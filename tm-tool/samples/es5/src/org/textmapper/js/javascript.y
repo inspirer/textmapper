@@ -155,6 +155,14 @@ PrimaryExpression :
 | Lparen Expression Rparen
 ;
 
+PrimaryExpression_ExprStart :
+  this
+| Identifier
+| Literal
+| ArrayLiteral
+| Lparen Expression Rparen
+;
+
 ArrayLiteral :
   Lsquare Elisionopt Rsquare
 | Lsquare ElementList Rsquare
@@ -206,8 +214,20 @@ MemberExpression :
 | new MemberExpression Arguments
 ;
 
+MemberExpression_ExprStart :
+  PrimaryExpression_ExprStart
+| MemberExpression_ExprStart Lsquare Expression Rsquare
+| MemberExpression_ExprStart Dot IdentifierName
+| new MemberExpression Arguments
+;
+
 NewExpression :
   MemberExpression
+| new NewExpression
+;
+
+NewExpression_ExprStart :
+  MemberExpression_ExprStart
 | new NewExpression
 ;
 
@@ -216,6 +236,13 @@ CallExpression :
 | CallExpression Arguments
 | CallExpression Lsquare Expression Rsquare
 | CallExpression Dot IdentifierName
+;
+
+CallExpression_ExprStart :
+  MemberExpression_ExprStart Arguments
+| CallExpression_ExprStart Arguments
+| CallExpression_ExprStart Lsquare Expression Rsquare
+| CallExpression_ExprStart Dot IdentifierName
 ;
 
 Arguments :
@@ -233,14 +260,38 @@ LeftHandSideExpression :
 | CallExpression
 ;
 
+LeftHandSideExpression_ExprStart :
+  NewExpression_ExprStart
+| CallExpression_ExprStart
+;
+
 PostfixExpression :
   LeftHandSideExpression
 | LeftHandSideExpression PlusPlus
 | LeftHandSideExpression MinusMinus
 ;
 
+PostfixExpression_ExprStart :
+  LeftHandSideExpression_ExprStart
+| LeftHandSideExpression_ExprStart PlusPlus
+| LeftHandSideExpression_ExprStart MinusMinus
+;
+
 UnaryExpression :
   PostfixExpression
+| delete UnaryExpression
+| void UnaryExpression
+| typeof UnaryExpression
+| PlusPlus UnaryExpression
+| MinusMinus UnaryExpression
+| Plus UnaryExpression
+| Minus UnaryExpression
+| Tilde UnaryExpression
+| Exclamation UnaryExpression
+;
+
+UnaryExpression_ExprStart :
+  PostfixExpression_ExprStart
 | delete UnaryExpression
 | void UnaryExpression
 | typeof UnaryExpression
@@ -259,10 +310,23 @@ MultiplicativeExpression :
 | MultiplicativeExpression Percent UnaryExpression
 ;
 
+MultiplicativeExpression_ExprStart :
+  UnaryExpression_ExprStart
+| MultiplicativeExpression_ExprStart Mult UnaryExpression
+| MultiplicativeExpression_ExprStart Slash UnaryExpression
+| MultiplicativeExpression_ExprStart Percent UnaryExpression
+;
+
 AdditiveExpression :
   MultiplicativeExpression
 | AdditiveExpression Plus MultiplicativeExpression
 | AdditiveExpression Minus MultiplicativeExpression
+;
+
+AdditiveExpression_ExprStart :
+  MultiplicativeExpression_ExprStart
+| AdditiveExpression_ExprStart Plus MultiplicativeExpression
+| AdditiveExpression_ExprStart Minus MultiplicativeExpression
 ;
 
 ShiftExpression :
@@ -270,6 +334,13 @@ ShiftExpression :
 | ShiftExpression LessLess AdditiveExpression
 | ShiftExpression GreaterGreater AdditiveExpression
 | ShiftExpression GreaterGreaterGreater AdditiveExpression
+;
+
+ShiftExpression_ExprStart :
+  AdditiveExpression_ExprStart
+| ShiftExpression_ExprStart LessLess AdditiveExpression
+| ShiftExpression_ExprStart GreaterGreater AdditiveExpression
+| ShiftExpression_ExprStart GreaterGreaterGreater AdditiveExpression
 ;
 
 RelationalExpression :
@@ -280,6 +351,16 @@ RelationalExpression :
 | RelationalExpression GreaterEqual ShiftExpression
 | RelationalExpression instanceof ShiftExpression
 | RelationalExpression in ShiftExpression
+;
+
+RelationalExpression_ExprStart :
+  ShiftExpression_ExprStart
+| RelationalExpression_ExprStart Less ShiftExpression
+| RelationalExpression_ExprStart Greater ShiftExpression
+| RelationalExpression_ExprStart LessEqual ShiftExpression
+| RelationalExpression_ExprStart GreaterEqual ShiftExpression
+| RelationalExpression_ExprStart instanceof ShiftExpression
+| RelationalExpression_ExprStart in ShiftExpression
 ;
 
 RelationalExpression_NoIn :
@@ -299,6 +380,14 @@ EqualityExpression :
 | EqualityExpression ExclamationEqualEqual RelationalExpression
 ;
 
+EqualityExpression_ExprStart :
+  RelationalExpression_ExprStart
+| EqualityExpression_ExprStart EqualEqual RelationalExpression
+| EqualityExpression_ExprStart ExclamationEqual RelationalExpression
+| EqualityExpression_ExprStart EqualEqualEqual RelationalExpression
+| EqualityExpression_ExprStart ExclamationEqualEqual RelationalExpression
+;
+
 EqualityExpression_NoIn :
   RelationalExpression_NoIn
 | EqualityExpression_NoIn EqualEqual RelationalExpression_NoIn
@@ -312,6 +401,11 @@ BitwiseANDExpression :
 | BitwiseANDExpression Ampersand EqualityExpression
 ;
 
+BitwiseANDExpression_ExprStart :
+  EqualityExpression_ExprStart
+| BitwiseANDExpression_ExprStart Ampersand EqualityExpression
+;
+
 BitwiseANDExpression_NoIn :
   EqualityExpression_NoIn
 | BitwiseANDExpression_NoIn Ampersand EqualityExpression_NoIn
@@ -320,6 +414,11 @@ BitwiseANDExpression_NoIn :
 BitwiseXORExpression :
   BitwiseANDExpression
 | BitwiseXORExpression Xor BitwiseANDExpression
+;
+
+BitwiseXORExpression_ExprStart :
+  BitwiseANDExpression_ExprStart
+| BitwiseXORExpression_ExprStart Xor BitwiseANDExpression
 ;
 
 BitwiseXORExpression_NoIn :
@@ -332,6 +431,11 @@ BitwiseORExpression :
 | BitwiseORExpression Or BitwiseXORExpression
 ;
 
+BitwiseORExpression_ExprStart :
+  BitwiseXORExpression_ExprStart
+| BitwiseORExpression_ExprStart Or BitwiseXORExpression
+;
+
 BitwiseORExpression_NoIn :
   BitwiseXORExpression_NoIn
 | BitwiseORExpression_NoIn Or BitwiseXORExpression_NoIn
@@ -340,6 +444,11 @@ BitwiseORExpression_NoIn :
 LogicalANDExpression :
   BitwiseORExpression
 | LogicalANDExpression AmpersandAmpersand BitwiseORExpression
+;
+
+LogicalANDExpression_ExprStart :
+  BitwiseORExpression_ExprStart
+| LogicalANDExpression_ExprStart AmpersandAmpersand BitwiseORExpression
 ;
 
 LogicalANDExpression_NoIn :
@@ -352,6 +461,11 @@ LogicalORExpression :
 | LogicalORExpression OrOr LogicalANDExpression
 ;
 
+LogicalORExpression_ExprStart :
+  LogicalANDExpression_ExprStart
+| LogicalORExpression_ExprStart OrOr LogicalANDExpression
+;
+
 LogicalORExpression_NoIn :
   LogicalANDExpression_NoIn
 | LogicalORExpression_NoIn OrOr LogicalANDExpression_NoIn
@@ -362,6 +476,11 @@ ConditionalExpression :
 | LogicalORExpression Questionmark AssignmentExpression Colon AssignmentExpression
 ;
 
+ConditionalExpression_ExprStart :
+  LogicalORExpression_ExprStart
+| LogicalORExpression_ExprStart Questionmark AssignmentExpression Colon AssignmentExpression
+;
+
 ConditionalExpression_NoIn :
   LogicalORExpression_NoIn
 | LogicalORExpression_NoIn Questionmark AssignmentExpression_NoIn Colon AssignmentExpression_NoIn
@@ -370,6 +489,11 @@ ConditionalExpression_NoIn :
 AssignmentExpression :
   ConditionalExpression
 | LeftHandSideExpression AssignmentOperator AssignmentExpression
+;
+
+AssignmentExpression_ExprStart :
+  ConditionalExpression_ExprStart
+| LeftHandSideExpression_ExprStart AssignmentOperator AssignmentExpression
 ;
 
 AssignmentExpression_NoIn :
@@ -395,6 +519,11 @@ AssignmentOperator :
 Expression :
   AssignmentExpression
 | Expression Comma AssignmentExpression
+;
+
+Expression_ExprStart :
+  AssignmentExpression_ExprStart
+| Expression_ExprStart Comma AssignmentExpression
 ;
 
 Expression_NoIn :
@@ -465,7 +594,7 @@ EmptyStatement :
 ;
 
 ExpressionStatement :
-  PlusPlus Expression Semicolon
+  Expression_ExprStart Semicolon
 ;
 
 IfStatement :
