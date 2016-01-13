@@ -33,13 +33,21 @@ genastdef = true
 
 [initial, afterAt => initial, afterAtID => initial]
 
-regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $$ = tokenText().substring(1, tokenSize()-1); }
+reClass = /\[([^\n\r\]\\]|\\.)*\]/
+reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
+reChar = /{reFirst}|\*/
+
+regexp(String): /\/{reFirst}{reChar}*\// { $$ = tokenText().substring(1, tokenSize()-1); }
 scon(String):	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(tokenText(), 1, tokenSize()-1); }
 icon(Integer):	/-?[0-9]+/				{ $$ = Integer.parseInt(tokenText()); }
 
 eoi:           /%%.*(\r?\n)?/			{ templatesStart = token.endoffset; }
 _skip:         /[\n\r\t ]+/		(space)
 _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
+
+commentChars = /([^*]|\*+[^*\/])*([^*]|\*+[^*\/]?)/
+_skip_multiline: /\/\*{commentChars}?\*\// (space)
+
 
 '%':	/%/
 '::=':  /::=/
@@ -63,7 +71,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '}':	/\}/
 '<':	/</
 '>':	/>/
-'*':	/*/
+'*':	/\*/
 '+':	/+/
 '+=':	/+=/
 '?':	/?/

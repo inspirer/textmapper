@@ -134,6 +134,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return WHITESPACE;
 			case Tokens._skip_comment:
 				return COMMENT;
+			case Tokens._skip_multiline:
+				return ML_COMMENT;
 			case Tokens.scon:
 				return STRING;
 			case Tokens.icon:

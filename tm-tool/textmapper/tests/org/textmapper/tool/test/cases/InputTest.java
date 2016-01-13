@@ -140,7 +140,7 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testNamedPatterns() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_patterns,10: unfinished regexp\n" +
+				"syntax_patterns,10: regexp is incomplete\n" +
 						"syntax_patterns,19: redeclaration of named pattern `WORD', ignored\n"
 		);
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_patterns", FileUtil.getFileContents(openStream("syntax_patterns", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), notifier, createDefaultTypesRegistry());

@@ -124,7 +124,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, STRING, TMTokenTypes.STRING);
 		fillMap(attributes, NUMBER, TMTokenTypes.ICON);
 		fillMap(attributes, IDENTIFIER, TMTokenTypes.ID);
-		fillMap(attributes, LINE_COMMENT, TMTokenTypes.COMMENT);
+		fillMap(attributes, LINE_COMMENT, TMTokenTypes.COMMENT, TMTokenTypes.ML_COMMENT);
 
 		// [] () and operators
 		fillMap(attributes, TMTokenTypes.operators, OPERATOR);

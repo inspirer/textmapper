@@ -27,7 +27,8 @@ public interface TMTokenTypes {
 	TokenSet whitespaces = TokenSet.create(WHITESPACE);
 
 	IElementType COMMENT = new TMElementType(Tokens._skip_comment, "comment");
-	TokenSet comments = TokenSet.create(COMMENT);
+	IElementType ML_COMMENT = new TMElementType(Tokens._skip_multiline, "ml-comment");
+	TokenSet comments = TokenSet.create(COMMENT, ML_COMMENT);
 
 	// tokens
 	IElementType STRING = new TMElementType(Tokens.scon, "string");

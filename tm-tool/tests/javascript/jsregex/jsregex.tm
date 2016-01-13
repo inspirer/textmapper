@@ -46,7 +46,7 @@ charclass: /\\p\{\w+\}/							{ this.quantifierReady(); }
 
 [afterChar => initial]
 
-'*':  /*/
+'*':  /\*/
 '+':  /+/
 '?':  /?/
 quantifier:  /\{[0-9]+(,[0-9]*)?\}/

@@ -55,7 +55,7 @@ charclass(String): /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize() 
 
 [afterChar => initial]
 
-'*':  /*/
+'*':  /\*/
 '+':  /+/
 '?':  /?/
 quantifier:  /\{[0-9]+(,[0-9]*)?\}/

@@ -7,7 +7,7 @@ prefix = "Lexemes"
 icon: /[0-7]+/       (class)
 
 # error
-DIGIT = /[0-9+/
+DIGIT = /([0-9]/
 
 # ok
 NORMDIGIT = /[0-9]+/
