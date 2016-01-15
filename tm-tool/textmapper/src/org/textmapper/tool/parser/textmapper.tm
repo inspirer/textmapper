@@ -45,8 +45,8 @@ eoi:           /%%.*(\r?\n)?/			{ templatesStart = token.endoffset; }
 _skip:         /[\n\r\t ]+/		(space)
 _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 
-commentChars = /([^*]|\*+[^*\/])*([^*]|\*+[^*\/]?)/
-_skip_multiline: /\/\*{commentChars}?\*\// (space)
+commentChars = /([^*]|\*+[^*\/])*\**/
+_skip_multiline: /\/\*{commentChars}\*\// (space)
 
 
 '%':	/%/

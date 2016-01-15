@@ -518,7 +518,7 @@ public class TMLexer {
 				}
 				{ spaceToken = skipComments; }
 				break;
-			case 7: // _skip_multiline: /\/\*{commentChars}?\*\//
+			case 7: // _skip_multiline: /\/\*{commentChars}\*\//
 				spaceToken = true;
 				switch(state) {
 					case States.afterAt:

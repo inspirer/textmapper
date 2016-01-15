@@ -19,7 +19,7 @@ space: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 # Note: LineTerminator: /[\n\r\u2028\u2029]/
 LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
 
-commentChars = /([^*]|\*+[^*\/])*([^*]|\*+[^*\/]?)/
+commentChars = /([^*]|\*+[^*\/])*\**/
 MultiLineComment: /\/\*{commentChars}?\*\// (space)
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/ (space)
 
