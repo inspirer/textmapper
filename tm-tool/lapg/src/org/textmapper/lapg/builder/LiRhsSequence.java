@@ -38,7 +38,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	private final LiRhsPart[] parts;
 	private AstType type;
 	private RhsMapping mapping;
-	private Terminal prio;
+	private Terminal precedence;
 
 	LiRhsSequence(String name, LiRhsPart[] parts, boolean isRewrite, SourceElement origin) {
 		super(origin);
@@ -145,12 +145,12 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 		}
 	}
 
-	Terminal getPrio() {
-		return prio;
+	Terminal getPrecedence() {
+		return precedence;
 	}
 
-	void setPrio(Terminal prio) {
+	void setPrecedence(Terminal precedence) {
 		// TODO check unused priorities
-		this.prio = prio;
+		this.precedence = precedence;
 	}
 }

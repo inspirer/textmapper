@@ -123,7 +123,7 @@ charset ::=
 	| setsymbol
 	| charset setsymbol
 	| charset sym='-'
-			%prio char
+			%prec char
 	| charset '-' char
 	| charset '-' escaped
 ;

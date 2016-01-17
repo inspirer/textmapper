@@ -28,5 +28,7 @@ public interface Rule extends SourceElement, UserDataHolder {
 
 	RhsSequence getSource();
 
-	int getPriority();
+	Terminal getPrecedenceSymbol();
+
+	int getPrecedence();
 }

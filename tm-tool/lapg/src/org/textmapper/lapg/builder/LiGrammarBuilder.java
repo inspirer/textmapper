@@ -240,7 +240,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	public RhsSequence addPrecedence(RhsPart p, Terminal prec) {
 		check(prec);
 		LiRhsSequence result = (LiRhsSequence) asSequence(p);
-		result.setPrio(prec);
+		result.setPrecedence(prec);
 		return result;
 	}
 
@@ -680,7 +680,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		for (RhsSequence r : ((LiRhsRoot) n.getDefinition()).preprocess()) {
 			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand(context);
 			for (RhsSymbol[] arr : expanded) {
-				rules.add(new LiRule(rules.size(), n, arr, ((LiRhsSequence) r).getPrio(), r));
+				rules.add(new LiRule(rules.size(), n, arr, ((LiRhsSequence) r).getPrecedence(), r));
 			}
 		}
 	}

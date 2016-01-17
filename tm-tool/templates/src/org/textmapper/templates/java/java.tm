@@ -486,7 +486,7 @@ StatementExpression ::=
 %right kw_else;
 
 IfStatement ::=
-	  kw_if '(' Expression ')' Statement (kw_else Statement)? %prio kw_else ;
+	  kw_if '(' Expression ')' Statement (kw_else Statement)? %prec kw_else ;
 
 SwitchStatement ::=
 	  kw_switch '(' Expression ')' '{' SwitchBlockStatementGroup* SwitchLabel+? '}' ;

@@ -143,7 +143,9 @@ class TemplateInstance {
 
 	private LiRhsSequence cloneSeq(RhsSequence p) {
 		if (p == null) return null;
-		return new LiRhsSequence(p.getName(), clone(p.getParts()), false, p);
+		LiRhsSequence seq = new LiRhsSequence(p.getName(), clone(p.getParts()), false, p);
+		seq.setPrecedence(((LiRhsSequence)p).getPrecedence());
+		return seq;
 	}
 
 	private LiRhsPart clone(RhsPart p) {

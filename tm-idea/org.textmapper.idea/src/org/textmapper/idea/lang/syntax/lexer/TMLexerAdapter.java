@@ -235,8 +235,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 			case Tokens.Linline:
 				return KW_INLINE;
 
-			case Tokens.Lprio:
-				return KW_PRIO;
+			case Tokens.Lprec:
+				return KW_PREC;
 			case Tokens.Lshift:
 				return KW_SHIFT;
 			case Tokens.Lreduce:

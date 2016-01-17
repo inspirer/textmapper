@@ -92,7 +92,7 @@ abstract class ContextFree {
 		for (int i = 0; i < wrules.length; i++) {
 			Rule r = wrules[i];
 			this.rleft[i] = r.getLeft().getIndex();
-			this.rprio[i] = r.getPriority();
+			this.rprio[i] = r.getPrecedence();
 			this.rindex[i] = curr_rindex;
 			RhsSymbol[] wright = r.getRight();
 			for (RhsSymbol element : wright) {

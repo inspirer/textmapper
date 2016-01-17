@@ -4,6 +4,7 @@
 
 %start input
 
+%right d
 %token Equal
 %token Colon
 %token Lparen
@@ -12,13 +13,12 @@
 %token a
 %token b
 %token c
-%token d
 
 %locations
 %%
 
 input :
-  DefaultP DefaultP_C DefaultP_A_C DefaultP_A_B_C
+  DefaultP DefaultP_C DefaultP_A_C DefaultP_A_B_C IfThenElse IfThenElse_C
 ;
 
 DefaultP :
@@ -57,6 +57,25 @@ Terms_B :
 
 Terms_C :
   c
+;
+
+Condition :
+  b
+;
+
+Condition_C :
+  a
+| b
+;
+
+IfThenElse :
+  Lparen Condition Rparen c d c
+| Lparen Condition Rparen c %prec d
+;
+
+IfThenElse_C :
+  Lparen Condition_C Rparen c d c
+| Lparen Condition_C Rparen c %prec d
 ;
 
 %%

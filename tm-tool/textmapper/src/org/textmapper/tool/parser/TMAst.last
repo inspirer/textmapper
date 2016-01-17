@@ -392,13 +392,13 @@ class RhsSuffix {
 	KindKind kind;
 	Symref symref;
 	enum KindKind {
-		LPRIO,
+		LPREC,
 		LSHIFT
 	}
 }
 
 rhsSuffix  : RhsSuffix ::=
-	'%' kind=Lprio as KindKind.LPRIO symref=symref_noargs
+	'%' kind=Lprec as KindKind.LPREC symref=symref_noargs
   | '%' kind=Lshift as KindKind.LSHIFT symref=symref_noargs
 ;
 

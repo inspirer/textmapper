@@ -431,7 +431,7 @@ ExpressionStatement ::=
 
 IfStatement ::=
 	  'if' '(' Expression ')' Statement 'else' Statement
-	| 'if' '(' Expression ')' Statement %prio 'else'
+	| 'if' '(' Expression ')' Statement %prec 'else'
 ;
 
 IterationStatement ::=

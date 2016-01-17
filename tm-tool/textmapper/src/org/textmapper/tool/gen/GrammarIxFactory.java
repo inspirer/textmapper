@@ -120,6 +120,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 				if ("getAction".equals(methodName)) {
 					return TMDataUtil.getCode(rule);
 				}
+				if ("precedence".equals(methodName)) {
+					return rule.getPrecedenceSymbol();
+				}
 				if ("left".equals(methodName)) {
 					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, 0, evaluationStrategy, rootContext,
 							templatePackage, caller);

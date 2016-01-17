@@ -22,15 +22,16 @@ d:  /d/
 %flag C;
 
 input ::=
-	  DefaultP DefaultP<+C> DefaultP<+A,+C> DefaultP<+A,+B,+C>
+	  DefaultP DefaultP<+C> DefaultP<+A,+C> DefaultP<+A,+B,+C> IfThenElse<~C> IfThenElse<+C>
 ;
 
-# Test symbol propagation.
+# Test 1: symbol propagation.
 DefaultP<A,B,C> ::=
 	  Terms
 	| [A] d Terms<B>
 ;
 
+# Test 2: rule conditions
 Terms<A,B,C> ::=
 	  [A && B && C] a b c
 	| [A && !B && C] a c
@@ -42,3 +43,17 @@ Terms<A,B,C> ::=
 	| [!A && !B && !C]
 ;
 
+
+# Test 3: templates and rule precedence.
+
+%right d;
+
+Condition<C> ::=
+	  [C] a
+	| b
+;
+
+IfThenElse<C> ::=
+	  '(' Condition ')' c d c
+	| '(' Condition ')' c %prec d
+;

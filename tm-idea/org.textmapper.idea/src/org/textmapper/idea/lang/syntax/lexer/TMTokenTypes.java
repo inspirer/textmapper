@@ -101,7 +101,7 @@ public interface TMTokenTypes {
 	IElementType KW_BRACKETS = new TMElementType(Tokens.Lbrackets, "brackets");
 	IElementType KW_INLINE = new TMElementType(Tokens.Linline, "inline");
 
-	IElementType KW_PRIO = new TMElementType(Tokens.Lprio, "prio");
+	IElementType KW_PREC = new TMElementType(Tokens.Lprec, "prec");
 	IElementType KW_SHIFT = new TMElementType(Tokens.Lshift, "shift");
 	IElementType KW_REDUCE = new TMElementType(Tokens.Lreduce, "reduce");
 
@@ -142,7 +142,7 @@ public interface TMTokenTypes {
 
 	TokenSet softKeywords = TokenSet.create(
 			KW_BRACKETS, KW_INLINE,
-			KW_PRIO, KW_SHIFT, KW_REDUCE,
+			KW_PREC, KW_SHIFT, KW_REDUCE,
 			KW_RETURNS,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC,
 			KW_GENERATE, KW_ASSERT, KW_EMPTY, KW_NONEMPTY,

@@ -786,7 +786,7 @@ public class TMParser {
 		"Lset",
 		"Lbrackets",
 		"Linline",
-		"Lprio",
+		"Lprec",
 		"Lshift",
 		"Lreturns",
 		"Linput",
@@ -1821,9 +1821,9 @@ public class TMParser {
 						((TmaAnnotations)tmStack[tmHead - 1].value) /* annotations */,
 						source, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 123:  // rhsSuffix ::= '%' Lprio symref_noargs
+			case 123:  // rhsSuffix ::= '%' Lprec symref_noargs
 				tmLeft.value = new TmaRhsSuffix(
-						TmaRhsSuffix.TmaKindKind.LPRIO /* kind */,
+						TmaRhsSuffix.TmaKindKind.LPREC /* kind */,
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;

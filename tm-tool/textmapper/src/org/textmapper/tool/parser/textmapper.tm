@@ -100,7 +100,7 @@ Lbrackets: /brackets/		(soft)
 
 Linline: /inline/			(soft)
 
-Lprio:  /prio/				(soft)
+Lprec:  /prec/				(soft)
 Lshift: /shift/				(soft)
 
 Lreturns: /returns/			(soft)
@@ -308,7 +308,7 @@ rhsPrefix ::=
 ;
 
 rhsSuffix ::=
-	  '%' kind=Lprio symref=symref_noargs
+	  '%' kind=Lprec symref=symref_noargs
 	| '%' kind=Lshift symref=symref_noargs
 ;
 

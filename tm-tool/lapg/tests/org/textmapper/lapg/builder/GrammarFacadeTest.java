@@ -64,7 +64,7 @@ public class GrammarFacadeTest {
 
 		Rule[] rules = grammar.getRules();
 		assertEquals(1, rules.length);
-		assertEquals(id.getIndex(), grammar.getRules()[0].getPriority());
+		assertEquals(id.getIndex(), grammar.getRules()[0].getPrecedence());
 		assertTrue(symbols[2] == rules[0].getLeft());
 		assertEquals(1, rules[0].getRight().length);
 		assertTrue(symbols[1] == rules[0].getRight()[0].getTarget());
@@ -216,7 +216,7 @@ public class GrammarFacadeTest {
 		Grammar grammar = builder.create();
 
 		assertEquals(1, grammar.getRules().length);
-		assertEquals(id.getIndex(), grammar.getRules()[0].getPriority());
+		assertEquals(id.getIndex(), grammar.getRules()[0].getPrecedence());
 		assertEquals(1, grammar.getPriorities().length);
 		assertEquals(Prio.RIGHT, grammar.getPriorities()[0].getPrio());
 		assertEquals(1, grammar.getPriorities()[0].getSymbols().length);

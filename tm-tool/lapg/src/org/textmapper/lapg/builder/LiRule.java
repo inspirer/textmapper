@@ -24,15 +24,15 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 	private final int index;
 	private final Nonterminal left;
 	private final RhsSymbol[] right;
-	private final Symbol priority;
+	private final Terminal precedence;
 	private final RhsSequence definition;
 
 	public LiRule(int index, Nonterminal left, RhsSymbol[] right,
-				  Symbol priority, RhsSequence definition) {
+				  Terminal precedence, RhsSequence definition) {
 		this.index = index;
 		this.left = left;
 		this.right = right;
-		this.priority = priority;
+		this.precedence = precedence;
 		this.definition = definition;
 		((LiNonterminal) left).addRule(this);
 	}
@@ -58,9 +58,14 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 	}
 
 	@Override
-	public int getPriority() {
-		if (priority != null) {
-			return priority.getIndex();
+	public Terminal getPrecedenceSymbol() {
+		return precedence;
+	}
+
+	@Override
+	public int getPrecedence() {
+		if (precedence != null) {
+			return precedence.getIndex();
 		}
 		for (int i = right.length - 1; i >= 0; i--) {
 			if (right[i].getTarget().isTerm()) {
@@ -83,9 +88,9 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 			sb.append(" ");
 			sb.append(LiUtil.getSymbolName(s));
 		}
-		if (priority != null) {
-			sb.append(" %prio ");
-			sb.append(priority.getName());
+		if (precedence != null) {
+			sb.append(" %prec ");
+			sb.append(precedence.getName());
 		}
 		return sb.toString();
 	}

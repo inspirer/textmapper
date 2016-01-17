@@ -135,7 +135,7 @@ charset (java.util.@List<RegexAstPart>) ::=
 	| setsymbol									{ $$ = new java.util.@ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(${left()}, $setsymbol, reporter); }
 	| charset setsymbol							{ RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
 	| charset sym='-'							{ $charset.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
-			%prio char
+			%prec char
 	| charset '-' char							{ RegexUtil.applyRange($charset, new RegexAstChar($char, source, ${char.offset}, ${char.endoffset}), reporter); }
 	| charset '-' escaped						{ RegexUtil.applyRange($charset, new RegexAstChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
 ;

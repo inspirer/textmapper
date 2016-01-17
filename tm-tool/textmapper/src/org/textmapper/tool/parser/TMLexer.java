@@ -91,7 +91,7 @@ public class TMLexer {
 		int Lset = 46;
 		int Lbrackets = 47;
 		int Linline = 48;
-		int Lprio = 49;
+		int Lprec = 49;
 		int Lshift = 50;
 		int Lreturns = 51;
 		int Linput = 52;
@@ -858,7 +858,7 @@ public class TMLexer {
 		subTokensOfID.put("set", 45);
 		subTokensOfID.put("brackets", 46);
 		subTokensOfID.put("inline", 47);
-		subTokensOfID.put("prio", 48);
+		subTokensOfID.put("prec", 48);
 		subTokensOfID.put("shift", 49);
 		subTokensOfID.put("returns", 50);
 		subTokensOfID.put("input", 51);
@@ -976,7 +976,7 @@ public class TMLexer {
 				break;
 			case 46:	// brackets (soft)
 			case 47:	// inline (soft)
-			case 48:	// prio (soft)
+			case 48:	// prec (soft)
 			case 49:	// shift (soft)
 			case 50:	// returns (soft)
 			case 51:	// input (soft)

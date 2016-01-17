@@ -295,7 +295,7 @@ public class RegexDefParser {
 			case 22:  // charset ::= charset setsymbol
 				{ RegexUtil.addSetSymbol(((List<RegexAstPart>)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value), reporter); }
 				break;
-			case 23:  // charset ::= charset '-' %prio char
+			case 23:  // charset ::= charset '-' %prec char
 				{ ((List<RegexAstPart>)tmStack[tmHead - 1].value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); }
 				break;
 			case 24:  // charset ::= charset '-' char

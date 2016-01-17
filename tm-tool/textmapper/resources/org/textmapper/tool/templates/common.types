@@ -55,7 +55,7 @@ class Rule extends SourceElement {
 	string alias;
 	Symbol left[1];
 	SymbolRef right[0..*];
-	int priority;
+	int precedence;
 	SourceElement action;
 }
 

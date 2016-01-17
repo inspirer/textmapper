@@ -600,7 +600,7 @@ ExpressionStatement :
 
 IfStatement :
   if Lparen Expression Rparen Statement else Statement
-| if Lparen Expression Rparen Statement
+| if Lparen Expression Rparen Statement %prec else
 ;
 
 IterationStatement :

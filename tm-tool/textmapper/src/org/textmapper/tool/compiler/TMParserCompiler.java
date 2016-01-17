@@ -261,7 +261,7 @@ public class TMParserCompiler {
 		}
 		TmaRhsSuffix ruleAttribute = right.getSuffix();
 		TmaSymref rulePrio = ruleAttribute != null &&
-				ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPRIO
+				ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPREC
 				? ruleAttribute.getSymref() : null;
 		Terminal prio = null;
 		if (rulePrio != null) {
