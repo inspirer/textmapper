@@ -38,13 +38,10 @@ public class ClassResourceLoader implements IResourceLoader {
 		char[] buffer = new char[2048];
 		int count;
 		try {
-			Reader in = new InputStreamReader(url.openStream(), charsetName);
-			try {
+			try (Reader in = new InputStreamReader(url.openStream(), charsetName)) {
 				while ((count = in.read(buffer)) > 0) {
 					contents.append(buffer, 0, count);
 				}
-			} finally {
-				in.close();
 			}
 		} catch (IOException ioe) {
 			return null;

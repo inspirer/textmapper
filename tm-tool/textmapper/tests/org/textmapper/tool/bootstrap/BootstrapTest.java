@@ -154,13 +154,13 @@ public class BootstrapTest {
 
 	@Test
 	public void testJavascriptTm() {
-		bootstrap("../samples/es5/src/org/textmapper/js", "javascript.tm", new String[0],
-				new String[]{"javascript.y"}, 1);
+		bootstrap("../samples/js/src/org/textmapper/js", "js.tm", new String[0],
+				new String[]{"js.y"}, 1);
 	}
 
 	@Test
 	public void testJsonTm() {
-		bootstrap("../samples/es5/src/org/textmapper/js", "json.tm", new String[0], new String[]{
+		bootstrap("../samples/js/src/org/textmapper/json", "json.tm", new String[0], new String[]{
 				"JsonTree.java", "JsonParser.java", "JsonLexer.java"}, 0);
 	}
 
