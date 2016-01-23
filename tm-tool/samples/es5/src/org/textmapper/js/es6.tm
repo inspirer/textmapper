@@ -14,6 +14,9 @@ module = "es6"
 
 [initial, div, template, template_div]
 
+# TODO
+lookahead1:
+
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 
 LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
@@ -197,8 +200,7 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 
 :: parser
 
-# FIXME
-%input IdentifierName;
+%input Module;
 
 %flag In;
 %flag Yield;
@@ -224,14 +226,6 @@ IdentifierName ::=
 
 	# NullLiteral | BooleanLiteral
 	| 'null' | 'true' | 'false'
-;
-
-Literal ::=
-	  'null'
-	| 'true'
-	| 'false'
-	| NumericLiteral
-	| StringLiteral
 ;
 
 # A.2 Expressions
@@ -560,7 +554,7 @@ BlockStatement<Yield, Return> ::=
 ;
 
 Block<Yield, Return> ::=
-	  '{' StatementListopt '}'
+	  '{' StatementList? '}'
 ;
 
 StatementList<Yield, Return> ::=
@@ -659,24 +653,27 @@ EmptyStatement ::=
 	  ';' ;
 
 ExpressionStatement<Yield> ::=
+	lookahead1
 	/* lookahead != {'{', function, class, let '[' } */ Expression<+In,Yield> ';'
 ;
 
+%right 'else';
+
 IfStatement<Yield, Return> ::=
 	  'if' '(' Expression<+In,Yield> ')' Statement 'else' Statement
-	| 'if' '(' Expression<+In,Yield> ')' Statement
+	| 'if' '(' Expression<+In,Yield> ')' Statement %prec 'else'
 ;
 
 IterationStatement<Yield, Return> ::=
 	  'do' Statement 'while' '(' Expression<+In,Yield> ')' ';'
 	| 'while' '(' Expression<+In,Yield> ')' Statement
-	| 'for' '(' /* lookahead != {let [ } */ Expressionopt<Yield> ';' Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
+	| 'for' '(' lookahead1 /* lookahead != {let [ } */ Expressionopt<Yield> ';' Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
 	| 'for' '(' 'var' VariableDeclarationList<Yield> ';' Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
 	| 'for' '(' LexicalDeclaration<Yield> Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
-	| 'for' '(' /* lookahead != {let [ } */ LeftHandSideExpression<Yield> 'in' Expression<+In,Yield> ')' Statement
+	| 'for' '(' lookahead1 /* lookahead != {let [ } */ LeftHandSideExpression<Yield> 'in' Expression<+In,Yield> ')' Statement
 	| 'for' '(' 'var' ForBinding<Yield> 'in' Expression<+In,Yield> ')' Statement
 	| 'for' '(' ForDeclaration<Yield> 'in' Expression<+In,Yield> ')' Statement
-	| 'for' '(' /* lookahead != let */ LeftHandSideExpression<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
+	| 'for' '(' lookahead1 /* lookahead != let */ LeftHandSideExpression<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
 	| 'for' '(' 'var' ForBinding<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
 	| 'for' '(' ForDeclaration<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
 ;
@@ -724,15 +721,16 @@ CaseClauses<Yield, Return> ::=
 ;
 
 CaseClause<Yield, Return> ::=
-	  'case' Expression<+In,Yield> ':' StatementListopt<Yield,Return>
+	  'case' Expression<+In,Yield> ':' StatementList<Yield,Return>?
 ;
 
 DefaultClause<Yield, Return> ::=
-	  'default' ':' StatementListopt<Yield,Return>
+	  'default' ':' StatementList<Yield,Return>?
 ;
 
 LabelledStatement<Yield, Return> ::=
-	  LabelIdentifier<Yield> ':' LabelledItem
+	  Identifier ':' LabelledItem
+	| [!Yield] 'yield' ':' LabelledItem
 ;
 
 LabelledItem<Yield, Return> ::=
@@ -775,7 +773,7 @@ FunctionDeclaration<Yield, Default> ::=
 ;
 
 FunctionExpression ::=
-	  'function' BindingIdentifieropt '(' FormalParameters ')' '{' FunctionBody '}'
+	  'function' BindingIdentifier? '(' FormalParameters ')' '{' FunctionBody '}'
 ;
 
 StrictFormalParameters<Yield> ::=
@@ -802,10 +800,7 @@ FormalParameter<Yield> ::=
 	  BindingElement ;
 
 FunctionBody<Yield> ::=
-	  FunctionStatementList ;
-
-FunctionStatementList<Yield> ::=
-	  StatementListopt<Yield,+Return> ;
+	  StatementList<Yield,+Return>? ;
 
 ArrowFunction<In, Yield> ::=
 	  ArrowParameters<Yield> /* no LineTerminator */ '=>' ConciseBody<In> ;
@@ -816,7 +811,8 @@ ArrowParameters<Yield> ::=
 ;
 
 ConciseBody<In> ::=
-      /* lookahead != { */ AssignmentExpression<In>
+	  lookahead1
+	  /* lookahead != { */ AssignmentExpression<In>
 	| '{' FunctionBody '}'
 ;
 
@@ -839,7 +835,7 @@ GeneratorDeclaration<Yield, Default> ::=
 ;
 
 GeneratorExpression ::=
-	  'function' '*' BindingIdentifieropt<+Yield> '(' FormalParameters<+Yield> ')' '{' GeneratorBody '}' ;
+	  'function' '*' BindingIdentifier<+Yield>? '(' FormalParameters<+Yield> ')' '{' GeneratorBody '}' ;
 
 GeneratorBody ::=
 	  FunctionBody<+Yield> ;
@@ -856,10 +852,10 @@ ClassDeclaration<Yield, Default> ::=
 ;
 
 ClassExpression<Yield> ::=
-	  'class' BindingIdentifieropt<Yield> ClassTail<Yield> ;
+	  'class' BindingIdentifier<Yield>? ClassTail<Yield> ;
 
 ClassTail<Yield> ::=
-	  ClassHeritageopt<Yield> '{' ClassBodyopt<Yield> '}' ;
+	  ClassHeritage? '{' ClassBodyopt<Yield> '}' ;
 
 ClassHeritage<Yield> ::=
 	  'extends' LeftHandSideExpression<Yield> ;
@@ -955,7 +951,7 @@ ExportDeclaration ::=
 	| 'export' Declaration
 	| 'export' 'default' HoistableDeclaration<+Default>
 	| 'export' 'default' ClassDeclaration<+Default>
-	| 'export' 'default' /* lookahead != { function, class } */ AssignmentExpression<+In> ';'
+	| 'export' 'default' lookahead1 /* lookahead != { function, class } */ AssignmentExpression<+In> ';'
 ;
 
 ExportClause ::=
