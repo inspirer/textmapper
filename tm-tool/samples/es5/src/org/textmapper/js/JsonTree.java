@@ -1,7 +1,5 @@
-package com.test;
+package org.textmapper.js;
 
-import com.test.JsonLexer.ErrorReporter;
-import com.test.JsonParser.ParseException;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -9,6 +7,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.textmapper.js.JsonLexer.ErrorReporter;
+import org.textmapper.js.JsonParser.ParseException;
 
 public class JsonTree<T> {
 

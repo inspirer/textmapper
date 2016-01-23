@@ -1,10 +1,10 @@
-package com.test;
+package org.textmapper.js;
 
-import com.test.JsonLexer.ErrorReporter;
-import com.test.JsonLexer.Span;
-import com.test.JsonLexer.Tokens;
 import java.io.IOException;
 import java.text.MessageFormat;
+import org.textmapper.js.JsonLexer.ErrorReporter;
+import org.textmapper.js.JsonLexer.Span;
+import org.textmapper.js.JsonLexer.Tokens;
 
 public class JsonParser {
 

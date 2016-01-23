@@ -6,6 +6,7 @@ gentree = true
 genast = false
 positions = "line,offset"
 endpositions = "offset"
+package = "org.textmapper.js"
 
 :: lexer
 

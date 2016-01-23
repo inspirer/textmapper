@@ -1,4 +1,4 @@
-package com.test;
+package org.textmapper.js;
 
 import java.io.IOException;
 import java.io.Reader;
