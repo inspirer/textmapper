@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/samples/es5/es5.iml" filepath="$PROJECT_DIR$/samples/es5/es5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/js/js.iml" filepath="$PROJECT_DIR$/samples/js/js.iml" />
       <module fileurl="file://$PROJECT_DIR$/lapg/lapg.iml" filepath="$PROJECT_DIR$/lapg/lapg.iml" />
       <module fileurl="file://$PROJECT_DIR$/templates/templates.iml" filepath="$PROJECT_DIR$/templates/templates.iml" />
       <module fileurl="file://$PROJECT_DIR$/textmapper/textmapper.iml" filepath="$PROJECT_DIR$/textmapper/textmapper.iml" />

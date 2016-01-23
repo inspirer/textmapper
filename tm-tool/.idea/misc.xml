@@ -55,7 +55,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/samples/es5/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/js/pom.xml" />
       </list>
     </option>
   </component>
