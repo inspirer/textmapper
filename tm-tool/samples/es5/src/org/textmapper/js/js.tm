@@ -1,14 +1,13 @@
-language javascript(bison);
+language javascript(java);
 
-module = "javascript"
-
-#package = "org.textmapper.js"
-#prefix = "Js"
-#breaks = true
-#gentree = true
-#genast = false
-#positions = "line,offset"
-#endpositions = "offset"
+package = "org.textmapper.js"
+prefix = "Js"
+breaks = true
+gentree = true
+genast = false
+positions = "line,offset"
+endpositions = "offset"
+genbison = true
 
 :: lexer
 

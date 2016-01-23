@@ -16,6 +16,7 @@ class Options extends common.Options {
 	bool gentree = false;
 	bool genast = false;
 	bool genastdef = false;
+	bool genbison = false;
 	bool genmain = false;
 	bool java8 = true;
 

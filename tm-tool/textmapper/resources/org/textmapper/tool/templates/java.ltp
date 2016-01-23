@@ -5,6 +5,9 @@ ${file opts.prefix+'Parser.java'}${call java_parser.unit}${end-}
 ${if opts.gentree-}
 ${file opts.prefix+'Tree.java'}${call java_tree.unit}${end-}
 ${end-}
+${if opts.genbison-}
+${file opts.prefix.toLowerCase()+'.y'}${call bison.unit('$$')}${end-}
+${end-}
 ${if opts.genast-}
 ${call java_ast.unit-}
 ${end-}

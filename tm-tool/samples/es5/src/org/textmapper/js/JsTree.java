@@ -7,16 +7,16 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textmapper.js.JsonLexer.ErrorReporter;
-import org.textmapper.js.JsonParser.ParseException;
+import org.textmapper.js.JsLexer.ErrorReporter;
+import org.textmapper.js.JsParser.ParseException;
 
-public class JsonTree<T> {
+public class JsTree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<JsonProblem> errors;
+	private final List<JsProblem> errors;
 
-	public JsonTree(TextSource source, T root, List<JsonProblem> errors) {
+	public JsTree(TextSource source, T root, List<JsProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -30,7 +30,7 @@ public class JsonTree<T> {
 		return root;
 	}
 
-	public List<JsonProblem> getErrors() {
+	public List<JsProblem> getErrors() {
 		return errors;
 	}
 
@@ -39,25 +39,25 @@ public class JsonTree<T> {
 	}
 
 
-	public static JsonTree<Object> parse(TextSource source) {
-		final List<JsonProblem> list = new ArrayList<>();
+	public static JsTree<Object> parse(TextSource source) {
+		final List<JsProblem> list = new ArrayList<>();
 		ErrorReporter reporter = (message, line, offset, endoffset) ->
-				list.add(new JsonProblem(KIND_ERROR, message, line, offset, endoffset, null));
+				list.add(new JsProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			JsonLexer lexer = new JsonLexer(source.getStream(), reporter);
+			JsLexer lexer = new JsLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
 
-			JsonParser parser = new JsonParser(reporter);
+			JsParser parser = new JsParser(reporter);
 			Object result = parser.parse(lexer);
 
-			return new JsonTree<>(source, result, list);
+			return new JsTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new JsonProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
+			list.add(new JsProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new JsonTree<>(source, null, list);
+		return new JsTree<>(source, null, list);
 	}
 
 
@@ -67,7 +67,7 @@ public class JsonTree<T> {
 
 	public static final String PARSER_SOURCE = "parser";
 
-	public static class JsonProblem extends Exception {
+	public static class JsProblem extends Exception {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
@@ -75,7 +75,7 @@ public class JsonTree<T> {
 		private final int offset;
 		private final int endoffset;
 
-		public JsonProblem(int kind, String message, int line, int offset, int endoffset, Throwable cause) {
+		public JsProblem(int kind, String message, int line, int offset, int endoffset, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.line = line;
