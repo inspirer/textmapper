@@ -21,10 +21,16 @@ endpositions = "offset"
 'h': /h/
 'i': /i/
 
+
+'3': /3/
+'4': /4/
+'5': /5/
+'6': /6/
+
 :: parser
 
 input ::=
-	  abcdef+
+	  abcdef+ test_3
 ;
 
 abcdef ::=
@@ -52,3 +58,17 @@ recursive ::=
 helper ::=
 	  'i' recursive 'h' 'i'
 ;
+
+# test 3
+
+%generate precede4 = set(precede '4');
+
+test_3 ::=
+	  '3' test_3_helper '4' '5'
+;
+
+test_3_helper ::=
+	('b' 'c'? maybeD)?
+;
+
+maybeD ::= 'd'? ;

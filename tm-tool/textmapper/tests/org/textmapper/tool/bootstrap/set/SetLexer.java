@@ -27,6 +27,10 @@ public class SetLexer {
 		int char_g = 7;
 		int char_h = 8;
 		int char_i = 9;
+		int x33 = 10;
+		int x34 = 11;
+		int x35 = 12;
+		int x36 = 13;
 	}
 
 	public interface ErrorReporter {
@@ -123,21 +127,22 @@ public class SetLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 11, 12, 13, 14, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(9,
-		"\1\2\3\4\5\6\7\10\11");
+	private static final short[] tmRuleSymbol = unpack_short(13,
+		"\1\2\3\4\5\6\7\10\11\12\13\14\15");
 
-	private static final int tmClassesCount = 11;
+	private static final int tmClassesCount = 15;
 
-	private static final short[] tmGoto = unpack_vc_short(110,
-		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\13\ufffd\13\ufffc\13\ufffb" +
-		"\13\ufffa\13\ufff9\13\ufff8\13\ufff7\13\ufff6\13\ufff5");
+	private static final short[] tmGoto = unpack_vc_short(210,
+		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1\15\17\ufffd" +
+		"\17\ufffc\17\ufffb\17\ufffa\17\ufff9\17\ufff8\17\ufff7\17\ufff6\17\ufff5\17\ufff4" +
+		"\17\ufff3\17\ufff2\17\ufff1");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

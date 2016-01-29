@@ -158,7 +158,7 @@ class LiSetResolver {
 			for (int i = 0; i < resolvedElements.length; i++) {
 				res[i] = resolvedElements[i].getIndex();
 			}
-			((LiNamedSet)namedSet).setElements(res);
+			((LiNamedSet) namedSet).setElements(res);
 		}
 	}
 
@@ -392,6 +392,9 @@ class LiSetResolver {
 					} else {
 						dependenciesSet.add(
 								index.index(reverse ? Operation.Last : Operation.First, target));
+						if (((Nonterminal) target).isNullable()) {
+							return true;
+						}
 					}
 				}
 				return target == symbol;
