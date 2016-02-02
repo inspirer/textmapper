@@ -62,7 +62,7 @@ public class SampleATree<T> {
 				list.add(new SampleAProblem(KIND_ERROR, message, line, offset, column, endline, endoffset, endcolumn, null));
 
 		try {
-			SampleALexer lexer = new SampleALexer(source.getStream(), reporter);
+			SampleALexer lexer = new SampleALexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			SampleAParser parser = new SampleAParser(reporter);
@@ -83,7 +83,7 @@ public class SampleATree<T> {
 				list.add(new SampleAProblem(KIND_ERROR, message, line, offset, column, endline, endoffset, endcolumn, null));
 
 		try {
-			SampleALexer lexer = new SampleALexer(source.getStream(), reporter);
+			SampleALexer lexer = new SampleALexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			SampleAParser parser = new SampleAParser(reporter);

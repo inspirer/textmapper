@@ -13,13 +13,8 @@ ${call errorReporter-}
 	private java.io.@Reader stream;
 	final private ErrorReporter reporter;
 
-${if opts.lexerInput == 'stream'-}
-	final private char[] data = new char[2048];
-	private int datalen;
-${else if opts.lexerInput == 'buffer'-}
+${if opts.lexerInput == 'buffer'-}
 	private CharSequence input;
-${end-}
-${if opts.lexerInput == 'stream' || opts.lexerInput == 'buffer'-}
 	private int tokenOffset;
 	private int l;
 	private int charOffset;
@@ -69,14 +64,14 @@ ${call java_pack.unpackShort-}
 ${end}
 
 ${template lexerCtor}
-	public ${opts.prefix}Lexer(${if opts.lexerInput == 'buffer'}CharSequence input, ${else if opts.lexerInput == 'stream'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
+	public ${opts.prefix}Lexer(${if opts.lexerInput == 'buffer'}CharSequence input, ${end}ErrorReporter reporter) throws java.io.@IOException {
 		this.reporter = reporter;
-		reset(${if opts.lexerInput == 'buffer'}input${else if opts.lexerInput == 'stream'}stream${end});
+		reset(${if opts.lexerInput == 'buffer'}input${end});
 	}
 ${end}
 
 ${template lexerReset}
-	public void reset(${if opts.lexerInput == 'buffer'}CharSequence input${else if opts.lexerInput == 'stream'}java.io.@Reader stream${end}) throws java.io.@IOException {
+	public void reset(${if opts.lexerInput == 'buffer'}CharSequence input${end}) throws java.io.@IOException {
 		this.state = 0;
 		tokenLine = currLine = 1;
 ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
@@ -88,11 +83,6 @@ ${end-}
 ${if opts.lexerInput == 'buffer'-}
 		this.input = input;
 		tokenOffset = l = 0;
-${else if opts.lexerInput == 'stream'-}
-		this.stream = stream;
-		datalen = stream.read(data);
-		l = 0;
-		tokenOffset = -1;
 ${end-}
 ${call advanceChar(false, true)-}
 	}
@@ -180,15 +170,14 @@ ${end-}
 ${if opts.positions.contains('column')-}
 			token.column = currColumn;
 ${end-}
-${if opts.lexerInput != 'buffer'-}
+${if opts.lexerInput == 'buffer'-}
+			tokenOffset = charOffset;
+${else-}
 			if (tokenBuffer.length() > TOKEN_SIZE) {
 				tokenBuffer.setLength(TOKEN_SIZE);
 				tokenBuffer.trimToSize();
 			}
 			tokenBuffer.setLength(0);
-${end-}
-${if opts.lexerInput == 'stream' || opts.lexerInput == 'buffer'-}
-			tokenOffset = charOffset;
 ${end-}
 
 			for (state = ${self->tmStateMapExists() ? 'tmStateMap[this.state]' : 'this.state'}; state >= 0; ) {
@@ -226,11 +215,6 @@ ${if opts.endpositions.contains('column')-}
 ${end-}
 
 			if (state == -1) {
-${if opts.lexerInput == 'stream'-}
-				if (charOffset > tokenOffset) {
-					tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
-				}
-${end-}
 				reporter.error(java.text.@MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText())${call java.err_location('token', 'this') });
 				token.symbol = -1;
 				continue;
@@ -242,19 +226,10 @@ ${end-}
 				break tokenloop;
 			}
 
-${if opts.lexerInput == 'stream'-}
-			if (charOffset > tokenOffset) {
-				tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
-			}
-
-${end-}
 			token.symbol = tmRuleSymbol[-state - 3];
 			token.value = null;
 
 		} while (token.symbol == -1 || !createToken(token, -state - 3));
-${if opts.lexerInput == 'stream'-}
-		tokenOffset = -1;
-${end-}
 ${call onNext-}
 		return token;
 	}
@@ -339,7 +314,7 @@ ${end-}
 ${end}
 
 ${template updateLocation-}
-${if opts.lexerInput == 'buffer' || opts.lexerInput == 'stream'-}
+${if opts.lexerInput == 'buffer'-}
 ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 		currOffset += l - charOffset;
 ${end-}
@@ -374,33 +349,6 @@ ${else if opts.lexerInput == 'buffer'-}
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
 				Character.isLowSurrogate(input.charAt(l))) {
 			chr = Character.toCodePoint((char) chr, input.charAt(l++));
-		}
-${else if opts.lexerInput == 'stream'-}
-		if (l + 1 >= datalen) {
-${if !first-}
-${if inNext-}
-			tokenBuffer.append(data, tokenOffset, l - tokenOffset);
-			tokenOffset = 0;
-${else-}
-			if (tokenOffset >= 0) {
-				tokenBuffer.append(data, tokenOffset, l - tokenOffset);
-				tokenOffset = 0;
-			}
-${end-}
-${end-}
-			if (l < datalen) {
-				data[0] = data[l];
-				datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
-			} else {
-				datalen = stream.read(data);
-			}
-			l = 0;
-		}
-		charOffset = l;
-		chr = l < datalen ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
-				Character.isLowSurrogate(data[l])) {
-			chr = Character.toCodePoint((char) chr, data[l++]);
 		}
 ${end-}
 ${end}

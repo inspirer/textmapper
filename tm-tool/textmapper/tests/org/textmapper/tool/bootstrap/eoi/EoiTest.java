@@ -49,26 +49,32 @@ public class EoiTest {
 	@Test
 	public void testLexer() throws IOException {
 		checkTokens("(;)", Tokens.Lparen, Tokens.Semicolon, Tokens.Rparen,
-				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens
+						._customEOI);
 		checkTokens("(;", Tokens.Lparen, Tokens.Semicolon, Tokens._retfromA,
-				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens
+						._customEOI);
 
 		checkTokens("(ii:(;);)",
 				Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen, Tokens.Semicolon,
 				Tokens.Rparen, Tokens.Semicolon, Tokens.Rparen,
-				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens
+						._customEOI);
 
 		checkTokens("(ii:(;;",
 				Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen,
 				Tokens.Semicolon, Tokens.Semicolon,
 				Tokens._retfromB, Tokens._retfromA,
-				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens
+						._customEOI);
 
 		checkTokens("(ii:(ee:(;;;",
-				Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen,
+				Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen, Tokens.id, Tokens.Colon,
+				Tokens.Lparen,
 				Tokens.Semicolon, Tokens.Semicolon, Tokens.Semicolon,
 				Tokens._retfromB, Tokens._retfromA,
-				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens
+						._customEOI);
 
 		checkTokens("<c>", Tokens.gotoc);
 	}
@@ -81,7 +87,7 @@ public class EoiTest {
 	}
 
 	private void checkTokens(String s, int... types) throws IOException {
-		EoiLexer lexer = new EoiLexer(new CharArrayReader(s.toCharArray()), (ErrorReporter)
+		EoiLexer lexer = new EoiLexer(s, (ErrorReporter)
 				(message, line, offset, endoffset) -> fail(line + ":" + message)) {
 			@Override
 			protected boolean createToken(Span token, int ruleIndex) throws IOException {

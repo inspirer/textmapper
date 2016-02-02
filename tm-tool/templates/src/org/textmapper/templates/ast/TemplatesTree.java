@@ -62,7 +62,7 @@ public class TemplatesTree<T> {
 				list.add(new TemplatesProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			TemplatesLexer lexer = new TemplatesLexer(source.getStream(), reporter);
+			TemplatesLexer lexer = new TemplatesLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			TemplatesParser parser = new TemplatesParser(reporter);
@@ -85,7 +85,7 @@ public class TemplatesTree<T> {
 				list.add(new TemplatesProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			TemplatesLexer lexer = new TemplatesLexer(source.getStream(), reporter);
+			TemplatesLexer lexer = new TemplatesLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			TemplatesParser parser = new TemplatesParser(reporter);

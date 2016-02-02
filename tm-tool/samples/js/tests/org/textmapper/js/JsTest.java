@@ -46,7 +46,7 @@ public class JsTest {
 		try {
 			String contents = read(getClass().getClassLoader().getResourceAsStream(
 					TESTDATA + fileName));
-			JsLexer lexer = new JsLexer(new StringReader(contents), reporter);
+			JsLexer lexer = new JsLexer(contents, reporter);
 			JsParser parser = new JsParser(reporter);
 			parser.parse(lexer);
 		} catch (ParseException ex) {

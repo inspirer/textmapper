@@ -139,8 +139,7 @@ public class JavaLexer {
 	private Reader stream;
 	final private ErrorReporter reporter;
 
-	final private char[] data = new char[2048];
-	private int datalen;
+	private CharSequence input;
 	private int tokenOffset;
 	private int l;
 	private int charOffset;
@@ -148,66 +147,40 @@ public class JavaLexer {
 
 	private int state;
 
-	final private StringBuilder tokenBuffer = new StringBuilder(TOKEN_SIZE);
-
 	private int tokenLine;
 	private int currLine;
 	private int currOffset;
 
-	public JavaLexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public JavaLexer(CharSequence input, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
-		reset(stream);
+		reset(input);
 	}
 
-	public void reset(Reader stream) throws IOException {
+	public void reset(CharSequence input) throws IOException {
 		this.state = 0;
 		tokenLine = currLine = 1;
 		currOffset = 0;
-		this.stream = stream;
-		datalen = stream.read(data);
-		l = 0;
-		tokenOffset = -1;
-		if (l + 1 >= datalen) {
-			if (l < datalen) {
-				data[0] = data[l];
-				datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
-			} else {
-				datalen = stream.read(data);
-			}
-			l = 0;
-		}
+		this.input = input;
+		tokenOffset = l = 0;
 		charOffset = l;
-		chr = l < datalen ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
-				Character.isLowSurrogate(data[l])) {
-			chr = Character.toCodePoint((char) chr, data[l++]);
+		chr = l < input.length() ? input.charAt(l++) : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+				Character.isLowSurrogate(input.charAt(l))) {
+			chr = Character.toCodePoint((char) chr, input.charAt(l++));
 		}
 	}
 
-	protected void advance() throws IOException {
+	protected void advance() {
 		if (chr == -1) return;
 		currOffset += l - charOffset;
 		if (chr == '\n') {
 			currLine++;
 		}
-		if (l + 1 >= datalen) {
-			if (tokenOffset >= 0) {
-				tokenBuffer.append(data, tokenOffset, l - tokenOffset);
-				tokenOffset = 0;
-			}
-			if (l < datalen) {
-				data[0] = data[l];
-				datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
-			} else {
-				datalen = stream.read(data);
-			}
-			l = 0;
-		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
-				Character.isLowSurrogate(data[l])) {
-			chr = Character.toCodePoint((char) chr, data[l++]);
+		chr = l < input.length() ? input.charAt(l++) : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+				Character.isLowSurrogate(input.charAt(l))) {
+			chr = Character.toCodePoint((char) chr, input.charAt(l++));
 		}
 	}
 
@@ -240,11 +213,11 @@ public class JavaLexer {
 	}
 
 	public String tokenText() {
-		return tokenBuffer.toString();
+		return input.subSequence(tokenOffset, charOffset).toString();
 	}
 
 	public int tokenSize() {
-		return tokenBuffer.length();
+		return charOffset - tokenOffset;
 	}
 
 	private static final char[] tmCharClass = unpack_vc_char(262144,
@@ -462,11 +435,6 @@ public class JavaLexer {
 		do {
 			token.offset = currOffset;
 			tokenLine = token.line = currLine;
-			if (tokenBuffer.length() > TOKEN_SIZE) {
-				tokenBuffer.setLength(TOKEN_SIZE);
-				tokenBuffer.trimToSize();
-			}
-			tokenBuffer.setLength(0);
 			tokenOffset = charOffset;
 
 			for (state = this.state; state >= 0; ) {
@@ -484,31 +452,17 @@ public class JavaLexer {
 					if (chr == '\n') {
 						currLine++;
 					}
-					if (l + 1 >= datalen) {
-						tokenBuffer.append(data, tokenOffset, l - tokenOffset);
-						tokenOffset = 0;
-						if (l < datalen) {
-							data[0] = data[l];
-							datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
-						} else {
-							datalen = stream.read(data);
-						}
-						l = 0;
-					}
 					charOffset = l;
-					chr = l < datalen ? data[l++] : -1;
-					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
-							Character.isLowSurrogate(data[l])) {
-						chr = Character.toCodePoint((char) chr, data[l++]);
+					chr = l < input.length() ? input.charAt(l++) : -1;
+					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+							Character.isLowSurrogate(input.charAt(l))) {
+						chr = Character.toCodePoint((char) chr, input.charAt(l++));
 					}
 				}
 			}
 			token.endoffset = currOffset;
 
 			if (state == -1) {
-				if (charOffset > tokenOffset) {
-					tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
-				}
 				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
 				token.symbol = -1;
 				continue;
@@ -520,16 +474,22 @@ public class JavaLexer {
 				break tokenloop;
 			}
 
-			if (charOffset > tokenOffset) {
-				tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
-			}
-
 			token.symbol = tmRuleSymbol[-state - 3];
 			token.value = null;
 
 		} while (token.symbol == -1 || !createToken(token, -state - 3));
-		tokenOffset = -1;
 		return token;
+	}
+
+	protected int charAt(int i) {
+		if (i == 0) return chr;
+		i += l - 1;
+		int res = i < input.length() ? input.charAt(i++) : -1;
+		if (res >= Character.MIN_HIGH_SURROGATE && res <= Character.MAX_HIGH_SURROGATE && i < input.length() &&
+				Character.isLowSurrogate(input.charAt(i))) {
+			res = Character.toCodePoint((char) res, input.charAt(i++));
+		}
+		return res;
 	}
 
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {

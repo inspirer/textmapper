@@ -36,7 +36,7 @@ public class TMTextUtil {
 		ErrorReporter reporter = (s, line, offset, endoffset) -> hasErrors[0] = true;
 
 		try {
-			TMLexer lexer = new TMLexer(source.getStream(), reporter);
+			TMLexer lexer = new TMLexer(source.getContents(), reporter);
 			lexer.setSkipComments(false);
 			List<String> headers = new LinkedList<>();
 

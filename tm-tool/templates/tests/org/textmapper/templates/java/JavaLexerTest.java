@@ -197,7 +197,7 @@ public class JavaLexerTest {
 
 	private void assertJava(String text, int... tokens) {
 		try {
-			JavaLexer javaLexer = new JavaLexer(new StringReader(text), testReporter());
+			JavaLexer javaLexer = new JavaLexer(text, testReporter());
 			JavaLexer.Span next;
 			int index = 0;
 			while ((next = javaLexer.next()).symbol != Tokens.eoi) {
@@ -222,7 +222,7 @@ public class JavaLexerTest {
 
 	private void assertComment(String text, int... tokens) {
 		try {
-			JavaLexer javaLexer = new JavaLexer(new StringReader(text), testReporter()) {
+			JavaLexer javaLexer = new JavaLexer(text, testReporter()) {
 				@Override
 				protected boolean createToken(JavaLexer.Span token, int ruleIndex) throws IOException {
 					if (token.symbol == Tokens.EndOfLineComment || token.symbol == Tokens.TraditionalComment) {

@@ -24,7 +24,6 @@ genmain = true
 genast = false
 positions = "line,offset"
 endpositions = "offset"
-lexerInput = "buffer"
 defaultExtension = "y"
 genCopyright = true
 

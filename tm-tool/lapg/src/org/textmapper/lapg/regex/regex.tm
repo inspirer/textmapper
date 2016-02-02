@@ -18,7 +18,6 @@ language regex(java);
 
 prefix = "RegexDef"
 package = "org.textmapper.lapg.regex"
-lexerInput = "buffer"
 positions = "offset"
 endpositions = "offset"
 breaks = true

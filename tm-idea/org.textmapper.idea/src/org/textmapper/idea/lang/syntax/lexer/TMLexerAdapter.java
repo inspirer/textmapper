@@ -24,8 +24,6 @@ import org.textmapper.tool.parser.TMLexer.Span;
 import org.textmapper.tool.parser.TMLexer.Tokens;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 
 public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 
@@ -47,13 +45,13 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
-		Reader reader = new StringReader(buffer.toString().substring(startOffset, endOffset));
+		String input = buffer.toString().substring(startOffset, endOffset);
 
 		try {
 			if (lexer == null) {
-				lexer = new IdeaLapgLexer(reader);
+				lexer = new IdeaLapgLexer(input);
 			} else {
-				lexer.reset(reader);
+				lexer.reset(input);
 			}
 		} catch (IOException ex) {
 			/* never happens */
@@ -318,8 +316,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 	private static class IdeaLapgLexer extends TMLexer {
 		private boolean fAfterColonColon = false;
 
-		public IdeaLapgLexer(Reader stream) throws IOException {
-			super(stream, (message, line, offset, endoffset) -> {
+		public IdeaLapgLexer(CharSequence input) throws IOException {
+			super(input, (message, line, offset, endoffset) -> {
 			});
 		}
 
@@ -335,9 +333,9 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 		}
 
 		@Override
-		public void reset(Reader stream) throws IOException {
+		public void reset(CharSequence input) throws IOException {
 			fAfterColonColon = false;
-			super.reset(stream);
+			super.reset(input);
 		}
 
 		@Override

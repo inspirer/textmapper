@@ -45,7 +45,7 @@ public class JsonTree<T> {
 				list.add(new JsonProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			JsonLexer lexer = new JsonLexer(source.getStream(), reporter);
+			JsonLexer lexer = new JsonLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			JsonParser parser = new JsonParser(reporter);

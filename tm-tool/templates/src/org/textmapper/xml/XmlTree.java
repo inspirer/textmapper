@@ -60,7 +60,7 @@ public class XmlTree<T> {
 				list.add(new XmlProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			XmlLexer lexer = new XmlLexer(source.getStream(), reporter);
+			XmlLexer lexer = new XmlLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			XmlParser parser = new XmlParser(reporter);

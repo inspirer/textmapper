@@ -61,7 +61,7 @@ public class TypesTree<T> {
 				list.add(new TypesProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			TypesLexer lexer = new TypesLexer(source.getStream(), reporter);
+			TypesLexer lexer = new TypesLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			TypesParser parser = new TypesParser(reporter);

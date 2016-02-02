@@ -498,7 +498,7 @@ public class JavaParserTest {
 				super.shift();
 			}
 		};
-		JavaLexer lexer = new JavaLexer(new StringReader(text), reporter);
+		JavaLexer lexer = new JavaLexer(text, reporter);
 		try {
 			p.parseCompilationUnit(lexer);
 		} catch (JavaParser.ParseException e) {

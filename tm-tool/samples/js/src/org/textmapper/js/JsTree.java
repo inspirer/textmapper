@@ -45,7 +45,7 @@ public class JsTree<T> {
 				list.add(new JsProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			JsLexer lexer = new JsLexer(source.getStream(), reporter);
+			JsLexer lexer = new JsLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			JsParser parser = new JsParser(reporter);

@@ -42,7 +42,7 @@ public class SampleAParseContext {
 		ErrorReporter reporter = (message, line, offset, column, endline, endoffset, endcolumn) -> list.add(new ParseProblem(GenericParseContext.KIND_ERROR, offset, endoffset, message, null));
 
 		try {
-			SampleALexer lexer = new SampleALexer(source.getStream(), reporter);
+			SampleALexer lexer = new SampleALexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			SampleAParser parser = new SampleAParser(reporter);

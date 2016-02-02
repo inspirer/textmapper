@@ -61,7 +61,7 @@ public class TMTree<T> {
 				list.add(new TMProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			TMLexer lexer = new TMLexer(source.getStream(), reporter);
+			TMLexer lexer = new TMLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			TMParser parser = new TMParser(reporter);
@@ -86,7 +86,7 @@ public class TMTree<T> {
 				list.add(new TMProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			TMLexer lexer = new TMLexer(source.getStream(), reporter);
+			TMLexer lexer = new TMLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			TMParser parser = new TMParser(reporter);

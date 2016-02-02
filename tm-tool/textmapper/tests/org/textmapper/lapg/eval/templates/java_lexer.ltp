@@ -7,7 +7,7 @@ ${template lexerCtor}
 	private final int[] tmStateMap;
 	private final int tmClassesCount;
 
-	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textmapper.lapg.api.@LexerData lexerData, org.textmapper.lapg.api.@Grammar grammar) throws java.io.@IOException {
+	public ${opts.prefix}Lexer(CharSequence input, ErrorReporter reporter, org.textmapper.lapg.api.@LexerData lexerData, org.textmapper.lapg.api.@Grammar grammar) throws java.io.@IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
 		tmRuleSymbol = getRuleSymbols(grammar);
@@ -15,7 +15,7 @@ ${template lexerCtor}
 		tmGoto = lexerData.getChange();
 		tmClassesCount = lexerData.getNchars();
 		tmStateMap = lexerData.getGroupset();
-		reset(stream);
+		reset(input);
 	}
 ${end}
 

@@ -75,7 +75,7 @@ public class GenericParseContext {
 	}
 
 	protected GenericLexer createLexer(TextSource source, ErrorReporter reporter) throws IOException {
-		return new GenericLexer(source.getStream(), reporter, lexerTables, grammar);
+		return new GenericLexer(source.getContents(), reporter, lexerTables, grammar);
 	}
 
 	public static class Result {

@@ -210,7 +210,7 @@ public class TMPsiParser implements PsiParser {
 		}
 
 		@Override
-		public void reset(Reader stream) throws IOException {
+		public void reset(CharSequence input) throws IOException {
 		}
 
 		private Span nextInternal() {

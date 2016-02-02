@@ -24,8 +24,6 @@ import org.textmapper.templates.ast.TemplatesLexer.Span;
 import org.textmapper.templates.ast.TemplatesLexer.Tokens;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 
 /**
  * Gryaznov Evgeny, 3/1/12
@@ -47,13 +45,13 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
-		Reader reader = new StringReader(buffer.toString().substring(startOffset, endOffset));
+		String input = buffer.toString().substring(startOffset, endOffset);
 
 		try {
 			if (lexer == null) {
-				lexer = new IdeaLtplLexer(reader);
+				lexer = new IdeaLtplLexer(input);
 			} else {
-				lexer.reset(reader);
+				lexer.reset(input);
 			}
 		} catch (IOException ex) {
 			/* never happens */
@@ -270,8 +268,8 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 	}
 
 	private static class IdeaLtplLexer extends TemplatesLexer {
-		public IdeaLtplLexer(Reader stream) throws IOException {
-			super(stream, (message, line, offset, endoffset) -> {
+		public IdeaLtplLexer(CharSequence input) throws IOException {
+			super(input, (message, line, offset, endoffset) -> {
 			});
 		}
 

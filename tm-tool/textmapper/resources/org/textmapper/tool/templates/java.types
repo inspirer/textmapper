@@ -9,7 +9,7 @@ class Options extends common.Options {
 	string package[qualified] = "";
 	string positions [set:line,column,offset] = "line,offset";
 	string endpositions [set:line,column,offset] = "";
-	string lexerInput [choice:buffer,stream,custom] = "stream";
+	string lexerInput [choice:buffer,custom] = "buffer";
 	string defaultExtension;
 
 	bool breaks = true;

@@ -62,7 +62,7 @@ public class UnicodeTest {
 	private void valid(String text, int... expectedTokens) {
 		UnicodeTestLexer lexer;
 		try {
-			lexer = new UnicodeTestLexer(new StringReader(text), (message, line, offset) -> fail("unexpected failure: " + line + ": " + message));
+			lexer = new UnicodeTestLexer(text, (message, line, offset) -> fail("unexpected failure: " + line + ": " + message));
 			Span next;
 			for (int expected : expectedTokens) {
 				next = lexer.next();

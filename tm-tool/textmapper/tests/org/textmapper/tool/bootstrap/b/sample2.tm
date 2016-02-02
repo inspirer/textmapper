@@ -28,7 +28,6 @@ positions = "offset"
 endpositions = "offset"
 genCleanup = false
 genCopyright = true
-lexerInput = "buffer"
 
 :: lexer
 

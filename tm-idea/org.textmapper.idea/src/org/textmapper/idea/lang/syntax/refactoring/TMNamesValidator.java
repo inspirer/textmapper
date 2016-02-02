@@ -49,7 +49,7 @@ public class TMNamesValidator implements NamesValidator {
 
 	private static class ValidatingLexer extends TMLexer {
 		public ValidatingLexer(String name) throws java.io.IOException {
-			super(new StringReader(name), (message, line, offset, endoffset) -> {
+			super(name, (message, line, offset, endoffset) -> {
 				throw new IllegalArgumentException();
 			});
 		}

@@ -45,7 +45,7 @@ public class EoiTree<T> {
 				list.add(new EoiProblem(KIND_ERROR, message, line, offset, endoffset, null));
 
 		try {
-			EoiLexer lexer = new EoiLexer(source.getStream(), reporter);
+			EoiLexer lexer = new EoiLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			EoiParser parser = new EoiParser(reporter);
