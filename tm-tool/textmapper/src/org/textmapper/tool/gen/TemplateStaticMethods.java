@@ -16,6 +16,7 @@
 package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.common.FormatUtil;
+import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.templates.eval.DefaultStaticMethods;
 import org.textmapper.tool.common.JavaArrayEncoder;
 
@@ -232,5 +233,9 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 
 	public String toUpperWithUnderscores(String s) {
 		return FormatUtil.toUpperWithUnderscores(s);
+	}
+
+	public Iterable reverse(Object[] array) {
+		return new ArrayIterable(array, true);
 	}
 }
