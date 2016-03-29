@@ -65,7 +65,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 			TextAttributesKey.createTextAttributesKey("TM.QUANTIFIER", DefaultLanguageHighlighterColors.KEYWORD);
 
 	static final TextAttributesKey LEXEM_REFERENCE =
-			TextAttributesKey.createTextAttributesKey("TM.LEXEM_REFERENCE", CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES);
+			TextAttributesKey.createTextAttributesKey("TM.LEXEM_REFERENCE", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
 
 	static final TextAttributesKey LINE_COMMENT =
 			TextAttributesKey.createTextAttributesKey("TM.LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
@@ -80,7 +80,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 			TextAttributesKey.createTextAttributesKey("TM.RULE_METADATA", DefaultLanguageHighlighterColors.NUMBER);
 
 	static final TextAttributesKey NONTERM_PARAMETER_NAME =
-			TextAttributesKey.createTextAttributesKey("TM.NONTERM_PARAMETER", CodeInsightColors.TYPE_PARAMETER_NAME_ATTRIBUTES);
+			TextAttributesKey.createTextAttributesKey("TM.NONTERM_PARAMETER", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
 
 	// Regexp
 
@@ -94,7 +94,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 			TextAttributesKey.createTextAttributesKey("TM.RE_ESCAPED", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
 
 	static final TextAttributesKey RE_CHAR_CLASS =
-			TextAttributesKey.createTextAttributesKey("TM.RE_CHAR_CLASS", CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES);
+			TextAttributesKey.createTextAttributesKey("TM.RE_CHAR_CLASS", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
 
 	static final TextAttributesKey RE_DOT =
 			TextAttributesKey.createTextAttributesKey("TM.RE_DOT", DefaultLanguageHighlighterColors.KEYWORD);
@@ -109,7 +109,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 			TextAttributesKey.createTextAttributesKey("TM.RE_PARENTHS", DefaultLanguageHighlighterColors.PARENTHESES);
 
 	static final TextAttributesKey RE_EXPAND =
-			TextAttributesKey.createTextAttributesKey("TM.RE_EXPAND", CodeInsightColors.STATIC_FIELD_ATTRIBUTES);
+			TextAttributesKey.createTextAttributesKey("TM.RE_EXPAND", DefaultLanguageHighlighterColors.STATIC_FIELD);
 
 	static final TextAttributesKey RE_BAD_CHAR =
 			TextAttributesKey.createTextAttributesKey("TM.RE_BAD_CHAR", HighlighterColors.BAD_CHARACTER);

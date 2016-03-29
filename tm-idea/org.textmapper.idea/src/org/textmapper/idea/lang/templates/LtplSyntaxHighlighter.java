@@ -19,7 +19,6 @@ package org.textmapper.idea.lang.templates;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
-import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
@@ -43,7 +42,7 @@ public class LtplSyntaxHighlighter extends SyntaxHighlighterBase implements Ltpl
 		fillMap(attributes, DefaultLanguageHighlighterColors.STRING, CCON);
 		fillMap(attributes, DefaultLanguageHighlighterColors.NUMBER, ICON);
 		fillMap(attributes, HighlighterColors.TEXT, IDENTIFIER);
-		fillMap(attributes, CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES, ESCID, ESCINT);
+		fillMap(attributes, DefaultLanguageHighlighterColors.INSTANCE_FIELD, ESCID, ESCINT);
 		fillMap(attributes, DefaultLanguageHighlighterColors.BLOCK_COMMENT, ANY);
 
 		// [] ()

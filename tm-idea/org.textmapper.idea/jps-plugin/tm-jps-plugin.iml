@@ -10,5 +10,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="tm-common" />
+    <orderEntry type="library" name="JPS" level="application" />
   </component>
 </module>
