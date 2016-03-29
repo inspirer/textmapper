@@ -129,8 +129,8 @@ template_def (TemplateNode) ::=
 ;
 
 query_def (QueryNode) ::=
-	'${' cached_flagopt Lquery qualified_id parametersopt context_typeopt '=' expression '}'
-                                                    { $$ = new QueryNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, $expression, $cached_flagopt != null, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${first().line}); }
+	'${' cached_flagopt Lquery qualified_id parametersopt '=' expression '}'
+                                                    { $$ = new QueryNode($qualified_id, $parametersopt, templatePackage, $expression, $cached_flagopt != null, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${first().line}); }
 ;
 
 cached_flag (Boolean) ::=
@@ -138,8 +138,8 @@ cached_flag (Boolean) ::=
 ;
 
 template_start (TemplateNode) ::=
-	'${' Ltemplate qualified_id parametersopt context_typeopt '[-]}'
-                                                    { $$ = new TemplateNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${first().line}); }
+	'${' Ltemplate qualified_id parametersopt '[-]}'
+                                                    { $$ = new TemplateNode($qualified_id, $parametersopt, templatePackage, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${first().line}); }
 ; 
 
 parameters (List<ParameterNode>) ::=
@@ -150,11 +150,6 @@ parameter_list (List<ParameterNode>) ::=
 	  identifier                       				{ $$ = new ArrayList(); ${left()}.add(new ParameterNode($identifier, source, ${identifier.offset}, ${left().endoffset})); }
 	| parameter_list ',' identifier                 { $parameter_list.add(new ParameterNode($identifier, source, ${identifier.offset}, ${left().endoffset})); }
 ;
-
-context_type (String) ::=
-	Lfor qualified_id									{ $$ = $1; }
-;
-
 
 template_end ::=
 	'${' Lend '}' ;
@@ -375,7 +370,7 @@ expression_list (ArrayList) ::=
 body (TemplateNode) ::=
 	instructions
 						{
-							$$ = new TemplateNode("inline", null, null, templatePackage, source, ${left().offset}, ${left().endoffset});
+							$$ = new TemplateNode("inline", null, templatePackage, source, ${left().offset}, ${left().endoffset});
 							${left()}.setInstructions($instructions);
 						}
 ;

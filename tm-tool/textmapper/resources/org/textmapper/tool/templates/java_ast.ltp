@@ -305,7 +305,7 @@ ${end-}
 , ${'$'}{${if getRight().length == 0}left()${else if l.startsWith('end')}last()${else}first()${end}.${l}}${end-}
 )${end}
 
-${query fieldValue(field, mapped) for ast.AstRule =
+${query fieldValue(field, mapped) =
 	mapped.length == 1 && mapped.first() is LiRhsSymbol && !mapped.first().mapping.isAddition() ? self->simpleMapping(mapped.first()) :
 	mapped.length > 0
 		? '('+mapped.length+') /* ERR: TODO */'

@@ -51,46 +51,6 @@ public class DefaultIxOperand implements IxOperand, IxWrapper {
 	}
 
 	@Override
-	public Object or(Object v) throws EvaluationException {
-		throw new EvaluationException("'|' is not supported for `" + getType() + "`");
-	}
-
-	@Override
-	public Object and(Object v) throws EvaluationException {
-		throw new EvaluationException("'&' is not supported for `" + getType() + "`");
-	}
-
-	@Override
-	public Object xor(Object v) throws EvaluationException {
-		throw new EvaluationException("'^' is not supported for `" + getType() + "`");
-	}
-
-	@Override
-	public Object next() throws EvaluationException {
-		throw new EvaluationException("increment is not supported for `" + getType() + "`");
-	}
-
-	@Override
-	public Object previous() throws EvaluationException {
-		throw new EvaluationException("decrement is not supported for `" + getType() + "`");
-	}
-
-	@Override
-	public Object negative() throws EvaluationException {
-		throw new EvaluationException("negative is not supported for `" + getType() + "`");
-	}
-
-	@Override
-	public Object leftShift(Object v) throws EvaluationException {
-		throw new EvaluationException("left shift is not supported for `" + getType() + "`");
-	}
-
-	@Override
-	public Object rightShift(Object v) throws EvaluationException {
-		throw new EvaluationException("right shift is not supported for `" + getType() + "`");
-	}
-
-	@Override
 	public int compareTo(Object v) throws EvaluationException {
 		throw new EvaluationException("compare is not supported for `" + getType() + "`");
 	}

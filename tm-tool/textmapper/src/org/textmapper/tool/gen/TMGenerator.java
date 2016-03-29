@@ -215,7 +215,7 @@ public final class TMGenerator {
 													  ParserData r) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("syntax", s);
-		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
+		map.put("lex", l);
 		map.put("parser", r);
 		if (astModel != null) {
 			map.put("ast", astModel);

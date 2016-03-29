@@ -26,17 +26,6 @@ public interface IxOperand {
 	Object div(Object v) throws EvaluationException;
 	Object mod(Object v) throws EvaluationException;
 
-	Object or(Object v) throws EvaluationException;
-	Object and(Object v) throws EvaluationException;
-	Object xor(Object v) throws EvaluationException;
-
-	Object next() throws EvaluationException;
-	Object previous() throws EvaluationException;
-	Object negative() throws EvaluationException;
-
-	Object leftShift(Object v) throws EvaluationException;
-	Object rightShift(Object v) throws EvaluationException;
-
 	int compareTo(Object v) throws EvaluationException;
 	boolean equalsTo(Object v) throws EvaluationException;
 }
