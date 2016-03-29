@@ -104,7 +104,7 @@ public class TMAnnotator implements Annotator {
 		if (element instanceof TmParameterReference) {
 			TmParameterReference ref = (TmParameterReference) element;
 			PsiElement target = ref.resolve();
-			if (target instanceof TmNontermParam) {
+			if (target instanceof TmTemplateParam || target instanceof TmNontermParam) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
 				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.NONTERM_PARAMETER_NAME);
 			} else if (target == null) {
