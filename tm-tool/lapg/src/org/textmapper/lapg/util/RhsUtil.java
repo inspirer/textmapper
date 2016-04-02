@@ -117,7 +117,7 @@ public class RhsUtil {
 			case Optional:
 				return Arrays.asList(((RhsOptional) part).getPart());
 			case Conditional:
-				return Arrays.<RhsPart>asList(((RhsConditional) part).getInner());
+				return Arrays.asList(((RhsConditional) part).getInner());
 			case Cast:
 				return Arrays.asList(((RhsCast) part).getPart());
 			case Assignment:
@@ -128,11 +128,11 @@ public class RhsUtil {
 				return Arrays.asList(((RhsUnordered) part).getParts());
 			case Set: {
 				RhsSet[] sets = ((RhsSet) part).getSets();
-				if (sets != null) return Arrays.<RhsPart>asList(sets);
+				if (sets != null) return Arrays.asList(sets);
 				break;
 			}
 			case List:
-				return Arrays.<RhsPart>asList(((RhsList) part).asRules());
+				return Arrays.asList(((RhsList) part).asRules());
 		}
 		return null;
 	}

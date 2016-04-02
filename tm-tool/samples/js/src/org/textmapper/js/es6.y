@@ -1216,13 +1216,13 @@ IfStatement_Return_Yield :
 IterationStatement :
   do Statement while Lparen Expression_In Rparen Semicolon
 | while Lparen Expression_In Rparen Statement
-| for Lparen lookahead1 Expressionopt Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement
+| for Lparen Expressionopt Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement
 | for Lparen var VariableDeclarationList Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement
 | for Lparen LexicalDeclaration Expressionopt_In Semicolon Expressionopt_In Rparen Statement
-| for Lparen lookahead1 LeftHandSideExpression in Expression_In Rparen Statement
+| for Lparen LeftHandSideExpression in Expression_In Rparen Statement
 | for Lparen var ForBinding in Expression_In Rparen Statement
 | for Lparen ForDeclaration in Expression_In Rparen Statement
-| for Lparen lookahead1 LeftHandSideExpression of AssignmentExpression_In Rparen Statement
+| for Lparen LeftHandSideExpression of AssignmentExpression_In Rparen Statement
 | for Lparen var ForBinding of AssignmentExpression_In Rparen Statement
 | for Lparen ForDeclaration of AssignmentExpression_In Rparen Statement
 ;
@@ -1230,13 +1230,13 @@ IterationStatement :
 IterationStatement_Return :
   do Statement_Return while Lparen Expression_In Rparen Semicolon
 | while Lparen Expression_In Rparen Statement_Return
-| for Lparen lookahead1 Expressionopt Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
+| for Lparen Expressionopt Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
 | for Lparen var VariableDeclarationList Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
 | for Lparen LexicalDeclaration Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
-| for Lparen lookahead1 LeftHandSideExpression in Expression_In Rparen Statement_Return
+| for Lparen LeftHandSideExpression in Expression_In Rparen Statement_Return
 | for Lparen var ForBinding in Expression_In Rparen Statement_Return
 | for Lparen ForDeclaration in Expression_In Rparen Statement_Return
-| for Lparen lookahead1 LeftHandSideExpression of AssignmentExpression_In Rparen Statement_Return
+| for Lparen LeftHandSideExpression of AssignmentExpression_In Rparen Statement_Return
 | for Lparen var ForBinding of AssignmentExpression_In Rparen Statement_Return
 | for Lparen ForDeclaration of AssignmentExpression_In Rparen Statement_Return
 ;
@@ -1244,13 +1244,13 @@ IterationStatement_Return :
 IterationStatement_Return_Yield :
   do Statement_Return_Yield while Lparen Expression_In_Yield Rparen Semicolon
 | while Lparen Expression_In_Yield Rparen Statement_Return_Yield
-| for Lparen lookahead1 Expressionopt_Yield Semicolon Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
+| for Lparen Expressionopt_Yield Semicolon Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
 | for Lparen var VariableDeclarationList_Yield Semicolon Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
 | for Lparen LexicalDeclaration_Yield Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
-| for Lparen lookahead1 LeftHandSideExpression_Yield in Expression_In_Yield Rparen Statement_Return_Yield
+| for Lparen LeftHandSideExpression_Yield in Expression_In_Yield Rparen Statement_Return_Yield
 | for Lparen var ForBinding_Yield in Expression_In_Yield Rparen Statement_Return_Yield
 | for Lparen ForDeclaration_Yield in Expression_In_Yield Rparen Statement_Return_Yield
-| for Lparen lookahead1 LeftHandSideExpression_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
+| for Lparen LeftHandSideExpression_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
 | for Lparen var ForBinding_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
 | for Lparen ForDeclaration_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
 ;

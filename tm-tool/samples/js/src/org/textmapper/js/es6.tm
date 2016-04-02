@@ -653,6 +653,7 @@ EmptyStatement ::=
 	  ';' ;
 
 ExpressionStatement<Yield> ::=
+# TODO: -- ClassExpression, FunctionExpression, GeneratorExpression, ObjectLiteral
 	lookahead1
 	/* lookahead != {'{', function, class, let '[' } */ Expression<+In,Yield> ';'
 ;
@@ -667,13 +668,13 @@ IfStatement<Yield, Return> ::=
 IterationStatement<Yield, Return> ::=
 	  'do' Statement 'while' '(' Expression<+In,Yield> ')' ';'
 	| 'while' '(' Expression<+In,Yield> ')' Statement
-	| 'for' '(' lookahead1 /* lookahead != {let [ } */ Expressionopt<Yield> ';' Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
+	| 'for' '(' Expressionopt<Yield> ';' Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
 	| 'for' '(' 'var' VariableDeclarationList<Yield> ';' Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
 	| 'for' '(' LexicalDeclaration<Yield> Expressionopt<+In,Yield> ';' Expressionopt<+In,Yield> ')' Statement
-	| 'for' '(' lookahead1 /* lookahead != {let [ } */ LeftHandSideExpression<Yield> 'in' Expression<+In,Yield> ')' Statement
+	| 'for' '(' LeftHandSideExpression<Yield> 'in' Expression<+In,Yield> ')' Statement
 	| 'for' '(' 'var' ForBinding<Yield> 'in' Expression<+In,Yield> ')' Statement
 	| 'for' '(' ForDeclaration<Yield> 'in' Expression<+In,Yield> ')' Statement
-	| 'for' '(' lookahead1 /* lookahead != let */ LeftHandSideExpression<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
+	| 'for' '(' LeftHandSideExpression<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
 	| 'for' '(' 'var' ForBinding<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
 	| 'for' '(' ForDeclaration<Yield> 'of' AssignmentExpression<+In,Yield> ')' Statement
 ;
@@ -811,8 +812,9 @@ ArrowParameters<Yield> ::=
 ;
 
 ConciseBody<In> ::=
+# TODO: -- ObjectLiteral
 	  lookahead1
-	  /* lookahead != { */ AssignmentExpression<In>
+			  /* lookahead != { */ AssignmentExpression<In>
 	| '{' FunctionBody '}'
 ;
 
@@ -951,6 +953,7 @@ ExportDeclaration ::=
 	| 'export' Declaration
 	| 'export' 'default' HoistableDeclaration<+Default>
 	| 'export' 'default' ClassDeclaration<+Default>
+# TODO: -- FunctionExpression, GeneratorExpression, ClassExpression
 	| 'export' 'default' lookahead1 /* lookahead != { function, class } */ AssignmentExpression<+In> ';'
 ;
 
