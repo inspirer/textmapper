@@ -207,7 +207,7 @@ Literal ::=
 	| RegularExpressionLiteral
 ;
 
-%flag ExprStart = false;
+%explicit flag ExprStart = false;
 
 PrimaryExpression<ExprStart> ::=
 	  'this'
@@ -215,7 +215,7 @@ PrimaryExpression<ExprStart> ::=
 	| Literal
 	| ArrayLiteral
 	| [!ExprStart] ObjectLiteral
-	| '(' Expression<~ExprStart> ')'
+	| '(' Expression ')'
 ;
 
 ArrayLiteral ::=
@@ -243,126 +243,126 @@ PropertySetParameterList ::=
 	  Identifier ;
 
 MemberExpression<ExprStart> ::=
-	  PrimaryExpression
+	  PrimaryExpression<ExprStart>
 	| [!ExprStart] FunctionExpression
-	| MemberExpression '[' Expression<~ExprStart> ']'
-	| MemberExpression '.' IdentifierName
-	| 'new' MemberExpression<~ExprStart> Arguments
+	| MemberExpression<ExprStart> '[' Expression ']'
+	| MemberExpression<ExprStart> '.' IdentifierName
+	| 'new' MemberExpression Arguments
 ;
 
 NewExpression<ExprStart> ::=
-	  MemberExpression
-	| 'new' NewExpression<~ExprStart>
+	  MemberExpression<ExprStart>
+	| 'new' NewExpression
 ;
 
 CallExpression<ExprStart> ::=
-	  MemberExpression Arguments
-	| CallExpression Arguments
-	| CallExpression '[' Expression<~ExprStart> ']'
-	| CallExpression '.' IdentifierName
+	  MemberExpression<ExprStart> Arguments
+	| CallExpression<ExprStart> Arguments
+	| CallExpression<ExprStart> '[' Expression ']'
+	| CallExpression<ExprStart> '.' IdentifierName
 ;
 
 Arguments ::=
 	  '(' (AssignmentExpression separator ',')* ')' ;
 
 LeftHandSideExpression<ExprStart> ::=
-	  NewExpression
-	| CallExpression
+	  NewExpression<ExprStart>
+	| CallExpression<ExprStart>
 ;
 
 # Note: no LineTerminator after LeftHandSideExpression
 PostfixExpression<ExprStart> ::=
-	  LeftHandSideExpression
-	| LeftHandSideExpression '++'
-	| LeftHandSideExpression '--'
+	  LeftHandSideExpression<ExprStart>
+	| LeftHandSideExpression<ExprStart> '++'
+	| LeftHandSideExpression<ExprStart> '--'
 ;
 
 UnaryExpression<ExprStart> ::=
-	  PostfixExpression
-	| 'delete' UnaryExpression<~ExprStart>
-	| 'void' UnaryExpression<~ExprStart>
-	| 'typeof' UnaryExpression<~ExprStart>
-	| '++' UnaryExpression<~ExprStart>
-	| '--' UnaryExpression<~ExprStart>
-	| '+' UnaryExpression<~ExprStart>
-	| '-' UnaryExpression<~ExprStart>
-	| '~' UnaryExpression<~ExprStart>
-	| '!' UnaryExpression<~ExprStart>
+	  PostfixExpression<ExprStart>
+	| 'delete' UnaryExpression
+	| 'void' UnaryExpression
+	| 'typeof' UnaryExpression
+	| '++' UnaryExpression
+	| '--' UnaryExpression
+	| '+' UnaryExpression
+	| '-' UnaryExpression
+	| '~' UnaryExpression
+	| '!' UnaryExpression
 ;
 
 MultiplicativeExpression<ExprStart> ::=
-	  UnaryExpression
-	| MultiplicativeExpression '*' UnaryExpression<~ExprStart>
-	| MultiplicativeExpression '/' UnaryExpression<~ExprStart>
-	| MultiplicativeExpression '%' UnaryExpression<~ExprStart>
+	  UnaryExpression<ExprStart>
+	| MultiplicativeExpression<ExprStart> '*' UnaryExpression
+	| MultiplicativeExpression<ExprStart> '/' UnaryExpression
+	| MultiplicativeExpression<ExprStart> '%' UnaryExpression
 ;
 
 AdditiveExpression<ExprStart> ::=
-	  MultiplicativeExpression
-	| AdditiveExpression '+' MultiplicativeExpression<~ExprStart>
-	| AdditiveExpression '-' MultiplicativeExpression<~ExprStart>
+	  MultiplicativeExpression<ExprStart>
+	| AdditiveExpression<ExprStart> '+' MultiplicativeExpression
+	| AdditiveExpression<ExprStart> '-' MultiplicativeExpression
 ;
 
 ShiftExpression<ExprStart> ::=
-	  AdditiveExpression
-	| ShiftExpression '<<' AdditiveExpression<~ExprStart>
-	| ShiftExpression '>>' AdditiveExpression<~ExprStart>
-	| ShiftExpression '>>>' AdditiveExpression<~ExprStart>
+	  AdditiveExpression<ExprStart>
+	| ShiftExpression<ExprStart> '<<' AdditiveExpression
+	| ShiftExpression<ExprStart> '>>' AdditiveExpression
+	| ShiftExpression<ExprStart> '>>>' AdditiveExpression
 ;
 
 %flag NoIn = false;
 
 RelationalExpression<NoIn, ExprStart> ::=
 	  ShiftExpression<ExprStart>
-	| RelationalExpression '<' ShiftExpression<~ExprStart>
-	| RelationalExpression '>' ShiftExpression<~ExprStart>
-	| RelationalExpression '<=' ShiftExpression<~ExprStart>
-	| RelationalExpression '>=' ShiftExpression<~ExprStart>
-	| RelationalExpression 'instanceof' ShiftExpression<~ExprStart>
-	| [!NoIn] RelationalExpression 'in' ShiftExpression<~ExprStart>
+	| RelationalExpression<ExprStart> '<' ShiftExpression
+	| RelationalExpression<ExprStart> '>' ShiftExpression
+	| RelationalExpression<ExprStart> '<=' ShiftExpression
+	| RelationalExpression<ExprStart> '>=' ShiftExpression
+	| RelationalExpression<ExprStart> 'instanceof' ShiftExpression
+	| [!NoIn] RelationalExpression<ExprStart> 'in' ShiftExpression
 ;
 
 EqualityExpression<NoIn, ExprStart> ::=
-	  RelationalExpression
-	| EqualityExpression '==' RelationalExpression<NoIn, ~ExprStart>
-	| EqualityExpression '!=' RelationalExpression<NoIn, ~ExprStart>
-	| EqualityExpression '===' RelationalExpression<NoIn, ~ExprStart>
-	| EqualityExpression '!==' RelationalExpression<NoIn, ~ExprStart>
+	  RelationalExpression<ExprStart>
+	| EqualityExpression<ExprStart> '==' RelationalExpression<NoIn>
+	| EqualityExpression<ExprStart> '!=' RelationalExpression<NoIn>
+	| EqualityExpression<ExprStart> '===' RelationalExpression<NoIn>
+	| EqualityExpression<ExprStart> '!==' RelationalExpression<NoIn>
 ;
 
 BitwiseANDExpression<NoIn, ExprStart> ::=
-	  EqualityExpression
-	| BitwiseANDExpression '&' EqualityExpression<NoIn, ~ExprStart>
+	  EqualityExpression<ExprStart>
+	| BitwiseANDExpression<ExprStart> '&' EqualityExpression<NoIn>
 ;
 
 BitwiseXORExpression<NoIn, ExprStart> ::=
-	  BitwiseANDExpression
-	| BitwiseXORExpression '^' BitwiseANDExpression<NoIn, ~ExprStart>
+	  BitwiseANDExpression<ExprStart>
+	| BitwiseXORExpression<ExprStart> '^' BitwiseANDExpression<NoIn>
 ;
 
 BitwiseORExpression<NoIn, ExprStart> ::=
-	  BitwiseXORExpression
-	| BitwiseORExpression '|' BitwiseXORExpression<NoIn, ~ExprStart>
+	  BitwiseXORExpression<ExprStart>
+	| BitwiseORExpression<ExprStart> '|' BitwiseXORExpression<NoIn>
 ;
 
 LogicalANDExpression<NoIn, ExprStart> ::=
-	  BitwiseORExpression
-	| LogicalANDExpression '&&' BitwiseORExpression<NoIn, ~ExprStart>
+	  BitwiseORExpression<ExprStart>
+	| LogicalANDExpression<ExprStart> '&&' BitwiseORExpression<NoIn>
 ;
 
 LogicalORExpression<NoIn, ExprStart> ::=
-	  LogicalANDExpression
-	| LogicalORExpression '||' LogicalANDExpression<NoIn, ~ExprStart>
+	  LogicalANDExpression<ExprStart>
+	| LogicalORExpression<ExprStart> '||' LogicalANDExpression<NoIn>
 ;
 
 ConditionalExpression<NoIn, ExprStart> ::=
-	  LogicalORExpression
-	| LogicalORExpression '?' AssignmentExpression<NoIn, ~ExprStart> ':' AssignmentExpression<NoIn, ~ExprStart>
+	  LogicalORExpression<ExprStart>
+	| LogicalORExpression<ExprStart> '?' AssignmentExpression<NoIn> ':' AssignmentExpression<NoIn>
 ;
 
 AssignmentExpression<NoIn, ExprStart> ::=
-	  ConditionalExpression
-	| LeftHandSideExpression<ExprStart> AssignmentOperator AssignmentExpression<NoIn, ~ExprStart>
+	  ConditionalExpression<ExprStart>
+	| LeftHandSideExpression<ExprStart> AssignmentOperator AssignmentExpression<NoIn>
 ;
 
 AssignmentOperator ::=
@@ -381,8 +381,8 @@ AssignmentOperator ::=
 ;
 
 Expression<NoIn, ExprStart> ::=
-	  AssignmentExpression
-	| Expression ',' AssignmentExpression<NoIn, ~ExprStart>
+	  AssignmentExpression<ExprStart>
+	| Expression<ExprStart> ',' AssignmentExpression<NoIn>
 ;
 
 Statement ::=
