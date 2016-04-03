@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TemplateParameter.Forward;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -119,7 +120,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public TemplateParameter addParameter(Type type, String name, Object defaultValue,
-										  boolean global, SourceElement origin) {
+										  Forward p, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -130,7 +131,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			check(type, defaultValue);
 		}
 		LiTemplateParameter param = new LiTemplateParameter(
-				type, name, defaultValue, global, origin);
+				type, name, defaultValue, p, origin);
 		if (!paramScope.insert(param, null /* anchor */)) {
 			throw new IllegalStateException("name `" + name + "' is already used");
 		}

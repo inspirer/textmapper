@@ -58,7 +58,7 @@ key_value ::=
 
 list<param Of> ::=  (Of separator ',')+ ;
 
-%global flag AllowObject;
+%global flag AllowObject = false;
 
 expression ::=
 	  icon

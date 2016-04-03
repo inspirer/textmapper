@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TemplateParameter.Forward;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.util.RhsUtil;
@@ -238,7 +239,7 @@ class TemplateInstantiator {
 
 		// Remove non-global & unused parameters.
 		TemplateEnvironment env = sourceEnv.filter(
-				parameter -> (fwdAll || parameter.isGlobal())
+				parameter -> (fwdAll || parameter.getFwdStrategy() == Forward.Always)
 						&& acceptedParameters.get(paramIndex.get(parameter)));
 
 		if (args == null) return env;
@@ -290,7 +291,8 @@ class TemplateInstantiator {
 				}
 				target = (Symbol) value;
 			}
-			instantiateRef(context, (LiRhsSymbol) p, target, ((RhsSymbol) p).getArgs(), ((RhsSymbol) p).isFwdAll());
+			instantiateRef(context, (LiRhsSymbol) p, target,
+					((RhsSymbol) p).getArgs(), ((RhsSymbol) p).isFwdAll());
 			return;
 		}
 		if (p instanceof RhsCast) {

@@ -115,7 +115,8 @@ Lassert: /assert/			(soft)
 Lempty: /empty/				(soft)
 Lnonempty: /nonempty/		(soft)
 
-Lglobal: /global/			(soft)
+Lglobal: /global/		    (soft)
+Lexplicit: /explicit/		(soft)
 Lparam: /param/			    (soft)
 Lflag: /flag/				(soft)
 
@@ -269,7 +270,7 @@ assoc ::=
 	  Lleft | Lright | Lnonassoc ;
 
 template_param returns grammar_part ::=
-	  '%' global=Lglobal? param_type name=identifier ('=' param_value)? ';'
+	  '%' (explicit=Lexplicit | global=Lglobal)? param_type name=identifier ('=' param_value)? ';'
 ;
 
 directive returns grammar_part ::=

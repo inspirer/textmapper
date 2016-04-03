@@ -19,17 +19,23 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaTemplateParam extends TmaNode implements ITmaGrammarPart {
 
+	private final boolean explicit;
 	private final boolean global;
 	private final TmaParamType paramType;
 	private final TmaIdentifier name;
 	private final ITmaParamValue paramValue;
 
-	public TmaTemplateParam(boolean global, TmaParamType paramType, TmaIdentifier name, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
+	public TmaTemplateParam(boolean explicit, boolean global, TmaParamType paramType, TmaIdentifier name, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
+		this.explicit = explicit;
 		this.global = global;
 		this.paramType = paramType;
 		this.name = name;
 		this.paramValue = paramValue;
+	}
+
+	public boolean isExplicit() {
+		return explicit;
 	}
 
 	public boolean isGlobal() {

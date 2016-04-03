@@ -207,7 +207,7 @@ Literal ::=
 	| RegularExpressionLiteral
 ;
 
-%flag ExprStart;
+%flag ExprStart = false;
 
 PrimaryExpression<ExprStart> ::=
 	  'this'
@@ -215,7 +215,7 @@ PrimaryExpression<ExprStart> ::=
 	| Literal
 	| ArrayLiteral
 	| [!ExprStart] ObjectLiteral
-	| '(' Expression ')'
+	| '(' Expression<~ExprStart> ')'
 ;
 
 ArrayLiteral ::=
@@ -245,7 +245,7 @@ PropertySetParameterList ::=
 MemberExpression<ExprStart> ::=
 	  PrimaryExpression
 	| [!ExprStart] FunctionExpression
-	| MemberExpression '[' Expression ']'
+	| MemberExpression '[' Expression<~ExprStart> ']'
 	| MemberExpression '.' IdentifierName
 	| 'new' MemberExpression<~ExprStart> Arguments
 ;
@@ -258,7 +258,7 @@ NewExpression<ExprStart> ::=
 CallExpression<ExprStart> ::=
 	  MemberExpression Arguments
 	| CallExpression Arguments
-	| CallExpression '[' Expression ']'
+	| CallExpression '[' Expression<~ExprStart> ']'
 	| CallExpression '.' IdentifierName
 ;
 
@@ -310,7 +310,7 @@ ShiftExpression<ExprStart> ::=
 	| ShiftExpression '>>>' AdditiveExpression<~ExprStart>
 ;
 
-%flag NoIn;
+%flag NoIn = false;
 
 RelationalExpression<NoIn, ExprStart> ::=
 	  ShiftExpression<ExprStart>

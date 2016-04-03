@@ -23,13 +23,18 @@ public interface TemplateParameter extends NamedElement, SourceElement, UserData
 	}
 	Type getType();
 
+	enum Forward {
+		Always,
+		IfRequested,
+		Never,
+	}
+	Forward getFwdStrategy();
+
 	/**
 	 * May hold a value of type Boolean, or (reference to) Symbol.
 	 * Or null, if the parameter does not have any default value (unset).
 	 */
 	Object getDefaultValue();
-
-	boolean isGlobal();
 
 	void appendSuffix(StringBuilder sb, Object value);
 }

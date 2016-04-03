@@ -17,6 +17,7 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TemplateParameter.Forward;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.AstBuilder;
@@ -175,8 +176,10 @@ public class TMResolver {
 
 				Type type = (param.getParamType() == TmaParamType.LFLAG) ? Type.Flag : Type.Symbol;
 
+				Forward p = param.isExplicit() ? Forward.Never :
+						param.isGlobal() ? Forward.Always : Forward.IfRequested;
 				TemplateParameter value = createParameter(param.getName().getID(), type,
-						param.isGlobal(), param.getParamValue(), param);
+						p, param.getParamValue(), param);
 				if (value != null) parametersMap.put(name, value);
 			}
 		}
@@ -210,8 +213,8 @@ public class TMResolver {
 								continue;
 						}
 
-						TemplateParameter p = createParameter(name, type,
-								false, ((TmaInlineParameter) param).getParamValue(), param);
+						TemplateParameter p = createParameter(name, type, Forward.Never,
+								((TmaInlineParameter) param).getParamValue(), param);
 						if (p == null) continue;
 
 						parametersMap.put(name, p);
@@ -258,7 +261,7 @@ public class TMResolver {
 	}
 
 	private TemplateParameter createParameter(String name, TemplateParameter.Type type,
-											  boolean global, ITmaParamValue paramValue,
+											  Forward p, ITmaParamValue paramValue,
 											  TextSourceElement origin) {
 		Symbol existingSym = symbolsMap.get(name);
 		if (existingSym != null) {
@@ -270,8 +273,8 @@ public class TMResolver {
 			error(origin, "redeclaration of template parameter: " + name);
 			return null;
 		}
-		return builder.addParameter(type, name,
-				paramValue == null ? null : getParamValue(type, paramValue), global, origin);
+		return builder.addParameter(type, name, paramValue == null ? null :
+				getParamValue(type, paramValue), p, origin);
 	}
 
 
@@ -328,28 +331,8 @@ public class TMResolver {
 		}
 
 		Nonterminal nonterm = (Nonterminal) target;
-		List<TemplateParameter> requiredParameters = requiredParams(nonterm);
-
-		if (args == null && requiredParameters == null) {
-			if (targetParam != null && targetParam.isGlobal()) {
-				// One should use X<X> to make X available in X.
-				return Collections.singleton(builder.argument(targetParam, null, null, ref));
-			}
-			return null;
-		}
-
+		List<TemplateParameter> requiredParameters = templateParams(nonterm);
 		List<RhsArgument> result = null;
-		if (requiredParameters != null
-				&& args == null
-				&& getTemplateSignature(nonterm).equals(getTemplateSignature(context))) {
-			// Forward all context parameters.
-			result = new ArrayList<>(requiredParameters.size());
-			for (TemplateParameter p : requiredParameters) {
-				if (p.isGlobal()) continue;
-				result.add(builder.argument(p, p, null, ref));
-			}
-			return result;
-		}
 
 		Set<TemplateParameter> provided = new HashSet<>();
 		if (args != null && args.getArgList() != null) {
@@ -358,7 +341,7 @@ public class TMResolver {
 				TemplateParameter param = resolveParam(arg.getName(), nonterm);
 				if (param == null) continue;
 
-				if (!param.isGlobal()
+				if (param.getFwdStrategy() != Forward.Always
 						&& (requiredParameters == null || !requiredParameters.contains(param))) {
 					error(arg, "Template parameter " + arg.getName() + " is not expected by "
 							+ ref.getName());
@@ -403,8 +386,29 @@ public class TMResolver {
 		}
 
 		if (requiredParameters != null) {
+			// Forward context parameters, or use defaults.
+			List<TemplateParameter> availParams = templateParams(context);
+			for (TemplateParameter p : requiredParameters) {
+				if (provided.contains(p) || p.getFwdStrategy() == Forward.Always) continue;
+				if (availParams != null && availParams.contains(p) &&
+						p.getFwdStrategy() != Forward.Never) {
+					provided.add(p);
+					if (result == null) {
+						result = new ArrayList<>(requiredParameters.size());
+					}
+					result.add(builder.argument(p, p, null, ref));
+				} else if (p.getDefaultValue() != null) {
+					provided.add(p);
+					if (result == null) {
+						result = new ArrayList<>(requiredParameters.size());
+					}
+					result.add(builder.argument(p, null, p.getDefaultValue(), ref));
+				}
+			}
+
+			// Report unfulfilled parameters.
 			String unfulfilled = requiredParameters.stream()
-					.filter(p -> p.getType() == Type.Symbol && !provided.contains(p))
+					.filter(p -> !provided.contains(p))
 					.map(TemplateParameter::getName)
 					.collect(Collectors.joining(", "));
 
@@ -413,7 +417,8 @@ public class TMResolver {
 			}
 		}
 
-		if (targetParam != null && targetParam.isGlobal() && !provided.contains(targetParam)) {
+		if (targetParam != null && targetParam.getFwdStrategy() == Forward.Always &&
+				!provided.contains(targetParam)) {
 			// One should use X<X> to make X available in X.
 			return Collections.singleton(builder.argument(targetParam, null, null, ref));
 		}
@@ -434,25 +439,13 @@ public class TMResolver {
 		return null;
 	}
 
-	List<TemplateParameter> requiredParams(Nonterminal nonterm) {
+	List<TemplateParameter> templateParams(Nonterminal nonterm) {
 		@SuppressWarnings("unchecked")
 		List<TemplateParameter> params = (nonterm == null)
 				? null
 				: (List<TemplateParameter>) nonterm.getUserData(Nonterminal.UD_TEMPLATE_PARAMS);
 		return params == null || params.isEmpty() ? null : params;
 	}
-
-	String getTemplateSignature(Nonterminal nonterm) {
-		List<TemplateParameter> params = requiredParams(nonterm);
-		if (params == null || params.isEmpty()) return "";
-		StringBuilder sb = new StringBuilder();
-		for (TemplateParameter p : params) {
-			if (sb.length() > 0) sb.append(',');
-			sb.append(p.getName());
-		}
-		return sb.toString();
-	}
-
 
 	TemplateParameter tryResolveParam(TmaSymref id, Nonterminal context) {
 		if (context != null) {

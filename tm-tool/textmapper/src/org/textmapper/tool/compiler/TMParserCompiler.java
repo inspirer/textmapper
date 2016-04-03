@@ -729,7 +729,7 @@ public class TMParserCompiler {
 	}
 
 	private void copyParameters(Nonterminal source, Nonterminal target) {
-		List<TemplateParameter> params = resolver.requiredParams(source);
+		List<TemplateParameter> params = resolver.templateParams(source);
 		if (params != null) target.putUserData(Nonterminal.UD_TEMPLATE_PARAMS, params);
 	}
 

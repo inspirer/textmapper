@@ -45,7 +45,7 @@ list<Elem> ::=
 # ERR: @Elem: Template parameter is unset.
 	  Elem
 # ERR: @Elem: Template parameter is unset.
-	| list ',' Elem
+	| list<Elem> ',' Elem
 ;
 
 %global flag Bool;

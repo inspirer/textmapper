@@ -202,10 +202,10 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 
 %input Module;
 
-%flag In;
-%flag Yield;
-%flag Default;
-%flag Return;
+%flag In = false;
+%flag Yield = false;
+%flag Default = false;
+%flag Return = false;
 
 IdentifierName ::=
 	  Identifier
@@ -769,7 +769,7 @@ DebuggerStatement ::=
 # A.4 Functions and Classes
 
 FunctionDeclaration<Yield, Default> ::=
-	  'function' BindingIdentifier<Yield> '(' FormalParameters ')' '{' FunctionBody '}'
+	  'function' BindingIdentifier<Yield> '(' FormalParameters<~Yield> ')' '{' FunctionBody<~Yield> '}'
 	| [Default] 'function' '(' FormalParameters ')' '{' FunctionBody '}'
 ;
 

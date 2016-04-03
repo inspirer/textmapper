@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateEnvironment;
 import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.api.TemplateParameter.Forward;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 
@@ -35,7 +36,7 @@ public class InstantiationTest {
 
 		// Booleans
 		TemplateParameter b1 = b.addParameter(Type.Flag, "b1",
-				null /* no default */, true /* global */, null);
+				null /* no default */, Forward.Always, null);
 		env = env.extend(b1, true);
 		assertEquals("_b1", env.getNonterminalSuffix());
 
@@ -47,9 +48,9 @@ public class InstantiationTest {
 		Symbol t1 = b.addNonterminal("T1", null);
 		Symbol t2 = b.addNonterminal("T2", null);
 
-		TemplateParameter s1 = b.addParameter(Type.Symbol, "s1", t1, true /* global */, null);
+		TemplateParameter s1 = b.addParameter(Type.Symbol, "s1", t1, Forward.Always, null);
 		TemplateParameter s2 = b.addParameter(Type.Symbol, "s2",
-				null /* default value */, true /* global */, null);
+				null /* default value */, Forward.Always, null);
 		env = env.extend(s1, t2);
 		assertEquals("_b1_s1_T2", env.getNonterminalSuffix());
 

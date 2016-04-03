@@ -17,9 +17,9 @@ d:  /d/
 
 :: parser
 
-%flag A;
-%flag B;
-%flag C;
+%explicit flag A = false;
+%explicit flag B = false;
+%explicit flag C = false;
 
 input ::=
 	  DefaultP DefaultP<+C> DefaultP<+A,+C> DefaultP<+A,+B,+C> IfThenElse<~C> IfThenElse<+C>
@@ -27,7 +27,7 @@ input ::=
 
 # Test 1: symbol propagation.
 DefaultP<A,B,C> ::=
-	  Terms
+	  Terms<A,B,C>
 	| [A] d Terms<B>
 ;
 
@@ -54,6 +54,6 @@ Condition<C> ::=
 ;
 
 IfThenElse<C> ::=
-	  '(' Condition ')' c d c
-	| '(' Condition ')' c %prec d
+	  '(' Condition<C> ')' c d c
+	| '(' Condition<C> ')' c %prec d
 ;

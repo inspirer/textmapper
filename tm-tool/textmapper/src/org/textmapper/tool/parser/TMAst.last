@@ -291,6 +291,7 @@ assoc  : Assoc ::=
 ;
 
 class TemplateParam : GrammarPart {
+	boolean explicit;
 	boolean global;
 	ParamType paramType;
 	Identifier name;
@@ -298,7 +299,7 @@ class TemplateParam : GrammarPart {
 }
 
 template_param  : TemplateParam ::=
-	this=new.TemplateParam: '%' global=Lglobal as true? paramType=param_type name=identifier ('=' paramValue=param_value)? ';'
+	this=new.TemplateParam: '%' (explicit=Lexplicit as true | global=Lglobal as true)? paramType=param_type name=identifier ('=' paramValue=param_value)? ';'
 ;
 
 class DirectivePrio : GrammarPart {

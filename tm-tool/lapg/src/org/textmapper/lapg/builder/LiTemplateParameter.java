@@ -26,22 +26,26 @@ public class LiTemplateParameter extends LiUserDataHolder
 	private final Type type;
 	private final String name;
 	private final Object defaultValue;
-	private final boolean global;
 	private final SourceElement origin;
+	private final Forward p;
 
 	public LiTemplateParameter(Type type, String name, Object defaultValue,
-							   boolean global, SourceElement origin) {
+							   Forward p, SourceElement origin) {
 		this.type = type;
 		this.name = name;
-		boolean flagWithoutDefault = type == Type.Flag && !(defaultValue instanceof Boolean);
-		this.defaultValue = flagWithoutDefault ? Boolean.FALSE : defaultValue;
-		this.global = global;
+		this.defaultValue = defaultValue;
+		this.p = p;
 		this.origin = origin;
 	}
 
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public Forward getFwdStrategy() {
+		return p;
 	}
 
 	@Override
@@ -52,11 +56,6 @@ public class LiTemplateParameter extends LiUserDataHolder
 	@Override
 	public Object getDefaultValue() {
 		return defaultValue;
-	}
-
-	@Override
-	public boolean isGlobal() {
-		return global;
 	}
 
 	@Override
