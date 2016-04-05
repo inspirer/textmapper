@@ -40,9 +40,6 @@ identifierPart = /{identifierStart}|{ID_Continue}|{Join_Control}/
 
 Identifier: /{identifierStart}{identifierPart}*/    (class)
 
-## TODO: smart keywords? (used in PropertyAssignment)
-#	get set
-
 'break': /break/
 'case': /case/
 'catch': /catch/
@@ -81,6 +78,20 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 'await': /await/
 'enum': /enum/
 
+'null': /null/
+'true': /true/
+'false': /false/
+
+# Soft (contextual) keywords. FIXME
+'target':	/target/	(soft)
+'of':		/of/		(soft)
+'let':		/let/
+'static':	/static/
+'as':		/as/		(soft)
+'from':		/from/		(soft)
+'get':		/get/
+'set':		/set/
+
 # In strict mode:
 #'implements': /implements/
 #'interface': /interface/
@@ -88,22 +99,6 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 #'private': /private/
 #'protected': /protected/
 #'public': /public/
-
-'null': /null/
-'true': /true/
-'false': /false/
-
-
-# Soft (contextual) keywords. FIXME
-'target': /target/
-'of': /of/
-'let': /let/
-'static': /static/
-'as': /as/
-'from': /from/
-'get': /get/
-'set': /set/
-
 
 '{': /\{/
 '(': /\(/

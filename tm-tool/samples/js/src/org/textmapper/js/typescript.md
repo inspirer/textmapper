@@ -1,3 +1,45 @@
+#  A.0 Keywords
+
+# Typescript
+'enum': /enum/
+
+# The following keywords cannot be used as identifiers in strict mode code, but
+# are otherwise not restricted:
+'implements':   /implements/
+'interface':    /interface/
+'let': 			/let/
+'private':		/private/
+'protected':	/protected/
+'public':		/public/
+'static':		/static/
+
+# The following keywords cannot be used as user defined type names, but are
+# otherwise not restricted:
+'any':			/any/
+'boolean':		/boolean/
+'number':		/number/
+'string':		/string/
+'symbol':		/symbol/
+
+# The following keywords have special meaning in certain contexts, but are
+# valid identifiers:
+'abstract':		/abstract/
+'as':			/as/
+'async':		/async/
+'await':		/await/
+'constructor':	/constructor/
+'declare':		/declare/
+'from':			/from/
+'get':			/get/
+'is':			/is/
+'module':		/module/
+'namespace':	/namespace/
+'of':			/of/
+'require':		/require/
+'set':			/set/
+'type':			/type/
+
+
 #  A.1 Types
 
 TypeParameters ::=
