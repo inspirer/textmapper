@@ -82,15 +82,15 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 'true': /true/
 'false': /false/
 
-# Soft (contextual) keywords. FIXME
-'target':	/target/	(soft)
-'of':		/of/		(soft)
-'let':		/let/
-'static':	/static/
-'as':		/as/		(soft)
-'from':		/from/		(soft)
+# Soft (contextual) keywords.
+'as':		/as/
+'from':		/from/
 'get':		/get/
+'let':		/let/
+'of':		/of/
 'set':		/set/
+'static':	/static/
+'target':	/target/
 
 # In strict mode:
 #'implements': /implements/
@@ -202,6 +202,8 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 %flag Default;
 %flag Return;
 
+%flag NoLet = false;
+
 IdentifierName ::=
 	  Identifier
 
@@ -221,26 +223,39 @@ IdentifierName ::=
 
 	# NullLiteral | BooleanLiteral
 	| 'null' | 'true' | 'false'
+
+	# Soft keywords
+	| 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target'
 ;
 
 # A.2 Expressions
 
-IdentifierReference<Yield> ::=
+IdentifierReference<Yield, NoLet> ::=
 	  Identifier
 	| [!Yield] 'yield'
+	| [!NoLet] 'let'
+
+	# Soft keywords
+	| 'as' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
 ;
 
 BindingIdentifier<Yield> ::=
 	  Identifier
 	| [!Yield] 'yield'
+
+	# Soft keywords
+	| 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target'
 ;
 
 LabelIdentifier<Yield> ::=
 	  Identifier
 	| [!Yield] 'yield'
+
+	# Soft keywords
+	| 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target'
 ;
 
-PrimaryExpression<Yield> ::=
+PrimaryExpression<Yield, NoLet> ::=
 	  'this'
 	| IdentifierReference
 	| Literal
@@ -348,7 +363,8 @@ TemplateMiddleList<Yield> ::=
 ;
 
 MemberExpression<Yield> ::=
-	  PrimaryExpression
+	  # FIXME implement disabling -- let [ production
+	  PrimaryExpression<+NoLet>
 	| MemberExpression '[' Expression<+In> ']'
 	| MemberExpression '.' IdentifierName
 	| MemberExpression TemplateLiteral

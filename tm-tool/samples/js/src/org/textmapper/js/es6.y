@@ -48,14 +48,14 @@
 %token null
 %token true
 %token false
-%token target
-%token of
-%token let
-%token static
 %token as
 %token from
 %token get
+%token let
+%token of
 %token set
+%token static
+%token target
 %token Lcurly
 %token Lparen
 %token Rparen
@@ -156,38 +156,117 @@ IdentifierName :
 | null
 | true
 | false
+| as
+| from
+| get
+| let
+| of
+| set
+| static
+| target
 ;
 
 IdentifierReference :
   Identifier
 | yield
+| let
+| as
+| from
+| get
+| of
+| set
+| static
+| target
+;
+
+IdentifierReference_NoLet :
+  Identifier
+| yield
+| as
+| from
+| get
+| of
+| set
+| static
+| target
+;
+
+IdentifierReference_NoLet_Yield :
+  Identifier
+| as
+| from
+| get
+| of
+| set
+| static
+| target
 ;
 
 IdentifierReference_Yield :
   Identifier
+| let
+| as
+| from
+| get
+| of
+| set
+| static
+| target
 ;
 
 BindingIdentifier :
   Identifier
 | yield
+| as
+| from
+| get
+| let
+| of
+| set
+| static
+| target
 ;
 
 BindingIdentifier_Yield :
   Identifier
+| as
+| from
+| get
+| let
+| of
+| set
+| static
+| target
 ;
 
 LabelIdentifier :
   Identifier
 | yield
+| as
+| from
+| get
+| let
+| of
+| set
+| static
+| target
 ;
 
 LabelIdentifier_Yield :
   Identifier
+| as
+| from
+| get
+| let
+| of
+| set
+| static
+| target
 ;
 
-PrimaryExpression :
+PrimaryExpression_NoLet :
   this
-| IdentifierReference
+| IdentifierReference_NoLet
 | Literal
 | ArrayLiteral
 | ObjectLiteral
@@ -199,9 +278,9 @@ PrimaryExpression :
 | CoverParenthesizedExpressionAndArrowParameterList
 ;
 
-PrimaryExpression_Yield :
+PrimaryExpression_NoLet_Yield :
   this
-| IdentifierReference_Yield
+| IdentifierReference_NoLet_Yield
 | Literal
 | ArrayLiteral_Yield
 | ObjectLiteral_Yield
@@ -389,7 +468,7 @@ TemplateMiddleList_Yield :
 ;
 
 MemberExpression :
-  PrimaryExpression
+  PrimaryExpression_NoLet
 | MemberExpression Lsquare Expression_In Rsquare
 | MemberExpression Dot IdentifierName
 | MemberExpression TemplateLiteral
@@ -399,7 +478,7 @@ MemberExpression :
 ;
 
 MemberExpression_Yield :
-  PrimaryExpression_Yield
+  PrimaryExpression_NoLet_Yield
 | MemberExpression_Yield Lsquare Expression_In_Yield Rsquare
 | MemberExpression_Yield Dot IdentifierName
 | MemberExpression_Yield TemplateLiteral_Yield
