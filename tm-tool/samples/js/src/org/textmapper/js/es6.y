@@ -264,6 +264,20 @@ LabelIdentifier_Yield :
 | target
 ;
 
+PrimaryExpression :
+  this
+| IdentifierReference
+| Literal
+| ArrayLiteral
+| ObjectLiteral
+| FunctionExpression
+| ClassExpression
+| GeneratorExpression
+| RegularExpressionLiteral
+| TemplateLiteral
+| CoverParenthesizedExpressionAndArrowParameterList
+;
+
 PrimaryExpression_NoLet :
   this
 | IdentifierReference_NoLet
@@ -281,6 +295,20 @@ PrimaryExpression_NoLet :
 PrimaryExpression_NoLet_Yield :
   this
 | IdentifierReference_NoLet_Yield
+| Literal
+| ArrayLiteral_Yield
+| ObjectLiteral_Yield
+| FunctionExpression
+| ClassExpression_Yield
+| GeneratorExpression
+| RegularExpressionLiteral
+| TemplateLiteral_Yield
+| CoverParenthesizedExpressionAndArrowParameterList_Yield
+;
+
+PrimaryExpression_Yield :
+  this
+| IdentifierReference_Yield
 | Literal
 | ArrayLiteral_Yield
 | ObjectLiteral_Yield
@@ -468,7 +496,7 @@ TemplateMiddleList_Yield :
 ;
 
 MemberExpression :
-  PrimaryExpression_NoLet
+  PrimaryExpression
 | MemberExpression Lsquare Expression_In Rsquare
 | MemberExpression Dot IdentifierName
 | MemberExpression TemplateLiteral
@@ -477,8 +505,28 @@ MemberExpression :
 | new MemberExpression Arguments
 ;
 
-MemberExpression_Yield :
+MemberExpression_NoLet :
+  PrimaryExpression_NoLet
+| MemberExpression_NoLet Lsquare Expression_In Rsquare
+| MemberExpression_NoLet Dot IdentifierName
+| MemberExpression_NoLet TemplateLiteral
+| SuperProperty
+| MetaProperty
+| new MemberExpression Arguments
+;
+
+MemberExpression_NoLet_Yield :
   PrimaryExpression_NoLet_Yield
+| MemberExpression_NoLet_Yield Lsquare Expression_In_Yield Rsquare
+| MemberExpression_NoLet_Yield Dot IdentifierName
+| MemberExpression_NoLet_Yield TemplateLiteral_Yield
+| SuperProperty_Yield
+| MetaProperty
+| new MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield :
+  PrimaryExpression_Yield
 | MemberExpression_Yield Lsquare Expression_In_Yield Rsquare
 | MemberExpression_Yield Dot IdentifierName
 | MemberExpression_Yield TemplateLiteral_Yield
@@ -510,27 +558,37 @@ NewExpression :
 | new NewExpression
 ;
 
+NewExpression_NoLet :
+  MemberExpression_NoLet
+| new NewExpression
+;
+
+NewExpression_NoLet_Yield :
+  MemberExpression_NoLet_Yield
+| new NewExpression_Yield
+;
+
 NewExpression_Yield :
   MemberExpression_Yield
 | new NewExpression_Yield
 ;
 
-CallExpression :
-  MemberExpression Arguments
+CallExpression_NoLet :
+  MemberExpression_NoLet Arguments
 | SuperCall
-| CallExpression Arguments
-| CallExpression Lsquare Expression_In Rsquare
-| CallExpression Dot IdentifierName
-| CallExpression TemplateLiteral
+| CallExpression_NoLet Arguments
+| CallExpression_NoLet Lsquare Expression_In Rsquare
+| CallExpression_NoLet Dot IdentifierName
+| CallExpression_NoLet TemplateLiteral
 ;
 
-CallExpression_Yield :
-  MemberExpression_Yield Arguments_Yield
+CallExpression_NoLet_Yield :
+  MemberExpression_NoLet_Yield Arguments_Yield
 | SuperCall_Yield
-| CallExpression_Yield Arguments_Yield
-| CallExpression_Yield Lsquare Expression_In_Yield Rsquare
-| CallExpression_Yield Dot IdentifierName
-| CallExpression_Yield TemplateLiteral_Yield
+| CallExpression_NoLet_Yield Arguments_Yield
+| CallExpression_NoLet_Yield Lsquare Expression_In_Yield Rsquare
+| CallExpression_NoLet_Yield Dot IdentifierName
+| CallExpression_NoLet_Yield TemplateLiteral_Yield
 ;
 
 SuperCall :
@@ -566,13 +624,13 @@ ArgumentList_Yield :
 ;
 
 LeftHandSideExpression :
-  NewExpression
-| CallExpression
+  NewExpression_NoLet
+| CallExpression_NoLet
 ;
 
 LeftHandSideExpression_Yield :
-  NewExpression_Yield
-| CallExpression_Yield
+  NewExpression_NoLet_Yield
+| CallExpression_NoLet_Yield
 ;
 
 PostfixExpression :

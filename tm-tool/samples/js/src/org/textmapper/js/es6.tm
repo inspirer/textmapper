@@ -203,6 +203,8 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 %flag Return;
 
 %flag NoLet = false;
+%flag NoLetSq = false;
+
 
 IdentifierName ::=
 	  Identifier
@@ -362,15 +364,15 @@ TemplateMiddleList<Yield> ::=
 	| TemplateMiddleList TemplateMiddle Expression<+In>
 ;
 
-MemberExpression<Yield> ::=
-	  # FIXME implement disabling -- let [ production
-	  PrimaryExpression<+NoLet>
-	| MemberExpression '[' Expression<+In> ']'
+MemberExpression<Yield, NoLet, NoLetSq, flag NoLetOnly = false> ::=
+	  [!NoLetOnly] PrimaryExpression
+	| [NoLetOnly] PrimaryExpression<+NoLet>
+	| MemberExpression<NoLetOnly: NoLetSq> '[' Expression<+In> ']'
 	| MemberExpression '.' IdentifierName
 	| MemberExpression TemplateLiteral
 	| SuperProperty
 	| MetaProperty
-	| 'new' MemberExpression Arguments
+	| 'new' MemberExpression<~NoLet, ~NoLetSq> Arguments
 ;
 
 SuperProperty<Yield> ::=
@@ -386,12 +388,12 @@ NewTarget ::=
 	  'new' '.' 'target'
 ;
 
-NewExpression<Yield> ::=
+NewExpression<Yield, NoLet, NoLetSq> ::=
 	  MemberExpression
-	| 'new' NewExpression
+	| 'new' NewExpression<~NoLet, ~NoLetSq>
 ;
 
-CallExpression<Yield> ::=
+CallExpression<Yield, NoLet, NoLetSq> ::=
 	  MemberExpression Arguments
 	| SuperCall
 	| CallExpression Arguments
@@ -417,8 +419,8 @@ ArgumentList<Yield> ::=
 ;
 
 LeftHandSideExpression<Yield> ::=
-	  NewExpression
-	| CallExpression
+	  NewExpression<+NoLet>
+	| CallExpression<+NoLet>
 ;
 
 PostfixExpression<Yield> ::=

@@ -132,9 +132,18 @@ class TemplateInstantiator {
 		if (part instanceof RhsSymbol) {
 			TemplateParameter param = ((RhsSymbol) part).getTemplateTarget();
 			if (param != null) {
-				int index = paramIndex.get(param);
-				result.add(index);
+				result.add(paramIndex.get(param));
 			}
+
+			RhsArgument[] args = ((RhsSymbol) part).getArgs();
+			if (args == null) return;
+
+			for (RhsArgument arg : args) {
+				if (arg.getSource() != null && arg.getSource() != arg.getParameter()) {
+					result.add(paramIndex.get(arg.getSource()));
+				}
+			}
+
 			return;
 		} else if (part instanceof RhsConditional) {
 			collectDirectUsage(((RhsConditional) part).getPredicate(), result);
@@ -208,7 +217,6 @@ class TemplateInstantiator {
 			if (args != null) {
 				for (RhsArgument arg : args) {
 					if (arg.getSource() != arg.getParameter()) {
-						// TODO fix propagation
 						sb.add(paramIndex.get(arg.getParameter()));
 					}
 				}
