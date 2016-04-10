@@ -16,7 +16,6 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.TemplateParameter.Forward;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
@@ -40,7 +39,7 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	TemplateParameter addParameter(TemplateParameter.Type type,
 								   String name, Object defaultValue,
-								   Forward p, SourceElement origin);
+								   TemplateParameter.Modifier m, SourceElement origin);
 
 	TemplateEnvironment getRootEnvironment();
 

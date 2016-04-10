@@ -16,7 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.TemplateParameter.Forward;
+import org.textmapper.lapg.api.TemplateParameter.Modifier;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.util.RhsUtil;
@@ -247,7 +247,7 @@ class TemplateInstantiator {
 
 		// Remove non-global & unused parameters.
 		TemplateEnvironment env = sourceEnv.filter(
-				parameter -> (fwdAll || parameter.getFwdStrategy() == Forward.Always)
+				parameter -> (fwdAll || parameter.getModifier() == Modifier.Global)
 						&& acceptedParameters.get(paramIndex.get(parameter)));
 
 		if (args == null) return env;

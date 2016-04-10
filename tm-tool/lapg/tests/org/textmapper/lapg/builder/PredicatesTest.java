@@ -21,7 +21,7 @@ import org.junit.rules.ExpectedException;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateEnvironment;
 import org.textmapper.lapg.api.TemplateParameter;
-import org.textmapper.lapg.api.TemplateParameter.Forward;
+import org.textmapper.lapg.api.TemplateParameter.Modifier;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.RhsPredicate;
@@ -42,9 +42,9 @@ public class PredicatesTest {
 		Symbol t2 = b.addNonterminal("T2", null);
 
 		TemplateParameter s1 = b.addParameter(Type.Symbol, "s1", t1,
-				Forward.Always, null);
+				Modifier.Global, null);
 		TemplateParameter s2 = b.addParameter(Type.Symbol, "s2", null /* defaultValue */,
-				Forward.Always, null);
+				Modifier.Global, null);
 		TemplateEnvironment env = GrammarFacade.createBuilder().getRootEnvironment();
 
 		assertTrue(env == env.extend(s1, t1));
@@ -72,8 +72,10 @@ public class PredicatesTest {
 	@Test
 	public void testEvaluation() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
-		TemplateParameter p1 = b.addParameter(Type.Flag, "p1", Boolean.TRUE, Forward.Always, null);
-		TemplateParameter p2 = b.addParameter(Type.Flag, "p2", null, Forward.Always, null);
+		TemplateParameter p1 = b.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier
+				.Global, null);
+		TemplateParameter p2 = b.addParameter(Type.Flag, "p2", null, Modifier.Global,
+				null);
 
 		RhsPredicate pr = and(b, not(b, equals(b, p1, Boolean.TRUE)),
 				equals(b, p2, Boolean.FALSE));
@@ -95,8 +97,9 @@ public class PredicatesTest {
 	public void testToStringAndEquals() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
 		TemplateParameter p1 = b.addParameter(Type.Flag, "p1", Boolean.TRUE,
-				Forward.Always, null);
-		TemplateParameter p2 = b.addParameter(Type.Flag, "p2", null, Forward.Always, null);
+				Modifier.Global, null);
+		TemplateParameter p2 = b.addParameter(Type.Flag, "p2", null, Modifier.Global,
+				null);
 
 		RhsPredicate pr = not(b, and(b,
 				or(b, equals(b, p1, Boolean.TRUE), equals(b, p1, Boolean.FALSE)),
@@ -134,8 +137,8 @@ public class PredicatesTest {
 		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Forward.Always, null);
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Forward.Always, null);
+		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
+		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
@@ -145,7 +148,7 @@ public class PredicatesTest {
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		builder.addTerminal("p1", null, null);
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Forward.Always, null);
+		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
@@ -154,7 +157,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Forward.Always, null);
+		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
 		builder.addTerminal("p1", null, null);
 	}
 
@@ -164,14 +167,14 @@ public class PredicatesTest {
 		expectedEx.expectMessage("error");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "error", Boolean.TRUE, Forward.Always, null);
+		builder.addParameter(Type.Flag, "error", Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
 	public void testNullName() {
 		expectedEx.expect(NullPointerException.class);
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, null, Boolean.TRUE, Forward.Always, null);
+		builder.addParameter(Type.Flag, null, Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
@@ -180,7 +183,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("boolean default value is expected");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "error1", 1, Forward.Always, null);
+		builder.addParameter(Type.Flag, "error1", 1, Modifier.Global, null);
 	}
 
 	@Test
@@ -191,7 +194,7 @@ public class PredicatesTest {
 		GrammarBuilder builder1 = GrammarFacade.createBuilder();
 		GrammarBuilder builder2 = GrammarFacade.createBuilder();
 		builder1.addParameter(Type.Symbol, "int",
-				builder2.addTerminal("bb", null, null), Forward.Always, null);
+				builder2.addTerminal("bb", null, null), Modifier.Global, null);
 	}
 
 	@Test
@@ -210,7 +213,7 @@ public class PredicatesTest {
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		TemplateParameter p1 = builder.addParameter(Type.Flag, "p1", Boolean.TRUE,
-				Forward.Always, null);
+				Modifier.Global, null);
 		builder.predicate(Operation.Equals, null, p1, null, null);
 	}
 }

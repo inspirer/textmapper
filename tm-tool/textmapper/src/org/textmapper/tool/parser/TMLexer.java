@@ -104,22 +104,23 @@ public class TMLexer {
 		int Lnonempty = 59;
 		int Lglobal = 60;
 		int Lexplicit = 61;
-		int Lparam = 62;
-		int Lflag = 63;
-		int Lnoeoi = 64;
-		int Lsoft = 65;
-		int Lclass = 66;
-		int Linterface = 67;
-		int Lvoid = 68;
-		int Lspace = 69;
-		int Llayout = 70;
-		int Llanguage = 71;
-		int Llalr = 72;
-		int Llexer = 73;
-		int Lparser = 74;
-		int Lreduce = 75;
-		int code = 76;
-		int Lcurly = 77;
+		int Llookahead = 62;
+		int Lparam = 63;
+		int Lflag = 64;
+		int Lnoeoi = 65;
+		int Lsoft = 66;
+		int Lclass = 67;
+		int Linterface = 68;
+		int Lvoid = 69;
+		int Lspace = 70;
+		int Llayout = 71;
+		int Llanguage = 72;
+		int Llalr = 73;
+		int Llexer = 74;
+		int Lparser = 75;
+		int Lreduce = 76;
+		int code = 77;
+		int Lcurly = 78;
 	}
 
 	public interface ErrorReporter {
@@ -291,10 +292,10 @@ public class TMLexer {
 		0, 0, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(77,
+	private static final short[] tmRuleSymbol = unpack_short(78,
 		"\47\1\2\3\0\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34" +
 		"\35\36\37\40\41\42\43\44\45\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\70\71" +
-		"\72\73\74\75\76\77\100\101\102\103\104\105\106\107\110\111\112\113\114\115");
+		"\72\73\74\75\76\77\100\101\102\103\104\105\106\107\110\111\112\113\114\115\116");
 
 	private static final int tmClassesCount = 36;
 
@@ -308,10 +309,10 @@ public class TMLexer {
 		"\44\44\uffe8\44\uffe7\44\uffe0\1\uffff\2\10\1\50\1\uffff\4\10\1\51\32\10\42\uffff" +
 		"\1\40\1\uffff\13\ufff5\1\52\30\ufff5\1\ufff7\3\13\1\53\37\13\16\uffe9\1\54\25\uffe9" +
 		"\17\ufff0\1\55\2\ufff0\1\56\21\ufff0\20\ufff2\1\57\23\ufff2\17\uffdc\1\60\24\uffdc" +
-		"\44\uffe1\44\uffec\44\uffeb\44\uffea\44\uffe6\44\uffe5\31\uffb2\1\61\12\uffb2\44" +
+		"\44\uffe1\44\uffec\44\uffeb\44\uffea\44\uffe6\44\uffe5\31\uffb1\1\61\12\uffb1\44" +
 		"\uffdb\44\uffe3\44\uffe2\17\uffdf\1\62\24\uffdf\44\uffdd\36\uffda\1\63\5\uffda\44" +
-		"\uffd8\44\uffd7\12\ufffd\1\64\26\ufffd\2\37\1\ufffd\42\ufffa\1\40\1\ufffa\31\uffb1" +
-		"\1\61\12\uffb1\44\ufffd\1\uffff\3\2\1\uffff\37\2\1\uffff\2\44\1\65\1\uffff\1\66\1" +
+		"\uffd8\44\uffd7\12\ufffd\1\64\26\ufffd\2\37\1\ufffd\42\ufffa\1\40\1\ufffa\31\uffb0" +
+		"\1\61\12\uffb0\44\ufffd\1\uffff\3\2\1\uffff\37\2\1\uffff\2\44\1\65\1\uffff\1\66\1" +
 		"\67\5\44\1\uffff\27\44\1\uffff\3\44\1\uffff\37\44\1\uffff\2\46\1\70\1\uffff\2\46" +
 		"\1\44\4\46\1\uffff\27\46\1\uffff\7\47\1\71\33\47\1\uffff\3\10\1\uffff\37\10\44\ufffb" +
 		"\1\ufff9\3\52\1\72\37\52\44\ufff7\17\ufff3\1\73\24\ufff3\44\uffef\44\uffed\44\ufff1" +
@@ -793,7 +794,7 @@ public class TMLexer {
 			case 38: // '@': /@/
 				state = States.afterAt;
 				break;
-			case 75: // code: /\{/
+			case 76: // code: /\{/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -801,7 +802,7 @@ public class TMLexer {
 				}
 				{ skipAction(); token.endoffset = getOffset(); }
 				break;
-			case 76: // '{': /\{/
+			case 77: // '{': /\{/
 				state = States.initial;
 				break;
 		}
@@ -832,20 +833,21 @@ public class TMLexer {
 		subTokensOfID.put("nonempty", 58);
 		subTokensOfID.put("global", 59);
 		subTokensOfID.put("explicit", 60);
-		subTokensOfID.put("param", 61);
-		subTokensOfID.put("flag", 62);
-		subTokensOfID.put("no-eoi", 63);
-		subTokensOfID.put("soft", 64);
-		subTokensOfID.put("class", 65);
-		subTokensOfID.put("interface", 66);
-		subTokensOfID.put("void", 67);
-		subTokensOfID.put("space", 68);
-		subTokensOfID.put("layout", 69);
-		subTokensOfID.put("language", 70);
-		subTokensOfID.put("lalr", 71);
-		subTokensOfID.put("lexer", 72);
-		subTokensOfID.put("parser", 73);
-		subTokensOfID.put("reduce", 74);
+		subTokensOfID.put("lookahead", 61);
+		subTokensOfID.put("param", 62);
+		subTokensOfID.put("flag", 63);
+		subTokensOfID.put("no-eoi", 64);
+		subTokensOfID.put("soft", 65);
+		subTokensOfID.put("class", 66);
+		subTokensOfID.put("interface", 67);
+		subTokensOfID.put("void", 68);
+		subTokensOfID.put("space", 69);
+		subTokensOfID.put("layout", 70);
+		subTokensOfID.put("language", 71);
+		subTokensOfID.put("lalr", 72);
+		subTokensOfID.put("lexer", 73);
+		subTokensOfID.put("parser", 74);
+		subTokensOfID.put("reduce", 75);
 	}
 
 	protected boolean createIDToken(Span token, int ruleIndex) {
@@ -926,7 +928,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 74:	// reduce
+			case 75:	// reduce
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -951,19 +953,20 @@ public class TMLexer {
 			case 58:	// nonempty (soft)
 			case 59:	// global (soft)
 			case 60:	// explicit (soft)
-			case 61:	// param (soft)
-			case 62:	// flag (soft)
-			case 63:	// no-eoi (soft)
-			case 64:	// soft (soft)
-			case 65:	// class (soft)
-			case 66:	// interface (soft)
-			case 67:	// void (soft)
-			case 68:	// space (soft)
-			case 69:	// layout (soft)
-			case 70:	// language (soft)
-			case 71:	// lalr (soft)
-			case 72:	// lexer (soft)
-			case 73:	// parser (soft)
+			case 61:	// lookahead (soft)
+			case 62:	// param (soft)
+			case 63:	// flag (soft)
+			case 64:	// no-eoi (soft)
+			case 65:	// soft (soft)
+			case 66:	// class (soft)
+			case 67:	// interface (soft)
+			case 68:	// void (soft)
+			case 69:	// space (soft)
+			case 70:	// layout (soft)
+			case 71:	// language (soft)
+			case 72:	// lalr (soft)
+			case 73:	// lexer (soft)
+			case 74:	// parser (soft)
 			case 0:	// <default>
 				switch(state) {
 					case States.afterAt:

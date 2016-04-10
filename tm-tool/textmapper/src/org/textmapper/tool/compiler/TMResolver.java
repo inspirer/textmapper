@@ -17,7 +17,7 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.TemplateParameter.Forward;
+import org.textmapper.lapg.api.TemplateParameter.Modifier;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.AstBuilder;
@@ -176,10 +176,19 @@ public class TMResolver {
 
 				Type type = (param.getParamType() == TmaParamType.LFLAG) ? Type.Flag : Type.Symbol;
 
-				Forward p = param.isExplicit() ? Forward.Never :
-						param.isGlobal() ? Forward.Always : Forward.IfRequested;
+				Modifier mod = Modifier.Default;
+				if (param.getModifier() != null) {
+					switch (param.getModifier()) {
+						case LEXPLICIT:
+							mod = Modifier.Explicit;
+							break;
+						case LGLOBAL:
+							mod = Modifier.Global;
+							break;
+					}
+				}
 				TemplateParameter value = createParameter(param.getName().getID(), type,
-						p, param.getParamValue(), param);
+						mod, param.getParamValue(), param);
 				if (value != null) parametersMap.put(name, value);
 			}
 		}
@@ -213,7 +222,7 @@ public class TMResolver {
 								continue;
 						}
 
-						TemplateParameter p = createParameter(name, type, Forward.Never,
+						TemplateParameter p = createParameter(name, type, Modifier.Explicit,
 								((TmaInlineParameter) param).getParamValue(), param);
 						if (p == null) continue;
 
@@ -261,7 +270,7 @@ public class TMResolver {
 	}
 
 	private TemplateParameter createParameter(String name, TemplateParameter.Type type,
-											  Forward p, ITmaParamValue paramValue,
+											  TemplateParameter.Modifier m, ITmaParamValue paramValue,
 											  TextSourceElement origin) {
 		Symbol existingSym = symbolsMap.get(name);
 		if (existingSym != null) {
@@ -274,7 +283,7 @@ public class TMResolver {
 			return null;
 		}
 		return builder.addParameter(type, name, paramValue == null ? null :
-				getParamValue(type, paramValue), p, origin);
+				getParamValue(type, paramValue), m, origin);
 	}
 
 
@@ -341,7 +350,7 @@ public class TMResolver {
 				TemplateParameter param = resolveParam(arg.getName(), nonterm);
 				if (param == null) continue;
 
-				if (param.getFwdStrategy() != Forward.Always
+				if (param.getModifier() != Modifier.Global
 						&& (requiredParameters == null || !requiredParameters.contains(param))) {
 					error(arg, "Template parameter " + arg.getName() + " is not expected by "
 							+ ref.getName());
@@ -389,9 +398,9 @@ public class TMResolver {
 			// Forward context parameters, or use defaults.
 			List<TemplateParameter> availParams = templateParams(context);
 			for (TemplateParameter p : requiredParameters) {
-				if (provided.contains(p) || p.getFwdStrategy() == Forward.Always) continue;
+				if (provided.contains(p) || p.getModifier() == Modifier.Global) continue;
 				if (availParams != null && availParams.contains(p) &&
-						p.getFwdStrategy() != Forward.Never) {
+						p.getModifier() != Modifier.Explicit) {
 					provided.add(p);
 					if (result == null) {
 						result = new ArrayList<>(requiredParameters.size());
@@ -417,7 +426,7 @@ public class TMResolver {
 			}
 		}
 
-		if (targetParam != null && targetParam.getFwdStrategy() == Forward.Always &&
+		if (targetParam != null && targetParam.getModifier() == Modifier.Global &&
 				!provided.contains(targetParam)) {
 			// One should use X<X> to make X available in X.
 			return Collections.singleton(builder.argument(targetParam, null, null, ref));

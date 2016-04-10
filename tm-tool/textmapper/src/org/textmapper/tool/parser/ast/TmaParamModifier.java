@@ -13,29 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.tool.parser.ast;
 
-public interface TemplateParameter extends NamedElement, SourceElement, UserDataHolder {
-
-	enum Type {
-		Flag,
-		Symbol
-	}
-	Type getType();
-
-	enum Modifier {
-		Default,
-		Global,
-		Lookahead,
-		Explicit,
-	}
-	Modifier getModifier();
-
-	/**
-	 * May hold a value of type Boolean, or (reference to) Symbol.
-	 * Or null, if the parameter does not have any default value (unset).
-	 */
-	Object getDefaultValue();
-
-	void appendSuffix(StringBuilder sb, Object value);
+public enum TmaParamModifier {
+	LEXPLICIT,
+	LGLOBAL,
+	LLOOKAHEAD,
 }

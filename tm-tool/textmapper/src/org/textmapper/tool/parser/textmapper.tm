@@ -117,6 +117,7 @@ Lnonempty: /nonempty/		(soft)
 
 Lglobal: /global/		    (soft)
 Lexplicit: /explicit/		(soft)
+Llookahead: /lookahead/		(soft)
 Lparam: /param/			    (soft)
 Lflag: /flag/				(soft)
 
@@ -269,8 +270,14 @@ implements ::=
 assoc ::=
 	  Lleft | Lright | Lnonassoc ;
 
+param_modifier ::=
+	  Lexplicit
+	| Lglobal
+	| Llookahead
+;
+
 template_param returns grammar_part ::=
-	  '%' (explicit=Lexplicit | global=Lglobal)? param_type name=identifier ('=' param_value)? ';'
+	  '%' modifier=param_modifier? param_type name=identifier ('=' param_value)? ';'
 ;
 
 directive returns grammar_part ::=

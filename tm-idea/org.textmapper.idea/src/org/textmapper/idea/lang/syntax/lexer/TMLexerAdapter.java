@@ -264,6 +264,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return KW_EXPLICIT;
 			case Tokens.Lglobal:
 				return KW_GLOBAL;
+			case Tokens.Llookahead:
+				return KW_LOOKAHEAD;
 			case Tokens.Lparam:
 				return KW_PARAM;
 			case Tokens.Lflag:

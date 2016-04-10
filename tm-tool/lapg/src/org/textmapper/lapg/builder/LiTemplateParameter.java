@@ -27,14 +27,14 @@ public class LiTemplateParameter extends LiUserDataHolder
 	private final String name;
 	private final Object defaultValue;
 	private final SourceElement origin;
-	private final Forward p;
+	private final Modifier m;
 
 	public LiTemplateParameter(Type type, String name, Object defaultValue,
-							   Forward p, SourceElement origin) {
+							   TemplateParameter.Modifier m, SourceElement origin) {
 		this.type = type;
 		this.name = name;
 		this.defaultValue = defaultValue;
-		this.p = p;
+		this.m = m;
 		this.origin = origin;
 	}
 
@@ -44,8 +44,8 @@ public class LiTemplateParameter extends LiUserDataHolder
 	}
 
 	@Override
-	public Forward getFwdStrategy() {
-		return p;
+	public Modifier getModifier() {
+		return m;
 	}
 
 	@Override

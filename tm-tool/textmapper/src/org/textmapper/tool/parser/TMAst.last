@@ -290,16 +290,27 @@ assoc  : Assoc ::=
   | this=Lnonassoc as Assoc.LNONASSOC
 ;
 
+enum ParamModifier {
+	LEXPLICIT,
+	LGLOBAL,
+	LLOOKAHEAD
+}
+
+param_modifier  : ParamModifier ::=
+	this=Lexplicit as ParamModifier.LEXPLICIT
+  | this=Lglobal as ParamModifier.LGLOBAL
+  | this=Llookahead as ParamModifier.LLOOKAHEAD
+;
+
 class TemplateParam : GrammarPart {
-	boolean explicit;
-	boolean global;
+	ParamModifier modifier;
 	ParamType paramType;
 	Identifier name;
 	ParamValue paramValue;
 }
 
 template_param  : TemplateParam ::=
-	this=new.TemplateParam: '%' (explicit=Lexplicit as true | global=Lglobal as true)? paramType=param_type name=identifier ('=' paramValue=param_value)? ';'
+	this=new.TemplateParam: '%' modifier=param_modifier? paramType=param_type name=identifier ('=' paramValue=param_value)? ';'
 ;
 
 class DirectivePrio : GrammarPart {

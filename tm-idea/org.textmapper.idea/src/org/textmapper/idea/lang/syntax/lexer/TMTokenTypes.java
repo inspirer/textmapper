@@ -119,6 +119,7 @@ public interface TMTokenTypes {
 
 	IElementType KW_EXPLICIT = new TMElementType(Tokens.Lexplicit, "explicit");
 	IElementType KW_GLOBAL = new TMElementType(Tokens.Lglobal, "global");
+	IElementType KW_LOOKAHEAD = new TMElementType(Tokens.Llookahead, "lookahead");
 	IElementType KW_PARAM = new TMElementType(Tokens.Lparam, "param");
 	IElementType KW_FLAG = new TMElementType(Tokens.Lflag, "flag");
 
@@ -147,7 +148,7 @@ public interface TMTokenTypes {
 			KW_RETURNS,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC,
 			KW_GENERATE, KW_ASSERT, KW_EMPTY, KW_NONEMPTY,
-			KW_EXPLICIT, KW_GLOBAL, KW_PARAM, KW_FLAG,
+			KW_EXPLICIT, KW_GLOBAL, KW_LOOKAHEAD, KW_PARAM, KW_FLAG,
 			KW_NOEOI,
 			KW_SOFT, KW_CLASS, KW_INTERFACE, KW_VOID, KW_SPACE, KW_LAYOUT, KW_LANGUAGE, KW_LALR,
 			KW_LEXER, KW_PARSER);
