@@ -185,6 +185,9 @@ public class TMResolver {
 						case LGLOBAL:
 							mod = Modifier.Global;
 							break;
+						case LLOOKAHEAD:
+							mod = Modifier.Lookahead;
+							break;
 					}
 				}
 				TemplateParameter value = createParameter(param.getName().getID(), type,
@@ -270,7 +273,8 @@ public class TMResolver {
 	}
 
 	private TemplateParameter createParameter(String name, TemplateParameter.Type type,
-											  TemplateParameter.Modifier m, ITmaParamValue paramValue,
+											  TemplateParameter.Modifier m,
+											  ITmaParamValue paramValue,
 											  TextSourceElement origin) {
 		Symbol existingSym = symbolsMap.get(name);
 		if (existingSym != null) {
@@ -351,6 +355,7 @@ public class TMResolver {
 				if (param == null) continue;
 
 				if (param.getModifier() != Modifier.Global
+						&& param.getModifier() != Modifier.Lookahead
 						&& (requiredParameters == null || !requiredParameters.contains(param))) {
 					error(arg, "Template parameter " + arg.getName() + " is not expected by "
 							+ ref.getName());
@@ -398,7 +403,10 @@ public class TMResolver {
 			// Forward context parameters, or use defaults.
 			List<TemplateParameter> availParams = templateParams(context);
 			for (TemplateParameter p : requiredParameters) {
-				if (provided.contains(p) || p.getModifier() == Modifier.Global) continue;
+				if (provided.contains(p) || p.getModifier() == Modifier.Global ||
+						p.getModifier() == Modifier.Lookahead) {
+					continue;
+				}
 				if (availParams != null && availParams.contains(p) &&
 						p.getModifier() != Modifier.Explicit) {
 					provided.add(p);

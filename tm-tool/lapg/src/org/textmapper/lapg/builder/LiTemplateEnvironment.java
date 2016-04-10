@@ -17,6 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.TemplateEnvironment;
 import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.api.TemplateParameter.Modifier;
 
 import java.util.*;
 
@@ -83,6 +84,14 @@ public class LiTemplateEnvironment implements TemplateEnvironment {
 			if (!predicate.include(param)) env = env.extend(param, null);
 		}
 		return env;
+	}
+
+	@Override
+	public boolean hasLookahead() {
+		for (TemplateParameter param : values.keySet()) {
+			if (param.getModifier() == Modifier.Lookahead) return true;
+		}
+		return false;
 	}
 
 	@Override

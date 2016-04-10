@@ -50,4 +50,9 @@ public interface TemplateEnvironment {
 	interface ParameterPredicate {
 		boolean include(TemplateParameter parameter);
 	}
+
+	/**
+	 * @return true if this environment contains any lookahead parameters.
+	 */
+	boolean hasLookahead();
 }

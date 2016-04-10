@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.TemplateParameter.Modifier;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsPart.Kind;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
@@ -112,7 +113,7 @@ class TemplateInstantiator {
 		IntArrayBuilder b = new IntArrayBuilder(true);
 		for (int i = 0; i < nonterminals; i++) {
 			LiNonterminal symbol = (LiNonterminal) symbols[i + terminals];
-			collectDependencies(closure, sb, paramUsage, symbol.getDefinition(), b);
+			collectDependencies(closure, sb, paramUsage, symbol.getDefinition(), b, true);
 			closure.addDependencies(paramUsage[i], b.create(false));
 		}
 		if (!closure.compute()) {
@@ -173,7 +174,8 @@ class TemplateInstantiator {
 
 	private void collectDependencies(SetsClosure closure, SetBuilder sb,
 									 int[] nontermNode, RhsPart p,
-									 IntArrayBuilder result) {
+									 IntArrayBuilder result,
+									 boolean leftmost) {
 		p = RhsUtil.unwrapEx(p, true, false /* cast */, true);
 
 		TemplateParameter param = null;
@@ -220,13 +222,19 @@ class TemplateInstantiator {
 						sb.add(paramIndex.get(arg.getParameter()));
 					}
 				}
-				int[] paramSet = sb.create();
-				if (paramSet.length > 0) {
-					node = closure.addIntersection(new int[]{
-							node,
-							closure.complement(closure.addSet(paramSet, null), null)
-					}, null);
+			}
+			for (TemplateParameter globalParam : params) {
+				if (globalParam.getModifier() == Modifier.Lookahead && !leftmost) {
+					sb.add(paramIndex.get(globalParam));
 				}
+			}
+
+			int[] paramSet = sb.create();
+			if (paramSet.length > 0) {
+				node = closure.addIntersection(new int[]{
+						node,
+						closure.complement(closure.addSet(paramSet, null), null)
+				}, null);
 			}
 
 			result.add(node);
@@ -235,19 +243,32 @@ class TemplateInstantiator {
 		final Iterable<RhsPart> children = RhsUtil.getChildren(p);
 		if (children == null) return;
 
+		switch (p.getKind()) {
+			case Sequence:
+			case Choice:
+			case Assignment:
+			case Conditional:
+			case Cast:
+				break;
+			default:
+				leftmost = false;
+		}
+
 		for (RhsPart child : children) {
-			collectDependencies(closure, sb, nontermNode, child, result);
+			collectDependencies(closure, sb, nontermNode, child, result, leftmost);
+			if (p.getKind() != Kind.Choice) leftmost = false;
 		}
 	}
 
 	private TemplateEnvironment applyArguments(TemplateEnvironment sourceEnv,
 											   Nonterminal target, RhsArgument[] args,
-											   boolean fwdAll) {
+											   boolean fwdAll, boolean leftmost) {
 		final BitSet acceptedParameters = paramUsage.get(target);
 
 		// Remove non-global & unused parameters.
 		TemplateEnvironment env = sourceEnv.filter(
-				parameter -> (fwdAll || parameter.getModifier() == Modifier.Global)
+				parameter -> (fwdAll || parameter.getModifier() == Modifier.Global ||
+						leftmost && parameter.getModifier() == Modifier.Lookahead)
 						&& acceptedParameters.get(paramIndex.get(parameter)));
 
 		if (args == null) return env;
@@ -269,7 +290,8 @@ class TemplateInstantiator {
 	}
 
 	private void instantiateRef(TemplateInstance context, TemplatedSymbolRef ref,
-								Symbol target, RhsArgument[] args, boolean fwdAll) {
+								Symbol target, RhsArgument[] args,
+								boolean fwdAll, boolean leftmost) {
 		if (!(target instanceof Nonterminal)) {
 			if (!target.isTerm()) {
 				throw new UnsupportedOperationException();
@@ -280,12 +302,13 @@ class TemplateInstantiator {
 		}
 
 		Nonterminal nonterm = (Nonterminal) target;
-		TemplateEnvironment env = applyArguments(context.getEnvironment(), nonterm, args, fwdAll);
+		TemplateEnvironment env = applyArguments(
+				context.getEnvironment(), nonterm, args, fwdAll, leftmost);
 		TemplateInstance instance = instantiate(nonterm, env, ref);
 		context.addNonterminalTarget(ref, instance);
 	}
 
-	private void instantiatePart(TemplateInstance context, RhsPart p) {
+	private void instantiatePart(TemplateInstance context, RhsPart p, boolean leftmost) {
 		p = RhsUtil.unwrapEx(p, true, false /* cast */, true);
 		if (p instanceof RhsSymbol) {
 			Symbol target = ((RhsSymbol) p).getTarget();
@@ -300,23 +323,55 @@ class TemplateInstantiator {
 				target = (Symbol) value;
 			}
 			instantiateRef(context, (LiRhsSymbol) p, target,
-					((RhsSymbol) p).getArgs(), ((RhsSymbol) p).isFwdAll());
+					((RhsSymbol) p).getArgs(), ((RhsSymbol) p).isFwdAll(), leftmost);
 			return;
 		}
 		if (p instanceof RhsCast) {
 			instantiateRef(context, (LiRhsCast) p, ((RhsCast) p).getTarget(),
-					((RhsCast) p).getArgs(), false);
+					((RhsCast) p).getArgs(), false, leftmost);
 		} else if (p instanceof RhsSet) {
+			if (context.getEnvironment().hasLookahead()) {
+				problems.add(new LiProblem(p,
+						"Cannot instantiate sets with lookahead parameters."));
+				return;
+			}
 			instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(),
-					((RhsSet) p).getArgs(), false);
+					((RhsSet) p).getArgs(), false /*fwdAll*/, false /*leftmost*/);
 		} else if (p instanceof RhsConditional) {
 			context.getTemplate().setTemplate();
+		} else if (leftmost && p instanceof RhsList && context.getEnvironment().hasLookahead()) {
+			if (((RhsList) p).isRightRecursive()) {
+				problems.add(new LiProblem(p, "Cannot instantiate right recursive lists with " +
+						"lookahead parameters."));
+				return;
+			}
+			// TODO
+			problems.add(new LiProblem(p, "(not implemented) Cannot instantiate lists with " +
+					"lookahead parameters."));
+			return;
+
+		} else if (leftmost && p instanceof RhsOptional &&
+				context.getEnvironment().hasLookahead()) {
+			problems.add(new LiProblem(p, "Cannot instantiate ()? with lookahead parameters."));
+			return;
 		}
 		final Iterable<RhsPart> children = RhsUtil.getChildren(p);
 		if (children == null) return;
 
+		switch (p.getKind()) {
+			case Sequence:
+			case Choice:
+			case Assignment:
+			case Conditional:
+			case Cast:
+				break;
+			default:
+				leftmost = false;
+		}
+
 		for (RhsPart child : children) {
-			instantiatePart(context, child);
+			instantiatePart(context, child, leftmost);
+			if (p.getKind() != Kind.Choice) leftmost = false;
 		}
 	}
 
@@ -344,7 +399,7 @@ class TemplateInstantiator {
 		}
 		TemplateInstance instance;
 		while ((instance = queue.poll()) != null) {
-			instantiatePart(instance, instance.getTemplate().getDefinition());
+			instantiatePart(instance, instance.getTemplate().getDefinition(), true);
 		}
 		for (int i = 0; i < nonterminals; i++) {
 			LiNonterminal nonterm = (LiNonterminal) symbols[i + terminals];
