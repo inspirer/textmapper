@@ -202,8 +202,10 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 %flag Default;
 %flag Return;
 
-%flag NoLet = false;
-%flag NoLetSq = false;
+%lookahead flag NoLet = false;
+%lookahead flag NoLetSq = false;
+%lookahead flag NoObjLiteral = false;
+%lookahead flag NoFuncClass = false;
 
 
 IdentifierName ::=
@@ -232,7 +234,7 @@ IdentifierName ::=
 
 # A.2 Expressions
 
-IdentifierReference<Yield, NoLet> ::=
+IdentifierReference<Yield> ::=
 	  Identifier
 	| [!Yield] 'yield'
 	| [!NoLet] 'let'
@@ -257,15 +259,15 @@ LabelIdentifier<Yield> ::=
 	| 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target'
 ;
 
-PrimaryExpression<Yield, NoLet> ::=
+PrimaryExpression<Yield> ::=
 	  'this'
 	| IdentifierReference
 	| Literal
 	| ArrayLiteral
-	| ObjectLiteral
-	| FunctionExpression
-	| ClassExpression
-	| GeneratorExpression
+	| [!NoObjLiteral] ObjectLiteral
+	| [!NoFuncClass] FunctionExpression
+	| [!NoFuncClass] ClassExpression
+	| [!NoFuncClass] GeneratorExpression
 	| RegularExpressionLiteral
 	| TemplateLiteral
 	| CoverParenthesizedExpressionAndArrowParameterList
@@ -364,7 +366,7 @@ TemplateMiddleList<Yield> ::=
 	| TemplateMiddleList TemplateMiddle Expression<+In>
 ;
 
-MemberExpression<Yield, NoLet, NoLetSq, flag NoLetOnly = false> ::=
+MemberExpression<Yield, flag NoLetOnly = false> ::=
 	  [!NoLetOnly] PrimaryExpression
 	| [NoLetOnly] PrimaryExpression<+NoLet>
 	| MemberExpression<NoLetOnly: NoLetSq> '[' Expression<+In> ']'
@@ -372,7 +374,7 @@ MemberExpression<Yield, NoLet, NoLetSq, flag NoLetOnly = false> ::=
 	| MemberExpression TemplateLiteral
 	| SuperProperty
 	| MetaProperty
-	| 'new' MemberExpression<~NoLet, ~NoLetSq> Arguments
+	| 'new' MemberExpression Arguments
 ;
 
 SuperProperty<Yield> ::=
@@ -388,12 +390,12 @@ NewTarget ::=
 	  'new' '.' 'target'
 ;
 
-NewExpression<Yield, NoLet, NoLetSq> ::=
+NewExpression<Yield> ::=
 	  MemberExpression
-	| 'new' NewExpression<~NoLet, ~NoLetSq>
+	| 'new' NewExpression
 ;
 
-CallExpression<Yield, NoLet, NoLetSq> ::=
+CallExpression<Yield> ::=
 	  MemberExpression Arguments
 	| SuperCall
 	| CallExpression Arguments
@@ -419,8 +421,8 @@ ArgumentList<Yield> ::=
 ;
 
 LeftHandSideExpression<Yield> ::=
-	  NewExpression<+NoLet>
-	| CallExpression<+NoLet>
+	  NewExpression
+	| CallExpression
 ;
 
 PostfixExpression<Yield> ::=
@@ -666,10 +668,7 @@ EmptyStatement ::=
 	  ';' ;
 
 ExpressionStatement<Yield> ::=
-# TODO: -- ClassExpression, FunctionExpression, GeneratorExpression, ObjectLiteral
-	lookahead1
-	/* lookahead != {'{', function, class, let '[' } */ Expression<+In> ';'
-;
+	Expression<+In, +NoFuncClass, +NoObjLiteral, +NoLetSq> ';' ;
 
 %right 'else';
 
@@ -681,13 +680,13 @@ IfStatement<Yield, Return> ::=
 IterationStatement<Yield, Return> ::=
 	  'do' Statement 'while' '(' Expression<+In> ')' ';'
 	| 'while' '(' Expression<+In> ')' Statement
-	| 'for' '(' Expressionopt<~In> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
+	| 'for' '(' Expressionopt<~In,+NoLetSq> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
 	| 'for' '(' 'var' VariableDeclarationList<~In> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
 	| 'for' '(' LexicalDeclaration<~In> Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
-	| 'for' '(' LeftHandSideExpression 'in' Expression<+In> ')' Statement
+	| 'for' '(' LeftHandSideExpression<+NoLetSq> 'in' Expression<+In> ')' Statement
 	| 'for' '(' 'var' ForBinding 'in' Expression<+In> ')' Statement
 	| 'for' '(' ForDeclaration 'in' Expression<+In> ')' Statement
-	| 'for' '(' LeftHandSideExpression 'of' AssignmentExpression<+In> ')' Statement
+	| 'for' '(' lookahead1 LeftHandSideExpression<+NoLet> 'of' AssignmentExpression<+In> ')' Statement
 	| 'for' '(' 'var' ForBinding 'of' AssignmentExpression<+In> ')' Statement
 	| 'for' '(' ForDeclaration 'of' AssignmentExpression<+In> ')' Statement
 ;
@@ -826,9 +825,7 @@ ArrowParameters<Yield> ::=
 ;
 
 ConciseBody<In> ::=
-# TODO: -- ObjectLiteral
-	  lookahead1
-			  /* lookahead != { */ AssignmentExpression<~Yield>
+	  AssignmentExpression<~Yield, +NoObjLiteral>
 	| '{' FunctionBody<~Yield> '}'
 ;
 
@@ -967,8 +964,7 @@ ExportDeclaration ::=
 	| 'export' Declaration<~Yield>
 	| 'export' 'default' HoistableDeclaration<+Default,~Yield>
 	| 'export' 'default' ClassDeclaration<+Default,~Yield>
-# TODO: -- FunctionExpression, GeneratorExpression, ClassExpression
-	| 'export' 'default' lookahead1 /* lookahead != { function, class } */ AssignmentExpression<+In,~Yield> ';'
+	| 'export' 'default' AssignmentExpression<+In,~Yield,+NoFuncClass> ';'
 ;
 
 ExportClause ::=
