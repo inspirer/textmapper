@@ -41,23 +41,24 @@ public class SActionParser {
 		"\uffff\uffff\ufffd\uffff\ufff7\uffff\ufff1\uffff\2\0\uffff\uffff\uffff\uffff\1\0" +
 		"\0\0\3\0\ufffe\uffff");
 
-	private static final short[] tmLalr = SActionLexer.unpack_short(18,
-		"\1\uffff\3\5\uffff\ufffe\1\uffff\3\5\uffff\ufffe\1\uffff\3\4\uffff\ufffe");
+	private static final int[] tmLalr = SActionLexer.unpack_int(18,
+		"\1\0\uffff\uffff\3\0\5\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\3\0\5\0\uffff\uffff" +
+		"\ufffe\uffff\1\0\uffff\uffff\3\0\4\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = SActionLexer.unpack_short(9,
-		"\0\0\4\4\6\7\11\14\16");
+	private static final int[] lapg_sym_goto = SActionLexer.unpack_int(9,
+		"\0\0\0\0\4\0\4\0\6\0\7\0\11\0\14\0\16\0");
 
-	private static final short[] lapg_sym_from = SActionLexer.unpack_short(14,
-		"\0\1\2\3\5\6\0\1\2\1\2\3\1\2");
+	private static final int[] lapg_sym_from = SActionLexer.unpack_int(14,
+		"\0\0\1\0\2\0\3\0\5\0\6\0\0\0\1\0\2\0\1\0\2\0\3\0\1\0\2\0");
 
-	private static final short[] lapg_sym_to = SActionLexer.unpack_short(14,
-		"\1\2\2\2\10\11\12\3\3\4\4\7\5\6");
+	private static final int[] lapg_sym_to = SActionLexer.unpack_int(14,
+		"\1\0\2\0\2\0\2\0\10\0\11\0\12\0\3\0\3\0\4\0\4\0\7\0\5\0\6\0");
 
-	private static final short[] tmRuleLen = SActionLexer.unpack_short(6,
-		"\3\2\1\3\1\0");
+	private static final int[] tmRuleLen = SActionLexer.unpack_int(6,
+		"\3\0\2\0\1\0\3\0\1\0\0\0");
 
-	private static final short[] tmRuleSymbol = SActionLexer.unpack_short(6,
-		"\4\5\5\6\7\7");
+	private static final int[] tmRuleSymbol = SActionLexer.unpack_int(6,
+		"\4\0\5\0\5\0\6\0\7\0\7\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",

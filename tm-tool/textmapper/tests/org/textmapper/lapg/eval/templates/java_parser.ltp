@@ -3,10 +3,10 @@ ${template parserCtor-}
 	protected final org.textmapper.lapg.api.@Grammar grammar;
 
 	private final int[] tmAction;
-	private final short[] tmLalr;
-	private final short[] lapg_sym_goto;
-	private final short[] lapg_sym_from;
-	private final short[] lapg_sym_to;
+	private final int[] tmLalr;
+	private final int[] lapg_sym_goto;
+	private final int[] lapg_sym_from;
+	private final int[] lapg_sym_to;
 	private final int[] tmRuleLen;
 	private final int[] tmRuleSymbol;
 

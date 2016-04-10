@@ -305,18 +305,18 @@ ${template parserTables-}
 	private static final int[] tmAction = ${opts.prefix}Lexer.${parser.action->java_pack.packInt()};
 
 ${if self->needActionsTable()-}
-	private static final short[] tmLalr = ${opts.prefix}Lexer.${parser.lalr->java_pack.packShort()};
+	private static final int[] tmLalr = ${opts.prefix}Lexer.${parser.lalr->java_pack.packInt()};
 
 ${end-}
-	private static final short[] lapg_sym_goto = ${opts.prefix}Lexer.${parser.symGoto->java_pack.packShort()};
+	private static final int[] lapg_sym_goto = ${opts.prefix}Lexer.${parser.symGoto->java_pack.packInt()};
 
-	private static final short[] lapg_sym_from = ${opts.prefix}Lexer.${parser.symFrom->java_pack.packShort()};
+	private static final int[] lapg_sym_from = ${opts.prefix}Lexer.${parser.symFrom->java_pack.packInt()};
 
-	private static final short[] lapg_sym_to = ${opts.prefix}Lexer.${parser.symTo->java_pack.packShort()};
+	private static final int[] lapg_sym_to = ${opts.prefix}Lexer.${parser.symTo->java_pack.packInt()};
 
-	private static final short[] tmRuleLen = ${opts.prefix}Lexer.${parser.ruleLength->java_pack.packShort()};
+	private static final int[] tmRuleLen = ${opts.prefix}Lexer.${parser.ruleLength->java_pack.packInt()};
 
-	private static final short[] tmRuleSymbol = ${opts.prefix}Lexer.${parser.left->java_pack.packShort()};
+	private static final int[] tmRuleSymbol = ${opts.prefix}Lexer.${parser.left->java_pack.packInt()};
 
 	protected static final String[] tmSymbolNames = new String[] {
 ${foreach s in parser.symbols-}

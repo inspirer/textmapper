@@ -129,8 +129,8 @@ public abstract class NoparserLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 7, 1, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(5,
-		"\1\2\2\2\3");
+	private static final int[] tmRuleSymbol = unpack_int(5,
+		"\1\0\2\0\2\0\2\0\3\0");
 
 	private static final int tmClassesCount = 8;
 
@@ -242,16 +242,4 @@ public abstract class NoparserLexer {
 		return res;
 	}
 
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
 }

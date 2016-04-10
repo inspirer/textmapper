@@ -29,7 +29,7 @@ public class Builder extends Lalr1 {
 	// tables
 	private int[] action_index;
 	private int nactions;
-	private short[] action_table;
+	private int[] action_table;
 
 	private void verify_grammar() {
 		int i, e, h;
@@ -185,9 +185,9 @@ public class Builder extends Lalr1 {
 	}
 
 	private void action() {
-		List<short[]> actionTables = new ArrayList<>();
+		List<int[]> actionTables = new ArrayList<>();
 		int rr = 0, sr = 0;
-		short[] actionset = new short[nterms], next = new short[nterms];
+		int[] actionset = new int[nterms], next = new int[nterms];
 		ConflictBuilder conflicts = new ConflictBuilder(nterms);
 		int i, e;
 
@@ -222,14 +222,14 @@ public class Builder extends Lalr1 {
 
 					assert next[termSym] == -2;
 					next[termSym] = -1;
-					actionset[setsize++] = (short) termSym;
+					actionset[setsize++] = termSym;
 
 					// shift soft terms
 					if (classterm[termSym] == -1 && !t.softConflicts) {
 						for (int soft = softterms[termSym]; soft != -1; soft = softterms[soft]) {
 							assert next[soft] == -2;
 							next[soft] = -1;
-							actionset[setsize++] = (short) soft;
+							actionset[setsize++] = soft;
 						}
 					}
 				}
@@ -252,7 +252,7 @@ public class Builder extends Lalr1 {
 									if (next[termSym] == -2) {
 										// OK
 										next[termSym] = larule[i];
-										actionset[setsize++] = (short) termSym;
+										actionset[setsize++] = termSym;
 									} else {
 										addReduce(next, termSym, larule[i], conflicts);
 									}
@@ -287,7 +287,7 @@ public class Builder extends Lalr1 {
 				}
 
 				// insert into action_table
-				short[] stateActions = new short[2 * (setsize + 1)];
+				int[] stateActions = new int[2 * (setsize + 1)];
 				action_index[t.number] = -3 - nactions;
 				e = 0;
 				for (i = 0; i < setsize; i++) {
@@ -306,15 +306,15 @@ public class Builder extends Lalr1 {
 		}
 
 		e = 0;
-		action_table = new short[nactions];
-		for (short[] stateActions : actionTables) {
+		action_table = new int[nactions];
+		for (int[] stateActions : actionTables) {
 			for (i = 0; i < stateActions.length; i++) {
 				action_table[e++] = stateActions[i];
 			}
 		}
 	}
 
-	private void addReduce(short[] next, int termSym, short rule, ConflictBuilder builder) {
+	private void addReduce(int[] next, int termSym, int rule, ConflictBuilder builder) {
 		if (builder.hasConflict(termSym)) {
 			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
 

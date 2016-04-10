@@ -26,23 +26,27 @@ public class EoiParser {
 		"\uffff\uffff\1\0\ufffd\uffff\0\0\uffff\uffff\ufff7\uffff\uffff\uffff\uffff\uffff" +
 		"\uffff\uffff\ufff1\uffff\5\0\uffff\uffff\2\0\uffff\uffff\4\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] tmLalr = EoiLexer.unpack_short(22,
-		"\1\uffff\3\7\uffff\ufffe\4\uffff\3\6\uffff\ufffe\10\uffff\0\3\3\3\4\3\uffff\ufffe");
+	private static final int[] tmLalr = EoiLexer.unpack_int(22,
+		"\1\0\uffff\uffff\3\0\7\0\uffff\uffff\ufffe\uffff\4\0\uffff\uffff\3\0\6\0\uffff\uffff" +
+		"\ufffe\uffff\10\0\uffff\uffff\0\0\3\0\3\0\3\0\4\0\3\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = EoiLexer.unpack_short(17,
-		"\0\1\6\10\11\12\12\12\15\16\16\16\16\17\22\23\24");
+	private static final int[] lapg_sym_goto = EoiLexer.unpack_int(17,
+		"\0\0\1\0\6\0\10\0\11\0\12\0\12\0\12\0\15\0\16\0\16\0\16\0\16\0\17\0\22\0\23\0\24" +
+		"\0");
 
-	private static final short[] lapg_sym_from = EoiLexer.unpack_short(20,
-		"\17\0\2\7\10\15\4\13\6\5\0\7\15\11\0\0\7\15\2\2");
+	private static final int[] lapg_sym_from = EoiLexer.unpack_int(20,
+		"\17\0\0\0\2\0\7\0\10\0\15\0\4\0\13\0\6\0\5\0\0\0\7\0\15\0\11\0\0\0\0\0\7\0\15\0\2" +
+		"\0\2\0");
 
-	private static final short[] lapg_sym_to = EoiLexer.unpack_short(20,
-		"\20\1\4\1\13\1\7\15\11\10\2\2\2\14\17\3\12\16\5\6");
+	private static final int[] lapg_sym_to = EoiLexer.unpack_int(20,
+		"\20\0\1\0\4\0\1\0\13\0\1\0\7\0\15\0\11\0\10\0\2\0\2\0\2\0\14\0\17\0\3\0\12\0\16\0" +
+		"\5\0\6\0");
 
-	private static final short[] tmRuleLen = EoiLexer.unpack_short(8,
-		"\1\1\4\3\5\3\1\0");
+	private static final int[] tmRuleLen = EoiLexer.unpack_int(8,
+		"\1\0\1\0\4\0\3\0\5\0\3\0\1\0\0\0");
 
-	private static final short[] tmRuleSymbol = EoiLexer.unpack_short(8,
-		"\14\15\15\15\16\16\17\17");
+	private static final int[] tmRuleSymbol = EoiLexer.unpack_int(8,
+		"\14\0\15\0\15\0\15\0\16\0\16\0\17\0\17\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",

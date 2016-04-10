@@ -192,8 +192,9 @@ public class TypesLexer {
 		29, 29, 8, 14, 7, 9, 29, 29, 29, 29, 29, 23, 1, 24, 1, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(27,
-		"\1\2\3\4\5\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32");
+	private static final int[] tmRuleSymbol = unpack_int(27,
+		"\1\0\2\0\3\0\4\0\5\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20\0\21" +
+		"\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0");
 
 	private static final int tmClassesCount = 32;
 
@@ -369,16 +370,4 @@ public class TypesLexer {
 		return res;
 	}
 
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
 }

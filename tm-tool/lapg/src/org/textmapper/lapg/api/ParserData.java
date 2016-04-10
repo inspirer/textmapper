@@ -30,13 +30,13 @@ public interface ParserData {
 
 	int getStatesCount();
 
-	short[] getSymGoto();
+	int[] getSymGoto();
 
-	short[] getSymFrom();
+	int[] getSymFrom();
 
-	short[] getSymTo();
+	int[] getSymTo();
 
-	short[] getLalr();
+	int[] getLalr();
 
 	int[] getAction();
 

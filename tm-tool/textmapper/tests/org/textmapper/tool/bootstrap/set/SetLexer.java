@@ -134,8 +134,8 @@ public class SetLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(13,
-		"\1\2\3\4\5\6\7\10\11\12\13\14\15");
+	private static final int[] tmRuleSymbol = unpack_int(13,
+		"\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0");
 
 	private static final int tmClassesCount = 15;
 
@@ -257,16 +257,4 @@ public class SetLexer {
 		return res;
 	}
 
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
 }

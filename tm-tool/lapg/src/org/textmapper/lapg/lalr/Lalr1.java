@@ -23,8 +23,8 @@ import java.util.Arrays;
 
 class Lalr1 extends LR0 {
 
-	public static class Short {
-		short value;
+	static class Short {
+		int value;
 		Short next;
 	}
 
@@ -34,14 +34,14 @@ class Lalr1 extends LR0 {
 
 	// LALR
 
-	protected short[] larule /* index in LA -> rule */, laindex /* state -> index in LA */;
-	protected int[] LA /* (state,rule to reduce in state) -> setof(term) */;
-	protected short[] term_goto /* sym -> index [nsyms + 1] */, term_from, term_to /* [ntgotos + ngotos] for each shift: state->state */;
+	int[] larule /* index in LA -> rule */, laindex /* state -> index in LA */;
+	int[] LA /* (state,rule to reduce in state) -> setof(term) */;
+	int[] term_goto /* sym -> index [nsyms + 1] */, term_from, term_to /* [ntgotos + ngotos] for each shift: state->state */;
 
 	private int maxrpart /* max len of rule's right part */, ngotos, ntgotos;
 	private Short[] lookback /* [number of available non-LR0 reductions] */;
-	private short[] edge;
-	private short[][] graph;
+	private int[] edge;
+	private int[][] graph;
 	private int[] follow /* ngotos ->setof(term) */;
 
 	protected void buildLalr() {
@@ -55,8 +55,8 @@ class Lalr1 extends LR0 {
 			term_goto[i] -= ntgotos;
 		}
 
-		edge = new short[ngotos + 1];
-		graph = new short[ngotos][];
+		edge = new int[ngotos + 1];
+		graph = new int[ngotos][];
 
 		init_follow();
 		build_follow();
@@ -108,9 +108,9 @@ class Lalr1 extends LR0 {
 		}
 
 		// allocate
-		laindex = new short[nstates + 1];
-		laindex[nstates] = (short) e;
-		larule = new short[e];
+		laindex = new int[nstates + 1];
+		laindex[nstates] = e;
+		larule = new int[e];
 		lookback = new Short[e];
 		LA = new int[e * termset];
 
@@ -119,7 +119,7 @@ class Lalr1 extends LR0 {
 
 		// fills: larule, laindex
 		for (i = 0, t = first; t != null; t = t.next) {
-			laindex[t.number] = (short) i;
+			laindex[t.number] = i;
 			if (!t.LR0) {
 				for (k = 0; k < t.nreduce; k++) {
 					larule[i++] = t.reduce[k];
@@ -133,7 +133,7 @@ class Lalr1 extends LR0 {
 	private void init_goto() {
 		int i, e, symnum;
 
-		term_goto = new short[nsyms + 1];
+		term_goto = new int[nsyms + 1];
 		int[] symshiftCounter = new int[nsyms];
 		Arrays.fill(symshiftCounter, 0);
 
@@ -155,28 +155,28 @@ class Lalr1 extends LR0 {
 		}
 
 		for (e = i = 0; i < nsyms; i++) {
-			term_goto[i] = (short) e;
+			term_goto[i] = e;
 			e += symshiftCounter[i];
 			symshiftCounter[i] = term_goto[i];
 		}
-		term_goto[nsyms] = (short) ngotos;
-		term_from = new short[ngotos];
-		term_to = new short[ngotos];
+		term_goto[nsyms] = ngotos;
+		term_from = new int[ngotos];
+		term_to = new int[ngotos];
 
 		for (State t = first; t != null; t = t.next) {
 			for (i = t.nshifts - 1; i >= 0; i--) {
 				int newstate = t.shifts[i];
 				symnum = state[newstate].symbol;
 				e = symshiftCounter[symnum]++;
-				term_from[e] = (short) t.number;
-				term_to[e] = (short) newstate;
+				term_from[e] = t.number;
+				term_to[e] = newstate;
 
 				// handle soft terms
 				if(symnum < nterms && classterm[symnum] == -1 && !t.softConflicts) {
 					for (int soft = softterms[symnum]; soft != -1; soft = softterms[soft]) {
 						e = symshiftCounter[soft]++;
-						term_from[e] = (short) t.number;
-						term_to[e] = (short) newstate;
+						term_from[e] = t.number;
+						term_to[e] = newstate;
 					}
 				}
 			}
@@ -210,7 +210,7 @@ class Lalr1 extends LR0 {
 
 
 	// add goto number to rule lookback list
-	private void add_lookback(int state, int rule, short gotono) {
+	private void add_lookback(int state, int rule, int gotono) {
 		int i = laindex[state], max = laindex[state + 1];
 
 		for (; i < max; i++) {
@@ -230,14 +230,14 @@ class Lalr1 extends LR0 {
 	// builds in-rule follow set, processes empty symbols
 	private void init_follow() {
 		int settrav = 0, nedges = 0;
-		short[][] empties = graph;
+		int[][] empties = graph;
 
 		follow = new int[ngotos * termset];
 		Arrays.fill(follow, 0);
 
 		for (int i = 0; i < ngotos; i++, settrav += termset) {
 			int st = term_to[ntgotos + i];
-			short[] shifts = state[st].shifts;
+			int[] shifts = state[st].shifts;
 			int nshifts = state[st].nshifts, shifts_ind = 0;
 
 			// handle goto for no-eoi input => add all terms into follow
@@ -268,12 +268,12 @@ class Lalr1 extends LR0 {
 			for (; shifts_ind < nshifts; shifts_ind++) {
 				int k = state[shifts[shifts_ind]].symbol;
 				if (sym_empty[k]) {
-					edge[nedges++] = (short) select_goto(st, k);
+					edge[nedges++] = select_goto(st, k);
 				}
 			}
 
 			if (nedges != 0) {
-				empties[i] = new short[nedges + 1];
+				empties[i] = new int[nedges + 1];
 				System.arraycopy(edge, 0, empties[i], 0, nedges);
 				empties[i][nedges] = -1;
 				nedges = 0;
@@ -302,25 +302,25 @@ class Lalr1 extends LR0 {
 	// builds 1) lookback 2) cross-rule follow graph & updates follow set
 	private void build_follow() {
 		int i, length, currstate, nedges = 0, rpart;
-		short[] states = new short[maxrpart + 1];
+		int[] states = new int[maxrpart + 1];
 
 		for (i = 0; i < ngotos; i++) {
 			int fstate = term_from[ntgotos + i];
 			int symbol = state[term_to[ntgotos + i]].symbol;
 
 			for (int rule : derives[symbol - nterms]) {
-				currstate = states[0] = (short) fstate;
+				currstate = states[0] = fstate;
 				length = 1;
 
 				// iterate through rule's states
 				for (rpart = rindex[rule]; rright[rpart] >= 0; rpart++) {
 					currstate = state_by_symbol(currstate, rright[rpart]);
-					states[length++] = (short) currstate;
+					states[length++] = currstate;
 				}
 
 				if (!state[currstate].LR0) {
 					// a) lookback: rule's lookahead symbols include follow set for the current goto (i)
-					add_lookback(currstate, rule, (short) i);
+					add_lookback(currstate, rule, i);
 				}
 
 				for (length--; ; ) {
@@ -329,7 +329,7 @@ class Lalr1 extends LR0 {
 						currstate = states[--length];
 
 						// b) inner rule's goto inherits outer follow set
-						edge[nedges++] = (short) select_goto(currstate, rright[rpart]);
+						edge[nedges++] = select_goto(currstate, rright[rpart]);
 						if (sym_empty[rright[rpart]]) {
 							continue;
 						}
@@ -339,7 +339,7 @@ class Lalr1 extends LR0 {
 			}
 
 			if (nedges != 0) {
-				graph[i] = new short[nedges + 1];
+				graph[i] = new int[nedges + 1];
 				System.arraycopy(edge, 0, graph[i], 0, nedges);
 				graph[i][nedges] = -1;
 				nedges = 0;
@@ -429,7 +429,7 @@ class Lalr1 extends LR0 {
 		status.debug("\nGraph:\n");
 
 		for (int i = 0; i < ngotos; i++) {
-			short[] p = graph[i];
+			int[] p = graph[i];
 			if (p != null) {
 				status.debug(MessageFormat.format(" {0,number,####}: ", i));
 				for (int e = 0; p[e] >= 0; e++) {
@@ -477,9 +477,9 @@ class Lalr1 extends LR0 {
 	}
 
 	// reverts all edges in graph
-	private static short[][] transpose_graph(short[][] graph, final int n) {
+	private static int[][] transpose_graph(int[][] graph, final int n) {
 		int[] nedges = new int[n];
-		short[] p;
+		int[] p;
 		int i;
 
 		// calculate new row sizes
@@ -494,18 +494,18 @@ class Lalr1 extends LR0 {
 		}
 
 		// allocate new graph
-		short[][] newgraph = new short[n][];
+		int[][] newgraph = new int[n][];
 		for (i = 0; i < n; i++) {
-			newgraph[i] = (nedges[i] != 0) ? new short[nedges[i] + 1] : null;
+			newgraph[i] = (nedges[i] != 0) ? new int[nedges[i] + 1] : null;
 		}
 
 		// fill new graph
-		Arrays.fill(nedges, (short) 0);
+		Arrays.fill(nedges, 0);
 		for (i = 0; i < n; i++) {
 			p = graph[i];
 			if (p != null) {
 				for (int e = 0; p[e] >= 0; e++) {
-					newgraph[p[e]][nedges[p[e]]++] = (short) i;
+					newgraph[p[e]][nedges[p[e]]++] = i;
 				}
 			}
 		}
@@ -523,19 +523,19 @@ class Lalr1 extends LR0 {
 	// graph closure // //////////////////////////////////////////////////////////////////////////////
 
 	private int infinity, top;
-	private short[][] relation;
-	private short[] gc_index, gc_vertices;
+	private int[][] relation;
+	private int[] gc_index, gc_vertices;
 
 	// process one vertex
 	private void do_vertex(int i) {
 		int height, k;
 
-		gc_vertices[++top] = (short) i;
+		gc_vertices[++top] = i;
 		height = top;
-		gc_index[i] = (short) top;
+		gc_index[i] = top;
 
 		if (relation[i] != null) {
-			short[] row = relation[i];
+			int[] row = relation[i];
 			for (int e = 0; row[e] >= 0; e++) {
 				if (gc_index[row[e]] == 0) {
 					do_vertex(row[e]);
@@ -555,7 +555,7 @@ class Lalr1 extends LR0 {
 		if (gc_index[i] == height) {
 			for (; ; ) {
 				int e = gc_vertices[top--];
-				gc_index[e] = (short) infinity;
+				gc_index[e] = infinity;
 				if (i == e) {
 					break;
 				}
@@ -568,12 +568,12 @@ class Lalr1 extends LR0 {
 	}
 
 	// modifies: follow (in according to digraph)
-	private void graph_closure(short[][] relation) {
+	private void graph_closure(int[][] relation) {
 		int i;
 
 		this.relation = relation;
-		gc_index = new short[ngotos];
-		gc_vertices = new short[ngotos + 1];
+		gc_index = new int[ngotos];
+		gc_vertices = new int[ngotos + 1];
 		infinity = ngotos + 2;
 		top = 0;
 

@@ -34,12 +34,6 @@ ${call unpackCountValue(false)-}
 		return unpack_vc_short(size, st);
 	}
 
-${call unpackShort-}
-
-	public static short[] test_unpack_short(int size, String... st) {
-		return unpack_short(size, st);
-	}
-
 ${call unpackInt-}
 
 	public static int[] test_unpack_int(int size, String... st) {

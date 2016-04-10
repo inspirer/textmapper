@@ -27,22 +27,28 @@ public class JsonParser {
 		"\13\0\uffff\uffff\16\0\17\0\uffff\uffff\uffff\uffff\10\0\uffff\uffff\15\0\uffff\uffff" +
 		"\12\0\14\0\20\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = JsonLexer.unpack_short(21,
-		"\0\1\5\7\13\15\16\20\20\26\32\36\42\46\47\53\57\61\62\66\67");
+	private static final int[] lapg_sym_goto = JsonLexer.unpack_int(21,
+		"\0\0\1\0\5\0\7\0\13\0\15\0\16\0\20\0\20\0\26\0\32\0\36\0\42\0\46\0\47\0\53\0\57\0" +
+		"\61\0\62\0\66\0\67\0");
 
-	private static final short[] lapg_sym_from = JsonLexer.unpack_short(55,
-		"\32\0\2\22\26\1\16\0\2\22\26\2\21\14\16\21\0\1\2\22\24\26\0\2\22\26\0\2\22\26\0\2" +
-		"\22\26\0\2\22\26\0\0\2\22\26\0\2\22\26\1\24\1\0\2\22\26\2");
+	private static final int[] lapg_sym_from = JsonLexer.unpack_int(55,
+		"\32\0\0\0\2\0\22\0\26\0\1\0\16\0\0\0\2\0\22\0\26\0\2\0\21\0\14\0\16\0\21\0\0\0\1" +
+		"\0\2\0\22\0\24\0\26\0\0\0\2\0\22\0\26\0\0\0\2\0\22\0\26\0\0\0\2\0\22\0\26\0\0\0\2" +
+		"\0\22\0\26\0\0\0\0\0\2\0\22\0\26\0\0\0\2\0\22\0\26\0\1\0\24\0\1\0\0\0\2\0\22\0\26" +
+		"\0\2\0");
 
-	private static final short[] lapg_sym_to = JsonLexer.unpack_short(55,
-		"\33\1\1\1\1\13\23\2\2\2\2\17\25\22\24\26\3\14\3\3\14\3\4\4\4\4\5\5\5\5\6\6\6\6\7" +
-		"\7\7\7\32\10\20\27\31\11\11\11\11\15\30\16\12\12\12\12\21");
+	private static final int[] lapg_sym_to = JsonLexer.unpack_int(55,
+		"\33\0\1\0\1\0\1\0\1\0\13\0\23\0\2\0\2\0\2\0\2\0\17\0\25\0\22\0\24\0\26\0\3\0\14\0" +
+		"\3\0\3\0\14\0\3\0\4\0\4\0\4\0\4\0\5\0\5\0\5\0\5\0\6\0\6\0\6\0\6\0\7\0\7\0\7\0\7\0" +
+		"\32\0\10\0\20\0\27\0\31\0\11\0\11\0\11\0\11\0\15\0\30\0\16\0\12\0\12\0\12\0\12\0" +
+		"\21\0");
 
-	private static final short[] tmRuleLen = JsonLexer.unpack_short(17,
-		"\1\1\1\1\1\1\1\1\3\2\3\1\3\3\2\1\3");
+	private static final int[] tmRuleLen = JsonLexer.unpack_int(17,
+		"\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\3\0\2\0\3\0\1\0\3\0\3\0\2\0\1\0\3\0");
 
-	private static final short[] tmRuleSymbol = JsonLexer.unpack_short(17,
-		"\15\16\16\16\16\16\16\16\17\17\20\21\21\22\22\23\23");
+	private static final int[] tmRuleSymbol = JsonLexer.unpack_int(17,
+		"\15\0\16\0\16\0\16\0\16\0\16\0\16\0\16\0\17\0\17\0\20\0\21\0\21\0\22\0\22\0\23\0" +
+		"\23\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",

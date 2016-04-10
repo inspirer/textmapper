@@ -28,28 +28,32 @@ public class SetParser {
 		"\uffff\37\0\35\0\uffff\uffff\21\0\22\0\uffff\uffff\3\0\34\0\33\0\23\0\24\0\25\0\26" +
 		"\0\27\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] tmLalr = SetLexer.unpack_short(20,
-		"\2\uffff\13\36\uffff\ufffe\3\uffff\4\uffff\13\40\uffff\ufffe\4\uffff\13\40\uffff" +
-		"\ufffe");
+	private static final int[] tmLalr = SetLexer.unpack_int(20,
+		"\2\0\uffff\uffff\13\0\36\0\uffff\uffff\ufffe\uffff\3\0\uffff\uffff\4\0\uffff\uffff" +
+		"\13\0\40\0\uffff\uffff\ufffe\uffff\4\0\uffff\uffff\13\0\40\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = SetLexer.unpack_short(30,
-		"\0\1\5\11\15\20\23\24\24\26\30\31\32\33\33\34\35\37\40\42\43\43\44\45\46\46\46\47" +
-		"\50\52");
+	private static final int[] lapg_sym_goto = SetLexer.unpack_int(30,
+		"\0\0\1\0\5\0\11\0\15\0\20\0\23\0\24\0\24\0\26\0\30\0\31\0\32\0\33\0\33\0\34\0\35" +
+		"\0\37\0\40\0\42\0\43\0\43\0\44\0\45\0\46\0\46\0\46\0\47\0\50\0\52\0");
 
-	private static final short[] lapg_sym_from = SetLexer.unpack_short(42,
-		"\44\0\4\6\33\6\7\24\33\0\4\6\21\6\21\25\0\4\6\6\20\33\24\33\4\22\30\0\0\0\4\20\0" +
-		"\4\6\24\33\24\4\7\21\25");
+	private static final int[] lapg_sym_from = SetLexer.unpack_int(42,
+		"\44\0\0\0\4\0\6\0\33\0\6\0\7\0\24\0\33\0\0\0\4\0\6\0\21\0\6\0\21\0\25\0\0\0\4\0\6" +
+		"\0\6\0\20\0\33\0\24\0\33\0\4\0\22\0\30\0\0\0\0\0\0\0\4\0\20\0\0\0\4\0\6\0\24\0\33" +
+		"\0\24\0\4\0\7\0\21\0\25\0");
 
-	private static final short[] lapg_sym_to = SetLexer.unpack_short(42,
-		"\45\1\1\12\37\13\21\31\40\2\2\14\25\15\26\26\3\3\16\17\23\41\32\42\7\30\36\4\44\5" +
-		"\10\24\6\6\20\33\43\34\11\22\27\35");
+	private static final int[] lapg_sym_to = SetLexer.unpack_int(42,
+		"\45\0\1\0\1\0\12\0\37\0\13\0\21\0\31\0\40\0\2\0\2\0\14\0\25\0\15\0\26\0\26\0\3\0" +
+		"\3\0\16\0\17\0\23\0\41\0\32\0\42\0\7\0\30\0\36\0\4\0\44\0\5\0\10\0\24\0\6\0\6\0\20" +
+		"\0\33\0\43\0\34\0\11\0\22\0\27\0\35\0");
 
-	private static final short[] tmRuleLen = SetLexer.unpack_short(33,
-		"\2\1\2\4\1\1\1\1\1\1\1\1\1\1\2\2\2\1\1\1\1\1\1\2\2\1\4\4\3\2\0\1\0");
+	private static final int[] tmRuleLen = SetLexer.unpack_int(33,
+		"\2\0\1\0\2\0\4\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\2\0\2\0\2\0\1\0\1\0\1\0" +
+		"\1\0\1\0\1\0\2\0\2\0\1\0\4\0\4\0\3\0\2\0\0\0\1\0\0\0");
 
-	private static final short[] tmRuleSymbol = SetLexer.unpack_short(33,
-		"\16\16\17\20\21\22\22\22\23\23\23\23\23\23\24\24\24\25\25\26\26\26\26\27\30\30\31" +
-		"\32\33\33\33\34\34");
+	private static final int[] tmRuleSymbol = SetLexer.unpack_int(33,
+		"\16\0\16\0\17\0\20\0\21\0\22\0\22\0\22\0\23\0\23\0\23\0\23\0\23\0\23\0\24\0\24\0" +
+		"\24\0\25\0\25\0\26\0\26\0\26\0\26\0\27\0\30\0\30\0\31\0\32\0\33\0\33\0\33\0\34\0" +
+		"\34\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",

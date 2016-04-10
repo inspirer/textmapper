@@ -60,7 +60,6 @@ ${end}
 
 ${template unpackRoutines}
 ${call java_pack.unpackInt}
-${call java_pack.unpackShort-}
 ${end}
 
 ${template lexerCtor}
@@ -398,7 +397,7 @@ ${if self->tmStateMapExists()-}
 	};
 
 ${end-}
-	private static final short[] tmRuleSymbol = ${syntax.lexerRuleTokens->java_pack.packShort()};
+	private static final int[] tmRuleSymbol = ${syntax.lexerRuleTokens->java_pack.packInt()};
 
 	private static final int tmClassesCount = ${lex.nchars};
 

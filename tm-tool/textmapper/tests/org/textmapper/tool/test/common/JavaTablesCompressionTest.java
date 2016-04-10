@@ -33,13 +33,6 @@ public class JavaTablesCompressionTest {
 		assertArrayEquals(a, b);
 	}
 
-	private void checkDecompression(short[] a) {
-		List<List<String>> packed = TemplateStaticMethods.packShort(a);
-		String parsed = parsePackedJavaString(packed);
-		short[] b = JavaTemplateRoutines.test_unpack_short(a.length, parsed);
-		assertArrayEquals(a, b);
-	}
-
 	private String parsePackedJavaString(List<List<String>> c) {
 		StringBuilder extractedString = new StringBuilder();
 		for (List<String> slist : c) {
@@ -131,51 +124,6 @@ public class JavaTablesCompressionTest {
 		for(int i = 0; i < s.length; i++) {
 			s[i] = i - 32768;
 		}
-		checkDecompression(s);
-	}
-
-	@Test
-	public void testShortCompression1() {
-		checkDecompression(new short[]{1, 2, 3, 4, 5, 6, 7, 8});
-	}
-
-	@Test
-	public void testShortCompressionEmpty() {
-		checkDecompression(new short[]{});
-	}
-
-	@Test
-	public void testShortCompressionOne() {
-		checkDecompression(new short[]{-100});
-		checkDecompression(new short[]{1});
-	}
-
-	@Test
-	public void testShortCompressionNearZero() {
-		checkDecompression(new short[]{0});
-		checkDecompression(new short[]{-1});
-	}
-
-	@Test
-	public void testShortCompression2() {
-		checkDecompression(new short[]{0, 0, 0});
-		checkDecompression(new short[]{Short.MAX_VALUE});
-	}
-
-	@Test
-	public void testShortCompressionMax() {
-		checkDecompression(new short[]{Short.MAX_VALUE});
-	}
-
-	@Test
-	public void testShortCompressionMin() {
-		checkDecompression(new short[]{Short.MIN_VALUE});
-	}
-
-	@Test
-	public void testShortCompressionLong() {
-		short[] s = new short[32768*4 + 7];
-		Arrays.fill(s, (short) -1);
 		checkDecompression(s);
 	}
 }

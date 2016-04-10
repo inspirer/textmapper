@@ -46,23 +46,24 @@ public class SampleAParser {
 		"\uffff\uffff\uffff\uffff\uffff\uffff\0\0\uffff\uffff\ufffd\uffff\4\0\2\0\ufff5\uffff" +
 		"\uffff\uffff\3\0\1\0\ufffe\uffff\uffff\uffff\ufffe\uffff");
 
-	private static final short[] tmLalr = SampleALexer.unpack_short(14,
-		"\3\uffff\6\uffff\5\6\uffff\ufffe\3\uffff\5\5\uffff\ufffe");
+	private static final int[] tmLalr = SampleALexer.unpack_int(14,
+		"\3\0\uffff\uffff\6\0\uffff\uffff\5\0\6\0\uffff\uffff\ufffe\uffff\3\0\uffff\uffff" +
+		"\5\0\5\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = SampleALexer.unpack_short(12,
-		"\0\1\2\2\6\7\10\11\12\16\17\20");
+	private static final int[] lapg_sym_goto = SampleALexer.unpack_int(12,
+		"\0\0\1\0\2\0\2\0\6\0\7\0\10\0\11\0\12\0\16\0\17\0\20\0");
 
-	private static final short[] lapg_sym_from = SampleALexer.unpack_short(16,
-		"\15\2\0\1\5\10\4\11\5\0\0\1\5\10\5\5");
+	private static final int[] lapg_sym_from = SampleALexer.unpack_int(16,
+		"\15\0\2\0\0\0\1\0\5\0\10\0\4\0\11\0\5\0\0\0\0\0\1\0\5\0\10\0\5\0\5\0");
 
-	private static final short[] lapg_sym_to = SampleALexer.unpack_short(16,
-		"\16\4\2\2\2\2\5\13\6\14\3\15\7\12\10\11");
+	private static final int[] lapg_sym_to = SampleALexer.unpack_int(16,
+		"\16\0\4\0\2\0\2\0\2\0\2\0\5\0\13\0\6\0\14\0\3\0\15\0\7\0\12\0\10\0\11\0");
 
-	private static final short[] tmRuleLen = SampleALexer.unpack_short(7,
-		"\1\5\1\2\1\1\0");
+	private static final int[] tmRuleLen = SampleALexer.unpack_int(7,
+		"\1\0\5\0\1\0\2\0\1\0\1\0\0\0");
 
-	private static final short[] tmRuleSymbol = SampleALexer.unpack_short(7,
-		"\7\10\11\11\11\12\12");
+	private static final int[] tmRuleSymbol = SampleALexer.unpack_int(7,
+		"\7\0\10\0\11\0\11\0\11\0\12\0\12\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",

@@ -53,24 +53,3 @@ unpack_int(${self.size()},
 ${foreach str in util.packInt(self) separator ',\n'-}
 ${foreach spart in str separator ' +\n'-}
 		${spart}${end}${end})${end}
-
-${template unpackShort-}
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
-${end}
-
-${template packShort-}
-unpack_short(${self.size()},
-${foreach str in util.packShort(self) separator ',\n'-}
-${foreach spart in str separator ' +\n'-}
-		${spart}${end}${end})${end}

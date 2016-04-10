@@ -41,10 +41,10 @@ public class GenericParser {
 	protected final Grammar grammar;
 
 	private final int[] tmAction;
-	private final short[] tmLalr;
-	private final short[] lapg_sym_goto;
-	private final short[] lapg_sym_from;
-	private final short[] lapg_sym_to;
+	private final int[] tmLalr;
+	private final int[] lapg_sym_goto;
+	private final int[] lapg_sym_from;
+	private final int[] lapg_sym_to;
 	private final int[] tmRuleLen;
 	private final int[] tmRuleSymbol;
 

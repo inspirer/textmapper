@@ -161,8 +161,8 @@ public class JsonLexer {
 		1, 1, 17, 21, 16, 10, 1, 1, 1, 1, 1, 2, 1, 3, 1, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(12,
-		"\1\2\3\4\5\6\7\10\11\12\13\14");
+	private static final int[] tmRuleSymbol = unpack_int(12,
+		"\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0");
 
 	private static final int tmClassesCount = 29;
 
@@ -300,16 +300,4 @@ public class JsonLexer {
 		return res;
 	}
 
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
 }

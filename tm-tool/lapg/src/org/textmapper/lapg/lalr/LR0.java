@@ -28,7 +28,6 @@ import java.util.*;
 class LR0 extends ContextFree {
 
 	protected static final int BITS = 32;
-	protected static final int MAX_WORD = 0x7ff0;
 	private static final int STATE_TABLE_SIZE = 1037;
 
 	// LR0 engine internals
@@ -36,11 +35,11 @@ class LR0 extends ContextFree {
 	private int varset, ruleset;
 	private int[] ruleforvar /* nvars: set of rules (closure) */;
 
-	private short[] toreduce, closure /* [items] */;
+	private int[] toreduce, closure /* [items] */;
 	private int closureend /* size of closure */;
-	private short[][] symbase /* nsyms: array of size symbasesize[i] = items after sym shift */;
+	private int[][] symbase /* nsyms: array of size symbasesize[i] = items after sym shift */;
 	private int[] symbasesize;
-	private short[] symcanshift /* list of symbols to shift [nsyms] */;
+	private int[] symcanshift /* list of symbols to shift [nsyms] */;
 	private int[] closurebit /* list of rules, added to closure [ruleset] */;
 	private State[] table;
 	private State current, last;
@@ -86,8 +85,8 @@ class LR0 extends ContextFree {
 		varset = (((nvars) + BITS - 1) / BITS);
 		termset = (((nterms) + BITS - 1) / BITS);
 
-		toreduce = new short[rules + 1];
-		closure = new short[items];
+		toreduce = new int[rules + 1];
+		closure = new int[items];
 		closurebit = new int[ruleset];
 
 		table = new State[STATE_TABLE_SIZE];
@@ -96,8 +95,8 @@ class LR0 extends ContextFree {
 		next_to_final = new State[inputs.length];
 
 		// state transition temporary data
-		short[] symnum = new short[nsyms];
-		Arrays.fill(symnum, (short) 0);
+		int[] symnum = new int[nsyms];
+		Arrays.fill(symnum, 0);
 
 		int i;
 
@@ -107,11 +106,11 @@ class LR0 extends ContextFree {
 			}
 		}
 
-		symbase = new short[nsyms][];
+		symbase = new int[nsyms][];
 		symbasesize = new int[nsyms];
 
 		for (i = 0; i < nsyms; i++) {
-			symbase[i] = new short[symnum[i]];
+			symbase[i] = new int[symnum[i]];
 		}
 		symcanshift = symnum;
 
@@ -208,11 +207,11 @@ class LR0 extends ContextFree {
 			last.nreduce = last.nshifts = last.symbol = last.fromstate = 0;
 			last.next = last.link = null;
 			last.shifts = last.reduce = null;
-			last.elems = new short[]{-1};
+			last.elems = new int[]{-1};
 		}
 	}
 
-	private void build_closure(State state, short[] prev) {
+	private void build_closure(State state, int[] prev) {
 		int e, i;
 
 		if (state.number < inputs.length) {
@@ -249,7 +248,7 @@ class LR0 extends ContextFree {
 						while (prev[prev_index] >= 0 && prev[prev_index] < index) {
 							closure[closureend++] = prev[prev_index++];
 						}
-						closure[closureend++] = (short) index;
+						closure[closureend++] = index;
 					}
 					rule++;
 				}
@@ -263,7 +262,7 @@ class LR0 extends ContextFree {
 
 	private State new_state(int from, int by, int hash, int size, int inputsign) {
 		last = last.next = new State();
-		last.elems = new short[size + 1];
+		last.elems = new int[size + 1];
 		last.link = table[hash % STATE_TABLE_SIZE];
 		table[hash % STATE_TABLE_SIZE] = last;
 		last.fromstate = from;
@@ -283,7 +282,7 @@ class LR0 extends ContextFree {
 	}
 
 	private int goto_state(int symbol) {
-		short[] new_core = symbase[symbol];
+		int[] new_core = symbase[symbol];
 		int size = symbasesize[symbol];
 		int i, hash;
 
@@ -319,24 +318,24 @@ class LR0 extends ContextFree {
 
 	private boolean process_state() {
 		int i, ntoreduce = 0;
-		Arrays.fill(symbasesize, (short) 0);
+		Arrays.fill(symbasesize, 0);
 
 		for (i = 0; i < closureend; i++) {
 			int sym = rright[closure[i]];
 			if (sym >= 0) {
 				int e = symbasesize[sym];
-				symbase[sym][e++] = (short) (closure[i] + 1);
+				symbase[sym][e++] = closure[i] + 1;
 				symbasesize[sym] = e;
 
 			} else {
-				toreduce[ntoreduce++] = (short) (-1 - sym);
+				toreduce[ntoreduce++] = -1 - sym;
 			}
 		}
 
 		int ntoshift = 0;
 		for (i = 0; i < nsyms; i++) {
 			if (symbasesize[i] != 0) {
-				symcanshift[ntoshift++] = (short) i;
+				symcanshift[ntoshift++] = i;
 
 				if (i < nterms && classterm[i] == -1) {
 					checkSoftTerms(i);
@@ -345,16 +344,13 @@ class LR0 extends ContextFree {
 		}
 
 		current.nshifts = ntoshift;
-		current.shifts = (ntoshift != 0) ? new short[ntoshift] : null;
+		current.shifts = (ntoshift != 0) ? new int[ntoshift] : null;
 
 		current.nreduce = ntoreduce;
-		current.reduce = (ntoreduce != 0) ? new short[ntoreduce] : null;
+		current.reduce = (ntoreduce != 0) ? new int[ntoreduce] : null;
 
 		for (i = 0; i < ntoshift; i++) {
-			current.shifts[i] = (short) goto_state(symcanshift[i]);
-			if (current.shifts[i] >= MAX_WORD) {
-				return false;
-			}
+			current.shifts[i] = goto_state(symcanshift[i]);
 		}
 
 		for (i = 0; i < ntoreduce; i++) {
@@ -372,7 +368,7 @@ class LR0 extends ContextFree {
 			assert soft < nterms && classterm[soft] == classTerm;
 			if (symbasesize[soft] != 0) {
 				// soft lexeme conflict
-				short[] core;
+				int[] core;
 				if (conflict == null) {
 					current.softConflicts = true;
 					conflict = softconflicts.addConflict(current.number);
@@ -394,15 +390,15 @@ class LR0 extends ContextFree {
 	private void insert_shift(State t, int tostate) {
 		if (t.shifts != null) {
 			final int symbol = state[tostate].symbol;
-			short[] old = t.shifts;
+			int[] old = t.shifts;
 			int i, e, n = t.nshifts;
 
-			t.shifts = new short[n + 1];
+			t.shifts = new int[n + 1];
 			e = 0;
 			for (i = 0; i < n && state[old[i]].symbol < symbol; i++) {
 				t.shifts[e++] = old[i];
 			}
-			t.shifts[e++] = (short) tostate;
+			t.shifts[e++] = tostate;
 			assert i == n || state[old[i]].symbol != symbol : "internal error: cannot insert shift";
 			for (; i < n; i++) {
 				t.shifts[e++] = old[i];
@@ -411,8 +407,8 @@ class LR0 extends ContextFree {
 
 		} else {
 			t.nshifts = 1;
-			t.shifts = new short[1];
-			t.shifts[0] = (short) tostate;
+			t.shifts = new int[1];
+			t.shifts[0] = tostate;
 
 			if (t.nreduce > 0) {
 				t.LR0 = false;
@@ -532,9 +528,9 @@ class LR0 extends ContextFree {
 		int fromstate, symbol, number, nshifts, nreduce;
 		int inputsign;
 		State link, next;
-		short[] shifts, reduce;
+		int[] shifts, reduce;
 		boolean LR0;
-		short[] elems;
+		int[] elems;
 		boolean softConflicts;
 	}
 }

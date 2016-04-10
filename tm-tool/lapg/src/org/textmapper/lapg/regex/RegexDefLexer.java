@@ -183,9 +183,9 @@ public class RegexDefLexer {
 		0, 1, 2
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(36,
-		"\22\1\2\2\2\2\2\2\2\2\2\2\2\2\3\3\4\5\6\7\10\11\12\13\1\14\15\16\17\20\21\1\23\24" +
-		"\25\1");
+	private static final int[] tmRuleSymbol = unpack_int(36,
+		"\22\0\1\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\3\0\3\0\4\0\5\0\6\0\7\0" +
+		"\10\0\11\0\12\0\13\0\1\0\14\0\15\0\16\0\17\0\20\0\21\0\1\0\23\0\24\0\25\0\1\0");
 
 	private static final int tmClassesCount = 41;
 
@@ -455,16 +455,4 @@ public class RegexDefLexer {
 		return res;
 	}
 
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
 }

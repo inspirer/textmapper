@@ -47,26 +47,31 @@ public class SampleBParser {
 		"\uffff\uffff\11\0\4\0\uffef\uffff\uffff\uffff\uffe3\uffff\uffff\uffff\uffff\uffff" +
 		"\5\0\1\0\uffff\uffff\uffff\uffff\6\0\uffff\uffff\2\0\7\0\10\0\ufffe\uffff");
 
-	private static final short[] tmLalr = SampleBLexer.unpack_short(40,
-		"\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\13\uffff\ufffe\1\uffff\20\uffff\4\uffff" +
-		"\3\uffff\6\12\uffff\ufffe\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\13\uffff\ufffe");
+	private static final int[] tmLalr = SampleBLexer.unpack_int(40,
+		"\1\0\uffff\uffff\20\0\uffff\uffff\4\0\uffff\uffff\3\0\uffff\uffff\13\0\uffff\uffff" +
+		"\6\0\13\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\20\0\uffff\uffff\4\0\uffff\uffff" +
+		"\3\0\uffff\uffff\6\0\12\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\20\0\uffff\uffff" +
+		"\4\0\uffff\uffff\3\0\uffff\uffff\13\0\uffff\uffff\6\0\13\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = SampleBLexer.unpack_short(23,
-		"\0\0\5\5\11\20\22\24\26\31\31\31\33\33\33\33\33\40\41\45\46\50\52");
+	private static final int[] lapg_sym_goto = SampleBLexer.unpack_int(23,
+		"\0\0\0\0\5\0\5\0\11\0\20\0\22\0\24\0\26\0\31\0\31\0\31\0\33\0\33\0\33\0\33\0\33\0" +
+		"\40\0\41\0\45\0\46\0\50\0\52\0");
 
-	private static final short[] lapg_sym_from = SampleBLexer.unpack_short(42,
-		"\1\5\6\13\15\0\6\13\15\1\4\5\6\13\15\16\4\7\14\22\10\17\16\23\25\6\15\1\5\6\13\15" +
-		"\0\0\6\13\15\1\6\15\6\15");
+	private static final int[] lapg_sym_from = SampleBLexer.unpack_int(42,
+		"\1\0\5\0\6\0\13\0\15\0\0\0\6\0\13\0\15\0\1\0\4\0\5\0\6\0\13\0\15\0\16\0\4\0\7\0\14" +
+		"\0\22\0\10\0\17\0\16\0\23\0\25\0\6\0\15\0\1\0\5\0\6\0\13\0\15\0\0\0\0\0\6\0\13\0" +
+		"\15\0\1\0\6\0\15\0\6\0\15\0");
 
-	private static final short[] lapg_sym_to = SampleBLexer.unpack_short(42,
-		"\3\7\10\17\10\1\1\1\1\3\5\7\10\17\10\23\6\15\21\26\16\25\24\27\30\11\11\3\7\10\17" +
-		"\10\31\2\12\20\12\4\13\13\14\22");
+	private static final int[] lapg_sym_to = SampleBLexer.unpack_int(42,
+		"\3\0\7\0\10\0\17\0\10\0\1\0\1\0\1\0\1\0\3\0\5\0\7\0\10\0\17\0\10\0\23\0\6\0\15\0" +
+		"\21\0\26\0\16\0\25\0\24\0\27\0\30\0\11\0\11\0\3\0\7\0\10\0\17\0\10\0\31\0\2\0\12" +
+		"\0\20\0\12\0\4\0\13\0\13\0\14\0\22\0");
 
-	private static final short[] tmRuleLen = SampleBLexer.unpack_short(12,
-		"\1\5\7\1\1\2\3\4\4\1\1\0");
+	private static final int[] tmRuleLen = SampleBLexer.unpack_int(12,
+		"\1\0\5\0\7\0\1\0\1\0\2\0\3\0\4\0\4\0\1\0\1\0\0\0");
 
-	private static final short[] tmRuleSymbol = SampleBLexer.unpack_short(12,
-		"\21\22\22\23\24\24\24\24\24\24\25\25");
+	private static final int[] tmRuleSymbol = SampleBLexer.unpack_int(12,
+		"\21\0\22\0\22\0\23\0\24\0\24\0\24\0\24\0\24\0\24\0\25\0\25\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",

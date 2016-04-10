@@ -50,35 +50,46 @@ public class RegexDefParser {
 		"\uffff\uffff\uffff\uff91\uffff\5\0\6\0\7\0\10\0\33\0\15\0\16\0\uff79\uffff\26\0\17" +
 		"\0\3\0\30\0\31\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] tmLalr = RegexDefLexer.unpack_short(144,
-		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\23\uffff\0\35" +
-		"\15\35\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22" +
-		"\uffff\15\35\16\35\uffff\ufffe\15\uffff\0\0\uffff\ufffe\5\uffff\6\uffff\7\uffff\10" +
-		"\uffff\0\4\1\4\2\4\3\4\4\4\14\4\15\4\16\4\20\4\21\4\22\4\uffff\ufffe\1\uffff\2\uffff" +
-		"\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\34\15\34\16\34\uffff\ufffe" +
-		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\35\15\35\16" +
-		"\35\uffff\ufffe\1\uffff\2\uffff\3\27\24\27\25\27\uffff\ufffe");
+	private static final int[] tmLalr = RegexDefLexer.unpack_int(144,
+		"\1\0\uffff\uffff\2\0\uffff\uffff\3\0\uffff\uffff\4\0\uffff\uffff\14\0\uffff\uffff" +
+		"\20\0\uffff\uffff\21\0\uffff\uffff\22\0\uffff\uffff\23\0\uffff\uffff\0\0\35\0\15" +
+		"\0\35\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\2\0\uffff\uffff\3\0\uffff\uffff\4" +
+		"\0\uffff\uffff\14\0\uffff\uffff\20\0\uffff\uffff\21\0\uffff\uffff\22\0\uffff\uffff" +
+		"\15\0\35\0\16\0\35\0\uffff\uffff\ufffe\uffff\15\0\uffff\uffff\0\0\0\0\uffff\uffff" +
+		"\ufffe\uffff\5\0\uffff\uffff\6\0\uffff\uffff\7\0\uffff\uffff\10\0\uffff\uffff\0\0" +
+		"\4\0\1\0\4\0\2\0\4\0\3\0\4\0\4\0\4\0\14\0\4\0\15\0\4\0\16\0\4\0\20\0\4\0\21\0\4\0" +
+		"\22\0\4\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\2\0\uffff\uffff\3\0\uffff\uffff" +
+		"\4\0\uffff\uffff\14\0\uffff\uffff\20\0\uffff\uffff\21\0\uffff\uffff\22\0\uffff\uffff" +
+		"\0\0\34\0\15\0\34\0\16\0\34\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\2\0\uffff\uffff" +
+		"\3\0\uffff\uffff\4\0\uffff\uffff\14\0\uffff\uffff\20\0\uffff\uffff\21\0\uffff\uffff" +
+		"\22\0\uffff\uffff\0\0\35\0\15\0\35\0\16\0\35\0\uffff\uffff\ufffe\uffff\1\0\uffff" +
+		"\uffff\2\0\uffff\uffff\3\0\27\0\24\0\27\0\25\0\27\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = RegexDefLexer.unpack_short(31,
-		"\0\1\12\23\33\37\40\41\42\43\43\43\43\47\51\52\52\56\62\66\67\71\75\76\100\104\110" +
-		"\114\116\121\124");
+	private static final int[] lapg_sym_goto = RegexDefLexer.unpack_int(31,
+		"\0\0\1\0\12\0\23\0\33\0\37\0\40\0\41\0\42\0\43\0\43\0\43\0\43\0\47\0\51\0\52\0\52" +
+		"\0\56\0\62\0\66\0\67\0\71\0\75\0\76\0\100\0\104\0\110\0\114\0\116\0\121\0\124\0");
 
-	private static final short[] lapg_sym_from = RegexDefLexer.unpack_short(84,
-		"\45\0\5\6\7\15\25\26\27\37\0\5\6\7\15\25\26\27\37\0\5\6\7\15\25\26\27\0\5\15\27\14" +
-		"\14\14\14\0\5\15\27\12\17\17\0\5\15\27\0\5\15\27\0\5\15\27\0\25\26\6\7\25\26\0\0" +
-		"\5\0\5\15\27\0\5\15\27\6\7\25\26\6\7\0\5\27\0\5\27");
+	private static final int[] lapg_sym_from = RegexDefLexer.unpack_int(84,
+		"\45\0\0\0\5\0\6\0\7\0\15\0\25\0\26\0\27\0\37\0\0\0\5\0\6\0\7\0\15\0\25\0\26\0\27" +
+		"\0\37\0\0\0\5\0\6\0\7\0\15\0\25\0\26\0\27\0\0\0\5\0\15\0\27\0\14\0\14\0\14\0\14\0" +
+		"\0\0\5\0\15\0\27\0\12\0\17\0\17\0\0\0\5\0\15\0\27\0\0\0\5\0\15\0\27\0\0\0\5\0\15" +
+		"\0\27\0\0\0\25\0\26\0\6\0\7\0\25\0\26\0\0\0\0\0\5\0\0\0\5\0\15\0\27\0\0\0\5\0\15" +
+		"\0\27\0\6\0\7\0\25\0\26\0\6\0\7\0\0\0\5\0\27\0\0\0\5\0\27\0");
 
-	private static final short[] lapg_sym_to = RegexDefLexer.unpack_short(84,
-		"\46\1\1\20\20\1\20\20\1\43\2\2\21\21\2\21\21\2\44\3\3\22\22\3\22\22\3\4\4\4\4\30" +
-		"\31\32\33\5\5\5\5\27\27\35\6\6\6\6\7\7\7\7\10\10\10\10\11\36\41\23\23\37\37\45\12" +
-		"\17\13\13\34\13\14\14\14\14\24\24\40\40\25\26\15\15\15\16\16\42");
+	private static final int[] lapg_sym_to = RegexDefLexer.unpack_int(84,
+		"\46\0\1\0\1\0\20\0\20\0\1\0\20\0\20\0\1\0\43\0\2\0\2\0\21\0\21\0\2\0\21\0\21\0\2" +
+		"\0\44\0\3\0\3\0\22\0\22\0\3\0\22\0\22\0\3\0\4\0\4\0\4\0\4\0\30\0\31\0\32\0\33\0\5" +
+		"\0\5\0\5\0\5\0\27\0\27\0\35\0\6\0\6\0\6\0\6\0\7\0\7\0\7\0\7\0\10\0\10\0\10\0\10\0" +
+		"\11\0\36\0\41\0\23\0\23\0\37\0\37\0\45\0\12\0\17\0\13\0\13\0\34\0\13\0\14\0\14\0" +
+		"\14\0\14\0\24\0\24\0\40\0\40\0\25\0\26\0\15\0\15\0\15\0\16\0\16\0\42\0");
 
-	private static final short[] tmRuleLen = RegexDefLexer.unpack_short(30,
-		"\1\1\1\3\1\2\2\2\2\1\1\1\1\3\3\3\1\1\1\1\1\1\2\2\3\3\1\2\1\0");
+	private static final int[] tmRuleLen = RegexDefLexer.unpack_int(30,
+		"\1\0\1\0\1\0\3\0\1\0\2\0\2\0\2\0\2\0\1\0\1\0\1\0\1\0\3\0\3\0\3\0\1\0\1\0\1\0\1\0" +
+		"\1\0\1\0\2\0\2\0\3\0\3\0\1\0\2\0\1\0\0\0");
 
-	private static final short[] tmRuleSymbol = RegexDefLexer.unpack_short(30,
-		"\26\26\27\27\30\30\30\30\30\31\31\31\31\31\31\31\31\32\32\32\33\33\33\33\33\33\34" +
-		"\34\35\35");
+	private static final int[] tmRuleSymbol = RegexDefLexer.unpack_int(30,
+		"\26\0\26\0\27\0\27\0\30\0\30\0\30\0\30\0\30\0\31\0\31\0\31\0\31\0\31\0\31\0\31\0" +
+		"\31\0\32\0\32\0\32\0\33\0\33\0\33\0\33\0\33\0\33\0\34\0\34\0\35\0\35\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",

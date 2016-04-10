@@ -64,23 +64,6 @@ public class JavaTemplateRoutines {
 		return unpack_vc_short(size, st);
 	}
 
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
-
-	public static short[] test_unpack_short(int size, String... st) {
-		return unpack_short(size, st);
-	}
-
 	/* package */ static int[] unpack_int(int size, String... st) {
 		int[] res = new int[size];
 		boolean second = false;

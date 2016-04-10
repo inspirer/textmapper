@@ -214,8 +214,8 @@ public class UnicodeTestLexer {
 		return res;
 	}
 
-	private static final short[] tmRuleSymbol = unpack_short(4,
-		"\1\2\3\4");
+	private static final int[] tmRuleSymbol = unpack_int(4,
+		"\1\0\2\0\3\0\4\0");
 
 	private static final int tmClassesCount = 8;
 
@@ -349,16 +349,4 @@ public class UnicodeTestLexer {
 		return res;
 	}
 
-	/* package */ static short[] unpack_short(int size, String... st) {
-		short[] res = new short[size];
-		int t = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; i++) {
-				res[t++] = (short) s.charAt(i);
-			}
-		}
-		assert res.length == t;
-		return res;
-	}
 }

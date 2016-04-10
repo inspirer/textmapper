@@ -63,7 +63,7 @@ public class ConflictBuilder {
 	}
 
 	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input,
-												 short[] next, int[] classterm) {
+												 int[] next, int[] classterm) {
 		if (conflicts.isEmpty()) {
 			return Collections.emptyList();
 		}

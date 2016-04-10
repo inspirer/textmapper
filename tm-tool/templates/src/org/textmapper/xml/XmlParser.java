@@ -58,26 +58,31 @@ public class XmlParser {
 		"\uffff\uffff\4\0\10\0\uffff\uffff\14\0\11\0\uffff\uffff\uffff\uffff\16\0\12\0\13" +
 		"\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] tmLalr = XmlLexer.unpack_short(34,
-		"\1\uffff\2\uffff\0\0\uffff\ufffe\10\uffff\4\7\6\7\11\7\uffff\ufffe\4\uffff\6\20\11" +
-		"\20\uffff\ufffe\4\uffff\6\17\11\17\uffff\ufffe");
+	private static final int[] tmLalr = XmlLexer.unpack_int(34,
+		"\1\0\uffff\uffff\2\0\uffff\uffff\0\0\0\0\uffff\uffff\ufffe\uffff\10\0\uffff\uffff" +
+		"\4\0\7\0\6\0\7\0\11\0\7\0\uffff\uffff\ufffe\uffff\4\0\uffff\uffff\6\0\20\0\11\0\20" +
+		"\0\uffff\uffff\ufffe\uffff\4\0\uffff\uffff\6\0\17\0\11\0\17\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_sym_goto = XmlLexer.unpack_short(22,
-		"\0\1\5\11\11\17\20\23\24\25\27\27\30\32\36\41\45\51\53\54\56\57");
+	private static final int[] lapg_sym_goto = XmlLexer.unpack_int(22,
+		"\0\0\1\0\5\0\11\0\11\0\17\0\20\0\23\0\24\0\25\0\27\0\27\0\30\0\32\0\36\0\41\0\45" +
+		"\0\51\0\53\0\54\0\56\0\57\0");
 
-	private static final short[] lapg_sym_from = XmlLexer.unpack_short(47,
-		"\35\0\3\5\13\0\3\5\13\2\10\12\15\17\22\25\21\30\31\16\7\12\21\0\0\5\0\3\5\13\2\12" +
-		"\22\0\3\5\13\0\3\5\13\5\13\10\10\17\10");
+	private static final int[] lapg_sym_from = XmlLexer.unpack_int(47,
+		"\35\0\0\0\3\0\5\0\13\0\0\0\3\0\5\0\13\0\2\0\10\0\12\0\15\0\17\0\22\0\25\0\21\0\30" +
+		"\0\31\0\16\0\7\0\12\0\21\0\0\0\0\0\5\0\0\0\3\0\5\0\13\0\2\0\12\0\22\0\0\0\3\0\5\0" +
+		"\13\0\0\0\3\0\5\0\13\0\5\0\13\0\10\0\10\0\17\0\10\0");
 
-	private static final short[] lapg_sym_to = XmlLexer.unpack_short(47,
-		"\36\1\1\1\1\2\2\12\12\7\16\7\24\16\7\32\27\33\34\25\15\22\30\35\3\13\4\11\4\11\10" +
-		"\10\31\5\5\5\5\6\6\6\6\14\23\17\20\26\21");
+	private static final int[] lapg_sym_to = XmlLexer.unpack_int(47,
+		"\36\0\1\0\1\0\1\0\1\0\2\0\2\0\12\0\12\0\7\0\16\0\7\0\24\0\16\0\7\0\32\0\27\0\33\0" +
+		"\34\0\25\0\15\0\22\0\30\0\35\0\3\0\13\0\4\0\11\0\4\0\11\0\10\0\10\0\31\0\5\0\5\0" +
+		"\5\0\5\0\6\0\6\0\6\0\6\0\14\0\23\0\17\0\20\0\26\0\21\0");
 
-	private static final short[] tmRuleLen = XmlLexer.unpack_short(17,
-		"\1\2\1\2\3\1\1\1\3\4\5\4\2\1\3\1\0");
+	private static final int[] tmRuleLen = XmlLexer.unpack_int(17,
+		"\1\0\2\0\1\0\2\0\3\0\1\0\1\0\1\0\3\0\4\0\5\0\4\0\2\0\1\0\3\0\1\0\0\0");
 
-	private static final short[] tmRuleSymbol = XmlLexer.unpack_short(17,
-		"\13\14\14\15\15\15\15\16\16\17\20\21\22\22\23\24\24");
+	private static final int[] tmRuleSymbol = XmlLexer.unpack_int(17,
+		"\13\0\14\0\14\0\15\0\15\0\15\0\15\0\16\0\16\0\17\0\20\0\21\0\22\0\22\0\23\0\24\0" +
+		"\24\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
