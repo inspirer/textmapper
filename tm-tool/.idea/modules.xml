@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/lapg/lapg.iml" filepath="$PROJECT_DIR$/lapg/lapg.iml" />
       <module fileurl="file://$PROJECT_DIR$/templates/templates.iml" filepath="$PROJECT_DIR$/templates/templates.iml" />
       <module fileurl="file://$PROJECT_DIR$/textmapper/textmapper.iml" filepath="$PROJECT_DIR$/textmapper/textmapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tm-go.iml" filepath="$PROJECT_DIR$/.idea/tm-go.iml" />
       <module fileurl="file://$PROJECT_DIR$/tm-master.iml" filepath="$PROJECT_DIR$/tm-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/tool/tool.iml" filepath="$PROJECT_DIR$/tool/tool.iml" />
     </modules>

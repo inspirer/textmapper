@@ -1,0 +1,58 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;tm-go&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../code.google.com" />
+      <root url="file://$PROJECT_DIR$/../../.." />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/cloud/.git" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org/x/net/.git" />
+      <root url="file://$PROJECT_DIR$/textmapper/.settings" />
+      <root url="file://$PROJECT_DIR$/../tm-idea/caches/system/compiler/tm-tool.70d84a41/.generated" />
+      <root url="file://$PROJECT_DIR$/../tm-idea/caches/system/index/.persistent" />
+      <root url="file://$PROJECT_DIR$/../../euler/.git" />
+      <root url="file://$PROJECT_DIR$/../tm-eclipse/.idea" />
+      <root url="file://$PROJECT_DIR$/.idea" />
+      <root url="file://$PROJECT_DIR$/../tm-idea/.idea" />
+      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/samples/js/tests/org/textmapper/js/testdata" />
+      <root url="file://$PROJECT_DIR$/tests/javascript/.idea" />
+      <root url="file://$PROJECT_DIR$/samples/js/target/test-classes/org/textmapper/js/testdata" />
+      <root url="file://$PROJECT_DIR$/../../span/.idea" />
+      <root url="file://$PROJECT_DIR$/../tm-go" />
+      <root url="file://$PROJECT_DIR$/../.git" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org/x/net/html/testdata" />
+      <root url="file://$PROJECT_DIR$/../../span/.git" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org/x/oauth2/.git" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/appengine/.git" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/cloud/datastore/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org/x/oauth2/google/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/grpc/interop/client/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/grpc/interop/server/testdata" />
+      <root url="file://$PROJECT_DIR$/tool" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/api/.git" />
+      <root url="file://$PROJECT_DIR$/../tm-eclipse/plugins/org.textmapper/.settings" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/grpc/.git" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/api/google-api-go-generator/testdata" />
+      <root url="file://$PROJECT_DIR$/../tm-eclipse/plugins/org.textmapper.common.ui/.settings" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org/x/net/html/charset/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org/x/blog/.git" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/grpc/test/testdata" />
+      <root url="file://$PROJECT_DIR$/../../euler/.idea" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/grpc/transport/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org/x/net/http2/testdata" />
+      <root url="file://$PROJECT_DIR$/samples/js" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/grpc/examples/route_guide/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org/cloud/storage/testdata" />
+      <root url="file://$PROJECT_DIR$/textmapper" />
+      <root url="file://$PROJECT_DIR$/../tm-idea/caches/system/index/stubs/.versions" />
+      <root url="file://$PROJECT_DIR$/../tm-eclipse/plugins/org.textmapper.lapg.ui/.settings" />
+      <root url="file://$PROJECT_DIR$/templates" />
+      <root url="file://$PROJECT_DIR$/lapg" />
+    </excluded>
+  </library>
+</component>
