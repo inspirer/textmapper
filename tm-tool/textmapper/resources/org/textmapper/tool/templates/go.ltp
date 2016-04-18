@@ -1,6 +1,7 @@
 ${template main-}
 ${call go_lexer.main-}
 ${call go_parser.main-}
+${call go_token.main-}
 ${end}
 
 ${query escapeGoReserved() =

@@ -66,23 +66,17 @@ public class TMCompiler {
 		for (Problem p : g.getProblems()) {
 			resolver.error(unwrap(p.getSourceElement()), p.getMessage());
 		}
-		generateUniqueIds(g);
+		generateUniqueIds(g, options.get("tokensAllCaps") == Boolean.TRUE);
 		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options,
 				copyrightHeader, targetLanguage);
 	}
 
-	private void generateUniqueIds(Grammar g) {
-		UniqueNameHelper helper = new UniqueNameHelper();
+	private void generateUniqueIds(Grammar g, boolean tokensAllCaps) {
+		UniqueNameHelper helper = new UniqueNameHelper(tokensAllCaps);
 		for (Symbol s : g.getSymbols()) {
-			String name = s.getName();
-			if (FormatUtil.isIdentifier(name)) {
-				helper.markUsed(name);
-			}
+			helper.add(s);
 		}
-		int i = 0;
-		for (Symbol s : g.getSymbols()) {
-			TMDataUtil.putId(s, helper.generateSymbolId(s.getName(), i++));
-		}
+		helper.apply();
 	}
 
 	private TextSourceElement getTemplates() {

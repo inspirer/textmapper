@@ -141,13 +141,13 @@ public class FormatUtil {
 
 		// 0x20
 		charName.put(' ', "space");
-		charName.put('!', "exclamation");
+		charName.put('!', "excl");
 		charName.put('"', "quote");
 		charName.put('#', "sharp");
 		charName.put('$', "dollar");
-		charName.put('%', "percent");
-		charName.put('&', "ampersand");
-		charName.put('\'', "apostrophe");
+		charName.put('%', "rem");
+		charName.put('&', "and");
+		charName.put('\'', "apos");
 		charName.put('(', "lparen");
 		charName.put(')', "rparen");
 		charName.put('*', "mult");
@@ -155,30 +155,30 @@ public class FormatUtil {
 		charName.put(',', "comma");
 		charName.put('-', "minus");
 		charName.put('.', "dot");
-		charName.put('/', "slash");
+		charName.put('/', "div");
 
 		// 0x3A
 		charName.put(':', "colon");
 		charName.put(';', "semicolon");
-		charName.put('<', "less");
-		charName.put('=', "equal");
-		charName.put('>', "greater");
-		charName.put('?', "questionmark");
+		charName.put('<', "lt");
+		charName.put('=', "assign");
+		charName.put('>', "gt");
+		charName.put('?', "quest");
 		charName.put('@', "atsign");
 
 		// 0x5B
-		charName.put('[', "lsquare");
-		charName.put('\\', "backslash");
-		charName.put(']', "rsquare");
+		charName.put('[', "lbrack");
+		charName.put('\\', "esc");
+		charName.put(']', "rbrack");
 		charName.put('^', "xor");
 
 		// 0x60
-		charName.put('`', "graveaccent");
+		charName.put('`', "bquote");
 
 		// 0x7B
-		charName.put('{', "lcurly");
+		charName.put('{', "lbrace");
 		charName.put('|', "or");
-		charName.put('}', "rcurly");
+		charName.put('}', "rbrace");
 		charName.put('~', "tilde");
 	}
 

@@ -7,6 +7,7 @@ class Options extends common.Options {
 
 	bool genCopyright = false;
 	int expandTabs = 0;
+	bool tokensAllCaps = true;
 }
 
 class AnnotateReference {

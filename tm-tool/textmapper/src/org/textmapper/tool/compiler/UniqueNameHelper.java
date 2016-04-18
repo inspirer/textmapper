@@ -15,31 +15,76 @@
  */
 package org.textmapper.tool.compiler;
 
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.common.FormatUtil;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.text.Normalizer.Form;
+import java.util.*;
+import java.util.Map.Entry;
 
 class UniqueNameHelper {
 
+	private final Map<String, Integer> desiredNameUsage = new HashMap<>();
+	private final Map<Symbol, String> desiredNames = new LinkedHashMap<>();
 	private final Set<String> usedIdentifiers = new HashSet<>();
+	private final boolean tokensAllCaps;
 
-	void markUsed(String name) {
-		usedIdentifiers.add(name);
+	UniqueNameHelper(boolean tokensAllCaps) {
+		this.tokensAllCaps = tokensAllCaps;
 	}
 
-	String generateSymbolId(String symbolName, int uniqueID) {
-		if (usedIdentifiers.contains(symbolName)) {
-			return symbolName;
+	void add(Symbol s) {
+		String desiredName = desiredName(s);
+		desiredNames.put(s, desiredName);
+
+		Integer count = desiredNameUsage.get(desiredName);
+		desiredNameUsage.put(desiredName, count == null ? 1 : count + 1);
+	}
+
+	void apply() {
+		for (Entry<Symbol, String> entry : desiredNames.entrySet()) {
+			Integer count = desiredNameUsage.get(entry.getValue());
+			if (count == 1) {
+				TMDataUtil.putId(entry.getKey(), entry.getValue());
+				usedIdentifiers.add(entry.getValue());
+			}
 		}
-		symbolName = toIdentifier(symbolName, uniqueID);
-		String result = symbolName;
-		int i1 = 2;
+		for (Entry<Symbol, String> entry : desiredNames.entrySet()) {
+			Integer count = desiredNameUsage.get(entry.getValue());
+			if (count != 1) {
+				TMDataUtil.putId(entry.getKey(), generateSymbolId(entry.getValue()));
+			}
+		}
+	}
+
+	private String generateSymbolId(String desiredName) {
+		String result = desiredName;
+		int i1 = 1;
 		while (usedIdentifiers.contains(result)) {
-			result = symbolName + i1++;
+			result = desiredName + i1++;
 		}
 		usedIdentifiers.add(result);
 		return result;
+	}
+
+	private String desiredName(Symbol s) {
+		String name = s.getName();
+		String desiredName;
+		if (FormatUtil.isIdentifier(name)) {
+			desiredName = name;
+		} else if (s.isTerm() && ((Terminal)s).isConstant()) {
+			desiredName = toIdentifier(((Terminal) s).getConstantValue(), s.getIndex());
+			if (desiredName.length() == 1 && FormatUtil.isIdentifier(desiredName)) {
+				desiredName = "char_" + desiredName;
+			}
+		} else {
+			desiredName = toIdentifier(name, s.getIndex());
+		}
+		if (this.tokensAllCaps && s.isTerm()) {
+			desiredName = desiredName.toUpperCase();
+		}
+		return desiredName;
 	}
 
 	private static String toIdentifier(String original, int uniqueID) {

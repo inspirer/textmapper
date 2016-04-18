@@ -54,12 +54,12 @@ func testLexer(input []byte, t *testing.T) {
 		offset = e
 		token := string(input[s:e])
 		switch next {
-		case json.LCURLY, json.RCURLY, json.LSQUARE, json.RSQUARE,
+		case json.LBRACE, json.RBRACE, json.LBRACK, json.RBRACK,
 			json.COLON, json.COMMA, json.NULL, json.TRUE, json.FALSE:
 			if token != next.String() {
 				t.Errorf("Bad token %v: %s", next, token)
 			}
-		case json.JSONSTR:
+		case json.JSONSTRING:
 			if !strings.HasPrefix(token, `"`) || !strings.HasSuffix(token, `"`) {
 				t.Errorf("Bad string literal: %s", token)
 			}

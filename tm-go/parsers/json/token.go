@@ -10,20 +10,18 @@ const (
 	// An end-of-input marker token.
 	EOI Token = iota
 
-	LCURLY  // {
-	RCURLY  // }
-	LSQUARE // [
-	RSQUARE // ]
-	COLON   // :
-	COMMA   // ,
-
+	LBRACE // {
+	RBRACE // }
+	LBRACK // [
+	RBRACK // ]
+	COLON // :
+	COMMA // ,
 	SPACE
-	JSONSTR
-	JSONNUM
-
-	NULL
-	TRUE
-	FALSE
+	JSONSTRING
+	JSONNUMBER
+	NULL // null
+	TRUE // true
+	FALSE // false
 
 	terminalEnd
 )
@@ -37,11 +35,9 @@ var tokenStr = [...]string{
 	"]",
 	":",
 	",",
-
 	"SPACE",
-	"JSONSTR",
-	"JSONNUM",
-
+	"JSONSTRING",
+	"JSONNUMBER",
 	"null",
 	"true",
 	"false",
