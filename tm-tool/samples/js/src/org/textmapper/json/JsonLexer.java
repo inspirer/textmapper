@@ -18,10 +18,10 @@ public class JsonLexer {
 	public interface Tokens {
 		int Unavailable_ = -1;
 		int eoi = 0;
-		int Lcurly = 1;
-		int Rcurly = 2;
-		int Lsquare = 3;
-		int Rsquare = 4;
+		int Lbrace = 1;
+		int Rbrace = 2;
+		int Lbrack = 3;
+		int Rbrack = 4;
 		int Colon = 5;
 		int Comma = 6;
 		int space = 7;

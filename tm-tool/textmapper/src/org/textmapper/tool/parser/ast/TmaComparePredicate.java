@@ -56,7 +56,7 @@ public class TmaComparePredicate extends TmaNode implements ITmaPredicateExpress
 	}
 
 	public enum TmaKindKind {
-		EQUAL_EQUAL,
-		EXCLAMATION_EQUAL,
+		ASSIGN_ASSIGN,
+		EXCL_ASSIGN,
 	}
 }

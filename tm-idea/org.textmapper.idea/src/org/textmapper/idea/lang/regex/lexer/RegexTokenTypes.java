@@ -33,19 +33,19 @@ public interface RegexTokenTypes {
 	IElementType RE_DOT = new RegexElementType(Tokens.Dot, ".");
 	IElementType RE_MULT = new RegexElementType(Tokens.Mult, "*");
 	IElementType RE_PLUS = new RegexElementType(Tokens.Plus, "+");
-	IElementType RE_QUESTIONMARK = new RegexElementType(Tokens.Questionmark, "?");
+	IElementType RE_QUESTIONMARK = new RegexElementType(Tokens.Quest, "?");
 	IElementType RE_QUANTFIER = new RegexElementType(Tokens.quantifier, "{n,m}");
 
 	IElementType RE_LPAREN = new RegexElementType(Tokens.Lparen, "(");
-	IElementType RE_LPARENQMARK = new RegexElementType(Tokens.LparenQuestionmark, "(?");
+	IElementType RE_LPARENQMARK = new RegexElementType(Tokens.LparenQuest, "(?");
 	IElementType RE_OR = new RegexElementType(Tokens.Or, "|");
 	IElementType RE_RPAREN = new RegexElementType(Tokens.Rparen, ")");
 	IElementType RE_EXPAND = new RegexElementType(Tokens.expand, "{expand}");
 
-	IElementType RE_LSQUARE = new RegexElementType(Tokens.Lsquare, "[");
-	IElementType RE_LSQUAREXOR = new RegexElementType(Tokens.LsquareXor, "[^");
+	IElementType RE_LSQUARE = new RegexElementType(Tokens.Lbrack, "[");
+	IElementType RE_LSQUAREXOR = new RegexElementType(Tokens.LbrackXor, "[^");
 	IElementType RE_MINUS = new RegexElementType(Tokens.Minus, "-");
-	IElementType RE_RSQUARE = new RegexElementType(Tokens.Rsquare, "]");
+	IElementType RE_RSQUARE = new RegexElementType(Tokens.Rbrack, "]");
 
 	IElementType RE_SETDIFF = new RegexElementType(Tokens.op_minus, "{-}");
 	IElementType RE_SETUNION = new RegexElementType(Tokens.op_union, "{+}");

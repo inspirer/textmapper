@@ -42,60 +42,60 @@
 %token extends
 %token import
 %token super
-%token Lcurly
-%token Rcurly
+%token Lbrace
+%token Rbrace
 %token Lparen
 %token Rparen
-%token Lsquare
-%token Rsquare
+%token Lbrack
+%token Rbrack
 %token Dot
 %token Semicolon
 %token Comma
-%token Less
-%token Greater
-%token LessEqual
-%token GreaterEqual
-%token EqualEqual
-%token ExclamationEqual
-%token EqualEqualEqual
-%token ExclamationEqualEqual
+%token Lt
+%token Gt
+%token LtAssign
+%token GtAssign
+%token AssignAssign
+%token ExclAssign
+%token AssignAssignAssign
+%token ExclAssignAssign
 %token Plus
 %token Minus
 %token Mult
-%token Percent
+%token Rem
 %token PlusPlus
 %token MinusMinus
-%token LessLess
-%token GreaterGreater
-%token GreaterGreaterGreater
-%token Ampersand
+%token LtLt
+%token GtGt
+%token GtGtGt
+%token And
 %token Or
 %token Xor
-%token Exclamation
+%token Excl
 %token Tilde
-%token AmpersandAmpersand
+%token AndAnd
 %token OrOr
-%token Questionmark
+%token Quest
 %token Colon
-%token Equal
-%token PlusEqual
-%token MinusEqual
-%token MultEqual
-%token PercentEqual
-%token LessLessEqual
-%token GreaterGreaterEqual
-%token GreaterGreaterGreaterEqual
-%token AmpersandEqual
-%token OrEqual
-%token XorEqual
+%token Assign
+%token PlusAssign
+%token MinusAssign
+%token MultAssign
+%token RemAssign
+%token LtLtAssign
+%token GtGtAssign
+%token GtGtGtAssign
+%token AndAssign
+%token OrAssign
+%token XorAssign
 %token null
 %token true
 %token false
 %token NumericLiteral
 %token StringLiteral
 %token RegularExpressionLiteral
-%token Slash
-%token SlashEqual
+%token Div
+%token DivAssign
 
 %locations
 %%
@@ -167,7 +167,7 @@ PrimaryExpression_ExprStart :
 ;
 
 ArrayLiteral :
-  Lsquare AssignmentExpression_list_Comma_separated Rsquare
+  Lbrack AssignmentExpression_list_Comma_separated Rbrack
 ;
 
 AssignmentExpression_list_Comma_separated :
@@ -178,9 +178,9 @@ AssignmentExpression_list_Comma_separated :
 ;
 
 ObjectLiteral :
-  Lcurly PropertyAssignment_list_Comma_separated Comma Rcurly
-| Lcurly PropertyAssignment_list_Comma_separated Rcurly
-| Lcurly Rcurly
+  Lbrace PropertyAssignment_list_Comma_separated Comma Rbrace
+| Lbrace PropertyAssignment_list_Comma_separated Rbrace
+| Lbrace Rbrace
 ;
 
 PropertyAssignment_list_Comma_separated :
@@ -190,8 +190,8 @@ PropertyAssignment_list_Comma_separated :
 
 PropertyAssignment :
   PropertyName Colon AssignmentExpression
-| Identifier PropertyName Lparen Rparen Lcurly FunctionBody Rcurly
-| Identifier PropertyName Lparen PropertySetParameterList Rparen Lcurly FunctionBody Rcurly
+| Identifier PropertyName Lparen Rparen Lbrace FunctionBody Rbrace
+| Identifier PropertyName Lparen PropertySetParameterList Rparen Lbrace FunctionBody Rbrace
 ;
 
 PropertyName :
@@ -207,14 +207,14 @@ PropertySetParameterList :
 MemberExpression :
   PrimaryExpression
 | FunctionExpression
-| MemberExpression Lsquare Expression Rsquare
+| MemberExpression Lbrack Expression Rbrack
 | MemberExpression Dot IdentifierName
 | new MemberExpression Arguments
 ;
 
 MemberExpression_ExprStart :
   PrimaryExpression_ExprStart
-| MemberExpression_ExprStart Lsquare Expression Rsquare
+| MemberExpression_ExprStart Lbrack Expression Rbrack
 | MemberExpression_ExprStart Dot IdentifierName
 | new MemberExpression Arguments
 ;
@@ -232,14 +232,14 @@ NewExpression_ExprStart :
 CallExpression :
   MemberExpression Arguments
 | CallExpression Arguments
-| CallExpression Lsquare Expression Rsquare
+| CallExpression Lbrack Expression Rbrack
 | CallExpression Dot IdentifierName
 ;
 
 CallExpression_ExprStart :
   MemberExpression_ExprStart Arguments
 | CallExpression_ExprStart Arguments
-| CallExpression_ExprStart Lsquare Expression Rsquare
+| CallExpression_ExprStart Lbrack Expression Rbrack
 | CallExpression_ExprStart Dot IdentifierName
 ;
 
@@ -289,7 +289,7 @@ UnaryExpression :
 | Plus UnaryExpression
 | Minus UnaryExpression
 | Tilde UnaryExpression
-| Exclamation UnaryExpression
+| Excl UnaryExpression
 ;
 
 UnaryExpression_ExprStart :
@@ -302,21 +302,21 @@ UnaryExpression_ExprStart :
 | Plus UnaryExpression
 | Minus UnaryExpression
 | Tilde UnaryExpression
-| Exclamation UnaryExpression
+| Excl UnaryExpression
 ;
 
 MultiplicativeExpression :
   UnaryExpression
 | MultiplicativeExpression Mult UnaryExpression
-| MultiplicativeExpression Slash UnaryExpression
-| MultiplicativeExpression Percent UnaryExpression
+| MultiplicativeExpression Div UnaryExpression
+| MultiplicativeExpression Rem UnaryExpression
 ;
 
 MultiplicativeExpression_ExprStart :
   UnaryExpression_ExprStart
 | MultiplicativeExpression_ExprStart Mult UnaryExpression
-| MultiplicativeExpression_ExprStart Slash UnaryExpression
-| MultiplicativeExpression_ExprStart Percent UnaryExpression
+| MultiplicativeExpression_ExprStart Div UnaryExpression
+| MultiplicativeExpression_ExprStart Rem UnaryExpression
 ;
 
 AdditiveExpression :
@@ -333,84 +333,84 @@ AdditiveExpression_ExprStart :
 
 ShiftExpression :
   AdditiveExpression
-| ShiftExpression LessLess AdditiveExpression
-| ShiftExpression GreaterGreater AdditiveExpression
-| ShiftExpression GreaterGreaterGreater AdditiveExpression
+| ShiftExpression LtLt AdditiveExpression
+| ShiftExpression GtGt AdditiveExpression
+| ShiftExpression GtGtGt AdditiveExpression
 ;
 
 ShiftExpression_ExprStart :
   AdditiveExpression_ExprStart
-| ShiftExpression_ExprStart LessLess AdditiveExpression
-| ShiftExpression_ExprStart GreaterGreater AdditiveExpression
-| ShiftExpression_ExprStart GreaterGreaterGreater AdditiveExpression
+| ShiftExpression_ExprStart LtLt AdditiveExpression
+| ShiftExpression_ExprStart GtGt AdditiveExpression
+| ShiftExpression_ExprStart GtGtGt AdditiveExpression
 ;
 
 RelationalExpression :
   ShiftExpression
-| RelationalExpression Less ShiftExpression
-| RelationalExpression Greater ShiftExpression
-| RelationalExpression LessEqual ShiftExpression
-| RelationalExpression GreaterEqual ShiftExpression
+| RelationalExpression Lt ShiftExpression
+| RelationalExpression Gt ShiftExpression
+| RelationalExpression LtAssign ShiftExpression
+| RelationalExpression GtAssign ShiftExpression
 | RelationalExpression instanceof ShiftExpression
 | RelationalExpression in ShiftExpression
 ;
 
 RelationalExpression_ExprStart :
   ShiftExpression_ExprStart
-| RelationalExpression_ExprStart Less ShiftExpression
-| RelationalExpression_ExprStart Greater ShiftExpression
-| RelationalExpression_ExprStart LessEqual ShiftExpression
-| RelationalExpression_ExprStart GreaterEqual ShiftExpression
+| RelationalExpression_ExprStart Lt ShiftExpression
+| RelationalExpression_ExprStart Gt ShiftExpression
+| RelationalExpression_ExprStart LtAssign ShiftExpression
+| RelationalExpression_ExprStart GtAssign ShiftExpression
 | RelationalExpression_ExprStart instanceof ShiftExpression
 | RelationalExpression_ExprStart in ShiftExpression
 ;
 
 RelationalExpression_NoIn :
   ShiftExpression
-| RelationalExpression_NoIn Less ShiftExpression
-| RelationalExpression_NoIn Greater ShiftExpression
-| RelationalExpression_NoIn LessEqual ShiftExpression
-| RelationalExpression_NoIn GreaterEqual ShiftExpression
+| RelationalExpression_NoIn Lt ShiftExpression
+| RelationalExpression_NoIn Gt ShiftExpression
+| RelationalExpression_NoIn LtAssign ShiftExpression
+| RelationalExpression_NoIn GtAssign ShiftExpression
 | RelationalExpression_NoIn instanceof ShiftExpression
 ;
 
 EqualityExpression :
   RelationalExpression
-| EqualityExpression EqualEqual RelationalExpression
-| EqualityExpression ExclamationEqual RelationalExpression
-| EqualityExpression EqualEqualEqual RelationalExpression
-| EqualityExpression ExclamationEqualEqual RelationalExpression
+| EqualityExpression AssignAssign RelationalExpression
+| EqualityExpression ExclAssign RelationalExpression
+| EqualityExpression AssignAssignAssign RelationalExpression
+| EqualityExpression ExclAssignAssign RelationalExpression
 ;
 
 EqualityExpression_ExprStart :
   RelationalExpression_ExprStart
-| EqualityExpression_ExprStart EqualEqual RelationalExpression
-| EqualityExpression_ExprStart ExclamationEqual RelationalExpression
-| EqualityExpression_ExprStart EqualEqualEqual RelationalExpression
-| EqualityExpression_ExprStart ExclamationEqualEqual RelationalExpression
+| EqualityExpression_ExprStart AssignAssign RelationalExpression
+| EqualityExpression_ExprStart ExclAssign RelationalExpression
+| EqualityExpression_ExprStart AssignAssignAssign RelationalExpression
+| EqualityExpression_ExprStart ExclAssignAssign RelationalExpression
 ;
 
 EqualityExpression_NoIn :
   RelationalExpression_NoIn
-| EqualityExpression_NoIn EqualEqual RelationalExpression_NoIn
-| EqualityExpression_NoIn ExclamationEqual RelationalExpression_NoIn
-| EqualityExpression_NoIn EqualEqualEqual RelationalExpression_NoIn
-| EqualityExpression_NoIn ExclamationEqualEqual RelationalExpression_NoIn
+| EqualityExpression_NoIn AssignAssign RelationalExpression_NoIn
+| EqualityExpression_NoIn ExclAssign RelationalExpression_NoIn
+| EqualityExpression_NoIn AssignAssignAssign RelationalExpression_NoIn
+| EqualityExpression_NoIn ExclAssignAssign RelationalExpression_NoIn
 ;
 
 BitwiseANDExpression :
   EqualityExpression
-| BitwiseANDExpression Ampersand EqualityExpression
+| BitwiseANDExpression And EqualityExpression
 ;
 
 BitwiseANDExpression_ExprStart :
   EqualityExpression_ExprStart
-| BitwiseANDExpression_ExprStart Ampersand EqualityExpression
+| BitwiseANDExpression_ExprStart And EqualityExpression
 ;
 
 BitwiseANDExpression_NoIn :
   EqualityExpression_NoIn
-| BitwiseANDExpression_NoIn Ampersand EqualityExpression_NoIn
+| BitwiseANDExpression_NoIn And EqualityExpression_NoIn
 ;
 
 BitwiseXORExpression :
@@ -445,17 +445,17 @@ BitwiseORExpression_NoIn :
 
 LogicalANDExpression :
   BitwiseORExpression
-| LogicalANDExpression AmpersandAmpersand BitwiseORExpression
+| LogicalANDExpression AndAnd BitwiseORExpression
 ;
 
 LogicalANDExpression_ExprStart :
   BitwiseORExpression_ExprStart
-| LogicalANDExpression_ExprStart AmpersandAmpersand BitwiseORExpression
+| LogicalANDExpression_ExprStart AndAnd BitwiseORExpression
 ;
 
 LogicalANDExpression_NoIn :
   BitwiseORExpression_NoIn
-| LogicalANDExpression_NoIn AmpersandAmpersand BitwiseORExpression_NoIn
+| LogicalANDExpression_NoIn AndAnd BitwiseORExpression_NoIn
 ;
 
 LogicalORExpression :
@@ -475,17 +475,17 @@ LogicalORExpression_NoIn :
 
 ConditionalExpression :
   LogicalORExpression
-| LogicalORExpression Questionmark AssignmentExpression Colon AssignmentExpression
+| LogicalORExpression Quest AssignmentExpression Colon AssignmentExpression
 ;
 
 ConditionalExpression_ExprStart :
   LogicalORExpression_ExprStart
-| LogicalORExpression_ExprStart Questionmark AssignmentExpression Colon AssignmentExpression
+| LogicalORExpression_ExprStart Quest AssignmentExpression Colon AssignmentExpression
 ;
 
 ConditionalExpression_NoIn :
   LogicalORExpression_NoIn
-| LogicalORExpression_NoIn Questionmark AssignmentExpression_NoIn Colon AssignmentExpression_NoIn
+| LogicalORExpression_NoIn Quest AssignmentExpression_NoIn Colon AssignmentExpression_NoIn
 ;
 
 AssignmentExpression :
@@ -504,18 +504,18 @@ AssignmentExpression_NoIn :
 ;
 
 AssignmentOperator :
-  Equal
-| MultEqual
-| SlashEqual
-| PercentEqual
-| PlusEqual
-| MinusEqual
-| LessLessEqual
-| GreaterGreaterEqual
-| GreaterGreaterGreaterEqual
-| AmpersandEqual
-| XorEqual
-| OrEqual
+  Assign
+| MultAssign
+| DivAssign
+| RemAssign
+| PlusAssign
+| MinusAssign
+| LtLtAssign
+| GtGtAssign
+| GtGtGtAssign
+| AndAssign
+| XorAssign
+| OrAssign
 ;
 
 Expression :
@@ -552,7 +552,7 @@ Statement :
 ;
 
 Block :
-  Lcurly Statement_optlist Rcurly
+  Lbrace Statement_optlist Rbrace
 ;
 
 Statement_optlist :
@@ -583,11 +583,11 @@ VariableDeclaration_NoIn :
 ;
 
 Initialiser :
-  Equal AssignmentExpression
+  Assign AssignmentExpression
 ;
 
 Initialiser_NoIn :
-  Equal AssignmentExpression_NoIn
+  Assign AssignmentExpression_NoIn
 ;
 
 EmptyStatement :
@@ -635,8 +635,8 @@ SwitchStatement :
 ;
 
 CaseBlock :
-  Lcurly CaseClause_optlist DefaultClause CaseClause_optlist Rcurly
-| Lcurly CaseClause_optlist Rcurly
+  Lbrace CaseClause_optlist DefaultClause CaseClause_optlist Rbrace
+| Lbrace CaseClause_optlist Rbrace
 ;
 
 CaseClause_optlist :
@@ -679,12 +679,12 @@ DebuggerStatement :
 ;
 
 FunctionDeclaration :
-  function Identifier Lparen FormalParameterListopt Rparen Lcurly FunctionBody Rcurly
+  function Identifier Lparen FormalParameterListopt Rparen Lbrace FunctionBody Rbrace
 ;
 
 FunctionExpression :
-  function Identifier Lparen FormalParameterListopt Rparen Lcurly FunctionBody Rcurly
-| function Lparen FormalParameterListopt Rparen Lcurly FunctionBody Rcurly
+  function Identifier Lparen FormalParameterListopt Rparen Lbrace FunctionBody Rbrace
+| function Lparen FormalParameterListopt Rparen Lbrace FunctionBody Rbrace
 ;
 
 FormalParameterList :

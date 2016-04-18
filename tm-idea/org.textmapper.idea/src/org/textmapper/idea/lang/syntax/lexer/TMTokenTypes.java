@@ -43,13 +43,13 @@ public interface TMTokenTypes {
 	IElementType TEMPLATES = new TMTemplatesElementType(Tokens.eoi, false, "templates");
 
 	// [] () {}
-	IElementType OP_LBRACKET = new TMElementType(Tokens.Lsquare, "[");
-	IElementType OP_RBRACKET = new TMElementType(Tokens.Rsquare, "]");
+	IElementType OP_LBRACKET = new TMElementType(Tokens.Lbrack, "[");
+	IElementType OP_RBRACKET = new TMElementType(Tokens.Rbrack, "]");
 	IElementType OP_LPAREN = new TMElementType(Tokens.Lparen, "(");
 	IElementType OP_RPAREN = new TMElementType(Tokens.Rparen, ")");
-	IElementType OP_LCURLY = new TMElementType(Tokens.Lcurly, "{");
-	IElementType OP_LCURLYTILDE = new TMElementType(Tokens.LcurlyTilde, "{~");
-	IElementType OP_RCURLY = new TMElementType(Tokens.Rcurly, "}");
+	IElementType OP_LCURLY = new TMElementType(Tokens.Lbrace, "{");
+	IElementType OP_LCURLYTILDE = new TMElementType(Tokens.LbraceTilde, "{~");
+	IElementType OP_RCURLY = new TMElementType(Tokens.Rbrace, "}");
 
 	// punctuation
 	IElementType OP_SEMICOLON = new TMElementType(Tokens.Semicolon, ";");
@@ -58,26 +58,26 @@ public interface TMTokenTypes {
 	IElementType OP_COLONCOLON = new TMElementType(Tokens.ColonColon, "::");
 
 	// operators
-	IElementType OP_PERCENT = new TMElementType(Tokens.Percent, "%");
+	IElementType OP_PERCENT = new TMElementType(Tokens.Rem, "%");
 	IElementType OP_DOLLAR = new TMElementType(Tokens.Dollar, "$");
-	IElementType OP_CCEQ = new TMElementType(Tokens.ColonColonEqual, "::=");
+	IElementType OP_CCEQ = new TMElementType(Tokens.ColonColonAssign, "::=");
 	IElementType OP_OR = new TMElementType(Tokens.Or, "|");
 	IElementType OP_OROR = new TMElementType(Tokens.OrOr, "||");
-	IElementType OP_EQ = new TMElementType(Tokens.Equal, "=");
-	IElementType OP_EQEQ = new TMElementType(Tokens.EqualEqual, "==");
-	IElementType OP_EXCLEQ = new TMElementType(Tokens.ExclamationEqual, "!=");
-	IElementType OP_EQGT = new TMElementType(Tokens.EqualGreater, "=>");
+	IElementType OP_EQ = new TMElementType(Tokens.Assign, "=");
+	IElementType OP_EQEQ = new TMElementType(Tokens.AssignAssign, "==");
+	IElementType OP_EXCLEQ = new TMElementType(Tokens.ExclAssign, "!=");
+	IElementType OP_EQGT = new TMElementType(Tokens.AssignGt, "=>");
 	IElementType OP_COLON = new TMElementType(Tokens.Colon, ":");
-	IElementType OP_LT = new TMElementType(Tokens.Less, "<");
-	IElementType OP_GT = new TMElementType(Tokens.Greater, ">");
+	IElementType OP_LT = new TMElementType(Tokens.Lt, "<");
+	IElementType OP_GT = new TMElementType(Tokens.Gt, ">");
 	IElementType OP_STAR = new TMElementType(Tokens.Mult, "*");
 	IElementType OP_PLUS = new TMElementType(Tokens.Plus, "+");
-	IElementType OP_PLUSEQ = new TMElementType(Tokens.PlusEqual, "+=");
-	IElementType OP_QMARK = new TMElementType(Tokens.Questionmark, "?");
-	IElementType OP_EMARK = new TMElementType(Tokens.Exclamation, "!");
+	IElementType OP_PLUSEQ = new TMElementType(Tokens.PlusAssign, "+=");
+	IElementType OP_QMARK = new TMElementType(Tokens.Quest, "?");
+	IElementType OP_EMARK = new TMElementType(Tokens.Excl, "!");
 	//TODO IElementType OP_ARROW = new TMElementType(Tokens.MINUSGREATER, "->");
-	IElementType OP_AND = new TMElementType(Tokens.Ampersand, "&");
-	IElementType OP_ANDAND = new TMElementType(Tokens.AmpersandAmpersand, "&&");
+	IElementType OP_AND = new TMElementType(Tokens.And, "&");
+	IElementType OP_ANDAND = new TMElementType(Tokens.AndAnd, "&&");
 	IElementType OP_AT = new TMElementType(Tokens.Atsign, "@");
 	IElementType OP_TILDE = new TMElementType(Tokens.Tilde, "~");
 

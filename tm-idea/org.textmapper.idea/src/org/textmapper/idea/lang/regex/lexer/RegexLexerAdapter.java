@@ -157,14 +157,14 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 				return RE_MULT;
 			case Tokens.Plus:
 				return RE_PLUS;
-			case Tokens.Questionmark:
+			case Tokens.Quest:
 				return RE_QUESTIONMARK;
 			case Tokens.quantifier:
 				return RE_QUANTFIER;
 
 			case Tokens.Lparen:
 				return RE_LPAREN;
-			case Tokens.LparenQuestionmark:
+			case Tokens.LparenQuest:
 				return RE_LPARENQMARK;
 			case Tokens.Or:
 				return RE_OR;
@@ -173,13 +173,13 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 			case Tokens.expand:
 				return RE_EXPAND;
 
-			case Tokens.Lsquare:
+			case Tokens.Lbrack:
 				return RE_LSQUARE;
-			case Tokens.LsquareXor:
+			case Tokens.LbrackXor:
 				return RE_LSQUAREXOR;
 			case Tokens.Minus:
 				return RE_MINUS;
-			case Tokens.Rsquare:
+			case Tokens.Rbrack:
 				return RE_RSQUARE;
 
 			case Tokens.kw_eoi:

@@ -127,8 +127,8 @@ public class RegexDefTest {
 		checkLexer("\\w++", Tokens.charclass, Tokens.Plus, Tokens._char);
 		checkLexer("(\\011{1,3}{name})",
 				Tokens.Lparen, Tokens.escaped, Tokens.quantifier, Tokens.expand, Tokens.Rparen);
-		checkLexer("[^()a-z]", Tokens.LsquareXor, Tokens._char, Tokens._char, Tokens._char, Tokens.Minus, Tokens._char,
-				Tokens.Rsquare);
+		checkLexer("[^()a-z]", Tokens.LbrackXor, Tokens._char, Tokens._char, Tokens._char, Tokens.Minus, Tokens._char,
+				Tokens.Rbrack);
 		checkLexer("a{+}\\p{abc}{-}\\x12{eoi}", Tokens._char, Tokens.op_union, Tokens.charclass, Tokens.op_minus,
 				Tokens.escaped, Tokens.kw_eoi);
 	}

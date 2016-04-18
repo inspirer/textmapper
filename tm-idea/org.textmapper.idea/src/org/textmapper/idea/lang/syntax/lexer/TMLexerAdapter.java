@@ -144,23 +144,23 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return REGEXP;
 
 			// operators
-			case Tokens.Percent:
+			case Tokens.Rem:
 				return OP_PERCENT;
 			case Tokens.Dollar:
 				return OP_DOLLAR;
-			case Tokens.ColonColonEqual:
+			case Tokens.ColonColonAssign:
 				return OP_CCEQ;
 			case Tokens.Or:
 				return OP_OR;
 			case Tokens.OrOr:
 				return OP_OROR;
-			case Tokens.Equal:
+			case Tokens.Assign:
 				return OP_EQ;
-			case Tokens.EqualEqual:
+			case Tokens.AssignAssign:
 				return OP_EQEQ;
-			case Tokens.ExclamationEqual:
+			case Tokens.ExclAssign:
 				return OP_EXCLEQ;
-			case Tokens.EqualGreater:
+			case Tokens.AssignGt:
 				return OP_EQGT;
 			case Tokens.Semicolon:
 				return OP_SEMICOLON;
@@ -172,39 +172,39 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_COLON;
 			case Tokens.ColonColon:
 				return OP_COLONCOLON;
-			case Tokens.Lsquare:
+			case Tokens.Lbrack:
 				return OP_LBRACKET;
-			case Tokens.Rsquare:
+			case Tokens.Rbrack:
 				return OP_RBRACKET;
 			case Tokens.Lparen:
 				return OP_LPAREN;
 			case Tokens.Rparen:
 				return OP_RPAREN;
-			case Tokens.Lcurly:
+			case Tokens.Lbrace:
 				return OP_LCURLY;
-			case Tokens.LcurlyTilde:
+			case Tokens.LbraceTilde:
 				return OP_LCURLYTILDE;
-			case Tokens.Rcurly:
+			case Tokens.Rbrace:
 				return OP_RCURLY;
-			case Tokens.Less:
+			case Tokens.Lt:
 				return OP_LT;
-			case Tokens.Greater:
+			case Tokens.Gt:
 				return OP_GT;
 			case Tokens.Mult:
 				return OP_STAR;
 			case Tokens.Plus:
 				return OP_PLUS;
-			case Tokens.PlusEqual:
+			case Tokens.PlusAssign:
 				return OP_PLUSEQ;
-			case Tokens.Questionmark:
+			case Tokens.Quest:
 				return OP_QMARK;
-			case Tokens.Exclamation:
+			case Tokens.Excl:
 				return OP_EMARK;
 //			case Tokens.MINUSGREATER:
 //				return OP_ARROW;
-			case Tokens.Ampersand:
+			case Tokens.And:
 				return OP_AND;
-			case Tokens.AmpersandAmpersand:
+			case Tokens.AndAnd:
 				return OP_ANDAND;
 			case Tokens.Atsign:
 				return OP_AT;

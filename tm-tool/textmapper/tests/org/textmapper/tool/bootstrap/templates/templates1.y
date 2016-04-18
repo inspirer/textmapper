@@ -5,7 +5,7 @@
 %start input
 
 %right d
-%token Equal
+%token Assign
 %token Colon
 %token Lparen
 %token Comma

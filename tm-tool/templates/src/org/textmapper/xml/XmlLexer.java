@@ -39,14 +39,14 @@ public class XmlLexer {
 		int Unavailable_ = -1;
 		int eoi = 0;
 		int any = 1;
-		int Less = 2;
+		int Lt = 2;
 		int _skipcomment = 3;
 		int identifier = 4;
 		int ccon = 5;
-		int Greater = 6;
-		int Equal = 7;
+		int Gt = 6;
+		int Assign = 7;
 		int Colon = 8;
-		int Slash = 9;
+		int Div = 9;
 		int _skip = 10;
 	}
 

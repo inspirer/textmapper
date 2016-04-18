@@ -620,10 +620,10 @@ public class TypesParser {
 				tmLeft.value = AstMapSeparator.COLON;
 				break;
 			case 53:  // map_separator ::= '='
-				tmLeft.value = AstMapSeparator.EQUAL;
+				tmLeft.value = AstMapSeparator.ASSIGN;
 				break;
 			case 54:  // map_separator ::= '=>'
-				tmLeft.value = AstMapSeparator.EQUAL_GREATER;
+				tmLeft.value = AstMapSeparator.ASSIGN_GT;
 				break;
 			case 55:  // name ::= identifier
 				tmLeft.value = new ArrayList();

@@ -46,7 +46,7 @@ public class RegexDefLexer {
 		int Dot = 4;
 		int Mult = 5;
 		int Plus = 6;
-		int Questionmark = 7;
+		int Quest = 7;
 		int quantifier = 8;
 		int op_minus = 9;
 		int op_union = 10;
@@ -54,12 +54,12 @@ public class RegexDefLexer {
 		int Lparen = 12;
 		int Or = 13;
 		int Rparen = 14;
-		int LparenQuestionmark = 15;
-		int Lsquare = 16;
-		int LsquareXor = 17;
+		int LparenQuest = 15;
+		int Lbrack = 16;
+		int LbrackXor = 17;
 		int expand = 18;
 		int kw_eoi = 19;
-		int Rsquare = 20;
+		int Rbrack = 20;
 		int Minus = 21;
 	}
 

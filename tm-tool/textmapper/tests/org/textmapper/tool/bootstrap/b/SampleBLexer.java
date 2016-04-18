@@ -38,8 +38,8 @@ public class SampleBLexer {
 		int _skip = 2;
 		int Lclass = 3;
 		int Lextends = 4;
-		int Lcurly = 5;
-		int Rcurly = 6;
+		int Lbrace = 5;
+		int Rbrace = 6;
 		int Lparen = 7;
 		int Rparen = 8;
 		int Linterface = 9;

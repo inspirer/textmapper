@@ -32,9 +32,9 @@ public abstract class SActionLexer {
 	public interface Tokens {
 		int Unavailable_ = -1;
 		int eoi = 0;
-		int Lcurly = 1;
+		int Lbrace = 1;
 		int _skip = 2;
-		int Rcurly = 3;
+		int Rbrace = 3;
 	}
 
 	public interface ErrorReporter {

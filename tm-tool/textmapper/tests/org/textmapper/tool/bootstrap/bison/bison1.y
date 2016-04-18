@@ -13,7 +13,7 @@
 %token kw_object
 %token skip
 %token comment
-%token Equal
+%token Assign
 %token Colon
 %token Lparen
 %token Comma
@@ -35,7 +35,7 @@ epilogue_T_a2 :
 ;
 
 assignment :
-  identifier Equal object
+  identifier Assign object
 			{ $$ = combine($0, $2); }
 | identifier object
 			{ $$ = combine($0, $1); }

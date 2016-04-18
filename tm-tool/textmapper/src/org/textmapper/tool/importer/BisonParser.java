@@ -339,7 +339,7 @@ public class BisonParser {
 		int input = 69;
 		int prologue_declaration_optlist = 70;
 		int prologue_declaration = 71;
-		int ApostropheLcurlyDotDotDotRcurlyApostrophe_list = 72;
+		int AposLbraceDotDotDotRbraceApos_list = 72;
 		int prologue_directive = 73;
 		int grammar_declaration = 74;
 		int symbol_or_tag_list = 75;

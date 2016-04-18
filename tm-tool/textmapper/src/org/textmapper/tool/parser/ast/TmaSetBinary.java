@@ -57,6 +57,6 @@ public class TmaSetBinary extends TmaNode implements ITmaSetExpression {
 
 	public enum TmaKindKind {
 		OR,
-		AMPERSAND,
+		AND,
 	}
 }

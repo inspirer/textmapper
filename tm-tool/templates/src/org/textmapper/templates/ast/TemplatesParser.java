@@ -706,7 +706,7 @@ public class TemplatesParser {
 		int parameter_list = 74;
 		int template_end = 75;
 		int instructions = 76;
-		int LsquareMinusRsquareRcurly = 77;
+		int LbrackMinusRbrackRbrace = 77;
 		int instruction = 78;
 		int simple_instruction = 79;
 		int sentence = 80;

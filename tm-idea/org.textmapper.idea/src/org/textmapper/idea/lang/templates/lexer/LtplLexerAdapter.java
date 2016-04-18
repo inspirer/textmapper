@@ -129,9 +129,9 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 				return ESCID;
 			case Tokens.escint:
 				return ESCINT;
-			case Tokens.DollarLcurly:
+			case Tokens.DollarLbrace:
 				return OP_DOLLARLCURLY;
-			case Tokens.DollarSlash:
+			case Tokens.DollarDiv:
 				return OP_DOLLARSLASH;
 			case Tokens.icon:
 				return ICON;
@@ -191,11 +191,11 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 				return KW_ASSERT;
 
 			// operators
-			case Tokens.Lcurly:
+			case Tokens.Lbrace:
 				return OP_LCURLY;
-			case Tokens.Rcurly:
+			case Tokens.Rbrace:
 				return OP_RCURLY;
-			case Tokens.MinusRcurly:
+			case Tokens.MinusRbrace:
 				return OP_MINUSRCURLY;
 			case Tokens.Plus:
 				return OP_PLUS;
@@ -203,17 +203,17 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 				return OP_MINUS;
 			case Tokens.Mult:
 				return OP_MULT;
-			case Tokens.Slash:
+			case Tokens.Div:
 				return OP_SLASH;
-			case Tokens.Percent:
+			case Tokens.Rem:
 				return OP_PERCENT;
-			case Tokens.Exclamation:
+			case Tokens.Excl:
 				return OP_EXCLAMATION;
 			case Tokens.Or:
 				return OP_OR;
-			case Tokens.Lsquare:
+			case Tokens.Lbrack:
 				return OP_LSQUARE;
-			case Tokens.Rsquare:
+			case Tokens.Rbrack:
 				return OP_RSQUARE;
 			case Tokens.Lparen:
 				return OP_LPAREN;
@@ -223,31 +223,31 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 				return OP_DOT;
 			case Tokens.Comma:
 				return OP_COMMA;
-			case Tokens.AmpersandAmpersand:
+			case Tokens.AndAnd:
 				return OP_AMPERSANDAMPERSAND;
 			case Tokens.OrOr:
 				return OP_OROR;
-			case Tokens.EqualEqual:
+			case Tokens.AssignAssign:
 				return OP_EQUALEQUAL;
-			case Tokens.Equal:
+			case Tokens.Assign:
 				return OP_EQUAL;
-			case Tokens.ExclamationEqual:
+			case Tokens.ExclAssign:
 				return OP_EXCLAMATIONEQUAL;
-			case Tokens.MinusGreater:
+			case Tokens.MinusGt:
 				return OP_MINUSGREATER;
-			case Tokens.EqualGreater:
+			case Tokens.AssignGt:
 				return OP_EQUALGREATER;
-			case Tokens.LessEqual:
+			case Tokens.LtAssign:
 				return OP_LESSEQUAL;
-			case Tokens.GreaterEqual:
+			case Tokens.GtAssign:
 				return OP_GREATEREQUAL;
-			case Tokens.Less:
+			case Tokens.Lt:
 				return OP_LESS;
-			case Tokens.Greater:
+			case Tokens.Gt:
 				return OP_GREATER;
 			case Tokens.Colon:
 				return OP_COLON;
-			case Tokens.Questionmark:
+			case Tokens.Quest:
 				return OP_QUESTIONMARK;
 			case Tokens._skip:
 				return WHITESPACE;

@@ -213,14 +213,14 @@ expression_list  : list<Expression>
 
 enum MapSeparator {
 	COLON,
-	EQUAL,
-	EQUAL_GREATER
+	ASSIGN,
+	ASSIGN_GT
 }
 
 map_separator  : MapSeparator ::=
 	this=':' as MapSeparator.COLON
-  | this='=' as MapSeparator.EQUAL
-  | this='=>' as MapSeparator.EQUAL_GREATER
+  | this='=' as MapSeparator.ASSIGN
+  | this='=>' as MapSeparator.ASSIGN_GT
 ;
 
 name  : list<String>

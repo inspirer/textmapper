@@ -17,6 +17,6 @@ package org.textmapper.templates.types.ast;
 
 public enum AstMapSeparator {
 	COLON,
-	EQUAL,
-	EQUAL_GREATER,
+	ASSIGN,
+	ASSIGN_GT,
 }

@@ -56,7 +56,7 @@ public class TmaPredicateBinary extends TmaNode implements ITmaPredicateExpressi
 	}
 
 	public enum TmaKindKind {
-		AMPERSAND_AMPERSAND,
+		AND_AND,
 		OR_OR,
 	}
 }

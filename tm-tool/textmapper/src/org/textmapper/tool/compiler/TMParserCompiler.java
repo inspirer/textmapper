@@ -319,7 +319,7 @@ public class TMParserCompiler {
 					RhsPredicate.Operation.Equals, null,
 					param, val, e);
 			if (((TmaComparePredicate) e).getKind()
-					== TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL) {
+					== TmaComparePredicate.TmaKindKind.EXCL_ASSIGN) {
 				result = builder.predicate(RhsPredicate.Operation.Not,
 						Collections.singleton(result), null, null, e);
 			}
@@ -332,7 +332,7 @@ public class TMParserCompiler {
 
 			RhsPredicate.Operation op;
 			switch (((TmaPredicateBinary) e).getKind()) {
-				case AMPERSAND_AMPERSAND:
+				case AND_AND:
 					op = RhsPredicate.Operation.And;
 					break;
 				case OR_OR:
@@ -388,7 +388,7 @@ public class TMParserCompiler {
 
 		TmaRhsQuantifier optional = null;
 		if (part instanceof TmaRhsQuantifier &&
-				((TmaRhsQuantifier) part).getQuantifier() == TmaQuantifierKind.QUESTIONMARK) {
+				((TmaRhsQuantifier) part).getQuantifier() == TmaQuantifierKind.QUEST) {
 			optional = (TmaRhsQuantifier) part;
 			part = optional.getInner();
 		}
@@ -472,7 +472,7 @@ public class TMParserCompiler {
 	private RhsSet convertSet(ITmaSetExpression expr, Nonterminal context) {
 		if (expr instanceof TmaSetBinary) {
 			TmaSetBinary binary = (TmaSetBinary) expr;
-			boolean is_and = binary.getKind() == TmaKindKind.AMPERSAND;
+			boolean is_and = binary.getKind() == TmaKindKind.AND;
 
 			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft(), context),
 					convertSet(binary.getRight(), context));
@@ -602,7 +602,7 @@ public class TMParserCompiler {
 						innerSymRef);
 			}
 			TmaQuantifierKind quantifier = nestedQuantifier.getQuantifier();
-			if (quantifier == TmaQuantifierKind.QUESTIONMARK) {
+			if (quantifier == TmaQuantifierKind.QUEST) {
 				error(part, "? cannot be a child of another quantifier");
 				return null;
 			}

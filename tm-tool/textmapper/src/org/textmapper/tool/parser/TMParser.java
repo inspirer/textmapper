@@ -2303,7 +2303,7 @@ public class TMParser {
 			case 142:  // rhsOptional ::= rhsCast '?'
 				tmLeft.value = new TmaRhsQuantifier(
 						((ITmaRhsPart)tmStack[tmHead - 1].value) /* inner */,
-						TmaRhsQuantifier.TmaQuantifierKind.QUESTIONMARK /* quantifier */,
+						TmaRhsQuantifier.TmaQuantifierKind.QUEST /* quantifier */,
 						source, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 144:  // rhsCast ::= rhsClass Las symref
@@ -2408,7 +2408,7 @@ public class TMParser {
 			case 164:  // setExpression ::= setExpression '&' setExpression
 				tmLeft.value = new TmaSetBinary(
 						((ITmaSetExpression)tmStack[tmHead - 2].value) /* left */,
-						TmaSetBinary.TmaKindKind.AMPERSAND /* kind */,
+						TmaSetBinary.TmaKindKind.AND /* kind */,
 						((ITmaSetExpression)tmStack[tmHead].value) /* right */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
@@ -2537,21 +2537,21 @@ public class TMParser {
 			case 193:  // predicate_primary ::= param_ref '==' literal
 				tmLeft.value = new TmaComparePredicate(
 						((TmaParamRef)tmStack[tmHead - 2].value) /* paramRef */,
-						TmaComparePredicate.TmaKindKind.EQUAL_EQUAL /* kind */,
+						TmaComparePredicate.TmaKindKind.ASSIGN_ASSIGN /* kind */,
 						((TmaLiteral)tmStack[tmHead].value) /* literal */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 194:  // predicate_primary ::= param_ref '!=' literal
 				tmLeft.value = new TmaComparePredicate(
 						((TmaParamRef)tmStack[tmHead - 2].value) /* paramRef */,
-						TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL /* kind */,
+						TmaComparePredicate.TmaKindKind.EXCL_ASSIGN /* kind */,
 						((TmaLiteral)tmStack[tmHead].value) /* literal */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 196:  // predicate_expression ::= predicate_expression '&&' predicate_expression
 				tmLeft.value = new TmaPredicateBinary(
 						((ITmaPredicateExpression)tmStack[tmHead - 2].value) /* left */,
-						TmaPredicateBinary.TmaKindKind.AMPERSAND_AMPERSAND /* kind */,
+						TmaPredicateBinary.TmaKindKind.AND_AND /* kind */,
 						((ITmaPredicateExpression)tmStack[tmHead].value) /* right */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;

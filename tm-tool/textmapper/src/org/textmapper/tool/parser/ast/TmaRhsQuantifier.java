@@ -47,7 +47,7 @@ public class TmaRhsQuantifier extends TmaNode implements ITmaRhsPart {
 	}
 
 	public enum TmaQuantifierKind {
-		QUESTIONMARK,
+		QUEST,
 		PLUS,
 		MULT,
 	}

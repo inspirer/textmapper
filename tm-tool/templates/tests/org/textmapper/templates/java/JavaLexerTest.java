@@ -170,29 +170,29 @@ public class JavaLexerTest {
 	@Test
 	public void testSeparators() {
 		assertJava(" (    )    {    }    [    ]    ;    ,    . ",
-				Tokens.Lparen, Tokens.Rparen, Tokens.Lcurly, Tokens.Rcurly, Tokens.Lsquare, Tokens.Rsquare,
+				Tokens.Lparen, Tokens.Rparen, Tokens.Lbrace, Tokens.Rbrace, Tokens.Lbrack, Tokens.Rbrack,
 				Tokens.Semicolon, Tokens.Comma, Tokens.Dot);
 	}
 
 	@Test
 	public void testOperators() {
 		assertJava("=   >   <   !   ~   ?   :",
-				Tokens.Equal, Tokens.Greater, Tokens.Less, Tokens.Exclamation, Tokens.Tilde,
-				Tokens.Questionmark, Tokens.Colon);
+				Tokens.Assign, Tokens.Gt, Tokens.Lt, Tokens.Excl, Tokens.Tilde,
+				Tokens.Quest, Tokens.Colon);
 
 		assertJava("==  <=  >=  !=  &&  ||  ++  --",
-				Tokens.EqualEqual, Tokens.LessEqual, Tokens.GreaterEqual, Tokens.ExclamationEqual,
-				Tokens.AmpersandAmpersand, Tokens.OrOr, Tokens.PlusPlus, Tokens.MinusMinus);
+				Tokens.AssignAssign, Tokens.LtAssign, Tokens.GtAssign, Tokens.ExclAssign,
+				Tokens.AndAnd, Tokens.OrOr, Tokens.PlusPlus, Tokens.MinusMinus);
 
 		assertJava("+   -   *   /   &   |   ^   %   <<   >>   >>>	@",
-				Tokens.Plus, Tokens.Minus, Tokens.Mult, Tokens.Slash,
-				Tokens.Ampersand, Tokens.Or, Tokens.Xor, Tokens.Percent,
-				Tokens.LessLess, Tokens.GreaterGreater, Tokens.GreaterGreaterGreater, Tokens.Atsign);
+				Tokens.Plus, Tokens.Minus, Tokens.Mult, Tokens.Div,
+				Tokens.And, Tokens.Or, Tokens.Xor, Tokens.Rem,
+				Tokens.LtLt, Tokens.GtGt, Tokens.GtGtGt, Tokens.Atsign);
 
 		assertJava("+=  -=  *=  /=  &=  |=  ^=  %=  <<=  >>=  >>>=",
-				Tokens.PlusEqual, Tokens.MinusEqual, Tokens.MultEqual, Tokens.SlashEqual,
-				Tokens.AmpersandEqual, Tokens.OrEqual, Tokens.XorEqual, Tokens.PercentEqual,
-				Tokens.LessLessEqual, Tokens.GreaterGreaterEqual, Tokens.GreaterGreaterGreaterEqual);
+				Tokens.PlusAssign, Tokens.MinusAssign, Tokens.MultAssign, Tokens.DivAssign,
+				Tokens.AndAssign, Tokens.OrAssign, Tokens.XorAssign, Tokens.RemAssign,
+				Tokens.LtLtAssign, Tokens.GtGtAssign, Tokens.GtGtGtAssign);
 	}
 
 	private void assertJava(String text, int... tokens) {

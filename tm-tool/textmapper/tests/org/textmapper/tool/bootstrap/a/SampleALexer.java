@@ -39,8 +39,8 @@ public class SampleALexer {
 		int identifier = 1;
 		int _skip = 2;
 		int Lclass = 3;
-		int Lcurly = 4;
-		int Rcurly = 5;
+		int Lbrace = 4;
+		int Rbrace = 5;
 		int error = 6;
 	}
 

@@ -461,7 +461,7 @@ class RhsQuantifier : RhsPart {
 	RhsPart inner;
 	QuantifierKind quantifier;
 	enum QuantifierKind {
-		QUESTIONMARK,
+		QUEST,
 		PLUS,
 		MULT
 	}
@@ -469,7 +469,7 @@ class RhsQuantifier : RhsPart {
 
 rhsOptional  : RhsPart ::=
 	this=rhsCast
-  | this=new.RhsQuantifier: inner=rhsCast quantifier='?' as QuantifierKind.QUESTIONMARK
+  | this=new.RhsQuantifier: inner=rhsCast quantifier='?' as QuantifierKind.QUEST
 ;
 
 class RhsCast : RhsPart {
@@ -572,14 +572,14 @@ class SetBinary : SetExpression {
 	SetExpression right;
 	enum KindKind {
 		OR,
-		AMPERSAND
+		AND
 	}
 }
 
 setExpression  : SetExpression ::=
 	this=setPrimary
   | this=new.SetBinary: left=setExpression kind='|' as KindKind.OR right=setExpression
-  | this=new.SetBinary: left=setExpression kind='&' as KindKind.AMPERSAND right=setExpression
+  | this=new.SetBinary: left=setExpression kind='&' as KindKind.AND right=setExpression
 ;
 
 annotation_list  : list<Annotation>
@@ -697,14 +697,14 @@ class ComparePredicate : PredicateExpression {
 	KindKind kind;
 	Literal literal;
 	enum KindKind {
-		EQUAL_EQUAL,
-		EXCLAMATION_EQUAL
+		ASSIGN_ASSIGN,
+		EXCL_ASSIGN
 	}
 }
 
 predicate_primary  : PredicateExpression ::=
 	this=new.BoolPredicate: negated='!' as true? paramRef=param_ref
-  | this=new.ComparePredicate: paramRef=param_ref (kind='==' as KindKind.EQUAL_EQUAL | kind='!=' as KindKind.EXCLAMATION_EQUAL) {literal}
+  | this=new.ComparePredicate: paramRef=param_ref (kind='==' as KindKind.ASSIGN_ASSIGN | kind='!=' as KindKind.EXCL_ASSIGN) {literal}
 ;
 
 class PredicateBinary : PredicateExpression {
@@ -712,14 +712,14 @@ class PredicateBinary : PredicateExpression {
 	KindKind kind;
 	PredicateExpression right;
 	enum KindKind {
-		AMPERSAND_AMPERSAND,
+		AND_AND,
 		OR_OR
 	}
 }
 
 predicate_expression  : PredicateExpression ::=
 	this=predicate_primary
-  | this=new.PredicateBinary: left=predicate_expression kind='&&' as KindKind.AMPERSAND_AMPERSAND right=predicate_expression
+  | this=new.PredicateBinary: left=predicate_expression kind='&&' as KindKind.AND_AND right=predicate_expression
   | this=new.PredicateBinary: left=predicate_expression kind='||' as KindKind.OR_OR right=predicate_expression
 ;
 
