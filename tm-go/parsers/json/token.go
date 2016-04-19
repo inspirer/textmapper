@@ -7,8 +7,10 @@ import (
 type Token int
 
 const (
+	UNAVAILABLE Token = iota - 1
+
 	// An end-of-input marker token.
-	EOI Token = iota
+	EOI
 
 	LBRACE // {
 	RBRACE // }
@@ -22,6 +24,7 @@ const (
 	NULL // null
 	TRUE // true
 	FALSE // false
+	ERROR
 
 	terminalEnd
 )
@@ -41,6 +44,7 @@ var tokenStr = [...]string{
 	"null",
 	"true",
 	"false",
+	"ERROR",
 }
 
 func (tok Token) String() string {

@@ -14,8 +14,10 @@ import (
 type Token int
 
 const (
+	UNAVAILABLE Token = iota - 1
+
 	// An end-of-input marker token.
-	EOI Token = iota
+	EOI
 
 ${for i in [1, syntax.terminals - 1]-}
 	${syntax.symbols[i].id->java.escapeJavaReserved()}${if syntax.symbols[i].isConstant()} // ${util.escape(syntax.symbols[i].getConstantValue())}${end}

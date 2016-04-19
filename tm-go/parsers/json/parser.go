@@ -9,6 +9,8 @@ type Parser struct {
 	err ErrorHandler
 
 	stack []node
+	lexer *Lexer
+	next Token
 }
 
 type node struct {
@@ -28,20 +30,23 @@ const (
 	debugSyntax    = false
 )
 
-func (p *Parser) Parse(lexer *Lexer) interface{} {
+func (p *Parser) Parse(lexer *Lexer) (bool, interface{}) {
 	return p.parse(0, 27, lexer)
 }
 
-func (p *Parser) parse(start, end int32, lexer *Lexer) interface{} {
+func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
-	var state int32
-	p.stack = append(p.stack[:0], node{state: state})
+	state := start
+	recovering := 0
 
-	token := lexer.Next()
+	p.stack = append(p.stack[:0], node{state: state})
+	p.lexer = lexer
+	p.next = lexer.Next()
+
 	for state != end {
-		action := p.action(state, token)
+		action := p.action(state)
 
 		if action >= 0 {
 			// Reduce.
@@ -60,7 +65,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) interface{} {
 				node.offset = p.stack[len(p.stack)-ln].offset
 				node.endoffset = p.stack[len(p.stack)-1].endoffset
 			}
-			// TODO apply rule
+			p.applyRule(&node, rule, tmRuleLen[rule])
 			p.stack = p.stack[:len(p.stack)-ln]
 			state = p.gotoState(p.stack[len(p.stack)-1].state, node.symbol)
 			node.state = state
@@ -68,38 +73,91 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) interface{} {
 
 		} else if action == -1 {
 			// Shift.
-			state = p.gotoState(state, int32(token))
+			if p.next == UNAVAILABLE {
+				p.next = lexer.Next()
+			}
+			state = p.gotoState(state, int32(p.next))
 			s, e := lexer.Pos()
 			p.stack = append(p.stack, node{
-				symbol:    int32(token),
+				symbol:    int32(p.next),
 				state:     state,
 				offset:    s,
 				endoffset: e,
 			})
 			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", token, lexer.Text())
+				fmt.Printf("shift: %v (%s)\n", p.next, lexer.Text())
 			}
-			if state != -1 && token != EOI {
-				token = lexer.Next()
+			if state != -1 && p.next != EOI {
+				p.next = UNAVAILABLE
+			}
+			if recovering > 0 {
+				recovering--
 			}
 		}
 
 		if action == -2 || state == -1 {
+			if p.recover() {
+				state = p.stack[len(p.stack)-1].state
+				if recovering == 0 {
+					offset, endoffset := lexer.Pos()
+					line := lexer.Line()
+					p.err(line, offset, endoffset - offset, "syntax error")
+				}
+				if recovering >= 3 {
+					p.next = lexer.Next()
+				}
+				recovering = 4
+				continue
+			}
+			if len(p.stack) == 0 {
+				state = start
+				p.stack = append(p.stack, node{state: state})
+			}
 			break
 		}
 	}
 
 	if state != end {
+		if recovering > 0 {
+			return false, nil
+		}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
 		p.err(line, offset, endoffset - offset, "syntax error")
-		return nil
+		return false, nil
 	}
 
-	return p.stack[len(p.stack)-1].value
+	return true, p.stack[len(p.stack)-1].value
 }
 
-func (p *Parser) action(state int32, next Token) int32 {
+func (p *Parser) recover() bool {
+	if p.next == UNAVAILABLE {
+		p.next = p.lexer.Next()
+	}
+	if p.next == EOI {
+		return false
+	}
+	e, _ := p.lexer.Pos()
+	s := e
+	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, 13) == -1 {
+	    // TODO cleanup
+		p.stack = p.stack[:len(p.stack)-1]
+		s = p.stack[len(p.stack)-1].offset
+	}
+	if len(p.stack) > 0 {
+	    state := p.gotoState(p.stack[len(p.stack)-1].state, 13)
+		p.stack = append(p.stack, node{
+			symbol:    13,
+			state:     state,
+			offset:    s,
+			endoffset: e,
+		})
+		return true
+	}
+	return false
+}
+
+func (p *Parser) action(state int32) int32 {
 	a := tmAction[state]
 	return a
 }
@@ -120,4 +178,7 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 		}
 	}
 	return -1
+}
+
+func (p* Parser) applyRule(node *node, rule, ruleLen int32) {
 }
