@@ -22,6 +22,7 @@ type Lexer struct {
 	tokenLine   int  // last token line
 	lineOffset  int  // current line offset
 	scanOffset  int  // scanning offset
+	value       interface{}
 
 	State int // lexer state, modifiable
 }
@@ -134,9 +135,23 @@ restart:
 	}
 
 	rule := -state - 3
+	switch rule {
+	case 0:
+		if r, ok := instancesOfID[l.Text()]; ok {
+			rule = r
+		}
+	}
+
 	token := tmToken[rule]
-	switch token {
-	case SPACE:
+	space := false
+	switch rule {
+	case 7: // space: /[\t\r\n ]+/
+		space = true
+	case 8: // JSONString: /"([^"\\]|\\(["\/\\bfnrt]|u{hex}{4}))*"/
+		{ l.value = l.Text() }
+	}
+
+	if space {
 		goto restart
 	}
 	return token
@@ -166,4 +181,14 @@ func (l *Lexer) Line() int {
 // Text returns the substring of the input corresponding to the last token.
 func (l *Lexer) Text() string {
 	return string(l.source[l.tokenOffset:l.offset])
+}
+
+func (l *Lexer) Value() interface{} {
+	return l.value
+}
+
+var instancesOfID = map[string]int{
+	"null": 10,
+	"true": 11,
+	"false": 12,
 }

@@ -65,7 +65,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 				node.offset = p.stack[len(p.stack)-ln].offset
 				node.endoffset = p.stack[len(p.stack)-1].endoffset
 			}
-			p.applyRule(&node, rule, tmRuleLen[rule])
+			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
 			state = p.gotoState(p.stack[len(p.stack)-1].state, node.symbol)
 			node.state = state
@@ -81,6 +81,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 			p.stack = append(p.stack, node{
 				symbol:    int32(p.next),
 				state:     state,
+				value:     lexer.Value(),
 				offset:    s,
 				endoffset: e,
 			})
@@ -130,6 +131,8 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 	return true, p.stack[len(p.stack)-1].value
 }
 
+const errSymbol = 14
+
 func (p *Parser) recover() bool {
 	if p.next == UNAVAILABLE {
 		p.next = p.lexer.Next()
@@ -139,15 +142,15 @@ func (p *Parser) recover() bool {
 	}
 	e, _ := p.lexer.Pos()
 	s := e
-	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, 13) == -1 {
+	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
 	    // TODO cleanup
 		p.stack = p.stack[:len(p.stack)-1]
 		s = p.stack[len(p.stack)-1].offset
 	}
 	if len(p.stack) > 0 {
-	    state := p.gotoState(p.stack[len(p.stack)-1].state, 13)
+	    state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
 		p.stack = append(p.stack, node{
-			symbol:    13,
+			symbol:    errSymbol,
 			state:     state,
 			offset:    s,
 			endoffset: e,
@@ -180,5 +183,11 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 	return -1
 }
 
-func (p* Parser) applyRule(node *node, rule, ruleLen int32) {
+func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
+	switch (rule) {
+	case 1:  // JSONValue ::= 'null'
+		{ node.value = &Literal{value: "null"} }
+	case 10:  // JSONMember ::= JSONString ':' JSONValue
+		{ node.value = &Field{name: rhs[0].value.(string)} }
+	}
 }

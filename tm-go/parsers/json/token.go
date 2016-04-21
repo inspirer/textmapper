@@ -21,6 +21,7 @@ const (
 	SPACE
 	JSONSTRING
 	JSONNUMBER
+	ID
 	NULL // null
 	TRUE // true
 	FALSE // false
@@ -41,6 +42,7 @@ var tokenStr = [...]string{
 	"SPACE",
 	"JSONSTRING",
 	"JSONNUMBER",
+	"ID",
 	"null",
 	"true",
 	"false",

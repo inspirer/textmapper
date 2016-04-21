@@ -76,7 +76,7 @@ ${end-}
 				node.offset = p.stack[len(p.stack)-ln].offset
 				node.endoffset = p.stack[len(p.stack)-1].endoffset
 			}
-			p.applyRule(&node, rule, tmRuleLen[rule])
+			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
 			state = p.gotoState(p.stack[len(p.stack)-1].state, node.symbol)
 			node.state = state
@@ -92,6 +92,7 @@ ${end-}
 			p.stack = append(p.stack, node{
 				symbol:    int32(p.next),
 				state:     state,
+				value:     lexer.Value(),
 				offset:    s,
 				endoffset: e,
 			})
@@ -146,7 +147,10 @@ ${end-}
 
 	return true, p.stack[len(p.stack)-1].value
 }
-${if self->hasRecovering()}
+${if self->hasRecovering()-}
+
+const errSymbol = ${syntax.error.index}
+
 func (p *Parser) recover() bool {
 	if p.next == UNAVAILABLE {
 		p.next = p.lexer.Next()
@@ -156,15 +160,15 @@ func (p *Parser) recover() bool {
 	}
 	e, _ := p.lexer.Pos()
 	s := e
-	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, ${syntax.error.index}) == -1 {
+	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
 	    // TODO cleanup
 		p.stack = p.stack[:len(p.stack)-1]
 		s = p.stack[len(p.stack)-1].offset
 	}
 	if len(p.stack) > 0 {
-	    state := p.gotoState(p.stack[len(p.stack)-1].state, ${syntax.error.index})
+	    state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
 		p.stack = append(p.stack, node{
-			symbol:    ${syntax.error.index},
+			symbol:    errSymbol,
 			state:     state,
 			offset:    s,
 			endoffset: e,
@@ -213,7 +217,15 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 	return -1
 }
 
-func (p* Parser) applyRule(node *node, rule, ruleLen int32) {
+func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
+${if syntax.rules.exists(r|r.getAction())-}
+	switch (rule) {
+${foreach rule in syntax.rules.select(r|r.getAction())-}
+	case ${rule.getIndex()}:  // ${rule}
+		${call parserAction('node.value') for rule-}
+${end-}
+	}
+${end-}
 }
 ${end}
 
@@ -267,3 +279,7 @@ ${end}
 ${query needActionsTable() = parser.lalr.size() > 0}
 
 ${cached query hasRecovering() = syntax.error}
+
+${template parserAction($)-}
+${eval getAction()}
+${end}

@@ -13,3 +13,15 @@ ${query escapeGoReserved() =
         'continue',     'for',         'import',       'return',       'var'
 
 	].contains(self) ? '_' + self : self }
+
+${query symText(property) = self.leftOffset == -1
+	? (property == 'value' ? 'nil' : '-1')
+	: (self.isLeft ? 'node' : 'rhs[' + self.leftOffset + ']') + '.' + property }
+
+${template symAccess(property)-}
+${assert ['value', 'offset', 'endoffset'].contains(property)-}
+${self->symText(property)-}
+${if property == 'value' && symbol->type()}.(${symbol->type()-})${end-}
+${end}
+
+${cached query type() = self.type is LiRawAstType ? self.type : null }
