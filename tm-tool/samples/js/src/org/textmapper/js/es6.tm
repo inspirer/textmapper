@@ -14,9 +14,6 @@ module = "es6"
 
 [initial, div, template, template_div]
 
-# TODO
-lookahead1:
-
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 
 LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
@@ -206,7 +203,7 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 %lookahead flag NoLetSq = false;
 %lookahead flag NoObjLiteral = false;
 %lookahead flag NoFuncClass = false;
-
+%lookahead flag StartWithLet = false;
 
 IdentifierName ::=
 	  Identifier
@@ -367,14 +364,16 @@ TemplateMiddleList<Yield> ::=
 ;
 
 MemberExpression<Yield, flag NoLetOnly = false> ::=
-	  [!NoLetOnly] PrimaryExpression
-	| [NoLetOnly] PrimaryExpression<+NoLet>
-	| MemberExpression<NoLetOnly: NoLetSq> '[' Expression<+In> ']'
+	  [!NoLetOnly && !StartWithLet] PrimaryExpression
+	| [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
+	| [StartWithLet && !NoLetOnly] 'let'
+	| [StartWithLet] MemberExpression<+NoLetOnly> '[' Expression<+In> ']'
+	| [!StartWithLet] MemberExpression<NoLetOnly: NoLetSq> '[' Expression<+In> ']'
 	| MemberExpression '.' IdentifierName
 	| MemberExpression TemplateLiteral
-	| SuperProperty
-	| MetaProperty
-	| 'new' MemberExpression Arguments
+	| [!StartWithLet] SuperProperty
+	| [!StartWithLet] MetaProperty
+	| [!StartWithLet] 'new' MemberExpression Arguments
 ;
 
 SuperProperty<Yield> ::=
@@ -392,12 +391,12 @@ NewTarget ::=
 
 NewExpression<Yield> ::=
 	  MemberExpression
-	| 'new' NewExpression
+	| [!StartWithLet] 'new' NewExpression
 ;
 
 CallExpression<Yield> ::=
 	  MemberExpression Arguments
-	| SuperCall
+	| [!StartWithLet] SuperCall
 	| CallExpression Arguments
 	| CallExpression '[' Expression<+In> ']'
 	| CallExpression '.' IdentifierName
@@ -433,15 +432,15 @@ PostfixExpression<Yield> ::=
 
 UnaryExpression<Yield> ::=
 	  PostfixExpression
-	| 'delete' UnaryExpression
-	| 'void' UnaryExpression
-	| 'typeof' UnaryExpression
-	| '++' UnaryExpression
-	| '--' UnaryExpression
-	| '+' UnaryExpression
-	| '-' UnaryExpression
-	| '~' UnaryExpression
-	| '!' UnaryExpression
+	| [!StartWithLet] 'delete' UnaryExpression
+	| [!StartWithLet] 'void' UnaryExpression
+	| [!StartWithLet] 'typeof' UnaryExpression
+	| [!StartWithLet] '++' UnaryExpression
+	| [!StartWithLet] '--' UnaryExpression
+	| [!StartWithLet] '+' UnaryExpression
+	| [!StartWithLet] '-' UnaryExpression
+	| [!StartWithLet] '~' UnaryExpression
+	| [!StartWithLet] '!' UnaryExpression
 ;
 
 MultiplicativeExpression<Yield> ::=
@@ -515,8 +514,8 @@ ConditionalExpression<In, Yield> ::=
 
 AssignmentExpression<In, Yield> ::=
 	  ConditionalExpression
-	| [Yield] YieldExpression
-	| ArrowFunction
+	| [Yield && !StartWithLet] YieldExpression
+	| [!StartWithLet] ArrowFunction
 	| LeftHandSideExpression '=' AssignmentExpression
 	| LeftHandSideExpression AssignmentOperator AssignmentExpression
 ;
@@ -680,13 +679,15 @@ IfStatement<Yield, Return> ::=
 IterationStatement<Yield, Return> ::=
 	  'do' Statement 'while' '(' Expression<+In> ')' ';'
 	| 'while' '(' Expression<+In> ')' Statement
-	| 'for' '(' Expressionopt<~In,+NoLetSq> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
+	| 'for' '(' Expressionopt<~In,+NoLet> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
+	| 'for' '(' Expression<~In,+StartWithLet> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
 	| 'for' '(' 'var' VariableDeclarationList<~In> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
 	| 'for' '(' LexicalDeclaration<~In> Expressionopt<+In> ';' Expressionopt<+In> ')' Statement
-	| 'for' '(' LeftHandSideExpression<+NoLetSq> 'in' Expression<+In> ')' Statement
+	| 'for' '(' LeftHandSideExpression<+NoLet> 'in' Expression<+In> ')' Statement
+	| 'for' '(' LeftHandSideExpression<+StartWithLet> 'in' Expression<+In> ')' Statement
 	| 'for' '(' 'var' ForBinding 'in' Expression<+In> ')' Statement
 	| 'for' '(' ForDeclaration 'in' Expression<+In> ')' Statement
-	| 'for' '(' lookahead1 LeftHandSideExpression<+NoLet> 'of' AssignmentExpression<+In> ')' Statement
+	| 'for' '(' LeftHandSideExpression<+NoLet> 'of' AssignmentExpression<+In> ')' Statement
 	| 'for' '(' 'var' ForBinding 'of' AssignmentExpression<+In> ')' Statement
 	| 'for' '(' ForDeclaration 'of' AssignmentExpression<+In> ')' Statement
 ;
