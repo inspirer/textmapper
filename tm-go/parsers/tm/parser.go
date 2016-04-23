@@ -1,21 +1,10 @@
-${template main-}
-${file 'parser.go'-}
-${call parser-}
-${end-}
-${file 'parser_tables.go'-}
-${call parserTables-}
-${end-}
-${end}
-
-${template parser-}
-package ${opts.lang}
+package tm
 
 import (
 	"fmt"
-${call imports-}
 )
 
-// Parser is a table-driven LALR parser for ${opts.lang}.
+// Parser is a table-driven LALR parser for tm.
 type Parser struct {
 	err ErrorHandler
 
@@ -42,7 +31,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) (bool, interface{}) {
-	return p.parse(0, ${parser.statesCount-1}, lexer)
+	return p.parse(0, 418, lexer)
 }
 
 func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
@@ -50,8 +39,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 		p.stack = make([]node, 0, startStackSize)
 	}
 	state := start
-${if self->hasRecovering()}	recovering := 0
-${end-}
+	recovering := 0
 
 	p.stack = append(p.stack[:0], node{state: state})
 	p.lexer = lexer
@@ -103,15 +91,12 @@ ${end-}
 			if state != -1 && p.next != EOI {
 				p.next = UNAVAILABLE
 			}
-${if self->hasRecovering()-}
 			if recovering > 0 {
 				recovering--
 			}
-${end-}
 		}
 
 		if action == -2 || state == -1 {
-${if self->hasRecovering()-}
 			if p.recover() {
 				state = p.stack[len(p.stack)-1].state
 				if recovering == 0 {
@@ -129,17 +114,14 @@ ${if self->hasRecovering()-}
 				state = start
 				p.stack = append(p.stack, node{state: state})
 			}
-${end-}
 			break
 		}
 	}
 
 	if state != end {
-${if self->hasRecovering()-}
 		if recovering > 0 {
 			return false, nil
 		}
-${end-}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
 		p.err(line, offset, endoffset - offset, "syntax error")
@@ -148,9 +130,8 @@ ${end-}
 
 	return true, p.stack[len(p.stack)-1].value
 }
-${if self->hasRecovering()-}
 
-const errSymbol = ${syntax.error.index}
+const errSymbol = 38
 
 func (p *Parser) recover() bool {
 	if p.next == UNAVAILABLE {
@@ -178,11 +159,9 @@ func (p *Parser) recover() bool {
 	}
 	return false
 }
-${end-}
 
 func (p *Parser) action(state int32) int32 {
 	a := tmAction[state]
-${if self->needActionsTable()-}
 	if a < -2 {
 		// Lookahead is needed.
 		if p.next == UNAVAILABLE {
@@ -196,7 +175,6 @@ ${if self->needActionsTable()-}
 		}
 		return tmLalr[a+1]
 	}
-${end-}
 	return a
 }
 
@@ -219,78 +197,12 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 }
 
 func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
-${if syntax.rules.exists(r|r.getAction())-}
 	switch (rule) {
-${foreach rule in syntax.rules.select(r|r.getAction())-}
-	case ${rule.getIndex()}:  // ${rule}
-		${call parserAction('node.value') for rule-}
-${end-}
+	case 19:  // type ::= '(' scon ')'
+		{ node.value = rhs[1].value.(string); }
+	case 20:  // type ::= '(' type_part_list ')'
+		{ node.value = "TODO" }
+	case 218:  // qualified_id ::= qualified_id '.' ID
+		{ node.value = rhs[0].value.(string) + "." + rhs[2].value.(string); }
 	}
-${end-}
 }
-${end}
-
-
-${template parserTables-}
-package ${opts.lang}
-
-var tmAction = []int32{
-	${util.format(parser.action, 16, 1)},
-}
-
-${if self->needActionsTable()-}
-var tmLalr = []int32{
-	${util.format(parser.lalr, 16, 1)},
-}
-
-${end-}
-var tmGoto = []int32{
-	${util.format(parser.symGoto, 16, 1)},
-}
-
-var tmFrom = []int32{
-	${util.format(parser.symFrom, 16, 1)},
-}
-
-var tmTo = []int32{
-	${util.format(parser.symTo, 16, 1)},
-}
-
-var tmRuleLen = []int32{
-	${util.format(parser.ruleLength, 16, 1)},
-}
-
-var tmRuleSymbol = []int32{
-	${util.format(parser.left, 16, 1)},
-}
-
-const (
-${for i in [parser.nterms, parser.nsyms-1]-}
-	${parser.symbols[i].id->go.escapeGoReserved()}${if i == parser.nterms} int = int(terminalEnd) + iota${end}
-${end-}
-)
-
-var tmSymbolNames = [...]string{
-${for i in [parser.nterms, parser.nsyms-1]-}
-	"${parser.symbols[i].name}",
-${end-}
-}
-${foreach set in syntax.sets-}
-
-// ${set.set}
-var ${set.name} = []int32{
-	${util.format(set.elements, 16, 1)},
-}
-${end-}
-${end}
-
-${query needActionsTable() = parser.lalr.size() > 0}
-
-${cached query hasRecovering() = syntax.error}
-
-${template parserAction($)-}
-${eval getAction()}
-${end}
-
-
-${template imports}${end}

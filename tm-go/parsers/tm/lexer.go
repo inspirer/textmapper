@@ -1,19 +1,9 @@
-${template main-}
-${file 'lexer.go'-}
-${call lexer-}
-${end-}
-${file 'lexer_tables.go'-}
-${call lexerTables-}
-${end-}
-${end}
-
-${template lexer-}
-package ${opts.lang}
+package tm
 
 import (
 	"bytes"
 	"unicode/utf8"
-${call imports-}
+	"strconv"
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process
@@ -146,27 +136,31 @@ restart:
 	}
 
 	rule := -state - 3
-${if self->classRules().exists(it|it->classHasInstances())-}
 	switch rule {
-${foreach rule in self->classRules().select(it|it->classHasInstances())-}
-	case ${rule.index}:
-		if r, ok := instancesOf${rule->classRuleName()}[l.Text()]; ok {
+	case 0:
+		if r, ok := instancesOfID[l.Text()]; ok {
 			rule = r
 		}
-${end-}
 	}
 
-${end-}
 	token := tmToken[rule]
 	space := false
-${if syntax.lexerRules.exists(r|r->hasActions())-}
 	switch rule {
-${foreach rule in syntax.lexerRules.select(r|r->hasActions())-}
-	case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
-${call lexerAction('l.value', 'token') for rule-}
-${end-}
+	case 0: // ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/
+		{ l.value = l.Text(); }
+	case 1: // regexp: /\/{reFirst}{reChar}*\//
+		{ text := l.Text(); l.value = text[1:len(text)-2] }
+	case 2: // scon: /"([^\n\\"]|\\.)*"/
+		{ text := l.Text(); l.value = text[1:len(text)-2] }
+	case 3: // icon: /\-?[0-9]+/
+		{ l.value, _ = strconv.ParseInt(l.Text(), 10, 64) }
+	case 5: // _skip: /[\n\r\t ]+/
+		space = true
+	case 6: // _skip_comment: /#.*(\r?\n)?/
+		space = true
+	case 7: // _skip_multiline: /\/\*{commentChars}\*\//
+		space = true
 	}
-${end-}
 
 	if space {
 		goto restart
@@ -203,58 +197,43 @@ func (l *Lexer) Text() string {
 func (l *Lexer) Value() interface{} {
 	return l.value
 }
-${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
 
-var instancesOf${classRule->classRuleName()} = map[string]int{
-${foreach instance in classRule->classInstances()-}
-	"${util.escape(instance.regexp.constantValue)}": ${instance.index},
-${end-}
+var instancesOfID = map[string]int{
+	"true": 39,
+	"false": 40,
+	"new": 41,
+	"separator": 42,
+	"as": 43,
+	"import": 44,
+	"set": 45,
+	"brackets": 46,
+	"inline": 47,
+	"prec": 48,
+	"shift": 49,
+	"returns": 50,
+	"input": 51,
+	"left": 52,
+	"right": 53,
+	"nonassoc": 54,
+	"generate": 55,
+	"assert": 56,
+	"empty": 57,
+	"nonempty": 58,
+	"global": 59,
+	"explicit": 60,
+	"lookahead": 61,
+	"param": 62,
+	"flag": 63,
+	"no-eoi": 64,
+	"soft": 65,
+	"class": 66,
+	"interface": 67,
+	"void": 68,
+	"space": 69,
+	"layout": 70,
+	"language": 71,
+	"lalr": 72,
+	"lexer": 73,
+	"parser": 74,
+	"reduce": 75,
 }
-${end-}
-${end}
-
-${template lexerTables-}
-package ${opts.lang}
-
-var tmNumClasses = ${lex.nchars}
-
-var tmRuneClass = []int32{
-	${util.format(lex.char2no, 16, 1)},
-}
-
-var tmStateMap = []int{
-	${util.format(lex.groupset, 16, 1)},
-}
-
-var tmToken = []Token{
-	${util.format(syntax.lexerRuleTokens, 16, 1)},
-}
-
-var tmLexerAction = []int32{
-	${util.format(lex.change, 16, 1)},
-}
-${end}
-
-
-
-${template lexerAction($, symbol)-}
-${if self.kindAsText == 'space'-}
-		space = true
-${end-}
-${if action-}
-		${eval action}
-${end-}
-${end}
-
-
-${cached query hasActions() = self.action || self.kindAsText == 'space' }
-
-${cached query classRules() = syntax.lexerRules.select(x|x.kindAsText == 'class')}
-
-${cached query classHasInstances() = self->classInstances().size() > 0 }
-
-${cached query classInstances() = context.syntax.lexerRules.select(x|x.classRule && x.classRule == self)}
-
-${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
-
-${template imports}${end}

@@ -2,6 +2,7 @@ ${template main-}
 ${call go_lexer.main-}
 ${call go_parser.main-}
 ${call go_token.main-}
+${call go_ast.main-}
 ${end}
 
 ${query escapeGoReserved() =
@@ -10,8 +11,13 @@ ${query escapeGoReserved() =
         'case',         'defer',       'go',           'map',          'struct',
         'chan',         'else',        'goto',         'package',      'switch',
         'const',        'fallthrough', 'if',           'range',        'type',
-        'continue',     'for',         'import',       'return',       'var'
+        'continue',     'for',         'import',       'return',       'var',
 
+        'bool', 'string', 'byte', 'int', 'rune',
+
+        'iota', 'nil', 'true', 'false',
+
+        'fmt', 'strconv'
 	].contains(self) ? '_' + self : self }
 
 ${query symText(property) = self.leftOffset == -1
@@ -24,4 +30,4 @@ ${self->symText(property)-}
 ${if property == 'value' && symbol->type()}.(${symbol->type()-})${end-}
 ${end}
 
-${cached query type() = self.type is LiRawAstType ? self.type : null }
+${cached query type() = context.opts.genast ? self->go_ast.type() : self.type is LiRawAstType ? self.type : null }

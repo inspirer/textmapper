@@ -1,0 +1,89 @@
+${template main-}
+${if opts.genast && self.ast-}
+${file 'ast/ast.go'-}
+${call ast-}
+${end-}
+${end-}
+${if opts.genastdef && self.ast-}
+${file 'ast.last'}${call ast_text.unit}${end-}
+${end-}
+${end}
+
+${cached query className() =
+	prefix = self.containingClass ? self.containingClass->className() + '_' : '',
+	util.uniqueId((prefix + util.toCamelCase(self.name, true))->go.escapeGoReserved(), '__classes__')}
+
+${cached query interfaceMethodName() =
+	util.toFirstLower(self->className())}
+
+${cached query enumMemberName() =
+	prefix = self.containingEnum.containingClass
+			? self.containingEnum.containingClass->className() + '_'
+			: self.containingEnum->className() + '_',
+	util.uniqueId(prefix + self.name.toUpperCase()->go.escapeGoReserved(), '__classes__')}
+
+${cached query propertyName() =
+	util.uniqueId(util.toCamelCase(self.name, true)->go.escapeGoReserved(), '__prop__#' + self.containingClass->className())}
+
+${query fieldType() =
+	type is PrimitiveType ? (value = type.toString(), value == 'boolean' ? 'bool' : value == 'any' ? 'interface{}' : value) :
+	context->convertType(self.type)}
+
+${template ast-}
+package ast
+
+${foreach cl in ast.classifiers separator '\n'-}
+${self->('ast_'+cl->kind())(cl)-}
+${end-}
+${end}
+
+${query kind() =
+	self is LiAstEnum ? 'enum' : self.isInterface() ? 'interface' : 'class' }
+
+${query type() =
+	context->convertType(self.type)}
+
+${query convertType(asttype) =
+	asttype is LiAstList ? '[]' + self->convertType(asttype.inner) :
+	asttype is PrimitiveType ? (val = asttype.toString(), val == 'boolean' ? 'bool': val ) :
+	asttype is LiRawAstType ? asttype.rawType :
+	asttype is VoidType ? null :
+	asttype->className()
+}
+
+${template ast_interface(cl)-}
+type ${cl->className()} interface {
+${foreach impl in cl.super-}
+	${impl->className()}
+${end-}
+	${cl->interfaceMethodName()}()
+}
+${end}
+
+${template ast_class_fields(cl)}${end}
+
+${template ast_class(cl)-}
+type ${cl->className()} struct {
+${foreach prop in cl.fields-}
+	${prop->propertyName()} ${prop->fieldType()}
+${end-}
+${call ast_class_fields(cl)-}
+}
+${if cl.super.length > 0}
+${foreach impl in cl.super-}
+func (*${cl->className()}) ${impl->interfaceMethodName()}() {}
+${end-}
+${end-}
+${foreach inner in cl.inner}
+${self->('ast_'+inner->kind())(inner)-}
+${end-}
+${end}
+
+${template ast_enum(cl)-}
+type ${cl->className()} int
+const (
+${foreach const in cl.members-}
+	${const->enumMemberName()}${if index == 0} ${cl->className()} = iota$/
+${end-}
+)
+${end}

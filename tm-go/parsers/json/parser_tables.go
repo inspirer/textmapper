@@ -53,3 +53,8 @@ var tmSymbolNames = [...]string{
 	"JSONArray",
 	"JSONElementList",
 }
+
+// set(first JSONValue)
+var Literals = []int32{
+	1, 3, 8, 9, 11, 12, 13,
+}

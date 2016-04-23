@@ -35,6 +35,8 @@ error:
 
 %input JSONText;
 
+%generate Literals = set(first JSONValue);
+
 JSONText ::=
 	  JSONValue ;
 
