@@ -41,7 +41,7 @@ type NontermType interface {
 }
 
 type NontermTypeAST struct {
-	Reference Symref
+	Reference *Symref
 }
 
 func (*NontermTypeAST) nontermType() {}
@@ -49,8 +49,8 @@ func (*NontermTypeAST) nontermType() {}
 type NontermTypeHint struct {
 	Inline bool
 	Kind NontermTypeHint_KindKind
-	Name Identifier
-	Implements []Symref
+	Name *Identifier
+	Implements []*Symref
 }
 
 func (*NontermTypeHint) nontermType() {}
@@ -96,7 +96,7 @@ type NontermParam interface {
 
 type InlineParameter struct {
 	ParamType string
-	Name Identifier
+	Name *Identifier
 	ParamValue ParamValue
 }
 
@@ -129,8 +129,8 @@ type Expression interface {
 }
 
 type Instance struct {
-	ClassName Name
-	Entries []MapEntry
+	ClassName *Name
+	Entries []*MapEntry
 }
 
 func (*Instance) expression() {}
@@ -142,17 +142,17 @@ type Array struct {
 func (*Array) expression() {}
 
 type Input struct {
-	Header Header
-	Imports []Import
-	Options []Option
+	Header *Header
+	Imports []*Import
+	Options []*Option
 	Lexer []LexerPart
 	Parser []GrammarPart
 }
 
 type Header struct {
-	Name Name
-	Target Name
-	ParsingAlgorithm ParsingAlgorithm
+	Name *Name
+	Target *Name
+	ParsingAlgorithm *ParsingAlgorithm
 }
 
 type ParsingAlgorithm struct {
@@ -167,7 +167,7 @@ type Import struct {
 type Option struct {
 	Key string
 	Value Expression
-	SyntaxProblem SyntaxProblem
+	SyntaxProblem *SyntaxProblem
 }
 
 type Identifier struct {
@@ -176,7 +176,7 @@ type Identifier struct {
 
 type Symref struct {
 	Name string
-	Args SymrefArgs
+	Args *SymrefArgs
 }
 
 func (*Symref) expression() {}
@@ -188,19 +188,19 @@ type Pattern struct {
 
 type NamedPattern struct {
 	Name string
-	Pattern Pattern
+	Pattern *Pattern
 }
 
 func (*NamedPattern) lexerPart() {}
 
 type Lexeme struct {
-	Name Identifier
+	Name *Identifier
 	Type string
-	Pattern Pattern
-	Transition Stateref
+	Pattern *Pattern
+	Transition *Stateref
 	Priority int
-	Attrs LexemeAttrs
-	Command Command
+	Attrs *LexemeAttrs
+	Command *Command
 }
 
 func (*Lexeme) lexerPart() {}
@@ -210,7 +210,7 @@ type LexemeAttrs struct {
 }
 
 type StateSelector struct {
-	States []LexerState
+	States []*LexerState
 }
 
 func (*StateSelector) lexerPart() {}
@@ -220,41 +220,41 @@ type Stateref struct {
 }
 
 type LexerState struct {
-	Name Identifier
-	DefaultTransition Stateref
+	Name *Identifier
+	DefaultTransition *Stateref
 }
 
 type Nonterm struct {
-	Annotations Annotations
-	Name Identifier
-	Params NontermParams
+	Annotations *Annotations
+	Name *Identifier
+	Params *NontermParams
 	Type NontermType
-	Rules []Rule0
+	Rules []*Rule0
 }
 
 func (*Nonterm) grammarPart() {}
 
 type Inputref struct {
-	Reference Symref
+	Reference *Symref
 	Noeoi bool
 }
 
 type Rule0 struct {
 	Predicate PredicateExpression
-	Prefix RhsPrefix
+	Prefix *RhsPrefix
 	List []RhsPart
-	Action RuleAction
-	Suffix RhsSuffix
-	Error SyntaxProblem
+	Action *RuleAction
+	Suffix *RhsSuffix
+	Error *SyntaxProblem
 }
 
 type RhsPrefix struct {
-	Annotations Annotations
+	Annotations *Annotations
 }
 
 type RhsSuffix struct {
 	Kind RhsSuffix_KindKind
-	Symref Symref
+	Symref *Symref
 }
 
 type RhsSuffix_KindKind int
@@ -264,18 +264,18 @@ const (
 )
 
 type RuleAction struct {
-	Action Identifier
+	Action *Identifier
 	Parameter string
 }
 
 type Annotations struct {
-	Annotations []Annotation
+	Annotations []*Annotation
 }
 
 type Annotation struct {
 	Name string
 	Expression Expression
-	SyntaxProblem SyntaxProblem
+	SyntaxProblem *SyntaxProblem
 }
 
 type NontermParams struct {
@@ -283,17 +283,17 @@ type NontermParams struct {
 }
 
 type ParamRef struct {
-	Ref Identifier
+	Ref *Identifier
 }
 
 func (*ParamRef) nontermParam() {}
 
 type SymrefArgs struct {
-	ArgList []Argument
+	ArgList []*Argument
 }
 
 type Argument struct {
-	Name ParamRef
+	Name *ParamRef
 	Val ParamValue
 	Bool Argument_BoolKind
 }
@@ -334,8 +334,8 @@ func (*SyntaxProblem) rhsPart() {}
 func (*SyntaxProblem) expression() {}
 
 type DirectiveBrackets struct {
-	Opening Symref
-	Closing Symref
+	Opening *Symref
+	Closing *Symref
 }
 
 func (*DirectiveBrackets) lexerPart() {}
@@ -343,7 +343,7 @@ func (*DirectiveBrackets) lexerPart() {}
 type TemplateParam struct {
 	Modifier ParamModifier
 	ParamType ParamType
-	Name Identifier
+	Name *Identifier
 	ParamValue ParamValue
 }
 
@@ -351,20 +351,20 @@ func (*TemplateParam) grammarPart() {}
 
 type DirectivePrio struct {
 	Assoc Assoc
-	Symbols []Symref
+	Symbols []*Symref
 }
 
 func (*DirectivePrio) grammarPart() {}
 
 type DirectiveInput struct {
-	InputRefs []Inputref
+	InputRefs []*Inputref
 }
 
 func (*DirectiveInput) grammarPart() {}
 
 type DirectiveAssert struct {
 	Kind DirectiveAssert_KindKind
-	RhsSet RhsSet
+	RhsSet *RhsSet
 }
 
 func (*DirectiveAssert) grammarPart() {}
@@ -377,20 +377,20 @@ const (
 
 type DirectiveSet struct {
 	Name string
-	RhsSet RhsSet
+	RhsSet *RhsSet
 }
 
 func (*DirectiveSet) grammarPart() {}
 
 type RhsAnnotated struct {
-	Annotations Annotations
+	Annotations *Annotations
 	Inner RhsPart
 }
 
 func (*RhsAnnotated) rhsPart() {}
 
 type RhsAssignment struct {
-	Id Identifier
+	Id *Identifier
 	Addition bool
 	Inner RhsPart
 }
@@ -413,14 +413,14 @@ const (
 
 type RhsCast struct {
 	Inner RhsPart
-	Target Symref
+	Target *Symref
 }
 
 func (*RhsCast) rhsPart() {}
 
 type RhsAsLiteral struct {
 	Inner RhsPart
-	Literal Literal
+	Literal *Literal
 }
 
 func (*RhsAsLiteral) rhsPart() {}
@@ -433,34 +433,34 @@ type RhsUnordered struct {
 func (*RhsUnordered) rhsPart() {}
 
 type RhsClass struct {
-	Identifier Identifier
+	Identifier *Identifier
 	Inner RhsPart
 }
 
 func (*RhsClass) rhsPart() {}
 
 type RhsSymbol struct {
-	Reference Symref
+	Reference *Symref
 }
 
 func (*RhsSymbol) rhsPart() {}
 
 type RhsNested struct {
-	Rules []Rule0
+	Rules []*Rule0
 }
 
 func (*RhsNested) rhsPart() {}
 
 type RhsList struct {
 	RuleParts []RhsPart
-	Separator []Symref
+	Separator []*Symref
 	AtLeastOne bool
 }
 
 func (*RhsList) rhsPart() {}
 
 type RhsIgnored struct {
-	Rules []Rule0
+	Rules []*Rule0
 }
 
 func (*RhsIgnored) rhsPart() {}
@@ -473,7 +473,7 @@ func (*RhsSet) rhsPart() {}
 
 type SetSymbol struct {
 	Operator string
-	Symbol Symref
+	Symbol *Symref
 }
 
 func (*SetSymbol) setExpression() {}
@@ -492,15 +492,15 @@ func (*SetComplement) setExpression() {}
 
 type BoolPredicate struct {
 	Negated bool
-	ParamRef ParamRef
+	ParamRef *ParamRef
 }
 
 func (*BoolPredicate) predicateExpression() {}
 
 type ComparePredicate struct {
-	ParamRef ParamRef
+	ParamRef *ParamRef
 	Kind ComparePredicate_KindKind
-	Literal Literal
+	Literal *Literal
 }
 
 func (*ComparePredicate) predicateExpression() {}

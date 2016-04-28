@@ -4,6 +4,7 @@ class Global {
 
 class Options extends common.Options {
 	string lang[notempty; identifier];
+	string package = "";
 
 	bool genCopyright = false;
 	int expandTabs = 0;

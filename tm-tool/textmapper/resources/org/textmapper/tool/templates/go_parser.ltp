@@ -12,6 +12,9 @@ package ${opts.lang}
 
 import (
 	"fmt"
+${if opts.genast-}
+	"${opts.package}/ast"
+${end-}
 ${call imports-}
 )
 
@@ -40,10 +43,17 @@ const (
 	startStackSize = 512
 	debugSyntax    = false
 )
-
-func (p *Parser) Parse(lexer *Lexer) (bool, interface{}) {
-	return p.parse(0, ${parser.statesCount-1}, lexer)
+${foreach inp in syntax.input}
+func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) (bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}interface{}${end}) {
+${if inp.target->go.type()-}
+	ok, v := p.parse(${index}, ${parser.finalStates[index]}, lexer)
+	val, _ := v.(${inp.target->go.type()})
+	return ok, val
+${else-}
+	return p.parse(${index}, ${parser.finalStates[index]}, lexer)
+${end-}
 }
+${end-}
 
 func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 	if cap(p.stack) < startStackSize {
@@ -146,7 +156,7 @@ ${end-}
 		return false, nil
 	}
 
-	return true, p.stack[len(p.stack)-1].value
+	return true, p.stack[len(p.stack)-2].value
 }
 ${if self->hasRecovering()-}
 
@@ -219,11 +229,11 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 }
 
 func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
-${if syntax.rules.exists(r|r.getAction())-}
+${if syntax.rules.exists(r|self->hasAction(r))-}
 	switch (rule) {
-${foreach rule in syntax.rules.select(r|r.getAction())-}
+${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
 	case ${rule.getIndex()}:  // ${rule}
-		${call parserAction('node.value') for rule-}
+		${util.extractStatements(rule->parserAction('node.value'))-}
 ${end-}
 	}
 ${end-}
@@ -288,8 +298,14 @@ ${query needActionsTable() = parser.lalr.size() > 0}
 
 ${cached query hasRecovering() = syntax.error}
 
+${query hasAction(rule) = rule.getAction() || opts.genast && self->go_ast.astcode(rule)}
+
 ${template parserAction($)-}
+${if getAction()-}
 ${eval getAction()}
+${else-}
+${eval context->go_ast.astcode(self), '#[generated action for ' + self + ']'}
+${end-}
 ${end}
 
 

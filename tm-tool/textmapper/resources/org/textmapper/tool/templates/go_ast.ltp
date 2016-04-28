@@ -27,7 +27,7 @@ ${cached query propertyName() =
 
 ${query fieldType() =
 	type is PrimitiveType ? (value = type.toString(), value == 'boolean' ? 'bool' : value == 'any' ? 'interface{}' : value) :
-	context->convertType(self.type)}
+	context->convertType(self.type, false)}
 
 ${template ast-}
 package ast
@@ -40,15 +40,16 @@ ${end}
 ${query kind() =
 	self is LiAstEnum ? 'enum' : self.isInterface() ? 'interface' : 'class' }
 
-${query type() =
-	context->convertType(self.type)}
+${query type(qualified) =
+	context->convertType(self.type, qualified)}
 
-${query convertType(asttype) =
-	asttype is LiAstList ? '[]' + self->convertType(asttype.inner) :
+${query convertType(asttype, qualified) =
+	asttype is LiAstList ? '[]' + self->convertType(asttype.inner, qualified) :
 	asttype is PrimitiveType ? (val = asttype.toString(), val == 'boolean' ? 'bool': val ) :
 	asttype is LiRawAstType ? asttype.rawType :
-	asttype is VoidType ? null :
-	asttype->className()
+	asttype is VoidType ? null : (
+		isStruct = asttype is LiAstClass && !asttype.isInterface(),
+		(isStruct ? '*' : '') + (qualified ? 'ast.' : '') + asttype->className())
 }
 
 ${template ast_interface(cl)-}
@@ -87,3 +88,54 @@ ${foreach const in cl.members-}
 ${end-}
 )
 ${end}
+
+
+${cached query astcode(rule) =
+	nontermType = rule.getLeft().type,
+	def = rule.getLeft().definition,
+	nontermType is VoidType || nontermType is LiRawAstType ? null :
+	def is LiRhsList && nontermType is LiAstList ? rule->codeForList(def) :
+	rule->codeForClass()
+}
+
+${query codeForList(list) =
+    recursive = self.getRight().select(rs|rs.target == list.getLeft()).length != 0,
+    tail = recursive ? (list.isRightRecursive() ? '$'+(self.getRight().size()-1) : '$0') : '',
+	expr = self->asExpression(self.getSource(), self.getLeft().type.inner, true),
+    expr == 'nil' ? (tail ? '$$ = ' + tail : '$$ = ' + self.getLeft()->type(true) + '{}') :
+    '$$ = ' + (tail ? 'append(' + tail + ', ' + expr + ')' : self.getLeft()->type(true) + '{' + expr + '}')
+}
+
+${query codeForClass() =
+	expr = self->asExpression(self.getSource(), self.getLeft().type, false),
+	expr == '$0' ? null :
+	expr == 'nil' && self.getRight().size() == 0 ? null :
+    '$$ = ' + expr
+}
+
+${query isThisMapping(addOnly) = !mapping.field && mapping.isAddition() == addOnly}
+
+${query asExpression(seq,contextType,addOnly) =
+	mapped = self.mappedSymbols(seq),
+	mapped.length == 1 && mapped.first() is LiRhsSymbol && mapped.first()->isThisMapping(addOnly) ? self->simpleMapping(mapped.first()) :
+	mapped.length == 1 && mapped.first() is LiRhsSequence && mapped.first()->isThisMapping(addOnly) ? self->asExpression(mapped.first(), contextType, addOnly) :
+	(type = seq.type ? seq.type : contextType,
+
+	mapped.length == 0 && type is PrimitiveType ? (type.toString() == 'boolean' ? 'false' : type.toString() == 'int' ? '0' : 'nil') :
+	!self.isMatched(seq) ? 'nil' :
+	!(type is LiAstClass) ? '/* ERR: unknown type ' + type + ' */' :
+	'&ast.' + type->className() + '{}')
+}
+
+${query simpleMapping(rhsSym) =
+	value = rhsSym.mapping.value,
+	value || value is Boolean || value is String ? (
+        value is LiAstEnumMember ? 'ast.' + value->enumMemberName() : value
+	) :
+	(
+		index = self.sourceSymbols().indexOf(rhsSym),
+		index < 0 ? 'nil /*ERR: no index*/' : '$' + index
+	)
+}
+
+${template ctorArguments(cl, mapped)}/*TODO*/${end}

@@ -170,4 +170,17 @@ public class TemplateStaticMethodsTest {
 			assertEquals("cannot convert int[] into short[], contains `32768'", ex.getMessage());
 		}
 	}
+
+	@Test
+	public void testExtractStatements() throws Exception {
+		TemplateStaticMethods util = new TemplateStaticMethods();
+
+		assertEquals("", util.extractStatements(""));
+		assertEquals("abc", util.extractStatements("abc"));
+		assertEquals("d\nabc ", util.extractStatements("abc {{d}}"));
+		assertEquals("d\n abc", util.extractStatements("{{d}} abc"));
+		assertEquals("d\ne\nabc  : ", util.extractStatements("abc {{d}} : {{e}}"));
+		assertEquals("{ }\nabc ", util.extractStatements("abc {{ { } }}"));
+		assertEquals("q1\nabc ", util.extractStatements("abc {{ q1 }}{{q1}}"));
+	}
 }

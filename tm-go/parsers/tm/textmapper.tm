@@ -17,6 +17,7 @@
 language textmapper(go);
 
 lang = "tm"
+package = "github.com/inspirer/textmapper/tm-go/parsers/tm"
 genast = true
 
 :: lexer

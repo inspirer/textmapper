@@ -24,10 +24,14 @@ ${query symText(property) = self.leftOffset == -1
 	? (property == 'value' ? 'nil' : '-1')
 	: (self.isLeft ? 'node' : 'rhs[' + self.leftOffset + ']') + '.' + property }
 
+${query varName() = 'nn' + (self.leftOffset == -1 ? '' : self.leftOffset)}
+
 ${template symAccess(property)-}
 ${assert ['value', 'offset', 'endoffset'].contains(property)-}
+${if property == 'value' && symbol->type()-}
+ {{${self->varName()}, _ := ${self->symText(property)-}.(${symbol->type()-})}}${self->varName()}${else-}
 ${self->symText(property)-}
-${if property == 'value' && symbol->type()}.(${symbol->type()-})${end-}
+${end-}
 ${end}
 
-${cached query type() = context.opts.genast ? self->go_ast.type() : self.type is LiRawAstType ? self.type : null }
+${cached query type() = context.opts.genast ? self->go_ast.type(true) : self.type is LiRawAstType ? self.type : null }

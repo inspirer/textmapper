@@ -1,6 +1,7 @@
 language json(go);
 
 lang = "json"
+package = "github.com/inspirer/textmapper/tm-go/parsers/json"
 
 :: lexer
 

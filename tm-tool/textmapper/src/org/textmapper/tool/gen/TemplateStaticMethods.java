@@ -20,7 +20,11 @@ import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.templates.eval.DefaultStaticMethods;
 import org.textmapper.tool.common.JavaArrayEncoder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TemplateStaticMethods extends DefaultStaticMethods {
 
@@ -218,5 +222,26 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 
 	public Iterable reverse(Object[] array) {
 		return new ArrayIterable(array, true);
+	}
+
+	private static Pattern STMT = Pattern.compile("\\{\\{(([^}]|\\}[^}])*)\\}\\}");
+
+	public String extractStatements(String code) {
+		StringBuilder prefix = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
+		Set<String> seen = new HashSet<>();
+		int lastStart = 0;
+		Matcher m = STMT.matcher(code);
+		while (m.find()) {
+			sb.append(code.substring(lastStart, m.start()));
+			lastStart = m.end();
+			String stmt = m.group(1).trim();
+			if (seen.add(stmt)) {
+				prefix.append(stmt).append("\n");
+			}
+		}
+		sb.append(code.substring(lastStart));
+		prefix.append(sb);
+		return prefix.toString();
 	}
 }

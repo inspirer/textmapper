@@ -188,6 +188,7 @@ func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
 	case 1:  // JSONValue ::= 'null'
 		{ node.value = &Literal{value: "null"} }
 	case 10:  // JSONMember ::= JSONString ':' JSONValue
-		{ node.value = &Field{name: rhs[0].value.(string)} }
+		nn0, _ := rhs[0].value.(string)
+{ node.value = &Field{name:  nn0} }
 	}
 }
