@@ -78,7 +78,7 @@ ${end-}
 			var node node
 			node.symbol = tmRuleSymbol[rule]
 			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", tmSymbolNames[node.symbol-int32(terminalEnd)])
+				fmt.Printf("reduce to: %v\n", Symbol(node.symbol))
 			}
 			if ln == 0 {
 				node.offset, _ = lexer.Pos()
@@ -244,6 +244,29 @@ ${end}
 ${template parserTables-}
 package ${opts.lang}
 
+import (
+	"fmt"
+)
+
+type Symbol int
+
+var symbolStr = [...]string{
+${for i in [parser.nterms, parser.nsyms-1]-}
+	"${parser.symbols[i].name}",
+${end-}
+}
+
+func (n Symbol) String() string {
+    if n < Symbol(terminalEnd) {
+      return Token(n).String()
+    }
+    i := int(n) - int(terminalEnd)
+	if i < len(symbolStr) {
+		return symbolStr[i]
+	}
+	return fmt.Sprintf("nonterminal(%d)", n)
+}
+
 var tmAction = []int32{
 	${util.format(parser.action, 16, 1)},
 }
@@ -272,18 +295,6 @@ var tmRuleLen = []int32{
 
 var tmRuleSymbol = []int32{
 	${util.format(parser.left, 16, 1)},
-}
-
-const (
-${for i in [parser.nterms, parser.nsyms-1]-}
-	${parser.symbols[i].id->go.escapeGoReserved()}${if i == parser.nterms} int = int(terminalEnd) + iota${end}
-${end-}
-)
-
-var tmSymbolNames = [...]string{
-${for i in [parser.nterms, parser.nsyms-1]-}
-	"${parser.symbols[i].name}",
-${end-}
 }
 ${foreach set in syntax.sets-}
 

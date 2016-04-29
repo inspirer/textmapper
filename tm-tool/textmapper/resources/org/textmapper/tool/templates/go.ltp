@@ -17,6 +17,8 @@ ${query escapeGoReserved() =
 
         'iota', 'nil', 'true', 'false',
 
+        'Token', 'Nonterminal', 'Pos', 'Node', 'Offset', 'Endoffset', 'Start', 'End',
+
         'fmt', 'strconv'
 	].contains(self) ? '_' + self : self }
 

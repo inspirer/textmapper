@@ -1,5 +1,120 @@
 package tm
 
+import (
+	"fmt"
+)
+
+type Symbol int
+
+var symbolStr = [...]string{
+	"import__optlist",
+	"input",
+	"option_optlist",
+	"header",
+	"lexer_section",
+	"parser_section",
+	"parsing_algorithm",
+	"import_",
+	"option",
+	"identifier",
+	"symref",
+	"symref_noargs",
+	"type",
+	"type_part_list",
+	"type_part",
+	"pattern",
+	"lexer_parts",
+	"lexer_part",
+	"named_pattern",
+	"lexeme",
+	"lexeme_transition",
+	"lexeme_attrs",
+	"lexeme_attribute",
+	"lexer_directive",
+	"lexer_state_list_Comma_separated",
+	"state_selector",
+	"stateref",
+	"lexer_state",
+	"grammar_parts",
+	"grammar_part",
+	"nonterm",
+	"nonterm_type",
+	"implements",
+	"assoc",
+	"param_modifier",
+	"template_param",
+	"directive",
+	"inputref_list_Comma_separated",
+	"inputref",
+	"references",
+	"references_cs",
+	"rule0_list_Or_separated",
+	"rules",
+	"rule0",
+	"predicate",
+	"rhsPrefix",
+	"rhsSuffix",
+	"ruleAction",
+	"rhsParts",
+	"rhsPart",
+	"rhsAnnotated",
+	"rhsAssignment",
+	"rhsOptional",
+	"rhsCast",
+	"rhsUnordered",
+	"rhsClass",
+	"rhsPrimary",
+	"rhsSet",
+	"setPrimary",
+	"setExpression",
+	"annotation_list",
+	"annotations",
+	"annotation",
+	"nonterm_param_list_Comma_separated",
+	"nonterm_params",
+	"nonterm_param",
+	"param_ref",
+	"argument_list_Comma_separated",
+	"argument_list_Comma_separated_opt",
+	"symref_args",
+	"argument",
+	"param_type",
+	"param_value",
+	"predicate_primary",
+	"predicate_expression",
+	"expression",
+	"expression_list_Comma_separated",
+	"expression_list_Comma_separated_opt",
+	"map_entry_list_Comma_separated",
+	"map_entry_list_Comma_separated_opt",
+	"map_entry",
+	"literal",
+	"name",
+	"qualified_id",
+	"command",
+	"syntax_problem",
+	"parsing_algorithmopt",
+	"typeopt",
+	"lexeme_transitionopt",
+	"iconopt",
+	"lexeme_attrsopt",
+	"commandopt",
+	"identifieropt",
+	"implementsopt",
+	"rhsSuffixopt",
+}
+
+func (n Symbol) String() string {
+    if n < Symbol(terminalEnd) {
+      return Token(n).String()
+    }
+    i := int(n) - int(terminalEnd)
+	if i < len(symbolStr) {
+		return symbolStr[i]
+	}
+	return fmt.Sprintf("nonterminal(%d)", n)
+}
+
 var tmAction = []int32{
 	-1, -1, -1, -3, 212, 213, -71, 220, -149, 214, 215, -1, 199, 198, 202, 217,
 	-257, -265, -277, 204, -345, -1, -351, 16, -1, -1, -1, 221, -1, -1, -1, -1,
@@ -852,200 +967,4 @@ var tmRuleSymbol = []int32{
 	152, 152, 152, 153, 153, 153, 154, 154, 154, 154, 154, 155, 155, 156, 156, 157,
 	157, 158, 158, 159, 160, 160, 160, 160, 161, 162, 162, 163, 164, 165, 165, 166,
 	166, 167, 167, 168, 168, 169, 169, 170, 170, 171, 171, 172, 172, 173, 173,
-}
-
-const (
-	import__optlist int = int(terminalEnd) + iota
-	input
-	option_optlist
-	header
-	lexer_section
-	parser_section
-	parsing_algorithm
-	import_
-	option
-	identifier
-	symref
-	symref_noargs
-	_type
-	type_part_list
-	type_part
-	pattern
-	lexer_parts
-	lexer_part
-	named_pattern
-	lexeme
-	lexeme_transition
-	lexeme_attrs
-	lexeme_attribute
-	lexer_directive
-	lexer_state_list_Comma_separated
-	state_selector
-	stateref
-	lexer_state
-	grammar_parts
-	grammar_part
-	nonterm
-	nonterm_type
-	implements
-	assoc
-	param_modifier
-	template_param
-	directive
-	inputref_list_Comma_separated
-	inputref
-	references
-	references_cs
-	rule0_list_Or_separated
-	rules
-	rule0
-	predicate
-	rhsPrefix
-	rhsSuffix
-	ruleAction
-	rhsParts
-	rhsPart
-	rhsAnnotated
-	rhsAssignment
-	rhsOptional
-	rhsCast
-	rhsUnordered
-	rhsClass
-	rhsPrimary
-	rhsSet
-	setPrimary
-	setExpression
-	annotation_list
-	annotations
-	annotation
-	nonterm_param_list_Comma_separated
-	nonterm_params
-	nonterm_param
-	param_ref
-	argument_list_Comma_separated
-	argument_list_Comma_separated_opt
-	symref_args
-	argument
-	param_type
-	param_value
-	predicate_primary
-	predicate_expression
-	expression
-	expression_list_Comma_separated
-	expression_list_Comma_separated_opt
-	map_entry_list_Comma_separated
-	map_entry_list_Comma_separated_opt
-	map_entry
-	literal
-	name
-	qualified_id
-	command
-	syntax_problem
-	parsing_algorithmopt
-	typeopt
-	lexeme_transitionopt
-	iconopt
-	lexeme_attrsopt
-	commandopt
-	identifieropt
-	implementsopt
-	rhsSuffixopt
-)
-
-var tmSymbolNames = [...]string{
-	"import__optlist",
-	"input",
-	"option_optlist",
-	"header",
-	"lexer_section",
-	"parser_section",
-	"parsing_algorithm",
-	"import_",
-	"option",
-	"identifier",
-	"symref",
-	"symref_noargs",
-	"type",
-	"type_part_list",
-	"type_part",
-	"pattern",
-	"lexer_parts",
-	"lexer_part",
-	"named_pattern",
-	"lexeme",
-	"lexeme_transition",
-	"lexeme_attrs",
-	"lexeme_attribute",
-	"lexer_directive",
-	"lexer_state_list_Comma_separated",
-	"state_selector",
-	"stateref",
-	"lexer_state",
-	"grammar_parts",
-	"grammar_part",
-	"nonterm",
-	"nonterm_type",
-	"implements",
-	"assoc",
-	"param_modifier",
-	"template_param",
-	"directive",
-	"inputref_list_Comma_separated",
-	"inputref",
-	"references",
-	"references_cs",
-	"rule0_list_Or_separated",
-	"rules",
-	"rule0",
-	"predicate",
-	"rhsPrefix",
-	"rhsSuffix",
-	"ruleAction",
-	"rhsParts",
-	"rhsPart",
-	"rhsAnnotated",
-	"rhsAssignment",
-	"rhsOptional",
-	"rhsCast",
-	"rhsUnordered",
-	"rhsClass",
-	"rhsPrimary",
-	"rhsSet",
-	"setPrimary",
-	"setExpression",
-	"annotation_list",
-	"annotations",
-	"annotation",
-	"nonterm_param_list_Comma_separated",
-	"nonterm_params",
-	"nonterm_param",
-	"param_ref",
-	"argument_list_Comma_separated",
-	"argument_list_Comma_separated_opt",
-	"symref_args",
-	"argument",
-	"param_type",
-	"param_value",
-	"predicate_primary",
-	"predicate_expression",
-	"expression",
-	"expression_list_Comma_separated",
-	"expression_list_Comma_separated_opt",
-	"map_entry_list_Comma_separated",
-	"map_entry_list_Comma_separated_opt",
-	"map_entry",
-	"literal",
-	"name",
-	"qualified_id",
-	"command",
-	"syntax_problem",
-	"parsing_algorithmopt",
-	"typeopt",
-	"lexeme_transitionopt",
-	"iconopt",
-	"lexeme_attrsopt",
-	"commandopt",
-	"identifieropt",
-	"implementsopt",
-	"rhsSuffixopt",
 }

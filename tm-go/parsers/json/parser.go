@@ -56,7 +56,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 			var node node
 			node.symbol = tmRuleSymbol[rule]
 			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", tmSymbolNames[node.symbol-int32(terminalEnd)])
+				fmt.Printf("reduce to: %v\n", Symbol(node.symbol))
 			}
 			if ln == 0 {
 				node.offset, _ = lexer.Pos()

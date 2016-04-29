@@ -1,5 +1,32 @@
 package json
 
+import (
+	"fmt"
+)
+
+type Symbol int
+
+var symbolStr = [...]string{
+	"JSONText",
+	"JSONValue",
+	"JSONObject",
+	"JSONMember",
+	"JSONMemberList",
+	"JSONArray",
+	"JSONElementList",
+}
+
+func (n Symbol) String() string {
+    if n < Symbol(terminalEnd) {
+      return Token(n).String()
+    }
+    i := int(n) - int(terminalEnd)
+	if i < len(symbolStr) {
+		return symbolStr[i]
+	}
+	return fmt.Sprintf("nonterminal(%d)", n)
+}
+
 var tmAction = []int32{
 	-1, -1, -1, 6, 7, 1, 2, 3, 0, 4, 5, 9, -1, 11, -1, 14,
 	15, -1, -1, 8, -1, 13, -1, 10, 12, 16, -1, -2,
@@ -32,26 +59,6 @@ var tmRuleLen = []int32{
 var tmRuleSymbol = []int32{
 	15, 16, 16, 16, 16, 16, 16, 16, 17, 17, 18, 19, 19, 20, 20, 21,
 	21,
-}
-
-const (
-	JSONText int = int(terminalEnd) + iota
-	JSONValue
-	JSONObject
-	JSONMember
-	JSONMemberList
-	JSONArray
-	JSONElementList
-)
-
-var tmSymbolNames = [...]string{
-	"JSONText",
-	"JSONValue",
-	"JSONObject",
-	"JSONMember",
-	"JSONMemberList",
-	"JSONArray",
-	"JSONElementList",
 }
 
 // set(first JSONValue)
