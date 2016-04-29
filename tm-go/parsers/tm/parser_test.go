@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/tm"
+	"github.com/inspirer/textmapper/tm-go/parsers/tm/ast"
 )
 
 func PanicOnError(line, offset, len int, msg string) {
 	panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
 }
 
-func testParser(input []byte, t *testing.T) {
+func testParser(input []byte, t *testing.T) *ast.Input {
 	l := new(tm.Lexer)
 	l.Init(input, PanicOnError)
 
@@ -20,16 +21,17 @@ func testParser(input []byte, t *testing.T) {
 	ok, val := p.ParseInput(l)
 	if !ok {
 		t.Error("Not parsed.")
-		return
+		return nil
 	}
 	if val == nil {
 		t.Errorf("Not input: %v", val)
 	}
+	return val
 }
 
 func TestParserExample(t *testing.T) {
-	testParser([]byte(`
-language json(java);
+	input := testParser([]byte(`
+language aaa.bbb.json(java);
 
 positions = "line,offset"
 endpositions = "offset"
@@ -104,4 +106,12 @@ ${end}
 
 
 	`), t)
+
+	if input == nil {
+		return
+	}
+
+	if input.Header.Name.QualifiedId != "aaa.bbb.json" {
+		t.Errorf("input.Header.Name.QualifiedId = %v, want aaa.bbb.json", input.Header.Name.QualifiedId)
+	}
 }

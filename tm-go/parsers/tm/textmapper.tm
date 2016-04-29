@@ -77,7 +77,7 @@ error:
 
 [initial, afterAt, afterAtID]
 
-ID(string): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = l.Text(); }
+ID(string): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)  { $$ = l.Text(); }
 
 Ltrue:  /true/
 Lfalse: /false/
@@ -463,7 +463,7 @@ name class ::=
 	  qualified_id ;
 
 qualified_id (string) ::=
-	  ID
+	  ID								{ $$ = $0; }
 	| qualified_id '.' ID				{ $$ = $qualified_id + "." + $ID; }
 ;
 
