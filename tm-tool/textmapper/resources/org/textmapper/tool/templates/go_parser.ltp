@@ -5,6 +5,11 @@ ${end-}
 ${file 'parser_tables.go'-}
 ${call parserTables-}
 ${end-}
+${if self->eventBased()-}
+${file 'listener.go'-}
+${call listener-}
+${end-}
+${end-}
 ${end}
 
 ${template parser-}
@@ -21,6 +26,9 @@ ${call imports-}
 // Parser is a table-driven LALR parser for ${opts.lang}.
 type Parser struct {
 	err ErrorHandler
+${if self->eventBased()-}
+	listener Listener
+${end-}
 
 	stack []node
 	lexer *Lexer
@@ -35,8 +43,11 @@ type node struct {
 	endoffset int
 }
 
-func (p *Parser) Init(err ErrorHandler) {
+func (p *Parser) Init(err ErrorHandler${if self->eventBased()}, l Listener${end}) {
 	p.err = err
+${if self->eventBased()-}
+	p.listener = l
+${end-}
 }
 
 const (
@@ -174,7 +185,9 @@ func (p *Parser) recover() bool {
 	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
 	    // TODO cleanup
 		p.stack = p.stack[:len(p.stack)-1]
-		s = p.stack[len(p.stack)-1].offset
+		if len(p.stack) > 0 {
+			s = p.stack[len(p.stack)-1].offset
+		}
 	}
 	if len(p.stack) > 0 {
 	    state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
@@ -305,6 +318,43 @@ var ${set.name} = []int32{
 ${end-}
 ${end}
 
+${cached query reserve(scope) =
+	util.uniqueId(util.toCamelCase(self, true)->go.escapeGoReserved(), scope)}
+
+${cached query rangeTypeName() =
+    rangeType = self.rangeType(),
+    rangeType == '' ? '' : rangeType->reserve('__rangeTypes__')}
+
+
+${template listener-}
+package ${opts.lang}
+
+type NodeType int
+
+type Listener interface {
+	Node(t NodeType, offset, endoffset int)
+}
+
+const (
+${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
+	${rangeType}${if index == 0} NodeType = iota${end}
+${end-}
+)
+
+var ruleNodeType = [...]NodeType{
+${foreach rule in syntax.rules-}
+	${v = rule->rangeTypeName(), v == '' ? 0 : v}, // ${rule}
+${end-}
+}
+
+var nodeTypeStr = [...]string{
+${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
+	"${rangeType}",
+${end-}
+}
+${end}
+
+
 ${query needActionsTable() = parser.lalr.size() > 0}
 
 ${cached query hasRecovering() = syntax.error}
@@ -321,3 +371,5 @@ ${end}
 
 
 ${template imports}${end}
+
+${query eventBased() = opts.eventBased && !opts.genast}

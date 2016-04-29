@@ -85,11 +85,18 @@ public final class TMGenerator {
 			// Language-specific processing.
 			boolean genast = genOptions.containsKey("genast")
 					&& Boolean.TRUE.equals(genOptions.get("genast"));
+			boolean eventBased = genOptions.containsKey("eventBased")
+					&& Boolean.TRUE.equals(genOptions.get("eventBased"));
+
 			AstModel astModel = null;
-			if (genast) {
+			if (genast || eventBased) {
 				boolean hasAny = genOptions.containsKey("__hasAny")
 						&& Boolean.TRUE.equals(genOptions.get("__hasAny"));
-				astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
+				if (genast) {
+					astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
+				} else {
+					new TMMapper(s.getGrammar(), status, hasAny).detectListsOnly();
+				}
 			}
 
 			// Generate tables

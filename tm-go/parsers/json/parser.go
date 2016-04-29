@@ -7,6 +7,7 @@ import (
 // Parser is a table-driven LALR parser for json.
 type Parser struct {
 	err ErrorHandler
+	listener Listener
 
 	stack []node
 	lexer *Lexer
@@ -21,8 +22,9 @@ type node struct {
 	endoffset int
 }
 
-func (p *Parser) Init(err ErrorHandler) {
+func (p *Parser) Init(err ErrorHandler, l Listener) {
 	p.err = err
+	p.listener = l
 }
 
 const (
@@ -31,7 +33,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) (bool, interface{}) {
-	return p.parse(0, 27, lexer)
+	return p.parse(0, 36, lexer)
 }
 
 func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
@@ -131,7 +133,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 	return true, p.stack[len(p.stack)-2].value
 }
 
-const errSymbol = 14
+const errSymbol = 16
 
 func (p *Parser) recover() bool {
 	if p.next == UNAVAILABLE {
@@ -145,7 +147,9 @@ func (p *Parser) recover() bool {
 	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
 	    // TODO cleanup
 		p.stack = p.stack[:len(p.stack)-1]
-		s = p.stack[len(p.stack)-1].offset
+		if len(p.stack) > 0 {
+			s = p.stack[len(p.stack)-1].offset
+		}
 	}
 	if len(p.stack) > 0 {
 	    state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
@@ -162,6 +166,19 @@ func (p *Parser) recover() bool {
 
 func (p *Parser) action(state int32) int32 {
 	a := tmAction[state]
+	if a < -2 {
+		// Lookahead is needed.
+		if p.next == UNAVAILABLE {
+			p.next = p.lexer.Next()
+		}
+		a = -a - 3
+		for ; tmLalr[a] >= 0; a += 2 {
+			if tmLalr[a] == int32(p.next) {
+				break
+			}
+		}
+		return tmLalr[a+1]
+	}
 	return a
 }
 
@@ -184,11 +201,4 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 }
 
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
-	switch rule {
-	case 1: // JSONValue ::= 'null'
-		{ node.value = &Literal{value: "null"} }
-	case 10: // JSONMember ::= JSONString ':' JSONValue
-		nn0, _ := rhs[0].value.(string)
-{ node.value = &Field{name:  nn0} }
-	}
 }

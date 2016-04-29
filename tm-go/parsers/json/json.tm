@@ -2,6 +2,7 @@ language json(go);
 
 lang = "json"
 package = "github.com/inspirer/textmapper/tm-go/parsers/json"
+eventBased = true
 
 :: lexer
 
@@ -17,7 +18,7 @@ space: /[\t\r\n ]+/ (space)
 hex = /[0-9a-fA-F]/
 
 # TODO
-JSONString(string): /"([^"\\]|\\(["\/\\bfnrt]|u{hex}{4}))*"/		{ $$ = l.Text() }
+JSONString(string): /"([^"\\]|\\(["\/\\bfnrt]|u{hex}{4}))*"/
 #JSONString: /"([^"\\\x00-\x1f]|\\(["\/\\bfnrt]|u{hex}{4}))*"/
 
 fraction = /\.[0-9]+/
@@ -30,21 +31,28 @@ id: /[a-zA-Z][a-zA-Z0-9]*/ (class)
 'true': /true/
 'false': /false/
 
+'A': /A/
+'B': /B/
+
 error:
 
 :: parser
 
 %input JSONText;
 
-%generate Literals = set(first JSONValue);
+%generate Literals = set(first JSONValue<+A>);
+
+%flag A;
 
 JSONText ::=
-	  JSONValue ;
+	  JSONValue<+A> ;
 
-JSONValue (Value) ::=
-	  'null'						{ $$ = &Literal{value: "null"} }
+JSONValue<A> (Value) ::=
+	  'null'
 	| 'true'
 	| 'false'
+	| [A] 'A'
+	| [!A] 'B'
 	| JSONObject
 	| JSONArray
 	| JSONString
@@ -55,7 +63,7 @@ JSONObject ::=
 	  '{' JSONMemberList? '}' ;
 
 JSONMember (*Field) ::=
-	  JSONString ':' JSONValue		{ $$ = &Field{name: $JSONString} } ;
+	  JSONString ':' JSONValue<~A> ;
 
 JSONMemberList ::=
 	  JSONMember
@@ -63,9 +71,9 @@ JSONMemberList ::=
 ;
 
 JSONArray ::=
-	  '[' JSONElementList? ']' ;
+	  '[' JSONElementListopt ']' ;
 
 JSONElementList ::=
-	  JSONValue
-	| JSONElementList ',' JSONValue
+	  JSONValue<+A>
+	| JSONElementList ',' JSONValue<+A>
 ;

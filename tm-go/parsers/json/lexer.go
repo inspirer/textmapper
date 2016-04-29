@@ -147,8 +147,6 @@ restart:
 	switch rule {
 	case 7: // space: /[\t\r\n ]+/
 		space = true
-	case 8: // JSONString: /"([^"\\]|\\(["\/\\bfnrt]|u{hex}{4}))*"/
-		{ l.value = l.Text() }
 	}
 
 	if space {
@@ -191,4 +189,6 @@ var instancesOfID = map[string]int{
 	"null": 10,
 	"true": 11,
 	"false": 12,
+	"A": 13,
+	"B": 14,
 }

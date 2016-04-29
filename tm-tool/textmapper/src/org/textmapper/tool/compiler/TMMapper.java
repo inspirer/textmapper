@@ -22,6 +22,7 @@ import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarMapper;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.builder.GrammarFacade;
+import org.textmapper.lapg.util.NonterminalUtil;
 import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.lapg.util.TypesUtil;
 import org.textmapper.tool.compiler.TMTypeHint.Kind;
@@ -78,6 +79,11 @@ public class TMMapper {
 		}
 
 		return builder.create();
+	}
+
+	public void detectListsOnly() {
+		collectUnmapped();
+		rewriteLists();
 	}
 
 	private void rewriteLists() {
@@ -223,7 +229,7 @@ public class TMMapper {
 			}
 
 			RhsPart r = null;
-			for (RhsSequence rule : getRules(n)) {
+			for (RhsSequence rule : NonterminalUtil.getRules(n)) {
 				if (RhsUtil.isEmpty(rule)) continue;
 
 				if (r == null) {
@@ -332,7 +338,7 @@ public class TMMapper {
 
 			boolean hasNamedRules = false;
 			boolean isInterface = true;
-			for (RhsSequence rule : getRules(n)) {
+			for (RhsSequence rule : NonterminalUtil.getRules(n)) {
 				RhsSymbol master = getMasterSymbol(rule);
 				if (master != null) {
 					Symbol target = unwrapDecorators(master.getTarget());
@@ -477,21 +483,6 @@ public class TMMapper {
 		}
 	}
 
-	private Iterable<RhsSequence> getRules(Nonterminal n) {
-		RhsPart definition = n.getDefinition();
-		if (!(definition instanceof RhsChoice)) {
-			throw new IllegalStateException();
-		}
-
-		RhsPart[] rules = ((RhsChoice) definition).getParts();
-		for (RhsPart p : rules) {
-			if (!(p instanceof RhsSequence)) throw new IllegalStateException();
-		}
-		RhsSequence[] result = new RhsSequence[rules.length];
-		System.arraycopy(rules, 0, result, 0, rules.length);
-		return Arrays.asList(result);
-	}
-
 	private void mapCustomTypeNonterm(Nonterminal n, AstClass cl,
 									  Map<Nonterminal, AstClass> customTypes) {
 		if (!cl.isInterface()) {
@@ -504,7 +495,7 @@ public class TMMapper {
 		Set<AstClass> usedClasses = new HashSet<>();
 		Map<RhsSequence, AstClass> mappedRules = new HashMap<>();
 
-		for (RhsSequence rule : getRules(n)) {
+		for (RhsSequence rule : NonterminalUtil.getRules(n)) {
 			RhsSymbol master = getMasterSymbol(rule);
 			if (master != null) {
 				Symbol target = unwrapDecorators(master.getTarget());

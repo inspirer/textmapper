@@ -18,7 +18,7 @@ var tmStateMap = []int{
 }
 
 var tmToken = []Token{
-	10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13,
+	10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15,
 }
 
 var tmLexerAction = []int32{

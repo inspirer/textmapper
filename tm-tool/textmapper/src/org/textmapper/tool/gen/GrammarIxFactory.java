@@ -15,14 +15,13 @@
  */
 package org.textmapper.tool.gen;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.LexerRule;
-import org.textmapper.lapg.api.Rule;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsList;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.RuleUtil;
+import org.textmapper.lapg.util.NonterminalUtil;
 import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
@@ -130,6 +129,18 @@ public class GrammarIxFactory extends JavaIxFactory {
 				if ("sourceSymbols".equals(methodName)) {
 					loadSourceSymbols();
 					return sourceSymbols;
+				}
+				if ("rangeType".equals(methodName)) {
+					RhsSequence seq = rule.getSource();
+					if (seq.getName() != null) return seq.getName();
+
+					Nonterminal n = seq.getLeft();
+					if (n.getDefinition() instanceof RhsList || NonterminalUtil.isOptional(n)) {
+						return "";
+					}
+
+					if (n.getTemplate() != null) n = n.getTemplate();
+					return n.getName();
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					RhsSymbol[] array = rule.getRight();

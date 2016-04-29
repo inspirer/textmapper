@@ -50,7 +50,8 @@ public class RhsUtil {
 		return part;
 	}
 
-	public static RhsPart unwrapEx(RhsPart part, boolean opts, boolean casts, boolean assignments) {
+	public static RhsPart unwrapEx(RhsPart part,
+								   boolean opts, boolean casts, boolean assignments) {
 		part = unwrap(part);
 		if (opts && part instanceof RhsOptional) {
 			return unwrapEx(((RhsOptional) part).getPart(), opts, casts, assignments);
@@ -58,7 +59,8 @@ public class RhsUtil {
 		if (casts && part instanceof RhsCast) {
 			return unwrapEx(((RhsCast) part).getPart(), opts, casts, assignments);
 		}
-		if (assignments && part instanceof RhsAssignment && !(((RhsAssignment) part).isAddition())) {
+		if (assignments && part instanceof RhsAssignment
+				&& !(((RhsAssignment) part).isAddition())) {
 			return unwrapEx(((RhsAssignment) part).getPart(), opts, casts, assignments);
 		}
 		return part;

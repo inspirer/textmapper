@@ -25,6 +25,8 @@ const (
 	NULL // null
 	TRUE // true
 	FALSE // false
+	CHAR_A // A
+	CHAR_B // B
 	ERROR
 
 	terminalEnd
@@ -46,6 +48,8 @@ var tokenStr = [...]string{
 	"null",
 	"true",
 	"false",
+	"A",
+	"B",
 	"ERROR",
 }
 
