@@ -1,8 +1,8 @@
 package tm_test
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/tm"
 	"github.com/inspirer/textmapper/tm-go/parsers/tm/ast"

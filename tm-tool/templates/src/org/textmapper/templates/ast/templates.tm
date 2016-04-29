@@ -484,6 +484,11 @@ private ExpressionNode createCollectionProcessor(ExpressionNode context, String 
 			kind = CollectionProcessorNode.REJECT;
 		}
 		break;
+	case 'm':
+		if(instruction.equals("max")) {
+			kind = CollectionProcessorNode.MAX;
+		}
+		break;
 	case 's':
 		if(instruction.equals("select")) {
 			kind = CollectionProcessorNode.SELECT;

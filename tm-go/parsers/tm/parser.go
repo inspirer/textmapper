@@ -11,7 +11,7 @@ type Parser struct {
 
 	stack []node
 	lexer *Lexer
-	next Token
+	next  Token
 }
 
 type node struct {
@@ -111,7 +111,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 				if recovering == 0 {
 					offset, endoffset := lexer.Pos()
 					line := lexer.Line()
-					p.err(line, offset, endoffset - offset, "syntax error")
+					p.err(line, offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
 					p.next = lexer.Next()
@@ -133,7 +133,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 		}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
-		p.err(line, offset, endoffset - offset, "syntax error")
+		p.err(line, offset, endoffset-offset, "syntax error")
 		return false, nil
 	}
 
@@ -205,15 +205,15 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 	return -1
 }
 
-func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
-	switch (rule) {
-	case 0:  // import__optlist ::= import__optlist import_
+func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
+	switch rule {
+	case 0: // import__optlist ::= import__optlist import_
 		nn0, _ := rhs[0].value.([]*ast.Import)
 nn1, _ := rhs[1].value.(*ast.Import)
 node.value = append( nn0,  nn1)
-	case 1:  // import__optlist ::=
+	case 1: // import__optlist ::=
 		node.value = []*ast.Import{}
-	case 2:  // input ::= header import__optlist option_optlist lexer_section parser_section
+	case 2: // input ::= header import__optlist option_optlist lexer_section parser_section
 		nn0, _ := rhs[0].value.(*ast.Header)
 nn1, _ := rhs[1].value.([]*ast.Import)
 nn2, _ := rhs[2].value.([]*ast.Option)
@@ -227,7 +227,7 @@ node.value = &ast.Input{
 			Parser:  nn4,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 3:  // input ::= header import__optlist option_optlist lexer_section
+	case 3: // input ::= header import__optlist option_optlist lexer_section
 		nn0, _ := rhs[0].value.(*ast.Header)
 nn1, _ := rhs[1].value.([]*ast.Import)
 nn2, _ := rhs[2].value.([]*ast.Option)
@@ -239,13 +239,13 @@ node.value = &ast.Input{
 			Lexer:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 4:  // option_optlist ::= option_optlist option
+	case 4: // option_optlist ::= option_optlist option
 		nn0, _ := rhs[0].value.([]*ast.Option)
 nn1, _ := rhs[1].value.(*ast.Option)
 node.value = append( nn0,  nn1)
-	case 5:  // option_optlist ::=
+	case 5: // option_optlist ::=
 		node.value = []*ast.Option{}
-	case 6:  // header ::= Llanguage name '(' name ')' parsing_algorithmopt ';'
+	case 6: // header ::= Llanguage name '(' name ')' parsing_algorithmopt ';'
 		nn1, _ := rhs[1].value.(*ast.Name)
 nn3, _ := rhs[3].value.(*ast.Name)
 nn5, _ := rhs[5].value.(*ast.ParsingAlgorithm)
@@ -255,7 +255,7 @@ node.value = &ast.Header{
 			ParsingAlgorithm:  nn5,
 			Pos: ast.Pos{rhs[0].offset, rhs[6].endoffset},
 }
-	case 7:  // header ::= Llanguage name parsing_algorithmopt ';'
+	case 7: // header ::= Llanguage name parsing_algorithmopt ';'
 		nn1, _ := rhs[1].value.(*ast.Name)
 nn2, _ := rhs[2].value.(*ast.ParsingAlgorithm)
 node.value = &ast.Header{
@@ -263,19 +263,19 @@ node.value = &ast.Header{
 			ParsingAlgorithm:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 8:  // lexer_section ::= '::' Llexer lexer_parts
+	case 8: // lexer_section ::= '::' Llexer lexer_parts
 		nn2, _ := rhs[2].value.([]ast.LexerPart)
 node.value =  nn2
-	case 9:  // parser_section ::= '::' Lparser grammar_parts
+	case 9: // parser_section ::= '::' Lparser grammar_parts
 		nn2, _ := rhs[2].value.([]ast.GrammarPart)
 node.value =  nn2
-	case 10:  // parsing_algorithm ::= Llalr '(' icon ')'
+	case 10: // parsing_algorithm ::= Llalr '(' icon ')'
 		nn2, _ := rhs[2].value.(int)
 node.value = &ast.ParsingAlgorithm{
 			La:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 11:  // import_ ::= Limport ID scon ';'
+	case 11: // import_ ::= Limport ID scon ';'
 		nn1, _ := rhs[1].value.(string)
 nn2, _ := rhs[2].value.(string)
 node.value = &ast.Import{
@@ -283,13 +283,13 @@ node.value = &ast.Import{
 			File:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 12:  // import_ ::= Limport scon ';'
+	case 12: // import_ ::= Limport scon ';'
 		nn1, _ := rhs[1].value.(string)
 node.value = &ast.Import{
 			File:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 13:  // option ::= ID '=' expression
+	case 13: // option ::= ID '=' expression
 		nn0, _ := rhs[0].value.(string)
 nn2, _ := rhs[2].value.(ast.Expression)
 node.value = &ast.Option{
@@ -297,19 +297,19 @@ node.value = &ast.Option{
 			Value:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 14:  // option ::= syntax_problem
+	case 14: // option ::= syntax_problem
 		nn0, _ := rhs[0].value.(*ast.SyntaxProblem)
 node.value = &ast.Option{
 			SyntaxProblem:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 15:  // identifier ::= ID
+	case 15: // identifier ::= ID
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.Identifier{
 			ID:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 16:  // symref ::= ID symref_args
+	case 16: // symref ::= ID symref_args
 		nn0, _ := rhs[0].value.(string)
 nn1, _ := rhs[1].value.(*ast.SymrefArgs)
 node.value = &ast.Symref{
@@ -317,41 +317,41 @@ node.value = &ast.Symref{
 			Args:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 17:  // symref ::= ID
+	case 17: // symref ::= ID
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.Symref{
 			Name:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 18:  // symref_noargs ::= ID
+	case 18: // symref_noargs ::= ID
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.Symref{
 			Name:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 19:  // type ::= '(' scon ')'
+	case 19: // type ::= '(' scon ')'
 		nn1, _ := rhs[1].value.(string)
 { node.value =  nn1; }
-	case 20:  // type ::= '(' type_part_list ')'
+	case 20: // type ::= '(' type_part_list ')'
 		{ node.value = "TODO" }
-	case 36:  // pattern ::= regexp
+	case 36: // pattern ::= regexp
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.Pattern{
 			REGEXP:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 37:  // lexer_parts ::= lexer_part
+	case 37: // lexer_parts ::= lexer_part
 		nn0, _ := rhs[0].value.(ast.LexerPart)
 node.value = []ast.LexerPart{ nn0}
-	case 38:  // lexer_parts ::= lexer_parts lexer_part
+	case 38: // lexer_parts ::= lexer_parts lexer_part
 		nn0, _ := rhs[0].value.([]ast.LexerPart)
 nn1, _ := rhs[1].value.(ast.LexerPart)
 node.value = append( nn0,  nn1)
-	case 39:  // lexer_parts ::= lexer_parts syntax_problem
+	case 39: // lexer_parts ::= lexer_parts syntax_problem
 		nn0, _ := rhs[0].value.([]ast.LexerPart)
 nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 node.value = append( nn0,  nn1)
-	case 44:  // named_pattern ::= ID '=' pattern
+	case 44: // named_pattern ::= ID '=' pattern
 		nn0, _ := rhs[0].value.(string)
 nn2, _ := rhs[2].value.(*ast.Pattern)
 node.value = &ast.NamedPattern{
@@ -359,7 +359,7 @@ node.value = &ast.NamedPattern{
 			Pattern:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 45:  // lexeme ::= identifier typeopt ':' pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt
+	case 45: // lexeme ::= identifier typeopt ':' pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn1, _ := rhs[1].value.(string)
 nn3, _ := rhs[3].value.(*ast.Pattern)
@@ -377,7 +377,7 @@ node.value = &ast.Lexeme{
 			Command:  nn7,
 			Pos: ast.Pos{rhs[0].offset, rhs[7].endoffset},
 }
-	case 46:  // lexeme ::= identifier typeopt ':'
+	case 46: // lexeme ::= identifier typeopt ':'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn1, _ := rhs[1].value.(string)
 node.value = &ast.Lexeme{
@@ -385,24 +385,24 @@ node.value = &ast.Lexeme{
 			Type:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 47:  // lexeme_transition ::= '=>' stateref
+	case 47: // lexeme_transition ::= '=>' stateref
 		nn1, _ := rhs[1].value.(*ast.Stateref)
 node.value =  nn1
-	case 48:  // lexeme_attrs ::= '(' lexeme_attribute ')'
+	case 48: // lexeme_attrs ::= '(' lexeme_attribute ')'
 		nn1, _ := rhs[1].value.(ast.LexemeAttribute)
 node.value = &ast.LexemeAttrs{
 			Kind:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 49:  // lexeme_attribute ::= Lsoft
+	case 49: // lexeme_attribute ::= Lsoft
 		node.value = ast.LexemeAttribute_LSOFT
-	case 50:  // lexeme_attribute ::= Lclass
+	case 50: // lexeme_attribute ::= Lclass
 		node.value = ast.LexemeAttribute_LCLASS
-	case 51:  // lexeme_attribute ::= Lspace
+	case 51: // lexeme_attribute ::= Lspace
 		node.value = ast.LexemeAttribute_LSPACE
-	case 52:  // lexeme_attribute ::= Llayout
+	case 52: // lexeme_attribute ::= Llayout
 		node.value = ast.LexemeAttribute_LLAYOUT
-	case 53:  // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs ';'
+	case 53: // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs ';'
 		nn2, _ := rhs[2].value.(*ast.Symref)
 nn3, _ := rhs[3].value.(*ast.Symref)
 node.value = &ast.DirectiveBrackets{
@@ -410,26 +410,26 @@ node.value = &ast.DirectiveBrackets{
 			Closing:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 54:  // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
+	case 54: // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
 		nn0, _ := rhs[0].value.([]*ast.LexerState)
 nn2, _ := rhs[2].value.(*ast.LexerState)
 node.value = append( nn0,  nn2)
-	case 55:  // lexer_state_list_Comma_separated ::= lexer_state
+	case 55: // lexer_state_list_Comma_separated ::= lexer_state
 		nn0, _ := rhs[0].value.(*ast.LexerState)
 node.value = []*ast.LexerState{ nn0}
-	case 56:  // state_selector ::= '[' lexer_state_list_Comma_separated ']'
+	case 56: // state_selector ::= '[' lexer_state_list_Comma_separated ']'
 		nn1, _ := rhs[1].value.([]*ast.LexerState)
 node.value = &ast.StateSelector{
 			States:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 57:  // stateref ::= ID
+	case 57: // stateref ::= ID
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.Stateref{
 			Name:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 58:  // lexer_state ::= identifier '=>' stateref
+	case 58: // lexer_state ::= identifier '=>' stateref
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(*ast.Stateref)
 node.value = &ast.LexerState{
@@ -437,24 +437,24 @@ node.value = &ast.LexerState{
 			DefaultTransition:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 59:  // lexer_state ::= identifier
+	case 59: // lexer_state ::= identifier
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 node.value = &ast.LexerState{
 			Name:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 60:  // grammar_parts ::= grammar_part
+	case 60: // grammar_parts ::= grammar_part
 		nn0, _ := rhs[0].value.(ast.GrammarPart)
 node.value = []ast.GrammarPart{ nn0}
-	case 61:  // grammar_parts ::= grammar_parts grammar_part
+	case 61: // grammar_parts ::= grammar_parts grammar_part
 		nn0, _ := rhs[0].value.([]ast.GrammarPart)
 nn1, _ := rhs[1].value.(ast.GrammarPart)
 node.value = append( nn0,  nn1)
-	case 62:  // grammar_parts ::= grammar_parts syntax_problem
+	case 62: // grammar_parts ::= grammar_parts syntax_problem
 		nn0, _ := rhs[0].value.([]ast.GrammarPart)
 nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 node.value = append( nn0,  nn1)
-	case 66:  // nonterm ::= annotations identifier nonterm_params nonterm_type '::=' rules ';'
+	case 66: // nonterm ::= annotations identifier nonterm_params nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 nn1, _ := rhs[1].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(*ast.NontermParams)
@@ -468,7 +468,7 @@ node.value = &ast.Nonterm{
 			Rules:  nn5,
 			Pos: ast.Pos{rhs[0].offset, rhs[6].endoffset},
 }
-	case 67:  // nonterm ::= annotations identifier nonterm_params '::=' rules ';'
+	case 67: // nonterm ::= annotations identifier nonterm_params '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 nn1, _ := rhs[1].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(*ast.NontermParams)
@@ -480,7 +480,7 @@ node.value = &ast.Nonterm{
 			Rules:  nn4,
 			Pos: ast.Pos{rhs[0].offset, rhs[5].endoffset},
 }
-	case 68:  // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
+	case 68: // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 nn1, _ := rhs[1].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(ast.NontermType)
@@ -492,7 +492,7 @@ node.value = &ast.Nonterm{
 			Rules:  nn4,
 			Pos: ast.Pos{rhs[0].offset, rhs[5].endoffset},
 }
-	case 69:  // nonterm ::= annotations identifier '::=' rules ';'
+	case 69: // nonterm ::= annotations identifier '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 nn1, _ := rhs[1].value.(*ast.Identifier)
 nn3, _ := rhs[3].value.([]*ast.Rule0)
@@ -502,7 +502,7 @@ node.value = &ast.Nonterm{
 			Rules:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 70:  // nonterm ::= identifier nonterm_params nonterm_type '::=' rules ';'
+	case 70: // nonterm ::= identifier nonterm_params nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn1, _ := rhs[1].value.(*ast.NontermParams)
 nn2, _ := rhs[2].value.(ast.NontermType)
@@ -514,7 +514,7 @@ node.value = &ast.Nonterm{
 			Rules:  nn4,
 			Pos: ast.Pos{rhs[0].offset, rhs[5].endoffset},
 }
-	case 71:  // nonterm ::= identifier nonterm_params '::=' rules ';'
+	case 71: // nonterm ::= identifier nonterm_params '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn1, _ := rhs[1].value.(*ast.NontermParams)
 nn3, _ := rhs[3].value.([]*ast.Rule0)
@@ -524,7 +524,7 @@ node.value = &ast.Nonterm{
 			Rules:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 72:  // nonterm ::= identifier nonterm_type '::=' rules ';'
+	case 72: // nonterm ::= identifier nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn1, _ := rhs[1].value.(ast.NontermType)
 nn3, _ := rhs[3].value.([]*ast.Rule0)
@@ -534,7 +534,7 @@ node.value = &ast.Nonterm{
 			Rules:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 73:  // nonterm ::= identifier '::=' rules ';'
+	case 73: // nonterm ::= identifier '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.([]*ast.Rule0)
 node.value = &ast.Nonterm{
@@ -542,13 +542,13 @@ node.value = &ast.Nonterm{
 			Rules:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 74:  // nonterm_type ::= Lreturns symref_noargs
+	case 74: // nonterm_type ::= Lreturns symref_noargs
 		nn1, _ := rhs[1].value.(*ast.Symref)
 node.value = &ast.NontermTypeAST{
 			Reference:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 75:  // nonterm_type ::= Linline Lclass identifieropt implementsopt
+	case 75: // nonterm_type ::= Linline Lclass identifieropt implementsopt
 		nn2, _ := rhs[2].value.(*ast.Identifier)
 nn3, _ := rhs[3].value.([]*ast.Symref)
 node.value = &ast.NontermTypeHint{
@@ -558,7 +558,7 @@ node.value = &ast.NontermTypeHint{
 			Implements:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 76:  // nonterm_type ::= Lclass identifieropt implementsopt
+	case 76: // nonterm_type ::= Lclass identifieropt implementsopt
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.([]*ast.Symref)
 node.value = &ast.NontermTypeHint{
@@ -567,7 +567,7 @@ node.value = &ast.NontermTypeHint{
 			Implements:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 77:  // nonterm_type ::= Linterface identifieropt implementsopt
+	case 77: // nonterm_type ::= Linterface identifieropt implementsopt
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.([]*ast.Symref)
 node.value = &ast.NontermTypeHint{
@@ -576,33 +576,33 @@ node.value = &ast.NontermTypeHint{
 			Implements:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 78:  // nonterm_type ::= Lvoid
+	case 78: // nonterm_type ::= Lvoid
 		node.value = &ast.NontermTypeHint{
 			Kind: ast.NontermTypeHint_LVOID,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 79:  // nonterm_type ::= type
+	case 79: // nonterm_type ::= type
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.NontermTypeRaw{
 			TypeText:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 80:  // implements ::= ':' references_cs
+	case 80: // implements ::= ':' references_cs
 		nn1, _ := rhs[1].value.([]*ast.Symref)
 node.value =  nn1
-	case 81:  // assoc ::= Lleft
+	case 81: // assoc ::= Lleft
 		node.value = ast.Assoc_LLEFT
-	case 82:  // assoc ::= Lright
+	case 82: // assoc ::= Lright
 		node.value = ast.Assoc_LRIGHT
-	case 83:  // assoc ::= Lnonassoc
+	case 83: // assoc ::= Lnonassoc
 		node.value = ast.Assoc_LNONASSOC
-	case 84:  // param_modifier ::= Lexplicit
+	case 84: // param_modifier ::= Lexplicit
 		node.value = ast.ParamModifier_LEXPLICIT
-	case 85:  // param_modifier ::= Lglobal
+	case 85: // param_modifier ::= Lglobal
 		node.value = ast.ParamModifier_LGLOBAL
-	case 86:  // param_modifier ::= Llookahead
+	case 86: // param_modifier ::= Llookahead
 		node.value = ast.ParamModifier_LLOOKAHEAD
-	case 87:  // template_param ::= '%' param_modifier param_type identifier '=' param_value ';'
+	case 87: // template_param ::= '%' param_modifier param_type identifier '=' param_value ';'
 		nn1, _ := rhs[1].value.(ast.ParamModifier)
 nn2, _ := rhs[2].value.(ast.ParamType)
 nn3, _ := rhs[3].value.(*ast.Identifier)
@@ -614,7 +614,7 @@ node.value = &ast.TemplateParam{
 			ParamValue:  nn5,
 			Pos: ast.Pos{rhs[0].offset, rhs[6].endoffset},
 }
-	case 88:  // template_param ::= '%' param_modifier param_type identifier ';'
+	case 88: // template_param ::= '%' param_modifier param_type identifier ';'
 		nn1, _ := rhs[1].value.(ast.ParamModifier)
 nn2, _ := rhs[2].value.(ast.ParamType)
 nn3, _ := rhs[3].value.(*ast.Identifier)
@@ -624,7 +624,7 @@ node.value = &ast.TemplateParam{
 			Name:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 89:  // template_param ::= '%' param_type identifier '=' param_value ';'
+	case 89: // template_param ::= '%' param_type identifier '=' param_value ';'
 		nn1, _ := rhs[1].value.(ast.ParamType)
 nn2, _ := rhs[2].value.(*ast.Identifier)
 nn4, _ := rhs[4].value.(ast.ParamValue)
@@ -634,7 +634,7 @@ node.value = &ast.TemplateParam{
 			ParamValue:  nn4,
 			Pos: ast.Pos{rhs[0].offset, rhs[5].endoffset},
 }
-	case 90:  // template_param ::= '%' param_type identifier ';'
+	case 90: // template_param ::= '%' param_type identifier ';'
 		nn1, _ := rhs[1].value.(ast.ParamType)
 nn2, _ := rhs[2].value.(*ast.Identifier)
 node.value = &ast.TemplateParam{
@@ -642,7 +642,7 @@ node.value = &ast.TemplateParam{
 			Name:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 91:  // directive ::= '%' assoc references ';'
+	case 91: // directive ::= '%' assoc references ';'
 		nn1, _ := rhs[1].value.(ast.Assoc)
 nn2, _ := rhs[2].value.([]*ast.Symref)
 node.value = &ast.DirectivePrio{
@@ -650,27 +650,27 @@ node.value = &ast.DirectivePrio{
 			Symbols:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 92:  // directive ::= '%' Linput inputref_list_Comma_separated ';'
+	case 92: // directive ::= '%' Linput inputref_list_Comma_separated ';'
 		nn2, _ := rhs[2].value.([]*ast.Inputref)
 node.value = &ast.DirectiveInput{
 			InputRefs:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 93:  // directive ::= '%' Lassert Lempty rhsSet ';'
+	case 93: // directive ::= '%' Lassert Lempty rhsSet ';'
 		nn3, _ := rhs[3].value.(*ast.RhsSet)
 node.value = &ast.DirectiveAssert{
 			Kind: ast.DirectiveAssert_LEMPTY,
 			RhsSet:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 94:  // directive ::= '%' Lassert Lnonempty rhsSet ';'
+	case 94: // directive ::= '%' Lassert Lnonempty rhsSet ';'
 		nn3, _ := rhs[3].value.(*ast.RhsSet)
 node.value = &ast.DirectiveAssert{
 			Kind: ast.DirectiveAssert_LNONEMPTY,
 			RhsSet:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 95:  // directive ::= '%' Lgenerate ID '=' rhsSet ';'
+	case 95: // directive ::= '%' Lgenerate ID '=' rhsSet ';'
 		nn2, _ := rhs[2].value.(string)
 nn4, _ := rhs[4].value.(*ast.RhsSet)
 node.value = &ast.DirectiveSet{
@@ -678,48 +678,48 @@ node.value = &ast.DirectiveSet{
 			RhsSet:  nn4,
 			Pos: ast.Pos{rhs[0].offset, rhs[5].endoffset},
 }
-	case 96:  // inputref_list_Comma_separated ::= inputref_list_Comma_separated ',' inputref
+	case 96: // inputref_list_Comma_separated ::= inputref_list_Comma_separated ',' inputref
 		nn0, _ := rhs[0].value.([]*ast.Inputref)
 nn2, _ := rhs[2].value.(*ast.Inputref)
 node.value = append( nn0,  nn2)
-	case 97:  // inputref_list_Comma_separated ::= inputref
+	case 97: // inputref_list_Comma_separated ::= inputref
 		nn0, _ := rhs[0].value.(*ast.Inputref)
 node.value = []*ast.Inputref{ nn0}
-	case 98:  // inputref ::= symref_noargs Lnoeoi
+	case 98: // inputref ::= symref_noargs Lnoeoi
 		nn0, _ := rhs[0].value.(*ast.Symref)
 node.value = &ast.Inputref{
 			Reference:  nn0,
 			Noeoi: true,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 99:  // inputref ::= symref_noargs
+	case 99: // inputref ::= symref_noargs
 		nn0, _ := rhs[0].value.(*ast.Symref)
 node.value = &ast.Inputref{
 			Reference:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 100:  // references ::= symref_noargs
+	case 100: // references ::= symref_noargs
 		nn0, _ := rhs[0].value.(*ast.Symref)
 node.value = []*ast.Symref{ nn0}
-	case 101:  // references ::= references symref_noargs
+	case 101: // references ::= references symref_noargs
 		nn0, _ := rhs[0].value.([]*ast.Symref)
 nn1, _ := rhs[1].value.(*ast.Symref)
 node.value = append( nn0,  nn1)
-	case 102:  // references_cs ::= symref_noargs
+	case 102: // references_cs ::= symref_noargs
 		nn0, _ := rhs[0].value.(*ast.Symref)
 node.value = []*ast.Symref{ nn0}
-	case 103:  // references_cs ::= references_cs ',' symref_noargs
+	case 103: // references_cs ::= references_cs ',' symref_noargs
 		nn0, _ := rhs[0].value.([]*ast.Symref)
 nn2, _ := rhs[2].value.(*ast.Symref)
 node.value = append( nn0,  nn2)
-	case 104:  // rule0_list_Or_separated ::= rule0_list_Or_separated '|' rule0
+	case 104: // rule0_list_Or_separated ::= rule0_list_Or_separated '|' rule0
 		nn0, _ := rhs[0].value.([]*ast.Rule0)
 nn2, _ := rhs[2].value.(*ast.Rule0)
 node.value = append( nn0,  nn2)
-	case 105:  // rule0_list_Or_separated ::= rule0
+	case 105: // rule0_list_Or_separated ::= rule0
 		nn0, _ := rhs[0].value.(*ast.Rule0)
 node.value = []*ast.Rule0{ nn0}
-	case 107:  // rule0 ::= predicate rhsPrefix rhsParts ruleAction rhsSuffixopt
+	case 107: // rule0 ::= predicate rhsPrefix rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 nn2, _ := rhs[2].value.([]ast.RhsPart)
@@ -733,7 +733,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn4,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 108:  // rule0 ::= predicate rhsPrefix rhsParts rhsSuffixopt
+	case 108: // rule0 ::= predicate rhsPrefix rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 nn2, _ := rhs[2].value.([]ast.RhsPart)
@@ -745,7 +745,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 109:  // rule0 ::= predicate rhsPrefix ruleAction rhsSuffixopt
+	case 109: // rule0 ::= predicate rhsPrefix ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 nn2, _ := rhs[2].value.(*ast.RuleAction)
@@ -757,7 +757,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 110:  // rule0 ::= predicate rhsPrefix rhsSuffixopt
+	case 110: // rule0 ::= predicate rhsPrefix rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -767,7 +767,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 111:  // rule0 ::= predicate rhsParts ruleAction rhsSuffixopt
+	case 111: // rule0 ::= predicate rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.([]ast.RhsPart)
 nn2, _ := rhs[2].value.(*ast.RuleAction)
@@ -779,7 +779,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 112:  // rule0 ::= predicate rhsParts rhsSuffixopt
+	case 112: // rule0 ::= predicate rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.([]ast.RhsPart)
 nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -789,7 +789,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 113:  // rule0 ::= predicate ruleAction rhsSuffixopt
+	case 113: // rule0 ::= predicate ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.(*ast.RuleAction)
 nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -799,7 +799,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 114:  // rule0 ::= predicate rhsSuffixopt
+	case 114: // rule0 ::= predicate rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 node.value = &ast.Rule0{
@@ -807,7 +807,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 115:  // rule0 ::= rhsPrefix rhsParts ruleAction rhsSuffixopt
+	case 115: // rule0 ::= rhsPrefix rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 nn1, _ := rhs[1].value.([]ast.RhsPart)
 nn2, _ := rhs[2].value.(*ast.RuleAction)
@@ -819,7 +819,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 116:  // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
+	case 116: // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 nn1, _ := rhs[1].value.([]ast.RhsPart)
 nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -829,7 +829,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 117:  // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
+	case 117: // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 nn1, _ := rhs[1].value.(*ast.RuleAction)
 nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -839,7 +839,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 118:  // rule0 ::= rhsPrefix rhsSuffixopt
+	case 118: // rule0 ::= rhsPrefix rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 node.value = &ast.Rule0{
@@ -847,7 +847,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 119:  // rule0 ::= rhsParts ruleAction rhsSuffixopt
+	case 119: // rule0 ::= rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 nn1, _ := rhs[1].value.(*ast.RuleAction)
 nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -857,7 +857,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 120:  // rule0 ::= rhsParts rhsSuffixopt
+	case 120: // rule0 ::= rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 node.value = &ast.Rule0{
@@ -865,7 +865,7 @@ node.value = &ast.Rule0{
 			Suffix:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 121:  // rule0 ::= ruleAction rhsSuffixopt
+	case 121: // rule0 ::= ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RuleAction)
 nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 node.value = &ast.Rule0{
@@ -873,42 +873,42 @@ node.value = &ast.Rule0{
 			Suffix:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 122:  // rule0 ::= rhsSuffixopt
+	case 122: // rule0 ::= rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsSuffix)
 node.value = &ast.Rule0{
 			Suffix:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 123:  // rule0 ::= syntax_problem
+	case 123: // rule0 ::= syntax_problem
 		nn0, _ := rhs[0].value.(*ast.SyntaxProblem)
 node.value = &ast.Rule0{
 			Error:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 124:  // predicate ::= '[' predicate_expression ']'
+	case 124: // predicate ::= '[' predicate_expression ']'
 		nn1, _ := rhs[1].value.(ast.PredicateExpression)
 node.value =  nn1
-	case 125:  // rhsPrefix ::= annotations ':'
+	case 125: // rhsPrefix ::= annotations ':'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 node.value = &ast.RhsPrefix{
 			Annotations:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 126:  // rhsSuffix ::= '%' Lprec symref_noargs
+	case 126: // rhsSuffix ::= '%' Lprec symref_noargs
 		nn2, _ := rhs[2].value.(*ast.Symref)
 node.value = &ast.RhsSuffix{
 			Kind: ast.RhsSuffix_LPREC,
 			Symref:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 127:  // rhsSuffix ::= '%' Lshift symref_noargs
+	case 127: // rhsSuffix ::= '%' Lshift symref_noargs
 		nn2, _ := rhs[2].value.(*ast.Symref)
 node.value = &ast.RhsSuffix{
 			Kind: ast.RhsSuffix_LSHIFT,
 			Symref:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 128:  // ruleAction ::= '{~' identifier scon '}'
+	case 128: // ruleAction ::= '{~' identifier scon '}'
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(string)
 node.value = &ast.RuleAction{
@@ -916,24 +916,24 @@ node.value = &ast.RuleAction{
 			Parameter:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 129:  // ruleAction ::= '{~' identifier '}'
+	case 129: // ruleAction ::= '{~' identifier '}'
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 node.value = &ast.RuleAction{
 			Action:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 130:  // rhsParts ::= rhsPart
+	case 130: // rhsParts ::= rhsPart
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 node.value = []ast.RhsPart{ nn0}
-	case 131:  // rhsParts ::= rhsParts rhsPart
+	case 131: // rhsParts ::= rhsParts rhsPart
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 nn1, _ := rhs[1].value.(ast.RhsPart)
 node.value = append( nn0,  nn1)
-	case 132:  // rhsParts ::= rhsParts syntax_problem
+	case 132: // rhsParts ::= rhsParts syntax_problem
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 node.value = append( nn0,  nn1)
-	case 137:  // rhsAnnotated ::= annotations rhsAssignment
+	case 137: // rhsAnnotated ::= annotations rhsAssignment
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 nn1, _ := rhs[1].value.(ast.RhsPart)
 node.value = &ast.RhsAnnotated{
@@ -941,7 +941,7 @@ node.value = &ast.RhsAnnotated{
 			Inner:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 139:  // rhsAssignment ::= identifier '=' rhsOptional
+	case 139: // rhsAssignment ::= identifier '=' rhsOptional
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(ast.RhsPart)
 node.value = &ast.RhsAssignment{
@@ -949,7 +949,7 @@ node.value = &ast.RhsAssignment{
 			Inner:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 140:  // rhsAssignment ::= identifier '+=' rhsOptional
+	case 140: // rhsAssignment ::= identifier '+=' rhsOptional
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(ast.RhsPart)
 node.value = &ast.RhsAssignment{
@@ -958,14 +958,14 @@ node.value = &ast.RhsAssignment{
 			Inner:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 142:  // rhsOptional ::= rhsCast '?'
+	case 142: // rhsOptional ::= rhsCast '?'
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 node.value = &ast.RhsQuantifier{
 			Inner:  nn0,
 			Quantifier: ast.RhsQuantifier_QUEST,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 144:  // rhsCast ::= rhsClass Las symref
+	case 144: // rhsCast ::= rhsClass Las symref
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 nn2, _ := rhs[2].value.(*ast.Symref)
 node.value = &ast.RhsCast{
@@ -973,7 +973,7 @@ node.value = &ast.RhsCast{
 			Target:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 145:  // rhsCast ::= rhsClass Las literal
+	case 145: // rhsCast ::= rhsClass Las literal
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 nn2, _ := rhs[2].value.(*ast.Literal)
 node.value = &ast.RhsAsLiteral{
@@ -981,7 +981,7 @@ node.value = &ast.RhsAsLiteral{
 			Literal:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 146:  // rhsUnordered ::= rhsPart '&' rhsPart
+	case 146: // rhsUnordered ::= rhsPart '&' rhsPart
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 nn2, _ := rhs[2].value.(ast.RhsPart)
 node.value = &ast.RhsUnordered{
@@ -989,7 +989,7 @@ node.value = &ast.RhsUnordered{
 			Right:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 148:  // rhsClass ::= identifier ':' rhsPrimary
+	case 148: // rhsClass ::= identifier ':' rhsPrimary
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 nn2, _ := rhs[2].value.(ast.RhsPart)
 node.value = &ast.RhsClass{
@@ -997,19 +997,19 @@ node.value = &ast.RhsClass{
 			Inner:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 149:  // rhsPrimary ::= symref
+	case 149: // rhsPrimary ::= symref
 		nn0, _ := rhs[0].value.(*ast.Symref)
 node.value = &ast.RhsSymbol{
 			Reference:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 150:  // rhsPrimary ::= '(' rules ')'
+	case 150: // rhsPrimary ::= '(' rules ')'
 		nn1, _ := rhs[1].value.([]*ast.Rule0)
 node.value = &ast.RhsNested{
 			Rules:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 151:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
+	case 151: // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 nn3, _ := rhs[3].value.([]*ast.Symref)
 node.value = &ast.RhsList{
@@ -1018,7 +1018,7 @@ node.value = &ast.RhsList{
 			AtLeastOne: true,
 			Pos: ast.Pos{rhs[0].offset, rhs[5].endoffset},
 }
-	case 152:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
+	case 152: // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 nn3, _ := rhs[3].value.([]*ast.Symref)
 node.value = &ast.RhsList{
@@ -1027,33 +1027,33 @@ node.value = &ast.RhsList{
 			AtLeastOne: false,
 			Pos: ast.Pos{rhs[0].offset, rhs[5].endoffset},
 }
-	case 153:  // rhsPrimary ::= rhsPrimary '*'
+	case 153: // rhsPrimary ::= rhsPrimary '*'
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 node.value = &ast.RhsQuantifier{
 			Inner:  nn0,
 			Quantifier: ast.RhsQuantifier_MULT,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 154:  // rhsPrimary ::= rhsPrimary '+'
+	case 154: // rhsPrimary ::= rhsPrimary '+'
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 node.value = &ast.RhsQuantifier{
 			Inner:  nn0,
 			Quantifier: ast.RhsQuantifier_PLUS,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 155:  // rhsPrimary ::= '$' '(' rules ')'
+	case 155: // rhsPrimary ::= '$' '(' rules ')'
 		nn2, _ := rhs[2].value.([]*ast.Rule0)
 node.value = &ast.RhsIgnored{
 			Rules:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 157:  // rhsSet ::= Lset '(' setExpression ')'
+	case 157: // rhsSet ::= Lset '(' setExpression ')'
 		nn2, _ := rhs[2].value.(ast.SetExpression)
 node.value = &ast.RhsSet{
 			Expr:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 158:  // setPrimary ::= ID symref
+	case 158: // setPrimary ::= ID symref
 		nn0, _ := rhs[0].value.(string)
 nn1, _ := rhs[1].value.(*ast.Symref)
 node.value = &ast.SetSymbol{
@@ -1061,25 +1061,25 @@ node.value = &ast.SetSymbol{
 			Symbol:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 159:  // setPrimary ::= symref
+	case 159: // setPrimary ::= symref
 		nn0, _ := rhs[0].value.(*ast.Symref)
 node.value = &ast.SetSymbol{
 			Symbol:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 160:  // setPrimary ::= '(' setExpression ')'
+	case 160: // setPrimary ::= '(' setExpression ')'
 		nn1, _ := rhs[1].value.(ast.SetExpression)
 node.value = &ast.SetCompound{
 			Inner:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 161:  // setPrimary ::= '~' setPrimary
+	case 161: // setPrimary ::= '~' setPrimary
 		nn1, _ := rhs[1].value.(ast.SetExpression)
 node.value = &ast.SetComplement{
 			Inner:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 163:  // setExpression ::= setExpression '|' setExpression
+	case 163: // setExpression ::= setExpression '|' setExpression
 		nn0, _ := rhs[0].value.(ast.SetExpression)
 nn2, _ := rhs[2].value.(ast.SetExpression)
 node.value = &ast.SetBinary{
@@ -1088,7 +1088,7 @@ node.value = &ast.SetBinary{
 			Right:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 164:  // setExpression ::= setExpression '&' setExpression
+	case 164: // setExpression ::= setExpression '&' setExpression
 		nn0, _ := rhs[0].value.(ast.SetExpression)
 nn2, _ := rhs[2].value.(ast.SetExpression)
 node.value = &ast.SetBinary{
@@ -1097,20 +1097,20 @@ node.value = &ast.SetBinary{
 			Right:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 165:  // annotation_list ::= annotation_list annotation
+	case 165: // annotation_list ::= annotation_list annotation
 		nn0, _ := rhs[0].value.([]*ast.Annotation)
 nn1, _ := rhs[1].value.(*ast.Annotation)
 node.value = append( nn0,  nn1)
-	case 166:  // annotation_list ::= annotation
+	case 166: // annotation_list ::= annotation
 		nn0, _ := rhs[0].value.(*ast.Annotation)
 node.value = []*ast.Annotation{ nn0}
-	case 167:  // annotations ::= annotation_list
+	case 167: // annotations ::= annotation_list
 		nn0, _ := rhs[0].value.([]*ast.Annotation)
 node.value = &ast.Annotations{
 			Annotations:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 168:  // annotation ::= '@' ID '{' expression '}'
+	case 168: // annotation ::= '@' ID '{' expression '}'
 		nn1, _ := rhs[1].value.(string)
 nn3, _ := rhs[3].value.(ast.Expression)
 node.value = &ast.Annotation{
@@ -1118,32 +1118,32 @@ node.value = &ast.Annotation{
 			Expression:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 169:  // annotation ::= '@' ID
+	case 169: // annotation ::= '@' ID
 		nn1, _ := rhs[1].value.(string)
 node.value = &ast.Annotation{
 			Name:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 170:  // annotation ::= '@' syntax_problem
+	case 170: // annotation ::= '@' syntax_problem
 		nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 node.value = &ast.Annotation{
 			SyntaxProblem:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 171:  // nonterm_param_list_Comma_separated ::= nonterm_param_list_Comma_separated ',' nonterm_param
+	case 171: // nonterm_param_list_Comma_separated ::= nonterm_param_list_Comma_separated ',' nonterm_param
 		nn0, _ := rhs[0].value.([]ast.NontermParam)
 nn2, _ := rhs[2].value.(ast.NontermParam)
 node.value = append( nn0,  nn2)
-	case 172:  // nonterm_param_list_Comma_separated ::= nonterm_param
+	case 172: // nonterm_param_list_Comma_separated ::= nonterm_param
 		nn0, _ := rhs[0].value.(ast.NontermParam)
 node.value = []ast.NontermParam{ nn0}
-	case 173:  // nonterm_params ::= '<' nonterm_param_list_Comma_separated '>'
+	case 173: // nonterm_params ::= '<' nonterm_param_list_Comma_separated '>'
 		nn1, _ := rhs[1].value.([]ast.NontermParam)
 node.value = &ast.NontermParams{
 			List:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 175:  // nonterm_param ::= ID identifier '=' param_value
+	case 175: // nonterm_param ::= ID identifier '=' param_value
 		nn0, _ := rhs[0].value.(string)
 nn1, _ := rhs[1].value.(*ast.Identifier)
 nn3, _ := rhs[3].value.(ast.ParamValue)
@@ -1153,7 +1153,7 @@ node.value = &ast.InlineParameter{
 			ParamValue:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[3].endoffset},
 }
-	case 176:  // nonterm_param ::= ID identifier
+	case 176: // nonterm_param ::= ID identifier
 		nn0, _ := rhs[0].value.(string)
 nn1, _ := rhs[1].value.(*ast.Identifier)
 node.value = &ast.InlineParameter{
@@ -1161,26 +1161,26 @@ node.value = &ast.InlineParameter{
 			Name:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 177:  // param_ref ::= identifier
+	case 177: // param_ref ::= identifier
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 node.value = &ast.ParamRef{
 			Ref:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 178:  // argument_list_Comma_separated ::= argument_list_Comma_separated ',' argument
+	case 178: // argument_list_Comma_separated ::= argument_list_Comma_separated ',' argument
 		nn0, _ := rhs[0].value.([]*ast.Argument)
 nn2, _ := rhs[2].value.(*ast.Argument)
 node.value = append( nn0,  nn2)
-	case 179:  // argument_list_Comma_separated ::= argument
+	case 179: // argument_list_Comma_separated ::= argument
 		nn0, _ := rhs[0].value.(*ast.Argument)
 node.value = []*ast.Argument{ nn0}
-	case 182:  // symref_args ::= '<' argument_list_Comma_separated_opt '>'
+	case 182: // symref_args ::= '<' argument_list_Comma_separated_opt '>'
 		nn1, _ := rhs[1].value.([]*ast.Argument)
 node.value = &ast.SymrefArgs{
 			ArgList:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 183:  // argument ::= param_ref ':' param_value
+	case 183: // argument ::= param_ref ':' param_value
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 nn2, _ := rhs[2].value.(ast.ParamValue)
 node.value = &ast.Argument{
@@ -1188,44 +1188,44 @@ node.value = &ast.Argument{
 			Val:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 184:  // argument ::= '+' param_ref
+	case 184: // argument ::= '+' param_ref
 		nn1, _ := rhs[1].value.(*ast.ParamRef)
 node.value = &ast.Argument{
 			Name:  nn1,
 			Bool: ast.Argument_PLUS,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 185:  // argument ::= '~' param_ref
+	case 185: // argument ::= '~' param_ref
 		nn1, _ := rhs[1].value.(*ast.ParamRef)
 node.value = &ast.Argument{
 			Name:  nn1,
 			Bool: ast.Argument_TILDE,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 186:  // argument ::= param_ref
+	case 186: // argument ::= param_ref
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 node.value = &ast.Argument{
 			Name:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 187:  // param_type ::= Lflag
+	case 187: // param_type ::= Lflag
 		node.value = ast.ParamType_LFLAG
-	case 188:  // param_type ::= Lparam
+	case 188: // param_type ::= Lparam
 		node.value = ast.ParamType_LPARAM
-	case 191:  // predicate_primary ::= '!' param_ref
+	case 191: // predicate_primary ::= '!' param_ref
 		nn1, _ := rhs[1].value.(*ast.ParamRef)
 node.value = &ast.BoolPredicate{
 			Negated: true,
 			ParamRef:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[1].endoffset},
 }
-	case 192:  // predicate_primary ::= param_ref
+	case 192: // predicate_primary ::= param_ref
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 node.value = &ast.BoolPredicate{
 			ParamRef:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 193:  // predicate_primary ::= param_ref '==' literal
+	case 193: // predicate_primary ::= param_ref '==' literal
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 nn2, _ := rhs[2].value.(*ast.Literal)
 node.value = &ast.ComparePredicate{
@@ -1234,7 +1234,7 @@ node.value = &ast.ComparePredicate{
 			Literal:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 194:  // predicate_primary ::= param_ref '!=' literal
+	case 194: // predicate_primary ::= param_ref '!=' literal
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 nn2, _ := rhs[2].value.(*ast.Literal)
 node.value = &ast.ComparePredicate{
@@ -1243,7 +1243,7 @@ node.value = &ast.ComparePredicate{
 			Literal:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 196:  // predicate_expression ::= predicate_expression '&&' predicate_expression
+	case 196: // predicate_expression ::= predicate_expression '&&' predicate_expression
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn2, _ := rhs[2].value.(ast.PredicateExpression)
 node.value = &ast.PredicateBinary{
@@ -1252,7 +1252,7 @@ node.value = &ast.PredicateBinary{
 			Right:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 197:  // predicate_expression ::= predicate_expression '||' predicate_expression
+	case 197: // predicate_expression ::= predicate_expression '||' predicate_expression
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 nn2, _ := rhs[2].value.(ast.PredicateExpression)
 node.value = &ast.PredicateBinary{
@@ -1261,7 +1261,7 @@ node.value = &ast.PredicateBinary{
 			Right:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 200:  // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
+	case 200: // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
 		nn1, _ := rhs[1].value.(*ast.Name)
 nn3, _ := rhs[3].value.([]*ast.MapEntry)
 node.value = &ast.Instance{
@@ -1269,27 +1269,27 @@ node.value = &ast.Instance{
 			Entries:  nn3,
 			Pos: ast.Pos{rhs[0].offset, rhs[4].endoffset},
 }
-	case 201:  // expression ::= '[' expression_list_Comma_separated_opt ']'
+	case 201: // expression ::= '[' expression_list_Comma_separated_opt ']'
 		nn1, _ := rhs[1].value.([]ast.Expression)
 node.value = &ast.Array{
 			Content:  nn1,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 203:  // expression_list_Comma_separated ::= expression_list_Comma_separated ',' expression
+	case 203: // expression_list_Comma_separated ::= expression_list_Comma_separated ',' expression
 		nn0, _ := rhs[0].value.([]ast.Expression)
 nn2, _ := rhs[2].value.(ast.Expression)
 node.value = append( nn0,  nn2)
-	case 204:  // expression_list_Comma_separated ::= expression
+	case 204: // expression_list_Comma_separated ::= expression
 		nn0, _ := rhs[0].value.(ast.Expression)
 node.value = []ast.Expression{ nn0}
-	case 207:  // map_entry_list_Comma_separated ::= map_entry_list_Comma_separated ',' map_entry
+	case 207: // map_entry_list_Comma_separated ::= map_entry_list_Comma_separated ',' map_entry
 		nn0, _ := rhs[0].value.([]*ast.MapEntry)
 nn2, _ := rhs[2].value.(*ast.MapEntry)
 node.value = append( nn0,  nn2)
-	case 208:  // map_entry_list_Comma_separated ::= map_entry
+	case 208: // map_entry_list_Comma_separated ::= map_entry
 		nn0, _ := rhs[0].value.(*ast.MapEntry)
 node.value = []*ast.MapEntry{ nn0}
-	case 211:  // map_entry ::= ID ':' expression
+	case 211: // map_entry ::= ID ':' expression
 		nn0, _ := rhs[0].value.(string)
 nn2, _ := rhs[2].value.(ast.Expression)
 node.value = &ast.MapEntry{
@@ -1297,46 +1297,46 @@ node.value = &ast.MapEntry{
 			Value:  nn2,
 			Pos: ast.Pos{rhs[0].offset, rhs[2].endoffset},
 }
-	case 212:  // literal ::= scon
+	case 212: // literal ::= scon
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.Literal{
 			Value:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 213:  // literal ::= icon
+	case 213: // literal ::= icon
 		nn0, _ := rhs[0].value.(int)
 node.value = &ast.Literal{
 			Value:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 214:  // literal ::= Ltrue
+	case 214: // literal ::= Ltrue
 		node.value = &ast.Literal{
 			Value: true,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 215:  // literal ::= Lfalse
+	case 215: // literal ::= Lfalse
 		node.value = &ast.Literal{
 			Value: false,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 216:  // name ::= qualified_id
+	case 216: // name ::= qualified_id
 		nn0, _ := rhs[0].value.(string)
 node.value = &ast.Name{
 			QualifiedId:  nn0,
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 217:  // qualified_id ::= ID
+	case 217: // qualified_id ::= ID
 		nn0, _ := rhs[0].value.(string)
 { node.value =  nn0; }
-	case 218:  // qualified_id ::= qualified_id '.' ID
+	case 218: // qualified_id ::= qualified_id '.' ID
 		nn0, _ := rhs[0].value.(string)
 nn2, _ := rhs[2].value.(string)
 { node.value =  nn0 + "." +  nn2; }
-	case 219:  // command ::= code
+	case 219: // command ::= code
 		node.value = &ast.Command{
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }
-	case 220:  // syntax_problem ::= error
+	case 220: // syntax_problem ::= error
 		node.value = &ast.SyntaxProblem{
 			Pos: ast.Pos{rhs[0].offset, rhs[0].endoffset},
 }

@@ -178,6 +178,19 @@ public class TemplateConstructionsTest {
 	}
 
 	@Test
+	public void testMax() {
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
+
+		EvaluationContext context = new EvaluationContext(null);
+		context.setVariable("util", new DefaultStaticMethods());
+
+		// test 1
+		String q = env.executeTemplate("filter.max1", context, null, null);
+		assertEquals("7 0 10", q);
+	}
+
+	@Test
 	public void testGroupBy() {
 		TestProblemCollector collector = new TestProblemCollector();
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);

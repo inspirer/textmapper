@@ -10,7 +10,7 @@ type Parser struct {
 
 	stack []node
 	lexer *Lexer
-	next Token
+	next  Token
 }
 
 type node struct {
@@ -102,7 +102,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 				if recovering == 0 {
 					offset, endoffset := lexer.Pos()
 					line := lexer.Line()
-					p.err(line, offset, endoffset - offset, "syntax error")
+					p.err(line, offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
 					p.next = lexer.Next()
@@ -124,11 +124,11 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 		}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
-		p.err(line, offset, endoffset - offset, "syntax error")
+		p.err(line, offset, endoffset-offset, "syntax error")
 		return false, nil
 	}
 
-	return true, p.stack[len(p.stack)-1].value
+	return true, p.stack[len(p.stack)-2].value
 }
 
 const errSymbol = 14
@@ -183,11 +183,11 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 	return -1
 }
 
-func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
-	switch (rule) {
-	case 1:  // JSONValue ::= 'null'
+func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
+	switch rule {
+	case 1: // JSONValue ::= 'null'
 		{ node.value = &Literal{value: "null"} }
-	case 10:  // JSONMember ::= JSONString ':' JSONValue
+	case 10: // JSONMember ::= JSONString ':' JSONValue
 		nn0, _ := rhs[0].value.(string)
 { node.value = &Field{name:  nn0} }
 	}

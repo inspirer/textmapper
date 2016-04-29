@@ -13,6 +13,7 @@ func (p Pos) Start() int { return p.Offset }
 func (p Pos) End() int   { return p.Endoffset }
 
 type LexemeAttribute int
+
 const (
 	LexemeAttribute_LSOFT LexemeAttribute = iota
 	LexemeAttribute_LCLASS
@@ -21,6 +22,7 @@ const (
 )
 
 type Assoc int
+
 const (
 	Assoc_LLEFT Assoc = iota
 	Assoc_LRIGHT
@@ -28,6 +30,7 @@ const (
 )
 
 type ParamModifier int
+
 const (
 	ParamModifier_LEXPLICIT ParamModifier = iota
 	ParamModifier_LGLOBAL
@@ -35,6 +38,7 @@ const (
 )
 
 type ParamType int
+
 const (
 	ParamType_LFLAG ParamType = iota
 	ParamType_LPARAM
@@ -60,9 +64,9 @@ type NontermTypeAST struct {
 func (*NontermTypeAST) nontermType() {}
 
 type NontermTypeHint struct {
-	Inline bool
-	Kind NontermTypeHint_KindKind
-	Name *Identifier
+	Inline     bool
+	Kind       NontermTypeHint_KindKind
+	Name       *Identifier
 	Implements []*Symref
 	Pos
 }
@@ -70,6 +74,7 @@ type NontermTypeHint struct {
 func (*NontermTypeHint) nontermType() {}
 
 type NontermTypeHint_KindKind int
+
 const (
 	NontermTypeHint_LCLASS NontermTypeHint_KindKind = iota
 	NontermTypeHint_LVOID
@@ -92,8 +97,8 @@ type SetExpression interface {
 }
 
 type SetBinary struct {
-	Left SetExpression
-	Kind SetBinary_KindKind
+	Left  SetExpression
+	Kind  SetBinary_KindKind
 	Right SetExpression
 	Pos
 }
@@ -101,6 +106,7 @@ type SetBinary struct {
 func (*SetBinary) setExpression() {}
 
 type SetBinary_KindKind int
+
 const (
 	SetBinary_OR SetBinary_KindKind = iota
 	SetBinary_AND
@@ -111,8 +117,8 @@ type NontermParam interface {
 }
 
 type InlineParameter struct {
-	ParamType string
-	Name *Identifier
+	ParamType  string
+	Name       *Identifier
 	ParamValue ParamValue
 	Pos
 }
@@ -128,8 +134,8 @@ type PredicateExpression interface {
 }
 
 type PredicateBinary struct {
-	Left PredicateExpression
-	Kind PredicateBinary_KindKind
+	Left  PredicateExpression
+	Kind  PredicateBinary_KindKind
 	Right PredicateExpression
 	Pos
 }
@@ -137,6 +143,7 @@ type PredicateBinary struct {
 func (*PredicateBinary) predicateExpression() {}
 
 type PredicateBinary_KindKind int
+
 const (
 	PredicateBinary_ANDAND PredicateBinary_KindKind = iota
 	PredicateBinary_OROR
@@ -148,7 +155,7 @@ type Expression interface {
 
 type Instance struct {
 	ClassName *Name
-	Entries []*MapEntry
+	Entries   []*MapEntry
 	Pos
 }
 
@@ -162,17 +169,17 @@ type Array struct {
 func (*Array) expression() {}
 
 type Input struct {
-	Header *Header
+	Header  *Header
 	Imports []*Import
 	Options []*Option
-	Lexer []LexerPart
-	Parser []GrammarPart
+	Lexer   []LexerPart
+	Parser  []GrammarPart
 	Pos
 }
 
 type Header struct {
-	Name *Name
-	Target *Name
+	Name             *Name
+	Target           *Name
 	ParsingAlgorithm *ParsingAlgorithm
 	Pos
 }
@@ -184,13 +191,13 @@ type ParsingAlgorithm struct {
 
 type Import struct {
 	Alias string
-	File string
+	File  string
 	Pos
 }
 
 type Option struct {
-	Key string
-	Value Expression
+	Key           string
+	Value         Expression
 	SyntaxProblem *SyntaxProblem
 	Pos
 }
@@ -215,7 +222,7 @@ type Pattern struct {
 }
 
 type NamedPattern struct {
-	Name string
+	Name    string
 	Pattern *Pattern
 	Pos
 }
@@ -223,13 +230,13 @@ type NamedPattern struct {
 func (*NamedPattern) lexerPart() {}
 
 type Lexeme struct {
-	Name *Identifier
-	Type string
-	Pattern *Pattern
+	Name       *Identifier
+	Type       string
+	Pattern    *Pattern
 	Transition *Stateref
-	Priority int
-	Attrs *LexemeAttrs
-	Command *Command
+	Priority   int
+	Attrs      *LexemeAttrs
+	Command    *Command
 	Pos
 }
 
@@ -253,17 +260,17 @@ type Stateref struct {
 }
 
 type LexerState struct {
-	Name *Identifier
+	Name              *Identifier
 	DefaultTransition *Stateref
 	Pos
 }
 
 type Nonterm struct {
 	Annotations *Annotations
-	Name *Identifier
-	Params *NontermParams
-	Type NontermType
-	Rules []*Rule0
+	Name        *Identifier
+	Params      *NontermParams
+	Type        NontermType
+	Rules       []*Rule0
 	Pos
 }
 
@@ -271,17 +278,17 @@ func (*Nonterm) grammarPart() {}
 
 type Inputref struct {
 	Reference *Symref
-	Noeoi bool
+	Noeoi     bool
 	Pos
 }
 
 type Rule0 struct {
 	Predicate PredicateExpression
-	Prefix *RhsPrefix
-	List []RhsPart
-	Action *RuleAction
-	Suffix *RhsSuffix
-	Error *SyntaxProblem
+	Prefix    *RhsPrefix
+	List      []RhsPart
+	Action    *RuleAction
+	Suffix    *RhsSuffix
+	Error     *SyntaxProblem
 	Pos
 }
 
@@ -291,19 +298,20 @@ type RhsPrefix struct {
 }
 
 type RhsSuffix struct {
-	Kind RhsSuffix_KindKind
+	Kind   RhsSuffix_KindKind
 	Symref *Symref
 	Pos
 }
 
 type RhsSuffix_KindKind int
+
 const (
 	RhsSuffix_LPREC RhsSuffix_KindKind = iota
 	RhsSuffix_LSHIFT
 )
 
 type RuleAction struct {
-	Action *Identifier
+	Action    *Identifier
 	Parameter string
 	Pos
 }
@@ -314,8 +322,8 @@ type Annotations struct {
 }
 
 type Annotation struct {
-	Name string
-	Expression Expression
+	Name          string
+	Expression    Expression
 	SyntaxProblem *SyntaxProblem
 	Pos
 }
@@ -339,19 +347,20 @@ type SymrefArgs struct {
 
 type Argument struct {
 	Name *ParamRef
-	Val ParamValue
+	Val  ParamValue
 	Bool Argument_BoolKind
 	Pos
 }
 
 type Argument_BoolKind int
+
 const (
 	Argument_PLUS Argument_BoolKind = iota
 	Argument_TILDE
 )
 
 type MapEntry struct {
-	Name string
+	Name  string
 	Value Expression
 	Pos
 }
@@ -393,9 +402,9 @@ type DirectiveBrackets struct {
 func (*DirectiveBrackets) lexerPart() {}
 
 type TemplateParam struct {
-	Modifier ParamModifier
-	ParamType ParamType
-	Name *Identifier
+	Modifier   ParamModifier
+	ParamType  ParamType
+	Name       *Identifier
 	ParamValue ParamValue
 	Pos
 }
@@ -403,7 +412,7 @@ type TemplateParam struct {
 func (*TemplateParam) grammarPart() {}
 
 type DirectivePrio struct {
-	Assoc Assoc
+	Assoc   Assoc
 	Symbols []*Symref
 	Pos
 }
@@ -418,7 +427,7 @@ type DirectiveInput struct {
 func (*DirectiveInput) grammarPart() {}
 
 type DirectiveAssert struct {
-	Kind DirectiveAssert_KindKind
+	Kind   DirectiveAssert_KindKind
 	RhsSet *RhsSet
 	Pos
 }
@@ -426,13 +435,14 @@ type DirectiveAssert struct {
 func (*DirectiveAssert) grammarPart() {}
 
 type DirectiveAssert_KindKind int
+
 const (
 	DirectiveAssert_LEMPTY DirectiveAssert_KindKind = iota
 	DirectiveAssert_LNONEMPTY
 )
 
 type DirectiveSet struct {
-	Name string
+	Name   string
 	RhsSet *RhsSet
 	Pos
 }
@@ -441,23 +451,23 @@ func (*DirectiveSet) grammarPart() {}
 
 type RhsAnnotated struct {
 	Annotations *Annotations
-	Inner RhsPart
+	Inner       RhsPart
 	Pos
 }
 
 func (*RhsAnnotated) rhsPart() {}
 
 type RhsAssignment struct {
-	Id *Identifier
+	Id       *Identifier
 	Addition bool
-	Inner RhsPart
+	Inner    RhsPart
 	Pos
 }
 
 func (*RhsAssignment) rhsPart() {}
 
 type RhsQuantifier struct {
-	Inner RhsPart
+	Inner      RhsPart
 	Quantifier RhsQuantifier_QuantifierKind
 	Pos
 }
@@ -465,6 +475,7 @@ type RhsQuantifier struct {
 func (*RhsQuantifier) rhsPart() {}
 
 type RhsQuantifier_QuantifierKind int
+
 const (
 	RhsQuantifier_QUEST RhsQuantifier_QuantifierKind = iota
 	RhsQuantifier_PLUS
@@ -472,7 +483,7 @@ const (
 )
 
 type RhsCast struct {
-	Inner RhsPart
+	Inner  RhsPart
 	Target *Symref
 	Pos
 }
@@ -480,7 +491,7 @@ type RhsCast struct {
 func (*RhsCast) rhsPart() {}
 
 type RhsAsLiteral struct {
-	Inner RhsPart
+	Inner   RhsPart
 	Literal *Literal
 	Pos
 }
@@ -488,7 +499,7 @@ type RhsAsLiteral struct {
 func (*RhsAsLiteral) rhsPart() {}
 
 type RhsUnordered struct {
-	Left RhsPart
+	Left  RhsPart
 	Right RhsPart
 	Pos
 }
@@ -497,7 +508,7 @@ func (*RhsUnordered) rhsPart() {}
 
 type RhsClass struct {
 	Identifier *Identifier
-	Inner RhsPart
+	Inner      RhsPart
 	Pos
 }
 
@@ -518,8 +529,8 @@ type RhsNested struct {
 func (*RhsNested) rhsPart() {}
 
 type RhsList struct {
-	RuleParts []RhsPart
-	Separator []*Symref
+	RuleParts  []RhsPart
+	Separator  []*Symref
 	AtLeastOne bool
 	Pos
 }
@@ -542,7 +553,7 @@ func (*RhsSet) rhsPart() {}
 
 type SetSymbol struct {
 	Operator string
-	Symbol *Symref
+	Symbol   *Symref
 	Pos
 }
 
@@ -563,7 +574,7 @@ type SetComplement struct {
 func (*SetComplement) setExpression() {}
 
 type BoolPredicate struct {
-	Negated bool
+	Negated  bool
 	ParamRef *ParamRef
 	Pos
 }
@@ -572,14 +583,15 @@ func (*BoolPredicate) predicateExpression() {}
 
 type ComparePredicate struct {
 	ParamRef *ParamRef
-	Kind ComparePredicate_KindKind
-	Literal *Literal
+	Kind     ComparePredicate_KindKind
+	Literal  *Literal
 	Pos
 }
 
 func (*ComparePredicate) predicateExpression() {}
 
 type ComparePredicate_KindKind int
+
 const (
 	ComparePredicate_ASSIGNASSIGN ComparePredicate_KindKind = iota
 	ComparePredicate_EXCLASSIGN

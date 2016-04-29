@@ -39,6 +39,16 @@ ${foreach x in [
 ${x.name} -> ${x.val}; ${end-}
 ${end}
 
+${template max1-}
+${[
+  	[name:'1a3',  val:'yo4'],
+  	[name:'xb',  val:'yo3'],
+  	[name:'daafop1', val:'yo2'],
+  	[name:'a333',   val:'yo1']].max(it|it.name.length())-}
+ ${[].max(it|10)-}
+ ${[1].max(it|10)-}
+${end}
+
 ${template grouped-}
 ${foreach x in [
 	[name:'1a',  val:'yo1'],

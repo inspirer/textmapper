@@ -24,7 +24,7 @@ type Parser struct {
 
 	stack []node
 	lexer *Lexer
-	next Token
+	next  Token
 }
 
 type node struct {
@@ -127,7 +127,7 @@ ${if self->hasRecovering()-}
 				if recovering == 0 {
 					offset, endoffset := lexer.Pos()
 					line := lexer.Line()
-					p.err(line, offset, endoffset - offset, "syntax error")
+					p.err(line, offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
 					p.next = lexer.Next()
@@ -152,7 +152,7 @@ ${if self->hasRecovering()-}
 ${end-}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
-		p.err(line, offset, endoffset - offset, "syntax error")
+		p.err(line, offset, endoffset-offset, "syntax error")
 		return false, nil
 	}
 
@@ -228,11 +228,11 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 	return -1
 }
 
-func (p* Parser) applyRule(rule int32, node *node, rhs []node) {
+func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 ${if syntax.rules.exists(r|self->hasAction(r))-}
-	switch (rule) {
+	switch rule {
 ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
-	case ${rule.getIndex()}:  // ${rule}
+	case ${rule.getIndex()}: // ${rule}
 		${util.extractStatements(rule->parserAction('node.value'))-}
 ${end-}
 	}

@@ -33,14 +33,15 @@ public class CollectionProcessorNode extends ExpressionNode {
 	static final int EXISTS = 6;
 	static final int SORT = 7;
 	static final int GROUPBY = 8;
+	static final int MAX = 9;
 
 	private static final String[] INSTR_VERBS = new String[]{null,
 			"collect", "collectUnique", "reject", "select",
-			"forAll", "exists", "sort", "groupBy"};
+			"forAll", "exists", "sort", "groupBy", "max"};
 
 	private static final String[] JS_VERBS = new String[]{null,
 			"map", "collectUnique", "reject", "filter",
-			"forAll", "exists", "sort", "groupBy"};
+			"forAll", "exists", "sort", "groupBy", "max"};
 
 	private final ExpressionNode selectExpression;
 	private final int instruction;
@@ -165,6 +166,27 @@ public class CollectionProcessorNode extends ExpressionNode {
 				});
 				return arr;
 			}
+			case MAX: {
+				int max = 0;
+				while (it.hasNext()) {
+					Object curr = it.next();
+					EvaluationContext innerContext = new EvaluationContext(
+							context.getThisObject(), null, context);
+					innerContext.setVariable(varName, curr);
+					Object val = env.evaluate(foreachExpr, innerContext, true);
+					if (!(val instanceof Integer)) {
+						throw new EvaluationException("`" + foreachExpr.toString()
+								+ "` should implement Comparable (instead of "
+								+ (val != null ? val.getClass().getCanonicalName() : "<null>") +
+								")");
+					}
+					Integer i = (Integer) val;
+					if (i > max) max = i;
+				}
+				return max;
+			}
+			case FORALL:
+			case EXISTS:
 			default:
 				while (it.hasNext()) {
 					Object curr = it.next();

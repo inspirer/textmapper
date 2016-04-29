@@ -75,10 +75,12 @@ ${end}
 
 ${template ast_class_fields(cl)}${end}
 
+${cached query maxNameLen() = cl.fields.max(prop|prop->propertyName().length())}
+
 ${template ast_class(cl)-}
 type ${cl->className()} struct {
 ${foreach prop in cl.fields-}
-	${prop->propertyName()} ${prop->fieldType()}
+	${prop->propertyName()} ${util.spaces(cl->maxNameLen()-prop->propertyName().length())}${prop->fieldType()}
 ${end-}
 ${call ast_class_fields(cl)-}
 	Pos
@@ -95,6 +97,7 @@ ${end}
 
 ${template ast_enum(cl)-}
 type ${cl->className()} int
+
 const (
 ${foreach const in cl.members-}
 	${const->enumMemberName()}${if index == 0} ${cl->className()} = iota$/

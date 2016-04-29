@@ -20,6 +20,7 @@ import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.templates.eval.DefaultStaticMethods;
 import org.textmapper.tool.common.JavaArrayEncoder;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,12 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 
 	public String shiftRightWithSpaces(String s, Integer padding) {
 		return shiftRightWithChar(s, padding, ' ');
+	}
+
+	public String spaces(Integer num) {
+		char[] c = new char[num];
+		Arrays.fill(c, ' ');
+		return new String(c);
 	}
 
 	private static String shiftRightWithChar(String s, Integer padding, char paddingChar) {
@@ -96,27 +103,6 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 				sb.append(q.substring(padding));
 			}
 			sb.append('\n');
-		}
-		return sb.toString();
-	}
-
-	public String format(short[] table, Integer maxwidth, Integer leftpadding) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < table.length; i++) {
-			if (i > 0) {
-				if ((i % maxwidth) == 0) {
-					sb.append("\n");
-					for (int e = 0; e < leftpadding; e++) {
-						sb.append("\t");
-					}
-				} else {
-					sb.append(" ");
-				}
-			}
-			sb.append(table[i]);
-			if (i + 1 < table.length) {
-				sb.append(",");
-			}
 		}
 		return sb.toString();
 	}
