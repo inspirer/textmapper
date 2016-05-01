@@ -158,7 +158,7 @@ public class JsonLexer {
 		1, 24, 24, 24, 24, 27, 24, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 9, 5, 1, 1,
 		1, 20, 25, 24, 24, 18, 19, 1, 1, 1, 1, 1, 15, 1, 14, 1,
-		1, 1, 17, 21, 16, 10, 1, 1, 1, 1, 1, 2, 1, 3, 1, 1
+		1, 1, 17, 21, 16, 10, 1, 1, 1, 1, 1, 2, 1, 3
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(12,
@@ -200,7 +200,7 @@ public class JsonLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

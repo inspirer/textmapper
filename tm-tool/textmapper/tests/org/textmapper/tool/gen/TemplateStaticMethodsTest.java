@@ -16,11 +16,13 @@
 package org.textmapper.tool.gen;
 
 import org.junit.Test;
+import org.textmapper.tool.gen.TemplateStaticMethods.MapRange;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.textmapper.tool.gen.TemplateStaticMethods.packAsMapRanges;
 
 public class TemplateStaticMethodsTest {
 
@@ -182,5 +184,37 @@ public class TemplateStaticMethodsTest {
 		assertEquals("d\ne\nabc  : ", util.extractStatements("abc {{d}} : {{e}}"));
 		assertEquals("{ }\nabc ", util.extractStatements("abc {{ { } }}"));
 		assertEquals("q1\nabc ", util.extractStatements("abc {{ q1 }}{{q1}}"));
+	}
+
+	private void testRanges(int[] arr) {
+		List<MapRange> res = packAsMapRanges(arr, 0);
+		int[] restored = new int[arr.length];
+		Arrays.fill(restored, 1);
+		int start = 0;
+		for (MapRange r : res) {
+			assertTrue(start <= r.lo);
+			assertTrue(r.lo < r.hi);
+			start = r.hi;
+			assertTrue(start <= arr.length);
+			assertTrue((r.val == null ? 0 : r.val.length) < r.hi - r.lo);
+			Arrays.fill(restored, r.lo, r.hi, r.defaultVal);
+			if (r.val != null) {
+				System.arraycopy(r.val, 0, restored, r.lo, r.val.length);
+			}
+		}
+		assertArrayEquals(Arrays.toString(restored), arr, restored);
+	}
+
+	@Test
+	public void testPackAsMapRanges() throws Exception {
+		testRanges(new int[] {2,3,4,5,6,1});
+		testRanges(new int[] {1,2,3,3,3,4,1,1,1,1,1});
+		testRanges(new int[] {1,1,1,1,1,1,22,1,1,1,1,1});
+		testRanges(new int[] {0});
+		testRanges(new int[] {0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,22});
+		testRanges(new int[] {0,1,1,1,0,1,1,1,1,1});
+		testRanges(new int[] {0,1,1,1,1,1,1,1,1,1,2,3,8,6,3,10,10,10,10,10,10,10,10,0,1,1,1,1,1});
+		testRanges(new int[] {0,2,2,2,1,1,1,1,1,1,1,1,1,2,3,8,6,3,10,10,10,10,10,10,10,10,0,1,1,1,1,1});
+		testRanges(new int[] {1,1,1,1,2,2,2,2,8,8,8,8,1,1,1,1,1,4,4,4,1,1,1,1,1,1,1,1,1});
 	}
 }

@@ -161,6 +161,14 @@ public class LexerInputSymbols {
 			set2symbols[setind] = toSortedArray(values);
 		}
 		builder = null;
+
+		int newLength = character2symbol.length;
+		while (newLength > 0 && character2symbol[newLength - 1] == 1) {
+			newLength--;
+		}
+		if (newLength < character2symbol.length) {
+			character2symbol = Arrays.copyOf(character2symbol, newLength);
+		}
 	}
 
 	private static int[] toSortedArray(Collection<Integer> collection) {

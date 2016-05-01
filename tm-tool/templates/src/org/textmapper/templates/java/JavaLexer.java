@@ -220,7 +220,7 @@ public class JavaLexer {
 		return charOffset - tokenOffset;
 	}
 
-	private static final char[] tmCharClass = unpack_vc_char(262144,
+	private static final char[] tmCharClass = unpack_vc_char(195102,
 		"\11\1\1\50\1\6\1\1\1\50\1\5\14\1\1\4\5\1\1\50\1\31\1\15\1\1\1\44\1\42\1\35\1\14\1" +
 		"\16\1\17\1\10\1\37\1\25\1\40\1\13\1\7\1\11\1\55\2\64\4\53\2\45\1\34\1\24\1\30\1\26" +
 		"\1\27\1\33\1\43\1\46\1\54\1\46\1\57\1\56\1\57\5\44\1\51\3\44\1\60\7\44\1\52\2\44" +
@@ -300,8 +300,7 @@ public class JavaLexer {
 		"\44\1\1\4\44\1\1\1\44\1\1\1\44\6\1\1\44\4\1\1\44\1\1\1\44\1\1\1\44\1\1\3\44\1\1\2" +
 		"\44\1\1\1\44\2\1\1\44\1\1\1\44\1\1\1\44\1\1\1\44\1\1\1\44\1\1\2\44\1\1\1\44\2\1\4" +
 		"\44\1\1\7\44\1\1\4\44\1\1\4\44\1\1\1\44\1\1\12\44\1\1\21\44\5\1\3\44\1\1\5\44\1\1" +
-		"\21\44\u1144\1\ua6d7\44\51\1\u1035\44\13\1\336\44\2\1\u1682\44\u295e\1\u021e\44\uffff" +
-		"\1\u05e3\1");
+		"\21\44\u1144\1\ua6d7\44\51\1\u1035\44\13\1\336\44\2\1\u1682\44\u295e\1\u021e\44");
 
 	private static char[] unpack_vc_char(int size, String... st) {
 		char[] res = new char[size];
@@ -426,7 +425,7 @@ public class JavaLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 262144) return tmCharClass[chr];
+		if (chr >= 0 && chr < 195102) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

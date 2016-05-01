@@ -126,7 +126,7 @@ public class StatesLexer {
 		1, 1, 1, 1, 13, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 2, 3, 4, 5, 1, 12, 1, 1, 7, 1, 1, 10, 1, 8, 1,
-		1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+		1, 1, 1, 1, 9
 	};
 
 	private static final short tmStateMap[] = {
@@ -165,7 +165,7 @@ public class StatesLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		if (chr >= 0 && chr < 117) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

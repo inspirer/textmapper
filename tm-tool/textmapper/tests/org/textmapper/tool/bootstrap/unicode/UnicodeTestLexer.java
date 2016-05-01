@@ -128,7 +128,7 @@ public class UnicodeTestLexer {
 		return charOffset - tokenOffset;
 	}
 
-	private static final char[] tmCharClass = unpack_vc_char(131072,
+	private static final char[] tmCharClass = unpack_vc_char(120780,
 		"\11\1\2\7\2\1\1\7\22\1\1\7\1\1\1\3\12\1\1\2\2\1\12\5\7\1\32\4\4\1\1\4\1\1\32\4\72" +
 		"\1\1\6\51\1\30\6\1\1\10\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6" +
 		"\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6" +
@@ -194,7 +194,7 @@ public class UnicodeTestLexer {
 		"\u0870\1\63\6\u0bcd\1\40\6\ubb3a\1\32\6\32\1\7\6\1\1\22\6\32\1\32\6\32\1\4\6\1\1" +
 		"\1\6\1\1\7\6\1\1\13\6\32\1\32\6\32\1\32\6\32\1\32\6\32\1\32\6\32\1\32\6\32\1\32\6" +
 		"\32\1\32\6\32\1\32\6\32\1\34\6\34\1\31\6\1\1\6\6\32\1\31\6\1\1\6\6\32\1\31\6\1\1" +
-		"\6\6\32\1\31\6\1\1\6\6\32\1\31\6\1\1\6\6\1\1\1\6\u2834\1");
+		"\6\6\32\1\31\6\1\1\6\6\32\1\31\6\1\1\6\6\1\1\1\6");
 
 	private static char[] unpack_vc_char(int size, String... st) {
 		char[] res = new char[size];
@@ -242,7 +242,7 @@ public class UnicodeTestLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 131072) return tmCharClass[chr];
+		if (chr >= 0 && chr < 120780) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

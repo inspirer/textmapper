@@ -138,7 +138,7 @@ public class EoiLexer {
 		1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
 		10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 10,
 		1, 10, 10, 6, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-		10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1
+		10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
 	};
 
 	private static final short tmStateMap[] = {
@@ -177,7 +177,7 @@ public class EoiLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		if (chr >= 0 && chr < 123) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

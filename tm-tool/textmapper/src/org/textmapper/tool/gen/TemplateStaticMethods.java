@@ -20,10 +20,7 @@ import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.templates.eval.DefaultStaticMethods;
 import org.textmapper.tool.common.JavaArrayEncoder;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,7 +80,10 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 				prefix = sspl[i].substring(0, spaces);
 			} else {
 				int len = 0;
-				while (len < prefix.length() && len < spaces && prefix.charAt(len) == sspl[i].charAt(len)) len++;
+				while (len < prefix.length() && len < spaces
+						&& prefix.charAt(len) == sspl[i].charAt(len)) {
+					len++;
+				}
 				if (len < prefix.length()) {
 					prefix = prefix.substring(0, len);
 				}
@@ -128,7 +128,8 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		return sb.toString();
 	}
 
-	public static String format(int[][] table, Integer leftpadding, String startrow, String endrow) {
+	public static String format(int[][] table, Integer leftpadding, String
+								startrow, String endrow) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < table.length; i++) {
 			if (i > 0) {
@@ -188,6 +189,74 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			}
 		}
 		return enc.getResult();
+	}
+
+	public static int[] head(int[] arr, int headLen) {
+		return Arrays.copyOf(arr, headLen);
+	}
+
+	public static int[] tail(int[] arr, int headLen) {
+		return Arrays.copyOfRange(arr, headLen, arr.length);
+	}
+
+	public static class MapRange {
+		public int lo, hi, defaultVal;
+		public int[] val;
+
+		public int getLo() {
+			return lo;
+		}
+
+		public int getHi() {
+			return hi;
+		}
+
+		public int getDefaultVal() {
+			return defaultVal;
+		}
+
+		public int[] getVal() {
+			return val;
+		}
+	}
+
+	public static List<MapRange> packAsMapRanges(int[] arr, Integer rangeOffset) {
+		List<MapRange> result = new ArrayList<>();
+		int i = 0;
+		while (i < arr.length) {
+			while (i < arr.length && arr[i] == 1) i++;
+			if (i == arr.length) break;
+
+			MapRange r = new MapRange();
+			r.lo = i;
+			r.hi = i;
+			int lastChar = -1;
+			int numOthers = 0;
+			int numOnes = 0;
+
+			for (; i < arr.length; i++) {
+				if (arr[i] == 1) {
+					numOnes++;
+				} else if (arr[i] == lastChar && numOnes == 0) {
+					numOthers++;
+				} else if (numOnes + numOthers > 8) {
+					break;
+				} else {
+					numOnes = 0;
+					numOthers = 1;
+					lastChar = arr[i];
+					r.hi = i;
+				}
+			}
+			r.defaultVal = lastChar;
+			if (r.lo < r.hi) {
+				r.val = Arrays.copyOfRange(arr, r.lo, r.hi);
+			}
+			r.hi = i - numOnes + rangeOffset;
+			r.lo += rangeOffset;
+			result.add(r);
+		}
+		return result;
 	}
 
 	public static List<List<String>> packInt(int[] arr) {

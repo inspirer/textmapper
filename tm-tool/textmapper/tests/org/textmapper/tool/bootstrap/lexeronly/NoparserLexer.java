@@ -126,7 +126,7 @@ public abstract class NoparserLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 7, 1, 1
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 7
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(5,
@@ -158,7 +158,7 @@ public abstract class NoparserLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

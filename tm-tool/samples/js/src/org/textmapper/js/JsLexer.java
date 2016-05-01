@@ -209,7 +209,7 @@ public class JsLexer {
 		return charOffset - tokenOffset;
 	}
 
-	private static final char[] tmCharClass = unpack_vc_char(1048576,
+	private static final char[] tmCharClass = unpack_vc_char(918000,
 		"\11\1\1\63\1\11\2\63\1\10\22\1\1\63\1\30\1\43\1\1\1\2\1\33\1\34\1\45\1\16\1\17\1" +
 		"\13\1\31\1\24\1\32\1\22\1\12\1\42\11\54\1\41\1\23\1\25\1\27\1\26\1\40\1\1\4\55\1" +
 		"\65\1\55\21\46\1\67\2\46\1\20\1\4\1\21\1\36\1\3\1\1\4\56\1\66\1\56\16\47\1\5\2\47" +
@@ -395,7 +395,7 @@ public class JsLexer {
 		"\52\1\1\7\52\1\1\4\52\1\1\4\52\1\1\1\52\1\1\12\52\1\1\21\52\5\1\3\52\1\1\5\52\1\1" +
 		"\21\52\u1144\1\ua6d7\52\51\1\u1035\52\13\1\336\52\2\1\u1682\52\u295e\1\u021e\52\uffff" +
 		"\1\uffff\1\uffff\1\uffff\1\uffff\1\uffff\1\uffff\1\uffff\1\uffff\1\uffff\1\uffff" +
-		"\1\u06ed\1\360\57\uffff\1\ufe11\1");
+		"\1\u06ed\1\360\57");
 
 	private static char[] unpack_vc_char(int size, String... st) {
 		char[] res = new char[size];
@@ -500,7 +500,7 @@ public class JsLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 1048576) return tmCharClass[chr];
+		if (chr >= 0 && chr < 918000) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

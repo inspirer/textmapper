@@ -1,19 +1,8 @@
-${template main-}
-${file 'lexer.go'-}
-${call lexer-}
-${end-}
-${file 'lexer_tables.go'-}
-${call lexerTables-}
-${end-}
-${end}
-
-${template lexer-}
-package ${opts.lang}
+package js
 
 import (
 	"bytes"
 	"unicode/utf8"
-${call imports-}
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process
@@ -101,11 +90,7 @@ restart:
 		case int(l.ch) < len(tmRuneClass):
 			ch = int(tmRuneClass[l.ch])
 		default:
-${if lex.char2no.length >= 2048-}
 			ch = mapRune(l.ch)
-${else-}
-			ch = 1
-${end-}
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state == -1 && ch == -1 {
@@ -150,27 +135,25 @@ ${end-}
 	}
 
 	rule := -state - 3
-${if self->classRules().exists(it|it->classHasInstances())-}
 	switch rule {
-${foreach rule in self->classRules().select(it|it->classHasInstances())-}
-	case ${rule.index}:
-		if r, ok := instancesOf${rule->classRuleName()}[l.Text()]; ok {
+	case 0:
+		if r, ok := instancesOfIDENTIFIER[l.Text()]; ok {
 			rule = r
 		}
-${end-}
 	}
 
-${end-}
 	token := tmToken[rule]
 	space := false
-${if syntax.lexerRules.exists(r|r->hasActions())-}
 	switch rule {
-${foreach rule in syntax.lexerRules.select(r|r->hasActions())-}
-	case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
-${call lexerAction('l.value', 'token') for rule-}
-${end-}
+	case 1: // WhiteSpace: /[\t\v\f \xa0\ufeff\p{Zs}]/
+		space = true
+	case 2: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
+		space = true
+	case 3: // MultiLineComment: /\/\*{commentChars}\*\//
+		space = true
+	case 4: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
+		space = true
 	}
-${end-}
 
 	if space {
 		goto restart
@@ -207,103 +190,52 @@ func (l *Lexer) Text() string {
 func (l *Lexer) Value() interface{} {
 	return l.value
 }
-${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
 
-var instancesOf${classRule->classRuleName()} = map[string]int{
-${foreach instance in classRule->classInstances()-}
-	"${util.escape(instance.regexp.constantValue)}": ${instance.index},
-${end-}
+var instancesOfIDENTIFIER = map[string]int{
+	"break": 5,
+	"case": 6,
+	"catch": 7,
+	"class": 8,
+	"const": 9,
+	"continue": 10,
+	"debugger": 11,
+	"default": 12,
+	"delete": 13,
+	"do": 14,
+	"else": 15,
+	"export": 16,
+	"extends": 17,
+	"finally": 18,
+	"for": 19,
+	"function": 20,
+	"if": 21,
+	"import": 22,
+	"in": 23,
+	"instanceof": 24,
+	"new": 25,
+	"return": 26,
+	"super": 27,
+	"switch": 28,
+	"this": 29,
+	"throw": 30,
+	"try": 31,
+	"typeof": 32,
+	"var": 33,
+	"void": 34,
+	"while": 35,
+	"with": 36,
+	"yield": 37,
+	"await": 38,
+	"enum": 39,
+	"null": 40,
+	"true": 41,
+	"false": 42,
+	"as": 43,
+	"from": 44,
+	"get": 45,
+	"let": 46,
+	"of": 47,
+	"set": 48,
+	"static": 49,
+	"target": 50,
 }
-${end-}
-${end}
-
-${template lexerTables-}
-package ${opts.lang}
-
-var tmNumClasses = ${lex.nchars}
-
-${if lex.char2no.length >= 2048-}
-type mapRange struct {
-	lo         rune
-	hi         rune
-	defaultVal ${self->runeClassType()}
-	val        []${self->runeClassType()}
-}
-
-func mapRune(c rune) int {
-	lo := 0
-	hi := len(tmRuneRanges)
-	for lo < hi {
-		m := lo + (hi-lo)/2
-		r := tmRuneRanges[m]
-		if c < r.lo {
-			hi = m
-		} else if c >= r.hi {
-			lo = m + 1
-		} else {
-			i := int(c - r.lo)
-			if i < len(r.val) {
-				return int(r.val[i])
-			}
-			return int(r.defaultVal)
-		}
-	}
-	return 1
-}
-
-// Latin-1 characters.
-var tmRuneClass = []${self->runeClassType()}{
-	${util.format(util.head(lex.char2no, 256), 16, 1)},
-}
-
-var tmRuneRanges = []mapRange{
-${foreach r in util.packAsMapRanges(util.tail(lex.char2no, 256), 256)-}
-	{${r.lo}, ${r.hi}, ${r.defaultVal}, ${if r.val}[]${self->runeClassType()}{
-		${util.format(r.val, 16, 2)},
-	}${else}nil${end}},
-${end-}
-}
-${else-}
-var tmRuneClass = []${self->runeClassType()}{
-	${util.format(lex.char2no, 16, 1)},
-}
-${end-}
-
-var tmStateMap = []int{
-	${util.format(lex.groupset, 16, 1)},
-}
-
-var tmToken = []Token{
-	${util.format(syntax.lexerRuleTokens, 16, 1)},
-}
-
-var tmLexerAction = []int32{
-	${util.format(lex.change, 16, 1)},
-}
-${end}
-
-
-
-${template lexerAction($, symbol)-}
-${if self.kindAsText == 'space'-}
-		space = true
-${end-}
-${if action-}
-		${eval action}
-${end-}
-${end}
-
-
-${cached query runeClassType() = lex.nchars < 256 ? 'uint8' : lex.nchars < 65536 ? 'uint16' : 'int32' }
-
-${cached query hasActions() = self.action || self.kindAsText == 'space' }
-
-${cached query classRules() = syntax.lexerRules.select(x|x.kindAsText == 'class')}
-
-${cached query classHasInstances() = self->classInstances().size() > 0 }
-
-${cached query classInstances() = context.syntax.lexerRules.select(x|x.classRule && x.classRule == self)}
-
-${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
-
-${template imports}${end}

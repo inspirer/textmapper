@@ -134,8 +134,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 					RhsSequence seq = rule.getSource();
 					if (seq.getName() != null) return seq.getName();
 
-					Nonterminal n = seq.getLeft();
-					if (n.getDefinition() instanceof RhsList || NonterminalUtil.isOptional(n)) {
+					Nonterminal n = rule.getLeft();
+					if (n.getDefinition() instanceof RhsList
+							&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
+							|| NonterminalUtil.isOptional(n)) {
 						return "";
 					}
 

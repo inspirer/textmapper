@@ -5,7 +5,6 @@
 %start Module
 
 %right else
-%token lookahead1
 %token WhiteSpace
 %token LineTerminatorSequence
 %token MultiLineComment
@@ -56,62 +55,62 @@
 %token set
 %token static
 %token target
-%token Lcurly
+%token Lbrace
 %token Lparen
 %token Rparen
-%token Lsquare
-%token Rsquare
+%token Lbrack
+%token Rbrack
 %token Dot
 %token Semicolon
 %token Comma
-%token Less
-%token Greater
-%token LessEqual
-%token GreaterEqual
-%token EqualEqual
-%token ExclamationEqual
-%token EqualEqualEqual
-%token ExclamationEqualEqual
+%token Lt
+%token Gt
+%token LtAssign
+%token GtAssign
+%token AssignAssign
+%token ExclAssign
+%token AssignAssignAssign
+%token ExclAssignAssign
 %token Plus
 %token Minus
 %token Mult
-%token Percent
+%token Rem
 %token PlusPlus
 %token MinusMinus
-%token LessLess
-%token GreaterGreater
-%token GreaterGreaterGreater
-%token Ampersand
+%token LtLt
+%token GtGt
+%token GtGtGt
+%token And
 %token Or
 %token Xor
-%token Exclamation
+%token Excl
 %token Tilde
-%token AmpersandAmpersand
+%token AndAnd
 %token OrOr
-%token Questionmark
+%token Quest
 %token Colon
-%token Equal
-%token PlusEqual
-%token MinusEqual
-%token MultEqual
-%token PercentEqual
-%token LessLessEqual
-%token GreaterGreaterEqual
-%token GreaterGreaterGreaterEqual
-%token AmpersandEqual
-%token OrEqual
-%token XorEqual
-%token EqualGreater
+%token Assign
+%token PlusAssign
+%token MinusAssign
+%token MultAssign
+%token RemAssign
+%token LtLtAssign
+%token GtGtAssign
+%token GtGtGtAssign
+%token AndAssign
+%token OrAssign
+%token XorAssign
+%token AssignGt
 %token NumericLiteral
 %token StringLiteral
-%token Rcurly
+%token Rbrace
 %token NoSubstitutionTemplate
 %token TemplateHead
 %token TemplateMiddle
 %token TemplateTail
 %token RegularExpressionLiteral
-%token Slash
-%token SlashEqual
+%token Div
+%token DivAssign
 
 %locations
 %%
@@ -431,15 +430,15 @@ Literal :
 ;
 
 ArrayLiteral :
-  Lsquare Elisionopt Rsquare
-| Lsquare ElementList Rsquare
-| Lsquare ElementList Comma Elisionopt Rsquare
+  Lbrack Elisionopt Rbrack
+| Lbrack ElementList Rbrack
+| Lbrack ElementList Comma Elisionopt Rbrack
 ;
 
 ArrayLiteral_Yield :
-  Lsquare Elisionopt Rsquare
-| Lsquare ElementList_Yield Rsquare
-| Lsquare ElementList_Yield Comma Elisionopt Rsquare
+  Lbrack Elisionopt Rbrack
+| Lbrack ElementList_Yield Rbrack
+| Lbrack ElementList_Yield Comma Elisionopt Rbrack
 ;
 
 ElementList :
@@ -470,15 +469,15 @@ SpreadElement_Yield :
 ;
 
 ObjectLiteral :
-  Lcurly Rcurly
-| Lcurly PropertyDefinitionList Rcurly
-| Lcurly PropertyDefinitionList Comma Rcurly
+  Lbrace Rbrace
+| Lbrace PropertyDefinitionList Rbrace
+| Lbrace PropertyDefinitionList Comma Rbrace
 ;
 
 ObjectLiteral_Yield :
-  Lcurly Rcurly
-| Lcurly PropertyDefinitionList_Yield Rcurly
-| Lcurly PropertyDefinitionList_Yield Comma Rcurly
+  Lbrace Rbrace
+| Lbrace PropertyDefinitionList_Yield Rbrace
+| Lbrace PropertyDefinitionList_Yield Comma Rbrace
 ;
 
 PropertyDefinitionList :
@@ -522,11 +521,11 @@ LiteralPropertyName :
 ;
 
 ComputedPropertyName :
-  Lsquare AssignmentExpression_In Rsquare
+  Lbrack AssignmentExpression_In Rbrack
 ;
 
 ComputedPropertyName_Yield :
-  Lsquare AssignmentExpression_In_Yield Rsquare
+  Lbrack AssignmentExpression_In_Yield Rbrack
 ;
 
 CoverInitializedName :
@@ -538,19 +537,19 @@ CoverInitializedName_Yield :
 ;
 
 Initializer :
-  Equal AssignmentExpression
+  Assign AssignmentExpression
 ;
 
 Initializer_In :
-  Equal AssignmentExpression_In
+  Assign AssignmentExpression_In
 ;
 
 Initializer_In_Yield :
-  Equal AssignmentExpression_In_Yield
+  Assign AssignmentExpression_In_Yield
 ;
 
 Initializer_Yield :
-  Equal AssignmentExpression_Yield
+  Assign AssignmentExpression_Yield
 ;
 
 TemplateLiteral :
@@ -585,7 +584,7 @@ TemplateMiddleList_Yield :
 
 MemberExpression :
   PrimaryExpression
-| MemberExpression Lsquare Expression_In Rsquare
+| MemberExpression Lbrack Expression_In Rbrack
 | MemberExpression Dot IdentifierName
 | MemberExpression TemplateLiteral
 | SuperProperty
@@ -595,7 +594,7 @@ MemberExpression :
 
 MemberExpression_NoFuncClass :
   PrimaryExpression_NoFuncClass
-| MemberExpression_NoFuncClass Lsquare Expression_In Rsquare
+| MemberExpression_NoFuncClass Lbrack Expression_In Rbrack
 | MemberExpression_NoFuncClass Dot IdentifierName
 | MemberExpression_NoFuncClass TemplateLiteral
 | SuperProperty
@@ -605,7 +604,7 @@ MemberExpression_NoFuncClass :
 
 MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral :
   PrimaryExpression_NoFuncClass_NoObjLiteral
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral Lsquare Expression_In Rsquare
+| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral Lbrack Expression_In Rbrack
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Dot IdentifierName
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 | SuperProperty
@@ -615,7 +614,7 @@ MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral :
 
 MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   PrimaryExpression_NoFuncClass_NoObjLiteral_Yield
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield Lsquare Expression_In_Yield Rsquare
+| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield Lbrack Expression_In_Yield Rbrack
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Dot IdentifierName
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 | SuperProperty_Yield
@@ -625,7 +624,7 @@ MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 
 MemberExpression_NoLet :
   PrimaryExpression_NoLet
-| MemberExpression_NoLet Lsquare Expression_In Rsquare
+| MemberExpression_NoLet Lbrack Expression_In Rbrack
 | MemberExpression_NoLet Dot IdentifierName
 | MemberExpression_NoLet TemplateLiteral
 | SuperProperty
@@ -635,7 +634,7 @@ MemberExpression_NoLet :
 
 MemberExpression_NoLet_Yield :
   PrimaryExpression_NoLet_Yield
-| MemberExpression_NoLet_Yield Lsquare Expression_In_Yield Rsquare
+| MemberExpression_NoLet_Yield Lbrack Expression_In_Yield Rbrack
 | MemberExpression_NoLet_Yield Dot IdentifierName
 | MemberExpression_NoLet_Yield TemplateLiteral_Yield
 | SuperProperty_Yield
@@ -643,9 +642,29 @@ MemberExpression_NoLet_Yield :
 | new MemberExpression_Yield Arguments_Yield
 ;
 
+MemberExpression_NoLetOnly :
+  PrimaryExpression_NoLet
+| MemberExpression Lbrack Expression_In Rbrack
+| MemberExpression Dot IdentifierName
+| MemberExpression TemplateLiteral
+| SuperProperty
+| MetaProperty
+| new MemberExpression Arguments
+;
+
+MemberExpression_NoLetOnly_NoFuncClass :
+  PrimaryExpression_NoFuncClass_NoLet
+| MemberExpression_NoFuncClass Lbrack Expression_In Rbrack
+| MemberExpression_NoFuncClass Dot IdentifierName
+| MemberExpression_NoFuncClass TemplateLiteral
+| SuperProperty
+| MetaProperty
+| new MemberExpression Arguments
+;
+
 MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral :
   PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral Lsquare Expression_In Rsquare
+| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral Lbrack Expression_In Rbrack
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Dot IdentifierName
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 | SuperProperty
@@ -655,7 +674,7 @@ MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral :
 
 MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield Lsquare Expression_In_Yield Rsquare
+| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield Lbrack Expression_In_Yield Rbrack
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Dot IdentifierName
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 | SuperProperty_Yield
@@ -663,49 +682,29 @@ MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 | new MemberExpression_Yield Arguments_Yield
 ;
 
-MemberExpression_NoLetOnly_NoLetSq :
+MemberExpression_NoLetOnly_NoLet :
   PrimaryExpression_NoLet
-| MemberExpression_NoLetOnly_NoLetSq Lsquare Expression_In Rsquare
-| MemberExpression_NoLetSq Dot IdentifierName
-| MemberExpression_NoLetSq TemplateLiteral
+| MemberExpression_NoLet Lbrack Expression_In Rbrack
+| MemberExpression_NoLet Dot IdentifierName
+| MemberExpression_NoLet TemplateLiteral
 | SuperProperty
 | MetaProperty
 | new MemberExpression Arguments
 ;
 
-MemberExpression_NoLetOnly_NoLetSq_Yield :
+MemberExpression_NoLetOnly_NoLet_Yield :
   PrimaryExpression_NoLet_Yield
-| MemberExpression_NoLetOnly_NoLetSq_Yield Lsquare Expression_In_Yield Rsquare
-| MemberExpression_NoLetSq_Yield Dot IdentifierName
-| MemberExpression_NoLetSq_Yield TemplateLiteral_Yield
+| MemberExpression_NoLet_Yield Lbrack Expression_In_Yield Rbrack
+| MemberExpression_NoLet_Yield Dot IdentifierName
+| MemberExpression_NoLet_Yield TemplateLiteral_Yield
 | SuperProperty_Yield
 | MetaProperty
 | new MemberExpression_Yield Arguments_Yield
 ;
 
-MemberExpression_NoLetSq :
-  PrimaryExpression
-| MemberExpression_NoLetOnly_NoLetSq Lsquare Expression_In Rsquare
-| MemberExpression_NoLetSq Dot IdentifierName
-| MemberExpression_NoLetSq TemplateLiteral
-| SuperProperty
-| MetaProperty
-| new MemberExpression Arguments
-;
-
-MemberExpression_NoLetSq_Yield :
-  PrimaryExpression_Yield
-| MemberExpression_NoLetOnly_NoLetSq_Yield Lsquare Expression_In_Yield Rsquare
-| MemberExpression_NoLetSq_Yield Dot IdentifierName
-| MemberExpression_NoLetSq_Yield TemplateLiteral_Yield
-| SuperProperty_Yield
-| MetaProperty
-| new MemberExpression_Yield Arguments_Yield
-;
-
-MemberExpression_NoObjLiteral :
-  PrimaryExpression_NoObjLiteral
-| MemberExpression_NoObjLiteral Lsquare Expression_In Rsquare
+MemberExpression_NoLetOnly_NoObjLiteral :
+  PrimaryExpression_NoLet_NoObjLiteral
+| MemberExpression_NoObjLiteral Lbrack Expression_In Rbrack
 | MemberExpression_NoObjLiteral Dot IdentifierName
 | MemberExpression_NoObjLiteral TemplateLiteral
 | SuperProperty
@@ -713,9 +712,55 @@ MemberExpression_NoObjLiteral :
 | new MemberExpression Arguments
 ;
 
+MemberExpression_NoLetOnly_StartWithLet :
+  MemberExpression_NoLetOnly_StartWithLet Lbrack Expression_In Rbrack
+| MemberExpression_StartWithLet Dot IdentifierName
+| MemberExpression_StartWithLet TemplateLiteral
+;
+
+MemberExpression_NoLetOnly_StartWithLet_Yield :
+  MemberExpression_NoLetOnly_StartWithLet_Yield Lbrack Expression_In_Yield Rbrack
+| MemberExpression_StartWithLet_Yield Dot IdentifierName
+| MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
+;
+
+MemberExpression_NoLetOnly_Yield :
+  PrimaryExpression_NoLet_Yield
+| MemberExpression_Yield Lbrack Expression_In_Yield Rbrack
+| MemberExpression_Yield Dot IdentifierName
+| MemberExpression_Yield TemplateLiteral_Yield
+| SuperProperty_Yield
+| MetaProperty
+| new MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_NoObjLiteral :
+  PrimaryExpression_NoObjLiteral
+| MemberExpression_NoObjLiteral Lbrack Expression_In Rbrack
+| MemberExpression_NoObjLiteral Dot IdentifierName
+| MemberExpression_NoObjLiteral TemplateLiteral
+| SuperProperty
+| MetaProperty
+| new MemberExpression Arguments
+;
+
+MemberExpression_StartWithLet :
+  let
+| MemberExpression_NoLetOnly_StartWithLet Lbrack Expression_In Rbrack
+| MemberExpression_StartWithLet Dot IdentifierName
+| MemberExpression_StartWithLet TemplateLiteral
+;
+
+MemberExpression_StartWithLet_Yield :
+  let
+| MemberExpression_NoLetOnly_StartWithLet_Yield Lbrack Expression_In_Yield Rbrack
+| MemberExpression_StartWithLet_Yield Dot IdentifierName
+| MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
+;
+
 MemberExpression_Yield :
   PrimaryExpression_Yield
-| MemberExpression_Yield Lsquare Expression_In_Yield Rsquare
+| MemberExpression_Yield Lbrack Expression_In_Yield Rbrack
 | MemberExpression_Yield Dot IdentifierName
 | MemberExpression_Yield TemplateLiteral_Yield
 | SuperProperty_Yield
@@ -724,12 +769,12 @@ MemberExpression_Yield :
 ;
 
 SuperProperty :
-  super Lsquare Expression_In Rsquare
+  super Lbrack Expression_In Rbrack
 | super Dot IdentifierName
 ;
 
 SuperProperty_Yield :
-  super Lsquare Expression_In_Yield Rsquare
+  super Lbrack Expression_In_Yield Rbrack
 | super Dot IdentifierName
 ;
 
@@ -771,19 +816,17 @@ NewExpression_NoLet_Yield :
 | new NewExpression_Yield
 ;
 
-NewExpression_NoLetSq :
-  MemberExpression_NoLetSq
-| new NewExpression
-;
-
-NewExpression_NoLetSq_Yield :
-  MemberExpression_NoLetSq_Yield
-| new NewExpression_Yield
-;
-
 NewExpression_NoObjLiteral :
   MemberExpression_NoObjLiteral
 | new NewExpression
+;
+
+NewExpression_StartWithLet :
+  MemberExpression_StartWithLet
+;
+
+NewExpression_StartWithLet_Yield :
+  MemberExpression_StartWithLet_Yield
 ;
 
 NewExpression_Yield :
@@ -795,7 +838,7 @@ CallExpression :
   MemberExpression Arguments
 | SuperCall
 | CallExpression Arguments
-| CallExpression Lsquare Expression_In Rsquare
+| CallExpression Lbrack Expression_In Rbrack
 | CallExpression Dot IdentifierName
 | CallExpression TemplateLiteral
 ;
@@ -804,7 +847,7 @@ CallExpression_NoFuncClass :
   MemberExpression_NoFuncClass Arguments
 | SuperCall
 | CallExpression_NoFuncClass Arguments
-| CallExpression_NoFuncClass Lsquare Expression_In Rsquare
+| CallExpression_NoFuncClass Lbrack Expression_In Rbrack
 | CallExpression_NoFuncClass Dot IdentifierName
 | CallExpression_NoFuncClass TemplateLiteral
 ;
@@ -813,7 +856,7 @@ CallExpression_NoFuncClass_NoLetSq_NoObjLiteral :
   MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 | SuperCall
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Lsquare Expression_In Rsquare
+| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Lbrack Expression_In Rbrack
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Dot IdentifierName
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 ;
@@ -822,7 +865,7 @@ CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 | SuperCall_Yield
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Lsquare Expression_In_Yield Rsquare
+| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Lbrack Expression_In_Yield Rbrack
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Dot IdentifierName
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 ;
@@ -831,7 +874,7 @@ CallExpression_NoLet :
   MemberExpression_NoLet Arguments
 | SuperCall
 | CallExpression_NoLet Arguments
-| CallExpression_NoLet Lsquare Expression_In Rsquare
+| CallExpression_NoLet Lbrack Expression_In Rbrack
 | CallExpression_NoLet Dot IdentifierName
 | CallExpression_NoLet TemplateLiteral
 ;
@@ -840,43 +883,41 @@ CallExpression_NoLet_Yield :
   MemberExpression_NoLet_Yield Arguments_Yield
 | SuperCall_Yield
 | CallExpression_NoLet_Yield Arguments_Yield
-| CallExpression_NoLet_Yield Lsquare Expression_In_Yield Rsquare
+| CallExpression_NoLet_Yield Lbrack Expression_In_Yield Rbrack
 | CallExpression_NoLet_Yield Dot IdentifierName
 | CallExpression_NoLet_Yield TemplateLiteral_Yield
-;
-
-CallExpression_NoLetSq :
-  MemberExpression_NoLetSq Arguments
-| SuperCall
-| CallExpression_NoLetSq Arguments
-| CallExpression_NoLetSq Lsquare Expression_In Rsquare
-| CallExpression_NoLetSq Dot IdentifierName
-| CallExpression_NoLetSq TemplateLiteral
-;
-
-CallExpression_NoLetSq_Yield :
-  MemberExpression_NoLetSq_Yield Arguments_Yield
-| SuperCall_Yield
-| CallExpression_NoLetSq_Yield Arguments_Yield
-| CallExpression_NoLetSq_Yield Lsquare Expression_In_Yield Rsquare
-| CallExpression_NoLetSq_Yield Dot IdentifierName
-| CallExpression_NoLetSq_Yield TemplateLiteral_Yield
 ;
 
 CallExpression_NoObjLiteral :
   MemberExpression_NoObjLiteral Arguments
 | SuperCall
 | CallExpression_NoObjLiteral Arguments
-| CallExpression_NoObjLiteral Lsquare Expression_In Rsquare
+| CallExpression_NoObjLiteral Lbrack Expression_In Rbrack
 | CallExpression_NoObjLiteral Dot IdentifierName
 | CallExpression_NoObjLiteral TemplateLiteral
+;
+
+CallExpression_StartWithLet :
+  MemberExpression_StartWithLet Arguments
+| CallExpression_StartWithLet Arguments
+| CallExpression_StartWithLet Lbrack Expression_In Rbrack
+| CallExpression_StartWithLet Dot IdentifierName
+| CallExpression_StartWithLet TemplateLiteral
+;
+
+CallExpression_StartWithLet_Yield :
+  MemberExpression_StartWithLet_Yield Arguments_Yield
+| CallExpression_StartWithLet_Yield Arguments_Yield
+| CallExpression_StartWithLet_Yield Lbrack Expression_In_Yield Rbrack
+| CallExpression_StartWithLet_Yield Dot IdentifierName
+| CallExpression_StartWithLet_Yield TemplateLiteral_Yield
 ;
 
 CallExpression_Yield :
   MemberExpression_Yield Arguments_Yield
 | SuperCall_Yield
 | CallExpression_Yield Arguments_Yield
-| CallExpression_Yield Lsquare Expression_In_Yield Rsquare
+| CallExpression_Yield Lbrack Expression_In_Yield Rbrack
 | CallExpression_Yield Dot IdentifierName
 | CallExpression_Yield TemplateLiteral_Yield
 ;
@@ -943,19 +984,19 @@ LeftHandSideExpression_NoLet_Yield :
 | CallExpression_NoLet_Yield
 ;
 
-LeftHandSideExpression_NoLetSq :
-  NewExpression_NoLetSq
-| CallExpression_NoLetSq
-;
-
-LeftHandSideExpression_NoLetSq_Yield :
-  NewExpression_NoLetSq_Yield
-| CallExpression_NoLetSq_Yield
-;
-
 LeftHandSideExpression_NoObjLiteral :
   NewExpression_NoObjLiteral
 | CallExpression_NoObjLiteral
+;
+
+LeftHandSideExpression_StartWithLet :
+  NewExpression_StartWithLet
+| CallExpression_StartWithLet
+;
+
+LeftHandSideExpression_StartWithLet_Yield :
+  NewExpression_StartWithLet_Yield
+| CallExpression_StartWithLet_Yield
 ;
 
 LeftHandSideExpression_Yield :
@@ -987,22 +1028,34 @@ PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 | LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield MinusMinus
 ;
 
-PostfixExpression_NoLetSq :
-  LeftHandSideExpression_NoLetSq
-| LeftHandSideExpression_NoLetSq PlusPlus
-| LeftHandSideExpression_NoLetSq MinusMinus
+PostfixExpression_NoLet :
+  LeftHandSideExpression_NoLet
+| LeftHandSideExpression_NoLet PlusPlus
+| LeftHandSideExpression_NoLet MinusMinus
 ;
 
-PostfixExpression_NoLetSq_Yield :
-  LeftHandSideExpression_NoLetSq_Yield
-| LeftHandSideExpression_NoLetSq_Yield PlusPlus
-| LeftHandSideExpression_NoLetSq_Yield MinusMinus
+PostfixExpression_NoLet_Yield :
+  LeftHandSideExpression_NoLet_Yield
+| LeftHandSideExpression_NoLet_Yield PlusPlus
+| LeftHandSideExpression_NoLet_Yield MinusMinus
 ;
 
 PostfixExpression_NoObjLiteral :
   LeftHandSideExpression_NoObjLiteral
 | LeftHandSideExpression_NoObjLiteral PlusPlus
 | LeftHandSideExpression_NoObjLiteral MinusMinus
+;
+
+PostfixExpression_StartWithLet :
+  LeftHandSideExpression_StartWithLet
+| LeftHandSideExpression_StartWithLet PlusPlus
+| LeftHandSideExpression_StartWithLet MinusMinus
+;
+
+PostfixExpression_StartWithLet_Yield :
+  LeftHandSideExpression_StartWithLet_Yield
+| LeftHandSideExpression_StartWithLet_Yield PlusPlus
+| LeftHandSideExpression_StartWithLet_Yield MinusMinus
 ;
 
 PostfixExpression_Yield :
@@ -1021,7 +1074,7 @@ UnaryExpression :
 | Plus UnaryExpression
 | Minus UnaryExpression
 | Tilde UnaryExpression
-| Exclamation UnaryExpression
+| Excl UnaryExpression
 ;
 
 UnaryExpression_NoFuncClass :
@@ -1034,7 +1087,7 @@ UnaryExpression_NoFuncClass :
 | Plus UnaryExpression
 | Minus UnaryExpression
 | Tilde UnaryExpression
-| Exclamation UnaryExpression
+| Excl UnaryExpression
 ;
 
 UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral :
@@ -1047,7 +1100,7 @@ UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral :
 | Plus UnaryExpression
 | Minus UnaryExpression
 | Tilde UnaryExpression
-| Exclamation UnaryExpression
+| Excl UnaryExpression
 ;
 
 UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
@@ -1060,11 +1113,11 @@ UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 | Plus UnaryExpression_Yield
 | Minus UnaryExpression_Yield
 | Tilde UnaryExpression_Yield
-| Exclamation UnaryExpression_Yield
+| Excl UnaryExpression_Yield
 ;
 
-UnaryExpression_NoLetSq :
-  PostfixExpression_NoLetSq
+UnaryExpression_NoLet :
+  PostfixExpression_NoLet
 | delete UnaryExpression
 | void UnaryExpression
 | typeof UnaryExpression
@@ -1073,11 +1126,11 @@ UnaryExpression_NoLetSq :
 | Plus UnaryExpression
 | Minus UnaryExpression
 | Tilde UnaryExpression
-| Exclamation UnaryExpression
+| Excl UnaryExpression
 ;
 
-UnaryExpression_NoLetSq_Yield :
-  PostfixExpression_NoLetSq_Yield
+UnaryExpression_NoLet_Yield :
+  PostfixExpression_NoLet_Yield
 | delete UnaryExpression_Yield
 | void UnaryExpression_Yield
 | typeof UnaryExpression_Yield
@@ -1086,7 +1139,7 @@ UnaryExpression_NoLetSq_Yield :
 | Plus UnaryExpression_Yield
 | Minus UnaryExpression_Yield
 | Tilde UnaryExpression_Yield
-| Exclamation UnaryExpression_Yield
+| Excl UnaryExpression_Yield
 ;
 
 UnaryExpression_NoObjLiteral :
@@ -1099,7 +1152,15 @@ UnaryExpression_NoObjLiteral :
 | Plus UnaryExpression
 | Minus UnaryExpression
 | Tilde UnaryExpression
-| Exclamation UnaryExpression
+| Excl UnaryExpression
+;
+
+UnaryExpression_StartWithLet :
+  PostfixExpression_StartWithLet
+;
+
+UnaryExpression_StartWithLet_Yield :
+  PostfixExpression_StartWithLet_Yield
 ;
 
 UnaryExpression_Yield :
@@ -1112,7 +1173,7 @@ UnaryExpression_Yield :
 | Plus UnaryExpression_Yield
 | Minus UnaryExpression_Yield
 | Tilde UnaryExpression_Yield
-| Exclamation UnaryExpression_Yield
+| Excl UnaryExpression_Yield
 ;
 
 MultiplicativeExpression :
@@ -1135,19 +1196,29 @@ MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 | MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield MultiplicativeOperator UnaryExpression_Yield
 ;
 
-MultiplicativeExpression_NoLetSq :
-  UnaryExpression_NoLetSq
-| MultiplicativeExpression_NoLetSq MultiplicativeOperator UnaryExpression
+MultiplicativeExpression_NoLet :
+  UnaryExpression_NoLet
+| MultiplicativeExpression_NoLet MultiplicativeOperator UnaryExpression
 ;
 
-MultiplicativeExpression_NoLetSq_Yield :
-  UnaryExpression_NoLetSq_Yield
-| MultiplicativeExpression_NoLetSq_Yield MultiplicativeOperator UnaryExpression_Yield
+MultiplicativeExpression_NoLet_Yield :
+  UnaryExpression_NoLet_Yield
+| MultiplicativeExpression_NoLet_Yield MultiplicativeOperator UnaryExpression_Yield
 ;
 
 MultiplicativeExpression_NoObjLiteral :
   UnaryExpression_NoObjLiteral
 | MultiplicativeExpression_NoObjLiteral MultiplicativeOperator UnaryExpression
+;
+
+MultiplicativeExpression_StartWithLet :
+  UnaryExpression_StartWithLet
+| MultiplicativeExpression_StartWithLet MultiplicativeOperator UnaryExpression
+;
+
+MultiplicativeExpression_StartWithLet_Yield :
+  UnaryExpression_StartWithLet_Yield
+| MultiplicativeExpression_StartWithLet_Yield MultiplicativeOperator UnaryExpression_Yield
 ;
 
 MultiplicativeExpression_Yield :
@@ -1157,8 +1228,8 @@ MultiplicativeExpression_Yield :
 
 MultiplicativeOperator :
   Mult
-| Slash
-| Percent
+| Div
+| Rem
 ;
 
 AdditiveExpression :
@@ -1185,22 +1256,34 @@ AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 | AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Minus MultiplicativeExpression_Yield
 ;
 
-AdditiveExpression_NoLetSq :
-  MultiplicativeExpression_NoLetSq
-| AdditiveExpression_NoLetSq Plus MultiplicativeExpression
-| AdditiveExpression_NoLetSq Minus MultiplicativeExpression
+AdditiveExpression_NoLet :
+  MultiplicativeExpression_NoLet
+| AdditiveExpression_NoLet Plus MultiplicativeExpression
+| AdditiveExpression_NoLet Minus MultiplicativeExpression
 ;
 
-AdditiveExpression_NoLetSq_Yield :
-  MultiplicativeExpression_NoLetSq_Yield
-| AdditiveExpression_NoLetSq_Yield Plus MultiplicativeExpression_Yield
-| AdditiveExpression_NoLetSq_Yield Minus MultiplicativeExpression_Yield
+AdditiveExpression_NoLet_Yield :
+  MultiplicativeExpression_NoLet_Yield
+| AdditiveExpression_NoLet_Yield Plus MultiplicativeExpression_Yield
+| AdditiveExpression_NoLet_Yield Minus MultiplicativeExpression_Yield
 ;
 
 AdditiveExpression_NoObjLiteral :
   MultiplicativeExpression_NoObjLiteral
 | AdditiveExpression_NoObjLiteral Plus MultiplicativeExpression
 | AdditiveExpression_NoObjLiteral Minus MultiplicativeExpression
+;
+
+AdditiveExpression_StartWithLet :
+  MultiplicativeExpression_StartWithLet
+| AdditiveExpression_StartWithLet Plus MultiplicativeExpression
+| AdditiveExpression_StartWithLet Minus MultiplicativeExpression
+;
+
+AdditiveExpression_StartWithLet_Yield :
+  MultiplicativeExpression_StartWithLet_Yield
+| AdditiveExpression_StartWithLet_Yield Plus MultiplicativeExpression_Yield
+| AdditiveExpression_StartWithLet_Yield Minus MultiplicativeExpression_Yield
 ;
 
 AdditiveExpression_Yield :
@@ -1211,326 +1294,404 @@ AdditiveExpression_Yield :
 
 ShiftExpression :
   AdditiveExpression
-| ShiftExpression LessLess AdditiveExpression
-| ShiftExpression GreaterGreater AdditiveExpression
-| ShiftExpression GreaterGreaterGreater AdditiveExpression
+| ShiftExpression LtLt AdditiveExpression
+| ShiftExpression GtGt AdditiveExpression
+| ShiftExpression GtGtGt AdditiveExpression
 ;
 
 ShiftExpression_NoFuncClass :
   AdditiveExpression_NoFuncClass
-| ShiftExpression_NoFuncClass LessLess AdditiveExpression
-| ShiftExpression_NoFuncClass GreaterGreater AdditiveExpression
-| ShiftExpression_NoFuncClass GreaterGreaterGreater AdditiveExpression
+| ShiftExpression_NoFuncClass LtLt AdditiveExpression
+| ShiftExpression_NoFuncClass GtGt AdditiveExpression
+| ShiftExpression_NoFuncClass GtGtGt AdditiveExpression
 ;
 
 ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral :
   AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral LessLess AdditiveExpression
-| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral GreaterGreater AdditiveExpression
-| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral GreaterGreaterGreater AdditiveExpression
+| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral LtLt AdditiveExpression
+| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral GtGt AdditiveExpression
+| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral GtGtGt AdditiveExpression
 ;
 
 ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield LessLess AdditiveExpression_Yield
-| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield GreaterGreater AdditiveExpression_Yield
-| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield GreaterGreaterGreater AdditiveExpression_Yield
+| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield LtLt AdditiveExpression_Yield
+| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield GtGt AdditiveExpression_Yield
+| ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield GtGtGt AdditiveExpression_Yield
 ;
 
-ShiftExpression_NoLetSq :
-  AdditiveExpression_NoLetSq
-| ShiftExpression_NoLetSq LessLess AdditiveExpression
-| ShiftExpression_NoLetSq GreaterGreater AdditiveExpression
-| ShiftExpression_NoLetSq GreaterGreaterGreater AdditiveExpression
+ShiftExpression_NoLet :
+  AdditiveExpression_NoLet
+| ShiftExpression_NoLet LtLt AdditiveExpression
+| ShiftExpression_NoLet GtGt AdditiveExpression
+| ShiftExpression_NoLet GtGtGt AdditiveExpression
 ;
 
-ShiftExpression_NoLetSq_Yield :
-  AdditiveExpression_NoLetSq_Yield
-| ShiftExpression_NoLetSq_Yield LessLess AdditiveExpression_Yield
-| ShiftExpression_NoLetSq_Yield GreaterGreater AdditiveExpression_Yield
-| ShiftExpression_NoLetSq_Yield GreaterGreaterGreater AdditiveExpression_Yield
+ShiftExpression_NoLet_Yield :
+  AdditiveExpression_NoLet_Yield
+| ShiftExpression_NoLet_Yield LtLt AdditiveExpression_Yield
+| ShiftExpression_NoLet_Yield GtGt AdditiveExpression_Yield
+| ShiftExpression_NoLet_Yield GtGtGt AdditiveExpression_Yield
 ;
 
 ShiftExpression_NoObjLiteral :
   AdditiveExpression_NoObjLiteral
-| ShiftExpression_NoObjLiteral LessLess AdditiveExpression
-| ShiftExpression_NoObjLiteral GreaterGreater AdditiveExpression
-| ShiftExpression_NoObjLiteral GreaterGreaterGreater AdditiveExpression
+| ShiftExpression_NoObjLiteral LtLt AdditiveExpression
+| ShiftExpression_NoObjLiteral GtGt AdditiveExpression
+| ShiftExpression_NoObjLiteral GtGtGt AdditiveExpression
+;
+
+ShiftExpression_StartWithLet :
+  AdditiveExpression_StartWithLet
+| ShiftExpression_StartWithLet LtLt AdditiveExpression
+| ShiftExpression_StartWithLet GtGt AdditiveExpression
+| ShiftExpression_StartWithLet GtGtGt AdditiveExpression
+;
+
+ShiftExpression_StartWithLet_Yield :
+  AdditiveExpression_StartWithLet_Yield
+| ShiftExpression_StartWithLet_Yield LtLt AdditiveExpression_Yield
+| ShiftExpression_StartWithLet_Yield GtGt AdditiveExpression_Yield
+| ShiftExpression_StartWithLet_Yield GtGtGt AdditiveExpression_Yield
 ;
 
 ShiftExpression_Yield :
   AdditiveExpression_Yield
-| ShiftExpression_Yield LessLess AdditiveExpression_Yield
-| ShiftExpression_Yield GreaterGreater AdditiveExpression_Yield
-| ShiftExpression_Yield GreaterGreaterGreater AdditiveExpression_Yield
+| ShiftExpression_Yield LtLt AdditiveExpression_Yield
+| ShiftExpression_Yield GtGt AdditiveExpression_Yield
+| ShiftExpression_Yield GtGtGt AdditiveExpression_Yield
 ;
 
 RelationalExpression :
   ShiftExpression
-| RelationalExpression Less ShiftExpression
-| RelationalExpression Greater ShiftExpression
-| RelationalExpression LessEqual ShiftExpression
-| RelationalExpression GreaterEqual ShiftExpression
+| RelationalExpression Lt ShiftExpression
+| RelationalExpression Gt ShiftExpression
+| RelationalExpression LtAssign ShiftExpression
+| RelationalExpression GtAssign ShiftExpression
 | RelationalExpression instanceof ShiftExpression
 ;
 
 RelationalExpression_In :
   ShiftExpression
-| RelationalExpression_In Less ShiftExpression
-| RelationalExpression_In Greater ShiftExpression
-| RelationalExpression_In LessEqual ShiftExpression
-| RelationalExpression_In GreaterEqual ShiftExpression
+| RelationalExpression_In Lt ShiftExpression
+| RelationalExpression_In Gt ShiftExpression
+| RelationalExpression_In LtAssign ShiftExpression
+| RelationalExpression_In GtAssign ShiftExpression
 | RelationalExpression_In instanceof ShiftExpression
 | RelationalExpression_In in ShiftExpression
 ;
 
 RelationalExpression_In_NoFuncClass :
   ShiftExpression_NoFuncClass
-| RelationalExpression_In_NoFuncClass Less ShiftExpression
-| RelationalExpression_In_NoFuncClass Greater ShiftExpression
-| RelationalExpression_In_NoFuncClass LessEqual ShiftExpression
-| RelationalExpression_In_NoFuncClass GreaterEqual ShiftExpression
+| RelationalExpression_In_NoFuncClass Lt ShiftExpression
+| RelationalExpression_In_NoFuncClass Gt ShiftExpression
+| RelationalExpression_In_NoFuncClass LtAssign ShiftExpression
+| RelationalExpression_In_NoFuncClass GtAssign ShiftExpression
 | RelationalExpression_In_NoFuncClass instanceof ShiftExpression
 | RelationalExpression_In_NoFuncClass in ShiftExpression
 ;
 
 RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral :
   ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral Less ShiftExpression
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral Greater ShiftExpression
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral LessEqual ShiftExpression
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral GreaterEqual ShiftExpression
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral Lt ShiftExpression
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral Gt ShiftExpression
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral LtAssign ShiftExpression
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral GtAssign ShiftExpression
 | RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral instanceof ShiftExpression
 | RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral in ShiftExpression
 ;
 
 RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield Less ShiftExpression_Yield
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield Greater ShiftExpression_Yield
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield LessEqual ShiftExpression_Yield
-| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield GreaterEqual ShiftExpression_Yield
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield Lt ShiftExpression_Yield
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield Gt ShiftExpression_Yield
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield LtAssign ShiftExpression_Yield
+| RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield GtAssign ShiftExpression_Yield
 | RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield instanceof ShiftExpression_Yield
 | RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield in ShiftExpression_Yield
 ;
 
-RelationalExpression_In_NoLetSq :
-  ShiftExpression_NoLetSq
-| RelationalExpression_In_NoLetSq Less ShiftExpression
-| RelationalExpression_In_NoLetSq Greater ShiftExpression
-| RelationalExpression_In_NoLetSq LessEqual ShiftExpression
-| RelationalExpression_In_NoLetSq GreaterEqual ShiftExpression
-| RelationalExpression_In_NoLetSq instanceof ShiftExpression
-| RelationalExpression_In_NoLetSq in ShiftExpression
+RelationalExpression_In_NoLet :
+  ShiftExpression_NoLet
+| RelationalExpression_In_NoLet Lt ShiftExpression
+| RelationalExpression_In_NoLet Gt ShiftExpression
+| RelationalExpression_In_NoLet LtAssign ShiftExpression
+| RelationalExpression_In_NoLet GtAssign ShiftExpression
+| RelationalExpression_In_NoLet instanceof ShiftExpression
+| RelationalExpression_In_NoLet in ShiftExpression
 ;
 
-RelationalExpression_In_NoLetSq_Yield :
-  ShiftExpression_NoLetSq_Yield
-| RelationalExpression_In_NoLetSq_Yield Less ShiftExpression_Yield
-| RelationalExpression_In_NoLetSq_Yield Greater ShiftExpression_Yield
-| RelationalExpression_In_NoLetSq_Yield LessEqual ShiftExpression_Yield
-| RelationalExpression_In_NoLetSq_Yield GreaterEqual ShiftExpression_Yield
-| RelationalExpression_In_NoLetSq_Yield instanceof ShiftExpression_Yield
-| RelationalExpression_In_NoLetSq_Yield in ShiftExpression_Yield
+RelationalExpression_In_NoLet_Yield :
+  ShiftExpression_NoLet_Yield
+| RelationalExpression_In_NoLet_Yield Lt ShiftExpression_Yield
+| RelationalExpression_In_NoLet_Yield Gt ShiftExpression_Yield
+| RelationalExpression_In_NoLet_Yield LtAssign ShiftExpression_Yield
+| RelationalExpression_In_NoLet_Yield GtAssign ShiftExpression_Yield
+| RelationalExpression_In_NoLet_Yield instanceof ShiftExpression_Yield
+| RelationalExpression_In_NoLet_Yield in ShiftExpression_Yield
 ;
 
 RelationalExpression_In_NoObjLiteral :
   ShiftExpression_NoObjLiteral
-| RelationalExpression_In_NoObjLiteral Less ShiftExpression
-| RelationalExpression_In_NoObjLiteral Greater ShiftExpression
-| RelationalExpression_In_NoObjLiteral LessEqual ShiftExpression
-| RelationalExpression_In_NoObjLiteral GreaterEqual ShiftExpression
+| RelationalExpression_In_NoObjLiteral Lt ShiftExpression
+| RelationalExpression_In_NoObjLiteral Gt ShiftExpression
+| RelationalExpression_In_NoObjLiteral LtAssign ShiftExpression
+| RelationalExpression_In_NoObjLiteral GtAssign ShiftExpression
 | RelationalExpression_In_NoObjLiteral instanceof ShiftExpression
 | RelationalExpression_In_NoObjLiteral in ShiftExpression
 ;
 
+RelationalExpression_In_StartWithLet :
+  ShiftExpression_StartWithLet
+| RelationalExpression_In_StartWithLet Lt ShiftExpression
+| RelationalExpression_In_StartWithLet Gt ShiftExpression
+| RelationalExpression_In_StartWithLet LtAssign ShiftExpression
+| RelationalExpression_In_StartWithLet GtAssign ShiftExpression
+| RelationalExpression_In_StartWithLet instanceof ShiftExpression
+| RelationalExpression_In_StartWithLet in ShiftExpression
+;
+
+RelationalExpression_In_StartWithLet_Yield :
+  ShiftExpression_StartWithLet_Yield
+| RelationalExpression_In_StartWithLet_Yield Lt ShiftExpression_Yield
+| RelationalExpression_In_StartWithLet_Yield Gt ShiftExpression_Yield
+| RelationalExpression_In_StartWithLet_Yield LtAssign ShiftExpression_Yield
+| RelationalExpression_In_StartWithLet_Yield GtAssign ShiftExpression_Yield
+| RelationalExpression_In_StartWithLet_Yield instanceof ShiftExpression_Yield
+| RelationalExpression_In_StartWithLet_Yield in ShiftExpression_Yield
+;
+
 RelationalExpression_In_Yield :
   ShiftExpression_Yield
-| RelationalExpression_In_Yield Less ShiftExpression_Yield
-| RelationalExpression_In_Yield Greater ShiftExpression_Yield
-| RelationalExpression_In_Yield LessEqual ShiftExpression_Yield
-| RelationalExpression_In_Yield GreaterEqual ShiftExpression_Yield
+| RelationalExpression_In_Yield Lt ShiftExpression_Yield
+| RelationalExpression_In_Yield Gt ShiftExpression_Yield
+| RelationalExpression_In_Yield LtAssign ShiftExpression_Yield
+| RelationalExpression_In_Yield GtAssign ShiftExpression_Yield
 | RelationalExpression_In_Yield instanceof ShiftExpression_Yield
 | RelationalExpression_In_Yield in ShiftExpression_Yield
 ;
 
-RelationalExpression_NoLetSq :
-  ShiftExpression_NoLetSq
-| RelationalExpression_NoLetSq Less ShiftExpression
-| RelationalExpression_NoLetSq Greater ShiftExpression
-| RelationalExpression_NoLetSq LessEqual ShiftExpression
-| RelationalExpression_NoLetSq GreaterEqual ShiftExpression
-| RelationalExpression_NoLetSq instanceof ShiftExpression
+RelationalExpression_NoLet :
+  ShiftExpression_NoLet
+| RelationalExpression_NoLet Lt ShiftExpression
+| RelationalExpression_NoLet Gt ShiftExpression
+| RelationalExpression_NoLet LtAssign ShiftExpression
+| RelationalExpression_NoLet GtAssign ShiftExpression
+| RelationalExpression_NoLet instanceof ShiftExpression
 ;
 
-RelationalExpression_NoLetSq_Yield :
-  ShiftExpression_NoLetSq_Yield
-| RelationalExpression_NoLetSq_Yield Less ShiftExpression_Yield
-| RelationalExpression_NoLetSq_Yield Greater ShiftExpression_Yield
-| RelationalExpression_NoLetSq_Yield LessEqual ShiftExpression_Yield
-| RelationalExpression_NoLetSq_Yield GreaterEqual ShiftExpression_Yield
-| RelationalExpression_NoLetSq_Yield instanceof ShiftExpression_Yield
+RelationalExpression_NoLet_Yield :
+  ShiftExpression_NoLet_Yield
+| RelationalExpression_NoLet_Yield Lt ShiftExpression_Yield
+| RelationalExpression_NoLet_Yield Gt ShiftExpression_Yield
+| RelationalExpression_NoLet_Yield LtAssign ShiftExpression_Yield
+| RelationalExpression_NoLet_Yield GtAssign ShiftExpression_Yield
+| RelationalExpression_NoLet_Yield instanceof ShiftExpression_Yield
 ;
 
 RelationalExpression_NoObjLiteral :
   ShiftExpression_NoObjLiteral
-| RelationalExpression_NoObjLiteral Less ShiftExpression
-| RelationalExpression_NoObjLiteral Greater ShiftExpression
-| RelationalExpression_NoObjLiteral LessEqual ShiftExpression
-| RelationalExpression_NoObjLiteral GreaterEqual ShiftExpression
+| RelationalExpression_NoObjLiteral Lt ShiftExpression
+| RelationalExpression_NoObjLiteral Gt ShiftExpression
+| RelationalExpression_NoObjLiteral LtAssign ShiftExpression
+| RelationalExpression_NoObjLiteral GtAssign ShiftExpression
 | RelationalExpression_NoObjLiteral instanceof ShiftExpression
+;
+
+RelationalExpression_StartWithLet :
+  ShiftExpression_StartWithLet
+| RelationalExpression_StartWithLet Lt ShiftExpression
+| RelationalExpression_StartWithLet Gt ShiftExpression
+| RelationalExpression_StartWithLet LtAssign ShiftExpression
+| RelationalExpression_StartWithLet GtAssign ShiftExpression
+| RelationalExpression_StartWithLet instanceof ShiftExpression
+;
+
+RelationalExpression_StartWithLet_Yield :
+  ShiftExpression_StartWithLet_Yield
+| RelationalExpression_StartWithLet_Yield Lt ShiftExpression_Yield
+| RelationalExpression_StartWithLet_Yield Gt ShiftExpression_Yield
+| RelationalExpression_StartWithLet_Yield LtAssign ShiftExpression_Yield
+| RelationalExpression_StartWithLet_Yield GtAssign ShiftExpression_Yield
+| RelationalExpression_StartWithLet_Yield instanceof ShiftExpression_Yield
 ;
 
 RelationalExpression_Yield :
   ShiftExpression_Yield
-| RelationalExpression_Yield Less ShiftExpression_Yield
-| RelationalExpression_Yield Greater ShiftExpression_Yield
-| RelationalExpression_Yield LessEqual ShiftExpression_Yield
-| RelationalExpression_Yield GreaterEqual ShiftExpression_Yield
+| RelationalExpression_Yield Lt ShiftExpression_Yield
+| RelationalExpression_Yield Gt ShiftExpression_Yield
+| RelationalExpression_Yield LtAssign ShiftExpression_Yield
+| RelationalExpression_Yield GtAssign ShiftExpression_Yield
 | RelationalExpression_Yield instanceof ShiftExpression_Yield
 ;
 
 EqualityExpression :
   RelationalExpression
-| EqualityExpression EqualEqual RelationalExpression
-| EqualityExpression ExclamationEqual RelationalExpression
-| EqualityExpression EqualEqualEqual RelationalExpression
-| EqualityExpression ExclamationEqualEqual RelationalExpression
+| EqualityExpression AssignAssign RelationalExpression
+| EqualityExpression ExclAssign RelationalExpression
+| EqualityExpression AssignAssignAssign RelationalExpression
+| EqualityExpression ExclAssignAssign RelationalExpression
 ;
 
 EqualityExpression_In :
   RelationalExpression_In
-| EqualityExpression_In EqualEqual RelationalExpression_In
-| EqualityExpression_In ExclamationEqual RelationalExpression_In
-| EqualityExpression_In EqualEqualEqual RelationalExpression_In
-| EqualityExpression_In ExclamationEqualEqual RelationalExpression_In
+| EqualityExpression_In AssignAssign RelationalExpression_In
+| EqualityExpression_In ExclAssign RelationalExpression_In
+| EqualityExpression_In AssignAssignAssign RelationalExpression_In
+| EqualityExpression_In ExclAssignAssign RelationalExpression_In
 ;
 
 EqualityExpression_In_NoFuncClass :
   RelationalExpression_In_NoFuncClass
-| EqualityExpression_In_NoFuncClass EqualEqual RelationalExpression_In
-| EqualityExpression_In_NoFuncClass ExclamationEqual RelationalExpression_In
-| EqualityExpression_In_NoFuncClass EqualEqualEqual RelationalExpression_In
-| EqualityExpression_In_NoFuncClass ExclamationEqualEqual RelationalExpression_In
+| EqualityExpression_In_NoFuncClass AssignAssign RelationalExpression_In
+| EqualityExpression_In_NoFuncClass ExclAssign RelationalExpression_In
+| EqualityExpression_In_NoFuncClass AssignAssignAssign RelationalExpression_In
+| EqualityExpression_In_NoFuncClass ExclAssignAssign RelationalExpression_In
 ;
 
 EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral :
   RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral EqualEqual RelationalExpression_In
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ExclamationEqual RelationalExpression_In
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral EqualEqualEqual RelationalExpression_In
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ExclamationEqualEqual RelationalExpression_In
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral AssignAssign RelationalExpression_In
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ExclAssign RelationalExpression_In
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral AssignAssignAssign RelationalExpression_In
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ExclAssignAssign RelationalExpression_In
 ;
 
 EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield EqualEqual RelationalExpression_In_Yield
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ExclamationEqual RelationalExpression_In_Yield
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield EqualEqualEqual RelationalExpression_In_Yield
-| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ExclamationEqualEqual RelationalExpression_In_Yield
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield AssignAssign RelationalExpression_In_Yield
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ExclAssign RelationalExpression_In_Yield
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield AssignAssignAssign RelationalExpression_In_Yield
+| EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ExclAssignAssign RelationalExpression_In_Yield
 ;
 
 EqualityExpression_In_NoObjLiteral :
   RelationalExpression_In_NoObjLiteral
-| EqualityExpression_In_NoObjLiteral EqualEqual RelationalExpression_In
-| EqualityExpression_In_NoObjLiteral ExclamationEqual RelationalExpression_In
-| EqualityExpression_In_NoObjLiteral EqualEqualEqual RelationalExpression_In
-| EqualityExpression_In_NoObjLiteral ExclamationEqualEqual RelationalExpression_In
+| EqualityExpression_In_NoObjLiteral AssignAssign RelationalExpression_In
+| EqualityExpression_In_NoObjLiteral ExclAssign RelationalExpression_In
+| EqualityExpression_In_NoObjLiteral AssignAssignAssign RelationalExpression_In
+| EqualityExpression_In_NoObjLiteral ExclAssignAssign RelationalExpression_In
 ;
 
 EqualityExpression_In_Yield :
   RelationalExpression_In_Yield
-| EqualityExpression_In_Yield EqualEqual RelationalExpression_In_Yield
-| EqualityExpression_In_Yield ExclamationEqual RelationalExpression_In_Yield
-| EqualityExpression_In_Yield EqualEqualEqual RelationalExpression_In_Yield
-| EqualityExpression_In_Yield ExclamationEqualEqual RelationalExpression_In_Yield
+| EqualityExpression_In_Yield AssignAssign RelationalExpression_In_Yield
+| EqualityExpression_In_Yield ExclAssign RelationalExpression_In_Yield
+| EqualityExpression_In_Yield AssignAssignAssign RelationalExpression_In_Yield
+| EqualityExpression_In_Yield ExclAssignAssign RelationalExpression_In_Yield
 ;
 
-EqualityExpression_NoLetSq :
-  RelationalExpression_NoLetSq
-| EqualityExpression_NoLetSq EqualEqual RelationalExpression
-| EqualityExpression_NoLetSq ExclamationEqual RelationalExpression
-| EqualityExpression_NoLetSq EqualEqualEqual RelationalExpression
-| EqualityExpression_NoLetSq ExclamationEqualEqual RelationalExpression
+EqualityExpression_NoLet :
+  RelationalExpression_NoLet
+| EqualityExpression_NoLet AssignAssign RelationalExpression
+| EqualityExpression_NoLet ExclAssign RelationalExpression
+| EqualityExpression_NoLet AssignAssignAssign RelationalExpression
+| EqualityExpression_NoLet ExclAssignAssign RelationalExpression
 ;
 
-EqualityExpression_NoLetSq_Yield :
-  RelationalExpression_NoLetSq_Yield
-| EqualityExpression_NoLetSq_Yield EqualEqual RelationalExpression_Yield
-| EqualityExpression_NoLetSq_Yield ExclamationEqual RelationalExpression_Yield
-| EqualityExpression_NoLetSq_Yield EqualEqualEqual RelationalExpression_Yield
-| EqualityExpression_NoLetSq_Yield ExclamationEqualEqual RelationalExpression_Yield
+EqualityExpression_NoLet_Yield :
+  RelationalExpression_NoLet_Yield
+| EqualityExpression_NoLet_Yield AssignAssign RelationalExpression_Yield
+| EqualityExpression_NoLet_Yield ExclAssign RelationalExpression_Yield
+| EqualityExpression_NoLet_Yield AssignAssignAssign RelationalExpression_Yield
+| EqualityExpression_NoLet_Yield ExclAssignAssign RelationalExpression_Yield
 ;
 
 EqualityExpression_NoObjLiteral :
   RelationalExpression_NoObjLiteral
-| EqualityExpression_NoObjLiteral EqualEqual RelationalExpression
-| EqualityExpression_NoObjLiteral ExclamationEqual RelationalExpression
-| EqualityExpression_NoObjLiteral EqualEqualEqual RelationalExpression
-| EqualityExpression_NoObjLiteral ExclamationEqualEqual RelationalExpression
+| EqualityExpression_NoObjLiteral AssignAssign RelationalExpression
+| EqualityExpression_NoObjLiteral ExclAssign RelationalExpression
+| EqualityExpression_NoObjLiteral AssignAssignAssign RelationalExpression
+| EqualityExpression_NoObjLiteral ExclAssignAssign RelationalExpression
+;
+
+EqualityExpression_StartWithLet :
+  RelationalExpression_StartWithLet
+| EqualityExpression_StartWithLet AssignAssign RelationalExpression
+| EqualityExpression_StartWithLet ExclAssign RelationalExpression
+| EqualityExpression_StartWithLet AssignAssignAssign RelationalExpression
+| EqualityExpression_StartWithLet ExclAssignAssign RelationalExpression
+;
+
+EqualityExpression_StartWithLet_Yield :
+  RelationalExpression_StartWithLet_Yield
+| EqualityExpression_StartWithLet_Yield AssignAssign RelationalExpression_Yield
+| EqualityExpression_StartWithLet_Yield ExclAssign RelationalExpression_Yield
+| EqualityExpression_StartWithLet_Yield AssignAssignAssign RelationalExpression_Yield
+| EqualityExpression_StartWithLet_Yield ExclAssignAssign RelationalExpression_Yield
 ;
 
 EqualityExpression_Yield :
   RelationalExpression_Yield
-| EqualityExpression_Yield EqualEqual RelationalExpression_Yield
-| EqualityExpression_Yield ExclamationEqual RelationalExpression_Yield
-| EqualityExpression_Yield EqualEqualEqual RelationalExpression_Yield
-| EqualityExpression_Yield ExclamationEqualEqual RelationalExpression_Yield
+| EqualityExpression_Yield AssignAssign RelationalExpression_Yield
+| EqualityExpression_Yield ExclAssign RelationalExpression_Yield
+| EqualityExpression_Yield AssignAssignAssign RelationalExpression_Yield
+| EqualityExpression_Yield ExclAssignAssign RelationalExpression_Yield
 ;
 
 BitwiseANDExpression :
   EqualityExpression
-| BitwiseANDExpression Ampersand EqualityExpression
+| BitwiseANDExpression And EqualityExpression
 ;
 
 BitwiseANDExpression_In :
   EqualityExpression_In
-| BitwiseANDExpression_In Ampersand EqualityExpression_In
+| BitwiseANDExpression_In And EqualityExpression_In
 ;
 
 BitwiseANDExpression_In_NoFuncClass :
   EqualityExpression_In_NoFuncClass
-| BitwiseANDExpression_In_NoFuncClass Ampersand EqualityExpression_In
+| BitwiseANDExpression_In_NoFuncClass And EqualityExpression_In
 ;
 
 BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral :
   EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-| BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral Ampersand EqualityExpression_In
+| BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral And EqualityExpression_In
 ;
 
 BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield Ampersand EqualityExpression_In_Yield
+| BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield And EqualityExpression_In_Yield
 ;
 
 BitwiseANDExpression_In_NoObjLiteral :
   EqualityExpression_In_NoObjLiteral
-| BitwiseANDExpression_In_NoObjLiteral Ampersand EqualityExpression_In
+| BitwiseANDExpression_In_NoObjLiteral And EqualityExpression_In
 ;
 
 BitwiseANDExpression_In_Yield :
   EqualityExpression_In_Yield
-| BitwiseANDExpression_In_Yield Ampersand EqualityExpression_In_Yield
+| BitwiseANDExpression_In_Yield And EqualityExpression_In_Yield
 ;
 
-BitwiseANDExpression_NoLetSq :
-  EqualityExpression_NoLetSq
-| BitwiseANDExpression_NoLetSq Ampersand EqualityExpression
+BitwiseANDExpression_NoLet :
+  EqualityExpression_NoLet
+| BitwiseANDExpression_NoLet And EqualityExpression
 ;
 
-BitwiseANDExpression_NoLetSq_Yield :
-  EqualityExpression_NoLetSq_Yield
-| BitwiseANDExpression_NoLetSq_Yield Ampersand EqualityExpression_Yield
+BitwiseANDExpression_NoLet_Yield :
+  EqualityExpression_NoLet_Yield
+| BitwiseANDExpression_NoLet_Yield And EqualityExpression_Yield
 ;
 
 BitwiseANDExpression_NoObjLiteral :
   EqualityExpression_NoObjLiteral
-| BitwiseANDExpression_NoObjLiteral Ampersand EqualityExpression
+| BitwiseANDExpression_NoObjLiteral And EqualityExpression
+;
+
+BitwiseANDExpression_StartWithLet :
+  EqualityExpression_StartWithLet
+| BitwiseANDExpression_StartWithLet And EqualityExpression
+;
+
+BitwiseANDExpression_StartWithLet_Yield :
+  EqualityExpression_StartWithLet_Yield
+| BitwiseANDExpression_StartWithLet_Yield And EqualityExpression_Yield
 ;
 
 BitwiseANDExpression_Yield :
   EqualityExpression_Yield
-| BitwiseANDExpression_Yield Ampersand EqualityExpression_Yield
+| BitwiseANDExpression_Yield And EqualityExpression_Yield
 ;
 
 BitwiseXORExpression :
@@ -1568,19 +1729,29 @@ BitwiseXORExpression_In_Yield :
 | BitwiseXORExpression_In_Yield Xor BitwiseANDExpression_In_Yield
 ;
 
-BitwiseXORExpression_NoLetSq :
-  BitwiseANDExpression_NoLetSq
-| BitwiseXORExpression_NoLetSq Xor BitwiseANDExpression
+BitwiseXORExpression_NoLet :
+  BitwiseANDExpression_NoLet
+| BitwiseXORExpression_NoLet Xor BitwiseANDExpression
 ;
 
-BitwiseXORExpression_NoLetSq_Yield :
-  BitwiseANDExpression_NoLetSq_Yield
-| BitwiseXORExpression_NoLetSq_Yield Xor BitwiseANDExpression_Yield
+BitwiseXORExpression_NoLet_Yield :
+  BitwiseANDExpression_NoLet_Yield
+| BitwiseXORExpression_NoLet_Yield Xor BitwiseANDExpression_Yield
 ;
 
 BitwiseXORExpression_NoObjLiteral :
   BitwiseANDExpression_NoObjLiteral
 | BitwiseXORExpression_NoObjLiteral Xor BitwiseANDExpression
+;
+
+BitwiseXORExpression_StartWithLet :
+  BitwiseANDExpression_StartWithLet
+| BitwiseXORExpression_StartWithLet Xor BitwiseANDExpression
+;
+
+BitwiseXORExpression_StartWithLet_Yield :
+  BitwiseANDExpression_StartWithLet_Yield
+| BitwiseXORExpression_StartWithLet_Yield Xor BitwiseANDExpression_Yield
 ;
 
 BitwiseXORExpression_Yield :
@@ -1623,19 +1794,29 @@ BitwiseORExpression_In_Yield :
 | BitwiseORExpression_In_Yield Or BitwiseXORExpression_In_Yield
 ;
 
-BitwiseORExpression_NoLetSq :
-  BitwiseXORExpression_NoLetSq
-| BitwiseORExpression_NoLetSq Or BitwiseXORExpression
+BitwiseORExpression_NoLet :
+  BitwiseXORExpression_NoLet
+| BitwiseORExpression_NoLet Or BitwiseXORExpression
 ;
 
-BitwiseORExpression_NoLetSq_Yield :
-  BitwiseXORExpression_NoLetSq_Yield
-| BitwiseORExpression_NoLetSq_Yield Or BitwiseXORExpression_Yield
+BitwiseORExpression_NoLet_Yield :
+  BitwiseXORExpression_NoLet_Yield
+| BitwiseORExpression_NoLet_Yield Or BitwiseXORExpression_Yield
 ;
 
 BitwiseORExpression_NoObjLiteral :
   BitwiseXORExpression_NoObjLiteral
 | BitwiseORExpression_NoObjLiteral Or BitwiseXORExpression
+;
+
+BitwiseORExpression_StartWithLet :
+  BitwiseXORExpression_StartWithLet
+| BitwiseORExpression_StartWithLet Or BitwiseXORExpression
+;
+
+BitwiseORExpression_StartWithLet_Yield :
+  BitwiseXORExpression_StartWithLet_Yield
+| BitwiseORExpression_StartWithLet_Yield Or BitwiseXORExpression_Yield
 ;
 
 BitwiseORExpression_Yield :
@@ -1645,57 +1826,67 @@ BitwiseORExpression_Yield :
 
 LogicalANDExpression :
   BitwiseORExpression
-| LogicalANDExpression AmpersandAmpersand BitwiseORExpression
+| LogicalANDExpression AndAnd BitwiseORExpression
 ;
 
 LogicalANDExpression_In :
   BitwiseORExpression_In
-| LogicalANDExpression_In AmpersandAmpersand BitwiseORExpression_In
+| LogicalANDExpression_In AndAnd BitwiseORExpression_In
 ;
 
 LogicalANDExpression_In_NoFuncClass :
   BitwiseORExpression_In_NoFuncClass
-| LogicalANDExpression_In_NoFuncClass AmpersandAmpersand BitwiseORExpression_In
+| LogicalANDExpression_In_NoFuncClass AndAnd BitwiseORExpression_In
 ;
 
 LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral :
   BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-| LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral AmpersandAmpersand BitwiseORExpression_In
+| LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral AndAnd BitwiseORExpression_In
 ;
 
 LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield AmpersandAmpersand BitwiseORExpression_In_Yield
+| LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield AndAnd BitwiseORExpression_In_Yield
 ;
 
 LogicalANDExpression_In_NoObjLiteral :
   BitwiseORExpression_In_NoObjLiteral
-| LogicalANDExpression_In_NoObjLiteral AmpersandAmpersand BitwiseORExpression_In
+| LogicalANDExpression_In_NoObjLiteral AndAnd BitwiseORExpression_In
 ;
 
 LogicalANDExpression_In_Yield :
   BitwiseORExpression_In_Yield
-| LogicalANDExpression_In_Yield AmpersandAmpersand BitwiseORExpression_In_Yield
+| LogicalANDExpression_In_Yield AndAnd BitwiseORExpression_In_Yield
 ;
 
-LogicalANDExpression_NoLetSq :
-  BitwiseORExpression_NoLetSq
-| LogicalANDExpression_NoLetSq AmpersandAmpersand BitwiseORExpression
+LogicalANDExpression_NoLet :
+  BitwiseORExpression_NoLet
+| LogicalANDExpression_NoLet AndAnd BitwiseORExpression
 ;
 
-LogicalANDExpression_NoLetSq_Yield :
-  BitwiseORExpression_NoLetSq_Yield
-| LogicalANDExpression_NoLetSq_Yield AmpersandAmpersand BitwiseORExpression_Yield
+LogicalANDExpression_NoLet_Yield :
+  BitwiseORExpression_NoLet_Yield
+| LogicalANDExpression_NoLet_Yield AndAnd BitwiseORExpression_Yield
 ;
 
 LogicalANDExpression_NoObjLiteral :
   BitwiseORExpression_NoObjLiteral
-| LogicalANDExpression_NoObjLiteral AmpersandAmpersand BitwiseORExpression
+| LogicalANDExpression_NoObjLiteral AndAnd BitwiseORExpression
+;
+
+LogicalANDExpression_StartWithLet :
+  BitwiseORExpression_StartWithLet
+| LogicalANDExpression_StartWithLet AndAnd BitwiseORExpression
+;
+
+LogicalANDExpression_StartWithLet_Yield :
+  BitwiseORExpression_StartWithLet_Yield
+| LogicalANDExpression_StartWithLet_Yield AndAnd BitwiseORExpression_Yield
 ;
 
 LogicalANDExpression_Yield :
   BitwiseORExpression_Yield
-| LogicalANDExpression_Yield AmpersandAmpersand BitwiseORExpression_Yield
+| LogicalANDExpression_Yield AndAnd BitwiseORExpression_Yield
 ;
 
 LogicalORExpression :
@@ -1733,19 +1924,29 @@ LogicalORExpression_In_Yield :
 | LogicalORExpression_In_Yield OrOr LogicalANDExpression_In_Yield
 ;
 
-LogicalORExpression_NoLetSq :
-  LogicalANDExpression_NoLetSq
-| LogicalORExpression_NoLetSq OrOr LogicalANDExpression
+LogicalORExpression_NoLet :
+  LogicalANDExpression_NoLet
+| LogicalORExpression_NoLet OrOr LogicalANDExpression
 ;
 
-LogicalORExpression_NoLetSq_Yield :
-  LogicalANDExpression_NoLetSq_Yield
-| LogicalORExpression_NoLetSq_Yield OrOr LogicalANDExpression_Yield
+LogicalORExpression_NoLet_Yield :
+  LogicalANDExpression_NoLet_Yield
+| LogicalORExpression_NoLet_Yield OrOr LogicalANDExpression_Yield
 ;
 
 LogicalORExpression_NoObjLiteral :
   LogicalANDExpression_NoObjLiteral
 | LogicalORExpression_NoObjLiteral OrOr LogicalANDExpression
+;
+
+LogicalORExpression_StartWithLet :
+  LogicalANDExpression_StartWithLet
+| LogicalORExpression_StartWithLet OrOr LogicalANDExpression
+;
+
+LogicalORExpression_StartWithLet_Yield :
+  LogicalANDExpression_StartWithLet_Yield
+| LogicalORExpression_StartWithLet_Yield OrOr LogicalANDExpression_Yield
 ;
 
 LogicalORExpression_Yield :
@@ -1755,84 +1956,94 @@ LogicalORExpression_Yield :
 
 ConditionalExpression :
   LogicalORExpression
-| LogicalORExpression Questionmark AssignmentExpression_In Colon AssignmentExpression
+| LogicalORExpression Quest AssignmentExpression_In Colon AssignmentExpression
 ;
 
 ConditionalExpression_In :
   LogicalORExpression_In
-| LogicalORExpression_In Questionmark AssignmentExpression_In Colon AssignmentExpression_In
+| LogicalORExpression_In Quest AssignmentExpression_In Colon AssignmentExpression_In
 ;
 
 ConditionalExpression_In_NoFuncClass :
   LogicalORExpression_In_NoFuncClass
-| LogicalORExpression_In_NoFuncClass Questionmark AssignmentExpression_In Colon AssignmentExpression_In
+| LogicalORExpression_In_NoFuncClass Quest AssignmentExpression_In Colon AssignmentExpression_In
 ;
 
 ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral :
   LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-| LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral Questionmark AssignmentExpression_In Colon AssignmentExpression_In
+| LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral Quest AssignmentExpression_In Colon AssignmentExpression_In
 ;
 
 ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield Questionmark AssignmentExpression_In_Yield Colon AssignmentExpression_In_Yield
+| LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield Quest AssignmentExpression_In_Yield Colon AssignmentExpression_In_Yield
 ;
 
 ConditionalExpression_In_NoObjLiteral :
   LogicalORExpression_In_NoObjLiteral
-| LogicalORExpression_In_NoObjLiteral Questionmark AssignmentExpression_In Colon AssignmentExpression_In
+| LogicalORExpression_In_NoObjLiteral Quest AssignmentExpression_In Colon AssignmentExpression_In
 ;
 
 ConditionalExpression_In_Yield :
   LogicalORExpression_In_Yield
-| LogicalORExpression_In_Yield Questionmark AssignmentExpression_In_Yield Colon AssignmentExpression_In_Yield
+| LogicalORExpression_In_Yield Quest AssignmentExpression_In_Yield Colon AssignmentExpression_In_Yield
 ;
 
-ConditionalExpression_NoLetSq :
-  LogicalORExpression_NoLetSq
-| LogicalORExpression_NoLetSq Questionmark AssignmentExpression_In Colon AssignmentExpression
+ConditionalExpression_NoLet :
+  LogicalORExpression_NoLet
+| LogicalORExpression_NoLet Quest AssignmentExpression_In Colon AssignmentExpression
 ;
 
-ConditionalExpression_NoLetSq_Yield :
-  LogicalORExpression_NoLetSq_Yield
-| LogicalORExpression_NoLetSq_Yield Questionmark AssignmentExpression_In_Yield Colon AssignmentExpression_Yield
+ConditionalExpression_NoLet_Yield :
+  LogicalORExpression_NoLet_Yield
+| LogicalORExpression_NoLet_Yield Quest AssignmentExpression_In_Yield Colon AssignmentExpression_Yield
 ;
 
 ConditionalExpression_NoObjLiteral :
   LogicalORExpression_NoObjLiteral
-| LogicalORExpression_NoObjLiteral Questionmark AssignmentExpression_In Colon AssignmentExpression
+| LogicalORExpression_NoObjLiteral Quest AssignmentExpression_In Colon AssignmentExpression
+;
+
+ConditionalExpression_StartWithLet :
+  LogicalORExpression_StartWithLet
+| LogicalORExpression_StartWithLet Quest AssignmentExpression_In Colon AssignmentExpression
+;
+
+ConditionalExpression_StartWithLet_Yield :
+  LogicalORExpression_StartWithLet_Yield
+| LogicalORExpression_StartWithLet_Yield Quest AssignmentExpression_In_Yield Colon AssignmentExpression_Yield
 ;
 
 ConditionalExpression_Yield :
   LogicalORExpression_Yield
-| LogicalORExpression_Yield Questionmark AssignmentExpression_In_Yield Colon AssignmentExpression_Yield
+| LogicalORExpression_Yield Quest AssignmentExpression_In_Yield Colon AssignmentExpression_Yield
 ;
 
 AssignmentExpression :
   ConditionalExpression
 | ArrowFunction
-| LeftHandSideExpression Equal AssignmentExpression
+| LeftHandSideExpression Assign AssignmentExpression
 | LeftHandSideExpression AssignmentOperator AssignmentExpression
 ;
 
 AssignmentExpression_In :
   ConditionalExpression_In
 | ArrowFunction_In
-| LeftHandSideExpression Equal AssignmentExpression_In
+| LeftHandSideExpression Assign AssignmentExpression_In
 | LeftHandSideExpression AssignmentOperator AssignmentExpression_In
 ;
 
 AssignmentExpression_In_NoFuncClass :
   ConditionalExpression_In_NoFuncClass
 | ArrowFunction_In
-| LeftHandSideExpression_NoFuncClass Equal AssignmentExpression_In
+| LeftHandSideExpression_NoFuncClass Assign AssignmentExpression_In
 | LeftHandSideExpression_NoFuncClass AssignmentOperator AssignmentExpression_In
 ;
 
 AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral :
   ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
 | ArrowFunction_In
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral Equal AssignmentExpression_In
+| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral Assign AssignmentExpression_In
 | LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral AssignmentOperator AssignmentExpression_In
 ;
 
@@ -1840,14 +2051,14 @@ AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 | YieldExpression_In
 | ArrowFunction_In_Yield
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Equal AssignmentExpression_In_Yield
+| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Assign AssignmentExpression_In_Yield
 | LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield AssignmentOperator AssignmentExpression_In_Yield
 ;
 
 AssignmentExpression_In_NoObjLiteral :
   ConditionalExpression_In_NoObjLiteral
 | ArrowFunction_In
-| LeftHandSideExpression_NoObjLiteral Equal AssignmentExpression_In
+| LeftHandSideExpression_NoObjLiteral Assign AssignmentExpression_In
 | LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression_In
 ;
 
@@ -1855,52 +2066,64 @@ AssignmentExpression_In_Yield :
   ConditionalExpression_In_Yield
 | YieldExpression_In
 | ArrowFunction_In_Yield
-| LeftHandSideExpression_Yield Equal AssignmentExpression_In_Yield
+| LeftHandSideExpression_Yield Assign AssignmentExpression_In_Yield
 | LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_In_Yield
 ;
 
-AssignmentExpression_NoLetSq :
-  ConditionalExpression_NoLetSq
+AssignmentExpression_NoLet :
+  ConditionalExpression_NoLet
 | ArrowFunction
-| LeftHandSideExpression_NoLetSq Equal AssignmentExpression
-| LeftHandSideExpression_NoLetSq AssignmentOperator AssignmentExpression
+| LeftHandSideExpression_NoLet Assign AssignmentExpression
+| LeftHandSideExpression_NoLet AssignmentOperator AssignmentExpression
 ;
 
-AssignmentExpression_NoLetSq_Yield :
-  ConditionalExpression_NoLetSq_Yield
+AssignmentExpression_NoLet_Yield :
+  ConditionalExpression_NoLet_Yield
 | YieldExpression
 | ArrowFunction_Yield
-| LeftHandSideExpression_NoLetSq_Yield Equal AssignmentExpression_Yield
-| LeftHandSideExpression_NoLetSq_Yield AssignmentOperator AssignmentExpression_Yield
+| LeftHandSideExpression_NoLet_Yield Assign AssignmentExpression_Yield
+| LeftHandSideExpression_NoLet_Yield AssignmentOperator AssignmentExpression_Yield
 ;
 
 AssignmentExpression_NoObjLiteral :
   ConditionalExpression_NoObjLiteral
 | ArrowFunction
-| LeftHandSideExpression_NoObjLiteral Equal AssignmentExpression
+| LeftHandSideExpression_NoObjLiteral Assign AssignmentExpression
 | LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression
+;
+
+AssignmentExpression_StartWithLet :
+  ConditionalExpression_StartWithLet
+| LeftHandSideExpression_StartWithLet Assign AssignmentExpression
+| LeftHandSideExpression_StartWithLet AssignmentOperator AssignmentExpression
+;
+
+AssignmentExpression_StartWithLet_Yield :
+  ConditionalExpression_StartWithLet_Yield
+| LeftHandSideExpression_StartWithLet_Yield Assign AssignmentExpression_Yield
+| LeftHandSideExpression_StartWithLet_Yield AssignmentOperator AssignmentExpression_Yield
 ;
 
 AssignmentExpression_Yield :
   ConditionalExpression_Yield
 | YieldExpression
 | ArrowFunction_Yield
-| LeftHandSideExpression_Yield Equal AssignmentExpression_Yield
+| LeftHandSideExpression_Yield Assign AssignmentExpression_Yield
 | LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_Yield
 ;
 
 AssignmentOperator :
-  MultEqual
-| SlashEqual
-| PercentEqual
-| PlusEqual
-| MinusEqual
-| LessLessEqual
-| GreaterGreaterEqual
-| GreaterGreaterGreaterEqual
-| AmpersandEqual
-| XorEqual
-| OrEqual
+  MultAssign
+| DivAssign
+| RemAssign
+| PlusAssign
+| MinusAssign
+| LtLtAssign
+| GtGtAssign
+| GtGtGtAssign
+| AndAssign
+| XorAssign
+| OrAssign
 ;
 
 Expression_In :
@@ -1923,14 +2146,24 @@ Expression_In_Yield :
 | Expression_In_Yield Comma AssignmentExpression_In_Yield
 ;
 
-Expression_NoLetSq :
-  AssignmentExpression_NoLetSq
-| Expression_NoLetSq Comma AssignmentExpression
+Expression_NoLet :
+  AssignmentExpression_NoLet
+| Expression_NoLet Comma AssignmentExpression
 ;
 
-Expression_NoLetSq_Yield :
-  AssignmentExpression_NoLetSq_Yield
-| Expression_NoLetSq_Yield Comma AssignmentExpression_Yield
+Expression_NoLet_Yield :
+  AssignmentExpression_NoLet_Yield
+| Expression_NoLet_Yield Comma AssignmentExpression_Yield
+;
+
+Expression_StartWithLet :
+  AssignmentExpression_StartWithLet
+| Expression_StartWithLet Comma AssignmentExpression
+;
+
+Expression_StartWithLet_Yield :
+  AssignmentExpression_StartWithLet_Yield
+| Expression_StartWithLet_Yield Comma AssignmentExpression_Yield
 ;
 
 Statement :
@@ -2038,18 +2271,18 @@ BlockStatement_Return_Yield :
 ;
 
 Block :
-  Lcurly StatementList Rcurly
-| Lcurly Rcurly
+  Lbrace StatementList Rbrace
+| Lbrace Rbrace
 ;
 
 Block_Return :
-  Lcurly StatementList_Return Rcurly
-| Lcurly Rcurly
+  Lbrace StatementList_Return Rbrace
+| Lbrace Rbrace
 ;
 
 Block_Return_Yield :
-  Lcurly StatementList_Return_Yield Rcurly
-| Lcurly Rcurly
+  Lbrace StatementList_Return_Yield Rbrace
+| Lbrace Rbrace
 ;
 
 StatementList :
@@ -2202,27 +2435,27 @@ BindingPattern_Yield :
 ;
 
 ObjectBindingPattern :
-  Lcurly Rcurly
-| Lcurly BindingPropertyList Rcurly
-| Lcurly BindingPropertyList Comma Rcurly
+  Lbrace Rbrace
+| Lbrace BindingPropertyList Rbrace
+| Lbrace BindingPropertyList Comma Rbrace
 ;
 
 ObjectBindingPattern_Yield :
-  Lcurly Rcurly
-| Lcurly BindingPropertyList_Yield Rcurly
-| Lcurly BindingPropertyList_Yield Comma Rcurly
+  Lbrace Rbrace
+| Lbrace BindingPropertyList_Yield Rbrace
+| Lbrace BindingPropertyList_Yield Comma Rbrace
 ;
 
 ArrayBindingPattern :
-  Lsquare Elisionopt BindingRestElementopt Rsquare
-| Lsquare BindingElementList Rsquare
-| Lsquare BindingElementList Comma Elisionopt BindingRestElementopt Rsquare
+  Lbrack Elisionopt BindingRestElementopt Rbrack
+| Lbrack BindingElementList Rbrack
+| Lbrack BindingElementList Comma Elisionopt BindingRestElementopt Rbrack
 ;
 
 ArrayBindingPattern_Yield :
-  Lsquare Elisionopt BindingRestElementopt_Yield Rsquare
-| Lsquare BindingElementList_Yield Rsquare
-| Lsquare BindingElementList_Yield Comma Elisionopt BindingRestElementopt_Yield Rsquare
+  Lbrack Elisionopt BindingRestElementopt_Yield Rbrack
+| Lbrack BindingElementList_Yield Rbrack
+| Lbrack BindingElementList_Yield Comma Elisionopt BindingRestElementopt_Yield Rbrack
 ;
 
 BindingPropertyList :
@@ -2319,13 +2552,15 @@ IfStatement_Return_Yield :
 IterationStatement :
   do Statement while Lparen Expression_In Rparen Semicolon
 | while Lparen Expression_In Rparen Statement
-| for Lparen Expressionopt_NoLetSq Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement
+| for Lparen Expressionopt_NoLet Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement
+| for Lparen Expression_StartWithLet Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement
 | for Lparen var VariableDeclarationList Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement
 | for Lparen LexicalDeclaration Expressionopt_In Semicolon Expressionopt_In Rparen Statement
-| for Lparen LeftHandSideExpression_NoLetSq in Expression_In Rparen Statement
+| for Lparen LeftHandSideExpression_NoLet in Expression_In Rparen Statement
+| for Lparen LeftHandSideExpression_StartWithLet in Expression_In Rparen Statement
 | for Lparen var ForBinding in Expression_In Rparen Statement
 | for Lparen ForDeclaration in Expression_In Rparen Statement
-| for Lparen lookahead1 LeftHandSideExpression_NoLet of AssignmentExpression_In Rparen Statement
+| for Lparen LeftHandSideExpression_NoLet of AssignmentExpression_In Rparen Statement
 | for Lparen var ForBinding of AssignmentExpression_In Rparen Statement
 | for Lparen ForDeclaration of AssignmentExpression_In Rparen Statement
 ;
@@ -2333,13 +2568,15 @@ IterationStatement :
 IterationStatement_Return :
   do Statement_Return while Lparen Expression_In Rparen Semicolon
 | while Lparen Expression_In Rparen Statement_Return
-| for Lparen Expressionopt_NoLetSq Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
+| for Lparen Expressionopt_NoLet Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
+| for Lparen Expression_StartWithLet Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
 | for Lparen var VariableDeclarationList Semicolon Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
 | for Lparen LexicalDeclaration Expressionopt_In Semicolon Expressionopt_In Rparen Statement_Return
-| for Lparen LeftHandSideExpression_NoLetSq in Expression_In Rparen Statement_Return
+| for Lparen LeftHandSideExpression_NoLet in Expression_In Rparen Statement_Return
+| for Lparen LeftHandSideExpression_StartWithLet in Expression_In Rparen Statement_Return
 | for Lparen var ForBinding in Expression_In Rparen Statement_Return
 | for Lparen ForDeclaration in Expression_In Rparen Statement_Return
-| for Lparen lookahead1 LeftHandSideExpression_NoLet of AssignmentExpression_In Rparen Statement_Return
+| for Lparen LeftHandSideExpression_NoLet of AssignmentExpression_In Rparen Statement_Return
 | for Lparen var ForBinding of AssignmentExpression_In Rparen Statement_Return
 | for Lparen ForDeclaration of AssignmentExpression_In Rparen Statement_Return
 ;
@@ -2347,13 +2584,15 @@ IterationStatement_Return :
 IterationStatement_Return_Yield :
   do Statement_Return_Yield while Lparen Expression_In_Yield Rparen Semicolon
 | while Lparen Expression_In_Yield Rparen Statement_Return_Yield
-| for Lparen Expressionopt_NoLetSq_Yield Semicolon Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
+| for Lparen Expressionopt_NoLet_Yield Semicolon Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
+| for Lparen Expression_StartWithLet_Yield Semicolon Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
 | for Lparen var VariableDeclarationList_Yield Semicolon Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
 | for Lparen LexicalDeclaration_Yield Expressionopt_In_Yield Semicolon Expressionopt_In_Yield Rparen Statement_Return_Yield
-| for Lparen LeftHandSideExpression_NoLetSq_Yield in Expression_In_Yield Rparen Statement_Return_Yield
+| for Lparen LeftHandSideExpression_NoLet_Yield in Expression_In_Yield Rparen Statement_Return_Yield
+| for Lparen LeftHandSideExpression_StartWithLet_Yield in Expression_In_Yield Rparen Statement_Return_Yield
 | for Lparen var ForBinding_Yield in Expression_In_Yield Rparen Statement_Return_Yield
 | for Lparen ForDeclaration_Yield in Expression_In_Yield Rparen Statement_Return_Yield
-| for Lparen lookahead1 LeftHandSideExpression_NoLet_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
+| for Lparen LeftHandSideExpression_NoLet_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
 | for Lparen var ForBinding_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
 | for Lparen ForDeclaration_Yield of AssignmentExpression_In_Yield Rparen Statement_Return_Yield
 ;
@@ -2431,18 +2670,18 @@ SwitchStatement_Return_Yield :
 ;
 
 CaseBlock :
-  Lcurly CaseClausesopt Rcurly
-| Lcurly CaseClausesopt DefaultClause CaseClausesopt Rcurly
+  Lbrace CaseClausesopt Rbrace
+| Lbrace CaseClausesopt DefaultClause CaseClausesopt Rbrace
 ;
 
 CaseBlock_Return :
-  Lcurly CaseClausesopt_Return Rcurly
-| Lcurly CaseClausesopt_Return DefaultClause_Return CaseClausesopt_Return Rcurly
+  Lbrace CaseClausesopt_Return Rbrace
+| Lbrace CaseClausesopt_Return DefaultClause_Return CaseClausesopt_Return Rbrace
 ;
 
 CaseBlock_Return_Yield :
-  Lcurly CaseClausesopt_Return_Yield Rcurly
-| Lcurly CaseClausesopt_Return_Yield DefaultClause_Return_Yield CaseClausesopt_Return_Yield Rcurly
+  Lbrace CaseClausesopt_Return_Yield Rbrace
+| Lbrace CaseClausesopt_Return_Yield DefaultClause_Return_Yield CaseClausesopt_Return_Yield Rbrace
 ;
 
 CaseClauses :
@@ -2584,21 +2823,21 @@ DebuggerStatement :
 ;
 
 FunctionDeclaration :
-  function BindingIdentifier Lparen FormalParameters Rparen Lcurly FunctionBody Rcurly
+  function BindingIdentifier Lparen FormalParameters Rparen Lbrace FunctionBody Rbrace
 ;
 
 FunctionDeclaration_Default :
-  function BindingIdentifier Lparen FormalParameters Rparen Lcurly FunctionBody Rcurly
-| function Lparen FormalParameters Rparen Lcurly FunctionBody Rcurly
+  function BindingIdentifier Lparen FormalParameters Rparen Lbrace FunctionBody Rbrace
+| function Lparen FormalParameters Rparen Lbrace FunctionBody Rbrace
 ;
 
 FunctionDeclaration_Yield :
-  function BindingIdentifier_Yield Lparen FormalParameters Rparen Lcurly FunctionBody Rcurly
+  function BindingIdentifier_Yield Lparen FormalParameters Rparen Lbrace FunctionBody Rbrace
 ;
 
 FunctionExpression :
-  function BindingIdentifier Lparen FormalParameters Rparen Lcurly FunctionBody Rcurly
-| function Lparen FormalParameters Rparen Lcurly FunctionBody Rcurly
+  function BindingIdentifier Lparen FormalParameters Rparen Lbrace FunctionBody Rbrace
+| function Lparen FormalParameters Rparen Lbrace FunctionBody Rbrace
 ;
 
 StrictFormalParameters :
@@ -2668,19 +2907,19 @@ FunctionBody_Yield :
 ;
 
 ArrowFunction :
-  ArrowParameters EqualGreater ConciseBody
+  ArrowParameters AssignGt ConciseBody
 ;
 
 ArrowFunction_In :
-  ArrowParameters EqualGreater ConciseBody_In
+  ArrowParameters AssignGt ConciseBody_In
 ;
 
 ArrowFunction_In_Yield :
-  ArrowParameters_Yield EqualGreater ConciseBody_In
+  ArrowParameters_Yield AssignGt ConciseBody_In
 ;
 
 ArrowFunction_Yield :
-  ArrowParameters_Yield EqualGreater ConciseBody
+  ArrowParameters_Yield AssignGt ConciseBody
 ;
 
 ArrowParameters :
@@ -2695,26 +2934,26 @@ ArrowParameters_Yield :
 
 ConciseBody :
   AssignmentExpression_NoObjLiteral
-| Lcurly FunctionBody Rcurly
+| Lbrace FunctionBody Rbrace
 ;
 
 ConciseBody_In :
   AssignmentExpression_In_NoObjLiteral
-| Lcurly FunctionBody Rcurly
+| Lbrace FunctionBody Rbrace
 ;
 
 MethodDefinition :
-  PropertyName Lparen StrictFormalParameters Rparen Lcurly FunctionBody Rcurly
+  PropertyName Lparen StrictFormalParameters Rparen Lbrace FunctionBody Rbrace
 | GeneratorMethod
-| get PropertyName Lparen Rparen Lcurly FunctionBody Rcurly
-| set PropertyName Lparen PropertySetParameterList Rparen Lcurly FunctionBody Rcurly
+| get PropertyName Lparen Rparen Lbrace FunctionBody Rbrace
+| set PropertyName Lparen PropertySetParameterList Rparen Lbrace FunctionBody Rbrace
 ;
 
 MethodDefinition_Yield :
-  PropertyName_Yield Lparen StrictFormalParameters_Yield Rparen Lcurly FunctionBody_Yield Rcurly
+  PropertyName_Yield Lparen StrictFormalParameters_Yield Rparen Lbrace FunctionBody_Yield Rbrace
 | GeneratorMethod_Yield
-| get PropertyName_Yield Lparen Rparen Lcurly FunctionBody_Yield Rcurly
-| set PropertyName_Yield Lparen PropertySetParameterList Rparen Lcurly FunctionBody_Yield Rcurly
+| get PropertyName_Yield Lparen Rparen Lbrace FunctionBody_Yield Rbrace
+| set PropertyName_Yield Lparen PropertySetParameterList Rparen Lbrace FunctionBody_Yield Rbrace
 ;
 
 PropertySetParameterList :
@@ -2722,29 +2961,29 @@ PropertySetParameterList :
 ;
 
 GeneratorMethod :
-  Mult PropertyName Lparen StrictFormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
+  Mult PropertyName Lparen StrictFormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
 ;
 
 GeneratorMethod_Yield :
-  Mult PropertyName_Yield Lparen StrictFormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
+  Mult PropertyName_Yield Lparen StrictFormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
 ;
 
 GeneratorDeclaration :
-  function Mult BindingIdentifier Lparen FormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
+  function Mult BindingIdentifier Lparen FormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
 ;
 
 GeneratorDeclaration_Default :
-  function Mult BindingIdentifier Lparen FormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
-| function Mult Lparen FormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
+  function Mult BindingIdentifier Lparen FormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
+| function Mult Lparen FormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
 ;
 
 GeneratorDeclaration_Yield :
-  function Mult BindingIdentifier_Yield Lparen FormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
+  function Mult BindingIdentifier_Yield Lparen FormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
 ;
 
 GeneratorExpression :
-  function Mult BindingIdentifier_Yield Lparen FormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
-| function Mult Lparen FormalParameters_Yield Rparen Lcurly GeneratorBody Rcurly
+  function Mult BindingIdentifier_Yield Lparen FormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
+| function Mult Lparen FormalParameters_Yield Rparen Lbrace GeneratorBody Rbrace
 ;
 
 GeneratorBody :
@@ -2787,13 +3026,13 @@ ClassExpression_Yield :
 ;
 
 ClassTail :
-  ClassHeritage Lcurly ClassBodyopt Rcurly
-| Lcurly ClassBodyopt Rcurly
+  ClassHeritage Lbrace ClassBodyopt Rbrace
+| Lbrace ClassBodyopt Rbrace
 ;
 
 ClassTail_Yield :
-  ClassHeritage_Yield Lcurly ClassBodyopt_Yield Rcurly
-| Lcurly ClassBodyopt_Yield Rcurly
+  ClassHeritage_Yield Lbrace ClassBodyopt_Yield Rbrace
+| Lbrace ClassBodyopt_Yield Rbrace
 ;
 
 ClassHeritage :
@@ -2875,9 +3114,9 @@ NameSpaceImport :
 ;
 
 NamedImports :
-  Lcurly Rcurly
-| Lcurly ImportsList Rcurly
-| Lcurly ImportsList Comma Rcurly
+  Lbrace Rbrace
+| Lbrace ImportsList Rbrace
+| Lbrace ImportsList Comma Rbrace
 ;
 
 FromClause :
@@ -2914,9 +3153,9 @@ ExportDeclaration :
 ;
 
 ExportClause :
-  Lcurly Rcurly
-| Lcurly ExportsList Rcurly
-| Lcurly ExportsList Comma Rcurly
+  Lbrace Rbrace
+| Lbrace ExportsList Rbrace
+| Lbrace ExportsList Comma Rbrace
 ;
 
 ExportsList :
@@ -2974,14 +3213,14 @@ Expressionopt_In_Yield :
 | Expression_In_Yield
 ;
 
-Expressionopt_NoLetSq :
+Expressionopt_NoLet :
   %empty
-| Expression_NoLetSq
+| Expression_NoLet
 ;
 
-Expressionopt_NoLetSq_Yield :
+Expressionopt_NoLet_Yield :
   %empty
-| Expression_NoLetSq_Yield
+| Expression_NoLet_Yield
 ;
 
 CaseClausesopt :

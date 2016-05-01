@@ -130,8 +130,7 @@ public class SetLexer {
 		1, 1, 1, 11, 12, 13, 14, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(13,
@@ -163,7 +162,7 @@ public class SetLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		if (chr >= 0 && chr < 106) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

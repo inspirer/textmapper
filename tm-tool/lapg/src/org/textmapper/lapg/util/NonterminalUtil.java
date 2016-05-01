@@ -38,6 +38,8 @@ public class NonterminalUtil {
 	}
 
 	public static boolean isOptional(Nonterminal n) {
+		if (n.getDefinition() instanceof RhsList) return false;
+
 		int refs = 0;
 		boolean hasEmpty = false;
 		for (RhsSequence rule : NonterminalUtil.getRules(n)) {

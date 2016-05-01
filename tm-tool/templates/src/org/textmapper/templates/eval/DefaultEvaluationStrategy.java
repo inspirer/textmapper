@@ -74,7 +74,11 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			throw ex;
 		} catch (Exception th) {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
-			String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": " + cause.getMessage();
+			String with = "";
+			if (!(cause instanceof EvaluationException)) {
+				with = " with " + cause.getClass().getName();
+			}
+			String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + with + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
 			report(KIND_ERROR, message, expr);
 //			context.printStackTrace(expr, System.err);

@@ -154,7 +154,7 @@ public class SampleALexer {
 		1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 1, 1, 1, 8,
 		1, 4, 8, 2, 8, 8, 8, 8, 8, 8, 8, 8, 3, 8, 8, 8,
-		8, 8, 8, 5, 8, 8, 8, 8, 8, 8, 8, 6, 1, 7, 1, 1
+		8, 8, 8, 5, 8, 8, 8, 8, 8, 8, 8, 6, 1, 7
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(5,
@@ -187,7 +187,7 @@ public class SampleALexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 
