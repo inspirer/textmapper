@@ -424,7 +424,8 @@ public class TMMapper {
 	private RhsSymbol getMasterSymbol(RhsPart rule) {
 		RhsPart r = RhsUtil.unwrap(rule);
 		RhsPart master = withoutConstants(r);
-		if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
+		if (master instanceof RhsSymbol &&
+				(master == r || TMDataUtil.hasProperty(master, "pass"))) {
 			return (RhsSymbol) master;
 		}
 		return null;
@@ -678,29 +679,22 @@ public class TMMapper {
 		return null;
 	}
 
-	private static boolean hasProperty(UserDataHolder o, String name) {
-		Map<String, Object> annotations = TMDataUtil.getAnnotations(o);
-		if (annotations == null) {
-			return false;
-		}
-		Object o1 = annotations.get(name);
-		return o1 instanceof Boolean ? (Boolean) o1 : false;
-	}
-
 	private static boolean hasClassHint(Nonterminal n) {
 		TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
-		return typeHint != null && typeHint.getKind() == Kind.CLASS || hasProperty(n, "_class");
+		return typeHint != null && typeHint.getKind() == Kind.CLASS ||
+				TMDataUtil.hasProperty(n, "_class");
 	}
 
 	private static boolean hasInterfaceHint(Nonterminal n) {
 		TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
 		return typeHint != null && typeHint.getKind() == Kind.INTERFACE ||
-				hasProperty(n, "_interface");
+				TMDataUtil.hasProperty(n, "_interface");
 	}
 
 	private static boolean hasVoidHint(Nonterminal n) {
 		TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
-		return typeHint != null && typeHint.getKind() == Kind.VOID || hasProperty(n, "noast");
+		return typeHint != null && typeHint.getKind() == Kind.VOID ||
+				TMDataUtil.hasProperty(n, "noast");
 	}
 
 	private final class TypeOrSymbolHandle {

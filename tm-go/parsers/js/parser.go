@@ -146,4 +146,9 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 }
 
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
+	nt := ruleNodeType[rule]
+	if nt == 0 {
+		return
+	}
+	p.listener.Node(nt, node.offset, node.endoffset)
 }

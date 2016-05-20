@@ -7,7 +7,7 @@ type Listener interface {
 }
 
 const (
-	IdentifierName NodeType = iota
+	IdentifierName NodeType = iota + 1
 	IdentifierReference
 	BindingIdentifier
 	LabelIdentifier
@@ -18,7 +18,6 @@ const (
 	SpreadElement
 	ObjectLiteral
 	PropertyDefinition
-	PropertyName
 	LiteralPropertyName
 	ComputedPropertyName
 	CoverInitializedName
@@ -411,10 +410,10 @@ var ruleNodeType = [...]NodeType{
 	PropertyDefinition, // PropertyDefinition_Yield ::= CoverInitializedName_Yield
 	PropertyDefinition, // PropertyDefinition_Yield ::= PropertyName_Yield ':' AssignmentExpression_In_Yield
 	PropertyDefinition, // PropertyDefinition_Yield ::= MethodDefinition_Yield
-	PropertyName, // PropertyName ::= LiteralPropertyName
-	PropertyName, // PropertyName ::= ComputedPropertyName
-	PropertyName, // PropertyName_Yield ::= LiteralPropertyName
-	PropertyName, // PropertyName_Yield ::= ComputedPropertyName_Yield
+	0, // PropertyName ::= LiteralPropertyName
+	0, // PropertyName ::= ComputedPropertyName
+	0, // PropertyName_Yield ::= LiteralPropertyName
+	0, // PropertyName_Yield ::= ComputedPropertyName_Yield
 	LiteralPropertyName, // LiteralPropertyName ::= IdentifierName
 	LiteralPropertyName, // LiteralPropertyName ::= StringLiteral
 	LiteralPropertyName, // LiteralPropertyName ::= NumericLiteral
@@ -1767,7 +1766,6 @@ var nodeTypeStr = [...]string{
 	"SpreadElement",
 	"ObjectLiteral",
 	"PropertyDefinition",
-	"PropertyName",
 	"LiteralPropertyName",
 	"ComputedPropertyName",
 	"CoverInitializedName",

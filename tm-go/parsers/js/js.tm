@@ -319,6 +319,7 @@ PropertyDefinition<Yield> ::=
 	| MethodDefinition
 ;
 
+@noast
 PropertyName<Yield> ::=
 	  LiteralPropertyName
 	| ComputedPropertyName

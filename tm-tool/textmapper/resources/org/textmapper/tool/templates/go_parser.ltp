@@ -242,7 +242,13 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 }
 
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
-${if syntax.rules.exists(r|self->hasAction(r))-}
+${if self->eventBased()-}
+	nt := ruleNodeType[rule]
+	if nt == 0 {
+		return
+	}
+	p.listener.Node(nt, node.offset, node.endoffset)
+${else if syntax.rules.exists(r|self->hasAction(r))-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
 	case ${rule.getIndex()}: // ${rule}
@@ -337,7 +343,7 @@ type Listener interface {
 
 const (
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
-	${rangeType}${if index == 0} NodeType = iota${end}
+	${rangeType}${if index == 0} NodeType = iota + 1${end}
 ${end-}
 )
 

@@ -119,4 +119,13 @@ public class TMDataUtil {
 	public static Object getLiteral(RhsSymbol rhsSym) {
 		return rhsSym.getUserData(UD_LITERAL);
 	}
+
+	public static boolean hasProperty(UserDataHolder o, String name) {
+		Map<String, Object> annotations = TMDataUtil.getAnnotations(o);
+		if (annotations == null) {
+			return false;
+		}
+		Object o1 = annotations.get(name);
+		return o1 instanceof Boolean ? (Boolean) o1 : false;
+	}
 }

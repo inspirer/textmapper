@@ -137,7 +137,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 					Nonterminal n = rule.getLeft();
 					if (n.getDefinition() instanceof RhsList
 							&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
-							|| NonterminalUtil.isOptional(n)) {
+							|| NonterminalUtil.isOptional(n)
+							|| TMDataUtil.hasProperty(n, "noast")) {
 						return "";
 					}
 
