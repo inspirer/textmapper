@@ -18,7 +18,9 @@ class Options extends common.Options {
 
 class AnnotateReference {
 	bool pass;
+	bool noast;
 }
 
 class AnnotateSymbol extends common.AnnotateSymbol {
+	bool ast;
 }

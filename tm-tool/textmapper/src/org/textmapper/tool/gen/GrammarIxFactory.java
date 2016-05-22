@@ -134,12 +134,19 @@ public class GrammarIxFactory extends JavaIxFactory {
 					RhsSequence seq = rule.getSource();
 					if (seq.getName() != null) return seq.getName();
 
-					Nonterminal n = rule.getLeft();
-					if (n.getDefinition() instanceof RhsList
-							&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
-							|| NonterminalUtil.isOptional(n)
-							|| TMDataUtil.hasProperty(n, "noast")) {
+					if (seq.getParts().length > 0 &&
+							TMDataUtil.hasProperty(seq.getParts()[0], "noast")) {
 						return "";
+					}
+
+					Nonterminal n = rule.getLeft();
+					if (!TMDataUtil.hasProperty(n, "ast")) {
+						if (n.getDefinition() instanceof RhsList
+								&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
+								|| NonterminalUtil.isOptional(n)
+								|| TMDataUtil.hasProperty(n, "noast")) {
+							return "";
+						}
 					}
 
 					if (n.getTemplate() != null) n = n.getTemplate();

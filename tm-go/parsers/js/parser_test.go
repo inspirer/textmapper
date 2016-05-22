@@ -30,6 +30,7 @@ var jsParseTests = []jsTestCase{
 		`/*no expectations*/ const a = 15;`,
 		`/*no expectations*/ var b = 7;`,
 		`var e = “aa“;`,
+		`var e = “let“;`,
 		`for (; “b“ < “a“; “b“++) { };`,
 		`/*no expectations*/ var c = (function() {})();`,
 	}},
@@ -45,13 +46,14 @@ var jsParseTests = []jsTestCase{
 		`A: for (;;) {continue “A“; }`,
 		`break “B“;`,
 	}},
-	{js.PrimaryExpression, []string{
-		`const c = “e“[“0“] + “5“ + “this“.e;`,
-		`const c = “[«0»]“[“0“ + “2“] + “{a: «33»}“.a;`,
+	{js.ThisExpression, []string{
+		`const c = “this“.e;`,
 	}},
-	{js.CoverParenthesizedExpressionAndArrowParameterList, []string{
+	{js.RegularExpression, []string{
+	// TODO
+	}},
+	{js.ParenthesizedExpression, []string{
 		`c = “(1+2)“;`,
-		`c = “(a)“ => a + 5;`,
 	}},
 	{js.Literal, []string{
 		`c = “1“ | a[“2“] | “true“ | “false“ | “1e4“;`,
@@ -70,7 +72,10 @@ var jsParseTests = []jsTestCase{
 		`a = «{a: «{}»,}»;`,
 	}},
 	{js.PropertyDefinition, []string{
-		`{} ({“a“,“b: 1 in {}“, “f() {}“, });`,
+		`{} ({“a“,“b: 1 in {}“, f() {}, });`,
+	}},
+	{js.SyntaxError, []string{
+		`{a=b;} ({“a = b“});`,
 	}},
 	{js.LiteralPropertyName, []string{
 		`{} ({a,“b“: 1 in {}, “f“() {}, get “d“() { return 1;}});`,
@@ -80,10 +85,11 @@ var jsParseTests = []jsTestCase{
 		`{} ({* “["a"+i]“() { yield 1;}});`,
 	}},
 	{js.CoverInitializedName, []string{
-	// TODO
+		`({“a = b“, “yield = {yield}“});`,
 	}},
 	{js.Initializer, []string{
-	// TODO
+		`({a “= b“, yield “= {yield}“});`,
+		`var a “= 4“, b “=[]“;`,
 	}},
 	{js.TemplateLiteral, []string{
 	// TODO
@@ -91,82 +97,123 @@ var jsParseTests = []jsTestCase{
 	{js.TemplateSpans, []string{
 	// TODO
 	}},
-	{js.MemberExpression, []string{
+	{js.TaggedTemplate, []string{
 	// TODO
 	}},
-	{js.SuperProperty, []string{
-	// TODO
+	{js.IndexAccess, []string{
+		`“super[10]“();`,
+		`“super()[10]“();`,
+		`“s.a()[10]“();`,
+		`“«s.a()[10]»[10]“();`,
 	}},
-	{js.MetaProperty, []string{
-	// TODO
+	{js.PropertyAccess, []string{
+		`for (««let.a».b» in b);`,
+		`“a.b“();`,
+		`“a().b“();`,
+		`“a()[10].b“();`,
+		`“super.me“();`,
 	}},
-	{js.NewTarget, []string{
-	// TODO
+	{js.SuperExpression, []string{
+		`“super“.me();`,
 	}},
 	{js.NewExpression, []string{
-	// TODO
+		`“new A“;`,
+		`“new A.b[10]“;`,
+		`“new A()“;`,
+		`“new A.b[10]()“.a();`,
+		`“new A.b[10]()“[10];`,
+	}},
+	{js.NewTarget, []string{
+		`“new.target“;`,
 	}},
 	{js.CallExpression, []string{
-	// TODO
-	}},
-	{js.SuperCall, []string{
-	// TODO
-	}},
-	{js.Arguments, []string{
-	// TODO
-	}},
-	{js.LeftHandSideExpression, []string{
-		`“a“ = “5“;`,
-		`“a“ += “5“;`,
-		`“a“++;`,
-		`“c“--;`,
 		`“a()“;`,
 		`“let()“;`,
-		`“let“++;`,
-		`for (“a“ in “b“) continue;`,
-		`for (let [a] in “b“);`,
-		`for (“let.b“ in “b“);`,
-		`for (“a“ of “b“);`,
-		`“new new A().q()“;`,
-		`class A extends “B“ {}`,
+		`“super(123)“;`,
+		`“aa[123]()“;`,
+		`««aa()».bbb()»;`,
+		`“«aa()»()“;`,
+		`“«aa()»[123]()“;`,
+		`“«super()»[123]()“;`,
+		`“«let()»[123]()“;`,
+		`“«super()»()“;`,
 	}},
-	//PostfixExpression
-	//UnaryExpression
-	//MultiplicativeExpression
-	//MultiplicativeOperator
-	//AdditiveExpression
-	//ShiftExpression
-	//RelationalExpression
-	//EqualityExpression
-	//BitwiseANDExpression
-	//BitwiseXORExpression
-	//BitwiseORExpression
-	//LogicalANDExpression
-	//LogicalORExpression
-	//ConditionalExpression
-	//AssignmentExpression
-	//AssignmentOperator
-	{js.Expression, []string{
-	// TODO `if (“a in b“);`,
+	{js.Arguments, []string{
+		`aa“()“.bbb“()““()“;`,
+		`aa“(1,2)“;`,
 	}},
-	//Statement
-	//Declaration
-	//HoistableDeclaration
-	//BreakableStatement
-	//BlockStatement
-	//Block
-	//StatementListItem
+	{js.PostfixExpression, []string{
+	// TODO
+	}},
+	{js.UnaryExpression, []string{
+	// TODO
+	}},
+	{js.MultiplicativeExpression, []string{
+		`/*no expectations*/ 1;`,
+		`“1*2“;`,
+		// TODO `1+“2/3“;`,
+		`“-1%~2“ << 3;`,
+	}},
+	{js.MultiplicativeOperator, []string{
+		`/*no expectations*/ 1;`,
+		`1“*“2;`,
+		`1+2“%“3;`,
+		// TODO `1“/“2;`,
+	}},
+	{js.AdditiveExpression, []string{
+		`/*no expectations*/ 1;`,
+		`“1+2“;`,
+		`“1+2*3“;`,
+		`“1-2“ << 3;`,
+	}},
+	{js.ShiftExpression, []string{
+		`/*no expectations*/ 1;`,
+		`“1<<2“;`,
+		`“1>>2+3“;`,
+		`“1>>>1“ < 3;`,
+	}},
+	{js.RelationalExpression, []string{
+		`/*no expectations*/ 1;`,
+		`“1 in {}“;`,
+		`“1<2*4“;`,
+		`“1>2“ != true;`,
+		`if (“1 >= 1“ && “1 <= 1“ && “a instanceof Window“) alert('true');`,
+	}},
+	{js.EqualityExpression, []string{
+	// TODO
+	}},
+	{js.BitwiseANDExpression, []string{
+	// TODO
+	}},
+	{js.BitwiseXORExpression, []string{
+	// TODO
+	}},
+	{js.BitwiseORExpression, []string{
+	// TODO
+	}},
+	{js.LogicalANDExpression, []string{
+	// TODO
+	}},
+	{js.LogicalORExpression, []string{
+	// TODO
+	}},
+	{js.ConditionalExpression, []string{
+	// TODO
+	}},
+	{js.AssignmentExpression, []string{
+	// TODO
+	}},
+	{js.AssignmentOperator, []string{
+	// TODO
+	}},
+	{js.Block, []string{
+	// TODO
+	}},
 	{js.LexicalDeclaration, []string{
 		`“let a;“`,
 		`“let a = 5;“`,
 		`“let [a] = [5];“`,
 		`“const {b: [c]} = a;“`,
-	}},
-	{js.LetOrConst, []string{
-		`“let“ a;`,
-		`“const“ {b} = a;`,
-		`for (“const“ [of] of b);`,
-		`for (“let“ [let] in b);`,
 	}},
 	{js.LexicalBinding, []string{
 		`let “a“;`,
@@ -174,20 +221,35 @@ var jsParseTests = []jsTestCase{
 		`let “[a] = [5]“;`,
 		`const “{b: [c]} = a“;`,
 	}},
-	//VariableStatement
-	//VariableDeclaration
-	//BindingPattern
+	{js.VariableStatement, []string{
+	// TODO
+	}},
+	{js.VariableDeclaration, []string{
+	// TODO
+	}},
 	{js.ObjectBindingPattern, []string{
 		`const “{b: [c]}“ = a;`,
 		`const “{}“ = a;`,
 		`for (const “{b,}“ in a);`,
 	}},
-	//ArrayBindingPattern
-	//BindingElisionElement
-	//BindingProperty
-	//BindingElement
-	//SingleNameBinding
-	//BindingRestElement
+	{js.ArrayBindingPattern, []string{
+	// TODO
+	}},
+	{js.BindingElisionElement, []string{
+	// TODO
+	}},
+	{js.BindingProperty, []string{
+	// TODO
+	}},
+	{js.BindingElement, []string{
+	// TODO
+	}},
+	{js.SingleNameBinding, []string{
+	// TODO
+	}},
+	{js.BindingRestElement, []string{
+	// TODO
+	}},
 	{js.EmptyStatement, []string{
 		`“;“`,
 		`for(;;)“;“`,
@@ -195,40 +257,45 @@ var jsParseTests = []jsTestCase{
 		`do“;“ while(true);`,
 	}},
 	{js.ExpressionStatement, []string{
-	// TODO
+		`“1+2;“ “v();“`,
 	}},
 	{js.IfStatement, []string{
 		`“if (a in b); else continue;“`,
 		`“if (a in b); else «if (true) a(); else b();»“`,
 		`“if (a in b) {«if(a);»} else continue;“`,
 	}},
-	{js.IterationStatement, []string{
+	{js.DoWhileStatement, []string{
 		`“do {} while(a < 5);“`,
 		`“do; while(a < 5);“`,
+	}},
+	{js.WhileStatement, []string{
 		`“while(false in a);“`,
-		`“for (a in b) continue;“`,
+	}},
+	{js.ForStatement, []string{
 		`“for (a=0; a < 5; a++);“`,
 		`“for (var a; a < 5; );“`,
 		`“for (var {a,b} = c; a < 5;);“`,
+	}},
+	{js.ForInStatement, []string{
+		`“for (a in b) continue;“`,
 		`“for (let [a] in b);“`,
 		`“for (let.a in b);“`,
 		`“for (let a in b);“`,
 		`“for (let in b);“`,
 		`“for (var a in b);“`,
 		`“for (var [a] in b);“`,
+	}},
+	{js.ForOfStatement, []string{
 		`“for (a of b);“`,
 		`“for (var {name:[name]} of b);“`,
 		`“for (const [[name]] of b);“`,
 	}},
-	{js.ForDeclaration, []string{
-		`for (“let a“ in b);`,
-		`for (“const {}“ in b);`,
-		`for (“let [a]“ in b);`,
-		`for (“const [,,,,...a]“ in b);`,
-	}},
 	{js.ForBinding, []string{
 		`for (var “a“ in b);`,
 		`for (var “[...a]“ in b);`,
+		`for (const “{}“ in b);`,
+		`for (let “[a]“ in b);`,
+		`for (const “[,,,,...a]“ in b);`,
 	}},
 	{js.ContinueStatement, []string{
 		`for(;;){ “continue;“ }`,
@@ -238,35 +305,81 @@ var jsParseTests = []jsTestCase{
 		`for(;;){ “break;“ }`,
 		`A: do “break A;“ while(false);`,
 	}},
-	//ReturnStatement
-	//WithStatement
-	//SwitchStatement
-	//CaseBlock
-	//CaseClause
-	//DefaultClause
+	{js.ReturnStatement, []string{
+		`function a() { “return 1;“ }`,
+		`function b() { “return;“ }`,
+	}},
+	{js.WithStatement, []string{
+		`“with(window) aa();“ {}`,
+		`“with(window) { addListener(); }“ {}`,
+	}},
+	{js.SwitchStatement, []string{
+		`“switch(a) {}“`,
+		`“switch(a) {case 1: case 2: default: case 3:}“`,
+		`“switch(a) {default: 1; case 3:}“`,
+		`“switch(a) {case 3: {} default: 1;}“`,
+	}},
+	{js.CaseBlock, []string{
+		`switch(a) “{}“`,
+		`switch(a) “{case 1: case 2: default: case 3:}“`,
+	}},
+	{js.CaseClause, []string{
+		`switch(a) {“case 1: a();“}`,
+		`switch(a) {“case 1:“ “case 2:“ default: “case 3:“}`,
+	}},
+	{js.DefaultClause, []string{
+		`switch(a) {case 1: case 2: “default:“ case 3:}`,
+		`function a() { switch(a) {“default: return;“ case 3:} }`,
+	}},
 	{js.LabelledStatement, []string{
 		`“yield: do break yield; while(false);“`,
 		`“A: for(;;) { break A; }“`,
 		`“A: function q() { return; }“`,
 	}},
-	{js.LabelledItem, []string{
-		`yield: “do break yield; while(false);“`,
-		`A: “for(;;) { break A; }“`,
-		`A: “function q() { return; }“`,
+	{js.ThrowStatement, []string{
+	// TODO
 	}},
-	//
-	//ThrowStatement
-	//TryStatement
-	//Catch
-	//Finally
-	//CatchParameter
-	//DebuggerStatement
-	//FunctionDeclaration
-	//FunctionExpression
-	//StrictFormalParameters
-	//FormalParameterList
-	//FunctionRestParameter
-	//FormalParameter
+	{js.TryStatement, []string{
+	// TODO
+	}},
+	{js.Catch, []string{
+	// TODO
+	}},
+	{js.Finally, []string{
+	// TODO
+	}},
+	{js.CatchParameter, []string{
+	// TODO
+	}},
+	{js.DebuggerStatement, []string{
+		`“debugger;“`,
+	}},
+	{js.FunctionDeclaration, []string{
+		`“function id() { yield = 1; }“`,
+		`export default “function() { yield = 1; }“`,
+		`“function sum(a,b) { return a + b; }“`,
+	}},
+	{js.FunctionExpression, []string{
+		`(“function() { yield = 1; }“)();`,
+		`(“function id() { yield = 1; }“)();`,
+		`(“function yield() { a++; }“)();`,
+		`(“function as() { a++; }“)();`,
+		`(“function let() { a++; }“)();`,
+	}},
+	{js.FormalParameters, []string{
+		`(function(“a,b,c“) { yield = 1; })();`,
+		`(function(““) { yield = 1; })();`,
+		`export default function(““) { yield = 1; };`,
+		`function q(“...a“) {}`,
+	}},
+	{js.FunctionRestParameter, []string{
+		`function q(“...a“) {}`,
+		`function q(b,c, “...a“) {}`,
+	}},
+	{js.FormalParameter, []string{
+		`function q(“a“, “b“) {}`,
+		`function q(“[id]“, “{name: name}“) {}`,
+	}},
 	{js.ArrowFunction, []string{
 		`(“a => a + 1“)(1);`,
 		`(“(a,b) => { return a*b; }“)(1);`,
@@ -279,13 +392,25 @@ var jsParseTests = []jsTestCase{
 		`(a => “a + 1“)(1);`,
 		`((a,b) => “{ return a*b; }“)(1);`,
 	}},
-	//MethodDefinition
-	//PropertySetParameterList
-	//GeneratorMethod
-	//GeneratorDeclaration
-	//GeneratorExpression
-	//GeneratorBody
-	//YieldExpression
+	{js.MethodDefinition, []string{
+	  `({ “run(){ console.log('executed'); }“}).run();`,
+		`class A { “noop(input) {}“}`,
+		`class A { “get x() { return this.x; }“ “set x(val) { this.x = val; }“}`,
+	}},
+	{js.GeneratorMethod, []string{
+		`({“*gen(){ yield 1; yield 2; }“}).run();`,
+	}},
+	{js.GeneratorDeclaration, []string{
+		`“function *gen(){ yield 1; yield 2; }“ {}`,
+		`export default “function*(){ yield 1; yield 2; }“ {}`,
+	}},
+	{js.GeneratorExpression, []string{
+		`(“function*(){ yield 1; yield 2; }“)();`,
+		`(“function* a(){ yield 1; yield 2; }“)();`,
+	}},
+	{js.YieldExpression, []string{
+		`function *gen(){ “yield 1“; “yield“; “yield *2“; } {}`,
+	}},
 	{js.ClassDeclaration, []string{
 		`“class A {}“`,
 		`“class A extends B {; ;}“`,
@@ -300,35 +425,62 @@ var jsParseTests = []jsTestCase{
 		`(“class extends B {}“);`,
 		`(“class { get a() { return 1;}}“);`,
 	}},
-	{js.ClassTail, []string{
-		`class A “{}“`,
-		`class A “extends B {; ;}“`,
-		`class A “extends B { a() {} }“`,
-		`export default class “extends B {}“`,
-		`export default class “{ get a() { return 1;}}“`,
-	}},
 	{js.ClassHeritage, []string{
 		`class A “extends B“ {; ;}`,
 		`class A “extends compose(B,C)“ {}`,
 		`(class “extends (A)“ {});`,
 	}},
-	//ClassBody
-	//ClassElement
-	//Module
-	//ModuleBody
-	//ModuleItem
-	//ImportDeclaration
-	//ImportClause
-	//ImportedDefaultBinding
-	//NameSpaceImport
-	//NamedImports
-	//FromClause
-	//ImportSpecifier
-	//ModuleSpecifier
-	//ImportedBinding
-	//ExportDeclaration
-	//ExportClause
-	//ExportSpecifier
+	{js.ClassBody, []string{
+	// TODO
+	}},
+	{js.ClassElement, []string{
+	// TODO
+	}},
+	{js.Module, []string{
+	// TODO
+	}},
+	{js.ModuleBody, []string{
+	// TODO
+	}},
+	{js.ModuleItem, []string{
+	// TODO
+	}},
+	{js.ImportDeclaration, []string{
+	// TODO
+	}},
+	{js.ImportClause, []string{
+	// TODO
+	}},
+	{js.ImportedDefaultBinding, []string{
+	// TODO
+	}},
+	{js.NameSpaceImport, []string{
+	// TODO
+	}},
+	{js.NamedImports, []string{
+	// TODO
+	}},
+	{js.FromClause, []string{
+	// TODO
+	}},
+	{js.ImportSpecifier, []string{
+	// TODO
+	}},
+	{js.ModuleSpecifier, []string{
+	// TODO
+	}},
+	{js.ImportedBinding, []string{
+	// TODO
+	}},
+	{js.ExportDeclaration, []string{
+	// TODO
+	}},
+	{js.ExportClause, []string{
+	// TODO
+	}},
+	{js.ExportSpecifier, []string{
+	// TODO
+	}},
 }
 
 func splitInput(input string, t *testing.T) (out []byte, exp []jsTestExpectation) {
@@ -390,7 +542,7 @@ func (e *expTest) Node(nt js.NodeType, offset, endoffset int) {
 		return
 	}
 	if len(e.exp) == 0 {
-		e.t.Errorf("Unexpected %v: `%s`", nt, e.source[offset:endoffset])
+		e.t.Errorf("Unexpected %v: `%s` in `%s`", nt, e.source[offset:endoffset], e.source)
 	} else if e.exp[0].offset != offset || e.exp[0].endoffset != endoffset {
 		first := e.exp[0]
 		e.t.Errorf("got `%s`, want `%s`", e.source[offset:endoffset], e.source[first.offset:first.endoffset])
