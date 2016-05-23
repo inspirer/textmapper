@@ -141,10 +141,17 @@ func TestLexer(t *testing.T) {
 
 const jsBenchmarkCode = `
   const a = 15;
-  var b = 7
-  var e = "aa"
+  if (" abcd ".length = 20) /aaaa/.test('vvaaaaaaaa');
+  var e = "some very long string" + [123,  9000000].length
   for (; b < a; b++) { }
   var c = (function() {})()
+
+  ({ a:  function*() { yeild 1; }, b : "aaaaaaaa"}).a();
+
+  class A extends B {
+      constructor() { this.x = 1; }
+      f() { return this.x; }
+  }
 `
 
 func BenchmarkLexer(b *testing.B) {
