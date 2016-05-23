@@ -64,6 +64,7 @@ const (
 	STATIC // static
 	TARGET // target
 	LBRACE // {
+	RBRACE // }
 	LPAREN // (
 	RPAREN // )
 	LBRACK // [
@@ -82,6 +83,7 @@ const (
 	PLUS // +
 	MINUS // -
 	MULT // *
+	DIV // /
 	REM // %
 	PLUSPLUS // ++
 	MINUSMINUS // --
@@ -101,6 +103,7 @@ const (
 	PLUSASSIGN // +=
 	MINUSASSIGN // -=
 	MULTASSIGN // *=
+	DIVASSIGN // /=
 	REMASSIGN // %=
 	LTLTASSIGN // <<=
 	GTGTASSIGN // >>=
@@ -111,14 +114,11 @@ const (
 	ASSIGNGT // =>
 	NUMERICLITERAL
 	STRINGLITERAL
-	RBRACE // }
 	NOSUBSTITUTIONTEMPLATE
 	TEMPLATEHEAD
 	TEMPLATEMIDDLE
 	TEMPLATETAIL
 	REGULAREXPRESSIONLITERAL
-	DIV // /
-	DIVASSIGN // /=
 
 	terminalEnd
 )
@@ -178,6 +178,7 @@ var tokenStr = [...]string{
 	"static",
 	"target",
 	"{",
+	"}",
 	"(",
 	")",
 	"[",
@@ -196,6 +197,7 @@ var tokenStr = [...]string{
 	"+",
 	"-",
 	"*",
+	"/",
 	"%",
 	"++",
 	"--",
@@ -215,6 +217,7 @@ var tokenStr = [...]string{
 	"+=",
 	"-=",
 	"*=",
+	"/=",
 	"%=",
 	"<<=",
 	">>=",
@@ -225,14 +228,11 @@ var tokenStr = [...]string{
 	"=>",
 	"NUMERICLITERAL",
 	"STRINGLITERAL",
-	"}",
 	"NOSUBSTITUTIONTEMPLATE",
 	"TEMPLATEHEAD",
 	"TEMPLATEMIDDLE",
 	"TEMPLATETAIL",
 	"REGULAREXPRESSIONLITERAL",
-	"/",
-	"/=",
 }
 
 func (tok Token) String() string {

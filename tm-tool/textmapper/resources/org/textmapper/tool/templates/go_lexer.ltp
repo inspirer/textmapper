@@ -15,6 +15,13 @@ import (
 	"unicode/utf8"
 ${call imports-}
 )
+${if syntax.lexerStates.size() > 1}
+const (
+${foreach state in syntax.lexerStates-}
+	${state->stateId()} = ${state.index}
+${end-}
+)
+${end-}
 
 // ErrorHandler is called every time a lexer or parser is unable to process
 // some part of the input.
@@ -88,6 +95,7 @@ skipChar:
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
+${call onBeforeNext-}
 restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
@@ -171,10 +179,10 @@ ${call lexerAction('l.value', 'token') for rule-}
 ${end-}
 	}
 ${end-}
-
 	if space {
 		goto restart
 	}
+${call onAfterNext-}
 	return token
 }
 
@@ -306,4 +314,9 @@ ${cached query classInstances() = context.syntax.lexerRules.select(x|x.classRule
 
 ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
 
+${cached query stateId() = 'State_' + util.uniqueId(self.name.replace('-', '_'), '__states__')}
+
 ${template imports}${end}
+
+${template onAfterNext}${end}
+${template onBeforeNext}${end}

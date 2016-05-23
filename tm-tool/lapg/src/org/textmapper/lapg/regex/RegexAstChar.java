@@ -39,12 +39,12 @@ class RegexAstChar extends RegexAstPart implements RegexChar {
 
 	@Override
 	public boolean isConstant() {
-		return true;
+		return c != -1;
 	}
 
 	@Override
 	public String getConstantValue() {
-		return new String(Character.toChars(c));
+ 		return new String(Character.toChars(c));
 	}
 
 	@Override

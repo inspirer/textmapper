@@ -8,6 +8,9 @@ eventBased = true
 
 [initial, div, template, template_div]
 
+# Accept end-of input in all states.
+eoi: /{eoi}/
+
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 
 LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
@@ -31,6 +34,7 @@ identifierPart = /{identifierStart}|{ID_Continue}|{Join_Control}/
 
 Identifier: /{identifierStart}{identifierPart}*/    (class)
 
+# Keywords.
 'break': /break/
 'case': /case/
 'catch': /catch/
@@ -69,6 +73,7 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 'await': /await/
 'enum': /enum/
 
+# Literals.
 'null': /null/
 'true': /true/
 'false': /false/
@@ -91,7 +96,9 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 #'protected': /protected/
 #'public': /public/
 
+# Punctuation
 '{': /\{/
+'}':          /* See below */
 '(': /\(/
 ')': /\)/
 '[': /\[/
@@ -110,6 +117,7 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '+': /\+/
 '-': /-/
 '*': /\*/
+'/':          /* See below */
 '%': /%/
 '++': /\+\+/
 '--': /--/
@@ -129,6 +137,7 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '+=': /\+=/
 '-=': /-=/
 '*=': /\*=/
+'/=':         /* See below */
 '%=': /%=/
 '<<=': /<<=/
 '>>=': />>=/
@@ -1009,3 +1018,59 @@ ExportSpecifier ::=
 	| IdentifierName 'as' IdentifierName
 ;
 
+%%
+
+${template go_lexer.onBeforeNext-}
+	prevLine := l.tokenLine
+${end}
+
+${template go_lexer.onAfterNext}
+	// There is an ambiguity in the language that a slash can either represent
+	// a division operator, or start a regular expression literal. This gets
+	// disambiguated at the grammar level - division always follows an
+	// expression, while regex literals are expressions themselves. Here we use
+	// some knowledge about the grammar to decide whether the next token can be
+	// a regular expression literal.
+	//
+	// See the following thread for more details:
+	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
+
+	inTemplate := l.State >= State_template
+	var reContext bool
+	switch token {
+	case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
+		reContext = true
+	case TEMPLATEHEAD, TEMPLATEMIDDLE:
+		reContext = true
+		inTemplate = true
+	case TEMPLATETAIL:
+		reContext = false
+		inTemplate = false
+	case RPAREN, RBRACK:
+		// TODO support if (...) /aaaa/;
+		reContext = false
+	case PLUSPLUS, MINUSMINUS:
+		if prevLine != l.tokenLine {
+			// This is a pre-increment/decrement, so we expect a regular expression.
+			reContext = true
+		} else {
+			// If we were in reContext before this token, this is a
+			// pre-increment/decrement, otherwise, this is a post. We can just
+			// propagate the previous value of reContext.
+			reContext = l.State == State_template || l.State == State_initial
+		}
+	default:
+		reContext = token >= punctuationStart && token < punctuationEnd
+	}
+	if inTemplate {
+		if reContext {
+			l.State = State_template
+		} else {
+			l.State = State_template_div
+		}
+	} else if reContext {
+		l.State = State_initial
+	} else {
+		l.State = State_div
+	}
+${end}

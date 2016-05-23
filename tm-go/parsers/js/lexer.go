@@ -5,6 +5,13 @@ import (
 	"unicode/utf8"
 )
 
+const (
+	State_initial = 0
+	State_div = 1
+	State_template = 2
+	State_template_div = 3
+)
+
 // ErrorHandler is called every time a lexer or parser is unable to process
 // some part of the input.
 type ErrorHandler func(line, offset, len int, msg string)
@@ -77,6 +84,7 @@ skipChar:
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
+	prevLine := l.tokenLine
 restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
@@ -145,18 +153,66 @@ restart:
 	token := tmToken[rule]
 	space := false
 	switch rule {
-	case 1: // WhiteSpace: /[\t\v\f \xa0\ufeff\p{Zs}]/
+	case 2: // WhiteSpace: /[\t\v\f \xa0\ufeff\p{Zs}]/
 		space = true
-	case 2: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
+	case 3: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
 		space = true
-	case 3: // MultiLineComment: /\/\*{commentChars}\*\//
+	case 4: // MultiLineComment: /\/\*{commentChars}\*\//
 		space = true
-	case 4: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
+	case 5: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
 		space = true
 	}
-
 	if space {
 		goto restart
+	}
+
+	// There is an ambiguity in the language that a slash can either represent
+	// a division operator, or start a regular expression literal. This gets
+	// disambiguated at the grammar level - division always follows an
+	// expression, while regex literals are expressions themselves. Here we use
+	// some knowledge about the grammar to decide whether the next token can be
+	// a regular expression literal.
+	//
+	// See the following thread for more details:
+	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
+
+	inTemplate := l.State >= State_template
+	var reContext bool
+	switch token {
+	case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
+		reContext = true
+	case TEMPLATEHEAD, TEMPLATEMIDDLE:
+		reContext = true
+		inTemplate = true
+	case TEMPLATETAIL:
+		reContext = false
+		inTemplate = false
+	case RPAREN, RBRACK:
+		// TODO support if (...) /aaaa/;
+		reContext = false
+	case PLUSPLUS, MINUSMINUS:
+		if prevLine != l.tokenLine {
+			// This is a pre-increment/decrement, so we expect a regular expression.
+			reContext = true
+		} else {
+			// If we were in reContext before this token, this is a
+			// pre-increment/decrement, otherwise, this is a post. We can just
+			// propagate the previous value of reContext.
+			reContext = l.State == State_template || l.State == State_initial
+		}
+	default:
+		reContext = token >= punctuationStart && token < punctuationEnd
+	}
+	if inTemplate {
+		if reContext {
+			l.State = State_template
+		} else {
+			l.State = State_template_div
+		}
+	} else if reContext {
+		l.State = State_initial
+	} else {
+		l.State = State_div
 	}
 	return token
 }
@@ -192,50 +248,50 @@ func (l *Lexer) Value() interface{} {
 }
 
 var instancesOfIDENTIFIER = map[string]int{
-	"break": 5,
-	"case": 6,
-	"catch": 7,
-	"class": 8,
-	"const": 9,
-	"continue": 10,
-	"debugger": 11,
-	"default": 12,
-	"delete": 13,
-	"do": 14,
-	"else": 15,
-	"export": 16,
-	"extends": 17,
-	"finally": 18,
-	"for": 19,
-	"function": 20,
-	"if": 21,
-	"import": 22,
-	"in": 23,
-	"instanceof": 24,
-	"new": 25,
-	"return": 26,
-	"super": 27,
-	"switch": 28,
-	"this": 29,
-	"throw": 30,
-	"try": 31,
-	"typeof": 32,
-	"var": 33,
-	"void": 34,
-	"while": 35,
-	"with": 36,
-	"yield": 37,
-	"await": 38,
-	"enum": 39,
-	"null": 40,
-	"true": 41,
-	"false": 42,
-	"as": 43,
-	"from": 44,
-	"get": 45,
-	"let": 46,
-	"of": 47,
-	"set": 48,
-	"static": 49,
-	"target": 50,
+	"break": 6,
+	"case": 7,
+	"catch": 8,
+	"class": 9,
+	"const": 10,
+	"continue": 11,
+	"debugger": 12,
+	"default": 13,
+	"delete": 14,
+	"do": 15,
+	"else": 16,
+	"export": 17,
+	"extends": 18,
+	"finally": 19,
+	"for": 20,
+	"function": 21,
+	"if": 22,
+	"import": 23,
+	"in": 24,
+	"instanceof": 25,
+	"new": 26,
+	"return": 27,
+	"super": 28,
+	"switch": 29,
+	"this": 30,
+	"throw": 31,
+	"try": 32,
+	"typeof": 33,
+	"var": 34,
+	"void": 35,
+	"while": 36,
+	"with": 37,
+	"yield": 38,
+	"await": 39,
+	"enum": 40,
+	"null": 41,
+	"true": 42,
+	"false": 43,
+	"as": 44,
+	"from": 45,
+	"get": 46,
+	"let": 47,
+	"of": 48,
+	"set": 49,
+	"static": 50,
+	"target": 51,
 }
