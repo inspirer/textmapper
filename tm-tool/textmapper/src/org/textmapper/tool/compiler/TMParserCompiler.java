@@ -371,6 +371,9 @@ public class TMParserCompiler {
 				resolved.add(rulePart);
 			}
 			return builder.unordered(resolved, part);
+		} else if (part instanceof TmaRhsStateMarker) {
+
+			return builder.stateMarker(((TmaRhsStateMarker) part).getName(), part);
 		}
 
 		Map<String, Object> annotations = null;

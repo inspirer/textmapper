@@ -129,6 +129,10 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaRhsStateMarker n) {
+		return true;
+	}
+
 	protected boolean visit(TmaAnnotations n) {
 		return true;
 	}

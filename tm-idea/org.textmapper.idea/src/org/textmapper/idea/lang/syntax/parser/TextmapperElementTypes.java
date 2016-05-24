@@ -51,6 +51,7 @@ public interface TextmapperElementTypes {
 	IElementType RHS_PART = new TMElementType(Nonterminals.rhsAnnotated, "rhs part");
 	IElementType RHS_UNORDERED = new TMElementType(Nonterminals.rhsUnordered, "rhs unordered");
 	IElementType RHS_PRIMARY = new TMElementType(Nonterminals.rhsPrimary, "rhs primary");
+	IElementType RHS_STATE_MARKER = new TMElementType(Nonterminals.rhsStateMarker, "rhs state marker");
 
 	IElementType ACTION = new TMElementType(Nonterminals.command, "action");
 	IElementType TYPE = new TMElementType(Nonterminals.type, "type");
@@ -73,7 +74,7 @@ public interface TextmapperElementTypes {
 			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE, LEXER_DIRECTIVE,
 			NONTERM, TEMPLATE_PARAM, NONTERM_PARAMS, NONTERM_PARAM, NONTERM_TYPE, DIRECTIVE,
-			RULE, RHS_PREFIX, RHS_SUFFIX, RULE_ACTION, RHS_PART, RHS_UNORDERED, RHS_PRIMARY,
+			RULE, RHS_PREFIX, RHS_SUFFIX, RULE_ACTION, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, RHS_STATE_MARKER,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, PREDICATE, PREDICATE_EXPRESSION,
 			SYMREF, SYMREF_ARGS, SYMREF_NA, STATEREF, IDENTIFIER, QUALIFIED_ID,
 			PARAMREF, TEMPLATE_ARG, MAP_ENTRY

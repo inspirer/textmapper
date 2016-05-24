@@ -440,8 +440,8 @@ LeftHandSideExpression<Yield> ::=
 
 PostfixExpression<Yield> ::=
 	  @noast LeftHandSideExpression
-	| LeftHandSideExpression /* no LineTerminator */ '++'
-	| LeftHandSideExpression /* no LineTerminator */ '--'
+	| LeftHandSideExpression .noLineBreak '++'
+	| LeftHandSideExpression .noLineBreak '--'
 ;
 
 UnaryExpression<Yield> ::=
@@ -737,17 +737,17 @@ ForBinding<Yield> ::=
 
 ContinueStatement<Yield> ::=
 	  'continue' ';'
-	| 'continue' /* no LineTerminator */ LabelIdentifier ';'
+	| 'continue' .noLineBreak LabelIdentifier ';'
 ;
 
 BreakStatement<Yield> ::=
 	  'break' ';'
-	| 'break' /* no LineTerminator */ LabelIdentifier ';'
+	| 'break' .noLineBreak LabelIdentifier ';'
 ;
 
 ReturnStatement<Yield> ::=
 	  'return' ';'
-	| 'return' /* no LineTerminator */ Expression<+In> ';'
+	| 'return' .noLineBreak Expression<+In> ';'
 ;
 
 WithStatement<Yield, Return> ::=
@@ -788,7 +788,7 @@ LabelledItem<Yield, Return> ::=
 ;
 
 ThrowStatement<Yield> ::=
-	  'throw' /* no LineTerminator */ Expression<+In> ';'
+	  'throw' .noLineBreak Expression<+In> ';'
 ;
 
 TryStatement<Yield, Return> ::=
@@ -855,7 +855,7 @@ FunctionBody<Yield> ::=
 	  StatementList<+Return>? ;
 
 ArrowFunction<In, Yield> ::=
-	  ArrowParameters /* no LineTerminator */ '=>' ConciseBody ;
+	  ArrowParameters .noLineBreak '=>' ConciseBody ;
 
 ArrowParameters<Yield> ::=
 	  BindingIdentifier
@@ -895,8 +895,8 @@ GeneratorBody ::=
 
 YieldExpression<In> ::=
 	  'yield'
-	| 'yield' /* no LineTerminator */ AssignmentExpression<+Yield>
-	| 'yield' /* no LineTerminator */ '*' AssignmentExpression<+Yield>
+	| 'yield' .noLineBreak AssignmentExpression<+Yield>
+	| 'yield' .noLineBreak '*' AssignmentExpression<+Yield>
 ;
 
 ClassDeclaration<Yield, Default> ::=

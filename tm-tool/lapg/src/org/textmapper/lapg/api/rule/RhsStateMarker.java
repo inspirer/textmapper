@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2015 Evgeny Gryaznov
+ * Copyright 2002-2016 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,35 +15,7 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.UserDataHolder;
+public interface RhsStateMarker extends RhsPart {
 
-/**
- * evgeny, 11/24/12
- */
-public interface RhsPart extends SourceElement, UserDataHolder {
-
-	enum Kind {
-		Choice,
-		Optional,
-		Sequence,
-		Symbol,
-		Unordered,
-		Assignment,
-		List,
-		Cast,
-		Set,
-		Ignored,
-		Conditional,
-		StateMarker,
-	}
-
-	Kind getKind();
-
-	Nonterminal getLeft();
-
-	RhsSequence getContext();
-
-	Object structuralNode();
+	String getName();
 }

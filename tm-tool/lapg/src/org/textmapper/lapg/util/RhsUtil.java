@@ -225,6 +225,8 @@ public class RhsUtil {
 			case Set:
 				// Sets have at least one element.
 				return false;
+			case StateMarker:
+				return true;
 			case Assignment:
 				return isNullable(((RhsAssignment) part).getPart(), dependencies);
 			case Cast:
@@ -233,9 +235,9 @@ public class RhsUtil {
 				return isNullable(((RhsIgnored) part).getInner(), dependencies);
 			case Conditional:
 				throw new IllegalStateException("Unexpected templates left-over.");
+			default:
+				throw new IllegalStateException();
 		}
-
-		throw new IllegalStateException("Unknown part.");
 	}
 
 	public static RhsChoice asChoice(final RhsPart... parts) {

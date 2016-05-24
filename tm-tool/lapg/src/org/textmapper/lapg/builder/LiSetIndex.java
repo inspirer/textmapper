@@ -248,6 +248,8 @@ class LiSetIndex {
 				topLevelSets.add((RhsSet) p);
 				break;
 			case Symbol:
+			case StateMarker:
+				// No sets can be found here.
 				break;
 			case Conditional:
 				throw new UnsupportedOperationException();

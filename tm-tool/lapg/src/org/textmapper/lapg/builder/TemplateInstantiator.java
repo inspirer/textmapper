@@ -256,7 +256,9 @@ class TemplateInstantiator {
 
 		for (RhsPart child : children) {
 			collectDependencies(closure, sb, nontermNode, child, result, leftmost);
-			if (p.getKind() != Kind.Choice) leftmost = false;
+			if (child.getKind() == Kind.StateMarker) continue;
+			if (p.getKind() == Kind.Choice) continue;
+			leftmost = false;
 		}
 	}
 
@@ -371,7 +373,9 @@ class TemplateInstantiator {
 
 		for (RhsPart child : children) {
 			instantiatePart(context, child, leftmost);
-			if (p.getKind() != Kind.Choice) leftmost = false;
+			if (child.getKind() == Kind.StateMarker) continue;
+			if (p.getKind() == Kind.Choice) continue;
+			leftmost = false;
 		}
 	}
 

@@ -17,6 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsPart.Kind;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.lapg.util.RhsUtil;
@@ -315,6 +316,8 @@ class LiSetResolver {
 					dependenciesSet.add(index.index(op, target));
 				}
 				break;
+			case StateMarker:
+				break;
 			case Conditional:
 				throw new UnsupportedOperationException();
 			default:
@@ -370,6 +373,7 @@ class LiSetResolver {
 			case Sequence: {
 				RhsPart[] parts = ((RhsSequence) p).getParts();
 				for (RhsPart inner : new ArrayIterable<>(parts, reverse)) {
+					if (inner.getKind() == Kind.StateMarker) continue;
 					isAfter = collectAdjacent(symbol, inner, reverse, isAfter);
 				}
 				return isAfter;

@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2010-2012 Evgeny Gryaznov
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
@@ -22,6 +22,7 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
+import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.IElementType;
@@ -86,18 +87,22 @@ public class TMAnnotator implements Annotator {
 				}
 			}
 		}
-		if (element instanceof TmRuleAction) {
+		if (element instanceof TmRuleAction || element instanceof TmStateMarker) {
+			TextAttributesKey key = element instanceof TmStateMarker
+					? TMSyntaxHighlighter.STATE_MARKER : TMSyntaxHighlighter.RULE_METADATA;
+
 			for (PsiElement el = element.getFirstChild(); el != null; el = el.getNextSibling()) {
 				if (el instanceof PsiWhiteSpace) continue;
 				if (el instanceof TmToken) {
 					IElementType type = ((TmToken) el).getTokenType();
-					if (type == TMTokenTypes.OP_LCURLYTILDE || type == TMTokenTypes.OP_RCURLY) {
+					if (type == TMTokenTypes.OP_LCURLYTILDE || type == TMTokenTypes.OP_RCURLY
+							|| type == TMTokenTypes.OP_DOT || type == TMTokenTypes.ID) {
 						Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
-						infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RULE_METADATA);
+						infoAnnotation.setTextAttributes(key);
 					}
 				} else if (el instanceof TmIdentifier) {
 					Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
-					infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RULE_METADATA);
+					infoAnnotation.setTextAttributes(key);
 				}
 			}
 		}

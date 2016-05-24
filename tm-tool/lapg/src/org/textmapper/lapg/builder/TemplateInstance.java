@@ -193,6 +193,10 @@ class TemplateInstance {
 			case Ignored:
 				// TODO implement
 				throw new UnsupportedOperationException();
+			case StateMarker: {
+				LiRhsStateMarker marker = (LiRhsStateMarker) p;
+				return new LiRhsStateMarker(marker.getName(), p);
+			}
 			case Conditional: {
 				boolean value = ((RhsConditional) p).getPredicate().apply(environment);
 				return value ? clone(((RhsConditional) p).getInner()) : null;

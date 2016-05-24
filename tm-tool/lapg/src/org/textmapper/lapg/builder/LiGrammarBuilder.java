@@ -501,6 +501,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
+	public RhsStateMarker stateMarker(String name, SourceElement origin) {
+		LiRhsStateMarker marker = new LiRhsStateMarker(name, origin);
+		rhsSet.add(marker);
+		return marker;
+	}
+
+	@Override
 	public Nonterminal addShared(RhsPart part, Symbol anchor, String nameHint) {
 		check(part);
 		if (nameHint == null) {

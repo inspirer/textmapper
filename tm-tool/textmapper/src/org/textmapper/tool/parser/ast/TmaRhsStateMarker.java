@@ -13,37 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.rule;
+package org.textmapper.tool.parser.ast;
 
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.UserDataHolder;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 11/24/12
- */
-public interface RhsPart extends SourceElement, UserDataHolder {
+public class TmaRhsStateMarker extends TmaNode implements ITmaRhsPart {
 
-	enum Kind {
-		Choice,
-		Optional,
-		Sequence,
-		Symbol,
-		Unordered,
-		Assignment,
-		List,
-		Cast,
-		Set,
-		Ignored,
-		Conditional,
-		StateMarker,
+	private final String name;
+
+	public TmaRhsStateMarker(String name, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
+		this.name = name;
 	}
 
-	Kind getKind();
+	public String getName() {
+		return name;
+	}
 
-	Nonterminal getLeft();
-
-	RhsSequence getContext();
-
-	Object structuralNode();
+	@Override
+	public void accept(TmaVisitor v) {
+		v.visit(this);
+	}
 }

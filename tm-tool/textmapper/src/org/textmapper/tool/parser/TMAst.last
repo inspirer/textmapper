@@ -434,6 +434,15 @@ rhsPart  : RhsPart ::=
 	this=rhsAnnotated
   | this=rhsUnordered
   | this=command
+  | this=rhsStateMarker
+;
+
+class RhsStateMarker : RhsPart {
+	String name;
+}
+
+rhsStateMarker  : RhsStateMarker ::=
+	'.' name=ID
 ;
 
 class RhsAnnotated : RhsPart {

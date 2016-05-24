@@ -43,6 +43,7 @@ public class RuleUtil {
 			case Ignored:
 			case Symbol:
 			case Set:
+			case StateMarker:
 				// cannot contain aliases
 				return false;
 			case Optional:
@@ -115,6 +116,7 @@ public class RuleUtil {
 					return resolve(((RhsCast) part).getPart());
 				case Set:
 				case Ignored:
+				case StateMarker:
 					// cannot contain named elements
 					return null;
 				case List:

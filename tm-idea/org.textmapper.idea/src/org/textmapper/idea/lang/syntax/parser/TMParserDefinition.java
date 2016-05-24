@@ -98,6 +98,8 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmRhsPrimary(node);
 			case Nonterminals.command:
 				return new TmAction(node);
+			case Nonterminals.rhsStateMarker:
+				return new TmStateMarker(node);
 			case Nonterminals.type:
 				return new TmType(node);
 			case Nonterminals.annotation:

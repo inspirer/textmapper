@@ -336,7 +336,11 @@ rhsPart ::=
 	  rhsAnnotated
 	| rhsUnordered
 	| command
+	| rhsStateMarker
 ;
+
+rhsStateMarker ::=
+	  '.' name=ID ;
 
 rhsAnnotated returns rhsPart ::=
 	  rhsAssignment

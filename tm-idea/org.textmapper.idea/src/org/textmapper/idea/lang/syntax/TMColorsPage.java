@@ -49,6 +49,7 @@ public class TMColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Annotations", TMSyntaxHighlighter.ANNOTATION),
 			new AttributesDescriptor("Sections", TMSyntaxHighlighter.SECTION),
 			new AttributesDescriptor("Rule metadata", TMSyntaxHighlighter.RULE_METADATA),
+			new AttributesDescriptor("State marker", TMSyntaxHighlighter.STATE_MARKER),
 			new AttributesDescriptor("Parameter Name", TMSyntaxHighlighter.NONTERM_PARAMETER_NAME),
 
 			new AttributesDescriptor("RegExp Delimiters", TMSyntaxHighlighter.RE_DELIMITERS),

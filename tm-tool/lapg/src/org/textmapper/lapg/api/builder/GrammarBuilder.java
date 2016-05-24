@@ -94,6 +94,8 @@ public interface GrammarBuilder extends GrammarMapper {
 			   Symbol symbol, Collection<RhsArgument> args,
 			   Collection<RhsSet> parts, SourceElement origin);
 
+	RhsStateMarker stateMarker(String name, SourceElement origin);
+
 	RhsSequence addPrecedence(RhsPart p, Terminal prec);
 
 	void define(Nonterminal left, RhsRoot rhs);
