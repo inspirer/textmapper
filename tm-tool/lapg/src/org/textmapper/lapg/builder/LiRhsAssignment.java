@@ -17,6 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsAssignment;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -55,7 +56,7 @@ class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
 		return inner.expand(context);
 	}
 

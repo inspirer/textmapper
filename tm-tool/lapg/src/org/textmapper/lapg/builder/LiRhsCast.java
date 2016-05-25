@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsArgument;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsCast;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -57,7 +58,7 @@ class LiRhsCast extends LiRhsPart implements RhsCast, TemplatedSymbolRef {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
 		return inner.expand(context);
 	}
 

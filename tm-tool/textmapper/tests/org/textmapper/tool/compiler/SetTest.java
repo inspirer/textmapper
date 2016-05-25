@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsPart.Kind;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.AbstractProcessingStatus;
@@ -75,7 +76,7 @@ public class SetTest {
 	private void traverse(Nonterminal nt, Set<Terminal> result) {
 		for (Rule r : nt.getRules()) {
 			assertTrue("bad rule: " + r, 1 == r.getRight().length && r.getRight()[0].getKind() == Kind.Symbol);
-			RhsSymbol rhsSymbol = r.getRight()[0];
+			RhsCFPart rhsSymbol = r.getRight()[0];
 			if (rhsSymbol.getTarget().isTerm()) {
 				result.add((Terminal) rhsSymbol.getTarget());
 			} else {

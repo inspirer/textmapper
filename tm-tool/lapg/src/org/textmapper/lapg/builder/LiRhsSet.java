@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.RhsArgument;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsSet;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -71,14 +72,14 @@ public class LiRhsSet extends LiRhsPart implements RhsSet, TemplatedSymbolRef {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
 		Terminal[] terminals = context.resolveSet(this);
 		if (terminals == null) {
 			// errors were already reported, so just ignoring the set
 			return Collections.singletonList(RhsSymbol.EMPTY_LIST);
 		}
 
-		List<RhsSymbol[]> result = new ArrayList<>(terminals.length);
+		List<RhsCFPart[]> result = new ArrayList<>(terminals.length);
 		for (Terminal t : terminals) {
 			result.add(new RhsSymbol[]{new LiRhsSymbol(t, null, false, this)});
 		}

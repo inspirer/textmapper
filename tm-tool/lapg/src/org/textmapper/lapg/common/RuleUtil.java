@@ -175,4 +175,11 @@ public class RuleUtil {
 		final RhsPart part = RhsUtil.unwrapEx(p, true, true, true);
 		return part instanceof RhsSymbol ? (RhsSymbol) part : null;
 	}
+
+	public static boolean isEmpty(RhsCFPart[] rhs) {
+		for (RhsCFPart p : rhs) {
+			if (p instanceof RhsSymbol) return false;
+		}
+		return true;
+	}
 }

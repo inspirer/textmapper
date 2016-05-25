@@ -685,8 +685,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	private void expandNonterminal(Nonterminal n, ExpansionContext context) {
 		for (RhsSequence r : ((LiRhsRoot) n.getDefinition()).preprocess()) {
-			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand(context);
-			for (RhsSymbol[] arr : expanded) {
+			List<RhsCFPart[]> expanded = ((LiRhsPart) r).expand(context);
+			for (RhsCFPart[] arr : expanded) {
 				rules.add(new LiRule(rules.size(), n, arr, ((LiRhsSequence) r).getPrecedence(), r));
 			}
 		}

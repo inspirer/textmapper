@@ -51,8 +51,8 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
-		List<RhsSymbol[]> result = new ArrayList<>();
+	List<RhsCFPart[]> expand(ExpansionContext context) {
+		List<RhsCFPart[]> result = new ArrayList<>();
 		for (LiRhsPart part : rules) {
 			result.addAll(part.expand(context));
 		}

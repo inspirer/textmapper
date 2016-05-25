@@ -697,7 +697,7 @@ BindingRestElement<Yield> ::=
 ;
 
 EmptyStatement ::=
-	  ';' ;
+	  ';' .emptyStatement ;
 
 ExpressionStatement<Yield> ::=
 	Expression<+In, +NoFuncClass, +NoObjLiteral, +NoLetSq> ';' ;
@@ -710,12 +710,12 @@ IfStatement<Yield, Return> ::=
 ;
 
 IterationStatement<Yield, Return> ::=
-	  'do' Statement 'while' '(' Expression<+In> ')' ';'                                         {~DoWhileStatement}
+	  'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile                                {~DoWhileStatement}
 	| 'while' '(' Expression<+In> ')' Statement                                                  {~WhileStatement}
-	| 'for' '(' Expressionopt<~In,+NoLet> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement           {~ForStatement}
-	| 'for' '(' Expression<~In,+StartWithLet> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement       {~ForStatement}
-	| 'for' '(' 'var' VariableDeclarationList<~In> ';' Expressionopt<+In> ';' Expressionopt<+In> ')' Statement  {~ForStatement}
-	| 'for' '(' LexicalDeclaration<~In> Expressionopt<+In> ';' Expressionopt<+In> ')' Statement                 {~ForStatement}
+	| 'for' '(' Expressionopt<~In,+NoLet> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement           {~ForStatement}
+	| 'for' '(' Expression<~In,+StartWithLet> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement       {~ForStatement}
+	| 'for' '(' 'var' VariableDeclarationList<~In> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement  {~ForStatement}
+	| 'for' '(' LetOrConst BindingList<~In> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement                {~ForStatement}
 	| 'for' '(' LeftHandSideExpression<+NoLet> 'in' Expression<+In> ')' Statement                {~ForInStatement}
 	| 'for' '(' LeftHandSideExpression<+StartWithLet> 'in' Expression<+In> ')' Statement         {~ForInStatement}
 	| 'for' '(' 'var' ForBinding 'in' Expression<+In> ')' Statement                              {~ForInStatement}

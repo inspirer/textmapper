@@ -15,7 +15,7 @@
  */
 package org.textmapper.lapg.api.rule;
 
-public interface RhsStateMarker extends RhsPart {
+public interface RhsStateMarker extends RhsPart, RhsCFPart {
 
 	String getName();
 }

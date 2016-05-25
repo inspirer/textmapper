@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsChoice;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -42,8 +43,8 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
-		List<RhsSymbol[]> result = new ArrayList<>();
+	List<RhsCFPart[]> expand(ExpansionContext context) {
+		List<RhsCFPart[]> result = new ArrayList<>();
 		for (LiRhsPart part : parts) {
 			result.addAll(part.expand(context));
 		}

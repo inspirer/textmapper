@@ -18,10 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsRoot;
-import org.textmapper.lapg.api.rule.RhsSequence;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.List;
 
@@ -37,7 +34,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		this.origin = origin;
 	}
 
-	abstract List<RhsSymbol[]> expand(ExpansionContext context);
+	abstract List<RhsCFPart[]> expand(ExpansionContext context);
 
 	@Override
 	public final SourceElement getOrigin() {

@@ -16,6 +16,8 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsStateMarker;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -43,9 +45,8 @@ public class LiRhsStateMarker extends LiRhsPart implements RhsStateMarker {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
-		// TODO expand to a special kind of RhsSymbol.
-		return Collections.singletonList(new RhsSymbol[0]);
+	List<RhsCFPart[]> expand(ExpansionContext context) {
+		return Collections.singletonList(new RhsCFPart[]{this});
 	}
 
 	@Override
@@ -65,5 +66,10 @@ public class LiRhsStateMarker extends LiRhsPart implements RhsStateMarker {
 	protected void toString(StringBuilder sb) {
 		sb.append('.');
 		sb.append(name);
+	}
+
+	@Override
+	public Symbol getTarget() {
+		return null;
 	}
 }

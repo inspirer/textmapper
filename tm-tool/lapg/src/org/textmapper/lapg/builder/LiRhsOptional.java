@@ -16,9 +16,11 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsOptional;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.common.RuleUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +44,10 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
-		List<RhsSymbol[]> result = inner.expand(context);
-		for (RhsSymbol[] p : result) {
-			if (p.length == 0) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
+		List<RhsCFPart[]> result = inner.expand(context);
+		for (RhsCFPart[] p : result) {
+			if (RuleUtil.isEmpty(p)) {
 				return result;
 			}
 		}

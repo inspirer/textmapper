@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsConditional;
 import org.textmapper.lapg.api.rule.RhsPredicate;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -44,7 +45,7 @@ class LiRhsConditional extends LiRhsPart implements RhsConditional {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
 		// TODO if (!predicate(context)) return <empty>;
 		throw new UnsupportedOperationException();
 		//return inner.expand(context);

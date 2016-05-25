@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2015 Evgeny Gryaznov
+ * Copyright 2002-2016 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,14 @@
 package org.textmapper.lapg.api.rule;
 
 import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.TemplateParameter;
 
 /**
- * evgeny, 11/24/12
+ * An element that can appear on the right-hand side of a context-free grammar rule.
  */
-public interface RhsSymbol extends RhsPart, RhsCFPart {
-
-	RhsSymbol[] EMPTY_LIST = new RhsSymbol[0];
-	String UD_REWRITTEN = "rewrittenTo";
+public interface RhsCFPart extends RhsPart {
 
 	/**
-	 * Instead of referencing some symbol directly, RhsSymbol can reference a template parameter value.
-	 * Only one of getTarget() or getTemplateTarget() is not null.
+	 * Returns the target symbol for RhsSymbol, and null for all non-symbol parts.
 	 */
 	Symbol getTarget();
-	TemplateParameter getTemplateTarget();
-
-	/**
-	 * Both symbol and templated symbol may have arguments.
-	 */
-	RhsArgument[] getArgs();
-
-	/**
-	 * Forwards all template arguments, including non-globals.
-	 */
-	boolean isFwdAll();
-
-	RhsMapping getMapping();
 }

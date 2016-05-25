@@ -18,10 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.ast.AstType;
-import org.textmapper.lapg.api.rule.RhsMapping;
-import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSequence;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +29,7 @@ import java.util.List;
  */
 class LiRhsSequence extends LiRhsPart implements RhsSequence {
 
-	private static final List<RhsSymbol[]> ONE = Collections.singletonList(RhsSymbol.EMPTY_LIST);
+	private static final List<RhsCFPart[]> ONE = Collections.singletonList(RhsSymbol.EMPTY_LIST);
 
 	private final String name;
 	private final LiRhsPart[] parts;
@@ -73,7 +70,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
 		return expandList(parts, context);
 	}
 
@@ -90,7 +87,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 		return structuralHashCode(parts);
 	}
 
-	static List<RhsSymbol[]> expandList(LiRhsPart[] list, ExpansionContext context) {
+	static List<RhsCFPart[]> expandList(LiRhsPart[] list, ExpansionContext context) {
 		boolean simplePartsOnly = true;
 		for (RhsPart part : list) {
 			if (!(part instanceof RhsSymbol)) {
@@ -104,23 +101,23 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 			return Collections.singletonList(parts);
 
 		} else {
-			List<RhsSymbol[]> result = ONE;
+			List<RhsCFPart[]> result = ONE;
 			for (LiRhsPart part : list) {
-				List<RhsSymbol[]> val = part.expand(context);
+				List<RhsCFPart[]> val = part.expand(context);
 				result = cartesianProduct(result, val);
 			}
 			return result;
 		}
 	}
 
-	private static List<RhsSymbol[]> cartesianProduct(List<RhsSymbol[]> left, List<RhsSymbol[]> right) {
+	private static List<RhsCFPart[]> cartesianProduct(List<RhsCFPart[]> left, List<RhsCFPart[]> right) {
 		if (left == ONE) {
 			return right;
 		}
-		List<RhsSymbol[]> result = new ArrayList<>(left.size() * right.size());
-		for (RhsSymbol[] leftElement : left) {
-			for (RhsSymbol[] rightElement : right) {
-				RhsSymbol[] elem = new RhsSymbol[leftElement.length + rightElement.length];
+		List<RhsCFPart[]> result = new ArrayList<>(left.size() * right.size());
+		for (RhsCFPart[] leftElement : left) {
+			for (RhsCFPart[] rightElement : right) {
+				RhsCFPart[] elem = new RhsCFPart[leftElement.length + rightElement.length];
 				System.arraycopy(leftElement, 0, elem, 0, leftElement.length);
 				System.arraycopy(rightElement, 0, elem, leftElement.length, rightElement.length);
 				result.add(elem);

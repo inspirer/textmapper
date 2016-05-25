@@ -16,6 +16,7 @@
 package org.textmapper.lapg.lalr;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.Arrays;
@@ -94,14 +95,14 @@ abstract class ContextFree {
 			this.rleft[i] = r.getLeft().getIndex();
 			this.rprio[i] = r.getPrecedence();
 			this.rindex[i] = curr_rindex;
-			RhsSymbol[] wright = r.getRight();
-			for (RhsSymbol element : wright) {
+			for (RhsCFPart element : r.getRight()) {
+				if (!(element instanceof RhsSymbol)) continue;
 				this.rright[curr_rindex++] = element.getTarget().getIndex();
 			}
-			this.rright[curr_rindex++] = -1 - i;
-			if (wright.length == 0) {
+			if (this.rindex[i] == curr_rindex) {
 				sym_empty[rleft[i]] = true;
 			}
+			this.rright[curr_rindex++] = -1 - i;
 		}
 
 		assert items == curr_rindex;
@@ -110,7 +111,10 @@ abstract class ContextFree {
 	private static int computeItems(Rule[] rules) {
 		int counter = 0;
 		for (Rule rule : rules) {
-			counter += rule.getRight().length + 1;
+			counter++;
+			for (RhsCFPart p : rule.getRight()) {
+				if (p instanceof RhsSymbol) counter++;
+			}
 		}
 		return counter;
 	}

@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -23,11 +24,11 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 
 	private final int index;
 	private final Nonterminal left;
-	private final RhsSymbol[] right;
+	private final RhsCFPart[] right;
 	private final Terminal precedence;
 	private final RhsSequence definition;
 
-	public LiRule(int index, Nonterminal left, RhsSymbol[] right,
+	public LiRule(int index, Nonterminal left, RhsCFPart[] right,
 				  Terminal precedence, RhsSequence definition) {
 		this.index = index;
 		this.left = left;
@@ -48,7 +49,7 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 	}
 
 	@Override
-	public RhsSymbol[] getRight() {
+	public RhsCFPart[] getRight() {
 		return right;
 	}
 
@@ -68,8 +69,10 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 			return precedence.getIndex();
 		}
 		for (int i = right.length - 1; i >= 0; i--) {
-			if (right[i].getTarget().isTerm()) {
-				return right[i].getTarget().getIndex();
+			Symbol target = right[i].getTarget();
+			if (target == null) continue;
+			if (target.isTerm()) {
+				return target.getIndex();
 			}
 		}
 		return -1;
@@ -84,9 +87,16 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 			sb.append(left.getName());
 		}
 		sb.append(" ::=");
-		for (RhsSymbol s : right) {
+		for (RhsCFPart s : right) {
 			sb.append(" ");
-			sb.append(LiUtil.getSymbolName(s));
+			switch (s.getKind()) {
+				case Symbol:
+					sb.append(LiUtil.getSymbolName((RhsSymbol) s));
+					break;
+				case StateMarker:
+					((LiRhsStateMarker)s).toString(sb);
+					break;
+			}
 		}
 		if (precedence != null) {
 			sb.append(" %prec ");

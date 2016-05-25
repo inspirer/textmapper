@@ -16,10 +16,7 @@
 package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.rule.RhsList;
-import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSequence;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.lapg.util.NonterminalUtil;
 import org.textmapper.lapg.util.RhsUtil;
@@ -153,19 +150,28 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return n.getName();
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
-					RhsSymbol[] array = rule.getRight();
-					if (array == null || array.length == 0) {
-						throw new EvaluationException(methodName + "() cannot be used on empty rule");
+					int rhsSize = 0;
+					int index = -1;
+					RhsSymbol sym = null;
+					for (RhsCFPart p : rule.getRight()) {
+						if (!(p instanceof RhsSymbol)) continue;;
+						if (rhsSize == 0 || methodName.charAt(0) == 'l') {
+							sym = (RhsSymbol) p;
+							index = rhsSize;
+						}
+						rhsSize++;
 					}
-					int i = methodName.charAt(0) == 'f' ? 0 : array.length - 1;
-					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, array.length - 1 - i, i,
+					if (rhsSize == 0) {
+						throw new EvaluationException(methodName + "() cannot be used on an empty rule");
+					}
+					return new ActionSymbol(grammar, sym.getTarget(), sym, false,
+							rhsSize - 1 - index, index,
 							evaluationStrategy, rootContext, templatePackage, caller);
 				}
 			}
 			if (args != null && args.length == 1) {
 				if ("mappedSymbols".equals(methodName)) {
-					return getMappedSymbols((RhsSequence) args[0], new HashSet<>(Arrays.asList(rule.getRight
-							())));
+					return getMappedSymbols((RhsSequence) args[0], new HashSet<>(Arrays.asList(rule.getRight())));
 				}
 				if ("isMatched".equals(methodName)) {
 					return isMatched(((RhsSequence) args[0]), new HashSet<>(Arrays.asList(rule.getRight())));
@@ -174,7 +180,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return super.callMethod(caller, methodName, args);
 		}
 
-		private boolean isMatched(RhsPart part, Set<RhsSymbol> active) {
+		private boolean isMatched(RhsPart part, Set<RhsCFPart> active) {
 			for (RhsSymbol o : RhsUtil.getRhsSymbols(part)) {
 				if (active.contains(o)) {
 					return true;
@@ -190,7 +196,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 		}
 
-		private RhsPart[] getMappedSymbols(RhsSequence seq, Set<RhsSymbol> active) {
+		private RhsPart[] getMappedSymbols(RhsSequence seq, Set<RhsCFPart> active) {
 			List<RhsPart> result = new ArrayList<>();
 			for (RhsPart p : seq.getParts()) {
 				collectMappedSymbols(p, result, active);
@@ -198,7 +204,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return result.toArray(new RhsPart[result.size()]);
 		}
 
-		private void collectMappedSymbols(RhsPart part, List<RhsPart> r, Set<RhsSymbol> active) {
+		private void collectMappedSymbols(RhsPart part, List<RhsPart> r, Set<RhsCFPart> active) {
 			if (part instanceof RhsSymbol) {
 				RhsSymbol sym = (RhsSymbol) part;
 				RhsSymbol rewrittenTo = TMDataUtil.getRewrittenTo(sym);
@@ -236,15 +242,16 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				RhsSymbol ref = sourceSymbols[i];
 
-				RhsSymbol[] right = rule.getRight();
-				int rightOffset = -1, leftOffset = -1;
-				for (i = 0; i < right.length; i++) {
-					if (right[i] == ref) {
-						leftOffset = i;
-						rightOffset = right.length - 1 - i;
-						break;
+				int leftOffset = -1;
+				int symSize = 0;
+				for (RhsCFPart p : rule.getRight()) {
+					if (!(p instanceof RhsSymbol)) continue;
+					if (p == ref) {
+						leftOffset = symSize;
 					}
+					symSize++;
 				}
+				int rightOffset = leftOffset == -1 ? -1 : symSize - 1 - leftOffset;
 				return new ActionSymbol(grammar, ref.getTarget(), ref, false, rightOffset, leftOffset,
 						evaluationStrategy, rootContext, templatePackage, caller);
 			} else if (index instanceof String) {
@@ -260,27 +267,30 @@ public class GrammarIxFactory extends JavaIxFactory {
 			ActionSymbol result = null;
 			Set<RhsSymbol> matching = RuleUtil.getSymbolsByName(id, rule.getSource());
 			if (matching == null || matching.isEmpty()) {
-				throw new EvaluationException("symbol `" + id + "' is " + (matching == null ? "undefined" :
-						"ambiguous"));
+				throw new EvaluationException("symbol `" + id + "' is " +
+						(matching == null ? "undefined" : "ambiguous"));
 			}
 
-			RhsSymbol[] right = rule.getRight();
-			for (int i = 0; i < right.length; i++) {
-				if (!matching.contains(right[i])) {
-					continue;
+			int leftOffset = -1;
+			int symSize = 0;
+			RhsSymbol sym = null;
+			for (RhsCFPart p : rule.getRight()) {
+				if (!(p instanceof RhsSymbol)) continue;
+				if (matching.contains(p)) {
+					assert sym == null : "internal error in RuleUtil.getSymbols()";
+					leftOffset = symSize;
+					sym = (RhsSymbol) p;
 				}
+				symSize++;
+			}
+			int rightOffset = leftOffset == -1 ? -1 : symSize - 1 - leftOffset;
 
-				assert result == null : "internal error in RuleUtil.getSymbols()";
-				result = new ActionSymbol(grammar, right[i].getTarget(), right[i], false, right.length - 1 - i, i,
-						evaluationStrategy, rootContext, templatePackage, caller);
+			if (sym == null) {
+				sym = matching.iterator().next();
 			}
 
-			if (result != null) {
-				return result;
-			}
-
-			final RhsSymbol first = matching.iterator().next();
-			return new ActionSymbol(grammar, first.getTarget(), first, false, -1, -1, evaluationStrategy,
+			return new ActionSymbol(grammar, sym.getTarget(), sym,
+					false, rightOffset, leftOffset, evaluationStrategy,
 					rootContext, templatePackage, caller);
 		}
 	}
@@ -429,9 +439,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 			Set<Symbol> seen = new HashSet<>();
 			for (Rule r : myRules) {
 				seen.clear();
-				for (RhsSymbol sref : r.getRight()) {
+				for (RhsCFPart sref : r.getRight()) {
 					Symbol s = sref.getTarget();
-					if (seen.contains(s)) {
+					if (s == null || seen.contains(s)) {
 						continue;
 					}
 					seen.add(s);

@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsList;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -86,7 +87,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
 		throw new UnsupportedOperationException();
 	}
 

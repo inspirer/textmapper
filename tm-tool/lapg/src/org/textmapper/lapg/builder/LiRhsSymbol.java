@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.rule.RhsArgument;
+import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsMapping;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -85,7 +86,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 	}
 
 	@Override
-	List<RhsSymbol[]> expand(ExpansionContext context) {
+	List<RhsCFPart[]> expand(ExpansionContext context) {
 		// TODO inline?
 		return Collections.singletonList(new RhsSymbol[]{this});
 	}
