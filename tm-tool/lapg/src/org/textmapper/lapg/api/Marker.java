@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2015 Evgeny Gryaznov
+ * Copyright 2002-2016 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,36 +15,9 @@
  */
 package org.textmapper.lapg.api;
 
-/**
- * Gryaznov Evgeny, 6/13/12
- */
-public interface ParserData {
+public interface Marker {
 
-	Symbol[] getSymbols();
+	String getName();
 
-	int getRules();
-
-	int getNsyms();
-
-	int getNterms();
-
-	int getStatesCount();
-
-	int[] getSymGoto();
-
-	int[] getSymFrom();
-
-	int[] getSymTo();
-
-	int[] getLalr();
-
-	int[] getAction();
-
-	int[] getRuleLength();
-
-	int[] getFinalStates();
-
-	int[] getLeft();
-
-	Marker[] getMarkers();
+	int[] getStates();
 }

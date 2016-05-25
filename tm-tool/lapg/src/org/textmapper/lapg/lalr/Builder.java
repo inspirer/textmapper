@@ -386,7 +386,8 @@ public class Builder extends Lalr1 {
 				rules, nsyms, nterms, nstates,
 				rleft, rlen,
 				term_goto, term_from, term_to,
-				action_table, action_index, final_states);
+				action_table, action_index, final_states,
+				markers);
 	}
 
 	public static ParserData compile(Grammar g, ProcessingStatus status) {

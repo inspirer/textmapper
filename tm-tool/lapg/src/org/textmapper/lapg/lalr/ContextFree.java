@@ -17,9 +17,10 @@ package org.textmapper.lapg.lalr;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.RhsCFPart;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.RhsPart.Kind;
+import org.textmapper.lapg.api.rule.RhsStateMarker;
 
-import java.util.Arrays;
+import java.util.*;
 
 abstract class ContextFree {
 
@@ -29,17 +30,20 @@ abstract class ContextFree {
 
 	// grammar information
 
-	protected final int nsyms, nterms, eoi, errorn;
-	protected final int[] inputs;
-	protected final boolean[] noEoiInput;
-	protected final int rules, items;
-	protected final Symbol[] sym;
-	protected final Rule[] wrules;
-	protected final int[] priorul;
-	protected final int[] rleft, rindex, rright, rprio;
-	protected final boolean[] sym_empty;
-	protected final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
-	protected final int[] softterms; /* a -1 terminated list of soft terms for a class */
+	final int nsyms, nterms, eoi, errorn;
+	final int[] inputs;
+	final boolean[] noEoiInput;
+	final int rules, items;
+	final Symbol[] sym;
+	final Rule[] wrules;
+	final int[] priorul;
+	final int[] rleft, rindex, rright, rprio;
+	final boolean[] sym_empty;
+	final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
+	final int[] softterms; /* a -1 terminated list of soft terms for a class */
+
+	final Map<Integer, Set<String>> itemMarkers = new HashMap<>();
+
 
 	protected ContextFree(Grammar g, ProcessingStatus status) {
 		this.status = status;
@@ -96,8 +100,19 @@ abstract class ContextFree {
 			this.rprio[i] = r.getPrecedence();
 			this.rindex[i] = curr_rindex;
 			for (RhsCFPart element : r.getRight()) {
-				if (!(element instanceof RhsSymbol)) continue;
-				this.rright[curr_rindex++] = element.getTarget().getIndex();
+				switch (element.getKind()) {
+					case Symbol:
+						this.rright[curr_rindex++] = element.getTarget().getIndex();
+						break;
+					case StateMarker: {
+						Set<String> set = itemMarkers.get(curr_rindex);
+						if (set == null) {
+							itemMarkers.put(curr_rindex, set = new HashSet<>());
+						}
+						set.add(((RhsStateMarker) element).getName());
+						break;
+					}
+				}
 			}
 			if (this.rindex[i] == curr_rindex) {
 				sym_empty[rleft[i]] = true;
@@ -113,7 +128,7 @@ abstract class ContextFree {
 		for (Rule rule : rules) {
 			counter++;
 			for (RhsCFPart p : rule.getRight()) {
-				if (p instanceof RhsSymbol) counter++;
+				if (p.getKind() == Kind.Symbol) counter++;
 			}
 		}
 		return counter;

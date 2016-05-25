@@ -266,6 +266,17 @@ package ${opts.lang}
 import (
 	"fmt"
 )
+${foreach marker in parser.markers}
+${if marker.states.length == 1-}
+const ${marker.name}State = ${marker.states[0]}
+${else-}
+var ${marker.name}States = map[int]bool{
+${for i in [0, marker.states.length-1]-}
+	${marker.states[i]}: true,
+${end-}
+}
+${end-}
+${end-}
 
 type Symbol int
 

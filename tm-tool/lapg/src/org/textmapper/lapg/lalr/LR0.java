@@ -21,6 +21,7 @@ import org.textmapper.lapg.lalr.LalrConflict.InputImpl;
 import org.textmapper.lapg.lalr.SoftConflictBuilder.SoftClassConflict;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * LR(0) states generator
@@ -45,6 +46,7 @@ class LR0 extends ContextFree {
 	private State current, last;
 	private State[] next_to_final;
 	private SoftConflictBuilder softconflicts;
+	private Map<String, Set<Integer>> markerStates = new LinkedHashMap<>();
 
 	// result
 	protected int nstates, termset;
@@ -52,6 +54,7 @@ class LR0 extends ContextFree {
 	protected State[] state;
 	protected State first;
 	protected int[] final_states;
+	protected Marker[] markers;
 
 	protected LR0(Grammar g, ProcessingStatus status) {
 		super(g, status);
@@ -75,6 +78,12 @@ class LR0 extends ContextFree {
 
 		add_final_states();
 		show_debug();
+
+		markers = new Marker[markerStates.size()];
+		int i = 0;
+		for (Entry<String, Set<Integer>> e : markerStates.entrySet()) {
+			markers[i++] = new MarkerImpl(e.getKey(), e.getValue());
+		}
 		freeLR0();
 		return true;
 	}
@@ -330,6 +339,17 @@ class LR0 extends ContextFree {
 			} else {
 				toreduce[ntoreduce++] = -1 - sym;
 			}
+
+			Set<String> markers = itemMarkers.get(closure[i]);
+			if (markers == null) continue;
+
+			for (String s : markers) {
+				Set<Integer> set = markerStates.get(s);
+				if (set == null) {
+					markerStates.put(s, set = new HashSet<>());
+				}
+				set.add(current.number);
+			}
 		}
 
 		int ntoshift = 0;
@@ -514,6 +534,7 @@ class LR0 extends ContextFree {
 
 	private void freeLR0() {
 		ruleforvar = null;
+		markerStates = null;
 		toreduce = closure = null;
 		symbase = null;
 		symbasesize = null;

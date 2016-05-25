@@ -4,6 +4,75 @@ import (
 	"fmt"
 )
 
+var noLineBreakStates = map[int]bool{
+	2: true,
+	5: true,
+	18: true,
+	70: true,
+	110: true,
+	184: true,
+	228: true,
+	461: true,
+	539: true,
+	540: true,
+	575: true,
+	732: true,
+	1032: true,
+	1194: true,
+	1263: true,
+	1479: true,
+	1480: true,
+	1508: true,
+	1544: true,
+	1561: true,
+	1685: true,
+	1773: true,
+	1775: true,
+	1782: true,
+	1785: true,
+	1823: true,
+	2152: true,
+	2185: true,
+	2186: true,
+	2221: true,
+	2332: true,
+}
+
+const emptyStatementState = 40
+
+var forSCStates = map[int]bool{
+	945: true,
+	955: true,
+	1179: true,
+	1257: true,
+	1433: true,
+	1458: true,
+	1590: true,
+	1616: true,
+	1656: true,
+	1660: true,
+	1896: true,
+	1903: true,
+	2099: true,
+	2103: true,
+	2286: true,
+	2293: true,
+	2421: true,
+	2431: true,
+	2470: true,
+	2555: true,
+	2620: true,
+	2627: true,
+	2645: true,
+	2655: true,
+}
+
+var doWhileStates = map[int]bool{
+	1584: true,
+	2285: true,
+	2644: true,
+}
+
 type Symbol int
 
 var symbolStr = [...]string{
