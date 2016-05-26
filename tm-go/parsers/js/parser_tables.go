@@ -67,6 +67,11 @@ var forSCStates = map[int]bool{
 	2655: true,
 }
 
+var afterYieldStates = map[int]bool{
+	1508: true,
+	2152: true,
+}
+
 var doWhileStates = map[int]bool{
 	1584: true,
 	2285: true,

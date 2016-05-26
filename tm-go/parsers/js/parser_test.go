@@ -393,7 +393,7 @@ var jsParseTests = []jsTestCase{
 		`((a,b) => “{ return a*b; }“)(1);`,
 	}},
 	{js.MethodDefinition, []string{
-	  `({ “run(){ console.log('executed'); }“}).run();`,
+		`({ “run(){ console.log('executed'); }“}).run();`,
 		`class A { “noop(input) {}“}`,
 		`class A { “get x() { return this.x; }“ “set x(val) { this.x = val; }“}`,
 	}},
@@ -480,6 +480,29 @@ var jsParseTests = []jsTestCase{
 	}},
 	{js.ExportSpecifier, []string{
 	// TODO
+	}},
+
+	// Automatic Semicolon Insertion
+	{js.ExpressionStatement, []string{
+		`{ “1“
+     “2“ } “3“`,
+	}},
+	{js.InsertedSemicolon, []string{
+		`{ 1«»
+     2«» } 3«»`,
+		` function a(){ return«»
+     a + b«»
+      a«»}`,
+		`continue«»
+     A«»`,
+		`/*no expectations*/ for (
+     ;;) {}`,
+		`/*no expectations*/ for (;
+     true;) {}`,
+		`a = b«»
+     ++c«»`,
+		`a = b + c   /* not here */
+     (d + e).print()«»`,
 	}},
 }
 
@@ -575,7 +598,7 @@ func TestParser(t *testing.T) {
 
 			l.Init([]byte(source), onError)
 			p.Init(onError, expTest)
-			res, _ := p.Parse(l)
+			res := p.Parse(l)
 			if !res {
 				t.Errorf("Parse() returned false for `%s`", source)
 			} else {

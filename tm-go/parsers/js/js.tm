@@ -895,8 +895,8 @@ GeneratorBody ::=
 
 YieldExpression<In> ::=
 	  'yield'
-	| 'yield' .noLineBreak AssignmentExpression<+Yield>
-	| 'yield' .noLineBreak '*' AssignmentExpression<+Yield>
+	| 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield>
+	| 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield>
 ;
 
 ClassDeclaration<Yield, Default> ::=

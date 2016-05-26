@@ -119,6 +119,8 @@ const (
 	ExportDeclaration
 	ExportClause
 	ExportSpecifier
+
+	InsertedSemicolon
 )
 
 var ruleNodeType = [...]NodeType{
@@ -1635,11 +1637,11 @@ var ruleNodeType = [...]NodeType{
 	GeneratorExpression, // GeneratorExpression ::= 'function' '*' '(' FormalParameters_Yield ')' '{' GeneratorBody '}'
 	0, // GeneratorBody ::= FunctionBody_Yield
 	YieldExpression, // YieldExpression ::= 'yield'
-	YieldExpression, // YieldExpression ::= 'yield' .noLineBreak AssignmentExpression_Yield
-	YieldExpression, // YieldExpression ::= 'yield' .noLineBreak '*' AssignmentExpression_Yield
+	YieldExpression, // YieldExpression ::= 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
+	YieldExpression, // YieldExpression ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
 	YieldExpression, // YieldExpression_In ::= 'yield'
-	YieldExpression, // YieldExpression_In ::= 'yield' .noLineBreak AssignmentExpression_In_Yield
-	YieldExpression, // YieldExpression_In ::= 'yield' .noLineBreak '*' AssignmentExpression_In_Yield
+	YieldExpression, // YieldExpression_In ::= 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
+	YieldExpression, // YieldExpression_In ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
 	ClassDeclaration, // ClassDeclaration ::= 'class' BindingIdentifier ClassTail
 	ClassDeclaration, // ClassDeclaration_Default ::= 'class' BindingIdentifier ClassTail
 	ClassDeclaration, // ClassDeclaration_Default ::= 'class' ClassTail

@@ -6,25 +6,35 @@ import (
 
 // Parser is a table-driven LALR parser for js.
 type Parser struct {
-	err ErrorHandler
+	err      ErrorHandler
 	listener Listener
 
-	stack []node
-	lexer *Lexer
-	next  Token
+	stack     []node
+	lexer     *Lexer
+	next      symbol
+	afterNext symbol
+
+	lastToken Token
+	lastLine  int
+	endState  int32
+}
+
+type symbol struct {
+	symbol    int32
+	offset    int
+	endoffset int
 }
 
 type node struct {
-	symbol    int32
-	state     int32
-	value     interface{}
-	offset    int
-	endoffset int
+	sym   symbol
+	state int32
 }
 
 func (p *Parser) Init(err ErrorHandler, l Listener) {
 	p.err = err
 	p.listener = l
+	p.lastToken = UNAVAILABLE
+	p.afterNext.symbol = -1
 }
 
 const (
@@ -32,19 +42,20 @@ const (
 	debugSyntax    = false
 )
 
-func (p *Parser) Parse(lexer *Lexer) (bool, interface{}) {
+func (p *Parser) Parse(lexer *Lexer) bool {
 	return p.parse(0, 2693, lexer)
 }
 
-func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
+func (p *Parser) parse(start, end int32, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
 	state := start
+	p.endState = end
 
 	p.stack = append(p.stack[:0], node{state: state})
 	p.lexer = lexer
-	p.next = lexer.Next()
+	p.fetchNext()
 
 	for state != end {
 		action := p.action(state)
@@ -55,42 +66,38 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 			ln := int(tmRuleLen[rule])
 
 			var node node
-			node.symbol = tmRuleSymbol[rule]
+			node.sym.symbol = tmRuleSymbol[rule]
 			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", Symbol(node.symbol))
+				fmt.Printf("reduce to: %v\n", Symbol(node.sym.symbol))
 			}
 			if ln == 0 {
-				node.offset, _ = lexer.Pos()
-				node.endoffset = node.offset
+				node.sym.offset = p.next.offset
+				node.sym.endoffset = p.next.offset
 			} else {
-				node.offset = p.stack[len(p.stack)-ln].offset
-				node.endoffset = p.stack[len(p.stack)-1].endoffset
+				node.sym.offset = p.stack[len(p.stack)-ln].sym.offset
+				node.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
 			}
 			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
-			state = p.gotoState(p.stack[len(p.stack)-1].state, node.symbol)
+			state = p.gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
 			node.state = state
 			p.stack = append(p.stack, node)
 
 		} else if action == -1 {
 			// Shift.
-			if p.next == UNAVAILABLE {
-				p.next = lexer.Next()
+			if p.next.symbol == int32(UNAVAILABLE) {
+				p.fetchNext()
 			}
-			state = p.gotoState(state, int32(p.next))
-			s, e := lexer.Pos()
+			state = p.gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
-				symbol:    int32(p.next),
-				state:     state,
-				value:     lexer.Value(),
-				offset:    s,
-				endoffset: e,
+				sym:   p.next,
+				state: state,
 			})
 			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", p.next, lexer.Text())
+				fmt.Printf("shift: %v (%s)\n", Token(p.next.symbol), lexer.Text())
 			}
-			if state != -1 && p.next != EOI {
-				p.next = UNAVAILABLE
+			if state != -1 && p.next.symbol != int32(EOI) {
+				p.next.symbol = int32(UNAVAILABLE)
 			}
 		}
 
@@ -103,22 +110,142 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
 		p.err(line, offset, endoffset-offset, "syntax error")
-		return false, nil
+		return false
 	}
 
-	return true, p.stack[len(p.stack)-2].value
+	return true
+}
+
+func (p *Parser) reduceAll() (state int32, success bool) {
+	size := len(p.stack)
+	state = p.stack[size-1].state
+
+	var stack2alloc [4]int32
+	stack2 := stack2alloc[:0]
+
+	for state != p.endState {
+		action := p.action(state)
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+			symbol := tmRuleSymbol[rule]
+
+			if ln > 0 {
+				if ln < len(stack2) {
+					state = stack2[len(stack2)-ln-1]
+					stack2 = stack2[:len(stack2)-ln]
+				} else {
+					size -= ln - len(stack2)
+					state = p.stack[size-1].state
+					stack2 = stack2alloc[:0]
+				}
+			}
+			state = p.gotoState(state, symbol)
+			stack2 = append(stack2, state)
+		} else {
+			success = (action == -1 && p.gotoState(state, p.next.symbol) >= 0)
+			return
+		}
+	}
+	success = true
+	return
+}
+
+func (p *Parser) insertSC(offset int) {
+	stateAfterSC := p.gotoState(p.stack[len(p.stack)-1].state, int32(SEMICOLON))
+	if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
+		// ".. a semicolon is never inserted automatically if the semicolon would
+		// then be parsed as an empty statement or if that semicolon would become
+		// one of the two semicolons in the header of a for statement."
+		return
+	}
+
+	p.afterNext = p.next
+	p.next = symbol{int32(SEMICOLON), offset, offset}
+	p.listener.Node(InsertedSemicolon, offset, offset)
+}
+
+func (p *Parser) fetchNext() {
+	if p.afterNext.symbol != -1 {
+		p.next = p.afterNext
+		p.afterNext.symbol = -1
+		return
+	}
+
+	lastToken := p.lastToken
+	lastEnd := p.next.endoffset
+	token := p.lexer.Next()
+	p.lastToken = token
+	p.next.symbol = int32(token)
+	p.next.offset, p.next.endoffset = p.lexer.Pos()
+	line := p.lexer.Line()
+
+	newLine := line != p.lastLine
+	p.lastLine = line
+
+	if !(newLine || token == RBRACE || token == EOI || lastToken == RPAREN) {
+		return
+	}
+
+	// We might need to insert a semicolon.
+	// See 11.9.1 Rules of Automatic Semicolon Insertion
+	if newLine {
+		// All but one of the restricted productions can be detected by looking
+		// at the last and current tokens.
+		restricted := (token == ASSIGNGT)
+		switch lastToken {
+		case CONTINUE, BREAK, RETURN, THROW:
+			restricted = true
+		case YIELD:
+			// No reduce actions are expected, so we can take a shortcut and check
+			// the current state.
+			restricted = afterYieldStates[int(p.stack[len(p.stack)-1].state)]
+		}
+
+		if restricted {
+			p.insertSC(lastEnd)
+			return
+		}
+	}
+
+	// Simulate all pending reductions and check if the current next token
+	// will be accepted by the parser.
+	state, success := p.reduceAll()
+
+	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS) {
+		if noLineBreakStates[int(state)] {
+			p.insertSC(lastEnd)
+			return
+		}
+	}
+
+	if success {
+		return
+	}
+
+	if newLine || token == RBRACE || token == EOI {
+		p.insertSC(lastEnd)
+		return
+	}
+
+	if lastToken == RPAREN && doWhileStates[int(p.gotoState(state, int32(SEMICOLON)))] {
+		p.insertSC(lastEnd)
+		return
+	}
 }
 
 func (p *Parser) action(state int32) int32 {
 	a := tmAction[state]
 	if a < -2 {
 		// Lookahead is needed.
-		if p.next == UNAVAILABLE {
-			p.next = p.lexer.Next()
+		if p.next.symbol == int32(UNAVAILABLE) {
+			p.fetchNext()
 		}
 		a = -a - 3
 		for ; tmLalr[a] >= 0; a += 2 {
-			if tmLalr[a] == int32(p.next) {
+			if tmLalr[a] == p.next.symbol {
 				break
 			}
 		}
@@ -150,5 +277,5 @@ func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 	if nt == 0 {
 		return
 	}
-	p.listener.Node(nt, node.offset, node.endoffset)
+	p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
 }
