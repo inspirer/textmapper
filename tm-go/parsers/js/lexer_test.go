@@ -141,25 +141,27 @@ func TestLexer(t *testing.T) {
 
 const jsBenchmarkCode = `
   const a = 15;
-  if (" abcd ".length = 20) /aaaa/.test('vvaaaaaaaa');
-  var e = "some very long string" + [123,  9000000].length
+  if (" abcd ".length == 20) { /aaaa/.test('vvaaaaaaaa') }
+  var e = "some very long string" + [123,  9000000].length;
   for (; b < a; b++) { }
-  var c = (function() {})()
+  var c = (function() {})();
 
-  ({ a:  function*() { yeild 1; }, b : "aaaaaaaa"}).a();
+  ({ reload:  function*() { yield 1; }, b : "aaaaaaaa"}).a();
 
   class A extends B {
       constructor() { this.x = 1; }
-      f() { return this.x; }
+      func() { return this.x; }
   }
+  /* lorem ipsum */
 `
 
 func BenchmarkLexer(b *testing.B) {
 	l := new(js.Lexer)
+	onError := func(line, offset, len int, msg string) {
+		panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
+	}
 	for i := 0; i < b.N; i++ {
-		l.Init([]byte(jsBenchmarkCode), func(line, offset, len int, msg string) {
-			panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
-		})
+		l.Init([]byte(jsBenchmarkCode), onError)
 		next := l.Next()
 		for next != js.EOI {
 			next = l.Next()

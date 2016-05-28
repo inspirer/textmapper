@@ -87,10 +87,10 @@ restart:
 		switch {
 		case l.ch < 0:
 			ch = 0
-		case int(l.ch) >= len(tmRuneClass):
-			ch = 1
-		default:
+		case int(l.ch) < len(tmRuneClass):
 			ch = int(tmRuneClass[l.ch])
+		default:
+			ch = 1
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state == -1 && ch == -1 {
@@ -148,7 +148,6 @@ restart:
 	case 7: // space: /[\t\r\n ]+/
 		space = true
 	}
-
 	if space {
 		goto restart
 	}

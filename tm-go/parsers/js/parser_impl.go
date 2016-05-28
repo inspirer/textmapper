@@ -28,6 +28,7 @@ type symbol struct {
 type node struct {
 	sym   symbol
 	state int32
+	value int
 }
 
 func (p *Parser) Init(err ErrorHandler, l Listener) {
@@ -39,6 +40,8 @@ func (p *Parser) Init(err ErrorHandler, l Listener) {
 
 const (
 	startStackSize = 512
+	noToken        = int32(UNAVAILABLE)
+	eoiToken       = int32(EOI)
 	debugSyntax    = false
 )
 
@@ -81,7 +84,7 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) bool {
 
 		} else if action == -1 {
 			// Shift.
-			if p.next.symbol == int32(UNAVAILABLE) {
+			if p.next.symbol == noToken {
 				p.fetchNext()
 			}
 			state = p.gotoState(state, p.next.symbol)
@@ -92,8 +95,8 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) bool {
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Token(p.next.symbol), lexer.Text())
 			}
-			if state != -1 && p.next.symbol != int32(EOI) {
-				p.next.symbol = int32(UNAVAILABLE)
+			if state != -1 && p.next.symbol != eoiToken {
+				p.next.symbol = noToken
 			}
 		}
 
@@ -244,7 +247,7 @@ func (p *Parser) action(state int32) int32 {
 	a := tmAction[state]
 	if a < -2 {
 		// Lookahead is needed.
-		if p.next.symbol == int32(UNAVAILABLE) {
+		if p.next.symbol == noToken {
 			p.fetchNext()
 		}
 		a = -a - 3
@@ -274,12 +277,4 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 		}
 	}
 	return -1
-}
-
-func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
-	nt := ruleNodeType[rule]
-	if nt == 0 {
-		return
-	}
-	p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
 }

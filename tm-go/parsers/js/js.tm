@@ -296,6 +296,7 @@ ArrayLiteral<Yield> ::=
 	| '[' ElementList ',' Elisionopt ']'
 ;
 
+@noast
 ElementList<Yield> ::=
 	  Elisionopt AssignmentExpression<+In>
 	| Elisionopt SpreadElement
@@ -303,6 +304,7 @@ ElementList<Yield> ::=
 	| ElementList ',' Elisionopt SpreadElement
 ;
 
+@noast
 Elision ::=
 	  ','
 	| Elision ','
@@ -318,6 +320,7 @@ ObjectLiteral<Yield> ::=
 	| '{' PropertyDefinitionList ',' '}'
 ;
 
+@noast
 PropertyDefinitionList<Yield> ::=
 	  PropertyDefinition
 	| PropertyDefinitionList ',' PropertyDefinition
@@ -427,6 +430,7 @@ Arguments<Yield> ::=
 	| '(' ArgumentList ')'
 ;
 
+@noast
 ArgumentList<Yield> ::=
 	  AssignmentExpression<+In>
 	| '.' '.' '.' AssignmentExpression<+In>
@@ -459,7 +463,6 @@ UnaryExpression<Yield> ::=
 	| [!StartWithLet] '!' UnaryExpression
 ;
 
-@ast
 MultiplicativeExpression<Yield> ::=
 	  @noast UnaryExpression
 	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
@@ -468,14 +471,12 @@ MultiplicativeExpression<Yield> ::=
 MultiplicativeOperator ::=
 	  '*' | '/' | '%' ;
 
-@ast
 AdditiveExpression<Yield> ::=
 	  @noast MultiplicativeExpression
 	| AdditiveExpression '+' MultiplicativeExpression
 	| AdditiveExpression '-' MultiplicativeExpression
 ;
 
-@ast
 ShiftExpression<Yield> ::=
 	  @noast AdditiveExpression
 	| ShiftExpression '<<' AdditiveExpression
@@ -483,7 +484,6 @@ ShiftExpression<Yield> ::=
 	| ShiftExpression '>>>' AdditiveExpression
 ;
 
-@ast
 RelationalExpression<In, Yield> ::=
 	  @noast ShiftExpression
 	| RelationalExpression '<' ShiftExpression
@@ -494,7 +494,6 @@ RelationalExpression<In, Yield> ::=
 	| [In] RelationalExpression<+In> 'in' ShiftExpression
 ;
 
-@ast
 EqualityExpression<In, Yield> ::=
 	  @noast RelationalExpression
 	| EqualityExpression '==' RelationalExpression
@@ -503,31 +502,26 @@ EqualityExpression<In, Yield> ::=
 	| EqualityExpression '!==' RelationalExpression
 ;
 
-@ast
 BitwiseANDExpression<In, Yield> ::=
 	  @noast EqualityExpression
 	| BitwiseANDExpression '&' EqualityExpression
 ;
 
-@ast
 BitwiseXORExpression<In, Yield> ::=
 	  @noast BitwiseANDExpression
 	| BitwiseXORExpression '^' BitwiseANDExpression
 ;
 
-@ast
 BitwiseORExpression<In, Yield> ::=
 	  @noast BitwiseXORExpression
 	| BitwiseORExpression '|' BitwiseXORExpression
 ;
 
-@ast
 LogicalANDExpression<In, Yield> ::=
 	  @noast BitwiseORExpression
 	| LogicalANDExpression '&&' BitwiseORExpression
 ;
 
-@ast
 LogicalORExpression<In, Yield> ::=
 	  @noast LogicalANDExpression
 	| LogicalORExpression '||' LogicalANDExpression
@@ -603,6 +597,7 @@ Block<Yield, Return> ::=
 	  '{' StatementList? '}'
 ;
 
+@noast
 StatementList<Yield, Return> ::=
 	  StatementListItem
 	| StatementList StatementListItem
@@ -624,6 +619,7 @@ LetOrConst ::=
 	| 'const'
 ;
 
+@noast
 BindingList<In, Yield> ::=
 	  LexicalBinding
 	| BindingList ',' LexicalBinding
@@ -638,6 +634,7 @@ VariableStatement<Yield> ::=
 	  'var' VariableDeclarationList<+In> ';'
 ;
 
+@noast
 VariableDeclarationList<In, Yield> ::=
 	  VariableDeclaration
 	| VariableDeclarationList ',' VariableDeclaration
@@ -666,11 +663,13 @@ ArrayBindingPattern<Yield> ::=
 	| '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'
 ;
 
+@noast
 BindingPropertyList<Yield> ::=
 	  BindingProperty
 	| BindingPropertyList ',' BindingProperty
 ;
 
+@noast
 BindingElementList<Yield> ::=
 	  BindingElisionElement
 	| BindingElementList ',' BindingElisionElement
@@ -765,6 +764,7 @@ CaseBlock<Yield, Return> ::=
 	| '{' CaseClausesopt DefaultClause CaseClausesopt '}'
 ;
 
+@noast
 CaseClauses<Yield, Return> ::=
 	  CaseClause
 	| CaseClauses CaseClause
@@ -842,6 +842,7 @@ FormalParameterList<Yield> ::=
 	| FormalsList ',' FunctionRestParameter
 ;
 
+@noast
 FormalsList<Yield> ::=
 	  FormalParameter
 	| FormalsList ',' FormalParameter
@@ -919,6 +920,7 @@ ClassHeritage<Yield> ::=
 ClassBody<Yield> ::=
 	  '{' ClassElementList? '}' ;
 
+@noast
 ClassElementList<Yield> ::=
 	  ClassElement
 	| ClassElementList ClassElement
@@ -939,6 +941,7 @@ Module ::=
 ModuleBody ::=
 	  ModuleItemList ;
 
+@noast
 ModuleItemList ::=
 	  ModuleItem
 	| ModuleItemList ModuleItem
@@ -981,6 +984,7 @@ NamedImports ::=
 FromClause ::=
 	  'from' ModuleSpecifier ;
 
+@noast
 ImportsList ::=
 	  ImportSpecifier
 	| ImportsList ',' ImportSpecifier
@@ -1015,6 +1019,7 @@ ExportClause ::=
 	| '{' ExportsList ',' '}'
 ;
 
+@noast
 ExportsList ::=
 	  ExportSpecifier
 	| ExportsList ',' ExportSpecifier
@@ -1091,4 +1096,6 @@ func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.targ
 	return p.parse(${index}, ${parser.finalStates[index]}, lexer)
 }
 ${end-}
+
+${call go_parser.applyRule-}
 ${end}

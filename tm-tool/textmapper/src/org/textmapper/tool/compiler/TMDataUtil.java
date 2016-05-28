@@ -35,6 +35,8 @@ public class TMDataUtil {
 	private static final String UD_TYPE_HINT = "typeHint";
 	private static final String UD_IMPLEMENTS = "implements";
 	private static final String UD_LITERAL = "literal";
+	private static final String UD_ROLE = "role";
+	private static final String UD_RANGE_TYPE = "rangeType";
 
 	private static Object lookupUserData(UserDataHolder element, String key) {
 		while (element != null) {
@@ -118,6 +120,22 @@ public class TMDataUtil {
 
 	public static Object getLiteral(RhsSymbol rhsSym) {
 		return rhsSym.getUserData(UD_LITERAL);
+	}
+
+	public static void putRole(RhsSymbol rhsSym, String role) {
+		rhsSym.putUserData(UD_ROLE, role);
+	}
+
+	public static String getRole(RhsSymbol rhsSym) {
+		return (String) rhsSym.getUserData(UD_ROLE);
+	}
+
+	public static void putRangeType(Rule rule, String type) {
+		rule.putUserData(UD_RANGE_TYPE, type);
+	}
+
+	public static String getRangeType(Rule rule) {
+		return (String) rule.getUserData(UD_RANGE_TYPE);
 	}
 
 	public static boolean hasProperty(UserDataHolder o, String name) {

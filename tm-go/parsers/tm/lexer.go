@@ -6,6 +6,12 @@ import (
 	"strconv"
 )
 
+const (
+	State_initial = 0
+	State_afterAt = 1
+	State_afterAtID = 2
+)
+
 // ErrorHandler is called every time a lexer or parser is unable to process
 // some part of the input.
 type ErrorHandler func(line, offset, len int, msg string)
@@ -88,10 +94,10 @@ restart:
 		switch {
 		case l.ch < 0:
 			ch = 0
-		case int(l.ch) >= len(tmRuneClass):
-			ch = 1
-		default:
+		case int(l.ch) < len(tmRuneClass):
 			ch = int(tmRuneClass[l.ch])
+		default:
+			ch = 1
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state == -1 && ch == -1 {
@@ -161,7 +167,6 @@ restart:
 	case 7: // _skip_multiline: /\/\*{commentChars}\*\//
 		space = true
 	}
-
 	if space {
 		goto restart
 	}

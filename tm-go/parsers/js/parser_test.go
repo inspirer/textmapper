@@ -697,16 +697,22 @@ func TestSplitInput(t *testing.T) {
 	}
 }
 
+type node struct {
+	offset, endoffset int
+}
+
 type expTest struct {
 	source       []byte
 	expectedType js.NodeType
 	exp          []jsTestExpectation
 	t            *testing.T
+	parsed       []node
 }
 
 func (e *expTest) Node(nt js.NodeType, offset, endoffset int) {
+	e.parsed = append(e.parsed, node{offset, endoffset})
 	if e.expectedType != nt {
-		return
+		return //len(e.parsed)
 	}
 	if len(e.exp) == 0 {
 		e.t.Errorf("Unexpected %v: `%s` in `%s`", nt, e.source[offset:endoffset], e.source)
@@ -716,7 +722,11 @@ func (e *expTest) Node(nt js.NodeType, offset, endoffset int) {
 	} else {
 		e.exp = e.exp[1:]
 	}
+	return //len(e.parsed)
 }
+
+//func (e *expTest) Role(r js.NodeRole, node int) {
+//}
 
 func (e *expTest) done() {
 	if len(e.exp) > 0 {
@@ -744,7 +754,7 @@ func TestParser(t *testing.T) {
 					t.Errorf("%d, %d: %s", line, offset, msg)
 				}
 			}
-			expTest := &expTest{source, tc.nt, exp, t}
+			expTest := &expTest{source, tc.nt, exp, t, nil}
 
 			l.Init([]byte(source), onError)
 			p.Init(onError, expTest)
@@ -761,4 +771,27 @@ func TestParser(t *testing.T) {
 			t.Errorf("%v is not tested", n)
 		}
 	}
+}
+
+type consumer struct{}
+
+func (c consumer) Node(t js.NodeType, offset, endoffset int) {
+}
+
+//func (c consumer) Role(r js.NodeRole, node int) {
+//}
+
+func BenchmarkParser(b *testing.B) {
+	l := new(js.Lexer)
+	p := new(js.Parser)
+	onError := func(line, offset, len int, msg string) {
+		b.Errorf("%d, %d: %s", line, offset, msg)
+	}
+
+	p.Init(onError, consumer{})
+	for i := 0; i < b.N; i++ {
+		l.Init([]byte(jsBenchmarkCode), onError)
+		p.Parse(l)
+	}
+	b.SetBytes(int64(len(jsBenchmarkCode)))
 }

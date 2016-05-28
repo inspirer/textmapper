@@ -65,6 +65,7 @@ JSONObject ::=
 JSONMember (*Field) ::=
 	  JSONString ':' JSONValue<~A> ;
 
+@noast
 JSONMemberList ::=
 	  JSONMember
 	| JSONMemberList ',' JSONMember
@@ -73,6 +74,7 @@ JSONMemberList ::=
 JSONArray ::=
 	  '[' JSONElementListopt ']' ;
 
+@noast
 JSONElementList ::=
 	  JSONValue<+A>
 	| JSONElementList ',' JSONValue<+A>

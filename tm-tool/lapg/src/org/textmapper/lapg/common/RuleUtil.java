@@ -171,7 +171,7 @@ public class RuleUtil {
 		}
 	}
 
-	private static RhsSymbol getAssignmentSymbol(RhsAssignment p) {
+	public static RhsSymbol getAssignmentSymbol(RhsAssignment p) {
 		final RhsPart part = RhsUtil.unwrapEx(p, true, true, true);
 		return part instanceof RhsSymbol ? (RhsSymbol) part : null;
 	}

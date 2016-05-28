@@ -25,22 +25,28 @@ ${call imports-}
 
 // Parser is a table-driven LALR parser for ${opts.lang}.
 type Parser struct {
-	err ErrorHandler
 ${if self->eventBased()-}
+	err      ErrorHandler
 	listener Listener
+${else-}
+	err ErrorHandler
 ${end-}
 
 	stack []node
 	lexer *Lexer
-	next  Token
+	next  symbol
+}
+
+type symbol struct {
+	symbol    int32
+	offset    int
+	endoffset int
 }
 
 type node struct {
-	symbol    int32
-	state     int32
-	value     interface{}
-	offset    int
-	endoffset int
+	sym   symbol
+	state int32
+	value ${self->valueType()}
 }
 
 func (p *Parser) Init(err ErrorHandler${if self->eventBased()}, l Listener${end}) {
@@ -52,10 +58,12 @@ ${end-}
 
 const (
 	startStackSize = 512
+	noToken        = int32(UNAVAILABLE)
+	eoiToken       = int32(EOI)
 	debugSyntax    = false
 )
 ${foreach inp in syntax.input}
-func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) (bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}interface{}${end}) {
+func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) (bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end}) {
 ${if inp.target->go.type()-}
 	ok, v := p.parse(${index}, ${parser.finalStates[index]}, lexer)
 	val, _ := v.(${inp.target->go.type()})
@@ -66,7 +74,7 @@ ${end-}
 }
 ${end-}
 
-func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
+func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, ${self->valueType()}) {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
@@ -76,7 +84,8 @@ ${end-}
 
 	p.stack = append(p.stack[:0], node{state: state})
 	p.lexer = lexer
-	p.next = lexer.Next()
+	p.next.symbol = int32(lexer.Next())
+	p.next.offset, p.next.endoffset = lexer.Pos()
 
 	for state != end {
 		action := p.action(state)
@@ -87,42 +96,42 @@ ${end-}
 			ln := int(tmRuleLen[rule])
 
 			var node node
-			node.symbol = tmRuleSymbol[rule]
+			node.sym.symbol = tmRuleSymbol[rule]
 			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", Symbol(node.symbol))
+				fmt.Printf("reduce to: %v\n", Symbol(node.sym.symbol))
 			}
 			if ln == 0 {
-				node.offset, _ = lexer.Pos()
-				node.endoffset = node.offset
+				node.sym.offset, _ = lexer.Pos()
+				node.sym.endoffset = node.sym.offset
 			} else {
-				node.offset = p.stack[len(p.stack)-ln].offset
-				node.endoffset = p.stack[len(p.stack)-1].endoffset
+				node.sym.offset = p.stack[len(p.stack)-ln].sym.offset
+				node.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
 			}
 			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
-			state = p.gotoState(p.stack[len(p.stack)-1].state, node.symbol)
+			state = p.gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
 			node.state = state
 			p.stack = append(p.stack, node)
 
 		} else if action == -1 {
 			// Shift.
-			if p.next == UNAVAILABLE {
-				p.next = lexer.Next()
+			if p.next.symbol == noToken {
+				p.next.symbol = int32(lexer.Next())
+				p.next.offset, p.next.endoffset = lexer.Pos()
 			}
-			state = p.gotoState(state, int32(p.next))
-			s, e := lexer.Pos()
+			state = p.gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
-				symbol:    int32(p.next),
-				state:     state,
-				value:     lexer.Value(),
-				offset:    s,
-				endoffset: e,
+				sym:   p.next,
+				state: state,
+${if !self->eventBased()-}
+				value: lexer.Value(),
+${end-}
 			})
 			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", p.next, lexer.Text())
+				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 			}
-			if state != -1 && p.next != EOI {
-				p.next = UNAVAILABLE
+			if state != -1 && p.next.symbol != eoiToken {
+				p.next.symbol = noToken
 			}
 ${if self->hasRecovering()-}
 			if recovering > 0 {
@@ -141,7 +150,8 @@ ${if self->hasRecovering()-}
 					p.err(line, offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
-					p.next = lexer.Next()
+					p.next.symbol = int32(p.lexer.Next())
+					p.next.offset, p.next.endoffset = lexer.Pos()
 				}
 				recovering = 4
 				continue
@@ -158,13 +168,13 @@ ${end-}
 	if state != end {
 ${if self->hasRecovering()-}
 		if recovering > 0 {
-			return false, nil
+			return false, ${self->valueTypeDefaultVal()}
 		}
 ${end-}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
 		p.err(line, offset, endoffset-offset, "syntax error")
-		return false, nil
+		return false, ${self->valueTypeDefaultVal()}
 	}
 
 	return true, p.stack[len(p.stack)-2].value
@@ -174,28 +184,27 @@ ${if self->hasRecovering()-}
 const errSymbol = ${syntax.error.index}
 
 func (p *Parser) recover() bool {
-	if p.next == UNAVAILABLE {
-		p.next = p.lexer.Next()
+	if p.next.symbol == noToken {
+		p.next.symbol = int32(p.lexer.Next())
+		p.next.offset, p.next.endoffset = p.lexer.Pos()
 	}
-	if p.next == EOI {
+	if p.next.symbol == eoiToken {
 		return false
 	}
 	e, _ := p.lexer.Pos()
 	s := e
 	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
-	    // TODO cleanup
+		// TODO cleanup
 		p.stack = p.stack[:len(p.stack)-1]
 		if len(p.stack) > 0 {
-			s = p.stack[len(p.stack)-1].offset
+			s = p.stack[len(p.stack)-1].sym.offset
 		}
 	}
 	if len(p.stack) > 0 {
-	    state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
+		state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
 		p.stack = append(p.stack, node{
-			symbol:    errSymbol,
-			state:     state,
-			offset:    s,
-			endoffset: e,
+			sym:   symbol{errSymbol, s, e},
+			state: state,
 		})
 		return true
 	}
@@ -208,12 +217,13 @@ func (p *Parser) action(state int32) int32 {
 ${if self->needActionsTable()-}
 	if a < -2 {
 		// Lookahead is needed.
-		if p.next == UNAVAILABLE {
-			p.next = p.lexer.Next()
+		if p.next.symbol == noToken {
+			p.next.symbol = int32(p.lexer.Next())
+			p.next.offset, p.next.endoffset = p.lexer.Pos()
 		}
 		a = -a - 3
 		for ; tmLalr[a] >= 0; a += 2 {
-			if tmLalr[a] == int32(p.next) {
+			if tmLalr[a] == p.next.symbol {
 				break
 			}
 		}
@@ -241,13 +251,28 @@ func (p *Parser) gotoState(state, symbol int32) int32 {
 	return -1
 }
 
+${call applyRule-}
+${end}
+
+
+${template applyRule-}
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 ${if self->eventBased()-}
+${if syntax.rules.exists(r|r.hasSymbolsWithRole())-}
+	switch rule {
+${foreach rule in syntax.rules.select(r|r.hasSymbolsWithRole())-}
+	case ${rule.getIndex()}: // ${rule}
+${foreach sym in rule.symbolsWithRole()-}
+		p.listener.Role(Role_${sym.role}, rhs[${sym.leftOffset}].value)
+${end-}
+${end-}
+	}
+${end-}
 	nt := ruleNodeType[rule]
 	if nt == 0 {
 		return
 	}
-	p.listener.Node(nt, node.offset, node.endoffset)
+	${if self->withRoles()}node.value = ${end}p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
 ${else if syntax.rules.exists(r|self->hasAction(r))-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
@@ -349,9 +374,17 @@ package ${opts.lang}
 import "fmt"
 
 type NodeType int
+${if self->withRoles()-}
+type NodeRole int
+${end-}
 
 type Listener interface {
+${if self->withRoles()-}
+	Node(t NodeType, offset, endoffset int) int
+	Role(r NodeRole, node int)
+${else-}
 	Node(t NodeType, offset, endoffset int)
+${end-}
 }
 
 const (
@@ -363,6 +396,14 @@ ${foreach extraType in self->additionalNodeTypes()-}
 ${end-}
 	NodeTypeMax
 )
+${if self->withRoles()-}
+
+const (
+${foreach role in syntax.rules.collect(r|r.symbolsWithRole()).collectUnique(r|r.role).sort(r|r)-}
+	Role_${role}${if index == 0} NodeRole = iota + 1${end}
+${end-}
+)
+${end-}
 
 var ruleNodeType = [...]NodeType{
 ${foreach rule in syntax.rules-}
@@ -406,6 +447,12 @@ ${end}
 
 ${template imports}${end}
 
-${query eventBased() = opts.eventBased && !opts.genast}
+${cached query eventBased() = opts.eventBased && !opts.genast}
+
+${cached query withRoles() = self->eventBased() && syntax.rules.exists(r|r.hasSymbolsWithRole()) }
 
 ${query additionalNodeTypes() = []}
+
+${query valueType() = self->eventBased() ? 'int' : 'interface{}' }
+
+${query valueTypeDefaultVal() = self->eventBased() ? '0' : 'nil' }

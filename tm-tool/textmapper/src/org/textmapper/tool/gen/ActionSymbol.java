@@ -18,6 +18,7 @@ package org.textmapper.tool.gen;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.templates.api.*;
+import org.textmapper.tool.compiler.TMDataUtil;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.templates.bundle.IBundleEntity;
 import org.textmapper.templates.objects.DefaultIxObject;
@@ -88,6 +89,9 @@ public class ActionSymbol extends DefaultIxObject {
 		}
 		if (id.equals("leftOffset")) {
 			return leftOffset;
+		}
+		if (id.equals("role")) {
+			return TMDataUtil.getRole(ref);
 		}
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess",
 				IBundleEntity.KIND_TEMPLATE, null);

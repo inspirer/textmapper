@@ -1,5 +1,7 @@
 package json
 
+import "fmt"
+
 type NodeType int
 
 type Listener interface {
@@ -7,11 +9,12 @@ type Listener interface {
 }
 
 const (
-	JSONText NodeType = iota
+	JSONText NodeType = iota + 1
 	JSONValue
 	JSONObject
 	JSONMember
 	JSONArray
+	NodeTypeMax
 )
 
 var ruleNodeType = [...]NodeType{
@@ -45,9 +48,17 @@ var ruleNodeType = [...]NodeType{
 }
 
 var nodeTypeStr = [...]string{
+	"NONE",
 	"JSONText",
 	"JSONValue",
 	"JSONObject",
 	"JSONMember",
 	"JSONArray",
+}
+
+func (t NodeType) String() string {
+	if t >= 0 && int(t) < len(nodeTypeStr) {
+		return nodeTypeStr[t]
+	}
+	return fmt.Sprintf("node(%d)", t)
 }

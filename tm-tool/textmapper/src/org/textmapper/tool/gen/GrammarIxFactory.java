@@ -18,7 +18,6 @@ package org.textmapper.tool.gen;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.common.RuleUtil;
-import org.textmapper.lapg.util.NonterminalUtil;
 import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
@@ -127,34 +126,45 @@ public class GrammarIxFactory extends JavaIxFactory {
 					loadSourceSymbols();
 					return sourceSymbols;
 				}
-				if ("rangeType".equals(methodName)) {
-					RhsSequence seq = rule.getSource();
-					if (seq.getName() != null) return seq.getName();
-
-					if (seq.getParts().length > 0 &&
-							TMDataUtil.hasProperty(seq.getParts()[0], "noast")) {
-						return "";
-					}
-
-					Nonterminal n = rule.getLeft();
-					if (!TMDataUtil.hasProperty(n, "ast")) {
-						if (n.getDefinition() instanceof RhsList
-								&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
-								|| NonterminalUtil.isOptional(n)
-								|| TMDataUtil.hasProperty(n, "noast")) {
-							return "";
+				if ("hasSymbolsWithRole".equals(methodName)) {
+					for (RhsCFPart p : rule.getRight()) {
+						if (p instanceof RhsSymbol && TMDataUtil.getRole((RhsSymbol) p) != null) {
+							return true;
 						}
 					}
 
-					if (n.getTemplate() != null) n = n.getTemplate();
-					return n.getName();
+					return false;
+				}
+				if ("symbolsWithRole".equals(methodName)) {
+					List<ActionSymbol> result = new ArrayList<>();
+					int rhsSize = 0;
+					for (RhsCFPart p : rule.getRight()) {
+						if (p instanceof RhsSymbol) rhsSize++;
+					}
+					int index = 0;
+					for (RhsCFPart p : rule.getRight()) {
+						if (p instanceof RhsSymbol) {
+							RhsSymbol sym = (RhsSymbol) p;
+							if (TMDataUtil.getRole(sym) != null) {
+								result.add(new ActionSymbol(grammar, sym.getTarget(), sym, false,
+										rhsSize - 1 - index, index,
+										evaluationStrategy, rootContext, templatePackage, caller));
+							}
+							index++;
+						}
+					}
+					return result;
+				}
+				if ("rangeType".equals(methodName)) {
+					String type = TMDataUtil.getRangeType(rule);
+					return type != null ? type : "";
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					int rhsSize = 0;
 					int index = -1;
 					RhsSymbol sym = null;
 					for (RhsCFPart p : rule.getRight()) {
-						if (!(p instanceof RhsSymbol)) continue;;
+						if (!(p instanceof RhsSymbol)) continue;
 						if (rhsSize == 0 || methodName.charAt(0) == 'l') {
 							sym = (RhsSymbol) p;
 							index = rhsSize;
@@ -264,7 +274,6 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		@Override
 		public Object getProperty(SourceElement caller, String id) throws EvaluationException {
-			ActionSymbol result = null;
 			Set<RhsSymbol> matching = RuleUtil.getSymbolsByName(id, rule.getSource());
 			if (matching == null || matching.isEmpty()) {
 				throw new EvaluationException("symbol `" + id + "' is " +
@@ -346,7 +355,6 @@ public class GrammarIxFactory extends JavaIxFactory {
 				RhsSymbol rewrittenTo = TMDataUtil.getRewrittenTo(sym);
 				return (rewrittenTo != null ? rewrittenTo : sym).getMapping();
 			}
-
 			return super.getProperty(caller, propertyName);
 		}
 	}

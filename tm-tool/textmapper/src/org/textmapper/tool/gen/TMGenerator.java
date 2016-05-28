@@ -16,10 +16,7 @@
 package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.LapgCore;
-import org.textmapper.lapg.api.LexerData;
-import org.textmapper.lapg.api.ParserData;
-import org.textmapper.lapg.api.ProcessingStatus;
-import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.ast.AstModel;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.TemplatesStatus;
@@ -36,6 +33,7 @@ import org.textmapper.templates.storage.Resource;
 import org.textmapper.templates.storage.ResourceRegistry;
 import org.textmapper.templates.types.TiInstance;
 import org.textmapper.templates.types.TypesRegistry;
+import org.textmapper.tool.compiler.TMEventMapper;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.compiler.TMMapper;
 import org.textmapper.tool.parser.TMTree.TextSource;
@@ -95,7 +93,7 @@ public final class TMGenerator {
 				if (genast) {
 					astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
 				} else {
-					new TMMapper(s.getGrammar(), status, hasAny).detectListsOnly();
+					new TMEventMapper(s.getGrammar(), status).deriveTypes();
 				}
 			}
 
