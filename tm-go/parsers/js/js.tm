@@ -1084,7 +1084,7 @@ ${end}
 
 ${query go_parser.additionalNodeTypes() = ['InsertedSemicolon']}
 
-${template go_parser.parser}
+${template go_parser.parser-}
 package ${opts.lang}
 ${foreach inp in syntax.input}
 func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) bool {

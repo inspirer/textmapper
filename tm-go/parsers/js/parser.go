@@ -1,4 +1,3 @@
-
 package js
 
 func (p *Parser) Parse(lexer *Lexer) bool {
