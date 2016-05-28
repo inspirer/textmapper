@@ -1,5 +1,7 @@
 package js
 
+import "fmt"
+
 type NodeType int
 
 type Listener interface {
@@ -25,7 +27,6 @@ const (
 	CoverInitializedName
 	Initializer
 	TemplateLiteral
-	TemplateSpans
 	IndexAccess
 	PropertyAccess
 	TaggedTemplate
@@ -105,18 +106,14 @@ const (
 	ClassBody
 	ClassElement
 	Module
-	ModuleBody
 	ModuleItem
 	ImportDeclaration
-	ImportClause
-	ImportedDefaultBinding
 	NameSpaceImport
 	NamedImports
-	FromClause
 	ImportSpecifier
 	ModuleSpecifier
-	ImportedBinding
 	ExportDeclaration
+	ExportDefault
 	ExportClause
 	ExportSpecifier
 
@@ -421,10 +418,10 @@ var ruleNodeType = [...]NodeType{
 	TemplateLiteral, // TemplateLiteral ::= TemplateHead Expression_In TemplateSpans
 	TemplateLiteral, // TemplateLiteral_Yield ::= NoSubstitutionTemplate
 	TemplateLiteral, // TemplateLiteral_Yield ::= TemplateHead Expression_In_Yield TemplateSpans_Yield
-	TemplateSpans, // TemplateSpans ::= TemplateTail
-	TemplateSpans, // TemplateSpans ::= TemplateMiddleList TemplateTail
-	TemplateSpans, // TemplateSpans_Yield ::= TemplateTail
-	TemplateSpans, // TemplateSpans_Yield ::= TemplateMiddleList_Yield TemplateTail
+	0, // TemplateSpans ::= TemplateTail
+	0, // TemplateSpans ::= TemplateMiddleList TemplateTail
+	0, // TemplateSpans_Yield ::= TemplateTail
+	0, // TemplateSpans_Yield ::= TemplateMiddleList_Yield TemplateTail
 	0, // TemplateMiddleList ::= TemplateMiddle Expression_In
 	0, // TemplateMiddleList ::= TemplateMiddleList TemplateMiddle Expression_In
 	0, // TemplateMiddleList_Yield ::= TemplateMiddle Expression_In_Yield
@@ -1650,14 +1647,16 @@ var ruleNodeType = [...]NodeType{
 	ClassExpression, // ClassExpression ::= 'class' ClassTail
 	ClassExpression, // ClassExpression_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
 	ClassExpression, // ClassExpression_Yield ::= 'class' ClassTail_Yield
-	0, // ClassTail ::= ClassHeritage '{' ClassBodyopt '}'
-	0, // ClassTail ::= '{' ClassBodyopt '}'
-	0, // ClassTail_Yield ::= ClassHeritage_Yield '{' ClassBodyopt_Yield '}'
-	0, // ClassTail_Yield ::= '{' ClassBodyopt_Yield '}'
+	0, // ClassTail ::= ClassHeritage ClassBody
+	0, // ClassTail ::= ClassBody
+	0, // ClassTail_Yield ::= ClassHeritage_Yield ClassBody_Yield
+	0, // ClassTail_Yield ::= ClassBody_Yield
 	ClassHeritage, // ClassHeritage ::= 'extends' LeftHandSideExpression
 	ClassHeritage, // ClassHeritage_Yield ::= 'extends' LeftHandSideExpression_Yield
-	ClassBody, // ClassBody ::= ClassElementList
-	ClassBody, // ClassBody_Yield ::= ClassElementList_Yield
+	ClassBody, // ClassBody ::= '{' ClassElementList '}'
+	ClassBody, // ClassBody ::= '{' '}'
+	ClassBody, // ClassBody_Yield ::= '{' ClassElementList_Yield '}'
+	ClassBody, // ClassBody_Yield ::= '{' '}'
 	0, // ClassElementList ::= ClassElement
 	0, // ClassElementList ::= ClassElementList ClassElement
 	0, // ClassElementList_Yield ::= ClassElement_Yield
@@ -1669,7 +1668,7 @@ var ruleNodeType = [...]NodeType{
 	ClassElement, // ClassElement_Yield ::= 'static' MethodDefinition_Yield
 	ClassElement, // ClassElement_Yield ::= ';'
 	Module, // Module ::= ModuleBodyopt
-	ModuleBody, // ModuleBody ::= ModuleItemList
+	0, // ModuleBody ::= ModuleItemList
 	0, // ModuleItemList ::= ModuleItem
 	0, // ModuleItemList ::= ModuleItemList ModuleItem
 	ModuleItem, // ModuleItem ::= ImportDeclaration
@@ -1677,31 +1676,31 @@ var ruleNodeType = [...]NodeType{
 	ModuleItem, // ModuleItem ::= StatementListItem
 	ImportDeclaration, // ImportDeclaration ::= 'import' ImportClause FromClause ';'
 	ImportDeclaration, // ImportDeclaration ::= 'import' ModuleSpecifier ';'
-	ImportClause, // ImportClause ::= ImportedDefaultBinding
-	ImportClause, // ImportClause ::= NameSpaceImport
-	ImportClause, // ImportClause ::= NamedImports
-	ImportClause, // ImportClause ::= ImportedDefaultBinding ',' NameSpaceImport
-	ImportClause, // ImportClause ::= ImportedDefaultBinding ',' NamedImports
-	ImportedDefaultBinding, // ImportedDefaultBinding ::= ImportedBinding
+	0, // ImportClause ::= ImportedDefaultBinding
+	0, // ImportClause ::= NameSpaceImport
+	0, // ImportClause ::= NamedImports
+	0, // ImportClause ::= ImportedDefaultBinding ',' NameSpaceImport
+	0, // ImportClause ::= ImportedDefaultBinding ',' NamedImports
+	0, // ImportedDefaultBinding ::= ImportedBinding
 	NameSpaceImport, // NameSpaceImport ::= '*' 'as' ImportedBinding
 	NamedImports, // NamedImports ::= '{' '}'
 	NamedImports, // NamedImports ::= '{' ImportsList '}'
 	NamedImports, // NamedImports ::= '{' ImportsList ',' '}'
-	FromClause, // FromClause ::= 'from' ModuleSpecifier
+	0, // FromClause ::= 'from' ModuleSpecifier
 	0, // ImportsList ::= ImportSpecifier
 	0, // ImportsList ::= ImportsList ',' ImportSpecifier
 	ImportSpecifier, // ImportSpecifier ::= ImportedBinding
 	ImportSpecifier, // ImportSpecifier ::= IdentifierName 'as' ImportedBinding
 	ModuleSpecifier, // ModuleSpecifier ::= StringLiteral
-	ImportedBinding, // ImportedBinding ::= BindingIdentifier
+	0, // ImportedBinding ::= BindingIdentifier
 	ExportDeclaration, // ExportDeclaration ::= 'export' '*' FromClause ';'
 	ExportDeclaration, // ExportDeclaration ::= 'export' ExportClause FromClause ';'
 	ExportDeclaration, // ExportDeclaration ::= 'export' ExportClause ';'
 	ExportDeclaration, // ExportDeclaration ::= 'export' VariableStatement
 	ExportDeclaration, // ExportDeclaration ::= 'export' Declaration
-	ExportDeclaration, // ExportDeclaration ::= 'export' 'default' HoistableDeclaration_Default
-	ExportDeclaration, // ExportDeclaration ::= 'export' 'default' ClassDeclaration_Default
-	ExportDeclaration, // ExportDeclaration ::= 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
+	ExportDefault, // ExportDeclaration ::= 'export' 'default' HoistableDeclaration_Default
+	ExportDefault, // ExportDeclaration ::= 'export' 'default' ClassDeclaration_Default
+	ExportDefault, // ExportDeclaration ::= 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
 	ExportClause, // ExportClause ::= '{' '}'
 	ExportClause, // ExportClause ::= '{' ExportsList '}'
 	ExportClause, // ExportClause ::= '{' ExportsList ',' '}'
@@ -1737,15 +1736,13 @@ var ruleNodeType = [...]NodeType{
 	0, // CaseClausesopt_Return ::=
 	0, // CaseClausesopt_Return_Yield ::= CaseClauses_Return_Yield
 	0, // CaseClausesopt_Return_Yield ::=
-	0, // ClassBodyopt ::= ClassBody
-	0, // ClassBodyopt ::=
-	0, // ClassBodyopt_Yield ::= ClassBody_Yield
-	0, // ClassBodyopt_Yield ::=
 	0, // ModuleBodyopt ::= ModuleBody
 	0, // ModuleBodyopt ::=
 }
 
 var nodeTypeStr = [...]string{
+	"NONE",
+
 	"IdentifierName",
 	"IdentifierReference",
 	"BindingIdentifier",
@@ -1764,7 +1761,6 @@ var nodeTypeStr = [...]string{
 	"CoverInitializedName",
 	"Initializer",
 	"TemplateLiteral",
-	"TemplateSpans",
 	"IndexAccess",
 	"PropertyAccess",
 	"TaggedTemplate",
@@ -1844,18 +1840,23 @@ var nodeTypeStr = [...]string{
 	"ClassBody",
 	"ClassElement",
 	"Module",
-	"ModuleBody",
 	"ModuleItem",
 	"ImportDeclaration",
-	"ImportClause",
-	"ImportedDefaultBinding",
 	"NameSpaceImport",
 	"NamedImports",
-	"FromClause",
 	"ImportSpecifier",
 	"ModuleSpecifier",
-	"ImportedBinding",
 	"ExportDeclaration",
+	"ExportDefault",
 	"ExportClause",
 	"ExportSpecifier",
+
+	"InsertedSemicolon",
+}
+
+func (t NodeType) String() string {
+	if t >= 0 && int(t) < len(nodeTypeStr) {
+		return nodeTypeStr[t]
+	}
+	return fmt.Sprintf("node(%d)", t)
 }

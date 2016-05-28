@@ -359,11 +359,13 @@ TemplateLiteral<Yield> ::=
 	| TemplateHead Expression<+In> TemplateSpans
 ;
 
+@noast
 TemplateSpans<Yield> ::=
 	  TemplateTail
 	| TemplateMiddleList TemplateTail
 ;
 
+@noast
 TemplateMiddleList<Yield> ::=
 	  TemplateMiddle Expression<+In>
 	| TemplateMiddleList TemplateMiddle Expression<+In>
@@ -909,13 +911,13 @@ ClassExpression<Yield> ::=
 
 @noast
 ClassTail<Yield> ::=
-	  ClassHeritage? '{' ClassBodyopt '}' ;
+	  ClassHeritage? ClassBody ;
 
 ClassHeritage<Yield> ::=
 	  'extends' LeftHandSideExpression ;
 
 ClassBody<Yield> ::=
-	  ClassElementList ;
+	  '{' ClassElementList? '}' ;
 
 ClassElementList<Yield> ::=
 	  ClassElement
@@ -933,6 +935,7 @@ ClassElement<Yield> ::=
 Module ::=
 	  ModuleBodyopt ;
 
+@noast
 ModuleBody ::=
 	  ModuleItemList ;
 
@@ -952,6 +955,7 @@ ImportDeclaration ::=
 	| 'import' ModuleSpecifier ';'
 ;
 
+@noast
 ImportClause ::=
 	  ImportedDefaultBinding
 	| NameSpaceImport
@@ -960,6 +964,7 @@ ImportClause ::=
 	| ImportedDefaultBinding ',' NamedImports
 ;
 
+@noast
 ImportedDefaultBinding ::=
 	  ImportedBinding ;
 
@@ -972,6 +977,7 @@ NamedImports ::=
 	| '{' ImportsList ',' '}'
 ;
 
+@noast
 FromClause ::=
 	  'from' ModuleSpecifier ;
 
@@ -988,6 +994,7 @@ ImportSpecifier ::=
 ModuleSpecifier ::=
 	  StringLiteral ;
 
+@noast
 ImportedBinding ::=
 	  BindingIdentifier<~Yield> ;
 
@@ -997,9 +1004,9 @@ ExportDeclaration ::=
 	| 'export' ExportClause ';'
 	| 'export' VariableStatement<~Yield>
 	| 'export' Declaration<~Yield>
-	| 'export' 'default' HoistableDeclaration<+Default,~Yield>
-	| 'export' 'default' ClassDeclaration<+Default,~Yield>
-	| 'export' 'default' AssignmentExpression<+In,~Yield,+NoFuncClass> ';'
+	| 'export' 'default' HoistableDeclaration<+Default,~Yield>              {~ExportDefault}
+	| 'export' 'default' ClassDeclaration<+Default,~Yield>                  {~ExportDefault}
+	| 'export' 'default' AssignmentExpression<+In,~Yield,+NoFuncClass> ';'  {~ExportDefault}
 ;
 
 ExportClause ::=

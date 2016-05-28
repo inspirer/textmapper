@@ -43,7 +43,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) bool {
-	return p.parse(0, 2693, lexer)
+	return p.parse(0, 2689, lexer)
 }
 
 func (p *Parser) parse(start, end int32, lexer *Lexer) bool {
@@ -153,8 +153,8 @@ func (p *Parser) reduceAll() (state int32, success bool) {
 	return
 }
 
-func (p *Parser) insertSC(offset int) {
-	stateAfterSC := p.gotoState(p.stack[len(p.stack)-1].state, int32(SEMICOLON))
+func (p *Parser) insertSC(state int32, offset int) {
+	stateAfterSC := p.gotoState(state, int32(SEMICOLON))
 	if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
 		// ".. a semicolon is never inserted automatically if the semicolon would
 		// then be parsed as an empty statement or if that semicolon would become
@@ -205,7 +205,7 @@ func (p *Parser) fetchNext() {
 		}
 
 		if restricted {
-			p.insertSC(lastEnd)
+			p.insertSC(p.stack[len(p.stack)-1].state, lastEnd)
 			return
 		}
 	}
@@ -216,7 +216,7 @@ func (p *Parser) fetchNext() {
 
 	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS) {
 		if noLineBreakStates[int(state)] {
-			p.insertSC(lastEnd)
+			p.insertSC(state, lastEnd)
 			return
 		}
 	}
@@ -226,12 +226,12 @@ func (p *Parser) fetchNext() {
 	}
 
 	if newLine || token == RBRACE || token == EOI {
-		p.insertSC(lastEnd)
+		p.insertSC(state, lastEnd)
 		return
 	}
 
 	if lastToken == RPAREN && doWhileStates[int(p.gotoState(state, int32(SEMICOLON)))] {
-		p.insertSC(lastEnd)
+		p.insertSC(state, lastEnd)
 		return
 	}
 }

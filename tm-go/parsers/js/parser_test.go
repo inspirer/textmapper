@@ -48,9 +48,11 @@ var jsParseTests = []jsTestCase{
 	}},
 	{js.ThisExpression, []string{
 		`const c = “this“.e;`,
+		"`ab${ “this“ }${ “this“ }c`",
 	}},
 	{js.RegularExpression, []string{
-	// TODO
+		`“/abc/i“.test('aaa')`,
+		`1 / ++“/^[a-z]+\//ii“.lastIndex`,
 	}},
 	{js.ParenthesizedExpression, []string{
 		`c = “(1+2)“;`,
@@ -92,13 +94,11 @@ var jsParseTests = []jsTestCase{
 		`var a “= 4“, b “=[]“;`,
 	}},
 	{js.TemplateLiteral, []string{
-	// TODO
-	}},
-	{js.TemplateSpans, []string{
-	// TODO
+		"print “`abc`“",
+		"“`ab${ expr }${ expr2 }c`“",
 	}},
 	{js.TaggedTemplate, []string{
-	// TODO
+		"“tpl`ab${ expr }${ expr2 }c`“",
 	}},
 	{js.IndexAccess, []string{
 		`“super[10]“();`,
@@ -143,22 +143,28 @@ var jsParseTests = []jsTestCase{
 		`aa“(1,2)“;`,
 	}},
 	{js.PostfixExpression, []string{
-	// TODO
+		`a(“b++“, c)`,
 	}},
 	{js.UnaryExpression, []string{
-	// TODO
+		`“delete a“
+		 “void 1“
+		 “typeof s“ == "string"
+		 a = b
+		 “++c“;
+		 “+1“ + “-2“ & “~0“
+		 if (“!(«typeof s» === "string")“) {}`,
 	}},
 	{js.MultiplicativeExpression, []string{
 		`/*no expectations*/ 1;`,
 		`“1*2“;`,
-		// TODO `1+“2/3“;`,
+		`1+“2/3“;`,
 		`“-1%~2“ << 3;`,
 	}},
 	{js.MultiplicativeOperator, []string{
 		`/*no expectations*/ 1;`,
 		`1“*“2;`,
 		`1+2“%“3;`,
-		// TODO `1“/“2;`,
+		`1“/“2;`,
 	}},
 	{js.AdditiveExpression, []string{
 		`/*no expectations*/ 1;`,
@@ -180,34 +186,54 @@ var jsParseTests = []jsTestCase{
 		`if (“1 >= 1“ && “1 <= 1“ && “a instanceof Window“) alert('true');`,
 	}},
 	{js.EqualityExpression, []string{
-	// TODO
+		`if (“a === b“);`,
+		`(“c !== 1“)`,
+		`(“c != 1“)`,
+		`(“a == 1“)`,
+		// Left associative.
+		`(“«a == 5» === true“)`,
 	}},
 	{js.BitwiseANDExpression, []string{
-	// TODO
+		`(“a&1“)`,
+		// Left associative.
+		`(“«a&7» & 3“)`,
 	}},
 	{js.BitwiseXORExpression, []string{
-	// TODO
+		`(“a^1“)`,
+		// Left associative.
+		`(“«a^7» ^ 4“)`,
 	}},
 	{js.BitwiseORExpression, []string{
-	// TODO
+		`(“a|1“)`,
+		// Left associative.
+		`(“«a|7» | 1“)`,
 	}},
 	{js.LogicalANDExpression, []string{
-	// TODO
+		`(“a && true“)`,
+		// Left associative.
+		`(“«a && b» && c“)`,
 	}},
 	{js.LogicalORExpression, []string{
-	// TODO
+		`(“a || true“)`,
+		// Left associative.
+		`(“«a || b» || c“)`,
 	}},
 	{js.ConditionalExpression, []string{
-	// TODO
+		`(“a ? b : c“)`,
+		`(“a ? «b1 ? b : c» : «b2 ? b : c»“)`,
 	}},
 	{js.AssignmentExpression, []string{
-	// TODO
+		`{ “a = 5“ }`,
+		`{ “a ^= 5“ }`,
+		`{ “a >>>= 5“ }`,
 	}},
 	{js.AssignmentOperator, []string{
-	// TODO
+		` a“+=“1`,
+		` a“<<=“ b “+=“ 1`,
 	}},
 	{js.Block, []string{
-	// TODO
+		`“{}“`,
+		`“{  «{1+2}»  ({a:b}) }“`,
 	}},
 	{js.LexicalDeclaration, []string{
 		`“let a;“`,
@@ -222,33 +248,43 @@ var jsParseTests = []jsTestCase{
 		`const “{b: [c]} = a“;`,
 	}},
 	{js.VariableStatement, []string{
-	// TODO
+		`“var a;“`,
+		`“var a, b;“`,
+		`“var a = 5, b;“`,
+		`“var [a, b, c] = x, b;“`,
+		`“var q, {names: [name1, name2, ...others],} = param“`,
 	}},
 	{js.VariableDeclaration, []string{
-	// TODO
+		`var “q“, “{obj1: {a,b,c}} = param“`,
 	}},
 	{js.ObjectBindingPattern, []string{
 		`const “{b: [c]}“ = a;`,
 		`const “{}“ = a;`,
+		`const “{name}“ = a;`,
 		`for (const “{b,}“ in a);`,
 	}},
-	{js.ArrayBindingPattern, []string{
-	// TODO
-	}},
-	{js.BindingElisionElement, []string{
-	// TODO
-	}},
 	{js.BindingProperty, []string{
-	// TODO
-	}},
-	{js.BindingElement, []string{
-	// TODO
+		`const {“name“, “a: {}“} = a;`,
 	}},
 	{js.SingleNameBinding, []string{
-	// TODO
+		`const {“name“} = a;`,
+		`let [“name“] = a;`,
+	}},
+	{js.ArrayBindingPattern, []string{
+		`var “[]“ = x;`,
+		`let “[x]“ = y;`,
+		`let “[x, ...rest]“ = y;`,
+	}},
+	{js.BindingElisionElement, []string{
+		`let [“x“, “y“] = y;`,
+		`let [“x“, ...rest] = y;`,
 	}},
 	{js.BindingRestElement, []string{
-	// TODO
+		`let [x, “...rest“] = y;`,
+		`let [“...oth“] = y;`,
+	}},
+	{js.BindingElement, []string{
+		`let [“oth“, “[«A»]“, “{a}“] = y;`,
 	}},
 	{js.EmptyStatement, []string{
 		`“;“`,
@@ -337,19 +373,39 @@ var jsParseTests = []jsTestCase{
 		`“A: function q() { return; }“`,
 	}},
 	{js.ThrowStatement, []string{
-	// TODO
+		`function a() { “throw new Error('oops!')“ }`,
+		`function a() { “throw a(1)“ }`,
 	}},
 	{js.TryStatement, []string{
-	// TODO
+		`“try {
+       call();
+     } catch (e) {
+			 if (e instanceof AError) {
+				 console.log('AError');
+			 } else {
+				 throw e
+			 }
+		 }“`,
 	}},
 	{js.Catch, []string{
-	// TODO
+		`try {} “catch (e) {
+		   throw e
+		 }“`,
 	}},
 	{js.Finally, []string{
-	// TODO
+		`try {} catch (e) {
+		   throw e
+		 } “finally {log.console('done')}“`,
+		`try {
+		   call();
+		 } “finally {
+		   log.console('done')
+		 }“`,
 	}},
 	{js.CatchParameter, []string{
-	// TODO
+		`try {} catch (“e“) {
+		   throw e
+		 }`,
 	}},
 	{js.DebuggerStatement, []string{
 		`“debugger;“`,
@@ -431,78 +487,167 @@ var jsParseTests = []jsTestCase{
 		`(class “extends (A)“ {});`,
 	}},
 	{js.ClassBody, []string{
-	// TODO
+		`class A extends B “{; ;}“`,
+		`class A extends B “{
+		   ;
+		   a() { return 1}
+		 }“`,
 	}},
 	{js.ClassElement, []string{
-	// TODO
+		`class A extends B {
+		   “;“
+		   “a() { return 1}“
+		   “*a() { yield 1; yield 2}“
+		   “get x() { return this.x}“
+		   “set x(val) { this.x = val}“
+		 }`,
 	}},
 	{js.Module, []string{
-	// TODO
-	}},
-	{js.ModuleBody, []string{
-	// TODO
+		`““`,
+		`
+		““`,
+		` “a = 4“ `,
 	}},
 	{js.ModuleItem, []string{
-	// TODO
+		` “a = 4;“ “b=5“
+		  “function a(){}“`,
 	}},
 	{js.ImportDeclaration, []string{
-	// TODO
-	}},
-	{js.ImportClause, []string{
-	// TODO
-	}},
-	{js.ImportedDefaultBinding, []string{
-	// TODO
+		`“import './aaa'“`,
+		`“import * as aaa from './aaa'“`,
+		`“import {b,c,} from './aaa'“`,
+		`“import aaa from './aaa'“`,
+		`“import aaa, {t} from './aaa'“`,
+		`“import aaa, * as oth from './aaa'“`,
 	}},
 	{js.NameSpaceImport, []string{
-	// TODO
+		`import “* as aaa“ from './aaa'`,
+		`import aaa, “* as oth“ from './aaa'`,
 	}},
 	{js.NamedImports, []string{
-	// TODO
-	}},
-	{js.FromClause, []string{
-	// TODO
+		`import “{}“ from './aaa'`,
+		`import aaa, “{t as b}“ from './aaa'`,
 	}},
 	{js.ImportSpecifier, []string{
-	// TODO
+		`import {“q“,“o“,} from './aaa'`,
+		`import aaa, {“t as b“} from './aaa'`,
 	}},
 	{js.ModuleSpecifier, []string{
-	// TODO
-	}},
-	{js.ImportedBinding, []string{
-	// TODO
+		`import “'./aaa'“`,
+		`import * as aaa from “'./aaa'“`,
 	}},
 	{js.ExportDeclaration, []string{
-	// TODO
+		`“export * from "aa/bb"“`,
+		`“export {} from "aa/bb"“`,
+		`“export {a, b as c} from "aa/bb"“`,
+		`“export {q, t, }“`,
+		`“export var v = 5“`,
+		`“export const a = 1.2345“`,
+		`“export function sum (x, y) { return x + y }“`,
+		`“export class A {}“`,
+	}},
+	{js.ExportDefault, []string{
+		`“export default (x) => x*x“`,
+		`“export default class {}“`,
+		`“export default function(x, y) { return x + y }“`,
+		`“export default function*(x, y) { yield
+		                                    yield z
+		                                   yield y}“`,
+		`“export default 5“`,
+		`“export default a = 5“`,
 	}},
 	{js.ExportClause, []string{
-	// TODO
+		`export “{}“ from "aa/bb"`,
+		`export “{q,}“ from "aa/bb"`,
+		`export “{q as p, c}“ from "aa/bb"`,
 	}},
 	{js.ExportSpecifier, []string{
-	// TODO
+		`export {“a as b“, “c“, }`,
 	}},
 
 	// Automatic Semicolon Insertion
-	{js.ExpressionStatement, []string{
-		`{ “1“
-     “2“ } “3“`,
-	}},
 	{js.InsertedSemicolon, []string{
+		/* at EOI, before '}', and after ')' */
+		`var a«»
+		`,
 		`{ 1«»
      2«» } 3«»`,
-		` function a(){ return«»
-     a + b«»
-      a«»}`,
-		`continue«»
-     A«»`,
+		`do; while(true)«» 1+2;`,
+		`do; while(true)«» function a(){}`,
+		`{ do; while(true)«» }`,
+
+		`{1«»} (1+2)«»`,
+		`{1«»} (1+2)«»
+		  3«»`,
+		`{1«»} (1+2) 3 /*fails*/`,
+
+		/* 'for' semicolons are not insertable */
 		`/*no expectations*/ for (
      ;;) {}`,
 		`/*no expectations*/ for (;
      true;) {}`,
-		`a = b«»
-     ++c«»`,
+		`/*no expectations*/ for (;;
+     ) {}`,
+		`/*no expectations*/ for (a; b
+		) /*fails*/`,
+
+		/* 'empty statement' semicolons are not insertable */
+		`/*no expectations*/ if (true) /*fails*/`,
+		`if (a > b);
+     else c = d«»`,
+		`/*no expectations*/ if (a > b)
+     else c = d /*fails*/`,
+
+		/* Can parse without a semicolon */
 		`a = b + c   /* not here */
      (d + e).print()«»`,
+		`++c
+		 +1«»`,
+
+		/* restricted productions: ArrowFunction */
+		`a = b=>b+1«»`,
+		`a = b«»
+		  =>b+1 /*fails*/`,
+
+		/* restricted productions: Yield */
+		`function *a() { yield«» }`,
+		`function *a() { yield a+b«»}`,
+		`function *a() { yield«»
+		                 a+b«»}`,
+		`function *a() { yield«»
+		                 *l} /*fails*/`,
+
+		/* restricted productions: PostfixExpression */
+		`a = b«»
+     ++c«»`,
+		`a = b«»
+     --«» /*fails*/`,
+
+		/* restricted productions: ReturnStatement */
+		` function a(){ return«» }`,
+		` function a(){
+		    return«»
+		  }`,
+		` function a(){ return a + b«» }`,
+		` function a(){ return«»
+                    a + b«»
+      a«»}`,
+
+		/* restricted productions: ContinueStatement */
+		`continue A«»`,
+		`continue«»
+     A«»`,
+
+		/* restricted productions: BreakStatement */
+		`while(true) break A«»`,
+		`for(;
+		     ;) break«»
+     A«»`,
+
+		/* restricted productions: ThrowStatement */
+		`throw A«»`,
+		`throw«»
+     A /*fails*/`,
 	}},
 }
 
@@ -560,7 +705,6 @@ type expTest struct {
 }
 
 func (e *expTest) Node(nt js.NodeType, offset, endoffset int) {
-	//fmt.Println(nt.String())
 	if e.expectedType != nt {
 		return
 	}
@@ -584,26 +728,37 @@ func (e *expTest) done() {
 func TestParser(t *testing.T) {
 	l := new(js.Lexer)
 	p := new(js.Parser)
+
+	seen := map[js.NodeType]bool{}
 	for _, tc := range jsParseTests {
+		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			source, exp := splitInput(input, t)
 			if len(exp) == 0 && !strings.HasPrefix(input, "/*no expectations*/") {
 				t.Errorf("No expectations in `%s`", input)
 			}
+			expected := !strings.HasSuffix(input, "/*fails*/")
 
 			onError := func(line, offset, len int, msg string) {
-				t.Errorf("%d, %d: %s", line, offset, msg)
+				if expected {
+					t.Errorf("%d, %d: %s", line, offset, msg)
+				}
 			}
 			expTest := &expTest{source, tc.nt, exp, t}
 
 			l.Init([]byte(source), onError)
 			p.Init(onError, expTest)
 			res := p.Parse(l)
-			if !res {
-				t.Errorf("Parse() returned false for `%s`", source)
+			if res != expected {
+				t.Errorf("Parse() returned %v for `%s`", res, source)
 			} else {
 				expTest.done()
 			}
+		}
+	}
+	for n := js.NodeType(1); n <= js.InsertedSemicolon; n++ {
+		if !seen[n] {
+			t.Errorf("%v is not tested", n)
 		}
 	}
 }
