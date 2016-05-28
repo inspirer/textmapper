@@ -116,8 +116,8 @@ const (
 	ExportDefault
 	ExportClause
 	ExportSpecifier
-
 	InsertedSemicolon
+	NodeTypeMax
 )
 
 var ruleNodeType = [...]NodeType{
@@ -1742,7 +1742,6 @@ var ruleNodeType = [...]NodeType{
 
 var nodeTypeStr = [...]string{
 	"NONE",
-
 	"IdentifierName",
 	"IdentifierReference",
 	"BindingIdentifier",
@@ -1850,7 +1849,6 @@ var nodeTypeStr = [...]string{
 	"ExportDefault",
 	"ExportClause",
 	"ExportSpecifier",
-
 	"InsertedSemicolon",
 }
 

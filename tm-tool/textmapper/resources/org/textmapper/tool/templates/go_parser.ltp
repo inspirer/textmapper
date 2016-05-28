@@ -346,6 +346,8 @@ ${cached query rangeTypeName() =
 ${template listener-}
 package ${opts.lang}
 
+import "fmt"
+
 type NodeType int
 
 type Listener interface {
@@ -356,6 +358,10 @@ const (
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
 	${rangeType}${if index == 0} NodeType = iota + 1${end}
 ${end-}
+${foreach extraType in self->additionalNodeTypes()-}
+	${extraType}
+${end-}
+	NodeTypeMax
 )
 
 var ruleNodeType = [...]NodeType{
@@ -365,9 +371,20 @@ ${end-}
 }
 
 var nodeTypeStr = [...]string{
+	"NONE",
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
 	"${rangeType}",
 ${end-}
+${foreach extraType in self->additionalNodeTypes()-}
+	"${extraType}",
+${end-}
+}
+
+func (t NodeType) String() string {
+	if t >= 0 && int(t) < len(nodeTypeStr) {
+		return nodeTypeStr[t]
+	}
+	return fmt.Sprintf("node(%d)", t)
 }
 ${end}
 
@@ -390,3 +407,5 @@ ${end}
 ${template imports}${end}
 
 ${query eventBased() = opts.eventBased && !opts.genast}
+
+${query additionalNodeTypes() = []}

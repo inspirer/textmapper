@@ -756,7 +756,7 @@ func TestParser(t *testing.T) {
 			}
 		}
 	}
-	for n := js.NodeType(1); n <= js.InsertedSemicolon; n++ {
+	for n := js.NodeType(1); n < js.NodeTypeMax; n++ {
 		if !seen[n] {
 			t.Errorf("%v is not tested", n)
 		}
