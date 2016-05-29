@@ -160,16 +160,10 @@ var jsParseTests = []jsTestCase{
 		`1+“2/3“;`,
 		`“-1%~2“ << 3;`,
 	}},
-	{js.MultiplicativeOperator, []string{
-		`/*no expectations*/ 1;`,
-		`1“*“2;`,
-		`1+2“%“3;`,
-		`1“/“2;`,
-	}},
 	{js.AdditiveExpression, []string{
 		`/*no expectations*/ 1;`,
 		`“1+2“;`,
-		`“1+2*3“;`,
+		`a ^ “1+2*3“;`,
 		`“1-2“ << 3;`,
 	}},
 	{js.ShiftExpression, []string{
@@ -187,29 +181,35 @@ var jsParseTests = []jsTestCase{
 	}},
 	{js.EqualityExpression, []string{
 		`if (“a === b“);`,
-		`(“c !== 1“)`,
-		`(“c != 1“)`,
+		`(“c !== 1+1“)`,
+		`(“c != 1/2“)`,
 		`(“a == 1“)`,
 		// Left associative.
 		`(“«a == 5» === true“)`,
 	}},
 	{js.BitwiseANDExpression, []string{
 		`(“a&1“)`,
+		`(“a==7 & 3+3“)`,
 		// Left associative.
 		`(“«a&7» & 3“)`,
 	}},
 	{js.BitwiseXORExpression, []string{
 		`(“a^1“)`,
+		`(“a&7 ^ 3“)`,
+		`(“7 ^ a==3“)`,
 		// Left associative.
 		`(“«a^7» ^ 4“)`,
 	}},
 	{js.BitwiseORExpression, []string{
 		`(“a|1“)`,
+		`(“a&7 | 1“)`,
+		`(a & (“7|1“))`,
 		// Left associative.
 		`(“«a|7» | 1“)`,
 	}},
 	{js.LogicalANDExpression, []string{
 		`(“a && true“)`,
+		`(“a && a==5“)`,
 		// Left associative.
 		`(“«a && b» && c“)`,
 	}},

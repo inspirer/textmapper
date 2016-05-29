@@ -463,73 +463,51 @@ UnaryExpression<Yield> ::=
 	| [!StartWithLet] '!' UnaryExpression
 ;
 
-MultiplicativeExpression<Yield> ::=
+%left '||';
+%left '&&';
+%left '|';
+%left '^';
+%left '&';
+%left '==' '!=' '===' '!==';
+%left '<' '>' '<=' '>=' 'instanceof' 'in';
+%left '<<' '>>' '>>>';
+%left '-' '+';
+%left '*' '/' '%';
+
+ArithmeticExpression<Yield> ::=
 	  @noast UnaryExpression
-	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
+	| ArithmeticExpression '+' ArithmeticExpression                 {~AdditiveExpression}
+	| ArithmeticExpression '-' ArithmeticExpression                 {~AdditiveExpression}
+	| ArithmeticExpression '<<' ArithmeticExpression                {~ShiftExpression}
+	| ArithmeticExpression '>>' ArithmeticExpression                {~ShiftExpression}
+	| ArithmeticExpression '>>>' ArithmeticExpression               {~ShiftExpression}
+	| ArithmeticExpression '*' ArithmeticExpression                 {~MultiplicativeExpression}
+	| ArithmeticExpression '/' ArithmeticExpression                 {~MultiplicativeExpression}
+	| ArithmeticExpression '%' ArithmeticExpression                 {~MultiplicativeExpression}
 ;
 
-MultiplicativeOperator ::=
-	  '*' | '/' | '%' ;
-
-AdditiveExpression<Yield> ::=
-	  @noast MultiplicativeExpression
-	| AdditiveExpression '+' MultiplicativeExpression
-	| AdditiveExpression '-' MultiplicativeExpression
-;
-
-ShiftExpression<Yield> ::=
-	  @noast AdditiveExpression
-	| ShiftExpression '<<' AdditiveExpression
-	| ShiftExpression '>>' AdditiveExpression
-	| ShiftExpression '>>>' AdditiveExpression
-;
-
-RelationalExpression<In, Yield> ::=
-	  @noast ShiftExpression
-	| RelationalExpression '<' ShiftExpression
-	| RelationalExpression '>' ShiftExpression
-	| RelationalExpression '<=' ShiftExpression
-	| RelationalExpression '>=' ShiftExpression
-	| RelationalExpression 'instanceof' ShiftExpression
-	| [In] RelationalExpression<+In> 'in' ShiftExpression
-;
-
-EqualityExpression<In, Yield> ::=
-	  @noast RelationalExpression
-	| EqualityExpression '==' RelationalExpression
-	| EqualityExpression '!=' RelationalExpression
-	| EqualityExpression '===' RelationalExpression
-	| EqualityExpression '!==' RelationalExpression
-;
-
-BitwiseANDExpression<In, Yield> ::=
-	  @noast EqualityExpression
-	| BitwiseANDExpression '&' EqualityExpression
-;
-
-BitwiseXORExpression<In, Yield> ::=
-	  @noast BitwiseANDExpression
-	| BitwiseXORExpression '^' BitwiseANDExpression
-;
-
-BitwiseORExpression<In, Yield> ::=
-	  @noast BitwiseXORExpression
-	| BitwiseORExpression '|' BitwiseXORExpression
-;
-
-LogicalANDExpression<In, Yield> ::=
-	  @noast BitwiseORExpression
-	| LogicalANDExpression '&&' BitwiseORExpression
-;
-
-LogicalORExpression<In, Yield> ::=
-	  @noast LogicalANDExpression
-	| LogicalORExpression '||' LogicalANDExpression
+BinaryExpression<In, Yield> ::=
+	  @noast ArithmeticExpression
+	| BinaryExpression '<' BinaryExpression                 {~RelationalExpression}
+	| BinaryExpression '>' BinaryExpression                 {~RelationalExpression}
+	| BinaryExpression '<=' BinaryExpression                {~RelationalExpression}
+	| BinaryExpression '>=' BinaryExpression                {~RelationalExpression}
+	| BinaryExpression 'instanceof' BinaryExpression        {~RelationalExpression}
+	| [In] BinaryExpression 'in' BinaryExpression           {~RelationalExpression}
+	| BinaryExpression '==' BinaryExpression                {~EqualityExpression}
+	| BinaryExpression '!=' BinaryExpression                {~EqualityExpression}
+	| BinaryExpression '===' BinaryExpression               {~EqualityExpression}
+	| BinaryExpression '!==' BinaryExpression               {~EqualityExpression}
+	| BinaryExpression '&' BinaryExpression                 {~BitwiseANDExpression}
+	| BinaryExpression '^' BinaryExpression                 {~BitwiseXORExpression}
+	| BinaryExpression '|' BinaryExpression                 {~BitwiseORExpression}
+	| BinaryExpression '&&' BinaryExpression                {~LogicalANDExpression}
+	| BinaryExpression '||' BinaryExpression                {~LogicalORExpression}
 ;
 
 ConditionalExpression<In, Yield> ::=
-	  @noast LogicalORExpression
-	| LogicalORExpression '?' AssignmentExpression<+In> ':' AssignmentExpression
+	  @noast BinaryExpression
+	| BinaryExpression '?' AssignmentExpression<+In> ':' AssignmentExpression
 ;
 
 AssignmentExpression<In, Yield> ::=

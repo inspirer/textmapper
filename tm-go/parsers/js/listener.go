@@ -37,10 +37,9 @@ const (
 	Arguments
 	PostfixExpression
 	UnaryExpression
-	MultiplicativeExpression
-	MultiplicativeOperator
 	AdditiveExpression
 	ShiftExpression
+	MultiplicativeExpression
 	RelationalExpression
 	EqualityExpression
 	BitwiseANDExpression
@@ -781,432 +780,323 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression, // UnaryExpression_Yield ::= '-' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= '~' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= '!' UnaryExpression_Yield
-	0, // MultiplicativeExpression ::= UnaryExpression
-	MultiplicativeExpression, // MultiplicativeExpression ::= MultiplicativeExpression MultiplicativeOperator UnaryExpression
-	0, // MultiplicativeExpression_NoFuncClass ::= UnaryExpression_NoFuncClass
-	MultiplicativeExpression, // MultiplicativeExpression_NoFuncClass ::= MultiplicativeExpression_NoFuncClass MultiplicativeOperator UnaryExpression
-	0, // MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral
-	MultiplicativeExpression, // MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral MultiplicativeOperator UnaryExpression
-	0, // MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	MultiplicativeExpression, // MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield MultiplicativeOperator UnaryExpression_Yield
-	0, // MultiplicativeExpression_NoLet ::= UnaryExpression_NoLet
-	MultiplicativeExpression, // MultiplicativeExpression_NoLet ::= MultiplicativeExpression_NoLet MultiplicativeOperator UnaryExpression
-	0, // MultiplicativeExpression_NoLet_Yield ::= UnaryExpression_NoLet_Yield
-	MultiplicativeExpression, // MultiplicativeExpression_NoLet_Yield ::= MultiplicativeExpression_NoLet_Yield MultiplicativeOperator UnaryExpression_Yield
-	0, // MultiplicativeExpression_NoObjLiteral ::= UnaryExpression_NoObjLiteral
-	MultiplicativeExpression, // MultiplicativeExpression_NoObjLiteral ::= MultiplicativeExpression_NoObjLiteral MultiplicativeOperator UnaryExpression
-	0, // MultiplicativeExpression_StartWithLet ::= UnaryExpression_StartWithLet
-	MultiplicativeExpression, // MultiplicativeExpression_StartWithLet ::= MultiplicativeExpression_StartWithLet MultiplicativeOperator UnaryExpression
-	0, // MultiplicativeExpression_StartWithLet_Yield ::= UnaryExpression_StartWithLet_Yield
-	MultiplicativeExpression, // MultiplicativeExpression_StartWithLet_Yield ::= MultiplicativeExpression_StartWithLet_Yield MultiplicativeOperator UnaryExpression_Yield
-	0, // MultiplicativeExpression_Yield ::= UnaryExpression_Yield
-	MultiplicativeExpression, // MultiplicativeExpression_Yield ::= MultiplicativeExpression_Yield MultiplicativeOperator UnaryExpression_Yield
-	MultiplicativeOperator, // MultiplicativeOperator ::= '*'
-	MultiplicativeOperator, // MultiplicativeOperator ::= '/'
-	MultiplicativeOperator, // MultiplicativeOperator ::= '%'
-	0, // AdditiveExpression ::= MultiplicativeExpression
-	AdditiveExpression, // AdditiveExpression ::= AdditiveExpression '+' MultiplicativeExpression
-	AdditiveExpression, // AdditiveExpression ::= AdditiveExpression '-' MultiplicativeExpression
-	0, // AdditiveExpression_NoFuncClass ::= MultiplicativeExpression_NoFuncClass
-	AdditiveExpression, // AdditiveExpression_NoFuncClass ::= AdditiveExpression_NoFuncClass '+' MultiplicativeExpression
-	AdditiveExpression, // AdditiveExpression_NoFuncClass ::= AdditiveExpression_NoFuncClass '-' MultiplicativeExpression
-	0, // AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral
-	AdditiveExpression, // AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral '+' MultiplicativeExpression
-	AdditiveExpression, // AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral '-' MultiplicativeExpression
-	0, // AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MultiplicativeExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	AdditiveExpression, // AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '+' MultiplicativeExpression_Yield
-	AdditiveExpression, // AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '-' MultiplicativeExpression_Yield
-	0, // AdditiveExpression_NoLet ::= MultiplicativeExpression_NoLet
-	AdditiveExpression, // AdditiveExpression_NoLet ::= AdditiveExpression_NoLet '+' MultiplicativeExpression
-	AdditiveExpression, // AdditiveExpression_NoLet ::= AdditiveExpression_NoLet '-' MultiplicativeExpression
-	0, // AdditiveExpression_NoLet_Yield ::= MultiplicativeExpression_NoLet_Yield
-	AdditiveExpression, // AdditiveExpression_NoLet_Yield ::= AdditiveExpression_NoLet_Yield '+' MultiplicativeExpression_Yield
-	AdditiveExpression, // AdditiveExpression_NoLet_Yield ::= AdditiveExpression_NoLet_Yield '-' MultiplicativeExpression_Yield
-	0, // AdditiveExpression_NoObjLiteral ::= MultiplicativeExpression_NoObjLiteral
-	AdditiveExpression, // AdditiveExpression_NoObjLiteral ::= AdditiveExpression_NoObjLiteral '+' MultiplicativeExpression
-	AdditiveExpression, // AdditiveExpression_NoObjLiteral ::= AdditiveExpression_NoObjLiteral '-' MultiplicativeExpression
-	0, // AdditiveExpression_StartWithLet ::= MultiplicativeExpression_StartWithLet
-	AdditiveExpression, // AdditiveExpression_StartWithLet ::= AdditiveExpression_StartWithLet '+' MultiplicativeExpression
-	AdditiveExpression, // AdditiveExpression_StartWithLet ::= AdditiveExpression_StartWithLet '-' MultiplicativeExpression
-	0, // AdditiveExpression_StartWithLet_Yield ::= MultiplicativeExpression_StartWithLet_Yield
-	AdditiveExpression, // AdditiveExpression_StartWithLet_Yield ::= AdditiveExpression_StartWithLet_Yield '+' MultiplicativeExpression_Yield
-	AdditiveExpression, // AdditiveExpression_StartWithLet_Yield ::= AdditiveExpression_StartWithLet_Yield '-' MultiplicativeExpression_Yield
-	0, // AdditiveExpression_Yield ::= MultiplicativeExpression_Yield
-	AdditiveExpression, // AdditiveExpression_Yield ::= AdditiveExpression_Yield '+' MultiplicativeExpression_Yield
-	AdditiveExpression, // AdditiveExpression_Yield ::= AdditiveExpression_Yield '-' MultiplicativeExpression_Yield
-	0, // ShiftExpression ::= AdditiveExpression
-	ShiftExpression, // ShiftExpression ::= ShiftExpression '<<' AdditiveExpression
-	ShiftExpression, // ShiftExpression ::= ShiftExpression '>>' AdditiveExpression
-	ShiftExpression, // ShiftExpression ::= ShiftExpression '>>>' AdditiveExpression
-	0, // ShiftExpression_NoFuncClass ::= AdditiveExpression_NoFuncClass
-	ShiftExpression, // ShiftExpression_NoFuncClass ::= ShiftExpression_NoFuncClass '<<' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoFuncClass ::= ShiftExpression_NoFuncClass '>>' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoFuncClass ::= ShiftExpression_NoFuncClass '>>>' AdditiveExpression
-	0, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral
-	ShiftExpression, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral '<<' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral '>>' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral '>>>' AdditiveExpression
-	0, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= AdditiveExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	ShiftExpression, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '<<' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>>' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>>>' AdditiveExpression_Yield
-	0, // ShiftExpression_NoLet ::= AdditiveExpression_NoLet
-	ShiftExpression, // ShiftExpression_NoLet ::= ShiftExpression_NoLet '<<' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoLet ::= ShiftExpression_NoLet '>>' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoLet ::= ShiftExpression_NoLet '>>>' AdditiveExpression
-	0, // ShiftExpression_NoLet_Yield ::= AdditiveExpression_NoLet_Yield
-	ShiftExpression, // ShiftExpression_NoLet_Yield ::= ShiftExpression_NoLet_Yield '<<' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_NoLet_Yield ::= ShiftExpression_NoLet_Yield '>>' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_NoLet_Yield ::= ShiftExpression_NoLet_Yield '>>>' AdditiveExpression_Yield
-	0, // ShiftExpression_NoObjLiteral ::= AdditiveExpression_NoObjLiteral
-	ShiftExpression, // ShiftExpression_NoObjLiteral ::= ShiftExpression_NoObjLiteral '<<' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoObjLiteral ::= ShiftExpression_NoObjLiteral '>>' AdditiveExpression
-	ShiftExpression, // ShiftExpression_NoObjLiteral ::= ShiftExpression_NoObjLiteral '>>>' AdditiveExpression
-	0, // ShiftExpression_StartWithLet ::= AdditiveExpression_StartWithLet
-	ShiftExpression, // ShiftExpression_StartWithLet ::= ShiftExpression_StartWithLet '<<' AdditiveExpression
-	ShiftExpression, // ShiftExpression_StartWithLet ::= ShiftExpression_StartWithLet '>>' AdditiveExpression
-	ShiftExpression, // ShiftExpression_StartWithLet ::= ShiftExpression_StartWithLet '>>>' AdditiveExpression
-	0, // ShiftExpression_StartWithLet_Yield ::= AdditiveExpression_StartWithLet_Yield
-	ShiftExpression, // ShiftExpression_StartWithLet_Yield ::= ShiftExpression_StartWithLet_Yield '<<' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_StartWithLet_Yield ::= ShiftExpression_StartWithLet_Yield '>>' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_StartWithLet_Yield ::= ShiftExpression_StartWithLet_Yield '>>>' AdditiveExpression_Yield
-	0, // ShiftExpression_Yield ::= AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_Yield ::= ShiftExpression_Yield '<<' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_Yield ::= ShiftExpression_Yield '>>' AdditiveExpression_Yield
-	ShiftExpression, // ShiftExpression_Yield ::= ShiftExpression_Yield '>>>' AdditiveExpression_Yield
-	0, // RelationalExpression ::= ShiftExpression
-	RelationalExpression, // RelationalExpression ::= RelationalExpression '<' ShiftExpression
-	RelationalExpression, // RelationalExpression ::= RelationalExpression '>' ShiftExpression
-	RelationalExpression, // RelationalExpression ::= RelationalExpression '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression ::= RelationalExpression '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression ::= RelationalExpression 'instanceof' ShiftExpression
-	0, // RelationalExpression_In ::= ShiftExpression
-	RelationalExpression, // RelationalExpression_In ::= RelationalExpression_In '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_In ::= RelationalExpression_In '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_In ::= RelationalExpression_In '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In ::= RelationalExpression_In '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In ::= RelationalExpression_In 'instanceof' ShiftExpression
-	RelationalExpression, // RelationalExpression_In ::= RelationalExpression_In 'in' ShiftExpression
-	0, // RelationalExpression_In_NoFuncClass ::= ShiftExpression_NoFuncClass
-	RelationalExpression, // RelationalExpression_In_NoFuncClass ::= RelationalExpression_In_NoFuncClass '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass ::= RelationalExpression_In_NoFuncClass '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass ::= RelationalExpression_In_NoFuncClass '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass ::= RelationalExpression_In_NoFuncClass '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass ::= RelationalExpression_In_NoFuncClass 'instanceof' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass ::= RelationalExpression_In_NoFuncClass 'in' ShiftExpression
-	0, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral 'instanceof' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral 'in' ShiftExpression
-	0, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ShiftExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '<' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '<=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield 'instanceof' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield 'in' ShiftExpression_Yield
-	0, // RelationalExpression_In_NoLet ::= ShiftExpression_NoLet
-	RelationalExpression, // RelationalExpression_In_NoLet ::= RelationalExpression_In_NoLet '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoLet ::= RelationalExpression_In_NoLet '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoLet ::= RelationalExpression_In_NoLet '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoLet ::= RelationalExpression_In_NoLet '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoLet ::= RelationalExpression_In_NoLet 'instanceof' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoLet ::= RelationalExpression_In_NoLet 'in' ShiftExpression
-	0, // RelationalExpression_In_NoLet_Yield ::= ShiftExpression_NoLet_Yield
-	RelationalExpression, // RelationalExpression_In_NoLet_Yield ::= RelationalExpression_In_NoLet_Yield '<' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoLet_Yield ::= RelationalExpression_In_NoLet_Yield '>' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoLet_Yield ::= RelationalExpression_In_NoLet_Yield '<=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoLet_Yield ::= RelationalExpression_In_NoLet_Yield '>=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoLet_Yield ::= RelationalExpression_In_NoLet_Yield 'instanceof' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_NoLet_Yield ::= RelationalExpression_In_NoLet_Yield 'in' ShiftExpression_Yield
-	0, // RelationalExpression_In_NoObjLiteral ::= ShiftExpression_NoObjLiteral
-	RelationalExpression, // RelationalExpression_In_NoObjLiteral ::= RelationalExpression_In_NoObjLiteral '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoObjLiteral ::= RelationalExpression_In_NoObjLiteral '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoObjLiteral ::= RelationalExpression_In_NoObjLiteral '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoObjLiteral ::= RelationalExpression_In_NoObjLiteral '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoObjLiteral ::= RelationalExpression_In_NoObjLiteral 'instanceof' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_NoObjLiteral ::= RelationalExpression_In_NoObjLiteral 'in' ShiftExpression
-	0, // RelationalExpression_In_StartWithLet ::= ShiftExpression_StartWithLet
-	RelationalExpression, // RelationalExpression_In_StartWithLet ::= RelationalExpression_In_StartWithLet '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_StartWithLet ::= RelationalExpression_In_StartWithLet '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_StartWithLet ::= RelationalExpression_In_StartWithLet '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_StartWithLet ::= RelationalExpression_In_StartWithLet '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_StartWithLet ::= RelationalExpression_In_StartWithLet 'instanceof' ShiftExpression
-	RelationalExpression, // RelationalExpression_In_StartWithLet ::= RelationalExpression_In_StartWithLet 'in' ShiftExpression
-	0, // RelationalExpression_In_StartWithLet_Yield ::= ShiftExpression_StartWithLet_Yield
-	RelationalExpression, // RelationalExpression_In_StartWithLet_Yield ::= RelationalExpression_In_StartWithLet_Yield '<' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_StartWithLet_Yield ::= RelationalExpression_In_StartWithLet_Yield '>' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_StartWithLet_Yield ::= RelationalExpression_In_StartWithLet_Yield '<=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_StartWithLet_Yield ::= RelationalExpression_In_StartWithLet_Yield '>=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_StartWithLet_Yield ::= RelationalExpression_In_StartWithLet_Yield 'instanceof' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_StartWithLet_Yield ::= RelationalExpression_In_StartWithLet_Yield 'in' ShiftExpression_Yield
-	0, // RelationalExpression_In_Yield ::= ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_Yield ::= RelationalExpression_In_Yield '<' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_Yield ::= RelationalExpression_In_Yield '>' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_Yield ::= RelationalExpression_In_Yield '<=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_Yield ::= RelationalExpression_In_Yield '>=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_Yield ::= RelationalExpression_In_Yield 'instanceof' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_In_Yield ::= RelationalExpression_In_Yield 'in' ShiftExpression_Yield
-	0, // RelationalExpression_NoLet ::= ShiftExpression_NoLet
-	RelationalExpression, // RelationalExpression_NoLet ::= RelationalExpression_NoLet '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoLet ::= RelationalExpression_NoLet '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoLet ::= RelationalExpression_NoLet '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoLet ::= RelationalExpression_NoLet '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoLet ::= RelationalExpression_NoLet 'instanceof' ShiftExpression
-	0, // RelationalExpression_NoLet_Yield ::= ShiftExpression_NoLet_Yield
-	RelationalExpression, // RelationalExpression_NoLet_Yield ::= RelationalExpression_NoLet_Yield '<' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_NoLet_Yield ::= RelationalExpression_NoLet_Yield '>' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_NoLet_Yield ::= RelationalExpression_NoLet_Yield '<=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_NoLet_Yield ::= RelationalExpression_NoLet_Yield '>=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_NoLet_Yield ::= RelationalExpression_NoLet_Yield 'instanceof' ShiftExpression_Yield
-	0, // RelationalExpression_NoObjLiteral ::= ShiftExpression_NoObjLiteral
-	RelationalExpression, // RelationalExpression_NoObjLiteral ::= RelationalExpression_NoObjLiteral '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoObjLiteral ::= RelationalExpression_NoObjLiteral '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoObjLiteral ::= RelationalExpression_NoObjLiteral '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoObjLiteral ::= RelationalExpression_NoObjLiteral '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_NoObjLiteral ::= RelationalExpression_NoObjLiteral 'instanceof' ShiftExpression
-	0, // RelationalExpression_StartWithLet ::= ShiftExpression_StartWithLet
-	RelationalExpression, // RelationalExpression_StartWithLet ::= RelationalExpression_StartWithLet '<' ShiftExpression
-	RelationalExpression, // RelationalExpression_StartWithLet ::= RelationalExpression_StartWithLet '>' ShiftExpression
-	RelationalExpression, // RelationalExpression_StartWithLet ::= RelationalExpression_StartWithLet '<=' ShiftExpression
-	RelationalExpression, // RelationalExpression_StartWithLet ::= RelationalExpression_StartWithLet '>=' ShiftExpression
-	RelationalExpression, // RelationalExpression_StartWithLet ::= RelationalExpression_StartWithLet 'instanceof' ShiftExpression
-	0, // RelationalExpression_StartWithLet_Yield ::= ShiftExpression_StartWithLet_Yield
-	RelationalExpression, // RelationalExpression_StartWithLet_Yield ::= RelationalExpression_StartWithLet_Yield '<' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_StartWithLet_Yield ::= RelationalExpression_StartWithLet_Yield '>' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_StartWithLet_Yield ::= RelationalExpression_StartWithLet_Yield '<=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_StartWithLet_Yield ::= RelationalExpression_StartWithLet_Yield '>=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_StartWithLet_Yield ::= RelationalExpression_StartWithLet_Yield 'instanceof' ShiftExpression_Yield
-	0, // RelationalExpression_Yield ::= ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_Yield ::= RelationalExpression_Yield '<' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_Yield ::= RelationalExpression_Yield '>' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_Yield ::= RelationalExpression_Yield '<=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_Yield ::= RelationalExpression_Yield '>=' ShiftExpression_Yield
-	RelationalExpression, // RelationalExpression_Yield ::= RelationalExpression_Yield 'instanceof' ShiftExpression_Yield
-	0, // EqualityExpression ::= RelationalExpression
-	EqualityExpression, // EqualityExpression ::= EqualityExpression '==' RelationalExpression
-	EqualityExpression, // EqualityExpression ::= EqualityExpression '!=' RelationalExpression
-	EqualityExpression, // EqualityExpression ::= EqualityExpression '===' RelationalExpression
-	EqualityExpression, // EqualityExpression ::= EqualityExpression '!==' RelationalExpression
-	0, // EqualityExpression_In ::= RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In ::= EqualityExpression_In '==' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In ::= EqualityExpression_In '!=' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In ::= EqualityExpression_In '===' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In ::= EqualityExpression_In '!==' RelationalExpression_In
-	0, // EqualityExpression_In_NoFuncClass ::= RelationalExpression_In_NoFuncClass
-	EqualityExpression, // EqualityExpression_In_NoFuncClass ::= EqualityExpression_In_NoFuncClass '==' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoFuncClass ::= EqualityExpression_In_NoFuncClass '!=' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoFuncClass ::= EqualityExpression_In_NoFuncClass '===' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoFuncClass ::= EqualityExpression_In_NoFuncClass '!==' RelationalExpression_In
-	0, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '==' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '!=' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '===' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '!==' RelationalExpression_In
-	0, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= RelationalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '==' RelationalExpression_In_Yield
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '!=' RelationalExpression_In_Yield
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '===' RelationalExpression_In_Yield
-	EqualityExpression, // EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '!==' RelationalExpression_In_Yield
-	0, // EqualityExpression_In_NoObjLiteral ::= RelationalExpression_In_NoObjLiteral
-	EqualityExpression, // EqualityExpression_In_NoObjLiteral ::= EqualityExpression_In_NoObjLiteral '==' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoObjLiteral ::= EqualityExpression_In_NoObjLiteral '!=' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoObjLiteral ::= EqualityExpression_In_NoObjLiteral '===' RelationalExpression_In
-	EqualityExpression, // EqualityExpression_In_NoObjLiteral ::= EqualityExpression_In_NoObjLiteral '!==' RelationalExpression_In
-	0, // EqualityExpression_In_Yield ::= RelationalExpression_In_Yield
-	EqualityExpression, // EqualityExpression_In_Yield ::= EqualityExpression_In_Yield '==' RelationalExpression_In_Yield
-	EqualityExpression, // EqualityExpression_In_Yield ::= EqualityExpression_In_Yield '!=' RelationalExpression_In_Yield
-	EqualityExpression, // EqualityExpression_In_Yield ::= EqualityExpression_In_Yield '===' RelationalExpression_In_Yield
-	EqualityExpression, // EqualityExpression_In_Yield ::= EqualityExpression_In_Yield '!==' RelationalExpression_In_Yield
-	0, // EqualityExpression_NoLet ::= RelationalExpression_NoLet
-	EqualityExpression, // EqualityExpression_NoLet ::= EqualityExpression_NoLet '==' RelationalExpression
-	EqualityExpression, // EqualityExpression_NoLet ::= EqualityExpression_NoLet '!=' RelationalExpression
-	EqualityExpression, // EqualityExpression_NoLet ::= EqualityExpression_NoLet '===' RelationalExpression
-	EqualityExpression, // EqualityExpression_NoLet ::= EqualityExpression_NoLet '!==' RelationalExpression
-	0, // EqualityExpression_NoLet_Yield ::= RelationalExpression_NoLet_Yield
-	EqualityExpression, // EqualityExpression_NoLet_Yield ::= EqualityExpression_NoLet_Yield '==' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_NoLet_Yield ::= EqualityExpression_NoLet_Yield '!=' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_NoLet_Yield ::= EqualityExpression_NoLet_Yield '===' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_NoLet_Yield ::= EqualityExpression_NoLet_Yield '!==' RelationalExpression_Yield
-	0, // EqualityExpression_NoObjLiteral ::= RelationalExpression_NoObjLiteral
-	EqualityExpression, // EqualityExpression_NoObjLiteral ::= EqualityExpression_NoObjLiteral '==' RelationalExpression
-	EqualityExpression, // EqualityExpression_NoObjLiteral ::= EqualityExpression_NoObjLiteral '!=' RelationalExpression
-	EqualityExpression, // EqualityExpression_NoObjLiteral ::= EqualityExpression_NoObjLiteral '===' RelationalExpression
-	EqualityExpression, // EqualityExpression_NoObjLiteral ::= EqualityExpression_NoObjLiteral '!==' RelationalExpression
-	0, // EqualityExpression_StartWithLet ::= RelationalExpression_StartWithLet
-	EqualityExpression, // EqualityExpression_StartWithLet ::= EqualityExpression_StartWithLet '==' RelationalExpression
-	EqualityExpression, // EqualityExpression_StartWithLet ::= EqualityExpression_StartWithLet '!=' RelationalExpression
-	EqualityExpression, // EqualityExpression_StartWithLet ::= EqualityExpression_StartWithLet '===' RelationalExpression
-	EqualityExpression, // EqualityExpression_StartWithLet ::= EqualityExpression_StartWithLet '!==' RelationalExpression
-	0, // EqualityExpression_StartWithLet_Yield ::= RelationalExpression_StartWithLet_Yield
-	EqualityExpression, // EqualityExpression_StartWithLet_Yield ::= EqualityExpression_StartWithLet_Yield '==' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_StartWithLet_Yield ::= EqualityExpression_StartWithLet_Yield '!=' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_StartWithLet_Yield ::= EqualityExpression_StartWithLet_Yield '===' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_StartWithLet_Yield ::= EqualityExpression_StartWithLet_Yield '!==' RelationalExpression_Yield
-	0, // EqualityExpression_Yield ::= RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_Yield ::= EqualityExpression_Yield '==' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_Yield ::= EqualityExpression_Yield '!=' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_Yield ::= EqualityExpression_Yield '===' RelationalExpression_Yield
-	EqualityExpression, // EqualityExpression_Yield ::= EqualityExpression_Yield '!==' RelationalExpression_Yield
-	0, // BitwiseANDExpression ::= EqualityExpression
-	BitwiseANDExpression, // BitwiseANDExpression ::= BitwiseANDExpression '&' EqualityExpression
-	0, // BitwiseANDExpression_In ::= EqualityExpression_In
-	BitwiseANDExpression, // BitwiseANDExpression_In ::= BitwiseANDExpression_In '&' EqualityExpression_In
-	0, // BitwiseANDExpression_In_NoFuncClass ::= EqualityExpression_In_NoFuncClass
-	BitwiseANDExpression, // BitwiseANDExpression_In_NoFuncClass ::= BitwiseANDExpression_In_NoFuncClass '&' EqualityExpression_In
-	0, // BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	BitwiseANDExpression, // BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '&' EqualityExpression_In
-	0, // BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= EqualityExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	BitwiseANDExpression, // BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '&' EqualityExpression_In_Yield
-	0, // BitwiseANDExpression_In_NoObjLiteral ::= EqualityExpression_In_NoObjLiteral
-	BitwiseANDExpression, // BitwiseANDExpression_In_NoObjLiteral ::= BitwiseANDExpression_In_NoObjLiteral '&' EqualityExpression_In
-	0, // BitwiseANDExpression_In_Yield ::= EqualityExpression_In_Yield
-	BitwiseANDExpression, // BitwiseANDExpression_In_Yield ::= BitwiseANDExpression_In_Yield '&' EqualityExpression_In_Yield
-	0, // BitwiseANDExpression_NoLet ::= EqualityExpression_NoLet
-	BitwiseANDExpression, // BitwiseANDExpression_NoLet ::= BitwiseANDExpression_NoLet '&' EqualityExpression
-	0, // BitwiseANDExpression_NoLet_Yield ::= EqualityExpression_NoLet_Yield
-	BitwiseANDExpression, // BitwiseANDExpression_NoLet_Yield ::= BitwiseANDExpression_NoLet_Yield '&' EqualityExpression_Yield
-	0, // BitwiseANDExpression_NoObjLiteral ::= EqualityExpression_NoObjLiteral
-	BitwiseANDExpression, // BitwiseANDExpression_NoObjLiteral ::= BitwiseANDExpression_NoObjLiteral '&' EqualityExpression
-	0, // BitwiseANDExpression_StartWithLet ::= EqualityExpression_StartWithLet
-	BitwiseANDExpression, // BitwiseANDExpression_StartWithLet ::= BitwiseANDExpression_StartWithLet '&' EqualityExpression
-	0, // BitwiseANDExpression_StartWithLet_Yield ::= EqualityExpression_StartWithLet_Yield
-	BitwiseANDExpression, // BitwiseANDExpression_StartWithLet_Yield ::= BitwiseANDExpression_StartWithLet_Yield '&' EqualityExpression_Yield
-	0, // BitwiseANDExpression_Yield ::= EqualityExpression_Yield
-	BitwiseANDExpression, // BitwiseANDExpression_Yield ::= BitwiseANDExpression_Yield '&' EqualityExpression_Yield
-	0, // BitwiseXORExpression ::= BitwiseANDExpression
-	BitwiseXORExpression, // BitwiseXORExpression ::= BitwiseXORExpression '^' BitwiseANDExpression
-	0, // BitwiseXORExpression_In ::= BitwiseANDExpression_In
-	BitwiseXORExpression, // BitwiseXORExpression_In ::= BitwiseXORExpression_In '^' BitwiseANDExpression_In
-	0, // BitwiseXORExpression_In_NoFuncClass ::= BitwiseANDExpression_In_NoFuncClass
-	BitwiseXORExpression, // BitwiseXORExpression_In_NoFuncClass ::= BitwiseXORExpression_In_NoFuncClass '^' BitwiseANDExpression_In
-	0, // BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	BitwiseXORExpression, // BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '^' BitwiseANDExpression_In
-	0, // BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BitwiseANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	BitwiseXORExpression, // BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '^' BitwiseANDExpression_In_Yield
-	0, // BitwiseXORExpression_In_NoObjLiteral ::= BitwiseANDExpression_In_NoObjLiteral
-	BitwiseXORExpression, // BitwiseXORExpression_In_NoObjLiteral ::= BitwiseXORExpression_In_NoObjLiteral '^' BitwiseANDExpression_In
-	0, // BitwiseXORExpression_In_Yield ::= BitwiseANDExpression_In_Yield
-	BitwiseXORExpression, // BitwiseXORExpression_In_Yield ::= BitwiseXORExpression_In_Yield '^' BitwiseANDExpression_In_Yield
-	0, // BitwiseXORExpression_NoLet ::= BitwiseANDExpression_NoLet
-	BitwiseXORExpression, // BitwiseXORExpression_NoLet ::= BitwiseXORExpression_NoLet '^' BitwiseANDExpression
-	0, // BitwiseXORExpression_NoLet_Yield ::= BitwiseANDExpression_NoLet_Yield
-	BitwiseXORExpression, // BitwiseXORExpression_NoLet_Yield ::= BitwiseXORExpression_NoLet_Yield '^' BitwiseANDExpression_Yield
-	0, // BitwiseXORExpression_NoObjLiteral ::= BitwiseANDExpression_NoObjLiteral
-	BitwiseXORExpression, // BitwiseXORExpression_NoObjLiteral ::= BitwiseXORExpression_NoObjLiteral '^' BitwiseANDExpression
-	0, // BitwiseXORExpression_StartWithLet ::= BitwiseANDExpression_StartWithLet
-	BitwiseXORExpression, // BitwiseXORExpression_StartWithLet ::= BitwiseXORExpression_StartWithLet '^' BitwiseANDExpression
-	0, // BitwiseXORExpression_StartWithLet_Yield ::= BitwiseANDExpression_StartWithLet_Yield
-	BitwiseXORExpression, // BitwiseXORExpression_StartWithLet_Yield ::= BitwiseXORExpression_StartWithLet_Yield '^' BitwiseANDExpression_Yield
-	0, // BitwiseXORExpression_Yield ::= BitwiseANDExpression_Yield
-	BitwiseXORExpression, // BitwiseXORExpression_Yield ::= BitwiseXORExpression_Yield '^' BitwiseANDExpression_Yield
-	0, // BitwiseORExpression ::= BitwiseXORExpression
-	BitwiseORExpression, // BitwiseORExpression ::= BitwiseORExpression '|' BitwiseXORExpression
-	0, // BitwiseORExpression_In ::= BitwiseXORExpression_In
-	BitwiseORExpression, // BitwiseORExpression_In ::= BitwiseORExpression_In '|' BitwiseXORExpression_In
-	0, // BitwiseORExpression_In_NoFuncClass ::= BitwiseXORExpression_In_NoFuncClass
-	BitwiseORExpression, // BitwiseORExpression_In_NoFuncClass ::= BitwiseORExpression_In_NoFuncClass '|' BitwiseXORExpression_In
-	0, // BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	BitwiseORExpression, // BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '|' BitwiseXORExpression_In
-	0, // BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BitwiseXORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	BitwiseORExpression, // BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '|' BitwiseXORExpression_In_Yield
-	0, // BitwiseORExpression_In_NoObjLiteral ::= BitwiseXORExpression_In_NoObjLiteral
-	BitwiseORExpression, // BitwiseORExpression_In_NoObjLiteral ::= BitwiseORExpression_In_NoObjLiteral '|' BitwiseXORExpression_In
-	0, // BitwiseORExpression_In_Yield ::= BitwiseXORExpression_In_Yield
-	BitwiseORExpression, // BitwiseORExpression_In_Yield ::= BitwiseORExpression_In_Yield '|' BitwiseXORExpression_In_Yield
-	0, // BitwiseORExpression_NoLet ::= BitwiseXORExpression_NoLet
-	BitwiseORExpression, // BitwiseORExpression_NoLet ::= BitwiseORExpression_NoLet '|' BitwiseXORExpression
-	0, // BitwiseORExpression_NoLet_Yield ::= BitwiseXORExpression_NoLet_Yield
-	BitwiseORExpression, // BitwiseORExpression_NoLet_Yield ::= BitwiseORExpression_NoLet_Yield '|' BitwiseXORExpression_Yield
-	0, // BitwiseORExpression_NoObjLiteral ::= BitwiseXORExpression_NoObjLiteral
-	BitwiseORExpression, // BitwiseORExpression_NoObjLiteral ::= BitwiseORExpression_NoObjLiteral '|' BitwiseXORExpression
-	0, // BitwiseORExpression_StartWithLet ::= BitwiseXORExpression_StartWithLet
-	BitwiseORExpression, // BitwiseORExpression_StartWithLet ::= BitwiseORExpression_StartWithLet '|' BitwiseXORExpression
-	0, // BitwiseORExpression_StartWithLet_Yield ::= BitwiseXORExpression_StartWithLet_Yield
-	BitwiseORExpression, // BitwiseORExpression_StartWithLet_Yield ::= BitwiseORExpression_StartWithLet_Yield '|' BitwiseXORExpression_Yield
-	0, // BitwiseORExpression_Yield ::= BitwiseXORExpression_Yield
-	BitwiseORExpression, // BitwiseORExpression_Yield ::= BitwiseORExpression_Yield '|' BitwiseXORExpression_Yield
-	0, // LogicalANDExpression ::= BitwiseORExpression
-	LogicalANDExpression, // LogicalANDExpression ::= LogicalANDExpression '&&' BitwiseORExpression
-	0, // LogicalANDExpression_In ::= BitwiseORExpression_In
-	LogicalANDExpression, // LogicalANDExpression_In ::= LogicalANDExpression_In '&&' BitwiseORExpression_In
-	0, // LogicalANDExpression_In_NoFuncClass ::= BitwiseORExpression_In_NoFuncClass
-	LogicalANDExpression, // LogicalANDExpression_In_NoFuncClass ::= LogicalANDExpression_In_NoFuncClass '&&' BitwiseORExpression_In
-	0, // LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	LogicalANDExpression, // LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '&&' BitwiseORExpression_In
-	0, // LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BitwiseORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	LogicalANDExpression, // LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '&&' BitwiseORExpression_In_Yield
-	0, // LogicalANDExpression_In_NoObjLiteral ::= BitwiseORExpression_In_NoObjLiteral
-	LogicalANDExpression, // LogicalANDExpression_In_NoObjLiteral ::= LogicalANDExpression_In_NoObjLiteral '&&' BitwiseORExpression_In
-	0, // LogicalANDExpression_In_Yield ::= BitwiseORExpression_In_Yield
-	LogicalANDExpression, // LogicalANDExpression_In_Yield ::= LogicalANDExpression_In_Yield '&&' BitwiseORExpression_In_Yield
-	0, // LogicalANDExpression_NoLet ::= BitwiseORExpression_NoLet
-	LogicalANDExpression, // LogicalANDExpression_NoLet ::= LogicalANDExpression_NoLet '&&' BitwiseORExpression
-	0, // LogicalANDExpression_NoLet_Yield ::= BitwiseORExpression_NoLet_Yield
-	LogicalANDExpression, // LogicalANDExpression_NoLet_Yield ::= LogicalANDExpression_NoLet_Yield '&&' BitwiseORExpression_Yield
-	0, // LogicalANDExpression_NoObjLiteral ::= BitwiseORExpression_NoObjLiteral
-	LogicalANDExpression, // LogicalANDExpression_NoObjLiteral ::= LogicalANDExpression_NoObjLiteral '&&' BitwiseORExpression
-	0, // LogicalANDExpression_StartWithLet ::= BitwiseORExpression_StartWithLet
-	LogicalANDExpression, // LogicalANDExpression_StartWithLet ::= LogicalANDExpression_StartWithLet '&&' BitwiseORExpression
-	0, // LogicalANDExpression_StartWithLet_Yield ::= BitwiseORExpression_StartWithLet_Yield
-	LogicalANDExpression, // LogicalANDExpression_StartWithLet_Yield ::= LogicalANDExpression_StartWithLet_Yield '&&' BitwiseORExpression_Yield
-	0, // LogicalANDExpression_Yield ::= BitwiseORExpression_Yield
-	LogicalANDExpression, // LogicalANDExpression_Yield ::= LogicalANDExpression_Yield '&&' BitwiseORExpression_Yield
-	0, // LogicalORExpression ::= LogicalANDExpression
-	LogicalORExpression, // LogicalORExpression ::= LogicalORExpression '||' LogicalANDExpression
-	0, // LogicalORExpression_In ::= LogicalANDExpression_In
-	LogicalORExpression, // LogicalORExpression_In ::= LogicalORExpression_In '||' LogicalANDExpression_In
-	0, // LogicalORExpression_In_NoFuncClass ::= LogicalANDExpression_In_NoFuncClass
-	LogicalORExpression, // LogicalORExpression_In_NoFuncClass ::= LogicalORExpression_In_NoFuncClass '||' LogicalANDExpression_In
-	0, // LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	LogicalORExpression, // LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '||' LogicalANDExpression_In
-	0, // LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LogicalANDExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	LogicalORExpression, // LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '||' LogicalANDExpression_In_Yield
-	0, // LogicalORExpression_In_NoObjLiteral ::= LogicalANDExpression_In_NoObjLiteral
-	LogicalORExpression, // LogicalORExpression_In_NoObjLiteral ::= LogicalORExpression_In_NoObjLiteral '||' LogicalANDExpression_In
-	0, // LogicalORExpression_In_Yield ::= LogicalANDExpression_In_Yield
-	LogicalORExpression, // LogicalORExpression_In_Yield ::= LogicalORExpression_In_Yield '||' LogicalANDExpression_In_Yield
-	0, // LogicalORExpression_NoLet ::= LogicalANDExpression_NoLet
-	LogicalORExpression, // LogicalORExpression_NoLet ::= LogicalORExpression_NoLet '||' LogicalANDExpression
-	0, // LogicalORExpression_NoLet_Yield ::= LogicalANDExpression_NoLet_Yield
-	LogicalORExpression, // LogicalORExpression_NoLet_Yield ::= LogicalORExpression_NoLet_Yield '||' LogicalANDExpression_Yield
-	0, // LogicalORExpression_NoObjLiteral ::= LogicalANDExpression_NoObjLiteral
-	LogicalORExpression, // LogicalORExpression_NoObjLiteral ::= LogicalORExpression_NoObjLiteral '||' LogicalANDExpression
-	0, // LogicalORExpression_StartWithLet ::= LogicalANDExpression_StartWithLet
-	LogicalORExpression, // LogicalORExpression_StartWithLet ::= LogicalORExpression_StartWithLet '||' LogicalANDExpression
-	0, // LogicalORExpression_StartWithLet_Yield ::= LogicalANDExpression_StartWithLet_Yield
-	LogicalORExpression, // LogicalORExpression_StartWithLet_Yield ::= LogicalORExpression_StartWithLet_Yield '||' LogicalANDExpression_Yield
-	0, // LogicalORExpression_Yield ::= LogicalANDExpression_Yield
-	LogicalORExpression, // LogicalORExpression_Yield ::= LogicalORExpression_Yield '||' LogicalANDExpression_Yield
-	0, // ConditionalExpression ::= LogicalORExpression
-	ConditionalExpression, // ConditionalExpression ::= LogicalORExpression '?' AssignmentExpression_In ':' AssignmentExpression
-	0, // ConditionalExpression_In ::= LogicalORExpression_In
-	ConditionalExpression, // ConditionalExpression_In ::= LogicalORExpression_In '?' AssignmentExpression_In ':' AssignmentExpression_In
-	0, // ConditionalExpression_In_NoFuncClass ::= LogicalORExpression_In_NoFuncClass
-	ConditionalExpression, // ConditionalExpression_In_NoFuncClass ::= LogicalORExpression_In_NoFuncClass '?' AssignmentExpression_In ':' AssignmentExpression_In
-	0, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	ConditionalExpression, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression_In
-	0, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	ConditionalExpression, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LogicalORExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_In_Yield
-	0, // ConditionalExpression_In_NoObjLiteral ::= LogicalORExpression_In_NoObjLiteral
-	ConditionalExpression, // ConditionalExpression_In_NoObjLiteral ::= LogicalORExpression_In_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression_In
-	0, // ConditionalExpression_In_Yield ::= LogicalORExpression_In_Yield
-	ConditionalExpression, // ConditionalExpression_In_Yield ::= LogicalORExpression_In_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_In_Yield
-	0, // ConditionalExpression_NoLet ::= LogicalORExpression_NoLet
-	ConditionalExpression, // ConditionalExpression_NoLet ::= LogicalORExpression_NoLet '?' AssignmentExpression_In ':' AssignmentExpression
-	0, // ConditionalExpression_NoLet_Yield ::= LogicalORExpression_NoLet_Yield
-	ConditionalExpression, // ConditionalExpression_NoLet_Yield ::= LogicalORExpression_NoLet_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
-	0, // ConditionalExpression_NoObjLiteral ::= LogicalORExpression_NoObjLiteral
-	ConditionalExpression, // ConditionalExpression_NoObjLiteral ::= LogicalORExpression_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression
-	0, // ConditionalExpression_StartWithLet ::= LogicalORExpression_StartWithLet
-	ConditionalExpression, // ConditionalExpression_StartWithLet ::= LogicalORExpression_StartWithLet '?' AssignmentExpression_In ':' AssignmentExpression
-	0, // ConditionalExpression_StartWithLet_Yield ::= LogicalORExpression_StartWithLet_Yield
-	ConditionalExpression, // ConditionalExpression_StartWithLet_Yield ::= LogicalORExpression_StartWithLet_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
-	0, // ConditionalExpression_Yield ::= LogicalORExpression_Yield
-	ConditionalExpression, // ConditionalExpression_Yield ::= LogicalORExpression_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
+	0, // ArithmeticExpression ::= UnaryExpression
+	AdditiveExpression, // ArithmeticExpression ::= ArithmeticExpression '+' ArithmeticExpression
+	AdditiveExpression, // ArithmeticExpression ::= ArithmeticExpression '-' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression ::= ArithmeticExpression '<<' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression ::= ArithmeticExpression '>>' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression ::= ArithmeticExpression '>>>' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression ::= ArithmeticExpression '*' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression ::= ArithmeticExpression '/' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression ::= ArithmeticExpression '%' ArithmeticExpression
+	0, // ArithmeticExpression_NoFuncClass ::= UnaryExpression_NoFuncClass
+	AdditiveExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '+' ArithmeticExpression
+	AdditiveExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '-' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '<<' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '>>' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '>>>' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '*' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '/' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '%' ArithmeticExpression
+	0, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral
+	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '+' ArithmeticExpression
+	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '-' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '<<' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '>>' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '>>>' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '*' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '/' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '%' ArithmeticExpression
+	0, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '+' ArithmeticExpression_Yield
+	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '-' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '<<' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>>' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>>>' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '*' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '/' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '%' ArithmeticExpression_Yield
+	0, // ArithmeticExpression_NoLet ::= UnaryExpression_NoLet
+	AdditiveExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '+' ArithmeticExpression
+	AdditiveExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '-' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '<<' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '>>' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '>>>' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '*' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '/' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '%' ArithmeticExpression
+	0, // ArithmeticExpression_NoLet_Yield ::= UnaryExpression_NoLet_Yield
+	AdditiveExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '+' ArithmeticExpression_Yield
+	AdditiveExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '-' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '<<' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '>>' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '>>>' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '*' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '/' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '%' ArithmeticExpression_Yield
+	0, // ArithmeticExpression_NoObjLiteral ::= UnaryExpression_NoObjLiteral
+	AdditiveExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '+' ArithmeticExpression
+	AdditiveExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '-' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '<<' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '>>' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '>>>' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '*' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '/' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '%' ArithmeticExpression
+	0, // ArithmeticExpression_StartWithLet ::= UnaryExpression_StartWithLet
+	AdditiveExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '+' ArithmeticExpression
+	AdditiveExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '-' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '<<' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '>>' ArithmeticExpression
+	ShiftExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '>>>' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '*' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '/' ArithmeticExpression
+	MultiplicativeExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '%' ArithmeticExpression
+	0, // ArithmeticExpression_StartWithLet_Yield ::= UnaryExpression_StartWithLet_Yield
+	AdditiveExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '+' ArithmeticExpression_Yield
+	AdditiveExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '-' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '<<' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '>>' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '>>>' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '*' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '/' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '%' ArithmeticExpression_Yield
+	0, // ArithmeticExpression_Yield ::= UnaryExpression_Yield
+	AdditiveExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '+' ArithmeticExpression_Yield
+	AdditiveExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '-' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '<<' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '>>' ArithmeticExpression_Yield
+	ShiftExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '>>>' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '*' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '/' ArithmeticExpression_Yield
+	MultiplicativeExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '%' ArithmeticExpression_Yield
+	0, // BinaryExpression ::= ArithmeticExpression
+	RelationalExpression, // BinaryExpression ::= BinaryExpression '<' BinaryExpression
+	RelationalExpression, // BinaryExpression ::= BinaryExpression '>' BinaryExpression
+	RelationalExpression, // BinaryExpression ::= BinaryExpression '<=' BinaryExpression
+	RelationalExpression, // BinaryExpression ::= BinaryExpression '>=' BinaryExpression
+	RelationalExpression, // BinaryExpression ::= BinaryExpression 'instanceof' BinaryExpression
+	EqualityExpression, // BinaryExpression ::= BinaryExpression '==' BinaryExpression
+	EqualityExpression, // BinaryExpression ::= BinaryExpression '!=' BinaryExpression
+	EqualityExpression, // BinaryExpression ::= BinaryExpression '===' BinaryExpression
+	EqualityExpression, // BinaryExpression ::= BinaryExpression '!==' BinaryExpression
+	BitwiseANDExpression, // BinaryExpression ::= BinaryExpression '&' BinaryExpression
+	BitwiseXORExpression, // BinaryExpression ::= BinaryExpression '^' BinaryExpression
+	BitwiseORExpression, // BinaryExpression ::= BinaryExpression '|' BinaryExpression
+	LogicalANDExpression, // BinaryExpression ::= BinaryExpression '&&' BinaryExpression
+	LogicalORExpression, // BinaryExpression ::= BinaryExpression '||' BinaryExpression
+	0, // BinaryExpression_In ::= ArithmeticExpression
+	RelationalExpression, // BinaryExpression_In ::= BinaryExpression_In '<' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In ::= BinaryExpression_In '>' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In ::= BinaryExpression_In '<=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In ::= BinaryExpression_In '>=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In ::= BinaryExpression_In 'instanceof' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In ::= BinaryExpression_In 'in' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In ::= BinaryExpression_In '==' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In ::= BinaryExpression_In '!=' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In ::= BinaryExpression_In '===' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In ::= BinaryExpression_In '!==' BinaryExpression_In
+	BitwiseANDExpression, // BinaryExpression_In ::= BinaryExpression_In '&' BinaryExpression_In
+	BitwiseXORExpression, // BinaryExpression_In ::= BinaryExpression_In '^' BinaryExpression_In
+	BitwiseORExpression, // BinaryExpression_In ::= BinaryExpression_In '|' BinaryExpression_In
+	LogicalANDExpression, // BinaryExpression_In ::= BinaryExpression_In '&&' BinaryExpression_In
+	LogicalORExpression, // BinaryExpression_In ::= BinaryExpression_In '||' BinaryExpression_In
+	0, // BinaryExpression_In_NoFuncClass ::= ArithmeticExpression_NoFuncClass
+	RelationalExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '<' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '>' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '<=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '>=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass 'instanceof' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass 'in' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '==' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '!=' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '===' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '!==' BinaryExpression_In
+	BitwiseANDExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '&' BinaryExpression_In
+	BitwiseXORExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '^' BinaryExpression_In
+	BitwiseORExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '|' BinaryExpression_In
+	LogicalANDExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '&&' BinaryExpression_In
+	LogicalORExpression, // BinaryExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '||' BinaryExpression_In
+	0, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '<' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '>' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '<=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '>=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral 'instanceof' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral 'in' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '==' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '!=' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '===' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '!==' BinaryExpression_In
+	BitwiseANDExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '&' BinaryExpression_In
+	BitwiseXORExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '^' BinaryExpression_In
+	BitwiseORExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '|' BinaryExpression_In
+	LogicalANDExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '&&' BinaryExpression_In
+	LogicalORExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '||' BinaryExpression_In
+	0, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '<' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '<=' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>=' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield 'instanceof' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield 'in' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '==' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '!=' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '===' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '!==' BinaryExpression_In_Yield
+	BitwiseANDExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '&' BinaryExpression_In_Yield
+	BitwiseXORExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '^' BinaryExpression_In_Yield
+	BitwiseORExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '|' BinaryExpression_In_Yield
+	LogicalANDExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '&&' BinaryExpression_In_Yield
+	LogicalORExpression, // BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '||' BinaryExpression_In_Yield
+	0, // BinaryExpression_In_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral
+	RelationalExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '<' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '>' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '<=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '>=' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral 'instanceof' BinaryExpression_In
+	RelationalExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral 'in' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '==' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '!=' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '===' BinaryExpression_In
+	EqualityExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '!==' BinaryExpression_In
+	BitwiseANDExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '&' BinaryExpression_In
+	BitwiseXORExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '^' BinaryExpression_In
+	BitwiseORExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '|' BinaryExpression_In
+	LogicalANDExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '&&' BinaryExpression_In
+	LogicalORExpression, // BinaryExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '||' BinaryExpression_In
+	0, // BinaryExpression_In_Yield ::= ArithmeticExpression_Yield
+	RelationalExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '<' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '>' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '<=' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '>=' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield 'instanceof' BinaryExpression_In_Yield
+	RelationalExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield 'in' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '==' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '!=' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '===' BinaryExpression_In_Yield
+	EqualityExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '!==' BinaryExpression_In_Yield
+	BitwiseANDExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '&' BinaryExpression_In_Yield
+	BitwiseXORExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '^' BinaryExpression_In_Yield
+	BitwiseORExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '|' BinaryExpression_In_Yield
+	LogicalANDExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '&&' BinaryExpression_In_Yield
+	LogicalORExpression, // BinaryExpression_In_Yield ::= BinaryExpression_In_Yield '||' BinaryExpression_In_Yield
+	0, // BinaryExpression_NoLet ::= ArithmeticExpression_NoLet
+	RelationalExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '<' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '>' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '<=' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '>=' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet 'instanceof' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '==' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '!=' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '===' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '!==' BinaryExpression
+	BitwiseANDExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '&' BinaryExpression
+	BitwiseXORExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '^' BinaryExpression
+	BitwiseORExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '|' BinaryExpression
+	LogicalANDExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '&&' BinaryExpression
+	LogicalORExpression, // BinaryExpression_NoLet ::= BinaryExpression_NoLet '||' BinaryExpression
+	0, // BinaryExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield
+	RelationalExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '<' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '>' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '<=' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '>=' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield 'instanceof' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '==' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '!=' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '===' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '!==' BinaryExpression_Yield
+	BitwiseANDExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '&' BinaryExpression_Yield
+	BitwiseXORExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '^' BinaryExpression_Yield
+	BitwiseORExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '|' BinaryExpression_Yield
+	LogicalANDExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '&&' BinaryExpression_Yield
+	LogicalORExpression, // BinaryExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '||' BinaryExpression_Yield
+	0, // BinaryExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral
+	RelationalExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '<' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '>' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '<=' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '>=' BinaryExpression
+	RelationalExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral 'instanceof' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '==' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '!=' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '===' BinaryExpression
+	EqualityExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '!==' BinaryExpression
+	BitwiseANDExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '&' BinaryExpression
+	BitwiseXORExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '^' BinaryExpression
+	BitwiseORExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '|' BinaryExpression
+	LogicalANDExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '&&' BinaryExpression
+	LogicalORExpression, // BinaryExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '||' BinaryExpression
+	0, // BinaryExpression_StartWithLet ::= ArithmeticExpression_StartWithLet
+	RelationalExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '<' BinaryExpression
+	RelationalExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '>' BinaryExpression
+	RelationalExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '<=' BinaryExpression
+	RelationalExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '>=' BinaryExpression
+	RelationalExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet 'instanceof' BinaryExpression
+	EqualityExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '==' BinaryExpression
+	EqualityExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '!=' BinaryExpression
+	EqualityExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '===' BinaryExpression
+	EqualityExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '!==' BinaryExpression
+	BitwiseANDExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '&' BinaryExpression
+	BitwiseXORExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '^' BinaryExpression
+	BitwiseORExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '|' BinaryExpression
+	LogicalANDExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '&&' BinaryExpression
+	LogicalORExpression, // BinaryExpression_StartWithLet ::= BinaryExpression_StartWithLet '||' BinaryExpression
+	0, // BinaryExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield
+	RelationalExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '<' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '>' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '<=' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '>=' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield 'instanceof' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '==' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '!=' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '===' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '!==' BinaryExpression_Yield
+	BitwiseANDExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '&' BinaryExpression_Yield
+	BitwiseXORExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '^' BinaryExpression_Yield
+	BitwiseORExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '|' BinaryExpression_Yield
+	LogicalANDExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '&&' BinaryExpression_Yield
+	LogicalORExpression, // BinaryExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '||' BinaryExpression_Yield
+	0, // BinaryExpression_Yield ::= ArithmeticExpression_Yield
+	RelationalExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '<' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '>' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '<=' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '>=' BinaryExpression_Yield
+	RelationalExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield 'instanceof' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '==' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '!=' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '===' BinaryExpression_Yield
+	EqualityExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '!==' BinaryExpression_Yield
+	BitwiseANDExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '&' BinaryExpression_Yield
+	BitwiseXORExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '^' BinaryExpression_Yield
+	BitwiseORExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '|' BinaryExpression_Yield
+	LogicalANDExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '&&' BinaryExpression_Yield
+	LogicalORExpression, // BinaryExpression_Yield ::= BinaryExpression_Yield '||' BinaryExpression_Yield
+	0, // ConditionalExpression ::= BinaryExpression
+	ConditionalExpression, // ConditionalExpression ::= BinaryExpression '?' AssignmentExpression_In ':' AssignmentExpression
+	0, // ConditionalExpression_In ::= BinaryExpression_In
+	ConditionalExpression, // ConditionalExpression_In ::= BinaryExpression_In '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0, // ConditionalExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass
+	ConditionalExpression, // ConditionalExpression_In_NoFuncClass ::= BinaryExpression_In_NoFuncClass '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
+	ConditionalExpression, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	ConditionalExpression, // ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= BinaryExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_In_Yield
+	0, // ConditionalExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral
+	ConditionalExpression, // ConditionalExpression_In_NoObjLiteral ::= BinaryExpression_In_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0, // ConditionalExpression_In_Yield ::= BinaryExpression_In_Yield
+	ConditionalExpression, // ConditionalExpression_In_Yield ::= BinaryExpression_In_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_In_Yield
+	0, // ConditionalExpression_NoLet ::= BinaryExpression_NoLet
+	ConditionalExpression, // ConditionalExpression_NoLet ::= BinaryExpression_NoLet '?' AssignmentExpression_In ':' AssignmentExpression
+	0, // ConditionalExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield
+	ConditionalExpression, // ConditionalExpression_NoLet_Yield ::= BinaryExpression_NoLet_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
+	0, // ConditionalExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral
+	ConditionalExpression, // ConditionalExpression_NoObjLiteral ::= BinaryExpression_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression
+	0, // ConditionalExpression_StartWithLet ::= BinaryExpression_StartWithLet
+	ConditionalExpression, // ConditionalExpression_StartWithLet ::= BinaryExpression_StartWithLet '?' AssignmentExpression_In ':' AssignmentExpression
+	0, // ConditionalExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield
+	ConditionalExpression, // ConditionalExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
+	0, // ConditionalExpression_Yield ::= BinaryExpression_Yield
+	ConditionalExpression, // ConditionalExpression_Yield ::= BinaryExpression_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
 	0, // AssignmentExpression ::= ConditionalExpression
 	0, // AssignmentExpression ::= ArrowFunction
 	AssignmentExpression, // AssignmentExpression ::= LeftHandSideExpression '=' AssignmentExpression
@@ -1770,10 +1660,9 @@ var nodeTypeStr = [...]string{
 	"Arguments",
 	"PostfixExpression",
 	"UnaryExpression",
-	"MultiplicativeExpression",
-	"MultiplicativeOperator",
 	"AdditiveExpression",
 	"ShiftExpression",
+	"MultiplicativeExpression",
 	"RelationalExpression",
 	"EqualityExpression",
 	"BitwiseANDExpression",
