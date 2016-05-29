@@ -217,4 +217,18 @@ public class TemplateStaticMethodsTest {
 		testRanges(new int[] {0,2,2,2,1,1,1,1,1,1,1,1,1,2,3,8,6,3,10,10,10,10,10,10,10,10,0,1,1,1,1,1});
 		testRanges(new int[] {1,1,1,1,2,2,2,2,8,8,8,8,1,1,1,1,1,4,4,4,1,1,1,1,1,1,1,1,1});
 	}
+
+	@Test
+	public void rangedHashes() throws Exception {
+		assertEquals(1, new TemplateStaticMethods().rangedHash("default", 64));
+		assertEquals("5c13d641", new TemplateStaticMethods().hashHex("default"));
+		assertEquals(0x5c13d641, new TemplateStaticMethods().stringHash("default"));
+
+		assertEquals(37, new TemplateStaticMethods().rangedHash("in", 64));
+		assertEquals(0xd25, new TemplateStaticMethods().stringHash("in"));
+		assertEquals("d25", new TemplateStaticMethods().hashHex("in"));
+
+		assertEquals(37, new TemplateStaticMethods().rangedHash("import", 64));
+		assertEquals("b96173a5", new TemplateStaticMethods().hashHex("import"));
+	}
 }

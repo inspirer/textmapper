@@ -90,6 +90,7 @@ restart:
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
+    hash := uint32(0)
 	for state >= 0 {
 		var ch int
 		switch {
@@ -108,6 +109,7 @@ restart:
 		if state < -1 || ch == -1 {
 			break
 		}
+    	hash = hash*uint32(31) + uint32(l.ch)
 
 		if l.ch == '\n' {
 			l.line++
@@ -145,8 +147,228 @@ restart:
 	rule := -state - 3
 	switch rule {
 	case 0:
-		if r, ok := instancesOfIDENTIFIER[l.Text()]; ok {
-			rule = r
+		hh := hash&63
+		switch hh {
+		case 1:
+			if hash == 0x5c13d641 && bytes.Equal([]byte("default"), l.source[l.tokenOffset:l.offset]) {
+				rule = 13
+				break
+			}
+			if hash == 0x2f9501 && bytes.Equal([]byte("enum"), l.source[l.tokenOffset:l.offset]) {
+				rule = 40
+				break
+			}
+		case 3:
+			if hash == 0xcd244983 && bytes.Equal([]byte("finally"), l.source[l.tokenOffset:l.offset]) {
+				rule = 19
+				break
+			}
+		case 6:
+			if hash == 0x37b0c6 && bytes.Equal([]byte("with"), l.source[l.tokenOffset:l.offset]) {
+				rule = 37
+				break
+			}
+		case 7:
+			if hash == 0x33c587 && bytes.Equal([]byte("null"), l.source[l.tokenOffset:l.offset]) {
+				rule = 41
+				break
+			}
+		case 9:
+			if hash == 0x18cc9 && bytes.Equal([]byte("for"), l.source[l.tokenOffset:l.offset]) {
+				rule = 20
+				break
+			}
+		case 11:
+			if hash == 0xc8b && bytes.Equal([]byte("do"), l.source[l.tokenOffset:l.offset]) {
+				rule = 15
+				break
+			}
+		case 13:
+			if hash == 0x6da5f8d && bytes.Equal([]byte("yield"), l.source[l.tokenOffset:l.offset]) {
+				rule = 38
+				break
+			}
+		case 14:
+			if hash == 0x36758e && bytes.Equal([]byte("true"), l.source[l.tokenOffset:l.offset]) {
+				rule = 42
+				break
+			}
+		case 17:
+			if hash == 0xcb7e7191 && bytes.Equal([]byte("target"), l.source[l.tokenOffset:l.offset]) {
+				rule = 51
+				break
+			}
+			if hash == 0xcccfb691 && bytes.Equal([]byte("typeof"), l.source[l.tokenOffset:l.offset]) {
+				rule = 33
+				break
+			}
+		case 20:
+			if hash == 0x375194 && bytes.Equal([]byte("void"), l.source[l.tokenOffset:l.offset]) {
+				rule = 35
+				break
+			}
+		case 22:
+			if hash == 0x58e7956 && bytes.Equal([]byte("await"), l.source[l.tokenOffset:l.offset]) {
+				rule = 39
+				break
+			}
+			if hash == 0x18f56 && bytes.Equal([]byte("get"), l.source[l.tokenOffset:l.offset]) {
+				rule = 46
+				break
+			}
+		case 23:
+			if hash == 0xdd7 && bytes.Equal([]byte("of"), l.source[l.tokenOffset:l.offset]) {
+				rule = 48
+				break
+			}
+		case 24:
+			if hash == 0x524f73d8 && bytes.Equal([]byte("function"), l.source[l.tokenOffset:l.offset]) {
+				rule = 21
+				break
+			}
+		case 25:
+			if hash == 0xb22d2499 && bytes.Equal([]byte("extends"), l.source[l.tokenOffset:l.offset]) {
+				rule = 18
+				break
+			}
+		case 27:
+			if hash == 0x1a21b && bytes.Equal([]byte("let"), l.source[l.tokenOffset:l.offset]) {
+				rule = 47
+				break
+			}
+		case 29:
+			if hash == 0xd1d && bytes.Equal([]byte("if"), l.source[l.tokenOffset:l.offset]) {
+				rule = 22
+				break
+			}
+		case 30:
+			if hash == 0x364e9e && bytes.Equal([]byte("this"), l.source[l.tokenOffset:l.offset]) {
+				rule = 30
+				break
+			}
+		case 32:
+			if hash == 0x1a9a0 && bytes.Equal([]byte("new"), l.source[l.tokenOffset:l.offset]) {
+				rule = 26
+				break
+			}
+		case 33:
+			if hash == 0x20a6f421 && bytes.Equal([]byte("debugger"), l.source[l.tokenOffset:l.offset]) {
+				rule = 12
+				break
+			}
+		case 34:
+			if hash == 0x1bc62 && bytes.Equal([]byte("set"), l.source[l.tokenOffset:l.offset]) {
+				rule = 49
+				break
+			}
+		case 35:
+			if hash == 0x5a73763 && bytes.Equal([]byte("const"), l.source[l.tokenOffset:l.offset]) {
+				rule = 10
+				break
+			}
+			if hash == 0x5cb1923 && bytes.Equal([]byte("false"), l.source[l.tokenOffset:l.offset]) {
+				rule = 43
+				break
+			}
+		case 37:
+			if hash == 0xb96173a5 && bytes.Equal([]byte("import"), l.source[l.tokenOffset:l.offset]) {
+				rule = 23
+				break
+			}
+			if hash == 0xd25 && bytes.Equal([]byte("in"), l.source[l.tokenOffset:l.offset]) {
+				rule = 24
+				break
+			}
+		case 38:
+			if hash == 0x693a6e6 && bytes.Equal([]byte("throw"), l.source[l.tokenOffset:l.offset]) {
+				rule = 31
+				break
+			}
+		case 39:
+			if hash == 0xde312ca7 && bytes.Equal([]byte("continue"), l.source[l.tokenOffset:l.offset]) {
+				rule = 11
+				break
+			}
+			if hash == 0x1c727 && bytes.Equal([]byte("var"), l.source[l.tokenOffset:l.offset]) {
+				rule = 34
+				break
+			}
+		case 42:
+			if hash == 0x3017aa && bytes.Equal([]byte("from"), l.source[l.tokenOffset:l.offset]) {
+				rule = 45
+				break
+			}
+		case 43:
+			if hash == 0xb06685ab && bytes.Equal([]byte("delete"), l.source[l.tokenOffset:l.offset]) {
+				rule = 14
+				break
+			}
+		case 44:
+			if hash == 0x35c3d12c && bytes.Equal([]byte("instanceof"), l.source[l.tokenOffset:l.offset]) {
+				rule = 25
+				break
+			}
+		case 46:
+			if hash == 0xcacdce6e && bytes.Equal([]byte("static"), l.source[l.tokenOffset:l.offset]) {
+				rule = 50
+				break
+			}
+		case 48:
+			if hash == 0x2e7b30 && bytes.Equal([]byte("case"), l.source[l.tokenOffset:l.offset]) {
+				rule = 7
+				break
+			}
+			if hash == 0xc84e3d30 && bytes.Equal([]byte("return"), l.source[l.tokenOffset:l.offset]) {
+				rule = 27
+				break
+			}
+		case 49:
+			if hash == 0x6bdcb31 && bytes.Equal([]byte("while"), l.source[l.tokenOffset:l.offset]) {
+				rule = 36
+				break
+			}
+		case 50:
+			if hash == 0xc32 && bytes.Equal([]byte("as"), l.source[l.tokenOffset:l.offset]) {
+				rule = 44
+				break
+			}
+		case 52:
+			if hash == 0xb32913b4 && bytes.Equal([]byte("export"), l.source[l.tokenOffset:l.offset]) {
+				rule = 17
+				break
+			}
+			if hash == 0xcafbb734 && bytes.Equal([]byte("switch"), l.source[l.tokenOffset:l.offset]) {
+				rule = 29
+				break
+			}
+		case 56:
+			if hash == 0x5a5a978 && bytes.Equal([]byte("class"), l.source[l.tokenOffset:l.offset]) {
+				rule = 9
+				break
+			}
+		case 57:
+			if hash == 0x2f8d39 && bytes.Equal([]byte("else"), l.source[l.tokenOffset:l.offset]) {
+				rule = 16
+				break
+			}
+		case 59:
+			if hash == 0x5a0eebb && bytes.Equal([]byte("catch"), l.source[l.tokenOffset:l.offset]) {
+				rule = 8
+				break
+			}
+			if hash == 0x68b6f7b && bytes.Equal([]byte("super"), l.source[l.tokenOffset:l.offset]) {
+				rule = 28
+				break
+			}
+			if hash == 0x1c1bb && bytes.Equal([]byte("try"), l.source[l.tokenOffset:l.offset]) {
+				rule = 32
+				break
+			}
+		case 63:
+			if hash == 0x59a58ff && bytes.Equal([]byte("break"), l.source[l.tokenOffset:l.offset]) {
+				rule = 6
+				break
+			}
 		}
 	}
 
@@ -245,53 +467,4 @@ func (l *Lexer) Text() string {
 
 func (l *Lexer) Value() interface{} {
 	return l.value
-}
-
-var instancesOfIDENTIFIER = map[string]int{
-	"break": 6,
-	"case": 7,
-	"catch": 8,
-	"class": 9,
-	"const": 10,
-	"continue": 11,
-	"debugger": 12,
-	"default": 13,
-	"delete": 14,
-	"do": 15,
-	"else": 16,
-	"export": 17,
-	"extends": 18,
-	"finally": 19,
-	"for": 20,
-	"function": 21,
-	"if": 22,
-	"import": 23,
-	"in": 24,
-	"instanceof": 25,
-	"new": 26,
-	"return": 27,
-	"super": 28,
-	"switch": 29,
-	"this": 30,
-	"throw": 31,
-	"try": 32,
-	"typeof": 33,
-	"var": 34,
-	"void": 35,
-	"while": 36,
-	"with": 37,
-	"yield": 38,
-	"await": 39,
-	"enum": 40,
-	"null": 41,
-	"true": 42,
-	"false": 43,
-	"as": 44,
-	"from": 45,
-	"get": 46,
-	"let": 47,
-	"of": 48,
-	"set": 49,
-	"static": 50,
-	"target": 51,
 }

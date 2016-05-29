@@ -101,6 +101,9 @@ restart:
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
+${if self->useCustomMap()-}
+    hash := uint32(0)
+${end-}
 	for state >= 0 {
 		var ch int
 		switch {
@@ -123,6 +126,9 @@ ${end-}
 		if state < -1 || ch == -1 {
 			break
 		}
+${if self->useCustomMap()-}
+    	hash = hash*uint32(31) + uint32(l.ch)
+${end-}
 
 		if l.ch == '\n' {
 			l.line++
@@ -160,10 +166,21 @@ ${end-}
 	rule := -state - 3
 ${if self->classRules().exists(it|it->classHasInstances())-}
 	switch rule {
-${foreach rule in self->classRules().select(it|it->classHasInstances())-}
-	case ${rule.index}:
-		if r, ok := instancesOf${rule->classRuleName()}[l.Text()]; ok {
-			rule = r
+${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
+	case ${classRule.index}:
+		hh := hash&${classRule->rangeSwitchSize() - 1}
+		switch hh {
+${foreach instance in classRule->classInstances().groupBy(it|util.rangedHash(it.regexp.constantValue, classRule->rangeSwitchSize())).sort(it|util.rangedHash((it is java.util.List ? it[0] : it).regexp.constantValue, classRule->rangeSwitchSize()))-}
+${if instance is java.util.List-}
+		case ${util.rangedHash(instance[0].regexp.constantValue, classRule->rangeSwitchSize())}:
+${foreach i in instance.sort(it|it.regexp.constantValue)-}
+${call instanceToRuleIf(i.regexp.constantValue, i.index)-}
+${end-}
+${else-}
+		case ${util.rangedHash(instance.regexp.constantValue, classRule->rangeSwitchSize())}:
+${call instanceToRuleIf(instance.regexp.constantValue, instance.index)-}
+${end-}
+${end-}
 		}
 ${end-}
 	}
@@ -215,14 +232,13 @@ func (l *Lexer) Text() string {
 func (l *Lexer) Value() interface{} {
 	return l.value
 }
-${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
+${end}
 
-var instancesOf${classRule->classRuleName()} = map[string]int{
-${foreach instance in classRule->classInstances()-}
-	"${util.escape(instance.regexp.constantValue)}": ${instance.index},
-${end-}
-}
-${end-}
+${template instanceToRuleIf(val,ruleIndex)-}
+			if hash == 0x${util.hashHex(val)} && bytes.Equal([]byte("${util.escape(val)}"), l.source[l.tokenOffset:l.offset]) {
+				rule = ${ruleIndex}
+				break
+			}
 ${end}
 
 ${template lexerTables-}
@@ -312,6 +328,8 @@ ${cached query classHasInstances() = self->classInstances().size() > 0 }
 
 ${cached query classInstances() = context.syntax.lexerRules.select(x|x.classRule && x.classRule == self)}
 
+${cached query rangeSwitchSize() = util.rangeSwitchSize(self->classInstances().length)}
+
 ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
 
 ${cached query stateId() = 'State_' + util.uniqueId(self.name.replace('-', '_'), '__states__')}
@@ -320,3 +338,5 @@ ${template imports}${end}
 
 ${template onAfterNext}${end}
 ${template onBeforeNext}${end}
+
+${cached query useCustomMap() = self->classRules().exists(it|it->classHasInstances())}

@@ -299,4 +299,32 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		prefix.append(sb);
 		return prefix.toString();
 	}
+
+	public Integer rangeSwitchSize(Integer len) {
+		int range = 8;
+		while (range < len) {
+			range *= 2;
+		}
+		return range;
+	}
+
+	public String hashHex(String s) {
+		int i = stringHash(s);
+		return Integer.toHexString(i);
+	}
+
+	public int stringHash(String s) {
+		int hash = 0;
+		for (char c : s.toCharArray()) {
+			hash = hash*31 + c;
+		}
+		return hash;
+	}
+
+	public int rangedHash(String s, int range) {
+		int i = stringHash(s)%range;
+		if (i < 0) i += range;
+		return i;
+	}
+
 }
