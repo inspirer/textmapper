@@ -123,4 +123,21 @@ class ParserTables implements ParserData {
 	public Marker[] getMarkers() {
 		return markers;
 	}
+
+	private static int byteSize(int maxInt) {
+		return maxInt < Short.MAX_VALUE ? 2 : 4;
+	}
+
+	@Override
+	public int getByteSize() {
+		int result = 0;
+		if (sym_goto.length > 0) {
+			int max = sym_goto[sym_goto.length - 1];
+			result += sym_goto.length * byteSize(max);
+			result += (sym_from.length + sym_to.length) * byteSize(nstates);
+		}
+		result += (action_index.length + action_table.length) * 4;
+		result += (rlen.length + rleft.length) * byteSize(nsyms);
+		return result;
+	}
 }

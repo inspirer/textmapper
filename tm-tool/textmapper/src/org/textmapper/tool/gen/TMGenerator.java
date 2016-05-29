@@ -150,8 +150,14 @@ public final class TMGenerator {
 				env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			}
 			long textTime = System.currentTimeMillis() - start;
-			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, "
-					+ "text: " + textTime / 1000. + "s");
+			StringBuilder sb = new StringBuilder();
+			sb.append("lalr: ").append(generationTime / 1000.).append("s");
+			sb.append(", text: ").append(textTime / 1000.).append("s");
+			if (r != null) {
+				sb.append(", parser: ").append(r.getStatesCount()).append(" states, ")
+						.append(r.getByteSize()/1024).append("KB");
+			}
+			status.report(ProcessingStatus.KIND_INFO, sb.toString());
 			return true;
 		} catch (Exception t) {
 			String message = "lapg: internal error: " + t.getClass().getName();

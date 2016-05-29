@@ -47,4 +47,6 @@ public interface ParserData {
 	int[] getLeft();
 
 	Marker[] getMarkers();
+
+	int getByteSize();
 }
