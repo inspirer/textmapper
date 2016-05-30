@@ -1,7 +1,11 @@
 0.9.5
 -----
 
-[+] grammar templates: list<param Of> ::= (Of separator ',')+ ;
+[+] grammar templates
+[+] item markers
+[+] Go support
+[+] event based parsers (Go only)
+[+] Unicode 8.0.0
 
 0.9.4
 -----

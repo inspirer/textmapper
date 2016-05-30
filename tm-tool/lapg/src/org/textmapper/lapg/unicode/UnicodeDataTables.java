@@ -16,11 +16,11 @@
 package org.textmapper.lapg.unicode;
 
 /**
- * This file contains data for Unicode 7.0.0
+ * This file contains data for Unicode 8.0.0
  */
 class UnicodeDataTables {
 
-	static final String VERSION = "7.0.0";
+	static final String VERSION = "8.0.0";
 
 	static final String[] PROPERTIES = {
 		"ahom",

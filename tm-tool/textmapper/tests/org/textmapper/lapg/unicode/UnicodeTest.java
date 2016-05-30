@@ -118,7 +118,7 @@ public class UnicodeTest {
 			@Override
 			protected EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
 				HashMap<String, Object> res = new HashMap<>();
-				res.put("version", "7.0.0");
+				res.put("version", "8.0.0");
 				res.put("properties", properties);
 				res.put("aliases", aliases);
 				res.put("composites", compositeProperties);
