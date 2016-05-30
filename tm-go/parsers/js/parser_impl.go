@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Parser is a table-driven LALR parser for js.
+// Parser is a table-driven LALR parser for Javascript.
 type Parser struct {
 	err      ErrorHandler
 	listener Listener

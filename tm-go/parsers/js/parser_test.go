@@ -725,9 +725,6 @@ func (e *expTest) Node(nt js.NodeType, offset, endoffset int) {
 	return //len(e.parsed)
 }
 
-//func (e *expTest) Role(r js.NodeRole, node int) {
-//}
-
 func (e *expTest) done() {
 	if len(e.exp) > 0 {
 		first := e.exp[0]
@@ -777,9 +774,6 @@ type consumer struct{}
 
 func (c consumer) Node(t js.NodeType, offset, endoffset int) {
 }
-
-//func (c consumer) Role(r js.NodeRole, node int) {
-//}
 
 func BenchmarkParser(b *testing.B) {
 	l := new(js.Lexer)
