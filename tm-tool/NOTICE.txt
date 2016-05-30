@@ -6,6 +6,6 @@
 
    Lexer and Parser Generator
    http://textmapper.org/
-   Copyright 2002-2015 Evgeny Gryaznov
+   Copyright 2002-2016 Evgeny Gryaznov
 
    This product is developed by Evgeny Gryaznov, egryaznov@gmail.com
