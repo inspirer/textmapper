@@ -22,7 +22,7 @@ type symbol struct {
 
 type node struct {
 	sym   symbol
-	state int32
+	state int16
 	value interface{}
 }
 
@@ -49,7 +49,7 @@ func (p *Parser) ParseExpression(lexer *Lexer) (bool, ast.Expression) {
 	return ok, val
 }
 
-func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, interface{}) {
+func (p *Parser) parse(start, end int16, lexer *Lexer) (bool, interface{}) {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
@@ -176,7 +176,7 @@ func (p *Parser) recover() bool {
 	return false
 }
 
-func (p *Parser) action(state int32) int32 {
+func (p *Parser) action(state int16) int32 {
 	a := tmAction[state]
 	if a < -2 {
 		// Lookahead is needed.
@@ -195,7 +195,7 @@ func (p *Parser) action(state int32) int32 {
 	return a
 }
 
-func (p *Parser) gotoState(state, symbol int32) int32 {
+func (p *Parser) gotoState(state int16, symbol int32) int16 {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1] - 1
 

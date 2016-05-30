@@ -1,6 +1,6 @@
 package json
 
-var tmNumClasses = 23
+const tmNumClasses = 23
 
 var tmRuneClass = []uint8{
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 16, 16, 1, 1, 16, 1, 1,
@@ -13,6 +13,8 @@ var tmRuneClass = []uint8{
 	14, 14, 18, 14, 18, 10, 14, 14, 14, 14, 14, 2, 1, 3,
 }
 
+const tmRuneClassLen = 126
+
 var tmStateMap = []int{
 	0,
 }
@@ -21,7 +23,7 @@ var tmToken = []Token{
 	10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15,
 }
 
-var tmLexerAction = []int32{
+var tmLexerAction = []int8{
 	-2, -1, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, -1, 8, 11,
 	12, -1, 8, 8, 8, 8, -1, -4, -4, -4, -4, -4, -4, -4, -4, -4,
 	-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -5, -5,

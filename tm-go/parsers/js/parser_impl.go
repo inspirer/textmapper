@@ -16,7 +16,7 @@ type Parser struct {
 
 	lastToken Token
 	lastLine  int
-	endState  int32
+	endState  int16
 }
 
 type symbol struct {
@@ -27,7 +27,7 @@ type symbol struct {
 
 type node struct {
 	sym   symbol
-	state int32
+	state int16
 	value int
 }
 
@@ -45,7 +45,7 @@ const (
 	debugSyntax    = false
 )
 
-func (p *Parser) parse(start, end int32, lexer *Lexer) bool {
+func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
@@ -118,11 +118,11 @@ func (p *Parser) parse(start, end int32, lexer *Lexer) bool {
 // reduceAll simulates all pending reductions and return true if the parser
 // can consume the next token. This function also returns the state of the
 // parser after the reductions have been applied.
-func (p *Parser) reduceAll() (state int32, success bool) {
+func (p *Parser) reduceAll() (state int16, success bool) {
 	size := len(p.stack)
 	state = p.stack[size-1].state
 
-	var stack2alloc [4]int32
+	var stack2alloc [4]int16
 	stack2 := stack2alloc[:0]
 
 	for state != p.endState {
@@ -157,7 +157,7 @@ func (p *Parser) reduceAll() (state int32, success bool) {
 
 // insertSC inserts and reports a semicolon, unless there is a overriding rule
 // forbidding insertion in this particular location.
-func (p *Parser) insertSC(state int32, offset int) {
+func (p *Parser) insertSC(state int16, offset int) {
 	stateAfterSC := p.gotoState(state, int32(SEMICOLON))
 	if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
 		// ".. a semicolon is never inserted automatically if the semicolon would
@@ -192,7 +192,7 @@ func (p *Parser) fetchNext() {
 	newLine := line != p.lastLine
 	p.lastLine = line
 
-	if !(newLine || token == RBRACE || token == EOI || lastToken == RPAREN) {
+	if !(newLine || token == RBRACE || token == EOI || lastToken == RPAREN) || lastToken == SEMICOLON {
 		return
 	}
 
@@ -243,7 +243,7 @@ func (p *Parser) fetchNext() {
 	}
 }
 
-func (p *Parser) action(state int32) int32 {
+func (p *Parser) action(state int16) int32 {
 	a := tmAction[state]
 	if a < -2 {
 		// Lookahead is needed.
@@ -261,19 +261,27 @@ func (p *Parser) action(state int32) int32 {
 	return a
 }
 
-func (p *Parser) gotoState(state, symbol int32) int32 {
+func (p *Parser) gotoState(state int16, symbol int32) int16 {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1] - 1
 
-	for min <= max {
-		e := (min + max) >> 1
-		i := tmFrom[e]
-		if i == state {
-			return tmTo[e]
-		} else if i < state {
-			min = e + 1
-		} else {
-			max = e - 1
+	if max-min < 16 {
+		for i := min; i <= max; i++ {
+			if tmFrom[i] == state {
+				return tmTo[i]
+			}
+		}
+	} else {
+		for min <= max {
+			e := (min + max) >> 1
+			i := tmFrom[e]
+			if i == state {
+				return tmTo[e]
+			} else if i < state {
+				min = e + 1
+			} else {
+				max = e - 1
+			}
 		}
 	}
 	return -1

@@ -1047,10 +1047,10 @@ ${template go_lexer.onAfterNext}
 			// If we were in reContext before this token, this is a
 			// pre-increment/decrement, otherwise, this is a post. We can just
 			// propagate the previous value of reContext.
-			reContext = l.State == State_template || l.State == State_initial
+			reContext = (l.State == State_template || l.State == State_initial)
 		}
 	default:
-		reContext = token >= punctuationStart && token < punctuationEnd
+		reContext = (token >= punctuationStart && token < punctuationEnd)
 	}
 	if inTemplate {
 		if reContext {

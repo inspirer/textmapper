@@ -82,24 +82,26 @@ restart:
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
+	hash := uint32(0)
 	for state >= 0 {
 		var ch int
 		switch {
 		case l.ch < 0:
-			ch = 0
-		case int(l.ch) < len(tmRuneClass):
+			state = int(tmLexerAction[state*tmNumClasses])
+			if state == -1 {
+				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
+			}
+			continue
+		case int(l.ch) < tmRuneClassLen:
 			ch = int(tmRuneClass[l.ch])
 		default:
 			ch = 1
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state == -1 && ch == -1 {
-			l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
-			return EOI
-		}
-		if state < -1 || ch == -1 {
+		if state < -1 {
 			break
 		}
+		hash = hash*uint32(31) + uint32(l.ch)
 
 		if l.ch == '\n' {
 			l.line++
@@ -126,19 +128,46 @@ restart:
 			l.ch = -1 // EOI
 		}
 	}
-	if state == -1 {
-		l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
-		goto restart
-	}
-	if state == -2 {
-		return EOI
+	if state >= -2 {
+		if state == -1 {
+			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
+			goto restart
+		}
+		if state == -2 {
+			return EOI
+		}
 	}
 
 	rule := -state - 3
 	switch rule {
 	case 0:
-		if r, ok := instancesOfID[l.Text()]; ok {
-			rule = r
+		hh := hash&7
+		switch hh {
+		case 1:
+			if hash == 0x41 && bytes.Equal([]byte("A"), l.source[l.tokenOffset:l.offset]) {
+				rule = 13
+				break
+			}
+		case 2:
+			if hash == 0x42 && bytes.Equal([]byte("B"), l.source[l.tokenOffset:l.offset]) {
+				rule = 14
+				break
+			}
+		case 3:
+			if hash == 0x5cb1923 && bytes.Equal([]byte("false"), l.source[l.tokenOffset:l.offset]) {
+				rule = 12
+				break
+			}
+		case 6:
+			if hash == 0x36758e && bytes.Equal([]byte("true"), l.source[l.tokenOffset:l.offset]) {
+				rule = 11
+				break
+			}
+		case 7:
+			if hash == 0x33c587 && bytes.Equal([]byte("null"), l.source[l.tokenOffset:l.offset]) {
+				rule = 10
+				break
+			}
 		}
 	}
 
@@ -182,12 +211,4 @@ func (l *Lexer) Text() string {
 
 func (l *Lexer) Value() interface{} {
 	return l.value
-}
-
-var instancesOfID = map[string]int{
-	"null": 10,
-	"true": 11,
-	"false": 12,
-	"A": 13,
-	"B": 14,
 }

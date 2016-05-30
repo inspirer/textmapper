@@ -1,6 +1,6 @@
 package js
 
-var tmNumClasses = 71
+const tmNumClasses = 71
 
 type mapRange struct {
 	lo         rune
@@ -49,6 +49,8 @@ var tmRuneClass = []uint8{
 	48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,
 	48, 48, 48, 48, 48, 48, 48, 1, 48, 48, 48, 48, 48, 48, 48, 48,
 }
+
+const tmRuneClassLen = 256
 
 var tmRuneRanges = []mapRange{
 	{256, 660, 48, []uint8{
@@ -1075,7 +1077,7 @@ var tmToken = []Token{
 	92,
 }
 
-var tmLexerAction = []int32{
+var tmLexerAction = []int16{
 	4, -1, 5, 5, 5, 5, 5, 5, 6, 5, 7, 8, -1, -1, -1, -1,
 	-1, -1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
 	23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 5, 35, 36, 5,

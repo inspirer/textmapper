@@ -45,7 +45,7 @@ type symbol struct {
 
 type node struct {
 	sym   symbol
-	state int32
+	state ${self->stateType()}
 	value ${self->valueType()}
 }
 
@@ -74,7 +74,7 @@ ${end-}
 }
 ${end-}
 
-func (p *Parser) parse(start, end int32, lexer *Lexer) (bool, ${self->valueType()}) {
+func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) (bool, ${self->valueType()}) {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
@@ -212,7 +212,7 @@ func (p *Parser) recover() bool {
 }
 ${end-}
 
-func (p *Parser) action(state int32) int32 {
+func (p *Parser) action(state ${self->stateType()}) int32 {
 	a := tmAction[state]
 ${if self->needActionsTable()-}
 	if a < -2 {
@@ -233,7 +233,7 @@ ${end-}
 	return a
 }
 
-func (p *Parser) gotoState(state, symbol int32) int32 {
+func (p *Parser) gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1] - 1
 
@@ -312,10 +312,10 @@ ${end-}
 }
 
 func (n Symbol) String() string {
-    if n < Symbol(terminalEnd) {
-      return Token(n).String()
-    }
-    i := int(n) - int(terminalEnd)
+	if n < Symbol(terminalEnd) {
+		return Token(n).String()
+	}
+	i := int(n) - int(terminalEnd)
 	if i < len(symbolStr) {
 		return symbolStr[i]
 	}
@@ -336,15 +336,15 @@ var tmGoto = []int32{
 	${util.format(parser.symGoto, 16, 1)},
 }
 
-var tmFrom = []int32{
+var tmFrom = []${self->stateType()}{
 	${util.format(parser.symFrom, 16, 1)},
 }
 
-var tmTo = []int32{
+var tmTo = []${self->stateType()}{
 	${util.format(parser.symTo, 16, 1)},
 }
 
-var tmRuleLen = []int32{
+var tmRuleLen = []int${util.bitsForElement(parser.ruleLength)}{
 	${util.format(parser.ruleLength, 16, 1)},
 }
 
@@ -456,3 +456,5 @@ ${query additionalNodeTypes() = []}
 ${query valueType() = self->eventBased() ? 'int' : 'interface{}' }
 
 ${query valueTypeDefaultVal() = self->eventBased() ? '0' : 'nil' }
+
+${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCount < 65535 ? 'int16' : 'int32' }

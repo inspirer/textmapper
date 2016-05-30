@@ -102,14 +102,18 @@ restart:
 
 	state := tmStateMap[l.State]
 ${if self->useCustomMap()-}
-    hash := uint32(0)
+	hash := uint32(0)
 ${end-}
 	for state >= 0 {
 		var ch int
 		switch {
 		case l.ch < 0:
-			ch = 0
-		case int(l.ch) < len(tmRuneClass):
+			state = int(tmLexerAction[state*tmNumClasses])
+			if state == -1 {
+				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
+			}
+			continue
+		case int(l.ch) < tmRuneClassLen:
 			ch = int(tmRuneClass[l.ch])
 		default:
 ${if lex.char2no.length >= 2048-}
@@ -119,15 +123,11 @@ ${else-}
 ${end-}
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state == -1 && ch == -1 {
-			l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
-			return EOI
-		}
-		if state < -1 || ch == -1 {
+		if state < -1 {
 			break
 		}
 ${if self->useCustomMap()-}
-    	hash = hash*uint32(31) + uint32(l.ch)
+		hash = hash*uint32(31) + uint32(l.ch)
 ${end-}
 
 		if l.ch == '\n' {
@@ -155,12 +155,14 @@ ${end-}
 			l.ch = -1 // EOI
 		}
 	}
-	if state == -1 {
-		l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
-		goto restart
-	}
-	if state == -2 {
-		return EOI
+	if state >= -2 {
+		if state == -1 {
+			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
+			goto restart
+		}
+		if state == -2 {
+			return EOI
+		}
 	}
 
 	rule := -state - 3
@@ -244,7 +246,7 @@ ${end}
 ${template lexerTables-}
 package ${opts.lang}
 
-var tmNumClasses = ${lex.nchars}
+const tmNumClasses = ${lex.nchars}
 
 ${if lex.char2no.length >= 2048-}
 type mapRange struct {
@@ -280,6 +282,8 @@ var tmRuneClass = []${self->runeClassType()}{
 	${util.format(util.head(lex.char2no, 256), 16, 1)},
 }
 
+const tmRuneClassLen = 256
+
 var tmRuneRanges = []mapRange{
 ${foreach r in util.packAsMapRanges(util.tail(lex.char2no, 256), 256)-}
 	{${r.lo}, ${r.hi}, ${r.defaultVal}, ${if r.val}[]${self->runeClassType()}{
@@ -291,6 +295,8 @@ ${else-}
 var tmRuneClass = []${self->runeClassType()}{
 	${util.format(lex.char2no, 16, 1)},
 }
+
+const tmRuneClassLen = ${lex.char2no.length}
 ${end-}
 
 var tmStateMap = []int{
@@ -301,7 +307,7 @@ var tmToken = []Token{
 	${util.format(syntax.lexerRuleTokens, 16, 1)},
 }
 
-var tmLexerAction = []int32{
+var tmLexerAction = []int${util.bitsForElement(lex.change)}{
 	${util.format(lex.change, 16, 1)},
 }
 ${end}

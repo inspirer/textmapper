@@ -90,26 +90,26 @@ restart:
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
-    hash := uint32(0)
+	hash := uint32(0)
 	for state >= 0 {
 		var ch int
 		switch {
 		case l.ch < 0:
-			ch = 0
-		case int(l.ch) < len(tmRuneClass):
+			state = int(tmLexerAction[state*tmNumClasses])
+			if state == -1 {
+				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
+			}
+			continue
+		case int(l.ch) < tmRuneClassLen:
 			ch = int(tmRuneClass[l.ch])
 		default:
 			ch = mapRune(l.ch)
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state == -1 && ch == -1 {
-			l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
-			return EOI
-		}
-		if state < -1 || ch == -1 {
+		if state < -1 {
 			break
 		}
-    	hash = hash*uint32(31) + uint32(l.ch)
+		hash = hash*uint32(31) + uint32(l.ch)
 
 		if l.ch == '\n' {
 			l.line++
@@ -136,12 +136,14 @@ restart:
 			l.ch = -1 // EOI
 		}
 	}
-	if state == -1 {
-		l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
-		goto restart
-	}
-	if state == -2 {
-		return EOI
+	if state >= -2 {
+		if state == -1 {
+			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
+			goto restart
+		}
+		if state == -2 {
+			return EOI
+		}
 	}
 
 	rule := -state - 3
@@ -420,10 +422,10 @@ restart:
 			// If we were in reContext before this token, this is a
 			// pre-increment/decrement, otherwise, this is a post. We can just
 			// propagate the previous value of reContext.
-			reContext = l.State == State_template || l.State == State_initial
+			reContext = (l.State == State_template || l.State == State_initial)
 		}
 	default:
-		reContext = token >= punctuationStart && token < punctuationEnd
+		reContext = (token >= punctuationStart && token < punctuationEnd)
 	}
 	if inTemplate {
 		if reContext {

@@ -327,4 +327,13 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		return i;
 	}
 
+	public int bitsForElement(int[] arr) {
+		int result = 8;
+		for (int i : arr) {
+			if (i >= Byte.MIN_VALUE && i <= Byte.MAX_VALUE) continue;
+			if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) return 32;
+			result = 16;
+		}
+		return result;
+	}
 }
