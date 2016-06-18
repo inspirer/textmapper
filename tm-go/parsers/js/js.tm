@@ -1,15 +1,17 @@
 language js(go);
 
 lang = "js"
-package = "github.com/inspirer/textmapper/tm-go/parsers/json"
+package = "github.com/inspirer/textmapper/tm-go/parsers/js"
 eventBased = true
 
 :: lexer
 
-[initial, div, template, template_div]
+[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxText]
 
 # Accept end-of input in all states.
 eoi: /{eoi}/
+
+[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv]
 
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 
@@ -166,19 +168,19 @@ StringLiteral: /'{ssChar}*'/
 
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
-[initial, div]
+[initial, div, jsxTemplate, jsxTemplateDiv]
 
 '}': /\}/
 
 NoSubstitutionTemplate: /`{tplChars}`/
 TemplateHead: /`{tplChars}\$\{/
 
-[template, template_div]
+[template, templateDiv]
 
 TemplateMiddle: /\}{tplChars}\$\{/
 TemplateTail: /\}{tplChars}`/
 
-[initial, template]
+[initial, template, jsxTemplate]
 
 reBS = /\\[^\n\r\u2028\u2029]/
 reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
@@ -187,11 +189,33 @@ reChar = /{reFirst}|\*/
 
 RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 
-[div, template_div]
+[div, templateDiv, jsxTemplateDiv]
 
 '/': /\//
 '/=': /\/=/
 
+[jsxTag]
+
+'{': /\{/
+'}': /\}/
+'<': /</
+'>': />/
+'/': /\//
+':': /:/
+'.': /\./
+'=': /=/
+
+jsxStringLiteral: /'[^']*'/
+jsxStringLiteral: /"[^"]*"/
+
+jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
+
+[jsxText]
+
+'}': /\}/
+'<': /</
+
+jsxText : /[^{}<>]+/
 
 :: parser
 
@@ -272,6 +296,7 @@ PrimaryExpression<Yield> ::=
 	| RegularExpressionLiteral                                    {~RegularExpression}
 	| TemplateLiteral
 	| CoverParenthesizedExpressionAndArrowParameterList     {~ParenthesizedExpression}
+	| JSXElement
 ;
 
 @noast
@@ -1008,6 +1033,58 @@ ExportSpecifier ::=
 	| IdentifierName 'as' IdentifierName
 ;
 
+# Extensions
+
+# JSX (see https://facebook.github.io/jsx/)
+
+JSXElement<Yield> ::=
+	  JSXSelfClosingElement
+	| JSXOpeningElement JSXChild* JSXClosingElement
+;
+
+JSXSelfClosingElement<Yield> ::=
+	  '<' JSXElementName JSXAttribute* '/' '>' ;
+
+JSXOpeningElement<Yield> ::=
+	  '<' JSXElementName JSXAttribute* '>' ;
+
+JSXClosingElement ::=
+	  '<' '/' JSXElementName '>' ;
+
+JSXElementName ::=
+	  jsxIdentifier
+	| jsxIdentifier ':' jsxIdentifier
+	| JSXMemberExpression
+;
+
+@noast
+JSXMemberExpression ::=
+	  jsxIdentifier '.' jsxIdentifier
+	| JSXMemberExpression '.' jsxIdentifier
+;
+
+JSXAttribute<Yield> ::=
+	  JSXAttributeName '=' JSXAttributeValue
+	| '{' '.' '.' '.' AssignmentExpression<+In> '}'             {~JSXSpreadAttribute}
+;
+
+JSXAttributeName ::=
+	  jsxIdentifier
+	| jsxIdentifier ':' jsxIdentifier
+;
+
+JSXAttributeValue<Yield> ::=
+	  jsxStringLiteral
+	| '{' AssignmentExpression<+In> '}'
+	| JSXElement
+;
+
+JSXChild<Yield> ::=
+	  jsxText                                                   {~JSXText}
+	| JSXElement
+	| '{' AssignmentExpressionopt<+In> '}'
+;
+
 %%
 
 ${template go_lexer.onBeforeNext-}
@@ -1056,7 +1133,7 @@ ${template go_lexer.onAfterNext}
 		if reContext {
 			l.State = State_template
 		} else {
-			l.State = State_template_div
+			l.State = State_templateDiv
 		}
 	} else if reContext {
 		l.State = State_initial

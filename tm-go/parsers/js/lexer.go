@@ -9,7 +9,11 @@ const (
 	State_initial = 0
 	State_div = 1
 	State_template = 2
-	State_template_div = 3
+	State_templateDiv = 3
+	State_jsxTemplate = 4
+	State_jsxTemplateDiv = 5
+	State_jsxTag = 6
+	State_jsxText = 7
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process
@@ -431,7 +435,7 @@ restart:
 		if reContext {
 			l.State = State_template
 		} else {
-			l.State = State_template_div
+			l.State = State_templateDiv
 		}
 	} else if reContext {
 		l.State = State_initial

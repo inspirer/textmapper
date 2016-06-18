@@ -115,6 +115,17 @@ const (
 	ExportDefault
 	ExportClause
 	ExportSpecifier
+	JSXElement
+	JSXSelfClosingElement
+	JSXOpeningElement
+	JSXClosingElement
+	JSXElementName
+	JSXAttribute
+	JSXSpreadAttribute
+	JSXAttributeName
+	JSXAttributeValue
+	JSXText
+	JSXChild
 	InsertedSemicolon
 	NodeTypeMax
 )
@@ -252,6 +263,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression ::= RegularExpressionLiteral
 	0, // PrimaryExpression ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression ::= JSXElement
 	ThisExpression, // PrimaryExpression_NoFuncClass ::= 'this'
 	0, // PrimaryExpression_NoFuncClass ::= IdentifierReference
 	0, // PrimaryExpression_NoFuncClass ::= Literal
@@ -260,6 +272,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoFuncClass ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoFuncClass ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression_NoFuncClass ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression_NoFuncClass ::= JSXElement
 	ThisExpression, // PrimaryExpression_NoFuncClass_NoLet ::= 'this'
 	0, // PrimaryExpression_NoFuncClass_NoLet ::= IdentifierReference_NoLet
 	0, // PrimaryExpression_NoFuncClass_NoLet ::= Literal
@@ -268,6 +281,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoFuncClass_NoLet ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoFuncClass_NoLet ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression_NoFuncClass_NoLet ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression_NoFuncClass_NoLet ::= JSXElement
 	ThisExpression, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral ::= 'this'
 	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral ::= IdentifierReference_NoLet
 	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral ::= Literal
@@ -275,6 +289,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral ::= JSXElement
 	ThisExpression, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield ::= 'this'
 	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield ::= IdentifierReference_NoLet_Yield
 	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield ::= Literal
@@ -282,6 +297,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield ::= TemplateLiteral_Yield
 	ParenthesizedExpression, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield ::= CoverParenthesizedExpressionAndArrowParameterList_Yield
+	0, // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield ::= JSXElement_Yield
 	ThisExpression, // PrimaryExpression_NoFuncClass_NoObjLiteral ::= 'this'
 	0, // PrimaryExpression_NoFuncClass_NoObjLiteral ::= IdentifierReference
 	0, // PrimaryExpression_NoFuncClass_NoObjLiteral ::= Literal
@@ -289,6 +305,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoFuncClass_NoObjLiteral ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoFuncClass_NoObjLiteral ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression_NoFuncClass_NoObjLiteral ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression_NoFuncClass_NoObjLiteral ::= JSXElement
 	ThisExpression, // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield ::= 'this'
 	0, // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield ::= IdentifierReference_Yield
 	0, // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield ::= Literal
@@ -296,6 +313,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield ::= TemplateLiteral_Yield
 	ParenthesizedExpression, // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield ::= CoverParenthesizedExpressionAndArrowParameterList_Yield
+	0, // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield ::= JSXElement_Yield
 	ThisExpression, // PrimaryExpression_NoLet ::= 'this'
 	0, // PrimaryExpression_NoLet ::= IdentifierReference_NoLet
 	0, // PrimaryExpression_NoLet ::= Literal
@@ -307,6 +325,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoLet ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoLet ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression_NoLet ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression_NoLet ::= JSXElement
 	ThisExpression, // PrimaryExpression_NoLet_NoObjLiteral ::= 'this'
 	0, // PrimaryExpression_NoLet_NoObjLiteral ::= IdentifierReference_NoLet
 	0, // PrimaryExpression_NoLet_NoObjLiteral ::= Literal
@@ -317,6 +336,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoLet_NoObjLiteral ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoLet_NoObjLiteral ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression_NoLet_NoObjLiteral ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression_NoLet_NoObjLiteral ::= JSXElement
 	ThisExpression, // PrimaryExpression_NoLet_Yield ::= 'this'
 	0, // PrimaryExpression_NoLet_Yield ::= IdentifierReference_NoLet_Yield
 	0, // PrimaryExpression_NoLet_Yield ::= Literal
@@ -328,6 +348,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoLet_Yield ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoLet_Yield ::= TemplateLiteral_Yield
 	ParenthesizedExpression, // PrimaryExpression_NoLet_Yield ::= CoverParenthesizedExpressionAndArrowParameterList_Yield
+	0, // PrimaryExpression_NoLet_Yield ::= JSXElement_Yield
 	ThisExpression, // PrimaryExpression_NoObjLiteral ::= 'this'
 	0, // PrimaryExpression_NoObjLiteral ::= IdentifierReference
 	0, // PrimaryExpression_NoObjLiteral ::= Literal
@@ -338,6 +359,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_NoObjLiteral ::= RegularExpressionLiteral
 	0, // PrimaryExpression_NoObjLiteral ::= TemplateLiteral
 	ParenthesizedExpression, // PrimaryExpression_NoObjLiteral ::= CoverParenthesizedExpressionAndArrowParameterList
+	0, // PrimaryExpression_NoObjLiteral ::= JSXElement
 	ThisExpression, // PrimaryExpression_Yield ::= 'this'
 	0, // PrimaryExpression_Yield ::= IdentifierReference_Yield
 	0, // PrimaryExpression_Yield ::= Literal
@@ -349,6 +371,7 @@ var ruleNodeType = [...]NodeType{
 	RegularExpression, // PrimaryExpression_Yield ::= RegularExpressionLiteral
 	0, // PrimaryExpression_Yield ::= TemplateLiteral_Yield
 	ParenthesizedExpression, // PrimaryExpression_Yield ::= CoverParenthesizedExpressionAndArrowParameterList_Yield
+	0, // PrimaryExpression_Yield ::= JSXElement_Yield
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' Expression_In ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' '.' '.' '.' BindingIdentifier ')'
@@ -1598,6 +1621,46 @@ var ruleNodeType = [...]NodeType{
 	0, // ExportsList ::= ExportsList ',' ExportSpecifier
 	ExportSpecifier, // ExportSpecifier ::= IdentifierName
 	ExportSpecifier, // ExportSpecifier ::= IdentifierName 'as' IdentifierName
+	0, // JSXChild_optlist ::= JSXChild_optlist JSXChild
+	0, // JSXChild_optlist ::=
+	0, // JSXChild_Yield_optlist ::= JSXChild_Yield_optlist JSXChild_Yield
+	0, // JSXChild_Yield_optlist ::=
+	JSXElement, // JSXElement ::= JSXSelfClosingElement
+	JSXElement, // JSXElement ::= JSXOpeningElement JSXChild_optlist JSXClosingElement
+	JSXElement, // JSXElement_Yield ::= JSXSelfClosingElement_Yield
+	JSXElement, // JSXElement_Yield ::= JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
+	0, // JSXAttribute_optlist ::= JSXAttribute_optlist JSXAttribute
+	0, // JSXAttribute_optlist ::=
+	0, // JSXAttribute_Yield_optlist ::= JSXAttribute_Yield_optlist JSXAttribute_Yield
+	0, // JSXAttribute_Yield_optlist ::=
+	JSXSelfClosingElement, // JSXSelfClosingElement ::= '<' JSXElementName JSXAttribute_optlist '/' '>'
+	JSXSelfClosingElement, // JSXSelfClosingElement_Yield ::= '<' JSXElementName JSXAttribute_Yield_optlist '/' '>'
+	JSXOpeningElement, // JSXOpeningElement ::= '<' JSXElementName JSXAttribute_optlist '>'
+	JSXOpeningElement, // JSXOpeningElement_Yield ::= '<' JSXElementName JSXAttribute_Yield_optlist '>'
+	JSXClosingElement, // JSXClosingElement ::= '<' '/' JSXElementName '>'
+	JSXElementName, // JSXElementName ::= jsxIdentifier
+	JSXElementName, // JSXElementName ::= jsxIdentifier ':' jsxIdentifier
+	JSXElementName, // JSXElementName ::= JSXMemberExpression
+	0, // JSXMemberExpression ::= jsxIdentifier '.' jsxIdentifier
+	0, // JSXMemberExpression ::= JSXMemberExpression '.' jsxIdentifier
+	JSXAttribute, // JSXAttribute ::= JSXAttributeName '=' JSXAttributeValue
+	JSXSpreadAttribute, // JSXAttribute ::= '{' '.' '.' '.' AssignmentExpression_In '}'
+	JSXAttribute, // JSXAttribute_Yield ::= JSXAttributeName '=' JSXAttributeValue_Yield
+	JSXSpreadAttribute, // JSXAttribute_Yield ::= '{' '.' '.' '.' AssignmentExpression_In_Yield '}'
+	JSXAttributeName, // JSXAttributeName ::= jsxIdentifier
+	JSXAttributeName, // JSXAttributeName ::= jsxIdentifier ':' jsxIdentifier
+	JSXAttributeValue, // JSXAttributeValue ::= jsxStringLiteral
+	JSXAttributeValue, // JSXAttributeValue ::= '{' AssignmentExpression_In '}'
+	JSXAttributeValue, // JSXAttributeValue ::= JSXElement
+	JSXAttributeValue, // JSXAttributeValue_Yield ::= jsxStringLiteral
+	JSXAttributeValue, // JSXAttributeValue_Yield ::= '{' AssignmentExpression_In_Yield '}'
+	JSXAttributeValue, // JSXAttributeValue_Yield ::= JSXElement_Yield
+	JSXText, // JSXChild ::= jsxText
+	JSXChild, // JSXChild ::= JSXElement
+	JSXChild, // JSXChild ::= '{' AssignmentExpressionopt_In '}'
+	JSXText, // JSXChild_Yield ::= jsxText
+	JSXChild, // JSXChild_Yield ::= JSXElement_Yield
+	JSXChild, // JSXChild_Yield ::= '{' AssignmentExpressionopt_In_Yield '}'
 	0, // Elisionopt ::= Elision
 	0, // Elisionopt ::=
 	0, // Initializeropt ::= Initializer
@@ -1628,6 +1691,10 @@ var ruleNodeType = [...]NodeType{
 	0, // CaseClausesopt_Return_Yield ::=
 	0, // ModuleBodyopt ::= ModuleBody
 	0, // ModuleBodyopt ::=
+	0, // AssignmentExpressionopt_In ::= AssignmentExpression_In
+	0, // AssignmentExpressionopt_In ::=
+	0, // AssignmentExpressionopt_In_Yield ::= AssignmentExpression_In_Yield
+	0, // AssignmentExpressionopt_In_Yield ::=
 }
 
 var nodeTypeStr = [...]string{
@@ -1738,6 +1805,17 @@ var nodeTypeStr = [...]string{
 	"ExportDefault",
 	"ExportClause",
 	"ExportSpecifier",
+	"JSXElement",
+	"JSXSelfClosingElement",
+	"JSXOpeningElement",
+	"JSXClosingElement",
+	"JSXElementName",
+	"JSXAttribute",
+	"JSXSpreadAttribute",
+	"JSXAttributeName",
+	"JSXAttributeValue",
+	"JSXText",
+	"JSXChild",
 	"InsertedSemicolon",
 }
 
