@@ -163,10 +163,10 @@ public class SampleALexer {
 	private static final int tmClassesCount = 11;
 
 	private static final short[] tmGoto = unpack_vc_short(110,
-		"\1\ufffe\1\uffff\1\1\3\2\1\3\1\4\1\2\1\uffff\1\5\2\ufffd\1\2\1\6\2\2\2\ufffd\2\2" +
-		"\3\ufffd\4\2\2\ufffd\2\2\1\ufffd\13\ufffa\13\ufff9\12\ufffc\1\5\2\ufffd\2\2\1\7\1" +
-		"\2\2\ufffd\2\2\3\ufffd\3\2\1\10\2\ufffd\2\2\3\ufffd\3\2\1\11\2\ufffd\2\2\1\ufffd" +
-		"\2\ufffb\4\2\2\ufffb\2\2\1\ufffb");
+		"\1\ufffe\1\uffff\1\5\3\4\1\3\1\2\1\4\1\uffff\1\1\12\ufffc\1\1\13\ufff9\13\ufffa\2" +
+		"\ufffd\4\4\2\ufffd\2\4\3\ufffd\1\4\1\6\2\4\2\ufffd\2\4\3\ufffd\2\4\1\7\1\4\2\ufffd" +
+		"\2\4\3\ufffd\3\4\1\10\2\ufffd\2\4\3\ufffd\3\4\1\11\2\ufffd\2\4\1\ufffd\2\ufffb\4" +
+		"\4\2\ufffb\2\4\1\ufffb");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

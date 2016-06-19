@@ -220,8 +220,8 @@ public class UnicodeTestLexer {
 	private static final int tmClassesCount = 8;
 
 	private static final short[] tmGoto = unpack_vc_short(64,
-		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\uffff\1\5\5\uffff\1\4\6\uffff\3\6\1\uffff\4\ufffd" +
-		"\2\3\2\ufffd\5\ufffc\1\4\2\ufffc\7\ufffa\1\5\3\uffff\1\7\3\6\1\uffff\10\ufffb");
+		"\1\ufffe\1\uffff\1\7\1\4\1\3\1\2\1\uffff\1\1\7\ufffa\1\1\5\ufffc\1\2\2\ufffc\4\ufffd" +
+		"\2\3\2\ufffd\4\uffff\3\5\4\uffff\1\6\3\5\1\uffff\10\ufffb\5\uffff\1\2\2\uffff");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

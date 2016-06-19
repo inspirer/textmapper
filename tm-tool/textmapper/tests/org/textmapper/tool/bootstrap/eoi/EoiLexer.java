@@ -142,7 +142,7 @@ public class EoiLexer {
 	};
 
 	private static final short tmStateMap[] = {
-		0, 1, 2, 3
+		0, 12, 16, 20
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(16,
@@ -151,12 +151,12 @@ public class EoiLexer {
 	private static final int tmClassesCount = 12;
 
 	private static final short[] tmGoto = unpack_vc_short(264,
-		"\1\4\1\uffff\1\5\1\6\1\7\1\10\1\11\1\uffff\1\12\1\13\1\11\1\14\1\15\1\uffff\1\5\1" +
-		"\6\1\7\1\10\1\11\1\uffff\1\16\1\17\1\11\1\14\1\20\1\uffff\1\5\1\6\1\7\1\10\1\11\1" +
-		"\uffff\1\21\1\22\1\11\1\14\1\23\1\uffff\1\5\1\6\1\7\1\10\1\11\3\uffff\1\11\1\14\14" +
-		"\ufff5\14\ufffc\14\ufffb\14\ufffa\6\uffff\1\24\5\uffff\6\ufffd\1\11\3\ufffd\1\11" +
-		"\1\ufffd\14\ufff7\14\ufff6\13\ufff8\1\14\14\ufff2\14\ufff4\14\ufff3\14\uffef\14\ufff1" +
-		"\14\ufff0\14\uffee\7\uffff\1\25\4\uffff\14\ufff9");
+		"\1\13\1\uffff\1\12\1\11\1\10\1\5\1\4\1\uffff\1\3\1\2\1\4\1\1\13\ufff8\1\1\14\ufff6" +
+		"\14\ufff7\6\ufffd\1\4\3\ufffd\1\4\1\ufffd\6\uffff\1\6\14\uffff\1\7\4\uffff\14\ufff9" +
+		"\14\ufffa\14\ufffb\14\ufffc\14\ufff5\1\17\1\uffff\1\12\1\11\1\10\1\5\1\4\1\uffff" +
+		"\1\16\1\15\1\4\1\1\14\ufff3\14\ufff4\14\ufff2\1\23\1\uffff\1\12\1\11\1\10\1\5\1\4" +
+		"\1\uffff\1\22\1\21\1\4\1\1\14\ufff0\14\ufff1\14\uffef\1\25\1\uffff\1\12\1\11\1\10" +
+		"\1\5\1\4\3\uffff\1\4\1\1\14\uffee");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

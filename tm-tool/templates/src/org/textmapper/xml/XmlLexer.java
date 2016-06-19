@@ -152,7 +152,7 @@ public class XmlLexer {
 	};
 
 	private static final short tmStateMap[] = {
-		0, 1
+		0, 9
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(11,
@@ -161,11 +161,11 @@ public class XmlLexer {
 	private static final int tmClassesCount = 15;
 
 	private static final short[] tmGoto = unpack_vc_short(300,
-		"\1\ufffe\1\2\1\3\14\2\5\uffff\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\uffff\2\13\1\ufffd" +
-		"\1\2\1\ufffd\14\2\3\ufffc\1\14\13\ufffc\17\ufff7\1\uffff\5\5\1\15\6\5\1\uffff\1\5" +
-		"\1\uffff\6\6\1\16\5\6\1\uffff\1\6\17\ufff6\17\ufff5\17\ufff4\4\ufffa\1\12\6\ufffa" +
-		"\2\12\2\ufffa\15\ufff3\2\13\4\uffff\1\17\12\uffff\17\ufff9\17\ufff8\4\uffff\1\20" +
-		"\13\uffff\3\20\1\21\12\20\1\uffff\3\20\1\22\12\20\1\uffff\4\20\1\23\11\20\17\ufffb");
+		"\1\ufffe\1\10\1\1\14\10\3\ufffc\1\2\13\ufffc\4\uffff\1\3\16\uffff\1\4\13\uffff\3" +
+		"\4\1\5\12\4\1\uffff\3\4\1\6\12\4\1\uffff\4\4\1\7\11\4\17\ufffb\1\ufffd\1\10\1\ufffd" +
+		"\14\10\5\uffff\1\23\1\21\1\17\1\16\1\15\1\14\1\13\1\uffff\2\12\15\ufff3\2\12\4\ufffa" +
+		"\1\13\6\ufffa\2\13\2\ufffa\17\ufff4\17\ufff5\17\ufff6\1\uffff\6\17\1\20\5\17\1\uffff" +
+		"\1\17\17\ufff8\1\uffff\5\21\1\22\6\21\1\uffff\1\21\17\ufff9\17\ufff7");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

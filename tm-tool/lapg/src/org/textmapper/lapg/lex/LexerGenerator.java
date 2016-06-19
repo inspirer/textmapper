@@ -431,7 +431,7 @@ public class LexerGenerator {
 					// closure
 					next[nnext] = -1;
 					closure(next);
-					current.action[sym] = add_set(next, null);
+					current.action[sym] = add_set(next, current);
 
 					// Have we exceeded the limits?
 					if (current.action[sym] == -1) {
@@ -447,11 +447,30 @@ public class LexerGenerator {
 			}
 		}
 
-		// first group (only) succeeds on EOI, unless there is an explicit EOI rule
+		// First group (only) succeeds on EOI, unless there is an explicit EOI rule.
 		if (first.action[0] == -1) first.action[0] = -2;
 
-		// TODO re-order states for better cache locality
+		// Re-ordering states for better cache locality.
+		int[] permutationMap = new int[states];
+		Arrays.fill(permutationMap, -1);
+		int counter = 0;
+		for (State s = first; s != null; s = s.next) {
+			assert permutationMap[s.number] == -1;
+			permutationMap[s.number] = counter++;
+		}
+		assert counter == states;
 
+		for (i = 0; i < groupset.length; i++) {
+			if (groupset[i] == -1) continue;
+			groupset[i] = permutationMap[groupset[i]];
+		}
+		for (State s = first; s != null; s = s.next) {
+			s.number = permutationMap[s.number];
+			for (i = 0; i < s.action.length; i++) {
+				if (s.action[i] < 0) continue;
+				s.action[i] = permutationMap[s.action[i]];
+			}
+		}
 		return errors == 0;
 	}
 

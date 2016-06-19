@@ -167,19 +167,19 @@ public class JsonLexer {
 	private static final int tmClassesCount = 29;
 
 	private static final short[] tmGoto = unpack_vc_short(1044,
-		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\2\uffff\1\10\1\11\1\uffff\1\12\1\uffff" +
-		"\1\13\2\uffff\1\14\2\uffff\1\15\3\uffff\1\16\2\uffff\35\ufffd\35\ufffc\35\ufffb\35" +
-		"\ufffa\35\ufff9\35\ufff8\1\uffff\7\7\1\17\1\20\23\7\14\uffff\1\11\15\uffff\1\16\2" +
-		"\uffff\15\ufff5\1\21\4\ufff5\1\22\10\ufff5\1\22\1\ufff5\12\uffff\1\23\43\uffff\1" +
-		"\24\37\uffff\1\25\10\uffff\26\ufff7\1\15\6\ufff7\14\ufff5\1\16\1\21\4\ufff5\1\22" +
-		"\7\ufff5\1\16\1\22\1\ufff5\35\ufff6\10\uffff\2\7\1\26\3\uffff\1\7\1\uffff\2\7\1\uffff" +
-		"\1\7\3\uffff\1\7\1\uffff\1\7\17\uffff\1\27\15\uffff\1\27\15\uffff\1\30\1\31\15\uffff" +
-		"\1\31\1\uffff\1\30\17\uffff\1\32\27\uffff\1\33\41\uffff\1\34\31\uffff\1\35\5\uffff" +
-		"\3\35\3\uffff\4\35\1\uffff\14\ufff5\1\27\5\ufff5\1\22\7\ufff5\1\27\1\22\1\ufff5\14" +
-		"\uffff\1\31\15\uffff\1\31\2\uffff\14\ufff5\1\31\15\ufff5\1\31\2\ufff5\17\uffff\1" +
-		"\36\37\uffff\1\37\37\uffff\1\40\23\uffff\1\41\5\uffff\3\41\3\uffff\4\41\1\uffff\35" +
-		"\ufff4\35\ufff3\22\uffff\1\42\26\uffff\1\43\5\uffff\3\43\3\uffff\4\43\1\uffff\35" +
-		"\ufff2\14\uffff\1\7\5\uffff\3\7\3\uffff\4\7\1\uffff");
+		"\1\ufffe\1\uffff\1\43\1\42\1\41\1\40\1\37\1\36\1\27\2\uffff\1\26\1\25\1\uffff\1\21" +
+		"\1\uffff\1\15\2\uffff\1\10\2\uffff\1\7\3\uffff\1\1\2\uffff\14\ufff5\1\1\1\5\4\ufff5" +
+		"\1\2\7\ufff5\1\1\1\2\1\ufff5\13\uffff\1\4\1\3\15\uffff\1\3\1\uffff\1\4\14\ufff5\1" +
+		"\3\15\ufff5\1\3\2\ufff5\14\uffff\1\3\15\uffff\1\3\16\uffff\1\6\15\uffff\1\6\2\uffff" +
+		"\14\ufff5\1\6\5\ufff5\1\2\7\ufff5\1\6\1\2\1\ufff5\26\ufff7\1\7\6\ufff7\24\uffff\1" +
+		"\11\27\uffff\1\12\42\uffff\1\13\31\uffff\1\14\12\uffff\35\ufff2\21\uffff\1\16\25" +
+		"\uffff\1\17\44\uffff\1\20\12\uffff\35\ufff3\12\uffff\1\22\41\uffff\1\23\34\uffff" +
+		"\1\24\15\uffff\35\ufff4\15\ufff5\1\5\4\ufff5\1\2\10\ufff5\1\2\1\ufff5\14\uffff\1" +
+		"\25\15\uffff\1\1\3\uffff\7\27\1\35\1\30\23\27\10\uffff\2\27\1\31\3\uffff\1\27\1\uffff" +
+		"\2\27\1\uffff\1\27\3\uffff\1\27\1\uffff\1\27\17\uffff\1\32\5\uffff\3\32\3\uffff\4" +
+		"\32\15\uffff\1\33\5\uffff\3\33\3\uffff\4\33\15\uffff\1\34\5\uffff\3\34\3\uffff\4" +
+		"\34\15\uffff\1\27\5\uffff\3\27\3\uffff\4\27\1\uffff\35\ufff6\35\ufff8\35\ufff9\35" +
+		"\ufffa\35\ufffb\35\ufffc\35\ufffd");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

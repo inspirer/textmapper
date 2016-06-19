@@ -159,11 +159,11 @@ public class SampleBLexer {
 	private static final int tmClassesCount = 13;
 
 	private static final short[] tmGoto = unpack_vc_short(169,
-		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\2\1\7\1\2\1\7\1\10\2\uffff\1\11\1\12\7" +
-		"\uffff\1\11\1\uffff\2\ufffd\2\2\4\ufffd\4\2\1\ufffd\15\ufff6\15\ufff5\15\ufff4\15" +
-		"\ufff3\2\uffff\1\13\6\uffff\1\13\1\uffff\1\13\1\uffff\14\ufff9\1\10\2\ufffb\1\11" +
-		"\10\ufffb\1\11\1\ufffb\2\uffff\1\14\6\uffff\3\14\1\uffff\2\ufffa\1\13\6\ufffa\1\13" +
-		"\1\ufffa\1\13\1\ufffa\2\ufffc\1\14\6\ufffc\3\14\1\ufffc");
+		"\1\ufffe\1\uffff\1\11\1\10\1\7\1\6\1\5\1\4\1\10\1\2\1\10\1\2\1\1\14\ufff9\1\1\2\uffff" +
+		"\1\3\6\uffff\1\3\1\uffff\1\3\1\uffff\2\ufffa\1\3\6\ufffa\1\3\1\ufffa\1\3\1\ufffa" +
+		"\15\ufff3\15\ufff4\15\ufff5\15\ufff6\2\ufffd\2\10\4\ufffd\4\10\1\ufffd\2\uffff\1" +
+		"\14\1\12\7\uffff\1\14\3\uffff\1\13\6\uffff\3\13\1\uffff\2\ufffc\1\13\6\ufffc\3\13" +
+		"\1\ufffc\2\ufffb\1\14\10\ufffb\1\14\1\ufffb");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

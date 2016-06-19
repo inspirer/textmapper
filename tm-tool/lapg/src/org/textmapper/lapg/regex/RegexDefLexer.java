@@ -180,7 +180,7 @@ public class RegexDefLexer {
 	};
 
 	private static final short tmStateMap[] = {
-		0, 1, 2
+		0, 50, 65
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(36,
@@ -190,30 +190,31 @@ public class RegexDefLexer {
 	private static final int tmClassesCount = 41;
 
 	private static final short[] tmGoto = unpack_vc_short(2829,
-		"\1\ufffe\1\3\1\4\1\3\1\5\13\3\1\6\3\7\1\3\1\10\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1" +
-		"\uffff\2\3\1\uffff\10\3\1\uffff\1\3\1\15\1\3\1\5\13\3\1\6\1\16\1\17\1\20\1\3\1\10" +
-		"\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1\uffff\2\3\1\uffff\10\3\1\uffff\3\3\1\5\13\3\1" +
-		"\6\3\7\1\3\1\21\1\3\3\22\1\3\1\uffff\1\3\1\23\2\3\1\uffff\10\3\56\ufffc\13\24\16" +
-		"\ufffc\1\24\3\ufffc\1\24\1\ufffc\5\24\1\uffff\4\25\1\26\1\27\1\30\1\31\1\32\1\33" +
-		"\1\34\1\35\1\36\1\37\1\40\17\25\1\uffff\1\25\2\uffff\1\41\1\25\2\42\1\25\1\42\51" +
-		"\uffed\51\uffe5\51\uffde\23\uffe4\1\43\25\uffe4\51\uffe3\51\uffe2\34\uffe0\1\44\14" +
-		"\uffe0\5\ufffc\13\24\2\ufffc\1\45\2\ufffc\1\46\1\47\7\ufffc\1\24\1\50\2\ufffc\1\24" +
-		"\1\50\5\24\51\uffec\51\uffeb\51\uffea\51\uffdb\51\uffda\51\uffdc\3\uffff\1\51\1\uffff" +
-		"\13\24\5\uffff\1\24\10\uffff\2\24\2\uffff\7\24\51\ufffb\51\ufffa\51\ufff9\51\ufff8" +
-		"\51\ufff7\51\ufff6\51\ufff5\51\ufff4\5\uffff\3\52\27\uffff\1\52\3\uffff\3\52\10\uffff" +
-		"\3\53\27\uffff\1\53\3\uffff\3\53\10\uffff\3\54\27\uffff\1\54\3\uffff\3\54\5\uffff" +
-		"\1\55\111\uffff\1\56\5\uffff\51\uffef\25\uffff\1\57\21\uffff\2\57\51\uffdf\3\uffff" +
-		"\1\60\50\uffff\1\61\73\uffff\1\62\25\uffff\1\63\20\uffff\1\64\12\uffff\1\50\3\uffff" +
-		"\1\50\5\uffff\51\ufffd\5\uffff\3\65\27\uffff\1\65\3\uffff\3\65\10\uffff\3\66\27\uffff" +
-		"\1\66\3\uffff\3\66\10\uffff\3\67\27\uffff\1\67\3\uffff\3\67\10\uffff\13\70\16\uffff" +
-		"\2\70\2\uffff\7\70\43\uffff\1\71\32\uffff\1\57\4\uffff\1\72\14\uffff\2\57\51\uffe7" +
-		"\51\uffe8\3\uffff\1\73\45\uffff\51\uffe9\3\uffff\1\63\33\uffff\1\64\3\uffff\1\64" +
-		"\5\uffff\51\ufff2\5\uffff\3\74\27\uffff\1\74\3\uffff\3\74\10\uffff\3\75\27\uffff" +
-		"\1\75\3\uffff\3\75\6\uffff\1\76\1\uffff\13\70\16\uffff\2\70\2\uffff\7\70\51\ufff3" +
-		"\51\uffe1\51\uffe6\5\uffff\3\77\27\uffff\1\77\3\uffff\3\77\10\uffff\3\100\27\uffff" +
-		"\1\100\3\uffff\3\100\3\uffff\51\uffee\51\ufff1\5\uffff\3\101\27\uffff\1\101\3\uffff" +
-		"\3\101\10\uffff\3\102\27\uffff\1\102\3\uffff\3\102\10\uffff\3\103\27\uffff\1\103" +
-		"\3\uffff\3\103\10\uffff\3\104\27\uffff\1\104\3\uffff\3\104\3\uffff\51\ufff0");
+		"\1\ufffe\1\61\1\56\1\61\1\14\13\61\1\13\3\12\1\61\1\11\1\61\1\5\1\4\1\3\1\61\1\1" +
+		"\1\61\1\uffff\2\61\1\uffff\10\61\34\uffe0\1\2\14\uffe0\51\uffdf\51\uffe2\51\uffe3" +
+		"\23\uffe4\1\6\25\uffe4\25\uffff\1\7\21\uffff\2\7\25\uffff\1\7\4\uffff\1\10\14\uffff" +
+		"\2\7\51\uffe1\51\uffde\51\uffe5\51\uffed\1\uffff\4\55\1\54\1\53\1\52\1\51\1\50\1" +
+		"\47\1\46\1\43\1\36\1\25\1\21\17\55\1\uffff\1\55\2\uffff\1\16\1\55\2\15\1\55\1\15" +
+		"\51\uffef\43\uffff\1\17\50\uffff\1\20\5\uffff\51\ufff3\2\uffff\1\22\53\uffff\13\23" +
+		"\16\uffff\2\23\2\uffff\7\23\3\uffff\1\24\1\uffff\13\23\16\uffff\2\23\2\uffff\7\23" +
+		"\51\uffee\5\uffff\3\26\27\uffff\1\26\3\uffff\3\26\10\uffff\3\27\27\uffff\1\27\3\uffff" +
+		"\3\27\10\uffff\3\30\27\uffff\1\30\3\uffff\3\30\10\uffff\3\31\27\uffff\1\31\3\uffff" +
+		"\3\31\10\uffff\3\32\27\uffff\1\32\3\uffff\3\32\10\uffff\3\33\27\uffff\1\33\3\uffff" +
+		"\3\33\10\uffff\3\34\27\uffff\1\34\3\uffff\3\34\10\uffff\3\35\27\uffff\1\35\3\uffff" +
+		"\3\35\3\uffff\51\ufff0\5\uffff\3\37\27\uffff\1\37\3\uffff\3\37\10\uffff\3\40\27\uffff" +
+		"\1\40\3\uffff\3\40\10\uffff\3\41\27\uffff\1\41\3\uffff\3\41\10\uffff\3\42\27\uffff" +
+		"\1\42\3\uffff\3\42\3\uffff\51\ufff1\5\uffff\3\44\27\uffff\1\44\3\uffff\3\44\10\uffff" +
+		"\3\45\27\uffff\1\45\3\uffff\3\45\3\uffff\51\ufff2\51\ufff4\51\ufff5\51\ufff6\51\ufff7" +
+		"\51\ufff8\51\ufff9\51\ufffa\51\ufffb\5\ufffc\13\57\16\ufffc\1\57\3\ufffc\1\57\1\ufffc" +
+		"\5\57\3\uffff\1\60\1\uffff\13\57\5\uffff\1\57\10\uffff\2\57\2\uffff\7\57\51\ufffd" +
+		"\51\ufffc\1\uffff\1\61\1\66\1\61\1\14\13\61\1\13\1\65\1\64\1\63\1\61\1\11\1\61\1" +
+		"\5\1\4\1\3\1\61\1\1\1\61\1\uffff\2\61\1\uffff\10\61\51\uffea\51\uffeb\51\uffec\5" +
+		"\ufffc\13\57\2\ufffc\1\77\2\ufffc\1\75\1\72\7\ufffc\1\57\1\67\2\ufffc\1\57\1\67\5" +
+		"\57\3\uffff\1\71\20\uffff\1\70\12\uffff\1\67\3\uffff\1\67\10\uffff\1\71\33\uffff" +
+		"\1\70\3\uffff\1\70\5\uffff\51\uffe9\26\uffff\1\73\25\uffff\1\74\45\uffff\51\uffe6" +
+		"\3\uffff\1\76\45\uffff\51\uffe8\3\uffff\1\100\45\uffff\51\uffe7\1\uffff\3\61\1\14" +
+		"\13\61\1\13\3\12\1\61\1\104\1\61\3\103\1\61\1\uffff\1\61\1\102\2\61\1\uffff\10\61" +
+		"\51\uffdc\51\uffda\51\uffdb");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

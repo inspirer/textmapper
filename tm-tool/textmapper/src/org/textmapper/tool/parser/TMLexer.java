@@ -289,7 +289,7 @@ public class TMLexer {
 	};
 
 	private static final short tmStateMap[] = {
-		0, 0, 1
+		0, 0, 60
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(78,
@@ -302,26 +302,26 @@ public class TMLexer {
 	private static final int tmClassesCount = 36;
 
 	private static final short[] tmGoto = unpack_vc_short(2232,
-		"\1\ufffe\1\uffff\1\2\1\uffff\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\3\1\13\1\14\1\15" +
-		"\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\33\1\34\1\35" +
-		"\1\36\1\37\1\40\1\3\2\uffff\1\2\1\uffff\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\3\1" +
-		"\13\1\14\1\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\41\1\27\1\30\1\31\1\32\1" +
-		"\33\1\34\1\35\1\36\1\37\1\40\1\3\1\uffff\1\2\1\42\1\43\1\uffff\37\2\4\ufff8\1\3\7" +
-		"\ufff8\1\3\26\ufff8\1\3\1\uffff\2\44\1\45\2\uffff\1\46\1\44\1\47\3\44\1\uffff\27" +
-		"\44\44\uffe8\44\uffe7\44\uffe0\1\uffff\2\10\1\50\1\uffff\4\10\1\51\32\10\42\uffff" +
-		"\1\40\1\uffff\13\ufff5\1\52\30\ufff5\1\ufff7\3\13\1\53\37\13\16\uffe9\1\54\25\uffe9" +
-		"\17\ufff0\1\55\2\ufff0\1\56\21\ufff0\20\ufff2\1\57\23\ufff2\17\uffdc\1\60\24\uffdc" +
-		"\44\uffe1\44\uffec\44\uffeb\44\uffea\44\uffe6\44\uffe5\31\uffb1\1\61\12\uffb1\44" +
-		"\uffdb\44\uffe3\44\uffe2\17\uffdf\1\62\24\uffdf\44\uffdd\36\uffda\1\63\5\uffda\44" +
-		"\uffd8\44\uffd7\12\ufffd\1\64\26\ufffd\2\37\1\ufffd\42\ufffa\1\40\1\ufffa\31\uffb0" +
-		"\1\61\12\uffb0\44\ufffd\1\uffff\3\2\1\uffff\37\2\1\uffff\2\44\1\65\1\uffff\1\66\1" +
-		"\67\5\44\1\uffff\27\44\1\uffff\3\44\1\uffff\37\44\1\uffff\2\46\1\70\1\uffff\2\46" +
-		"\1\44\4\46\1\uffff\27\46\1\uffff\7\47\1\71\33\47\1\uffff\3\10\1\uffff\37\10\44\ufffb" +
-		"\1\ufff9\3\52\1\72\37\52\44\ufff7\17\ufff3\1\73\24\ufff3\44\uffef\44\uffed\44\ufff1" +
-		"\44\uffee\44\uffe4\44\uffde\44\uffd9\12\uffff\1\64\26\uffff\2\37\2\uffff\3\44\1\uffff" +
-		"\37\44\44\ufffc\1\uffff\2\67\1\74\1\uffff\2\67\1\44\4\67\1\uffff\27\67\1\uffff\3" +
-		"\46\1\uffff\37\46\1\uffff\4\47\1\75\2\47\1\71\33\47\44\ufff9\44\ufff4\1\uffff\3\67" +
-		"\1\uffff\37\67\44\ufff6");
+		"\1\ufffe\1\uffff\1\71\1\uffff\1\70\1\54\1\53\1\52\1\51\1\46\1\45\1\42\1\70\1\40\1" +
+		"\35\1\32\1\30\1\26\1\25\1\24\1\23\1\22\1\21\1\20\1\16\1\15\1\14\1\13\1\11\1\10\1" +
+		"\6\1\5\1\4\1\2\1\1\1\70\42\ufffa\1\1\1\ufffa\12\ufffd\1\3\26\ufffd\2\2\1\ufffd\12" +
+		"\uffff\1\3\26\uffff\2\2\1\uffff\44\uffd7\44\uffd8\36\uffda\1\7\5\uffda\44\uffd9\44" +
+		"\uffdd\17\uffdf\1\12\24\uffdf\44\uffde\44\uffe2\44\uffe3\44\uffdb\31\uffb1\1\17\12" +
+		"\uffb1\44\uffe4\44\uffe5\44\uffe6\44\uffea\44\uffeb\44\uffec\44\uffe1\17\uffdc\1" +
+		"\27\24\uffdc\44\uffee\20\ufff2\1\31\23\ufff2\44\ufff1\17\ufff0\1\34\2\ufff0\1\33" +
+		"\21\ufff0\44\uffed\44\uffef\16\uffe9\1\36\25\uffe9\17\ufff3\1\37\24\ufff3\44\ufff4" +
+		"\1\ufff7\3\40\1\41\37\40\44\ufff7\13\ufff5\1\43\30\ufff5\1\ufff9\3\43\1\44\37\43" +
+		"\44\ufff9\42\uffff\1\1\2\uffff\2\46\1\50\1\uffff\4\46\1\47\32\46\44\ufffb\1\uffff" +
+		"\3\46\1\uffff\37\46\44\uffe0\44\uffe7\44\uffe8\1\uffff\2\63\1\62\2\uffff\1\60\1\63" +
+		"\1\55\3\63\1\uffff\27\63\1\uffff\7\55\1\56\33\55\1\uffff\4\55\1\57\2\55\1\56\33\55" +
+		"\44\ufff6\1\uffff\2\60\1\61\1\uffff\2\60\1\63\4\60\1\uffff\27\60\1\uffff\3\60\1\uffff" +
+		"\37\60\1\uffff\3\63\1\uffff\37\63\1\uffff\2\63\1\67\1\uffff\1\66\1\64\5\63\1\uffff" +
+		"\27\63\1\uffff\2\64\1\65\1\uffff\2\64\1\63\4\64\1\uffff\27\64\1\uffff\3\64\1\uffff" +
+		"\37\64\44\ufffc\1\uffff\3\63\1\uffff\37\63\4\ufff8\1\70\7\ufff8\1\70\26\ufff8\1\70" +
+		"\1\uffff\1\71\1\73\1\72\1\uffff\37\71\1\uffff\3\71\1\uffff\37\71\44\ufffd\2\uffff" +
+		"\1\71\1\uffff\1\70\1\54\1\53\1\52\1\51\1\46\1\45\1\42\1\70\1\40\1\35\1\32\1\30\1" +
+		"\26\1\25\1\24\1\23\1\22\1\21\1\20\1\75\1\15\1\14\1\13\1\11\1\10\1\6\1\5\1\4\1\2\1" +
+		"\1\1\70\31\uffb0\1\17\12\uffb0");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

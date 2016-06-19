@@ -130,7 +130,7 @@ public class StatesLexer {
 	};
 
 	private static final short tmStateMap[] = {
-		0, 1, 2, 3, 4
+		0, 2, 18, 22, 26
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(16,
@@ -139,12 +139,12 @@ public class StatesLexer {
 	private static final int tmClassesCount = 14;
 
 	private static final short[] tmGoto = unpack_vc_short(420,
-		"\1\ufffe\1\uffff\1\5\16\uffff\1\6\1\7\1\10\1\11\1\12\5\uffff\1\13\2\uffff\1\14\1" +
-		"\uffff\1\15\1\16\1\11\1\12\5\uffff\1\13\2\uffff\1\17\1\20\1\uffff\1\21\1\11\1\12" +
-		"\5\uffff\1\13\2\uffff\1\22\1\23\1\24\2\uffff\1\12\6\uffff\16\ufffd\16\ufffc\16\ufffb" +
-		"\16\ufffa\16\ufff0\10\uffff\1\25\5\uffff\16\uffee\16\ufff9\16\ufff8\16\ufff7\16\ufff6" +
-		"\16\ufff5\16\ufff4\16\ufff3\16\ufff2\16\ufff1\7\uffff\1\26\17\uffff\1\27\13\uffff" +
-		"\1\30\10\uffff\1\31\25\uffff\1\32\16\uffff\1\33\16\uffff\1\34\16\uffff\1\35\16\uffef");
+		"\1\ufffe\1\uffff\1\1\13\uffff\16\ufffd\3\uffff\1\21\1\20\1\17\1\16\1\4\5\uffff\1" +
+		"\3\16\uffee\10\uffff\1\5\14\uffff\1\6\17\uffff\1\7\13\uffff\1\10\10\uffff\1\11\25" +
+		"\uffff\1\12\16\uffff\1\13\16\uffff\1\14\16\uffff\1\15\16\uffef\16\ufff0\16\ufffa" +
+		"\16\ufffb\16\ufffc\2\uffff\1\25\1\uffff\1\24\1\23\1\16\1\4\5\uffff\1\3\16\ufff7\16" +
+		"\ufff8\16\ufff9\2\uffff\1\31\1\30\1\uffff\1\27\1\16\1\4\5\uffff\1\3\16\ufff4\16\ufff5" +
+		"\16\ufff6\2\uffff\1\35\1\34\1\33\2\uffff\1\4\6\uffff\16\ufff1\16\ufff2\16\ufff3");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

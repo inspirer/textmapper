@@ -199,17 +199,17 @@ public class TypesLexer {
 	private static final int tmClassesCount = 32;
 
 	private static final short[] tmGoto = unpack_vc_short(1088,
-		"\1\ufffe\1\uffff\1\1\1\uffff\1\2\1\3\1\4\1\5\3\6\1\7\3\6\1\10\1\11\1\12\1\13\1\14" +
-		"\1\15\1\16\1\uffff\1\17\1\20\1\21\1\22\1\23\1\24\1\6\1\25\1\2\1\uffff\1\1\1\26\1" +
-		"\27\1\uffff\33\1\4\ufff9\1\2\32\ufff9\1\2\1\uffff\2\3\1\30\1\uffff\1\31\32\3\36\uffff" +
-		"\1\25\1\uffff\7\ufffd\1\6\1\32\6\6\16\ufffd\2\6\10\ufffd\10\6\16\ufffd\2\6\10\ufffd" +
-		"\5\6\1\33\2\6\16\ufffd\2\6\1\ufffd\1\ufff8\3\10\1\ufff8\33\10\20\ufff6\1\34\17\ufff6" +
-		"\40\ufff5\40\ufff4\40\ufff3\40\ufff2\26\ufff1\1\35\11\ufff1\40\uffef\40\uffee\40" +
-		"\uffed\40\uffec\40\uffeb\40\uffea\36\ufffb\1\25\1\ufffb\40\ufffd\1\uffff\3\1\1\uffff" +
-		"\33\1\1\uffff\3\3\1\uffff\33\3\40\ufffc\7\ufffd\2\6\1\36\5\6\16\ufffd\2\6\10\ufffd" +
-		"\6\6\1\37\1\6\16\ufffd\2\6\1\ufffd\40\ufff7\40\ufff0\7\ufffd\3\6\1\40\4\6\16\ufffd" +
-		"\2\6\10\ufffd\7\6\1\41\16\ufffd\2\6\1\ufffd\7\ufffa\10\6\16\ufffa\2\6\1\ufffa\7\ufffd" +
-		"\3\6\1\40\4\6\16\ufffd\2\6\1\ufffd");
+		"\1\ufffe\1\uffff\1\37\1\uffff\1\36\1\33\1\32\1\27\3\26\1\21\3\26\1\20\1\16\1\15\1" +
+		"\14\1\13\1\12\1\10\1\uffff\1\7\1\6\1\5\1\4\1\3\1\2\1\26\1\1\1\36\36\ufffb\1\1\1\ufffb" +
+		"\40\uffea\40\uffeb\40\uffec\40\uffed\40\uffee\40\uffef\26\ufff1\1\11\11\ufff1\40" +
+		"\ufff0\40\ufff2\40\ufff3\40\ufff4\40\ufff5\20\ufff6\1\17\17\ufff6\40\ufff7\1\ufff8" +
+		"\3\20\1\ufff8\33\20\7\ufffd\5\26\1\22\2\26\16\ufffd\2\26\10\ufffd\6\26\1\23\1\26" +
+		"\16\ufffd\2\26\10\ufffd\7\26\1\24\16\ufffd\2\26\10\ufffd\3\26\1\25\4\26\16\ufffd" +
+		"\2\26\1\ufffd\7\ufffa\10\26\16\ufffa\2\26\1\ufffa\7\ufffd\10\26\16\ufffd\2\26\10" +
+		"\ufffd\1\26\1\30\6\26\16\ufffd\2\26\10\ufffd\2\26\1\31\5\26\16\ufffd\2\26\10\ufffd" +
+		"\3\26\1\25\4\26\16\ufffd\2\26\1\ufffd\36\uffff\1\1\2\uffff\2\33\1\35\1\uffff\1\34" +
+		"\32\33\40\ufffc\1\uffff\3\33\1\uffff\33\33\4\ufff9\1\36\32\ufff9\1\36\1\uffff\1\37" +
+		"\1\41\1\40\1\uffff\33\37\1\uffff\3\37\1\uffff\33\37\40\ufffd");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
