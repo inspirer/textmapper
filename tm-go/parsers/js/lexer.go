@@ -150,247 +150,236 @@ restart:
 		}
 	}
 
-	rule := -state - 3
-	switch rule {
-	case 0:
+	token := Token(-state - 3)
+	switch token {
+	case IDENTIFIER:
 		hh := hash&63
 		switch hh {
 		case 1:
 			if hash == 0x5c13d641 && bytes.Equal([]byte("default"), l.source[l.tokenOffset:l.offset]) {
-				rule = 13
+				token = DEFAULT
 				break
 			}
 			if hash == 0x2f9501 && bytes.Equal([]byte("enum"), l.source[l.tokenOffset:l.offset]) {
-				rule = 40
+				token = ENUM
 				break
 			}
 		case 3:
 			if hash == 0xcd244983 && bytes.Equal([]byte("finally"), l.source[l.tokenOffset:l.offset]) {
-				rule = 19
+				token = FINALLY
 				break
 			}
 		case 6:
 			if hash == 0x37b0c6 && bytes.Equal([]byte("with"), l.source[l.tokenOffset:l.offset]) {
-				rule = 37
+				token = WITH
 				break
 			}
 		case 7:
 			if hash == 0x33c587 && bytes.Equal([]byte("null"), l.source[l.tokenOffset:l.offset]) {
-				rule = 41
+				token = NULL
 				break
 			}
 		case 9:
 			if hash == 0x18cc9 && bytes.Equal([]byte("for"), l.source[l.tokenOffset:l.offset]) {
-				rule = 20
+				token = FOR
 				break
 			}
 		case 11:
 			if hash == 0xc8b && bytes.Equal([]byte("do"), l.source[l.tokenOffset:l.offset]) {
-				rule = 15
+				token = DO
 				break
 			}
 		case 13:
 			if hash == 0x6da5f8d && bytes.Equal([]byte("yield"), l.source[l.tokenOffset:l.offset]) {
-				rule = 38
+				token = YIELD
 				break
 			}
 		case 14:
 			if hash == 0x36758e && bytes.Equal([]byte("true"), l.source[l.tokenOffset:l.offset]) {
-				rule = 42
+				token = TRUE
 				break
 			}
 		case 17:
 			if hash == 0xcb7e7191 && bytes.Equal([]byte("target"), l.source[l.tokenOffset:l.offset]) {
-				rule = 51
+				token = TARGET
 				break
 			}
 			if hash == 0xcccfb691 && bytes.Equal([]byte("typeof"), l.source[l.tokenOffset:l.offset]) {
-				rule = 33
+				token = TYPEOF
 				break
 			}
 		case 20:
 			if hash == 0x375194 && bytes.Equal([]byte("void"), l.source[l.tokenOffset:l.offset]) {
-				rule = 35
+				token = VOID
 				break
 			}
 		case 22:
 			if hash == 0x58e7956 && bytes.Equal([]byte("await"), l.source[l.tokenOffset:l.offset]) {
-				rule = 39
+				token = AWAIT
 				break
 			}
 			if hash == 0x18f56 && bytes.Equal([]byte("get"), l.source[l.tokenOffset:l.offset]) {
-				rule = 46
+				token = GET
 				break
 			}
 		case 23:
 			if hash == 0xdd7 && bytes.Equal([]byte("of"), l.source[l.tokenOffset:l.offset]) {
-				rule = 48
+				token = OF
 				break
 			}
 		case 24:
 			if hash == 0x524f73d8 && bytes.Equal([]byte("function"), l.source[l.tokenOffset:l.offset]) {
-				rule = 21
+				token = FUNCTION
 				break
 			}
 		case 25:
 			if hash == 0xb22d2499 && bytes.Equal([]byte("extends"), l.source[l.tokenOffset:l.offset]) {
-				rule = 18
+				token = EXTENDS
 				break
 			}
 		case 27:
 			if hash == 0x1a21b && bytes.Equal([]byte("let"), l.source[l.tokenOffset:l.offset]) {
-				rule = 47
+				token = LET
 				break
 			}
 		case 29:
 			if hash == 0xd1d && bytes.Equal([]byte("if"), l.source[l.tokenOffset:l.offset]) {
-				rule = 22
+				token = IF
 				break
 			}
 		case 30:
 			if hash == 0x364e9e && bytes.Equal([]byte("this"), l.source[l.tokenOffset:l.offset]) {
-				rule = 30
+				token = THIS
 				break
 			}
 		case 32:
 			if hash == 0x1a9a0 && bytes.Equal([]byte("new"), l.source[l.tokenOffset:l.offset]) {
-				rule = 26
+				token = NEW
 				break
 			}
 		case 33:
 			if hash == 0x20a6f421 && bytes.Equal([]byte("debugger"), l.source[l.tokenOffset:l.offset]) {
-				rule = 12
+				token = DEBUGGER
 				break
 			}
 		case 34:
 			if hash == 0x1bc62 && bytes.Equal([]byte("set"), l.source[l.tokenOffset:l.offset]) {
-				rule = 49
+				token = SET
 				break
 			}
 		case 35:
 			if hash == 0x5a73763 && bytes.Equal([]byte("const"), l.source[l.tokenOffset:l.offset]) {
-				rule = 10
+				token = CONST
 				break
 			}
 			if hash == 0x5cb1923 && bytes.Equal([]byte("false"), l.source[l.tokenOffset:l.offset]) {
-				rule = 43
+				token = FALSE
 				break
 			}
 		case 37:
 			if hash == 0xb96173a5 && bytes.Equal([]byte("import"), l.source[l.tokenOffset:l.offset]) {
-				rule = 23
+				token = IMPORT
 				break
 			}
 			if hash == 0xd25 && bytes.Equal([]byte("in"), l.source[l.tokenOffset:l.offset]) {
-				rule = 24
+				token = IN
 				break
 			}
 		case 38:
 			if hash == 0x693a6e6 && bytes.Equal([]byte("throw"), l.source[l.tokenOffset:l.offset]) {
-				rule = 31
+				token = THROW
 				break
 			}
 		case 39:
 			if hash == 0xde312ca7 && bytes.Equal([]byte("continue"), l.source[l.tokenOffset:l.offset]) {
-				rule = 11
+				token = CONTINUE
 				break
 			}
 			if hash == 0x1c727 && bytes.Equal([]byte("var"), l.source[l.tokenOffset:l.offset]) {
-				rule = 34
+				token = VAR
 				break
 			}
 		case 42:
 			if hash == 0x3017aa && bytes.Equal([]byte("from"), l.source[l.tokenOffset:l.offset]) {
-				rule = 45
+				token = FROM
 				break
 			}
 		case 43:
 			if hash == 0xb06685ab && bytes.Equal([]byte("delete"), l.source[l.tokenOffset:l.offset]) {
-				rule = 14
+				token = DELETE
 				break
 			}
 		case 44:
 			if hash == 0x35c3d12c && bytes.Equal([]byte("instanceof"), l.source[l.tokenOffset:l.offset]) {
-				rule = 25
+				token = INSTANCEOF
 				break
 			}
 		case 46:
 			if hash == 0xcacdce6e && bytes.Equal([]byte("static"), l.source[l.tokenOffset:l.offset]) {
-				rule = 50
+				token = STATIC
 				break
 			}
 		case 48:
 			if hash == 0x2e7b30 && bytes.Equal([]byte("case"), l.source[l.tokenOffset:l.offset]) {
-				rule = 7
+				token = CASE
 				break
 			}
 			if hash == 0xc84e3d30 && bytes.Equal([]byte("return"), l.source[l.tokenOffset:l.offset]) {
-				rule = 27
+				token = RETURN
 				break
 			}
 		case 49:
 			if hash == 0x6bdcb31 && bytes.Equal([]byte("while"), l.source[l.tokenOffset:l.offset]) {
-				rule = 36
+				token = WHILE
 				break
 			}
 		case 50:
 			if hash == 0xc32 && bytes.Equal([]byte("as"), l.source[l.tokenOffset:l.offset]) {
-				rule = 44
+				token = AS
 				break
 			}
 		case 52:
 			if hash == 0xb32913b4 && bytes.Equal([]byte("export"), l.source[l.tokenOffset:l.offset]) {
-				rule = 17
+				token = EXPORT
 				break
 			}
 			if hash == 0xcafbb734 && bytes.Equal([]byte("switch"), l.source[l.tokenOffset:l.offset]) {
-				rule = 29
+				token = SWITCH
 				break
 			}
 		case 56:
 			if hash == 0x5a5a978 && bytes.Equal([]byte("class"), l.source[l.tokenOffset:l.offset]) {
-				rule = 9
+				token = CLASS
 				break
 			}
 		case 57:
 			if hash == 0x2f8d39 && bytes.Equal([]byte("else"), l.source[l.tokenOffset:l.offset]) {
-				rule = 16
+				token = ELSE
 				break
 			}
 		case 59:
 			if hash == 0x5a0eebb && bytes.Equal([]byte("catch"), l.source[l.tokenOffset:l.offset]) {
-				rule = 8
+				token = CATCH
 				break
 			}
 			if hash == 0x68b6f7b && bytes.Equal([]byte("super"), l.source[l.tokenOffset:l.offset]) {
-				rule = 28
+				token = SUPER
 				break
 			}
 			if hash == 0x1c1bb && bytes.Equal([]byte("try"), l.source[l.tokenOffset:l.offset]) {
-				rule = 32
+				token = TRY
 				break
 			}
 		case 63:
 			if hash == 0x59a58ff && bytes.Equal([]byte("break"), l.source[l.tokenOffset:l.offset]) {
-				rule = 6
+				token = BREAK
 				break
 			}
 		}
 	}
 
-	token := tmToken[rule]
-	space := false
-	switch rule {
-	case 2: // WhiteSpace: /[\t\v\f \xa0\ufeff\p{Zs}]/
-		space = true
-	case 3: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
-		space = true
-	case 4: // MultiLineComment: /\/\*{commentChars}\*\//
-		space = true
-	case 5: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
-		space = true
-	}
-	if space {
+	switch token {
+	case 1, 2, 3, 4:
 		goto restart
 	}
 

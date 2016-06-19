@@ -138,46 +138,41 @@ restart:
 		}
 	}
 
-	rule := -state - 3
-	switch rule {
-	case 0:
+	token := Token(-state - 3)
+	switch token {
+	case ID:
 		hh := hash&7
 		switch hh {
 		case 1:
 			if hash == 0x41 && bytes.Equal([]byte("A"), l.source[l.tokenOffset:l.offset]) {
-				rule = 13
+				token = CHAR_A
 				break
 			}
 		case 2:
 			if hash == 0x42 && bytes.Equal([]byte("B"), l.source[l.tokenOffset:l.offset]) {
-				rule = 14
+				token = CHAR_B
 				break
 			}
 		case 3:
 			if hash == 0x5cb1923 && bytes.Equal([]byte("false"), l.source[l.tokenOffset:l.offset]) {
-				rule = 12
+				token = FALSE
 				break
 			}
 		case 6:
 			if hash == 0x36758e && bytes.Equal([]byte("true"), l.source[l.tokenOffset:l.offset]) {
-				rule = 11
+				token = TRUE
 				break
 			}
 		case 7:
 			if hash == 0x33c587 && bytes.Equal([]byte("null"), l.source[l.tokenOffset:l.offset]) {
-				rule = 10
+				token = NULL
 				break
 			}
 		}
 	}
 
-	token := tmToken[rule]
-	space := false
-	switch rule {
-	case 7: // space: /[\t\r\n ]+/
-		space = true
-	}
-	if space {
+	switch token {
+	case 7:
 		goto restart
 	}
 	return token

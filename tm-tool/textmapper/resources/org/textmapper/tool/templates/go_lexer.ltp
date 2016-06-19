@@ -165,29 +165,45 @@ ${end-}
 		}
 	}
 
+${if self->canInlineLexerRules()-}
+	token := Token(-state - 3)
+${else-}
 	rule := -state - 3
+${end-}
 ${if self->classRules().exists(it|it->classHasInstances())-}
-	switch rule {
+	switch ${self->canInlineLexerRules() ? 'token' : 'rule'} {
 ${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
+${if self->canInlineLexerRules()-}
+	case ${classRule.symbol->go_token.tokenName()}:
+${else-}
 	case ${classRule.index}:
+${end-}
 		hh := hash&${classRule->rangeSwitchSize() - 1}
 		switch hh {
 ${foreach instance in classRule->classInstances().groupBy(it|util.rangedHash(it.regexp.constantValue, classRule->rangeSwitchSize())).sort(it|util.rangedHash((it is java.util.List ? it[0] : it).regexp.constantValue, classRule->rangeSwitchSize()))-}
 ${if instance is java.util.List-}
 		case ${util.rangedHash(instance[0].regexp.constantValue, classRule->rangeSwitchSize())}:
 ${foreach i in instance.sort(it|it.regexp.constantValue)-}
-${call instanceToRuleIf(i.regexp.constantValue, i.index)-}
+${call instanceToRuleIf(i.regexp.constantValue, i)-}
 ${end-}
 ${else-}
 		case ${util.rangedHash(instance.regexp.constantValue, classRule->rangeSwitchSize())}:
-${call instanceToRuleIf(instance.regexp.constantValue, instance.index)-}
+${call instanceToRuleIf(instance.regexp.constantValue, instance)-}
 ${end-}
 ${end-}
 		}
 ${end-}
 	}
-
 ${end-}
+${if self->canInlineLexerRules()-}
+${if list = syntax.lexerRules.select(r|r.kindAsText == 'space').collectUnique(r|r.symbol.index), list.size() > 0}
+	switch token {
+	case ${list->util.join(', ')}:
+		goto restart
+	}
+${end-}
+${else-}
+
 	token := tmToken[rule]
 	space := false
 ${if syntax.lexerRules.exists(r|r->hasActions())-}
@@ -201,6 +217,7 @@ ${end-}
 	if space {
 		goto restart
 	}
+${end-}
 ${call onAfterNext-}
 	return token
 }
@@ -236,9 +253,13 @@ func (l *Lexer) Value() interface{} {
 }
 ${end}
 
-${template instanceToRuleIf(val,ruleIndex)-}
+${template instanceToRuleIf(val,instanceRule)-}
 			if hash == 0x${util.hashHex(val)} && bytes.Equal([]byte("${util.escape(val)}"), l.source[l.tokenOffset:l.offset]) {
-				rule = ${ruleIndex}
+${if self->canInlineLexerRules()-}
+				token = ${instanceRule.symbol->go_token.tokenName()}
+${else-}
+				rule = ${instanceRule.index}
+${end-}
 				break
 			}
 ${end}
@@ -303,13 +324,17 @@ var tmStateMap = []int{
 	${util.format(lex.groupset, 16, 1)},
 }
 
+${if !self->canInlineLexerRules()-}
 var tmToken = []Token{
 	${util.format(syntax.lexerRuleTokens, 16, 1)},
 }
 
-var tmLexerAction = []int${util.bitsForElement(lex.change)}{
-	${util.format(lex.change, 16, 1)},
+${end-}
+${if change = self->canInlineLexerRules() ? syntax.inlineLexerRules(lex.change) : lex.change, true -}
+var tmLexerAction = []int${util.bitsForElement(change)}{
+	${util.format(change, 16, 1)},
 }
+${end-}
 ${end}
 
 
@@ -339,6 +364,8 @@ ${cached query rangeSwitchSize() = util.rangeSwitchSize(self->classInstances().l
 ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
 
 ${cached query stateId() = 'State_' + util.uniqueId(self.name.replace('-', '_'), '__states__')}
+
+${cached query canInlineLexerRules() = syntax.canInlineLexerRules}
 
 ${template imports}${end}
 

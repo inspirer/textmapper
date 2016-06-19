@@ -88,7 +88,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName)
+				throws EvaluationException {
 			if ("action".equals(propertyName)) {
 				return TMDataUtil.getCode(lexerRule);
 			}
@@ -110,7 +111,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
+		public Object callMethod(SourceElement caller, String methodName, Object... args)
+				throws EvaluationException {
 			if (args == null || args.length == 0) {
 				if ("getAction".equals(methodName)) {
 					return TMDataUtil.getCode(rule);
@@ -119,7 +121,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return rule.getPrecedenceSymbol();
 				}
 				if ("left".equals(methodName)) {
-					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, 0, evaluationStrategy, rootContext,
+					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, 0,
+							evaluationStrategy, rootContext,
 							templatePackage, caller);
 				}
 				if ("sourceSymbols".equals(methodName)) {
@@ -172,7 +175,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 						rhsSize++;
 					}
 					if (rhsSize == 0) {
-						throw new EvaluationException(methodName + "() cannot be used on an empty rule");
+						throw new EvaluationException(methodName
+								+ "() cannot be used on an empty rule");
 					}
 					return new ActionSymbol(grammar, sym.getTarget(), sym, false,
 							rhsSize - 1 - index, index,
@@ -181,10 +185,12 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 			if (args != null && args.length == 1) {
 				if ("mappedSymbols".equals(methodName)) {
-					return getMappedSymbols((RhsSequence) args[0], new HashSet<>(Arrays.asList(rule.getRight())));
+					return getMappedSymbols((RhsSequence) args[0],
+							new HashSet<>(Arrays.asList(rule.getRight())));
 				}
 				if ("isMatched".equals(methodName)) {
-					return isMatched(((RhsSequence) args[0]), new HashSet<>(Arrays.asList(rule.getRight())));
+					return isMatched(((RhsSequence) args[0]),
+							new HashSet<>(Arrays.asList(rule.getRight())));
 				}
 			}
 			return super.callMethod(caller, methodName, args);
@@ -262,13 +268,13 @@ public class GrammarIxFactory extends JavaIxFactory {
 					symSize++;
 				}
 				int rightOffset = leftOffset == -1 ? -1 : symSize - 1 - leftOffset;
-				return new ActionSymbol(grammar, ref.getTarget(), ref, false, rightOffset, leftOffset,
-						evaluationStrategy, rootContext, templatePackage, caller);
+				return new ActionSymbol(grammar, ref.getTarget(), ref, false, rightOffset,
+						leftOffset, evaluationStrategy, rootContext, templatePackage, caller);
 			} else if (index instanceof String) {
 				return grammar.getAnnotation(rule, (String) index);
 			} else {
-				throw new EvaluationException(
-						"index object should be integer (right part index) or string (annotation name)");
+				throw new EvaluationException("index object should be integer (right part index) "
+						+ "or string (annotation name)");
 			}
 		}
 
@@ -323,7 +329,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName)
+				throws EvaluationException {
 			if ("id".equals(propertyName)) {
 				return TMDataUtil.getId(sym);
 			}
@@ -350,7 +357,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName)
+				throws EvaluationException {
 			if ("mapping".equals(propertyName)) {
 				RhsSymbol rewrittenTo = TMDataUtil.getRewrittenTo(sym);
 				return (rewrittenTo != null ? rewrittenTo : sym).getMapping();
@@ -370,12 +378,18 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		@Override
 		public Object getProperty(SourceElement caller, String id) throws EvaluationException {
-			if ("templates".equals(id) || "hasErrors".equals(id) || "options".equals(id) || "copyrightHeader".equals
-					(id)) {
+			if ("templates".equals(id) || "hasErrors".equals(id) || "options".equals(id)
+					|| "copyrightHeader".equals(id)) {
 				return super.getProperty(caller, id);
 			} else {
 				return grammarIxObject.getProperty(caller, id);
 			}
+		}
+
+		@Override
+		public Object callMethod(SourceElement caller, String methodName, Object... args)
+				throws EvaluationException {
+			return grammarIxObject.callMethod(caller, methodName, args);
 		}
 	}
 
@@ -391,7 +405,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName)
+				throws EvaluationException {
 			if ("rules".equals(propertyName)) {
 				GrammarRules gr = rules.get(grammar);
 				if (gr == null) {
@@ -408,7 +423,55 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				return result;
 			}
+			if ("canInlineLexerRules".equals(propertyName)) {
+				return canInlineLexerRules();
+			}
 			return super.getProperty(caller, propertyName);
+		}
+
+		private boolean canInlineLexerRules() {
+			Map<Terminal, Boolean> seenSpaceRules = new HashMap<>();
+			Map<Terminal, Boolean> seenClassRules = new HashMap<>();
+			for (LexerRule rule : grammar.getLexerRules()) {
+				if (TMDataUtil.getCode(rule) != null
+						|| TMDataUtil.getTransition(rule) != null) {
+					return false;
+				}
+
+				// (space) annotations must be consistent.
+				Boolean existing = seenSpaceRules.get(rule.getSymbol());
+				boolean isSpace = (rule.getKind() == LexerRule.KIND_SPACE);
+				if (existing != null && existing != isSpace) {
+					return false;
+				}
+				seenSpaceRules.put(rule.getSymbol(), isSpace);
+
+				// A (class) rule must be the only rule for its terminal.
+				existing = seenClassRules.get(rule.getSymbol());
+				boolean isClass = (rule.getKind() == LexerRule.KIND_CLASS);
+				if (existing != null && (isClass || existing)) {
+					return false;
+				}
+				seenClassRules.put(rule.getSymbol(), isClass);
+			}
+			return true;
+		}
+
+		@Override
+		public Object callMethod(SourceElement caller, String methodName, Object... args)
+				throws EvaluationException {
+			if (args.length == 1 && "inlineLexerRules".equals(methodName)) {
+				int[] action = (int[]) args[0];
+				action = Arrays.copyOf(action, action.length);
+				for (int i = 0; i < action.length; i++) {
+					if (action[i] <= -3) {
+						action[i] = -3
+								- grammar.getLexerRules()[-3 - action[i]].getSymbol().getIndex();
+					}
+				}
+				return action;
+			}
+			return super.callMethod(caller, methodName, args);
 		}
 	}
 
@@ -487,7 +550,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
+		public Object callMethod(SourceElement caller, String methodName, Object... args)
+				throws EvaluationException {
 			if (args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
 				List<Rule> list = getRulesContainingSymbol().get(args[0]);
 				return list != null ? list : Collections.emptyList();

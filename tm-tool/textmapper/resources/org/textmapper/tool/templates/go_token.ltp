@@ -20,7 +20,7 @@ const (
 	EOI
 
 ${for i in [1, syntax.terminals - 1]-}
-	${syntax.symbols[i].id->java.escapeJavaReserved()}${if syntax.symbols[i].isConstant()} // ${util.escape(syntax.symbols[i].getConstantValue())}${end}
+	${syntax.symbols[i]->tokenName()}${if syntax.symbols[i].isConstant()} // ${util.escape(syntax.symbols[i].getConstantValue())}${end}
 ${end-}
 
 	terminalEnd
@@ -41,3 +41,5 @@ func (tok Token) String() string {
 	return fmt.Sprintf("token(%d)", tok)
 }
 ${end}
+
+${cached query tokenName() = self.id->go.escapeGoReserved()}
