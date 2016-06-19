@@ -70,6 +70,7 @@ const (
 	LBRACK // [
 	RBRACK // ]
 	DOT // .
+	DOTDOTDOT // ...
 	SEMICOLON // ;
 	COMMA // ,
 	LT // <
@@ -112,6 +113,8 @@ const (
 	ORASSIGN // |=
 	XORASSIGN // ^=
 	ASSIGNGT // =>
+	MULTMULT // **
+	MULTMULTASSIGN // **=
 	NUMERICLITERAL
 	STRINGLITERAL
 	NOSUBSTITUTIONTEMPLATE
@@ -187,6 +190,7 @@ var tokenStr = [...]string{
 	"[",
 	"]",
 	".",
+	"...",
 	";",
 	",",
 	"<",
@@ -229,6 +233,8 @@ var tokenStr = [...]string{
 	"|=",
 	"^=",
 	"=>",
+	"**",
+	"**=",
 	"NUMERICLITERAL",
 	"STRINGLITERAL",
 	"NOSUBSTITUTIONTEMPLATE",

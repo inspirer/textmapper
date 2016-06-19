@@ -35,11 +35,15 @@ const (
 	NewTarget
 	CallExpression
 	Arguments
-	PostfixExpression
+	PostIncrementExpression
+	PostDecrementExpression
+	PreIncrementExpression
+	PreDecrementExpression
 	UnaryExpression
 	AdditiveExpression
 	ShiftExpression
 	MultiplicativeExpression
+	ExponentiationExpression
 	RelationalExpression
 	EqualityExpression
 	BitwiseANDExpression
@@ -374,12 +378,16 @@ var ruleNodeType = [...]NodeType{
 	0, // PrimaryExpression_Yield ::= JSXElement_Yield
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' Expression_In ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' ')'
-	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' '.' '.' '.' BindingIdentifier ')'
-	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' Expression_In ',' '.' '.' '.' BindingIdentifier ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' '...' BindingIdentifier ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' '...' BindingPattern ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' Expression_In ',' '...' BindingIdentifier ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' Expression_In ',' '...' BindingPattern ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' Expression_In_Yield ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' ')'
-	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' '.' '.' '.' BindingIdentifier_Yield ')'
-	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' Expression_In_Yield ',' '.' '.' '.' BindingIdentifier_Yield ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' '...' BindingIdentifier_Yield ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' '...' BindingPattern_Yield ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' Expression_In_Yield ',' '...' BindingIdentifier_Yield ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' Expression_In_Yield ',' '...' BindingPattern_Yield ')'
 	Literal, // Literal ::= 'null'
 	Literal, // Literal ::= 'true'
 	Literal, // Literal ::= 'false'
@@ -401,8 +409,8 @@ var ruleNodeType = [...]NodeType{
 	0, // ElementList_Yield ::= ElementList_Yield ',' Elisionopt SpreadElement_Yield
 	0, // Elision ::= ','
 	0, // Elision ::= Elision ','
-	SpreadElement, // SpreadElement ::= '.' '.' '.' AssignmentExpression_In
-	SpreadElement, // SpreadElement_Yield ::= '.' '.' '.' AssignmentExpression_In_Yield
+	SpreadElement, // SpreadElement ::= '...' AssignmentExpression_In
+	SpreadElement, // SpreadElement_Yield ::= '...' AssignmentExpression_In_Yield
 	ObjectLiteral, // ObjectLiteral ::= '{' '}'
 	ObjectLiteral, // ObjectLiteral ::= '{' PropertyDefinitionList '}'
 	ObjectLiteral, // ObjectLiteral ::= '{' PropertyDefinitionList ',' '}'
@@ -664,13 +672,13 @@ var ruleNodeType = [...]NodeType{
 	Arguments, // Arguments_Yield ::= '(' ')'
 	Arguments, // Arguments_Yield ::= '(' ArgumentList_Yield ')'
 	0, // ArgumentList ::= AssignmentExpression_In
-	0, // ArgumentList ::= '.' '.' '.' AssignmentExpression_In
+	0, // ArgumentList ::= '...' AssignmentExpression_In
 	0, // ArgumentList ::= ArgumentList ',' AssignmentExpression_In
-	0, // ArgumentList ::= ArgumentList ',' '.' '.' '.' AssignmentExpression_In
+	0, // ArgumentList ::= ArgumentList ',' '...' AssignmentExpression_In
 	0, // ArgumentList_Yield ::= AssignmentExpression_In_Yield
-	0, // ArgumentList_Yield ::= '.' '.' '.' AssignmentExpression_In_Yield
+	0, // ArgumentList_Yield ::= '...' AssignmentExpression_In_Yield
 	0, // ArgumentList_Yield ::= ArgumentList_Yield ',' AssignmentExpression_In_Yield
-	0, // ArgumentList_Yield ::= ArgumentList_Yield ',' '.' '.' '.' AssignmentExpression_In_Yield
+	0, // ArgumentList_Yield ::= ArgumentList_Yield ',' '...' AssignmentExpression_In_Yield
 	0, // LeftHandSideExpression ::= NewExpression
 	0, // LeftHandSideExpression ::= CallExpression
 	0, // LeftHandSideExpression_NoFuncClass ::= NewExpression_NoFuncClass
@@ -691,114 +699,114 @@ var ruleNodeType = [...]NodeType{
 	0, // LeftHandSideExpression_StartWithLet_Yield ::= CallExpression_StartWithLet_Yield
 	0, // LeftHandSideExpression_Yield ::= NewExpression_Yield
 	0, // LeftHandSideExpression_Yield ::= CallExpression_Yield
-	0, // PostfixExpression ::= LeftHandSideExpression
-	PostfixExpression, // PostfixExpression ::= LeftHandSideExpression .noLineBreak '++'
-	PostfixExpression, // PostfixExpression ::= LeftHandSideExpression .noLineBreak '--'
-	0, // PostfixExpression_NoFuncClass ::= LeftHandSideExpression_NoFuncClass
-	PostfixExpression, // PostfixExpression_NoFuncClass ::= LeftHandSideExpression_NoFuncClass .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_NoFuncClass ::= LeftHandSideExpression_NoFuncClass .noLineBreak '--'
-	0, // PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral
-	PostfixExpression, // PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '--'
-	0, // PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	PostfixExpression, // PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '--'
-	0, // PostfixExpression_NoLet ::= LeftHandSideExpression_NoLet
-	PostfixExpression, // PostfixExpression_NoLet ::= LeftHandSideExpression_NoLet .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_NoLet ::= LeftHandSideExpression_NoLet .noLineBreak '--'
-	0, // PostfixExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield
-	PostfixExpression, // PostfixExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield .noLineBreak '--'
-	0, // PostfixExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral
-	PostfixExpression, // PostfixExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral .noLineBreak '--'
-	0, // PostfixExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet
-	PostfixExpression, // PostfixExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet .noLineBreak '--'
-	0, // PostfixExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield
-	PostfixExpression, // PostfixExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield .noLineBreak '--'
-	0, // PostfixExpression_Yield ::= LeftHandSideExpression_Yield
-	PostfixExpression, // PostfixExpression_Yield ::= LeftHandSideExpression_Yield .noLineBreak '++'
-	PostfixExpression, // PostfixExpression_Yield ::= LeftHandSideExpression_Yield .noLineBreak '--'
-	0, // UnaryExpression ::= PostfixExpression
+	0, // UpdateExpression ::= LeftHandSideExpression
+	PostIncrementExpression, // UpdateExpression ::= LeftHandSideExpression .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression ::= LeftHandSideExpression .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression ::= '++' UnaryExpression
+	PreDecrementExpression, // UpdateExpression ::= '--' UnaryExpression
+	0, // UpdateExpression_NoFuncClass ::= LeftHandSideExpression_NoFuncClass
+	PostIncrementExpression, // UpdateExpression_NoFuncClass ::= LeftHandSideExpression_NoFuncClass .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_NoFuncClass ::= LeftHandSideExpression_NoFuncClass .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression_NoFuncClass ::= '++' UnaryExpression
+	PreDecrementExpression, // UpdateExpression_NoFuncClass ::= '--' UnaryExpression
+	0, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral
+	PostIncrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '++' UnaryExpression
+	PreDecrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '--' UnaryExpression
+	0, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	PostIncrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '++' UnaryExpression_Yield
+	PreDecrementExpression, // UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '--' UnaryExpression_Yield
+	0, // UpdateExpression_NoLet ::= LeftHandSideExpression_NoLet
+	PostIncrementExpression, // UpdateExpression_NoLet ::= LeftHandSideExpression_NoLet .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_NoLet ::= LeftHandSideExpression_NoLet .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression_NoLet ::= '++' UnaryExpression
+	PreDecrementExpression, // UpdateExpression_NoLet ::= '--' UnaryExpression
+	0, // UpdateExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield
+	PostIncrementExpression, // UpdateExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression_NoLet_Yield ::= '++' UnaryExpression_Yield
+	PreDecrementExpression, // UpdateExpression_NoLet_Yield ::= '--' UnaryExpression_Yield
+	0, // UpdateExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral
+	PostIncrementExpression, // UpdateExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression_NoObjLiteral ::= '++' UnaryExpression
+	PreDecrementExpression, // UpdateExpression_NoObjLiteral ::= '--' UnaryExpression
+	0, // UpdateExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet
+	PostIncrementExpression, // UpdateExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet .noLineBreak '--'
+	0, // UpdateExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield
+	PostIncrementExpression, // UpdateExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield .noLineBreak '--'
+	0, // UpdateExpression_Yield ::= LeftHandSideExpression_Yield
+	PostIncrementExpression, // UpdateExpression_Yield ::= LeftHandSideExpression_Yield .noLineBreak '++'
+	PostDecrementExpression, // UpdateExpression_Yield ::= LeftHandSideExpression_Yield .noLineBreak '--'
+	PreIncrementExpression, // UpdateExpression_Yield ::= '++' UnaryExpression_Yield
+	PreDecrementExpression, // UpdateExpression_Yield ::= '--' UnaryExpression_Yield
+	0, // UnaryExpression ::= UpdateExpression
 	UnaryExpression, // UnaryExpression ::= 'delete' UnaryExpression
 	UnaryExpression, // UnaryExpression ::= 'void' UnaryExpression
 	UnaryExpression, // UnaryExpression ::= 'typeof' UnaryExpression
-	UnaryExpression, // UnaryExpression ::= '++' UnaryExpression
-	UnaryExpression, // UnaryExpression ::= '--' UnaryExpression
 	UnaryExpression, // UnaryExpression ::= '+' UnaryExpression
 	UnaryExpression, // UnaryExpression ::= '-' UnaryExpression
 	UnaryExpression, // UnaryExpression ::= '~' UnaryExpression
 	UnaryExpression, // UnaryExpression ::= '!' UnaryExpression
-	0, // UnaryExpression_NoFuncClass ::= PostfixExpression_NoFuncClass
+	0, // UnaryExpression_NoFuncClass ::= UpdateExpression_NoFuncClass
 	UnaryExpression, // UnaryExpression_NoFuncClass ::= 'delete' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass ::= 'void' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass ::= 'typeof' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoFuncClass ::= '++' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoFuncClass ::= '--' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass ::= '+' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass ::= '-' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass ::= '~' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass ::= '!' UnaryExpression
-	0, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral
+	0, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= 'delete' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= 'void' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= 'typeof' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '++' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '--' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '+' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '-' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '~' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= '!' UnaryExpression
-	0, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= PostfixExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	0, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= 'delete' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= 'void' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= 'typeof' UnaryExpression_Yield
-	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '++' UnaryExpression_Yield
-	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '--' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '+' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '-' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '~' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= '!' UnaryExpression_Yield
-	0, // UnaryExpression_NoLet ::= PostfixExpression_NoLet
+	0, // UnaryExpression_NoLet ::= UpdateExpression_NoLet
 	UnaryExpression, // UnaryExpression_NoLet ::= 'delete' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoLet ::= 'void' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoLet ::= 'typeof' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoLet ::= '++' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoLet ::= '--' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoLet ::= '+' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoLet ::= '-' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoLet ::= '~' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoLet ::= '!' UnaryExpression
-	0, // UnaryExpression_NoLet_Yield ::= PostfixExpression_NoLet_Yield
+	0, // UnaryExpression_NoLet_Yield ::= UpdateExpression_NoLet_Yield
 	UnaryExpression, // UnaryExpression_NoLet_Yield ::= 'delete' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoLet_Yield ::= 'void' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoLet_Yield ::= 'typeof' UnaryExpression_Yield
-	UnaryExpression, // UnaryExpression_NoLet_Yield ::= '++' UnaryExpression_Yield
-	UnaryExpression, // UnaryExpression_NoLet_Yield ::= '--' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoLet_Yield ::= '+' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoLet_Yield ::= '-' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoLet_Yield ::= '~' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_NoLet_Yield ::= '!' UnaryExpression_Yield
-	0, // UnaryExpression_NoObjLiteral ::= PostfixExpression_NoObjLiteral
+	0, // UnaryExpression_NoObjLiteral ::= UpdateExpression_NoObjLiteral
 	UnaryExpression, // UnaryExpression_NoObjLiteral ::= 'delete' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoObjLiteral ::= 'void' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoObjLiteral ::= 'typeof' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoObjLiteral ::= '++' UnaryExpression
-	UnaryExpression, // UnaryExpression_NoObjLiteral ::= '--' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoObjLiteral ::= '+' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoObjLiteral ::= '-' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoObjLiteral ::= '~' UnaryExpression
 	UnaryExpression, // UnaryExpression_NoObjLiteral ::= '!' UnaryExpression
-	0, // UnaryExpression_StartWithLet ::= PostfixExpression_StartWithLet
-	0, // UnaryExpression_StartWithLet_Yield ::= PostfixExpression_StartWithLet_Yield
-	0, // UnaryExpression_Yield ::= PostfixExpression_Yield
+	0, // UnaryExpression_StartWithLet ::= UpdateExpression_StartWithLet
+	0, // UnaryExpression_StartWithLet_Yield ::= UpdateExpression_StartWithLet_Yield
+	0, // UnaryExpression_Yield ::= UpdateExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= 'delete' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= 'void' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= 'typeof' UnaryExpression_Yield
-	UnaryExpression, // UnaryExpression_Yield ::= '++' UnaryExpression_Yield
-	UnaryExpression, // UnaryExpression_Yield ::= '--' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= '+' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= '-' UnaryExpression_Yield
 	UnaryExpression, // UnaryExpression_Yield ::= '~' UnaryExpression_Yield
@@ -812,6 +820,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression ::= ArithmeticExpression '*' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression ::= ArithmeticExpression '/' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression ::= ArithmeticExpression '%' ArithmeticExpression
+	ExponentiationExpression, // ArithmeticExpression ::= UpdateExpression '**' ArithmeticExpression
 	0, // ArithmeticExpression_NoFuncClass ::= UnaryExpression_NoFuncClass
 	AdditiveExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '+' ArithmeticExpression
 	AdditiveExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '-' ArithmeticExpression
@@ -821,6 +830,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '*' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '/' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass ::= ArithmeticExpression_NoFuncClass '%' ArithmeticExpression
+	ExponentiationExpression, // ArithmeticExpression_NoFuncClass ::= UpdateExpression_NoFuncClass '**' ArithmeticExpression
 	0, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral
 	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '+' ArithmeticExpression
 	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '-' ArithmeticExpression
@@ -830,6 +840,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '*' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '/' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral '%' ArithmeticExpression
+	ExponentiationExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral '**' ArithmeticExpression
 	0, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '+' ArithmeticExpression_Yield
 	AdditiveExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '-' ArithmeticExpression_Yield
@@ -839,6 +850,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '*' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '/' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '%' ArithmeticExpression_Yield
+	ExponentiationExpression, // ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '**' ArithmeticExpression_Yield
 	0, // ArithmeticExpression_NoLet ::= UnaryExpression_NoLet
 	AdditiveExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '+' ArithmeticExpression
 	AdditiveExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '-' ArithmeticExpression
@@ -848,6 +860,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '*' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '/' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoLet ::= ArithmeticExpression_NoLet '%' ArithmeticExpression
+	ExponentiationExpression, // ArithmeticExpression_NoLet ::= UpdateExpression_NoLet '**' ArithmeticExpression
 	0, // ArithmeticExpression_NoLet_Yield ::= UnaryExpression_NoLet_Yield
 	AdditiveExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '+' ArithmeticExpression_Yield
 	AdditiveExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '-' ArithmeticExpression_Yield
@@ -857,6 +870,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '*' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '/' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_NoLet_Yield ::= ArithmeticExpression_NoLet_Yield '%' ArithmeticExpression_Yield
+	ExponentiationExpression, // ArithmeticExpression_NoLet_Yield ::= UpdateExpression_NoLet_Yield '**' ArithmeticExpression_Yield
 	0, // ArithmeticExpression_NoObjLiteral ::= UnaryExpression_NoObjLiteral
 	AdditiveExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '+' ArithmeticExpression
 	AdditiveExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '-' ArithmeticExpression
@@ -866,6 +880,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '*' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '/' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_NoObjLiteral ::= ArithmeticExpression_NoObjLiteral '%' ArithmeticExpression
+	ExponentiationExpression, // ArithmeticExpression_NoObjLiteral ::= UpdateExpression_NoObjLiteral '**' ArithmeticExpression
 	0, // ArithmeticExpression_StartWithLet ::= UnaryExpression_StartWithLet
 	AdditiveExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '+' ArithmeticExpression
 	AdditiveExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '-' ArithmeticExpression
@@ -875,6 +890,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '*' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '/' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression_StartWithLet ::= ArithmeticExpression_StartWithLet '%' ArithmeticExpression
+	ExponentiationExpression, // ArithmeticExpression_StartWithLet ::= UpdateExpression_StartWithLet '**' ArithmeticExpression
 	0, // ArithmeticExpression_StartWithLet_Yield ::= UnaryExpression_StartWithLet_Yield
 	AdditiveExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '+' ArithmeticExpression_Yield
 	AdditiveExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '-' ArithmeticExpression_Yield
@@ -884,6 +900,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '*' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '/' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_StartWithLet_Yield ::= ArithmeticExpression_StartWithLet_Yield '%' ArithmeticExpression_Yield
+	ExponentiationExpression, // ArithmeticExpression_StartWithLet_Yield ::= UpdateExpression_StartWithLet_Yield '**' ArithmeticExpression_Yield
 	0, // ArithmeticExpression_Yield ::= UnaryExpression_Yield
 	AdditiveExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '+' ArithmeticExpression_Yield
 	AdditiveExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '-' ArithmeticExpression_Yield
@@ -893,6 +910,7 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '*' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '/' ArithmeticExpression_Yield
 	MultiplicativeExpression, // ArithmeticExpression_Yield ::= ArithmeticExpression_Yield '%' ArithmeticExpression_Yield
+	ExponentiationExpression, // ArithmeticExpression_Yield ::= UpdateExpression_Yield '**' ArithmeticExpression_Yield
 	0, // BinaryExpression ::= ArithmeticExpression
 	RelationalExpression, // BinaryExpression ::= BinaryExpression '<' BinaryExpression
 	RelationalExpression, // BinaryExpression ::= BinaryExpression '>' BinaryExpression
@@ -1185,6 +1203,7 @@ var ruleNodeType = [...]NodeType{
 	AssignmentOperator, // AssignmentOperator ::= '&='
 	AssignmentOperator, // AssignmentOperator ::= '^='
 	AssignmentOperator, // AssignmentOperator ::= '|='
+	AssignmentOperator, // AssignmentOperator ::= '**='
 	0, // Expression_In ::= AssignmentExpression_In
 	0, // Expression_In ::= Expression_In ',' AssignmentExpression_In
 	0, // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
@@ -1355,8 +1374,8 @@ var ruleNodeType = [...]NodeType{
 	BindingElement, // BindingElement_Yield ::= BindingPattern_Yield Initializeropt_In_Yield
 	SingleNameBinding, // SingleNameBinding ::= BindingIdentifier Initializeropt_In
 	SingleNameBinding, // SingleNameBinding_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
-	BindingRestElement, // BindingRestElement ::= '.' '.' '.' BindingIdentifier
-	BindingRestElement, // BindingRestElement_Yield ::= '.' '.' '.' BindingIdentifier_Yield
+	BindingRestElement, // BindingRestElement ::= '...' BindingIdentifier
+	BindingRestElement, // BindingRestElement_Yield ::= '...' BindingIdentifier_Yield
 	EmptyStatement, // EmptyStatement ::= ';' .emptyStatement
 	ExpressionStatement, // ExpressionStatement ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ';'
 	ExpressionStatement, // ExpressionStatement_Yield ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ';'
@@ -1644,9 +1663,9 @@ var ruleNodeType = [...]NodeType{
 	0, // JSXMemberExpression ::= jsxIdentifier '.' jsxIdentifier
 	0, // JSXMemberExpression ::= JSXMemberExpression '.' jsxIdentifier
 	JSXAttribute, // JSXAttribute ::= JSXAttributeName '=' JSXAttributeValue
-	JSXSpreadAttribute, // JSXAttribute ::= '{' '.' '.' '.' AssignmentExpression_In '}'
+	JSXSpreadAttribute, // JSXAttribute ::= '{' '...' AssignmentExpression_In '}'
 	JSXAttribute, // JSXAttribute_Yield ::= JSXAttributeName '=' JSXAttributeValue_Yield
-	JSXSpreadAttribute, // JSXAttribute_Yield ::= '{' '.' '.' '.' AssignmentExpression_In_Yield '}'
+	JSXSpreadAttribute, // JSXAttribute_Yield ::= '{' '...' AssignmentExpression_In_Yield '}'
 	JSXAttributeName, // JSXAttributeName ::= jsxIdentifier
 	JSXAttributeName, // JSXAttributeName ::= jsxIdentifier ':' jsxIdentifier
 	JSXAttributeValue, // JSXAttributeValue ::= jsxStringLiteral
@@ -1725,11 +1744,15 @@ var nodeTypeStr = [...]string{
 	"NewTarget",
 	"CallExpression",
 	"Arguments",
-	"PostfixExpression",
+	"PostIncrementExpression",
+	"PostDecrementExpression",
+	"PreIncrementExpression",
+	"PreDecrementExpression",
 	"UnaryExpression",
 	"AdditiveExpression",
 	"ShiftExpression",
 	"MultiplicativeExpression",
+	"ExponentiationExpression",
 	"RelationalExpression",
 	"EqualityExpression",
 	"BitwiseANDExpression",

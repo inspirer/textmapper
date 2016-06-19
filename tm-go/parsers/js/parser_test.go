@@ -142,17 +142,33 @@ var jsParseTests = []jsTestCase{
 		`aa“()“.bbb“()““()“;`,
 		`aa“(1,2)“;`,
 	}},
-	{js.PostfixExpression, []string{
+	{js.PostIncrementExpression, []string{
 		`a(“b++“, c)`,
+	}},
+	{js.PostDecrementExpression, []string{
+		`a(“b--“, c)`,
+	}},
+	{js.PreIncrementExpression, []string{
+		`a(“++b“, c)`,
+	}},
+	{js.PreDecrementExpression, []string{
+		`a(“--b“, c)`,
 	}},
 	{js.UnaryExpression, []string{
 		`“delete a“
 		 “void 1“
 		 “typeof s“ == "string"
 		 a = b
-		 “++c“;
+		 ++c;
 		 “+1“ + “-2“ & “~0“
 		 if (“!(«typeof s» === "string")“) {}`,
+	}},
+	{js.ExponentiationExpression, []string{
+		`/*no expectations*/ 1;`,
+		`“1**2“;`,
+		`“1**«2**3»“;`,
+		`“1**«2**--a»“;`,
+		`“--1**«2**a++»“;`,
 	}},
 	{js.MultiplicativeExpression, []string{
 		`/*no expectations*/ 1;`,
@@ -226,9 +242,12 @@ var jsParseTests = []jsTestCase{
 		`{ “a = 5“ }`,
 		`{ “a ^= 5“ }`,
 		`{ “a >>>= 5“ }`,
+		`{ “a |= 5“ }`,
+		`{ “a **= 5“ }`,
 	}},
 	{js.AssignmentOperator, []string{
 		` a“+=“1`,
+		` a“**=“2`,
 		` a“<<=“ b “+=“ 1`,
 	}},
 	{js.Block, []string{
@@ -648,6 +667,40 @@ var jsParseTests = []jsTestCase{
 		`throw A«»`,
 		`throw«»
      A /*fails*/`,
+	}},
+
+	{js.JSXElement, []string{
+		// TODO
+	}},
+	{js.JSXSelfClosingElement, []string{
+		// TODO
+	}},
+	{js.JSXOpeningElement, []string{
+		// TODO
+	}},
+	{js.JSXClosingElement, []string{
+		// TODO
+	}},
+	{js.JSXElementName, []string{
+		// TODO
+	}},
+	{js.JSXAttribute, []string{
+		// TODO
+	}},
+	{js.JSXSpreadAttribute, []string{
+		// TODO
+	}},
+	{js.JSXAttributeName, []string{
+		// TODO
+	}},
+	{js.JSXAttributeValue, []string{
+		// TODO
+	}},
+	{js.JSXText, []string{
+		// TODO
+	}},
+	{js.JSXChild, []string{
+		// TODO
 	}},
 }
 

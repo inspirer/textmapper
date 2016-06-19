@@ -1,3 +1,6 @@
+# ECMAScript 2016 Language Grammar (Standard ECMA-262, 7th Edition / June 2016)
+# This grammar also covers JSX - a popular language extension for React.
+
 language js(go);
 
 lang = "js"
@@ -22,10 +25,8 @@ MultiLineComment: /\/\*{commentChars}\*\// (space)
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/ (space)
 
 # Note: see http://unicode.org/reports/tr31/
-ID_Start = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}|{Other_ID_Start}/
-ID_Continue = /{ID_Start}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|{Other_ID_Continue}/
-Other_ID_Start = /\u2118|\u212E|\u309B|\u309C/
-Other_ID_Continue = /\u1369|\u00B7|\u0387|\u19DA/
+ID_Start = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
+ID_Continue = /{ID_Start}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}/
 Join_Control = /\u200c|\u200d/
 
 hex = /[0-9a-fA-F]/
@@ -106,6 +107,7 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '[': /\[/
 ']': /\]/
 '.': /\./
+'...': /\.\.\./
 ';': /;/
 ',': /,/
 '<': /</
@@ -148,6 +150,8 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '|=': /\|=/
 '^=': /^=/
 '=>': /=>/
+'**': /\*\*/
+'**=': /\*\*=/
 
 exp = /[eE][+-]?[0-9]+/
 NumericLiteral: /(0|[1-9][0-9]*)(\.[0-9]*)?{exp}?/
@@ -303,8 +307,10 @@ PrimaryExpression<Yield> ::=
 CoverParenthesizedExpressionAndArrowParameterList<Yield> ::=
 	  '(' Expression<+In> ')'
 	| '(' ')'
-	| '(' '.' '.' '.' BindingIdentifier ')'
-	| '(' Expression<+In> ',' '.' '.' '.' BindingIdentifier ')'
+	| '(' '...' BindingIdentifier ')'
+	| '(' '...' BindingPattern ')'
+	| '(' Expression<+In> ',' '...' BindingIdentifier ')'
+	| '(' Expression<+In> ',' '...' BindingPattern ')'
 ;
 
 Literal ::=
@@ -336,7 +342,7 @@ Elision ::=
 ;
 
 SpreadElement<Yield> ::=
-	  '.' '.' '.' AssignmentExpression<+In>
+	  '...' AssignmentExpression<+In>
 ;
 
 ObjectLiteral<Yield> ::=
@@ -458,9 +464,9 @@ Arguments<Yield> ::=
 @noast
 ArgumentList<Yield> ::=
 	  AssignmentExpression<+In>
-	| '.' '.' '.' AssignmentExpression<+In>
+	| '...' AssignmentExpression<+In>
 	| ArgumentList ',' AssignmentExpression<+In>
-	| ArgumentList ',' '.' '.' '.' AssignmentExpression<+In>
+	| ArgumentList ',' '...' AssignmentExpression<+In>
 ;
 
 @noast
@@ -469,19 +475,19 @@ LeftHandSideExpression<Yield> ::=
 	| CallExpression
 ;
 
-PostfixExpression<Yield> ::=
+UpdateExpression<Yield> ::=
 	  @noast LeftHandSideExpression
-	| LeftHandSideExpression .noLineBreak '++'
-	| LeftHandSideExpression .noLineBreak '--'
+	| LeftHandSideExpression .noLineBreak '++'             {~PostIncrementExpression}
+	| LeftHandSideExpression .noLineBreak '--'             {~PostDecrementExpression}
+	| [!StartWithLet] '++' UnaryExpression                 {~PreIncrementExpression}
+	| [!StartWithLet] '--' UnaryExpression                 {~PreDecrementExpression}
 ;
 
 UnaryExpression<Yield> ::=
-	  @noast PostfixExpression
+	  @noast UpdateExpression
 	| [!StartWithLet] 'delete' UnaryExpression
 	| [!StartWithLet] 'void' UnaryExpression
 	| [!StartWithLet] 'typeof' UnaryExpression
-	| [!StartWithLet] '++' UnaryExpression
-	| [!StartWithLet] '--' UnaryExpression
 	| [!StartWithLet] '+' UnaryExpression
 	| [!StartWithLet] '-' UnaryExpression
 	| [!StartWithLet] '~' UnaryExpression
@@ -498,36 +504,38 @@ UnaryExpression<Yield> ::=
 %left '<<' '>>' '>>>';
 %left '-' '+';
 %left '*' '/' '%';
+%right '**';
 
 ArithmeticExpression<Yield> ::=
 	  @noast UnaryExpression
-	| ArithmeticExpression '+' ArithmeticExpression                 {~AdditiveExpression}
-	| ArithmeticExpression '-' ArithmeticExpression                 {~AdditiveExpression}
-	| ArithmeticExpression '<<' ArithmeticExpression                {~ShiftExpression}
-	| ArithmeticExpression '>>' ArithmeticExpression                {~ShiftExpression}
-	| ArithmeticExpression '>>>' ArithmeticExpression               {~ShiftExpression}
-	| ArithmeticExpression '*' ArithmeticExpression                 {~MultiplicativeExpression}
-	| ArithmeticExpression '/' ArithmeticExpression                 {~MultiplicativeExpression}
-	| ArithmeticExpression '%' ArithmeticExpression                 {~MultiplicativeExpression}
+	| ArithmeticExpression '+' ArithmeticExpression        {~AdditiveExpression}
+	| ArithmeticExpression '-' ArithmeticExpression        {~AdditiveExpression}
+	| ArithmeticExpression '<<' ArithmeticExpression       {~ShiftExpression}
+	| ArithmeticExpression '>>' ArithmeticExpression       {~ShiftExpression}
+	| ArithmeticExpression '>>>' ArithmeticExpression      {~ShiftExpression}
+	| ArithmeticExpression '*' ArithmeticExpression        {~MultiplicativeExpression}
+	| ArithmeticExpression '/' ArithmeticExpression        {~MultiplicativeExpression}
+	| ArithmeticExpression '%' ArithmeticExpression        {~MultiplicativeExpression}
+	| UpdateExpression '**' ArithmeticExpression           {~ExponentiationExpression}
 ;
 
 BinaryExpression<In, Yield> ::=
 	  @noast ArithmeticExpression
-	| BinaryExpression '<' BinaryExpression                 {~RelationalExpression}
-	| BinaryExpression '>' BinaryExpression                 {~RelationalExpression}
-	| BinaryExpression '<=' BinaryExpression                {~RelationalExpression}
-	| BinaryExpression '>=' BinaryExpression                {~RelationalExpression}
-	| BinaryExpression 'instanceof' BinaryExpression        {~RelationalExpression}
-	| [In] BinaryExpression 'in' BinaryExpression           {~RelationalExpression}
-	| BinaryExpression '==' BinaryExpression                {~EqualityExpression}
-	| BinaryExpression '!=' BinaryExpression                {~EqualityExpression}
-	| BinaryExpression '===' BinaryExpression               {~EqualityExpression}
-	| BinaryExpression '!==' BinaryExpression               {~EqualityExpression}
-	| BinaryExpression '&' BinaryExpression                 {~BitwiseANDExpression}
-	| BinaryExpression '^' BinaryExpression                 {~BitwiseXORExpression}
-	| BinaryExpression '|' BinaryExpression                 {~BitwiseORExpression}
-	| BinaryExpression '&&' BinaryExpression                {~LogicalANDExpression}
-	| BinaryExpression '||' BinaryExpression                {~LogicalORExpression}
+	| BinaryExpression '<' BinaryExpression                {~RelationalExpression}
+	| BinaryExpression '>' BinaryExpression                {~RelationalExpression}
+	| BinaryExpression '<=' BinaryExpression               {~RelationalExpression}
+	| BinaryExpression '>=' BinaryExpression               {~RelationalExpression}
+	| BinaryExpression 'instanceof' BinaryExpression       {~RelationalExpression}
+	| [In] BinaryExpression 'in' BinaryExpression          {~RelationalExpression}
+	| BinaryExpression '==' BinaryExpression               {~EqualityExpression}
+	| BinaryExpression '!=' BinaryExpression               {~EqualityExpression}
+	| BinaryExpression '===' BinaryExpression              {~EqualityExpression}
+	| BinaryExpression '!==' BinaryExpression              {~EqualityExpression}
+	| BinaryExpression '&' BinaryExpression                {~BitwiseANDExpression}
+	| BinaryExpression '^' BinaryExpression                {~BitwiseXORExpression}
+	| BinaryExpression '|' BinaryExpression                {~BitwiseORExpression}
+	| BinaryExpression '&&' BinaryExpression               {~LogicalANDExpression}
+	| BinaryExpression '||' BinaryExpression               {~LogicalORExpression}
 ;
 
 ConditionalExpression<In, Yield> ::=
@@ -544,7 +552,7 @@ AssignmentExpression<In, Yield> ::=
 ;
 
 AssignmentOperator ::=
-	  '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' ;
+	  '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' ;
 
 @noast
 Expression<In, Yield> ::=
@@ -697,7 +705,7 @@ SingleNameBinding<Yield> ::=
 ;
 
 BindingRestElement<Yield> ::=
-	  '.' '.' '.' BindingIdentifier
+	  '...' BindingIdentifier
 ;
 
 EmptyStatement ::=
@@ -1065,7 +1073,7 @@ JSXMemberExpression ::=
 
 JSXAttribute<Yield> ::=
 	  JSXAttributeName '=' JSXAttributeValue
-	| '{' '.' '.' '.' AssignmentExpression<+In> '}'             {~JSXSpreadAttribute}
+	| '{' '...' AssignmentExpression<+In> '}'             {~JSXSpreadAttribute}
 ;
 
 JSXAttributeName ::=
