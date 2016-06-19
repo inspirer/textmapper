@@ -25,10 +25,6 @@ import org.textmapper.lapg.regex.RegexFacade;
 import java.util.*;
 
 public class LexerGenerator {
-	private static final int BITS = 32;
-	private static final int MAX_RULES = 0x100000 - 1;
-	private static final int MAX_WORD = 0x7ff0;
-
 	private static class RuleData {
 		private final LexerRule lexerRule;
 		private final RegexInstruction[] pattern;
@@ -58,34 +54,35 @@ public class LexerGenerator {
 		int[] action;
 	}
 
-	private static final int TABLE_SIZE = 1024; // should be power of 2
+	private static final int TABLE_SIZE = 1024; // should be a power of 2
 
 	// initial information
 	private final ProcessingStatus status;
 
 	// lexical analyzer description
-	int nitems, nrules, nlexerStates;
-	int characters, charsetSize;
-	int[] char2no;
+	private int nitems, nrules, nlexerStates;
+	private int characters, charsetSize;
+	private int[] char2no;
 	private int[][] set2symbols;
 	private int[] lsym;
 	private int[] lindex;
 	private RuleData[] ldata;
 
 	// generate-time variables
-	int states;
-	State[] hash;
-	State first, last, current;
-	int[] clsr;
-	BitSet cset;
+	private int states;
+	private State[] hash;
+	private State first;
+	private State last;
+	private int[] clsr;
+	private BitSet cset;
 
-	int[] groupset;
+	private int[] groupset;
 
 	private LexerGenerator(ProcessingStatus status) {
 		this.status = status;
 	}
 
-	private int add_set(int[] state) {
+	private int add_set(int[] state, State insertAfter) {
 		int hCode = 1;
 		int lastIndex = 0;
 		while (state[lastIndex] >= 0) {
@@ -105,12 +102,6 @@ public class LexerGenerator {
 			}
 		}
 
-		// have we exceed the limits
-		if (states >= MAX_WORD) {
-			// TODO throw new ???
-			return -1;
-		}
-
 		// create new
 		n = new State();
 		n.set = new int[lastIndex + 1];
@@ -125,6 +116,14 @@ public class LexerGenerator {
 
 		if (first == null) {
 			first = last = n;
+		} else if (insertAfter != null) {
+			if (insertAfter == last) {
+				last = n;
+				assert insertAfter.next == null;
+			} else {
+				n.next = insertAfter.next;
+			}
+			insertAfter.next = n;
 		} else {
 			last = last.next = n;
 		}
@@ -294,7 +293,7 @@ public class LexerGenerator {
 	private boolean buildStates() {
 		int i, k;
 		int nnext, errors = 0;
-		int[] toshift = new int[charsetSize];
+		BitSet toshift = new BitSet(characters);
 
 		// allocate temporary storage
 		hash = new State[TABLE_SIZE];
@@ -323,18 +322,18 @@ public class LexerGenerator {
 			if (nnext > 0) {
 				next[nnext] = -1;
 				closure(next);
-				groupset[k] = add_set(next);
+				groupset[k] = add_set(next, null);
 			} else {
 				groupset[k] = -1;
 			}
 		}
 
 		// generate states
-		for (current = first; current != null; ) {
+		for (State current = first; current != null; current = current.next) {
 
 			// first of all we must search if there any lexeme have been read already
 			int lexnum = -1;
-			Arrays.fill(toshift, 0);
+			toshift.clear();
 			int[] cset = current.set;
 
 			for (int csi = 0; cset[csi] >= 0; csi++) {
@@ -372,27 +371,19 @@ public class LexerGenerator {
 						break;
 					case Symbol:
 						int symValue = instruction.getValue();
-						toshift[symValue / BITS] |= 1 << symValue % BITS;
+						toshift.set(symValue);
 						break;
 					case Any: /* except \n and eof */
 						int nl = char2no['\n'];
-						for (i = 1; i < charsetSize; i++) {
-							if (i != nl / BITS) {
-								toshift[i] = ~0;
-							}
-						}
-						if (nl < 32) {
-							toshift[0] |= ~((1 << nl) + 1);
-						} else {
-							toshift[0] |= ~1;
-							toshift[nl / BITS] |= ~(1 << nl % BITS);
-						}
+						boolean nlVal = toshift.get(nl);
+						toshift.set(1, characters);
+						toshift.set(nl, nlVal);
 						break;
 					case Set: {
 						int e = instruction.getValue();
 						int[] used = set2symbols[e];
 						for (i = 0; i < used.length; i++) {
-							toshift[used[i] / BITS] |= 1 << used[i] % BITS;
+							toshift.set(used[i]);
 						}
 						break;
 					}
@@ -411,8 +402,7 @@ public class LexerGenerator {
 
 			// try to shift all available symbols
 			for (int sym = 0; sym < characters; sym++) {
-				if ((toshift[sym / BITS] & 1 << sym % BITS) != 0) {
-
+				if (toshift.get(sym)) {
 					nnext = 0;
 					// create new state
 					for (int p = 0; cset[p] >= 0; p++) {
@@ -441,7 +431,7 @@ public class LexerGenerator {
 					// closure
 					next[nnext] = -1;
 					closure(next);
-					current.action[sym] = add_set(next);
+					current.action[sym] = add_set(next, null);
 
 					// Have we exceeded the limits?
 					if (current.action[sym] == -1) {
@@ -455,13 +445,12 @@ public class LexerGenerator {
 							lexnum >= 0 ? -3 - ldata[lexnum].lexerRule.getIndex() : -1;
 				}
 			}
-
-			// next state
-			current = current.next;
 		}
 
 		// first group (only) succeeds on EOI, unless there is an explicit EOI rule
 		if (first.action[0] == -1) first.action[0] = -2;
+
+		// TODO re-order states for better cache locality
 
 		return errors == 0;
 	}
@@ -509,12 +498,7 @@ public class LexerGenerator {
 		}
 
 		nrules = syms.size();
-		if (nrules > MAX_RULES) {
-			status.report(ProcessingStatus.KIND_ERROR, "too many lexical rules",
-					syms.get(MAX_RULES).lexerRule);
-			return false;
-
-		} else if (nrules == 0) {
+		if (nrules == 0) {
 			status.report(ProcessingStatus.KIND_ERROR, "no lexical rules");
 			return false;
 		}
@@ -550,7 +534,6 @@ public class LexerGenerator {
 		char2no = inputSymbols.getCharacterMap();
 		characters = inputSymbols.getSymbolCount();
 		set2symbols = inputSymbols.getSetToSymbolsMap();
-		charsetSize = (characters + BITS - 1) / BITS;
 
 		if (status.isDebugMode()) {
 			debugTables();
