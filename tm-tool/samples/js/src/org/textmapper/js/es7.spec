@@ -1,5 +1,5 @@
-# Standard ECMA-262, 6th Edition / June 2015
-# ECMAScript 2015 Language Specification
+# Standard ECMA-262, 7th Edition / June 2016
+# ECMAScript 2016 Language Specification
 
 # A.1	Lexical Grammar
 
@@ -16,7 +16,6 @@ InputElementDiv ::
 	CommonToken
 	DivPunctuator
 	RightBracePunctuator
-
 
 InputElementRegExp ::
 	WhiteSpace
@@ -129,10 +128,10 @@ IdentifierPart ::
 	<ZWJ>
 
 UnicodeIDStart ::
-	any Unicode code point with the Unicode property “ID_Start” or “Other_ID_Start”
+	any Unicode code point with the Unicode property “ID_Start”
 
 UnicodeIDContinue ::
-	any Unicode code point with the Unicode property “ID_Continue”, “Other_ID_Continue”, or “Other_ID_Start”
+	any Unicode code point with the Unicode property “ID_Continue”
 
 ReservedWord ::
 	Keyword
@@ -150,29 +149,33 @@ Keyword :: one of
 	debugger	function	this
 	default		if			throw
 	delete		import		try
-# TODO: smart keywords? (used in PropertyAssignment)
-	get set
 
 FutureReservedWord :: one of
 	enum await
-#	or in strict mode code one of
-#	implements	package		protected
-#	interface	private		public
+
+# await is only treated as a FutureReservedWord when Module is the goal symbol of the
+# syntactic grammar. The following tokens are also considered to be FutureReservedWords
+# when parsing strict mode code:
+
+	implements	package		protected
+	interface	private		public
 
 Punctuator :: one of
 	{	}	(	)	[	]
-	.	;	,	<	>	<=
+	.	...	;	,	<	>	<=
 	>=	==	!=	===	!==
 	+	-	*	%	++	--
 	<<	>>	>>>	&	|	^
 	!	~	&&	||	?	:
 	=	+=	-=	*=	%=	<<=
 	>>=	>>>= &=	|=	^=	=>
+	**	**=
 
-DivPunctuator :: one of
-	/   /=
+DivPunctuator ::
+	/
+	/=
 
-RightBracePunctuator :: one of
+RightBracePunctuator ::
 	}
 
 NullLiteral ::
@@ -300,8 +303,11 @@ HexEscapeSequence ::
 	x HexDigit HexDigit
 
 UnicodeEscapeSequence ::
-	u HexDigit HexDigit HexDigit HexDigit
+	u Hex4Digits
 	u { HexDigits }
+
+Hex4Digits ::
+	HexDigit HexDigit HexDigit HexDigit
 
 RegularExpressionLiteral ::
 	/ RegularExpressionBody / RegularExpressionFlags
@@ -384,12 +390,12 @@ BindingIdentifier[Yield] :
 	Identifier
 	[~Yield] yield
 
+Identifier :
+	IdentifierName but not ReservedWord
+
 LabelIdentifier[Yield] :
 	Identifier
 	[~Yield] yield
-
-Identifier :
-	IdentifierName but not ReservedWord
 
 PrimaryExpression[Yield] :
 	this
@@ -407,16 +413,18 @@ PrimaryExpression[Yield] :
 CoverParenthesizedExpressionAndArrowParameterList[Yield] :
 	( Expression[In, ?Yield] )
 	( )
-	( . . . BindingIdentifier[?Yield] )
-	( Expression[In, ?Yield] , . . . BindingIdentifier[?Yield] )
+	( ... BindingIdentifier[?Yield] )
+	( ... BindingPattern[?Yield] )
+	( Expression[In, ?Yield] , ... BindingIdentifier[?Yield] )
+	( Expression[In, ?Yield] , ... BindingPattern[?Yield] )
 
 # When processing the production
-# PrimaryExpression[Yield] : CoverParenthesizedExpressionAndArrowParameterList[?Yield]
+# PrimaryExpression : CoverParenthesizedExpressionAndArrowParameterList
 # the interpretation of CoverParenthesizedExpressionAndArrowParameterList is refined
 # using the following grammar:
 
 ParenthesizedExpression[Yield] :
-  ( Expression[In, ?Yield] )
+	( Expression[In, ?Yield] )
 
 Literal ::
 	NullLiteral
@@ -440,7 +448,7 @@ Elision :
 	Elision ,
 
 SpreadElement[Yield] :
-	. . . AssignmentExpression[In, ?Yield]
+	... AssignmentExpression[In, ?Yield]
 
 ObjectLiteral[Yield] :
 	{ }
@@ -527,34 +535,38 @@ Arguments[Yield] :
 
 ArgumentList[Yield] :
 	AssignmentExpression[In, ?Yield]
-	. . . AssignmentExpression[In, ?Yield]
+	... AssignmentExpression[In, ?Yield]
 	ArgumentList[?Yield] , AssignmentExpression[In, ?Yield]
-	ArgumentList[?Yield] , . . . AssignmentExpression[In, ?Yield]
+	ArgumentList[?Yield] , ... AssignmentExpression[In, ?Yield]
 
 LeftHandSideExpression[Yield] :
 	NewExpression[?Yield]
 	CallExpression[?Yield]
 
-PostfixExpression[Yield] :
+UpdateExpression[Yield] :
 	LeftHandSideExpression[?Yield]
 	LeftHandSideExpression[?Yield] [no LineTerminator here] ++
 	LeftHandSideExpression[?Yield] [no LineTerminator here] --
+	++ UnaryExpression[?Yield]
+	-- UnaryExpression[?Yield]
 
 UnaryExpression[Yield] :
-	PostfixExpression[?Yield]
+	UpdateExpression[?Yield]
 	delete UnaryExpression[?Yield]
 	void UnaryExpression[?Yield]
 	typeof UnaryExpression[?Yield]
-	++ UnaryExpression[?Yield]
-	-- UnaryExpression[?Yield]
 	+ UnaryExpression[?Yield]
 	- UnaryExpression[?Yield]
 	~ UnaryExpression[?Yield]
 	! UnaryExpression[?Yield]
 
-MultiplicativeExpression[Yield] :
+ExponentiationExpression[Yield] :
 	UnaryExpression[?Yield]
-	MultiplicativeExpression[?Yield] MultiplicativeOperator UnaryExpression[?Yield]
+	UpdateExpression[?Yield] ** ExponentiationExpression[?Yield]
+
+MultiplicativeExpression[Yield] :
+	ExponentiationExpression[?Yield]
+	MultiplicativeExpression[?Yield] MultiplicativeOperator ExponentiationExpression[?Yield]
 
 MultiplicativeOperator : one of
 	* / %
@@ -564,7 +576,7 @@ AdditiveExpression[Yield] :
 	AdditiveExpression[?Yield] + MultiplicativeExpression[?Yield]
 	AdditiveExpression[?Yield] - MultiplicativeExpression[?Yield]
 
-ShiftExpression[Yield] : See 12.8
+ShiftExpression[Yield] :
 	AdditiveExpression[?Yield]
 	ShiftExpression[?Yield] << AdditiveExpression[?Yield]
 	ShiftExpression[?Yield] >> AdditiveExpression[?Yield]
@@ -617,8 +629,52 @@ AssignmentExpression[In, Yield] :
 	LeftHandSideExpression[?Yield] = AssignmentExpression[?In, ?Yield]
 	LeftHandSideExpression[?Yield] AssignmentOperator AssignmentExpression[?In, ?Yield]
 
+# In certain circumstances when processing the production
+#    AssignmentExpression : LeftHandSideExpression = AssignmentExpression
+# the following grammar is used to refine the interpretation of LeftHandSideExpression:
+
+AssignmentPattern[Yield] :
+	ObjectAssignmentPattern[?Yield]
+	ArrayAssignmentPattern[?Yield]
+
+ObjectAssignmentPattern[Yield] :
+	{ }
+	{ AssignmentPropertyList[?Yield] }
+	{ AssignmentPropertyList[?Yield] , }
+
+ArrayAssignmentPattern[Yield] :
+	[ Elisionopt AssignmentRestElement[?Yield]opt ]
+	[ AssignmentElementList[?Yield] ]
+	[ AssignmentElementList[?Yield] , Elisionopt AssignmentRestElement[?Yield]opt ]
+
+AssignmentPropertyList[Yield] :
+	AssignmentProperty[?Yield]
+	AssignmentPropertyList[?Yield] , AssignmentProperty[?Yield]
+
+AssignmentElementList[Yield] :
+	AssignmentElisionElement[?Yield]
+	AssignmentElementList[?Yield] , AssignmentElisionElement[?Yield]
+
+AssignmentElisionElement[Yield] :
+	Elisionopt AssignmentElement[?Yield]
+
+AssignmentProperty[Yield] :
+	IdentiᲪierReference[?Yield] Initializer[In, ?Yield]opt
+	PropertyName[?Yield] : AssignmentElement[?Yield]
+
+AssignmentElement[Yield] :
+	DestructuringAssignmentTarget[?Yield] Initializer[In,?Yield]opt
+
+AssignmentRestElement[Yield] :
+	... DestructuringAssignmentTarget[?Yield]
+
+DestructuringAssignmentTarget[Yield] :
+	LeftHandSideExpression[?Yield]
+
+# end of refinement
+
 AssignmentOperator : one of
-	*= /= %= += -= <<= >>= >>>= &= ^= |=
+	*= /= %= += -= <<= >>= >>>= &= ^= |= **=
 
 Expression[In, Yield] :
 	AssignmentExpression[?In, ?Yield]
@@ -732,7 +788,7 @@ SingleNameBinding[Yield] :
 	BindingIdentifier[?Yield] Initializer[In, ?Yield]opt
 
 BindingRestElement[Yield] :
-	. . . BindingIdentifier[?Yield]
+	... BindingIdentifier[?Yield]
 
 EmptyStatement :
 	;
@@ -748,7 +804,7 @@ IterationStatement[Yield, Return] :
 	do Statement[?Yield, ?Return] while ( Expression[In, ?Yield] ) ;
 	while ( Expression[In, ?Yield] ) Statement[?Yield, ?Return]
 	for ( [lookahead != {let [ }] Expression[?Yield]opt ; Expression[In, ?Yield]opt ; Expression[In, ?Yield]opt ) Statement[?Yield, ?Return]
-	for ( var VariableDeclarationList[?Yield]; Expression[In, ?Yield]opt ; Expression[In, ?Yield]opt ) Statement[?Yield, ?Return]
+	for ( var VariableDeclarationList[?Yield] ; Expression[In, ?Yield]opt ; Expression[In, ?Yield]opt ) Statement[?Yield, ?Return]
 	for ( LexicalDeclaration[?Yield] Expression[In, ?Yield]opt ; Expression[In, ?Yield]opt ) Statement[?Yield, ?Return]
 	for ( [lookahead != {let [ }] LeftHandSideExpression[?Yield] in Expression[In, ?Yield] ) Statement[?Yield, ?Return]
 	for ( var ForBinding[?Yield] in Expression[In, ?Yield] ) Statement[?Yield, ?Return]
@@ -872,10 +928,9 @@ ConciseBody[In] :
 	[lookahead != {] AssignmentExpression[?In]
 	{ FunctionBody }
 
-# When the production
-#  ArrowParameters[Yield] : CoverParenthesizedExpressionAndArrowParameterList[?Yield]
-#  is recognized the following grammar is used to refine the interpretation of
-#  CoverParenthesizedExpressionAndArrowParameterList:
+# When the production ArrowParameters : CoverParenthesizedExpressionAndArrowParameterList
+# is recognized the following grammar is used to refine the interpretation of
+# CoverParenthesizedExpressionAndArrowParameterList:
 
 ArrowFormalParameters[Yield] :
 	( StrictFormalParameters[?Yield] )
@@ -890,7 +945,7 @@ PropertySetParameterList :
 	FormalParameter
 
 GeneratorMethod[Yield] :
-	* PropertyName[?Yield] (StrictFormalParameters[Yield] ) { GeneratorBody }
+	* PropertyName[?Yield] ( StrictFormalParameters[Yield] ) { GeneratorBody }
 
 GeneratorDeclaration[Yield, Default] :
 	function * BindingIdentifier[?Yield] ( FormalParameters[Yield] ) { GeneratorBody }
