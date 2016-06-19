@@ -176,7 +176,7 @@ public class LexerGeneratorTest {
 	public void testLexGeneratorReporting() {
 		TestStatus notifier = new TestStatus(
 				"",
-				"lexergentest,3: `empty' can produce empty lexeme\n" +
+				"lexergentest,3: `empty' accepts empty text\n" +
 						"lexergentest,1: two rules are identical: string and number\n");
 		LexerGenerator.generate(LEXER_STATES, ERRINPUT, NO_PATTERNS, notifier);
 		notifier.assertDone();

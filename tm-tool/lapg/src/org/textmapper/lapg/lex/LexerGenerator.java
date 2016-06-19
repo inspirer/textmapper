@@ -25,7 +25,6 @@ import org.textmapper.lapg.regex.RegexFacade;
 import java.util.*;
 
 public class LexerGenerator {
-
 	private static final int BITS = 32;
 	private static final int MAX_RULES = 0x100000 - 1;
 	private static final int MAX_WORD = 0x7ff0;
@@ -34,13 +33,12 @@ public class LexerGenerator {
 		private final LexerRule lexerRule;
 		private final RegexInstruction[] pattern;
 		private final int prio;
-		private final int[] applicableStates;
+		private final BitSet applicableStates;
 		private final int len;
-		private final int jmpset;
-		private final int[] jmp;
+		private final BitSet jumps;
 		private final String name;
 
-		private RuleData(LexerRule l, int[] applicableStates, RegexInstruction[] pattern) {
+		private RuleData(LexerRule l, BitSet applicableStates, RegexInstruction[] pattern) {
 			this.lexerRule = l;
 			this.pattern = pattern;
 			this.name = l.getSymbol().getName();
@@ -48,9 +46,7 @@ public class LexerGenerator {
 			this.applicableStates = applicableStates;
 			len = pattern.length;
 			assert len > 0;
-			jmpset = (len + BITS - 1) / BITS;
-			jmp = new int[len * jmpset];
-			Arrays.fill(jmp, 0);
+			jumps = new BitSet(len * len);
 		}
 	}
 
@@ -80,7 +76,8 @@ public class LexerGenerator {
 	int states;
 	State[] hash;
 	State first, last, current;
-	int[] clsr, cset;
+	int[] clsr;
+	BitSet cset;
 
 	int[] groupset;
 
@@ -147,37 +144,29 @@ public class LexerGenerator {
 			assert lex < nrules;
 
 			// create closure for it in cset
-			int slen = ldata[lex].jmpset;
-			Arrays.fill(cset, 0, slen, 0);
+			cset.clear();
+			BitSet jumps = ldata[lex].jumps;
+			int len = ldata[lex].len;
 			int base = lindex[lex];
 
 			for (; set[p] >= 0 && set[p] < lindex[lex + 1]; p++) {
 				assert set[p] >= base;
-				int[] cjmp = ldata[lex].jmp;
-				int n = (set[p] - base) * slen;
-				for (int l = 0; l < slen; l++) {
-					cset[l] |= cjmp[n++];
+				int n = (set[p] - base) * len;
+				for (int l = 0; l < len; l++) {
+					if (jumps.get(n + l)) {
+						cset.set(l);
+					}
 				}
 			}
 
 			// save cset in closure (without parentheses & quantifiers)
-			int m = 0;
-			for (int k = 0; k < slen; k++) {
-				int word = cset[k];
-				if (word == 0) {
-					m += BITS;
-				} else {
-					for (int l = 0; l < BITS; l++, m++) {
-						if ((word & 1 << l) != 0) {
-							RegexInstructionKind kind = ldata[lex].pattern[m].getKind();
-							if (kind == RegexInstructionKind.Set ||
-									kind == RegexInstructionKind.Symbol ||
-									kind == RegexInstructionKind.Any ||
-									kind == RegexInstructionKind.Done) {
-								clsr[outputSize++] = base + m;
-							}
-						}
-					}
+			for (int val = cset.nextSetBit(0); val >= 0; val = cset.nextSetBit(val + 1)) {
+				RegexInstructionKind kind = ldata[lex].pattern[val].getKind();
+				if (kind == RegexInstructionKind.Set ||
+						kind == RegexInstructionKind.Symbol ||
+						kind == RegexInstructionKind.Any ||
+						kind == RegexInstructionKind.Done) {
+					clsr[outputSize++] = base + val;
 				}
 			}
 		}
@@ -199,32 +188,30 @@ public class LexerGenerator {
 		}
 
 		for (int lex = 0; lex < nrules; lex++) {
-			int[] jumps = ldata[lex].jmp;
-			int jmpset = ldata[lex].jmpset;
-			int len = ldata[lex].len - 1;
+			BitSet jumps = ldata[lex].jumps;
+			int len = ldata[lex].len;
 
 			// generate initial jumps
-			for (i = 0; i < len; i++) {
+			for (i = 0; i < len - 1; i++) {
 				switch (ldata[lex].pattern[i].getKind()) {
 					case LeftParen: // (
 						stack.push(i);
-						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+						jumps.set(i * len + i + 1);
 						break;
 
 					case RightParen: // )
-						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
-
-						if (i + 1 < len) {
+						jumps.set(i * len + i + 1);
+						if (i + 2 < len) {
 							switch (ldata[lex].pattern[i + 1].getKind()) {
 								case OneOrMore:
-									jumps[(i + 1) * jmpset + stack.peek() / BITS] |= 1 << stack.peek() % BITS;
+									jumps.set((i + 1) * len + stack.peek());
 									break;
 								case ZeroOrMore:
-									jumps[(i + 1) * jmpset + stack.peek() / BITS] |= 1 << stack.peek() % BITS;
-									jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+									jumps.set((i + 1) * len + stack.peek());
+									jumps.set(stack.peek() * len + i + 1);
 									break;
 								case Optional:
-									jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+									jumps.set(stack.peek() * len + i + 1);
 									break;
 							}
 						}
@@ -233,28 +220,28 @@ public class LexerGenerator {
 
 					case Or: // |
 						k = ldata[lex].pattern[stack.peek()].getValue();
-						jumps[i * jmpset + (k + 1) / BITS] |= 1 << (k + 1) % BITS;
-						jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+						jumps.set(i * len + k + 1);
+						jumps.set(stack.peek() * len + i + 1);
 						break;
 
 					case ZeroOrMore: // forbid two steps back
 					case OneOrMore:
 					case Optional:
-						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+						jumps.set(i * len + i + 1);
 						break;
 
 					default: // SYM, ANY, SET
-						if (i + 1 < len) {
+						if (i + 2 < len) {
 							switch (ldata[lex].pattern[i + 1].getKind()) {
 								case OneOrMore:
-									jumps[(i + 1) * jmpset + i / BITS] |= 1 << i % BITS;
+									jumps.set((i + 1) * len + i);
 									break;
 								case ZeroOrMore:
-									jumps[(i + 1) * jmpset + i / BITS] |= 1 << i % BITS;
-									jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+									jumps.set((i + 1) * len + i);
+									jumps.set(i * len + i + 1);
 									break;
 								case Optional:
-									jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+									jumps.set(i * len + i + 1);
 									break;
 							}
 						}
@@ -264,12 +251,12 @@ public class LexerGenerator {
 
 			// transitive closure of jumps
 			int j, e;
-			for (i = 0; i <= len; i++) {
-				for (j = 0; j <= len; j++) {
-					if ((jumps[jmpset * j + i / BITS] & 1 << i % BITS) != 0) {
-						for (e = 0; e <= len; e++) {
-							if ((jumps[jmpset * i + e / BITS] & 1 << e % BITS) != 0) {
-								jumps[jmpset * j + e / BITS] |= 1 << e % BITS;
+			for (i = 0; i < len; i++) {
+				for (j = 0; j < len; j++) {
+					if (jumps.get(j * len + i)) {
+						for (e = 0; e < len; e++) {
+							if (jumps.get(i * len + e)) {
+								jumps.set(j * len + e);
 							}
 						}
 					}
@@ -277,24 +264,25 @@ public class LexerGenerator {
 			}
 
 			// reflexive
-			for (i = 0; i <= len; i++) {
-				jumps[jmpset * i + i / BITS] |= 1 << i % BITS;
+			for (i = 0; i < len; i++) {
+				jumps.set(i * len + i);
 			}
 
 			// extended debug information
 			if (status.isDebugMode()) {
 				status.debug(FormatUtil.asDecimal(lex, 2, ' ') + ": ");
-				for (i = 0; i < len; i++) {
+				for (i = 0; i < len - 1; i++) {
 					status.debug(" (" + i + ":");
-					for (k = 0; k <= len; k++) {
-						if ((jumps[i * jmpset + k / BITS] & 1 << k % BITS) != 0) {
+					for (k = 0; k < len; k++) {
+						if (jumps.get(i * len + k)) {
 							status.debug(" " + k);
 						}
 					}
 					status.debug(") ");
 					status.debug(ldata[lex].pattern[i].toString());
 				}
-				status.debug("  [" + ldata[lex].name + "," + ldata[lex].lexerRule.getSymbol().getIndex() + "]\n");
+				status.debug("  [" + ldata[lex].name + ","
+						+ ldata[lex].lexerRule.getSymbol().getIndex() + "]\n");
 			}
 		}
 
@@ -304,7 +292,7 @@ public class LexerGenerator {
 	}
 
 	private boolean buildStates() {
-		int i, e, k;
+		int i, k;
 		int nnext, errors = 0;
 		int[] toshift = new int[charsetSize];
 
@@ -313,37 +301,22 @@ public class LexerGenerator {
 		Arrays.fill(hash, null);
 		clsr = new int[nitems];
 		int[] next = new int[nitems + 1];
-		nnext = 0;
 		states = 0;
 
 		// allocate temporary set
-		for (e = 1, i = 0; i < nrules; i++) {
-			if (ldata[i].jmpset > e) {
-				e = ldata[i].jmpset;
-			}
-		}
-		cset = new int[e];
-
-		// create first set
+		int maxPatternLength = 1;
 		for (i = 0; i < nrules; i++) {
-			if ((ldata[i].applicableStates[0] & 1) != 0 && ldata[i].len != 0) {
-				next[nnext++] = lindex[i];
+			if (ldata[i].len > maxPatternLength) {
+				maxPatternLength = ldata[i].len;
 			}
 		}
-		next[nnext] = -1;
-		closure(next);
-		add_set(next);
+		cset = new BitSet(maxPatternLength);
 
+		// create first group states
 		groupset = new int[nlexerStates];
-		groupset[0] = 0;
-
-		// create state
-		current = first;
-
-		// create left group states
-		for (k = 1; k < nlexerStates; k++) {
+		for (k = 0; k < nlexerStates; k++) {
 			for (nnext = i = 0; i < nrules; i++) {
-				if ((ldata[i].applicableStates[k / BITS] & (1 << (k % BITS))) != 0 && ldata[i].len != 0) {
+				if (ldata[i].applicableStates.get(k) && ldata[i].len != 0) {
 					next[nnext++] = lindex[i];
 				}
 			}
@@ -357,7 +330,7 @@ public class LexerGenerator {
 		}
 
 		// generate states
-		while (current != null) {
+		for (current = first; current != null; ) {
 
 			// first of all we must search if there any lexeme have been read already
 			int lexnum = -1;
@@ -376,19 +349,21 @@ public class LexerGenerator {
 
 							if (ldata[nlex].prio == ldata[lexnum].prio) {
 								status.report(ProcessingStatus.KIND_ERROR,
-										"two rules are identical: " + ldata[lexnum].name + " and " +
-												ldata[nlex].name, ldata[lexnum].lexerRule,
+										"two rules are identical: " + ldata[lexnum].name + " and "
+												+ ldata[nlex].name, ldata[lexnum].lexerRule,
 										ldata[nlex].lexerRule);
 								errors++;
 
 							} else if (ldata[nlex].prio > ldata[lexnum].prio) {
 								if (status.isAnalysisMode()) {
-									status.debug("fixed: " + ldata[nlex].name + " > " + ldata[lexnum].name + "\n");
+									status.debug("fixed: " + ldata[nlex].name + " > "
+											+ ldata[lexnum].name + "\n");
 								}
 								lexnum = nlex;
 
 							} else if (status.isAnalysisMode()) {
-								status.debug("fixed: " + ldata[lexnum].name + " > " + ldata[nlex].name + "\n");
+								status.debug("fixed: " + ldata[lexnum].name + " > "
+										+ ldata[nlex].name + "\n");
 							}
 
 						} else {
@@ -413,20 +388,21 @@ public class LexerGenerator {
 							toshift[nl / BITS] |= ~(1 << nl % BITS);
 						}
 						break;
-					case Set:
-						e = instruction.getValue();
+					case Set: {
+						int e = instruction.getValue();
 						int[] used = set2symbols[e];
 						for (i = 0; i < used.length; i++) {
 							toshift[used[i] / BITS] |= 1 << used[i] % BITS;
 						}
 						break;
+					}
 				}
 			}
 
-			// check for the empty lexeme
+			// nullable?
 			if (current == first && lexnum != -1) {
-				status.report(ProcessingStatus.KIND_ERROR, "`" + ldata[lexnum].name + "' can produce empty lexeme",
-						ldata[lexnum].lexerRule);
+				status.report(ProcessingStatus.KIND_ERROR, "`" + ldata[lexnum].name
+						+ "' accepts empty text", ldata[lexnum].lexerRule);
 				errors++;
 			}
 
@@ -469,12 +445,14 @@ public class LexerGenerator {
 
 					// Have we exceeded the limits?
 					if (current.action[sym] == -1) {
-						status.report(ProcessingStatus.KIND_FATAL, "lexical analyzer is too big ...");
+						status.report(ProcessingStatus.KIND_FATAL,
+								"lexical analyzer is too big ...");
 						return false;
 					}
 
 				} else {
-					current.action[sym] = lexnum >= 0 ? -3 - ldata[lexnum].lexerRule.getIndex() : -1;
+					current.action[sym] =
+							lexnum >= 0 ? -3 - ldata[lexnum].lexerRule.getIndex() : -1;
 				}
 			}
 
@@ -506,7 +484,8 @@ public class LexerGenerator {
 			}
 
 			if (l.getSymbol().getName().equals("error")) {
-				status.report(ProcessingStatus.KIND_ERROR, "error token must be defined without regular expression", l);
+				status.report(ProcessingStatus.KIND_ERROR,
+						"error token must be defined without regular expression", l);
 				success = false;
 				continue;
 			}
@@ -517,10 +496,9 @@ public class LexerGenerator {
 				continue;
 			}
 
-			int[] applicableStates = new int[(nlexerStates + BITS - 1) / BITS];
+			BitSet applicableStates = new BitSet(nlexerStates);
 			for (LexerState lexerState : l.getStates()) {
-				int index = lexerState.getIndex();
-				applicableStates[index / BITS] |= 1 << (index % BITS);
+				applicableStates.set(lexerState.getIndex());
 			}
 
 			syms.add(new RuleData(l, applicableStates, pattern));
@@ -532,7 +510,8 @@ public class LexerGenerator {
 
 		nrules = syms.size();
 		if (nrules > MAX_RULES) {
-			status.report(ProcessingStatus.KIND_ERROR, "too many lexical rules", syms.get(MAX_RULES).lexerRule);
+			status.report(ProcessingStatus.KIND_ERROR, "too many lexical rules",
+					syms.get(MAX_RULES).lexerRule);
 			return false;
 
 		} else if (nrules == 0) {
@@ -555,7 +534,7 @@ public class LexerGenerator {
 
 		boolean initialStateIsEmpty = true;
 		for (RuleData l : syms) {
-			if ((l.applicableStates[0] & 1) != 0) {
+			if (l.applicableStates.get(0)) {
 				initialStateIsEmpty = false;
 				break;
 			}
@@ -636,12 +615,14 @@ public class LexerGenerator {
 			return rp.compile(index, parsedRegex);
 
 		} catch (RegexParseException ex) {
-			status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": " + ex.getMessage(), l);
+			status.report(ProcessingStatus.KIND_ERROR,
+					l.getSymbol().getName() + ": " + ex.getMessage(), l);
 			return null;
 		}
 	}
 
-	private LexerTables generate(LexerState[] lexerStates, LexerRule[] rules, NamedPattern[] patterns) {
+	private LexerTables generate(LexerState[] lexerStates, LexerRule[] rules,
+								 NamedPattern[] patterns) {
 
 		if (!prepare(lexerStates, rules, patterns)) {
 			return null;
@@ -662,10 +643,10 @@ public class LexerGenerator {
 	}
 
 	/*
-	 * Generates lexer tables
+	 * Generates lexer tables.
 	 */
-	public static LexerData generate(LexerState[] states, LexerRule[] lexerRules, NamedPattern[] patterns,
-									 ProcessingStatus status) {
+	public static LexerData generate(LexerState[] states, LexerRule[] lexerRules,
+									 NamedPattern[] patterns, ProcessingStatus status) {
 		LexerGenerator lb = new LexerGenerator(status);
 		return lb.generate(states, lexerRules, patterns);
 	}
