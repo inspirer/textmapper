@@ -621,6 +621,9 @@ Declaration<Yield> ::=
 	  HoistableDeclaration<~Default>
 	| ClassDeclaration<~Default>
 	| LexicalDeclaration<+In>
+	| InterfaceDeclaration
+	| TypeAliasDeclaration
+	| EnumDeclaration
 ;
 
 @noast
@@ -1304,6 +1307,35 @@ MethodSignature<Yield> ::=
 
 TypeAliasDeclaration<Yield> ::=
 	  'type' BindingIdentifier TypeParameters? '=' Type ';' ;
+
+# A.5 Interfaces
+
+InterfaceDeclaration<Yield> ::=
+	  'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClauseopt ObjectType ;
+
+InterfaceExtendsClause<Yield> ::=
+	  'extends' (TypeReference separator ',')+ ;
+
+# A.7 Enums
+
+EnumDeclaration<Yield> ::=
+	  'const'? 'enum' BindingIdentifier '{' EnumBodyopt '}' ;
+
+EnumBody<Yield> ::=
+	  EnumMemberList ','? ;
+
+EnumMemberList<Yield> ::=
+	  EnumMember
+	| EnumMemberList ',' EnumMember
+;
+
+EnumMember<Yield> ::=
+	  PropertyName
+	| PropertyName '=' EnumValue
+;
+
+EnumValue<Yield> ::=
+	  AssignmentExpression<+In> ;
 
 %%
 
