@@ -129,6 +129,14 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaRhsLookahead n) {
+		return true;
+	}
+
+	protected boolean visit(TmaLookaheadPredicate n) {
+		return true;
+	}
+
 	protected boolean visit(TmaRhsStateMarker n) {
 		return true;
 	}

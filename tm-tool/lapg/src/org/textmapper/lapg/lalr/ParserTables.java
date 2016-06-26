@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.lalr;
 
+import org.textmapper.lapg.api.LookaheadRule;
 import org.textmapper.lapg.api.Marker;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.api.Symbol;
@@ -31,13 +32,14 @@ class ParserTables implements ParserData {
 	private int[] action_index;
 	private int[] final_states;
 	private Marker[] markers;
+	private LookaheadRule[] lookaheadRules;
 
 	ParserTables(Symbol[] sym,
 				 int rules, int nsyms, int nterms, int nstates,
 				 int[] rleft, int[] rlen,
 				 int[] sym_goto, int[] sym_from, int[] sym_to,
 				 int[] action_table, int[] action_index, int[] final_states,
-				 Marker[] markers) {
+				 Marker[] markers, LookaheadRule[] lookaheadRules) {
 		this.sym = sym;
 		this.rules = rules;
 		this.nsyms = nsyms;
@@ -52,6 +54,7 @@ class ParserTables implements ParserData {
 		this.action_index = action_index;
 		this.final_states = final_states;
 		this.markers = markers;
+		this.lookaheadRules = lookaheadRules;
 	}
 
 	@Override
@@ -122,6 +125,11 @@ class ParserTables implements ParserData {
 	@Override
 	public Marker[] getMarkers() {
 		return markers;
+	}
+
+	@Override
+	public LookaheadRule[] getLookaheadRules() {
+		return lookaheadRules;
 	}
 
 	private static int byteSize(int maxInt) {

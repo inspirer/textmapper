@@ -435,6 +435,28 @@ rhsPart  : RhsPart ::=
   | this=rhsUnordered
   | this=command
   | this=rhsStateMarker
+  | this=rhsLookahead
+;
+
+lookahead_predicate_list_And_separated  : list<LookaheadPredicate>
+	(this+=lookahead_predicate
+		separator '&')+ ;
+
+class RhsLookahead : RhsPart {
+	list<LookaheadPredicate> predicates;
+}
+
+rhsLookahead  : RhsLookahead ::=
+	'(?=' predicates=lookahead_predicate_list_And_separated ')'
+;
+
+class LookaheadPredicate {
+	boolean negate;
+	Symref symrefNoargs;
+}
+
+lookahead_predicate  : LookaheadPredicate ::=
+	negate='!' as true? symrefNoargs=symref_noargs
 ;
 
 class RhsStateMarker : RhsPart {

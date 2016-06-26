@@ -354,6 +354,22 @@ public class TMParserCompiler {
 			builder.addRule(codeSym, actionRule);
 			TMDataUtil.putCode(actionRule, astCode);
 			return builder.symbol(codeSym, null, astCode);
+		} else if (part instanceof TmaRhsLookahead) {
+			List<LookaheadPredicate> rules = new ArrayList<>();
+			for (TmaLookaheadPredicate p : ((TmaRhsLookahead) part).getPredicates()) {
+				Symbol s = resolver.resolve(p.getSymrefNoargs());
+				if (s == null) continue;
+				if (!(s instanceof Nonterminal)
+						|| resolver.templateParams((Nonterminal) s) != null) {
+					error(p, "lookahead assertion must reference a non-templated nonterminal");
+					continue;
+				}
+				rules.add(builder.lookaheadPredicate((Nonterminal) s, p.isNegate(), p));
+			}
+
+			if (rules.isEmpty()) return null;
+
+			return builder.symbol(builder.lookahead(rules, outer, part), null, part);
 
 		} else if (part instanceof TmaRhsUnordered) {
 			List<ITmaRhsPart> refParts = new ArrayList<>();

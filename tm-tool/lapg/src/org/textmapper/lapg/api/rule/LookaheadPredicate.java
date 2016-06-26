@@ -13,42 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.api.rule;
 
-/**
- * Gryaznov Evgeny, 6/13/12
- */
-public interface ParserData {
+import org.textmapper.lapg.api.Nonterminal;
 
-	Symbol[] getSymbols();
+public interface LookaheadPredicate {
 
-	int getRules();
+	/**
+	 * A nonterminal enumerating all accepted prefixes.
+	 */
+	Nonterminal getPrefix();
 
-	int getNsyms();
-
-	int getNterms();
-
-	int getStatesCount();
-
-	int[] getSymGoto();
-
-	int[] getSymFrom();
-
-	int[] getSymTo();
-
-	int[] getLalr();
-
-	int[] getAction();
-
-	int[] getRuleLength();
-
-	int[] getFinalStates();
-
-	int[] getLeft();
-
-	Marker[] getMarkers();
-
-	LookaheadRule[] getLookaheadRules();
-
-	int getByteSize();
+	/**
+	 * Negates the result of the lookahead.
+	 */
+	boolean isNegated();
 }

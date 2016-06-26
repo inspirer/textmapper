@@ -16,39 +16,21 @@
 package org.textmapper.lapg.api;
 
 /**
- * Gryaznov Evgeny, 6/13/12
+ * Lookahead rules are grammar rules produced by the LALR algorithm for
+ * conflicts resolution.
  */
-public interface ParserData {
+public interface LookaheadRule {
 
-	Symbol[] getSymbols();
+	int getIndex();
 
-	int getRules();
+	LookaheadCase[] getCases();
 
-	int getNsyms();
+	interface LookaheadCase {
 
-	int getNterms();
+		int getPrefixNonterminal();
+		boolean isNegated();
 
-	int getStatesCount();
-
-	int[] getSymGoto();
-
-	int[] getSymFrom();
-
-	int[] getSymTo();
-
-	int[] getLalr();
-
-	int[] getAction();
-
-	int[] getRuleLength();
-
-	int[] getFinalStates();
-
-	int[] getLeft();
-
-	Marker[] getMarkers();
-
-	LookaheadRule[] getLookaheadRules();
-
-	int getByteSize();
+		int getStartState();
+		int getSuccessState();
+	}
 }

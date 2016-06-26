@@ -65,6 +65,7 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 '[':    /\[/
 ']':    /\]/
 '(':	/\(/
+'(?=':	/\(\?=/
 # TODO overlaps with ID '->':	/->/
 ')':	/\)/
 '{~':	/\{~/
@@ -337,7 +338,14 @@ rhsPart ::=
 	| rhsUnordered
 	| command
 	| rhsStateMarker
+	| rhsLookahead
 ;
+
+rhsLookahead ::=
+	  '(?=' predicates=(lookahead_predicate separator '&')+ ')' ;
+
+lookahead_predicate ::=
+	  negate='!'? symref_noargs ;
 
 rhsStateMarker ::=
 	  '.' name=ID ;

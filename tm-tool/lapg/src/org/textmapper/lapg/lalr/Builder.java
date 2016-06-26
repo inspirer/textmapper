@@ -30,6 +30,7 @@ public class Builder extends Lalr1 {
 	private int[] action_index;
 	private int nactions;
 	private int[] action_table;
+	private ExplicitLookaheadBuilder lookaheadBuilder;
 
 	private void verify_grammar() {
 		int i, e, h;
@@ -61,7 +62,8 @@ public class Builder extends Lalr1 {
 
 		for (i = nterms; i < nsyms; i++) {
 			assert sym_empty[i] == ((Nonterminal) sym[i]).isNullable()
-					: "old = " + sym_empty[i] + ", new = " + ((Nonterminal) sym[i]).isNullable() + " for " + sym[i].getName();
+					: "old = " + sym_empty[i] + ", new = " + ((Nonterminal) sym[i]).isNullable() +
+					" for " + sym[i].getName();
 		}
 
 		boolean[] sym_good = new boolean[nsyms];
@@ -134,7 +136,8 @@ public class Builder extends Lalr1 {
 		for (i = 0; i < nsyms; i++) {
 			if (!sym_good[i] || !sym_employed[i]) {
 				if (!sym[i].getName().startsWith("_skip")) {
-					status.report(ProcessingStatus.KIND_WARN, "symbol `" + sym[i].getName() + "` is useless", sym[i]);
+					status.report(ProcessingStatus.KIND_WARN, "symbol `" + sym[i].getName()
+							+ "` is useless", sym[i]);
 				}
 			}
 		}
@@ -264,7 +267,8 @@ public class Builder extends Lalr1 {
 				}
 
 				// merge conflicts
-				List<LalrConflict> mergedConflicts = conflicts.getMergedConflicts(t.number, getInput(t.number), next, classterm);
+				List<LalrConflict> mergedConflicts = conflicts.getMergedConflicts(t.number,
+						getInput(t.number), next, classterm);
 				for (ParserConflict conflict : mergedConflicts) {
 					status.report(conflict);
 					switch (conflict.getKind()) {
@@ -301,8 +305,8 @@ public class Builder extends Lalr1 {
 			}
 		}
 		if ((sr + rr) > 0) {
-			status.report(ProcessingStatus.KIND_ERROR, "conflicts: " + sr + " shift/reduce and " + rr
-					+ " reduce/reduce");
+			status.report(ProcessingStatus.KIND_ERROR, "conflicts: " + sr + " shift/reduce and "
+					+ rr + " reduce/reduce");
 		}
 
 		e = 0;
@@ -316,30 +320,37 @@ public class Builder extends Lalr1 {
 
 	private void addReduce(int[] next, int termSym, int rule, ConflictBuilder builder) {
 		if (builder.hasConflict(termSym)) {
-			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule],
+					null);
 
 		} else if (next[termSym] == -1) {
 			switch (compare_prio(rule, termSym)) {
 				case 0: // shift/reduce
-					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT,
+							wrules[rule], null);
 					break;
 				case 1: // shift
-					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.SHIFT, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.SHIFT,
+							wrules[rule], null);
 					break;
 				case 2: // reduce
-					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.REDUCE, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.REDUCE,
+							wrules[rule], null);
 					next[termSym] = rule;
 					break;
 				case 3: // error (non-assoc)
-					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.SYNTAXERR, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.SYNTAXERR,
+							wrules[rule], null);
 					next[termSym] = -3;
 					break;
 			}
 		} else if (next[termSym] == -3) {
-			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule],
+					null);
 		} else {
 			// reduce/reduce
-			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], wrules[next[termSym]]);
+			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule],
+					wrules[next[termSym]]);
 		}
 	}
 
@@ -369,25 +380,31 @@ public class Builder extends Lalr1 {
 			return null;
 		}
 
+		lookaheadBuilder = new ExplicitLookaheadBuilder(rules);
 		buildLalr();
 		action();
 		return createResult();
 	}
 
 	private ParserTables createResult() {
-		int[] rlen = new int[rules];
-		for (int i = 0; i < rules; i++) {
+		LookaheadRule[] resolutionRules = lookaheadBuilder.getRules();
+
+		int[] rlen = new int[this.rules + resolutionRules.length];
+		for (int i = 0; i < this.rules; i++) {
 			int e = 0;
-			for (; rright[rindex[i] + e] >= 0; e++) {
-			}
+			while (rright[rindex[i] + e] >= 0) e++;
 			rlen[i] = e;
 		}
+		int nrules = this.rules;
+		for (LookaheadRule r : resolutionRules) {
+			rlen[nrules++] = 0;
+		}
 		return new ParserTables(sym,
-				rules, nsyms, nterms, nstates,
+				nrules, nsyms, nterms, nstates,
 				rleft, rlen,
 				term_goto, term_from, term_to,
 				action_table, action_index, final_states,
-				markers);
+				markers, resolutionRules);
 	}
 
 	public static ParserData compile(Grammar g, ProcessingStatus status) {

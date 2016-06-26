@@ -15,40 +15,15 @@
  */
 package org.textmapper.lapg.api;
 
+import org.textmapper.lapg.api.rule.LookaheadPredicate;
+
 /**
- * Gryaznov Evgeny, 6/13/12
+ * Lookahead is a special kind of nonterminal that accepts an empty string,
+ * but is able to survive reduce/reduce conflicts. When two or more lookahead
+ * nonterminals can be reduced in the same state, their lookahead predicates
+ * are used to determine which one should be reduced.
  */
-public interface ParserData {
+public interface Lookahead extends Nonterminal {
 
-	Symbol[] getSymbols();
-
-	int getRules();
-
-	int getNsyms();
-
-	int getNterms();
-
-	int getStatesCount();
-
-	int[] getSymGoto();
-
-	int[] getSymFrom();
-
-	int[] getSymTo();
-
-	int[] getLalr();
-
-	int[] getAction();
-
-	int[] getRuleLength();
-
-	int[] getFinalStates();
-
-	int[] getLeft();
-
-	Marker[] getMarkers();
-
-	LookaheadRule[] getLookaheadRules();
-
-	int getByteSize();
+	LookaheadPredicate[] getLookaheadPredicates();
 }

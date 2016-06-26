@@ -13,42 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.lalr;
 
-/**
- * Gryaznov Evgeny, 6/13/12
- */
-public interface ParserData {
+import org.textmapper.lapg.api.Lookahead;
+import org.textmapper.lapg.api.LookaheadRule;
 
-	Symbol[] getSymbols();
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-	int getRules();
+public class ExplicitLookaheadBuilder {
 
-	int getNsyms();
+	int rules;
+	int resolutionRules = 0;
 
-	int getNterms();
+	Map<Set<Lookahead>, LookaheadRule> resolutionMap = new HashMap<>();
 
-	int getStatesCount();
+	public ExplicitLookaheadBuilder(int rules) {
+		this.rules = rules;
+	}
 
-	int[] getSymGoto();
+	boolean isResolutionRule(int rule) {
+		return rule >= this.rules;
+	}
 
-	int[] getSymFrom();
-
-	int[] getSymTo();
-
-	int[] getLalr();
-
-	int[] getAction();
-
-	int[] getRuleLength();
-
-	int[] getFinalStates();
-
-	int[] getLeft();
-
-	Marker[] getMarkers();
-
-	LookaheadRule[] getLookaheadRules();
-
-	int getByteSize();
+	LookaheadRule[] getRules() {
+		return new LookaheadRule[0];
+	}
 }

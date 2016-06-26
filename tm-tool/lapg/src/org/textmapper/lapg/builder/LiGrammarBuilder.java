@@ -47,7 +47,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final LiTemplateEnvironment env = new LiTemplateEnvironment();
 	private final Terminal eoi;
 
-	public LiGrammarBuilder() {
+	LiGrammarBuilder() {
 		super(null);
 		eoi = addTerminal(Symbol.EOI, null, null);
 	}
@@ -68,7 +68,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (origin instanceof LiNonterminal) {
 			throw new IllegalArgumentException("origin");
 		}
-		return addSymbol(new LiNonterminal(name, false /* anonymous */, origin), null /* anchor */);
+		return addSymbol(new LiNonterminal(name, false /*anonymous*/, origin), null /*anchor*/);
 	}
 
 	@Override
@@ -388,6 +388,23 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsPredicate result = new LiRhsPredicate(operation, liinner, param, value, origin);
 		predicateSet.add(result);
 		return result;
+	}
+
+	@Override
+	public LookaheadPredicate lookaheadPredicate(Nonterminal prefix, boolean negate,
+												 SourceElement origin) {
+		check(prefix);
+		return new LiLookaheadPredicate(prefix, negate, origin);
+	}
+
+	@Override
+	public Lookahead lookahead(Collection<LookaheadPredicate> predicates,
+							   Symbol anchor, SourceElement origin) {
+		for (LookaheadPredicate p : predicates) {
+			check(p.getPrefix());
+		}
+		// TODO cache predicates
+		return addSymbol(new LiLookahead(predicates, origin), anchor);
 	}
 
 	@Override
