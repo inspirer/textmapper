@@ -42,6 +42,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final Set<Terminal> sealedTerminals = new HashSet<>();
 	private final Map<Object, Nonterminal> instantiations = new HashMap<>();
 	private final List<Problem> problems = new ArrayList<>();
+	private final Map<Set<LookaheadPredicate>, LiLookahead> lookaheadMap = new HashMap<>();
 
 	private final List<LiInputRef> inputs = new ArrayList<>();
 	private final LiTemplateEnvironment env = new LiTemplateEnvironment();
@@ -391,10 +392,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public LookaheadPredicate lookaheadPredicate(Nonterminal prefix, boolean negate,
-												 SourceElement origin) {
+	public LookaheadPredicate lookaheadPredicate(Nonterminal prefix, boolean negate) {
 		check(prefix);
-		return new LiLookaheadPredicate(prefix, negate, origin);
+		return new LiLookaheadPredicate(prefix, negate);
 	}
 
 	@Override
@@ -403,8 +403,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		for (LookaheadPredicate p : predicates) {
 			check(p.getPrefix());
 		}
-		// TODO cache predicates
-		return addSymbol(new LiLookahead(predicates, origin), anchor);
+		Set<LookaheadPredicate> predicateSet = new HashSet<>(predicates);
+		LiLookahead la = lookaheadMap.get(predicateSet);
+		if (la == null) {
+			la = new LiLookahead(predicates, origin);
+			lookaheadMap.put(predicateSet, la);
+		}
+		return addSymbol(la, anchor);
 	}
 
 	@Override

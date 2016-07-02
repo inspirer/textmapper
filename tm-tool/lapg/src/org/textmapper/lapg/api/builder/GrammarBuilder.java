@@ -74,7 +74,7 @@ public interface GrammarBuilder extends GrammarMapper {
 	RhsPredicate predicate(RhsPredicate.Operation operation, Collection<RhsPredicate> inner,
 						   TemplateParameter param, Object value, SourceElement origin);
 
-	LookaheadPredicate lookaheadPredicate(Nonterminal prefix, boolean negate, SourceElement origin);
+	LookaheadPredicate lookaheadPredicate(Nonterminal prefix, boolean negate);
 
 	Lookahead lookahead(Collection<LookaheadPredicate> predicates,
 						Symbol anchor, SourceElement origin);

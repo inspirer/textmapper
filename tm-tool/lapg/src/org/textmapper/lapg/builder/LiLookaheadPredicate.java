@@ -15,22 +15,17 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.LookaheadPredicate;
 
-class LiLookaheadPredicate extends LiUserDataHolder
-		implements LookaheadPredicate, DerivedSourceElement {
+class LiLookaheadPredicate implements LookaheadPredicate {
 
 	private final Nonterminal rule;
 	private final boolean negated;
-	private final SourceElement origin;
 
-	LiLookaheadPredicate(Nonterminal rule, boolean negated, SourceElement origin) {
+	LiLookaheadPredicate(Nonterminal rule, boolean negated) {
 		this.rule = rule;
 		this.negated = negated;
-		this.origin = origin;
 	}
 
 	@Override
@@ -44,7 +39,19 @@ class LiLookaheadPredicate extends LiUserDataHolder
 	}
 
 	@Override
-	public SourceElement getOrigin() {
-		return origin;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		LiLookaheadPredicate that = (LiLookaheadPredicate) o;
+
+		return negated == that.negated && rule.equals(that.rule);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = rule.hashCode();
+		result = 31 * result + (negated ? 1 : 0);
+		return result;
 	}
 }

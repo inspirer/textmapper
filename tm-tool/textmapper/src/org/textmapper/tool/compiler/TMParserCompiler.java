@@ -364,7 +364,7 @@ public class TMParserCompiler {
 					error(p, "lookahead assertion must reference a non-templated nonterminal");
 					continue;
 				}
-				rules.add(builder.lookaheadPredicate((Nonterminal) s, p.isNegate(), p));
+				rules.add(builder.lookaheadPredicate((Nonterminal) s, p.isNegate()));
 			}
 
 			if (rules.isEmpty()) return null;
