@@ -73,6 +73,9 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 	static final TextAttributesKey ANNOTATION =
 			TextAttributesKey.createTextAttributesKey("TM.ANNOTATION", DefaultLanguageHighlighterColors.METADATA);
 
+	static final TextAttributesKey LOOKAHEAD =
+			TextAttributesKey.createTextAttributesKey("TM.LOOKAHEAD", DefaultLanguageHighlighterColors.DOC_COMMENT_TAG_VALUE);
+
 	static final TextAttributesKey SECTION =
 			TextAttributesKey.createTextAttributesKey("TM.SECTION", DefaultLanguageHighlighterColors.STRING);
 
@@ -133,7 +136,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, TMTokenTypes.operators, OPERATOR);
 		fillMap(attributes, TMTokenTypes.quantifiers, QUANTIFIER);
 		fillMap(attributes, BRACKETS, TMTokenTypes.OP_LBRACKET, TMTokenTypes.OP_RBRACKET);
-		fillMap(attributes, PARENTHS, TMTokenTypes.OP_LPAREN, TMTokenTypes.OP_RPAREN);
+		fillMap(attributes, PARENTHS, TMTokenTypes.OP_LPAREN, TMTokenTypes.OP_LPAREN_QA, TMTokenTypes.OP_RPAREN);
 		fillMap(attributes, BRACES, TMTokenTypes.OP_LCURLYTILDE, TMTokenTypes.OP_LCURLY, TMTokenTypes.OP_RCURLY);
 
 		// punctuation

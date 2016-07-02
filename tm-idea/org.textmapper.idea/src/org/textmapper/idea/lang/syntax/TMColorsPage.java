@@ -47,6 +47,7 @@ public class TMColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Lexem reference", TMSyntaxHighlighter.LEXEM_REFERENCE),
 			new AttributesDescriptor("Line comment", TMSyntaxHighlighter.LINE_COMMENT),
 			new AttributesDescriptor("Annotations", TMSyntaxHighlighter.ANNOTATION),
+			new AttributesDescriptor("Lookahead", TMSyntaxHighlighter.LOOKAHEAD),
 			new AttributesDescriptor("Sections", TMSyntaxHighlighter.SECTION),
 			new AttributesDescriptor("Rule metadata", TMSyntaxHighlighter.RULE_METADATA),
 			new AttributesDescriptor("State marker", TMSyntaxHighlighter.STATE_MARKER),
@@ -78,6 +79,7 @@ public class TMColorsPage implements ColorSettingsPage {
 		ourTagToDescriptorMap.put("sect", TMSyntaxHighlighter.SECTION);
 		ourTagToDescriptorMap.put("kw", TMSyntaxHighlighter.KEYWORD);
 		ourTagToDescriptorMap.put("param", TMSyntaxHighlighter.NONTERM_PARAMETER_NAME);
+		ourTagToDescriptorMap.put("lookahead", TMSyntaxHighlighter.LOOKAHEAD);
 	}
 
 	@NotNull
@@ -150,7 +152,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"      <lexemeRef>identifier</lexemeRef>\n" +
 				"    | expr <lexemeRef>'+'</lexemeRef> expr\n" +
 				"    | expr <lexemeRef>'*'</lexemeRef> expr  <ruleMeta>{~multiply}</ruleMeta>\n" +
-				"    | <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr <kw>separator</kw> <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
+				"    | <lookahead>(?= StartOfA & StartOfB)</lookahead> <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr <kw>separator</kw> <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
 				";\n" +
 				"%%\n" +
 				"\n" +

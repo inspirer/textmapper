@@ -178,6 +178,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_RBRACKET;
 			case Tokens.Lparen:
 				return OP_LPAREN;
+			case Tokens.LparenQuestAssign:
+				return OP_LPAREN_QA;
 			case Tokens.Rparen:
 				return OP_RPAREN;
 			case Tokens.Lbrace:

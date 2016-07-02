@@ -46,6 +46,7 @@ public interface TMTokenTypes {
 	IElementType OP_LBRACKET = new TMElementType(Tokens.Lbrack, "[");
 	IElementType OP_RBRACKET = new TMElementType(Tokens.Rbrack, "]");
 	IElementType OP_LPAREN = new TMElementType(Tokens.Lparen, "(");
+	IElementType OP_LPAREN_QA = new TMElementType(Tokens.LparenQuestAssign, "(?=");
 	IElementType OP_RPAREN = new TMElementType(Tokens.Rparen, ")");
 	IElementType OP_LCURLY = new TMElementType(Tokens.Lbrace, "{");
 	IElementType OP_LCURLYTILDE = new TMElementType(Tokens.LbraceTilde, "{~");

@@ -71,6 +71,23 @@ public class TMAnnotator implements Annotator {
 				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.ANNOTATION);
 			}
 		}
+		if (element instanceof TmRhsLookahead || element instanceof TmLookaheadPredicate) {
+			for (PsiElement el = element.getFirstChild(); el != null; el = el.getNextSibling()) {
+				if (el instanceof PsiWhiteSpace) continue;
+				if (el instanceof TmToken) {
+					IElementType type = ((TmToken) el).getTokenType();
+					if (!(type == TMTokenTypes.OP_EMARK || type == TMTokenTypes.OP_LPAREN_QA
+							|| type == TMTokenTypes.OP_RPAREN || type == TMTokenTypes.OP_AND)) {
+						continue;
+					}
+					Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
+					infoAnnotation.setTextAttributes(TMSyntaxHighlighter.LOOKAHEAD);
+				} else if (el instanceof TmSymbolReference) {
+					Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
+					infoAnnotation.setTextAttributes(TMSyntaxHighlighter.LOOKAHEAD);
+				}
+			}
+		}
 		if (element instanceof TmDirective
 				|| element instanceof TmRhsSuffix
 				|| element instanceof TmNontermType
