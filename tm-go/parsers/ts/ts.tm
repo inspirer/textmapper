@@ -676,8 +676,8 @@ BindingList<In, Yield> ::=
 ;
 
 LexicalBinding<In, Yield> ::=
-	  BindingIdentifier Initializeropt
-	| BindingPattern Initializer
+	  BindingIdentifier TypeAnnotationopt Initializeropt
+	| BindingPattern TypeAnnotationopt Initializer
 ;
 
 VariableStatement<Yield> ::=
@@ -691,8 +691,8 @@ VariableDeclarationList<In, Yield> ::=
 ;
 
 VariableDeclaration<In, Yield> ::=
-	  BindingIdentifier Initializeropt
-	| BindingPattern Initializer
+	  BindingIdentifier TypeAnnotationopt Initializeropt
+	| BindingPattern TypeAnnotationopt Initializer
 ;
 
 @noast
@@ -868,14 +868,13 @@ DebuggerStatement ::=
 # A.4 Functions and Classes
 
 FunctionDeclaration<Yield, Default> ::=
-	  'function' BindingIdentifier '(' FormalParameters<~Yield> ')' '{' FunctionBody<~Yield> '}'
+	  'function' BindingIdentifier CallSignature<~Yield> ('{' FunctionBody<~Yield> '}' | ';')
 # TODO ~Yield?
-	| [Default] 'function' '(' FormalParameters ')' '{' FunctionBody '}'
+	| [Default] 'function' CallSignature<~Yield> ('{' FunctionBody '}' | ';')
 ;
 
 FunctionExpression ::=
-	  'function' BindingIdentifier<~Yield>? '(' FormalParameters<~Yield> ')' '{' FunctionBody<~Yield> '}'
-;
+	  'function' BindingIdentifier<~Yield>? CallSignature<~Yield> '{' FunctionBody<~Yield> '}' ;
 
 @noast
 StrictFormalParameters<Yield> ::=
@@ -921,19 +920,21 @@ ConciseBody<In> ::=
 ;
 
 MethodDefinition<Yield> ::=
-	  PropertyName '(' StrictFormalParameters ')' '{' FunctionBody '}'
+	  PropertyName CallSignature '{' FunctionBody '}'
 	| @noast GeneratorMethod
-	| 'get' PropertyName '(' ')' '{' FunctionBody '}'
+	| 'get' PropertyName '(' ')' TypeAnnotationopt '{' FunctionBody '}'
 	| 'set' PropertyName '(' PropertySetParameterList ')' '{' FunctionBody '}'
 ;
 
 @noast
 PropertySetParameterList ::=
-	  FormalParameter<~Yield> ;
+	  FormalParameter<~Yield> TypeAnnotationopt<~Yield> ;
 
+# TODO use CallSignature?
 GeneratorMethod<Yield> ::=
-	  '*' PropertyName '('StrictFormalParameters<+Yield> ')' '{' GeneratorBody '}' ;
+	  '*' PropertyName '(' StrictFormalParameters<+Yield> ')' '{' GeneratorBody '}' ;
 
+# TODO use CallSignature?
 GeneratorDeclaration<Yield, Default> ::=
 	  'function' '*' BindingIdentifier '(' FormalParameters<+Yield> ')' '{' GeneratorBody '}'
 	| [Default] 'function' '*' '(' FormalParameters<+Yield> ')' '{' GeneratorBody '}'
@@ -953,8 +954,8 @@ YieldExpression<In> ::=
 ;
 
 ClassDeclaration<Yield, Default> ::=
-	  'class' BindingIdentifier ClassTail
-	| [Default] 'class' ClassTail
+	  'class' BindingIdentifier TypeParametersopt ClassTail
+	| [Default] 'class' TypeParametersopt ClassTail
 ;
 
 ClassExpression<Yield> ::=
@@ -962,10 +963,14 @@ ClassExpression<Yield> ::=
 
 @noast
 ClassTail<Yield> ::=
-	  ClassHeritage? ClassBody ;
+	  ClassExtendsClause? ImplementsClause? ClassBody ;
 
-ClassHeritage<Yield> ::=
-	  'extends' LeftHandSideExpression ;
+ClassExtendsClause<Yield> ::=
+	  'extends' TypeReference ;
+
+ImplementsClause<Yield> ::=
+	'implements' (TypeReference separator ',')+ ;
+
 
 ClassBody<Yield> ::=
 	  '{' ClassElementList? '}' ;
@@ -977,9 +982,13 @@ ClassElementList<Yield> ::=
 ;
 
 ClassElement<Yield> ::=
-	  MethodDefinition
-	| 'static' MethodDefinition
+	  AccessibilityModifier? 'constructor' '(' ParameterListopt ')' '{' FunctionBody '}'
+	| AccessibilityModifier? 'constructor' '(' ParameterListopt ')' ';'
+	| AccessibilityModifier? 'static'? PropertyName TypeAnnotationopt Initializeropt<+In> ';'
+	| AccessibilityModifier? 'static'? MethodDefinition
+	| IndexSignature ';'
 	| ';'
+	# TODO /*abstract?*/ | AccessibilityModifier? 'static'opt PropertyName CallSignature ';'
 ;
 
 # A.5 Scripts and Modules
@@ -1308,6 +1317,14 @@ MethodSignature<Yield> ::=
 TypeAliasDeclaration<Yield> ::=
 	  'type' BindingIdentifier TypeParameters? '=' Type ';' ;
 
+# A.2 Expressions (TODO)
+
+# ArrowFormalParameters ::= /* Modified */
+#    CallSignature ;
+
+# Arguments ::= /* Modified */
+#    TypeArgumentsopt '(' ArgumentListopt ')' ;
+
 # A.5 Interfaces
 
 InterfaceDeclaration<Yield> ::=
@@ -1336,6 +1353,8 @@ EnumMember<Yield> ::=
 
 EnumValue<Yield> ::=
 	  AssignmentExpression<+In> ;
+
+# A.8+ TODO
 
 %%
 
