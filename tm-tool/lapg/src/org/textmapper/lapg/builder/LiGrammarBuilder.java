@@ -405,10 +405,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 		Set<LookaheadPredicate> predicateSet = new HashSet<>(predicates);
 		LiLookahead la = lookaheadMap.get(predicateSet);
-		if (la == null) {
-			la = new LiLookahead(predicates, origin);
-			lookaheadMap.put(predicateSet, la);
-		}
+		if (la != null) return la;
+
+		la = new LiLookahead(predicates, origin);
+		lookaheadMap.put(predicateSet, la);
 		return addSymbol(la, anchor);
 	}
 

@@ -92,7 +92,7 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 			if (nameToElement.containsKey(name)) return false;
 			nameToElement.put(name, element);
 		} else if (anchor == null) {
-			throw new NullPointerException("both `element' and `anchor' cannot be null");
+			throw new NullPointerException("both `name' and `anchor' cannot be null");
 		}
 
 		int index;

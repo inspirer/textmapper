@@ -1185,7 +1185,7 @@ PrimaryType<Yield> ::=
 ;
 
 ParenthesizedType<Yield> ::=
-	  '(' Type ')' ;
+	  '(' (?= !StartOfFunctionType) Type ')' ;
 
 PredefinedType ::=
 	  'any'
@@ -1252,8 +1252,7 @@ StartOfFunctionType ::=
 
 FunctionType<Yield> ::=
       TypeParameters '(' ParameterListopt ')' '=>' Type
-# TODO
-#	| '(' (?: StartOfFunctionType) ParameterListopt ')' '=>' Type
+	| '(' (?= StartOfFunctionType) ParameterListopt ')' '=>' Type
 ;
 
 ConstructorType<Yield> ::=

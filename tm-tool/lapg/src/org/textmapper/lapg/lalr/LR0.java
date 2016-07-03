@@ -549,7 +549,8 @@ class LR0 extends ContextFree {
 		int fromstate, symbol, number, nshifts, nreduce;
 		int inputsign;
 		State link, next;
-		int[] shifts, reduce;
+		int[] shifts;
+		int[] reduce;
 		boolean LR0;
 		int[] elems;
 		boolean softConflicts;

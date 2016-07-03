@@ -17,8 +17,7 @@ package org.textmapper.lapg.lalr;
 
 import org.textmapper.lapg.api.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Builder extends Lalr1 {
 
@@ -190,9 +189,9 @@ public class Builder extends Lalr1 {
 	private void action() {
 		List<int[]> actionTables = new ArrayList<>();
 		int rr = 0, sr = 0;
-		int[] actionset = new int[nterms], next = new int[nterms];
+		int[] actionset = new int[nterms];
+		int[] next = new int[nterms];
 		ConflictBuilder conflicts = new ConflictBuilder(nterms);
-		int i, e;
 
 		action_index = new int[nstates];
 		action_table = null;
@@ -211,17 +210,12 @@ public class Builder extends Lalr1 {
 
 				// prepare
 				int setsize = 0;
-				for (i = 0; i < nterms; i++) {
-					next[i] = -2;
-				}
+				Arrays.fill(next, -2);
 
 				// process shifts
-				int termSym;
-				for (i = 0; i < t.nshifts; i++) {
-					termSym = state[t.shifts[i]].symbol;
-					if (termSym >= nterms) {
-						break;
-					}
+				for (int i = 0; i < t.nshifts; i++) {
+					int termSym = state[t.shifts[i]].symbol;
+					if (termSym >= nterms) break;
 
 					assert next[termSym] == -2;
 					next[termSym] = -1;
@@ -241,16 +235,16 @@ public class Builder extends Lalr1 {
 				conflicts.clear();
 
 				// process reduces
-				for (i = laindex[t.number]; i < laindex[t.number + 1]; i++) {
+				for (int i = laindex[t.number]; i < laindex[t.number + 1]; i++) {
 					int ai = i * termset;
 					int max = ai + termset;
-					termSym = 0;
+					int termSym = 0;
 					for (; ai < max; ai++) {
 						int bits = LA[ai];
 						if (bits == 0) {
 							termSym += BITS;
 						} else {
-							for (e = 0; e < BITS; e++) {
+							for (int e = 0; e < BITS; e++) {
 								if ((bits & (1 << e)) != 0) {
 									if (next[termSym] == -2) {
 										// OK
@@ -284,7 +278,7 @@ public class Builder extends Lalr1 {
 				}
 
 				// process non-assoc syntax errors
-				for (i = 0; i < nterms; i++) {
+				for (int i = 0; i < nterms; i++) {
 					if (next[i] == -3) {
 						next[i] = -2;
 					}
@@ -293,8 +287,8 @@ public class Builder extends Lalr1 {
 				// insert into action_table
 				int[] stateActions = new int[2 * (setsize + 1)];
 				action_index[t.number] = -3 - nactions;
-				e = 0;
-				for (i = 0; i < setsize; i++) {
+				int e = 0;
+				for (int i = 0; i < setsize; i++) {
 					stateActions[e++] = actionset[i];
 					stateActions[e++] = next[actionset[i]];
 				}
@@ -309,11 +303,11 @@ public class Builder extends Lalr1 {
 					+ rr + " reduce/reduce");
 		}
 
-		e = 0;
+		int e = 0;
 		action_table = new int[nactions];
 		for (int[] stateActions : actionTables) {
-			for (i = 0; i < stateActions.length; i++) {
-				action_table[e++] = stateActions[i];
+			for (int stateAction : stateActions) {
+				action_table[e++] = stateAction;
 			}
 		}
 	}
@@ -349,8 +343,30 @@ public class Builder extends Lalr1 {
 					null);
 		} else {
 			// reduce/reduce
+			int prevRule = next[termSym];
+			if (lookaheadBuilder.isResolutionRule(prevRule)) {
+				if (sym[rleft[rule]] instanceof Lookahead) {
+					// Updating the resolution rule to include a new lookahead.
+					next[termSym] = lookaheadBuilder.addResolutionRule(prevRule,
+							(Lookahead) sym[rleft[rule]]);
+					return;
+				} else {
+					// Resolution rules are not part of the grammar, report one of the
+					// original lookahead rules.
+					prevRule = lookaheadBuilder.getRefRule(prevRule);
+				}
+			} else if (sym[rleft[rule]] instanceof Lookahead
+					&& sym[rleft[prevRule]] instanceof Lookahead) {
+
+				// Conflicting lookaheads need a new resolution rule.
+				Set<Lookahead> set = new HashSet<>();
+				set.add((Lookahead) sym[rleft[prevRule]]);
+				set.add((Lookahead) sym[rleft[rule]]);
+				next[termSym] = lookaheadBuilder.addResolutionRule(set, prevRule);
+				return;
+			}
 			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule],
-					wrules[next[termSym]]);
+					wrules[prevRule]);
 		}
 	}
 
@@ -380,14 +396,22 @@ public class Builder extends Lalr1 {
 			return null;
 		}
 
-		lookaheadBuilder = new ExplicitLookaheadBuilder(rules);
+		lookaheadBuilder = new ExplicitLookaheadBuilder(rules, status);
 		buildLalr();
 		action();
 		return createResult();
 	}
 
 	private ParserTables createResult() {
-		LookaheadRule[] resolutionRules = lookaheadBuilder.getRules();
+		// Compacting resolution rules.
+		lookaheadBuilder.assignIndices();
+		for (int i = 1; i < action_table.length; i += 2) {
+			if (action_table[i] >= this.rules) {
+				action_table[i] = lookaheadBuilder.getRuleIndex(action_table[i]);
+			}
+		}
+		lookaheadBuilder.compact();
+		LookaheadRule[] resolutionRules = lookaheadBuilder.extractRules();
 
 		int[] rlen = new int[this.rules + resolutionRules.length];
 		for (int i = 0; i < this.rules; i++) {
