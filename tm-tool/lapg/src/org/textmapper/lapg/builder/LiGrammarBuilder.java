@@ -231,7 +231,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (inputSymbol.isTerm()) {
 			throw new IllegalArgumentException("input symbol should be non-terminal");
 		}
-		LiInputRef inp = new LiInputRef(inputSymbol, hasEoi, origin);
+		LiInputRef inp = new LiInputRef(inputs.size(), inputSymbol, hasEoi, origin);
 		inputs.add(inp);
 		return inp;
 	}
@@ -392,16 +392,19 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public LookaheadPredicate lookaheadPredicate(Nonterminal prefix, boolean negate) {
-		check(prefix);
-		return new LiLookaheadPredicate(prefix, negate);
+	public LookaheadPredicate lookaheadPredicate(InputRef input, boolean negate) {
+		if (input.hasEoi()) {
+			throw new IllegalArgumentException("input");
+		}
+		check(input.getTarget());
+		return new LiLookaheadPredicate(input, negate);
 	}
 
 	@Override
 	public Lookahead lookahead(Collection<LookaheadPredicate> predicates,
 							   Symbol anchor, SourceElement origin) {
 		for (LookaheadPredicate p : predicates) {
-			check(p.getPrefix());
+			check(p.getInput().getTarget());
 		}
 		Set<LookaheadPredicate> predicateSet = new HashSet<>(predicates);
 		LiLookahead la = lookaheadMap.get(predicateSet);

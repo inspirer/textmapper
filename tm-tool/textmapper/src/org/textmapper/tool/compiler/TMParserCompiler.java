@@ -37,6 +37,7 @@ public class TMParserCompiler {
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 	private TMExpressionResolver expressionResolver;
+	private Map<Nonterminal, InputRef> inputs = new HashMap<>();
 	private boolean hasInputs = false;
 
 	public TMParserCompiler(TMResolver resolver, TMExpressionResolver expressionResolver) {
@@ -59,7 +60,8 @@ public class TMParserCompiler {
 			} else if (!(input instanceof Nonterminal)) {
 				error(tree.getRoot(), "input must be a nonterminal");
 			} else {
-				builder.addInput((Nonterminal) input, true, input);
+				inputs.put((Nonterminal) input,
+						builder.addInput((Nonterminal) input, true, input));
 			}
 		}
 	}
@@ -187,8 +189,16 @@ public class TMParserCompiler {
 					Symbol sym = resolver.resolve(inputRef.getReference());
 					boolean hasEoi = !inputRef.isNoeoi();
 					if (sym instanceof Nonterminal) {
-						builder.addInput((Nonterminal) sym, hasEoi, inputRef);
+						InputRef existing = inputs.get(sym);
 						hasInputs = true;
+						if (existing != null) {
+							if (existing.hasEoi() != hasEoi) {
+								error(inputRef, "conflicting inputs (eoi - no-eoi)");
+							}
+							continue;
+						}
+						inputs.put((Nonterminal) sym,
+								builder.addInput((Nonterminal) sym, hasEoi, inputRef));
 					} else if (sym != null) {
 						error(inputRef, "input must be a nonterminal");
 					}
@@ -364,7 +374,12 @@ public class TMParserCompiler {
 					error(p, "lookahead assertion must reference a non-templated nonterminal");
 					continue;
 				}
-				rules.add(builder.lookaheadPredicate((Nonterminal) s, p.isNegate()));
+				InputRef i = inputs.get(s);
+				if (i == null) {
+					i = builder.addInput((Nonterminal) s, false /* hasEoi */, p);
+					inputs.put((Nonterminal) s, i);
+				}
+				rules.add(builder.lookaheadPredicate(i, p.isNegate()));
 			}
 
 			if (rules.isEmpty()) return null;

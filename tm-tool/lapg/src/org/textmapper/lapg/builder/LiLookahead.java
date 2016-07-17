@@ -37,6 +37,21 @@ class LiLookahead extends LiNonterminal implements Lookahead {
 		return predicates;
 	}
 
+	@Override
+	public String asString() {
+		StringBuilder sb = new StringBuilder();
+		for (LookaheadPredicate p : predicates) {
+			if (sb.length() > 0) {
+				sb.append(" & ");
+			}
+			if (p.isNegated()) {
+				sb.append("!");
+			}
+			sb.append(p.getInput().getTarget().getName());
+		}
+		return sb.toString();
+	}
+
 	private static String nameHint(Collection<LookaheadPredicate> predicates) {
 		StringBuilder sb = new StringBuilder("lookahead");
 		for (LookaheadPredicate p : predicates) {
@@ -44,7 +59,7 @@ class LiLookahead extends LiNonterminal implements Lookahead {
 			if (p.isNegated()) {
 				sb.append("not");
 			}
-			sb.append(p.getPrefix().getName());
+			sb.append(p.getInput().getTarget().getName());
 		}
 		return sb.toString();
 	}

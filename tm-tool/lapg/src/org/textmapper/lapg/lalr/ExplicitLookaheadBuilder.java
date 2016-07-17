@@ -15,16 +15,100 @@
  */
 package org.textmapper.lapg.lalr;
 
-import org.textmapper.lapg.api.Lookahead;
-import org.textmapper.lapg.api.LookaheadRule;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.LookaheadRule.LookaheadCase;
-import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.rule.LookaheadPredicate;
+import org.textmapper.lapg.builder.LiUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 class ExplicitLookaheadBuilder {
 
 	private static final LookaheadCase[] EMPTY_CASES = new LookaheadCase[0];
+
+	private static class Node {
+		InputRef input;
+		Set<Node> prev = new HashSet<>();
+		List<Lookahead> positive = new ArrayList<>();
+		List<Lookahead> negative = new ArrayList<>();
+
+		boolean processing = false;
+		boolean done = false;
+
+		public Node(InputRef input) {
+			this.input = input;
+		}
+
+		String getName() {
+			return input.getTarget().getName();
+		}
+
+		void addPredicate(boolean negated, Lookahead la) {
+			(negated ? negative : positive).add(la);
+		}
+
+		boolean serializeTo(List<Node> res) {
+			if (processing) return false;
+			if (done) return true;
+			processing = true;
+			Node[] nodes = prev.toArray(new Node[prev.size()]);
+			if (nodes.length > 1) {
+				Arrays.sort(nodes, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+			}
+			for (Node n : nodes) {
+				if (!n.serializeTo(res)) return false;
+			}
+			processing = false;
+			done = true;
+			if (input != null) {
+				res.add(this);
+			}
+			return true;
+		}
+
+		List<Node> serialize() {
+			List<Node> result = new ArrayList<>();
+			if (!serializeTo(result)) return null;
+			return result;
+		}
+
+		Lookahead pickLookahead(LinkedHashSet<Lookahead> lookaheads, boolean negated) {
+			List<Lookahead> list = (negated ? negative : positive).stream()
+					.filter(lookaheads::contains)
+					.collect(Collectors.toList());
+			if (list.size() != 1) return null;
+			return list.get(0);
+		}
+	}
+
+	private static class LiLookaheadCase implements LookaheadCase {
+
+		InputRef input;
+		boolean negated;
+		Nonterminal target;
+
+		public LiLookaheadCase(InputRef input, boolean negated, Nonterminal target) {
+			this.input = input;
+			this.negated = negated;
+			this.target = target;
+		}
+
+		@Override
+		public InputRef getInput() {
+			return input;
+		}
+
+		@Override
+		public boolean isNegated() {
+			return negated;
+		}
+
+		@Override
+		public Nonterminal getTarget() {
+			return target;
+		}
+	}
 
 	private static class LiLookaheadRule implements LookaheadRule {
 		private int index;
@@ -32,6 +116,7 @@ class ExplicitLookaheadBuilder {
 		private int refRule;
 		private Set<Lookahead> lookaheads;
 		private LookaheadCase[] cases = EMPTY_CASES;
+		private Nonterminal defaultTarget = null;
 
 		private LiLookaheadRule(int index, Set<Lookahead> lookaheads, int refRule) {
 			this.index = index;
@@ -58,15 +143,95 @@ class ExplicitLookaheadBuilder {
 			return cases;
 		}
 
+		@Override
+		public Nonterminal getDefaultTarget() {
+			return defaultTarget;
+		}
+
+		Node addNode(Map<InputRef, Node> nodes, Node prev, InputRef input) {
+			Node node = nodes.get(input);
+			if (node == null) {
+				node = new Node(input);
+				nodes.put(input, node);
+			}
+			if (prev != null) {
+				node.prev.add(prev);
+			}
+			return node;
+		}
+
+		void reportError(ProcessingStatus status, String message) {
+			status.report(ProcessingStatus.KIND_ERROR, message
+					+ lookaheads.stream().map(Lookahead::asString)
+					.collect(Collectors.joining(", ")),
+					lookaheads.toArray(new SourceElement[lookaheads.size()]));
+		}
+
 		void computeCases(ProcessingStatus status) {
-			// TODO
-//			Set<Nonterminal> set = new HashSet<>();
-//			for (Lookahead la : lookaheads) {
-//				for (LookaheadPredicate p : la.getLookaheadPredicates()) {
-//					set.add(p.getPrefix());
-//				}
-//			}
-//			List<Nonterminal>
+			Node root = new Node(null);
+			Map<InputRef, Node> nodes = new HashMap<>();
+			for (Lookahead la : lookaheads) {
+				Node prev = null;
+				for (LookaheadPredicate p : la.getLookaheadPredicates()) {
+					prev = addNode(nodes, prev, p.getInput());
+					prev.addPredicate(p.isNegated(), la);
+				}
+				if (prev == null) {
+					throw new IllegalStateException();
+				}
+				root.prev.add(prev);
+			}
+			List<Node> evalOrder = root.serialize();
+			if (evalOrder == null) {
+				reportError(status, "Conflicting lookaheads (inconsistent nonterminal order): ");
+				return;
+			}
+
+			LinkedHashSet<Lookahead> lookaheads = new LinkedHashSet<>(this.lookaheads);
+			List<LookaheadCase> cases = new ArrayList<>();
+			for (Node node : evalOrder) {
+				if (lookaheads.size() == 1) break;
+				boolean negated = false;
+				Lookahead target = node.pickLookahead(lookaheads, false /*negated*/);
+				if (target == null) {
+					target = node.pickLookahead(lookaheads, true /*negated*/);
+					negated = true;
+				}
+				if (target == null) {
+					reportError(status, "Cannot decide which rule to choose after evaluating " +
+							node.getName() + ": ");
+					return;
+				}
+				lookaheads.remove(target);
+				cases.add(new LiLookaheadCase(node.input, negated, target));
+			}
+			if (lookaheads.size() != 1) {
+				reportError(status, "Conflicting lookaheads: ");
+				return;
+			}
+			this.cases = cases.toArray(new LookaheadCase[cases.size()]);
+			defaultTarget = lookaheads.iterator().next();
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			for (LookaheadCase c : cases) {
+				if (c.isNegated()) {
+					sb.append("!");
+				}
+				sb.append(c.getInput().getTarget().getName());
+				sb.append(" -> ");
+				sb.append(LiUtil.getSymbolName(c.getTarget()));
+				sb.append("; ");
+			}
+			sb.append("default -> ");
+			if (defaultTarget == null) {
+				sb.append("ERROR");
+			} else {
+				sb.append(LiUtil.getSymbolName(defaultTarget));
+			}
+			return sb.toString();
 		}
 	}
 
@@ -98,7 +263,7 @@ class ExplicitLookaheadBuilder {
 	int addResolutionRule(int resolutionRule, Lookahead la) {
 		LiLookaheadRule laRule = rules.get(resolutionRule - rulesCount);
 		laRule.decRef();
-		Set<Lookahead> set = new HashSet<>(laRule.lookaheads);
+		Set<Lookahead> set = new LinkedHashSet<>(laRule.lookaheads);
 		set.add(la);
 		return addResolutionRule(set, laRule.refRule);
 	}

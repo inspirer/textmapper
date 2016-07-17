@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="GOPATH &lt;tm-go&gt;">
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../googleplex.com" />
       <root url="file://$PROJECT_DIR$/../../../../code.google.com" />
       <root url="file://$PROJECT_DIR$/../../.." />
       <root url="file://$PROJECT_DIR$/../../../../golang.org" />

@@ -25,12 +25,12 @@ public interface LookaheadRule {
 
 	LookaheadCase[] getCases();
 
-	interface LookaheadCase {
+	Nonterminal getDefaultTarget();
 
-		int getPrefixNonterminal();
+	interface LookaheadCase {
+		InputRef getInput();
 		boolean isNegated();
 
-		int getStartState();
-		int getSuccessState();
+		Nonterminal getTarget();
 	}
 }

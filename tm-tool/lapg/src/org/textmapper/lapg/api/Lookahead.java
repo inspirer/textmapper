@@ -26,4 +26,6 @@ import org.textmapper.lapg.api.rule.LookaheadPredicate;
 public interface Lookahead extends Nonterminal {
 
 	LookaheadPredicate[] getLookaheadPredicates();
+
+	String asString();
 }

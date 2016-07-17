@@ -359,7 +359,7 @@ public class Builder extends Lalr1 {
 					&& sym[rleft[prevRule]] instanceof Lookahead) {
 
 				// Conflicting lookaheads need a new resolution rule.
-				Set<Lookahead> set = new HashSet<>();
+				Set<Lookahead> set = new LinkedHashSet<>();
 				set.add((Lookahead) sym[rleft[prevRule]]);
 				set.add((Lookahead) sym[rleft[rule]]);
 				next[termSym] = lookaheadBuilder.addResolutionRule(set, prevRule);

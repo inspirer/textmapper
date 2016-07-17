@@ -15,22 +15,22 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.InputRef;
 import org.textmapper.lapg.api.rule.LookaheadPredicate;
 
 class LiLookaheadPredicate implements LookaheadPredicate {
 
-	private final Nonterminal rule;
+	private final InputRef input;
 	private final boolean negated;
 
-	LiLookaheadPredicate(Nonterminal rule, boolean negated) {
-		this.rule = rule;
+	LiLookaheadPredicate(InputRef input, boolean negated) {
+		this.input = input;
 		this.negated = negated;
 	}
 
 	@Override
-	public Nonterminal getPrefix() {
-		return rule;
+	public InputRef getInput() {
+		return input;
 	}
 
 	@Override
@@ -45,12 +45,12 @@ class LiLookaheadPredicate implements LookaheadPredicate {
 
 		LiLookaheadPredicate that = (LiLookaheadPredicate) o;
 
-		return negated == that.negated && rule.equals(that.rule);
+		return negated == that.negated && input.equals(that.input);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = rule.hashCode();
+		int result = input.hashCode();
 		result = 31 * result + (negated ? 1 : 0);
 		return result;
 	}

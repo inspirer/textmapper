@@ -15,14 +15,14 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.InputRef;
 
 public interface LookaheadPredicate {
 
 	/**
-	 * A nonterminal enumerating all accepted prefixes.
+	 * The input nonterminal enumerating all accepted prefixes.
 	 */
-	Nonterminal getPrefix();
+	InputRef getInput();
 
 	/**
 	 * Negates the result of the lookahead.

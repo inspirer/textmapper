@@ -25,14 +25,21 @@ import org.textmapper.lapg.api.SourceElement;
  */
 class LiInputRef implements InputRef, DerivedSourceElement {
 
+	private final int index;
 	private final Nonterminal target;
 	private final boolean hasEoi;
 	private final SourceElement origin;
 
-	public LiInputRef(Nonterminal target, boolean hasEoi, SourceElement origin) {
+	public LiInputRef(int index, Nonterminal target, boolean hasEoi, SourceElement origin) {
+		this.index = index;
 		this.target = target;
 		this.hasEoi = hasEoi;
 		this.origin = origin;
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
 	}
 
 	@Override
@@ -48,5 +55,22 @@ class LiInputRef implements InputRef, DerivedSourceElement {
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		LiInputRef that = (LiInputRef) o;
+
+		return hasEoi == that.hasEoi && target.equals(that.target);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = target.hashCode();
+		result = 31 * result + (hasEoi ? 1 : 0);
+		return result;
 	}
 }
