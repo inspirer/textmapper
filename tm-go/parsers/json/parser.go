@@ -55,7 +55,15 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
 	p.next.offset, p.next.endoffset = lexer.Pos()
 
 	for state != end {
-		action := p.action(state)
+		action := tmAction[state]
+		if action < -2 {
+			// Lookahead is needed.
+			if p.next.symbol == noToken {
+				p.next.symbol = int32(p.lexer.Next())
+				p.next.offset, p.next.endoffset = p.lexer.Pos()
+			}
+			action = lalr(action, p.next.symbol)
+		}
 
 		if action >= 0 {
 			// Reduce.
@@ -76,7 +84,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
 			}
 			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
-			state = p.gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
+			state = gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
 			node.state = state
 			p.stack = append(p.stack, node)
 
@@ -86,7 +94,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
 				p.next.symbol = int32(lexer.Next())
 				p.next.offset, p.next.endoffset = lexer.Pos()
 			}
-			state = p.gotoState(state, p.next.symbol)
+			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
 				sym:   p.next,
 				state: state,
@@ -150,7 +158,7 @@ func (p *Parser) recover() bool {
 	}
 	e, _ := p.lexer.Pos()
 	s := e
-	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
+	for len(p.stack) > 0 && gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
 		// TODO cleanup
 		p.stack = p.stack[:len(p.stack)-1]
 		if len(p.stack) > 0 {
@@ -158,7 +166,7 @@ func (p *Parser) recover() bool {
 		}
 	}
 	if len(p.stack) > 0 {
-		state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
+		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
 		p.stack = append(p.stack, node{
 			sym:   symbol{errSymbol, s, e},
 			state: state,
@@ -168,26 +176,17 @@ func (p *Parser) recover() bool {
 	return false
 }
 
-func (p *Parser) action(state int8) int32 {
-	a := tmAction[state]
-	if a < -2 {
-		// Lookahead is needed.
-		if p.next.symbol == noToken {
-			p.next.symbol = int32(p.lexer.Next())
-			p.next.offset, p.next.endoffset = p.lexer.Pos()
+func lalr(action, next int32) int32 {
+	a := -action - 3
+	for ; tmLalr[a] >= 0; a += 2 {
+		if tmLalr[a] == next {
+			break
 		}
-		a = -a - 3
-		for ; tmLalr[a] >= 0; a += 2 {
-			if tmLalr[a] == p.next.symbol {
-				break
-			}
-		}
-		return tmLalr[a+1]
 	}
-	return a
+	return tmLalr[a+1]
 }
 
-func (p *Parser) gotoState(state int8, symbol int32) int8 {
+func gotoState(state int8, symbol int32) int8 {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1] - 1
 

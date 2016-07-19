@@ -252,7 +252,7 @@ jsxText : /[^{}<>]+/
 
 :: parser
 
-%input TypeInput, StartOfFunctionType no-eoi;
+%input TypeInput;
 
 TypeInput ::= Type<~Yield> ;
 
@@ -1240,7 +1240,7 @@ TupleType<Yield> ::=
 
 # This lookahead rule disambiguates FunctionType vs ParenthesizedType
 # productions by enumerating all prefixes of FunctionType that would
-# lead to parse failure if tried to be parsed as Type.
+# lead to parse failure if interpreted as Type.
 # (partially inspired by isUnambiguouslyStartOfFunctionType() in
 # src/compiler/parser.ts)
 StartOfFunctionType ::=

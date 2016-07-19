@@ -57,7 +57,14 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	p.fetchNext()
 
 	for state != end {
-		action := p.action(state)
+		action := tmAction[state]
+		if action < -2 {
+			// Lookahead is needed.
+			if p.next.symbol == noToken {
+				p.fetchNext()
+			}
+			action = lalr(action, p.next.symbol)
+		}
 
 		if action >= 0 {
 			// Reduce.
@@ -78,7 +85,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			}
 			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
-			state = p.gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
+			state = gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
 			node.state = state
 			p.stack = append(p.stack, node)
 
@@ -87,7 +94,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			if p.next.symbol == noToken {
 				p.fetchNext()
 			}
-			state = p.gotoState(state, p.next.symbol)
+			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
 				sym:   p.next,
 				state: state,
@@ -126,7 +133,14 @@ func (p *Parser) reduceAll() (state int16, success bool) {
 	stack2 := stack2alloc[:0]
 
 	for state != p.endState {
-		action := p.action(state)
+		action := tmAction[state]
+		if action < -2 {
+			// Lookahead is needed.
+			if p.next.symbol == noToken {
+				p.fetchNext()
+			}
+			action = lalr(action, p.next.symbol)
+		}
 
 		if action >= 0 {
 			// Reduce.
@@ -144,10 +158,10 @@ func (p *Parser) reduceAll() (state int16, success bool) {
 					stack2 = stack2alloc[:0]
 				}
 			}
-			state = p.gotoState(state, symbol)
+			state = gotoState(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
-			success = (action == -1 && p.gotoState(state, p.next.symbol) >= 0)
+			success = (action == -1 && gotoState(state, p.next.symbol) >= 0)
 			return
 		}
 	}
@@ -158,7 +172,7 @@ func (p *Parser) reduceAll() (state int16, success bool) {
 // insertSC inserts and reports a semicolon, unless there is a overriding rule
 // forbidding insertion in this particular location.
 func (p *Parser) insertSC(state int16, offset int) {
-	stateAfterSC := p.gotoState(state, int32(SEMICOLON))
+	stateAfterSC := gotoState(state, int32(SEMICOLON))
 	if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
 		// ".. a semicolon is never inserted automatically if the semicolon would
 		// then be parsed as an empty statement or if that semicolon would become
@@ -237,31 +251,23 @@ func (p *Parser) fetchNext() {
 		return
 	}
 
-	if lastToken == RPAREN && doWhileStates[int(p.gotoState(state, int32(SEMICOLON)))] {
+	if lastToken == RPAREN && doWhileStates[int(gotoState(state, int32(SEMICOLON)))] {
 		p.insertSC(state, lastEnd)
 		return
 	}
 }
 
-func (p *Parser) action(state int16) int32 {
-	a := tmAction[state]
-	if a < -2 {
-		// Lookahead is needed.
-		if p.next.symbol == noToken {
-			p.fetchNext()
+func lalr(action, next int32) int32 {
+	a := -action - 3
+	for ; tmLalr[a] >= 0; a += 2 {
+		if tmLalr[a] == next {
+			break
 		}
-		a = -a - 3
-		for ; tmLalr[a] >= 0; a += 2 {
-			if tmLalr[a] == p.next.symbol {
-				break
-			}
-		}
-		return tmLalr[a+1]
 	}
-	return a
+	return tmLalr[a+1]
 }
 
-func (p *Parser) gotoState(state int16, symbol int32) int16 {
+func gotoState(state int16, symbol int32) int16 {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1] - 1
 

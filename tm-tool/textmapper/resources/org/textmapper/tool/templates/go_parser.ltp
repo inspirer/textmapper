@@ -88,7 +88,17 @@ ${end-}
 	p.next.offset, p.next.endoffset = lexer.Pos()
 
 	for state != end {
-		action := p.action(state)
+		action := tmAction[state]
+${if self->needActionsTable()-}
+		if action < -2 {
+			// Lookahead is needed.
+			if p.next.symbol == noToken {
+				p.next.symbol = int32(p.lexer.Next())
+				p.next.offset, p.next.endoffset = p.lexer.Pos()
+			}
+			action = lalr(action, p.next.symbol)
+		}
+${end-}
 
 		if action >= 0 {
 			// Reduce.
@@ -109,7 +119,7 @@ ${end-}
 			}
 			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
-			state = p.gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
+			state = gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
 			node.state = state
 			p.stack = append(p.stack, node)
 
@@ -119,7 +129,7 @@ ${end-}
 				p.next.symbol = int32(lexer.Next())
 				p.next.offset, p.next.endoffset = lexer.Pos()
 			}
-			state = p.gotoState(state, p.next.symbol)
+			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
 				sym:   p.next,
 				state: state,
@@ -193,7 +203,7 @@ func (p *Parser) recover() bool {
 	}
 	e, _ := p.lexer.Pos()
 	s := e
-	for len(p.stack) > 0 && p.gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
+	for len(p.stack) > 0 && gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
 		// TODO cleanup
 		p.stack = p.stack[:len(p.stack)-1]
 		if len(p.stack) > 0 {
@@ -201,7 +211,7 @@ func (p *Parser) recover() bool {
 		}
 	}
 	if len(p.stack) > 0 {
-		state := p.gotoState(p.stack[len(p.stack)-1].state, errSymbol)
+		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
 		p.stack = append(p.stack, node{
 			sym:   symbol{errSymbol, s, e},
 			state: state,
@@ -212,28 +222,19 @@ func (p *Parser) recover() bool {
 }
 ${end-}
 
-func (p *Parser) action(state ${self->stateType()}) int32 {
-	a := tmAction[state]
 ${if self->needActionsTable()-}
-	if a < -2 {
-		// Lookahead is needed.
-		if p.next.symbol == noToken {
-			p.next.symbol = int32(p.lexer.Next())
-			p.next.offset, p.next.endoffset = p.lexer.Pos()
+func lalr(action, next int32) int32 {
+	a := -action - 3
+	for ; tmLalr[a] >= 0; a += 2 {
+		if tmLalr[a] == next {
+			break
 		}
-		a = -a - 3
-		for ; tmLalr[a] >= 0; a += 2 {
-			if tmLalr[a] == p.next.symbol {
-				break
-			}
-		}
-		return tmLalr[a+1]
 	}
-${end-}
-	return a
+	return tmLalr[a+1]
 }
 
-func (p *Parser) gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
+${end-}
+func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1] - 1
 
