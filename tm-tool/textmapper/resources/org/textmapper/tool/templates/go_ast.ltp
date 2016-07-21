@@ -1,6 +1,7 @@
 ${template main-}
 ${if opts.genast && self.ast-}
 ${file 'ast/ast.go'-}
+${call go.header-}
 ${call ast-}
 ${end-}
 ${end-}

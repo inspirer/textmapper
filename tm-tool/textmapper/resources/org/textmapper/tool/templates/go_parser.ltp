@@ -1,12 +1,15 @@
 ${template main-}
 ${file 'parser.go'-}
+${call go.header-}
 ${call parser-}
 ${end-}
 ${file 'parser_tables.go'-}
+${call go.header-}
 ${call parserTables-}
 ${end-}
 ${if self->eventBased()-}
 ${file 'listener.go'-}
+${call go.header-}
 ${call listener-}
 ${end-}
 ${end-}

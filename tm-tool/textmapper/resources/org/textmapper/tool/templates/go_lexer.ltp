@@ -1,8 +1,10 @@
 ${template main-}
 ${file 'lexer.go'-}
+${call go.header-}
 ${call lexer-}
 ${end-}
 ${file 'lexer_tables.go'-}
+${call go.header-}
 ${call lexerTables-}
 ${end-}
 ${end}

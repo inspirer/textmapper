@@ -1,5 +1,6 @@
 ${template main-}
 ${file 'token.go'-}
+${call go.header-}
 ${call token-}
 ${end-}
 ${end}
