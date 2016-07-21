@@ -19,6 +19,7 @@ const (
 	COLON // :
 	COMMA // ,
 	SPACE
+	MULTILINECOMMENT
 	JSONSTRING
 	JSONNUMBER
 	ID
@@ -42,6 +43,7 @@ var tokenStr = [...]string{
 	":",
 	",",
 	"SPACE",
+	"MULTILINECOMMENT",
 	"JSONSTRING",
 	"JSONNUMBER",
 	"ID",

@@ -37,6 +37,7 @@ public class TMDataUtil {
 	private static final String UD_LITERAL = "literal";
 	private static final String UD_ROLE = "role";
 	private static final String UD_RANGE_TYPE = "rangeType";
+	private static final String UD_USER_REQUESTED_INPUT = "userRequested";
 
 	private static Object lookupUserData(UserDataHolder element, String key) {
 		while (element != null) {
@@ -136,6 +137,14 @@ public class TMDataUtil {
 
 	public static String getRangeType(Rule rule) {
 		return (String) rule.getUserData(UD_RANGE_TYPE);
+	}
+
+	public static void setUserRequested(InputRef input) {
+		input.putUserData(UD_USER_REQUESTED_INPUT, Boolean.TRUE);
+	}
+
+	public static boolean isUserRequested(InputRef input) {
+		return input.getUserData(UD_USER_REQUESTED_INPUT) == Boolean.TRUE;
 	}
 
 	public static boolean hasProperty(UserDataHolder o, String name) {

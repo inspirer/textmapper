@@ -18,7 +18,7 @@ package org.textmapper.lapg.api;
 /**
  * Gryaznov Evgeny, 3/16/11
  */
-public interface InputRef extends SourceElement {
+public interface InputRef extends SourceElement, UserDataHolder {
 
 	int getIndex();
 

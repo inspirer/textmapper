@@ -16,7 +16,10 @@
 package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsCFPart;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.templates.api.EvaluationContext;
@@ -75,6 +78,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 		if (o instanceof TMGrammar) {
 			return new TMGrammarIxObject((TMGrammar) o);
+		}
+		if (o instanceof InputRef) {
+			return new InputRefIxObject((InputRef) o);
 		}
 		return super.asObject(o);
 	}
@@ -333,6 +339,24 @@ public class GrammarIxFactory extends JavaIxFactory {
 				throws EvaluationException {
 			if ("id".equals(propertyName)) {
 				return TMDataUtil.getId(sym);
+			}
+			return super.getProperty(caller, propertyName);
+		}
+	}
+
+	private final class InputRefIxObject extends DefaultJavaIxObject {
+		private final InputRef ref;
+
+		private InputRefIxObject(InputRef ref) {
+			super(ref);
+			this.ref = ref;
+		}
+
+		@Override
+		public Object getProperty(SourceElement caller, String propertyName)
+				throws EvaluationException {
+			if ("requested".equals(propertyName)) {
+				return TMDataUtil.isUserRequested(ref);
 			}
 			return super.getProperty(caller, propertyName);
 		}

@@ -420,7 +420,9 @@ public class Builder extends Lalr1 {
 			rlen[i] = e;
 		}
 		int nrules = this.rules;
+		int[] rleft = Arrays.copyOf(this.rleft, nrules + resolutionRules.length);
 		for (LookaheadRule r : resolutionRules) {
+			rleft[nrules] = r.getDefaultTarget().getIndex();
 			rlen[nrules++] = 0;
 		}
 		return new ParserTables(sym,

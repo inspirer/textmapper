@@ -54,6 +54,7 @@ public class TMEventMapper {
 		}
 
 		Nonterminal n = rule.getLeft();
+		if (n instanceof Lookahead) return;
 		if (!TMDataUtil.hasProperty(n, "ast")) {
 			if (n.getDefinition() instanceof RhsList
 					&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null

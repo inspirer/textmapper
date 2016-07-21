@@ -9,6 +9,8 @@ import (
 // some part of the input.
 type ErrorHandler func(line, offset, len int, msg string)
 
+func IgnoreErrorsHandler(line, offset, len int, msg string) {}
+
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
@@ -172,7 +174,7 @@ restart:
 	}
 
 	switch token {
-	case 7:
+	case 7, 8:
 		goto restart
 	}
 	return token

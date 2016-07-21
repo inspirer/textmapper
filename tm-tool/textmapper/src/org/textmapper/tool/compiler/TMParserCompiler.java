@@ -60,8 +60,9 @@ public class TMParserCompiler {
 			} else if (!(input instanceof Nonterminal)) {
 				error(tree.getRoot(), "input must be a nonterminal");
 			} else {
-				inputs.put((Nonterminal) input,
-						builder.addInput((Nonterminal) input, true, input));
+				InputRef ref = builder.addInput((Nonterminal) input, true, input);
+				TMDataUtil.setUserRequested(ref);
+				inputs.put((Nonterminal) input, ref);
 			}
 		}
 	}
@@ -197,8 +198,9 @@ public class TMParserCompiler {
 							}
 							continue;
 						}
-						inputs.put((Nonterminal) sym,
-								builder.addInput((Nonterminal) sym, hasEoi, inputRef));
+						InputRef ref = builder.addInput((Nonterminal) sym, hasEoi, inputRef);
+						TMDataUtil.setUserRequested(ref);
+						inputs.put((Nonterminal) sym, ref);
 					} else if (sym != null) {
 						error(inputRef, "input must be a nonterminal");
 					}

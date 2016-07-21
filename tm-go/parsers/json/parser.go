@@ -39,7 +39,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) (bool, int) {
-	return p.parse(0, 36, lexer)
+	return p.parse(1, 44, lexer)
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
@@ -72,9 +72,6 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
 
 			var node node
 			node.sym.symbol = tmRuleSymbol[rule]
-			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", Symbol(node.sym.symbol))
-			}
 			if ln == 0 {
 				node.sym.offset, _ = lexer.Pos()
 				node.sym.endoffset = node.sym.offset
@@ -83,6 +80,9 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
 				node.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
 			}
 			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
+			if debugSyntax {
+				fmt.Printf("reduced to: %v\n", Symbol(node.sym.symbol))
+			}
 			p.stack = p.stack[:len(p.stack)-ln]
 			state = gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
 			node.state = state
@@ -146,7 +146,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
 	return true, p.stack[len(p.stack)-2].value
 }
 
-const errSymbol = 16
+const errSymbol = 17
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {
@@ -204,7 +204,70 @@ func gotoState(state int8, symbol int32) int8 {
 	return -1
 }
 
+func (p *Parser) lookahead(start, end int8) bool {
+	var lexer Lexer = *p.lexer
+	lexer.err = IgnoreErrorsHandler
+
+	var allocated [64]node
+	state := start
+	stack := append(allocated[:0], node{state: state})
+	next := p.next.symbol
+
+	for state != end {
+		action := tmAction[state]
+		if action < -2 {
+			// Lookahead is needed.
+			if next == noToken {
+				next = int32(lexer.Next())
+			}
+			action = lalr(action, next)
+		}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+
+			var node node
+			node.sym.symbol = tmRuleSymbol[rule]
+			stack = stack[:len(stack)-ln]
+			state = gotoState(stack[len(stack)-1].state, node.sym.symbol)
+			node.state = state
+			stack = append(stack, node)
+
+		} else if action == -1 {
+			// Shift.
+			if next == noToken {
+				next = int32(lexer.Next())
+			}
+			state = gotoState(state, next)
+			stack = append(stack, node{
+				sym:   symbol{symbol: next},
+				state: state,
+			})
+			if state != -1 && next != eoiToken {
+				next = noToken
+			}
+		}
+
+		if action == -2 || state == -1 {
+			break
+		}
+	}
+
+	return state == end
+}
+
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
+	switch rule {
+	case 32:
+		if p.lookahead(0, 42) /* EmptyObject */ {
+			node.sym.symbol = 22 /* lookahead_EmptyObject */;
+		} else {
+			node.sym.symbol = 24 /* lookahead_notEmptyObject */;
+		}
+		return
+	}
 	nt := ruleNodeType[rule]
 	if nt == 0 {
 		return

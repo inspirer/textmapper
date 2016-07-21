@@ -15,6 +15,9 @@ eventBased = true
 
 space: /[\t\r\n ]+/ (space)
 
+commentChars = /([^*]|\*+[^*\/])*\**/
+MultiLineComment: /\/\*{commentChars}\*\// (space)
+
 hex = /[0-9a-fA-F]/
 
 # TODO
@@ -54,13 +57,16 @@ JSONValue<A> (Value) ::=
 	| [A] 'A'
 	| [!A] 'B'
 	| JSONObject
+	| EmptyObject
 	| JSONArray
 	| JSONString
 	| JSONNumber
 ;
 
+EmptyObject ::= (?= EmptyObject) '{' '}' ;
+
 JSONObject ::=
-	  '{' JSONMemberList? '}' ;
+	  (?= !EmptyObject) '{' JSONMemberList? '}' ;
 
 JSONMember (*Field) ::=
 	  JSONString ':' JSONValue<~A> ;

@@ -2,6 +2,8 @@
 ${cached query needInitialState() = syntax.input.length > 1}
 ${cached query needFinalState() = self->needInitialState() || !syntax.input[0].hasEoi() && parser.finalStates[0] != parser.statesCount - 1 }
 
+${cached query onlyOneUserInput() = syntax.input.select(it| it.requested).size() == 1}
+
 
 ${query hasOffsets() =
 		context.opts.endpositions.contains('offset') && context.opts.positions.contains('offset')}

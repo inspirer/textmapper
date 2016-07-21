@@ -11,6 +11,7 @@ type Listener interface {
 const (
 	JSONText NodeType = iota + 1
 	JSONValue
+	EmptyObject
 	JSONObject
 	JSONMember
 	JSONArray
@@ -24,6 +25,7 @@ var ruleNodeType = [...]NodeType{
 	JSONValue, // JSONValue ::= 'false'
 	JSONValue, // JSONValue ::= 'B'
 	JSONValue, // JSONValue ::= JSONObject
+	JSONValue, // JSONValue ::= EmptyObject
 	JSONValue, // JSONValue ::= JSONArray
 	JSONValue, // JSONValue ::= JSONString
 	JSONValue, // JSONValue ::= JSONNumber
@@ -32,11 +34,15 @@ var ruleNodeType = [...]NodeType{
 	JSONValue, // JSONValue_A ::= 'false'
 	JSONValue, // JSONValue_A ::= 'A'
 	JSONValue, // JSONValue_A ::= JSONObject
+	JSONValue, // JSONValue_A ::= EmptyObject
 	JSONValue, // JSONValue_A ::= JSONArray
 	JSONValue, // JSONValue_A ::= JSONString
 	JSONValue, // JSONValue_A ::= JSONNumber
-	JSONObject, // JSONObject ::= '{' JSONMemberList '}'
-	JSONObject, // JSONObject ::= '{' '}'
+	EmptyObject, // EmptyObject ::= lookahead_EmptyObject '{' '}'
+	0, // lookahead_EmptyObject ::=
+	JSONObject, // JSONObject ::= lookahead_notEmptyObject '{' JSONMemberList '}'
+	JSONObject, // JSONObject ::= lookahead_notEmptyObject '{' '}'
+	0, // lookahead_notEmptyObject ::=
 	JSONMember, // JSONMember ::= JSONString ':' JSONValue
 	0, // JSONMemberList ::= JSONMember
 	0, // JSONMemberList ::= JSONMemberList ',' JSONMember
@@ -51,6 +57,7 @@ var nodeTypeStr = [...]string{
 	"NONE",
 	"JSONText",
 	"JSONValue",
+	"EmptyObject",
 	"JSONObject",
 	"JSONMember",
 	"JSONArray",

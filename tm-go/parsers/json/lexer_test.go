@@ -21,7 +21,7 @@ const jsonExample = `
                     "ID": "xml",
 					"SortAs": "price",
 					"type": "Markup Language",
-					"Acronym": "XML",
+					"Acronym": {},
 					"UniqueID": "850257207432",
 					"def": {
                 "json": "Lorem ipsum dolor sit amet, ad prima imperdiet sea. Homero reprimique no duo, mundi iriure expetenda ei est. No nec denique efficiantur, pri ad oratio adipisci expetendis.",

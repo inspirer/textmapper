@@ -236,7 +236,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		return inp;
 	}
 
-
 	@Override
 	public RhsSequence addPrecedence(RhsPart p, Terminal prec) {
 		check(prec);

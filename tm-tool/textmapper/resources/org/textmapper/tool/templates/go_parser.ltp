@@ -62,14 +62,14 @@ const (
 	eoiToken       = int32(EOI)
 	debugSyntax    = false
 )
-${foreach inp in syntax.input}
-func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) (bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end}) {
+${foreach inp in syntax.input.select(it|it.requested)}
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) (bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end}) {
 ${if inp.target->go.type()-}
-	ok, v := p.parse(${index}, ${parser.finalStates[index]}, lexer)
+	ok, v := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 	val, _ := v.(${inp.target->go.type()})
 	return ok, val
 ${else-}
-	return p.parse(${index}, ${parser.finalStates[index]}, lexer)
+	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 ${end-}
 }
 ${end-}
@@ -107,9 +107,6 @@ ${end-}
 
 			var node node
 			node.sym.symbol = tmRuleSymbol[rule]
-			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", Symbol(node.sym.symbol))
-			}
 			if ln == 0 {
 				node.sym.offset, _ = lexer.Pos()
 				node.sym.endoffset = node.sym.offset
@@ -118,6 +115,9 @@ ${end-}
 				node.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
 			}
 			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
+			if debugSyntax {
+				fmt.Printf("reduced to: %v\n", Symbol(node.sym.symbol))
+			}
 			p.stack = p.stack[:len(p.stack)-ln]
 			state = gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
 			node.state = state
@@ -252,14 +252,87 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 	return -1
 }
 
+${if self->needExplicitLookahead()-}
+${call lookahead}
+${end-}
 ${call applyRule-}
 ${end}
 
 
+${template lookahead-}
+func (p *Parser) lookahead(start, end int8) bool {
+	var lexer Lexer = *p.lexer
+	lexer.err = IgnoreErrorsHandler
+
+	var allocated [64]node
+	state := start
+	stack := append(allocated[:0], node{state: state})
+	next := p.next.symbol
+
+	for state != end {
+		action := tmAction[state]
+${if self->needActionsTable()-}
+		if action < -2 {
+			// Lookahead is needed.
+			if next == noToken {
+				next = int32(lexer.Next())
+			}
+			action = lalr(action, next)
+		}
+${end-}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+
+			var node node
+			node.sym.symbol = tmRuleSymbol[rule]
+			stack = stack[:len(stack)-ln]
+			state = gotoState(stack[len(stack)-1].state, node.sym.symbol)
+			node.state = state
+			stack = append(stack, node)
+
+		} else if action == -1 {
+			// Shift.
+			if next == noToken {
+				next = int32(lexer.Next())
+			}
+			state = gotoState(state, next)
+			stack = append(stack, node{
+				sym:   symbol{symbol: next},
+				state: state,
+			})
+			if state != -1 && next != eoiToken {
+				next = noToken
+			}
+		}
+
+		if action == -2 || state == -1 {
+			break
+		}
+	}
+
+	return state == end
+}
+${end}
+
+${template caseLookaheadRules-}
+${foreach rule in parser.lookaheadRules-}
+	case ${rule.getIndex()}:
+		${foreach c in rule.cases}if ${c.isNegated() ? '!' : ''}p.lookahead(${c.input.index}, ${parser.finalStates[c.input.index]}) /* ${c.input.target.name} */ {
+			node.sym.symbol = ${c.target.index} /* ${c.target.name} */;
+		} else ${end}{
+			node.sym.symbol = ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
+		}
+		return
+${end-}
+${end}
+
 ${template applyRule-}
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 ${if self->eventBased()-}
-${if syntax.rules.exists(r|r.hasSymbolsWithRole())-}
+${if syntax.rules.exists(r|r.hasSymbolsWithRole()) || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|r.hasSymbolsWithRole())-}
 	case ${rule.getIndex()}: // ${rule}
@@ -267,6 +340,7 @@ ${foreach sym in rule.symbolsWithRole()-}
 		p.listener.Role(Role_${sym.role}, rhs[${sym.leftOffset}].value)
 ${end-}
 ${end-}
+${call caseLookaheadRules-}
 	}
 ${end-}
 	nt := ruleNodeType[rule]
@@ -274,12 +348,13 @@ ${end-}
 		return
 	}
 	${if self->withRoles()}node.value = ${end}p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
-${else if syntax.rules.exists(r|self->hasAction(r))-}
+${else if syntax.rules.exists(r|self->hasAction(r))  || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
 	case ${rule.getIndex()}: // ${rule}
 		${util.extractStatements(rule->parserAction('node.value'))-}
 ${end-}
+${call caseLookaheadRules-}
 	}
 ${end-}
 }
@@ -432,6 +507,8 @@ ${end}
 
 
 ${query needActionsTable() = parser.lalr.size() > 0}
+
+${query needExplicitLookahead() = parser.lookaheadRules.size() > 0}
 
 ${cached query hasRecovering() = syntax.error}
 

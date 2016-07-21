@@ -23,7 +23,7 @@ import org.textmapper.lapg.api.SourceElement;
 /**
  * Gryaznov Evgeny, 3/16/11
  */
-class LiInputRef implements InputRef, DerivedSourceElement {
+class LiInputRef extends LiUserDataHolder implements InputRef, DerivedSourceElement {
 
 	private final int index;
 	private final Nonterminal target;
