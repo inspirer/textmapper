@@ -397,43 +397,44 @@ restart:
 	// See the following thread for more details:
 	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
 
-	inTemplate := l.State >= State_template
-	var reContext bool
-	switch token {
-	case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
-		reContext = true
-	case TEMPLATEHEAD, TEMPLATEMIDDLE:
-		reContext = true
-		inTemplate = true
-	case TEMPLATETAIL:
-		reContext = false
-		inTemplate = false
-	case RPAREN, RBRACK:
-		// TODO support if (...) /aaaa/;
-		reContext = false
-	case PLUSPLUS, MINUSMINUS:
-		if prevLine != l.tokenLine {
-			// This is a pre-increment/decrement, so we expect a regular expression.
-			reContext = true
-		} else {
-			// If we were in reContext before this token, this is a
-			// pre-increment/decrement, otherwise, this is a post. We can just
-			// propagate the previous value of reContext.
-			reContext = (l.State == State_template || l.State == State_initial)
-		}
-	default:
-		reContext = (token >= punctuationStart && token < punctuationEnd)
-	}
-	if inTemplate {
-		if reContext {
+	if l.State <= State_jsxTemplateDiv {
+		// The lowest bit of "l.State" determines how to treat a forward
+		// slash if it happens to be the next character.
+		//   unset: start of a regular expression literal
+		//   set:   start of a division operator (/ or /=)
+		switch token {
+		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
+			l.State &^= 1
+		case TEMPLATEHEAD, TEMPLATEMIDDLE:
 			l.State = State_template
-		} else {
-			l.State = State_templateDiv
+		case TEMPLATETAIL:
+			l.State = State_div
+		case RPAREN, RBRACK:
+			// TODO support if (...) /aaaa/;
+			l.State |= 1
+		case PLUSPLUS, MINUSMINUS:
+			if prevLine != l.tokenLine {
+				// This is a pre-increment/decrement, so we expect a regular expression.
+				l.State &^= 1
+			}
+			// Otherwise: if we were expecting a regular expression literal before this
+			// token, this is a pre-increment/decrement, otherwise, this is a post. We
+			// can just propagate the previous value of the lowest bit of the state.
+		case LT:
+			if l.State&1 == 0 {
+				// TODO handle jsx
+			} else {
+				l.State &^= 1
+			}
+		default:
+			if token >= punctuationStart && token < punctuationEnd {
+				l.State &^= 1
+			} else {
+				l.State |= 1
+			}
 		}
-	} else if reContext {
-		l.State = State_initial
 	} else {
-		l.State = State_div
+		// TODO handle jsx
 	}
 	return token
 }
