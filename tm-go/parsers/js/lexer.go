@@ -15,7 +15,8 @@ const (
 	State_jsxTemplate = 4
 	State_jsxTemplateDiv = 5
 	State_jsxTag = 6
-	State_jsxText = 7
+	State_jsxClosingTag = 7
+	State_jsxText = 8
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process
@@ -40,6 +41,10 @@ type Lexer struct {
 	value       interface{}
 
 	State int // lexer state, modifiable
+
+	token  Token // last token
+	Stack  []int // stack of JSX states, non-empty for State_jsx*
+	Opened []int // number of opened curly braces per jsxTemplate* state
 }
 
 const bom = 0xfeff // byte order mark, permitted as a first character only
@@ -62,6 +67,9 @@ func (l *Lexer) Init(source []byte, err ErrorHandler) {
 	l.lineOffset = 0
 	l.scanOffset = 0
 	l.State = 0
+	l.token = UNAVAILABLE
+	l.Stack = nil
+	l.Opened = nil
 
 	if bytes.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
@@ -398,7 +406,7 @@ restart:
 	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
 
 	if l.State <= State_jsxTemplateDiv {
-		// The lowest bit of "l.State" determines how to treat a forward
+		// The lowest bit of "l.State" determines how to interpret a forward
 		// slash if it happens to be the next character.
 		//   unset: start of a regular expression literal
 		//   set:   start of a division operator (/ or /=)
@@ -422,10 +430,29 @@ restart:
 			// can just propagate the previous value of the lowest bit of the state.
 		case LT:
 			if l.State&1 == 0 {
-				// TODO handle jsx
+				// Start a new JSX tag.
+				l.Stack = append(l.Stack, l.State|1)
+				l.State = State_jsxTag
 			} else {
 				l.State &^= 1
 			}
+		case LBRACE:
+			if l.State >= State_jsxTemplate {
+				l.Opened[len(l.Opened)-1]++
+			}
+			l.State &^= 1
+		case RBRACE:
+			if l.State >= State_jsxTemplate {
+				last := len(l.Opened) - 1
+				l.Opened[last]--
+				if l.Opened[last] == 0 {
+					l.Opened = l.Opened[:last]
+					l.State = l.Stack[len(l.Stack) - 1]
+					l.Stack = l.Stack[:len(l.Stack) - 1]
+					break
+				}
+			}
+			l.State &^= 1
 		default:
 			if token >= punctuationStart && token < punctuationEnd {
 				l.State &^= 1
@@ -434,8 +461,31 @@ restart:
 			}
 		}
 	} else {
-		// TODO handle jsx
+		// Handling JSX states.
+		switch token {
+		case DIV:
+			if l.State == State_jsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == State_jsxText {
+				l.State = State_jsxClosingTag
+				l.Stack = l.Stack[:len(l.Stack) - 1]
+			}
+		case GT:
+			if l.State == State_jsxClosingTag || l.token == DIV {
+				l.State = l.Stack[len(l.Stack) - 1]
+				l.Stack = l.Stack[:len(l.Stack) - 1]
+			} else {
+					l.State = State_jsxText
+			}
+		case LBRACE:
+			l.Opened = append(l.Opened, 1)
+			l.Stack = append(l.Stack, l.State)
+			l.State = State_jsxTemplate
+		case LT:
+			// Start a new JSX tag.
+			l.Stack = append(l.Stack, l.State)
+			l.State = State_jsxTag
+		}
 	}
+	l.token = token
 	return token
 }
 

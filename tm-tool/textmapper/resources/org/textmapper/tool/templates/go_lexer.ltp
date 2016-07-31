@@ -47,6 +47,8 @@ type Lexer struct {
 	value       interface{}
 
 	State int // lexer state, modifiable
+
+${call stateVars-}
 }
 
 const bom = 0xfeff // byte order mark, permitted as a first character only
@@ -69,6 +71,7 @@ func (l *Lexer) Init(source []byte, err ErrorHandler) {
 	l.lineOffset = 0
 	l.scanOffset = 0
 	l.State = 0
+${call initStateVars-}
 
 	if bytes.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
@@ -375,5 +378,8 @@ ${template imports}${end}
 
 ${template onAfterNext}${end}
 ${template onBeforeNext}${end}
+
+${template stateVars}${end}
+${template initStateVars}${end}
 
 ${cached query useCustomMap() = self->classRules().exists(it|it->classHasInstances())}

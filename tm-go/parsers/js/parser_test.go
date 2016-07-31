@@ -669,38 +669,50 @@ var jsParseTests = []jsTestCase{
      A /*fails*/`,
 	}},
 
+	// JSX
 	{js.JSXElement, []string{
-		// TODO
+		`var a = “<div>ABC</div>“;`,
+		`var a = “<div/>“;`,
+		`var a = «<Q>«<P/>»</Q>»;`,
+		`var a = “<div>< / div>“;`,
+		`var a = “<div / >“;`,
+		`var a = «<q>{ «<a href={ {a: {b: 1}}.a.b }/>» }</q>»;`,
+		`var a = «<q>{ [1,2,3].map(a => («<a href={a}/>»)) }</q>»;`,
 	}},
 	{js.JSXSelfClosingElement, []string{
-		// TODO
+		`var a = “<div / >“;`,
 	}},
 	{js.JSXOpeningElement, []string{
-		// TODO
+		`var a = “<div name="a">“  </div>;`,
 	}},
 	{js.JSXClosingElement, []string{
-		// TODO
+		`var a = <div name="a">  “</div>“;`,
 	}},
 	{js.JSXElementName, []string{
-		// TODO
+		`var a = <“a.b.c.d“ />;`,
+		`var a = <“a:b“ />;`,
+		`var a = <“Q“ />;`,
 	}},
 	{js.JSXAttribute, []string{
-		// TODO
+		`var a = <div «name="a"»><div «name="b"»></div></div>;`,
 	}},
 	{js.JSXSpreadAttribute, []string{
-		// TODO
+		`var a = <div «{...props}»/>;`,
 	}},
 	{js.JSXAttributeName, []string{
-		// TODO
+		`var a = <div «name»="a"/>;`,
 	}},
 	{js.JSXAttributeValue, []string{
-		// TODO
+		`var a = <a href=“{1+{a:2}.a}“ target=«"123"»/>;`,
+		`var a = <X comp=«<Y text=«<h1>Title</h1>» />» />;`,
 	}},
 	{js.JSXText, []string{
-		// TODO
+		`var a = <A:A>“ ABC “</A:A>;`,
 	}},
 	{js.JSXChild, []string{
-		// TODO
+		`var a = <A:A>“{ 22+{a:1}.a }“</A:A>;`,
+		`var a = <A:A>«<a/>»bb«{1}»</A:A>;`,
+		`/*no expectations*/ var a = <A:A></A:A>;`,
 	}},
 }
 

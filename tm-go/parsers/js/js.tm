@@ -9,14 +9,16 @@ eventBased = true
 
 :: lexer
 
-[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxText]
+[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag, jsxText]
 
 # Accept end-of-input in all states.
 eoi: /{eoi}/
 
-[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv]
+[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag]
 
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+
+[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv]
 
 LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
 
@@ -198,13 +200,12 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 '/': /\//
 '/=': /\/=/
 
-[jsxTag]
+[jsxTag, jsxClosingTag]
 
-'{': /\{/
-'}': /\}/
 '<': /</
 '>': />/
 '/': /\//
+'{': /\{/
 ':': /:/
 '.': /\./
 '=': /=/
@@ -1095,6 +1096,18 @@ JSXChild<Yield> ::=
 
 %%
 
+${template go_lexer.stateVars-}
+	token  Token // last token
+	Stack  []int // stack of JSX states, non-empty for State_jsx*
+	Opened []int // number of opened curly braces per jsxTemplate* state
+${end}
+
+${template go_lexer.initStateVars-}
+	l.token = UNAVAILABLE
+	l.Stack = nil
+	l.Opened = nil
+${end}
+
 ${template go_lexer.onBeforeNext-}
 	prevLine := l.tokenLine
 ${end}
@@ -1111,7 +1124,7 @@ ${template go_lexer.onAfterNext}
 	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
 
 	if l.State <= State_jsxTemplateDiv {
-		// The lowest bit of "l.State" determines how to treat a forward
+		// The lowest bit of "l.State" determines how to interpret a forward
 		// slash if it happens to be the next character.
 		//   unset: start of a regular expression literal
 		//   set:   start of a division operator (/ or /=)
@@ -1135,10 +1148,29 @@ ${template go_lexer.onAfterNext}
 			// can just propagate the previous value of the lowest bit of the state.
 		case LT:
 			if l.State&1 == 0 {
-				// TODO handle jsx
+				// Start a new JSX tag.
+				l.Stack = append(l.Stack, l.State|1)
+				l.State = State_jsxTag
 			} else {
 				l.State &^= 1
 			}
+		case LBRACE:
+			if l.State >= State_jsxTemplate {
+				l.Opened[len(l.Opened)-1]++
+			}
+			l.State &^= 1
+		case RBRACE:
+			if l.State >= State_jsxTemplate {
+				last := len(l.Opened) - 1
+				l.Opened[last]--
+				if l.Opened[last] == 0 {
+					l.Opened = l.Opened[:last]
+					l.State = l.Stack[len(l.Stack) - 1]
+					l.Stack = l.Stack[:len(l.Stack) - 1]
+					break
+				}
+			}
+			l.State &^= 1
 		default:
 			if token >= punctuationStart && token < punctuationEnd {
 				l.State &^= 1
@@ -1147,8 +1179,31 @@ ${template go_lexer.onAfterNext}
 			}
 		}
 	} else {
-		// TODO handle jsx
+		// Handling JSX states.
+		switch token {
+		case DIV:
+			if l.State == State_jsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == State_jsxText {
+				l.State = State_jsxClosingTag
+				l.Stack = l.Stack[:len(l.Stack) - 1]
+			}
+		case GT:
+			if l.State == State_jsxClosingTag || l.token == DIV {
+				l.State = l.Stack[len(l.Stack) - 1]
+				l.Stack = l.Stack[:len(l.Stack) - 1]
+			} else {
+					l.State = State_jsxText
+			}
+		case LBRACE:
+			l.Opened = append(l.Opened, 1)
+			l.Stack = append(l.Stack, l.State)
+			l.State = State_jsxTemplate
+		case LT:
+			// Start a new JSX tag.
+			l.Stack = append(l.Stack, l.State)
+			l.State = State_jsxTag
+		}
 	}
+	l.token = token
 ${end}
 
 ${query go_parser.additionalNodeTypes() = ['InsertedSemicolon']}

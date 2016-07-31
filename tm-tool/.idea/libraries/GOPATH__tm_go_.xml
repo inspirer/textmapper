@@ -1,21 +1,27 @@
 <component name="libraryTable">
   <library name="GOPATH &lt;tm-go&gt;">
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org" />
+      <root url="file://$PROJECT_DIR$/../../.." />
       <root url="file://$PROJECT_DIR$/../../../../googleplex.com" />
       <root url="file://$PROJECT_DIR$/../../../../code.google.com" />
-      <root url="file://$PROJECT_DIR$/../../.." />
       <root url="file://$PROJECT_DIR$/../../../../golang.org" />
-      <root url="file://$PROJECT_DIR$/../../../../google.golang.org" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../../../google.golang.org" />
+      <root url="file://$PROJECT_DIR$/../../.." />
+      <root url="file://$PROJECT_DIR$/../../../../googleplex.com" />
+      <root url="file://$PROJECT_DIR$/../../../../code.google.com" />
+      <root url="file://$PROJECT_DIR$/../../../../golang.org" />
+    </SOURCES>
     <excluded>
-      <root url="file://$PROJECT_DIR$" />
-      <root url="file://$PROJECT_DIR$/samples/js" />
-      <root url="file://$PROJECT_DIR$/textmapper" />
-      <root url="file://$PROJECT_DIR$/templates" />
       <root url="file://$PROJECT_DIR$/../tm-go" />
+      <root url="file://$PROJECT_DIR$" />
       <root url="file://$PROJECT_DIR$/lapg" />
+      <root url="file://$PROJECT_DIR$/samples/js" />
+      <root url="file://$PROJECT_DIR$/templates" />
+      <root url="file://$PROJECT_DIR$/textmapper" />
       <root url="file://$PROJECT_DIR$/tool" />
     </excluded>
   </library>
