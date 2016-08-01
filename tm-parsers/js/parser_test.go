@@ -1,27 +1,17 @@
 package js_test
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
-	"strings"
+	pt "github.com/inspirer/textmapper/tm-parsers/testing"
 )
 
-const separator rune = '“'
-const nestedLeft rune = '«'
-const nestedRight rune = '»'
-
-type jsTestCase struct {
+var jsParseTests = []struct {
 	nt     js.NodeType
 	inputs []string
-}
+} {
 
-type jsTestExpectation struct {
-	offset, endoffset int
-}
-
-var jsParseTests = []jsTestCase{
 	{js.IdentifierName, []string{
 		`const a = {“cc“: 5}.“cc“;`,
 		`import {“a“ as b} from './Test1';`,
@@ -716,84 +706,14 @@ var jsParseTests = []jsTestCase{
 	}},
 }
 
-func splitInput(input string, t *testing.T) (out []byte, exp []jsTestExpectation) {
-	var stack []int
-	for index, ch := range input {
-		switch ch {
-		case separator, nestedRight, nestedLeft:
-			if ch == nestedLeft || ch == separator && len(stack) == 0 {
-				stack = append(stack, len(out))
-			} else if len(stack) == 0 {
-				t.Fatalf("Unexpected closing parenthesis at %d in `%s`", index, input)
-			} else {
-				exp = append(exp, jsTestExpectation{stack[len(stack)-1], len(out)})
-				stack = stack[:len(stack)-1]
-			}
-			continue
-		}
-		out = append(out, string(ch)...)
-	}
-	if len(stack) > 0 {
-		t.Fatalf("Missing closing separator at %d in `%s`", stack[len(stack)-1], input)
-	}
-	return
+type testConsumer struct {
+	nt js.NodeType
+	test *pt.ParserTest
 }
 
-func TestSplitInput(t *testing.T) {
-	res, exp := splitInput(`abc“def“cdf“q1“q2`, t)
-	if string(res) != `abcdefcdfq1q2` {
-		t.Errorf("Unexpected result: %s", res)
-	}
-	if !reflect.DeepEqual(exp, []jsTestExpectation{{3, 6}, {9, 11}}) {
-		t.Errorf("Unexpected expectations: %v", exp)
-	}
-
-	res, exp = splitInput(``, t)
-	if string(res) != `` || len(exp) != 0 {
-		t.Errorf("splitInput(``) is broken: %v", res)
-	}
-
-	res, exp = splitInput(`“abc“ «a«b«c»»»`, t)
-	if string(res) != `abc abc` {
-		t.Errorf("Unexpected result: %s", res)
-	}
-	if !reflect.DeepEqual(exp, []jsTestExpectation{{0, 3}, {6, 7}, {5, 7}, {4, 7}}) {
-		t.Errorf("Unexpected expectations: %v", exp)
-	}
-}
-
-type node struct {
-	offset, endoffset int
-}
-
-type expTest struct {
-	source       []byte
-	expectedType js.NodeType
-	exp          []jsTestExpectation
-	t            *testing.T
-	parsed       []node
-}
-
-func (e *expTest) Node(nt js.NodeType, offset, endoffset int) {
-	e.parsed = append(e.parsed, node{offset, endoffset})
-	if e.expectedType != nt {
-		return //len(e.parsed)
-	}
-	if len(e.exp) == 0 {
-		e.t.Errorf("Unexpected %v: `%s` in `%s`", nt, e.source[offset:endoffset], e.source)
-	} else if e.exp[0].offset != offset || e.exp[0].endoffset != endoffset {
-		first := e.exp[0]
-		e.t.Errorf("got `%s`, want `%s`", e.source[offset:endoffset], e.source[first.offset:first.endoffset])
-	} else {
-		e.exp = e.exp[1:]
-	}
-	return //len(e.parsed)
-}
-
-func (e *expTest) done() {
-	if len(e.exp) > 0 {
-		first := e.exp[0]
-		e.t.Errorf("`%s` was not reported in `%s`", e.source[first.offset:first.endoffset], e.source)
+func (c testConsumer) Node(t js.NodeType, offset, endoffset int) {
+	if t == c.nt {
+		c.test.Consume(offset, endoffset)
 	}
 }
 
@@ -805,27 +725,10 @@ func TestParser(t *testing.T) {
 	for _, tc := range jsParseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
-			source, exp := splitInput(input, t)
-			if len(exp) == 0 && !strings.HasPrefix(input, "/*no expectations*/") {
-				t.Errorf("No expectations in `%s`", input)
-			}
-			expected := !strings.HasSuffix(input, "/*fails*/")
-
-			onError := func(line, offset, len int, msg string) {
-				if expected {
-					t.Errorf("%d, %d: %s", line, offset, msg)
-				}
-			}
-			expTest := &expTest{source, tc.nt, exp, t, nil}
-
-			l.Init([]byte(source), onError)
-			p.Init(onError, expTest)
-			res := p.Parse(l)
-			if res != expected {
-				t.Errorf("Parse() returned %v for `%s`", res, source)
-			} else {
-				expTest.done()
-			}
+			test := pt.NewParserTest(tc.nt.String(), input, t)
+			l.Init(test.Source(), test.Error)
+			p.Init(test.Error, testConsumer{tc.nt, test})
+			test.Done(p.Parse(l))
 		}
 	}
 	for n := js.NodeType(1); n < js.NodeTypeMax; n++ {
