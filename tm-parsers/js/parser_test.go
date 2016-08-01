@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/inspirer/textmapper/tm-go/parsers/js"
+	"github.com/inspirer/textmapper/tm-parsers/js"
 	"strings"
 )
 

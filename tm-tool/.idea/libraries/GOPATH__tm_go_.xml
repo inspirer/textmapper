@@ -16,6 +16,7 @@
       <root url="file://$PROJECT_DIR$/../../../../golang.org" />
     </SOURCES>
     <excluded>
+      <root url="file://$PROJECT_DIR$/../tm-parsers" />
       <root url="file://$PROJECT_DIR$/../tm-go" />
       <root url="file://$PROJECT_DIR$" />
       <root url="file://$PROJECT_DIR$/lapg" />

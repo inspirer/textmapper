@@ -4,7 +4,7 @@
 language js(go);
 
 lang = "js"
-package = "github.com/inspirer/textmapper/tm-go/parsers/js"
+package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 
 :: lexer
