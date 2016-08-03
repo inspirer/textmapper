@@ -97,10 +97,13 @@ const (
 	FormalParameters
 	FunctionRestParameter
 	FormalParameter
+	FunctionBody
 	ArrowFunction
 	ArrowParameters
 	ConciseBody
 	MethodDefinition
+	PropertyGetter
+	PropertySetter
 	GeneratorMethod
 	GeneratorDeclaration
 	GeneratorExpression
@@ -110,8 +113,8 @@ const (
 	ClassHeritage
 	ClassBody
 	ClassElement
+	StaticClassElement
 	Module
-	ModuleItem
 	ImportDeclaration
 	NameSpaceImport
 	NamedImports
@@ -674,13 +677,13 @@ var ruleNodeType = [...]NodeType{
 	Arguments, // Arguments_Yield ::= '(' ')'
 	Arguments, // Arguments_Yield ::= '(' ArgumentList_Yield ')'
 	0, // ArgumentList ::= AssignmentExpression_In
-	0, // ArgumentList ::= '...' AssignmentExpression_In
+	0, // ArgumentList ::= SpreadElement
 	0, // ArgumentList ::= ArgumentList ',' AssignmentExpression_In
-	0, // ArgumentList ::= ArgumentList ',' '...' AssignmentExpression_In
+	0, // ArgumentList ::= ArgumentList ',' SpreadElement
 	0, // ArgumentList_Yield ::= AssignmentExpression_In_Yield
-	0, // ArgumentList_Yield ::= '...' AssignmentExpression_In_Yield
+	0, // ArgumentList_Yield ::= SpreadElement_Yield
 	0, // ArgumentList_Yield ::= ArgumentList_Yield ',' AssignmentExpression_In_Yield
-	0, // ArgumentList_Yield ::= ArgumentList_Yield ',' '...' AssignmentExpression_In_Yield
+	0, // ArgumentList_Yield ::= ArgumentList_Yield ',' SpreadElement_Yield
 	0, // LeftHandSideExpression ::= NewExpression
 	0, // LeftHandSideExpression ::= CallExpression
 	0, // LeftHandSideExpression_NoFuncClass ::= NewExpression_NoFuncClass
@@ -1366,13 +1369,13 @@ var ruleNodeType = [...]NodeType{
 	0, // BindingElementList_Yield ::= BindingElementList_Yield ',' BindingElisionElement_Yield
 	BindingElisionElement, // BindingElisionElement ::= Elisionopt BindingElement
 	BindingElisionElement, // BindingElisionElement_Yield ::= Elisionopt BindingElement_Yield
-	BindingProperty, // BindingProperty ::= SingleNameBinding
+	0, // BindingProperty ::= SingleNameBinding
 	BindingProperty, // BindingProperty ::= PropertyName ':' BindingElement
-	BindingProperty, // BindingProperty_Yield ::= SingleNameBinding_Yield
+	0, // BindingProperty_Yield ::= SingleNameBinding_Yield
 	BindingProperty, // BindingProperty_Yield ::= PropertyName_Yield ':' BindingElement_Yield
-	BindingElement, // BindingElement ::= SingleNameBinding
+	0, // BindingElement ::= SingleNameBinding
 	BindingElement, // BindingElement ::= BindingPattern Initializeropt_In
-	BindingElement, // BindingElement_Yield ::= SingleNameBinding_Yield
+	0, // BindingElement_Yield ::= SingleNameBinding_Yield
 	BindingElement, // BindingElement_Yield ::= BindingPattern_Yield Initializeropt_In_Yield
 	SingleNameBinding, // SingleNameBinding ::= BindingIdentifier Initializeropt_In
 	SingleNameBinding, // SingleNameBinding_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
@@ -1507,18 +1510,18 @@ var ruleNodeType = [...]NodeType{
 	CatchParameter, // CatchParameter_Yield ::= BindingIdentifier_Yield
 	CatchParameter, // CatchParameter_Yield ::= BindingPattern_Yield
 	DebuggerStatement, // DebuggerStatement ::= 'debugger' ';'
-	FunctionDeclaration, // FunctionDeclaration ::= 'function' BindingIdentifier '(' FormalParameters ')' '{' FunctionBody '}'
-	FunctionDeclaration, // FunctionDeclaration_Default ::= 'function' BindingIdentifier '(' FormalParameters ')' '{' FunctionBody '}'
-	FunctionDeclaration, // FunctionDeclaration_Default ::= 'function' '(' FormalParameters ')' '{' FunctionBody '}'
-	FunctionDeclaration, // FunctionDeclaration_Yield ::= 'function' BindingIdentifier_Yield '(' FormalParameters ')' '{' FunctionBody '}'
-	FunctionExpression, // FunctionExpression ::= 'function' BindingIdentifier '(' FormalParameters ')' '{' FunctionBody '}'
-	FunctionExpression, // FunctionExpression ::= 'function' '(' FormalParameters ')' '{' FunctionBody '}'
+	FunctionDeclaration, // FunctionDeclaration ::= 'function' BindingIdentifier FormalParameters FunctionBody
+	FunctionDeclaration, // FunctionDeclaration_Default ::= 'function' BindingIdentifier FormalParameters FunctionBody
+	FunctionDeclaration, // FunctionDeclaration_Default ::= 'function' FormalParameters FunctionBody
+	FunctionDeclaration, // FunctionDeclaration_Yield ::= 'function' BindingIdentifier_Yield FormalParameters FunctionBody
+	FunctionExpression, // FunctionExpression ::= 'function' BindingIdentifier FormalParameters FunctionBody
+	FunctionExpression, // FunctionExpression ::= 'function' FormalParameters FunctionBody
 	0, // StrictFormalParameters ::= FormalParameters
 	0, // StrictFormalParameters_Yield ::= FormalParameters_Yield
-	FormalParameters, // FormalParameters ::= FormalParameterList
-	FormalParameters, // FormalParameters ::=
-	FormalParameters, // FormalParameters_Yield ::= FormalParameterList_Yield
-	FormalParameters, // FormalParameters_Yield ::=
+	FormalParameters, // FormalParameters ::= '(' FormalParameterList ')'
+	FormalParameters, // FormalParameters ::= '(' ')'
+	FormalParameters, // FormalParameters_Yield ::= '(' FormalParameterList_Yield ')'
+	FormalParameters, // FormalParameters_Yield ::= '(' ')'
 	0, // FormalParameterList ::= FunctionRestParameter
 	0, // FormalParameterList ::= FormalsList
 	0, // FormalParameterList ::= FormalsList ',' FunctionRestParameter
@@ -1533,10 +1536,10 @@ var ruleNodeType = [...]NodeType{
 	FunctionRestParameter, // FunctionRestParameter_Yield ::= BindingRestElement_Yield
 	FormalParameter, // FormalParameter ::= BindingElement
 	FormalParameter, // FormalParameter_Yield ::= BindingElement_Yield
-	0, // FunctionBody ::= StatementList_Return
-	0, // FunctionBody ::=
-	0, // FunctionBody_Yield ::= StatementList_Return_Yield
-	0, // FunctionBody_Yield ::=
+	FunctionBody, // FunctionBody ::= '{' StatementList_Return '}'
+	FunctionBody, // FunctionBody ::= '{' '}'
+	FunctionBody, // FunctionBody_Yield ::= '{' StatementList_Return_Yield '}'
+	FunctionBody, // FunctionBody_Yield ::= '{' '}'
 	ArrowFunction, // ArrowFunction ::= ArrowParameters .noLineBreak '=>' ConciseBody
 	ArrowFunction, // ArrowFunction_In ::= ArrowParameters .noLineBreak '=>' ConciseBody_In
 	ArrowFunction, // ArrowFunction_In_Yield ::= ArrowParameters_Yield .noLineBreak '=>' ConciseBody_In
@@ -1546,26 +1549,26 @@ var ruleNodeType = [...]NodeType{
 	ArrowParameters, // ArrowParameters_Yield ::= BindingIdentifier_Yield
 	ArrowParameters, // ArrowParameters_Yield ::= CoverParenthesizedExpressionAndArrowParameterList_Yield
 	ConciseBody, // ConciseBody ::= AssignmentExpression_NoObjLiteral
-	ConciseBody, // ConciseBody ::= '{' FunctionBody '}'
+	ConciseBody, // ConciseBody ::= FunctionBody
 	ConciseBody, // ConciseBody_In ::= AssignmentExpression_In_NoObjLiteral
-	ConciseBody, // ConciseBody_In ::= '{' FunctionBody '}'
-	MethodDefinition, // MethodDefinition ::= PropertyName '(' StrictFormalParameters ')' '{' FunctionBody '}'
+	ConciseBody, // ConciseBody_In ::= FunctionBody
+	MethodDefinition, // MethodDefinition ::= PropertyName StrictFormalParameters FunctionBody
 	0, // MethodDefinition ::= GeneratorMethod
-	MethodDefinition, // MethodDefinition ::= 'get' PropertyName '(' ')' '{' FunctionBody '}'
-	MethodDefinition, // MethodDefinition ::= 'set' PropertyName '(' PropertySetParameterList ')' '{' FunctionBody '}'
-	MethodDefinition, // MethodDefinition_Yield ::= PropertyName_Yield '(' StrictFormalParameters_Yield ')' '{' FunctionBody_Yield '}'
+	PropertyGetter, // MethodDefinition ::= 'get' PropertyName '(' ')' FunctionBody
+	PropertySetter, // MethodDefinition ::= 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
+	MethodDefinition, // MethodDefinition_Yield ::= PropertyName_Yield StrictFormalParameters_Yield FunctionBody_Yield
 	0, // MethodDefinition_Yield ::= GeneratorMethod_Yield
-	MethodDefinition, // MethodDefinition_Yield ::= 'get' PropertyName_Yield '(' ')' '{' FunctionBody_Yield '}'
-	MethodDefinition, // MethodDefinition_Yield ::= 'set' PropertyName_Yield '(' PropertySetParameterList ')' '{' FunctionBody_Yield '}'
+	PropertyGetter, // MethodDefinition_Yield ::= 'get' PropertyName_Yield '(' ')' FunctionBody_Yield
+	PropertySetter, // MethodDefinition_Yield ::= 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody_Yield
 	0, // PropertySetParameterList ::= FormalParameter
-	GeneratorMethod, // GeneratorMethod ::= '*' PropertyName '(' StrictFormalParameters_Yield ')' '{' GeneratorBody '}'
-	GeneratorMethod, // GeneratorMethod_Yield ::= '*' PropertyName_Yield '(' StrictFormalParameters_Yield ')' '{' GeneratorBody '}'
-	GeneratorDeclaration, // GeneratorDeclaration ::= 'function' '*' BindingIdentifier '(' FormalParameters_Yield ')' '{' GeneratorBody '}'
-	GeneratorDeclaration, // GeneratorDeclaration_Default ::= 'function' '*' BindingIdentifier '(' FormalParameters_Yield ')' '{' GeneratorBody '}'
-	GeneratorDeclaration, // GeneratorDeclaration_Default ::= 'function' '*' '(' FormalParameters_Yield ')' '{' GeneratorBody '}'
-	GeneratorDeclaration, // GeneratorDeclaration_Yield ::= 'function' '*' BindingIdentifier_Yield '(' FormalParameters_Yield ')' '{' GeneratorBody '}'
-	GeneratorExpression, // GeneratorExpression ::= 'function' '*' BindingIdentifier_Yield '(' FormalParameters_Yield ')' '{' GeneratorBody '}'
-	GeneratorExpression, // GeneratorExpression ::= 'function' '*' '(' FormalParameters_Yield ')' '{' GeneratorBody '}'
+	GeneratorMethod, // GeneratorMethod ::= '*' PropertyName StrictFormalParameters_Yield GeneratorBody
+	GeneratorMethod, // GeneratorMethod_Yield ::= '*' PropertyName_Yield StrictFormalParameters_Yield GeneratorBody
+	GeneratorDeclaration, // GeneratorDeclaration ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	GeneratorDeclaration, // GeneratorDeclaration_Default ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	GeneratorDeclaration, // GeneratorDeclaration_Default ::= 'function' '*' FormalParameters_Yield GeneratorBody
+	GeneratorDeclaration, // GeneratorDeclaration_Yield ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
+	GeneratorExpression, // GeneratorExpression ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
+	GeneratorExpression, // GeneratorExpression ::= 'function' '*' FormalParameters_Yield GeneratorBody
 	0, // GeneratorBody ::= FunctionBody_Yield
 	YieldExpression, // YieldExpression ::= 'yield'
 	YieldExpression, // YieldExpression ::= 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
@@ -1596,18 +1599,18 @@ var ruleNodeType = [...]NodeType{
 	0, // ClassElementList_Yield ::= ClassElement_Yield
 	0, // ClassElementList_Yield ::= ClassElementList_Yield ClassElement_Yield
 	ClassElement, // ClassElement ::= MethodDefinition
-	ClassElement, // ClassElement ::= 'static' MethodDefinition
+	StaticClassElement, // ClassElement ::= 'static' MethodDefinition
 	ClassElement, // ClassElement ::= ';'
 	ClassElement, // ClassElement_Yield ::= MethodDefinition_Yield
-	ClassElement, // ClassElement_Yield ::= 'static' MethodDefinition_Yield
+	StaticClassElement, // ClassElement_Yield ::= 'static' MethodDefinition_Yield
 	ClassElement, // ClassElement_Yield ::= ';'
 	Module, // Module ::= ModuleBodyopt
 	0, // ModuleBody ::= ModuleItemList
 	0, // ModuleItemList ::= ModuleItem
 	0, // ModuleItemList ::= ModuleItemList ModuleItem
-	ModuleItem, // ModuleItem ::= ImportDeclaration
-	ModuleItem, // ModuleItem ::= ExportDeclaration
-	ModuleItem, // ModuleItem ::= StatementListItem
+	0, // ModuleItem ::= ImportDeclaration
+	0, // ModuleItem ::= ExportDeclaration
+	0, // ModuleItem ::= StatementListItem
 	ImportDeclaration, // ImportDeclaration ::= 'import' ImportClause FromClause ';'
 	ImportDeclaration, // ImportDeclaration ::= 'import' ModuleSpecifier ';'
 	0, // ImportClause ::= ImportedDefaultBinding
@@ -1806,10 +1809,13 @@ var nodeTypeStr = [...]string{
 	"FormalParameters",
 	"FunctionRestParameter",
 	"FormalParameter",
+	"FunctionBody",
 	"ArrowFunction",
 	"ArrowParameters",
 	"ConciseBody",
 	"MethodDefinition",
+	"PropertyGetter",
+	"PropertySetter",
 	"GeneratorMethod",
 	"GeneratorDeclaration",
 	"GeneratorExpression",
@@ -1819,8 +1825,8 @@ var nodeTypeStr = [...]string{
 	"ClassHeritage",
 	"ClassBody",
 	"ClassElement",
+	"StaticClassElement",
 	"Module",
-	"ModuleItem",
 	"ImportDeclaration",
 	"NameSpaceImport",
 	"NamedImports",

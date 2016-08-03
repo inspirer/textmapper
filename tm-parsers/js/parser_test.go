@@ -10,7 +10,7 @@ import (
 var jsParseTests = []struct {
 	nt     js.NodeType
 	inputs []string
-} {
+}{
 
 	{js.IdentifierName, []string{
 		`const a = {“cc“: 5}.“cc“;`,
@@ -273,11 +273,15 @@ var jsParseTests = []struct {
 		`for (const “{b,}“ in a);`,
 	}},
 	{js.BindingProperty, []string{
-		`const {“name“, “a: {}“} = a;`,
+		`const {name, “a: {}“} = a;`,
+	}},
+	{js.BindingElement, []string{
+		`let [oth, “[A]“, “{a}“] = y;`,
 	}},
 	{js.SingleNameBinding, []string{
 		`const {“name“} = a;`,
 		`let [“name“] = a;`,
+		`let [“oth“, [“A“], {“a“}] = y;`,
 	}},
 	{js.ArrayBindingPattern, []string{
 		`var “[]“ = x;`,
@@ -291,9 +295,6 @@ var jsParseTests = []struct {
 	{js.BindingRestElement, []string{
 		`let [x, “...rest“] = y;`,
 		`let [“...oth“] = y;`,
-	}},
-	{js.BindingElement, []string{
-		`let [“oth“, “[«A»]“, “{a}“] = y;`,
 	}},
 	{js.EmptyStatement, []string{
 		`“;“`,
@@ -432,10 +433,10 @@ var jsParseTests = []struct {
 		`(“function let() { a++; }“)();`,
 	}},
 	{js.FormalParameters, []string{
-		`(function(“a,b,c“) { yield = 1; })();`,
-		`(function(““) { yield = 1; })();`,
-		`export default function(““) { yield = 1; };`,
-		`function q(“...a“) {}`,
+		`(function“(a,b,c)“ { yield = 1; })();`,
+		`(function“()“ { yield = 1; })();`,
+		`export default function“()“ { yield = 1; };`,
+		`function q“(...a)“ {}`,
 	}},
 	{js.FunctionRestParameter, []string{
 		`function q(“...a“) {}`,
@@ -457,10 +458,15 @@ var jsParseTests = []struct {
 		`(a => “a + 1“)(1);`,
 		`((a,b) => “{ return a*b; }“)(1);`,
 	}},
+	{js.PropertyGetter, []string{
+		`class A { “get x() { return this.x; }“ set x(val) { this.x = val; }}`,
+	}},
+	{js.PropertySetter, []string{
+		`class A { get x() { return this.x; } “set x(val) { this.x = val; }“}`,
+	}},
 	{js.MethodDefinition, []string{
 		`({ “run(){ console.log('executed'); }“}).run();`,
 		`class A { “noop(input) {}“}`,
-		`class A { “get x() { return this.x; }“ “set x(val) { this.x = val; }“}`,
 	}},
 	{js.GeneratorMethod, []string{
 		`({“*gen(){ yield 1; yield 2; }“}).run();`,
@@ -472,6 +478,12 @@ var jsParseTests = []struct {
 	{js.GeneratorExpression, []string{
 		`(“function*(){ yield 1; yield 2; }“)();`,
 		`(“function* a(){ yield 1; yield 2; }“)();`,
+	}},
+	{js.FunctionBody, []string{
+		`(function*()“{ yield 1; yield 2; }“)();`,
+		`class A { noop(input) “{}“}`,
+		`function a() “{if (false) a();}“`,
+		`var a = function() “{if (false) a();}“;`,
 	}},
 	{js.YieldExpression, []string{
 		`function *gen(){ “yield 1“; “yield“; “yield *2“; } {}`,
@@ -511,15 +523,20 @@ var jsParseTests = []struct {
 		   “set x(val) { this.x = val}“
 		 }`,
 	}},
+	{js.StaticClassElement, []string{
+		`class A extends B {
+		   ;
+		   “static a() { return 1}“
+		   *a() { yield 1; yield 2}
+		   “static get x() { return this.x}“
+		   set x(val) { this.x = val}
+		 }`,
+	}},
 	{js.Module, []string{
 		`““`,
 		`
 		““`,
 		` “a = 4“ `,
-	}},
-	{js.ModuleItem, []string{
-		` “a = 4;“ “b=5“
-		  “function a(){}“`,
 	}},
 	{js.ImportDeclaration, []string{
 		`“import './aaa'“`,
@@ -707,7 +724,7 @@ var jsParseTests = []struct {
 }
 
 type testConsumer struct {
-	nt js.NodeType
+	nt   js.NodeType
 	test *pt.ParserTest
 }
 

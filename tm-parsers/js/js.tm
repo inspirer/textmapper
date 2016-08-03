@@ -465,9 +465,9 @@ Arguments<Yield> ::=
 @noast
 ArgumentList<Yield> ::=
 	  AssignmentExpression<+In>
-	| '...' AssignmentExpression<+In>
+	| SpreadElement
 	| ArgumentList ',' AssignmentExpression<+In>
-	| ArgumentList ',' '...' AssignmentExpression<+In>
+	| ArgumentList ',' SpreadElement
 ;
 
 @noast
@@ -692,12 +692,12 @@ BindingElisionElement<Yield> ::=
 ;
 
 BindingProperty<Yield> ::=
-	  SingleNameBinding
+	  @noast SingleNameBinding
 	| PropertyName ':' BindingElement
 ;
 
 BindingElement<Yield> ::=
-	  SingleNameBinding
+	  @noast SingleNameBinding
 	| BindingPattern Initializeropt<+In>
 ;
 
@@ -830,22 +830,21 @@ DebuggerStatement ::=
 # A.4 Functions and Classes
 
 FunctionDeclaration<Yield, Default> ::=
-	  'function' BindingIdentifier '(' FormalParameters<~Yield> ')' '{' FunctionBody<~Yield> '}'
+	  'function' BindingIdentifier FormalParameters<~Yield> FunctionBody<~Yield>
 # TODO ~Yield?
-	| [Default] 'function' '(' FormalParameters ')' '{' FunctionBody '}'
+	| [Default] 'function' FormalParameters FunctionBody
 ;
 
 FunctionExpression ::=
-	  'function' BindingIdentifier<~Yield>? '(' FormalParameters<~Yield> ')' '{' FunctionBody<~Yield> '}'
+	  'function' BindingIdentifier<~Yield>? FormalParameters<~Yield> FunctionBody<~Yield>
 ;
 
 @noast
 StrictFormalParameters<Yield> ::=
 	  FormalParameters ;
 
-@ast
 FormalParameters<Yield> ::=
-      FormalParameterList? ;
+      '(' FormalParameterList? ')' ;
 
 @noast
 FormalParameterList<Yield> ::=
@@ -867,7 +866,7 @@ FormalParameter<Yield> ::=
 	  BindingElement ;
 
 FunctionBody<Yield> ::=
-	  StatementList<+Return>? ;
+	  '{' StatementList<+Return>? '}' ;
 
 ArrowFunction<In, Yield> ::=
 	  ArrowParameters .noLineBreak '=>' ConciseBody ;
@@ -879,14 +878,14 @@ ArrowParameters<Yield> ::=
 
 ConciseBody<In> ::=
 	  AssignmentExpression<~Yield, +NoObjLiteral>
-	| '{' FunctionBody<~Yield> '}'
+	| FunctionBody<~Yield>
 ;
 
 MethodDefinition<Yield> ::=
-	  PropertyName '(' StrictFormalParameters ')' '{' FunctionBody '}'
+	  PropertyName StrictFormalParameters FunctionBody
 	| @noast GeneratorMethod
-	| 'get' PropertyName '(' ')' '{' FunctionBody '}'
-	| 'set' PropertyName '(' PropertySetParameterList ')' '{' FunctionBody '}'
+	| 'get' PropertyName '(' ')' FunctionBody								{~PropertyGetter}
+	| 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody      {~PropertySetter}
 ;
 
 @noast
@@ -894,15 +893,15 @@ PropertySetParameterList ::=
 	  FormalParameter<~Yield> ;
 
 GeneratorMethod<Yield> ::=
-	  '*' PropertyName '('StrictFormalParameters<+Yield> ')' '{' GeneratorBody '}' ;
+	  '*' PropertyName StrictFormalParameters<+Yield> GeneratorBody ;
 
 GeneratorDeclaration<Yield, Default> ::=
-	  'function' '*' BindingIdentifier '(' FormalParameters<+Yield> ')' '{' GeneratorBody '}'
-	| [Default] 'function' '*' '(' FormalParameters<+Yield> ')' '{' GeneratorBody '}'
+	  'function' '*' BindingIdentifier FormalParameters<+Yield> GeneratorBody
+	| [Default] 'function' '*' FormalParameters<+Yield> GeneratorBody
 ;
 
 GeneratorExpression ::=
-	  'function' '*' BindingIdentifier<+Yield>? '(' FormalParameters<+Yield> ')' '{' GeneratorBody '}' ;
+	  'function' '*' BindingIdentifier<+Yield>? FormalParameters<+Yield> GeneratorBody ;
 
 @noast
 GeneratorBody ::=
@@ -940,7 +939,7 @@ ClassElementList<Yield> ::=
 
 ClassElement<Yield> ::=
 	  MethodDefinition
-	| 'static' MethodDefinition
+	| 'static' MethodDefinition										{~StaticClassElement}
 	| ';'
 ;
 
@@ -959,6 +958,7 @@ ModuleItemList ::=
 	| ModuleItemList ModuleItem
 ;
 
+@noast
 ModuleItem ::=
 	  ImportDeclaration
 	| ExportDeclaration

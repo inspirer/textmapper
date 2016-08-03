@@ -3,7 +3,7 @@
 package js
 
 func (p *Parser) Parse(lexer *Lexer) bool {
-	return p.parse(0, 2719, lexer)
+	return p.parse(0, 2651, lexer)
 }
 
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
