@@ -47,7 +47,6 @@ type Lexer struct {
 	value       interface{}
 
 	State int // lexer state, modifiable
-
 ${call stateVars-}
 }
 

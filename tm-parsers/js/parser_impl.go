@@ -182,7 +182,7 @@ func (p *Parser) insertSC(state int16, offset int) {
 
 	p.afterNext = p.next
 	p.next = symbol{int32(SEMICOLON), offset, offset}
-	p.listener.Node(InsertedSemicolon, offset, offset)
+	p.listener(InsertedSemicolon, offset, offset)
 }
 
 // fetchNext fetches the next token from the lexer and puts it into "p.next".

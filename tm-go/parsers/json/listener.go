@@ -6,9 +6,7 @@ import "fmt"
 
 type NodeType int
 
-type Listener interface {
-	Node(t NodeType, offset, endoffset int)
-}
+type Listener func(t NodeType, offset, endoffset int)
 
 const (
 	JSONText NodeType = iota + 1

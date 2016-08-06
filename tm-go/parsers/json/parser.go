@@ -274,5 +274,5 @@ func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 	if nt == 0 {
 		return
 	}
-	p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
+	p.listener(nt, node.sym.offset, node.sym.endoffset)
 }

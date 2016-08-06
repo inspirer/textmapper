@@ -1096,7 +1096,7 @@ JSXChild<Yield> ::=
 
 %%
 
-${template go_lexer.stateVars-}
+${template go_lexer.stateVars}
 	token  Token // last token
 	Stack  []int // stack of JSX states, non-empty for State_jsx*
 	Opened []int // number of opened curly braces per jsxTemplate* state

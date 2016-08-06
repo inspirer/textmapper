@@ -350,7 +350,11 @@ ${end-}
 	if nt == 0 {
 		return
 	}
-	${if self->withRoles()}node.value = ${end}p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
+${if self->withRoles()-}
+	node.value = p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
+${else-}
+	p.listener(nt, node.sym.offset, node.sym.endoffset)
+${end-}
 ${else if syntax.rules.exists(r|self->hasAction(r))  || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
@@ -457,14 +461,14 @@ ${if self->withRoles()-}
 type NodeRole int
 ${end-}
 
-type Listener interface {
 ${if self->withRoles()-}
+type Listener interface {
 	Node(t NodeType, offset, endoffset int) int
 	Role(r NodeRole, node int)
-${else-}
-	Node(t NodeType, offset, endoffset int)
-${end-}
 }
+${else-}
+type Listener func(t NodeType, offset, endoffset int)
+${end-}
 
 const (
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}

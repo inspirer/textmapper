@@ -723,17 +723,6 @@ var jsParseTests = []struct {
 	}},
 }
 
-type testConsumer struct {
-	nt   js.NodeType
-	test *pt.ParserTest
-}
-
-func (c testConsumer) Node(t js.NodeType, offset, endoffset int) {
-	if t == c.nt {
-		c.test.Consume(offset, endoffset)
-	}
-}
-
 func TestParser(t *testing.T) {
 	l := new(js.Lexer)
 	p := new(js.Parser)
@@ -744,7 +733,11 @@ func TestParser(t *testing.T) {
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.nt.String(), input, t)
 			l.Init(test.Source(), test.Error)
-			p.Init(test.Error, testConsumer{tc.nt, test})
+			p.Init(test.Error, func(t js.NodeType, offset, endoffset int) {
+				if t == tc.nt {
+					test.Consume(offset, endoffset)
+				}
+			})
 			test.Done(p.Parse(l))
 		}
 	}
@@ -755,11 +748,6 @@ func TestParser(t *testing.T) {
 	}
 }
 
-type consumer struct{}
-
-func (c consumer) Node(t js.NodeType, offset, endoffset int) {
-}
-
 func BenchmarkParser(b *testing.B) {
 	l := new(js.Lexer)
 	p := new(js.Parser)
@@ -767,7 +755,7 @@ func BenchmarkParser(b *testing.B) {
 		b.Errorf("%d, %d: %s", line, offset, msg)
 	}
 
-	p.Init(onError, consumer{})
+	p.Init(onError, func(t js.NodeType, offset, endoffset int){})
 	code := []byte(jsBenchmarkCode)
 	for i := 0; i < b.N; i++ {
 		l.Init(code, onError)
