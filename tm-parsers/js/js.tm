@@ -222,9 +222,15 @@ jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
 
 jsxText: /[^{}<>]+/
 
+error:
+
 :: parser
 
 %input Module;
+
+%assert empty set(follow error & ~('}' | ')' | ',' | ';' | ']'));
+
+%generate afterErr = set(follow error);
 
 %flag In;
 %flag Yield;
@@ -236,6 +242,9 @@ jsxText: /[^{}<>]+/
 %lookahead flag NoObjLiteral = false;
 %lookahead flag NoFuncClass = false;
 %lookahead flag StartWithLet = false;
+
+SyntaxError ::=
+	  error ;
 
 IdentifierName ::=
 	  Identifier
@@ -312,6 +321,7 @@ CoverParenthesizedExpressionAndArrowParameterList<Yield> ::=
 	| '(' '...' BindingPattern ')'
 	| '(' Expression<+In> ',' '...' BindingIdentifier ')'
 	| '(' Expression<+In> ',' '...' BindingPattern ')'
+	| '(' SyntaxError ')'
 ;
 
 Literal ::=
@@ -360,9 +370,10 @@ PropertyDefinitionList<Yield> ::=
 
 PropertyDefinition<Yield> ::=
 	  IdentifierReference
-	| CoverInitializedName										{~SyntaxError}
 	| PropertyName ':' AssignmentExpression<+In>
 	| @noast MethodDefinition
+	| CoverInitializedName                                  {~SyntaxError}
+	| @noast SyntaxError
 ;
 
 @noast
@@ -602,12 +613,10 @@ BreakableStatement<Yield, Return> ::=
 
 @noast
 BlockStatement<Yield, Return> ::=
-	  Block
-;
+	  Block ;
 
 Block<Yield, Return> ::=
-	  '{' StatementList? '}'
-;
+	  '{' StatementList? '}' ;
 
 @noast
 StatementList<Yield, Return> ::=
@@ -619,11 +628,11 @@ StatementList<Yield, Return> ::=
 StatementListItem<Yield, Return> ::=
 	  Statement
 	| Declaration
+	| error ';'										        {~SyntaxError}
 ;
 
 LexicalDeclaration<In, Yield> ::=
-	  LetOrConst BindingList ';'
-;
+	  LetOrConst BindingList ';' ;
 
 @noast
 LetOrConst ::=
@@ -688,17 +697,19 @@ BindingElementList<Yield> ::=
 ;
 
 BindingElisionElement<Yield> ::=
-	  Elisionopt BindingElement
+	  Elision? BindingElement
 ;
 
 BindingProperty<Yield> ::=
 	  @noast SingleNameBinding
 	| PropertyName ':' BindingElement
+	| @noast SyntaxError
 ;
 
 BindingElement<Yield> ::=
 	  @noast SingleNameBinding
 	| BindingPattern Initializeropt<+In>
+	| @noast SyntaxError
 ;
 
 SingleNameBinding<Yield> ::=
@@ -1005,6 +1016,7 @@ ImportsList ::=
 ImportSpecifier ::=
 	  ImportedBinding
 	| IdentifierName 'as' ImportedBinding
+	| error                                                 {~SyntaxError}
 ;
 
 ModuleSpecifier ::=
@@ -1040,6 +1052,7 @@ ExportsList ::=
 ExportSpecifier ::=
 	  IdentifierName
 	| IdentifierName 'as' IdentifierName
+	| error                                                 {~SyntaxError}
 ;
 
 # Extensions
@@ -1217,4 +1230,7 @@ func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.targ
 ${end-}
 
 ${call go_parser.applyRule-}
+${if self->go_parser.hasRecovering()}
+const errSymbol = ${syntax.error.index}
+${end-}
 ${end}

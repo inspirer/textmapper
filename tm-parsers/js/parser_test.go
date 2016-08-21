@@ -66,9 +66,6 @@ var jsParseTests = []struct {
 	{js.PropertyDefinition, []string{
 		`{} ({“a“,“b: 1 in {}“, f() {}, });`,
 	}},
-	{js.SyntaxError, []string{
-		`{a=b;} ({“a = b“});`,
-	}},
 	{js.LiteralPropertyName, []string{
 		`{} ({a,“b“: 1 in {}, “f“() {}, get “d“() { return 1;}});`,
 		`{} ({* “d“() { yield 1;}});`,
@@ -605,7 +602,7 @@ var jsParseTests = []struct {
 		`{1«»} (1+2)«»`,
 		`{1«»} (1+2)«»
 		  3«»`,
-		`{1«»} (1+2) 3 /*fails*/`,
+		`{1«»} (1+2) §3«»`, /* recovers */
 
 		/* 'for' semicolons are not insertable */
 		`/*no expectations*/ for (
@@ -615,14 +612,14 @@ var jsParseTests = []struct {
 		`/*no expectations*/ for (;;
      ) {}`,
 		`/*no expectations*/ for (a; b
-		) /*fails*/`,
+		§)«» `, /* recovers */
 
 		/* 'empty statement' semicolons are not insertable */
-		`/*no expectations*/ if (true) /*fails*/`,
+		`/*no expectations*/ if (true) /*fails*/§`,
 		`if (a > b);
      else c = d«»`,
-		`/*no expectations*/ if (a > b)
-     else c = d /*fails*/`,
+		`if (a > b)
+     §else c = d«»`, /* recovers */
 
 		/* Can parse without a semicolon */
 		`a = b + c   /* not here */
@@ -633,7 +630,7 @@ var jsParseTests = []struct {
 		/* restricted productions: ArrowFunction */
 		`a = b=>b+1«»`,
 		`a = b«»
-		  =>b+1 /*fails*/`,
+		  §=>b+1«»`, /* recovers */
 
 		/* restricted productions: Yield */
 		`function *a() { yield«» }`,
@@ -641,13 +638,13 @@ var jsParseTests = []struct {
 		`function *a() { yield«»
 		                 a+b«»}`,
 		`function *a() { yield«»
-		                 *l} /*fails*/`,
+		                 §*l«» }`, /* recovers */
 
 		/* restricted productions: PostfixExpression */
 		`a = b«»
      ++c«»`,
 		`a = b«»
-     --«» /*fails*/`,
+     --«»§`, /* recovers */
 
 		/* restricted productions: ReturnStatement */
 		` function a(){ return«» }`,
@@ -673,7 +670,7 @@ var jsParseTests = []struct {
 		/* restricted productions: ThrowStatement */
 		`throw A«»`,
 		`throw«»
-     A /*fails*/`,
+     §A«»`, /* recovers */
 	}},
 
 	// JSX
@@ -721,6 +718,48 @@ var jsParseTests = []struct {
 		`var a = <A:A>«<a/>»bb«{1}»</A:A>;`,
 		`/*no expectations*/ var a = <A:A></A:A>;`,
 	}},
+
+	// Error Recovery
+	{js.SyntaxError, []string{
+		// Parenthesized expressions
+		`a = («5+»§)`,
+		`a = («a.b[10].»§)`,
+		`a = («a,»§) => b;`,
+
+		// Semicolon insertion during recovery.
+		`{1} «(1+2) §3»`,
+
+		// Statements
+		`function a() {
+		   «var a = 1+» /* inserted semicolon */
+		   §«var b = 2+§;»
+		   «var c = 2+
+		   a §= b;»
+		   b = a;
+		 }`,
+
+		// Binding
+		`function a(i) {
+		   let {b: [e,«...»§]} = i;
+		   let {c: [«...»§]} = i;
+		 }`,
+		`function a(i) {
+		   let {a: [ §«888»,b,c], c:{q} } = i;
+		 }`,
+		`function a(i) {
+		   let {a: [q, §«888+2»,b,c], c:{p} } = i;
+		 }`,
+		`function a(i) {
+		   let { c:{««8»»§}, e:{«8:«»»§} } = i;
+		 }`,
+
+		// ObjectLiteral
+		`{a=b;} ({“a = b“});`,
+		`function a(i) {
+		   let a = {«b = 5»};
+		   let b = {««c:» »§};
+		 }`,
+	}},
 }
 
 func TestParser(t *testing.T) {
@@ -755,7 +794,7 @@ func BenchmarkParser(b *testing.B) {
 		b.Errorf("%d, %d: %s", line, offset, msg)
 	}
 
-	p.Init(onError, func(t js.NodeType, offset, endoffset int){})
+	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
 	code := []byte(jsBenchmarkCode)
 	for i := 0; i < b.N; i++ {
 		l.Init(code, onError)

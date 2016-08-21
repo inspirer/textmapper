@@ -13,6 +13,7 @@ type Parser struct {
 	lexer     *Lexer
 	next      symbol
 	afterNext symbol
+	healthy   bool
 
 	lastToken Token
 	lastLine  int
@@ -28,7 +29,6 @@ type symbol struct {
 type node struct {
 	sym   symbol
 	state int16
-	value int
 }
 
 func (p *Parser) Init(err ErrorHandler, l Listener) {
@@ -51,6 +51,8 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	}
 	state := start
 	p.endState = end
+	recovering := 0
+	p.healthy = true
 
 	p.stack = append(p.stack[:0], node{state: state})
 	p.lexer = lexer
@@ -105,27 +107,76 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
 			}
+			if recovering > 0 {
+				recovering--
+			}
 		}
 
 		if action == -2 || state == -1 {
-			break
+			p.healthy = false
+			if recovering == 0 {
+				offset, endoffset := lexer.Pos()
+				line := lexer.Line()
+				p.err(line, offset, endoffset-offset, "syntax error")
+			}
+			skipToken := recovering >= 3
+			if !p.recover(skipToken) {
+				return false
+			}
+			p.healthy = true
+			state = p.stack[len(p.stack)-1].state
+			recovering = 4
 		}
 	}
 
-	if state != end {
-		offset, endoffset := lexer.Pos()
-		line := lexer.Line()
-		p.err(line, offset, endoffset-offset, "syntax error")
+	return true
+}
+
+func canRecoverOn(symbol int32) bool {
+	for _, v := range afterErr {
+		if v == symbol {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Parser) recover(skipToken bool) bool {
+	if p.next.symbol == eoiToken {
 		return false
 	}
-
-	return true
+	e := p.next.offset
+	s := e
+	for len(p.stack) > 0 && gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
+		s = p.stack[len(p.stack)-1].sym.offset
+		p.stack = p.stack[:len(p.stack)-1]
+	}
+	if len(p.stack) > 0 {
+		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
+		p.stack = append(p.stack, node{
+			sym:   symbol{errSymbol, s, e},
+			state: state,
+		})
+		if p.next.symbol == noToken || skipToken {
+			p.fetchNext()
+		}
+		for p.next.symbol != eoiToken && !canRecoverOn(p.next.symbol) {
+			p.fetchNext()
+		}
+		p.stack[len(p.stack)-1].sym.endoffset = p.next.offset
+		return true
+	}
+	return false
 }
 
 // reduceAll simulates all pending reductions and return true if the parser
 // can consume the next token. This function also returns the state of the
 // parser after the reductions have been applied.
 func (p *Parser) reduceAll() (state int16, success bool) {
+	if p.next.symbol == noToken {
+		panic("a valid next token is expected")
+	}
+
 	size := len(p.stack)
 	state = p.stack[size-1].state
 
@@ -135,10 +186,6 @@ func (p *Parser) reduceAll() (state int16, success bool) {
 	for state != p.endState {
 		action := tmAction[state]
 		if action < -2 {
-			// Lookahead is needed.
-			if p.next.symbol == noToken {
-				p.fetchNext()
-			}
 			action = lalr(action, p.next.symbol)
 		}
 
@@ -242,7 +289,11 @@ func (p *Parser) fetchNext() {
 		}
 	}
 
-	if success {
+	// When recovering from a syntax error, we cannot rely on the current state
+	// of the stack and assume that the next token won't be accepted by the
+	// parser, so in general we insert more semicolons than needed. This is
+	// exactly what we want.
+	if success && p.healthy {
 		return
 	}
 

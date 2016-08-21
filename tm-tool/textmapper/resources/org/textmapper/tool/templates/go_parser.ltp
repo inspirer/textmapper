@@ -438,7 +438,9 @@ ${foreach set in syntax.sets-}
 
 // ${set.set}
 var ${set.name} = []int32{
+${if set.elements.size() > 0-}
 	${util.format(set.elements, 16, 1)},
+${end-}
 }
 ${end-}
 ${end}

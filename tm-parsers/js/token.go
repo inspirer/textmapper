@@ -127,6 +127,7 @@ const (
 	JSXSTRINGLITERAL
 	JSXIDENTIFIER
 	JSXTEXT
+	ERROR
 
 	terminalEnd
 )
@@ -247,6 +248,7 @@ var tokenStr = [...]string{
 	"JSXSTRINGLITERAL",
 	"JSXIDENTIFIER",
 	"JSXTEXT",
+	"ERROR",
 }
 
 func (tok Token) String() string {

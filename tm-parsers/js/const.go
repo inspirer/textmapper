@@ -2,8 +2,8 @@ package js
 
 const (
 	keywordStart = IDENTIFIER + 1
-	keywordEnd = LBRACE
+	keywordEnd   = LBRACE
 
 	punctuationStart = LBRACE
-	punctuationEnd = NUMERICLITERAL
+	punctuationEnd   = NUMERICLITERAL
 )

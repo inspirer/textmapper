@@ -9,7 +9,8 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	IdentifierName NodeType = iota + 1
+	SyntaxError NodeType = iota + 1
+	IdentifierName
 	IdentifierReference
 	BindingIdentifier
 	LabelIdentifier
@@ -21,7 +22,6 @@ const (
 	SpreadElement
 	ObjectLiteral
 	PropertyDefinition
-	SyntaxError
 	LiteralPropertyName
 	ComputedPropertyName
 	CoverInitializedName
@@ -138,6 +138,7 @@ const (
 )
 
 var ruleNodeType = [...]NodeType{
+	SyntaxError, // SyntaxError ::= error
 	IdentifierName, // IdentifierName ::= Identifier
 	IdentifierName, // IdentifierName ::= 'break'
 	IdentifierName, // IdentifierName ::= 'do'
@@ -385,12 +386,14 @@ var ruleNodeType = [...]NodeType{
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' '...' BindingPattern ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' Expression_In ',' '...' BindingIdentifier ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' Expression_In ',' '...' BindingPattern ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList ::= '(' SyntaxError ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' Expression_In_Yield ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' '...' BindingIdentifier_Yield ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' '...' BindingPattern_Yield ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' Expression_In_Yield ',' '...' BindingIdentifier_Yield ')'
 	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' Expression_In_Yield ',' '...' BindingPattern_Yield ')'
+	0, // CoverParenthesizedExpressionAndArrowParameterList_Yield ::= '(' SyntaxError ')'
 	Literal, // Literal ::= 'null'
 	Literal, // Literal ::= 'true'
 	Literal, // Literal ::= 'false'
@@ -425,13 +428,15 @@ var ruleNodeType = [...]NodeType{
 	0, // PropertyDefinitionList_Yield ::= PropertyDefinition_Yield
 	0, // PropertyDefinitionList_Yield ::= PropertyDefinitionList_Yield ',' PropertyDefinition_Yield
 	PropertyDefinition, // PropertyDefinition ::= IdentifierReference
-	SyntaxError, // PropertyDefinition ::= CoverInitializedName
 	PropertyDefinition, // PropertyDefinition ::= PropertyName ':' AssignmentExpression_In
 	0, // PropertyDefinition ::= MethodDefinition
+	SyntaxError, // PropertyDefinition ::= CoverInitializedName
+	0, // PropertyDefinition ::= SyntaxError
 	PropertyDefinition, // PropertyDefinition_Yield ::= IdentifierReference_Yield
-	SyntaxError, // PropertyDefinition_Yield ::= CoverInitializedName_Yield
 	PropertyDefinition, // PropertyDefinition_Yield ::= PropertyName_Yield ':' AssignmentExpression_In_Yield
 	0, // PropertyDefinition_Yield ::= MethodDefinition_Yield
+	SyntaxError, // PropertyDefinition_Yield ::= CoverInitializedName_Yield
+	0, // PropertyDefinition_Yield ::= SyntaxError
 	0, // PropertyName ::= LiteralPropertyName
 	0, // PropertyName ::= ComputedPropertyName
 	0, // PropertyName_Yield ::= LiteralPropertyName
@@ -1299,10 +1304,13 @@ var ruleNodeType = [...]NodeType{
 	0, // StatementList_Return_Yield ::= StatementList_Return_Yield StatementListItem_Return_Yield
 	0, // StatementListItem ::= Statement
 	0, // StatementListItem ::= Declaration
+	SyntaxError, // StatementListItem ::= error ';'
 	0, // StatementListItem_Return ::= Statement_Return
 	0, // StatementListItem_Return ::= Declaration
+	SyntaxError, // StatementListItem_Return ::= error ';'
 	0, // StatementListItem_Return_Yield ::= Statement_Return_Yield
 	0, // StatementListItem_Return_Yield ::= Declaration_Yield
+	SyntaxError, // StatementListItem_Return_Yield ::= error ';'
 	LexicalDeclaration, // LexicalDeclaration_In ::= LetOrConst BindingList_In ';'
 	LexicalDeclaration, // LexicalDeclaration_In_Yield ::= LetOrConst BindingList_In_Yield ';'
 	0, // LetOrConst ::= 'let'
@@ -1365,16 +1373,22 @@ var ruleNodeType = [...]NodeType{
 	0, // BindingElementList ::= BindingElementList ',' BindingElisionElement
 	0, // BindingElementList_Yield ::= BindingElisionElement_Yield
 	0, // BindingElementList_Yield ::= BindingElementList_Yield ',' BindingElisionElement_Yield
-	BindingElisionElement, // BindingElisionElement ::= Elisionopt BindingElement
-	BindingElisionElement, // BindingElisionElement_Yield ::= Elisionopt BindingElement_Yield
+	BindingElisionElement, // BindingElisionElement ::= Elision BindingElement
+	BindingElisionElement, // BindingElisionElement ::= BindingElement
+	BindingElisionElement, // BindingElisionElement_Yield ::= Elision BindingElement_Yield
+	BindingElisionElement, // BindingElisionElement_Yield ::= BindingElement_Yield
 	0, // BindingProperty ::= SingleNameBinding
 	BindingProperty, // BindingProperty ::= PropertyName ':' BindingElement
+	0, // BindingProperty ::= SyntaxError
 	0, // BindingProperty_Yield ::= SingleNameBinding_Yield
 	BindingProperty, // BindingProperty_Yield ::= PropertyName_Yield ':' BindingElement_Yield
+	0, // BindingProperty_Yield ::= SyntaxError
 	0, // BindingElement ::= SingleNameBinding
 	BindingElement, // BindingElement ::= BindingPattern Initializeropt_In
+	0, // BindingElement ::= SyntaxError
 	0, // BindingElement_Yield ::= SingleNameBinding_Yield
 	BindingElement, // BindingElement_Yield ::= BindingPattern_Yield Initializeropt_In_Yield
+	0, // BindingElement_Yield ::= SyntaxError
 	SingleNameBinding, // SingleNameBinding ::= BindingIdentifier Initializeropt_In
 	SingleNameBinding, // SingleNameBinding_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
 	BindingRestElement, // BindingRestElement ::= '...' BindingIdentifier
@@ -1626,6 +1640,7 @@ var ruleNodeType = [...]NodeType{
 	0, // ImportsList ::= ImportsList ',' ImportSpecifier
 	ImportSpecifier, // ImportSpecifier ::= ImportedBinding
 	ImportSpecifier, // ImportSpecifier ::= IdentifierName 'as' ImportedBinding
+	SyntaxError, // ImportSpecifier ::= error
 	ModuleSpecifier, // ModuleSpecifier ::= StringLiteral
 	0, // ImportedBinding ::= BindingIdentifier
 	ExportDeclaration, // ExportDeclaration ::= 'export' '*' FromClause ';'
@@ -1643,6 +1658,7 @@ var ruleNodeType = [...]NodeType{
 	0, // ExportsList ::= ExportsList ',' ExportSpecifier
 	ExportSpecifier, // ExportSpecifier ::= IdentifierName
 	ExportSpecifier, // ExportSpecifier ::= IdentifierName 'as' IdentifierName
+	SyntaxError, // ExportSpecifier ::= error
 	0, // JSXChild_optlist ::= JSXChild_optlist JSXChild
 	0, // JSXChild_optlist ::=
 	0, // JSXChild_Yield_optlist ::= JSXChild_Yield_optlist JSXChild_Yield
@@ -1721,6 +1737,7 @@ var ruleNodeType = [...]NodeType{
 
 var nodeTypeStr = [...]string{
 	"NONE",
+	"SyntaxError",
 	"IdentifierName",
 	"IdentifierReference",
 	"BindingIdentifier",
@@ -1733,7 +1750,6 @@ var nodeTypeStr = [...]string{
 	"SpreadElement",
 	"ObjectLiteral",
 	"PropertyDefinition",
-	"SyntaxError",
 	"LiteralPropertyName",
 	"ComputedPropertyName",
 	"CoverInitializedName",
