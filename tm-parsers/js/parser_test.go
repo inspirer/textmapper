@@ -23,6 +23,9 @@ var jsParseTests = []struct {
 		`var e = “let“;`,
 		`for (; “b“ < “a“; “b“++) { };`,
 		`/*no expectations*/ var c = (function() {})();`,
+
+		// V8 runtime functions.
+		`let a = “%StringBuilderConcat“(“parts“, “len“ + 1, "")`,
 	}},
 	{js.BindingIdentifier, []string{
 		`const “a“ = 15;`,
@@ -49,6 +52,12 @@ var jsParseTests = []struct {
 	}},
 	{js.Literal, []string{
 		`c = “1“ | a[“2“] | “true“ | “false“ | “1e4“;`,
+
+		// 055 is parsed as an octal literal in 055.5
+		`“055“§.5`,
+		`“059.5“`,
+		`“09.9“`,
+		`“011“`,
 	}},
 	{js.ArrayLiteral, []string{
 		`c = “[4]“.concat(“[1, 2, 3]“);`,

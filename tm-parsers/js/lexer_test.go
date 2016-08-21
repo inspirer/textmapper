@@ -23,6 +23,10 @@ var jsLexerTests = []jsLexerTestCase{
 	`, []js.Token{
 		js.VAR, js.IDENTIFIER, js.ASSIGN, js.REGULAREXPRESSIONLITERAL,
 	}},
+	{`0000`, []js.Token{js.NUMERICLITERAL}},
+	{`0055`, []js.Token{js.NUMERICLITERAL}},
+	{`0059.5`, []js.Token{js.NUMERICLITERAL}},
+	{`095.5`, []js.Token{js.NUMERICLITERAL}},
 	{`var c = 1/2;`,
 		[]js.Token{
 			js.VAR, js.IDENTIFIER, js.ASSIGN, js.NUMERICLITERAL, js.DIV, js.NUMERICLITERAL, js.SEMICOLON,

@@ -37,7 +37,9 @@ unicodeEscapeSequence = /u(\{{hex}+\}|{hex}{4})/
 identifierStart = /{ID_Start}|$|_|\\{unicodeEscapeSequence}/
 identifierPart = /{identifierStart}|{ID_Continue}|{Join_Control}/
 
-Identifier: /{identifierStart}{identifierPart}*/    (class)
+# V8 identifiers start with a percent sign.
+# See http://stackoverflow.com/questions/11202824/what-is-in-javascript
+Identifier: /%?{identifierStart}{identifierPart}*/    (class)
 
 # Keywords.
 'break': /break/
@@ -93,13 +95,8 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 'static':	/static/
 'target':	/target/
 
-# In strict mode:
-#'implements': /implements/
-#'interface': /interface/
-#'package': /package/
-#'private': /private/
-#'protected': /protected/
-#'public': /public/
+# Strict mode keywords:
+#   implements interface package private protected public
 
 # Punctuation
 '{': /\{/
@@ -155,11 +152,17 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '**': /\*\*/
 '**=': /\*\*=/
 
+# Numeric literals starting with zero in V8:
+#   00000 == 0, 00001 = 1, 00.0 => error
+#   055 == 45, 099 == 99
+#   09.5 == 9.5, 059.5 == 59.5, 05.5 => error, 05.9 => error
+
 exp = /[eE][+-]?[0-9]+/
-NumericLiteral: /(0|[1-9][0-9]*)(\.[0-9]*)?{exp}?/
+NumericLiteral: /(0+([0-7]*[89][0-9]*)?|[1-9][0-9]*)(\.[0-9]*)?{exp}?/
 NumericLiteral: /\.[0-9]+{exp}?/
 NumericLiteral: /0[Xx]{hex}+/
 NumericLiteral: /0[oO][0-7]+/
+NumericLiteral: /0+[0-7]+/      1 # (Takes priority over the float rule above)
 NumericLiteral: /0[bB][01]+/
 
 escape = /\\([^1-9xu\n\r\u2028\u2029]|x{hex}{2}|{unicodeEscapeSequence})/
