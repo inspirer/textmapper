@@ -80,6 +80,7 @@ var doWhileStates = map[int]bool{
 	2619: true,
 }
 
+// Symbol represents a set of all terminal and non-terminal symbols of the js language.
 type Symbol int
 
 var symbolStr = [...]string{

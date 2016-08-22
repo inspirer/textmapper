@@ -25,7 +25,6 @@ type symbol struct {
 type node struct {
 	sym   symbol
 	state int8
-	value int
 }
 
 func (p *Parser) Init(err ErrorHandler, l Listener) {
@@ -40,11 +39,11 @@ const (
 	debugSyntax    = false
 )
 
-func (p *Parser) Parse(lexer *Lexer) (bool, int) {
+func (p *Parser) Parse(lexer *Lexer) bool {
 	return p.parse(1, 44, lexer)
 }
 
-func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
+func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
@@ -137,15 +136,15 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) (bool, int) {
 
 	if state != end {
 		if recovering > 0 {
-			return false, 0
+			return false
 		}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
 		p.err(line, offset, endoffset-offset, "syntax error")
-		return false, 0
+		return false
 	}
 
-	return true, p.stack[len(p.stack)-2].value
+	return true
 }
 
 const errSymbol = 17

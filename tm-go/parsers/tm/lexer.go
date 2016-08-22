@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	State_initial = 0
-	State_afterAt = 1
-	State_afterAtID = 2
+	StateInitial = 0
+	StateAfterAt = 1
+	StateAfterAtID = 2
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process

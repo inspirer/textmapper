@@ -6,9 +6,11 @@ import (
 	"fmt"
 )
 
+// Token is an enum of all terminal symbols of the tm language.
 type Token int
 
 const (
+	// Indicates a lack of the actual token.
 	UNAVAILABLE Token = iota - 1
 
 	// An end-of-input marker token.

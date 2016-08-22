@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+// Symbol represents a set of all terminal and non-terminal symbols of the json language.
 type Symbol int
 
 var symbolStr = [...]string{

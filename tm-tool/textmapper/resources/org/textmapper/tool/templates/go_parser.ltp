@@ -49,7 +49,9 @@ type symbol struct {
 type node struct {
 	sym   symbol
 	state ${self->stateType()}
+${if !self->eventBased()-}
 	value ${self->valueType()}
+${end-}
 }
 
 func (p *Parser) Init(err ErrorHandler${if self->eventBased()}, l Listener${end}) {
@@ -66,8 +68,8 @@ const (
 	debugSyntax    = false
 )
 ${foreach inp in syntax.input.select(it|it.requested)}
-func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) (bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end}) {
-${if inp.target->go.type()-}
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) ${if self->eventBased()}bool${else}(bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end})${end} {
+${if !self->eventBased() && inp.target->go.type()-}
 	ok, v := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 	val, _ := v.(${inp.target->go.type()})
 	return ok, val
@@ -77,7 +79,7 @@ ${end-}
 }
 ${end-}
 
-func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) (bool, ${self->valueType()}) {
+func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if self->eventBased()}bool${else}(bool, ${self->valueType()})${end} {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
@@ -181,16 +183,16 @@ ${end-}
 	if state != end {
 ${if self->hasRecovering()-}
 		if recovering > 0 {
-			return false, ${self->valueTypeDefaultVal()}
+			return false${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
 		}
 ${end-}
 		offset, endoffset := lexer.Pos()
 		line := lexer.Line()
 		p.err(line, offset, endoffset-offset, "syntax error")
-		return false, ${self->valueTypeDefaultVal()}
+		return false${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
 	}
 
-	return true, p.stack[len(p.stack)-2].value
+	return true${if !self->eventBased()}, p.stack[len(p.stack)-2].value${end}
 }
 ${if self->hasRecovering()-}
 
@@ -263,7 +265,7 @@ ${end}
 
 
 ${template lookahead-}
-func (p *Parser) lookahead(start, end int8) bool {
+func (p *Parser) lookahead(start, end ${self->stateType()}) bool {
 	var lexer Lexer = *p.lexer
 	lexer.err = IgnoreErrorsHandler
 
@@ -386,6 +388,7 @@ ${end-}
 ${end-}
 ${end-}
 
+// Symbol represents a set of all terminal and non-terminal symbols of the ${opts.lang} language.
 type Symbol int
 
 var symbolStr = [...]string{

@@ -56,8 +56,7 @@ func TestParser(t *testing.T) {
 					test.Consume(offset, endoffset)
 				}
 			})
-			success, _ := p.Parse(l)
-			test.Done(success)
+			test.Done(p.Parse(l))
 		}
 	}
 	for n := json.NodeType(1); n < json.NodeTypeMax; n++ {

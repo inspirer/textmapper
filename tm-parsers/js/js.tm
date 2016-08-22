@@ -1114,7 +1114,7 @@ JSXChild<Yield> ::=
 
 ${template go_lexer.stateVars}
 	token  Token // last token
-	Stack  []int // stack of JSX states, non-empty for State_jsx*
+	Stack  []int // stack of JSX states, non-empty for StateJsx*
 	Opened []int // number of opened curly braces per jsxTemplate* state
 ${end}
 
@@ -1139,7 +1139,7 @@ ${template go_lexer.onAfterNext}
 	// See the following thread for more details:
 	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
 
-	if l.State <= State_jsxTemplateDiv {
+	if l.State <= StateJsxTemplateDiv {
 		// The lowest bit of "l.State" determines how to interpret a forward
 		// slash if it happens to be the next character.
 		//   unset: start of a regular expression literal
@@ -1148,9 +1148,9 @@ ${template go_lexer.onAfterNext}
 		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
 			l.State &^= 1
 		case TEMPLATEHEAD, TEMPLATEMIDDLE:
-			l.State = State_template
+			l.State = StateTemplate
 		case TEMPLATETAIL:
-			l.State = State_div
+			l.State = StateDiv
 		case RPAREN, RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1
@@ -1166,17 +1166,17 @@ ${template go_lexer.onAfterNext}
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
 				l.Stack = append(l.Stack, l.State|1)
-				l.State = State_jsxTag
+				l.State = StateJsxTag
 			} else {
 				l.State &^= 1
 			}
 		case LBRACE:
-			if l.State >= State_jsxTemplate {
+			if l.State >= StateJsxTemplate {
 				l.Opened[len(l.Opened)-1]++
 			}
 			l.State &^= 1
 		case RBRACE:
-			if l.State >= State_jsxTemplate {
+			if l.State >= StateJsxTemplate {
 				last := len(l.Opened) - 1
 				l.Opened[last]--
 				if l.Opened[last] == 0 {
@@ -1198,25 +1198,25 @@ ${template go_lexer.onAfterNext}
 		// Handling JSX states.
 		switch token {
 		case DIV:
-			if l.State == State_jsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == State_jsxText {
-				l.State = State_jsxClosingTag
+			if l.State == StateJsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == StateJsxText {
+				l.State = StateJsxClosingTag
 				l.Stack = l.Stack[:len(l.Stack) - 1]
 			}
 		case GT:
-			if l.State == State_jsxClosingTag || l.token == DIV {
+			if l.State == StateJsxClosingTag || l.token == DIV {
 				l.State = l.Stack[len(l.Stack) - 1]
 				l.Stack = l.Stack[:len(l.Stack) - 1]
 			} else {
-					l.State = State_jsxText
+					l.State = StateJsxText
 			}
 		case LBRACE:
 			l.Opened = append(l.Opened, 1)
 			l.Stack = append(l.Stack, l.State)
-			l.State = State_jsxTemplate
+			l.State = StateJsxTemplate
 		case LT:
 			// Start a new JSX tag.
 			l.Stack = append(l.Stack, l.State)
-			l.State = State_jsxTag
+			l.State = StateJsxTag
 		}
 	}
 	l.token = token
