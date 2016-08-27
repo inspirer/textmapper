@@ -1,10 +1,10 @@
    =========================================================================
    ==  NOTICE file corresponding to the section 4 d of                    ==
    ==  the Apache License, Version 2.0,                                   ==
-   ==  in this case for the Lexer and Parser Generator distribution.      ==
+   ==  in this case for the Textmapper distribution.                      ==
    =========================================================================
 
-   Lexer and Parser Generator
+   Textmapper
    http://textmapper.org/
    Copyright 2002-2016 Evgeny Gryaznov
 
