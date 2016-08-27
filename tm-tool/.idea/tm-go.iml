@@ -4,7 +4,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../tm-go" />
     <content url="file://$MODULE_DIR$/../tm-parsers" />
-    <orderEntry type="jdk" jdkName="Go 1.6" jdkType="Go SDK" />
+    <orderEntry type="jdk" jdkName="Go 1.7" jdkType="Go SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="GOPATH &lt;tm-go&gt;" level="project" />
   </component>
