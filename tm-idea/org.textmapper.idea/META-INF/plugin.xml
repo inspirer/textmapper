@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2010-2012 Evgeny Gryaznov
+  ~ Copyright (c) 2010-2016 Evgeny Gryaznov
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 	<id>org.textmapper.idea</id>
 	<name>Textmapper</name>
 	<category>Custom Languages</category>
-	<version>0.9.5</version>
+	<version>0.9.7</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 
 	<depends>com.intellij.modules.lang</depends>
