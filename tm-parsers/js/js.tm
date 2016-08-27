@@ -37,9 +37,7 @@ unicodeEscapeSequence = /u(\{{hex}+\}|{hex}{4})/
 identifierStart = /{ID_Start}|$|_|\\{unicodeEscapeSequence}/
 identifierPart = /{identifierStart}|{ID_Continue}|{Join_Control}/
 
-# V8 identifiers start with a percent sign.
-# See http://stackoverflow.com/questions/11202824/what-is-in-javascript
-Identifier: /%?{identifierStart}{identifierPart}*/    (class)
+Identifier: /{identifierStart}{identifierPart}*/    (class)
 
 # Keywords.
 'break': /break/
@@ -276,7 +274,9 @@ IdentifierName ::=
 # A.2 Expressions
 
 IdentifierReference<Yield> ::=
-	  Identifier
+# V8 runtime functions start with a percent sign.
+# See http://stackoverflow.com/questions/11202824/what-is-in-javascript
+	  '%'? Identifier
 	| [!Yield] 'yield'
 	| [!NoLet] 'let'
 
