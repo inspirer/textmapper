@@ -337,8 +337,23 @@ class TemplateInstantiator {
 						"Cannot instantiate sets with lookahead parameters."));
 				return;
 			}
-			instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(),
-					((RhsSet) p).getArgs(), false /*fwdAll*/, false /*leftmost*/);
+			switch (((RhsSet) p).getOperation()) {
+				case Any:
+				case First:
+				case Last:
+				case Precede:
+				case Follow:
+					instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(),
+							((RhsSet) p).getArgs(), false /*fwdAll*/, false /*leftmost*/);
+					break;
+				case Complement:
+				case Intersection:
+				case Union:
+					for (RhsPart child : ((RhsSet) p).getSets()) {
+						instantiatePart(context, child, false /*leftmost*/);
+					}
+					break;
+			}
 		} else if (p instanceof RhsConditional) {
 			context.getTemplate().setTemplate();
 		} else if (leftmost && p instanceof RhsList && context.getEnvironment().hasLookahead()) {

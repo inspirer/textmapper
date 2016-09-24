@@ -197,11 +197,8 @@ class ExplicitLookaheadBuilder {
 					target = node.pickLookahead(lookaheads, true /*negated*/);
 					negated = true;
 				}
-				if (target == null) {
-					reportError(status, "Cannot decide which rule to choose after evaluating " +
-							node.getName() + ": ");
-					return;
-				}
+				if (target == null) continue;
+
 				lookaheads.remove(target);
 				cases.add(new LiLookaheadCase(node.input, negated, target));
 			}
