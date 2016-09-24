@@ -4,13 +4,14 @@ package tm
 
 import (
 	"bytes"
-	"unicode/utf8"
 	"strconv"
+	"unicode/utf8"
 )
 
+// Lexer states.
 const (
-	StateInitial = 0
-	StateAfterAt = 1
+	StateInitial   = 0
+	StateAfterAt   = 1
 	StateAfterAtID = 2
 )
 
@@ -18,6 +19,7 @@ const (
 // some part of the input.
 type ErrorHandler func(line, offset, len int, msg string)
 
+// IgnoreErrorsHandler is a no-op error handler.
 func IgnoreErrorsHandler(line, offset, len int, msg string) {}
 
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -44,7 +46,7 @@ var bomSeq = []byte{0xEF, 0xBB, 0xBF}
 // Init prepares the lexer l to tokenize source by performing the full reset
 // of the internal state.
 //
-// Note that Init may call err one or more times if there are errors in the
+// Note that Init may call err once if there is an error in the
 // first few characters of the text.
 func (l *Lexer) Init(source []byte, err ErrorHandler) {
 	l.source = source
@@ -63,7 +65,6 @@ func (l *Lexer) Init(source []byte, err ErrorHandler) {
 		l.scanOffset += len(bomSeq)
 	}
 
-skipChar:
 	l.offset = l.scanOffset
 	if l.offset < len(l.source) {
 		r, w := rune(l.source[l.offset]), 1
@@ -72,8 +73,6 @@ skipChar:
 			r, w = utf8.DecodeRune(l.source[l.offset:])
 			if r == utf8.RuneError && w == 1 || r == bom {
 				l.invalidRune(r, w)
-				l.scanOffset += w
-				goto skipChar
 			}
 		}
 		l.scanOffset += w
@@ -118,7 +117,7 @@ restart:
 			l.line++
 			l.lineOffset = l.offset
 		}
-	skipChar:
+
 		// Scan the next character.
 		// Note: the following code is inlined to avoid performance implications.
 		l.offset = l.scanOffset
@@ -129,8 +128,6 @@ restart:
 				r, w = utf8.DecodeRune(l.source[l.offset:])
 				if r == utf8.RuneError && w == 1 || r == bom {
 					l.invalidRune(r, w)
-					l.scanOffset += w
-					goto skipChar
 				}
 			}
 			l.scanOffset += w
@@ -152,7 +149,7 @@ restart:
 	rule := -state - 3
 	switch rule {
 	case 0:
-		hh := hash&63
+		hh := hash & 63
 		switch hh {
 		case 2:
 			if hash == 0x43733a82 && bytes.Equal([]byte("lookahead"), l.source[l.tokenOffset:l.offset]) {
@@ -338,13 +335,23 @@ restart:
 	space := false
 	switch rule {
 	case 0: // ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/
-		{ l.value = l.Text(); }
+		{
+			l.value = l.Text()
+		}
 	case 1: // regexp: /\/{reFirst}{reChar}*\//
-		{ text := l.Text(); l.value = text[1:len(text)-2] }
+		{
+			text := l.Text()
+			l.value = text[1 : len(text)-2]
+		}
 	case 2: // scon: /"([^\n\\"]|\\.)*"/
-		{ text := l.Text(); l.value = text[1:len(text)-2] }
+		{
+			text := l.Text()
+			l.value = text[1 : len(text)-2]
+		}
 	case 3: // icon: /\-?[0-9]+/
-		{ l.value, _ = strconv.ParseInt(l.Text(), 10, 64) }
+		{
+			l.value, _ = strconv.ParseInt(l.Text(), 10, 64)
+		}
 	case 5: // _skip: /[\n\r\t ]+/
 		space = true
 	case 6: // _skip_comment: /#.*(\r?\n)?/
@@ -384,6 +391,7 @@ func (l *Lexer) Text() string {
 	return string(l.source[l.tokenOffset:l.offset])
 }
 
+// Value returns the value associated with the last returned token.
 func (l *Lexer) Value() interface{} {
 	return l.value
 }

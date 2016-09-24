@@ -11,6 +11,7 @@ import (
 // some part of the input.
 type ErrorHandler func(line, offset, len int, msg string)
 
+// IgnoreErrorsHandler is a no-op error handler.
 func IgnoreErrorsHandler(line, offset, len int, msg string) {}
 
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -37,7 +38,7 @@ var bomSeq = []byte{0xEF, 0xBB, 0xBF}
 // Init prepares the lexer l to tokenize source by performing the full reset
 // of the internal state.
 //
-// Note that Init may call err one or more times if there are errors in the
+// Note that Init may call err once if there is an error in the
 // first few characters of the text.
 func (l *Lexer) Init(source []byte, err ErrorHandler) {
 	l.source = source
@@ -56,7 +57,6 @@ func (l *Lexer) Init(source []byte, err ErrorHandler) {
 		l.scanOffset += len(bomSeq)
 	}
 
-skipChar:
 	l.offset = l.scanOffset
 	if l.offset < len(l.source) {
 		r, w := rune(l.source[l.offset]), 1
@@ -65,8 +65,6 @@ skipChar:
 			r, w = utf8.DecodeRune(l.source[l.offset:])
 			if r == utf8.RuneError && w == 1 || r == bom {
 				l.invalidRune(r, w)
-				l.scanOffset += w
-				goto skipChar
 			}
 		}
 		l.scanOffset += w
@@ -111,7 +109,7 @@ restart:
 			l.line++
 			l.lineOffset = l.offset
 		}
-	skipChar:
+
 		// Scan the next character.
 		// Note: the following code is inlined to avoid performance implications.
 		l.offset = l.scanOffset
@@ -122,8 +120,6 @@ restart:
 				r, w = utf8.DecodeRune(l.source[l.offset:])
 				if r == utf8.RuneError && w == 1 || r == bom {
 					l.invalidRune(r, w)
-					l.scanOffset += w
-					goto skipChar
 				}
 			}
 			l.scanOffset += w
@@ -145,7 +141,7 @@ restart:
 	token := Token(-state - 3)
 	switch token {
 	case ID:
-		hh := hash&7
+		hh := hash & 7
 		switch hh {
 		case 1:
 			if hash == 0x41 && bytes.Equal([]byte("A"), l.source[l.tokenOffset:l.offset]) {
@@ -208,6 +204,7 @@ func (l *Lexer) Text() string {
 	return string(l.source[l.tokenOffset:l.offset])
 }
 
+// Value returns the value associated with the last returned token.
 func (l *Lexer) Value() interface{} {
 	return l.value
 }

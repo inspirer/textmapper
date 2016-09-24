@@ -73,7 +73,7 @@ func BenchmarkParser(b *testing.B) {
 		b.Errorf("%d, %d: %s", line, offset, msg)
 	}
 
-	p.Init(onError, func(t json.NodeType, offset, endoffset int){})
+	p.Init(onError, func(t json.NodeType, offset, endoffset int) {})
 	code := []byte(jsonExample)
 	for i := 0; i < b.N; i++ {
 		l.Init(code, onError)

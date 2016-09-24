@@ -7,18 +7,18 @@ import (
 )
 
 var noLineBreakStates = map[int]bool{
-	2: true,
-	5: true,
-	18: true,
-	73: true,
-	105: true,
-	183: true,
-	228: true,
-	467: true,
-	540: true,
-	541: true,
-	560: true,
-	737: true,
+	2:    true,
+	5:    true,
+	18:   true,
+	73:   true,
+	105:  true,
+	183:  true,
+	228:  true,
+	467:  true,
+	540:  true,
+	541:  true,
+	560:  true,
+	737:  true,
 	1060: true,
 	1234: true,
 	1302: true,
@@ -43,8 +43,8 @@ var noLineBreakStates = map[int]bool{
 const emptyStatementState = 40
 
 var forSCStates = map[int]bool{
-	960: true,
-	970: true,
+	960:  true,
+	970:  true,
 	1219: true,
 	1297: true,
 	1573: true,
@@ -510,10 +510,10 @@ var symbolStr = [...]string{
 }
 
 func (n Symbol) String() string {
-	if n < Symbol(terminalEnd) {
+	if n < Symbol(NumTokens) {
 		return Token(n).String()
 	}
-	i := int(n) - int(terminalEnd)
+	i := int(n) - int(NumTokens)
 	if i < len(symbolStr) {
 		return symbolStr[i]
 	}

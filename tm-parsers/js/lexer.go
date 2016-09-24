@@ -7,22 +7,24 @@ import (
 	"unicode/utf8"
 )
 
+// Lexer states.
 const (
-	StateInitial = 0
-	StateDiv = 1
-	StateTemplate = 2
-	StateTemplateDiv = 3
-	StateJsxTemplate = 4
+	StateInitial        = 0
+	StateDiv            = 1
+	StateTemplate       = 2
+	StateTemplateDiv    = 3
+	StateJsxTemplate    = 4
 	StateJsxTemplateDiv = 5
-	StateJsxTag = 6
-	StateJsxClosingTag = 7
-	StateJsxText = 8
+	StateJsxTag         = 6
+	StateJsxClosingTag  = 7
+	StateJsxText        = 8
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process
 // some part of the input.
 type ErrorHandler func(line, offset, len int, msg string)
 
+// IgnoreErrorsHandler is a no-op error handler.
 func IgnoreErrorsHandler(line, offset, len int, msg string) {}
 
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -53,7 +55,7 @@ var bomSeq = []byte{0xEF, 0xBB, 0xBF}
 // Init prepares the lexer l to tokenize source by performing the full reset
 // of the internal state.
 //
-// Note that Init may call err one or more times if there are errors in the
+// Note that Init may call err once if there is an error in the
 // first few characters of the text.
 func (l *Lexer) Init(source []byte, err ErrorHandler) {
 	l.source = source
@@ -75,7 +77,6 @@ func (l *Lexer) Init(source []byte, err ErrorHandler) {
 		l.scanOffset += len(bomSeq)
 	}
 
-skipChar:
 	l.offset = l.scanOffset
 	if l.offset < len(l.source) {
 		r, w := rune(l.source[l.offset]), 1
@@ -84,8 +85,6 @@ skipChar:
 			r, w = utf8.DecodeRune(l.source[l.offset:])
 			if r == utf8.RuneError && w == 1 || r == bom {
 				l.invalidRune(r, w)
-				l.scanOffset += w
-				goto skipChar
 			}
 		}
 		l.scanOffset += w
@@ -131,7 +130,7 @@ restart:
 			l.line++
 			l.lineOffset = l.offset
 		}
-	skipChar:
+
 		// Scan the next character.
 		// Note: the following code is inlined to avoid performance implications.
 		l.offset = l.scanOffset
@@ -142,8 +141,6 @@ restart:
 				r, w = utf8.DecodeRune(l.source[l.offset:])
 				if r == utf8.RuneError && w == 1 || r == bom {
 					l.invalidRune(r, w)
-					l.scanOffset += w
-					goto skipChar
 				}
 			}
 			l.scanOffset += w
@@ -165,7 +162,7 @@ restart:
 	token := Token(-state - 3)
 	switch token {
 	case IDENTIFIER:
-		hh := hash&63
+		hh := hash & 63
 		switch hh {
 		case 1:
 			if hash == 0x5c13d641 && bytes.Equal([]byte("default"), l.source[l.tokenOffset:l.offset]) {
@@ -447,8 +444,8 @@ restart:
 				l.Opened[last]--
 				if l.Opened[last] == 0 {
 					l.Opened = l.Opened[:last]
-					l.State = l.Stack[len(l.Stack) - 1]
-					l.Stack = l.Stack[:len(l.Stack) - 1]
+					l.State = l.Stack[len(l.Stack)-1]
+					l.Stack = l.Stack[:len(l.Stack)-1]
 					break
 				}
 			}
@@ -466,14 +463,14 @@ restart:
 		case DIV:
 			if l.State == StateJsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == StateJsxText {
 				l.State = StateJsxClosingTag
-				l.Stack = l.Stack[:len(l.Stack) - 1]
+				l.Stack = l.Stack[:len(l.Stack)-1]
 			}
 		case GT:
 			if l.State == StateJsxClosingTag || l.token == DIV {
-				l.State = l.Stack[len(l.Stack) - 1]
-				l.Stack = l.Stack[:len(l.Stack) - 1]
+				l.State = l.Stack[len(l.Stack)-1]
+				l.Stack = l.Stack[:len(l.Stack)-1]
 			} else {
-					l.State = StateJsxText
+				l.State = StateJsxText
 			}
 		case LBRACE:
 			l.Opened = append(l.Opened, 1)
@@ -515,6 +512,7 @@ func (l *Lexer) Text() string {
 	return string(l.source[l.tokenOffset:l.offset])
 }
 
+// Value returns the value associated with the last returned token.
 func (l *Lexer) Value() interface{} {
 	return l.value
 }

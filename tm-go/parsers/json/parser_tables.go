@@ -25,10 +25,10 @@ var symbolStr = [...]string{
 }
 
 func (n Symbol) String() string {
-	if n < Symbol(terminalEnd) {
+	if n < Symbol(NumTokens) {
 		return Token(n).String()
 	}
-	i := int(n) - int(terminalEnd)
+	i := int(n) - int(NumTokens)
 	if i < len(symbolStr) {
 		return symbolStr[i]
 	}

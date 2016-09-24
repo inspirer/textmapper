@@ -18,24 +18,23 @@ import (
 ${call imports-}
 )
 ${if syntax.lexerStates.size() > 1}
+// Lexer states.
 const (
 ${foreach state in syntax.lexerStates-}
 	${state->stateId()} = ${state.index}
 ${end-}
 )
 ${end-}
-
-// ErrorHandler is called every time a lexer or parser is unable to process
-// some part of the input.
-type ErrorHandler func(line, offset, len int, msg string)
-
-func IgnoreErrorsHandler(line, offset, len int, msg string) {}
-
+${if opts.reportInvalidTokens || opts.reportInvalidRunes}
+${call go.errorHandler-}
+${end}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
 	source []byte
+${if opts.reportInvalidTokens || opts.reportInvalidRunes-}
 	err    ErrorHandler
+${end-}
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
@@ -55,12 +54,16 @@ var bomSeq = []byte{0xEF, 0xBB, 0xBF}
 
 // Init prepares the lexer l to tokenize source by performing the full reset
 // of the internal state.
+${if opts.reportInvalidRunes-}
 //
-// Note that Init may call err one or more times if there are errors in the
+// Note that Init may call err once if there is an error in the
 // first few characters of the text.
-func (l *Lexer) Init(source []byte, err ErrorHandler) {
+${end-}
+func (l *Lexer) Init(source []byte${if opts.reportInvalidTokens || opts.reportInvalidRunes}, err ErrorHandler${end}) {
 	l.source = source
+${if opts.reportInvalidTokens || opts.reportInvalidRunes-}
 	l.err = err
+${end-}
 
 	l.ch = 0
 	l.offset = 0
@@ -76,18 +79,17 @@ ${call initStateVars-}
 		l.scanOffset += len(bomSeq)
 	}
 
-skipChar:
 	l.offset = l.scanOffset
 	if l.offset < len(l.source) {
 		r, w := rune(l.source[l.offset]), 1
 		if r >= 0x80 {
 			// not ASCII
 			r, w = utf8.DecodeRune(l.source[l.offset:])
+${if opts.reportInvalidRunes-}
 			if r == utf8.RuneError && w == 1 || r == bom {
 				l.invalidRune(r, w)
-				l.scanOffset += w
-				goto skipChar
 			}
+${end-}
 		}
 		l.scanOffset += w
 		l.ch = r
@@ -116,7 +118,11 @@ ${end-}
 		case l.ch < 0:
 			state = int(tmLexerAction[state*tmNumClasses])
 			if state == -1 {
+${if opts.reportInvalidTokens-}
 				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
+${else-}
+				return INVALIDTOKEN  // Unexpected end of input reached
+${end-}
 			}
 			continue
 		case int(l.ch) < tmRuneClassLen:
@@ -140,7 +146,7 @@ ${end-}
 			l.line++
 			l.lineOffset = l.offset
 		}
-	skipChar:
+
 		// Scan the next character.
 		// Note: the following code is inlined to avoid performance implications.
 		l.offset = l.scanOffset
@@ -149,11 +155,11 @@ ${end-}
 			if r >= 0x80 {
 				// not ASCII
 				r, w = utf8.DecodeRune(l.source[l.offset:])
+${if opts.reportInvalidRunes-}
 				if r == utf8.RuneError && w == 1 || r == bom {
 					l.invalidRune(r, w)
-					l.scanOffset += w
-					goto skipChar
 				}
+${end-}
 			}
 			l.scanOffset += w
 			l.ch = r
@@ -163,8 +169,12 @@ ${end-}
 	}
 	if state >= -2 {
 		if state == -1 {
+${if opts.reportInvalidTokens-}
 			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
 			goto restart
+${else-}
+			return INVALIDTOKEN
+${end-}
 		}
 		if state == -2 {
 			return EOI
@@ -227,7 +237,7 @@ ${end-}
 ${call onAfterNext-}
 	return token
 }
-
+${if opts.reportInvalidRunes}
 func (l *Lexer) invalidRune(r rune, w int) {
 	switch r {
 	case utf8.RuneError:
@@ -236,7 +246,7 @@ func (l *Lexer) invalidRune(r rune, w int) {
 		l.err(l.line, l.offset, w, "illegal byte order mark")
 	}
 }
-
+${end}
 // Pos returns the start and end positions of the last token returned by Next().
 func (l *Lexer) Pos() (start, end int) {
 	start = l.tokenOffset
@@ -254,6 +264,7 @@ func (l *Lexer) Text() string {
 	return string(l.source[l.tokenOffset:l.offset])
 }
 
+// Value returns the value associated with the last returned token.
 func (l *Lexer) Value() interface{} {
 	return l.value
 }
@@ -353,7 +364,6 @@ ${if action-}
 		${eval action}
 ${end-}
 ${end}
-
 
 ${cached query runeClassType() = lex.nchars < 256 ? 'uint8' : lex.nchars < 65536 ? 'uint16' : 'int32' }
 

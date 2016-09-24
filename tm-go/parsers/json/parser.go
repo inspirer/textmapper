@@ -263,9 +263,9 @@ func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 	switch rule {
 	case 32:
 		if p.lookahead(0, 42) /* EmptyObject */ {
-			node.sym.symbol = 22 /* lookahead_EmptyObject */;
+			node.sym.symbol = 22 /* lookahead_EmptyObject */
 		} else {
-			node.sym.symbol = 24 /* lookahead_notEmptyObject */;
+			node.sym.symbol = 24 /* lookahead_notEmptyObject */
 		}
 		return
 	}

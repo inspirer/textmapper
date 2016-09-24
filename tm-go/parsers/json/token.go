@@ -9,36 +9,34 @@ import (
 // Token is an enum of all terminal symbols of the json language.
 type Token int
 
+// Token values.
 const (
-	// Indicates a lack of the actual token.
 	UNAVAILABLE Token = iota - 1
-
-	// An end-of-input marker token.
 	EOI
 
 	LBRACE // {
 	RBRACE // }
 	LBRACK // [
 	RBRACK // ]
-	COLON // :
-	COMMA // ,
+	COLON  // :
+	COMMA  // ,
 	SPACE
 	MULTILINECOMMENT
 	JSONSTRING
 	JSONNUMBER
 	ID
-	NULL // null
-	TRUE // true
-	FALSE // false
+	NULL   // null
+	TRUE   // true
+	FALSE  // false
 	CHAR_A // A
 	CHAR_B // B
 	ERROR
 
-	terminalEnd
+	NumTokens
 )
 
 var tokenStr = [...]string{
-	"EOF",
+	"EOI",
 
 	"{",
 	"}",

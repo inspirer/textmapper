@@ -9,11 +9,9 @@ import (
 // Token is an enum of all terminal symbols of the js language.
 type Token int
 
+// Token values.
 const (
-	// Indicates a lack of the actual token.
 	UNAVAILABLE Token = iota - 1
-
-	// An end-of-input marker token.
 	EOI
 
 	WHITESPACE
@@ -21,104 +19,104 @@ const (
 	MULTILINECOMMENT
 	SINGLELINECOMMENT
 	IDENTIFIER
-	BREAK // break
-	CASE // case
-	CATCH // catch
-	CLASS // class
-	CONST // const
-	CONTINUE // continue
-	DEBUGGER // debugger
-	DEFAULT // default
-	DELETE // delete
-	DO // do
-	ELSE // else
-	EXPORT // export
-	EXTENDS // extends
-	FINALLY // finally
-	FOR // for
-	FUNCTION // function
-	IF // if
-	IMPORT // import
-	IN // in
-	INSTANCEOF // instanceof
-	NEW // new
-	RETURN // return
-	SUPER // super
-	SWITCH // switch
-	THIS // this
-	THROW // throw
-	TRY // try
-	TYPEOF // typeof
-	VAR // var
-	VOID // void
-	WHILE // while
-	WITH // with
-	YIELD // yield
-	AWAIT // await
-	ENUM // enum
-	NULL // null
-	TRUE // true
-	FALSE // false
-	AS // as
-	FROM // from
-	GET // get
-	LET // let
-	OF // of
-	SET // set
-	STATIC // static
-	TARGET // target
-	LBRACE // {
-	RBRACE // }
-	LPAREN // (
-	RPAREN // )
-	LBRACK // [
-	RBRACK // ]
-	DOT // .
-	DOTDOTDOT // ...
-	SEMICOLON // ;
-	COMMA // ,
-	LT // <
-	GT // >
-	LTASSIGN // <=
-	GTASSIGN // >=
-	ASSIGNASSIGN // ==
-	EXCLASSIGN // !=
+	BREAK              // break
+	CASE               // case
+	CATCH              // catch
+	CLASS              // class
+	CONST              // const
+	CONTINUE           // continue
+	DEBUGGER           // debugger
+	DEFAULT            // default
+	DELETE             // delete
+	DO                 // do
+	ELSE               // else
+	EXPORT             // export
+	EXTENDS            // extends
+	FINALLY            // finally
+	FOR                // for
+	FUNCTION           // function
+	IF                 // if
+	IMPORT             // import
+	IN                 // in
+	INSTANCEOF         // instanceof
+	NEW                // new
+	RETURN             // return
+	SUPER              // super
+	SWITCH             // switch
+	THIS               // this
+	THROW              // throw
+	TRY                // try
+	TYPEOF             // typeof
+	VAR                // var
+	VOID               // void
+	WHILE              // while
+	WITH               // with
+	YIELD              // yield
+	AWAIT              // await
+	ENUM               // enum
+	NULL               // null
+	TRUE               // true
+	FALSE              // false
+	AS                 // as
+	FROM               // from
+	GET                // get
+	LET                // let
+	OF                 // of
+	SET                // set
+	STATIC             // static
+	TARGET             // target
+	LBRACE             // {
+	RBRACE             // }
+	LPAREN             // (
+	RPAREN             // )
+	LBRACK             // [
+	RBRACK             // ]
+	DOT                // .
+	DOTDOTDOT          // ...
+	SEMICOLON          // ;
+	COMMA              // ,
+	LT                 // <
+	GT                 // >
+	LTASSIGN           // <=
+	GTASSIGN           // >=
+	ASSIGNASSIGN       // ==
+	EXCLASSIGN         // !=
 	ASSIGNASSIGNASSIGN // ===
-	EXCLASSIGNASSIGN // !==
-	PLUS // +
-	MINUS // -
-	MULT // *
-	DIV // /
-	REM // %
-	PLUSPLUS // ++
-	MINUSMINUS // --
-	LTLT // <<
-	GTGT // >>
-	GTGTGT // >>>
-	AND // &
-	OR // |
-	XOR // ^
-	EXCL // !
-	TILDE // ~
-	ANDAND // &&
-	OROR // ||
-	QUEST // ?
-	COLON // :
-	ASSIGN // =
-	PLUSASSIGN // +=
-	MINUSASSIGN // -=
-	MULTASSIGN // *=
-	DIVASSIGN // /=
-	REMASSIGN // %=
-	LTLTASSIGN // <<=
-	GTGTASSIGN // >>=
-	GTGTGTASSIGN // >>>=
-	ANDASSIGN // &=
-	ORASSIGN // |=
-	XORASSIGN // ^=
-	ASSIGNGT // =>
-	MULTMULT // **
-	MULTMULTASSIGN // **=
+	EXCLASSIGNASSIGN   // !==
+	PLUS               // +
+	MINUS              // -
+	MULT               // *
+	DIV                // /
+	REM                // %
+	PLUSPLUS           // ++
+	MINUSMINUS         // --
+	LTLT               // <<
+	GTGT               // >>
+	GTGTGT             // >>>
+	AND                // &
+	OR                 // |
+	XOR                // ^
+	EXCL               // !
+	TILDE              // ~
+	ANDAND             // &&
+	OROR               // ||
+	QUEST              // ?
+	COLON              // :
+	ASSIGN             // =
+	PLUSASSIGN         // +=
+	MINUSASSIGN        // -=
+	MULTASSIGN         // *=
+	DIVASSIGN          // /=
+	REMASSIGN          // %=
+	LTLTASSIGN         // <<=
+	GTGTASSIGN         // >>=
+	GTGTGTASSIGN       // >>>=
+	ANDASSIGN          // &=
+	ORASSIGN           // |=
+	XORASSIGN          // ^=
+	ASSIGNGT           // =>
+	MULTMULT           // **
+	MULTMULTASSIGN     // **=
 	NUMERICLITERAL
 	STRINGLITERAL
 	NOSUBSTITUTIONTEMPLATE
@@ -131,11 +129,11 @@ const (
 	JSXTEXT
 	ERROR
 
-	terminalEnd
+	NumTokens
 )
 
 var tokenStr = [...]string{
-	"EOF",
+	"EOI",
 
 	"WHITESPACE",
 	"LINETERMINATORSEQUENCE",

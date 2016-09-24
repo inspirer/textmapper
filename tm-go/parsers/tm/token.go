@@ -9,11 +9,9 @@ import (
 // Token is an enum of all terminal symbols of the tm language.
 type Token int
 
+// Token values.
 const (
-	// Indicates a lack of the actual token.
 	UNAVAILABLE Token = iota - 1
-
-	// An end-of-input marker token.
 	EOI
 
 	REGEXP
@@ -22,84 +20,84 @@ const (
 	_SKIP
 	_SKIP_COMMENT
 	_SKIP_MULTILINE
-	REM // %
+	REM              // %
 	COLONCOLONASSIGN // ::=
-	COLONCOLON // ::
-	OR // |
-	OROR // ||
-	ASSIGN // =
-	ASSIGNASSIGN // ==
-	EXCLASSIGN // !=
-	ASSIGNGT // =>
-	SEMICOLON // ;
-	DOT // .
-	COMMA // ,
-	COLON // :
-	LBRACK // [
-	RBRACK // ]
-	LPAREN // (
-	RPAREN // )
-	LBRACETILDE // {~
-	RBRACE // }
-	LT // <
-	GT // >
-	MULT // *
-	PLUS // +
-	PLUSASSIGN // +=
-	QUEST // ?
-	EXCL // !
-	TILDE // ~
-	AND // &
-	ANDAND // &&
-	DOLLAR // $
-	ATSIGN // @
+	COLONCOLON       // ::
+	OR               // |
+	OROR             // ||
+	ASSIGN           // =
+	ASSIGNASSIGN     // ==
+	EXCLASSIGN       // !=
+	ASSIGNGT         // =>
+	SEMICOLON        // ;
+	DOT              // .
+	COMMA            // ,
+	COLON            // :
+	LBRACK           // [
+	RBRACK           // ]
+	LPAREN           // (
+	RPAREN           // )
+	LBRACETILDE      // {~
+	RBRACE           // }
+	LT               // <
+	GT               // >
+	MULT             // *
+	PLUS             // +
+	PLUSASSIGN       // +=
+	QUEST            // ?
+	EXCL             // !
+	TILDE            // ~
+	AND              // &
+	ANDAND           // &&
+	DOLLAR           // $
+	ATSIGN           // @
 	ERROR
 	ID
-	LTRUE // true
-	LFALSE // false
-	LNEW // new
+	LTRUE      // true
+	LFALSE     // false
+	LNEW       // new
 	LSEPARATOR // separator
-	LAS // as
-	LIMPORT // import
-	LSET // set
-	LBRACKETS // brackets
-	LINLINE // inline
-	LPREC // prec
-	LSHIFT // shift
-	LRETURNS // returns
-	LINPUT // input
-	LLEFT // left
-	LRIGHT // right
-	LNONASSOC // nonassoc
-	LGENERATE // generate
-	LASSERT // assert
-	LEMPTY // empty
-	LNONEMPTY // nonempty
-	LGLOBAL // global
-	LEXPLICIT // explicit
+	LAS        // as
+	LIMPORT    // import
+	LSET       // set
+	LBRACKETS  // brackets
+	LINLINE    // inline
+	LPREC      // prec
+	LSHIFT     // shift
+	LRETURNS   // returns
+	LINPUT     // input
+	LLEFT      // left
+	LRIGHT     // right
+	LNONASSOC  // nonassoc
+	LGENERATE  // generate
+	LASSERT    // assert
+	LEMPTY     // empty
+	LNONEMPTY  // nonempty
+	LGLOBAL    // global
+	LEXPLICIT  // explicit
 	LLOOKAHEAD // lookahead
-	LPARAM // param
-	LFLAG // flag
-	LNOEOI // no-eoi
-	LSOFT // soft
-	LCLASS // class
+	LPARAM     // param
+	LFLAG      // flag
+	LNOEOI     // no-eoi
+	LSOFT      // soft
+	LCLASS     // class
 	LINTERFACE // interface
-	LVOID // void
-	LSPACE // space
-	LLAYOUT // layout
-	LLANGUAGE // language
-	LLALR // lalr
-	LLEXER // lexer
-	LPARSER // parser
-	LREDUCE // reduce
-	CODE // {
-	LBRACE // {
+	LVOID      // void
+	LSPACE     // space
+	LLAYOUT    // layout
+	LLANGUAGE  // language
+	LLALR      // lalr
+	LLEXER     // lexer
+	LPARSER    // parser
+	LREDUCE    // reduce
+	CODE       // {
+	LBRACE     // {
 
-	terminalEnd
+	NumTokens
 )
 
 var tokenStr = [...]string{
-	"EOF",
+	"EOI",
 
 	"REGEXP",
 	"SCON",

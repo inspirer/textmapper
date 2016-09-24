@@ -15,25 +15,29 @@ import (
 // Token is an enum of all terminal symbols of the ${opts.lang} language.
 type Token int
 
+// Token values.
 const (
-	// Indicates a lack of the actual token.
 	UNAVAILABLE Token = iota - 1
-
-	// An end-of-input marker token.
 	EOI
 
 ${for i in [1, syntax.terminals - 1]-}
 	${syntax.symbols[i]->tokenName()}${if syntax.symbols[i].isConstant()} // ${util.escape(syntax.symbols[i].getConstantValue())}${end}
 ${end-}
 
-	terminalEnd
+${if !opts.reportInvalidTokens-}
+	INVALIDTOKEN
+${end-}
+	NumTokens
 )
 
 var tokenStr = [...]string{
-	"EOF",
+	"EOI",
 
 ${for i in [1, syntax.terminals - 1]-}
 	"${util.escape(syntax.symbols[i].isConstant() ? util.escape(syntax.symbols[i].getConstantValue()) : syntax.symbols[i].id)}",
+${end-}
+${if !opts.reportInvalidTokens-}
+	"INVALID",
 ${end-}
 }
 

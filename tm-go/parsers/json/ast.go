@@ -13,4 +13,3 @@ func (literal Literal) valueType() {}
 type Field struct {
 	name string
 }
-

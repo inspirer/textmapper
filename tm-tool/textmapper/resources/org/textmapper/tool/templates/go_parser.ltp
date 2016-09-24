@@ -25,7 +25,9 @@ ${if opts.genast-}
 ${end-}
 ${call imports-}
 )
-
+${if !(opts.reportInvalidTokens || opts.reportInvalidRunes)}
+${call go.errorHandler-}
+${end}
 // Parser is a table-driven LALR parser for ${opts.lang}.
 type Parser struct {
 ${if self->eventBased()-}
@@ -398,10 +400,10 @@ ${end-}
 }
 
 func (n Symbol) String() string {
-	if n < Symbol(terminalEnd) {
+	if n < Symbol(NumTokens) {
 		return Token(n).String()
 	}
-	i := int(n) - int(terminalEnd)
+	i := int(n) - int(NumTokens)
 	if i < len(symbolStr) {
 		return symbolStr[i]
 	}
