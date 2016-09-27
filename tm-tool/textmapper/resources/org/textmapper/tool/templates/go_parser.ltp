@@ -269,7 +269,9 @@ ${end}
 ${template lookahead-}
 func (p *Parser) lookahead(start, end ${self->stateType()}) bool {
 	var lexer Lexer = *p.lexer
+${if opts.reportInvalidTokens || opts.reportInvalidRunes-}
 	lexer.err = IgnoreErrorsHandler
+${end-}
 
 	var allocated [64]node
 	state := start
