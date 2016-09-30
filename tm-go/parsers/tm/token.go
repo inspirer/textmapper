@@ -11,8 +11,8 @@ type Token int
 
 // Token values.
 const (
-	UNAVAILABLE Token = -1
-	EOI         Token = iota
+	UNAVAILABLE Token = iota - 1
+	EOI
 
 	REGEXP
 	SCON

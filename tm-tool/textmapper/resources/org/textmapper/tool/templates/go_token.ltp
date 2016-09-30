@@ -18,10 +18,12 @@ type Token int
 // Token values.
 const (
 ${if !opts.reportInvalidTokens-}
-	INVALIDTOKEN Token = -2
+	INVALIDTOKEN Token = iota-2
+	UNAVAILABLE
+${else-}
+	UNAVAILABLE Token = iota-1
 ${end-}
-	UNAVAILABLE Token = -1
-	EOI Token = iota
+	EOI
 
 ${for i in [1, syntax.terminals - 1]-}
 	${syntax.symbols[i]->tokenName()}${if syntax.symbols[i].isConstant()} // ${util.escape(syntax.symbols[i].getConstantValue())}${end}
