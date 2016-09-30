@@ -1,8 +1,8 @@
 package testing
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestSplitInput(t *testing.T) {
@@ -33,5 +33,3 @@ func TestSplitInput(t *testing.T) {
 		t.Errorf("got: %v, want: [6]", errors)
 	}
 }
-
-

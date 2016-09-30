@@ -390,10 +390,10 @@ type SyntaxProblem struct {
 	Pos
 }
 
-func (*SyntaxProblem) lexerPart() {}
+func (*SyntaxProblem) lexerPart()   {}
 func (*SyntaxProblem) grammarPart() {}
-func (*SyntaxProblem) rhsPart() {}
-func (*SyntaxProblem) expression() {}
+func (*SyntaxProblem) rhsPart()     {}
+func (*SyntaxProblem) expression()  {}
 
 type DirectiveBrackets struct {
 	Opening *Symref

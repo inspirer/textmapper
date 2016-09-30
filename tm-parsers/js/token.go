@@ -11,8 +11,8 @@ type Token int
 
 // Token values.
 const (
-	UNAVAILABLE Token = iota - 1
-	EOI
+	UNAVAILABLE Token = -1
+	EOI         Token = iota
 
 	WHITESPACE
 	LINETERMINATORSEQUENCE
