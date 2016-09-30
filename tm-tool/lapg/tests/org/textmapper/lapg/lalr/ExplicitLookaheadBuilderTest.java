@@ -160,7 +160,7 @@ public class ExplicitLookaheadBuilderTest {
 	}
 
 	@Test
-	public void testSimpleError() throws Exception {
+	public void testNoConflict() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
 		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
@@ -171,13 +171,12 @@ public class ExplicitLookaheadBuilderTest {
 				builder.lookaheadPredicate(ifB, false)
 		), builder.addNonterminal("context1", null), null);
 
-		Lookahead la2 = builder.lookahead(Collections.singletonList(
-				builder.lookaheadPredicate(ifA, true)
+		Lookahead la2 = builder.lookahead(Arrays.asList(
+				builder.lookaheadPredicate(ifA, true),
+				builder.lookaheadPredicate(ifB, false)
 		), builder.addNonterminal("context2", null), null);
 
-		// Both lookaheads have the same predicate on A.
-		expectError("Cannot decide which rule to choose after evaluating ifA: !ifA & ifB, !ifA\n",
-				la1, la2);
+		assertEquals("default -> lookahead_notifA_ifB", resolve(la1, la2));
 	}
 
 	@Test
@@ -200,6 +199,27 @@ public class ExplicitLookaheadBuilderTest {
 		// Both lookaheads have the same predicate on A.
 		expectError("Conflicting lookaheads (inconsistent nonterminal order): "
 				+ "!ifA & ifB, !ifB & ifA\n", la1, la2);
+	}
+
+	@Test
+	public void testPredicatesSharingCommonPrefix() throws Exception {
+		GrammarBuilder builder = LapgCore.createBuilder();
+
+		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
+
+		Lookahead la1 = builder.lookahead(Arrays.asList(
+				builder.lookaheadPredicate(ifA, false),
+				builder.lookaheadPredicate(ifB, true)
+		), builder.addNonterminal("context1", null), null);
+
+		Lookahead la2 = builder.lookahead(Arrays.asList(
+				builder.lookaheadPredicate(ifA, false),
+				builder.lookaheadPredicate(ifB, false)
+		), builder.addNonterminal("context2", null), null);
+
+		assertEquals("ifB -> lookahead_ifA_ifB; default -> lookahead_ifA_notifB",
+				resolve(la1, la2));
 	}
 
 	@Test
@@ -229,7 +249,7 @@ public class ExplicitLookaheadBuilderTest {
 				builder.lookaheadPredicate(ifB, true)
 		), builder.addNonterminal("context4", null), null);
 
-		expectError("Cannot decide which rule to choose after evaluating ifA: "
-				+ "!ifA & ifB, ifA & !ifB, ifA & ifB, !ifA & !ifB\n", la1, la2, la3, la4);
+		expectError("Conflicting lookaheads: !ifA & ifB, ifA & !ifB, ifA & ifB, !ifA & !ifB\n",
+				la1, la2, la3, la4);
 	}
 }
