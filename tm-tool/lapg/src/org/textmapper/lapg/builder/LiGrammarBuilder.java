@@ -124,8 +124,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (name == null) {
 			throw new NullPointerException();
 		}
-		if (name.equals("error")) {
-			throw new IllegalArgumentException("parameters cannot have name `error'");
+		if (name.equals(Symbol.ERROR) || name.equals(Symbol.INVALID_TOKEN) ||
+				name.equals(Symbol.EOI)) {
+			throw new IllegalArgumentException("parameters cannot have name `" + name + "'");
 		}
 		if (defaultValue != null) {
 			check(type, defaultValue);
@@ -646,7 +647,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		NamedSet[] setsArr = setScope.toArray(NamedSet[]::new);
 		computeSets(expansionContext, setsArr);
 
-		LiSymbol error = (LiSymbol) symScope.resolve("error");
+		LiSymbol error = (LiSymbol) symScope.resolve(Symbol.ERROR);
 		symScope.assignNames();
 		symScope.sort();
 

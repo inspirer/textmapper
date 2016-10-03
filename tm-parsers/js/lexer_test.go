@@ -2,143 +2,258 @@ package js_test
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
+	pt "github.com/inspirer/textmapper/tm-parsers/testing"
 )
 
-type jsLexerTestCase struct {
-	input    string
-	expected []js.Token
-}
+var lexerTests = []struct {
+	tok    js.Token
+	inputs []string
+}{
 
-var jsLexerTests = []jsLexerTestCase{
-	{`var c = (function() {})() // comment
-	`, []js.Token{
-		js.VAR, js.IDENTIFIER, js.ASSIGN, js.LPAREN, js.FUNCTION, js.LPAREN, js.RPAREN,
-		js.LBRACE, js.RBRACE, js.RPAREN, js.LPAREN, js.RPAREN,
+	{js.IDENTIFIER, []string{
+		`«abc» «brea» break`,
+		`«abc123»`,
+		`«_abc_»`,
 	}},
-	{`var c = /abc/ // comment
-	`, []js.Token{
-		js.VAR, js.IDENTIFIER, js.ASSIGN, js.REGULAREXPRESSIONLITERAL,
+	{js.SINGLELINECOMMENT, []string{
+		` «// abc»
+		  «// abc2»
+
+		  var i = 1; «// here too»
+
+		  «// end-of-file»
+		`,
+		`«// abc»`,
 	}},
-	{`0000`, []js.Token{js.NUMERICLITERAL}},
-	{`0055`, []js.Token{js.NUMERICLITERAL}},
-	{`0059.5`, []js.Token{js.NUMERICLITERAL}},
-	{`095.5`, []js.Token{js.NUMERICLITERAL}},
-	{`var c = 1/2;`,
-		[]js.Token{
-			js.VAR, js.IDENTIFIER, js.ASSIGN, js.NUMERICLITERAL, js.DIV, js.NUMERICLITERAL, js.SEMICOLON,
-		}},
-	{`1/2;`, []js.Token{
-		js.NUMERICLITERAL, js.DIV, js.NUMERICLITERAL, js.SEMICOLON,
+	{js.MULTILINECOMMENT, []string{
+		`1 / «/* comment */» /aa/.lastIndex`,
+		`«/**
+		   * comment
+		   */»
+		 function a() {}`,
 	}},
-	{`1 / /* comment */ /aa/.lastIndex`, []js.Token{
-		js.NUMERICLITERAL, js.DIV, js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER,
+	{js.NUMERICLITERAL, []string{
+		`«1e+9» «1.1e-9» «0xabcdefabcedef123» «123123121»  «0» -«1» `,
+		`«0000»`,
+		`«0055»`,
+		`«0059.5»`,
+		`«095.5»`,
 	}},
-	{`/aa/.lastIndex /* comment */ / 1`, []js.Token{
-		js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER, js.DIV, js.NUMERICLITERAL,
+	{js.STRINGLITERAL, []string{
+		`«'abc'» + «'Elly\'s'» `,
+		`«"abc"» `,
+		`«"ab ' and \"  c"» `,
 	}},
-	{`++/aa/`, []js.Token{
-		js.PLUSPLUS, js.REGULAREXPRESSIONLITERAL,
+
+	// Regular expressions vs division.
+	{js.REGULAREXPRESSIONLITERAL, []string{
+		`var c = «/abc/» // comment
+		`,
+		`1 / /* comment */ «/aa/».lastIndex`,
+		`«/aa/».lastIndex /* comment */ / 1`,
+		`++«/aa/».length`,
+		`--«/aa/».length`,
+		`(--
+	  «/aa/».lastIndex)`,
+		`b
+	  --«/aaa/».lastIndex`,
+		`b /= --«/aaa/».lastIndex`,
+		`typeof «/aaa/»`,
+		`(a) == «/aaa/».lastIndex`,
+		`(a) / «/aaa/».lastIndex`,
+		`[a] / «/aaa/».lastIndex`,
+		"`aa ${ «/aaa/».lastIndex / 1 }q`",
+		"`aa ${ 'aa' }q${ «/aaa/» } `",
+
+		// TODO if (a) /aaa/.compile()
 	}},
-	{`b--
-	  / 3`, []js.Token{
-		js.IDENTIFIER, js.MINUSMINUS, js.DIV, js.NUMERICLITERAL,
+	{js.DIV, []string{
+		`1 «/» /* comment */ /aa/.lastIndex`,
+		`1«/»2;`,
+		`var c = 1«/»2;`,
+		`b--
+	    «/» 3`,
+		"`a` «/»",
+		`let «/»`,
+		"`aa ${ /aaa/.lastIndex «/» 1 }q`",
 	}},
-	{`(--
-	  /aa/.lastIndex)`, []js.Token{
-		js.LPAREN, js.MINUSMINUS, js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER, js.RPAREN,
+	{js.DIVASSIGN, []string{
+		`b «/=» --/aaa/.lastIndex`,
 	}},
-	{`b
-	  --/aaa/.lastIndex`, []js.Token{
-		js.IDENTIFIER, js.MINUSMINUS, js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER,
+
+	// Templates.
+	{js.NOSUBSTITUTIONTEMPLATE, []string{
+		"«`a`»",
+		"«`a + \"B\"`»",
+		"  «`aa q`»  ",
 	}},
-	{`b /= --/aaa/.lastIndex`, []js.Token{
-		js.IDENTIFIER, js.DIVASSIGN, js.MINUSMINUS, js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER,
+	{js.TEMPLATEHEAD, []string{
+		"«`${»a}` /",
+		"«`aa ${» 'aa' }q${ /aaa/ } `",
+		"print«`aa ${» 'aa' }q${ /aaa/ } `",
 	}},
-	{`(a) == /aaa/.lastIndex`, []js.Token{
-		js.LPAREN, js.IDENTIFIER, js.RPAREN, js.ASSIGNASSIGN,
-		js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER,
+	{js.TEMPLATEMIDDLE, []string{
+		"`aa ${ 'aa' «}q${» /aaa/ } `",
 	}},
-	{`(a) / /aaa/.lastIndex`, []js.Token{
-		js.LPAREN, js.IDENTIFIER, js.RPAREN, js.DIV,
-		js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER,
+	{js.TEMPLATETAIL, []string{
+		"`${a«}`» /",
+		"`aa ${ 'aa' }q${ /aaa/ «} `»",
 	}},
-	{`[a] / /aaa/.lastIndex`, []js.Token{
-		js.LBRACK, js.IDENTIFIER, js.RBRACK, js.DIV,
-		js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER,
+
+	// Keywords.
+	{js.BREAK, []string{`«break» break2 brea hmm b`}},
+	{js.CASE, []string{`«case»`}},
+	{js.CATCH, []string{`«catch»`}},
+	{js.CLASS, []string{`«class»`}},
+	{js.CONST, []string{`«const»`}},
+	{js.CONTINUE, []string{`«continue»`}},
+	{js.DEBUGGER, []string{`«debugger»`}},
+	{js.DEFAULT, []string{`«default»`}},
+	{js.DELETE, []string{`«delete»`}},
+	{js.DO, []string{`«do»`}},
+	{js.ELSE, []string{`«else»`}},
+	{js.EXPORT, []string{`«export»`}},
+	{js.EXTENDS, []string{`«extends»`}},
+	{js.FINALLY, []string{`«finally»`}},
+	{js.FOR, []string{`«for»`}},
+	{js.FUNCTION, []string{`«function»`}},
+	{js.IF, []string{`«if»`}},
+	{js.IMPORT, []string{`«import»`}},
+	{js.IN, []string{`«in»`}},
+	{js.INSTANCEOF, []string{`«instanceof»`}},
+	{js.NEW, []string{`«new»`}},
+	{js.RETURN, []string{`«return»`}},
+	{js.SUPER, []string{`«super»`}},
+	{js.SWITCH, []string{`«switch»`}},
+	{js.THIS, []string{`«this»`}},
+	{js.THROW, []string{`«throw»`}},
+	{js.TRY, []string{`«try»`}},
+	{js.TYPEOF, []string{`«typeof»`}},
+	{js.VAR, []string{`«var»`}},
+	{js.VOID, []string{`«void»`}},
+	{js.WHILE, []string{`«while»`}},
+	{js.WITH, []string{`«with»`}},
+	{js.YIELD, []string{`«yield»`}},
+
+	// Reserved keywords.
+	{js.AWAIT, []string{`«await»`}},
+	{js.ENUM, []string{`«enum»`}},
+
+	// Literals.
+	{js.NULL, []string{`«null»`}},
+	{js.TRUE, []string{`«true»`}},
+	{js.FALSE, []string{`«false»`}},
+
+	// Soft (contextual) keywords.
+	{js.AS, []string{`«as»`}},
+	{js.FROM, []string{`«from»`}},
+	{js.GET, []string{`«get»`}},
+	{js.LET, []string{`«let»`}},
+	{js.OF, []string{`«of»`}},
+	{js.SET, []string{`«set»`}},
+	{js.STATIC, []string{`«static»`}},
+	{js.TARGET, []string{`«target»`}},
+
+	// Operators.
+	{js.LBRACE, []string{`«{»`}},
+	{js.RBRACE, []string{`«}»`}},
+	{js.LPAREN, []string{`«(»`}},
+	{js.RPAREN, []string{`«)»`}},
+	{js.LBRACK, []string{`«[»`}},
+	{js.RBRACK, []string{`«]»`}},
+	{js.DOT, []string{`«.»`}},
+	{js.DOTDOTDOT, []string{`«...»`}},
+	{js.SEMICOLON, []string{`«;»`}},
+	{js.COMMA, []string{`«,»`}},
+	{js.LT, []string{`«<»`}},
+	{js.GT, []string{`«>»`}},
+	{js.LTASSIGN, []string{`«<=»`}},
+	{js.GTASSIGN, []string{`«>=»`}},
+	{js.ASSIGNASSIGN, []string{`«==»`}},
+	{js.EXCLASSIGN, []string{`«!=»`}},
+	{js.ASSIGNASSIGNASSIGN, []string{`«===»`}},
+	{js.EXCLASSIGNASSIGN, []string{`«!==»`}},
+	{js.PLUS, []string{`«+»`}},
+	{js.MINUS, []string{`«-»`}},
+	{js.MULT, []string{`«*»`}},
+	{js.REM, []string{`«%»`}},
+	{js.PLUSPLUS, []string{`«++»`}},
+	{js.MINUSMINUS, []string{`«--»`}},
+	{js.LTLT, []string{`«<<»`}},
+	{js.GTGT, []string{`«>>»`}},
+	{js.GTGTGT, []string{`«>>>»`}},
+	{js.AND, []string{`«&»`}},
+	{js.OR, []string{`«|»`}},
+	{js.XOR, []string{`«^»`}},
+	{js.EXCL, []string{`«!»`}},
+	{js.TILDE, []string{`«~»`}},
+	{js.ANDAND, []string{`«&&» «&&»&`}},
+	{js.OROR, []string{`«||» «||»|`}},
+	{js.QUEST, []string{`«?»`}},
+	{js.COLON, []string{`«:»`}},
+	{js.ASSIGN, []string{`«=»`}},
+	{js.PLUSASSIGN, []string{`«+=»`}},
+	{js.MINUSASSIGN, []string{`«-=»`}},
+	{js.MULTASSIGN, []string{`«*=»`}},
+	{js.REMASSIGN, []string{`«%=»`}},
+	{js.LTLTASSIGN, []string{`«<<=»`}},
+	{js.GTGTASSIGN, []string{`«>>=»`}},
+	{js.GTGTGTASSIGN, []string{`«>>>=»`}},
+	{js.ANDASSIGN, []string{`«&=»`}},
+	{js.ORASSIGN, []string{`«|=»`}},
+	{js.XORASSIGN, []string{`«^=»`}},
+	{js.ASSIGNGT, []string{`«=>»`}},
+	{js.MULTMULT, []string{`«**»`}},
+	{js.MULTMULTASSIGN, []string{`«**=»`}},
+
+	{js.JSXSTRINGLITERAL, []string{`
+	<A f=«"123"»>{
+	   <B ref=«"456"» an={"789"} text=«"4 &quot; 56"»></B>
+	}</A>
+
+	`}},
+	{js.JSXIDENTIFIER, []string{`	<«A» «f»="123">{
+	   <«B» «an»={a+"789"}></«B»>
+	}</«A»>`}},
+	{js.JSXTEXT, []string{`	<A>« »{
+	   <B   >«abc
+
+	   »</B>
+	}« »</A>`}},
+
+	{js.INVALID_TOKEN, []string{
+		` «.. » `,
+		` «0x»`,
+		` «0x»`,
 	}},
-	{"  `aa q`  ", []js.Token{
-		js.NOSUBSTITUTIONTEMPLATE,
-	}},
-	{"`aa ${ /a/.lastIndex / 1 }q`", []js.Token{
-		js.TEMPLATEHEAD, js.REGULAREXPRESSIONLITERAL, js.DOT, js.IDENTIFIER,
-		js.DIV, js.NUMERICLITERAL, js.TEMPLATETAIL,
-	}},
-	{"`aa ${ 'aa' }q${ /aaa/ } `", []js.Token{
-		js.TEMPLATEHEAD, js.STRINGLITERAL, js.TEMPLATEMIDDLE,
-		js.REGULAREXPRESSIONLITERAL, js.TEMPLATETAIL,
-	}},
-	{"print`aa ${ 'aa' }q${ /aaa/ } `", []js.Token{
-		js.IDENTIFIER, js.TEMPLATEHEAD, js.STRINGLITERAL, js.TEMPLATEMIDDLE,
-		js.REGULAREXPRESSIONLITERAL, js.TEMPLATETAIL,
-	}},
-	{`typeof /aaa/`, []js.Token{
-		js.TYPEOF, js.REGULAREXPRESSIONLITERAL,
-	}},
-	{`let /`, []js.Token{
-		js.LET, js.DIV,
-	}},
-	{"`a` /", []js.Token{
-		js.NOSUBSTITUTIONTEMPLATE, js.DIV,
-	}},
-	{"`${a}` /", []js.Token{
-		js.TEMPLATEHEAD, js.IDENTIFIER, js.TEMPLATETAIL, js.DIV,
-	}},
-	// TODO if (a) /aaa/.compile()
 }
 
 func TestLexer(t *testing.T) {
-	spacesRE := regexp.MustCompile(`^[\s\n]*((\/\* comment \*\/|\/\/ comment\n)[\s\n]*)?$`)
 	l := new(js.Lexer)
-
-	for _, test := range jsLexerTests {
-		input := []byte(test.input)
-		onError := func(line, offset, len int, msg string) {
-			t.Errorf("%d, %d: %s", line, offset, msg)
+	seen := map[js.Token]bool{}
+	seen[js.WHITESPACE] = true
+	seen[js.ERROR] = true
+	for _, tc := range lexerTests {
+		seen[tc.tok] = true
+		for _, input := range tc.inputs {
+			test := pt.NewParserTest(tc.tok.String(), input, t)
+			l.Init(test.Source(), test.Error)
+			tok := l.Next()
+			for tok != js.EOI {
+				if tok == tc.tok {
+					test.Consume(l.Pos())
+				}
+				tok = l.Next()
+			}
+			test.Done(true)
 		}
-
-		l.Init(input, onError)
-
-		next := l.Next()
-		offset := 0
-		index := 0
-		for {
-			s, e := l.Pos()
-			if !spacesRE.Match(input[offset:s]) {
-				t.Errorf("Spaces expected: `%s`", input[offset:s])
-			}
-			if next == js.EOI {
-				break
-			}
-			offset = e
-			token := string(input[s:e])
-			if index >= len(test.expected) {
-				t.Errorf("token %s `%s` is not expected in `%s`", next.String(), token, input)
-				break
-			}
-			if test.expected[index] != next {
-				t.Errorf("got %s `%s`, want `%s` in `%s`", next.String(), token, test.expected[index], input)
-				break
-			}
-			index++
-			next = l.Next()
-		}
-
-		if index < len(test.expected) {
-			t.Errorf("got <none>, want `%s` in `%s`", test.expected[index], input)
+	}
+	for tok := js.EOI + 1; tok < js.NumTokens; tok++ {
+		if !seen[tok] {
+			t.Errorf("%v is not tested", tok)
 		}
 	}
 }

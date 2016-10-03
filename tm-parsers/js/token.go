@@ -15,7 +15,6 @@ const (
 	EOI
 
 	WHITESPACE
-	LINETERMINATORSEQUENCE
 	MULTILINECOMMENT
 	SINGLELINECOMMENT
 	IDENTIFIER
@@ -128,6 +127,7 @@ const (
 	JSXIDENTIFIER
 	JSXTEXT
 	ERROR
+	INVALID_TOKEN
 
 	NumTokens
 )
@@ -136,7 +136,6 @@ var tokenStr = [...]string{
 	"EOI",
 
 	"WHITESPACE",
-	"LINETERMINATORSEQUENCE",
 	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",
 	"IDENTIFIER",
@@ -249,6 +248,7 @@ var tokenStr = [...]string{
 	"JSXIDENTIFIER",
 	"JSXTEXT",
 	"ERROR",
+	"INVALID_TOKEN",
 }
 
 func (tok Token) String() string {

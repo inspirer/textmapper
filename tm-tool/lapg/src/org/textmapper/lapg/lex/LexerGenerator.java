@@ -491,7 +491,7 @@ public class LexerGenerator {
 				continue;
 			}
 
-			if (l.getSymbol().getName().equals("error")) {
+			if (l.getSymbol().getName().equals(Symbol.ERROR)) {
 				status.report(ProcessingStatus.KIND_ERROR,
 						"error token must be defined without regular expression", l);
 				success = false;

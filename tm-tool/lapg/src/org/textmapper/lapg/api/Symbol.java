@@ -22,6 +22,7 @@ public interface Symbol extends NamedElement, NamedElement.Anonymous,
 
 	String EOI = "eoi";
 	String ERROR = "error";
+	String INVALID_TOKEN = "invalid_token";
 
 	int getIndex();
 

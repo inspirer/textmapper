@@ -14,4 +14,4 @@ func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 	p.listener(nt, node.sym.offset, node.sym.endoffset)
 }
 
-const errSymbol = 114
+const errSymbol = 113

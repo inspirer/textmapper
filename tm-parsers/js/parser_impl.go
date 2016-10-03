@@ -13,6 +13,7 @@ type Parser struct {
 	lexer     *Lexer
 	next      symbol
 	afterNext symbol
+	comments  []symbol
 	healthy   bool
 
 	lastToken Token
@@ -39,15 +40,19 @@ func (p *Parser) Init(err ErrorHandler, l Listener) {
 }
 
 const (
-	startStackSize = 512
-	noToken        = int32(UNAVAILABLE)
-	eoiToken       = int32(EOI)
-	debugSyntax    = false
+	startStackSize    = 512
+	startCommentsSize = 16
+	noToken           = int32(UNAVAILABLE)
+	eoiToken          = int32(EOI)
+	debugSyntax       = false
 )
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
+	}
+	if cap(p.comments) < startCommentsSize {
+		p.comments = make([]symbol, 0, startCommentsSize)
 	}
 	state := start
 	p.endState = end
@@ -110,6 +115,9 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			if recovering > 0 {
 				recovering--
 			}
+			if len(p.comments) > 0 {
+				p.reportComments()
+			}
 		}
 
 		if action == -2 || state == -1 {
@@ -167,6 +175,17 @@ func (p *Parser) recover(skipToken bool) bool {
 		return true
 	}
 	return false
+}
+
+func (p *Parser) reportComments() {
+	for _, c := range p.comments {
+		t := Comment
+		if c.symbol == int32(MULTILINECOMMENT) {
+			t = BlockComment
+		}
+		p.listener(t, c.offset, c.endoffset)
+	}
+	p.comments = p.comments[:0]
 }
 
 // reduceAll simulates all pending reductions and return true if the parser
@@ -244,7 +263,16 @@ func (p *Parser) fetchNext() {
 
 	lastToken := p.lastToken
 	lastEnd := p.next.endoffset
+restart:
 	token := p.lexer.Next()
+	switch token {
+	case INVALID_TOKEN:
+		goto restart
+	case MULTILINECOMMENT, SINGLELINECOMMENT:
+		s, e := p.lexer.Pos()
+		p.comments = append(p.comments, symbol{int32(token), s, e})
+		goto restart
+	}
 	p.lastToken = token
 	p.next.symbol = int32(token)
 	p.next.offset, p.next.endoffset = p.lexer.Pos()

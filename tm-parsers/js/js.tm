@@ -20,11 +20,12 @@ WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 
 [initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv]
 
-LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
+# LineTerminatorSequence
+WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
 
 commentChars = /([^*]|\*+[^*\/])*\**/
-MultiLineComment:  /\/\*{commentChars}\*\// (space)
-SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/ (space)
+MultiLineComment:  /\/\*{commentChars}\*\//
+SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
 
 # Note: see http://unicode.org/reports/tr31/
 ID_Start = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
@@ -224,6 +225,7 @@ jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
 jsxText: /[^{}<>]+/
 
 error:
+invalid_token:
 
 :: parser
 
@@ -1188,6 +1190,8 @@ ${template go_lexer.onAfterNext}
 				}
 			}
 			l.State &^= 1
+		case SINGLELINECOMMENT, MULTILINECOMMENT:
+			break
 		default:
 			if token >= punctuationStart && token < punctuationEnd {
 				l.State &^= 1
@@ -1223,7 +1227,7 @@ ${template go_lexer.onAfterNext}
 	l.token = token
 ${end}
 
-${query go_parser.additionalNodeTypes() = ['InsertedSemicolon']}
+${query go_parser.additionalNodeTypes() = ['InsertedSemicolon', 'Comment', 'BlockComment']}
 
 ${template go_parser.parser-}
 package ${opts.lang}

@@ -7,11 +7,21 @@ import (
 	pt "github.com/inspirer/textmapper/tm-parsers/testing"
 )
 
-var jsParseTests = []struct {
+var parseTests = []struct {
 	nt     js.NodeType
 	inputs []string
 }{
 
+	{js.Comment, []string{
+		` «// abc»
+		  «// abc2»
+		  var i = 1;     «// 8»
+		  «// abc2»`,
+	}},
+	{js.BlockComment, []string{
+		`const a «/* te ** / st */» = 5;`,
+		`var a = 5;  «/* abc */»`,
+	}},
 	{js.IdentifierName, []string{
 		`const a = {«cc»: 5}.«cc»;`,
 		`import {«a» as b} from './Test1';`,
@@ -434,7 +444,7 @@ var jsParseTests = []struct {
 		`(function«()» { yield = 1; })();`,
 		`export default function«()» { yield = 1; };`,
 		`function q«(...a)» {}`,
-		
+
 		// in arrow functions
 		`(«a» => a + 1)(1);`,
 		`(«(a,b)» => { return a*b; })(1);`,
@@ -769,7 +779,7 @@ func TestParser(t *testing.T) {
 	p := new(js.Parser)
 
 	seen := map[js.NodeType]bool{}
-	for _, tc := range jsParseTests {
+	for _, tc := range parseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.nt.String(), input, t)

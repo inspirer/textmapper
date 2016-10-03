@@ -17,12 +17,7 @@ type Token int
 
 // Token values.
 const (
-${if !opts.reportInvalidTokens-}
-	INVALIDTOKEN Token = iota-2
-	UNAVAILABLE
-${else-}
 	UNAVAILABLE Token = iota-1
-${end-}
 	EOI
 
 ${for i in [1, syntax.terminals - 1]-}
@@ -44,13 +39,12 @@ func (tok Token) String() string {
 	if tok >= 0 && int(tok) < len(tokenStr) {
 		return tokenStr[tok]
 	}
-${if !opts.reportInvalidTokens-}
-	if tok == INVALIDTOKEN {
-		return "INVALID"
-	}
-${end-}
 	return fmt.Sprintf("token(%d)", tok)
 }
 ${end}
 
 ${cached query tokenName() = self.id->go.escapeGoReserved()}
+
+${cached query invalidTokenName() = syntax.symbols.select(s|s.name == 'invalid_token' && s.isTerm()).first()->tokenName()}
+
+${cached query hasInvalidToken() = syntax.symbols.exists(s|s.name == 'invalid_token' && s.isTerm())}

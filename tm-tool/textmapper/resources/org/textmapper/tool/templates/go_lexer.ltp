@@ -25,14 +25,14 @@ ${foreach state in syntax.lexerStates-}
 ${end-}
 )
 ${end-}
-${if opts.reportInvalidTokens || opts.reportInvalidRunes}
+${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes}
 ${call go.errorHandler-}
 ${end}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
 	source []byte
-${if opts.reportInvalidTokens || opts.reportInvalidRunes-}
+${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes-}
 	err    ErrorHandler
 ${end-}
 
@@ -59,9 +59,9 @@ ${if opts.reportInvalidRunes-}
 // Note that Init may call err once if there is an error in the
 // first few characters of the text.
 ${end-}
-func (l *Lexer) Init(source []byte${if opts.reportInvalidTokens || opts.reportInvalidRunes}, err ErrorHandler${end}) {
+func (l *Lexer) Init(source []byte${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes}, err ErrorHandler${end}) {
 	l.source = source
-${if opts.reportInvalidTokens || opts.reportInvalidRunes-}
+${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes-}
 	l.err = err
 ${end-}
 
@@ -118,10 +118,10 @@ ${end-}
 		case l.ch < 0:
 			state = int(tmLexerAction[state*tmNumClasses])
 			if state == -1 {
-${if opts.reportInvalidTokens-}
-				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
+${if self->go_token.hasInvalidToken()-}
+				return ${self->go_token.invalidTokenName()}  // Unexpected end of input reached
 ${else-}
-				return INVALIDTOKEN  // Unexpected end of input reached
+				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
 ${end-}
 			}
 			continue
@@ -169,11 +169,11 @@ ${end-}
 	}
 	if state >= -2 {
 		if state == -1 {
-${if opts.reportInvalidTokens-}
+${if self->go_token.hasInvalidToken()-}
+			return ${self->go_token.invalidTokenName()}
+${else-}
 			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
 			goto restart
-${else-}
-			return INVALIDTOKEN
 ${end-}
 		}
 		if state == -2 {

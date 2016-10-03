@@ -130,6 +130,8 @@ const (
 	JSXText
 	JSXChild
 	InsertedSemicolon
+	Comment
+	BlockComment
 	NodeTypeMax
 )
 
@@ -1858,6 +1860,8 @@ var nodeTypeStr = [...]string{
 	"JSXText",
 	"JSXChild",
 	"InsertedSemicolon",
+	"Comment",
+	"BlockComment",
 }
 
 func (t NodeType) String() string {
