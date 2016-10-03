@@ -9,12 +9,12 @@ type Parser struct {
 	err      ErrorHandler
 	listener Listener
 
-	stack     []node
-	lexer     *Lexer
-	next      symbol
-	afterNext symbol
-	comments  []symbol
-	healthy   bool
+	stack         []node
+	lexer         *Lexer
+	next          symbol
+	afterNext     symbol
+	ignoredTokens []symbol // to be reported with the next shift
+	healthy       bool
 
 	lastToken Token
 	lastLine  int
@@ -40,19 +40,21 @@ func (p *Parser) Init(err ErrorHandler, l Listener) {
 }
 
 const (
-	startStackSize    = 512
-	startCommentsSize = 16
-	noToken           = int32(UNAVAILABLE)
-	eoiToken          = int32(EOI)
-	debugSyntax       = false
+	startStackSize       = 512
+	startTokenBufferSize = 16
+	noToken              = int32(UNAVAILABLE)
+	eoiToken             = int32(EOI)
+	debugSyntax          = false
 )
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
-	if cap(p.comments) < startCommentsSize {
-		p.comments = make([]symbol, 0, startCommentsSize)
+	if cap(p.ignoredTokens) < startTokenBufferSize {
+		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
+	} else {
+		p.ignoredTokens = p.ignoredTokens[:0]
 	}
 	state := start
 	p.endState = end
@@ -109,14 +111,14 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Token(p.next.symbol), lexer.Text())
 			}
+			if len(p.ignoredTokens) > 0 {
+				p.reportIgnoredTokens()
+			}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
 			}
 			if recovering > 0 {
 				recovering--
-			}
-			if len(p.comments) > 0 {
-				p.reportComments()
 			}
 		}
 
@@ -177,15 +179,22 @@ func (p *Parser) recover(skipToken bool) bool {
 	return false
 }
 
-func (p *Parser) reportComments() {
-	for _, c := range p.comments {
-		t := Comment
-		if c.symbol == int32(MULTILINECOMMENT) {
+func (p *Parser) reportIgnoredTokens() {
+	for _, c := range p.ignoredTokens {
+		var t NodeType
+		switch Token(c.symbol) {
+		case MULTILINECOMMENT:
 			t = BlockComment
+		case SINGLELINECOMMENT:
+			t = Comment
+		case INVALID_TOKEN:
+			t = InvalidToken
+		default:
+			continue
 		}
 		p.listener(t, c.offset, c.endoffset)
 	}
-	p.comments = p.comments[:0]
+	p.ignoredTokens = p.ignoredTokens[:0]
 }
 
 // reduceAll simulates all pending reductions and return true if the parser
@@ -266,11 +275,9 @@ func (p *Parser) fetchNext() {
 restart:
 	token := p.lexer.Next()
 	switch token {
-	case INVALID_TOKEN:
-		goto restart
-	case MULTILINECOMMENT, SINGLELINECOMMENT:
+	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
 		s, e := p.lexer.Pos()
-		p.comments = append(p.comments, symbol{int32(token), s, e})
+		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(token), s, e})
 		goto restart
 	}
 	p.lastToken = token

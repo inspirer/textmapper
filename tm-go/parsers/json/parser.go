@@ -11,9 +11,10 @@ type Parser struct {
 	err      ErrorHandler
 	listener Listener
 
-	stack []node
-	lexer *Lexer
-	next  symbol
+	stack         []node
+	lexer         *Lexer
+	next          symbol
+	ignoredTokens []symbol // to be reported with the next shift
 }
 
 type symbol struct {
@@ -33,10 +34,11 @@ func (p *Parser) Init(err ErrorHandler, l Listener) {
 }
 
 const (
-	startStackSize = 512
-	noToken        = int32(UNAVAILABLE)
-	eoiToken       = int32(EOI)
-	debugSyntax    = false
+	startStackSize       = 512
+	startTokenBufferSize = 16
+	noToken              = int32(UNAVAILABLE)
+	eoiToken             = int32(EOI)
+	debugSyntax          = false
 )
 
 func (p *Parser) Parse(lexer *Lexer) bool {
@@ -47,21 +49,24 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
+	if cap(p.ignoredTokens) < startTokenBufferSize {
+		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
+	} else {
+		p.ignoredTokens = p.ignoredTokens[:0]
+	}
 	state := start
 	recovering := 0
 
 	p.stack = append(p.stack[:0], node{state: state})
 	p.lexer = lexer
-	p.next.symbol = int32(lexer.Next())
-	p.next.offset, p.next.endoffset = lexer.Pos()
+	p.fetchNext()
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.next.symbol = int32(p.lexer.Next())
-				p.next.offset, p.next.endoffset = p.lexer.Pos()
+				p.fetchNext()
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -92,8 +97,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.next.symbol = int32(lexer.Next())
-				p.next.offset, p.next.endoffset = lexer.Pos()
+				p.fetchNext()
 			}
 			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
@@ -102,6 +106,9 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 			})
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
+			}
+			if len(p.ignoredTokens) > 0 {
+				p.reportIgnoredTokens()
 			}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
@@ -120,8 +127,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 					p.err(line, offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
-					p.next.symbol = int32(p.lexer.Next())
-					p.next.offset, p.next.endoffset = lexer.Pos()
+					p.fetchNext()
 				}
 				recovering = 4
 				continue
@@ -151,8 +157,7 @@ const errSymbol = 17
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {
-		p.next.symbol = int32(p.lexer.Next())
-		p.next.offset, p.next.endoffset = p.lexer.Pos()
+		p.fetchNext()
 	}
 	if p.next.symbol == eoiToken {
 		return false
@@ -205,6 +210,29 @@ func gotoState(state int8, symbol int32) int8 {
 	return -1
 }
 
+func (p *Parser) fetchNext() {
+restart:
+	tok := p.lexer.Next()
+	switch tok {
+	case INVALID_TOKEN:
+		s, e := p.lexer.Pos()
+		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
+		goto restart
+	}
+	p.next.symbol = int32(tok)
+	p.next.offset, p.next.endoffset = p.lexer.Pos()
+}
+
+func lookaheadNext(lexer Lexer) int32 {
+restart:
+	tok := lexer.Next()
+	switch tok {
+	case INVALID_TOKEN:
+		goto restart
+	}
+	return int32(tok)
+}
+
 func (p *Parser) lookahead(start, end int8) bool {
 	var lexer Lexer = *p.lexer
 	lexer.err = IgnoreErrorsHandler
@@ -219,7 +247,7 @@ func (p *Parser) lookahead(start, end int8) bool {
 		if action < -2 {
 			// Lookahead is needed.
 			if next == noToken {
-				next = int32(lexer.Next())
+				next = lookaheadNext(lexer)
 			}
 			action = lalr(action, next)
 		}
@@ -239,7 +267,7 @@ func (p *Parser) lookahead(start, end int8) bool {
 		} else if action == -1 {
 			// Shift.
 			if next == noToken {
-				next = int32(lexer.Next())
+				next = lookaheadNext(lexer)
 			}
 			state = gotoState(state, next)
 			stack = append(stack, node{
@@ -263,9 +291,9 @@ func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 	switch rule {
 	case 32:
 		if p.lookahead(0, 42) /* EmptyObject */ {
-			node.sym.symbol = 22 /* lookahead_EmptyObject */
+			node.sym.symbol = 23 /* lookahead_EmptyObject */
 		} else {
-			node.sym.symbol = 24 /* lookahead_notEmptyObject */
+			node.sym.symbol = 25 /* lookahead_notEmptyObject */
 		}
 		return
 	}
@@ -274,4 +302,18 @@ func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 		return
 	}
 	p.listener(nt, node.sym.offset, node.sym.endoffset)
+}
+
+func (p *Parser) reportIgnoredTokens() {
+	for _, c := range p.ignoredTokens {
+		var t NodeType
+		switch Token(c.symbol) {
+		case INVALID_TOKEN:
+			t = InvalidToken
+		default:
+			continue
+		}
+		p.listener(t, c.offset, c.endoffset)
+	}
+	p.ignoredTokens = p.ignoredTokens[:0]
 }

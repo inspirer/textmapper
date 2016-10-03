@@ -91,7 +91,7 @@ restart:
 		case l.ch < 0:
 			state = int(tmLexerAction[state*tmNumClasses])
 			if state == -1 {
-				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
+				return INVALID_TOKEN // Unexpected end of input reached
 			}
 			continue
 		case int(l.ch) < tmRuneClassLen:
@@ -130,8 +130,7 @@ restart:
 	}
 	if state >= -2 {
 		if state == -1 {
-			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
-			goto restart
+			return INVALID_TOKEN
 		}
 		if state == -2 {
 			return EOI

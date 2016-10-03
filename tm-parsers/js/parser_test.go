@@ -772,6 +772,11 @@ var parseTests = []struct {
 		   let b = {««c:» »§};
 		 }`,
 	}},
+
+	{js.InvalidToken, []string{
+		`function a() { «0x »}`,
+		`/*fails*/ function a() { «0x»§`,
+	}},
 }
 
 func TestParser(t *testing.T) {

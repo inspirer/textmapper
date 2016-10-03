@@ -38,6 +38,7 @@ id: /[a-zA-Z][a-zA-Z0-9]*/ (class)
 'B': /B/
 
 error:
+invalid_token:
 
 :: parser
 

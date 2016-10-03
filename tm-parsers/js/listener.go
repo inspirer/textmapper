@@ -132,6 +132,7 @@ const (
 	InsertedSemicolon
 	Comment
 	BlockComment
+	InvalidToken
 	NodeTypeMax
 )
 
@@ -1862,6 +1863,7 @@ var nodeTypeStr = [...]string{
 	"InsertedSemicolon",
 	"Comment",
 	"BlockComment",
+	"InvalidToken",
 }
 
 func (t NodeType) String() string {

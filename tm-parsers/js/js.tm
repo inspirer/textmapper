@@ -1227,7 +1227,7 @@ ${template go_lexer.onAfterNext}
 	l.token = token
 ${end}
 
-${query go_parser.additionalNodeTypes() = ['InsertedSemicolon', 'Comment', 'BlockComment']}
+${query go_parser.additionalNodeTypes() = ['InsertedSemicolon', 'Comment', 'BlockComment', 'InvalidToken']}
 
 ${template go_parser.parser-}
 package ${opts.lang}

@@ -40,6 +40,10 @@ ${end-}
 	stack []node
 	lexer *Lexer
 	next  symbol
+${if self->reportTokens()-}
+	ignoredTokens []symbol // to be reported with the next shift
+${end-}
+${call stateVars-}
 }
 
 type symbol struct {
@@ -61,10 +65,14 @@ func (p *Parser) Init(err ErrorHandler${if self->eventBased()}, l Listener${end}
 ${if self->eventBased()-}
 	p.listener = l
 ${end-}
+${call initStateVars-}
 }
 
 const (
 	startStackSize = 512
+${if self->reportTokens()-}
+	startTokenBufferSize = 16
+${end-}
 	noToken        = int32(UNAVAILABLE)
 	eoiToken       = int32(EOI)
 	debugSyntax    = false
@@ -85,14 +93,20 @@ func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if self-
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
+${if self->reportTokens()-}
+	if cap(p.ignoredTokens) < startTokenBufferSize {
+		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
+	} else {
+	    p.ignoredTokens = p.ignoredTokens[:0]
+	}
+${end-}
 	state := start
 ${if self->hasRecovering()}	recovering := 0
 ${end-}
 
 	p.stack = append(p.stack[:0], node{state: state})
 	p.lexer = lexer
-	p.next.symbol = int32(lexer.Next())
-	p.next.offset, p.next.endoffset = lexer.Pos()
+	p.fetchNext()
 
 	for state != end {
 		action := tmAction[state]
@@ -100,8 +114,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.next.symbol = int32(p.lexer.Next())
-				p.next.offset, p.next.endoffset = p.lexer.Pos()
+				p.fetchNext()
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -133,8 +146,7 @@ ${end-}
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.next.symbol = int32(lexer.Next())
-				p.next.offset, p.next.endoffset = lexer.Pos()
+				p.fetchNext()
 			}
 			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
@@ -147,6 +159,12 @@ ${end-}
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 			}
+${if self->reportTokens()-}
+			if len(p.ignoredTokens) > 0 {
+				p.reportIgnoredTokens()
+			}
+${end-}
+${call onAfterShift-}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
 			}
@@ -167,8 +185,7 @@ ${if self->hasRecovering()-}
 					p.err(line, offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
-					p.next.symbol = int32(p.lexer.Next())
-					p.next.offset, p.next.endoffset = lexer.Pos()
+					p.fetchNext()
 				}
 				recovering = 4
 				continue
@@ -202,8 +219,7 @@ const errSymbol = ${syntax.error.index}
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {
-		p.next.symbol = int32(p.lexer.Next())
-		p.next.offset, p.next.endoffset = p.lexer.Pos()
+		p.fetchNext()
 	}
 	if p.next.symbol == eoiToken {
 		return false
@@ -259,14 +275,84 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 	return -1
 }
 
+${call fetchNext}
 ${if self->needExplicitLookahead()-}
 ${call lookahead}
 ${end-}
 ${call applyRule-}
+${if self->reportTokens()}
+${call reportIgnoredTokens-}
+${end-}
 ${end}
 
+${template fetchNext-}
+func (p *Parser) fetchNext() {
+${if self->go_token.hasInvalidToken() || self->reportTokens()-}
+restart:
+	tok := p.lexer.Next()
+	switch tok {
+${if self->reportTokens()-}
+	case ${self->tokensToIgnoreAndReport()->util.join(', ')}:
+		s, e := p.lexer.Pos()
+		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
+		goto restart
+${end-}
+${if !self->tokensToIgnoreAndReport().exists(t|t == self->go_token.invalidTokenName())-}
+	case ${self->go_token.invalidTokenName()}:
+		goto restart
+${end-}
+	}
+	p.next.symbol = int32(tok)
+${else-}
+	p.next.symbol = int32(p.lexer.Next())
+${end-}
+	p.next.offset, p.next.endoffset = p.lexer.Pos()
+}
+${end}
+
+${template reportIgnoredTokens-}
+func (p *Parser) reportIgnoredTokens() {
+	for _, c := range p.ignoredTokens {
+		var t NodeType
+		switch Token(c.symbol) {
+${foreach tok in self->tokensToIgnoreAndReport()-}
+		case ${tok}:
+			t = ${self->tokenNodeType(tok)}
+${end-}
+		default:
+			continue
+		}
+		p.listener(t, c.offset, c.endoffset)
+	}
+	p.ignoredTokens = p.ignoredTokens[:0]
+}
+${end}
+
+${template lookaheadNext-}
+func lookaheadNext(lexer Lexer) int32 {
+${if self->go_token.hasInvalidToken() || self->reportTokens()-}
+restart:
+	tok := lexer.Next()
+	switch tok {
+${if self->reportTokens()-}
+	case ${self->tokensToIgnoreAndReport()->util.join(', ')}:
+		goto restart
+${end-}
+${if !self->tokensToIgnoreAndReport().exists(t|t == self->go_token.invalidTokenName())-}
+	case ${self->go_token.invalidTokenName()}:
+		goto restart
+${end-}
+	}
+	return int32(tok)
+${else-}
+	return int32(lexer.Next())
+${end-}
+}
+${end}
 
 ${template lookahead-}
+${call lookaheadNext-}
+
 func (p *Parser) lookahead(start, end ${self->stateType()}) bool {
 	var lexer Lexer = *p.lexer
 ${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes-}
@@ -284,7 +370,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if next == noToken {
-				next = int32(lexer.Next())
+				next = lookaheadNext(lexer)
 			}
 			action = lalr(action, next)
 		}
@@ -305,7 +391,7 @@ ${end-}
 		} else if action == -1 {
 			// Shift.
 			if next == noToken {
-				next = int32(lexer.Next())
+				next = lookaheadNext(lexer)
 			}
 			state = gotoState(state, next)
 			stack = append(stack, node{
@@ -541,14 +627,25 @@ ${end}
 
 ${template imports}${end}
 
+${template onAfterShift}${end}
+
+${template stateVars}${end}
+${template initStateVars}${end}
+
 ${cached query eventBased() = opts.eventBased && !opts.genast}
 
 ${cached query withRoles() = self->eventBased() && syntax.rules.exists(r|r.hasSymbolsWithRole()) }
 
-${query additionalNodeTypes() = []}
+${query additionalNodeTypes() = self->go_token.hasInvalidToken() ? ['InvalidToken'] : []}
 
 ${query valueType() = self->eventBased() ? 'int' : 'interface{}' }
 
 ${query valueTypeDefaultVal() = self->eventBased() ? '0' : 'nil' }
 
 ${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCount < 65535 ? 'int16' : 'int32' }
+
+${cached query reportTokens() = self->tokensToIgnoreAndReport().length > 0}
+
+${query tokensToIgnoreAndReport() = self->go_token.hasInvalidToken() && self->eventBased() ? [self->go_token.invalidTokenName()] : []}
+
+${query tokenNodeType(tok) = tok == self->go_token.invalidTokenName() ? 'InvalidToken' : tok}

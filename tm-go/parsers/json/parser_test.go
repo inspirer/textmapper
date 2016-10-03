@@ -13,31 +13,34 @@ var jsParseTests = []struct {
 }{
 
 	{json.EmptyObject, []string{
-		`“{}“`,
-		`“{ /* comment */ }“`,
-		`{"aa": “{}“ }`,
+		`«{}»`,
+		`«{ /* comment */ }»`,
+		`{"aa": «{}» }`,
 	}},
 	{json.JSONObject, []string{
-		`“{ "a" : "b" }“`,
-		`“{ "a" : ["b"] }“`,
-		`“{ "a" : {} }“`,
-		`“{ "a" : «{"q":B}» }“`,
+		`«{ "a" : "b" }»`,
+		`«{ "a" : ["b"] }»`,
+		`«{ "a" : {} }»`,
+		`«{ "a" : «{"q":B}» }»`,
 	}},
 	{json.JSONArray, []string{
-		`{ "a" : “["b"]“ }`,
-		` “[]“ `,
+		`{ "a" : «["b"]» }`,
+		` «[]» `,
 	}},
 	{json.JSONText, []string{
-		`“{ "a" : ["b", A] }“`,
-		` “"aa"“ `,
-		` “A“ `,
+		`«{ "a" : ["b", A] }»`,
+		` «"aa"» `,
+		` «A» `,
 	}},
 	{json.JSONMember, []string{
-		`[{ “"a" : ["b"]“, “"q":[]“ }]`,
+		`[{ «"a" : ["b"]», «"q":[]» }]`,
 	}},
 	{json.JSONValue, []string{
-		`“{ "a" : «[«"b"»]» }“`,
-		` “"aa"“ `,
+		`«{ "a" : «[«"b"»]» }»`,
+		` «"aa"» `,
+	}},
+	{json.InvalidToken, []string{
+		`  «%» null `,
 	}},
 }
 

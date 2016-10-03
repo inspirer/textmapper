@@ -31,6 +31,7 @@ const (
 	CHAR_A // A
 	CHAR_B // B
 	ERROR
+	INVALID_TOKEN
 
 	NumTokens
 )
@@ -55,6 +56,7 @@ var tokenStr = [...]string{
 	"A",
 	"B",
 	"ERROR",
+	"INVALID_TOKEN",
 }
 
 func (tok Token) String() string {
