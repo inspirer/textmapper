@@ -22,10 +22,6 @@ var parseTests = []struct {
 		`const a «/* te ** / st */» = 5;`,
 		`var a = 5;  «/* abc */»`,
 	}},
-	{js.IdentifierName, []string{
-		`const a = {«cc»: 5}.«cc»;`,
-		`import {«a» as b} from './Test1';`,
-	}},
 	{js.IdentifierReference, []string{
 		`/*no expectations*/ const a = 15;`,
 		`/*no expectations*/ var b = 7;`,
@@ -36,6 +32,11 @@ var parseTests = []struct {
 
 		// V8 runtime functions.
 		`let a = «%StringBuilderConcat»(«parts», «len» + 1, "")`,
+
+		// IdentifierName rules
+		`const a = {cc: 5}.«cc»;`,
+		`import {«a» as b} from './Test1';`,
+		`export {«a», «b» as c} from "aa/bb"`,
 	}},
 	{js.BindingIdentifier, []string{
 		`const «a» = 15;`,
@@ -44,6 +45,16 @@ var parseTests = []struct {
 		`/*no expectations*/ for (; b < a; b++) { }`,
 		`var «c» = (function() {})();`,
 		`import {a as «b»} from './Test1';`,
+
+		// IdentifierName rules
+		`const «a» = {«cc»: 5}.cc;`,
+		`export {a, b as «c»} from "aa/bb"`,
+
+		// Catch parameter
+		`try {} catch («e») {
+		   throw e
+		 }`,
+
 	}},
 	{js.LabelIdentifier, []string{
 		`A: for (;;) {continue «A»; }`,
@@ -298,7 +309,7 @@ var parseTests = []struct {
 		`let [«name»] = a;`,
 		`let [«oth», [«A»], {«a»}] = y;`,
 	}},
-	{js.ArrayBindingPattern, []string{
+	{js.ArrayPattern, []string{
 		`var «[]» = x;`,
 		`let «[x]» = y;`,
 		`let «[x, ...rest]» = y;`,
@@ -419,11 +430,6 @@ var parseTests = []struct {
 		   log.console('done')
 		 }»`,
 	}},
-	{js.CatchParameter, []string{
-		`try {} catch («e») {
-		   throw e
-		 }`,
-	}},
 	{js.DebuggerStatement, []string{
 		`«debugger;»`,
 	}},
@@ -464,20 +470,20 @@ var parseTests = []struct {
 	{js.ConciseBody, []string{
 		`(a => «a + 1»)(1);`,
 	}},
-	{js.PropertyGetter, []string{
+	{js.Getter, []string{
 		`class A { «get x() { return this.x; }» set x(val) { this.x = val; }}`,
 	}},
-	{js.PropertySetter, []string{
+	{js.Setter, []string{
 		`class A { get x() { return this.x; } «set x(val) { this.x = val; }»}`,
 	}},
-	{js.MethodDefinition, []string{
+	{js.Method, []string{
 		`({ «run(){ console.log('executed'); }»}).run();`,
 		`class A { «noop(input) {}»}`,
 	}},
 	{js.GeneratorMethod, []string{
 		`({«*gen(){ yield 1; yield 2; }»}).run();`,
 	}},
-	{js.GeneratorDeclaration, []string{
+	{js.Generator, []string{
 		`«function *gen(){ yield 1; yield 2; }» {}`,
 		`export default «function*(){ yield 1; yield 2; }» {}`,
 	}},
@@ -494,24 +500,24 @@ var parseTests = []struct {
 		// in arrow functions
 		`((a,b) => «{ return a*b; }»)(1);`,
 	}},
-	{js.YieldExpression, []string{
+	{js.Yield, []string{
 		`function *gen(){ «yield 1»; «yield»; «yield *2»; } {}`,
 	}},
-	{js.ClassDeclaration, []string{
+	{js.Class, []string{
 		`«class A {}»`,
 		`«class A extends B {; ;}»`,
 		`«class A extends B { a() {} }»`,
 		`export default «class extends B {}»`,
 		`export default «class { get a() { return 1;}}»`,
 	}},
-	{js.ClassExpression, []string{
+	{js.ClassExpr, []string{
 		`(«class A {}»);`,
 		`(«class A extends B {; ;}»);`,
 		`(«class A extends B { a() {} }»);`,
 		`(«class extends B {}»);`,
 		`(«class { get a() { return 1;}}»);`,
 	}},
-	{js.ClassHeritage, []string{
+	{js.Extends, []string{
 		`class A «extends B» {; ;}`,
 		`class A «extends compose(B,C)» {}`,
 		`(class «extends (A)» {});`,
@@ -523,16 +529,12 @@ var parseTests = []struct {
 		   a() { return 1}
 		 }»`,
 	}},
-	{js.ClassElement, []string{
+	{js.EmptyDecl, []string{
 		`class A extends B {
-		   «;»
-		   «a() { return 1}»
-		   «*a() { yield 1; yield 2}»
-		   «get x() { return this.x}»
-		   «set x(val) { this.x = val}»
+		   «;» «;»
 		 }`,
 	}},
-	{js.StaticClassElement, []string{
+	{js.StaticMethod, []string{
 		`class A extends B {
 		   ;
 		   «static a() { return 1}»

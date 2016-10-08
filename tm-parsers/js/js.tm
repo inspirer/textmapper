@@ -249,6 +249,7 @@ invalid_token:
 SyntaxError ::=
     error ;
 
+@noast
 IdentifierName ::=
     Identifier
 
@@ -271,6 +272,14 @@ IdentifierName ::=
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target'
+;
+
+IdentifierNameDecl ::=
+    IdentifierName                                         {~BindingIdentifier}
+;
+
+IdentifierNameRef ::=
+     IdentifierName                                        {~IdentifierReference}
 ;
 
 # A.2 Expressions
@@ -388,7 +397,7 @@ PropertyName<Yield> ::=
 ;
 
 LiteralPropertyName ::=
-    IdentifierName
+    IdentifierNameDecl
   | StringLiteral
   | NumericLiteral
 ;
@@ -428,7 +437,7 @@ MemberExpression<Yield, flag NoLetOnly = false> ::=
   | [StartWithLet && !NoLetOnly] 'let'                    {~IdentifierReference}
   | [StartWithLet] MemberExpression<+NoLetOnly> '[' Expression<+In> ']'            {~IndexAccess}
   | [!StartWithLet] MemberExpression<NoLetOnly: NoLetSq> '[' Expression<+In> ']'   {~IndexAccess}
-  | MemberExpression '.' IdentifierName                   {~PropertyAccess}
+  | MemberExpression '.' IdentifierNameRef                {~PropertyAccess}
   | MemberExpression TemplateLiteral                      {~TaggedTemplate}
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
@@ -441,7 +450,7 @@ SuperExpression ::=
 
 SuperProperty<Yield> ::=
     SuperExpression '[' Expression<+In> ']'               {~IndexAccess}
-  | SuperExpression '.' IdentifierName                    {~PropertyAccess}
+  | SuperExpression '.' IdentifierNameRef                 {~PropertyAccess}
 ;
 
 @noast
@@ -461,7 +470,7 @@ CallExpression<Yield> ::=
   | [!StartWithLet] SuperCall
   | CallExpression Arguments
   | CallExpression '[' Expression<+In> ']'                {~IndexAccess}
-  | CallExpression '.' IdentifierName                     {~PropertyAccess}
+  | CallExpression '.' IdentifierNameRef                  {~PropertyAccess}
   | CallExpression TemplateLiteral                        {~TaggedTemplate}
 ;
 
@@ -680,9 +689,9 @@ ObjectBindingPattern<Yield> ::=
 ;
 
 ArrayBindingPattern<Yield> ::=
-    '[' Elisionopt BindingRestElementopt ']'
-  | '[' BindingElementList ']'
-  | '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'
+    '[' Elisionopt BindingRestElementopt ']'                            {~ArrayPattern}
+  | '[' BindingElementList ']'                                          {~ArrayPattern}
+  | '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'     {~ArrayPattern}
 ;
 
 @noast
@@ -831,6 +840,7 @@ Finally<Yield, Return> ::=
     'finally' Block
 ;
 
+@noast
 CatchParameter<Yield> ::=
     BindingIdentifier
   | BindingPattern
@@ -899,10 +909,10 @@ ConciseBody<In> ::=
 ;
 
 MethodDefinition<Yield> ::=
-    PropertyName StrictFormalParameters FunctionBody
+    PropertyName StrictFormalParameters FunctionBody                      {~Method}
   | @noast GeneratorMethod
-  | 'get' PropertyName '(' ')' FunctionBody                               {~PropertyGetter}
-  | 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody      {~PropertySetter}
+  | 'get' PropertyName '(' ')' FunctionBody                               {~Getter}
+  | 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody      {~Setter}
 ;
 
 @noast
@@ -913,8 +923,8 @@ GeneratorMethod<Yield> ::=
     '*' PropertyName StrictFormalParameters<+Yield> GeneratorBody ;
 
 GeneratorDeclaration<Yield, Default> ::=
-    'function' '*' BindingIdentifier FormalParameters<+Yield> GeneratorBody
-  | [Default] 'function' '*' FormalParameters<+Yield> GeneratorBody
+    'function' '*' BindingIdentifier FormalParameters<+Yield> GeneratorBody  {~Generator}
+  | [Default] 'function' '*' FormalParameters<+Yield> GeneratorBody          {~Generator}
 ;
 
 GeneratorExpression ::=
@@ -925,25 +935,27 @@ GeneratorBody ::=
     FunctionBody<+Yield> ;
 
 YieldExpression<In> ::=
-    'yield'
-  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield>
-  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield>
+    'yield'                                                                {~Yield}
+  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield>          {~Yield}
+  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield>      {~Yield}
 ;
 
 ClassDeclaration<Yield, Default> ::=
-    'class' BindingIdentifier ClassTail
-  | [Default] 'class' ClassTail
+    'class' BindingIdentifier ClassTail                   {~Class}
+  | [Default] 'class' ClassTail                           {~Class}
 ;
 
 ClassExpression<Yield> ::=
-    'class' BindingIdentifier? ClassTail ;
+    'class' BindingIdentifier? ClassTail                  {~ClassExpr}
+;
 
 @noast
 ClassTail<Yield> ::=
     ClassHeritage? ClassBody ;
 
 ClassHeritage<Yield> ::=
-    'extends' LeftHandSideExpression ;
+    'extends' LeftHandSideExpression                      {~Extends}
+;
 
 ClassBody<Yield> ::=
     '{' ClassElementList? '}' ;
@@ -955,9 +967,9 @@ ClassElementList<Yield> ::=
 ;
 
 ClassElement<Yield> ::=
-    MethodDefinition
-  | 'static' MethodDefinition                                 {~StaticClassElement}
-  | ';'
+    @noast MethodDefinition
+  | 'static' MethodDefinition                             {~StaticMethod}
+  | ';'                                                   {~EmptyDecl}
 ;
 
 # A.5 Scripts and Modules
@@ -1021,7 +1033,7 @@ ImportsList ::=
 
 ImportSpecifier ::=
     ImportedBinding
-  | IdentifierName 'as' ImportedBinding
+  | IdentifierNameRef 'as' ImportedBinding
   | error                                                 {~SyntaxError}
 ;
 
@@ -1056,8 +1068,8 @@ ExportsList ::=
 ;
 
 ExportSpecifier ::=
-    IdentifierName
-  | IdentifierName 'as' IdentifierName
+    IdentifierNameRef
+  | IdentifierNameRef 'as' IdentifierNameDecl
   | error                                                 {~SyntaxError}
 ;
 
@@ -1093,7 +1105,7 @@ JSXMemberExpression ::=
 
 JSXAttribute<Yield> ::=
     JSXAttributeName '=' JSXAttributeValue
-  | '{' '...' AssignmentExpression<+In> '}'             {~JSXSpreadAttribute}
+  | '{' '...' AssignmentExpression<+In> '}'               {~JSXSpreadAttribute}
 ;
 
 JSXAttributeName ::=
@@ -1108,7 +1120,7 @@ JSXAttributeValue<Yield> ::=
 ;
 
 JSXChild<Yield> ::=
-    jsxText                                                   {~JSXText}
+    jsxText                                               {~JSXText}
   | JSXElement
   | '{' AssignmentExpressionopt<+In> '}'
 ;

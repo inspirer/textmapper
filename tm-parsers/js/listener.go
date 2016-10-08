@@ -10,9 +10,8 @@ type Listener func(t NodeType, offset, endoffset int)
 
 const (
 	SyntaxError NodeType = iota + 1
-	IdentifierName
-	IdentifierReference
 	BindingIdentifier
+	IdentifierReference
 	LabelIdentifier
 	This
 	Regexp
@@ -59,7 +58,7 @@ const (
 	VariableStatement
 	VariableDeclaration
 	ObjectPattern
-	ArrayBindingPattern
+	ArrayPattern
 	BindingProperty
 	BindingElement
 	SingleNameBinding
@@ -85,7 +84,6 @@ const (
 	TryStatement
 	Catch
 	Finally
-	CatchParameter
 	DebuggerStatement
 	Function
 	FunctionExpression
@@ -95,19 +93,19 @@ const (
 	Body
 	ArrowFunction
 	ConciseBody
-	MethodDefinition
-	PropertyGetter
-	PropertySetter
+	Method
+	Getter
+	Setter
 	GeneratorMethod
-	GeneratorDeclaration
+	Generator
 	GeneratorExpression
-	YieldExpression
-	ClassDeclaration
-	ClassExpression
-	ClassHeritage
+	Yield
+	Class
+	ClassExpr
+	Extends
 	ClassBody
-	ClassElement
-	StaticClassElement
+	StaticMethod
+	EmptyDecl
 	Module
 	ImportDeclaration
 	NameSpaceImport
@@ -138,53 +136,55 @@ const (
 
 var ruleNodeType = [...]NodeType{
 	SyntaxError,              // SyntaxError ::= error
-	IdentifierName,           // IdentifierName ::= Identifier
-	IdentifierName,           // IdentifierName ::= 'break'
-	IdentifierName,           // IdentifierName ::= 'do'
-	IdentifierName,           // IdentifierName ::= 'in'
-	IdentifierName,           // IdentifierName ::= 'typeof'
-	IdentifierName,           // IdentifierName ::= 'case'
-	IdentifierName,           // IdentifierName ::= 'else'
-	IdentifierName,           // IdentifierName ::= 'instanceof'
-	IdentifierName,           // IdentifierName ::= 'var'
-	IdentifierName,           // IdentifierName ::= 'catch'
-	IdentifierName,           // IdentifierName ::= 'export'
-	IdentifierName,           // IdentifierName ::= 'new'
-	IdentifierName,           // IdentifierName ::= 'void'
-	IdentifierName,           // IdentifierName ::= 'class'
-	IdentifierName,           // IdentifierName ::= 'extends'
-	IdentifierName,           // IdentifierName ::= 'return'
-	IdentifierName,           // IdentifierName ::= 'while'
-	IdentifierName,           // IdentifierName ::= 'const'
-	IdentifierName,           // IdentifierName ::= 'finally'
-	IdentifierName,           // IdentifierName ::= 'super'
-	IdentifierName,           // IdentifierName ::= 'with'
-	IdentifierName,           // IdentifierName ::= 'continue'
-	IdentifierName,           // IdentifierName ::= 'for'
-	IdentifierName,           // IdentifierName ::= 'switch'
-	IdentifierName,           // IdentifierName ::= 'yield'
-	IdentifierName,           // IdentifierName ::= 'debugger'
-	IdentifierName,           // IdentifierName ::= 'function'
-	IdentifierName,           // IdentifierName ::= 'this'
-	IdentifierName,           // IdentifierName ::= 'default'
-	IdentifierName,           // IdentifierName ::= 'if'
-	IdentifierName,           // IdentifierName ::= 'throw'
-	IdentifierName,           // IdentifierName ::= 'delete'
-	IdentifierName,           // IdentifierName ::= 'import'
-	IdentifierName,           // IdentifierName ::= 'try'
-	IdentifierName,           // IdentifierName ::= 'enum'
-	IdentifierName,           // IdentifierName ::= 'await'
-	IdentifierName,           // IdentifierName ::= 'null'
-	IdentifierName,           // IdentifierName ::= 'true'
-	IdentifierName,           // IdentifierName ::= 'false'
-	IdentifierName,           // IdentifierName ::= 'as'
-	IdentifierName,           // IdentifierName ::= 'from'
-	IdentifierName,           // IdentifierName ::= 'get'
-	IdentifierName,           // IdentifierName ::= 'let'
-	IdentifierName,           // IdentifierName ::= 'of'
-	IdentifierName,           // IdentifierName ::= 'set'
-	IdentifierName,           // IdentifierName ::= 'static'
-	IdentifierName,           // IdentifierName ::= 'target'
+	0,                        // IdentifierName ::= Identifier
+	0,                        // IdentifierName ::= 'break'
+	0,                        // IdentifierName ::= 'do'
+	0,                        // IdentifierName ::= 'in'
+	0,                        // IdentifierName ::= 'typeof'
+	0,                        // IdentifierName ::= 'case'
+	0,                        // IdentifierName ::= 'else'
+	0,                        // IdentifierName ::= 'instanceof'
+	0,                        // IdentifierName ::= 'var'
+	0,                        // IdentifierName ::= 'catch'
+	0,                        // IdentifierName ::= 'export'
+	0,                        // IdentifierName ::= 'new'
+	0,                        // IdentifierName ::= 'void'
+	0,                        // IdentifierName ::= 'class'
+	0,                        // IdentifierName ::= 'extends'
+	0,                        // IdentifierName ::= 'return'
+	0,                        // IdentifierName ::= 'while'
+	0,                        // IdentifierName ::= 'const'
+	0,                        // IdentifierName ::= 'finally'
+	0,                        // IdentifierName ::= 'super'
+	0,                        // IdentifierName ::= 'with'
+	0,                        // IdentifierName ::= 'continue'
+	0,                        // IdentifierName ::= 'for'
+	0,                        // IdentifierName ::= 'switch'
+	0,                        // IdentifierName ::= 'yield'
+	0,                        // IdentifierName ::= 'debugger'
+	0,                        // IdentifierName ::= 'function'
+	0,                        // IdentifierName ::= 'this'
+	0,                        // IdentifierName ::= 'default'
+	0,                        // IdentifierName ::= 'if'
+	0,                        // IdentifierName ::= 'throw'
+	0,                        // IdentifierName ::= 'delete'
+	0,                        // IdentifierName ::= 'import'
+	0,                        // IdentifierName ::= 'try'
+	0,                        // IdentifierName ::= 'enum'
+	0,                        // IdentifierName ::= 'await'
+	0,                        // IdentifierName ::= 'null'
+	0,                        // IdentifierName ::= 'true'
+	0,                        // IdentifierName ::= 'false'
+	0,                        // IdentifierName ::= 'as'
+	0,                        // IdentifierName ::= 'from'
+	0,                        // IdentifierName ::= 'get'
+	0,                        // IdentifierName ::= 'let'
+	0,                        // IdentifierName ::= 'of'
+	0,                        // IdentifierName ::= 'set'
+	0,                        // IdentifierName ::= 'static'
+	0,                        // IdentifierName ::= 'target'
+	BindingIdentifier,        // IdentifierNameDecl ::= IdentifierName
+	IdentifierReference,      // IdentifierNameRef ::= IdentifierName
 	IdentifierReference,      // IdentifierReference ::= '%' Identifier
 	IdentifierReference,      // IdentifierReference ::= Identifier
 	IdentifierReference,      // IdentifierReference ::= 'yield'
@@ -444,7 +444,7 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PropertyName ::= ComputedPropertyName
 	0,                        // PropertyName_Yield ::= LiteralPropertyName
 	0,                        // PropertyName_Yield ::= ComputedPropertyName_Yield
-	LiteralPropertyName,      // LiteralPropertyName ::= IdentifierName
+	LiteralPropertyName,      // LiteralPropertyName ::= IdentifierNameDecl
 	LiteralPropertyName,      // LiteralPropertyName ::= StringLiteral
 	LiteralPropertyName,      // LiteralPropertyName ::= NumericLiteral
 	ComputedPropertyName,     // ComputedPropertyName ::= '[' AssignmentExpression_In ']'
@@ -469,135 +469,135 @@ var ruleNodeType = [...]NodeType{
 	0,                        // TemplateMiddleList_Yield ::= TemplateMiddleList_Yield TemplateMiddle Expression_In_Yield
 	0,                        // MemberExpression ::= PrimaryExpression
 	IndexAccess,              // MemberExpression ::= MemberExpression '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression ::= MemberExpression '.' IdentifierName
+	PropertyAccess,           // MemberExpression ::= MemberExpression '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression ::= MemberExpression TemplateLiteral
 	0,                        // MemberExpression ::= SuperProperty
 	0,                        // MemberExpression ::= MetaProperty
 	NewExpression,            // MemberExpression ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoFuncClass ::= PrimaryExpression_NoFuncClass
 	IndexAccess,              // MemberExpression_NoFuncClass ::= MemberExpression_NoFuncClass '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoFuncClass ::= MemberExpression_NoFuncClass '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoFuncClass ::= MemberExpression_NoFuncClass '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoFuncClass ::= MemberExpression_NoFuncClass TemplateLiteral
 	0,                        // MemberExpression_NoFuncClass ::= SuperProperty
 	0,                        // MemberExpression_NoFuncClass ::= MetaProperty
 	NewExpression,            // MemberExpression_NoFuncClass ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= PrimaryExpression_NoFuncClass_NoObjLiteral
 	IndexAccess,              // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= SuperProperty
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MetaProperty
 	NewExpression,            // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= PrimaryExpression_NoFuncClass_NoObjLiteral_Yield
 	IndexAccess,              // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= SuperProperty_Yield
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MetaProperty
 	NewExpression,            // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= 'new' MemberExpression_Yield Arguments_Yield
 	0,                        // MemberExpression_NoLet ::= PrimaryExpression_NoLet
 	IndexAccess,              // MemberExpression_NoLet ::= MemberExpression_NoLet '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoLet ::= MemberExpression_NoLet '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLet ::= MemberExpression_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLet ::= MemberExpression_NoLet TemplateLiteral
 	0,                        // MemberExpression_NoLet ::= SuperProperty
 	0,                        // MemberExpression_NoLet ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLet ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoLet_Yield ::= PrimaryExpression_NoLet_Yield
 	IndexAccess,              // MemberExpression_NoLet_Yield ::= MemberExpression_NoLet_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_NoLet_Yield ::= MemberExpression_NoLet_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLet_Yield ::= MemberExpression_NoLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLet_Yield ::= MemberExpression_NoLet_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_NoLet_Yield ::= SuperProperty_Yield
 	0,                        // MemberExpression_NoLet_Yield ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLet_Yield ::= 'new' MemberExpression_Yield Arguments_Yield
 	0,                        // MemberExpression_NoLetOnly ::= PrimaryExpression_NoLet
 	IndexAccess,              // MemberExpression_NoLetOnly ::= MemberExpression '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly ::= MemberExpression '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly ::= MemberExpression '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly ::= MemberExpression TemplateLiteral
 	0,                        // MemberExpression_NoLetOnly ::= SuperProperty
 	0,                        // MemberExpression_NoLetOnly ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass ::= PrimaryExpression_NoFuncClass_NoLet
 	IndexAccess,              // MemberExpression_NoLetOnly_NoFuncClass ::= MemberExpression_NoFuncClass '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass ::= MemberExpression_NoFuncClass '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass ::= MemberExpression_NoFuncClass '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoFuncClass ::= MemberExpression_NoFuncClass TemplateLiteral
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass ::= SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoFuncClass ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral
 	IndexAccess,              // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield
 	IndexAccess,              // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= SuperProperty_Yield
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= 'new' MemberExpression_Yield Arguments_Yield
 	0,                        // MemberExpression_NoLetOnly_NoLet ::= PrimaryExpression_NoLet
 	IndexAccess,              // MemberExpression_NoLetOnly_NoLet ::= MemberExpression_NoLet '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_NoLet ::= MemberExpression_NoLet '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_NoLet ::= MemberExpression_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoLet ::= MemberExpression_NoLet TemplateLiteral
 	0,                        // MemberExpression_NoLetOnly_NoLet ::= SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoLet ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoLet ::= 'new' MemberExpression Arguments
 	0,                        // MemberExpression_NoLetOnly_NoLet_Yield ::= PrimaryExpression_NoLet_Yield
 	IndexAccess,              // MemberExpression_NoLetOnly_NoLet_Yield ::= MemberExpression_NoLet_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_NoLet_Yield ::= MemberExpression_NoLet_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_NoLet_Yield ::= MemberExpression_NoLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoLet_Yield ::= MemberExpression_NoLet_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_NoLetOnly_NoLet_Yield ::= SuperProperty_Yield
 	0,                        // MemberExpression_NoLetOnly_NoLet_Yield ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoLet_Yield ::= 'new' MemberExpression_Yield Arguments_Yield
 	0,                        // MemberExpression_NoLetOnly_NoObjLiteral ::= PrimaryExpression_NoLet_NoObjLiteral
 	IndexAccess,              // MemberExpression_NoLetOnly_NoObjLiteral ::= MemberExpression_NoObjLiteral '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_NoObjLiteral ::= MemberExpression_NoObjLiteral '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_NoObjLiteral ::= MemberExpression_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoObjLiteral ::= MemberExpression_NoObjLiteral TemplateLiteral
 	0,                        // MemberExpression_NoLetOnly_NoObjLiteral ::= SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoObjLiteral ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoObjLiteral ::= 'new' MemberExpression Arguments
 	IndexAccess,              // MemberExpression_NoLetOnly_StartWithLet ::= MemberExpression_NoLetOnly_StartWithLet '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_StartWithLet ::= MemberExpression_StartWithLet '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_StartWithLet ::= MemberExpression_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_StartWithLet ::= MemberExpression_StartWithLet TemplateLiteral
 	IndexAccess,              // MemberExpression_NoLetOnly_StartWithLet_Yield ::= MemberExpression_NoLetOnly_StartWithLet_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_StartWithLet_Yield ::= MemberExpression_StartWithLet_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_StartWithLet_Yield ::= MemberExpression_StartWithLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_StartWithLet_Yield ::= MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_NoLetOnly_Yield ::= PrimaryExpression_NoLet_Yield
 	IndexAccess,              // MemberExpression_NoLetOnly_Yield ::= MemberExpression_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_NoLetOnly_Yield ::= MemberExpression_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoLetOnly_Yield ::= MemberExpression_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_Yield ::= MemberExpression_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_NoLetOnly_Yield ::= SuperProperty_Yield
 	0,                        // MemberExpression_NoLetOnly_Yield ::= MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_Yield ::= 'new' MemberExpression_Yield Arguments_Yield
 	0,                        // MemberExpression_NoObjLiteral ::= PrimaryExpression_NoObjLiteral
 	IndexAccess,              // MemberExpression_NoObjLiteral ::= MemberExpression_NoObjLiteral '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_NoObjLiteral ::= MemberExpression_NoObjLiteral '.' IdentifierName
+	PropertyAccess,           // MemberExpression_NoObjLiteral ::= MemberExpression_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoObjLiteral ::= MemberExpression_NoObjLiteral TemplateLiteral
 	0,                        // MemberExpression_NoObjLiteral ::= SuperProperty
 	0,                        // MemberExpression_NoObjLiteral ::= MetaProperty
 	NewExpression,            // MemberExpression_NoObjLiteral ::= 'new' MemberExpression Arguments
 	IdentifierReference,      // MemberExpression_StartWithLet ::= 'let'
 	IndexAccess,              // MemberExpression_StartWithLet ::= MemberExpression_NoLetOnly_StartWithLet '[' Expression_In ']'
-	PropertyAccess,           // MemberExpression_StartWithLet ::= MemberExpression_StartWithLet '.' IdentifierName
+	PropertyAccess,           // MemberExpression_StartWithLet ::= MemberExpression_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_StartWithLet ::= MemberExpression_StartWithLet TemplateLiteral
 	IdentifierReference,      // MemberExpression_StartWithLet_Yield ::= 'let'
 	IndexAccess,              // MemberExpression_StartWithLet_Yield ::= MemberExpression_NoLetOnly_StartWithLet_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_StartWithLet_Yield ::= MemberExpression_StartWithLet_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_StartWithLet_Yield ::= MemberExpression_StartWithLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_StartWithLet_Yield ::= MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_Yield ::= PrimaryExpression_Yield
 	IndexAccess,              // MemberExpression_Yield ::= MemberExpression_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // MemberExpression_Yield ::= MemberExpression_Yield '.' IdentifierName
+	PropertyAccess,           // MemberExpression_Yield ::= MemberExpression_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Yield ::= MemberExpression_Yield TemplateLiteral_Yield
 	0,                        // MemberExpression_Yield ::= SuperProperty_Yield
 	0,                        // MemberExpression_Yield ::= MetaProperty
 	NewExpression,            // MemberExpression_Yield ::= 'new' MemberExpression_Yield Arguments_Yield
 	SuperExpression,          // SuperExpression ::= 'super'
 	IndexAccess,              // SuperProperty ::= SuperExpression '[' Expression_In ']'
-	PropertyAccess,           // SuperProperty ::= SuperExpression '.' IdentifierName
+	PropertyAccess,           // SuperProperty ::= SuperExpression '.' IdentifierNameRef
 	IndexAccess,              // SuperProperty_Yield ::= SuperExpression '[' Expression_In_Yield ']'
-	PropertyAccess,           // SuperProperty_Yield ::= SuperExpression '.' IdentifierName
+	PropertyAccess,           // SuperProperty_Yield ::= SuperExpression '.' IdentifierNameRef
 	0,                        // MetaProperty ::= NewTarget
 	NewTarget,                // NewTarget ::= 'new' '.' 'target'
 	0,                        // NewExpression ::= MemberExpression
@@ -622,59 +622,59 @@ var ruleNodeType = [...]NodeType{
 	CallExpression,           // CallExpression ::= SuperCall
 	CallExpression,           // CallExpression ::= CallExpression Arguments
 	IndexAccess,              // CallExpression ::= CallExpression '[' Expression_In ']'
-	PropertyAccess,           // CallExpression ::= CallExpression '.' IdentifierName
+	PropertyAccess,           // CallExpression ::= CallExpression '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression ::= CallExpression TemplateLiteral
 	CallExpression,           // CallExpression_NoFuncClass ::= MemberExpression_NoFuncClass Arguments
 	CallExpression,           // CallExpression_NoFuncClass ::= SuperCall
 	CallExpression,           // CallExpression_NoFuncClass ::= CallExpression_NoFuncClass Arguments
 	IndexAccess,              // CallExpression_NoFuncClass ::= CallExpression_NoFuncClass '[' Expression_In ']'
-	PropertyAccess,           // CallExpression_NoFuncClass ::= CallExpression_NoFuncClass '.' IdentifierName
+	PropertyAccess,           // CallExpression_NoFuncClass ::= CallExpression_NoFuncClass '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoFuncClass ::= CallExpression_NoFuncClass TemplateLiteral
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= SuperCall
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 	IndexAccess,              // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_In ']'
-	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierName
+	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= SuperCall_Yield
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierName
+	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 	CallExpression,           // CallExpression_NoLet ::= MemberExpression_NoLet Arguments
 	CallExpression,           // CallExpression_NoLet ::= SuperCall
 	CallExpression,           // CallExpression_NoLet ::= CallExpression_NoLet Arguments
 	IndexAccess,              // CallExpression_NoLet ::= CallExpression_NoLet '[' Expression_In ']'
-	PropertyAccess,           // CallExpression_NoLet ::= CallExpression_NoLet '.' IdentifierName
+	PropertyAccess,           // CallExpression_NoLet ::= CallExpression_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoLet ::= CallExpression_NoLet TemplateLiteral
 	CallExpression,           // CallExpression_NoLet_Yield ::= MemberExpression_NoLet_Yield Arguments_Yield
 	CallExpression,           // CallExpression_NoLet_Yield ::= SuperCall_Yield
 	CallExpression,           // CallExpression_NoLet_Yield ::= CallExpression_NoLet_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_NoLet_Yield ::= CallExpression_NoLet_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // CallExpression_NoLet_Yield ::= CallExpression_NoLet_Yield '.' IdentifierName
+	PropertyAccess,           // CallExpression_NoLet_Yield ::= CallExpression_NoLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoLet_Yield ::= CallExpression_NoLet_Yield TemplateLiteral_Yield
 	CallExpression,           // CallExpression_NoObjLiteral ::= MemberExpression_NoObjLiteral Arguments
 	CallExpression,           // CallExpression_NoObjLiteral ::= SuperCall
 	CallExpression,           // CallExpression_NoObjLiteral ::= CallExpression_NoObjLiteral Arguments
 	IndexAccess,              // CallExpression_NoObjLiteral ::= CallExpression_NoObjLiteral '[' Expression_In ']'
-	PropertyAccess,           // CallExpression_NoObjLiteral ::= CallExpression_NoObjLiteral '.' IdentifierName
+	PropertyAccess,           // CallExpression_NoObjLiteral ::= CallExpression_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoObjLiteral ::= CallExpression_NoObjLiteral TemplateLiteral
 	CallExpression,           // CallExpression_StartWithLet ::= MemberExpression_StartWithLet Arguments
 	CallExpression,           // CallExpression_StartWithLet ::= CallExpression_StartWithLet Arguments
 	IndexAccess,              // CallExpression_StartWithLet ::= CallExpression_StartWithLet '[' Expression_In ']'
-	PropertyAccess,           // CallExpression_StartWithLet ::= CallExpression_StartWithLet '.' IdentifierName
+	PropertyAccess,           // CallExpression_StartWithLet ::= CallExpression_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_StartWithLet ::= CallExpression_StartWithLet TemplateLiteral
 	CallExpression,           // CallExpression_StartWithLet_Yield ::= MemberExpression_StartWithLet_Yield Arguments_Yield
 	CallExpression,           // CallExpression_StartWithLet_Yield ::= CallExpression_StartWithLet_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_StartWithLet_Yield ::= CallExpression_StartWithLet_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // CallExpression_StartWithLet_Yield ::= CallExpression_StartWithLet_Yield '.' IdentifierName
+	PropertyAccess,           // CallExpression_StartWithLet_Yield ::= CallExpression_StartWithLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_StartWithLet_Yield ::= CallExpression_StartWithLet_Yield TemplateLiteral_Yield
 	CallExpression,           // CallExpression_Yield ::= MemberExpression_Yield Arguments_Yield
 	CallExpression,           // CallExpression_Yield ::= SuperCall_Yield
 	CallExpression,           // CallExpression_Yield ::= CallExpression_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_Yield ::= CallExpression_Yield '[' Expression_In_Yield ']'
-	PropertyAccess,           // CallExpression_Yield ::= CallExpression_Yield '.' IdentifierName
+	PropertyAccess,           // CallExpression_Yield ::= CallExpression_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_Yield ::= CallExpression_Yield TemplateLiteral_Yield
 	0,                        // SuperCall ::= SuperExpression Arguments
 	0,                        // SuperCall_Yield ::= SuperExpression Arguments_Yield
@@ -1362,12 +1362,12 @@ var ruleNodeType = [...]NodeType{
 	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' '}'
 	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' BindingPropertyList_Yield ',' '}'
 	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' BindingPropertyList_Yield '}'
-	ArrayBindingPattern,  // ArrayBindingPattern ::= '[' Elisionopt BindingRestElementopt ']'
-	ArrayBindingPattern,  // ArrayBindingPattern ::= '[' BindingElementList ']'
-	ArrayBindingPattern,  // ArrayBindingPattern ::= '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'
-	ArrayBindingPattern,  // ArrayBindingPattern_Yield ::= '[' Elisionopt BindingRestElementopt_Yield ']'
-	ArrayBindingPattern,  // ArrayBindingPattern_Yield ::= '[' BindingElementList_Yield ']'
-	ArrayBindingPattern,  // ArrayBindingPattern_Yield ::= '[' BindingElementList_Yield ',' Elisionopt BindingRestElementopt_Yield ']'
+	ArrayPattern,         // ArrayBindingPattern ::= '[' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,         // ArrayBindingPattern ::= '[' BindingElementList ']'
+	ArrayPattern,         // ArrayBindingPattern ::= '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' Elisionopt BindingRestElementopt_Yield ']'
+	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' BindingElementList_Yield ']'
+	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' BindingElementList_Yield ',' Elisionopt BindingRestElementopt_Yield ']'
 	0,                    // BindingPropertyList ::= BindingProperty
 	0,                    // BindingPropertyList ::= BindingPropertyList ',' BindingProperty
 	0,                    // BindingPropertyList_Yield ::= BindingProperty_Yield
@@ -1520,10 +1520,10 @@ var ruleNodeType = [...]NodeType{
 	Finally,              // Finally ::= 'finally' Block
 	Finally,              // Finally_Return ::= 'finally' Block_Return
 	Finally,              // Finally_Return_Yield ::= 'finally' Block_Return_Yield
-	CatchParameter,       // CatchParameter ::= BindingIdentifier
-	CatchParameter,       // CatchParameter ::= BindingPattern
-	CatchParameter,       // CatchParameter_Yield ::= BindingIdentifier_Yield
-	CatchParameter,       // CatchParameter_Yield ::= BindingPattern_Yield
+	0,                    // CatchParameter ::= BindingIdentifier
+	0,                    // CatchParameter ::= BindingPattern
+	0,                    // CatchParameter_Yield ::= BindingIdentifier_Yield
+	0,                    // CatchParameter_Yield ::= BindingPattern_Yield
 	DebuggerStatement,    // DebuggerStatement ::= 'debugger' ';'
 	Function,             // FunctionDeclaration ::= 'function' BindingIdentifier FormalParameters FunctionBody
 	Function,             // FunctionDeclaration_Default ::= 'function' BindingIdentifier FormalParameters FunctionBody
@@ -1567,44 +1567,44 @@ var ruleNodeType = [...]NodeType{
 	0,                    // ConciseBody ::= FunctionBody
 	ConciseBody,          // ConciseBody_In ::= AssignmentExpression_In_NoObjLiteral
 	0,                    // ConciseBody_In ::= FunctionBody
-	MethodDefinition,     // MethodDefinition ::= PropertyName StrictFormalParameters FunctionBody
+	Method,               // MethodDefinition ::= PropertyName StrictFormalParameters FunctionBody
 	0,                    // MethodDefinition ::= GeneratorMethod
-	PropertyGetter,       // MethodDefinition ::= 'get' PropertyName '(' ')' FunctionBody
-	PropertySetter,       // MethodDefinition ::= 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
-	MethodDefinition,     // MethodDefinition_Yield ::= PropertyName_Yield StrictFormalParameters_Yield FunctionBody_Yield
+	Getter,               // MethodDefinition ::= 'get' PropertyName '(' ')' FunctionBody
+	Setter,               // MethodDefinition ::= 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
+	Method,               // MethodDefinition_Yield ::= PropertyName_Yield StrictFormalParameters_Yield FunctionBody_Yield
 	0,                    // MethodDefinition_Yield ::= GeneratorMethod_Yield
-	PropertyGetter,       // MethodDefinition_Yield ::= 'get' PropertyName_Yield '(' ')' FunctionBody_Yield
-	PropertySetter,       // MethodDefinition_Yield ::= 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody_Yield
+	Getter,               // MethodDefinition_Yield ::= 'get' PropertyName_Yield '(' ')' FunctionBody_Yield
+	Setter,               // MethodDefinition_Yield ::= 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody_Yield
 	0,                    // PropertySetParameterList ::= FormalParameter
 	GeneratorMethod,      // GeneratorMethod ::= '*' PropertyName StrictFormalParameters_Yield GeneratorBody
 	GeneratorMethod,      // GeneratorMethod_Yield ::= '*' PropertyName_Yield StrictFormalParameters_Yield GeneratorBody
-	GeneratorDeclaration, // GeneratorDeclaration ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
-	GeneratorDeclaration, // GeneratorDeclaration_Default ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
-	GeneratorDeclaration, // GeneratorDeclaration_Default ::= 'function' '*' FormalParameters_Yield GeneratorBody
-	GeneratorDeclaration, // GeneratorDeclaration_Yield ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
+	Generator,            // GeneratorDeclaration ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	Generator,            // GeneratorDeclaration_Default ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	Generator,            // GeneratorDeclaration_Default ::= 'function' '*' FormalParameters_Yield GeneratorBody
+	Generator,            // GeneratorDeclaration_Yield ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
 	GeneratorExpression,  // GeneratorExpression ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
 	GeneratorExpression,  // GeneratorExpression ::= 'function' '*' FormalParameters_Yield GeneratorBody
 	0,                    // GeneratorBody ::= FunctionBody_Yield
-	YieldExpression,      // YieldExpression ::= 'yield'
-	YieldExpression,      // YieldExpression ::= 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
-	YieldExpression,      // YieldExpression ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
-	YieldExpression,      // YieldExpression_In ::= 'yield'
-	YieldExpression,      // YieldExpression_In ::= 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
-	YieldExpression,      // YieldExpression_In ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
-	ClassDeclaration,     // ClassDeclaration ::= 'class' BindingIdentifier ClassTail
-	ClassDeclaration,     // ClassDeclaration_Default ::= 'class' BindingIdentifier ClassTail
-	ClassDeclaration,     // ClassDeclaration_Default ::= 'class' ClassTail
-	ClassDeclaration,     // ClassDeclaration_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
-	ClassExpression,      // ClassExpression ::= 'class' BindingIdentifier ClassTail
-	ClassExpression,      // ClassExpression ::= 'class' ClassTail
-	ClassExpression,      // ClassExpression_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
-	ClassExpression,      // ClassExpression_Yield ::= 'class' ClassTail_Yield
+	Yield,                // YieldExpression ::= 'yield'
+	Yield,                // YieldExpression ::= 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
+	Yield,                // YieldExpression ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
+	Yield,                // YieldExpression_In ::= 'yield'
+	Yield,                // YieldExpression_In ::= 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
+	Yield,                // YieldExpression_In ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
+	Class,                // ClassDeclaration ::= 'class' BindingIdentifier ClassTail
+	Class,                // ClassDeclaration_Default ::= 'class' BindingIdentifier ClassTail
+	Class,                // ClassDeclaration_Default ::= 'class' ClassTail
+	Class,                // ClassDeclaration_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
+	ClassExpr,            // ClassExpression ::= 'class' BindingIdentifier ClassTail
+	ClassExpr,            // ClassExpression ::= 'class' ClassTail
+	ClassExpr,            // ClassExpression_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
+	ClassExpr,            // ClassExpression_Yield ::= 'class' ClassTail_Yield
 	0,                    // ClassTail ::= ClassHeritage ClassBody
 	0,                    // ClassTail ::= ClassBody
 	0,                    // ClassTail_Yield ::= ClassHeritage_Yield ClassBody_Yield
 	0,                    // ClassTail_Yield ::= ClassBody_Yield
-	ClassHeritage,        // ClassHeritage ::= 'extends' LeftHandSideExpression
-	ClassHeritage,        // ClassHeritage_Yield ::= 'extends' LeftHandSideExpression_Yield
+	Extends,              // ClassHeritage ::= 'extends' LeftHandSideExpression
+	Extends,              // ClassHeritage_Yield ::= 'extends' LeftHandSideExpression_Yield
 	ClassBody,            // ClassBody ::= '{' ClassElementList '}'
 	ClassBody,            // ClassBody ::= '{' '}'
 	ClassBody,            // ClassBody_Yield ::= '{' ClassElementList_Yield '}'
@@ -1613,12 +1613,12 @@ var ruleNodeType = [...]NodeType{
 	0,                    // ClassElementList ::= ClassElementList ClassElement
 	0,                    // ClassElementList_Yield ::= ClassElement_Yield
 	0,                    // ClassElementList_Yield ::= ClassElementList_Yield ClassElement_Yield
-	ClassElement,         // ClassElement ::= MethodDefinition
-	StaticClassElement,   // ClassElement ::= 'static' MethodDefinition
-	ClassElement,         // ClassElement ::= ';'
-	ClassElement,         // ClassElement_Yield ::= MethodDefinition_Yield
-	StaticClassElement,   // ClassElement_Yield ::= 'static' MethodDefinition_Yield
-	ClassElement,         // ClassElement_Yield ::= ';'
+	0,                    // ClassElement ::= MethodDefinition
+	StaticMethod,         // ClassElement ::= 'static' MethodDefinition
+	EmptyDecl,            // ClassElement ::= ';'
+	0,                    // ClassElement_Yield ::= MethodDefinition_Yield
+	StaticMethod,         // ClassElement_Yield ::= 'static' MethodDefinition_Yield
+	EmptyDecl,            // ClassElement_Yield ::= ';'
 	Module,               // Module ::= ModuleBodyopt
 	0,                    // ModuleBody ::= ModuleItemList
 	0,                    // ModuleItemList ::= ModuleItem
@@ -1642,7 +1642,7 @@ var ruleNodeType = [...]NodeType{
 	0,                    // ImportsList ::= ImportSpecifier
 	0,                    // ImportsList ::= ImportsList ',' ImportSpecifier
 	ImportSpecifier,      // ImportSpecifier ::= ImportedBinding
-	ImportSpecifier,      // ImportSpecifier ::= IdentifierName 'as' ImportedBinding
+	ImportSpecifier,      // ImportSpecifier ::= IdentifierNameRef 'as' ImportedBinding
 	SyntaxError,          // ImportSpecifier ::= error
 	ModuleSpecifier,      // ModuleSpecifier ::= StringLiteral
 	0,                    // ImportedBinding ::= BindingIdentifier
@@ -1659,8 +1659,8 @@ var ruleNodeType = [...]NodeType{
 	ExportClause,         // ExportClause ::= '{' ExportsList ',' '}'
 	0,                    // ExportsList ::= ExportSpecifier
 	0,                    // ExportsList ::= ExportsList ',' ExportSpecifier
-	ExportSpecifier,      // ExportSpecifier ::= IdentifierName
-	ExportSpecifier,      // ExportSpecifier ::= IdentifierName 'as' IdentifierName
+	ExportSpecifier,      // ExportSpecifier ::= IdentifierNameRef
+	ExportSpecifier,      // ExportSpecifier ::= IdentifierNameRef 'as' IdentifierNameDecl
 	SyntaxError,          // ExportSpecifier ::= error
 	0,                    // JSXChild_optlist ::= JSXChild_optlist JSXChild
 	0,                    // JSXChild_optlist ::=
@@ -1741,9 +1741,8 @@ var ruleNodeType = [...]NodeType{
 var nodeTypeStr = [...]string{
 	"NONE",
 	"SyntaxError",
-	"IdentifierName",
-	"IdentifierReference",
 	"BindingIdentifier",
+	"IdentifierReference",
 	"LabelIdentifier",
 	"This",
 	"Regexp",
@@ -1790,7 +1789,7 @@ var nodeTypeStr = [...]string{
 	"VariableStatement",
 	"VariableDeclaration",
 	"ObjectPattern",
-	"ArrayBindingPattern",
+	"ArrayPattern",
 	"BindingProperty",
 	"BindingElement",
 	"SingleNameBinding",
@@ -1816,7 +1815,6 @@ var nodeTypeStr = [...]string{
 	"TryStatement",
 	"Catch",
 	"Finally",
-	"CatchParameter",
 	"DebuggerStatement",
 	"Function",
 	"FunctionExpression",
@@ -1826,19 +1824,19 @@ var nodeTypeStr = [...]string{
 	"Body",
 	"ArrowFunction",
 	"ConciseBody",
-	"MethodDefinition",
-	"PropertyGetter",
-	"PropertySetter",
+	"Method",
+	"Getter",
+	"Setter",
 	"GeneratorMethod",
-	"GeneratorDeclaration",
+	"Generator",
 	"GeneratorExpression",
-	"YieldExpression",
-	"ClassDeclaration",
-	"ClassExpression",
-	"ClassHeritage",
+	"Yield",
+	"Class",
+	"ClassExpr",
+	"Extends",
 	"ClassBody",
-	"ClassElement",
-	"StaticClassElement",
+	"StaticMethod",
+	"EmptyDecl",
 	"Module",
 	"ImportDeclaration",
 	"NameSpaceImport",
