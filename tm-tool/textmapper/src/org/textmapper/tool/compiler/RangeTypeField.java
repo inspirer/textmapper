@@ -13,36 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.tool.compiler;
 
-/**
- * Input grammar definition.
- */
-public interface Grammar extends UserDataHolder {
+import java.util.Set;
 
-	Symbol[] getSymbols();
+public interface RangeTypeField {
+	/**
+	 * @return the name of the field
+	 */
+	String getName();
 
-	Rule[] getRules();
+	/**
+	 * @return all possible range types that can be found behind this field.
+	 */
+	String[] getTypes();
 
-	Prio[] getPriorities();
+	/**
+	 * @return true if the name was explicitly mentioned in the grammar (via name=symref).
+	 */
+	boolean hasExplicitName();
 
-	LexerState[] getLexerStates();
-
-	LexerRule[] getLexerRules();
-
-	NamedPattern[] getPatterns();
-
-	NamedSet[] getSets();
-
-	int getTerminals();
-
-	int getGrammarSymbols();
-
-	InputRef[] getInput();
-
-	Symbol getEoi();
-
-	Symbol getError();
-
-	Problem[] getProblems();
+	boolean isList();
+	boolean isNullable();
 }

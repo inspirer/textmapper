@@ -599,6 +599,12 @@ public class TMParserCompiler {
 
 			String setName = set.getProvisionalName();
 			Nonterminal result = builder.addShared(set, outer, setName);
+
+			// Mark as set.
+			HashMap<String, Object> annotations = new HashMap<>();
+			annotations.put("_set", true);
+			TMDataUtil.putAnnotations(result, annotations);
+
 			return builder.symbolFwdAll(result, part);
 
 		} else if (part instanceof TmaRhsList) {

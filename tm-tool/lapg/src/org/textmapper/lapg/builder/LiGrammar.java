@@ -17,7 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
 
-class LiGrammar implements Grammar {
+class LiGrammar extends LiUserDataHolder implements Grammar {
 
 	private final Symbol[] symbols;
 	private final Rule[] rules;

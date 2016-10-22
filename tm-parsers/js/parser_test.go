@@ -54,7 +54,6 @@ var parseTests = []struct {
 		`try {} catch («e») {
 		   throw e
 		 }`,
-
 	}},
 	{js.LabelIdentifier, []string{
 		`A: for (;;) {continue «A»; }`,

@@ -59,6 +59,7 @@ public class TMEventMapper {
 			if (n.getDefinition() instanceof RhsList
 					&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
 					|| NonterminalUtil.isOptional(n)
+					|| TMDataUtil.hasProperty(n, "_set")
 					|| TMDataUtil.hasProperty(n, "noast")) {
 				return;
 			}

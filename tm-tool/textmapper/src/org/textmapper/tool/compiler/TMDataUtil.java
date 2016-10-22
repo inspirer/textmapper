@@ -19,6 +19,8 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.ast.TmaCommand;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,7 @@ public class TMDataUtil {
 	private static final String UD_LITERAL = "literal";
 	private static final String UD_ROLE = "role";
 	private static final String UD_RANGE_TYPE = "rangeType";
+	private static final String UD_RANGE_FIELDS = "rangeFields";
 	private static final String UD_USER_REQUESTED_INPUT = "userRequested";
 
 	private static Object lookupUserData(UserDataHolder element, String key) {
@@ -137,6 +140,21 @@ public class TMDataUtil {
 
 	public static String getRangeType(Rule rule) {
 		return (String) rule.getUserData(UD_RANGE_TYPE);
+	}
+
+	public static void putRangeFields(Grammar grammar, String type, Collection<? extends RangeTypeField> fields) {
+		Map<String, Collection<? extends RangeTypeField>> map = (Map<String, Collection<?
+				extends RangeTypeField>>) grammar.getUserData(UD_RANGE_FIELDS);
+		if (map == null) {
+			grammar.putUserData(UD_RANGE_FIELDS, (map = new HashMap<>()));
+		}
+		map.put(type, fields);
+	}
+
+	public static Collection<? extends RangeTypeField> getRangeFields(Grammar grammar, String type) {
+		Map<String, Collection<? extends RangeTypeField>> map = (Map<String, Collection<?
+				extends RangeTypeField>>) grammar.getUserData(UD_RANGE_FIELDS);
+		return map == null ? null : map.get(type);
 	}
 
 	public static void setUserRequested(InputRef input) {
