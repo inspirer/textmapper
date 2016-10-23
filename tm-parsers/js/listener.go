@@ -52,6 +52,7 @@ const (
 	ConditionalExpression
 	AssignmentExpression
 	AssignmentOperator
+	CommaExpression
 	Block
 	LexicalDeclaration
 	LexicalBinding
@@ -1215,22 +1216,30 @@ var ruleNodeType = [...]NodeType{
 	AssignmentOperator,   // AssignmentOperator ::= '^='
 	AssignmentOperator,   // AssignmentOperator ::= '|='
 	AssignmentOperator,   // AssignmentOperator ::= '**='
+	CommaExpression,      // CommaExpression_In ::= Expression_In ',' AssignmentExpression_In
+	CommaExpression,      // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ',' AssignmentExpression_In
+	CommaExpression,      // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ',' AssignmentExpression_In_Yield
+	CommaExpression,      // CommaExpression_In_Yield ::= Expression_In_Yield ',' AssignmentExpression_In_Yield
+	CommaExpression,      // CommaExpression_NoLet ::= Expression_NoLet ',' AssignmentExpression
+	CommaExpression,      // CommaExpression_NoLet_Yield ::= Expression_NoLet_Yield ',' AssignmentExpression_Yield
+	CommaExpression,      // CommaExpression_StartWithLet ::= Expression_StartWithLet ',' AssignmentExpression
+	CommaExpression,      // CommaExpression_StartWithLet_Yield ::= Expression_StartWithLet_Yield ',' AssignmentExpression_Yield
 	0,                    // Expression_In ::= AssignmentExpression_In
-	0,                    // Expression_In ::= Expression_In ',' AssignmentExpression_In
+	0,                    // Expression_In ::= CommaExpression_In
 	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ',' AssignmentExpression_In
+	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
 	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ',' AssignmentExpression_In_Yield
+	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	0,                    // Expression_In_Yield ::= AssignmentExpression_In_Yield
-	0,                    // Expression_In_Yield ::= Expression_In_Yield ',' AssignmentExpression_In_Yield
+	0,                    // Expression_In_Yield ::= CommaExpression_In_Yield
 	0,                    // Expression_NoLet ::= AssignmentExpression_NoLet
-	0,                    // Expression_NoLet ::= Expression_NoLet ',' AssignmentExpression
+	0,                    // Expression_NoLet ::= CommaExpression_NoLet
 	0,                    // Expression_NoLet_Yield ::= AssignmentExpression_NoLet_Yield
-	0,                    // Expression_NoLet_Yield ::= Expression_NoLet_Yield ',' AssignmentExpression_Yield
+	0,                    // Expression_NoLet_Yield ::= CommaExpression_NoLet_Yield
 	0,                    // Expression_StartWithLet ::= AssignmentExpression_StartWithLet
-	0,                    // Expression_StartWithLet ::= Expression_StartWithLet ',' AssignmentExpression
+	0,                    // Expression_StartWithLet ::= CommaExpression_StartWithLet
 	0,                    // Expression_StartWithLet_Yield ::= AssignmentExpression_StartWithLet_Yield
-	0,                    // Expression_StartWithLet_Yield ::= Expression_StartWithLet_Yield ',' AssignmentExpression_Yield
+	0,                    // Expression_StartWithLet_Yield ::= CommaExpression_StartWithLet_Yield
 	0,                    // Statement ::= BlockStatement
 	0,                    // Statement ::= VariableStatement
 	0,                    // Statement ::= EmptyStatement
@@ -1783,6 +1792,7 @@ var nodeTypeStr = [...]string{
 	"ConditionalExpression",
 	"AssignmentExpression",
 	"AssignmentOperator",
+	"CommaExpression",
 	"Block",
 	"LexicalDeclaration",
 	"LexicalBinding",

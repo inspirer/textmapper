@@ -60,6 +60,8 @@ public class TMEventMapper {
 					&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
 					|| NonterminalUtil.isOptional(n)
 					|| TMDataUtil.hasProperty(n, "_set")
+					|| TMDataUtil.hasProperty(n, "category")
+					|| TMDataUtil.hasProperty(n, "listof")
 					|| TMDataUtil.hasProperty(n, "noast")) {
 				return;
 			}

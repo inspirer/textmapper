@@ -142,18 +142,18 @@ public class TMDataUtil {
 		return (String) rule.getUserData(UD_RANGE_TYPE);
 	}
 
-	public static void putRangeFields(Grammar grammar, String type, Collection<? extends RangeTypeField> fields) {
-		Map<String, Collection<? extends RangeTypeField>> map = (Map<String, Collection<?
-				extends RangeTypeField>>) grammar.getUserData(UD_RANGE_FIELDS);
+	public static void putRangeFields(Grammar grammar, String type, Collection<? extends RangeField> fields) {
+		Map<String, Collection<? extends RangeField>> map = (Map<String, Collection<?
+				extends RangeField>>) grammar.getUserData(UD_RANGE_FIELDS);
 		if (map == null) {
 			grammar.putUserData(UD_RANGE_FIELDS, (map = new HashMap<>()));
 		}
 		map.put(type, fields);
 	}
 
-	public static Collection<? extends RangeTypeField> getRangeFields(Grammar grammar, String type) {
-		Map<String, Collection<? extends RangeTypeField>> map = (Map<String, Collection<?
-				extends RangeTypeField>>) grammar.getUserData(UD_RANGE_FIELDS);
+	public static Collection<? extends RangeField> getRangeFields(Grammar grammar, String type) {
+		Map<String, Collection<? extends RangeField>> map = (Map<String, Collection<?
+				extends RangeField>>) grammar.getUserData(UD_RANGE_FIELDS);
 		return map == null ? null : map.get(type);
 	}
 

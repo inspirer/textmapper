@@ -258,6 +258,11 @@ var parseTests = []struct {
 		`{ «a |= 5» }`,
 		`{ «a **= 5» }`,
 	}},
+	{js.CommaExpression, []string{
+		`{ «a = 5, b = 6» }`,
+		`{ a = («5,  6») }`,
+		`{ a((«5, 6»), 9) }`,
+	}},
 	{js.AssignmentOperator, []string{
 		` a«+=»1`,
 		` a«**=»2`,

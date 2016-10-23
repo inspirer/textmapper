@@ -475,7 +475,7 @@ CallExpression<Yield> ::=
 ;
 
 @noast
-SuperCall<Yield> ::=
+SuperCall<Yield>  ::=
     SuperExpression Arguments
 ;
 
@@ -577,15 +577,18 @@ AssignmentExpression<In, Yield> ::=
 AssignmentOperator ::=
     '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' ;
 
-@noast
+CommaExpression<In, Yield> ::=
+    Expression ',' AssignmentExpression ;
+
+@category
 Expression<In, Yield> ::=
     AssignmentExpression
-  | Expression ',' AssignmentExpression
+  | CommaExpression
 ;
 
 # A.3 Statements
 
-@noast
+@category
 Statement<Yield, Return> ::=
     BlockStatement
   | VariableStatement

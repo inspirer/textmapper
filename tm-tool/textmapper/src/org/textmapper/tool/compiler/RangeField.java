@@ -15,9 +15,7 @@
  */
 package org.textmapper.tool.compiler;
 
-import java.util.Set;
-
-public interface RangeTypeField {
+public interface RangeField {
 	/**
 	 * @return the name of the field
 	 */
