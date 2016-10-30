@@ -17,6 +17,7 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.tool.common.UniqueOrder;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -45,6 +46,10 @@ class TMRangePhrase {
 		return fields.size() == 1 && fields.get(0).isMergeable();
 	}
 
+	boolean isUnnamedField() {
+		return fields.size() == 1 && !fields.get(0).hasExplicitName();
+	}
+
 	TMRangePhrase makeNullable() {
 		if (fields.isEmpty()) return this;
 
@@ -53,6 +58,12 @@ class TMRangePhrase {
 			result[i] = fields.get(i).makeNullable();
 		}
 		return new TMRangePhrase(result);
+	}
+
+	TMRangePhrase makeList() {
+		if (!isSingleElement()) throw new IllegalStateException();
+
+		return new TMRangePhrase(fields.get(0).makeList());
 	}
 
 	static TMRangePhrase merge(String newName, List<TMRangePhrase> phrases,
@@ -66,6 +77,7 @@ class TMRangePhrase {
 		}
 
 		Map<String, List<TMRangeField>> bySignature = new LinkedHashMap<>();
+		UniqueOrder<String> nameOrder = new UniqueOrder<>();
 
 		Set<String> seen = new HashSet<>();
 		for (TMRangePhrase p : phrases) {
@@ -74,9 +86,11 @@ class TMRangePhrase {
 				String signature = f.getSignature();
 				if (!seen.add(signature)) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"two fields with the same signature `" + signature + "` in " +
-									newName, anchor);
+							"two fields with the same signature `" + signature + "`", anchor);
 					continue;
+				}
+				if (f.hasExplicitName()) {
+					nameOrder.add(f.getName());
 				}
 				List<TMRangeField> list = bySignature.get(signature);
 				if (list == null) {
@@ -84,6 +98,12 @@ class TMRangePhrase {
 				}
 				list.add(f);
 			}
+			nameOrder.flush();
+		}
+
+		if (nameOrder.getResult(String[]::new) == null) {
+			status.report(ProcessingStatus.KIND_ERROR,
+					"named elements must occur in the same order in all productions", anchor);
 		}
 
 		int ind = 0;
@@ -98,8 +118,7 @@ class TMRangePhrase {
 						fields.toArray(new TMRangeField[fields.size()]));
 				if (composite == null) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"Cannot merge " + fields.size() + " fields in " + newName + ": " +
-									entry.getKey(), anchor);
+							"Cannot merge " + fields.size() + " fields: " + entry.getKey(), anchor);
 					continue;
 				}
 			}
@@ -108,7 +127,62 @@ class TMRangePhrase {
 			}
 			result[ind++] = composite;
 		}
-		return ind == result.length ? new TMRangePhrase(result) : TMRangePhrase.empty();
+		TMRangePhrase phrase = ind == result.length ? new TMRangePhrase(result) :
+				TMRangePhrase.empty();
+		return verify(phrase, anchor, status);
+	}
+
+	static TMRangePhrase concat(List<TMRangePhrase> phrases,
+							    SourceElement anchor,
+							    ProcessingStatus status) {
+		List<TMRangeField> result = new ArrayList<>();
+
+		Set<String> seen = new HashSet<>();
+		for (TMRangePhrase p : phrases) {
+			for (TMRangeField f : p.fields) {
+				String signature = f.getSignature();
+				if (!seen.add(signature)) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							"two fields with the same signature `" + signature + "`", anchor);
+					continue;
+				}
+				result.add(f);
+			}
+		}
+
+		return verify(new TMRangePhrase(result), anchor, status);
+	}
+
+	private static TMRangePhrase verify(TMRangePhrase phrase,
+							   SourceElement anchor,
+							   ProcessingStatus status) {
+		Set<String> namedTypes = new HashSet<>();
+		for (TMRangeField field : phrase.fields) {
+			if (field.hasExplicitName()) {
+				namedTypes.addAll(Arrays.asList(field.getTypes()));
+			}
+		}
+		Map<String, String> unnamedTypes = new HashMap<>();
+		for (TMRangeField field : phrase.fields) {
+			if (field.hasExplicitName()) continue;
+			String signature = field.getSignature();
+
+			for (String type : field.getTypes()) {
+				if (namedTypes.contains(type)) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							"`" + type + "` occurs in both named and unnamed fields", anchor);
+					return TMRangePhrase.empty();
+				}
+
+				String prev = unnamedTypes.putIfAbsent(type, signature);
+				if (prev != null && !prev.equals(signature)) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							"two unnamed fields share the same type `" + type + "`", anchor);
+					return TMRangePhrase.empty();
+				}
+			}
+		}
+		return phrase;
 	}
 
 	@Override
