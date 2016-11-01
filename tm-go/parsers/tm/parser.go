@@ -60,16 +60,14 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) (bool, interface{}) {
 
 	p.stack = append(p.stack[:0], node{state: state})
 	p.lexer = lexer
-	p.next.symbol = int32(lexer.Next())
-	p.next.offset, p.next.endoffset = lexer.Pos()
+	p.fetchNext()
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.next.symbol = int32(p.lexer.Next())
-				p.next.offset, p.next.endoffset = p.lexer.Pos()
+				p.fetchNext()
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -100,8 +98,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) (bool, interface{}) {
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.next.symbol = int32(lexer.Next())
-				p.next.offset, p.next.endoffset = lexer.Pos()
+				p.fetchNext()
 			}
 			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, node{
@@ -129,8 +126,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) (bool, interface{}) {
 					p.err(line, offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
-					p.next.symbol = int32(p.lexer.Next())
-					p.next.offset, p.next.endoffset = lexer.Pos()
+					p.fetchNext()
 				}
 				recovering = 4
 				continue
@@ -160,8 +156,7 @@ const errSymbol = 38
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {
-		p.next.symbol = int32(p.lexer.Next())
-		p.next.offset, p.next.endoffset = p.lexer.Pos()
+		p.fetchNext()
 	}
 	if p.next.symbol == eoiToken {
 		return false
@@ -212,6 +207,11 @@ func gotoState(state int16, symbol int32) int16 {
 		}
 	}
 	return -1
+}
+
+func (p *Parser) fetchNext() {
+	p.next.symbol = int32(p.lexer.Next())
+	p.next.offset, p.next.endoffset = p.lexer.Pos()
 }
 
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {

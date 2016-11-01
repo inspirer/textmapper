@@ -90,9 +90,6 @@ public class ActionSymbol extends DefaultIxObject {
 		if (id.equals("leftOffset")) {
 			return leftOffset;
 		}
-		if (id.equals("role")) {
-			return TMDataUtil.getRole(ref);
-		}
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess",
 				IBundleEntity.KIND_TEMPLATE, null);
 		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, caller, context), new Object[]{id}, null);

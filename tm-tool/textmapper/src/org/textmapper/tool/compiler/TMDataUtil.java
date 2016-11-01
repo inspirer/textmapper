@@ -126,14 +126,6 @@ public class TMDataUtil {
 		return rhsSym.getUserData(UD_LITERAL);
 	}
 
-	public static void putRole(RhsSymbol rhsSym, String role) {
-		rhsSym.putUserData(UD_ROLE, role);
-	}
-
-	public static String getRole(RhsSymbol rhsSym) {
-		return (String) rhsSym.getUserData(UD_ROLE);
-	}
-
 	public static void putRangeType(Rule rule, String type) {
 		rule.putUserData(UD_RANGE_TYPE, type);
 	}

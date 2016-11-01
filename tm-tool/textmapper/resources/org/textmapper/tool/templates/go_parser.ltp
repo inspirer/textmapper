@@ -427,14 +427,8 @@ ${end}
 ${template applyRule-}
 func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 ${if self->eventBased()-}
-${if syntax.rules.exists(r|r.hasSymbolsWithRole()) || self->needExplicitLookahead()-}
+${if self->needExplicitLookahead()-}
 	switch rule {
-${foreach rule in syntax.rules.select(r|r.hasSymbolsWithRole())-}
-	case ${rule.getIndex()}: // ${rule}
-${foreach sym in rule.symbolsWithRole()-}
-		p.listener.Role(Role_${sym.role}, rhs[${sym.leftOffset}].value)
-${end-}
-${end-}
 ${call caseLookaheadRules-}
 	}
 ${end-}
@@ -442,11 +436,7 @@ ${end-}
 	if nt == 0 {
 		return
 	}
-${if self->withRoles()-}
-	node.value = p.listener.Node(nt, node.sym.offset, node.sym.endoffset)
-${else-}
 	p.listener(nt, node.sym.offset, node.sym.endoffset)
-${end-}
 ${else if syntax.rules.exists(r|self->hasAction(r))  || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
@@ -552,18 +542,8 @@ package ${opts.lang}
 import "fmt"
 
 type NodeType int
-${if self->withRoles()-}
-type NodeRole int
-${end-}
 
-${if self->withRoles()-}
-type Listener interface {
-	Node(t NodeType, offset, endoffset int) int
-	Role(r NodeRole, node int)
-}
-${else-}
 type Listener func(t NodeType, offset, endoffset int)
-${end-}
 
 const (
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
@@ -574,14 +554,6 @@ ${foreach extraType in self->additionalNodeTypes()-}
 ${end-}
 	NodeTypeMax
 )
-${if self->withRoles()-}
-
-const (
-${foreach role in syntax.rules.collect(r|r.symbolsWithRole()).collectUnique(r|r.role).sort(r|r)-}
-	Role_${role}${if index == 0} NodeRole = iota + 1${end}
-${end-}
-)
-${end-}
 
 var ruleNodeType = [...]NodeType{
 ${foreach rule in syntax.rules-}
@@ -633,8 +605,6 @@ ${template stateVars}${end}
 ${template initStateVars}${end}
 
 ${cached query eventBased() = opts.eventBased && !opts.genast}
-
-${cached query withRoles() = self->eventBased() && syntax.rules.exists(r|r.hasSymbolsWithRole()) }
 
 ${query additionalNodeTypes() = self->go_token.hasInvalidToken() ? ['InvalidToken'] : []}
 

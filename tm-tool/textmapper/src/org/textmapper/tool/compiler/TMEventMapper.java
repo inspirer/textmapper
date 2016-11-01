@@ -47,7 +47,6 @@ public class TMEventMapper {
 	}
 
 	public void deriveTypes() {
-		computeRoles();
 		computeTypes();
 		computeFields();
 	}
@@ -77,13 +76,6 @@ public class TMEventMapper {
 				typeIndex.put(type, list = new ArrayList<>());
 			}
 			list.add(seq);
-		}
-	}
-
-	private void computeRoles() {
-		for (Symbol sym : grammar.getSymbols()) {
-			if (!(sym instanceof Nonterminal)) continue;
-			assignRoles(((Nonterminal) sym).getDefinition());
 		}
 	}
 
@@ -162,42 +154,6 @@ public class TMEventMapper {
 		if (n.getTemplate() != null) n = n.getTemplate();
 		TMDataUtil.putRangeType(rule, n.getName());
 		return n.getName();
-	}
-
-	private void assignRoles(RhsPart part) {
-		switch (part.getKind()) {
-			case Assignment: {
-				RhsAssignment a = (RhsAssignment) part;
-				RhsSymbol sym = RuleUtil.getAssignmentSymbol(a);
-				if (sym != null) {
-					TMDataUtil.putRole(sym, a.getName());
-				}
-				return;
-			}
-			case Ignored:
-			case Symbol:
-			case Set:
-			case StateMarker:
-				// cannot contain aliases
-				return;
-			case Optional:
-			case Cast:
-			case Choice:
-			case Sequence:
-			case Unordered:
-			case List:
-				final Iterable<RhsPart> children = RhsUtil.getChildren(part);
-				if (children == null) return;
-
-				for (RhsPart child : children) {
-					assignRoles(child);
-				}
-				return;
-			case Conditional:
-				throw new UnsupportedOperationException();
-			default:
-				throw new IllegalStateException();
-		}
 	}
 
 	private TMRangePhrase computePhrase(Nonterminal nt, boolean internal) {

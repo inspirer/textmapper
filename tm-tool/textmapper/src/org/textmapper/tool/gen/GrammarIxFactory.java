@@ -135,35 +135,6 @@ public class GrammarIxFactory extends JavaIxFactory {
 					loadSourceSymbols();
 					return sourceSymbols;
 				}
-				if ("hasSymbolsWithRole".equals(methodName)) {
-					for (RhsCFPart p : rule.getRight()) {
-						if (p instanceof RhsSymbol && TMDataUtil.getRole((RhsSymbol) p) != null) {
-							return true;
-						}
-					}
-
-					return false;
-				}
-				if ("symbolsWithRole".equals(methodName)) {
-					List<ActionSymbol> result = new ArrayList<>();
-					int rhsSize = 0;
-					for (RhsCFPart p : rule.getRight()) {
-						if (p instanceof RhsSymbol) rhsSize++;
-					}
-					int index = 0;
-					for (RhsCFPart p : rule.getRight()) {
-						if (p instanceof RhsSymbol) {
-							RhsSymbol sym = (RhsSymbol) p;
-							if (TMDataUtil.getRole(sym) != null) {
-								result.add(new ActionSymbol(grammar, sym.getTarget(), sym, false,
-										rhsSize - 1 - index, index,
-										evaluationStrategy, rootContext, templatePackage, caller));
-							}
-							index++;
-						}
-					}
-					return result;
-				}
 				if ("rangeType".equals(methodName)) {
 					String type = TMDataUtil.getRangeType(rule);
 					return type != null ? type : "";
