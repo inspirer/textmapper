@@ -110,6 +110,10 @@ public class TMEventMapper {
 		for (Symbol symbol : grammar.getSymbols()) {
 			if (symbol instanceof Nonterminal &&
 					TMDataUtil.hasProperty(symbol, "category")) {
+				if (typeIndex.containsKey(symbol.getName())) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							symbol.getName() + " is already used ", symbol);
+				}
 				categories.put((Nonterminal) symbol, new LinkedHashSet<>());
 			}
 		}
@@ -192,7 +196,7 @@ public class TMEventMapper {
 			if (!result.isSingleElement()) {
 				if (result.fields.size() > 0) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"Invalid list: " + result.toString(), nt);
+							"Cannot make a list out of: " + result.toString(), nt);
 				}
 				result = TMRangePhrase.empty();
 			} else {
