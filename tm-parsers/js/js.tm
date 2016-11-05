@@ -348,8 +348,8 @@ Literal ::=
 
 ArrayLiteral<Yield> ::=
     '[' Elisionopt ']'
-  | '[' ElementList ']'
-  | '[' ElementList ',' Elisionopt ']'
+  | '[' list=ElementList ']'
+  | '[' list=ElementList ',' Elisionopt ']'
 ;
 
 @noast
@@ -383,8 +383,8 @@ PropertyDefinitionList<Yield> ::=
 ;
 
 PropertyDefinition<Yield> ::=
-    IdentifierReference                                   {~Property}
-  | PropertyName ':' AssignmentExpression<+In>            {~Property}
+    IdentifierReference                                   {~ShorthandProperty}
+  | PropertyName ':' value=AssignmentExpression<+In>      {~Property}
   | @noast MethodDefinition
   | CoverInitializedName                                  {~SyntaxError}
   | @noast SyntaxError
@@ -415,7 +415,7 @@ Initializer<In, Yield> ::=
 
 TemplateLiteral<Yield> ::=
     NoSubstitutionTemplate
-  | TemplateHead Expression<+In> TemplateSpans
+  | TemplateHead substitution+=Expression<+In> TemplateSpans
 ;
 
 @noast
@@ -426,8 +426,8 @@ TemplateSpans<Yield> ::=
 
 @noast
 TemplateMiddleList<Yield> ::=
-    TemplateMiddle Expression<+In>
-  | TemplateMiddleList TemplateMiddle Expression<+In>
+    TemplateMiddle substitution+=Expression<+In>
+  | TemplateMiddleList TemplateMiddle substitution+=Expression<+In>
 ;
 
 @noast
@@ -438,7 +438,7 @@ MemberExpression<Yield, flag NoLetOnly = false> ::=
   | [StartWithLet] expr=MemberExpression<+NoLetOnly> '[' index=Expression<+In> ']'            {~IndexAccess}
   | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq> '[' index=Expression<+In> ']'   {~IndexAccess}
   | expr=MemberExpression '.' selector=IdentifierNameRef        {~PropertyAccess}
-  | MemberExpression TemplateLiteral                            {~TaggedTemplate}
+  | tag=MemberExpression literal=TemplateLiteral                {~TaggedTemplate}
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
   | [!StartWithLet] 'new' MemberExpression Arguments            {~NewExpression}
@@ -466,21 +466,21 @@ NewExpression<Yield> ::=
 ;
 
 CallExpression<Yield> ::=
-    MemberExpression Arguments
+    expr=MemberExpression Arguments
   | [!StartWithLet] SuperCall
-  | CallExpression Arguments
+  | expr=CallExpression Arguments
   | expr=CallExpression '[' index=Expression<+In> ']'           {~IndexAccess}
   | expr=CallExpression '.' selector=IdentifierNameRef          {~PropertyAccess}
-  | CallExpression TemplateLiteral                              {~TaggedTemplate}
+  | tag=CallExpression literal=TemplateLiteral                  {~TaggedTemplate}
 ;
 
 @noast
 SuperCall<Yield>  ::=
-    SuperExpression Arguments
+    expr=SuperExpression Arguments
 ;
 
 Arguments<Yield> ::=
-    '(' ArgumentList? ')'
+    '(' list=ArgumentList? ')'
 ;
 
 @noast
@@ -577,7 +577,7 @@ AssignmentOperator ::=
     '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' ;
 
 CommaExpression<In, Yield> ::=
-    Expression ',' AssignmentExpression ;
+    left=Expression ',' right=AssignmentExpression ;
 
 @category
 Expression<In, Yield> ::=

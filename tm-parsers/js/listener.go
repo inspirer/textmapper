@@ -20,6 +20,7 @@ const (
 	ArrayLiteral
 	SpreadElement
 	ObjectLiteral
+	ShorthandProperty
 	Property
 	LiteralPropertyName
 	ComputedPropertyName
@@ -433,12 +434,12 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PropertyDefinitionList ::= PropertyDefinitionList ',' PropertyDefinition
 	0,                        // PropertyDefinitionList_Yield ::= PropertyDefinition_Yield
 	0,                        // PropertyDefinitionList_Yield ::= PropertyDefinitionList_Yield ',' PropertyDefinition_Yield
-	Property,                 // PropertyDefinition ::= IdentifierReference
+	ShorthandProperty,        // PropertyDefinition ::= IdentifierReference
 	Property,                 // PropertyDefinition ::= PropertyName ':' AssignmentExpression_In
 	0,                        // PropertyDefinition ::= MethodDefinition
 	SyntaxError,              // PropertyDefinition ::= CoverInitializedName
 	0,                        // PropertyDefinition ::= SyntaxError
-	Property,                 // PropertyDefinition_Yield ::= IdentifierReference_Yield
+	ShorthandProperty,        // PropertyDefinition_Yield ::= IdentifierReference_Yield
 	Property,                 // PropertyDefinition_Yield ::= PropertyName_Yield ':' AssignmentExpression_In_Yield
 	0,                        // PropertyDefinition_Yield ::= MethodDefinition_Yield
 	SyntaxError,              // PropertyDefinition_Yield ::= CoverInitializedName_Yield
@@ -1763,6 +1764,7 @@ var nodeTypeStr = [...]string{
 	"ArrayLiteral",
 	"SpreadElement",
 	"ObjectLiteral",
+	"ShorthandProperty",
 	"Property",
 	"LiteralPropertyName",
 	"ComputedPropertyName",

@@ -30,8 +30,12 @@ class TMRangePhrase {
 		this.fields = Arrays.asList(fields);
 	}
 
-	TMRangePhrase(List<TMRangeField> fields) {
+	private TMRangePhrase(List<TMRangeField> fields) {
 		this.fields = fields;
+	}
+
+	TMRangeField first() {
+		return fields.get(0);
 	}
 
 	static TMRangePhrase empty() {
@@ -43,11 +47,11 @@ class TMRangePhrase {
 	}
 
 	boolean isSingleElement() {
-		return fields.size() == 1 && fields.get(0).isMergeable();
+		return fields.size() == 1 && first().isMergeable();
 	}
 
 	boolean isUnnamedField() {
-		return fields.size() == 1 && !fields.get(0).hasExplicitName();
+		return fields.size() == 1 && !first().hasExplicitName();
 	}
 
 	TMRangePhrase makeNullable() {
@@ -61,19 +65,39 @@ class TMRangePhrase {
 	}
 
 	TMRangePhrase makeList() {
-		if (!isSingleElement()) throw new IllegalStateException();
+		if (fields.size() != 1 || first().isList()) throw new IllegalStateException();
 
-		return new TMRangePhrase(fields.get(0).makeList());
+		return new TMRangePhrase(first().makeList());
 	}
 
-	static TMRangePhrase merge(String newName, List<TMRangePhrase> phrases,
+	TMRangePhrase withName(String name) {
+		if (!isUnnamedField()) throw new IllegalStateException();
+
+		return new TMRangePhrase(first().withName(name));
+	}
+
+	static TMRangePhrase merge(List<TMRangePhrase> phrases,
 							   SourceElement anchor,
 							   ProcessingStatus status) {
-		if (phrases.stream().allMatch(TMRangePhrase::isSingleElement)) {
-			return new TMRangePhrase(TMRangeField.merge(newName,
-					phrases.stream()
-							.map(p -> p.fields.get(0))
-							.toArray(TMRangeField[]::new)));
+		if (phrases.stream().allMatch((r) -> r.isEmpty() || r.isSingleElement())) {
+			List<TMRangeField> fields = new ArrayList<>();
+			boolean nullable = false;
+			for (TMRangePhrase phrase : phrases) {
+				if (phrase.isEmpty()) {
+					nullable = true;
+				} else {
+					fields.add(phrase.first());
+				}
+			}
+			if (fields.isEmpty()) {
+				return TMRangePhrase.empty();
+			}
+			TMRangeField field = TMRangeField.merge(
+					fields.toArray(new TMRangeField[fields.size()]));
+			if (nullable) {
+				field = field.makeNullable();
+			}
+			return new TMRangePhrase(field);
 		}
 
 		Map<String, List<TMRangeField>> bySignature = new LinkedHashMap<>();
@@ -89,7 +113,7 @@ class TMRangePhrase {
 							"two fields with the same signature `" + signature + "`", anchor);
 					continue;
 				}
-				if (f.hasExplicitName()) {
+				if (f.hasExplicitName() && !f.isListElement()) {
 					nameOrder.add(f.getName());
 				}
 				List<TMRangeField> list = bySignature.get(signature);
@@ -114,11 +138,11 @@ class TMRangePhrase {
 			if (fields.size() == 1) {
 				composite = fields.get(0);
 			} else {
-				composite = TMRangeField.merge(null,
-						fields.toArray(new TMRangeField[fields.size()]));
+				composite = TMRangeField.merge(fields.toArray(new TMRangeField[fields.size()]));
 				if (composite == null) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"Cannot merge " + fields.size() + " fields: " + entry.getKey(), anchor);
+							"Cannot merge " + new TMRangePhrase(fields).toString()
+									+ " on " + entry.getKey(), anchor);
 					continue;
 				}
 			}
@@ -127,62 +151,65 @@ class TMRangePhrase {
 			}
 			result[ind++] = composite;
 		}
-		TMRangePhrase phrase = ind == result.length ? new TMRangePhrase(result) :
-				TMRangePhrase.empty();
-		return verify(phrase, anchor, status);
+		return ind == result.length ? new TMRangePhrase(result) : TMRangePhrase.empty();
 	}
 
 	static TMRangePhrase concat(List<TMRangePhrase> phrases,
-							    SourceElement anchor,
-							    ProcessingStatus status) {
-		List<TMRangeField> result = new ArrayList<>();
-
-		Set<String> seen = new HashSet<>();
+								SourceElement anchor,
+								ProcessingStatus status) {
+		Map<String, TMRangeField> seen = new LinkedHashMap<>();
 		for (TMRangePhrase p : phrases) {
 			for (TMRangeField f : p.fields) {
 				String signature = f.getSignature();
-				if (!seen.add(signature)) {
-					status.report(ProcessingStatus.KIND_ERROR,
-							"two fields with the same signature `" + signature + "`", anchor);
-					continue;
+				TMRangeField existing = seen.putIfAbsent(signature, f);
+				if (existing != null) {
+					if (!(existing.isListElement() && f.isListElement())) {
+						status.report(ProcessingStatus.KIND_ERROR,
+								"two fields with the same signature `" + signature + "`", anchor);
+						continue;
+					}
+					f = TMRangeField.merge(existing, f);
+					if (!f.isList()) {
+						f = f.makeList();
+					}
+					seen.put(signature, f);
 				}
-				result.add(f);
 			}
 		}
 
-		return verify(new TMRangePhrase(result), anchor, status);
+		return new TMRangePhrase(new ArrayList<>(seen.values()));
 	}
 
-	private static TMRangePhrase verify(TMRangePhrase phrase,
-							   SourceElement anchor,
-							   ProcessingStatus status) {
+	static void verify(TMRangePhrase phrase,
+					   SourceElement anchor,
+					   ProcessingStatus status) {
 		Set<String> namedTypes = new HashSet<>();
 		for (TMRangeField field : phrase.fields) {
-			if (field.hasExplicitName()) {
+			if (field.hasExplicitName() && !field.isListElement()) {
 				namedTypes.addAll(Arrays.asList(field.getTypes()));
 			}
 		}
 		Map<String, String> unnamedTypes = new HashMap<>();
 		for (TMRangeField field : phrase.fields) {
-			if (field.hasExplicitName()) continue;
+			if (field.hasExplicitName() && !field.isListElement()) continue;
 			String signature = field.getSignature();
 
 			for (String type : field.getTypes()) {
 				if (namedTypes.contains(type)) {
 					status.report(ProcessingStatus.KIND_ERROR,
 							"`" + type + "` occurs in both named and unnamed fields", anchor);
-					return TMRangePhrase.empty();
+					return;
 				}
 
 				String prev = unnamedTypes.putIfAbsent(type, signature);
 				if (prev != null && !prev.equals(signature)) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"two unnamed fields share the same type `" + type + "`", anchor);
-					return TMRangePhrase.empty();
+							"two unnamed fields share the same type `" + type + "`: " +
+									prev + " -vs- " + signature, anchor);
+					return;
 				}
 			}
 		}
-		return phrase;
 	}
 
 	@Override
@@ -190,5 +217,9 @@ class TMRangePhrase {
 		return fields.stream()
 				.map(TMRangeField::toString)
 				.collect(Collectors.joining(" "));
+	}
+
+	public boolean isEmpty() {
+		return fields.isEmpty();
 	}
 }

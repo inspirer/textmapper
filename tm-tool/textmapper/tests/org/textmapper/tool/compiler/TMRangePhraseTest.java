@@ -23,18 +23,19 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 public class TMRangePhraseTest {
+
 	@Test
 	public void merge() throws Exception {
 		TMRangePhrase p1 = phrase(field("a"), field("b"));
 		TMRangePhrase p2 = phrase(field("a"));
 
 		TMRangePhrase result = TMRangePhrase.merge(
-				"cc", Arrays.asList(p1, p2), null, new TestStatus());
+				Arrays.asList(p1, p2), null, new TestStatus());
 
 		assertEquals("a b?", result.toString());
 
 		result = TMRangePhrase.merge(
-				"cc", Arrays.asList(p1, TMRangePhrase.empty()), null, new TestStatus());
+				Arrays.asList(p1, TMRangePhrase.empty()), null, new TestStatus());
 
 		assertEquals("a? b?", result.toString());
 	}
@@ -42,12 +43,12 @@ public class TMRangePhraseTest {
 	@Test
 	public void illegalMerge() throws Exception {
 		TMRangePhrase p1 = phrase(
-				field("a").withName("q", true), field("b").withName("p", true));
-		TMRangePhrase p2 = phrase(
-				field("b").withName("p", true), field("c"), field("a").withName("q", true));
+				field("a").withExplicitName("q", false), field("b").withExplicitName("p", false));
+		TMRangePhrase p2 = phrase(field("b").withExplicitName("p", false),
+				field("c"), field("a").withExplicitName("q", false));
 
 		TMRangePhrase.merge(
-				"cc", Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), null,
 				new TestStatus(null,
 						"named elements must occur in the same order in all productions\n"));
 	}
@@ -68,7 +69,7 @@ public class TMRangePhraseTest {
 		TMRangePhrase p1 = phrase(field("a"), field("a"));
 
 		TMRangePhrase result = TMRangePhrase.merge(
-				"cc", Arrays.asList(p1), null,
+				Arrays.asList(p1), null,
 				new TestStatus(null, "two fields with the same signature `a`\n"));
 
 		assertEquals("a", result.toString());
@@ -77,10 +78,10 @@ public class TMRangePhraseTest {
 	@Test
 	public void namedAndUnnamed() throws Exception {
 		TMRangePhrase p1 = phrase(field("a"));
-		TMRangePhrase p2 = phrase(field("a").withName("q", true));
+		TMRangePhrase p2 = phrase(field("a").withExplicitName("q", false));
 
 		TMRangePhrase.merge(
-				null, Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), null,
 				new TestStatus(null, "`a` occurs in both named and unnamed fields\n"));
 
 		TMRangePhrase.concat(
@@ -94,7 +95,7 @@ public class TMRangePhraseTest {
 		TMRangePhrase p2 = phrase(field("l", "a", "b"));
 
 		TMRangePhrase.merge(
-				null, Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), null,
 				new TestStatus(null, "two unnamed fields share the same type `a`\n"));
 
 		TMRangePhrase.concat(
@@ -114,6 +115,6 @@ public class TMRangePhraseTest {
 		for (int i = 0; i < types.length; i++) {
 			fields[i] = new TMRangeField(types[i]);
 		}
-		return TMRangeField.merge(name, fields);
+		return TMRangeField.merge(fields).withName(name);
 	}
 }

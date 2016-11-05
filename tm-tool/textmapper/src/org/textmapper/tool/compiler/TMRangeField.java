@@ -24,35 +24,50 @@ class TMRangeField implements RangeField {
 	private final String name;
 	private final String[] types;
 	private final boolean isNamed;
+	private final boolean isListElement;
 	private final boolean isList;
 	private final boolean nullable;
 	private String signature;
 
 	TMRangeField(String type) {
-		this(type, new String[]{type}, false, false, false);
+		this(type, new String[]{type}, false, false, false, false);
 	}
 
 	private TMRangeField(String name, String[] types, boolean isNamed,
-						 boolean list, boolean nullable) {
+						 boolean isListElement, boolean list, boolean nullable) {
 		this.name = name;
 		this.types = types;
 		this.isNamed = isNamed;
+		this.isListElement = isListElement;
 		this.isList = list;
 		this.nullable = nullable;
 	}
 
 	TMRangeField makeNullable() {
 		if (isNullable()) return this;
-		return new TMRangeField(name, types, isNamed, isList, true);
+		return new TMRangeField(name, types, isNamed, isListElement, isList, true);
 	}
 
 	TMRangeField makeList() {
 		if (isList()) throw new IllegalStateException();
-		return new TMRangeField(name, types, isNamed, true, nullable);
+		if (isNamed && !isListElement) throw new IllegalStateException();
+		return new TMRangeField(name, types, isNamed, isListElement,
+				true /* list */, nullable);
 	}
 
-	TMRangeField withName(String newName, boolean explicit) {
-		return new TMRangeField(newName, types, explicit, isList, nullable);
+	TMRangeField withName(String newName) {
+		if (hasExplicitName()) {
+			throw new IllegalStateException();
+		}
+		return new TMRangeField(newName, types, false /* named */, isListElement,
+				isList, nullable);
+	}
+
+	TMRangeField withExplicitName(String newName, boolean isListElement) {
+		if (newName == null) {
+			throw new NullPointerException();
+		}
+		return new TMRangeField(newName, types, true /* named */, isListElement, isList, nullable);
 	}
 
 	boolean isMergeable() {
@@ -61,20 +76,18 @@ class TMRangeField implements RangeField {
 
 	/**
 	 *  Merges fields that are either {@code isMergeable()}, or share the same signature.
-	 *
-	 *  Returns null if nameHint is not provided and fields have different names.
 	 */
-	static TMRangeField merge(String nameHint, TMRangeField... fields) {
+	static TMRangeField merge(TMRangeField... fields) {
 		if (fields.length == 0) {
 			throw new IllegalArgumentException("fields is empty");
 		}
 		boolean mergeable = true;
 		boolean sameSignature = true;
 		for (TMRangeField field : fields) {
-			if (fields[0].isList != field.isList || fields[0].isNamed != field.isNamed) {
+			if (fields[0].isNamed != field.isNamed) {
 				throw new IllegalArgumentException("inconsistent properties");
 			}
-			if (field.isNamed && !field.getName().equals(fields[0].name)) {
+			if (field.isNamed && !equalNames(field, fields[0])) {
 				throw new IllegalArgumentException("different names");
 			}
 			mergeable &= field.isMergeable();
@@ -84,23 +97,26 @@ class TMRangeField implements RangeField {
 
 		Set<String> types = new HashSet<>();
 		boolean nullable = false;
+		boolean isList = false;
+		boolean isListElement = true;
+		boolean sameName = true;
 		for (TMRangeField field : fields) {
-			if (nameHint == null && !field.getName().equals(fields[0].name)) {
-				return null;
-			}
+			sameName &= equalNames(field, fields[0]);
+			isList |= field.isList;
+			isListElement &= field.isListElement;
 			types.addAll(Arrays.asList(field.types));
 			nullable |= field.nullable;
 		}
 		String[] arr = types.toArray(new String[types.size()]);
 		Arrays.sort(arr);
-		return new TMRangeField(fields[0].isNamed || nameHint == null ? fields[0].name : nameHint,
-				arr, fields[0].isNamed, fields[0].isList, nullable);
+		return new TMRangeField(sameName ? fields[0].name : null, arr, fields[0].isNamed,
+				isListElement, isList, nullable);
 	}
 
 	String getSignature() {
 		if (signature != null) return signature;
 		if (isNamed) {
-			signature = name + (isList ? "+=" : "=");
+			signature = name + (isList || isListElement ? "+=" : "=");
 		} else {
 			signature = asString(false);
 		}
@@ -115,7 +131,7 @@ class TMRangeField implements RangeField {
 
 	private String asString(boolean named) {
 		StringBuilder sb = new StringBuilder();
-		if (named) {
+		if (named && name != null) {
 			sb.append(name);
 			sb.append('=');
 		}
@@ -164,5 +180,13 @@ class TMRangeField implements RangeField {
 	@Override
 	public boolean isNullable() {
 		return nullable;
+	}
+
+	public boolean isListElement() {
+		return isListElement;
+	}
+
+	private static boolean equalNames(TMRangeField f1, TMRangeField f2) {
+		return f1.name == null ? f2.name == null : f1.name.equals(f2.name);
 	}
 }

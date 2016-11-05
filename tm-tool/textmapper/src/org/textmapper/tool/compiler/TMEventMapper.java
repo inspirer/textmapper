@@ -18,9 +18,7 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsPart.Kind;
-import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.lapg.util.NonterminalUtil;
-import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -126,7 +124,17 @@ public class TMEventMapper {
 		}
 
 		// TODO fill in categories
-		// TODO actually compute fields
+
+		for (Entry<String, List<RhsSequence>> e : typeIndex.entrySet()) {
+			String type = e.getKey();
+			List<TMRangePhrase> list = new ArrayList<>();
+			for (RhsSequence p : e.getValue()) {
+				list.add(computePhrase(p));
+			}
+			TMRangePhrase phrase = TMRangePhrase.merge(list, e.getValue().get(0), status);
+			TMRangePhrase.verify(phrase, e.getValue().get(0), status);
+			TMDataUtil.putRangeFields(grammar, type, phrase.fields);
+		}
 	}
 
 	private String assignRangeType(Rule rule) {
@@ -144,12 +152,10 @@ public class TMEventMapper {
 		Nonterminal n = rule.getLeft();
 		if (n instanceof Lookahead) return "";
 		if (!TMDataUtil.hasProperty(n, "ast")) {
-			if (n.getDefinition() instanceof RhsList
-					&& ((RhsList) n.getDefinition()).getCustomInitialElement() == null
+			if (isList(n)
 					|| NonterminalUtil.isOptional(n)
 					|| TMDataUtil.hasProperty(n, "_set")
 					|| TMDataUtil.hasProperty(n, "category")
-					|| TMDataUtil.hasProperty(n, "listof")
 					|| TMDataUtil.hasProperty(n, "noast")) {
 				return "";
 			}
@@ -158,6 +164,18 @@ public class TMEventMapper {
 		if (n.getTemplate() != null) n = n.getTemplate();
 		TMDataUtil.putRangeType(rule, n.getName());
 		return n.getName();
+	}
+
+	private static boolean isList(Nonterminal n) {
+		return n.getDefinition() instanceof RhsList || TMDataUtil.hasProperty(n, "listof");
+	}
+
+	private static boolean isListSelfReference(RhsSymbol ref) {
+		Symbol target = ref.getTarget();
+		if (ref.getLeft() != target || !(target instanceof Nonterminal)) return false;
+
+		Nonterminal n = (Nonterminal) target;
+		return isList(n) || TMDataUtil.hasProperty(n, "noast");
 	}
 
 	private TMRangePhrase computePhrase(Nonterminal nt, boolean internal) {
@@ -173,7 +191,7 @@ public class TMEventMapper {
 			}
 
 			if (categories.containsKey(nt)) {
-				result = new TMRangePhrase(new TMRangeField(nt.getName()));
+				result = new TMRangePhrase(new TMRangeField(getVariableName(nt)));
 			}
 
 			if (result != null) {
@@ -189,59 +207,72 @@ public class TMEventMapper {
 				list.add(new TMRangePhrase(new TMRangeField(type)));
 				continue;
 			}
-			list.add(computePhrase(nt.getName(), p));
+			list.add(computePhrase(p));
 		}
-		result = TMRangePhrase.merge(nt.getName(), list, nt, status);
+		result = TMRangePhrase.merge(list, nt, status);
+		if (result.isUnnamedField() && !NonterminalUtil.isOptional(nt)) {
+			result = result.withName(getVariableName(nt));
+		}
 		if (lists.contains(nt)) {
-			if (!result.isSingleElement()) {
-				if (result.fields.size() > 0) {
+			if (result.fields.size() == 1 && !result.first().isList()) {
+				result = result.makeList();
+			} else {
+				if (!result.isEmpty()) {
 					status.report(ProcessingStatus.KIND_ERROR,
 							"Cannot make a list out of: " + result.toString(), nt);
 				}
 				result = TMRangePhrase.empty();
-			} else {
-				result = result.makeList();
 			}
 		}
 		if (!internal) phrases.put(nt, result);
 		return result;
 	}
 
-	private TMRangePhrase computePhrase(String contextName, RhsPart part) {
+	private TMRangePhrase computePhrase(RhsPart part) {
 		switch (part.getKind()) {
 			case Assignment: {
 				RhsAssignment assignment = (RhsAssignment) part;
-				TMRangePhrase p = computePhrase(contextName, assignment.getPart());
+				TMRangePhrase p = computePhrase(assignment.getPart());
+				if (p.isEmpty()) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							"No ast nodes behind an assignment `" + assignment.getName()
+									+ "'", part);
+					return p;
+				}
 				if (!p.isUnnamedField()) {
 					status.report(ProcessingStatus.KIND_ERROR,
 							"More than one ast element behind an assignment (" +
-									assignment.getName() + ")", part);
+									assignment.getName() + "): " + p.toString(), part);
 					return p;
 				}
-				return new TMRangePhrase(p.fields.get(0).withName(assignment.getName(), true));
+				return new TMRangePhrase(p.first().withExplicitName(assignment.getName(),
+						assignment.isAddition()));
 			}
 			case Symbol: {
 				Symbol target = ((RhsSymbol) part).getTarget();
-				if (target == part.getLeft() || target.isTerm()) {
-					// This must be a list, ignore.
+				TMRangePhrase p = phrases.get(target);
+				if (p != null) return p;
+
+				if (isListSelfReference((RhsSymbol) part) || target.isTerm()) {
 					return TMRangePhrase.empty();
 				}
-				TMRangePhrase p = computePhrase((Nonterminal) target, false);
-				if (p.isUnnamedField()) {
-					p = new TMRangePhrase(p.fields.get(0).withName(target.getName(), false));
-				}
-				return p;
+				return computePhrase((Nonterminal) target, false);
 			}
 			case Optional:
-				return computePhrase(contextName, ((RhsOptional) part).getPart()).makeNullable();
+				return computePhrase(((RhsOptional) part).getPart()).makeNullable();
 			case Choice:
 			case Sequence: {
+				RhsPart[] parts = ((RhsSequence) part).getParts();
+				if (parts.length == 1) {
+					return computePhrase(parts[0]);
+				}
+
 				List<TMRangePhrase> list = new ArrayList<>();
-				for (RhsPart p : ((RhsSequence) part).getParts()) {
-					list.add(computePhrase(null, p));
+				for (RhsPart p : parts) {
+					list.add(computePhrase(p));
 				}
 				if (part.getKind() == Kind.Choice) {
-					return TMRangePhrase.merge(contextName, list, part, status);
+					return TMRangePhrase.merge(list, part, status);
 				} else {
 					return TMRangePhrase.concat(list, part, status);
 				}
@@ -259,5 +290,15 @@ public class TMEventMapper {
 			default:
 				throw new IllegalStateException();
 		}
+	}
+
+	private String getVariableName(Symbol s) {
+		if (s instanceof Nonterminal) {
+			Nonterminal template = ((Nonterminal) s).getTemplate();
+			if (template != null && template.getName() != null) {
+				return template.getName();
+			}
+		}
+		return s.getName();
 	}
 }
