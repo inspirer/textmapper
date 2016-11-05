@@ -73,6 +73,8 @@ const (
 	ForInStatement
 	ForOfStatement
 	ForBinding
+	ForCondition
+	ForFinalExpression
 	ContinueStatement
 	BreakStatement
 	ReturnStatement
@@ -679,10 +681,10 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_Yield ::= CallExpression_Yield TemplateLiteral_Yield
 	0,                        // SuperCall ::= SuperExpression Arguments
 	0,                        // SuperCall_Yield ::= SuperExpression Arguments_Yield
-	Arguments,                // Arguments ::= '(' ')'
 	Arguments,                // Arguments ::= '(' ArgumentList ')'
-	Arguments,                // Arguments_Yield ::= '(' ')'
+	Arguments,                // Arguments ::= '(' ')'
 	Arguments,                // Arguments_Yield ::= '(' ArgumentList_Yield ')'
+	Arguments,                // Arguments_Yield ::= '(' ')'
 	0,                        // ArgumentList ::= AssignmentExpression_In
 	0,                        // ArgumentList ::= SpreadElement
 	0,                        // ArgumentList ::= ArgumentList ',' AssignmentExpression_In
@@ -1416,10 +1418,10 @@ var ruleNodeType = [...]NodeType{
 	IfStatement,          // IfStatement_Return_Yield ::= 'if' '(' Expression_In_Yield ')' Statement_Return_Yield %prec 'else'
 	DoWhileStatement,     // IterationStatement ::= 'do' Statement 'while' '(' Expression_In ')' ';' .doWhile
 	WhileStatement,       // IterationStatement ::= 'while' '(' Expression_In ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' Expressionopt_NoLet ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' Expression_StartWithLet ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' LetOrConst BindingList ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement
+	ForStatement,         // IterationStatement ::= 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	ForStatement,         // IterationStatement ::= 'for' '(' Expression_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	ForStatement,         // IterationStatement ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	ForStatement,         // IterationStatement ::= 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
 	ForInStatement,       // IterationStatement ::= 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement
 	ForInStatement,       // IterationStatement ::= 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement
 	ForInStatement,       // IterationStatement ::= 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement
@@ -1429,10 +1431,10 @@ var ruleNodeType = [...]NodeType{
 	ForOfStatement,       // IterationStatement ::= 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement
 	DoWhileStatement,     // IterationStatement_Return ::= 'do' Statement_Return 'while' '(' Expression_In ')' ';' .doWhile
 	WhileStatement,       // IterationStatement_Return ::= 'while' '(' Expression_In ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' Expressionopt_NoLet ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' Expression_StartWithLet ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' LetOrConst BindingList ';' .forSC Expressionopt_In ';' .forSC Expressionopt_In ')' Statement_Return
+	ForStatement,         // IterationStatement_Return ::= 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
+	ForStatement,         // IterationStatement_Return ::= 'for' '(' Expression_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
+	ForStatement,         // IterationStatement_Return ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
+	ForStatement,         // IterationStatement_Return ::= 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
 	ForInStatement,       // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement_Return
 	ForInStatement,       // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement_Return
 	ForInStatement,       // IterationStatement_Return ::= 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement_Return
@@ -1442,10 +1444,10 @@ var ruleNodeType = [...]NodeType{
 	ForOfStatement,       // IterationStatement_Return ::= 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement_Return
 	DoWhileStatement,     // IterationStatement_Return_Yield ::= 'do' Statement_Return_Yield 'while' '(' Expression_In_Yield ')' ';' .doWhile
 	WhileStatement,       // IterationStatement_Return_Yield ::= 'while' '(' Expression_In_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' Expressionopt_NoLet_Yield ';' .forSC Expressionopt_In_Yield ';' .forSC Expressionopt_In_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' Expression_StartWithLet_Yield ';' .forSC Expressionopt_In_Yield ';' .forSC Expressionopt_In_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC Expressionopt_In_Yield ';' .forSC Expressionopt_In_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' LetOrConst BindingList_Yield ';' .forSC Expressionopt_In_Yield ';' .forSC Expressionopt_In_Yield ')' Statement_Return_Yield
+	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' Expressionopt_NoLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
+	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' Expression_StartWithLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
+	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
+	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' LetOrConst BindingList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
 	ForInStatement,       // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_NoLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
 	ForInStatement,       // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_StartWithLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
 	ForInStatement,       // IterationStatement_Return_Yield ::= 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
@@ -1459,6 +1461,10 @@ var ruleNodeType = [...]NodeType{
 	ForBinding,           // ForBinding ::= BindingPattern
 	ForBinding,           // ForBinding_Yield ::= BindingIdentifier_Yield
 	ForBinding,           // ForBinding_Yield ::= BindingPattern_Yield
+	ForCondition,         // ForCondition ::= Expressionopt_In
+	ForCondition,         // ForCondition_Yield ::= Expressionopt_In_Yield
+	ForFinalExpression,   // ForFinalExpression ::= Expressionopt_In
+	ForFinalExpression,   // ForFinalExpression_Yield ::= Expressionopt_In_Yield
 	ContinueStatement,    // ContinueStatement ::= 'continue' ';'
 	ContinueStatement,    // ContinueStatement ::= 'continue' .noLineBreak LabelIdentifier ';'
 	ContinueStatement,    // ContinueStatement_Yield ::= 'continue' ';'
@@ -1478,11 +1484,8 @@ var ruleNodeType = [...]NodeType{
 	SwitchStatement,      // SwitchStatement_Return ::= 'switch' '(' Expression_In ')' CaseBlock_Return
 	SwitchStatement,      // SwitchStatement_Return_Yield ::= 'switch' '(' Expression_In_Yield ')' CaseBlock_Return_Yield
 	Block,                // CaseBlock ::= '{' CaseClausesopt '}'
-	Block,                // CaseBlock ::= '{' CaseClausesopt DefaultClause CaseClausesopt '}'
 	Block,                // CaseBlock_Return ::= '{' CaseClausesopt_Return '}'
-	Block,                // CaseBlock_Return ::= '{' CaseClausesopt_Return DefaultClause_Return CaseClausesopt_Return '}'
 	Block,                // CaseBlock_Return_Yield ::= '{' CaseClausesopt_Return_Yield '}'
-	Block,                // CaseBlock_Return_Yield ::= '{' CaseClausesopt_Return_Yield DefaultClause_Return_Yield CaseClausesopt_Return_Yield '}'
 	0,                    // CaseClauses ::= CaseClause
 	0,                    // CaseClauses ::= CaseClauses CaseClause
 	0,                    // CaseClauses_Return ::= CaseClause_Return
@@ -1491,16 +1494,16 @@ var ruleNodeType = [...]NodeType{
 	0,                    // CaseClauses_Return_Yield ::= CaseClauses_Return_Yield CaseClause_Return_Yield
 	CaseClause,           // CaseClause ::= 'case' Expression_In ':' StatementList
 	CaseClause,           // CaseClause ::= 'case' Expression_In ':'
+	DefaultClause,        // CaseClause ::= 'default' ':' StatementList
+	DefaultClause,        // CaseClause ::= 'default' ':'
 	CaseClause,           // CaseClause_Return ::= 'case' Expression_In ':' StatementList_Return
 	CaseClause,           // CaseClause_Return ::= 'case' Expression_In ':'
+	DefaultClause,        // CaseClause_Return ::= 'default' ':' StatementList_Return
+	DefaultClause,        // CaseClause_Return ::= 'default' ':'
 	CaseClause,           // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':' StatementList_Return_Yield
 	CaseClause,           // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':'
-	DefaultClause,        // DefaultClause ::= 'default' ':' StatementList
-	DefaultClause,        // DefaultClause ::= 'default' ':'
-	DefaultClause,        // DefaultClause_Return ::= 'default' ':' StatementList_Return
-	DefaultClause,        // DefaultClause_Return ::= 'default' ':'
-	DefaultClause,        // DefaultClause_Return_Yield ::= 'default' ':' StatementList_Return_Yield
-	DefaultClause,        // DefaultClause_Return_Yield ::= 'default' ':'
+	DefaultClause,        // CaseClause_Return_Yield ::= 'default' ':' StatementList_Return_Yield
+	DefaultClause,        // CaseClause_Return_Yield ::= 'default' ':'
 	LabelledStatement,    // LabelledStatement ::= Identifier ':' LabelledItem
 	LabelledStatement,    // LabelledStatement ::= 'yield' ':' LabelledItem
 	LabelledStatement,    // LabelledStatement_Return ::= Identifier ':' LabelledItem_Return
@@ -1813,6 +1816,8 @@ var nodeTypeStr = [...]string{
 	"ForInStatement",
 	"ForOfStatement",
 	"ForBinding",
+	"ForCondition",
+	"ForFinalExpression",
 	"ContinueStatement",
 	"BreakStatement",
 	"ReturnStatement",

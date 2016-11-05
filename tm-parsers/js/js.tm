@@ -435,13 +435,13 @@ MemberExpression<Yield, flag NoLetOnly = false> ::=
     [!NoLetOnly && !StartWithLet] PrimaryExpression
   | [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
   | [StartWithLet && !NoLetOnly] 'let'                    {~IdentifierReference}
-  | [StartWithLet] MemberExpression<+NoLetOnly> '[' Expression<+In> ']'            {~IndexAccess}
-  | [!StartWithLet] MemberExpression<NoLetOnly: NoLetSq> '[' Expression<+In> ']'   {~IndexAccess}
-  | MemberExpression '.' IdentifierNameRef                {~PropertyAccess}
-  | MemberExpression TemplateLiteral                      {~TaggedTemplate}
+  | [StartWithLet] expr=MemberExpression<+NoLetOnly> '[' index=Expression<+In> ']'            {~IndexAccess}
+  | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq> '[' index=Expression<+In> ']'   {~IndexAccess}
+  | expr=MemberExpression '.' selector=IdentifierNameRef        {~PropertyAccess}
+  | MemberExpression TemplateLiteral                            {~TaggedTemplate}
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
-  | [!StartWithLet] 'new' MemberExpression Arguments      {~NewExpression}
+  | [!StartWithLet] 'new' MemberExpression Arguments            {~NewExpression}
 ;
 
 SuperExpression ::=
@@ -449,8 +449,8 @@ SuperExpression ::=
 ;
 
 SuperProperty<Yield> ::=
-    SuperExpression '[' Expression<+In> ']'               {~IndexAccess}
-  | SuperExpression '.' IdentifierNameRef                 {~PropertyAccess}
+    expr=SuperExpression '[' index=Expression<+In> ']'          {~IndexAccess}
+  | expr=SuperExpression '.' selector=IdentifierNameRef         {~PropertyAccess}
 ;
 
 @noast
@@ -469,9 +469,9 @@ CallExpression<Yield> ::=
     MemberExpression Arguments
   | [!StartWithLet] SuperCall
   | CallExpression Arguments
-  | CallExpression '[' Expression<+In> ']'                {~IndexAccess}
-  | CallExpression '.' IdentifierNameRef                  {~PropertyAccess}
-  | CallExpression TemplateLiteral                        {~TaggedTemplate}
+  | expr=CallExpression '[' index=Expression<+In> ']'           {~IndexAccess}
+  | expr=CallExpression '.' selector=IdentifierNameRef          {~PropertyAccess}
+  | CallExpression TemplateLiteral                              {~TaggedTemplate}
 ;
 
 @noast
@@ -480,8 +480,7 @@ SuperCall<Yield>  ::=
 ;
 
 Arguments<Yield> ::=
-    '(' ')'
-  | '(' ArgumentList ')'
+    '(' ArgumentList? ')'
 ;
 
 @noast
@@ -531,47 +530,47 @@ UnaryExpression<Yield> ::=
 
 ArithmeticExpression<Yield> ::=
     @noast UnaryExpression
-  | ArithmeticExpression '+' ArithmeticExpression        {~AdditiveExpression}
-  | ArithmeticExpression '-' ArithmeticExpression        {~AdditiveExpression}
-  | ArithmeticExpression '<<' ArithmeticExpression       {~ShiftExpression}
-  | ArithmeticExpression '>>' ArithmeticExpression       {~ShiftExpression}
-  | ArithmeticExpression '>>>' ArithmeticExpression      {~ShiftExpression}
-  | ArithmeticExpression '*' ArithmeticExpression        {~MultiplicativeExpression}
-  | ArithmeticExpression '/' ArithmeticExpression        {~MultiplicativeExpression}
-  | ArithmeticExpression '%' ArithmeticExpression        {~MultiplicativeExpression}
-  | UpdateExpression '**' ArithmeticExpression           {~ExponentiationExpression}
+  | left=ArithmeticExpression '+' right=ArithmeticExpression        {~AdditiveExpression}
+  | left=ArithmeticExpression '-' right=ArithmeticExpression        {~AdditiveExpression}
+  | left=ArithmeticExpression '<<' right=ArithmeticExpression       {~ShiftExpression}
+  | left=ArithmeticExpression '>>' right=ArithmeticExpression       {~ShiftExpression}
+  | left=ArithmeticExpression '>>>' right=ArithmeticExpression      {~ShiftExpression}
+  | left=ArithmeticExpression '*' right=ArithmeticExpression        {~MultiplicativeExpression}
+  | left=ArithmeticExpression '/' right=ArithmeticExpression        {~MultiplicativeExpression}
+  | left=ArithmeticExpression '%' right=ArithmeticExpression        {~MultiplicativeExpression}
+  | left=UpdateExpression '**' right=ArithmeticExpression           {~ExponentiationExpression}
 ;
 
 BinaryExpression<In, Yield> ::=
     @noast ArithmeticExpression
-  | BinaryExpression '<' BinaryExpression                {~RelationalExpression}
-  | BinaryExpression '>' BinaryExpression                {~RelationalExpression}
-  | BinaryExpression '<=' BinaryExpression               {~RelationalExpression}
-  | BinaryExpression '>=' BinaryExpression               {~RelationalExpression}
-  | BinaryExpression 'instanceof' BinaryExpression       {~RelationalExpression}
-  | [In] BinaryExpression 'in' BinaryExpression          {~RelationalExpression}
-  | BinaryExpression '==' BinaryExpression               {~EqualityExpression}
-  | BinaryExpression '!=' BinaryExpression               {~EqualityExpression}
-  | BinaryExpression '===' BinaryExpression              {~EqualityExpression}
-  | BinaryExpression '!==' BinaryExpression              {~EqualityExpression}
-  | BinaryExpression '&' BinaryExpression                {~BitwiseANDExpression}
-  | BinaryExpression '^' BinaryExpression                {~BitwiseXORExpression}
-  | BinaryExpression '|' BinaryExpression                {~BitwiseORExpression}
-  | BinaryExpression '&&' BinaryExpression               {~LogicalANDExpression}
-  | BinaryExpression '||' BinaryExpression               {~LogicalORExpression}
+  | left=BinaryExpression '<' right=BinaryExpression                {~RelationalExpression}
+  | left=BinaryExpression '>' right=BinaryExpression                {~RelationalExpression}
+  | left=BinaryExpression '<=' right=BinaryExpression               {~RelationalExpression}
+  | left=BinaryExpression '>=' right=BinaryExpression               {~RelationalExpression}
+  | left=BinaryExpression 'instanceof' right=BinaryExpression       {~RelationalExpression}
+  | [In] left=BinaryExpression 'in' right=BinaryExpression          {~RelationalExpression}
+  | left=BinaryExpression '==' right=BinaryExpression               {~EqualityExpression}
+  | left=BinaryExpression '!=' right=BinaryExpression               {~EqualityExpression}
+  | left=BinaryExpression '===' right=BinaryExpression              {~EqualityExpression}
+  | left=BinaryExpression '!==' right=BinaryExpression              {~EqualityExpression}
+  | left=BinaryExpression '&' right=BinaryExpression                {~BitwiseANDExpression}
+  | left=BinaryExpression '^' right=BinaryExpression                {~BitwiseXORExpression}
+  | left=BinaryExpression '|' right=BinaryExpression                {~BitwiseORExpression}
+  | left=BinaryExpression '&&' right=BinaryExpression               {~LogicalANDExpression}
+  | left=BinaryExpression '||' right=BinaryExpression               {~LogicalORExpression}
 ;
 
 ConditionalExpression<In, Yield> ::=
     @noast BinaryExpression
-  | BinaryExpression '?' AssignmentExpression<+In> ':' AssignmentExpression
+  | cond=BinaryExpression '?' then=AssignmentExpression<+In> ':' else=AssignmentExpression
 ;
 
 AssignmentExpression<In, Yield> ::=
     @noast ConditionalExpression
   | [Yield && !StartWithLet] @noast YieldExpression
   | [!StartWithLet] @noast ArrowFunction
-  | LeftHandSideExpression '=' AssignmentExpression
-  | LeftHandSideExpression AssignmentOperator AssignmentExpression
+  | left=LeftHandSideExpression '=' right=AssignmentExpression
+  | left=LeftHandSideExpression AssignmentOperator right=AssignmentExpression
 ;
 
 AssignmentOperator ::=
@@ -642,7 +641,7 @@ StatementList<Yield, Return> ::=
 StatementListItem<Yield, Return> ::=
     Statement
   | Declaration
-  | error ';'                       {~SyntaxError}
+  | error ';'                              {~SyntaxError}
 ;
 
 LexicalDeclaration<In, Yield> ::=
@@ -692,9 +691,9 @@ ObjectBindingPattern<Yield> ::=
 ;
 
 ArrayBindingPattern<Yield> ::=
-    '[' Elisionopt BindingRestElementopt ']'                            {~ArrayPattern}
-  | '[' BindingElementList ']'                                          {~ArrayPattern}
-  | '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'     {~ArrayPattern}
+    '[' Elisionopt BindingRestElementopt ']'                          {~ArrayPattern}
+  | '[' BindingElementList ']'                                        {~ArrayPattern}
+  | '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'   {~ArrayPattern}
 ;
 
 @noast
@@ -743,24 +742,35 @@ ExpressionStatement<Yield> ::=
 %right 'else';
 
 IfStatement<Yield, Return> ::=
-    'if' '(' Expression<+In> ')' Statement 'else' Statement
-  | 'if' '(' Expression<+In> ')' Statement %prec 'else'
+    'if' '(' Expression<+In> ')' then=Statement 'else' else=Statement
+  | 'if' '(' Expression<+In> ')' then=Statement %prec 'else'
 ;
 
 IterationStatement<Yield, Return> ::=
-    'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile                                {~DoWhileStatement}
-  | 'while' '(' Expression<+In> ')' Statement                                                  {~WhileStatement}
-  | 'for' '(' Expressionopt<~In,+NoLet> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement           {~ForStatement}
-  | 'for' '(' Expression<~In,+StartWithLet> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement       {~ForStatement}
-  | 'for' '(' 'var' VariableDeclarationList<~In> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement  {~ForStatement}
-  | 'for' '(' LetOrConst BindingList<~In> ';' .forSC Expressionopt<+In> ';' .forSC Expressionopt<+In> ')' Statement                {~ForStatement}
-  | 'for' '(' LeftHandSideExpression<+NoLet> 'in' Expression<+In> ')' Statement                {~ForInStatement}
-  | 'for' '(' LeftHandSideExpression<+StartWithLet> 'in' Expression<+In> ')' Statement         {~ForInStatement}
-  | 'for' '(' 'var' ForBinding 'in' Expression<+In> ')' Statement                              {~ForInStatement}
-  | 'for' '(' ForDeclaration 'in' Expression<+In> ')' Statement                                {~ForInStatement}
-  | 'for' '(' LeftHandSideExpression<+NoLet> 'of' AssignmentExpression<+In> ')' Statement      {~ForOfStatement}
-  | 'for' '(' 'var' ForBinding 'of' AssignmentExpression<+In> ')' Statement                    {~ForOfStatement}
-  | 'for' '(' ForDeclaration 'of' AssignmentExpression<+In> ')' Statement                      {~ForOfStatement}
+    'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       {~DoWhileStatement}
+  | 'while' '(' Expression<+In> ')' Statement                         {~WhileStatement}
+  | 'for' '(' var=Expressionopt<~In,+NoLet> ';' .forSC ForCondition
+          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+  | 'for' '(' var=Expression<~In,+StartWithLet> ';' .forSC ForCondition
+          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+  | 'for' '(' 'var' VariableDeclarationList<~In> ';' .forSC ForCondition
+          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+  | 'for' '(' LetOrConst BindingList<~In> ';' .forSC ForCondition
+          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+  | 'for' '(' var=LeftHandSideExpression<+NoLet>
+          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+  | 'for' '(' var=LeftHandSideExpression<+StartWithLet>
+          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+  | 'for' '(' 'var' ForBinding
+          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+  | 'for' '(' ForDeclaration
+          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+  | 'for' '(' var=LeftHandSideExpression<+NoLet>
+          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
+  | 'for' '(' 'var' ForBinding
+          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
+  | 'for' '(' ForDeclaration
+          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
 ;
 
 @noast
@@ -772,6 +782,12 @@ ForBinding<Yield> ::=
     BindingIdentifier
   | BindingPattern
 ;
+
+ForCondition<Yield> ::=
+    Expressionopt<+In> ;
+
+ForFinalExpression<Yield> ::=
+    Expressionopt<+In> ;
 
 ContinueStatement<Yield> ::=
     'continue' ';'
@@ -797,8 +813,7 @@ SwitchStatement<Yield, Return> ::=
 ;
 
 CaseBlock<Yield, Return> ::=
-    '{' CaseClausesopt '}'                                   {~Block}
-  | '{' CaseClausesopt DefaultClause CaseClausesopt '}'      {~Block}
+    '{' CaseClausesopt '}'                                      {~Block}
 ;
 
 @noast
@@ -809,10 +824,7 @@ CaseClauses<Yield, Return> ::=
 
 CaseClause<Yield, Return> ::=
     'case' Expression<+In> ':' StatementList?
-;
-
-DefaultClause<Yield, Return> ::=
-    'default' ':' StatementList?
+  | 'default' ':' StatementList?                                {~DefaultClause}
 ;
 
 LabelledStatement<Yield, Return> ::=
