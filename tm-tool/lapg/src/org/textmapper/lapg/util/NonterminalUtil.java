@@ -61,4 +61,8 @@ public class NonterminalUtil {
 		}
 		return refs == 1 && hasEmpty;
 	}
+
+	public static boolean isList(Nonterminal n) {
+		return n.getDefinition() instanceof RhsList;
+	}
 }

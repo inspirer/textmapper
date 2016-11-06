@@ -23,66 +23,70 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-class TMRangePhrase {
-	final List<TMRangeField> fields;
+class TMPhrase {
+	final List<TMField> fields;
 
-	TMRangePhrase(TMRangeField... fields) {
+	TMPhrase(TMField... fields) {
 		this.fields = Arrays.asList(fields);
 	}
 
-	private TMRangePhrase(List<TMRangeField> fields) {
+	static TMPhrase empty() {
+		return new TMPhrase();
+	}
+
+	static TMPhrase type(String rangeType) {
+		return new TMPhrase(new TMField(rangeType));
+	}
+
+	private TMPhrase(List<TMField> fields) {
 		this.fields = fields;
 	}
 
-	TMRangeField first() {
+	TMField first() {
 		return fields.get(0);
 	}
 
-	static TMRangePhrase empty() {
-		return new TMRangePhrase();
+	public boolean isEmpty() {
+		return fields.isEmpty();
 	}
 
-	static TMRangePhrase type(String rangeType) {
-		return new TMRangePhrase(new TMRangeField(rangeType));
-	}
-
-	boolean isSingleElement() {
-		return fields.size() == 1 && first().isMergeable();
+	boolean isMergeable() {
+		return isEmpty() || isUnnamedField() && !first().isList() && !first().isListElement();
 	}
 
 	boolean isUnnamedField() {
 		return fields.size() == 1 && !first().hasExplicitName();
 	}
 
-	TMRangePhrase makeNullable() {
+	TMPhrase makeNullable() {
 		if (fields.isEmpty()) return this;
 
-		TMRangeField[] result = new TMRangeField[fields.size()];
+		TMField[] result = new TMField[fields.size()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = fields.get(i).makeNullable();
 		}
-		return new TMRangePhrase(result);
+		return new TMPhrase(result);
 	}
 
-	TMRangePhrase makeList() {
+	TMPhrase makeList() {
 		if (fields.size() != 1 || first().isList()) throw new IllegalStateException();
 
-		return new TMRangePhrase(first().makeList());
+		return new TMPhrase(first().makeList());
 	}
 
-	TMRangePhrase withName(String name) {
+	TMPhrase withName(String name) {
 		if (!isUnnamedField()) throw new IllegalStateException();
 
-		return new TMRangePhrase(first().withName(name));
+		return new TMPhrase(first().withName(name));
 	}
 
-	static TMRangePhrase merge(List<TMRangePhrase> phrases,
-							   SourceElement anchor,
-							   ProcessingStatus status) {
-		if (phrases.stream().allMatch((r) -> r.isEmpty() || r.isSingleElement())) {
-			List<TMRangeField> fields = new ArrayList<>();
+	static TMPhrase merge(List<TMPhrase> phrases,
+						  SourceElement anchor,
+						  ProcessingStatus status) {
+		if (phrases.stream().allMatch(TMPhrase::isMergeable)) {
+			List<TMField> fields = new ArrayList<>();
 			boolean nullable = false;
-			for (TMRangePhrase phrase : phrases) {
+			for (TMPhrase phrase : phrases) {
 				if (phrase.isEmpty()) {
 					nullable = true;
 				} else {
@@ -90,33 +94,35 @@ class TMRangePhrase {
 				}
 			}
 			if (fields.isEmpty()) {
-				return TMRangePhrase.empty();
+				return TMPhrase.empty();
 			}
-			TMRangeField field = TMRangeField.merge(
-					fields.toArray(new TMRangeField[fields.size()]));
+			TMField field = TMField.merge(
+					fields.toArray(new TMField[fields.size()]));
 			if (nullable) {
 				field = field.makeNullable();
 			}
-			return new TMRangePhrase(field);
+			return new TMPhrase(field);
 		}
 
-		Map<String, List<TMRangeField>> bySignature = new LinkedHashMap<>();
+		Map<String, List<TMField>> bySignature = new LinkedHashMap<>();
 		UniqueOrder<String> nameOrder = new UniqueOrder<>();
 
-		Set<String> seen = new HashSet<>();
-		for (TMRangePhrase p : phrases) {
+		Map<String, TMField> seen = new HashMap<>();
+		for (TMPhrase p : phrases) {
 			seen.clear();
-			for (TMRangeField f : p.fields) {
+			for (TMField f : p.fields) {
 				String signature = f.getSignature();
-				if (!seen.add(signature)) {
+				TMField existing = seen.putIfAbsent(signature, f);
+				if (existing != null) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"two fields with the same signature `" + signature + "`", anchor);
+							"two fields with the same signature: " + existing.toString() +
+									" -vs- " + f.toString(), anchor);
 					continue;
 				}
 				if (f.hasExplicitName() && !f.isListElement()) {
 					nameOrder.add(f.getName());
 				}
-				List<TMRangeField> list = bySignature.get(signature);
+				List<TMField> list = bySignature.get(signature);
 				if (list == null) {
 					bySignature.put(signature, list = new ArrayList<>());
 				}
@@ -131,17 +137,17 @@ class TMRangePhrase {
 		}
 
 		int ind = 0;
-		TMRangeField[] result = new TMRangeField[bySignature.size()];
-		for (Entry<String, List<TMRangeField>> entry : bySignature.entrySet()) {
-			TMRangeField composite;
-			List<TMRangeField> fields = entry.getValue();
+		TMField[] result = new TMField[bySignature.size()];
+		for (Entry<String, List<TMField>> entry : bySignature.entrySet()) {
+			TMField composite;
+			List<TMField> fields = entry.getValue();
 			if (fields.size() == 1) {
 				composite = fields.get(0);
 			} else {
-				composite = TMRangeField.merge(fields.toArray(new TMRangeField[fields.size()]));
+				composite = TMField.merge(fields.toArray(new TMField[fields.size()]));
 				if (composite == null) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"Cannot merge " + new TMRangePhrase(fields).toString()
+							"Cannot merge " + new TMPhrase(fields).toString()
 									+ " on " + entry.getKey(), anchor);
 					continue;
 				}
@@ -151,24 +157,25 @@ class TMRangePhrase {
 			}
 			result[ind++] = composite;
 		}
-		return ind == result.length ? new TMRangePhrase(result) : TMRangePhrase.empty();
+		return ind == result.length ? new TMPhrase(result) : TMPhrase.empty();
 	}
 
-	static TMRangePhrase concat(List<TMRangePhrase> phrases,
-								SourceElement anchor,
-								ProcessingStatus status) {
-		Map<String, TMRangeField> seen = new LinkedHashMap<>();
-		for (TMRangePhrase p : phrases) {
-			for (TMRangeField f : p.fields) {
+	static TMPhrase concat(List<TMPhrase> phrases,
+						   SourceElement anchor,
+						   ProcessingStatus status) {
+		Map<String, TMField> seen = new LinkedHashMap<>();
+		for (TMPhrase p : phrases) {
+			for (TMField f : p.fields) {
 				String signature = f.getSignature();
-				TMRangeField existing = seen.putIfAbsent(signature, f);
+				TMField existing = seen.putIfAbsent(signature, f);
 				if (existing != null) {
 					if (!(existing.isListElement() && f.isListElement())) {
 						status.report(ProcessingStatus.KIND_ERROR,
-								"two fields with the same signature `" + signature + "`", anchor);
+								"two fields with the same signature: " + existing.toString() +
+										" -vs- " + f.toString(), anchor);
 						continue;
 					}
-					f = TMRangeField.merge(existing, f);
+					f = TMField.merge(existing, f);
 					if (!f.isList()) {
 						f = f.makeList();
 					}
@@ -177,20 +184,20 @@ class TMRangePhrase {
 			}
 		}
 
-		return new TMRangePhrase(new ArrayList<>(seen.values()));
+		return new TMPhrase(new ArrayList<>(seen.values()));
 	}
 
-	static void verify(TMRangePhrase phrase,
+	static void verify(TMPhrase phrase,
 					   SourceElement anchor,
 					   ProcessingStatus status) {
 		Set<String> namedTypes = new HashSet<>();
-		for (TMRangeField field : phrase.fields) {
+		for (TMField field : phrase.fields) {
 			if (field.hasExplicitName() && !field.isListElement()) {
 				namedTypes.addAll(Arrays.asList(field.getTypes()));
 			}
 		}
 		Map<String, String> unnamedTypes = new HashMap<>();
-		for (TMRangeField field : phrase.fields) {
+		for (TMField field : phrase.fields) {
 			if (field.hasExplicitName() && !field.isListElement()) continue;
 			String signature = field.getSignature();
 
@@ -215,11 +222,7 @@ class TMRangePhrase {
 	@Override
 	public String toString() {
 		return fields.stream()
-				.map(TMRangeField::toString)
+				.map(TMField::toString)
 				.collect(Collectors.joining(" "));
-	}
-
-	public boolean isEmpty() {
-		return fields.isEmpty();
 	}
 }

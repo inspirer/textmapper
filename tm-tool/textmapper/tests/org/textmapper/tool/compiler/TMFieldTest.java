@@ -19,18 +19,18 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class TMRangeFieldTest {
+public class TMFieldTest {
 
 	@Test
 	public void mergeUnnamed() throws Exception {
 		// Mergeable types.
-		TMRangeField f1 = new TMRangeField("type1");
-		TMRangeField f2 = new TMRangeField("type2");
-		TMRangeField f3 = new TMRangeField("type3");
+		TMField f1 = new TMField("type1");
+		TMField f2 = new TMField("type2");
+		TMField f3 = new TMField("type3");
 
-		TMRangeField result = TMRangeField.merge(f1, f2, f3);
+		TMField result = TMField.merge(f1, f2, f3);
 		assertNotNull(result);
-		assertEquals("(type1 | type2 | type3)", result.toString());
+		assertEquals("?=(type1 | type2 | type3)", result.toString());
 		assertFalse(result.hasExplicitName());
 
 		result = result.withName("a");
@@ -42,7 +42,7 @@ public class TMRangeFieldTest {
 		f2 = f2.withName("type");
 		f3 = f3.withName("type");
 
-		result = TMRangeField.merge(f1, f2, f3);
+		result = TMField.merge(f1, f2, f3);
 		assertNotNull(result);
 		assertEquals("type=(type1 | type2 | type3)", result.toString());
 		assertFalse(result.hasExplicitName());
@@ -51,13 +51,13 @@ public class TMRangeFieldTest {
 		f2 = f1.withName("type");
 		f3 = f1.withName("type");
 
-		result = TMRangeField.merge(f1, f2, f3);
+		result = TMField.merge(f1, f2, f3);
 		assertNotNull(result);
 		assertEquals("type=type1", result.toString());
 		assertFalse(result.hasExplicitName());
 
 		// Name hint is respected.
-		result = TMRangeField.merge(f1, f2, f3).withName("abc");
+		result = TMField.merge(f1, f2, f3).withName("abc");
 		assertNotNull(result);
 		assertEquals("abc=type1", result.toString());
 		assertFalse(result.hasExplicitName());
@@ -66,17 +66,17 @@ public class TMRangeFieldTest {
 	@Test
 	public void mergeNamed() throws Exception {
 		// Types with explicit names.
-		TMRangeField f1 = new TMRangeField("type1").withExplicitName("type", false);
-		TMRangeField f2 = new TMRangeField("type2").withExplicitName("type", false);
-		TMRangeField f3 = new TMRangeField("type3").withExplicitName("type", false);
+		TMField f1 = new TMField("type1").withExplicitName("type", false);
+		TMField f2 = new TMField("type2").withExplicitName("type", false);
+		TMField f3 = new TMField("type3").withExplicitName("type", false);
 
-		TMRangeField result = TMRangeField.merge(f1, f2, f3);
+		TMField result = TMField.merge(f1, f2, f3);
 		assertNotNull(result);
 		assertEquals("type=(type1 | type2 | type3)", result.toString());
 		assertTrue(result.hasExplicitName());
 
 		// Hint is ignored.
-		result = TMRangeField.merge(f1, f2, f3);
+		result = TMField.merge(f1, f2, f3);
 		assertNotNull(result);
 		assertEquals("type=(type1 | type2 | type3)", result.toString());
 		assertTrue(result.hasExplicitName());
@@ -85,36 +85,25 @@ public class TMRangeFieldTest {
 	@Test
 	public void mergeOrTypes() throws Exception {
 		// Types with explicit names.
-		TMRangeField f1 = new TMRangeField("type1");
-		TMRangeField f2 = new TMRangeField("type2");
-		TMRangeField f3 = new TMRangeField("type3");
+		TMField f1 = new TMField("type1");
+		TMField f2 = new TMField("type2");
+		TMField f3 = new TMField("type3");
 
-		TMRangeField f12 = TMRangeField.merge(f1, f2).withName("f12");
+		TMField f12 = TMField.merge(f1, f2).withName("f12");
 		assertEquals("f12=(type1 | type2)", f12.toString());
 
-		TMRangeField f23 = TMRangeField.merge(f2, f3).withName("f23");
+		TMField f23 = TMField.merge(f2, f3).withName("f23");
 		assertEquals("f23=(type2 | type3)", f23.toString());
 
-		TMRangeField f123 = TMRangeField.merge(f12, f23).withName("f123");
+		TMField f123 = TMField.merge(f12, f23).withName("f123");
 		assertEquals("f123=(type1 | type2 | type3)", f123.toString());
 
-		TMRangeField f123opt = TMRangeField.merge(f12, f23.makeNullable()).withName("f123opt");
+		TMField f123opt = TMField.merge(f12, f23.makeNullable()).withName("f123opt");
 		assertEquals("f123opt=(type1 | type2 | type3)?", f123opt.toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void cannotMergeEmptyList() throws Exception {
-		TMRangeField.merge();
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void cannotMergeUnmergeable() throws Exception {
-		TMRangeField.merge(new TMRangeField("aa").makeList(), new TMRangeField("bb"));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void cannotMergeNamedAndUnnamed() throws Exception {
-		TMRangeField.merge(new TMRangeField("aa").withExplicitName("qq", false),
-				new TMRangeField("bb"));
+		TMField.merge();
 	}
 }
