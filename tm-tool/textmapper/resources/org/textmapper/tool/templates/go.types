@@ -12,6 +12,7 @@ class Options extends common.Options {
 	bool genast = false;
 	bool genastdef = false;
 	bool eventBased = false;
+	bool eventFields = false;
 
 	bool reportInvalidRunes = true;
 

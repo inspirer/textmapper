@@ -44,9 +44,11 @@ public class TMEventMapper {
 		this.status = status;
 	}
 
-	public void deriveTypes() {
+	public void deriveTypes(boolean withFields) {
 		computeTypes();
-		computeFields();
+		if (withFields) {
+			computeFields();
+		}
 	}
 
 	private void computeTypes() {
@@ -133,7 +135,7 @@ public class TMEventMapper {
 			}
 			TMPhrase phrase = TMPhrase.merge(list, e.getValue().get(0), status);
 			TMPhrase.verify(phrase, e.getValue().get(0), status);
-			System.out.println(type + ": " + phrase.toString());
+//			System.out.println(type + ": " + phrase.toString());
 			TMDataUtil.putRangeFields(grammar, type, phrase.fields);
 		}
 	}
