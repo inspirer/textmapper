@@ -214,7 +214,7 @@ ${end-}
 	}
 ${end-}
 ${if self->canInlineLexerRules()-}
-${if list = syntax.lexerRules.select(r|r.kindAsText == 'space').collectUnique(r|r.symbol.index), list.size() > 0}
+${if list = syntax.lexerRules.select(r|r->isSpace()).collectUnique(r|r.symbol.index), list.size() > 0}
 	switch token {
 	case ${list->util.join(', ')}:
 		goto restart
@@ -359,7 +359,7 @@ ${end}
 
 
 ${template lexerAction($, symbol)-}
-${if self.kindAsText == 'space'-}
+${if self->isSpace()-}
 		space = true
 ${end-}
 ${if action-}
@@ -369,7 +369,9 @@ ${end}
 
 ${cached query runeClassType() = lex.nchars < 256 ? 'uint8' : lex.nchars < 65536 ? 'uint16' : 'int32' }
 
-${cached query hasActions() = self.action || self.kindAsText == 'space' }
+${cached query hasActions() = self.action || self->isSpace() }
+
+${cached query isSpace() = self.kindAsText == 'space' && !context.opts.reportTokens.exists(tok|tok == self.symbol)}
 
 ${cached query classRules() = syntax.lexerRules.select(x|x.kindAsText == 'class')}
 

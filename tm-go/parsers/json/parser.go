@@ -110,6 +110,10 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 			if len(p.ignoredTokens) > 0 {
 				p.reportIgnoredTokens()
 			}
+			switch Token(p.next.symbol) {
+			case JSONSTRING:
+				p.listener(JSONString, p.next.offset, p.next.endoffset)
+			}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
 			}

@@ -607,7 +607,16 @@ ${end}
 
 ${template imports}${end}
 
-${template onAfterShift}${end}
+${template onAfterShift-}
+${if self->nonignoredReportTokens()-}
+			switch Token(p.next.symbol) {
+${foreach tok in self->nonignoredReportTokens()-}
+			case ${tok->go_token.tokenName()}:
+				p.listener(${tok.name->asRangeTypeName()}, p.next.offset, p.next.endoffset)
+${end-}
+			}
+${end-}
+${end}
 
 ${template stateVars}${end}
 ${template initStateVars}${end}
@@ -621,3 +630,5 @@ ${query valueTypeDefaultVal() = self->eventBased() ? '0' : 'nil' }
 ${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCount < 65535 ? 'int16' : 'int32' }
 
 ${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_token.isSpace(tok))}
+
+${cached query nonignoredReportTokens() = opts.reportTokens.select(tok|!self->go_token.isSpace(tok))}

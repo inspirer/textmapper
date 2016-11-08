@@ -42,6 +42,13 @@ var jsParseTests = []struct {
 	{json.InvalidToken, []string{
 		`  «%» null `,
 	}},
+	{json.NonExistingType, []string{}},
+	{json.MultiLineComment, []string{
+		`{ "a"«/* abc */» : [] }`,
+	}},
+	{json.JSONString, []string{
+		`{ «"a"» : [«"b"»] }`,
+	}},
 }
 
 func TestParser(t *testing.T) {

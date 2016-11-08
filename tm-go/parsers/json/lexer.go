@@ -171,7 +171,7 @@ restart:
 	}
 
 	switch token {
-	case 7, 8:
+	case 7:
 		goto restart
 	}
 	return token

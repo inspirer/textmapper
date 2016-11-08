@@ -18,6 +18,7 @@ const (
 	NonExistingType
 	MultiLineComment
 	InvalidToken
+	JSONString
 	NodeTypeMax
 )
 
@@ -67,6 +68,7 @@ var nodeTypeStr = [...]string{
 	"NonExistingType",
 	"MULTILINECOMMENT",
 	"INVALID_TOKEN",
+	"JSONSTRING",
 }
 
 func (t NodeType) String() string {
