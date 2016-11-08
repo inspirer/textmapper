@@ -12,13 +12,13 @@ var parseTests = []struct {
 	inputs []string
 }{
 
-	{js.Comment, []string{
+	{js.SingleLineComment, []string{
 		` «// abc»
 		  «// abc2»
 		  var i = 1;     «// 8»
 		  «// abc2»`,
 	}},
-	{js.BlockComment, []string{
+	{js.MultiLineComment, []string{
 		`const a «/* te ** / st */» = 5;`,
 		`var a = 5;  «/* abc */»`,
 	}},
@@ -92,8 +92,11 @@ var parseTests = []struct {
 		`a = «{a: [], c: 1}»;`,
 		`a = «{a: «{}»,}»;`,
 	}},
+	{js.ShorthandProperty, []string{
+		`{} ({«a»,b: 1 in {}, f() {}, });`,
+	}},
 	{js.Property, []string{
-		`{} ({«a»,«b: 1 in {}», f() {}, });`,
+		`{} ({a,«b: 1 in {}», f() {}, });`,
 	}},
 	{js.LiteralPropertyName, []string{
 		`{} ({a,«b»: 1 in {}, «f»() {}, get «d»() { return 1;}});`,
@@ -347,6 +350,15 @@ var parseTests = []struct {
 		`«for (a=0; a < 5; a++);»`,
 		`«for (var a; a < 5; );»`,
 		`«for (var {a,b} = c; a < 5;);»`,
+	}},
+	{js.ForCondition, []string{
+		`for (a=0; «a < 5»; a++);`,
+		`for (var a; «a < 5»; );`,
+		`for (var {a,b} = c; «a < 5»;); for (; «»;);`,
+	}},
+	{js.ForFinalExpression, []string{
+		`for (a=0; a < 5; «a++»);`,
+		`for (var a; a < 5; «c++, d++»); for (;; «»);`,
 	}},
 	{js.ForInStatement, []string{
 		`«for (a in b) continue;»`,

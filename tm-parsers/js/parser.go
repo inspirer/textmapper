@@ -6,12 +6,12 @@ func (p *Parser) Parse(lexer *Lexer) bool {
 	return p.parse(0, 2691, lexer)
 }
 
-func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	nt := ruleNodeType[rule]
 	if nt == 0 {
 		return
 	}
-	p.listener(nt, node.sym.offset, node.sym.endoffset)
+	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 }
 
 const errSymbol = 113

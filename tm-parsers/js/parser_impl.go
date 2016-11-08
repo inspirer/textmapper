@@ -9,7 +9,7 @@ type Parser struct {
 	err      ErrorHandler
 	listener Listener
 
-	stack         []node
+	stack         []stackEntry
 	lexer         *Lexer
 	next          symbol
 	afterNext     symbol
@@ -27,7 +27,7 @@ type symbol struct {
 	endoffset int
 }
 
-type node struct {
+type stackEntry struct {
 	sym   symbol
 	state int16
 }
@@ -49,7 +49,7 @@ const (
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
-		p.stack = make([]node, 0, startStackSize)
+		p.stack = make([]stackEntry, 0, startStackSize)
 	}
 	if cap(p.ignoredTokens) < startTokenBufferSize {
 		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
@@ -61,7 +61,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	recovering := 0
 	p.healthy = true
 
-	p.stack = append(p.stack[:0], node{state: state})
+	p.stack = append(p.stack[:0], stackEntry{state: state})
 	p.lexer = lexer
 	p.fetchNext()
 
@@ -80,23 +80,23 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			rule := action
 			ln := int(tmRuleLen[rule])
 
-			var node node
-			node.sym.symbol = tmRuleSymbol[rule]
+			var entry stackEntry
+			entry.sym.symbol = tmRuleSymbol[rule]
 			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", Symbol(node.sym.symbol))
+				fmt.Printf("reduce to: %v\n", Symbol(entry.sym.symbol))
 			}
 			if ln == 0 {
-				node.sym.offset = p.next.offset
-				node.sym.endoffset = p.next.offset
+				entry.sym.offset = p.next.offset
+				entry.sym.endoffset = p.next.offset
 			} else {
-				node.sym.offset = p.stack[len(p.stack)-ln].sym.offset
-				node.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
+				entry.sym.offset = p.stack[len(p.stack)-ln].sym.offset
+				entry.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
 			}
-			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
+			p.applyRule(rule, &entry, p.stack[len(p.stack)-ln:])
 			p.stack = p.stack[:len(p.stack)-ln]
-			state = gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
-			node.state = state
-			p.stack = append(p.stack, node)
+			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
+			entry.state = state
+			p.stack = append(p.stack, entry)
 
 		} else if action == -1 {
 			// Shift.
@@ -104,7 +104,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 				p.fetchNext()
 			}
 			state = gotoState(state, p.next.symbol)
-			p.stack = append(p.stack, node{
+			p.stack = append(p.stack, stackEntry{
 				sym:   p.next,
 				state: state,
 			})
@@ -163,7 +163,7 @@ func (p *Parser) recover(skipToken bool) bool {
 	}
 	if len(p.stack) > 0 {
 		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
-		p.stack = append(p.stack, node{
+		p.stack = append(p.stack, stackEntry{
 			sym:   symbol{errSymbol, s, e},
 			state: state,
 		})

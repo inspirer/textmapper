@@ -58,7 +58,7 @@ func (pt *ParserTest) Consume(offset, endoffset int) {
 		pt.t.Errorf("Test %s: unexpected occurrence: `%s` in `%s` @%d", pt.name, pt.source[offset:endoffset], pt.source, offset)
 	} else if pt.exp[0].offset != offset || pt.exp[0].endoffset != endoffset {
 		first := pt.exp[0]
-		pt.t.Errorf("Test %s: got `%s`, want `%s`", pt.name, pt.source[offset:endoffset], pt.source[first.offset:first.endoffset])
+		pt.t.Errorf("Test %s: got `%s` (at %d), want `%s` (at %d)", pt.name, pt.source[offset:endoffset], offset, pt.source[first.offset:first.endoffset], first.offset)
 	} else {
 		pt.exp = pt.exp[1:]
 	}

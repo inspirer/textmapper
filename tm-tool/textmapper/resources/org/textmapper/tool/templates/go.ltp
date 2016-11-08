@@ -24,7 +24,7 @@ ${query escapeGoReserved() =
 
 ${query symText(property) = self.leftOffset == -1
 	? (property == 'value' ? 'nil' : '-1')
-	: (self.isLeft ? 'node' : 'rhs[' + self.leftOffset + ']') + '.' + (property == 'value' ? property : 'sym.' + property) }
+	: (self.isLeft ? 'lhs' : 'rhs[' + self.leftOffset + ']') + '.' + (property == 'value' ? property : 'sym.' + property) }
 
 ${query varName() = 'nn' + (self.leftOffset == -1 ? '' : self.leftOffset)}
 

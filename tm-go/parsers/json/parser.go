@@ -11,7 +11,7 @@ type Parser struct {
 	err      ErrorHandler
 	listener Listener
 
-	stack         []node
+	stack         []stackEntry
 	lexer         *Lexer
 	next          symbol
 	ignoredTokens []symbol // to be reported with the next shift
@@ -23,7 +23,7 @@ type symbol struct {
 	endoffset int
 }
 
-type node struct {
+type stackEntry struct {
 	sym   symbol
 	state int8
 }
@@ -47,7 +47,7 @@ func (p *Parser) Parse(lexer *Lexer) bool {
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 	if cap(p.stack) < startStackSize {
-		p.stack = make([]node, 0, startStackSize)
+		p.stack = make([]stackEntry, 0, startStackSize)
 	}
 	if cap(p.ignoredTokens) < startTokenBufferSize {
 		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
@@ -57,7 +57,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 	state := start
 	recovering := 0
 
-	p.stack = append(p.stack[:0], node{state: state})
+	p.stack = append(p.stack[:0], stackEntry{state: state})
 	p.lexer = lexer
 	p.fetchNext()
 
@@ -76,23 +76,23 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 			rule := action
 			ln := int(tmRuleLen[rule])
 
-			var node node
-			node.sym.symbol = tmRuleSymbol[rule]
+			var entry stackEntry
+			entry.sym.symbol = tmRuleSymbol[rule]
 			if ln == 0 {
-				node.sym.offset, _ = lexer.Pos()
-				node.sym.endoffset = node.sym.offset
+				entry.sym.offset, _ = lexer.Pos()
+				entry.sym.endoffset = entry.sym.offset
 			} else {
-				node.sym.offset = p.stack[len(p.stack)-ln].sym.offset
-				node.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
+				entry.sym.offset = p.stack[len(p.stack)-ln].sym.offset
+				entry.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
 			}
-			p.applyRule(rule, &node, p.stack[len(p.stack)-ln:])
+			p.applyRule(rule, &entry, p.stack[len(p.stack)-ln:])
 			if debugSyntax {
-				fmt.Printf("reduced to: %v\n", Symbol(node.sym.symbol))
+				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
 			p.stack = p.stack[:len(p.stack)-ln]
-			state = gotoState(p.stack[len(p.stack)-1].state, node.sym.symbol)
-			node.state = state
-			p.stack = append(p.stack, node)
+			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
+			entry.state = state
+			p.stack = append(p.stack, entry)
 
 		} else if action == -1 {
 			// Shift.
@@ -100,7 +100,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 				p.fetchNext()
 			}
 			state = gotoState(state, p.next.symbol)
-			p.stack = append(p.stack, node{
+			p.stack = append(p.stack, stackEntry{
 				sym:   p.next,
 				state: state,
 			})
@@ -138,7 +138,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 			}
 			if len(p.stack) == 0 {
 				state = start
-				p.stack = append(p.stack, node{state: state})
+				p.stack = append(p.stack, stackEntry{state: state})
 			}
 			break
 		}
@@ -177,7 +177,7 @@ func (p *Parser) recover() bool {
 	}
 	if len(p.stack) > 0 {
 		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
-		p.stack = append(p.stack, node{
+		p.stack = append(p.stack, stackEntry{
 			sym:   symbol{errSymbol, s, e},
 			state: state,
 		})
@@ -241,9 +241,9 @@ func (p *Parser) lookahead(start, end int8) bool {
 	var lexer Lexer = *p.lexer
 	lexer.err = IgnoreErrorsHandler
 
-	var allocated [64]node
+	var allocated [64]stackEntry
 	state := start
-	stack := append(allocated[:0], node{state: state})
+	stack := append(allocated[:0], stackEntry{state: state})
 	next := p.next.symbol
 
 	for state != end {
@@ -261,12 +261,12 @@ func (p *Parser) lookahead(start, end int8) bool {
 			rule := action
 			ln := int(tmRuleLen[rule])
 
-			var node node
-			node.sym.symbol = tmRuleSymbol[rule]
+			var entry stackEntry
+			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
-			state = gotoState(stack[len(stack)-1].state, node.sym.symbol)
-			node.state = state
-			stack = append(stack, node)
+			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			entry.state = state
+			stack = append(stack, entry)
 
 		} else if action == -1 {
 			// Shift.
@@ -274,7 +274,7 @@ func (p *Parser) lookahead(start, end int8) bool {
 				next = lookaheadNext(&lexer)
 			}
 			state = gotoState(state, next)
-			stack = append(stack, node{
+			stack = append(stack, stackEntry{
 				sym:   symbol{symbol: next},
 				state: state,
 			})
@@ -291,13 +291,13 @@ func (p *Parser) lookahead(start, end int8) bool {
 	return state == end
 }
 
-func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
 	case 32:
 		if p.lookahead(0, 42) /* EmptyObject */ {
-			node.sym.symbol = 23 /* lookahead_EmptyObject */
+			lhs.sym.symbol = 23 /* lookahead_EmptyObject */
 		} else {
-			node.sym.symbol = 25 /* lookahead_notEmptyObject */
+			lhs.sym.symbol = 25 /* lookahead_notEmptyObject */
 		}
 		return
 	}
@@ -305,7 +305,7 @@ func (p *Parser) applyRule(rule int32, node *node, rhs []node) {
 	if nt == 0 {
 		return
 	}
-	p.listener(nt, node.sym.offset, node.sym.endoffset)
+	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 }
 
 func (p *Parser) reportIgnoredTokens() {
