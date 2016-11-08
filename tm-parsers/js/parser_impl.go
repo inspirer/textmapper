@@ -184,9 +184,9 @@ func (p *Parser) reportIgnoredTokens() {
 		var t NodeType
 		switch Token(c.symbol) {
 		case MULTILINECOMMENT:
-			t = BlockComment
+			t = MultiLineComment
 		case SINGLELINECOMMENT:
-			t = Comment
+			t = SingleLineComment
 		case INVALID_TOKEN:
 			t = InvalidToken
 		default:

@@ -6,6 +6,8 @@ language js(go);
 lang = "js"
 package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
+reportTokens = [MultiLineComment, SingleLineComment, invalid_token]
+extraTypes = ["InsertedSemicolon"]
 
 :: lexer
 
@@ -1253,8 +1255,6 @@ ${template go_lexer.onAfterNext}
 	}
 	l.token = token
 ${end}
-
-${query go_parser.additionalNodeTypes() = ['InsertedSemicolon', 'Comment', 'BlockComment', 'InvalidToken']}
 
 ${template go_parser.parser-}
 package ${opts.lang}

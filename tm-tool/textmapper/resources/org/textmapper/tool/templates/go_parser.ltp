@@ -40,7 +40,7 @@ ${end-}
 	stack []node
 	lexer *Lexer
 	next  symbol
-${if self->reportTokens()-}
+${if self->ignoredReportTokens()-}
 	ignoredTokens []symbol // to be reported with the next shift
 ${end-}
 ${call stateVars-}
@@ -70,7 +70,7 @@ ${call initStateVars-}
 
 const (
 	startStackSize = 512
-${if self->reportTokens()-}
+${if self->ignoredReportTokens()-}
 	startTokenBufferSize = 16
 ${end-}
 	noToken        = int32(UNAVAILABLE)
@@ -93,7 +93,7 @@ func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if self-
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]node, 0, startStackSize)
 	}
-${if self->reportTokens()-}
+${if self->ignoredReportTokens()-}
 	if cap(p.ignoredTokens) < startTokenBufferSize {
 		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
 	} else {
@@ -159,7 +159,7 @@ ${end-}
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 			}
-${if self->reportTokens()-}
+${if self->ignoredReportTokens()-}
 			if len(p.ignoredTokens) > 0 {
 				p.reportIgnoredTokens()
 			}
@@ -280,24 +280,24 @@ ${if self->needExplicitLookahead()-}
 ${call lookahead}
 ${end-}
 ${call applyRule-}
-${if self->reportTokens()}
+${if self->ignoredReportTokens()}
 ${call reportIgnoredTokens-}
 ${end-}
 ${end}
 
 ${template fetchNext-}
 func (p *Parser) fetchNext() {
-${if self->go_token.hasInvalidToken() || self->reportTokens()-}
+${if self->go_token.hasInvalidToken() || self->ignoredReportTokens()-}
 restart:
 	tok := p.lexer.Next()
 	switch tok {
-${if self->reportTokens()-}
-	case ${self->tokensToIgnoreAndReport()->util.join(', ')}:
+${if self->ignoredReportTokens()-}
+	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenName())->util.join(', ')}:
 		s, e := p.lexer.Pos()
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
 		goto restart
 ${end-}
-${if !self->tokensToIgnoreAndReport().exists(t|t == self->go_token.invalidTokenName())-}
+${if !self->ignoredReportTokens().exists(t|t.name == 'invalid_token')-}
 	case ${self->go_token.invalidTokenName()}:
 		goto restart
 ${end-}
@@ -315,9 +315,9 @@ func (p *Parser) reportIgnoredTokens() {
 	for _, c := range p.ignoredTokens {
 		var t NodeType
 		switch Token(c.symbol) {
-${foreach tok in self->tokensToIgnoreAndReport()-}
-		case ${tok}:
-			t = ${self->tokenNodeType(tok)}
+${foreach tok in self->ignoredReportTokens()-}
+		case ${tok->go_token.tokenName()}:
+			t = ${tok.name->asRangeTypeName()}
 ${end-}
 		default:
 			continue
@@ -329,16 +329,16 @@ ${end-}
 ${end}
 
 ${template lookaheadNext-}
-func lookaheadNext(lexer Lexer) int32 {
-${if self->go_token.hasInvalidToken() || self->reportTokens()-}
+func lookaheadNext(lexer *Lexer) int32 {
+${if self->go_token.hasInvalidToken() || self->ignoredReportTokens()-}
 restart:
 	tok := lexer.Next()
 	switch tok {
-${if self->reportTokens()-}
-	case ${self->tokensToIgnoreAndReport()->util.join(', ')}:
+${if self->ignoredReportTokens()-}
+	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenName())->util.join(', ')}:
 		goto restart
 ${end-}
-${if !self->tokensToIgnoreAndReport().exists(t|t == self->go_token.invalidTokenName())-}
+${if !self->ignoredReportTokens().exists(t|t.name == 'invalid_token')-}
 	case ${self->go_token.invalidTokenName()}:
 		goto restart
 ${end-}
@@ -370,7 +370,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if next == noToken {
-				next = lookaheadNext(lexer)
+				next = lookaheadNext(&lexer)
 			}
 			action = lalr(action, next)
 		}
@@ -391,7 +391,7 @@ ${end-}
 		} else if action == -1 {
 			// Shift.
 			if next == noToken {
-				next = lookaheadNext(lexer)
+				next = lookaheadNext(&lexer)
 			}
 			state = gotoState(state, next)
 			stack = append(stack, node{
@@ -535,6 +535,8 @@ ${cached query rangeTypeName() =
     rangeType = self.rangeType(),
     rangeType == '' ? '' : rangeType->reserve('__rangeTypes__')}
 
+${cached query asRangeTypeName() =
+    self->reserve('__rangeTypes__')}
 
 ${template listener-}
 package ${opts.lang}
@@ -549,8 +551,11 @@ const (
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
 	${rangeType}${if index == 0} NodeType = iota + 1${end}
 ${end-}
-${foreach extraType in self->additionalNodeTypes()-}
+${foreach extraType in opts.extraTypes-}
 	${extraType}
+${end-}
+${foreach tok in opts.reportTokens-}
+	${tok.name->asRangeTypeName()}
 ${end-}
 	NodeTypeMax
 )
@@ -566,8 +571,11 @@ var nodeTypeStr = [...]string{
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
 	"${rangeType}",
 ${end-}
-${foreach extraType in self->additionalNodeTypes()-}
+${foreach extraType in opts.extraTypes-}
 	"${extraType}",
+${end-}
+${foreach tok in opts.reportTokens-}
+	"${tok->go_token.tokenName()}",
 ${end-}
 }
 
@@ -606,16 +614,10 @@ ${template initStateVars}${end}
 
 ${cached query eventBased() = opts.eventBased && !opts.genast}
 
-${query additionalNodeTypes() = self->go_token.hasInvalidToken() ? ['InvalidToken'] : []}
-
 ${query valueType() = self->eventBased() ? 'int' : 'interface{}' }
 
 ${query valueTypeDefaultVal() = self->eventBased() ? '0' : 'nil' }
 
 ${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCount < 65535 ? 'int16' : 'int32' }
 
-${cached query reportTokens() = self->tokensToIgnoreAndReport().length > 0}
-
-${query tokensToIgnoreAndReport() = self->go_token.hasInvalidToken() && self->eventBased() ? [self->go_token.invalidTokenName()] : []}
-
-${query tokenNodeType(tok) = tok == self->go_token.invalidTokenName() ? 'InvalidToken' : tok}
+${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_token.isSpace(tok))}

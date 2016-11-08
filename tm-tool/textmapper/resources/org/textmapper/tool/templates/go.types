@@ -13,6 +13,8 @@ class Options extends common.Options {
 	bool genastdef = false;
 	bool eventBased = false;
 	bool eventFields = false;
+	common.Symbol* reportTokens[0..*] = [];
+	string extraTypes[0..*] = [];
 
 	bool reportInvalidRunes = true;
 

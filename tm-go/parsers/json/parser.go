@@ -214,7 +214,7 @@ func (p *Parser) fetchNext() {
 restart:
 	tok := p.lexer.Next()
 	switch tok {
-	case INVALID_TOKEN:
+	case MULTILINECOMMENT, INVALID_TOKEN:
 		s, e := p.lexer.Pos()
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
 		goto restart
@@ -223,11 +223,11 @@ restart:
 	p.next.offset, p.next.endoffset = p.lexer.Pos()
 }
 
-func lookaheadNext(lexer Lexer) int32 {
+func lookaheadNext(lexer *Lexer) int32 {
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case INVALID_TOKEN:
+	case MULTILINECOMMENT, INVALID_TOKEN:
 		goto restart
 	}
 	return int32(tok)
@@ -247,7 +247,7 @@ func (p *Parser) lookahead(start, end int8) bool {
 		if action < -2 {
 			// Lookahead is needed.
 			if next == noToken {
-				next = lookaheadNext(lexer)
+				next = lookaheadNext(&lexer)
 			}
 			action = lalr(action, next)
 		}
@@ -267,7 +267,7 @@ func (p *Parser) lookahead(start, end int8) bool {
 		} else if action == -1 {
 			// Shift.
 			if next == noToken {
-				next = lookaheadNext(lexer)
+				next = lookaheadNext(&lexer)
 			}
 			state = gotoState(state, next)
 			stack = append(stack, node{
@@ -308,6 +308,8 @@ func (p *Parser) reportIgnoredTokens() {
 	for _, c := range p.ignoredTokens {
 		var t NodeType
 		switch Token(c.symbol) {
+		case MULTILINECOMMENT:
+			t = MultiLineComment
 		case INVALID_TOKEN:
 			t = InvalidToken
 		default:

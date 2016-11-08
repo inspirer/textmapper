@@ -15,6 +15,8 @@ const (
 	JSONObject
 	JSONMember
 	JSONArray
+	NonExistingType
+	MultiLineComment
 	InvalidToken
 	NodeTypeMax
 )
@@ -62,7 +64,9 @@ var nodeTypeStr = [...]string{
 	"JSONObject",
 	"JSONMember",
 	"JSONArray",
-	"InvalidToken",
+	"NonExistingType",
+	"MULTILINECOMMENT",
+	"INVALID_TOKEN",
 }
 
 func (t NodeType) String() string {
