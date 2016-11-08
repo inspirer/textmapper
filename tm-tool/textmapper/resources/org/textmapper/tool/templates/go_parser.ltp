@@ -313,7 +313,7 @@ ${end}
 ${template reportIgnoredTokens-}
 func (p *Parser) reportIgnoredTokens() {
 	for _, c := range p.ignoredTokens {
-		var t ${self->nodeType()}
+		var t ${self->nodeTypeRef()}
 		switch Token(c.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}
 		case ${tok->go_token.tokenName()}:
@@ -634,3 +634,5 @@ ${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_tok
 ${cached query nonignoredReportTokens() = opts.reportTokens.select(tok|!self->go_token.isSpace(tok))}
 
 ${query nodeType() = 'NodeType'}
+
+${query nodeTypeRef() = self->nodeType()}
