@@ -1,8 +1,12 @@
+0.9.8
+-----
+
+[+] Reporting whitespace and non-whitespace tokens as events.
+
 0.9.7
 -----
 
-[!] ...
-
+Broken release.
 
 0.9.6
 -----
