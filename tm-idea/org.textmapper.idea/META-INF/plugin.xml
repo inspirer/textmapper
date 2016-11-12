@@ -26,12 +26,9 @@
 	<depends optional="true" config-file="tm-java.xml">com.intellij.modules.java</depends>
 	<depends optional="true" config-file="tm-watcher.xml">com.intellij.plugins.watcher</depends>
 
-	<!-- 12.1.4 -->
-	<idea-version since-build="129.713"/>
-
 	<description><![CDATA[
 	<html>
-		<h3>Textmapper support for IntelliJ 12.1+</h3>
+		<h3>Textmapper support</h3>
 		<br>
 		<b>Features:</b><br>
 		<ul>
