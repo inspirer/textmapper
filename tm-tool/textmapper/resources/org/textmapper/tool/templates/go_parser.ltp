@@ -426,18 +426,7 @@ ${end}
 
 ${template applyRule-}
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
-${if self->eventBased()-}
-${if self->needExplicitLookahead()-}
-	switch rule {
-${call caseLookaheadRules-}
-	}
-${end-}
-	nt := rule${self->nodeType()}[rule]
-	if nt == 0 {
-		return
-	}
-	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
-${else if syntax.rules.exists(r|self->hasAction(r))  || self->needExplicitLookahead()-}
+${if syntax.rules.exists(r|self->hasAction(r)) || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
 	case ${rule.getIndex()}: // ${rule}
@@ -445,6 +434,13 @@ ${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
 ${end-}
 ${call caseLookaheadRules-}
 	}
+${end-}
+${if self->eventBased()-}
+	nt := rule${self->nodeType()}[rule]
+	if nt == 0 {
+		return
+	}
+	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 ${end-}
 }
 ${end}

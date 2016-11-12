@@ -164,6 +164,15 @@
 		<lapg source="syntax"/>
 	</target> -->
 
+	<target name="go">
+		<echo message="JS parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-parsers/js"/>
+		<echo message="JSON parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/json"/>
+		<echo message="TM parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/tm"/>
+	</target>
+
 	<target name="syntax">
 		<echo message="Textmapper parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/parser"/>
