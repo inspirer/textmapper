@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.builder;
+package org.textmapper.lapg.common;
 
 import java.util.Arrays;
 
-class SetBuilder {
+public class SetBuilder {
 	private int[] set;
 	private int size;
 	private int first;
 
-	SetBuilder(int elements) {
+	public SetBuilder(int elements) {
 		set = new int[elements];
 		Arrays.fill(set, -1);
 		size = 0;
@@ -40,7 +40,7 @@ class SetBuilder {
 	}
 
 
-	int[] create() {
+	public int[] create() {
 		int[] result = new int[size];
 		if (size == 0) return result;
 		int index = 0;

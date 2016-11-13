@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.builder;
+package org.textmapper.lapg.common;
 
 import java.util.Arrays;
 
@@ -24,13 +24,13 @@ import java.util.Arrays;
  */
 final class IntegerSets {
 
-	public static final int EMPTY_SET = 0;
-	public int[][] sets = new int[512][];
+	static final int EMPTY_SET = 0;
 
+	/* package */ int[][] sets = new int[512][];
 	private HashEntry[] htable = new HashEntry[997];
 	private int count = 0;
 
-	public IntegerSets() {
+	IntegerSets() {
 		push(1, new int[]{});
 	}
 
@@ -44,7 +44,7 @@ final class IntegerSets {
 		return true;
 	}
 
-	public int add(int... set) {
+	int add(int... set) {
 		if (set.length == 0) return EMPTY_SET;
 		if (!isSet(set)) throw new IllegalArgumentException();
 		int hash = hashCode(set);
@@ -56,7 +56,7 @@ final class IntegerSets {
 		return push(hash, set);
 	}
 
-	public boolean contains(int i, int element) {
+	boolean contains(int i, int element) {
 		if (i == EMPTY_SET) return false;
 		if (i < 0) return !contains(complement(i), element);
 
@@ -71,7 +71,7 @@ final class IntegerSets {
 		}
 	}
 
-	public int intersection(int i1, int i2) {
+	int intersection(int i1, int i2) {
 		if (i1 == EMPTY_SET || i2 == EMPTY_SET) return EMPTY_SET;
 
 		if (i1 < 0 && i2 < 0) {
@@ -93,7 +93,7 @@ final class IntegerSets {
 		return push(hash, set);
 	}
 
-	public int union(int i1, int i2) {
+	int union(int i1, int i2) {
 		if (i1 == EMPTY_SET) return i2;
 		if (i2 == EMPTY_SET) return i1;
 
@@ -115,7 +115,7 @@ final class IntegerSets {
 		return push(hash, set);
 	}
 
-	private int subtract(int i1, int i2) {
+	int subtract(int i1, int i2) {
 		if (i1 == EMPTY_SET || i2 == EMPTY_SET) return i1;
 
 		assert i1 >= 0 && i2 >= 0;
@@ -129,11 +129,11 @@ final class IntegerSets {
 		return push(hash, set);
 	}
 
-	public int complement(int set) {
+	int complement(int set) {
 		return -1 - set;
 	}
 
-	private int push(int hash, int[] set) {
+	int push(int hash, int[] set) {
 		assert hash == hashCode(set);
 		if (set.length == 0 && count > 0) return EMPTY_SET;
 		if (count >= sets.length) {

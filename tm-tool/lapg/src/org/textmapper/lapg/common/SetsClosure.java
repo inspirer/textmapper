@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.builder;
+package org.textmapper.lapg.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 /**
  * Computes a transitive closure of a set of sets based on the given relations.
  */
-class SetsClosure {
-	static final int[] EMPTY_ARRAY = new int[0];
+public class SetsClosure {
+	public static final int[] EMPTY_ARRAY = new int[0];
 
 	private final IntegerSets sets = new IntegerSets();
 	private final List<SetNode> nodes = new ArrayList<>();

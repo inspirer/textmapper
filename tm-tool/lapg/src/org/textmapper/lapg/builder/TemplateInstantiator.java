@@ -20,6 +20,8 @@ import org.textmapper.lapg.api.TemplateParameter.Modifier;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsPart.Kind;
+import org.textmapper.lapg.common.SetBuilder;
+import org.textmapper.lapg.common.SetsClosure;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;

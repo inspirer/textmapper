@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.builder;
+package org.textmapper.lapg.common;
 
 import org.junit.Test;
+import org.textmapper.lapg.common.SetBuilder;
 
 import static org.junit.Assert.*;
 

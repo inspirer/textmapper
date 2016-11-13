@@ -19,6 +19,8 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsPart.Kind;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
+import org.textmapper.lapg.common.SetBuilder;
+import org.textmapper.lapg.common.SetsClosure;
 import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.lapg.util.RhsUtil;
 
