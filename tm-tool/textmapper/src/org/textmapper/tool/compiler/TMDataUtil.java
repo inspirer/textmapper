@@ -84,7 +84,7 @@ public class TMDataUtil {
 	}
 
 	public static Nonterminal getCustomType(Nonterminal element) {
-		return (Nonterminal) element.getUserData(UD_CUSTOM_TYPE);
+		return (Nonterminal) lookupUserData(element, UD_CUSTOM_TYPE);
 	}
 
 	public static void putTypeHint(Nonterminal element, TMTypeHint hint) {
@@ -92,7 +92,7 @@ public class TMDataUtil {
 	}
 
 	public static TMTypeHint getTypeHint(Nonterminal element) {
-		return (TMTypeHint) element.getUserData(UD_TYPE_HINT);
+		return (TMTypeHint) lookupUserData(element, UD_TYPE_HINT);
 	}
 
 	public static void putImplements(Nonterminal element, List<Nonterminal> interfaces) {

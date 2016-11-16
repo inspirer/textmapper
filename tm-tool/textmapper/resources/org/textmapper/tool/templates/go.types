@@ -28,6 +28,4 @@ class AnnotateReference {
 
 class AnnotateSymbol extends common.AnnotateSymbol {
 	bool ast;
-	bool category;
-	string listof;
 }

@@ -33,7 +33,8 @@ public class TMEventMapper {
 	private final Map<Nonterminal, List<RhsSequence>> index = new HashMap<>();
 	private final Map<String, List<RhsSequence>> typeIndex = new HashMap<>();
 	private final Set<Nonterminal> lists = new HashSet<>();
-	private final Map<Nonterminal, Set<String>> categories = new HashMap<>();
+	private final Map<String, Set<String>> categories = new HashMap<>();
+	private final Map<String, List<Nonterminal>> categoryNonterms = new HashMap<>();
 
 	private final Set<Nonterminal> entered = new HashSet<>();
 	private final Map<Symbol, TMPhrase> phrases = new HashMap<>();
@@ -108,14 +109,39 @@ public class TMEventMapper {
 
 		// Collect categories.
 		for (Symbol symbol : grammar.getSymbols()) {
-			if (symbol instanceof Nonterminal &&
-					TMDataUtil.hasProperty(symbol, "category")) {
-				if (typeIndex.containsKey(symbol.getName())) {
+			if (!(symbol instanceof Nonterminal)) continue;
+			Nonterminal n = (Nonterminal) symbol;
+
+			if (isInterface(n)) {
+				String category = getVariableName(n);
+				if (categories.containsKey(category)) continue;
+
+				if (typeIndex.containsKey(category)) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							symbol.getName() + " is already used ", symbol);
+							"the name `" + category + "' is used for both - " +
+									"an interface and a type", symbol);
+					continue;
 				}
-				categories.put((Nonterminal) symbol, new LinkedHashSet<>());
+				categories.put(category, new LinkedHashSet<>());
+				categoryNonterms.put(category, new ArrayList<>(Collections.singletonList(n)));
 			}
+		}
+
+		// Category extensions.
+		for (Symbol symbol : grammar.getSymbols()) {
+			if (!(symbol instanceof Nonterminal)) continue;
+			Nonterminal n = (Nonterminal) symbol;
+
+			Nonterminal type = TMDataUtil.getCustomType(n);
+			if (type == null) continue;
+
+			String category = getVariableName(type);
+			if (!categoryNonterms.containsKey(category)) {
+				status.report(ProcessingStatus.KIND_ERROR,
+						category + " must be an interface", symbol);
+				continue;
+			}
+			categoryNonterms.get(category).add(n);
 		}
 
 		// Pre-compute phrases for all nonterminals.
@@ -125,7 +151,21 @@ public class TMEventMapper {
 			}
 		}
 
-		// TODO fill in categories
+		// Fill in categories.
+		for (Entry<String, List<Nonterminal>> e : categoryNonterms.entrySet()) {
+			Set<String> foundTypes = categories.get(e.getKey());
+
+			for (Nonterminal nt : e.getValue()) {
+				TMPhrase phrase = phrases.get(nt);
+				if (!phrase.isUnnamedField() || phrase.first().isList()) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							getVariableName(nt) + " cannot be used as an interface: "
+									+ phrase.toString(), nt);
+					continue;
+				}
+				foundTypes.addAll(Arrays.asList(phrase.first().getTypes()));
+			}
+		}
 
 		for (Entry<String, List<RhsSequence>> e : typeIndex.entrySet()) {
 			String type = e.getKey();
@@ -158,8 +198,7 @@ public class TMEventMapper {
 			if (NonterminalUtil.isList(n)
 					|| NonterminalUtil.isOptional(n)
 					|| TMDataUtil.hasProperty(n, "_set")
-					|| TMDataUtil.hasProperty(n, "category")
-					|| TMDataUtil.hasProperty(n, "listof")
+					|| isInterface(n)
 					|| TMDataUtil.hasProperty(n, "noast")) {
 				return "";
 			}
@@ -190,8 +229,14 @@ public class TMEventMapper {
 				result = TMPhrase.empty();
 			}
 
-			if (categories.containsKey(nt)) {
-				result = new TMPhrase(new TMField(getVariableName(nt)));
+			Nonterminal category = TMDataUtil.getCustomType(nt);
+			if (result == null && category != null) {
+				result = new TMPhrase(new TMField(getVariableName(category)));
+			}
+
+			String ntName = getVariableName(nt);
+			if (result == null && categories.containsKey(ntName)) {
+				result = new TMPhrase(new TMField(ntName));
 			}
 
 			if (result != null) {
@@ -211,17 +256,16 @@ public class TMEventMapper {
 		}
 		result = TMPhrase.merge(list, nt, status);
 		if (result.isUnnamedField() && !NonterminalUtil.isOptional(nt)
-				&& !NonterminalUtil.isList(nt)) {
+				&& !NonterminalUtil.isList(nt) && !TMDataUtil.hasProperty(nt, "noname")) {
 			result = result.withName(getVariableName(nt));
 		}
 		if (lists.contains(nt)) {
 			if (result.fields.size() == 1 && !result.first().isList()) {
 				result = result.makeList();
-			} else {
-				if (!result.isEmpty()) {
-					status.report(ProcessingStatus.KIND_ERROR,
-							"Cannot make a list out of: " + result.toString(), nt);
-				}
+			} else if (!result.isEmpty()) {
+				status.report(ProcessingStatus.KIND_ERROR,
+						"Cannot make a list out of: " + result.toString(), nt);
+
 				result = TMPhrase.empty();
 			}
 		}
@@ -236,8 +280,8 @@ public class TMEventMapper {
 				TMPhrase p = computePhrase(assignment.getPart());
 				if (p.isEmpty()) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"No ast nodes behind an assignment `" + assignment.getName()
-									+ "'", part);
+							"No ast nodes behind an assignment `" + assignment.getName() + "'",
+							part);
 					return p;
 				}
 				if (!p.isUnnamedField()) {
@@ -301,5 +345,10 @@ public class TMEventMapper {
 			}
 		}
 		return s.getName();
+	}
+
+	private boolean isInterface(Nonterminal n) {
+		TMTypeHint hint = TMDataUtil.getTypeHint(n);
+		return hint != null && hint.getKind() == TMTypeHint.Kind.INTERFACE;
 	}
 }

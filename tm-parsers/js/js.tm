@@ -6,6 +6,7 @@ language js(go);
 lang = "js"
 package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
+eventFields = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token]
 extraTypes = ["InsertedSemicolon"]
 
@@ -314,7 +315,7 @@ LabelIdentifier<Yield> ::=
 ;
 
 @noast
-PrimaryExpression<Yield> ::=
+PrimaryExpression<Yield> returns Expression ::=
     'this'                                                 {~This}
   | IdentifierReference
   | Literal
@@ -384,7 +385,7 @@ PropertyDefinitionList<Yield> ::=
   | PropertyDefinitionList ',' PropertyDefinition
 ;
 
-PropertyDefinition<Yield> ::=
+PropertyDefinition<Yield> interface ::=
     IdentifierReference                                   {~ShorthandProperty}
   | PropertyName ':' value=AssignmentExpression<+In>      {~Property}
   | @noast MethodDefinition
@@ -392,8 +393,7 @@ PropertyDefinition<Yield> ::=
   | @noast SyntaxError
 ;
 
-@noast
-PropertyName<Yield> ::=
+PropertyName<Yield> interface ::=
     LiteralPropertyName
   | ComputedPropertyName
 ;
@@ -433,7 +433,7 @@ TemplateMiddleList<Yield> ::=
 ;
 
 @noast
-MemberExpression<Yield, flag NoLetOnly = false> ::=
+MemberExpression<Yield, flag NoLetOnly = false> returns Expression ::=
     [!NoLetOnly && !StartWithLet] PrimaryExpression
   | [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
   | [StartWithLet && !NoLetOnly] 'let'                    {~IdentifierReference}
@@ -443,14 +443,14 @@ MemberExpression<Yield, flag NoLetOnly = false> ::=
   | tag=MemberExpression literal=TemplateLiteral                {~TaggedTemplate}
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
-  | [!StartWithLet] 'new' MemberExpression Arguments            {~NewExpression}
+  | [!StartWithLet] 'new' expr=MemberExpression Arguments            {~NewExpression}
 ;
 
-SuperExpression ::=
+SuperExpression returns Expression ::=
     'super'
 ;
 
-SuperProperty<Yield> ::=
+SuperProperty<Yield> returns Expression ::=
     expr=SuperExpression '[' index=Expression<+In> ']'          {~IndexAccess}
   | expr=SuperExpression '.' selector=IdentifierNameRef         {~PropertyAccess}
 ;
@@ -462,12 +462,12 @@ MetaProperty ::=
 NewTarget ::=
     'new' '.' 'target' ;
 
-NewExpression<Yield> ::=
+NewExpression<Yield> returns Expression ::=
     @noast MemberExpression
-  | [!StartWithLet] 'new' NewExpression
+  | [!StartWithLet] 'new' expr=NewExpression
 ;
 
-CallExpression<Yield> ::=
+CallExpression<Yield> returns Expression ::=
     expr=MemberExpression Arguments
   | [!StartWithLet] SuperCall
   | expr=CallExpression Arguments
@@ -477,7 +477,7 @@ CallExpression<Yield> ::=
 ;
 
 @noast
-SuperCall<Yield>  ::=
+SuperCall<Yield> ::=
     expr=SuperExpression Arguments
 ;
 
@@ -494,12 +494,12 @@ ArgumentList<Yield> ::=
 ;
 
 @noast
-LeftHandSideExpression<Yield> ::=
+LeftHandSideExpression<Yield> returns Expression ::=
     NewExpression
   | CallExpression
 ;
 
-UpdateExpression<Yield> ::=
+UpdateExpression<Yield> returns Expression ::=
     @noast LeftHandSideExpression
   | LeftHandSideExpression .noLineBreak '++'             {~PostInc}
   | LeftHandSideExpression .noLineBreak '--'             {~PostDec}
@@ -507,7 +507,7 @@ UpdateExpression<Yield> ::=
   | [!StartWithLet] '--' UnaryExpression                 {~PreDec}
 ;
 
-UnaryExpression<Yield> ::=
+UnaryExpression<Yield> returns Expression ::=
     @noast UpdateExpression
   | [!StartWithLet] 'delete' UnaryExpression
   | [!StartWithLet] 'void' UnaryExpression
@@ -530,7 +530,7 @@ UnaryExpression<Yield> ::=
 %left '*' '/' '%';
 %right '**';
 
-ArithmeticExpression<Yield> ::=
+ArithmeticExpression<Yield> returns Expression ::=
     @noast UnaryExpression
   | left=ArithmeticExpression '+' right=ArithmeticExpression        {~AdditiveExpression}
   | left=ArithmeticExpression '-' right=ArithmeticExpression        {~AdditiveExpression}
@@ -543,7 +543,7 @@ ArithmeticExpression<Yield> ::=
   | left=UpdateExpression '**' right=ArithmeticExpression           {~ExponentiationExpression}
 ;
 
-BinaryExpression<In, Yield> ::=
+BinaryExpression<In, Yield> returns Expression ::=
     @noast ArithmeticExpression
   | left=BinaryExpression '<' right=BinaryExpression                {~RelationalExpression}
   | left=BinaryExpression '>' right=BinaryExpression                {~RelationalExpression}
@@ -562,12 +562,12 @@ BinaryExpression<In, Yield> ::=
   | left=BinaryExpression '||' right=BinaryExpression               {~LogicalORExpression}
 ;
 
-ConditionalExpression<In, Yield> ::=
+ConditionalExpression<In, Yield> returns Expression ::=
     @noast BinaryExpression
   | cond=BinaryExpression '?' then=AssignmentExpression<+In> ':' else=AssignmentExpression
 ;
 
-AssignmentExpression<In, Yield> ::=
+AssignmentExpression<In, Yield> returns Expression ::=
     @noast ConditionalExpression
   | [Yield && !StartWithLet] @noast YieldExpression
   | [!StartWithLet] @noast ArrowFunction
@@ -578,19 +578,17 @@ AssignmentExpression<In, Yield> ::=
 AssignmentOperator ::=
     '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' ;
 
-CommaExpression<In, Yield> ::=
+CommaExpression<In, Yield> returns Expression ::=
     left=Expression ',' right=AssignmentExpression ;
 
-@category
-Expression<In, Yield> ::=
+Expression<In, Yield> interface ::=
     AssignmentExpression
   | CommaExpression
 ;
 
 # A.3 Statements
 
-@category
-Statement<Yield, Return> ::=
+Statement<Yield, Return> interface ::=
     BlockStatement
   | VariableStatement
   | EmptyStatement
@@ -608,7 +606,7 @@ Statement<Yield, Return> ::=
 ;
 
 @noast
-Declaration<Yield> ::=
+Declaration<Yield> interface ::=
     HoistableDeclaration<~Default>
   | ClassDeclaration<~Default>
   | LexicalDeclaration<+In>
@@ -621,7 +619,7 @@ HoistableDeclaration<Yield, Default> ::=
 ;
 
 @noast
-BreakableStatement<Yield, Return> ::=
+BreakableStatement<Yield, Return> returns Statement::=
     IterationStatement
   | SwitchStatement
 ;
@@ -640,7 +638,7 @@ StatementList<Yield, Return> ::=
 ;
 
 @noast
-StatementListItem<Yield, Return> ::=
+StatementListItem<Yield, Return> interface ::=
     Statement
   | Declaration
   | error ';'                              {~SyntaxError}
@@ -748,7 +746,7 @@ IfStatement<Yield, Return> ::=
   | 'if' '(' Expression<+In> ')' then=Statement %prec 'else'
 ;
 
-IterationStatement<Yield, Return> ::=
+IterationStatement<Yield, Return> returns Statement ::=
     'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       {~DoWhileStatement}
   | 'while' '(' Expression<+In> ')' Statement                         {~WhileStatement}
   | 'for' '(' var=Expressionopt<~In,+NoLet> ';' .forSC ForCondition
@@ -775,7 +773,7 @@ IterationStatement<Yield, Return> ::=
           'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
 ;
 
-@noast
+@noast @noname
 ForDeclaration<Yield> ::=
     LetOrConst ForBinding
 ;
@@ -925,7 +923,7 @@ ConciseBody<In> ::=
   | @noast FunctionBody<~Yield>
 ;
 
-MethodDefinition<Yield> ::=
+MethodDefinition<Yield> interface ::=
     PropertyName StrictFormalParameters FunctionBody                      {~Method}
   | @noast GeneratorMethod
   | 'get' PropertyName '(' ')' FunctionBody                               {~Getter}
@@ -983,7 +981,7 @@ ClassElementList<Yield> ::=
   | ClassElementList ClassElement
 ;
 
-ClassElement<Yield> ::=
+ClassElement<Yield> interface ::=
     @noast MethodDefinition
   | 'static' MethodDefinition                             {~StaticMethod}
   | ';'                                                   {~EmptyDecl}
@@ -1005,7 +1003,7 @@ ModuleItemList ::=
 ;
 
 @noast
-ModuleItem ::=
+ModuleItem interface ::=
     ImportDeclaration
   | ExportDeclaration
   | StatementListItem<~Yield,~Return>
@@ -1038,7 +1036,7 @@ NamedImports ::=
   | '{' ImportsList ',' '}'
 ;
 
-@noast
+@noast @noname
 FromClause ::=
     'from' ModuleSpecifier ;
 
