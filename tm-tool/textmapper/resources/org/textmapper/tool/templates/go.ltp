@@ -1,6 +1,8 @@
 ${template main-}
 ${call go_lexer.main-}
+${if parser-}
 ${call go_parser.main-}
+${end-}
 ${call go_token.main-}
 ${call go_ast.main-}
 ${end}

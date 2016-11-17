@@ -33,7 +33,8 @@ import java.util.regex.Pattern;
 class RegexUtil {
 
 	private static final Pattern QUANTIFIER = Pattern.compile("(\\d+)(,(\\d+)?)?");
-	private static final Pattern IDENTIFIER = Pattern.compile("[a-zA-Z_][a-zA-Z_0-9]*|'([^\\n\\\\']|\\\\.)*'");
+	private static final Pattern IDENTIFIER = Pattern.compile(
+			"[a-zA-Z_]([a-zA-Z_\\-0-9]*[a-zA-Z_0-9])?|'([^\\n\\\\']|\\\\.)*'");
 
 	static RegexAstPart wrap(RegexAstPart part) {
 		if (!(part instanceof RegexAstList) || ((RegexAstList) part).isParenthesized()) {

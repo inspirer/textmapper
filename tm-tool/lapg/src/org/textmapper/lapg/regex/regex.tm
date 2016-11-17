@@ -79,7 +79,7 @@ char(Integer): /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(
 '[^':	/\[^/ => inSet
 char(Integer):  /-/								{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
-identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
+identifier = /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?/
 
 expand:			/\{{identifier}\}/	(class)		{ quantifierReady(); }
 kw_eoi:			/\{eoi\}/						{ state = 0; }

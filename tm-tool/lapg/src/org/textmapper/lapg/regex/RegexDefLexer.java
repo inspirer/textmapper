@@ -180,7 +180,7 @@ public class RegexDefLexer {
 	};
 
 	private static final short tmStateMap[] = {
-		0, 50, 65
+		0, 51, 66
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(36,
@@ -189,9 +189,9 @@ public class RegexDefLexer {
 
 	private static final int tmClassesCount = 41;
 
-	private static final short[] tmGoto = unpack_vc_short(2829,
-		"\1\ufffe\1\61\1\56\1\61\1\14\13\61\1\13\3\12\1\61\1\11\1\61\1\5\1\4\1\3\1\61\1\1" +
-		"\1\61\1\uffff\2\61\1\uffff\10\61\34\uffe0\1\2\14\uffe0\51\uffdf\51\uffe2\51\uffe3" +
+	private static final short[] tmGoto = unpack_vc_short(2870,
+		"\1\ufffe\1\62\1\56\1\62\1\14\13\62\1\13\3\12\1\62\1\11\1\62\1\5\1\4\1\3\1\62\1\1" +
+		"\1\62\1\uffff\2\62\1\uffff\10\62\34\uffe0\1\2\14\uffe0\51\uffdf\51\uffe2\51\uffe3" +
 		"\23\uffe4\1\6\25\uffe4\25\uffff\1\7\21\uffff\2\7\25\uffff\1\7\4\uffff\1\10\14\uffff" +
 		"\2\7\51\uffe1\51\uffde\51\uffe5\51\uffed\1\uffff\4\55\1\54\1\53\1\52\1\51\1\50\1" +
 		"\47\1\46\1\43\1\36\1\25\1\21\17\55\1\uffff\1\55\2\uffff\1\16\1\55\2\15\1\55\1\15" +
@@ -206,15 +206,15 @@ public class RegexDefLexer {
 		"\1\42\3\uffff\3\42\3\uffff\51\ufff1\5\uffff\3\44\27\uffff\1\44\3\uffff\3\44\10\uffff" +
 		"\3\45\27\uffff\1\45\3\uffff\3\45\3\uffff\51\ufff2\51\ufff4\51\ufff5\51\ufff6\51\ufff7" +
 		"\51\ufff8\51\ufff9\51\ufffa\51\ufffb\5\ufffc\13\57\16\ufffc\1\57\3\ufffc\1\57\1\ufffc" +
-		"\5\57\3\uffff\1\60\1\uffff\13\57\5\uffff\1\57\10\uffff\2\57\2\uffff\7\57\51\ufffd" +
-		"\51\ufffc\1\uffff\1\61\1\66\1\61\1\14\13\61\1\13\1\65\1\64\1\63\1\61\1\11\1\61\1" +
-		"\5\1\4\1\3\1\61\1\1\1\61\1\uffff\2\61\1\uffff\10\61\51\uffea\51\uffeb\51\uffec\5" +
-		"\ufffc\13\57\2\ufffc\1\77\2\ufffc\1\75\1\72\7\ufffc\1\57\1\67\2\ufffc\1\57\1\67\5" +
-		"\57\3\uffff\1\71\20\uffff\1\70\12\uffff\1\67\3\uffff\1\67\10\uffff\1\71\33\uffff" +
-		"\1\70\3\uffff\1\70\5\uffff\51\uffe9\26\uffff\1\73\25\uffff\1\74\45\uffff\51\uffe6" +
-		"\3\uffff\1\76\45\uffff\51\uffe8\3\uffff\1\100\45\uffff\51\uffe7\1\uffff\3\61\1\14" +
-		"\13\61\1\13\3\12\1\61\1\104\1\61\3\103\1\61\1\uffff\1\61\1\102\2\61\1\uffff\10\61" +
-		"\51\uffdc\51\uffda\51\uffdb");
+		"\5\57\3\uffff\1\61\1\uffff\13\57\5\uffff\1\60\10\uffff\2\57\2\uffff\7\57\5\uffff" +
+		"\13\57\5\uffff\1\60\10\uffff\2\57\2\uffff\7\57\51\ufffd\51\ufffc\1\uffff\1\62\1\67" +
+		"\1\62\1\14\13\62\1\13\1\66\1\65\1\64\1\62\1\11\1\62\1\5\1\4\1\3\1\62\1\1\1\62\1\uffff" +
+		"\2\62\1\uffff\10\62\51\uffea\51\uffeb\51\uffec\5\ufffc\13\57\2\ufffc\1\100\2\ufffc" +
+		"\1\76\1\73\7\ufffc\1\57\1\70\2\ufffc\1\57\1\70\5\57\3\uffff\1\72\20\uffff\1\71\12" +
+		"\uffff\1\70\3\uffff\1\70\10\uffff\1\72\33\uffff\1\71\3\uffff\1\71\5\uffff\51\uffe9" +
+		"\26\uffff\1\74\25\uffff\1\75\45\uffff\51\uffe6\3\uffff\1\77\45\uffff\51\uffe8\3\uffff" +
+		"\1\101\45\uffff\51\uffe7\1\uffff\3\62\1\14\13\62\1\13\3\12\1\62\1\105\1\62\3\104" +
+		"\1\62\1\uffff\1\62\1\103\2\62\1\uffff\10\62\51\uffdc\51\uffda\51\uffdb");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
