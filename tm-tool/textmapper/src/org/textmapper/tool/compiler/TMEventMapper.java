@@ -18,6 +18,8 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsPart.Kind;
+import org.textmapper.lapg.common.SetBuilder;
+import org.textmapper.lapg.common.SetsClosure;
 import org.textmapper.lapg.util.NonterminalUtil;
 
 import java.util.*;
@@ -151,21 +153,8 @@ public class TMEventMapper {
 			}
 		}
 
-		// Fill in categories.
-		for (Entry<String, List<Nonterminal>> e : categoryNonterms.entrySet()) {
-			Set<String> foundTypes = categories.get(e.getKey());
-
-			for (Nonterminal nt : e.getValue()) {
-				TMPhrase phrase = phrases.get(nt);
-				if (!phrase.isUnnamedField() || phrase.first().isList()) {
-					status.report(ProcessingStatus.KIND_ERROR,
-							getVariableName(nt) + " cannot be used as an interface: "
-									+ phrase.toString(), nt);
-					continue;
-				}
-				foundTypes.addAll(Arrays.asList(phrase.first().getTypes()));
-			}
-		}
+		// Build a set of types behind each interface.
+		collectCategoryTypes();
 
 		for (Entry<String, List<RhsSequence>> e : typeIndex.entrySet()) {
 			String type = e.getKey();
@@ -177,6 +166,80 @@ public class TMEventMapper {
 			TMPhrase.verify(phrase, e.getValue().get(0), status);
 //			System.out.println(type + ": " + phrase.toString());
 			TMDataUtil.putRangeFields(grammar, type, phrase.fields);
+		}
+	}
+
+	private void collectCategoryTypes() {
+		Map<String,Integer> catIndex = new HashMap<>();
+		Map<String,Integer> typeIndex = new HashMap<>();
+		List<String> allTypes = new ArrayList<>(this.typeIndex.keySet());
+		Collections.sort(allTypes);
+		List<String> allCategories = new ArrayList<>(this.categories.keySet());
+		Collections.sort(allCategories);
+		class Category {
+			private Category(String name) {
+				this.name = name;
+			}
+			String name;
+			int node;
+			int[] deps;
+		}
+		List<Category> catList = new ArrayList<>();
+		for (String name : allCategories) {
+			catIndex.put(name, catIndex.size());
+			catList.add(new Category(name));
+		}
+		for (String name : allTypes) {
+			typeIndex.put(name, typeIndex.size());
+		}
+
+		// Fill in categories.
+		SetsClosure closure = new SetsClosure();
+		SetBuilder typeSet = new SetBuilder(typeIndex.size());
+		SetBuilder categorySet = new SetBuilder(catIndex.size());
+
+		for (String catName : allCategories) {
+			List<Nonterminal> nonterminals = this.categoryNonterms.get(catName);
+			Category cat = catList.get(catIndex.get(catName));
+			for (Nonterminal nt : nonterminals) {
+				TMPhrase phrase = computePhrase(nt, true);
+				if (!phrase.isUnnamedField() || phrase.first().isList()) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							getVariableName(nt) + " cannot be used as an interface: "
+									+ phrase.toString(), nt);
+					continue;
+				}
+				for (String catOrType : phrase.first().getTypes()) {
+					Integer category = catIndex.get(catOrType);
+					if (category != null) {
+						categorySet.add(category);
+						continue;
+					}
+
+					Integer type = typeIndex.get(catOrType);
+					if (type != null) {
+						typeSet.add(type);
+						continue;
+					}
+
+					throw new IllegalStateException();
+				}
+			}
+			cat.node = closure.addSet(typeSet.create(), null);
+			cat.deps = categorySet.create();
+		}
+		for (Category cat : catList) {
+			for (int i = 0; i < cat.deps.length; i++) {
+				cat.deps[i] = catList.get(cat.deps[i]).node;
+			}
+			closure.addDependencies(cat.node, cat.deps);
+		}
+		if (!closure.compute()) throw new IllegalStateException();
+		for (Category cat : catList) {
+			Set<String> catTypes = this.categories.get(cat.name);
+			for (int typeId : closure.getSet(cat.node)) {
+				catTypes.add(allTypes.get(typeId));
+			}
 		}
 	}
 
