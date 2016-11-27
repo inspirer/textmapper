@@ -61,8 +61,8 @@ const (
 	VariableDeclaration
 	ObjectPattern
 	ArrayPattern
-	BindingProperty
-	BindingElement
+	PropertyBinding
+	ElementBinding
 	SingleNameBinding
 	BindingRestElement
 	EmptyStatement
@@ -81,8 +81,8 @@ const (
 	ReturnStatement
 	WithStatement
 	SwitchStatement
-	CaseClause
-	DefaultClause
+	Case
+	Default
 	LabelledStatement
 	ThrowStatement
 	TryStatement
@@ -125,12 +125,12 @@ const (
 	JSXOpeningElement
 	JSXClosingElement
 	JSXElementName
-	JSXAttribute
+	JSXNormalAttribute
 	JSXSpreadAttribute
 	JSXAttributeName
-	JSXAttributeValue
+	JSXLiteral
+	JSXExpression
 	JSXText
-	JSXChild
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -1369,41 +1369,41 @@ var ruleNodeType = [...]NodeType{
 	0,                    // BindingPattern_Yield ::= ObjectBindingPattern_Yield
 	0,                    // BindingPattern_Yield ::= ArrayBindingPattern_Yield
 	ObjectPattern,        // ObjectBindingPattern ::= '{' '}'
-	ObjectPattern,        // ObjectBindingPattern ::= '{' BindingPropertyList ',' '}'
-	ObjectPattern,        // ObjectBindingPattern ::= '{' BindingPropertyList '}'
+	ObjectPattern,        // ObjectBindingPattern ::= '{' PropertyPattern_list_Comma_separated ',' '}'
+	ObjectPattern,        // ObjectBindingPattern ::= '{' PropertyPattern_list_Comma_separated '}'
 	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' '}'
-	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' BindingPropertyList_Yield ',' '}'
-	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' BindingPropertyList_Yield '}'
+	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' PropertyPattern_Yield_list_Comma_separated ',' '}'
+	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' PropertyPattern_Yield_list_Comma_separated '}'
+	0,                    // PropertyPattern_list_Comma_separated ::= PropertyPattern_list_Comma_separated ',' PropertyPattern
+	0,                    // PropertyPattern_list_Comma_separated ::= PropertyPattern
+	0,                    // PropertyPattern_Yield_list_Comma_separated ::= PropertyPattern_Yield_list_Comma_separated ',' PropertyPattern_Yield
+	0,                    // PropertyPattern_Yield_list_Comma_separated ::= PropertyPattern_Yield
 	ArrayPattern,         // ArrayBindingPattern ::= '[' Elisionopt BindingRestElementopt ']'
-	ArrayPattern,         // ArrayBindingPattern ::= '[' BindingElementList ']'
-	ArrayPattern,         // ArrayBindingPattern ::= '[' BindingElementList ',' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,         // ArrayBindingPattern ::= '[' ElementPatternList ']'
+	ArrayPattern,         // ArrayBindingPattern ::= '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'
 	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' Elisionopt BindingRestElementopt_Yield ']'
-	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' BindingElementList_Yield ']'
-	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' BindingElementList_Yield ',' Elisionopt BindingRestElementopt_Yield ']'
-	0,                    // BindingPropertyList ::= BindingProperty
-	0,                    // BindingPropertyList ::= BindingPropertyList ',' BindingProperty
-	0,                    // BindingPropertyList_Yield ::= BindingProperty_Yield
-	0,                    // BindingPropertyList_Yield ::= BindingPropertyList_Yield ',' BindingProperty_Yield
-	0,                    // BindingElementList ::= BindingElisionElement
-	0,                    // BindingElementList ::= BindingElementList ',' BindingElisionElement
-	0,                    // BindingElementList_Yield ::= BindingElisionElement_Yield
-	0,                    // BindingElementList_Yield ::= BindingElementList_Yield ',' BindingElisionElement_Yield
-	0,                    // BindingElisionElement ::= Elision BindingElement
-	0,                    // BindingElisionElement ::= BindingElement
-	0,                    // BindingElisionElement_Yield ::= Elision BindingElement_Yield
-	0,                    // BindingElisionElement_Yield ::= BindingElement_Yield
-	0,                    // BindingProperty ::= SingleNameBinding
-	BindingProperty,      // BindingProperty ::= PropertyName ':' BindingElement
-	0,                    // BindingProperty ::= SyntaxError
-	0,                    // BindingProperty_Yield ::= SingleNameBinding_Yield
-	BindingProperty,      // BindingProperty_Yield ::= PropertyName_Yield ':' BindingElement_Yield
-	0,                    // BindingProperty_Yield ::= SyntaxError
-	0,                    // BindingElement ::= SingleNameBinding
-	BindingElement,       // BindingElement ::= BindingPattern Initializeropt_In
-	0,                    // BindingElement ::= SyntaxError
-	0,                    // BindingElement_Yield ::= SingleNameBinding_Yield
-	BindingElement,       // BindingElement_Yield ::= BindingPattern_Yield Initializeropt_In_Yield
-	0,                    // BindingElement_Yield ::= SyntaxError
+	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' ElementPatternList_Yield ']'
+	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' ElementPatternList_Yield ',' Elisionopt BindingRestElementopt_Yield ']'
+	0,                    // ElementPatternList ::= BindingElisionElement
+	0,                    // ElementPatternList ::= ElementPatternList ',' BindingElisionElement
+	0,                    // ElementPatternList_Yield ::= BindingElisionElement_Yield
+	0,                    // ElementPatternList_Yield ::= ElementPatternList_Yield ',' BindingElisionElement_Yield
+	0,                    // BindingElisionElement ::= Elision ElementPattern
+	0,                    // BindingElisionElement ::= ElementPattern
+	0,                    // BindingElisionElement_Yield ::= Elision ElementPattern_Yield
+	0,                    // BindingElisionElement_Yield ::= ElementPattern_Yield
+	0,                    // PropertyPattern ::= SingleNameBinding
+	PropertyBinding,      // PropertyPattern ::= PropertyName ':' ElementPattern
+	0,                    // PropertyPattern ::= SyntaxError
+	0,                    // PropertyPattern_Yield ::= SingleNameBinding_Yield
+	PropertyBinding,      // PropertyPattern_Yield ::= PropertyName_Yield ':' ElementPattern_Yield
+	0,                    // PropertyPattern_Yield ::= SyntaxError
+	0,                    // ElementPattern ::= SingleNameBinding
+	ElementBinding,       // ElementPattern ::= BindingPattern Initializeropt_In
+	0,                    // ElementPattern ::= SyntaxError
+	0,                    // ElementPattern_Yield ::= SingleNameBinding_Yield
+	ElementBinding,       // ElementPattern_Yield ::= BindingPattern_Yield Initializeropt_In_Yield
+	0,                    // ElementPattern_Yield ::= SyntaxError
 	SingleNameBinding,    // SingleNameBinding ::= BindingIdentifier Initializeropt_In
 	SingleNameBinding,    // SingleNameBinding_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
 	BindingRestElement,   // BindingRestElement ::= '...' BindingIdentifier
@@ -1493,18 +1493,18 @@ var ruleNodeType = [...]NodeType{
 	0,                    // CaseClauses_Return ::= CaseClauses_Return CaseClause_Return
 	0,                    // CaseClauses_Return_Yield ::= CaseClause_Return_Yield
 	0,                    // CaseClauses_Return_Yield ::= CaseClauses_Return_Yield CaseClause_Return_Yield
-	CaseClause,           // CaseClause ::= 'case' Expression_In ':' StatementList
-	CaseClause,           // CaseClause ::= 'case' Expression_In ':'
-	DefaultClause,        // CaseClause ::= 'default' ':' StatementList
-	DefaultClause,        // CaseClause ::= 'default' ':'
-	CaseClause,           // CaseClause_Return ::= 'case' Expression_In ':' StatementList_Return
-	CaseClause,           // CaseClause_Return ::= 'case' Expression_In ':'
-	DefaultClause,        // CaseClause_Return ::= 'default' ':' StatementList_Return
-	DefaultClause,        // CaseClause_Return ::= 'default' ':'
-	CaseClause,           // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':' StatementList_Return_Yield
-	CaseClause,           // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':'
-	DefaultClause,        // CaseClause_Return_Yield ::= 'default' ':' StatementList_Return_Yield
-	DefaultClause,        // CaseClause_Return_Yield ::= 'default' ':'
+	Case,                 // CaseClause ::= 'case' Expression_In ':' StatementList
+	Case,                 // CaseClause ::= 'case' Expression_In ':'
+	Default,              // CaseClause ::= 'default' ':' StatementList
+	Default,              // CaseClause ::= 'default' ':'
+	Case,                 // CaseClause_Return ::= 'case' Expression_In ':' StatementList_Return
+	Case,                 // CaseClause_Return ::= 'case' Expression_In ':'
+	Default,              // CaseClause_Return ::= 'default' ':' StatementList_Return
+	Default,              // CaseClause_Return ::= 'default' ':'
+	Case,                 // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':' StatementList_Return_Yield
+	Case,                 // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':'
+	Default,              // CaseClause_Return_Yield ::= 'default' ':' StatementList_Return_Yield
+	Default,              // CaseClause_Return_Yield ::= 'default' ':'
 	LabelledStatement,    // LabelledStatement ::= Identifier ':' LabelledItem
 	LabelledStatement,    // LabelledStatement ::= 'yield' ':' LabelledItem
 	LabelledStatement,    // LabelledStatement_Return ::= Identifier ':' LabelledItem_Return
@@ -1562,8 +1562,8 @@ var ruleNodeType = [...]NodeType{
 	0,                    // FormalsList_Yield ::= FormalsList_Yield ',' FormalParameter_Yield
 	RestParameter,        // FunctionRestParameter ::= BindingRestElement
 	RestParameter,        // FunctionRestParameter_Yield ::= BindingRestElement_Yield
-	Parameter,            // FormalParameter ::= BindingElement
-	Parameter,            // FormalParameter_Yield ::= BindingElement_Yield
+	Parameter,            // FormalParameter ::= ElementPattern
+	Parameter,            // FormalParameter_Yield ::= ElementPattern_Yield
 	Body,                 // FunctionBody ::= '{' StatementList_Return '}'
 	Body,                 // FunctionBody ::= '{' '}'
 	Body,                 // FunctionBody_Yield ::= '{' StatementList_Return_Yield '}'
@@ -1648,15 +1648,15 @@ var ruleNodeType = [...]NodeType{
 	0,                    // ImportClause ::= ImportedDefaultBinding ',' NamedImports
 	0,                    // ImportedDefaultBinding ::= ImportedBinding
 	NameSpaceImport,      // NameSpaceImport ::= '*' 'as' ImportedBinding
-	NamedImports,         // NamedImports ::= '{' '}'
-	NamedImports,         // NamedImports ::= '{' ImportsList '}'
-	NamedImports,         // NamedImports ::= '{' ImportsList ',' '}'
 	0,                    // FromClause ::= 'from' ModuleSpecifier
-	0,                    // ImportsList ::= ImportSpecifier
-	0,                    // ImportsList ::= ImportsList ',' ImportSpecifier
-	ImportSpecifier,      // ImportSpecifier ::= ImportedBinding
-	ImportSpecifier,      // ImportSpecifier ::= IdentifierNameRef 'as' ImportedBinding
-	SyntaxError,          // ImportSpecifier ::= error
+	0,                    // NamedImport_list_Comma_separated ::= NamedImport_list_Comma_separated ',' NamedImport
+	0,                    // NamedImport_list_Comma_separated ::= NamedImport
+	NamedImports,         // NamedImports ::= '{' '}'
+	NamedImports,         // NamedImports ::= '{' NamedImport_list_Comma_separated ',' '}'
+	NamedImports,         // NamedImports ::= '{' NamedImport_list_Comma_separated '}'
+	ImportSpecifier,      // NamedImport ::= ImportedBinding
+	ImportSpecifier,      // NamedImport ::= IdentifierNameRef 'as' ImportedBinding
+	SyntaxError,          // NamedImport ::= error
 	ModuleSpecifier,      // ModuleSpecifier ::= StringLiteral
 	0,                    // ImportedBinding ::= BindingIdentifier
 	ExportDeclaration,    // ExportDeclaration ::= 'export' '*' FromClause ';'
@@ -1668,13 +1668,13 @@ var ruleNodeType = [...]NodeType{
 	ExportDefault,        // ExportDeclaration ::= 'export' 'default' ClassDeclaration_Default
 	ExportDefault,        // ExportDeclaration ::= 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
 	ExportClause,         // ExportClause ::= '{' '}'
-	ExportClause,         // ExportClause ::= '{' ExportsList '}'
-	ExportClause,         // ExportClause ::= '{' ExportsList ',' '}'
-	0,                    // ExportsList ::= ExportSpecifier
-	0,                    // ExportsList ::= ExportsList ',' ExportSpecifier
-	ExportSpecifier,      // ExportSpecifier ::= IdentifierNameRef
-	ExportSpecifier,      // ExportSpecifier ::= IdentifierNameRef 'as' IdentifierNameDecl
-	SyntaxError,          // ExportSpecifier ::= error
+	ExportClause,         // ExportClause ::= '{' ExportElement_list_Comma_separated ',' '}'
+	ExportClause,         // ExportClause ::= '{' ExportElement_list_Comma_separated '}'
+	0,                    // ExportElement_list_Comma_separated ::= ExportElement_list_Comma_separated ',' ExportElement
+	0,                    // ExportElement_list_Comma_separated ::= ExportElement
+	ExportSpecifier,      // ExportElement ::= IdentifierNameRef
+	ExportSpecifier,      // ExportElement ::= IdentifierNameRef 'as' IdentifierNameDecl
+	SyntaxError,          // ExportElement ::= error
 	0,                    // JSXChild_optlist ::= JSXChild_optlist JSXChild
 	0,                    // JSXChild_optlist ::=
 	0,                    // JSXChild_Yield_optlist ::= JSXChild_Yield_optlist JSXChild_Yield
@@ -1697,24 +1697,24 @@ var ruleNodeType = [...]NodeType{
 	JSXElementName,        // JSXElementName ::= JSXMemberExpression
 	0,                     // JSXMemberExpression ::= jsxIdentifier '.' jsxIdentifier
 	0,                     // JSXMemberExpression ::= JSXMemberExpression '.' jsxIdentifier
-	JSXAttribute,          // JSXAttribute ::= JSXAttributeName '=' JSXAttributeValue
+	JSXNormalAttribute,    // JSXAttribute ::= JSXAttributeName '=' JSXAttributeValue
 	JSXSpreadAttribute,    // JSXAttribute ::= '{' '...' AssignmentExpression_In '}'
-	JSXAttribute,          // JSXAttribute_Yield ::= JSXAttributeName '=' JSXAttributeValue_Yield
+	JSXNormalAttribute,    // JSXAttribute_Yield ::= JSXAttributeName '=' JSXAttributeValue_Yield
 	JSXSpreadAttribute,    // JSXAttribute_Yield ::= '{' '...' AssignmentExpression_In_Yield '}'
 	JSXAttributeName,      // JSXAttributeName ::= jsxIdentifier
 	JSXAttributeName,      // JSXAttributeName ::= jsxIdentifier ':' jsxIdentifier
-	JSXAttributeValue,     // JSXAttributeValue ::= jsxStringLiteral
-	JSXAttributeValue,     // JSXAttributeValue ::= '{' AssignmentExpression_In '}'
-	JSXAttributeValue,     // JSXAttributeValue ::= JSXElement
-	JSXAttributeValue,     // JSXAttributeValue_Yield ::= jsxStringLiteral
-	JSXAttributeValue,     // JSXAttributeValue_Yield ::= '{' AssignmentExpression_In_Yield '}'
-	JSXAttributeValue,     // JSXAttributeValue_Yield ::= JSXElement_Yield
+	JSXLiteral,            // JSXAttributeValue ::= jsxStringLiteral
+	JSXExpression,         // JSXAttributeValue ::= '{' AssignmentExpression_In '}'
+	0,                     // JSXAttributeValue ::= JSXElement
+	JSXLiteral,            // JSXAttributeValue_Yield ::= jsxStringLiteral
+	JSXExpression,         // JSXAttributeValue_Yield ::= '{' AssignmentExpression_In_Yield '}'
+	0,                     // JSXAttributeValue_Yield ::= JSXElement_Yield
 	JSXText,               // JSXChild ::= jsxText
-	JSXChild,              // JSXChild ::= JSXElement
-	JSXChild,              // JSXChild ::= '{' AssignmentExpressionopt_In '}'
+	0,                     // JSXChild ::= JSXElement
+	JSXExpression,         // JSXChild ::= '{' AssignmentExpressionopt_In '}'
 	JSXText,               // JSXChild_Yield ::= jsxText
-	JSXChild,              // JSXChild_Yield ::= JSXElement_Yield
-	JSXChild,              // JSXChild_Yield ::= '{' AssignmentExpressionopt_In_Yield '}'
+	0,                     // JSXChild_Yield ::= JSXElement_Yield
+	JSXExpression,         // JSXChild_Yield ::= '{' AssignmentExpressionopt_In_Yield '}'
 	0,                     // Elisionopt ::= Elision
 	0,                     // Elisionopt ::=
 	0,                     // Initializeropt ::= Initializer
@@ -1805,8 +1805,8 @@ var nodeTypeStr = [...]string{
 	"VariableDeclaration",
 	"ObjectPattern",
 	"ArrayPattern",
-	"BindingProperty",
-	"BindingElement",
+	"PropertyBinding",
+	"ElementBinding",
 	"SingleNameBinding",
 	"BindingRestElement",
 	"EmptyStatement",
@@ -1825,8 +1825,8 @@ var nodeTypeStr = [...]string{
 	"ReturnStatement",
 	"WithStatement",
 	"SwitchStatement",
-	"CaseClause",
-	"DefaultClause",
+	"Case",
+	"Default",
 	"LabelledStatement",
 	"ThrowStatement",
 	"TryStatement",
@@ -1869,12 +1869,12 @@ var nodeTypeStr = [...]string{
 	"JSXOpeningElement",
 	"JSXClosingElement",
 	"JSXElementName",
-	"JSXAttribute",
+	"JSXNormalAttribute",
 	"JSXSpreadAttribute",
 	"JSXAttributeName",
-	"JSXAttributeValue",
+	"JSXLiteral",
+	"JSXExpression",
 	"JSXText",
-	"JSXChild",
 	"InsertedSemicolon",
 	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",

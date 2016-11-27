@@ -305,10 +305,10 @@ var parseTests = []struct {
 		`const «{name}» = a;`,
 		`for (const «{b,}» in a);`,
 	}},
-	{js.BindingProperty, []string{
+	{js.PropertyBinding, []string{
 		`const {name, «a: {}»} = a;`,
 	}},
-	{js.BindingElement, []string{
+	{js.ElementBinding, []string{
 		`let [oth, «[A]», «{a}»] = y;`,
 	}},
 	{js.SingleNameBinding, []string{
@@ -403,11 +403,11 @@ var parseTests = []struct {
 		`«switch(a) {default: 1; case 3:}»`,
 		`«switch(a) {case 3: {} default: 1;}»`,
 	}},
-	{js.CaseClause, []string{
+	{js.Case, []string{
 		`switch(a) {«case 1: a();»}`,
 		`switch(a) {«case 1:» «case 2:» default: «case 3:»}`,
 	}},
-	{js.DefaultClause, []string{
+	{js.Default, []string{
 		`switch(a) {case 1: case 2: «default:» case 3:}`,
 		`function a() { switch(a) {«default: return;» case 3:} }`,
 	}},
@@ -712,6 +712,7 @@ var parseTests = []struct {
 		`var a = «<div / >»;`,
 		`var a = «<q>{ «<a href={ {a: {b: 1}}.a.b }/>» }</q>»;`,
 		`var a = «<q>{ [1,2,3].map(a => («<a href={a}/>»)) }</q>»;`,
+		`var a = «<X comp=«<Y text=«<h1>Title</h1>» />» />»;`,
 	}},
 	{js.JSXSelfClosingElement, []string{
 		`var a = «<div / >»;`,
@@ -727,7 +728,7 @@ var parseTests = []struct {
 		`var a = <«a:b» />;`,
 		`var a = <«Q» />;`,
 	}},
-	{js.JSXAttribute, []string{
+	{js.JSXNormalAttribute, []string{
 		`var a = <div «name="a"»><div «name="b"»></div></div>;`,
 	}},
 	{js.JSXSpreadAttribute, []string{
@@ -736,17 +737,19 @@ var parseTests = []struct {
 	{js.JSXAttributeName, []string{
 		`var a = <div «name»="a"/>;`,
 	}},
-	{js.JSXAttributeValue, []string{
-		`var a = <a href=«{1+{a:2}.a}» target=«"123"»/>;`,
-		`var a = <X comp=«<Y text=«<h1>Title</h1>» />» />;`,
-	}},
 	{js.JSXText, []string{
 		`var a = <A:A>« ABC »</A:A>;`,
-	}},
-	{js.JSXChild, []string{
-		`var a = <A:A>«{ 22+{a:1}.a }»</A:A>;`,
-		`var a = <A:A>«<a/>»bb«{1}»</A:A>;`,
+		`var a = <A:A>«bb»{1}«cc»{<abc/>}</A:A>;`,
 		`/*no expectations*/ var a = <A:A></A:A>;`,
+	}},
+	{js.JSXExpression, []string{
+		`var a = <A:A>«{ 22+{a:1}.a }»</A:A>;`,
+		`var a = <A:A>bb«{1}»cc«{<abc/>}»</A:A>;`,
+		`var a = <a href=«{1+{a:2}.a}»/>;`,
+		`/*no expectations*/ var a = <A:A></A:A>;`,
+	}},
+	{js.JSXLiteral, []string{
+		`var a = <a href={"chrome://about"} target=«"123"»/>;`,
 	}},
 
 	// Error Recovery
