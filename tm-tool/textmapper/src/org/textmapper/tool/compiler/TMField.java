@@ -51,7 +51,7 @@ class TMField implements RangeField {
 	}
 
 	TMField makeList() {
-		if (isList) throw new IllegalStateException();
+		if (isList) return this;
 
 		return new TMField(name, types, hasExplicitName, true /* list */, nullable);
 	}

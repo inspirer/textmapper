@@ -545,7 +545,7 @@ type Listener func(t ${self->nodeType()}, offset, endoffset int)
 
 const (
 ${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
-	${rangeType}${if index == 0} ${self->nodeType()} = iota + 1${end}
+	${rangeType}${if index == 0} ${self->nodeType()} = iota + 1${end}${call typedescr(rangeType)}
 ${end-}
 ${foreach extraType in opts.extraTypes-}
 	${extraType}
@@ -583,6 +583,11 @@ func (t ${self->nodeType()}) String() string {
 }
 ${end}
 
+${query typedescr(rangeType) =
+  signature = opts.eventFields
+    ? syntax.rangeFields(rangeType).collect(it | it.toString())->util.join(' ')
+    : '',
+  signature.isEmpty() ? '' : '  // ' + signature }
 
 ${query needActionsTable() = parser.lalr.size() > 0}
 

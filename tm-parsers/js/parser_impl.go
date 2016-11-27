@@ -114,6 +114,16 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			if len(p.ignoredTokens) > 0 {
 				p.reportIgnoredTokens()
 			}
+			switch Token(p.next.symbol) {
+			case NOSUBSTITUTIONTEMPLATE:
+				p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
+			case TEMPLATEHEAD:
+				p.listener(TemplateHead, p.next.offset, p.next.endoffset)
+			case TEMPLATEMIDDLE:
+				p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
+			case TEMPLATETAIL:
+				p.listener(TemplateTail, p.next.offset, p.next.endoffset)
+			}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
 			}

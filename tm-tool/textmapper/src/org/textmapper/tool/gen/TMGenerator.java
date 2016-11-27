@@ -90,8 +90,7 @@ public final class TMGenerator {
 				if (genast) {
 					astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
 				} else {
-					new TMEventMapper(s.getGrammar(), status).deriveTypes(
-							Boolean.TRUE.equals(genOptions.get("eventFields")));
+					new TMEventMapper(s.getGrammar(), genOptions, status).deriveTypes();
 				}
 			}
 

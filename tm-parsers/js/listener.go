@@ -9,132 +9,139 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	SyntaxError NodeType = iota + 1
+	SyntaxError NodeType = iota + 1 // IdentifierReference? Initializer?
 	BindingIdentifier
 	IdentifierReference
 	LabelIdentifier
 	This
 	Regexp
-	Parenthesized
+	Parenthesized // Expression? BindingIdentifier? BindingPattern? SyntaxError?
 	Literal
-	ArrayLiteral
-	SpreadElement
-	ObjectLiteral
-	ShorthandProperty
-	Property
-	LiteralPropertyName
-	ComputedPropertyName
-	Initializer
-	TemplateLiteral
-	IndexAccess
-	PropertyAccess
-	TaggedTemplate
-	NewExpression
+	ArrayLiteral         // list=(Expression | SpreadElement)*
+	SpreadElement        // Expression
+	ObjectLiteral        // (PropertyDefinition)*
+	ShorthandProperty    // IdentifierReference
+	Property             // PropertyName value=Expression
+	LiteralPropertyName  // BindingIdentifier?
+	ComputedPropertyName // Expression
+	Initializer          // Expression
+	TemplateLiteral      // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expression)*
+	IndexAccess          // expr=Expression index=Expression
+	PropertyAccess       // expr=Expression selector=IdentifierReference
+	TaggedTemplate       // tag=Expression literal=TemplateLiteral
+	NewExpression        // expr=Expression Arguments?
 	SuperExpression
 	NewTarget
-	CallExpression
-	Arguments
-	PostInc
-	PostDec
-	PreInc
-	PreDec
-	UnaryExpression
-	AdditiveExpression
-	ShiftExpression
-	MultiplicativeExpression
-	ExponentiationExpression
-	RelationalExpression
-	EqualityExpression
-	BitwiseANDExpression
-	BitwiseXORExpression
-	BitwiseORExpression
-	LogicalANDExpression
-	LogicalORExpression
-	ConditionalExpression
-	AssignmentExpression
+	CallExpression           // expr=Expression Arguments
+	Arguments                // list=(Expression | SpreadElement)*
+	PostInc                  // Expression
+	PostDec                  // Expression
+	PreInc                   // Expression
+	PreDec                   // Expression
+	UnaryExpression          // Expression
+	AdditiveExpression       // left=Expression right=Expression
+	ShiftExpression          // left=Expression right=Expression
+	MultiplicativeExpression // left=Expression right=Expression
+	ExponentiationExpression // left=Expression right=Expression
+	RelationalExpression     // left=Expression right=Expression
+	EqualityExpression       // left=Expression right=Expression
+	BitwiseANDExpression     // left=Expression right=Expression
+	BitwiseXORExpression     // left=Expression right=Expression
+	BitwiseORExpression      // left=Expression right=Expression
+	LogicalANDExpression     // left=Expression right=Expression
+	LogicalORExpression      // left=Expression right=Expression
+	ConditionalExpression    // cond=Expression then=Expression else=Expression
+	AssignmentExpression     // left=Expression right=Expression AssignmentOperator?
 	AssignmentOperator
-	CommaExpression
-	Block
-	LexicalDeclaration
-	LexicalBinding
-	VariableStatement
-	VariableDeclaration
-	ObjectPattern
-	ArrayPattern
-	PropertyBinding
-	ElementBinding
-	SingleNameBinding
-	BindingRestElement
+	CommaExpression     // left=Expression right=Expression
+	Block               // (StatementListItem)* (CaseClause)*
+	LexicalDeclaration  // (LexicalBinding)+
+	LexicalBinding      // BindingIdentifier? Initializer? BindingPattern?
+	VariableStatement   // (VariableDeclaration)+
+	VariableDeclaration // BindingIdentifier? Initializer? BindingPattern?
+	ObjectPattern       // (PropertyPattern)*
+	ArrayPattern        // BindingRestElement? (ElementPattern)*
+	PropertyBinding     // PropertyName ElementPattern
+	ElementBinding      // BindingPattern Initializer?
+	SingleNameBinding   // BindingIdentifier Initializer?
+	BindingRestElement  // BindingIdentifier
 	EmptyStatement
-	ExpressionStatement
-	IfStatement
-	DoWhileStatement
-	WhileStatement
-	ForStatement
-	ForInStatement
-	ForOfStatement
-	ForBinding
-	ForCondition
-	ForFinalExpression
-	ContinueStatement
-	BreakStatement
-	ReturnStatement
-	WithStatement
-	SwitchStatement
-	Case
-	Default
-	LabelledStatement
-	ThrowStatement
-	TryStatement
-	Catch
-	Finally
+	ExpressionStatement   // Expression
+	IfStatement           // Expression then=Statement else=Statement?
+	DoWhileStatement      // Statement Expression
+	WhileStatement        // Expression Statement
+	ForStatement          // var=Expression? ForCondition ForFinalExpression Statement
+	ForStatementWithVar   // (VariableDeclaration)* ForCondition ForFinalExpression Statement (LexicalBinding)*
+	ForInStatement        // var=Expression object=Expression Statement
+	ForInStatementWithVar // ForBinding object=Expression Statement
+	ForOfStatement        // var=Expression iterable=Expression Statement
+	ForOfStatementWithVar // ForBinding iterable=Expression Statement
+	ForBinding            // BindingIdentifier? BindingPattern?
+	ForCondition          // Expression?
+	ForFinalExpression    // Expression?
+	ContinueStatement     // LabelIdentifier?
+	BreakStatement        // LabelIdentifier?
+	ReturnStatement       // Expression?
+	WithStatement         // Expression Statement
+	SwitchStatement       // Expression Block
+	Case                  // Expression (StatementListItem)*
+	Default               // (StatementListItem)*
+	LabelledStatement     // Statement? Function?
+	ThrowStatement        // Expression
+	TryStatement          // Block Catch? Finally?
+	Catch                 // BindingIdentifier? BindingPattern? Block
+	Finally               // Block
 	DebuggerStatement
-	Function
-	FunctionExpression
-	Parameters
-	RestParameter
-	Parameter
-	Body
-	ArrowFunction
-	ConciseBody
-	Method
-	Getter
-	Setter
-	GeneratorMethod
-	Generator
-	GeneratorExpression
-	Yield
-	Class
-	ClassExpr
-	Extends
-	ClassBody
-	StaticMethod
+	Function            // BindingIdentifier? Parameters Body
+	FunctionExpression  // BindingIdentifier? Parameters Body
+	Parameters          // RestParameter? (Parameter)* BindingIdentifier? Expression? BindingPattern? SyntaxError?
+	RestParameter       // BindingRestElement
+	Parameter           // ElementPattern
+	Body                // (StatementListItem)*
+	ArrowFunction       // Parameters ConciseBody? Body?
+	ConciseBody         // Expression
+	Method              // PropertyName Parameters Body
+	Getter              // PropertyName Body
+	Setter              // PropertyName Parameter Body
+	GeneratorMethod     // PropertyName Parameters Body
+	Generator           // BindingIdentifier? Parameters Body
+	GeneratorExpression // BindingIdentifier? Parameters Body
+	Yield               // Expression?
+	Class               // BindingIdentifier? Extends? ClassBody
+	ClassExpr           // BindingIdentifier? Extends? ClassBody
+	Extends             // Expression
+	ClassBody           // (ClassElement)*
+	StaticMethod        // MethodDefinition
 	EmptyDecl
-	Module
-	ImportDeclaration
-	NameSpaceImport
-	NamedImports
-	ImportSpecifier
+	Module            // (ModuleItem)*
+	ImportDeclaration // BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
+	NameSpaceImport   // BindingIdentifier
+	NamedImports      // (NamedImport)*
+	ImportSpecifier   // BindingIdentifier IdentifierReference?
 	ModuleSpecifier
-	ExportDeclaration
-	ExportDefault
-	ExportClause
-	ExportSpecifier
-	JSXElement
-	JSXSelfClosingElement
-	JSXOpeningElement
-	JSXClosingElement
+	ExportDeclaration     // ModuleSpecifier? ExportClause? VariableStatement? Declaration?
+	ExportDefault         // Declaration? Expression?
+	ExportClause          // (ExportElement)*
+	ExportSpecifier       // IdentifierReference BindingIdentifier?
+	JSXElement            // JSXSelfClosingElement? JSXOpeningElement? (JSXChild)* JSXClosingElement?
+	JSXSelfClosingElement // JSXElementName (JSXAttribute)*
+	JSXOpeningElement     // JSXElementName (JSXAttribute)*
+	JSXClosingElement     // JSXElementName
 	JSXElementName
-	JSXNormalAttribute
-	JSXSpreadAttribute
+	JSXNormalAttribute // JSXAttributeName JSXAttributeValue
+	JSXSpreadAttribute // Expression
 	JSXAttributeName
 	JSXLiteral
-	JSXExpression
+	JSXExpression // Expression?
 	JSXText
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
 	InvalidToken
+	NoSubstitutionTemplate
+	TemplateHead
+	TemplateMiddle
+	TemplateTail
 	NodeTypeMax
 )
 
@@ -1153,540 +1160,540 @@ var ruleNodeType = [...]NodeType{
 	ConditionalExpression, // ConditionalExpression_StartWithLet_Yield ::= BinaryExpression_StartWithLet_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
 	0, // ConditionalExpression_Yield ::= BinaryExpression_Yield
 	ConditionalExpression, // ConditionalExpression_Yield ::= BinaryExpression_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
-	0,                    // AssignmentExpression ::= ConditionalExpression
-	0,                    // AssignmentExpression ::= ArrowFunction
-	AssignmentExpression, // AssignmentExpression ::= LeftHandSideExpression '=' AssignmentExpression
-	AssignmentExpression, // AssignmentExpression ::= LeftHandSideExpression AssignmentOperator AssignmentExpression
-	0,                    // AssignmentExpression_In ::= ConditionalExpression_In
-	0,                    // AssignmentExpression_In ::= ArrowFunction_In
-	AssignmentExpression, // AssignmentExpression_In ::= LeftHandSideExpression '=' AssignmentExpression_In
-	AssignmentExpression, // AssignmentExpression_In ::= LeftHandSideExpression AssignmentOperator AssignmentExpression_In
-	0,                    // AssignmentExpression_In_NoFuncClass ::= ConditionalExpression_In_NoFuncClass
-	0,                    // AssignmentExpression_In_NoFuncClass ::= ArrowFunction_In
-	AssignmentExpression, // AssignmentExpression_In_NoFuncClass ::= LeftHandSideExpression_NoFuncClass '=' AssignmentExpression_In
-	AssignmentExpression, // AssignmentExpression_In_NoFuncClass ::= LeftHandSideExpression_NoFuncClass AssignmentOperator AssignmentExpression_In
-	0,                    // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	0,                    // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= ArrowFunction_In
-	AssignmentExpression, // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral '=' AssignmentExpression_In
-	AssignmentExpression, // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral AssignmentOperator AssignmentExpression_In
-	0,                    // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	0,                    // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= YieldExpression_In
-	0,                    // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArrowFunction_In_Yield
-	AssignmentExpression, // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '=' AssignmentExpression_In_Yield
-	AssignmentExpression, // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield AssignmentOperator AssignmentExpression_In_Yield
-	0,                    // AssignmentExpression_In_NoObjLiteral ::= ConditionalExpression_In_NoObjLiteral
-	0,                    // AssignmentExpression_In_NoObjLiteral ::= ArrowFunction_In
-	AssignmentExpression, // AssignmentExpression_In_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression_In
-	AssignmentExpression, // AssignmentExpression_In_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression_In
-	0,                    // AssignmentExpression_In_Yield ::= ConditionalExpression_In_Yield
-	0,                    // AssignmentExpression_In_Yield ::= YieldExpression_In
-	0,                    // AssignmentExpression_In_Yield ::= ArrowFunction_In_Yield
-	AssignmentExpression, // AssignmentExpression_In_Yield ::= LeftHandSideExpression_Yield '=' AssignmentExpression_In_Yield
-	AssignmentExpression, // AssignmentExpression_In_Yield ::= LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_In_Yield
-	0,                    // AssignmentExpression_NoLet ::= ConditionalExpression_NoLet
-	0,                    // AssignmentExpression_NoLet ::= ArrowFunction
-	AssignmentExpression, // AssignmentExpression_NoLet ::= LeftHandSideExpression_NoLet '=' AssignmentExpression
-	AssignmentExpression, // AssignmentExpression_NoLet ::= LeftHandSideExpression_NoLet AssignmentOperator AssignmentExpression
-	0,                    // AssignmentExpression_NoLet_Yield ::= ConditionalExpression_NoLet_Yield
-	0,                    // AssignmentExpression_NoLet_Yield ::= YieldExpression
-	0,                    // AssignmentExpression_NoLet_Yield ::= ArrowFunction_Yield
-	AssignmentExpression, // AssignmentExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield '=' AssignmentExpression_Yield
-	AssignmentExpression, // AssignmentExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield AssignmentOperator AssignmentExpression_Yield
-	0,                    // AssignmentExpression_NoObjLiteral ::= ConditionalExpression_NoObjLiteral
-	0,                    // AssignmentExpression_NoObjLiteral ::= ArrowFunction
-	AssignmentExpression, // AssignmentExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression
-	AssignmentExpression, // AssignmentExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression
-	0,                    // AssignmentExpression_StartWithLet ::= ConditionalExpression_StartWithLet
-	AssignmentExpression, // AssignmentExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet '=' AssignmentExpression
-	AssignmentExpression, // AssignmentExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet AssignmentOperator AssignmentExpression
-	0,                    // AssignmentExpression_StartWithLet_Yield ::= ConditionalExpression_StartWithLet_Yield
-	AssignmentExpression, // AssignmentExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield '=' AssignmentExpression_Yield
-	AssignmentExpression, // AssignmentExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield AssignmentOperator AssignmentExpression_Yield
-	0,                    // AssignmentExpression_Yield ::= ConditionalExpression_Yield
-	0,                    // AssignmentExpression_Yield ::= YieldExpression
-	0,                    // AssignmentExpression_Yield ::= ArrowFunction_Yield
-	AssignmentExpression, // AssignmentExpression_Yield ::= LeftHandSideExpression_Yield '=' AssignmentExpression_Yield
-	AssignmentExpression, // AssignmentExpression_Yield ::= LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_Yield
-	AssignmentOperator,   // AssignmentOperator ::= '*='
-	AssignmentOperator,   // AssignmentOperator ::= '/='
-	AssignmentOperator,   // AssignmentOperator ::= '%='
-	AssignmentOperator,   // AssignmentOperator ::= '+='
-	AssignmentOperator,   // AssignmentOperator ::= '-='
-	AssignmentOperator,   // AssignmentOperator ::= '<<='
-	AssignmentOperator,   // AssignmentOperator ::= '>>='
-	AssignmentOperator,   // AssignmentOperator ::= '>>>='
-	AssignmentOperator,   // AssignmentOperator ::= '&='
-	AssignmentOperator,   // AssignmentOperator ::= '^='
-	AssignmentOperator,   // AssignmentOperator ::= '|='
-	AssignmentOperator,   // AssignmentOperator ::= '**='
-	CommaExpression,      // CommaExpression_In ::= Expression_In ',' AssignmentExpression_In
-	CommaExpression,      // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ',' AssignmentExpression_In
-	CommaExpression,      // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ',' AssignmentExpression_In_Yield
-	CommaExpression,      // CommaExpression_In_Yield ::= Expression_In_Yield ',' AssignmentExpression_In_Yield
-	CommaExpression,      // CommaExpression_NoLet ::= Expression_NoLet ',' AssignmentExpression
-	CommaExpression,      // CommaExpression_NoLet_Yield ::= Expression_NoLet_Yield ',' AssignmentExpression_Yield
-	CommaExpression,      // CommaExpression_StartWithLet ::= Expression_StartWithLet ',' AssignmentExpression
-	CommaExpression,      // CommaExpression_StartWithLet_Yield ::= Expression_StartWithLet_Yield ',' AssignmentExpression_Yield
-	0,                    // Expression_In ::= AssignmentExpression_In
-	0,                    // Expression_In ::= CommaExpression_In
-	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
-	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	0,                    // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	0,                    // Expression_In_Yield ::= AssignmentExpression_In_Yield
-	0,                    // Expression_In_Yield ::= CommaExpression_In_Yield
-	0,                    // Expression_NoLet ::= AssignmentExpression_NoLet
-	0,                    // Expression_NoLet ::= CommaExpression_NoLet
-	0,                    // Expression_NoLet_Yield ::= AssignmentExpression_NoLet_Yield
-	0,                    // Expression_NoLet_Yield ::= CommaExpression_NoLet_Yield
-	0,                    // Expression_StartWithLet ::= AssignmentExpression_StartWithLet
-	0,                    // Expression_StartWithLet ::= CommaExpression_StartWithLet
-	0,                    // Expression_StartWithLet_Yield ::= AssignmentExpression_StartWithLet_Yield
-	0,                    // Expression_StartWithLet_Yield ::= CommaExpression_StartWithLet_Yield
-	0,                    // Statement ::= BlockStatement
-	0,                    // Statement ::= VariableStatement
-	0,                    // Statement ::= EmptyStatement
-	0,                    // Statement ::= ExpressionStatement
-	0,                    // Statement ::= IfStatement
-	0,                    // Statement ::= BreakableStatement
-	0,                    // Statement ::= ContinueStatement
-	0,                    // Statement ::= BreakStatement
-	0,                    // Statement ::= WithStatement
-	0,                    // Statement ::= LabelledStatement
-	0,                    // Statement ::= ThrowStatement
-	0,                    // Statement ::= TryStatement
-	0,                    // Statement ::= DebuggerStatement
-	0,                    // Statement_Return ::= BlockStatement_Return
-	0,                    // Statement_Return ::= VariableStatement
-	0,                    // Statement_Return ::= EmptyStatement
-	0,                    // Statement_Return ::= ExpressionStatement
-	0,                    // Statement_Return ::= IfStatement_Return
-	0,                    // Statement_Return ::= BreakableStatement_Return
-	0,                    // Statement_Return ::= ContinueStatement
-	0,                    // Statement_Return ::= BreakStatement
-	0,                    // Statement_Return ::= ReturnStatement
-	0,                    // Statement_Return ::= WithStatement_Return
-	0,                    // Statement_Return ::= LabelledStatement_Return
-	0,                    // Statement_Return ::= ThrowStatement
-	0,                    // Statement_Return ::= TryStatement_Return
-	0,                    // Statement_Return ::= DebuggerStatement
-	0,                    // Statement_Return_Yield ::= BlockStatement_Return_Yield
-	0,                    // Statement_Return_Yield ::= VariableStatement_Yield
-	0,                    // Statement_Return_Yield ::= EmptyStatement
-	0,                    // Statement_Return_Yield ::= ExpressionStatement_Yield
-	0,                    // Statement_Return_Yield ::= IfStatement_Return_Yield
-	0,                    // Statement_Return_Yield ::= BreakableStatement_Return_Yield
-	0,                    // Statement_Return_Yield ::= ContinueStatement_Yield
-	0,                    // Statement_Return_Yield ::= BreakStatement_Yield
-	0,                    // Statement_Return_Yield ::= ReturnStatement_Yield
-	0,                    // Statement_Return_Yield ::= WithStatement_Return_Yield
-	0,                    // Statement_Return_Yield ::= LabelledStatement_Return_Yield
-	0,                    // Statement_Return_Yield ::= ThrowStatement_Yield
-	0,                    // Statement_Return_Yield ::= TryStatement_Return_Yield
-	0,                    // Statement_Return_Yield ::= DebuggerStatement
-	0,                    // Declaration ::= HoistableDeclaration
-	0,                    // Declaration ::= ClassDeclaration
-	0,                    // Declaration ::= LexicalDeclaration_In
-	0,                    // Declaration_Yield ::= HoistableDeclaration_Yield
-	0,                    // Declaration_Yield ::= ClassDeclaration_Yield
-	0,                    // Declaration_Yield ::= LexicalDeclaration_In_Yield
-	0,                    // HoistableDeclaration ::= FunctionDeclaration
-	0,                    // HoistableDeclaration ::= GeneratorDeclaration
-	0,                    // HoistableDeclaration_Default ::= FunctionDeclaration_Default
-	0,                    // HoistableDeclaration_Default ::= GeneratorDeclaration_Default
-	0,                    // HoistableDeclaration_Yield ::= FunctionDeclaration_Yield
-	0,                    // HoistableDeclaration_Yield ::= GeneratorDeclaration_Yield
-	0,                    // BreakableStatement ::= IterationStatement
-	0,                    // BreakableStatement ::= SwitchStatement
-	0,                    // BreakableStatement_Return ::= IterationStatement_Return
-	0,                    // BreakableStatement_Return ::= SwitchStatement_Return
-	0,                    // BreakableStatement_Return_Yield ::= IterationStatement_Return_Yield
-	0,                    // BreakableStatement_Return_Yield ::= SwitchStatement_Return_Yield
-	0,                    // BlockStatement ::= Block
-	0,                    // BlockStatement_Return ::= Block_Return
-	0,                    // BlockStatement_Return_Yield ::= Block_Return_Yield
-	Block,                // Block ::= '{' StatementList '}'
-	Block,                // Block ::= '{' '}'
-	Block,                // Block_Return ::= '{' StatementList_Return '}'
-	Block,                // Block_Return ::= '{' '}'
-	Block,                // Block_Return_Yield ::= '{' StatementList_Return_Yield '}'
-	Block,                // Block_Return_Yield ::= '{' '}'
-	0,                    // StatementList ::= StatementListItem
-	0,                    // StatementList ::= StatementList StatementListItem
-	0,                    // StatementList_Return ::= StatementListItem_Return
-	0,                    // StatementList_Return ::= StatementList_Return StatementListItem_Return
-	0,                    // StatementList_Return_Yield ::= StatementListItem_Return_Yield
-	0,                    // StatementList_Return_Yield ::= StatementList_Return_Yield StatementListItem_Return_Yield
-	0,                    // StatementListItem ::= Statement
-	0,                    // StatementListItem ::= Declaration
-	SyntaxError,          // StatementListItem ::= error ';'
-	0,                    // StatementListItem_Return ::= Statement_Return
-	0,                    // StatementListItem_Return ::= Declaration
-	SyntaxError,          // StatementListItem_Return ::= error ';'
-	0,                    // StatementListItem_Return_Yield ::= Statement_Return_Yield
-	0,                    // StatementListItem_Return_Yield ::= Declaration_Yield
-	SyntaxError,          // StatementListItem_Return_Yield ::= error ';'
-	LexicalDeclaration,   // LexicalDeclaration_In ::= LetOrConst BindingList_In ';'
-	LexicalDeclaration,   // LexicalDeclaration_In_Yield ::= LetOrConst BindingList_In_Yield ';'
-	0,                    // LetOrConst ::= 'let'
-	0,                    // LetOrConst ::= 'const'
-	0,                    // BindingList ::= LexicalBinding
-	0,                    // BindingList ::= BindingList ',' LexicalBinding
-	0,                    // BindingList_In ::= LexicalBinding_In
-	0,                    // BindingList_In ::= BindingList_In ',' LexicalBinding_In
-	0,                    // BindingList_In_Yield ::= LexicalBinding_In_Yield
-	0,                    // BindingList_In_Yield ::= BindingList_In_Yield ',' LexicalBinding_In_Yield
-	0,                    // BindingList_Yield ::= LexicalBinding_Yield
-	0,                    // BindingList_Yield ::= BindingList_Yield ',' LexicalBinding_Yield
-	LexicalBinding,       // LexicalBinding ::= BindingIdentifier Initializeropt
-	LexicalBinding,       // LexicalBinding ::= BindingPattern Initializer
-	LexicalBinding,       // LexicalBinding_In ::= BindingIdentifier Initializeropt_In
-	LexicalBinding,       // LexicalBinding_In ::= BindingPattern Initializer_In
-	LexicalBinding,       // LexicalBinding_In_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
-	LexicalBinding,       // LexicalBinding_In_Yield ::= BindingPattern_Yield Initializer_In_Yield
-	LexicalBinding,       // LexicalBinding_Yield ::= BindingIdentifier_Yield Initializeropt_Yield
-	LexicalBinding,       // LexicalBinding_Yield ::= BindingPattern_Yield Initializer_Yield
-	VariableStatement,    // VariableStatement ::= 'var' VariableDeclarationList_In ';'
-	VariableStatement,    // VariableStatement_Yield ::= 'var' VariableDeclarationList_In_Yield ';'
-	0,                    // VariableDeclarationList ::= VariableDeclaration
-	0,                    // VariableDeclarationList ::= VariableDeclarationList ',' VariableDeclaration
-	0,                    // VariableDeclarationList_In ::= VariableDeclaration_In
-	0,                    // VariableDeclarationList_In ::= VariableDeclarationList_In ',' VariableDeclaration_In
-	0,                    // VariableDeclarationList_In_Yield ::= VariableDeclaration_In_Yield
-	0,                    // VariableDeclarationList_In_Yield ::= VariableDeclarationList_In_Yield ',' VariableDeclaration_In_Yield
-	0,                    // VariableDeclarationList_Yield ::= VariableDeclaration_Yield
-	0,                    // VariableDeclarationList_Yield ::= VariableDeclarationList_Yield ',' VariableDeclaration_Yield
-	VariableDeclaration,  // VariableDeclaration ::= BindingIdentifier Initializeropt
-	VariableDeclaration,  // VariableDeclaration ::= BindingPattern Initializer
-	VariableDeclaration,  // VariableDeclaration_In ::= BindingIdentifier Initializeropt_In
-	VariableDeclaration,  // VariableDeclaration_In ::= BindingPattern Initializer_In
-	VariableDeclaration,  // VariableDeclaration_In_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
-	VariableDeclaration,  // VariableDeclaration_In_Yield ::= BindingPattern_Yield Initializer_In_Yield
-	VariableDeclaration,  // VariableDeclaration_Yield ::= BindingIdentifier_Yield Initializeropt_Yield
-	VariableDeclaration,  // VariableDeclaration_Yield ::= BindingPattern_Yield Initializer_Yield
-	0,                    // BindingPattern ::= ObjectBindingPattern
-	0,                    // BindingPattern ::= ArrayBindingPattern
-	0,                    // BindingPattern_Yield ::= ObjectBindingPattern_Yield
-	0,                    // BindingPattern_Yield ::= ArrayBindingPattern_Yield
-	ObjectPattern,        // ObjectBindingPattern ::= '{' '}'
-	ObjectPattern,        // ObjectBindingPattern ::= '{' PropertyPattern_list_Comma_separated ',' '}'
-	ObjectPattern,        // ObjectBindingPattern ::= '{' PropertyPattern_list_Comma_separated '}'
-	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' '}'
-	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' PropertyPattern_Yield_list_Comma_separated ',' '}'
-	ObjectPattern,        // ObjectBindingPattern_Yield ::= '{' PropertyPattern_Yield_list_Comma_separated '}'
-	0,                    // PropertyPattern_list_Comma_separated ::= PropertyPattern_list_Comma_separated ',' PropertyPattern
-	0,                    // PropertyPattern_list_Comma_separated ::= PropertyPattern
-	0,                    // PropertyPattern_Yield_list_Comma_separated ::= PropertyPattern_Yield_list_Comma_separated ',' PropertyPattern_Yield
-	0,                    // PropertyPattern_Yield_list_Comma_separated ::= PropertyPattern_Yield
-	ArrayPattern,         // ArrayBindingPattern ::= '[' Elisionopt BindingRestElementopt ']'
-	ArrayPattern,         // ArrayBindingPattern ::= '[' ElementPatternList ']'
-	ArrayPattern,         // ArrayBindingPattern ::= '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'
-	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' Elisionopt BindingRestElementopt_Yield ']'
-	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' ElementPatternList_Yield ']'
-	ArrayPattern,         // ArrayBindingPattern_Yield ::= '[' ElementPatternList_Yield ',' Elisionopt BindingRestElementopt_Yield ']'
-	0,                    // ElementPatternList ::= BindingElisionElement
-	0,                    // ElementPatternList ::= ElementPatternList ',' BindingElisionElement
-	0,                    // ElementPatternList_Yield ::= BindingElisionElement_Yield
-	0,                    // ElementPatternList_Yield ::= ElementPatternList_Yield ',' BindingElisionElement_Yield
-	0,                    // BindingElisionElement ::= Elision ElementPattern
-	0,                    // BindingElisionElement ::= ElementPattern
-	0,                    // BindingElisionElement_Yield ::= Elision ElementPattern_Yield
-	0,                    // BindingElisionElement_Yield ::= ElementPattern_Yield
-	0,                    // PropertyPattern ::= SingleNameBinding
-	PropertyBinding,      // PropertyPattern ::= PropertyName ':' ElementPattern
-	0,                    // PropertyPattern ::= SyntaxError
-	0,                    // PropertyPattern_Yield ::= SingleNameBinding_Yield
-	PropertyBinding,      // PropertyPattern_Yield ::= PropertyName_Yield ':' ElementPattern_Yield
-	0,                    // PropertyPattern_Yield ::= SyntaxError
-	0,                    // ElementPattern ::= SingleNameBinding
-	ElementBinding,       // ElementPattern ::= BindingPattern Initializeropt_In
-	0,                    // ElementPattern ::= SyntaxError
-	0,                    // ElementPattern_Yield ::= SingleNameBinding_Yield
-	ElementBinding,       // ElementPattern_Yield ::= BindingPattern_Yield Initializeropt_In_Yield
-	0,                    // ElementPattern_Yield ::= SyntaxError
-	SingleNameBinding,    // SingleNameBinding ::= BindingIdentifier Initializeropt_In
-	SingleNameBinding,    // SingleNameBinding_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
-	BindingRestElement,   // BindingRestElement ::= '...' BindingIdentifier
-	BindingRestElement,   // BindingRestElement_Yield ::= '...' BindingIdentifier_Yield
-	EmptyStatement,       // EmptyStatement ::= ';' .emptyStatement
-	ExpressionStatement,  // ExpressionStatement ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ';'
-	ExpressionStatement,  // ExpressionStatement_Yield ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ';'
-	IfStatement,          // IfStatement ::= 'if' '(' Expression_In ')' Statement 'else' Statement
-	IfStatement,          // IfStatement ::= 'if' '(' Expression_In ')' Statement %prec 'else'
-	IfStatement,          // IfStatement_Return ::= 'if' '(' Expression_In ')' Statement_Return 'else' Statement_Return
-	IfStatement,          // IfStatement_Return ::= 'if' '(' Expression_In ')' Statement_Return %prec 'else'
-	IfStatement,          // IfStatement_Return_Yield ::= 'if' '(' Expression_In_Yield ')' Statement_Return_Yield 'else' Statement_Return_Yield
-	IfStatement,          // IfStatement_Return_Yield ::= 'if' '(' Expression_In_Yield ')' Statement_Return_Yield %prec 'else'
-	DoWhileStatement,     // IterationStatement ::= 'do' Statement 'while' '(' Expression_In ')' ';' .doWhile
-	WhileStatement,       // IterationStatement ::= 'while' '(' Expression_In ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' Expression_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
-	ForStatement,         // IterationStatement ::= 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
-	ForInStatement,       // IterationStatement ::= 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement
-	ForInStatement,       // IterationStatement ::= 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement
-	ForInStatement,       // IterationStatement ::= 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement
-	ForInStatement,       // IterationStatement ::= 'for' '(' ForDeclaration 'in' Expression_In ')' Statement
-	ForOfStatement,       // IterationStatement ::= 'for' '(' LeftHandSideExpression_NoLet 'of' AssignmentExpression_In ')' Statement
-	ForOfStatement,       // IterationStatement ::= 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement
-	ForOfStatement,       // IterationStatement ::= 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement
-	DoWhileStatement,     // IterationStatement_Return ::= 'do' Statement_Return 'while' '(' Expression_In ')' ';' .doWhile
-	WhileStatement,       // IterationStatement_Return ::= 'while' '(' Expression_In ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' Expression_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForStatement,         // IterationStatement_Return ::= 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForInStatement,       // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement_Return
-	ForInStatement,       // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement_Return
-	ForInStatement,       // IterationStatement_Return ::= 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement_Return
-	ForInStatement,       // IterationStatement_Return ::= 'for' '(' ForDeclaration 'in' Expression_In ')' Statement_Return
-	ForOfStatement,       // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_NoLet 'of' AssignmentExpression_In ')' Statement_Return
-	ForOfStatement,       // IterationStatement_Return ::= 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement_Return
-	ForOfStatement,       // IterationStatement_Return ::= 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement_Return
-	DoWhileStatement,     // IterationStatement_Return_Yield ::= 'do' Statement_Return_Yield 'while' '(' Expression_In_Yield ')' ';' .doWhile
-	WhileStatement,       // IterationStatement_Return_Yield ::= 'while' '(' Expression_In_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' Expressionopt_NoLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' Expression_StartWithLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForStatement,         // IterationStatement_Return_Yield ::= 'for' '(' LetOrConst BindingList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForInStatement,       // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_NoLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForInStatement,       // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_StartWithLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForInStatement,       // IterationStatement_Return_Yield ::= 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForInStatement,       // IterationStatement_Return_Yield ::= 'for' '(' ForDeclaration_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForOfStatement,       // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_NoLet_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
-	ForOfStatement,       // IterationStatement_Return_Yield ::= 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
-	ForOfStatement,       // IterationStatement_Return_Yield ::= 'for' '(' ForDeclaration_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
-	0,                    // ForDeclaration ::= LetOrConst ForBinding
-	0,                    // ForDeclaration_Yield ::= LetOrConst ForBinding_Yield
-	ForBinding,           // ForBinding ::= BindingIdentifier
-	ForBinding,           // ForBinding ::= BindingPattern
-	ForBinding,           // ForBinding_Yield ::= BindingIdentifier_Yield
-	ForBinding,           // ForBinding_Yield ::= BindingPattern_Yield
-	ForCondition,         // ForCondition ::= Expressionopt_In
-	ForCondition,         // ForCondition_Yield ::= Expressionopt_In_Yield
-	ForFinalExpression,   // ForFinalExpression ::= Expressionopt_In
-	ForFinalExpression,   // ForFinalExpression_Yield ::= Expressionopt_In_Yield
-	ContinueStatement,    // ContinueStatement ::= 'continue' ';'
-	ContinueStatement,    // ContinueStatement ::= 'continue' .noLineBreak LabelIdentifier ';'
-	ContinueStatement,    // ContinueStatement_Yield ::= 'continue' ';'
-	ContinueStatement,    // ContinueStatement_Yield ::= 'continue' .noLineBreak LabelIdentifier_Yield ';'
-	BreakStatement,       // BreakStatement ::= 'break' ';'
-	BreakStatement,       // BreakStatement ::= 'break' .noLineBreak LabelIdentifier ';'
-	BreakStatement,       // BreakStatement_Yield ::= 'break' ';'
-	BreakStatement,       // BreakStatement_Yield ::= 'break' .noLineBreak LabelIdentifier_Yield ';'
-	ReturnStatement,      // ReturnStatement ::= 'return' ';'
-	ReturnStatement,      // ReturnStatement ::= 'return' .noLineBreak Expression_In ';'
-	ReturnStatement,      // ReturnStatement_Yield ::= 'return' ';'
-	ReturnStatement,      // ReturnStatement_Yield ::= 'return' .noLineBreak Expression_In_Yield ';'
-	WithStatement,        // WithStatement ::= 'with' '(' Expression_In ')' Statement
-	WithStatement,        // WithStatement_Return ::= 'with' '(' Expression_In ')' Statement_Return
-	WithStatement,        // WithStatement_Return_Yield ::= 'with' '(' Expression_In_Yield ')' Statement_Return_Yield
-	SwitchStatement,      // SwitchStatement ::= 'switch' '(' Expression_In ')' CaseBlock
-	SwitchStatement,      // SwitchStatement_Return ::= 'switch' '(' Expression_In ')' CaseBlock_Return
-	SwitchStatement,      // SwitchStatement_Return_Yield ::= 'switch' '(' Expression_In_Yield ')' CaseBlock_Return_Yield
-	Block,                // CaseBlock ::= '{' CaseClausesopt '}'
-	Block,                // CaseBlock_Return ::= '{' CaseClausesopt_Return '}'
-	Block,                // CaseBlock_Return_Yield ::= '{' CaseClausesopt_Return_Yield '}'
-	0,                    // CaseClauses ::= CaseClause
-	0,                    // CaseClauses ::= CaseClauses CaseClause
-	0,                    // CaseClauses_Return ::= CaseClause_Return
-	0,                    // CaseClauses_Return ::= CaseClauses_Return CaseClause_Return
-	0,                    // CaseClauses_Return_Yield ::= CaseClause_Return_Yield
-	0,                    // CaseClauses_Return_Yield ::= CaseClauses_Return_Yield CaseClause_Return_Yield
-	Case,                 // CaseClause ::= 'case' Expression_In ':' StatementList
-	Case,                 // CaseClause ::= 'case' Expression_In ':'
-	Default,              // CaseClause ::= 'default' ':' StatementList
-	Default,              // CaseClause ::= 'default' ':'
-	Case,                 // CaseClause_Return ::= 'case' Expression_In ':' StatementList_Return
-	Case,                 // CaseClause_Return ::= 'case' Expression_In ':'
-	Default,              // CaseClause_Return ::= 'default' ':' StatementList_Return
-	Default,              // CaseClause_Return ::= 'default' ':'
-	Case,                 // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':' StatementList_Return_Yield
-	Case,                 // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':'
-	Default,              // CaseClause_Return_Yield ::= 'default' ':' StatementList_Return_Yield
-	Default,              // CaseClause_Return_Yield ::= 'default' ':'
-	LabelledStatement,    // LabelledStatement ::= Identifier ':' LabelledItem
-	LabelledStatement,    // LabelledStatement ::= 'yield' ':' LabelledItem
-	LabelledStatement,    // LabelledStatement_Return ::= Identifier ':' LabelledItem_Return
-	LabelledStatement,    // LabelledStatement_Return ::= 'yield' ':' LabelledItem_Return
-	LabelledStatement,    // LabelledStatement_Return_Yield ::= Identifier ':' LabelledItem_Return_Yield
-	0,                    // LabelledItem ::= Statement
-	0,                    // LabelledItem ::= FunctionDeclaration
-	0,                    // LabelledItem_Return ::= Statement_Return
-	0,                    // LabelledItem_Return ::= FunctionDeclaration
-	0,                    // LabelledItem_Return_Yield ::= Statement_Return_Yield
-	0,                    // LabelledItem_Return_Yield ::= FunctionDeclaration_Yield
-	ThrowStatement,       // ThrowStatement ::= 'throw' .noLineBreak Expression_In ';'
-	ThrowStatement,       // ThrowStatement_Yield ::= 'throw' .noLineBreak Expression_In_Yield ';'
-	TryStatement,         // TryStatement ::= 'try' Block Catch
-	TryStatement,         // TryStatement ::= 'try' Block Catch Finally
-	TryStatement,         // TryStatement ::= 'try' Block Finally
-	TryStatement,         // TryStatement_Return ::= 'try' Block_Return Catch_Return
-	TryStatement,         // TryStatement_Return ::= 'try' Block_Return Catch_Return Finally_Return
-	TryStatement,         // TryStatement_Return ::= 'try' Block_Return Finally_Return
-	TryStatement,         // TryStatement_Return_Yield ::= 'try' Block_Return_Yield Catch_Return_Yield
-	TryStatement,         // TryStatement_Return_Yield ::= 'try' Block_Return_Yield Catch_Return_Yield Finally_Return_Yield
-	TryStatement,         // TryStatement_Return_Yield ::= 'try' Block_Return_Yield Finally_Return_Yield
-	Catch,                // Catch ::= 'catch' '(' CatchParameter ')' Block
-	Catch,                // Catch_Return ::= 'catch' '(' CatchParameter ')' Block_Return
-	Catch,                // Catch_Return_Yield ::= 'catch' '(' CatchParameter_Yield ')' Block_Return_Yield
-	Finally,              // Finally ::= 'finally' Block
-	Finally,              // Finally_Return ::= 'finally' Block_Return
-	Finally,              // Finally_Return_Yield ::= 'finally' Block_Return_Yield
-	0,                    // CatchParameter ::= BindingIdentifier
-	0,                    // CatchParameter ::= BindingPattern
-	0,                    // CatchParameter_Yield ::= BindingIdentifier_Yield
-	0,                    // CatchParameter_Yield ::= BindingPattern_Yield
-	DebuggerStatement,    // DebuggerStatement ::= 'debugger' ';'
-	Function,             // FunctionDeclaration ::= 'function' BindingIdentifier FormalParameters FunctionBody
-	Function,             // FunctionDeclaration_Default ::= 'function' BindingIdentifier FormalParameters FunctionBody
-	Function,             // FunctionDeclaration_Default ::= 'function' FormalParameters FunctionBody
-	Function,             // FunctionDeclaration_Yield ::= 'function' BindingIdentifier_Yield FormalParameters FunctionBody
-	FunctionExpression,   // FunctionExpression ::= 'function' BindingIdentifier FormalParameters FunctionBody
-	FunctionExpression,   // FunctionExpression ::= 'function' FormalParameters FunctionBody
-	0,                    // StrictFormalParameters ::= FormalParameters
-	0,                    // StrictFormalParameters_Yield ::= FormalParameters_Yield
-	Parameters,           // FormalParameters ::= '(' FormalParameterList ')'
-	Parameters,           // FormalParameters ::= '(' ')'
-	Parameters,           // FormalParameters_Yield ::= '(' FormalParameterList_Yield ')'
-	Parameters,           // FormalParameters_Yield ::= '(' ')'
-	0,                    // FormalParameterList ::= FunctionRestParameter
-	0,                    // FormalParameterList ::= FormalsList
-	0,                    // FormalParameterList ::= FormalsList ',' FunctionRestParameter
-	0,                    // FormalParameterList_Yield ::= FunctionRestParameter_Yield
-	0,                    // FormalParameterList_Yield ::= FormalsList_Yield
-	0,                    // FormalParameterList_Yield ::= FormalsList_Yield ',' FunctionRestParameter_Yield
-	0,                    // FormalsList ::= FormalParameter
-	0,                    // FormalsList ::= FormalsList ',' FormalParameter
-	0,                    // FormalsList_Yield ::= FormalParameter_Yield
-	0,                    // FormalsList_Yield ::= FormalsList_Yield ',' FormalParameter_Yield
-	RestParameter,        // FunctionRestParameter ::= BindingRestElement
-	RestParameter,        // FunctionRestParameter_Yield ::= BindingRestElement_Yield
-	Parameter,            // FormalParameter ::= ElementPattern
-	Parameter,            // FormalParameter_Yield ::= ElementPattern_Yield
-	Body,                 // FunctionBody ::= '{' StatementList_Return '}'
-	Body,                 // FunctionBody ::= '{' '}'
-	Body,                 // FunctionBody_Yield ::= '{' StatementList_Return_Yield '}'
-	Body,                 // FunctionBody_Yield ::= '{' '}'
-	ArrowFunction,        // ArrowFunction ::= ArrowParameters .noLineBreak '=>' ConciseBody
-	ArrowFunction,        // ArrowFunction_In ::= ArrowParameters .noLineBreak '=>' ConciseBody_In
-	ArrowFunction,        // ArrowFunction_In_Yield ::= ArrowParameters_Yield .noLineBreak '=>' ConciseBody_In
-	ArrowFunction,        // ArrowFunction_Yield ::= ArrowParameters_Yield .noLineBreak '=>' ConciseBody
-	Parameters,           // ArrowParameters ::= BindingIdentifier
-	Parameters,           // ArrowParameters ::= CoverParenthesizedExpressionAndArrowParameterList
-	Parameters,           // ArrowParameters_Yield ::= BindingIdentifier_Yield
-	Parameters,           // ArrowParameters_Yield ::= CoverParenthesizedExpressionAndArrowParameterList_Yield
-	ConciseBody,          // ConciseBody ::= AssignmentExpression_NoObjLiteral
-	0,                    // ConciseBody ::= FunctionBody
-	ConciseBody,          // ConciseBody_In ::= AssignmentExpression_In_NoObjLiteral
-	0,                    // ConciseBody_In ::= FunctionBody
-	Method,               // MethodDefinition ::= PropertyName StrictFormalParameters FunctionBody
-	0,                    // MethodDefinition ::= GeneratorMethod
-	Getter,               // MethodDefinition ::= 'get' PropertyName '(' ')' FunctionBody
-	Setter,               // MethodDefinition ::= 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
-	Method,               // MethodDefinition_Yield ::= PropertyName_Yield StrictFormalParameters_Yield FunctionBody_Yield
-	0,                    // MethodDefinition_Yield ::= GeneratorMethod_Yield
-	Getter,               // MethodDefinition_Yield ::= 'get' PropertyName_Yield '(' ')' FunctionBody_Yield
-	Setter,               // MethodDefinition_Yield ::= 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody_Yield
-	0,                    // PropertySetParameterList ::= FormalParameter
-	GeneratorMethod,      // GeneratorMethod ::= '*' PropertyName StrictFormalParameters_Yield GeneratorBody
-	GeneratorMethod,      // GeneratorMethod_Yield ::= '*' PropertyName_Yield StrictFormalParameters_Yield GeneratorBody
-	Generator,            // GeneratorDeclaration ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
-	Generator,            // GeneratorDeclaration_Default ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
-	Generator,            // GeneratorDeclaration_Default ::= 'function' '*' FormalParameters_Yield GeneratorBody
-	Generator,            // GeneratorDeclaration_Yield ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
-	GeneratorExpression,  // GeneratorExpression ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
-	GeneratorExpression,  // GeneratorExpression ::= 'function' '*' FormalParameters_Yield GeneratorBody
-	0,                    // GeneratorBody ::= FunctionBody_Yield
-	Yield,                // YieldExpression ::= 'yield'
-	Yield,                // YieldExpression ::= 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
-	Yield,                // YieldExpression ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
-	Yield,                // YieldExpression_In ::= 'yield'
-	Yield,                // YieldExpression_In ::= 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
-	Yield,                // YieldExpression_In ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
-	Class,                // ClassDeclaration ::= 'class' BindingIdentifier ClassTail
-	Class,                // ClassDeclaration_Default ::= 'class' BindingIdentifier ClassTail
-	Class,                // ClassDeclaration_Default ::= 'class' ClassTail
-	Class,                // ClassDeclaration_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
-	ClassExpr,            // ClassExpression ::= 'class' BindingIdentifier ClassTail
-	ClassExpr,            // ClassExpression ::= 'class' ClassTail
-	ClassExpr,            // ClassExpression_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
-	ClassExpr,            // ClassExpression_Yield ::= 'class' ClassTail_Yield
-	0,                    // ClassTail ::= ClassHeritage ClassBody
-	0,                    // ClassTail ::= ClassBody
-	0,                    // ClassTail_Yield ::= ClassHeritage_Yield ClassBody_Yield
-	0,                    // ClassTail_Yield ::= ClassBody_Yield
-	Extends,              // ClassHeritage ::= 'extends' LeftHandSideExpression
-	Extends,              // ClassHeritage_Yield ::= 'extends' LeftHandSideExpression_Yield
-	ClassBody,            // ClassBody ::= '{' ClassElementList '}'
-	ClassBody,            // ClassBody ::= '{' '}'
-	ClassBody,            // ClassBody_Yield ::= '{' ClassElementList_Yield '}'
-	ClassBody,            // ClassBody_Yield ::= '{' '}'
-	0,                    // ClassElementList ::= ClassElement
-	0,                    // ClassElementList ::= ClassElementList ClassElement
-	0,                    // ClassElementList_Yield ::= ClassElement_Yield
-	0,                    // ClassElementList_Yield ::= ClassElementList_Yield ClassElement_Yield
-	0,                    // ClassElement ::= MethodDefinition
-	StaticMethod,         // ClassElement ::= 'static' MethodDefinition
-	EmptyDecl,            // ClassElement ::= ';'
-	0,                    // ClassElement_Yield ::= MethodDefinition_Yield
-	StaticMethod,         // ClassElement_Yield ::= 'static' MethodDefinition_Yield
-	EmptyDecl,            // ClassElement_Yield ::= ';'
-	Module,               // Module ::= ModuleBodyopt
-	0,                    // ModuleBody ::= ModuleItemList
-	0,                    // ModuleItemList ::= ModuleItem
-	0,                    // ModuleItemList ::= ModuleItemList ModuleItem
-	0,                    // ModuleItem ::= ImportDeclaration
-	0,                    // ModuleItem ::= ExportDeclaration
-	0,                    // ModuleItem ::= StatementListItem
-	ImportDeclaration,    // ImportDeclaration ::= 'import' ImportClause FromClause ';'
-	ImportDeclaration,    // ImportDeclaration ::= 'import' ModuleSpecifier ';'
-	0,                    // ImportClause ::= ImportedDefaultBinding
-	0,                    // ImportClause ::= NameSpaceImport
-	0,                    // ImportClause ::= NamedImports
-	0,                    // ImportClause ::= ImportedDefaultBinding ',' NameSpaceImport
-	0,                    // ImportClause ::= ImportedDefaultBinding ',' NamedImports
-	0,                    // ImportedDefaultBinding ::= ImportedBinding
-	NameSpaceImport,      // NameSpaceImport ::= '*' 'as' ImportedBinding
-	0,                    // FromClause ::= 'from' ModuleSpecifier
-	0,                    // NamedImport_list_Comma_separated ::= NamedImport_list_Comma_separated ',' NamedImport
-	0,                    // NamedImport_list_Comma_separated ::= NamedImport
-	NamedImports,         // NamedImports ::= '{' '}'
-	NamedImports,         // NamedImports ::= '{' NamedImport_list_Comma_separated ',' '}'
-	NamedImports,         // NamedImports ::= '{' NamedImport_list_Comma_separated '}'
-	ImportSpecifier,      // NamedImport ::= ImportedBinding
-	ImportSpecifier,      // NamedImport ::= IdentifierNameRef 'as' ImportedBinding
-	SyntaxError,          // NamedImport ::= error
-	ModuleSpecifier,      // ModuleSpecifier ::= StringLiteral
-	0,                    // ImportedBinding ::= BindingIdentifier
-	ExportDeclaration,    // ExportDeclaration ::= 'export' '*' FromClause ';'
-	ExportDeclaration,    // ExportDeclaration ::= 'export' ExportClause FromClause ';'
-	ExportDeclaration,    // ExportDeclaration ::= 'export' ExportClause ';'
-	ExportDeclaration,    // ExportDeclaration ::= 'export' VariableStatement
-	ExportDeclaration,    // ExportDeclaration ::= 'export' Declaration
-	ExportDefault,        // ExportDeclaration ::= 'export' 'default' HoistableDeclaration_Default
-	ExportDefault,        // ExportDeclaration ::= 'export' 'default' ClassDeclaration_Default
-	ExportDefault,        // ExportDeclaration ::= 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
-	ExportClause,         // ExportClause ::= '{' '}'
-	ExportClause,         // ExportClause ::= '{' ExportElement_list_Comma_separated ',' '}'
-	ExportClause,         // ExportClause ::= '{' ExportElement_list_Comma_separated '}'
-	0,                    // ExportElement_list_Comma_separated ::= ExportElement_list_Comma_separated ',' ExportElement
-	0,                    // ExportElement_list_Comma_separated ::= ExportElement
-	ExportSpecifier,      // ExportElement ::= IdentifierNameRef
-	ExportSpecifier,      // ExportElement ::= IdentifierNameRef 'as' IdentifierNameDecl
-	SyntaxError,          // ExportElement ::= error
-	0,                    // JSXChild_optlist ::= JSXChild_optlist JSXChild
-	0,                    // JSXChild_optlist ::=
-	0,                    // JSXChild_Yield_optlist ::= JSXChild_Yield_optlist JSXChild_Yield
-	0,                    // JSXChild_Yield_optlist ::=
-	JSXElement,           // JSXElement ::= JSXSelfClosingElement
-	JSXElement,           // JSXElement ::= JSXOpeningElement JSXChild_optlist JSXClosingElement
-	JSXElement,           // JSXElement_Yield ::= JSXSelfClosingElement_Yield
-	JSXElement,           // JSXElement_Yield ::= JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
-	0,                    // JSXAttribute_optlist ::= JSXAttribute_optlist JSXAttribute
-	0,                    // JSXAttribute_optlist ::=
-	0,                    // JSXAttribute_Yield_optlist ::= JSXAttribute_Yield_optlist JSXAttribute_Yield
-	0,                    // JSXAttribute_Yield_optlist ::=
+	0,                     // AssignmentExpression ::= ConditionalExpression
+	0,                     // AssignmentExpression ::= ArrowFunction
+	AssignmentExpression,  // AssignmentExpression ::= LeftHandSideExpression '=' AssignmentExpression
+	AssignmentExpression,  // AssignmentExpression ::= LeftHandSideExpression AssignmentOperator AssignmentExpression
+	0,                     // AssignmentExpression_In ::= ConditionalExpression_In
+	0,                     // AssignmentExpression_In ::= ArrowFunction_In
+	AssignmentExpression,  // AssignmentExpression_In ::= LeftHandSideExpression '=' AssignmentExpression_In
+	AssignmentExpression,  // AssignmentExpression_In ::= LeftHandSideExpression AssignmentOperator AssignmentExpression_In
+	0,                     // AssignmentExpression_In_NoFuncClass ::= ConditionalExpression_In_NoFuncClass
+	0,                     // AssignmentExpression_In_NoFuncClass ::= ArrowFunction_In
+	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass ::= LeftHandSideExpression_NoFuncClass '=' AssignmentExpression_In
+	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass ::= LeftHandSideExpression_NoFuncClass AssignmentOperator AssignmentExpression_In
+	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= ArrowFunction_In
+	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral '=' AssignmentExpression_In
+	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral AssignmentOperator AssignmentExpression_In
+	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= YieldExpression_In
+	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= ArrowFunction_In_Yield
+	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '=' AssignmentExpression_In_Yield
+	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield AssignmentOperator AssignmentExpression_In_Yield
+	0,                     // AssignmentExpression_In_NoObjLiteral ::= ConditionalExpression_In_NoObjLiteral
+	0,                     // AssignmentExpression_In_NoObjLiteral ::= ArrowFunction_In
+	AssignmentExpression,  // AssignmentExpression_In_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression_In
+	AssignmentExpression,  // AssignmentExpression_In_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression_In
+	0,                     // AssignmentExpression_In_Yield ::= ConditionalExpression_In_Yield
+	0,                     // AssignmentExpression_In_Yield ::= YieldExpression_In
+	0,                     // AssignmentExpression_In_Yield ::= ArrowFunction_In_Yield
+	AssignmentExpression,  // AssignmentExpression_In_Yield ::= LeftHandSideExpression_Yield '=' AssignmentExpression_In_Yield
+	AssignmentExpression,  // AssignmentExpression_In_Yield ::= LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_In_Yield
+	0,                     // AssignmentExpression_NoLet ::= ConditionalExpression_NoLet
+	0,                     // AssignmentExpression_NoLet ::= ArrowFunction
+	AssignmentExpression,  // AssignmentExpression_NoLet ::= LeftHandSideExpression_NoLet '=' AssignmentExpression
+	AssignmentExpression,  // AssignmentExpression_NoLet ::= LeftHandSideExpression_NoLet AssignmentOperator AssignmentExpression
+	0,                     // AssignmentExpression_NoLet_Yield ::= ConditionalExpression_NoLet_Yield
+	0,                     // AssignmentExpression_NoLet_Yield ::= YieldExpression
+	0,                     // AssignmentExpression_NoLet_Yield ::= ArrowFunction_Yield
+	AssignmentExpression,  // AssignmentExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield '=' AssignmentExpression_Yield
+	AssignmentExpression,  // AssignmentExpression_NoLet_Yield ::= LeftHandSideExpression_NoLet_Yield AssignmentOperator AssignmentExpression_Yield
+	0,                     // AssignmentExpression_NoObjLiteral ::= ConditionalExpression_NoObjLiteral
+	0,                     // AssignmentExpression_NoObjLiteral ::= ArrowFunction
+	AssignmentExpression,  // AssignmentExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression
+	AssignmentExpression,  // AssignmentExpression_NoObjLiteral ::= LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression
+	0,                     // AssignmentExpression_StartWithLet ::= ConditionalExpression_StartWithLet
+	AssignmentExpression,  // AssignmentExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet '=' AssignmentExpression
+	AssignmentExpression,  // AssignmentExpression_StartWithLet ::= LeftHandSideExpression_StartWithLet AssignmentOperator AssignmentExpression
+	0,                     // AssignmentExpression_StartWithLet_Yield ::= ConditionalExpression_StartWithLet_Yield
+	AssignmentExpression,  // AssignmentExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield '=' AssignmentExpression_Yield
+	AssignmentExpression,  // AssignmentExpression_StartWithLet_Yield ::= LeftHandSideExpression_StartWithLet_Yield AssignmentOperator AssignmentExpression_Yield
+	0,                     // AssignmentExpression_Yield ::= ConditionalExpression_Yield
+	0,                     // AssignmentExpression_Yield ::= YieldExpression
+	0,                     // AssignmentExpression_Yield ::= ArrowFunction_Yield
+	AssignmentExpression,  // AssignmentExpression_Yield ::= LeftHandSideExpression_Yield '=' AssignmentExpression_Yield
+	AssignmentExpression,  // AssignmentExpression_Yield ::= LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_Yield
+	AssignmentOperator,    // AssignmentOperator ::= '*='
+	AssignmentOperator,    // AssignmentOperator ::= '/='
+	AssignmentOperator,    // AssignmentOperator ::= '%='
+	AssignmentOperator,    // AssignmentOperator ::= '+='
+	AssignmentOperator,    // AssignmentOperator ::= '-='
+	AssignmentOperator,    // AssignmentOperator ::= '<<='
+	AssignmentOperator,    // AssignmentOperator ::= '>>='
+	AssignmentOperator,    // AssignmentOperator ::= '>>>='
+	AssignmentOperator,    // AssignmentOperator ::= '&='
+	AssignmentOperator,    // AssignmentOperator ::= '^='
+	AssignmentOperator,    // AssignmentOperator ::= '|='
+	AssignmentOperator,    // AssignmentOperator ::= '**='
+	CommaExpression,       // CommaExpression_In ::= Expression_In ',' AssignmentExpression_In
+	CommaExpression,       // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ',' AssignmentExpression_In
+	CommaExpression,       // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ',' AssignmentExpression_In_Yield
+	CommaExpression,       // CommaExpression_In_Yield ::= Expression_In_Yield ',' AssignmentExpression_In_Yield
+	CommaExpression,       // CommaExpression_NoLet ::= Expression_NoLet ',' AssignmentExpression
+	CommaExpression,       // CommaExpression_NoLet_Yield ::= Expression_NoLet_Yield ',' AssignmentExpression_Yield
+	CommaExpression,       // CommaExpression_StartWithLet ::= Expression_StartWithLet ',' AssignmentExpression
+	CommaExpression,       // CommaExpression_StartWithLet_Yield ::= Expression_StartWithLet_Yield ',' AssignmentExpression_Yield
+	0,                     // Expression_In ::= AssignmentExpression_In
+	0,                     // Expression_In ::= CommaExpression_In
+	0,                     // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                     // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ::= CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                     // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	0,                     // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ::= CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	0,                     // Expression_In_Yield ::= AssignmentExpression_In_Yield
+	0,                     // Expression_In_Yield ::= CommaExpression_In_Yield
+	0,                     // Expression_NoLet ::= AssignmentExpression_NoLet
+	0,                     // Expression_NoLet ::= CommaExpression_NoLet
+	0,                     // Expression_NoLet_Yield ::= AssignmentExpression_NoLet_Yield
+	0,                     // Expression_NoLet_Yield ::= CommaExpression_NoLet_Yield
+	0,                     // Expression_StartWithLet ::= AssignmentExpression_StartWithLet
+	0,                     // Expression_StartWithLet ::= CommaExpression_StartWithLet
+	0,                     // Expression_StartWithLet_Yield ::= AssignmentExpression_StartWithLet_Yield
+	0,                     // Expression_StartWithLet_Yield ::= CommaExpression_StartWithLet_Yield
+	0,                     // Statement ::= BlockStatement
+	0,                     // Statement ::= VariableStatement
+	0,                     // Statement ::= EmptyStatement
+	0,                     // Statement ::= ExpressionStatement
+	0,                     // Statement ::= IfStatement
+	0,                     // Statement ::= BreakableStatement
+	0,                     // Statement ::= ContinueStatement
+	0,                     // Statement ::= BreakStatement
+	0,                     // Statement ::= WithStatement
+	0,                     // Statement ::= LabelledStatement
+	0,                     // Statement ::= ThrowStatement
+	0,                     // Statement ::= TryStatement
+	0,                     // Statement ::= DebuggerStatement
+	0,                     // Statement_Return ::= BlockStatement_Return
+	0,                     // Statement_Return ::= VariableStatement
+	0,                     // Statement_Return ::= EmptyStatement
+	0,                     // Statement_Return ::= ExpressionStatement
+	0,                     // Statement_Return ::= IfStatement_Return
+	0,                     // Statement_Return ::= BreakableStatement_Return
+	0,                     // Statement_Return ::= ContinueStatement
+	0,                     // Statement_Return ::= BreakStatement
+	0,                     // Statement_Return ::= ReturnStatement
+	0,                     // Statement_Return ::= WithStatement_Return
+	0,                     // Statement_Return ::= LabelledStatement_Return
+	0,                     // Statement_Return ::= ThrowStatement
+	0,                     // Statement_Return ::= TryStatement_Return
+	0,                     // Statement_Return ::= DebuggerStatement
+	0,                     // Statement_Return_Yield ::= BlockStatement_Return_Yield
+	0,                     // Statement_Return_Yield ::= VariableStatement_Yield
+	0,                     // Statement_Return_Yield ::= EmptyStatement
+	0,                     // Statement_Return_Yield ::= ExpressionStatement_Yield
+	0,                     // Statement_Return_Yield ::= IfStatement_Return_Yield
+	0,                     // Statement_Return_Yield ::= BreakableStatement_Return_Yield
+	0,                     // Statement_Return_Yield ::= ContinueStatement_Yield
+	0,                     // Statement_Return_Yield ::= BreakStatement_Yield
+	0,                     // Statement_Return_Yield ::= ReturnStatement_Yield
+	0,                     // Statement_Return_Yield ::= WithStatement_Return_Yield
+	0,                     // Statement_Return_Yield ::= LabelledStatement_Return_Yield
+	0,                     // Statement_Return_Yield ::= ThrowStatement_Yield
+	0,                     // Statement_Return_Yield ::= TryStatement_Return_Yield
+	0,                     // Statement_Return_Yield ::= DebuggerStatement
+	0,                     // Declaration ::= HoistableDeclaration
+	0,                     // Declaration ::= ClassDeclaration
+	0,                     // Declaration ::= LexicalDeclaration_In
+	0,                     // Declaration_Yield ::= HoistableDeclaration_Yield
+	0,                     // Declaration_Yield ::= ClassDeclaration_Yield
+	0,                     // Declaration_Yield ::= LexicalDeclaration_In_Yield
+	0,                     // HoistableDeclaration ::= FunctionDeclaration
+	0,                     // HoistableDeclaration ::= GeneratorDeclaration
+	0,                     // HoistableDeclaration_Default ::= FunctionDeclaration_Default
+	0,                     // HoistableDeclaration_Default ::= GeneratorDeclaration_Default
+	0,                     // HoistableDeclaration_Yield ::= FunctionDeclaration_Yield
+	0,                     // HoistableDeclaration_Yield ::= GeneratorDeclaration_Yield
+	0,                     // BreakableStatement ::= IterationStatement
+	0,                     // BreakableStatement ::= SwitchStatement
+	0,                     // BreakableStatement_Return ::= IterationStatement_Return
+	0,                     // BreakableStatement_Return ::= SwitchStatement_Return
+	0,                     // BreakableStatement_Return_Yield ::= IterationStatement_Return_Yield
+	0,                     // BreakableStatement_Return_Yield ::= SwitchStatement_Return_Yield
+	0,                     // BlockStatement ::= Block
+	0,                     // BlockStatement_Return ::= Block_Return
+	0,                     // BlockStatement_Return_Yield ::= Block_Return_Yield
+	Block,                 // Block ::= '{' StatementList '}'
+	Block,                 // Block ::= '{' '}'
+	Block,                 // Block_Return ::= '{' StatementList_Return '}'
+	Block,                 // Block_Return ::= '{' '}'
+	Block,                 // Block_Return_Yield ::= '{' StatementList_Return_Yield '}'
+	Block,                 // Block_Return_Yield ::= '{' '}'
+	0,                     // StatementList ::= StatementListItem
+	0,                     // StatementList ::= StatementList StatementListItem
+	0,                     // StatementList_Return ::= StatementListItem_Return
+	0,                     // StatementList_Return ::= StatementList_Return StatementListItem_Return
+	0,                     // StatementList_Return_Yield ::= StatementListItem_Return_Yield
+	0,                     // StatementList_Return_Yield ::= StatementList_Return_Yield StatementListItem_Return_Yield
+	0,                     // StatementListItem ::= Statement
+	0,                     // StatementListItem ::= Declaration
+	SyntaxError,           // StatementListItem ::= error ';'
+	0,                     // StatementListItem_Return ::= Statement_Return
+	0,                     // StatementListItem_Return ::= Declaration
+	SyntaxError,           // StatementListItem_Return ::= error ';'
+	0,                     // StatementListItem_Return_Yield ::= Statement_Return_Yield
+	0,                     // StatementListItem_Return_Yield ::= Declaration_Yield
+	SyntaxError,           // StatementListItem_Return_Yield ::= error ';'
+	LexicalDeclaration,    // LexicalDeclaration_In ::= LetOrConst BindingList_In ';'
+	LexicalDeclaration,    // LexicalDeclaration_In_Yield ::= LetOrConst BindingList_In_Yield ';'
+	0,                     // LetOrConst ::= 'let'
+	0,                     // LetOrConst ::= 'const'
+	0,                     // BindingList ::= LexicalBinding
+	0,                     // BindingList ::= BindingList ',' LexicalBinding
+	0,                     // BindingList_In ::= LexicalBinding_In
+	0,                     // BindingList_In ::= BindingList_In ',' LexicalBinding_In
+	0,                     // BindingList_In_Yield ::= LexicalBinding_In_Yield
+	0,                     // BindingList_In_Yield ::= BindingList_In_Yield ',' LexicalBinding_In_Yield
+	0,                     // BindingList_Yield ::= LexicalBinding_Yield
+	0,                     // BindingList_Yield ::= BindingList_Yield ',' LexicalBinding_Yield
+	LexicalBinding,        // LexicalBinding ::= BindingIdentifier Initializeropt
+	LexicalBinding,        // LexicalBinding ::= BindingPattern Initializer
+	LexicalBinding,        // LexicalBinding_In ::= BindingIdentifier Initializeropt_In
+	LexicalBinding,        // LexicalBinding_In ::= BindingPattern Initializer_In
+	LexicalBinding,        // LexicalBinding_In_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
+	LexicalBinding,        // LexicalBinding_In_Yield ::= BindingPattern_Yield Initializer_In_Yield
+	LexicalBinding,        // LexicalBinding_Yield ::= BindingIdentifier_Yield Initializeropt_Yield
+	LexicalBinding,        // LexicalBinding_Yield ::= BindingPattern_Yield Initializer_Yield
+	VariableStatement,     // VariableStatement ::= 'var' VariableDeclarationList_In ';'
+	VariableStatement,     // VariableStatement_Yield ::= 'var' VariableDeclarationList_In_Yield ';'
+	0,                     // VariableDeclarationList ::= VariableDeclaration
+	0,                     // VariableDeclarationList ::= VariableDeclarationList ',' VariableDeclaration
+	0,                     // VariableDeclarationList_In ::= VariableDeclaration_In
+	0,                     // VariableDeclarationList_In ::= VariableDeclarationList_In ',' VariableDeclaration_In
+	0,                     // VariableDeclarationList_In_Yield ::= VariableDeclaration_In_Yield
+	0,                     // VariableDeclarationList_In_Yield ::= VariableDeclarationList_In_Yield ',' VariableDeclaration_In_Yield
+	0,                     // VariableDeclarationList_Yield ::= VariableDeclaration_Yield
+	0,                     // VariableDeclarationList_Yield ::= VariableDeclarationList_Yield ',' VariableDeclaration_Yield
+	VariableDeclaration,   // VariableDeclaration ::= BindingIdentifier Initializeropt
+	VariableDeclaration,   // VariableDeclaration ::= BindingPattern Initializer
+	VariableDeclaration,   // VariableDeclaration_In ::= BindingIdentifier Initializeropt_In
+	VariableDeclaration,   // VariableDeclaration_In ::= BindingPattern Initializer_In
+	VariableDeclaration,   // VariableDeclaration_In_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
+	VariableDeclaration,   // VariableDeclaration_In_Yield ::= BindingPattern_Yield Initializer_In_Yield
+	VariableDeclaration,   // VariableDeclaration_Yield ::= BindingIdentifier_Yield Initializeropt_Yield
+	VariableDeclaration,   // VariableDeclaration_Yield ::= BindingPattern_Yield Initializer_Yield
+	0,                     // BindingPattern ::= ObjectBindingPattern
+	0,                     // BindingPattern ::= ArrayBindingPattern
+	0,                     // BindingPattern_Yield ::= ObjectBindingPattern_Yield
+	0,                     // BindingPattern_Yield ::= ArrayBindingPattern_Yield
+	ObjectPattern,         // ObjectBindingPattern ::= '{' '}'
+	ObjectPattern,         // ObjectBindingPattern ::= '{' PropertyPattern_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern ::= '{' PropertyPattern_list_Comma_separated '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield ::= '{' '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield ::= '{' PropertyPattern_Yield_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield ::= '{' PropertyPattern_Yield_list_Comma_separated '}'
+	0,                     // PropertyPattern_list_Comma_separated ::= PropertyPattern_list_Comma_separated ',' PropertyPattern
+	0,                     // PropertyPattern_list_Comma_separated ::= PropertyPattern
+	0,                     // PropertyPattern_Yield_list_Comma_separated ::= PropertyPattern_Yield_list_Comma_separated ',' PropertyPattern_Yield
+	0,                     // PropertyPattern_Yield_list_Comma_separated ::= PropertyPattern_Yield
+	ArrayPattern,          // ArrayBindingPattern ::= '[' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,          // ArrayBindingPattern ::= '[' ElementPatternList ']'
+	ArrayPattern,          // ArrayBindingPattern ::= '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,          // ArrayBindingPattern_Yield ::= '[' Elisionopt BindingRestElementopt_Yield ']'
+	ArrayPattern,          // ArrayBindingPattern_Yield ::= '[' ElementPatternList_Yield ']'
+	ArrayPattern,          // ArrayBindingPattern_Yield ::= '[' ElementPatternList_Yield ',' Elisionopt BindingRestElementopt_Yield ']'
+	0,                     // ElementPatternList ::= BindingElisionElement
+	0,                     // ElementPatternList ::= ElementPatternList ',' BindingElisionElement
+	0,                     // ElementPatternList_Yield ::= BindingElisionElement_Yield
+	0,                     // ElementPatternList_Yield ::= ElementPatternList_Yield ',' BindingElisionElement_Yield
+	0,                     // BindingElisionElement ::= Elision ElementPattern
+	0,                     // BindingElisionElement ::= ElementPattern
+	0,                     // BindingElisionElement_Yield ::= Elision ElementPattern_Yield
+	0,                     // BindingElisionElement_Yield ::= ElementPattern_Yield
+	0,                     // PropertyPattern ::= SingleNameBinding
+	PropertyBinding,       // PropertyPattern ::= PropertyName ':' ElementPattern
+	0,                     // PropertyPattern ::= SyntaxError
+	0,                     // PropertyPattern_Yield ::= SingleNameBinding_Yield
+	PropertyBinding,       // PropertyPattern_Yield ::= PropertyName_Yield ':' ElementPattern_Yield
+	0,                     // PropertyPattern_Yield ::= SyntaxError
+	0,                     // ElementPattern ::= SingleNameBinding
+	ElementBinding,        // ElementPattern ::= BindingPattern Initializeropt_In
+	0,                     // ElementPattern ::= SyntaxError
+	0,                     // ElementPattern_Yield ::= SingleNameBinding_Yield
+	ElementBinding,        // ElementPattern_Yield ::= BindingPattern_Yield Initializeropt_In_Yield
+	0,                     // ElementPattern_Yield ::= SyntaxError
+	SingleNameBinding,     // SingleNameBinding ::= BindingIdentifier Initializeropt_In
+	SingleNameBinding,     // SingleNameBinding_Yield ::= BindingIdentifier_Yield Initializeropt_In_Yield
+	BindingRestElement,    // BindingRestElement ::= '...' BindingIdentifier
+	BindingRestElement,    // BindingRestElement_Yield ::= '...' BindingIdentifier_Yield
+	EmptyStatement,        // EmptyStatement ::= ';' .emptyStatement
+	ExpressionStatement,   // ExpressionStatement ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ';'
+	ExpressionStatement,   // ExpressionStatement_Yield ::= Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ';'
+	IfStatement,           // IfStatement ::= 'if' '(' Expression_In ')' Statement 'else' Statement
+	IfStatement,           // IfStatement ::= 'if' '(' Expression_In ')' Statement %prec 'else'
+	IfStatement,           // IfStatement_Return ::= 'if' '(' Expression_In ')' Statement_Return 'else' Statement_Return
+	IfStatement,           // IfStatement_Return ::= 'if' '(' Expression_In ')' Statement_Return %prec 'else'
+	IfStatement,           // IfStatement_Return_Yield ::= 'if' '(' Expression_In_Yield ')' Statement_Return_Yield 'else' Statement_Return_Yield
+	IfStatement,           // IfStatement_Return_Yield ::= 'if' '(' Expression_In_Yield ')' Statement_Return_Yield %prec 'else'
+	DoWhileStatement,      // IterationStatement ::= 'do' Statement 'while' '(' Expression_In ')' ';' .doWhile
+	WhileStatement,        // IterationStatement ::= 'while' '(' Expression_In ')' Statement
+	ForStatement,          // IterationStatement ::= 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	ForStatement,          // IterationStatement ::= 'for' '(' Expression_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	ForStatementWithVar,   // IterationStatement ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	ForStatementWithVar,   // IterationStatement ::= 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	ForInStatement,        // IterationStatement ::= 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement
+	ForInStatement,        // IterationStatement ::= 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement
+	ForInStatementWithVar, // IterationStatement ::= 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement
+	ForInStatementWithVar, // IterationStatement ::= 'for' '(' ForDeclaration 'in' Expression_In ')' Statement
+	ForOfStatement,        // IterationStatement ::= 'for' '(' LeftHandSideExpression_NoLet 'of' AssignmentExpression_In ')' Statement
+	ForOfStatementWithVar, // IterationStatement ::= 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement
+	ForOfStatementWithVar, // IterationStatement ::= 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement
+	DoWhileStatement,      // IterationStatement_Return ::= 'do' Statement_Return 'while' '(' Expression_In ')' ';' .doWhile
+	WhileStatement,        // IterationStatement_Return ::= 'while' '(' Expression_In ')' Statement_Return
+	ForStatement,          // IterationStatement_Return ::= 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
+	ForStatement,          // IterationStatement_Return ::= 'for' '(' Expression_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
+	ForStatementWithVar,   // IterationStatement_Return ::= 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
+	ForStatementWithVar,   // IterationStatement_Return ::= 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
+	ForInStatement,        // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement_Return
+	ForInStatement,        // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement_Return
+	ForInStatementWithVar, // IterationStatement_Return ::= 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement_Return
+	ForInStatementWithVar, // IterationStatement_Return ::= 'for' '(' ForDeclaration 'in' Expression_In ')' Statement_Return
+	ForOfStatement,        // IterationStatement_Return ::= 'for' '(' LeftHandSideExpression_NoLet 'of' AssignmentExpression_In ')' Statement_Return
+	ForOfStatementWithVar, // IterationStatement_Return ::= 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement_Return
+	ForOfStatementWithVar, // IterationStatement_Return ::= 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement_Return
+	DoWhileStatement,      // IterationStatement_Return_Yield ::= 'do' Statement_Return_Yield 'while' '(' Expression_In_Yield ')' ';' .doWhile
+	WhileStatement,        // IterationStatement_Return_Yield ::= 'while' '(' Expression_In_Yield ')' Statement_Return_Yield
+	ForStatement,          // IterationStatement_Return_Yield ::= 'for' '(' Expressionopt_NoLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
+	ForStatement,          // IterationStatement_Return_Yield ::= 'for' '(' Expression_StartWithLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
+	ForStatementWithVar,   // IterationStatement_Return_Yield ::= 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
+	ForStatementWithVar,   // IterationStatement_Return_Yield ::= 'for' '(' LetOrConst BindingList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
+	ForInStatement,        // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_NoLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
+	ForInStatement,        // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_StartWithLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
+	ForInStatementWithVar, // IterationStatement_Return_Yield ::= 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
+	ForInStatementWithVar, // IterationStatement_Return_Yield ::= 'for' '(' ForDeclaration_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
+	ForOfStatement,        // IterationStatement_Return_Yield ::= 'for' '(' LeftHandSideExpression_NoLet_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
+	ForOfStatementWithVar, // IterationStatement_Return_Yield ::= 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
+	ForOfStatementWithVar, // IterationStatement_Return_Yield ::= 'for' '(' ForDeclaration_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
+	0,                   // ForDeclaration ::= LetOrConst ForBinding
+	0,                   // ForDeclaration_Yield ::= LetOrConst ForBinding_Yield
+	ForBinding,          // ForBinding ::= BindingIdentifier
+	ForBinding,          // ForBinding ::= BindingPattern
+	ForBinding,          // ForBinding_Yield ::= BindingIdentifier_Yield
+	ForBinding,          // ForBinding_Yield ::= BindingPattern_Yield
+	ForCondition,        // ForCondition ::= Expressionopt_In
+	ForCondition,        // ForCondition_Yield ::= Expressionopt_In_Yield
+	ForFinalExpression,  // ForFinalExpression ::= Expressionopt_In
+	ForFinalExpression,  // ForFinalExpression_Yield ::= Expressionopt_In_Yield
+	ContinueStatement,   // ContinueStatement ::= 'continue' ';'
+	ContinueStatement,   // ContinueStatement ::= 'continue' .noLineBreak LabelIdentifier ';'
+	ContinueStatement,   // ContinueStatement_Yield ::= 'continue' ';'
+	ContinueStatement,   // ContinueStatement_Yield ::= 'continue' .noLineBreak LabelIdentifier_Yield ';'
+	BreakStatement,      // BreakStatement ::= 'break' ';'
+	BreakStatement,      // BreakStatement ::= 'break' .noLineBreak LabelIdentifier ';'
+	BreakStatement,      // BreakStatement_Yield ::= 'break' ';'
+	BreakStatement,      // BreakStatement_Yield ::= 'break' .noLineBreak LabelIdentifier_Yield ';'
+	ReturnStatement,     // ReturnStatement ::= 'return' ';'
+	ReturnStatement,     // ReturnStatement ::= 'return' .noLineBreak Expression_In ';'
+	ReturnStatement,     // ReturnStatement_Yield ::= 'return' ';'
+	ReturnStatement,     // ReturnStatement_Yield ::= 'return' .noLineBreak Expression_In_Yield ';'
+	WithStatement,       // WithStatement ::= 'with' '(' Expression_In ')' Statement
+	WithStatement,       // WithStatement_Return ::= 'with' '(' Expression_In ')' Statement_Return
+	WithStatement,       // WithStatement_Return_Yield ::= 'with' '(' Expression_In_Yield ')' Statement_Return_Yield
+	SwitchStatement,     // SwitchStatement ::= 'switch' '(' Expression_In ')' CaseBlock
+	SwitchStatement,     // SwitchStatement_Return ::= 'switch' '(' Expression_In ')' CaseBlock_Return
+	SwitchStatement,     // SwitchStatement_Return_Yield ::= 'switch' '(' Expression_In_Yield ')' CaseBlock_Return_Yield
+	Block,               // CaseBlock ::= '{' CaseClausesopt '}'
+	Block,               // CaseBlock_Return ::= '{' CaseClausesopt_Return '}'
+	Block,               // CaseBlock_Return_Yield ::= '{' CaseClausesopt_Return_Yield '}'
+	0,                   // CaseClauses ::= CaseClause
+	0,                   // CaseClauses ::= CaseClauses CaseClause
+	0,                   // CaseClauses_Return ::= CaseClause_Return
+	0,                   // CaseClauses_Return ::= CaseClauses_Return CaseClause_Return
+	0,                   // CaseClauses_Return_Yield ::= CaseClause_Return_Yield
+	0,                   // CaseClauses_Return_Yield ::= CaseClauses_Return_Yield CaseClause_Return_Yield
+	Case,                // CaseClause ::= 'case' Expression_In ':' StatementList
+	Case,                // CaseClause ::= 'case' Expression_In ':'
+	Default,             // CaseClause ::= 'default' ':' StatementList
+	Default,             // CaseClause ::= 'default' ':'
+	Case,                // CaseClause_Return ::= 'case' Expression_In ':' StatementList_Return
+	Case,                // CaseClause_Return ::= 'case' Expression_In ':'
+	Default,             // CaseClause_Return ::= 'default' ':' StatementList_Return
+	Default,             // CaseClause_Return ::= 'default' ':'
+	Case,                // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':' StatementList_Return_Yield
+	Case,                // CaseClause_Return_Yield ::= 'case' Expression_In_Yield ':'
+	Default,             // CaseClause_Return_Yield ::= 'default' ':' StatementList_Return_Yield
+	Default,             // CaseClause_Return_Yield ::= 'default' ':'
+	LabelledStatement,   // LabelledStatement ::= Identifier ':' LabelledItem
+	LabelledStatement,   // LabelledStatement ::= 'yield' ':' LabelledItem
+	LabelledStatement,   // LabelledStatement_Return ::= Identifier ':' LabelledItem_Return
+	LabelledStatement,   // LabelledStatement_Return ::= 'yield' ':' LabelledItem_Return
+	LabelledStatement,   // LabelledStatement_Return_Yield ::= Identifier ':' LabelledItem_Return_Yield
+	0,                   // LabelledItem ::= Statement
+	0,                   // LabelledItem ::= FunctionDeclaration
+	0,                   // LabelledItem_Return ::= Statement_Return
+	0,                   // LabelledItem_Return ::= FunctionDeclaration
+	0,                   // LabelledItem_Return_Yield ::= Statement_Return_Yield
+	0,                   // LabelledItem_Return_Yield ::= FunctionDeclaration_Yield
+	ThrowStatement,      // ThrowStatement ::= 'throw' .noLineBreak Expression_In ';'
+	ThrowStatement,      // ThrowStatement_Yield ::= 'throw' .noLineBreak Expression_In_Yield ';'
+	TryStatement,        // TryStatement ::= 'try' Block Catch
+	TryStatement,        // TryStatement ::= 'try' Block Catch Finally
+	TryStatement,        // TryStatement ::= 'try' Block Finally
+	TryStatement,        // TryStatement_Return ::= 'try' Block_Return Catch_Return
+	TryStatement,        // TryStatement_Return ::= 'try' Block_Return Catch_Return Finally_Return
+	TryStatement,        // TryStatement_Return ::= 'try' Block_Return Finally_Return
+	TryStatement,        // TryStatement_Return_Yield ::= 'try' Block_Return_Yield Catch_Return_Yield
+	TryStatement,        // TryStatement_Return_Yield ::= 'try' Block_Return_Yield Catch_Return_Yield Finally_Return_Yield
+	TryStatement,        // TryStatement_Return_Yield ::= 'try' Block_Return_Yield Finally_Return_Yield
+	Catch,               // Catch ::= 'catch' '(' CatchParameter ')' Block
+	Catch,               // Catch_Return ::= 'catch' '(' CatchParameter ')' Block_Return
+	Catch,               // Catch_Return_Yield ::= 'catch' '(' CatchParameter_Yield ')' Block_Return_Yield
+	Finally,             // Finally ::= 'finally' Block
+	Finally,             // Finally_Return ::= 'finally' Block_Return
+	Finally,             // Finally_Return_Yield ::= 'finally' Block_Return_Yield
+	0,                   // CatchParameter ::= BindingIdentifier
+	0,                   // CatchParameter ::= BindingPattern
+	0,                   // CatchParameter_Yield ::= BindingIdentifier_Yield
+	0,                   // CatchParameter_Yield ::= BindingPattern_Yield
+	DebuggerStatement,   // DebuggerStatement ::= 'debugger' ';'
+	Function,            // FunctionDeclaration ::= 'function' BindingIdentifier FormalParameters FunctionBody
+	Function,            // FunctionDeclaration_Default ::= 'function' BindingIdentifier FormalParameters FunctionBody
+	Function,            // FunctionDeclaration_Default ::= 'function' FormalParameters FunctionBody
+	Function,            // FunctionDeclaration_Yield ::= 'function' BindingIdentifier_Yield FormalParameters FunctionBody
+	FunctionExpression,  // FunctionExpression ::= 'function' BindingIdentifier FormalParameters FunctionBody
+	FunctionExpression,  // FunctionExpression ::= 'function' FormalParameters FunctionBody
+	0,                   // StrictFormalParameters ::= FormalParameters
+	0,                   // StrictFormalParameters_Yield ::= FormalParameters_Yield
+	Parameters,          // FormalParameters ::= '(' FormalParameterList ')'
+	Parameters,          // FormalParameters ::= '(' ')'
+	Parameters,          // FormalParameters_Yield ::= '(' FormalParameterList_Yield ')'
+	Parameters,          // FormalParameters_Yield ::= '(' ')'
+	0,                   // FormalParameterList ::= FunctionRestParameter
+	0,                   // FormalParameterList ::= FormalsList
+	0,                   // FormalParameterList ::= FormalsList ',' FunctionRestParameter
+	0,                   // FormalParameterList_Yield ::= FunctionRestParameter_Yield
+	0,                   // FormalParameterList_Yield ::= FormalsList_Yield
+	0,                   // FormalParameterList_Yield ::= FormalsList_Yield ',' FunctionRestParameter_Yield
+	0,                   // FormalsList ::= FormalParameter
+	0,                   // FormalsList ::= FormalsList ',' FormalParameter
+	0,                   // FormalsList_Yield ::= FormalParameter_Yield
+	0,                   // FormalsList_Yield ::= FormalsList_Yield ',' FormalParameter_Yield
+	RestParameter,       // FunctionRestParameter ::= BindingRestElement
+	RestParameter,       // FunctionRestParameter_Yield ::= BindingRestElement_Yield
+	Parameter,           // FormalParameter ::= ElementPattern
+	Parameter,           // FormalParameter_Yield ::= ElementPattern_Yield
+	Body,                // FunctionBody ::= '{' StatementList_Return '}'
+	Body,                // FunctionBody ::= '{' '}'
+	Body,                // FunctionBody_Yield ::= '{' StatementList_Return_Yield '}'
+	Body,                // FunctionBody_Yield ::= '{' '}'
+	ArrowFunction,       // ArrowFunction ::= ArrowParameters .noLineBreak '=>' ConciseBody
+	ArrowFunction,       // ArrowFunction_In ::= ArrowParameters .noLineBreak '=>' ConciseBody_In
+	ArrowFunction,       // ArrowFunction_In_Yield ::= ArrowParameters_Yield .noLineBreak '=>' ConciseBody_In
+	ArrowFunction,       // ArrowFunction_Yield ::= ArrowParameters_Yield .noLineBreak '=>' ConciseBody
+	Parameters,          // ArrowParameters ::= BindingIdentifier
+	Parameters,          // ArrowParameters ::= CoverParenthesizedExpressionAndArrowParameterList
+	Parameters,          // ArrowParameters_Yield ::= BindingIdentifier_Yield
+	Parameters,          // ArrowParameters_Yield ::= CoverParenthesizedExpressionAndArrowParameterList_Yield
+	ConciseBody,         // ConciseBody ::= AssignmentExpression_NoObjLiteral
+	0,                   // ConciseBody ::= FunctionBody
+	ConciseBody,         // ConciseBody_In ::= AssignmentExpression_In_NoObjLiteral
+	0,                   // ConciseBody_In ::= FunctionBody
+	Method,              // MethodDefinition ::= PropertyName StrictFormalParameters FunctionBody
+	0,                   // MethodDefinition ::= GeneratorMethod
+	Getter,              // MethodDefinition ::= 'get' PropertyName '(' ')' FunctionBody
+	Setter,              // MethodDefinition ::= 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
+	Method,              // MethodDefinition_Yield ::= PropertyName_Yield StrictFormalParameters_Yield FunctionBody_Yield
+	0,                   // MethodDefinition_Yield ::= GeneratorMethod_Yield
+	Getter,              // MethodDefinition_Yield ::= 'get' PropertyName_Yield '(' ')' FunctionBody_Yield
+	Setter,              // MethodDefinition_Yield ::= 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody_Yield
+	0,                   // PropertySetParameterList ::= FormalParameter
+	GeneratorMethod,     // GeneratorMethod ::= '*' PropertyName StrictFormalParameters_Yield GeneratorBody
+	GeneratorMethod,     // GeneratorMethod_Yield ::= '*' PropertyName_Yield StrictFormalParameters_Yield GeneratorBody
+	Generator,           // GeneratorDeclaration ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	Generator,           // GeneratorDeclaration_Default ::= 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	Generator,           // GeneratorDeclaration_Default ::= 'function' '*' FormalParameters_Yield GeneratorBody
+	Generator,           // GeneratorDeclaration_Yield ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
+	GeneratorExpression, // GeneratorExpression ::= 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
+	GeneratorExpression, // GeneratorExpression ::= 'function' '*' FormalParameters_Yield GeneratorBody
+	0,                   // GeneratorBody ::= FunctionBody_Yield
+	Yield,               // YieldExpression ::= 'yield'
+	Yield,               // YieldExpression ::= 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
+	Yield,               // YieldExpression ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
+	Yield,               // YieldExpression_In ::= 'yield'
+	Yield,               // YieldExpression_In ::= 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
+	Yield,               // YieldExpression_In ::= 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
+	Class,               // ClassDeclaration ::= 'class' BindingIdentifier ClassTail
+	Class,               // ClassDeclaration_Default ::= 'class' BindingIdentifier ClassTail
+	Class,               // ClassDeclaration_Default ::= 'class' ClassTail
+	Class,               // ClassDeclaration_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
+	ClassExpr,           // ClassExpression ::= 'class' BindingIdentifier ClassTail
+	ClassExpr,           // ClassExpression ::= 'class' ClassTail
+	ClassExpr,           // ClassExpression_Yield ::= 'class' BindingIdentifier_Yield ClassTail_Yield
+	ClassExpr,           // ClassExpression_Yield ::= 'class' ClassTail_Yield
+	0,                   // ClassTail ::= ClassHeritage ClassBody
+	0,                   // ClassTail ::= ClassBody
+	0,                   // ClassTail_Yield ::= ClassHeritage_Yield ClassBody_Yield
+	0,                   // ClassTail_Yield ::= ClassBody_Yield
+	Extends,             // ClassHeritage ::= 'extends' LeftHandSideExpression
+	Extends,             // ClassHeritage_Yield ::= 'extends' LeftHandSideExpression_Yield
+	ClassBody,           // ClassBody ::= '{' ClassElementList '}'
+	ClassBody,           // ClassBody ::= '{' '}'
+	ClassBody,           // ClassBody_Yield ::= '{' ClassElementList_Yield '}'
+	ClassBody,           // ClassBody_Yield ::= '{' '}'
+	0,                   // ClassElementList ::= ClassElement
+	0,                   // ClassElementList ::= ClassElementList ClassElement
+	0,                   // ClassElementList_Yield ::= ClassElement_Yield
+	0,                   // ClassElementList_Yield ::= ClassElementList_Yield ClassElement_Yield
+	0,                   // ClassElement ::= MethodDefinition
+	StaticMethod,        // ClassElement ::= 'static' MethodDefinition
+	EmptyDecl,           // ClassElement ::= ';'
+	0,                   // ClassElement_Yield ::= MethodDefinition_Yield
+	StaticMethod,        // ClassElement_Yield ::= 'static' MethodDefinition_Yield
+	EmptyDecl,           // ClassElement_Yield ::= ';'
+	Module,              // Module ::= ModuleBodyopt
+	0,                   // ModuleBody ::= ModuleItemList
+	0,                   // ModuleItemList ::= ModuleItem
+	0,                   // ModuleItemList ::= ModuleItemList ModuleItem
+	0,                   // ModuleItem ::= ImportDeclaration
+	0,                   // ModuleItem ::= ExportDeclaration
+	0,                   // ModuleItem ::= StatementListItem
+	ImportDeclaration,   // ImportDeclaration ::= 'import' ImportClause FromClause ';'
+	ImportDeclaration,   // ImportDeclaration ::= 'import' ModuleSpecifier ';'
+	0,                   // ImportClause ::= ImportedDefaultBinding
+	0,                   // ImportClause ::= NameSpaceImport
+	0,                   // ImportClause ::= NamedImports
+	0,                   // ImportClause ::= ImportedDefaultBinding ',' NameSpaceImport
+	0,                   // ImportClause ::= ImportedDefaultBinding ',' NamedImports
+	0,                   // ImportedDefaultBinding ::= ImportedBinding
+	NameSpaceImport,     // NameSpaceImport ::= '*' 'as' ImportedBinding
+	0,                   // FromClause ::= 'from' ModuleSpecifier
+	0,                   // NamedImport_list_Comma_separated ::= NamedImport_list_Comma_separated ',' NamedImport
+	0,                   // NamedImport_list_Comma_separated ::= NamedImport
+	NamedImports,        // NamedImports ::= '{' '}'
+	NamedImports,        // NamedImports ::= '{' NamedImport_list_Comma_separated ',' '}'
+	NamedImports,        // NamedImports ::= '{' NamedImport_list_Comma_separated '}'
+	ImportSpecifier,     // NamedImport ::= ImportedBinding
+	ImportSpecifier,     // NamedImport ::= IdentifierNameRef 'as' ImportedBinding
+	SyntaxError,         // NamedImport ::= error
+	ModuleSpecifier,     // ModuleSpecifier ::= StringLiteral
+	0,                   // ImportedBinding ::= BindingIdentifier
+	ExportDeclaration,   // ExportDeclaration ::= 'export' '*' FromClause ';'
+	ExportDeclaration,   // ExportDeclaration ::= 'export' ExportClause FromClause ';'
+	ExportDeclaration,   // ExportDeclaration ::= 'export' ExportClause ';'
+	ExportDeclaration,   // ExportDeclaration ::= 'export' VariableStatement
+	ExportDeclaration,   // ExportDeclaration ::= 'export' Declaration
+	ExportDefault,       // ExportDeclaration ::= 'export' 'default' HoistableDeclaration_Default
+	ExportDefault,       // ExportDeclaration ::= 'export' 'default' ClassDeclaration_Default
+	ExportDefault,       // ExportDeclaration ::= 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
+	ExportClause,        // ExportClause ::= '{' '}'
+	ExportClause,        // ExportClause ::= '{' ExportElement_list_Comma_separated ',' '}'
+	ExportClause,        // ExportClause ::= '{' ExportElement_list_Comma_separated '}'
+	0,                   // ExportElement_list_Comma_separated ::= ExportElement_list_Comma_separated ',' ExportElement
+	0,                   // ExportElement_list_Comma_separated ::= ExportElement
+	ExportSpecifier,     // ExportElement ::= IdentifierNameRef
+	ExportSpecifier,     // ExportElement ::= IdentifierNameRef 'as' IdentifierNameDecl
+	SyntaxError,         // ExportElement ::= error
+	0,                   // JSXChild_optlist ::= JSXChild_optlist JSXChild
+	0,                   // JSXChild_optlist ::=
+	0,                   // JSXChild_Yield_optlist ::= JSXChild_Yield_optlist JSXChild_Yield
+	0,                   // JSXChild_Yield_optlist ::=
+	JSXElement,          // JSXElement ::= JSXSelfClosingElement
+	JSXElement,          // JSXElement ::= JSXOpeningElement JSXChild_optlist JSXClosingElement
+	JSXElement,          // JSXElement_Yield ::= JSXSelfClosingElement_Yield
+	JSXElement,          // JSXElement_Yield ::= JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
+	0,                   // JSXAttribute_optlist ::= JSXAttribute_optlist JSXAttribute
+	0,                   // JSXAttribute_optlist ::=
+	0,                   // JSXAttribute_Yield_optlist ::= JSXAttribute_Yield_optlist JSXAttribute_Yield
+	0,                   // JSXAttribute_Yield_optlist ::=
 	JSXSelfClosingElement, // JSXSelfClosingElement ::= '<' JSXElementName JSXAttribute_optlist '/' '>'
 	JSXSelfClosingElement, // JSXSelfClosingElement_Yield ::= '<' JSXElementName JSXAttribute_Yield_optlist '/' '>'
 	JSXOpeningElement,     // JSXOpeningElement ::= '<' JSXElementName JSXAttribute_optlist '>'
@@ -1815,8 +1822,11 @@ var nodeTypeStr = [...]string{
 	"DoWhileStatement",
 	"WhileStatement",
 	"ForStatement",
+	"ForStatementWithVar",
 	"ForInStatement",
+	"ForInStatementWithVar",
 	"ForOfStatement",
+	"ForOfStatementWithVar",
 	"ForBinding",
 	"ForCondition",
 	"ForFinalExpression",
@@ -1879,6 +1889,10 @@ var nodeTypeStr = [...]string{
 	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",
 	"INVALID_TOKEN",
+	"NOSUBSTITUTIONTEMPLATE",
+	"TEMPLATEHEAD",
+	"TEMPLATEMIDDLE",
+	"TEMPLATETAIL",
 }
 
 func (t NodeType) String() string {

@@ -466,6 +466,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				return action;
 			}
+			if (args.length == 1 && "rangeFields".equals(methodName)) {
+				return TMDataUtil.getRangeFields(grammar, (String) args[0]);
+
+			}
 			return super.callMethod(caller, methodName, args);
 		}
 	}

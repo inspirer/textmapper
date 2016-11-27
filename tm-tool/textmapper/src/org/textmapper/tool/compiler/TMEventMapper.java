@@ -30,25 +30,35 @@ import java.util.stream.Collectors;
 public class TMEventMapper {
 
 	private final Grammar grammar;
+	private final Map<String, Object> opts;
 	private final ProcessingStatus status;
 
-	private final Map<RhsSequence, String> sequenceTypes = new HashMap<>();
+	private final Set<Symbol> reportedTokens = new HashSet<>();
+	private final Map<RhsSequence, String> sequenceTypes = new LinkedHashMap<>();
 	private final Map<Nonterminal, List<RhsSequence>> index = new HashMap<>();
 	private final Map<String, List<RhsSequence>> typeIndex = new HashMap<>();
 	private final Set<Nonterminal> lists = new HashSet<>();
 	private final Map<String, Set<String>> categories = new HashMap<>();
-	private final Map<String, List<Nonterminal>> categoryNonterms = new HashMap<>();
 
+	private final Map<String, List<Nonterminal>> categoryNonterms = new HashMap<>();
 	private final Set<Nonterminal> entered = new HashSet<>();
 	private final Map<Symbol, TMPhrase> phrases = new HashMap<>();
 
 
-	public TMEventMapper(Grammar grammar, ProcessingStatus status) {
+	public TMEventMapper(Grammar grammar, Map<String, Object> opts, ProcessingStatus status) {
 		this.grammar = grammar;
+		this.opts = opts;
 		this.status = status;
+
+		Object rt = opts.get("reportTokens");
+		if (rt instanceof Collection && ((Collection<?>) rt).stream()
+				.allMatch(p -> p instanceof Symbol)) {
+			reportedTokens.addAll((Collection<? extends Symbol>) rt);
+		}
 	}
 
-	public void deriveTypes(boolean withFields) {
+	public void deriveTypes() {
+		boolean withFields = Boolean.TRUE.equals(opts.get("eventFields"));
 		computeTypes();
 		if (withFields) {
 			computeFields();
@@ -320,13 +330,17 @@ public class TMEventMapper {
 			}
 			list.add(computePhrase(p));
 		}
-		if ((category != null || categories.containsKey(name) || lists.contains(nt))) {
+		if ((category != null || categories.containsKey(name) ||
+				lists.contains(nt) && TMPhrase.allMergeable(list))) {
 			result = TMPhrase.mergeSet(name, list, nt, status);
 		} else {
 			result = TMPhrase.merge(list, nt, status);
 		}
 		if (lists.contains(nt)) {
-			if (result.getFields().size() == 1 && !result.first().isList()) {
+			if (result.getFields().size() == 1 && !result.first().hasExplicitName()) {
+				result = result.makeList(nt);
+			} else if (result.getFields().stream()
+					.allMatch(f -> f.hasExplicitName() && f.isList())) {
 				result = result.makeList(nt);
 			} else if (!result.isEmpty()) {
 				status.report(ProcessingStatus.KIND_ERROR,
@@ -374,6 +388,10 @@ public class TMEventMapper {
 			}
 			case Symbol: {
 				Symbol target = ((RhsSymbol) part).getTarget();
+				if (target.isTerm() && reportedTokens.contains(target)) {
+					return TMPhrase.type(target.getName(), part);
+				}
+
 				TMPhrase p = phrases.get(target);
 				if (p != null) return p;
 

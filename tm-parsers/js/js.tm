@@ -7,7 +7,8 @@ lang = "js"
 package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 eventFields = true
-reportTokens = [MultiLineComment, SingleLineComment, invalid_token]
+reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
+                NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]
 
 :: lexer
@@ -355,7 +356,7 @@ ArrayLiteral<Yield> ::=
   | '[' list=ElementList ',' Elisionopt ']'
 ;
 
-@noast
+@noast @listof{"Element"}
 ElementList<Yield> ::=
     Elisionopt AssignmentExpression<+In>
   | Elisionopt SpreadElement
@@ -416,20 +417,20 @@ Initializer<In, Yield> ::=
 ;
 
 TemplateLiteral<Yield> ::=
-    NoSubstitutionTemplate
-  | TemplateHead substitution+=Expression<+In> TemplateSpans
+    template+=NoSubstitutionTemplate
+  | template+=TemplateHead substitution+=Expression<+In> TemplateSpans
 ;
 
 @noast
 TemplateSpans<Yield> ::=
-    TemplateTail
-  | TemplateMiddleList TemplateTail
+    template+=TemplateTail
+  | TemplateMiddleList template+=TemplateTail
 ;
 
 @noast
 TemplateMiddleList<Yield> ::=
-    TemplateMiddle substitution+=Expression<+In>
-  | TemplateMiddleList TemplateMiddle substitution+=Expression<+In>
+    template+=TemplateMiddle substitution+=Expression<+In>
+  | TemplateMiddleList template+=TemplateMiddle substitution+=Expression<+In>
 ;
 
 @noast
@@ -485,7 +486,7 @@ Arguments<Yield> ::=
     '(' list=ArgumentList? ')'
 ;
 
-@noast
+@noast @listof{"Argument"}
 ArgumentList<Yield> ::=
     AssignmentExpression<+In>
   | SpreadElement
@@ -746,23 +747,23 @@ IterationStatement<Yield, Return> returns Statement ::=
   | 'for' '(' var=Expression<~In,+StartWithLet> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
   | 'for' '(' 'var' VariableDeclarationList<~In> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatementWithVar}
   | 'for' '(' LetOrConst BindingList<~In> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatementWithVar}
   | 'for' '(' var=LeftHandSideExpression<+NoLet>
           'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
   | 'for' '(' var=LeftHandSideExpression<+StartWithLet>
           'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
   | 'for' '(' 'var' ForBinding
-          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+          'in' object=Expression<+In> ')' Statement                   {~ForInStatementWithVar}
   | 'for' '(' ForDeclaration
-          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+          'in' object=Expression<+In> ')' Statement                   {~ForInStatementWithVar}
   | 'for' '(' var=LeftHandSideExpression<+NoLet>
           'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
   | 'for' '(' 'var' ForBinding
-          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
+          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatementWithVar}
   | 'for' '(' ForDeclaration
-          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
+          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatementWithVar}
 ;
 
 @noast

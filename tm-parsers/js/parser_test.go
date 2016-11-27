@@ -113,6 +113,21 @@ var parseTests = []struct {
 		"print «`abc`»",
 		"«`ab${ expr }${ expr2 }c`»",
 	}},
+	{js.NoSubstitutionTemplate, []string{
+		"print «`abc`»",
+	}},
+	{js.TemplateHead, []string{
+		"print «`ab${»123}c`",
+	}},
+	{js.TemplateMiddle, []string{
+		"/*no expectations*/ print `a${123}bc`",
+		"print `a${123«}${»234}bc`",
+		"print `a${123«}abc${»234}bc`",
+		"print `a${12«}abc1${»3«}abc2${»234}bc`",
+	}},
+	{js.TemplateTail, []string{
+		"print `a${123«}bc`»",
+	}},
 	{js.TaggedTemplate, []string{
 		"«tpl`ab${ expr }${ expr2 }c`»",
 	}},
@@ -348,6 +363,8 @@ var parseTests = []struct {
 	}},
 	{js.ForStatement, []string{
 		`«for (a=0; a < 5; a++);»`,
+	}},
+	{js.ForStatementWithVar, []string{
 		`«for (var a; a < 5; );»`,
 		`«for (var {a,b} = c; a < 5;);»`,
 	}},
@@ -362,15 +379,19 @@ var parseTests = []struct {
 	}},
 	{js.ForInStatement, []string{
 		`«for (a in b) continue;»`,
-		`«for (let [a] in b);»`,
 		`«for (let.a in b);»`,
-		`«for (let a in b);»`,
 		`«for (let in b);»`,
+	}},
+	{js.ForInStatementWithVar, []string{
+		`«for (let [a] in b);»`,
+		`«for (let a in b);»`,
 		`«for (var a in b);»`,
 		`«for (var [a] in b);»`,
 	}},
 	{js.ForOfStatement, []string{
 		`«for (a of b);»`,
+	}},
+	{js.ForOfStatementWithVar, []string{
 		`«for (var {name:[name]} of b);»`,
 		`«for (const [[name]] of b);»`,
 	}},

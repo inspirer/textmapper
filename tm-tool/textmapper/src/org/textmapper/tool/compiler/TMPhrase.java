@@ -69,9 +69,9 @@ class TMPhrase implements DerivedSourceElement {
 	}
 
 	TMPhrase makeList(SourceElement origin) {
-		if (fields.size() != 1 || first().isList()) throw new IllegalStateException();
-
-		return new TMPhrase(Collections.singletonList(first().makeList()), origin);
+		return new TMPhrase(fields.stream()
+				.map(TMField::makeList)
+				.collect(Collectors.toList()), origin);
 	}
 
 	TMPhrase withName(String newName, SourceElement origin) {
@@ -79,6 +79,10 @@ class TMPhrase implements DerivedSourceElement {
 
 		return new TMPhrase(Collections.singletonList(
 				first().withName(newName)), origin);
+	}
+
+	static boolean allMergeable(List<TMPhrase> phrases) {
+		return phrases.stream().allMatch(TMPhrase::isMergeable);
 	}
 
 	static TMPhrase mergeSet(String name,
