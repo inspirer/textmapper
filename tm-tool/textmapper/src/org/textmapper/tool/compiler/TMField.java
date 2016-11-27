@@ -18,64 +18,56 @@ package org.textmapper.tool.compiler;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class TMField implements RangeField {
 
 	private final String name;
 	private final String[] types;
 	private final boolean hasExplicitName;
-	private final boolean isListElement;
 	private final boolean isList;
 	private final boolean nullable;
 	private String signature;
 
 	TMField(String type) {
-		this(type, new String[]{type}, false, false, false, false);
+		this(type, new String[]{type}, false, false, false);
 	}
 
 	private TMField(String name, String[] types, boolean hasExplicitName,
-					boolean isListElement, boolean list, boolean nullable) {
+					boolean list, boolean nullable) {
+		if (name == null) {
+			throw new NullPointerException();
+		}
 		this.name = name;
 		this.types = types;
 		this.hasExplicitName = hasExplicitName;
-		this.isListElement = isListElement;
 		this.isList = list;
 		this.nullable = nullable;
 	}
 
 	TMField makeNullable() {
 		if (nullable) return this;
-		return new TMField(name, types, hasExplicitName, isListElement, isList, true);
+		return new TMField(name, types, hasExplicitName, isList, true);
 	}
 
 	TMField makeList() {
 		if (isList) throw new IllegalStateException();
-		if (hasExplicitName && !isListElement) throw new IllegalStateException();
 
-		return new TMField(name, types, hasExplicitName, isListElement,
-				true /* list */, nullable);
+		return new TMField(name, types, hasExplicitName, true /* list */, nullable);
 	}
 
 	TMField withName(String newName) {
-		if (hasExplicitName) throw new IllegalStateException();
-
-		return new TMField(newName, types, false /* hasExplicitName */, isListElement,
-				isList, nullable);
-	}
-
-	TMField withExplicitName(String newName, boolean isListElement) {
 		if (newName == null) {
 			throw new NullPointerException();
 		}
-		return new TMField(newName, types, true /* named */, isListElement, isList, nullable);
+		return new TMField(newName, types, true /* named */, isList, nullable);
 	}
 
 	String getSignature() {
 		if (signature != null) return signature;
-		if (this.name == null) return null;
 
 		signature = this.name +
-				(isList || isListElement ? "+" : "") +
+				(isList ? "+" : "") +
 				(hasExplicitName ? "=" : "");
 		return signature;
 	}
@@ -105,28 +97,16 @@ class TMField implements RangeField {
 		return nullable;
 	}
 
-	public boolean isListElement() {
-		return isListElement;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		if (types.length != 1 || !types[0].equals(name)) {
-			sb.append(name == null ? "?" : name);
-			sb.append(isListElement && !isList ? "+="  : "=");
+			sb.append(name);
+			sb.append("=");
 		}
 		boolean needParentheses = types.length > 1 || isList;
 		if (needParentheses) sb.append('(');
-		boolean first = true;
-		for (String type : types) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(" | ");
-			}
-			sb.append(type);
-		}
+		sb.append(Arrays.stream(types).collect(Collectors.joining(" | ")));
 		if (needParentheses) sb.append(')');
 		if (isList && nullable) {
 			sb.append('*');
@@ -139,13 +119,13 @@ class TMField implements RangeField {
 	}
 
 	private static boolean equalNames(TMField f1, TMField f2) {
-		return f1.name == null ? f2.name == null : f1.name.equals(f2.name);
+		return f1.name.equals(f2.name);
 	}
 
 	/**
 	 *  Merges fields that are either simple non-list elements, or share the same signature.
 	 */
-	static TMField merge(TMField... fields) {
+	static TMField merge(String nameHint, TMField... fields) {
 		if (fields.length == 0) {
 			throw new IllegalArgumentException("fields is empty");
 		}
@@ -153,18 +133,20 @@ class TMField implements RangeField {
 		Set<String> types = new HashSet<>();
 		boolean nullable = false;
 		boolean isList = false;
-		boolean isListElement = true;
 		boolean sameName = true;
 		for (TMField field : fields) {
 			sameName &= equalNames(field, fields[0]);
 			isList |= field.isList;
-			isListElement &= field.isListElement;
 			types.addAll(Arrays.asList(field.types));
 			nullable |= field.nullable;
 		}
 		String[] arr = types.toArray(new String[types.size()]);
 		Arrays.sort(arr);
-		return new TMField(sameName ? fields[0].name : null, arr, fields[0].hasExplicitName,
-				isListElement, isList, nullable);
+		if (!sameName && nameHint == null) {
+			throw new IllegalStateException();
+		}
+		return new TMField(sameName ? fields[0].name : nameHint, arr,
+				sameName && fields[0].hasExplicitName,
+				isList, nullable);
 	}
 }

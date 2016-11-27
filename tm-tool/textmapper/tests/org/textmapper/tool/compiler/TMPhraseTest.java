@@ -16,13 +16,17 @@
 package org.textmapper.tool.compiler;
 
 import org.junit.Test;
+import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.test.TestStatus;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
 public class TMPhraseTest {
+
+	private static SourceElement SOURCE_ELEMENT = new SourceElement() {};
 
 	@Test
 	public void merge() throws Exception {
@@ -30,12 +34,12 @@ public class TMPhraseTest {
 		TMPhrase p2 = phrase(field("a"));
 
 		TMPhrase result = TMPhrase.merge(
-				Arrays.asList(p1, p2), null, new TestStatus());
+				Arrays.asList(p1, p2), SOURCE_ELEMENT, new TestStatus());
 
 		assertEquals("a b?", result.toString());
 
 		result = TMPhrase.merge(
-				Arrays.asList(p1, TMPhrase.empty()), null, new TestStatus());
+				Arrays.asList(p1, TMPhrase.empty(p1)), SOURCE_ELEMENT, new TestStatus());
 
 		assertEquals("a? b?", result.toString());
 	}
@@ -43,12 +47,12 @@ public class TMPhraseTest {
 	@Test
 	public void illegalMerge() throws Exception {
 		TMPhrase p1 = phrase(
-				field("a").withExplicitName("q", false), field("b").withExplicitName("p", false));
-		TMPhrase p2 = phrase(field("b").withExplicitName("p", false),
-				field("c"), field("a").withExplicitName("q", false));
+				field("a").withName("q"), field("b").withName("p"));
+		TMPhrase p2 = phrase(field("b").withName("p"),
+				field("c"), field("a").withName("q"));
 
 		TMPhrase.merge(
-				Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), SOURCE_ELEMENT,
 				new TestStatus(null,
 						"named elements must occur in the same order in all productions\n"));
 	}
@@ -59,7 +63,7 @@ public class TMPhraseTest {
 		TMPhrase p2 = phrase(field("a"));
 
 		TMPhrase result = TMPhrase.concat(
-				Arrays.asList(p1, p2), null, new TestStatus());
+				Arrays.asList(p1, p2), SOURCE_ELEMENT, new TestStatus());
 
 		assertEquals("b a", result.toString());
 	}
@@ -69,7 +73,7 @@ public class TMPhraseTest {
 		TMPhrase p1 = phrase(field("a"), field("a"));
 
 		TMPhrase result = TMPhrase.merge(
-				Arrays.asList(p1), null,
+				Collections.singletonList(p1), SOURCE_ELEMENT,
 				new TestStatus(null, "two fields with the same signature: a -vs- a\n"));
 
 		assertEquals("a", result.toString());
@@ -78,14 +82,14 @@ public class TMPhraseTest {
 	@Test
 	public void namedAndUnnamed() throws Exception {
 		TMPhrase p1 = phrase(field("a"));
-		TMPhrase p2 = phrase(field("a").withExplicitName("q", false));
+		TMPhrase p2 = phrase(field("a").withName("q"));
 
 		TMPhrase.merge(
-				Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), SOURCE_ELEMENT,
 				new TestStatus(null, "`a` occurs in both named and unnamed fields\n"));
 
 		TMPhrase.concat(
-				Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), SOURCE_ELEMENT,
 				new TestStatus(null, "`a` occurs in both named and unnamed fields\n"));
 	}
 
@@ -95,16 +99,16 @@ public class TMPhraseTest {
 		TMPhrase p2 = phrase(field("l", "a", "b"));
 
 		TMPhrase.merge(
-				Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), SOURCE_ELEMENT,
 				new TestStatus(null, "two unnamed fields share the same type `a`\n"));
 
 		TMPhrase.concat(
-				Arrays.asList(p1, p2), null,
+				Arrays.asList(p1, p2), SOURCE_ELEMENT,
 				new TestStatus(null, "two unnamed fields share the same type `a`\n"));
 	}
 
 	private static TMPhrase phrase(TMField...fields) {
-		return new TMPhrase(fields);
+		return new TMPhrase(Arrays.asList(fields), SOURCE_ELEMENT);
 	}
 
 	private static TMField field(String name, String ...types) {
@@ -115,6 +119,6 @@ public class TMPhraseTest {
 		for (int i = 0; i < types.length; i++) {
 			fields[i] = new TMField(types[i]);
 		}
-		return TMField.merge(fields).withName(name);
+		return TMField.merge(name, fields).withName(name);
 	}
 }

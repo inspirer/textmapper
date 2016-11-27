@@ -15,6 +15,7 @@
  */
 package org.textmapper.tool.compiler;
 
+import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.tool.common.UniqueOrder;
@@ -23,23 +24,24 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-class TMPhrase {
-	final List<TMField> fields;
+class TMPhrase implements DerivedSourceElement {
+	private final List<TMField> fields;
+	private final SourceElement origin;
 
-	TMPhrase(TMField... fields) {
-		this.fields = Arrays.asList(fields);
-	}
-
-	static TMPhrase empty() {
-		return new TMPhrase();
-	}
-
-	static TMPhrase type(String rangeType) {
-		return new TMPhrase(new TMField(rangeType));
-	}
-
-	private TMPhrase(List<TMField> fields) {
+	TMPhrase(List<TMField> fields, SourceElement origin) {
+		if (origin == null) {
+			throw new NullPointerException("origin");
+		}
 		this.fields = fields;
+		this.origin = origin;
+	}
+
+	static TMPhrase empty(SourceElement origin) {
+		return new TMPhrase(Collections.emptyList(), origin);
+	}
+
+	static TMPhrase type(String rangeType, SourceElement origin) {
+		return new TMPhrase(Collections.singletonList(new TMField(rangeType)), origin);
 	}
 
 	TMField first() {
@@ -51,59 +53,72 @@ class TMPhrase {
 	}
 
 	boolean isMergeable() {
-		return isEmpty() || isUnnamedField() && !first().isList() && !first().isListElement();
+		return isEmpty() || isUnnamedField() && !first().isList();
 	}
 
 	boolean isUnnamedField() {
 		return fields.size() == 1 && !first().hasExplicitName();
 	}
 
-	TMPhrase makeNullable() {
+	TMPhrase makeNullable(SourceElement origin) {
 		if (fields.isEmpty()) return this;
 
-		TMField[] result = new TMField[fields.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = fields.get(i).makeNullable();
-		}
-		return new TMPhrase(result);
+		return new TMPhrase(fields.stream()
+				.map(TMField::makeNullable)
+				.collect(Collectors.toList()), origin);
 	}
 
-	TMPhrase makeList() {
+	TMPhrase makeList(SourceElement origin) {
 		if (fields.size() != 1 || first().isList()) throw new IllegalStateException();
 
-		return new TMPhrase(first().makeList());
+		return new TMPhrase(Collections.singletonList(first().makeList()), origin);
 	}
 
-	TMPhrase withName(String name) {
+	TMPhrase withName(String newName, SourceElement origin) {
 		if (!isUnnamedField()) throw new IllegalStateException();
 
-		return new TMPhrase(first().withName(name));
+		return new TMPhrase(Collections.singletonList(
+				first().withName(newName)), origin);
+	}
+
+	static TMPhrase mergeSet(String name,
+							 List<TMPhrase> phrases,
+							 SourceElement anchor,
+							 ProcessingStatus status) {
+		List<TMPhrase> nonMergable = phrases.stream()
+				.filter(p -> !p.isMergeable())
+				.collect(Collectors.toList());
+		if (!nonMergable.isEmpty()) {
+			for (TMPhrase p : nonMergable) {
+				status.report(ProcessingStatus.KIND_ERROR,
+						"Exactly one ast element behind " + name +
+								" is expected: " + p.toString(), p);
+			}
+			return TMPhrase.empty(anchor);
+		}
+
+		List<TMField> fields = new ArrayList<>();
+		boolean nullable = false;
+		for (TMPhrase phrase : phrases) {
+			if (phrase.isEmpty()) {
+				nullable = true;
+			} else {
+				fields.add(phrase.first());
+			}
+		}
+		if (fields.isEmpty()) {
+			return TMPhrase.empty(anchor);
+		}
+		TMField field = TMField.merge(name, fields.toArray(new TMField[fields.size()]));
+		if (nullable) {
+			field = field.makeNullable();
+		}
+		return new TMPhrase(Collections.singletonList(field), anchor);
 	}
 
 	static TMPhrase merge(List<TMPhrase> phrases,
 						  SourceElement anchor,
 						  ProcessingStatus status) {
-		if (phrases.stream().allMatch(TMPhrase::isMergeable)) {
-			List<TMField> fields = new ArrayList<>();
-			boolean nullable = false;
-			for (TMPhrase phrase : phrases) {
-				if (phrase.isEmpty()) {
-					nullable = true;
-				} else {
-					fields.add(phrase.first());
-				}
-			}
-			if (fields.isEmpty()) {
-				return TMPhrase.empty();
-			}
-			TMField field = TMField.merge(
-					fields.toArray(new TMField[fields.size()]));
-			if (nullable) {
-				field = field.makeNullable();
-			}
-			return new TMPhrase(field);
-		}
-
 		Map<String, List<TMField>> bySignature = new LinkedHashMap<>();
 		UniqueOrder<String> nameOrder = new UniqueOrder<>();
 
@@ -119,7 +134,7 @@ class TMPhrase {
 									" -vs- " + f.toString(), anchor);
 					continue;
 				}
-				if (f.hasExplicitName() && !f.isListElement()) {
+				if (f.hasExplicitName()) {
 					nameOrder.add(f.getName());
 				}
 				List<TMField> list = bySignature.get(signature);
@@ -136,28 +151,21 @@ class TMPhrase {
 					"named elements must occur in the same order in all productions", anchor);
 		}
 
-		int ind = 0;
-		TMField[] result = new TMField[bySignature.size()];
+		List<TMField> result = new ArrayList<>(bySignature.size());
 		for (Entry<String, List<TMField>> entry : bySignature.entrySet()) {
 			TMField composite;
 			List<TMField> fields = entry.getValue();
 			if (fields.size() == 1) {
 				composite = fields.get(0);
 			} else {
-				composite = TMField.merge(fields.toArray(new TMField[fields.size()]));
-				if (composite == null) {
-					status.report(ProcessingStatus.KIND_ERROR,
-							"Cannot merge " + new TMPhrase(fields).toString()
-									+ " on " + entry.getKey(), anchor);
-					continue;
-				}
+				composite = TMField.merge(null, fields.toArray(new TMField[fields.size()]));
 			}
 			if (fields.size() < phrases.size()) {
 				composite = composite.makeNullable();
 			}
-			result[ind++] = composite;
+			result.add(composite);
 		}
-		return ind == result.length ? new TMPhrase(result) : TMPhrase.empty();
+		return new TMPhrase(result, anchor);
 	}
 
 	static TMPhrase concat(List<TMPhrase> phrases,
@@ -169,13 +177,13 @@ class TMPhrase {
 				String signature = f.getSignature();
 				TMField existing = seen.putIfAbsent(signature, f);
 				if (existing != null) {
-					if (!(existing.isListElement() && f.isListElement())) {
+					if (!(existing.isList() && f.isList())) {
 						status.report(ProcessingStatus.KIND_ERROR,
 								"two fields with the same signature: " + existing.toString() +
 										" -vs- " + f.toString(), anchor);
 						continue;
 					}
-					f = TMField.merge(existing, f);
+					f = TMField.merge(null, existing, f);
 					if (!f.isList()) {
 						f = f.makeList();
 					}
@@ -184,27 +192,25 @@ class TMPhrase {
 			}
 		}
 
-		return new TMPhrase(new ArrayList<>(seen.values()));
+		return new TMPhrase(new ArrayList<>(seen.values()), anchor);
 	}
 
-	static void verify(TMPhrase phrase,
-					   SourceElement anchor,
-					   ProcessingStatus status) {
+	static void verify(TMPhrase phrase, ProcessingStatus status) {
 		Set<String> namedTypes = new HashSet<>();
-		for (TMField field : phrase.fields) {
-			if (field.hasExplicitName() && !field.isListElement()) {
+		for (TMField field : phrase.getFields()) {
+			if (field.hasExplicitName()) {
 				namedTypes.addAll(Arrays.asList(field.getTypes()));
 			}
 		}
 		Map<String, String> unnamedTypes = new HashMap<>();
 		for (TMField field : phrase.fields) {
-			if (field.hasExplicitName() && !field.isListElement()) continue;
+			if (field.hasExplicitName()) continue;
 			String signature = field.getSignature();
 
 			for (String type : field.getTypes()) {
 				if (namedTypes.contains(type)) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"`" + type + "` occurs in both named and unnamed fields", anchor);
+							"`" + type + "` occurs in both named and unnamed fields", phrase);
 					return;
 				}
 
@@ -212,11 +218,20 @@ class TMPhrase {
 				if (prev != null && !prev.equals(signature)) {
 					status.report(ProcessingStatus.KIND_ERROR,
 							"two unnamed fields share the same type `" + type + "`: " +
-									prev + " -vs- " + signature, anchor);
+									prev + " -vs- " + signature, phrase);
 					return;
 				}
 			}
 		}
+	}
+
+	public List<TMField> getFields() {
+		return fields;
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 
 	@Override

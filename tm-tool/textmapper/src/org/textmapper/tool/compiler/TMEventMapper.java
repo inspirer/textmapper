@@ -21,15 +21,16 @@ import org.textmapper.lapg.api.rule.RhsPart.Kind;
 import org.textmapper.lapg.common.SetBuilder;
 import org.textmapper.lapg.common.SetsClosure;
 import org.textmapper.lapg.util.NonterminalUtil;
+import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class TMEventMapper {
 
 	private final Grammar grammar;
 	private final ProcessingStatus status;
-
 
 	private final Map<RhsSequence, String> sequenceTypes = new HashMap<>();
 	private final Map<Nonterminal, List<RhsSequence>> index = new HashMap<>();
@@ -163,15 +164,15 @@ public class TMEventMapper {
 				list.add(computePhrase(p));
 			}
 			TMPhrase phrase = TMPhrase.merge(list, e.getValue().get(0), status);
-			TMPhrase.verify(phrase, e.getValue().get(0), status);
+			TMPhrase.verify(phrase, status);
 //			System.out.println(type + ": " + phrase.toString());
-			TMDataUtil.putRangeFields(grammar, type, phrase.fields);
+			TMDataUtil.putRangeFields(grammar, type, phrase.getFields());
 		}
 	}
 
 	private void collectCategoryTypes() {
-		Map<String,Integer> catIndex = new HashMap<>();
-		Map<String,Integer> typeIndex = new HashMap<>();
+		Map<String, Integer> catIndex = new HashMap<>();
+		Map<String, Integer> typeIndex = new HashMap<>();
 		List<String> allTypes = new ArrayList<>(this.typeIndex.keySet());
 		Collections.sort(allTypes);
 		List<String> allCategories = new ArrayList<>(this.categories.keySet());
@@ -282,6 +283,8 @@ public class TMEventMapper {
 
 	private TMPhrase computePhrase(Nonterminal nt, boolean internal) {
 		TMPhrase result;
+		Nonterminal category = TMDataUtil.getCustomType(nt);
+		String name = getVariableName(nt);
 		if (!internal) {
 			result = phrases.get(nt);
 			if (result != null) return result;
@@ -289,17 +292,17 @@ public class TMEventMapper {
 			if (!entered.add(nt)) {
 				status.report(ProcessingStatus.KIND_ERROR,
 						"`" + nt.getName() + "' recursively contain itself", nt);
-				result = TMPhrase.empty();
+				result = TMPhrase.empty(nt);
 			}
 
-			Nonterminal category = TMDataUtil.getCustomType(nt);
+			// returns ...
 			if (result == null && category != null) {
-				result = new TMPhrase(new TMField(getVariableName(category)));
+				result = TMPhrase.type(getVariableName(category), nt);
 			}
 
-			String ntName = getVariableName(nt);
-			if (result == null && categories.containsKey(ntName)) {
-				result = new TMPhrase(new TMField(ntName));
+			// interface
+			if (result == null && categories.containsKey(name)) {
+				result = TMPhrase.type(name, nt);
 			}
 
 			if (result != null) {
@@ -312,24 +315,24 @@ public class TMEventMapper {
 		for (RhsSequence p : index.get(nt)) {
 			String type = sequenceTypes.get(p);
 			if (!type.isEmpty()) {
-				list.add(new TMPhrase(new TMField(type)));
+				list.add(TMPhrase.type(type, p));
 				continue;
 			}
 			list.add(computePhrase(p));
 		}
-		result = TMPhrase.merge(list, nt, status);
-		if (result.isUnnamedField() && !NonterminalUtil.isOptional(nt)
-				&& !NonterminalUtil.isList(nt) && !TMDataUtil.hasProperty(nt, "noname")) {
-			result = result.withName(getVariableName(nt));
+		if ((category != null || categories.containsKey(name) || lists.contains(nt))) {
+			result = TMPhrase.mergeSet(name, list, nt, status);
+		} else {
+			result = TMPhrase.merge(list, nt, status);
 		}
 		if (lists.contains(nt)) {
-			if (result.fields.size() == 1 && !result.first().isList()) {
-				result = result.makeList();
+			if (result.getFields().size() == 1 && !result.first().isList()) {
+				result = result.makeList(nt);
 			} else if (!result.isEmpty()) {
 				status.report(ProcessingStatus.KIND_ERROR,
 						"Cannot make a list out of: " + result.toString(), nt);
 
-				result = TMPhrase.empty();
+				result = TMPhrase.empty(nt);
 			}
 		}
 		if (!internal) phrases.put(nt, result);
@@ -340,7 +343,18 @@ public class TMEventMapper {
 		switch (part.getKind()) {
 			case Assignment: {
 				RhsAssignment assignment = (RhsAssignment) part;
-				TMPhrase p = computePhrase(assignment.getPart());
+				RhsPart unwrapped = RhsUtil.unwrap(part);
+				TMPhrase p;
+				if (unwrapped instanceof RhsChoice) {
+					p = TMPhrase.mergeSet(
+							assignment.getName(),
+							Arrays.stream(((RhsChoice) unwrapped).getParts())
+									.map(this::computePhrase)
+									.collect(Collectors.toList()),
+							part, status);
+				} else {
+					p = computePhrase(assignment.getPart());
+				}
 				if (p.isEmpty()) {
 					status.report(ProcessingStatus.KIND_ERROR,
 							"No ast nodes behind an assignment `" + assignment.getName() + "'",
@@ -349,12 +363,14 @@ public class TMEventMapper {
 				}
 				if (!p.isUnnamedField()) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							"More than one ast element behind an assignment (" +
-									assignment.getName() + "): " + p.toString(), part);
+							"Exactly one ast element behind " +
+									assignment.getName() + " is expected: " + p.toString(), part);
 					return p;
 				}
-				return new TMPhrase(p.first().withExplicitName(assignment.getName(),
-						assignment.isAddition()));
+				if (assignment.isAddition()) {
+					p = p.makeList(part);
+				}
+				return p.withName(assignment.getName(), part);
 			}
 			case Symbol: {
 				Symbol target = ((RhsSymbol) part).getTarget();
@@ -362,23 +378,22 @@ public class TMEventMapper {
 				if (p != null) return p;
 
 				if (isListSelfReference((RhsSymbol) part) || target.isTerm()) {
-					return TMPhrase.empty();
+					return TMPhrase.empty(part);
 				}
 				return computePhrase((Nonterminal) target, false);
 			}
 			case Optional:
-				return computePhrase(((RhsOptional) part).getPart()).makeNullable();
+				return computePhrase(((RhsOptional) part).getPart()).makeNullable(part);
 			case Choice:
 			case Sequence: {
 				RhsPart[] parts = ((RhsSequence) part).getParts();
 				if (parts.length == 1) {
 					return computePhrase(parts[0]);
 				}
+				List<TMPhrase> list = Arrays.stream(parts)
+						.map(this::computePhrase)
+						.collect(Collectors.toList());
 
-				List<TMPhrase> list = new ArrayList<>();
-				for (RhsPart p : parts) {
-					list.add(computePhrase(p));
-				}
 				if (part.getKind() == Kind.Choice) {
 					return TMPhrase.merge(list, part, status);
 				} else {
@@ -389,7 +404,7 @@ public class TMEventMapper {
 			case StateMarker:
 			case Set:
 			case Ignored:
-				return TMPhrase.empty();
+				return TMPhrase.empty(part);
 			case Cast:
 			case Unordered:
 			case Conditional:
