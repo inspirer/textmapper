@@ -128,5 +128,4 @@ class AnnotateSymbol {
 	bool _interface;
 	bool _set;
 	bool noast;
-	bool noname;
 }

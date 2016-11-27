@@ -765,7 +765,7 @@ IterationStatement<Yield, Return> returns Statement ::=
           'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
 ;
 
-@noast @noname
+@noast
 ForDeclaration<Yield> ::=
     LetOrConst ForBinding
 ;
@@ -1022,7 +1022,7 @@ ImportedDefaultBinding ::=
 NameSpaceImport ::=
     '*' 'as' ImportedBinding ;
 
-@noast @noname
+@noast
 FromClause ::=
     'from' ModuleSpecifier ;
 
