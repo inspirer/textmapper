@@ -84,10 +84,9 @@ func BenchmarkParser(b *testing.B) {
 	}
 
 	p.Init(onError, func(t json.NodeType, offset, endoffset int) {})
-	code := []byte(jsonExample)
 	for i := 0; i < b.N; i++ {
-		l.Init(code, onError)
+		l.Init(jsonExample, onError)
 		p.Parse(l)
 	}
-	b.SetBytes(int64(len(code)))
+	b.SetBytes(int64(len(jsonExample)))
 }

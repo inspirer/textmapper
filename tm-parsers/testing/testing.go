@@ -8,6 +8,7 @@ package testing
 import (
 	"strings"
 	"testing"
+	"bytes"
 )
 
 const separator rune = '“'
@@ -21,7 +22,7 @@ type node struct {
 
 type ParserTest struct {
 	name          string
-	source        []byte
+	source        string
 	exp           []node
 	expErrors     []int
 	expectFailure bool
@@ -41,7 +42,7 @@ func NewParserTest(name, input string, t *testing.T) *ParserTest {
 	}
 }
 
-func (pt *ParserTest) Source() []byte {
+func (pt *ParserTest) Source() string {
 	return pt.source
 }
 
@@ -75,26 +76,28 @@ func (pt *ParserTest) Done(parsed bool) {
 	}
 }
 
-func splitInput(name, input string, t *testing.T) (out []byte, exp []node, errors []int) {
+func splitInput(name, input string, t *testing.T) (out string, exp []node, errors []int) {
 	var stack []int
+	var buffer bytes.Buffer
 	for index, ch := range input {
 		switch ch {
 		case separator, nestedRight, nestedLeft:
 			if ch == nestedLeft || ch == separator && len(stack) == 0 {
-				stack = append(stack, len(out))
+				stack = append(stack, buffer.Len())
 			} else if len(stack) == 0 {
 				t.Fatalf("Test %s: unexpected closing parenthesis at %d in `%s`", name, index, input)
 			} else {
-				exp = append(exp, node{stack[len(stack)-1], len(out)})
+				exp = append(exp, node{stack[len(stack)-1], buffer.Len()})
 				stack = stack[:len(stack)-1]
 			}
 			continue
 		case errorMarker:
-			errors = append(errors, len(out))
+			errors = append(errors, buffer.Len())
 			continue
 		}
-		out = append(out, string(ch)...)
+		buffer.WriteRune(ch)
 	}
+	out = buffer.String()
 	if len(stack) > 0 {
 		t.Fatalf("Test %s: missing closing separator at %d in `%s`", name, stack[len(stack)-1], input)
 	}

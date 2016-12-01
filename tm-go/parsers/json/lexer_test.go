@@ -39,7 +39,7 @@ func PanicOnError(line, offset, len int, msg string) {
 	panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
 }
 
-func testLexer(input []byte, t *testing.T) {
+func testLexer(input string, t *testing.T) {
 	l := new(json.Lexer)
 	l.Init(input, PanicOnError)
 	spacesRE := regexp.MustCompile(`^\s+$`)
@@ -48,7 +48,7 @@ func testLexer(input []byte, t *testing.T) {
 	offset := 0
 	for next != json.EOI {
 		s, e := l.Pos()
-		if s > offset && !spacesRE.Match(input[offset:s]) {
+		if s > offset && !spacesRE.MatchString(input[offset:s]) {
 			t.Errorf("Spaces expected: %s", input[offset:s])
 		}
 		offset = e
@@ -69,13 +69,13 @@ func testLexer(input []byte, t *testing.T) {
 }
 
 func TestLexerExample(t *testing.T) {
-	testLexer([]byte(jsonExample), t)
+	testLexer(jsonExample, t)
 }
 
 func BenchmarkLexer(b *testing.B) {
 	l := new(json.Lexer)
 	for i := 0; i < b.N; i++ {
-		l.Init([]byte(jsonExample), PanicOnError)
+		l.Init(jsonExample, PanicOnError)
 		next := l.Next()
 		for next != json.EOI {
 			next = l.Next()

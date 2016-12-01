@@ -854,9 +854,8 @@ func BenchmarkParser(b *testing.B) {
 	}
 
 	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
-	code := []byte(jsBenchmarkCode)
 	for i := 0; i < b.N; i++ {
-		l.Init(code, onError)
+		l.Init(jsBenchmarkCode, onError)
 		p.Parse(l)
 	}
 	b.SetBytes(int64(len(jsBenchmarkCode)))

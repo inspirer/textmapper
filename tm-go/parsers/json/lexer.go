@@ -3,7 +3,7 @@
 package json
 
 import (
-	"bytes"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -17,7 +17,7 @@ func IgnoreErrorsHandler(line, offset, len int, msg string) {}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
-	source []byte
+	source string
 	err    ErrorHandler
 
 	ch          rune // current character, -1 means EOI
@@ -33,14 +33,14 @@ type Lexer struct {
 }
 
 const bom = 0xfeff // byte order mark, permitted as a first character only
-var bomSeq = []byte{0xEF, 0xBB, 0xBF}
+var bomSeq = "\xef\xbb\xbf"
 
 // Init prepares the lexer l to tokenize source by performing the full reset
 // of the internal state.
 //
 // Note that Init may call err once if there is an error in the
 // first few characters of the text.
-func (l *Lexer) Init(source []byte, err ErrorHandler) {
+func (l *Lexer) Init(source string, err ErrorHandler) {
 	l.source = source
 	l.err = err
 
@@ -53,7 +53,7 @@ func (l *Lexer) Init(source []byte, err ErrorHandler) {
 	l.scanOffset = 0
 	l.State = 0
 
-	if bytes.HasPrefix(source, bomSeq) {
+	if strings.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
 	}
 
@@ -62,7 +62,7 @@ func (l *Lexer) Init(source []byte, err ErrorHandler) {
 		r, w := rune(l.source[l.offset]), 1
 		if r >= 0x80 {
 			// not ASCII
-			r, w = utf8.DecodeRune(l.source[l.offset:])
+			r, w = utf8.DecodeRuneInString(l.source[l.offset:])
 			if r == utf8.RuneError && w == 1 || r == bom {
 				l.invalidRune(r, w)
 			}
@@ -117,7 +117,7 @@ restart:
 			r, w := rune(l.source[l.offset]), 1
 			if r >= 0x80 {
 				// not ASCII
-				r, w = utf8.DecodeRune(l.source[l.offset:])
+				r, w = utf8.DecodeRuneInString(l.source[l.offset:])
 				if r == utf8.RuneError && w == 1 || r == bom {
 					l.invalidRune(r, w)
 				}
@@ -143,27 +143,27 @@ restart:
 		hh := hash & 7
 		switch hh {
 		case 1:
-			if hash == 0x41 && bytes.Equal([]byte("A"), l.source[l.tokenOffset:l.offset]) {
+			if hash == 0x41 && "A" == l.source[l.tokenOffset:l.offset] {
 				token = CHAR_A
 				break
 			}
 		case 2:
-			if hash == 0x42 && bytes.Equal([]byte("B"), l.source[l.tokenOffset:l.offset]) {
+			if hash == 0x42 && "B" == l.source[l.tokenOffset:l.offset] {
 				token = CHAR_B
 				break
 			}
 		case 3:
-			if hash == 0x5cb1923 && bytes.Equal([]byte("false"), l.source[l.tokenOffset:l.offset]) {
+			if hash == 0x5cb1923 && "false" == l.source[l.tokenOffset:l.offset] {
 				token = FALSE
 				break
 			}
 		case 6:
-			if hash == 0x36758e && bytes.Equal([]byte("true"), l.source[l.tokenOffset:l.offset]) {
+			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
 				token = TRUE
 				break
 			}
 		case 7:
-			if hash == 0x33c587 && bytes.Equal([]byte("null"), l.source[l.tokenOffset:l.offset]) {
+			if hash == 0x33c587 && "null" == l.source[l.tokenOffset:l.offset] {
 				token = NULL
 				break
 			}
@@ -200,7 +200,7 @@ func (l *Lexer) Line() int {
 
 // Text returns the substring of the input corresponding to the last token.
 func (l *Lexer) Text() string {
-	return string(l.source[l.tokenOffset:l.offset])
+	return l.source[l.tokenOffset:l.offset]
 }
 
 // Value returns the value associated with the last returned token.

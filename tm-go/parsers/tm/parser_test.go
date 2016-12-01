@@ -12,7 +12,7 @@ func PanicOnError(line, offset, len int, msg string) {
 	panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
 }
 
-func testParser(input []byte, t *testing.T) *ast.Input {
+func testParser(input string, t *testing.T) *ast.Input {
 	l := new(tm.Lexer)
 	l.Init(input, PanicOnError)
 
@@ -30,7 +30,7 @@ func testParser(input []byte, t *testing.T) *ast.Input {
 }
 
 func TestParserExample(t *testing.T) {
-	input := testParser([]byte(`
+	input := testParser(`
 language aaa.bbb.json(java);
 
 positions = "line,offset"
@@ -105,7 +105,7 @@ ${template java_lexer.lexercode}
 ${end}
 
 
-	`), t)
+	`, t)
 
 	if input == nil {
 		return

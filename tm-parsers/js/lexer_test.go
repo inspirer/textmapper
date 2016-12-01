@@ -279,9 +279,8 @@ func BenchmarkLexer(b *testing.B) {
 	onError := func(line, offset, len int, msg string) {
 		panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
 	}
-	code := []byte(jsBenchmarkCode)
 	for i := 0; i < b.N; i++ {
-		l.Init(code, onError)
+		l.Init(jsBenchmarkCode, onError)
 		next := l.Next()
 		for next != js.EOI {
 			next = l.Next()

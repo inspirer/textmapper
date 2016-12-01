@@ -13,7 +13,7 @@ ${template lexer-}
 package ${opts.lang}
 
 import (
-	"bytes"
+	"strings"
 	"unicode/utf8"
 ${call imports-}
 )
@@ -31,7 +31,7 @@ ${end}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
-	source []byte
+	source string
 ${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes-}
 	err    ErrorHandler
 ${end-}
@@ -52,7 +52,7 @@ ${call stateVars-}
 ${if opts.reportInvalidRunes-}
 const bom = 0xfeff // byte order mark, permitted as a first character only
 ${end-}
-var bomSeq = []byte{0xEF, 0xBB, 0xBF}
+var bomSeq = "\xef\xbb\xbf"
 
 // Init prepares the lexer l to tokenize source by performing the full reset
 // of the internal state.
@@ -61,7 +61,7 @@ ${if opts.reportInvalidRunes-}
 // Note that Init may call err once if there is an error in the
 // first few characters of the text.
 ${end-}
-func (l *Lexer) Init(source []byte${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes}, err ErrorHandler${end}) {
+func (l *Lexer) Init(source string${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes}, err ErrorHandler${end}) {
 	l.source = source
 ${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes-}
 	l.err = err
@@ -77,7 +77,7 @@ ${end-}
 	l.State = 0
 ${call initStateVars-}
 
-	if bytes.HasPrefix(source, bomSeq) {
+	if strings.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
 	}
 
@@ -86,7 +86,7 @@ ${call initStateVars-}
 		r, w := rune(l.source[l.offset]), 1
 		if r >= 0x80 {
 			// not ASCII
-			r, w = utf8.DecodeRune(l.source[l.offset:])
+			r, w = utf8.DecodeRuneInString(l.source[l.offset:])
 ${if opts.reportInvalidRunes-}
 			if r == utf8.RuneError && w == 1 || r == bom {
 				l.invalidRune(r, w)
@@ -156,7 +156,7 @@ ${end-}
 			r, w := rune(l.source[l.offset]), 1
 			if r >= 0x80 {
 				// not ASCII
-				r, w = utf8.DecodeRune(l.source[l.offset:])
+				r, w = utf8.DecodeRuneInString(l.source[l.offset:])
 ${if opts.reportInvalidRunes-}
 				if r == utf8.RuneError && w == 1 || r == bom {
 					l.invalidRune(r, w)
@@ -263,7 +263,7 @@ func (l *Lexer) Line() int {
 
 // Text returns the substring of the input corresponding to the last token.
 func (l *Lexer) Text() string {
-	return string(l.source[l.tokenOffset:l.offset])
+	return l.source[l.tokenOffset:l.offset]
 }
 
 // Value returns the value associated with the last returned token.
@@ -273,7 +273,7 @@ func (l *Lexer) Value() interface{} {
 ${end}
 
 ${template instanceToRuleIf(val,instanceRule)-}
-			if hash == 0x${util.hashHex(val)} && bytes.Equal([]byte("${util.escape(val)}"), l.source[l.tokenOffset:l.offset]) {
+			if hash == 0x${util.hashHex(val)} && "${util.escape(val)}" == l.source[l.tokenOffset:l.offset] {
 ${if self->canInlineLexerRules()-}
 				token = ${instanceRule.symbol->go_token.tokenName()}
 ${else-}
