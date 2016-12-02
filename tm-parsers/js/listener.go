@@ -145,6 +145,221 @@ const (
 	NodeTypeMax
 )
 
+var BindingPattern = []NodeType{
+	ArrayPattern,
+	ObjectPattern,
+}
+
+var CaseClause = []NodeType{
+	Case,
+	Default,
+}
+
+var ClassElement = []NodeType{
+	EmptyDecl,
+	GeneratorMethod,
+	Getter,
+	Method,
+	Setter,
+	StaticMethod,
+}
+
+var Declaration = []NodeType{
+	Class,
+	Function,
+	Generator,
+	LexicalDeclaration,
+}
+
+var ElementPattern = []NodeType{
+	ElementBinding,
+	SingleNameBinding,
+	SyntaxError,
+}
+
+var ExportElement = []NodeType{
+	ExportSpecifier,
+	SyntaxError,
+}
+
+var Expression = []NodeType{
+	AdditiveExpression,
+	ArrayLiteral,
+	ArrowFunction,
+	AssignmentExpression,
+	BitwiseANDExpression,
+	BitwiseORExpression,
+	BitwiseXORExpression,
+	CallExpression,
+	ClassExpr,
+	CommaExpression,
+	ConditionalExpression,
+	EqualityExpression,
+	ExponentiationExpression,
+	FunctionExpression,
+	GeneratorExpression,
+	IdentifierReference,
+	IndexAccess,
+	JSXElement,
+	Literal,
+	LogicalANDExpression,
+	LogicalORExpression,
+	MultiplicativeExpression,
+	NewExpression,
+	NewTarget,
+	ObjectLiteral,
+	Parenthesized,
+	PostDec,
+	PostInc,
+	PreDec,
+	PreInc,
+	PropertyAccess,
+	Regexp,
+	RelationalExpression,
+	ShiftExpression,
+	SuperExpression,
+	TaggedTemplate,
+	TemplateLiteral,
+	This,
+	UnaryExpression,
+	Yield,
+}
+
+var JSXAttribute = []NodeType{
+	JSXNormalAttribute,
+	JSXSpreadAttribute,
+}
+
+var JSXAttributeValue = []NodeType{
+	JSXElement,
+	JSXExpression,
+	JSXLiteral,
+}
+
+var JSXChild = []NodeType{
+	JSXElement,
+	JSXExpression,
+	JSXText,
+}
+
+var MethodDefinition = []NodeType{
+	GeneratorMethod,
+	Getter,
+	Method,
+	Setter,
+}
+
+var ModuleItem = []NodeType{
+	Block,
+	BreakStatement,
+	Class,
+	ContinueStatement,
+	DebuggerStatement,
+	DoWhileStatement,
+	EmptyStatement,
+	ExportDeclaration,
+	ExportDefault,
+	ExpressionStatement,
+	ForInStatement,
+	ForInStatementWithVar,
+	ForOfStatement,
+	ForOfStatementWithVar,
+	ForStatement,
+	ForStatementWithVar,
+	Function,
+	Generator,
+	IfStatement,
+	ImportDeclaration,
+	LabelledStatement,
+	LexicalDeclaration,
+	SwitchStatement,
+	SyntaxError,
+	ThrowStatement,
+	TryStatement,
+	VariableStatement,
+	WhileStatement,
+	WithStatement,
+}
+
+var NamedImport = []NodeType{
+	ImportSpecifier,
+	SyntaxError,
+}
+
+var PropertyDefinition = []NodeType{
+	GeneratorMethod,
+	Getter,
+	Method,
+	Property,
+	Setter,
+	ShorthandProperty,
+	SyntaxError,
+}
+
+var PropertyName = []NodeType{
+	ComputedPropertyName,
+	LiteralPropertyName,
+}
+
+var PropertyPattern = []NodeType{
+	PropertyBinding,
+	SingleNameBinding,
+	SyntaxError,
+}
+
+var Statement = []NodeType{
+	Block,
+	BreakStatement,
+	ContinueStatement,
+	DebuggerStatement,
+	DoWhileStatement,
+	EmptyStatement,
+	ExpressionStatement,
+	ForInStatement,
+	ForInStatementWithVar,
+	ForOfStatement,
+	ForOfStatementWithVar,
+	ForStatement,
+	ForStatementWithVar,
+	IfStatement,
+	LabelledStatement,
+	SwitchStatement,
+	ThrowStatement,
+	TryStatement,
+	VariableStatement,
+	WhileStatement,
+	WithStatement,
+}
+
+var StatementListItem = []NodeType{
+	Block,
+	BreakStatement,
+	Class,
+	ContinueStatement,
+	DebuggerStatement,
+	DoWhileStatement,
+	EmptyStatement,
+	ExpressionStatement,
+	ForInStatement,
+	ForInStatementWithVar,
+	ForOfStatement,
+	ForOfStatementWithVar,
+	ForStatement,
+	ForStatementWithVar,
+	Function,
+	Generator,
+	IfStatement,
+	LabelledStatement,
+	LexicalDeclaration,
+	SwitchStatement,
+	SyntaxError,
+	ThrowStatement,
+	TryStatement,
+	VariableStatement,
+	WhileStatement,
+	WithStatement,
+}
+
 var ruleNodeType = [...]NodeType{
 	SyntaxError,              // SyntaxError ::= error
 	0,                        // IdentifierName ::= Identifier

@@ -556,6 +556,7 @@ ${end-}
 	${self->nodeType()}Max
 )
 
+${call categories-}
 var rule${self->nodeType()} = [...]${self->nodeType()}{
 ${foreach rule in syntax.rules-}
 	${v = rule->rangeTypeName(), v == '' ? 0 : v}, // ${rule}
@@ -581,6 +582,17 @@ func (t ${self->nodeType()}) String() string {
 	}
 	return fmt.Sprintf("node(%d)", t)
 }
+${end}
+
+${template categories-}
+${foreach cat in syntax.categories.sort(it|it)-}
+var ${cat} = []NodeType{
+${foreach type in syntax.categoryTypes(cat)-}
+    ${type->asRangeTypeName()},
+${end-}
+}
+
+${end-}
 ${end}
 
 ${query typedescr(rangeType) =

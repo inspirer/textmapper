@@ -19,10 +19,7 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.ast.TmaCommand;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * evgeny, 1/15/13
@@ -40,6 +37,7 @@ public class TMDataUtil {
 	private static final String UD_ROLE = "role";
 	private static final String UD_RANGE_TYPE = "rangeType";
 	private static final String UD_RANGE_FIELDS = "rangeFields";
+	private static final String UD_CATEGORIES = "categories";
 	private static final String UD_USER_REQUESTED_INPUT = "userRequested";
 
 	private static Object lookupUserData(UserDataHolder element, String key) {
@@ -147,6 +145,27 @@ public class TMDataUtil {
 		Map<String, Collection<? extends RangeField>> map = (Map<String, Collection<?
 				extends RangeField>>) grammar.getUserData(UD_RANGE_FIELDS);
 		return map == null ? null : map.get(type);
+	}
+
+	public static void putCategory(Grammar grammar, String category, Collection<String> types) {
+		Map<String, Collection<String>> map = (Map<String, Collection<String>>) grammar
+				.getUserData(UD_CATEGORIES);
+		if (map == null) {
+			grammar.putUserData(UD_CATEGORIES, (map = new HashMap<>()));
+		}
+		map.put(category, types);
+	}
+
+	public static Collection<String> getCategoryTypes(Grammar grammar, String category) {
+		Map<String, Collection<String>> map = (Map<String, Collection<String>>) grammar
+				.getUserData(UD_CATEGORIES);
+		return map == null ? null : map.get(category);
+	}
+
+	public static Collection<String> getCategoryList(Grammar grammar) {
+		Map<String, Collection<String>> map = (Map<String, Collection<String>>) grammar
+				.getUserData(UD_CATEGORIES);
+		return map == null ? Collections.emptyList() : new ArrayList<>(map.keySet());
 	}
 
 	public static void setUserRequested(InputRef input) {

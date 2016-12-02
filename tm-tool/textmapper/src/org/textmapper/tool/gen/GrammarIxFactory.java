@@ -421,6 +421,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if ("canInlineLexerRules".equals(propertyName)) {
 				return canInlineLexerRules();
 			}
+			if ("categories".equals(propertyName)) {
+				return TMDataUtil.getCategoryList(grammar);
+			}
 			return super.getProperty(caller, propertyName);
 		}
 
@@ -468,7 +471,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 			if (args.length == 1 && "rangeFields".equals(methodName)) {
 				return TMDataUtil.getRangeFields(grammar, (String) args[0]);
-
+			}
+			if (args.length == 1 && "categoryTypes".equals(methodName)) {
+				return TMDataUtil.getCategoryTypes(grammar, (String) args[0]);
 			}
 			return super.callMethod(caller, methodName, args);
 		}
