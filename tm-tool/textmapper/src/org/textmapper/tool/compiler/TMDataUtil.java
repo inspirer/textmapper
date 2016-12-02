@@ -34,7 +34,6 @@ public class TMDataUtil {
 	private static final String UD_TYPE_HINT = "typeHint";
 	private static final String UD_IMPLEMENTS = "implements";
 	private static final String UD_LITERAL = "literal";
-	private static final String UD_ROLE = "role";
 	private static final String UD_RANGE_TYPE = "rangeType";
 	private static final String UD_RANGE_FIELDS = "rangeFields";
 	private static final String UD_CATEGORIES = "categories";
