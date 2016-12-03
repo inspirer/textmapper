@@ -2,7 +2,12 @@
 
 package ast
 
-type Node struct {
+import (
+	"github.com/inspirer/textmapper/tm-parsers/js"
+)
+
+type Node interface {
+	Type() js.NodeType
 }
 
 // Interfaces.

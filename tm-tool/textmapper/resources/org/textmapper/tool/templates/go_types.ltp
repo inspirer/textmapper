@@ -1,7 +1,10 @@
 ${template main-}
 ${if self->go_parser.eventBased() && opts.eventFields-}
-${file self->filename()-}
+${file self->astFilename()-}
 ${call unit-}
+${end-}
+${file self->factoryFilename()-}
+${call factory-}
 ${end-}
 ${end-}
 ${end}
@@ -10,14 +13,42 @@ ${template unit-}
 ${call go.header-}
 package ${call package}
 
+${call imports-}
 ${call wrappedTypeTempl-}
 ${call interfaces-}
 ${call types-}
 ${end}
 
+${template imports-}
+import (
+	"${self->go.package()}"
+)
+
+${end}
+
+${template factory-}
+${call go.header-}
+package ${call package}
+
+import (
+	"log"
+	"${self->go.package()}"
+)
+
+func New${self->baseNode()}(node Node) ${self->baseNode()} {
+	switch node.Type() {
+${foreach rangeType in syntax.rules.collectUnique(r|r->go_parser.rangeTypeName()).select(it|it != '').sort(it|it)-}
+	case ${self->go.shortPackage()}.${rangeType->go_parser.asRangeTypeName()}:
+		return &${rangeType->go_parser.asRangeTypeName()}{node}
+${end-}
+	}
+	log.Fatalf("unknown node type %v\n", node.Type())
+}
+${end}
 
 ${template wrappedTypeTempl-}
-type Node struct {
+type Node interface {
+	Type() ${self->nodeTypeRef()}
 }
 
 ${end}
@@ -70,7 +101,8 @@ ${end}
 ${end}
 
 
-${query filename() = 'ast/ast.go'}
+${query astFilename() = 'ast/ast.go'}
+${query factoryFilename() = 'ast/factory.go'}
 ${query package() = 'ast'}
 
 ${query wrappedType() = 'Node'}
@@ -80,3 +112,5 @@ ${query asInterfaceMethod() = util.toFirstLower(self->go_parser.asRangeTypeName(
 
 ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved()}
 ${query fieldType() = ''}
+
+${query nodeTypeRef() = self->go.shortPackage() + '.' + self->go_parser.nodeTypeRef()}

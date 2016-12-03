@@ -16,7 +16,7 @@ ${end-}
 ${end}
 
 ${template parser-}
-package ${opts.lang}
+package ${self->go.shortPackage()}
 
 import (
 	"fmt"
@@ -447,7 +447,7 @@ ${end}
 
 
 ${template parserTables-}
-package ${opts.lang}
+package ${self->go.shortPackage()}
 
 import (
 	"fmt"
@@ -535,7 +535,7 @@ ${cached query asRangeTypeName() =
     self->reserve('__rangeTypes__')}
 
 ${template listener-}
-package ${opts.lang}
+package ${self->go.shortPackage()}
 
 import "fmt"
 

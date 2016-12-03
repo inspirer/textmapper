@@ -54,3 +54,9 @@ type ErrorHandler func(line, offset, len int, msg string)
 // IgnoreErrorsHandler is a no-op error handler.
 func IgnoreErrorsHandler(line, offset, len int, msg string) {}
 ${end}
+
+${query package() = opts.package }
+${query shortPackage() =
+  p = self->package(),
+  i = p.lastIndexOf('/'),
+  i >= 0 ? p.substring(i + 1) : p }
