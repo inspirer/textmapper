@@ -1,0 +1,82 @@
+${template main-}
+${if self->go_parser.eventBased() && opts.eventFields-}
+${file self->filename()-}
+${call unit-}
+${end-}
+${end-}
+${end}
+
+${template unit-}
+${call go.header-}
+package ${call package}
+
+${call wrappedTypeTempl-}
+${call interfaces-}
+${call types-}
+${end}
+
+
+${template wrappedTypeTempl-}
+type Node struct {
+}
+
+${end}
+
+${template interfaces-}
+// Interfaces.
+
+type ${self->baseNode()} interface {
+	${self->baseNode()->asInterfaceMethod()}()
+}
+
+// All types implement ${self->baseNode()}.
+${foreach name in syntax.rules.collectUnique(r|r->go_parser.rangeTypeName()).select(it|it != '').sort(it|it)-}
+func (*${name->go_parser.asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
+${end-}
+
+${foreach cat in syntax.categories.sort(it|it)-}
+type ${cat->go_parser.asRangeTypeName()} interface {
+	${cat->asInterfaceMethod()}()
+}
+
+// ${cat->asInterfaceMethod()}() ensures that only the following types can be
+// assigned to an ${cat->go_parser.asRangeTypeName()}.
+//
+${foreach type in syntax.categoryTypes(cat)-}
+func (*${type->go_parser.asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
+${end-}
+
+${end-}
+${end}
+
+${template types-}
+// Types.
+
+${foreach rangeType in syntax.rules.collectUnique(r|r->go_parser.rangeTypeName()).select(it|it != '').sort(it|it)-}
+${call type(rangeType)-}
+${end-}
+
+${end}
+
+${template type(name)-}
+type ${name->go_parser.asRangeTypeName()} struct {
+	${self->wrappedType()}
+}
+${foreach field in syntax.rangeFields(name)}
+func (n *${name->go_parser.asRangeTypeName()}) ${field->asGetterName()}() ${self->baseNode()} {
+	return nil
+}
+${end}
+${end}
+
+
+${query filename() = 'ast/ast.go'}
+${query package() = 'ast'}
+
+${query wrappedType() = 'Node'}
+${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
+
+${query asInterfaceMethod() = util.toFirstLower(self->go_parser.asRangeTypeName()) + 'Node' }
+
+${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved()}
+${query fieldType() = ''}
