@@ -3,11 +3,14 @@
 package ast
 
 import (
-	"log"
 	"github.com/inspirer/textmapper/tm-parsers/js"
+	"log"
 )
 
-func NewJsNode(node Node) JsNode {
+func ToJsNode(node Node) JsNode {
+	if node == nil {
+		return nil
+	}
 	switch node.Type() {
 	case js.AdditiveExpression:
 		return &AdditiveExpression{node}
@@ -261,4 +264,5 @@ func NewJsNode(node Node) JsNode {
 		return &Yield{node}
 	}
 	log.Fatalf("unknown node type %v\n", node.Type())
+	return nil
 }

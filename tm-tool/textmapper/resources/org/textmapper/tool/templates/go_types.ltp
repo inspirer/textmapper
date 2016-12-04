@@ -35,20 +35,27 @@ import (
 	"${self->go.package()}"
 )
 
-func New${self->baseNode()}(node Node) ${self->baseNode()} {
+func To${self->baseNode()}(node Node) ${self->baseNode()} {
+	if node == nil {
+		return nil
+	}
 	switch node.Type() {
 ${foreach rangeType in syntax.rules.collectUnique(r|r->go_parser.rangeTypeName()).select(it|it != '').sort(it|it)-}
-	case ${self->go.shortPackage()}.${rangeType->go_parser.asRangeTypeName()}:
+	case ${rangeType->nodeTypeValueRef()}:
 		return &${rangeType->go_parser.asRangeTypeName()}{node}
 ${end-}
 	}
 	log.Fatalf("unknown node type %v\n", node.Type())
+	return nil
 }
 ${end}
 
 ${template wrappedTypeTempl-}
 type Node interface {
 	Type() ${self->nodeTypeRef()}
+	Child(t ...${self->nodeTypeRef()}) Node
+	Sibling(t ...${self->nodeTypeRef()}) Node
+	Children(t ...${self->nodeTypeRef()}) []Node
 }
 
 ${end}
@@ -62,7 +69,7 @@ type ${self->baseNode()} interface {
 
 // All types implement ${self->baseNode()}.
 ${foreach name in syntax.rules.collectUnique(r|r->go_parser.rangeTypeName()).select(it|it != '').sort(it|it)-}
-func (*${name->go_parser.asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
+func (${name->go_parser.asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
 
 ${foreach cat in syntax.categories.sort(it|it)-}
@@ -74,7 +81,7 @@ type ${cat->go_parser.asRangeTypeName()} interface {
 // assigned to an ${cat->go_parser.asRangeTypeName()}.
 //
 ${foreach type in syntax.categoryTypes(cat)-}
-func (*${type->go_parser.asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
+func (${type->go_parser.asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
 
 ${end-}
@@ -94,10 +101,61 @@ type ${name->go_parser.asRangeTypeName()} struct {
 	${self->wrappedType()}
 }
 ${foreach field in syntax.rangeFields(name)}
-func (n *${name->go_parser.asRangeTypeName()}) ${field->asGetterName()}() ${self->baseNode()} {
-	return nil
+func (n ${name->go_parser.asRangeTypeName()}) ${field->asGetterName()}() ${call getterType(field)} {
+${call getterImpl(field)-}
 }
 ${end}
+${end}
+
+
+${cached query needPtr(field) =
+  oneType = (field.types.length == 1),
+  isCat = oneType && self->isCategory(field.types.first()),
+  !field.isList() && field.isNullable() && oneType && !isCat }
+
+${cached query getterType(field) =
+  (field.isList() ? '[]' : '') +
+  (self->needPtr(field) ? '*' : '') +
+   self->getterInnerType(field) }
+
+${cached query getterInnerType(field) =
+  oneType = (field.types.length == 1),
+  oneType
+     ? field.types.first()->go_parser.asRangeTypeName()
+     : self->baseNode() }
+
+${cached query isOneType(field) =
+   field.types.length == 1 && !self->isCategory(field.types.first())}
+
+${query fieldActualTypes(field) =
+  oneType = (field.types.length == 1),
+  isCat = oneType && self->isCategory(field.types.first()),
+  oneType ? (
+    field.types.first()->nodeTypeValueRef() + (isCat ? '...' : '')
+  ) : field.types.collect(it|it->nodeTypeValueRef())->util.join(', ')}
+
+${template convertNode(field, node)-}
+${if self->isOneType(field)-}
+${(self->needPtr(field) ? '&' : '') + self->getterInnerType(field)}{${node}}${else-}
+To${self->baseNode()}(${node}).(${(self->needPtr(field) ? '*' : '') + self->getterInnerType(field)})${end-}
+${end}
+
+${template getterImpl(field)-}
+${if field.isList()-}
+	nodes := n.Children(${self->fieldActualTypes(field)})
+	var result []${self->getterInnerType(field)} = make([]${self->getterInnerType(field)}, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ${self->convertNode(field, 'node')})
+	}
+	return result
+${else if !field.isNullable()-}
+	return ${self->convertNode(field, 'n.Child(' + self->fieldActualTypes(field) + ')')}
+${else-}
+	if child := n.Child(${self->fieldActualTypes(field)}); child != nil {
+		return ${self->convertNode(field, 'child')}
+	}
+	return nil
+${end-}
 ${end}
 
 
@@ -111,6 +169,7 @@ ${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
 ${query asInterfaceMethod() = util.toFirstLower(self->go_parser.asRangeTypeName()) + 'Node' }
 
 ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved()}
-${query fieldType() = ''}
 
 ${query nodeTypeRef() = self->go.shortPackage() + '.' + self->go_parser.nodeTypeRef()}
+${query nodeTypeValueRef() = context->go.shortPackage() + '.' + self->go_parser.asRangeTypeName()}
+${query isCategory(cat) = syntax.categoryTypes(cat) && true}
