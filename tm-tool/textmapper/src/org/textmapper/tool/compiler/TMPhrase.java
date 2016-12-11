@@ -60,6 +60,12 @@ class TMPhrase implements DerivedSourceElement {
 		return fields.size() == 1 && !first().hasExplicitName();
 	}
 
+	TMPhrase resolve(Map<String, Set<String>> categories) {
+		return new TMPhrase(fields.stream()
+				.map(f -> f.resolve(categories))
+				.collect(Collectors.toList()), origin);
+	}
+
 	TMPhrase makeNullable(SourceElement origin) {
 		if (fields.isEmpty()) return this;
 
@@ -133,10 +139,7 @@ class TMPhrase implements DerivedSourceElement {
 				String signature = f.getSignature();
 				TMField existing = seen.putIfAbsent(signature, f);
 				if (existing != null) {
-					status.report(ProcessingStatus.KIND_ERROR,
-							"two fields with the same signature: " + existing.toString() +
-									" -vs- " + f.toString(), anchor);
-					continue;
+					throw new IllegalStateException();
 				}
 				if (f.hasExplicitName()) {
 					nameOrder.add(f.getName());
@@ -181,16 +184,13 @@ class TMPhrase implements DerivedSourceElement {
 				String signature = f.getSignature();
 				TMField existing = seen.putIfAbsent(signature, f);
 				if (existing != null) {
-					if (!(existing.isList() && f.isList())) {
+					if (!existing.isList() || !f.isList()) {
 						status.report(ProcessingStatus.KIND_ERROR,
 								"two fields with the same signature: " + existing.toString() +
 										" -vs- " + f.toString(), anchor);
 						continue;
 					}
 					f = TMField.merge(null, existing, f);
-					if (!f.isList()) {
-						f = f.makeList();
-					}
 					seen.put(signature, f);
 				}
 			}

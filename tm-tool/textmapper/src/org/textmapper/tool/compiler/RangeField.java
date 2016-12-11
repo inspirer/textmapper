@@ -22,14 +22,24 @@ public interface RangeField {
 	String getName();
 
 	/**
-	 * @return all possible range types that can be found behind this field.
+	 * @return all possible range types that can be found behind this field (sorted).
 	 */
 	String[] getTypes();
+
+	/**
+	 * @return returns the type of the field, if this is an interface type.
+	 */
+	String getInterfaceType();
 
 	/**
 	 * @return true if the name was explicitly mentioned in the grammar (via name=symref).
 	 */
 	boolean hasExplicitName();
+
+	/**
+	 * @return the name of the previous field which shares types with this one.
+	 */
+	String alwaysComesAfterField();
 
 	boolean isList();
 	boolean isNullable();

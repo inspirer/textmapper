@@ -151,7 +151,7 @@ type BindingPattern interface {
 }
 
 // bindingPatternNode() ensures that only the following types can be
-// assigned to an BindingPattern.
+// assigned to BindingPattern.
 //
 func (ArrayPattern) bindingPatternNode()  {}
 func (ObjectPattern) bindingPatternNode() {}
@@ -161,7 +161,7 @@ type CaseClause interface {
 }
 
 // caseClauseNode() ensures that only the following types can be
-// assigned to an CaseClause.
+// assigned to CaseClause.
 //
 func (Case) caseClauseNode()    {}
 func (Default) caseClauseNode() {}
@@ -171,7 +171,7 @@ type ClassElement interface {
 }
 
 // classElementNode() ensures that only the following types can be
-// assigned to an ClassElement.
+// assigned to ClassElement.
 //
 func (EmptyDecl) classElementNode()       {}
 func (GeneratorMethod) classElementNode() {}
@@ -185,7 +185,7 @@ type Declaration interface {
 }
 
 // declarationNode() ensures that only the following types can be
-// assigned to an Declaration.
+// assigned to Declaration.
 //
 func (Class) declarationNode()              {}
 func (Function) declarationNode()           {}
@@ -197,7 +197,7 @@ type ElementPattern interface {
 }
 
 // elementPatternNode() ensures that only the following types can be
-// assigned to an ElementPattern.
+// assigned to ElementPattern.
 //
 func (ElementBinding) elementPatternNode()    {}
 func (SingleNameBinding) elementPatternNode() {}
@@ -208,7 +208,7 @@ type ExportElement interface {
 }
 
 // exportElementNode() ensures that only the following types can be
-// assigned to an ExportElement.
+// assigned to ExportElement.
 //
 func (ExportSpecifier) exportElementNode() {}
 func (SyntaxError) exportElementNode()     {}
@@ -218,7 +218,7 @@ type Expression interface {
 }
 
 // expressionNode() ensures that only the following types can be
-// assigned to an Expression.
+// assigned to Expression.
 //
 func (AdditiveExpression) expressionNode()       {}
 func (ArrayLiteral) expressionNode()             {}
@@ -266,7 +266,7 @@ type JSXAttribute interface {
 }
 
 // jSXAttributeNode() ensures that only the following types can be
-// assigned to an JSXAttribute.
+// assigned to JSXAttribute.
 //
 func (JSXNormalAttribute) jSXAttributeNode() {}
 func (JSXSpreadAttribute) jSXAttributeNode() {}
@@ -276,7 +276,7 @@ type JSXAttributeValue interface {
 }
 
 // jSXAttributeValueNode() ensures that only the following types can be
-// assigned to an JSXAttributeValue.
+// assigned to JSXAttributeValue.
 //
 func (JSXElement) jSXAttributeValueNode()    {}
 func (JSXExpression) jSXAttributeValueNode() {}
@@ -287,7 +287,7 @@ type JSXChild interface {
 }
 
 // jSXChildNode() ensures that only the following types can be
-// assigned to an JSXChild.
+// assigned to JSXChild.
 //
 func (JSXElement) jSXChildNode()    {}
 func (JSXExpression) jSXChildNode() {}
@@ -298,7 +298,7 @@ type MethodDefinition interface {
 }
 
 // methodDefinitionNode() ensures that only the following types can be
-// assigned to an MethodDefinition.
+// assigned to MethodDefinition.
 //
 func (GeneratorMethod) methodDefinitionNode() {}
 func (Getter) methodDefinitionNode()          {}
@@ -310,7 +310,7 @@ type ModuleItem interface {
 }
 
 // moduleItemNode() ensures that only the following types can be
-// assigned to an ModuleItem.
+// assigned to ModuleItem.
 //
 func (Block) moduleItemNode()                 {}
 func (BreakStatement) moduleItemNode()        {}
@@ -347,7 +347,7 @@ type NamedImport interface {
 }
 
 // namedImportNode() ensures that only the following types can be
-// assigned to an NamedImport.
+// assigned to NamedImport.
 //
 func (ImportSpecifier) namedImportNode() {}
 func (SyntaxError) namedImportNode()     {}
@@ -357,7 +357,7 @@ type PropertyDefinition interface {
 }
 
 // propertyDefinitionNode() ensures that only the following types can be
-// assigned to an PropertyDefinition.
+// assigned to PropertyDefinition.
 //
 func (GeneratorMethod) propertyDefinitionNode()   {}
 func (Getter) propertyDefinitionNode()            {}
@@ -372,7 +372,7 @@ type PropertyName interface {
 }
 
 // propertyNameNode() ensures that only the following types can be
-// assigned to an PropertyName.
+// assigned to PropertyName.
 //
 func (ComputedPropertyName) propertyNameNode() {}
 func (LiteralPropertyName) propertyNameNode()  {}
@@ -382,7 +382,7 @@ type PropertyPattern interface {
 }
 
 // propertyPatternNode() ensures that only the following types can be
-// assigned to an PropertyPattern.
+// assigned to PropertyPattern.
 //
 func (PropertyBinding) propertyPatternNode()   {}
 func (SingleNameBinding) propertyPatternNode() {}
@@ -393,7 +393,7 @@ type Statement interface {
 }
 
 // statementNode() ensures that only the following types can be
-// assigned to an Statement.
+// assigned to Statement.
 //
 func (Block) statementNode()                 {}
 func (BreakStatement) statementNode()        {}
@@ -422,7 +422,7 @@ type StatementListItem interface {
 }
 
 // statementListItemNode() ensures that only the following types can be
-// assigned to an StatementListItem.
+// assigned to StatementListItem.
 //
 func (Block) statementListItemNode()                 {}
 func (BreakStatement) statementListItemNode()        {}
@@ -470,7 +470,7 @@ type Arguments struct {
 }
 
 func (n Arguments) List() []JsNode {
-	nodes := n.Children(js.SpreadElement)
+	nodes := n.Children(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield)
 	var result []JsNode = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JsNode))
@@ -483,7 +483,7 @@ type ArrayLiteral struct {
 }
 
 func (n ArrayLiteral) List() []JsNode {
-	nodes := n.Children(js.SpreadElement)
+	nodes := n.Children(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield)
 	var result []JsNode = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JsNode))

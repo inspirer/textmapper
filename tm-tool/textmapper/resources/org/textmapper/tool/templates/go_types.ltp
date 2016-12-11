@@ -78,7 +78,7 @@ type ${cat->go_parser.asRangeTypeName()} interface {
 }
 
 // ${cat->asInterfaceMethod()}() ensures that only the following types can be
-// assigned to an ${cat->go_parser.asRangeTypeName()}.
+// assigned to ${cat->go_parser.asRangeTypeName()}.
 //
 ${foreach type in syntax.categoryTypes(cat)-}
 func (${type->go_parser.asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
@@ -109,9 +109,8 @@ ${end}
 
 
 ${cached query needPtr(field) =
-  oneType = (field.types.length == 1),
-  isCat = oneType && self->isCategory(field.types.first()),
-  !field.isList() && field.isNullable() && oneType && !isCat }
+  field.interfaceType ? false :
+  field.isNullable() && !field.isList() && field.types.length == 1 }
 
 ${cached query getterType(field) =
   (field.isList() ? '[]' : '') +
@@ -119,20 +118,16 @@ ${cached query getterType(field) =
    self->getterInnerType(field) }
 
 ${cached query getterInnerType(field) =
-  oneType = (field.types.length == 1),
-  oneType
+  field.interfaceType ? field.interfaceType->go_parser.asRangeTypeName() :
+  field.types.length == 1
      ? field.types.first()->go_parser.asRangeTypeName()
      : self->baseNode() }
 
-${cached query isOneType(field) =
-   field.types.length == 1 && !self->isCategory(field.types.first())}
+${cached query isOneType(field) = field.types.length == 1 }
 
 ${query fieldActualTypes(field) =
-  oneType = (field.types.length == 1),
-  isCat = oneType && self->isCategory(field.types.first()),
-  oneType ? (
-    field.types.first()->nodeTypeValueRef() + (isCat ? '...' : '')
-  ) : field.types.collect(it|it->nodeTypeValueRef())->util.join(', ')}
+  field.interfaceType ? field.interfaceType->nodeTypeValueRef() + '...' :
+  field.types.collect(it|it->nodeTypeValueRef())->util.join(', ')}
 
 ${template convertNode(field, node)-}
 ${if self->isOneType(field)-}
@@ -172,4 +167,3 @@ ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved(
 
 ${query nodeTypeRef() = self->go.shortPackage() + '.' + self->go_parser.nodeTypeRef()}
 ${query nodeTypeValueRef() = context->go.shortPackage() + '.' + self->go_parser.asRangeTypeName()}
-${query isCategory(cat) = syntax.categoryTypes(cat) && true}

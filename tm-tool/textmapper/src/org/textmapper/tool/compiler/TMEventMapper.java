@@ -167,11 +167,14 @@ public class TMEventMapper {
 		// Build a set of types behind each interface.
 		collectCategoryTypes();
 
+		// Export categories.
 		for (Entry<String, Set<String>> e : categories.entrySet()) {
 			List<String> types = new ArrayList<>(e.getValue());
 			Collections.sort(types);
 			TMDataUtil.putCategory(grammar, e.getKey(), types);
 		}
+
+		// Export fields.
 		for (Entry<String, List<RhsSequence>> e : typeIndex.entrySet()) {
 			String type = e.getKey();
 			List<TMPhrase> list = new ArrayList<>();
@@ -179,6 +182,7 @@ public class TMEventMapper {
 				list.add(computePhrase(p));
 			}
 			TMPhrase phrase = TMPhrase.merge(list, e.getValue().get(0), status);
+			phrase = phrase.resolve(categories);
 			TMPhrase.verify(phrase, status);
 			TMDataUtil.putRangeFields(grammar, type, phrase.getFields());
 		}
@@ -195,7 +199,7 @@ public class TMEventMapper {
 			private Category(String name) {
 				this.name = name;
 			}
-			String name;
+			final String name;
 			int node;
 			int[] deps;
 		}

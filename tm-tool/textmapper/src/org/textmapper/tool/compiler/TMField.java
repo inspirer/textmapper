@@ -17,6 +17,7 @@ package org.textmapper.tool.compiler;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,17 +25,20 @@ class TMField implements RangeField {
 
 	private final String name;
 	private final String[] types;
+	private final String interfaceType;
+	private final String comesAfterField;
 	private final boolean hasExplicitName;
 	private final boolean isList;
 	private final boolean nullable;
 	private String signature;
+	private String text;
 
 	TMField(String type) {
-		this(type, new String[]{type}, false, false, false);
+		this(type, new String[]{type}, false, false, false, null, null);
 	}
 
 	private TMField(String name, String[] types, boolean hasExplicitName,
-					boolean list, boolean nullable) {
+					boolean list, boolean nullable, String interfaceType, String comesAfterField) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -43,24 +47,51 @@ class TMField implements RangeField {
 		this.hasExplicitName = hasExplicitName;
 		this.isList = list;
 		this.nullable = nullable;
+		this.interfaceType = interfaceType;
+		this.comesAfterField = comesAfterField;
+	}
+
+	TMField resolve(Map<String, Set<String>> categories) {
+		if (Arrays.stream(types).noneMatch(categories::containsKey)) return this;
+
+		String newInterfaceType =
+				(types.length == 1 && categories.containsKey(types[0])) ? types[0] : null;
+		Set<String> newTypes = new HashSet<>();
+		for (String type : types) {
+			if (categories.containsKey(type)) {
+				newTypes.addAll(categories.get(type));
+			} else {
+				newTypes.add(type);
+			}
+		}
+		String[] newTypesArr = newTypes.toArray(new String[newTypes.size()]);
+		Arrays.sort(newTypesArr);
+
+		TMField result = new TMField(name, newTypesArr, hasExplicitName, isList, nullable,
+				newInterfaceType, comesAfterField);
+		result.text = toString();
+		return result;
 	}
 
 	TMField makeNullable() {
 		if (nullable) return this;
-		return new TMField(name, types, hasExplicitName, isList, true);
+		return new TMField(name, types, hasExplicitName, isList, true, interfaceType,
+				comesAfterField);
 	}
 
 	TMField makeList() {
 		if (isList) return this;
 
-		return new TMField(name, types, hasExplicitName, true /* list */, nullable);
+		return new TMField(name, types, hasExplicitName, true /* list */, nullable, interfaceType,
+				comesAfterField);
 	}
 
 	TMField withName(String newName) {
 		if (newName == null) {
 			throw new NullPointerException();
 		}
-		return new TMField(newName, types, true /* named */, isList, nullable);
+		return new TMField(newName, types, true /* named */, isList, nullable, interfaceType,
+				comesAfterField);
 	}
 
 	String getSignature() {
@@ -83,8 +114,18 @@ class TMField implements RangeField {
 	}
 
 	@Override
+	public String getInterfaceType() {
+		return interfaceType;
+	}
+
+	@Override
 	public boolean hasExplicitName() {
 		return hasExplicitName;
+	}
+
+	@Override
+	public String alwaysComesAfterField() {
+		return comesAfterField;
 	}
 
 	@Override
@@ -99,6 +140,7 @@ class TMField implements RangeField {
 
 	@Override
 	public String toString() {
+		if (text != null) return text;
 		StringBuilder sb = new StringBuilder();
 		if (types.length != 1 || !types[0].equals(name)) {
 			sb.append(name);
@@ -115,7 +157,7 @@ class TMField implements RangeField {
 		} else if (nullable) {
 			sb.append('?');
 		}
-		return sb.toString();
+		return text = sb.toString();
 	}
 
 	private static boolean equalNames(TMField f1, TMField f2) {
@@ -147,6 +189,6 @@ class TMField implements RangeField {
 		}
 		return new TMField(sameName ? fields[0].name : nameHint, arr,
 				sameName && fields[0].hasExplicitName,
-				isList, nullable);
+				isList, nullable, null, null);
 	}
 }
