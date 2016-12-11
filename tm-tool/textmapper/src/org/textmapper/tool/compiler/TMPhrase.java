@@ -18,10 +18,9 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.tool.common.UniqueOrder;
+import org.textmapper.tool.common.ArrayMerger;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 class TMPhrase implements DerivedSourceElement {
@@ -130,7 +129,8 @@ class TMPhrase implements DerivedSourceElement {
 						  SourceElement anchor,
 						  ProcessingStatus status) {
 		Map<String, List<TMField>> bySignature = new LinkedHashMap<>();
-		UniqueOrder<String> nameOrder = new UniqueOrder<>();
+		ArrayMerger<String> namedFields = new ArrayMerger<>();
+		ArrayMerger<String> allFields = new ArrayMerger<>();
 
 		Map<String, TMField> seen = new HashMap<>();
 		for (TMPhrase p : phrases) {
@@ -142,26 +142,42 @@ class TMPhrase implements DerivedSourceElement {
 					throw new IllegalStateException();
 				}
 				if (f.hasExplicitName()) {
-					nameOrder.add(f.getName());
+					namedFields.add(signature);
 				}
+				allFields.add(signature);
 				List<TMField> list = bySignature.get(signature);
 				if (list == null) {
 					bySignature.put(signature, list = new ArrayList<>());
 				}
 				list.add(f);
 			}
-			nameOrder.flush();
+			namedFields.flush();
+			allFields.flush();
 		}
 
-		if (nameOrder.getResult(String[]::new) == null) {
+		String[] order = namedFields.uniqueSort(String[]::new);
+		if (order == null) {
 			status.report(ProcessingStatus.KIND_ERROR,
 					"named elements must occur in the same order in all productions", anchor);
+			order = new String[0];
+		}
+
+		String[] sortedSignatures = allFields.topoSort(String[]::new);
+		if (sortedSignatures == null) {
+			Set<String> unnamed = new HashSet<>(bySignature.keySet());
+			unnamed.removeAll(Arrays.asList(order));
+			String[] unnamedArr = unnamed.toArray(new String[unnamed.size()]);
+			Arrays.sort(unnamedArr);
+			assert unnamedArr.length + order.length == bySignature.size();
+			sortedSignatures = new String[bySignature.size()];
+			System.arraycopy(order, 0, sortedSignatures, 0, order.length);
+			System.arraycopy(unnamedArr, 0, sortedSignatures, order.length, unnamedArr.length);
 		}
 
 		List<TMField> result = new ArrayList<>(bySignature.size());
-		for (Entry<String, List<TMField>> entry : bySignature.entrySet()) {
+		for (String signature : sortedSignatures) {
 			TMField composite;
-			List<TMField> fields = entry.getValue();
+			List<TMField> fields = bySignature.get(signature);
 			if (fields.size() == 1) {
 				composite = fields.get(0);
 			} else {

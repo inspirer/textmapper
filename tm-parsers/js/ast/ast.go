@@ -496,13 +496,6 @@ type ArrayPattern struct {
 	Node
 }
 
-func (n ArrayPattern) BindingRestElement() *BindingRestElement {
-	if child := n.Child(js.BindingRestElement); child != nil {
-		return &BindingRestElement{child}
-	}
-	return nil
-}
-
 func (n ArrayPattern) ElementPattern() []ElementPattern {
 	nodes := n.Children(js.ElementPattern...)
 	var result []ElementPattern = make([]ElementPattern, 0, len(nodes))
@@ -510,6 +503,13 @@ func (n ArrayPattern) ElementPattern() []ElementPattern {
 		result = append(result, ToJsNode(node).(ElementPattern))
 	}
 	return result
+}
+
+func (n ArrayPattern) BindingRestElement() *BindingRestElement {
+	if child := n.Child(js.BindingRestElement); child != nil {
+		return &BindingRestElement{child}
+	}
+	return nil
 }
 
 type ArrowFunction struct {
@@ -520,16 +520,16 @@ func (n ArrowFunction) Parameters() Parameters {
 	return Parameters{n.Child(js.Parameters)}
 }
 
-func (n ArrowFunction) ConciseBody() *ConciseBody {
-	if child := n.Child(js.ConciseBody); child != nil {
-		return &ConciseBody{child}
+func (n ArrowFunction) Body() *Body {
+	if child := n.Child(js.Body); child != nil {
+		return &Body{child}
 	}
 	return nil
 }
 
-func (n ArrowFunction) Body() *Body {
-	if child := n.Child(js.Body); child != nil {
-		return &Body{child}
+func (n ArrowFunction) ConciseBody() *ConciseBody {
+	if child := n.Child(js.ConciseBody); child != nil {
+		return &ConciseBody{child}
 	}
 	return nil
 }
@@ -542,15 +542,15 @@ func (n AssignmentExpression) Left() Expression {
 	return ToJsNode(n.Child(js.Expression...)).(Expression)
 }
 
-func (n AssignmentExpression) Right() Expression {
-	return ToJsNode(n.Child(js.Expression...)).(Expression)
-}
-
 func (n AssignmentExpression) AssignmentOperator() *AssignmentOperator {
 	if child := n.Child(js.AssignmentOperator); child != nil {
 		return &AssignmentOperator{child}
 	}
 	return nil
+}
+
+func (n AssignmentExpression) Right() Expression {
+	return ToJsNode(n.Child(js.Expression...)).(Expression)
 }
 
 type AssignmentOperator struct {
@@ -609,20 +609,20 @@ type Block struct {
 	Node
 }
 
-func (n Block) StatementListItem() []StatementListItem {
-	nodes := n.Children(js.StatementListItem...)
-	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
-	for _, node := range nodes {
-		result = append(result, ToJsNode(node).(StatementListItem))
-	}
-	return result
-}
-
 func (n Block) CaseClause() []CaseClause {
 	nodes := n.Children(js.CaseClause...)
 	var result []CaseClause = make([]CaseClause, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(CaseClause))
+	}
+	return result
+}
+
+func (n Block) StatementListItem() []StatementListItem {
+	nodes := n.Children(js.StatementListItem...)
+	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(StatementListItem))
 	}
 	return result
 }
@@ -907,9 +907,9 @@ type ExportDeclaration struct {
 	Node
 }
 
-func (n ExportDeclaration) ModuleSpecifier() *ModuleSpecifier {
-	if child := n.Child(js.ModuleSpecifier); child != nil {
-		return &ModuleSpecifier{child}
+func (n ExportDeclaration) Declaration() Declaration {
+	if child := n.Child(js.Declaration...); child != nil {
+		return ToJsNode(child).(Declaration)
 	}
 	return nil
 }
@@ -928,9 +928,9 @@ func (n ExportDeclaration) VariableStatement() *VariableStatement {
 	return nil
 }
 
-func (n ExportDeclaration) Declaration() Declaration {
-	if child := n.Child(js.Declaration...); child != nil {
-		return ToJsNode(child).(Declaration)
+func (n ExportDeclaration) ModuleSpecifier() *ModuleSpecifier {
+	if child := n.Child(js.ModuleSpecifier); child != nil {
+		return &ModuleSpecifier{child}
 	}
 	return nil
 }
@@ -1123,6 +1123,15 @@ type ForStatementWithVar struct {
 	Node
 }
 
+func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
+	nodes := n.Children(js.LexicalBinding)
+	var result []LexicalBinding = make([]LexicalBinding, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, LexicalBinding{node})
+	}
+	return result
+}
+
 func (n ForStatementWithVar) VariableDeclaration() []VariableDeclaration {
 	nodes := n.Children(js.VariableDeclaration)
 	var result []VariableDeclaration = make([]VariableDeclaration, 0, len(nodes))
@@ -1142,15 +1151,6 @@ func (n ForStatementWithVar) ForFinalExpression() ForFinalExpression {
 
 func (n ForStatementWithVar) Statement() Statement {
 	return ToJsNode(n.Child(js.Statement...)).(Statement)
-}
-
-func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
-	nodes := n.Children(js.LexicalBinding)
-	var result []LexicalBinding = make([]LexicalBinding, 0, len(nodes))
-	for _, node := range nodes {
-		result = append(result, LexicalBinding{node})
-	}
-	return result
 }
 
 type Function struct {
@@ -1313,15 +1313,15 @@ type ImportSpecifier struct {
 	Node
 }
 
-func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(js.BindingIdentifier)}
-}
-
 func (n ImportSpecifier) IdentifierReference() *IdentifierReference {
 	if child := n.Child(js.IdentifierReference); child != nil {
 		return &IdentifierReference{child}
 	}
 	return nil
+}
+
+func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(js.BindingIdentifier)}
 }
 
 type IndexAccess struct {
@@ -1360,16 +1360,16 @@ type JSXElement struct {
 	Node
 }
 
-func (n JSXElement) JSXSelfClosingElement() *JSXSelfClosingElement {
-	if child := n.Child(js.JSXSelfClosingElement); child != nil {
-		return &JSXSelfClosingElement{child}
+func (n JSXElement) JSXOpeningElement() *JSXOpeningElement {
+	if child := n.Child(js.JSXOpeningElement); child != nil {
+		return &JSXOpeningElement{child}
 	}
 	return nil
 }
 
-func (n JSXElement) JSXOpeningElement() *JSXOpeningElement {
-	if child := n.Child(js.JSXOpeningElement); child != nil {
-		return &JSXOpeningElement{child}
+func (n JSXElement) JSXSelfClosingElement() *JSXSelfClosingElement {
+	if child := n.Child(js.JSXSelfClosingElement); child != nil {
+		return &JSXSelfClosingElement{child}
 	}
 	return nil
 }
@@ -1475,16 +1475,16 @@ type LabelledStatement struct {
 	Node
 }
 
-func (n LabelledStatement) Statement() Statement {
-	if child := n.Child(js.Statement...); child != nil {
-		return ToJsNode(child).(Statement)
+func (n LabelledStatement) Function() *Function {
+	if child := n.Child(js.Function); child != nil {
+		return &Function{child}
 	}
 	return nil
 }
 
-func (n LabelledStatement) Function() *Function {
-	if child := n.Child(js.Function); child != nil {
-		return &Function{child}
+func (n LabelledStatement) Statement() Statement {
+	if child := n.Child(js.Statement...); child != nil {
+		return ToJsNode(child).(Statement)
 	}
 	return nil
 }
@@ -1500,16 +1500,16 @@ func (n LexicalBinding) BindingIdentifier() *BindingIdentifier {
 	return nil
 }
 
-func (n LexicalBinding) Initializer() *Initializer {
-	if child := n.Child(js.Initializer); child != nil {
-		return &Initializer{child}
+func (n LexicalBinding) BindingPattern() BindingPattern {
+	if child := n.Child(js.BindingPattern...); child != nil {
+		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
 }
 
-func (n LexicalBinding) BindingPattern() BindingPattern {
-	if child := n.Child(js.BindingPattern...); child != nil {
-		return ToJsNode(child).(BindingPattern)
+func (n LexicalBinding) Initializer() *Initializer {
+	if child := n.Child(js.Initializer); child != nil {
+		return &Initializer{child}
 	}
 	return nil
 }
@@ -1689,9 +1689,9 @@ type Parameters struct {
 	Node
 }
 
-func (n Parameters) RestParameter() *RestParameter {
-	if child := n.Child(js.RestParameter); child != nil {
-		return &RestParameter{child}
+func (n Parameters) Expression() Expression {
+	if child := n.Child(js.Expression...); child != nil {
+		return ToJsNode(child).(Expression)
 	}
 	return nil
 }
@@ -1705,23 +1705,9 @@ func (n Parameters) Parameter() []Parameter {
 	return result
 }
 
-func (n Parameters) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(js.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
-}
-
-func (n Parameters) Expression() Expression {
-	if child := n.Child(js.Expression...); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
-}
-
-func (n Parameters) BindingPattern() BindingPattern {
-	if child := n.Child(js.BindingPattern...); child != nil {
-		return ToJsNode(child).(BindingPattern)
+func (n Parameters) RestParameter() *RestParameter {
+	if child := n.Child(js.RestParameter); child != nil {
+		return &RestParameter{child}
 	}
 	return nil
 }
@@ -1729,6 +1715,20 @@ func (n Parameters) BindingPattern() BindingPattern {
 func (n Parameters) SyntaxError() *SyntaxError {
 	if child := n.Child(js.SyntaxError); child != nil {
 		return &SyntaxError{child}
+	}
+	return nil
+}
+
+func (n Parameters) BindingIdentifier() *BindingIdentifier {
+	if child := n.Child(js.BindingIdentifier); child != nil {
+		return &BindingIdentifier{child}
+	}
+	return nil
+}
+
+func (n Parameters) BindingPattern() BindingPattern {
+	if child := n.Child(js.BindingPattern...); child != nil {
+		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
 }
@@ -1744,6 +1744,13 @@ func (n Parenthesized) Expression() Expression {
 	return nil
 }
 
+func (n Parenthesized) SyntaxError() *SyntaxError {
+	if child := n.Child(js.SyntaxError); child != nil {
+		return &SyntaxError{child}
+	}
+	return nil
+}
+
 func (n Parenthesized) BindingIdentifier() *BindingIdentifier {
 	if child := n.Child(js.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
@@ -1754,13 +1761,6 @@ func (n Parenthesized) BindingIdentifier() *BindingIdentifier {
 func (n Parenthesized) BindingPattern() BindingPattern {
 	if child := n.Child(js.BindingPattern...); child != nil {
 		return ToJsNode(child).(BindingPattern)
-	}
-	return nil
-}
-
-func (n Parenthesized) SyntaxError() *SyntaxError {
-	if child := n.Child(js.SyntaxError); child != nil {
-		return &SyntaxError{child}
 	}
 	return nil
 }
@@ -2056,16 +2056,16 @@ func (n VariableDeclaration) BindingIdentifier() *BindingIdentifier {
 	return nil
 }
 
-func (n VariableDeclaration) Initializer() *Initializer {
-	if child := n.Child(js.Initializer); child != nil {
-		return &Initializer{child}
+func (n VariableDeclaration) BindingPattern() BindingPattern {
+	if child := n.Child(js.BindingPattern...); child != nil {
+		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
 }
 
-func (n VariableDeclaration) BindingPattern() BindingPattern {
-	if child := n.Child(js.BindingPattern...); child != nil {
-		return ToJsNode(child).(BindingPattern)
+func (n VariableDeclaration) Initializer() *Initializer {
+	if child := n.Child(js.Initializer); child != nil {
+		return &Initializer{child}
 	}
 	return nil
 }

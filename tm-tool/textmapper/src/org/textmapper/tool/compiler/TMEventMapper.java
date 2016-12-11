@@ -205,7 +205,14 @@ public class TMEventMapper {
 				namedTypes.put(type, result.size());
 			}
 			if (comesAfter >= 0) {
-				field = field.withComesAfter(result.get(comesAfter));
+				RangeField prev = result.get(comesAfter);
+				if (prev.isNullable() || prev.isList()) {
+					String adj = prev.isNullable() ?  "nullable" : "a list";
+					status.report(ProcessingStatus.KIND_ERROR,
+							"`" + prev.getName() + "` cannot be " + adj + ", since it precedes " +
+									field.getName(), phrase);
+				}
+				field = field.withComesAfter(prev);
 			}
 			result.add(field);
 		}

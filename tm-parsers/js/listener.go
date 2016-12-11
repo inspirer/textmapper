@@ -15,7 +15,7 @@ const (
 	LabelIdentifier
 	This
 	Regexp
-	Parenthesized // Expression? BindingIdentifier? BindingPattern? SyntaxError?
+	Parenthesized // Expression? SyntaxError? BindingIdentifier? BindingPattern?
 	Literal
 	ArrayLiteral         // list=(Expression)*
 	SpreadElement        // Expression
@@ -51,16 +51,16 @@ const (
 	LogicalANDExpression     // left=Expression right=Expression
 	LogicalORExpression      // left=Expression right=Expression
 	ConditionalExpression    // cond=Expression then=Expression else=Expression
-	AssignmentExpression     // left=Expression right=Expression AssignmentOperator?
+	AssignmentExpression     // left=Expression AssignmentOperator? right=Expression
 	AssignmentOperator
 	CommaExpression     // left=Expression right=Expression
-	Block               // (StatementListItem)* (CaseClause)*
+	Block               // (CaseClause)* (StatementListItem)*
 	LexicalDeclaration  // (LexicalBinding)+
-	LexicalBinding      // BindingIdentifier? Initializer? BindingPattern?
+	LexicalBinding      // BindingIdentifier? BindingPattern? Initializer?
 	VariableStatement   // (VariableDeclaration)+
-	VariableDeclaration // BindingIdentifier? Initializer? BindingPattern?
+	VariableDeclaration // BindingIdentifier? BindingPattern? Initializer?
 	ObjectPattern       // (PropertyPattern)*
-	ArrayPattern        // BindingRestElement? (ElementPattern)*
+	ArrayPattern        // (ElementPattern)* BindingRestElement?
 	PropertyBinding     // PropertyName ElementPattern
 	ElementBinding      // BindingPattern Initializer?
 	SingleNameBinding   // BindingIdentifier Initializer?
@@ -71,7 +71,7 @@ const (
 	DoWhileStatement      // Statement Expression
 	WhileStatement        // Expression Statement
 	ForStatement          // var=Expression? ForCondition ForFinalExpression Statement
-	ForStatementWithVar   // (VariableDeclaration)* ForCondition ForFinalExpression Statement (LexicalBinding)*
+	ForStatementWithVar   // (LexicalBinding)* (VariableDeclaration)* ForCondition ForFinalExpression Statement
 	ForInStatement        // var=Expression object=Expression Statement
 	ForInStatementWithVar // ForBinding object=Expression Statement
 	ForOfStatement        // var=Expression iterable=Expression Statement
@@ -86,7 +86,7 @@ const (
 	SwitchStatement       // Expression Block
 	Case                  // Expression (StatementListItem)*
 	Default               // (StatementListItem)*
-	LabelledStatement     // Statement? Function?
+	LabelledStatement     // Function? Statement?
 	ThrowStatement        // Expression
 	TryStatement          // Block Catch? Finally?
 	Catch                 // BindingIdentifier? BindingPattern? Block
@@ -94,11 +94,11 @@ const (
 	DebuggerStatement
 	Function            // BindingIdentifier? Parameters Body
 	FunctionExpression  // BindingIdentifier? Parameters Body
-	Parameters          // RestParameter? (Parameter)* BindingIdentifier? Expression? BindingPattern? SyntaxError?
+	Parameters          // Expression? (Parameter)* RestParameter? SyntaxError? BindingIdentifier? BindingPattern?
 	RestParameter       // BindingRestElement
 	Parameter           // ElementPattern
 	Body                // (StatementListItem)*
-	ArrowFunction       // Parameters ConciseBody? Body?
+	ArrowFunction       // Parameters Body? ConciseBody?
 	ConciseBody         // Expression
 	Method              // PropertyName Parameters Body
 	Getter              // PropertyName Body
@@ -117,13 +117,13 @@ const (
 	ImportDeclaration // BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
 	NameSpaceImport   // BindingIdentifier
 	NamedImports      // (NamedImport)*
-	ImportSpecifier   // BindingIdentifier IdentifierReference?
+	ImportSpecifier   // IdentifierReference? BindingIdentifier
 	ModuleSpecifier
-	ExportDeclaration     // ModuleSpecifier? ExportClause? VariableStatement? Declaration?
+	ExportDeclaration     // Declaration? ExportClause? VariableStatement? ModuleSpecifier?
 	ExportDefault         // Declaration? Expression?
 	ExportClause          // (ExportElement)*
 	ExportSpecifier       // IdentifierReference BindingIdentifier?
-	JSXElement            // JSXSelfClosingElement? JSXOpeningElement? (JSXChild)* JSXClosingElement?
+	JSXElement            // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
 	JSXSelfClosingElement // JSXElementName (JSXAttribute)*
 	JSXOpeningElement     // JSXElementName (JSXAttribute)*
 	JSXClosingElement     // JSXElementName
