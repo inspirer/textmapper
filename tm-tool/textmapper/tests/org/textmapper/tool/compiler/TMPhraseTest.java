@@ -69,17 +69,6 @@ public class TMPhraseTest {
 	}
 
 	@Test
-	public void identicalTypes() throws Exception {
-		TMPhrase p1 = phrase(field("a"), field("a"));
-
-		TMPhrase result = TMPhrase.merge(
-				Collections.singletonList(p1), SOURCE_ELEMENT,
-				new TestStatus(null, "two fields with the same signature: a -vs- a\n"));
-
-		assertEquals("a", result.toString());
-	}
-
-	@Test
 	public void namedAndUnnamed() throws Exception {
 		TMPhrase p1 = phrase(field("a"));
 		TMPhrase p2 = phrase(field("a").withName("q"));

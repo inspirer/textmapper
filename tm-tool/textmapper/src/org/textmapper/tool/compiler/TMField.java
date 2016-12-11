@@ -26,7 +26,7 @@ class TMField implements RangeField {
 	private final String name;
 	private final String[] types;
 	private final String interfaceType;
-	private final String comesAfterField;
+	private final RangeField comesAfterField;
 	private final boolean hasExplicitName;
 	private final boolean isList;
 	private final boolean nullable;
@@ -38,7 +38,7 @@ class TMField implements RangeField {
 	}
 
 	private TMField(String name, String[] types, boolean hasExplicitName,
-					boolean list, boolean nullable, String interfaceType, String comesAfterField) {
+					boolean list, boolean nullable, String interfaceType, RangeField comesAfterField) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -71,6 +71,14 @@ class TMField implements RangeField {
 				newInterfaceType, comesAfterField);
 		result.text = toString();
 		return result;
+	}
+
+	TMField withComesAfter(RangeField comesAfter) {
+		TMField field = new TMField(name, types, hasExplicitName, isList, nullable,
+				interfaceType,
+				comesAfter);
+		field.text = text;
+		return field;
 	}
 
 	TMField makeNullable() {
@@ -124,7 +132,7 @@ class TMField implements RangeField {
 	}
 
 	@Override
-	public String alwaysComesAfterField() {
+	public RangeField comesAfterField() {
 		return comesAfterField;
 	}
 

@@ -37,9 +37,9 @@ public interface RangeField {
 	boolean hasExplicitName();
 
 	/**
-	 * @return the name of the previous field which shares types with this one.
+	 * @return the previous field that shares range types with this one.
 	 */
-	String alwaysComesAfterField();
+	RangeField comesAfterField();
 
 	boolean isList();
 	boolean isNullable();

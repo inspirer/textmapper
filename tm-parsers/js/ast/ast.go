@@ -254,6 +254,7 @@ func (PropertyAccess) expressionNode()           {}
 func (Regexp) expressionNode()                   {}
 func (RelationalExpression) expressionNode()     {}
 func (ShiftExpression) expressionNode()          {}
+func (SpreadElement) expressionNode()            {}
 func (SuperExpression) expressionNode()          {}
 func (TaggedTemplate) expressionNode()           {}
 func (TemplateLiteral) expressionNode()          {}
@@ -469,11 +470,11 @@ type Arguments struct {
 	Node
 }
 
-func (n Arguments) List() []JsNode {
-	nodes := n.Children(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield)
-	var result []JsNode = make([]JsNode, 0, len(nodes))
+func (n Arguments) List() []Expression {
+	nodes := n.Children(js.Expression...)
+	var result []Expression = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToJsNode(node).(JsNode))
+		result = append(result, ToJsNode(node).(Expression))
 	}
 	return result
 }
@@ -482,11 +483,11 @@ type ArrayLiteral struct {
 	Node
 }
 
-func (n ArrayLiteral) List() []JsNode {
-	nodes := n.Children(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield)
-	var result []JsNode = make([]JsNode, 0, len(nodes))
+func (n ArrayLiteral) List() []Expression {
+	nodes := n.Children(js.Expression...)
+	var result []Expression = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToJsNode(node).(JsNode))
+		result = append(result, ToJsNode(node).(Expression))
 	}
 	return result
 }

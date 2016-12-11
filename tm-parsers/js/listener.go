@@ -17,7 +17,7 @@ const (
 	Regexp
 	Parenthesized // Expression? BindingIdentifier? BindingPattern? SyntaxError?
 	Literal
-	ArrayLiteral         // list=(Expression | SpreadElement)*
+	ArrayLiteral         // list=(Expression)*
 	SpreadElement        // Expression
 	ObjectLiteral        // (PropertyDefinition)*
 	ShorthandProperty    // IdentifierReference
@@ -33,7 +33,7 @@ const (
 	SuperExpression
 	NewTarget
 	CallExpression           // expr=Expression Arguments
-	Arguments                // list=(Expression | SpreadElement)*
+	Arguments                // list=(Expression)*
 	PostInc                  // Expression
 	PostDec                  // Expression
 	PreInc                   // Expression
@@ -217,6 +217,7 @@ var Expression = []NodeType{
 	Regexp,
 	RelationalExpression,
 	ShiftExpression,
+	SpreadElement,
 	SuperExpression,
 	TaggedTemplate,
 	TemplateLiteral,

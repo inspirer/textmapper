@@ -370,7 +370,7 @@ Elision ::=
   | Elision ','
 ;
 
-SpreadElement<Yield> ::=
+SpreadElement<Yield> returns Expression ::=
     '...' AssignmentExpression<+In>
 ;
 

@@ -227,6 +227,16 @@ class TMPhrase implements DerivedSourceElement {
 				}
 			}
 		}
+		for (TMField field : phrase.getFields()) {
+			if (field.getInterfaceType() != null) continue;
+
+			if (field.getTypes().length > 8) {
+				status.report(ProcessingStatus.KIND_WARN,
+						"two many range types behind `" + field.getName() + "`, consider " +
+								"introducing an interface",
+						phrase);
+			}
+		}
 	}
 
 	public List<TMField> getFields() {

@@ -184,8 +184,32 @@ public class TMEventMapper {
 			TMPhrase phrase = TMPhrase.merge(list, e.getValue().get(0), status);
 			phrase = phrase.resolve(categories);
 			TMPhrase.verify(phrase, status);
-			TMDataUtil.putRangeFields(grammar, type, phrase.getFields());
+			TMDataUtil.putRangeFields(grammar, type, extractFields(phrase));
 		}
+	}
+
+	private List<RangeField> extractFields(TMPhrase phrase) {
+		List<RangeField> result = new ArrayList<>();
+		Map<String, Integer> namedTypes = new HashMap<>();
+		for (TMField field : phrase.getFields()) {
+			if (!field.hasExplicitName()) {
+				result.add(field);
+				continue;
+			}
+			int comesAfter = -1;
+			for (String type : field.getTypes()) {
+				Integer prev = namedTypes.get(type);
+				if (prev != null) {
+					comesAfter = Math.max(comesAfter, prev);
+				}
+				namedTypes.put(type, result.size());
+			}
+			if (comesAfter >= 0) {
+				field = field.withComesAfter(result.get(comesAfter));
+			}
+			result.add(field);
+		}
+		return result;
 	}
 
 	private void collectCategoryTypes() {
@@ -199,6 +223,7 @@ public class TMEventMapper {
 			private Category(String name) {
 				this.name = name;
 			}
+
 			final String name;
 			int node;
 			int[] deps;
