@@ -356,7 +356,7 @@ ArrayLiteral<Yield> ::=
   | '[' list=ElementList ',' Elisionopt ']'
 ;
 
-@noast @listof{"Element"}
+@noast
 ElementList<Yield> ::=
     Elisionopt AssignmentExpression<+In>
   | Elisionopt SpreadElement
@@ -486,7 +486,7 @@ Arguments<Yield> ::=
     '(' list=ArgumentList? ')'
 ;
 
-@noast @listof{"Argument"}
+@noast
 ArgumentList<Yield> ::=
     AssignmentExpression<+In>
   | SpreadElement
