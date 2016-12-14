@@ -6,9 +6,9 @@
 package testing
 
 import (
+	"bytes"
 	"strings"
 	"testing"
-	"bytes"
 )
 
 const separator rune = '“'

@@ -1,0 +1,65 @@
+${template main-}
+${if self->go_parser.eventBased() && opts.eventFields-}
+${file self->filtersFilename()-}
+${call unit-}
+${end-}
+${end-}
+${end}
+
+${template unit-}
+${call go.header-}
+package ${call package}
+
+${call imports-}
+${call nodeFilterTypeImpl-}
+
+var (
+${foreach rangeType in syntax.rules.collectUnique(r|r->go_parser.rangeTypeName()).select(it|it != '').sort(it|it)-}
+	${rangeType->go_parser.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) { return t == ${rangeType->nodeTypeValueRef()} }
+${end-}
+${foreach cat in syntax.categories.sort(it|it)-}
+	${cat->go_parser.asRangeTypeName()} = OneOf(${cat->nodeTypeValueRef()}...)
+${end-}
+)
+
+${call filterFunc-}
+${end}
+
+${template imports-}
+import (
+	"${self->go.package()}"
+)
+
+${end}
+
+${template nodeFilterTypeImpl-}
+type ${self->nodeFilterTypeRef()} func (nt ${self->nodeTypeRef()}) bool
+
+${end}
+
+${template filterFunc-}
+func OneOf(types ...${self->nodeTypeRef()}) ${self->nodeFilterTypeRef()} {
+	if len(types) == 0 {
+		return func(${self->nodeTypeRef()}) bool { return false }
+	}
+	const bits = 32
+	size := (int(types[len(types)-1]) + bits - 1) / bits
+	bitarr := make([]int32, size)
+	for _, t := range types {
+		bitarr[uint(t)/bits] |= 1 << (uint(t) % bits)
+	}
+	return func(t ${self->nodeTypeRef()}) bool {
+		return bitarr[uint(t)/bits]&(1<<(uint(t)%bits)) != 0
+	}
+}
+${end}
+
+${query filtersFilename() = 'filters/filters.go'}
+${query package() = 'filters'}
+${query importPackage() = self->go.package() + '/' + self->package()}
+
+${query nodeTypeRef() = self->go_types.nodeTypeRef()}
+${query nodeTypeValueRef() = self->go_types.nodeTypeValueRef()}
+
+${query nodeFilterType() = 'NodeFilter'}
+${query nodeFilterTypeRef() = self->nodeFilterType()}

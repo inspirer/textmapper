@@ -22,6 +22,7 @@ ${end}
 ${template imports-}
 import (
 	"${self->go.package()}"
+	"${self->go_filters.importPackage()}"
 )
 
 ${end}
@@ -53,9 +54,8 @@ ${end}
 ${template wrappedTypeTempl-}
 type Node interface {
 	Type() ${self->nodeTypeRef()}
-	Child(t ...${self->nodeTypeRef()}) Node
-	Sibling(t ...${self->nodeTypeRef()}) Node
-	Children(t ...${self->nodeTypeRef()}) []Node
+	Child(filter ...${self->nodeFilterTypeRef()}) Node
+	Children(filter ...${self->nodeFilterTypeRef()}) []Node
 }
 
 ${end}
@@ -125,9 +125,15 @@ ${cached query getterInnerType(field) =
 
 ${cached query isOneType(field) = field.types.length == 1 }
 
-${query fieldActualTypes(field) =
-  field.interfaceType ? field.interfaceType->nodeTypeValueRef() + '...' :
-  field.types.collect(it|it->nodeTypeValueRef())->util.join(', ')}
+${query fieldFilterInternal(field) =
+  field.interfaceType ? field.interfaceType->nodeTypeFilterRef() :
+  field.types.length == 1 ? field.types.first()->nodeTypeFilterRef() :
+  self->go_filters.package() + '.OneOf(' +
+          field.types.collect(it|it->nodeTypeValueRef())->util.join(', ') + ')'}
+
+${query fieldFilter(field) =
+  after = field.comesAfterField(),
+  (after ? self->fieldFilter(after) + ', ' : '') + self->fieldFilterInternal(field) }
 
 ${template convertNode(field, node)-}
 ${if self->isOneType(field)-}
@@ -137,16 +143,16 @@ ${end}
 
 ${template getterImpl(field)-}
 ${if field.isList()-}
-	nodes := n.Children(${self->fieldActualTypes(field)})
+	nodes := n.Children(${self->fieldFilter(field)})
 	var result []${self->getterInnerType(field)} = make([]${self->getterInnerType(field)}, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ${self->convertNode(field, 'node')})
 	}
 	return result
 ${else if !field.isNullable()-}
-	return ${self->convertNode(field, 'n.Child(' + self->fieldActualTypes(field) + ')')}
+	return ${self->convertNode(field, 'n.Child(' + self->fieldFilter(field) + ')')}
 ${else-}
-	if child := n.Child(${self->fieldActualTypes(field)}); child != nil {
+	if child := n.Child(${self->fieldFilter(field)}); child != nil {
 		return ${self->convertNode(field, 'child')}
 	}
 	return nil
@@ -157,6 +163,7 @@ ${end}
 ${query astFilename() = 'ast/ast.go'}
 ${query factoryFilename() = 'ast/factory.go'}
 ${query package() = 'ast'}
+${query importPackage() = self->go.package() + '/' + self->package()}
 
 ${query wrappedType() = 'Node'}
 ${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
@@ -167,3 +174,6 @@ ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved(
 
 ${query nodeTypeRef() = self->go.shortPackage() + '.' + self->go_parser.nodeTypeRef()}
 ${query nodeTypeValueRef() = context->go.shortPackage() + '.' + self->go_parser.asRangeTypeName()}
+${query nodeTypeFilterRef() = context->go_filters.package() + '.' + self->go_parser.asRangeTypeName()}
+
+${query nodeFilterTypeRef() = self->go_filters.package() + '.' + self->go_filters.nodeFilterType()}

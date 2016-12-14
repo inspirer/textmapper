@@ -1,11 +1,12 @@
 ${template main-}
 ${call go_lexer.main-}
+${call go_token.main-}
 ${if parser-}
 ${call go_parser.main-}
-${end-}
-${call go_token.main-}
 ${call go_ast.main-}
 ${call go_types.main-}
+${call go_filters.main-}
+${end-}
 ${end}
 
 ${query escapeGoReserved() =
