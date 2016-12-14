@@ -15,7 +15,7 @@ ${call nodeFilterTypeImpl-}
 
 var (
 ${foreach rangeType in syntax.rules.collectUnique(r|r->go_parser.rangeTypeName()).select(it|it != '').sort(it|it)-}
-	${rangeType->go_parser.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) { return t == ${rangeType->nodeTypeValueRef()} }
+	${rangeType->go_parser.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) bool { return t == ${rangeType->nodeTypeValueRef()} }
 ${end-}
 ${foreach cat in syntax.categories.sort(it|it)-}
 	${cat->go_parser.asRangeTypeName()} = OneOf(${cat->nodeTypeValueRef()}...)
