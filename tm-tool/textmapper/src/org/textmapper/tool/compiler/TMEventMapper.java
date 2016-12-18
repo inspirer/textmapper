@@ -467,11 +467,13 @@ public class TMEventMapper {
 				return computePhrase(((RhsOptional) part).getPart()).makeNullable(part);
 			case Choice:
 			case Sequence: {
-				RhsPart[] parts = ((RhsSequence) part).getParts();
-				if (parts.length == 1) {
-					return computePhrase(parts[0]);
+				List<RhsPart> children = RhsUtil.getChildren(part);
+				if (children == null) return TMPhrase.empty(part);
+
+				if (children.size() == 1) {
+					return computePhrase(children.get(0));
 				}
-				List<TMPhrase> list = Arrays.stream(parts)
+				List<TMPhrase> list = children.stream()
 						.map(this::computePhrase)
 						.collect(Collectors.toList());
 

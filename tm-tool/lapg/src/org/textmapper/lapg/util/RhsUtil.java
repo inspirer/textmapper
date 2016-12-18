@@ -112,7 +112,7 @@ public class RhsUtil {
 		return true;
 	}
 
-	public static Iterable<RhsPart> getChildren(RhsPart part) {
+	public static List<RhsPart> getChildren(RhsPart part) {
 		switch (part.getKind()) {
 			case Sequence:
 				return Arrays.asList(((RhsSequence) part).getParts());
