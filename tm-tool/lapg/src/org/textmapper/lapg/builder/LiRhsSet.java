@@ -131,7 +131,7 @@ public class LiRhsSet extends LiRhsPart implements RhsSet, TemplatedSymbolRef {
 				String text = toString(operation);
 				sb.append(text);
 				if (text.length() > 0) sb.append(" ");
-				sb.append(symbol.getName());
+				sb.append(symbol.getNameText());
 				LiUtil.appendArguments(sb, args);
 				break;
 			case Complement:

@@ -41,16 +41,15 @@ import java.util.stream.Collectors;
  */
 public class TMResolver {
 
-	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
-	public static final String INITIAL_STATE = "initial"; //$NON-NLS-1$
+	public static final String RESOLVER_SOURCE = "problem.resolver";
+	public static final Name INITIAL_STATE = LapgCore.name("initial");
 
 	private final TMTree<TmaInput> tree;
 	private final GrammarBuilder builder;
 	private final AstBuilder rawTypesBuilder;
 
-	private final Map<String, LexerState> statesMap = new HashMap<>();
-	private final Map<String, Symbol> symbolsMap = new HashMap<>();
-	private final Map<String, TemplateParameter> parametersMap = new HashMap<>();
+	private final Namespace namespace = new Namespace();
+	private final Namespace lexerStates = new Namespace();
 	private final Map<String, RegexPart> namedPatternsMap = new HashMap<>();
 
 	public TMResolver(TMTree<TmaInput> tree, GrammarBuilder builder) {
@@ -68,11 +67,11 @@ public class TMResolver {
 	}
 
 	public LexerState getState(String name) {
-		return statesMap.get(name);
+		return lexerStates.resolve(name, null, LexerState.class);
 	}
 
 	public Symbol getSymbol(String name) {
-		return symbolsMap.get(name);
+		return namespace.resolve(name, null, Symbol.class);
 	}
 
 	public RegexContext createRegexContext() {
@@ -80,7 +79,7 @@ public class TMResolver {
 	}
 
 	public void collectSymbols() {
-		symbolsMap.put(Symbol.EOI, builder.getEoi());
+		namespace.insert(builder.getEoi());
 
 		collectLexerStates();
 		collectLexerSymbols();
@@ -96,7 +95,7 @@ public class TMResolver {
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaStateSelector) {
 				for (TmaLexerState state : ((TmaStateSelector) clause).getStates()) {
-					if (state.getName().getID().equals(INITIAL_STATE)) {
+					if (state.getName().getID().equals(INITIAL_STATE.text())) {
 						initialOrigin = state.getName();
 						break;
 					}
@@ -107,14 +106,16 @@ public class TMResolver {
 			}
 		}
 
-		statesMap.put(INITIAL_STATE, builder.addState(INITIAL_STATE, initialOrigin));
+		lexerStates.insert(builder.addState(INITIAL_STATE, initialOrigin));
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaStateSelector) {
 				TmaStateSelector selector = (TmaStateSelector) clause;
 				for (TmaLexerState state : selector.getStates()) {
-					String name = state.getName().getID();
-					if (!statesMap.containsKey(name)) {
-						statesMap.put(name, builder.addState(name, state.getName()));
+					Name name = name(state.getName().getID(), state.getName());
+					if (name == null) continue;
+
+					if (lexerStates.resolve(name.text(), null, LexerState.class) == null) {
+						lexerStates.insert(builder.addState(name, state.getName()));
 					}
 				}
 			}
@@ -129,19 +130,20 @@ public class TMResolver {
 
 			} else if (clause instanceof TmaNamedPattern) {
 				TmaNamedPattern astpattern = (TmaNamedPattern) clause;
-				String name = astpattern.getName();
+				Name name = name(astpattern.getName(), astpattern);
+				if (name == null) continue;
 				RegexPart regex;
 				try {
-					regex = LapgCore.parse(name, astpattern.getPattern().getRegexp());
+					regex = LapgCore.parse(name.text(), astpattern.getPattern().getRegexp());
 				} catch (RegexParseException e) {
 					error(astpattern.getPattern(), e.getMessage());
 					continue;
 				}
-				if (namedPatternsMap.get(name) != null) {
+				if (namedPatternsMap.get(name.text()) != null) {
 					error(astpattern, "redeclaration of named pattern `" + name + "', ignored");
 				} else {
 					builder.addPattern(name, regex, astpattern);
-					namedPatternsMap.put(name, regex);
+					namedPatternsMap.put(name.text(), regex);
 				}
 			}
 		}
@@ -172,7 +174,8 @@ public class TMResolver {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaTemplateParam) {
 				TmaTemplateParam param = (TmaTemplateParam) clause;
-				String name = param.getName().getID();
+				Name name = name(param.getName().getID(), param.getName());
+				if (name == null) continue;
 
 				Type type = (param.getParamType() == TmaParamType.LFLAG) ? Type.Flag : Type.Symbol;
 
@@ -190,9 +193,7 @@ public class TMResolver {
 							break;
 					}
 				}
-				TemplateParameter value = createParameter(param.getName().getID(), type,
-						mod, param.getParamValue(), param);
-				if (value != null) parametersMap.put(name, value);
+				createParameter(name, type, mod, param.getParamValue(), param);
 			}
 		}
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
@@ -210,10 +211,12 @@ public class TMResolver {
 						TemplateParameter p = resolveParam((TmaParamRef) param, null /* global */);
 						if (p != null) parameters.add(p);
 					} else if (param instanceof TmaInlineParameter) {
-						String name = s.getName() + "$"
-								+ ((TmaInlineParameter) param).getName().getID();
+						TmaInlineParameter tmaParam = (TmaInlineParameter) param;
+						Name subname = name(tmaParam.getName().getID(), tmaParam.getName());
+						if (subname == null) continue;
+						Name name = s.getName().subName(subname);
 						Type type;
-						switch (((TmaInlineParameter) param).getParamType()) {
+						switch (tmaParam.getParamType()) {
 							case "flag":
 								type = Type.Flag;
 								break;
@@ -226,10 +229,9 @@ public class TMResolver {
 						}
 
 						TemplateParameter p = createParameter(name, type, Modifier.Explicit,
-								((TmaInlineParameter) param).getParamValue(), param);
+								tmaParam.getParamValue(), param);
 						if (p == null) continue;
 
-						parametersMap.put(name, p);
 						parameters.add(p);
 					} else {
 						throw new IllegalStateException();
@@ -272,29 +274,35 @@ public class TMResolver {
 		return null;
 	}
 
-	private TemplateParameter createParameter(String name, TemplateParameter.Type type,
+	private TemplateParameter createParameter(Name name, TemplateParameter.Type type,
 											  TemplateParameter.Modifier m,
 											  ITmaParamValue paramValue,
 											  TextSourceElement origin) {
-		Symbol existingSym = symbolsMap.get(name);
-		if (existingSym != null) {
-			String kind = existingSym.isTerm() ? "terminal" : "non-terminal";
-			error(origin, "redeclaration of " + kind + ": " + name);
+		NamedElement existing = namespace.canInsert(name);
+		if (existing != null) {
+			nameConflict(name.text(), origin, existing);
 			return null;
 		}
-		if (parametersMap.containsKey(name)) {
-			error(origin, "redeclaration of template parameter: " + name);
-			return null;
-		}
-		return builder.addParameter(type, name, paramValue == null ? null :
-				getParamValue(type, paramValue), m, origin);
+		Object defaultValue = paramValue == null ? null :
+				getParamValue(type, paramValue);
+		TemplateParameter p = builder.addParameter(type, name, defaultValue, m, origin);
+		namespace.insert(p);
+		return p;
 	}
 
 
 	private Symbol create(TmaIdentifier id, AstType type, boolean isTerm) {
-		String name = id.getID();
-		if (symbolsMap.containsKey(name)) {
-			Symbol sym = symbolsMap.get(name);
+		Name name = name(id.getID(), id);
+		if (name == null) return null;
+
+		NamedElement existing = namespace.canInsert(name);
+		if (existing != null && !(existing instanceof Symbol)) {
+			nameConflict(id.getID(), id, existing);
+			existing = null;
+		}
+
+		Symbol sym = (Symbol) existing;
+		if (sym != null) {
 			if (sym.isTerm() != isTerm) {
 				String symKind = sym.isTerm() ? "terminal" : "non-terminal";
 				error(id, "redeclaration of " + symKind + ": " + name);
@@ -303,32 +311,33 @@ public class TMResolver {
 				String existingType = sym.getType() == null ? "<empty>" : sym.getType().toString();
 				error(id, "redeclaration of type: " + newType + " instead of " + existingType);
 			}
-			return sym;
 		} else {
-			Symbol sym = isTerm
+			sym = isTerm
 					? builder.addTerminal(name, type, id)
 					: builder.addNonterminal(name, id);
 			if (type != null && !isTerm) {
 				builder.map((Nonterminal) sym, type);
 			}
-			symbolsMap.put(name, sym);
-			return sym;
+			namespace.insert(sym);
 		}
+		return sym;
 	}
 
 	private Map<String, Integer> lastIndex = new HashMap<>();
 
 	Nonterminal createNestedNonTerm(Nonterminal outer, ITmaNode source) {
-		final String base_ = outer.getName() + "$";
+		final String base_ = outer.getNameText() + "$";
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
-		while (symbolsMap.containsKey(base_ + index)) {
+
+		Name name = outer.getName().subName(LapgCore.name("n"+index));
+		while (namespace.canInsert(name) != null) {
 			index++;
+			name = outer.getName().subName(LapgCore.name("n"+index));
 		}
-		String name = base_ + index;
+		lastIndex.put(base_, index + 1);
 
 		Nonterminal sym = builder.addNonterminal(name, source);
-		symbolsMap.put(name, sym);
-		lastIndex.put(base_, index + 1);
+		namespace.insert(sym);
 		return sym;
 	}
 
@@ -385,12 +394,12 @@ public class TMResolver {
 				} else {
 					TemplateParameter source = resolveParam(arg.getName(), context);
 					if (source == null) {
-						error(arg, "cannot resolve " + arg.getName() + " in " + context.getName());
+						error(arg, "cannot resolve " + arg.getName() + " in " + context.getNameText());
 						continue;
 					} else if (source != param) {
 						error(arg, arg.getName() + " has different meanings in "
-								+ context.getName() + " and "
-								+ (nonterm != null ? nonterm.getName() : "globally"));
+								+ context.getNameText() + " and "
+								+ (nonterm != null ? nonterm.getNameText() : "globally"));
 						continue;
 					}
 					result.add(builder.argument(param, source, null, arg));
@@ -426,7 +435,7 @@ public class TMResolver {
 			// Report unfulfilled parameters.
 			String unfulfilled = requiredParameters.stream()
 					.filter(p -> !provided.contains(p))
-					.map(TemplateParameter::getName)
+					.map(TemplateParameter::getNameText)
 					.collect(Collectors.joining(", "));
 
 			if (!unfulfilled.isEmpty()) {
@@ -443,13 +452,9 @@ public class TMResolver {
 	}
 
 	TemplateParameter resolveParam(TmaParamRef ref, Nonterminal context) {
-		TemplateParameter param;
-		if (context != null) {
-			param = parametersMap.get(context.getName() + "$" + ref.getRef().getID());
-			if (param != null) return param;
-		}
-
-		param = parametersMap.get(ref.getRef().getID());
+		TemplateParameter param =
+				namespace.resolve(ref.getRef().getID(),
+						context == null ? null : context.getName(), TemplateParameter.class);
 		if (param != null) return param;
 
 		error(ref, ref.getRef().getID() + " cannot be resolved");
@@ -465,24 +470,22 @@ public class TMResolver {
 	}
 
 	TemplateParameter tryResolveParam(TmaSymref id, Nonterminal context) {
-		if (context != null) {
-			TemplateParameter param = parametersMap.get(context.getName() + "$" + id.getName());
-			if (param != null) return param;
-		}
-		return parametersMap.get(id.getName());
+		return namespace.resolve(id.getName(),
+				context == null ? null : context.getName(), TemplateParameter.class);
 	}
 
 	Symbol resolve(TmaSymref id) {
 		String name = id.getName();
-		Symbol sym = symbolsMap.get(name);
+		Symbol sym = namespace.resolve(name, null, Symbol.class);
 		if (sym == null) {
 			// TODO make "opt" configurable in options
 			if (name.length() > 3 && name.endsWith("opt")) {
-				sym = symbolsMap.get(name.substring(0, name.length() - 3));
+				sym = namespace.resolve(name.substring(0, name.length() - 3), null, Symbol.class);
 				if (sym != null) {
 					TmaIdentifier tmaId = new TmaIdentifier(id.getName(), id.getSource(),
 							id.getLine(), id.getOffset(), id.getEndoffset());
 					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false);
+					if (symopt == null) return null;
 					builder.addRule(symopt,
 							builder.asSequence(
 									builder.optional(
@@ -501,6 +504,19 @@ public class TMResolver {
 		if (n == null || message == null) return;
 		tree.getErrors().add(new LapgResolverProblem(
 				TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndoffset(), message));
+	}
+
+	void nameConflict(String newName, TextSourceElement anchor, NamedElement existing) {
+		error(anchor, newName + " conflicts with " + existing.toString());
+	}
+
+	Name name(String name, TextSourceElement anchor) {
+		try {
+			return LapgCore.name(name);
+		} catch (NameParseException ex) {
+			error(anchor, ex.getMessage());
+			return null;
+		}
 	}
 
 	private static class LapgResolverProblem extends TMProblem {

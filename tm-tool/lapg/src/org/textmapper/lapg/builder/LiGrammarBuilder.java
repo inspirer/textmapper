@@ -54,7 +54,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Terminal addTerminal(String name, AstType type, SourceElement origin) {
+	public Terminal addTerminal(Name name, AstType type, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -62,20 +62,20 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Nonterminal addNonterminal(String name, SourceElement origin) {
+	public Nonterminal addNonterminal(Name name, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
 		if (origin instanceof LiNonterminal) {
 			throw new IllegalArgumentException("origin");
 		}
-		return addSymbol(new LiNonterminal(name, false /*anonymous*/, origin), null /*anchor*/);
+		return addSymbol(new LiNonterminal(name, null /*nameHint*/, origin), null /*anchor*/);
 	}
 
 	@Override
 	public Nonterminal addAnonymous(String nameHint, Symbol anchor, SourceElement origin) {
 		return addSymbol(
-				new LiNonterminal(nameHint, true /* anonymous */, origin), anchor);
+				new LiNonterminal(null /* name */, nameHint, origin), anchor);
 	}
 
 	@Override
@@ -105,11 +105,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	private <T extends LiSymbol> T addSymbol(T sym, Symbol anchor) {
-		String name = sym.getName();
+		Name name = sym.getName();
 		if (!symScope.insert(sym, anchor)) {
 			throw new IllegalStateException("name `" + name + "' is already used");
 		}
-		paramScope.reserve(name);
+		if (name != null) {
+			paramScope.reserve(name.text());
+		}
 		return sym;
 	}
 
@@ -119,7 +121,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public TemplateParameter addParameter(Type type, String name, Object defaultValue,
+	public TemplateParameter addParameter(Type type, Name name, Object defaultValue,
 										  TemplateParameter.Modifier m, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
@@ -136,7 +138,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (!paramScope.insert(param, null /* anchor */)) {
 			throw new IllegalStateException("name `" + name + "' is already used");
 		}
-		symScope.reserve(name);
+		symScope.reserve(name.text());
 		return param;
 	}
 
@@ -146,7 +148,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public NamedPattern addPattern(String name, RegexPart regexp, SourceElement origin) {
+	public NamedPattern addPattern(Name name, RegexPart regexp, SourceElement origin) {
 		if (name == null || regexp == null) {
 			throw new NullPointerException();
 		}
@@ -158,7 +160,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public LexerState addState(String name, SourceElement origin) {
+	public LexerState addState(Name name, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -185,7 +187,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		for (LexerState state : states) {
 			if (!statesScope.contains(state)) {
 				throw new IllegalArgumentException(
-						"unknown state passed `" + state.getName() + "'");
+						"unknown state passed `" + state.getNameText() + "'");
 			}
 			liStates.add(state);
 		}
@@ -200,7 +202,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public NamedSet addSet(String name, RhsSet set, SourceElement origin) {
+	public NamedSet addSet(Name name, RhsSet set, SourceElement origin) {
 		if (name == null || set == null) {
 			throw new NullPointerException();
 		}
@@ -647,7 +649,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		NamedSet[] setsArr = setScope.toArray(NamedSet[]::new);
 		computeSets(expansionContext, setsArr);
 
-		LiSymbol error = (LiSymbol) symScope.resolve(Symbol.ERROR);
+		LiSymbol error = (LiSymbol) symScope.resolve(Symbol.ERROR.text());
 		symScope.assignNames();
 		symScope.sort();
 

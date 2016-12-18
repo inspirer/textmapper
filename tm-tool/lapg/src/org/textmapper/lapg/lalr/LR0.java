@@ -493,7 +493,7 @@ class LR0 extends ContextFree {
 
 		for (State t = first; t != null; t = t.next) {
 			if (t != first) {
-				status.debug("\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
+				status.debug("\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getNameText() + ")\n");
 			}
 
 			build_closure(t, t.elems);
@@ -513,7 +513,7 @@ class LR0 extends ContextFree {
 			for (int i = t.nshifts - 1; i >= 0; i--) {
 				int newstate = t.shifts[i];
 				int symnum = state[newstate].symbol;
-				status.debug(sym[symnum].getName() + " -> " + newstate);
+				status.debug(sym[symnum].getNameText() + " -> " + newstate);
 				status.debug(i > 0 ? ", " : "\n");
 			}
 		}

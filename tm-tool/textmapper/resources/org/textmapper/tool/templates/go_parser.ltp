@@ -292,7 +292,7 @@ ${if self->ignoredReportTokens()-}
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
 		goto restart
 ${end-}
-${if !self->ignoredReportTokens().exists(t|t.name == 'invalid_token')-}
+${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 	case ${self->go_token.invalidTokenName()}:
 		goto restart
 ${end-}
@@ -312,7 +312,7 @@ func (p *Parser) reportIgnoredTokens() {
 		switch Token(c.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}
 		case ${tok->go_token.tokenName()}:
-			t = ${tok.name->go_listener.asRangeTypeName()}
+			t = ${tok.name.text()->go_listener.asRangeTypeName()}
 ${end-}
 		default:
 			continue
@@ -333,7 +333,7 @@ ${if self->ignoredReportTokens()-}
 	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenName())->util.join(', ')}:
 		goto restart
 ${end-}
-${if !self->ignoredReportTokens().exists(t|t.name == 'invalid_token')-}
+${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 	case ${self->go_token.invalidTokenName()}:
 		goto restart
 ${end-}

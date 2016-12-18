@@ -24,8 +24,6 @@ import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
-import org.textmapper.templates.api.SourceElement;
-import org.textmapper.templates.api.TemplatesStatus;
 import org.textmapper.templates.storage.ClassResourceLoader;
 import org.textmapper.templates.storage.ResourceRegistry;
 import org.textmapper.templates.types.TypesRegistry;
@@ -97,8 +95,8 @@ public class AnnotationsTest extends LapgTestCase {
 		ArrayList<Rule> result = new ArrayList<>();
 		for (Rule r : rules) {
 			assertNotNull(r.getLeft());
-			assertNotNull(r.getLeft().getName());
-			if (r.getLeft().getName().equals(name)) {
+			assertNotNull(r.getLeft().getNameText());
+			if (r.getLeft().getNameText().equals(name)) {
 				result.add(r);
 			}
 		}

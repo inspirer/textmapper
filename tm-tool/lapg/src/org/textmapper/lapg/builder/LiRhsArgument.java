@@ -79,17 +79,17 @@ public class LiRhsArgument implements RhsArgument, DerivedSourceElement {
 
 	public void toString(StringBuilder sb) {
 		if (source != null) {
-			sb.append(parameter.getName());
+			sb.append(parameter.getNameText());
 			if (source != parameter) {
-				sb.append(":").append(source.getName());
+				sb.append(":").append(source.getNameText());
 			}
 		} else if (value instanceof Boolean) {
 			sb.append((boolean) value ? "+" : "~");
-			sb.append(parameter.getName());
+			sb.append(parameter.getNameText());
 		} else if (value instanceof Symbol || value == null) {
-			sb.append(parameter.getName());
+			sb.append(parameter.getNameText());
 			sb.append(":");
-			sb.append(value == null ? "null" : ((Symbol) value).getName());
+			sb.append(value == null ? "null" : ((Symbol) value).getNameText());
 		} else {
 			throw new IllegalStateException();
 		}

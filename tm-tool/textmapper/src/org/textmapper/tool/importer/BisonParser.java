@@ -319,7 +319,7 @@ public class BisonParser {
 		"tag_op",
 		"symbol_prec",
 		"symbol_or_tag",
-		"tag",
+		"tag_nt",
 		"symbol_def",
 		"grammar_part",
 		"nonterm_rules",
@@ -353,7 +353,7 @@ public class BisonParser {
 		int tag_op = 83;
 		int symbol_prec = 84;
 		int symbol_or_tag = 85;
-		int tag = 86;
+		int tag_nt = 86;
 		int symbol_def = 87;
 		int grammar_part = 88;
 		int nonterm_rules = 89;

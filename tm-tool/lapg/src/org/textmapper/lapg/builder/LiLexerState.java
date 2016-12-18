@@ -17,18 +17,19 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.LexerState;
+import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.SourceElement;
 
 /**
  * Gryaznov Evgeny, 9/10/12
  */
-public class LiLexerState implements LexerState, DerivedSourceElement {
+public class LiLexerState extends LiNamedElement implements LexerState, DerivedSourceElement {
 
 	private final int index;
-	private final String name;
+	private final Name name;
 	private final SourceElement origin;
 
-	public LiLexerState(int index, String name, SourceElement origin) {
+	public LiLexerState(int index, Name name, SourceElement origin) {
 		this.index = index;
 		this.name = name;
 		this.origin = origin;
@@ -40,12 +41,17 @@ public class LiLexerState implements LexerState, DerivedSourceElement {
 	}
 
 	@Override
-	public String getName() {
+	public Name getName() {
 		return name;
 	}
 
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	@Override
+	public String toString() {
+		return getNameText() + " (state)";
 	}
 }

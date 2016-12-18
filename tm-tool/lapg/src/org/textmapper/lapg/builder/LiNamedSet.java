@@ -16,24 +16,25 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.NamedSet;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsSet;
 
-public class LiNamedSet extends LiUserDataHolder implements NamedSet, DerivedSourceElement {
-	private final String name;
+public class LiNamedSet extends LiNamedElement implements NamedSet, DerivedSourceElement {
+	private final Name name;
 	private final RhsSet set;
 	private int[] resolvedElements;
 	private final SourceElement origin;
 
-	public LiNamedSet(String name, RhsSet set, SourceElement origin) {
+	public LiNamedSet(Name name, RhsSet set, SourceElement origin) {
 		this.name = name;
 		this.set = set;
 		this.origin = origin;
 	}
 
 	@Override
-	public String getName() {
+	public Name getName() {
 		return name;
 	}
 
@@ -54,5 +55,10 @@ public class LiNamedSet extends LiUserDataHolder implements NamedSet, DerivedSou
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	@Override
+	public String toString() {
+		return getNameText() + " (set)";
 	}
 }

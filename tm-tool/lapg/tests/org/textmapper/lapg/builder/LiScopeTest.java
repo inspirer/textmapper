@@ -16,6 +16,8 @@
 package org.textmapper.lapg.builder;
 
 import org.junit.Test;
+import org.textmapper.lapg.LapgCore;
+import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.NamedElement;
 
 import java.util.List;
@@ -56,7 +58,7 @@ public class LiScopeTest {
 		assertFalse(scope.insert(new NameOnly("foo"), null));
 		NameOnly[] result = scope.toArray(NameOnly[]::new);
 		assertEquals(1, result.length);
-		assertEquals("abc", result[0].getName());
+		assertEquals("abc", result[0].getNameText());
 	}
 
 	@Test
@@ -97,22 +99,22 @@ public class LiScopeTest {
 
 		addAfter(scope, "zxyopt", zxy);
 
-		addAfter(scope, "foo_B_type", foo);
-		addAfter(scope, "foo_A_type_1", foo);
+		addAfter(scope, "foo_b_type", foo);
+		addAfter(scope, "foo_a_type_1", foo);
 		addAfter(scope, "foo_a_type", foo);
-		addAfter(scope, "foo_A_type_2", foo);
+		addAfter(scope, "foo_a_type_2", foo);
 
 		scope.sort();
 
 		List<String> result = scope.elements().stream()
-				.map(NameOnly::getName)
+				.map(NameOnly::getNameText)
 				.collect(Collectors.toList());
 
 		assertArrayEquals(new String[]{
 				"qef", "qef000", "qef200", "qef800", "qef900",
 				"aaa_bc1", "abc", "zzzzzzz",
 				"zxy", "zxyopt",
-				"foo", "foo_a_type", "foo_A_type_1", "foo_A_type_2", "foo_B_type",
+				"foo", "foo_a_type", "foo_a_type_1", "foo_a_type_2", "foo_b_type",
 				"bar", "last"
 		}, result.toArray(new String[result.size()]));
 	}
@@ -130,20 +132,25 @@ public class LiScopeTest {
 	}
 
 	private static class NameOnly implements NamedElement {
-		private String name;
+		private Name name;
 
 		public NameOnly(String name) {
-			this.name = name;
+			this.name = LapgCore.name(name);
 		}
 
 		@Override
-		public String getName() {
+		public Name getName() {
 			return name;
+		}
+
+		@Override
+		public String getNameText() {
+			return name.text();
 		}
 
 		@Override
 		public String toString() {
-			return name;
+			return name.text();
 		}
 	}
 }

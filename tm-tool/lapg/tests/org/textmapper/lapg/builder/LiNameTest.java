@@ -50,12 +50,6 @@ public class LiNameTest {
 		assertEquals("__ABC_DEF", n.snakeCase(true));
 		assertEquals("__abc_def", n.snakeCase(false));
 
-		n = LiName.create("abc$de_f");
-		assertEquals("Abc__DeF", n.camelCase(true));
-		assertEquals("abc__DeF", n.camelCase(false));
-		assertEquals("ABC__DE_F", n.snakeCase(true));
-		assertEquals("abc__de_f", n.snakeCase(false));
-
 		n = LiName.create("__abcDef");
 		assertEquals("__AbcDef", n.camelCase(true));
 		assertEquals("__abcDef", n.camelCase(false));
@@ -87,14 +81,14 @@ public class LiNameTest {
 		assertEquals("abc", n.snakeCase(false));
 		assertTrue(n.isReference("ABC"));
 		assertFalse(n.isReference("Abc"));
-		assertArrayEquals(new String[]{"abc"}, n.uniqueIds());
+		assertArrayEquals(new String[]{"abc", "ABC"}, n.uniqueIds());
 
 		n = LiName.create("qwe-xyz-def");
 		assertEquals("QweXyzDef", n.camelCase(true));
 		assertEquals("qweXyzDef", n.camelCase(false));
 		assertEquals("QWE_XYZ_DEF", n.snakeCase(true));
 		assertEquals("qwe_xyz_def", n.snakeCase(false));
-		assertArrayEquals(new String[]{"qwe-xyz-def"}, n.uniqueIds());
+		assertArrayEquals(new String[]{"qwexyzdef", "qwe-xyz-def"}, n.uniqueIds());
 	}
 
 	private void testAbcDef(String identifier) {
@@ -109,7 +103,7 @@ public class LiNameTest {
 		assertEquals("abc_def", n.snakeCase(false)); // caching
 
 		assertTrue(n.isReference(identifier));
-		assertArrayEquals(new String[]{"abc-def"}, n.uniqueIds());
+		assertArrayEquals(new String[]{"abcdef", identifier}, n.uniqueIds());
 	}
 
 	private void testBreakage(String identifier) {

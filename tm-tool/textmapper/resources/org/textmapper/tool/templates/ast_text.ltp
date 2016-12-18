@@ -58,7 +58,7 @@ ${query rhsPart(prio) =
 	self is LiRhsList
 		? self->rhsList() :
 	self is LiRhsSymbol
-		? (self.mapping ? self.mapping->rhsMapping(self.target.name) : self.target.name) :
+		? (self.mapping ? self.mapping->rhsMapping(self.target.nameText) : self.target.nameText) :
 	'/* ERROR */'
 }
 

@@ -77,7 +77,7 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 			} else {
 				first = false;
 			}
-			sb.append(s.getName());
+			sb.append(s.getNameText());
 		}
 		sb.append(")\n");
 		for (Rule r : getRules()) {
@@ -115,7 +115,7 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 				if (sb.length() > 0) {
 					sb.append(" ");
 				}
-				sb.append(s.getName());
+				sb.append(s.getNameText());
 			}
 			return sb.toString();
 		}

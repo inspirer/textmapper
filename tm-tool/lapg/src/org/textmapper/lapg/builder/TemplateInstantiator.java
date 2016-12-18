@@ -282,8 +282,8 @@ class TemplateInstantiator {
 			int index = paramIndex.get(arg.getParameter());
 			if (!acceptedParameters.get(index)) {
 
-				problems.add(new LiProblem(arg, arg.getParameter().getName()
-						+ " is not used in " + target.getName()));
+				problems.add(new LiProblem(arg, arg.getParameter().getNameText()
+						+ " is not used in " + target.getNameText()));
 				continue;
 			}
 			TemplateParameter source = arg.getSource();

@@ -15,14 +15,15 @@
  */
 package org.textmapper.lapg.api;
 
+import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.ast.AstType;
 
 public interface Symbol extends NamedElement, NamedElement.Anonymous,
 		SourceElement, UserDataHolder {
 
-	String EOI = "eoi";
-	String ERROR = "error";
-	String INVALID_TOKEN = "invalid_token";
+	Name EOI = LapgCore.name("eoi");
+	Name ERROR = LapgCore.name("error");
+	Name INVALID_TOKEN = LapgCore.name("invalid_token");
 
 	int getIndex();
 

@@ -67,7 +67,7 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 				continue;
 			}
 
-			String name = element.getName();
+			String name = element.getNameText();
 			if (name != null) continue;
 
 			name = newName(((Anonymous) element).getNameHint());
@@ -79,14 +79,14 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 	@Override
 	public void sort() {
 		Comparator<T> cmp = Comparator.<T>comparingInt(elementIndex::get)
-				.thenComparing(NamedElement::getName,
+				.thenComparing(NamedElement::getNameText,
 						Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
 		allElements.sort(cmp);
 	}
 
 	@Override
 	public boolean insert(T element, T anchor) {
-		String name = element.getName();
+		String name = element.getNameText();
 		if (name != null) {
 			if (nameToElement.containsKey(name)) return false;
 			nameToElement.put(name, element);
@@ -138,7 +138,7 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 		while (each.hasNext()) {
 			T next = each.next();
 			if (filter.test(next)) {
-				String name = next.getName();
+				String name = next.getNameText();
 				if (name != null) nameToElement.remove(name);
 				elementIndex.remove(next);
 				each.remove();

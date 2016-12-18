@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.NamedPattern;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.regex.RegexPart;
@@ -23,20 +24,20 @@ import org.textmapper.lapg.api.regex.RegexPart;
 /**
  * Gryaznov Evgeny, 6/23/11
  */
-class LiNamedPattern implements NamedPattern, DerivedSourceElement {
+class LiNamedPattern extends LiNamedElement implements NamedPattern, DerivedSourceElement {
 
-	private final String name;
+	private final Name name;
 	private final RegexPart regexp;
 	private final SourceElement origin;
 
-	public LiNamedPattern(String name, RegexPart regexp, SourceElement origin) {
+	LiNamedPattern(Name name, RegexPart regexp, SourceElement origin) {
 		this.name = name;
 		this.regexp = regexp;
 		this.origin = origin;
 	}
 
 	@Override
-	public String getName() {
+	public Name getName() {
 		return name;
 	}
 
@@ -48,5 +49,10 @@ class LiNamedPattern implements NamedPattern, DerivedSourceElement {
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	@Override
+	public String toString() {
+		return getNameText() + " (pattern)";
 	}
 }

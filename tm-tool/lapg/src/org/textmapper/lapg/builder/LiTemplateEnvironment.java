@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.NamedElement;
 import org.textmapper.lapg.api.TemplateEnvironment;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.TemplateParameter.Modifier;
@@ -24,7 +25,7 @@ import java.util.*;
 public class LiTemplateEnvironment implements TemplateEnvironment {
 
 	public static final Comparator<TemplateParameter> TEMPLATE_PARAMETER_COMPARATOR =
-			(o1, o2) -> o1.getName().compareTo(o2.getName());
+			Comparator.comparing(NamedElement::getNameText);
 
 	private final Map<TemplateParameter, Object> values;
 	private String nonterminalSuffix;

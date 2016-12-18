@@ -26,7 +26,7 @@ public class GrammarFacade {
 		return new LiGrammarBuilder();
 	}
 
-	public static Name createName(String... aliases) {
+	public static Name name(String... aliases) {
 		return LiName.create(aliases);
 	}
 

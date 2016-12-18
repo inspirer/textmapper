@@ -62,7 +62,7 @@ public class Builder extends Lalr1 {
 		for (i = nterms; i < nsyms; i++) {
 			assert sym_empty[i] == ((Nonterminal) sym[i]).isNullable()
 					: "old = " + sym_empty[i] + ", new = " + ((Nonterminal) sym[i]).isNullable() +
-					" for " + sym[i].getName();
+					" for " + sym[i].getNameText();
 		}
 
 		boolean[] sym_good = new boolean[nsyms];
@@ -134,8 +134,8 @@ public class Builder extends Lalr1 {
 		// print out the useless symbols
 		for (i = 0; i < nsyms; i++) {
 			if (!sym_good[i] || !sym_employed[i]) {
-				if (!sym[i].getName().startsWith("_skip")) {
-					status.report(ProcessingStatus.KIND_WARN, "symbol `" + sym[i].getName()
+				if (!sym[i].getNameText().startsWith("_skip")) {
+					status.report(ProcessingStatus.KIND_WARN, "symbol `" + sym[i].getNameText()
 							+ "` is useless", sym[i]);
 				}
 			}

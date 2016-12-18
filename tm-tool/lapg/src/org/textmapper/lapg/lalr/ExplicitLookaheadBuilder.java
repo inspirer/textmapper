@@ -41,7 +41,7 @@ class ExplicitLookaheadBuilder {
 		}
 
 		String getName() {
-			return input.getTarget().getName();
+			return input.getTarget().getNameText();
 		}
 
 		void addPredicate(boolean negated, Lookahead la) {
@@ -217,7 +217,7 @@ class ExplicitLookaheadBuilder {
 				if (c.isNegated()) {
 					sb.append("!");
 				}
-				sb.append(c.getInput().getTarget().getName());
+				sb.append(c.getInput().getTarget().getNameText());
 				sb.append(" -> ");
 				sb.append(LiUtil.getSymbolName(c.getTarget()));
 				sb.append("; ");

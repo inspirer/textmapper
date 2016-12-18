@@ -120,7 +120,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		boolean isHint = (parameter == null && target.getName() == null);
+		boolean isHint = (parameter == null && target.getNameText() == null);
 		if (isHint) {
 			sb.append("#");
 		}

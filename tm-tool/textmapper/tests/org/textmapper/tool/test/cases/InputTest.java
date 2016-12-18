@@ -25,8 +25,6 @@ import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
 import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
-import org.textmapper.templates.api.SourceElement;
-import org.textmapper.templates.api.TemplatesStatus;
 import org.textmapper.templates.storage.ClassResourceLoader;
 import org.textmapper.templates.storage.ResourceRegistry;
 import org.textmapper.templates.types.TypesRegistry;
@@ -61,20 +59,20 @@ public class InputTest extends LapgTestCase {
 
 		Symbol[] syms = g.getGrammar().getSymbols();
 		assertEquals(7, syms.length);
-		assertEquals(Symbol.EOI, syms[0].getName());
-		assertEquals("identifier", syms[1].getName());
-		assertEquals("Licon", syms[2].getName());
-		assertEquals("_skip", syms[3].getName()); // TODO do not
+		assertEquals(Symbol.EOI.text(), syms[0].getNameText());
+		assertEquals("identifier", syms[1].getNameText());
+		assertEquals("Licon", syms[2].getNameText());
+		assertEquals("_skip", syms[3].getNameText()); // TODO do not
 		// collect skip
 		// symbols
-		assertEquals("input", syms[4].getName());
-		assertEquals("list", syms[5].getName());
-		assertEquals("list_item", syms[6].getName());
+		assertEquals("input", syms[4].getNameText());
+		assertEquals("list", syms[5].getNameText());
+		assertEquals("list_item", syms[6].getNameText());
 
 		Rule[] rules = g.getGrammar().getRules();
 		assertEquals(5, rules.length);
-		assertEquals("input", rules[0].getLeft().getName());
-		assertEquals("list", rules[0].getRight()[0].getTarget().getName());
+		assertEquals("input", rules[0].getLeft().getNameText());
+		assertEquals("list", rules[0].getRight()[0].getTarget().getNameText());
 		assertEquals(1, rules[0].getRight().length);
 
 		LexerRule[] lexerRules = g.getGrammar().getLexerRules();
@@ -94,17 +92,17 @@ public class InputTest extends LapgTestCase {
 
 		Symbol[] syms = g.getGrammar().getSymbols();
 		assertEquals(11, syms.length);
-		assertEquals(Symbol.EOI, syms[0].getName());
-		assertEquals("a", syms[1].getName());
-		assertEquals("b", syms[2].getName());
-		assertEquals("'('", syms[3].getName());
-		assertEquals("')'", syms[4].getName());
-		assertEquals("input", syms[5].getName());
-		assertEquals("list", syms[6].getName());
-		assertEquals("item", syms[7].getName());
-		assertEquals("item3", syms[8].getName());
-		assertEquals("subitem", syms[9].getName());
-		assertEquals("listopt", syms[10].getName());
+		assertEquals(Symbol.EOI.text(), syms[0].getNameText());
+		assertEquals("a", syms[1].getNameText());
+		assertEquals("b", syms[2].getNameText());
+		assertEquals("'('", syms[3].getNameText());
+		assertEquals("')'", syms[4].getNameText());
+		assertEquals("input", syms[5].getNameText());
+		assertEquals("list", syms[6].getNameText());
+		assertEquals("item", syms[7].getNameText());
+		assertEquals("item3", syms[8].getNameText());
+		assertEquals("subitem", syms[9].getNameText());
+		assertEquals("listopt", syms[10].getNameText());
 		assertEquals(13, g.getGrammar().getRules().length);
 		assertEquals("{  ${for a in b}..!..$$  }", TMDataUtil.getCode(g.getGrammar().getRules()[5]).getText());
 		assertEquals(1, g.getGrammar().getRules()[9].getRight().length);

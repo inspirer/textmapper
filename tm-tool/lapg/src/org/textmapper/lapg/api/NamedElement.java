@@ -17,7 +17,9 @@ package org.textmapper.lapg.api;
 
 public interface NamedElement {
 
-	String getName();
+	Name getName();
+
+	String getNameText();
 
 	/**
 	 * Named elements that can be anonymous must also implement this interface.

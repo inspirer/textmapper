@@ -122,7 +122,7 @@ public class TMEventMapper {
 			if (!NonterminalUtil.isList(left) &&
 					!TMDataUtil.hasProperty(rule.getLeft(), "noast")) {
 				status.report(ProcessingStatus.KIND_ERROR,
-						rule.getLeft().getName() + " have to be marked as @noast", rule);
+						rule.getLeft().getNameText() + " have to be marked as @noast", rule);
 			}
 			lists.add(rule.getLeft());
 		}
@@ -337,8 +337,8 @@ public class TMEventMapper {
 		}
 
 		if (n.getTemplate() != null) n = n.getTemplate();
-		TMDataUtil.putRangeType(rule, n.getName());
-		return n.getName();
+		TMDataUtil.putRangeType(rule, n.getNameText());
+		return n.getNameText();
 	}
 
 	private static boolean isListSelfReference(RhsSymbol ref) {
@@ -363,7 +363,7 @@ public class TMEventMapper {
 
 			if (!entered.add(nt)) {
 				status.report(ProcessingStatus.KIND_ERROR,
-						"`" + nt.getName() + "' recursively contain itself", nt);
+						"`" + nt.getNameText() + "' recursively contain itself", nt);
 				result = TMPhrase.empty(nt);
 			}
 
@@ -451,8 +451,8 @@ public class TMEventMapper {
 			case Symbol: {
 				Symbol target = ((RhsSymbol) part).getTarget();
 				if (target.isTerm() && reportedTokens.contains(target)) {
-					categories.get(TOKEN_CATEGORY).add(target.getName());
-					return TMPhrase.type(target.getName(), part);
+					categories.get(TOKEN_CATEGORY).add(target.getNameText());
+					return TMPhrase.type(target.getNameText(), part);
 				}
 
 				TMPhrase p = phrases.get(target);
@@ -502,10 +502,10 @@ public class TMEventMapper {
 		if (s instanceof Nonterminal) {
 			Nonterminal template = ((Nonterminal) s).getTemplate();
 			if (template != null) {
-				return template.getName();
+				return template.getNameText();
 			}
 		}
-		return s.getName();
+		return s.getNameText();
 	}
 
 	private boolean isInterface(Nonterminal n) {

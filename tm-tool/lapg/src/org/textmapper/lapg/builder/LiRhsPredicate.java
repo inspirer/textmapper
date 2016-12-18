@@ -105,7 +105,7 @@ class LiRhsPredicate implements RhsPredicate, DerivedSourceElement {
 				break;
 			}
 			case Equals:
-				sb.append(param.getName());
+				sb.append(param.getNameText());
 				sb.append(" == ");
 				sb.append(value);
 				break;

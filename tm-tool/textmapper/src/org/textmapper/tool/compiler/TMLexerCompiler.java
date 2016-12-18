@@ -122,8 +122,8 @@ public class TMLexerCompiler {
 				RegexMatcher m = classMatchers.get(rule);
 				if (m.matches(regex.getConstantValue())) {
 					if (result != null) {
-						error(l, "regex matches two classes `" + result.getSymbol().getName() +
-								"' and `" + rule.getSymbol().getName() + "', using first");
+						error(l, "regex matches two classes `" + result.getSymbol().getNameText() +
+								"' and `" + rule.getSymbol().getNameText() + "', using first");
 					} else {
 						result = rule;
 					}
@@ -159,7 +159,7 @@ public class TMLexerCompiler {
 
 		TMStateTransitionSwitch activeTransitions = null;
 		List<LexerState> activeStates = Collections.singletonList(resolver.getState(
-				TMResolver.INITIAL_STATE));
+				TMResolver.INITIAL_STATE.text()));
 
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaLexeme) {
@@ -202,7 +202,7 @@ public class TMLexerCompiler {
 			RegexPart regex;
 			RegexMatcher matcher;
 			try {
-				regex = LapgCore.parse(s.getName(), lexeme.getPattern().getRegexp());
+				regex = LapgCore.parse(s.getNameText(), lexeme.getPattern().getRegexp());
 				matcher = LapgCore.createMatcher(regex, context);
 			} catch (RegexParseException e) {
 				error(lexeme.getPattern(), e.getMessage());
@@ -292,9 +292,9 @@ public class TMLexerCompiler {
 
 				final Terminal oldClass = softToClass.get(term);
 				if (oldClass != null && oldClass != softClass) {
-					error(lexeme, "redeclaration of soft class for `" + term.getName() +
-							"': found " + softClass.getName() + " instead of " +
-							oldClass.getName());
+					error(lexeme, "redeclaration of soft class for `" + term.getNameText() +
+							"': found " + softClass.getNameText() + " instead of " +
+							oldClass.getNameText());
 					continue;
 				} else if (oldClass == null) {
 					builder.makeSoft(term, softClass);

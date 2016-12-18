@@ -16,13 +16,14 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.ast.AstType;
 
-abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourceElement {
+abstract class LiSymbol extends LiNamedElement implements Symbol, DerivedSourceElement {
 
-	private String name;
+	private Name name;
 	// OR
 	private String nameHint;
 
@@ -31,9 +32,9 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	private AstType mapping;
 	private boolean unused;
 
-	protected LiSymbol(String name, boolean isAnonymous, SourceElement origin) {
-		this.name = isAnonymous ? null : name;
-		this.nameHint = isAnonymous ? name : null;
+	protected LiSymbol(Name name, String nameHint, SourceElement origin) {
+		this.name = name;
+		this.nameHint = nameHint;
 		this.origin = origin;
 	}
 
@@ -56,7 +57,7 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	}
 
 	@Override
-	public String getName() {
+	public Name getName() {
 		return name;
 	}
 
@@ -64,7 +65,7 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	public void setName(String value) {
 		if (name != null) throw new IllegalStateException();
 
-		name = value;
+		name = LiName.raw(value);
 	}
 
 	@Override
@@ -94,7 +95,7 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 
 	@Override
 	public String toString() {
-		return LiUtil.getSymbolName(this);
+		return LiUtil.getSymbolName(this) + (isTerm() ? " (terminal)" : " (nonterminal)");
 	}
 
 	void setUnused() {

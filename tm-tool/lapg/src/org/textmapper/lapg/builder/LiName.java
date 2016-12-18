@@ -21,25 +21,29 @@ import org.textmapper.lapg.common.FormatUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 class LiName implements Name {
 	private static final Pattern IDENTIFIER = Pattern.compile(
-			"[a-zA-Z_]([a-zA-Z_\\-0-9$]*[a-zA-Z_0-9])?");
+			"[a-zA-Z_]([a-zA-Z_\\-0-9]*[a-zA-Z_0-9])?");
 
 	private final String[] words;
 	private final String[] aliases;
+	private final Name qualifier;
 
 	private String camel1;
 	private String camel2;
 	private String snake1;
 	private String snake2;
+	private String allUpper;
 
-	LiName(String[] words, String[] aliases) {
+	private LiName(String[] words, String[] aliases, Name qualifier) {
 		this.words = words;
 		this.aliases = aliases;
+		this.qualifier = qualifier;
 		if (aliases == null || aliases.length == 0) {
 			throw new IllegalArgumentException();
 		}
@@ -47,7 +51,7 @@ class LiName implements Name {
 
 	@Override
 	public String[] uniqueIds() {
-		List<String> ids = new ArrayList<>();
+		LinkedHashSet<String> ids = new LinkedHashSet<>();
 		for (String alias : aliases) {
 			if (alias.startsWith("'")) continue;
 			String[] words;
@@ -56,22 +60,23 @@ class LiName implements Name {
 			} catch (NameParseException e) {
 				throw new IllegalStateException();
 			}
-			ids.add(Arrays.stream(words).collect(Collectors.joining("-")));
+			ids.add(Arrays.stream(words).collect(Collectors.joining()));
 		}
-		if (ids.isEmpty()) {
-			throw new IllegalStateException();
-		}
+		ids.addAll(Arrays.asList(aliases));
 		return ids.toArray(new String[ids.size()]);
 	}
 
 	@Override
 	public String text() {
+		if (qualifier != null) {
+			return qualifier.text() + "/" + aliases[0];
+		}
 		return aliases[0];
 	}
 
 	@Override
 	public boolean isReference(String referenceText) {
-		// We have at most two aliases in typical grammars, so no need to optimize here.
+		// We allow at most two aliases in grammars, so no need to optimize here.
 		for (String alias : aliases) {
 			if (alias.equals(referenceText)) {
 				return true;
@@ -130,15 +135,41 @@ class LiName implements Name {
 		return result;
 	}
 
-	static boolean isWordBoundary(String s, int i) {
+	@Override
+	public String allUpper() {
+		if (allUpper != null) return allUpper;
+
+		StringBuilder sb = new StringBuilder();
+		for (String word : words) {
+			sb.append(word.toUpperCase());
+		}
+		allUpper = sb.toString();
+		return allUpper;
+	}
+
+	@Override
+	public Name qualifier() {
+		return qualifier;
+	}
+
+	@Override
+	public Name subName(Name nested) {
+		LiName unqualified = (LiName) nested;
+		if (unqualified.qualifier != null) {
+			throw new IllegalArgumentException("already qualified");
+		}
+		return new LiName(unqualified.words, unqualified.aliases, this);
+	}
+
+	private static boolean isWordBoundary(String s, int i) {
 		if (i >= s.length()) return true;
 
 		char c = s.charAt(i);
-		if (c == '_' || c == '$' || c == '-') return true;
+		if (c == '_' || c == '-') return true;
 		if (i == 0) return false;
 
 		char prev = s.charAt(i - 1);
-		if (prev == '_' || prev == '$' || prev == '-') {
+		if (prev == '_' || prev == '-') {
 			if (Character.isUpperCase(c) || Character.isLowerCase(c)) return false;
 		}
 
@@ -154,7 +185,7 @@ class LiName implements Name {
 		return false;
 	}
 
-	static String[] parseWords(String identifier) {
+	private static String[] parseWords(String identifier) {
 		if (!IDENTIFIER.matcher(identifier).matches()) {
 			throw new NameParseException("malformed identifier: " + identifier);
 		}
@@ -206,10 +237,7 @@ class LiName implements Name {
 			offset = i;
 
 			char c = i < identifier.length() ? identifier.charAt(i) : 0;
-			if (c == '_' || c == '$' || c == '-') offset++;
-			if (c == '$') {
-				result.add("__");
-			}
+			if (c == '_' || c == '-') offset++;
 		}
 		if (suffix != null) {
 			result.add(suffix);
@@ -236,14 +264,24 @@ class LiName implements Name {
 		}
 		if (words == null) {
 			aliases = Arrays.copyOf(aliases, aliases.length + 1);
-			aliases[aliases.length - 1] = FormatUtil.toIdentifier(aliases[0]);
+			aliases[aliases.length - 1] = toIdentifier(aliases[0]);
 			words = LiName.parseWords(aliases[aliases.length - 1]);
 		}
-		return new LiName(words, aliases);
+		return new LiName(words, aliases, null);
+	}
+
+	private static String toIdentifier(String s) {
+		if (s.startsWith("\'") && s.endsWith("\'") && s.length() > 2) {
+			s = s.substring(1, s.length() - 1);
+			if (FormatUtil.isIdentifier(s)) {
+				return (s.length() == 1 ? "char_" : "kw_") + s.toLowerCase();
+			}
+		}
+		return FormatUtil.toIdentifier(s);
 	}
 
 	static Name raw(String word) {
-		return new LiName(new String[]{word.toLowerCase()}, new String[]{word});
+		return new LiName(new String[]{word.toLowerCase()}, new String[]{word}, null);
 	}
 
 	@Override
@@ -252,11 +290,20 @@ class LiName implements Name {
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LiName liName = (LiName) o;
-		return Arrays.equals(aliases, liName.aliases);
+
+		if (!Arrays.equals(aliases, liName.aliases)) return false;
+		return qualifier != null ? qualifier.equals(liName.qualifier) : liName.qualifier == null;
 	}
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(aliases);
+		int result = Arrays.hashCode(aliases);
+		result = 31 * result + (qualifier != null ? qualifier.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return text();
 	}
 }

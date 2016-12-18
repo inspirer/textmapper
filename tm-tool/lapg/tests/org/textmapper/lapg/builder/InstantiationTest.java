@@ -16,9 +16,8 @@
 package org.textmapper.lapg.builder;
 
 import org.junit.Test;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.TemplateEnvironment;
-import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.LapgCore;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.TemplateParameter.Modifier;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -35,31 +34,30 @@ public class InstantiationTest {
 		assertEquals("", env.getNonterminalSuffix());
 
 		// Booleans
-		TemplateParameter b1 = b.addParameter(Type.Flag, "b1",
-				null /* no default */, Modifier.Global, null);
+		TemplateParameter b1 = b.addParameter(Type.Flag, LapgCore.name("b1"), null, Modifier
+				.Global, null);
 		env = env.extend(b1, true);
-		assertEquals("_b1", env.getNonterminalSuffix());
+		assertEquals("_B1", env.getNonterminalSuffix());
 
 		env = env.extend(b1, false);
 		assertEquals("", env.getNonterminalSuffix());
 		env = env.extend(b1, true);
 
 		// Symbols
-		Symbol t1 = b.addNonterminal("T1", null);
-		Symbol t2 = b.addNonterminal("T2", null);
+		Symbol t1 = b.addNonterminal(LapgCore.name("T1"), null);
+		Symbol t2 = b.addNonterminal(LapgCore.name("T2"), null);
 
-		TemplateParameter s1 = b.addParameter(Type.Symbol, "s1",
-				t1, Modifier.Global, null);
-		TemplateParameter s2 = b.addParameter(Type.Symbol, "s2",
-				null /* default value */, Modifier.Global, null);
+		TemplateParameter s1 = b.addParameter(Type.Symbol, LapgCore.name("s1"), t1, Modifier
+				.Global, null);
+		TemplateParameter s2 = b.addParameter(Type.Symbol, LapgCore.name("s2"), null, Modifier.Global, null);
 		env = env.extend(s1, t2);
-		assertEquals("_b1_s1_T2", env.getNonterminalSuffix());
+		assertEquals("_B1_S1_T2", env.getNonterminalSuffix());
 
 		env = env.extend(s1, null);
-		assertEquals("_b1", env.getNonterminalSuffix());
+		assertEquals("_B1", env.getNonterminalSuffix());
 
 		env = env.extend(s1, t1);
-		assertEquals("_b1", env.getNonterminalSuffix());
+		assertEquals("_B1", env.getNonterminalSuffix());
 	}
 
 }

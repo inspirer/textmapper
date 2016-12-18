@@ -57,14 +57,14 @@ public class RewriteTest {
 			Nonterminal left = resolve(grammar, entry.getKey());
 			String expected = entry.getValue();
 			String actual = left.getDefinition().toString();
-			assertEquals("failed for " + left.getName(), expected, actual);
+			assertEquals("failed for " + left.getNameText(), expected, actual);
 		}
 		assertEquals(14, tests.size());
 	}
 
 	private Nonterminal resolve(TMGrammar grammar, String name) {
 		for (Symbol sym : grammar.getGrammar().getSymbols()) {
-			if (name.equals(sym.getName())) {
+			if (name.equals(sym.getNameText())) {
 				assertTrue(sym instanceof Nonterminal);
 				return (Nonterminal) sym;
 			}

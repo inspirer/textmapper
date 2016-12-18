@@ -4,15 +4,15 @@
 
 %start input
 
-%right d
+%right char_d
 %token Assign
 %token Colon
 %token Lparen
 %token Comma
 %token Rparen
-%token a
-%token b
-%token c
+%token char_a
+%token char_b
+%token char_c
 
 %locations
 %%
@@ -27,12 +27,12 @@ DefaultP :
 
 DefaultP_A_B_C :
   Terms_A_B_C
-| d Terms_B
+| char_d Terms_B
 ;
 
 DefaultP_A_C :
   Terms_A_C
-| d Terms
+| char_d Terms
 ;
 
 DefaultP_C :
@@ -44,38 +44,38 @@ Terms :
 ;
 
 Terms_A_B_C :
-  a b c
+  char_a char_b char_c
 ;
 
 Terms_A_C :
-  a c
+  char_a char_c
 ;
 
 Terms_B :
-  b
+  char_b
 ;
 
 Terms_C :
-  c
+  char_c
 ;
 
 Condition :
-  b
+  char_b
 ;
 
 Condition_C :
-  a
-| b
+  char_a
+| char_b
 ;
 
 IfThenElse :
-  Lparen Condition Rparen c d c
-| Lparen Condition Rparen c %prec d
+  Lparen Condition Rparen char_c char_d char_c
+| Lparen Condition Rparen char_c %prec char_d
 ;
 
 IfThenElse_C :
-  Lparen Condition_C Rparen c d c
-| Lparen Condition_C Rparen c %prec d
+  Lparen Condition_C Rparen char_c char_d char_c
+| Lparen Condition_C Rparen char_c %prec char_d
 ;
 
 %%

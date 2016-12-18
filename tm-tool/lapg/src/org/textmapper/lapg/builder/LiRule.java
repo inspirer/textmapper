@@ -81,10 +81,10 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if (left.getName() == null) {
+		if (left.getNameText() == null) {
 			sb.append("<noname>");
 		} else {
-			sb.append(left.getName());
+			sb.append(left.getNameText());
 		}
 		sb.append(" ::=");
 		for (RhsCFPart s : right) {
@@ -100,7 +100,7 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 		}
 		if (precedence != null) {
 			sb.append(" %prec ");
-			sb.append(precedence.getName());
+			sb.append(precedence.getNameText());
 		}
 		return sb.toString();
 	}

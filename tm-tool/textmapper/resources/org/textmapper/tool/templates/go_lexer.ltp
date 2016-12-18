@@ -383,7 +383,7 @@ ${cached query rangeSwitchSize() = util.rangeSwitchSize(self->classInstances().l
 
 ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
 
-${cached query stateId() = 'State' + util.uniqueId(util.toCamelCase(self.name.replace('-', '_'), true), '__states__')}
+${cached query stateId() = 'State' + util.uniqueId(util.toCamelCase(self.nameText.replace('-', '_'), true), '__states__')}
 
 ${cached query canInlineLexerRules() = syntax.canInlineLexerRules}
 

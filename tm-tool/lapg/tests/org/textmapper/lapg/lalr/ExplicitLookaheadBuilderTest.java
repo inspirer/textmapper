@@ -17,9 +17,7 @@ package org.textmapper.lapg.lalr;
 
 import org.junit.Test;
 import org.textmapper.lapg.LapgCore;
-import org.textmapper.lapg.api.InputRef;
-import org.textmapper.lapg.api.Lookahead;
-import org.textmapper.lapg.api.LookaheadRule;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.test.TestStatus;
 
@@ -62,15 +60,16 @@ public class ExplicitLookaheadBuilderTest {
 	public void testSimple() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+
 
 		Lookahead la1 = builder.lookahead(Collections.singletonList(
 				builder.lookaheadPredicate(ifA, true)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Collections.singletonList(
 				builder.lookaheadPredicate(ifA, false)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		// Non-negated first.
 		assertEquals("ifA -> lookahead_ifA; default -> lookahead_notifA",
@@ -83,21 +82,21 @@ public class ExplicitLookaheadBuilderTest {
 	public void testSorting() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
-		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
-		InputRef ifC = builder.addInput(builder.addNonterminal("ifC", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal(LapgCore.name("ifB"), null), false, null);
+		InputRef ifC = builder.addInput(builder.addNonterminal(LapgCore.name("ifC"), null), false, null);
 
 		Lookahead la1 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		Lookahead la3 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifC, true)
-		), builder.addNonterminal("context3", null), null);
+		), builder.addNonterminal(LapgCore.name("context3"), null), null);
 
 		// Sorted by predicate nonterminal.
 		assertEquals("!ifA -> lookahead_notifA; ifB -> lookahead_ifB; default -> lookahead_notifC",
@@ -108,21 +107,21 @@ public class ExplicitLookaheadBuilderTest {
 	public void testMulti() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
-		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
-		InputRef ifC = builder.addInput(builder.addNonterminal("ifC", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal(LapgCore.name("ifB"), null), false, null);
+		InputRef ifC = builder.addInput(builder.addNonterminal(LapgCore.name("ifC"), null), false, null);
 
 		Lookahead la1 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true),
 				builder.lookaheadPredicate(ifB, true),
 				builder.lookaheadPredicate(ifC, true)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, false),
 				builder.lookaheadPredicate(ifB, true),
 				builder.lookaheadPredicate(ifC, true)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		assertEquals("ifA -> lookahead_ifA_notifB_notifC; "
 				+ "default -> lookahead_notifA_notifB_notifC", resolve(la1, la2));
@@ -132,24 +131,24 @@ public class ExplicitLookaheadBuilderTest {
 	public void testOverlapping() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
-		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
-		InputRef ifC = builder.addInput(builder.addNonterminal("ifC", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal(LapgCore.name("ifB"), null), false, null);
+		InputRef ifC = builder.addInput(builder.addNonterminal(LapgCore.name("ifC"), null), false, null);
 
 		Lookahead la1 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, false),
 				builder.lookaheadPredicate(ifC, false)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true),
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		Lookahead la3 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifB, true),
 				builder.lookaheadPredicate(ifC, true)
-		), builder.addNonterminal("context3", null), null);
+		), builder.addNonterminal(LapgCore.name("context3"), null), null);
 
 		assertEquals("ifA -> lookahead_ifA_ifC; "
 				+ "ifB -> lookahead_notifA_ifB; "
@@ -163,18 +162,18 @@ public class ExplicitLookaheadBuilderTest {
 	public void testNoConflict() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
-		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal(LapgCore.name("ifB"), null), false, null);
 
 		Lookahead la1 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true),
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true),
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		assertEquals("default -> lookahead_notifA_ifB", resolve(la1, la2));
 	}
@@ -183,18 +182,18 @@ public class ExplicitLookaheadBuilderTest {
 	public void testInconsistentOrder() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
-		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal(LapgCore.name("ifB"), null), false, null);
 
 		Lookahead la1 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true),
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifB, true),
 				builder.lookaheadPredicate(ifA, false)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		// Both lookaheads have the same predicate on A.
 		expectError("Conflicting lookaheads (inconsistent nonterminal order): "
@@ -205,18 +204,18 @@ public class ExplicitLookaheadBuilderTest {
 	public void testPredicatesSharingCommonPrefix() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
-		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal(LapgCore.name("ifB"), null), false, null);
 
 		Lookahead la1 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, false),
 				builder.lookaheadPredicate(ifB, true)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, false),
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		assertEquals("ifB -> lookahead_ifA_ifB; default -> lookahead_ifA_notifB",
 				resolve(la1, la2));
@@ -226,28 +225,28 @@ public class ExplicitLookaheadBuilderTest {
 	public void testComplexPredicates() throws Exception {
 		GrammarBuilder builder = LapgCore.createBuilder();
 
-		InputRef ifA = builder.addInput(builder.addNonterminal("ifA", null), false, null);
-		InputRef ifB = builder.addInput(builder.addNonterminal("ifB", null), false, null);
+		InputRef ifA = builder.addInput(builder.addNonterminal(LapgCore.name("ifA"), null), false, null);
+		InputRef ifB = builder.addInput(builder.addNonterminal(LapgCore.name("ifB"), null), false, null);
 
 		Lookahead la1 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true),
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context1", null), null);
+		), builder.addNonterminal(LapgCore.name("context1"), null), null);
 
 		Lookahead la2 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, false),
 				builder.lookaheadPredicate(ifB, true)
-		), builder.addNonterminal("context2", null), null);
+		), builder.addNonterminal(LapgCore.name("context2"), null), null);
 
 		Lookahead la3 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, false),
 				builder.lookaheadPredicate(ifB, false)
-		), builder.addNonterminal("context3", null), null);
+		), builder.addNonterminal(LapgCore.name("context3"), null), null);
 
 		Lookahead la4 = builder.lookahead(Arrays.asList(
 				builder.lookaheadPredicate(ifA, true),
 				builder.lookaheadPredicate(ifB, true)
-		), builder.addNonterminal("context4", null), null);
+		), builder.addNonterminal(LapgCore.name("context4"), null), null);
 
 		expectError("Conflicting lookaheads: !ifA & ifB, ifA & !ifB, ifA & ifB, !ifA & !ifB\n",
 				la1, la2, la3, la4);

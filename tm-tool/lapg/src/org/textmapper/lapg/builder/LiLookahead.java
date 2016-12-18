@@ -26,7 +26,7 @@ class LiLookahead extends LiNonterminal implements Lookahead {
 	private LookaheadPredicate[] predicates;
 
 	LiLookahead(Collection<LookaheadPredicate> predicates, SourceElement origin) {
-		super(nameHint(predicates), true /* anonymous */, origin);
+		super(null /* name */, nameHint(predicates), origin);
 		this.predicates = predicates.toArray(new LookaheadPredicate[predicates.size()]);
 		addRule(new LiRhsSequence(null /*name*/, new LiRhsPart[0], false, origin));
 		setNullable(true);
@@ -47,7 +47,7 @@ class LiLookahead extends LiNonterminal implements Lookahead {
 			if (p.isNegated()) {
 				sb.append("!");
 			}
-			sb.append(p.getInput().getTarget().getName());
+			sb.append(p.getInput().getTarget().getNameText());
 		}
 		return sb.toString();
 	}
@@ -59,7 +59,7 @@ class LiLookahead extends LiNonterminal implements Lookahead {
 			if (p.isNegated()) {
 				sb.append("not");
 			}
-			sb.append(p.getInput().getTarget().getName());
+			sb.append(p.getInput().getTarget().getNameText());
 		}
 		return sb.toString();
 	}

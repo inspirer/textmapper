@@ -25,11 +25,11 @@ import java.util.Collection;
 
 public interface GrammarBuilder extends GrammarMapper {
 
-	Terminal addTerminal(String name, AstType type, SourceElement origin);
+	Terminal addTerminal(Name name, AstType type, SourceElement origin);
 
 	void makeSoft(Terminal terminal, Terminal softClass);
 
-	Nonterminal addNonterminal(String name, SourceElement origin);
+	Nonterminal addNonterminal(Name name, SourceElement origin);
 
 	Nonterminal addAnonymous(String nameHint, Symbol anchor, SourceElement origin);
 
@@ -38,19 +38,19 @@ public interface GrammarBuilder extends GrammarMapper {
 	Terminal getEoi();
 
 	TemplateParameter addParameter(TemplateParameter.Type type,
-								   String name, Object defaultValue,
+								   Name name, Object defaultValue,
 								   TemplateParameter.Modifier m, SourceElement origin);
 
 	TemplateEnvironment getRootEnvironment();
 
-	NamedPattern addPattern(String name, RegexPart regexp, SourceElement origin);
+	NamedPattern addPattern(Name name, RegexPart regexp, SourceElement origin);
 
-	LexerState addState(String name, SourceElement origin);
+	LexerState addState(Name name, SourceElement origin);
 
 	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states,
 						   int priority, LexerRule classLexerRule, SourceElement origin);
 
-	NamedSet addSet(String name, RhsSet set, SourceElement origin);
+	NamedSet addSet(Name name, RhsSet set, SourceElement origin);
 
 	RhsArgument argument(TemplateParameter param, TemplateParameter source, Object value,
 						 SourceElement origin);

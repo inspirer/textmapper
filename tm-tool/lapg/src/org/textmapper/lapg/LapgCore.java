@@ -47,8 +47,8 @@ public class LapgCore {
 		return GrammarFacade.createAstBuilder();
 	}
 
-	public static Name createName(String... aliases) {
-		return GrammarFacade.createName(aliases);
+	public static Name name(String... aliases) {
+		return GrammarFacade.name(aliases);
 	}
 
 	public static ParserData generateParser(Grammar g, ProcessingStatus status) {

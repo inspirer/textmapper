@@ -24,14 +24,14 @@ public class LiUtil {
 	public static String getSymbolName(RhsSymbol s) {
 		TemplateParameter templateTarget = s.getTemplateTarget();
 		if (templateTarget != null) {
-			return templateTarget.getName();
+			return templateTarget.getNameText();
 		}
 
 		return getSymbolName(s.getTarget());
 	}
 
 	public static String getSymbolName(Symbol s) {
-		String name = s.getName();
+		String name = s.getNameText();
 		if (name != null) return name;
 
 		// for anonymous nonterminals we can get an approximate name from nameHint user data.

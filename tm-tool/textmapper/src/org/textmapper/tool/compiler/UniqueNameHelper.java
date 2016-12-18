@@ -19,7 +19,6 @@ import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.common.FormatUtil;
 
-import java.text.Normalizer.Form;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -69,7 +68,7 @@ class UniqueNameHelper {
 	}
 
 	private String desiredName(Symbol s) {
-		String name = s.getName();
+		String name = s.getNameText();
 		String desiredName;
 		if (FormatUtil.isIdentifier(name)) {
 			desiredName = name;

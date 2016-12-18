@@ -13,44 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.builder;
 
-public interface Name {
+import org.textmapper.lapg.api.Name;
+import org.textmapper.lapg.api.NamedElement;
 
-	String[] uniqueIds();
+public abstract class LiNamedElement extends LiUserDataHolder implements NamedElement {
 
-	/**
-	 * Returns the first alias.
-	 */
-	String text();
+	@Override
+	public String getNameText() {
+		Name name = getName();
+		return name != null ? name.text() : null;
+	}
 
-	/**
-	 * Returns true if referenceText matches one of the aliases.
-	 */
-	boolean isReference(String referenceText);
-
-	/**
-	 * Returns SomeName or someName.
-	 */
-	String camelCase(boolean firstUpper);
-
-	/**
-	 * some_name or SOME_NAME.
-	 */
-	String snakeCase(boolean allUpper);
-
-	/**
-	 * SOMENAME
-	 */
-	String allUpper();
-
-	/**
-	 * @return the name qualifier
-	 */
-	Name qualifier();
-
-	/**
-	 * Constructs a fully qualified name for `nested`.
-	 */
-	Name subName(Name nested);
+	@Override
+	public abstract String toString();
 }

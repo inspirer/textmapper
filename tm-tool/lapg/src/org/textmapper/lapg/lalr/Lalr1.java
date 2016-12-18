@@ -296,7 +296,7 @@ class Lalr1 extends LR0 {
 		}
 
 		// data consistency problem, shouldn't happen
-		throw new RuntimeException("state N" + sourceState + " is broken, cannot shift " + sym[symbol].getName());
+		throw new RuntimeException("state N" + sourceState + " is broken, cannot shift " + sym[symbol].getNameText());
 	}
 
 	// builds 1) lookback 2) cross-rule follow graph & updates follow set
@@ -411,7 +411,7 @@ class Lalr1 extends LR0 {
 			status.debug(format(term_from[ntgotos + i], false) + " -> " + format(term_to[ntgotos + i], true) + "\t");
 			for (e = 0; e < nterms; e++) {
 				if (((follow[i * termset + (e) / BITS] & (1 << ((e) % BITS))) != 0)) {
-					status.debug(" " + sym[e].getName());
+					status.debug(" " + sym[e].getNameText());
 				}
 			}
 
@@ -466,7 +466,7 @@ class Lalr1 extends LR0 {
 					status.debug("  >>>");
 					for (k = 0; k < nterms; k++) {
 						if (((LA[set + (k) / BITS] & (1 << ((k) % BITS))) != 0)) {
-							status.debug(" " + sym[k].getName());
+							status.debug(" " + sym[k].getNameText());
 						}
 					}
 					status.debug("\n");

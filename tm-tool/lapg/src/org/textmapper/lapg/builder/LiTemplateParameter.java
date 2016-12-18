@@ -15,21 +15,18 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.DerivedSourceElement;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.api.*;
 
-public class LiTemplateParameter extends LiUserDataHolder
+public class LiTemplateParameter extends LiNamedElement
 		implements TemplateParameter, DerivedSourceElement {
 
 	private final Type type;
-	private final String name;
+	private final Name name;
 	private final Object defaultValue;
 	private final SourceElement origin;
 	private final Modifier m;
 
-	public LiTemplateParameter(Type type, String name, Object defaultValue,
+	public LiTemplateParameter(Type type, Name name, Object defaultValue,
 							   TemplateParameter.Modifier m, SourceElement origin) {
 		this.type = type;
 		this.name = name;
@@ -49,7 +46,7 @@ public class LiTemplateParameter extends LiUserDataHolder
 	}
 
 	@Override
-	public String getName() {
+	public Name getName() {
 		return name;
 	}
 
@@ -64,10 +61,10 @@ public class LiTemplateParameter extends LiUserDataHolder
 			return;
 		}
 		sb.append("_");
-		sb.append(name.substring(name.indexOf('$') + 1));
+		sb.append(name.camelCase(true));
 		if (value instanceof Symbol) {
 			sb.append("_");
-			sb.append(((Symbol) value).getName());
+			sb.append(((Symbol) value).getNameText());
 		}
 	}
 
@@ -78,6 +75,6 @@ public class LiTemplateParameter extends LiUserDataHolder
 
 	@Override
 	public String toString() {
-		return name + " " + type;
+		return name + " (parameter)";
 	}
 }

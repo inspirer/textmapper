@@ -208,11 +208,11 @@ public class LexerGeneratorTest {
 	private static class TestLexerState implements LexerState {
 
 		final int index;
-		final String name;
+		final Name name;
 
 		private TestLexerState(int index, String name) {
 			this.index = index;
-			this.name = name;
+			this.name = LapgCore.name(name);
 		}
 
 		@Override
@@ -221,8 +221,13 @@ public class LexerGeneratorTest {
 		}
 
 		@Override
-		public String getName() {
+		public Name getName() {
 			return name;
+		}
+
+		@Override
+		public String getNameText() {
+			return name.text();
 		}
 	}
 
@@ -230,7 +235,7 @@ public class LexerGeneratorTest {
 
 		private final int index;
 		private final int prio;
-		private final String name;
+		private final Name name;
 		private final LexerState initial;
 		private final String regexp;
 		private final String[] samples;
@@ -238,7 +243,7 @@ public class LexerGeneratorTest {
 		public TestRule(int index, int prio, String name, LexerState initial, String regexp, String... samples) {
 			this.index = index;
 			this.prio = prio;
-			this.name = name;
+			this.name = LapgCore.name(name);
 			this.initial = initial;
 			this.regexp = regexp;
 			this.samples = samples;
@@ -281,7 +286,7 @@ public class LexerGeneratorTest {
 		@Override
 		public RegexPart getRegexp() {
 			try {
-				return LapgCore.parse(getSymbol().getName(), regexp);
+				return LapgCore.parse(getSymbol().getNameText(), regexp);
 			} catch (RegexParseException ex) {
 				fail(ex.toString());
 				return null;
@@ -356,12 +361,17 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
-				public String getName() {
+				public Name getName() {
 					return name;
 				}
 
+				@Override
+				public String getNameText() {
+					return name.text();
+				}
+
 				public String getId() {
-					return name;
+					return name.text();
 				}
 
 				@Override

@@ -22,7 +22,6 @@ import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.RhsCFPart;
 import org.textmapper.lapg.api.rule.RhsPart.Kind;
-import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.AbstractProcessingStatus;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.templates.storage.ClassResourceLoader;
@@ -61,7 +60,7 @@ public class SetTest {
 				traverse(left, set);
 
 				List<String> list = set.stream()
-						.map(Terminal::getName)
+						.map(Terminal::getNameText)
 						.sorted().collect(Collectors.toList());
 
 				String expected = entry.getValue();
@@ -87,7 +86,7 @@ public class SetTest {
 
 	private Nonterminal resolve(TMGrammar grammar, String name) {
 		for (Symbol sym : grammar.getGrammar().getSymbols()) {
-			if (name.equals(sym.getName())) {
+			if (name.equals(sym.getNameText())) {
 				assertTrue(sym instanceof Nonterminal);
 				return (Nonterminal) sym;
 			}

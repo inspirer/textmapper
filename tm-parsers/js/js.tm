@@ -32,15 +32,15 @@ MultiLineComment:  /\/\*{commentChars}\*\//
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
 
 # Note: see http://unicode.org/reports/tr31/
-ID_Start = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
-ID_Continue = /{ID_Start}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}/
-Join_Control = /\u200c|\u200d/
+IDStart = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
+IDContinue = /{IDStart}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}/
+JoinControl = /\u200c|\u200d/
 
 hex = /[0-9a-fA-F]/
 unicodeEscapeSequence = /u(\{{hex}+\}|{hex}{4})/
 
-identifierStart = /{ID_Start}|$|_|\\{unicodeEscapeSequence}/
-identifierPart =  /{identifierStart}|{ID_Continue}|{Join_Control}/
+identifierStart = /{IDStart}|$|_|\\{unicodeEscapeSequence}/
+identifierPart =  /{identifierStart}|{IDContinue}|{JoinControl}/
 
 Identifier: /{identifierStart}{identifierPart}*/    (class)
 

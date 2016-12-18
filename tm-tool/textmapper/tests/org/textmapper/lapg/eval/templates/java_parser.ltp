@@ -31,13 +31,13 @@ ${end}
 
 ${template debugShift-}
 		if (debugSyntax) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.tokenText()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getNameText(), tmLexer.tokenText()));
 		}
 ${end}
 
 ${template debugReduce-}
 		if (debugSyntax) {
-			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getName());
+			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getNameText());
 		}
 ${end}
 

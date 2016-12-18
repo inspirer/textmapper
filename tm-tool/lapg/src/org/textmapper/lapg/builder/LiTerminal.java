@@ -15,10 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.LexerRule;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 
@@ -33,8 +30,8 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	private Symbol softClass;
 	private List<LexerRule> rules = new ArrayList<>();
 
-	public LiTerminal(String name, AstType type, SourceElement origin) {
-		super(name, false /* anonymous */, origin);
+	public LiTerminal(Name name, AstType type, SourceElement origin) {
+		super(name, null /* nameHint */, origin);
 		setType(type);
 	}
 

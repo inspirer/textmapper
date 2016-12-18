@@ -37,7 +37,7 @@ public class LexerGenerator {
 		private RuleData(LexerRule l, BitSet applicableStates, RegexInstruction[] pattern) {
 			this.lexerRule = l;
 			this.pattern = pattern;
-			this.name = l.getSymbol().getName();
+			this.name = l.getSymbol().getNameText();
 			this.prio = l.getPriority();
 			this.applicableStates = applicableStates;
 			len = pattern.length;
@@ -491,7 +491,7 @@ public class LexerGenerator {
 				continue;
 			}
 
-			if (l.getSymbol().getName().equals(Symbol.ERROR)) {
+			if (l.getSymbol().getNameText().equals(Symbol.ERROR.text())) {
 				status.report(ProcessingStatus.KIND_ERROR,
 						"error token must be defined without regular expression", l);
 				success = false;
@@ -604,7 +604,7 @@ public class LexerGenerator {
 	private RegexContext createContext(NamedPattern[] patterns) {
 		final Map<String, RegexPart> result = new HashMap<>();
 		for (NamedPattern p : patterns) {
-			String name = p.getName();
+			String name = p.getNameText();
 			RegexPart regex = p.getRegexp();
 			result.put(name, regex);
 		}
@@ -618,7 +618,7 @@ public class LexerGenerator {
 
 		} catch (RegexParseException ex) {
 			status.report(ProcessingStatus.KIND_ERROR,
-					l.getSymbol().getName() + ": " + ex.getMessage(), l);
+					l.getSymbol().getNameText() + ": " + ex.getMessage(), l);
 			return null;
 		}
 	}

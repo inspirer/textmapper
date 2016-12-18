@@ -176,14 +176,14 @@ abstract class ContextFree {
 		int rule = ruleIndex(item);
 
 		// left part of the rule
-		sb.append(sym[rleft[rule]].getName()).append(" ::=");
+		sb.append(sym[rleft[rule]].getNameText()).append(" ::=");
 
 		int i;
 		for (i = rindex[rule]; rright[i] >= 0; i++) {
 			if (i == item) {
 				sb.append(" _");
 			}
-			sb.append(" ").append(sym[rright[i]].getName());
+			sb.append(" ").append(sym[rright[i]].getNameText());
 		}
 		if (i == item) {
 			sb.append(" _");

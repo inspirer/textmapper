@@ -18,9 +18,8 @@ package org.textmapper.lapg.builder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.TemplateEnvironment;
-import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.LapgCore;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.TemplateParameter.Modifier;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -38,13 +37,13 @@ public class PredicatesTest {
 	@Test
 	public void testEnvironment() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
-		Symbol t1 = b.addNonterminal("T1", null);
-		Symbol t2 = b.addNonterminal("T2", null);
+		Symbol t1 = b.addNonterminal(LapgCore.name("T1"), null);
+		Symbol t2 = b.addNonterminal(LapgCore.name("T2"), null);
 
-		TemplateParameter s1 = b.addParameter(Type.Symbol, "s1", t1,
-				Modifier.Global, null);
-		TemplateParameter s2 = b.addParameter(Type.Symbol, "s2", null /* defaultValue */,
-				Modifier.Global, null);
+		TemplateParameter s1 = b.addParameter(Type.Symbol, LapgCore.name("s1"), t1, Modifier
+				.Global, null);
+		TemplateParameter s2 = b.addParameter(Type.Symbol, LapgCore.name("s2"), null, Modifier
+				.Global, null);
 		TemplateEnvironment env = GrammarFacade.createBuilder().getRootEnvironment();
 
 		assertTrue(env == env.extend(s1, t1));
@@ -72,10 +71,10 @@ public class PredicatesTest {
 	@Test
 	public void testEvaluation() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
-		TemplateParameter p1 = b.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier
+		TemplateParameter p1 = b.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE,
+				Modifier
 				.Global, null);
-		TemplateParameter p2 = b.addParameter(Type.Flag, "p2", null, Modifier.Global,
-				null);
+		TemplateParameter p2 = b.addParameter(Type.Flag, LapgCore.name("p2"), null, Modifier.Global, null);
 
 		RhsPredicate pr = and(b, not(b, equals(b, p1, Boolean.TRUE)),
 				equals(b, p2, Boolean.FALSE));
@@ -89,17 +88,15 @@ public class PredicatesTest {
 		assertEquals(false, pr.apply(env));
 		env = env.extend(p2, Boolean.FALSE);
 		assertEquals(true, pr.apply(env));
-		env = env.filter(parameter -> !parameter.getName().equals("p1"));
+		env = env.filter(parameter -> !parameter.getNameText().equals("p1"));
 		assertEquals(false, pr.apply(env));
 	}
 
 	@Test
 	public void testToStringAndEquals() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
-		TemplateParameter p1 = b.addParameter(Type.Flag, "p1", Boolean.TRUE,
-				Modifier.Global, null);
-		TemplateParameter p2 = b.addParameter(Type.Flag, "p2", null, Modifier.Global,
-				null);
+		TemplateParameter p1 = b.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE, Modifier.Global, null);
+		TemplateParameter p2 = b.addParameter(Type.Flag, LapgCore.name("p2"), null, Modifier.Global, null);
 
 		RhsPredicate pr = not(b, and(b,
 				or(b, equals(b, p1, Boolean.TRUE), equals(b, p1, Boolean.FALSE)),
@@ -137,8 +134,8 @@ public class PredicatesTest {
 		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
+		builder.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE, Modifier.Global, null);
+		builder.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
@@ -147,8 +144,8 @@ public class PredicatesTest {
 		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addTerminal("p1", null, null);
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
+		builder.addTerminal(LapgCore.name("p1"), null, null);
+		builder.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
@@ -157,8 +154,8 @@ public class PredicatesTest {
 		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, Modifier.Global, null);
-		builder.addTerminal("p1", null, null);
+		builder.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE, Modifier.Global, null);
+		builder.addTerminal(LapgCore.name("p1"), null, null);
 	}
 
 	@Test
@@ -167,14 +164,14 @@ public class PredicatesTest {
 		expectedEx.expectMessage("error");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "error", Boolean.TRUE, Modifier.Global, null);
+		builder.addParameter(Type.Flag, LapgCore.name("error"), Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
 	public void testNullName() {
 		expectedEx.expect(NullPointerException.class);
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, null, Boolean.TRUE, Modifier.Global, null);
+		builder.addParameter(Type.Flag, (Name)null, Boolean.TRUE, Modifier.Global, null);
 	}
 
 	@Test
@@ -183,7 +180,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("boolean default value is expected");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Flag, "error1", 1, Modifier.Global, null);
+		builder.addParameter(Type.Flag, LapgCore.name("error1"), 1, Modifier.Global, null);
 	}
 
 	@Test
@@ -193,8 +190,7 @@ public class PredicatesTest {
 
 		GrammarBuilder builder1 = GrammarFacade.createBuilder();
 		GrammarBuilder builder2 = GrammarFacade.createBuilder();
-		builder1.addParameter(Type.Symbol, "int",
-				builder2.addTerminal("bb", null, null), Modifier.Global, null);
+		builder1.addParameter(Type.Symbol, LapgCore.name("int"), builder2.addTerminal(LapgCore.name("bb"), null, null), Modifier.Global, null);
 	}
 
 	@Test
@@ -212,7 +208,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("boolean default value is expected");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		TemplateParameter p1 = builder.addParameter(Type.Flag, "p1", Boolean.TRUE,
+		TemplateParameter p1 = builder.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE,
 				Modifier.Global, null);
 		builder.predicate(Operation.Equals, null, p1, null, null);
 	}

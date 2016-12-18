@@ -198,7 +198,7 @@ public class GenericParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (debugSyntax) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.tokenText()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getNameText(), tmLexer.tokenText()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = lazy ? null : tmLexer.next();
@@ -211,7 +211,7 @@ public class GenericParser {
 		left.symbol = tmRuleSymbol[rule];
 		left.state = 0;
 		if (debugSyntax) {
-			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getName());
+			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getNameText());
 		}
 		Span startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
 		left.line = startsym == null ? tmLexer.getLine() : startsym.line;

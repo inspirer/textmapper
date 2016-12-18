@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.SourceElement;
@@ -34,8 +35,8 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 	private List<TemplateInstance> instances;
 	private boolean isTemplate;
 
-	public LiNonterminal(String name, boolean isAnonymous, SourceElement origin) {
-		super(name, isAnonymous, origin);
+	public LiNonterminal(Name name, String nameHint, SourceElement origin) {
+		super(name, nameHint, origin);
 	}
 
 	@Override

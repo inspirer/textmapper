@@ -15,6 +15,7 @@
  */
 package org.textmapper.tool.compiler;
 
+import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -217,7 +218,7 @@ public class TMParserCompiler {
 
 				RhsSet set = convertSet(namedSet.getRhsSet().getExpr(), null);
 				if (set != null) {
-					builder.addSet(namedSet.getName(), set, clause);
+					builder.addSet(LapgCore.name(namedSet.getName()), set, clause);
 				}
 			}
 		}
@@ -281,7 +282,7 @@ public class TMParserCompiler {
 			if (prioSym instanceof Terminal) {
 				prio = (Terminal) prioSym;
 			} else if (prioSym != null) {
-				error(rulePrio, "symbol `" + prioSym.getName() + "' is not a terminal");
+				error(rulePrio, "symbol `" + prioSym.getNameText() + "' is not a terminal");
 			}
 		}
 
@@ -312,7 +313,7 @@ public class TMParserCompiler {
 			if (param == null) return null;
 
 			if (param.getType() != Type.Flag) {
-				error(e, "type of " + param.getName() + " must be boolean");
+				error(e, "type of " + param.getNameText() + " must be boolean");
 				return null;
 			}
 

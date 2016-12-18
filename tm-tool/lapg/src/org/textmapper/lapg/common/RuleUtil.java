@@ -100,7 +100,7 @@ public class RuleUtil {
 					return resolve(a.getPart());
 				}
 				case Symbol:
-					if (!aliasesOnly && name.equals(((RhsSymbol) part).getTarget().getName())) {
+					if (!aliasesOnly && name.equals(((RhsSymbol) part).getTarget().getNameText())) {
 						return Collections.singleton((RhsSymbol) part);
 					}
 					return null;

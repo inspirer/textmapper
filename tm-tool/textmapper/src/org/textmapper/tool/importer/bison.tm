@@ -262,10 +262,10 @@ symbol_prec ::=
 
 symbol_or_tag ::=
 	  symbol
-	| tag
+	| tag_nt
 ;
 
-tag ::=
+tag_nt ::=
 	  TAG
 	| '<*>'
 	| '<>'

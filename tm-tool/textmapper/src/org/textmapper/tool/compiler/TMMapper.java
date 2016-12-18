@@ -292,7 +292,7 @@ public class TMMapper {
 			try {
 				builder.addExtends(cl, baseClass);
 			} catch (IllegalArgumentException ex) {
-				error(n, n.getName() + ": " + cl.getName() + " cannot extend " +
+				error(n, n.getNameText() + ": " + cl.getName() + " cannot extend " +
 						baseClass.getName() +
 						" (would introduce a cycle in the inheritance hierarchy)");
 			}
@@ -305,7 +305,7 @@ public class TMMapper {
 			boolean isInterface = baseInterface.getType() instanceof AstClass &&
 					((AstClass)baseInterface.getType()).isInterface();
 			if (!isInterface) {
-				error(origin, cl.getName() + " cannot extend " + baseInterface.getName() +
+				error(origin, cl.getName() + " cannot extend " + baseInterface.getNameText() +
 						" (interface is expected)");
 				return;
 			}
@@ -471,7 +471,7 @@ public class TMMapper {
 			AstType mappedType = customType.getType();
 			if (!(mappedType instanceof AstClass)) {
 				i.remove();
-				error(n, "type for `" + n.getName() + "' is not a classifier");
+				error(n, "type for `" + n.getNameText() + "' is not a classifier");
 				mapNonterm(n, builder.addClass(getNonterminalTypeName(n, null), null, n));
 				continue;
 			}
