@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.builder;
+
+import org.textmapper.lapg.api.NamedElement;
 
 import java.util.Collection;
 import java.util.function.IntFunction;

@@ -15,8 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.GrammarMapper;
@@ -25,6 +24,10 @@ public class GrammarFacade {
 
 	public static GrammarBuilder createBuilder() {
 		return new LiGrammarBuilder();
+	}
+
+	public static Name createName(String... aliases) {
+		return LiName.create(aliases);
 	}
 
 	public static GrammarMapper createMapper(Grammar grammar) {

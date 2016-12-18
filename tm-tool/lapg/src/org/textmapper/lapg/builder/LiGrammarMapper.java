@@ -17,7 +17,6 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.Scope;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstField;
@@ -28,10 +27,6 @@ import org.textmapper.lapg.api.rule.RhsMapping;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 class LiGrammarMapper implements GrammarMapper {
 

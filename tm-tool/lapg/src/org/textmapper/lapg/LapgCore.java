@@ -15,10 +15,7 @@
  */
 package org.textmapper.lapg;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.LexerData;
-import org.textmapper.lapg.api.ParserData;
-import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.GrammarMapper;
@@ -48,6 +45,10 @@ public class LapgCore {
 
 	public static AstBuilder createAstBuilder() {
 		return GrammarFacade.createAstBuilder();
+	}
+
+	public static Name createName(String... aliases) {
+		return GrammarFacade.createName(aliases);
 	}
 
 	public static ParserData generateParser(Grammar g, ProcessingStatus status) {

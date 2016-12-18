@@ -17,7 +17,6 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.NamedElement;
 import org.textmapper.lapg.api.NamedElement.Anonymous;
-import org.textmapper.lapg.api.Scope;
 
 import java.util.*;
 import java.util.function.IntFunction;
@@ -82,7 +81,7 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 		Comparator<T> cmp = Comparator.<T>comparingInt(elementIndex::get)
 				.thenComparing(NamedElement::getName,
 						Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
-		Collections.sort(allElements, cmp);
+		allElements.sort(cmp);
 	}
 
 	@Override
