@@ -1,0 +1,93 @@
+${template main-}
+${if self->go_parser.eventBased()-}
+${file 'listener.go'-}
+${call go.header-}
+${call listener-}
+${end-}
+${end-}
+${end}
+
+
+${template listener-}
+package ${self->go.shortPackage()}
+
+import "fmt"
+
+type ${self->nodeType()} int
+
+type Listener func(t ${self->nodeType()}, offset, endoffset int)
+
+const (
+${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
+	${rangeType}${if index == 0} ${self->nodeType()} = iota + 1${end}${call typedescr(rangeType)}
+${end-}
+${foreach extraType in opts.extraTypes-}
+	${extraType}
+${end-}
+${foreach tok in opts.reportTokens-}
+	${tok.name->asRangeTypeName()}
+${end-}
+	${self->nodeType()}Max
+)
+
+${call categories-}
+var rule${self->nodeType()} = [...]${self->nodeType()}{
+${foreach rule in syntax.rules-}
+	${v = rule->rangeTypeName(), v == '' ? 0 : v}, // ${rule}
+${end-}
+}
+
+var nodeTypeStr = [...]string{
+	"NONE",
+${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
+	"${rangeType}",
+${end-}
+${foreach extraType in opts.extraTypes-}
+	"${extraType}",
+${end-}
+${foreach tok in opts.reportTokens-}
+	"${tok->go_token.tokenName()}",
+${end-}
+}
+
+func (t ${self->nodeType()}) String() string {
+	if t >= 0 && int(t) < len(nodeTypeStr) {
+		return nodeTypeStr[t]
+	}
+	return fmt.Sprintf("node(%d)", t)
+}
+${end}
+
+
+${query typedescr(rangeType) =
+  signature = opts.eventFields
+    ? syntax.rangeFields(rangeType).collect(it | it.toString())->util.join(' ')
+    : '',
+  signature.isEmpty() ? '' : '  // ' + signature }
+
+
+${template categories-}
+${foreach cat in syntax.categories.sort(it|it)-}
+var ${cat->asRangeTypeName()} = []NodeType{
+${foreach type in syntax.categoryTypes(cat)-}
+    ${type->asRangeTypeName()},
+${end-}
+}
+
+${end-}
+${end}
+
+
+${cached query reserve(scope) =
+	util.uniqueId(util.toCamelCase(self, true)->go.escapeGoReserved(), scope)}
+
+${cached query rangeTypeName() =
+    rangeType = self.rangeType(),
+    rangeType == '' ? '' : rangeType->reserve('__rangeTypes__')}
+
+${cached query asRangeTypeName() =
+    self->reserve('__rangeTypes__')}
+
+${query nodeType() = 'NodeType'}
+
+${query nodeTypeRef() = self->nodeType()}
