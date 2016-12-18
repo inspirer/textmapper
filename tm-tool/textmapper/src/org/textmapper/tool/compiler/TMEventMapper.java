@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 public class TMEventMapper {
 
+	private static final String TOKEN_CATEGORY = "TokenSet";
+
 	private final Grammar grammar;
 	private final Map<String, Object> opts;
 	private final ProcessingStatus status;
@@ -87,6 +89,11 @@ public class TMEventMapper {
 			if (type.isEmpty()) continue;
 			list = typeIndex.get(type);
 			if (list == null) {
+				if (type.equals(TOKEN_CATEGORY)) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							TOKEN_CATEGORY + " is reserved for a set of token node types", seq);
+					continue;
+				}
 				typeIndex.put(type, list = new ArrayList<>());
 			}
 			list.add(seq);
@@ -135,6 +142,11 @@ public class TMEventMapper {
 									"an interface and a type", symbol);
 					continue;
 				}
+				if (category.equals(TOKEN_CATEGORY)) {
+					status.report(ProcessingStatus.KIND_ERROR,
+							TOKEN_CATEGORY + " is reserved for a set of token node types", n);
+					continue;
+				}
 				categories.put(category, new LinkedHashSet<>());
 				categoryNonterms.put(category, new ArrayList<>(Collections.singletonList(n)));
 			}
@@ -157,8 +169,13 @@ public class TMEventMapper {
 			categoryNonterms.get(category).add(n);
 		}
 
+		// A special category of tokens.
+		categories.put(TOKEN_CATEGORY, new LinkedHashSet<>());
+		categoryNonterms.put(TOKEN_CATEGORY, Collections.emptyList());
+
 		// Pre-compute phrases for all nonterminals.
 		for (Symbol symbol : grammar.getSymbols()) {
+			if (TMDataUtil.hasProperty(symbol, "lookahead")) continue;
 			if (symbol instanceof Nonterminal) {
 				computePhrase((Nonterminal) symbol, false);
 			}
@@ -166,13 +183,6 @@ public class TMEventMapper {
 
 		// Build a set of types behind each interface.
 		collectCategoryTypes();
-
-		// Export categories.
-		for (Entry<String, Set<String>> e : categories.entrySet()) {
-			List<String> types = new ArrayList<>(e.getValue());
-			Collections.sort(types);
-			TMDataUtil.putCategory(grammar, e.getKey(), types);
-		}
 
 		// Export fields.
 		for (Entry<String, List<RhsSequence>> e : typeIndex.entrySet()) {
@@ -185,6 +195,13 @@ public class TMEventMapper {
 			phrase = phrase.resolve(categories);
 			TMPhrase.verify(phrase, status);
 			TMDataUtil.putRangeFields(grammar, type, extractFields(phrase));
+		}
+
+		// Export categories.
+		for (Entry<String, Set<String>> e : categories.entrySet()) {
+			List<String> types = new ArrayList<>(e.getValue());
+			Collections.sort(types);
+			TMDataUtil.putCategory(grammar, e.getKey(), types);
 		}
 	}
 
@@ -313,6 +330,7 @@ public class TMEventMapper {
 					|| NonterminalUtil.isOptional(n)
 					|| TMDataUtil.hasProperty(n, "_set")
 					|| isInterface(n)
+					|| TMDataUtil.hasProperty(n, "lookahead")
 					|| TMDataUtil.hasProperty(n, "noast")) {
 				return "";
 			}
@@ -332,6 +350,10 @@ public class TMEventMapper {
 	}
 
 	private TMPhrase computePhrase(Nonterminal nt, boolean internal) {
+		if (TMDataUtil.hasProperty(nt, "void")) {
+			return TMPhrase.empty(nt);
+		}
+
 		TMPhrase result;
 		Nonterminal category = TMDataUtil.getCustomType(nt);
 		String name = getVariableName(nt);
@@ -429,6 +451,7 @@ public class TMEventMapper {
 			case Symbol: {
 				Symbol target = ((RhsSymbol) part).getTarget();
 				if (target.isTerm() && reportedTokens.contains(target)) {
+					categories.get(TOKEN_CATEGORY).add(target.getName());
 					return TMPhrase.type(target.getName(), part);
 				}
 

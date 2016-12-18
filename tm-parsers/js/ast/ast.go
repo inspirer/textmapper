@@ -452,6 +452,10 @@ func (VariableStatement) statementListItemNode()     {}
 func (WhileStatement) statementListItemNode()        {}
 func (WithStatement) statementListItemNode()         {}
 
+type Token struct {
+	Node
+}
+
 // Types.
 
 type AdditiveExpression struct {

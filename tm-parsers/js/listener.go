@@ -361,6 +361,13 @@ var StatementListItem = []NodeType{
 	WithStatement,
 }
 
+var TokenSet = []NodeType{
+	NoSubstitutionTemplate,
+	TemplateHead,
+	TemplateMiddle,
+	TemplateTail,
+}
+
 var ruleNodeType = [...]NodeType{
 	SyntaxError,              // SyntaxError ::= error
 	0,                        // IdentifierName ::= Identifier

@@ -37,6 +37,10 @@ func (Block) declarationNode() {}
 func (Decl1) declarationNode() {}
 func (Decl2) declarationNode() {}
 
+type Token struct {
+	Node
+}
+
 // Types.
 
 type Block struct {
@@ -75,8 +79,8 @@ func (n QualifiedName) QualifiedName() *QualifiedName {
 	return nil
 }
 
-func (n QualifiedName) Identifier() Identifier {
-	return Identifier{n.Child(filters.Identifier)}
+func (n QualifiedName) Identifier() Token {
+	return Token{n.Child(filters.Identifier)}
 }
 
 type Test struct {

@@ -27,6 +27,10 @@ var Declaration = []NodeType{
 	Decl2,
 }
 
+var TokenSet = []NodeType{
+	Identifier,
+}
+
 var ruleNodeType = [...]NodeType{
 	QualifiedName, // QualifiedName ::= Identifier
 	QualifiedName, // QualifiedName ::= QualifiedName '.' Identifier

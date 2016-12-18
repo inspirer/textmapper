@@ -18,7 +18,7 @@ func (n *NodeImpl) Type() test.NodeType {
 }
 
 func (n *NodeImpl) Child(t ...filters.NodeFilter) Node {
-	index := 0
+	//index := 0
 	//for _, child := range n.Children {
 	//
 	//}

@@ -72,7 +72,13 @@ ${foreach name in syntax.rules.collectUnique(r|r->go_listener.rangeTypeName()).s
 func (${name->go_listener.asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
 
-${foreach cat in syntax.categories.sort(it|it)-}
+${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
+${if cat == 'TokenSet'-}
+type Token struct {
+	${self->wrappedType()}
+}
+
+${else-}
 type ${cat->go_listener.asRangeTypeName()} interface {
 	${cat->asInterfaceMethod()}()
 }
@@ -84,6 +90,7 @@ ${foreach type in syntax.categoryTypes(cat)-}
 func (${type->go_listener.asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
 
+${end-}
 ${end-}
 ${end}
 
@@ -117,10 +124,18 @@ ${cached query getterType(field) =
   (self->needPtr(field) ? '*' : '') +
    self->getterInnerType(field) }
 
+
+
+${cached query isTokenType(name) =
+    syntax.categoryTypes('TokenSet').contains(name) }
+
 ${cached query getterInnerType(field) =
   field.interfaceType ? field.interfaceType->go_listener.asRangeTypeName() :
   field.types.length == 1
-     ? field.types.first()->go_listener.asRangeTypeName()
+     ? (self->isTokenType(field.types.first())
+         ? 'Token'
+         : field.types.first()->go_listener.asRangeTypeName()
+       )
      : self->baseNode() }
 
 ${cached query isOneType(field) = field.types.length == 1 }

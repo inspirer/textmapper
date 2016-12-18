@@ -134,6 +134,10 @@ var (
 	WhileStatement           = func(t js.NodeType) bool { return t == js.WhileStatement }
 	WithStatement            = func(t js.NodeType) bool { return t == js.WithStatement }
 	Yield                    = func(t js.NodeType) bool { return t == js.Yield }
+	NoSubstitutionTemplate   = func(t js.NodeType) bool { return t == js.NoSubstitutionTemplate }
+	TemplateHead             = func(t js.NodeType) bool { return t == js.TemplateHead }
+	TemplateMiddle           = func(t js.NodeType) bool { return t == js.TemplateMiddle }
+	TemplateTail             = func(t js.NodeType) bool { return t == js.TemplateTail }
 	BindingPattern           = OneOf(js.BindingPattern...)
 	CaseClause               = OneOf(js.CaseClause...)
 	ClassElement             = OneOf(js.ClassElement...)
@@ -152,6 +156,7 @@ var (
 	PropertyPattern          = OneOf(js.PropertyPattern...)
 	Statement                = OneOf(js.Statement...)
 	StatementListItem        = OneOf(js.StatementListItem...)
+	TokenSet                 = OneOf(js.TokenSet...)
 )
 
 func OneOf(types ...js.NodeType) NodeFilter {

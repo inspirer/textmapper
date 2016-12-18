@@ -14,7 +14,9 @@ var (
 	Decl2         = func(t test.NodeType) bool { return t == test.Decl2 }
 	QualifiedName = func(t test.NodeType) bool { return t == test.QualifiedName }
 	Test          = func(t test.NodeType) bool { return t == test.Test }
+	Identifier    = func(t test.NodeType) bool { return t == test.Identifier }
 	Declaration   = OneOf(test.Declaration...)
+	TokenSet      = OneOf(test.TokenSet...)
 )
 
 func OneOf(types ...test.NodeType) NodeFilter {

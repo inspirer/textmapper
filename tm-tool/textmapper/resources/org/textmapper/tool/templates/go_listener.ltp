@@ -67,7 +67,7 @@ ${query typedescr(rangeType) =
 
 
 ${template categories-}
-${foreach cat in syntax.categories.sort(it|it)-}
+${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
 var ${cat->asRangeTypeName()} = []NodeType{
 ${foreach type in syntax.categoryTypes(cat)-}
     ${type->asRangeTypeName()},
