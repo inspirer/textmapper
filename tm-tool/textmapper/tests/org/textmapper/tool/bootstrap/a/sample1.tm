@@ -41,9 +41,9 @@ error:
 
 :: parser
 
-%input classdef_NoEoi no-eoi, classdef ;
+%input classdef_no_eoi no-eoi, classdef ;
 
-classdef_NoEoi interface ::=
+classdef_no_eoi interface ::=
 	classdef ;
 
 classdef ::=

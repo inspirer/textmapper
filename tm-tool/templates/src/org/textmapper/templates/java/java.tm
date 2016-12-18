@@ -747,22 +747,22 @@ AdditionalBoundList ::=
 AdditionalBound ::=
 	  '&' ReferenceType ;
 
-PostfixExpression_NotName ::=
+PostfixExpressionNotName ::=
 	  Primary
 	| PostIncrementExpression
 	| PostDecrementExpression
 ;
 
-UnaryExpression_NotName ::=
+UnaryExpressionNotName ::=
 	  PreIncrementExpression
 	| PreDecrementExpression
 	| '+' UnaryExpression
 	| '-' UnaryExpression
-	| UnaryExpressionNotPlusMinus_NotName
+	| UnaryExpressionNotPlusMinusNotName
 ;
 
-UnaryExpressionNotPlusMinus_NotName ::=
-	  PostfixExpression_NotName
+UnaryExpressionNotPlusMinusNotName ::=
+	  PostfixExpressionNotName
 	| '~' UnaryExpression
 	| '!' UnaryExpression
 	| CastExpression
@@ -780,7 +780,7 @@ UnaryExpressionNotPlusMinus_NotName ::=
 %left '*' '/' '%';
 
 ArithmeticExpressionNotName ::=
-	  UnaryExpression_NotName
+	  UnaryExpressionNotName
 	| ArithmeticPart '*' ArithmeticPart
 	| ArithmeticPart '/' ArithmeticPart
 	| ArithmeticPart '%' ArithmeticPart

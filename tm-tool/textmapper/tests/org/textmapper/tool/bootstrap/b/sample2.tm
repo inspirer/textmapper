@@ -68,9 +68,9 @@ _skipSoftKW: /xyzzz/	(soft)
 
 :: parser
 
-%input classdef_NoEoi no-eoi;
+%input classdef_no_eoi no-eoi;
 
-classdef_NoEoi interface ::=
+classdef_no_eoi interface ::=
 	classdef ;
 
 classdef ::=

@@ -73,7 +73,7 @@ public class SampleAParser {
 		"'{'",
 		"'}'",
 		"error",
-		"classdef_NoEoi",
+		"classdef_no_eoi",
 		"classdef",
 		"classdeflist",
 		"classdeflistopt",
@@ -81,7 +81,7 @@ public class SampleAParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		int classdef_NoEoi = 7;
+		int classdef_no_eoi = 7;
 		int classdef = 8;
 		int classdeflist = 9;
 		int classdeflistopt = 10;
@@ -288,7 +288,7 @@ public class SampleAParser {
 	protected void dispose(Span value) {
 	}
 
-	public IAstClassdefNoEoi parseClassdef_NoEoi(SampleALexer lexer) throws IOException, ParseException {
+	public IAstClassdefNoEoi parseClassdef_no_eoi(SampleALexer lexer) throws IOException, ParseException {
 		return (IAstClassdefNoEoi) parse(lexer, 0, 12, true);
 	}
 

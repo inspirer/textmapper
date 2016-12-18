@@ -2705,9 +2705,9 @@ public class JavaParser {
 		"TypeParameter1",
 		"AdditionalBoundList",
 		"AdditionalBound",
-		"PostfixExpression_NotName",
-		"UnaryExpression_NotName",
-		"UnaryExpressionNotPlusMinus_NotName",
+		"PostfixExpressionNotName",
+		"UnaryExpressionNotName",
+		"UnaryExpressionNotPlusMinusNotName",
 		"ArithmeticExpressionNotName",
 		"ArithmeticPart",
 		"RelationalExpressionNotName",
@@ -2880,9 +2880,9 @@ public class JavaParser {
 		int TypeParameter1 = 246;
 		int AdditionalBoundList = 247;
 		int AdditionalBound = 248;
-		int PostfixExpression_NotName = 249;
-		int UnaryExpression_NotName = 250;
-		int UnaryExpressionNotPlusMinus_NotName = 251;
+		int PostfixExpressionNotName = 249;
+		int UnaryExpressionNotName = 250;
+		int UnaryExpressionNotPlusMinusNotName = 251;
 		int ArithmeticExpressionNotName = 252;
 		int ArithmeticPart = 253;
 		int RelationalExpressionNotName = 254;

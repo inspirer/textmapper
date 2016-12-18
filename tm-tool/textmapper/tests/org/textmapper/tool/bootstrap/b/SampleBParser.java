@@ -91,7 +91,7 @@ public class SampleBParser {
 		"decimal",
 		"eleven",
 		"_skipSoftKW",
-		"classdef_NoEoi",
+		"classdef_no_eoi",
 		"classdef",
 		"ID",
 		"classdeflist",
@@ -100,7 +100,7 @@ public class SampleBParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		int classdef_NoEoi = 17;
+		int classdef_no_eoi = 17;
 		int classdef = 18;
 		int ID = 19;
 		int classdeflist = 20;

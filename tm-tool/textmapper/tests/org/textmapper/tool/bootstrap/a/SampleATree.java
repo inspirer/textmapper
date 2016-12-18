@@ -56,7 +56,7 @@ public class SampleATree<T> {
 	}
 
 
-	public static SampleATree<IAstClassdefNoEoi> parseClassdef_NoEoi(TextSource source) {
+	public static SampleATree<IAstClassdefNoEoi> parseClassdef_no_eoi(TextSource source) {
 		final List<SampleAProblem> list = new ArrayList<>();
 		ErrorReporter reporter = (message, line, offset, column, endline, endoffset, endcolumn) ->
 				list.add(new SampleAProblem(KIND_ERROR, message, line, offset, column, endline, endoffset, endcolumn, null));
@@ -66,7 +66,7 @@ public class SampleATree<T> {
 			lexer.setLine(source.getInitialLine());
 
 			SampleAParser parser = new SampleAParser(reporter);
-			IAstClassdefNoEoi result = parser.parseClassdef_NoEoi(lexer);
+			IAstClassdefNoEoi result = parser.parseClassdef_no_eoi(lexer);
 
 			return new SampleATree<>(source, result, list);
 		} catch (ParseException ex) {

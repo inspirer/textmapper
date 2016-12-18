@@ -46,7 +46,7 @@ public class SampleAParseContext {
 			lexer.setLine(source.getInitialLine());
 
 			SampleAParser parser = new SampleAParser(reporter);
-			IAstClassdefNoEoi result = eoi ? parser.parseClassdef(lexer) : parser.parseClassdef_NoEoi(lexer);
+			IAstClassdefNoEoi result = eoi ? parser.parseClassdef(lexer) : parser.parseClassdef_no_eoi(lexer);
 
 			return new Result(source2, convert(source2, result), list);
 		} catch (ParseException ex) {
