@@ -543,7 +543,7 @@ ${if self->nonignoredReportTokens()-}
 			switch Token(p.next.symbol) {
 ${foreach tok in self->nonignoredReportTokens()-}
 			case ${tok->go_token.tokenName()}:
-				p.listener(${tok.name->go_listener.asRangeTypeName()}, p.next.offset, p.next.endoffset)
+				p.listener(${tok->go_token.tokenNodeName()}, p.next.offset, p.next.endoffset)
 ${end-}
 			}
 ${end-}

@@ -25,7 +25,7 @@ ${foreach extraType in opts.extraTypes-}
 	${extraType}
 ${end-}
 ${foreach tok in opts.reportTokens-}
-	${tok.name->asRangeTypeName()}
+	${tok->go_token.tokenNodeName()}
 ${end-}
 	${self->nodeType()}Max
 )
