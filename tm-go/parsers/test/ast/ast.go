@@ -20,11 +20,10 @@ type TestNode interface {
 }
 
 // All types implement TestNode.
-func (Block) testNodeNode()         {}
-func (Decl1) testNodeNode()         {}
-func (Decl2) testNodeNode()         {}
-func (QualifiedName) testNodeNode() {}
-func (Test) testNodeNode()          {}
+func (Block) testNodeNode() {}
+func (Decl1) testNodeNode() {}
+func (Decl2) testNodeNode() {}
+func (Test) testNodeNode()  {}
 
 type Declaration interface {
 	declarationNode()
@@ -60,27 +59,17 @@ type Decl1 struct {
 	Node
 }
 
-func (n Decl1) QualifiedName() QualifiedName {
-	return QualifiedName{n.Child(filters.QualifiedName)}
+func (n Decl1) Identifier() []Token {
+	nodes := n.Children(filters.Identifier)
+	var result []Token = make([]Token, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Token{node})
+	}
+	return result
 }
 
 type Decl2 struct {
 	Node
-}
-
-type QualifiedName struct {
-	Node
-}
-
-func (n QualifiedName) QualifiedName() *QualifiedName {
-	if child := n.Child(filters.QualifiedName); child != nil {
-		return &QualifiedName{child}
-	}
-	return nil
-}
-
-func (n QualifiedName) Identifier() Token {
-	return Token{n.Child(filters.Identifier)}
 }
 
 type Test struct {

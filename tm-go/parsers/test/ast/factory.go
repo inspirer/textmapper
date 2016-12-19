@@ -18,8 +18,6 @@ func ToTestNode(node Node) TestNode {
 		return &Decl1{node}
 	case test.Decl2:
 		return &Decl2{node}
-	case test.QualifiedName:
-		return &QualifiedName{node}
 	case test.Test:
 		return &Test{node}
 	}

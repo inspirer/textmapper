@@ -9,10 +9,9 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	QualifiedName NodeType = iota + 1 // QualifiedName? Identifier
-	Test                              // (Declaration)+
-	Block                             // (Declaration)+
-	Decl1                             // QualifiedName
+	Test  NodeType = iota + 1 // (Declaration)+
+	Block                     // (Declaration)+
+	Decl1                     // (Identifier)+
 	Decl2
 	MultiLineComment
 	SingleLineComment
@@ -32,21 +31,20 @@ var TokenSet = []NodeType{
 }
 
 var ruleNodeType = [...]NodeType{
-	QualifiedName, // QualifiedName ::= Identifier
-	QualifiedName, // QualifiedName ::= QualifiedName '.' Identifier
-	0,             // Declaration_list ::= Declaration_list Declaration
-	0,             // Declaration_list ::= Declaration
-	Test,          // Test ::= Declaration_list
-	0,             // Declaration ::= Decl1
-	0,             // Declaration ::= Decl2
-	Block,         // Declaration ::= '{' Declaration_list '}'
-	Decl1,         // Decl1 ::= 'decl1' '(' QualifiedName ')'
-	Decl2,         // Decl2 ::= 'decl2'
+	0,     // QualifiedName ::= Identifier
+	0,     // QualifiedName ::= QualifiedName '.' Identifier
+	0,     // Declaration_list ::= Declaration_list Declaration
+	0,     // Declaration_list ::= Declaration
+	Test,  // Test ::= Declaration_list
+	0,     // Declaration ::= Decl1
+	0,     // Declaration ::= Decl2
+	Block, // Declaration ::= '{' Declaration_list '}'
+	Decl1, // Decl1 ::= 'decl1' '(' QualifiedName ')'
+	Decl2, // Decl2 ::= 'decl2'
 }
 
 var nodeTypeStr = [...]string{
 	"NONE",
-	"QualifiedName",
 	"Test",
 	"Block",
 	"Decl1",

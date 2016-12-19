@@ -12,9 +12,6 @@ var testParseTests = []struct {
 	inputs []string
 }{
 
-	{test.QualifiedName, []string{
-		` decl2 decl1(««a».b»)`,
-	}},
 	{test.Test, []string{
 		` «decl2 decl1(a)»`,
 	}},

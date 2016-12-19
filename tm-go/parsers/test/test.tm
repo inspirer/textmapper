@@ -42,18 +42,23 @@ invalid_token:
 
 %input Test;
 
-QualifiedName ::=
-	  Identifier
-	| QualifiedName '.' Identifier
-;
-
 Test ::=
 	  Declaration+ ;
+
+# Test: an interface with a type rule.
 
 Declaration interface ::=
 	  Decl1
 	| Decl2
 	| '{' Declaration+ '}'        {~Block}
+;
+
+# Test: a list of an exported terminal.
+
+@noast
+QualifiedName ::=
+	  Identifier
+	| QualifiedName '.' Identifier
 ;
 
 Decl1 ::=
