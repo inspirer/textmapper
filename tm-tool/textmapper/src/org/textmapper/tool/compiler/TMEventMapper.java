@@ -175,7 +175,6 @@ public class TMEventMapper {
 
 		// Pre-compute phrases for all nonterminals.
 		for (Symbol symbol : grammar.getSymbols()) {
-			if (TMDataUtil.hasProperty(symbol, "lookahead")) continue;
 			if (symbol instanceof Nonterminal) {
 				computePhrase((Nonterminal) symbol, false);
 			}
@@ -350,7 +349,7 @@ public class TMEventMapper {
 	}
 
 	private TMPhrase computePhrase(Nonterminal nt, boolean internal) {
-		if (TMDataUtil.hasProperty(nt, "void")) {
+		if (TMDataUtil.hasProperty(nt, "void") || TMDataUtil.hasProperty(nt, "lookahead")) {
 			return TMPhrase.empty(nt);
 		}
 

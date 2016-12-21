@@ -41,9 +41,9 @@ func To${self->baseNode()}(node Node) ${self->baseNode()} {
 		return nil
 	}
 	switch node.Type() {
-${foreach rangeType in syntax.rules.collectUnique(r|r->go_listener.rangeTypeName()).select(it|it != '').sort(it|it)-}
+${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
 	case ${rangeType->nodeTypeValueRef()}:
-		return &${rangeType->go_listener.asRangeTypeName()}{node}
+		return &${rangeType->asRangeTypeName()}{node}
 ${end-}
 	}
 	log.Fatalf("unknown node type %v\n", node.Type())
@@ -68,8 +68,8 @@ type ${self->baseNode()} interface {
 }
 
 // All types implement ${self->baseNode()}.
-${foreach name in syntax.rules.collectUnique(r|r->go_listener.rangeTypeName()).select(it|it != '').sort(it|it)-}
-func (${name->go_listener.asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
+${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
+func (${rangeType->asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
 
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
@@ -79,15 +79,15 @@ type Token struct {
 }
 
 ${else-}
-type ${cat->go_listener.asRangeTypeName()} interface {
+type ${cat->asRangeTypeName()} interface {
 	${cat->asInterfaceMethod()}()
 }
 
 // ${cat->asInterfaceMethod()}() ensures that only the following types can be
-// assigned to ${cat->go_listener.asRangeTypeName()}.
+// assigned to ${cat->asRangeTypeName()}.
 //
 ${foreach type in syntax.categoryTypes(cat)-}
-func (${type->go_listener.asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
+func (${type->asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
 
 ${end-}
@@ -97,18 +97,18 @@ ${end}
 ${template types-}
 // Types.
 
-${foreach rangeType in syntax.rules.collectUnique(r|r->go_listener.rangeTypeName()).select(it|it != '').sort(it|it)-}
+${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
 ${call type(rangeType)-}
 ${end-}
 
 ${end}
 
-${template type(name)-}
-type ${name->go_listener.asRangeTypeName()} struct {
+${template type(rangeType)-}
+type ${rangeType->asRangeTypeName()} struct {
 	${self->wrappedType()}
 }
-${foreach field in syntax.rangeFields(name)}
-func (n ${name->go_listener.asRangeTypeName()}) ${field->asGetterName()}() ${call getterType(field)} {
+${foreach field in syntax.rangeFields(rangeType)}
+func (n ${rangeType->asRangeTypeName()}) ${field->asGetterName()}() ${call getterType(field)} {
 ${call getterImpl(field)-}
 }
 ${end}
@@ -130,11 +130,11 @@ ${cached query isTokenType(name) =
     syntax.categoryTypes('TokenSet').contains(name) }
 
 ${cached query getterInnerType(field) =
-  field.interfaceType ? field.interfaceType->go_listener.asRangeTypeName() :
+  field.interfaceType ? field.interfaceType->asRangeTypeName() :
   field.types.length == 1
      ? (self->isTokenType(field.types.first())
          ? 'Token'
-         : field.types.first()->go_listener.asRangeTypeName()
+         : field.types.first()->asRangeTypeName()
        )
      : self->baseNode() }
 
@@ -183,12 +183,13 @@ ${query importPackage() = self->go.package() + '/' + self->package()}
 ${query wrappedType() = 'Node'}
 ${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
 
-${query asInterfaceMethod() = util.toFirstLower(self->go_listener.asRangeTypeName()) + 'Node' }
+${query asInterfaceMethod() = util.toFirstLower(self->asRangeTypeName()) + 'Node' }
 
 ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved()}
 
 ${query nodeTypeRef() = self->go.shortPackage() + '.' + self->go_listener.nodeTypeRef()}
-${query nodeTypeValueRef() = context->go.shortPackage() + '.' + self->go_listener.asRangeTypeName()}
-${query nodeTypeFilterRef() = context->go_filters.package() + '.' + self->go_listener.asRangeTypeName()}
+${query nodeTypeValueRef() = context->go.shortPackage() + '.' + self->asRangeTypeName()}
+${query nodeTypeFilterRef() = context->go_filters.package() + '.' + self->asRangeTypeName()}
+${query asRangeTypeName() = self->go_listener.asRangeTypeName()}
 
 ${query nodeFilterTypeRef() = self->go_filters.package() + '.' + self->go_filters.nodeFilterType()}

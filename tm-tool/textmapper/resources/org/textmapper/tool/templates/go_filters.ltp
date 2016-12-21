@@ -14,10 +14,10 @@ ${call imports-}
 ${call nodeFilterTypeImpl-}
 
 var (
-${foreach rangeType in syntax.rules.collectUnique(r|r->go_listener.rangeTypeName()).select(it|it != '').sort(it|it)-}
+${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
 	${rangeType->go_listener.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) bool { return t == ${rangeType->nodeTypeValueRef()} }
 ${end-}
-${foreach name in opts.reportTokens.select(tok| self->go_types.isTokenType(tok.nameText)).collect(tok|tok.nameText)-}
+${foreach name in opts.reportTokens.select(tok| self->go_types.isTokenType(tok.nameText)).collect(tok|tok->go_token.tokenNodeName())-}
 	${name->go_listener.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) bool { return t == ${name->nodeTypeValueRef()} }
 ${end-}
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}

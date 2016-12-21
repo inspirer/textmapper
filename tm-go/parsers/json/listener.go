@@ -18,7 +18,7 @@ const (
 	NonExistingType
 	MultiLineComment
 	InvalidToken
-	JSONString
+	JsonString
 	NodeTypeMax
 )
 

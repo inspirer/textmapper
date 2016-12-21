@@ -112,7 +112,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 			}
 			switch Token(p.next.symbol) {
 			case JSONSTRING:
-				p.listener(JSONString, p.next.offset, p.next.endoffset)
+				p.listener(JsonString, p.next.offset, p.next.endoffset)
 			}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken

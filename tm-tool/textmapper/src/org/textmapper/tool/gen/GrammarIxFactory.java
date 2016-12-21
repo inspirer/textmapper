@@ -67,6 +67,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 		if (o instanceof Rule) {
 			return new RuleIxObject((Rule) o);
 		}
+		if (o instanceof Name) {
+			return new NameIxObject((Name) o);
+		}
 		if (o instanceof Symbol) {
 			return new SymbolIxObject((Symbol) o);
 		}
@@ -580,6 +583,26 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Iterator asSequence() {
 			return iterator();
+		}
+	}
+
+	private class NameIxObject extends DefaultJavaIxObject {
+		private final Name name;
+
+		NameIxObject(Name name) {
+			super(name);
+			this.name = name;
+		}
+
+		@Override
+		public Object getProperty(SourceElement caller, String id) throws EvaluationException {
+			switch (id) {
+				case "CamelCase":
+					return name.camelCase(true);
+				case "camelCase":
+					return name.camelCase(false);
+			}
+			return super.getProperty(caller, id);
 		}
 	}
 }

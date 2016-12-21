@@ -312,7 +312,7 @@ func (p *Parser) reportIgnoredTokens() {
 		switch Token(c.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}
 		case ${tok->go_token.tokenName()}:
-			t = ${tok.name.text()->go_listener.asRangeTypeName()}
+			t = ${tok->go_token.tokenNodeName()->go_listener.asRangeTypeName()}
 ${end-}
 		default:
 			continue
@@ -543,7 +543,7 @@ ${if self->nonignoredReportTokens()-}
 			switch Token(p.next.symbol) {
 ${foreach tok in self->nonignoredReportTokens()-}
 			case ${tok->go_token.tokenName()}:
-				p.listener(${tok->go_token.tokenNodeName()}, p.next.offset, p.next.endoffset)
+				p.listener(${tok->go_token.tokenNodeName()->go_listener.asRangeTypeName()}, p.next.offset, p.next.endoffset)
 ${end-}
 			}
 ${end-}

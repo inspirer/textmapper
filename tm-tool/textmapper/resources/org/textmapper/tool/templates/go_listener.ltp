@@ -18,14 +18,14 @@ type ${self->nodeType()} int
 type Listener func(t ${self->nodeType()}, offset, endoffset int)
 
 const (
-${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
-	${rangeType}${if index == 0} ${self->nodeType()} = iota + 1${end}${call typedescr(rangeType)}
+${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '')-}
+	${rangeType->asRangeTypeName()}${if index == 0} ${self->nodeType()} = iota + 1${end}${call typedescr(rangeType)}
 ${end-}
 ${foreach extraType in opts.extraTypes-}
-	${extraType}
+	${extraType->asRangeTypeName()}
 ${end-}
-${foreach tok in opts.reportTokens-}
-	${tok->go_token.tokenNodeName()}
+${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
+	${name->asRangeTypeName()}
 ${end-}
 	${self->nodeType()}Max
 )
@@ -33,17 +33,17 @@ ${end-}
 ${call categories-}
 var rule${self->nodeType()} = [...]${self->nodeType()}{
 ${foreach rule in syntax.rules-}
-	${v = rule->rangeTypeName(), v == '' ? 0 : v}, // ${rule}
+	${v = rule.rangeType(), v == '' ? 0 : v->asRangeTypeName()}, // ${rule}
 ${end-}
 }
 
 var nodeTypeStr = [...]string{
 	"NONE",
-${foreach rangeType in syntax.rules.collectUnique(r|r->rangeTypeName()).select(it|it != '')-}
-	"${rangeType}",
+${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '')-}
+	"${rangeType->asRangeTypeName()}",
 ${end-}
 ${foreach extraType in opts.extraTypes-}
-	"${extraType}",
+	"${extraType->asRangeTypeName()}",
 ${end-}
 ${foreach tok in opts.reportTokens-}
 	"${tok->go_token.tokenName()}",
@@ -80,10 +80,6 @@ ${end}
 
 ${cached query reserve(scope) =
 	util.uniqueId(util.toCamelCase(self, true)->go.escapeGoReserved(), scope)}
-
-${cached query rangeTypeName() =
-    rangeType = self.rangeType(),
-    rangeType == '' ? '' : rangeType->reserve('__rangeTypes__')}
 
 ${cached query asRangeTypeName() =
     self->reserve('__rangeTypes__')}
