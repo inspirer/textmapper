@@ -11,7 +11,6 @@ import (
 	"testing"
 )
 
-const separator rune = '“'
 const nestedLeft rune = '«'
 const nestedRight rune = '»'
 const errorMarker rune = '§'
@@ -81,8 +80,8 @@ func splitInput(name, input string, t *testing.T) (out string, exp []node, error
 	var buffer bytes.Buffer
 	for index, ch := range input {
 		switch ch {
-		case separator, nestedRight, nestedLeft:
-			if ch == nestedLeft || ch == separator && len(stack) == 0 {
+		case nestedRight, nestedLeft:
+			if ch == nestedLeft {
 				stack = append(stack, buffer.Len())
 			} else if len(stack) == 0 {
 				t.Fatalf("Test %s: unexpected closing parenthesis at %d in `%s`", name, index, input)

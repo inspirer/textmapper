@@ -4,13 +4,13 @@ package ast
 
 import (
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
-	"github.com/inspirer/textmapper/tm-go/parsers/test/filters"
+	"github.com/inspirer/textmapper/tm-go/parsers/test/filter"
 )
 
 type Node interface {
 	Type() test.NodeType
-	Child(filter ...filters.NodeFilter) Node
-	Children(filter ...filters.NodeFilter) []Node
+	Child(filter ...filter.NodeFilter) Node
+	Children(filter ...filter.NodeFilter) []Node
 }
 
 // Interfaces.
@@ -48,7 +48,7 @@ type Block struct {
 }
 
 func (n Block) Declaration() []Declaration {
-	nodes := n.Children(filters.Declaration)
+	nodes := n.Children(filter.Declaration)
 	var result []Declaration = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTestNode(node).(Declaration))
@@ -61,7 +61,7 @@ type Decl1 struct {
 }
 
 func (n Decl1) Identifier() []Token {
-	nodes := n.Children(filters.Identifier)
+	nodes := n.Children(filter.Identifier)
 	var result []Token = make([]Token, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Token{node})
@@ -78,7 +78,7 @@ type Test struct {
 }
 
 func (n Test) Declaration() []Declaration {
-	nodes := n.Children(filters.Declaration)
+	nodes := n.Children(filter.Declaration)
 	var result []Declaration = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTestNode(node).(Declaration))

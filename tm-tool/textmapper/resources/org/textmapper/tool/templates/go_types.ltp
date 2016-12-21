@@ -22,7 +22,7 @@ ${end}
 ${template imports-}
 import (
 	"${self->go.importPackage()}"
-	"${self->go_filters.importPackage()}"
+	"${self->go_filter.importPackage()}"
 )
 
 ${end}
@@ -155,7 +155,7 @@ ${cached query isOneType(field) = field.types.length == 1 }
 ${query fieldFilterInternal(field) =
   field.interfaceType ? field.interfaceType->nodeTypeFilterRef() :
   field.types.length == 1 ? field.types.first()->nodeTypeFilterRef() :
-  self->go_filters.package() + '.OneOf(' +
+  self->go_filter.package() + '.OneOf(' +
           field.types.collect(it|it->nodeTypeValueRef())->util.join(', ') + ')'}
 
 ${query fieldFilter(field) =
@@ -201,9 +201,9 @@ ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved(
 
 ${query nodeTypeRef() = context->go.package() + '.' + self->go_listener.nodeTypeRef()}
 ${query nodeTypeValueRef() = context->go.package() + '.' + self->asRangeTypeName()}
-${query nodeTypeFilterRef() = context->go_filters.package() + '.' + self->asRangeTypeName()}
+${query nodeTypeFilterRef() = context->go_filter.package() + '.' + self->asRangeTypeName()}
 ${query asRangeTypeName() = self->go_listener.asRangeTypeName()}
 
-${query nodeFilterTypeRef() = self->go_filters.package() + '.' + self->go_filters.nodeFilterType()}
+${query nodeFilterTypeRef() = self->go_filter.package() + '.' + self->go_filter.nodeFilterType()}
 
 ${template customRules}${end}

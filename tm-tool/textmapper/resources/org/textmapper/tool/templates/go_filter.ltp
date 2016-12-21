@@ -1,6 +1,6 @@
 ${template main-}
 ${if self->go_parser.eventBased() && opts.eventFields-}
-${file self->filtersFilename()-}
+${file self->filterFilename()-}
 ${call unit-}
 ${end-}
 ${end-}
@@ -36,7 +36,7 @@ import (
 ${end}
 
 ${template nodeFilterTypeImpl-}
-type ${self->nodeFilterTypeRef()} func (nt ${self->nodeTypeRef()}) bool
+type ${self->nodeFilterType()} func (nt ${self->nodeTypeRef()}) bool
 
 ${end}
 
@@ -57,8 +57,8 @@ func OneOf(types ...${self->nodeTypeRef()}) ${self->nodeFilterTypeRef()} {
 }
 ${end}
 
-${query filtersFilename() = 'filters/filters.go'}
-${query package() = 'filters'}
+${query filterFilename() = 'filter/filter.go'}
+${query package() = 'filter'}
 ${query importPackage() = self->go.importPackage() + '/' + self->package()}
 
 ${query nodeTypeRef() = self->go_types.nodeTypeRef()}

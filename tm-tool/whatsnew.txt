@@ -1,7 +1,8 @@
 0.9.9
 -----
 
-....
+[+] Generate wrapper AST classes (eventFields = true).
+[+] @void, @lookahead
 
 0.9.8
 -----

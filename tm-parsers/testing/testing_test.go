@@ -6,7 +6,7 @@ import (
 )
 
 func TestSplitInput(t *testing.T) {
-	res, exp, errors := splitInput("test", `abc“de§f“cdf“q1“q2§`, t)
+	res, exp, errors := splitInput("test", `abc«de§f»cdf«q1»q2§`, t)
 	if string(res) != `abcdefcdfq1q2` {
 		t.Errorf("got: %s, want: abcdefcdfq1q2", res)
 	}
@@ -22,7 +22,7 @@ func TestSplitInput(t *testing.T) {
 		t.Errorf("got: %s, %v, %v, want: /*no expectations*/, [], []", res, exp, errors)
 	}
 
-	res, exp, errors = splitInput("test", `“abc“ «a«b§«c»»»`, t)
+	res, exp, errors = splitInput("test", `«abc» «a«b§«c»»»`, t)
 	if string(res) != `abc abc` {
 		t.Errorf("got: %s, want: abc abc", res)
 	}

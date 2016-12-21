@@ -2,7 +2,7 @@ package ast
 
 import (
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
-	"github.com/inspirer/textmapper/tm-go/parsers/test/filters"
+	"github.com/inspirer/textmapper/tm-go/parsers/test/filter"
 )
 
 type NodeImpl struct {
@@ -17,7 +17,7 @@ func (n *NodeImpl) Type() test.NodeType {
 	return n.tp
 }
 
-func (n *NodeImpl) Child(t ...filters.NodeFilter) Node {
+func (n *NodeImpl) Child(t ...filter.NodeFilter) Node {
 	//index := 0
 	//for _, child := range n.Children {
 	//
@@ -25,6 +25,6 @@ func (n *NodeImpl) Child(t ...filters.NodeFilter) Node {
 	return nil
 }
 
-func (n *NodeImpl) Children(t ...filters.NodeFilter) []Node {
+func (n *NodeImpl) Children(t ...filter.NodeFilter) []Node {
 	return nil
 }
