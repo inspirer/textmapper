@@ -11,7 +11,7 @@ ${call go_listener.main-}
 ${end}
 
 ${template parser-}
-package ${self->go.shortPackage()}
+package ${self->go.package()}
 
 import (
 	"fmt"
@@ -442,7 +442,7 @@ ${end}
 
 
 ${template parserTables-}
-package ${self->go.shortPackage()}
+package ${self->go.package()}
 
 import (
 	"fmt"

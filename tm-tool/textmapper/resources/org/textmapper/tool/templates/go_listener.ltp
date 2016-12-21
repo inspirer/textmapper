@@ -9,7 +9,7 @@ ${end}
 
 
 ${template listener-}
-package ${self->go.shortPackage()}
+package ${self->go.package()}
 
 import "fmt"
 

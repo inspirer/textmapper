@@ -21,7 +21,7 @@ ${end}
 
 ${template imports-}
 import (
-	"${self->go.package()}"
+	"${self->go.importPackage()}"
 	"${self->go_filters.importPackage()}"
 )
 
@@ -31,11 +31,7 @@ ${template factory-}
 ${call go.header-}
 package ${call package}
 
-import (
-	"log"
-	"${self->go.package()}"
-)
-
+${call factoryImports-}
 func To${self->baseNode()}(node Node) ${self->baseNode()} {
 	if node == nil {
 		return nil
@@ -45,11 +41,27 @@ ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it 
 	case ${rangeType->nodeTypeValueRef()}:
 		return &${rangeType->asRangeTypeName()}{node}
 ${end-}
+${if tokens = opts.reportTokens
+                   .collect(it|it->go_token.tokenNodeName()->nodeTypeValueRef())->util.join(', '),
+     tokens != '' -}
+	case ${tokens}:
+		return &Token{node}
+${end-}
+${call customRules-}
 	}
 	log.Fatalf("unknown node type %v\n", node.Type())
 	return nil
 }
 ${end}
+
+${template factoryImports-}
+import (
+	"log"
+	"${self->go.importPackage()}"
+)
+
+${end}
+
 
 ${template wrappedTypeTempl-}
 type Node interface {
@@ -67,18 +79,21 @@ type ${self->baseNode()} interface {
 	${self->baseNode()->asInterfaceMethod()}()
 }
 
-// All types implement ${self->baseNode()}.
-${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
-func (${rangeType->asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
-${end-}
-
-${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
-${if cat == 'TokenSet'-}
+${if syntax.categoryTypes('TokenSet').length > 0-}
 type Token struct {
 	${self->wrappedType()}
 }
 
-${else-}
+${end-}
+// All types implement ${self->baseNode()}.
+${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
+func (${rangeType->asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
+${end-}
+${if syntax.categoryTypes('TokenSet').length > 0-}
+func (Token) ${self->baseNode()->asInterfaceMethod()}() {}
+${end-}
+
+${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet')-}
 type ${cat->asRangeTypeName()} interface {
 	${cat->asInterfaceMethod()}()
 }
@@ -90,7 +105,6 @@ ${foreach type in syntax.categoryTypes(cat)-}
 func (${type->asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
 
-${end-}
 ${end-}
 ${end}
 
@@ -131,11 +145,9 @@ ${cached query isTokenType(name) =
 
 ${cached query getterInnerType(field) =
   field.interfaceType ? field.interfaceType->asRangeTypeName() :
+  field.types.forAll(t|self->isTokenType(t)) ? 'Token' :
   field.types.length == 1
-     ? (self->isTokenType(field.types.first())
-         ? 'Token'
-         : field.types.first()->asRangeTypeName()
-       )
+     ? field.types.first()->asRangeTypeName()
      : self->baseNode() }
 
 ${cached query isOneType(field) = field.types.length == 1 }
@@ -178,7 +190,7 @@ ${end}
 ${query astFilename() = 'ast/ast.go'}
 ${query factoryFilename() = 'ast/factory.go'}
 ${query package() = 'ast'}
-${query importPackage() = self->go.package() + '/' + self->package()}
+${query importPackage() = self->go.importPackage() + '/' + self->package()}
 
 ${query wrappedType() = 'Node'}
 ${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
@@ -187,9 +199,11 @@ ${query asInterfaceMethod() = util.toFirstLower(self->asRangeTypeName()) + 'Node
 
 ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved()}
 
-${query nodeTypeRef() = self->go.shortPackage() + '.' + self->go_listener.nodeTypeRef()}
-${query nodeTypeValueRef() = context->go.shortPackage() + '.' + self->asRangeTypeName()}
+${query nodeTypeRef() = context->go.package() + '.' + self->go_listener.nodeTypeRef()}
+${query nodeTypeValueRef() = context->go.package() + '.' + self->asRangeTypeName()}
 ${query nodeTypeFilterRef() = context->go_filters.package() + '.' + self->asRangeTypeName()}
 ${query asRangeTypeName() = self->go_listener.asRangeTypeName()}
 
 ${query nodeFilterTypeRef() = self->go_filters.package() + '.' + self->go_filters.nodeFilterType()}
+
+${template customRules}${end}

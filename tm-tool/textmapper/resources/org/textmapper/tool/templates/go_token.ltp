@@ -6,7 +6,7 @@ ${end-}
 ${end}
 
 ${template token-}
-package ${self->go.shortPackage()}
+package ${self->go.package()}
 
 import (
 	"fmt"

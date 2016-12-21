@@ -19,6 +19,10 @@ type JsNode interface {
 	jsNodeNode()
 }
 
+type Token struct {
+	Node
+}
+
 // All types implement JsNode.
 func (AdditiveExpression) jsNodeNode()       {}
 func (Arguments) jsNodeNode()                {}
@@ -145,6 +149,7 @@ func (VariableStatement) jsNodeNode()        {}
 func (WhileStatement) jsNodeNode()           {}
 func (WithStatement) jsNodeNode()            {}
 func (Yield) jsNodeNode()                    {}
+func (Token) jsNodeNode()                    {}
 
 type BindingPattern interface {
 	bindingPatternNode()
@@ -451,10 +456,6 @@ func (TryStatement) statementListItemNode()          {}
 func (VariableStatement) statementListItemNode()     {}
 func (WhileStatement) statementListItemNode()        {}
 func (WithStatement) statementListItemNode()         {}
-
-type Token struct {
-	Node
-}
 
 // Types.
 
@@ -1989,11 +1990,11 @@ type TemplateLiteral struct {
 	Node
 }
 
-func (n TemplateLiteral) Template() []JsNode {
+func (n TemplateLiteral) Template() []Token {
 	nodes := n.Children(filters.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail))
-	var result []JsNode = make([]JsNode, 0, len(nodes))
+	var result []Token = make([]Token, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToJsNode(node).(JsNode))
+		result = append(result, ToJsNode(node).(Token))
 	}
 	return result
 }

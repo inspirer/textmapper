@@ -30,7 +30,7 @@ ${end}
 
 ${template imports-}
 import (
-	"${self->go.package()}"
+	"${self->go.importPackage()}"
 )
 
 ${end}
@@ -59,7 +59,7 @@ ${end}
 
 ${query filtersFilename() = 'filters/filters.go'}
 ${query package() = 'filters'}
-${query importPackage() = self->go.package() + '/' + self->package()}
+${query importPackage() = self->go.importPackage() + '/' + self->package()}
 
 ${query nodeTypeRef() = self->go_types.nodeTypeRef()}
 ${query nodeTypeValueRef() = self->go_types.nodeTypeValueRef()}

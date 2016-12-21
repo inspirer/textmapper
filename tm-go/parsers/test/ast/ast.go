@@ -19,11 +19,16 @@ type TestNode interface {
 	testNodeNode()
 }
 
+type Token struct {
+	Node
+}
+
 // All types implement TestNode.
 func (Block) testNodeNode() {}
 func (Decl1) testNodeNode() {}
 func (Decl2) testNodeNode() {}
 func (Test) testNodeNode()  {}
+func (Token) testNodeNode() {}
 
 type Declaration interface {
 	declarationNode()
@@ -35,10 +40,6 @@ type Declaration interface {
 func (Block) declarationNode() {}
 func (Decl1) declarationNode() {}
 func (Decl2) declarationNode() {}
-
-type Token struct {
-	Node
-}
 
 // Types.
 

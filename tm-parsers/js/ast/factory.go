@@ -262,6 +262,8 @@ func ToJsNode(node Node) JsNode {
 		return &WithStatement{node}
 	case js.Yield:
 		return &Yield{node}
+	case js.MultiLineComment, js.SingleLineComment, js.InvalidToken, js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail:
+		return &Token{node}
 	}
 	log.Fatalf("unknown node type %v\n", node.Type())
 	return nil

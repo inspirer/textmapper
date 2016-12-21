@@ -20,6 +20,8 @@ func ToTestNode(node Node) TestNode {
 		return &Decl2{node}
 	case test.Test:
 		return &Test{node}
+	case test.MultiLineComment, test.SingleLineComment, test.InvalidToken, test.Identifier:
+		return &Token{node}
 	}
 	log.Fatalf("unknown node type %v\n", node.Type())
 	return nil
