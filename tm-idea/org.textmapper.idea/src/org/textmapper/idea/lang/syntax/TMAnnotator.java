@@ -65,8 +65,8 @@ public class TMAnnotator implements Annotator {
 		if (element instanceof TmAnnotation) {
 			for (PsiElement el = element.getFirstChild(); el instanceof TmToken || el instanceof PsiWhiteSpace; el = el.getNextSibling()) {
 				if (el instanceof PsiWhiteSpace) continue;
-				IElementType type = ((TmToken) el).getTokenType();
-				if (!(type == TMTokenTypes.OP_AT || type == TMTokenTypes.ID)) break;
+				TMElementType type = (TMElementType) ((TmToken) el).getTokenType();
+				if (!(type == TMTokenTypes.OP_AT || type == TMTokenTypes.ID || isSoft(type.getSymbol()))) break;
 				Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
 				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.ANNOTATION);
 			}
