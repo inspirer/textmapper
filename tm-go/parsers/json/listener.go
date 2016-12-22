@@ -66,9 +66,9 @@ var nodeTypeStr = [...]string{
 	"JSONMember",
 	"JSONArray",
 	"NonExistingType",
-	"MULTILINECOMMENT",
-	"INVALID_TOKEN",
-	"JSONSTRING",
+	"MultiLineComment",
+	"InvalidToken",
+	"JsonString",
 }
 
 func (t NodeType) String() string {

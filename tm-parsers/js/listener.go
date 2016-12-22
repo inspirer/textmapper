@@ -2109,13 +2109,13 @@ var nodeTypeStr = [...]string{
 	"JSXExpression",
 	"JSXText",
 	"InsertedSemicolon",
-	"MULTILINECOMMENT",
-	"SINGLELINECOMMENT",
-	"INVALID_TOKEN",
-	"NOSUBSTITUTIONTEMPLATE",
-	"TEMPLATEHEAD",
-	"TEMPLATEMIDDLE",
-	"TEMPLATETAIL",
+	"MultiLineComment",
+	"SingleLineComment",
+	"InvalidToken",
+	"NoSubstitutionTemplate",
+	"TemplateHead",
+	"TemplateMiddle",
+	"TemplateTail",
 }
 
 func (t NodeType) String() string {

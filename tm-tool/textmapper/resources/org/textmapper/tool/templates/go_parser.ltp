@@ -312,7 +312,7 @@ func (p *Parser) reportIgnoredTokens() {
 		switch Token(c.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}
 		case ${tok->go_token.tokenName()}:
-			t = ${tok->go_token.tokenNodeName()->go_listener.asRangeTypeName()}
+			t = ${tok->go_token.tokenNodeName()->nodeTypeValueRef()}
 ${end-}
 		default:
 			continue
@@ -543,7 +543,7 @@ ${if self->nonignoredReportTokens()-}
 			switch Token(p.next.symbol) {
 ${foreach tok in self->nonignoredReportTokens()-}
 			case ${tok->go_token.tokenName()}:
-				p.listener(${tok->go_token.tokenNodeName()->go_listener.asRangeTypeName()}, p.next.offset, p.next.endoffset)
+				p.listener(${tok->go_token.tokenNodeName()->nodeTypeValueRef()}, p.next.offset, p.next.endoffset)
 ${end-}
 			}
 ${end-}
@@ -563,3 +563,5 @@ ${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCo
 ${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_token.isSpace(tok))}
 
 ${cached query nonignoredReportTokens() = opts.reportTokens.select(tok|!self->go_token.isSpace(tok))}
+
+${query nodeTypeValueRef() = self->go_listener.nodeTypeValueRef()}

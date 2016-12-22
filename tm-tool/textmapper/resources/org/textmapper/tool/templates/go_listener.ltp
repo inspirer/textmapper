@@ -33,20 +33,20 @@ ${end-}
 ${call categories-}
 var rule${self->nodeType()} = [...]${self->nodeType()}{
 ${foreach rule in syntax.rules-}
-	${v = rule.rangeType(), v == '' ? 0 : v->asRangeTypeName()}, // ${rule}
+	${v = rule.rangeType(), v == '' ? 0 : v->nodeTypeValueRef()}, // ${rule}
 ${end-}
 }
 
 var nodeTypeStr = [...]string{
 	"NONE",
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '')-}
-	"${rangeType->asRangeTypeName()}",
+	"${rangeType->nodeTypeValueString()}",
 ${end-}
 ${foreach extraType in opts.extraTypes-}
-	"${extraType->asRangeTypeName()}",
+	"${extraType->nodeTypeValueString()}",
 ${end-}
-${foreach tok in opts.reportTokens-}
-	"${tok->go_token.tokenName()}",
+${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
+	"${name->nodeTypeValueString()}",
 ${end-}
 }
 
@@ -70,7 +70,7 @@ ${template categories-}
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
 var ${cat->asRangeTypeName()} = []NodeType{
 ${foreach type in syntax.categoryTypes(cat)-}
-    ${type->asRangeTypeName()},
+    ${type->nodeTypeValueRef()},
 ${end-}
 }
 
@@ -87,3 +87,5 @@ ${cached query asRangeTypeName() =
 ${query nodeType() = 'NodeType'}
 
 ${query nodeTypeRef() = self->nodeType()}
+${query nodeTypeValueRef() = self->asRangeTypeName()}
+${query nodeTypeValueString() = self->asRangeTypeName()}

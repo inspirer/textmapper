@@ -21,7 +21,7 @@ ${foreach name in opts.reportTokens.select(tok| self->go_types.isTokenType(tok.n
 	${name->go_listener.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) bool { return t == ${name->nodeTypeValueRef()} }
 ${end-}
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
-	${cat->go_listener.asRangeTypeName()} = OneOf(${cat->nodeTypeValueRef()}...)
+	${cat->go_listener.asRangeTypeName()} = OneOf(${cat->catTypeValueRef()}...)
 ${end-}
 )
 
@@ -63,6 +63,7 @@ ${query importPackage() = self->go.importPackage() + '/' + self->package()}
 
 ${query nodeTypeRef() = self->go_types.nodeTypeRef()}
 ${query nodeTypeValueRef() = self->go_types.nodeTypeValueRef()}
+${query catTypeValueRef() = self->nodeTypeValueRef()}
 
 ${query nodeFilterType() = 'NodeFilter'}
 ${query nodeFilterTypeRef() = self->nodeFilterType()}

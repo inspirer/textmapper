@@ -49,10 +49,10 @@ var nodeTypeStr = [...]string{
 	"Block",
 	"Decl1",
 	"Decl2",
-	"MULTILINECOMMENT",
-	"SINGLELINECOMMENT",
-	"INVALID_TOKEN",
-	"IDENTIFIER",
+	"MultiLineComment",
+	"SingleLineComment",
+	"InvalidToken",
+	"Identifier",
 }
 
 func (t NodeType) String() string {
