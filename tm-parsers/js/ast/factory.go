@@ -7,264 +7,264 @@ import (
 	"log"
 )
 
-func ToJsNode(node Node) JsNode {
-	if node == nil {
+func ToJsNode(n Node) JsNode {
+	if n == nil {
 		return nil
 	}
-	switch node.Type() {
+	switch n.Type() {
 	case js.AdditiveExpression:
-		return &AdditiveExpression{node}
+		return &AdditiveExpression{n}
 	case js.Arguments:
-		return &Arguments{node}
+		return &Arguments{n}
 	case js.ArrayLiteral:
-		return &ArrayLiteral{node}
+		return &ArrayLiteral{n}
 	case js.ArrayPattern:
-		return &ArrayPattern{node}
+		return &ArrayPattern{n}
 	case js.ArrowFunction:
-		return &ArrowFunction{node}
+		return &ArrowFunction{n}
 	case js.AssignmentExpression:
-		return &AssignmentExpression{node}
+		return &AssignmentExpression{n}
 	case js.AssignmentOperator:
-		return &AssignmentOperator{node}
+		return &AssignmentOperator{n}
 	case js.BindingIdentifier:
-		return &BindingIdentifier{node}
+		return &BindingIdentifier{n}
 	case js.BindingRestElement:
-		return &BindingRestElement{node}
+		return &BindingRestElement{n}
 	case js.BitwiseANDExpression:
-		return &BitwiseANDExpression{node}
+		return &BitwiseANDExpression{n}
 	case js.BitwiseORExpression:
-		return &BitwiseORExpression{node}
+		return &BitwiseORExpression{n}
 	case js.BitwiseXORExpression:
-		return &BitwiseXORExpression{node}
+		return &BitwiseXORExpression{n}
 	case js.Block:
-		return &Block{node}
+		return &Block{n}
 	case js.Body:
-		return &Body{node}
+		return &Body{n}
 	case js.BreakStatement:
-		return &BreakStatement{node}
+		return &BreakStatement{n}
 	case js.CallExpression:
-		return &CallExpression{node}
+		return &CallExpression{n}
 	case js.Case:
-		return &Case{node}
+		return &Case{n}
 	case js.Catch:
-		return &Catch{node}
+		return &Catch{n}
 	case js.Class:
-		return &Class{node}
+		return &Class{n}
 	case js.ClassBody:
-		return &ClassBody{node}
+		return &ClassBody{n}
 	case js.ClassExpr:
-		return &ClassExpr{node}
+		return &ClassExpr{n}
 	case js.CommaExpression:
-		return &CommaExpression{node}
+		return &CommaExpression{n}
 	case js.ComputedPropertyName:
-		return &ComputedPropertyName{node}
+		return &ComputedPropertyName{n}
 	case js.ConciseBody:
-		return &ConciseBody{node}
+		return &ConciseBody{n}
 	case js.ConditionalExpression:
-		return &ConditionalExpression{node}
+		return &ConditionalExpression{n}
 	case js.ContinueStatement:
-		return &ContinueStatement{node}
+		return &ContinueStatement{n}
 	case js.DebuggerStatement:
-		return &DebuggerStatement{node}
+		return &DebuggerStatement{n}
 	case js.Default:
-		return &Default{node}
+		return &Default{n}
 	case js.DoWhileStatement:
-		return &DoWhileStatement{node}
+		return &DoWhileStatement{n}
 	case js.ElementBinding:
-		return &ElementBinding{node}
+		return &ElementBinding{n}
 	case js.EmptyDecl:
-		return &EmptyDecl{node}
+		return &EmptyDecl{n}
 	case js.EmptyStatement:
-		return &EmptyStatement{node}
+		return &EmptyStatement{n}
 	case js.EqualityExpression:
-		return &EqualityExpression{node}
+		return &EqualityExpression{n}
 	case js.ExponentiationExpression:
-		return &ExponentiationExpression{node}
+		return &ExponentiationExpression{n}
 	case js.ExportClause:
-		return &ExportClause{node}
+		return &ExportClause{n}
 	case js.ExportDeclaration:
-		return &ExportDeclaration{node}
+		return &ExportDeclaration{n}
 	case js.ExportDefault:
-		return &ExportDefault{node}
+		return &ExportDefault{n}
 	case js.ExportSpecifier:
-		return &ExportSpecifier{node}
+		return &ExportSpecifier{n}
 	case js.ExpressionStatement:
-		return &ExpressionStatement{node}
+		return &ExpressionStatement{n}
 	case js.Extends:
-		return &Extends{node}
+		return &Extends{n}
 	case js.Finally:
-		return &Finally{node}
+		return &Finally{n}
 	case js.ForBinding:
-		return &ForBinding{node}
+		return &ForBinding{n}
 	case js.ForCondition:
-		return &ForCondition{node}
+		return &ForCondition{n}
 	case js.ForFinalExpression:
-		return &ForFinalExpression{node}
+		return &ForFinalExpression{n}
 	case js.ForInStatement:
-		return &ForInStatement{node}
+		return &ForInStatement{n}
 	case js.ForInStatementWithVar:
-		return &ForInStatementWithVar{node}
+		return &ForInStatementWithVar{n}
 	case js.ForOfStatement:
-		return &ForOfStatement{node}
+		return &ForOfStatement{n}
 	case js.ForOfStatementWithVar:
-		return &ForOfStatementWithVar{node}
+		return &ForOfStatementWithVar{n}
 	case js.ForStatement:
-		return &ForStatement{node}
+		return &ForStatement{n}
 	case js.ForStatementWithVar:
-		return &ForStatementWithVar{node}
+		return &ForStatementWithVar{n}
 	case js.Function:
-		return &Function{node}
+		return &Function{n}
 	case js.FunctionExpression:
-		return &FunctionExpression{node}
+		return &FunctionExpression{n}
 	case js.Generator:
-		return &Generator{node}
+		return &Generator{n}
 	case js.GeneratorExpression:
-		return &GeneratorExpression{node}
+		return &GeneratorExpression{n}
 	case js.GeneratorMethod:
-		return &GeneratorMethod{node}
+		return &GeneratorMethod{n}
 	case js.Getter:
-		return &Getter{node}
+		return &Getter{n}
 	case js.IdentifierReference:
-		return &IdentifierReference{node}
+		return &IdentifierReference{n}
 	case js.IfStatement:
-		return &IfStatement{node}
+		return &IfStatement{n}
 	case js.ImportDeclaration:
-		return &ImportDeclaration{node}
+		return &ImportDeclaration{n}
 	case js.ImportSpecifier:
-		return &ImportSpecifier{node}
+		return &ImportSpecifier{n}
 	case js.IndexAccess:
-		return &IndexAccess{node}
+		return &IndexAccess{n}
 	case js.Initializer:
-		return &Initializer{node}
+		return &Initializer{n}
 	case js.JSXAttributeName:
-		return &JSXAttributeName{node}
+		return &JSXAttributeName{n}
 	case js.JSXClosingElement:
-		return &JSXClosingElement{node}
+		return &JSXClosingElement{n}
 	case js.JSXElement:
-		return &JSXElement{node}
+		return &JSXElement{n}
 	case js.JSXElementName:
-		return &JSXElementName{node}
+		return &JSXElementName{n}
 	case js.JSXExpression:
-		return &JSXExpression{node}
+		return &JSXExpression{n}
 	case js.JSXLiteral:
-		return &JSXLiteral{node}
+		return &JSXLiteral{n}
 	case js.JSXNormalAttribute:
-		return &JSXNormalAttribute{node}
+		return &JSXNormalAttribute{n}
 	case js.JSXOpeningElement:
-		return &JSXOpeningElement{node}
+		return &JSXOpeningElement{n}
 	case js.JSXSelfClosingElement:
-		return &JSXSelfClosingElement{node}
+		return &JSXSelfClosingElement{n}
 	case js.JSXSpreadAttribute:
-		return &JSXSpreadAttribute{node}
+		return &JSXSpreadAttribute{n}
 	case js.JSXText:
-		return &JSXText{node}
+		return &JSXText{n}
 	case js.LabelIdentifier:
-		return &LabelIdentifier{node}
+		return &LabelIdentifier{n}
 	case js.LabelledStatement:
-		return &LabelledStatement{node}
+		return &LabelledStatement{n}
 	case js.LexicalBinding:
-		return &LexicalBinding{node}
+		return &LexicalBinding{n}
 	case js.LexicalDeclaration:
-		return &LexicalDeclaration{node}
+		return &LexicalDeclaration{n}
 	case js.Literal:
-		return &Literal{node}
+		return &Literal{n}
 	case js.LiteralPropertyName:
-		return &LiteralPropertyName{node}
+		return &LiteralPropertyName{n}
 	case js.LogicalANDExpression:
-		return &LogicalANDExpression{node}
+		return &LogicalANDExpression{n}
 	case js.LogicalORExpression:
-		return &LogicalORExpression{node}
+		return &LogicalORExpression{n}
 	case js.Method:
-		return &Method{node}
+		return &Method{n}
 	case js.Module:
-		return &Module{node}
+		return &Module{n}
 	case js.ModuleSpecifier:
-		return &ModuleSpecifier{node}
+		return &ModuleSpecifier{n}
 	case js.MultiplicativeExpression:
-		return &MultiplicativeExpression{node}
+		return &MultiplicativeExpression{n}
 	case js.NameSpaceImport:
-		return &NameSpaceImport{node}
+		return &NameSpaceImport{n}
 	case js.NamedImports:
-		return &NamedImports{node}
+		return &NamedImports{n}
 	case js.NewExpression:
-		return &NewExpression{node}
+		return &NewExpression{n}
 	case js.NewTarget:
-		return &NewTarget{node}
+		return &NewTarget{n}
 	case js.ObjectLiteral:
-		return &ObjectLiteral{node}
+		return &ObjectLiteral{n}
 	case js.ObjectPattern:
-		return &ObjectPattern{node}
+		return &ObjectPattern{n}
 	case js.Parameter:
-		return &Parameter{node}
+		return &Parameter{n}
 	case js.Parameters:
-		return &Parameters{node}
+		return &Parameters{n}
 	case js.Parenthesized:
-		return &Parenthesized{node}
+		return &Parenthesized{n}
 	case js.PostDec:
-		return &PostDec{node}
+		return &PostDec{n}
 	case js.PostInc:
-		return &PostInc{node}
+		return &PostInc{n}
 	case js.PreDec:
-		return &PreDec{node}
+		return &PreDec{n}
 	case js.PreInc:
-		return &PreInc{node}
+		return &PreInc{n}
 	case js.Property:
-		return &Property{node}
+		return &Property{n}
 	case js.PropertyAccess:
-		return &PropertyAccess{node}
+		return &PropertyAccess{n}
 	case js.PropertyBinding:
-		return &PropertyBinding{node}
+		return &PropertyBinding{n}
 	case js.Regexp:
-		return &Regexp{node}
+		return &Regexp{n}
 	case js.RelationalExpression:
-		return &RelationalExpression{node}
+		return &RelationalExpression{n}
 	case js.RestParameter:
-		return &RestParameter{node}
+		return &RestParameter{n}
 	case js.ReturnStatement:
-		return &ReturnStatement{node}
+		return &ReturnStatement{n}
 	case js.Setter:
-		return &Setter{node}
+		return &Setter{n}
 	case js.ShiftExpression:
-		return &ShiftExpression{node}
+		return &ShiftExpression{n}
 	case js.ShorthandProperty:
-		return &ShorthandProperty{node}
+		return &ShorthandProperty{n}
 	case js.SingleNameBinding:
-		return &SingleNameBinding{node}
+		return &SingleNameBinding{n}
 	case js.SpreadElement:
-		return &SpreadElement{node}
+		return &SpreadElement{n}
 	case js.StaticMethod:
-		return &StaticMethod{node}
+		return &StaticMethod{n}
 	case js.SuperExpression:
-		return &SuperExpression{node}
+		return &SuperExpression{n}
 	case js.SwitchStatement:
-		return &SwitchStatement{node}
+		return &SwitchStatement{n}
 	case js.SyntaxError:
-		return &SyntaxError{node}
+		return &SyntaxError{n}
 	case js.TaggedTemplate:
-		return &TaggedTemplate{node}
+		return &TaggedTemplate{n}
 	case js.TemplateLiteral:
-		return &TemplateLiteral{node}
+		return &TemplateLiteral{n}
 	case js.This:
-		return &This{node}
+		return &This{n}
 	case js.ThrowStatement:
-		return &ThrowStatement{node}
+		return &ThrowStatement{n}
 	case js.TryStatement:
-		return &TryStatement{node}
+		return &TryStatement{n}
 	case js.UnaryExpression:
-		return &UnaryExpression{node}
+		return &UnaryExpression{n}
 	case js.VariableDeclaration:
-		return &VariableDeclaration{node}
+		return &VariableDeclaration{n}
 	case js.VariableStatement:
-		return &VariableStatement{node}
+		return &VariableStatement{n}
 	case js.WhileStatement:
-		return &WhileStatement{node}
+		return &WhileStatement{n}
 	case js.WithStatement:
-		return &WithStatement{node}
+		return &WithStatement{n}
 	case js.Yield:
-		return &Yield{node}
+		return &Yield{n}
 	case js.MultiLineComment, js.SingleLineComment, js.InvalidToken, js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail:
-		return &Token{node}
+		return &Token{n}
 	}
-	log.Fatalf("unknown node type %v\n", node.Type())
+	log.Fatalf("unknown node type %v\n", n.Type())
 	return nil
 }

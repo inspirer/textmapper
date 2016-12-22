@@ -7,22 +7,22 @@ import (
 	"log"
 )
 
-func ToTestNode(node Node) TestNode {
-	if node == nil {
+func ToTestNode(n Node) TestNode {
+	if n == nil {
 		return nil
 	}
-	switch node.Type() {
+	switch n.Type() {
 	case test.Block:
-		return &Block{node}
+		return &Block{n}
 	case test.Decl1:
-		return &Decl1{node}
+		return &Decl1{n}
 	case test.Decl2:
-		return &Decl2{node}
+		return &Decl2{n}
 	case test.Test:
-		return &Test{node}
+		return &Test{n}
 	case test.MultiLineComment, test.SingleLineComment, test.InvalidToken, test.Identifier:
-		return &Token{node}
+		return &Token{n}
 	}
-	log.Fatalf("unknown node type %v\n", node.Type())
+	log.Fatalf("unknown node type %v\n", n.Type())
 	return nil
 }

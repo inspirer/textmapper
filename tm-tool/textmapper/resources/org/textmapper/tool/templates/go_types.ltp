@@ -13,7 +13,9 @@ ${template unit-}
 ${call go.header-}
 package ${self->package()}
 
+${if self->localWrappedType()-}
 ${call wrappedTypeTempl-}
+${end-}
 ${call interfaces-}
 ${call types-}
 ${end}
@@ -22,31 +24,31 @@ ${template factory-}
 ${call go.header-}
 package ${self->package()}
 
-func To${self->baseNode()}(node Node) ${self->baseNode()} {
-	if node == nil {
+func To${self->baseNode()}(n ${self->wrappedTypeRef()}) ${self->baseNode()} {
+	if n == nil {
 		return nil
 	}
-	switch node.Type() {
+	switch n.Type() {
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
 	case ${rangeType->go_listener.nodeTypeValueRef()}:
-		return &${rangeType->astClassRef()}{node}
+		return &${rangeType->astClassRef()}{n}
 ${end-}
 ${if tokens = opts.reportTokens
                    .collect(it|it->go_token.tokenNodeName()->go_listener.nodeTypeValueRef())->util.join(', '),
      tokens != '' -}
 	case ${tokens}:
-		return &Token{node}
+		return &Token{n}
 ${end-}
 ${call customRules-}
 	}
-	"log".Fatalf("unknown node type %v\n", node.Type())
+	"log".Fatalf("unknown node type %v\n", n.Type())
 	return nil
 }
 ${end}
 
 
 ${template wrappedTypeTempl-}
-type Node interface {
+type ${self->wrappedTypeRef()->go.declarationName()} interface {
 	Type() ${self->go_listener.nodeTypeRef()}
 	Child(filter ...${self->go_filter.nodeFilterTypeRef()}) Node
 	Children(filter ...${self->go_filter.nodeFilterTypeRef()}) []Node
@@ -63,7 +65,7 @@ type ${self->baseNode()} interface {
 
 ${if syntax.categoryTypes('TokenSet').length > 0-}
 type Token struct {
-	${self->wrappedType()}
+	${self->wrappedTypeRef()}
 }
 
 ${end-}
@@ -101,7 +103,7 @@ ${end}
 
 ${template type(rangeType)-}
 type ${rangeType->astClassRef()->go.declarationName()} struct {
-	${self->wrappedType()}
+	${self->wrappedTypeRef()}
 }
 ${foreach field in syntax.rangeFields(rangeType)}
 func (n ${rangeType->astClassRef()->go.declarationName()}) ${field->asGetterName()}() ${call getterType(field)} {
@@ -173,7 +175,8 @@ ${query astFilename() = 'ast/ast.go'}
 ${query factoryFilename() = 'ast/factory.go'}
 ${query package() = self->go.package() + '/ast'}
 
-${query wrappedType() = 'Node'}
+${query localWrappedType() = self->package()->go.element(self->wrappedTypeRef()->go.declarationName()) == self->wrappedTypeRef()}
+${query wrappedTypeRef() = self->package()->go.element('Node')}
 ${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
 
 ${query asInterfaceMethod() = util.toFirstLower(self->go_listener.asRangeTypeName()) + 'Node' }
