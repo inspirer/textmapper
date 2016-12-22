@@ -1,3 +1,8 @@
+0.9.10
+-----
+
+[+] Automatic import management in Go templates. "fmt".Sprintf -> fmt.Sprintf + an import.
+
 0.9.9
 -----
 
