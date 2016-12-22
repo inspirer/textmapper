@@ -63,7 +63,7 @@ type ${self->baseNode()} interface {
 	${self->baseNode()->asInterfaceMethod()}()
 }
 
-${if syntax.categoryTypes('TokenSet').length > 0-}
+${if opts.reportTokens.length > 0-}
 type Token struct {
 	${self->wrappedTypeRef()}
 }
@@ -73,7 +73,7 @@ ${end-}
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
 func (${rangeType->astClassRef()->go.declarationName()}) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
-${if syntax.categoryTypes('TokenSet').length > 0-}
+${if opts.reportTokens.length > 0-}
 func (Token) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
 
