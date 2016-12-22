@@ -60,6 +60,8 @@ public class GeneratedFile {
 		String data = contents;
 		if (name.endsWith(".java")) {
 			data = new JavaPostProcessor(data).process();
+		} else if (name.endsWith(".go")) {
+			data = new GoPostProcessor(data).process();
 		}
 		return FileUtil.fixWhitespaces(data, forceLF ? "\n" : NL, expandTabs);
 	}
