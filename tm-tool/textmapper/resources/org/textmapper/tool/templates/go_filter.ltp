@@ -8,42 +8,37 @@ ${end}
 
 ${template unit-}
 ${call go.header-}
-package ${call package}
+package ${self->package()}
 
-${call imports-}
+${if self->localNodeFilterType()-}
 ${call nodeFilterTypeImpl-}
-
+${end-}
 var (
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
-	${rangeType->go_listener.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) bool { return t == ${rangeType->nodeTypeValueRef()} }
+	${rangeType->nodeTypeFilterRef()->go.declarationName()} = func(t ${self->go_listener.nodeTypeRef()}) bool { return t == ${rangeType->go_listener.nodeTypeValueRef()} }
 ${end-}
 ${foreach name in opts.reportTokens.select(tok| self->go_types.isTokenType(tok.nameText)).collect(tok|tok->go_token.tokenNodeName())-}
-	${name->go_listener.asRangeTypeName()} = func(t ${self->nodeTypeRef()}) bool { return t == ${name->nodeTypeValueRef()} }
+	${name->nodeTypeFilterRef()->go.declarationName()} = func(t ${self->go_listener.nodeTypeRef()}) bool { return t == ${name->go_listener.nodeTypeValueRef()} }
 ${end-}
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
-	${cat->go_listener.asRangeTypeName()} = OneOf(${cat->catTypeValueRef()}...)
+	${cat->nodeTypeFilterRef()->go.declarationName()} = ${self->oneOfRef()}(${cat->go_listener.interfaceEnumValueRef()}...)
 ${end-}
 )
 
+${if self->localOneOf()-}
 ${call filterFunc-}
-${end}
-
-${template imports-}
-import (
-	"${self->go.importPackage()}"
-)
-
+${end-}
 ${end}
 
 ${template nodeFilterTypeImpl-}
-type ${self->nodeFilterType()} func (nt ${self->nodeTypeRef()}) bool
+type ${self->nodeFilterType()} func (nt ${self->go_listener.nodeTypeRef()}) bool
 
 ${end}
 
 ${template filterFunc-}
-func OneOf(types ...${self->nodeTypeRef()}) ${self->nodeFilterTypeRef()} {
+func ${self->oneOfRef()->go.declarationName()}(types ...${self->go_listener.nodeTypeRef()}) ${self->nodeFilterTypeRef()} {
 	if len(types) == 0 {
-		return func(${self->nodeTypeRef()}) bool { return false }
+		return func(${self->go_listener.nodeTypeRef()}) bool { return false }
 	}
 	const bits = 32
 	size := (int(types[len(types)-1]) + bits - 1) / bits
@@ -51,19 +46,21 @@ func OneOf(types ...${self->nodeTypeRef()}) ${self->nodeFilterTypeRef()} {
 	for _, t := range types {
 		bitarr[uint(t)/bits] |= 1 << (uint(t) % bits)
 	}
-	return func(t ${self->nodeTypeRef()}) bool {
+	return func(t ${self->go_listener.nodeTypeRef()}) bool {
 		return bitarr[uint(t)/bits]&(1<<(uint(t)%bits)) != 0
 	}
 }
 ${end}
 
 ${query filterFilename() = 'filter/filter.go'}
-${query package() = 'filter'}
-${query importPackage() = self->go.importPackage() + '/' + self->package()}
+${query package() = self->go.package() + '/filter'}
 
-${query nodeTypeRef() = self->go_types.nodeTypeRef()}
-${query nodeTypeValueRef() = self->go_types.nodeTypeValueRef()}
-${query catTypeValueRef() = self->nodeTypeValueRef()}
+${query localNodeFilterType() = self->package()->go.element(self->nodeFilterType()) == self->nodeFilterTypeRef()}
 
-${query nodeFilterType() = 'NodeFilter'}
-${query nodeFilterTypeRef() = self->nodeFilterType()}
+${query nodeFilterType() = self->nodeFilterTypeRef()->go.declarationName()}
+${query nodeFilterTypeRef() = self->package()->go.element('NodeFilter')}
+
+${query nodeTypeFilterRef() = self->package()->go.element(self->go_listener.asRangeTypeName())}
+
+${query localOneOf() = self->package()->go.element(self->oneOfRef()->go.declarationName()) == self->oneOfRef()}
+${query oneOfRef() = self->package()->go.element('OneOf')}

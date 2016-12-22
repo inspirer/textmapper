@@ -11,12 +11,6 @@ ${end}
 
 ${template lexer-}
 package ${self->go.package()}
-
-import (
-	"strings"
-	"unicode/utf8"
-${call imports-}
-)
 ${if syntax.lexerStates.size() > 1}
 // Lexer states.
 const (
@@ -27,7 +21,8 @@ ${end-}
 ${end-}
 ${if !self->go_token.hasInvalidToken() || opts.reportInvalidRunes}
 ${call go.errorHandler-}
-${end}
+${end-}
+
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
@@ -77,7 +72,7 @@ ${end-}
 	l.State = 0
 ${call initStateVars-}
 
-	if strings.HasPrefix(source, bomSeq) {
+	if "strings".HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
 	}
 
@@ -86,9 +81,9 @@ ${call initStateVars-}
 		r, w := rune(l.source[l.offset]), 1
 		if r >= 0x80 {
 			// not ASCII
-			r, w = utf8.DecodeRuneInString(l.source[l.offset:])
+			r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
 ${if opts.reportInvalidRunes-}
-			if r == utf8.RuneError && w == 1 || r == bom {
+			if r == "unicode/utf8".RuneError && w == 1 || r == bom {
 				l.invalidRune(r, w)
 			}
 ${end-}
@@ -156,9 +151,9 @@ ${end-}
 			r, w := rune(l.source[l.offset]), 1
 			if r >= 0x80 {
 				// not ASCII
-				r, w = utf8.DecodeRuneInString(l.source[l.offset:])
+				r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
 ${if opts.reportInvalidRunes-}
-				if r == utf8.RuneError && w == 1 || r == bom {
+				if r == "unicode/utf8".RuneError && w == 1 || r == bom {
 					l.invalidRune(r, w)
 				}
 ${end-}
@@ -242,7 +237,7 @@ ${call onAfterNext-}
 ${if opts.reportInvalidRunes}
 func (l *Lexer) invalidRune(r rune, w int) {
 	switch r {
-	case utf8.RuneError:
+	case "unicode/utf8".RuneError:
 		l.err(l.line, l.offset, w, "illegal UTF-8 encoding")
 	case bom:
 		l.err(l.line, l.offset, w, "illegal byte order mark")
@@ -386,8 +381,6 @@ ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id)
 ${cached query stateId() = 'State' + util.uniqueId(util.toCamelCase(self.nameText.replace('-', '_'), true), '__states__')}
 
 ${cached query canInlineLexerRules() = syntax.canInlineLexerRules}
-
-${template imports}${end}
 
 ${template onAfterNext}${end}
 ${template onBeforeNext}${end}

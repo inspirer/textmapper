@@ -11,31 +11,38 @@ ${end}
 ${template listener-}
 package ${self->go.package()}
 
-import "fmt"
+${if self->localNodeType()-}
+${call nodeTypeImpl-}
+${end-}
+${call categories-}
+${call rules-}
+${end}
 
-type ${self->nodeType()} int
 
-type Listener func(t ${self->nodeType()}, offset, endoffset int)
+${query typedescr(rangeType) =
+  signature = opts.eventFields
+    ? syntax.rangeFields(rangeType).collect(it | it.toString())->util.join(' ')
+    : '',
+  signature.isEmpty() ? '' : '  // ' + signature }
+
+
+${template nodeTypeImpl-}
+type ${self->nodeTypeRef()->go.declarationName()} int
+
+type Listener func(t ${self->nodeTypeRef()}, offset, endoffset int)
 
 const (
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '')-}
-	${rangeType->asRangeTypeName()}${if index == 0} ${self->nodeType()} = iota + 1${end}${call typedescr(rangeType)}
+	${rangeType->nodeTypeValueRef()->go.declarationName()}${if index == 0} ${self->nodeTypeRef()} = iota + 1${end}${call typedescr(rangeType)}
 ${end-}
 ${foreach extraType in opts.extraTypes-}
-	${extraType->asRangeTypeName()}
+	${extraType->nodeTypeValueRef()->go.declarationName()}
 ${end-}
 ${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
-	${name->asRangeTypeName()}
+	${name->nodeTypeValueRef()->go.declarationName()}
 ${end-}
 	${self->nodeType()}Max
 )
-
-${call categories-}
-var rule${self->nodeType()} = [...]${self->nodeType()}{
-${foreach rule in syntax.rules-}
-	${v = rule.rangeType(), v == '' ? 0 : v->nodeTypeValueRef()}, // ${rule}
-${end-}
-}
 
 var nodeTypeStr = [...]string{
 	"NONE",
@@ -54,27 +61,29 @@ func (t ${self->nodeType()}) String() string {
 	if t >= 0 && int(t) < len(nodeTypeStr) {
 		return nodeTypeStr[t]
 	}
-	return fmt.Sprintf("node(%d)", t)
+	return "fmt".Sprintf("node(%d)", t)
 }
+
 ${end}
-
-
-${query typedescr(rangeType) =
-  signature = opts.eventFields
-    ? syntax.rangeFields(rangeType).collect(it | it.toString())->util.join(' ')
-    : '',
-  signature.isEmpty() ? '' : '  // ' + signature }
-
 
 ${template categories-}
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
-var ${cat->asRangeTypeName()} = []NodeType{
+var ${cat->interfaceEnumValueRef()->go.declarationName()} = []${self->nodeTypeRef()}{
 ${foreach type in syntax.categoryTypes(cat)-}
     ${type->nodeTypeValueRef()},
 ${end-}
 }
 
 ${end-}
+${end}
+
+${template rules-}
+var rule${self->nodeType()} = [...]${self->nodeTypeRef()}{
+${foreach rule in syntax.rules-}
+	${v = rule.rangeType(), v == '' ? 0 : v->nodeTypeValueRef()}, // ${rule}
+${end-}
+}
+
 ${end}
 
 
@@ -84,8 +93,10 @@ ${cached query reserve(scope) =
 ${cached query asRangeTypeName() =
     self->reserve('__rangeTypes__')}
 
-${query nodeType() = 'NodeType'}
+${query localNodeType() = self->go.package()->go.element(self->nodeType()) == self->nodeTypeRef()}
 
-${query nodeTypeRef() = self->nodeType()}
-${query nodeTypeValueRef() = self->asRangeTypeName()}
+${query nodeType() = self->nodeTypeRef()->go.declarationName()}
+${query nodeTypeRef() = self->go.package()->go.element('NodeType')}
+${query nodeTypeValueRef() = self->go.package()->go.element(self->asRangeTypeName())}
+${query interfaceEnumValueRef() = self->go.package()->go.element(self->asRangeTypeName())}
 ${query nodeTypeValueString() = self->asRangeTypeName()}

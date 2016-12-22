@@ -30,7 +30,7 @@ reChar = /{reFirst}|\*/
 
 regexp(string): /\/{reFirst}{reChar}*\// { text := l.Text(); $$ = text[1:len(text)-2] }
 scon(string):	/"([^\n\\"]|\\.)*"/		 { text := l.Text(); $$ = text[1:len(text)-2] }
-icon(int):	/-?[0-9]+/				     { $$, _ = strconv.ParseInt(l.Text(), 10, 64) }
+icon(int):	/-?[0-9]+/				     { $$, _ = "strconv".ParseInt(l.Text(), 10, 64) }
 
 eoi:           /%%.*(\r?\n)?/
 _skip:         /[\n\r\t ]+/		(space)
@@ -473,9 +473,3 @@ command class ::=
 
 syntax_problem class : lexer_part, grammar_part, rhsPart ::=
 	  error ;
-
-%%
-
-${template go_lexer.imports-}
-	"strconv"
-${end}

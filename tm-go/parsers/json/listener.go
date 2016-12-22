@@ -2,7 +2,9 @@
 
 package json
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type NodeType int
 
@@ -21,6 +23,27 @@ const (
 	JsonString
 	NodeTypeMax
 )
+
+var nodeTypeStr = [...]string{
+	"NONE",
+	"JSONText",
+	"JSONValue",
+	"EmptyObject",
+	"JSONObject",
+	"JSONMember",
+	"JSONArray",
+	"NonExistingType",
+	"MultiLineComment",
+	"InvalidToken",
+	"JsonString",
+}
+
+func (t NodeType) String() string {
+	if t >= 0 && int(t) < len(nodeTypeStr) {
+		return nodeTypeStr[t]
+	}
+	return fmt.Sprintf("node(%d)", t)
+}
 
 var ruleNodeType = [...]NodeType{
 	JSONText,    // JSONText ::= JSONValue_A
@@ -55,25 +78,4 @@ var ruleNodeType = [...]NodeType{
 	0,           // JSONElementList ::= JSONElementList ',' JSONValue_A
 	0,           // JSONElementListopt ::= JSONElementList
 	0,           // JSONElementListopt ::=
-}
-
-var nodeTypeStr = [...]string{
-	"NONE",
-	"JSONText",
-	"JSONValue",
-	"EmptyObject",
-	"JSONObject",
-	"JSONMember",
-	"JSONArray",
-	"NonExistingType",
-	"MultiLineComment",
-	"InvalidToken",
-	"JsonString",
-}
-
-func (t NodeType) String() string {
-	if t >= 0 && int(t) < len(nodeTypeStr) {
-		return nodeTypeStr[t]
-	}
-	return fmt.Sprintf("node(%d)", t)
 }

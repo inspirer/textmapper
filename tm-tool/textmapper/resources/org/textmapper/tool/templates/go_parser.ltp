@@ -12,14 +12,6 @@ ${end}
 
 ${template parser-}
 package ${self->go.package()}
-
-import (
-	"fmt"
-${if opts.genast-}
-	"${opts.package}/ast"
-${end-}
-${call imports-}
-)
 ${if !(!self->go_token.hasInvalidToken() || opts.reportInvalidRunes)}
 ${call go.errorHandler-}
 ${end}
@@ -131,7 +123,7 @@ ${end-}
 			}
 			p.applyRule(rule, &entry, p.stack[len(p.stack)-ln:])
 			if debugSyntax {
-				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
+				"fmt".Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
 			p.stack = p.stack[:len(p.stack)-ln]
 			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
@@ -152,7 +144,7 @@ ${if !self->eventBased()-}
 ${end-}
 			})
 			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
+				"fmt".Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 			}
 ${if self->ignoredReportTokens()-}
 			if len(p.ignoredTokens) > 0 {
@@ -312,7 +304,7 @@ func (p *Parser) reportIgnoredTokens() {
 		switch Token(c.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}
 		case ${tok->go_token.tokenName()}:
-			t = ${tok->go_token.tokenNodeName()->nodeTypeValueRef()}
+			t = ${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}
 ${end-}
 		default:
 			continue
@@ -444,9 +436,6 @@ ${end}
 ${template parserTables-}
 package ${self->go.package()}
 
-import (
-	"fmt"
-)
 ${foreach marker in parser.markers}
 ${if marker.states.length == 1-}
 const ${marker.name}State = ${marker.states[0]}
@@ -476,7 +465,7 @@ func (n Symbol) String() string {
 	if i < len(symbolStr) {
 		return symbolStr[i]
 	}
-	return fmt.Sprintf("nonterminal(%d)", n)
+	return "fmt".Sprintf("nonterminal(%d)", n)
 }
 
 var tmAction = []int32{
@@ -536,14 +525,12 @@ ${end-}
 ${end}
 
 
-${template imports}${end}
-
 ${template onAfterShift-}
 ${if self->nonignoredReportTokens()-}
 			switch Token(p.next.symbol) {
 ${foreach tok in self->nonignoredReportTokens()-}
 			case ${tok->go_token.tokenName()}:
-				p.listener(${tok->go_token.tokenNodeName()->nodeTypeValueRef()}, p.next.offset, p.next.endoffset)
+				p.listener(${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}, p.next.offset, p.next.endoffset)
 ${end-}
 			}
 ${end-}
@@ -563,5 +550,3 @@ ${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCo
 ${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_token.isSpace(tok))}
 
 ${cached query nonignoredReportTokens() = opts.reportTokens.select(tok|!self->go_token.isSpace(tok))}
-
-${query nodeTypeValueRef() = self->go_listener.nodeTypeValueRef()}

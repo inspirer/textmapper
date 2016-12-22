@@ -11,63 +11,45 @@ ${end}
 
 ${template unit-}
 ${call go.header-}
-package ${call package}
+package ${self->package()}
 
-${call imports-}
 ${call wrappedTypeTempl-}
 ${call interfaces-}
 ${call types-}
 ${end}
 
-${template imports-}
-import (
-	"${self->go.importPackage()}"
-	"${self->go_filter.importPackage()}"
-)
-
-${end}
-
 ${template factory-}
 ${call go.header-}
-package ${call package}
+package ${self->package()}
 
-${call factoryImports-}
 func To${self->baseNode()}(node Node) ${self->baseNode()} {
 	if node == nil {
 		return nil
 	}
 	switch node.Type() {
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
-	case ${rangeType->nodeTypeValueRef()}:
-		return &${rangeType->asRangeTypeName()}{node}
+	case ${rangeType->go_listener.nodeTypeValueRef()}:
+		return &${rangeType->astClassRef()}{node}
 ${end-}
 ${if tokens = opts.reportTokens
-                   .collect(it|it->go_token.tokenNodeName()->nodeTypeValueRef())->util.join(', '),
+                   .collect(it|it->go_token.tokenNodeName()->go_listener.nodeTypeValueRef())->util.join(', '),
      tokens != '' -}
 	case ${tokens}:
 		return &Token{node}
 ${end-}
 ${call customRules-}
 	}
-	log.Fatalf("unknown node type %v\n", node.Type())
+	"log".Fatalf("unknown node type %v\n", node.Type())
 	return nil
 }
-${end}
-
-${template factoryImports-}
-import (
-	"log"
-	"${self->go.importPackage()}"
-)
-
 ${end}
 
 
 ${template wrappedTypeTempl-}
 type Node interface {
-	Type() ${self->nodeTypeRef()}
-	Child(filter ...${self->nodeFilterTypeRef()}) Node
-	Children(filter ...${self->nodeFilterTypeRef()}) []Node
+	Type() ${self->go_listener.nodeTypeRef()}
+	Child(filter ...${self->go_filter.nodeFilterTypeRef()}) Node
+	Children(filter ...${self->go_filter.nodeFilterTypeRef()}) []Node
 }
 
 ${end}
@@ -87,22 +69,22 @@ type Token struct {
 ${end-}
 // All types implement ${self->baseNode()}.
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
-func (${rangeType->asRangeTypeName()}) ${self->baseNode()->asInterfaceMethod()}() {}
+func (${rangeType->astClassRef()->go.declarationName()}) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
 ${if syntax.categoryTypes('TokenSet').length > 0-}
 func (Token) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
 
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet')-}
-type ${cat->asRangeTypeName()} interface {
+type ${cat->astInterfaceRef()->go.declarationName()} interface {
 	${cat->asInterfaceMethod()}()
 }
 
 // ${cat->asInterfaceMethod()}() ensures that only the following types can be
-// assigned to ${cat->asRangeTypeName()}.
+// assigned to ${cat->astInterfaceRef()->go.declarationName()}.
 //
 ${foreach type in syntax.categoryTypes(cat)-}
-func (${type->asRangeTypeName()}) ${cat->asInterfaceMethod()}() {}
+func (${type->astClassRef()->go.declarationName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
 
 ${end-}
@@ -118,11 +100,11 @@ ${end-}
 ${end}
 
 ${template type(rangeType)-}
-type ${rangeType->asRangeTypeName()} struct {
+type ${rangeType->astClassRef()->go.declarationName()} struct {
 	${self->wrappedType()}
 }
 ${foreach field in syntax.rangeFields(rangeType)}
-func (n ${rangeType->asRangeTypeName()}) ${field->asGetterName()}() ${call getterType(field)} {
+func (n ${rangeType->astClassRef()->go.declarationName()}) ${field->asGetterName()}() ${call getterType(field)} {
 ${call getterImpl(field)-}
 }
 ${end}
@@ -144,19 +126,19 @@ ${cached query isTokenType(name) =
     syntax.categoryTypes('TokenSet').contains(name) }
 
 ${cached query getterInnerType(field) =
-  field.interfaceType ? field.interfaceType->asRangeTypeName() :
+  field.interfaceType ? field.interfaceType->astClassRef() :
   field.types.forAll(t|self->isTokenType(t)) ? 'Token' :
   field.types.length == 1
-     ? field.types.first()->asRangeTypeName()
+     ? field.types.first()->astClassRef()
      : self->baseNode() }
 
 ${cached query isOneType(field) = field.types.length == 1 }
 
 ${query fieldFilterInternal(field) =
-  field.interfaceType ? field.interfaceType->nodeTypeFilterRef() :
-  field.types.length == 1 ? field.types.first()->nodeTypeFilterRef() :
-  self->go_filter.package() + '.OneOf(' +
-          field.types.collect(it|it->nodeTypeValueRef())->util.join(', ') + ')'}
+  field.interfaceType ? field.interfaceType->go_filter.nodeTypeFilterRef() :
+  field.types.length == 1 ? field.types.first()->go_filter.nodeTypeFilterRef() :
+  self->go_filter.oneOfRef() + '(' +
+          field.types.collect(it|it->go_listener.nodeTypeValueRef())->util.join(', ') + ')'}
 
 ${query fieldFilter(field) =
   after = field.comesAfterField(),
@@ -189,21 +171,16 @@ ${end}
 
 ${query astFilename() = 'ast/ast.go'}
 ${query factoryFilename() = 'ast/factory.go'}
-${query package() = 'ast'}
-${query importPackage() = self->go.importPackage() + '/' + self->package()}
+${query package() = self->go.package() + '/ast'}
 
 ${query wrappedType() = 'Node'}
 ${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
 
-${query asInterfaceMethod() = util.toFirstLower(self->asRangeTypeName()) + 'Node' }
+${query asInterfaceMethod() = util.toFirstLower(self->go_listener.asRangeTypeName()) + 'Node' }
 
 ${query asGetterName() = util.toCamelCase(self.name, true)->go.escapeGoReserved()}
 
-${query nodeTypeRef() = context->go.package() + '.' + self->go_listener.nodeTypeRef()}
-${query nodeTypeValueRef() = context->go.package() + '.' + self->asRangeTypeName()}
-${query nodeTypeFilterRef() = context->go_filter.package() + '.' + self->asRangeTypeName()}
-${query asRangeTypeName() = self->go_listener.asRangeTypeName()}
-
-${query nodeFilterTypeRef() = self->go_filter.package() + '.' + self->go_filter.nodeFilterType()}
+${query astClassRef() = self->package()->go.element(self->go_listener.asRangeTypeName())}
+${query astInterfaceRef() = self->package()->go.element(self->go_listener.asRangeTypeName())}
 
 ${template customRules}${end}

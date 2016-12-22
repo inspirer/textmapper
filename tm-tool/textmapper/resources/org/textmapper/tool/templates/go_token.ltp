@@ -8,10 +8,6 @@ ${end}
 ${template token-}
 package ${self->go.package()}
 
-import (
-	"fmt"
-)
-
 // Token is an enum of all terminal symbols of the ${opts.lang} language.
 type Token int
 
@@ -39,7 +35,7 @@ func (tok Token) String() string {
 	if tok >= 0 && int(tok) < len(tokenStr) {
 		return tokenStr[tok]
 	}
-	return fmt.Sprintf("token(%d)", tok)
+	return "fmt".Sprintf("token(%d)", tok)
 }
 ${end}
 

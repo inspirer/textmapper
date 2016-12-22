@@ -2,7 +2,9 @@
 
 package test
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type NodeType int
 
@@ -19,6 +21,25 @@ const (
 	Identifier
 	NodeTypeMax
 )
+
+var nodeTypeStr = [...]string{
+	"NONE",
+	"Test",
+	"Block",
+	"Decl1",
+	"Decl2",
+	"MultiLineComment",
+	"SingleLineComment",
+	"InvalidToken",
+	"Identifier",
+}
+
+func (t NodeType) String() string {
+	if t >= 0 && int(t) < len(nodeTypeStr) {
+		return nodeTypeStr[t]
+	}
+	return fmt.Sprintf("node(%d)", t)
+}
 
 var Declaration = []NodeType{
 	Block,
@@ -41,23 +62,4 @@ var ruleNodeType = [...]NodeType{
 	0,     // QualifiedName ::= QualifiedName '.' Identifier
 	Decl1, // Decl1 ::= 'decl1' '(' QualifiedName ')'
 	Decl2, // Decl2 ::= 'decl2'
-}
-
-var nodeTypeStr = [...]string{
-	"NONE",
-	"Test",
-	"Block",
-	"Decl1",
-	"Decl2",
-	"MultiLineComment",
-	"SingleLineComment",
-	"InvalidToken",
-	"Identifier",
-}
-
-func (t NodeType) String() string {
-	if t >= 0 && int(t) < len(nodeTypeStr) {
-		return nodeTypeStr[t]
-	}
-	return fmt.Sprintf("node(%d)", t)
 }

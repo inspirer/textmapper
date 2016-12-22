@@ -62,7 +62,7 @@ ${query convertType(asttype, qualified) =
 	asttype is LiRawAstType ? asttype.rawType :
 	asttype is VoidType ? null : (
 		isStruct = asttype is LiAstClass && !asttype.isInterface(),
-		(isStruct ? '*' : '') + (qualified ? 'ast.' : '') + asttype->className())
+		(isStruct ? '*' : '') + (qualified ? '"' + context.opts.package + '/ast".' : '') + asttype->className())
 }
 
 ${template ast_interface(cl)-}
@@ -141,13 +141,13 @@ ${query asExpression(seq,contextType,addOnly) =
 	mapped.length == 0 && type is PrimitiveType ? (type.toString() == 'boolean' ? 'false' : type.toString() == 'int' ? '0' : 'nil') :
 	!self.isMatched(seq) ? 'nil' :
 	!(type is LiAstClass) ? '/* ERR: unknown type ' + type + ' */' :
-	'&ast.' + type->className() + self->ctorArguments(type, mapped))
+	'&"' + context.opts.package + '/ast".' + type->className() + self->ctorArguments(type, mapped))
 }
 
 ${query simpleMapping(rhsSym) =
 	value = rhsSym.mapping.value,
 	value || value is Boolean || value is String ? (
-        value is LiAstEnumMember ? 'ast.' + value->enumMemberName() : value
+        value is LiAstEnumMember ? '"' + context.opts.package + '/ast".' + value->enumMemberName() : value
 	) :
 	(
 		index = self.sourceSymbols().indexOf(rhsSym),
@@ -162,7 +162,7 @@ ${if val = self->fieldValue(field, mapped.select(t|t.mapping.field && t.mapping.
 			${field->propertyName()}: ${val},
 ${end-}
 ${end-}
-			Pos: ast.Pos{${'$'}{${if getRight().length == 0}left()${else}first()${end}.offset}, ${'$'}{${if getRight().length == 0}left()${else}last()${end}.endoffset}},
+			Pos: "${context.opts.package}/ast".Pos{${'$'}{${if getRight().length == 0}left()${else}first()${end}.offset}, ${'$'}{${if getRight().length == 0}left()${else}last()${end}.endoffset}},
 }${end}
 
 ${query fieldValue(field, mapped) =

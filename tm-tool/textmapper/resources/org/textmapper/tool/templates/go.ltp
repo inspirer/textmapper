@@ -56,9 +56,10 @@ type ErrorHandler func(line, offset, len int, msg string)
 func IgnoreErrorsHandler(line, offset, len int, msg string) {}
 ${end}
 
-${query package() =
-  p = self->importPackage(),
-  i = p.lastIndexOf('/'),
-  i >= 0 ? p.substring(i + 1) : p }
+${query package() = context.opts.package}
 
-${query importPackage() = opts.package}
+${query element(name) = '"' + self + '".' + name }
+
+${query declarationName() =
+   i = self.lastIndexOf('.'),
+   i >= 0 ? self.substring(i + 1) : self }
