@@ -11,7 +11,7 @@ type Token int
 
 // Token values.
 const (
-	UNAVAILABLE Token = iota - 1
+	UNAVAILABLE Token = iota-1
 	EOI
 
 	REGEXP
@@ -20,78 +20,78 @@ const (
 	_SKIP
 	_SKIP_COMMENT
 	_SKIP_MULTILINE
-	REM              // %
+	REM // %
 	COLONCOLONASSIGN // ::=
-	COLONCOLON       // ::
-	OR               // |
-	OROR             // ||
-	ASSIGN           // =
-	ASSIGNASSIGN     // ==
-	EXCLASSIGN       // !=
-	ASSIGNGT         // =>
-	SEMICOLON        // ;
-	DOT              // .
-	COMMA            // ,
-	COLON            // :
-	LBRACK           // [
-	RBRACK           // ]
-	LPAREN           // (
-	RPAREN           // )
-	LBRACETILDE      // {~
-	RBRACE           // }
-	LT               // <
-	GT               // >
-	MULT             // *
-	PLUS             // +
-	PLUSASSIGN       // +=
-	QUEST            // ?
-	EXCL             // !
-	TILDE            // ~
-	AND              // &
-	ANDAND           // &&
-	DOLLAR           // $
-	ATSIGN           // @
+	COLONCOLON // ::
+	OR // |
+	OROR // ||
+	ASSIGN // =
+	ASSIGNASSIGN // ==
+	EXCLASSIGN // !=
+	ASSIGNGT // =>
+	SEMICOLON // ;
+	DOT // .
+	COMMA // ,
+	COLON // :
+	LBRACK // [
+	RBRACK // ]
+	LPAREN // (
+	RPAREN // )
+	LBRACETILDE // {~
+	RBRACE // }
+	LT // <
+	GT // >
+	MULT // *
+	PLUS // +
+	PLUSASSIGN // +=
+	QUEST // ?
+	EXCL // !
+	TILDE // ~
+	AND // &
+	ANDAND // &&
+	DOLLAR // $
+	ATSIGN // @
 	ERROR
 	ID
-	LTRUE      // true
-	LFALSE     // false
-	LNEW       // new
-	LSEPARATOR // separator
-	LAS        // as
-	LIMPORT    // import
-	LSET       // set
-	LBRACKETS  // brackets
-	LINLINE    // inline
-	LPREC      // prec
-	LSHIFT     // shift
-	LRETURNS   // returns
-	LINPUT     // input
-	LLEFT      // left
-	LRIGHT     // right
-	LNONASSOC  // nonassoc
-	LGENERATE  // generate
-	LASSERT    // assert
-	LEMPTY     // empty
-	LNONEMPTY  // nonempty
-	LGLOBAL    // global
-	LEXPLICIT  // explicit
-	LLOOKAHEAD // lookahead
-	LPARAM     // param
-	LFLAG      // flag
-	LNOEOI     // no-eoi
-	LSOFT      // soft
-	LCLASS     // class
-	LINTERFACE // interface
-	LVOID      // void
-	LSPACE     // space
-	LLAYOUT    // layout
-	LLANGUAGE  // language
-	LLALR      // lalr
-	LLEXER     // lexer
-	LPARSER    // parser
-	LREDUCE    // reduce
-	CODE       // {
-	LBRACE     // {
+	TRUE // true
+	FALSE // false
+	NEW // new
+	SEPARATOR // separator
+	AS // as
+	IMPORT // import
+	SET // set
+	BRACKETS // brackets
+	INLINE // inline
+	PREC // prec
+	SHIFT // shift
+	RETURNS // returns
+	INPUT // input
+	LEFT // left
+	RIGHT // right
+	NONASSOC // nonassoc
+	GENERATE // generate
+	ASSERT // assert
+	EMPTY // empty
+	NONEMPTY // nonempty
+	GLOBAL // global
+	EXPLICIT // explicit
+	LOOKAHEAD // lookahead
+	PARAM // param
+	FLAG // flag
+	NOMINUSEOI // no-eoi
+	SOFT // soft
+	CLASS // class
+	INTERFACE // interface
+	VOID // void
+	SPACE // space
+	LAYOUT // layout
+	LANGUAGE // language
+	LALR // lalr
+	LEXER // lexer
+	PARSER // parser
+	REDUCE // reduce
+	CODE // {
+	LBRACE // {
 
 	NumTokens
 )

@@ -17,33 +17,33 @@ func (p Pos) End() int   { return p.Endoffset }
 type LexemeAttribute int
 
 const (
-	LexemeAttribute_LSOFT LexemeAttribute = iota
-	LexemeAttribute_LCLASS
-	LexemeAttribute_LSPACE
-	LexemeAttribute_LLAYOUT
+	LexemeAttribute_SOFT LexemeAttribute = iota
+	LexemeAttribute_CLASS
+	LexemeAttribute_SPACE
+	LexemeAttribute_LAYOUT
 )
 
 type Assoc int
 
 const (
-	Assoc_LLEFT Assoc = iota
-	Assoc_LRIGHT
-	Assoc_LNONASSOC
+	Assoc_LEFT Assoc = iota
+	Assoc_RIGHT
+	Assoc_NONASSOC
 )
 
 type ParamModifier int
 
 const (
-	ParamModifier_LEXPLICIT ParamModifier = iota
-	ParamModifier_LGLOBAL
-	ParamModifier_LLOOKAHEAD
+	ParamModifier_EXPLICIT ParamModifier = iota
+	ParamModifier_GLOBAL
+	ParamModifier_LOOKAHEAD
 )
 
 type ParamType int
 
 const (
-	ParamType_LFLAG ParamType = iota
-	ParamType_LPARAM
+	ParamType_FLAG ParamType = iota
+	ParamType_PARAM
 )
 
 type LexerPart interface {
@@ -78,9 +78,9 @@ func (*NontermTypeHint) nontermType() {}
 type NontermTypeHint_KindKind int
 
 const (
-	NontermTypeHint_LCLASS NontermTypeHint_KindKind = iota
-	NontermTypeHint_LVOID
-	NontermTypeHint_LINTERFACE
+	NontermTypeHint_CLASS NontermTypeHint_KindKind = iota
+	NontermTypeHint_VOID
+	NontermTypeHint_INTERFACE
 )
 
 type NontermTypeRaw struct {
@@ -308,8 +308,8 @@ type RhsSuffix struct {
 type RhsSuffix_KindKind int
 
 const (
-	RhsSuffix_LPREC RhsSuffix_KindKind = iota
-	RhsSuffix_LSHIFT
+	RhsSuffix_PREC RhsSuffix_KindKind = iota
+	RhsSuffix_SHIFT
 )
 
 type RuleAction struct {
@@ -390,10 +390,10 @@ type SyntaxProblem struct {
 	Pos
 }
 
-func (*SyntaxProblem) lexerPart()   {}
+func (*SyntaxProblem) lexerPart() {}
 func (*SyntaxProblem) grammarPart() {}
-func (*SyntaxProblem) rhsPart()     {}
-func (*SyntaxProblem) expression()  {}
+func (*SyntaxProblem) rhsPart() {}
+func (*SyntaxProblem) expression() {}
 
 type DirectiveBrackets struct {
 	Opening *Symref
@@ -439,8 +439,8 @@ func (*DirectiveAssert) grammarPart() {}
 type DirectiveAssert_KindKind int
 
 const (
-	DirectiveAssert_LEMPTY DirectiveAssert_KindKind = iota
-	DirectiveAssert_LNONEMPTY
+	DirectiveAssert_EMPTY DirectiveAssert_KindKind = iota
+	DirectiveAssert_NONEMPTY
 )
 
 type DirectiveSet struct {

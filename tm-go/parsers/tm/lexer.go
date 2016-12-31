@@ -10,8 +10,8 @@ import (
 
 // Lexer states.
 const (
-	StateInitial   = 0
-	StateAfterAt   = 1
+	StateInitial = 0
+	StateAfterAt = 1
 	StateAfterAtID = 2
 )
 
@@ -149,7 +149,7 @@ restart:
 	rule := -state - 3
 	switch rule {
 	case 0:
-		hh := hash & 63
+		hh := hash&63
 		switch hh {
 		case 2:
 			if hash == 0x43733a82 && "lookahead" == l.source[l.tokenOffset:l.offset] {
@@ -335,23 +335,13 @@ restart:
 	space := false
 	switch rule {
 	case 0: // ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/
-		{
-			l.value = l.Text()
-		}
+		{ l.value = l.Text(); }
 	case 1: // regexp: /\/{reFirst}{reChar}*\//
-		{
-			text := l.Text()
-			l.value = text[1 : len(text)-2]
-		}
+		{ text := l.Text(); l.value = text[1:len(text)-2] }
 	case 2: // scon: /"([^\n\\"]|\\.)*"/
-		{
-			text := l.Text()
-			l.value = text[1 : len(text)-2]
-		}
+		{ text := l.Text(); l.value = text[1:len(text)-2] }
 	case 3: // icon: /\-?[0-9]+/
-		{
-			l.value, _ = strconv.ParseInt(l.Text(), 10, 64)
-		}
+		{ l.value, _ = strconv.ParseInt(l.Text(), 10, 64) }
 	case 5: // _skip: /[\n\r\t ]+/
 		space = true
 	case 6: // _skip_comment: /#.*(\r?\n)?/
