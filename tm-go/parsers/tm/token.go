@@ -11,87 +11,86 @@ type Token int
 
 // Token values.
 const (
-	UNAVAILABLE Token = iota-1
+	UNAVAILABLE Token = iota - 1
 	EOI
 
 	REGEXP
 	SCON
 	ICON
-	_SKIP
-	_SKIP_COMMENT
-	_SKIP_MULTILINE
-	REM // %
+	WHITESPACE
+	COMMENT
+	MULTILINE_COMMENT
+	REM              // %
 	COLONCOLONASSIGN // ::=
-	COLONCOLON // ::
-	OR // |
-	OROR // ||
-	ASSIGN // =
-	ASSIGNASSIGN // ==
-	EXCLASSIGN // !=
-	ASSIGNGT // =>
-	SEMICOLON // ;
-	DOT // .
-	COMMA // ,
-	COLON // :
-	LBRACK // [
-	RBRACK // ]
-	LPAREN // (
-	RPAREN // )
-	LBRACETILDE // {~
-	RBRACE // }
-	LT // <
-	GT // >
-	MULT // *
-	PLUS // +
-	PLUSASSIGN // +=
-	QUEST // ?
-	EXCL // !
-	TILDE // ~
-	AND // &
-	ANDAND // &&
-	DOLLAR // $
-	ATSIGN // @
+	COLONCOLON       // ::
+	OR               // |
+	OROR             // ||
+	ASSIGN           // =
+	ASSIGNASSIGN     // ==
+	EXCLASSIGN       // !=
+	ASSIGNGT         // =>
+	SEMICOLON        // ;
+	DOT              // .
+	COMMA            // ,
+	COLON            // :
+	LBRACK           // [
+	RBRACK           // ]
+	LPAREN           // (
+	RPAREN           // )
+	LBRACETILDE      // {~
+	RBRACE           // }
+	LT               // <
+	GT               // >
+	MULT             // *
+	PLUS             // +
+	PLUSASSIGN       // +=
+	QUEST            // ?
+	EXCL             // !
+	TILDE            // ~
+	AND              // &
+	ANDAND           // &&
+	DOLLAR           // $
+	ATSIGN           // @
 	ERROR
+	INVALID_TOKEN
 	ID
-	TRUE // true
-	FALSE // false
-	NEW // new
-	SEPARATOR // separator
-	AS // as
-	IMPORT // import
-	SET // set
-	BRACKETS // brackets
-	INLINE // inline
-	PREC // prec
-	SHIFT // shift
-	RETURNS // returns
-	INPUT // input
-	LEFT // left
-	RIGHT // right
-	NONASSOC // nonassoc
-	GENERATE // generate
-	ASSERT // assert
-	EMPTY // empty
-	NONEMPTY // nonempty
-	GLOBAL // global
-	EXPLICIT // explicit
-	LOOKAHEAD // lookahead
-	PARAM // param
-	FLAG // flag
+	AS         // as
+	FALSE      // false
+	IMPORT     // import
+	SEPARATOR  // separator
+	SET        // set
+	TRUE       // true
+	ASSERT     // assert
+	BRACKETS   // brackets
+	CLASS      // class
+	EMPTY      // empty
+	EXPLICIT   // explicit
+	FLAG       // flag
+	GENERATE   // generate
+	GLOBAL     // global
+	INLINE     // inline
+	INPUT      // input
+	INTERFACE  // interface
+	LALR       // lalr
+	LANGUAGE   // language
+	LAYOUT     // layout
+	LEFT       // left
+	LEXER      // lexer
+	LOOKAHEAD  // lookahead
 	NOMINUSEOI // no-eoi
-	SOFT // soft
-	CLASS // class
-	INTERFACE // interface
-	VOID // void
-	SPACE // space
-	LAYOUT // layout
-	LANGUAGE // language
-	LALR // lalr
-	LEXER // lexer
-	PARSER // parser
-	REDUCE // reduce
-	CODE // {
-	LBRACE // {
+	NONASSOC   // nonassoc
+	NONEMPTY   // nonempty
+	PARAM      // param
+	PARSER     // parser
+	PREC       // prec
+	RETURNS    // returns
+	RIGHT      // right
+	SHIFT      // shift
+	SOFT       // soft
+	SPACE      // space
+	VOID       // void
+	CODE       // {
+	LBRACE     // {
 
 	NumTokens
 )
@@ -102,9 +101,9 @@ var tokenStr = [...]string{
 	"REGEXP",
 	"SCON",
 	"ICON",
-	"_SKIP",
-	"_SKIP_COMMENT",
-	"_SKIP_MULTILINE",
+	"WHITESPACE",
+	"COMMENT",
+	"MULTILINE_COMMENT",
 	"%",
 	"::=",
 	"::",
@@ -137,44 +136,43 @@ var tokenStr = [...]string{
 	"$",
 	"@",
 	"ERROR",
+	"INVALID_TOKEN",
 	"ID",
-	"true",
-	"false",
-	"new",
-	"separator",
 	"as",
+	"false",
 	"import",
+	"separator",
 	"set",
-	"brackets",
-	"inline",
-	"prec",
-	"shift",
-	"returns",
-	"input",
-	"left",
-	"right",
-	"nonassoc",
-	"generate",
+	"true",
 	"assert",
-	"empty",
-	"nonempty",
-	"global",
-	"explicit",
-	"lookahead",
-	"param",
-	"flag",
-	"no-eoi",
-	"soft",
+	"brackets",
 	"class",
+	"empty",
+	"explicit",
+	"flag",
+	"generate",
+	"global",
+	"inline",
+	"input",
 	"interface",
-	"void",
-	"space",
-	"layout",
-	"language",
 	"lalr",
+	"language",
+	"layout",
+	"left",
 	"lexer",
+	"lookahead",
+	"no-eoi",
+	"nonassoc",
+	"nonempty",
+	"param",
 	"parser",
-	"reduce",
+	"prec",
+	"returns",
+	"right",
+	"shift",
+	"soft",
+	"space",
+	"void",
 	"{",
 	"{",
 }

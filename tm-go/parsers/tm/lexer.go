@@ -3,15 +3,14 @@
 package tm
 
 import (
-	"strconv"
 	"strings"
 	"unicode/utf8"
 )
 
 // Lexer states.
 const (
-	StateInitial = 0
-	StateAfterAt = 1
+	StateInitial   = 0
+	StateAfterAt   = 1
 	StateAfterAtID = 2
 )
 
@@ -99,7 +98,7 @@ restart:
 		case l.ch < 0:
 			state = int(tmLexerAction[state*tmNumClasses])
 			if state == -1 {
-				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
+				return INVALID_TOKEN // Unexpected end of input reached
 			}
 			continue
 		case int(l.ch) < tmRuneClassLen:
@@ -138,218 +137,191 @@ restart:
 	}
 	if state >= -2 {
 		if state == -1 {
-			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
-			goto restart
+			return INVALID_TOKEN
 		}
 		if state == -2 {
 			return EOI
 		}
 	}
 
-	rule := -state - 3
-	switch rule {
-	case 0:
-		hh := hash&63
+	token := Token(-state - 3)
+	switch token {
+	case ID:
+		hh := hash & 63
 		switch hh {
 		case 2:
 			if hash == 0x43733a82 && "lookahead" == l.source[l.tokenOffset:l.offset] {
-				rule = 61
+				token = LOOKAHEAD
 				break
 			}
 			if hash == 0x6856c82 && "shift" == l.source[l.tokenOffset:l.offset] {
-				rule = 49
+				token = SHIFT
 				break
 			}
 		case 3:
 			if hash == 0x41796943 && "returns" == l.source[l.tokenOffset:l.offset] {
-				rule = 50
+				token = RETURNS
 				break
 			}
 		case 6:
 			if hash == 0xac107346 && "assert" == l.source[l.tokenOffset:l.offset] {
-				rule = 56
+				token = ASSERT
 				break
 			}
 			if hash == 0x688f106 && "space" == l.source[l.tokenOffset:l.offset] {
-				rule = 69
+				token = SPACE
 				break
 			}
 		case 7:
 			if hash == 0x32a007 && "left" == l.source[l.tokenOffset:l.offset] {
-				rule = 52
+				token = LEFT
 				break
 			}
 		case 10:
 			if hash == 0x5fb57ca && "input" == l.source[l.tokenOffset:l.offset] {
-				rule = 51
+				token = INPUT
 				break
 			}
 		case 11:
 			if hash == 0xfde4e8cb && "brackets" == l.source[l.tokenOffset:l.offset] {
-				rule = 46
+				token = BRACKETS
 				break
 			}
 		case 12:
 			if hash == 0x621a30c && "lexer" == l.source[l.tokenOffset:l.offset] {
-				rule = 73
+				token = LEXER
 				break
 			}
 		case 13:
 			if hash == 0x5c2854d && "empty" == l.source[l.tokenOffset:l.offset] {
-				rule = 57
+				token = EMPTY
 				break
 			}
 			if hash == 0x658188d && "param" == l.source[l.tokenOffset:l.offset] {
-				rule = 62
+				token = PARAM
 				break
 			}
 		case 14:
 			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
-				rule = 39
+				token = TRUE
 				break
 			}
 		case 20:
 			if hash == 0x375194 && "void" == l.source[l.tokenOffset:l.offset] {
-				rule = 68
+				token = VOID
 				break
 			}
 		case 24:
 			if hash == 0x9fd29358 && "language" == l.source[l.tokenOffset:l.offset] {
-				rule = 71
+				token = LANGUAGE
 				break
 			}
 		case 25:
 			if hash == 0xb96da299 && "inline" == l.source[l.tokenOffset:l.offset] {
-				rule = 47
+				token = INLINE
 				break
 			}
 		case 28:
 			if hash == 0x677c21c && "right" == l.source[l.tokenOffset:l.offset] {
-				rule = 53
+				token = RIGHT
 				break
 			}
 		case 31:
 			if hash == 0xc4ab3c1f && "parser" == l.source[l.tokenOffset:l.offset] {
-				rule = 74
+				token = PARSER
 				break
 			}
 		case 32:
-			if hash == 0x1a9a0 && "new" == l.source[l.tokenOffset:l.offset] {
-				rule = 41
-				break
-			}
 			if hash == 0x540c92a0 && "nonempty" == l.source[l.tokenOffset:l.offset] {
-				rule = 58
+				token = NONEMPTY
 				break
 			}
 			if hash == 0x34a220 && "prec" == l.source[l.tokenOffset:l.offset] {
-				rule = 48
+				token = PREC
 				break
 			}
 		case 34:
 			if hash == 0x1bc62 && "set" == l.source[l.tokenOffset:l.offset] {
-				rule = 45
+				token = SET
 				break
 			}
 		case 35:
 			if hash == 0x5cb1923 && "false" == l.source[l.tokenOffset:l.offset] {
-				rule = 40
+				token = FALSE
 				break
 			}
 			if hash == 0xb5e903a3 && "global" == l.source[l.tokenOffset:l.offset] {
-				rule = 59
+				token = GLOBAL
 				break
 			}
 		case 37:
 			if hash == 0xb96173a5 && "import" == l.source[l.tokenOffset:l.offset] {
-				rule = 44
+				token = IMPORT
 				break
 			}
 			if hash == 0x6748e2e5 && "separator" == l.source[l.tokenOffset:l.offset] {
-				rule = 42
-				break
-			}
-		case 38:
-			if hash == 0xc846f566 && "reduce" == l.source[l.tokenOffset:l.offset] {
-				rule = 75
+				token = SEPARATOR
 				break
 			}
 		case 40:
 			if hash == 0x53d6f968 && "nonassoc" == l.source[l.tokenOffset:l.offset] {
-				rule = 54
+				token = NONASSOC
 				break
 			}
 		case 42:
 			if hash == 0xbddafb2a && "layout" == l.source[l.tokenOffset:l.offset] {
-				rule = 70
+				token = LAYOUT
 				break
 			}
 			if hash == 0x35f42a && "soft" == l.source[l.tokenOffset:l.offset] {
-				rule = 65
+				token = SOFT
 				break
 			}
 		case 44:
 			if hash == 0x2fff6c && "flag" == l.source[l.tokenOffset:l.offset] {
-				rule = 63
+				token = FLAG
 				break
 			}
 		case 50:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
-				rule = 43
+				token = AS
 				break
 			}
 		case 51:
 			if hash == 0xc1e742f3 && "no-eoi" == l.source[l.tokenOffset:l.offset] {
-				rule = 64
+				token = NOMINUSEOI
 				break
 			}
 		case 52:
 			if hash == 0x8d046634 && "explicit" == l.source[l.tokenOffset:l.offset] {
-				rule = 60
+				token = EXPLICIT
 				break
 			}
 		case 53:
 			if hash == 0x6be81575 && "generate" == l.source[l.tokenOffset:l.offset] {
-				rule = 55
+				token = GENERATE
 				break
 			}
 		case 56:
 			if hash == 0x5a5a978 && "class" == l.source[l.tokenOffset:l.offset] {
-				rule = 66
+				token = CLASS
 				break
 			}
 		case 57:
 			if hash == 0x1df56d39 && "interface" == l.source[l.tokenOffset:l.offset] {
-				rule = 67
+				token = INTERFACE
 				break
 			}
 		case 59:
 			if hash == 0x3291bb && "lalr" == l.source[l.tokenOffset:l.offset] {
-				rule = 72
+				token = LALR
 				break
 			}
 		}
 	}
 
-	token := tmToken[rule]
-	space := false
-	switch rule {
-	case 0: // ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/
-		{ l.value = l.Text(); }
-	case 1: // regexp: /\/{reFirst}{reChar}*\//
-		{ text := l.Text(); l.value = text[1:len(text)-2] }
-	case 2: // scon: /"([^\n\\"]|\\.)*"/
-		{ text := l.Text(); l.value = text[1:len(text)-2] }
-	case 3: // icon: /\-?[0-9]+/
-		{ l.value, _ = strconv.ParseInt(l.Text(), 10, 64) }
-	case 5: // _skip: /[\n\r\t ]+/
-		space = true
-	case 6: // _skip_comment: /#.*(\r?\n)?/
-		space = true
-	case 7: // _skip_multiline: /\/\*{commentChars}\*\//
-		space = true
-	}
-	if space {
+	switch token {
+	case 4:
 		goto restart
 	}
 	return token

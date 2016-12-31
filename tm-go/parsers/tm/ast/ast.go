@@ -2,599 +2,1182 @@
 
 package ast
 
+import (
+	"github.com/inspirer/textmapper/tm-go/parsers/tm"
+	"github.com/inspirer/textmapper/tm-go/parsers/tm/filter"
+)
+
 type Node interface {
-	Start() int
-	End() int
+	Type() tm.NodeType
+	Child(filter ...filter.NodeFilter) Node
+	Children(filter ...filter.NodeFilter) []Node
 }
 
-type Pos struct {
-	Offset, Endoffset int
+// Interfaces.
+
+type TmNode interface {
+	tmNodeNode()
 }
 
-func (p Pos) Start() int { return p.Offset }
-func (p Pos) End() int   { return p.Endoffset }
-
-type LexemeAttribute int
-
-const (
-	LexemeAttribute_SOFT LexemeAttribute = iota
-	LexemeAttribute_CLASS
-	LexemeAttribute_SPACE
-	LexemeAttribute_LAYOUT
-)
-
-type Assoc int
-
-const (
-	Assoc_LEFT Assoc = iota
-	Assoc_RIGHT
-	Assoc_NONASSOC
-)
-
-type ParamModifier int
-
-const (
-	ParamModifier_EXPLICIT ParamModifier = iota
-	ParamModifier_GLOBAL
-	ParamModifier_LOOKAHEAD
-)
-
-type ParamType int
-
-const (
-	ParamType_FLAG ParamType = iota
-	ParamType_PARAM
-)
-
-type LexerPart interface {
-	lexerPart()
+type Token struct {
+	Node
 }
 
-type GrammarPart interface {
-	grammarPart()
+// All types implement TmNode.
+func (KeyValue) tmNodeNode()          {}
+func (AnnotationImpl) tmNodeNode()    {}
+func (Annotations) tmNodeNode()       {}
+func (ArgumentFalse) tmNodeNode()     {}
+func (ArgumentImpl) tmNodeNode()      {}
+func (ArgumentTrue) tmNodeNode()      {}
+func (Array) tmNodeNode()             {}
+func (Assoc) tmNodeNode()             {}
+func (BooleanLiteral) tmNodeNode()    {}
+func (Command) tmNodeNode()           {}
+func (DirectiveAssert) tmNodeNode()   {}
+func (DirectiveBrackets) tmNodeNode() {}
+func (DirectiveInput) tmNodeNode()    {}
+func (DirectivePrio) tmNodeNode()     {}
+func (DirectiveSet) tmNodeNode()      {}
+func (GrammarParts) tmNodeNode()      {}
+func (Header) tmNodeNode()            {}
+func (Identifier) tmNodeNode()        {}
+func (Import) tmNodeNode()            {}
+func (InlineParameter) tmNodeNode()   {}
+func (Input) tmNodeNode()             {}
+func (Inputref) tmNodeNode()          {}
+func (IntegerLiteral) tmNodeNode()    {}
+func (InterfaceType) tmNodeNode()     {}
+func (Lexeme) tmNodeNode()            {}
+func (LexemeAttribute) tmNodeNode()   {}
+func (LexemeAttrs) tmNodeNode()       {}
+func (LexemeTransition) tmNodeNode()  {}
+func (LexerState) tmNodeNode()        {}
+func (ListSeparator) tmNodeNode()     {}
+func (Name) tmNodeNode()              {}
+func (NamedPattern) tmNodeNode()      {}
+func (Nonterm) tmNodeNode()           {}
+func (NontermParams) tmNodeNode()     {}
+func (ParamModifier) tmNodeNode()     {}
+func (ParamRef) tmNodeNode()          {}
+func (ParamType) tmNodeNode()         {}
+func (Pattern) tmNodeNode()           {}
+func (Predicate) tmNodeNode()         {}
+func (PredicateAnd) tmNodeNode()      {}
+func (PredicateEq) tmNodeNode()       {}
+func (PredicateNot) tmNodeNode()      {}
+func (PredicateNotEq) tmNodeNode()    {}
+func (PredicateOr) tmNodeNode()       {}
+func (RawType) tmNodeNode()           {}
+func (References) tmNodeNode()        {}
+func (RhsAnnotated) tmNodeNode()      {}
+func (RhsAssignment) tmNodeNode()     {}
+func (RhsCast) tmNodeNode()           {}
+func (RhsIgnored) tmNodeNode()        {}
+func (RhsNested) tmNodeNode()         {}
+func (RhsOptional) tmNodeNode()       {}
+func (RhsPlusAssignment) tmNodeNode() {}
+func (RhsPlusList) tmNodeNode()       {}
+func (RhsPrimary) tmNodeNode()        {}
+func (RhsQuantifier) tmNodeNode()     {}
+func (RhsSet) tmNodeNode()            {}
+func (RhsStarList) tmNodeNode()       {}
+func (RhsSuffix) tmNodeNode()         {}
+func (RhsSymbol) tmNodeNode()         {}
+func (Rule) tmNodeNode()              {}
+func (RuleAction) tmNodeNode()        {}
+func (SetAnd) tmNodeNode()            {}
+func (SetComplement) tmNodeNode()     {}
+func (SetCompound) tmNodeNode()       {}
+func (SetOr) tmNodeNode()             {}
+func (SetSymbol) tmNodeNode()         {}
+func (StateSelector) tmNodeNode()     {}
+func (Stateref) tmNodeNode()          {}
+func (StringLiteral) tmNodeNode()     {}
+func (SubType) tmNodeNode()           {}
+func (Symref) tmNodeNode()            {}
+func (SymrefArgs) tmNodeNode()        {}
+func (SyntaxProblem) tmNodeNode()     {}
+func (TemplateParam) tmNodeNode()     {}
+func (Type) tmNodeNode()              {}
+func (VoidType) tmNodeNode()          {}
+func (Token) tmNodeNode()             {}
+
+type Annotation interface {
+	annotationNode()
 }
 
-type NontermType interface {
-	nontermType()
+// annotationNode() ensures that only the following types can be
+// assigned to Annotation.
+//
+func (AnnotationImpl) annotationNode() {}
+func (SyntaxProblem) annotationNode()  {}
+
+type Argument interface {
+	argumentNode()
 }
 
-type NontermTypeAST struct {
-	Reference *Symref
-	Pos
-}
-
-func (*NontermTypeAST) nontermType() {}
-
-type NontermTypeHint struct {
-	Inline     bool
-	Kind       NontermTypeHint_KindKind
-	Name       *Identifier
-	Implements []*Symref
-	Pos
-}
-
-func (*NontermTypeHint) nontermType() {}
-
-type NontermTypeHint_KindKind int
-
-const (
-	NontermTypeHint_CLASS NontermTypeHint_KindKind = iota
-	NontermTypeHint_VOID
-	NontermTypeHint_INTERFACE
-)
-
-type NontermTypeRaw struct {
-	TypeText string
-	Pos
-}
-
-func (*NontermTypeRaw) nontermType() {}
-
-type RhsPart interface {
-	rhsPart()
-}
-
-type SetExpression interface {
-	setExpression()
-}
-
-type SetBinary struct {
-	Left  SetExpression
-	Kind  SetBinary_KindKind
-	Right SetExpression
-	Pos
-}
-
-func (*SetBinary) setExpression() {}
-
-type SetBinary_KindKind int
-
-const (
-	SetBinary_OR SetBinary_KindKind = iota
-	SetBinary_AND
-)
-
-type NontermParam interface {
-	nontermParam()
-}
-
-type InlineParameter struct {
-	ParamType  string
-	Name       *Identifier
-	ParamValue ParamValue
-	Pos
-}
-
-func (*InlineParameter) nontermParam() {}
-
-type ParamValue interface {
-	paramValue()
-}
-
-type PredicateExpression interface {
-	predicateExpression()
-}
-
-type PredicateBinary struct {
-	Left  PredicateExpression
-	Kind  PredicateBinary_KindKind
-	Right PredicateExpression
-	Pos
-}
-
-func (*PredicateBinary) predicateExpression() {}
-
-type PredicateBinary_KindKind int
-
-const (
-	PredicateBinary_ANDAND PredicateBinary_KindKind = iota
-	PredicateBinary_OROR
-)
+// argumentNode() ensures that only the following types can be
+// assigned to Argument.
+//
+func (ArgumentFalse) argumentNode() {}
+func (ArgumentImpl) argumentNode()  {}
+func (ArgumentTrue) argumentNode()  {}
 
 type Expression interface {
-	expression()
+	expressionNode()
 }
 
-type Instance struct {
-	ClassName *Name
-	Entries   []*MapEntry
-	Pos
+// expressionNode() ensures that only the following types can be
+// assigned to Expression.
+//
+func (Array) expressionNode()          {}
+func (BooleanLiteral) expressionNode() {}
+func (IntegerLiteral) expressionNode() {}
+func (StringLiteral) expressionNode()  {}
+func (Symref) expressionNode()         {}
+func (SyntaxProblem) expressionNode()  {}
+
+type GrammarPart interface {
+	grammarPartNode()
 }
 
-func (*Instance) expression() {}
+// grammarPartNode() ensures that only the following types can be
+// assigned to GrammarPart.
+//
+func (DirectiveAssert) grammarPartNode() {}
+func (DirectiveInput) grammarPartNode()  {}
+func (DirectivePrio) grammarPartNode()   {}
+func (DirectiveSet) grammarPartNode()    {}
+func (Nonterm) grammarPartNode()         {}
+func (TemplateParam) grammarPartNode()   {}
 
-type Array struct {
-	Content []Expression
-	Pos
+type LexerPart interface {
+	lexerPartNode()
 }
 
-func (*Array) expression() {}
+// lexerPartNode() ensures that only the following types can be
+// assigned to LexerPart.
+//
+func (DirectiveBrackets) lexerPartNode() {}
+func (Lexeme) lexerPartNode()            {}
+func (NamedPattern) lexerPartNode()      {}
+func (StateSelector) lexerPartNode()     {}
 
-type Input struct {
-	Header  *Header
-	Imports []*Import
-	Options []*Option
-	Lexer   []LexerPart
-	Parser  []GrammarPart
-	Pos
+type Literal interface {
+	literalNode()
 }
 
-type Header struct {
-	Name             *Name
-	Target           *Name
-	ParsingAlgorithm *ParsingAlgorithm
-	Pos
+// literalNode() ensures that only the following types can be
+// assigned to Literal.
+//
+func (BooleanLiteral) literalNode() {}
+func (IntegerLiteral) literalNode() {}
+func (StringLiteral) literalNode()  {}
+
+type NontermParam interface {
+	nontermParamNode()
 }
 
-type ParsingAlgorithm struct {
-	La int
-	Pos
+// nontermParamNode() ensures that only the following types can be
+// assigned to NontermParam.
+//
+func (InlineParameter) nontermParamNode() {}
+func (ParamRef) nontermParamNode()        {}
+
+type NontermType interface {
+	nontermTypeNode()
 }
 
-type Import struct {
-	Alias string
-	File  string
-	Pos
+// nontermTypeNode() ensures that only the following types can be
+// assigned to NontermType.
+//
+func (InterfaceType) nontermTypeNode() {}
+func (RawType) nontermTypeNode()       {}
+func (SubType) nontermTypeNode()       {}
+func (VoidType) nontermTypeNode()      {}
+
+type Option interface {
+	optionNode()
 }
 
-type Option struct {
-	Key           string
-	Value         Expression
-	SyntaxProblem *SyntaxProblem
-	Pos
+// optionNode() ensures that only the following types can be
+// assigned to Option.
+//
+func (KeyValue) optionNode()      {}
+func (SyntaxProblem) optionNode() {}
+
+type ParamValue interface {
+	paramValueNode()
 }
 
-type Identifier struct {
-	ID string
-	Pos
+// paramValueNode() ensures that only the following types can be
+// assigned to ParamValue.
+//
+func (BooleanLiteral) paramValueNode() {}
+func (IntegerLiteral) paramValueNode() {}
+func (ParamRef) paramValueNode()       {}
+func (StringLiteral) paramValueNode()  {}
+
+type PredicateExpression interface {
+	predicateExpressionNode()
 }
 
-type Symref struct {
-	Name string
-	Args *SymrefArgs
-	Pos
+// predicateExpressionNode() ensures that only the following types can be
+// assigned to PredicateExpression.
+//
+func (ParamRef) predicateExpressionNode()       {}
+func (PredicateAnd) predicateExpressionNode()   {}
+func (PredicateEq) predicateExpressionNode()    {}
+func (PredicateNot) predicateExpressionNode()   {}
+func (PredicateNotEq) predicateExpressionNode() {}
+func (PredicateOr) predicateExpressionNode()    {}
+
+type RhsPart interface {
+	rhsPartNode()
 }
 
-func (*Symref) expression() {}
-func (*Symref) paramValue() {}
+// rhsPartNode() ensures that only the following types can be
+// assigned to RhsPart.
+//
+func (Command) rhsPartNode()           {}
+func (RhsAnnotated) rhsPartNode()      {}
+func (RhsAssignment) rhsPartNode()     {}
+func (RhsCast) rhsPartNode()           {}
+func (RhsIgnored) rhsPartNode()        {}
+func (RhsNested) rhsPartNode()         {}
+func (RhsOptional) rhsPartNode()       {}
+func (RhsPlusAssignment) rhsPartNode() {}
+func (RhsPlusList) rhsPartNode()       {}
+func (RhsPrimary) rhsPartNode()        {}
+func (RhsQuantifier) rhsPartNode()     {}
+func (RhsStarList) rhsPartNode()       {}
+func (RhsSymbol) rhsPartNode()         {}
 
-type Pattern struct {
-	REGEXP string
-	Pos
+type Rule0 interface {
+	rule0Node()
 }
 
-type NamedPattern struct {
-	Name    string
-	Pattern *Pattern
-	Pos
+// rule0Node() ensures that only the following types can be
+// assigned to Rule0.
+//
+func (Rule) rule0Node()          {}
+func (SyntaxProblem) rule0Node() {}
+
+type SetExpression interface {
+	setExpressionNode()
 }
 
-func (*NamedPattern) lexerPart() {}
+// setExpressionNode() ensures that only the following types can be
+// assigned to SetExpression.
+//
+func (SetAnd) setExpressionNode()        {}
+func (SetComplement) setExpressionNode() {}
+func (SetCompound) setExpressionNode()   {}
+func (SetOr) setExpressionNode()         {}
+func (SetSymbol) setExpressionNode()     {}
 
-type Lexeme struct {
-	Name       *Identifier
-	Type       string
-	Pattern    *Pattern
-	Transition *Stateref
-	Priority   int
-	Attrs      *LexemeAttrs
-	Command    *Command
-	Pos
+// Types.
+
+type KeyValue struct {
+	Node
 }
 
-func (*Lexeme) lexerPart() {}
-
-type LexemeAttrs struct {
-	Kind LexemeAttribute
-	Pos
+func (n KeyValue) Key() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
 }
 
-type StateSelector struct {
-	States []*LexerState
-	Pos
+func (n KeyValue) Value() Expression {
+	return ToTmNode(n.Child(filter.Expression)).(Expression)
 }
 
-func (*StateSelector) lexerPart() {}
-
-type Stateref struct {
-	Name string
-	Pos
+type AnnotationImpl struct {
+	Node
 }
 
-type LexerState struct {
-	Name              *Identifier
-	DefaultTransition *Stateref
-	Pos
+func (n AnnotationImpl) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
 }
 
-type Nonterm struct {
-	Annotations *Annotations
-	Name        *Identifier
-	Params      *NontermParams
-	Type        NontermType
-	Rules       []*Rule0
-	Pos
-}
-
-func (*Nonterm) grammarPart() {}
-
-type Inputref struct {
-	Reference *Symref
-	Noeoi     bool
-	Pos
-}
-
-type Rule0 struct {
-	Predicate PredicateExpression
-	Prefix    *RhsPrefix
-	List      []RhsPart
-	Action    *RuleAction
-	Suffix    *RhsSuffix
-	Error     *SyntaxProblem
-	Pos
-}
-
-type RhsPrefix struct {
-	Annotations *Annotations
-	Pos
-}
-
-type RhsSuffix struct {
-	Kind   RhsSuffix_KindKind
-	Symref *Symref
-	Pos
-}
-
-type RhsSuffix_KindKind int
-
-const (
-	RhsSuffix_PREC RhsSuffix_KindKind = iota
-	RhsSuffix_SHIFT
-)
-
-type RuleAction struct {
-	Action    *Identifier
-	Parameter string
-	Pos
+func (n AnnotationImpl) Expression() Expression {
+	if child := n.Child(filter.Expression); child != nil {
+		return ToTmNode(child).(Expression)
+	}
+	return nil
 }
 
 type Annotations struct {
-	Annotations []*Annotation
-	Pos
+	Node
 }
 
-type Annotation struct {
-	Name          string
-	Expression    Expression
-	SyntaxProblem *SyntaxProblem
-	Pos
+func (n Annotations) Annotation() []Annotation {
+	nodes := n.Children(filter.Annotation)
+	var result []Annotation = make([]Annotation, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Annotation))
+	}
+	return result
 }
 
-type NontermParams struct {
-	List []NontermParam
-	Pos
+type ArgumentFalse struct {
+	Node
 }
 
-type ParamRef struct {
-	Ref *Identifier
-	Pos
+func (n ArgumentFalse) Name() ParamRef {
+	return ParamRef{n.Child(filter.ParamRef)}
 }
 
-func (*ParamRef) nontermParam() {}
-
-type SymrefArgs struct {
-	ArgList []*Argument
-	Pos
+type ArgumentImpl struct {
+	Node
 }
 
-type Argument struct {
-	Name *ParamRef
-	Val  ParamValue
-	Bool Argument_BoolKind
-	Pos
+func (n ArgumentImpl) Name() ParamRef {
+	return ParamRef{n.Child(filter.ParamRef)}
 }
 
-type Argument_BoolKind int
-
-const (
-	Argument_PLUS Argument_BoolKind = iota
-	Argument_TILDE
-)
-
-type MapEntry struct {
-	Name  string
-	Value Expression
-	Pos
+func (n ArgumentImpl) Val() ParamValue {
+	if child := n.Child(filter.ParamRef, filter.ParamValue); child != nil {
+		return ToTmNode(child).(ParamValue)
+	}
+	return nil
 }
 
-type Literal struct {
-	Value interface{}
-	Pos
+type ArgumentTrue struct {
+	Node
 }
 
-func (*Literal) paramValue() {}
-func (*Literal) expression() {}
+func (n ArgumentTrue) Name() ParamRef {
+	return ParamRef{n.Child(filter.ParamRef)}
+}
 
-type Name struct {
-	QualifiedId string
-	Pos
+type Array struct {
+	Node
+}
+
+func (n Array) Expression() []Expression {
+	nodes := n.Children(filter.Expression)
+	var result []Expression = make([]Expression, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Expression))
+	}
+	return result
+}
+
+type Assoc struct {
+	Node
+}
+
+type BooleanLiteral struct {
+	Node
 }
 
 type Command struct {
-	Pos
+	Node
 }
-
-func (*Command) rhsPart() {}
-
-type SyntaxProblem struct {
-	Pos
-}
-
-func (*SyntaxProblem) lexerPart() {}
-func (*SyntaxProblem) grammarPart() {}
-func (*SyntaxProblem) rhsPart() {}
-func (*SyntaxProblem) expression() {}
-
-type DirectiveBrackets struct {
-	Opening *Symref
-	Closing *Symref
-	Pos
-}
-
-func (*DirectiveBrackets) lexerPart() {}
-
-type TemplateParam struct {
-	Modifier   ParamModifier
-	ParamType  ParamType
-	Name       *Identifier
-	ParamValue ParamValue
-	Pos
-}
-
-func (*TemplateParam) grammarPart() {}
-
-type DirectivePrio struct {
-	Assoc   Assoc
-	Symbols []*Symref
-	Pos
-}
-
-func (*DirectivePrio) grammarPart() {}
-
-type DirectiveInput struct {
-	InputRefs []*Inputref
-	Pos
-}
-
-func (*DirectiveInput) grammarPart() {}
 
 type DirectiveAssert struct {
-	Kind   DirectiveAssert_KindKind
-	RhsSet *RhsSet
-	Pos
+	Node
 }
 
-func (*DirectiveAssert) grammarPart() {}
+func (n DirectiveAssert) RhsSet() RhsSet {
+	return RhsSet{n.Child(filter.RhsSet)}
+}
 
-type DirectiveAssert_KindKind int
+type DirectiveBrackets struct {
+	Node
+}
 
-const (
-	DirectiveAssert_EMPTY DirectiveAssert_KindKind = iota
-	DirectiveAssert_NONEMPTY
-)
+func (n DirectiveBrackets) Opening() Symref {
+	return Symref{n.Child(filter.Symref)}
+}
+
+func (n DirectiveBrackets) Closing() Symref {
+	return Symref{n.Child(filter.Symref, filter.Symref)}
+}
+
+type DirectiveInput struct {
+	Node
+}
+
+func (n DirectiveInput) InputRefs() []Inputref {
+	nodes := n.Children(filter.Inputref)
+	var result []Inputref = make([]Inputref, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Inputref{node})
+	}
+	return result
+}
+
+type DirectivePrio struct {
+	Node
+}
+
+func (n DirectivePrio) Assoc() Assoc {
+	return Assoc{n.Child(filter.Assoc)}
+}
+
+func (n DirectivePrio) Symbols() References {
+	return References{n.Child(filter.References)}
+}
 
 type DirectiveSet struct {
-	Name   string
-	RhsSet *RhsSet
-	Pos
+	Node
 }
 
-func (*DirectiveSet) grammarPart() {}
+func (n DirectiveSet) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n DirectiveSet) RhsSet() RhsSet {
+	return RhsSet{n.Child(filter.RhsSet)}
+}
+
+type GrammarParts struct {
+	Node
+}
+
+func (n GrammarParts) GrammarParts() *GrammarParts {
+	if child := n.Child(filter.GrammarParts); child != nil {
+		return &GrammarParts{child}
+	}
+	return nil
+}
+
+func (n GrammarParts) GrammarPart() GrammarPart {
+	return ToTmNode(n.Child(filter.GrammarPart)).(GrammarPart)
+}
+
+type Header struct {
+	Node
+}
+
+func (n Header) Name() Name {
+	return Name{n.Child(filter.Name)}
+}
+
+func (n Header) Target() *Name {
+	if child := n.Child(filter.Name, filter.Name); child != nil {
+		return &Name{child}
+	}
+	return nil
+}
+
+type Identifier struct {
+	Node
+}
+
+type Import struct {
+	Node
+}
+
+func (n Import) Alias() *Identifier {
+	if child := n.Child(filter.Identifier); child != nil {
+		return &Identifier{child}
+	}
+	return nil
+}
+
+func (n Import) Path() StringLiteral {
+	return StringLiteral{n.Child(filter.StringLiteral)}
+}
+
+type InlineParameter struct {
+	Node
+}
+
+func (n InlineParameter) ParamType() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n InlineParameter) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier, filter.Identifier)}
+}
+
+func (n InlineParameter) ParamValue() ParamValue {
+	if child := n.Child(filter.ParamValue); child != nil {
+		return ToTmNode(child).(ParamValue)
+	}
+	return nil
+}
+
+type Input struct {
+	Node
+}
+
+func (n Input) Header() Header {
+	return Header{n.Child(filter.Header)}
+}
+
+func (n Input) Imports() []Import {
+	nodes := n.Children(filter.Import)
+	var result []Import = make([]Import, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Import{node})
+	}
+	return result
+}
+
+func (n Input) Options() []Option {
+	nodes := n.Children(filter.Option)
+	var result []Option = make([]Option, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Option))
+	}
+	return result
+}
+
+func (n Input) Lexer() []LexerPart {
+	nodes := n.Children(filter.LexerPart)
+	var result []LexerPart = make([]LexerPart, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(LexerPart))
+	}
+	return result
+}
+
+func (n Input) Parser() *GrammarParts {
+	if child := n.Child(filter.GrammarParts); child != nil {
+		return &GrammarParts{child}
+	}
+	return nil
+}
+
+type Inputref struct {
+	Node
+}
+
+func (n Inputref) Reference() Symref {
+	return Symref{n.Child(filter.Symref)}
+}
+
+type IntegerLiteral struct {
+	Node
+}
+
+type InterfaceType struct {
+	Node
+}
+
+type Lexeme struct {
+	Node
+}
+
+func (n Lexeme) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n Lexeme) Pattern() *Pattern {
+	if child := n.Child(filter.Pattern); child != nil {
+		return &Pattern{child}
+	}
+	return nil
+}
+
+func (n Lexeme) Transition() *LexemeTransition {
+	if child := n.Child(filter.LexemeTransition); child != nil {
+		return &LexemeTransition{child}
+	}
+	return nil
+}
+
+func (n Lexeme) Priority() *IntegerLiteral {
+	if child := n.Child(filter.IntegerLiteral); child != nil {
+		return &IntegerLiteral{child}
+	}
+	return nil
+}
+
+func (n Lexeme) Attrs() *LexemeAttrs {
+	if child := n.Child(filter.LexemeAttrs); child != nil {
+		return &LexemeAttrs{child}
+	}
+	return nil
+}
+
+func (n Lexeme) Command() *Command {
+	if child := n.Child(filter.Command); child != nil {
+		return &Command{child}
+	}
+	return nil
+}
+
+type LexemeAttribute struct {
+	Node
+}
+
+type LexemeAttrs struct {
+	Node
+}
+
+func (n LexemeAttrs) LexemeAttribute() LexemeAttribute {
+	return LexemeAttribute{n.Child(filter.LexemeAttribute)}
+}
+
+type LexemeTransition struct {
+	Node
+}
+
+func (n LexemeTransition) Stateref() Stateref {
+	return Stateref{n.Child(filter.Stateref)}
+}
+
+type LexerState struct {
+	Node
+}
+
+func (n LexerState) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n LexerState) DefaultTransition() *Stateref {
+	if child := n.Child(filter.Stateref); child != nil {
+		return &Stateref{child}
+	}
+	return nil
+}
+
+type ListSeparator struct {
+	Node
+}
+
+func (n ListSeparator) Separator() References {
+	return References{n.Child(filter.References)}
+}
+
+type Name struct {
+	Node
+}
+
+func (n Name) Identifier() []Identifier {
+	nodes := n.Children(filter.Identifier)
+	var result []Identifier = make([]Identifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Identifier{node})
+	}
+	return result
+}
+
+type NamedPattern struct {
+	Node
+}
+
+func (n NamedPattern) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n NamedPattern) Pattern() Pattern {
+	return Pattern{n.Child(filter.Pattern)}
+}
+
+type Nonterm struct {
+	Node
+}
+
+func (n Nonterm) Annotations() *Annotations {
+	if child := n.Child(filter.Annotations); child != nil {
+		return &Annotations{child}
+	}
+	return nil
+}
+
+func (n Nonterm) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n Nonterm) Params() *NontermParams {
+	if child := n.Child(filter.NontermParams); child != nil {
+		return &NontermParams{child}
+	}
+	return nil
+}
+
+func (n Nonterm) Type() NontermType {
+	if child := n.Child(filter.NontermType); child != nil {
+		return ToTmNode(child).(NontermType)
+	}
+	return nil
+}
+
+func (n Nonterm) Rule0() []Rule0 {
+	nodes := n.Children(filter.Rule0)
+	var result []Rule0 = make([]Rule0, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Rule0))
+	}
+	return result
+}
+
+type NontermParams struct {
+	Node
+}
+
+func (n NontermParams) List() []NontermParam {
+	nodes := n.Children(filter.NontermParam)
+	var result []NontermParam = make([]NontermParam, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(NontermParam))
+	}
+	return result
+}
+
+type ParamModifier struct {
+	Node
+}
+
+type ParamRef struct {
+	Node
+}
+
+func (n ParamRef) Identifier() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+type ParamType struct {
+	Node
+}
+
+type Pattern struct {
+	Node
+}
+
+type Predicate struct {
+	Node
+}
+
+func (n Predicate) PredicateExpression() PredicateExpression {
+	return ToTmNode(n.Child(filter.PredicateExpression)).(PredicateExpression)
+}
+
+type PredicateAnd struct {
+	Node
+}
+
+func (n PredicateAnd) Left() PredicateExpression {
+	return ToTmNode(n.Child(filter.PredicateExpression)).(PredicateExpression)
+}
+
+func (n PredicateAnd) Right() PredicateExpression {
+	return ToTmNode(n.Child(filter.PredicateExpression, filter.PredicateExpression)).(PredicateExpression)
+}
+
+type PredicateEq struct {
+	Node
+}
+
+func (n PredicateEq) ParamRef() ParamRef {
+	return ParamRef{n.Child(filter.ParamRef)}
+}
+
+func (n PredicateEq) Literal() Literal {
+	return ToTmNode(n.Child(filter.Literal)).(Literal)
+}
+
+type PredicateNot struct {
+	Node
+}
+
+func (n PredicateNot) ParamRef() ParamRef {
+	return ParamRef{n.Child(filter.ParamRef)}
+}
+
+type PredicateNotEq struct {
+	Node
+}
+
+func (n PredicateNotEq) ParamRef() ParamRef {
+	return ParamRef{n.Child(filter.ParamRef)}
+}
+
+func (n PredicateNotEq) Literal() Literal {
+	return ToTmNode(n.Child(filter.Literal)).(Literal)
+}
+
+type PredicateOr struct {
+	Node
+}
+
+func (n PredicateOr) Left() PredicateExpression {
+	return ToTmNode(n.Child(filter.PredicateExpression)).(PredicateExpression)
+}
+
+func (n PredicateOr) Right() PredicateExpression {
+	return ToTmNode(n.Child(filter.PredicateExpression, filter.PredicateExpression)).(PredicateExpression)
+}
+
+type RawType struct {
+	Node
+}
+
+type References struct {
+	Node
+}
+
+func (n References) References() *References {
+	if child := n.Child(filter.References); child != nil {
+		return &References{child}
+	}
+	return nil
+}
+
+func (n References) Symref() Symref {
+	return Symref{n.Child(filter.Symref)}
+}
 
 type RhsAnnotated struct {
-	Annotations *Annotations
-	Inner       RhsPart
-	Pos
+	Node
 }
 
-func (*RhsAnnotated) rhsPart() {}
+func (n RhsAnnotated) Annotations() Annotations {
+	return Annotations{n.Child(filter.Annotations)}
+}
+
+func (n RhsAnnotated) Inner() RhsPart {
+	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+}
 
 type RhsAssignment struct {
-	Id       *Identifier
-	Addition bool
-	Inner    RhsPart
-	Pos
+	Node
 }
 
-func (*RhsAssignment) rhsPart() {}
-
-type RhsQuantifier struct {
-	Inner      RhsPart
-	Quantifier RhsQuantifier_QuantifierKind
-	Pos
+func (n RhsAssignment) Id() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
 }
 
-func (*RhsQuantifier) rhsPart() {}
-
-type RhsQuantifier_QuantifierKind int
-
-const (
-	RhsQuantifier_QUEST RhsQuantifier_QuantifierKind = iota
-	RhsQuantifier_PLUS
-	RhsQuantifier_MULT
-)
+func (n RhsAssignment) Inner() RhsPart {
+	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+}
 
 type RhsCast struct {
-	Inner  RhsPart
-	Target *Symref
-	Pos
+	Node
 }
 
-func (*RhsCast) rhsPart() {}
-
-type RhsAsLiteral struct {
-	Inner   RhsPart
-	Literal *Literal
-	Pos
+func (n RhsCast) Inner() RhsPart {
+	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
 }
 
-func (*RhsAsLiteral) rhsPart() {}
-
-type RhsUnordered struct {
-	Left  RhsPart
-	Right RhsPart
-	Pos
+func (n RhsCast) Target() Symref {
+	return Symref{n.Child(filter.Symref)}
 }
-
-func (*RhsUnordered) rhsPart() {}
-
-type RhsClass struct {
-	Identifier *Identifier
-	Inner      RhsPart
-	Pos
-}
-
-func (*RhsClass) rhsPart() {}
-
-type RhsSymbol struct {
-	Reference *Symref
-	Pos
-}
-
-func (*RhsSymbol) rhsPart() {}
-
-type RhsNested struct {
-	Rules []*Rule0
-	Pos
-}
-
-func (*RhsNested) rhsPart() {}
-
-type RhsList struct {
-	RuleParts  []RhsPart
-	Separator  []*Symref
-	AtLeastOne bool
-	Pos
-}
-
-func (*RhsList) rhsPart() {}
 
 type RhsIgnored struct {
-	Rules []*Rule0
-	Pos
+	Node
 }
 
-func (*RhsIgnored) rhsPart() {}
+func (n RhsIgnored) Rule0() []Rule0 {
+	nodes := n.Children(filter.Rule0)
+	var result []Rule0 = make([]Rule0, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Rule0))
+	}
+	return result
+}
+
+type RhsNested struct {
+	Node
+}
+
+func (n RhsNested) Rule0() []Rule0 {
+	nodes := n.Children(filter.Rule0)
+	var result []Rule0 = make([]Rule0, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Rule0))
+	}
+	return result
+}
+
+type RhsOptional struct {
+	Node
+}
+
+func (n RhsOptional) Inner() RhsPart {
+	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+}
+
+type RhsPlusAssignment struct {
+	Node
+}
+
+func (n RhsPlusAssignment) Id() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n RhsPlusAssignment) Inner() RhsPart {
+	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+}
+
+type RhsPlusList struct {
+	Node
+}
+
+func (n RhsPlusList) RuleParts() []RhsPart {
+	nodes := n.Children(filter.RhsPart)
+	var result []RhsPart = make([]RhsPart, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(RhsPart))
+	}
+	return result
+}
+
+func (n RhsPlusList) ListSeparator() ListSeparator {
+	return ListSeparator{n.Child(filter.ListSeparator)}
+}
+
+type RhsPrimary struct {
+	Node
+}
+
+func (n RhsPrimary) RhsSet() RhsSet {
+	return RhsSet{n.Child(filter.RhsSet)}
+}
+
+type RhsQuantifier struct {
+	Node
+}
+
+func (n RhsQuantifier) Inner() RhsPart {
+	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+}
 
 type RhsSet struct {
-	Expr SetExpression
-	Pos
+	Node
 }
 
-func (*RhsSet) rhsPart() {}
-
-type SetSymbol struct {
-	Operator string
-	Symbol   *Symref
-	Pos
+func (n RhsSet) Expr() SetExpression {
+	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
 }
 
-func (*SetSymbol) setExpression() {}
-
-type SetCompound struct {
-	Inner SetExpression
-	Pos
+type RhsStarList struct {
+	Node
 }
 
-func (*SetCompound) setExpression() {}
+func (n RhsStarList) RuleParts() []RhsPart {
+	nodes := n.Children(filter.RhsPart)
+	var result []RhsPart = make([]RhsPart, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(RhsPart))
+	}
+	return result
+}
+
+func (n RhsStarList) ListSeparator() ListSeparator {
+	return ListSeparator{n.Child(filter.ListSeparator)}
+}
+
+type RhsSuffix struct {
+	Node
+}
+
+func (n RhsSuffix) Symref() Symref {
+	return Symref{n.Child(filter.Symref)}
+}
+
+type RhsSymbol struct {
+	Node
+}
+
+func (n RhsSymbol) Reference() Symref {
+	return Symref{n.Child(filter.Symref)}
+}
+
+type Rule struct {
+	Node
+}
+
+func (n Rule) Predicate() *Predicate {
+	if child := n.Child(filter.Predicate); child != nil {
+		return &Predicate{child}
+	}
+	return nil
+}
+
+func (n Rule) RhsPart() []RhsPart {
+	nodes := n.Children(filter.RhsPart)
+	var result []RhsPart = make([]RhsPart, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(RhsPart))
+	}
+	return result
+}
+
+func (n Rule) RuleAction() *RuleAction {
+	if child := n.Child(filter.RuleAction); child != nil {
+		return &RuleAction{child}
+	}
+	return nil
+}
+
+func (n Rule) RhsSuffix() *RhsSuffix {
+	if child := n.Child(filter.RhsSuffix); child != nil {
+		return &RhsSuffix{child}
+	}
+	return nil
+}
+
+type RuleAction struct {
+	Node
+}
+
+func (n RuleAction) Action() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n RuleAction) Parameter() *StringLiteral {
+	if child := n.Child(filter.StringLiteral); child != nil {
+		return &StringLiteral{child}
+	}
+	return nil
+}
+
+type SetAnd struct {
+	Node
+}
+
+func (n SetAnd) Left() SetExpression {
+	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+}
+
+func (n SetAnd) Right() SetExpression {
+	return ToTmNode(n.Child(filter.SetExpression, filter.SetExpression)).(SetExpression)
+}
 
 type SetComplement struct {
-	Inner SetExpression
-	Pos
+	Node
 }
 
-func (*SetComplement) setExpression() {}
-
-type BoolPredicate struct {
-	Negated  bool
-	ParamRef *ParamRef
-	Pos
+func (n SetComplement) Inner() SetExpression {
+	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
 }
 
-func (*BoolPredicate) predicateExpression() {}
-
-type ComparePredicate struct {
-	ParamRef *ParamRef
-	Kind     ComparePredicate_KindKind
-	Literal  *Literal
-	Pos
+type SetCompound struct {
+	Node
 }
 
-func (*ComparePredicate) predicateExpression() {}
+func (n SetCompound) Inner() SetExpression {
+	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+}
 
-type ComparePredicate_KindKind int
+type SetOr struct {
+	Node
+}
 
-const (
-	ComparePredicate_ASSIGNASSIGN ComparePredicate_KindKind = iota
-	ComparePredicate_EXCLASSIGN
-)
+func (n SetOr) Left() SetExpression {
+	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+}
+
+func (n SetOr) Right() SetExpression {
+	return ToTmNode(n.Child(filter.SetExpression, filter.SetExpression)).(SetExpression)
+}
+
+type SetSymbol struct {
+	Node
+}
+
+func (n SetSymbol) Operator() *Identifier {
+	if child := n.Child(filter.Identifier); child != nil {
+		return &Identifier{child}
+	}
+	return nil
+}
+
+func (n SetSymbol) Symbol() Symref {
+	return Symref{n.Child(filter.Symref)}
+}
+
+type StateSelector struct {
+	Node
+}
+
+func (n StateSelector) States() []LexerState {
+	nodes := n.Children(filter.LexerState)
+	var result []LexerState = make([]LexerState, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, LexerState{node})
+	}
+	return result
+}
+
+type Stateref struct {
+	Node
+}
+
+func (n Stateref) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+type StringLiteral struct {
+	Node
+}
+
+type SubType struct {
+	Node
+}
+
+func (n SubType) Reference() Symref {
+	return Symref{n.Child(filter.Symref)}
+}
+
+type Symref struct {
+	Node
+}
+
+func (n Symref) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n Symref) Args() *SymrefArgs {
+	if child := n.Child(filter.SymrefArgs); child != nil {
+		return &SymrefArgs{child}
+	}
+	return nil
+}
+
+type SymrefArgs struct {
+	Node
+}
+
+func (n SymrefArgs) ArgList() []Argument {
+	nodes := n.Children(filter.Argument)
+	var result []Argument = make([]Argument, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Argument))
+	}
+	return result
+}
+
+type SyntaxProblem struct {
+	Node
+}
+
+type TemplateParam struct {
+	Node
+}
+
+func (n TemplateParam) Modifier() *ParamModifier {
+	if child := n.Child(filter.ParamModifier); child != nil {
+		return &ParamModifier{child}
+	}
+	return nil
+}
+
+func (n TemplateParam) ParamType() ParamType {
+	return ParamType{n.Child(filter.ParamType)}
+}
+
+func (n TemplateParam) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n TemplateParam) ParamValue() ParamValue {
+	if child := n.Child(filter.ParamValue); child != nil {
+		return ToTmNode(child).(ParamValue)
+	}
+	return nil
+}
+
+type Type struct {
+	Node
+}
+
+type VoidType struct {
+	Node
+}

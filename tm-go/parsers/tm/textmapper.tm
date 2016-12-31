@@ -18,7 +18,9 @@ language textmapper(go);
 
 lang = "tm"
 package = "github.com/inspirer/textmapper/tm-go/parsers/tm"
-genast = true
+eventBased = true
+eventFields = true
+reportTokens = [invalid_token, multiline_comment, comment]
 
 :: lexer
 
@@ -28,107 +30,95 @@ reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
 reChar = /{reFirst}|\*/
 
-regexp(string): /\/{reFirst}{reChar}*\//  { text := l.Text(); $$ = text[1:len(text)-2] }
-scon(string):   /"([^\n\\"]|\\.)*"/       { text := l.Text(); $$ = text[1:len(text)-2] }
-icon(int):      /-?[0-9]+/                { $$, _ = "strconv".ParseInt(l.Text(), 10, 64) }
+regexp:  /\/{reFirst}{reChar}*\//
+scon:    /"([^\n\\"]|\\.)*"/
+icon:    /-?[0-9]+/
 
-eoi:           /%%.*(\r?\n)?/
-_skip:         /[\n\r\t ]+/               (space)
-_skip_comment:  /#.*(\r?\n)?/             (space)
+eoi:        /%%.*(\r?\n)?/
+whitespace: /[\n\r\t ]+/                      (space)
+comment:    /(#|\/\/)[^\r\n]*/                (space)
 
 commentChars = /([^*]|\*+[^*\/])*\**/
-_skip_multiline: /\/\*{commentChars}\*\// (space)
+multiline_comment: /\/\*{commentChars}\*\//   (space)
 
-
-'%':     /%/
-'::=':   /::=/
-'::':    /::/
-'|':     /\|/
-'||':    /\|\|/
-'=':     /=/
-'==':    /==/
-'!=':    /!=/
-'=>':    /=>/
-';':     /;/
-'.':     /\./
-',':     /,/
-':':     /:/
-'[':     /\[/
-']':     /\]/
-'(':     /\(/
-# TODO overlaps with ID '->':  /->/
-')':     /\)/
-'{~':    /\{~/
-'}':     /\}/
-'<':     /</
-'>':     />/
-'*':     /\*/
-'+':     /+/
-'+=':    /+=/
-'?':     /?/
-'!':     /!/
-'~':     /~/
-'&':     /&/
-'&&':    /&&/
-'$':     /$/
-'@':     /@/
+'%':    /%/
+'::=':  /::=/
+'::':   /::/
+'|':    /\|/
+'||':   /\|\|/
+'=':    /=/
+'==':   /==/
+'!=':   /!=/
+'=>':   /=>/
+';':    /;/
+'.':    /\./
+',':    /,/
+':':    /:/
+'[':    /\[/
+']':    /\]/
+'(':    /\(/
+# TODO overlaps with ID '->':    /->/
+')':    /\)/
+'{~':   /\{~/
+'}':    /\}/
+'<':    /</
+'>':    />/
+'*':    /\*/
+'+':    /+/
+'+=':   /+=/
+'?':    /?/
+'!':    /!/
+'~':    /~/
+'&':    /&/
+'&&':   /&&/
+'$':    /$/
+'@':    /@/
 
 error:
+invalid_token:
 
 [initial, afterAt, afterAtID]
 
-ID(string): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)  { $$ = l.Text(); }
+ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 
-'true':  /true/
-'false': /false/
-'new':   /new/
-'separator': /separator/
 'as': /as/
+'false': /false/
 'import': /import/
+'separator': /separator/
 'set': /set/
+'true':  /true/
 
-'brackets': /brackets/    (soft)
+# Soft keywords.
 
-'inline': /inline/        (soft)
-
-'prec':  /prec/           (soft)
-'shift': /shift/          (soft)
-
-'returns': /returns/      (soft)
-
-'input': /input/          (soft)
-'left':  /left/           (soft)
-'right': /right/          (soft)
-'nonassoc': /nonassoc/    (soft)
-
-'generate': /generate/    (soft)
-'assert': /assert/        (soft)
-'empty': /empty/          (soft)
-'nonempty': /nonempty/    (soft)
-
-'global': /global/        (soft)
-'explicit': /explicit/    (soft)
-'lookahead': /lookahead/  (soft)
-'param': /param/          (soft)
-'flag': /flag/            (soft)
-
-'no-eoi': /no-eoi/        (soft)
-
-'soft': /soft/            (soft)
-'class': /class/          (soft)
-'interface': /interface/  (soft)
-'void': /void/            (soft)
-'space': /space/          (soft)
-'layout': /layout/        (soft)
-'language': /language/    (soft)
-'lalr': /lalr/            (soft)
-
-'lexer': /lexer/          (soft)
-'parser': /parser/        (soft)
-
-# reserved
-
-'reduce': /reduce/
+'assert': /assert/
+'brackets': /brackets/
+'class': /class/
+'empty': /empty/
+'explicit': /explicit/
+'flag': /flag/
+'generate': /generate/
+'global': /global/
+'inline': /inline/
+'input': /input/
+'interface': /interface/
+'lalr': /lalr/
+'language': /language/
+'layout': /layout/
+'left':  /left/
+'lexer': /lexer/
+'lookahead': /lookahead/
+'no-eoi': /no-eoi/
+'nonassoc': /nonassoc/
+'nonempty': /nonempty/
+'param': /param/
+'parser': /parser/
+'prec':  /prec/
+'returns': /returns/
+'right': /right/
+'shift': /shift/
+'soft': /soft/
+'space': /space/
+'void': /void/
 
 [initial, afterAt]
 
@@ -137,8 +127,61 @@ code:   /\{/
 [afterAtID]
 '{':    /\{/
 
-
 :: parser
+
+%flag OrSyntaxError = false;
+
+# Basic nonterminals.
+
+identifier<flag KW = false> ::=
+    ID
+
+  # Soft keywords
+  | 'brackets' | 'inline'   | 'prec'     | 'shift'     | 'returns' | 'input'
+  | 'left'     | 'right'    | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
+  | 'nonempty' | 'global'   | 'explicit' | 'lookahead' | 'param'   | 'flag'
+  | 'no-eoi'
+  | 'soft'     | 'class'    | 'interface' | 'void'    | 'space'
+  | 'layout'   | 'language' | 'lalr'     | 'lexer'     | 'parser'
+
+  # KW
+  | [KW] ('true' | 'false' | 'separator' | 'as' | 'import' | 'set')
+;
+
+integer_literal ::=
+    icon ;
+
+string_literal ::=
+    scon ;
+
+boolean_literal ::=
+    'true'
+  | 'false'
+;
+
+literal interface ::=
+    string_literal
+  | integer_literal
+  | boolean_literal
+;
+
+pattern ::=
+    regexp ;
+
+@noast
+qualified_name ::=
+    identifier
+  | qualified_name '.' identifier<+KW>
+;
+
+name ::=
+    qualified_name ;
+
+command ::=
+    code ;
+
+syntax_problem ::=
+    error ;
 
 %input input, expression;
 
@@ -146,74 +189,69 @@ input ::=
     header imports=import_* options=option* lexer=lexer_section parser=parser_section? ;
 
 header ::=
-    'language' name ('(' target=name ')')? parsing_algorithmopt ';' ;
+    'language' name=name ('(' target=name ')')? ';' ;
 
+@noast
 lexer_section ::=
-    '::' 'lexer' @pass lexer_parts ;
+    '::' 'lexer' lexer_parts ;
 
+@noast
 parser_section ::=
-    '::' 'parser' @pass grammar_parts ;
-
-parsing_algorithm ::=
-    'lalr' '(' la=icon ')' ;
+    '::' 'parser' grammar_parts ;
 
 import_ ::=
-    'import' alias=ID? file=scon ';' ;
+    'import' alias=identifier? path=string_literal ';' ;
 
-option ::=
-    key=ID '=' value=expression
+option interface ::=
+    key=identifier '=' value=expression        {~KeyValue}
   | syntax_problem
 ;
 
-identifier class ::=
-    ID ;
-
-symref class ::=
-    name=ID args=symref_args? ;
-
-symref_noargs returns symref ::=
-    name=ID ;
-
-type (string) ::=
-    '(' scon ')'                       { $$ = $scon; }
-  | '(' type_part_list ')'             { $$ = "TODO" }
+symref<flag Args> ::=
+    [Args]  name=identifier args=symref_args?
+  | [!Args] name=identifier
 ;
 
-type_part_list void ::=
+@void
+type ::=
+    '(' scon ')'
+  | '(' type_part_list ')'
+;
+
+@noast @void
+type_part_list ::=
     type_part_list type_part | type_part ;
 
-type_part void ::=
-    '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
+@noast @void
+type_part ::=
+    '<' | '>' | '[' | ']' | identifier | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
 
-pattern class ::=
-    regexp
-;
-
+@noast
 lexer_parts ::=
     lexer_part
-  | lexer_parts lexer_part
-  | lexer_parts syntax_problem
+  | lexer_parts lexer_part<+OrSyntaxError>
 ;
 
-lexer_part ::=
+lexer_part<OrSyntaxError> interface ::=
     state_selector
   | named_pattern
   | lexeme
   | lexer_directive
+  | [OrSyntaxError] syntax_problem
 ;
 
 named_pattern ::=
-    name=ID '=' pattern ;
+    name=identifier '=' pattern ;
 
 lexeme ::=
     name=identifier typeopt ':'
-        (pattern transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
+          (pattern transition=lexeme_transitionopt priority=integer_literalopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_transition ::=
-    '=>' @pass stateref ;
+    '=>' stateref ;
 
 lexeme_attrs ::=
-    '(' kind=lexeme_attribute ')' ;
+    '(' lexeme_attribute ')' ;
 
 lexeme_attribute ::=
     'soft'
@@ -223,40 +261,39 @@ lexeme_attribute ::=
 ;
 
 lexer_directive returns lexer_part ::=
-    '%' 'brackets' opening=symref_noargs closing=symref_noargs ';'   {~directiveBrackets}
+    '%' 'brackets' opening=symref<~Args> closing=symref<~Args> ';'    {~directiveBrackets}
 ;
 
 state_selector ::=
     '[' states=(lexer_state separator ',')+ ']' ;
 
-stateref class ::=
-    name=ID ;
+stateref ::=
+    name=identifier ;
 
 lexer_state ::=
     name=identifier ('=>' defaultTransition=stateref)? ;
 
 grammar_parts ::=
     grammar_part
-  | grammar_parts grammar_part
-  | grammar_parts syntax_problem
+  | grammar_parts grammar_part<+OrSyntaxError>
 ;
 
-grammar_part ::=
-    nonterm | template_param | directive ;
+grammar_part<OrSyntaxError> interface ::=
+    nonterm
+  | template_param
+  | directive
+  | [OrSyntaxError] syntax_problem
+;
 
 nonterm ::=
     annotations? name=identifier params=nonterm_params? type=nonterm_type? '::=' rules ';' ;
 
 nonterm_type interface ::=
-    'returns' reference=symref_noargs                                {~nontermTypeAST}
-  | inline='inline'? kind='class' name=identifieropt implementsopt   {~nontermTypeHint}
-  | kind='interface' name=identifieropt implementsopt                {~nontermTypeHint}
-  | kind='void'                                                      {~nontermTypeHint}
-  | typeText=type                                                    {~nontermTypeRaw}
+    'returns' reference=symref<~Args>                      {~subType}
+  | 'interface'                                            {~interfaceType}
+  | 'void'                                                 {~voidType}
+  | type                                                   {~rawType}
 ;
-
-implements ::=
-    ':' @pass references_cs ;
 
 assoc ::=
     'left'
@@ -277,145 +314,138 @@ template_param returns grammar_part ::=
 directive returns grammar_part ::=
     '%' assoc symbols=references ';'                                 {~directivePrio}
   | '%' 'input' inputRefs=(inputref separator ',')+ ';'              {~directiveInput}
-  | '%' 'assert' (kind='empty' | kind='nonempty') rhsSet ';'         {~directiveAssert}
-  | '%' 'generate' name=ID '=' rhsSet ';'                            {~directiveSet}
+  | '%' 'assert' ('empty' | 'nonempty') rhsSet ';'                   {~directiveAssert}
+  | '%' 'generate' name=identifier '=' rhsSet ';'                    {~directiveSet}
 ;
 
 inputref ::=
-    reference=symref_noargs noeoi='no-eoi'? ;
+    reference=symref<~Args> 'no-eoi'? ;
 
 references ::=
-    symref_noargs
-  | references symref_noargs
+    symref<~Args>
+  | references symref<~Args>
 ;
 
 references_cs ::=
-    symref_noargs
-  | references_cs ',' symref_noargs
+    symref<~Args>
+  | references_cs ',' symref<~Args>
 ;
 
+@noast
 rules ::=
-    (rule0 separator '|')+ ;
+    rule0
+  | rules '|' rule0
+;
 
-rule0 ::=
-    predicate? prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
-  | error=syntax_problem
+rule0 interface ::=
+    predicate? rhsParts? ruleAction? rhsSuffixopt       {~rule}
+  | syntax_problem
 ;
 
 predicate ::=
-    '[' @pass predicate_expression ']' ;
-
-rhsPrefix ::=
-    annotations ':'
-;
+    '[' predicate_expression ']' ;
 
 rhsSuffix ::=
-    '%' kind='prec' symref=symref_noargs
-  | '%' kind='shift' symref=symref_noargs
+    '%' 'prec' symref<~Args>
+  | '%' 'shift' symref<~Args>
 ;
 
 ruleAction ::=
-    '{~' action=identifier parameter=scon? '}' ;
+    '{~' action=identifier parameter=string_literal? '}' ;
 
+@noast
 rhsParts ::=
     rhsPart
-  | rhsParts rhsPart
-  | rhsParts syntax_problem
+  | rhsParts rhsPart<+OrSyntaxError>
+;
+
+rhsPart<OrSyntaxError> interface ::=
+    rhsAnnotated
+  | command
+  | [OrSyntaxError] syntax_problem
+;
+
+rhsAnnotated returns rhsPart ::=
+    @noast rhsAssignment
+  | annotations inner=rhsAssignment
+;
+
+rhsAssignment returns rhsPart ::=
+    @noast rhsOptional
+  | id=identifier '=' inner=rhsOptional
+  | id=identifier '+=' inner=rhsOptional     {~rhsPlusAssignment}
+;
+
+rhsOptional returns rhsPart ::=
+    @noast rhsCast
+  | inner=rhsCast '?'
+;
+
+rhsCast returns rhsPart ::=
+    @noast rhsPrimary
+  | inner=rhsPrimary 'as' target=symref<+Args>
+;
+
+listSeparator ::=
+    'separator' separator_=references ;
+
+rhsPrimary returns rhsPart ::=
+    reference=symref<+Args>                           {~rhsSymbol}
+  | '(' rules ')'                                     {~rhsNested}
+  | '(' ruleParts=rhsParts listSeparator ')' '+'      {~rhsPlusList}
+  | '(' ruleParts=rhsParts listSeparator ')' '*'      {~rhsStarList}
+  | inner=rhsPrimary '+'                              {~rhsQuantifier}
+  | inner=rhsPrimary '*'                              {~rhsQuantifier}
+  | '$' '(' rules ')'                                 {~rhsIgnored}
+  | rhsSet
+;
+
+rhsSet ::=
+    'set' '(' expr=setExpression ')' ;
+
+setPrimary returns setExpression ::=
+    operator=identifier? symbol=symref<+Args>    {~setSymbol}
+  | '(' inner=setExpression ')'                  {~setCompound}
+  | '~' inner=setPrimary                         {~setComplement}
 ;
 
 %left '|';
 %left '&';
 
-rhsPart ::=
-    rhsAnnotated
-  | rhsUnordered
-  | command
-;
-
-rhsAnnotated returns rhsPart ::=
-    rhsAssignment
-  | annotations inner=rhsAssignment
-;
-
-rhsAssignment returns rhsPart ::=
-    rhsOptional
-  | id=identifier ('=' | addition='+=') inner=rhsOptional
-;
-
-rhsOptional returns rhsPart ::=
-    rhsCast
-  | inner=rhsCast quantifier='?'        {~rhsQuantifier}
-;
-
-rhsCast returns rhsPart ::=
-    rhsClass
-  | inner=rhsClass 'as' target=symref
-  | inner=rhsClass 'as' literal         {~rhsAsLiteral}
-;
-
-rhsUnordered returns rhsPart ::=
-    left=rhsPart '&' right=rhsPart
-;
-
-rhsClass returns rhsPart ::=
-    rhsPrimary
-  | identifier ':' inner=rhsPrimary
-;
-
-rhsPrimary returns rhsPart ::=
-    reference=symref                                               {~rhsSymbol}
-  | '(' rules ')'                                                  {~rhsNested}
-  | '(' ruleParts=rhsParts 'separator' separator_=references ')' atLeastOne='+' as true     {~rhsList}
-  | '(' ruleParts=rhsParts 'separator' separator_=references ')' atLeastOne='*' as false    {~rhsList}
-  | inner=rhsPrimary quantifier='*'                                {~rhsQuantifier}
-  | inner=rhsPrimary quantifier='+'                                {~rhsQuantifier}
-  | '$' '(' rules ')'                                              {~rhsIgnored}
-  | rhsSet
-;
-
-rhsSet returns rhsPart ::=
-    'set' '(' expr=setExpression ')'
-;
-
-setPrimary returns setExpression ::=
-    operator=ID? symbol=symref          {~setSymbol}
-  | '(' inner=setExpression ')'         {~setCompound}
-  | '~' inner=setPrimary                {~setComplement}
-;
-
 setExpression interface ::=
-    setPrimary
-  | left=setExpression kind='|' right=setExpression     {~setBinary}
-  | left=setExpression kind='&' right=setExpression     {~setBinary}
+    @noast setPrimary
+  | left=setExpression '|' right=setExpression   {~setOr}
+  | left=setExpression '&' right=setExpression   {~setAnd}
 ;
 
-annotations class ::=
-    annotations=annotation+ ;
+annotations ::=
+    annotation+ ;
 
-annotation ::=
-    '@' name=ID ('{' expression '}')?
+annotation interface ::=
+    '@' name=identifier ('{' expression '}')?    {~annotationImpl}
   | '@' syntax_problem
 ;
 
-##### Nonterminal parameters
+/* Nonterminal parameters */
 
 nonterm_params ::=
     '<' list=(nonterm_param separator ',')+ '>' ;
 
 nonterm_param interface ::=
     param_ref
-  | param_type=ID name=identifier ('=' param_value)?     {~inlineParameter}
+  | param_type=identifier name=identifier ('=' param_value)?     {~inlineParameter}
 ;
 
 param_ref ::=
-    ref=identifier ;
+    identifier ;
 
 symref_args ::=
     '<' arg_list=(argument separator ',')* '>' ;
 
-argument ::=
-    name=param_ref ':' val=param_value
-  | (bool='+'|bool='~')? name=param_ref
+argument interface  ::=
+    name=param_ref (':' val=param_value)?        {~argumentImpl}
+  | '+' name=param_ref                           {~argumentTrue}
+  | '~' name=param_ref                           {~argumentFalse}
 ;
 
 param_type ::=
@@ -423,14 +453,16 @@ param_type ::=
   | 'param'
 ;
 
-param_value ::=
+param_value interface ::=
     literal
-  | symref_noargs
+  | param_ref
 ;
 
 predicate_primary returns predicate_expression ::=
-    negated='!'? param_ref {~boolPredicate}
-  | param_ref (kind='==' | kind='!=') literal {~comparePredicate}
+    @noast param_ref
+  | '!' param_ref                 {~predicateNot}
+  | param_ref '==' literal        {~predicateEq}
+  | param_ref '!=' literal        {~predicateNotEq}
 ;
 
 %left '||';
@@ -438,42 +470,13 @@ predicate_primary returns predicate_expression ::=
 
 predicate_expression interface ::=
     predicate_primary
-  | left=predicate_expression kind='&&' right=predicate_expression {~predicateBinary}
-  | left=predicate_expression kind='||' right=predicate_expression {~predicateBinary}
+  | left=predicate_expression '&&' right=predicate_expression        {~predicateAnd}
+  | left=predicate_expression '||' right=predicate_expression        {~predicateOr}
 ;
 
-##### EXPRESSIONS
-
-# TODO use json, get rid of new & symref
-
-expression ::=
+expression interface ::=
     literal
-  | symref
-  | 'new' className=name '(' entries=(map_entry separator ',')* ')'     {~instance}
-  | '[' content=(expression separator ',')* ']'                         {~array}
+  | symref<+Args>
+  | '[' (expression separator ',')* ']'                              {~array}
   | syntax_problem
 ;
-
-map_entry ::=
-    name=ID ':' value=expression ;
-
-literal ::=
-    value=scon
-  | value=icon
-  | value='true' as true
-  | value='false' as false
-;
-
-name class ::=
-    qualified_id ;
-
-qualified_id (string) ::=
-    ID                              { $$ = $0; }
-  | qualified_id '.' ID             { $$ = $qualified_id + "." + $ID; }
-;
-
-command class ::=
-    code ;
-
-syntax_problem class : lexer_part, grammar_part, rhsPart ::=
-    error ;
