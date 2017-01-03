@@ -5,6 +5,8 @@ ${template lexerCtor}
 	private final int[] tmRuleSymbol;
 	private final int[] tmGoto;
 	private final int[] tmStateMap;
+	private final int[] tmBacktracking;
+	private final int tmFirstRule;
 	private final int tmClassesCount;
 
 	public ${opts.prefix}Lexer(CharSequence input, ErrorReporter reporter, org.textmapper.lapg.api.@LexerData lexerData, org.textmapper.lapg.api.@Grammar grammar) throws java.io.@IOException {
@@ -15,6 +17,8 @@ ${template lexerCtor}
 		tmGoto = lexerData.getChange();
 		tmClassesCount = lexerData.getNchars();
 		tmStateMap = lexerData.getGroupset();
+		tmBacktracking = lexerData.getBacktracking();
+		tmFirstRule = -3 - tmBacktracking.length/2;
 		reset(input);
 	}
 ${end}
@@ -60,3 +64,5 @@ ${end}
 ${cached query hasLexerActions() = false}
 
 ${query tmStateMapExists() = true}
+
+${query tmWithBacktracking() = true}

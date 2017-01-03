@@ -64,6 +64,8 @@ public class GenericLexer {
 	private final int[] tmRuleSymbol;
 	private final int[] tmGoto;
 	private final int[] tmStateMap;
+	private final int[] tmBacktracking;
+	private final int tmFirstRule;
 	private final int tmClassesCount;
 
 	public GenericLexer(CharSequence input, ErrorReporter reporter, LexerData lexerData, Grammar grammar) throws IOException {
@@ -74,6 +76,8 @@ public class GenericLexer {
 		tmGoto = lexerData.getChange();
 		tmClassesCount = lexerData.getNchars();
 		tmStateMap = lexerData.getGroupset();
+		tmBacktracking = lexerData.getBacktracking();
+		tmFirstRule = -3 - tmBacktracking.length/2;
 		reset(input);
 	}
 
@@ -156,8 +160,16 @@ public class GenericLexer {
 			tokenLine = token.line = currLine;
 			tokenOffset = charOffset;
 
+			// TODO use backupRule
+			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
+				if (state > tmFirstRule && state < -2) {
+					token.endoffset = currOffset;
+					state = (-3 - state) * 2;
+					backupRule = tmBacktracking[state++];
+					state = tmBacktracking[state];
+				}
 				if (state == -1 && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
@@ -193,10 +205,10 @@ public class GenericLexer {
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
 	}
 

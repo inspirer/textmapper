@@ -179,13 +179,13 @@ ${else-}
 			tokenBuffer.setLength(0);
 ${end-}
 
-${if lex.backtracking.length > 0-}
+${if self->tmWithBacktracking()-}
 			// TODO use backupRule
 			int backupRule = -1;
 ${end-}
 			for (state = ${self->tmStateMapExists() ? 'tmStateMap[this.state]' : 'this.state'}; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-${if lex.backtracking.length > 0-}
+${if self->tmWithBacktracking()-}
 				if (state > tmFirstRule && state < -2) {
 ${if opts.endpositions.contains('offset')-}
 					token.endoffset = currOffset;
@@ -245,10 +245,10 @@ ${end-}
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[${lex.backtracking.length == 0 ? '-3' : 'tmFirstRule'} - state];
+			token.symbol = tmRuleSymbol[${!self->tmWithBacktracking() ? '-3' : 'tmFirstRule'} - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, ${lex.backtracking.length == 0 ? '-3' : 'tmFirstRule'} - state));
+		} while (token.symbol == -1 || !createToken(token, ${!self->tmWithBacktracking() ? '-3' : 'tmFirstRule'} - state));
 ${call onNext-}
 		return token;
 	}
@@ -417,7 +417,7 @@ ${if self->tmStateMapExists()-}
 	};
 
 ${end-}
-${if lex.backtracking.length > 0-}
+${if self->tmWithBacktracking()-}
 	private static final short tmBacktracking[] = {
 		${util.format(lex.backtracking, 16, 2)}
 	};
@@ -506,3 +506,5 @@ ${cached query classInstances() = context.syntax.lexerRules.select(x|x.classRule
 ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
 
 ${cached query tmStateMapExists() = lex.groupset.length > 1}
+
+${cached query tmWithBacktracking() = lex.backtracking.length}
