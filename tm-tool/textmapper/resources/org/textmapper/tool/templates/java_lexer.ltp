@@ -179,8 +179,28 @@ ${else-}
 			tokenBuffer.setLength(0);
 ${end-}
 
+${if lex.backtracking.length > 0-}
+			// TODO use backupRule
+			int backupRule = -1;
+${end-}
 			for (state = ${self->tmStateMapExists() ? 'tmStateMap[this.state]' : 'this.state'}; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
+${if lex.backtracking.length > 0-}
+				if (state > tmFirstRule && state < -2) {
+${if opts.endpositions.contains('offset')-}
+					token.endoffset = currOffset;
+${end-}
+${if opts.endpositions.contains('line')-}
+					token.endline = currLine;
+${end-}
+${if opts.endpositions.contains('column')-}
+					token.endcolumn = currColumn;
+${end-}
+					state = (-3 - state) * 2;
+					backupRule = tmBacktracking[state++];
+					state = tmBacktracking[state];
+				}
+${end-}
 				if (state == -1 && chr == -1) {
 ${if opts.endpositions.contains('offset')-}
 					token.endoffset = currOffset;
@@ -225,10 +245,10 @@ ${end-}
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[${lex.backtracking.length == 0 ? '-3' : 'tmFirstRule'} - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, ${lex.backtracking.length == 0 ? '-3' : 'tmFirstRule'} - state));
 ${call onNext-}
 		return token;
 	}
@@ -395,6 +415,14 @@ ${if self->tmStateMapExists()-}
 	private static final short tmStateMap[] = {
 		${util.format(lex.groupset, 16, 2)}
 	};
+
+${end-}
+${if lex.backtracking.length > 0-}
+	private static final short tmBacktracking[] = {
+		${util.format(lex.backtracking, 16, 2)}
+	};
+
+	private static final int tmFirstRule = ${-3 - (lex.backtracking.length / 2)};
 
 ${end-}
 	private static final int[] tmRuleSymbol = ${syntax.lexerRuleTokens->java_pack.packInt()};

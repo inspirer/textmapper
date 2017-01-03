@@ -26,5 +26,9 @@ public interface LexerData {
 
 	int[] getGroupset();
 
+	// matrix of [getNchars() * num of states] -> next state (non-negative), or action (negative)
 	int[] getChange();
+
+	// array of pairs [rule, next state]
+	int[] getBacktracking();
 }

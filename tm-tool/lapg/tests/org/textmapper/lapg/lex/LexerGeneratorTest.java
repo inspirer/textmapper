@@ -188,10 +188,16 @@ public class LexerGeneratorTest {
 		int state = 0;
 		int index = 0;
 
+		final int tmFirstRule = -3 - lr.getBacktracking().length/2;
 		while (state >= 0) {
 			int chr = index < s.length() ? s.codePointAt(index) : 0;
 			index++;
 			state = lr.getChange()[state * lr.getNchars() + (chr >= 0 && chr < lr.getChar2no().length ? lr.getChar2no()[chr] : 1)];
+			if (state < -2 && state > tmFirstRule) {
+				state = (-3 - state) * 2;
+				// TODO test backtracking
+				state = lr.getBacktracking()[state + 1];
+			}
 		}
 		if (index != s.length() + 1) {
 			return -1;
@@ -202,7 +208,7 @@ public class LexerGeneratorTest {
 		if (state == -2) {
 			return -1;
 		}
-		return lexerRules[-state - 3].getSymbol().getIndex();
+		return lexerRules[tmFirstRule-state].getSymbol().getIndex();
 	}
 
 	private static class TestLexerState implements LexerState {

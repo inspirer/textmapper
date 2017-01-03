@@ -23,6 +23,7 @@ import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.lapg.regex.RegexFacade;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class LexerGenerator {
 	private static class RuleData {
@@ -52,6 +53,35 @@ public class LexerGenerator {
 		int[] set;
 		// -1 error, -2 succeed, -3... lexer rule #0
 		int[] action;
+		LexerRule defaultRule;
+	}
+
+	private static class Checkpoint {
+		int targetState;
+		int rule;
+
+		public Checkpoint(int targetState, int rule) {
+			this.targetState = targetState;
+			this.rule = rule;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Checkpoint that = (Checkpoint) o;
+
+			if (targetState != that.targetState) return false;
+			return rule == that.rule;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = targetState;
+			result = 31 * result + rule;
+			return result;
+		}
 	}
 
 	private static final int TABLE_SIZE = 1024; // should be a power of 2
@@ -77,6 +107,7 @@ public class LexerGenerator {
 	private BitSet cset;
 
 	private int[] groupset;
+	private int[] backtracking;
 
 	private LexerGenerator(ProcessingStatus status) {
 		this.status = status;
@@ -110,6 +141,7 @@ public class LexerGenerator {
 		n.next = null;
 		n.number = states++;
 		n.action = null;
+		n.defaultRule = null;
 
 		n.hash = hash[hCode & (TABLE_SIZE - 1)];
 		hash[hCode & (TABLE_SIZE - 1)] = n;
@@ -399,6 +431,7 @@ public class LexerGenerator {
 
 			// allocate new change table
 			current.action = new int[characters];
+			current.defaultRule = lexnum >= 0 ? ldata[lexnum].lexerRule : null;
 
 			// try to shift all available symbols
 			for (int sym = 0; sym < characters; sym++) {
@@ -442,13 +475,46 @@ public class LexerGenerator {
 
 				} else {
 					current.action[sym] =
-							lexnum >= 0 ? -3 - ldata[lexnum].lexerRule.getIndex() : -1;
+							current.defaultRule != null ? -3 - current.defaultRule.getIndex() : -1;
 				}
 			}
 		}
 
 		// First group (only) succeeds on EOI, unless there is an explicit EOI rule.
 		if (first.action[0] == -1) first.action[0] = -2;
+
+		// Adding backtracking states.
+		State[] statesArr = new State[states];
+		for (State s = first; s != null; s = s.next) {
+			statesArr[s.number] = s;
+		}
+		Map<Checkpoint, Integer> checkpoints = new HashMap<>();
+		for (State s = first; s != null; s = s.next) {
+			if (s.defaultRule == null) continue;
+			for (i = 0; i < s.action.length; i++) {
+				if (s.action[i] < 0) continue;
+				if (statesArr[s.action[i]].defaultRule == null) {
+					// need a checkpoint
+					Checkpoint cp = new Checkpoint(s.action[i], s.defaultRule.getIndex());
+					Integer index = checkpoints.get(cp);
+					if (index == null) {
+						checkpoints.put(cp, index = checkpoints.size());
+						if (status.isDebugMode()) {
+							status.debug("Created a checkpoint for " + s.defaultRule.getRegexp());
+						}
+					}
+					s.action[i] = states + index;
+				}
+			}
+		}
+
+		this.backtracking = new int[checkpoints.size() * 2];
+		for (Entry<Checkpoint, Integer> entry : checkpoints.entrySet()) {
+			i = entry.getValue() * 2;
+			this.backtracking[i++] = entry.getKey().rule;
+			this.backtracking[i] = entry.getKey().targetState;
+		}
+		final int backtrackingStates = checkpoints.size();
 
 		// Re-ordering states for better cache locality.
 		int[] permutationMap = new int[states];
@@ -464,11 +530,19 @@ public class LexerGenerator {
 			if (groupset[i] == -1) continue;
 			groupset[i] = permutationMap[groupset[i]];
 		}
+		for (i = 1; i < this.backtracking.length; i += 2) {
+			this.backtracking[i] = permutationMap[this.backtracking[i]];
+		}
 		for (State s = first; s != null; s = s.next) {
 			s.number = permutationMap[s.number];
 			for (i = 0; i < s.action.length; i++) {
-				if (s.action[i] < 0) continue;
-				s.action[i] = permutationMap[s.action[i]];
+				if (s.action[i] >= states) {
+					s.action[i] = -3 - (s.action[i] - states);
+				} else if (s.action[i] >= 0) {
+					s.action[i] = permutationMap[s.action[i]];
+				} else if (s.action[i] < -2) {
+					s.action[i] -= backtrackingStates;
+				}
 			}
 		}
 		return errors == 0;
@@ -641,7 +715,7 @@ public class LexerGenerator {
 			System.arraycopy(s.action, 0, stateChange, t, characters);
 		}
 
-		return new LexerTables(characters, char2no, groupset, stateChange);
+		return new LexerTables(characters, char2no, groupset, stateChange, backtracking);
 	}
 
 	/*

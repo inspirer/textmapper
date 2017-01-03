@@ -23,13 +23,14 @@ import org.textmapper.lapg.api.LexerData;
 class LexerTables implements LexerData {
 
 	private final int nchars;
-	private final int[] char2no, groupset, change;
+	private final int[] char2no, groupset, change, backtracking;
 
-	LexerTables(int nchars, int[] char2no, int[] groupset, int[] change) {
+	LexerTables(int nchars, int[] char2no, int[] groupset, int[] change, int[] backtracking) {
 		this.nchars = nchars;
 		this.char2no = char2no;
 		this.groupset = groupset;
 		this.change = change;
+		this.backtracking = backtracking;
 	}
 
 	@Override
@@ -50,5 +51,10 @@ class LexerTables implements LexerData {
 	@Override
 	public int[] getChange() {
 		return change;
+	}
+
+	@Override
+	public int[] getBacktracking() {
+		return backtracking;
 	}
 }
