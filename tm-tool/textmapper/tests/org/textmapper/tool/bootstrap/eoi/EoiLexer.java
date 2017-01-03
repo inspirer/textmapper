@@ -228,10 +228,10 @@ public class EoiLexer {
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[-3 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, -3 - state));
 		return token;
 	}
 

@@ -242,6 +242,12 @@ public class TemplatesLexer {
 		0, 10
 	};
 
+	private static final short tmBacktracking[] = {
+		3, 4
+	};
+
+	private static final int tmFirstRule = -4;
+
 	private static final int[] tmRuleSymbol = unpack_int(64,
 		"\7\0\1\0\2\0\3\0\4\0\5\0\6\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20\0\21\0\22" +
 		"\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37\0\40\0\41\0\42" +
@@ -252,21 +258,21 @@ public class TemplatesLexer {
 
 	private static final short[] tmGoto = unpack_vc_short(1887,
 		"\1\ufffe\1\11\1\1\42\11\2\uffff\1\10\1\uffff\1\7\1\6\2\uffff\1\3\23\uffff\1\3\1\2" +
-		"\2\uffff\3\3\1\2\1\uffff\35\ufff9\1\2\5\ufff9\1\2\1\ufff9\3\ufffa\1\4\4\ufffa\1\3" +
-		"\23\ufffa\2\3\2\ufffa\4\3\1\ufffa\35\uffff\1\5\5\uffff\1\5\1\uffff\35\ufffa\1\5\5" +
-		"\ufffa\1\5\1\ufffa\45\ufff7\45\ufff8\45\ufffb\1\ufffc\1\11\1\ufffc\42\11\2\uffff" +
+		"\2\uffff\3\3\1\2\1\uffff\35\ufff8\1\2\5\ufff8\1\2\1\ufff8\3\ufff9\1\ufffd\4\ufff9" +
+		"\1\3\23\ufff9\2\3\2\ufff9\4\3\1\ufff9\35\uffff\1\5\5\uffff\1\5\1\uffff\35\ufff9\1" +
+		"\5\5\ufff9\1\5\1\ufff9\45\ufff6\45\ufff7\45\ufffa\1\ufffb\1\11\1\ufffb\42\11\2\uffff" +
 		"\1\62\1\uffff\1\61\1\60\1\51\1\uffff\1\62\1\50\1\45\1\44\1\43\1\42\1\40\1\36\1\35" +
 		"\1\34\1\33\1\32\1\31\1\30\1\26\1\23\1\21\1\17\1\16\1\15\1\62\1\14\1\13\1\uffff\3" +
-		"\62\1\14\1\13\36\uffbe\1\13\5\uffbe\1\13\35\ufff6\1\14\5\ufff6\1\14\1\ufff6\45\uffbf" +
-		"\45\uffc0\27\uffc2\1\20\15\uffc2\45\uffc4\27\uffc1\1\22\15\uffc1\45\uffc3\27\uffc8" +
-		"\1\25\1\24\14\uffc8\45\uffc5\45\uffc9\26\uffff\1\27\16\uffff\45\uffcb\45\uffcc\45" +
-		"\uffcd\45\uffce\45\uffcf\45\uffd0\45\uffd1\17\uffd2\1\37\25\uffd2\45\uffca\27\uffd3" +
-		"\1\41\15\uffd3\45\uffc7\45\uffd4\45\uffd6\45\uffd8\11\uffd7\1\47\16\uffd7\1\46\14" +
-		"\uffd7\45\uffc6\45\uffd9\45\uffda\1\uffff\5\51\1\57\1\52\26\51\1\uffff\6\51\6\uffff" +
+		"\62\1\14\1\13\36\uffbd\1\13\5\uffbd\1\13\35\ufff5\1\14\5\ufff5\1\14\1\ufff5\45\uffbe" +
+		"\45\uffbf\27\uffc1\1\20\15\uffc1\45\uffc3\27\uffc0\1\22\15\uffc0\45\uffc2\27\uffc7" +
+		"\1\25\1\24\14\uffc7\45\uffc4\45\uffc8\26\uffff\1\27\16\uffff\45\uffca\45\uffcb\45" +
+		"\uffcc\45\uffcd\45\uffce\45\uffcf\45\uffd0\17\uffd1\1\37\25\uffd1\45\uffc9\27\uffd2" +
+		"\1\41\15\uffd2\45\uffc6\45\uffd3\45\uffd5\45\uffd7\11\uffd6\1\47\16\uffd6\1\46\14" +
+		"\uffd6\45\uffc5\45\uffd8\45\uffd9\1\uffff\5\51\1\57\1\52\26\51\1\uffff\6\51\6\uffff" +
 		"\2\51\1\55\22\uffff\1\51\3\uffff\2\51\1\uffff\1\51\1\53\2\uffff\5\51\1\57\1\52\26" +
 		"\51\1\uffff\4\51\1\54\1\51\1\uffff\5\51\1\57\1\52\26\51\1\uffff\6\51\35\uffff\1\56" +
-		"\3\uffff\3\56\2\uffff\5\51\1\57\1\52\25\51\1\56\1\uffff\2\51\3\56\1\51\45\ufff5\45" +
-		"\uffd5\45\uffdb\2\ufffd\1\62\5\ufffd\1\62\23\ufffd\2\62\2\ufffd\4\62\1\ufffd");
+		"\3\uffff\3\56\2\uffff\5\51\1\57\1\52\25\51\1\56\1\uffff\2\51\3\56\1\51\45\ufff4\45" +
+		"\uffd4\45\uffda\2\ufffc\1\62\5\ufffc\1\62\23\ufffc\2\62\2\ufffc\4\62\1\ufffc");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -301,8 +307,16 @@ public class TemplatesLexer {
 			tokenLine = token.line = currLine;
 			tokenOffset = charOffset;
 
+			// TODO use backupRule
+			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
+				if (state > tmFirstRule && state < -2) {
+					token.endoffset = currOffset;
+					state = (-3 - state) * 2;
+					backupRule = tmBacktracking[state++];
+					state = tmBacktracking[state];
+				}
 				if (state == -1 && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
@@ -338,10 +352,10 @@ public class TemplatesLexer {
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
 	}
 

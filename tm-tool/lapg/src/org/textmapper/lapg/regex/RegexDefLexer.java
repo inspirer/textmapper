@@ -183,6 +183,12 @@ public class RegexDefLexer {
 		0, 51, 66
 	};
 
+	private static final short tmBacktracking[] = {
+		25, 6, 1, 47, 1, 64, 1, 62, 1, 59, 1, 56
+	};
+
+	private static final int tmFirstRule = -9;
+
 	private static final int[] tmRuleSymbol = unpack_int(36,
 		"\22\0\1\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\3\0\3\0\4\0\5\0\6\0\7\0" +
 		"\10\0\11\0\12\0\13\0\1\0\14\0\15\0\16\0\17\0\20\0\21\0\1\0\23\0\24\0\25\0\1\0");
@@ -191,30 +197,31 @@ public class RegexDefLexer {
 
 	private static final short[] tmGoto = unpack_vc_short(2870,
 		"\1\ufffe\1\62\1\56\1\62\1\14\13\62\1\13\3\12\1\62\1\11\1\62\1\5\1\4\1\3\1\62\1\1" +
-		"\1\62\1\uffff\2\62\1\uffff\10\62\34\uffe0\1\2\14\uffe0\51\uffdf\51\uffe2\51\uffe3" +
-		"\23\uffe4\1\6\25\uffe4\25\uffff\1\7\21\uffff\2\7\25\uffff\1\7\4\uffff\1\10\14\uffff" +
-		"\2\7\51\uffe1\51\uffde\51\uffe5\51\uffed\1\uffff\4\55\1\54\1\53\1\52\1\51\1\50\1" +
-		"\47\1\46\1\43\1\36\1\25\1\21\17\55\1\uffff\1\55\2\uffff\1\16\1\55\2\15\1\55\1\15" +
-		"\51\uffef\43\uffff\1\17\50\uffff\1\20\5\uffff\51\ufff3\2\uffff\1\22\53\uffff\13\23" +
-		"\16\uffff\2\23\2\uffff\7\23\3\uffff\1\24\1\uffff\13\23\16\uffff\2\23\2\uffff\7\23" +
-		"\51\uffee\5\uffff\3\26\27\uffff\1\26\3\uffff\3\26\10\uffff\3\27\27\uffff\1\27\3\uffff" +
-		"\3\27\10\uffff\3\30\27\uffff\1\30\3\uffff\3\30\10\uffff\3\31\27\uffff\1\31\3\uffff" +
-		"\3\31\10\uffff\3\32\27\uffff\1\32\3\uffff\3\32\10\uffff\3\33\27\uffff\1\33\3\uffff" +
-		"\3\33\10\uffff\3\34\27\uffff\1\34\3\uffff\3\34\10\uffff\3\35\27\uffff\1\35\3\uffff" +
-		"\3\35\3\uffff\51\ufff0\5\uffff\3\37\27\uffff\1\37\3\uffff\3\37\10\uffff\3\40\27\uffff" +
-		"\1\40\3\uffff\3\40\10\uffff\3\41\27\uffff\1\41\3\uffff\3\41\10\uffff\3\42\27\uffff" +
-		"\1\42\3\uffff\3\42\3\uffff\51\ufff1\5\uffff\3\44\27\uffff\1\44\3\uffff\3\44\10\uffff" +
-		"\3\45\27\uffff\1\45\3\uffff\3\45\3\uffff\51\ufff2\51\ufff4\51\ufff5\51\ufff6\51\ufff7" +
-		"\51\ufff8\51\ufff9\51\ufffa\51\ufffb\5\ufffc\13\57\16\ufffc\1\57\3\ufffc\1\57\1\ufffc" +
-		"\5\57\3\uffff\1\61\1\uffff\13\57\5\uffff\1\60\10\uffff\2\57\2\uffff\7\57\5\uffff" +
-		"\13\57\5\uffff\1\60\10\uffff\2\57\2\uffff\7\57\51\ufffd\51\ufffc\1\uffff\1\62\1\67" +
-		"\1\62\1\14\13\62\1\13\1\66\1\65\1\64\1\62\1\11\1\62\1\5\1\4\1\3\1\62\1\1\1\62\1\uffff" +
-		"\2\62\1\uffff\10\62\51\uffea\51\uffeb\51\uffec\5\ufffc\13\57\2\ufffc\1\100\2\ufffc" +
-		"\1\76\1\73\7\ufffc\1\57\1\70\2\ufffc\1\57\1\70\5\57\3\uffff\1\72\20\uffff\1\71\12" +
-		"\uffff\1\70\3\uffff\1\70\10\uffff\1\72\33\uffff\1\71\3\uffff\1\71\5\uffff\51\uffe9" +
-		"\26\uffff\1\74\25\uffff\1\75\45\uffff\51\uffe6\3\uffff\1\77\45\uffff\51\uffe8\3\uffff" +
-		"\1\101\45\uffff\51\uffe7\1\uffff\3\62\1\14\13\62\1\13\3\12\1\62\1\105\1\62\3\104" +
-		"\1\62\1\uffff\1\62\1\103\2\62\1\uffff\10\62\51\uffdc\51\uffda\51\uffdb");
+		"\1\62\1\uffff\2\62\1\uffff\10\62\34\uffda\1\2\14\uffda\51\uffd9\51\uffdc\51\uffdd" +
+		"\23\uffde\1\ufffd\25\uffde\25\uffff\1\7\21\uffff\2\7\25\uffff\1\7\4\uffff\1\10\14" +
+		"\uffff\2\7\51\uffdb\51\uffd8\51\uffdf\51\uffe7\1\uffff\4\55\1\54\1\53\1\52\1\51\1" +
+		"\50\1\47\1\46\1\43\1\36\1\25\1\21\17\55\1\uffff\1\55\2\uffff\1\16\1\55\2\15\1\55" +
+		"\1\15\51\uffe9\43\uffff\1\17\50\uffff\1\20\5\uffff\51\uffed\2\uffff\1\22\53\uffff" +
+		"\13\23\16\uffff\2\23\2\uffff\7\23\3\uffff\1\24\1\uffff\13\23\16\uffff\2\23\2\uffff" +
+		"\7\23\51\uffe8\5\uffff\3\26\27\uffff\1\26\3\uffff\3\26\10\uffff\3\27\27\uffff\1\27" +
+		"\3\uffff\3\27\10\uffff\3\30\27\uffff\1\30\3\uffff\3\30\10\uffff\3\31\27\uffff\1\31" +
+		"\3\uffff\3\31\10\uffff\3\32\27\uffff\1\32\3\uffff\3\32\10\uffff\3\33\27\uffff\1\33" +
+		"\3\uffff\3\33\10\uffff\3\34\27\uffff\1\34\3\uffff\3\34\10\uffff\3\35\27\uffff\1\35" +
+		"\3\uffff\3\35\3\uffff\51\uffea\5\uffff\3\37\27\uffff\1\37\3\uffff\3\37\10\uffff\3" +
+		"\40\27\uffff\1\40\3\uffff\3\40\10\uffff\3\41\27\uffff\1\41\3\uffff\3\41\10\uffff" +
+		"\3\42\27\uffff\1\42\3\uffff\3\42\3\uffff\51\uffeb\5\uffff\3\44\27\uffff\1\44\3\uffff" +
+		"\3\44\10\uffff\3\45\27\uffff\1\45\3\uffff\3\45\3\uffff\51\uffec\51\uffee\51\uffef" +
+		"\51\ufff0\51\ufff1\51\ufff2\51\ufff3\51\ufff4\51\ufff5\5\ufff6\13\ufffc\16\ufff6" +
+		"\1\ufffc\3\ufff6\1\ufffc\1\ufff6\5\ufffc\3\uffff\1\61\1\uffff\13\57\5\uffff\1\60" +
+		"\10\uffff\2\57\2\uffff\7\57\5\uffff\13\57\5\uffff\1\60\10\uffff\2\57\2\uffff\7\57" +
+		"\51\ufff7\51\ufff6\1\uffff\1\62\1\67\1\62\1\14\13\62\1\13\1\66\1\65\1\64\1\62\1\11" +
+		"\1\62\1\5\1\4\1\3\1\62\1\1\1\62\1\uffff\2\62\1\uffff\10\62\51\uffe4\51\uffe5\51\uffe6" +
+		"\5\ufff6\13\ufffc\2\ufff6\1\ufffb\2\ufff6\1\ufffa\1\ufff9\7\ufff6\1\ufffc\1\ufff8" +
+		"\2\ufff6\1\ufffc\1\ufff8\5\ufffc\3\uffff\1\72\20\uffff\1\71\12\uffff\1\70\3\uffff" +
+		"\1\70\10\uffff\1\72\33\uffff\1\71\3\uffff\1\71\5\uffff\51\uffe3\26\uffff\1\74\25" +
+		"\uffff\1\75\45\uffff\51\uffe0\3\uffff\1\77\45\uffff\51\uffe2\3\uffff\1\101\45\uffff" +
+		"\51\uffe1\1\uffff\3\62\1\14\13\62\1\13\3\12\1\62\1\105\1\62\3\104\1\62\1\uffff\1" +
+		"\62\1\103\2\62\1\uffff\10\62\51\uffd6\51\uffd4\51\uffd5");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -249,8 +256,16 @@ public class RegexDefLexer {
 			tokenLine = currLine;
 			tokenOffset = charOffset;
 
+			// TODO use backupRule
+			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
+				if (state > tmFirstRule && state < -2) {
+					token.endoffset = currOffset;
+					state = (-3 - state) * 2;
+					backupRule = tmBacktracking[state++];
+					state = tmBacktracking[state];
+				}
 				if (state == -1 && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
@@ -286,10 +301,10 @@ public class RegexDefLexer {
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
 	}
 

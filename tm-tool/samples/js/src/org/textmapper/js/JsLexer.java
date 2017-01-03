@@ -419,6 +419,12 @@ public class JsLexer {
 		0, 111
 	};
 
+	private static final short tmBacktracking[] = {
+		87, 3, 87, 28, 88, 69, 92, 92, 0, 106, 93, 83
+	};
+
+	private static final int tmFirstRule = -9;
+
 	private static final int[] tmRuleSymbol = unpack_int(95,
 		"\5\0\1\0\2\0\3\0\4\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20\0\21\0\22" +
 		"\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37\0\40\0\41\0\42" +
@@ -434,53 +440,53 @@ public class JsLexer {
 		"\1\ufffe\1\uffff\2\151\1\144\1\151\2\uffff\1\143\1\142\1\120\1\116\1\115\1\114\1" +
 		"\113\1\112\1\111\1\110\1\103\1\102\1\101\1\75\1\67\1\64\1\61\1\56\1\53\1\51\1\46" +
 		"\1\43\1\41\1\40\1\37\1\36\1\33\1\21\1\151\1\7\6\151\1\2\2\151\4\uffff\1\1\1\142\3" +
-		"\151\70\ufffc\22\uffa6\1\6\17\uffa6\1\2\11\uffa6\1\2\10\uffa6\2\3\1\uffa6\31\uffff" +
-		"\2\5\7\uffff\1\4\11\uffff\1\4\13\uffff\42\uffa6\1\4\11\uffa6\1\4\13\uffa6\42\uffff" +
-		"\1\4\11\uffff\1\4\13\uffff\42\uffa6\1\6\11\uffa6\1\6\10\uffa6\2\3\1\uffa6\1\uffff" +
-		"\3\7\1\11\3\7\2\uffff\33\7\1\10\16\7\1\uffff\3\7\70\uffa2\1\uffff\4\7\1\15\2\7\1" +
-		"\14\33\7\1\12\7\7\1\uffff\13\7\42\uffff\1\13\11\uffff\3\13\6\uffff\2\13\43\uffff" +
-		"\1\7\11\uffff\3\7\6\uffff\2\7\2\uffff\3\7\1\11\3\7\1\uffff\34\7\1\10\16\7\1\uffff" +
-		"\3\7\42\uffff\1\16\11\uffff\3\16\6\uffff\2\16\43\uffff\1\17\11\uffff\3\17\6\uffff" +
-		"\2\17\43\uffff\1\20\11\uffff\3\20\6\uffff\2\20\43\uffff\1\7\11\uffff\3\7\6\uffff" +
-		"\2\7\2\uffff\3\21\1\23\3\21\2\uffff\31\21\1\22\20\21\1\uffff\3\21\70\uffa3\1\uffff" +
-		"\4\21\1\27\2\21\1\26\33\21\1\24\7\21\1\uffff\13\21\42\uffff\1\25\11\uffff\3\25\6" +
-		"\uffff\2\25\43\uffff\1\21\11\uffff\3\21\6\uffff\2\21\2\uffff\3\21\1\23\3\21\1\uffff" +
-		"\32\21\1\22\20\21\1\uffff\3\21\42\uffff\1\30\11\uffff\3\30\6\uffff\2\30\43\uffff" +
-		"\1\31\11\uffff\3\31\6\uffff\2\31\43\uffff\1\32\11\uffff\3\32\6\uffff\2\32\43\uffff" +
-		"\1\21\11\uffff\3\21\6\uffff\2\21\1\uffff\22\uffa6\1\6\21\uffa6\1\34\20\uffa6\2\3" +
-		"\1\34\42\uffff\1\35\11\uffff\3\35\6\uffff\2\35\1\uffff\42\uffa4\1\35\11\uffa4\3\35" +
-		"\6\uffa4\2\35\1\uffa4\70\uffb5\70\uffb6\70\uffb9\27\uffbb\1\42\40\uffbb\70\uffaa" +
-		"\27\uffbc\1\45\5\uffbc\1\44\32\uffbc\70\uffb7\70\uffab\27\uffbd\1\50\4\uffbd\1\47" +
-		"\33\uffbd\70\uffb8\70\uffac\27\uffc3\1\52\40\uffc3\70\uffb0\27\uffc5\1\55\2\uffc5" +
-		"\1\54\35\uffc5\70\uffc1\70\uffb2\27\uffc6\1\60\1\uffc6\1\57\36\uffc6\70\uffc2\70" +
-		"\uffb3\27\uffba\1\62\40\uffba\27\uffc9\1\63\40\uffc9\70\uffc7\27\uffb4\1\65\40\uffb4" +
-		"\27\uffca\1\66\40\uffca\70\uffc8\26\uffcd\1\71\1\70\40\uffcd\70\uffcb\26\uffbf\1" +
-		"\73\1\72\40\uffbf\70\uffae\27\uffbe\1\74\40\uffbe\70\uffad\25\uffce\1\77\1\uffce" +
-		"\1\76\40\uffce\70\uffcc\27\uffc0\1\100\40\uffc0\70\uffaf\70\uffcf\70\uffd0\42\uffd1" +
-		"\1\104\11\uffd1\1\104\13\uffd1\42\uffa5\1\104\11\uffa5\1\104\10\uffa5\2\105\1\uffa5" +
-		"\31\uffff\2\107\7\uffff\1\106\11\uffff\1\106\13\uffff\42\uffa5\1\106\11\uffa5\1\106" +
-		"\13\uffa5\42\uffff\1\106\11\uffff\1\106\13\uffff\70\uffd2\70\uffd3\70\uffd4\70\uffd5" +
-		"\70\uffd6\70\uffd7\27\uffc4\1\117\40\uffc4\70\uffb1\1\uffff\3\130\1\127\3\130\2\uffff" +
+		"\151\70\ufff6\22\uffa0\1\6\17\uffa0\1\2\11\uffa0\1\2\10\uffa0\2\ufffd\1\uffa0\31" +
+		"\uffff\2\5\7\uffff\1\4\11\uffff\1\4\13\uffff\42\uffa0\1\4\11\uffa0\1\4\13\uffa0\42" +
+		"\uffff\1\4\11\uffff\1\4\13\uffff\42\uffa0\1\6\11\uffa0\1\6\10\uffa0\2\ufffd\1\uffa0" +
+		"\1\uffff\3\7\1\11\3\7\2\uffff\33\7\1\10\16\7\1\uffff\3\7\70\uff9c\1\uffff\4\7\1\15" +
+		"\2\7\1\14\33\7\1\12\7\7\1\uffff\13\7\42\uffff\1\13\11\uffff\3\13\6\uffff\2\13\43" +
+		"\uffff\1\7\11\uffff\3\7\6\uffff\2\7\2\uffff\3\7\1\11\3\7\1\uffff\34\7\1\10\16\7\1" +
+		"\uffff\3\7\42\uffff\1\16\11\uffff\3\16\6\uffff\2\16\43\uffff\1\17\11\uffff\3\17\6" +
+		"\uffff\2\17\43\uffff\1\20\11\uffff\3\20\6\uffff\2\20\43\uffff\1\7\11\uffff\3\7\6" +
+		"\uffff\2\7\2\uffff\3\21\1\23\3\21\2\uffff\31\21\1\22\20\21\1\uffff\3\21\70\uff9d" +
+		"\1\uffff\4\21\1\27\2\21\1\26\33\21\1\24\7\21\1\uffff\13\21\42\uffff\1\25\11\uffff" +
+		"\3\25\6\uffff\2\25\43\uffff\1\21\11\uffff\3\21\6\uffff\2\21\2\uffff\3\21\1\23\3\21" +
+		"\1\uffff\32\21\1\22\20\21\1\uffff\3\21\42\uffff\1\30\11\uffff\3\30\6\uffff\2\30\43" +
+		"\uffff\1\31\11\uffff\3\31\6\uffff\2\31\43\uffff\1\32\11\uffff\3\32\6\uffff\2\32\43" +
+		"\uffff\1\21\11\uffff\3\21\6\uffff\2\21\1\uffff\22\uffa0\1\6\21\uffa0\1\ufffc\20\uffa0" +
+		"\2\ufffd\1\ufffc\42\uffff\1\35\11\uffff\3\35\6\uffff\2\35\1\uffff\42\uff9e\1\35\11" +
+		"\uff9e\3\35\6\uff9e\2\35\1\uff9e\70\uffaf\70\uffb0\70\uffb3\27\uffb5\1\42\40\uffb5" +
+		"\70\uffa4\27\uffb6\1\45\5\uffb6\1\44\32\uffb6\70\uffb1\70\uffa5\27\uffb7\1\50\4\uffb7" +
+		"\1\47\33\uffb7\70\uffb2\70\uffa6\27\uffbd\1\52\40\uffbd\70\uffaa\27\uffbf\1\55\2" +
+		"\uffbf\1\54\35\uffbf\70\uffbb\70\uffac\27\uffc0\1\60\1\uffc0\1\57\36\uffc0\70\uffbc" +
+		"\70\uffad\27\uffb4\1\62\40\uffb4\27\uffc3\1\63\40\uffc3\70\uffc1\27\uffae\1\65\40" +
+		"\uffae\27\uffc4\1\66\40\uffc4\70\uffc2\26\uffc7\1\71\1\70\40\uffc7\70\uffc5\26\uffb9" +
+		"\1\73\1\72\40\uffb9\70\uffa8\27\uffb8\1\74\40\uffb8\70\uffa7\25\uffc8\1\77\1\uffc8" +
+		"\1\76\40\uffc8\70\uffc6\27\uffba\1\100\40\uffba\70\uffa9\70\uffc9\70\uffca\42\uffcb" +
+		"\1\104\11\uffcb\1\104\13\uffcb\42\uff9f\1\104\11\uff9f\1\104\10\uff9f\2\ufffb\1\uff9f" +
+		"\31\uffff\2\107\7\uffff\1\106\11\uffff\1\106\13\uffff\42\uff9f\1\106\11\uff9f\1\106" +
+		"\13\uff9f\42\uffff\1\106\11\uffff\1\106\13\uffff\70\uffcc\70\uffcd\70\uffce\70\uffcf" +
+		"\70\uffd0\70\uffd1\27\uffbe\1\117\40\uffbe\70\uffab\1\uffff\3\130\1\127\3\130\2\uffff" +
 		"\1\126\1\123\4\130\1\121\43\130\1\uffff\3\130\1\uffff\3\121\1\122\3\121\2\uffff\7" +
 		"\121\1\130\42\121\1\uffff\3\121\1\uffff\7\121\2\uffff\52\121\1\uffff\3\121\1\uffff" +
-		"\12\123\1\124\54\123\1\uffff\11\123\1\125\1\124\54\123\70\ufffa\1\ufff9\7\126\2\ufff9" +
-		"\52\126\1\ufff9\3\126\1\uffff\7\130\2\uffff\52\130\1\uffff\3\130\1\uffff\3\130\1" +
+		"\12\123\1\124\54\123\1\uffff\11\123\1\125\1\124\54\123\70\ufff4\1\ufff3\7\126\2\ufff3" +
+		"\52\126\1\ufff3\3\126\1\uffff\7\130\2\uffff\52\130\1\uffff\3\130\1\uffff\3\130\1" +
 		"\141\3\130\2\uffff\1\133\5\130\1\131\43\130\1\uffff\3\130\1\uffff\3\131\1\132\3\131" +
 		"\2\uffff\7\131\1\130\42\131\1\uffff\3\131\1\uffff\7\131\2\uffff\52\131\1\uffff\3" +
-		"\131\2\uffa1\2\133\1\134\3\133\32\uffa1\1\133\1\uffa1\1\133\1\uffa1\15\133\2\uffa1" +
+		"\131\2\uff9b\2\133\1\ufffa\3\133\32\uff9b\1\133\1\uff9b\1\133\1\uff9b\15\133\2\uff9b" +
 		"\3\133\5\uffff\1\135\124\uffff\1\136\11\uffff\3\136\6\uffff\2\136\43\uffff\1\137" +
 		"\11\uffff\3\137\6\uffff\2\137\43\uffff\1\140\11\uffff\3\140\6\uffff\2\140\43\uffff" +
 		"\1\133\11\uffff\3\133\6\uffff\2\133\2\uffff\7\130\2\uffff\52\130\1\uffff\3\130\101" +
-		"\ufffb\1\142\56\ufffb\5\uffff\1\145\124\uffff\1\146\11\uffff\3\146\6\uffff\2\146" +
+		"\ufff5\1\142\56\ufff5\5\uffff\1\145\124\uffff\1\146\11\uffff\3\146\6\uffff\2\146" +
 		"\43\uffff\1\147\11\uffff\3\147\6\uffff\2\147\43\uffff\1\150\11\uffff\3\150\6\uffff" +
-		"\2\150\43\uffff\1\151\11\uffff\3\151\6\uffff\2\151\1\uffff\2\ufffd\2\151\1\152\3" +
-		"\151\32\ufffd\1\151\1\ufffd\1\151\1\ufffd\15\151\2\ufffd\3\151\5\uffff\1\153\124" +
+		"\2\150\43\uffff\1\151\11\uffff\3\151\6\uffff\2\151\1\uffff\2\ufff7\2\151\1\ufff9" +
+		"\3\151\32\ufff7\1\151\1\ufff7\1\151\1\ufff7\15\151\2\ufff7\3\151\5\uffff\1\153\124" +
 		"\uffff\1\154\11\uffff\3\154\6\uffff\2\154\43\uffff\1\155\11\uffff\3\155\6\uffff\2" +
 		"\155\43\uffff\1\156\11\uffff\3\156\6\uffff\2\156\43\uffff\1\151\11\uffff\3\151\6" +
 		"\uffff\2\151\3\uffff\2\151\1\144\1\151\2\uffff\1\143\1\142\1\160\1\116\1\115\1\114" +
 		"\1\113\1\112\1\111\1\110\1\103\1\102\1\101\1\75\1\67\1\64\1\61\1\56\1\53\1\51\1\46" +
 		"\1\43\1\41\1\40\1\37\1\36\1\33\1\21\1\151\1\7\6\151\1\2\2\151\4\uffff\1\1\1\142\3" +
-		"\151\12\uffa0\1\126\1\123\13\uffa0\1\161\40\uffa0\70\uff9f");
+		"\151\12\uff9a\1\126\1\ufff8\13\uff9a\1\161\40\uff9a\70\uff99");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -515,8 +521,16 @@ public class JsLexer {
 			tokenLine = token.line = currLine;
 			tokenOffset = charOffset;
 
+			// TODO use backupRule
+			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
+				if (state > tmFirstRule && state < -2) {
+					token.endoffset = currOffset;
+					state = (-3 - state) * 2;
+					backupRule = tmBacktracking[state++];
+					state = tmBacktracking[state];
+				}
 				if (state == -1 && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
@@ -552,10 +566,10 @@ public class JsLexer {
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
 	}
 

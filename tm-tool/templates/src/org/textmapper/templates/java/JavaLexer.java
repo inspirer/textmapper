@@ -320,6 +320,14 @@ public class JavaLexer {
 		return res;
 	}
 
+	private static final short tmBacktracking[] = {
+		55, 17, 55, 3, 60, 7, 59, 11, 59, 14, 59, 16, 55, 19, 76, 82,
+		59, 85, 55, 106, 55, 104, 55, 91, 55, 87, 58, 90, 62, 98, 56, 103,
+		56, 102, 56, 94, 57, 109, 57, 104, 57, 3, 96, 114, 0, 122
+	};
+
+	private static final int tmFirstRule = -26;
+
 	private static final int[] tmRuleSymbol = unpack_int(116,
 		"\4\0\0\0\1\0\2\0\3\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20\0\21" +
 		"\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37\0\40\0\41" +
@@ -336,75 +344,76 @@ public class JavaLexer {
 		"\1\ufffe\1\uffff\1\177\1\171\1\170\1\167\1\166\1\160\1\156\1\126\1\171\1\121\1\107" +
 		"\1\76\1\75\1\74\1\73\1\72\1\71\1\70\1\67\1\66\1\64\1\56\1\52\1\50\1\47\1\46\1\45" +
 		"\1\42\1\37\1\34\1\31\1\27\1\25\1\24\1\171\1\1\1\171\1\uffff\1\166\2\171\1\1\1\171" +
-		"\1\1\6\171\1\1\11\uffc6\1\22\1\21\1\11\31\uffc6\1\22\3\uffc6\1\10\1\uffc6\1\22\1" +
-		"\uffc6\1\22\1\3\1\2\3\uffc6\1\2\1\22\65\uffc0\11\uffff\1\5\25\uffff\2\4\4\uffff\1" +
-		"\5\5\uffff\1\5\1\uffff\1\5\6\uffff\1\5\11\uffff\1\5\33\uffff\1\5\5\uffff\1\5\1\uffff" +
-		"\1\5\6\uffff\1\5\11\uffc1\1\5\1\7\32\uffc1\1\5\5\uffc1\1\5\1\uffc1\1\5\1\uffc1\1" +
-		"\6\3\uffc1\1\6\1\5\65\uffc1\11\uffff\1\5\1\7\32\uffff\1\5\5\uffff\1\5\1\uffff\1\5" +
-		"\6\uffff\1\5\65\uffc6\11\uffc2\1\17\33\uffc2\1\17\5\uffc2\1\17\1\uffc2\1\17\1\13" +
-		"\1\12\3\uffc2\1\12\1\17\65\uffc2\11\uffff\1\15\25\uffff\2\14\4\uffff\1\15\5\uffff" +
-		"\1\15\1\uffff\1\15\6\uffff\1\15\11\uffff\1\15\33\uffff\1\15\5\uffff\1\15\1\uffff" +
-		"\1\15\6\uffff\1\15\11\uffc2\1\15\1\16\32\uffc2\1\15\5\uffc2\1\15\1\uffc2\1\15\1\uffc2" +
-		"\1\12\3\uffc2\1\12\1\15\11\uffff\1\15\1\16\32\uffff\1\15\5\uffff\1\15\1\uffff\1\15" +
-		"\6\uffff\1\15\11\uffc2\1\17\1\20\32\uffc2\1\17\5\uffc2\1\17\1\uffc2\1\17\1\13\1\12" +
-		"\3\uffc2\1\12\1\17\11\uffff\1\17\1\20\32\uffff\1\17\5\uffff\1\17\1\uffff\1\17\6\uffff" +
-		"\1\17\11\uffff\1\22\1\21\32\uffff\1\22\5\uffff\1\22\1\uffff\1\22\6\uffff\1\22\11" +
-		"\uffc6\1\22\1\23\1\11\31\uffc6\1\22\3\uffc6\1\10\1\uffc6\1\22\1\uffc6\1\22\1\3\1" +
-		"\2\3\uffc6\1\2\1\22\11\uffff\1\22\1\23\32\uffff\1\22\5\uffff\1\22\1\uffff\1\22\6" +
-		"\uffff\1\22\65\uff8a\26\uff99\1\26\36\uff99\65\uff8e\26\uff9a\1\30\36\uff9a\65\uff8f" +
-		"\26\uff9f\1\33\11\uff9f\1\32\24\uff9f\65\uffa1\65\uff94\26\uffa0\1\36\10\uffa0\1" +
-		"\35\25\uffa0\65\uffa2\65\uff95\26\uff9b\1\41\7\uff9b\1\40\26\uff9b\65\uffa3\65\uff90" +
-		"\26\uff9c\1\44\6\uff9c\1\43\27\uff9c\65\uffa4\65\uff91\65\uffa9\65\uffaa\65\uffab" +
-		"\26\uffac\1\51\36\uffac\65\uffa5\26\uffad\1\55\1\uffad\1\53\34\uffad\26\uff98\1\54" +
-		"\36\uff98\65\uff8d\65\uffa7\26\uffae\1\63\1\57\35\uffae\26\uff97\1\62\1\60\35\uff97" +
-		"\26\uff96\1\61\36\uff96\65\uff8b\65\uff8c\65\uffa6\26\uffaf\1\65\36\uffaf\65\uffa8" +
-		"\65\uffb2\65\uffb3\65\uffb4\65\uffb5\65\uffb6\65\uffb7\65\uffb8\65\uffb9\1\uffff" +
-		"\1\76\1\100\2\76\2\uffff\6\76\1\77\47\76\65\uffbb\2\uffff\1\76\1\103\5\uffff\1\102" +
-		"\2\uffff\2\76\35\uffff\1\101\1\uffff\1\102\3\uffff\3\76\1\102\1\uffff\1\76\1\100" +
-		"\2\76\2\uffff\6\76\1\77\47\76\1\uffff\1\76\1\100\2\76\2\uffff\2\76\1\101\3\76\1\77" +
-		"\35\76\1\101\1\76\1\101\6\76\1\101\3\uffff\1\103\5\uffff\1\104\33\uffff\2\104\4\uffff" +
-		"\5\104\2\uffff\3\104\11\uffff\1\105\33\uffff\2\105\4\uffff\5\105\2\uffff\3\105\11" +
-		"\uffff\1\106\33\uffff\2\106\4\uffff\5\106\2\uffff\3\106\11\uffff\1\76\33\uffff\2" +
-		"\76\4\uffff\5\76\2\uffff\3\76\1\uffff\1\120\1\110\2\120\2\uffff\5\120\1\uffff\50" +
-		"\120\2\uffff\1\120\1\114\5\uffff\1\113\2\uffff\2\120\35\uffff\1\111\1\uffff\1\113" +
-		"\3\uffff\3\120\1\113\11\uffff\1\120\2\uffff\1\112\36\uffff\1\120\1\uffff\1\120\6" +
-		"\uffff\1\120\65\uffbc\11\uffff\1\111\2\uffff\1\112\36\uffff\1\111\1\uffff\1\111\6" +
-		"\uffff\1\111\3\uffff\1\114\5\uffff\1\115\33\uffff\2\115\4\uffff\5\115\2\uffff\3\115" +
-		"\11\uffff\1\116\33\uffff\2\116\4\uffff\5\116\2\uffff\3\116\11\uffff\1\117\33\uffff" +
-		"\2\117\4\uffff\5\117\2\uffff\3\117\11\uffff\1\120\33\uffff\2\120\4\uffff\5\120\2" +
-		"\uffff\3\120\14\uffff\1\112\50\uffff\11\uffb1\1\124\1\uffb1\1\122\31\uffb1\1\124" +
-		"\5\uffb1\1\124\1\uffb1\1\124\6\uffb1\1\124\13\uffff\1\123\51\uffff\65\uffb0\11\uffc2" +
-		"\1\124\1\125\32\uffc2\1\124\5\uffc2\1\124\1\uffc2\1\124\1\13\1\12\3\uffc2\1\12\1" +
-		"\124\11\uffff\1\124\1\125\32\uffff\1\124\5\uffff\1\124\1\uffff\1\124\6\uffff\1\124" +
-		"\11\uffc6\1\153\1\152\1\11\31\uffc6\1\150\3\uffc6\1\10\1\133\1\153\1\127\1\153\1" +
-		"\3\1\2\2\uffc6\1\127\1\2\1\153\11\uffff\1\130\43\uffff\1\130\7\uffff\11\uffc3\1\130" +
-		"\1\132\36\uffc3\1\131\3\uffc3\1\130\74\uffc3\11\uffff\1\130\1\132\42\uffff\1\130" +
-		"\20\uffff\1\144\1\uffff\1\134\31\uffff\2\144\4\uffff\5\144\2\uffff\3\144\11\uffff" +
-		"\1\135\33\uffff\2\135\4\uffff\5\135\2\uffff\3\135\11\uffff\1\135\1\143\32\uffff\2" +
-		"\135\4\uffff\5\135\1\136\1\uffff\3\135\11\uffff\1\140\25\uffff\2\137\4\uffff\1\140" +
-		"\5\uffff\1\140\1\uffff\1\140\6\uffff\1\140\11\uffff\1\140\33\uffff\1\140\5\uffff" +
-		"\1\140\1\uffff\1\140\6\uffff\1\140\11\uffbf\1\140\1\142\32\uffbf\1\140\5\uffbf\1" +
-		"\140\1\uffbf\1\140\1\uffbf\1\141\3\uffbf\1\141\1\140\65\uffbf\11\uffff\1\140\1\142" +
-		"\32\uffff\1\140\5\uffff\1\140\1\uffff\1\140\6\uffff\1\140\11\uffff\1\135\1\143\32" +
-		"\uffff\2\135\4\uffff\5\135\2\uffff\3\135\11\uffc5\1\144\1\147\1\146\31\uffc5\2\144" +
-		"\2\uffc5\1\145\1\uffc5\5\144\1\136\1\uffc5\3\144\65\uffc5\11\uffff\1\135\33\uffff" +
-		"\2\135\4\uffff\5\135\1\136\1\uffff\3\135\11\uffff\1\144\1\147\32\uffff\2\144\4\uffff" +
-		"\5\144\2\uffff\3\144\11\uffff\1\150\1\151\1\11\31\uffff\1\150\5\uffff\1\150\1\uffff" +
-		"\1\150\1\3\1\2\3\uffff\1\2\1\150\11\uffff\1\150\1\151\32\uffff\1\150\5\uffff\1\150" +
-		"\1\uffff\1\150\6\uffff\1\150\11\uffff\1\153\1\152\32\uffff\1\150\5\uffff\1\153\1" +
-		"\uffff\1\153\6\uffff\1\153\11\uffc4\1\153\1\155\1\11\31\uffc4\1\150\3\uffc4\1\154" +
-		"\1\uffc4\1\153\1\uffc4\1\153\1\3\1\2\3\uffc4\1\2\1\153\65\uffc4\11\uffff\1\153\1" +
-		"\155\32\uffff\1\150\5\uffff\1\153\1\uffff\1\153\6\uffff\1\153\26\uff9e\1\157\36\uff9e" +
-		"\65\uff93\7\uff9d\1\165\1\162\15\uff9d\1\161\36\uff9d\65\uff92\1\uffff\7\162\1\163" +
-		"\54\162\1\uffff\6\162\1\164\1\163\54\162\65\ufff9\1\ufffa\4\165\2\ufffa\56\165\73" +
-		"\ufffb\1\166\56\ufffb\65\ufffc\2\ufffd\1\172\1\171\5\ufffd\2\171\31\ufffd\4\171\1" +
-		"\ufffd\14\171\3\uffff\1\173\64\uffff\1\173\5\uffff\1\174\33\uffff\2\174\4\uffff\5" +
-		"\174\2\uffff\3\174\11\uffff\1\175\33\uffff\2\175\4\uffff\5\175\2\uffff\3\175\11\uffff" +
-		"\1\176\33\uffff\2\176\4\uffff\5\176\2\uffff\3\176\11\uffff\1\171\33\uffff\2\171\4" +
-		"\uffff\5\171\2\uffff\3\171\3\uffff\1\200\64\uffff\1\200\5\uffff\1\201\33\uffff\2" +
-		"\201\4\uffff\5\201\2\uffff\3\201\11\uffff\1\202\33\uffff\2\202\4\uffff\5\202\2\uffff" +
-		"\3\202\11\uffff\1\203\33\uffff\2\203\4\uffff\5\203\2\uffff\3\203\11\uffff\1\171\33" +
-		"\uffff\2\171\4\uffff\5\171\2\uffff\3\171");
+		"\1\1\6\171\1\1\11\uffaf\1\22\1\ufffd\1\11\31\uffaf\1\22\3\uffaf\1\10\1\uffaf\1\22" +
+		"\1\uffaf\1\22\1\ufffc\1\2\3\uffaf\1\2\1\22\65\uffa9\11\uffff\1\5\25\uffff\2\4\4\uffff" +
+		"\1\5\5\uffff\1\5\1\uffff\1\5\6\uffff\1\5\11\uffff\1\5\33\uffff\1\5\5\uffff\1\5\1" +
+		"\uffff\1\5\6\uffff\1\5\11\uffaa\1\5\1\ufffb\32\uffaa\1\5\5\uffaa\1\5\1\uffaa\1\5" +
+		"\1\uffaa\1\6\3\uffaa\1\6\1\5\65\uffaa\11\uffff\1\5\1\7\32\uffff\1\5\5\uffff\1\5\1" +
+		"\uffff\1\5\6\uffff\1\5\65\uffaf\11\uffab\1\17\33\uffab\1\17\5\uffab\1\17\1\uffab" +
+		"\1\17\1\ufffa\1\12\3\uffab\1\12\1\17\65\uffab\11\uffff\1\15\25\uffff\2\14\4\uffff" +
+		"\1\15\5\uffff\1\15\1\uffff\1\15\6\uffff\1\15\11\uffff\1\15\33\uffff\1\15\5\uffff" +
+		"\1\15\1\uffff\1\15\6\uffff\1\15\11\uffab\1\15\1\ufff9\32\uffab\1\15\5\uffab\1\15" +
+		"\1\uffab\1\15\1\uffab\1\12\3\uffab\1\12\1\15\11\uffff\1\15\1\16\32\uffff\1\15\5\uffff" +
+		"\1\15\1\uffff\1\15\6\uffff\1\15\11\uffab\1\17\1\ufff8\32\uffab\1\17\5\uffab\1\17" +
+		"\1\uffab\1\17\1\ufffa\1\12\3\uffab\1\12\1\17\11\uffff\1\17\1\20\32\uffff\1\17\5\uffff" +
+		"\1\17\1\uffff\1\17\6\uffff\1\17\11\uffff\1\22\1\21\32\uffff\1\22\5\uffff\1\22\1\uffff" +
+		"\1\22\6\uffff\1\22\11\uffaf\1\22\1\ufff7\1\11\31\uffaf\1\22\3\uffaf\1\10\1\uffaf" +
+		"\1\22\1\uffaf\1\22\1\ufffc\1\2\3\uffaf\1\2\1\22\11\uffff\1\22\1\23\32\uffff\1\22" +
+		"\5\uffff\1\22\1\uffff\1\22\6\uffff\1\22\65\uff73\26\uff82\1\26\36\uff82\65\uff77" +
+		"\26\uff83\1\30\36\uff83\65\uff78\26\uff88\1\33\11\uff88\1\32\24\uff88\65\uff8a\65" +
+		"\uff7d\26\uff89\1\36\10\uff89\1\35\25\uff89\65\uff8b\65\uff7e\26\uff84\1\41\7\uff84" +
+		"\1\40\26\uff84\65\uff8c\65\uff79\26\uff85\1\44\6\uff85\1\43\27\uff85\65\uff8d\65" +
+		"\uff7a\65\uff92\65\uff93\65\uff94\26\uff95\1\51\36\uff95\65\uff8e\26\uff96\1\55\1" +
+		"\uff96\1\53\34\uff96\26\uff81\1\54\36\uff81\65\uff76\65\uff90\26\uff97\1\63\1\57" +
+		"\35\uff97\26\uff80\1\62\1\60\35\uff80\26\uff7f\1\61\36\uff7f\65\uff74\65\uff75\65" +
+		"\uff8f\26\uff98\1\65\36\uff98\65\uff91\65\uff9b\65\uff9c\65\uff9d\65\uff9e\65\uff9f" +
+		"\65\uffa0\65\uffa1\65\uffa2\1\uffff\1\76\1\100\2\76\2\uffff\6\76\1\77\47\76\65\uffa4" +
+		"\2\uffff\1\76\1\103\5\uffff\1\102\2\uffff\2\76\35\uffff\1\101\1\uffff\1\102\3\uffff" +
+		"\3\76\1\102\1\uffff\1\76\1\100\2\76\2\uffff\6\76\1\77\47\76\1\uffff\1\76\1\100\2" +
+		"\76\2\uffff\2\76\1\101\3\76\1\77\35\76\1\101\1\76\1\101\6\76\1\101\3\uffff\1\103" +
+		"\5\uffff\1\104\33\uffff\2\104\4\uffff\5\104\2\uffff\3\104\11\uffff\1\105\33\uffff" +
+		"\2\105\4\uffff\5\105\2\uffff\3\105\11\uffff\1\106\33\uffff\2\106\4\uffff\5\106\2" +
+		"\uffff\3\106\11\uffff\1\76\33\uffff\2\76\4\uffff\5\76\2\uffff\3\76\1\uffff\1\120" +
+		"\1\110\2\120\2\uffff\5\120\1\uffff\50\120\2\uffff\1\120\1\114\5\uffff\1\113\2\uffff" +
+		"\2\120\35\uffff\1\111\1\uffff\1\113\3\uffff\3\120\1\113\11\uffff\1\120\2\uffff\1" +
+		"\112\36\uffff\1\120\1\uffff\1\120\6\uffff\1\120\65\uffa5\11\uffff\1\111\2\uffff\1" +
+		"\112\36\uffff\1\111\1\uffff\1\111\6\uffff\1\111\3\uffff\1\114\5\uffff\1\115\33\uffff" +
+		"\2\115\4\uffff\5\115\2\uffff\3\115\11\uffff\1\116\33\uffff\2\116\4\uffff\5\116\2" +
+		"\uffff\3\116\11\uffff\1\117\33\uffff\2\117\4\uffff\5\117\2\uffff\3\117\11\uffff\1" +
+		"\120\33\uffff\2\120\4\uffff\5\120\2\uffff\3\120\14\uffff\1\112\50\uffff\11\uff9a" +
+		"\1\124\1\uff9a\1\ufff6\31\uff9a\1\124\5\uff9a\1\124\1\uff9a\1\124\6\uff9a\1\124\13" +
+		"\uffff\1\123\51\uffff\65\uff99\11\uffab\1\124\1\ufff5\32\uffab\1\124\5\uffab\1\124" +
+		"\1\uffab\1\124\1\ufffa\1\12\3\uffab\1\12\1\124\11\uffff\1\124\1\125\32\uffff\1\124" +
+		"\5\uffff\1\124\1\uffff\1\124\6\uffff\1\124\11\uffaf\1\153\1\ufff4\1\11\31\uffaf\1" +
+		"\ufff3\3\uffaf\1\10\1\ufff2\1\153\1\ufff1\1\153\1\ufffc\1\2\2\uffaf\1\ufff1\1\2\1" +
+		"\153\11\uffff\1\130\43\uffff\1\130\7\uffff\11\uffac\1\130\1\ufff0\36\uffac\1\131" +
+		"\3\uffac\1\130\74\uffac\11\uffff\1\130\1\132\42\uffff\1\130\20\uffff\1\144\1\uffff" +
+		"\1\134\31\uffff\2\144\4\uffff\5\144\2\uffff\3\144\11\uffff\1\135\33\uffff\2\135\4" +
+		"\uffff\5\135\2\uffff\3\135\11\uffff\1\135\1\143\32\uffff\2\135\4\uffff\5\135\1\136" +
+		"\1\uffff\3\135\11\uffff\1\140\25\uffff\2\137\4\uffff\1\140\5\uffff\1\140\1\uffff" +
+		"\1\140\6\uffff\1\140\11\uffff\1\140\33\uffff\1\140\5\uffff\1\140\1\uffff\1\140\6" +
+		"\uffff\1\140\11\uffa8\1\140\1\uffef\32\uffa8\1\140\5\uffa8\1\140\1\uffa8\1\140\1" +
+		"\uffa8\1\141\3\uffa8\1\141\1\140\65\uffa8\11\uffff\1\140\1\142\32\uffff\1\140\5\uffff" +
+		"\1\140\1\uffff\1\140\6\uffff\1\140\11\uffff\1\135\1\143\32\uffff\2\135\4\uffff\5" +
+		"\135\2\uffff\3\135\11\uffae\1\144\1\uffee\1\uffed\31\uffae\2\144\2\uffae\1\145\1" +
+		"\uffae\5\144\1\uffec\1\uffae\3\144\65\uffae\11\uffff\1\135\33\uffff\2\135\4\uffff" +
+		"\5\135\1\136\1\uffff\3\135\11\uffff\1\144\1\147\32\uffff\2\144\4\uffff\5\144\2\uffff" +
+		"\3\144\11\uffff\1\150\1\151\1\11\31\uffff\1\150\5\uffff\1\150\1\uffff\1\150\1\3\1" +
+		"\2\3\uffff\1\2\1\150\11\uffff\1\150\1\151\32\uffff\1\150\5\uffff\1\150\1\uffff\1" +
+		"\150\6\uffff\1\150\11\uffff\1\153\1\152\32\uffff\1\150\5\uffff\1\153\1\uffff\1\153" +
+		"\6\uffff\1\153\11\uffad\1\153\1\uffeb\1\11\31\uffad\1\uffea\3\uffad\1\154\1\uffad" +
+		"\1\153\1\uffad\1\153\1\uffe9\1\2\3\uffad\1\2\1\153\65\uffad\11\uffff\1\153\1\155" +
+		"\32\uffff\1\150\5\uffff\1\153\1\uffff\1\153\6\uffff\1\153\26\uff87\1\157\36\uff87" +
+		"\65\uff7c\7\uff86\1\165\1\uffe8\15\uff86\1\161\36\uff86\65\uff7b\1\uffff\7\162\1" +
+		"\163\54\162\1\uffff\6\162\1\164\1\163\54\162\65\uffe2\1\uffe3\4\165\2\uffe3\56\165" +
+		"\73\uffe4\1\166\56\uffe4\65\uffe5\2\uffe6\1\uffe7\1\171\5\uffe6\2\171\31\uffe6\4" +
+		"\171\1\uffe6\14\171\3\uffff\1\173\64\uffff\1\173\5\uffff\1\174\33\uffff\2\174\4\uffff" +
+		"\5\174\2\uffff\3\174\11\uffff\1\175\33\uffff\2\175\4\uffff\5\175\2\uffff\3\175\11" +
+		"\uffff\1\176\33\uffff\2\176\4\uffff\5\176\2\uffff\3\176\11\uffff\1\171\33\uffff\2" +
+		"\171\4\uffff\5\171\2\uffff\3\171\3\uffff\1\200\64\uffff\1\200\5\uffff\1\201\33\uffff" +
+		"\2\201\4\uffff\5\201\2\uffff\3\201\11\uffff\1\202\33\uffff\2\202\4\uffff\5\202\2" +
+		"\uffff\3\202\11\uffff\1\203\33\uffff\2\203\4\uffff\5\203\2\uffff\3\203\11\uffff\1" +
+		"\171\33\uffff\2\171\4\uffff\5\171\2\uffff\3\171");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -439,8 +448,16 @@ public class JavaLexer {
 			tokenLine = token.line = currLine;
 			tokenOffset = charOffset;
 
+			// TODO use backupRule
+			int backupRule = -1;
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
+				if (state > tmFirstRule && state < -2) {
+					token.endoffset = currOffset;
+					state = (-3 - state) * 2;
+					backupRule = tmBacktracking[state++];
+					state = tmBacktracking[state];
+				}
 				if (state == -1 && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
@@ -476,10 +493,10 @@ public class JavaLexer {
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
 	}
 

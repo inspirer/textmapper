@@ -293,6 +293,12 @@ public class TMLexer {
 		0, 0, 62
 	};
 
+	private static final short tmBacktracking[] = {
+		0, 3, 23, 18
+	};
+
+	private static final int tmFirstRule = -5;
+
 	private static final int[] tmRuleSymbol = unpack_int(79,
 		"\50\0\1\0\2\0\3\0\0\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20" +
 		"\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37\0\40" +
@@ -305,24 +311,24 @@ public class TMLexer {
 	private static final short[] tmGoto = unpack_vc_short(2304,
 		"\1\ufffe\1\uffff\1\73\1\uffff\1\72\1\56\1\55\1\54\1\53\1\50\1\47\1\44\1\72\1\42\1" +
 		"\37\1\34\1\32\1\30\1\27\1\26\1\25\1\24\1\21\1\20\1\17\1\15\1\14\1\13\1\12\1\10\1" +
-		"\6\1\5\1\4\1\2\1\1\1\72\42\ufffa\1\1\1\ufffa\12\ufffd\1\3\26\ufffd\2\2\1\ufffd\12" +
-		"\uffff\1\3\26\uffff\2\2\1\uffff\44\uffd6\44\uffd7\36\uffd9\1\7\5\uffd9\44\uffd8\17" +
-		"\uffde\1\11\24\uffde\44\uffdd\44\uffe1\44\uffe2\44\uffda\32\uffb0\1\16\11\uffb0\44" +
-		"\uffe3\44\uffe4\44\uffdc\27\uffe6\1\22\14\uffe6\17\uffff\1\23\24\uffff\44\uffe5\44" +
-		"\uffea\44\uffeb\44\uffec\44\uffe0\17\uffdb\1\31\24\uffdb\44\uffee\20\ufff2\1\33\23" +
-		"\ufff2\44\ufff1\17\ufff0\1\36\2\ufff0\1\35\21\ufff0\44\uffed\44\uffef\16\uffe9\1" +
-		"\40\25\uffe9\17\ufff3\1\41\24\ufff3\44\ufff4\1\ufff7\3\42\1\43\37\42\44\ufff7\13" +
-		"\ufff5\1\45\30\ufff5\1\ufff9\3\45\1\46\37\45\44\ufff9\42\uffff\1\1\2\uffff\2\50\1" +
-		"\52\1\uffff\4\50\1\51\32\50\44\ufffb\1\uffff\3\50\1\uffff\37\50\44\uffdf\44\uffe7" +
-		"\44\uffe8\1\uffff\2\65\1\64\2\uffff\1\62\1\65\1\57\3\65\1\uffff\27\65\1\uffff\7\57" +
-		"\1\60\33\57\1\uffff\4\57\1\61\2\57\1\60\33\57\44\ufff6\1\uffff\2\62\1\63\1\uffff" +
+		"\6\1\5\1\4\1\2\1\1\1\72\42\ufff8\1\1\1\ufff8\12\ufffb\1\ufffd\26\ufffb\2\2\1\ufffb" +
+		"\12\uffff\1\3\26\uffff\2\2\1\uffff\44\uffd4\44\uffd5\36\uffd7\1\7\5\uffd7\44\uffd6" +
+		"\17\uffdc\1\11\24\uffdc\44\uffdb\44\uffdf\44\uffe0\44\uffd8\32\uffae\1\16\11\uffae" +
+		"\44\uffe1\44\uffe2\44\uffda\27\uffe4\1\ufffc\14\uffe4\17\uffff\1\23\24\uffff\44\uffe3" +
+		"\44\uffe8\44\uffe9\44\uffea\44\uffde\17\uffd9\1\31\24\uffd9\44\uffec\20\ufff0\1\33" +
+		"\23\ufff0\44\uffef\17\uffee\1\36\2\uffee\1\35\21\uffee\44\uffeb\44\uffed\16\uffe7" +
+		"\1\40\25\uffe7\17\ufff1\1\41\24\ufff1\44\ufff2\1\ufff5\3\42\1\43\37\42\44\ufff5\13" +
+		"\ufff3\1\45\30\ufff3\1\ufff7\3\45\1\46\37\45\44\ufff7\42\uffff\1\1\2\uffff\2\50\1" +
+		"\52\1\uffff\4\50\1\51\32\50\44\ufff9\1\uffff\3\50\1\uffff\37\50\44\uffdd\44\uffe5" +
+		"\44\uffe6\1\uffff\2\65\1\64\2\uffff\1\62\1\65\1\57\3\65\1\uffff\27\65\1\uffff\7\57" +
+		"\1\60\33\57\1\uffff\4\57\1\61\2\57\1\60\33\57\44\ufff4\1\uffff\2\62\1\63\1\uffff" +
 		"\2\62\1\65\4\62\1\uffff\27\62\1\uffff\3\62\1\uffff\37\62\1\uffff\3\65\1\uffff\37" +
 		"\65\1\uffff\2\65\1\71\1\uffff\1\70\1\66\5\65\1\uffff\27\65\1\uffff\2\66\1\67\1\uffff" +
-		"\2\66\1\65\4\66\1\uffff\27\66\1\uffff\3\66\1\uffff\37\66\44\ufffc\1\uffff\3\65\1" +
-		"\uffff\37\65\4\ufff8\1\72\7\ufff8\1\72\26\ufff8\1\72\1\uffff\1\73\1\75\1\74\1\uffff" +
-		"\37\73\1\uffff\3\73\1\uffff\37\73\44\ufffd\2\uffff\1\73\1\uffff\1\72\1\56\1\55\1" +
+		"\2\66\1\65\4\66\1\uffff\27\66\1\uffff\3\66\1\uffff\37\66\44\ufffa\1\uffff\3\65\1" +
+		"\uffff\37\65\4\ufff6\1\72\7\ufff6\1\72\26\ufff6\1\72\1\uffff\1\73\1\75\1\74\1\uffff" +
+		"\37\73\1\uffff\3\73\1\uffff\37\73\44\ufffb\2\uffff\1\73\1\uffff\1\72\1\56\1\55\1" +
 		"\54\1\53\1\50\1\47\1\44\1\72\1\42\1\37\1\34\1\32\1\30\1\27\1\26\1\25\1\24\1\21\1" +
-		"\20\1\17\1\77\1\14\1\13\1\12\1\10\1\6\1\5\1\4\1\2\1\1\1\72\32\uffaf\1\16\11\uffaf");
+		"\20\1\17\1\77\1\14\1\13\1\12\1\10\1\6\1\5\1\4\1\2\1\1\1\72\32\uffad\1\16\11\uffad");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -357,8 +363,16 @@ public class TMLexer {
 			tokenLine = token.line = currLine;
 			tokenOffset = charOffset;
 
+			// TODO use backupRule
+			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
+				if (state > tmFirstRule && state < -2) {
+					token.endoffset = currOffset;
+					state = (-3 - state) * 2;
+					backupRule = tmBacktracking[state++];
+					state = tmBacktracking[state];
+				}
 				if (state == -1 && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
@@ -394,10 +408,10 @@ public class TMLexer {
 				break tokenloop;
 			}
 
-			token.symbol = tmRuleSymbol[-state - 3];
+			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
 	}
 
