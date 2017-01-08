@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2010-2016 Evgeny Gryaznov
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
@@ -202,8 +202,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_QMARK;
 			case Tokens.Excl:
 				return OP_EMARK;
-//			case Tokens.MINUSGREATER:
-//				return OP_ARROW;
+			case Tokens.MinusGt:
+				return OP_ARROW;
 			case Tokens.And:
 				return OP_AND;
 			case Tokens.AndAnd:
@@ -212,6 +212,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_AT;
 			case Tokens.Tilde:
 				return OP_TILDE;
+			case Tokens.Div:
+				return OP_DIV;
 
 			// keywords
 			case Tokens.Ltrue:
@@ -239,8 +241,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return KW_PREC;
 			case Tokens.Lshift:
 				return KW_SHIFT;
-			case Tokens.Lreduce:
-				return KW_REDUCE;
 			case Tokens.Lreturns:
 				return KW_RETURNS;
 
@@ -330,12 +330,20 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 		@Override
 		public void setState(int state) {
 			fAfterColonColon = (state == STATE_AFTER_COLONCOLON);
-			super.setState(fAfterColonColon ? States.initial : state);
+			if (fAfterColonColon) {
+				state = States.initial;
+			}
+			inStatesSelector = (state&16) != 0;
+			if (inStatesSelector) {
+				state &= ~16;
+			}
+			super.setState(state);
 		}
 
 		@Override
 		public int getState() {
-			return fAfterColonColon ? STATE_AFTER_COLONCOLON : super.getState();
+			if (fAfterColonColon) return STATE_AFTER_COLONCOLON;
+			return super.getState() + (inStatesSelector ? 16 : 0);
 		}
 
 		@Override
@@ -353,8 +361,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 		@Override
 		public Span next() throws IOException {
 			Span next = super.next();
-			if (next.symbol != Tokens._skip && next.symbol != Tokens._skip_comment) {
-				fAfterColonColon = (next.symbol == Tokens.ColonColon && super.getState() == States.initial);
+			if (next.symbol != Tokens._skip && next.symbol != Tokens._skip_comment && next.symbol != Tokens._skip_multiline) {
+				fAfterColonColon = (next.symbol == Tokens.ColonColon && super.getState() == States.initial && !inStatesSelector);
 			}
 			return next;
 		}

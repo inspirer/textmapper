@@ -23,7 +23,7 @@ MultiLineComment: /\/\*{commentChars}\*\// (space)
 hex = /[0-9a-fA-F]/
 
 # TODO
-JSONString(string): /"([^"\\]|\\(["\/\\bfnrt]|u{hex}{4}))*"/
+JSONString {string}: /"([^"\\]|\\(["\/\\bfnrt]|u{hex}{4}))*"/
 #JSONString: /"([^"\\\x00-\x1f]|\\(["\/\\bfnrt]|u{hex}{4}))*"/
 
 fraction = /\.[0-9]+/
@@ -53,7 +53,7 @@ invalid_token:
 JSONText ::=
 	  JSONValue<+A> ;
 
-JSONValue<A> (Value) ::=
+JSONValue<A> {Value} ::=
 	  'null'
 	| 'true'
 	| 'false'
@@ -71,7 +71,7 @@ EmptyObject ::= (?= EmptyObject) '{' '}' ;
 JSONObject ::=
 	  (?= !EmptyObject) '{' JSONMemberList? '}' ;
 
-JSONMember (*Field) ::=
+JSONMember {*Field} ::=
 	  JSONString ':' JSONValue<~A> ;
 
 @noast

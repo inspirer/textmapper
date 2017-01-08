@@ -151,7 +151,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		@NotNull
 		@Override
 		public ChildAttributes getChildAttributes(int newChildIndex) {
-			if (isAfter(newChildIndex, new IElementType[]{TextmapperElementTypes.TYPE, TextmapperElementTypes.IDENTIFIER})) {
+			if (isAfter(newChildIndex, new IElementType[]{TextmapperElementTypes.RAW_TYPE, TextmapperElementTypes.IDENTIFIER})) {
 				return new ChildAttributes(Indent.getNoneIndent(), null);
 			} else if (isAfter(newChildIndex, new IElementType[]{TMTokenTypes.OP_CCEQ})) {
 				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(TMFileType.INSTANCE) + 2, false, true), null);

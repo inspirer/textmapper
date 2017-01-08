@@ -83,13 +83,6 @@ const (
 	NontermTypeHint_LINTERFACE
 )
 
-type NontermTypeRaw struct {
-	TypeText string
-	Pos
-}
-
-func (*NontermTypeRaw) nontermType() {}
-
 type RhsPart interface {
 	rhsPart()
 }
@@ -218,6 +211,12 @@ type Symref struct {
 func (*Symref) expression() {}
 func (*Symref) paramValue() {}
 
+type RawType struct {
+	Pos
+}
+
+func (*RawType) nontermType() {}
+
 type Pattern struct {
 	REGEXP string
 	Pos
@@ -233,7 +232,7 @@ func (*NamedPattern) lexerPart() {}
 
 type Lexeme struct {
 	Name       *Identifier
-	Type       string
+	RawType    *RawType
 	Pattern    *Pattern
 	Transition *Stateref
 	Priority   int

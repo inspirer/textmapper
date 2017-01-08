@@ -104,7 +104,7 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmLookaheadPredicate(node);
 			case Nonterminals.rhsStateMarker:
 				return new TmStateMarker(node);
-			case Nonterminals.type:
+			case Nonterminals.rawType:
 				return new TmType(node);
 			case Nonterminals.annotation:
 				return new TmAnnotation(node);

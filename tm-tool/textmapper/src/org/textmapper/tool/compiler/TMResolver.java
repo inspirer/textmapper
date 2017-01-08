@@ -126,7 +126,7 @@ public class TMResolver {
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaLexeme) {
 				TmaLexeme lexeme = (TmaLexeme) clause;
-				create(lexeme.getName(), convertRawType(lexeme.getType(), lexeme), true);
+				create(lexeme.getName(), convertRawType(lexeme.getRawType(), lexeme), true);
 
 			} else if (clause instanceof TmaNamedPattern) {
 				TmaNamedPattern astpattern = (TmaNamedPattern) clause;
@@ -149,16 +149,12 @@ public class TMResolver {
 		}
 	}
 
-	private AstType convertRawType(String type, SourceElement origin) {
-		return type != null
-				? rawTypesBuilder.rawType(type, origin)
-				: null;
-	}
-
 	private AstType convertRawType(ITmaNontermType type, SourceElement origin) {
-		return type instanceof TmaNontermTypeRaw
-				? rawTypesBuilder.rawType(((TmaNontermTypeRaw) type).getTypeText(), origin)
-				: null;
+		if (!(type instanceof TmaRawType)) {
+			return null;
+		}
+		String text = type.getText();
+		return rawTypesBuilder.rawType(text.substring(1, text.length() - 1), origin);
 	}
 
 	private void collectNonterminals() {

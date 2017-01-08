@@ -1,7 +1,7 @@
 package tm_test
 
 import (
-	"fmt"
+	"log"
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/tm"
@@ -9,7 +9,7 @@ import (
 )
 
 func PanicOnError(line, offset, len int, msg string) {
-	panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
+	log.Fatalf("%d, %d: %s", line, offset, msg)
 }
 
 func testParser(input string, t *testing.T) *ast.Input {
@@ -67,10 +67,10 @@ JSONNumber: /-?(0|[1-9][0-9]*){fraction}?{exp}?/
 
 %input JSONText;
 
-JSONText ::=
+JSONText {string} ::=
 	  JSONValue ;
 
-JSONValue ::=
+JSONValue<T> {string} ::=
 	  'null'
 	| 'true'
 	| 'false'

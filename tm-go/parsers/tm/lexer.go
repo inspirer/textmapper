@@ -10,9 +10,9 @@ import (
 
 // Lexer states.
 const (
-	StateInitial   = 0
-	StateAfterAt   = 1
-	StateAfterAtID = 2
+	StateInitial        = 0
+	StateAfterColonOrEq = 1
+	StateAfterGT        = 2
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process
@@ -38,6 +38,8 @@ type Lexer struct {
 	value       interface{}
 
 	State int // lexer state, modifiable
+
+	inStatesSelector bool
 }
 
 const bom = 0xfeff // byte order mark, permitted as a first character only
@@ -60,6 +62,7 @@ func (l *Lexer) Init(source string, err ErrorHandler) {
 	l.lineOffset = 0
 	l.scanOffset = 0
 	l.State = 0
+	l.inStatesSelector = false
 
 	if strings.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
@@ -87,6 +90,7 @@ func (l *Lexer) Init(source string, err ErrorHandler) {
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
+	lastTokenLine := l.tokenLine
 restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
@@ -269,11 +273,6 @@ restart:
 				rule = 42
 				break
 			}
-		case 38:
-			if hash == 0xc846f566 && "reduce" == l.source[l.tokenOffset:l.offset] {
-				rule = 75
-				break
-			}
 		case 40:
 			if hash == 0x53d6f968 && "nonassoc" == l.source[l.tokenOffset:l.offset] {
 				rule = 54
@@ -338,29 +337,45 @@ restart:
 		{
 			l.value = l.Text()
 		}
-	case 1: // regexp: /\/{reFirst}{reChar}*\//
+	case 1: // scon: /"([^\n\\"]|\\.)*"/
 		{
 			text := l.Text()
 			l.value = text[1 : len(text)-2]
 		}
-	case 2: // scon: /"([^\n\\"]|\\.)*"/
-		{
-			text := l.Text()
-			l.value = text[1 : len(text)-2]
-		}
-	case 3: // icon: /\-?[0-9]+/
+	case 2: // icon: /\-?[0-9]+/
 		{
 			l.value, _ = strconv.ParseInt(l.Text(), 10, 64)
 		}
-	case 5: // _skip: /[\n\r\t ]+/
+	case 4: // _skip: /[\n\r\t ]+/
 		space = true
-	case 6: // _skip_comment: /#.*(\r?\n)?/
+	case 5: // _skip_comment: /#.*(\r?\n)?/
 		space = true
-	case 7: // _skip_multiline: /\/\*{commentChars}\*\//
+	case 6: // _skip_multiline: /\/\*{commentChars}\*\//
 		space = true
+	case 77: // regexp: /\/{reFirst}{reChar}*\//
+		{
+			text := l.Text()
+			l.value = text[1 : len(text)-2]
+		}
 	}
 	if space {
 		goto restart
+	}
+	switch token {
+	case LT:
+		l.inStatesSelector = (lastTokenLine != l.tokenLine) || state == StateAfterColonOrEq
+		l.State = StateInitial
+	case GT:
+		if l.inStatesSelector {
+			l.State = StateAfterGT
+			l.inStatesSelector = false
+		} else {
+			l.State = StateInitial
+		}
+	case ASSIGN, COLON:
+		l.State = StateAfterColonOrEq
+	default:
+		l.State = StateInitial
 	}
 	return token
 }

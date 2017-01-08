@@ -40,13 +40,13 @@ const (
 )
 
 func (p *Parser) ParseInput(lexer *Lexer) (bool, *ast.Input) {
-	ok, v := p.parse(0, 417, lexer)
+	ok, v := p.parse(0, 395, lexer)
 	val, _ := v.(*ast.Input)
 	return ok, val
 }
 
 func (p *Parser) ParseExpression(lexer *Lexer) (bool, ast.Expression) {
-	ok, v := p.parse(1, 418, lexer)
+	ok, v := p.parse(1, 396, lexer)
 	val, _ := v.(ast.Expression)
 	return ok, val
 }
@@ -338,33 +338,28 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Name: nn0,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 19: // type ::= '(' scon ')'
-		nn1, _ := rhs[1].value.(string)
-		{
-			lhs.value = nn1
+	case 19: // rawType ::= code
+		lhs.value = &ast.RawType{
+			Pos: ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 20: // type ::= '(' type_part_list ')'
-		{
-			lhs.value = "TODO"
-		}
-	case 36: // pattern ::= regexp
+	case 20: // pattern ::= regexp
 		nn0, _ := rhs[0].value.(string)
 		lhs.value = &ast.Pattern{
 			REGEXP: nn0,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 37: // lexer_parts ::= lexer_part
+	case 21: // lexer_parts ::= lexer_part
 		nn0, _ := rhs[0].value.(ast.LexerPart)
 		lhs.value = []ast.LexerPart{nn0}
-	case 38: // lexer_parts ::= lexer_parts lexer_part
+	case 22: // lexer_parts ::= lexer_parts lexer_part
 		nn0, _ := rhs[0].value.([]ast.LexerPart)
 		nn1, _ := rhs[1].value.(ast.LexerPart)
 		lhs.value = append(nn0, nn1)
-	case 39: // lexer_parts ::= lexer_parts syntax_problem
+	case 23: // lexer_parts ::= lexer_parts syntax_problem
 		nn0, _ := rhs[0].value.([]ast.LexerPart)
 		nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 		lhs.value = append(nn0, nn1)
-	case 44: // named_pattern ::= ID '=' pattern
+	case 28: // named_pattern ::= ID '=' pattern
 		nn0, _ := rhs[0].value.(string)
 		nn2, _ := rhs[2].value.(*ast.Pattern)
 		lhs.value = &ast.NamedPattern{
@@ -372,9 +367,9 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Pattern: nn2,
 			Pos:     ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 45: // lexeme ::= identifier typeopt ':' pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt
+	case 29: // lexeme ::= identifier rawTypeopt ':' pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt
 		nn0, _ := rhs[0].value.(*ast.Identifier)
-		nn1, _ := rhs[1].value.(string)
+		nn1, _ := rhs[1].value.(*ast.RawType)
 		nn3, _ := rhs[3].value.(*ast.Pattern)
 		nn4, _ := rhs[4].value.(*ast.Stateref)
 		nn5, _ := rhs[5].value.(int)
@@ -382,7 +377,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 		nn7, _ := rhs[7].value.(*ast.Command)
 		lhs.value = &ast.Lexeme{
 			Name:       nn0,
-			Type:       nn1,
+			RawType:    nn1,
 			Pattern:    nn3,
 			Transition: nn4,
 			Priority:   nn5,
@@ -390,32 +385,32 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Command:    nn7,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[7].sym.endoffset},
 		}
-	case 46: // lexeme ::= identifier typeopt ':'
+	case 30: // lexeme ::= identifier rawTypeopt ':'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
-		nn1, _ := rhs[1].value.(string)
+		nn1, _ := rhs[1].value.(*ast.RawType)
 		lhs.value = &ast.Lexeme{
-			Name: nn0,
-			Type: nn1,
-			Pos:  ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
+			Name:    nn0,
+			RawType: nn1,
+			Pos:     ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 47: // lexeme_transition ::= '=>' stateref
+	case 31: // lexeme_transition ::= '=>' stateref
 		nn1, _ := rhs[1].value.(*ast.Stateref)
 		lhs.value = nn1
-	case 48: // lexeme_attrs ::= '(' lexeme_attribute ')'
+	case 32: // lexeme_attrs ::= '(' lexeme_attribute ')'
 		nn1, _ := rhs[1].value.(ast.LexemeAttribute)
 		lhs.value = &ast.LexemeAttrs{
 			Kind: nn1,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 49: // lexeme_attribute ::= Lsoft
+	case 33: // lexeme_attribute ::= Lsoft
 		lhs.value = ast.LexemeAttribute_LSOFT
-	case 50: // lexeme_attribute ::= Lclass
+	case 34: // lexeme_attribute ::= Lclass
 		lhs.value = ast.LexemeAttribute_LCLASS
-	case 51: // lexeme_attribute ::= Lspace
+	case 35: // lexeme_attribute ::= Lspace
 		lhs.value = ast.LexemeAttribute_LSPACE
-	case 52: // lexeme_attribute ::= Llayout
+	case 36: // lexeme_attribute ::= Llayout
 		lhs.value = ast.LexemeAttribute_LLAYOUT
-	case 53: // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs ';'
+	case 37: // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs ';'
 		nn2, _ := rhs[2].value.(*ast.Symref)
 		nn3, _ := rhs[3].value.(*ast.Symref)
 		lhs.value = &ast.DirectiveBrackets{
@@ -423,26 +418,26 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Closing: nn3,
 			Pos:     ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 54: // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
+	case 38: // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
 		nn0, _ := rhs[0].value.([]*ast.LexerState)
 		nn2, _ := rhs[2].value.(*ast.LexerState)
 		lhs.value = append(nn0, nn2)
-	case 55: // lexer_state_list_Comma_separated ::= lexer_state
+	case 39: // lexer_state_list_Comma_separated ::= lexer_state
 		nn0, _ := rhs[0].value.(*ast.LexerState)
 		lhs.value = []*ast.LexerState{nn0}
-	case 56: // state_selector ::= '[' lexer_state_list_Comma_separated ']'
+	case 40: // state_selector ::= '[' lexer_state_list_Comma_separated ']'
 		nn1, _ := rhs[1].value.([]*ast.LexerState)
 		lhs.value = &ast.StateSelector{
 			States: nn1,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 57: // stateref ::= ID
+	case 41: // stateref ::= ID
 		nn0, _ := rhs[0].value.(string)
 		lhs.value = &ast.Stateref{
 			Name: nn0,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 58: // lexer_state ::= identifier '=>' stateref
+	case 42: // lexer_state ::= identifier '=>' stateref
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(*ast.Stateref)
 		lhs.value = &ast.LexerState{
@@ -450,24 +445,24 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			DefaultTransition: nn2,
 			Pos:               ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 59: // lexer_state ::= identifier
+	case 43: // lexer_state ::= identifier
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		lhs.value = &ast.LexerState{
 			Name: nn0,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 60: // grammar_parts ::= grammar_part
+	case 44: // grammar_parts ::= grammar_part
 		nn0, _ := rhs[0].value.(ast.GrammarPart)
 		lhs.value = []ast.GrammarPart{nn0}
-	case 61: // grammar_parts ::= grammar_parts grammar_part
+	case 45: // grammar_parts ::= grammar_parts grammar_part
 		nn0, _ := rhs[0].value.([]ast.GrammarPart)
 		nn1, _ := rhs[1].value.(ast.GrammarPart)
 		lhs.value = append(nn0, nn1)
-	case 62: // grammar_parts ::= grammar_parts syntax_problem
+	case 46: // grammar_parts ::= grammar_parts syntax_problem
 		nn0, _ := rhs[0].value.([]ast.GrammarPart)
 		nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 		lhs.value = append(nn0, nn1)
-	case 66: // nonterm ::= annotations identifier nonterm_params nonterm_type '::=' rules ';'
+	case 50: // nonterm ::= annotations identifier nonterm_params nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(*ast.NontermParams)
@@ -481,7 +476,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules:       nn5,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[6].sym.endoffset},
 		}
-	case 67: // nonterm ::= annotations identifier nonterm_params '::=' rules ';'
+	case 51: // nonterm ::= annotations identifier nonterm_params '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(*ast.NontermParams)
@@ -493,7 +488,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules:       nn4,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[5].sym.endoffset},
 		}
-	case 68: // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
+	case 52: // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(ast.NontermType)
@@ -505,7 +500,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules:       nn4,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[5].sym.endoffset},
 		}
-	case 69: // nonterm ::= annotations identifier '::=' rules ';'
+	case 53: // nonterm ::= annotations identifier '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn3, _ := rhs[3].value.([]*ast.Rule0)
@@ -515,7 +510,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules:       nn3,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 70: // nonterm ::= identifier nonterm_params nonterm_type '::=' rules ';'
+	case 54: // nonterm ::= identifier nonterm_params nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn1, _ := rhs[1].value.(*ast.NontermParams)
 		nn2, _ := rhs[2].value.(ast.NontermType)
@@ -527,7 +522,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules:  nn4,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[5].sym.endoffset},
 		}
-	case 71: // nonterm ::= identifier nonterm_params '::=' rules ';'
+	case 55: // nonterm ::= identifier nonterm_params '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn1, _ := rhs[1].value.(*ast.NontermParams)
 		nn3, _ := rhs[3].value.([]*ast.Rule0)
@@ -537,7 +532,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules:  nn3,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 72: // nonterm ::= identifier nonterm_type '::=' rules ';'
+	case 56: // nonterm ::= identifier nonterm_type '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn1, _ := rhs[1].value.(ast.NontermType)
 		nn3, _ := rhs[3].value.([]*ast.Rule0)
@@ -547,7 +542,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules: nn3,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 73: // nonterm ::= identifier '::=' rules ';'
+	case 57: // nonterm ::= identifier '::=' rules ';'
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.([]*ast.Rule0)
 		lhs.value = &ast.Nonterm{
@@ -555,13 +550,13 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Rules: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 74: // nonterm_type ::= Lreturns symref_noargs
+	case 58: // nonterm_type ::= Lreturns symref_noargs
 		nn1, _ := rhs[1].value.(*ast.Symref)
 		lhs.value = &ast.NontermTypeAST{
 			Reference: nn1,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 75: // nonterm_type ::= Linline Lclass identifieropt implementsopt
+	case 59: // nonterm_type ::= Linline Lclass identifieropt implementsopt
 		nn2, _ := rhs[2].value.(*ast.Identifier)
 		nn3, _ := rhs[3].value.([]*ast.Symref)
 		lhs.value = &ast.NontermTypeHint{
@@ -571,7 +566,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Implements: nn3,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 76: // nonterm_type ::= Lclass identifieropt implementsopt
+	case 60: // nonterm_type ::= Lclass identifieropt implementsopt
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.([]*ast.Symref)
 		lhs.value = &ast.NontermTypeHint{
@@ -580,7 +575,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Implements: nn2,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 77: // nonterm_type ::= Linterface identifieropt implementsopt
+	case 61: // nonterm_type ::= Linterface identifieropt implementsopt
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.([]*ast.Symref)
 		lhs.value = &ast.NontermTypeHint{
@@ -589,33 +584,27 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Implements: nn2,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 78: // nonterm_type ::= Lvoid
+	case 62: // nonterm_type ::= Lvoid
 		lhs.value = &ast.NontermTypeHint{
 			Kind: ast.NontermTypeHint_LVOID,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 79: // nonterm_type ::= type
-		nn0, _ := rhs[0].value.(string)
-		lhs.value = &ast.NontermTypeRaw{
-			TypeText: nn0,
-			Pos:      ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
-		}
-	case 80: // implements ::= ':' references_cs
+	case 64: // implements ::= ':' references_cs
 		nn1, _ := rhs[1].value.([]*ast.Symref)
 		lhs.value = nn1
-	case 81: // assoc ::= Lleft
+	case 65: // assoc ::= Lleft
 		lhs.value = ast.Assoc_LLEFT
-	case 82: // assoc ::= Lright
+	case 66: // assoc ::= Lright
 		lhs.value = ast.Assoc_LRIGHT
-	case 83: // assoc ::= Lnonassoc
+	case 67: // assoc ::= Lnonassoc
 		lhs.value = ast.Assoc_LNONASSOC
-	case 84: // param_modifier ::= Lexplicit
+	case 68: // param_modifier ::= Lexplicit
 		lhs.value = ast.ParamModifier_LEXPLICIT
-	case 85: // param_modifier ::= Lglobal
+	case 69: // param_modifier ::= Lglobal
 		lhs.value = ast.ParamModifier_LGLOBAL
-	case 86: // param_modifier ::= Llookahead
+	case 70: // param_modifier ::= Llookahead
 		lhs.value = ast.ParamModifier_LLOOKAHEAD
-	case 87: // template_param ::= '%' param_modifier param_type identifier '=' param_value ';'
+	case 71: // template_param ::= '%' param_modifier param_type identifier '=' param_value ';'
 		nn1, _ := rhs[1].value.(ast.ParamModifier)
 		nn2, _ := rhs[2].value.(ast.ParamType)
 		nn3, _ := rhs[3].value.(*ast.Identifier)
@@ -627,7 +616,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			ParamValue: nn5,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[6].sym.endoffset},
 		}
-	case 88: // template_param ::= '%' param_modifier param_type identifier ';'
+	case 72: // template_param ::= '%' param_modifier param_type identifier ';'
 		nn1, _ := rhs[1].value.(ast.ParamModifier)
 		nn2, _ := rhs[2].value.(ast.ParamType)
 		nn3, _ := rhs[3].value.(*ast.Identifier)
@@ -637,7 +626,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Name:      nn3,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 89: // template_param ::= '%' param_type identifier '=' param_value ';'
+	case 73: // template_param ::= '%' param_type identifier '=' param_value ';'
 		nn1, _ := rhs[1].value.(ast.ParamType)
 		nn2, _ := rhs[2].value.(*ast.Identifier)
 		nn4, _ := rhs[4].value.(ast.ParamValue)
@@ -647,7 +636,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			ParamValue: nn4,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[5].sym.endoffset},
 		}
-	case 90: // template_param ::= '%' param_type identifier ';'
+	case 74: // template_param ::= '%' param_type identifier ';'
 		nn1, _ := rhs[1].value.(ast.ParamType)
 		nn2, _ := rhs[2].value.(*ast.Identifier)
 		lhs.value = &ast.TemplateParam{
@@ -655,7 +644,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Name:      nn2,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 91: // directive ::= '%' assoc references ';'
+	case 75: // directive ::= '%' assoc references ';'
 		nn1, _ := rhs[1].value.(ast.Assoc)
 		nn2, _ := rhs[2].value.([]*ast.Symref)
 		lhs.value = &ast.DirectivePrio{
@@ -663,27 +652,27 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Symbols: nn2,
 			Pos:     ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 92: // directive ::= '%' Linput inputref_list_Comma_separated ';'
+	case 76: // directive ::= '%' Linput inputref_list_Comma_separated ';'
 		nn2, _ := rhs[2].value.([]*ast.Inputref)
 		lhs.value = &ast.DirectiveInput{
 			InputRefs: nn2,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 93: // directive ::= '%' Lassert Lempty rhsSet ';'
+	case 77: // directive ::= '%' Lassert Lempty rhsSet ';'
 		nn3, _ := rhs[3].value.(*ast.RhsSet)
 		lhs.value = &ast.DirectiveAssert{
 			Kind:   ast.DirectiveAssert_LEMPTY,
 			RhsSet: nn3,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 94: // directive ::= '%' Lassert Lnonempty rhsSet ';'
+	case 78: // directive ::= '%' Lassert Lnonempty rhsSet ';'
 		nn3, _ := rhs[3].value.(*ast.RhsSet)
 		lhs.value = &ast.DirectiveAssert{
 			Kind:   ast.DirectiveAssert_LNONEMPTY,
 			RhsSet: nn3,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 95: // directive ::= '%' Lgenerate ID '=' rhsSet ';'
+	case 79: // directive ::= '%' Lgenerate ID '=' rhsSet ';'
 		nn2, _ := rhs[2].value.(string)
 		nn4, _ := rhs[4].value.(*ast.RhsSet)
 		lhs.value = &ast.DirectiveSet{
@@ -691,48 +680,48 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			RhsSet: nn4,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[5].sym.endoffset},
 		}
-	case 96: // inputref_list_Comma_separated ::= inputref_list_Comma_separated ',' inputref
+	case 80: // inputref_list_Comma_separated ::= inputref_list_Comma_separated ',' inputref
 		nn0, _ := rhs[0].value.([]*ast.Inputref)
 		nn2, _ := rhs[2].value.(*ast.Inputref)
 		lhs.value = append(nn0, nn2)
-	case 97: // inputref_list_Comma_separated ::= inputref
+	case 81: // inputref_list_Comma_separated ::= inputref
 		nn0, _ := rhs[0].value.(*ast.Inputref)
 		lhs.value = []*ast.Inputref{nn0}
-	case 98: // inputref ::= symref_noargs Lnoeoi
+	case 82: // inputref ::= symref_noargs Lnoeoi
 		nn0, _ := rhs[0].value.(*ast.Symref)
 		lhs.value = &ast.Inputref{
 			Reference: nn0,
 			Noeoi:     true,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 99: // inputref ::= symref_noargs
+	case 83: // inputref ::= symref_noargs
 		nn0, _ := rhs[0].value.(*ast.Symref)
 		lhs.value = &ast.Inputref{
 			Reference: nn0,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 100: // references ::= symref_noargs
+	case 84: // references ::= symref_noargs
 		nn0, _ := rhs[0].value.(*ast.Symref)
 		lhs.value = []*ast.Symref{nn0}
-	case 101: // references ::= references symref_noargs
+	case 85: // references ::= references symref_noargs
 		nn0, _ := rhs[0].value.([]*ast.Symref)
 		nn1, _ := rhs[1].value.(*ast.Symref)
 		lhs.value = append(nn0, nn1)
-	case 102: // references_cs ::= symref_noargs
+	case 86: // references_cs ::= symref_noargs
 		nn0, _ := rhs[0].value.(*ast.Symref)
 		lhs.value = []*ast.Symref{nn0}
-	case 103: // references_cs ::= references_cs ',' symref_noargs
+	case 87: // references_cs ::= references_cs ',' symref_noargs
 		nn0, _ := rhs[0].value.([]*ast.Symref)
 		nn2, _ := rhs[2].value.(*ast.Symref)
 		lhs.value = append(nn0, nn2)
-	case 104: // rule0_list_Or_separated ::= rule0_list_Or_separated '|' rule0
+	case 88: // rule0_list_Or_separated ::= rule0_list_Or_separated '|' rule0
 		nn0, _ := rhs[0].value.([]*ast.Rule0)
 		nn2, _ := rhs[2].value.(*ast.Rule0)
 		lhs.value = append(nn0, nn2)
-	case 105: // rule0_list_Or_separated ::= rule0
+	case 89: // rule0_list_Or_separated ::= rule0
 		nn0, _ := rhs[0].value.(*ast.Rule0)
 		lhs.value = []*ast.Rule0{nn0}
-	case 107: // rule0 ::= predicate rhsPrefix rhsParts ruleAction rhsSuffixopt
+	case 91: // rule0 ::= predicate rhsPrefix rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 		nn2, _ := rhs[2].value.([]ast.RhsPart)
@@ -746,7 +735,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn4,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 108: // rule0 ::= predicate rhsPrefix rhsParts rhsSuffixopt
+	case 92: // rule0 ::= predicate rhsPrefix rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 		nn2, _ := rhs[2].value.([]ast.RhsPart)
@@ -758,7 +747,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn3,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 109: // rule0 ::= predicate rhsPrefix ruleAction rhsSuffixopt
+	case 93: // rule0 ::= predicate rhsPrefix ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 		nn2, _ := rhs[2].value.(*ast.RuleAction)
@@ -770,7 +759,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn3,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 110: // rule0 ::= predicate rhsPrefix rhsSuffixopt
+	case 94: // rule0 ::= predicate rhsPrefix rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.(*ast.RhsPrefix)
 		nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -780,7 +769,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn2,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 111: // rule0 ::= predicate rhsParts ruleAction rhsSuffixopt
+	case 95: // rule0 ::= predicate rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 		nn2, _ := rhs[2].value.(*ast.RuleAction)
@@ -792,7 +781,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn3,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 112: // rule0 ::= predicate rhsParts rhsSuffixopt
+	case 96: // rule0 ::= predicate rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 		nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -802,7 +791,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn2,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 113: // rule0 ::= predicate ruleAction rhsSuffixopt
+	case 97: // rule0 ::= predicate ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.(*ast.RuleAction)
 		nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -812,7 +801,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn2,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 114: // rule0 ::= predicate rhsSuffixopt
+	case 98: // rule0 ::= predicate rhsSuffixopt
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 		lhs.value = &ast.Rule0{
@@ -820,7 +809,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix:    nn1,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 115: // rule0 ::= rhsPrefix rhsParts ruleAction rhsSuffixopt
+	case 99: // rule0 ::= rhsPrefix rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 		nn2, _ := rhs[2].value.(*ast.RuleAction)
@@ -832,7 +821,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix: nn3,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 116: // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
+	case 100: // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 		nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -842,7 +831,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix: nn2,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 117: // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
+	case 101: // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 		nn1, _ := rhs[1].value.(*ast.RuleAction)
 		nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -852,7 +841,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix: nn2,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 118: // rule0 ::= rhsPrefix rhsSuffixopt
+	case 102: // rule0 ::= rhsPrefix rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsPrefix)
 		nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 		lhs.value = &ast.Rule0{
@@ -860,7 +849,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix: nn1,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 119: // rule0 ::= rhsParts ruleAction rhsSuffixopt
+	case 103: // rule0 ::= rhsParts ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 		nn1, _ := rhs[1].value.(*ast.RuleAction)
 		nn2, _ := rhs[2].value.(*ast.RhsSuffix)
@@ -870,7 +859,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix: nn2,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 120: // rule0 ::= rhsParts rhsSuffixopt
+	case 104: // rule0 ::= rhsParts rhsSuffixopt
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 		nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 		lhs.value = &ast.Rule0{
@@ -878,7 +867,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix: nn1,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 121: // rule0 ::= ruleAction rhsSuffixopt
+	case 105: // rule0 ::= ruleAction rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RuleAction)
 		nn1, _ := rhs[1].value.(*ast.RhsSuffix)
 		lhs.value = &ast.Rule0{
@@ -886,42 +875,42 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Suffix: nn1,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 122: // rule0 ::= rhsSuffixopt
+	case 106: // rule0 ::= rhsSuffixopt
 		nn0, _ := rhs[0].value.(*ast.RhsSuffix)
 		lhs.value = &ast.Rule0{
 			Suffix: nn0,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 123: // rule0 ::= syntax_problem
+	case 107: // rule0 ::= syntax_problem
 		nn0, _ := rhs[0].value.(*ast.SyntaxProblem)
 		lhs.value = &ast.Rule0{
 			Error: nn0,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 124: // predicate ::= '[' predicate_expression ']'
+	case 108: // predicate ::= '[' predicate_expression ']'
 		nn1, _ := rhs[1].value.(ast.PredicateExpression)
 		lhs.value = nn1
-	case 125: // rhsPrefix ::= annotations ':'
+	case 109: // rhsPrefix ::= annotations ':'
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 		lhs.value = &ast.RhsPrefix{
 			Annotations: nn0,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 126: // rhsSuffix ::= '%' Lprec symref_noargs
+	case 110: // rhsSuffix ::= '%' Lprec symref_noargs
 		nn2, _ := rhs[2].value.(*ast.Symref)
 		lhs.value = &ast.RhsSuffix{
 			Kind:   ast.RhsSuffix_LPREC,
 			Symref: nn2,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 127: // rhsSuffix ::= '%' Lshift symref_noargs
+	case 111: // rhsSuffix ::= '%' Lshift symref_noargs
 		nn2, _ := rhs[2].value.(*ast.Symref)
 		lhs.value = &ast.RhsSuffix{
 			Kind:   ast.RhsSuffix_LSHIFT,
 			Symref: nn2,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 128: // ruleAction ::= '{~' identifier scon '}'
+	case 112: // ruleAction ::= '{~' identifier scon '}'
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(string)
 		lhs.value = &ast.RuleAction{
@@ -929,24 +918,24 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Parameter: nn2,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 129: // ruleAction ::= '{~' identifier '}'
+	case 113: // ruleAction ::= '{~' identifier '}'
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		lhs.value = &ast.RuleAction{
 			Action: nn1,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 130: // rhsParts ::= rhsPart
+	case 114: // rhsParts ::= rhsPart
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 		lhs.value = []ast.RhsPart{nn0}
-	case 131: // rhsParts ::= rhsParts rhsPart
+	case 115: // rhsParts ::= rhsParts rhsPart
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 		nn1, _ := rhs[1].value.(ast.RhsPart)
 		lhs.value = append(nn0, nn1)
-	case 132: // rhsParts ::= rhsParts syntax_problem
+	case 116: // rhsParts ::= rhsParts syntax_problem
 		nn0, _ := rhs[0].value.([]ast.RhsPart)
 		nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 		lhs.value = append(nn0, nn1)
-	case 137: // rhsAnnotated ::= annotations rhsAssignment
+	case 121: // rhsAnnotated ::= annotations rhsAssignment
 		nn0, _ := rhs[0].value.(*ast.Annotations)
 		nn1, _ := rhs[1].value.(ast.RhsPart)
 		lhs.value = &ast.RhsAnnotated{
@@ -954,7 +943,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Inner:       nn1,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 139: // rhsAssignment ::= identifier '=' rhsOptional
+	case 123: // rhsAssignment ::= identifier '=' rhsOptional
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(ast.RhsPart)
 		lhs.value = &ast.RhsAssignment{
@@ -962,7 +951,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Inner: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 140: // rhsAssignment ::= identifier '+=' rhsOptional
+	case 124: // rhsAssignment ::= identifier '+=' rhsOptional
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(ast.RhsPart)
 		lhs.value = &ast.RhsAssignment{
@@ -971,14 +960,14 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Inner:    nn2,
 			Pos:      ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 142: // rhsOptional ::= rhsCast '?'
+	case 126: // rhsOptional ::= rhsCast '?'
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 		lhs.value = &ast.RhsQuantifier{
 			Inner:      nn0,
 			Quantifier: ast.RhsQuantifier_QUEST,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 144: // rhsCast ::= rhsClass Las symref
+	case 128: // rhsCast ::= rhsClass Las symref
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 		nn2, _ := rhs[2].value.(*ast.Symref)
 		lhs.value = &ast.RhsCast{
@@ -986,7 +975,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Target: nn2,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 145: // rhsCast ::= rhsClass Las literal
+	case 129: // rhsCast ::= rhsClass Las literal
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 		nn2, _ := rhs[2].value.(*ast.Literal)
 		lhs.value = &ast.RhsAsLiteral{
@@ -994,7 +983,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Literal: nn2,
 			Pos:     ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 146: // rhsUnordered ::= rhsPart '&' rhsPart
+	case 130: // rhsUnordered ::= rhsPart '&' rhsPart
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 		nn2, _ := rhs[2].value.(ast.RhsPart)
 		lhs.value = &ast.RhsUnordered{
@@ -1002,7 +991,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Right: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 148: // rhsClass ::= identifier ':' rhsPrimary
+	case 132: // rhsClass ::= identifier ':' rhsPrimary
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		nn2, _ := rhs[2].value.(ast.RhsPart)
 		lhs.value = &ast.RhsClass{
@@ -1010,19 +999,19 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Inner:      nn2,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 149: // rhsPrimary ::= symref
+	case 133: // rhsPrimary ::= symref
 		nn0, _ := rhs[0].value.(*ast.Symref)
 		lhs.value = &ast.RhsSymbol{
 			Reference: nn0,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 150: // rhsPrimary ::= '(' rules ')'
+	case 134: // rhsPrimary ::= '(' rules ')'
 		nn1, _ := rhs[1].value.([]*ast.Rule0)
 		lhs.value = &ast.RhsNested{
 			Rules: nn1,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 151: // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
+	case 135: // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 		nn3, _ := rhs[3].value.([]*ast.Symref)
 		lhs.value = &ast.RhsList{
@@ -1031,7 +1020,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			AtLeastOne: true,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[5].sym.endoffset},
 		}
-	case 152: // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
+	case 136: // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
 		nn1, _ := rhs[1].value.([]ast.RhsPart)
 		nn3, _ := rhs[3].value.([]*ast.Symref)
 		lhs.value = &ast.RhsList{
@@ -1040,33 +1029,33 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			AtLeastOne: false,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[5].sym.endoffset},
 		}
-	case 153: // rhsPrimary ::= rhsPrimary '*'
+	case 137: // rhsPrimary ::= rhsPrimary '*'
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 		lhs.value = &ast.RhsQuantifier{
 			Inner:      nn0,
 			Quantifier: ast.RhsQuantifier_MULT,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 154: // rhsPrimary ::= rhsPrimary '+'
+	case 138: // rhsPrimary ::= rhsPrimary '+'
 		nn0, _ := rhs[0].value.(ast.RhsPart)
 		lhs.value = &ast.RhsQuantifier{
 			Inner:      nn0,
 			Quantifier: ast.RhsQuantifier_PLUS,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 155: // rhsPrimary ::= '$' '(' rules ')'
+	case 139: // rhsPrimary ::= '$' '(' rules ')'
 		nn2, _ := rhs[2].value.([]*ast.Rule0)
 		lhs.value = &ast.RhsIgnored{
 			Rules: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 157: // rhsSet ::= Lset '(' setExpression ')'
+	case 141: // rhsSet ::= Lset '(' setExpression ')'
 		nn2, _ := rhs[2].value.(ast.SetExpression)
 		lhs.value = &ast.RhsSet{
 			Expr: nn2,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 158: // setPrimary ::= ID symref
+	case 142: // setPrimary ::= ID symref
 		nn0, _ := rhs[0].value.(string)
 		nn1, _ := rhs[1].value.(*ast.Symref)
 		lhs.value = &ast.SetSymbol{
@@ -1074,25 +1063,25 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Symbol:   nn1,
 			Pos:      ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 159: // setPrimary ::= symref
+	case 143: // setPrimary ::= symref
 		nn0, _ := rhs[0].value.(*ast.Symref)
 		lhs.value = &ast.SetSymbol{
 			Symbol: nn0,
 			Pos:    ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 160: // setPrimary ::= '(' setExpression ')'
+	case 144: // setPrimary ::= '(' setExpression ')'
 		nn1, _ := rhs[1].value.(ast.SetExpression)
 		lhs.value = &ast.SetCompound{
 			Inner: nn1,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 161: // setPrimary ::= '~' setPrimary
+	case 145: // setPrimary ::= '~' setPrimary
 		nn1, _ := rhs[1].value.(ast.SetExpression)
 		lhs.value = &ast.SetComplement{
 			Inner: nn1,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 163: // setExpression ::= setExpression '|' setExpression
+	case 147: // setExpression ::= setExpression '|' setExpression
 		nn0, _ := rhs[0].value.(ast.SetExpression)
 		nn2, _ := rhs[2].value.(ast.SetExpression)
 		lhs.value = &ast.SetBinary{
@@ -1101,7 +1090,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Right: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 164: // setExpression ::= setExpression '&' setExpression
+	case 148: // setExpression ::= setExpression '&' setExpression
 		nn0, _ := rhs[0].value.(ast.SetExpression)
 		nn2, _ := rhs[2].value.(ast.SetExpression)
 		lhs.value = &ast.SetBinary{
@@ -1110,53 +1099,53 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Right: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 165: // annotation_list ::= annotation_list annotation
+	case 149: // annotation_list ::= annotation_list annotation
 		nn0, _ := rhs[0].value.([]*ast.Annotation)
 		nn1, _ := rhs[1].value.(*ast.Annotation)
 		lhs.value = append(nn0, nn1)
-	case 166: // annotation_list ::= annotation
+	case 150: // annotation_list ::= annotation
 		nn0, _ := rhs[0].value.(*ast.Annotation)
 		lhs.value = []*ast.Annotation{nn0}
-	case 167: // annotations ::= annotation_list
+	case 151: // annotations ::= annotation_list
 		nn0, _ := rhs[0].value.([]*ast.Annotation)
 		lhs.value = &ast.Annotations{
 			Annotations: nn0,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 168: // annotation ::= '@' ID '{' expression '}'
+	case 152: // annotation ::= '@' ID '=' expression
 		nn1, _ := rhs[1].value.(string)
 		nn3, _ := rhs[3].value.(ast.Expression)
 		lhs.value = &ast.Annotation{
 			Name:       nn1,
 			Expression: nn3,
-			Pos:        ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
+			Pos:        ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 169: // annotation ::= '@' ID
+	case 153: // annotation ::= '@' ID
 		nn1, _ := rhs[1].value.(string)
 		lhs.value = &ast.Annotation{
 			Name: nn1,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 170: // annotation ::= '@' syntax_problem
+	case 154: // annotation ::= '@' syntax_problem
 		nn1, _ := rhs[1].value.(*ast.SyntaxProblem)
 		lhs.value = &ast.Annotation{
 			SyntaxProblem: nn1,
 			Pos:           ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 171: // nonterm_param_list_Comma_separated ::= nonterm_param_list_Comma_separated ',' nonterm_param
+	case 155: // nonterm_param_list_Comma_separated ::= nonterm_param_list_Comma_separated ',' nonterm_param
 		nn0, _ := rhs[0].value.([]ast.NontermParam)
 		nn2, _ := rhs[2].value.(ast.NontermParam)
 		lhs.value = append(nn0, nn2)
-	case 172: // nonterm_param_list_Comma_separated ::= nonterm_param
+	case 156: // nonterm_param_list_Comma_separated ::= nonterm_param
 		nn0, _ := rhs[0].value.(ast.NontermParam)
 		lhs.value = []ast.NontermParam{nn0}
-	case 173: // nonterm_params ::= '<' nonterm_param_list_Comma_separated '>'
+	case 157: // nonterm_params ::= '<' nonterm_param_list_Comma_separated '>'
 		nn1, _ := rhs[1].value.([]ast.NontermParam)
 		lhs.value = &ast.NontermParams{
 			List: nn1,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 175: // nonterm_param ::= ID identifier '=' param_value
+	case 159: // nonterm_param ::= ID identifier '=' param_value
 		nn0, _ := rhs[0].value.(string)
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		nn3, _ := rhs[3].value.(ast.ParamValue)
@@ -1166,7 +1155,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			ParamValue: nn3,
 			Pos:        ast.Pos{rhs[0].sym.offset, rhs[3].sym.endoffset},
 		}
-	case 176: // nonterm_param ::= ID identifier
+	case 160: // nonterm_param ::= ID identifier
 		nn0, _ := rhs[0].value.(string)
 		nn1, _ := rhs[1].value.(*ast.Identifier)
 		lhs.value = &ast.InlineParameter{
@@ -1174,26 +1163,26 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Name:      nn1,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 177: // param_ref ::= identifier
+	case 161: // param_ref ::= identifier
 		nn0, _ := rhs[0].value.(*ast.Identifier)
 		lhs.value = &ast.ParamRef{
 			Ref: nn0,
 			Pos: ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 178: // argument_list_Comma_separated ::= argument_list_Comma_separated ',' argument
+	case 162: // argument_list_Comma_separated ::= argument_list_Comma_separated ',' argument
 		nn0, _ := rhs[0].value.([]*ast.Argument)
 		nn2, _ := rhs[2].value.(*ast.Argument)
 		lhs.value = append(nn0, nn2)
-	case 179: // argument_list_Comma_separated ::= argument
+	case 163: // argument_list_Comma_separated ::= argument
 		nn0, _ := rhs[0].value.(*ast.Argument)
 		lhs.value = []*ast.Argument{nn0}
-	case 182: // symref_args ::= '<' argument_list_Comma_separated_opt '>'
+	case 166: // symref_args ::= '<' argument_list_Comma_separated_opt '>'
 		nn1, _ := rhs[1].value.([]*ast.Argument)
 		lhs.value = &ast.SymrefArgs{
 			ArgList: nn1,
 			Pos:     ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 183: // argument ::= param_ref ':' param_value
+	case 167: // argument ::= param_ref ':' param_value
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 		nn2, _ := rhs[2].value.(ast.ParamValue)
 		lhs.value = &ast.Argument{
@@ -1201,44 +1190,44 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Val:  nn2,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 184: // argument ::= '+' param_ref
+	case 168: // argument ::= '+' param_ref
 		nn1, _ := rhs[1].value.(*ast.ParamRef)
 		lhs.value = &ast.Argument{
 			Name: nn1,
 			Bool: ast.Argument_PLUS,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 185: // argument ::= '~' param_ref
+	case 169: // argument ::= '~' param_ref
 		nn1, _ := rhs[1].value.(*ast.ParamRef)
 		lhs.value = &ast.Argument{
 			Name: nn1,
 			Bool: ast.Argument_TILDE,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 186: // argument ::= param_ref
+	case 170: // argument ::= param_ref
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 		lhs.value = &ast.Argument{
 			Name: nn0,
 			Pos:  ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 187: // param_type ::= Lflag
+	case 171: // param_type ::= Lflag
 		lhs.value = ast.ParamType_LFLAG
-	case 188: // param_type ::= Lparam
+	case 172: // param_type ::= Lparam
 		lhs.value = ast.ParamType_LPARAM
-	case 191: // predicate_primary ::= '!' param_ref
+	case 175: // predicate_primary ::= '!' param_ref
 		nn1, _ := rhs[1].value.(*ast.ParamRef)
 		lhs.value = &ast.BoolPredicate{
 			Negated:  true,
 			ParamRef: nn1,
 			Pos:      ast.Pos{rhs[0].sym.offset, rhs[1].sym.endoffset},
 		}
-	case 192: // predicate_primary ::= param_ref
+	case 176: // predicate_primary ::= param_ref
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 		lhs.value = &ast.BoolPredicate{
 			ParamRef: nn0,
 			Pos:      ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 193: // predicate_primary ::= param_ref '==' literal
+	case 177: // predicate_primary ::= param_ref '==' literal
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 		nn2, _ := rhs[2].value.(*ast.Literal)
 		lhs.value = &ast.ComparePredicate{
@@ -1247,7 +1236,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Literal:  nn2,
 			Pos:      ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 194: // predicate_primary ::= param_ref '!=' literal
+	case 178: // predicate_primary ::= param_ref '!=' literal
 		nn0, _ := rhs[0].value.(*ast.ParamRef)
 		nn2, _ := rhs[2].value.(*ast.Literal)
 		lhs.value = &ast.ComparePredicate{
@@ -1256,7 +1245,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Literal:  nn2,
 			Pos:      ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 196: // predicate_expression ::= predicate_expression '&&' predicate_expression
+	case 180: // predicate_expression ::= predicate_expression '&&' predicate_expression
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn2, _ := rhs[2].value.(ast.PredicateExpression)
 		lhs.value = &ast.PredicateBinary{
@@ -1265,7 +1254,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Right: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 197: // predicate_expression ::= predicate_expression '||' predicate_expression
+	case 181: // predicate_expression ::= predicate_expression '||' predicate_expression
 		nn0, _ := rhs[0].value.(ast.PredicateExpression)
 		nn2, _ := rhs[2].value.(ast.PredicateExpression)
 		lhs.value = &ast.PredicateBinary{
@@ -1274,7 +1263,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Right: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 200: // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
+	case 184: // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
 		nn1, _ := rhs[1].value.(*ast.Name)
 		nn3, _ := rhs[3].value.([]*ast.MapEntry)
 		lhs.value = &ast.Instance{
@@ -1282,27 +1271,27 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Entries:   nn3,
 			Pos:       ast.Pos{rhs[0].sym.offset, rhs[4].sym.endoffset},
 		}
-	case 201: // expression ::= '[' expression_list_Comma_separated_opt ']'
+	case 185: // expression ::= '[' expression_list_Comma_separated_opt ']'
 		nn1, _ := rhs[1].value.([]ast.Expression)
 		lhs.value = &ast.Array{
 			Content: nn1,
 			Pos:     ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 203: // expression_list_Comma_separated ::= expression_list_Comma_separated ',' expression
+	case 187: // expression_list_Comma_separated ::= expression_list_Comma_separated ',' expression
 		nn0, _ := rhs[0].value.([]ast.Expression)
 		nn2, _ := rhs[2].value.(ast.Expression)
 		lhs.value = append(nn0, nn2)
-	case 204: // expression_list_Comma_separated ::= expression
+	case 188: // expression_list_Comma_separated ::= expression
 		nn0, _ := rhs[0].value.(ast.Expression)
 		lhs.value = []ast.Expression{nn0}
-	case 207: // map_entry_list_Comma_separated ::= map_entry_list_Comma_separated ',' map_entry
+	case 191: // map_entry_list_Comma_separated ::= map_entry_list_Comma_separated ',' map_entry
 		nn0, _ := rhs[0].value.([]*ast.MapEntry)
 		nn2, _ := rhs[2].value.(*ast.MapEntry)
 		lhs.value = append(nn0, nn2)
-	case 208: // map_entry_list_Comma_separated ::= map_entry
+	case 192: // map_entry_list_Comma_separated ::= map_entry
 		nn0, _ := rhs[0].value.(*ast.MapEntry)
 		lhs.value = []*ast.MapEntry{nn0}
-	case 211: // map_entry ::= ID ':' expression
+	case 195: // map_entry ::= ID ':' expression
 		nn0, _ := rhs[0].value.(string)
 		nn2, _ := rhs[2].value.(ast.Expression)
 		lhs.value = &ast.MapEntry{
@@ -1310,50 +1299,50 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 			Value: nn2,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[2].sym.endoffset},
 		}
-	case 212: // literal ::= scon
+	case 196: // literal ::= scon
 		nn0, _ := rhs[0].value.(string)
 		lhs.value = &ast.Literal{
 			Value: nn0,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 213: // literal ::= icon
+	case 197: // literal ::= icon
 		nn0, _ := rhs[0].value.(int)
 		lhs.value = &ast.Literal{
 			Value: nn0,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 214: // literal ::= Ltrue
+	case 198: // literal ::= Ltrue
 		lhs.value = &ast.Literal{
 			Value: true,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 215: // literal ::= Lfalse
+	case 199: // literal ::= Lfalse
 		lhs.value = &ast.Literal{
 			Value: false,
 			Pos:   ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 216: // name ::= qualified_id
+	case 200: // name ::= qualified_id
 		nn0, _ := rhs[0].value.(string)
 		lhs.value = &ast.Name{
 			QualifiedId: nn0,
 			Pos:         ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 217: // qualified_id ::= ID
+	case 201: // qualified_id ::= ID
 		nn0, _ := rhs[0].value.(string)
 		{
 			lhs.value = nn0
 		}
-	case 218: // qualified_id ::= qualified_id '.' ID
+	case 202: // qualified_id ::= qualified_id '.' ID
 		nn0, _ := rhs[0].value.(string)
 		nn2, _ := rhs[2].value.(string)
 		{
 			lhs.value = nn0 + "." + nn2
 		}
-	case 219: // command ::= code
+	case 203: // command ::= code
 		lhs.value = &ast.Command{
 			Pos: ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}
-	case 220: // syntax_problem ::= error
+	case 204: // syntax_problem ::= error
 		lhs.value = &ast.SyntaxProblem{
 			Pos: ast.Pos{rhs[0].sym.offset, rhs[0].sym.endoffset},
 		}

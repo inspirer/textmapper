@@ -14,7 +14,6 @@ const (
 	UNAVAILABLE Token = iota - 1
 	EOI
 
-	REGEXP
 	SCON
 	ICON
 	_SKIP
@@ -36,6 +35,7 @@ const (
 	LBRACK           // [
 	RBRACK           // ]
 	LPAREN           // (
+	MINUSGT          // ->
 	RPAREN           // )
 	LBRACETILDE      // {~
 	RBRACE           // }
@@ -89,9 +89,10 @@ const (
 	LLALR      // lalr
 	LLEXER     // lexer
 	LPARSER    // parser
-	LREDUCE    // reduce
-	CODE       // {
-	LBRACE     // {
+	CODE
+	LBRACE // {
+	REGEXP
+	DIV // /
 
 	NumTokens
 )
@@ -99,7 +100,6 @@ const (
 var tokenStr = [...]string{
 	"EOI",
 
-	"REGEXP",
 	"SCON",
 	"ICON",
 	"_SKIP",
@@ -121,6 +121,7 @@ var tokenStr = [...]string{
 	"[",
 	"]",
 	"(",
+	"->",
 	")",
 	"{~",
 	"}",
@@ -174,9 +175,10 @@ var tokenStr = [...]string{
 	"lalr",
 	"lexer",
 	"parser",
-	"reduce",
+	"CODE",
 	"{",
-	"{",
+	"REGEXP",
+	"/",
 }
 
 func (tok Token) String() string {

@@ -22,15 +22,14 @@ genast = true
 
 :: lexer
 
-[initial, afterAt, afterAtID]
+[initial, afterColonOrEq, afterGT]
 
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
 reChar = /{reFirst}|\*/
 
-regexp(string): /\/{reFirst}{reChar}*\// { text := l.Text(); $$ = text[1:len(text)-2] }
-scon(string):	/"([^\n\\"]|\\.)*"/		 { text := l.Text(); $$ = text[1:len(text)-2] }
-icon(int):	/-?[0-9]+/				     { $$, _ = "strconv".ParseInt(l.Text(), 10, 64) }
+scon {string}:	/"([^\n\\"]|\\.)*"/		 { text := l.Text(); $$ = text[1:len(text)-2] }
+icon {int}:	/-?[0-9]+/				     { $$, _ = "strconv".ParseInt(l.Text(), 10, 64) }
 
 eoi:           /%%.*(\r?\n)?/
 _skip:         /[\n\r\t ]+/		(space)
@@ -56,7 +55,8 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 '[':    /\[/
 ']':    /\]/
 '(':	/\(/
-# TODO overlaps with ID '->':	/->/
+# TODO overlaps with ID
+'->':	/->/
 ')':	/\)/
 '{~':	/\{~/
 '}':	/\}/
@@ -75,9 +75,7 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 
 error:
 
-[initial, afterAt, afterAtID]
-
-ID(string): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)  { $$ = l.Text(); }
+ID {string}: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)  { $$ = l.Text(); }
 
 Ltrue:  /true/
 Lfalse: /false/
@@ -126,16 +124,18 @@ Llalr: /lalr/				(soft)
 Llexer: /lexer/				(soft)
 Lparser: /parser/			(soft)
 
-# reserved
+[initial, afterColonOrEq]
 
-Lreduce: /reduce/
+code:   /\{[^\{\}]*\}/    /* TODO */
 
-[initial, afterAt]
-
-code:   /\{/
-
-[afterAtID]
+[afterGT]
 '{':	/\{/
+
+[afterColonOrEq]
+regexp {string}: /\/{reFirst}{reChar}*\// { text := l.Text(); $$ = text[1:len(text)-2] }
+
+[initial, afterGT]
+'/':    /\//
 
 
 :: parser
@@ -174,16 +174,8 @@ symref class ::=
 symref_noargs returns symref ::=
 	  name=ID ;
 
-type (string) ::=
-	  '(' scon ')'						{ $$ = $scon; }
-	| '(' type_part_list ')'			{ $$ = "TODO" }
-;
-
-type_part_list void ::=
-	  type_part_list type_part | type_part ;
-
-type_part void ::=
-	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
+rawType class ::=
+	  code ;
 
 pattern class ::=
 	  regexp
@@ -206,7 +198,7 @@ named_pattern ::=
 	  name=ID '=' pattern ;
 
 lexeme ::=
-	  name=identifier typeopt ':'
+	  name=identifier rawTypeopt ':'
 			(pattern transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_transition ::=
@@ -252,7 +244,7 @@ nonterm_type interface ::=
 	| inline=Linline? kind=Lclass name=identifieropt implementsopt		{~nontermTypeHint}
 	| kind=Linterface name=identifieropt implementsopt					{~nontermTypeHint}
 	| kind=Lvoid														{~nontermTypeHint}
-	| typeText=type														{~nontermTypeRaw}
+	| rawType
 ;
 
 implements ::=
@@ -390,7 +382,7 @@ annotations class ::=
 	  annotations=annotation+ ;
 
 annotation ::=
-	  '@' name=ID ('{' expression '}')?
+	  '@' name=ID ('=' expression)?
 	| '@' syntax_problem
 ;
 
@@ -462,7 +454,7 @@ literal ::=
 name class ::=
 	  qualified_id ;
 
-qualified_id (string) ::=
+qualified_id {string} ::=
 	  ID								{ $$ = $0; }
 	| qualified_id '.' ID				{ $$ = $qualified_id + "." + $ID; }
 ;
@@ -473,3 +465,36 @@ command class ::=
 
 syntax_problem class : lexer_part, grammar_part, rhsPart ::=
 	  error ;
+
+%%
+
+${template go_lexer.stateVars}
+	inStatesSelector bool
+${end}
+
+${template go_lexer.initStateVars-}
+	l.inStatesSelector = false
+${end}
+
+${template go_lexer.onBeforeNext-}
+	lastTokenLine := l.tokenLine
+${end}
+
+${template go_lexer.onAfterNext-}
+	switch token {
+	case LT:
+		l.inStatesSelector = (lastTokenLine != l.tokenLine) || l.State == StateAfterColonOrEq
+		l.State = StateInitial
+	case GT:
+		if l.inStatesSelector {
+			l.State = StateAfterGT
+			l.inStatesSelector = false
+		} else {
+			l.State = StateInitial
+		}
+	case ASSIGN, COLON:
+		l.State = StateAfterColonOrEq
+	default:
+		l.State = StateInitial
+	}
+${end}
