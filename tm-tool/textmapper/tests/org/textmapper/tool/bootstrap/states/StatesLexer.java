@@ -133,8 +133,8 @@ public class StatesLexer {
 		0, 2, 18, 22, 26
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(16,
-		"\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0");
+	private static final int[] tmRuleSymbol = unpack_int(18,
+		"\uffff\uffff\0\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0");
 
 	private static final int tmClassesCount = 14;
 
@@ -202,22 +202,14 @@ public class StatesLexer {
 				}
 			}
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 
@@ -235,46 +227,46 @@ public class StatesLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 0: // x: /a/
+			case 2: // x: /a/
 				state = States.a;
 				break;
-			case 1: // x: /b/
+			case 3: // x: /b/
 				state = States.b;
 				break;
-			case 2: // x: /c/
+			case 4: // x: /c/
 				state = States.c;
 				break;
-			case 3: // x: /d/
+			case 5: // x: /d/
 				state = States.d;
 				break;
-			case 4: // x: /a/
+			case 6: // x: /a/
 				state = States.a;
 				break;
-			case 5: // x: /c/
+			case 7: // x: /c/
 				state = States.c;
 				break;
-			case 6: // x: /d/
+			case 8: // x: /d/
 				state = States.d;
 				break;
-			case 7: // x: /a/
+			case 9: // x: /a/
 				state = States.a;
 				break;
-			case 8: // x: /b/
+			case 10: // x: /b/
 				state = States.b;
 				break;
-			case 9: // x: /d/
+			case 11: // x: /d/
 				state = States.d;
 				break;
-			case 10: // x: /a/
+			case 12: // x: /a/
 				state = States.a;
 				break;
-			case 11: // x: /b/
+			case 13: // x: /b/
 				state = States.b;
 				break;
-			case 12: // x: /c/
+			case 14: // x: /c/
 				state = States.c;
 				break;
-			case 13: // x: /!/
+			case 15: // x: /!/
 				switch(state) {
 					case States.b:
 						state = States.c;
@@ -287,14 +279,14 @@ public class StatesLexer {
 						break;
 				}
 				break;
-			case 14: // x: /initialIfD/
+			case 16: // x: /initialIfD/
 				switch(state) {
 					case States.d:
 						state = States.initial;
 						break;
 				}
 				break;
-			case 15: // x: /D/
+			case 17: // x: /D/
 				state = States.d;
 				break;
 		}

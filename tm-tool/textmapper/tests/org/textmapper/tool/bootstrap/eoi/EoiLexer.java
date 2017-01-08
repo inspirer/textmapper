@@ -145,8 +145,9 @@ public class EoiLexer {
 		0, 12, 16, 20
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(16,
-		"\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\7\0\10\0\12\0\7\0\10\0\13\0\0\0");
+	private static final int[] tmRuleSymbol = unpack_int(18,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\7\0\10\0\12\0\7\0\10\0\13" +
+		"\0\0\0");
 
 	private static final int tmClassesCount = 12;
 
@@ -216,22 +217,14 @@ public class EoiLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 
@@ -249,33 +242,33 @@ public class EoiLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 4: // gotoc: /<c>/
+			case 6: // gotoc: /<c>/
 				state = States.c;
 				break;
-			case 5: // _skip: /[\n\t\r ]+/
+			case 7: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
-			case 6: // '(': /\(/
+			case 8: // '(': /\(/
 				state = States.a;
 				break;
-			case 8: // _customEOI: /{eoi}/
+			case 10: // _customEOI: /{eoi}/
 				spaceToken = true;
 				{ if (--eoiToGo < 0) { token.symbol = Tokens.eoi; spaceToken = false; } }
 				break;
-			case 9: // '(': /\(/
+			case 11: // '(': /\(/
 				state = States.b;
 				break;
-			case 10: // ')': /\)/
+			case 12: // ')': /\)/
 				state = States.initial;
 				break;
-			case 11: // _retfromA: /{eoi}/
+			case 13: // _retfromA: /{eoi}/
 				spaceToken = true;
 				state = States.initial;
 				break;
-			case 13: // ')': /\)/
+			case 15: // ')': /\)/
 				state = States.a;
 				break;
-			case 14: // _retfromB: /{eoi}/
+			case 16: // _retfromB: /{eoi}/
 				spaceToken = true;
 				state = States.a;
 				break;

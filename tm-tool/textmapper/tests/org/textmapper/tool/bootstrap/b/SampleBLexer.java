@@ -153,8 +153,9 @@ public class SampleBLexer {
 		8, 8, 8, 8, 8, 8, 8, 8, 3, 8, 8, 4, 1, 5
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(15,
-		"\1\0\14\0\15\0\16\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\17\0\20\0");
+	private static final int[] tmRuleSymbol = unpack_int(17,
+		"\uffff\uffff\0\0\1\0\14\0\15\0\16\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\17\0\20" +
+		"\0");
 
 	private static final int tmClassesCount = 13;
 
@@ -223,22 +224,14 @@ public class SampleBLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.offset, token.endoffset);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 
@@ -256,15 +249,15 @@ public class SampleBLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 0:
-				return createIdentifierToken(token, ruleIndex);
-			case 1:
-				return createNumericToken(token, ruleIndex);
 			case 2:
-				return createOctalToken(token, ruleIndex);
+				return createIdentifierToken(token, ruleIndex);
 			case 3:
+				return createNumericToken(token, ruleIndex);
+			case 4:
+				return createOctalToken(token, ruleIndex);
+			case 5:
 				return createDecimalToken(token, ruleIndex);
-			case 4: // _skip: /[\n\t\r ]+/
+			case 6: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
 		}
@@ -273,11 +266,11 @@ public class SampleBLexer {
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<>();
 	static {
-		subTokensOfIdentifier.put("class", 5);
-		subTokensOfIdentifier.put("extends", 6);
-		subTokensOfIdentifier.put("interface", 11);
-		subTokensOfIdentifier.put("enum", 12);
-		subTokensOfIdentifier.put("xyzzz", 14);
+		subTokensOfIdentifier.put("class", 7);
+		subTokensOfIdentifier.put("extends", 8);
+		subTokensOfIdentifier.put("interface", 13);
+		subTokensOfIdentifier.put("enum", 14);
+		subTokensOfIdentifier.put("xyzzz", 16);
 	}
 
 	protected boolean createIdentifierToken(Span token, int ruleIndex) {
@@ -288,18 +281,18 @@ public class SampleBLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 5:	// class
+			case 7:	// class
 				{ token.value = "class"; }
 				break;
-			case 11:	// interface
+			case 13:	// interface
 				{ token.value = "interface"; }
 				break;
-			case 12:	// enum
+			case 14:	// enum
 				{ token.value = new Object(); }
 				break;
-			case 6:	// extends (soft)
-			case 14:	// xyzzz (soft)
-			case 0:	// <default>
+			case 8:	// extends (soft)
+			case 16:	// xyzzz (soft)
+			case 2:	// <default>
 				{ token.value = tokenText(); }
 				break;
 		}
@@ -313,7 +306,7 @@ public class SampleBLexer {
 	protected boolean createOctalToken(Span token, int ruleIndex) {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 2:	// <default>
+			case 4:	// <default>
 				{ token.value = Integer.parseInt(tokenText(), 8); }
 				break;
 		}
@@ -322,7 +315,7 @@ public class SampleBLexer {
 
 	private static Map<String,Integer> subTokensOfDecimal = new HashMap<>();
 	static {
-		subTokensOfDecimal.put("11", 13);
+		subTokensOfDecimal.put("11", 15);
 	}
 
 	protected boolean createDecimalToken(Span token, int ruleIndex) {
@@ -333,7 +326,7 @@ public class SampleBLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 13:	// 11
+			case 15:	// 11
 				{ token.value = 11; }
 				break;
 		}

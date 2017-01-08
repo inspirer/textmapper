@@ -157,8 +157,8 @@ public class SampleALexer {
 		8, 8, 8, 5, 8, 8, 8, 8, 8, 8, 8, 6, 1, 7
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(5,
-		"\1\0\2\0\3\0\4\0\5\0");
+	private static final int[] tmRuleSymbol = unpack_int(7,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0");
 
 	private static final int tmClassesCount = 11;
 
@@ -233,22 +233,14 @@ public class SampleALexer {
 			token.endline = currLine;
 			token.endcolumn = currColumn;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.column, token.endline, token.endoffset, token.endcolumn);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.column, token.endline, token.endoffset, token.endcolumn);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 
@@ -266,10 +258,10 @@ public class SampleALexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 0: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
+			case 2: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
 				{ token.value = tokenText(); }
 				break;
-			case 1: // _skip: /[\n\t\r ]+/
+			case 3: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
 		}

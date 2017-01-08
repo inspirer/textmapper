@@ -53,7 +53,7 @@ lexer1.Lexer.prototype = {
     0, 6
   ],
   tmRuleSymbol: [
-    1, 2, 3, 3, 4, 5, 6
+    -1, 0, 1, 2, 3, 3, 4, 5, 6
   ],
   tmClassesCount: 13,
   tmGoto: [

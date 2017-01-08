@@ -423,38 +423,38 @@ public class JsLexer {
 		87, 3, 87, 28, 88, 69, 92, 92, 0, 106, 93, 83
 	};
 
-	private static final int tmFirstRule = -9;
+	private static final int tmFirstRule = -7;
 
-	private static final int[] tmRuleSymbol = unpack_int(95,
-		"\5\0\1\0\2\0\3\0\4\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20\0\21\0\22" +
-		"\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37\0\40\0\41\0\42" +
-		"\0\43\0\44\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56\0\57\0\60\0\61\0\62" +
-		"\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77\0\100\0\101\0\102" +
-		"\0\103\0\104\0\105\0\106\0\107\0\110\0\111\0\112\0\113\0\114\0\115\0\116\0\117\0" +
-		"\120\0\121\0\122\0\123\0\124\0\125\0\126\0\127\0\130\0\130\0\130\0\131\0\131\0\132" +
-		"\0\133\0\134\0");
+	private static final int[] tmRuleSymbol = unpack_int(97,
+		"\uffff\uffff\0\0\5\0\1\0\2\0\3\0\4\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17" +
+		"\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37" +
+		"\0\40\0\41\0\42\0\43\0\44\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56\0\57" +
+		"\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77" +
+		"\0\100\0\101\0\102\0\103\0\104\0\105\0\106\0\107\0\110\0\111\0\112\0\113\0\114\0" +
+		"\115\0\116\0\117\0\120\0\121\0\122\0\123\0\124\0\125\0\126\0\127\0\130\0\130\0\130" +
+		"\0\131\0\131\0\132\0\133\0\134\0");
 
 	private static final int tmClassesCount = 56;
 
 	private static final short[] tmGoto = unpack_vc_short(6384,
-		"\1\ufffe\1\uffff\2\151\1\144\1\151\2\uffff\1\143\1\142\1\120\1\116\1\115\1\114\1" +
+		"\1\ufff8\1\ufff9\2\151\1\144\1\151\2\ufff9\1\143\1\142\1\120\1\116\1\115\1\114\1" +
 		"\113\1\112\1\111\1\110\1\103\1\102\1\101\1\75\1\67\1\64\1\61\1\56\1\53\1\51\1\46" +
-		"\1\43\1\41\1\40\1\37\1\36\1\33\1\21\1\151\1\7\6\151\1\2\2\151\4\uffff\1\1\1\142\3" +
-		"\151\70\ufff6\22\uffa0\1\6\17\uffa0\1\2\11\uffa0\1\2\10\uffa0\2\ufffd\1\uffa0\31" +
-		"\uffff\2\5\7\uffff\1\4\11\uffff\1\4\13\uffff\42\uffa0\1\4\11\uffa0\1\4\13\uffa0\42" +
-		"\uffff\1\4\11\uffff\1\4\13\uffff\42\uffa0\1\6\11\uffa0\1\6\10\uffa0\2\ufffd\1\uffa0" +
-		"\1\uffff\3\7\1\11\3\7\2\uffff\33\7\1\10\16\7\1\uffff\3\7\70\uff9c\1\uffff\4\7\1\15" +
-		"\2\7\1\14\33\7\1\12\7\7\1\uffff\13\7\42\uffff\1\13\11\uffff\3\13\6\uffff\2\13\43" +
-		"\uffff\1\7\11\uffff\3\7\6\uffff\2\7\2\uffff\3\7\1\11\3\7\1\uffff\34\7\1\10\16\7\1" +
-		"\uffff\3\7\42\uffff\1\16\11\uffff\3\16\6\uffff\2\16\43\uffff\1\17\11\uffff\3\17\6" +
-		"\uffff\2\17\43\uffff\1\20\11\uffff\3\20\6\uffff\2\20\43\uffff\1\7\11\uffff\3\7\6" +
-		"\uffff\2\7\2\uffff\3\21\1\23\3\21\2\uffff\31\21\1\22\20\21\1\uffff\3\21\70\uff9d" +
-		"\1\uffff\4\21\1\27\2\21\1\26\33\21\1\24\7\21\1\uffff\13\21\42\uffff\1\25\11\uffff" +
-		"\3\25\6\uffff\2\25\43\uffff\1\21\11\uffff\3\21\6\uffff\2\21\2\uffff\3\21\1\23\3\21" +
-		"\1\uffff\32\21\1\22\20\21\1\uffff\3\21\42\uffff\1\30\11\uffff\3\30\6\uffff\2\30\43" +
-		"\uffff\1\31\11\uffff\3\31\6\uffff\2\31\43\uffff\1\32\11\uffff\3\32\6\uffff\2\32\43" +
-		"\uffff\1\21\11\uffff\3\21\6\uffff\2\21\1\uffff\22\uffa0\1\6\21\uffa0\1\ufffc\20\uffa0" +
-		"\2\ufffd\1\ufffc\42\uffff\1\35\11\uffff\3\35\6\uffff\2\35\1\uffff\42\uff9e\1\35\11" +
+		"\1\43\1\41\1\40\1\37\1\36\1\33\1\21\1\151\1\7\6\151\1\2\2\151\4\ufff9\1\1\1\142\3" +
+		"\151\70\ufff6\22\uffa0\1\6\17\uffa0\1\2\11\uffa0\1\2\10\uffa0\2\uffff\1\uffa0\31" +
+		"\ufff9\2\5\7\ufff9\1\4\11\ufff9\1\4\13\ufff9\42\uffa0\1\4\11\uffa0\1\4\13\uffa0\42" +
+		"\ufff9\1\4\11\ufff9\1\4\13\ufff9\42\uffa0\1\6\11\uffa0\1\6\10\uffa0\2\uffff\1\uffa0" +
+		"\1\ufff9\3\7\1\11\3\7\2\ufff9\33\7\1\10\16\7\1\ufff9\3\7\70\uff9c\1\ufff9\4\7\1\15" +
+		"\2\7\1\14\33\7\1\12\7\7\1\ufff9\13\7\42\ufff9\1\13\11\ufff9\3\13\6\ufff9\2\13\43" +
+		"\ufff9\1\7\11\ufff9\3\7\6\ufff9\2\7\2\ufff9\3\7\1\11\3\7\1\ufff9\34\7\1\10\16\7\1" +
+		"\ufff9\3\7\42\ufff9\1\16\11\ufff9\3\16\6\ufff9\2\16\43\ufff9\1\17\11\ufff9\3\17\6" +
+		"\ufff9\2\17\43\ufff9\1\20\11\ufff9\3\20\6\ufff9\2\20\43\ufff9\1\7\11\ufff9\3\7\6" +
+		"\ufff9\2\7\2\ufff9\3\21\1\23\3\21\2\ufff9\31\21\1\22\20\21\1\ufff9\3\21\70\uff9d" +
+		"\1\ufff9\4\21\1\27\2\21\1\26\33\21\1\24\7\21\1\ufff9\13\21\42\ufff9\1\25\11\ufff9" +
+		"\3\25\6\ufff9\2\25\43\ufff9\1\21\11\ufff9\3\21\6\ufff9\2\21\2\ufff9\3\21\1\23\3\21" +
+		"\1\ufff9\32\21\1\22\20\21\1\ufff9\3\21\42\ufff9\1\30\11\ufff9\3\30\6\ufff9\2\30\43" +
+		"\ufff9\1\31\11\ufff9\3\31\6\ufff9\2\31\43\ufff9\1\32\11\ufff9\3\32\6\ufff9\2\32\43" +
+		"\ufff9\1\21\11\ufff9\3\21\6\ufff9\2\21\1\ufff9\22\uffa0\1\6\21\uffa0\1\ufffe\20\uffa0" +
+		"\2\uffff\1\ufffe\42\ufff9\1\35\11\ufff9\3\35\6\ufff9\2\35\1\ufff9\42\uff9e\1\35\11" +
 		"\uff9e\3\35\6\uff9e\2\35\1\uff9e\70\uffaf\70\uffb0\70\uffb3\27\uffb5\1\42\40\uffb5" +
 		"\70\uffa4\27\uffb6\1\45\5\uffb6\1\44\32\uffb6\70\uffb1\70\uffa5\27\uffb7\1\50\4\uffb7" +
 		"\1\47\33\uffb7\70\uffb2\70\uffa6\27\uffbd\1\52\40\uffbd\70\uffaa\27\uffbf\1\55\2" +
@@ -463,30 +463,30 @@ public class JsLexer {
 		"\uffae\27\uffc4\1\66\40\uffc4\70\uffc2\26\uffc7\1\71\1\70\40\uffc7\70\uffc5\26\uffb9" +
 		"\1\73\1\72\40\uffb9\70\uffa8\27\uffb8\1\74\40\uffb8\70\uffa7\25\uffc8\1\77\1\uffc8" +
 		"\1\76\40\uffc8\70\uffc6\27\uffba\1\100\40\uffba\70\uffa9\70\uffc9\70\uffca\42\uffcb" +
-		"\1\104\11\uffcb\1\104\13\uffcb\42\uff9f\1\104\11\uff9f\1\104\10\uff9f\2\ufffb\1\uff9f" +
-		"\31\uffff\2\107\7\uffff\1\106\11\uffff\1\106\13\uffff\42\uff9f\1\106\11\uff9f\1\106" +
-		"\13\uff9f\42\uffff\1\106\11\uffff\1\106\13\uffff\70\uffcc\70\uffcd\70\uffce\70\uffcf" +
-		"\70\uffd0\70\uffd1\27\uffbe\1\117\40\uffbe\70\uffab\1\uffff\3\130\1\127\3\130\2\uffff" +
-		"\1\126\1\123\4\130\1\121\43\130\1\uffff\3\130\1\uffff\3\121\1\122\3\121\2\uffff\7" +
-		"\121\1\130\42\121\1\uffff\3\121\1\uffff\7\121\2\uffff\52\121\1\uffff\3\121\1\uffff" +
-		"\12\123\1\124\54\123\1\uffff\11\123\1\125\1\124\54\123\70\ufff4\1\ufff3\7\126\2\ufff3" +
-		"\52\126\1\ufff3\3\126\1\uffff\7\130\2\uffff\52\130\1\uffff\3\130\1\uffff\3\130\1" +
-		"\141\3\130\2\uffff\1\133\5\130\1\131\43\130\1\uffff\3\130\1\uffff\3\131\1\132\3\131" +
-		"\2\uffff\7\131\1\130\42\131\1\uffff\3\131\1\uffff\7\131\2\uffff\52\131\1\uffff\3" +
-		"\131\2\uff9b\2\133\1\ufffa\3\133\32\uff9b\1\133\1\uff9b\1\133\1\uff9b\15\133\2\uff9b" +
-		"\3\133\5\uffff\1\135\124\uffff\1\136\11\uffff\3\136\6\uffff\2\136\43\uffff\1\137" +
-		"\11\uffff\3\137\6\uffff\2\137\43\uffff\1\140\11\uffff\3\140\6\uffff\2\140\43\uffff" +
-		"\1\133\11\uffff\3\133\6\uffff\2\133\2\uffff\7\130\2\uffff\52\130\1\uffff\3\130\101" +
-		"\ufff5\1\142\56\ufff5\5\uffff\1\145\124\uffff\1\146\11\uffff\3\146\6\uffff\2\146" +
-		"\43\uffff\1\147\11\uffff\3\147\6\uffff\2\147\43\uffff\1\150\11\uffff\3\150\6\uffff" +
-		"\2\150\43\uffff\1\151\11\uffff\3\151\6\uffff\2\151\1\uffff\2\ufff7\2\151\1\ufff9" +
-		"\3\151\32\ufff7\1\151\1\ufff7\1\151\1\ufff7\15\151\2\ufff7\3\151\5\uffff\1\153\124" +
-		"\uffff\1\154\11\uffff\3\154\6\uffff\2\154\43\uffff\1\155\11\uffff\3\155\6\uffff\2" +
-		"\155\43\uffff\1\156\11\uffff\3\156\6\uffff\2\156\43\uffff\1\151\11\uffff\3\151\6" +
-		"\uffff\2\151\3\uffff\2\151\1\144\1\151\2\uffff\1\143\1\142\1\160\1\116\1\115\1\114" +
+		"\1\104\11\uffcb\1\104\13\uffcb\42\uff9f\1\104\11\uff9f\1\104\10\uff9f\2\ufffd\1\uff9f" +
+		"\31\ufff9\2\107\7\ufff9\1\106\11\ufff9\1\106\13\ufff9\42\uff9f\1\106\11\uff9f\1\106" +
+		"\13\uff9f\42\ufff9\1\106\11\ufff9\1\106\13\ufff9\70\uffcc\70\uffcd\70\uffce\70\uffcf" +
+		"\70\uffd0\70\uffd1\27\uffbe\1\117\40\uffbe\70\uffab\1\ufff9\3\130\1\127\3\130\2\ufff9" +
+		"\1\126\1\123\4\130\1\121\43\130\1\ufff9\3\130\1\ufff9\3\121\1\122\3\121\2\ufff9\7" +
+		"\121\1\130\42\121\1\ufff9\3\121\1\ufff9\7\121\2\ufff9\52\121\1\ufff9\3\121\1\ufff9" +
+		"\12\123\1\124\54\123\1\ufff9\11\123\1\125\1\124\54\123\70\ufff4\1\ufff3\7\126\2\ufff3" +
+		"\52\126\1\ufff3\3\126\1\ufff9\7\130\2\ufff9\52\130\1\ufff9\3\130\1\ufff9\3\130\1" +
+		"\141\3\130\2\ufff9\1\133\5\130\1\131\43\130\1\ufff9\3\130\1\ufff9\3\131\1\132\3\131" +
+		"\2\ufff9\7\131\1\130\42\131\1\ufff9\3\131\1\ufff9\7\131\2\ufff9\52\131\1\ufff9\3" +
+		"\131\2\uff9b\2\133\1\ufffc\3\133\32\uff9b\1\133\1\uff9b\1\133\1\uff9b\15\133\2\uff9b" +
+		"\3\133\5\ufff9\1\135\124\ufff9\1\136\11\ufff9\3\136\6\ufff9\2\136\43\ufff9\1\137" +
+		"\11\ufff9\3\137\6\ufff9\2\137\43\ufff9\1\140\11\ufff9\3\140\6\ufff9\2\140\43\ufff9" +
+		"\1\133\11\ufff9\3\133\6\ufff9\2\133\2\ufff9\7\130\2\ufff9\52\130\1\ufff9\3\130\101" +
+		"\ufff5\1\142\56\ufff5\5\ufff9\1\145\124\ufff9\1\146\11\ufff9\3\146\6\ufff9\2\146" +
+		"\43\ufff9\1\147\11\ufff9\3\147\6\ufff9\2\147\43\ufff9\1\150\11\ufff9\3\150\6\ufff9" +
+		"\2\150\43\ufff9\1\151\11\ufff9\3\151\6\ufff9\2\151\1\ufff9\2\ufff7\2\151\1\ufffb" +
+		"\3\151\32\ufff7\1\151\1\ufff7\1\151\1\ufff7\15\151\2\ufff7\3\151\5\ufff9\1\153\124" +
+		"\ufff9\1\154\11\ufff9\3\154\6\ufff9\2\154\43\ufff9\1\155\11\ufff9\3\155\6\ufff9\2" +
+		"\155\43\ufff9\1\156\11\ufff9\3\156\6\ufff9\2\156\43\ufff9\1\151\11\ufff9\3\151\6" +
+		"\ufff9\2\151\3\ufff9\2\151\1\144\1\151\2\ufff9\1\143\1\142\1\160\1\116\1\115\1\114" +
 		"\1\113\1\112\1\111\1\110\1\103\1\102\1\101\1\75\1\67\1\64\1\61\1\56\1\53\1\51\1\46" +
-		"\1\43\1\41\1\40\1\37\1\36\1\33\1\21\1\151\1\7\6\151\1\2\2\151\4\uffff\1\1\1\142\3" +
-		"\151\12\uff9a\1\126\1\ufff8\13\uff9a\1\161\40\uff9a\70\uff99");
+		"\1\43\1\41\1\40\1\37\1\36\1\33\1\21\1\151\1\7\6\151\1\2\2\151\4\ufff9\1\1\1\142\3" +
+		"\151\12\uff9a\1\126\1\ufffa\13\uff9a\1\161\40\uff9a\70\uff99");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -525,13 +525,13 @@ public class JsLexer {
 			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state > tmFirstRule && state < -2) {
+				if (state > tmFirstRule && state < 0) {
 					token.endoffset = currOffset;
-					state = (-3 - state) * 2;
+					state = (-1 - state) * 2;
 					backupRule = tmBacktracking[state++];
 					state = tmBacktracking[state];
 				}
-				if (state == -1 && chr == -1) {
+				if (state == tmFirstRule && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
 					token.value = null;
@@ -539,7 +539,7 @@ public class JsLexer {
 					token.offset = currOffset;
 					break tokenloop;
 				}
-				if (state >= -1 && chr != -1) {
+				if (state >= tmFirstRule && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
@@ -554,20 +554,12 @@ public class JsLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
 			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
+
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
 
 		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
@@ -587,18 +579,18 @@ public class JsLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 0:
+			case 2:
 				return createIdentifierToken(token, ruleIndex);
-			case 1: // space: /[\t\v\f \xa0\ufeff\p{Zs}]/
+			case 3: // space: /[\t\v\f \xa0\ufeff\p{Zs}]/
 				spaceToken = true;
 				break;
-			case 2: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
+			case 4: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
 				spaceToken = true;
 				break;
-			case 3: // MultiLineComment: /\/\*{commentChars}?\*\//
+			case 5: // MultiLineComment: /\/\*{commentChars}?\*\//
 				spaceToken = true;
 				break;
-			case 4: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
+			case 6: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
 				spaceToken = true;
 				break;
 		}
@@ -607,42 +599,42 @@ public class JsLexer {
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<>();
 	static {
-		subTokensOfIdentifier.put("break", 5);
-		subTokensOfIdentifier.put("case", 6);
-		subTokensOfIdentifier.put("catch", 7);
-		subTokensOfIdentifier.put("continue", 8);
-		subTokensOfIdentifier.put("debugger", 9);
-		subTokensOfIdentifier.put("default", 10);
-		subTokensOfIdentifier.put("delete", 11);
-		subTokensOfIdentifier.put("do", 12);
-		subTokensOfIdentifier.put("else", 13);
-		subTokensOfIdentifier.put("finally", 14);
-		subTokensOfIdentifier.put("for", 15);
-		subTokensOfIdentifier.put("function", 16);
-		subTokensOfIdentifier.put("if", 17);
-		subTokensOfIdentifier.put("in", 18);
-		subTokensOfIdentifier.put("instanceof", 19);
-		subTokensOfIdentifier.put("new", 20);
-		subTokensOfIdentifier.put("return", 21);
-		subTokensOfIdentifier.put("switch", 22);
-		subTokensOfIdentifier.put("this", 23);
-		subTokensOfIdentifier.put("throw", 24);
-		subTokensOfIdentifier.put("try", 25);
-		subTokensOfIdentifier.put("typeof", 26);
-		subTokensOfIdentifier.put("var", 27);
-		subTokensOfIdentifier.put("void", 28);
-		subTokensOfIdentifier.put("while", 29);
-		subTokensOfIdentifier.put("with", 30);
-		subTokensOfIdentifier.put("class", 31);
-		subTokensOfIdentifier.put("const", 32);
-		subTokensOfIdentifier.put("enum", 33);
-		subTokensOfIdentifier.put("export", 34);
-		subTokensOfIdentifier.put("extends", 35);
-		subTokensOfIdentifier.put("import", 36);
-		subTokensOfIdentifier.put("super", 37);
-		subTokensOfIdentifier.put("null", 84);
-		subTokensOfIdentifier.put("true", 85);
-		subTokensOfIdentifier.put("false", 86);
+		subTokensOfIdentifier.put("break", 7);
+		subTokensOfIdentifier.put("case", 8);
+		subTokensOfIdentifier.put("catch", 9);
+		subTokensOfIdentifier.put("continue", 10);
+		subTokensOfIdentifier.put("debugger", 11);
+		subTokensOfIdentifier.put("default", 12);
+		subTokensOfIdentifier.put("delete", 13);
+		subTokensOfIdentifier.put("do", 14);
+		subTokensOfIdentifier.put("else", 15);
+		subTokensOfIdentifier.put("finally", 16);
+		subTokensOfIdentifier.put("for", 17);
+		subTokensOfIdentifier.put("function", 18);
+		subTokensOfIdentifier.put("if", 19);
+		subTokensOfIdentifier.put("in", 20);
+		subTokensOfIdentifier.put("instanceof", 21);
+		subTokensOfIdentifier.put("new", 22);
+		subTokensOfIdentifier.put("return", 23);
+		subTokensOfIdentifier.put("switch", 24);
+		subTokensOfIdentifier.put("this", 25);
+		subTokensOfIdentifier.put("throw", 26);
+		subTokensOfIdentifier.put("try", 27);
+		subTokensOfIdentifier.put("typeof", 28);
+		subTokensOfIdentifier.put("var", 29);
+		subTokensOfIdentifier.put("void", 30);
+		subTokensOfIdentifier.put("while", 31);
+		subTokensOfIdentifier.put("with", 32);
+		subTokensOfIdentifier.put("class", 33);
+		subTokensOfIdentifier.put("const", 34);
+		subTokensOfIdentifier.put("enum", 35);
+		subTokensOfIdentifier.put("export", 36);
+		subTokensOfIdentifier.put("extends", 37);
+		subTokensOfIdentifier.put("import", 38);
+		subTokensOfIdentifier.put("super", 39);
+		subTokensOfIdentifier.put("null", 86);
+		subTokensOfIdentifier.put("true", 87);
+		subTokensOfIdentifier.put("false", 88);
 	}
 
 	protected boolean createIdentifierToken(Span token, int ruleIndex) {

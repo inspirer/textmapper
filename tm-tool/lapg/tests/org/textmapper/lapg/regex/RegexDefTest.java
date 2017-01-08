@@ -64,9 +64,9 @@ public class RegexDefTest {
 		checkRegex("\\111", "I");
 		checkRegex("\\xf40");
 		checkErrors("\\u200", "Unexpected end of input reached");
-		checkErrors("\\x2x0", "invalid lexeme at line 1: `\\x2x`, skipped");
-		checkErrors("\\x2x", "invalid lexeme at line 1: `\\x2x`, skipped");
-		checkErrors("\\u200xx", "invalid lexeme at line 1: `\\u200x`, skipped");
+		checkErrors("\\x2x0", "invalid token at line 1: `\\x2x`, skipped");
+		checkErrors("\\x2x", "invalid token at line 1: `\\x2x`, skipped");
+		checkErrors("\\u200xx", "invalid token at line 1: `\\u200x`, skipped");
 		checkRegex("\\uf40b");
 	}
 
@@ -114,8 +114,8 @@ public class RegexDefTest {
 	@Test
 	public void testQuantifiers() {
 		checkRegex("{aaa}");
-		checkErrors("{aaa }", "invalid lexeme at line 1: `{aaa `, skipped");
-		checkErrors("a{aaa }", "invalid lexeme at line 1: `{aaa `, skipped");
+		checkErrors("{aaa }", "invalid token at line 1: `{aaa `, skipped");
+		checkErrors("a{aaa }", "invalid token at line 1: `{aaa `, skipped");
 		checkRegex("a{9}");
 		checkRegex("a{9,}");
 		checkRegex("a{9,10}");

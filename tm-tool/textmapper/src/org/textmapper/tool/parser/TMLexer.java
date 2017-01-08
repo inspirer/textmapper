@@ -297,36 +297,37 @@ public class TMLexer {
 		0, 3, 23, 18
 	};
 
-	private static final int tmFirstRule = -5;
+	private static final int tmFirstRule = -3;
 
-	private static final int[] tmRuleSymbol = unpack_int(79,
-		"\50\0\1\0\2\0\3\0\0\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20" +
-		"\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37\0\40" +
-		"\0\41\0\42\0\43\0\44\0\45\0\46\0\51\0\52\0\53\0\54\0\55\0\56\0\57\0\60\0\61\0\62" +
-		"\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77\0\100\0\101\0\102" +
-		"\0\103\0\104\0\105\0\106\0\107\0\110\0\111\0\112\0\113\0\114\0\115\0\116\0\117\0");
+	private static final int[] tmRuleSymbol = unpack_int(81,
+		"\uffff\uffff\0\0\50\0\1\0\2\0\3\0\0\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15" +
+		"\0\16\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35" +
+		"\0\36\0\37\0\40\0\41\0\42\0\43\0\44\0\45\0\46\0\51\0\52\0\53\0\54\0\55\0\56\0\57" +
+		"\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77" +
+		"\0\100\0\101\0\102\0\103\0\104\0\105\0\106\0\107\0\110\0\111\0\112\0\113\0\114\0" +
+		"\115\0\116\0\117\0");
 
 	private static final int tmClassesCount = 36;
 
 	private static final short[] tmGoto = unpack_vc_short(2304,
-		"\1\ufffe\1\uffff\1\73\1\uffff\1\72\1\56\1\55\1\54\1\53\1\50\1\47\1\44\1\72\1\42\1" +
+		"\1\ufffc\1\ufffd\1\73\1\ufffd\1\72\1\56\1\55\1\54\1\53\1\50\1\47\1\44\1\72\1\42\1" +
 		"\37\1\34\1\32\1\30\1\27\1\26\1\25\1\24\1\21\1\20\1\17\1\15\1\14\1\13\1\12\1\10\1" +
-		"\6\1\5\1\4\1\2\1\1\1\72\42\ufff8\1\1\1\ufff8\12\ufffb\1\ufffd\26\ufffb\2\2\1\ufffb" +
-		"\12\uffff\1\3\26\uffff\2\2\1\uffff\44\uffd4\44\uffd5\36\uffd7\1\7\5\uffd7\44\uffd6" +
+		"\6\1\5\1\4\1\2\1\1\1\72\42\ufff8\1\1\1\ufff8\12\ufffb\1\uffff\26\ufffb\2\2\1\ufffb" +
+		"\12\ufffd\1\3\26\ufffd\2\2\1\ufffd\44\uffd4\44\uffd5\36\uffd7\1\7\5\uffd7\44\uffd6" +
 		"\17\uffdc\1\11\24\uffdc\44\uffdb\44\uffdf\44\uffe0\44\uffd8\32\uffae\1\16\11\uffae" +
-		"\44\uffe1\44\uffe2\44\uffda\27\uffe4\1\ufffc\14\uffe4\17\uffff\1\23\24\uffff\44\uffe3" +
+		"\44\uffe1\44\uffe2\44\uffda\27\uffe4\1\ufffe\14\uffe4\17\ufffd\1\23\24\ufffd\44\uffe3" +
 		"\44\uffe8\44\uffe9\44\uffea\44\uffde\17\uffd9\1\31\24\uffd9\44\uffec\20\ufff0\1\33" +
 		"\23\ufff0\44\uffef\17\uffee\1\36\2\uffee\1\35\21\uffee\44\uffeb\44\uffed\16\uffe7" +
 		"\1\40\25\uffe7\17\ufff1\1\41\24\ufff1\44\ufff2\1\ufff5\3\42\1\43\37\42\44\ufff5\13" +
-		"\ufff3\1\45\30\ufff3\1\ufff7\3\45\1\46\37\45\44\ufff7\42\uffff\1\1\2\uffff\2\50\1" +
-		"\52\1\uffff\4\50\1\51\32\50\44\ufff9\1\uffff\3\50\1\uffff\37\50\44\uffdd\44\uffe5" +
-		"\44\uffe6\1\uffff\2\65\1\64\2\uffff\1\62\1\65\1\57\3\65\1\uffff\27\65\1\uffff\7\57" +
-		"\1\60\33\57\1\uffff\4\57\1\61\2\57\1\60\33\57\44\ufff4\1\uffff\2\62\1\63\1\uffff" +
-		"\2\62\1\65\4\62\1\uffff\27\62\1\uffff\3\62\1\uffff\37\62\1\uffff\3\65\1\uffff\37" +
-		"\65\1\uffff\2\65\1\71\1\uffff\1\70\1\66\5\65\1\uffff\27\65\1\uffff\2\66\1\67\1\uffff" +
-		"\2\66\1\65\4\66\1\uffff\27\66\1\uffff\3\66\1\uffff\37\66\44\ufffa\1\uffff\3\65\1" +
-		"\uffff\37\65\4\ufff6\1\72\7\ufff6\1\72\26\ufff6\1\72\1\uffff\1\73\1\75\1\74\1\uffff" +
-		"\37\73\1\uffff\3\73\1\uffff\37\73\44\ufffb\2\uffff\1\73\1\uffff\1\72\1\56\1\55\1" +
+		"\ufff3\1\45\30\ufff3\1\ufff7\3\45\1\46\37\45\44\ufff7\42\ufffd\1\1\2\ufffd\2\50\1" +
+		"\52\1\ufffd\4\50\1\51\32\50\44\ufff9\1\ufffd\3\50\1\ufffd\37\50\44\uffdd\44\uffe5" +
+		"\44\uffe6\1\ufffd\2\65\1\64\2\ufffd\1\62\1\65\1\57\3\65\1\ufffd\27\65\1\ufffd\7\57" +
+		"\1\60\33\57\1\ufffd\4\57\1\61\2\57\1\60\33\57\44\ufff4\1\ufffd\2\62\1\63\1\ufffd" +
+		"\2\62\1\65\4\62\1\ufffd\27\62\1\ufffd\3\62\1\ufffd\37\62\1\ufffd\3\65\1\ufffd\37" +
+		"\65\1\ufffd\2\65\1\71\1\ufffd\1\70\1\66\5\65\1\ufffd\27\65\1\ufffd\2\66\1\67\1\ufffd" +
+		"\2\66\1\65\4\66\1\ufffd\27\66\1\ufffd\3\66\1\ufffd\37\66\44\ufffa\1\ufffd\3\65\1" +
+		"\ufffd\37\65\4\ufff6\1\72\7\ufff6\1\72\26\ufff6\1\72\1\ufffd\1\73\1\75\1\74\1\ufffd" +
+		"\37\73\1\ufffd\3\73\1\ufffd\37\73\44\ufffb\2\ufffd\1\73\1\ufffd\1\72\1\56\1\55\1" +
 		"\54\1\53\1\50\1\47\1\44\1\72\1\42\1\37\1\34\1\32\1\30\1\27\1\26\1\25\1\24\1\21\1" +
 		"\20\1\17\1\77\1\14\1\13\1\12\1\10\1\6\1\5\1\4\1\2\1\1\1\72\32\uffad\1\16\11\uffad");
 
@@ -367,13 +368,13 @@ public class TMLexer {
 			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state > tmFirstRule && state < -2) {
+				if (state > tmFirstRule && state < 0) {
 					token.endoffset = currOffset;
-					state = (-3 - state) * 2;
+					state = (-1 - state) * 2;
 					backupRule = tmBacktracking[state++];
 					state = tmBacktracking[state];
 				}
-				if (state == -1 && chr == -1) {
+				if (state == tmFirstRule && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
 					token.value = null;
@@ -381,7 +382,7 @@ public class TMLexer {
 					token.offset = currOffset;
 					break tokenloop;
 				}
-				if (state >= -1 && chr != -1) {
+				if (state >= tmFirstRule && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
@@ -396,20 +397,12 @@ public class TMLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
 			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
+
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
 
 		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
@@ -429,9 +422,9 @@ public class TMLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 0:
+			case 2:
 				return createIDToken(token, ruleIndex);
-			case 1: // regexp: /\/{reFirst}{reChar}*\//
+			case 3: // regexp: /\/{reFirst}{reChar}*\//
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -442,7 +435,7 @@ public class TMLexer {
 				}
 				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
-			case 2: // scon: /"([^\n\\"]|\\.)*"/
+			case 4: // scon: /"([^\n\\"]|\\.)*"/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -453,7 +446,7 @@ public class TMLexer {
 				}
 				{ token.value = unescape(tokenText(), 1, tokenSize()-1); }
 				break;
-			case 3: // icon: /\-?[0-9]+/
+			case 5: // icon: /\-?[0-9]+/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -464,7 +457,7 @@ public class TMLexer {
 				}
 				{ token.value = Integer.parseInt(tokenText()); }
 				break;
-			case 4: // eoi: /%%.*(\r?\n)?/
+			case 6: // eoi: /%%.*(\r?\n)?/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -475,7 +468,7 @@ public class TMLexer {
 				}
 				{ templatesStart = token.endoffset; }
 				break;
-			case 5: // _skip: /[\n\r\t ]+/
+			case 7: // _skip: /[\n\r\t ]+/
 				spaceToken = true;
 				switch(state) {
 					case States.afterAt:
@@ -486,7 +479,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 6: // _skip_comment: /#.*(\r?\n)?/
+			case 8: // _skip_comment: /#.*(\r?\n)?/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -497,7 +490,7 @@ public class TMLexer {
 				}
 				{ spaceToken = skipComments; }
 				break;
-			case 7: // _skip_multiline: /\/\*{commentChars}\*\//
+			case 9: // _skip_multiline: /\/\*{commentChars}\*\//
 				spaceToken = true;
 				switch(state) {
 					case States.afterAt:
@@ -508,7 +501,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 8: // '%': /%/
+			case 10: // '%': /%/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -518,7 +511,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 9: // '::=': /::=/
+			case 11: // '::=': /::=/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -528,7 +521,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 10: // '::': /::/
+			case 12: // '::': /::/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -538,7 +531,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 11: // '|': /\|/
+			case 13: // '|': /\|/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -548,7 +541,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 12: // '||': /\|\|/
+			case 14: // '||': /\|\|/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -558,7 +551,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 13: // '=': /=/
+			case 15: // '=': /=/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -568,7 +561,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 14: // '==': /==/
+			case 16: // '==': /==/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -578,7 +571,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 15: // '!=': /!=/
+			case 17: // '!=': /!=/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -588,7 +581,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 16: // '=>': /=>/
+			case 18: // '=>': /=>/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -598,7 +591,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 17: // ';': /;/
+			case 19: // ';': /;/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -608,7 +601,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 18: // '.': /\./
+			case 20: // '.': /\./
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -618,7 +611,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 19: // ',': /,/
+			case 21: // ',': /,/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -628,7 +621,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 20: // ':': /:/
+			case 22: // ':': /:/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -638,7 +631,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 21: // '[': /\[/
+			case 23: // '[': /\[/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -648,7 +641,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 22: // ']': /\]/
+			case 24: // ']': /\]/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -658,7 +651,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 23: // '(': /\(/
+			case 25: // '(': /\(/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -668,7 +661,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 24: // '(?=': /\(\?=/
+			case 26: // '(?=': /\(\?=/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -678,7 +671,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 25: // ')': /\)/
+			case 27: // ')': /\)/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -688,7 +681,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 26: // '{~': /\{~/
+			case 28: // '{~': /\{~/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -698,7 +691,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 27: // '}': /\}/
+			case 29: // '}': /\}/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -708,7 +701,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 28: // '<': /</
+			case 30: // '<': /</
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -718,7 +711,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 29: // '>': />/
+			case 31: // '>': />/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -728,7 +721,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 30: // '*': /\*/
+			case 32: // '*': /\*/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -738,7 +731,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 31: // '+': /\+/
+			case 33: // '+': /\+/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -748,7 +741,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 32: // '+=': /\+=/
+			case 34: // '+=': /\+=/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -758,7 +751,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 33: // '?': /\?/
+			case 35: // '?': /\?/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -768,7 +761,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 34: // '!': /!/
+			case 36: // '!': /!/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -778,7 +771,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 35: // '~': /~/
+			case 37: // '~': /~/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -788,7 +781,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 36: // '&': /&/
+			case 38: // '&': /&/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -798,7 +791,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 37: // '&&': /&&/
+			case 39: // '&&': /&&/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -808,7 +801,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 38: // '$': /$/
+			case 40: // '$': /$/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -818,10 +811,10 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 39: // '@': /@/
+			case 41: // '@': /@/
 				state = States.afterAt;
 				break;
-			case 77: // code: /\{/
+			case 79: // code: /\{/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -829,7 +822,7 @@ public class TMLexer {
 				}
 				{ skipAction(); token.endoffset = getOffset(); }
 				break;
-			case 78: // '{': /\{/
+			case 80: // '{': /\{/
 				state = States.initial;
 				break;
 		}
@@ -838,43 +831,43 @@ public class TMLexer {
 
 	private static Map<String,Integer> subTokensOfID = new HashMap<>();
 	static {
-		subTokensOfID.put("true", 40);
-		subTokensOfID.put("false", 41);
-		subTokensOfID.put("new", 42);
-		subTokensOfID.put("separator", 43);
-		subTokensOfID.put("as", 44);
-		subTokensOfID.put("import", 45);
-		subTokensOfID.put("set", 46);
-		subTokensOfID.put("brackets", 47);
-		subTokensOfID.put("inline", 48);
-		subTokensOfID.put("prec", 49);
-		subTokensOfID.put("shift", 50);
-		subTokensOfID.put("returns", 51);
-		subTokensOfID.put("input", 52);
-		subTokensOfID.put("left", 53);
-		subTokensOfID.put("right", 54);
-		subTokensOfID.put("nonassoc", 55);
-		subTokensOfID.put("generate", 56);
-		subTokensOfID.put("assert", 57);
-		subTokensOfID.put("empty", 58);
-		subTokensOfID.put("nonempty", 59);
-		subTokensOfID.put("global", 60);
-		subTokensOfID.put("explicit", 61);
-		subTokensOfID.put("lookahead", 62);
-		subTokensOfID.put("param", 63);
-		subTokensOfID.put("flag", 64);
-		subTokensOfID.put("no-eoi", 65);
-		subTokensOfID.put("soft", 66);
-		subTokensOfID.put("class", 67);
-		subTokensOfID.put("interface", 68);
-		subTokensOfID.put("void", 69);
-		subTokensOfID.put("space", 70);
-		subTokensOfID.put("layout", 71);
-		subTokensOfID.put("language", 72);
-		subTokensOfID.put("lalr", 73);
-		subTokensOfID.put("lexer", 74);
-		subTokensOfID.put("parser", 75);
-		subTokensOfID.put("reduce", 76);
+		subTokensOfID.put("true", 42);
+		subTokensOfID.put("false", 43);
+		subTokensOfID.put("new", 44);
+		subTokensOfID.put("separator", 45);
+		subTokensOfID.put("as", 46);
+		subTokensOfID.put("import", 47);
+		subTokensOfID.put("set", 48);
+		subTokensOfID.put("brackets", 49);
+		subTokensOfID.put("inline", 50);
+		subTokensOfID.put("prec", 51);
+		subTokensOfID.put("shift", 52);
+		subTokensOfID.put("returns", 53);
+		subTokensOfID.put("input", 54);
+		subTokensOfID.put("left", 55);
+		subTokensOfID.put("right", 56);
+		subTokensOfID.put("nonassoc", 57);
+		subTokensOfID.put("generate", 58);
+		subTokensOfID.put("assert", 59);
+		subTokensOfID.put("empty", 60);
+		subTokensOfID.put("nonempty", 61);
+		subTokensOfID.put("global", 62);
+		subTokensOfID.put("explicit", 63);
+		subTokensOfID.put("lookahead", 64);
+		subTokensOfID.put("param", 65);
+		subTokensOfID.put("flag", 66);
+		subTokensOfID.put("no-eoi", 67);
+		subTokensOfID.put("soft", 68);
+		subTokensOfID.put("class", 69);
+		subTokensOfID.put("interface", 70);
+		subTokensOfID.put("void", 71);
+		subTokensOfID.put("space", 72);
+		subTokensOfID.put("layout", 73);
+		subTokensOfID.put("language", 74);
+		subTokensOfID.put("lalr", 75);
+		subTokensOfID.put("lexer", 76);
+		subTokensOfID.put("parser", 77);
+		subTokensOfID.put("reduce", 78);
 	}
 
 	protected boolean createIDToken(Span token, int ruleIndex) {
@@ -885,7 +878,7 @@ public class TMLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 40:	// true
+			case 42:	// true
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -895,7 +888,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 41:	// false
+			case 43:	// false
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -905,7 +898,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 42:	// new
+			case 44:	// new
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -915,7 +908,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 43:	// separator
+			case 45:	// separator
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -925,7 +918,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 44:	// as
+			case 46:	// as
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -935,7 +928,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 45:	// import
+			case 47:	// import
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -945,7 +938,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 46:	// set
+			case 48:	// set
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -955,7 +948,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 76:	// reduce
+			case 78:	// reduce
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -965,36 +958,36 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 47:	// brackets (soft)
-			case 48:	// inline (soft)
-			case 49:	// prec (soft)
-			case 50:	// shift (soft)
-			case 51:	// returns (soft)
-			case 52:	// input (soft)
-			case 53:	// left (soft)
-			case 54:	// right (soft)
-			case 55:	// nonassoc (soft)
-			case 56:	// generate (soft)
-			case 57:	// assert (soft)
-			case 58:	// empty (soft)
-			case 59:	// nonempty (soft)
-			case 60:	// global (soft)
-			case 61:	// explicit (soft)
-			case 62:	// lookahead (soft)
-			case 63:	// param (soft)
-			case 64:	// flag (soft)
-			case 65:	// no-eoi (soft)
-			case 66:	// soft (soft)
-			case 67:	// class (soft)
-			case 68:	// interface (soft)
-			case 69:	// void (soft)
-			case 70:	// space (soft)
-			case 71:	// layout (soft)
-			case 72:	// language (soft)
-			case 73:	// lalr (soft)
-			case 74:	// lexer (soft)
-			case 75:	// parser (soft)
-			case 0:	// <default>
+			case 49:	// brackets (soft)
+			case 50:	// inline (soft)
+			case 51:	// prec (soft)
+			case 52:	// shift (soft)
+			case 53:	// returns (soft)
+			case 54:	// input (soft)
+			case 55:	// left (soft)
+			case 56:	// right (soft)
+			case 57:	// nonassoc (soft)
+			case 58:	// generate (soft)
+			case 59:	// assert (soft)
+			case 60:	// empty (soft)
+			case 61:	// nonempty (soft)
+			case 62:	// global (soft)
+			case 63:	// explicit (soft)
+			case 64:	// lookahead (soft)
+			case 65:	// param (soft)
+			case 66:	// flag (soft)
+			case 67:	// no-eoi (soft)
+			case 68:	// soft (soft)
+			case 69:	// class (soft)
+			case 70:	// interface (soft)
+			case 71:	// void (soft)
+			case 72:	// space (soft)
+			case 73:	// layout (soft)
+			case 74:	// language (soft)
+			case 75:	// lalr (soft)
+			case 76:	// lexer (soft)
+			case 77:	// parser (soft)
+			case 2:	// <default>
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;

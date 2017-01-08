@@ -159,19 +159,19 @@ public class XmlLexer {
 		1, 2
 	};
 
-	private static final int tmFirstRule = -4;
+	private static final int tmFirstRule = -2;
 
-	private static final int[] tmRuleSymbol = unpack_int(11,
-		"\1\0\2\0\3\0\4\0\5\0\5\0\6\0\7\0\10\0\11\0\12\0");
+	private static final int[] tmRuleSymbol = unpack_int(13,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\5\0\6\0\7\0\10\0\11\0\12\0");
 
 	private static final int tmClassesCount = 15;
 
 	private static final short[] tmGoto = unpack_vc_short(300,
-		"\1\ufffe\1\10\1\1\14\10\3\ufffb\1\ufffd\13\ufffb\4\uffff\1\3\16\uffff\1\4\13\uffff" +
-		"\3\4\1\5\12\4\1\uffff\3\4\1\6\12\4\1\uffff\4\4\1\7\11\4\17\ufffa\1\ufffc\1\10\1\ufffc" +
-		"\14\10\5\uffff\1\23\1\21\1\17\1\16\1\15\1\14\1\13\1\uffff\2\12\15\ufff2\2\12\4\ufff9" +
-		"\1\13\6\ufff9\2\13\2\ufff9\17\ufff3\17\ufff4\17\ufff5\1\uffff\6\17\1\20\5\17\1\uffff" +
-		"\1\17\17\ufff7\1\uffff\5\21\1\22\6\21\1\uffff\1\21\17\ufff8\17\ufff6");
+		"\1\ufffd\1\10\1\1\14\10\3\ufffb\1\uffff\13\ufffb\4\ufffe\1\3\16\ufffe\1\4\13\ufffe" +
+		"\3\4\1\5\12\4\1\ufffe\3\4\1\6\12\4\1\ufffe\4\4\1\7\11\4\17\ufffa\1\ufffc\1\10\1\ufffc" +
+		"\14\10\5\ufffe\1\23\1\21\1\17\1\16\1\15\1\14\1\13\1\ufffe\2\12\15\ufff2\2\12\4\ufff9" +
+		"\1\13\6\ufff9\2\13\2\ufff9\17\ufff3\17\ufff4\17\ufff5\1\ufffe\6\17\1\20\5\17\1\ufffe" +
+		"\1\17\17\ufff7\1\ufffe\5\21\1\22\6\21\1\ufffe\1\21\17\ufff8\17\ufff6");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -210,13 +210,13 @@ public class XmlLexer {
 			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state > tmFirstRule && state < -2) {
+				if (state > tmFirstRule && state < 0) {
 					token.endoffset = currOffset;
-					state = (-3 - state) * 2;
+					state = (-1 - state) * 2;
 					backupRule = tmBacktracking[state++];
 					state = tmBacktracking[state];
 				}
-				if (state == -1 && chr == -1) {
+				if (state == tmFirstRule && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
 					token.value = null;
@@ -224,7 +224,7 @@ public class XmlLexer {
 					token.offset = currOffset;
 					break tokenloop;
 				}
-				if (state >= -1 && chr != -1) {
+				if (state >= tmFirstRule && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
@@ -239,20 +239,12 @@ public class XmlLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
 			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
+
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
 
 		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
@@ -272,25 +264,25 @@ public class XmlLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 1: // '<': /</
+			case 3: // '<': /</
 				state = States.inTag;
 				break;
-			case 2: // _skipcomment: /<!\-\-([^\-]|\-[^\-]|\-\-[^>])*\-\->/
+			case 4: // _skipcomment: /<!\-\-([^\-]|\-[^\-]|\-\-[^>])*\-\->/
 				spaceToken = true;
 				break;
-			case 3: // identifier: /[a-zA-Z_][A-Za-z_0-9\-]*/
+			case 5: // identifier: /[a-zA-Z_][A-Za-z_0-9\-]*/
 				{ token.value = tokenText(); }
 				break;
-			case 4: // ccon: /"[^\n"]*"/
+			case 6: // ccon: /"[^\n"]*"/
 				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
-			case 5: // ccon: /'[^\n']*'/
+			case 7: // ccon: /'[^\n']*'/
 				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
-			case 6: // '>': />/
+			case 8: // '>': />/
 				state = States.initial;
 				break;
-			case 10: // _skip: /[\t\r\n ]+/
+			case 12: // _skip: /[\t\r\n ]+/
 				spaceToken = true;
 				break;
 		}

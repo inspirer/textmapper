@@ -406,18 +406,17 @@ public class GrammarIxFactory extends JavaIxFactory {
 		public Object getProperty(SourceElement caller, String propertyName)
 				throws EvaluationException {
 			if ("rules".equals(propertyName)) {
-				GrammarRules gr = rules.get(grammar);
-				if (gr == null) {
-					gr = new GrammarRules(grammar);
-					rules.put(grammar, gr);
-				}
-				return gr;
+				return rules.computeIfAbsent(grammar, k -> new GrammarRules(grammar));
 			}
 			if ("lexerRuleTokens".equals(propertyName)) {
 				LexerRule[] lexerRules = grammar.getLexerRules();
-				int[] result = new int[lexerRules.length];
+				int[] result = new int[lexerRules.length+2];
+				result[0] = grammar.getInvalidToken() != null
+						? grammar.getInvalidToken().getIndex()
+						: -1;
+				result[1] = grammar.getEoi().getIndex();
 				for (int i = 0; i < lexerRules.length; i++) {
-					result[i] = lexerRules[i].getSymbol().getIndex();
+					result[i+2] = lexerRules[i].getSymbol().getIndex();
 				}
 				return result;
 			}

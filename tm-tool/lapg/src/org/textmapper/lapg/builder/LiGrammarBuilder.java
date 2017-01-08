@@ -650,6 +650,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		computeSets(expansionContext, setsArr);
 
 		LiSymbol error = (LiSymbol) symScope.resolve(Symbol.ERROR.text());
+		LiSymbol invalidToken = (LiSymbol) symScope.resolve(Symbol.INVALID_TOKEN.text());
 		symScope.assignNames();
 		symScope.sort();
 
@@ -681,7 +682,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr,
 				patternsArr, setsArr,
-				statesArr, inputArr, eoi, error,
+				statesArr, inputArr, eoi, error, invalidToken,
 				terminals, grammarSymbols, problemsArr);
 	}
 

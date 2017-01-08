@@ -165,27 +165,27 @@ public class JsonLexer {
 		8, 5, 8, 2
 	};
 
-	private static final int tmFirstRule = -5;
+	private static final int tmFirstRule = -3;
 
-	private static final int[] tmRuleSymbol = unpack_int(12,
-		"\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0");
+	private static final int[] tmRuleSymbol = unpack_int(14,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0");
 
 	private static final int tmClassesCount = 29;
 
 	private static final short[] tmGoto = unpack_vc_short(1044,
-		"\1\ufffe\1\uffff\1\43\1\42\1\41\1\40\1\37\1\36\1\27\2\uffff\1\26\1\25\1\uffff\1\21" +
-		"\1\uffff\1\15\2\uffff\1\10\2\uffff\1\7\3\uffff\1\1\2\uffff\14\ufff3\1\1\1\ufffd\4" +
-		"\ufff3\1\ufffc\7\ufff3\1\1\1\ufffc\1\ufff3\13\uffff\1\4\1\3\15\uffff\1\3\1\uffff" +
-		"\1\4\14\ufff3\1\3\15\ufff3\1\3\2\ufff3\14\uffff\1\3\15\uffff\1\3\16\uffff\1\6\15" +
-		"\uffff\1\6\2\uffff\14\ufff3\1\6\5\ufff3\1\ufffc\7\ufff3\1\6\1\ufffc\1\ufff3\26\ufff5" +
-		"\1\7\6\ufff5\24\uffff\1\11\27\uffff\1\12\42\uffff\1\13\31\uffff\1\14\12\uffff\35" +
-		"\ufff0\21\uffff\1\16\25\uffff\1\17\44\uffff\1\20\12\uffff\35\ufff1\12\uffff\1\22" +
-		"\41\uffff\1\23\34\uffff\1\24\15\uffff\35\ufff2\15\ufff3\1\ufffd\4\ufff3\1\ufffc\10" +
-		"\ufff3\1\ufffc\1\ufff3\14\uffff\1\25\15\uffff\1\1\3\uffff\7\27\1\35\1\30\23\27\10" +
-		"\uffff\2\27\1\31\3\uffff\1\27\1\uffff\2\27\1\uffff\1\27\3\uffff\1\27\1\uffff\1\27" +
-		"\17\uffff\1\32\5\uffff\3\32\3\uffff\4\32\15\uffff\1\33\5\uffff\3\33\3\uffff\4\33" +
-		"\15\uffff\1\34\5\uffff\3\34\3\uffff\4\34\15\uffff\1\27\5\uffff\3\27\3\uffff\4\27" +
-		"\1\uffff\35\ufff4\35\ufff6\35\ufff7\35\ufff8\35\ufff9\35\ufffa\35\ufffb");
+		"\1\ufffc\1\ufffd\1\43\1\42\1\41\1\40\1\37\1\36\1\27\2\ufffd\1\26\1\25\1\ufffd\1\21" +
+		"\1\ufffd\1\15\2\ufffd\1\10\2\ufffd\1\7\3\ufffd\1\1\2\ufffd\14\ufff3\1\1\1\uffff\4" +
+		"\ufff3\1\ufffe\7\ufff3\1\1\1\ufffe\1\ufff3\13\ufffd\1\4\1\3\15\ufffd\1\3\1\ufffd" +
+		"\1\4\14\ufff3\1\3\15\ufff3\1\3\2\ufff3\14\ufffd\1\3\15\ufffd\1\3\16\ufffd\1\6\15" +
+		"\ufffd\1\6\2\ufffd\14\ufff3\1\6\5\ufff3\1\ufffe\7\ufff3\1\6\1\ufffe\1\ufff3\26\ufff5" +
+		"\1\7\6\ufff5\24\ufffd\1\11\27\ufffd\1\12\42\ufffd\1\13\31\ufffd\1\14\12\ufffd\35" +
+		"\ufff0\21\ufffd\1\16\25\ufffd\1\17\44\ufffd\1\20\12\ufffd\35\ufff1\12\ufffd\1\22" +
+		"\41\ufffd\1\23\34\ufffd\1\24\15\ufffd\35\ufff2\15\ufff3\1\uffff\4\ufff3\1\ufffe\10" +
+		"\ufff3\1\ufffe\1\ufff3\14\ufffd\1\25\15\ufffd\1\1\3\ufffd\7\27\1\35\1\30\23\27\10" +
+		"\ufffd\2\27\1\31\3\ufffd\1\27\1\ufffd\2\27\1\ufffd\1\27\3\ufffd\1\27\1\ufffd\1\27" +
+		"\17\ufffd\1\32\5\ufffd\3\32\3\ufffd\4\32\15\ufffd\1\33\5\ufffd\3\33\3\ufffd\4\33" +
+		"\15\ufffd\1\34\5\ufffd\3\34\3\ufffd\4\34\15\ufffd\1\27\5\ufffd\3\27\3\ufffd\4\27" +
+		"\1\ufffd\35\ufff4\35\ufff6\35\ufff7\35\ufff8\35\ufff9\35\ufffa\35\ufffb");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -224,13 +224,13 @@ public class JsonLexer {
 			int backupRule = -1;
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state > tmFirstRule && state < -2) {
+				if (state > tmFirstRule && state < 0) {
 					token.endoffset = currOffset;
-					state = (-3 - state) * 2;
+					state = (-1 - state) * 2;
 					backupRule = tmBacktracking[state++];
 					state = tmBacktracking[state];
 				}
-				if (state == -1 && chr == -1) {
+				if (state == tmFirstRule && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
 					token.value = null;
@@ -238,7 +238,7 @@ public class JsonLexer {
 					token.offset = currOffset;
 					break tokenloop;
 				}
-				if (state >= -1 && chr != -1) {
+				if (state >= tmFirstRule && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
@@ -253,20 +253,12 @@ public class JsonLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
 			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
+
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
 
 		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
@@ -286,7 +278,7 @@ public class JsonLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 6: // space: /[\t\r\n ]+/
+			case 8: // space: /[\t\r\n ]+/
 				spaceToken = true;
 				break;
 		}

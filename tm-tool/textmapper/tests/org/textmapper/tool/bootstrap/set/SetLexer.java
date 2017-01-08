@@ -133,8 +133,8 @@ public class SetLexer {
 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(13,
-		"\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0");
+	private static final int[] tmRuleSymbol = unpack_int(15,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0");
 
 	private static final int tmClassesCount = 15;
 
@@ -201,22 +201,14 @@ public class SetLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 

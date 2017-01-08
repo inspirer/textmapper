@@ -192,9 +192,9 @@ public class TypesLexer {
 		29, 29, 8, 14, 7, 9, 29, 29, 29, 29, 29, 23, 1, 24
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(27,
-		"\1\0\2\0\3\0\4\0\5\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20\0\21" +
-		"\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0");
+	private static final int[] tmRuleSymbol = unpack_int(29,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16" +
+		"\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0");
 
 	private static final int tmClassesCount = 32;
 
@@ -269,22 +269,14 @@ public class TypesLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 
@@ -302,21 +294,21 @@ public class TypesLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 0:
+			case 2:
 				return createIdentifierToken(token, ruleIndex);
-			case 1: // scon: /"([^\n\\"]|\\.)*"/
+			case 3: // scon: /"([^\n\\"]|\\.)*"/
 				{ token.value = unescape(tokenText(), 1, tokenSize()-1); }
 				break;
-			case 2: // icon: /\-?[0-9]+/
+			case 4: // icon: /\-?[0-9]+/
 				{ token.value = Integer.parseInt(tokenText()); }
 				break;
-			case 3: // bcon: /true|false/
+			case 5: // bcon: /true|false/
 				{ token.value = tokenText().equals("true"); }
 				break;
-			case 4: // _skip: /[\n\t\r ]+/
+			case 6: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
-			case 5: // _skip: /#.*/
+			case 7: // _skip: /#.*/
 				spaceToken = true;
 				break;
 		}
@@ -325,13 +317,13 @@ public class TypesLexer {
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<>();
 	static {
-		subTokensOfIdentifier.put("class", 20);
-		subTokensOfIdentifier.put("extends", 21);
-		subTokensOfIdentifier.put("int", 22);
-		subTokensOfIdentifier.put("bool", 23);
-		subTokensOfIdentifier.put("string", 24);
-		subTokensOfIdentifier.put("set", 25);
-		subTokensOfIdentifier.put("choice", 26);
+		subTokensOfIdentifier.put("class", 22);
+		subTokensOfIdentifier.put("extends", 23);
+		subTokensOfIdentifier.put("int", 24);
+		subTokensOfIdentifier.put("bool", 25);
+		subTokensOfIdentifier.put("string", 26);
+		subTokensOfIdentifier.put("set", 27);
+		subTokensOfIdentifier.put("choice", 28);
 	}
 
 	protected boolean createIdentifierToken(Span token, int ruleIndex) {
@@ -342,7 +334,7 @@ public class TypesLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 0:	// <default>
+			case 2:	// <default>
 				{ token.value = tokenText(); }
 				break;
 		}

@@ -77,7 +77,7 @@ public class GenericLexer {
 		tmClassesCount = lexerData.getNchars();
 		tmStateMap = lexerData.getGroupset();
 		tmBacktracking = lexerData.getBacktracking();
-		tmFirstRule = -3 - tmBacktracking.length/2;
+		tmFirstRule = -1 - tmBacktracking.length/2;
 		reset(input);
 	}
 
@@ -164,13 +164,13 @@ public class GenericLexer {
 			int backupRule = -1;
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state > tmFirstRule && state < -2) {
+				if (state > tmFirstRule && state < 0) {
 					token.endoffset = currOffset;
-					state = (-3 - state) * 2;
+					state = (-1 - state) * 2;
 					backupRule = tmBacktracking[state++];
 					state = tmBacktracking[state];
 				}
-				if (state == -1 && chr == -1) {
+				if (state == tmFirstRule && chr == -1) {
 					token.endoffset = currOffset;
 					token.symbol = 0;
 					token.value = null;
@@ -178,7 +178,7 @@ public class GenericLexer {
 					token.offset = currOffset;
 					break tokenloop;
 				}
-				if (state >= -1 && chr != -1) {
+				if (state >= tmFirstRule && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
@@ -193,20 +193,12 @@ public class GenericLexer {
 			}
 			token.endoffset = currOffset;
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
 			token.symbol = tmRuleSymbol[tmFirstRule - state];
 			token.value = null;
+
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+			}
 
 		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		return token;
@@ -224,15 +216,17 @@ public class GenericLexer {
 	}
 
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
-		int lexemeKind = grammar.getLexerRules()[ruleIndex].getKind();
+		int lexemeKind = ruleIndex > 1 ? grammar.getLexerRules()[ruleIndex-2].getKind() : LexerRule.KIND_NONE;
 		return lexemeKind != LexerRule.KIND_SPACE;
 	}
 
 	private static int[] getRuleSymbols(Grammar grammar) {
 		LexerRule[] lexerRules = grammar.getLexerRules();
-		int[] result = new int[lexerRules.length];
+		int[] result = new int[lexerRules.length + 2];
+		result[0] = grammar.getInvalidToken() != null ? grammar.getInvalidToken().getIndex() : -1;
+		result[1] = grammar.getEoi().getIndex();
 		for (int i = 0; i < lexerRules.length; i++) {
-			result[i] = lexerRules[i].getSymbol().getIndex();
+			result[i + 2] = lexerRules[i].getSymbol().getIndex();
 		}
 		return result;
 	}

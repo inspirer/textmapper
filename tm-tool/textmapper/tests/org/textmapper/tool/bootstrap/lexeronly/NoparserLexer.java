@@ -129,8 +129,8 @@ public abstract class NoparserLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 7
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(5,
-		"\1\0\2\0\2\0\2\0\3\0");
+	private static final int[] tmRuleSymbol = unpack_int(7,
+		"\uffff\uffff\0\0\1\0\2\0\2\0\2\0\3\0");
 
 	private static final int tmClassesCount = 8;
 
@@ -198,22 +198,14 @@ public abstract class NoparserLexer {
 				}
 			}
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 

@@ -186,7 +186,7 @@ ${end-}
 			for (state = ${self->tmStateMapExists() ? 'tmStateMap[this.state]' : 'this.state'}; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 ${if self->tmWithBacktracking()-}
-				if (state > tmFirstRule && state < -2) {
+				if (state > tmFirstRule && state < 0) {
 ${if opts.endpositions.contains('offset')-}
 					token.endoffset = currOffset;
 ${end-}
@@ -196,12 +196,12 @@ ${end-}
 ${if opts.endpositions.contains('column')-}
 					token.endcolumn = currColumn;
 ${end-}
-					state = (-3 - state) * 2;
+					state = (-1 - state) * 2;
 					backupRule = tmBacktracking[state++];
 					state = tmBacktracking[state];
 				}
 ${end-}
-				if (state == -1 && chr == -1) {
+				if (state == ${!self->tmWithBacktracking() ? '-1' : 'tmFirstRule'} && chr == -1) {
 ${if opts.endpositions.contains('offset')-}
 					token.endoffset = currOffset;
 ${end-}
@@ -219,7 +219,7 @@ ${if opts.positions.contains('offset')-}
 ${end-}
 					break tokenloop;
 				}
-				if (state >= -1 && chr != -1) {
+				if (state >= ${!self->tmWithBacktracking() ? '-1' : 'tmFirstRule'} && chr != -1) {
 ${util.shiftRight(self->advanceChar(true, false), 3)-}
 				}
 			}
@@ -233,22 +233,14 @@ ${if opts.endpositions.contains('column')-}
 			token.endcolumn = currColumn;
 ${end-}
 
-			if (state == -1) {
-				reporter.error(java.text.@MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText())${call java.err_location('token', 'this') });
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[${!self->tmWithBacktracking() ? '-3' : 'tmFirstRule'} - state];
+			token.symbol = tmRuleSymbol[${!self->tmWithBacktracking() ? '-1' : 'tmFirstRule'} - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, ${!self->tmWithBacktracking() ? '-3' : 'tmFirstRule'} - state));
+			if (token.symbol == -1) {
+				reporter.error(java.text.@MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText())${call java.err_location('token', 'this') });
+			}
+
+		} while (token.symbol == -1 || !createToken(token, ${!self->tmWithBacktracking() ? '-1' : 'tmFirstRule'} - state));
 ${call onNext-}
 		return token;
 	}
@@ -274,10 +266,10 @@ ${if self->hasLexerActions()-}
 		switch (ruleIndex) {
 ${foreach rule in syntax.lexerRules-}
 ${if rule.kindAsText == 'class'-}
-			case ${rule.index}:
+			case ${rule.index+2}:
 				return create${rule->classRuleName()}Token(token, ruleIndex);
 ${else if rule->hasActions() && !rule.classRule-}
-			case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
+			case ${rule.index+2}: // ${rule.symbol.name}: /${rule.regexp}/
 ${call lexerAction('token.value', 'token.symbol') for rule-}
 				break;
 ${end-}
@@ -294,7 +286,7 @@ ${if classRule->classHasInstances()-}
 	private static java.util.@Map<String,Integer> subTokensOf${classRule->classRuleName()} = new java.util.@HashMap<${if !opts.java8}String,Integer${end}>();
 	static {
 ${foreach instance in classRule->classInstances()-}
-		subTokensOf${classRule->classRuleName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index});
+		subTokensOf${classRule->classRuleName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index+2});
 ${end-}
 	}
 ${end-}
@@ -311,15 +303,15 @@ ${if classRule->classInstances().exists(x|x->hasActions()) || classRule->hasActi
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 ${foreach instance in classRule->classInstances().select(x|x->hasActions())-}
-			case ${instance.index}:	// ${instance.regexp.constantValue}
+			case ${instance.index+2}:	// ${instance.regexp.constantValue}
 ${call lexerAction('token.value', 'token.symbol') for instance-}
 				break;
 ${end-}
 ${if classRule->hasActions()-}
 ${foreach instance in classRule->classInstances().select(x|!x.action && x.kindAsText == 'soft')-}
-			case ${instance.index}:	// ${instance.regexp.constantValue} (soft)
+			case ${instance.index+2}:	// ${instance.regexp.constantValue} (soft)
 ${end-}
-			case ${classRule.index}:	// <default>
+			case ${classRule.index+2}:	// <default>
 ${call lexerAction('token.value', 'token.symbol') for classRule-}
 				break;
 ${end-}
@@ -422,7 +414,7 @@ ${if self->tmWithBacktracking()-}
 		${util.format(lex.backtracking, 16, 2)}
 	};
 
-	private static final int tmFirstRule = ${-3 - (lex.backtracking.length / 2)};
+	private static final int tmFirstRule = ${-1 - (lex.backtracking.length / 2)};
 
 ${end-}
 	private static final int[] tmRuleSymbol = ${syntax.lexerRuleTokens->java_pack.packInt()};

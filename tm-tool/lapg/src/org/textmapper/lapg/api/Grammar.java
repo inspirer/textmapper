@@ -44,5 +44,7 @@ public interface Grammar extends UserDataHolder {
 
 	Symbol getError();
 
+	Symbol getInvalidToken();
+
 	Problem[] getProblems();
 }

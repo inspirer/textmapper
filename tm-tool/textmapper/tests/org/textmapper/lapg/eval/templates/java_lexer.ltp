@@ -18,7 +18,7 @@ ${template lexerCtor}
 		tmClassesCount = lexerData.getNchars();
 		tmStateMap = lexerData.getGroupset();
 		tmBacktracking = lexerData.getBacktracking();
-		tmFirstRule = -3 - tmBacktracking.length/2;
+		tmFirstRule = -1 - tmBacktracking.length/2;
 		reset(input);
 	}
 ${end}
@@ -32,7 +32,7 @@ ${end}
 
 ${template createToken}
 	protected boolean createToken(${self->java.symbolClassName()} token, int ruleIndex) throws java.io.@IOException {
-		int lexemeKind = grammar.getLexerRules()[ruleIndex].getKind();
+		int lexemeKind = ruleIndex > 1 ? grammar.getLexerRules()[ruleIndex-2].getKind() : org.textmapper.lapg.api.@LexerRule.KIND_NONE;
 		return lexemeKind != org.textmapper.lapg.api.@LexerRule.KIND_SPACE;
 	}
 ${end}
@@ -50,9 +50,11 @@ ${end}
 ${template unpackRoutines}
 	private static int[] getRuleSymbols(org.textmapper.lapg.api.@Grammar grammar) {
 		org.textmapper.lapg.api.@LexerRule[] lexerRules = grammar.getLexerRules();
-		int[] result = new int[lexerRules.length];
+		int[] result = new int[lexerRules.length + 2];
+		result[0] = grammar.getInvalidToken() != null ? grammar.getInvalidToken().getIndex() : -1;
+		result[1] = grammar.getEoi().getIndex();
 		for (int i = 0; i < lexerRules.length; i++) {
-			result[i] = lexerRules[i].getSymbol().getIndex();
+			result[i + 2] = lexerRules[i].getSymbol().getIndex();
 		}
 		return result;
 	}

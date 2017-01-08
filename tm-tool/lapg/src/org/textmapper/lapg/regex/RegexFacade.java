@@ -42,7 +42,7 @@ public class RegexFacade {
 		if (result.hasErrors()) {
 			RegexDefProblem problem = result.getErrors().get(0);
 			String message = problem.getMessage();
-			if (message.startsWith("syntax error") || message.startsWith("invalid lexeme at")) {
+			if (message.startsWith("syntax error") || message.startsWith("invalid token at")) {
 				if (problem.getOffset() >= regex.length()) {
 					message = "regexp is incomplete";
 				} else {

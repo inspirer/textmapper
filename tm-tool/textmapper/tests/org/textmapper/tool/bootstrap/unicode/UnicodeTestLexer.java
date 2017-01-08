@@ -214,8 +214,8 @@ public class UnicodeTestLexer {
 		return res;
 	}
 
-	private static final int[] tmRuleSymbol = unpack_int(4,
-		"\1\0\2\0\3\0\4\0");
+	private static final int[] tmRuleSymbol = unpack_int(6,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0");
 
 	private static final int tmClassesCount = 8;
 
@@ -279,22 +279,14 @@ public class UnicodeTestLexer {
 				}
 			}
 
-			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset);
-				token.symbol = -1;
-				continue;
-			}
-
-			if (state == -2) {
-				token.symbol = Tokens.eoi;
-				token.value = null;
-				break tokenloop;
-			}
-
-			token.symbol = tmRuleSymbol[-3 - state];
+			token.symbol = tmRuleSymbol[-1 - state];
 			token.value = null;
 
-		} while (token.symbol == -1 || !createToken(token, -3 - state));
+			if (token.symbol == -1) {
+				reporter.error(MessageFormat.format("invalid token at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset);
+			}
+
+		} while (token.symbol == -1 || !createToken(token, -1 - state));
 		return token;
 	}
 
@@ -312,16 +304,16 @@ public class UnicodeTestLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 0: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
+			case 2: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
 				{ token.value = tokenText(); }
 				break;
-			case 1: // icon: /\-?[0-9]+/
+			case 3: // icon: /\-?[0-9]+/
 				{ token.value = Integer.parseInt(tokenText()); }
 				break;
-			case 2: // string: /"({schar})+"/
+			case 4: // string: /"({schar})+"/
 				{ token.value = tokenText(); }
 				break;
-			case 3: // _skip: /[\n\t\r ]+/
+			case 5: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
 		}

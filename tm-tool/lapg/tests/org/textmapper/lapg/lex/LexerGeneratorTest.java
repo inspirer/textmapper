@@ -41,7 +41,8 @@ public class LexerGeneratorTest {
 			new TestRule(1, 0, "number", LEXER_STATES[0], "[0-9]+", "1", "12", "323", "2111111"),
 			new TestRule(2, 0, "hex", LEXER_STATES[0], "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
 			new TestRule(3, 0, "hex", LEXER_STATES[0], "\\n|\\t|\\r", "\n", "\t", "\r"),
-			new TestRule(4, 0, "hex", LEXER_STATES[0], "[\\uAAAA-\\uAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
+			new TestRule(4, 0, "hex", LEXER_STATES[0], "[\\uAAAA-\\uAABB]", "\uaab0", "\uaabb",
+					"\uaaaa", "\uaaaf"),
 	};
 
 	TestRule[] ERRINPUT = {
@@ -163,11 +164,13 @@ public class LexerGeneratorTest {
 
 	@Test
 	public void testGenerator() {
-		LexerData lt = LexerGenerator.generate(LEXER_STATES, INPUT1, NO_PATTERNS, new TestStatus());
+		LexerData lt = LexerGenerator.generate(LEXER_STATES, INPUT1, NO_PATTERNS, new TestStatus
+				());
 		for (TestRule tl : INPUT1) {
 			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s, INPUT1);
-				assertEquals("For " + s + " Expected " + tl.getRegexp().toString() + ";", tl.index, res);
+				assertEquals("For " + s + " Expected " + tl.getRegexp().toString() + ";", tl
+						.index, res);
 			}
 		}
 	}
@@ -188,13 +191,14 @@ public class LexerGeneratorTest {
 		int state = 0;
 		int index = 0;
 
-		final int tmFirstRule = -3 - lr.getBacktracking().length/2;
+		final int tmFirstRule = -1 - lr.getBacktracking().length / 2;
 		while (state >= 0) {
 			int chr = index < s.length() ? s.codePointAt(index) : 0;
 			index++;
-			state = lr.getChange()[state * lr.getNchars() + (chr >= 0 && chr < lr.getChar2no().length ? lr.getChar2no()[chr] : 1)];
-			if (state < -2 && state > tmFirstRule) {
-				state = (-3 - state) * 2;
+			state = lr.getChange()[state * lr.getNchars() + (chr >= 0 && chr < lr.getChar2no()
+					.length ? lr.getChar2no()[chr] : 1)];
+			if (state < 0 && state > tmFirstRule) {
+				state = (-1 - state) * 2;
 				// TODO test backtracking
 				state = lr.getBacktracking()[state + 1];
 			}
@@ -202,13 +206,10 @@ public class LexerGeneratorTest {
 		if (index != s.length() + 1) {
 			return -1;
 		}
-		if (state == -1) {
+		if (state == tmFirstRule || state == tmFirstRule - 1) {
 			return -1;
 		}
-		if (state == -2) {
-			return -1;
-		}
-		return lexerRules[tmFirstRule-state].getSymbol().getIndex();
+		return lexerRules[tmFirstRule - state - 2].getSymbol().getIndex();
 	}
 
 	private static class TestLexerState implements LexerState {
@@ -246,7 +247,8 @@ public class LexerGeneratorTest {
 		private final String regexp;
 		private final String[] samples;
 
-		public TestRule(int index, int prio, String name, LexerState initial, String regexp, String... samples) {
+		public TestRule(int index, int prio, String name, LexerState initial, String regexp,
+						String... samples) {
 			this.index = index;
 			this.prio = prio;
 			this.name = LapgCore.name(name);

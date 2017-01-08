@@ -51,7 +51,7 @@ public class LexerGenerator {
 		State next, hash;
 		int number;
 		int[] set;
-		// -1 error, -2 succeed, -3... lexer rule #0
+		// -1 invalid token, -2 eoi, -3... lexer rule #0
 		int[] action;
 		LexerRule defaultRule;
 	}
@@ -537,10 +537,10 @@ public class LexerGenerator {
 			s.number = permutationMap[s.number];
 			for (i = 0; i < s.action.length; i++) {
 				if (s.action[i] >= states) {
-					s.action[i] = -3 - (s.action[i] - states);
+					s.action[i] = -1 - (s.action[i] - states);
 				} else if (s.action[i] >= 0) {
 					s.action[i] = permutationMap[s.action[i]];
-				} else if (s.action[i] < -2) {
+				} else {
 					s.action[i] -= backtrackingStates;
 				}
 			}
