@@ -406,24 +406,24 @@ public class TMLexer {
 
 		} while (token.symbol == -1 || !createToken(token, -state - 3));
 		switch (token.symbol) {
-			case Tokens.Lt:
-				inStatesSelector = (lastTokenLine != tokenLine) || this.state == States.afterColonOrEq;
-				this.state = States.initial;
-				break;
-			case Tokens.Gt:
-				this.state = inStatesSelector ? States.afterGT : States.initial;
-				inStatesSelector = false;
-				break;
-			case Tokens.Assign:
-			case Tokens.Colon:
-				this.state = States.afterColonOrEq;
-				break;
-			case Tokens._skip:
-			case Tokens._skip_comment:
-			case Tokens._skip_multiline:
-				break;
-			default:
-				this.state = States.initial;
+		case Tokens.Lt:
+			inStatesSelector = (lastTokenLine != tokenLine) || this.state == States.afterColonOrEq;
+			this.state = States.initial;
+			break;
+		case Tokens.Gt:
+			this.state = inStatesSelector ? States.afterGT : States.initial;
+			inStatesSelector = false;
+			break;
+		case Tokens.Assign:
+		case Tokens.Colon:
+			this.state = States.afterColonOrEq;
+			break;
+		case Tokens._skip:
+		case Tokens._skip_comment:
+		case Tokens._skip_multiline:
+			break;
+		default:
+			this.state = States.initial;
 		}
 		return token;
 	}

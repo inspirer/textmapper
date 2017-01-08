@@ -2,7 +2,7 @@ language template_vars_err(null);
 
 :: lexer
 
-identifier(String): /[a-zA-Z_]+/
+identifier {String}: /[a-zA-Z_]+/
 
 '=':        /=/
 ':':        /:/

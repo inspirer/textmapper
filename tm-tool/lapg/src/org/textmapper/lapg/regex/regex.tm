@@ -32,23 +32,23 @@ genCopyright = true
 
 [initial, afterChar, inSet]
 
-char(Integer): /[^()\[\]\.|\\\/*?+-]/			{ $$ = tokenText().codePointAt(0); quantifierReady(); }
-escaped(Integer): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
+char {Integer}: /[^()\[\]\.|\\\/*?+-]/			{ $$ = tokenText().codePointAt(0); quantifierReady(); }
+escaped {Integer}: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
 												{ $$ = (int) tokenText().charAt(1); quantifierReady(); }
-escaped(Integer): /\\a/							{ $$ = (int) 7; quantifierReady(); }
-escaped(Integer): /\\b/							{ $$ = (int) '\b'; quantifierReady(); }
-escaped(Integer): /\\f/							{ $$ = (int) '\f'; quantifierReady(); }
-escaped(Integer): /\\n/							{ $$ = (int) '\n'; quantifierReady(); }
-escaped(Integer): /\\r/							{ $$ = (int) '\r'; quantifierReady(); }
-escaped(Integer): /\\t/							{ $$ = (int) '\t'; quantifierReady(); }
-escaped(Integer): /\\v/							{ $$ = (int) 0xb; quantifierReady(); }
-escaped(Integer): /\\[0-7][0-7][0-7]/			{ $$ = RegexUtil.unescapeOct(tokenText().substring(1)); quantifierReady(); }
+escaped {Integer}: /\\a/							{ $$ = (int) 7; quantifierReady(); }
+escaped {Integer}: /\\b/							{ $$ = (int) '\b'; quantifierReady(); }
+escaped {Integer}: /\\f/							{ $$ = (int) '\f'; quantifierReady(); }
+escaped {Integer}: /\\n/							{ $$ = (int) '\n'; quantifierReady(); }
+escaped {Integer}: /\\r/							{ $$ = (int) '\r'; quantifierReady(); }
+escaped {Integer}: /\\t/							{ $$ = (int) '\t'; quantifierReady(); }
+escaped {Integer}: /\\v/							{ $$ = (int) 0xb; quantifierReady(); }
+escaped {Integer}: /\\[0-7][0-7][0-7]/			{ $$ = RegexUtil.unescapeOct(tokenText().substring(1)); quantifierReady(); }
 hx = /[0-9A-Fa-f]/
-escaped(Integer): /\\x{hx}{2}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
-escaped(Integer): /\\u{hx}{4}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
-escaped(Integer): /\\U{hx}{8}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
-charclass(String): /\\[wWsSdD]/					{ $$ = tokenText().substring(1); quantifierReady(); }
-charclass(String): /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize() - 1); quantifierReady(); }
+escaped {Integer}: /\\x{hx}{2}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
+escaped {Integer}: /\\u{hx}{4}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
+escaped {Integer}: /\\U{hx}{8}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
+charclass {String}: /\\[wWsSdD]/					{ $$ = tokenText().substring(1); quantifierReady(); }
+charclass {String}: /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize() - 1); quantifierReady(); }
 
 '.':  /\./										{ quantifierReady(); }
 
@@ -65,7 +65,7 @@ op_intersect:	/\{&&\}/
 
 [initial, inSet]
 
-char(Integer): /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
+char {Integer}: /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
 [initial, afterChar]
 
@@ -77,7 +77,7 @@ char(Integer): /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(
 
 '[':	/\[/  => inSet
 '[^':	/\[^/ => inSet
-char(Integer):  /-/								{ $$ = tokenText().codePointAt(0); quantifierReady(); }
+char {Integer}:  /-/								{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
 identifier = /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?/
 
@@ -88,21 +88,21 @@ kw_eoi:			/\{eoi\}/						{ state = 0; }
 
 ']':  /\]/										{ state = 0; quantifierReady(); }
 '-':  /-/
-char(Integer):  /[\(\|\)]/						{ $$ = tokenText().codePointAt(0); }
+char {Integer}:  /[\(\|\)]/						{ $$ = tokenText().codePointAt(0); }
 
 :: parser
 
-input (RegexAstPart) ::=
+input {RegexAstPart} ::=
 	  pattern
 	| kw_eoi                                    { $$ = new RegexAstChar(-1, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-pattern (RegexAstPart) ::=
+pattern {RegexAstPart} ::=
 	  partsopt									{ $$ = RegexUtil.emptyIfNull($partsopt, source, ${partsopt.offset}); }
 	| left=pattern '|' partsopt					{ $$ = RegexUtil.createOr($left, $partsopt, source, ${partsopt.offset}); }
 ;
 
-part (RegexAstPart) ::=
+part {RegexAstPart} ::=
 	  primitive_part
 	| primitive_part '*'						{ $$ = new RegexAstQuantifier($primitive_part, 0, -1, source, ${left().offset}, ${left().endoffset}); }
 	| primitive_part '+'						{ $$ = new RegexAstQuantifier($primitive_part, 1, -1, source, ${left().offset}, ${left().endoffset}); }
@@ -110,7 +110,7 @@ part (RegexAstPart) ::=
 	| primitive_part quantifier					{ $$ = RegexUtil.createQuantifier($primitive_part, source, ${quantifier.offset}, ${left().endoffset}, reporter); }
 ;
 
-primitive_part (RegexAstPart) ::=
+primitive_part {RegexAstPart} ::=
 	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
 	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
@@ -121,7 +121,7 @@ primitive_part (RegexAstPart) ::=
 	| expand									{ $$ = new RegexAstExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexAstExpand) $$, reporter); }
 ;
 
-setsymbol (RegexAstPart) ::=
+setsymbol {RegexAstPart} ::=
 	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
 	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
@@ -129,7 +129,7 @@ setsymbol (RegexAstPart) ::=
 
 %right char escaped;
 
-charset (java.util.@List<RegexAstPart>) ::=
+charset {java.util.@List<RegexAstPart>} ::=
 	  sym='-'									{ $$ = new java.util.@ArrayList<RegexAstPart>(); ${left()}.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
 	| setsymbol									{ $$ = new java.util.@ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(${left()}, $setsymbol, reporter); }
 	| charset setsymbol							{ RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
@@ -139,7 +139,7 @@ charset (java.util.@List<RegexAstPart>) ::=
 	| charset '-' escaped						{ RegexUtil.applyRange($charset, new RegexAstChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
 ;
 
-parts (RegexAstPart) ::=
+parts {RegexAstPart} ::=
 	  part
 	| list=parts part							{ $$ = RegexUtil.createSequence($list, $part); }
 ;

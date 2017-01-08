@@ -37,8 +37,8 @@ reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
 reChar = /{reFirst}|\*/
 
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(tokenText(), 1, tokenSize()-1); }
-icon(Integer):	/-?[0-9]+/				{ $$ = Integer.parseInt(tokenText()); }
+scon {String}:	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(tokenText(), 1, tokenSize()-1); }
+icon {Integer}:	/-?[0-9]+/				{ $$ = Integer.parseInt(tokenText()); }
 
 eoi:           /%%.*(\r?\n)?/			{ templatesStart = token.endoffset; }
 _skip:         /[\n\r\t ]+/		(space)
@@ -85,7 +85,7 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 
 error:
 
-ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = tokenText(); }
+ID {String}: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = tokenText(); }
 
 Ltrue:  /true/
 Lfalse: /false/
@@ -141,7 +141,7 @@ code:   /\{/                               { skipAction(); token.endoffset = get
 '{':	/\{/
 
 [afterColonOrEq]
-regexp(String): /\/{reFirst}{reChar}*\//   { $$ = tokenText().substring(1, tokenSize()-1); }
+regexp {String}: /\/{reFirst}{reChar}*\//   { $$ = tokenText().substring(1, tokenSize()-1); }
 
 [initial, afterGT]
 '/':    /\//
@@ -474,7 +474,7 @@ literal ::=
 name class ::=
 	  qualified_id ;
 
-qualified_id (String) ::=
+qualified_id {String} ::=
 	  ID
 	| qualified_id '.' ID				{ $$ = $qualified_id + "." + $ID; }
 ;

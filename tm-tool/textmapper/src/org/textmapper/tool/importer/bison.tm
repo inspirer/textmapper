@@ -132,7 +132,7 @@ skip: /%{/					=> prologue   (space) { nesting = 0; lexemeStart = token.offset; 
 skip: /</					=> tag        (space) { nesting = 0; lexemeStart = token.offset; }
 
 [bracedCode]
-'{...}' (String):  /}/
+'{...}' {String}:  /}/
 	{
 		nesting--;
 		if (nesting < 0) {
