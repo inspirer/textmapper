@@ -18,6 +18,9 @@ extraTypes = ["InsertedSemicolon"]
 # Accept end-of-input in all states.
 eoi: /{eoi}/
 
+invalid_token:
+error:
+
 [initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag]
 
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
@@ -109,6 +112,7 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '[': /\[/
 ']': /\]/
 '.': /\./
+invalid_token: /\.\./
 '...': /\.\.\./
 ';': /;/
 ',': /,/
@@ -163,10 +167,12 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 exp = /[eE][+-]?[0-9]+/
 NumericLiteral: /(0+([0-7]*[89][0-9]*)?|[1-9][0-9]*)(\.[0-9]*)?{exp}?/
 NumericLiteral: /\.[0-9]+{exp}?/
-NumericLiteral: /0[Xx]{hex}+/
+NumericLiteral: /0[xX]{hex}+/
 NumericLiteral: /0[oO][0-7]+/
 NumericLiteral: /0+[0-7]+/      1 # (Takes priority over the float rule above)
 NumericLiteral: /0[bB][01]+/
+
+invalid_token: /0[xXbBoO]/
 
 escape = /\\([^1-9xu\n\r\u2028\u2029]|x{hex}{2}|{unicodeEscapeSequence})/
 lineCont = /\\([\n\r\u2028\u2029]|\r\n)/
@@ -227,9 +233,6 @@ jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
 '<': /</
 
 jsxText: /[^{}<>]+/
-
-error:
-invalid_token:
 
 :: parser
 

@@ -816,7 +816,7 @@ var parseTests = []struct {
 	}},
 
 	{js.InvalidToken, []string{
-		`function a() { «0x »}`,
+		`function a() { «0x» }`,
 		`/*fails*/ function a() { «0x»§`,
 	}},
 }

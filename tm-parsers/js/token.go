@@ -14,6 +14,8 @@ const (
 	UNAVAILABLE Token = iota - 1
 	EOI
 
+	INVALID_TOKEN
+	ERROR
 	WHITESPACE
 	MULTILINECOMMENT
 	SINGLELINECOMMENT
@@ -126,8 +128,6 @@ const (
 	JSXSTRINGLITERAL
 	JSXIDENTIFIER
 	JSXTEXT
-	ERROR
-	INVALID_TOKEN
 
 	NumTokens
 )
@@ -135,6 +135,8 @@ const (
 var tokenStr = [...]string{
 	"EOI",
 
+	"INVALID_TOKEN",
+	"ERROR",
 	"WHITESPACE",
 	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",
@@ -247,8 +249,6 @@ var tokenStr = [...]string{
 	"JSXSTRINGLITERAL",
 	"JSXIDENTIFIER",
 	"JSXTEXT",
-	"ERROR",
-	"INVALID_TOKEN",
 }
 
 func (tok Token) String() string {

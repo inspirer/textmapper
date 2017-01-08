@@ -225,9 +225,10 @@ var lexerTests = []struct {
 	}« »</A>`}},
 
 	{js.INVALID_TOKEN, []string{
-		` «.. » `,
+		` «..» `,
 		` «0x»`,
-		` «0x»`,
+		` «0X» `,
+		` «0o» «0b» «0O» «0B»`,
 	}},
 }
 

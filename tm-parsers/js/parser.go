@@ -14,4 +14,4 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 }
 
-const errSymbol = 113
+const errSymbol = 2

@@ -397,7 +397,7 @@ cont:
 	}
 
 	switch token {
-	case 1:
+	case 3:
 		goto restart
 	}
 
