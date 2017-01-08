@@ -84,7 +84,7 @@ restart:
 			ch = mapRune(l.ch)
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state < -1 {
+		if state <= tmFirstRule || state == -2 {
 			break
 		}
 		hash = hash*uint32(31) + uint32(l.ch)
@@ -109,16 +109,15 @@ restart:
 			l.ch = -1 // EOI
 		}
 	}
-	if state >= -2 {
+	if state > tmFirstRule {
 		if state == -1 {
 			return INVALID_TOKEN
-		}
-		if state == -2 {
+		} else {
 			return EOI
 		}
 	}
 
-	token := Token(-state - 3)
+	token := Token(tmFirstRule - state)
 	switch token {
 	case IDENTIFIER:
 		hh := hash & 7

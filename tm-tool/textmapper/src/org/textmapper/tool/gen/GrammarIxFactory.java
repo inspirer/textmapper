@@ -461,16 +461,25 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object callMethod(SourceElement caller, String methodName, Object... args)
 				throws EvaluationException {
-			if (args.length == 1 && "inlineLexerRules".equals(methodName)) {
-				int[] action = (int[]) args[0];
+			if (args.length == 2 && "inlineLexerRules".equals(methodName)) {
+				int tmFirstRule = (Integer) args[0];
+				int[] action = (int[]) args[1];
 				action = Arrays.copyOf(action, action.length);
 				for (int i = 0; i < action.length; i++) {
-					if (action[i] <= -3) {
-						action[i] = -3
-								- grammar.getLexerRules()[-3 - action[i]].getSymbol().getIndex();
+					if (action[i] <= tmFirstRule) {
+						action[i] = tmFirstRule
+								- grammar.getLexerRules()[tmFirstRule - action[i]].getSymbol().getIndex();
 					}
 				}
 				return action;
+			}
+			if (args.length == 1 && "inlineLexerRulesBT".equals(methodName)) {
+				int[] backtracking = (int[]) args[0];
+				backtracking = Arrays.copyOf(backtracking, backtracking.length);
+				for (int i = 0; i < backtracking.length; i+=2) {
+					backtracking[i] = grammar.getLexerRules()[backtracking[i]].getSymbol().getIndex();
+				}
+				return backtracking;
 			}
 			if (args.length == 1 && "rangeFields".equals(methodName)) {
 				return TMDataUtil.getRangeFields(grammar, (String) args[0]);

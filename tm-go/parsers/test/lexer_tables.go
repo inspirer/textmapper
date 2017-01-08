@@ -53,6 +53,7 @@ var tmRuneClass = []uint8{
 }
 
 const tmRuneClassLen = 256
+const tmFirstRule = -3
 
 var tmRuneRanges = []mapRange{
 	{8232, 8234, 16, nil},

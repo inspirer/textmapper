@@ -106,6 +106,8 @@ restart:
 
 	state := tmStateMap[l.State]
 	hash := uint32(0)
+	backupToken := -1
+cont:
 	for state >= 0 {
 		var ch int
 		switch {
@@ -121,7 +123,7 @@ restart:
 			ch = mapRune(l.ch)
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state < -1 {
+		if state <= tmFirstRule || state == -2 {
 			break
 		}
 		hash = hash*uint32(31) + uint32(l.ch)
@@ -149,16 +151,24 @@ restart:
 			l.ch = -1 // EOI
 		}
 	}
-	if state >= -2 {
-		if state == -1 {
-			return INVALID_TOKEN
+	if state > tmFirstRule {
+		if state < -2 {
+			state = (-3 - state) * 2
+			backupToken = tmBacktracking[state]
+			state = tmBacktracking[state+1]
+			goto cont
 		}
-		if state == -2 {
+		if state == -1 {
+			if backupToken >= 0 {
+				// TODO recover
+			}
+			return INVALID_TOKEN
+		} else {
 			return EOI
 		}
 	}
 
-	token := Token(-state - 3)
+	token := Token(tmFirstRule - state)
 	switch token {
 	case IDENTIFIER:
 		hh := hash & 63

@@ -109,6 +109,10 @@ restart:
 ${if self->useCustomMap()-}
 	hash := uint32(0)
 ${end-}
+${if lex.backtracking.length > 0-}
+	${self->backupVar()} := -1
+cont:
+${end-}
 	for state >= 0 {
 		var ch int
 		switch {
@@ -132,7 +136,7 @@ ${else-}
 ${end-}
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state < -1 {
+		if state <= tmFirstRule || state == -2 {
 			break
 		}
 ${if self->useCustomMap()-}
@@ -164,24 +168,36 @@ ${end-}
 			l.ch = -1 // EOI
 		}
 	}
-	if state >= -2 {
+	if state > tmFirstRule {
+${if lex.backtracking.length > 0-}
+		if state < -2 {
+			state = (-3 - state) * 2
+			${self->backupVar()} = tmBacktracking[state]
+			state = tmBacktracking[state+1]
+			goto cont
+		}
+${end-}
 		if state == -1 {
+${if lex.backtracking.length > 0-}
+			if ${self->backupVar()} >= 0 {
+				// TODO recover
+			}
+${end-}
 ${if self->go_token.hasInvalidToken()-}
 			return ${self->go_token.invalidTokenName()}
 ${else-}
 			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
 			goto restart
 ${end-}
-		}
-		if state == -2 {
+		} else {
 			return EOI
 		}
 	}
 
 ${if self->canInlineLexerRules()-}
-	token := Token(-state - 3)
+	token := Token(tmFirstRule-state)
 ${else-}
-	rule := -state - 3
+	rule := tmFirstRule-state
 ${end-}
 ${if self->classRules().exists(it|it->classHasInstances())-}
 	switch ${self->canInlineLexerRules() ? 'token' : 'rule'} {
@@ -318,6 +334,7 @@ var tmRuneClass = []${self->runeClassType()}{
 }
 
 const tmRuneClassLen = 256
+const tmFirstRule = ${-3 - (lex.backtracking.length / 2)}
 
 var tmRuneRanges = []mapRange{
 ${foreach r in util.packAsMapRanges(util.tail(lex.char2no, 256), 256)-}
@@ -332,6 +349,7 @@ var tmRuneClass = []${self->runeClassType()}{
 }
 
 const tmRuneClassLen = ${lex.char2no.length}
+const tmFirstRule = ${-3 - (lex.backtracking.length / 2)}
 ${end-}
 
 var tmStateMap = []int{
@@ -344,9 +362,21 @@ var tmToken = []Token{
 }
 
 ${end-}
-${if change = self->canInlineLexerRules() ? syntax.inlineLexerRules(lex.change) : lex.change, true -}
+${if change = self->canInlineLexerRules()
+              ? syntax.inlineLexerRules(-3 - (lex.backtracking.length / 2), lex.change)
+              : lex.change,
+     true -}
 var tmLexerAction = []int${util.bitsForElement(change)}{
 	${util.format(change, 16, 1)},
+}
+
+${end-}
+${if backtracking = self->canInlineLexerRules()
+                   ? syntax.inlineLexerRulesBT(lex.backtracking)
+                   : lex.backtracking,
+     lex.backtracking.length > 0-}
+var tmBacktracking = []int{
+	${util.format(backtracking, 16, 1)},
 }
 ${end-}
 ${end}
@@ -389,3 +419,5 @@ ${template stateVars}${end}
 ${template initStateVars}${end}
 
 ${cached query useCustomMap() = self->classRules().exists(it|it->classHasInstances())}
+
+${cached query backupVar() = self->canInlineLexerRules() ? 'backupToken' : 'backupRule'}
