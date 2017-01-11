@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
+// ErrorHandler is called every time a lexer or parser is unable to process
+// some part of the input.
+type ErrorHandler func(line, offset, len int, msg string)
+
 // Parser is a table-driven LALR parser for Javascript.
 type Parser struct {
 	err      ErrorHandler

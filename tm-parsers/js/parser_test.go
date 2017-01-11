@@ -830,7 +830,7 @@ func TestParser(t *testing.T) {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.nt.String(), input, t)
-			l.Init(test.Source(), test.Error)
+			l.Init(test.Source())
 			p.Init(test.Error, func(t js.NodeType, offset, endoffset int) {
 				if t == tc.nt {
 					test.Consume(offset, endoffset)
@@ -855,7 +855,7 @@ func BenchmarkParser(b *testing.B) {
 
 	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
 	for i := 0; i < b.N; i++ {
-		l.Init(jsBenchmarkCode, onError)
+		l.Init(jsBenchmarkCode)
 		p.Parse(l)
 	}
 	b.SetBytes(int64(len(jsBenchmarkCode)))

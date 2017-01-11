@@ -511,7 +511,7 @@ public class LexerGenerator {
 		this.backtracking = new int[checkpoints.size() * 2];
 		for (Entry<Checkpoint, Integer> entry : checkpoints.entrySet()) {
 			i = entry.getValue() * 2;
-			this.backtracking[i++] = entry.getKey().rule;
+			this.backtracking[i++] = entry.getKey().rule + 2;
 			this.backtracking[i] = entry.getKey().targetState;
 		}
 		final int backtrackingStates = checkpoints.size();

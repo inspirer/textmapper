@@ -23,7 +23,7 @@ var parseTests = []struct {
 		rule(`«/* abc */» a::=b;`),
 	}},
 	{tm.InvalidToken, []string{
-		rule("a ::= «'\n»   ;"),
+		rule("a ::= «'»\n   ;"),
 	}},
 
 	// TODO add tests

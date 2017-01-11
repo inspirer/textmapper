@@ -118,13 +118,6 @@ ${end-}
 		switch {
 		case l.ch < 0:
 			state = int(tmLexerAction[state*tmNumClasses])
-			if state == -1 {
-${if self->go_token.hasInvalidToken()-}
-				return ${self->go_token.invalidTokenName()}  // Unexpected end of input reached
-${else-}
-				l.err(l.line, l.tokenOffset, l.offset-l.tokenOffset, "Unexpected end of input reached")
-${end-}
-			}
 			continue
 		case int(l.ch) < tmRuneClassLen:
 			ch = int(tmRuneClass[l.ch])
@@ -136,7 +129,7 @@ ${else-}
 ${end-}
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state <= tmFirstRule || state == -2 {
+		if state <= tmFirstRule {
 			break
 		}
 ${if self->useCustomMap()-}
@@ -168,31 +161,14 @@ ${end-}
 			l.ch = -1 // EOI
 		}
 	}
+${if lex.backtracking.length > 0-}
 	if state > tmFirstRule {
-${if lex.backtracking.length > 0-}
-		if state < -2 {
-			state = (-3 - state) * 2
-			${self->backupVar()} = tmBacktracking[state]
-			state = tmBacktracking[state+1]
-			goto cont
-		}
-${end-}
-		if state == -1 {
-${if lex.backtracking.length > 0-}
-			if ${self->backupVar()} >= 0 {
-				// TODO recover
-			}
-${end-}
-${if self->go_token.hasInvalidToken()-}
-			return ${self->go_token.invalidTokenName()}
-${else-}
-			l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
-			goto restart
-${end-}
-		} else {
-			return EOI
-		}
+		state = (-1 - state) * 2
+		${self->backupVar()} = tmBacktracking[state]
+		state = tmBacktracking[state+1]
+		goto cont
 	}
+${end-}
 
 ${if self->canInlineLexerRules()-}
 	token := Token(tmFirstRule-state)
@@ -205,7 +181,7 @@ ${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
 ${if self->canInlineLexerRules()-}
 	case ${classRule.symbol->go_token.tokenName()}:
 ${else-}
-	case ${classRule.index}:
+	case ${classRule.index+2}:
 ${end-}
 		hh := hash&${classRule->rangeSwitchSize() - 1}
 		switch hh {
@@ -225,20 +201,24 @@ ${end-}
 	}
 ${end-}
 ${if self->canInlineLexerRules()-}
-${if list = syntax.lexerRules.select(r|r->isSpace()).collectUnique(r|r.symbol.index), list.size() > 0}
 	switch token {
+	case ${self->go_token.invalidTokenName()}:
+${call handleInvalidToken-}
+${if list = syntax.lexerRules.select(r|r->isSpace()).collectUnique(r|r.symbol.index), list.size() > 0}
 	case ${list->util.join(', ')}:
 		goto restart
-	}
 ${end-}
+	}
 ${else-}
 
 	token := tmToken[rule]
 	space := false
 ${if syntax.lexerRules.exists(r|r->hasActions())-}
 	switch rule {
+	case 0:
+${call handleInvalidToken-}
 ${foreach rule in syntax.lexerRules.select(r|r->hasActions())-}
-	case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
+	case ${rule.index+2}: // ${rule.symbol.name}: /${rule.regexp}/
 ${call lexerAction('l.value', 'token') for rule-}
 ${end-}
 	}
@@ -283,12 +263,50 @@ func (l *Lexer) Value() interface{} {
 }
 ${end}
 
+${template handleInvalidToken-}
+${if lex.backtracking.length > 0-}
+	if ${self->backupVar()} >= 0 {
+		// TODO recover
+	}
+${end-}
+	if l.offset == l.tokenOffset {
+		if l.ch == '\n' {
+			l.line++
+			l.lineOffset = l.offset
+		}
+
+		// Scan the next character.
+		// Note: the following code is inlined to avoid performance implications.
+		l.offset = l.scanOffset
+		if l.offset < len(l.source) {
+			r, w := rune(l.source[l.offset]), 1
+			if r >= 0x80 {
+				// not ASCII
+				r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
+${if opts.reportInvalidRunes-}
+				if r == "unicode/utf8".RuneError && w == 1 || r == bom {
+					l.invalidRune(r, w)
+				}
+${end-}
+			}
+			l.scanOffset += w
+			l.ch = r
+		} else {
+			l.ch = -1 // EOI
+		}
+	}
+${if !self->go_token.hasInvalidToken()-}
+	l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
+	goto restart
+${end-}
+${end}
+
 ${template instanceToRuleIf(val,instanceRule)-}
 			if hash == 0x${util.hashHex(val)} && "${util.escape(val)}" == l.source[l.tokenOffset:l.offset] {
 ${if self->canInlineLexerRules()-}
 				token = ${instanceRule.symbol->go_token.tokenName()}
 ${else-}
-				rule = ${instanceRule.index}
+				rule = ${instanceRule.index+2}
 ${end-}
 				break
 			}
@@ -334,7 +352,7 @@ var tmRuneClass = []${self->runeClassType()}{
 }
 
 const tmRuneClassLen = 256
-const tmFirstRule = ${-3 - (lex.backtracking.length / 2)}
+const tmFirstRule = ${-1 - (lex.backtracking.length / 2)}
 
 var tmRuneRanges = []mapRange{
 ${foreach r in util.packAsMapRanges(util.tail(lex.char2no, 256), 256)-}
@@ -349,7 +367,7 @@ var tmRuneClass = []${self->runeClassType()}{
 }
 
 const tmRuneClassLen = ${lex.char2no.length}
-const tmFirstRule = ${-3 - (lex.backtracking.length / 2)}
+const tmFirstRule = ${-1 - (lex.backtracking.length / 2)}
 ${end-}
 
 var tmStateMap = []int{
@@ -363,7 +381,7 @@ var tmToken = []Token{
 
 ${end-}
 ${if change = self->canInlineLexerRules()
-              ? syntax.inlineLexerRules(-3 - (lex.backtracking.length / 2), lex.change)
+              ? syntax.inlineLexerRules(-1 - (lex.backtracking.length / 2), lex.change)
               : lex.change,
      true -}
 var tmLexerAction = []int${util.bitsForElement(change)}{

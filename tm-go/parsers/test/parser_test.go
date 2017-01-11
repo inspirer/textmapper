@@ -50,7 +50,12 @@ func TestParser(t *testing.T) {
 		for _, input := range tc.inputs {
 			ptest := pt.NewParserTest(tc.nt.String(), input, t)
 			l.Init(ptest.Source())
+			var i int
 			p.Init(ptest.Error, func(tn test.NodeType, offset, endoffset int) {
+				i++
+				if i == 1000 {
+					panic(i)
+				}
 				if tn == tc.nt {
 					ptest.Consume(offset, endoffset)
 				}

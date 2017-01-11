@@ -1,7 +1,6 @@
 package js_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
@@ -241,7 +240,7 @@ func TestLexer(t *testing.T) {
 		seen[tc.tok] = true
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.tok.String(), input, t)
-			l.Init(test.Source(), test.Error)
+			l.Init(test.Source())
 			tok := l.Next()
 			for tok != js.EOI {
 				if tok == tc.tok {
@@ -277,11 +276,8 @@ const jsBenchmarkCode = `
 
 func BenchmarkLexer(b *testing.B) {
 	l := new(js.Lexer)
-	onError := func(line, offset, len int, msg string) {
-		panic(fmt.Sprintf("%d, %d: %s", line, offset, msg))
-	}
 	for i := 0; i < b.N; i++ {
-		l.Init(jsBenchmarkCode, onError)
+		l.Init(jsBenchmarkCode)
 		next := l.Next()
 		for next != js.EOI {
 			next = l.Next()

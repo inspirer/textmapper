@@ -410,13 +410,13 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 			if ("lexerRuleTokens".equals(propertyName)) {
 				LexerRule[] lexerRules = grammar.getLexerRules();
-				int[] result = new int[lexerRules.length+2];
+				int[] result = new int[lexerRules.length + 2];
 				result[0] = grammar.getInvalidToken() != null
 						? grammar.getInvalidToken().getIndex()
 						: -1;
 				result[1] = grammar.getEoi().getIndex();
 				for (int i = 0; i < lexerRules.length; i++) {
-					result[i+2] = lexerRules[i].getSymbol().getIndex();
+					result[i + 2] = lexerRules[i].getSymbol().getIndex();
 				}
 				return result;
 			}
@@ -432,6 +432,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 		private boolean canInlineLexerRules() {
 			Map<Terminal, Boolean> seenSpaceRules = new HashMap<>();
 			Map<Terminal, Boolean> seenClassRules = new HashMap<>();
+			if (grammar.getInvalidToken() == null) {
+				return false;
+			}
 			for (LexerRule rule : grammar.getLexerRules()) {
 				if (TMDataUtil.getCode(rule) != null
 						|| TMDataUtil.getTransition(rule) != null) {
@@ -466,8 +469,20 @@ public class GrammarIxFactory extends JavaIxFactory {
 				action = Arrays.copyOf(action, action.length);
 				for (int i = 0; i < action.length; i++) {
 					if (action[i] <= tmFirstRule) {
-						action[i] = tmFirstRule
-								- grammar.getLexerRules()[tmFirstRule - action[i]].getSymbol().getIndex();
+						int rule = tmFirstRule - action[i];
+						int symbol;
+						switch (rule) {
+							case 0: // invalid token
+								symbol = grammar.getInvalidToken().getIndex();
+								break;
+							case 1: // eoi
+								symbol = grammar.getEoi().getIndex();
+								break;
+							default:
+								symbol = grammar.getLexerRules()[rule - 2].getSymbol().getIndex();
+								break;
+						}
+						action[i] = tmFirstRule - symbol;
 					}
 				}
 				return action;
@@ -475,8 +490,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if (args.length == 1 && "inlineLexerRulesBT".equals(methodName)) {
 				int[] backtracking = (int[]) args[0];
 				backtracking = Arrays.copyOf(backtracking, backtracking.length);
-				for (int i = 0; i < backtracking.length; i+=2) {
-					backtracking[i] = grammar.getLexerRules()[backtracking[i]].getSymbol().getIndex();
+				for (int i = 0; i < backtracking.length; i += 2) {
+					backtracking[i] = 2+grammar.getLexerRules()[backtracking[i]-2].getSymbol().getIndex();
 				}
 				return backtracking;
 			}

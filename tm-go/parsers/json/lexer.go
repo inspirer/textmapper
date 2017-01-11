@@ -92,9 +92,6 @@ cont:
 		switch {
 		case l.ch < 0:
 			state = int(tmLexerAction[state*tmNumClasses])
-			if state == -1 {
-				return INVALID_TOKEN // Unexpected end of input reached
-			}
 			continue
 		case int(l.ch) < tmRuneClassLen:
 			ch = int(tmRuneClass[l.ch])
@@ -102,7 +99,7 @@ cont:
 			ch = 1
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state <= tmFirstRule || state == -2 {
+		if state <= tmFirstRule {
 			break
 		}
 		hash = hash*uint32(31) + uint32(l.ch)
@@ -131,20 +128,10 @@ cont:
 		}
 	}
 	if state > tmFirstRule {
-		if state < -2 {
-			state = (-3 - state) * 2
-			backupToken = tmBacktracking[state]
-			state = tmBacktracking[state+1]
-			goto cont
-		}
-		if state == -1 {
-			if backupToken >= 0 {
-				// TODO recover
-			}
-			return INVALID_TOKEN
-		} else {
-			return EOI
-		}
+		state = (-1 - state) * 2
+		backupToken = tmBacktracking[state]
+		state = tmBacktracking[state+1]
+		goto cont
 	}
 
 	token := Token(tmFirstRule - state)
@@ -179,8 +166,36 @@ cont:
 			}
 		}
 	}
-
 	switch token {
+	case INVALID_TOKEN:
+		if backupToken >= 0 {
+			// TODO recover
+		}
+		if l.offset == l.tokenOffset {
+			if l.ch == '\n' {
+				l.line++
+				l.lineOffset = l.offset
+			}
+
+			// Scan the next character.
+			// Note: the following code is inlined to avoid performance implications.
+			l.offset = l.scanOffset
+			if l.offset < len(l.source) {
+				r, w := rune(l.source[l.offset]), 1
+				if r >= 0x80 {
+					// not ASCII
+					r, w = utf8.DecodeRuneInString(l.source[l.offset:])
+					if r == utf8.RuneError && w == 1 || r == bom {
+						l.invalidRune(r, w)
+					}
+				}
+				l.scanOffset += w
+				l.ch = r
+			} else {
+				l.ch = -1 // EOI
+			}
+		}
+
 	case 7:
 		goto restart
 	}
