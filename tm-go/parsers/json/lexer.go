@@ -89,42 +89,40 @@ restart:
 cont:
 	for state >= 0 {
 		var ch int
-		switch {
-		case l.ch < 0:
+		if uint(l.ch) < tmRuneClassLen {
+			ch = int(tmRuneClass[l.ch])
+		} else if l.ch < 0 {
 			state = int(tmLexerAction[state*tmNumClasses])
 			continue
-		case int(l.ch) < tmRuneClassLen:
-			ch = int(tmRuneClass[l.ch])
-		default:
+		} else {
 			ch = 1
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
-		if state <= tmFirstRule {
-			break
-		}
-		hash = hash*uint32(31) + uint32(l.ch)
+		if state > tmFirstRule {
+			hash = hash*uint32(31) + uint32(l.ch)
 
-		if l.ch == '\n' {
-			l.line++
-			l.lineOffset = l.offset
-		}
-
-		// Scan the next character.
-		// Note: the following code is inlined to avoid performance implications.
-		l.offset = l.scanOffset
-		if l.offset < len(l.source) {
-			r, w := rune(l.source[l.offset]), 1
-			if r >= 0x80 {
-				// not ASCII
-				r, w = utf8.DecodeRuneInString(l.source[l.offset:])
-				if r == utf8.RuneError && w == 1 || r == bom {
-					l.invalidRune(r, w)
-				}
+			if l.ch == '\n' {
+				l.line++
+				l.lineOffset = l.offset
 			}
-			l.scanOffset += w
-			l.ch = r
-		} else {
-			l.ch = -1 // EOI
+
+			// Scan the next character.
+			// Note: the following code is inlined to avoid performance implications.
+			l.offset = l.scanOffset
+			if l.offset < len(l.source) {
+				r, w := rune(l.source[l.offset]), 1
+				if r >= 0x80 {
+					// not ASCII
+					r, w = utf8.DecodeRuneInString(l.source[l.offset:])
+					if r == utf8.RuneError && w == 1 || r == bom {
+						l.invalidRune(r, w)
+					}
+				}
+				l.scanOffset += w
+				l.ch = r
+			} else {
+				l.ch = -1 // EOI
+			}
 		}
 	}
 	if state > tmFirstRule {
