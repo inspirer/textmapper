@@ -4,7 +4,7 @@ prefix = "Lexemes"
 
 :: lexer
 
-identifier(String): /[a-zA-Z_][A-Za-z_0-9]*/    (class)
+identifier {String}: /[a-zA-Z_][A-Za-z_0-9]*/    (class)
 _skip:      /[\t\r\n ]+/    							{ return false; }
 
 Lclass:		 /class/				(soft)

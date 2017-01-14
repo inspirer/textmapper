@@ -88,7 +88,7 @@ public class TMParserCompiler {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				if (nonterm.getType() instanceof TmaNontermTypeRaw) {
+				if (nonterm.getType() instanceof TmaRawType) {
 					withType.add(nonterm.getName().getID());
 				}
 			}

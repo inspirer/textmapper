@@ -243,7 +243,7 @@ public class TemplatesLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		3, 4
+		5, 4
 	};
 
 	private static final int tmFirstRule = -2;

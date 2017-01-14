@@ -184,7 +184,7 @@ public class RegexDefLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		25, 6, 1, 47, 1, 64, 1, 62, 1, 59, 1, 56
+		27, 6, 3, 47, 3, 64, 3, 62, 3, 59, 3, 56
 	};
 
 	private static final int tmFirstRule = -7;

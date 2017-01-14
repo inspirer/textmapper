@@ -156,7 +156,7 @@ public class XmlLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		1, 2
+		3, 2
 	};
 
 	private static final int tmFirstRule = -2;

@@ -200,7 +200,7 @@ optsemicolon ::= | ';' ;
 
 # A.1.8 Literals
 
-literal (Node) ::=
+literal {Node} ::=
     Licon												{ $$ = new Node(); break; }
   | Lfcon                                               { $$ = new Node(); break; }
   | Lccon                                               { $$ = new Node(); break; }
@@ -219,7 +219,7 @@ qualified_identifier ::=
   | qualified_identifier '.' identifier
 ;
 
-ID (Node) ::=
+ID {Node} ::=
     identifier											{ $$ = new Node( Kind.Identifier, null, null, null ); break; }
 ;
 
@@ -295,12 +295,12 @@ argument ::=
   | Lout expression
 ;
 
-primary_expression (Node) ::=
+primary_expression {Node} ::=
     primary_expression_na
   | new_array_expression
 ;
 
-primary_expression_na (Node) ::=
+primary_expression_na {Node} ::=
     literal
   | ID
   | parenthesized
@@ -322,16 +322,16 @@ primary_expression_na (Node) ::=
   | object_or_delegate_creation_expression				{ $$ = new Node(); break; }
 ;
 
-new_array_expression (Node) ::=
+new_array_expression {Node} ::=
     Lnew non_array_type '[' expression_list ']' rank_specifiersopt array_initializeropt		{ $$ = new Node(); break; }
   | Lnew array_type array_initializer                   { $$ = new Node(); break; }
 ;
 
-object_or_delegate_creation_expression (Node) ::=
+object_or_delegate_creation_expression {Node} ::=
 	Lnew type '(' argument_listopt ')'                  { $$ = new Node(); break; }
 ;
 
-unary_expression (Node) ::=
+unary_expression {Node} ::=
     primary_expression
   | '+' unary_expression								{ $$ = new Node(); break; }
   | '-' unary_expression								{ $$ = new Node(); break; }
@@ -342,7 +342,7 @@ unary_expression (Node) ::=
   | cast_expression
 ;
 
-parenthesized (Node) ::=
+parenthesized {Node} ::=
     '(' expression ')'
 		{ $$ = $1;
 		// HACK to resolve Cast ambiguity
@@ -366,31 +366,31 @@ parenthesized (Node) ::=
 		break; }
 ;
 
-cast_expression (Node) ::=
+cast_expression {Node} ::=
     parenthesized cast_token unary_expression                   { $$ = new Node(); break; }
   | '(' cast_type ')' unary_expression                          { $$ = new Node(); break; }
 ;
 
-multiplicative_expression (Node) ::=
+multiplicative_expression {Node} ::=
     unary_expression
   | multiplicative_expression '*' unary_expression              { $$ = new Node(); break; }
   | multiplicative_expression '/' unary_expression              { $$ = new Node(); break; }
   | multiplicative_expression '%' unary_expression              { $$ = new Node(); break; }
 ;
 
-additive_expression (Node) ::=
+additive_expression {Node} ::=
     multiplicative_expression
   | additive_expression '+' multiplicative_expression           { $$ = new Node(); break; }
   | additive_expression '-' multiplicative_expression           { $$ = new Node(); break; }
 ;
 
-shift_expression (Node) ::=
+shift_expression {Node} ::=
     additive_expression
   | shift_expression '<<' additive_expression                   { $$ = new Node(); break; }
   | shift_expression '>>' additive_expression					{ $$ = new Node(); break; }
 ;
 
-relational_expression (Node) ::=
+relational_expression {Node} ::=
     shift_expression
   | relational_expression '<' shift_expression                  { $$ = new Node(); break; }
   | relational_expression '>' shift_expression                  { $$ = new Node(); break; }
@@ -400,43 +400,43 @@ relational_expression (Node) ::=
   | relational_expression Las type                              { $$ = new Node(); break; }
 ;
 
-equality_expression (Node) ::=
+equality_expression {Node} ::=
     relational_expression
   | equality_expression '==' relational_expression              { $$ = new Node(); break; }
   | equality_expression '!=' relational_expression              { $$ = new Node(); break; }
 ;
 
-and_expression (Node) ::=
+and_expression {Node} ::=
     equality_expression
   | and_expression '&' equality_expression                      { $$ = new Node(); break; }
 ;
 
-exclusive_or_expression (Node) ::=
+exclusive_or_expression {Node} ::=
     and_expression
   | exclusive_or_expression '^' and_expression                  { $$ = new Node(); break; }
 ;
 
-inclusive_or_expression (Node) ::=
+inclusive_or_expression {Node} ::=
     exclusive_or_expression
   | inclusive_or_expression '|' exclusive_or_expression         { $$ = new Node(); break; }
 ;
 
-conditional_and_expression (Node) ::=
+conditional_and_expression {Node} ::=
     inclusive_or_expression
   | conditional_and_expression '&&' inclusive_or_expression     { $$ = new Node(); break; }
 ;
 
-conditional_or_expression (Node) ::=
+conditional_or_expression {Node} ::=
     conditional_and_expression
   | conditional_or_expression '||' conditional_and_expression   { $$ = new Node(); break; }
 ;
 
-conditional_expression (Node) ::=
+conditional_expression {Node} ::=
     conditional_or_expression
   | conditional_or_expression '?' expression ':' expression		{ $$ = new Node(); break; }
 ;
 
-assignment (Node) ::=
+assignment {Node} ::=
     unary_expression assignment_operator expression		{ $$ = new Node(); break; }
 ;
 
@@ -459,12 +459,12 @@ expression_list ::=
   | expression_list ',' expression
 ;
 
-expression (Node) ::=
+expression {Node} ::=
     conditional_expression
   | assignment
 ;
 
-constant_expression (Node) ::=
+constant_expression {Node} ::=
     expression
 ;
 

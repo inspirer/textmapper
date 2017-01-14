@@ -54,7 +54,7 @@ public interface TextmapperElementTypes {
 	IElementType RHS_STATE_MARKER = new TMElementType(Nonterminals.rhsStateMarker, "rhs state marker");
 
 	IElementType ACTION = new TMElementType(Nonterminals.command, "action");
-	IElementType TYPE = new TMElementType(Nonterminals.type, "type");
+	IElementType RAW_TYPE = new TMElementType(Nonterminals.rawType, "raw type");
 	IElementType LOOKAHEAD = new TMElementType(Nonterminals.rhsLookahead, "lookahead");
 	IElementType LOOKAHEAD_PREDICATE = new TMElementType(Nonterminals.lookahead_predicate, "lookahead predicate");
 	IElementType ANNOTATION = new TMElementType(Nonterminals.annotation, "annotation");
@@ -77,7 +77,7 @@ public interface TextmapperElementTypes {
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE, LEXER_DIRECTIVE,
 			NONTERM, TEMPLATE_PARAM, NONTERM_PARAMS, NONTERM_PARAM, NONTERM_TYPE, DIRECTIVE,
 			RULE, RHS_PREFIX, RHS_SUFFIX, RULE_ACTION, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, RHS_STATE_MARKER,
-			ACTION, TYPE, LOOKAHEAD, LOOKAHEAD_PREDICATE, ANNOTATION, EXPRESSION, PREDICATE, PREDICATE_EXPRESSION,
+			ACTION, RAW_TYPE, LOOKAHEAD, LOOKAHEAD_PREDICATE, ANNOTATION, EXPRESSION, PREDICATE, PREDICATE_EXPRESSION,
 			SYMREF, SYMREF_ARGS, SYMREF_NA, STATEREF, IDENTIFIER, QUALIFIED_ID,
 			PARAMREF, TEMPLATE_ARG, MAP_ENTRY
 	};

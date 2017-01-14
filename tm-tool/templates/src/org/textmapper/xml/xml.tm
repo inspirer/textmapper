@@ -38,9 +38,9 @@ _skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/ (space)
 
 [inTag]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $$ = tokenText(); }
-ccon(String):	/"[^\n"]*"/							{ $$ = tokenText().substring(1, tokenSize()-1); }
-ccon(String):	/'[^\n']*'/							{ $$ = tokenText().substring(1, tokenSize()-1); }
+identifier {String}:	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $$ = tokenText(); }
+ccon {String}:	/"[^\n"]*"/							{ $$ = tokenText().substring(1, tokenSize()-1); }
+ccon {String}:	/'[^\n']*'/							{ $$ = tokenText().substring(1, tokenSize()-1); }
 
 '>':	    />/  => initial
 '=':		/=/
@@ -51,45 +51,45 @@ _skip:      /[\t\r\n ]+/  (space)
 
 :: parser
 
-input (XmlNode) ::=
+input {XmlNode} ::=
 	xml_tags										{ $$ = new XmlNode("<root>", null, 1); ${left()}.setData($xml_tags); }
 ;
 
-xml_tags (List<XmlElement>) ::=
+xml_tags {List<XmlElement>} ::=
 	xml_tags xml_tag_or_space 						{ $xml_tags.add($xml_tag_or_space); }
 	| xml_tag_or_space 								{ $$ = new ArrayList<XmlElement>(); ${left()}.add($xml_tag_or_space); }
 ;
 
-xml_tag_or_space (XmlElement) ::=
+xml_tag_or_space {XmlElement} ::=
 	tag_start tag_end								{ checkTag($tag_start,$tag_end,${tag_end.offset},${tag_end.endoffset},${tag_end.line}); }
 	| tag_start xml_tags tag_end					{ checkTag($tag_start,$tag_end,${tag_end.offset},${tag_end.endoffset},${tag_end.line}); $tag_start.setData($xml_tags); }
 	| no_body_tag
 	| any											{ $$ = getData(${left().offset},${left().endoffset}); }
 ;
 
-tag_name (String) ::=
+tag_name {String} ::=
 	identifier										{ $$ = $identifier; }
 	| ns=identifier ':' identifier						{ $$ = $ns + ":" + $identifier; }
 ;
 
-tag_start (XmlNode) ::=
+tag_start {XmlNode} ::=
 	'<' tag_name attributesopt '>'		            { $$ = new XmlNode($tag_name, $attributesopt, ${first().line}); }
 ;
 
-no_body_tag (XmlNode) ::=
+no_body_tag {XmlNode} ::=
 	'<' tag_name attributesopt '/' '>'		        { $$ = new XmlNode($tag_name, $attributesopt, ${first().line}); }
 ;
 
-tag_end (String) ::=
+tag_end {String} ::=
 	'<' '/' tag_name '>'		                    { $$ = $tag_name; }
 ;
 
-attributes (List<XmlAttribute>) ::=
+attributes {List<XmlAttribute>} ::=
 	attributes attribute							{ $attributes.add($attribute); }
 	| attribute 									{ $$ = new ArrayList<XmlAttribute>(); ${left()}.add($attribute); }
 ;
 
-attribute (XmlAttribute) ::=
+attribute {XmlAttribute} ::=
 	identifier '=' ccon								{ $$ = new XmlAttribute($identifier,$ccon); }
 ;
 

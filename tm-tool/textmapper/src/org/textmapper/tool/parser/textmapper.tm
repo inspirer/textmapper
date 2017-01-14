@@ -31,15 +31,14 @@ genastdef = true
 
 :: lexer
 
-[initial, afterAt => initial, afterAtID => initial]
+[initial, afterColonOrEq, afterGT]
 
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
 reChar = /{reFirst}|\*/
 
-regexp(String): /\/{reFirst}{reChar}*\// { $$ = tokenText().substring(1, tokenSize()-1); }
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(tokenText(), 1, tokenSize()-1); }
-icon(Integer):	/-?[0-9]+/				{ $$ = Integer.parseInt(tokenText()); }
+scon {String}:	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(tokenText(), 1, tokenSize()-1); }
+icon {Integer}:	/-?[0-9]+/				{ $$ = Integer.parseInt(tokenText()); }
 
 eoi:           /%%.*(\r?\n)?/			{ templatesStart = token.endoffset; }
 _skip:         /[\n\r\t ]+/		(space)
@@ -66,7 +65,8 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 ']':    /\]/
 '(':	/\(/
 '(?=':	/\(\?=/
-# TODO overlaps with ID '->':	/->/
+# TODO overlaps with ID
+'->':	/->/
 ')':	/\)/
 '{~':	/\{~/
 '}':	/\}/
@@ -81,13 +81,11 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 '&':	/&/
 '&&':	/&&/
 '$':	/$/
-'@':    /@/ => afterAt
+'@':    /@/
 
 error:
 
-[initial, afterAt => afterAtID, afterAtID => initial]
-
-ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = tokenText(); }
+ID {String}: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = tokenText(); }
 
 Ltrue:  /true/
 Lfalse: /false/
@@ -136,16 +134,17 @@ Llalr: /lalr/				(soft)
 Llexer: /lexer/				(soft)
 Lparser: /parser/			(soft)
 
-# reserved
+[initial, afterColonOrEq]
+code:   /\{/                               { skipAction(); token.endoffset = getOffset(); }
 
-Lreduce: /reduce/
-
-[initial, afterAt => initial]
-
-code:   /\{/     { skipAction(); token.endoffset = getOffset(); }
-
-[afterAtID => initial]
+[afterGT]
 '{':	/\{/
+
+[afterColonOrEq]
+regexp {String}: /\/{reFirst}{reChar}*\//   { $$ = tokenText().substring(1, tokenSize()-1); }
+
+[initial, afterGT]
+'/':    /\//
 
 
 :: parser
@@ -184,16 +183,8 @@ symref class ::=
 symref_noargs returns symref ::=
 	  name=ID ;
 
-type (String) ::=
-	  '(' scon ')'						{ $$ = $scon; }
-	| '(' type_part_list ')'			{ $$ = source.getText(${first().offset}+1, ${last().endoffset}-1); }
-;
-
-type_part_list void ::=
-	  type_part_list type_part | type_part ;
-
-type_part void ::=
-	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
+rawType class ::=
+	  code ;
 
 pattern class ::=
 	  regexp
@@ -216,7 +207,7 @@ named_pattern ::=
 	  name=ID '=' pattern ;
 
 lexeme ::=
-	  name=identifier typeopt ':'
+	  name=identifier rawTypeopt ':'
 			(pattern transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_transition ::=
@@ -262,7 +253,7 @@ nonterm_type interface ::=
 	| inline=Linline? kind=Lclass name=identifieropt implementsopt		{~nontermTypeHint}
 	| kind=Linterface name=identifieropt implementsopt					{~nontermTypeHint}
 	| kind=Lvoid														{~nontermTypeHint}
-	| typeText=type														{~nontermTypeRaw}
+	| rawType
 ;
 
 implements ::=
@@ -411,7 +402,7 @@ annotations class ::=
 	  annotations=annotation+ ;
 
 annotation ::=
-	  '@' name=ID ('{' expression '}')?
+	  '@' name=ID ('=' expression)?
 	| '@' syntax_problem
 ;
 
@@ -483,7 +474,7 @@ literal ::=
 name class ::=
 	  qualified_id ;
 
-qualified_id (String) ::=
+qualified_id {String} ::=
 	  ID
 	| qualified_id '.' ID				{ $$ = $qualified_id + "." + $ID; }
 ;
@@ -506,8 +497,12 @@ import java.util.ArrayList;
 import org.textmapper.tool.parser.ast.*;
 ${end}
 
+${template java_lexer.onReset-}
+inStatesSelector = false;
+${end}
+
 ${template java_lexer.lexercode}
-private int deep = 0;
+protected boolean inStatesSelector = false;
 private int templatesStart = -1;
 private boolean skipComments = true;
 
@@ -611,4 +606,31 @@ ${if cl.name == 'Input'}
 		this.templatesStart = templatesStart;
 	}
 ${end-}
+${end}
+
+${template java_lexer.onBeforeNext-}
+int lastTokenLine = tokenLine;
+${end}
+
+${template java_lexer.onAfterNext-}
+switch (token.symbol) {
+case Tokens.Lt:
+	inStatesSelector = (lastTokenLine != tokenLine) || this.state == States.afterColonOrEq;
+	this.state = States.initial;
+	break;
+case Tokens.Gt:
+	this.state = inStatesSelector ? States.afterGT : States.initial;
+	inStatesSelector = false;
+	break;
+case Tokens.Assign:
+case Tokens.Colon:
+	this.state = States.afterColonOrEq;
+	break;
+case Tokens._skip:
+case Tokens._skip_comment:
+case Tokens._skip_multiline:
+	break;
+default:
+	this.state = States.initial;
+}
 ${end}

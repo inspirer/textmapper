@@ -26,6 +26,9 @@ class LiRawAstType implements AstRawType, DerivedSourceElement {
 	private final SourceElement origin;
 
 	public LiRawAstType(String type, SourceElement origin) {
+		if (type == null) {
+			throw new NullPointerException("type");
+		}
 		this.type = type;
 		this.origin = origin;
 	}

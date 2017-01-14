@@ -76,15 +76,16 @@ public interface TMTokenTypes {
 	IElementType OP_PLUSEQ = new TMElementType(Tokens.PlusAssign, "+=");
 	IElementType OP_QMARK = new TMElementType(Tokens.Quest, "?");
 	IElementType OP_EMARK = new TMElementType(Tokens.Excl, "!");
-	//TODO IElementType OP_ARROW = new TMElementType(Tokens.MINUSGREATER, "->");
+	IElementType OP_ARROW = new TMElementType(Tokens.MinusGt, "->");
 	IElementType OP_AND = new TMElementType(Tokens.And, "&");
 	IElementType OP_ANDAND = new TMElementType(Tokens.AndAnd, "&&");
 	IElementType OP_AT = new TMElementType(Tokens.Atsign, "@");
 	IElementType OP_TILDE = new TMElementType(Tokens.Tilde, "~");
+	IElementType OP_DIV = new TMElementType(Tokens.Div, "/");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_DOLLAR, OP_CCEQ, OP_OR, OP_OROR, OP_EQ, OP_EQEQ, OP_EXCLEQ, OP_EQGT, OP_COLON,
-			OP_LT, OP_GT, OP_PLUSEQ, OP_EMARK/*, OP_ARROW*/, OP_AND, OP_ANDAND, OP_AT, OP_TILDE
+			OP_LT, OP_GT, OP_PLUSEQ, OP_EMARK, OP_ARROW, OP_AND, OP_ANDAND, OP_AT, OP_TILDE, OP_DIV
 	);
 
 	TokenSet quantifiers = TokenSet.create(OP_PLUS, OP_QMARK, OP_STAR);
@@ -104,7 +105,6 @@ public interface TMTokenTypes {
 
 	IElementType KW_PREC = new TMElementType(Tokens.Lprec, "prec");
 	IElementType KW_SHIFT = new TMElementType(Tokens.Lshift, "shift");
-	IElementType KW_REDUCE = new TMElementType(Tokens.Lreduce, "reduce");
 
 	IElementType KW_RETURNS = new TMElementType(Tokens.Lreturns, "returns");
 
@@ -145,7 +145,7 @@ public interface TMTokenTypes {
 
 	TokenSet softKeywords = TokenSet.create(
 			KW_BRACKETS, KW_INLINE,
-			KW_PREC, KW_SHIFT, KW_REDUCE,
+			KW_PREC, KW_SHIFT,
 			KW_RETURNS,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC,
 			KW_GENERATE, KW_ASSERT, KW_EMPTY, KW_NONEMPTY,

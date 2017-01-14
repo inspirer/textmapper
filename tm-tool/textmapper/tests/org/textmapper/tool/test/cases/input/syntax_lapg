@@ -6,11 +6,11 @@ lang        = "java"
 
 [0]
 
-identifier(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { @ = new String(token,0,lapg_size); break; }
-regexp(String):	/\/([^\/\\]|\\.)*\//	{ @ = new String(token,1,lapg_size-2); break; }
-scon(String):	/"[^"\n\\]*"/			{ @ = new String(token,1,lapg_size-2); break; }
-type(String):	/\([^\)\n]+\)/			{ @ = new String(token,1,lapg_size-2); break; }
-icon(Integer):	/-?[0-9]+/				{ @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
+identifier {String}:     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { @ = new String(token,0,lapg_size); break; }
+regexp {String}:	/\/([^\/\\]|\\.)*\//	{ @ = new String(token,1,lapg_size-2); break; }
+scon {String}:	/"[^"\n\\]*"/			{ @ = new String(token,1,lapg_size-2); break; }
+type {String}:	/\([^\)\n]+\)/			{ @ = new String(token,1,lapg_size-2); break; }
+icon {Integer}:	/-?[0-9]+/				{ @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
 eoi:           /\n%%.*/
 '%':           /\n%/
 _skip:         /\n|[\t\r ]+/    		{ continue; }

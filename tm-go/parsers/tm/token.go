@@ -14,7 +14,6 @@ const (
 	UNAVAILABLE Token = iota - 1
 	EOI
 
-	REGEXP
 	SCON
 	ICON
 	WHITESPACE
@@ -36,6 +35,7 @@ const (
 	LBRACK           // [
 	RBRACK           // ]
 	LPAREN           // (
+	MINUSGT          // ->
 	RPAREN           // )
 	LBRACETILDE      // {~
 	RBRACE           // }
@@ -89,8 +89,10 @@ const (
 	SOFT       // soft
 	SPACE      // space
 	VOID       // void
-	CODE       // {
-	LBRACE     // {
+	CODE
+	LBRACE // {
+	REGEXP
+	DIV // /
 
 	NumTokens
 )
@@ -98,7 +100,6 @@ const (
 var tokenStr = [...]string{
 	"EOI",
 
-	"REGEXP",
 	"SCON",
 	"ICON",
 	"WHITESPACE",
@@ -120,6 +121,7 @@ var tokenStr = [...]string{
 	"[",
 	"]",
 	"(",
+	"->",
 	")",
 	"{~",
 	"}",
@@ -173,8 +175,10 @@ var tokenStr = [...]string{
 	"soft",
 	"space",
 	"void",
+	"CODE",
 	"{",
-	"{",
+	"REGEXP",
+	"/",
 }
 
 func (tok Token) String() string {

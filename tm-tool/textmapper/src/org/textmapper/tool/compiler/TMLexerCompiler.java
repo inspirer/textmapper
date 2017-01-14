@@ -281,7 +281,7 @@ public class TMLexerCompiler {
 				}
 				Terminal softClass = classRule.getSymbol();
 
-				String type = lexeme.getType();
+				String type = getRawTypeText(lexeme.getRawType());
 				String classtype = getSymbolType(softClass);
 				if (type != null && !type.equals(classtype)) {
 					error(lexeme, "soft terminal `" + name + "' overrides base type: expected `" +
@@ -315,6 +315,14 @@ public class TMLexerCompiler {
 	private static String getSymbolType(Symbol s) {
 		final AstType type = s.getType();
 		return type instanceof AstRawType ? ((AstRawType) type).getRawType() : null;
+	}
+
+	private static String getRawTypeText(TmaRawType type) {
+		if (type == null) {
+			return null;
+		}
+		String text = type.getText();
+		return text.substring(1, text.length() - 1);
 	}
 
 	private static class RuleAttributes {

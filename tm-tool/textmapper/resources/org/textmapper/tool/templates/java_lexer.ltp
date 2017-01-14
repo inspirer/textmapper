@@ -84,6 +84,7 @@ ${if opts.lexerInput == 'buffer'-}
 		tokenOffset = l = 0;
 ${end-}
 ${call advanceChar(false, true)-}
+${util.shiftRight(self->onReset(), 2)-}
 	}
 ${end}
 
@@ -152,12 +153,16 @@ ${template mapCharacter}
 	}
 ${end}
 
-${template onNext-}
-${end}
+${template onBeforeNext}${end}
+
+${template onAfterNext}${end}
+
+${template onReset}${end}
 
 ${template next}
 	public ${self->java.symbolClassName()} next() throws java.io.@IOException {
 		${self->java.symbolClassName()} token = new ${self->java.symbolClassName()}();
+${util.shiftRight(self->onBeforeNext(), 2)-}
 		int state;
 
 		tokenloop:
@@ -241,7 +246,7 @@ ${end-}
 			}
 
 		} while (token.symbol == -1 || !createToken(token, ${!self->tmWithBacktracking() ? '-1' : 'tmFirstRule'} - state));
-${call onNext-}
+${util.shiftRight(self->onAfterNext(), 2)-}
 		return token;
 	}
 ${end}

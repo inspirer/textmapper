@@ -84,7 +84,6 @@ var (
 	SymrefArgs          = func(t tm.NodeType) bool { return t == tm.SymrefArgs }
 	SyntaxProblem       = func(t tm.NodeType) bool { return t == tm.SyntaxProblem }
 	TemplateParam       = func(t tm.NodeType) bool { return t == tm.TemplateParam }
-	Type                = func(t tm.NodeType) bool { return t == tm.Type }
 	VoidType            = func(t tm.NodeType) bool { return t == tm.VoidType }
 	Annotation          = OneOf(tm.Annotation...)
 	Argument            = OneOf(tm.Argument...)

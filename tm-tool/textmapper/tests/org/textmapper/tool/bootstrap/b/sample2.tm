@@ -31,7 +31,7 @@ genCopyright = true
 
 :: lexer
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)
+identifier {String}: /[a-zA-Z_][a-zA-Z_0-9]*/ (class)
 												{ $$ = tokenText(); }
 _skip:          /[\n\t\r ]+/ (space)
 
@@ -45,7 +45,7 @@ Lextends: /extends/  (soft)
 # reserved
 
 Linterface: /interface/                      { $$ = "interface"; }
-Lenum(Object):      /enum/							 { $$ = new Object(); }
+Lenum {Object}:      /enum/							 { $$ = new Object(); }
 
 
 error:

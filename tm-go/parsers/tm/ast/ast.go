@@ -99,7 +99,6 @@ func (Symref) tmNodeNode()            {}
 func (SymrefArgs) tmNodeNode()        {}
 func (SyntaxProblem) tmNodeNode()     {}
 func (TemplateParam) tmNodeNode()     {}
-func (Type) tmNodeNode()              {}
 func (VoidType) tmNodeNode()          {}
 func (Token) tmNodeNode()             {}
 
@@ -564,6 +563,13 @@ type Lexeme struct {
 
 func (n Lexeme) Name() Identifier {
 	return Identifier{n.Child(filter.Identifier)}
+}
+
+func (n Lexeme) RawType() *RawType {
+	if child := n.Child(filter.RawType); child != nil {
+		return &RawType{child}
+	}
+	return nil
 }
 
 func (n Lexeme) Pattern() *Pattern {
@@ -1172,10 +1178,6 @@ func (n TemplateParam) ParamValue() ParamValue {
 		return ToTmNode(child).(ParamValue)
 	}
 	return nil
-}
-
-type Type struct {
-	Node
 }
 
 type VoidType struct {

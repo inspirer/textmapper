@@ -9,9 +9,9 @@ import (
 
 // Lexer states.
 const (
-	StateInitial   = 0
-	StateAfterAt   = 1
-	StateAfterAtID = 2
+	StateInitial        = 0
+	StateAfterColonOrEq = 1
+	StateAfterGT        = 2
 )
 
 // ErrorHandler is called every time a lexer or parser is unable to process
@@ -37,6 +37,8 @@ type Lexer struct {
 	value       interface{}
 
 	State int // lexer state, modifiable
+
+	inStatesSelector bool
 }
 
 const bom = 0xfeff // byte order mark, permitted as a first character only
@@ -59,6 +61,7 @@ func (l *Lexer) Init(source string, err ErrorHandler) {
 	l.lineOffset = 0
 	l.scanOffset = 0
 	l.State = 0
+	l.inStatesSelector = false
 
 	if strings.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
@@ -86,6 +89,7 @@ func (l *Lexer) Init(source string, err ErrorHandler) {
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
+	lastTokenLine := l.tokenLine
 restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
@@ -344,8 +348,24 @@ cont:
 			}
 		}
 
-	case 4:
+	case 3:
 		goto restart
+	}
+	switch token {
+	case LT:
+		l.inStatesSelector = (lastTokenLine != l.tokenLine) || l.State == StateAfterColonOrEq
+		l.State = StateInitial
+	case GT:
+		if l.inStatesSelector {
+			l.State = StateAfterGT
+			l.inStatesSelector = false
+		} else {
+			l.State = StateInitial
+		}
+	case ASSIGN, COLON:
+		l.State = StateAfterColonOrEq
+	default:
+		l.State = StateInitial
 	}
 	return token
 }

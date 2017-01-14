@@ -25,10 +25,6 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaNontermTypeRaw n) {
-		return true;
-	}
-
 	protected boolean visit(TmaSetBinary n) {
 		return true;
 	}
@@ -74,6 +70,10 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaSymref n) {
+		return true;
+	}
+
+	protected boolean visit(TmaRawType n) {
 		return true;
 	}
 

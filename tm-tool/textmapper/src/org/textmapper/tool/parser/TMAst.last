@@ -86,27 +86,11 @@ symref_noargs  : Symref ::=
 	name=ID
 ;
 
-type (String) ::=
-	'(' scon ')'
-  | '(' type_part_list ')'
-;
+class RawType : NontermType {
+}
 
-type_part_list  : void
-	(type_part)+ ;
-
-type_part  : void ::=
-	'<'
-  | '>'
-  | '['
-  | ']'
-  | ID
-  | '*'
-  | '.'
-  | ','
-  | '?'
-  | '@'
-  | '&'
-  | '(' type_part_list? ')'
+rawType  : RawType ::=
+	code
 ;
 
 class Pattern {
@@ -142,7 +126,7 @@ named_pattern  : NamedPattern ::=
 
 class Lexeme : LexerPart {
 	Identifier name;
-	String type;
+	RawType rawType;
 	Pattern pattern;
 	Stateref transition;
 	Integer priority;
@@ -151,7 +135,7 @@ class Lexeme : LexerPart {
 }
 
 lexeme  : Lexeme ::=
-	name=identifier type=typeopt ':' ({pattern} transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
+	name=identifier rawType=rawTypeopt ':' ({pattern} transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
 ;
 
 class Stateref {
@@ -262,16 +246,12 @@ class NontermTypeHint : NontermType {
 	}
 }
 
-class NontermTypeRaw : NontermType {
-	String typeText;
-}
-
 nonterm_type  : NontermType ::=
 	this=new.NontermTypeAST: Lreturns reference=symref_noargs
   | this=new.NontermTypeHint: inline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implements=implementsopt
   | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt implements=implementsopt
   | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
-  | this=new.NontermTypeRaw: typeText=type
+  | this=rawType
 ;
 
 implements  : list<Symref> ::=
@@ -631,7 +611,7 @@ class Annotation {
 }
 
 annotation  : Annotation ::=
-	'@' name=ID ('{' {expression} '}')?
+	'@' name=ID ('=' {expression})?
   | '@' syntaxProblem=syntax_problem
 ;
 
@@ -841,8 +821,8 @@ parsing_algorithmopt  : ParsingAlgorithm ::=
 	this=parsing_algorithm?
 ;
 
-typeopt (String) ::=
-	type?
+rawTypeopt  : RawType ::=
+	this=rawType?
 ;
 
 lexeme_transitionopt  : Stateref ::=

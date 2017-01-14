@@ -45,14 +45,14 @@ ssss:
 wact:   /withAction/			(soft)   { System.out.println("oops"); return true; }
 
 # err: cannot have a type
-wtype (int):   /withType/			(soft)
+wtype {int}:   /withType/			(soft)
 
 
-delim(char): /[;:,\.\/\\]/       (class)
+delim {char}: /[;:,\.\/\\]/       (class)
 
 
 # err: overrides type
-comma(Character): /,/   (soft)
+comma {Character}: /,/   (soft)
 
 # ok
 colon_or_semicolon: /;/   (soft)

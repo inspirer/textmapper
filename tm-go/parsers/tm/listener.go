@@ -24,9 +24,9 @@ const (
 	Import   // alias=identifier? path=string_literal
 	KeyValue // key=identifier value=expression
 	Symref   // name=identifier args=symref_args?
-	Type
+	RawType
 	NamedPattern     // name=identifier pattern
-	Lexeme           // name=identifier pattern? transition=lexeme_transition? priority=integer_literal? attrs=lexeme_attrs? command?
+	Lexeme           // name=identifier rawType? pattern? transition=lexeme_transition? priority=integer_literal? attrs=lexeme_attrs? command?
 	LexemeTransition // stateref
 	LexemeAttrs      // lexeme_attribute
 	LexemeAttribute
@@ -39,7 +39,6 @@ const (
 	SubType           // reference=symref
 	InterfaceType
 	VoidType
-	RawType
 	Assoc
 	ParamModifier
 	TemplateParam     // modifier=param_modifier? param_type name=identifier param_value?
@@ -109,7 +108,7 @@ var nodeTypeStr = [...]string{
 	"Import",
 	"KeyValue",
 	"Symref",
-	"Type",
+	"RawType",
 	"NamedPattern",
 	"Lexeme",
 	"LexemeTransition",
@@ -124,7 +123,6 @@ var nodeTypeStr = [...]string{
 	"SubType",
 	"InterfaceType",
 	"VoidType",
-	"RawType",
 	"Assoc",
 	"ParamModifier",
 	"TemplateParam",
@@ -386,23 +384,7 @@ var ruleNodeType = [...]NodeType{
 	Symref,            // symref ::= identifier
 	Symref,            // symref_Args ::= identifier symref_args
 	Symref,            // symref_Args ::= identifier
-	Type,              // type ::= '(' scon ')'
-	Type,              // type ::= '(' type_part_list ')'
-	0,                 // type_part_list ::= type_part_list type_part
-	0,                 // type_part_list ::= type_part
-	0,                 // type_part ::= '<'
-	0,                 // type_part ::= '>'
-	0,                 // type_part ::= '['
-	0,                 // type_part ::= ']'
-	0,                 // type_part ::= identifier
-	0,                 // type_part ::= '*'
-	0,                 // type_part ::= '.'
-	0,                 // type_part ::= ','
-	0,                 // type_part ::= '?'
-	0,                 // type_part ::= '@'
-	0,                 // type_part ::= '&'
-	0,                 // type_part ::= '(' type_part_list ')'
-	0,                 // type_part ::= '(' ')'
+	RawType,           // rawType ::= code
 	0,                 // lexer_parts ::= lexer_part
 	0,                 // lexer_parts ::= lexer_parts lexer_part_OrSyntaxError
 	0,                 // lexer_part ::= state_selector
@@ -415,8 +397,8 @@ var ruleNodeType = [...]NodeType{
 	0,                 // lexer_part_OrSyntaxError ::= lexer_directive
 	0,                 // lexer_part_OrSyntaxError ::= syntax_problem
 	NamedPattern,      // named_pattern ::= identifier '=' pattern
-	Lexeme,            // lexeme ::= identifier typeopt ':' pattern lexeme_transitionopt integer_literalopt lexeme_attrsopt commandopt
-	Lexeme,            // lexeme ::= identifier typeopt ':'
+	Lexeme,            // lexeme ::= identifier rawTypeopt ':' pattern lexeme_transitionopt integer_literalopt lexeme_attrsopt commandopt
+	Lexeme,            // lexeme ::= identifier rawTypeopt ':'
 	LexemeTransition,  // lexeme_transition ::= '=>' stateref
 	LexemeAttrs,       // lexeme_attrs ::= '(' lexeme_attribute ')'
 	LexemeAttribute,   // lexeme_attribute ::= 'soft'
@@ -450,7 +432,7 @@ var ruleNodeType = [...]NodeType{
 	SubType,           // nonterm_type ::= 'returns' symref
 	InterfaceType,     // nonterm_type ::= 'interface'
 	VoidType,          // nonterm_type ::= 'void'
-	RawType,           // nonterm_type ::= type
+	0,                 // nonterm_type ::= rawType
 	Assoc,             // assoc ::= 'left'
 	Assoc,             // assoc ::= 'right'
 	Assoc,             // assoc ::= 'nonassoc'
@@ -524,7 +506,7 @@ var ruleNodeType = [...]NodeType{
 	0,                 // annotation_list ::= annotation_list annotation
 	0,                 // annotation_list ::= annotation
 	Annotations,       // annotations ::= annotation_list
-	AnnotationImpl,    // annotation ::= '@' identifier '{' expression '}'
+	AnnotationImpl,    // annotation ::= '@' identifier '=' expression
 	AnnotationImpl,    // annotation ::= '@' identifier
 	0,                 // annotation ::= '@' syntax_problem
 	0,                 // nonterm_param_list_Comma_separated ::= nonterm_param_list_Comma_separated ',' nonterm_param
@@ -562,8 +544,8 @@ var ruleNodeType = [...]NodeType{
 	0,                 // expression_list_Comma_separated ::= expression
 	0,                 // expression_list_Comma_separated_opt ::= expression_list_Comma_separated
 	0,                 // expression_list_Comma_separated_opt ::=
-	0,                 // typeopt ::= type
-	0,                 // typeopt ::=
+	0,                 // rawTypeopt ::= rawType
+	0,                 // rawTypeopt ::=
 	0,                 // lexeme_transitionopt ::= lexeme_transition
 	0,                 // lexeme_transitionopt ::=
 	0,                 // integer_literalopt ::= integer_literal

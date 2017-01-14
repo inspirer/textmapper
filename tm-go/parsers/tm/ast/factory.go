@@ -162,8 +162,6 @@ func ToTmNode(n Node) TmNode {
 		return &SyntaxProblem{n}
 	case tm.TemplateParam:
 		return &TemplateParam{n}
-	case tm.Type:
-		return &Type{n}
 	case tm.VoidType:
 		return &VoidType{n}
 	case tm.InvalidToken, tm.MultilineComment, tm.Comment:

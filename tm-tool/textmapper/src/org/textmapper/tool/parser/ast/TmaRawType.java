@@ -17,17 +17,10 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaNontermTypeRaw extends TmaNode implements ITmaNontermType {
+public class TmaRawType extends TmaNode implements ITmaNontermType {
 
-	private final String typeText;
-
-	public TmaNontermTypeRaw(String typeText, TextSource source, int line, int offset, int endoffset) {
+	public TmaRawType(TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.typeText = typeText;
-	}
-
-	public String getTypeText() {
-		return typeText;
 	}
 
 	@Override

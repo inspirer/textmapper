@@ -420,7 +420,7 @@ public class JsLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		87, 3, 87, 28, 88, 69, 92, 92, 0, 106, 93, 83
+		89, 3, 89, 28, 90, 69, 94, 92, 2, 106, 95, 83
 	};
 
 	private static final int tmFirstRule = -7;

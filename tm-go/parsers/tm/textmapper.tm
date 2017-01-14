@@ -24,13 +24,12 @@ reportTokens = [invalid_token, multiline_comment, comment]
 
 :: lexer
 
-[initial, afterAt, afterAtID]
+[initial, afterColonOrEq, afterGT]
 
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
 reChar = /{reFirst}|\*/
 
-regexp:  /\/{reFirst}{reChar}*\//
 scon:    /"([^\n\\"]|\\.)*"/
 icon:    /-?[0-9]+/
 
@@ -57,7 +56,8 @@ multiline_comment: /\/\*{commentChars}\*\//   (space)
 '[':    /\[/
 ']':    /\]/
 '(':    /\(/
-# TODO overlaps with ID '->':    /->/
+# TODO overlaps with ID
+'->':   /->/
 ')':    /\)/
 '{~':   /\{~/
 '}':    /\}/
@@ -76,8 +76,6 @@ multiline_comment: /\/\*{commentChars}\*\//   (space)
 
 error:
 invalid_token:
-
-[initial, afterAt, afterAtID]
 
 ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 
@@ -120,12 +118,18 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'space': /space/
 'void': /void/
 
-[initial, afterAt]
+[initial, afterColonOrEq]
 
-code:   /\{/
+code:   /\{[^\{\}]*\}/    /* TODO */
 
-[afterAtID]
-'{':    /\{/
+[afterGT]
+'{':	/\{/
+
+[afterColonOrEq]
+regexp: /\/{reFirst}{reChar}*\//
+
+[initial, afterGT]
+'/':    /\//
 
 :: parser
 
@@ -212,19 +216,8 @@ symref<flag Args> ::=
   | [!Args] name=identifier
 ;
 
-@void
-type ::=
-    '(' scon ')'
-  | '(' type_part_list ')'
-;
-
-@noast @void
-type_part_list ::=
-    type_part_list type_part | type_part ;
-
-@noast @void
-type_part ::=
-    '<' | '>' | '[' | ']' | identifier | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
+rawType class ::=
+	  code ;
 
 @noast
 lexer_parts ::=
@@ -244,7 +237,7 @@ named_pattern ::=
     name=identifier '=' pattern ;
 
 lexeme ::=
-    name=identifier typeopt ':'
+    name=identifier rawTypeopt ':'
           (pattern transition=lexeme_transitionopt priority=integer_literalopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_transition ::=
@@ -292,7 +285,7 @@ nonterm_type interface ::=
     'returns' reference=symref<~Args>                      {~subType}
   | 'interface'                                            {~interfaceType}
   | 'void'                                                 {~voidType}
-  | type                                                   {~rawType}
+  | rawType
 ;
 
 assoc ::=
@@ -422,7 +415,7 @@ annotations ::=
     annotation+ ;
 
 annotation interface ::=
-    '@' name=identifier ('{' expression '}')?    {~annotationImpl}
+    '@' name=identifier ('=' expression)?    {~annotationImpl}
   | '@' syntax_problem
 ;
 
@@ -480,3 +473,36 @@ expression interface ::=
   | '[' (expression separator ',')* ']'                              {~array}
   | syntax_problem
 ;
+
+%%
+
+${template go_lexer.stateVars}
+	inStatesSelector bool
+${end}
+
+${template go_lexer.initStateVars-}
+	l.inStatesSelector = false
+${end}
+
+${template go_lexer.onBeforeNext-}
+	lastTokenLine := l.tokenLine
+${end}
+
+${template go_lexer.onAfterNext-}
+	switch token {
+	case LT:
+		l.inStatesSelector = (lastTokenLine != l.tokenLine) || l.State == StateAfterColonOrEq
+		l.State = StateInitial
+	case GT:
+		if l.inStatesSelector {
+			l.State = StateAfterGT
+			l.inStatesSelector = false
+		} else {
+			l.State = StateInitial
+		}
+	case ASSIGN, COLON:
+		l.State = StateAfterColonOrEq
+	default:
+		l.State = StateInitial
+	}
+${end}

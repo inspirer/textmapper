@@ -162,7 +162,7 @@ public class JsonLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		8, 5, 8, 2
+		10, 5, 10, 2
 	};
 
 	private static final int tmFirstRule = -3;
