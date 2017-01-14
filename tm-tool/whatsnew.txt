@@ -1,5 +1,11 @@
+0.9.11
+------
+
+[+] Backtracking lexers
+[+] New syntax for types
+
 0.9.10
------
+------
 
 [+] Automatic import management in Go templates. "fmt".Sprintf -> fmt.Sprintf + an import.
 

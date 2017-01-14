@@ -21,7 +21,7 @@
 		</component>
 	</project-components>
 	<extensions defaultExtensionNs="com.intellij">
-		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.10.jar"/>
+		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.11.jar"/>
 	</extensions>
 	<extensions defaultExtensionNs="org.textmapper.idea">
 		<templatesHandler implementation="org.textmapper.idea.java.JavaTemplatesHandler"/>
