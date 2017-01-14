@@ -165,8 +165,11 @@ invalid_token: /\.\./
 #   055 == 45, 099 == 99
 #   09.5 == 9.5, 059.5 == 59.5, 05.5 => error, 05.9 => error
 
+int = /(0+([0-7]*[89][0-9]*)?|[1-9][0-9]*)/
+frac = /\.[0-9]*/
 exp = /[eE][+-]?[0-9]+/
-NumericLiteral: /(0+([0-7]*[89][0-9]*)?|[1-9][0-9]*)(\.[0-9]*)?{exp}?/
+bad_exp = /[eE][+-]?/
+NumericLiteral: /{int}{frac}?{exp}?/
 NumericLiteral: /\.[0-9]+{exp}?/
 NumericLiteral: /0[xX]{hex}+/
 NumericLiteral: /0[oO][0-7]+/
@@ -174,6 +177,8 @@ NumericLiteral: /0+[0-7]+/      1 # (Takes priority over the float rule above)
 NumericLiteral: /0[bB][01]+/
 
 invalid_token: /0[xXbBoO]/
+invalid_token: /{int}{frac}?{bad_exp}/
+invalid_token: /\.[0-9]+{bad_exp}/
 
 escape = /\\([^1-9xu\n\r\u2028\u2029]|x{hex}{2}|{unicodeEscapeSequence})/
 lineCont = /\\([\n\r\u2028\u2029]|\r\n)/

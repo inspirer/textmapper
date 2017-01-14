@@ -177,5 +177,5 @@ var tmLexerAction = []int8{
 }
 
 var tmBacktracking = []int{
-	42, 3, 26, 17, 81, 38,
+	40, 3, 24, 17, 79, 38,
 }

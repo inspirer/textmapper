@@ -491,7 +491,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				int[] backtracking = (int[]) args[0];
 				backtracking = Arrays.copyOf(backtracking, backtracking.length);
 				for (int i = 0; i < backtracking.length; i += 2) {
-					backtracking[i] = 2+grammar.getLexerRules()[backtracking[i]-2].getSymbol().getIndex();
+					backtracking[i] = grammar.getLexerRules()[backtracking[i]-2].getSymbol().getIndex();
 				}
 				return backtracking;
 			}

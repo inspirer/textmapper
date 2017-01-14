@@ -168,8 +168,12 @@ ${if self->hasRecovering()-}
 				state = p.stack[len(p.stack)-1].state
 				if recovering == 0 {
 					offset, endoffset := lexer.Pos()
+${if opts.tokenLine-}
 					line := lexer.Line()
 					p.err(line, offset, endoffset-offset, "syntax error")
+${else-}
+					p.err(offset, endoffset-offset, "syntax error")
+${end-}
 				}
 				if recovering >= 3 {
 					p.fetchNext()
@@ -193,8 +197,12 @@ ${if self->hasRecovering()-}
 		}
 ${end-}
 		offset, endoffset := lexer.Pos()
+${if opts.tokenLine-}
 		line := lexer.Line()
 		p.err(line, offset, endoffset-offset, "syntax error")
+${else-}
+		p.err(offset, endoffset-offset, "syntax error")
+${end-}
 		return false${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
 	}
 

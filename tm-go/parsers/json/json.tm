@@ -4,6 +4,7 @@ lang = "json"
 package = "github.com/inspirer/textmapper/tm-go/parsers/json"
 eventBased = true
 reportTokens = [MultiLineComment, invalid_token, JSONString]
+reportInvalidRunes = true
 extraTypes = ["NonExistingType"]
 
 :: lexer

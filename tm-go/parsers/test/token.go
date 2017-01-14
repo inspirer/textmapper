@@ -18,18 +18,21 @@ const (
 	MULTILINECOMMENT
 	SINGLELINECOMMENT
 	IDENTIFIER
-	TEST   // test
-	DECL1  // decl1
-	DECL2  // decl2
-	LBRACE // {
-	RBRACE // }
-	LPAREN // (
-	RPAREN // )
-	LBRACK // [
-	RBRACK // ]
-	DOT    // .
-	COMMA  // ,
-	COLON  // :
+	TEST    // test
+	DECL1   // decl1
+	DECL2   // decl2
+	LBRACE  // {
+	RBRACE  // }
+	LPAREN  // (
+	RPAREN  // )
+	LBRACK  // [
+	RBRACK  // ]
+	DOT     // .
+	COMMA   // ,
+	COLON   // :
+	MINUS   // -
+	MINUSGT // ->
+	BACKTRACKINGTOKEN
 	ERROR
 	INVALID_TOKEN
 
@@ -55,6 +58,9 @@ var tokenStr = [...]string{
 	".",
 	",",
 	":",
+	"-",
+	"->",
+	"BACKTRACKINGTOKEN",
 	"ERROR",
 	"INVALID_TOKEN",
 }

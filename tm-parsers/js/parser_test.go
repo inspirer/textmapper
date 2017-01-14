@@ -818,6 +818,8 @@ var parseTests = []struct {
 	{js.InvalidToken, []string{
 		`function a() { «0x» }`,
 		`/*fails*/ function a() { «0x»§`,
+		`function a() { «"abc»
+		}`,
 	}},
 }
 
@@ -831,7 +833,7 @@ func TestParser(t *testing.T) {
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.nt.String(), input, t)
 			l.Init(test.Source())
-			p.Init(test.Error, func(t js.NodeType, offset, endoffset int) {
+			p.Init(test.ErrorWithLine, func(t js.NodeType, offset, endoffset int) {
 				if t == tc.nt {
 					test.Consume(offset, endoffset)
 				}

@@ -14,25 +14,16 @@ const (
 	StateAfterGT        = 2
 )
 
-// ErrorHandler is called every time a lexer or parser is unable to process
-// some part of the input.
-type ErrorHandler func(line, offset, len int, msg string)
-
-// IgnoreErrorsHandler is a no-op error handler.
-func IgnoreErrorsHandler(line, offset, len int, msg string) {}
-
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
 	source string
-	err    ErrorHandler
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
 	tokenOffset int  // last token offset
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
-	lineOffset  int  // current line offset
 	scanOffset  int  // scanning offset
 	value       interface{}
 
@@ -41,24 +32,18 @@ type Lexer struct {
 	inStatesSelector bool
 }
 
-const bom = 0xfeff // byte order mark, permitted as a first character only
 var bomSeq = "\xef\xbb\xbf"
 
 // Init prepares the lexer l to tokenize source by performing the full reset
 // of the internal state.
-//
-// Note that Init may call err once if there is an error in the
-// first few characters of the text.
-func (l *Lexer) Init(source string, err ErrorHandler) {
+func (l *Lexer) Init(source string) {
 	l.source = source
-	l.err = err
 
 	l.ch = 0
 	l.offset = 0
 	l.tokenOffset = 0
 	l.line = 1
 	l.tokenLine = 1
-	l.lineOffset = 0
 	l.scanOffset = 0
 	l.State = 0
 	l.inStatesSelector = false
@@ -73,9 +58,6 @@ func (l *Lexer) Init(source string, err ErrorHandler) {
 		if r >= 0x80 {
 			// not ASCII
 			r, w = utf8.DecodeRuneInString(l.source[l.offset:])
-			if r == utf8.RuneError && w == 1 || r == bom {
-				l.invalidRune(r, w)
-			}
 		}
 		l.scanOffset += w
 		l.ch = r
@@ -97,7 +79,9 @@ restart:
 	state := tmStateMap[l.State]
 	hash := uint32(0)
 	backupToken := -1
-cont:
+	backupOffset := 0
+	backupLine := 0
+	backupHash := hash
 	for state >= 0 {
 		var ch int
 		if uint(l.ch) < tmRuneClassLen {
@@ -110,11 +94,18 @@ cont:
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state > tmFirstRule {
+			if state < 0 {
+				state = (-1 - state) * 2
+				backupToken = tmBacktracking[state]
+				backupOffset = l.offset
+				backupLine = l.line
+				backupHash = hash
+				state = tmBacktracking[state+1]
+			}
 			hash = hash*uint32(31) + uint32(l.ch)
 
 			if l.ch == '\n' {
 				l.line++
-				l.lineOffset = l.offset
 			}
 
 			// Scan the next character.
@@ -125,9 +116,6 @@ cont:
 				if r >= 0x80 {
 					// not ASCII
 					r, w = utf8.DecodeRuneInString(l.source[l.offset:])
-					if r == utf8.RuneError && w == 1 || r == bom {
-						l.invalidRune(r, w)
-					}
 				}
 				l.scanOffset += w
 				l.ch = r
@@ -136,14 +124,9 @@ cont:
 			}
 		}
 	}
-	if state > tmFirstRule {
-		state = (-1 - state) * 2
-		backupToken = tmBacktracking[state]
-		state = tmBacktracking[state+1]
-		goto cont
-	}
 
 	token := Token(tmFirstRule - state)
+recovered:
 	switch token {
 	case ID:
 		hh := hash & 63
@@ -320,15 +303,23 @@ cont:
 	}
 	switch token {
 	case INVALID_TOKEN:
+		scanNext := false
 		if backupToken >= 0 {
-			// TODO recover
-		}
-		if l.offset == l.tokenOffset {
+			// Update line information
+			l.line = backupLine
+
+			token = Token(backupToken)
+			hash = backupHash
+			l.scanOffset = backupOffset
+			scanNext = true
+		} else if l.offset == l.tokenOffset {
 			if l.ch == '\n' {
 				l.line++
-				l.lineOffset = l.offset
 			}
 
+			scanNext = true
+		}
+		if scanNext {
 			// Scan the next character.
 			// Note: the following code is inlined to avoid performance implications.
 			l.offset = l.scanOffset
@@ -337,15 +328,15 @@ cont:
 				if r >= 0x80 {
 					// not ASCII
 					r, w = utf8.DecodeRuneInString(l.source[l.offset:])
-					if r == utf8.RuneError && w == 1 || r == bom {
-						l.invalidRune(r, w)
-					}
 				}
 				l.scanOffset += w
 				l.ch = r
 			} else {
 				l.ch = -1 // EOI
 			}
+		}
+		if token != INVALID_TOKEN {
+			goto recovered
 		}
 
 	case 3:
@@ -368,15 +359,6 @@ cont:
 		l.State = StateInitial
 	}
 	return token
-}
-
-func (l *Lexer) invalidRune(r rune, w int) {
-	switch r {
-	case utf8.RuneError:
-		l.err(l.line, l.offset, w, "illegal UTF-8 encoding")
-	case bom:
-		l.err(l.line, l.offset, w, "illegal byte order mark")
-	}
 }
 
 // Pos returns the start and end positions of the last token returned by Next().

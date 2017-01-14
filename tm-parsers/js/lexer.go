@@ -30,7 +30,6 @@ type Lexer struct {
 	tokenOffset int  // last token offset
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
-	lineOffset  int  // current line offset
 	scanOffset  int  // scanning offset
 	value       interface{}
 
@@ -53,7 +52,6 @@ func (l *Lexer) Init(source string) {
 	l.tokenOffset = 0
 	l.line = 1
 	l.tokenLine = 1
-	l.lineOffset = 0
 	l.scanOffset = 0
 	l.State = 0
 	l.token = UNAVAILABLE
@@ -91,7 +89,9 @@ restart:
 	state := tmStateMap[l.State]
 	hash := uint32(0)
 	backupToken := -1
-cont:
+	backupOffset := 0
+	backupLine := 0
+	backupHash := hash
 	for state >= 0 {
 		var ch int
 		if uint(l.ch) < tmRuneClassLen {
@@ -104,11 +104,18 @@ cont:
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state > tmFirstRule {
+			if state < 0 {
+				state = (-1 - state) * 2
+				backupToken = tmBacktracking[state]
+				backupOffset = l.offset
+				backupLine = l.line
+				backupHash = hash
+				state = tmBacktracking[state+1]
+			}
 			hash = hash*uint32(31) + uint32(l.ch)
 
 			if l.ch == '\n' {
 				l.line++
-				l.lineOffset = l.offset
 			}
 
 			// Scan the next character.
@@ -127,14 +134,9 @@ cont:
 			}
 		}
 	}
-	if state > tmFirstRule {
-		state = (-1 - state) * 2
-		backupToken = tmBacktracking[state]
-		state = tmBacktracking[state+1]
-		goto cont
-	}
 
 	token := Token(tmFirstRule - state)
+recovered:
 	switch token {
 	case IDENTIFIER:
 		hh := hash & 63
@@ -363,15 +365,23 @@ cont:
 	}
 	switch token {
 	case INVALID_TOKEN:
+		scanNext := false
 		if backupToken >= 0 {
-			// TODO recover
-		}
-		if l.offset == l.tokenOffset {
+			// Update line information
+			l.line = backupLine
+
+			token = Token(backupToken)
+			hash = backupHash
+			l.scanOffset = backupOffset
+			scanNext = true
+		} else if l.offset == l.tokenOffset {
 			if l.ch == '\n' {
 				l.line++
-				l.lineOffset = l.offset
 			}
 
+			scanNext = true
+		}
+		if scanNext {
 			// Scan the next character.
 			// Note: the following code is inlined to avoid performance implications.
 			l.offset = l.scanOffset
@@ -386,6 +396,9 @@ cont:
 			} else {
 				l.ch = -1 // EOI
 			}
+		}
+		if token != INVALID_TOKEN {
+			goto recovered
 		}
 
 	case 3:

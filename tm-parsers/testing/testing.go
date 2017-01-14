@@ -45,12 +45,16 @@ func (pt *ParserTest) Source() string {
 	return pt.source
 }
 
-func (pt *ParserTest) Error(line, offset, length int, msg string) {
+func (pt *ParserTest) Error(offset, length int, msg string) {
 	if len(pt.expErrors) > 0 && pt.expErrors[0] == offset {
 		pt.expErrors = pt.expErrors[1:]
 		return
 	}
 	pt.t.Errorf("Test %s: unexpected error at %d in `%s_%s`: %s", pt.name, offset, pt.source[:offset], pt.source[offset:], msg)
+}
+
+func (pt *ParserTest) ErrorWithLine(line, offset, length int, msg string) {
+	pt.Error(offset, length, msg)
 }
 
 func (pt *ParserTest) Consume(offset, endoffset int) {

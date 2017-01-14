@@ -7,7 +7,7 @@ import (
 	pt "github.com/inspirer/textmapper/tm-parsers/testing"
 )
 
-var testParseTests = []struct {
+var parseTests = []struct {
 	nt     test.NodeType
 	inputs []string
 }{
@@ -45,7 +45,7 @@ func TestParser(t *testing.T) {
 	p := new(test.Parser)
 
 	seen := map[test.NodeType]bool{}
-	for _, tc := range testParseTests {
+	for _, tc := range parseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			ptest := pt.NewParserTest(tc.nt.String(), input, t)

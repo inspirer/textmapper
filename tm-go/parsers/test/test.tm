@@ -6,7 +6,7 @@ lang = "test"
 package = "github.com/inspirer/textmapper/tm-go/parsers/test"
 eventBased = true
 eventFields = true
-reportInvalidRunes = false
+tokenLine = false
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
 
 :: lexer
@@ -17,7 +17,7 @@ commentChars = /([^*]|\*+[^*\/])*\**/
 MultiLineComment:  /\/\*{commentChars}\*\//    (space)
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
 
-Identifier: /[a-zA-Z_][a-zA-Z_0-9]*/    (class)
+Identifier: /[a-zA-Z_](-*[a-zA-Z_0-9])*/    (class)
 
 # Keywords.
 'test':      /test/
@@ -34,6 +34,11 @@ Identifier: /[a-zA-Z_][a-zA-Z_0-9]*/    (class)
 '.': /\./
 ',': /,/
 ':': /:/
+'-': /-/
+'->': /->/
+
+# Backtracing.
+backtrackingToken: /test(foo)?-+>/
 
 error:
 invalid_token:

@@ -6,6 +6,13 @@ import (
 	"fmt"
 )
 
+// ErrorHandler is called every time a lexer or parser is unable to process
+// some part of the input.
+type ErrorHandler func(line, offset, len int, msg string)
+
+// IgnoreErrorsHandler is a no-op error handler.
+func IgnoreErrorsHandler(line, offset, len int, msg string) {}
+
 // Parser is a table-driven LALR parser for tm.
 type Parser struct {
 	err      ErrorHandler

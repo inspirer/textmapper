@@ -34,9 +34,13 @@ ${end-}
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
 	tokenOffset int  // last token offset
+${if opts.tokenLine-}
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
+${end-}
+${if opts.tokenLineOffset-}
 	lineOffset  int  // current line offset
+${end-}
 	scanOffset  int  // scanning offset
 	value       interface{}
 
@@ -65,9 +69,13 @@ ${end-}
 	l.ch = 0
 	l.offset = 0
 	l.tokenOffset = 0
+${if opts.tokenLine-}
 	l.line = 1
 	l.tokenLine = 1
+${end-}
+${if opts.tokenLineOffset-}
 	l.lineOffset = 0
+${end-}
 	l.scanOffset = 0
 	l.State = 0
 ${call initStateVars-}
@@ -102,7 +110,9 @@ ${end-}
 func (l *Lexer) Next() Token {
 ${call onBeforeNext-}
 restart:
+${if opts.tokenLine-}
 	l.tokenLine = l.line
+${end-}
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
@@ -111,7 +121,16 @@ ${if self->useCustomMap()-}
 ${end-}
 ${if lex.backtracking.length > 0-}
 	${self->backupVar()} := -1
-cont:
+	backupOffset := 0
+${if opts.tokenLine-}
+	backupLine := 0
+${end-}
+${if self->useCustomMap()-}
+	backupHash := hash
+${end-}
+${if opts.tokenLineOffset-}
+	backupLineOffset := 0
+${end-}
 ${end-}
 	for state >= 0 {
 		var ch int
@@ -129,15 +148,36 @@ ${end-}
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state > tmFirstRule {
+${if lex.backtracking.length > 0-}
+			if state < 0 {
+				state = (-1 - state) * 2
+				${self->backupVar()} = tmBacktracking[state]
+				backupOffset = l.offset
+${if opts.tokenLine-}
+				backupLine = l.line
+${end-}
+${if opts.tokenLineOffset-}
+				backupLineOffset = l.lineOffset
+${end-}
+${if self->useCustomMap()-}
+				backupHash = hash
+${end-}
+				state = tmBacktracking[state+1]
+			}
+${end-}
 ${if self->useCustomMap()-}
 			hash = hash*uint32(31) + uint32(l.ch)
 
 ${end-}
+${if opts.tokenLine-}
 			if l.ch == '\n' {
 				l.line++
+${if opts.tokenLineOffset-}
 				l.lineOffset = l.offset
+${end-}
 			}
 
+${end-}
 			// Scan the next character.
 			// Note: the following code is inlined to avoid performance implications.
 			l.offset = l.scanOffset
@@ -159,19 +199,14 @@ ${end-}
 			}
 		}
 	}
-${if lex.backtracking.length > 0-}
-	if state > tmFirstRule {
-		state = (-1 - state) * 2
-		${self->backupVar()} = tmBacktracking[state]
-		state = tmBacktracking[state+1]
-		goto cont
-	}
-${end-}
 
 ${if self->canInlineLexerRules()-}
 	token := Token(tmFirstRule-state)
 ${else-}
 	rule := tmFirstRule-state
+${end-}
+${if lex.backtracking.length > 0-}
+recovered:
 ${end-}
 ${if self->classRules().exists(it|it->classHasInstances())-}
 	switch ${self->canInlineLexerRules() ? 'token' : 'rule'} {
@@ -220,6 +255,10 @@ ${foreach rule in syntax.lexerRules.select(r|r->hasActions())-}
 ${call lexerAction('l.value', 'token') for rule-}
 ${end-}
 	}
+${else-}
+	if rule == 0 {
+${call handleInvalidToken-}
+	}
 ${end-}
 	if space {
 		goto restart
@@ -232,9 +271,9 @@ ${if opts.reportInvalidRunes}
 func (l *Lexer) invalidRune(r rune, w int) {
 	switch r {
 	case "unicode/utf8".RuneError:
-		l.err(l.line, l.offset, w, "illegal UTF-8 encoding")
+		l.err(${if opts.tokenLine}l.line, ${end}l.offset, w, "illegal UTF-8 encoding")
 	case bom:
-		l.err(l.line, l.offset, w, "illegal byte order mark")
+		l.err(${if opts.tokenLine}l.line, ${end}l.offset, w, "illegal byte order mark")
 	}
 }
 ${end}
@@ -244,12 +283,12 @@ func (l *Lexer) Pos() (start, end int) {
 	end = l.offset
 	return
 }
-
+${if opts.tokenLine}
 // Line returns the line number of the last token returned by Next().
 func (l *Lexer) Line() int {
 	return l.tokenLine
 }
-
+${end}
 // Text returns the substring of the input corresponding to the last token.
 func (l *Lexer) Text() string {
 	return l.source[l.tokenOffset:l.offset]
@@ -263,16 +302,51 @@ ${end}
 
 ${template handleInvalidToken-}
 ${if lex.backtracking.length > 0-}
+	scanNext := false
 	if ${self->backupVar()} >= 0 {
-		// TODO recover
-	}
+${if opts.tokenLine-}
+		// Update line information
+		l.line = backupLine
 ${end-}
-	if l.offset == l.tokenOffset {
+${if opts.tokenLineOffset-}
+		l.lineOffset = backupLineOffset
+${end-}
+
+${if self->canInlineLexerRules()-}
+		token = Token(backupToken)
+${else-}
+		rule = backupRule
+${end-}
+${if self->useCustomMap()-}
+		hash = backupHash
+${end-}
+		l.scanOffset = backupOffset
+		scanNext = true
+	} else if l.offset == l.tokenOffset {
+${if opts.tokenLine-}
 		if l.ch == '\n' {
 			l.line++
+${if opts.tokenLineOffset-}
 			l.lineOffset = l.offset
+${end-}
 		}
 
+${end-}
+		scanNext = true
+	}
+	if scanNext {
+${else-}
+	if l.offset == l.tokenOffset {
+${if opts.tokenLine-}
+		if l.ch == '\n' {
+			l.line++
+${if opts.tokenLineOffset-}
+			l.lineOffset = l.offset
+${end-}
+		}
+
+${end-}
+${end-}
 		// Scan the next character.
 		// Note: the following code is inlined to avoid performance implications.
 		l.offset = l.scanOffset
@@ -293,8 +367,17 @@ ${end-}
 			l.ch = -1 // EOI
 		}
 	}
+${if lex.backtracking.length > 0-}
+${if self->canInlineLexerRules()-}
+	if token != ${self->go_token.invalidTokenName()} {
+${else-}
+	if rule != 0 {
+${end-}
+		goto recovered
+	}
+${end-}
 ${if !self->go_token.hasInvalidToken()-}
-	l.err(l.tokenLine, l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
+	l.err(${if opts.tokenLine}l.tokenLine, ${end}l.tokenOffset, l.offset-l.tokenOffset, "invalid token")
 	goto restart
 ${end-}
 ${end}

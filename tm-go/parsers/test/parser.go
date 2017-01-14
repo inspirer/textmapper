@@ -8,10 +8,10 @@ import (
 
 // ErrorHandler is called every time a lexer or parser is unable to process
 // some part of the input.
-type ErrorHandler func(line, offset, len int, msg string)
+type ErrorHandler func(offset, len int, msg string)
 
 // IgnoreErrorsHandler is a no-op error handler.
-func IgnoreErrorsHandler(line, offset, len int, msg string) {}
+func IgnoreErrorsHandler(offset, len int, msg string) {}
 
 // Parser is a table-driven LALR parser for test.
 type Parser struct {
@@ -134,8 +134,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 				state = p.stack[len(p.stack)-1].state
 				if recovering == 0 {
 					offset, endoffset := lexer.Pos()
-					line := lexer.Line()
-					p.err(line, offset, endoffset-offset, "syntax error")
+					p.err(offset, endoffset-offset, "syntax error")
 				}
 				if recovering >= 3 {
 					p.fetchNext()
@@ -156,15 +155,14 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 			return false
 		}
 		offset, endoffset := lexer.Pos()
-		line := lexer.Line()
-		p.err(line, offset, endoffset-offset, "syntax error")
+		p.err(offset, endoffset-offset, "syntax error")
 		return false
 	}
 
 	return true
 }
 
-const errSymbol = 17
+const errSymbol = 20
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {
