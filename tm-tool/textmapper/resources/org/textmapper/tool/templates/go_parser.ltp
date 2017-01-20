@@ -507,7 +507,7 @@ var tmRuleSymbol = []int32{
 }
 ${foreach set in syntax.sets-}
 
-// ${set.set}
+// ${set.set} = ${set.elements.collect(i | syntax.symbols[i]->go_token.tokenName())->util.join(', ')}
 var ${set.name} = []int32{
 ${if set.elements.size() > 0-}
 	${util.format(set.elements, 16, 1)},

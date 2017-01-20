@@ -9772,7 +9772,7 @@ var tmRuleSymbol = []int32{
 	544, 544, 545, 545, 546, 546, 547, 547, 548, 548,
 }
 
-// set(follow error)
+// set(follow error) = RBRACE, RPAREN, RBRACK, SEMICOLON, COMMA
 var afterErr = []int32{
 	54, 56, 58, 61, 62,
 }

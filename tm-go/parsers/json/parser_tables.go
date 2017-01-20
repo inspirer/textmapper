@@ -83,7 +83,7 @@ var tmRuleSymbol = []int32{
 	25,
 }
 
-// set(first JSONValue<+A>)
+// set(first JSONValue<+A>) = LBRACE
 var Literals = []int32{
 	1,
 }

@@ -389,6 +389,23 @@ public class JavaIxFactory implements IxFactory {
 		public Object getObject() {
 			return array;
 		}
+
+		@Override
+		public Iterator asSequence() throws EvaluationException {
+			return new Iterator() {
+				private int pos = 0;
+
+				@Override
+				public boolean hasNext() {
+					return pos < array.length;
+				}
+
+				@Override
+				public Object next() {
+					return array[pos++];
+				}
+			};
+		}
 	}
 
 	private class JavaShortArrayIxObject extends DefaultIxObject implements IxWrapper {
