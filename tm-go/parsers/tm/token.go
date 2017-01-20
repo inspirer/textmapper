@@ -27,7 +27,6 @@ const (
 	ASSIGN           // =
 	ASSIGNASSIGN     // ==
 	EXCLASSIGN       // !=
-	ASSIGNGT         // =>
 	SEMICOLON        // ;
 	DOT              // .
 	COMMA            // ,
@@ -113,7 +112,6 @@ var tokenStr = [...]string{
 	"=",
 	"==",
 	"!=",
-	"=>",
 	";",
 	".",
 	",",

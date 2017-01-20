@@ -66,8 +66,6 @@ func ToTmNode(n Node) TmNode {
 		return &LexemeAttribute{n}
 	case tm.LexemeAttrs:
 		return &LexemeAttrs{n}
-	case tm.LexemeTransition:
-		return &LexemeTransition{n}
 	case tm.LexerState:
 		return &LexerState{n}
 	case tm.ListSeparator:
@@ -148,8 +146,6 @@ func ToTmNode(n Node) TmNode {
 		return &SetSymbol{n}
 	case tm.StateSelector:
 		return &StateSelector{n}
-	case tm.Stateref:
-		return &Stateref{n}
 	case tm.StringLiteral:
 		return &StringLiteral{n}
 	case tm.SubType:

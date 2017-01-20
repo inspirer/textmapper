@@ -49,11 +49,11 @@ const (
 )
 
 func (p *Parser) ParseInput(lexer *Lexer) bool {
-	return p.parse(0, 409, lexer)
+	return p.parse(0, 402, lexer)
 }
 
 func (p *Parser) ParseExpression(lexer *Lexer) bool {
-	return p.parse(1, 410, lexer)
+	return p.parse(1, 403, lexer)
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
@@ -164,7 +164,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	return true
 }
 
-const errSymbol = 38
+const errSymbol = 37
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {

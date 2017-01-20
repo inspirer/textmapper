@@ -22,17 +22,15 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 	private final TmaIdentifier name;
 	private final TmaRawType rawType;
 	private final TmaPattern pattern;
-	private final TmaStateref transition;
 	private final Integer priority;
 	private final TmaLexemeAttrs attrs;
 	private final TmaCommand command;
 
-	public TmaLexeme(TmaIdentifier name, TmaRawType rawType, TmaPattern pattern, TmaStateref transition, Integer priority, TmaLexemeAttrs attrs, TmaCommand command, TextSource source, int line, int offset, int endoffset) {
+	public TmaLexeme(TmaIdentifier name, TmaRawType rawType, TmaPattern pattern, Integer priority, TmaLexemeAttrs attrs, TmaCommand command, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.rawType = rawType;
 		this.pattern = pattern;
-		this.transition = transition;
 		this.priority = priority;
 		this.attrs = attrs;
 		this.command = command;
@@ -48,10 +46,6 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 
 	public TmaPattern getPattern() {
 		return pattern;
-	}
-
-	public TmaStateref getTransition() {
-		return transition;
 	}
 
 	public Integer getPriority() {
@@ -79,9 +73,6 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 		}
 		if (pattern != null) {
 			pattern.accept(v);
-		}
-		if (transition != null) {
-			transition.accept(v);
 		}
 		if (attrs != null) {
 			attrs.accept(v);

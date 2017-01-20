@@ -51,7 +51,6 @@ func (InterfaceType) tmNodeNode()     {}
 func (Lexeme) tmNodeNode()            {}
 func (LexemeAttribute) tmNodeNode()   {}
 func (LexemeAttrs) tmNodeNode()       {}
-func (LexemeTransition) tmNodeNode()  {}
 func (LexerState) tmNodeNode()        {}
 func (ListSeparator) tmNodeNode()     {}
 func (Name) tmNodeNode()              {}
@@ -92,7 +91,6 @@ func (SetCompound) tmNodeNode()       {}
 func (SetOr) tmNodeNode()             {}
 func (SetSymbol) tmNodeNode()         {}
 func (StateSelector) tmNodeNode()     {}
-func (Stateref) tmNodeNode()          {}
 func (StringLiteral) tmNodeNode()     {}
 func (SubType) tmNodeNode()           {}
 func (Symref) tmNodeNode()            {}
@@ -579,13 +577,6 @@ func (n Lexeme) Pattern() *Pattern {
 	return nil
 }
 
-func (n Lexeme) Transition() *LexemeTransition {
-	if child := n.Child(filter.LexemeTransition); child != nil {
-		return &LexemeTransition{child}
-	}
-	return nil
-}
-
 func (n Lexeme) Priority() *IntegerLiteral {
 	if child := n.Child(filter.IntegerLiteral); child != nil {
 		return &IntegerLiteral{child}
@@ -619,27 +610,12 @@ func (n LexemeAttrs) LexemeAttribute() LexemeAttribute {
 	return LexemeAttribute{n.Child(filter.LexemeAttribute)}
 }
 
-type LexemeTransition struct {
-	Node
-}
-
-func (n LexemeTransition) Stateref() Stateref {
-	return Stateref{n.Child(filter.Stateref)}
-}
-
 type LexerState struct {
 	Node
 }
 
 func (n LexerState) Name() Identifier {
 	return Identifier{n.Child(filter.Identifier)}
-}
-
-func (n LexerState) DefaultTransition() *Stateref {
-	if child := n.Child(filter.Stateref); child != nil {
-		return &Stateref{child}
-	}
-	return nil
 }
 
 type ListSeparator struct {
@@ -1100,14 +1076,6 @@ func (n StateSelector) States() []LexerState {
 		result = append(result, LexerState{node})
 	}
 	return result
-}
-
-type Stateref struct {
-	Node
-}
-
-func (n Stateref) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
 }
 
 type StringLiteral struct {

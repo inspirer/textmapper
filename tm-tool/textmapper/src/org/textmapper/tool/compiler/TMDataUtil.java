@@ -100,14 +100,6 @@ public class TMDataUtil {
 		return (List<Nonterminal>) element.getUserData(UD_IMPLEMENTS);
 	}
 
-	public static void putTransition(LexerRule rule, TMStateTransitionSwitch transitionSwitch) {
-		rule.putUserData(UD_TRANSITIONMAP, transitionSwitch);
-	}
-
-	public static TMStateTransitionSwitch getTransition(LexerRule rule) {
-		return (TMStateTransitionSwitch) rule.getUserData(UD_TRANSITIONMAP);
-	}
-
 	public static RhsSymbol getRewrittenTo(RhsSymbol source) {
 		return (RhsSymbol) source.getUserData(RhsSymbol.UD_REWRITTEN);
 	}

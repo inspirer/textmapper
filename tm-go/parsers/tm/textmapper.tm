@@ -48,7 +48,6 @@ multiline_comment: /\/\*{commentChars}\*\//   (space)
 '=':    /=/
 '==':   /==/
 '!=':   /!=/
-'=>':   /=>/
 ';':    /;/
 '.':    /\./
 ',':    /,/
@@ -238,10 +237,7 @@ named_pattern ::=
 
 lexeme ::=
     name=identifier rawTypeopt ':'
-          (pattern transition=lexeme_transitionopt priority=integer_literalopt attrs=lexeme_attrsopt commandopt)? ;
-
-lexeme_transition ::=
-    '=>' stateref ;
+          (pattern priority=integer_literalopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_attrs ::=
     '(' lexeme_attribute ')' ;
@@ -264,7 +260,7 @@ stateref ::=
     name=identifier ;
 
 lexer_state ::=
-    name=identifier ('=>' defaultTransition=stateref)? ;
+    name=identifier ;
 
 grammar_parts ::=
     grammar_part

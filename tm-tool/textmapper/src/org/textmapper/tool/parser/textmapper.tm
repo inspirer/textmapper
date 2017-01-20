@@ -56,7 +56,6 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 '=':	/=/
 '==':   /==/
 '!=':   /!=/
-'=>':	/=>/
 ';':    /;/
 '.':    /\./
 ',':	/,/
@@ -208,10 +207,7 @@ named_pattern ::=
 
 lexeme ::=
 	  name=identifier rawTypeopt ':'
-			(pattern transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
-
-lexeme_transition ::=
-	  '=>' @pass stateref ;
+			(pattern priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_attrs ::=
 	  '(' kind=lexeme_attribute ')' ;
@@ -234,7 +230,7 @@ stateref class ::=
 	  name=ID ;
 
 lexer_state ::=
-	  name=identifier ('=>' defaultTransition=stateref)? ;
+	  name=identifier ;
 
 grammar_parts ::=
 	  grammar_part

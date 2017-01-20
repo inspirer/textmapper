@@ -36,7 +36,6 @@ var (
 	Lexeme              = func(t tm.NodeType) bool { return t == tm.Lexeme }
 	LexemeAttribute     = func(t tm.NodeType) bool { return t == tm.LexemeAttribute }
 	LexemeAttrs         = func(t tm.NodeType) bool { return t == tm.LexemeAttrs }
-	LexemeTransition    = func(t tm.NodeType) bool { return t == tm.LexemeTransition }
 	LexerState          = func(t tm.NodeType) bool { return t == tm.LexerState }
 	ListSeparator       = func(t tm.NodeType) bool { return t == tm.ListSeparator }
 	Name                = func(t tm.NodeType) bool { return t == tm.Name }
@@ -77,7 +76,6 @@ var (
 	SetOr               = func(t tm.NodeType) bool { return t == tm.SetOr }
 	SetSymbol           = func(t tm.NodeType) bool { return t == tm.SetSymbol }
 	StateSelector       = func(t tm.NodeType) bool { return t == tm.StateSelector }
-	Stateref            = func(t tm.NodeType) bool { return t == tm.Stateref }
 	StringLiteral       = func(t tm.NodeType) bool { return t == tm.StringLiteral }
 	SubType             = func(t tm.NodeType) bool { return t == tm.SubType }
 	Symref              = func(t tm.NodeType) bool { return t == tm.Symref }

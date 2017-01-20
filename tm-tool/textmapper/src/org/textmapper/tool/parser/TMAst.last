@@ -128,22 +128,13 @@ class Lexeme : LexerPart {
 	Identifier name;
 	RawType rawType;
 	Pattern pattern;
-	Stateref transition;
 	Integer priority;
 	LexemeAttrs attrs;
 	Command command;
 }
 
 lexeme  : Lexeme ::=
-	name=identifier rawType=rawTypeopt ':' ({pattern} transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
-;
-
-class Stateref {
-	String name;
-}
-
-lexeme_transition  : Stateref ::=
-	'=>' this=stateref
+	name=identifier rawType=rawTypeopt ':' ({pattern} priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
 ;
 
 class LexemeAttrs {
@@ -189,17 +180,20 @@ state_selector  : StateSelector ::=
 	'[' states=lexer_state_list_Comma_separated ']'
 ;
 
+class Stateref {
+	String name;
+}
+
 stateref  : Stateref ::=
 	name=ID
 ;
 
 class LexerState {
 	Identifier name;
-	Stateref defaultTransition;
 }
 
 lexer_state  : LexerState ::=
-	name=identifier ('=>' defaultTransition=stateref)?
+	name=identifier
 ;
 
 grammar_parts  : list<GrammarPart>
@@ -823,10 +817,6 @@ parsing_algorithmopt  : ParsingAlgorithm ::=
 
 rawTypeopt  : RawType ::=
 	this=rawType?
-;
-
-lexeme_transitionopt  : Stateref ::=
-	this=lexeme_transition?
 ;
 
 iconopt (Integer) ::=

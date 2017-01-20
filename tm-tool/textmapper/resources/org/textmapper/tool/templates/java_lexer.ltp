@@ -374,24 +374,6 @@ ${template lexerAction($, symbol)-}
 ${if self.kindAsText == 'space'-}
 				spaceToken = true;
 ${end-}
-${if self.transitions-}
-${if self.transitions.stateSwitch-}
-				switch(state) {
-${foreach x in self.transitions.stateSwitch.entrySet()-}
-					case States.${x.key->stateId()}:
-						state = States.${x.value->stateId()};
-						break;
-${end-}
-${if self.transitions.defaultTransition-}
-					default:
-						state = States.${self.transitions.defaultTransition->stateId()};
-						break;
-${end-}
-				}
-${else if self.transitions.defaultTransition-}
-				state = States.${self.transitions.defaultTransition->stateId()};
-${end-}
-${end-}
 ${if action-}
 				${eval action}
 ${end-}
@@ -492,7 +474,7 @@ ${end}
 ${cached query hasLexerActions() =
 	syntax.lexerRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
 
-${cached query hasActions() = self.action || self.transitions && self.kindAsText != 'soft' || self.kindAsText == 'space' }
+${cached query hasActions() = self.action || self.kindAsText == 'space' }
 
 ${cached query classRules() = syntax.lexerRules.select(x|x.kindAsText == 'class')}
 

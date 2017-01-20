@@ -25,15 +25,13 @@ const (
 	KeyValue // key=identifier value=expression
 	Symref   // name=identifier args=symref_args?
 	RawType
-	NamedPattern     // name=identifier pattern
-	Lexeme           // name=identifier rawType? pattern? transition=lexeme_transition? priority=integer_literal? attrs=lexeme_attrs? command?
-	LexemeTransition // stateref
-	LexemeAttrs      // lexeme_attribute
+	NamedPattern // name=identifier pattern
+	Lexeme       // name=identifier rawType? pattern? priority=integer_literal? attrs=lexeme_attrs? command?
+	LexemeAttrs  // lexeme_attribute
 	LexemeAttribute
 	DirectiveBrackets // opening=symref closing=symref
 	StateSelector     // states=(lexer_state)+
-	Stateref          // name=identifier
-	LexerState        // name=identifier defaultTransition=stateref?
+	LexerState        // name=identifier
 	GrammarParts      // grammar_parts? grammar_part
 	Nonterm           // annotations? name=identifier params=nonterm_params? type=nonterm_type? (rule0)+
 	SubType           // reference=symref
@@ -111,12 +109,10 @@ var nodeTypeStr = [...]string{
 	"RawType",
 	"NamedPattern",
 	"Lexeme",
-	"LexemeTransition",
 	"LexemeAttrs",
 	"LexemeAttribute",
 	"DirectiveBrackets",
 	"StateSelector",
-	"Stateref",
 	"LexerState",
 	"GrammarParts",
 	"Nonterm",
@@ -397,9 +393,8 @@ var ruleNodeType = [...]NodeType{
 	0,                 // lexer_part_OrSyntaxError ::= lexer_directive
 	0,                 // lexer_part_OrSyntaxError ::= syntax_problem
 	NamedPattern,      // named_pattern ::= identifier '=' pattern
-	Lexeme,            // lexeme ::= identifier rawTypeopt ':' pattern lexeme_transitionopt integer_literalopt lexeme_attrsopt commandopt
+	Lexeme,            // lexeme ::= identifier rawTypeopt ':' pattern integer_literalopt lexeme_attrsopt commandopt
 	Lexeme,            // lexeme ::= identifier rawTypeopt ':'
-	LexemeTransition,  // lexeme_transition ::= '=>' stateref
 	LexemeAttrs,       // lexeme_attrs ::= '(' lexeme_attribute ')'
 	LexemeAttribute,   // lexeme_attribute ::= 'soft'
 	LexemeAttribute,   // lexeme_attribute ::= 'class'
@@ -409,8 +404,6 @@ var ruleNodeType = [...]NodeType{
 	0,                 // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
 	0,                 // lexer_state_list_Comma_separated ::= lexer_state
 	StateSelector,     // state_selector ::= '[' lexer_state_list_Comma_separated ']'
-	Stateref,          // stateref ::= identifier
-	LexerState,        // lexer_state ::= identifier '=>' stateref
 	LexerState,        // lexer_state ::= identifier
 	GrammarParts,      // grammar_parts ::= grammar_part
 	GrammarParts,      // grammar_parts ::= grammar_parts grammar_part_OrSyntaxError
@@ -546,8 +539,6 @@ var ruleNodeType = [...]NodeType{
 	0,                 // expression_list_Comma_separated_opt ::=
 	0,                 // rawTypeopt ::= rawType
 	0,                 // rawTypeopt ::=
-	0,                 // lexeme_transitionopt ::= lexeme_transition
-	0,                 // lexeme_transitionopt ::=
 	0,                 // integer_literalopt ::= integer_literal
 	0,                 // integer_literalopt ::=
 	0,                 // lexeme_attrsopt ::= lexeme_attrs

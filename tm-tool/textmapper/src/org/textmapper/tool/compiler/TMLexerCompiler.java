@@ -60,54 +60,6 @@ public class TMLexerCompiler {
 		return result;
 	}
 
-	private TMStateTransitionSwitch convertTransitions(TmaStateSelector selector) {
-		boolean noDefault = false;
-		for (TmaLexerState state : selector.getStates()) {
-			if (state.getDefaultTransition() == null) {
-				noDefault = true;
-			}
-		}
-
-		LexerState defaultTransition = null;
-		Map<LexerState, LexerState> stateSwitch = new LinkedHashMap<>();
-		for (TmaLexerState state : selector.getStates()) {
-			if (state.getDefaultTransition() == null) {
-				continue;
-			}
-			String targetName = state.getDefaultTransition().getName();
-			LexerState target = resolver.getState(targetName);
-			if (target == null) {
-				error(state.getDefaultTransition(), targetName + " cannot be resolved");
-				continue;
-			}
-
-			if (defaultTransition == null && !(noDefault)) {
-				defaultTransition = target;
-			} else if (defaultTransition != target) {
-				LexerState source = resolver.getState(state.getName().getID());
-				stateSwitch.put(source, target);
-			}
-		}
-		return stateSwitch.isEmpty() && defaultTransition == null ? null :
-				new TMStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch,
-						defaultTransition);
-	}
-
-	private TMStateTransitionSwitch getTransition(TmaLexeme lexeme,
-												  TMStateTransitionSwitch active) {
-		TmaStateref transition = lexeme.getTransition();
-		if (transition != null) {
-			String targetName = transition.getName();
-			LexerState target = resolver.getState(targetName);
-			if (target == null) {
-				error(transition, targetName + " cannot be resolved");
-			} else {
-				return new TMStateTransitionSwitch(target);
-			}
-		}
-		return active;
-	}
-
 	private LexerRule getClassRule(Map<LexerRule, RegexMatcher> classMatchers, TmaLexeme l,
 								   RegexPart regex) {
 		LexerRule result = null;
@@ -157,18 +109,15 @@ public class TMLexerCompiler {
 
 		// Step 1. Collect states & transitions (attributes).
 
-		TMStateTransitionSwitch activeTransitions = null;
 		List<LexerState> activeStates = Collections.singletonList(resolver.getState(
 				TMResolver.INITIAL_STATE.text()));
 
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaLexeme) {
 				TmaLexeme lexeme = (TmaLexeme) clause;
-				attributes.put(lexeme, new RuleAttributes(getTransition(lexeme, activeTransitions),
-						activeStates));
+				attributes.put(lexeme, new RuleAttributes(activeStates));
 			} else if (clause instanceof TmaStateSelector) {
 				activeStates = convertApplicableStates((TmaStateSelector) clause);
-				activeTransitions = convertTransitions((TmaStateSelector) clause);
 			}
 		}
 
@@ -214,7 +163,6 @@ public class TMLexerCompiler {
 					attributes.get(lexeme).getApplicableInStates(), priority, null, lexeme);
 			classMatchers.put(liLexerRule, matcher);
 			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
-			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
 
 		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
@@ -308,7 +256,6 @@ public class TMLexerCompiler {
 			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex,
 					attributes.get(lexeme).getApplicableInStates(), priority, classRule, lexeme);
 			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
-			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
 	}
 
@@ -327,17 +274,10 @@ public class TMLexerCompiler {
 
 	private static class RuleAttributes {
 
-		private final TMStateTransitionSwitch transitions;
 		private final List<LexerState> applicableInStates;
 
-		public RuleAttributes(TMStateTransitionSwitch transitions,
-							  List<LexerState> applicableInStates) {
-			this.transitions = transitions;
+		public RuleAttributes(List<LexerState> applicableInStates) {
 			this.applicableInStates = applicableInStates;
-		}
-
-		public TMStateTransitionSwitch getTransitions() {
-			return transitions;
 		}
 
 		public List<LexerState> getApplicableInStates() {
@@ -350,11 +290,8 @@ public class TMLexerCompiler {
 			}
 			Collection<LexerState> applicableInStatesSet = applicableInStates.size() > 4
 					? new HashSet<>(applicableInStates) : applicableInStates;
-			if (!(applicableInStatesSet.containsAll(l.getApplicableInStates()))) {
-				return false;
-			}
-			return this.transitions == null ? l.getTransitions() == null :
-					this.transitions.equals(l.getTransitions());
+
+			return applicableInStatesSet.containsAll(l.getApplicableInStates());
 		}
 
 	}

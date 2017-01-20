@@ -102,9 +102,6 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if ("action".equals(propertyName)) {
 				return TMDataUtil.getCode(lexerRule);
 			}
-			if ("transitions".equals(propertyName)) {
-				return TMDataUtil.getTransition(lexerRule);
-			}
 			return super.getProperty(caller, propertyName);
 		}
 	}
@@ -436,8 +433,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				return false;
 			}
 			for (LexerRule rule : grammar.getLexerRules()) {
-				if (TMDataUtil.getCode(rule) != null
-						|| TMDataUtil.getTransition(rule) != null) {
+				if (TMDataUtil.getCode(rule) != null) {
 					return false;
 				}
 
