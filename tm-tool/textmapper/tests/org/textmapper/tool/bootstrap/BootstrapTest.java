@@ -117,12 +117,6 @@ public class BootstrapTest {
 	}
 
 	@Test
-	public void testStates() {
-		bootstrap("tests/org/textmapper/tool/bootstrap/states", "states.tm", new String[0],
-				new String[]{"StatesLexer.java"}, 0);
-	}
-
-	@Test
 	public void testSampleNoParser() {
 		bootstrap("tests/org/textmapper/tool/bootstrap/lexeronly", "noparser.tm",
 				new String[0], new String[]{"NoparserLexer.java"}, 0);

@@ -265,7 +265,7 @@ public class XmlLexer {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 3: // '<': /</
-				state = States.inTag;
+				{ state = States.inTag; }
 				break;
 			case 4: // _skipcomment: /<!\-\-([^\-]|\-[^\-]|\-\-[^>])*\-\->/
 				spaceToken = true;
@@ -280,7 +280,7 @@ public class XmlLexer {
 				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
 			case 8: // '>': />/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 12: // _skip: /[\t\r\n ]+/
 				spaceToken = true;

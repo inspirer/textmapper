@@ -16,24 +16,24 @@ id: /[a-zA-Z_]+/
 ':':        /:/
 ';':        /;/
 ',':        /,/
-gotoc:      /<c>/ => c
+gotoc:      /<c>/   { state = States.c; }
 
 _skip: /[\n\t\r ]+/  (space)
 
 [initial]
-'(':        /\(/  => a
+'(':        /\(/    { state = States.a; }
 ')':        /\)/
 _customEOI:       /{eoi}/  (space) 		{ if (--eoiToGo < 0) { $symbol = Tokens.eoi; spaceToken = false; } }
 
 [a]
-'(':        /\(/  => b
-')':        /\)/  => initial
-_retfromA:       /{eoi}/  => initial (space)
+'(':        /\(/    { state = States.b; }
+')':        /\)/    { state = States.initial; }
+_retfromA:       /{eoi}/  (space)       { state = States.initial; }
 
 [b]
 '(':        /\(/
-')':        /\)/  => a
-_retfromB:       /{eoi}/  => a (space)
+')':        /\)/  { state = States.a; }
+_retfromB:       /{eoi}/  (space)       { state = States.a; }
 
 [c]
 eoi:  /{eoi}/

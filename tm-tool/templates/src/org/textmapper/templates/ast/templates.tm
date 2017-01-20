@@ -36,7 +36,7 @@ escdollar:		/$$/
 escid{String}:	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $$ = tokenText().substring(1, tokenSize()); }
 escint{Integer}:/$[0-9]+/							{ $$ = Integer.parseInt(tokenText().substring(1, tokenSize())); }
 
-'${':	/$\{/ => query		{ deep = 1;}
+'${':	/$\{/         { state = States.query; deep = 1;}
 '$/':   /$\//
 
 [query]
@@ -74,7 +74,7 @@ Lassert:	/assert/
 
 '{':		/\{/		{ deep++; }
 '}':		/\}/		{ if (--deep == 0) { state = 0; } }
-'-}':		/-\}/ => initial
+'-}':		/-\}/       { state = States.initial; }
 '+':		/+/
 '-':		/-/
 '*':		/\*/

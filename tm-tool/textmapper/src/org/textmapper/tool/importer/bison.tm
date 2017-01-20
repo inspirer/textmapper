@@ -126,10 +126,10 @@ skip_ml_comment: /\/\*([^*]|\*+[^\/*])*\*+\// (space)
 ###################
 # Complex tokens.
 
-skip: /{/ 					=> bracedCode (space) { nesting = 0; lexemeStart = token.offset; }
-skip: /%\?[ \f\r\n\t\v]*\{/	=> predicate  (space) { nesting = 0; lexemeStart = token.offset; }
-skip: /%{/					=> prologue   (space) { nesting = 0; lexemeStart = token.offset; }
-skip: /</					=> tag        (space) { nesting = 0; lexemeStart = token.offset; }
+skip: /{/ 					(space) { state = States.bracedCode; nesting = 0; lexemeStart = token.offset; }
+skip: /%\?[ \f\r\n\t\v]*\{/	(space) { state = States.predicate; nesting = 0; lexemeStart = token.offset; }
+skip: /%{/					(space) { state = States.prologue; nesting = 0; lexemeStart = token.offset; }
+skip: /</					(space) { state = States.tag; nesting = 0; lexemeStart = token.offset; }
 
 [bracedCode]
 '{...}' {String}:  /}/
@@ -145,10 +145,10 @@ skip: /</					=> tag        (space) { nesting = 0; lexemeStart = token.offset; }
 	}
 
 [predicate]
-'%?{...}':  /}/  { nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
+'%?{...}':  /}/    { nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
 
 [prologue]
-'%{...%}':   /%}/ => initial    { token.offset = lexemeStart; }
+'%{...%}':   /%}/  { state = States.initial; token.offset = lexemeStart; }
 
 [tag]
 tag_any: /([^<>]|->)+/  (space)

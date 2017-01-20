@@ -375,8 +375,7 @@ public class TemplatesLexer {
 				{ token.value = Integer.parseInt(tokenText().substring(1, tokenSize())); }
 				break;
 			case 7: // '${': /$\{/
-				state = States.query;
-				{ deep = 1;}
+				{ state = States.query; deep = 1;}
 				break;
 			case 9: // icon: /[0-9]+/
 				{ token.value = Integer.parseInt(tokenText()); }
@@ -391,7 +390,7 @@ public class TemplatesLexer {
 				{ if (--deep == 0) { state = 0; } }
 				break;
 			case 38: // '-}': /\-\}/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 65: // _skip: /[\t\r\n ]+/
 				spaceToken = true;

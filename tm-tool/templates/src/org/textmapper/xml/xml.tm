@@ -32,7 +32,7 @@ genCopyright = true
 
 any:	/[^<]+/
 
-'<':	/</  => inTag
+'<':	/</  { state = States.inTag; }
 
 _skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/ (space)
 
@@ -42,7 +42,7 @@ identifier {String}:	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $$ = tokenText(); }
 ccon {String}:	/"[^\n"]*"/							{ $$ = tokenText().substring(1, tokenSize()-1); }
 ccon {String}:	/'[^\n']*'/							{ $$ = tokenText().substring(1, tokenSize()-1); }
 
-'>':	    />/  => initial
+'>':	    />/  { state = States.initial; }
 '=':		/=/
 ':':		/:/
 '/':		/\//

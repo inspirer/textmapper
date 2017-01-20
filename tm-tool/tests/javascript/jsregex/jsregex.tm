@@ -44,16 +44,16 @@ charclass: /\\p\{\w+\}/							{ this.quantifierReady(); }
 
 '.':  /\./										{ this.quantifierReady(); }
 
-[afterChar => initial]
+[afterChar]
 
-'*':  /\*/
-'+':  /+/
-'?':  /?/
-quantifier:  /\{[0-9]+(,[0-9]*)?\}/
+'*':  /\*/                                      { this.state = jsregex.States.initial; }
+'+':  /+/                                       { this.state = jsregex.States.initial; }
+'?':  /?/                                       { this.state = jsregex.States.initial; }
+quantifier:  /\{[0-9]+(,[0-9]*)?\}/             { this.state = jsregex.States.initial; }
 
-op_minus:		/\{\-\}/
-op_union:		/\{\+\}/
-op_intersect:	/\{&&\}/
+op_minus:		/\{\-\}/                        { this.state = jsregex.States.initial; }
+op_union:		/\{\+\}/                        { this.state = jsregex.States.initial; }
+op_intersect:	/\{&&\}/                        { this.state = jsregex.States.initial; }
 
 [initial, inSet]
 
@@ -67,8 +67,8 @@ char: /[*+?]/									{ this.quantifierReady(); }
 
 '(?':	/\(\?[is-]+:/							{ this.state = 0; }
 
-'[':	/\[/  => inSet
-'[^':	/\[^/ => inSet
+'[':	/\[/                                    { this.state = jsregex.States.inSet; }
+'[^':	/\[^/                                   { this.state = jsregex.States.inSet; }
 char:  /-/										{ this.quantifierReady(); }
 
 identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/

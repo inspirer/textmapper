@@ -243,34 +243,34 @@ public class EoiLexer {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 6: // gotoc: /<c>/
-				state = States.c;
+				{ state = States.c; }
 				break;
 			case 7: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
 			case 8: // '(': /\(/
-				state = States.a;
+				{ state = States.a; }
 				break;
 			case 10: // _customEOI: /{eoi}/
 				spaceToken = true;
 				{ if (--eoiToGo < 0) { token.symbol = Tokens.eoi; spaceToken = false; } }
 				break;
 			case 11: // '(': /\(/
-				state = States.b;
+				{ state = States.b; }
 				break;
 			case 12: // ')': /\)/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 13: // _retfromA: /{eoi}/
 				spaceToken = true;
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 15: // ')': /\)/
-				state = States.a;
+				{ state = States.a; }
 				break;
 			case 16: // _retfromB: /{eoi}/
 				spaceToken = true;
-				state = States.a;
+				{ state = States.a; }
 				break;
 		}
 		return !(spaceToken);

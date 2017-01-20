@@ -541,23 +541,19 @@ public class BisonLexer {
 				break;
 			case 56: // skip: /\{/
 				spaceToken = true;
-				state = States.bracedCode;
-				{ nesting = 0; lexemeStart = token.offset; }
+				{ state = States.bracedCode; nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 57: // skip: /%\?[ \f\r\n\t\v]*\{/
 				spaceToken = true;
-				state = States.predicate;
-				{ nesting = 0; lexemeStart = token.offset; }
+				{ state = States.predicate; nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 58: // skip: /%\{/
 				spaceToken = true;
-				state = States.prologue;
-				{ nesting = 0; lexemeStart = token.offset; }
+				{ state = States.prologue; nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 59: // skip: /</
 				spaceToken = true;
-				state = States.tag;
-				{ nesting = 0; lexemeStart = token.offset; }
+				{ state = States.tag; nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 60: // '{...}': /\}/
 				{
@@ -575,8 +571,7 @@ public class BisonLexer {
 				{ nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
 				break;
 			case 62: // '%{...%}': /%\}/
-				state = States.initial;
-				{ token.offset = lexemeStart; }
+				{ state = States.initial; token.offset = lexemeStart; }
 				break;
 			case 63: // tag_any: /([^<>]|\->)+/
 				spaceToken = true;

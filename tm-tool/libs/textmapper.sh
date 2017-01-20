@@ -7,4 +7,4 @@ while [ -L "$SCRIPT_LOCATION" ]; do
 done
 
 BASE=`dirname "$SCRIPT_LOCATION"`
-java -cp ${BASE}/textmapper-0.9.?.jar org.textmapper.tool.Tool $*
+java -cp ${BASE}/textmapper-0.9.??.jar org.textmapper.tool.Tool $*

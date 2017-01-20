@@ -66,8 +66,8 @@ describe('Regex lexer', function () {
     it('handles character sets', function () {
         var errorHandler = jasmine.createSpy('errorHandler');
         var lexer = new jsregex.Lexer("[^()a-z]", errorHandler);
-        expectTokens(lexer, [jsregex.Tokens.LsquareXor, jsregex.Tokens.char, jsregex.Tokens.char,
-            jsregex.Tokens.char, jsregex.Tokens.Minus, jsregex.Tokens.char, jsregex.Tokens.Rsquare]);
+        expectTokens(lexer, [jsregex.Tokens.LbrackXor, jsregex.Tokens.char, jsregex.Tokens.char,
+            jsregex.Tokens.char, jsregex.Tokens.Minus, jsregex.Tokens.char, jsregex.Tokens.Rbrack]);
         expect(errorHandler).not.toHaveBeenCalled();
     });
 

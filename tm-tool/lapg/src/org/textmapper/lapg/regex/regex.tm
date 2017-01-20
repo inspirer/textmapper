@@ -52,16 +52,16 @@ charclass {String}: /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize()
 
 '.':  /\./										{ quantifierReady(); }
 
-[afterChar => initial]
+[afterChar]
 
-'*':  /\*/
-'+':  /+/
-'?':  /?/
-quantifier:  /\{[0-9]+(,[0-9]*)?\}/
+'*':  /\*/                                      { state = States.initial; }
+'+':  /+/                                       { state = States.initial; }
+'?':  /?/                                       { state = States.initial; }
+quantifier:  /\{[0-9]+(,[0-9]*)?\}/             { state = States.initial; }
 
-op_minus:		/\{\-\}/
-op_union:		/\{\+\}/
-op_intersect:	/\{&&\}/
+op_minus:		/\{\-\}/                        { state = States.initial; }
+op_union:		/\{\+\}/                        { state = States.initial; }
+op_intersect:	/\{&&\}/                        { state = States.initial; }
 
 [initial, inSet]
 
@@ -75,9 +75,9 @@ char {Integer}: /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady
 
 '(?':	/\(\?[is-]+:/							{ state = 0; }
 
-'[':	/\[/  => inSet
-'[^':	/\[^/ => inSet
-char {Integer}:  /-/								{ $$ = tokenText().codePointAt(0); quantifierReady(); }
+'[':	/\[/                                    { state = States.inSet; }
+'[^':	/\[^/                                   { state = States.inSet; }
+char {Integer}:  /-/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
 identifier = /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?/
 

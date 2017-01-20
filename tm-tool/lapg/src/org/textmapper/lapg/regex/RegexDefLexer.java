@@ -366,25 +366,25 @@ public class RegexDefLexer {
 				{ quantifierReady(); }
 				break;
 			case 19: // '*': /\*/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 20: // '+': /\+/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 21: // '?': /\?/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 22: // quantifier: /\{[0-9]+(,[0-9]*)?\}/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 23: // op_minus: /\{\-\}/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 24: // op_union: /\{\+\}/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 25: // op_intersect: /\{&&\}/
-				state = States.initial;
+				{ state = States.initial; }
 				break;
 			case 26: // char: /[*+?]/
 				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
@@ -402,10 +402,10 @@ public class RegexDefLexer {
 				{ state = 0; }
 				break;
 			case 31: // '[': /\[/
-				state = States.inSet;
+				{ state = States.inSet; }
 				break;
 			case 32: // '[^': /\[\^/
-				state = States.inSet;
+				{ state = States.inSet; }
 				break;
 			case 33: // char: /\-/
 				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
