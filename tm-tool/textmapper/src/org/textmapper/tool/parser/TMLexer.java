@@ -90,38 +90,40 @@ public class TMLexer {
 		int Limport = 45;
 		int Lset = 46;
 		int Lbrackets = 47;
-		int Linline = 48;
-		int Lprec = 49;
-		int Lshift = 50;
-		int Lreturns = 51;
-		int Linput = 52;
-		int Lleft = 53;
-		int Lright = 54;
-		int Lnonassoc = 55;
-		int Lgenerate = 56;
-		int Lassert = 57;
-		int Lempty = 58;
-		int Lnonempty = 59;
-		int Lglobal = 60;
-		int Lexplicit = 61;
-		int Llookahead = 62;
-		int Lparam = 63;
-		int Lflag = 64;
-		int Lnoeoi = 65;
-		int Lsoft = 66;
-		int Lclass = 67;
-		int Linterface = 68;
-		int Lvoid = 69;
-		int Lspace = 70;
-		int Llayout = 71;
-		int Llanguage = 72;
-		int Llalr = 73;
-		int Llexer = 74;
-		int Lparser = 75;
-		int code = 76;
-		int Lbrace = 77;
-		int regexp = 78;
-		int Div = 79;
+		int Ls = 48;
+		int Lx = 49;
+		int Linline = 50;
+		int Lprec = 51;
+		int Lshift = 52;
+		int Lreturns = 53;
+		int Linput = 54;
+		int Lleft = 55;
+		int Lright = 56;
+		int Lnonassoc = 57;
+		int Lgenerate = 58;
+		int Lassert = 59;
+		int Lempty = 60;
+		int Lnonempty = 61;
+		int Lglobal = 62;
+		int Lexplicit = 63;
+		int Llookahead = 64;
+		int Lparam = 65;
+		int Lflag = 66;
+		int Lnoeoi = 67;
+		int Lsoft = 68;
+		int Lclass = 69;
+		int Linterface = 70;
+		int Lvoid = 71;
+		int Lspace = 72;
+		int Llayout = 73;
+		int Llanguage = 74;
+		int Llalr = 75;
+		int Llexer = 76;
+		int Lparser = 77;
+		int code = 78;
+		int Lbrace = 79;
+		int regexp = 80;
+		int Div = 81;
 	}
 
 	public interface ErrorReporter {
@@ -295,18 +297,18 @@ public class TMLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		2, 3, 23, 19, 80, 37
+		2, 3, 23, 19, 82, 37
 	};
 
 	private static final int tmFirstRule = -4;
 
-	private static final int[] tmRuleSymbol = unpack_int(81,
+	private static final int[] tmRuleSymbol = unpack_int(83,
 		"\uffff\uffff\0\0\47\0\1\0\2\0\0\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15" +
 		"\0\16\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35" +
 		"\0\36\0\37\0\40\0\41\0\42\0\43\0\44\0\45\0\50\0\51\0\52\0\53\0\54\0\55\0\56\0\57" +
 		"\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77" +
 		"\0\100\0\101\0\102\0\103\0\104\0\105\0\106\0\107\0\110\0\111\0\112\0\113\0\114\0" +
-		"\115\0\116\0\117\0");
+		"\115\0\116\0\117\0\120\0\121\0");
 
 	private static final int tmClassesCount = 36;
 
@@ -315,11 +317,11 @@ public class TMLexer {
 		"\34\1\32\1\31\1\30\1\27\1\26\1\25\1\22\1\21\1\20\1\17\1\15\1\14\1\13\1\12\1\10\1" +
 		"\6\1\5\1\4\1\2\1\1\1\62\42\ufff8\1\1\1\ufff8\6\ufffa\1\uffff\32\ufffa\2\2\1\ufffa" +
 		"\6\ufffc\1\3\32\ufffc\2\2\1\ufffc\44\uffd4\44\uffd5\36\uffd7\1\7\5\uffd7\44\uffd6" +
-		"\15\uffdc\1\11\26\uffdc\44\uffdb\44\uffdf\44\uffe0\44\uffd8\32\uffaf\1\16\11\uffaf" +
+		"\15\uffdc\1\11\26\uffdc\44\uffdb\44\uffdf\44\uffe0\44\uffd8\32\uffad\1\16\11\uffad" +
 		"\44\uffe1\44\uffe2\44\uffde\44\uffda\26\uffe5\1\ufffe\15\uffe5\15\ufffc\1\24\26\ufffc" +
 		"\44\uffe4\44\uffe6\44\uffe7\44\uffe9\44\uffea\44\uffeb\15\uffd9\1\33\26\uffd9\44" +
 		"\uffec\16\ufff0\1\35\25\ufff0\44\uffef\15\uffee\1\37\26\uffee\44\uffed\14\uffe8\1" +
-		"\41\27\uffe8\15\ufff1\1\42\26\ufff1\44\ufff2\44\uffdd\13\uffac\1\ufffd\30\uffac\1" +
+		"\41\27\uffe8\15\ufff1\1\42\26\ufff1\44\ufff2\44\uffdd\13\uffaa\1\ufffd\30\uffaa\1" +
 		"\ufffc\12\45\1\46\30\45\1\ufffc\11\45\1\47\1\46\30\45\44\ufff4\1\ufff5\3\50\1\51" +
 		"\37\50\44\ufff5\7\ufff3\1\53\34\ufff3\1\ufff7\3\53\1\54\37\53\44\ufff7\27\ufffc\1" +
 		"\56\12\ufffc\1\1\1\ufffc\44\uffe3\1\ufffc\2\57\1\61\1\ufffc\1\60\36\57\44\ufff9\1" +
@@ -331,9 +333,9 @@ public class TMLexer {
 		"\71\1\ufffc\3\70\1\ufffc\13\70\1\73\17\70\1\ufffc\3\70\1\ufffc\37\70\1\ufffc\3\73" +
 		"\1\ufffc\37\73\1\ufffc\2\73\1\77\1\ufffc\3\73\1\ufffc\1\73\1\76\10\73\1\74\20\73" +
 		"\1\ufffc\2\74\1\75\1\ufffc\3\74\1\ufffc\13\74\1\73\17\74\1\ufffc\3\74\1\ufffc\37" +
-		"\74\44\uffad\1\ufffc\3\73\1\ufffc\37\73\2\ufffc\1\63\1\ufffc\1\62\1\57\1\55\1\52" +
+		"\74\44\uffab\1\ufffc\3\73\1\ufffc\37\73\2\ufffc\1\63\1\ufffc\1\62\1\57\1\55\1\52" +
 		"\1\62\1\50\1\44\1\43\1\40\1\36\1\34\1\32\1\31\1\30\1\27\1\26\1\25\1\22\1\21\1\20" +
-		"\1\17\1\101\1\14\1\13\1\12\1\10\1\6\1\5\1\4\1\2\1\1\1\62\32\uffae\1\16\11\uffae");
+		"\1\17\1\101\1\14\1\13\1\12\1\10\1\6\1\5\1\4\1\2\1\1\1\62\32\uffac\1\16\11\uffac");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -467,10 +469,10 @@ public class TMLexer {
 			case 8: // _skip_multiline: /\/\*{commentChars}\*\//
 				spaceToken = true;
 				break;
-			case 77: // code: /\{/
+			case 79: // code: /\{/
 				{ skipAction(); token.endoffset = getOffset(); }
 				break;
-			case 79: // regexp: /\/{reFirst}{reChar}*\//
+			case 81: // regexp: /\/{reFirst}{reChar}*\//
 				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
 		}
@@ -487,34 +489,36 @@ public class TMLexer {
 		subTokensOfID.put("import", 46);
 		subTokensOfID.put("set", 47);
 		subTokensOfID.put("brackets", 48);
-		subTokensOfID.put("inline", 49);
-		subTokensOfID.put("prec", 50);
-		subTokensOfID.put("shift", 51);
-		subTokensOfID.put("returns", 52);
-		subTokensOfID.put("input", 53);
-		subTokensOfID.put("left", 54);
-		subTokensOfID.put("right", 55);
-		subTokensOfID.put("nonassoc", 56);
-		subTokensOfID.put("generate", 57);
-		subTokensOfID.put("assert", 58);
-		subTokensOfID.put("empty", 59);
-		subTokensOfID.put("nonempty", 60);
-		subTokensOfID.put("global", 61);
-		subTokensOfID.put("explicit", 62);
-		subTokensOfID.put("lookahead", 63);
-		subTokensOfID.put("param", 64);
-		subTokensOfID.put("flag", 65);
-		subTokensOfID.put("no-eoi", 66);
-		subTokensOfID.put("soft", 67);
-		subTokensOfID.put("class", 68);
-		subTokensOfID.put("interface", 69);
-		subTokensOfID.put("void", 70);
-		subTokensOfID.put("space", 71);
-		subTokensOfID.put("layout", 72);
-		subTokensOfID.put("language", 73);
-		subTokensOfID.put("lalr", 74);
-		subTokensOfID.put("lexer", 75);
-		subTokensOfID.put("parser", 76);
+		subTokensOfID.put("s", 49);
+		subTokensOfID.put("x", 50);
+		subTokensOfID.put("inline", 51);
+		subTokensOfID.put("prec", 52);
+		subTokensOfID.put("shift", 53);
+		subTokensOfID.put("returns", 54);
+		subTokensOfID.put("input", 55);
+		subTokensOfID.put("left", 56);
+		subTokensOfID.put("right", 57);
+		subTokensOfID.put("nonassoc", 58);
+		subTokensOfID.put("generate", 59);
+		subTokensOfID.put("assert", 60);
+		subTokensOfID.put("empty", 61);
+		subTokensOfID.put("nonempty", 62);
+		subTokensOfID.put("global", 63);
+		subTokensOfID.put("explicit", 64);
+		subTokensOfID.put("lookahead", 65);
+		subTokensOfID.put("param", 66);
+		subTokensOfID.put("flag", 67);
+		subTokensOfID.put("no-eoi", 68);
+		subTokensOfID.put("soft", 69);
+		subTokensOfID.put("class", 70);
+		subTokensOfID.put("interface", 71);
+		subTokensOfID.put("void", 72);
+		subTokensOfID.put("space", 73);
+		subTokensOfID.put("layout", 74);
+		subTokensOfID.put("language", 75);
+		subTokensOfID.put("lalr", 76);
+		subTokensOfID.put("lexer", 77);
+		subTokensOfID.put("parser", 78);
 	}
 
 	protected boolean createIDToken(Span token, int ruleIndex) {
@@ -526,34 +530,34 @@ public class TMLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 48:	// brackets (soft)
-			case 49:	// inline (soft)
-			case 50:	// prec (soft)
-			case 51:	// shift (soft)
-			case 52:	// returns (soft)
-			case 53:	// input (soft)
-			case 54:	// left (soft)
-			case 55:	// right (soft)
-			case 56:	// nonassoc (soft)
-			case 57:	// generate (soft)
-			case 58:	// assert (soft)
-			case 59:	// empty (soft)
-			case 60:	// nonempty (soft)
-			case 61:	// global (soft)
-			case 62:	// explicit (soft)
-			case 63:	// lookahead (soft)
-			case 64:	// param (soft)
-			case 65:	// flag (soft)
-			case 66:	// no-eoi (soft)
-			case 67:	// soft (soft)
-			case 68:	// class (soft)
-			case 69:	// interface (soft)
-			case 70:	// void (soft)
-			case 71:	// space (soft)
-			case 72:	// layout (soft)
-			case 73:	// language (soft)
-			case 74:	// lalr (soft)
-			case 75:	// lexer (soft)
-			case 76:	// parser (soft)
+			case 51:	// inline (soft)
+			case 52:	// prec (soft)
+			case 53:	// shift (soft)
+			case 54:	// returns (soft)
+			case 55:	// input (soft)
+			case 56:	// left (soft)
+			case 57:	// right (soft)
+			case 58:	// nonassoc (soft)
+			case 59:	// generate (soft)
+			case 60:	// assert (soft)
+			case 61:	// empty (soft)
+			case 62:	// nonempty (soft)
+			case 63:	// global (soft)
+			case 64:	// explicit (soft)
+			case 65:	// lookahead (soft)
+			case 66:	// param (soft)
+			case 67:	// flag (soft)
+			case 68:	// no-eoi (soft)
+			case 69:	// soft (soft)
+			case 70:	// class (soft)
+			case 71:	// interface (soft)
+			case 72:	// void (soft)
+			case 73:	// space (soft)
+			case 74:	// layout (soft)
+			case 75:	// language (soft)
+			case 76:	// lalr (soft)
+			case 77:	// lexer (soft)
+			case 78:	// parser (soft)
 			case 2:	// <default>
 				{ token.value = tokenText(); }
 				break;

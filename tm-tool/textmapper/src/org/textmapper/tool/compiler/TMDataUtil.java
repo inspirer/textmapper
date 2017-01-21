@@ -33,6 +33,7 @@ public class TMDataUtil {
 	private static final String UD_CUSTOM_TYPE = "customType";
 	private static final String UD_TYPE_HINT = "typeHint";
 	private static final String UD_IMPLEMENTS = "implements";
+	private static final String UD_EXCLUSIVE = "exclusive";
 	private static final String UD_LITERAL = "literal";
 	private static final String UD_RANGE_TYPE = "rangeType";
 	private static final String UD_RANGE_FIELDS = "rangeFields";
@@ -98,6 +99,14 @@ public class TMDataUtil {
 
 	public static List<Nonterminal> getImplements(Nonterminal element) {
 		return (List<Nonterminal>) element.getUserData(UD_IMPLEMENTS);
+	}
+
+	public static void makeExclusive(LexerState state) {
+		state.putUserData(UD_EXCLUSIVE, Boolean.TRUE);
+	}
+
+	public static boolean isExclusive(LexerState state) {
+		return state.getUserData(UD_EXCLUSIVE) == Boolean.TRUE;
 	}
 
 	public static RhsSymbol getRewrittenTo(RhsSymbol source) {

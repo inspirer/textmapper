@@ -31,6 +31,8 @@ genastdef = true
 
 :: lexer
 
+%s initial, afterColonOrEq, afterGT;
+
 [initial, afterColonOrEq, afterGT]
 
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
@@ -95,6 +97,8 @@ Limport: /import/
 Lset: /set/
 
 Lbrackets: /brackets/		(soft)
+Ls: /s/
+Lx: /x/
 
 Linline: /inline/			(soft)
 
@@ -196,10 +200,11 @@ lexer_parts ::=
 ;
 
 lexer_part ::=
-	  state_selector
+	  states_clause
+	| state_selector
 	| named_pattern
 	| lexeme
-	| lexer_directive
+	| brackets_directive
 ;
 
 named_pattern ::=
@@ -219,12 +224,16 @@ lexeme_attribute ::=
 	| Llayout
 ;
 
-lexer_directive returns lexer_part ::=
-	  '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'		{~directiveBrackets}
+brackets_directive returns lexer_part ::=
+	  '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'	;
+
+states_clause returns lexer_part ::=
+	  '%' exclusive=Ls as false states=(lexer_state separator ',')+ ';'
+	| '%' exclusive=Lx as true states=(lexer_state separator ',')+ ';'
 ;
 
 state_selector ::=
-	  '[' states=(lexer_state separator ',')+ ']' ;
+	  '[' states=(stateref separator ',')+ ']' ;
 
 stateref class ::=
 	  name=ID ;

@@ -28,7 +28,7 @@ genCleanup = true
 
 :: lexer
 
-[initial]
+%s query;
 
 any:	/[^$]+/
 

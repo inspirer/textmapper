@@ -24,10 +24,12 @@ var (
 	DirectiveInput      = func(t tm.NodeType) bool { return t == tm.DirectiveInput }
 	DirectivePrio       = func(t tm.NodeType) bool { return t == tm.DirectivePrio }
 	DirectiveSet        = func(t tm.NodeType) bool { return t == tm.DirectiveSet }
+	ExclusiveStates     = func(t tm.NodeType) bool { return t == tm.ExclusiveStates }
 	GrammarParts        = func(t tm.NodeType) bool { return t == tm.GrammarParts }
 	Header              = func(t tm.NodeType) bool { return t == tm.Header }
 	Identifier          = func(t tm.NodeType) bool { return t == tm.Identifier }
 	Import              = func(t tm.NodeType) bool { return t == tm.Import }
+	InclusiveStates     = func(t tm.NodeType) bool { return t == tm.InclusiveStates }
 	InlineParameter     = func(t tm.NodeType) bool { return t == tm.InlineParameter }
 	Input               = func(t tm.NodeType) bool { return t == tm.Input }
 	Inputref            = func(t tm.NodeType) bool { return t == tm.Inputref }
@@ -76,6 +78,7 @@ var (
 	SetOr               = func(t tm.NodeType) bool { return t == tm.SetOr }
 	SetSymbol           = func(t tm.NodeType) bool { return t == tm.SetSymbol }
 	StateSelector       = func(t tm.NodeType) bool { return t == tm.StateSelector }
+	Stateref            = func(t tm.NodeType) bool { return t == tm.Stateref }
 	StringLiteral       = func(t tm.NodeType) bool { return t == tm.StringLiteral }
 	SubType             = func(t tm.NodeType) bool { return t == tm.SubType }
 	Symref              = func(t tm.NodeType) bool { return t == tm.Symref }

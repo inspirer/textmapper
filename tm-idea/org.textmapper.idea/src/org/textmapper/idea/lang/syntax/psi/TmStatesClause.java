@@ -17,18 +17,21 @@
 package org.textmapper.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.navigation.ItemPresentation;
-import com.intellij.navigation.ItemPresentationProviders;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class TmLexerState extends TmNamedElement {
+import java.util.List;
 
-	public TmLexerState(@NotNull ASTNode node) {
+/**
+ * evgeny, 8/14/12
+ */
+public class TmStatesClause extends TmElement {
+
+	public TmStatesClause(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	@Override
-	public ItemPresentation getPresentation() {
-		return ItemPresentationProviders.getItemPresentation(this);
+	public List<TmLexerState> getStates() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexerState.class);
 	}
 }

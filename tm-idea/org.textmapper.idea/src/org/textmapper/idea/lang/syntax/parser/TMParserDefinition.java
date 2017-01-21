@@ -78,6 +78,8 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmOption(node);
 			case Nonterminals.lexeme_attrs:
 				return new TmLexemeAttrs(node);
+			case Nonterminals.states_clause:
+				return new TmStatesClause(node);
 			case Nonterminals.state_selector:
 				return new TmLexerStateSelector(node);
 			case Nonterminals.lexer_state:
@@ -141,7 +143,7 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmDirective(node);
 			case Nonterminals.nonterm_param:
 				return new TmNontermParam(node);
-			case Nonterminals.lexer_directive:
+			case Nonterminals.brackets_directive:
 				return new TmLexerDirective(node);
 			case Nonterminals.param_ref:
 				return new TmParameterReference(node);

@@ -28,7 +28,7 @@ genCopyright = true
 
 :: lexer
 
-[initial]
+%s inTag;
 
 any:	/[^<]+/
 

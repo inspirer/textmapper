@@ -2,6 +2,8 @@ language syntax_cs(java);
 
 :: lexer
 
+%s inComment;
+
 identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/ -1
 error:
 

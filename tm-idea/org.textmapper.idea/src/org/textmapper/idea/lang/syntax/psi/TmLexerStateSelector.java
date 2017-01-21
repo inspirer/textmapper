@@ -22,16 +22,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-/**
- * evgeny, 8/14/12
- */
 public class TmLexerStateSelector extends TmElement {
 
 	public TmLexerStateSelector(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	public List<TmLexerState> getStates() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexerState.class);
+	public List<TmStateReference> getRefs() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmStateReference.class);
 	}
 }

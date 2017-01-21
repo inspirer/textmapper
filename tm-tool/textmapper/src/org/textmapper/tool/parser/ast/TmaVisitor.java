@@ -185,7 +185,11 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaDirectiveBrackets n) {
+	protected boolean visit(TmaBracketsDirective n) {
+		return true;
+	}
+
+	protected boolean visit(TmaStatesClause n) {
 		return true;
 	}
 

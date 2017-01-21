@@ -11,6 +11,8 @@ genbison = true
 
 :: lexer
 
+%s initial, div;
+
 [initial, div]
 
 space: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)

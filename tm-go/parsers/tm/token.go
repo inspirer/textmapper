@@ -85,9 +85,11 @@ const (
 	RETURNS    // returns
 	RIGHT      // right
 	SHIFT      // shift
+	CHAR_S     // s
 	SOFT       // soft
 	SPACE      // space
 	VOID       // void
+	CHAR_X     // x
 	CODE
 	LBRACE // {
 	REGEXP
@@ -170,9 +172,11 @@ var tokenStr = [...]string{
 	"returns",
 	"right",
 	"shift",
+	"s",
 	"soft",
 	"space",
 	"void",
+	"x",
 	"CODE",
 	"{",
 	"REGEXP",

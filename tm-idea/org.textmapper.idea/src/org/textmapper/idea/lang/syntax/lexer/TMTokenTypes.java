@@ -67,7 +67,6 @@ public interface TMTokenTypes {
 	IElementType OP_EQ = new TMElementType(Tokens.Assign, "=");
 	IElementType OP_EQEQ = new TMElementType(Tokens.AssignAssign, "==");
 	IElementType OP_EXCLEQ = new TMElementType(Tokens.ExclAssign, "!=");
-	IElementType OP_EQGT = new TMElementType(Tokens.AssignGt, "=>");
 	IElementType OP_COLON = new TMElementType(Tokens.Colon, ":");
 	IElementType OP_LT = new TMElementType(Tokens.Lt, "<");
 	IElementType OP_GT = new TMElementType(Tokens.Gt, ">");
@@ -84,7 +83,7 @@ public interface TMTokenTypes {
 	IElementType OP_DIV = new TMElementType(Tokens.Div, "/");
 
 	TokenSet operators = TokenSet.create(
-			OP_PERCENT, OP_DOLLAR, OP_CCEQ, OP_OR, OP_OROR, OP_EQ, OP_EQEQ, OP_EXCLEQ, OP_EQGT, OP_COLON,
+			OP_PERCENT, OP_DOLLAR, OP_CCEQ, OP_OR, OP_OROR, OP_EQ, OP_EQEQ, OP_EXCLEQ, OP_COLON,
 			OP_LT, OP_GT, OP_PLUSEQ, OP_EMARK, OP_ARROW, OP_AND, OP_ANDAND, OP_AT, OP_TILDE, OP_DIV
 	);
 
@@ -101,6 +100,8 @@ public interface TMTokenTypes {
 
 	// soft keywords
 	IElementType KW_BRACKETS = new TMElementType(Tokens.Lbrackets, "brackets");
+	IElementType KW_S = new TMElementType(Tokens.Ls, "s");
+	IElementType KW_X = new TMElementType(Tokens.Lx, "x");
 	IElementType KW_INLINE = new TMElementType(Tokens.Linline, "inline");
 
 	IElementType KW_PREC = new TMElementType(Tokens.Lprec, "prec");
@@ -144,7 +145,7 @@ public interface TMTokenTypes {
 			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT, KW_SET);
 
 	TokenSet softKeywords = TokenSet.create(
-			KW_BRACKETS, KW_INLINE,
+			KW_BRACKETS, KW_INLINE, KW_S, KW_X,
 			KW_PREC, KW_SHIFT,
 			KW_RETURNS,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC,

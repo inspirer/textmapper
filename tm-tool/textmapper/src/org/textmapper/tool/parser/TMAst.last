@@ -109,10 +109,11 @@ interface LexerPart {
 }
 
 lexer_part  : LexerPart ::=
-	this=state_selector
+	this=states_clause
+  | this=state_selector
   | this=named_pattern
   | this=lexeme
-  | this=lexer_directive
+  | this=brackets_directive
 ;
 
 class NamedPattern : LexerPart {
@@ -159,26 +160,40 @@ lexeme_attribute  : LexemeAttribute ::=
   | this=Llayout as LexemeAttribute.LLAYOUT
 ;
 
-class DirectiveBrackets : LexerPart {
+class BracketsDirective : LexerPart {
 	Symref opening;
 	Symref closing;
 }
 
-lexer_directive  : DirectiveBrackets ::=
-	this=new.DirectiveBrackets: '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'
+brackets_directive  : BracketsDirective ::=
+	this=new.BracketsDirective: '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'
 ;
 
 lexer_state_list_Comma_separated  : list<LexerState>
 	(this+=lexer_state
 		separator ',')+ ;
 
-class StateSelector : LexerPart {
+class StatesClause : LexerPart {
+	boolean exclusive;
 	list<LexerState> states;
 }
 
-state_selector  : StateSelector ::=
-	'[' states=lexer_state_list_Comma_separated ']'
+states_clause  : StatesClause ::=
+	this=new.StatesClause: '%' exclusive=Ls as false states=lexer_state_list_Comma_separated ';'
+  | this=new.StatesClause: '%' exclusive=Lx as true states=lexer_state_list_Comma_separated ';'
 ;
+
+class StateSelector : LexerPart {
+	list<Stateref> states;
+}
+
+state_selector  : StateSelector ::=
+	'[' states=stateref_list_Comma_separated ']'
+;
+
+stateref_list_Comma_separated  : list<Stateref>
+	(this+=stateref
+		separator ',')+ ;
 
 class Stateref {
 	String name;

@@ -53,9 +53,16 @@ public class TMLexerCompiler {
 
 	private List<LexerState> convertApplicableStates(TmaStateSelector selector) {
 		List<LexerState> result = new ArrayList<>();
-		for (TmaLexerState state : selector.getStates()) {
-			LexerState applicable = resolver.getState(state.getName().getID());
-			result.add(applicable);
+		for (TmaStateref ref : selector.getStates()) {
+			LexerState applicable = resolver.getState(ref.getName());
+			if (applicable != null) {
+				result.add(applicable);
+			} else {
+				error(ref, ref.getName() + " cannot be resolved");
+			}
+		}
+		if (result.isEmpty()) {
+			result.add(resolver.getState(TMResolver.INITIAL_STATE.text()));
 		}
 		return result;
 	}

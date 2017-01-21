@@ -236,6 +236,16 @@ public class LexerGeneratorTest {
 		public String getNameText() {
 			return name.text();
 		}
+
+		@Override
+		public Object getUserData(String key) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void putUserData(String key, Object value) {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	private static class TestRule implements LexerRule, TextSourceElement {

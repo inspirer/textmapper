@@ -10,6 +10,8 @@ endpositions = "offset"
 
 :: lexer
 
+%s a, b, c;
+
 [initial, a, b, c]
 
 id: /[a-zA-Z_]+/

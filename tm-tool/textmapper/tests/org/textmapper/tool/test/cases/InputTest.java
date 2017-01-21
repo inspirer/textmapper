@@ -152,12 +152,12 @@ public class InputTest extends LapgTestCase {
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("input", FileUtil.getFileContents(openStream("syntax_cs", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
-		ts.reset("input,6: symbol `error` is useless\n" + "input,47: symbol `Lfixed` is useless\n"
-				+ "input,79: symbol `Lstackalloc` is useless\n"
-				+ "input,152: symbol `comment` is useless\n" + "input,158: symbol `'/*'` is useless\n"
-				+ "input,160: symbol `anysym1` is useless\n" + "input,162: symbol `'*/'` is useless\n",
+		ts.reset("input,8: symbol `error` is useless\n" + "input,49: symbol `Lfixed` is useless\n"
+				+ "input,81: symbol `Lstackalloc` is useless\n"
+				+ "input,154: symbol `comment` is useless\n" + "input,160: symbol `'/*'` is useless\n"
+				+ "input,162: symbol `anysym1` is useless\n" + "input,164: symbol `'*/'` is useless\n",
 
-				"input,484: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
+				"input,486: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
 						+ "shift/reduce conflict (next: Lelse)\n"
 						+ "    embedded_statement ::= Lif '(' expression ')' embedded_statement\n"
 						+ "\n"

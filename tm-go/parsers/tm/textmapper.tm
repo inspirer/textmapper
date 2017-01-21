@@ -24,6 +24,8 @@ reportTokens = [invalid_token, multiline_comment, comment]
 
 :: lexer
 
+%s initial, afterColonOrEq, afterGT;
+
 [initial, afterColonOrEq, afterGT]
 
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
@@ -87,42 +89,44 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 
 # Soft keywords.
 
-'assert': /assert/
-'brackets': /brackets/
-'class': /class/
-'empty': /empty/
-'explicit': /explicit/
-'flag': /flag/
-'generate': /generate/
-'global': /global/
-'inline': /inline/
-'input': /input/
+'assert':    /assert/
+'brackets':  /brackets/
+'class':     /class/
+'empty':     /empty/
+'explicit':  /explicit/
+'flag':      /flag/
+'generate':  /generate/
+'global':    /global/
+'inline':    /inline/
+'input':     /input/
 'interface': /interface/
-'lalr': /lalr/
-'language': /language/
-'layout': /layout/
-'left':  /left/
-'lexer': /lexer/
+'lalr':      /lalr/
+'language':  /language/
+'layout':    /layout/
+'left':      /left/
+'lexer':     /lexer/
 'lookahead': /lookahead/
-'no-eoi': /no-eoi/
-'nonassoc': /nonassoc/
-'nonempty': /nonempty/
-'param': /param/
-'parser': /parser/
-'prec':  /prec/
-'returns': /returns/
-'right': /right/
-'shift': /shift/
-'soft': /soft/
-'space': /space/
-'void': /void/
+'no-eoi':    /no-eoi/
+'nonassoc':  /nonassoc/
+'nonempty':  /nonempty/
+'param':     /param/
+'parser':    /parser/
+'prec':      /prec/
+'returns':   /returns/
+'right':     /right/
+'shift':     /shift/
+'s':         /s/
+'soft':      /soft/
+'space':     /space/
+'void':      /void/
+'x':         /x/
 
 [initial, afterColonOrEq]
 
 code:   /\{[^\{\}]*\}/    /* TODO */
 
 [afterGT]
-'{':	/\{/
+'{':    /\{/
 
 [afterColonOrEq]
 regexp: /\/{reFirst}{reChar}*\//
@@ -143,7 +147,7 @@ identifier<flag KW = false> ::=
   | 'brackets' | 'inline'   | 'prec'     | 'shift'     | 'returns' | 'input'
   | 'left'     | 'right'    | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
   | 'nonempty' | 'global'   | 'explicit' | 'lookahead' | 'param'   | 'flag'
-  | 'no-eoi'
+  | 'no-eoi'   | 's'        | 'x'
   | 'soft'     | 'class'    | 'interface' | 'void'    | 'space'
   | 'layout'   | 'language' | 'lalr'     | 'lexer'     | 'parser'
 
@@ -216,7 +220,7 @@ symref<flag Args> ::=
 ;
 
 rawType class ::=
-	  code ;
+    code ;
 
 @noast
 lexer_parts ::=
@@ -251,10 +255,12 @@ lexeme_attribute ::=
 
 lexer_directive returns lexer_part ::=
     '%' 'brackets' opening=symref<~Args> closing=symref<~Args> ';'    {~directiveBrackets}
+  | '%' 's' states=(lexer_state separator ',')+                       {~inclusiveStates}
+  | '%' 'x' states=(lexer_state separator ',')+                       {~exclusiveStates}
 ;
 
 state_selector ::=
-    '[' states=(lexer_state separator ',')+ ']' ;
+    '[' states=(stateref separator ',')+ ']' ;
 
 stateref ::=
     name=identifier ;

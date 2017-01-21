@@ -14,6 +14,8 @@ extraTypes = ["InsertedSemicolon"]
 
 :: lexer
 
+%s initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag, jsxText;
+
 [initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag, jsxText]
 
 # Accept end-of-input in all states.

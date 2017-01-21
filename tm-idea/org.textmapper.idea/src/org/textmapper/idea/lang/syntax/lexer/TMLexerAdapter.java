@@ -160,8 +160,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_EQEQ;
 			case Tokens.ExclAssign:
 				return OP_EXCLEQ;
-			case Tokens.AssignGt:
-				return OP_EQGT;
 			case Tokens.Semicolon:
 				return OP_SEMICOLON;
 			case Tokens.Dot:
@@ -234,6 +232,10 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 			// soft keywords
 			case Tokens.Lbrackets:
 				return KW_BRACKETS;
+			case Tokens.Ls:
+				return KW_S;
+			case Tokens.Lx:
+				return KW_X;
 			case Tokens.Linline:
 				return KW_INLINE;
 

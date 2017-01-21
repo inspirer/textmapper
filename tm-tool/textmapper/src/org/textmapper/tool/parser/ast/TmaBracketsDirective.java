@@ -17,12 +17,12 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaDirectiveBrackets extends TmaNode implements ITmaLexerPart {
+public class TmaBracketsDirective extends TmaNode implements ITmaLexerPart {
 
 	private final TmaSymref opening;
 	private final TmaSymref closing;
 
-	public TmaDirectiveBrackets(TmaSymref opening, TmaSymref closing, TextSource source, int line, int offset, int endoffset) {
+	public TmaBracketsDirective(TmaSymref opening, TmaSymref closing, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.opening = opening;
 		this.closing = closing;

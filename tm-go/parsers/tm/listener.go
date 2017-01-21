@@ -30,7 +30,10 @@ const (
 	LexemeAttrs  // lexeme_attribute
 	LexemeAttribute
 	DirectiveBrackets // opening=symref closing=symref
-	StateSelector     // states=(lexer_state)+
+	InclusiveStates   // states=(lexer_state)+
+	ExclusiveStates   // states=(lexer_state)+
+	StateSelector     // states=(stateref)+
+	Stateref          // name=identifier
 	LexerState        // name=identifier
 	GrammarParts      // grammar_parts? grammar_part
 	Nonterm           // annotations? name=identifier params=nonterm_params? type=nonterm_type? (rule0)+
@@ -112,7 +115,10 @@ var nodeTypeStr = [...]string{
 	"LexemeAttrs",
 	"LexemeAttribute",
 	"DirectiveBrackets",
+	"InclusiveStates",
+	"ExclusiveStates",
 	"StateSelector",
+	"Stateref",
 	"LexerState",
 	"GrammarParts",
 	"Nonterm",
@@ -210,6 +216,8 @@ var GrammarPart = []NodeType{
 
 var LexerPart = []NodeType{
 	DirectiveBrackets,
+	ExclusiveStates,
+	InclusiveStates,
 	Lexeme,
 	NamedPattern,
 	StateSelector,
@@ -304,6 +312,8 @@ var ruleNodeType = [...]NodeType{
 	Identifier,        // identifier ::= 'param'
 	Identifier,        // identifier ::= 'flag'
 	Identifier,        // identifier ::= 'no-eoi'
+	Identifier,        // identifier ::= 's'
+	Identifier,        // identifier ::= 'x'
 	Identifier,        // identifier ::= 'soft'
 	Identifier,        // identifier ::= 'class'
 	Identifier,        // identifier ::= 'interface'
@@ -334,6 +344,8 @@ var ruleNodeType = [...]NodeType{
 	Identifier,        // identifier_Kw ::= 'param'
 	Identifier,        // identifier_Kw ::= 'flag'
 	Identifier,        // identifier_Kw ::= 'no-eoi'
+	Identifier,        // identifier_Kw ::= 's'
+	Identifier,        // identifier_Kw ::= 'x'
 	Identifier,        // identifier_Kw ::= 'soft'
 	Identifier,        // identifier_Kw ::= 'class'
 	Identifier,        // identifier_Kw ::= 'interface'
@@ -401,9 +413,14 @@ var ruleNodeType = [...]NodeType{
 	LexemeAttribute,   // lexeme_attribute ::= 'space'
 	LexemeAttribute,   // lexeme_attribute ::= 'layout'
 	DirectiveBrackets, // lexer_directive ::= '%' 'brackets' symref symref ';'
+	InclusiveStates,   // lexer_directive ::= '%' 's' lexer_state_list_Comma_separated
+	ExclusiveStates,   // lexer_directive ::= '%' 'x' lexer_state_list_Comma_separated
 	0,                 // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
 	0,                 // lexer_state_list_Comma_separated ::= lexer_state
-	StateSelector,     // state_selector ::= '[' lexer_state_list_Comma_separated ']'
+	StateSelector,     // state_selector ::= '[' stateref_list_Comma_separated ']'
+	0,                 // stateref_list_Comma_separated ::= stateref_list_Comma_separated ',' stateref
+	0,                 // stateref_list_Comma_separated ::= stateref
+	Stateref,          // stateref ::= identifier
 	LexerState,        // lexer_state ::= identifier
 	GrammarParts,      // grammar_parts ::= grammar_part
 	GrammarParts,      // grammar_parts ::= grammar_parts grammar_part_OrSyntaxError

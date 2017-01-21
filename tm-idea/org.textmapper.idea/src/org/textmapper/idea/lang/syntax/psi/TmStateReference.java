@@ -32,7 +32,7 @@ import java.util.Set;
 /**
  * Gryaznov Evgeny, 9/12/12
  */
-public class TmStateReference extends TmElement implements PsiPolyVariantReference {
+public class TmStateReference extends TmElement implements PsiReference {
 
 	public TmStateReference(@NotNull ASTNode node) {
 		super(node);
@@ -44,8 +44,11 @@ public class TmStateReference extends TmElement implements PsiPolyVariantReferen
 
 	@Nullable
 	public PsiElement resolve() {
-		ResolveResult[] resolveResults = multiResolve(false);
-		return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
+		String referenceText = getReferenceText();
+		if (referenceText == null) return null;
+		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
+		if (grammar == null) return null;
+		return grammar.resolveState(referenceText);
 	}
 
 	@Override
@@ -87,7 +90,7 @@ public class TmStateReference extends TmElement implements PsiPolyVariantReferen
 		if (grammar != null) {
 			List<TmLexerState> states = new ArrayList<>();
 			Set<String> seen = new HashSet<>();
-			for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
+			for (TmStatesClause selector : grammar.getStateDeclarations()) {
 				for (TmLexerState tmLexerState : selector.getStates()) {
 					if (seen.add(tmLexerState.getName())) {
 						states.add(tmLexerState);
@@ -101,24 +104,5 @@ public class TmStateReference extends TmElement implements PsiPolyVariantReferen
 
 	public boolean isSoft() {
 		return false;
-	}
-
-	@NotNull
-	@Override
-	public ResolveResult[] multiResolve(boolean incompleteCode) {
-		String referenceText = getReferenceText();
-		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
-		if (grammar != null && referenceText != null) {
-			List<ResolveResult> states = new ArrayList<>();
-			for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
-				for (TmLexerState state : selector.getStates()) {
-					if (referenceText.equals(state.getName())) {
-						states.add(new PsiElementResolveResult(state));
-					}
-				}
-			}
-			return states.toArray(new ResolveResult[states.size()]);
-		}
-		return new ResolveResult[0];
 	}
 }

@@ -12,6 +12,8 @@ module = "es6"
 
 :: lexer
 
+%s initial, div, template, template_div;
+
 [initial, div, template, template_div]
 
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)

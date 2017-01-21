@@ -18,16 +18,22 @@ package org.textmapper.tool.parser.ast;
 import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaStateSelector extends TmaNode implements ITmaLexerPart {
+public class TmaStatesClause extends TmaNode implements ITmaLexerPart {
 
-	private final List<TmaStateref> states;
+	private final boolean exclusive;
+	private final List<TmaLexerState> states;
 
-	public TmaStateSelector(List<TmaStateref> states, TextSource source, int line, int offset, int endoffset) {
+	public TmaStatesClause(boolean exclusive, List<TmaLexerState> states, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
+		this.exclusive = exclusive;
 		this.states = states;
 	}
 
-	public List<TmaStateref> getStates() {
+	public boolean isExclusive() {
+		return exclusive;
+	}
+
+	public List<TmaLexerState> getStates() {
 		return states;
 	}
 
@@ -37,7 +43,7 @@ public class TmaStateSelector extends TmaNode implements ITmaLexerPart {
 			return;
 		}
 		if (states != null) {
-			for (TmaStateref it : states) {
+			for (TmaLexerState it : states) {
 				it.accept(v);
 			}
 		}

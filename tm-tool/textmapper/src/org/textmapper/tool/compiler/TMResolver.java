@@ -92,30 +92,48 @@ public class TMResolver {
 
 	private void collectLexerStates() {
 		TmaIdentifier initialOrigin = null;
+		boolean initialExclusive = false;
+
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof TmaStateSelector) {
-				for (TmaLexerState state : ((TmaStateSelector) clause).getStates()) {
+			if (clause instanceof TmaStatesClause) {
+				for (TmaLexerState state : ((TmaStatesClause) clause).getStates()) {
 					if (state.getName().getID().equals(INITIAL_STATE.text())) {
+						if (initialOrigin != null) {
+							error(state, "redeclaration of `initial', ignored");
+							continue;
+						}
 						initialOrigin = state.getName();
-						break;
+						initialExclusive = ((TmaStatesClause) clause).isExclusive();
 					}
-				}
-				if (initialOrigin != null) {
-					break;
 				}
 			}
 		}
 
-		lexerStates.insert(builder.addState(INITIAL_STATE, initialOrigin));
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof TmaStateSelector) {
-				TmaStateSelector selector = (TmaStateSelector) clause;
-				for (TmaLexerState state : selector.getStates()) {
-					Name name = name(state.getName().getID(), state.getName());
-					if (name == null) continue;
+		LexerState initial = builder.addState(INITIAL_STATE, initialOrigin);
+		lexerStates.insert(initial);
+		if (initialExclusive) {
+			TMDataUtil.makeExclusive(initial);
+		}
 
-					if (lexerStates.resolve(name.text(), null, LexerState.class) == null) {
-						lexerStates.insert(builder.addState(name, state.getName()));
+		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof TmaStatesClause) {
+				boolean exclusive = ((TmaStatesClause) clause).isExclusive();
+				for (TmaLexerState state : ((TmaStatesClause) clause).getStates()) {
+					Name name = name(state.getName().getID(), state.getName());
+					if (name == null || state.getName().getID().equals(INITIAL_STATE.text())) {
+						continue;
+					}
+
+					LexerState lexerState =
+							lexerStates.resolve(name.text(), null, LexerState.class);
+					if (lexerState == null) {
+						lexerState = builder.addState(name, state.getName());
+						lexerStates.insert(lexerState);
+						if (exclusive) {
+							TMDataUtil.makeExclusive(lexerState);
+						}
+					} else {
+						error(state, "redeclaration of `" + name.text() + "', ignored");
 					}
 				}
 			}
@@ -325,10 +343,10 @@ public class TMResolver {
 		final String base_ = outer.getNameText() + "$";
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
 
-		Name name = outer.getName().subName(LapgCore.name("n"+index));
+		Name name = outer.getName().subName(LapgCore.name("n" + index));
 		while (namespace.canInsert(name) != null) {
 			index++;
-			name = outer.getName().subName(LapgCore.name("n"+index));
+			name = outer.getName().subName(LapgCore.name("n" + index));
 		}
 		lastIndex.put(base_, index + 1);
 
@@ -390,7 +408,8 @@ public class TMResolver {
 				} else {
 					TemplateParameter source = resolveParam(arg.getName(), context);
 					if (source == null) {
-						error(arg, "cannot resolve " + arg.getName() + " in " + context.getNameText());
+						error(arg, "cannot resolve " + arg.getName()
+								+ " in " + context.getNameText());
 						continue;
 					} else if (source != param) {
 						error(arg, arg.getName() + " has different meanings in "

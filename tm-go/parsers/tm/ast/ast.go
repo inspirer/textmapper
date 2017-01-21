@@ -39,10 +39,12 @@ func (DirectiveBrackets) tmNodeNode() {}
 func (DirectiveInput) tmNodeNode()    {}
 func (DirectivePrio) tmNodeNode()     {}
 func (DirectiveSet) tmNodeNode()      {}
+func (ExclusiveStates) tmNodeNode()   {}
 func (GrammarParts) tmNodeNode()      {}
 func (Header) tmNodeNode()            {}
 func (Identifier) tmNodeNode()        {}
 func (Import) tmNodeNode()            {}
+func (InclusiveStates) tmNodeNode()   {}
 func (InlineParameter) tmNodeNode()   {}
 func (Input) tmNodeNode()             {}
 func (Inputref) tmNodeNode()          {}
@@ -91,6 +93,7 @@ func (SetCompound) tmNodeNode()       {}
 func (SetOr) tmNodeNode()             {}
 func (SetSymbol) tmNodeNode()         {}
 func (StateSelector) tmNodeNode()     {}
+func (Stateref) tmNodeNode()          {}
 func (StringLiteral) tmNodeNode()     {}
 func (SubType) tmNodeNode()           {}
 func (Symref) tmNodeNode()            {}
@@ -157,6 +160,8 @@ type LexerPart interface {
 // assigned to LexerPart.
 //
 func (DirectiveBrackets) lexerPartNode() {}
+func (ExclusiveStates) lexerPartNode()   {}
+func (InclusiveStates) lexerPartNode()   {}
 func (Lexeme) lexerPartNode()            {}
 func (NamedPattern) lexerPartNode()      {}
 func (StateSelector) lexerPartNode()     {}
@@ -429,6 +434,19 @@ func (n DirectiveSet) RhsSet() RhsSet {
 	return RhsSet{n.Child(filter.RhsSet)}
 }
 
+type ExclusiveStates struct {
+	Node
+}
+
+func (n ExclusiveStates) States() []LexerState {
+	nodes := n.Children(filter.LexerState)
+	var result []LexerState = make([]LexerState, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, LexerState{node})
+	}
+	return result
+}
+
 type GrammarParts struct {
 	Node
 }
@@ -476,6 +494,19 @@ func (n Import) Alias() *Identifier {
 
 func (n Import) Path() StringLiteral {
 	return StringLiteral{n.Child(filter.StringLiteral)}
+}
+
+type InclusiveStates struct {
+	Node
+}
+
+func (n InclusiveStates) States() []LexerState {
+	nodes := n.Children(filter.LexerState)
+	var result []LexerState = make([]LexerState, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, LexerState{node})
+	}
+	return result
 }
 
 type InlineParameter struct {
@@ -1069,13 +1100,21 @@ type StateSelector struct {
 	Node
 }
 
-func (n StateSelector) States() []LexerState {
-	nodes := n.Children(filter.LexerState)
-	var result []LexerState = make([]LexerState, 0, len(nodes))
+func (n StateSelector) States() []Stateref {
+	nodes := n.Children(filter.Stateref)
+	var result []Stateref = make([]Stateref, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, LexerState{node})
+		result = append(result, Stateref{node})
 	}
 	return result
+}
+
+type Stateref struct {
+	Node
+}
+
+func (n Stateref) Name() Identifier {
+	return Identifier{n.Child(filter.Identifier)}
 }
 
 type StringLiteral struct {

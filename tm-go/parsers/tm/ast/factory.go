@@ -42,6 +42,8 @@ func ToTmNode(n Node) TmNode {
 		return &DirectivePrio{n}
 	case tm.DirectiveSet:
 		return &DirectiveSet{n}
+	case tm.ExclusiveStates:
+		return &ExclusiveStates{n}
 	case tm.GrammarParts:
 		return &GrammarParts{n}
 	case tm.Header:
@@ -50,6 +52,8 @@ func ToTmNode(n Node) TmNode {
 		return &Identifier{n}
 	case tm.Import:
 		return &Import{n}
+	case tm.InclusiveStates:
+		return &InclusiveStates{n}
 	case tm.InlineParameter:
 		return &InlineParameter{n}
 	case tm.Input:
@@ -146,6 +150,8 @@ func ToTmNode(n Node) TmNode {
 		return &SetSymbol{n}
 	case tm.StateSelector:
 		return &StateSelector{n}
+	case tm.Stateref:
+		return &Stateref{n}
 	case tm.StringLiteral:
 		return &StringLiteral{n}
 	case tm.SubType:

@@ -29,7 +29,7 @@ genCopyright = true
 
 :: lexer
 
-[initial]
+%s initial, bracedCode, predicate, prologue, tag, epilogue;
 
 #####################
 # Common definitions.

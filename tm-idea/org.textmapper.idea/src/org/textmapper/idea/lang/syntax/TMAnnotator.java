@@ -57,7 +57,7 @@ public class TMAnnotator implements Annotator {
 		}
 		if (element instanceof TmStateReference) {
 			TmStateReference ref = (TmStateReference) element;
-			if (ref.multiResolve(false).length == 0) {
+			if (ref.resolve() == null && !"initial".equals(ref.getReferenceText())) {
 				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve state `" + ref.getReferenceText() + "'");
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
 			}
@@ -92,6 +92,7 @@ public class TMAnnotator implements Annotator {
 				|| element instanceof TmRhsSuffix
 				|| element instanceof TmNontermType
 				|| element instanceof TmHeader
+				|| element instanceof TmStatesClause
 				|| element instanceof TmLexemeAttrs
 				|| element instanceof TmLexerDirective
 				|| element instanceof TmNontermParam

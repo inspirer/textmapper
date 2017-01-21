@@ -30,6 +30,8 @@ genCopyright = true
 # 1 - after character/group - enables qualifiers
 # 2 - in character set
 
+%s initial, afterChar, inSet;
+
 [initial, afterChar, inSet]
 
 char {Integer}: /[^()\[\]\.|\\\/*?+-]/			{ $$ = tokenText().codePointAt(0); quantifierReady(); }

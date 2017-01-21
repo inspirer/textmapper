@@ -274,6 +274,10 @@ recovered:
 				token = NOMINUSEOI
 				break
 			}
+			if hash == 0x73 && "s" == l.source[l.tokenOffset:l.offset] {
+				token = CHAR_S
+				break
+			}
 		case 52:
 			if hash == 0x8d046634 && "explicit" == l.source[l.tokenOffset:l.offset] {
 				token = EXPLICIT
@@ -287,6 +291,10 @@ recovered:
 		case 56:
 			if hash == 0x5a5a978 && "class" == l.source[l.tokenOffset:l.offset] {
 				token = CLASS
+				break
+			}
+			if hash == 0x78 && "x" == l.source[l.tokenOffset:l.offset] {
+				token = CHAR_X
 				break
 			}
 		case 57:
