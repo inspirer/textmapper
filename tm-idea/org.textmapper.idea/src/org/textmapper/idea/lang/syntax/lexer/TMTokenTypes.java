@@ -49,7 +49,6 @@ public interface TMTokenTypes {
 	IElementType OP_LPAREN_QA = new TMElementType(Tokens.LparenQuestAssign, "(?=");
 	IElementType OP_RPAREN = new TMElementType(Tokens.Rparen, ")");
 	IElementType OP_LCURLY = new TMElementType(Tokens.Lbrace, "{");
-	IElementType OP_LCURLYTILDE = new TMElementType(Tokens.LbraceTilde, "{~");
 	IElementType OP_RCURLY = new TMElementType(Tokens.Rbrace, "}");
 
 	// punctuation
@@ -61,7 +60,6 @@ public interface TMTokenTypes {
 	// operators
 	IElementType OP_PERCENT = new TMElementType(Tokens.Rem, "%");
 	IElementType OP_DOLLAR = new TMElementType(Tokens.Dollar, "$");
-	IElementType OP_CCEQ = new TMElementType(Tokens.ColonColonAssign, "::=");
 	IElementType OP_OR = new TMElementType(Tokens.Or, "|");
 	IElementType OP_OROR = new TMElementType(Tokens.OrOr, "||");
 	IElementType OP_EQ = new TMElementType(Tokens.Assign, "=");
@@ -83,7 +81,7 @@ public interface TMTokenTypes {
 	IElementType OP_DIV = new TMElementType(Tokens.Div, "/");
 
 	TokenSet operators = TokenSet.create(
-			OP_PERCENT, OP_DOLLAR, OP_CCEQ, OP_OR, OP_OROR, OP_EQ, OP_EQEQ, OP_EXCLEQ, OP_COLON,
+			OP_PERCENT, OP_DOLLAR, OP_OR, OP_OROR, OP_EQ, OP_EQEQ, OP_EXCLEQ, OP_COLON,
 			OP_LT, OP_GT, OP_PLUSEQ, OP_EMARK, OP_ARROW, OP_AND, OP_ANDAND, OP_AT, OP_TILDE, OP_DIV
 	);
 
@@ -97,6 +95,7 @@ public interface TMTokenTypes {
 	IElementType KW_AS = new TMElementType(Tokens.Las, "as");
 	IElementType KW_IMPORT = new TMElementType(Tokens.Limport, "import");
 	IElementType KW_SET = new TMElementType(Tokens.Lset, "set");
+	IElementType KW_IMPLEMENTS = new TMElementType(Tokens.Limplements, "implements");
 
 	// soft keywords
 	IElementType KW_BRACKETS = new TMElementType(Tokens.Lbrackets, "brackets");
@@ -142,7 +141,7 @@ public interface TMTokenTypes {
 	IElementType KW_PARSER_ACC = new TMElementType(Tokens.Lparser, "parser");
 
 	TokenSet keywords = TokenSet.create(
-			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT, KW_SET);
+			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT, KW_SET, KW_IMPLEMENTS);
 
 	TokenSet softKeywords = TokenSet.create(
 			KW_BRACKETS, KW_INLINE, KW_S, KW_X,

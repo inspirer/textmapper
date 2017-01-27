@@ -40,81 +40,81 @@ _skip:	/[^'"{}]+/
 
 # Grammar
 
-input ::=
+input :
 	directivesopt
 	lexical_definitions
 	grammar_definitions ;
 
-directives ::= 
+directives :
 	directives directive | directive ;
 
-directive ::=
+directive :
 	'.' identifier scon 								{ options.put($identifier, $scon); }
 	| '.' identifier icon								{ options.put($identifier, $icon.toString()); }
 ;
 
-lexical_definitions ::= 
+lexical_definitions :
 	lexical_definitions lexical_definition 
 	| lexical_definition 
 ;
 
-lexical_definition ::=
+lexical_definition :
 	'[' iconlist_in_bits ']'							{ currentgroups = $iconlist_in_bits; }
 	| symbol typeopt ':'								{ addLexeme($symbol, $typeopt, null, null, null, @0.line); }
 	| symbol typeopt ':' regexp iconopt commandopt		{ addLexeme($symbol, $typeopt, $regexp, $iconopt, $commandopt, @0.line); }
 ;
 
-iconlist_in_bits(Integer) ::=
+iconlist_in_bits(Integer) :
 	icon 												{ if( $icon < 0 || $icon >= BITS ) $$ = 0; else $$ = 1 << $icon; } 
 	| iconlist_in_bits icon  							{ $$ = $iconlist_in_bits | $icon; }
 ;
 
-grammar_definitions ::=
+grammar_definitions :
 	grammar_definitions grammar_definition
 	| grammar_definition 
 ;
 
-grammar_definition ::= 
+grammar_definition :
 	rules_definition ';'
 	| '%' identifier symbol_list ';'					{ addPrio($identifier, $symbol_list, @1.line); }
 ; 
 
-rules_definition (CSymbol) ::= 
+rules_definition (CSymbol) :
 	symbol typeopt '::=' rule_def						{ addNonterm($symbol, $typeopt, @0.line); addRule($rule_def,$symbol); }
 	| rules_definition '|' rule_def						{ addRule($rule_def,$rules_definition); }
 ;
 
-symbol_list (List<CSymbol>) ::= 
+symbol_list (List<CSymbol>) :
 	symbol_list symbol									{ $symbol_list.add($symbol); }
 	| symbol 											{ $$ = new ArrayList<CSymbol>(); $symbol_list.add($symbol); }
 ;
 
-rule_def (CRule) ::=
+rule_def (CRule) :
 	rule_symbols commandopt rule_priorityopt			{ $$ = new CRule($rule_symbols, $commandopt, $rule_priorityopt, @0.line); }
 	| commandopt rule_priorityopt 						{ $$ = new CRule(null, $commandopt, $rule_priorityopt, @0.line); }
 ;
 
-rule_symbols (List<CSymbol>) ::=
+rule_symbols (List<CSymbol>) :
 	rule_symbols commandopt symbol						{ addRuleSymbol($rule_symbols,$commandopt,$symbol); } 
 	| commandopt symbol									{ $$ = new ArrayList<CSymbol>(); addRuleSymbol($rule_symbols,$commandopt,$symbol); }
 ;
 
-rule_priority (CSymbol) ::=
+rule_priority (CSymbol) :
 	'<<' symbol											{ $$ = $symbol; } 
 ;
 
-command (CAction) ::=
+command (CAction) :
 	'{' command_tokensopt '}'							{ $$ = new CAction(@0.line, rawData(@0.offset+1,@2.offset)); }  
 ;
 	
-command_tokens ::=
+command_tokens :
 	command_tokens command_token | command_token ;
 
-command_token ::=
+command_token :
 	'i{' command_tokensopt '}' 
 ;
 
-symbol (CSymbol) ::=
+symbol (CSymbol) :
 	identifier											{ $$ = getSymbol($identifier, @0.line); }
 ;
 

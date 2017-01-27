@@ -15,18 +15,18 @@ Lextends:	 /extends/              (soft)
 
 :: parser
 
-input ::=
+input :
 	classdef ;
 
-classdef ::=
+classdef :
 	  Lclass identifier '(' memberslist ')'
 	| Lclass identifier Lextends identifier '(' memberslist ')'
 ;
 
-memberslist ::=
+memberslist :
 	member | memberslist member ;
 
-member ::=
+member :
 	  classdef
 	| identifier '(' ')'
 ;

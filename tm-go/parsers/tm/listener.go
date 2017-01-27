@@ -52,7 +52,7 @@ const (
 	Rule              // predicate? (rhsPart)* ruleAction? rhsSuffix?
 	Predicate         // predicate_expression
 	RhsSuffix         // symref
-	RuleAction        // action=identifier parameter=string_literal?
+	RuleAction        // action=identifier kind=identifier?
 	RhsAnnotated      // annotations inner=rhsPart
 	RhsAssignment     // id=identifier inner=rhsPart
 	RhsPlusAssignment // id=identifier inner=rhsPart
@@ -292,276 +292,276 @@ var SetExpression = []NodeType{
 }
 
 var ruleNodeType = [...]NodeType{
-	Identifier,        // identifier ::= ID
-	Identifier,        // identifier ::= 'brackets'
-	Identifier,        // identifier ::= 'inline'
-	Identifier,        // identifier ::= 'prec'
-	Identifier,        // identifier ::= 'shift'
-	Identifier,        // identifier ::= 'returns'
-	Identifier,        // identifier ::= 'input'
-	Identifier,        // identifier ::= 'left'
-	Identifier,        // identifier ::= 'right'
-	Identifier,        // identifier ::= 'nonassoc'
-	Identifier,        // identifier ::= 'generate'
-	Identifier,        // identifier ::= 'assert'
-	Identifier,        // identifier ::= 'empty'
-	Identifier,        // identifier ::= 'nonempty'
-	Identifier,        // identifier ::= 'global'
-	Identifier,        // identifier ::= 'explicit'
-	Identifier,        // identifier ::= 'lookahead'
-	Identifier,        // identifier ::= 'param'
-	Identifier,        // identifier ::= 'flag'
-	Identifier,        // identifier ::= 'no-eoi'
-	Identifier,        // identifier ::= 's'
-	Identifier,        // identifier ::= 'x'
-	Identifier,        // identifier ::= 'soft'
-	Identifier,        // identifier ::= 'class'
-	Identifier,        // identifier ::= 'interface'
-	Identifier,        // identifier ::= 'void'
-	Identifier,        // identifier ::= 'space'
-	Identifier,        // identifier ::= 'layout'
-	Identifier,        // identifier ::= 'language'
-	Identifier,        // identifier ::= 'lalr'
-	Identifier,        // identifier ::= 'lexer'
-	Identifier,        // identifier ::= 'parser'
-	Identifier,        // identifier_Kw ::= ID
-	Identifier,        // identifier_Kw ::= 'brackets'
-	Identifier,        // identifier_Kw ::= 'inline'
-	Identifier,        // identifier_Kw ::= 'prec'
-	Identifier,        // identifier_Kw ::= 'shift'
-	Identifier,        // identifier_Kw ::= 'returns'
-	Identifier,        // identifier_Kw ::= 'input'
-	Identifier,        // identifier_Kw ::= 'left'
-	Identifier,        // identifier_Kw ::= 'right'
-	Identifier,        // identifier_Kw ::= 'nonassoc'
-	Identifier,        // identifier_Kw ::= 'generate'
-	Identifier,        // identifier_Kw ::= 'assert'
-	Identifier,        // identifier_Kw ::= 'empty'
-	Identifier,        // identifier_Kw ::= 'nonempty'
-	Identifier,        // identifier_Kw ::= 'global'
-	Identifier,        // identifier_Kw ::= 'explicit'
-	Identifier,        // identifier_Kw ::= 'lookahead'
-	Identifier,        // identifier_Kw ::= 'param'
-	Identifier,        // identifier_Kw ::= 'flag'
-	Identifier,        // identifier_Kw ::= 'no-eoi'
-	Identifier,        // identifier_Kw ::= 's'
-	Identifier,        // identifier_Kw ::= 'x'
-	Identifier,        // identifier_Kw ::= 'soft'
-	Identifier,        // identifier_Kw ::= 'class'
-	Identifier,        // identifier_Kw ::= 'interface'
-	Identifier,        // identifier_Kw ::= 'void'
-	Identifier,        // identifier_Kw ::= 'space'
-	Identifier,        // identifier_Kw ::= 'layout'
-	Identifier,        // identifier_Kw ::= 'language'
-	Identifier,        // identifier_Kw ::= 'lalr'
-	Identifier,        // identifier_Kw ::= 'lexer'
-	Identifier,        // identifier_Kw ::= 'parser'
-	Identifier,        // identifier_Kw ::= 'true'
-	Identifier,        // identifier_Kw ::= 'false'
-	Identifier,        // identifier_Kw ::= 'separator'
-	Identifier,        // identifier_Kw ::= 'as'
-	Identifier,        // identifier_Kw ::= 'import'
-	Identifier,        // identifier_Kw ::= 'set'
-	IntegerLiteral,    // integer_literal ::= icon
-	StringLiteral,     // string_literal ::= scon
-	BooleanLiteral,    // boolean_literal ::= 'true'
-	BooleanLiteral,    // boolean_literal ::= 'false'
-	0,                 // literal ::= string_literal
-	0,                 // literal ::= integer_literal
-	0,                 // literal ::= boolean_literal
-	Pattern,           // pattern ::= regexp
-	0,                 // qualified_name ::= identifier
-	0,                 // qualified_name ::= qualified_name '.' identifier_Kw
-	Name,              // name ::= qualified_name
-	Command,           // command ::= code
-	SyntaxProblem,     // syntax_problem ::= error
-	0,                 // import__optlist ::= import__optlist import_
-	0,                 // import__optlist ::=
-	Input,             // input ::= header import__optlist option_optlist lexer_section parser_section
-	Input,             // input ::= header import__optlist option_optlist lexer_section
-	0,                 // option_optlist ::= option_optlist option
-	0,                 // option_optlist ::=
-	Header,            // header ::= 'language' name '(' name ')' ';'
-	Header,            // header ::= 'language' name ';'
-	0,                 // lexer_section ::= '::' 'lexer' lexer_parts
-	0,                 // parser_section ::= '::' 'parser' grammar_parts
-	Import,            // import_ ::= 'import' identifier string_literal ';'
-	Import,            // import_ ::= 'import' string_literal ';'
-	KeyValue,          // option ::= identifier '=' expression
-	0,                 // option ::= syntax_problem
-	Symref,            // symref ::= identifier
-	Symref,            // symref_Args ::= identifier symref_args
-	Symref,            // symref_Args ::= identifier
-	RawType,           // rawType ::= code
-	0,                 // lexer_parts ::= lexer_part
-	0,                 // lexer_parts ::= lexer_parts lexer_part_OrSyntaxError
-	0,                 // lexer_part ::= state_selector
-	0,                 // lexer_part ::= named_pattern
-	0,                 // lexer_part ::= lexeme
-	0,                 // lexer_part ::= lexer_directive
-	0,                 // lexer_part_OrSyntaxError ::= state_selector
-	0,                 // lexer_part_OrSyntaxError ::= named_pattern
-	0,                 // lexer_part_OrSyntaxError ::= lexeme
-	0,                 // lexer_part_OrSyntaxError ::= lexer_directive
-	0,                 // lexer_part_OrSyntaxError ::= syntax_problem
-	NamedPattern,      // named_pattern ::= identifier '=' pattern
-	Lexeme,            // lexeme ::= identifier rawTypeopt ':' pattern integer_literalopt lexeme_attrsopt commandopt
-	Lexeme,            // lexeme ::= identifier rawTypeopt ':'
-	LexemeAttrs,       // lexeme_attrs ::= '(' lexeme_attribute ')'
-	LexemeAttribute,   // lexeme_attribute ::= 'soft'
-	LexemeAttribute,   // lexeme_attribute ::= 'class'
-	LexemeAttribute,   // lexeme_attribute ::= 'space'
-	LexemeAttribute,   // lexeme_attribute ::= 'layout'
-	DirectiveBrackets, // lexer_directive ::= '%' 'brackets' symref symref ';'
-	InclusiveStates,   // lexer_directive ::= '%' 's' lexer_state_list_Comma_separated
-	ExclusiveStates,   // lexer_directive ::= '%' 'x' lexer_state_list_Comma_separated
-	0,                 // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
-	0,                 // lexer_state_list_Comma_separated ::= lexer_state
-	StateSelector,     // state_selector ::= '[' stateref_list_Comma_separated ']'
-	0,                 // stateref_list_Comma_separated ::= stateref_list_Comma_separated ',' stateref
-	0,                 // stateref_list_Comma_separated ::= stateref
-	Stateref,          // stateref ::= identifier
-	LexerState,        // lexer_state ::= identifier
-	GrammarParts,      // grammar_parts ::= grammar_part
-	GrammarParts,      // grammar_parts ::= grammar_parts grammar_part_OrSyntaxError
-	0,                 // grammar_part ::= nonterm
-	0,                 // grammar_part ::= template_param
-	0,                 // grammar_part ::= directive
-	0,                 // grammar_part_OrSyntaxError ::= nonterm
-	0,                 // grammar_part_OrSyntaxError ::= template_param
-	0,                 // grammar_part_OrSyntaxError ::= directive
-	0,                 // grammar_part_OrSyntaxError ::= syntax_problem
-	Nonterm,           // nonterm ::= annotations identifier nonterm_params nonterm_type '::=' rules ';'
-	Nonterm,           // nonterm ::= annotations identifier nonterm_params '::=' rules ';'
-	Nonterm,           // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
-	Nonterm,           // nonterm ::= annotations identifier '::=' rules ';'
-	Nonterm,           // nonterm ::= identifier nonterm_params nonterm_type '::=' rules ';'
-	Nonterm,           // nonterm ::= identifier nonterm_params '::=' rules ';'
-	Nonterm,           // nonterm ::= identifier nonterm_type '::=' rules ';'
-	Nonterm,           // nonterm ::= identifier '::=' rules ';'
-	SubType,           // nonterm_type ::= 'returns' symref
-	InterfaceType,     // nonterm_type ::= 'interface'
-	VoidType,          // nonterm_type ::= 'void'
-	0,                 // nonterm_type ::= rawType
-	Assoc,             // assoc ::= 'left'
-	Assoc,             // assoc ::= 'right'
-	Assoc,             // assoc ::= 'nonassoc'
-	ParamModifier,     // param_modifier ::= 'explicit'
-	ParamModifier,     // param_modifier ::= 'global'
-	ParamModifier,     // param_modifier ::= 'lookahead'
-	TemplateParam,     // template_param ::= '%' param_modifier param_type identifier '=' param_value ';'
-	TemplateParam,     // template_param ::= '%' param_modifier param_type identifier ';'
-	TemplateParam,     // template_param ::= '%' param_type identifier '=' param_value ';'
-	TemplateParam,     // template_param ::= '%' param_type identifier ';'
-	DirectivePrio,     // directive ::= '%' assoc references ';'
-	DirectiveInput,    // directive ::= '%' 'input' inputref_list_Comma_separated ';'
-	DirectiveAssert,   // directive ::= '%' 'assert' 'empty' rhsSet ';'
-	DirectiveAssert,   // directive ::= '%' 'assert' 'nonempty' rhsSet ';'
-	DirectiveSet,      // directive ::= '%' 'generate' identifier '=' rhsSet ';'
-	0,                 // inputref_list_Comma_separated ::= inputref_list_Comma_separated ',' inputref
-	0,                 // inputref_list_Comma_separated ::= inputref
-	Inputref,          // inputref ::= symref 'no-eoi'
-	Inputref,          // inputref ::= symref
-	References,        // references ::= symref
-	References,        // references ::= references symref
-	0,                 // rules ::= rule0
-	0,                 // rules ::= rules '|' rule0
-	Rule,              // rule0 ::= predicate rhsParts ruleAction rhsSuffixopt
-	Rule,              // rule0 ::= predicate rhsParts rhsSuffixopt
-	Rule,              // rule0 ::= predicate ruleAction rhsSuffixopt
-	Rule,              // rule0 ::= predicate rhsSuffixopt
-	Rule,              // rule0 ::= rhsParts ruleAction rhsSuffixopt
-	Rule,              // rule0 ::= rhsParts rhsSuffixopt
-	Rule,              // rule0 ::= ruleAction rhsSuffixopt
-	Rule,              // rule0 ::= rhsSuffixopt
-	0,                 // rule0 ::= syntax_problem
-	Predicate,         // predicate ::= '[' predicate_expression ']'
-	RhsSuffix,         // rhsSuffix ::= '%' 'prec' symref
-	RhsSuffix,         // rhsSuffix ::= '%' 'shift' symref
-	RuleAction,        // ruleAction ::= '{~' identifier string_literal '}'
-	RuleAction,        // ruleAction ::= '{~' identifier '}'
-	0,                 // rhsParts ::= rhsPart
-	0,                 // rhsParts ::= rhsParts rhsPart_OrSyntaxError
-	0,                 // rhsPart ::= rhsAnnotated
-	0,                 // rhsPart ::= command
-	0,                 // rhsPart_OrSyntaxError ::= rhsAnnotated
-	0,                 // rhsPart_OrSyntaxError ::= command
-	0,                 // rhsPart_OrSyntaxError ::= syntax_problem
-	0,                 // rhsAnnotated ::= rhsAssignment
-	RhsAnnotated,      // rhsAnnotated ::= annotations rhsAssignment
-	0,                 // rhsAssignment ::= rhsOptional
-	RhsAssignment,     // rhsAssignment ::= identifier '=' rhsOptional
-	RhsPlusAssignment, // rhsAssignment ::= identifier '+=' rhsOptional
-	0,                 // rhsOptional ::= rhsCast
-	RhsOptional,       // rhsOptional ::= rhsCast '?'
-	0,                 // rhsCast ::= rhsPrimary
-	RhsCast,           // rhsCast ::= rhsPrimary 'as' symref_Args
-	ListSeparator,     // listSeparator ::= 'separator' references
-	RhsSymbol,         // rhsPrimary ::= symref_Args
-	RhsNested,         // rhsPrimary ::= '(' rules ')'
-	RhsPlusList,       // rhsPrimary ::= '(' rhsParts listSeparator ')' '+'
-	RhsStarList,       // rhsPrimary ::= '(' rhsParts listSeparator ')' '*'
-	RhsQuantifier,     // rhsPrimary ::= rhsPrimary '+'
-	RhsQuantifier,     // rhsPrimary ::= rhsPrimary '*'
-	RhsIgnored,        // rhsPrimary ::= '$' '(' rules ')'
-	RhsPrimary,        // rhsPrimary ::= rhsSet
-	RhsSet,            // rhsSet ::= 'set' '(' setExpression ')'
-	SetSymbol,         // setPrimary ::= identifier symref_Args
-	SetSymbol,         // setPrimary ::= symref_Args
-	SetCompound,       // setPrimary ::= '(' setExpression ')'
-	SetComplement,     // setPrimary ::= '~' setPrimary
-	0,                 // setExpression ::= setPrimary
-	SetOr,             // setExpression ::= setExpression '|' setExpression
-	SetAnd,            // setExpression ::= setExpression '&' setExpression
-	0,                 // annotation_list ::= annotation_list annotation
-	0,                 // annotation_list ::= annotation
-	Annotations,       // annotations ::= annotation_list
-	AnnotationImpl,    // annotation ::= '@' identifier '=' expression
-	AnnotationImpl,    // annotation ::= '@' identifier
-	0,                 // annotation ::= '@' syntax_problem
-	0,                 // nonterm_param_list_Comma_separated ::= nonterm_param_list_Comma_separated ',' nonterm_param
-	0,                 // nonterm_param_list_Comma_separated ::= nonterm_param
-	NontermParams,     // nonterm_params ::= '<' nonterm_param_list_Comma_separated '>'
-	0,                 // nonterm_param ::= param_ref
-	InlineParameter,   // nonterm_param ::= identifier identifier '=' param_value
-	InlineParameter,   // nonterm_param ::= identifier identifier
-	ParamRef,          // param_ref ::= identifier
-	0,                 // argument_list_Comma_separated ::= argument_list_Comma_separated ',' argument
-	0,                 // argument_list_Comma_separated ::= argument
-	0,                 // argument_list_Comma_separated_opt ::= argument_list_Comma_separated
-	0,                 // argument_list_Comma_separated_opt ::=
-	SymrefArgs,        // symref_args ::= '<' argument_list_Comma_separated_opt '>'
-	ArgumentImpl,      // argument ::= param_ref ':' param_value
-	ArgumentImpl,      // argument ::= param_ref
-	ArgumentTrue,      // argument ::= '+' param_ref
-	ArgumentFalse,     // argument ::= '~' param_ref
-	ParamType,         // param_type ::= 'flag'
-	ParamType,         // param_type ::= 'param'
-	0,                 // param_value ::= literal
-	0,                 // param_value ::= param_ref
-	0,                 // predicate_primary ::= param_ref
-	PredicateNot,      // predicate_primary ::= '!' param_ref
-	PredicateEq,       // predicate_primary ::= param_ref '==' literal
-	PredicateNotEq,    // predicate_primary ::= param_ref '!=' literal
-	0,                 // predicate_expression ::= predicate_primary
-	PredicateAnd,      // predicate_expression ::= predicate_expression '&&' predicate_expression
-	PredicateOr,       // predicate_expression ::= predicate_expression '||' predicate_expression
-	0,                 // expression ::= literal
-	0,                 // expression ::= symref_Args
-	Array,             // expression ::= '[' expression_list_Comma_separated_opt ']'
-	0,                 // expression ::= syntax_problem
-	0,                 // expression_list_Comma_separated ::= expression_list_Comma_separated ',' expression
-	0,                 // expression_list_Comma_separated ::= expression
-	0,                 // expression_list_Comma_separated_opt ::= expression_list_Comma_separated
-	0,                 // expression_list_Comma_separated_opt ::=
-	0,                 // rawTypeopt ::= rawType
-	0,                 // rawTypeopt ::=
-	0,                 // integer_literalopt ::= integer_literal
-	0,                 // integer_literalopt ::=
-	0,                 // lexeme_attrsopt ::= lexeme_attrs
-	0,                 // lexeme_attrsopt ::=
-	0,                 // commandopt ::= command
-	0,                 // commandopt ::=
-	0,                 // rhsSuffixopt ::= rhsSuffix
-	0,                 // rhsSuffixopt ::=
+	Identifier,        // identifier : ID
+	Identifier,        // identifier : 'brackets'
+	Identifier,        // identifier : 'inline'
+	Identifier,        // identifier : 'prec'
+	Identifier,        // identifier : 'shift'
+	Identifier,        // identifier : 'returns'
+	Identifier,        // identifier : 'input'
+	Identifier,        // identifier : 'left'
+	Identifier,        // identifier : 'right'
+	Identifier,        // identifier : 'nonassoc'
+	Identifier,        // identifier : 'generate'
+	Identifier,        // identifier : 'assert'
+	Identifier,        // identifier : 'empty'
+	Identifier,        // identifier : 'nonempty'
+	Identifier,        // identifier : 'global'
+	Identifier,        // identifier : 'explicit'
+	Identifier,        // identifier : 'lookahead'
+	Identifier,        // identifier : 'param'
+	Identifier,        // identifier : 'flag'
+	Identifier,        // identifier : 'no-eoi'
+	Identifier,        // identifier : 's'
+	Identifier,        // identifier : 'x'
+	Identifier,        // identifier : 'soft'
+	Identifier,        // identifier : 'class'
+	Identifier,        // identifier : 'interface'
+	Identifier,        // identifier : 'void'
+	Identifier,        // identifier : 'space'
+	Identifier,        // identifier : 'layout'
+	Identifier,        // identifier : 'language'
+	Identifier,        // identifier : 'lalr'
+	Identifier,        // identifier : 'lexer'
+	Identifier,        // identifier : 'parser'
+	Identifier,        // identifier_Kw : ID
+	Identifier,        // identifier_Kw : 'brackets'
+	Identifier,        // identifier_Kw : 'inline'
+	Identifier,        // identifier_Kw : 'prec'
+	Identifier,        // identifier_Kw : 'shift'
+	Identifier,        // identifier_Kw : 'returns'
+	Identifier,        // identifier_Kw : 'input'
+	Identifier,        // identifier_Kw : 'left'
+	Identifier,        // identifier_Kw : 'right'
+	Identifier,        // identifier_Kw : 'nonassoc'
+	Identifier,        // identifier_Kw : 'generate'
+	Identifier,        // identifier_Kw : 'assert'
+	Identifier,        // identifier_Kw : 'empty'
+	Identifier,        // identifier_Kw : 'nonempty'
+	Identifier,        // identifier_Kw : 'global'
+	Identifier,        // identifier_Kw : 'explicit'
+	Identifier,        // identifier_Kw : 'lookahead'
+	Identifier,        // identifier_Kw : 'param'
+	Identifier,        // identifier_Kw : 'flag'
+	Identifier,        // identifier_Kw : 'no-eoi'
+	Identifier,        // identifier_Kw : 's'
+	Identifier,        // identifier_Kw : 'x'
+	Identifier,        // identifier_Kw : 'soft'
+	Identifier,        // identifier_Kw : 'class'
+	Identifier,        // identifier_Kw : 'interface'
+	Identifier,        // identifier_Kw : 'void'
+	Identifier,        // identifier_Kw : 'space'
+	Identifier,        // identifier_Kw : 'layout'
+	Identifier,        // identifier_Kw : 'language'
+	Identifier,        // identifier_Kw : 'lalr'
+	Identifier,        // identifier_Kw : 'lexer'
+	Identifier,        // identifier_Kw : 'parser'
+	Identifier,        // identifier_Kw : 'true'
+	Identifier,        // identifier_Kw : 'false'
+	Identifier,        // identifier_Kw : 'separator'
+	Identifier,        // identifier_Kw : 'as'
+	Identifier,        // identifier_Kw : 'import'
+	Identifier,        // identifier_Kw : 'set'
+	IntegerLiteral,    // integer_literal : icon
+	StringLiteral,     // string_literal : scon
+	BooleanLiteral,    // boolean_literal : 'true'
+	BooleanLiteral,    // boolean_literal : 'false'
+	0,                 // literal : string_literal
+	0,                 // literal : integer_literal
+	0,                 // literal : boolean_literal
+	Pattern,           // pattern : regexp
+	0,                 // qualified_name : identifier
+	0,                 // qualified_name : qualified_name '.' identifier_Kw
+	Name,              // name : qualified_name
+	Command,           // command : code
+	SyntaxProblem,     // syntax_problem : error
+	0,                 // import__optlist : import__optlist import_
+	0,                 // import__optlist :
+	Input,             // input : header import__optlist option_optlist lexer_section parser_section
+	Input,             // input : header import__optlist option_optlist lexer_section
+	0,                 // option_optlist : option_optlist option
+	0,                 // option_optlist :
+	Header,            // header : 'language' name '(' name ')' ';'
+	Header,            // header : 'language' name ';'
+	0,                 // lexer_section : '::' 'lexer' lexer_parts
+	0,                 // parser_section : '::' 'parser' grammar_parts
+	Import,            // import_ : 'import' identifier string_literal ';'
+	Import,            // import_ : 'import' string_literal ';'
+	KeyValue,          // option : identifier '=' expression
+	0,                 // option : syntax_problem
+	Symref,            // symref : identifier
+	Symref,            // symref_Args : identifier symref_args
+	Symref,            // symref_Args : identifier
+	RawType,           // rawType : code
+	0,                 // lexer_parts : lexer_part
+	0,                 // lexer_parts : lexer_parts lexer_part_OrSyntaxError
+	0,                 // lexer_part : state_selector
+	0,                 // lexer_part : named_pattern
+	0,                 // lexer_part : lexeme
+	0,                 // lexer_part : lexer_directive
+	0,                 // lexer_part_OrSyntaxError : state_selector
+	0,                 // lexer_part_OrSyntaxError : named_pattern
+	0,                 // lexer_part_OrSyntaxError : lexeme
+	0,                 // lexer_part_OrSyntaxError : lexer_directive
+	0,                 // lexer_part_OrSyntaxError : syntax_problem
+	NamedPattern,      // named_pattern : identifier '=' pattern
+	Lexeme,            // lexeme : identifier rawTypeopt ':' pattern integer_literalopt lexeme_attrsopt commandopt
+	Lexeme,            // lexeme : identifier rawTypeopt ':'
+	LexemeAttrs,       // lexeme_attrs : '(' lexeme_attribute ')'
+	LexemeAttribute,   // lexeme_attribute : 'soft'
+	LexemeAttribute,   // lexeme_attribute : 'class'
+	LexemeAttribute,   // lexeme_attribute : 'space'
+	LexemeAttribute,   // lexeme_attribute : 'layout'
+	DirectiveBrackets, // lexer_directive : '%' 'brackets' symref symref ';'
+	InclusiveStates,   // lexer_directive : '%' 's' lexer_state_list_Comma_separated
+	ExclusiveStates,   // lexer_directive : '%' 'x' lexer_state_list_Comma_separated
+	0,                 // lexer_state_list_Comma_separated : lexer_state_list_Comma_separated ',' lexer_state
+	0,                 // lexer_state_list_Comma_separated : lexer_state
+	StateSelector,     // state_selector : '[' stateref_list_Comma_separated ']'
+	0,                 // stateref_list_Comma_separated : stateref_list_Comma_separated ',' stateref
+	0,                 // stateref_list_Comma_separated : stateref
+	Stateref,          // stateref : identifier
+	LexerState,        // lexer_state : identifier
+	GrammarParts,      // grammar_parts : grammar_part
+	GrammarParts,      // grammar_parts : grammar_parts grammar_part_OrSyntaxError
+	0,                 // grammar_part : nonterm
+	0,                 // grammar_part : template_param
+	0,                 // grammar_part : directive
+	0,                 // grammar_part_OrSyntaxError : nonterm
+	0,                 // grammar_part_OrSyntaxError : template_param
+	0,                 // grammar_part_OrSyntaxError : directive
+	0,                 // grammar_part_OrSyntaxError : syntax_problem
+	Nonterm,           // nonterm : annotations identifier nonterm_params nonterm_type ':' rules ';'
+	Nonterm,           // nonterm : annotations identifier nonterm_params ':' rules ';'
+	Nonterm,           // nonterm : annotations identifier nonterm_type ':' rules ';'
+	Nonterm,           // nonterm : annotations identifier ':' rules ';'
+	Nonterm,           // nonterm : identifier nonterm_params nonterm_type ':' rules ';'
+	Nonterm,           // nonterm : identifier nonterm_params ':' rules ';'
+	Nonterm,           // nonterm : identifier nonterm_type ':' rules ';'
+	Nonterm,           // nonterm : identifier ':' rules ';'
+	SubType,           // nonterm_type : 'returns' symref
+	InterfaceType,     // nonterm_type : 'interface'
+	VoidType,          // nonterm_type : 'void'
+	0,                 // nonterm_type : rawType
+	Assoc,             // assoc : 'left'
+	Assoc,             // assoc : 'right'
+	Assoc,             // assoc : 'nonassoc'
+	ParamModifier,     // param_modifier : 'explicit'
+	ParamModifier,     // param_modifier : 'global'
+	ParamModifier,     // param_modifier : 'lookahead'
+	TemplateParam,     // template_param : '%' param_modifier param_type identifier '=' param_value ';'
+	TemplateParam,     // template_param : '%' param_modifier param_type identifier ';'
+	TemplateParam,     // template_param : '%' param_type identifier '=' param_value ';'
+	TemplateParam,     // template_param : '%' param_type identifier ';'
+	DirectivePrio,     // directive : '%' assoc references ';'
+	DirectiveInput,    // directive : '%' 'input' inputref_list_Comma_separated ';'
+	DirectiveAssert,   // directive : '%' 'assert' 'empty' rhsSet ';'
+	DirectiveAssert,   // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	DirectiveSet,      // directive : '%' 'generate' identifier '=' rhsSet ';'
+	0,                 // inputref_list_Comma_separated : inputref_list_Comma_separated ',' inputref
+	0,                 // inputref_list_Comma_separated : inputref
+	Inputref,          // inputref : symref 'no-eoi'
+	Inputref,          // inputref : symref
+	References,        // references : symref
+	References,        // references : references symref
+	0,                 // rules : rule0
+	0,                 // rules : rules '|' rule0
+	Rule,              // rule0 : predicate rhsParts ruleAction rhsSuffixopt
+	Rule,              // rule0 : predicate rhsParts rhsSuffixopt
+	Rule,              // rule0 : predicate ruleAction rhsSuffixopt
+	Rule,              // rule0 : predicate rhsSuffixopt
+	Rule,              // rule0 : rhsParts ruleAction rhsSuffixopt
+	Rule,              // rule0 : rhsParts rhsSuffixopt
+	Rule,              // rule0 : ruleAction rhsSuffixopt
+	Rule,              // rule0 : rhsSuffixopt
+	0,                 // rule0 : syntax_problem
+	Predicate,         // predicate : '[' predicate_expression ']'
+	RhsSuffix,         // rhsSuffix : '%' 'prec' symref
+	RhsSuffix,         // rhsSuffix : '%' 'shift' symref
+	RuleAction,        // ruleAction : '->' identifier '/' identifier
+	RuleAction,        // ruleAction : '->' identifier
+	0,                 // rhsParts : rhsPart
+	0,                 // rhsParts : rhsParts rhsPart_OrSyntaxError
+	0,                 // rhsPart : rhsAnnotated
+	0,                 // rhsPart : command
+	0,                 // rhsPart_OrSyntaxError : rhsAnnotated
+	0,                 // rhsPart_OrSyntaxError : command
+	0,                 // rhsPart_OrSyntaxError : syntax_problem
+	0,                 // rhsAnnotated : rhsAssignment
+	RhsAnnotated,      // rhsAnnotated : annotations rhsAssignment
+	0,                 // rhsAssignment : rhsOptional
+	RhsAssignment,     // rhsAssignment : identifier '=' rhsOptional
+	RhsPlusAssignment, // rhsAssignment : identifier '+=' rhsOptional
+	0,                 // rhsOptional : rhsCast
+	RhsOptional,       // rhsOptional : rhsCast '?'
+	0,                 // rhsCast : rhsPrimary
+	RhsCast,           // rhsCast : rhsPrimary 'as' symref_Args
+	ListSeparator,     // listSeparator : 'separator' references
+	RhsSymbol,         // rhsPrimary : symref_Args
+	RhsNested,         // rhsPrimary : '(' rules ')'
+	RhsPlusList,       // rhsPrimary : '(' rhsParts listSeparator ')' '+'
+	RhsStarList,       // rhsPrimary : '(' rhsParts listSeparator ')' '*'
+	RhsQuantifier,     // rhsPrimary : rhsPrimary '+'
+	RhsQuantifier,     // rhsPrimary : rhsPrimary '*'
+	RhsIgnored,        // rhsPrimary : '$' '(' rules ')'
+	RhsPrimary,        // rhsPrimary : rhsSet
+	RhsSet,            // rhsSet : 'set' '(' setExpression ')'
+	SetSymbol,         // setPrimary : identifier symref_Args
+	SetSymbol,         // setPrimary : symref_Args
+	SetCompound,       // setPrimary : '(' setExpression ')'
+	SetComplement,     // setPrimary : '~' setPrimary
+	0,                 // setExpression : setPrimary
+	SetOr,             // setExpression : setExpression '|' setExpression
+	SetAnd,            // setExpression : setExpression '&' setExpression
+	0,                 // annotation_list : annotation_list annotation
+	0,                 // annotation_list : annotation
+	Annotations,       // annotations : annotation_list
+	AnnotationImpl,    // annotation : '@' identifier '=' expression
+	AnnotationImpl,    // annotation : '@' identifier
+	0,                 // annotation : '@' syntax_problem
+	0,                 // nonterm_param_list_Comma_separated : nonterm_param_list_Comma_separated ',' nonterm_param
+	0,                 // nonterm_param_list_Comma_separated : nonterm_param
+	NontermParams,     // nonterm_params : '<' nonterm_param_list_Comma_separated '>'
+	0,                 // nonterm_param : param_ref
+	InlineParameter,   // nonterm_param : identifier identifier '=' param_value
+	InlineParameter,   // nonterm_param : identifier identifier
+	ParamRef,          // param_ref : identifier
+	0,                 // argument_list_Comma_separated : argument_list_Comma_separated ',' argument
+	0,                 // argument_list_Comma_separated : argument
+	0,                 // argument_list_Comma_separated_opt : argument_list_Comma_separated
+	0,                 // argument_list_Comma_separated_opt :
+	SymrefArgs,        // symref_args : '<' argument_list_Comma_separated_opt '>'
+	ArgumentImpl,      // argument : param_ref ':' param_value
+	ArgumentImpl,      // argument : param_ref
+	ArgumentTrue,      // argument : '+' param_ref
+	ArgumentFalse,     // argument : '~' param_ref
+	ParamType,         // param_type : 'flag'
+	ParamType,         // param_type : 'param'
+	0,                 // param_value : literal
+	0,                 // param_value : param_ref
+	0,                 // predicate_primary : param_ref
+	PredicateNot,      // predicate_primary : '!' param_ref
+	PredicateEq,       // predicate_primary : param_ref '==' literal
+	PredicateNotEq,    // predicate_primary : param_ref '!=' literal
+	0,                 // predicate_expression : predicate_primary
+	PredicateAnd,      // predicate_expression : predicate_expression '&&' predicate_expression
+	PredicateOr,       // predicate_expression : predicate_expression '||' predicate_expression
+	0,                 // expression : literal
+	0,                 // expression : symref_Args
+	Array,             // expression : '[' expression_list_Comma_separated_opt ']'
+	0,                 // expression : syntax_problem
+	0,                 // expression_list_Comma_separated : expression_list_Comma_separated ',' expression
+	0,                 // expression_list_Comma_separated : expression
+	0,                 // expression_list_Comma_separated_opt : expression_list_Comma_separated
+	0,                 // expression_list_Comma_separated_opt :
+	0,                 // rawTypeopt : rawType
+	0,                 // rawTypeopt :
+	0,                 // integer_literalopt : integer_literal
+	0,                 // integer_literalopt :
+	0,                 // lexeme_attrsopt : lexeme_attrs
+	0,                 // lexeme_attrsopt :
+	0,                 // commandopt : command
+	0,                 // commandopt :
+	0,                 // rhsSuffixopt : rhsSuffix
+	0,                 // rhsSuffixopt :
 }

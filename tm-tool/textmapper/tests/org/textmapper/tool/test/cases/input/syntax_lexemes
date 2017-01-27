@@ -60,5 +60,5 @@ colon_or_semicolon: /:/   (soft)
 
 :: parser
 
-input ::=
+input :
 	identifier ;

@@ -32,7 +32,7 @@ a4:  /a4/
 %right a3;
 %nonassoc a4;
 
-input ::=
+input :
 	  list<Of: assignment>
 			epilogue<T: a1, +AllowObject>
 			epilogue<T: a2, ~AllowObject>
@@ -40,27 +40,27 @@ input ::=
 
 %global param T;
 
-epilogue ::=
+epilogue :
 	  T '(' list<Of: expression> ')'
 ;
 
-assignment ::=
+assignment :
 	  identifier '='? object				{ $$ = combine($0, $2); }
 ;
 
-object ::=
+object :
 	  kw_object ('(' list<Of: key_value>  ')')?
 ;
 
-key_value ::=
+key_value :
 	  icon  ':' sconopt
 ;
 
-list<param Of> ::=  (Of separator ',')+ ;
+list<param Of> :  (Of separator ',')+ ;
 
 %global flag AllowObject = false;
 
-expression ::=
+expression :
 	  icon
 	| [AllowObject] object
 ;

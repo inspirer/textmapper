@@ -203,21 +203,21 @@ NullLiteral: /null/
 
 %input CompilationUnit, MethodBody, GenericMethodDeclaration, ClassBodyDeclaration, Expression, Statement;
 
-QualifiedIdentifier ::=
+QualifiedIdentifier :
 	  Identifier
 	| QualifiedIdentifier '.' Identifier
 ;
 
-CompilationUnit ::=
+CompilationUnit :
 	  PackageDeclaration? ImportDeclaration+? TypeDeclaration+? ;
 
-PackageDeclaration ::=
+PackageDeclaration :
 	  Modifiers? kw_package QualifiedIdentifier ';' ;
 
-ImportDeclaration ::=
+ImportDeclaration :
 	kw_import kw_static? QualifiedIdentifier ('.' '*')? ';' ;
 
-TypeDeclaration ::=
+TypeDeclaration :
 	  ClassDeclaration
 	| InterfaceDeclaration
 	| EnumDeclaration
@@ -225,19 +225,19 @@ TypeDeclaration ::=
 	| ';'
 ;
 
-ClassDeclaration ::=
+ClassDeclaration :
 	  Modifiersopt kw_class Identifier TypeParameters? (kw_extends ClassType)? (kw_implements (InterfaceType separator ',')+)? ClassBody ;
 
-EnumDeclaration ::=
+EnumDeclaration :
 	  Modifiersopt kw_enum Identifier TypeParameters? (kw_implements (InterfaceType separator ',')+)? EnumBody ;
 
-InterfaceDeclaration ::=
+InterfaceDeclaration :
 	  Modifiersopt kw_interface Identifier TypeParameters? (kw_extends (InterfaceType separator ',')+)? InterfaceBody ;
 
-AnnotationTypeDeclaration ::=
+AnnotationTypeDeclaration :
 	  Modifiers? '@' kw_interface Identifier TypeParameters? (kw_extends ClassType)? (kw_implements (InterfaceType separator ',')+)? AnnotationTypeBody ;
 
-Literal ::=
+Literal :
 	  IntegerLiteral
 	| FloatingPointLiteral
 	| CharacterLiteral
@@ -246,12 +246,12 @@ Literal ::=
 	| BooleanLiteral
 ;
 
-Type ::=
+Type :
 	  PrimitiveType
 	| ReferenceType
 ;
 
-PrimitiveType class ::=
+PrimitiveType class :
 	  kind=kw_byte
 	| kind=kw_short
 	| kind=kw_int
@@ -263,42 +263,42 @@ PrimitiveType class ::=
 	| kind=kw_void
 ;
 
-ReferenceType ::=
+ReferenceType :
 	  ClassOrInterfaceType
 	| ArrayType
 ;
 
-ClassOrInterfaceType ::=
+ClassOrInterfaceType :
 	  ClassOrInterface
 	| GenericType
 ;
 
-ClassOrInterface ::=
+ClassOrInterface :
 	  QualifiedIdentifier
 	| GenericType '.' QualifiedIdentifier
 ;
 
-GenericType ::=
+GenericType :
 	  ClassOrInterface TypeArguments
 	| ClassOrInterface '<' '>'
 ;
 
-ArrayType ::=
+ArrayType :
 	  PrimitiveType Dims
 	| QualifiedIdentifier Dims
 	| GenericType '.' QualifiedIdentifier Dims
 	| GenericType Dims
 ;
 
-ClassType ::=
+ClassType :
 	  ClassOrInterfaceType ;
 
-Modifiers ::=
+Modifiers :
 	  Modifier
 	| Modifiers Modifier
 ;
 
-Modifier interface ::=
+Modifier interface :
 	  kind=kw_public
 	| kind=kw_protected
 	| kind=kw_private
@@ -313,20 +313,20 @@ Modifier interface ::=
 	| Annotation
 ;
 
-InterfaceType ::=
+InterfaceType :
 	  ClassOrInterfaceType ;
 
-ClassBody ::=
+ClassBody :
 	  '{' ClassBodyDeclaration* '}' ;
 
-ClassBodyDeclaration ::=
+ClassBodyDeclaration :
 	  ClassMemberDeclaration
 	| StaticInitializer
 	| ConstructorDeclaration
 	| Block
 ;
 
-ClassMemberDeclaration ::=
+ClassMemberDeclaration :
 	  FieldDeclaration
 	| MethodDeclaration
 	| ClassDeclaration
@@ -336,75 +336,75 @@ ClassMemberDeclaration ::=
 	| ';'
 ;
 
-GenericMethodDeclaration ::=
+GenericMethodDeclaration :
 	  MethodDeclaration
 	| ConstructorDeclaration
 ;
 
-FieldDeclaration ::=
+FieldDeclaration :
 	  Modifiersopt Type VariableDeclarators ';' ;
 
-VariableDeclarators ::=
+VariableDeclarators :
 	  VariableDeclarator
 	| VariableDeclarators ',' VariableDeclarator
 ;
 
-VariableDeclarator ::=
+VariableDeclarator :
 	  VariableDeclaratorId ('=' VariableInitializer)? ;
 
-VariableDeclaratorId ::=
+VariableDeclaratorId :
 	  Identifier Dimsopt ;
 
-VariableInitializer ::=
+VariableInitializer :
 	  Expression
 	| ArrayInitializer
 ;
 
-MethodDeclaration ::=
+MethodDeclaration :
 	  AbstractMethodDeclaration
 	| MethodHeader MethodBody
 ;
 
-AbstractMethodDeclaration ::=
+AbstractMethodDeclaration :
 	  MethodHeader ';' ;
 
-MethodHeader ::=
+MethodHeader :
 	  Modifiersopt TypeParameters? Type Identifier '(' (FormalParameter separator ',')* ')' Dimsopt MethodHeaderThrowsClauseopt ;
 
-MethodHeaderThrowsClause ::=
+MethodHeaderThrowsClause :
 	  kw_throws (ClassType separator ',')+ ;
 
-FormalParameter ::=
+FormalParameter :
 	  Modifiersopt Type '...'? VariableDeclaratorId ;
 
-CatchFormalParameter ::=
+CatchFormalParameter :
 	  Modifiersopt CatchType VariableDeclaratorId ;
 
-CatchType ::=
+CatchType :
 	  (Type separator '|')+ ;
 
-MethodBody ::=
+MethodBody :
 	  Block ;
 
-StaticInitializer ::=
+StaticInitializer :
 	  kw_static Block ;
 
-ConstructorDeclaration ::=
+ConstructorDeclaration :
 	  Modifiersopt TypeParameters? Identifier '(' (FormalParameter separator ',')* ')' MethodHeaderThrowsClauseopt (MethodBody | ';') ;
 
-ExplicitConstructorInvocation ::=
+ExplicitConstructorInvocation :
 	  ExplicitConstructorId '(' (Expression separator ',')* ')' ';' ;
 
-ExplicitConstructorId ::=
+ExplicitConstructorId :
 	  (Primary '.' | QualifiedIdentifier '.')? TypeArguments? ThisOrSuper ;
 
-ThisOrSuper ::=
+ThisOrSuper :
 	  kw_this | kw_super ;
 
-InterfaceBody ::=
+InterfaceBody :
 	  '{' InterfaceMemberDeclaration* '}'  ;
 
-InterfaceMemberDeclaration ::=
+InterfaceMemberDeclaration :
 	  ConstantDeclaration
 	| MethodHeader MethodBody
 	| AbstractMethodDeclaration
@@ -415,16 +415,16 @@ InterfaceMemberDeclaration ::=
 	| ';'
 ;
 
-ConstantDeclaration ::=
+ConstantDeclaration :
 	  FieldDeclaration ;
 
-ArrayInitializer ::=
+ArrayInitializer :
 	  '{' (VariableInitializer separator ',')+? ','? '}' ;
 
-Block ::=
+Block :
 	  '{' BlockStatement* '}' ;
 
-BlockStatement ::=
+BlockStatement :
 	  LocalVariableDeclarationStatement
 	| Statement
 	| ClassDeclaration
@@ -433,13 +433,13 @@ BlockStatement ::=
 	| EnumDeclaration
 ;
 
-LocalVariableDeclarationStatement ::=
+LocalVariableDeclarationStatement :
 	  LocalVariableDeclaration ';' ;
 
-LocalVariableDeclaration ::=
+LocalVariableDeclaration :
 	  Modifiers? Type VariableDeclarators ;
 
-Statement ::=
+Statement :
 	  AssertStatement
 	| Block
 	| EmptyStatement
@@ -459,21 +459,21 @@ Statement ::=
 	| EnhancedForStatement
 ;
 
-EmptyStatement ::=
+EmptyStatement :
 	  ';' ;
 
-LabeledStatement ::=
+LabeledStatement :
 	  Label ':' Statement ;
 
-Label ::=
+Label :
 	  Identifier ;
 
-ExpressionStatement ::=
+ExpressionStatement :
 	  StatementExpression ';'
 	| ExplicitConstructorInvocation
 ;
 
-StatementExpression ::=
+StatementExpression :
 	  Assignment
 	| PreIncrementExpression
 	| PreDecrementExpression
@@ -485,74 +485,74 @@ StatementExpression ::=
 
 %right kw_else;
 
-IfStatement ::=
+IfStatement :
 	  kw_if '(' Expression ')' Statement (kw_else Statement)? %prec kw_else ;
 
-SwitchStatement ::=
+SwitchStatement :
 	  kw_switch '(' Expression ')' '{' SwitchBlockStatementGroup* SwitchLabel+? '}' ;
 
-SwitchBlockStatementGroup ::=
+SwitchBlockStatementGroup :
 	SwitchLabel+ BlockStatement+ ;
 
-SwitchLabel ::=
+SwitchLabel :
 	  kw_case ConstantExpression ':'
 	| kw_default ':'
 ;
 
-WhileStatement ::=
+WhileStatement :
 	  kw_while '(' Expression ')' Statement ;
 
-DoStatement ::=
+DoStatement :
 	  kw_do Statement kw_while '(' Expression ')' ';' ;
 
-ForStatement ::=
+ForStatement :
 	  kw_for '(' ForInitopt ';' Expressionopt ';' (StatementExpression separator ',')* ')' Statement ;
 
-EnhancedForStatement ::=
+EnhancedForStatement :
 	  kw_for '(' Modifiers? Type Identifier Dimsopt ':' Expression ')' Statement ;
 
-ForInit ::=
+ForInit :
 	  (StatementExpression separator ',')+
 	| LocalVariableDeclaration
 ;
 
-AssertStatement ::=
+AssertStatement :
 	  kw_assert Expression (':' Expression)? ';' ;
 
-BreakStatement ::=
+BreakStatement :
 	  kw_break Identifieropt ';' ;
 
-ContinueStatement ::=
+ContinueStatement :
 	  kw_continue Identifieropt ';' ;
 
-ReturnStatement ::=
+ReturnStatement :
 	  kw_return Expressionopt ';' ;
 
-ThrowStatement ::=
+ThrowStatement :
 	  kw_throw Expression ';' ;
 
-SynchronizedStatement ::=
+SynchronizedStatement :
 	  kw_synchronized '(' Expression ')' Block ;
 
-TryStatement ::=
+TryStatement :
 	  kw_try ('(' (Resource separator ';')+ (';')? ')')? Block CatchClause* Finallyopt ;
 
-Resource ::=
+Resource :
 	  Modifiersopt Type VariableDeclaratorId '=' VariableInitializer ;
 
-CatchClause ::=
+CatchClause :
 	  kw_catch '(' CatchFormalParameter ')' Block ;
 
-Finally ::=
+Finally :
 	  kw_finally Block ;
 
-Primary ::=
+Primary :
 	  PrimaryNoNewArray
 	| ArrayCreationWithArrayInitializer
 	| ArrayCreationWithoutArrayInitializer
 ;
 
-PrimaryNoNewArray ::=
+PrimaryNoNewArray :
 	  Literal
 	| kw_this
 	| ParenthesizedExpression
@@ -565,64 +565,64 @@ PrimaryNoNewArray ::=
 	| ArrayAccess
 ;
 
-ParenthesizedExpression ::=
+ParenthesizedExpression :
 	  '(' ExpressionNotName ')'
 	| '(' QualifiedIdentifier ')'
 ;
 
-ClassInstanceCreationExpression ::=
+ClassInstanceCreationExpression :
 	  (Primary '.' | QualifiedIdentifier '.')? kw_new TypeArguments? ClassType '(' (Expression separator ',')* ')' ClassBodyopt ;
 
-NonArrayType ::=
+NonArrayType :
 	  PrimitiveType
 	| ClassOrInterfaceType
 ;
 
-ArrayCreationWithoutArrayInitializer ::=
+ArrayCreationWithoutArrayInitializer :
 	  kw_new NonArrayType DimWithOrWithOutExpr+
 ;
 
-ArrayCreationWithArrayInitializer ::=
+ArrayCreationWithArrayInitializer :
 	  kw_new NonArrayType DimWithOrWithOutExpr+ ArrayInitializer
 ;
 
-DimWithOrWithOutExpr ::=
+DimWithOrWithOutExpr :
 	  '[' Expression? ']' ;
 
-Dims ::=
+Dims :
 	  ('[' ']')+ ;
 
-FieldAccess ::=
+FieldAccess :
 	  Primary '.' Identifier
 	| kw_super '.' Identifier
 ;
 
-MethodInvocation ::=
+MethodInvocation :
 	  QualifiedIdentifier ('.' TypeArguments Identifier)? '(' (Expression separator ',')* ')'
 	| Primary '.' TypeArguments? Identifier '(' (Expression separator ',')* ')'
 	| kw_super '.' TypeArguments? Identifier '(' (Expression separator ',')* ')'
 ;
 
-ArrayAccess ::=
+ArrayAccess :
 	  QualifiedIdentifier '[' Expression ']'
 	| PrimaryNoNewArray '[' Expression ']'
 	| ArrayCreationWithArrayInitializer '[' Expression ']'
 ;
 
-PostfixExpression ::=
+PostfixExpression :
 	  Primary
 	| QualifiedIdentifier
 	| PostIncrementExpression
 	| PostDecrementExpression
 ;
 
-PostIncrementExpression ::=
+PostIncrementExpression :
 	  PostfixExpression '++' ;
 
-PostDecrementExpression ::=
+PostDecrementExpression :
 	  PostfixExpression '--' ;
 
-UnaryExpression ::=
+UnaryExpression :
 	  PreIncrementExpression
 	| PreDecrementExpression
 	| '+' UnaryExpression
@@ -630,45 +630,45 @@ UnaryExpression ::=
 	| UnaryExpressionNotPlusMinus
 ;
 
-PreIncrementExpression ::=
+PreIncrementExpression :
 	  '++' UnaryExpression ;
 
-PreDecrementExpression ::=
+PreDecrementExpression :
 	  '--' UnaryExpression ;
 
-UnaryExpressionNotPlusMinus ::=
+UnaryExpressionNotPlusMinus :
 	  PostfixExpression
 	| '~' UnaryExpression
 	| '!' UnaryExpression
 	| CastExpression
 ;
 
-CastExpression ::=
+CastExpression :
 	  '(' PrimitiveType Dimsopt ')' UnaryExpression
 	| '(' QualifiedIdentifier TypeArguments ('.' ClassOrInterfaceType)? Dimsopt ')' UnaryExpressionNotPlusMinus
 	| '(' QualifiedIdentifier Dims? ')' UnaryExpressionNotPlusMinus
 ;
 
-ConditionalExpression ::=
+ConditionalExpression :
 	  ConditionalExpressionNotName
 	| QualifiedIdentifier
 ;
 
-AssignmentExpression ::=
+AssignmentExpression :
 	  ConditionalExpression
 	| Assignment
 ;
 
-LValue ::=
+LValue :
  	  ArrayAccess
  	| FieldAccess
  	| QualifiedIdentifier
 ;
 
-Assignment ::=
+Assignment :
 	  LValue AssignmentOperator AssignmentExpression ;
 
-AssignmentOperator ::=
+AssignmentOperator :
 	  '='
 	| '*='
 	| '/='
@@ -683,77 +683,77 @@ AssignmentOperator ::=
 	| '|='
 ;
 
-Expression ::=
+Expression :
 	  AssignmentExpression ;
 
-ConstantExpression ::=
+ConstantExpression :
 	  Expression ;
 
-EnumBody ::=
+EnumBody :
 	  '{' (EnumConstant separator ',')+? ','? (';' ClassBodyDeclaration*)? '}' ;
 
-EnumConstant ::=
+EnumConstant :
 	  Modifiersopt Identifier ('(' (Expression separator ',')* ')')? ClassBodyopt ;
 
-TypeArguments ::=
+TypeArguments :
 	  '<' TypeArgumentList '>'
 	| '<' (TypeArgumentList ',')? DeeperTypeArgument '>>'
 	| '<' (TypeArgumentList ',')? ('?' (kw_extends|kw_super))? ClassOrInterface '<' (TypeArgumentList ',')? DeeperTypeArgument '>>>'
 ;
 
-TypeArgumentList ::=
+TypeArgumentList :
 	  TypeArgument
 	| TypeArgumentList ',' TypeArgument
 ;
 
-TypeArgument ::=
+TypeArgument :
 	  ReferenceType
 	| Wildcard
 ;
 
-ReferenceType1 ::=
+ReferenceType1 :
 	  ReferenceType '>'
 	| ClassOrInterface '<' TypeArgumentList '>>'
 	| ClassOrInterface '<' (TypeArgumentList ',')? DeeperTypeArgument '>>>'
 ;
 
-Wildcard ::=
+Wildcard :
 	  '?' ((kw_extends|kw_super) ReferenceType)? ;
 
-DeeperTypeArgument ::=
+DeeperTypeArgument :
 	  ('?' (kw_extends|kw_super))? ClassOrInterface '<' TypeArgumentList ;
 
-TypeParameters ::=
+TypeParameters :
 	  '<' (TypeParameterList ',')? TypeParameter1 ;
 
-TypeParameterList ::=
+TypeParameterList :
 	  TypeParameter
 	| TypeParameterList ',' TypeParameter
 ;
 
-TypeParameter ::=
+TypeParameter :
 	  Identifier (kw_extends ReferenceType AdditionalBoundList?)? ;
 
-TypeParameter1 ::=
+TypeParameter1 :
 	  Identifier '>'
 	| Identifier kw_extends (ReferenceType AdditionalBoundList? '&')? ReferenceType1
 ;
 
-AdditionalBoundList ::=
+AdditionalBoundList :
 	  AdditionalBound
 	| AdditionalBoundList AdditionalBound
 ;
 
-AdditionalBound ::=
+AdditionalBound :
 	  '&' ReferenceType ;
 
-PostfixExpressionNotName ::=
+PostfixExpressionNotName :
 	  Primary
 	| PostIncrementExpression
 	| PostDecrementExpression
 ;
 
-UnaryExpressionNotName ::=
+UnaryExpressionNotName :
 	  PreIncrementExpression
 	| PreDecrementExpression
 	| '+' UnaryExpression
@@ -761,7 +761,7 @@ UnaryExpressionNotName ::=
 	| UnaryExpressionNotPlusMinusNotName
 ;
 
-UnaryExpressionNotPlusMinusNotName ::=
+UnaryExpressionNotPlusMinusNotName :
 	  PostfixExpressionNotName
 	| '~' UnaryExpression
 	| '!' UnaryExpression
@@ -779,7 +779,7 @@ UnaryExpressionNotPlusMinusNotName ::=
 %left '+' '-';
 %left '*' '/' '%';
 
-ArithmeticExpressionNotName ::=
+ArithmeticExpressionNotName :
 	  UnaryExpressionNotName
 	| ArithmeticPart '*' ArithmeticPart
 	| ArithmeticPart '/' ArithmeticPart
@@ -791,12 +791,12 @@ ArithmeticExpressionNotName ::=
 	| ArithmeticPart '>>>' ArithmeticPart
 ;
 
-ArithmeticPart ::=
+ArithmeticPart :
 	  ArithmeticExpressionNotName
 	| QualifiedIdentifier
 ;
 
-RelationalExpressionNotName ::=
+RelationalExpressionNotName :
 	  ArithmeticExpressionNotName
 	| ArithmeticExpressionNotName '<' ArithmeticPart
 	| QualifiedIdentifier '<' ArithmeticPart
@@ -808,12 +808,12 @@ RelationalExpressionNotName ::=
 	| RelationalPart '!=' RelationalPart
 ;
 
-RelationalPart ::=
+RelationalPart :
 	  RelationalExpressionNotName
 	| QualifiedIdentifier
 ;
 
-LogicalExpressionNotName ::=
+LogicalExpressionNotName :
 	  RelationalExpressionNotName
 	| BooleanOrBitwisePart '&' BooleanOrBitwisePart
 	| BooleanOrBitwisePart '^' BooleanOrBitwisePart
@@ -822,48 +822,48 @@ LogicalExpressionNotName ::=
 	| BooleanOrBitwisePart '||' BooleanOrBitwisePart
 ;
 
-BooleanOrBitwisePart ::=
+BooleanOrBitwisePart :
 	  LogicalExpressionNotName
 	| QualifiedIdentifier
 ;
 
-ConditionalExpressionNotName ::=
+ConditionalExpressionNotName :
 	  LogicalExpressionNotName
 	| BooleanOrBitwisePart '?' Expression ':' ConditionalExpression
 ;
 
-ExpressionNotName ::=
+ExpressionNotName :
 	  ConditionalExpressionNotName
 	| Assignment
 ;
 
-AnnotationTypeBody ::=
+AnnotationTypeBody :
 	  '{' AnnotationTypeMemberDeclaration* '}' ;
 
-AnnotationTypeMemberDeclaration ::=
+AnnotationTypeMemberDeclaration :
 	  Modifiersopt TypeParameters? Type Identifier '(' (FormalParameter separator ',')* ')' Dimsopt DefaultValueopt ';'
 	| ConstantDeclaration
 	| ConstructorDeclaration
 	| TypeDeclaration
 ;
 
-DefaultValue ::=
+DefaultValue :
 	  kw_default MemberValue ;
 
-Annotation ::=
+Annotation :
 	  '@' QualifiedIdentifier
 	| '@' QualifiedIdentifier '(' MemberValue ')'
 	| '@' QualifiedIdentifier '(' (MemberValuePair separator ',')* ')'
 ;
 
-MemberValuePair ::=
+MemberValuePair :
 	  Identifier '=' MemberValue ;
 
-MemberValue ::=
+MemberValue :
 	  ConditionalExpression
 	| Annotation
 	| MemberValueArrayInitializer
 ;
 
-MemberValueArrayInitializer ::=
+MemberValueArrayInitializer :
 	  '{' (MemberValue separator ',')+? ','? '}' ;

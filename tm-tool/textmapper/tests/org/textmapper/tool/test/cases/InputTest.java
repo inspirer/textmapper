@@ -159,7 +159,7 @@ public class InputTest extends LapgTestCase {
 
 				"input,486: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
 						+ "shift/reduce conflict (next: Lelse)\n"
-						+ "    embedded_statement ::= Lif '(' expression ')' embedded_statement\n"
+						+ "    embedded_statement : Lif '(' expression ')' embedded_statement\n"
 						+ "\n"
 						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
@@ -182,8 +182,8 @@ public class InputTest extends LapgTestCase {
 				"",
 				"syntax_conflict1,22: input: Licon\n" +
 						"reduce/reduce conflict (next: fix1, fix2, fix3)\n" +
-						"    input1 ::= Licon\n" +
-						"    list_item ::= Licon\n" +
+						"    input1 : Licon\n" +
+						"    list_item : Licon\n" +
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
@@ -222,27 +222,27 @@ public class InputTest extends LapgTestCase {
 		isDebug[0] = true;
 		ts.reset("syntax_conflict2resolved,42: input: Lid '=' expr '*' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
-				"    expr ::= expr '*' expr\n" +
+				"    expr : expr '*' expr\n" +
 				"\n" +
 				"syntax_conflict2resolved,44: input: Lid '=' expr '+' expr\n" +
 				"resolved as shift conflict (next: '*', '/')\n" +
-				"    expr ::= expr '+' expr\n" +
+				"    expr : expr '+' expr\n" +
 				"\n" +
 				"syntax_conflict2resolved,44: input: Lid '=' expr '+' expr\n" +
 				"resolved as reduce conflict (next: '+', '-')\n" +
-				"    expr ::= expr '+' expr\n" +
+				"    expr : expr '+' expr\n" +
 				"\n" +
 				"syntax_conflict2resolved,45: input: Lid '=' expr '-' expr\n" +
 				"resolved as shift conflict (next: '*', '/')\n" +
-				"    expr ::= expr '-' expr\n" +
+				"    expr : expr '-' expr\n" +
 				"\n" +
 				"syntax_conflict2resolved,45: input: Lid '=' expr '-' expr\n" +
 				"resolved as reduce conflict (next: '+', '-')\n" +
-				"    expr ::= expr '-' expr\n" +
+				"    expr : expr '-' expr\n" +
 				"\n" +
 				"syntax_conflict2resolved,43: input: Lid '=' expr '/' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
-				"    expr ::= expr '/' expr\n" +
+				"    expr : expr '/' expr\n" +
 				"\n", "");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
 				g.getGrammar().getPatterns(), ts);

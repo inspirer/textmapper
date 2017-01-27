@@ -52,14 +52,14 @@ var TokenSet = []NodeType{
 }
 
 var ruleNodeType = [...]NodeType{
-	0,     // Declaration_list ::= Declaration_list Declaration
-	0,     // Declaration_list ::= Declaration
-	Test,  // Test ::= Declaration_list
-	0,     // Declaration ::= Decl1
-	0,     // Declaration ::= Decl2
-	Block, // Declaration ::= '{' Declaration_list '}'
-	0,     // QualifiedName ::= Identifier
-	0,     // QualifiedName ::= QualifiedName '.' Identifier
-	Decl1, // Decl1 ::= 'decl1' '(' QualifiedName ')'
-	Decl2, // Decl2 ::= 'decl2'
+	0,     // Declaration_list : Declaration_list Declaration
+	0,     // Declaration_list : Declaration
+	Test,  // Test : Declaration_list
+	0,     // Declaration : Decl1
+	0,     // Declaration : Decl2
+	Block, // Declaration : '{' Declaration_list '}'
+	0,     // QualifiedName : Identifier
+	0,     // QualifiedName : QualifiedName '.' Identifier
+	Decl1, // Decl1 : 'decl1' '(' QualifiedName ')'
+	Decl2, // Decl2 : 'decl2'
 }

@@ -70,18 +70,18 @@ _skipSoftKW: /xyzzz/	(soft)
 
 %input classdef_no_eoi no-eoi;
 
-classdef_no_eoi interface ::=
+classdef_no_eoi interface :
 	classdef ;
 
-classdef ::=
+classdef :
 	tc=Lclass ID '{' classdeflistopt '}'
   | tc=Lclass ID te=Lextends identifier '{' classdeflistopt '}'
 ;
 
-ID ::=
+ID :
 	@pass identifier ;
 
-classdeflist ::=
+classdeflist :
 	classdef
   | classdeflist classdef
   | identifier '(' ')'

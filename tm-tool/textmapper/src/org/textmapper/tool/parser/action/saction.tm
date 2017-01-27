@@ -37,12 +37,12 @@ _skip:	/[^'"{}]+/		(space)
 
 %input javaaction no-eoi;
 
-javaaction ::=
+javaaction :
 	'{' command_tokensopt '}' ;
 
-command_tokens ::=
+command_tokens :
 	command_tokens command_token | command_token ;
 
-command_token ::=
+command_token :
 	'{' command_tokensopt '}'
 ;

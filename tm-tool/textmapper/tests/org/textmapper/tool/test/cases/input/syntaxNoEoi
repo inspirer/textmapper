@@ -16,13 +16,13 @@ Lclass: /class/
 
 %input classdef_no_eoi no-eoi;
 
-classdef_no_eoi ::=
+classdef_no_eoi :
 	classdef ;
 
-classdef ::=
+classdef :
 	Lclass identifier '{' classdeflistopt '}' ;
 
-classdeflist ::=
+classdeflist :
 	classdef
   | classdeflist classdef
 ;

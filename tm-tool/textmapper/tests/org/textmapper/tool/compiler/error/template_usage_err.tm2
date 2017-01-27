@@ -12,7 +12,7 @@ identifier {String}: /[a-zA-Z_]+/
 
 :: parser
 
-input ::=
+input :
 # ERR: @Elem: Template parameter is unset.
 	  Elem
 	  (identifier '=' object)+
@@ -30,18 +30,18 @@ input ::=
 	A<~Bool>
 ;
 
-object ::=
+object :
 # ERR: @list: Required parameters are not provided: Elem
 	  identifier ('(' list ')')?
 ;
 
-key_value ::=
+key_value :
 	  identifier ':' object
 ;
 
 %global param Elem;
 
-list<Elem> ::=
+list<Elem> :
 # ERR: @Elem: Template parameter is unset.
 	  Elem
 # ERR: @Elem: Template parameter is unset.
@@ -50,7 +50,7 @@ list<Elem> ::=
 
 %global flag Bool;
 
-A ::=
+A :
 	  identifier
 	| [Bool] '(' ')'
 ;

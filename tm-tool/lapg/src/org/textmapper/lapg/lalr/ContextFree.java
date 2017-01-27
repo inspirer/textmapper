@@ -176,7 +176,7 @@ abstract class ContextFree {
 		int rule = ruleIndex(item);
 
 		// left part of the rule
-		sb.append(sym[rleft[rule]].getNameText()).append(" ::=");
+		sb.append(sym[rleft[rule]].getNameText()).append(" :");
 
 		int i;
 		for (i = rindex[rule]; rright[i] >= 0; i++) {

@@ -27,18 +27,18 @@ error:
 %left '-' '+' ;
 %left '*' '/' ;
 
-input ::= 
+input :
 	statements ;
 
-statements ::= 
+statements :
 	statements statement | statement ;
 
 
-statement ::=
+statement :
 	Lid '=' expr ';' { myprint("good"); break; }
   | Lid '=' error ';' { myprint("error in expression"); break; } ;
 
-expr ::=
+expr :
 	expr '*' expr 
   | expr '/' expr
   | expr '+' expr

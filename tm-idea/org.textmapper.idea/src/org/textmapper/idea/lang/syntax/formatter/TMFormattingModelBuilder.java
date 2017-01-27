@@ -61,8 +61,6 @@ public class TMFormattingModelBuilder implements FormattingModelBuilder {
 				/* nonterm */
 				.between(NONTERM, NONTERM).blankLines(1)
 				.before(NONTERM).lineBreakInCode()
-				.before(OP_CCEQ).spaces(1)
-				.after(OP_CCEQ).lineBreakInCode()
 				.afterInside(RULE, NONTERM).lineBreakInCode()
 				.after(OP_OR).spaces(1)
 				.beforeInside(OP_SEMICOLON, NONTERM).lineBreakInCode()

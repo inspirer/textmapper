@@ -36,16 +36,16 @@ get: /get/		(soft)
 
 %input ClassDeclaration;
 
-ClassDeclaration ::=
+ClassDeclaration :
 	class name=Identifier '{' PropertyDeclaration* '}' ;
 
-PropertyDeclaration ::=
+PropertyDeclaration :
 	type=Identifier name=Identifier ('{' PropertyConstraint* '}')? ;
 
-PropertyConstraint ::=
+PropertyConstraint :
 	get '=' Expression ;
 
-Expression ::=
+Expression :
 	  int_literal
 	| null
 ;

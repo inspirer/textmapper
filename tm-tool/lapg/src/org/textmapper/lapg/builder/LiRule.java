@@ -86,7 +86,7 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 		} else {
 			sb.append(left.getNameText());
 		}
-		sb.append(" ::=");
+		sb.append(" :");
 		for (RhsCFPart s : right) {
 			sb.append(" ");
 			switch (s.getKind()) {

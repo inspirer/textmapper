@@ -38,7 +38,7 @@ public class GrammarFacadeTest {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 
 		// id: /[a-z][a-z0-9]+/
-		// input ::= id ;
+		// input : id ;
 
 		LexerState initial = builder.addState(LapgCore.name("initial"), null);
 
@@ -199,7 +199,7 @@ public class GrammarFacadeTest {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 
 		// id: /[a-z][a-z0-9]+/
-		// input ::= id ;
+		// input : id ;
 
 		LexerState initial = builder.addState(LapgCore.name("initial"), null);
 

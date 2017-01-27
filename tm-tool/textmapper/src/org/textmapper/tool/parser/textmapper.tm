@@ -51,7 +51,6 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 
 
 '%':	/%/
-'::=':  /::=/
 '::':   /::/
 '|':    /\|/
 '||':    /\|\|/
@@ -69,7 +68,6 @@ _skip_multiline: /\/\*{commentChars}\*\// (space)
 # TODO overlaps with ID
 '->':	/->/
 ')':	/\)/
-'{~':	/\{~/
 '}':	/\}/
 '<':	/</
 '>':	/>/
@@ -95,6 +93,7 @@ Lseparator: /separator/
 Las: /as/
 Limport: /import/
 Lset: /set/
+Limplements: /implements/
 
 Lbrackets: /brackets/		(soft)
 Ls: /s/
@@ -154,52 +153,52 @@ regexp {String}: /\/{reFirst}{reChar}*\//   { $$ = tokenText().substring(1, toke
 
 %input input, expression;
 
-input ::=
+input :
 	  header imports=import_* options=option* lexer=lexer_section parser=parser_section? ;
 
-header ::=
+header :
 	  Llanguage name ('(' target=name ')')? parsing_algorithmopt ';' ;
 
-lexer_section ::=
+lexer_section :
 	  '::' Llexer @pass lexer_parts ;
 
-parser_section ::=
+parser_section :
 	  '::' Lparser @pass grammar_parts ;
 
-parsing_algorithm ::=
+parsing_algorithm :
 	  Llalr '(' la=icon ')' ;
 
-import_ ::=
+import_ :
 	  Limport alias=ID? file=scon ';' ;
 
-option ::=
+option :
 	  key=ID '=' value=expression
 	| syntax_problem
 ;
 
-identifier class ::=
+identifier class :
 	  ID ;
 
-symref class ::=
+symref class :
 	  name=ID args=symref_args? ;
 
-symref_noargs returns symref ::=
+symref_noargs returns symref :
 	  name=ID ;
 
-rawType class ::=
+rawType class :
 	  code ;
 
-pattern class ::=
+pattern class :
 	  regexp
 ;
 
-lexer_parts ::=
+lexer_parts :
 	  lexer_part
 	| lexer_parts lexer_part
 	| lexer_parts syntax_problem
 ;
 
-lexer_part ::=
+lexer_part :
 	  states_clause
 	| state_selector
 	| named_pattern
@@ -207,120 +206,120 @@ lexer_part ::=
 	| brackets_directive
 ;
 
-named_pattern ::=
+named_pattern :
 	  name=ID '=' pattern ;
 
-lexeme ::=
+lexeme :
 	  name=identifier rawTypeopt ':'
 			(pattern priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
 
-lexeme_attrs ::=
+lexeme_attrs :
 	  '(' kind=lexeme_attribute ')' ;
 
-lexeme_attribute ::=
+lexeme_attribute :
 	  Lsoft
 	| Lclass
 	| Lspace
 	| Llayout
 ;
 
-brackets_directive returns lexer_part ::=
+brackets_directive returns lexer_part :
 	  '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'	;
 
-states_clause returns lexer_part ::=
+states_clause returns lexer_part :
 	  '%' exclusive=Ls as false states=(lexer_state separator ',')+ ';'
 	| '%' exclusive=Lx as true states=(lexer_state separator ',')+ ';'
 ;
 
-state_selector ::=
+state_selector :
 	  '[' states=(stateref separator ',')+ ']' ;
 
-stateref class ::=
+stateref class :
 	  name=ID ;
 
-lexer_state ::=
+lexer_state :
 	  name=identifier ;
 
-grammar_parts ::=
+grammar_parts :
 	  grammar_part
 	| grammar_parts grammar_part
 	| grammar_parts syntax_problem
 ;
 
-grammar_part ::=
+grammar_part :
 	  nonterm | template_param | directive ;
 
-nonterm ::=
-	  annotations? name=identifier params=nonterm_params? type=nonterm_type? '::=' rules ';' ;
+nonterm :
+	  annotations? name=identifier params=nonterm_params? type=nonterm_type? ':' rules ';' ;
 
-nonterm_type interface ::=
-	  Lreturns reference=symref_noargs									{~nontermTypeAST}
-	| inline=Linline? kind=Lclass name=identifieropt implementsopt		{~nontermTypeHint}
-	| kind=Linterface name=identifieropt implementsopt					{~nontermTypeHint}
-	| kind=Lvoid														{~nontermTypeHint}
+nonterm_type interface :
+	  Lreturns reference=symref_noargs									   -> nontermTypeAST
+	| inline=Linline? kind=Lclass name=identifieropt implements_clauseopt  -> nontermTypeHint
+	| kind=Linterface name=identifieropt implements_clauseopt			   -> nontermTypeHint
+	| kind=Lvoid															-> nontermTypeHint
 	| rawType
 ;
 
-implements ::=
-	  ':' @pass references_cs ;
+implements_clause :
+	  Limplements @pass references_cs ;
 
-assoc ::=
+assoc :
 	  Lleft | Lright | Lnonassoc ;
 
-param_modifier ::=
+param_modifier :
 	  Lexplicit
 	| Lglobal
 	| Llookahead
 ;
 
-template_param returns grammar_part ::=
+template_param returns grammar_part :
 	  '%' modifier=param_modifier? param_type name=identifier ('=' param_value)? ';'
 ;
 
-directive returns grammar_part ::=
-	  '%' assoc symbols=references ';' 						        {~directivePrio}
-	| '%' Linput inputRefs=(inputref separator ',')+ ';'	        {~directiveInput}
-	| '%' Lassert (kind=Lempty | kind=Lnonempty) rhsSet ';'			{~directiveAssert}
-	| '%' Lgenerate name=ID '=' rhsSet ';'							{~directiveSet}
+directive returns grammar_part :
+	  '%' assoc symbols=references ';' 						        -> directivePrio
+	| '%' Linput inputRefs=(inputref separator ',')+ ';'	        -> directiveInput
+	| '%' Lassert (kind=Lempty | kind=Lnonempty) rhsSet ';'			-> directiveAssert
+	| '%' Lgenerate name=ID '=' rhsSet ';'							-> directiveSet
 ;
 
-inputref ::=
+inputref :
 	  reference=symref_noargs noeoi=Lnoeoi? ;
 
-references ::=
+references :
 	  symref_noargs
 	| references symref_noargs
 ;
 
-references_cs ::=
+references_cs :
 	  symref_noargs
 	| references_cs ',' symref_noargs
 ;
 
-rules ::=
+rules :
 	  (rule0 separator '|')+ ;
 
-rule0 ::=
+rule0 :
 	  predicate? prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
 	| error=syntax_problem
 ;
 
-predicate ::=
+predicate :
 	  '[' @pass predicate_expression ']' ;
 
-rhsPrefix ::=
+rhsPrefix :
 	  annotations ':'
 ;
 
-rhsSuffix ::=
+rhsSuffix :
 	  '%' kind=Lprec symref=symref_noargs
 	| '%' kind=Lshift symref=symref_noargs
 ;
 
-ruleAction ::=
-	  '{~' action=identifier parameter=scon? '}' ;
+ruleAction :
+	  '->' action=identifier ('/' kind=identifier)?  ;
 
-rhsParts ::=
+rhsParts :
 	  rhsPart
 	| rhsParts rhsPart
 	| rhsParts syntax_problem
@@ -329,7 +328,7 @@ rhsParts ::=
 %left '|';
 %left '&';
 
-rhsPart ::=
+rhsPart :
 	  rhsAnnotated
 	| rhsUnordered
 	| command
@@ -337,158 +336,158 @@ rhsPart ::=
 	| rhsLookahead
 ;
 
-rhsLookahead ::=
+rhsLookahead :
 	  '(?=' predicates=(lookahead_predicate separator '&')+ ')' ;
 
-lookahead_predicate ::=
+lookahead_predicate :
 	  negate='!'? symref_noargs ;
 
-rhsStateMarker ::=
+rhsStateMarker :
 	  '.' name=ID ;
 
-rhsAnnotated returns rhsPart ::=
+rhsAnnotated returns rhsPart :
 	  rhsAssignment
 	| annotations inner=rhsAssignment
 ;
 
-rhsAssignment returns rhsPart ::=
+rhsAssignment returns rhsPart :
 	  rhsOptional
 	| id=identifier ('=' | addition='+=') inner=rhsOptional
 ;
 
-rhsOptional returns rhsPart ::=
+rhsOptional returns rhsPart :
 	  rhsCast
-	| inner=rhsCast quantifier='?' 		{~rhsQuantifier}
+	| inner=rhsCast quantifier='?' 		-> rhsQuantifier
 ;
 
-rhsCast returns rhsPart ::=
+rhsCast returns rhsPart :
 	  rhsClass
 	| inner=rhsClass Las target=symref
-	| inner=rhsClass Las literal 		{~rhsAsLiteral}
+	| inner=rhsClass Las literal 		-> rhsAsLiteral
 ;
 
-rhsUnordered returns rhsPart ::=
+rhsUnordered returns rhsPart :
 	  left=rhsPart '&' right=rhsPart
 ;
 
-rhsClass returns rhsPart ::=
+rhsClass returns rhsPart :
 	  rhsPrimary
 	| identifier ':' inner=rhsPrimary
 ;
 
-rhsPrimary returns rhsPart ::=
-	  reference=symref 																		{~rhsSymbol}
-	| '(' rules ')' 																		{~rhsNested}
-	| '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='+' as true 	{~rhsList}
-	| '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='*' as false 	{~rhsList}
-	| inner=rhsPrimary quantifier='*'														{~rhsQuantifier}
-	| inner=rhsPrimary quantifier='+'														{~rhsQuantifier}
-	| '$' '(' rules ')' 					{~rhsIgnored}
+rhsPrimary returns rhsPart :
+	  reference=symref 																		-> rhsSymbol
+	| '(' rules ')' 																		-> rhsNested
+	| '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='+' as true 	-> rhsList
+	| '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='*' as false 	-> rhsList
+	| inner=rhsPrimary quantifier='*'														-> rhsQuantifier
+	| inner=rhsPrimary quantifier='+'														-> rhsQuantifier
+	| '$' '(' rules ')' 					-> rhsIgnored
 	| rhsSet
 ;
 
-rhsSet returns rhsPart ::=
+rhsSet returns rhsPart :
 	  Lset '(' expr=setExpression ')'
 ;
 
-setPrimary returns setExpression ::=
-	  operator=ID? symbol=symref 			{~setSymbol}
-	| '(' inner=setExpression ')' 			{~setCompound}
-	| '~' inner=setPrimary 					{~setComplement}
+setPrimary returns setExpression :
+	  operator=ID? symbol=symref 			-> setSymbol
+	| '(' inner=setExpression ')' 			-> setCompound
+	| '~' inner=setPrimary 					-> setComplement
 ;
 
-setExpression interface ::=
+setExpression interface :
 	  setPrimary
-	| left=setExpression kind='|' right=setExpression 	{~setBinary}
-	| left=setExpression kind='&' right=setExpression 	{~setBinary}
+	| left=setExpression kind='|' right=setExpression 	-> setBinary
+	| left=setExpression kind='&' right=setExpression 	-> setBinary
 ;
 
-annotations class ::=
+annotations class :
 	  annotations=annotation+ ;
 
-annotation ::=
+annotation :
 	  '@' name=ID ('=' expression)?
 	| '@' syntax_problem
 ;
 
 ##### Nonterminal parameters
 
-nonterm_params ::=
+nonterm_params :
 	  '<' list=(nonterm_param separator ',')+ '>' ;
 
-nonterm_param interface ::=
+nonterm_param interface :
 	  param_ref
-	| param_type=ID name=identifier ('=' param_value)?     {~inlineParameter}
+	| param_type=ID name=identifier ('=' param_value)?     -> inlineParameter
 ;
 
-param_ref ::=
+param_ref :
 	  ref=identifier ;
 
-symref_args ::=
+symref_args :
 	  '<' arg_list=(argument separator ',')* '>' ;
 
-argument ::=
+argument :
 	  name=param_ref ':' val=param_value
 	| (bool='+'|bool='~')? name=param_ref
 ;
 
-param_type ::=
+param_type :
 	  Lflag | Lparam ;
 
-param_value ::=
+param_value :
 	  literal
 	| symref_noargs
 ;
 
-predicate_primary returns predicate_expression ::=
-	  negated='!'? param_ref {~boolPredicate}
-	| param_ref (kind='==' | kind='!=') literal {~comparePredicate}
+predicate_primary returns predicate_expression :
+	  negated='!'? param_ref -> boolPredicate
+	| param_ref (kind='==' | kind='!=') literal -> comparePredicate
 ;
 
 %left '||';
 %left '&&';
 
-predicate_expression interface ::=
+predicate_expression interface :
 	  predicate_primary
-	| left=predicate_expression kind='&&' right=predicate_expression {~predicateBinary}
-	| left=predicate_expression kind='||' right=predicate_expression {~predicateBinary}
+	| left=predicate_expression kind='&&' right=predicate_expression -> predicateBinary
+	| left=predicate_expression kind='||' right=predicate_expression -> predicateBinary
 ;
 
 ##### EXPRESSIONS
 
 # TODO use json, get rid of new & symref
 
-expression ::=
+expression :
 	  literal
 	| symref
-	| Lnew className=name '(' entries=(map_entry separator ',')* ')' 	{~instance}
-	| '[' content=(expression separator ',')* ']' 	{~array}
+	| Lnew className=name '(' entries=(map_entry separator ',')* ')' 	-> instance
+	| '[' content=(expression separator ',')* ']' 	-> array
 	| syntax_problem
 ;
 
-map_entry ::=
+map_entry :
 	  name=ID ':' value=expression ;
 
-literal ::=
+literal :
 	  value=scon
 	| value=icon
 	| value=Ltrue as true
 	| value=Lfalse as false
 ;
 
-name class ::=
+name class :
 	  qualified_id ;
 
-qualified_id {String} ::=
+qualified_id {String} :
 	  ID
 	| qualified_id '.' ID				{ $$ = $qualified_id + "." + $ID; }
 ;
 
-command class ::=
+command class :
 	  code
 ;
 
-syntax_problem class : lexer_part, grammar_part, rhsPart ::=
+syntax_problem class implements lexer_part, grammar_part, rhsPart :
 	  error ;
 
 ##################################################################################

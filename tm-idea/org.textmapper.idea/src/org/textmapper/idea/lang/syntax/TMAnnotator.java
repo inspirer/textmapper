@@ -113,8 +113,7 @@ public class TMAnnotator implements Annotator {
 				if (el instanceof PsiWhiteSpace) continue;
 				if (el instanceof TmToken) {
 					IElementType type = ((TmToken) el).getTokenType();
-					if (type == TMTokenTypes.OP_LCURLYTILDE || type == TMTokenTypes.OP_RCURLY
-							|| type == TMTokenTypes.OP_DOT || type == TMTokenTypes.ID) {
+					if (type == TMTokenTypes.OP_DIV || type == TMTokenTypes.ID) {
 						Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
 						infoAnnotation.setTextAttributes(key);
 					}

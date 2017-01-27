@@ -20,9 +20,9 @@ class: /class/ (soft)
 
 :: parser
 
-field ::=
+field :
 	  id icon ;
 
-input ::=
+input :
 	  class id '(' (field separator ',')* ')'           { console.log(${d}id); }
 ;

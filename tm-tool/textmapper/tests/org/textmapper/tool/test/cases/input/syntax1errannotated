@@ -10,26 +10,26 @@ bbbb: /bbbb/
 
 :: parser
 
-input ::=
+input :
 	list ;
 	
-list ::=
+list :
 	list_item
 	| list list_item
 ;
 
 @weight=5 @name="wwo"
-list_item ::=
+list_item :
 	  @name="rule1": @ids=[4,2,3] identifier
 	| @name="rule2": Licon
 ;
 
 @name="aaa" @ref=notexistingsym
-tempanno ::=
+tempanno :
 	aaaa
 ;
 
 @name="bbb"
-tempanno ::=
+tempanno :
 	bbbb
 ;

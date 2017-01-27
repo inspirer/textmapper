@@ -261,11 +261,11 @@ jsxText: /[^{}<>]+/
 %lookahead flag NoFuncClass = false;
 %lookahead flag StartWithLet = false;
 
-SyntaxError ::=
+SyntaxError :
     error ;
 
 @noast
-IdentifierName ::=
+IdentifierName :
     Identifier
 
   # Keywords
@@ -289,17 +289,17 @@ IdentifierName ::=
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target'
 ;
 
-IdentifierNameDecl ::=
-    IdentifierName                                    {~BindingIdentifier}
+IdentifierNameDecl :
+    IdentifierName                                    -> BindingIdentifier
 ;
 
-IdentifierNameRef ::=
-     IdentifierName                                   {~IdentifierReference}
+IdentifierNameRef :
+     IdentifierName                                   -> IdentifierReference
 ;
 
 # A.2 Expressions
 
-IdentifierReference<Yield> ::=
+IdentifierReference<Yield> :
 # V8 runtime functions start with a percent sign.
 # See http://stackoverflow.com/questions/11202824/what-is-in-javascript
     '%'? Identifier
@@ -310,7 +310,7 @@ IdentifierReference<Yield> ::=
   | 'as' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
 ;
 
-BindingIdentifier<Yield> ::=
+BindingIdentifier<Yield> :
     Identifier
   | [!Yield] 'yield'
 
@@ -318,7 +318,7 @@ BindingIdentifier<Yield> ::=
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target'
 ;
 
-LabelIdentifier<Yield> ::=
+LabelIdentifier<Yield> :
     Identifier
   | [!Yield] 'yield'
 
@@ -327,8 +327,8 @@ LabelIdentifier<Yield> ::=
 ;
 
 @noast
-PrimaryExpression<Yield> returns Expression ::=
-    'this'                                                 {~This}
+PrimaryExpression<Yield> returns Expression :
+    'this'                                                 -> This
   | IdentifierReference
   | Literal
   | ArrayLiteral
@@ -336,14 +336,14 @@ PrimaryExpression<Yield> returns Expression ::=
   | [!NoFuncClass] FunctionExpression
   | [!NoFuncClass] ClassExpression
   | [!NoFuncClass] GeneratorExpression
-  | RegularExpressionLiteral                               {~Regexp}
+  | RegularExpressionLiteral                               -> Regexp
   | TemplateLiteral
-  | CoverParenthesizedExpressionAndArrowParameterList      {~Parenthesized}
+  | CoverParenthesizedExpressionAndArrowParameterList      -> Parenthesized
   | JSXElement
 ;
 
 @noast
-CoverParenthesizedExpressionAndArrowParameterList<Yield> ::=
+CoverParenthesizedExpressionAndArrowParameterList<Yield> :
     '(' Expression<+In> ')'
   | '(' ')'
   | '(' '...' BindingIdentifier ')'
@@ -353,7 +353,7 @@ CoverParenthesizedExpressionAndArrowParameterList<Yield> ::=
   | '(' SyntaxError ')'
 ;
 
-Literal ::=
+Literal :
     'null'
   | 'true'
   | 'false'
@@ -361,14 +361,14 @@ Literal ::=
   | StringLiteral
 ;
 
-ArrayLiteral<Yield> ::=
+ArrayLiteral<Yield> :
     '[' Elisionopt ']'
   | '[' list=ElementList ']'
   | '[' list=ElementList ',' Elisionopt ']'
 ;
 
 @noast
-ElementList<Yield> ::=
+ElementList<Yield> :
     Elisionopt AssignmentExpression<+In>
   | Elisionopt SpreadElement
   | ElementList ',' Elisionopt AssignmentExpression<+In>
@@ -376,129 +376,129 @@ ElementList<Yield> ::=
 ;
 
 @noast
-Elision ::=
+Elision :
     ','
   | Elision ','
 ;
 
-SpreadElement<Yield> returns Expression ::=
+SpreadElement<Yield> returns Expression :
     '...' AssignmentExpression<+In>
 ;
 
-ObjectLiteral<Yield> ::=
+ObjectLiteral<Yield> :
     '{' '}'
   | '{' PropertyDefinitionList '}'
   | '{' PropertyDefinitionList ',' '}'
 ;
 
 @noast
-PropertyDefinitionList<Yield> ::=
+PropertyDefinitionList<Yield> :
     PropertyDefinition
   | PropertyDefinitionList ',' PropertyDefinition
 ;
 
-PropertyDefinition<Yield> interface ::=
-    IdentifierReference                                   {~ShorthandProperty}
-  | PropertyName ':' value=AssignmentExpression<+In>      {~Property}
+PropertyDefinition<Yield> interface :
+    IdentifierReference                                   -> ShorthandProperty
+  | PropertyName ':' value=AssignmentExpression<+In>      -> Property
   | @noast MethodDefinition
-  | CoverInitializedName                                  {~SyntaxError}
+  | CoverInitializedName                                  -> SyntaxError
   | @noast SyntaxError
 ;
 
-PropertyName<Yield> interface ::=
+PropertyName<Yield> interface :
     LiteralPropertyName
   | ComputedPropertyName
 ;
 
-LiteralPropertyName ::=
+LiteralPropertyName :
     IdentifierNameDecl
   | StringLiteral
   | NumericLiteral
 ;
 
-ComputedPropertyName<Yield> ::=
+ComputedPropertyName<Yield> :
     '[' AssignmentExpression<+In> ']' ;
 
 @noast
-CoverInitializedName<Yield> ::=
+CoverInitializedName<Yield> :
     IdentifierReference Initializer<+In> ;
 
-Initializer<In, Yield> ::=
+Initializer<In, Yield> :
     '=' AssignmentExpression
 ;
 
-TemplateLiteral<Yield> ::=
+TemplateLiteral<Yield> :
     template+=NoSubstitutionTemplate
   | template+=TemplateHead substitution+=Expression<+In> TemplateSpans
 ;
 
 @noast
-TemplateSpans<Yield> ::=
+TemplateSpans<Yield> :
     template+=TemplateTail
   | TemplateMiddleList template+=TemplateTail
 ;
 
 @noast
-TemplateMiddleList<Yield> ::=
+TemplateMiddleList<Yield> :
     template+=TemplateMiddle substitution+=Expression<+In>
   | TemplateMiddleList template+=TemplateMiddle substitution+=Expression<+In>
 ;
 
 @noast
-MemberExpression<Yield, flag NoLetOnly = false> returns Expression ::=
+MemberExpression<Yield, flag NoLetOnly = false> returns Expression :
     [!NoLetOnly && !StartWithLet] PrimaryExpression
   | [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
-  | [StartWithLet && !NoLetOnly] 'let'                          {~IdentifierReference}
-  | [StartWithLet] expr=MemberExpression<+NoLetOnly> '[' index=Expression<+In> ']'            {~IndexAccess}
-  | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq> '[' index=Expression<+In> ']'   {~IndexAccess}
-  | expr=MemberExpression '.' selector=IdentifierNameRef        {~PropertyAccess}
-  | tag=MemberExpression literal=TemplateLiteral                {~TaggedTemplate}
+  | [StartWithLet && !NoLetOnly] 'let'                          -> IdentifierReference
+  | [StartWithLet] expr=MemberExpression<+NoLetOnly> '[' index=Expression<+In> ']'            -> IndexAccess
+  | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq> '[' index=Expression<+In> ']'   -> IndexAccess
+  | expr=MemberExpression '.' selector=IdentifierNameRef        -> PropertyAccess
+  | tag=MemberExpression literal=TemplateLiteral                -> TaggedTemplate
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
-  | [!StartWithLet] 'new' expr=MemberExpression Arguments       {~NewExpression}
+  | [!StartWithLet] 'new' expr=MemberExpression Arguments       -> NewExpression
 ;
 
-SuperExpression returns Expression ::=
+SuperExpression returns Expression :
     'super'
 ;
 
-SuperProperty<Yield> returns Expression ::=
-    expr=SuperExpression '[' index=Expression<+In> ']'          {~IndexAccess}
-  | expr=SuperExpression '.' selector=IdentifierNameRef         {~PropertyAccess}
+SuperProperty<Yield> returns Expression :
+    expr=SuperExpression '[' index=Expression<+In> ']'          -> IndexAccess
+  | expr=SuperExpression '.' selector=IdentifierNameRef         -> PropertyAccess
 ;
 
 @noast
-MetaProperty ::=
+MetaProperty :
     NewTarget ;
 
-NewTarget ::=
+NewTarget :
     'new' '.' 'target' ;
 
-NewExpression<Yield> returns Expression ::=
+NewExpression<Yield> returns Expression :
     @noast MemberExpression
   | [!StartWithLet] 'new' expr=NewExpression
 ;
 
-CallExpression<Yield> returns Expression ::=
+CallExpression<Yield> returns Expression :
     expr=MemberExpression Arguments
   | [!StartWithLet] SuperCall
   | expr=CallExpression Arguments
-  | expr=CallExpression '[' index=Expression<+In> ']'           {~IndexAccess}
-  | expr=CallExpression '.' selector=IdentifierNameRef          {~PropertyAccess}
-  | tag=CallExpression literal=TemplateLiteral                  {~TaggedTemplate}
+  | expr=CallExpression '[' index=Expression<+In> ']'           -> IndexAccess
+  | expr=CallExpression '.' selector=IdentifierNameRef          -> PropertyAccess
+  | tag=CallExpression literal=TemplateLiteral                  -> TaggedTemplate
 ;
 
 @noast
-SuperCall<Yield> ::=
+SuperCall<Yield> :
     expr=SuperExpression Arguments
 ;
 
-Arguments<Yield> ::=
+Arguments<Yield> :
     '(' list=ArgumentList? ')'
 ;
 
 @noast
-ArgumentList<Yield> ::=
+ArgumentList<Yield> :
     AssignmentExpression<+In>
   | SpreadElement
   | ArgumentList ',' AssignmentExpression<+In>
@@ -506,20 +506,20 @@ ArgumentList<Yield> ::=
 ;
 
 @noast
-LeftHandSideExpression<Yield> returns Expression ::=
+LeftHandSideExpression<Yield> returns Expression :
     NewExpression
   | CallExpression
 ;
 
-UpdateExpression<Yield> returns Expression ::=
+UpdateExpression<Yield> returns Expression :
     @noast LeftHandSideExpression
-  | LeftHandSideExpression .noLineBreak '++'          {~PostInc}
-  | LeftHandSideExpression .noLineBreak '--'          {~PostDec}
-  | [!StartWithLet] '++' UnaryExpression              {~PreInc}
-  | [!StartWithLet] '--' UnaryExpression              {~PreDec}
+  | LeftHandSideExpression .noLineBreak '++'          -> PostInc
+  | LeftHandSideExpression .noLineBreak '--'          -> PostDec
+  | [!StartWithLet] '++' UnaryExpression              -> PreInc
+  | [!StartWithLet] '--' UnaryExpression              -> PreDec
 ;
 
-UnaryExpression<Yield> returns Expression ::=
+UnaryExpression<Yield> returns Expression :
     @noast UpdateExpression
   | [!StartWithLet] 'delete' UnaryExpression
   | [!StartWithLet] 'void' UnaryExpression
@@ -542,44 +542,44 @@ UnaryExpression<Yield> returns Expression ::=
 %left '*' '/' '%';
 %right '**';
 
-ArithmeticExpression<Yield> returns Expression ::=
+ArithmeticExpression<Yield> returns Expression :
     @noast UnaryExpression
-  | left=ArithmeticExpression '+' right=ArithmeticExpression        {~AdditiveExpression}
-  | left=ArithmeticExpression '-' right=ArithmeticExpression        {~AdditiveExpression}
-  | left=ArithmeticExpression '<<' right=ArithmeticExpression       {~ShiftExpression}
-  | left=ArithmeticExpression '>>' right=ArithmeticExpression       {~ShiftExpression}
-  | left=ArithmeticExpression '>>>' right=ArithmeticExpression      {~ShiftExpression}
-  | left=ArithmeticExpression '*' right=ArithmeticExpression        {~MultiplicativeExpression}
-  | left=ArithmeticExpression '/' right=ArithmeticExpression        {~MultiplicativeExpression}
-  | left=ArithmeticExpression '%' right=ArithmeticExpression        {~MultiplicativeExpression}
-  | left=UpdateExpression '**' right=ArithmeticExpression           {~ExponentiationExpression}
+  | left=ArithmeticExpression '+' right=ArithmeticExpression        -> AdditiveExpression
+  | left=ArithmeticExpression '-' right=ArithmeticExpression        -> AdditiveExpression
+  | left=ArithmeticExpression '<<' right=ArithmeticExpression       -> ShiftExpression
+  | left=ArithmeticExpression '>>' right=ArithmeticExpression       -> ShiftExpression
+  | left=ArithmeticExpression '>>>' right=ArithmeticExpression      -> ShiftExpression
+  | left=ArithmeticExpression '*' right=ArithmeticExpression        -> MultiplicativeExpression
+  | left=ArithmeticExpression '/' right=ArithmeticExpression        -> MultiplicativeExpression
+  | left=ArithmeticExpression '%' right=ArithmeticExpression        -> MultiplicativeExpression
+  | left=UpdateExpression '**' right=ArithmeticExpression           -> ExponentiationExpression
 ;
 
-BinaryExpression<In, Yield> returns Expression ::=
+BinaryExpression<In, Yield> returns Expression :
     @noast ArithmeticExpression
-  | left=BinaryExpression '<' right=BinaryExpression                {~RelationalExpression}
-  | left=BinaryExpression '>' right=BinaryExpression                {~RelationalExpression}
-  | left=BinaryExpression '<=' right=BinaryExpression               {~RelationalExpression}
-  | left=BinaryExpression '>=' right=BinaryExpression               {~RelationalExpression}
-  | left=BinaryExpression 'instanceof' right=BinaryExpression       {~RelationalExpression}
-  | [In] left=BinaryExpression 'in' right=BinaryExpression          {~RelationalExpression}
-  | left=BinaryExpression '==' right=BinaryExpression               {~EqualityExpression}
-  | left=BinaryExpression '!=' right=BinaryExpression               {~EqualityExpression}
-  | left=BinaryExpression '===' right=BinaryExpression              {~EqualityExpression}
-  | left=BinaryExpression '!==' right=BinaryExpression              {~EqualityExpression}
-  | left=BinaryExpression '&' right=BinaryExpression                {~BitwiseANDExpression}
-  | left=BinaryExpression '^' right=BinaryExpression                {~BitwiseXORExpression}
-  | left=BinaryExpression '|' right=BinaryExpression                {~BitwiseORExpression}
-  | left=BinaryExpression '&&' right=BinaryExpression               {~LogicalANDExpression}
-  | left=BinaryExpression '||' right=BinaryExpression               {~LogicalORExpression}
+  | left=BinaryExpression '<' right=BinaryExpression                -> RelationalExpression
+  | left=BinaryExpression '>' right=BinaryExpression                -> RelationalExpression
+  | left=BinaryExpression '<=' right=BinaryExpression               -> RelationalExpression
+  | left=BinaryExpression '>=' right=BinaryExpression               -> RelationalExpression
+  | left=BinaryExpression 'instanceof' right=BinaryExpression       -> RelationalExpression
+  | [In] left=BinaryExpression 'in' right=BinaryExpression          -> RelationalExpression
+  | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpression
+  | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpression
+  | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpression
+  | left=BinaryExpression '!==' right=BinaryExpression              -> EqualityExpression
+  | left=BinaryExpression '&' right=BinaryExpression                -> BitwiseANDExpression
+  | left=BinaryExpression '^' right=BinaryExpression                -> BitwiseXORExpression
+  | left=BinaryExpression '|' right=BinaryExpression                -> BitwiseORExpression
+  | left=BinaryExpression '&&' right=BinaryExpression               -> LogicalANDExpression
+  | left=BinaryExpression '||' right=BinaryExpression               -> LogicalORExpression
 ;
 
-ConditionalExpression<In, Yield> returns Expression ::=
+ConditionalExpression<In, Yield> returns Expression :
     @noast BinaryExpression
   | cond=BinaryExpression '?' then=AssignmentExpression<+In> ':' else=AssignmentExpression
 ;
 
-AssignmentExpression<In, Yield> returns Expression ::=
+AssignmentExpression<In, Yield> returns Expression :
     @noast ConditionalExpression
   | [Yield && !StartWithLet] @noast YieldExpression
   | [!StartWithLet] @noast ArrowFunction
@@ -587,20 +587,20 @@ AssignmentExpression<In, Yield> returns Expression ::=
   | left=LeftHandSideExpression AssignmentOperator right=AssignmentExpression
 ;
 
-AssignmentOperator ::=
+AssignmentOperator :
     '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' ;
 
-CommaExpression<In, Yield> returns Expression ::=
+CommaExpression<In, Yield> returns Expression :
     left=Expression ',' right=AssignmentExpression ;
 
-Expression<In, Yield> interface ::=
+Expression<In, Yield> interface :
     AssignmentExpression
   | CommaExpression
 ;
 
 # A.3 Statements
 
-Statement<Yield, Return> interface ::=
+Statement<Yield, Return> interface :
     BlockStatement
   | VariableStatement
   | EmptyStatement
@@ -617,409 +617,409 @@ Statement<Yield, Return> interface ::=
   | DebuggerStatement
 ;
 
-Declaration<Yield> interface ::=
+Declaration<Yield> interface :
     HoistableDeclaration<~Default>
   | ClassDeclaration<~Default>
   | LexicalDeclaration<+In>
 ;
 
 @noast
-HoistableDeclaration<Yield, Default> returns Declaration ::=
+HoistableDeclaration<Yield, Default> returns Declaration :
     FunctionDeclaration
   | GeneratorDeclaration
 ;
 
 @noast
-BreakableStatement<Yield, Return> returns Statement::=
+BreakableStatement<Yield, Return> returns Statement:
     IterationStatement
   | SwitchStatement
 ;
 
 @noast
-BlockStatement<Yield, Return> ::=
+BlockStatement<Yield, Return> :
     Block ;
 
-Block<Yield, Return> ::=
+Block<Yield, Return> :
     '{' StatementList? '}' ;
 
 @noast
-StatementList<Yield, Return> ::=
+StatementList<Yield, Return> :
     StatementListItem
   | StatementList StatementListItem
 ;
 
 @noast
-StatementListItem<Yield, Return> interface ::=
+StatementListItem<Yield, Return> interface :
     Statement
   | Declaration
-  | error ';'                                         {~SyntaxError}
+  | error ';'                                         -> SyntaxError
 ;
 
-LexicalDeclaration<In, Yield> ::=
+LexicalDeclaration<In, Yield> :
     LetOrConst BindingList ';' ;
 
 @noast
-LetOrConst ::=
+LetOrConst :
     'let'
   | 'const'
 ;
 
 @noast
-BindingList<In, Yield> ::=
+BindingList<In, Yield> :
     LexicalBinding
   | BindingList ',' LexicalBinding
 ;
 
-LexicalBinding<In, Yield> ::=
+LexicalBinding<In, Yield> :
     BindingIdentifier Initializeropt
   | BindingPattern Initializer
 ;
 
-VariableStatement<Yield> ::=
+VariableStatement<Yield> :
     'var' VariableDeclarationList<+In> ';'
 ;
 
 @noast
-VariableDeclarationList<In, Yield> ::=
+VariableDeclarationList<In, Yield> :
     VariableDeclaration
   | VariableDeclarationList ',' VariableDeclaration
 ;
 
-VariableDeclaration<In, Yield> ::=
+VariableDeclaration<In, Yield> :
     BindingIdentifier Initializeropt
   | BindingPattern Initializer
 ;
 
-BindingPattern<Yield> interface::=
+BindingPattern<Yield> interface:
     ObjectBindingPattern
   | ArrayBindingPattern
 ;
 
-ObjectBindingPattern<Yield> ::=
-    '{' '}'                                           {~ObjectPattern}
-  | '{' (PropertyPattern separator ',')+ ','? '}'     {~ObjectPattern}
+ObjectBindingPattern<Yield> :
+    '{' '}'                                           -> ObjectPattern
+  | '{' (PropertyPattern separator ',')+ ','? '}'     -> ObjectPattern
 ;
 
-ArrayBindingPattern<Yield> ::=
-    '[' Elisionopt BindingRestElementopt ']'                          {~ArrayPattern}
-  | '[' ElementPatternList ']'                                        {~ArrayPattern}
-  | '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'   {~ArrayPattern}
+ArrayBindingPattern<Yield> :
+    '[' Elisionopt BindingRestElementopt ']'                          -> ArrayPattern
+  | '[' ElementPatternList ']'                                        -> ArrayPattern
+  | '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'   -> ArrayPattern
 ;
 
 @noast
-ElementPatternList<Yield> ::=
+ElementPatternList<Yield> :
     BindingElisionElement
   | ElementPatternList ',' BindingElisionElement
 ;
 
 @noast
-BindingElisionElement<Yield> ::=
+BindingElisionElement<Yield> :
     Elision? ElementPattern
 ;
 
-PropertyPattern<Yield> interface ::=
+PropertyPattern<Yield> interface :
     @noast SingleNameBinding
-  | PropertyName ':' ElementPattern                   {~PropertyBinding}
+  | PropertyName ':' ElementPattern                   -> PropertyBinding
   | @noast SyntaxError
 ;
 
-ElementPattern<Yield> interface ::=
+ElementPattern<Yield> interface :
     @noast SingleNameBinding
-  | BindingPattern Initializeropt<+In>                {~ElementBinding}
+  | BindingPattern Initializeropt<+In>                -> ElementBinding
   | @noast SyntaxError
 ;
 
-SingleNameBinding<Yield> ::=
+SingleNameBinding<Yield> :
     BindingIdentifier Initializeropt<+In>
 ;
 
-BindingRestElement<Yield> ::=
+BindingRestElement<Yield> :
     '...' BindingIdentifier
 ;
 
-EmptyStatement ::=
+EmptyStatement :
     ';' .emptyStatement ;
 
-ExpressionStatement<Yield> ::=
+ExpressionStatement<Yield> :
     Expression<+In, +NoFuncClass, +NoObjLiteral, +NoLetSq> ';' ;
 
 %right 'else';
 
-IfStatement<Yield, Return> ::=
+IfStatement<Yield, Return> :
     'if' '(' Expression<+In> ')' then=Statement 'else' else=Statement
   | 'if' '(' Expression<+In> ')' then=Statement %prec 'else'
 ;
 
-IterationStatement<Yield, Return> returns Statement ::=
-    'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       {~DoWhileStatement}
-  | 'while' '(' Expression<+In> ')' Statement                         {~WhileStatement}
+IterationStatement<Yield, Return> returns Statement :
+    'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       -> DoWhileStatement
+  | 'while' '(' Expression<+In> ')' Statement                         -> WhileStatement
   | 'for' '(' var=Expressionopt<~In,+NoLet> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
   | 'for' '(' var=Expression<~In,+StartWithLet> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatement}
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
   | 'for' '(' 'var' VariableDeclarationList<~In> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatementWithVar}
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatementWithVar
   | 'for' '(' LetOrConst BindingList<~In> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 {~ForStatementWithVar}
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatementWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet>
-          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+          'in' object=Expression<+In> ')' Statement                   -> ForInStatement
   | 'for' '(' var=LeftHandSideExpression<+StartWithLet>
-          'in' object=Expression<+In> ')' Statement                   {~ForInStatement}
+          'in' object=Expression<+In> ')' Statement                   -> ForInStatement
   | 'for' '(' 'var' ForBinding
-          'in' object=Expression<+In> ')' Statement                   {~ForInStatementWithVar}
+          'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
   | 'for' '(' ForDeclaration
-          'in' object=Expression<+In> ')' Statement                   {~ForInStatementWithVar}
+          'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet>
-          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatement}
+          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
   | 'for' '(' 'var' ForBinding
-          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatementWithVar}
+          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
   | 'for' '(' ForDeclaration
-          'of' iterable=AssignmentExpression<+In> ')' Statement       {~ForOfStatementWithVar}
+          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
 ;
 
 @noast
-ForDeclaration<Yield> ::=
+ForDeclaration<Yield> :
     LetOrConst ForBinding
 ;
 
-ForBinding<Yield> ::=
+ForBinding<Yield> :
     BindingIdentifier
   | BindingPattern
 ;
 
-ForCondition<Yield> ::=
+ForCondition<Yield> :
     Expressionopt<+In> ;
 
-ForFinalExpression<Yield> ::=
+ForFinalExpression<Yield> :
     Expressionopt<+In> ;
 
-ContinueStatement<Yield> ::=
+ContinueStatement<Yield> :
     'continue' ';'
   | 'continue' .noLineBreak LabelIdentifier ';'
 ;
 
-BreakStatement<Yield> ::=
+BreakStatement<Yield> :
     'break' ';'
   | 'break' .noLineBreak LabelIdentifier ';'
 ;
 
-ReturnStatement<Yield> ::=
+ReturnStatement<Yield> :
     'return' ';'
   | 'return' .noLineBreak Expression<+In> ';'
 ;
 
-WithStatement<Yield, Return> ::=
+WithStatement<Yield, Return> :
     'with' '(' Expression<+In> ')' Statement
 ;
 
-SwitchStatement<Yield, Return> ::=
+SwitchStatement<Yield, Return> :
     'switch' '(' Expression<+In> ')' CaseBlock
 ;
 
-CaseBlock<Yield, Return> ::=
-    '{' CaseClausesopt '}'                            {~Block}
+CaseBlock<Yield, Return> :
+    '{' CaseClausesopt '}'                            -> Block
 ;
 
 @noast
-CaseClauses<Yield, Return> ::=
+CaseClauses<Yield, Return> :
     CaseClause
   | CaseClauses CaseClause
 ;
 
-CaseClause<Yield, Return> interface ::=
-    'case' Expression<+In> ':' StatementList?         {~Case}
-  | 'default' ':' StatementList?                      {~Default}
+CaseClause<Yield, Return> interface :
+    'case' Expression<+In> ':' StatementList?         -> Case
+  | 'default' ':' StatementList?                      -> Default
 ;
 
-LabelledStatement<Yield, Return> ::=
+LabelledStatement<Yield, Return> :
     Identifier ':' LabelledItem
   | [!Yield] 'yield' ':' LabelledItem
 ;
 
 @noast
-LabelledItem<Yield, Return> ::=
+LabelledItem<Yield, Return> :
     Statement
   | FunctionDeclaration<~Default>
 ;
 
-ThrowStatement<Yield> ::=
+ThrowStatement<Yield> :
     'throw' .noLineBreak Expression<+In> ';'
 ;
 
-TryStatement<Yield, Return> ::=
+TryStatement<Yield, Return> :
     'try' Block Catch
   | 'try' Block Catch? Finally
 ;
 
-Catch<Yield, Return> ::=
+Catch<Yield, Return> :
     'catch' '(' CatchParameter ')' Block
 ;
 
-Finally<Yield, Return> ::=
+Finally<Yield, Return> :
     'finally' Block
 ;
 
 @noast
-CatchParameter<Yield> ::=
+CatchParameter<Yield> :
     BindingIdentifier
   | BindingPattern
 ;
 
-DebuggerStatement ::=
+DebuggerStatement :
     'debugger' ';'
 ;
 
 # A.4 Functions and Classes
 
-FunctionDeclaration<Yield, Default> ::=
-    'function' BindingIdentifier FormalParameters<~Yield> FunctionBody<~Yield>  {~Function}
+FunctionDeclaration<Yield, Default> :
+    'function' BindingIdentifier FormalParameters<~Yield> FunctionBody<~Yield>  -> Function
 # TODO ~Yield?
-  | [Default] 'function' FormalParameters FunctionBody                          {~Function}
+  | [Default] 'function' FormalParameters FunctionBody                          -> Function
 ;
 
-FunctionExpression ::=
+FunctionExpression :
     'function' BindingIdentifier<~Yield>? FormalParameters<~Yield>
         FunctionBody<~Yield> ;
 
 @noast
-StrictFormalParameters<Yield> ::=
+StrictFormalParameters<Yield> :
     FormalParameters ;
 
-FormalParameters<Yield> ::=
-      '(' FormalParameterList? ')'                    {~Parameters}
+FormalParameters<Yield> :
+      '(' FormalParameterList? ')'                    -> Parameters
 ;
 
 @noast
-FormalParameterList<Yield> ::=
+FormalParameterList<Yield> :
     FunctionRestParameter
   | FormalsList
   | FormalsList ',' FunctionRestParameter
 ;
 
 @noast
-FormalsList<Yield> ::=
+FormalsList<Yield> :
     FormalParameter
   | FormalsList ',' FormalParameter
 ;
 
-FunctionRestParameter<Yield> ::=
-    BindingRestElement                                {~RestParameter}
+FunctionRestParameter<Yield> :
+    BindingRestElement                                -> RestParameter
 ;
 
-FormalParameter<Yield> ::=
-    ElementPattern                                    {~Parameter}
+FormalParameter<Yield> :
+    ElementPattern                                    -> Parameter
 ;
 
-FunctionBody<Yield> ::=
-    '{' StatementList<+Return>? '}'                   {~Body}
+FunctionBody<Yield> :
+    '{' StatementList<+Return>? '}'                   -> Body
 ;
 
-ArrowFunction<In, Yield> ::=
+ArrowFunction<In, Yield> :
     ArrowParameters .noLineBreak '=>' ConciseBody ;
 
-ArrowParameters<Yield> ::=
-    BindingIdentifier                                     {~Parameters}
-  | CoverParenthesizedExpressionAndArrowParameterList     {~Parameters}
+ArrowParameters<Yield> :
+    BindingIdentifier                                     -> Parameters
+  | CoverParenthesizedExpressionAndArrowParameterList     -> Parameters
 ;
 
-ConciseBody<In> ::=
+ConciseBody<In> :
     AssignmentExpression<~Yield, +NoObjLiteral>
   | @noast FunctionBody<~Yield>
 ;
 
-MethodDefinition<Yield> interface ::=
-    PropertyName StrictFormalParameters FunctionBody                      {~Method}
+MethodDefinition<Yield> interface :
+    PropertyName StrictFormalParameters FunctionBody                      -> Method
   | @noast GeneratorMethod
-  | 'get' PropertyName '(' ')' FunctionBody                               {~Getter}
-  | 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody      {~Setter}
+  | 'get' PropertyName '(' ')' FunctionBody                               -> Getter
+  | 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody      -> Setter
 ;
 
 @noast
-PropertySetParameterList ::=
+PropertySetParameterList :
     FormalParameter<~Yield> ;
 
-GeneratorMethod<Yield> ::=
+GeneratorMethod<Yield> :
     '*' PropertyName StrictFormalParameters<+Yield> GeneratorBody ;
 
-GeneratorDeclaration<Yield, Default> ::=
-    'function' '*' BindingIdentifier FormalParameters<+Yield> GeneratorBody  {~Generator}
-  | [Default] 'function' '*' FormalParameters<+Yield> GeneratorBody          {~Generator}
+GeneratorDeclaration<Yield, Default> :
+    'function' '*' BindingIdentifier FormalParameters<+Yield> GeneratorBody  -> Generator
+  | [Default] 'function' '*' FormalParameters<+Yield> GeneratorBody          -> Generator
 ;
 
-GeneratorExpression ::=
+GeneratorExpression :
     'function' '*' BindingIdentifier<+Yield>? FormalParameters<+Yield> GeneratorBody ;
 
 @noast
-GeneratorBody ::=
+GeneratorBody :
     FunctionBody<+Yield> ;
 
-YieldExpression<In> ::=
-    'yield'                                                                {~Yield}
-  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield>          {~Yield}
-  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield>      {~Yield}
+YieldExpression<In> :
+    'yield'                                                                -> Yield
+  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield>          -> Yield
+  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield>      -> Yield
 ;
 
-ClassDeclaration<Yield, Default> returns Declaration ::=
-    'class' BindingIdentifier ClassTail               {~Class}
-  | [Default] 'class' ClassTail                       {~Class}
+ClassDeclaration<Yield, Default> returns Declaration :
+    'class' BindingIdentifier ClassTail               -> Class
+  | [Default] 'class' ClassTail                       -> Class
 ;
 
-ClassExpression<Yield> ::=
-    'class' BindingIdentifier? ClassTail              {~ClassExpr}
+ClassExpression<Yield> :
+    'class' BindingIdentifier? ClassTail              -> ClassExpr
 ;
 
 @noast
-ClassTail<Yield> ::=
+ClassTail<Yield> :
     ClassHeritage? ClassBody ;
 
-ClassHeritage<Yield> ::=
-    'extends' LeftHandSideExpression                  {~Extends}
+ClassHeritage<Yield> :
+    'extends' LeftHandSideExpression                  -> Extends
 ;
 
-ClassBody<Yield> ::=
+ClassBody<Yield> :
     '{' ClassElementList? '}' ;
 
 @noast
-ClassElementList<Yield> ::=
+ClassElementList<Yield> :
     ClassElement
   | ClassElementList ClassElement
 ;
 
-ClassElement<Yield> interface ::=
+ClassElement<Yield> interface :
     @noast MethodDefinition
-  | 'static' MethodDefinition                         {~StaticMethod}
-  | ';'                                               {~EmptyDecl}
+  | 'static' MethodDefinition                         -> StaticMethod
+  | ';'                                               -> EmptyDecl
 ;
 
 # A.5 Scripts and Modules
 
-Module ::=
+Module :
     ModuleBodyopt ;
 
 @noast
-ModuleBody ::=
+ModuleBody :
     ModuleItemList ;
 
 @noast
-ModuleItemList ::=
+ModuleItemList :
     ModuleItem
   | ModuleItemList ModuleItem
 ;
 
 @noast
-ModuleItem interface ::=
+ModuleItem interface :
     ImportDeclaration
   | ExportDeclaration
   | StatementListItem<~Yield,~Return>
 ;
 
-ImportDeclaration ::=
+ImportDeclaration :
     'import' ImportClause FromClause ';'
   | 'import' ModuleSpecifier ';'
 ;
 
 @noast
-ImportClause ::=
+ImportClause :
     ImportedDefaultBinding
   | NameSpaceImport
   | NamedImports
@@ -1028,106 +1028,106 @@ ImportClause ::=
 ;
 
 @noast
-ImportedDefaultBinding ::=
+ImportedDefaultBinding :
     ImportedBinding ;
 
-NameSpaceImport ::=
+NameSpaceImport :
     '*' 'as' ImportedBinding ;
 
 @noast
-FromClause ::=
+FromClause :
     'from' ModuleSpecifier ;
 
-NamedImports ::=
+NamedImports :
     '{' '}'
   | '{' (NamedImport separator ',')+ ','? '}'
 ;
 
-NamedImport interface ::=
-    ImportedBinding                                   {~ImportSpecifier}
-  | IdentifierNameRef 'as' ImportedBinding            {~ImportSpecifier}
-  | error                                             {~SyntaxError}
+NamedImport interface :
+    ImportedBinding                                   -> ImportSpecifier
+  | IdentifierNameRef 'as' ImportedBinding            -> ImportSpecifier
+  | error                                             -> SyntaxError
 ;
 
-ModuleSpecifier ::=
+ModuleSpecifier :
     StringLiteral ;
 
 @noast
-ImportedBinding ::=
+ImportedBinding :
     BindingIdentifier<~Yield> ;
 
-ExportDeclaration returns ModuleItem ::=
+ExportDeclaration returns ModuleItem :
     'export' '*' FromClause ';'
   | 'export' ExportClause FromClause ';'
   | 'export' ExportClause ';'
   | 'export' VariableStatement<~Yield>
   | 'export' Declaration<~Yield>
-  | 'export' 'default' HoistableDeclaration<+Default,~Yield>              {~ExportDefault}
-  | 'export' 'default' ClassDeclaration<+Default,~Yield>                  {~ExportDefault}
-  | 'export' 'default' AssignmentExpression<+In,~Yield,+NoFuncClass> ';'  {~ExportDefault}
+  | 'export' 'default' HoistableDeclaration<+Default,~Yield>              -> ExportDefault
+  | 'export' 'default' ClassDeclaration<+Default,~Yield>                  -> ExportDefault
+  | 'export' 'default' AssignmentExpression<+In,~Yield,+NoFuncClass> ';'  -> ExportDefault
 ;
 
-ExportClause ::=
+ExportClause :
     '{' '}'
   | '{' (ExportElement separator ',')+ ','? '}'
 ;
 
-ExportElement interface ::=
-    IdentifierNameRef                                 {~ExportSpecifier}
-  | IdentifierNameRef 'as' IdentifierNameDecl         {~ExportSpecifier}
-  | error                                             {~SyntaxError}
+ExportElement interface :
+    IdentifierNameRef                                 -> ExportSpecifier
+  | IdentifierNameRef 'as' IdentifierNameDecl         -> ExportSpecifier
+  | error                                             -> SyntaxError
 ;
 
 # Extensions
 
 # JSX (see https://facebook.github.io/jsx/)
 
-JSXElement<Yield> ::=
+JSXElement<Yield> :
     JSXSelfClosingElement
   | JSXOpeningElement JSXChild* JSXClosingElement
 ;
 
-JSXSelfClosingElement<Yield> ::=
+JSXSelfClosingElement<Yield> :
     '<' JSXElementName JSXAttribute* '/' '>' ;
 
-JSXOpeningElement<Yield> ::=
+JSXOpeningElement<Yield> :
     '<' JSXElementName JSXAttribute* '>' ;
 
-JSXClosingElement ::=
+JSXClosingElement :
     '<' '/' JSXElementName '>' ;
 
-JSXElementName ::=
+JSXElementName :
     jsxIdentifier
   | jsxIdentifier ':' jsxIdentifier
   | JSXMemberExpression
 ;
 
 @noast
-JSXMemberExpression ::=
+JSXMemberExpression :
     jsxIdentifier '.' jsxIdentifier
   | JSXMemberExpression '.' jsxIdentifier
 ;
 
-JSXAttribute<Yield> interface ::=
-    JSXAttributeName '=' JSXAttributeValue            {~JSXNormalAttribute}
-  | '{' '...' AssignmentExpression<+In> '}'           {~JSXSpreadAttribute}
+JSXAttribute<Yield> interface :
+    JSXAttributeName '=' JSXAttributeValue            -> JSXNormalAttribute
+  | '{' '...' AssignmentExpression<+In> '}'           -> JSXSpreadAttribute
 ;
 
-JSXAttributeName ::=
+JSXAttributeName :
     jsxIdentifier
   | jsxIdentifier ':' jsxIdentifier
 ;
 
-JSXAttributeValue<Yield> interface ::=
-    jsxStringLiteral                                  {~JSXLiteral}
-  | '{' AssignmentExpression<+In> '}'                 {~JSXExpression}
+JSXAttributeValue<Yield> interface :
+    jsxStringLiteral                                  -> JSXLiteral
+  | '{' AssignmentExpression<+In> '}'                 -> JSXExpression
   | JSXElement
 ;
 
-JSXChild<Yield> interface ::=
-    jsxText                                           {~JSXText}
+JSXChild<Yield> interface :
+    jsxText                                           -> JSXText
   | JSXElement
-  | '{' AssignmentExpressionopt<+In> '}'              {~JSXExpression}
+  | '{' AssignmentExpressionopt<+In> '}'              -> JSXExpression
 ;
 
 %%

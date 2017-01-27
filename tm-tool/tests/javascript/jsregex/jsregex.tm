@@ -86,12 +86,12 @@ char:  /[\(\|\)]/
 
 %input pattern;
 
-pattern ::=
+pattern :
 	  partsopt
 	| left=pattern '|' partsopt					{ this.report(${left().offset}, ${left().endoffset}, "or"); }
 ;
 
-part ::=
+part :
 	  primitive_part
 	| primitive_part '*'            { this.report(${left().offset}, ${left().endoffset}, "*"); }
 	| primitive_part '+'            { this.report(${left().offset}, ${left().endoffset}, "+"); }
@@ -99,7 +99,7 @@ part ::=
 	| primitive_part quantifier     { this.report(${left().offset}, ${left().endoffset}, "{,}"); }
 ;
 
-primitive_part ::=
+primitive_part :
 	  char
 	| escaped						{ this.report(${left().offset}, ${left().endoffset}, "escaped"); }
 	| charclass
@@ -110,7 +110,7 @@ primitive_part ::=
 	| expand
 ;
 
-setsymbol ::=
+setsymbol :
 	  char
 	| escaped
 	| charclass
@@ -118,7 +118,7 @@ setsymbol ::=
 
 %right char escaped;
 
-charset ::=
+charset :
 	  sym='-'
 	| setsymbol
 	| charset setsymbol
@@ -128,7 +128,7 @@ charset ::=
 	| charset '-' escaped
 ;
 
-parts ::=
+parts :
 	  part
 	| list=parts part
 ;

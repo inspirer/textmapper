@@ -47,28 +47,28 @@ invalid_token:
 
 %input Test;
 
-Test ::=
+Test :
 	  Declaration+ ;
 
 # Test: an interface with a type rule.
 
-Declaration interface ::=
+Declaration interface :
 	  Decl1
 	| Decl2
-	| '{' Declaration+ '}'        {~Block}
+	| '{' Declaration+ '}'        -> Block
 ;
 
 # Test: a list of an exported terminal.
 
 @noast
-QualifiedName ::=
+QualifiedName :
 	  Identifier
 	| QualifiedName '.' Identifier
 ;
 
-Decl1 ::=
+Decl1 :
 	  'decl1' '(' QualifiedName ')' ;
 
-Decl2 ::=
+Decl2 :
 	  'decl2'
 ;

@@ -58,7 +58,7 @@ public class RuleListSelectionHandlerBase extends ExtendWordSelectionHandlerBase
 
 			if (sibling instanceof TmToken) {
 				TmToken token = (TmToken) sibling;
-				if (token.getNode().getElementType() == TMTokenTypes.OP_CCEQ) {
+				if (token.getNode().getElementType() == TMTokenTypes.OP_COLON) {
 					break;
 				}
 			}

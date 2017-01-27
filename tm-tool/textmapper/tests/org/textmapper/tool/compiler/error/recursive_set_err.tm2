@@ -11,21 +11,21 @@ eoi:
 
 :: parser
 
-input ::=
+input :
 	abc xyz def
 ;
 
-abc ::=
+abc :
 # ERR: @~abc: Cannot resolve set, since it recursively depends on itself.
 	  set('a' | ~abc) 'b'
 ;
 
-xyz ::=
+xyz :
 # ERR: @~xyz: Cannot resolve set, since it recursively depends on itself.
 	  set('c' & ~xyz) 'b'
 ;
 
 # This is OK.
-def ::=
+def :
 	  set('c' & def) 'b'
 ;

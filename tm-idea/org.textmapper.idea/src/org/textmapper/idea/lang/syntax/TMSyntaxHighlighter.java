@@ -137,10 +137,11 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, TMTokenTypes.quantifiers, QUANTIFIER);
 		fillMap(attributes, BRACKETS, TMTokenTypes.OP_LBRACKET, TMTokenTypes.OP_RBRACKET);
 		fillMap(attributes, PARENTHS, TMTokenTypes.OP_LPAREN, TMTokenTypes.OP_LPAREN_QA, TMTokenTypes.OP_RPAREN);
-		fillMap(attributes, BRACES, TMTokenTypes.OP_LCURLYTILDE, TMTokenTypes.OP_LCURLY, TMTokenTypes.OP_RCURLY);
+		fillMap(attributes, BRACES, TMTokenTypes.OP_LCURLY, TMTokenTypes.OP_RCURLY);
 
 		// punctuation
 		fillMap(attributes, DefaultLanguageHighlighterColors.DOT, TMTokenTypes.OP_DOT);
+		fillMap(attributes, RULE_METADATA, TMTokenTypes.OP_ARROW);
 		fillMap(attributes, DefaultLanguageHighlighterColors.COMMA, TMTokenTypes.OP_COMMA);
 		fillMap(attributes, DefaultLanguageHighlighterColors.SEMICOLON, TMTokenTypes.OP_SEMICOLON);
 		fillMap(attributes, SECTION, TMTokenTypes.OP_COLONCOLON, TMTokenTypes.KW_LEXER_ACC, TMTokenTypes.KW_PARSER_ACC);

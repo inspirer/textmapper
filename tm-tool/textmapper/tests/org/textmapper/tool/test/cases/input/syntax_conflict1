@@ -11,23 +11,23 @@ fix3: /fix3/
 
 :: parser
 
-input ::=
+input :
 	input1 fixI ;
 
-fixI ::=
+fixI :
 	fix1 | fix2 | fix3 ;
 
-input1 ::=
+input1 :
 	list
 	| Licon
 ;
 	
-list ::=
+list :
 	list_item
 	| list list_item
 ;
 
-list_item ::=
+list_item :
 	identifier
 	| Licon
 ;

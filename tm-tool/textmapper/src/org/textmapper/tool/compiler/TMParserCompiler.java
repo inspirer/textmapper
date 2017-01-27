@@ -130,9 +130,10 @@ public class TMParserCompiler {
 					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind,
 							hint.getName() == null ? null : hint.getName().getID()));
 
-					if (hint.getImplements() != null && !hint.getImplements().isEmpty()) {
+					if (hint.getImplementsClause() != null
+							&& !hint.getImplementsClause().isEmpty()) {
 						List<Nonterminal> interfaces = new ArrayList<>();
-						for (TmaSymref ref : hint.getImplements()) {
+						for (TmaSymref ref : hint.getImplementsClause()) {
 							Nonterminal type = asNonterminalWithoutType(ref, withType);
 							if (type != null) {
 								interfaces.add(type);
@@ -697,7 +698,7 @@ public class TMParserCompiler {
 		copyParameters(outer, result);
 
 		if (separator != null && !nonEmpty) {
-			// (a separator ',')*  => alistopt ::= alist | ; alist ::= a | alist ',' a ;
+			// (a separator ',')*  => alistopt : alist | ; alist : a | alist ',' a ;
 			result = builder.addShared(builder.optional(builder.symbolFwdAll(result, origin),
 					origin), outer, listName + "_opt");
 			copyParameters(outer, result);

@@ -19,37 +19,35 @@ const (
 	WHITESPACE
 	COMMENT
 	MULTILINE_COMMENT
-	REM              // %
-	COLONCOLONASSIGN // ::=
-	COLONCOLON       // ::
-	OR               // |
-	OROR             // ||
-	ASSIGN           // =
-	ASSIGNASSIGN     // ==
-	EXCLASSIGN       // !=
-	SEMICOLON        // ;
-	DOT              // .
-	COMMA            // ,
-	COLON            // :
-	LBRACK           // [
-	RBRACK           // ]
-	LPAREN           // (
-	MINUSGT          // ->
-	RPAREN           // )
-	LBRACETILDE      // {~
-	RBRACE           // }
-	LT               // <
-	GT               // >
-	MULT             // *
-	PLUS             // +
-	PLUSASSIGN       // +=
-	QUEST            // ?
-	EXCL             // !
-	TILDE            // ~
-	AND              // &
-	ANDAND           // &&
-	DOLLAR           // $
-	ATSIGN           // @
+	REM          // %
+	COLONCOLON   // ::
+	OR           // |
+	OROR         // ||
+	ASSIGN       // =
+	ASSIGNASSIGN // ==
+	EXCLASSIGN   // !=
+	SEMICOLON    // ;
+	DOT          // .
+	COMMA        // ,
+	COLON        // :
+	LBRACK       // [
+	RBRACK       // ]
+	LPAREN       // (
+	MINUSGT      // ->
+	RPAREN       // )
+	RBRACE       // }
+	LT           // <
+	GT           // >
+	MULT         // *
+	PLUS         // +
+	PLUSASSIGN   // +=
+	QUEST        // ?
+	EXCL         // !
+	TILDE        // ~
+	AND          // &
+	ANDAND       // &&
+	DOLLAR       // $
+	ATSIGN       // @
 	ERROR
 	INVALID_TOKEN
 	ID
@@ -107,7 +105,6 @@ var tokenStr = [...]string{
 	"COMMENT",
 	"MULTILINE_COMMENT",
 	"%",
-	"::=",
 	"::",
 	"|",
 	"||",
@@ -123,7 +120,6 @@ var tokenStr = [...]string{
 	"(",
 	"->",
 	")",
-	"{~",
 	"}",
 	"<",
 	">",

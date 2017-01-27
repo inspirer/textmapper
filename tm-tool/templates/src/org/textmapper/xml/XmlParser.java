@@ -230,46 +230,46 @@ public class XmlParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
 		switch (ruleIndex) {
-			case 0:  // input ::= xml_tags
+			case 0:  // input : xml_tags
 				{ tmLeft.value = new XmlNode("<root>", null, 1); ((XmlNode)tmLeft.value).setData(((List<XmlElement>)tmStack[tmHead].value)); }
 				break;
-			case 1:  // xml_tags ::= xml_tags xml_tag_or_space
+			case 1:  // xml_tags : xml_tags xml_tag_or_space
 				{ ((List<XmlElement>)tmStack[tmHead - 1].value).add(((XmlElement)tmStack[tmHead].value)); }
 				break;
-			case 2:  // xml_tags ::= xml_tag_or_space
+			case 2:  // xml_tags : xml_tag_or_space
 				{ tmLeft.value = new ArrayList<XmlElement>(); ((List<XmlElement>)tmLeft.value).add(((XmlElement)tmStack[tmHead].value)); }
 				break;
-			case 3:  // xml_tag_or_space ::= tag_start tag_end
+			case 3:  // xml_tag_or_space : tag_start tag_end
 				{ checkTag(((XmlNode)tmStack[tmHead - 1].value),((String)tmStack[tmHead].value),tmStack[tmHead].offset,tmStack[tmHead].endoffset,tmStack[tmHead].line); }
 				break;
-			case 4:  // xml_tag_or_space ::= tag_start xml_tags tag_end
+			case 4:  // xml_tag_or_space : tag_start xml_tags tag_end
 				{ checkTag(((XmlNode)tmStack[tmHead - 2].value),((String)tmStack[tmHead].value),tmStack[tmHead].offset,tmStack[tmHead].endoffset,tmStack[tmHead].line); ((XmlNode)tmStack[tmHead - 2].value).setData(((List<XmlElement>)tmStack[tmHead - 1].value)); }
 				break;
-			case 6:  // xml_tag_or_space ::= any
+			case 6:  // xml_tag_or_space : any
 				{ tmLeft.value = getData(tmLeft.offset,tmLeft.endoffset); }
 				break;
-			case 7:  // tag_name ::= identifier
+			case 7:  // tag_name : identifier
 				{ tmLeft.value = ((String)tmStack[tmHead].value); }
 				break;
-			case 8:  // tag_name ::= identifier ':' identifier
+			case 8:  // tag_name : identifier ':' identifier
 				{ tmLeft.value = ((String)tmStack[tmHead - 2].value) + ":" + ((String)tmStack[tmHead].value); }
 				break;
-			case 9:  // tag_start ::= '<' tag_name attributesopt '>'
+			case 9:  // tag_start : '<' tag_name attributesopt '>'
 				{ tmLeft.value = new XmlNode(((String)tmStack[tmHead - 2].value), ((List<XmlAttribute>)tmStack[tmHead - 1].value), tmStack[tmHead - 3].line); }
 				break;
-			case 10:  // no_body_tag ::= '<' tag_name attributesopt '/' '>'
+			case 10:  // no_body_tag : '<' tag_name attributesopt '/' '>'
 				{ tmLeft.value = new XmlNode(((String)tmStack[tmHead - 3].value), ((List<XmlAttribute>)tmStack[tmHead - 2].value), tmStack[tmHead - 4].line); }
 				break;
-			case 11:  // tag_end ::= '<' '/' tag_name '>'
+			case 11:  // tag_end : '<' '/' tag_name '>'
 				{ tmLeft.value = ((String)tmStack[tmHead - 1].value); }
 				break;
-			case 12:  // attributes ::= attributes attribute
+			case 12:  // attributes : attributes attribute
 				{ ((List<XmlAttribute>)tmStack[tmHead - 1].value).add(((XmlAttribute)tmStack[tmHead].value)); }
 				break;
-			case 13:  // attributes ::= attribute
+			case 13:  // attributes : attribute
 				{ tmLeft.value = new ArrayList<XmlAttribute>(); ((List<XmlAttribute>)tmLeft.value).add(((XmlAttribute)tmStack[tmHead].value)); }
 				break;
-			case 14:  // attribute ::= identifier '=' ccon
+			case 14:  // attribute : identifier '=' ccon
 				{ tmLeft.value = new XmlAttribute(((String)tmStack[tmHead - 2].value),((String)tmStack[tmHead].value)); }
 				break;
 		}

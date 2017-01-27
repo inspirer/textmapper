@@ -74,8 +74,8 @@ public class GrammarTest extends LapgTestCase {
 	public void testMultiInputStates() {
 		GenericParseContext context = loadGrammar("syntaxmultiinput");
 
-		// A1 ::= 'aaa' | A2 identifier ;
-		// A2 ::= A1 | A2 'aaa' ;
+		// A1 : 'aaa' | A2 identifier ;
+		// A2 : A1 | A2 'aaa' ;
 
 		testParser(context, 0, "    aaa    ", "[aaa]");
 		testParser(context, 0, "    aaa x    ", "[[aaa] x]");

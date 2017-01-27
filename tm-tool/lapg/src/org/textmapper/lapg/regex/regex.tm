@@ -94,17 +94,17 @@ char {Integer}:  /[\(\|\)]/						{ $$ = tokenText().codePointAt(0); }
 
 :: parser
 
-input {RegexAstPart} ::=
+input {RegexAstPart} :
 	  pattern
 	| kw_eoi                                    { $$ = new RegexAstChar(-1, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-pattern {RegexAstPart} ::=
+pattern {RegexAstPart} :
 	  partsopt									{ $$ = RegexUtil.emptyIfNull($partsopt, source, ${partsopt.offset}); }
 	| left=pattern '|' partsopt					{ $$ = RegexUtil.createOr($left, $partsopt, source, ${partsopt.offset}); }
 ;
 
-part {RegexAstPart} ::=
+part {RegexAstPart} :
 	  primitive_part
 	| primitive_part '*'						{ $$ = new RegexAstQuantifier($primitive_part, 0, -1, source, ${left().offset}, ${left().endoffset}); }
 	| primitive_part '+'						{ $$ = new RegexAstQuantifier($primitive_part, 1, -1, source, ${left().offset}, ${left().endoffset}); }
@@ -112,7 +112,7 @@ part {RegexAstPart} ::=
 	| primitive_part quantifier					{ $$ = RegexUtil.createQuantifier($primitive_part, source, ${quantifier.offset}, ${left().endoffset}, reporter); }
 ;
 
-primitive_part {RegexAstPart} ::=
+primitive_part {RegexAstPart} :
 	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
 	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
@@ -123,7 +123,7 @@ primitive_part {RegexAstPart} ::=
 	| expand									{ $$ = new RegexAstExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexAstExpand) $$, reporter); }
 ;
 
-setsymbol {RegexAstPart} ::=
+setsymbol {RegexAstPart} :
 	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
 	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
@@ -131,7 +131,7 @@ setsymbol {RegexAstPart} ::=
 
 %right char escaped;
 
-charset {java.util.@List<RegexAstPart>} ::=
+charset {java.util.@List<RegexAstPart>} :
 	  sym='-'									{ $$ = new java.util.@ArrayList<RegexAstPart>(); ${left()}.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
 	| setsymbol									{ $$ = new java.util.@ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(${left()}, $setsymbol, reporter); }
 	| charset setsymbol							{ RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
@@ -141,7 +141,7 @@ charset {java.util.@List<RegexAstPart>} ::=
 	| charset '-' escaped						{ RegexUtil.applyRange($charset, new RegexAstChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
 ;
 
-parts {RegexAstPart} ::=
+parts {RegexAstPart} :
 	  part
 	| list=parts part							{ $$ = RegexUtil.createSequence($list, $part); }
 ;

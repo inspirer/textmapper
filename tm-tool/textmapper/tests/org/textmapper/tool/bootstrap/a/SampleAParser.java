@@ -256,24 +256,24 @@ public class SampleAParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
 		switch (ruleIndex) {
-			case 1:  // classdef ::= Lclass identifier '{' classdeflistopt '}'
+			case 1:  // classdef : Lclass identifier '{' classdeflistopt '}'
 				tmLeft.value = new AstClassdef(
 						((String)tmStack[tmHead - 3].value) /* identifier */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead - 4].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn);
 				break;
-			case 2:  // classdeflist ::= classdef
+			case 2:  // classdeflist : classdef
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn));
 				break;
-			case 3:  // classdeflist ::= classdeflist classdef
+			case 3:  // classdeflist : classdeflist classdef
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead - 1].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn));
 				break;
-			case 4:  // classdeflist ::= error
+			case 4:  // classdeflist : error
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,

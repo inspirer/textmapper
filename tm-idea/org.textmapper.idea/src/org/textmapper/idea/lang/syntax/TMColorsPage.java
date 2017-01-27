@@ -120,7 +120,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"\n" +
 				"[initial]\n" +
 				"idStart = /[a-zA-Z_]/\n" +
-				"identifier(String): /{idStart}([A-Za-z_\\d])*/  (<kw>class</kw>)\n" +
+				"identifier {String}: /{idStart}([A-Za-z_\\d])*/  (<kw>class</kw>)\n" +
 				"                 { $lexem = current(); break; }\n" +
 				"kw_eval:  /eval/ (<kw>soft</kw>)\n" +
 				"'(': /\\(/\n" +
@@ -135,23 +135,23 @@ public class TMColorsPage implements ColorSettingsPage {
 				"\n" +
 				"%<kw>param</kw> X <kw>symbol</kw>;\n" +
 				"\n" +
-				"parenthesized<<param>X</param>> ::= <lexemeRef>'('</lexemeRef> <param>X</param> <lexemeRef>')'</lexemeRef>;\n" +
+				"parenthesized<<param>X</param>> : <lexemeRef>'('</lexemeRef> <param>X</param> <lexemeRef>')'</lexemeRef>;\n" +
 				"\n" +
 				"%<kw>input</kw> root;\n" +
 				"%<kw>left</kw> <lexemeRef>'+'</lexemeRef>;\n" +
 				"%<kw>left</kw> <lexemeRef>'*'</lexemeRef>;\n" +
 				"\n" +
-				"root (ParsedRoot) ::=\n" +
+				"root (ParsedRoot) :\n" +
 				"      <lexemeRef>kw_eval</lexemeRef> expr  {  $$ = new ParsedRoot($expr, ${root.offset}, ${root.endoffset}); }\n" +
 				";\n" +
 				"\n" +
 				"# expression rule\n" +
 				"\n" +
 				"<annotation>@noast</annotation>{<kw>true</kw>}\n" +
-				"expr ::=\n" +
+				"expr :\n" +
 				"      <lexemeRef>identifier</lexemeRef>\n" +
 				"    | expr <lexemeRef>'+'</lexemeRef> expr\n" +
-				"    | expr <lexemeRef>'*'</lexemeRef> expr  <ruleMeta>{~multiply}</ruleMeta>\n" +
+				"    | expr <lexemeRef>'*'</lexemeRef> expr  <ruleMeta>-&gt; binary/multiply</ruleMeta>\n" +
 				"    | <lookahead>(?= StartOfA & StartOfB)</lookahead> <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr <kw>separator</kw> <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
 				";\n" +
 				"%%\n" +

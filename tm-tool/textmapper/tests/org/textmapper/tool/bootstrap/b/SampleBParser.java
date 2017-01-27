@@ -267,7 +267,7 @@ public class SampleBParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
 		switch (ruleIndex) {
-			case 1:  // classdef ::= Lclass ID '{' classdeflistopt '}'
+			case 1:  // classdef : Lclass ID '{' classdeflistopt '}'
 				tmLeft.value = new AstClassdef(
 						true /* tc */,
 						((String)tmStack[tmHead - 3].value) /* ID */,
@@ -276,7 +276,7 @@ public class SampleBParser {
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 2:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
+			case 2:  // classdef : Lclass ID Lextends identifier '{' classdeflistopt '}'
 				tmLeft.value = new AstClassdef(
 						true /* tc */,
 						((String)tmStack[tmHead - 5].value) /* ID */,
@@ -285,36 +285,36 @@ public class SampleBParser {
 						((String)tmStack[tmHead - 3].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
 				break;
-			case 4:  // classdeflist ::= classdef
+			case 4:  // classdeflist : classdef
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset));
 				break;
-			case 5:  // classdeflist ::= classdeflist classdef
+			case 5:  // classdeflist : classdeflist classdef
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset));
 				break;
-			case 6:  // classdeflist ::= identifier '(' ')'
+			case 6:  // classdeflist : identifier '(' ')'
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
-			case 7:  // classdeflist ::= identifier '(' Lextends ')'
+			case 7:  // classdeflist : identifier '(' Lextends ')'
 				{ String s = /* should be string */ ((String)tmStack[tmHead - 1].value); }
 				break;
-			case 8:  // classdeflist ::= classdeflist identifier '(' ')'
+			case 8:  // classdeflist : classdeflist identifier '(' ')'
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset));
 				break;
-			case 9:  // classdeflist ::= error
+			case 9:  // classdeflist : error
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,

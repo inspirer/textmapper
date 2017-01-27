@@ -16,25 +16,25 @@ Ltype:	 	 /type/              (soft)
 
 :: parser
 
-input ::=
+input :
 	classdef ;
 
-classdef ::=
+classdef :
 	  Lclass identifier '(' memberslist ')'
 ;
 
-memberslist ::=
+memberslist :
 	memberslist_item | memberslist memberslist_item ;
 
-memberslist_item ::=
+memberslist_item :
 	varname Lof Ltype typename
 	| typename varname
 ;
 
-varname ::=
+varname :
 	identifier
 ;
 
-typename ::=
+typename :
 	identifier
 ;

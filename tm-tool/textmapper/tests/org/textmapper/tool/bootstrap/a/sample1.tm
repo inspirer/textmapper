@@ -43,13 +43,13 @@ error:
 
 %input classdef_no_eoi no-eoi, classdef ;
 
-classdef_no_eoi interface ::=
+classdef_no_eoi interface :
 	classdef ;
 
-classdef ::=
+classdef :
 	Lclass identifier '{' classdeflistopt '}' ;
 
-classdeflist ::=
+classdeflist :
 	classdef
   | classdeflist classdef
   | error

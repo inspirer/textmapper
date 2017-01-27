@@ -13,12 +13,12 @@ AAA: /aaa/
 
 %input A1, A2;
 
-A1 ::=
+A1 :
 	AAA
    	|
 	A2 identifier ;
 
-A2 ::=
+A2 :
 	A1
 	| A2 AAA ;
 

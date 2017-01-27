@@ -243,79 +243,79 @@ public class RegexDefParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
 		switch (ruleIndex) {
-			case 1:  // input ::= kw_eoi
+			case 1:  // input : kw_eoi
 				{ tmLeft.value = new RegexAstChar(-1, source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 2:  // pattern ::= partsopt
+			case 2:  // pattern : partsopt
 				{ tmLeft.value = RegexUtil.emptyIfNull(((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); }
 				break;
-			case 3:  // pattern ::= pattern '|' partsopt
+			case 3:  // pattern : pattern '|' partsopt
 				{ tmLeft.value = RegexUtil.createOr(((RegexAstPart)tmStack[tmHead - 2].value), ((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); }
 				break;
-			case 5:  // part ::= primitive_part '*'
+			case 5:  // part : primitive_part '*'
 				{ tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, -1, source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 6:  // part ::= primitive_part '+'
+			case 6:  // part : primitive_part '+'
 				{ tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 1, -1, source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 7:  // part ::= primitive_part '?'
+			case 7:  // part : primitive_part '?'
 				{ tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, 1, source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 8:  // part ::= primitive_part quantifier
+			case 8:  // part : primitive_part quantifier
 				{ tmLeft.value = RegexUtil.createQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), source, tmStack[tmHead].offset, tmLeft.endoffset, reporter); }
 				break;
-			case 9:  // primitive_part ::= char
+			case 9:  // primitive_part : char
 				{ tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 10:  // primitive_part ::= escaped
+			case 10:  // primitive_part : escaped
 				{ tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 11:  // primitive_part ::= charclass
+			case 11:  // primitive_part : charclass
 				{ tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 12:  // primitive_part ::= '.'
+			case 12:  // primitive_part : '.'
 				{ tmLeft.value = new RegexAstAny(source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 13:  // primitive_part ::= '(' pattern ')'
+			case 13:  // primitive_part : '(' pattern ')'
 				{ tmLeft.value = RegexUtil.wrap(((RegexAstPart)tmStack[tmHead - 1].value)); }
 				break;
-			case 14:  // primitive_part ::= '[' charset ']'
+			case 14:  // primitive_part : '[' charset ']'
 				{ tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, false); }
 				break;
-			case 15:  // primitive_part ::= '[^' charset ']'
+			case 15:  // primitive_part : '[^' charset ']'
 				{ tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, true); }
 				break;
-			case 16:  // primitive_part ::= expand
+			case 16:  // primitive_part : expand
 				{ tmLeft.value = new RegexAstExpand(source, tmLeft.offset, tmLeft.endoffset); RegexUtil.checkExpand((RegexAstExpand) tmLeft.value, reporter); }
 				break;
-			case 17:  // setsymbol ::= char
+			case 17:  // setsymbol : char
 				{ tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 18:  // setsymbol ::= escaped
+			case 18:  // setsymbol : escaped
 				{ tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 19:  // setsymbol ::= charclass
+			case 19:  // setsymbol : charclass
 				{ tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); }
 				break;
-			case 20:  // charset ::= '-'
+			case 20:  // charset : '-'
 				{ tmLeft.value = new ArrayList<RegexAstPart>(); ((List<RegexAstPart>)tmLeft.value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); }
 				break;
-			case 21:  // charset ::= setsymbol
+			case 21:  // charset : setsymbol
 				{ tmLeft.value = new ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(((List<RegexAstPart>)tmLeft.value), ((RegexAstPart)tmStack[tmHead].value), reporter); }
 				break;
-			case 22:  // charset ::= charset setsymbol
+			case 22:  // charset : charset setsymbol
 				{ RegexUtil.addSetSymbol(((List<RegexAstPart>)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value), reporter); }
 				break;
-			case 23:  // charset ::= charset '-' %prec char
+			case 23:  // charset : charset '-' %prec char
 				{ ((List<RegexAstPart>)tmStack[tmHead - 1].value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); }
 				break;
-			case 24:  // charset ::= charset '-' char
+			case 24:  // charset : charset '-' char
 				{ RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); }
 				break;
-			case 25:  // charset ::= charset '-' escaped
+			case 25:  // charset : charset '-' escaped
 				{ RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); }
 				break;
-			case 27:  // parts ::= parts part
+			case 27:  // parts : parts part
 				{ tmLeft.value = RegexUtil.createSequence(((RegexAstPart)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value)); }
 				break;
 		}

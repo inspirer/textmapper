@@ -102,7 +102,7 @@ public class SetTest {
 		String expectedValue = null;
 		while ((line = bufferedReader.readLine()) != null) {
 			if (expectedValue != null) {
-				assertFalse("bad line: " + line, line.matches("^\\w+ ::="));
+				assertFalse("bad line: " + line, line.matches("^\\w+ :"));
 				result.put(line.substring(0, line.indexOf(" ")), expectedValue);
 				expectedValue = null;
 				continue;

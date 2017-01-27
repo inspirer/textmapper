@@ -9,24 +9,24 @@ b:		/ab/
 
 :: parser
 
-input ::=
+input :
 	list ;
 
-list ::=
+list :
 	item
 	| list item 
 ;
 
-item ::=
+item :
 	'(' listopt ')'
 	| a
 	| b {  ${for a in b}..!..$$  }
 	| item3
 ;
 
-item3 ::=
+item3 :
 	subitem
 ;
 
-subitem ::=
+subitem :
 	a | b | '(' ')' ;

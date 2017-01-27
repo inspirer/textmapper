@@ -45,7 +45,7 @@ public class EnterAfterUnmatchedNonTermStartHandler extends EnterHandlerDelegate
 		Document document = editor.getDocument();
 		CharSequence text = document.getCharsSequence();
 		int caretOffset = caretOffsetRef.get();
-		if (caretOffset < 3 || !("::=".equals(text.subSequence(caretOffset - 3, caretOffset).toString()))) {
+		if (caretOffset < 3 || !(":".equals(text.subSequence(caretOffset - 1, caretOffset).toString()))) {
 			return Result.Continue;
 		}
 
@@ -72,7 +72,7 @@ public class EnterAfterUnmatchedNonTermStartHandler extends EnterHandlerDelegate
 
 		for (; !iterator.atEnd(); iterator.advance()) {
 			IElementType tokenType = iterator.getTokenType();
-			if (tokenType == TMTokenTypes.OP_CCEQ || tokenType == TMTokenTypes.OP_PERCENT) {
+			if (tokenType == TMTokenTypes.OP_COLON || tokenType == TMTokenTypes.OP_PERCENT) {
 				return true;
 			}
 			if (tokenType == TMTokenTypes.OP_SEMICOLON) {

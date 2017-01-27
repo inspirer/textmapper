@@ -15,15 +15,15 @@ var parseTests = []struct {
 	{tm.Comment, []string{
 		rule(` «# abc»
 		  «# abc2»
-		  a ::= abc ;    «# 8»
+		  a : abc ;    «# 8»
 		  «# abc2»`),
 	}},
 	{tm.MultilineComment, []string{
-		rule(`a void ::= «/* te ** / st */» ;`),
-		rule(`«/* abc */» a::=b;`),
+		rule(`a void : «/* te ** / st */» ;`),
+		rule(`«/* abc */» a:b;`),
 	}},
 	{tm.InvalidToken, []string{
-		rule("a ::= «'»\n   ;"),
+		rule("a : «'»\n   ;"),
 	}},
 
 	// TODO add tests

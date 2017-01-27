@@ -20,20 +20,20 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaRuleAction extends TmaNode {
 
 	private final TmaIdentifier action;
-	private final String parameter;
+	private final TmaIdentifier kind;
 
-	public TmaRuleAction(TmaIdentifier action, String parameter, TextSource source, int line, int offset, int endoffset) {
+	public TmaRuleAction(TmaIdentifier action, TmaIdentifier kind, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.action = action;
-		this.parameter = parameter;
+		this.kind = kind;
 	}
 
 	public TmaIdentifier getAction() {
 		return action;
 	}
 
-	public String getParameter() {
-		return parameter;
+	public TmaIdentifier getKind() {
+		return kind;
 	}
 
 	@Override
@@ -43,6 +43,9 @@ public class TmaRuleAction extends TmaNode {
 		}
 		if (action != null) {
 			action.accept(v);
+		}
+		if (kind != null) {
+			kind.accept(v);
 		}
 	}
 }

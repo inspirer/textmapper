@@ -184,19 +184,19 @@ code_lessless: /<{splice}</ (space)
 #
 #	Epilogue
 
-input ::=
+input :
 	  prologue_declaration*
 	  '%%'
 	  grammar_part+
 ;
 
-prologue_declaration ::=
+prologue_declaration :
 	  grammar_declaration
 	| prologue_directive
 	| '%{...%}'
 ;
 
-prologue_directive ::=
+prologue_directive :
 	  '%<flag>'
 	| '%define' variable valueopt
 	| '%defines'
@@ -221,7 +221,7 @@ prologue_directive ::=
 	| ';'
 ;
 
-grammar_declaration ::=
+grammar_declaration :
 	  prec_declaration
 	| symbol_declaration
 	| code_props_type '{...}' symbol_or_tag+
@@ -233,65 +233,65 @@ grammar_declaration ::=
 	| '%union' ID? '{...}'
 ;
 
-code_props_type ::=
+code_props_type :
 	  '%destructor'
 	| '%printer'
 ;
 
-symbol_declaration ::=
+symbol_declaration :
 	  '%nterm' symbol_def+
 	| '%token' symbol_def+
 	| '%type' TAG symbol+
 ;
 
-prec_declaration ::=
+prec_declaration :
 	  prec_directive tag_op symbol_prec+ ;
 
-prec_directive ::=
+prec_directive :
 	  '%left'
 	| '%right'
 	| '%nonassoc'
 	| '%precedence'
 ;
 
-tag_op ::=
+tag_op :
 	  TAG? ;
 
-symbol_prec ::=
+symbol_prec :
 	  symbol INT? ;
 
-symbol_or_tag ::=
+symbol_or_tag :
 	  symbol
 	| tag_nt
 ;
 
-tag_nt ::=
+tag_nt :
 	  TAG
 	| '<*>'
 	| '<>'
 ;
 
-symbol_def ::=
+symbol_def :
 	  TAG
 	| ID INT? STRING?
 	| CHAR INT? STRING?
 ;
 
-grammar_part ::=
+grammar_part :
 	  nonterm_rules
 	| grammar_declaration ';'
 ;
 
-nonterm_rules ::=
+nonterm_rules :
 	  ID_COLON named_ref_op rules ;
 
-rules ::=
+rules :
 	  rhsPart*
 	| rules '|' rhsPart*
 	| rules ';'
 ;
 
-rhsPart ::=
+rhsPart :
 	  symbol named_ref_op
 	| '{...}' named_ref_op
 	| '%?{...}'
@@ -301,20 +301,20 @@ rhsPart ::=
 	| '%merge' TAG
 ;
 
-named_ref_op ::=
+named_ref_op :
 	  ('[' ID ']')?
 ;
 
-variable ::=
+variable :
 	  ID | STRING ;
 
-value ::=
+value :
 	  ID
 	| STRING
 	| '{...}'
 ;
 
-symbol ::=
+symbol :
 	  ID
 	| CHAR
 	| STRING

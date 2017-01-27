@@ -233,7 +233,7 @@ class Nonterm : GrammarPart {
 }
 
 nonterm  : Nonterm ::=
-	{annotations}? name=identifier params=nonterm_params? type=nonterm_type? '::=' {rules} ';'
+	{annotations}? name=identifier params=nonterm_params? type=nonterm_type? ':' {rules} ';'
 ;
 
 interface NontermType {
@@ -247,7 +247,7 @@ class NontermTypeHint : NontermType {
 	boolean inline;
 	KindKind kind;
 	Identifier name;
-	list<Symref> implements;
+	list<Symref> implementsClause;
 	enum KindKind {
 		LCLASS,
 		LVOID,
@@ -257,14 +257,14 @@ class NontermTypeHint : NontermType {
 
 nonterm_type  : NontermType ::=
 	this=new.NontermTypeAST: Lreturns reference=symref_noargs
-  | this=new.NontermTypeHint: inline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implements=implementsopt
-  | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt implements=implementsopt
+  | this=new.NontermTypeHint: inline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implementsClause=implements_clauseopt
+  | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt implementsClause=implements_clauseopt
   | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
   | this=rawType
 ;
 
-implements  : list<Symref> ::=
-	':' this=references_cs
+implements_clause  : list<Symref> ::=
+	Limplements this=references_cs
 ;
 
 enum Assoc {
@@ -405,11 +405,11 @@ rhsSuffix  : RhsSuffix ::=
 
 class RuleAction {
 	Identifier action;
-	String parameter;
+	Identifier kind;
 }
 
 ruleAction  : RuleAction ::=
-	'{~' action=identifier parameter=scon? '}'
+	'->' action=identifier ('/' kind=identifier)?
 ;
 
 rhsParts  : list<RhsPart>
@@ -850,8 +850,8 @@ identifieropt  : Identifier ::=
 	this=identifier?
 ;
 
-implementsopt  : list<Symref> ::=
-	this=implements?
+implements_clauseopt  : list<Symref> ::=
+	this=implements_clause?
 ;
 
 rhsSuffixopt  : RhsSuffix ::=

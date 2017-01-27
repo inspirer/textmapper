@@ -32,7 +32,7 @@
 			<option name="OTHER" value="true"/>
 		</context>
 	</template>
-	<template name="rule" value="$NONTERM$ ::=&#10;    $END$&#10;;"
+	<template name="rule" value="$NONTERM$ :&#10;    $END$&#10;;"
 			  resource-bundle="org.textmapper.idea.TextmapperBundle" key="livetemplate.rule.description"
 			  toReformat="true" toShortenFQNames="true">
 		<variable name="NONTERM" expression="&quot;nonterm&quot;" defaultValue="nonterm" alwaysStopAt="true"/>

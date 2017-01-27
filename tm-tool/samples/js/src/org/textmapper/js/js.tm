@@ -180,7 +180,7 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
                            'in' | 'do' | 'return' | 'case' | 'throw' | 'else');
 
 # TODO set of keywords
-IdentifierName ::=
+IdentifierName :
 	  Identifier
 
 	# Keywords
@@ -200,7 +200,7 @@ IdentifierName ::=
 	| 'null' | 'true' | 'false'
 ;
 
-Literal ::=
+Literal :
 	  'null'
 	| 'true'
 	| 'false'
@@ -211,7 +211,7 @@ Literal ::=
 
 %explicit flag ExprStart = false;
 
-PrimaryExpression<ExprStart> ::=
+PrimaryExpression<ExprStart> :
 	  'this'
 	| Identifier
 	| Literal
@@ -220,31 +220,31 @@ PrimaryExpression<ExprStart> ::=
 	| '(' Expression ')'
 ;
 
-ArrayLiteral ::=
+ArrayLiteral :
 	  '[' (AssignmentExpression? separator ',')+ ']'
 ;
 
-ObjectLiteral ::=
+ObjectLiteral :
 	  '{' ((PropertyAssignment separator ',')+ ','?)? '}'
 ;
 
 # TODO use 'get' and 'set'
-PropertyAssignment ::=
+PropertyAssignment :
 	  PropertyName ':' AssignmentExpression
 	| Identifier PropertyName '(' ')' '{' FunctionBody '}'
 	| Identifier PropertyName '(' PropertySetParameterList ')' '{' FunctionBody '}'
 ;
 
-PropertyName ::=
+PropertyName :
 	  IdentifierName
 	| StringLiteral
 	| NumericLiteral
 ;
 
-PropertySetParameterList ::=
+PropertySetParameterList :
 	  Identifier ;
 
-MemberExpression<ExprStart> ::=
+MemberExpression<ExprStart> :
 	  PrimaryExpression<ExprStart>
 	| [!ExprStart] FunctionExpression
 	| MemberExpression<ExprStart> '[' Expression ']'
@@ -252,34 +252,34 @@ MemberExpression<ExprStart> ::=
 	| 'new' MemberExpression Arguments
 ;
 
-NewExpression<ExprStart> ::=
+NewExpression<ExprStart> :
 	  MemberExpression<ExprStart>
 	| 'new' NewExpression
 ;
 
-CallExpression<ExprStart> ::=
+CallExpression<ExprStart> :
 	  MemberExpression<ExprStart> Arguments
 	| CallExpression<ExprStart> Arguments
 	| CallExpression<ExprStart> '[' Expression ']'
 	| CallExpression<ExprStart> '.' IdentifierName
 ;
 
-Arguments ::=
+Arguments :
 	  '(' (AssignmentExpression separator ',')* ')' ;
 
-LeftHandSideExpression<ExprStart> ::=
+LeftHandSideExpression<ExprStart> :
 	  NewExpression<ExprStart>
 	| CallExpression<ExprStart>
 ;
 
 # Note: no LineTerminator after LeftHandSideExpression
-PostfixExpression<ExprStart> ::=
+PostfixExpression<ExprStart> :
 	  LeftHandSideExpression<ExprStart>
 	| LeftHandSideExpression<ExprStart> '++'
 	| LeftHandSideExpression<ExprStart> '--'
 ;
 
-UnaryExpression<ExprStart> ::=
+UnaryExpression<ExprStart> :
 	  PostfixExpression<ExprStart>
 	| 'delete' UnaryExpression
 	| 'void' UnaryExpression
@@ -292,20 +292,20 @@ UnaryExpression<ExprStart> ::=
 	| '!' UnaryExpression
 ;
 
-MultiplicativeExpression<ExprStart> ::=
+MultiplicativeExpression<ExprStart> :
 	  UnaryExpression<ExprStart>
 	| MultiplicativeExpression<ExprStart> '*' UnaryExpression
 	| MultiplicativeExpression<ExprStart> '/' UnaryExpression
 	| MultiplicativeExpression<ExprStart> '%' UnaryExpression
 ;
 
-AdditiveExpression<ExprStart> ::=
+AdditiveExpression<ExprStart> :
 	  MultiplicativeExpression<ExprStart>
 	| AdditiveExpression<ExprStart> '+' MultiplicativeExpression
 	| AdditiveExpression<ExprStart> '-' MultiplicativeExpression
 ;
 
-ShiftExpression<ExprStart> ::=
+ShiftExpression<ExprStart> :
 	  AdditiveExpression<ExprStart>
 	| ShiftExpression<ExprStart> '<<' AdditiveExpression
 	| ShiftExpression<ExprStart> '>>' AdditiveExpression
@@ -314,7 +314,7 @@ ShiftExpression<ExprStart> ::=
 
 %flag NoIn = false;
 
-RelationalExpression<NoIn, ExprStart> ::=
+RelationalExpression<NoIn, ExprStart> :
 	  ShiftExpression<ExprStart>
 	| RelationalExpression<ExprStart> '<' ShiftExpression
 	| RelationalExpression<ExprStart> '>' ShiftExpression
@@ -324,7 +324,7 @@ RelationalExpression<NoIn, ExprStart> ::=
 	| [!NoIn] RelationalExpression<ExprStart> 'in' ShiftExpression
 ;
 
-EqualityExpression<NoIn, ExprStart> ::=
+EqualityExpression<NoIn, ExprStart> :
 	  RelationalExpression<ExprStart>
 	| EqualityExpression<ExprStart> '==' RelationalExpression<NoIn>
 	| EqualityExpression<ExprStart> '!=' RelationalExpression<NoIn>
@@ -332,42 +332,42 @@ EqualityExpression<NoIn, ExprStart> ::=
 	| EqualityExpression<ExprStart> '!==' RelationalExpression<NoIn>
 ;
 
-BitwiseANDExpression<NoIn, ExprStart> ::=
+BitwiseANDExpression<NoIn, ExprStart> :
 	  EqualityExpression<ExprStart>
 	| BitwiseANDExpression<ExprStart> '&' EqualityExpression<NoIn>
 ;
 
-BitwiseXORExpression<NoIn, ExprStart> ::=
+BitwiseXORExpression<NoIn, ExprStart> :
 	  BitwiseANDExpression<ExprStart>
 	| BitwiseXORExpression<ExprStart> '^' BitwiseANDExpression<NoIn>
 ;
 
-BitwiseORExpression<NoIn, ExprStart> ::=
+BitwiseORExpression<NoIn, ExprStart> :
 	  BitwiseXORExpression<ExprStart>
 	| BitwiseORExpression<ExprStart> '|' BitwiseXORExpression<NoIn>
 ;
 
-LogicalANDExpression<NoIn, ExprStart> ::=
+LogicalANDExpression<NoIn, ExprStart> :
 	  BitwiseORExpression<ExprStart>
 	| LogicalANDExpression<ExprStart> '&&' BitwiseORExpression<NoIn>
 ;
 
-LogicalORExpression<NoIn, ExprStart> ::=
+LogicalORExpression<NoIn, ExprStart> :
 	  LogicalANDExpression<ExprStart>
 	| LogicalORExpression<ExprStart> '||' LogicalANDExpression<NoIn>
 ;
 
-ConditionalExpression<NoIn, ExprStart> ::=
+ConditionalExpression<NoIn, ExprStart> :
 	  LogicalORExpression<ExprStart>
 	| LogicalORExpression<ExprStart> '?' AssignmentExpression<NoIn> ':' AssignmentExpression<NoIn>
 ;
 
-AssignmentExpression<NoIn, ExprStart> ::=
+AssignmentExpression<NoIn, ExprStart> :
 	  ConditionalExpression<ExprStart>
 	| LeftHandSideExpression<ExprStart> AssignmentOperator AssignmentExpression<NoIn>
 ;
 
-AssignmentOperator ::=
+AssignmentOperator :
 	  '='
 	| '*='
 	| '/='
@@ -382,12 +382,12 @@ AssignmentOperator ::=
 	| '|='
 ;
 
-Expression<NoIn, ExprStart> ::=
+Expression<NoIn, ExprStart> :
 	  AssignmentExpression<ExprStart>
 	| Expression<ExprStart> ',' AssignmentExpression<NoIn>
 ;
 
-Statement ::=
+Statement :
 	  Block
 	| VariableStatement
 	| EmptyStatement
@@ -405,37 +405,37 @@ Statement ::=
 	| DebuggerStatement
 ;
 
-Block ::=
+Block :
 	  '{' Statement* '}' ;
 
-VariableStatement ::=
+VariableStatement :
 	  'var' VariableDeclarationList ';' ;
 
-VariableDeclarationList<NoIn> ::=
+VariableDeclarationList<NoIn> :
 	  VariableDeclaration
 	| VariableDeclarationList ',' VariableDeclaration
 ;
 
-VariableDeclaration<NoIn> ::=
+VariableDeclaration<NoIn> :
 	  Identifier Initialiseropt ;
 
-Initialiser<NoIn> ::=
+Initialiser<NoIn> :
 	  '=' AssignmentExpression<NoIn> ;
 
-EmptyStatement ::=
+EmptyStatement :
 	  ';' ;
 
-ExpressionStatement ::=
+ExpressionStatement :
 	Expression<+ExprStart> ';' ;
 
 %right 'else';
 
-IfStatement ::=
+IfStatement :
 	  'if' '(' Expression ')' Statement 'else' Statement
 	| 'if' '(' Expression ')' Statement %prec 'else'
 ;
 
-IterationStatement ::=
+IterationStatement :
 	  'do' Statement 'while' '(' Expression ')' ';'
 	| 'while' '(' Expression ')' Statement
 	| 'for' '(' Expressionopt<+NoIn> ';' Expressionopt ';' Expressionopt ')' Statement
@@ -444,71 +444,71 @@ IterationStatement ::=
 	| 'for' '(' 'var' VariableDeclaration<+NoIn> 'in' Expression ')' Statement
 ;
 
-ContinueStatement ::=
+ContinueStatement :
 # Note: no LineTerminator after 'continue'
 	'continue' Identifier? ';' ;
 
-BreakStatement ::=
+BreakStatement :
 # Note: no LineTerminator after 'break'
 	'break' Identifier? ';' ;
 
-ReturnStatement ::=
+ReturnStatement :
 # Note: no LineTerminator after 'return'
     'return' Expressionopt ';' ;
 
-WithStatement ::=
+WithStatement :
 	  'with' '(' Expression ')' Statement ;
 
-SwitchStatement ::=
+SwitchStatement :
 	  'switch' '(' Expression ')' CaseBlock ;
 
-CaseBlock ::=
+CaseBlock :
 	  '{' CaseClause* (DefaultClause CaseClause*)? '}' ;
 
-CaseClause ::=
+CaseClause :
 	  'case' Expression ':' Statement* ;
 
-DefaultClause ::=
+DefaultClause :
 	  'default' ':' Statement* ;
 
-LabelledStatement ::=
+LabelledStatement :
 	  Identifier ':' Statement ;
 
-ThrowStatement ::=
+ThrowStatement :
 # Note: no LineTerminator after 'throw'
 	'throw' Expression ';'
 ;
 
-TryStatement ::=
+TryStatement :
 	  'try' Block (Catch | Finally | Catch Finally) ;
 
-Catch ::=
+Catch :
 	  'catch' '(' Identifier ')' Block ;
 
-Finally ::=
+Finally :
 	  'finally' Block ;
 
-DebuggerStatement ::=
+DebuggerStatement :
 	  'debugger' ';' ;
 
-FunctionDeclaration ::=
+FunctionDeclaration :
 	  'function' Identifier '(' FormalParameterListopt ')' '{' FunctionBody '}' ;
 
-FunctionExpression ::=
+FunctionExpression :
 	  'function' Identifier? '(' FormalParameterListopt ')' '{' FunctionBody '}' ;
 
-FormalParameterList ::=
+FormalParameterList :
 	  Identifier
 	| FormalParameterList ',' Identifier
 ;
 
-FunctionBody ::=
+FunctionBody :
 	  SourceElement* ;
 
-Program ::=
+Program :
 	  SourceElement* ;
 
-SourceElement ::=
+SourceElement :
 	  Statement
 	| FunctionDeclaration
 ;

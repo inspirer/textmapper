@@ -66,27 +66,27 @@ public class SoftTermsTest extends LapgTestCase {
 				"",
 				"syntax_softconflicts_ss,31: input: Lclass identifier '('\n" +
 						"shift soft/class conflict (next: identifier, Lclass)\n" +
-						"    member ::= identifier '(' ')'\n" +
-						"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-						"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+						"    member : identifier '(' ')'\n" +
+						"    classdef : Lclass identifier '(' memberslist ')'\n" +
+						"    classdef : Lclass identifier Lextends identifier '(' memberslist ')'\n" +
 						"\n" +
 						"syntax_softconflicts_ss,31: input: Lclass identifier '(' memberslist\n" +
 						"shift soft/class conflict (next: identifier, Lclass)\n" +
-						"    member ::= identifier '(' ')'\n" +
-						"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-						"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+						"    member : identifier '(' ')'\n" +
+						"    classdef : Lclass identifier '(' memberslist ')'\n" +
+						"    classdef : Lclass identifier Lextends identifier '(' memberslist ')'\n" +
 						"\n" +
 						"syntax_softconflicts_ss,31: input: Lclass identifier Lextends identifier '('\n" +
 						"shift soft/class conflict (next: identifier, Lclass)\n" +
-						"    member ::= identifier '(' ')'\n" +
-						"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-						"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+						"    member : identifier '(' ')'\n" +
+						"    classdef : Lclass identifier '(' memberslist ')'\n" +
+						"    classdef : Lclass identifier Lextends identifier '(' memberslist ')'\n" +
 						"\n" +
 						"syntax_softconflicts_ss,31: input: Lclass identifier Lextends identifier '(' memberslist\n" +
 						"shift soft/class conflict (next: identifier, Lclass)\n" +
-						"    member ::= identifier '(' ')'\n" +
-						"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-						"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+						"    member : identifier '(' ')'\n" +
+						"    classdef : Lclass identifier '(' memberslist ')'\n" +
+						"    classdef : Lclass identifier Lextends identifier '(' memberslist ')'\n" +
 						"\n");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
 				g.getGrammar().getPatterns(), er);
@@ -105,7 +105,7 @@ public class SoftTermsTest extends LapgTestCase {
 				"",
 				"syntax_softconflicts_sr,35: input: Lclass identifier '(' identifier\n" +
 						"soft shift/reduce conflict (next: Lof)\n" +
-						"    typename ::= identifier\n" +
+						"    typename : identifier\n" +
 						"\n" +
 						"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
@@ -125,8 +125,8 @@ public class SoftTermsTest extends LapgTestCase {
 				"",
 				"syntax_softconflicts_rr,35: input: Lclass identifier '(' identifier\n" +
 						"soft reduce/reduce conflict (next: Lof)\n" +
-						"    varname ::= identifier\n" +
-						"    typename ::= identifier\n" +
+						"    varname : identifier\n" +
+						"    typename : identifier\n" +
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),

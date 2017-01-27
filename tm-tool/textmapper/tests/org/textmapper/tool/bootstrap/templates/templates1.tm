@@ -21,18 +21,18 @@ module = "templates1"
 %explicit flag B = false;
 %explicit flag C = false;
 
-input ::=
+input :
 	  DefaultP DefaultP<+C> DefaultP<+A,+C> DefaultP<+A,+B,+C> IfThenElse<~C> IfThenElse<+C>
 ;
 
 # Test 1: symbol propagation.
-DefaultP<A,B,C> ::=
+DefaultP<A,B,C> :
 	  Terms<A,B,C>
 	| [A] 'd' Terms<B>
 ;
 
 # Test 2: rule conditions
-Terms<A,B,C> ::=
+Terms<A,B,C> :
 	  [A && B && C] 'a' 'b' 'c'
 	| [A && !B && C] 'a' 'c'
 	| [A && !B && !C] 'a'
@@ -48,12 +48,12 @@ Terms<A,B,C> ::=
 
 %right 'd';
 
-Condition<C> ::=
+Condition<C> :
 	  [C] 'a'
 	| 'b'
 ;
 
-IfThenElse<C> ::=
+IfThenElse<C> :
 	  '(' Condition<C> ')' 'c' 'd' 'c'
 	| '(' Condition<C> ')' 'c' %prec 'd'
 ;

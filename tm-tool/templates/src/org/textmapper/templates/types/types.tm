@@ -67,57 +67,57 @@ Lchoice:	 /choice/
 
 :: parser
 
-input class ::=
+input class :
 	declarations ;
 
-declarations ::=
+declarations :
 	declarations type_declaration | type_declaration ;
 
-type_declaration ::=
+type_declaration :
 	Lclass name=identifier super=extends_clauseopt '{' members=member_declaration* '}'
 ;
 
-extends_clause ::=
+extends_clause :
 	Lextends @pass name_list ;
 
 ##### DECLARATIONS
 
-member_declaration ::=
+member_declaration :
 	feature_declaration
   | method_declaration
 ;
 
-feature_declaration ::=
+feature_declaration :
 	type_ex name=identifier modifiersopt defaultvalopt ';' ;
 
-method_declaration ::=
+method_declaration :
 	returnType=type_ex name=identifier '(' parametersopt ')' ';' ;
 
-parameters ::=
+parameters :
 	type_ex | parameters ',' type_ex ;
 
-defaultval ::=
+defaultval :
 	'=' @pass expression ;
 
-modifiers ::=
+modifiers :
 	'[' @pass (constraint separator ';')+ ']' ;
 
-constraint ::=
+constraint :
 	string_constraint | (multiplicity separator ',')+ ;
 
-string_constraint ::=
+string_constraint :
 	kind=Lset ':' strings
   | kind=Lchoice ':' strings
   | identifier
 ;
 
-strings ::=
+strings :
 	strings ',' string | string ;
 	
-string ::=
+string :
 	identifier | scon ;	
 
-multiplicity ::=
+multiplicity :
 	lo=icon
   | lo=icon '..' hasNoUpperBound='*'
   | lo=icon '..' hi=icon
@@ -126,12 +126,12 @@ multiplicity ::=
 
 ##### TYPES
 
-type_ex ::=
+type_ex :
 	type
   |	type '[' (multiplicity separator ',')+ ']'
 ;
 
-type ::=
+type :
 	kind=Lint
   | kind=Lstring
   | kind=Lbool
@@ -142,34 +142,34 @@ type ::=
 
 ##### EXPRESSIONS
 
-expression ::=
+expression :
 	structural_expression | literal_expression ;
 
-literal_expression ::=
+literal_expression :
 	  scon
 	| icon
 	| bcon
 ;
 
-structural_expression ::=
+structural_expression :
 	  name '(' mapEntries=(identifier map_separator expression separator ',')* ')'
 	| '[' expression_listopt ']'
 ;
 
-expression_list ::=
+expression_list :
 	expression
 	| expression_list ',' expression
 ;
 
-map_separator ::=
+map_separator :
 	':' | '=' | '=>' ;
 
-name ::=
+name :
 	  identifier
 	| name '.' identifier
 ;
 
-name_list ::=
+name_list :
 	  name
 	| name_list ',' name
 ;

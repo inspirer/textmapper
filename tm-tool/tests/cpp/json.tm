@@ -35,10 +35,10 @@ JSONNumber: /-?(0|[1-9][0-9]*){fraction}?{exp}?/
 
 %input JSONText;
 
-JSONText ::=
+JSONText :
 	  JSONValue ;
 
-JSONValue ::=
+JSONValue :
 	  'null'
 	| 'true'
 	| 'false'
@@ -48,21 +48,21 @@ JSONValue ::=
 	| JSONNumber
 ;
 
-JSONObject ::=
+JSONObject :
 	  '{' JSONMemberList? '}' ;
 
-JSONMember ::=
+JSONMember :
 	  JSONString ':' JSONValue ;
 
-JSONMemberList ::=
+JSONMemberList :
 	  JSONMember
 	| JSONMemberList ',' JSONMember
 ;
 
-JSONArray ::=
+JSONArray :
 	  '[' JSONElementList? ']' ;
 
-JSONElementList ::=
+JSONElementList :
 	  JSONValue
 	| JSONElementList ',' JSONValue
 ;

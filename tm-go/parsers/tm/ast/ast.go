@@ -1034,9 +1034,9 @@ func (n RuleAction) Action() Identifier {
 	return Identifier{n.Child(filter.Identifier)}
 }
 
-func (n RuleAction) Parameter() *StringLiteral {
-	if child := n.Child(filter.StringLiteral); child != nil {
-		return &StringLiteral{child}
+func (n RuleAction) Kind() *Identifier {
+	if child := n.Child(filter.Identifier, filter.Identifier); child != nil {
+		return &Identifier{child}
 	}
 	return nil
 }

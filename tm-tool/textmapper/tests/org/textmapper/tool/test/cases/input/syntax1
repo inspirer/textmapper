@@ -8,15 +8,15 @@ _skip:      /[\t\r\n ]+/    { continue; }
 
 :: parser
 
-input ::=
+input :
 	list ;
 	
-list ::=
+list :
 	list_item
 	| list list_item
 ;
 
-list_item ::=
+list_item :
 	identifier
 	| Licon
 ;

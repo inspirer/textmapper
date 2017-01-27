@@ -29,16 +29,16 @@ endpositions = "offset"
 
 :: parser
 
-input ::=
+input :
 	  abcdef+ test_3
 ;
 
-abcdef ::=
+abcdef :
 	  set(first pair) set(pair) set('h') # set(follow 'a')
     test2
 ;
 
-pair ::=
+pair :
 	  'a' 'b'
 	| 'c' 'd'
 	| 'e' 'f'
@@ -46,16 +46,16 @@ pair ::=
 
 # test 2
 
-test2 ::=
+test2 :
 	  set(first recursive) set(recursive)
 ;
 
-recursive ::=
+recursive :
 	  'b' 'a'
 	| helper
 ;
 
-helper ::=
+helper :
 	  'i' recursive 'h' 'i'
 ;
 
@@ -63,12 +63,12 @@ helper ::=
 
 %generate precede4 = set(precede '4');
 
-test_3 ::=
+test_3 :
 	  '3' test_3_helper '4' '5'
 ;
 
-test_3_helper ::=
+test_3_helper :
 	('b' 'c'? maybeD)?
 ;
 
-maybeD ::= 'd'? ;
+maybeD : 'd'? ;

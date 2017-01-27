@@ -201,9 +201,9 @@ class TemplateInstantiator {
 			int node;
 			if (param != null) {
 				// Note: currently, we overestimate here to keep the logic simple. Consider:
-				//   List<X> ::= '(' ( X separator ',')+ ')';
-				//   AA ::= List<A> ;
-				//   BB ::= List<B> ;
+				//   List<X> : '(' ( X separator ',')+ ')';
+				//   AA : List<A> ;
+				//   BB : List<B> ;
 				// Both AA & BB will depend on a union of A & B.
 				Set<Object> values = paramValues.get(param);
 				for (Object o : values) {

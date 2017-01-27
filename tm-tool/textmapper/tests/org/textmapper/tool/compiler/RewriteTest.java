@@ -80,7 +80,7 @@ public class RewriteTest {
 		String expectedValue = null;
 		while ((line = bufferedReader.readLine()) != null) {
 			if (expectedValue != null) {
-				assertTrue("bad line: " + line, line.matches("\\w+ ::="));
+				assertTrue("bad line: " + line, line.matches("\\w+ :"));
 				result.put(line.substring(0, line.indexOf(" ")), expectedValue);
 				expectedValue = null;
 				continue;

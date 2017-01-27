@@ -42,11 +42,11 @@ eoi:  /{eoi}/
 
 :: parser
 
-input ::=
+input :
 	  expr
 ;
 
-expr ::=
+expr :
 	  id
 	| '(' (id ':' expr separator ',')* ';' ')'?
 ;

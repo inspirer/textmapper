@@ -148,8 +148,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_PERCENT;
 			case Tokens.Dollar:
 				return OP_DOLLAR;
-			case Tokens.ColonColonAssign:
-				return OP_CCEQ;
 			case Tokens.Or:
 				return OP_OR;
 			case Tokens.OrOr:
@@ -182,8 +180,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_RPAREN;
 			case Tokens.Lbrace:
 				return OP_LCURLY;
-			case Tokens.LbraceTilde:
-				return OP_LCURLYTILDE;
 			case Tokens.Rbrace:
 				return OP_RCURLY;
 			case Tokens.Lt:
@@ -228,6 +224,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return KW_IMPORT;
 			case Tokens.Lset:
 				return KW_SET;
+			case Tokens.Limplements:
+				return KW_IMPLEMENTS;
 
 			// soft keywords
 			case Tokens.Lbrackets:

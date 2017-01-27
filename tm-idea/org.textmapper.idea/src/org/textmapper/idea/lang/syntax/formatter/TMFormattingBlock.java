@@ -143,7 +143,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		@Override
 		protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
 			if (child.getElementType() == TextmapperElementTypes.RULE) {
-				return new RuleBlock(child, null, settings, spacingBuilder, lastCodeBlock, prev == null || prev.getElementType() == TMTokenTypes.OP_CCEQ);
+				return new RuleBlock(child, null, settings, spacingBuilder, lastCodeBlock, prev == null || prev.getElementType() == TMTokenTypes.OP_COLON);
 			}
 			return super.buildChild(child, prev, childAlignment);
 		}
@@ -153,7 +153,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		public ChildAttributes getChildAttributes(int newChildIndex) {
 			if (isAfter(newChildIndex, new IElementType[]{TextmapperElementTypes.RAW_TYPE, TextmapperElementTypes.IDENTIFIER})) {
 				return new ChildAttributes(Indent.getNoneIndent(), null);
-			} else if (isAfter(newChildIndex, new IElementType[]{TMTokenTypes.OP_CCEQ})) {
+			} else if (isAfter(newChildIndex, new IElementType[]{TMTokenTypes.OP_COLON})) {
 				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(TMFileType.INSTANCE) + 2, false, true), null);
 			} else {
 				if (getSubBlocks().size() == newChildIndex) {
