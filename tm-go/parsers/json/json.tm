@@ -52,40 +52,40 @@ invalid_token:
 %flag A;
 
 JSONText :
-	  JSONValue<+A> ;
+    JSONValue<+A> ;
 
 JSONValue<A> {Value} :
-	  'null'
-	| 'true'
-	| 'false'
-	| [A] 'A'
-	| [!A] 'B'
-	| JSONObject
-	| EmptyObject
-	| JSONArray
-	| JSONString
-	| JSONNumber
+    'null'
+  | 'true'
+  | 'false'
+  | [A] 'A'
+  | [!A] 'B'
+  | JSONObject
+  | EmptyObject
+  | JSONArray
+  | JSONString
+  | JSONNumber
 ;
 
 EmptyObject : (?= EmptyObject) '{' '}' ;
 
 JSONObject :
-	  (?= !EmptyObject) '{' JSONMemberList? '}' ;
+    (?= !EmptyObject) '{' JSONMemberList? '}' ;
 
 JSONMember {*Field} :
-	  JSONString ':' JSONValue<~A> ;
+    JSONString ':' JSONValue<~A> ;
 
 @noast
 JSONMemberList :
-	  JSONMember
-	| JSONMemberList ',' JSONMember
+    JSONMember
+  | JSONMemberList ',' JSONMember
 ;
 
 JSONArray :
-	  '[' JSONElementListopt ']' ;
+    '[' JSONElementListopt ']' ;
 
 @noast
 JSONElementList :
-	  JSONValue<+A>
-	| JSONElementList ',' JSONValue<+A>
+    JSONValue<+A>
+  | JSONElementList ',' JSONValue<+A>
 ;

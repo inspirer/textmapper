@@ -530,6 +530,8 @@ public class TMLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 47:	// brackets (soft)
+			case 48:	// s (soft)
+			case 49:	// x (soft)
 			case 50:	// inline (soft)
 			case 51:	// prec (soft)
 			case 52:	// shift (soft)
