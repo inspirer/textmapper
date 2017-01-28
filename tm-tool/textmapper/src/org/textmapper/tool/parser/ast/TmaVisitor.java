@@ -101,10 +101,6 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaStateSelector n) {
-		return true;
-	}
-
 	protected boolean visit(TmaStateref n) {
 		return true;
 	}

@@ -18,15 +18,13 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.NamedElement;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class Namespace {
+public class Namespace<T extends NamedElement> {
 
 	Set<Name> knownNames = new HashSet<>();
-	Map<String, NamedElement> reservedIds = new HashMap<>();
+	Map<String, T> reservedIds = new HashMap<>();
+	List<T> allElements = new ArrayList<>();
 
 	NamedElement canInsert(Name name) {
 		String idPrefix = name.qualifier() != null ? qualifiedId(name.qualifier()) + "/" : "";
@@ -39,10 +37,15 @@ public class Namespace {
 		return null;
 	}
 
-	boolean insert(NamedElement element) {
+	List<T> getElements() {
+		return Collections.unmodifiableList(this.allElements);
+	}
+
+	boolean insert(T element) {
 		Name name = element.getName();
 		if (canInsert(name) != null) return false;
 		knownNames.add(name);
+		allElements.add(element);
 		String idPrefix = name.qualifier() != null ? qualifiedId(name.qualifier()) + "/" : "";
 		for (String id : name.uniqueIds()) {
 			reservedIds.put(idPrefix + id, element);
@@ -50,9 +53,9 @@ public class Namespace {
 		return true;
 	}
 
-	NamedElement resolve(String referenceText, Name context) {
+	T resolve(String referenceText, Name context) {
 		for (; context != null; context = context.qualifier()) {
-			NamedElement namedElement = reservedIds.get(qualifiedId(context) + "/" + referenceText);
+			T namedElement = reservedIds.get(qualifiedId(context) + "/" + referenceText);
 			if (namedElement != null) {
 				if (!namedElement.getName().isReference(referenceText)) {
 					return null;
@@ -60,17 +63,17 @@ public class Namespace {
 				return namedElement;
 			}
 		}
-		NamedElement namedElement = reservedIds.get(referenceText);
+		T namedElement = reservedIds.get(referenceText);
 		if (namedElement != null && namedElement.getName().isReference(referenceText)) {
 			return namedElement;
 		}
 		return null;
 	}
 
-	<T extends NamedElement> T resolve(String referenceText, Name context, Class<T> type) {
-		NamedElement result = resolve(referenceText, context);
+	<E extends T> E resolve(String referenceText, Name context, Class<E> type) {
+		T result = resolve(referenceText, context);
 		if (type.isInstance(result)) {
-			return (T) result;
+			return (E) result;
 		}
 		return null;
 	}

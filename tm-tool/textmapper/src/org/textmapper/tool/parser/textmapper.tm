@@ -199,7 +199,6 @@ lexer_parts :
 
 lexer_part :
     states_clause
-  | state_selector
   | named_pattern
   | lexeme
   | brackets_directive
@@ -238,9 +237,6 @@ states_clause returns lexer_part :
     '%' exclusive=Ls as false states=(lexer_state separator ',')+ ';'
   | '%' exclusive=Lx as true states=(lexer_state separator ',')+ ';'
 ;
-
-state_selector :
-    '[' states=(stateref separator ',')+ ']' ;
 
 stateref class :
     name=ID ;

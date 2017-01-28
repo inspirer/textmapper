@@ -48,8 +48,8 @@ public class TMResolver {
 	private final GrammarBuilder builder;
 	private final AstBuilder rawTypesBuilder;
 
-	private final Namespace namespace = new Namespace();
-	private final Namespace lexerStates = new Namespace();
+	private final Namespace<NamedElement> namespace = new Namespace<>();
+	private final Namespace<LexerState> lexerStates = new Namespace<>();
 	private final Map<String, RegexPart> namedPatternsMap = new HashMap<>();
 
 	public TMResolver(TMTree<TmaInput> tree, GrammarBuilder builder) {
@@ -68,6 +68,17 @@ public class TMResolver {
 
 	public LexerState getState(String name) {
 		return lexerStates.resolve(name, null, LexerState.class);
+	}
+
+	public List<LexerState> allStates() {
+		return lexerStates.getElements();
+	}
+
+	public List<LexerState> inclusiveStates() {
+		return lexerStates.getElements()
+				.stream()
+				.filter(s -> !TMDataUtil.isExclusive(s))
+				.collect(Collectors.toList());
 	}
 
 	public Symbol getSymbol(String name) {
@@ -94,19 +105,18 @@ public class TMResolver {
 		TmaIdentifier initialOrigin = null;
 		boolean initialExclusive = false;
 
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof TmaStatesClause) {
-				for (TmaLexerState state : ((TmaStatesClause) clause).getStates()) {
-					if (state.getName().getID().equals(INITIAL_STATE.text())) {
-						if (initialOrigin != null) {
-							error(state, "redeclaration of `initial', ignored");
-							continue;
-						}
-						initialOrigin = state.getName();
-						initialExclusive = ((TmaStatesClause) clause).isExclusive();
+		for (TmaStatesClause clause : getLexerParts(TmaStatesClause.class)) {
+			for (TmaLexerState state : clause.getStates()) {
+				if (state.getName().getID().equals(INITIAL_STATE.text())) {
+					if (initialOrigin != null) {
+						error(state, "redeclaration of `initial', ignored");
+						continue;
 					}
+					initialOrigin = state.getName();
+					initialExclusive = clause.isExclusive();
 				}
 			}
+
 		}
 
 		LexerState initial = builder.addState(INITIAL_STATE, initialOrigin);
@@ -115,55 +125,91 @@ public class TMResolver {
 			TMDataUtil.makeExclusive(initial);
 		}
 
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof TmaStatesClause) {
-				boolean exclusive = ((TmaStatesClause) clause).isExclusive();
-				for (TmaLexerState state : ((TmaStatesClause) clause).getStates()) {
-					Name name = name(state.getName().getID(), state.getName());
-					if (name == null || state.getName().getID().equals(INITIAL_STATE.text())) {
-						continue;
-					}
+		for (TmaStatesClause clause : getLexerParts(TmaStatesClause.class)) {
+			boolean exclusive = clause.isExclusive();
+			for (TmaLexerState state : clause.getStates()) {
+				Name name = name(state.getName().getID(), state.getName());
+				if (name == null || state.getName().getID().equals(INITIAL_STATE.text())) {
+					continue;
+				}
 
-					LexerState lexerState =
-							lexerStates.resolve(name.text(), null, LexerState.class);
-					if (lexerState == null) {
-						lexerState = builder.addState(name, state.getName());
-						lexerStates.insert(lexerState);
-						if (exclusive) {
-							TMDataUtil.makeExclusive(lexerState);
-						}
-					} else {
-						error(state, "redeclaration of `" + name.text() + "', ignored");
+				LexerState lexerState =
+						lexerStates.resolve(name.text(), null, LexerState.class);
+				if (lexerState == null) {
+					lexerState = builder.addState(name, state.getName());
+					lexerStates.insert(lexerState);
+					if (exclusive) {
+						TMDataUtil.makeExclusive(lexerState);
 					}
+				} else {
+					error(state, "redeclaration of `" + name.text() + "', ignored");
 				}
 			}
 		}
 	}
 
-	private void collectLexerSymbols() {
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof TmaLexeme) {
-				TmaLexeme lexeme = (TmaLexeme) clause;
-				create(lexeme.getName(), convertRawType(lexeme.getRawType(), lexeme), true);
+	<T extends ITmaLexerPart> Iterable<T> getLexerParts(Class<T> c) {
+		return () -> new Iterator<T>() {
+			Stack<Iterator<ITmaLexerPart>> stack = new Stack<>();
+			T next;
 
-			} else if (clause instanceof TmaNamedPattern) {
-				TmaNamedPattern astpattern = (TmaNamedPattern) clause;
-				Name name = name(astpattern.getName(), astpattern);
-				if (name == null) continue;
-				RegexPart regex;
-				try {
-					regex = LapgCore.parse(name.text(), astpattern.getPattern().getRegexp());
-				} catch (RegexParseException e) {
-					error(astpattern.getPattern(), e.getMessage());
-					continue;
-				}
-				if (namedPatternsMap.get(name.text()) != null) {
-					error(astpattern, "redeclaration of named pattern `" + name + "', ignored");
-				} else {
-					builder.addPattern(name, regex, astpattern);
-					namedPatternsMap.put(name.text(), regex);
+			{
+				stack.add(tree.getRoot().getLexer().iterator());
+				fetch();
+			}
+
+			private void fetch() {
+				next = null;
+				while (!stack.empty()) {
+					if (!stack.peek().hasNext()) {
+						stack.pop();
+						continue;
+					}
+					ITmaLexerPart next = stack.peek().next();
+					if (c.isInstance(next)) {
+						this.next = (T) next;
+						return;
+					}
+					if (next instanceof TmaStartConditionsScope) {
+						stack.push(((TmaStartConditionsScope) next).getLexerParts().iterator());
+					}
 				}
 			}
+
+			@Override
+			public boolean hasNext() {
+				return next != null;
+			}
+
+			@Override
+			public T next() {
+				T r = next;
+				fetch();
+				return r;
+			}
+		};
+	}
+
+	private void collectLexerSymbols() {
+		for (TmaNamedPattern astpattern : getLexerParts(TmaNamedPattern.class)) {
+			Name name = name(astpattern.getName(), astpattern);
+			if (name == null) continue;
+			RegexPart regex;
+			try {
+				regex = LapgCore.parse(name.text(), astpattern.getPattern().getRegexp());
+			} catch (RegexParseException e) {
+				error(astpattern.getPattern(), e.getMessage());
+				continue;
+			}
+			if (namedPatternsMap.get(name.text()) != null) {
+				error(astpattern, "redeclaration of named pattern `" + name + "', ignored");
+			} else {
+				builder.addPattern(name, regex, astpattern);
+				namedPatternsMap.put(name.text(), regex);
+			}
+		}
+		for (TmaLexeme lexeme : getLexerParts(TmaLexeme.class)) {
+			create(lexeme.getName(), convertRawType(lexeme.getRawType(), lexeme), true);
 		}
 	}
 

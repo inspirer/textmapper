@@ -110,7 +110,6 @@ interface LexerPart {
 
 lexer_part  : LexerPart ::=
 	this=states_clause
-  | this=state_selector
   | this=named_pattern
   | this=lexeme
   | this=brackets_directive
@@ -205,14 +204,6 @@ class StatesClause : LexerPart {
 states_clause  : StatesClause ::=
 	this=new.StatesClause: '%' exclusive=Ls as false states=lexer_state_list_Comma_separated ';'
   | this=new.StatesClause: '%' exclusive=Lx as true states=lexer_state_list_Comma_separated ';'
-;
-
-class StateSelector : LexerPart {
-	list<Stateref> states;
-}
-
-state_selector  : StateSelector ::=
-	'[' states=stateref_list_Comma_separated ']'
 ;
 
 class Stateref {

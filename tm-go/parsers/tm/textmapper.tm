@@ -26,8 +26,6 @@ reportTokens = [invalid_token, multiline_comment, comment]
 
 %s initial, afterID, afterColonOrEq, afterGT;
 
-[initial, afterID, afterColonOrEq, afterGT]
-
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
 reChar = /{reFirst}|\*/
@@ -119,18 +117,17 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'void':      /void/
 'x':         /x/
 
-[initial, afterID, afterColonOrEq]
+<initial, afterID, afterColonOrEq> {
+  code:   /\{[^\{\}]*\}/    /* TODO */
+}
+<afterGT>'{':    /\{/
 
-code:   /\{[^\{\}]*\}/    /* TODO */
-
-[afterGT]
-'{':    /\{/
-
-[afterColonOrEq]
-regexp: /\/{reFirst}{reChar}*\//
-
-[initial, afterID, afterGT]
-'/':    /\//
+<afterColonOrEq> {
+  regexp: /\/{reFirst}{reChar}*\//
+}
+<initial, afterID, afterGT> {
+  '/':    /\//
+}
 
 :: parser
 
@@ -227,8 +224,7 @@ lexer_parts :
 ;
 
 lexer_part<OrSyntaxError> interface :
-    state_selector
-  | named_pattern
+    named_pattern
   | lexeme
   | lexer_directive
   | start_conditions_scope
@@ -265,9 +261,6 @@ lexer_directive returns lexer_part :
   | '%' 's' states=(lexer_state separator ',')+                       -> inclusiveStates
   | '%' 'x' states=(lexer_state separator ',')+                       -> exclusiveStates
 ;
-
-state_selector :
-    '[' states=(stateref separator ',')+ ']' ;
 
 stateref :
     name=identifier ;

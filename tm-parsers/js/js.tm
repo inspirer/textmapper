@@ -14,21 +14,18 @@ extraTypes = ["InsertedSemicolon"]
 
 :: lexer
 
-%s initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag, jsxText;
-
-[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag, jsxText]
+%s initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv;
+%x jsxTag, jsxClosingTag, jsxText;
 
 # Accept end-of-input in all states.
-eoi: /{eoi}/
+<*> eoi: /{eoi}/
 
 invalid_token:
 error:
 
-[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag]
-
-WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
-
-[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv]
+<initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag> {
+  WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+}
 
 # LineTerminatorSequence
 WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
@@ -194,53 +191,53 @@ StringLiteral: /'{ssChar}*'/
 
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
-[initial, div, jsxTemplate, jsxTemplateDiv]
+<initial, div, jsxTemplate, jsxTemplateDiv> {
+  '}': /\}/
 
-'}': /\}/
+  NoSubstitutionTemplate: /`{tplChars}`/
+  TemplateHead: /`{tplChars}\$\{/
+}
 
-NoSubstitutionTemplate: /`{tplChars}`/
-TemplateHead: /`{tplChars}\$\{/
+<template, templateDiv> {
+  TemplateMiddle: /\}{tplChars}\$\{/
+  TemplateTail: /\}{tplChars}`/
+}
 
-[template, templateDiv]
+<initial, template, jsxTemplate> {
+  reBS = /\\[^\n\r\u2028\u2029]/
+  reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
+  reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
+  reChar = /{reFirst}|\*/
 
-TemplateMiddle: /\}{tplChars}\$\{/
-TemplateTail: /\}{tplChars}`/
+  RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
+}
 
-[initial, template, jsxTemplate]
+<div, templateDiv, jsxTemplateDiv> {
+  '/': /\//
+  '/=': /\/=/
+}
 
-reBS = /\\[^\n\r\u2028\u2029]/
-reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
-reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
-reChar = /{reFirst}|\*/
+<jsxTag, jsxClosingTag> {
+  '<': /</
+  '>': />/
+  '/': /\//
+  '{': /\{/
+  ':': /:/
+  '.': /\./
+  '=': /=/
 
-RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
+  jsxStringLiteral: /'[^']*'/
+  jsxStringLiteral: /"[^"]*"/
 
-[div, templateDiv, jsxTemplateDiv]
+  jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
+}
 
-'/': /\//
-'/=': /\/=/
+<jsxText> {
+  '{': /\{/
+  '<': /</
 
-[jsxTag, jsxClosingTag]
-
-'<': /</
-'>': />/
-'/': /\//
-'{': /\{/
-':': /:/
-'.': /\./
-'=': /=/
-
-jsxStringLiteral: /'[^']*'/
-jsxStringLiteral: /"[^"]*"/
-
-jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
-
-[jsxText]
-
-'{': /\{/
-'<': /</
-
-jsxText: /[^{}<>]+/
+  jsxText: /[^{}<>]+/
+}
 
 :: parser
 

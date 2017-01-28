@@ -51,9 +51,13 @@ public class TMLexerCompiler {
 		resolver.error(n, message);
 	}
 
-	private List<LexerState> convertApplicableStates(TmaStateSelector selector) {
+	private List<LexerState> resolveStates(TmaStartConditions conditions) {
 		List<LexerState> result = new ArrayList<>();
-		for (TmaStateref ref : selector.getStates()) {
+		List<TmaStateref> refs = conditions.getStaterefListCommaSeparated();
+		if (refs == null) {
+			return resolver.allStates();
+		}
+		for (TmaStateref ref : refs) {
 			LexerState applicable = resolver.getState(ref.getName());
 			if (applicable != null) {
 				result.add(applicable);
@@ -62,7 +66,7 @@ public class TMLexerCompiler {
 			}
 		}
 		if (result.isEmpty()) {
-			result.add(resolver.getState(TMResolver.INITIAL_STATE.text()));
+			result.addAll(resolver.allStates());
 		}
 		return result;
 	}
@@ -110,22 +114,31 @@ public class TMLexerCompiler {
 		return LexerRule.KIND_NONE;
 	}
 
+	private void collectAttributes(List<LexerState> states, ITmaLexerPart part) {
+		if (part instanceof TmaLexeme) {
+			TmaStartConditions conditions = ((TmaLexeme) part).getStartConditions();
+			if (conditions != null) {
+				states = resolveStates(conditions);
+			}
+			attributes.put((TmaLexeme) part, new RuleAttributes(states));
+		} else if (part instanceof TmaStartConditionsScope) {
+			TmaStartConditionsScope scope = (TmaStartConditionsScope) part;
+			states = resolveStates(scope.getStartConditions());
+			for (ITmaLexerPart p : scope.getLexerParts()) {
+				collectAttributes(states, p);
+			}
+		}
+	}
+
 	public void compile() {
 		Map<Terminal, Terminal> softToClass = new HashMap<>();
 		Set<Terminal> nonSoft = new HashSet<>();
 
-		// Step 1. Collect states & transitions (attributes).
+		// Step 1. Collect states.
 
-		List<LexerState> activeStates = Collections.singletonList(resolver.getState(
-				TMResolver.INITIAL_STATE.text()));
-
+		List<LexerState> defaultStates = resolver.inclusiveStates();
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof TmaLexeme) {
-				TmaLexeme lexeme = (TmaLexeme) clause;
-				attributes.put(lexeme, new RuleAttributes(activeStates));
-			} else if (clause instanceof TmaStateSelector) {
-				activeStates = convertApplicableStates((TmaStateSelector) clause);
-			}
+			collectAttributes(defaultStates, clause);
 		}
 
 		// Step 2. Process class lexical rules.
@@ -133,11 +146,7 @@ public class TMLexerCompiler {
 		RegexContext context = resolver.createRegexContext();
 		Map<LexerRule, RegexMatcher> classMatchers = new LinkedHashMap<>();
 
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (!(clause instanceof TmaLexeme)) {
-				continue;
-			}
-			TmaLexeme lexeme = (TmaLexeme) clause;
+		for (TmaLexeme lexeme : resolver.getLexerParts(TmaLexeme.class)) {
 			TmaLexemeAttrs attrs = lexeme.getAttrs();
 			if (attrs == null || attrs.getKind() != TmaLexemeAttribute.LCLASS) {
 				continue;
@@ -174,11 +183,7 @@ public class TMLexerCompiler {
 
 		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
 
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
-			if (!(clause instanceof TmaLexeme)) {
-				continue;
-			}
-			TmaLexeme lexeme = (TmaLexeme) clause;
+		for (TmaLexeme lexeme : resolver.getLexerParts(TmaLexeme.class)) {
 			TmaLexemeAttrs attrs = lexeme.getAttrs();
 			int kind = getLexerRuleKind(attrs);
 			if (kind == LexerRule.KIND_CLASS) {
