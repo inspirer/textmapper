@@ -31,9 +31,9 @@ genastdef = true
 
 :: lexer
 
-%s initial, afterColonOrEq, afterGT;
+%s initial, afterID, afterColonOrEq, afterGT;
 
-[initial, afterColonOrEq, afterGT]
+[initial, afterID, afterColonOrEq, afterGT]
 
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
@@ -136,7 +136,7 @@ Llalr: /lalr/           (soft)
 Llexer: /lexer/         (soft)
 Lparser: /parser/       (soft)
 
-[initial, afterColonOrEq]
+[initial, afterID, afterColonOrEq]
 code:   /\{/                                { skipAction(); token.endoffset = getOffset(); }
 
 [afterGT]
@@ -145,7 +145,7 @@ code:   /\{/                                { skipAction(); token.endoffset = ge
 [afterColonOrEq]
 regexp {String}: /\/{reFirst}{reChar}*\//   { $$ = tokenText().substring(1, tokenSize()-1); }
 
-[initial, afterGT]
+[initial, afterID, afterGT]
 '/':    /\//
 
 :: parser
@@ -203,13 +203,22 @@ lexer_part :
   | named_pattern
   | lexeme
   | brackets_directive
+  | start_conditions_scope
 ;
 
 named_pattern :
     name=ID '=' pattern ;
 
+start_conditions_scope :
+    start_conditions '{' lexer_parts '}' ;
+
+start_conditions :
+    '<' '*'  '>'
+  | '<' (stateref separator ',')+ '>'
+;
+
 lexeme :
-    name=identifier rawTypeopt ':'
+    start_conditions? name=identifier rawTypeopt ':'
         (pattern priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_attrs :
@@ -611,14 +620,10 @@ ${if cl.name == 'Input'}
 ${end-}
 ${end}
 
-${template java_lexer.onBeforeNext-}
-int lastTokenLine = tokenLine;
-${end}
-
 ${template java_lexer.onAfterNext-}
 switch (token.symbol) {
 case Tokens.Lt:
-	inStatesSelector = (lastTokenLine != tokenLine) || this.state == States.afterColonOrEq;
+	inStatesSelector = this.state == States.initial || this.state == States.afterColonOrEq;
 	this.state = States.initial;
 	break;
 case Tokens.Gt:
@@ -629,6 +634,40 @@ case Tokens.Assign:
 case Tokens.Colon:
 	this.state = States.afterColonOrEq;
 	break;
+case Tokens.ID:
+case Tokens.Lleft:
+case Tokens.Lright:
+case Tokens.Lnonassoc:
+case Tokens.Lgenerate:
+case Tokens.Lassert:
+case Tokens.Lempty:
+case Tokens.Lbrackets:
+case Tokens.Linline:
+case Tokens.Lprec:
+case Tokens.Lshift:
+case Tokens.Lreturns:
+case Tokens.Linput:
+case Tokens.Lnonempty:
+case Tokens.Lglobal:
+case Tokens.Lexplicit:
+case Tokens.Llookahead:
+case Tokens.Lparam:
+case Tokens.Lflag:
+case Tokens.Lnoeoi:
+case Tokens.Ls:
+case Tokens.Lx:
+case Tokens.Lsoft:
+case Tokens.Lclass:
+case Tokens.Linterface:
+case Tokens.Lvoid:
+case Tokens.Lspace:
+case Tokens.Llayout:
+case Tokens.Llanguage:
+case Tokens.Llalr:
+case Tokens.Llexer:
+case Tokens.Lparser:
+  this.state = States.afterID;
+  break;
 case Tokens._skip:
 case Tokens._skip_comment:
 case Tokens._skip_multiline:

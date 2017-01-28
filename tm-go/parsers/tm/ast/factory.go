@@ -148,6 +148,10 @@ func ToTmNode(n Node) TmNode {
 		return &SetOr{n}
 	case tm.SetSymbol:
 		return &SetSymbol{n}
+	case tm.StartConditions:
+		return &StartConditions{n}
+	case tm.StartConditionsScope:
+		return &StartConditionsScope{n}
 	case tm.StateSelector:
 		return &StateSelector{n}
 	case tm.Stateref:

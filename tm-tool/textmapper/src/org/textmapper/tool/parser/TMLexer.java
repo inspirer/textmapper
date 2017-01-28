@@ -36,8 +36,9 @@ public class TMLexer {
 
 	public interface States {
 		int initial = 0;
-		int afterColonOrEq = 1;
-		int afterGT = 2;
+		int afterID = 1;
+		int afterColonOrEq = 2;
+		int afterGT = 3;
 	}
 
 	public interface Tokens {
@@ -292,7 +293,7 @@ public class TMLexer {
 	};
 
 	private static final short tmStateMap[] = {
-		0, 52, 62
+		0, 0, 52, 62
 	};
 
 	private static final short tmBacktracking[] = {
@@ -361,7 +362,6 @@ public class TMLexer {
 
 	public Span next() throws IOException {
 		Span token = new Span();
-		int lastTokenLine = tokenLine;
 		int state;
 
 		tokenloop:
@@ -413,7 +413,7 @@ public class TMLexer {
 		} while (token.symbol == -1 || !createToken(token, tmFirstRule - state));
 		switch (token.symbol) {
 		case Tokens.Lt:
-			inStatesSelector = (lastTokenLine != tokenLine) || this.state == States.afterColonOrEq;
+			inStatesSelector = this.state == States.initial || this.state == States.afterColonOrEq;
 			this.state = States.initial;
 			break;
 		case Tokens.Gt:
@@ -424,6 +424,40 @@ public class TMLexer {
 		case Tokens.Colon:
 			this.state = States.afterColonOrEq;
 			break;
+		case Tokens.ID:
+		case Tokens.Lleft:
+		case Tokens.Lright:
+		case Tokens.Lnonassoc:
+		case Tokens.Lgenerate:
+		case Tokens.Lassert:
+		case Tokens.Lempty:
+		case Tokens.Lbrackets:
+		case Tokens.Linline:
+		case Tokens.Lprec:
+		case Tokens.Lshift:
+		case Tokens.Lreturns:
+		case Tokens.Linput:
+		case Tokens.Lnonempty:
+		case Tokens.Lglobal:
+		case Tokens.Lexplicit:
+		case Tokens.Llookahead:
+		case Tokens.Lparam:
+		case Tokens.Lflag:
+		case Tokens.Lnoeoi:
+		case Tokens.Ls:
+		case Tokens.Lx:
+		case Tokens.Lsoft:
+		case Tokens.Lclass:
+		case Tokens.Linterface:
+		case Tokens.Lvoid:
+		case Tokens.Lspace:
+		case Tokens.Llayout:
+		case Tokens.Llanguage:
+		case Tokens.Llalr:
+		case Tokens.Llexer:
+		case Tokens.Lparser:
+		  this.state = States.afterID;
+		  break;
 		case Tokens._skip:
 		case Tokens._skip_comment:
 		case Tokens._skip_multiline:

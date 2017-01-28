@@ -10,8 +10,9 @@ import (
 // Lexer states.
 const (
 	StateInitial        = 0
-	StateAfterColonOrEq = 1
-	StateAfterGT        = 2
+	StateAfterID        = 1
+	StateAfterColonOrEq = 2
+	StateAfterGT        = 3
 )
 
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -71,7 +72,6 @@ func (l *Lexer) Init(source string) {
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
-	lastTokenLine := l.tokenLine
 restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
@@ -352,7 +352,7 @@ recovered:
 	}
 	switch token {
 	case LT:
-		l.inStatesSelector = (lastTokenLine != l.tokenLine) || l.State == StateAfterColonOrEq
+		l.inStatesSelector = l.State == StateInitial || l.State == StateAfterColonOrEq
 		l.State = StateInitial
 	case GT:
 		if l.inStatesSelector {
@@ -361,6 +361,13 @@ recovered:
 		} else {
 			l.State = StateInitial
 		}
+	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
+		BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
+		NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
+		NOMINUSEOI, CHAR_S, CHAR_X,
+		SOFT, CLASS, INTERFACE, VOID, SPACE,
+		LAYOUT, LANGUAGE, LALR, LEXER, PARSER:
+		l.State = StateAfterID
 	case ASSIGN, COLON:
 		l.State = StateAfterColonOrEq
 	default:

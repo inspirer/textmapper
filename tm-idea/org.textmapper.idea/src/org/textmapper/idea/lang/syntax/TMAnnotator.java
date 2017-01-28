@@ -60,6 +60,9 @@ public class TMAnnotator implements Annotator {
 			if (ref.resolve() == null && !"initial".equals(ref.getReferenceText())) {
 				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve state `" + ref.getReferenceText() + "'");
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
+			} else {
+				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
+				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.START_CONDITION);
 			}
 		}
 		if (element instanceof TmAnnotation) {

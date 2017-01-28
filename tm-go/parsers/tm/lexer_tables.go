@@ -19,7 +19,7 @@ const tmRuneClassLen = 127
 const tmFirstRule = -3
 
 var tmStateMap = []int{
-	0, 50, 60,
+	0, 0, 50, 60,
 }
 
 var tmLexerAction = []int8{

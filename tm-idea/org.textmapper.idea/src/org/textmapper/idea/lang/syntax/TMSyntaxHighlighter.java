@@ -88,6 +88,9 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 	static final TextAttributesKey NONTERM_PARAMETER_NAME =
 			TextAttributesKey.createTextAttributesKey("TM.NONTERM_PARAMETER", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
 
+	static final TextAttributesKey START_CONDITION =
+			TextAttributesKey.createTextAttributesKey("TM.START_CONDITION", DefaultLanguageHighlighterColors.STATIC_FIELD);
+
 	// Regexp
 
 	static final TextAttributesKey RE_DELIMITERS =

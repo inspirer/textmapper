@@ -19,6 +19,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 
+	private final TmaStartConditions startConditions;
 	private final TmaIdentifier name;
 	private final TmaRawType rawType;
 	private final TmaPattern pattern;
@@ -26,14 +27,19 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 	private final TmaLexemeAttrs attrs;
 	private final TmaCommand command;
 
-	public TmaLexeme(TmaIdentifier name, TmaRawType rawType, TmaPattern pattern, Integer priority, TmaLexemeAttrs attrs, TmaCommand command, TextSource source, int line, int offset, int endoffset) {
+	public TmaLexeme(TmaStartConditions startConditions, TmaIdentifier name, TmaRawType rawType, TmaPattern pattern, Integer priority, TmaLexemeAttrs attrs, TmaCommand command, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
+		this.startConditions = startConditions;
 		this.name = name;
 		this.rawType = rawType;
 		this.pattern = pattern;
 		this.priority = priority;
 		this.attrs = attrs;
 		this.command = command;
+	}
+
+	public TmaStartConditions getStartConditions() {
+		return startConditions;
 	}
 
 	public TmaIdentifier getName() {
@@ -64,6 +70,9 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (startConditions != null) {
+			startConditions.accept(v);
 		}
 		if (name != null) {
 			name.accept(v);

@@ -49,11 +49,11 @@ const (
 )
 
 func (p *Parser) ParseInput(lexer *Lexer) bool {
-	return p.parse(0, 413, lexer)
+	return p.parse(0, 431, lexer)
 }
 
 func (p *Parser) ParseExpression(lexer *Lexer) bool {
-	return p.parse(1, 414, lexer)
+	return p.parse(1, 432, lexer)
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) bool {

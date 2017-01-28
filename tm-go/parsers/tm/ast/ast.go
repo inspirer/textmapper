@@ -24,84 +24,86 @@ type Token struct {
 }
 
 // All types implement TmNode.
-func (KeyValue) tmNodeNode()          {}
-func (AnnotationImpl) tmNodeNode()    {}
-func (Annotations) tmNodeNode()       {}
-func (ArgumentFalse) tmNodeNode()     {}
-func (ArgumentImpl) tmNodeNode()      {}
-func (ArgumentTrue) tmNodeNode()      {}
-func (Array) tmNodeNode()             {}
-func (Assoc) tmNodeNode()             {}
-func (BooleanLiteral) tmNodeNode()    {}
-func (Command) tmNodeNode()           {}
-func (DirectiveAssert) tmNodeNode()   {}
-func (DirectiveBrackets) tmNodeNode() {}
-func (DirectiveInput) tmNodeNode()    {}
-func (DirectivePrio) tmNodeNode()     {}
-func (DirectiveSet) tmNodeNode()      {}
-func (ExclusiveStates) tmNodeNode()   {}
-func (GrammarParts) tmNodeNode()      {}
-func (Header) tmNodeNode()            {}
-func (Identifier) tmNodeNode()        {}
-func (Import) tmNodeNode()            {}
-func (InclusiveStates) tmNodeNode()   {}
-func (InlineParameter) tmNodeNode()   {}
-func (Input) tmNodeNode()             {}
-func (Inputref) tmNodeNode()          {}
-func (IntegerLiteral) tmNodeNode()    {}
-func (InterfaceType) tmNodeNode()     {}
-func (Lexeme) tmNodeNode()            {}
-func (LexemeAttribute) tmNodeNode()   {}
-func (LexemeAttrs) tmNodeNode()       {}
-func (LexerState) tmNodeNode()        {}
-func (ListSeparator) tmNodeNode()     {}
-func (Name) tmNodeNode()              {}
-func (NamedPattern) tmNodeNode()      {}
-func (Nonterm) tmNodeNode()           {}
-func (NontermParams) tmNodeNode()     {}
-func (ParamModifier) tmNodeNode()     {}
-func (ParamRef) tmNodeNode()          {}
-func (ParamType) tmNodeNode()         {}
-func (Pattern) tmNodeNode()           {}
-func (Predicate) tmNodeNode()         {}
-func (PredicateAnd) tmNodeNode()      {}
-func (PredicateEq) tmNodeNode()       {}
-func (PredicateNot) tmNodeNode()      {}
-func (PredicateNotEq) tmNodeNode()    {}
-func (PredicateOr) tmNodeNode()       {}
-func (RawType) tmNodeNode()           {}
-func (References) tmNodeNode()        {}
-func (RhsAnnotated) tmNodeNode()      {}
-func (RhsAssignment) tmNodeNode()     {}
-func (RhsCast) tmNodeNode()           {}
-func (RhsIgnored) tmNodeNode()        {}
-func (RhsNested) tmNodeNode()         {}
-func (RhsOptional) tmNodeNode()       {}
-func (RhsPlusAssignment) tmNodeNode() {}
-func (RhsPlusList) tmNodeNode()       {}
-func (RhsPrimary) tmNodeNode()        {}
-func (RhsQuantifier) tmNodeNode()     {}
-func (RhsSet) tmNodeNode()            {}
-func (RhsStarList) tmNodeNode()       {}
-func (RhsSuffix) tmNodeNode()         {}
-func (RhsSymbol) tmNodeNode()         {}
-func (Rule) tmNodeNode()              {}
-func (RuleAction) tmNodeNode()        {}
-func (SetAnd) tmNodeNode()            {}
-func (SetComplement) tmNodeNode()     {}
-func (SetCompound) tmNodeNode()       {}
-func (SetOr) tmNodeNode()             {}
-func (SetSymbol) tmNodeNode()         {}
-func (StateSelector) tmNodeNode()     {}
-func (Stateref) tmNodeNode()          {}
-func (StringLiteral) tmNodeNode()     {}
-func (SubType) tmNodeNode()           {}
-func (Symref) tmNodeNode()            {}
-func (SymrefArgs) tmNodeNode()        {}
-func (SyntaxProblem) tmNodeNode()     {}
-func (TemplateParam) tmNodeNode()     {}
-func (VoidType) tmNodeNode()          {}
-func (Token) tmNodeNode()             {}
+func (KeyValue) tmNodeNode()             {}
+func (AnnotationImpl) tmNodeNode()       {}
+func (Annotations) tmNodeNode()          {}
+func (ArgumentFalse) tmNodeNode()        {}
+func (ArgumentImpl) tmNodeNode()         {}
+func (ArgumentTrue) tmNodeNode()         {}
+func (Array) tmNodeNode()                {}
+func (Assoc) tmNodeNode()                {}
+func (BooleanLiteral) tmNodeNode()       {}
+func (Command) tmNodeNode()              {}
+func (DirectiveAssert) tmNodeNode()      {}
+func (DirectiveBrackets) tmNodeNode()    {}
+func (DirectiveInput) tmNodeNode()       {}
+func (DirectivePrio) tmNodeNode()        {}
+func (DirectiveSet) tmNodeNode()         {}
+func (ExclusiveStates) tmNodeNode()      {}
+func (GrammarParts) tmNodeNode()         {}
+func (Header) tmNodeNode()               {}
+func (Identifier) tmNodeNode()           {}
+func (Import) tmNodeNode()               {}
+func (InclusiveStates) tmNodeNode()      {}
+func (InlineParameter) tmNodeNode()      {}
+func (Input) tmNodeNode()                {}
+func (Inputref) tmNodeNode()             {}
+func (IntegerLiteral) tmNodeNode()       {}
+func (InterfaceType) tmNodeNode()        {}
+func (Lexeme) tmNodeNode()               {}
+func (LexemeAttribute) tmNodeNode()      {}
+func (LexemeAttrs) tmNodeNode()          {}
+func (LexerState) tmNodeNode()           {}
+func (ListSeparator) tmNodeNode()        {}
+func (Name) tmNodeNode()                 {}
+func (NamedPattern) tmNodeNode()         {}
+func (Nonterm) tmNodeNode()              {}
+func (NontermParams) tmNodeNode()        {}
+func (ParamModifier) tmNodeNode()        {}
+func (ParamRef) tmNodeNode()             {}
+func (ParamType) tmNodeNode()            {}
+func (Pattern) tmNodeNode()              {}
+func (Predicate) tmNodeNode()            {}
+func (PredicateAnd) tmNodeNode()         {}
+func (PredicateEq) tmNodeNode()          {}
+func (PredicateNot) tmNodeNode()         {}
+func (PredicateNotEq) tmNodeNode()       {}
+func (PredicateOr) tmNodeNode()          {}
+func (RawType) tmNodeNode()              {}
+func (References) tmNodeNode()           {}
+func (RhsAnnotated) tmNodeNode()         {}
+func (RhsAssignment) tmNodeNode()        {}
+func (RhsCast) tmNodeNode()              {}
+func (RhsIgnored) tmNodeNode()           {}
+func (RhsNested) tmNodeNode()            {}
+func (RhsOptional) tmNodeNode()          {}
+func (RhsPlusAssignment) tmNodeNode()    {}
+func (RhsPlusList) tmNodeNode()          {}
+func (RhsPrimary) tmNodeNode()           {}
+func (RhsQuantifier) tmNodeNode()        {}
+func (RhsSet) tmNodeNode()               {}
+func (RhsStarList) tmNodeNode()          {}
+func (RhsSuffix) tmNodeNode()            {}
+func (RhsSymbol) tmNodeNode()            {}
+func (Rule) tmNodeNode()                 {}
+func (RuleAction) tmNodeNode()           {}
+func (SetAnd) tmNodeNode()               {}
+func (SetComplement) tmNodeNode()        {}
+func (SetCompound) tmNodeNode()          {}
+func (SetOr) tmNodeNode()                {}
+func (SetSymbol) tmNodeNode()            {}
+func (StartConditions) tmNodeNode()      {}
+func (StartConditionsScope) tmNodeNode() {}
+func (StateSelector) tmNodeNode()        {}
+func (Stateref) tmNodeNode()             {}
+func (StringLiteral) tmNodeNode()        {}
+func (SubType) tmNodeNode()              {}
+func (Symref) tmNodeNode()               {}
+func (SymrefArgs) tmNodeNode()           {}
+func (SyntaxProblem) tmNodeNode()        {}
+func (TemplateParam) tmNodeNode()        {}
+func (VoidType) tmNodeNode()             {}
+func (Token) tmNodeNode()                {}
 
 type Annotation interface {
 	annotationNode()
@@ -159,12 +161,13 @@ type LexerPart interface {
 // lexerPartNode() ensures that only the following types can be
 // assigned to LexerPart.
 //
-func (DirectiveBrackets) lexerPartNode() {}
-func (ExclusiveStates) lexerPartNode()   {}
-func (InclusiveStates) lexerPartNode()   {}
-func (Lexeme) lexerPartNode()            {}
-func (NamedPattern) lexerPartNode()      {}
-func (StateSelector) lexerPartNode()     {}
+func (DirectiveBrackets) lexerPartNode()    {}
+func (ExclusiveStates) lexerPartNode()      {}
+func (InclusiveStates) lexerPartNode()      {}
+func (Lexeme) lexerPartNode()               {}
+func (NamedPattern) lexerPartNode()         {}
+func (StartConditionsScope) lexerPartNode() {}
+func (StateSelector) lexerPartNode()        {}
 
 type Literal interface {
 	literalNode()
@@ -588,6 +591,13 @@ type InterfaceType struct {
 
 type Lexeme struct {
 	Node
+}
+
+func (n Lexeme) StartConditions() *StartConditions {
+	if child := n.Child(filter.StartConditions); child != nil {
+		return &StartConditions{child}
+	}
+	return nil
 }
 
 func (n Lexeme) Name() Identifier {
@@ -1094,6 +1104,36 @@ func (n SetSymbol) Operator() *Identifier {
 
 func (n SetSymbol) Symbol() Symref {
 	return Symref{n.Child(filter.Symref)}
+}
+
+type StartConditions struct {
+	Node
+}
+
+func (n StartConditions) Stateref() []Stateref {
+	nodes := n.Children(filter.Stateref)
+	var result []Stateref = make([]Stateref, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Stateref{node})
+	}
+	return result
+}
+
+type StartConditionsScope struct {
+	Node
+}
+
+func (n StartConditionsScope) StartConditions() StartConditions {
+	return StartConditions{n.Child(filter.StartConditions)}
+}
+
+func (n StartConditionsScope) LexerPart() []LexerPart {
+	nodes := n.Children(filter.LexerPart)
+	var result []LexerPart = make([]LexerPart, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(LexerPart))
+	}
+	return result
 }
 
 type StateSelector struct {

@@ -114,6 +114,7 @@ lexer_part  : LexerPart ::=
   | this=named_pattern
   | this=lexeme
   | this=brackets_directive
+  | this=start_conditions_scope
 ;
 
 class NamedPattern : LexerPart {
@@ -125,7 +126,30 @@ named_pattern  : NamedPattern ::=
 	name=ID '=' {pattern}
 ;
 
+class StartConditionsScope : LexerPart {
+	StartConditions startConditions;
+	list<LexerPart> lexerParts;
+}
+
+start_conditions_scope  : StartConditionsScope ::=
+	startConditions=start_conditions '{' lexerParts=lexer_parts '}'
+;
+
+class StartConditions {
+	list<Stateref> staterefListCommaSeparated;
+}
+
+start_conditions  : StartConditions ::=
+	'<' '*' '>'
+  | '<' staterefListCommaSeparated=stateref_list_Comma_separated '>'
+;
+
+stateref_list_Comma_separated  : list<Stateref>
+	(this+=stateref
+		separator ',')+ ;
+
 class Lexeme : LexerPart {
+	StartConditions startConditions;
 	Identifier name;
 	RawType rawType;
 	Pattern pattern;
@@ -135,7 +159,7 @@ class Lexeme : LexerPart {
 }
 
 lexeme  : Lexeme ::=
-	name=identifier rawType=rawTypeopt ':' ({pattern} priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
+	startConditions=start_conditions? name=identifier rawType=rawTypeopt ':' ({pattern} priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
 ;
 
 class LexemeAttrs {
@@ -190,10 +214,6 @@ class StateSelector : LexerPart {
 state_selector  : StateSelector ::=
 	'[' states=stateref_list_Comma_separated ']'
 ;
-
-stateref_list_Comma_separated  : list<Stateref>
-	(this+=stateref
-		separator ',')+ ;
 
 class Stateref {
 	String name;

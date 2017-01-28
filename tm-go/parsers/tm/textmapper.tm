@@ -24,9 +24,9 @@ reportTokens = [invalid_token, multiline_comment, comment]
 
 :: lexer
 
-%s initial, afterColonOrEq, afterGT;
+%s initial, afterID, afterColonOrEq, afterGT;
 
-[initial, afterColonOrEq, afterGT]
+[initial, afterID, afterColonOrEq, afterGT]
 
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
@@ -119,7 +119,7 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'void':      /void/
 'x':         /x/
 
-[initial, afterColonOrEq]
+[initial, afterID, afterColonOrEq]
 
 code:   /\{[^\{\}]*\}/    /* TODO */
 
@@ -129,7 +129,7 @@ code:   /\{[^\{\}]*\}/    /* TODO */
 [afterColonOrEq]
 regexp: /\/{reFirst}{reChar}*\//
 
-[initial, afterGT]
+[initial, afterID, afterGT]
 '/':    /\//
 
 :: parser
@@ -146,8 +146,8 @@ identifier<flag KW = false> :
   | 'left'     | 'right'    | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
   | 'nonempty' | 'global'   | 'explicit' | 'lookahead' | 'param'   | 'flag'
   | 'no-eoi'   | 's'        | 'x'
-  | 'soft'     | 'class'    | 'interface' | 'void'    | 'space'
-  | 'layout'   | 'language' | 'lalr'     | 'lexer'     | 'parser'
+  | 'soft'     | 'class'    | 'interface'  | 'void'    | 'space'
+  | 'layout'   | 'language' | 'lalr'       | 'lexer'   | 'parser'
 
   # KW
   | [KW] ('true' | 'false' | 'separator' | 'as' | 'import' | 'set')
@@ -231,14 +231,23 @@ lexer_part<OrSyntaxError> interface :
   | named_pattern
   | lexeme
   | lexer_directive
+  | start_conditions_scope
   | [OrSyntaxError] syntax_problem
 ;
 
 named_pattern :
     name=identifier '=' pattern ;
 
+start_conditions_scope :
+    start_conditions '{' lexer_parts '}' ;
+
+start_conditions :
+    '<' '*'  '>'
+  | '<' (stateref separator ',')+ '>'
+;
+
 lexeme :
-    name=identifier rawTypeopt ':'
+    start_conditions? name=identifier rawTypeopt ':'
           (pattern priority=integer_literalopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_attrs :
@@ -484,14 +493,10 @@ ${template go_lexer.initStateVars-}
 	l.inStatesSelector = false
 ${end}
 
-${template go_lexer.onBeforeNext-}
-	lastTokenLine := l.tokenLine
-${end}
-
 ${template go_lexer.onAfterNext-}
 	switch token {
 	case LT:
-		l.inStatesSelector = (lastTokenLine != l.tokenLine) || l.State == StateAfterColonOrEq
+		l.inStatesSelector = l.State == StateInitial || l.State == StateAfterColonOrEq
 		l.State = StateInitial
 	case GT:
 		if l.inStatesSelector {
@@ -500,6 +505,13 @@ ${template go_lexer.onAfterNext-}
 		} else {
 			l.State = StateInitial
 		}
+	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
+       BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
+       NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
+       NOMINUSEOI, CHAR_S, CHAR_X,
+       SOFT, CLASS, INTERFACE, VOID, SPACE,
+       LAYOUT, LANGUAGE, LALR, LEXER, PARSER:
+    l.State = StateAfterID
 	case ASSIGN, COLON:
 		l.State = StateAfterColonOrEq
 	default:

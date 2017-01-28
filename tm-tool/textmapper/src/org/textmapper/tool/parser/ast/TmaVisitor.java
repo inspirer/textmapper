@@ -85,6 +85,14 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaStartConditionsScope n) {
+		return true;
+	}
+
+	protected boolean visit(TmaStartConditions n) {
+		return true;
+	}
+
 	protected boolean visit(TmaLexeme n) {
 		return true;
 	}

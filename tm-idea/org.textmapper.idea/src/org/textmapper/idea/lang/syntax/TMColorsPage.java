@@ -52,6 +52,7 @@ public class TMColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Rule metadata", TMSyntaxHighlighter.RULE_METADATA),
 			new AttributesDescriptor("State marker", TMSyntaxHighlighter.STATE_MARKER),
 			new AttributesDescriptor("Parameter Name", TMSyntaxHighlighter.NONTERM_PARAMETER_NAME),
+			new AttributesDescriptor("Start condition", TMSyntaxHighlighter.START_CONDITION),
 
 			new AttributesDescriptor("RegExp Delimiters", TMSyntaxHighlighter.RE_DELIMITERS),
 			new AttributesDescriptor("RegExp Text", TMSyntaxHighlighter.RE_TEXT),
@@ -80,6 +81,8 @@ public class TMColorsPage implements ColorSettingsPage {
 		ourTagToDescriptorMap.put("kw", TMSyntaxHighlighter.KEYWORD);
 		ourTagToDescriptorMap.put("param", TMSyntaxHighlighter.NONTERM_PARAMETER_NAME);
 		ourTagToDescriptorMap.put("lookahead", TMSyntaxHighlighter.LOOKAHEAD);
+		ourTagToDescriptorMap.put("stateMarker", TMSyntaxHighlighter.STATE_MARKER);
+		ourTagToDescriptorMap.put("startCond", TMSyntaxHighlighter.START_CONDITION);
 	}
 
 	@NotNull
@@ -120,7 +123,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"\n" +
 				"[initial]\n" +
 				"idStart = /[a-zA-Z_]/\n" +
-				"identifier {String}: /{idStart}([A-Za-z_\\d])*/  (<kw>class</kw>)\n" +
+				"<<startCond>initial</startCond>> identifier {String}: /{idStart}([A-Za-z_\\d])*/  (<kw>class</kw>)\n" +
 				"                 { $lexem = current(); break; }\n" +
 				"kw_eval:  /eval/ (<kw>soft</kw>)\n" +
 				"'(': /\\(/\n" +
@@ -142,7 +145,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"%<kw>left</kw> <lexemeRef>'*'</lexemeRef>;\n" +
 				"\n" +
 				"root (ParsedRoot) :\n" +
-				"      <lexemeRef>kw_eval</lexemeRef> expr  {  $$ = new ParsedRoot($expr, ${root.offset}, ${root.endoffset}); }\n" +
+				"      <lexemeRef>kw_eval</lexemeRef> .<stateMarker>state1</stateMarker> expr  {  $$ = new ParsedRoot($expr, ${root.offset}, ${root.endoffset}); }\n" +
 				";\n" +
 				"\n" +
 				"# expression rule\n" +
@@ -151,7 +154,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"expr :\n" +
 				"      <lexemeRef>identifier</lexemeRef>\n" +
 				"    | expr <lexemeRef>'+'</lexemeRef> expr\n" +
-				"    | expr <lexemeRef>'*'</lexemeRef> expr  <ruleMeta>-&gt; binary/multiply</ruleMeta>\n" +
+				"    | expr <lexemeRef>'*'</lexemeRef> expr  <ruleMeta>-> binary/multiply</ruleMeta>\n" +
 				"    | <lookahead>(?= StartOfA & StartOfB)</lookahead> <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr <kw>separator</kw> <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
 				";\n" +
 				"%%\n" +

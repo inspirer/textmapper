@@ -37,6 +37,8 @@ public interface TextmapperElementTypes {
 	IElementType LEXER_STATE = new TMElementType(Nonterminals.lexer_state, "lexer state");
 	IElementType BRACKETS_DIRECTIVE = new TMElementType(Nonterminals.brackets_directive, "lexer directive");
 	IElementType STATES_CLAUSE = new TMElementType(Nonterminals.states_clause, "states clause");
+	IElementType START_CONDITIONS = new TMElementType(Nonterminals.start_conditions, "start conditions");
+	IElementType START_CONDITIONS_SCOPE = new TMElementType(Nonterminals.start_conditions_scope, "start conditions scope");
 
 	IElementType NONTERM = new TMElementType(Nonterminals.nonterm, "nonterminal");
 	IElementType TEMPLATE_PARAM = new TMElementType(Nonterminals.template_param, "template parameter definition");
@@ -76,6 +78,7 @@ public interface TextmapperElementTypes {
 	IElementType[] allElements = {
 			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE, BRACKETS_DIRECTIVE, STATES_CLAUSE,
+			START_CONDITIONS, START_CONDITIONS_SCOPE,
 			NONTERM, TEMPLATE_PARAM, NONTERM_PARAMS, NONTERM_PARAM, NONTERM_TYPE, DIRECTIVE,
 			RULE, RHS_PREFIX, RHS_SUFFIX, RULE_ACTION, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, RHS_STATE_MARKER,
 			ACTION, RAW_TYPE, LOOKAHEAD, LOOKAHEAD_PREDICATE, ANNOTATION, EXPRESSION, PREDICATE, PREDICATE_EXPRESSION,
