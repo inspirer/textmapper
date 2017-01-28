@@ -17,11 +17,18 @@
 package org.textmapper.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class TmStartConditions extends TmElement {
 
 	public TmStartConditions(@NotNull ASTNode node) {
 		super(node);
+	}
+
+	public List<TmStateReference> getRefs() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmStateReference.class);
 	}
 }

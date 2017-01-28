@@ -84,8 +84,6 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmStartConditions(node);
 			case Nonterminals.start_conditions_scope:
 				return new TmStartConditionsScope(node);
-			case Nonterminals.state_selector:
-				return new TmLexerStateSelector(node);
 			case Nonterminals.lexer_state:
 				return new TmLexerState(node);
 			case Nonterminals.rule0:

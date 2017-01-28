@@ -22,7 +22,7 @@ import com.intellij.navigation.ItemPresentationProvider;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.textmapper.idea.lang.syntax.psi.TmLexerState;
-import org.textmapper.idea.lang.syntax.psi.TmLexerStateSelector;
+import org.textmapper.idea.lang.syntax.psi.TmStartConditions;
 
 import javax.swing.*;
 
@@ -45,8 +45,8 @@ public class LexerStatePresentationProvider implements ItemPresentationProvider<
 
 			@Override
 			public String getLocationString() {
-				TmLexerStateSelector selector = PsiTreeUtil.getParentOfType(lexerState, TmLexerStateSelector.class);
-				return selector == null ? null : "(in " + selector.getText() + ")";
+				TmStartConditions conditions = PsiTreeUtil.getParentOfType(lexerState, TmStartConditions.class);
+				return conditions == null ? null : "(in " + conditions.getText() + ")";
 			}
 
 			@Override

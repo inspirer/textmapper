@@ -51,8 +51,8 @@ public class TMFormattingModelBuilder implements FormattingModelBuilder {
 				.after(OPTION).blankLines(1)
 
 				/* lexer */
-				.before(STATE_SELECTOR).blankLines(1)
-				.after(STATE_SELECTOR).lineBreakInCode()
+				.before(START_CONDITIONS_SCOPE).blankLines(1)
+				.after(START_CONDITIONS).spaces(1)
 				.before(LEXEM).lineBreakInCode()
 				.before(NAMED_PATTERN).lineBreakInCode()
 				.beforeInside(OP_EQ, NAMED_PATTERN).spaces(1)

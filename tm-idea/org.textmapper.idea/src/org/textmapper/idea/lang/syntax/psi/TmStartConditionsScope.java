@@ -17,6 +17,7 @@
 package org.textmapper.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class TmStartConditionsScope extends TmElement {
@@ -24,4 +25,9 @@ public class TmStartConditionsScope extends TmElement {
 	public TmStartConditionsScope(@NotNull ASTNode node) {
 		super(node);
 	}
+
+	public TmStartConditions getStartConditions() {
+		return PsiTreeUtil.getChildOfType(this, TmStartConditions.class);
+	}
+
 }

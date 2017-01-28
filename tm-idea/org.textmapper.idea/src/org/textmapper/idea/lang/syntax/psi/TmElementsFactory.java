@@ -87,20 +87,20 @@ public class TmElementsFactory {
 
 	public static TmStateReference createStateReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = "language a;\n" +
-						":: lexer\n[" + name + "]";
+						":: lexer\n%s "+name+";<" + name + "> { a = /abc/}";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
-		List<TmLexerStateSelector> s = grammar.getStateSelectors();
+		List<TmStartConditionsScope> s = grammar.getStartConditionScopes();
 		if (s == null || s.size() != 1) {
 			throw new IncorrectOperationException();
 		}
 
-		List<TmStateReference> states = s.get(0).getRefs();
-		if (states == null || states.size() != 1) {
+		TmStartConditions conds = s.get(0).getStartConditions();
+		if (conds == null || conds.getRefs().size() != 1) {
 			throw new IncorrectOperationException();
 		}
 
-		TmStateReference ref = states.get(0);
+		TmStateReference ref = conds.getRefs().get(0);
 		if (ref == null) {
 			throw new IncorrectOperationException();
 		}

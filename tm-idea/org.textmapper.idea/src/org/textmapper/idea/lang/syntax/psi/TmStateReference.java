@@ -1,16 +1,16 @@
 /**
  * Copyright 2010-2017 Evgeny Gryaznov
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
@@ -18,20 +18,13 @@ package org.textmapper.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-/**
- * Gryaznov Evgeny, 9/12/12
- */
 public class TmStateReference extends TmElement implements PsiReference {
 
 	public TmStateReference(@NotNull ASTNode node) {
@@ -87,19 +80,8 @@ public class TmStateReference extends TmElement implements PsiReference {
 	@NotNull
 	public Object[] getVariants() {
 		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
-		if (grammar != null) {
-			List<TmLexerState> states = new ArrayList<>();
-			Set<String> seen = new HashSet<>();
-			for (TmStatesClause selector : grammar.getStateDeclarations()) {
-				for (TmLexerState tmLexerState : selector.getStates()) {
-					if (seen.add(tmLexerState.getName())) {
-						states.add(tmLexerState);
-					}
-				}
-			}
-			return states.toArray();
-		}
-		return new Object[0];
+		if (grammar == null) return new Object[0];
+		return grammar.getStates();
 	}
 
 	public boolean isSoft() {

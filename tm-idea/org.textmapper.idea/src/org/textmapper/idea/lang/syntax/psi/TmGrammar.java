@@ -20,7 +20,9 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Gryaznov Evgeny, 1/26/11
@@ -32,7 +34,9 @@ public class TmGrammar extends TmElement {
 	}
 
 	public TmNamedElement[] getNamedElements() {
-		return PsiTreeUtil.getChildrenOfType(this, TmNamedElement.class);
+		Iterable<TmNamedElement> elements = getElements(TmNamedElement.class);
+		List<TmNamedElement> list = StreamSupport.stream(elements.spliterator(), false).collect(Collectors.toList());
+		return list.toArray(new TmNamedElement[list.size()]);
 	}
 
 	public TmHeader getHeader() {
@@ -55,12 +59,21 @@ public class TmGrammar extends TmElement {
 		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmNonterm.class);
 	}
 
-	public List<TmStatesClause> getStateDeclarations() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmStatesClause.class);
+	public TmLexerState[] getStates() {
+		List<TmLexerState> states = new ArrayList<>();
+		Set<String> seen = new HashSet<>();
+		for (TmStatesClause selector : getElements(TmStatesClause.class)) {
+			for (TmLexerState tmLexerState : selector.getStates()) {
+				if (seen.add(tmLexerState.getName())) {
+					states.add(tmLexerState);
+				}
+			}
+		}
+		return states.toArray(new TmLexerState[states.size()]);
 	}
 
-	public List<TmLexerStateSelector> getStateSelectors() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexerStateSelector.class);
+	public List<TmStartConditionsScope> getStartConditionScopes() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmStartConditionsScope.class);
 	}
 
 	public TmNamedElement resolve(String name) {
@@ -68,12 +81,7 @@ public class TmGrammar extends TmElement {
 			name = name.substring(0, name.length() - 3);
 		}
 
-		TmNamedElement[] namedElements = getNamedElements();
-		if (namedElements == null) {
-			return null;
-		}
-
-		for (TmNamedElement named : namedElements) {
+		for (TmNamedElement named : getElements(TmNamedElement.class)) {
 			if (name.equals(named.getName())) {
 				return named;
 			}
@@ -82,7 +90,7 @@ public class TmGrammar extends TmElement {
 	}
 
 	public TmNamedElement resolveState(String name) {
-		for (TmStatesClause clause : getStateDeclarations()) {
+		for (TmStatesClause clause : getElements(TmStatesClause.class)) {
 			for (TmLexerState state : clause.getStates()) {
 				if (name.equals(state.getName())) {
 					return state;
@@ -90,5 +98,46 @@ public class TmGrammar extends TmElement {
 			}
 		}
 		return null;
+	}
+
+	<T extends TmElement> Iterable<T> getElements(Class<T> c) {
+		return () -> new Iterator<T>() {
+			Stack<Iterator<TmElement>> stack = new Stack<>();
+			T next;
+			{
+				stack.push(PsiTreeUtil.getChildrenOfAnyType(TmGrammar.this, TmStartConditionsScope.class, c).iterator());
+				fetch();
+			}
+
+			private void fetch() {
+				next = null;
+				while (!stack.empty()) {
+					if (!stack.peek().hasNext()) {
+						stack.pop();
+						continue;
+					}
+					TmElement next = stack.peek().next();
+					if (c.isInstance(next)) {
+						this.next = (T) next;
+						return;
+					}
+					if (next instanceof TmStartConditionsScope) {
+						stack.push(PsiTreeUtil.getChildrenOfAnyType(next, TmStartConditionsScope.class, c).iterator());
+					}
+				}
+			}
+
+			@Override
+			public boolean hasNext() {
+				return next != null;
+			}
+
+			@Override
+			public T next() {
+				T r = next;
+				fetch();
+				return r;
+			}
+		};
 	}
 }

@@ -121,8 +121,9 @@ public class TMColorsPage implements ColorSettingsPage {
 				"\n" +
 				"<sect>:: lexer</sect>\n" +
 				"\n" +
-				"[initial]\n" +
-				"idStart = /[a-zA-Z_]/\n" +
+				"<initial> { \n" +
+				"  idStart = /[a-zA-Z_]/\n" +
+				"}\n" +
 				"<<startCond>initial</startCond>> identifier {String}: /{idStart}([A-Za-z_\\d])*/  (<kw>class</kw>)\n" +
 				"                 { $lexem = current(); break; }\n" +
 				"kw_eval:  /eval/ (<kw>soft</kw>)\n" +

@@ -100,15 +100,9 @@ public class TmParameterReference extends TmElement implements PsiReference {
 
 	@NotNull
 	public Object[] getVariants() {
-		PsiElement context = this.getContext();
-		while (context != null) {
-			if (context instanceof TmGrammar) {
-				TmGrammar grammar = (TmGrammar) context;
-				return grammar.getNamedElements();
-			}
-			context = context.getContext();
-		}
-		return new Object[0];
+		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
+		if (grammar == null) return new Object[0];
+		return grammar.getNamedElements();
 	}
 
 	public boolean isSoft() {
