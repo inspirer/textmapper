@@ -121,7 +121,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"\n" +
 				"<sect>:: lexer</sect>\n" +
 				"\n" +
-				"<initial> { \n" +
+				"<<startCond>initial</startCond>> { \n" +
 				"  idStart = /[a-zA-Z_]/\n" +
 				"}\n" +
 				"<<startCond>initial</startCond>> identifier {String}: /{idStart}([A-Za-z_\\d])*/  (<kw>class</kw>)\n" +
@@ -130,8 +130,8 @@ public class TMColorsPage implements ColorSettingsPage {
 				"'(': /\\(/\n" +
 				"')': /\\)/\n" +
 				"',': /,/\n" +
-				"'*': /*/\n" +
-				"'+': /+/\n" +
+				"'*': /\\*/\n" +
+				"'+': /\\+/\n" +
 				"complex: /\\p{Lu}-a{1,8}-[^a-z] \\y . forwardSlash:\\/ /\n" +
 				"skip: /[\\t\\r\\n ]+/ (<kw>space</kw>)\n" +
 				"\n" +
@@ -151,7 +151,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"\n" +
 				"# expression rule\n" +
 				"\n" +
-				"<annotation>@noast</annotation>{<kw>true</kw>}\n" +
+				"<annotation>@noast</annotation>=true\n" +
 				"expr :\n" +
 				"      <lexemeRef>identifier</lexemeRef>\n" +
 				"    | expr <lexemeRef>'+'</lexemeRef> expr\n" +

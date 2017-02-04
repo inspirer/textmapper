@@ -25,10 +25,8 @@ import org.jetbrains.jps.ModuleChunk;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor;
 import org.jetbrains.jps.incremental.*;
+import org.jetbrains.jps.incremental.messages.*;
 import org.jetbrains.jps.incremental.messages.BuildMessage.Kind;
-import org.jetbrains.jps.incremental.messages.CompilerMessage;
-import org.jetbrains.jps.incremental.messages.CustomBuilderMessage;
-import org.jetbrains.jps.incremental.messages.ProgressMessage;
 import org.jetbrains.jps.model.java.JpsJavaExtensionService;
 import org.jetbrains.jps.model.java.compiler.JpsJavaCompilerConfiguration;
 import org.textmapper.idea.compiler.*;
@@ -68,12 +66,12 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 	public void buildStarted(final CompileContext context) {
 		context.addBuildListener(new BuildListener() {
 			@Override
-			public void filesGenerated(Collection<Pair<String, String>> paths) {
+			public void filesGenerated(FileGeneratedEvent event) {
 			}
 
 			@Override
-			public void filesDeleted(Collection<String> paths) {
-				refreshComponent.filesRemoved(paths);
+			public void filesDeleted(FileDeletedEvent event) {
+				refreshComponent.filesRemoved(event.getFilePaths());
 			}
 		});
 	}
