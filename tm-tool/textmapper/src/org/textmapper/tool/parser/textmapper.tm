@@ -33,8 +33,6 @@ genastdef = true
 
 %s initial, afterID, afterColonOrEq, afterGT;
 
-[initial, afterID, afterColonOrEq, afterGT]
-
 reClass = /\[([^\n\r\]\\]|\\.)*\]/
 reFirst = /[^\n\r\*\[\\\/]|\\.|{reClass}/
 reChar = /{reFirst}|\*/
@@ -136,16 +134,16 @@ Llalr: /lalr/           (soft)
 Llexer: /lexer/         (soft)
 Lparser: /parser/       (soft)
 
-[initial, afterID, afterColonOrEq]
+<initial, afterID, afterColonOrEq>
 code:   /\{/                                { skipAction(); token.endoffset = getOffset(); }
 
-[afterGT]
+<afterGT>
 '{':  /\{/
 
-[afterColonOrEq]
+<afterColonOrEq>
 regexp {String}: /\/{reFirst}{reChar}*\//   { $$ = tokenText().substring(1, tokenSize()-1); }
 
-[initial, afterID, afterGT]
+<initial, afterID, afterGT>
 '/':    /\//
 
 :: parser

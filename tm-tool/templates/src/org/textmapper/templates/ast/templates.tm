@@ -28,7 +28,7 @@ genCleanup = true
 
 :: lexer
 
-%s query;
+%x query;
 
 any:	/[^$]+/
 
@@ -39,7 +39,7 @@ escint{Integer}:/$[0-9]+/							{ $$ = Integer.parseInt(tokenText().substring(1,
 '${':	/$\{/         { state = States.query; deep = 1;}
 '$/':   /$\//
 
-[query]
+<query> {
 
 identifier{String}:	/[a-zA-Z$_][A-Za-z$_0-9]*/ (class) { $$ = tokenText(); }
 
@@ -103,6 +103,8 @@ Lassert:	/assert/
 '?':		/?/
 
 _skip:      /[\t\r\n ]+/	(space)
+
+}
 
 error:
 

@@ -9,7 +9,7 @@ expandTabs = 2
 
 :: lexer
 
-%s state2;
+%x state2;
 
 id:        /[a-zA-Z_][a-zA-Z_0-9]*/  (class)	{ $$ = this.token; }
 icon:		/[0-9]+/
@@ -19,5 +19,5 @@ _skip:      /[\t\r\n ]+/    (space)
 run:  /run/
 class: /class/ (soft)
 
-[state2]
+<state2>
 method:  /method/

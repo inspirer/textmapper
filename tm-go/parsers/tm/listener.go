@@ -34,7 +34,6 @@ const (
 	DirectiveBrackets // opening=symref closing=symref
 	InclusiveStates   // states=(lexer_state)+
 	ExclusiveStates   // states=(lexer_state)+
-	StateSelector     // states=(stateref)+
 	Stateref          // name=identifier
 	LexerState        // name=identifier
 	GrammarParts      // grammar_parts? grammar_part
@@ -121,7 +120,6 @@ var nodeTypeStr = [...]string{
 	"DirectiveBrackets",
 	"InclusiveStates",
 	"ExclusiveStates",
-	"StateSelector",
 	"Stateref",
 	"LexerState",
 	"GrammarParts",
@@ -225,7 +223,6 @@ var LexerPart = []NodeType{
 	Lexeme,
 	NamedPattern,
 	StartConditionsScope,
-	StateSelector,
 }
 
 var Literal = []NodeType{
@@ -400,12 +397,10 @@ var ruleNodeType = [...]NodeType{
 	RawType,              // rawType : code
 	0,                    // lexer_parts : lexer_part
 	0,                    // lexer_parts : lexer_parts lexer_part_OrSyntaxError
-	0,                    // lexer_part : state_selector
 	0,                    // lexer_part : named_pattern
 	0,                    // lexer_part : lexeme
 	0,                    // lexer_part : lexer_directive
 	0,                    // lexer_part : start_conditions_scope
-	0,                    // lexer_part_OrSyntaxError : state_selector
 	0,                    // lexer_part_OrSyntaxError : named_pattern
 	0,                    // lexer_part_OrSyntaxError : lexeme
 	0,                    // lexer_part_OrSyntaxError : lexer_directive
@@ -431,7 +426,6 @@ var ruleNodeType = [...]NodeType{
 	ExclusiveStates,      // lexer_directive : '%' 'x' lexer_state_list_Comma_separated
 	0,                    // lexer_state_list_Comma_separated : lexer_state_list_Comma_separated ',' lexer_state
 	0,                    // lexer_state_list_Comma_separated : lexer_state
-	StateSelector,        // state_selector : '[' stateref_list_Comma_separated ']'
 	Stateref,             // stateref : identifier
 	LexerState,           // lexer_state : identifier
 	GrammarParts,         // grammar_parts : grammar_part

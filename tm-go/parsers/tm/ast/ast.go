@@ -94,7 +94,6 @@ func (SetOr) tmNodeNode()                {}
 func (SetSymbol) tmNodeNode()            {}
 func (StartConditions) tmNodeNode()      {}
 func (StartConditionsScope) tmNodeNode() {}
-func (StateSelector) tmNodeNode()        {}
 func (Stateref) tmNodeNode()             {}
 func (StringLiteral) tmNodeNode()        {}
 func (SubType) tmNodeNode()              {}
@@ -167,7 +166,6 @@ func (InclusiveStates) lexerPartNode()      {}
 func (Lexeme) lexerPartNode()               {}
 func (NamedPattern) lexerPartNode()         {}
 func (StartConditionsScope) lexerPartNode() {}
-func (StateSelector) lexerPartNode()        {}
 
 type Literal interface {
 	literalNode()
@@ -1132,19 +1130,6 @@ func (n StartConditionsScope) LexerPart() []LexerPart {
 	var result []LexerPart = make([]LexerPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(LexerPart))
-	}
-	return result
-}
-
-type StateSelector struct {
-	Node
-}
-
-func (n StateSelector) States() []Stateref {
-	nodes := n.Children(filter.Stateref)
-	var result []Stateref = make([]Stateref, 0, len(nodes))
-	for _, node := range nodes {
-		result = append(result, Stateref{node})
 	}
 	return result
 }

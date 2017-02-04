@@ -14,8 +14,6 @@ module = "es6"
 
 %s initial, div, template, template_div;
 
-[initial, div, template, template_div]
-
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 
 LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
@@ -165,32 +163,31 @@ StringLiteral: /'{ssChar}*'/
 
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
-[initial, div]
+<initial, div> {
+  '}': /\}/
 
-'}': /\}/
+  NoSubstitutionTemplate: /`{tplChars}`/
+  TemplateHead: /`{tplChars}\$\{/
+}
 
-NoSubstitutionTemplate: /`{tplChars}`/
-TemplateHead: /`{tplChars}\$\{/
+<template, template_div> {
+  TemplateMiddle: /\}{tplChars}\$\{/
+  TemplateTail: /\}{tplChars}`/
+}
 
-[template, template_div]
+<initial, template> {
+  reBS = /\\[^\n\r\u2028\u2029]/
+  reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
+  reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
+  reChar = /{reFirst}|\*/
 
-TemplateMiddle: /\}{tplChars}\$\{/
-TemplateTail: /\}{tplChars}`/
+  RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
+}
 
-[initial, template]
-
-reBS = /\\[^\n\r\u2028\u2029]/
-reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
-reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
-reChar = /{reFirst}|\*/
-
-RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
-
-[div, template_div]
-
-'/': /\//
-'/=': /\/=/
-
+<div, template_div> {
+  '/': /\//
+  '/=': /\/=/
+}
 
 :: parser
 

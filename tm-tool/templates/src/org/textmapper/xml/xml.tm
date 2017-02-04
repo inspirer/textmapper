@@ -28,7 +28,7 @@ genCopyright = true
 
 :: lexer
 
-%s inTag;
+%x inTag;
 
 any:	/[^<]+/
 
@@ -36,18 +36,18 @@ any:	/[^<]+/
 
 _skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/ (space)
 
-[inTag]
+<inTag> {
+  identifier {String}:	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $$ = tokenText(); }
+  ccon {String}:	/"[^\n"]*"/							{ $$ = tokenText().substring(1, tokenSize()-1); }
+  ccon {String}:	/'[^\n']*'/							{ $$ = tokenText().substring(1, tokenSize()-1); }
 
-identifier {String}:	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $$ = tokenText(); }
-ccon {String}:	/"[^\n"]*"/							{ $$ = tokenText().substring(1, tokenSize()-1); }
-ccon {String}:	/'[^\n']*'/							{ $$ = tokenText().substring(1, tokenSize()-1); }
+  '>':	    />/  { state = States.initial; }
+  '=':		/=/
+  ':':		/:/
+  '/':		/\//
 
-'>':	    />/  { state = States.initial; }
-'=':		/=/
-':':		/:/
-'/':		/\//
-
-_skip:      /[\t\r\n ]+/  (space)
+  _skip:      /[\t\r\n ]+/  (space)
+}
 
 :: parser
 

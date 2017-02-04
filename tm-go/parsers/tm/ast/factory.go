@@ -152,8 +152,6 @@ func ToTmNode(n Node) TmNode {
 		return &StartConditions{n}
 	case tm.StartConditionsScope:
 		return &StartConditionsScope{n}
-	case tm.StateSelector:
-		return &StateSelector{n}
 	case tm.Stateref:
 		return &Stateref{n}
 	case tm.StringLiteral:

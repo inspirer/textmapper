@@ -13,8 +13,6 @@ genbison = true
 
 %s initial, div;
 
-[initial, div]
-
 space: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 
 # Note: LineTerminator: /[\n\r\u2028\u2029]/
@@ -150,19 +148,19 @@ ssChar = /[^\n\r'\\\u2028\u2029]|{escape}|{lineCont}/
 StringLiteral: /"{dsChar}*"/
 StringLiteral: /'{ssChar}*'/
 
-[initial]
+<initial> {
+  reBS = /\\[^\n\r\u2028\u2029]/
+  reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
+  reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
+  reChar = /{reFirst}|\*/
 
-reBS = /\\[^\n\r\u2028\u2029]/
-reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
-reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
-reChar = /{reFirst}|\*/
+  RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
+}
 
-RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
-
-[div]
-'/': /\//
-'/=': /\/=/
-
+<div> {
+  '/': /\//
+  '/=': /\/=/
+}
 
 :: parser
 

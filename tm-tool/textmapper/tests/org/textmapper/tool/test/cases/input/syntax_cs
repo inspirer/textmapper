@@ -2,7 +2,7 @@ language syntax_cs(java);
 
 :: lexer
 
-%s inComment;
+%x inComment;
 
 identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/ -1
 error:
@@ -158,11 +158,11 @@ _skip:		/#.*/
 _skip:      /[\t\r\n ]+/    { continue; }
 
 '/*':   /\/\*/          { group = @1;continue; }
-[inComment]
-anysym1: /[^*]+/		{ continue; }
-anysym1: /\*/
-'*/':    /\*\//         { group = @0;continue; }
-
+<inComment> {
+  anysym1: /[^*]+/		{ continue; }
+  anysym1: /\*/
+  '*/':    /\*\//         { group = @0;continue; }
+}
 # Attributes
 
 :: parser

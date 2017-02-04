@@ -29,7 +29,7 @@ genCopyright = true
 
 :: lexer
 
-%s initial, bracedCode, predicate, prologue, tag, epilogue;
+%x bracedCode, predicate, prologue, tag, epilogue;
 
 #####################
 # Common definitions.
@@ -131,8 +131,7 @@ skip: /%\?[ \f\r\n\t\v]*\{/	(space) { state = States.predicate; nesting = 0; lex
 skip: /%{/					(space) { state = States.prologue; nesting = 0; lexemeStart = token.offset; }
 skip: /</					(space) { state = States.tag; nesting = 0; lexemeStart = token.offset; }
 
-[bracedCode]
-'{...}' {String}:  /}/
+<bracedCode> '{...}' {String}:  /}/
 	{
 		nesting--;
 		if (nesting < 0) {
@@ -144,30 +143,31 @@ skip: /</					(space) { state = States.tag; nesting = 0; lexemeStart = token.off
 		}
 	}
 
-[predicate]
-'%?{...}':  /}/    { nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
+<predicate> '%?{...}':  /}/    { nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
 
-[prologue]
-'%{...%}':   /%}/  { state = States.initial; token.offset = lexemeStart; }
+<prologue> '%{...%}':   /%}/  { state = States.initial; token.offset = lexemeStart; }
 
-[tag]
-tag_any: /([^<>]|->)+/  (space)
-tag_inc_nesting: /</  (space)  { nesting++; }
-TAG: />/ 		{ nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
+<tag> {
+	tag_any: /([^<>]|->)+/  (space)
+	tag_inc_nesting: /</  (space)  { nesting++; }
+	TAG: />/ 		{ nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
+}
 
-[bracedCode, prologue, epilogue, predicate]
-code_char: /'([^'\n\\]|{escape})*'/  (space)
-code_string: /"([^"\n\\]|{escape})*"/ (space)
-code_comment: /\/{splice}\/[^\r\n]*/ (space)                                # TODO more {splice}
-code_ml_comment: /\/{splice}\*([^*]|\*+[^\/*])*\*+\// (space)				# TODO more {splice}
-code_any: /.|\n/ -1 (space)
+<bracedCode, prologue, epilogue, predicate> {
+	code_char: /'([^'\n\\]|{escape})*'/  (space)
+	code_string: /"([^"\n\\]|{escape})*"/ (space)
+	code_comment: /\/{splice}\/[^\r\n]*/ (space)                                # TODO more {splice}
+	code_ml_comment: /\/{splice}\*([^*]|\*+[^\/*])*\*+\// (space)				# TODO more {splice}
+	code_any: /.|\n/ -1 (space)
+}
 
-[bracedCode, predicate]
-code_inc_nesting: /{|<{splice}%/ (space) 	{ nesting++; }
-code_dec_nesting: /%{splice}>/ (space) 		{ nesting--; }
+<bracedCode, predicate> {
+	code_inc_nesting: /{|<{splice}%/ (space) 	{ nesting++; }
+	code_dec_nesting: /%{splice}>/ (space) 		{ nesting--; }
 
-# Tokenize '<<%' correctly (as '<<' '%')
-code_lessless: /<{splice}</ (space)
+	# Tokenize '<<%' correctly (as '<<' '%')
+	code_lessless: /<{splice}</ (space)
+}
 
 :: parser
 

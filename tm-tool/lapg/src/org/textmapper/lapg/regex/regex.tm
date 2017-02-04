@@ -32,8 +32,6 @@ genCopyright = true
 
 %s initial, afterChar, inSet;
 
-[initial, afterChar, inSet]
-
 char {Integer}: /[^()\[\]\.|\\\/*?+-]/			{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 escaped {Integer}: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
 												{ $$ = (int) tokenText().charAt(1); quantifierReady(); }
@@ -54,43 +52,42 @@ charclass {String}: /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize()
 
 '.':  /\./										{ quantifierReady(); }
 
-[afterChar]
+<afterChar> {
+	'*':  /\*/                                      { state = States.initial; }
+	'+':  /+/                                       { state = States.initial; }
+	'?':  /?/                                       { state = States.initial; }
+	quantifier:  /\{[0-9]+(,[0-9]*)?\}/             { state = States.initial; }
 
-'*':  /\*/                                      { state = States.initial; }
-'+':  /+/                                       { state = States.initial; }
-'?':  /?/                                       { state = States.initial; }
-quantifier:  /\{[0-9]+(,[0-9]*)?\}/             { state = States.initial; }
+	op_minus:		/\{\-\}/                        { state = States.initial; }
+	op_union:		/\{\+\}/                        { state = States.initial; }
+	op_intersect:	/\{&&\}/                        { state = States.initial; }
+}
 
-op_minus:		/\{\-\}/                        { state = States.initial; }
-op_union:		/\{\+\}/                        { state = States.initial; }
-op_intersect:	/\{&&\}/                        { state = States.initial; }
+<initial, inSet> char {Integer}: /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
-[initial, inSet]
+<initial, afterChar> {
+	'(':  /\(/										{ state = 0; }
+	'|':  /\|/										{ state = 0; }
+	')':  /\)/										{ quantifierReady(); }
 
-char {Integer}: /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
+	'(?':	/\(\?[is-]+:/							{ state = 0; }
 
-[initial, afterChar]
+	'[':	/\[/                                    { state = States.inSet; }
+	'[^':	/\[^/                                   { state = States.inSet; }
+	char {Integer}:  /-/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
-'(':  /\(/										{ state = 0; }
-'|':  /\|/										{ state = 0; }
-')':  /\)/										{ quantifierReady(); }
+	identifier = /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?/
 
-'(?':	/\(\?[is-]+:/							{ state = 0; }
+	expand:			/\{{identifier}\}/	(class)		{ quantifierReady(); }
+	kw_eoi:			/\{eoi\}/						{ state = 0; }
+}
 
-'[':	/\[/                                    { state = States.inSet; }
-'[^':	/\[^/                                   { state = States.inSet; }
-char {Integer}:  /-/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
+<inSet> {
 
-identifier = /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?/
-
-expand:			/\{{identifier}\}/	(class)		{ quantifierReady(); }
-kw_eoi:			/\{eoi\}/						{ state = 0; }
-
-[inSet]
-
-']':  /\]/										{ state = 0; quantifierReady(); }
-'-':  /-/
-char {Integer}:  /[\(\|\)]/						{ $$ = tokenText().codePointAt(0); }
+	']':  /\]/										{ state = 0; quantifierReady(); }
+	'-':  /-/
+	char {Integer}:  /[\(\|\)]/						{ $$ = tokenText().codePointAt(0); }
+}
 
 :: parser
 
