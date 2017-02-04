@@ -38,7 +38,7 @@ public class TmElementsFactory {
 				":: lexer\n" +
 				"token: / /\n" +
 				":: parser\n" +
-				name + " ::= token ;";
+				name + " : token ;";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonterm> s = grammar.getNonterms();
@@ -53,7 +53,7 @@ public class TmElementsFactory {
 				":: lexer\n" +
 				name + ": / /\n\n" +
 				":: parser\n" +
-				"input ::= " + name + " ;";
+				"input : " + name + " ;";
 
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();

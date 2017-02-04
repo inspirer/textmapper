@@ -38,8 +38,7 @@ public class TMLexerCompiler {
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 
-	private final Map<TmaLexeme, RuleAttributes> attributes =
-			new HashMap<>();
+	private final Map<TmaLexeme, RuleAttributes> attributes = new HashMap<>();
 
 	public TMLexerCompiler(TMResolver resolver) {
 		this.resolver = resolver;
@@ -175,8 +174,14 @@ public class TMLexerCompiler {
 			}
 
 			int priority = lexeme.getPriority() == null ? 0 : lexeme.getPriority();
+			List<LexerState> states = attributes.get(lexeme).getApplicableInStates();
+			if (states.isEmpty()) {
+				error(lexeme, "lexer rule is never applicable, ignored");
+				continue;
+			}
+
 			LexerRule liLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, classTerm, regex,
-					attributes.get(lexeme).getApplicableInStates(), priority, null, lexeme);
+					states, priority, null, lexeme);
 			classMatchers.put(liLexerRule, matcher);
 			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
 		}
@@ -265,8 +270,14 @@ public class TMLexerCompiler {
 			}
 
 			int priority = lexeme.getPriority() == null ? 0 : lexeme.getPriority();
+			List<LexerState> states = attributes.get(lexeme).getApplicableInStates();
+			if (states.isEmpty()) {
+				error(lexeme, "lexer rule is never applicable, ignored");
+				continue;
+			}
+
 			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex,
-					attributes.get(lexeme).getApplicableInStates(), priority, classRule, lexeme);
+					states, priority, classRule, lexeme);
 			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
 		}
 	}
