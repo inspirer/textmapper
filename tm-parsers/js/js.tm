@@ -32,6 +32,9 @@ WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
 
 commentChars = /([^*]|\*+[^*\/])*\**/
 MultiLineComment:  /\/\*{commentChars}\*\//
+# Note: the following rule disables backtracking for incomplete multiline comments, which
+# would otherwise be reported as '/', '*', etc.
+invalid_token: /\/\*{commentChars}/
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
 
 # Note: see http://unicode.org/reports/tr31/
@@ -41,11 +44,14 @@ JoinControl = /\u200c|\u200d/
 
 hex = /[0-9a-fA-F]/
 unicodeEscapeSequence = /u(\{{hex}+\}|{hex}{4})/
+brokenEscapeSequence = /\\(u({hex}{0,3}|\{{hex}*))?/
 
 identifierStart = /{IDStart}|$|_|\\{unicodeEscapeSequence}/
 identifierPart =  /{identifierStart}|{IDContinue}|{JoinControl}/
 
 Identifier: /{identifierStart}{identifierPart}*/    (class)
+# Note: the following rule disables backtracking for incomplete identifiers.
+invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 
 # Keywords.
 'break':      /break/
@@ -208,8 +214,9 @@ tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
   reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
   reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
   reChar = /{reFirst}|\*/
+  reFlags = /[a-z]*/
 
-  RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
+  RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{reFlags}/
 }
 
 <div, templateDiv, jsxTemplateDiv> {
@@ -230,6 +237,8 @@ tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
   jsxStringLiteral: /"[^"]*"/
 
   jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
+  # Note: the following rule disables backtracking for incomplete identifiers.
+  invalid_token: /({identifierStart}({identifierPart}|-)*)?{brokenEscapeSequence}/
 }
 
 <jsxText> {
