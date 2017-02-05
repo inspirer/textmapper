@@ -1851,5 +1851,8 @@ var tmLexerAction = []int16{
 }
 
 var tmBacktracking = []int{
-	111, 120, 6, 140, 74, 111, 113, 187,
+	111, 120, // in RegularExpressionLiteral
+	6, 140, // in Identifier
+	74, 111, // in '/': /\//
+	113, 187, // in jsxIdentifier
 }

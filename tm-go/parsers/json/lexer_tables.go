@@ -68,5 +68,6 @@ var tmLexerAction = []int8{
 }
 
 var tmBacktracking = []int{
-	10, 6, 10, 3,
+	10, 6, // in JSONNumber
+	10, 3, // in JSONNumber
 }

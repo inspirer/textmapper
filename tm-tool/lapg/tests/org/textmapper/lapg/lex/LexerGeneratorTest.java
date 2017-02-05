@@ -23,6 +23,7 @@ import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.test.TestStatus;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -374,7 +375,7 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
-				public Iterable<LexerRule> getRules() {
+				public Collection<LexerRule> getRules() {
 					throw new UnsupportedOperationException();
 				}
 

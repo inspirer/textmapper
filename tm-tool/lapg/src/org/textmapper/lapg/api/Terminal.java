@@ -15,6 +15,8 @@
  */
 package org.textmapper.lapg.api;
 
+import java.util.Collection;
+
 /**
  * evgeny, 11/16/12
  */
@@ -28,5 +30,5 @@ public interface Terminal extends Symbol {
 
 	Symbol getSoftClass();
 
-	Iterable<LexerRule> getRules();
+	Collection<LexerRule> getRules();
 }

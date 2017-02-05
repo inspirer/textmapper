@@ -473,9 +473,13 @@ ${end-}
 ${if backtracking = self->canInlineLexerRules()
                    ? syntax.inlineLexerRulesBT(lex.backtracking)
                    : lex.backtracking,
-     lex.backtracking.length > 0-}
+     backtracking.length > 0-}
 var tmBacktracking = []int{
-	${util.format(backtracking, 16, 1)},
+${for i in [0, backtracking.length/2-1]-}
+	${backtracking[i*2]}, ${backtracking[i*2+1]}, // in ${
+	      rule = syntax.lexerRules[lex.backtracking[i*2]-2], rule.symbol.name-}
+${if rule.symbol.rules.size() > 1}: /${rule.regexp}/${end}
+${end-}
 }
 ${end-}
 ${end}

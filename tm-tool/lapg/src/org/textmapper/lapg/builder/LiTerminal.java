@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	}
 
 	@Override
-	public Iterable<LexerRule> getRules() {
+	public Collection<LexerRule> getRules() {
 		return rules;
 	}
 
