@@ -10,8 +10,8 @@ ${template unit-}
 ${call go.header-}
 package ${self->package()}
 
-${if self->localNodeFilterType()-}
-${call nodeFilterTypeImpl-}
+${if self->localNodeSelectorType()-}
+${call nodeSelectorTypeImpl-}
 ${end-}
 var (
 ${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
@@ -30,13 +30,13 @@ ${call filterFunc-}
 ${end-}
 ${end}
 
-${template nodeFilterTypeImpl-}
-type ${self->nodeFilterType()} func (nt ${self->go_listener.nodeTypeRef()}) bool
+${template nodeSelectorTypeImpl-}
+type ${self->nodeSelectorType()} func (nt ${self->go_listener.nodeTypeRef()}) bool
 
 ${end}
 
 ${template filterFunc-}
-func ${self->oneOfRef()->go.declarationName()}(types ...${self->go_listener.nodeTypeRef()}) ${self->nodeFilterTypeRef()} {
+func ${self->oneOfRef()->go.declarationName()}(types ...${self->go_listener.nodeTypeRef()}) ${self->nodeSelectorTypeRef()} {
 	if len(types) == 0 {
 		return func(${self->go_listener.nodeTypeRef()}) bool { return false }
 	}
@@ -52,13 +52,13 @@ func ${self->oneOfRef()->go.declarationName()}(types ...${self->go_listener.node
 }
 ${end}
 
-${query filterFilename() = 'filter/filter.go'}
-${query package() = self->go.package() + '/filter'}
+${query filterFilename() = 'selector/selector.go'}
+${query package() = self->go.package() + '/selector'}
 
-${query localNodeFilterType() = self->package()->go.element(self->nodeFilterType()) == self->nodeFilterTypeRef()}
+${query localNodeSelectorType() = self->package()->go.element(self->nodeSelectorType()) == self->nodeSelectorTypeRef()}
 
-${query nodeFilterType() = self->nodeFilterTypeRef()->go.declarationName()}
-${query nodeFilterTypeRef() = self->package()->go.element('NodeFilter')}
+${query nodeSelectorType() = self->nodeSelectorTypeRef()->go.declarationName()}
+${query nodeSelectorTypeRef() = self->package()->go.element('Selector')}
 
 ${query nodeTypeFilterRef() = self->package()->go.element(self->go_listener.asRangeTypeName())}
 

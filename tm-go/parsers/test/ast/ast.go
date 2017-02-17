@@ -4,18 +4,24 @@ package ast
 
 import (
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
-	"github.com/inspirer/textmapper/tm-go/parsers/test/filter"
+	"github.com/inspirer/textmapper/tm-go/parsers/test/selector"
 )
 
 type Node interface {
 	Type() test.NodeType
-	Child(filter ...filter.NodeFilter) Node
-	Children(filter ...filter.NodeFilter) []Node
+	// Child returns the first child node that matches the selector.
+	Child(sel selector.Selector) Node
+	Children(sel selector.Selector) []Node
+	// Next returns the first element among the following siblings that matches the selector.
+	Next(sel selector.Selector) Node
+	// NextAll returns all following siblings of the node that match the selector.
+	NextAll(sel selector.Selector) []Node
 }
 
 // Interfaces.
 
 type TestNode interface {
+	Node
 	testNodeNode()
 }
 
@@ -31,6 +37,7 @@ func (Test) testNodeNode()  {}
 func (Token) testNodeNode() {}
 
 type Declaration interface {
+	TestNode
 	declarationNode()
 }
 
@@ -48,7 +55,7 @@ type Block struct {
 }
 
 func (n Block) Declaration() []Declaration {
-	nodes := n.Children(filter.Declaration)
+	nodes := n.Children(selector.Declaration)
 	var result []Declaration = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTestNode(node).(Declaration))
@@ -61,7 +68,7 @@ type Decl1 struct {
 }
 
 func (n Decl1) Identifier() []Token {
-	nodes := n.Children(filter.Identifier)
+	nodes := n.Children(selector.Identifier)
 	var result []Token = make([]Token, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Token{node})
@@ -78,7 +85,7 @@ type Test struct {
 }
 
 func (n Test) Declaration() []Declaration {
-	nodes := n.Children(filter.Declaration)
+	nodes := n.Children(selector.Declaration)
 	var result []Declaration = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTestNode(node).(Declaration))

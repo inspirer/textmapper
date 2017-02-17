@@ -4,18 +4,24 @@ package ast
 
 import (
 	"github.com/inspirer/textmapper/tm-parsers/js"
-	"github.com/inspirer/textmapper/tm-parsers/js/filter"
+	"github.com/inspirer/textmapper/tm-parsers/js/selector"
 )
 
 type Node interface {
 	Type() js.NodeType
-	Child(filter ...filter.NodeFilter) Node
-	Children(filter ...filter.NodeFilter) []Node
+	// Child returns the first child node that matches the selector.
+	Child(sel selector.Selector) Node
+	Children(sel selector.Selector) []Node
+	// Next returns the first element among the following siblings that matches the selector.
+	Next(sel selector.Selector) Node
+	// NextAll returns all following siblings of the node that match the selector.
+	NextAll(sel selector.Selector) []Node
 }
 
 // Interfaces.
 
 type JsNode interface {
+	Node
 	jsNodeNode()
 }
 
@@ -152,6 +158,7 @@ func (Yield) jsNodeNode()                    {}
 func (Token) jsNodeNode()                    {}
 
 type BindingPattern interface {
+	JsNode
 	bindingPatternNode()
 }
 
@@ -162,6 +169,7 @@ func (ArrayPattern) bindingPatternNode()  {}
 func (ObjectPattern) bindingPatternNode() {}
 
 type CaseClause interface {
+	JsNode
 	caseClauseNode()
 }
 
@@ -172,6 +180,7 @@ func (Case) caseClauseNode()    {}
 func (Default) caseClauseNode() {}
 
 type ClassElement interface {
+	JsNode
 	classElementNode()
 }
 
@@ -186,6 +195,7 @@ func (Setter) classElementNode()          {}
 func (StaticMethod) classElementNode()    {}
 
 type Declaration interface {
+	JsNode
 	declarationNode()
 }
 
@@ -198,6 +208,7 @@ func (Generator) declarationNode()          {}
 func (LexicalDeclaration) declarationNode() {}
 
 type ElementPattern interface {
+	JsNode
 	elementPatternNode()
 }
 
@@ -209,6 +220,7 @@ func (SingleNameBinding) elementPatternNode() {}
 func (SyntaxError) elementPatternNode()       {}
 
 type ExportElement interface {
+	JsNode
 	exportElementNode()
 }
 
@@ -219,6 +231,7 @@ func (ExportSpecifier) exportElementNode() {}
 func (SyntaxError) exportElementNode()     {}
 
 type Expression interface {
+	JsNode
 	expressionNode()
 }
 
@@ -268,6 +281,7 @@ func (UnaryExpression) expressionNode()          {}
 func (Yield) expressionNode()                    {}
 
 type JSXAttribute interface {
+	JsNode
 	jSXAttributeNode()
 }
 
@@ -278,6 +292,7 @@ func (JSXNormalAttribute) jSXAttributeNode() {}
 func (JSXSpreadAttribute) jSXAttributeNode() {}
 
 type JSXAttributeValue interface {
+	JsNode
 	jSXAttributeValueNode()
 }
 
@@ -289,6 +304,7 @@ func (JSXExpression) jSXAttributeValueNode() {}
 func (JSXLiteral) jSXAttributeValueNode()    {}
 
 type JSXChild interface {
+	JsNode
 	jSXChildNode()
 }
 
@@ -300,6 +316,7 @@ func (JSXExpression) jSXChildNode() {}
 func (JSXText) jSXChildNode()       {}
 
 type MethodDefinition interface {
+	JsNode
 	methodDefinitionNode()
 }
 
@@ -312,6 +329,7 @@ func (Method) methodDefinitionNode()          {}
 func (Setter) methodDefinitionNode()          {}
 
 type ModuleItem interface {
+	JsNode
 	moduleItemNode()
 }
 
@@ -349,6 +367,7 @@ func (WhileStatement) moduleItemNode()        {}
 func (WithStatement) moduleItemNode()         {}
 
 type NamedImport interface {
+	JsNode
 	namedImportNode()
 }
 
@@ -359,6 +378,7 @@ func (ImportSpecifier) namedImportNode() {}
 func (SyntaxError) namedImportNode()     {}
 
 type PropertyDefinition interface {
+	JsNode
 	propertyDefinitionNode()
 }
 
@@ -374,6 +394,7 @@ func (ShorthandProperty) propertyDefinitionNode() {}
 func (SyntaxError) propertyDefinitionNode()       {}
 
 type PropertyName interface {
+	JsNode
 	propertyNameNode()
 }
 
@@ -384,6 +405,7 @@ func (ComputedPropertyName) propertyNameNode() {}
 func (LiteralPropertyName) propertyNameNode()  {}
 
 type PropertyPattern interface {
+	JsNode
 	propertyPatternNode()
 }
 
@@ -395,6 +417,7 @@ func (SingleNameBinding) propertyPatternNode() {}
 func (SyntaxError) propertyPatternNode()       {}
 
 type Statement interface {
+	JsNode
 	statementNode()
 }
 
@@ -424,6 +447,7 @@ func (WhileStatement) statementNode()        {}
 func (WithStatement) statementNode()         {}
 
 type StatementListItem interface {
+	JsNode
 	statementListItemNode()
 }
 
@@ -464,11 +488,11 @@ type AdditiveExpression struct {
 }
 
 func (n AdditiveExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n AdditiveExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type Arguments struct {
@@ -476,7 +500,7 @@ type Arguments struct {
 }
 
 func (n Arguments) List() []Expression {
-	nodes := n.Children(filter.Expression)
+	nodes := n.Children(selector.Expression)
 	var result []Expression = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Expression))
@@ -489,7 +513,7 @@ type ArrayLiteral struct {
 }
 
 func (n ArrayLiteral) List() []Expression {
-	nodes := n.Children(filter.Expression)
+	nodes := n.Children(selector.Expression)
 	var result []Expression = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Expression))
@@ -502,7 +526,7 @@ type ArrayPattern struct {
 }
 
 func (n ArrayPattern) ElementPattern() []ElementPattern {
-	nodes := n.Children(filter.ElementPattern)
+	nodes := n.Children(selector.ElementPattern)
 	var result []ElementPattern = make([]ElementPattern, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ElementPattern))
@@ -511,7 +535,7 @@ func (n ArrayPattern) ElementPattern() []ElementPattern {
 }
 
 func (n ArrayPattern) BindingRestElement() *BindingRestElement {
-	if child := n.Child(filter.BindingRestElement); child != nil {
+	if child := n.Child(selector.BindingRestElement); child != nil {
 		return &BindingRestElement{child}
 	}
 	return nil
@@ -522,18 +546,18 @@ type ArrowFunction struct {
 }
 
 func (n ArrowFunction) Parameters() Parameters {
-	return Parameters{n.Child(filter.Parameters)}
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n ArrowFunction) Body() *Body {
-	if child := n.Child(filter.Body); child != nil {
+	if child := n.Child(selector.Body); child != nil {
 		return &Body{child}
 	}
 	return nil
 }
 
 func (n ArrowFunction) ConciseBody() *ConciseBody {
-	if child := n.Child(filter.ConciseBody); child != nil {
+	if child := n.Child(selector.ConciseBody); child != nil {
 		return &ConciseBody{child}
 	}
 	return nil
@@ -544,18 +568,18 @@ type AssignmentExpression struct {
 }
 
 func (n AssignmentExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n AssignmentExpression) AssignmentOperator() *AssignmentOperator {
-	if child := n.Child(filter.AssignmentOperator); child != nil {
+	if child := n.Child(selector.AssignmentOperator); child != nil {
 		return &AssignmentOperator{child}
 	}
 	return nil
 }
 
 func (n AssignmentExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type AssignmentOperator struct {
@@ -571,7 +595,7 @@ type BindingRestElement struct {
 }
 
 func (n BindingRestElement) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(filter.BindingIdentifier)}
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 type BitwiseANDExpression struct {
@@ -579,11 +603,11 @@ type BitwiseANDExpression struct {
 }
 
 func (n BitwiseANDExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n BitwiseANDExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type BitwiseORExpression struct {
@@ -591,11 +615,11 @@ type BitwiseORExpression struct {
 }
 
 func (n BitwiseORExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n BitwiseORExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type BitwiseXORExpression struct {
@@ -603,11 +627,11 @@ type BitwiseXORExpression struct {
 }
 
 func (n BitwiseXORExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n BitwiseXORExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type Block struct {
@@ -615,7 +639,7 @@ type Block struct {
 }
 
 func (n Block) CaseClause() []CaseClause {
-	nodes := n.Children(filter.CaseClause)
+	nodes := n.Children(selector.CaseClause)
 	var result []CaseClause = make([]CaseClause, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(CaseClause))
@@ -624,7 +648,7 @@ func (n Block) CaseClause() []CaseClause {
 }
 
 func (n Block) StatementListItem() []StatementListItem {
-	nodes := n.Children(filter.StatementListItem)
+	nodes := n.Children(selector.StatementListItem)
 	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
@@ -637,7 +661,7 @@ type Body struct {
 }
 
 func (n Body) StatementListItem() []StatementListItem {
-	nodes := n.Children(filter.StatementListItem)
+	nodes := n.Children(selector.StatementListItem)
 	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
@@ -650,7 +674,7 @@ type BreakStatement struct {
 }
 
 func (n BreakStatement) LabelIdentifier() *LabelIdentifier {
-	if child := n.Child(filter.LabelIdentifier); child != nil {
+	if child := n.Child(selector.LabelIdentifier); child != nil {
 		return &LabelIdentifier{child}
 	}
 	return nil
@@ -661,11 +685,11 @@ type CallExpression struct {
 }
 
 func (n CallExpression) Expr() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n CallExpression) Arguments() Arguments {
-	return Arguments{n.Child(filter.Arguments)}
+	return Arguments{n.Child(selector.Arguments)}
 }
 
 type Case struct {
@@ -673,11 +697,11 @@ type Case struct {
 }
 
 func (n Case) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n Case) StatementListItem() []StatementListItem {
-	nodes := n.Children(filter.StatementListItem)
+	nodes := n.Children(selector.StatementListItem)
 	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
@@ -690,21 +714,21 @@ type Catch struct {
 }
 
 func (n Catch) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n Catch) BindingPattern() BindingPattern {
-	if child := n.Child(filter.BindingPattern); child != nil {
+	if child := n.Child(selector.BindingPattern); child != nil {
 		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
 }
 
 func (n Catch) Block() Block {
-	return Block{n.Child(filter.Block)}
+	return Block{n.Child(selector.Block)}
 }
 
 type Class struct {
@@ -712,21 +736,21 @@ type Class struct {
 }
 
 func (n Class) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n Class) Extends() *Extends {
-	if child := n.Child(filter.Extends); child != nil {
+	if child := n.Child(selector.Extends); child != nil {
 		return &Extends{child}
 	}
 	return nil
 }
 
 func (n Class) ClassBody() ClassBody {
-	return ClassBody{n.Child(filter.ClassBody)}
+	return ClassBody{n.Child(selector.ClassBody)}
 }
 
 type ClassBody struct {
@@ -734,7 +758,7 @@ type ClassBody struct {
 }
 
 func (n ClassBody) ClassElement() []ClassElement {
-	nodes := n.Children(filter.ClassElement)
+	nodes := n.Children(selector.ClassElement)
 	var result []ClassElement = make([]ClassElement, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ClassElement))
@@ -747,21 +771,21 @@ type ClassExpr struct {
 }
 
 func (n ClassExpr) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n ClassExpr) Extends() *Extends {
-	if child := n.Child(filter.Extends); child != nil {
+	if child := n.Child(selector.Extends); child != nil {
 		return &Extends{child}
 	}
 	return nil
 }
 
 func (n ClassExpr) ClassBody() ClassBody {
-	return ClassBody{n.Child(filter.ClassBody)}
+	return ClassBody{n.Child(selector.ClassBody)}
 }
 
 type CommaExpression struct {
@@ -769,11 +793,11 @@ type CommaExpression struct {
 }
 
 func (n CommaExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n CommaExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type ComputedPropertyName struct {
@@ -781,7 +805,7 @@ type ComputedPropertyName struct {
 }
 
 func (n ComputedPropertyName) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type ConciseBody struct {
@@ -789,7 +813,7 @@ type ConciseBody struct {
 }
 
 func (n ConciseBody) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type ConditionalExpression struct {
@@ -797,15 +821,15 @@ type ConditionalExpression struct {
 }
 
 func (n ConditionalExpression) Cond() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ConditionalExpression) Then() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 func (n ConditionalExpression) Else() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type ContinueStatement struct {
@@ -813,7 +837,7 @@ type ContinueStatement struct {
 }
 
 func (n ContinueStatement) LabelIdentifier() *LabelIdentifier {
-	if child := n.Child(filter.LabelIdentifier); child != nil {
+	if child := n.Child(selector.LabelIdentifier); child != nil {
 		return &LabelIdentifier{child}
 	}
 	return nil
@@ -828,7 +852,7 @@ type Default struct {
 }
 
 func (n Default) StatementListItem() []StatementListItem {
-	nodes := n.Children(filter.StatementListItem)
+	nodes := n.Children(selector.StatementListItem)
 	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
@@ -841,11 +865,11 @@ type DoWhileStatement struct {
 }
 
 func (n DoWhileStatement) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 func (n DoWhileStatement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type ElementBinding struct {
@@ -853,11 +877,11 @@ type ElementBinding struct {
 }
 
 func (n ElementBinding) BindingPattern() BindingPattern {
-	return ToJsNode(n.Child(filter.BindingPattern)).(BindingPattern)
+	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
 func (n ElementBinding) Initializer() *Initializer {
-	if child := n.Child(filter.Initializer); child != nil {
+	if child := n.Child(selector.Initializer); child != nil {
 		return &Initializer{child}
 	}
 	return nil
@@ -876,11 +900,11 @@ type EqualityExpression struct {
 }
 
 func (n EqualityExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n EqualityExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type ExponentiationExpression struct {
@@ -888,11 +912,11 @@ type ExponentiationExpression struct {
 }
 
 func (n ExponentiationExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ExponentiationExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type ExportClause struct {
@@ -900,7 +924,7 @@ type ExportClause struct {
 }
 
 func (n ExportClause) ExportElement() []ExportElement {
-	nodes := n.Children(filter.ExportElement)
+	nodes := n.Children(selector.ExportElement)
 	var result []ExportElement = make([]ExportElement, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ExportElement))
@@ -913,28 +937,28 @@ type ExportDeclaration struct {
 }
 
 func (n ExportDeclaration) Declaration() Declaration {
-	if child := n.Child(filter.Declaration); child != nil {
+	if child := n.Child(selector.Declaration); child != nil {
 		return ToJsNode(child).(Declaration)
 	}
 	return nil
 }
 
 func (n ExportDeclaration) ExportClause() *ExportClause {
-	if child := n.Child(filter.ExportClause); child != nil {
+	if child := n.Child(selector.ExportClause); child != nil {
 		return &ExportClause{child}
 	}
 	return nil
 }
 
 func (n ExportDeclaration) VariableStatement() *VariableStatement {
-	if child := n.Child(filter.VariableStatement); child != nil {
+	if child := n.Child(selector.VariableStatement); child != nil {
 		return &VariableStatement{child}
 	}
 	return nil
 }
 
 func (n ExportDeclaration) ModuleSpecifier() *ModuleSpecifier {
-	if child := n.Child(filter.ModuleSpecifier); child != nil {
+	if child := n.Child(selector.ModuleSpecifier); child != nil {
 		return &ModuleSpecifier{child}
 	}
 	return nil
@@ -945,14 +969,14 @@ type ExportDefault struct {
 }
 
 func (n ExportDefault) Declaration() Declaration {
-	if child := n.Child(filter.Declaration); child != nil {
+	if child := n.Child(selector.Declaration); child != nil {
 		return ToJsNode(child).(Declaration)
 	}
 	return nil
 }
 
 func (n ExportDefault) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
@@ -963,11 +987,11 @@ type ExportSpecifier struct {
 }
 
 func (n ExportSpecifier) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(filter.IdentifierReference)}
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
 func (n ExportSpecifier) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
@@ -978,7 +1002,7 @@ type ExpressionStatement struct {
 }
 
 func (n ExpressionStatement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type Extends struct {
@@ -986,7 +1010,7 @@ type Extends struct {
 }
 
 func (n Extends) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type Finally struct {
@@ -994,7 +1018,7 @@ type Finally struct {
 }
 
 func (n Finally) Block() Block {
-	return Block{n.Child(filter.Block)}
+	return Block{n.Child(selector.Block)}
 }
 
 type ForBinding struct {
@@ -1002,14 +1026,14 @@ type ForBinding struct {
 }
 
 func (n ForBinding) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n ForBinding) BindingPattern() BindingPattern {
-	if child := n.Child(filter.BindingPattern); child != nil {
+	if child := n.Child(selector.BindingPattern); child != nil {
 		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
@@ -1020,7 +1044,7 @@ type ForCondition struct {
 }
 
 func (n ForCondition) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
@@ -1031,7 +1055,7 @@ type ForFinalExpression struct {
 }
 
 func (n ForFinalExpression) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
@@ -1042,15 +1066,15 @@ type ForInStatement struct {
 }
 
 func (n ForInStatement) Var() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ForInStatement) Object() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 func (n ForInStatement) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type ForInStatementWithVar struct {
@@ -1058,15 +1082,15 @@ type ForInStatementWithVar struct {
 }
 
 func (n ForInStatementWithVar) ForBinding() ForBinding {
-	return ForBinding{n.Child(filter.ForBinding)}
+	return ForBinding{n.Child(selector.ForBinding)}
 }
 
 func (n ForInStatementWithVar) Object() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ForInStatementWithVar) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type ForOfStatement struct {
@@ -1074,15 +1098,15 @@ type ForOfStatement struct {
 }
 
 func (n ForOfStatement) Var() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatement) Iterable() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatement) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type ForOfStatementWithVar struct {
@@ -1090,15 +1114,15 @@ type ForOfStatementWithVar struct {
 }
 
 func (n ForOfStatementWithVar) ForBinding() ForBinding {
-	return ForBinding{n.Child(filter.ForBinding)}
+	return ForBinding{n.Child(selector.ForBinding)}
 }
 
 func (n ForOfStatementWithVar) Iterable() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatementWithVar) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type ForStatement struct {
@@ -1106,22 +1130,22 @@ type ForStatement struct {
 }
 
 func (n ForStatement) Var() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
 }
 
 func (n ForStatement) ForCondition() ForCondition {
-	return ForCondition{n.Child(filter.ForCondition)}
+	return ForCondition{n.Child(selector.ForCondition)}
 }
 
 func (n ForStatement) ForFinalExpression() ForFinalExpression {
-	return ForFinalExpression{n.Child(filter.ForFinalExpression)}
+	return ForFinalExpression{n.Child(selector.ForFinalExpression)}
 }
 
 func (n ForStatement) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type ForStatementWithVar struct {
@@ -1129,7 +1153,7 @@ type ForStatementWithVar struct {
 }
 
 func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
-	nodes := n.Children(filter.LexicalBinding)
+	nodes := n.Children(selector.LexicalBinding)
 	var result []LexicalBinding = make([]LexicalBinding, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexicalBinding{node})
@@ -1138,7 +1162,7 @@ func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
 }
 
 func (n ForStatementWithVar) VariableDeclaration() []VariableDeclaration {
-	nodes := n.Children(filter.VariableDeclaration)
+	nodes := n.Children(selector.VariableDeclaration)
 	var result []VariableDeclaration = make([]VariableDeclaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, VariableDeclaration{node})
@@ -1147,15 +1171,15 @@ func (n ForStatementWithVar) VariableDeclaration() []VariableDeclaration {
 }
 
 func (n ForStatementWithVar) ForCondition() ForCondition {
-	return ForCondition{n.Child(filter.ForCondition)}
+	return ForCondition{n.Child(selector.ForCondition)}
 }
 
 func (n ForStatementWithVar) ForFinalExpression() ForFinalExpression {
-	return ForFinalExpression{n.Child(filter.ForFinalExpression)}
+	return ForFinalExpression{n.Child(selector.ForFinalExpression)}
 }
 
 func (n ForStatementWithVar) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type Function struct {
@@ -1163,18 +1187,18 @@ type Function struct {
 }
 
 func (n Function) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n Function) Parameters() Parameters {
-	return Parameters{n.Child(filter.Parameters)}
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n Function) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type FunctionExpression struct {
@@ -1182,18 +1206,18 @@ type FunctionExpression struct {
 }
 
 func (n FunctionExpression) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n FunctionExpression) Parameters() Parameters {
-	return Parameters{n.Child(filter.Parameters)}
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n FunctionExpression) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type Generator struct {
@@ -1201,18 +1225,18 @@ type Generator struct {
 }
 
 func (n Generator) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n Generator) Parameters() Parameters {
-	return Parameters{n.Child(filter.Parameters)}
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n Generator) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type GeneratorExpression struct {
@@ -1220,18 +1244,18 @@ type GeneratorExpression struct {
 }
 
 func (n GeneratorExpression) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n GeneratorExpression) Parameters() Parameters {
-	return Parameters{n.Child(filter.Parameters)}
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n GeneratorExpression) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type GeneratorMethod struct {
@@ -1239,15 +1263,15 @@ type GeneratorMethod struct {
 }
 
 func (n GeneratorMethod) PropertyName() PropertyName {
-	return ToJsNode(n.Child(filter.PropertyName)).(PropertyName)
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
 func (n GeneratorMethod) Parameters() Parameters {
-	return Parameters{n.Child(filter.Parameters)}
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n GeneratorMethod) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type Getter struct {
@@ -1255,11 +1279,11 @@ type Getter struct {
 }
 
 func (n Getter) PropertyName() PropertyName {
-	return ToJsNode(n.Child(filter.PropertyName)).(PropertyName)
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
 func (n Getter) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type IdentifierReference struct {
@@ -1271,15 +1295,15 @@ type IfStatement struct {
 }
 
 func (n IfStatement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n IfStatement) Then() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 func (n IfStatement) Else() Statement {
-	if child := n.Child(filter.Statement, filter.Statement); child != nil {
+	if child := n.Child(selector.Statement).Next(selector.Statement); child != nil {
 		return ToJsNode(child).(Statement)
 	}
 	return nil
@@ -1290,28 +1314,28 @@ type ImportDeclaration struct {
 }
 
 func (n ImportDeclaration) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n ImportDeclaration) NameSpaceImport() *NameSpaceImport {
-	if child := n.Child(filter.NameSpaceImport); child != nil {
+	if child := n.Child(selector.NameSpaceImport); child != nil {
 		return &NameSpaceImport{child}
 	}
 	return nil
 }
 
 func (n ImportDeclaration) NamedImports() *NamedImports {
-	if child := n.Child(filter.NamedImports); child != nil {
+	if child := n.Child(selector.NamedImports); child != nil {
 		return &NamedImports{child}
 	}
 	return nil
 }
 
 func (n ImportDeclaration) ModuleSpecifier() ModuleSpecifier {
-	return ModuleSpecifier{n.Child(filter.ModuleSpecifier)}
+	return ModuleSpecifier{n.Child(selector.ModuleSpecifier)}
 }
 
 type ImportSpecifier struct {
@@ -1319,14 +1343,14 @@ type ImportSpecifier struct {
 }
 
 func (n ImportSpecifier) IdentifierReference() *IdentifierReference {
-	if child := n.Child(filter.IdentifierReference); child != nil {
+	if child := n.Child(selector.IdentifierReference); child != nil {
 		return &IdentifierReference{child}
 	}
 	return nil
 }
 
 func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(filter.BindingIdentifier)}
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 type IndexAccess struct {
@@ -1334,11 +1358,11 @@ type IndexAccess struct {
 }
 
 func (n IndexAccess) Expr() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n IndexAccess) Index() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type Initializer struct {
@@ -1346,7 +1370,7 @@ type Initializer struct {
 }
 
 func (n Initializer) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type JSXAttributeName struct {
@@ -1358,7 +1382,7 @@ type JSXClosingElement struct {
 }
 
 func (n JSXClosingElement) JSXElementName() JSXElementName {
-	return JSXElementName{n.Child(filter.JSXElementName)}
+	return JSXElementName{n.Child(selector.JSXElementName)}
 }
 
 type JSXElement struct {
@@ -1366,21 +1390,21 @@ type JSXElement struct {
 }
 
 func (n JSXElement) JSXOpeningElement() *JSXOpeningElement {
-	if child := n.Child(filter.JSXOpeningElement); child != nil {
+	if child := n.Child(selector.JSXOpeningElement); child != nil {
 		return &JSXOpeningElement{child}
 	}
 	return nil
 }
 
 func (n JSXElement) JSXSelfClosingElement() *JSXSelfClosingElement {
-	if child := n.Child(filter.JSXSelfClosingElement); child != nil {
+	if child := n.Child(selector.JSXSelfClosingElement); child != nil {
 		return &JSXSelfClosingElement{child}
 	}
 	return nil
 }
 
 func (n JSXElement) JSXChild() []JSXChild {
-	nodes := n.Children(filter.JSXChild)
+	nodes := n.Children(selector.JSXChild)
 	var result []JSXChild = make([]JSXChild, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JSXChild))
@@ -1389,7 +1413,7 @@ func (n JSXElement) JSXChild() []JSXChild {
 }
 
 func (n JSXElement) JSXClosingElement() *JSXClosingElement {
-	if child := n.Child(filter.JSXClosingElement); child != nil {
+	if child := n.Child(selector.JSXClosingElement); child != nil {
 		return &JSXClosingElement{child}
 	}
 	return nil
@@ -1404,7 +1428,7 @@ type JSXExpression struct {
 }
 
 func (n JSXExpression) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
@@ -1419,11 +1443,11 @@ type JSXNormalAttribute struct {
 }
 
 func (n JSXNormalAttribute) JSXAttributeName() JSXAttributeName {
-	return JSXAttributeName{n.Child(filter.JSXAttributeName)}
+	return JSXAttributeName{n.Child(selector.JSXAttributeName)}
 }
 
 func (n JSXNormalAttribute) JSXAttributeValue() JSXAttributeValue {
-	return ToJsNode(n.Child(filter.JSXAttributeValue)).(JSXAttributeValue)
+	return ToJsNode(n.Child(selector.JSXAttributeValue)).(JSXAttributeValue)
 }
 
 type JSXOpeningElement struct {
@@ -1431,11 +1455,11 @@ type JSXOpeningElement struct {
 }
 
 func (n JSXOpeningElement) JSXElementName() JSXElementName {
-	return JSXElementName{n.Child(filter.JSXElementName)}
+	return JSXElementName{n.Child(selector.JSXElementName)}
 }
 
 func (n JSXOpeningElement) JSXAttribute() []JSXAttribute {
-	nodes := n.Children(filter.JSXAttribute)
+	nodes := n.Children(selector.JSXAttribute)
 	var result []JSXAttribute = make([]JSXAttribute, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JSXAttribute))
@@ -1448,11 +1472,11 @@ type JSXSelfClosingElement struct {
 }
 
 func (n JSXSelfClosingElement) JSXElementName() JSXElementName {
-	return JSXElementName{n.Child(filter.JSXElementName)}
+	return JSXElementName{n.Child(selector.JSXElementName)}
 }
 
 func (n JSXSelfClosingElement) JSXAttribute() []JSXAttribute {
-	nodes := n.Children(filter.JSXAttribute)
+	nodes := n.Children(selector.JSXAttribute)
 	var result []JSXAttribute = make([]JSXAttribute, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JSXAttribute))
@@ -1465,7 +1489,7 @@ type JSXSpreadAttribute struct {
 }
 
 func (n JSXSpreadAttribute) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type JSXText struct {
@@ -1481,14 +1505,14 @@ type LabelledStatement struct {
 }
 
 func (n LabelledStatement) Function() *Function {
-	if child := n.Child(filter.Function); child != nil {
+	if child := n.Child(selector.Function); child != nil {
 		return &Function{child}
 	}
 	return nil
 }
 
 func (n LabelledStatement) Statement() Statement {
-	if child := n.Child(filter.Statement); child != nil {
+	if child := n.Child(selector.Statement); child != nil {
 		return ToJsNode(child).(Statement)
 	}
 	return nil
@@ -1499,21 +1523,21 @@ type LexicalBinding struct {
 }
 
 func (n LexicalBinding) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n LexicalBinding) BindingPattern() BindingPattern {
-	if child := n.Child(filter.BindingPattern); child != nil {
+	if child := n.Child(selector.BindingPattern); child != nil {
 		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
 }
 
 func (n LexicalBinding) Initializer() *Initializer {
-	if child := n.Child(filter.Initializer); child != nil {
+	if child := n.Child(selector.Initializer); child != nil {
 		return &Initializer{child}
 	}
 	return nil
@@ -1524,7 +1548,7 @@ type LexicalDeclaration struct {
 }
 
 func (n LexicalDeclaration) LexicalBinding() []LexicalBinding {
-	nodes := n.Children(filter.LexicalBinding)
+	nodes := n.Children(selector.LexicalBinding)
 	var result []LexicalBinding = make([]LexicalBinding, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexicalBinding{node})
@@ -1541,7 +1565,7 @@ type LiteralPropertyName struct {
 }
 
 func (n LiteralPropertyName) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
@@ -1552,11 +1576,11 @@ type LogicalANDExpression struct {
 }
 
 func (n LogicalANDExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n LogicalANDExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type LogicalORExpression struct {
@@ -1564,11 +1588,11 @@ type LogicalORExpression struct {
 }
 
 func (n LogicalORExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n LogicalORExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type Method struct {
@@ -1576,15 +1600,15 @@ type Method struct {
 }
 
 func (n Method) PropertyName() PropertyName {
-	return ToJsNode(n.Child(filter.PropertyName)).(PropertyName)
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
 func (n Method) Parameters() Parameters {
-	return Parameters{n.Child(filter.Parameters)}
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n Method) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type Module struct {
@@ -1592,7 +1616,7 @@ type Module struct {
 }
 
 func (n Module) ModuleItem() []ModuleItem {
-	nodes := n.Children(filter.ModuleItem)
+	nodes := n.Children(selector.ModuleItem)
 	var result []ModuleItem = make([]ModuleItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ModuleItem))
@@ -1609,11 +1633,11 @@ type MultiplicativeExpression struct {
 }
 
 func (n MultiplicativeExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n MultiplicativeExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type NameSpaceImport struct {
@@ -1621,7 +1645,7 @@ type NameSpaceImport struct {
 }
 
 func (n NameSpaceImport) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(filter.BindingIdentifier)}
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 type NamedImports struct {
@@ -1629,7 +1653,7 @@ type NamedImports struct {
 }
 
 func (n NamedImports) NamedImport() []NamedImport {
-	nodes := n.Children(filter.NamedImport)
+	nodes := n.Children(selector.NamedImport)
 	var result []NamedImport = make([]NamedImport, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(NamedImport))
@@ -1642,11 +1666,11 @@ type NewExpression struct {
 }
 
 func (n NewExpression) Expr() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n NewExpression) Arguments() *Arguments {
-	if child := n.Child(filter.Arguments); child != nil {
+	if child := n.Child(selector.Arguments); child != nil {
 		return &Arguments{child}
 	}
 	return nil
@@ -1661,7 +1685,7 @@ type ObjectLiteral struct {
 }
 
 func (n ObjectLiteral) PropertyDefinition() []PropertyDefinition {
-	nodes := n.Children(filter.PropertyDefinition)
+	nodes := n.Children(selector.PropertyDefinition)
 	var result []PropertyDefinition = make([]PropertyDefinition, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(PropertyDefinition))
@@ -1674,7 +1698,7 @@ type ObjectPattern struct {
 }
 
 func (n ObjectPattern) PropertyPattern() []PropertyPattern {
-	nodes := n.Children(filter.PropertyPattern)
+	nodes := n.Children(selector.PropertyPattern)
 	var result []PropertyPattern = make([]PropertyPattern, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(PropertyPattern))
@@ -1687,7 +1711,7 @@ type Parameter struct {
 }
 
 func (n Parameter) ElementPattern() ElementPattern {
-	return ToJsNode(n.Child(filter.ElementPattern)).(ElementPattern)
+	return ToJsNode(n.Child(selector.ElementPattern)).(ElementPattern)
 }
 
 type Parameters struct {
@@ -1695,14 +1719,14 @@ type Parameters struct {
 }
 
 func (n Parameters) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
 }
 
 func (n Parameters) Parameter() []Parameter {
-	nodes := n.Children(filter.Parameter)
+	nodes := n.Children(selector.Parameter)
 	var result []Parameter = make([]Parameter, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Parameter{node})
@@ -1711,28 +1735,28 @@ func (n Parameters) Parameter() []Parameter {
 }
 
 func (n Parameters) RestParameter() *RestParameter {
-	if child := n.Child(filter.RestParameter); child != nil {
+	if child := n.Child(selector.RestParameter); child != nil {
 		return &RestParameter{child}
 	}
 	return nil
 }
 
 func (n Parameters) SyntaxError() *SyntaxError {
-	if child := n.Child(filter.SyntaxError); child != nil {
+	if child := n.Child(selector.SyntaxError); child != nil {
 		return &SyntaxError{child}
 	}
 	return nil
 }
 
 func (n Parameters) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n Parameters) BindingPattern() BindingPattern {
-	if child := n.Child(filter.BindingPattern); child != nil {
+	if child := n.Child(selector.BindingPattern); child != nil {
 		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
@@ -1743,28 +1767,28 @@ type Parenthesized struct {
 }
 
 func (n Parenthesized) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
 }
 
 func (n Parenthesized) SyntaxError() *SyntaxError {
-	if child := n.Child(filter.SyntaxError); child != nil {
+	if child := n.Child(selector.SyntaxError); child != nil {
 		return &SyntaxError{child}
 	}
 	return nil
 }
 
 func (n Parenthesized) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n Parenthesized) BindingPattern() BindingPattern {
-	if child := n.Child(filter.BindingPattern); child != nil {
+	if child := n.Child(selector.BindingPattern); child != nil {
 		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
@@ -1775,7 +1799,7 @@ type PostDec struct {
 }
 
 func (n PostDec) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type PostInc struct {
@@ -1783,7 +1807,7 @@ type PostInc struct {
 }
 
 func (n PostInc) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type PreDec struct {
@@ -1791,7 +1815,7 @@ type PreDec struct {
 }
 
 func (n PreDec) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type PreInc struct {
@@ -1799,7 +1823,7 @@ type PreInc struct {
 }
 
 func (n PreInc) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type Property struct {
@@ -1807,11 +1831,11 @@ type Property struct {
 }
 
 func (n Property) PropertyName() PropertyName {
-	return ToJsNode(n.Child(filter.PropertyName)).(PropertyName)
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
 func (n Property) Value() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type PropertyAccess struct {
@@ -1819,11 +1843,11 @@ type PropertyAccess struct {
 }
 
 func (n PropertyAccess) Expr() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n PropertyAccess) Selector() IdentifierReference {
-	return IdentifierReference{n.Child(filter.Expression, filter.IdentifierReference)}
+	return IdentifierReference{n.Child(selector.Expression).Next(selector.IdentifierReference)}
 }
 
 type PropertyBinding struct {
@@ -1831,11 +1855,11 @@ type PropertyBinding struct {
 }
 
 func (n PropertyBinding) PropertyName() PropertyName {
-	return ToJsNode(n.Child(filter.PropertyName)).(PropertyName)
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
 func (n PropertyBinding) ElementPattern() ElementPattern {
-	return ToJsNode(n.Child(filter.ElementPattern)).(ElementPattern)
+	return ToJsNode(n.Child(selector.ElementPattern)).(ElementPattern)
 }
 
 type Regexp struct {
@@ -1847,11 +1871,11 @@ type RelationalExpression struct {
 }
 
 func (n RelationalExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n RelationalExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type RestParameter struct {
@@ -1859,7 +1883,7 @@ type RestParameter struct {
 }
 
 func (n RestParameter) BindingRestElement() BindingRestElement {
-	return BindingRestElement{n.Child(filter.BindingRestElement)}
+	return BindingRestElement{n.Child(selector.BindingRestElement)}
 }
 
 type ReturnStatement struct {
@@ -1867,7 +1891,7 @@ type ReturnStatement struct {
 }
 
 func (n ReturnStatement) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil
@@ -1878,15 +1902,15 @@ type Setter struct {
 }
 
 func (n Setter) PropertyName() PropertyName {
-	return ToJsNode(n.Child(filter.PropertyName)).(PropertyName)
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
 func (n Setter) Parameter() Parameter {
-	return Parameter{n.Child(filter.Parameter)}
+	return Parameter{n.Child(selector.Parameter)}
 }
 
 func (n Setter) Body() Body {
-	return Body{n.Child(filter.Body)}
+	return Body{n.Child(selector.Body)}
 }
 
 type ShiftExpression struct {
@@ -1894,11 +1918,11 @@ type ShiftExpression struct {
 }
 
 func (n ShiftExpression) Left() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ShiftExpression) Right() Expression {
-	return ToJsNode(n.Child(filter.Expression, filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type ShorthandProperty struct {
@@ -1906,7 +1930,7 @@ type ShorthandProperty struct {
 }
 
 func (n ShorthandProperty) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(filter.IdentifierReference)}
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
 type SingleNameBinding struct {
@@ -1914,11 +1938,11 @@ type SingleNameBinding struct {
 }
 
 func (n SingleNameBinding) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(filter.BindingIdentifier)}
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 func (n SingleNameBinding) Initializer() *Initializer {
-	if child := n.Child(filter.Initializer); child != nil {
+	if child := n.Child(selector.Initializer); child != nil {
 		return &Initializer{child}
 	}
 	return nil
@@ -1929,7 +1953,7 @@ type SpreadElement struct {
 }
 
 func (n SpreadElement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type StaticMethod struct {
@@ -1937,7 +1961,7 @@ type StaticMethod struct {
 }
 
 func (n StaticMethod) MethodDefinition() MethodDefinition {
-	return ToJsNode(n.Child(filter.MethodDefinition)).(MethodDefinition)
+	return ToJsNode(n.Child(selector.MethodDefinition)).(MethodDefinition)
 }
 
 type SuperExpression struct {
@@ -1949,11 +1973,11 @@ type SwitchStatement struct {
 }
 
 func (n SwitchStatement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n SwitchStatement) Block() Block {
-	return Block{n.Child(filter.Block)}
+	return Block{n.Child(selector.Block)}
 }
 
 type SyntaxError struct {
@@ -1961,14 +1985,14 @@ type SyntaxError struct {
 }
 
 func (n SyntaxError) IdentifierReference() *IdentifierReference {
-	if child := n.Child(filter.IdentifierReference); child != nil {
+	if child := n.Child(selector.IdentifierReference); child != nil {
 		return &IdentifierReference{child}
 	}
 	return nil
 }
 
 func (n SyntaxError) Initializer() *Initializer {
-	if child := n.Child(filter.Initializer); child != nil {
+	if child := n.Child(selector.Initializer); child != nil {
 		return &Initializer{child}
 	}
 	return nil
@@ -1979,11 +2003,11 @@ type TaggedTemplate struct {
 }
 
 func (n TaggedTemplate) Tag() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n TaggedTemplate) Literal() TemplateLiteral {
-	return TemplateLiteral{n.Child(filter.Expression, filter.TemplateLiteral)}
+	return TemplateLiteral{n.Child(selector.Expression).Next(selector.TemplateLiteral)}
 }
 
 type TemplateLiteral struct {
@@ -1991,7 +2015,7 @@ type TemplateLiteral struct {
 }
 
 func (n TemplateLiteral) Template() []Token {
-	nodes := n.Children(filter.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail))
+	nodes := n.Children(selector.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail))
 	var result []Token = make([]Token, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Token))
@@ -2000,7 +2024,7 @@ func (n TemplateLiteral) Template() []Token {
 }
 
 func (n TemplateLiteral) Substitution() []Expression {
-	nodes := n.Children(filter.Expression)
+	nodes := n.Children(selector.Expression)
 	var result []Expression = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Expression))
@@ -2017,7 +2041,7 @@ type ThrowStatement struct {
 }
 
 func (n ThrowStatement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type TryStatement struct {
@@ -2025,18 +2049,18 @@ type TryStatement struct {
 }
 
 func (n TryStatement) Block() Block {
-	return Block{n.Child(filter.Block)}
+	return Block{n.Child(selector.Block)}
 }
 
 func (n TryStatement) Catch() *Catch {
-	if child := n.Child(filter.Catch); child != nil {
+	if child := n.Child(selector.Catch); child != nil {
 		return &Catch{child}
 	}
 	return nil
 }
 
 func (n TryStatement) Finally() *Finally {
-	if child := n.Child(filter.Finally); child != nil {
+	if child := n.Child(selector.Finally); child != nil {
 		return &Finally{child}
 	}
 	return nil
@@ -2047,7 +2071,7 @@ type UnaryExpression struct {
 }
 
 func (n UnaryExpression) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type VariableDeclaration struct {
@@ -2055,21 +2079,21 @@ type VariableDeclaration struct {
 }
 
 func (n VariableDeclaration) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(filter.BindingIdentifier); child != nil {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
 	}
 	return nil
 }
 
 func (n VariableDeclaration) BindingPattern() BindingPattern {
-	if child := n.Child(filter.BindingPattern); child != nil {
+	if child := n.Child(selector.BindingPattern); child != nil {
 		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
 }
 
 func (n VariableDeclaration) Initializer() *Initializer {
-	if child := n.Child(filter.Initializer); child != nil {
+	if child := n.Child(selector.Initializer); child != nil {
 		return &Initializer{child}
 	}
 	return nil
@@ -2080,7 +2104,7 @@ type VariableStatement struct {
 }
 
 func (n VariableStatement) VariableDeclaration() []VariableDeclaration {
-	nodes := n.Children(filter.VariableDeclaration)
+	nodes := n.Children(selector.VariableDeclaration)
 	var result []VariableDeclaration = make([]VariableDeclaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, VariableDeclaration{node})
@@ -2093,11 +2117,11 @@ type WhileStatement struct {
 }
 
 func (n WhileStatement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n WhileStatement) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type WithStatement struct {
@@ -2105,11 +2129,11 @@ type WithStatement struct {
 }
 
 func (n WithStatement) Expression() Expression {
-	return ToJsNode(n.Child(filter.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n WithStatement) Statement() Statement {
-	return ToJsNode(n.Child(filter.Statement)).(Statement)
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type Yield struct {
@@ -2117,7 +2141,7 @@ type Yield struct {
 }
 
 func (n Yield) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToJsNode(child).(Expression)
 	}
 	return nil

@@ -4,18 +4,24 @@ package ast
 
 import (
 	"github.com/inspirer/textmapper/tm-go/parsers/tm"
-	"github.com/inspirer/textmapper/tm-go/parsers/tm/filter"
+	"github.com/inspirer/textmapper/tm-go/parsers/tm/selector"
 )
 
 type Node interface {
 	Type() tm.NodeType
-	Child(filter ...filter.NodeFilter) Node
-	Children(filter ...filter.NodeFilter) []Node
+	// Child returns the first child node that matches the selector.
+	Child(sel selector.Selector) Node
+	Children(sel selector.Selector) []Node
+	// Next returns the first element among the following siblings that matches the selector.
+	Next(sel selector.Selector) Node
+	// NextAll returns all following siblings of the node that match the selector.
+	NextAll(sel selector.Selector) []Node
 }
 
 // Interfaces.
 
 type TmNode interface {
+	Node
 	tmNodeNode()
 }
 
@@ -105,6 +111,7 @@ func (VoidType) tmNodeNode()             {}
 func (Token) tmNodeNode()                {}
 
 type Annotation interface {
+	TmNode
 	annotationNode()
 }
 
@@ -115,6 +122,7 @@ func (AnnotationImpl) annotationNode() {}
 func (SyntaxProblem) annotationNode()  {}
 
 type Argument interface {
+	TmNode
 	argumentNode()
 }
 
@@ -126,6 +134,7 @@ func (ArgumentImpl) argumentNode()  {}
 func (ArgumentTrue) argumentNode()  {}
 
 type Expression interface {
+	TmNode
 	expressionNode()
 }
 
@@ -140,6 +149,7 @@ func (Symref) expressionNode()         {}
 func (SyntaxProblem) expressionNode()  {}
 
 type GrammarPart interface {
+	TmNode
 	grammarPartNode()
 }
 
@@ -154,6 +164,7 @@ func (Nonterm) grammarPartNode()         {}
 func (TemplateParam) grammarPartNode()   {}
 
 type LexerPart interface {
+	TmNode
 	lexerPartNode()
 }
 
@@ -168,6 +179,7 @@ func (NamedPattern) lexerPartNode()         {}
 func (StartConditionsScope) lexerPartNode() {}
 
 type Literal interface {
+	TmNode
 	literalNode()
 }
 
@@ -179,6 +191,7 @@ func (IntegerLiteral) literalNode() {}
 func (StringLiteral) literalNode()  {}
 
 type NontermParam interface {
+	TmNode
 	nontermParamNode()
 }
 
@@ -189,6 +202,7 @@ func (InlineParameter) nontermParamNode() {}
 func (ParamRef) nontermParamNode()        {}
 
 type NontermType interface {
+	TmNode
 	nontermTypeNode()
 }
 
@@ -201,6 +215,7 @@ func (SubType) nontermTypeNode()       {}
 func (VoidType) nontermTypeNode()      {}
 
 type Option interface {
+	TmNode
 	optionNode()
 }
 
@@ -211,6 +226,7 @@ func (KeyValue) optionNode()      {}
 func (SyntaxProblem) optionNode() {}
 
 type ParamValue interface {
+	TmNode
 	paramValueNode()
 }
 
@@ -223,6 +239,7 @@ func (ParamRef) paramValueNode()       {}
 func (StringLiteral) paramValueNode()  {}
 
 type PredicateExpression interface {
+	TmNode
 	predicateExpressionNode()
 }
 
@@ -237,6 +254,7 @@ func (PredicateNotEq) predicateExpressionNode() {}
 func (PredicateOr) predicateExpressionNode()    {}
 
 type RhsPart interface {
+	TmNode
 	rhsPartNode()
 }
 
@@ -258,6 +276,7 @@ func (RhsStarList) rhsPartNode()       {}
 func (RhsSymbol) rhsPartNode()         {}
 
 type Rule0 interface {
+	TmNode
 	rule0Node()
 }
 
@@ -268,6 +287,7 @@ func (Rule) rule0Node()          {}
 func (SyntaxProblem) rule0Node() {}
 
 type SetExpression interface {
+	TmNode
 	setExpressionNode()
 }
 
@@ -287,11 +307,11 @@ type KeyValue struct {
 }
 
 func (n KeyValue) Key() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n KeyValue) Value() Expression {
-	return ToTmNode(n.Child(filter.Expression)).(Expression)
+	return ToTmNode(n.Child(selector.Expression)).(Expression)
 }
 
 type AnnotationImpl struct {
@@ -299,11 +319,11 @@ type AnnotationImpl struct {
 }
 
 func (n AnnotationImpl) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n AnnotationImpl) Expression() Expression {
-	if child := n.Child(filter.Expression); child != nil {
+	if child := n.Child(selector.Expression); child != nil {
 		return ToTmNode(child).(Expression)
 	}
 	return nil
@@ -314,7 +334,7 @@ type Annotations struct {
 }
 
 func (n Annotations) Annotation() []Annotation {
-	nodes := n.Children(filter.Annotation)
+	nodes := n.Children(selector.Annotation)
 	var result []Annotation = make([]Annotation, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Annotation))
@@ -327,7 +347,7 @@ type ArgumentFalse struct {
 }
 
 func (n ArgumentFalse) Name() ParamRef {
-	return ParamRef{n.Child(filter.ParamRef)}
+	return ParamRef{n.Child(selector.ParamRef)}
 }
 
 type ArgumentImpl struct {
@@ -335,11 +355,11 @@ type ArgumentImpl struct {
 }
 
 func (n ArgumentImpl) Name() ParamRef {
-	return ParamRef{n.Child(filter.ParamRef)}
+	return ParamRef{n.Child(selector.ParamRef)}
 }
 
 func (n ArgumentImpl) Val() ParamValue {
-	if child := n.Child(filter.ParamRef, filter.ParamValue); child != nil {
+	if child := n.Child(selector.ParamRef).Next(selector.ParamValue); child != nil {
 		return ToTmNode(child).(ParamValue)
 	}
 	return nil
@@ -350,7 +370,7 @@ type ArgumentTrue struct {
 }
 
 func (n ArgumentTrue) Name() ParamRef {
-	return ParamRef{n.Child(filter.ParamRef)}
+	return ParamRef{n.Child(selector.ParamRef)}
 }
 
 type Array struct {
@@ -358,7 +378,7 @@ type Array struct {
 }
 
 func (n Array) Expression() []Expression {
-	nodes := n.Children(filter.Expression)
+	nodes := n.Children(selector.Expression)
 	var result []Expression = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Expression))
@@ -383,7 +403,7 @@ type DirectiveAssert struct {
 }
 
 func (n DirectiveAssert) RhsSet() RhsSet {
-	return RhsSet{n.Child(filter.RhsSet)}
+	return RhsSet{n.Child(selector.RhsSet)}
 }
 
 type DirectiveBrackets struct {
@@ -391,11 +411,11 @@ type DirectiveBrackets struct {
 }
 
 func (n DirectiveBrackets) Opening() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 func (n DirectiveBrackets) Closing() Symref {
-	return Symref{n.Child(filter.Symref, filter.Symref)}
+	return Symref{n.Child(selector.Symref).Next(selector.Symref)}
 }
 
 type DirectiveInput struct {
@@ -403,7 +423,7 @@ type DirectiveInput struct {
 }
 
 func (n DirectiveInput) InputRefs() []Inputref {
-	nodes := n.Children(filter.Inputref)
+	nodes := n.Children(selector.Inputref)
 	var result []Inputref = make([]Inputref, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Inputref{node})
@@ -416,11 +436,11 @@ type DirectivePrio struct {
 }
 
 func (n DirectivePrio) Assoc() Assoc {
-	return Assoc{n.Child(filter.Assoc)}
+	return Assoc{n.Child(selector.Assoc)}
 }
 
 func (n DirectivePrio) Symbols() References {
-	return References{n.Child(filter.References)}
+	return References{n.Child(selector.References)}
 }
 
 type DirectiveSet struct {
@@ -428,11 +448,11 @@ type DirectiveSet struct {
 }
 
 func (n DirectiveSet) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n DirectiveSet) RhsSet() RhsSet {
-	return RhsSet{n.Child(filter.RhsSet)}
+	return RhsSet{n.Child(selector.RhsSet)}
 }
 
 type ExclusiveStates struct {
@@ -440,7 +460,7 @@ type ExclusiveStates struct {
 }
 
 func (n ExclusiveStates) States() []LexerState {
-	nodes := n.Children(filter.LexerState)
+	nodes := n.Children(selector.LexerState)
 	var result []LexerState = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexerState{node})
@@ -453,14 +473,14 @@ type GrammarParts struct {
 }
 
 func (n GrammarParts) GrammarParts() *GrammarParts {
-	if child := n.Child(filter.GrammarParts); child != nil {
+	if child := n.Child(selector.GrammarParts); child != nil {
 		return &GrammarParts{child}
 	}
 	return nil
 }
 
 func (n GrammarParts) GrammarPart() GrammarPart {
-	return ToTmNode(n.Child(filter.GrammarPart)).(GrammarPart)
+	return ToTmNode(n.Child(selector.GrammarPart)).(GrammarPart)
 }
 
 type Header struct {
@@ -468,11 +488,11 @@ type Header struct {
 }
 
 func (n Header) Name() Name {
-	return Name{n.Child(filter.Name)}
+	return Name{n.Child(selector.Name)}
 }
 
 func (n Header) Target() *Name {
-	if child := n.Child(filter.Name, filter.Name); child != nil {
+	if child := n.Child(selector.Name).Next(selector.Name); child != nil {
 		return &Name{child}
 	}
 	return nil
@@ -487,14 +507,14 @@ type Import struct {
 }
 
 func (n Import) Alias() *Identifier {
-	if child := n.Child(filter.Identifier); child != nil {
+	if child := n.Child(selector.Identifier); child != nil {
 		return &Identifier{child}
 	}
 	return nil
 }
 
 func (n Import) Path() StringLiteral {
-	return StringLiteral{n.Child(filter.StringLiteral)}
+	return StringLiteral{n.Child(selector.StringLiteral)}
 }
 
 type InclusiveStates struct {
@@ -502,7 +522,7 @@ type InclusiveStates struct {
 }
 
 func (n InclusiveStates) States() []LexerState {
-	nodes := n.Children(filter.LexerState)
+	nodes := n.Children(selector.LexerState)
 	var result []LexerState = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexerState{node})
@@ -515,15 +535,15 @@ type InlineParameter struct {
 }
 
 func (n InlineParameter) ParamType() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n InlineParameter) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier, filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier).Next(selector.Identifier)}
 }
 
 func (n InlineParameter) ParamValue() ParamValue {
-	if child := n.Child(filter.ParamValue); child != nil {
+	if child := n.Child(selector.ParamValue); child != nil {
 		return ToTmNode(child).(ParamValue)
 	}
 	return nil
@@ -534,11 +554,11 @@ type Input struct {
 }
 
 func (n Input) Header() Header {
-	return Header{n.Child(filter.Header)}
+	return Header{n.Child(selector.Header)}
 }
 
 func (n Input) Imports() []Import {
-	nodes := n.Children(filter.Import)
+	nodes := n.Children(selector.Import)
 	var result []Import = make([]Import, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Import{node})
@@ -547,7 +567,7 @@ func (n Input) Imports() []Import {
 }
 
 func (n Input) Options() []Option {
-	nodes := n.Children(filter.Option)
+	nodes := n.Children(selector.Option)
 	var result []Option = make([]Option, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Option))
@@ -556,7 +576,7 @@ func (n Input) Options() []Option {
 }
 
 func (n Input) Lexer() []LexerPart {
-	nodes := n.Children(filter.LexerPart)
+	nodes := n.Children(selector.LexerPart)
 	var result []LexerPart = make([]LexerPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(LexerPart))
@@ -565,7 +585,7 @@ func (n Input) Lexer() []LexerPart {
 }
 
 func (n Input) Parser() *GrammarParts {
-	if child := n.Child(filter.GrammarParts); child != nil {
+	if child := n.Child(selector.GrammarParts); child != nil {
 		return &GrammarParts{child}
 	}
 	return nil
@@ -576,7 +596,7 @@ type Inputref struct {
 }
 
 func (n Inputref) Reference() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 type IntegerLiteral struct {
@@ -592,46 +612,46 @@ type Lexeme struct {
 }
 
 func (n Lexeme) StartConditions() *StartConditions {
-	if child := n.Child(filter.StartConditions); child != nil {
+	if child := n.Child(selector.StartConditions); child != nil {
 		return &StartConditions{child}
 	}
 	return nil
 }
 
 func (n Lexeme) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n Lexeme) RawType() *RawType {
-	if child := n.Child(filter.RawType); child != nil {
+	if child := n.Child(selector.RawType); child != nil {
 		return &RawType{child}
 	}
 	return nil
 }
 
 func (n Lexeme) Pattern() *Pattern {
-	if child := n.Child(filter.Pattern); child != nil {
+	if child := n.Child(selector.Pattern); child != nil {
 		return &Pattern{child}
 	}
 	return nil
 }
 
 func (n Lexeme) Priority() *IntegerLiteral {
-	if child := n.Child(filter.IntegerLiteral); child != nil {
+	if child := n.Child(selector.IntegerLiteral); child != nil {
 		return &IntegerLiteral{child}
 	}
 	return nil
 }
 
 func (n Lexeme) Attrs() *LexemeAttrs {
-	if child := n.Child(filter.LexemeAttrs); child != nil {
+	if child := n.Child(selector.LexemeAttrs); child != nil {
 		return &LexemeAttrs{child}
 	}
 	return nil
 }
 
 func (n Lexeme) Command() *Command {
-	if child := n.Child(filter.Command); child != nil {
+	if child := n.Child(selector.Command); child != nil {
 		return &Command{child}
 	}
 	return nil
@@ -646,7 +666,7 @@ type LexemeAttrs struct {
 }
 
 func (n LexemeAttrs) LexemeAttribute() LexemeAttribute {
-	return LexemeAttribute{n.Child(filter.LexemeAttribute)}
+	return LexemeAttribute{n.Child(selector.LexemeAttribute)}
 }
 
 type LexerState struct {
@@ -654,7 +674,7 @@ type LexerState struct {
 }
 
 func (n LexerState) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 type ListSeparator struct {
@@ -662,7 +682,7 @@ type ListSeparator struct {
 }
 
 func (n ListSeparator) Separator() References {
-	return References{n.Child(filter.References)}
+	return References{n.Child(selector.References)}
 }
 
 type Name struct {
@@ -670,7 +690,7 @@ type Name struct {
 }
 
 func (n Name) Identifier() []Identifier {
-	nodes := n.Children(filter.Identifier)
+	nodes := n.Children(selector.Identifier)
 	var result []Identifier = make([]Identifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Identifier{node})
@@ -683,11 +703,11 @@ type NamedPattern struct {
 }
 
 func (n NamedPattern) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n NamedPattern) Pattern() Pattern {
-	return Pattern{n.Child(filter.Pattern)}
+	return Pattern{n.Child(selector.Pattern)}
 }
 
 type Nonterm struct {
@@ -695,32 +715,32 @@ type Nonterm struct {
 }
 
 func (n Nonterm) Annotations() *Annotations {
-	if child := n.Child(filter.Annotations); child != nil {
+	if child := n.Child(selector.Annotations); child != nil {
 		return &Annotations{child}
 	}
 	return nil
 }
 
 func (n Nonterm) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n Nonterm) Params() *NontermParams {
-	if child := n.Child(filter.NontermParams); child != nil {
+	if child := n.Child(selector.NontermParams); child != nil {
 		return &NontermParams{child}
 	}
 	return nil
 }
 
 func (n Nonterm) Type() NontermType {
-	if child := n.Child(filter.NontermType); child != nil {
+	if child := n.Child(selector.NontermType); child != nil {
 		return ToTmNode(child).(NontermType)
 	}
 	return nil
 }
 
 func (n Nonterm) Rule0() []Rule0 {
-	nodes := n.Children(filter.Rule0)
+	nodes := n.Children(selector.Rule0)
 	var result []Rule0 = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Rule0))
@@ -733,7 +753,7 @@ type NontermParams struct {
 }
 
 func (n NontermParams) List() []NontermParam {
-	nodes := n.Children(filter.NontermParam)
+	nodes := n.Children(selector.NontermParam)
 	var result []NontermParam = make([]NontermParam, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(NontermParam))
@@ -750,7 +770,7 @@ type ParamRef struct {
 }
 
 func (n ParamRef) Identifier() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 type ParamType struct {
@@ -766,7 +786,7 @@ type Predicate struct {
 }
 
 func (n Predicate) PredicateExpression() PredicateExpression {
-	return ToTmNode(n.Child(filter.PredicateExpression)).(PredicateExpression)
+	return ToTmNode(n.Child(selector.PredicateExpression)).(PredicateExpression)
 }
 
 type PredicateAnd struct {
@@ -774,11 +794,11 @@ type PredicateAnd struct {
 }
 
 func (n PredicateAnd) Left() PredicateExpression {
-	return ToTmNode(n.Child(filter.PredicateExpression)).(PredicateExpression)
+	return ToTmNode(n.Child(selector.PredicateExpression)).(PredicateExpression)
 }
 
 func (n PredicateAnd) Right() PredicateExpression {
-	return ToTmNode(n.Child(filter.PredicateExpression, filter.PredicateExpression)).(PredicateExpression)
+	return ToTmNode(n.Child(selector.PredicateExpression).Next(selector.PredicateExpression)).(PredicateExpression)
 }
 
 type PredicateEq struct {
@@ -786,11 +806,11 @@ type PredicateEq struct {
 }
 
 func (n PredicateEq) ParamRef() ParamRef {
-	return ParamRef{n.Child(filter.ParamRef)}
+	return ParamRef{n.Child(selector.ParamRef)}
 }
 
 func (n PredicateEq) Literal() Literal {
-	return ToTmNode(n.Child(filter.Literal)).(Literal)
+	return ToTmNode(n.Child(selector.Literal)).(Literal)
 }
 
 type PredicateNot struct {
@@ -798,7 +818,7 @@ type PredicateNot struct {
 }
 
 func (n PredicateNot) ParamRef() ParamRef {
-	return ParamRef{n.Child(filter.ParamRef)}
+	return ParamRef{n.Child(selector.ParamRef)}
 }
 
 type PredicateNotEq struct {
@@ -806,11 +826,11 @@ type PredicateNotEq struct {
 }
 
 func (n PredicateNotEq) ParamRef() ParamRef {
-	return ParamRef{n.Child(filter.ParamRef)}
+	return ParamRef{n.Child(selector.ParamRef)}
 }
 
 func (n PredicateNotEq) Literal() Literal {
-	return ToTmNode(n.Child(filter.Literal)).(Literal)
+	return ToTmNode(n.Child(selector.Literal)).(Literal)
 }
 
 type PredicateOr struct {
@@ -818,11 +838,11 @@ type PredicateOr struct {
 }
 
 func (n PredicateOr) Left() PredicateExpression {
-	return ToTmNode(n.Child(filter.PredicateExpression)).(PredicateExpression)
+	return ToTmNode(n.Child(selector.PredicateExpression)).(PredicateExpression)
 }
 
 func (n PredicateOr) Right() PredicateExpression {
-	return ToTmNode(n.Child(filter.PredicateExpression, filter.PredicateExpression)).(PredicateExpression)
+	return ToTmNode(n.Child(selector.PredicateExpression).Next(selector.PredicateExpression)).(PredicateExpression)
 }
 
 type RawType struct {
@@ -834,14 +854,14 @@ type References struct {
 }
 
 func (n References) References() *References {
-	if child := n.Child(filter.References); child != nil {
+	if child := n.Child(selector.References); child != nil {
 		return &References{child}
 	}
 	return nil
 }
 
 func (n References) Symref() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 type RhsAnnotated struct {
@@ -849,11 +869,11 @@ type RhsAnnotated struct {
 }
 
 func (n RhsAnnotated) Annotations() Annotations {
-	return Annotations{n.Child(filter.Annotations)}
+	return Annotations{n.Child(selector.Annotations)}
 }
 
 func (n RhsAnnotated) Inner() RhsPart {
-	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
 type RhsAssignment struct {
@@ -861,11 +881,11 @@ type RhsAssignment struct {
 }
 
 func (n RhsAssignment) Id() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n RhsAssignment) Inner() RhsPart {
-	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
 type RhsCast struct {
@@ -873,11 +893,11 @@ type RhsCast struct {
 }
 
 func (n RhsCast) Inner() RhsPart {
-	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
 func (n RhsCast) Target() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 type RhsIgnored struct {
@@ -885,7 +905,7 @@ type RhsIgnored struct {
 }
 
 func (n RhsIgnored) Rule0() []Rule0 {
-	nodes := n.Children(filter.Rule0)
+	nodes := n.Children(selector.Rule0)
 	var result []Rule0 = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Rule0))
@@ -898,7 +918,7 @@ type RhsNested struct {
 }
 
 func (n RhsNested) Rule0() []Rule0 {
-	nodes := n.Children(filter.Rule0)
+	nodes := n.Children(selector.Rule0)
 	var result []Rule0 = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Rule0))
@@ -911,7 +931,7 @@ type RhsOptional struct {
 }
 
 func (n RhsOptional) Inner() RhsPart {
-	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
 type RhsPlusAssignment struct {
@@ -919,11 +939,11 @@ type RhsPlusAssignment struct {
 }
 
 func (n RhsPlusAssignment) Id() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n RhsPlusAssignment) Inner() RhsPart {
-	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
 type RhsPlusList struct {
@@ -931,7 +951,7 @@ type RhsPlusList struct {
 }
 
 func (n RhsPlusList) RuleParts() []RhsPart {
-	nodes := n.Children(filter.RhsPart)
+	nodes := n.Children(selector.RhsPart)
 	var result []RhsPart = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(RhsPart))
@@ -940,7 +960,7 @@ func (n RhsPlusList) RuleParts() []RhsPart {
 }
 
 func (n RhsPlusList) ListSeparator() ListSeparator {
-	return ListSeparator{n.Child(filter.ListSeparator)}
+	return ListSeparator{n.Child(selector.ListSeparator)}
 }
 
 type RhsPrimary struct {
@@ -948,7 +968,7 @@ type RhsPrimary struct {
 }
 
 func (n RhsPrimary) RhsSet() RhsSet {
-	return RhsSet{n.Child(filter.RhsSet)}
+	return RhsSet{n.Child(selector.RhsSet)}
 }
 
 type RhsQuantifier struct {
@@ -956,7 +976,7 @@ type RhsQuantifier struct {
 }
 
 func (n RhsQuantifier) Inner() RhsPart {
-	return ToTmNode(n.Child(filter.RhsPart)).(RhsPart)
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
 type RhsSet struct {
@@ -964,7 +984,7 @@ type RhsSet struct {
 }
 
 func (n RhsSet) Expr() SetExpression {
-	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+	return ToTmNode(n.Child(selector.SetExpression)).(SetExpression)
 }
 
 type RhsStarList struct {
@@ -972,7 +992,7 @@ type RhsStarList struct {
 }
 
 func (n RhsStarList) RuleParts() []RhsPart {
-	nodes := n.Children(filter.RhsPart)
+	nodes := n.Children(selector.RhsPart)
 	var result []RhsPart = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(RhsPart))
@@ -981,7 +1001,7 @@ func (n RhsStarList) RuleParts() []RhsPart {
 }
 
 func (n RhsStarList) ListSeparator() ListSeparator {
-	return ListSeparator{n.Child(filter.ListSeparator)}
+	return ListSeparator{n.Child(selector.ListSeparator)}
 }
 
 type RhsSuffix struct {
@@ -989,7 +1009,7 @@ type RhsSuffix struct {
 }
 
 func (n RhsSuffix) Symref() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 type RhsSymbol struct {
@@ -997,7 +1017,7 @@ type RhsSymbol struct {
 }
 
 func (n RhsSymbol) Reference() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 type Rule struct {
@@ -1005,14 +1025,14 @@ type Rule struct {
 }
 
 func (n Rule) Predicate() *Predicate {
-	if child := n.Child(filter.Predicate); child != nil {
+	if child := n.Child(selector.Predicate); child != nil {
 		return &Predicate{child}
 	}
 	return nil
 }
 
 func (n Rule) RhsPart() []RhsPart {
-	nodes := n.Children(filter.RhsPart)
+	nodes := n.Children(selector.RhsPart)
 	var result []RhsPart = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(RhsPart))
@@ -1021,14 +1041,14 @@ func (n Rule) RhsPart() []RhsPart {
 }
 
 func (n Rule) RuleAction() *RuleAction {
-	if child := n.Child(filter.RuleAction); child != nil {
+	if child := n.Child(selector.RuleAction); child != nil {
 		return &RuleAction{child}
 	}
 	return nil
 }
 
 func (n Rule) RhsSuffix() *RhsSuffix {
-	if child := n.Child(filter.RhsSuffix); child != nil {
+	if child := n.Child(selector.RhsSuffix); child != nil {
 		return &RhsSuffix{child}
 	}
 	return nil
@@ -1039,11 +1059,11 @@ type RuleAction struct {
 }
 
 func (n RuleAction) Action() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n RuleAction) Kind() *Identifier {
-	if child := n.Child(filter.Identifier, filter.Identifier); child != nil {
+	if child := n.Child(selector.Identifier).Next(selector.Identifier); child != nil {
 		return &Identifier{child}
 	}
 	return nil
@@ -1054,11 +1074,11 @@ type SetAnd struct {
 }
 
 func (n SetAnd) Left() SetExpression {
-	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+	return ToTmNode(n.Child(selector.SetExpression)).(SetExpression)
 }
 
 func (n SetAnd) Right() SetExpression {
-	return ToTmNode(n.Child(filter.SetExpression, filter.SetExpression)).(SetExpression)
+	return ToTmNode(n.Child(selector.SetExpression).Next(selector.SetExpression)).(SetExpression)
 }
 
 type SetComplement struct {
@@ -1066,7 +1086,7 @@ type SetComplement struct {
 }
 
 func (n SetComplement) Inner() SetExpression {
-	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+	return ToTmNode(n.Child(selector.SetExpression)).(SetExpression)
 }
 
 type SetCompound struct {
@@ -1074,7 +1094,7 @@ type SetCompound struct {
 }
 
 func (n SetCompound) Inner() SetExpression {
-	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+	return ToTmNode(n.Child(selector.SetExpression)).(SetExpression)
 }
 
 type SetOr struct {
@@ -1082,11 +1102,11 @@ type SetOr struct {
 }
 
 func (n SetOr) Left() SetExpression {
-	return ToTmNode(n.Child(filter.SetExpression)).(SetExpression)
+	return ToTmNode(n.Child(selector.SetExpression)).(SetExpression)
 }
 
 func (n SetOr) Right() SetExpression {
-	return ToTmNode(n.Child(filter.SetExpression, filter.SetExpression)).(SetExpression)
+	return ToTmNode(n.Child(selector.SetExpression).Next(selector.SetExpression)).(SetExpression)
 }
 
 type SetSymbol struct {
@@ -1094,14 +1114,14 @@ type SetSymbol struct {
 }
 
 func (n SetSymbol) Operator() *Identifier {
-	if child := n.Child(filter.Identifier); child != nil {
+	if child := n.Child(selector.Identifier); child != nil {
 		return &Identifier{child}
 	}
 	return nil
 }
 
 func (n SetSymbol) Symbol() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 type StartConditions struct {
@@ -1109,7 +1129,7 @@ type StartConditions struct {
 }
 
 func (n StartConditions) Stateref() []Stateref {
-	nodes := n.Children(filter.Stateref)
+	nodes := n.Children(selector.Stateref)
 	var result []Stateref = make([]Stateref, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Stateref{node})
@@ -1122,11 +1142,11 @@ type StartConditionsScope struct {
 }
 
 func (n StartConditionsScope) StartConditions() StartConditions {
-	return StartConditions{n.Child(filter.StartConditions)}
+	return StartConditions{n.Child(selector.StartConditions)}
 }
 
 func (n StartConditionsScope) LexerPart() []LexerPart {
-	nodes := n.Children(filter.LexerPart)
+	nodes := n.Children(selector.LexerPart)
 	var result []LexerPart = make([]LexerPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(LexerPart))
@@ -1139,7 +1159,7 @@ type Stateref struct {
 }
 
 func (n Stateref) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 type StringLiteral struct {
@@ -1151,7 +1171,7 @@ type SubType struct {
 }
 
 func (n SubType) Reference() Symref {
-	return Symref{n.Child(filter.Symref)}
+	return Symref{n.Child(selector.Symref)}
 }
 
 type Symref struct {
@@ -1159,11 +1179,11 @@ type Symref struct {
 }
 
 func (n Symref) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n Symref) Args() *SymrefArgs {
-	if child := n.Child(filter.SymrefArgs); child != nil {
+	if child := n.Child(selector.SymrefArgs); child != nil {
 		return &SymrefArgs{child}
 	}
 	return nil
@@ -1174,7 +1194,7 @@ type SymrefArgs struct {
 }
 
 func (n SymrefArgs) ArgList() []Argument {
-	nodes := n.Children(filter.Argument)
+	nodes := n.Children(selector.Argument)
 	var result []Argument = make([]Argument, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Argument))
@@ -1191,22 +1211,22 @@ type TemplateParam struct {
 }
 
 func (n TemplateParam) Modifier() *ParamModifier {
-	if child := n.Child(filter.ParamModifier); child != nil {
+	if child := n.Child(selector.ParamModifier); child != nil {
 		return &ParamModifier{child}
 	}
 	return nil
 }
 
 func (n TemplateParam) ParamType() ParamType {
-	return ParamType{n.Child(filter.ParamType)}
+	return ParamType{n.Child(selector.ParamType)}
 }
 
 func (n TemplateParam) Name() Identifier {
-	return Identifier{n.Child(filter.Identifier)}
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n TemplateParam) ParamValue() ParamValue {
-	if child := n.Child(filter.ParamValue); child != nil {
+	if child := n.Child(selector.ParamValue); child != nil {
 		return ToTmNode(child).(ParamValue)
 	}
 	return nil

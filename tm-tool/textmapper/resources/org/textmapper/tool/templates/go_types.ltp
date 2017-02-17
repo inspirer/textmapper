@@ -50,8 +50,13 @@ ${end}
 ${template wrappedTypeTempl-}
 type ${self->wrappedTypeRef()->go.declarationName()} interface {
 	Type() ${self->go_listener.nodeTypeRef()}
-	Child(filter ...${self->go_filter.nodeFilterTypeRef()}) Node
-	Children(filter ...${self->go_filter.nodeFilterTypeRef()}) []Node
+	// Child returns the first child node that matches the selector.
+	Child(sel ${self->go_filter.nodeSelectorTypeRef()}) Node
+	Children(sel ${self->go_filter.nodeSelectorTypeRef()}) []Node
+	// Next returns the first element among the following siblings that matches the selector.
+	Next(sel ${self->go_filter.nodeSelectorTypeRef()}) Node
+	// NextAll returns all following siblings of the node that match the selector.
+	NextAll(sel ${self->go_filter.nodeSelectorTypeRef()}) []Node
 }
 
 ${end}
@@ -60,6 +65,7 @@ ${template interfaces-}
 // Interfaces.
 
 type ${self->baseNode()} interface {
+  ${self->wrappedTypeRef()}
 	${self->baseNode()->asInterfaceMethod()}()
 }
 
@@ -79,6 +85,7 @@ ${end-}
 
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet')-}
 type ${cat->astInterfaceRef()->go.declarationName()} interface {
+  ${self->baseNode()}
 	${cat->asInterfaceMethod()}()
 }
 
@@ -136,15 +143,16 @@ ${cached query getterInnerType(field) =
 
 ${cached query isOneType(field) = field.types.length == 1 }
 
-${query fieldFilterInternal(field) =
+${query fieldFilter(field) =
   field.interfaceType ? field.interfaceType->go_filter.nodeTypeFilterRef() :
   field.types.length == 1 ? field.types.first()->go_filter.nodeTypeFilterRef() :
   self->go_filter.oneOfRef() + '(' +
           field.types.collect(it|it->go_listener.nodeTypeValueRef())->util.join(', ') + ')'}
 
-${query fieldFilter(field) =
+${query getFieldNode(field) =
   after = field.comesAfterField(),
-  (after ? self->fieldFilter(after) + ', ' : '') + self->fieldFilterInternal(field) }
+  method = after ? (field.isList() ? 'NextAll' : 'Next') : (field.isList() ? 'Children' : 'Child'),
+  (after ? self->getFieldNode(after) + '.' : 'n.') + method + '(' + self->fieldFilter(field) + ')' }
 
 ${template convertNode(field, node)-}
 ${if self->isOneType(field)-}
@@ -154,16 +162,16 @@ ${end}
 
 ${template getterImpl(field)-}
 ${if field.isList()-}
-	nodes := n.Children(${self->fieldFilter(field)})
+	nodes := ${self->getFieldNode(field)}
 	var result []${self->getterInnerType(field)} = make([]${self->getterInnerType(field)}, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ${self->convertNode(field, 'node')})
 	}
 	return result
 ${else if !field.isNullable()-}
-	return ${self->convertNode(field, 'n.Child(' + self->fieldFilter(field) + ')')}
+	return ${self->convertNode(field, self->getFieldNode(field))}
 ${else-}
-	if child := n.Child(${self->fieldFilter(field)}); child != nil {
+	if child := ${self->getFieldNode(field)}; child != nil {
 		return ${self->convertNode(field, 'child')}
 	}
 	return nil
