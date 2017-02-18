@@ -16,6 +16,7 @@ type Node interface {
 	Next(sel selector.Selector) Node
 	// NextAll returns all following siblings of the node that match the selector.
 	NextAll(sel selector.Selector) []Node
+	Text() string
 }
 
 // Interfaces.
@@ -732,7 +733,7 @@ func (n Nonterm) Params() *NontermParams {
 	return nil
 }
 
-func (n Nonterm) Type() NontermType {
+func (n Nonterm) NontermType() NontermType {
 	if child := n.Child(selector.NontermType); child != nil {
 		return ToTmNode(child).(NontermType)
 	}

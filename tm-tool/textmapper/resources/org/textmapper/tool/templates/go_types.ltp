@@ -57,6 +57,7 @@ type ${self->wrappedTypeRef()->go.declarationName()} interface {
 	Next(sel ${self->go_filter.nodeSelectorTypeRef()}) Node
 	// NextAll returns all following siblings of the node that match the selector.
 	NextAll(sel ${self->go_filter.nodeSelectorTypeRef()}) []Node
+	Text() string
 }
 
 ${end}

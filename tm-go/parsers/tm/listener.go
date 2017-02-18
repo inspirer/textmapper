@@ -37,7 +37,7 @@ const (
 	Stateref          // name=identifier
 	LexerState        // name=identifier
 	GrammarParts      // grammar_parts? grammar_part
-	Nonterm           // annotations? name=identifier params=nonterm_params? type=nonterm_type? (rule0)+
+	Nonterm           // annotations? name=identifier params=nonterm_params? nonterm_type? (rule0)+
 	SubType           // reference=symref
 	InterfaceType
 	VoidType

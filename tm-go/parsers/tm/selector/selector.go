@@ -108,12 +108,19 @@ func OneOf(types ...tm.NodeType) Selector {
 		return func(tm.NodeType) bool { return false }
 	}
 	const bits = 32
-	size := (int(types[len(types)-1]) + bits - 1) / bits
-	bitarr := make([]int32, size)
+	max := 1
+	for _, t := range types {
+		if int(t) > max {
+			max = int(t)
+		}
+	}
+	size := (max + bits) / bits
+	bitarr := make([]uint32, size)
 	for _, t := range types {
 		bitarr[uint(t)/bits] |= 1 << (uint(t) % bits)
 	}
 	return func(t tm.NodeType) bool {
-		return bitarr[uint(t)/bits]&(1<<(uint(t)%bits)) != 0
+		i := uint(t) / bits
+		return int(i) < len(bitarr) && bitarr[i]&(1<<(uint(t)%bits)) != 0
 	}
 }

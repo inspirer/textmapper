@@ -281,7 +281,7 @@ grammar_part<OrSyntaxError> interface :
 ;
 
 nonterm :
-    annotations? name=identifier params=nonterm_params? type=nonterm_type? ':' rules ';' ;
+    annotations? name=identifier params=nonterm_params? nonterm_type? ':' rules ';' ;
 
 nonterm_type interface :
     'returns' reference=symref<~Args>                      -> subType

@@ -16,6 +16,7 @@ type Node interface {
 	Next(sel selector.Selector) Node
 	// NextAll returns all following siblings of the node that match the selector.
 	NextAll(sel selector.Selector) []Node
+	Text() string
 }
 
 // Interfaces.
