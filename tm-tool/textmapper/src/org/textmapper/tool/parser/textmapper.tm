@@ -252,7 +252,8 @@ grammar_part :
     nonterm | template_param | directive ;
 
 nonterm :
-    annotations? name=identifier params=nonterm_params? type=nonterm_type? ':' rules ';' ;
+    annotations? name=identifier params=nonterm_params? type=nonterm_type?
+          defaultAction=reportClause? ':' rules ';' ;
 
 nonterm_type interface :
     Lreturns reference=symref_noargs                                     -> nontermTypeAST
@@ -281,6 +282,7 @@ template_param returns grammar_part :
 directive returns grammar_part :
     '%' assoc symbols=references ';'                         -> directivePrio
   | '%' Linput inputRefs=(inputref separator ',')+ ';'       -> directiveInput
+  | '%' Linterface ids=(identifier separator ',')+ ';'       -> directiveInterface
   | '%' Lassert (kind=Lempty | kind=Lnonempty) rhsSet ';'    -> directiveAssert
   | '%' Lgenerate name=ID '=' rhsSet ';'                     -> directiveSet
 ;
@@ -302,7 +304,7 @@ rules :
     (rule0 separator '|')+ ;
 
 rule0 :
-    predicate? prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
+    predicate? prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt action=reportClause?
   | error=syntax_problem
 ;
 
@@ -318,7 +320,7 @@ rhsSuffix :
   | '%' kind=Lshift symref=symref_noargs
 ;
 
-ruleAction :
+reportClause :
     '->' action=identifier ('/' kind=identifier)?  ;
 
 rhsParts :

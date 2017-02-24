@@ -38,6 +38,8 @@ func ToTmNode(n Node) TmNode {
 		return &DirectiveBrackets{n}
 	case tm.DirectiveInput:
 		return &DirectiveInput{n}
+	case tm.DirectiveInterface:
+		return &DirectiveInterface{n}
 	case tm.DirectivePrio:
 		return &DirectivePrio{n}
 	case tm.DirectiveSet:
@@ -106,6 +108,8 @@ func ToTmNode(n Node) TmNode {
 		return &RawType{n}
 	case tm.References:
 		return &References{n}
+	case tm.ReportClause:
+		return &ReportClause{n}
 	case tm.RhsAnnotated:
 		return &RhsAnnotated{n}
 	case tm.RhsAssignment:
@@ -136,8 +140,6 @@ func ToTmNode(n Node) TmNode {
 		return &RhsSymbol{n}
 	case tm.Rule:
 		return &Rule{n}
-	case tm.RuleAction:
-		return &RuleAction{n}
 	case tm.SetAnd:
 		return &SetAnd{n}
 	case tm.SetComplement:

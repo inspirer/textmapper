@@ -19,9 +19,9 @@ package org.textmapper.idea.lang.syntax.psi;
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
-public class TmRuleAction extends TmElement {
+public class TmReportClause extends TmElement {
 
-	public TmRuleAction(@NotNull ASTNode node) {
+	public TmReportClause(@NotNull ASTNode node) {
 		super(node);
 	}
 }

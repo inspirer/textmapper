@@ -44,6 +44,7 @@ func (Command) tmNodeNode()              {}
 func (DirectiveAssert) tmNodeNode()      {}
 func (DirectiveBrackets) tmNodeNode()    {}
 func (DirectiveInput) tmNodeNode()       {}
+func (DirectiveInterface) tmNodeNode()   {}
 func (DirectivePrio) tmNodeNode()        {}
 func (DirectiveSet) tmNodeNode()         {}
 func (ExclusiveStates) tmNodeNode()      {}
@@ -78,6 +79,7 @@ func (PredicateNotEq) tmNodeNode()       {}
 func (PredicateOr) tmNodeNode()          {}
 func (RawType) tmNodeNode()              {}
 func (References) tmNodeNode()           {}
+func (ReportClause) tmNodeNode()         {}
 func (RhsAnnotated) tmNodeNode()         {}
 func (RhsAssignment) tmNodeNode()        {}
 func (RhsCast) tmNodeNode()              {}
@@ -93,7 +95,6 @@ func (RhsStarList) tmNodeNode()          {}
 func (RhsSuffix) tmNodeNode()            {}
 func (RhsSymbol) tmNodeNode()            {}
 func (Rule) tmNodeNode()                 {}
-func (RuleAction) tmNodeNode()           {}
 func (SetAnd) tmNodeNode()               {}
 func (SetComplement) tmNodeNode()        {}
 func (SetCompound) tmNodeNode()          {}
@@ -157,12 +158,13 @@ type GrammarPart interface {
 // grammarPartNode() ensures that only the following types can be
 // assigned to GrammarPart.
 //
-func (DirectiveAssert) grammarPartNode() {}
-func (DirectiveInput) grammarPartNode()  {}
-func (DirectivePrio) grammarPartNode()   {}
-func (DirectiveSet) grammarPartNode()    {}
-func (Nonterm) grammarPartNode()         {}
-func (TemplateParam) grammarPartNode()   {}
+func (DirectiveAssert) grammarPartNode()    {}
+func (DirectiveInput) grammarPartNode()     {}
+func (DirectiveInterface) grammarPartNode() {}
+func (DirectivePrio) grammarPartNode()      {}
+func (DirectiveSet) grammarPartNode()       {}
+func (Nonterm) grammarPartNode()            {}
+func (TemplateParam) grammarPartNode()      {}
 
 type LexerPart interface {
 	TmNode
@@ -428,6 +430,19 @@ func (n DirectiveInput) InputRefs() []Inputref {
 	var result []Inputref = make([]Inputref, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Inputref{node})
+	}
+	return result
+}
+
+type DirectiveInterface struct {
+	Node
+}
+
+func (n DirectiveInterface) Ids() []Identifier {
+	nodes := n.Children(selector.Identifier)
+	var result []Identifier = make([]Identifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Identifier{node})
 	}
 	return result
 }
@@ -740,6 +755,13 @@ func (n Nonterm) NontermType() NontermType {
 	return nil
 }
 
+func (n Nonterm) ReportClause() *ReportClause {
+	if child := n.Child(selector.ReportClause); child != nil {
+		return &ReportClause{child}
+	}
+	return nil
+}
+
 func (n Nonterm) Rule0() []Rule0 {
 	nodes := n.Children(selector.Rule0)
 	var result []Rule0 = make([]Rule0, 0, len(nodes))
@@ -863,6 +885,21 @@ func (n References) References() *References {
 
 func (n References) Symref() Symref {
 	return Symref{n.Child(selector.Symref)}
+}
+
+type ReportClause struct {
+	Node
+}
+
+func (n ReportClause) Action() Identifier {
+	return Identifier{n.Child(selector.Identifier)}
+}
+
+func (n ReportClause) Kind() *Identifier {
+	if child := n.Child(selector.Identifier).Next(selector.Identifier); child != nil {
+		return &Identifier{child}
+	}
+	return nil
 }
 
 type RhsAnnotated struct {
@@ -1041,13 +1078,6 @@ func (n Rule) RhsPart() []RhsPart {
 	return result
 }
 
-func (n Rule) RuleAction() *RuleAction {
-	if child := n.Child(selector.RuleAction); child != nil {
-		return &RuleAction{child}
-	}
-	return nil
-}
-
 func (n Rule) RhsSuffix() *RhsSuffix {
 	if child := n.Child(selector.RhsSuffix); child != nil {
 		return &RhsSuffix{child}
@@ -1055,17 +1085,9 @@ func (n Rule) RhsSuffix() *RhsSuffix {
 	return nil
 }
 
-type RuleAction struct {
-	Node
-}
-
-func (n RuleAction) Action() Identifier {
-	return Identifier{n.Child(selector.Identifier)}
-}
-
-func (n RuleAction) Kind() *Identifier {
-	if child := n.Child(selector.Identifier).Next(selector.Identifier); child != nil {
-		return &Identifier{child}
+func (n Rule) ReportClause() *ReportClause {
+	if child := n.Child(selector.ReportClause); child != nil {
+		return &ReportClause{child}
 	}
 	return nil
 }

@@ -15,25 +15,20 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRuleAction extends TmaNode {
+public class TmaDirectiveInterface extends TmaNode implements ITmaGrammarPart {
 
-	private final TmaIdentifier action;
-	private final TmaIdentifier kind;
+	private final List<TmaIdentifier> ids;
 
-	public TmaRuleAction(TmaIdentifier action, TmaIdentifier kind, TextSource source, int line, int offset, int endoffset) {
+	public TmaDirectiveInterface(List<TmaIdentifier> ids, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.action = action;
-		this.kind = kind;
+		this.ids = ids;
 	}
 
-	public TmaIdentifier getAction() {
-		return action;
-	}
-
-	public TmaIdentifier getKind() {
-		return kind;
+	public List<TmaIdentifier> getIds() {
+		return ids;
 	}
 
 	@Override
@@ -41,11 +36,10 @@ public class TmaRuleAction extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (action != null) {
-			action.accept(v);
-		}
-		if (kind != null) {
-			kind.accept(v);
+		if (ids != null) {
+			for (TmaIdentifier it : ids) {
+				it.accept(v);
+			}
 		}
 	}
 }

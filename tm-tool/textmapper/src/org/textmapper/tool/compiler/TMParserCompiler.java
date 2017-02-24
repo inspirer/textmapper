@@ -288,7 +288,7 @@ public class TMParserCompiler {
 		}
 
 		// TODO store %shift attribute
-		TmaRuleAction action = right.getAction();
+		TmaReportClause action = right.getAction();
 		String alias = action != null && action.getAction() != null
 				? action.getAction().getID() : null;
 		RhsSequence rule = builder.sequence(alias, rhs, right);

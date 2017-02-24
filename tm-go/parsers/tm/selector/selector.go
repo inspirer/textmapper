@@ -22,6 +22,7 @@ var (
 	DirectiveAssert      = func(t tm.NodeType) bool { return t == tm.DirectiveAssert }
 	DirectiveBrackets    = func(t tm.NodeType) bool { return t == tm.DirectiveBrackets }
 	DirectiveInput       = func(t tm.NodeType) bool { return t == tm.DirectiveInput }
+	DirectiveInterface   = func(t tm.NodeType) bool { return t == tm.DirectiveInterface }
 	DirectivePrio        = func(t tm.NodeType) bool { return t == tm.DirectivePrio }
 	DirectiveSet         = func(t tm.NodeType) bool { return t == tm.DirectiveSet }
 	ExclusiveStates      = func(t tm.NodeType) bool { return t == tm.ExclusiveStates }
@@ -56,6 +57,7 @@ var (
 	PredicateOr          = func(t tm.NodeType) bool { return t == tm.PredicateOr }
 	RawType              = func(t tm.NodeType) bool { return t == tm.RawType }
 	References           = func(t tm.NodeType) bool { return t == tm.References }
+	ReportClause         = func(t tm.NodeType) bool { return t == tm.ReportClause }
 	RhsAnnotated         = func(t tm.NodeType) bool { return t == tm.RhsAnnotated }
 	RhsAssignment        = func(t tm.NodeType) bool { return t == tm.RhsAssignment }
 	RhsCast              = func(t tm.NodeType) bool { return t == tm.RhsCast }
@@ -71,7 +73,6 @@ var (
 	RhsSuffix            = func(t tm.NodeType) bool { return t == tm.RhsSuffix }
 	RhsSymbol            = func(t tm.NodeType) bool { return t == tm.RhsSymbol }
 	Rule                 = func(t tm.NodeType) bool { return t == tm.Rule }
-	RuleAction           = func(t tm.NodeType) bool { return t == tm.RuleAction }
 	SetAnd               = func(t tm.NodeType) bool { return t == tm.SetAnd }
 	SetComplement        = func(t tm.NodeType) bool { return t == tm.SetComplement }
 	SetCompound          = func(t tm.NodeType) bool { return t == tm.SetCompound }

@@ -240,11 +240,12 @@ class Nonterm : GrammarPart {
 	Identifier name;
 	NontermParams params;
 	NontermType type;
+	ReportClause defaultAction;
 	list<Rule0> rules;
 }
 
 nonterm  : Nonterm ::=
-	{annotations}? name=identifier params=nonterm_params? type=nonterm_type? ':' {rules} ';'
+	{annotations}? name=identifier params=nonterm_params? type=nonterm_type? defaultAction=reportClause? ':' {rules} ';'
 ;
 
 interface NontermType {
@@ -322,6 +323,10 @@ class DirectiveInput : GrammarPart {
 	list<Inputref> inputRefs;
 }
 
+class DirectiveInterface : GrammarPart {
+	list<Identifier> ids;
+}
+
 class DirectiveAssert : GrammarPart {
 	KindKind kind;
 	RhsSet rhsSet;
@@ -339,9 +344,14 @@ class DirectiveSet : GrammarPart {
 directive  : GrammarPart ::=
 	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
   | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list_Comma_separated ';'
+  | this=new.DirectiveInterface: '%' Linterface ids=identifier_list_Comma_separated ';'
   | this=new.DirectiveAssert: '%' Lassert (kind=Lempty as KindKind.LEMPTY | kind=Lnonempty as KindKind.LNONEMPTY) {rhsSet} ';'
   | this=new.DirectiveSet: '%' Lgenerate name=ID '=' {rhsSet} ';'
 ;
+
+identifier_list_Comma_separated  : list<Identifier>
+	(this+=identifier
+		separator ',')+ ;
 
 inputref_list_Comma_separated  : list<Inputref>
 	(this+=inputref
@@ -375,13 +385,13 @@ class Rule0 {
 	PredicateExpression predicate;
 	RhsPrefix prefix;
 	list<RhsPart> list;
-	RuleAction action;
 	RhsSuffix suffix;
+	ReportClause action;
 	SyntaxProblem error;
 }
 
 rule0  : Rule0 ::=
-	{predicate}? prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
+	{predicate}? prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt action=reportClause?
   | error=syntax_problem
 ;
 
@@ -414,12 +424,12 @@ rhsSuffix  : RhsSuffix ::=
   | '%' kind=Lshift as KindKind.LSHIFT symref=symref_noargs
 ;
 
-class RuleAction {
+class ReportClause {
 	Identifier action;
 	Identifier kind;
 }
 
-ruleAction  : RuleAction ::=
+reportClause  : ReportClause ::=
 	'->' action=identifier ('/' kind=identifier)?
 ;
 

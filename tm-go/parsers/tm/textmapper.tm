@@ -281,7 +281,7 @@ grammar_part<OrSyntaxError> interface :
 ;
 
 nonterm :
-    annotations? name=identifier params=nonterm_params? nonterm_type? ':' rules ';' ;
+    annotations? name=identifier params=nonterm_params? nonterm_type? reportClause? ':' rules ';' ;
 
 nonterm_type interface :
     'returns' reference=symref<~Args>                      -> subType
@@ -309,6 +309,7 @@ template_param returns grammar_part :
 directive returns grammar_part :
     '%' assoc symbols=references ';'                                 -> directivePrio
   | '%' 'input' inputRefs=(inputref separator ',')+ ';'              -> directiveInput
+  | '%' 'interface' ids=(identifier separator ',')+ ';'              -> directiveInterface
   | '%' 'assert' ('empty' | 'nonempty') rhsSet ';'                   -> directiveAssert
   | '%' 'generate' name=identifier '=' rhsSet ';'                    -> directiveSet
 ;
@@ -333,7 +334,7 @@ rules :
 ;
 
 rule0 interface :
-    predicate? rhsParts? ruleAction? rhsSuffixopt       -> rule
+    predicate? rhsParts? rhsSuffixopt reportClause?       -> rule
   | syntax_problem
 ;
 
@@ -345,7 +346,7 @@ rhsSuffix :
   | '%' 'shift' symref<~Args>
 ;
 
-ruleAction :
+reportClause :
     '->' action=identifier ('/' kind=identifier)?  ;
 
 @noast

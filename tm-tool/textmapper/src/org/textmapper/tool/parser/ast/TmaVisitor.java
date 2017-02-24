@@ -129,7 +129,7 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaRuleAction n) {
+	protected boolean visit(TmaReportClause n) {
 		return true;
 	}
 
@@ -206,6 +206,10 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaDirectiveInput n) {
+		return true;
+	}
+
+	protected boolean visit(TmaDirectiveInterface n) {
 		return true;
 	}
 

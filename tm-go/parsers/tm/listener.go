@@ -37,51 +37,52 @@ const (
 	Stateref          // name=identifier
 	LexerState        // name=identifier
 	GrammarParts      // grammar_parts? grammar_part
-	Nonterm           // annotations? name=identifier params=nonterm_params? nonterm_type? (rule0)+
+	Nonterm           // annotations? name=identifier params=nonterm_params? nonterm_type? reportClause? (rule0)+
 	SubType           // reference=symref
 	InterfaceType
 	VoidType
 	Assoc
 	ParamModifier
-	TemplateParam     // modifier=param_modifier? param_type name=identifier param_value?
-	DirectivePrio     // assoc symbols=references
-	DirectiveInput    // inputRefs=(inputref)+
-	DirectiveAssert   // rhsSet
-	DirectiveSet      // name=identifier rhsSet
-	Inputref          // reference=symref
-	References        // references? symref
-	Rule              // predicate? (rhsPart)* ruleAction? rhsSuffix?
-	Predicate         // predicate_expression
-	RhsSuffix         // symref
-	RuleAction        // action=identifier kind=identifier?
-	RhsAnnotated      // annotations inner=rhsPart
-	RhsAssignment     // id=identifier inner=rhsPart
-	RhsPlusAssignment // id=identifier inner=rhsPart
-	RhsOptional       // inner=rhsPart
-	RhsCast           // inner=rhsPart target=symref
-	ListSeparator     // separator_=references
-	RhsSymbol         // reference=symref
-	RhsNested         // (rule0)+
-	RhsPlusList       // ruleParts=(rhsPart)+ listSeparator
-	RhsStarList       // ruleParts=(rhsPart)+ listSeparator
-	RhsQuantifier     // inner=rhsPart
-	RhsIgnored        // (rule0)+
-	RhsPrimary        // rhsSet
-	RhsSet            // expr=setExpression
-	SetSymbol         // operator=identifier? symbol=symref
-	SetCompound       // inner=setExpression
-	SetComplement     // inner=setExpression
-	SetOr             // left=setExpression right=setExpression
-	SetAnd            // left=setExpression right=setExpression
-	Annotations       // (annotation)+
-	AnnotationImpl    // name=identifier expression?
-	NontermParams     // list=(nonterm_param)+
-	InlineParameter   // param_type=identifier name=identifier param_value?
-	ParamRef          // identifier
-	SymrefArgs        // arg_list=(argument)*
-	ArgumentImpl      // name=param_ref val=param_value?
-	ArgumentTrue      // name=param_ref
-	ArgumentFalse     // name=param_ref
+	TemplateParam      // modifier=param_modifier? param_type name=identifier param_value?
+	DirectivePrio      // assoc symbols=references
+	DirectiveInput     // inputRefs=(inputref)+
+	DirectiveInterface // ids=(identifier)+
+	DirectiveAssert    // rhsSet
+	DirectiveSet       // name=identifier rhsSet
+	Inputref           // reference=symref
+	References         // references? symref
+	Rule               // predicate? (rhsPart)* rhsSuffix? reportClause?
+	Predicate          // predicate_expression
+	RhsSuffix          // symref
+	ReportClause       // action=identifier kind=identifier?
+	RhsAnnotated       // annotations inner=rhsPart
+	RhsAssignment      // id=identifier inner=rhsPart
+	RhsPlusAssignment  // id=identifier inner=rhsPart
+	RhsOptional        // inner=rhsPart
+	RhsCast            // inner=rhsPart target=symref
+	ListSeparator      // separator_=references
+	RhsSymbol          // reference=symref
+	RhsNested          // (rule0)+
+	RhsPlusList        // ruleParts=(rhsPart)+ listSeparator
+	RhsStarList        // ruleParts=(rhsPart)+ listSeparator
+	RhsQuantifier      // inner=rhsPart
+	RhsIgnored         // (rule0)+
+	RhsPrimary         // rhsSet
+	RhsSet             // expr=setExpression
+	SetSymbol          // operator=identifier? symbol=symref
+	SetCompound        // inner=setExpression
+	SetComplement      // inner=setExpression
+	SetOr              // left=setExpression right=setExpression
+	SetAnd             // left=setExpression right=setExpression
+	Annotations        // (annotation)+
+	AnnotationImpl     // name=identifier expression?
+	NontermParams      // list=(nonterm_param)+
+	InlineParameter    // param_type=identifier name=identifier param_value?
+	ParamRef           // identifier
+	SymrefArgs         // arg_list=(argument)*
+	ArgumentImpl       // name=param_ref val=param_value?
+	ArgumentTrue       // name=param_ref
+	ArgumentFalse      // name=param_ref
 	ParamType
 	PredicateNot   // param_ref
 	PredicateEq    // param_ref literal
@@ -132,6 +133,7 @@ var nodeTypeStr = [...]string{
 	"TemplateParam",
 	"DirectivePrio",
 	"DirectiveInput",
+	"DirectiveInterface",
 	"DirectiveAssert",
 	"DirectiveSet",
 	"Inputref",
@@ -139,7 +141,7 @@ var nodeTypeStr = [...]string{
 	"Rule",
 	"Predicate",
 	"RhsSuffix",
-	"RuleAction",
+	"ReportClause",
 	"RhsAnnotated",
 	"RhsAssignment",
 	"RhsPlusAssignment",
@@ -210,6 +212,7 @@ var Expression = []NodeType{
 var GrammarPart = []NodeType{
 	DirectiveAssert,
 	DirectiveInput,
+	DirectiveInterface,
 	DirectivePrio,
 	DirectiveSet,
 	Nonterm,
@@ -437,13 +440,21 @@ var ruleNodeType = [...]NodeType{
 	0,                    // grammar_part_OrSyntaxError : template_param
 	0,                    // grammar_part_OrSyntaxError : directive
 	0,                    // grammar_part_OrSyntaxError : syntax_problem
+	Nonterm,              // nonterm : annotations identifier nonterm_params nonterm_type reportClause ':' rules ';'
 	Nonterm,              // nonterm : annotations identifier nonterm_params nonterm_type ':' rules ';'
+	Nonterm,              // nonterm : annotations identifier nonterm_params reportClause ':' rules ';'
 	Nonterm,              // nonterm : annotations identifier nonterm_params ':' rules ';'
+	Nonterm,              // nonterm : annotations identifier nonterm_type reportClause ':' rules ';'
 	Nonterm,              // nonterm : annotations identifier nonterm_type ':' rules ';'
+	Nonterm,              // nonterm : annotations identifier reportClause ':' rules ';'
 	Nonterm,              // nonterm : annotations identifier ':' rules ';'
+	Nonterm,              // nonterm : identifier nonterm_params nonterm_type reportClause ':' rules ';'
 	Nonterm,              // nonterm : identifier nonterm_params nonterm_type ':' rules ';'
+	Nonterm,              // nonterm : identifier nonterm_params reportClause ':' rules ';'
 	Nonterm,              // nonterm : identifier nonterm_params ':' rules ';'
+	Nonterm,              // nonterm : identifier nonterm_type reportClause ':' rules ';'
 	Nonterm,              // nonterm : identifier nonterm_type ':' rules ';'
+	Nonterm,              // nonterm : identifier reportClause ':' rules ';'
 	Nonterm,              // nonterm : identifier ':' rules ';'
 	SubType,              // nonterm_type : 'returns' symref
 	InterfaceType,        // nonterm_type : 'interface'
@@ -461,9 +472,12 @@ var ruleNodeType = [...]NodeType{
 	TemplateParam,        // template_param : '%' param_type identifier ';'
 	DirectivePrio,        // directive : '%' assoc references ';'
 	DirectiveInput,       // directive : '%' 'input' inputref_list_Comma_separated ';'
+	DirectiveInterface,   // directive : '%' 'interface' identifier_list_Comma_separated ';'
 	DirectiveAssert,      // directive : '%' 'assert' 'empty' rhsSet ';'
 	DirectiveAssert,      // directive : '%' 'assert' 'nonempty' rhsSet ';'
 	DirectiveSet,         // directive : '%' 'generate' identifier '=' rhsSet ';'
+	0,                    // identifier_list_Comma_separated : identifier_list_Comma_separated ',' identifier
+	0,                    // identifier_list_Comma_separated : identifier
 	0,                    // inputref_list_Comma_separated : inputref_list_Comma_separated ',' inputref
 	0,                    // inputref_list_Comma_separated : inputref
 	Inputref,             // inputref : symref 'no-eoi'
@@ -472,20 +486,20 @@ var ruleNodeType = [...]NodeType{
 	References,           // references : references symref
 	0,                    // rules : rule0
 	0,                    // rules : rules '|' rule0
-	Rule,                 // rule0 : predicate rhsParts ruleAction rhsSuffixopt
+	Rule,                 // rule0 : predicate rhsParts rhsSuffixopt reportClause
 	Rule,                 // rule0 : predicate rhsParts rhsSuffixopt
-	Rule,                 // rule0 : predicate ruleAction rhsSuffixopt
+	Rule,                 // rule0 : predicate rhsSuffixopt reportClause
 	Rule,                 // rule0 : predicate rhsSuffixopt
-	Rule,                 // rule0 : rhsParts ruleAction rhsSuffixopt
+	Rule,                 // rule0 : rhsParts rhsSuffixopt reportClause
 	Rule,                 // rule0 : rhsParts rhsSuffixopt
-	Rule,                 // rule0 : ruleAction rhsSuffixopt
+	Rule,                 // rule0 : rhsSuffixopt reportClause
 	Rule,                 // rule0 : rhsSuffixopt
 	0,                    // rule0 : syntax_problem
 	Predicate,            // predicate : '[' predicate_expression ']'
 	RhsSuffix,            // rhsSuffix : '%' 'prec' symref
 	RhsSuffix,            // rhsSuffix : '%' 'shift' symref
-	RuleAction,           // ruleAction : '->' identifier '/' identifier
-	RuleAction,           // ruleAction : '->' identifier
+	ReportClause,         // reportClause : '->' identifier '/' identifier
+	ReportClause,         // reportClause : '->' identifier
 	0,                    // rhsParts : rhsPart
 	0,                    // rhsParts : rhsParts rhsPart_OrSyntaxError
 	0,                    // rhsPart : rhsAnnotated

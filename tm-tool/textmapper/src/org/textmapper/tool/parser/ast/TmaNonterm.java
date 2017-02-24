@@ -24,14 +24,16 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 	private final TmaIdentifier name;
 	private final TmaNontermParams params;
 	private final ITmaNontermType type;
+	private final TmaReportClause defaultAction;
 	private final List<TmaRule0> rules;
 
-	public TmaNonterm(TmaAnnotations annotations, TmaIdentifier name, TmaNontermParams params, ITmaNontermType type, List<TmaRule0> rules, TextSource source, int line, int offset, int endoffset) {
+	public TmaNonterm(TmaAnnotations annotations, TmaIdentifier name, TmaNontermParams params, ITmaNontermType type, TmaReportClause defaultAction, List<TmaRule0> rules, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.annotations = annotations;
 		this.name = name;
 		this.params = params;
 		this.type = type;
+		this.defaultAction = defaultAction;
 		this.rules = rules;
 	}
 
@@ -49,6 +51,10 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 
 	public ITmaNontermType getType() {
 		return type;
+	}
+
+	public TmaReportClause getDefaultAction() {
+		return defaultAction;
 	}
 
 	public List<TmaRule0> getRules() {
@@ -71,6 +77,9 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 		}
 		if (type != null) {
 			type.accept(v);
+		}
+		if (defaultAction != null) {
+			defaultAction.accept(v);
 		}
 		if (rules != null) {
 			for (TmaRule0 it : rules) {

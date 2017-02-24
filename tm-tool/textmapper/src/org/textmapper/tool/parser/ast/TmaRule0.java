@@ -23,17 +23,17 @@ public class TmaRule0 extends TmaNode {
 	private final ITmaPredicateExpression predicate;
 	private final TmaRhsPrefix prefix;
 	private final List<ITmaRhsPart> list;
-	private final TmaRuleAction action;
 	private final TmaRhsSuffix suffix;
+	private final TmaReportClause action;
 	private final TmaSyntaxProblem error;
 
-	public TmaRule0(ITmaPredicateExpression predicate, TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRuleAction action, TmaRhsSuffix suffix, TmaSyntaxProblem error, TextSource source, int line, int offset, int endoffset) {
+	public TmaRule0(ITmaPredicateExpression predicate, TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRhsSuffix suffix, TmaReportClause action, TmaSyntaxProblem error, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.predicate = predicate;
 		this.prefix = prefix;
 		this.list = list;
-		this.action = action;
 		this.suffix = suffix;
+		this.action = action;
 		this.error = error;
 	}
 
@@ -49,12 +49,12 @@ public class TmaRule0 extends TmaNode {
 		return list;
 	}
 
-	public TmaRuleAction getAction() {
-		return action;
-	}
-
 	public TmaRhsSuffix getSuffix() {
 		return suffix;
+	}
+
+	public TmaReportClause getAction() {
+		return action;
 	}
 
 	public TmaSyntaxProblem getError() {
@@ -77,11 +77,11 @@ public class TmaRule0 extends TmaNode {
 				it.accept(v);
 			}
 		}
-		if (action != null) {
-			action.accept(v);
-		}
 		if (suffix != null) {
 			suffix.accept(v);
+		}
+		if (action != null) {
+			action.accept(v);
 		}
 		if (error != null) {
 			error.accept(v);

@@ -108,7 +108,7 @@ public class TMAnnotator implements Annotator {
 				}
 			}
 		}
-		if (element instanceof TmRuleAction || element instanceof TmStateMarker) {
+		if (element instanceof TmReportClause || element instanceof TmStateMarker) {
 			TextAttributesKey key = element instanceof TmStateMarker
 					? TMSyntaxHighlighter.STATE_MARKER : TMSyntaxHighlighter.RULE_METADATA;
 
