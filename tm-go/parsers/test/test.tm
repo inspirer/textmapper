@@ -47,12 +47,14 @@ invalid_token:
 
 %input Test;
 
-Test :
+Test -> Test :
     Declaration+ ;
 
 # Test: an interface with a type rule.
 
-Declaration interface :
+%interface Declaration;
+
+Declaration -> Declaration :
     Decl1
   | Decl2
   | '{' Declaration+ '}'        -> Block
@@ -60,14 +62,13 @@ Declaration interface :
 
 # Test: a list of an exported terminal.
 
-@noast
 QualifiedName :
     Identifier
   | QualifiedName '.' Identifier
 ;
 
-Decl1 :
+Decl1 -> Decl1 :
     'decl1' '(' QualifiedName ')' ;
 
 Decl2 :
-    'decl2' ;
+    'decl2' -> Decl2 ;

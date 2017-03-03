@@ -16,80 +16,80 @@ const (
 	StringLiteral
 	BooleanLiteral
 	Pattern
-	Name // (identifier)+
+	Name // (Identifier)+
 	Command
 	SyntaxProblem
-	Input    // header imports=(import_)* options=(option)* lexer=(lexer_part)+ parser=grammar_parts?
-	Header   // name target=name?
-	Import   // alias=identifier? path=string_literal
-	KeyValue // key=identifier value=expression
-	Symref   // name=identifier args=symref_args?
+	Input         // Header imports=(Import)* options=(Option)* lexer=LexerSection parser=ParserSection?
+	Header        // name=Name target=Name?
+	LexerSection  // (LexerPart)+
+	ParserSection // (GrammarPart)+
+	Import        // alias=Identifier? path=StringLiteral
+	KeyValue      // key=Identifier value=Expression
+	Symref        // name=Identifier args=SymrefArgs?
 	RawType
-	NamedPattern         // name=identifier pattern
-	StartConditionsScope // start_conditions (lexer_part)+
-	StartConditions      // (stateref)*
-	Lexeme               // start_conditions? name=identifier rawType? pattern? priority=integer_literal? attrs=lexeme_attrs? command?
-	LexemeAttrs          // lexeme_attribute
+	NamedPattern         // name=Identifier Pattern
+	StartConditionsScope // StartConditions (LexerPart)+
+	StartConditions      // (Stateref)*
+	Lexeme               // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
+	LexemeAttrs          // LexemeAttribute
 	LexemeAttribute
-	DirectiveBrackets // opening=symref closing=symref
-	InclusiveStates   // states=(lexer_state)+
-	ExclusiveStates   // states=(lexer_state)+
-	Stateref          // name=identifier
-	LexerState        // name=identifier
-	GrammarParts      // grammar_parts? grammar_part
-	Nonterm           // annotations? name=identifier params=nonterm_params? nonterm_type? reportClause? (rule0)+
-	SubType           // reference=symref
+	DirectiveBrackets // opening=Symref closing=Symref
+	InclusiveStates   // states=(LexerState)+
+	ExclusiveStates   // states=(LexerState)+
+	Stateref          // name=Identifier
+	LexerState        // name=Identifier
+	Nonterm           // Annotations? name=Identifier params=NontermParams? NontermType? ReportClause? (Rule0)+
+	SubType           // reference=Symref
 	InterfaceType
 	VoidType
 	Assoc
 	ParamModifier
-	TemplateParam      // modifier=param_modifier? param_type name=identifier param_value?
-	DirectivePrio      // assoc symbols=references
-	DirectiveInput     // inputRefs=(inputref)+
-	DirectiveInterface // ids=(identifier)+
-	DirectiveAssert    // rhsSet
-	DirectiveSet       // name=identifier rhsSet
-	Inputref           // reference=symref
-	References         // references? symref
-	Rule               // predicate? (rhsPart)* rhsSuffix? reportClause?
-	Predicate          // predicate_expression
-	RhsSuffix          // symref
-	ReportClause       // action=identifier kind=identifier?
-	RhsAnnotated       // annotations inner=rhsPart
-	RhsAssignment      // id=identifier inner=rhsPart
-	RhsPlusAssignment  // id=identifier inner=rhsPart
-	RhsOptional        // inner=rhsPart
-	RhsCast            // inner=rhsPart target=symref
-	ListSeparator      // separator_=references
-	RhsSymbol          // reference=symref
-	RhsNested          // (rule0)+
-	RhsPlusList        // ruleParts=(rhsPart)+ listSeparator
-	RhsStarList        // ruleParts=(rhsPart)+ listSeparator
-	RhsQuantifier      // inner=rhsPart
-	RhsIgnored         // (rule0)+
-	RhsPrimary         // rhsSet
-	RhsSet             // expr=setExpression
-	SetSymbol          // operator=identifier? symbol=symref
-	SetCompound        // inner=setExpression
-	SetComplement      // inner=setExpression
-	SetOr              // left=setExpression right=setExpression
-	SetAnd             // left=setExpression right=setExpression
-	Annotations        // (annotation)+
-	AnnotationImpl     // name=identifier expression?
-	NontermParams      // list=(nonterm_param)+
-	InlineParameter    // param_type=identifier name=identifier param_value?
-	ParamRef           // identifier
-	SymrefArgs         // arg_list=(argument)*
-	ArgumentImpl       // name=param_ref val=param_value?
-	ArgumentTrue       // name=param_ref
-	ArgumentFalse      // name=param_ref
+	TemplateParam      // modifier=ParamModifier? ParamType name=Identifier ParamValue?
+	DirectivePrio      // Assoc symbols=References
+	DirectiveInput     // inputRefs=(Inputref)+
+	DirectiveInterface // ids=(Identifier)+
+	DirectiveAssert    // RhsSet
+	DirectiveSet       // name=Identifier RhsSet
+	Inputref           // reference=Symref
+	References         // References? Symref
+	Rule               // Predicate? (RhsPart)* RhsSuffix? ReportClause?
+	Predicate          // PredicateExpression
+	RhsSuffix          // Symref
+	ReportClause       // action=Identifier kind=Identifier?
+	RhsAnnotated       // Annotations inner=RhsPart
+	RhsAssignment      // id=Identifier inner=RhsPart
+	RhsPlusAssignment  // id=Identifier inner=RhsPart
+	RhsOptional        // inner=RhsPart
+	RhsCast            // inner=RhsPart target=Symref
+	ListSeparator      // separator_=References
+	RhsSymbol          // reference=Symref
+	RhsNested          // (Rule0)+
+	RhsPlusList        // ruleParts=(RhsPart)+ ListSeparator
+	RhsStarList        // ruleParts=(RhsPart)+ ListSeparator
+	RhsQuantifier      // inner=RhsPart
+	RhsIgnored         // (Rule0)+
+	RhsSet             // expr=SetExpression
+	SetSymbol          // operator=Identifier? symbol=Symref
+	SetCompound        // inner=SetExpression
+	SetComplement      // inner=SetExpression
+	SetOr              // left=SetExpression right=SetExpression
+	SetAnd             // left=SetExpression right=SetExpression
+	Annotations        // (Annotation)+
+	AnnotationImpl     // name=Identifier Expression?
+	NontermParams      // list=(NontermParam)+
+	InlineParameter    // param_type=Identifier name=Identifier ParamValue?
+	ParamRef           // Identifier
+	SymrefArgs         // arg_list=(Argument)*
+	ArgumentImpl       // name=ParamRef val=ParamValue?
+	ArgumentTrue       // name=ParamRef
+	ArgumentFalse      // name=ParamRef
 	ParamType
-	PredicateNot   // param_ref
-	PredicateEq    // param_ref literal
-	PredicateNotEq // param_ref literal
-	PredicateAnd   // left=predicate_expression right=predicate_expression
-	PredicateOr    // left=predicate_expression right=predicate_expression
-	Array          // (expression)*
+	PredicateNot   // ParamRef
+	PredicateEq    // ParamRef Literal
+	PredicateNotEq // ParamRef Literal
+	PredicateAnd   // left=PredicateExpression right=PredicateExpression
+	PredicateOr    // left=PredicateExpression right=PredicateExpression
+	Array          // (Expression)*
 	InvalidToken
 	MultilineComment
 	Comment
@@ -108,6 +108,8 @@ var nodeTypeStr = [...]string{
 	"SyntaxProblem",
 	"Input",
 	"Header",
+	"LexerSection",
+	"ParserSection",
 	"Import",
 	"KeyValue",
 	"Symref",
@@ -123,7 +125,6 @@ var nodeTypeStr = [...]string{
 	"ExclusiveStates",
 	"Stateref",
 	"LexerState",
-	"GrammarParts",
 	"Nonterm",
 	"SubType",
 	"InterfaceType",
@@ -154,7 +155,6 @@ var nodeTypeStr = [...]string{
 	"RhsStarList",
 	"RhsQuantifier",
 	"RhsIgnored",
-	"RhsPrimary",
 	"RhsSet",
 	"SetSymbol",
 	"SetCompound",
@@ -216,6 +216,7 @@ var GrammarPart = []NodeType{
 	DirectivePrio,
 	DirectiveSet,
 	Nonterm,
+	SyntaxProblem,
 	TemplateParam,
 }
 
@@ -226,6 +227,7 @@ var LexerPart = []NodeType{
 	Lexeme,
 	NamedPattern,
 	StartConditionsScope,
+	SyntaxProblem,
 }
 
 var Literal = []NodeType{
@@ -277,10 +279,11 @@ var RhsPart = []NodeType{
 	RhsOptional,
 	RhsPlusAssignment,
 	RhsPlusList,
-	RhsPrimary,
 	RhsQuantifier,
+	RhsSet,
 	RhsStarList,
 	RhsSymbol,
+	SyntaxProblem,
 }
 
 var Rule0 = []NodeType{
@@ -388,8 +391,8 @@ var ruleNodeType = [...]NodeType{
 	0,                    // option_optlist :
 	Header,               // header : 'language' name '(' name ')' ';'
 	Header,               // header : 'language' name ';'
-	0,                    // lexer_section : '::' 'lexer' lexer_parts
-	0,                    // parser_section : '::' 'parser' grammar_parts
+	LexerSection,         // lexer_section : '::' 'lexer' lexer_parts
+	ParserSection,        // parser_section : '::' 'parser' grammar_parts
 	Import,               // import_ : 'import' identifier string_literal ';'
 	Import,               // import_ : 'import' string_literal ';'
 	KeyValue,             // option : identifier '=' expression
@@ -431,8 +434,8 @@ var ruleNodeType = [...]NodeType{
 	0,                    // lexer_state_list_Comma_separated : lexer_state
 	Stateref,             // stateref : identifier
 	LexerState,           // lexer_state : identifier
-	GrammarParts,         // grammar_parts : grammar_part
-	GrammarParts,         // grammar_parts : grammar_parts grammar_part_OrSyntaxError
+	0,                    // grammar_parts : grammar_part
+	0,                    // grammar_parts : grammar_parts grammar_part_OrSyntaxError
 	0,                    // grammar_part : nonterm
 	0,                    // grammar_part : template_param
 	0,                    // grammar_part : directive
@@ -524,7 +527,7 @@ var ruleNodeType = [...]NodeType{
 	RhsQuantifier,        // rhsPrimary : rhsPrimary '+'
 	RhsQuantifier,        // rhsPrimary : rhsPrimary '*'
 	RhsIgnored,           // rhsPrimary : '$' '(' rules ')'
-	RhsPrimary,           // rhsPrimary : rhsSet
+	0,                    // rhsPrimary : rhsSet
 	RhsSet,               // rhsSet : 'set' '(' setExpression ')'
 	SetSymbol,            // setPrimary : identifier symref_Args
 	SetSymbol,            // setPrimary : symref_Args

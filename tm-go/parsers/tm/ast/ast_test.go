@@ -48,7 +48,7 @@ func TestParser(t *testing.T) {
 	input := ast.Input{root}
 	var buf bytes.Buffer
 
-	for _, lp := range input.Lexer() {
+	for _, lp := range input.Lexer().LexerPart() {
 		switch lp := lp.(type) {
 		case *ast.Lexeme:
 			fmt.Fprintf(&buf, "token %v\n", lp.Name().Text())

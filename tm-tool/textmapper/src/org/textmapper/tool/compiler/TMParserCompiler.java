@@ -39,6 +39,7 @@ public class TMParserCompiler {
 	private final GrammarBuilder builder;
 	private TMExpressionResolver expressionResolver;
 	private Map<Nonterminal, InputRef> inputs = new HashMap<>();
+	private Set<String> interfaces = new HashSet<>();
 	private boolean hasInputs = false;
 
 	public TMParserCompiler(TMResolver resolver, TMExpressionResolver expressionResolver) {
@@ -91,6 +92,18 @@ public class TMParserCompiler {
 				if (nonterm.getType() instanceof TmaRawType) {
 					withType.add(nonterm.getName().getID());
 				}
+			} else if (clause instanceof TmaDirectiveInterface) {
+				for (TmaIdentifier id : ((TmaDirectiveInterface) clause).getIds()) {
+					String name = id.getID();
+					if (name.equals(TMEventMapper.TOKEN_CATEGORY)) {
+						error(id, TMEventMapper.TOKEN_CATEGORY +
+								" is reserved for a set of token node types");
+						continue;
+					}
+					if (!interfaces.add(id.getID())) {
+						error(id, "a duplicate interface identifier");
+					}
+				}
 			}
 		}
 
@@ -99,6 +112,15 @@ public class TMParserCompiler {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
 				if (!(left instanceof Nonterminal)) continue; /* error is already reported */
+
+				TmaReportClause defaultAction = nonterm.getDefaultAction();
+				if (defaultAction != null) {
+					String name = defaultAction.getAction().getID();
+					TMDataUtil.putRangeType(left, new RangeType(name,
+							defaultAction.getKind() != null ? defaultAction.getKind().getID() :
+									null,
+							interfaces.contains(name)));
+				}
 
 				if (nonterm.getType() instanceof TmaNontermTypeAST) {
 					final TmaNontermTypeAST astType = (TmaNontermTypeAST) nonterm.getType();
@@ -295,6 +317,7 @@ public class TMParserCompiler {
 		if (prio != null) {
 			rule = builder.addPrecedence(rule, prio);
 		}
+		annotateSequence(rule, action);
 		RhsPredicate predicate = convertPredicate(right.getPredicate(), left);
 		builder.addRule(left, predicate == null
 				? rule : builder.conditional(predicate, rule, right));
@@ -452,8 +475,9 @@ public class TMParserCompiler {
 
 		// inline (...)
 		if (canInline && isGroupPart(part)) {
-			List<ITmaRhsPart> groupPart = getGroupPart(part);
-			result = convertGroup(outer, groupPart, part);
+			TmaRule0 rule = getGroupRule(part);
+			result = convertGroup(outer, rule.getList(), part);
+			annotateSequence((RhsSequence) result, rule.getAction());
 
 			// inline (...|...|...)
 		} else if (canInline && isChoicePart(part)) {
@@ -505,6 +529,20 @@ public class TMParserCompiler {
 		}
 		if (sets.length == 1) return Collections.singleton(sets[0]);
 		return Arrays.asList(sets);
+	}
+
+	private void annotateSequence(RhsSequence seq, TmaReportClause clause) {
+		if (clause == null) return;
+
+		String name = clause.getAction().getID();
+		if (interfaces.contains(name)) {
+			error(clause.getAction(), "interface types are not expected here");
+			return;
+		}
+
+		TMDataUtil.putRangeType(seq, new RangeType(name,
+				clause.getKind() != null ? clause.getKind().getID() : null,
+				false /*interface*/));
 	}
 
 	private RhsSet convertSet(ITmaSetExpression expr, Nonterminal context) {
@@ -635,8 +673,8 @@ public class TMParserCompiler {
 			RhsSequence inner;
 			ITmaRhsPart innerSymRef = nestedQuantifier.getInner();
 			if (isGroupPart(innerSymRef)) {
-				List<ITmaRhsPart> groupPart = getGroupPart(innerSymRef);
-				inner = convertGroup(outer, groupPart, innerSymRef);
+				TmaRule0 rule = getGroupRule(innerSymRef);
+				inner = convertGroup(outer, rule.getList(), innerSymRef);
 			} else {
 				RhsSymbol symref = convertPrimary(outer, innerSymRef);
 				if (symref == null) {
@@ -664,6 +702,7 @@ public class TMParserCompiler {
 			if (abstractRulePart == null) {
 				return null;
 			}
+			annotateSequence(abstractRulePart, rule.getAction());
 			RhsPredicate predicate = convertPredicate(rule.getPredicate(), outer);
 			if (predicate != null) {
 				result.add(builder.conditional(predicate, abstractRulePart, rule));
@@ -739,13 +778,12 @@ public class TMParserCompiler {
 				&& (allowPredicates || rule.getPredicate() == null)
 				&& rule.getPrefix() == null
 				&& rule.getSuffix() == null
-				&& rule.getAction() == null
 				&& rule.getList() != null && !rule.getList().isEmpty()
 				&& rule.getError() == null;
 	}
 
-	private List<ITmaRhsPart> getGroupPart(ITmaRhsPart symbolRef) {
-		return ((TmaRhsNested) symbolRef).getRules().get(0).getList();
+	private TmaRule0 getGroupRule(ITmaRhsPart symbolRef) {
+		return ((TmaRhsNested) symbolRef).getRules().get(0);
 	}
 
 	private void extractUnorderedParts(ITmaRhsPart unorderedRulePart, List<ITmaRhsPart> result) {

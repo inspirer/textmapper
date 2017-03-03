@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 public class TMEventMapper {
 
-	private static final String TOKEN_CATEGORY = "TokenSet";
+	static final String TOKEN_CATEGORY = "TokenSet";
 
 	private final Grammar grammar;
 	private final Map<String, Object> opts;
@@ -69,7 +69,8 @@ public class TMEventMapper {
 
 	private void computeTypes() {
 		for (Rule rule : grammar.getRules()) {
-			String type = assignRangeType(rule);
+			RangeType rangeType = TMDataUtil.getRangeType(rule);
+			String type = rangeType != null ? rangeType.getName() : "";
 			String existing;
 			if ((existing = sequenceTypes.putIfAbsent(rule.getSource(), type)) != null) {
 				if (!existing.equals(type)) {
@@ -116,14 +117,6 @@ public class TMEventMapper {
 		// Detect lists.
 		for (Rule rule : grammar.getRules()) {
 			if (!isListRule(rule)) continue;
-
-			Nonterminal left = rule.getLeft();
-
-			if (!NonterminalUtil.isList(left) &&
-					!TMDataUtil.hasProperty(rule.getLeft(), "noast")) {
-				status.report(ProcessingStatus.KIND_ERROR,
-						rule.getLeft().getNameText() + " have to be marked as @noast", rule);
-			}
 			lists.add(rule.getLeft());
 		}
 
@@ -132,39 +125,13 @@ public class TMEventMapper {
 			if (!(symbol instanceof Nonterminal)) continue;
 			Nonterminal n = (Nonterminal) symbol;
 
-			if (isInterface(n)) {
-				String category = getVariableName(n);
-				if (categories.containsKey(category)) continue;
+			RangeType rangeType = TMDataUtil.getRangeType(n);
+			if (rangeType == null || !rangeType.isInterface()) continue;
 
-				if (typeIndex.containsKey(category)) {
-					status.report(ProcessingStatus.KIND_ERROR,
-							"the name `" + category + "' is used for both - " +
-									"an interface and a type", symbol);
-					continue;
-				}
-				if (category.equals(TOKEN_CATEGORY)) {
-					status.report(ProcessingStatus.KIND_ERROR,
-							TOKEN_CATEGORY + " is reserved for a set of token node types", n);
-					continue;
-				}
+			String category = rangeType.getName();
+			if (!categories.containsKey(category)) {
 				categories.put(category, new LinkedHashSet<>());
 				categoryNonterms.put(category, new ArrayList<>(Collections.singletonList(n)));
-			}
-		}
-
-		// Category extensions.
-		for (Symbol symbol : grammar.getSymbols()) {
-			if (!(symbol instanceof Nonterminal)) continue;
-			Nonterminal n = (Nonterminal) symbol;
-
-			Nonterminal type = TMDataUtil.getCustomType(n);
-			if (type == null) continue;
-
-			String category = getVariableName(type);
-			if (!categoryNonterms.containsKey(category)) {
-				status.report(ProcessingStatus.KIND_ERROR,
-						category + " must be an interface", symbol);
-				continue;
 			}
 			categoryNonterms.get(category).add(n);
 		}
@@ -223,7 +190,7 @@ public class TMEventMapper {
 			if (comesAfter >= 0) {
 				RangeField prev = result.get(comesAfter);
 				if (prev.isNullable() || prev.isList()) {
-					String adj = prev.isNullable() ?  "nullable" : "a list";
+					String adj = prev.isNullable() ? "nullable" : "a list";
 					status.report(ProcessingStatus.KIND_ERROR,
 							"`" + prev.getName() + "` cannot be " + adj + ", since it precedes " +
 									field.getName(), phrase);
@@ -272,7 +239,7 @@ public class TMEventMapper {
 				TMPhrase phrase = computePhrase(nt, true);
 				if (!phrase.isUnnamedField() || phrase.first().isList()) {
 					status.report(ProcessingStatus.KIND_ERROR,
-							getVariableName(nt) + " cannot be used as an interface: "
+							nt.getNameText() + " cannot be used as an interface: "
 									+ phrase.toString(), nt);
 					continue;
 				}
@@ -310,52 +277,21 @@ public class TMEventMapper {
 		}
 	}
 
-	private String assignRangeType(Rule rule) {
-		RhsSequence seq = rule.getSource();
-		if (seq.getName() != null) {
-			TMDataUtil.putRangeType(rule, seq.getName());
-			return seq.getName();
-		}
-
-		if (seq.getParts().length > 0 &&
-				TMDataUtil.hasProperty(seq.getParts()[0], "noast")) {
-			return "";
-		}
-
-		Nonterminal n = rule.getLeft();
-		if (n instanceof Lookahead) return "";
-		if (!TMDataUtil.hasProperty(n, "ast")) {
-			if (NonterminalUtil.isList(n)
-					|| NonterminalUtil.isOptional(n)
-					|| TMDataUtil.hasProperty(n, "_set")
-					|| isInterface(n)
-					|| TMDataUtil.hasProperty(n, "lookahead")
-					|| TMDataUtil.hasProperty(n, "noast")) {
-				return "";
-			}
-		}
-
-		if (n.getTemplate() != null) n = n.getTemplate();
-		TMDataUtil.putRangeType(rule, n.getNameText());
-		return n.getNameText();
-	}
-
-	private static boolean isListSelfReference(RhsSymbol ref) {
+	private boolean isListSelfReference(RhsSymbol ref) {
 		Symbol target = ref.getTarget();
 		if (ref.getLeft() != target || !(target instanceof Nonterminal)) return false;
 
 		Nonterminal n = (Nonterminal) target;
-		return NonterminalUtil.isList(n) || TMDataUtil.hasProperty(n, "noast");
+		return NonterminalUtil.isList(n) || lists.contains(n);
 	}
 
 	private TMPhrase computePhrase(Nonterminal nt, boolean internal) {
-		if (TMDataUtil.hasProperty(nt, "void") || TMDataUtil.hasProperty(nt, "lookahead")) {
+		RangeType rangeType = TMDataUtil.getRangeType(nt);
+		if (rangeType != null && rangeType.getName().equals("void")) {
 			return TMPhrase.empty(nt);
 		}
 
 		TMPhrase result;
-		Nonterminal category = TMDataUtil.getCustomType(nt);
-		String name = getVariableName(nt);
 		if (!internal) {
 			result = phrases.get(nt);
 			if (result != null) return result;
@@ -366,14 +302,9 @@ public class TMEventMapper {
 				result = TMPhrase.empty(nt);
 			}
 
-			// returns ...
-			if (result == null && category != null) {
-				result = TMPhrase.type(getVariableName(category), nt);
-			}
-
-			// interface
-			if (result == null && categories.containsKey(name)) {
-				result = TMPhrase.type(name, nt);
+			// -> something
+			if (result == null && rangeType != null) {
+				result = TMPhrase.type(rangeType.getName(), nt);
 			}
 
 			if (result != null) {
@@ -391,9 +322,8 @@ public class TMEventMapper {
 			}
 			list.add(computePhrase(p));
 		}
-		if ((category != null || categories.containsKey(name) ||
-				lists.contains(nt) && TMPhrase.allMergeable(list))) {
-			result = TMPhrase.mergeSet(name, list, nt, status);
+		if (rangeType != null) {
+			result = TMPhrase.mergeSet(rangeType.getName(), list, nt, status);
 		} else {
 			result = TMPhrase.merge(list, nt, status);
 		}
@@ -495,20 +425,5 @@ public class TMEventMapper {
 			default:
 				throw new IllegalStateException();
 		}
-	}
-
-	private String getVariableName(Symbol s) {
-		if (s instanceof Nonterminal) {
-			Nonterminal template = ((Nonterminal) s).getTemplate();
-			if (template != null) {
-				return template.getNameText();
-			}
-		}
-		return s.getNameText();
-	}
-
-	private boolean isInterface(Nonterminal n) {
-		TMTypeHint hint = TMDataUtil.getTypeHint(n);
-		return hint != null && hint.getKind() == TMTypeHint.Kind.INTERFACE;
 	}
 }

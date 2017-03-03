@@ -12,8 +12,6 @@ func ToTmNode(n Node) TmNode {
 		return nil
 	}
 	switch n.Type() {
-	case tm.KeyValue:
-		return &KeyValue{n}
 	case tm.AnnotationImpl:
 		return &AnnotationImpl{n}
 	case tm.Annotations:
@@ -46,8 +44,6 @@ func ToTmNode(n Node) TmNode {
 		return &DirectiveSet{n}
 	case tm.ExclusiveStates:
 		return &ExclusiveStates{n}
-	case tm.GrammarParts:
-		return &GrammarParts{n}
 	case tm.Header:
 		return &Header{n}
 	case tm.Identifier:
@@ -66,12 +62,16 @@ func ToTmNode(n Node) TmNode {
 		return &IntegerLiteral{n}
 	case tm.InterfaceType:
 		return &InterfaceType{n}
+	case tm.KeyValue:
+		return &KeyValue{n}
 	case tm.Lexeme:
 		return &Lexeme{n}
 	case tm.LexemeAttribute:
 		return &LexemeAttribute{n}
 	case tm.LexemeAttrs:
 		return &LexemeAttrs{n}
+	case tm.LexerSection:
+		return &LexerSection{n}
 	case tm.LexerState:
 		return &LexerState{n}
 	case tm.ListSeparator:
@@ -90,6 +90,8 @@ func ToTmNode(n Node) TmNode {
 		return &ParamRef{n}
 	case tm.ParamType:
 		return &ParamType{n}
+	case tm.ParserSection:
+		return &ParserSection{n}
 	case tm.Pattern:
 		return &Pattern{n}
 	case tm.Predicate:
@@ -126,8 +128,6 @@ func ToTmNode(n Node) TmNode {
 		return &RhsPlusAssignment{n}
 	case tm.RhsPlusList:
 		return &RhsPlusList{n}
-	case tm.RhsPrimary:
-		return &RhsPrimary{n}
 	case tm.RhsQuantifier:
 		return &RhsQuantifier{n}
 	case tm.RhsSet:

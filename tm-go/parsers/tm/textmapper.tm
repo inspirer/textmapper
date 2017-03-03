@@ -135,7 +135,7 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 
 # Basic nonterminals.
 
-identifier<flag KW = false> :
+identifier<flag KW = false> -> Identifier :
     ID
 
   # Soft keywords
@@ -150,80 +150,82 @@ identifier<flag KW = false> :
   | [KW] ('true' | 'false' | 'separator' | 'as' | 'import' | 'set')
 ;
 
-integer_literal :
+integer_literal -> IntegerLiteral :
     icon ;
 
-string_literal :
+string_literal -> StringLiteral :
     scon ;
 
-boolean_literal :
+boolean_literal -> BooleanLiteral :
     'true'
   | 'false'
 ;
 
-literal interface :
+%interface Literal;
+
+literal -> Literal :
     string_literal
   | integer_literal
   | boolean_literal
 ;
 
-pattern :
+pattern -> Pattern :
     regexp ;
 
-@noast
 qualified_name :
     identifier
   | qualified_name '.' identifier<+KW>
 ;
 
-name :
+name -> Name :
     qualified_name ;
 
-command :
+command -> Command :
     code ;
 
-syntax_problem :
+syntax_problem -> SyntaxProblem :
     error ;
 
 %input input, expression;
 
-input :
+input -> Input :
     header imports=import_* options=option* lexer=lexer_section parser=parser_section? ;
 
-header :
+header -> Header :
     'language' name=name ('(' target=name ')')? ';' ;
 
-@noast
-lexer_section :
+lexer_section -> LexerSection :
     '::' 'lexer' lexer_parts ;
 
-@noast
-parser_section :
+parser_section -> ParserSection :
     '::' 'parser' grammar_parts ;
 
-import_ :
+import_ -> Import :
     'import' alias=identifier? path=string_literal ';' ;
 
-option interface :
+%interface Option;
+
+option -> Option :
     key=identifier '=' value=expression        -> KeyValue
   | syntax_problem
 ;
 
-symref<flag Args> :
+symref<flag Args> -> Symref :
     [Args]  name=identifier args=symref_args?
   | [!Args] name=identifier
 ;
 
-rawType class :
+rawType -> RawType :
     code ;
 
-@noast
 lexer_parts :
     lexer_part
   | lexer_parts lexer_part<+OrSyntaxError>
 ;
 
-lexer_part<OrSyntaxError> interface :
+%interface LexerPart;
+
+lexer_part<OrSyntaxError> -> LexerPart :
     named_pattern
   | lexeme
   | lexer_directive
@@ -231,41 +233,41 @@ lexer_part<OrSyntaxError> interface :
   | [OrSyntaxError] syntax_problem
 ;
 
-named_pattern :
+named_pattern -> NamedPattern :
     name=identifier '=' pattern ;
 
-start_conditions_scope :
+start_conditions_scope -> StartConditionsScope :
     start_conditions '{' lexer_parts '}' ;
 
-start_conditions :
+start_conditions -> StartConditions :
     '<' '*'  '>'
   | '<' (stateref separator ',')+ '>'
 ;
 
-lexeme :
+lexeme -> Lexeme :
     start_conditions? name=identifier rawTypeopt ':'
           (pattern priority=integer_literalopt attrs=lexeme_attrsopt commandopt)? ;
 
-lexeme_attrs :
+lexeme_attrs -> LexemeAttrs :
     '(' lexeme_attribute ')' ;
 
-lexeme_attribute :
+lexeme_attribute -> LexemeAttribute :
     'soft'
   | 'class'
   | 'space'
   | 'layout'
 ;
 
-lexer_directive returns lexer_part :
-    '%' 'brackets' opening=symref<~Args> closing=symref<~Args> ';'    -> directiveBrackets
-  | '%' 's' states=(lexer_state separator ',')+                       -> inclusiveStates
-  | '%' 'x' states=(lexer_state separator ',')+                       -> exclusiveStates
+lexer_directive -> LexerPart :
+    '%' 'brackets' opening=symref<~Args> closing=symref<~Args> ';'    -> DirectiveBrackets
+  | '%' 's' states=(lexer_state separator ',')+                       -> InclusiveStates
+  | '%' 'x' states=(lexer_state separator ',')+                       -> ExclusiveStates
 ;
 
-stateref :
+stateref -> Stateref :
     name=identifier ;
 
-lexer_state :
+lexer_state -> LexerState :
     name=identifier ;
 
 grammar_parts :
@@ -273,51 +275,55 @@ grammar_parts :
   | grammar_parts grammar_part<+OrSyntaxError>
 ;
 
-grammar_part<OrSyntaxError> interface :
+%interface GrammarPart;
+
+grammar_part<OrSyntaxError> -> GrammarPart :
     nonterm
   | template_param
   | directive
   | [OrSyntaxError] syntax_problem
 ;
 
-nonterm :
+nonterm -> Nonterm :
     annotations? name=identifier params=nonterm_params? nonterm_type? reportClause? ':' rules ';' ;
 
-nonterm_type interface :
-    'returns' reference=symref<~Args>                      -> subType
-  | 'interface'                                            -> interfaceType
-  | 'void'                                                 -> voidType
+%interface NontermType;
+
+nonterm_type -> NontermType :
+    'returns' reference=symref<~Args>                      -> SubType
+  | 'interface'                                            -> InterfaceType
+  | 'void'                                                 -> VoidType
   | rawType
 ;
 
-assoc :
+assoc -> Assoc :
     'left'
   | 'right'
   | 'nonassoc'
 ;
 
-param_modifier :
+param_modifier -> ParamModifier :
     'explicit'
   | 'global'
   | 'lookahead'
 ;
 
-template_param returns grammar_part :
-    '%' modifier=param_modifier? param_type name=identifier ('=' param_value)? ';'
+template_param -> GrammarPart :
+    '%' modifier=param_modifier? param_type name=identifier ('=' param_value)? ';' -> TemplateParam
 ;
 
-directive returns grammar_part :
-    '%' assoc symbols=references ';'                                 -> directivePrio
-  | '%' 'input' inputRefs=(inputref separator ',')+ ';'              -> directiveInput
-  | '%' 'interface' ids=(identifier separator ',')+ ';'              -> directiveInterface
-  | '%' 'assert' ('empty' | 'nonempty') rhsSet ';'                   -> directiveAssert
-  | '%' 'generate' name=identifier '=' rhsSet ';'                    -> directiveSet
+directive -> GrammarPart :
+    '%' assoc symbols=references ';'                                 -> DirectivePrio
+  | '%' 'input' inputRefs=(inputref separator ',')+ ';'              -> DirectiveInput
+  | '%' 'interface' ids=(identifier separator ',')+ ';'              -> DirectiveInterface
+  | '%' 'assert' ('empty' | 'nonempty') rhsSet ';'                   -> DirectiveAssert
+  | '%' 'generate' name=identifier '=' rhsSet ';'                    -> DirectiveSet
 ;
 
-inputref :
+inputref -> Inputref :
     reference=symref<~Args> 'no-eoi'? ;
 
-references :
+references -> References :
     symref<~Args>
   | references symref<~Args>
 ;
@@ -327,153 +333,169 @@ references_cs :
   | references_cs ',' symref<~Args>
 ;
 
-@noast
 rules :
     rule0
   | rules '|' rule0
 ;
 
-rule0 interface :
-    predicate? rhsParts? rhsSuffixopt reportClause?       -> rule
+%interface Rule0;
+
+rule0 -> Rule0 :
+    predicate? rhsParts? rhsSuffixopt reportClause?       -> Rule
   | syntax_problem
 ;
 
-predicate :
+predicate -> Predicate :
     '[' predicate_expression ']' ;
 
-rhsSuffix :
+rhsSuffix -> RhsSuffix :
     '%' 'prec' symref<~Args>
   | '%' 'shift' symref<~Args>
 ;
 
-reportClause :
+reportClause -> ReportClause :
     '->' action=identifier ('/' kind=identifier)?  ;
 
-@noast
 rhsParts :
     rhsPart
   | rhsParts rhsPart<+OrSyntaxError>
 ;
 
-rhsPart<OrSyntaxError> interface :
+%interface RhsPart;
+
+rhsPart<OrSyntaxError> -> RhsPart :
     rhsAnnotated
   | command
   | [OrSyntaxError] syntax_problem
 ;
 
-rhsAnnotated returns rhsPart :
-    @noast rhsAssignment
-  | annotations inner=rhsAssignment
+rhsAnnotated -> RhsPart :
+    rhsAssignment
+  | annotations inner=rhsAssignment  -> RhsAnnotated
 ;
 
-rhsAssignment returns rhsPart :
-    @noast rhsOptional
-  | id=identifier '=' inner=rhsOptional
-  | id=identifier '+=' inner=rhsOptional     -> rhsPlusAssignment
+rhsAssignment -> RhsPart :
+    rhsOptional
+  | id=identifier '=' inner=rhsOptional      -> RhsAssignment
+  | id=identifier '+=' inner=rhsOptional     -> RhsPlusAssignment
 ;
 
-rhsOptional returns rhsPart :
-    @noast rhsCast
-  | inner=rhsCast '?'
+rhsOptional -> RhsPart :
+    rhsCast
+  | inner=rhsCast '?'  -> RhsOptional
 ;
 
-rhsCast returns rhsPart :
-    @noast rhsPrimary
-  | inner=rhsPrimary 'as' target=symref<+Args>
+rhsCast -> RhsPart :
+    rhsPrimary
+  | inner=rhsPrimary 'as' target=symref<+Args> -> RhsCast
 ;
 
-listSeparator :
+listSeparator -> ListSeparator :
     'separator' separator_=references ;
 
-rhsPrimary returns rhsPart :
-    reference=symref<+Args>                           -> rhsSymbol
-  | '(' rules ')'                                     -> rhsNested
-  | '(' ruleParts=rhsParts listSeparator ')' '+'      -> rhsPlusList
-  | '(' ruleParts=rhsParts listSeparator ')' '*'      -> rhsStarList
-  | inner=rhsPrimary '+'                              -> rhsQuantifier
-  | inner=rhsPrimary '*'                              -> rhsQuantifier
-  | '$' '(' rules ')'                                 -> rhsIgnored
+rhsPrimary -> RhsPart :
+    reference=symref<+Args>                           -> RhsSymbol
+  | '(' rules ')'                                     -> RhsNested
+  | '(' ruleParts=rhsParts listSeparator ')' '+'      -> RhsPlusList
+  | '(' ruleParts=rhsParts listSeparator ')' '*'      -> RhsStarList
+  | inner=rhsPrimary '+'                              -> RhsQuantifier
+  | inner=rhsPrimary '*'                              -> RhsQuantifier
+  | '$' '(' rules ')'                                 -> RhsIgnored
   | rhsSet
 ;
 
-rhsSet :
+rhsSet -> RhsSet :
     'set' '(' expr=setExpression ')' ;
 
-setPrimary returns setExpression :
-    operator=identifier? symbol=symref<+Args>    -> setSymbol
-  | '(' inner=setExpression ')'                  -> setCompound
-  | '~' inner=setPrimary                         -> setComplement
+%interface SetExpression;
+
+setPrimary -> SetExpression :
+    operator=identifier? symbol=symref<+Args>    -> SetSymbol
+  | '(' inner=setExpression ')'                  -> SetCompound
+  | '~' inner=setPrimary                         -> SetComplement
 ;
 
 %left '|';
 %left '&';
 
-setExpression interface :
-    @noast setPrimary
-  | left=setExpression '|' right=setExpression   -> setOr
-  | left=setExpression '&' right=setExpression   -> setAnd
+setExpression -> SetExpression :
+    setPrimary
+  | left=setExpression '|' right=setExpression   -> SetOr
+  | left=setExpression '&' right=setExpression   -> SetAnd
 ;
 
-annotations :
+annotations -> Annotations :
     annotation+ ;
 
-annotation interface :
-    '@' name=identifier ('=' expression)?    -> annotationImpl
+%interface Annotation;
+
+annotation -> Annotation :
+    '@' name=identifier ('=' expression)?    -> AnnotationImpl
   | '@' syntax_problem
 ;
 
 /* Nonterminal parameters */
 
-nonterm_params :
+nonterm_params -> NontermParams :
     '<' list=(nonterm_param separator ',')+ '>' ;
 
-nonterm_param interface :
+%interface NontermParam;
+
+nonterm_param -> NontermParam :
     param_ref
-  | param_type=identifier name=identifier ('=' param_value)?     -> inlineParameter
+  | param_type=identifier name=identifier ('=' param_value)?     -> InlineParameter
 ;
 
-param_ref :
+param_ref -> ParamRef:
     identifier ;
 
-symref_args :
+symref_args -> SymrefArgs :
     '<' arg_list=(argument separator ',')* '>' ;
 
-argument interface  :
-    name=param_ref (':' val=param_value)?        -> argumentImpl
-  | '+' name=param_ref                           -> argumentTrue
-  | '~' name=param_ref                           -> argumentFalse
+%interface Argument;
+
+argument -> Argument  :
+    name=param_ref (':' val=param_value)?        -> ArgumentImpl
+  | '+' name=param_ref                           -> ArgumentTrue
+  | '~' name=param_ref                           -> ArgumentFalse
 ;
 
-param_type :
+param_type -> ParamType :
     'flag'
   | 'param'
 ;
 
-param_value interface :
+%interface ParamValue;
+
+param_value -> ParamValue :
     literal
   | param_ref
 ;
 
-predicate_primary returns predicate_expression :
-    @noast param_ref
-  | '!' param_ref                 -> predicateNot
-  | param_ref '==' literal        -> predicateEq
-  | param_ref '!=' literal        -> predicateNotEq
+predicate_primary -> PredicateExpression :
+    param_ref
+  | '!' param_ref                 -> PredicateNot
+  | param_ref '==' literal        -> PredicateEq
+  | param_ref '!=' literal        -> PredicateNotEq
 ;
 
 %left '||';
 %left '&&';
 
-predicate_expression interface :
+%interface PredicateExpression;
+
+predicate_expression -> PredicateExpression :
     predicate_primary
-  | left=predicate_expression '&&' right=predicate_expression        -> predicateAnd
-  | left=predicate_expression '||' right=predicate_expression        -> predicateOr
+  | left=predicate_expression '&&' right=predicate_expression        -> PredicateAnd
+  | left=predicate_expression '||' right=predicate_expression        -> PredicateOr
 ;
 
-expression interface :
+%interface Expression;
+
+expression -> Expression :
     literal
   | symref<+Args>
-  | '[' (expression separator ',')* ']'                              -> array
+  | '[' (expression separator ',')* ']'                              -> Array
   | syntax_problem
 ;
 

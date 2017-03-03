@@ -30,6 +30,7 @@ import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.objects.JavaIxFactory;
+import org.textmapper.tool.compiler.RangeType;
 import org.textmapper.tool.compiler.TMDataUtil;
 import org.textmapper.tool.compiler.TMGrammar;
 
@@ -136,8 +137,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return sourceSymbols;
 				}
 				if ("rangeType".equals(methodName)) {
-					String type = TMDataUtil.getRangeType(rule);
-					return type != null ? type : "";
+					RangeType rangeType = TMDataUtil.getRangeType(rule);
+					return rangeType != null ? rangeType.getName() : "";
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					int rhsSize = 0;

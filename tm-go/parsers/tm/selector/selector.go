@@ -9,7 +9,6 @@ import (
 type Selector func(nt tm.NodeType) bool
 
 var (
-	KeyValue             = func(t tm.NodeType) bool { return t == tm.KeyValue }
 	AnnotationImpl       = func(t tm.NodeType) bool { return t == tm.AnnotationImpl }
 	Annotations          = func(t tm.NodeType) bool { return t == tm.Annotations }
 	ArgumentFalse        = func(t tm.NodeType) bool { return t == tm.ArgumentFalse }
@@ -26,7 +25,6 @@ var (
 	DirectivePrio        = func(t tm.NodeType) bool { return t == tm.DirectivePrio }
 	DirectiveSet         = func(t tm.NodeType) bool { return t == tm.DirectiveSet }
 	ExclusiveStates      = func(t tm.NodeType) bool { return t == tm.ExclusiveStates }
-	GrammarParts         = func(t tm.NodeType) bool { return t == tm.GrammarParts }
 	Header               = func(t tm.NodeType) bool { return t == tm.Header }
 	Identifier           = func(t tm.NodeType) bool { return t == tm.Identifier }
 	Import               = func(t tm.NodeType) bool { return t == tm.Import }
@@ -36,9 +34,11 @@ var (
 	Inputref             = func(t tm.NodeType) bool { return t == tm.Inputref }
 	IntegerLiteral       = func(t tm.NodeType) bool { return t == tm.IntegerLiteral }
 	InterfaceType        = func(t tm.NodeType) bool { return t == tm.InterfaceType }
+	KeyValue             = func(t tm.NodeType) bool { return t == tm.KeyValue }
 	Lexeme               = func(t tm.NodeType) bool { return t == tm.Lexeme }
 	LexemeAttribute      = func(t tm.NodeType) bool { return t == tm.LexemeAttribute }
 	LexemeAttrs          = func(t tm.NodeType) bool { return t == tm.LexemeAttrs }
+	LexerSection         = func(t tm.NodeType) bool { return t == tm.LexerSection }
 	LexerState           = func(t tm.NodeType) bool { return t == tm.LexerState }
 	ListSeparator        = func(t tm.NodeType) bool { return t == tm.ListSeparator }
 	Name                 = func(t tm.NodeType) bool { return t == tm.Name }
@@ -48,6 +48,7 @@ var (
 	ParamModifier        = func(t tm.NodeType) bool { return t == tm.ParamModifier }
 	ParamRef             = func(t tm.NodeType) bool { return t == tm.ParamRef }
 	ParamType            = func(t tm.NodeType) bool { return t == tm.ParamType }
+	ParserSection        = func(t tm.NodeType) bool { return t == tm.ParserSection }
 	Pattern              = func(t tm.NodeType) bool { return t == tm.Pattern }
 	Predicate            = func(t tm.NodeType) bool { return t == tm.Predicate }
 	PredicateAnd         = func(t tm.NodeType) bool { return t == tm.PredicateAnd }
@@ -66,7 +67,6 @@ var (
 	RhsOptional          = func(t tm.NodeType) bool { return t == tm.RhsOptional }
 	RhsPlusAssignment    = func(t tm.NodeType) bool { return t == tm.RhsPlusAssignment }
 	RhsPlusList          = func(t tm.NodeType) bool { return t == tm.RhsPlusList }
-	RhsPrimary           = func(t tm.NodeType) bool { return t == tm.RhsPrimary }
 	RhsQuantifier        = func(t tm.NodeType) bool { return t == tm.RhsQuantifier }
 	RhsSet               = func(t tm.NodeType) bool { return t == tm.RhsSet }
 	RhsStarList          = func(t tm.NodeType) bool { return t == tm.RhsStarList }

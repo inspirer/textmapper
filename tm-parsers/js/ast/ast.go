@@ -359,6 +359,7 @@ func (IfStatement) moduleItemNode()           {}
 func (ImportDeclaration) moduleItemNode()     {}
 func (LabelledStatement) moduleItemNode()     {}
 func (LexicalDeclaration) moduleItemNode()    {}
+func (ReturnStatement) moduleItemNode()       {}
 func (SwitchStatement) moduleItemNode()       {}
 func (SyntaxError) moduleItemNode()           {}
 func (ThrowStatement) moduleItemNode()        {}
@@ -440,6 +441,7 @@ func (ForStatement) statementNode()          {}
 func (ForStatementWithVar) statementNode()   {}
 func (IfStatement) statementNode()           {}
 func (LabelledStatement) statementNode()     {}
+func (ReturnStatement) statementNode()       {}
 func (SwitchStatement) statementNode()       {}
 func (ThrowStatement) statementNode()        {}
 func (TryStatement) statementNode()          {}
@@ -474,6 +476,7 @@ func (Generator) statementListItemNode()             {}
 func (IfStatement) statementListItemNode()           {}
 func (LabelledStatement) statementListItemNode()     {}
 func (LexicalDeclaration) statementListItemNode()    {}
+func (ReturnStatement) statementListItemNode()       {}
 func (SwitchStatement) statementListItemNode()       {}
 func (SyntaxError) statementListItemNode()           {}
 func (ThrowStatement) statementListItemNode()        {}

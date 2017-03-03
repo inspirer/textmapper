@@ -31,7 +31,6 @@ type Token struct {
 }
 
 // All types implement TmNode.
-func (KeyValue) tmNodeNode()             {}
 func (AnnotationImpl) tmNodeNode()       {}
 func (Annotations) tmNodeNode()          {}
 func (ArgumentFalse) tmNodeNode()        {}
@@ -48,7 +47,6 @@ func (DirectiveInterface) tmNodeNode()   {}
 func (DirectivePrio) tmNodeNode()        {}
 func (DirectiveSet) tmNodeNode()         {}
 func (ExclusiveStates) tmNodeNode()      {}
-func (GrammarParts) tmNodeNode()         {}
 func (Header) tmNodeNode()               {}
 func (Identifier) tmNodeNode()           {}
 func (Import) tmNodeNode()               {}
@@ -58,9 +56,11 @@ func (Input) tmNodeNode()                {}
 func (Inputref) tmNodeNode()             {}
 func (IntegerLiteral) tmNodeNode()       {}
 func (InterfaceType) tmNodeNode()        {}
+func (KeyValue) tmNodeNode()             {}
 func (Lexeme) tmNodeNode()               {}
 func (LexemeAttribute) tmNodeNode()      {}
 func (LexemeAttrs) tmNodeNode()          {}
+func (LexerSection) tmNodeNode()         {}
 func (LexerState) tmNodeNode()           {}
 func (ListSeparator) tmNodeNode()        {}
 func (Name) tmNodeNode()                 {}
@@ -70,6 +70,7 @@ func (NontermParams) tmNodeNode()        {}
 func (ParamModifier) tmNodeNode()        {}
 func (ParamRef) tmNodeNode()             {}
 func (ParamType) tmNodeNode()            {}
+func (ParserSection) tmNodeNode()        {}
 func (Pattern) tmNodeNode()              {}
 func (Predicate) tmNodeNode()            {}
 func (PredicateAnd) tmNodeNode()         {}
@@ -88,7 +89,6 @@ func (RhsNested) tmNodeNode()            {}
 func (RhsOptional) tmNodeNode()          {}
 func (RhsPlusAssignment) tmNodeNode()    {}
 func (RhsPlusList) tmNodeNode()          {}
-func (RhsPrimary) tmNodeNode()           {}
 func (RhsQuantifier) tmNodeNode()        {}
 func (RhsSet) tmNodeNode()               {}
 func (RhsStarList) tmNodeNode()          {}
@@ -164,6 +164,7 @@ func (DirectiveInterface) grammarPartNode() {}
 func (DirectivePrio) grammarPartNode()      {}
 func (DirectiveSet) grammarPartNode()       {}
 func (Nonterm) grammarPartNode()            {}
+func (SyntaxProblem) grammarPartNode()      {}
 func (TemplateParam) grammarPartNode()      {}
 
 type LexerPart interface {
@@ -180,6 +181,7 @@ func (InclusiveStates) lexerPartNode()      {}
 func (Lexeme) lexerPartNode()               {}
 func (NamedPattern) lexerPartNode()         {}
 func (StartConditionsScope) lexerPartNode() {}
+func (SyntaxProblem) lexerPartNode()        {}
 
 type Literal interface {
 	TmNode
@@ -273,10 +275,11 @@ func (RhsNested) rhsPartNode()         {}
 func (RhsOptional) rhsPartNode()       {}
 func (RhsPlusAssignment) rhsPartNode() {}
 func (RhsPlusList) rhsPartNode()       {}
-func (RhsPrimary) rhsPartNode()        {}
 func (RhsQuantifier) rhsPartNode()     {}
+func (RhsSet) rhsPartNode()            {}
 func (RhsStarList) rhsPartNode()       {}
 func (RhsSymbol) rhsPartNode()         {}
+func (SyntaxProblem) rhsPartNode()     {}
 
 type Rule0 interface {
 	TmNode
@@ -304,18 +307,6 @@ func (SetOr) setExpressionNode()         {}
 func (SetSymbol) setExpressionNode()     {}
 
 // Types.
-
-type KeyValue struct {
-	Node
-}
-
-func (n KeyValue) Key() Identifier {
-	return Identifier{n.Child(selector.Identifier)}
-}
-
-func (n KeyValue) Value() Expression {
-	return ToTmNode(n.Child(selector.Expression)).(Expression)
-}
 
 type AnnotationImpl struct {
 	Node
@@ -484,21 +475,6 @@ func (n ExclusiveStates) States() []LexerState {
 	return result
 }
 
-type GrammarParts struct {
-	Node
-}
-
-func (n GrammarParts) GrammarParts() *GrammarParts {
-	if child := n.Child(selector.GrammarParts); child != nil {
-		return &GrammarParts{child}
-	}
-	return nil
-}
-
-func (n GrammarParts) GrammarPart() GrammarPart {
-	return ToTmNode(n.Child(selector.GrammarPart)).(GrammarPart)
-}
-
 type Header struct {
 	Node
 }
@@ -591,18 +567,13 @@ func (n Input) Options() []Option {
 	return result
 }
 
-func (n Input) Lexer() []LexerPart {
-	nodes := n.Children(selector.LexerPart)
-	var result []LexerPart = make([]LexerPart, 0, len(nodes))
-	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(LexerPart))
-	}
-	return result
+func (n Input) Lexer() LexerSection {
+	return LexerSection{n.Child(selector.LexerSection)}
 }
 
-func (n Input) Parser() *GrammarParts {
-	if child := n.Child(selector.GrammarParts); child != nil {
-		return &GrammarParts{child}
+func (n Input) Parser() *ParserSection {
+	if child := n.Child(selector.ParserSection); child != nil {
+		return &ParserSection{child}
 	}
 	return nil
 }
@@ -621,6 +592,18 @@ type IntegerLiteral struct {
 
 type InterfaceType struct {
 	Node
+}
+
+type KeyValue struct {
+	Node
+}
+
+func (n KeyValue) Key() Identifier {
+	return Identifier{n.Child(selector.Identifier)}
+}
+
+func (n KeyValue) Value() Expression {
+	return ToTmNode(n.Child(selector.Expression)).(Expression)
 }
 
 type Lexeme struct {
@@ -683,6 +666,19 @@ type LexemeAttrs struct {
 
 func (n LexemeAttrs) LexemeAttribute() LexemeAttribute {
 	return LexemeAttribute{n.Child(selector.LexemeAttribute)}
+}
+
+type LexerSection struct {
+	Node
+}
+
+func (n LexerSection) LexerPart() []LexerPart {
+	nodes := n.Children(selector.LexerPart)
+	var result []LexerPart = make([]LexerPart, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(LexerPart))
+	}
+	return result
 }
 
 type LexerState struct {
@@ -798,6 +794,19 @@ func (n ParamRef) Identifier() Identifier {
 
 type ParamType struct {
 	Node
+}
+
+type ParserSection struct {
+	Node
+}
+
+func (n ParserSection) GrammarPart() []GrammarPart {
+	nodes := n.Children(selector.GrammarPart)
+	var result []GrammarPart = make([]GrammarPart, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(GrammarPart))
+	}
+	return result
 }
 
 type Pattern struct {
@@ -999,14 +1008,6 @@ func (n RhsPlusList) RuleParts() []RhsPart {
 
 func (n RhsPlusList) ListSeparator() ListSeparator {
 	return ListSeparator{n.Child(selector.ListSeparator)}
-}
-
-type RhsPrimary struct {
-	Node
-}
-
-func (n RhsPrimary) RhsSet() RhsSet {
-	return RhsSet{n.Child(selector.RhsSet)}
 }
 
 type RhsQuantifier struct {

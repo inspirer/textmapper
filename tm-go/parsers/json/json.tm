@@ -51,10 +51,10 @@ invalid_token:
 
 %flag A;
 
-JSONText :
+JSONText -> JSONText :
     JSONValue<+A> ;
 
-JSONValue<A> {Value} :
+JSONValue<A> {Value} -> JSONValue :
     'null'
   | 'true'
   | 'false'
@@ -67,24 +67,22 @@ JSONValue<A> {Value} :
   | JSONNumber
 ;
 
-EmptyObject : (?= EmptyObject) '{' '}' ;
+EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' ;
 
-JSONObject :
+JSONObject -> JSONObject :
     (?= !EmptyObject) '{' JSONMemberList? '}' ;
 
-JSONMember {*Field} :
+JSONMember {*Field} -> JSONMember :
     JSONString ':' JSONValue<~A> ;
 
-@noast
 JSONMemberList :
     JSONMember
   | JSONMemberList ',' JSONMember
 ;
 
-JSONArray :
+JSONArray -> JSONArray :
     '[' JSONElementListopt ']' ;
 
-@noast
 JSONElementList :
     JSONValue<+A>
   | JSONElementList ',' JSONValue<+A>

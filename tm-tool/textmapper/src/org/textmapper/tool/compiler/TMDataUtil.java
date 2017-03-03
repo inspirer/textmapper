@@ -16,6 +16,7 @@
 package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.ast.TmaCommand;
 
@@ -124,12 +125,25 @@ public class TMDataUtil {
 		return rhsSym.getUserData(UD_LITERAL);
 	}
 
-	public static void putRangeType(Rule rule, String type) {
-		rule.putUserData(UD_RANGE_TYPE, type);
+	public static void putRangeType(UserDataHolder udh, RangeType type) {
+		if (udh instanceof RhsSequence && type.isInterface()) {
+			throw new IllegalArgumentException();
+		}
+		udh.putUserData(UD_RANGE_TYPE, type);
 	}
 
-	public static String getRangeType(Rule rule) {
-		return (String) rule.getUserData(UD_RANGE_TYPE);
+	public static RangeType getRangeType(UserDataHolder udh) {
+		if (udh instanceof Rule) {
+			udh = ((Rule) udh).getSource();
+		}
+		RangeType rangeType = (RangeType) lookupUserData(udh, UD_RANGE_TYPE);
+		if (rangeType == null && udh instanceof RhsSequence) {
+			rangeType = (RangeType) lookupUserData(((RhsSequence) udh).getLeft(), UD_RANGE_TYPE);
+			if (rangeType != null && rangeType.isInterface()) {
+				return null;
+			}
+		}
+		return rangeType;
 	}
 
 	public static void putRangeFields(Grammar grammar, String type, Collection<? extends RangeField> fields) {
