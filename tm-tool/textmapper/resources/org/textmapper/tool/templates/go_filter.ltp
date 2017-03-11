@@ -14,7 +14,7 @@ ${if self->localNodeSelectorType()-}
 ${call nodeSelectorTypeImpl-}
 ${end-}
 var (
-${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
+${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
 	${rangeType->nodeTypeFilterRef()->go.declarationName()} = func(t ${self->go_listener.nodeTypeRef()}) bool { return t == ${rangeType->go_listener.nodeTypeValueRef()} }
 ${end-}
 ${foreach name in opts.reportTokens.select(tok| self->go_types.isTokenType(tok.nameText)).collect(tok|tok->go_token.tokenNodeName())-}

@@ -42,9 +42,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="js" target="1.5" />
+      <module name="js" target="1.8" />
       <module name="lapg" target="1.8" />
-      <module name="lapg-master" target="1.6" />
       <module name="templates" target="1.8" />
       <module name="textmapper" target="1.8" />
       <module name="tm-master" target="1.8" />

@@ -29,7 +29,7 @@ func To${self->baseNode()}(n ${self->wrappedTypeRef()}) ${self->baseNode()} {
 		return nil
 	}
 	switch n.Type() {
-${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
+${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
 	case ${rangeType->go_listener.nodeTypeValueRef()}:
 		return &${rangeType->astClassRef()}{n}
 ${end-}
@@ -77,7 +77,7 @@ type Token struct {
 
 ${end-}
 // All types implement ${self->baseNode()}.
-${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
+${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
 func (${rangeType->astClassRef()->go.declarationName()}) ${self->baseNode()->asInterfaceMethod()}() {}
 ${end-}
 ${if opts.reportTokens.length > 0-}
@@ -103,7 +103,7 @@ ${end}
 ${template types-}
 // Types.
 
-${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '').sort(it|it)-}
+${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
 ${call type(rangeType)-}
 ${end-}
 

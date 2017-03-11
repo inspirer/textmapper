@@ -24,6 +24,7 @@ import org.textmapper.lapg.api.rule.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * evgeny, 12/7/12
@@ -137,6 +138,18 @@ public class RhsUtil {
 				return Arrays.asList(((RhsList) part).asRules());
 		}
 		return null;
+	}
+
+	public static void traverse(RhsPart p, Consumer<RhsPart> c) {
+		if (p == null) return;
+		c.accept(p);
+
+		final Iterable<RhsPart> children = getChildren(p);
+		if (children == null) return;
+
+		for (RhsPart child : children) {
+			traverse(child, c);
+		}
 	}
 
 	public static boolean containsRef(RhsPart part, final Symbol ref) {

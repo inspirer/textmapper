@@ -424,6 +424,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if ("categories".equals(propertyName)) {
 				return TMDataUtil.getCategoryList(grammar);
 			}
+			if ("rangeTypes".equals(propertyName)) {
+				return TMDataUtil.getTypes(grammar);
+			}
 			return super.getProperty(caller, propertyName);
 		}
 

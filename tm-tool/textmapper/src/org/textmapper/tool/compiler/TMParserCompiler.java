@@ -116,10 +116,15 @@ public class TMParserCompiler {
 				TmaReportClause defaultAction = nonterm.getDefaultAction();
 				if (defaultAction != null) {
 					String name = defaultAction.getAction().getID();
-					TMDataUtil.putRangeType(left, new RangeType(name,
-							defaultAction.getKind() != null ? defaultAction.getKind().getID() :
-									null,
-							interfaces.contains(name)));
+					if (name.equals(TMEventMapper.TOKEN_CATEGORY)) {
+						error(defaultAction.getAction(), TMEventMapper.TOKEN_CATEGORY +
+								" is reserved for a set of token node types");
+					} else {
+						TMDataUtil.putRangeType(left, new RangeType(name,
+								defaultAction.getKind() != null ? defaultAction.getKind().getID() :
+										null,
+								interfaces.contains(name)));
+					}
 				}
 
 				if (nonterm.getType() instanceof TmaNontermTypeAST) {
@@ -537,6 +542,11 @@ public class TMParserCompiler {
 		String name = clause.getAction().getID();
 		if (interfaces.contains(name)) {
 			error(clause.getAction(), "interface types are not expected here");
+			return;
+		}
+		if (name.equals(TMEventMapper.TOKEN_CATEGORY)) {
+			error(clause.getAction(), TMEventMapper.TOKEN_CATEGORY +
+					" is reserved for a set of token node types");
 			return;
 		}
 

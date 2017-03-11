@@ -32,7 +32,7 @@ type ${self->nodeTypeRef()->go.declarationName()} int
 type Listener func(t ${self->nodeTypeRef()}, offset, endoffset int)
 
 const (
-${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '')-}
+${foreach rangeType in syntax.rangeTypes-}
 	${rangeType->nodeTypeValueRef()->go.declarationName()}${if index == 0} ${self->nodeTypeRef()} = iota + 1${end}${call typedescr(rangeType)}
 ${end-}
 ${foreach extraType in opts.extraTypes-}
@@ -46,7 +46,7 @@ ${end-}
 
 var nodeTypeStr = [...]string{
 	"NONE",
-${foreach rangeType in syntax.rules.collectUnique(r|r.rangeType()).select(it|it != '')-}
+${foreach rangeType in syntax.rangeTypes-}
 	"${rangeType->nodeTypeValueString()}",
 ${end-}
 ${foreach extraType in opts.extraTypes-}

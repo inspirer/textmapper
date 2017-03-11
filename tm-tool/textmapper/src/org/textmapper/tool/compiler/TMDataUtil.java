@@ -30,13 +30,13 @@ public class TMDataUtil {
 	private static final String UD_CODE = "code";
 	private static final String UD_ANNOTATIONS = "annotations";
 	private static final String UD_IDENTIFIER = "id";
-	private static final String UD_TRANSITIONMAP = "transitionMap";
 	private static final String UD_CUSTOM_TYPE = "customType";
 	private static final String UD_TYPE_HINT = "typeHint";
 	private static final String UD_IMPLEMENTS = "implements";
 	private static final String UD_EXCLUSIVE = "exclusive";
 	private static final String UD_LITERAL = "literal";
 	private static final String UD_RANGE_TYPE = "rangeType";
+	private static final String UD_RANGE_TYPES = "rangeTypes";
 	private static final String UD_RANGE_FIELDS = "rangeFields";
 	private static final String UD_CATEGORIES = "categories";
 	private static final String UD_USER_REQUESTED_INPUT = "userRequested";
@@ -137,7 +137,8 @@ public class TMDataUtil {
 			udh = ((Rule) udh).getSource();
 		}
 		RangeType rangeType = (RangeType) lookupUserData(udh, UD_RANGE_TYPE);
-		if (rangeType == null && udh instanceof RhsSequence) {
+		if (rangeType == null && udh instanceof RhsSequence && ((RhsSequence) udh).getContext() == null) {
+			// For top-level sequences, we also check the nonterminal default type.
 			rangeType = (RangeType) lookupUserData(((RhsSequence) udh).getLeft(), UD_RANGE_TYPE);
 			if (rangeType != null && rangeType.isInterface()) {
 				return null;
@@ -175,6 +176,15 @@ public class TMDataUtil {
 				.getUserData(UD_CATEGORIES);
 		return map == null ? null : map.get(category);
 	}
+
+	public static void putTypes(Grammar grammar, Collection<String> rangeTypes) {
+		grammar.putUserData(UD_RANGE_TYPES, rangeTypes);
+	}
+
+	public static Collection<String> getTypes(Grammar grammar) {
+		return (Collection<String>) grammar.getUserData(UD_RANGE_TYPES);
+	}
+
 
 	public static Collection<String> getCategoryList(Grammar grammar) {
 		Map<String, Collection<String>> map = (Map<String, Collection<String>>) grammar
