@@ -522,12 +522,17 @@ ${query needExplicitLookahead() = parser.lookaheadRules.size() > 0}
 
 ${cached query hasRecovering() = syntax.error}
 
-${query hasAction(rule) = rule.getAction() || opts.genast && self->go_ast.astcode(rule)}
+${query hasAction(rule) = rule.getAction() || opts.genast && self->go_ast.astcode(rule) || rule.customRanges()}
 
 ${template parserAction($)-}
+${if customRanges()-}
+${foreach range in customRanges()-}
+		p.listener(${range.rangeType()}, ${range.first().offset}, ${range.first().endoffset})
+${end-}
+${end-}
 ${if getAction()-}
 ${eval getAction()}
-${else-}
+${else if context.opts.genast && context->go_ast.astcode(self)-}
 ${eval context->go_ast.astcode(self), '#[generated action for ' + self + ']'}
 ${end-}
 ${end}

@@ -39,6 +39,7 @@ public class TMDataUtil {
 	private static final String UD_RANGE_TYPES = "rangeTypes";
 	private static final String UD_RANGE_FIELDS = "rangeFields";
 	private static final String UD_CATEGORIES = "categories";
+	private static final String UD_CUSTOM_RANGES = "customRanges";
 	private static final String UD_USER_REQUESTED_INPUT = "userRequested";
 
 	private static Object lookupUserData(UserDataHolder element, String key) {
@@ -185,6 +186,19 @@ public class TMDataUtil {
 		return (Collection<String>) grammar.getUserData(UD_RANGE_TYPES);
 	}
 
+	public static void putCustomRange(Rule rule, CustomRange range) {
+		if (range == null) return;
+
+		Collection<CustomRange> list = (Collection<CustomRange>) rule.getUserData(UD_CUSTOM_RANGES);
+		if (list == null) {
+			rule.putUserData(UD_CUSTOM_RANGES, (list = new ArrayList<>()));
+		}
+		list.add(range);
+	}
+
+	public static Collection<CustomRange> getCustomRanges(Rule rule) {
+		return (Collection<CustomRange>) rule.getUserData(UD_CUSTOM_RANGES);
+	}
 
 	public static Collection<String> getCategoryList(Grammar grammar) {
 		Map<String, Collection<String>> map = (Map<String, Collection<String>>) grammar

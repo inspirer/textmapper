@@ -88,6 +88,7 @@ public class TMEventMapper {
 			}
 			list.add(seq);
 
+			RuleIndex ri = new RuleIndex(rule);
 			RhsUtil.traverse(seq, rhsPart -> {
 				if (!(rhsPart instanceof RhsSequence)) return;
 
@@ -100,6 +101,10 @@ public class TMEventMapper {
 					allTypes.add(rt.getName());
 				}
 				typeSeqs.add((RhsSequence) rhsPart);
+
+				if (!sequenceTypes.containsKey(rhsPart)) {
+					TMDataUtil.putCustomRange(rule, ri.compute((RhsSequence) rhsPart, rt));
+				}
 			});
 		}
 
@@ -435,6 +440,45 @@ public class TMEventMapper {
 				throw new UnsupportedOperationException();
 			default:
 				throw new IllegalStateException();
+		}
+	}
+
+	private class RuleIndex {
+		private Rule rule;
+		private Map<RhsSymbol, Integer> index;
+
+		public RuleIndex(Rule rule) {
+			this.rule = rule;
+		}
+
+		public CustomRange compute(RhsSequence rhsPart, RangeType rt) {
+			if (index == null) {
+				index = new HashMap<>();
+				int i = 0;
+				for (RhsCFPart p : rule.getRight()) {
+					if (!(p instanceof RhsSymbol)) continue;
+					index.put((RhsSymbol) p, i);
+					i++;
+				}
+			}
+
+			int[] result = new int[]{-1, -1};
+			RhsUtil.traverse(rhsPart, p -> {
+				if (!(p instanceof RhsSymbol)) return;
+				Integer m = index.get(p);
+				if (m == null) return;
+				if (result[0] == -1) {
+					result[0] = result[1] = m;
+				} else if (m < result[0]) {
+					result[0] = m;
+				} else if (m > result[1]) {
+					result[1] = m;
+				}
+			});
+			if (result[0] != -1) {
+				return new CustomRange(rule, result[0], result[1], rt);
+			}
+			return null;
 		}
 	}
 }

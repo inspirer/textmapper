@@ -30,6 +30,7 @@ import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.objects.JavaIxFactory;
+import org.textmapper.tool.compiler.CustomRange;
 import org.textmapper.tool.compiler.RangeType;
 import org.textmapper.tool.compiler.TMDataUtil;
 import org.textmapper.tool.compiler.TMGrammar;
@@ -67,6 +68,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 		if (o instanceof Rule) {
 			return new RuleIxObject((Rule) o);
+		}
+		if (o instanceof CustomRange) {
+			return new CustomRangeIxObject((CustomRange) o);
 		}
 		if (o instanceof Name) {
 			return new NameIxObject((Name) o);
@@ -107,6 +111,45 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 	}
 
+	private final class CustomRangeIxObject extends DefaultJavaIxObject {
+		private final CustomRange range;
+
+		public CustomRangeIxObject(CustomRange range) {
+			super(range);
+			this.range = range;
+		}
+
+		@Override
+		public Object callMethod(SourceElement caller, String methodName, Object... args)
+				throws EvaluationException {
+			if (args == null || args.length == 0) {
+				if ("rangeType".equals(methodName)) {
+					return range.getType().getName();
+				}
+				if (methodName.equals("last") || methodName.equals("first")) {
+					int index = methodName.charAt(0) == 'l' ? range.getEnd() : range.getStart();
+
+					int rhsSize = 0;
+					RhsSymbol sym = null;
+					for (RhsCFPart p : range.getRule().getRight()) {
+						if (!(p instanceof RhsSymbol)) continue;
+						if (rhsSize == index) {
+							sym = (RhsSymbol) p;
+						}
+						rhsSize++;
+					}
+					if (sym == null || rhsSize == 0) {
+						throw new IllegalStateException();
+					}
+					return new ActionSymbol(grammar, sym.getTarget(), sym, false,
+							rhsSize - 1 - index, index,
+							evaluationStrategy, rootContext, templatePackage, caller);
+				}
+			}
+			return super.callMethod(caller, methodName, args);
+		}
+	}
+
 	private final class RuleIxObject extends DefaultJavaIxObject {
 
 		private final Rule rule;
@@ -139,6 +182,19 @@ public class GrammarIxFactory extends JavaIxFactory {
 				if ("rangeType".equals(methodName)) {
 					RangeType rangeType = TMDataUtil.getRangeType(rule);
 					return rangeType != null ? rangeType.getName() : "";
+				}
+				if ("customRanges".equals(methodName)) {
+					Collection<CustomRange> customRanges = TMDataUtil.getCustomRanges(rule);
+					if (customRanges != null) {
+						CustomRange prev = null;
+						for (CustomRange cr : customRanges) {
+							if (prev != null && prev.compareTo(cr) == 1) {
+								throw new IllegalStateException("unsorted");
+							}
+							prev = cr;
+						}
+					}
+					return customRanges;
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					int rhsSize = 0;

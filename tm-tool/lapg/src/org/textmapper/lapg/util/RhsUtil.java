@@ -142,14 +142,14 @@ public class RhsUtil {
 
 	public static void traverse(RhsPart p, Consumer<RhsPart> c) {
 		if (p == null) return;
-		c.accept(p);
 
 		final Iterable<RhsPart> children = getChildren(p);
-		if (children == null) return;
-
-		for (RhsPart child : children) {
-			traverse(child, c);
+		if (children != null) {
+			for (RhsPart child : children) {
+				traverse(child, c);
+			}
 		}
+		c.accept(p);
 	}
 
 	public static boolean containsRef(RhsPart part, final Symbol ref) {
