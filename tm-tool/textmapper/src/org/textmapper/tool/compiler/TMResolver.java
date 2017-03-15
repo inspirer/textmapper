@@ -89,8 +89,19 @@ public class TMResolver {
 		return LapgCore.createContext(namedPatternsMap);
 	}
 
+	public String targetLanguage() {
+		if (tree.getRoot() == null || tree.getRoot().getHeader() == null) return null;
+		TmaName target = tree.getRoot().getHeader().getTarget();
+		if (target == null) return null;
+		return target.getQualifiedId();
+	}
+
 	public void collectSymbols() {
 		namespace.insert(builder.getEoi());
+		if ("go".equals(targetLanguage())) {
+			Terminal invalidToken = builder.addTerminal(Symbol.INVALID_TOKEN, null, null);
+			namespace.insert(invalidToken);
+		}
 
 		collectLexerStates();
 		collectLexerSymbols();

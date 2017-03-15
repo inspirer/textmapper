@@ -60,7 +60,7 @@ func TestParser(t *testing.T) {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.nt.String(), input, t)
-			l.Init(test.Source(), test.ErrorWithLine)
+			l.Init(test.Source())
 			p.Init(test.ErrorWithLine, func(t json.NodeType, offset, endoffset int) {
 				if t == tc.nt {
 					test.Consume(offset, endoffset)
@@ -85,7 +85,7 @@ func BenchmarkParser(b *testing.B) {
 
 	p.Init(onError, func(t json.NodeType, offset, endoffset int) {})
 	for i := 0; i < b.N; i++ {
-		l.Init(jsonExample, onError)
+		l.Init(jsonExample)
 		p.Parse(l)
 	}
 	b.SetBytes(int64(len(jsonExample)))

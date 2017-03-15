@@ -162,7 +162,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 	return true
 }
 
-const errSymbol = 20
+const errSymbol = 21
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {

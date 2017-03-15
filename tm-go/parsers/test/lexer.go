@@ -158,7 +158,7 @@ recovered:
 			goto recovered
 		}
 
-	case 1:
+	case 2:
 		goto restart
 	}
 	return token

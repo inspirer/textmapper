@@ -45,8 +45,6 @@ ${cached query tokenNodeName() = self.name.CamelCase}
 
 ${cached query invalidTokenName() = syntax.symbols.select(s|s.nameText == 'invalid_token' && s.isTerm()).first()->tokenName()}
 
-${cached query hasInvalidToken() = syntax.symbols.exists(s|s.nameText == 'invalid_token' && s.isTerm())}
-
 ${cached query isSpace(tok) = tok.nameText == 'invalid_token' || self->spaceTokens().exists(it| it == tok)}
 
 ${cached query spaceTokens() = syntax.lexerRules.select(x|x.kindAsText == 'space').collectUnique(it | it.symbol)}

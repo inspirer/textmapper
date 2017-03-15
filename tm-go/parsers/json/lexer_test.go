@@ -41,7 +41,7 @@ func PanicOnError(line, offset, len int, msg string) {
 
 func testLexer(input string, t *testing.T) {
 	l := new(json.Lexer)
-	l.Init(input, PanicOnError)
+	l.Init(input)
 	spacesRE := regexp.MustCompile(`^\s+$`)
 
 	next := l.Next()
@@ -75,7 +75,7 @@ func TestLexerExample(t *testing.T) {
 func BenchmarkLexer(b *testing.B) {
 	l := new(json.Lexer)
 	for i := 0; i < b.N; i++ {
-		l.Init(jsonExample, PanicOnError)
+		l.Init(jsonExample)
 		next := l.Next()
 		for next != json.EOI {
 			next = l.Next()

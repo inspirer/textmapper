@@ -6,6 +6,13 @@ import (
 	"fmt"
 )
 
+// ErrorHandler is called every time a lexer or parser is unable to process
+// some part of the input.
+type ErrorHandler func(line, offset, len int, msg string)
+
+// IgnoreErrorsHandler is a no-op error handler.
+func IgnoreErrorsHandler(line, offset, len int, msg string) {}
+
 // Parser is a table-driven LALR parser for json.
 type Parser struct {
 	err      ErrorHandler
@@ -157,7 +164,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 	return true
 }
 
-const errSymbol = 17
+const errSymbol = 18
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {
@@ -239,7 +246,6 @@ restart:
 
 func (p *Parser) lookahead(start, end int8) bool {
 	var lexer Lexer = *p.lexer
-	lexer.err = IgnoreErrorsHandler
 
 	var allocated [64]stackEntry
 	state := start

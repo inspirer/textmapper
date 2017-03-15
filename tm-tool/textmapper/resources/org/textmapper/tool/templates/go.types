@@ -16,7 +16,6 @@ class Options extends common.Options {
 	common.Symbol* reportTokens[0..*] = [];
 	string extraTypes[0..*] = [];
 
-	bool reportInvalidRunes = false;
 	bool tokenLine = true;
 	bool tokenLineOffset = false;
 

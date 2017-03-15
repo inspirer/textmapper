@@ -7,7 +7,6 @@ lang = "js"
 package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 eventFields = true
-reportInvalidRunes = false
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
                 NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]

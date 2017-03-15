@@ -347,7 +347,7 @@ recovered:
 			goto recovered
 		}
 
-	case 3:
+	case 4:
 		goto restart
 	}
 	switch token {

@@ -164,7 +164,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	return true
 }
 
-const errSymbol = 35
+const errSymbol = 36
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {

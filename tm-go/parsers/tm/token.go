@@ -14,6 +14,7 @@ const (
 	UNAVAILABLE Token = iota - 1
 	EOI
 
+	INVALID_TOKEN
 	SCON
 	ICON
 	WHITESPACE
@@ -49,7 +50,6 @@ const (
 	DOLLAR       // $
 	ATSIGN       // @
 	ERROR
-	INVALID_TOKEN
 	ID
 	AS         // as
 	FALSE      // false
@@ -99,6 +99,7 @@ const (
 var tokenStr = [...]string{
 	"EOI",
 
+	"INVALID_TOKEN",
 	"SCON",
 	"ICON",
 	"WHITESPACE",
@@ -134,7 +135,6 @@ var tokenStr = [...]string{
 	"$",
 	"@",
 	"ERROR",
-	"INVALID_TOKEN",
 	"ID",
 	"as",
 	"false",

@@ -14,6 +14,7 @@ const (
 	UNAVAILABLE Token = iota - 1
 	EOI
 
+	INVALID_TOKEN
 	LBRACE // {
 	RBRACE // }
 	LBRACK // [
@@ -31,7 +32,6 @@ const (
 	CHAR_A // A
 	CHAR_B // B
 	ERROR
-	INVALID_TOKEN
 
 	NumTokens
 )
@@ -39,6 +39,7 @@ const (
 var tokenStr = [...]string{
 	"EOI",
 
+	"INVALID_TOKEN",
 	"{",
 	"}",
 	"[",
@@ -56,7 +57,6 @@ var tokenStr = [...]string{
 	"A",
 	"B",
 	"ERROR",
-	"INVALID_TOKEN",
 }
 
 func (tok Token) String() string {
