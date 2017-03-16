@@ -266,7 +266,7 @@ tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 %lookahead flag NoFuncClass = false;
 %lookahead flag StartWithLet = false;
 
-SyntaxError -> SyntaxError :
+SyntaxError -> SyntaxProblem :
     error ;
 
 IdentifierName :
@@ -402,7 +402,7 @@ PropertyDefinition<Yield> -> PropertyDefinition /* interface */ :
     IdentifierReference                                   -> ShorthandProperty
   | PropertyName ':' value=AssignmentExpression<+In>      -> Property
   | MethodDefinition
-  | CoverInitializedName                                  -> SyntaxError
+  | CoverInitializedName                                  -> SyntaxProblem
   | SyntaxError
 ;
 
@@ -647,7 +647,7 @@ StatementList<Yield, Return> :
 StatementListItem<Yield, Return> -> StatementListItem /* interface */ :
     Statement
   | Declaration
-  | error ';'                                         -> SyntaxError
+  | error ';'                                         -> SyntaxProblem
 ;
 
 LexicalDeclaration<In, Yield> -> LexicalDeclaration :
@@ -1023,7 +1023,7 @@ NamedImports -> NamedImports :
 NamedImport -> NamedImport /* interface */ :
     ImportedBinding                                   -> ImportSpecifier
   | IdentifierNameRef 'as' ImportedBinding            -> ImportSpecifier
-  | error                                             -> SyntaxError
+  | error                                             -> SyntaxProblem
 ;
 
 ModuleSpecifier -> ModuleSpecifier :
@@ -1051,7 +1051,7 @@ ExportClause -> ExportClause :
 ExportElement -> ExportElement /* interface */ :
     IdentifierNameRef                                 -> ExportSpecifier
   | IdentifierNameRef 'as' IdentifierNameDecl         -> ExportSpecifier
-  | error                                             -> SyntaxError
+  | error                                             -> SyntaxProblem
 ;
 
 # Extensions
@@ -1224,7 +1224,7 @@ ${end}
 ${template go_parser.parser-}
 package ${self->go.package()}
 ${foreach inp in syntax.input}
-func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) bool {
+func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) error {
 	return p.parse(${index}, ${parser.finalStates[index]}, lexer)
 }
 ${end-}

@@ -6,22 +6,28 @@ import (
 	"fmt"
 )
 
-// ErrorHandler is called every time a lexer or parser is unable to process
-// some part of the input.
-type ErrorHandler func(offset, len int, msg string)
-
-// IgnoreErrorsHandler is a no-op error handler.
-func IgnoreErrorsHandler(offset, len int, msg string) {}
+// ErrorHandler is called every time a parser is unable to process some part of the input.
+// This handler can return false to abort the parser.
+type ErrorHandler func(err SyntaxError) bool
 
 // Parser is a table-driven LALR parser for test.
 type Parser struct {
-	err      ErrorHandler
+	eh       ErrorHandler
 	listener Listener
 
 	stack         []stackEntry
 	lexer         *Lexer
 	next          symbol
 	ignoredTokens []symbol // to be reported with the next shift
+}
+
+type SyntaxError struct {
+	Offset    int
+	Endoffset int
+}
+
+func (e SyntaxError) Error() string {
+	return "syntax error"
 }
 
 type symbol struct {
@@ -35,8 +41,8 @@ type stackEntry struct {
 	state int8
 }
 
-func (p *Parser) Init(err ErrorHandler, l Listener) {
-	p.err = err
+func (p *Parser) Init(eh ErrorHandler, l Listener) {
+	p.eh = eh
 	p.listener = l
 }
 
@@ -48,11 +54,11 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) Parse(lexer *Lexer) bool {
+func (p *Parser) Parse(lexer *Lexer) error {
 	return p.parse(0, 18, lexer)
 }
 
-func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
+func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]stackEntry, 0, startStackSize)
 	}
@@ -62,6 +68,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 		p.ignoredTokens = p.ignoredTokens[:0]
 	}
 	state := start
+	var lastErr SyntaxError
 	recovering := 0
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
@@ -134,7 +141,13 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 				state = p.stack[len(p.stack)-1].state
 				if recovering == 0 {
 					offset, endoffset := lexer.Pos()
-					p.err(offset, endoffset-offset, "syntax error")
+					lastErr = SyntaxError{
+						Offset:    offset,
+						Endoffset: endoffset,
+					}
+					if !p.eh(lastErr) {
+						return lastErr
+					}
 				}
 				if recovering >= 3 {
 					p.fetchNext()
@@ -152,14 +165,17 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) bool {
 
 	if state != end {
 		if recovering > 0 {
-			return false
+			return lastErr
 		}
 		offset, endoffset := lexer.Pos()
-		p.err(offset, endoffset-offset, "syntax error")
-		return false
+		err := SyntaxError{
+			Offset:    offset,
+			Endoffset: endoffset,
+		}
+		return err
 	}
 
-	return true
+	return nil
 }
 
 const errSymbol = 21

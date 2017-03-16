@@ -2,9 +2,9 @@ package ast_test
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
-	"fmt"
 	"github.com/inspirer/textmapper/tm-go/parsers/tm"
 	"github.com/inspirer/textmapper/tm-go/parsers/tm/ast"
 )
@@ -35,8 +35,8 @@ func TestParser(t *testing.T) {
 
 	l.Init(testInput)
 	p.Init(b.AddError, b.Add)
-	if ok := p.ParseInput(l); !ok {
-		t.Errorf("cannot parse %q", testInput)
+	if err := p.ParseInput(l); err != nil {
+		t.Errorf("cannot parse %q: %v", testInput, err)
 	}
 	root, err := b.Root()
 	if err != nil {

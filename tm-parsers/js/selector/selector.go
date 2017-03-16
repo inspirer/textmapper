@@ -122,7 +122,7 @@ var (
 	StaticMethod             = func(t js.NodeType) bool { return t == js.StaticMethod }
 	SuperExpression          = func(t js.NodeType) bool { return t == js.SuperExpression }
 	SwitchStatement          = func(t js.NodeType) bool { return t == js.SwitchStatement }
-	SyntaxError              = func(t js.NodeType) bool { return t == js.SyntaxError }
+	SyntaxProblem            = func(t js.NodeType) bool { return t == js.SyntaxProblem }
 	TaggedTemplate           = func(t js.NodeType) bool { return t == js.TaggedTemplate }
 	TemplateLiteral          = func(t js.NodeType) bool { return t == js.TemplateLiteral }
 	This                     = func(t js.NodeType) bool { return t == js.This }

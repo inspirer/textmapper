@@ -11,13 +11,13 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	SyntaxError NodeType = iota + 1 // IdentifierReference? Initializer?
+	SyntaxProblem NodeType = iota + 1 // IdentifierReference? Initializer?
 	BindingIdentifier
 	IdentifierReference
 	LabelIdentifier
 	This
 	Regexp
-	Parenthesized // Expression? SyntaxError? BindingIdentifier? BindingPattern?
+	Parenthesized // Expression? SyntaxProblem? BindingIdentifier? BindingPattern?
 	Literal
 	ArrayLiteral         // list=(Expression)*
 	SpreadElement        // Expression
@@ -96,7 +96,7 @@ const (
 	DebuggerStatement
 	Function            // BindingIdentifier? Parameters Body
 	FunctionExpression  // BindingIdentifier? Parameters Body
-	Parameters          // Expression? (Parameter)* RestParameter? SyntaxError? BindingIdentifier? BindingPattern?
+	Parameters          // Expression? (Parameter)* RestParameter? SyntaxProblem? BindingIdentifier? BindingPattern?
 	RestParameter       // BindingRestElement
 	Parameter           // ElementPattern
 	Body                // (StatementListItem)*
@@ -149,7 +149,7 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
-	"SyntaxError",
+	"SyntaxProblem",
 	"BindingIdentifier",
 	"IdentifierReference",
 	"LabelIdentifier",
@@ -320,12 +320,12 @@ var Declaration = []NodeType{
 var ElementPattern = []NodeType{
 	ElementBinding,
 	SingleNameBinding,
-	SyntaxError,
+	SyntaxProblem,
 }
 
 var ExportElement = []NodeType{
 	ExportSpecifier,
-	SyntaxError,
+	SyntaxProblem,
 }
 
 var Expression = []NodeType{
@@ -421,7 +421,7 @@ var ModuleItem = []NodeType{
 	LexicalDeclaration,
 	ReturnStatement,
 	SwitchStatement,
-	SyntaxError,
+	SyntaxProblem,
 	ThrowStatement,
 	TryStatement,
 	VariableStatement,
@@ -431,7 +431,7 @@ var ModuleItem = []NodeType{
 
 var NamedImport = []NodeType{
 	ImportSpecifier,
-	SyntaxError,
+	SyntaxProblem,
 }
 
 var PropertyDefinition = []NodeType{
@@ -441,7 +441,7 @@ var PropertyDefinition = []NodeType{
 	Property,
 	Setter,
 	ShorthandProperty,
-	SyntaxError,
+	SyntaxProblem,
 }
 
 var PropertyName = []NodeType{
@@ -452,7 +452,7 @@ var PropertyName = []NodeType{
 var PropertyPattern = []NodeType{
 	PropertyBinding,
 	SingleNameBinding,
-	SyntaxError,
+	SyntaxProblem,
 }
 
 var Statement = []NodeType{
@@ -502,7 +502,7 @@ var StatementListItem = []NodeType{
 	LexicalDeclaration,
 	ReturnStatement,
 	SwitchStatement,
-	SyntaxError,
+	SyntaxProblem,
 	ThrowStatement,
 	TryStatement,
 	VariableStatement,
@@ -518,7 +518,7 @@ var TokenSet = []NodeType{
 }
 
 var ruleNodeType = [...]NodeType{
-	SyntaxError,              // SyntaxError : error
+	SyntaxProblem,            // SyntaxError : error
 	0,                        // IdentifierName : Identifier
 	0,                        // IdentifierName : 'break'
 	0,                        // IdentifierName : 'do'
@@ -816,12 +816,12 @@ var ruleNodeType = [...]NodeType{
 	ShorthandProperty,        // PropertyDefinition : IdentifierReference
 	Property,                 // PropertyDefinition : PropertyName ':' AssignmentExpression_In
 	0,                        // PropertyDefinition : MethodDefinition
-	SyntaxError,              // PropertyDefinition : CoverInitializedName
+	SyntaxProblem,            // PropertyDefinition : CoverInitializedName
 	0,                        // PropertyDefinition : SyntaxError
 	ShorthandProperty,        // PropertyDefinition_Yield : IdentifierReference_Yield
 	Property,                 // PropertyDefinition_Yield : PropertyName_Yield ':' AssignmentExpression_In_Yield
 	0,                        // PropertyDefinition_Yield : MethodDefinition_Yield
-	SyntaxError,              // PropertyDefinition_Yield : CoverInitializedName_Yield
+	SyntaxProblem,            // PropertyDefinition_Yield : CoverInitializedName_Yield
 	0,                        // PropertyDefinition_Yield : SyntaxError
 	0,                        // PropertyName : LiteralPropertyName
 	0,                        // PropertyName : ComputedPropertyName
@@ -1698,13 +1698,13 @@ var ruleNodeType = [...]NodeType{
 	0,                     // StatementList_Return_Yield : StatementList_Return_Yield StatementListItem_Return_Yield
 	0,                     // StatementListItem : Statement
 	0,                     // StatementListItem : Declaration
-	SyntaxError,           // StatementListItem : error ';'
+	SyntaxProblem,         // StatementListItem : error ';'
 	0,                     // StatementListItem_Return : Statement_Return
 	0,                     // StatementListItem_Return : Declaration
-	SyntaxError,           // StatementListItem_Return : error ';'
+	SyntaxProblem,         // StatementListItem_Return : error ';'
 	0,                     // StatementListItem_Return_Yield : Statement_Return_Yield
 	0,                     // StatementListItem_Return_Yield : Declaration_Yield
-	SyntaxError,           // StatementListItem_Return_Yield : error ';'
+	SyntaxProblem,         // StatementListItem_Return_Yield : error ';'
 	LexicalDeclaration,    // LexicalDeclaration_In : LetOrConst BindingList_In ';'
 	LexicalDeclaration,    // LexicalDeclaration_In_Yield : LetOrConst BindingList_In_Yield ';'
 	0,                     // LetOrConst : 'let'
@@ -2035,7 +2035,7 @@ var ruleNodeType = [...]NodeType{
 	NamedImports,        // NamedImports : '{' NamedImport_list_Comma_separated '}'
 	ImportSpecifier,     // NamedImport : ImportedBinding
 	ImportSpecifier,     // NamedImport : IdentifierNameRef 'as' ImportedBinding
-	SyntaxError,         // NamedImport : error
+	SyntaxProblem,       // NamedImport : error
 	ModuleSpecifier,     // ModuleSpecifier : StringLiteral
 	0,                   // ImportedBinding : BindingIdentifier
 	ExportDeclaration,   // ExportDeclaration : 'export' '*' FromClause ';'
@@ -2053,7 +2053,7 @@ var ruleNodeType = [...]NodeType{
 	0,                   // ExportElement_list_Comma_separated : ExportElement
 	ExportSpecifier,     // ExportElement : IdentifierNameRef
 	ExportSpecifier,     // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
-	SyntaxError,         // ExportElement : error
+	SyntaxProblem,       // ExportElement : error
 	0,                   // JSXChild_optlist : JSXChild_optlist JSXChild
 	0,                   // JSXChild_optlist :
 	0,                   // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield

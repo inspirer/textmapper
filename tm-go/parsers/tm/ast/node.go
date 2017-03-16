@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"fmt"
 	"github.com/inspirer/textmapper/tm-go/parsers/tm"
 	"github.com/inspirer/textmapper/tm-go/parsers/tm/selector"
 )
@@ -29,7 +28,7 @@ type Builder struct {
 }
 
 func NewBuilder(input string) *Builder {
-	return &Builder{input: input, s: []span{span{offset: -1}}, stack: []int{0}}
+	return &Builder{input: input, s: []span{{offset: -1}}, stack: []int{0}}
 }
 
 func (b *Builder) Root() (Span, error) {
@@ -41,8 +40,9 @@ func (b *Builder) Root() (Span, error) {
 	return Span{&b.input, b.s, len(b.s) - 1}, nil
 }
 
-func (b *Builder) AddError(line, offset, len int, msg string) {
-	b.err = fmt.Errorf("%d: %v", line, msg)
+func (b *Builder) AddError(se tm.SyntaxError) bool {
+	b.err = se
+	return true
 }
 
 func (b *Builder) Add(t tm.NodeType, offset, endoffset int) {

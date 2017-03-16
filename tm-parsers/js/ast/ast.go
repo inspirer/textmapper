@@ -144,7 +144,7 @@ func (SpreadElement) jsNodeNode()            {}
 func (StaticMethod) jsNodeNode()             {}
 func (SuperExpression) jsNodeNode()          {}
 func (SwitchStatement) jsNodeNode()          {}
-func (SyntaxError) jsNodeNode()              {}
+func (SyntaxProblem) jsNodeNode()            {}
 func (TaggedTemplate) jsNodeNode()           {}
 func (TemplateLiteral) jsNodeNode()          {}
 func (This) jsNodeNode()                     {}
@@ -218,7 +218,7 @@ type ElementPattern interface {
 //
 func (ElementBinding) elementPatternNode()    {}
 func (SingleNameBinding) elementPatternNode() {}
-func (SyntaxError) elementPatternNode()       {}
+func (SyntaxProblem) elementPatternNode()     {}
 
 type ExportElement interface {
 	JsNode
@@ -229,7 +229,7 @@ type ExportElement interface {
 // assigned to ExportElement.
 //
 func (ExportSpecifier) exportElementNode() {}
-func (SyntaxError) exportElementNode()     {}
+func (SyntaxProblem) exportElementNode()   {}
 
 type Expression interface {
 	JsNode
@@ -361,7 +361,7 @@ func (LabelledStatement) moduleItemNode()     {}
 func (LexicalDeclaration) moduleItemNode()    {}
 func (ReturnStatement) moduleItemNode()       {}
 func (SwitchStatement) moduleItemNode()       {}
-func (SyntaxError) moduleItemNode()           {}
+func (SyntaxProblem) moduleItemNode()         {}
 func (ThrowStatement) moduleItemNode()        {}
 func (TryStatement) moduleItemNode()          {}
 func (VariableStatement) moduleItemNode()     {}
@@ -377,7 +377,7 @@ type NamedImport interface {
 // assigned to NamedImport.
 //
 func (ImportSpecifier) namedImportNode() {}
-func (SyntaxError) namedImportNode()     {}
+func (SyntaxProblem) namedImportNode()   {}
 
 type PropertyDefinition interface {
 	JsNode
@@ -393,7 +393,7 @@ func (Method) propertyDefinitionNode()            {}
 func (Property) propertyDefinitionNode()          {}
 func (Setter) propertyDefinitionNode()            {}
 func (ShorthandProperty) propertyDefinitionNode() {}
-func (SyntaxError) propertyDefinitionNode()       {}
+func (SyntaxProblem) propertyDefinitionNode()     {}
 
 type PropertyName interface {
 	JsNode
@@ -416,7 +416,7 @@ type PropertyPattern interface {
 //
 func (PropertyBinding) propertyPatternNode()   {}
 func (SingleNameBinding) propertyPatternNode() {}
-func (SyntaxError) propertyPatternNode()       {}
+func (SyntaxProblem) propertyPatternNode()     {}
 
 type Statement interface {
 	JsNode
@@ -478,7 +478,7 @@ func (LabelledStatement) statementListItemNode()     {}
 func (LexicalDeclaration) statementListItemNode()    {}
 func (ReturnStatement) statementListItemNode()       {}
 func (SwitchStatement) statementListItemNode()       {}
-func (SyntaxError) statementListItemNode()           {}
+func (SyntaxProblem) statementListItemNode()         {}
 func (ThrowStatement) statementListItemNode()        {}
 func (TryStatement) statementListItemNode()          {}
 func (VariableStatement) statementListItemNode()     {}
@@ -1745,9 +1745,9 @@ func (n Parameters) RestParameter() *RestParameter {
 	return nil
 }
 
-func (n Parameters) SyntaxError() *SyntaxError {
-	if child := n.Child(selector.SyntaxError); child != nil {
-		return &SyntaxError{child}
+func (n Parameters) SyntaxProblem() *SyntaxProblem {
+	if child := n.Child(selector.SyntaxProblem); child != nil {
+		return &SyntaxProblem{child}
 	}
 	return nil
 }
@@ -1777,9 +1777,9 @@ func (n Parenthesized) Expression() Expression {
 	return nil
 }
 
-func (n Parenthesized) SyntaxError() *SyntaxError {
-	if child := n.Child(selector.SyntaxError); child != nil {
-		return &SyntaxError{child}
+func (n Parenthesized) SyntaxProblem() *SyntaxProblem {
+	if child := n.Child(selector.SyntaxProblem); child != nil {
+		return &SyntaxProblem{child}
 	}
 	return nil
 }
@@ -1984,18 +1984,18 @@ func (n SwitchStatement) Block() Block {
 	return Block{n.Child(selector.Block)}
 }
 
-type SyntaxError struct {
+type SyntaxProblem struct {
 	Node
 }
 
-func (n SyntaxError) IdentifierReference() *IdentifierReference {
+func (n SyntaxProblem) IdentifierReference() *IdentifierReference {
 	if child := n.Child(selector.IdentifierReference); child != nil {
 		return &IdentifierReference{child}
 	}
 	return nil
 }
 
-func (n SyntaxError) Initializer() *Initializer {
+func (n SyntaxProblem) Initializer() *Initializer {
 	if child := n.Child(selector.Initializer); child != nil {
 		return &Initializer{child}
 	}

@@ -238,8 +238,8 @@ func ToJsNode(n Node) JsNode {
 		return &SuperExpression{n}
 	case js.SwitchStatement:
 		return &SwitchStatement{n}
-	case js.SyntaxError:
-		return &SyntaxError{n}
+	case js.SyntaxProblem:
+		return &SyntaxProblem{n}
 	case js.TaggedTemplate:
 		return &TaggedTemplate{n}
 	case js.TemplateLiteral:

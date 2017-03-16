@@ -4,13 +4,13 @@ import (
 	"fmt"
 )
 
-// ErrorHandler is called every time a lexer or parser is unable to process
-// some part of the input.
-type ErrorHandler func(line, offset, len int, msg string)
+// ErrorHandler is called every time a parser is unable to process some part of the input.
+// This handler can return false to abort the parser.
+type ErrorHandler func(err SyntaxError) bool
 
 // Parser is a table-driven LALR parser for Javascript.
 type Parser struct {
-	err      ErrorHandler
+	eh       ErrorHandler
 	listener Listener
 
 	stack         []stackEntry
@@ -25,6 +25,16 @@ type Parser struct {
 	endState  int16
 }
 
+type SyntaxError struct {
+	Line      int
+	Offset    int
+	Endoffset int
+}
+
+func (e SyntaxError) Error() string {
+	return fmt.Sprintf("syntax error at line %v", e.Line)
+}
+
 type symbol struct {
 	symbol    int32
 	offset    int
@@ -36,8 +46,8 @@ type stackEntry struct {
 	state int16
 }
 
-func (p *Parser) Init(err ErrorHandler, l Listener) {
-	p.err = err
+func (p *Parser) Init(eh ErrorHandler, l Listener) {
+	p.eh = eh
 	p.listener = l
 	p.lastToken = UNAVAILABLE
 	p.afterNext.symbol = -1
@@ -51,7 +61,7 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
+func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]stackEntry, 0, startStackSize)
 	}
@@ -62,6 +72,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 	}
 	state := start
 	p.endState = end
+	var lastErr SyntaxError
 	recovering := 0
 	p.healthy = true
 
@@ -140,12 +151,18 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 			p.healthy = false
 			if recovering == 0 {
 				offset, endoffset := lexer.Pos()
-				line := lexer.Line()
-				p.err(line, offset, endoffset-offset, "syntax error")
+				lastErr = SyntaxError{
+					Line:      lexer.Line(),
+					Offset:    offset,
+					Endoffset: endoffset,
+				}
+				if !p.eh(lastErr) {
+					return lastErr
+				}
 			}
 			skipToken := recovering >= 3
 			if !p.recover(skipToken) {
-				return false
+				return lastErr
 			}
 			p.healthy = true
 			state = p.stack[len(p.stack)-1].state
@@ -153,7 +170,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) bool {
 		}
 	}
 
-	return true
+	return nil
 }
 
 func canRecoverOn(symbol int32) bool {

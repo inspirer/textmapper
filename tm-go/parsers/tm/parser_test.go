@@ -39,12 +39,17 @@ func TestParser(t *testing.T) {
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.nt.String(), input, t)
 			l.Init(test.Source())
-			p.Init(test.ErrorWithLine, func(t tm.NodeType, offset, endoffset int) {
+			errHandler := func(se tm.SyntaxError) bool {
+				test.Error(se.Offset, se.Endoffset)
+				return true
+			}
+			p.Init(errHandler, func(t tm.NodeType, offset, endoffset int) {
 				if t == tc.nt {
 					test.Consume(offset, endoffset)
 				}
 			})
-			test.Done(p.ParseInput(l))
+			err := p.ParseInput(l)
+			test.Done(err == nil)
 		}
 	}
 	for n := tm.NodeType(1); n < tm.NodeTypeMax; n++ {

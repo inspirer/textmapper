@@ -50,17 +50,17 @@ func TestParser(t *testing.T) {
 		for _, input := range tc.inputs {
 			ptest := pt.NewParserTest(tc.nt.String(), input, t)
 			l.Init(ptest.Source())
-			var i int
-			p.Init(ptest.Error, func(tn test.NodeType, offset, endoffset int) {
-				i++
-				if i == 1000 {
-					panic(i)
-				}
+			errHandler := func(se test.SyntaxError) bool {
+				ptest.Error(se.Offset, se.Endoffset)
+				return true
+			}
+			p.Init(errHandler, func(tn test.NodeType, offset, endoffset int) {
 				if tn == tc.nt {
 					ptest.Consume(offset, endoffset)
 				}
 			})
-			ptest.Done(p.Parse(l))
+			err := p.Parse(l)
+			ptest.Done(err == nil)
 		}
 	}
 	for n := test.NodeType(1); n < test.NodeTypeMax; n++ {

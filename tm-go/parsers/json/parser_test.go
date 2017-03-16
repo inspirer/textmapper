@@ -61,12 +61,17 @@ func TestParser(t *testing.T) {
 		for _, input := range tc.inputs {
 			test := pt.NewParserTest(tc.nt.String(), input, t)
 			l.Init(test.Source())
-			p.Init(test.ErrorWithLine, func(t json.NodeType, offset, endoffset int) {
+			errHandler := func(se json.SyntaxError) bool {
+				test.Error(se.Offset, se.Endoffset)
+				return true
+			}
+			p.Init(errHandler, func(t json.NodeType, offset, endoffset int) {
 				if t == tc.nt {
 					test.Consume(offset, endoffset)
 				}
 			})
-			test.Done(p.Parse(l))
+			err := p.Parse(l)
+			test.Done(err == nil)
 		}
 	}
 	for n := json.NodeType(1); n < json.NodeTypeMax; n++ {
@@ -79,8 +84,9 @@ func TestParser(t *testing.T) {
 func BenchmarkParser(b *testing.B) {
 	l := new(json.Lexer)
 	p := new(json.Parser)
-	onError := func(line, offset, len int, msg string) {
-		b.Errorf("%d, %d: %s", line, offset, msg)
+	onError := func(se json.SyntaxError) bool {
+		b.Errorf("unexpected: %v", se)
+		return false
 	}
 
 	p.Init(onError, func(t json.NodeType, offset, endoffset int) {})

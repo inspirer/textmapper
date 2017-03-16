@@ -10,18 +10,25 @@ ${end-}
 ${call go_listener.main-}
 ${end}
 
+${template errorHandler-}
+// ErrorHandler is called every time a parser is unable to process some part of the input.
+// This handler can return false to abort the parser.
+type ErrorHandler func(err SyntaxError) bool
+${end}
+
 ${template parser-}
 package ${self->go.package()}
 
-${call go.errorHandler-}
-
+${if self->hasRecovering()-}
+${call errorHandler}
+${end-}
 // Parser is a table-driven LALR parser for ${opts.lang}.
 type Parser struct {
+${if self->hasRecovering()-}
+	eh ErrorHandler
+${end-}
 ${if self->eventBased()-}
-	err      ErrorHandler
 	listener Listener
-${else-}
-	err ErrorHandler
 ${end-}
 
 	stack []stackEntry
@@ -31,6 +38,22 @@ ${if self->ignoredReportTokens()-}
 	ignoredTokens []symbol // to be reported with the next shift
 ${end-}
 ${call stateVars-}
+}
+
+type SyntaxError struct {
+${if opts.tokenLine-}
+	Line      int
+${end-}
+	Offset    int
+	Endoffset int
+}
+
+func (e SyntaxError) Error() string {
+${if opts.tokenLine-}
+	return "fmt".Sprintf("syntax error at line %v", e.Line)
+${else-}
+	return "syntax error"
+${end-}
 }
 
 type symbol struct {
@@ -47,8 +70,10 @@ ${if !self->eventBased()-}
 ${end-}
 }
 
-func (p *Parser) Init(err ErrorHandler${if self->eventBased()}, l Listener${end}) {
-	p.err = err
+func (p *Parser) Init(${if self->hasRecovering()}eh ErrorHandler${end}${if self->eventBased()}${if self->hasRecovering()}, ${end}l Listener${end}) {
+${if self->hasRecovering()-}
+	p.eh = eh
+${end-}
 ${if self->eventBased()-}
 	p.listener = l
 ${end-}
@@ -65,18 +90,18 @@ ${end-}
 	debugSyntax    = false
 )
 ${foreach inp in syntax.input.select(it|it.requested)}
-func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) ${if self->eventBased()}bool${else}(bool, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end})${end} {
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) ${if self->eventBased()}error${else}(error, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end})${end} {
 ${if !self->eventBased() && inp.target->go.type()-}
-	ok, v := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
+	err, v := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 	val, _ := v.(${inp.target->go.type()})
-	return ok, val
+	return err, val
 ${else-}
 	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 ${end-}
 }
 ${end-}
 
-func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if self->eventBased()}bool${else}(bool, ${self->valueType()})${end} {
+func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if self->eventBased()}error${else}(error, ${self->valueType()})${end} {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]stackEntry, 0, startStackSize)
 	}
@@ -88,7 +113,9 @@ ${if self->ignoredReportTokens()-}
 	}
 ${end-}
 	state := start
-${if self->hasRecovering()}	recovering := 0
+${if self->hasRecovering()-}
+  var lastErr SyntaxError
+	recovering := 0
 ${end-}
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
@@ -168,12 +195,16 @@ ${if self->hasRecovering()-}
 				state = p.stack[len(p.stack)-1].state
 				if recovering == 0 {
 					offset, endoffset := lexer.Pos()
+          lastErr = SyntaxError{
 ${if opts.tokenLine-}
-					line := lexer.Line()
-					p.err(line, offset, endoffset-offset, "syntax error")
-${else-}
-					p.err(offset, endoffset-offset, "syntax error")
+            Line: lexer.Line(),
 ${end-}
+            Offset: offset,
+            Endoffset: endoffset,
+          }
+          if !p.eh(lastErr) {
+            return lastErr${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
+          }
 				}
 				if recovering >= 3 {
 					p.fetchNext()
@@ -193,20 +224,21 @@ ${end-}
 	if state != end {
 ${if self->hasRecovering()-}
 		if recovering > 0 {
-			return false${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
+			return lastErr${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
 		}
 ${end-}
 		offset, endoffset := lexer.Pos()
+    err := SyntaxError{
 ${if opts.tokenLine-}
-		line := lexer.Line()
-		p.err(line, offset, endoffset-offset, "syntax error")
-${else-}
-		p.err(offset, endoffset-offset, "syntax error")
+      Line: lexer.Line(),
 ${end-}
-		return false${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
+      Offset: offset,
+      Endoffset: endoffset,
+    }
+		return err${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
 	}
 
-	return true${if !self->eventBased()}, p.stack[len(p.stack)-2].value${end}
+	return nil${if !self->eventBased()}, p.stack[len(p.stack)-2].value${end}
 }
 ${if self->hasRecovering()-}
 
