@@ -1,7 +1,8 @@
 0.9.12
 ------
 
-...
+[+] Support late reporting: a : (prefix -> Prefix) suffix -> A ;
+[+] Parsers return a custom syntax error instead of false.
 
 0.9.11
 ------
