@@ -11,9 +11,10 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	Test  NodeType = iota + 1 // (Declaration)+
-	Block                     // (Declaration)+
-	Decl1                     // (Identifier)+
+	Test NodeType = iota + 1 // (Declaration)+
+	Negation
+	Block // Negation? (Declaration)*
+	Decl1 // (Identifier)+
 	Decl2
 	MultiLineComment
 	SingleLineComment
@@ -25,6 +26,7 @@ const (
 var nodeTypeStr = [...]string{
 	"NONE",
 	"Test",
+	"Negation",
 	"Block",
 	"Decl1",
 	"Decl2",
@@ -57,7 +59,12 @@ var ruleNodeType = [...]NodeType{
 	Test,  // Test : Declaration_list
 	0,     // Declaration : Decl1
 	0,     // Declaration : Decl2
+	Block, // Declaration : '{' '-' '-' Declaration_list '}'
+	Block, // Declaration : '{' '-' '-' '}'
+	Block, // Declaration : '{' '-' Declaration_list '}'
+	Block, // Declaration : '{' '-' '}'
 	Block, // Declaration : '{' Declaration_list '}'
+	Block, // Declaration : '{' '}'
 	0,     // QualifiedName : Identifier
 	0,     // QualifiedName : QualifiedName '.' Identifier
 	Decl1, // Decl1 : 'decl1' '(' QualifiedName ')'

@@ -31,11 +31,12 @@ type Token struct {
 }
 
 // All types implement TestNode.
-func (Block) testNodeNode() {}
-func (Decl1) testNodeNode() {}
-func (Decl2) testNodeNode() {}
-func (Test) testNodeNode()  {}
-func (Token) testNodeNode() {}
+func (Block) testNodeNode()    {}
+func (Decl1) testNodeNode()    {}
+func (Decl2) testNodeNode()    {}
+func (Negation) testNodeNode() {}
+func (Test) testNodeNode()     {}
+func (Token) testNodeNode()    {}
 
 type Declaration interface {
 	TestNode
@@ -53,6 +54,13 @@ func (Decl2) declarationNode() {}
 
 type Block struct {
 	Node
+}
+
+func (n Block) Negation() *Negation {
+	if child := n.Child(selector.Negation); child != nil {
+		return &Negation{child}
+	}
+	return nil
 }
 
 func (n Block) Declaration() []Declaration {
@@ -78,6 +86,10 @@ func (n Decl1) Identifier() []Token {
 }
 
 type Decl2 struct {
+	Node
+}
+
+type Negation struct {
 	Node
 }
 

@@ -79,14 +79,13 @@ public class TMEventMapper {
 				if (!existing.equals(type)) {
 					throw new IllegalStateException();
 				}
-				continue;
+			} else {
+				List<RhsSequence> list = index.get(seq.getLeft());
+				if (list == null) {
+					index.put(seq.getLeft(), list = new ArrayList<>());
+				}
+				list.add(seq);
 			}
-
-			List<RhsSequence> list = index.get(seq.getLeft());
-			if (list == null) {
-				index.put(seq.getLeft(), list = new ArrayList<>());
-			}
-			list.add(seq);
 
 			RuleIndex ri = new RuleIndex(rule);
 			RhsUtil.traverse(seq, rhsPart -> {

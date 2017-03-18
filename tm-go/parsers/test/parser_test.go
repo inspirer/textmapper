@@ -17,6 +17,17 @@ var parseTests = []struct {
 	}},
 	{test.Block, []string{
 		`«{decl2}»`,
+		`«{-decl2}»`,
+		`«{--decl2}»`,
+		`«{--}»`,
+		`«{-}»`,
+		`«{}»`,
+	}},
+	{test.Negation, []string{
+		`{«-»decl2}`,
+		`{«--»decl2}`,
+		`{«--»}`,
+		`{«-»}`,
 	}},
 	{test.Decl1, []string{
 		`{«decl1(a.b.c.d123)»}`,

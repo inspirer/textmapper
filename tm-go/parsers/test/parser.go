@@ -55,7 +55,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 18, lexer)
+	return p.parse(0, 27, lexer)
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) error {
@@ -249,6 +249,16 @@ restart:
 }
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
+	switch rule {
+	case 5: // Declaration : '{' '-' '-' Declaration_list '}'
+		p.listener(Negation, rhs[1].sym.offset, rhs[2].sym.endoffset)
+	case 6: // Declaration : '{' '-' '-' '}'
+		p.listener(Negation, rhs[1].sym.offset, rhs[2].sym.endoffset)
+	case 7: // Declaration : '{' '-' Declaration_list '}'
+		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 8: // Declaration : '{' '-' '}'
+		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	}
 	nt := ruleNodeType[rule]
 	if nt == 0 {
 		return

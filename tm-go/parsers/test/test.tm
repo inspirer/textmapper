@@ -57,7 +57,7 @@ Test -> Test :
 Declaration -> Declaration :
     Decl1
   | Decl2
-  | '{' Declaration+ '}'        -> Block
+  | '{' ('-' '-'? -> Negation)? Declaration+? '}'        -> Block
 ;
 
 # Test: a list of an exported terminal.
