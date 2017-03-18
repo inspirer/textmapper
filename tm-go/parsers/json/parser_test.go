@@ -70,8 +70,7 @@ func TestParser(t *testing.T) {
 					test.Consume(offset, endoffset)
 				}
 			})
-			err := p.Parse(l)
-			test.Done(err == nil)
+			test.Done(p.Parse(l))
 		}
 	}
 	for n := json.NodeType(1); n < json.NodeTypeMax; n++ {

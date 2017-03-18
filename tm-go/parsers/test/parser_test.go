@@ -28,6 +28,7 @@ var parseTests = []struct {
 		`{«--»decl2}`,
 		`{«--»}`,
 		`{«-»}`,
+		`{«-»{«-»decl2}}`,
 	}},
 	{test.Decl1, []string{
 		`{«decl1(a.b.c.d123)»}`,
@@ -70,8 +71,7 @@ func TestParser(t *testing.T) {
 					ptest.Consume(offset, endoffset)
 				}
 			})
-			err := p.Parse(l)
-			ptest.Done(err == nil)
+			ptest.Done(p.Parse(l))
 		}
 	}
 	for n := test.NodeType(1); n < test.NodeTypeMax; n++ {

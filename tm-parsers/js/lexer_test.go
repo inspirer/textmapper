@@ -249,7 +249,7 @@ func TestLexer(t *testing.T) {
 				}
 				tok = l.Next()
 			}
-			test.Done(true)
+			test.Done(nil)
 		}
 	}
 	for tok := js.EOI + 1; tok < js.NumTokens; tok++ {

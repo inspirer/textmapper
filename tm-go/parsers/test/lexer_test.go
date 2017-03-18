@@ -71,7 +71,7 @@ func TestLexer(t *testing.T) {
 				}
 				tok = l.Next()
 			}
-			ptest.Done(true)
+			ptest.Done(nil)
 		}
 	}
 	for tok := test.EOI + 1; tok < test.NumTokens; tok++ {

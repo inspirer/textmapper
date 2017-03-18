@@ -48,8 +48,7 @@ func TestParser(t *testing.T) {
 					test.Consume(offset, endoffset)
 				}
 			})
-			err := p.ParseInput(l)
-			test.Done(err == nil)
+			test.Done(p.ParseInput(l))
 		}
 	}
 	for n := tm.NodeType(1); n < tm.NodeTypeMax; n++ {
