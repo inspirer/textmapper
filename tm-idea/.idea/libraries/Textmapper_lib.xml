@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="Textmapper lib">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/org.textmapper.idea/lib/textmapper-0.9.13.jar!/" />
+      <root url="jar://$PROJECT_DIR$/org.textmapper.idea/lib/textmapper-0.9.14.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/org.textmapper.idea/lib/textmapper-0.9.13-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/org.textmapper.idea/lib/textmapper-0.9.14-src.jar!/" />
     </SOURCES>
   </library>
 </component>
