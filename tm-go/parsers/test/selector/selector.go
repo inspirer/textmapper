@@ -9,6 +9,7 @@ import (
 type Selector func(nt test.NodeType) bool
 
 var (
+	Any         = func(t test.NodeType) bool { return true }
 	Block       = func(t test.NodeType) bool { return t == test.Block }
 	Decl1       = func(t test.NodeType) bool { return t == test.Decl1 }
 	Decl2       = func(t test.NodeType) bool { return t == test.Decl2 }

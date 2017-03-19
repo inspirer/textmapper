@@ -14,6 +14,7 @@ ${if self->localNodeSelectorType()-}
 ${call nodeSelectorTypeImpl-}
 ${end-}
 var (
+	Any = func(t ${self->go_listener.nodeTypeRef()}) bool { return true }
 ${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
 	${rangeType->nodeTypeFilterRef()->go.declarationName()} = func(t ${self->go_listener.nodeTypeRef()}) bool { return t == ${rangeType->go_listener.nodeTypeValueRef()} }
 ${end-}

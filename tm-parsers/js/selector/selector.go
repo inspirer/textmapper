@@ -9,6 +9,7 @@ import (
 type Selector func(nt js.NodeType) bool
 
 var (
+	Any                      = func(t js.NodeType) bool { return true }
 	AdditiveExpression       = func(t js.NodeType) bool { return t == js.AdditiveExpression }
 	Arguments                = func(t js.NodeType) bool { return t == js.Arguments }
 	ArrayLiteral             = func(t js.NodeType) bool { return t == js.ArrayLiteral }

@@ -9,6 +9,8 @@ import (
 
 type Node interface {
 	Type() test.NodeType
+	Offset() int
+	Endoffset() int
 	// Child returns the first child node that matches the selector.
 	Child(sel selector.Selector) Node
 	Children(sel selector.Selector) []Node

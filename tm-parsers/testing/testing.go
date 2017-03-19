@@ -7,9 +7,9 @@ package testing
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
-	"fmt"
 )
 
 const (

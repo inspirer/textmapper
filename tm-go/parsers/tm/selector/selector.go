@@ -9,6 +9,7 @@ import (
 type Selector func(nt tm.NodeType) bool
 
 var (
+	Any                  = func(t tm.NodeType) bool { return true }
 	AnnotationImpl       = func(t tm.NodeType) bool { return t == tm.AnnotationImpl }
 	Annotations          = func(t tm.NodeType) bool { return t == tm.Annotations }
 	ArgumentFalse        = func(t tm.NodeType) bool { return t == tm.ArgumentFalse }

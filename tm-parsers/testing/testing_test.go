@@ -10,8 +10,9 @@ func TestSplitInput(t *testing.T) {
 	if string(res) != `abcdefcdfq1q2` {
 		t.Errorf("got: %s, want: abcdefcdfq1q2", res)
 	}
-	if !reflect.DeepEqual(exp, []node{{3, 6}, {9, 11}}) {
-		t.Errorf("got: %v, want: [{3 6} {9 11}]", exp)
+	want := map[node]int{{3, 6}: 1, {9, 11}: 1}
+	if !reflect.DeepEqual(exp, want) {
+		t.Errorf("got: %v, want: %v", exp, want)
 	}
 	if !reflect.DeepEqual(errors, []int{5, 13}) {
 		t.Errorf("got: %v, want: [5 13]", errors)
@@ -26,8 +27,9 @@ func TestSplitInput(t *testing.T) {
 	if string(res) != `abc abc` {
 		t.Errorf("got: %s, want: abc abc", res)
 	}
-	if !reflect.DeepEqual(exp, []node{{0, 3}, {6, 7}, {5, 7}, {4, 7}}) {
-		t.Errorf("got: %v, want: [{0 3} {6 7} {5 7} {4 7}]", exp)
+	want = map[node]int{{0, 3}: 1, {6, 7}: 1, {5, 7}: 1, {4, 7}: 1}
+	if !reflect.DeepEqual(exp, want) {
+		t.Errorf("got: %v, want: %v", exp, want)
 	}
 	if !reflect.DeepEqual(errors, []int{6}) {
 		t.Errorf("got: %v, want: [6]", errors)

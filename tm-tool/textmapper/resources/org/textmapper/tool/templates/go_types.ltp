@@ -50,6 +50,8 @@ ${end}
 ${template wrappedTypeTempl-}
 type ${self->wrappedTypeRef()->go.declarationName()} interface {
 	Type() ${self->go_listener.nodeTypeRef()}
+	Offset() int
+	Endoffset() int
 	// Child returns the first child node that matches the selector.
 	Child(sel ${self->go_filter.nodeSelectorTypeRef()}) Node
 	Children(sel ${self->go_filter.nodeSelectorTypeRef()}) []Node

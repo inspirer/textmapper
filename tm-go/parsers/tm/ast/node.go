@@ -28,7 +28,7 @@ type Builder struct {
 }
 
 func NewBuilder(input string) *Builder {
-	return &Builder{input: input, s: []span{{offset: -1}}, stack: []int{0}}
+	return &Builder{input: input, s: []span{{offset: -1}}, stack: make([]int, 1, 512)}
 }
 
 func (b *Builder) Root() (Span, error) {
@@ -47,20 +47,34 @@ func (b *Builder) AddError(se tm.SyntaxError) bool {
 
 func (b *Builder) Add(t tm.NodeType, offset, endoffset int) {
 	index := len(b.s)
-	firstChild := 0
 
 	start := len(b.stack)
-	for b.s[b.stack[start-1]].offset >= offset {
+	end := start
+	for o := b.s[b.stack[start-1]].offset; o >= offset; o = b.s[b.stack[start-1]].offset {
 		start--
+		if o >= endoffset {
+			end--
+		}
 	}
-	if start < len(b.stack) {
+	firstChild := 0
+	if start < end {
 		firstChild = b.stack[start]
-		for _, i := range b.stack[start:] {
+		for _, i := range b.stack[start:end] {
 			b.s[i].parent = index
 		}
 	}
 	b.s[b.stack[start-1]].next = index
-	b.stack = append(b.stack[:start], index)
+	if end == len(b.stack) {
+		b.stack = append(b.stack[:start], index)
+	} else if start < end {
+		b.stack[start] = index
+		l := copy(b.stack[start+1:], b.stack[end:])
+		b.stack = b.stack[:start+1+l]
+	} else {
+		b.stack = append(b.stack, 0)
+		copy(b.stack[start+1:], b.stack[start:])
+		b.stack[start] = index
+	}
 	b.s = append(b.s, span{
 		t:          t,
 		offset:     offset,
@@ -71,6 +85,14 @@ func (b *Builder) Add(t tm.NodeType, offset, endoffset int) {
 
 func (s Span) Type() tm.NodeType {
 	return s.spans[s.index].t
+}
+
+func (s Span) Offset() int {
+	return s.spans[s.index].offset
+}
+
+func (s Span) Endoffset() int {
+	return s.spans[s.index].endoffset
 }
 
 func (s Span) Child(sel selector.Selector) Node {
