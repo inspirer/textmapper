@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
-	pt "github.com/inspirer/textmapper/tm-parsers/testing"
+	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
 
 var lexerTests = []struct {
@@ -240,16 +240,17 @@ func TestLexer(t *testing.T) {
 	for _, tc := range lexerTests {
 		seen[tc.tok] = true
 		for _, input := range tc.inputs {
-			test := pt.NewParserTest(tc.tok.String(), input, t)
+			test := parsertest.New(t, tc.tok.String(), input)
 			l.Init(test.Source())
 			tok := l.Next()
 			for tok != js.EOI {
 				if tok == tc.tok {
-					test.Consume(l.Pos())
+					s, e := l.Pos()
+					test.Consume(t, s, e)
 				}
 				tok = l.Next()
 			}
-			test.Done(nil)
+			test.Done(t, nil)
 		}
 	}
 	for tok := js.EOI + 1; tok < js.NumTokens; tok++ {

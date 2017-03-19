@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/tm"
-	pt "github.com/inspirer/textmapper/tm-parsers/testing"
+	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
 
 var parseTests = []struct {
@@ -37,18 +37,18 @@ func TestParser(t *testing.T) {
 	for _, tc := range parseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
-			test := pt.NewParserTest(tc.nt.String(), input, t)
+			test := parsertest.New(t, tc.nt.String(), input)
 			l.Init(test.Source())
 			errHandler := func(se tm.SyntaxError) bool {
-				test.Error(se.Offset, se.Endoffset)
+				test.ConsumeError(t, se.Offset, se.Endoffset)
 				return true
 			}
-			p.Init(errHandler, func(t tm.NodeType, offset, endoffset int) {
-				if t == tc.nt {
-					test.Consume(offset, endoffset)
+			p.Init(errHandler, func(nt tm.NodeType, offset, endoffset int) {
+				if nt == tc.nt {
+					test.Consume(t, offset, endoffset)
 				}
 			})
-			test.Done(p.ParseInput(l))
+			test.Done(t, p.ParseInput(l))
 		}
 	}
 	for n := tm.NodeType(1); n < tm.NodeTypeMax; n++ {

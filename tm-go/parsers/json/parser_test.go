@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/json"
-	pt "github.com/inspirer/textmapper/tm-parsers/testing"
+	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
 
 var jsParseTests = []struct {
@@ -59,18 +59,18 @@ func TestParser(t *testing.T) {
 	for _, tc := range jsParseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
-			test := pt.NewParserTest(tc.nt.String(), input, t)
+			test := parsertest.New(t, tc.nt.String(), input)
 			l.Init(test.Source())
 			errHandler := func(se json.SyntaxError) bool {
-				test.Error(se.Offset, se.Endoffset)
+				test.ConsumeError(t, se.Offset, se.Endoffset)
 				return true
 			}
-			p.Init(errHandler, func(t json.NodeType, offset, endoffset int) {
-				if t == tc.nt {
-					test.Consume(offset, endoffset)
+			p.Init(errHandler, func(nt json.NodeType, offset, endoffset int) {
+				if nt == tc.nt {
+					test.Consume(t, offset, endoffset)
 				}
 			})
-			test.Done(p.Parse(l))
+			test.Done(t, p.Parse(l))
 		}
 	}
 	for n := json.NodeType(1); n < json.NodeTypeMax; n++ {

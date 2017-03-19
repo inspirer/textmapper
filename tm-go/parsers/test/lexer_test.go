@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
-	pt "github.com/inspirer/textmapper/tm-parsers/testing"
+	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
 
 var lexerTests = []struct {
@@ -62,16 +62,17 @@ func TestLexer(t *testing.T) {
 	for _, tc := range lexerTests {
 		seen[tc.tok] = true
 		for _, input := range tc.inputs {
-			ptest := pt.NewParserTest(tc.tok.String(), input, t)
+			ptest := parsertest.New(t, tc.tok.String(), input)
 			l.Init(ptest.Source())
 			tok := l.Next()
 			for tok != test.EOI {
 				if tok == tc.tok {
-					ptest.Consume(l.Pos())
+					s, e := l.Pos()
+					ptest.Consume(t, s, e)
 				}
 				tok = l.Next()
 			}
-			ptest.Done(nil)
+			ptest.Done(t, nil)
 		}
 	}
 	for tok := test.EOI + 1; tok < test.NumTokens; tok++ {

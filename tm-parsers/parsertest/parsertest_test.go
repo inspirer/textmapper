@@ -1,4 +1,4 @@
-package testing
+package parsertest
 
 import (
 	"reflect"
@@ -6,7 +6,7 @@ import (
 )
 
 func TestSplitInput(t *testing.T) {
-	res, exp, errors := splitInput("test", `abc«de§f»cdf«q1»q2§`, t)
+	res, exp, errors := splitInput(t, "test", `abc«de§f»cdf«q1»q2§`)
 	if string(res) != `abcdefcdfq1q2` {
 		t.Errorf("got: %s, want: abcdefcdfq1q2", res)
 	}
@@ -18,12 +18,12 @@ func TestSplitInput(t *testing.T) {
 		t.Errorf("got: %v, want: [5 13]", errors)
 	}
 
-	res, exp, errors = splitInput("test", `/*no expectations*/`, t)
+	res, exp, errors = splitInput(t, "test", `/*no expectations*/`)
 	if string(res) != `/*no expectations*/` || len(exp) != 0 || len(errors) != 0 {
 		t.Errorf("got: %s, %v, %v, want: /*no expectations*/, [], []", res, exp, errors)
 	}
 
-	res, exp, errors = splitInput("test", `«abc» «a«b§«c»»»`, t)
+	res, exp, errors = splitInput(t, "test", `«abc» «a«b§«c»»»`)
 	if string(res) != `abc abc` {
 		t.Errorf("got: %s, want: abc abc", res)
 	}
