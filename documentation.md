@@ -20,7 +20,7 @@ Textmapper files must start with a header specifying a name for the grammar and 
 
 	language js(go);     # A Javascript parser in Go.
 
-	eventBased = true                                          # generate an event-based parser
+	eventBased = true                          # generate an event-based parser
 	reportTokens = [Comment, invalid_token]    # report these tokens as events
 
 	# ... lexer specification
