@@ -26,7 +26,7 @@ Textmapper files must start with a header specifying a name for the grammar and 
 	# ... lexer specification
 	# ... parser
 
-Option values are checked against the expected types declared in the target language templates, and can contan integers, booleans, strings, grammar symbol references, and arrays of the above.
+Option values are checked against the expected types declared in the target language templates, and can contain integers, booleans, strings, grammar symbol references, and arrays of the above.
 
 The list of available options for each output language can be found in the language section below.
 
@@ -107,7 +107,7 @@ Whenever you need to write a grammar production rule for a specific lexeme value
 	ONE:    /1/
 
 	# in the grammar
-	number ::= INT_wo_ZERO | ZERO | ONE;
+	number : INT_wo_ZERO | ZERO | ONE;
 
 Textmapper introduces the concept of soft terminals to automate and simplify this task. Soft terminals are symbols whose types depend on the grammar context. All soft terminals must have a class symbol. To add a new soft terminal, you mark the original lexeme rule with a _class_ attribute and create a separate soft terminal rule for the constant value. From the lexer point of view, conflicts are automatically resolved in favor of the soft terminal, while in the parser, it is interpreted as its class terminal when that is expected.
 
@@ -115,7 +115,7 @@ Textmapper introduces the concept of soft terminals to automate and simplify thi
 	ZERO: /0/         (soft)
 
 	# "0" (returned from the lexer as ZERO) is interpreted as INT here
-	input ::= INT ;
+	input : INT ;
 
 A soft terminal symbol behaves like its class terminal symbol in the contexts where the class symbol is expected. Soft terminals therefore inherit all properties from their respective class terminals (attributes, type and semantic action).
 
@@ -137,7 +137,7 @@ Soft keywords don't contribute to a reserved keywords set, allowing them to be u
 	class:   /class/
 
 	# class is a usual keyword, while extends is a soft one
-	declaration ::= class ID (extends ID) '{' body '}' ;
+	declaration : class ID (extends ID) '{' body '}' ;
 
 The main restriction of soft terminals is that you cannot use them in the same context as their respective class terminals. This will result in an ambiguity as to whether the soft terminal should be interpreted as itself or its class terminal. In addition to LR shift/reduce and reduce/reduce conflicts, soft terminals can introduce two more types of conflicts: _soft shift/reduce_ and _soft reduce/reduce_.
 
@@ -296,27 +296,27 @@ Notes
 A parser component, given a stream of tokens, tries to build a parse tree, or reports a syntax error in case of failure. The parser specification consists of EBNF-like production rules, which are used to rewrite input to nonterminal start symbols (in a bottom-up manner). There should be at least one grammar rule defining a start symbol (the root of the parse tree), which by convention is called **_input_**.
 
 	# the minimum grammar: input is empty
-	input ::= ;
+	input : /* empty */ ;
 
 The right-hand side of a rule is a sequence of terminal and nonterminal symbols. Multiple alternative definitions for the same nonterminal can be combined using the vertical bar character (```|```).
 
-	input ::= Identifier | IntegerConstant ;
+	input : Identifier | IntegerConstant ;
 
 The **_%input_** directive allows you to override the start symbol, or even introduce several start symbols (each gets a separate parse method in the generated code).
 
 	%input start, expr;
-	start ::= ID '=' expr ;
-	expr ::= IntegerConstant ;
+	start : ID '=' expr ;
+	expr : IntegerConstant ;
 
 To use an optional symbol (meaning either that symbol or an empty string is accepted), the **opt** suffix can be added to the symbol reference. Defining a symbol ending in `opt' is forbidden.
 
-	# a new rule is implicitly added: IDopt ::= ID | ;
-	input ::= IDopt ;
+	# a new rule is implicitly added: IDopt : ID | /* empty */ ;
+	input : IDopt ;
 
 As in lexer rules, the type of the associated value can be specified right after the symbol name.
 
 	# associated value is an AST class
-	IfStatement (AstIfStatement) ::= if '(' expr ')' statement ;
+	IfStatement (AstIfStatement) : if '(' expr ')' statement ;
 
 ## Rule syntax extensions
 
@@ -324,10 +324,10 @@ Textmapper supports extended syntax for production rules. It includes grouping, 
 
 Parentheses are used for grouping in the usual manner. A question mark after a symbol reference or a group means that reference or group is optional. The following rule is expanded into 4 rules, where all combinations are expressed individually.
 
-	javaImport ::= import static? qualifiedID ('.' '*')? ';' ;
+	javaImport : import static? qualifiedID ('.' '*')? ';' ;
 
 	# is reduced to
-	javaImport ::=
+	javaImport :
 		 import qualifiedID ';'
 		| import qualifiedID '.' '*' ';'
 		| import static qualifiedID ';'
@@ -338,24 +338,24 @@ The difference between using the **opt** suffix and a question mark operator is 
 In-group alternation is a way to avoid repetitions.
 
 	# accepts "block ID code" and "block ID semicolon"
-	element ::= block ID (code | semicolon) ;
+	element : block ID (code | semicolon) ;
 
 Unordered sequences accept their elements in any order but each element must appear exactly once (unless it is optional). Such sequences are formed by joining the elements with an ampersand ('&') operator. Parentheses can be used to override precedence or to improve readability.
 
 	# accepts all permutations of A, B and C as well as an empty string
-	ABC ::= (A & B & C)? ;
+	ABC : (A & B & C)? ;
 
 	# accepts: int i, const int i, int volatile i, etc.
-	Var ::= Type & Modifiers? ID ;
-	Modifiers ::= const | volatile ;
+	Var : Type & Modifiers? ID ;
+	Modifiers : const | volatile ;
 
 Lists can be introduced on the right-hand side of a rule without the need for a separate nonterminal. An element which may appear multiple times should be followed by a quantifier. This can be either a plus (one or more elements are accepted) or a star (in this case, an empty string is accepted as well). There is a special syntax for lists with a separator. The sequence of separator tokens follows the list element, prefixed with the ```separator``` keyword. A quantifier should then be applied to the whole block enclosed in parentheses.
 
 	# one or more methods
-	input ::= method+ ;
+	input : method+ ;
 
 	# comma separated list of zero or more parameters
-	methodHeader ::= ID leftParen (parameter separator comma)* rightParen ;
+	methodHeader : ID leftParen (parameter separator comma)* rightParen ;
 
 As with **opt** versus ```?```, there are two ways to express lists accepting an empty string. The star quantifier handles an empty production in the created list nonterminal, while the ```+?``` operator inlines it on the caller side. Inlining is more verbose, but less likely to cause LR conflicts.
 
@@ -364,18 +364,18 @@ As with **opt** versus ```?```, there are two ways to express lists accepting an
 Semantic actions are code in the target language, which is executed when the parser reaches that point in the grammar. Most actions are declared at the end of the rule, where they can be used to compute the resulting associated value for the left-hand nonterminal. ```$$``` stands for the resulting variable.
 
 	# simple action
-	One (Integer) ::= '1'   { $$ = 1; } ;
+	One (Integer) : '1'   { $$ = 1; } ;
 
 To refer to the values of the right-hand side symbols, use a dollar sign followed by the position or the name of the symbol. Symbols are numbered from left to right starting with 0, so the leftmost one can be referred to as ```$0```. If a symbol is not matched, its associated value will be null (nil, NULL, 0, etc., depending on the target language and type).
 
 	# for "a - b": $0 = "a", $2 = null,  $4 = "b"
-	input ::= id ('+' id | '-' id)? { /* action */ } ;
+	input : id ('+' id | '-' id)? { /* action */ } ;
 
 An associated value for the symbol can be used only if its type is declared. In the previous example ```$1``` and ```$3``` are undefined and their usages are reported as compile-time errors.
 
 When the same symbol is used twice on the right-hand side of a rule, it cannot be referred to by its own name due to ambiguity (reported as an error). In this case we can provide an alias for it: ```alias=symbol```.
 
-	expr (int) ::=
+	expr (int) :
 	    left=expr '+' right=expr  { $$ = $left + $right; }
 	  | ID '(' argumentsopt ')'   { $$ = call($ID, $argumentsopt); }
 	;
@@ -383,7 +383,7 @@ When the same symbol is used twice on the right-hand side of a rule, it cannot b
 It is possible to declare actions in the middle of a rule. Only symbols to the left of the action are available for referring to (as the rest of the rule has not been parsed by then). Each such mid-rule action introduces a new auxiliary nonterminal in the grammar (which triggers its execution), so it may cause LR conflicts.
 
 	# actions conflict: lalr(1) is not enough to decide which action to execute
-	expr ::=
+	expr :
 	    expr { fieldAccess($expr); } '.' 'ID'
 	  | expr { methodAccess($expr); } '.' 'ID' '(' arguments ')'
 	;
@@ -393,11 +393,11 @@ Although mid-rule actions have associated nonterminals, they don't have associat
 Due to syntax extensions, it may not be completely clear if the action is a mid-rule action (and so requires an additional nonterminal). If no symbol can appear after the action, it is considered as a rule action. If there are multiple rule actions, they are executed left to right when the rule is reduced.
 
 	# runs aParsed() when "read a" is reduced
-	input ::= read (a { aParsed(); } | b | c) ;
+	input : read (a { aParsed(); } | b | c) ;
 
 	# the following two actions are executed one after another
 	# when "minus expr" is matched
-	input ::= (minus { handleMinus(); })? expr { handleExpr(); }
+	input : (minus { handleMinus(); })? expr { handleExpr(); }
 
 Semantic actions are processed using the Textmapper templates engine, which uses a dollar sign as the start symbol of all template constructs. All dollar signs in the target language must be escaped. Here is a brief explanation of the most used constructs:
 
@@ -406,7 +406,7 @@ Semantic actions are processed using the Textmapper templates engine, which uses
 	$0, $1..    shortcuts for ${self[index]}
 	$$          shortcut for ${self.'$'}
 	${'$'}      the best way to print a single dollar sign
-	${self}     a string representation of the rule, like 'expr ::= minus expr'
+	${self}     a string representation of the rule, like 'expr : minus expr'
 
 Expressions in rule actions are evaluated in the context of the current rule. In addition to property and index access to the right-hand side values, a rule object also provides the following operations:
 
@@ -421,7 +421,7 @@ Although ```${left()}``` and ```$$``` denote the same entity, their output diffe
 ```${left()}```: Should be used for reading typed data; it returns an associated value cast to the rule's nonterminal type. It cannot be used to modify values.
 
 	# example in java:  ${left()} is equivalent to ((List<Method>)$$)
-	methods (List<Method>) ::=
+	methods (List<Method>) :
 	    method      { $$ = new ArrayList<Method>(); ${left()}.add($method); }
 	    | methods method .... ;
 
@@ -437,7 +437,7 @@ The generated lexer and parser can track the locations of the parsed elements in
 Location attributes of terminal symbols are filled out by the lexer. A nonterminal inherits its starting and ending locations from the first and last symbols on the right-hand side of the matched rule. If the rule is empty, then both locations are set to the starting position of the next token in the stream.
 
 	# store line and offsets in the AST class
-	assignment ::=
+	assignment :
 	    ID '=' expr
 	          { $$ = new Assignment($ID, $expr, ${ID.line} ${ID.offset}, ${expr.endoffset}); }
 	;
@@ -456,16 +456,16 @@ The following example shows the parsing steps for the variable declaration const
 | stack                   | input stream  | action |
 |-
 | \<empty\>               | int i = 5 + 3;| Shift |
-| int                     | i = 5 + 3;    | Reduce (type ::= int) |
+| int                     | i = 5 + 3;    | Reduce (type : int) |
 | type                    | i = 5 + 3;    | Shift |
 | type ID(i)              | = 5 + 3;      | Shift (2 times) |
-| type ID = 5             | + 3;          | Reduce (expr ::= integer_const) |
+| type ID = 5             | + 3;          | Reduce (expr : integer_const) |
 | type ID = expr          | + 3;          | Shift (2 times) |
-| type ID = expr + 3      | ;             | Reduce (expr ::= integer_const) |
-| type ID = expr + expr   | ;             | Reduce (expr ::= expr '+' expr) |
+| type ID = expr + 3      | ;             | Reduce (expr : integer_const) |
+| type ID = expr + expr   | ;             | Reduce (expr : expr '+' expr) |
 | type ID = expr          | ;             | Shift |
-| type ID = expr ;        |               | Reduce (var_decl ::= type ID '=' expr ';') |
-| var_decl                |               | Reduce (input ::= var_decl) |
+| type ID = expr ;        |               | Reduce (var_decl : type ID '=' expr ';') |
+| var_decl                |               | Reduce (input : var_decl) |
 | input                   |               | \<success\> |
 
 The decision on which action to execute is made at each step, depending on the stack content and the following items in the input stream (so-called lookahead tokens). Textmapper uses LR parsing techniques to come to this decision quickly.
@@ -496,11 +496,11 @@ Each error contains an example of the parsing stack content, conflicting rules, 
 
 	input: statementList if '(' Expression ')' Statement
 	shift/reduce conflict (next: else)
-    	IfStatement ::= if '(' Expression ')' Statement
+    	IfStatement : if '(' Expression ')' Statement
 
 We can resolve this conflict manually by marking the appropriate rule with a %shift modifier, which takes a comma-separated list of terminal symbols for which *Shift* is the preferred solution. Excess modifiers (i.e. for non-conflicting rules or terminals) are reported as errors.
 
-	IfStatement ::=
+	IfStatement :
 	    kw_if '(' Expression ')' Statement %shift else
 	  | kw_if '(' Expression ')' Statement else Statement
 	;
@@ -515,7 +515,7 @@ For operators of the same precedence, the order of execution remains unclear. Fo
 
 The following grammar snippet produces a bunch of **Shift/Reduce** conflicts. Obviously, without precedences and associativities, there are multiple ways to parse any complex expression.
 
-	expr ::= 
+	expr : 
 	     IntegerConstant
 	   | expr '+' expr
 	   | expr '*' expr
@@ -523,13 +523,13 @@ The following grammar snippet produces a bunch of **Shift/Reduce** conflicts. Ob
 	   
 We can rewrite it so that operator priorities and associativities are encoded in the grammar. The rewritten grammar would look like this:
 
-	expr ::=
+	expr :
 	    plus_expr ;
 	
-	plus_expr ::=
+	plus_expr :
 	    mult_expr | plus_expr '+' mult_expr ;
 	    
-	mult_expr ::=
+	mult_expr :
 		IntegerConstant | mult_expr '*' IntegerConstant ; 
 
 It is heavy, verbose, and requires many excess reductions (every single constant passes its way through all nonterminals). Instead, we can add precedence rules to solve all the ambiguities and stick to the original version. Note that operators are represented by terminal symbols.
@@ -549,7 +549,7 @@ For example, the following conflict will be resolved as *Shift* for the ```'*'``
 
 	input: MethodHeader '{' expr '+' expr
 	shift/reduce conflict (next: '+', '*')
-	    expr ::= expr '+' expr
+	    expr : expr '+' expr
 
 The unary minus requires a separate operator terminal as it has higher precedence than the usual minus operator. This means we must specify this custom precedence in a rule modifier.
 
@@ -561,7 +561,7 @@ The unary minus requires a separate operator terminal as it has higher precedenc
 	%left '*';
 	%left unaryMinus;
 
-	expr ::= 
+	expr : 
 	     IntegerConstant
 	   | expr '+' expr
 	   | expr '-' expr
@@ -580,7 +580,7 @@ By default, the generated parser stops when it encounters the first syntax error
 
 This terminal can then be used in production rules to specify the contexts where an error is expected and can be properly handled.
 
-	statement ::=
+	statement :
 	    expr_statement ';'
 	  | error ';'		# if something is broken here, it is broken up to the next semicolon
 	;
@@ -675,7 +675,7 @@ Defining an AST model in a grammar is wordy and explicit, so for many simple non
 	}
 	
 	:: parser
-	Visibility ::=
+	Visibility :
 	   'public' | 'private' | 'protected' ;
 
 ## Grammar Mapping
@@ -688,7 +688,7 @@ In order to get a separately defined AST instantiated and returned from the pars
 	}
 	
 	:: parser
-	entity returns Entity ::=
+	entity returns Entity :
 	    'entity' name=ID ;
 
 
@@ -707,7 +707,7 @@ Return types can be specified on individual actions, which in turn allows us to 
 	}
 
 	:: parser
-	literal returns ConstExpression ::=
+	literal returns ConstExpression :
 	      [returns IntegerLiteral] val=icon
 	    | [returns StringLiteral] val=scon
 	;
@@ -726,7 +726,7 @@ A parenthesized clause can be mapped to a field. In this case it is considered a
     class ChildEx : Child {}
 
 	:: parser
-	complexRule returns Container ::=
+	complexRule returns Container :
 	      # equivalent to new Container(new Child($ID));
 	      'container' '(' child=('child' name=ID) ')'
 	  
@@ -739,19 +739,19 @@ If we don't need an intermediate node for the rule and just want to pass the wra
 	:: parser
 	
 	# no intermediate node here
-	init_expr returns Expression ::=
+	init_expr returns Expression :
 		'=' this=expr ;
 
 Enumerations are mapped in a similar way to classes, but instead of fields we map enumeration literals to constant terminals.
 
 	:: parser
-	visibility returns Visibility ::=
+	visibility returns Visibility :
 		public='public' | private='private' | protected='protected' ;
 
 Lists are created by adding elements one-by-one, using the ```+=``` operator. 
 
 	:: parser
-	expression_list returns list<Expression> ::=
+	expression_list returns list<Expression> :
 	      this+=expression
 	    | expression_list ',' this+=expression
 	;
@@ -765,14 +765,14 @@ Lists are created by adding elements one-by-one, using the ```+=``` operator.
 	}
 	
 	:: ast
-	method ::=
+	method :
 	    # handle a variable arity parameter separately, 
 	    name=ID '(' params=parameter+ (',' params+=var_arity_param)? ')' ;
 
 Booleans can be mapped to constant terminals to indicate their presence in the input.
 
 	:: parser
-	class_declaration returns ClassDeclaration ::=
+	class_declaration returns ClassDeclaration :
 	      final='final' 'class' ...              # final is true
 	    | # final is false, abstact and data can be true or false
 	      (abstract='abstract')? data='data'? 'class' ...
@@ -781,12 +781,12 @@ Booleans can be mapped to constant terminals to indicate their presence in the i
 We can ignore the value provided by the right-hand side symbol and give our own constant by using ```symbol as <primitiveConstant>```. Usually this makes sense when the symbol is a constant terminal. Enumeration literals can be used as well.
 
 	:: parser
-	modifier returns int ::=
+	modifier returns int :
 	      this='a' as 0
 	    | this='b' as 1
 	    | this='c' as 2
 	;
-	class_declaration returns ClassDeclaration ::=
+	class_declaration returns ClassDeclaration :
 	      visibility='internal' as Visibility.protected 'class' ...
 	    | visibility=visibility 'class' ...
 	;
