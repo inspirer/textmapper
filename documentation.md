@@ -12,11 +12,11 @@ The textmapper input file contains definitions of the lexer and parser as well a
 
 The source text is a sequence of Unicode characters. By default, it is stored in a file with the extension .tm which is represented in the UTF-8 encoding.
 
-Whitespaces (including line breaks) have no special meaning, and are used only as token separators. Single-line comments start with a hash character (#). Larger pieces of text can be commented out with traditional block comments (`/* .. */`). Identifiers consist of case-sensitive sequences of alphanumeric or underscore characters and cannot start with a digit. As an exception, they are also allowed to have dashes in the middle, as is common in many reference grammars. Another possible form of an identifier is a sequence of characters in single quotes ('), which is useful for naming keywords and punctuation tokens.
+Whitespaces (including line breaks) have no special meaning, and are used only as token separators. Single-line comments start with a hash character (`#`). Larger pieces of text can be commented out with traditional block comments (`/* .. */`). Identifiers consist of case-sensitive sequences of alphanumeric or underscore characters and cannot start with a digit. As an exception, they are also allowed to have dashes in the middle, as is common in many reference grammars. Another possible form of an identifier is a sequence of characters in single quotes ('), which is useful for naming keywords and punctuation tokens.
 
 ## Options
 
-Textmapper files must start with a header specifying a name for the grammar and a target language for the generated lexer and parser. Semantic actions and value types associated with symbols are considered to be in that language. The header is followed by zero or more generation options, which can be used to tweak the Textmapper output.
+Textmapper files must start with a header specifying a name for the grammar and a target language for the generated code. Semantic actions and value types associated with symbols are considered to be in that language. The header is followed by zero or more generation options, which can be used to tweak the Textmapper output.
 
 	language js(go);     # A Javascript parser in Go.
 
@@ -48,7 +48,7 @@ There is one predefined symbol **_eoi_**, meaning end-of-input. It is returned a
 	# treat Ctrl-Z as end-of-input, see http://en.wikipedia.org/wiki/Control-Z
 	eoi: /\x1a/
 
-It is possible to extract a valid part of a regular expression into a reusable named pattern.
+It is possible to extract a part of a regular expression into a reusable named pattern.
 
 	digit = /[0-9]/
 	IntegerConstant: /{digit}+/
@@ -66,119 +66,75 @@ Mapping an input string to a terminal can be handled by the associated code.
 
 ## Associated values
 
-During the parsing process, each symbol can optionally hold an associated value. Different symbols can have values of different types. The type can be specified in parentheses next to the symbol name. For example, IntegerConstant represents any number in the code, while the value of the number is usually attached to the symbol as the associated data.
+During the parsing process, each symbol can optionally hold an associated value. Different symbols can have values of different types. The type can be specified in braces next to the symbol name. For example, IntegerConstant represents any number in the code, while the value of the number is usually attached to the symbol as the associated data.
 
-	IntegerConstant (Integer): /[0-9]+/
+	IntegerConstant {Integer}: /[0-9]+/
 
 By default, the associated value is null (nil, NULL, 0, etc., depending on the target language and type). To compute it for a terminal, add a semantic action to the lexer rule. "$value" is an alias for the associated value variable of the current terminal under construction.
 
-	IntegerConstant (int): /[0-9]+/ { $value = Integer.parseInt(current()); }
+	IntegerConstant {int}: /[0-9]+/ { $value = Integer.parseInt(current()); }
 
 When the string type is chosen for a terminal, the matched text is taken as the default associated value. Semantic actions can override this default value (to perform decoding, for example).
 
 	# value is taken from the parsed text as is
-	ID (String): /[a-z]+/
+	ID {String}: /[a-z]+/
 
 ## Lexer conflicts
 
 When a string of characters is matched by two rules, Textmapper reports a conflict. In most cases one of the regular expressions can be rewritten to exclude the conflicting string. Although that is possible in theory, in practice it may lead to enormously long and unreadable definitions. Textmapper has two mechanisms to avoid this problem. The first one is applicable when one of the rules matches only one specific string. I.e. we have a more general and a more specific rule matching the same string. Marking the general one with the _(class)_ attribute tells Textmapper to prefer specific rules over it.
 
-	# 'void' is returned as kw_void, because kw_void is an identifier
+	# 'keyword' has a priority over identifier, since it is a more specific rule.
 	identifier: /[a-zA-Z]+/   (class)
-	kw_void: /void/
+	'keyword': /keyword/
 
 For all constant regular expressions, Textmapper tries to find a matching _class_ rule. If there are two, a fatal error is reported.
 
 Another solution is to use numerical priorities. The rule with the highest priority value is chosen. When not specified, the priority value is considered to be zero.
 
-	# 'void' is returned as kw_void, because -1 < 0
-	identifier: /[a-zA-Z]+/   (-1)
+	# 'void' is returned as kw_void, since -1 < 0
+	identifier: /[a-zA-Z]+/   -1
 	kw_void: /void/
 
 Intensive usage of priorities can be dangerous, as it prevents Textmapper from detecting potential conflicts as you change the grammar. The conflicts get resolved silently in accordance with priorities, masking the actual problem, which is often a poorly-defined rule.
 
-## Soft terminals
+## Start conditions
 
-Whenever you need to write a grammar production rule for a specific lexeme value, you face the problem that you have to exclude the string from the original lexeme and handle it as a separate symbol in the grammar. Basically this means replacing all entries of the original terminal with an alternative ```(original | value1 | ... | valueN)```, which makes the grammar more complex and may often introduce unexpected conflicts.
+Parsing heterogeneous input can require adjusting the set of active lexer rules for different parts of the text. This can be done by introducing lexer start conditions and mapping rules to them. The lexer can be in only one start condition (i.e. state) at a time. Depending on the state, it uses the appropriate set of active rules to match and return the next token. The current start condition can be changed in the associated code upon a successful token match. There is one predefined condition, called **_initial_**, in which the lexer starts scanning the input string.
 
-	# that's how we did it before
-	INT_wo_01: /[1-9][0-9]+|[2-9]/
-	ZERO:   /0/
-	ONE:    /1/
+	# on '/*' set the current start condition (also known as state) to inComment
+	commentStart: /\/\*/  (space)    { l.State = StateInComment }
 
-	# in the grammar
-	number : INT_wo_ZERO | ZERO | ONE;
+A rule prefixed with a list of start conditions is considered to be active in those conditions only.
 
-Textmapper introduces the concept of soft terminals to automate and simplify this task. Soft terminals are symbols whose types depend on the grammar context. All soft terminals must have a class symbol. To add a new soft terminal, you mark the original lexeme rule with a _class_ attribute and create a separate soft terminal rule for the constant value. From the lexer point of view, conflicts are automatically resolved in favor of the soft terminal, while in the parser, it is interpreted as its class terminal when that is expected.
+	<initial, inComment> /[\t\x20]+/   (space)
 
-	INT:  /[0-9]+/    (class)
-	ZERO: /0/         (soft)
+There are two types of start conditions: inclusive and exclusive, which get declared with '%s' and '%x' directives respectively. Rules without explicit restrictions automatically become active in all inclusive start conditions. By default, the **_initial_** state is inclusive but it can be re-declared as exclusive if needed.
 
-	# "0" (returned from the lexer as ZERO) is interpreted as INT here
-	input : INT ;
+	%s initial, afterComma;
+	%x inComment, inStringLiteral;
 
-A soft terminal symbol behaves like its class terminal symbol in the contexts where the class symbol is expected. Soft terminals therefore inherit all properties from their respective class terminals (attributes, type and semantic action).
+	identifier: /[a-zA-Z_]+/        # This rule is active in initial and afterComma states.
+	<initial> ',':  /,/                      { l.State = StateAfterComma }
 
-	INT (Integer): /[0-9]+/  (class) { .. parsing lexeme value... }
+Substituting a list of start conditions with a star character activates a rule in all available inclusive and exclusive start conditions.
 
-	# ZERO inherits Integer type & semantic action
-	ZERO:       /0/ (soft)
+	<*> /[\t\x20]+/   (space)
 
-	# error: Type should match
-	ONE (Long): /1/ (soft)
+If several lexer rules are applicable in the same set of start conditions, they can be put together into a start conditions clause. Each rule in the clause inherits the applicability from the clause but can override it if needed. Such clauses combined with exclusive start conditions are a good way of representing lexers within lexers, which tokenize pieces of the input that are syntactically different from the rest (e.g. comments and various embedded languages). Start condition clauses can nest.
 
-	# replacing the action
-	TWO:        /2/ (soft)     { $$ = 2; }
+	<inComment, inJavadoc> {
+	  commentText: /*|[^*]+/  (space)
+	  commentEnd: /\*\// (space)   { l.State = StateInitial }
 
-Soft keywords don't contribute to a reserved keywords set, allowing them to be used as plain identifiers.
+	  <inJavadoc> {
+	    # some extra rules available in Javadoc comments only
+	  }
+	}
 
-	ID:      /[a-zA-Z_]+/    (class)
-	extends: /extends/       (soft)
-	class:   /class/
+Using start conditions, the same string can be interpreted differently depending on the lexer context.
 
-	# class is a usual keyword, while extends is a soft one
-	declaration : class ID (extends ID) '{' body '}' ;
-
-The main restriction of soft terminals is that you cannot use them in the same context as their respective class terminals. This will result in an ambiguity as to whether the soft terminal should be interpreted as itself or its class terminal. In addition to LR shift/reduce and reduce/reduce conflicts, soft terminals can introduce two more types of conflicts: _soft shift/reduce_ and _soft reduce/reduce_.
-
-	# example of conflicts
-
-## Lexer states
-
-Parsing heterogeneous input can require adjusting the set of active lexer rules for different parts of the stream. This can be done by introducing lexer states and mapping rules to them. The lexer can be in only one state at a time. Depending on the state, it uses the appropriate set of rules to match and return the next token. The current state can be changed after a successful token match using transition maps (see below), or from the associated code. There is one predefined state, called **_initial_**, in which the lexer starts reading the stream.
-
-	# after '/*' shift to inComment state
-	commentStart: /\/\*/  (space)    { setState(States.inComment); }
-
-States are declared in a mapping clause. In its simple form, a mapping clause is a comma separated list of state names. All rules following the declaration (up to the next mapping clause) are applicable only in the enumerated states.
-
-	[inComment]
-	commentText: /*|[^*]+/  (space)
-	commentEnd: /\*\// (space)   { setState(States.initial); }
-
-All rules before the first mapping clause fall into the **_initial_** state.
-
-A transition can be declared without associated code by using arrow notation.
-
-	commentStart: /\/\*/  (space, -> inComment)
-
-The mapping clause can contain transitions for each state, which are inherited by rules without explicitly specified transitions.
-
-	# Example: lexer is in newLine state only immediately after \n
-	[initial, newLine -> initial]
-	NL:   /\n/   (space, -> newLine)
-
-	# no transition, inherits transition from newLine to initial
-	ID:  /[a-z]+/
-
-Depending on the state, the same string can be handled in more than one way.
-
-	[newLine] TAB:  /\t/
-	[initial] ignoredTab: /\t/  (space)
-
-All specified transitions are applied before the execution of the associated code, so the current state of the lexer can be fine-tuned in the code even when declarative transitions are used.
-
-	leftParen: /\(/   (-> inParentheses)		{ if (!isExpression()) setState(States.initial); }
+	<newLine> TAB:  /\t/
+	<initial> ignoredTab: /\t/  (space)
 
 ## Regular expressions
 
@@ -236,6 +192,10 @@ Pattern definitions
 
 	{name}         the substitution of the `name' pattern definition
 
+Special symbols
+
+	{eoi}          an end-of-input (can appear at the end of a pattern only)
+
 Supported unicode categories (in `\p{xx}`)
 
 	Lu             Letter, uppercase
@@ -269,23 +229,6 @@ Supported unicode categories (in `\p{xx}`)
 	Co             Other, private use
 	Cn             Other, not assigned (including non-characters)
 
-Pattern modifiers (in `/pattern/si`)
-
-	s              change `.' to match any character (even a newline)
-	i              case-insensitive pattern matching
-
-Unsupported (planned)
-
-	^              the beginning of a line
-	$              the end of a line
-	{eoi}          an end-of-input (can appear at the end of a pattern only)
-	[\w]{-}[A-Z]   difference of two character sets (left associative operator)
-	{+}            union
-	{&&}           intersection (has lower priority than {+} or {-})
-	\Q             quotes all characters until \E
-	(?is:R)        match an `R' with the given modifiers (see Pattern modifiers)
-	(?-i:R)        turns off modifier
-
 Notes
 
 	[^a-z] matches a newline, unless '\n' is explicitly added into the negated class: [^a-z\n]
@@ -316,7 +259,7 @@ To use an optional symbol (meaning either that symbol or an empty string is acce
 As in lexer rules, the type of the associated value can be specified right after the symbol name.
 
 	# associated value is an AST class
-	IfStatement (AstIfStatement) : if '(' expr ')' statement ;
+	IfStatement {AstIfStatement} : if '(' expr ')' statement ;
 
 ## Rule syntax extensions
 
@@ -364,7 +307,7 @@ As with **opt** versus ```?```, there are two ways to express lists accepting an
 Semantic actions are code in the target language, which is executed when the parser reaches that point in the grammar. Most actions are declared at the end of the rule, where they can be used to compute the resulting associated value for the left-hand nonterminal. ```$$``` stands for the resulting variable.
 
 	# simple action
-	One (Integer) : '1'   { $$ = 1; } ;
+	One {Integer} : '1'   { $$ = 1; } ;
 
 To refer to the values of the right-hand side symbols, use a dollar sign followed by the position or the name of the symbol. Symbols are numbered from left to right starting with 0, so the leftmost one can be referred to as ```$0```. If a symbol is not matched, its associated value will be null (nil, NULL, 0, etc., depending on the target language and type).
 
@@ -375,7 +318,7 @@ An associated value for the symbol can be used only if its type is declared. In 
 
 When the same symbol is used twice on the right-hand side of a rule, it cannot be referred to by its own name due to ambiguity (reported as an error). In this case we can provide an alias for it: ```alias=symbol```.
 
-	expr (int) :
+	expr {int} :
 	    left=expr '+' right=expr  { $$ = $left + $right; }
 	  | ID '(' argumentsopt ')'   { $$ = call($ID, $argumentsopt); }
 	;
