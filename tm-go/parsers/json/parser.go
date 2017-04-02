@@ -40,6 +40,7 @@ type symbol struct {
 type stackEntry struct {
 	sym   symbol
 	state int8
+	value interface{}
 }
 
 func (p *Parser) Init(eh ErrorHandler, l Listener) {
@@ -118,6 +119,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			p.stack = append(p.stack, stackEntry{
 				sym:   p.next,
 				state: state,
+				value: lexer.Value(),
 			})
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())

@@ -10,8 +10,8 @@ ${end-}
 ${end}
 
 ${query escapeGoReserved() =
-	[
-		'break',        'default',     'func',         'interface',    'select',
+    [
+        'break',        'default',     'func',         'interface',    'select',
         'case',         'defer',       'go',           'map',          'struct',
         'chan',         'else',        'goto',         'package',      'switch',
         'const',        'fallthrough', 'if',           'range',        'type',
@@ -24,11 +24,11 @@ ${query escapeGoReserved() =
         'Token', 'Nonterminal', 'Pos', 'Node', 'Offset', 'Endoffset', 'Start', 'End',
 
         'fmt', 'strconv'
-	].contains(self) ? '_' + self : self }
+    ].contains(self) ? '_' + self : self }
 
 ${query symText(property) = self.leftOffset == -1
-	? (property == 'value' ? 'nil' : '-1')
-	: (self.isLeft ? 'lhs' : 'rhs[' + self.leftOffset + ']') + '.' + (property == 'value' ? property : 'sym.' + property) }
+    ? (property == 'value' ? 'nil' : '-1')
+    : (self.isLeft ? 'lhs' : 'rhs[' + self.leftOffset + ']') + '.' + (property == 'value' ? property : 'sym.' + property) }
 
 ${query varName() = 'nn' + (self.leftOffset == -1 ? '' : self.leftOffset)}
 

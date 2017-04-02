@@ -65,7 +65,7 @@ type symbol struct {
 type stackEntry struct {
 	sym   symbol
 	state ${self->stateType()}
-${if !self->eventBased()-}
+${if self->hasAssocValues()-}
 	value ${self->valueType()}
 ${end-}
 }
@@ -90,18 +90,22 @@ ${end-}
 	debugSyntax    = false
 )
 ${foreach inp in syntax.input.select(it|it.requested)}
-func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) ${if self->eventBased()}error${else}(error, ${if inp.target->go.type()}${inp.target->go.type()}${else}${self->valueType()}${end})${end} {
-${if !self->eventBased() && inp.target->go.type()-}
-	err, v := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) ${if !self->hasAssocValueFor(inp)}error${else}(error, ${inp.target->go.type()})${end} {
+${if self->hasAssocValuesForInput()-}
+	err, ${if self->hasAssocValueFor(inp)}v${else}_${end} := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
+${if self->hasAssocValueFor(inp)-}
 	val, _ := v.(${inp.target->go.type()})
 	return err, val
+${else-}
+	return err
+${end-}
 ${else-}
 	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 ${end-}
 }
 ${end-}
 
-func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if self->eventBased()}error${else}(error, ${self->valueType()})${end} {
+func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(error, ${self->valueType()})${end} {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]stackEntry, 0, startStackSize)
 	}
@@ -166,7 +170,7 @@ ${end-}
 			p.stack = append(p.stack, stackEntry{
 				sym:   p.next,
 				state: state,
-${if !self->eventBased()-}
+${if self->hasAssocValues()-}
 				value: lexer.Value(),
 ${end-}
 			})
@@ -203,7 +207,7 @@ ${end-}
             Endoffset: endoffset,
           }
           if !p.eh(lastErr) {
-            return lastErr${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
+            return lastErr${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
           }
 				}
 				if recovering >= 3 {
@@ -224,7 +228,7 @@ ${end-}
 	if state != end {
 ${if self->hasRecovering()-}
 		if recovering > 0 {
-			return lastErr${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
+			return lastErr${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
 		}
 ${end-}
 		offset, endoffset := lexer.Pos()
@@ -235,10 +239,10 @@ ${end-}
       Offset: offset,
       Endoffset: endoffset,
     }
-		return err${if !self->eventBased()}, ${self->valueTypeDefaultVal()}${end}
+		return err${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
 	}
 
-	return nil${if !self->eventBased()}, p.stack[len(p.stack)-2].value${end}
+	return nil${if self->hasAssocValuesForInput()}, p.stack[len(p.stack)-2].value${end}
 }
 ${if self->hasRecovering()-}
 
@@ -575,9 +579,15 @@ ${template initStateVars}${end}
 
 ${cached query eventBased() = opts.eventBased && !opts.genast}
 
-${query valueType() = self->eventBased() ? 'int' : 'interface{}' }
+${cached query hasAssocValues() = syntax.symbols.exists(it|it->go.type())}
 
-${query valueTypeDefaultVal() = self->eventBased() ? '0' : 'nil' }
+${cached query hasAssocValuesForInput() = self->hasAssocValues() && syntax.input.select(it|it.requested).exists(it|it.target->go.type())}
+
+${cached query hasAssocValueFor(input) = self->hasAssocValues() && input.target->go.type()}
+
+${query valueType() = 'interface{}' }
+
+${query valueTypeDefaultVal() = 'nil' }
 
 ${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCount < 65535 ? 'int16' : 'int32' }
 
