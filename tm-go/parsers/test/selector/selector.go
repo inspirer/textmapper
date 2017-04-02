@@ -13,6 +13,7 @@ var (
 	Block       = func(t test.NodeType) bool { return t == test.Block }
 	Decl1       = func(t test.NodeType) bool { return t == test.Decl1 }
 	Decl2       = func(t test.NodeType) bool { return t == test.Decl2 }
+	Int         = func(t test.NodeType) bool { return t == test.Int }
 	Negation    = func(t test.NodeType) bool { return t == test.Negation }
 	Test        = func(t test.NodeType) bool { return t == test.Test }
 	Identifier  = func(t test.NodeType) bool { return t == test.Identifier }

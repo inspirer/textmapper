@@ -36,6 +36,21 @@ var parseTests = []struct {
 	{test.Decl2, []string{
 		`«decl2»`,
 	}},
+	{test.Int, []string{
+		`«42» «7» «9»`,
+		`{«42»}`,
+		`{«42[]»}`,
+	}},
+	{test.Int7, []string{
+		`«7» 42`,
+		`{«7»}`,
+		`{«7[]»}`,
+	}},
+	{test.Int9, []string{
+		`«9»`,
+		`{3 «9» 11 «9»}`,
+		`{-- 5 «9[]» 3}`,
+	}},
 
 	{test.MultiLineComment, []string{
 		` decl2 «/* ****/» decl1(a)`,

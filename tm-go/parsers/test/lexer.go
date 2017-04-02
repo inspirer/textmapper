@@ -3,6 +3,7 @@
 package test
 
 import (
+	"strconv"
 	"strings"
 	"unicode/utf8"
 )
@@ -62,7 +63,7 @@ restart:
 
 	state := tmStateMap[l.State]
 	hash := uint32(0)
-	backupToken := -1
+	backupRule := -1
 	backupOffset := 0
 	backupHash := hash
 	for state >= 0 {
@@ -79,7 +80,7 @@ restart:
 		if state > tmFirstRule {
 			if state < 0 {
 				state = (-1 - state) * 2
-				backupToken = tmBacktracking[state]
+				backupRule = tmBacktracking[state]
 				backupOffset = l.offset
 				backupHash = hash
 				state = tmBacktracking[state+1]
@@ -103,35 +104,38 @@ restart:
 		}
 	}
 
-	token := Token(tmFirstRule - state)
+	rule := tmFirstRule - state
 recovered:
-	switch token {
-	case IDENTIFIER:
+	switch rule {
+	case 2:
 		hh := hash & 7
 		switch hh {
 		case 0:
 			if hash == 0x5b098c8 && "decl2" == l.source[l.tokenOffset:l.offset] {
-				token = DECL2
+				rule = 9
 				break
 			}
 		case 2:
 			if hash == 0x364492 && "test" == l.source[l.tokenOffset:l.offset] {
-				token = TEST
+				rule = 7
 				break
 			}
 		case 7:
 			if hash == 0x5b098c7 && "decl1" == l.source[l.tokenOffset:l.offset] {
-				token = DECL1
+				rule = 8
 				break
 			}
 		}
 	}
-	switch token {
-	case INVALID_TOKEN:
-		scanNext := false
-		if backupToken >= 0 {
 
-			token = Token(backupToken)
+	token := tmToken[rule]
+	space := false
+	switch rule {
+	case 0:
+		scanNext := false
+		if backupRule >= 0 {
+
+			rule = backupRule
 			hash = backupHash
 			l.scanOffset = backupOffset
 			scanNext = true
@@ -154,11 +158,17 @@ recovered:
 				l.ch = -1 // EOI
 			}
 		}
-		if token != INVALID_TOKEN {
+		if rule != 0 {
 			goto recovered
 		}
-
-	case 2:
+	case 3: // WhiteSpace: /[ \t\r\n]/
+		space = true
+	case 6: // IntegerConstant: /[0-9]+/
+		{
+			l.value = mustParseInt(l.Text())
+		}
+	}
+	if space {
 		goto restart
 	}
 	return token
@@ -179,4 +189,12 @@ func (l *Lexer) Text() string {
 // Value returns the value associated with the last returned token.
 func (l *Lexer) Value() interface{} {
 	return l.value
+}
+
+func mustParseInt(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		panic(`lexer internal error: ` + err.Error())
+	}
+	return i
 }

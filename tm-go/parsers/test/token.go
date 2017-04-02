@@ -19,6 +19,7 @@ const (
 	MULTILINECOMMENT
 	SINGLELINECOMMENT
 	IDENTIFIER
+	INTEGERCONSTANT
 	TEST    // test
 	DECL1   // decl1
 	DECL2   // decl2
@@ -47,6 +48,7 @@ var tokenStr = [...]string{
 	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",
 	"IDENTIFIER",
+	"INTEGERCONSTANT",
 	"test",
 	"decl1",
 	"decl2",

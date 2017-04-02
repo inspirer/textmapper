@@ -36,6 +36,7 @@ type Token struct {
 func (Block) testNodeNode()    {}
 func (Decl1) testNodeNode()    {}
 func (Decl2) testNodeNode()    {}
+func (Int) testNodeNode()      {}
 func (Negation) testNodeNode() {}
 func (Test) testNodeNode()     {}
 func (Token) testNodeNode()    {}
@@ -51,6 +52,7 @@ type Declaration interface {
 func (Block) declarationNode() {}
 func (Decl1) declarationNode() {}
 func (Decl2) declarationNode() {}
+func (Int) declarationNode()   {}
 
 // Types.
 
@@ -88,6 +90,10 @@ func (n Decl1) Identifier() []Token {
 }
 
 type Decl2 struct {
+	Node
+}
+
+type Int struct {
 	Node
 }
 

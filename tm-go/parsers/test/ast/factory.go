@@ -18,6 +18,8 @@ func ToTestNode(n Node) TestNode {
 		return &Decl1{n}
 	case test.Decl2:
 		return &Decl2{n}
+	case test.Int:
+		return &Int{n}
 	case test.Negation:
 		return &Negation{n}
 	case test.Test:

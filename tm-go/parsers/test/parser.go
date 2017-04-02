@@ -39,6 +39,7 @@ type symbol struct {
 type stackEntry struct {
 	sym   symbol
 	state int8
+	value interface{}
 }
 
 func (p *Parser) Init(eh ErrorHandler, l Listener) {
@@ -55,7 +56,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 27, lexer)
+	return p.parse(0, 30, lexer)
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) error {
@@ -117,6 +118,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			p.stack = append(p.stack, stackEntry{
 				sym:   p.next,
 				state: state,
+				value: lexer.Value(),
 			})
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
@@ -178,7 +180,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 	return nil
 }
 
-const errSymbol = 21
+const errSymbol = 22
 
 func (p *Parser) recover() bool {
 	if p.next.symbol == noToken {
@@ -258,6 +260,26 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 8: // Declaration : '{' '-' '}'
 		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 11: // Declaration : IntegerConstant '[' ']'
+		nn0, _ := rhs[0].value.(int)
+		{
+			switch nn0 {
+			case 7:
+				p.listener(Int7, rhs[0].sym.offset, rhs[2].sym.endoffset)
+			case 9:
+				p.listener(Int9, rhs[0].sym.offset, rhs[2].sym.endoffset)
+			}
+		}
+	case 12: // Declaration : IntegerConstant
+		nn0, _ := rhs[0].value.(int)
+		{
+			switch nn0 {
+			case 7:
+				p.listener(Int7, rhs[0].sym.offset, rhs[0].sym.endoffset)
+			case 9:
+				p.listener(Int9, rhs[0].sym.offset, rhs[0].sym.endoffset)
+			}
+		}
 	}
 	nt := ruleNodeType[rule]
 	if nt == 0 {

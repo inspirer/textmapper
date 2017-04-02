@@ -14,8 +14,11 @@ const (
 	Test NodeType = iota + 1 // (Declaration)+
 	Negation
 	Block // Negation? (Declaration)*
+	Int
 	Decl1 // (Identifier)+
 	Decl2
+	Int7
+	Int9
 	MultiLineComment
 	SingleLineComment
 	InvalidToken
@@ -28,8 +31,11 @@ var nodeTypeStr = [...]string{
 	"Test",
 	"Negation",
 	"Block",
+	"Int",
 	"Decl1",
 	"Decl2",
+	"Int7",
+	"Int9",
 	"MultiLineComment",
 	"SingleLineComment",
 	"InvalidToken",
@@ -47,6 +53,7 @@ var Declaration = []NodeType{
 	Block,
 	Decl1,
 	Decl2,
+	Int,
 }
 
 var TokenSet = []NodeType{
@@ -65,6 +72,8 @@ var ruleNodeType = [...]NodeType{
 	Block, // Declaration : '{' '-' '}'
 	Block, // Declaration : '{' Declaration_list '}'
 	Block, // Declaration : '{' '}'
+	Int,   // Declaration : IntegerConstant '[' ']'
+	Int,   // Declaration : IntegerConstant
 	0,     // QualifiedName : Identifier
 	0,     // QualifiedName : QualifiedName '.' Identifier
 	Decl1, // Decl1 : 'decl1' '(' QualifiedName ')'
