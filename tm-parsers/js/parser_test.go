@@ -56,7 +56,7 @@ var parseTests = []struct {
 		 }`,
 	}},
 	{js.LabelIdentifier, []string{
-		`A: for (;;) {continue «A»; }`,
+		`«A»: for (;;) {continue «A»; }`,
 		`break «B»;`,
 	}},
 	{js.This, []string{
@@ -538,7 +538,12 @@ var parseTests = []struct {
 		`((a,b) => «{ return a*b; }»)(1);`,
 	}},
 	{js.Yield, []string{
-		`function *gen(){ «yield 1»; «yield»; «yield *2»; } {}`,
+		`function *gen(){
+		   «yield 1»; «yield»; «yield *2»;
+		   function foo(yield) {
+		     return yield + 5
+		   }
+		 } {}`,
 	}},
 	{js.Class, []string{
 		`«class A {}»`,
@@ -768,6 +773,9 @@ var parseTests = []struct {
 		`var a = <A:A>bb«{1}»cc«{<abc/>}»</A:A>;`,
 		`var a = <a href=«{1+{a:2}.a}»/>;`,
 		`/*no expectations*/ var a = <A:A></A:A>;`,
+	}},
+	{js.JSXSpreadExpression, []string{
+		`var a = <A:A>«{...[a,b,c] }»</A:A>;`,
 	}},
 	{js.JSXLiteral, []string{
 		`var a = <a href={"chrome://about"} target=«"123"»/>;`,

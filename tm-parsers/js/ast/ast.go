@@ -105,6 +105,7 @@ func (JSXNormalAttribute) jsNodeNode()       {}
 func (JSXOpeningElement) jsNodeNode()        {}
 func (JSXSelfClosingElement) jsNodeNode()    {}
 func (JSXSpreadAttribute) jsNodeNode()       {}
+func (JSXSpreadExpression) jsNodeNode()      {}
 func (JSXText) jsNodeNode()                  {}
 func (LabelIdentifier) jsNodeNode()          {}
 func (LabelledStatement) jsNodeNode()        {}
@@ -314,9 +315,10 @@ type JSXChild interface {
 // jSXChildNode() ensures that only the following types can be
 // assigned to JSXChild.
 //
-func (JSXElement) jSXChildNode()    {}
-func (JSXExpression) jSXChildNode() {}
-func (JSXText) jSXChildNode()       {}
+func (JSXElement) jSXChildNode()          {}
+func (JSXExpression) jSXChildNode()       {}
+func (JSXSpreadExpression) jSXChildNode() {}
+func (JSXText) jSXChildNode()             {}
 
 type MethodDefinition interface {
 	JsNode
@@ -1498,6 +1500,17 @@ func (n JSXSpreadAttribute) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
+type JSXSpreadExpression struct {
+	Node
+}
+
+func (n JSXSpreadExpression) Expression() Expression {
+	if child := n.Child(selector.Expression); child != nil {
+		return ToJsNode(child).(Expression)
+	}
+	return nil
+}
+
 type JSXText struct {
 	Node
 }
@@ -1508,6 +1521,10 @@ type LabelIdentifier struct {
 
 type LabelledStatement struct {
 	Node
+}
+
+func (n LabelledStatement) LabelIdentifier() LabelIdentifier {
+	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
 }
 
 func (n LabelledStatement) Function() *Function {

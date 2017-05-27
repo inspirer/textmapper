@@ -156,6 +156,8 @@ func ToJsNode(n Node) JsNode {
 		return &JSXSelfClosingElement{n}
 	case js.JSXSpreadAttribute:
 		return &JSXSpreadAttribute{n}
+	case js.JSXSpreadExpression:
+		return &JSXSpreadExpression{n}
 	case js.JSXText:
 		return &JSXText{n}
 	case js.LabelIdentifier:

@@ -298,7 +298,7 @@ IdentifierNameDecl :
 ;
 
 IdentifierNameRef :
-     IdentifierName                                   -> IdentifierReference
+    IdentifierName                                    -> IdentifierReference
 ;
 
 # A.2 Expressions
@@ -820,9 +820,7 @@ CaseClause<Yield, Return> -> CaseClause /* interface */ :
 ;
 
 LabelledStatement<Yield, Return> -> LabelledStatement :
-    Identifier ':' LabelledItem
-  | [!Yield] 'yield' ':' LabelledItem
-;
+    LabelIdentifier ':' LabelledItem ;
 
 LabelledItem<Yield, Return> :
     Statement
@@ -861,8 +859,7 @@ DebuggerStatement -> DebuggerStatement :
 
 FunctionDeclaration<Yield, Default> -> Function :
     'function' BindingIdentifier FormalParameters<~Yield> FunctionBody<~Yield>
-# TODO ~Yield?
-  | [Default] 'function' FormalParameters FunctionBody
+  | [Default] 'function' FormalParameters<~Yield> FunctionBody<~Yield>
 ;
 
 FunctionExpression -> FunctionExpression :
@@ -873,8 +870,7 @@ StrictFormalParameters<Yield> :
     FormalParameters ;
 
 FormalParameters<Yield> -> Parameters :
-      '(' FormalParameterList? ')'
-;
+      '(' FormalParameterList? ')' ;
 
 FormalParameterList<Yield> :
     FunctionRestParameter
@@ -888,16 +884,13 @@ FormalsList<Yield> :
 ;
 
 FunctionRestParameter<Yield> -> RestParameter :
-    BindingRestElement
-;
+    BindingRestElement ;
 
 FormalParameter<Yield> -> Parameter :
-    ElementPattern
-;
+    ElementPattern ;
 
 FunctionBody<Yield> -> Body :
-    '{' StatementList<+Return>? '}'
-;
+    '{' StatementList<+Return>? '}' ;
 
 ArrowFunction<In, Yield> -> ArrowFunction :
     ArrowParameters .noLineBreak '=>' ConciseBody ;
@@ -1105,6 +1098,7 @@ JSXChild<Yield> -> JSXChild /* interface */ :
     jsxText                                           -> JSXText
   | JSXElement
   | '{' AssignmentExpressionopt<+In> '}'              -> JSXExpression
+  | '{' '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpression
 ;
 
 %%
@@ -1223,10 +1217,14 @@ ${end}
 
 ${template go_parser.parser-}
 package ${self->go.package()}
-${foreach inp in syntax.input}
-func (p *Parser) Parse${self->util.needFinalState() ? util.toFirstUpper(inp.target.id) : ''}(lexer *Lexer) error {
-	return p.parse(${index}, ${parser.finalStates[index]}, lexer)
+${foreach inp in syntax.input.select(it|it.requested)}
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) error {
+	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 }
+
+${if self->needExplicitLookahead()-}
+${call lookahead}
+${end-}
 ${end-}
 
 ${call go_parser.applyRule-}

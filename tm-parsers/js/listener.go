@@ -88,7 +88,7 @@ const (
 	SwitchStatement       // Expression Block
 	Case                  // Expression (StatementListItem)*
 	Default               // (StatementListItem)*
-	LabelledStatement     // Function? Statement?
+	LabelledStatement     // LabelIdentifier Function? Statement?
 	ThrowStatement        // Expression
 	TryStatement          // Block Catch? Finally?
 	Catch                 // BindingIdentifier? BindingPattern? Block
@@ -136,6 +136,7 @@ const (
 	JSXLiteral
 	JSXExpression // Expression?
 	JSXText
+	JSXSpreadExpression // Expression?
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -274,6 +275,7 @@ var nodeTypeStr = [...]string{
 	"JSXLiteral",
 	"JSXExpression",
 	"JSXText",
+	"JSXSpreadExpression",
 	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",
@@ -386,6 +388,7 @@ var JSXAttributeValue = []NodeType{
 var JSXChild = []NodeType{
 	JSXElement,
 	JSXExpression,
+	JSXSpreadExpression,
 	JSXText,
 }
 
@@ -1884,11 +1887,9 @@ var ruleNodeType = [...]NodeType{
 	Case,                // CaseClause_Return_Yield : 'case' Expression_In_Yield ':'
 	Default,             // CaseClause_Return_Yield : 'default' ':' StatementList_Return_Yield
 	Default,             // CaseClause_Return_Yield : 'default' ':'
-	LabelledStatement,   // LabelledStatement : Identifier ':' LabelledItem
-	LabelledStatement,   // LabelledStatement : 'yield' ':' LabelledItem
-	LabelledStatement,   // LabelledStatement_Return : Identifier ':' LabelledItem_Return
-	LabelledStatement,   // LabelledStatement_Return : 'yield' ':' LabelledItem_Return
-	LabelledStatement,   // LabelledStatement_Return_Yield : Identifier ':' LabelledItem_Return_Yield
+	LabelledStatement,   // LabelledStatement : LabelIdentifier ':' LabelledItem
+	LabelledStatement,   // LabelledStatement_Return : LabelIdentifier ':' LabelledItem_Return
+	LabelledStatement,   // LabelledStatement_Return_Yield : LabelIdentifier_Yield ':' LabelledItem_Return_Yield
 	0,                   // LabelledItem : Statement
 	0,                   // LabelledItem : FunctionDeclaration
 	0,                   // LabelledItem_Return : Statement_Return
@@ -2091,9 +2092,11 @@ var ruleNodeType = [...]NodeType{
 	JSXText,               // JSXChild : jsxText
 	0,                     // JSXChild : JSXElement
 	JSXExpression,         // JSXChild : '{' AssignmentExpressionopt_In '}'
+	JSXSpreadExpression,   // JSXChild : '{' '...' AssignmentExpressionopt_In '}'
 	JSXText,               // JSXChild_Yield : jsxText
 	0,                     // JSXChild_Yield : JSXElement_Yield
 	JSXExpression,         // JSXChild_Yield : '{' AssignmentExpressionopt_In_Yield '}'
+	JSXSpreadExpression,   // JSXChild_Yield : '{' '...' AssignmentExpressionopt_In_Yield '}'
 	0,                     // Elisionopt : Elision
 	0,                     // Elisionopt :
 	0,                     // Initializeropt : Initializer

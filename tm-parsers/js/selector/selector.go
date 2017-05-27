@@ -82,6 +82,7 @@ var (
 	JSXOpeningElement        = func(t js.NodeType) bool { return t == js.JSXOpeningElement }
 	JSXSelfClosingElement    = func(t js.NodeType) bool { return t == js.JSXSelfClosingElement }
 	JSXSpreadAttribute       = func(t js.NodeType) bool { return t == js.JSXSpreadAttribute }
+	JSXSpreadExpression      = func(t js.NodeType) bool { return t == js.JSXSpreadExpression }
 	JSXText                  = func(t js.NodeType) bool { return t == js.JSXText }
 	LabelIdentifier          = func(t js.NodeType) bool { return t == js.LabelIdentifier }
 	LabelledStatement        = func(t js.NodeType) bool { return t == js.LabelledStatement }
