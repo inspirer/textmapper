@@ -40,6 +40,11 @@ func (ArrayPattern) jsNodeNode()             {}
 func (ArrowFunction) jsNodeNode()            {}
 func (AssignmentExpression) jsNodeNode()     {}
 func (AssignmentOperator) jsNodeNode()       {}
+func (AsyncArrowFunction) jsNodeNode()       {}
+func (AsyncFunction) jsNodeNode()            {}
+func (AsyncFunctionExpression) jsNodeNode()  {}
+func (AsyncMethod) jsNodeNode()              {}
+func (AwaitExpression) jsNodeNode()          {}
 func (BindingIdentifier) jsNodeNode()        {}
 func (BindingRestElement) jsNodeNode()       {}
 func (BitwiseANDExpression) jsNodeNode()     {}
@@ -191,6 +196,7 @@ type ClassElement interface {
 // classElementNode() ensures that only the following types can be
 // assigned to ClassElement.
 //
+func (AsyncMethod) classElementNode()     {}
 func (EmptyDecl) classElementNode()       {}
 func (GeneratorMethod) classElementNode() {}
 func (Getter) classElementNode()          {}
@@ -206,6 +212,7 @@ type Declaration interface {
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
 //
+func (AsyncFunction) declarationNode()      {}
 func (Class) declarationNode()              {}
 func (Function) declarationNode()           {}
 func (Generator) declarationNode()          {}
@@ -246,6 +253,9 @@ func (AdditiveExpression) expressionNode()       {}
 func (ArrayLiteral) expressionNode()             {}
 func (ArrowFunction) expressionNode()            {}
 func (AssignmentExpression) expressionNode()     {}
+func (AsyncArrowFunction) expressionNode()       {}
+func (AsyncFunctionExpression) expressionNode()  {}
+func (AwaitExpression) expressionNode()          {}
 func (BitwiseANDExpression) expressionNode()     {}
 func (BitwiseORExpression) expressionNode()      {}
 func (BitwiseXORExpression) expressionNode()     {}
@@ -328,6 +338,7 @@ type MethodDefinition interface {
 // methodDefinitionNode() ensures that only the following types can be
 // assigned to MethodDefinition.
 //
+func (AsyncMethod) methodDefinitionNode()     {}
 func (GeneratorMethod) methodDefinitionNode() {}
 func (Getter) methodDefinitionNode()          {}
 func (Method) methodDefinitionNode()          {}
@@ -341,6 +352,7 @@ type ModuleItem interface {
 // moduleItemNode() ensures that only the following types can be
 // assigned to ModuleItem.
 //
+func (AsyncFunction) moduleItemNode()         {}
 func (Block) moduleItemNode()                 {}
 func (BreakStatement) moduleItemNode()        {}
 func (Class) moduleItemNode()                 {}
@@ -391,6 +403,7 @@ type PropertyDefinition interface {
 // propertyDefinitionNode() ensures that only the following types can be
 // assigned to PropertyDefinition.
 //
+func (AsyncMethod) propertyDefinitionNode()       {}
 func (GeneratorMethod) propertyDefinitionNode()   {}
 func (Getter) propertyDefinitionNode()            {}
 func (Method) propertyDefinitionNode()            {}
@@ -461,6 +474,7 @@ type StatementListItem interface {
 // statementListItemNode() ensures that only the following types can be
 // assigned to StatementListItem.
 //
+func (AsyncFunction) statementListItemNode()         {}
 func (Block) statementListItemNode()                 {}
 func (BreakStatement) statementListItemNode()        {}
 func (Class) statementListItemNode()                 {}
@@ -592,6 +606,107 @@ func (n AssignmentExpression) Right() Expression {
 
 type AssignmentOperator struct {
 	Node
+}
+
+type AsyncArrowFunction struct {
+	Node
+}
+
+func (n AsyncArrowFunction) BindingIdentifier() *BindingIdentifier {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
+		return &BindingIdentifier{child}
+	}
+	return nil
+}
+
+func (n AsyncArrowFunction) Expr() Expression {
+	if child := n.Child(selector.Expression); child != nil {
+		return ToJsNode(child).(Expression)
+	}
+	return nil
+}
+
+func (n AsyncArrowFunction) Arguments() *Arguments {
+	if child := n.Child(selector.Arguments); child != nil {
+		return &Arguments{child}
+	}
+	return nil
+}
+
+func (n AsyncArrowFunction) Body() *Body {
+	if child := n.Child(selector.Body); child != nil {
+		return &Body{child}
+	}
+	return nil
+}
+
+func (n AsyncArrowFunction) ConciseBody() *ConciseBody {
+	if child := n.Child(selector.ConciseBody); child != nil {
+		return &ConciseBody{child}
+	}
+	return nil
+}
+
+type AsyncFunction struct {
+	Node
+}
+
+func (n AsyncFunction) BindingIdentifier() *BindingIdentifier {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
+		return &BindingIdentifier{child}
+	}
+	return nil
+}
+
+func (n AsyncFunction) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
+}
+
+func (n AsyncFunction) Body() Body {
+	return Body{n.Child(selector.Body)}
+}
+
+type AsyncFunctionExpression struct {
+	Node
+}
+
+func (n AsyncFunctionExpression) BindingIdentifier() *BindingIdentifier {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
+		return &BindingIdentifier{child}
+	}
+	return nil
+}
+
+func (n AsyncFunctionExpression) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
+}
+
+func (n AsyncFunctionExpression) Body() Body {
+	return Body{n.Child(selector.Body)}
+}
+
+type AsyncMethod struct {
+	Node
+}
+
+func (n AsyncMethod) PropertyName() PropertyName {
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+}
+
+func (n AsyncMethod) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
+}
+
+func (n AsyncMethod) Body() Body {
+	return Body{n.Child(selector.Body)}
+}
+
+type AwaitExpression struct {
+	Node
+}
+
+func (n AwaitExpression) Expression() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type BindingIdentifier struct {
@@ -1105,12 +1220,12 @@ type ForOfStatement struct {
 	Node
 }
 
-func (n ForOfStatement) Var() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForOfStatement) Var() JsNode {
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield))).(JsNode)
 }
 
 func (n ForOfStatement) Iterable() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatement) Statement() Statement {

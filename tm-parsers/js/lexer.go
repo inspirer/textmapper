@@ -343,6 +343,11 @@ restart:
 				token = TRY
 				break
 			}
+		case 60:
+			if hash == 0x58d027c && "async" == l.source[l.tokenOffset:l.offset] {
+				token = ASYNC
+				break
+			}
 		case 63:
 			if hash == 0x59a58ff && "break" == l.source[l.tokenOffset:l.offset] {
 				token = BREAK

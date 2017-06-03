@@ -37,6 +37,14 @@ var parseTests = []struct {
 		`const a = {cc: 5}.«cc»;`,
 		`import {«a» as b} from './Test1';`,
 		`export {«a», «b» as c} from "aa/bb"`,
+
+		// async, yield, of
+		`for («async» of [1,2,3]) { «console».«log»(«async»); }`,
+		`for («yield» of [1,2,3]) { «console».«log»(«yield»); }`,
+		`for(var a /*binding*/ = (async/*kw*/ of/*binding*/=>5)(); «a» != null; «a» = null) {
+		    «a».«then»(of/*binding*/=>«console».«log»(«of»)); 0;
+		 }`,
+		`/*no expectations*/ for(async of=>5;;) {}`,
 	}},
 	{js.BindingIdentifier, []string{
 		`const «a» = 15;`,
@@ -544,6 +552,51 @@ var parseTests = []struct {
 		     return yield + 5
 		   }
 		 } {}`,
+	}},
+	{js.AsyncArrowFunction, []string{
+		`/*no expectations*/ for(«async of=>5»;;) {}`,
+		`/*no expectations*/ for(«async (of)=>5»;;) {}`,
+		`/*no expectations*/ for(«async (of)=>{}»;;) {}`,
+	}},
+	{js.AsyncMethod, []string{
+		`class A {
+		  «async a() {}»
+		  «async yield() {}»
+		  «async await() {}»
+		}`,
+	}},
+	{js.AsyncFunction, []string{
+		`«async function add2(x) {
+       var a = await resolveAfter2Seconds(20);
+       var b = await resolveAfter2Seconds(30);
+       return x + a + b;
+     }»`,
+	}},
+	{js.AsyncFunctionExpression, []string{
+		`var a = «async function(x) {
+       var a = await resolveAfter2Seconds(20);
+       var b = await resolveAfter2Seconds(30);
+       return x + a + b;
+     }»`,
+		`var a = «async function(x) {
+       var a = await resolveAfter2Seconds(20);
+       var b = await resolveAfter2Seconds(30);
+       return x + a + b;
+     }»`,
+		`this.it('is a test', «async function () {
+       const foo = await 3;
+       const bar = await new Promise(function (resolve) {
+         resolve('7');
+       });
+       const baz = bar * foo;
+       console.log(baz);
+	   }»);`,
+	}},
+	{js.AwaitExpression, []string{
+		`async function gogo() {
+       var b = «await func1(10)»;
+       return b + 1;
+     }`,
 	}},
 	{js.Class, []string{
 		`«class A {}»`,

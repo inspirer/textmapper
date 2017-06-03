@@ -20,6 +20,7 @@ const (
 	MULTILINECOMMENT
 	SINGLELINECOMMENT
 	IDENTIFIER
+	AWAIT              // await
 	BREAK              // break
 	CASE               // case
 	CATCH              // catch
@@ -53,12 +54,12 @@ const (
 	WHILE              // while
 	WITH               // with
 	YIELD              // yield
-	AWAIT              // await
 	ENUM               // enum
 	NULL               // null
 	TRUE               // true
 	FALSE              // false
 	AS                 // as
+	ASYNC              // async
 	FROM               // from
 	GET                // get
 	LET                // let
@@ -141,6 +142,7 @@ var tokenStr = [...]string{
 	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",
 	"IDENTIFIER",
+	"await",
 	"break",
 	"case",
 	"catch",
@@ -174,12 +176,12 @@ var tokenStr = [...]string{
 	"while",
 	"with",
 	"yield",
-	"await",
 	"enum",
 	"null",
 	"true",
 	"false",
 	"as",
+	"async",
 	"from",
 	"get",
 	"let",

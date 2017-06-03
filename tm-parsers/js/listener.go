@@ -76,7 +76,7 @@ const (
 	ForStatementWithVar   // (LexicalBinding)* (VariableDeclaration)* ForCondition ForFinalExpression Statement
 	ForInStatement        // var=Expression object=Expression Statement
 	ForInStatementWithVar // ForBinding object=Expression Statement
-	ForOfStatement        // var=Expression iterable=Expression Statement
+	ForOfStatement        // var=(Expression | IdentifierReference) iterable=Expression Statement
 	ForOfStatementWithVar // ForBinding iterable=Expression Statement
 	ForBinding            // BindingIdentifier? BindingPattern?
 	ForCondition          // Expression?
@@ -94,26 +94,31 @@ const (
 	Catch                 // BindingIdentifier? BindingPattern? Block
 	Finally               // Block
 	DebuggerStatement
-	Function            // BindingIdentifier? Parameters Body
-	FunctionExpression  // BindingIdentifier? Parameters Body
-	Parameters          // Expression? (Parameter)* RestParameter? SyntaxProblem? BindingIdentifier? BindingPattern?
-	RestParameter       // BindingRestElement
-	Parameter           // ElementPattern
-	Body                // (StatementListItem)*
-	ArrowFunction       // Parameters Body? ConciseBody?
-	ConciseBody         // Expression
-	Method              // PropertyName Parameters Body
-	Getter              // PropertyName Body
-	Setter              // PropertyName Parameter Body
-	GeneratorMethod     // PropertyName Parameters Body
-	Generator           // BindingIdentifier? Parameters Body
-	GeneratorExpression // BindingIdentifier? Parameters Body
-	Yield               // Expression?
-	Class               // BindingIdentifier? Extends? ClassBody
-	ClassExpr           // BindingIdentifier? Extends? ClassBody
-	Extends             // Expression
-	ClassBody           // (ClassElement)*
-	StaticMethod        // MethodDefinition
+	Function                // BindingIdentifier? Parameters Body
+	FunctionExpression      // BindingIdentifier? Parameters Body
+	Parameters              // Expression? (Parameter)* RestParameter? SyntaxProblem? BindingIdentifier? BindingPattern?
+	RestParameter           // BindingRestElement
+	Parameter               // ElementPattern
+	Body                    // (StatementListItem)*
+	ArrowFunction           // Parameters Body? ConciseBody?
+	ConciseBody             // Expression
+	AsyncArrowFunction      // BindingIdentifier? expr=Expression? Arguments? Body? ConciseBody?
+	Method                  // PropertyName Parameters Body
+	Getter                  // PropertyName Body
+	Setter                  // PropertyName Parameter Body
+	GeneratorMethod         // PropertyName Parameters Body
+	Generator               // BindingIdentifier? Parameters Body
+	GeneratorExpression     // BindingIdentifier? Parameters Body
+	Yield                   // Expression?
+	AsyncMethod             // PropertyName Parameters Body
+	AsyncFunction           // BindingIdentifier? Parameters Body
+	AsyncFunctionExpression // BindingIdentifier? Parameters Body
+	AwaitExpression         // Expression
+	Class                   // BindingIdentifier? Extends? ClassBody
+	ClassExpr               // BindingIdentifier? Extends? ClassBody
+	Extends                 // Expression
+	ClassBody               // (ClassElement)*
+	StaticMethod            // MethodDefinition
 	EmptyDecl
 	Module            // (ModuleItem)*
 	ImportDeclaration // BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
@@ -241,6 +246,7 @@ var nodeTypeStr = [...]string{
 	"Body",
 	"ArrowFunction",
 	"ConciseBody",
+	"AsyncArrowFunction",
 	"Method",
 	"Getter",
 	"Setter",
@@ -248,6 +254,10 @@ var nodeTypeStr = [...]string{
 	"Generator",
 	"GeneratorExpression",
 	"Yield",
+	"AsyncMethod",
+	"AsyncFunction",
+	"AsyncFunctionExpression",
+	"AwaitExpression",
 	"Class",
 	"ClassExpr",
 	"Extends",
@@ -304,6 +314,7 @@ var CaseClause = []NodeType{
 }
 
 var ClassElement = []NodeType{
+	AsyncMethod,
 	EmptyDecl,
 	GeneratorMethod,
 	Getter,
@@ -313,6 +324,7 @@ var ClassElement = []NodeType{
 }
 
 var Declaration = []NodeType{
+	AsyncFunction,
 	Class,
 	Function,
 	Generator,
@@ -335,6 +347,9 @@ var Expression = []NodeType{
 	ArrayLiteral,
 	ArrowFunction,
 	AssignmentExpression,
+	AsyncArrowFunction,
+	AsyncFunctionExpression,
+	AwaitExpression,
 	BitwiseANDExpression,
 	BitwiseORExpression,
 	BitwiseXORExpression,
@@ -393,6 +408,7 @@ var JSXChild = []NodeType{
 }
 
 var MethodDefinition = []NodeType{
+	AsyncMethod,
 	GeneratorMethod,
 	Getter,
 	Method,
@@ -400,6 +416,7 @@ var MethodDefinition = []NodeType{
 }
 
 var ModuleItem = []NodeType{
+	AsyncFunction,
 	Block,
 	BreakStatement,
 	Class,
@@ -438,6 +455,7 @@ var NamedImport = []NodeType{
 }
 
 var PropertyDefinition = []NodeType{
+	AsyncMethod,
 	GeneratorMethod,
 	Getter,
 	Method,
@@ -484,6 +502,7 @@ var Statement = []NodeType{
 }
 
 var StatementListItem = []NodeType{
+	AsyncFunction,
 	Block,
 	BreakStatement,
 	Class,
@@ -523,6 +542,7 @@ var TokenSet = []NodeType{
 var ruleNodeType = [...]NodeType{
 	SyntaxProblem,            // SyntaxError : error
 	0,                        // IdentifierName : Identifier
+	0,                        // IdentifierName : 'await'
 	0,                        // IdentifierName : 'break'
 	0,                        // IdentifierName : 'do'
 	0,                        // IdentifierName : 'in'
@@ -557,7 +577,6 @@ var ruleNodeType = [...]NodeType{
 	0,                        // IdentifierName : 'import'
 	0,                        // IdentifierName : 'try'
 	0,                        // IdentifierName : 'enum'
-	0,                        // IdentifierName : 'await'
 	0,                        // IdentifierName : 'null'
 	0,                        // IdentifierName : 'true'
 	0,                        // IdentifierName : 'false'
@@ -569,12 +588,15 @@ var ruleNodeType = [...]NodeType{
 	0,                        // IdentifierName : 'set'
 	0,                        // IdentifierName : 'static'
 	0,                        // IdentifierName : 'target'
+	0,                        // IdentifierName : 'async'
 	BindingIdentifier,        // IdentifierNameDecl : IdentifierName
 	IdentifierReference,      // IdentifierNameRef : IdentifierName
 	IdentifierReference,      // IdentifierReference : '%' Identifier
 	IdentifierReference,      // IdentifierReference : Identifier
 	IdentifierReference,      // IdentifierReference : 'yield'
+	IdentifierReference,      // IdentifierReference : 'await'
 	IdentifierReference,      // IdentifierReference : 'let'
+	IdentifierReference,      // IdentifierReference : 'async'
 	IdentifierReference,      // IdentifierReference : 'as'
 	IdentifierReference,      // IdentifierReference : 'from'
 	IdentifierReference,      // IdentifierReference : 'get'
@@ -582,9 +604,86 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,      // IdentifierReference : 'set'
 	IdentifierReference,      // IdentifierReference : 'static'
 	IdentifierReference,      // IdentifierReference : 'target'
+	IdentifierReference,      // IdentifierReference_Await : '%' Identifier
+	IdentifierReference,      // IdentifierReference_Await : Identifier
+	IdentifierReference,      // IdentifierReference_Await : 'yield'
+	IdentifierReference,      // IdentifierReference_Await : 'let'
+	IdentifierReference,      // IdentifierReference_Await : 'async'
+	IdentifierReference,      // IdentifierReference_Await : 'as'
+	IdentifierReference,      // IdentifierReference_Await : 'from'
+	IdentifierReference,      // IdentifierReference_Await : 'get'
+	IdentifierReference,      // IdentifierReference_Await : 'of'
+	IdentifierReference,      // IdentifierReference_Await : 'set'
+	IdentifierReference,      // IdentifierReference_Await : 'static'
+	IdentifierReference,      // IdentifierReference_Await : 'target'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : '%' Identifier
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : Identifier
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'yield'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'as'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'from'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'get'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'of'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'set'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'static'
+	IdentifierReference,      // IdentifierReference_Await_NoAsync_NoLet : 'target'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : '%' Identifier
+	IdentifierReference,      // IdentifierReference_Await_NoLet : Identifier
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'yield'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'async'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'as'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'from'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'get'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'of'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'set'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'static'
+	IdentifierReference,      // IdentifierReference_Await_NoLet : 'target'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : '%' Identifier
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : Identifier
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'async'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'as'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'from'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'get'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'of'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'set'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'static'
+	IdentifierReference,      // IdentifierReference_Await_NoLet_Yield : 'target'
+	IdentifierReference,      // IdentifierReference_Await_Yield : '%' Identifier
+	IdentifierReference,      // IdentifierReference_Await_Yield : Identifier
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'let'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'async'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'as'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'from'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'get'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'of'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'set'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'static'
+	IdentifierReference,      // IdentifierReference_Await_Yield : 'target'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : '%' Identifier
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : Identifier
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'yield'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'await'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'as'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'from'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'get'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'of'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'set'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'static'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet : 'target'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : '%' Identifier
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : Identifier
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'await'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'as'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'from'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'get'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'of'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'set'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'static'
+	IdentifierReference,      // IdentifierReference_NoAsync_NoLet_Yield : 'target'
 	IdentifierReference,      // IdentifierReference_NoLet : '%' Identifier
 	IdentifierReference,      // IdentifierReference_NoLet : Identifier
 	IdentifierReference,      // IdentifierReference_NoLet : 'yield'
+	IdentifierReference,      // IdentifierReference_NoLet : 'await'
+	IdentifierReference,      // IdentifierReference_NoLet : 'async'
 	IdentifierReference,      // IdentifierReference_NoLet : 'as'
 	IdentifierReference,      // IdentifierReference_NoLet : 'from'
 	IdentifierReference,      // IdentifierReference_NoLet : 'get'
@@ -594,6 +693,8 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,      // IdentifierReference_NoLet : 'target'
 	IdentifierReference,      // IdentifierReference_NoLet_Yield : '%' Identifier
 	IdentifierReference,      // IdentifierReference_NoLet_Yield : Identifier
+	IdentifierReference,      // IdentifierReference_NoLet_Yield : 'await'
+	IdentifierReference,      // IdentifierReference_NoLet_Yield : 'async'
 	IdentifierReference,      // IdentifierReference_NoLet_Yield : 'as'
 	IdentifierReference,      // IdentifierReference_NoLet_Yield : 'from'
 	IdentifierReference,      // IdentifierReference_NoLet_Yield : 'get'
@@ -603,7 +704,9 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,      // IdentifierReference_NoLet_Yield : 'target'
 	IdentifierReference,      // IdentifierReference_Yield : '%' Identifier
 	IdentifierReference,      // IdentifierReference_Yield : Identifier
+	IdentifierReference,      // IdentifierReference_Yield : 'await'
 	IdentifierReference,      // IdentifierReference_Yield : 'let'
+	IdentifierReference,      // IdentifierReference_Yield : 'async'
 	IdentifierReference,      // IdentifierReference_Yield : 'as'
 	IdentifierReference,      // IdentifierReference_Yield : 'from'
 	IdentifierReference,      // IdentifierReference_Yield : 'get'
@@ -613,6 +716,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,      // IdentifierReference_Yield : 'target'
 	BindingIdentifier,        // BindingIdentifier : Identifier
 	BindingIdentifier,        // BindingIdentifier : 'yield'
+	BindingIdentifier,        // BindingIdentifier : 'await'
 	BindingIdentifier,        // BindingIdentifier : 'as'
 	BindingIdentifier,        // BindingIdentifier : 'from'
 	BindingIdentifier,        // BindingIdentifier : 'get'
@@ -621,7 +725,30 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,        // BindingIdentifier : 'set'
 	BindingIdentifier,        // BindingIdentifier : 'static'
 	BindingIdentifier,        // BindingIdentifier : 'target'
+	BindingIdentifier,        // BindingIdentifier : 'async'
+	BindingIdentifier,        // BindingIdentifier_Await : Identifier
+	BindingIdentifier,        // BindingIdentifier_Await : 'yield'
+	BindingIdentifier,        // BindingIdentifier_Await : 'as'
+	BindingIdentifier,        // BindingIdentifier_Await : 'from'
+	BindingIdentifier,        // BindingIdentifier_Await : 'get'
+	BindingIdentifier,        // BindingIdentifier_Await : 'let'
+	BindingIdentifier,        // BindingIdentifier_Await : 'of'
+	BindingIdentifier,        // BindingIdentifier_Await : 'set'
+	BindingIdentifier,        // BindingIdentifier_Await : 'static'
+	BindingIdentifier,        // BindingIdentifier_Await : 'target'
+	BindingIdentifier,        // BindingIdentifier_Await : 'async'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : Identifier
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'as'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'from'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'get'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'let'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'of'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'set'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'static'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'target'
+	BindingIdentifier,        // BindingIdentifier_Await_Yield : 'async'
 	BindingIdentifier,        // BindingIdentifier_Yield : Identifier
+	BindingIdentifier,        // BindingIdentifier_Yield : 'await'
 	BindingIdentifier,        // BindingIdentifier_Yield : 'as'
 	BindingIdentifier,        // BindingIdentifier_Yield : 'from'
 	BindingIdentifier,        // BindingIdentifier_Yield : 'get'
@@ -630,8 +757,12 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,        // BindingIdentifier_Yield : 'set'
 	BindingIdentifier,        // BindingIdentifier_Yield : 'static'
 	BindingIdentifier,        // BindingIdentifier_Yield : 'target'
+	BindingIdentifier,        // BindingIdentifier_Yield : 'async'
+	0,                        // AsyncArrowBindingIdentifier : BindingIdentifier_Await
+	0,                        // AsyncArrowBindingIdentifier_Yield : BindingIdentifier_Await_Yield
 	LabelIdentifier,          // LabelIdentifier : Identifier
 	LabelIdentifier,          // LabelIdentifier : 'yield'
+	LabelIdentifier,          // LabelIdentifier : 'await'
 	LabelIdentifier,          // LabelIdentifier : 'as'
 	LabelIdentifier,          // LabelIdentifier : 'from'
 	LabelIdentifier,          // LabelIdentifier : 'get'
@@ -640,7 +771,20 @@ var ruleNodeType = [...]NodeType{
 	LabelIdentifier,          // LabelIdentifier : 'set'
 	LabelIdentifier,          // LabelIdentifier : 'static'
 	LabelIdentifier,          // LabelIdentifier : 'target'
+	LabelIdentifier,          // LabelIdentifier : 'async'
+	LabelIdentifier,          // LabelIdentifier_Await : Identifier
+	LabelIdentifier,          // LabelIdentifier_Await : 'yield'
+	LabelIdentifier,          // LabelIdentifier_Await : 'as'
+	LabelIdentifier,          // LabelIdentifier_Await : 'from'
+	LabelIdentifier,          // LabelIdentifier_Await : 'get'
+	LabelIdentifier,          // LabelIdentifier_Await : 'let'
+	LabelIdentifier,          // LabelIdentifier_Await : 'of'
+	LabelIdentifier,          // LabelIdentifier_Await : 'set'
+	LabelIdentifier,          // LabelIdentifier_Await : 'static'
+	LabelIdentifier,          // LabelIdentifier_Await : 'target'
+	LabelIdentifier,          // LabelIdentifier_Await : 'async'
 	LabelIdentifier,          // LabelIdentifier_Yield : Identifier
+	LabelIdentifier,          // LabelIdentifier_Yield : 'await'
 	LabelIdentifier,          // LabelIdentifier_Yield : 'as'
 	LabelIdentifier,          // LabelIdentifier_Yield : 'from'
 	LabelIdentifier,          // LabelIdentifier_Yield : 'get'
@@ -649,6 +793,7 @@ var ruleNodeType = [...]NodeType{
 	LabelIdentifier,          // LabelIdentifier_Yield : 'set'
 	LabelIdentifier,          // LabelIdentifier_Yield : 'static'
 	LabelIdentifier,          // LabelIdentifier_Yield : 'target'
+	LabelIdentifier,          // LabelIdentifier_Yield : 'async'
 	This,                     // PrimaryExpression : 'this'
 	0,                        // PrimaryExpression : IdentifierReference
 	0,                        // PrimaryExpression : Literal
@@ -657,10 +802,142 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PrimaryExpression : FunctionExpression
 	0,                        // PrimaryExpression : ClassExpression
 	0,                        // PrimaryExpression : GeneratorExpression
+	0,                        // PrimaryExpression : AsyncFunctionExpression
 	Regexp,                   // PrimaryExpression : RegularExpressionLiteral
 	0,                        // PrimaryExpression : TemplateLiteral
 	Parenthesized,            // PrimaryExpression : CoverParenthesizedExpressionAndArrowParameterList
 	0,                        // PrimaryExpression : JSXElement
+	This,                     // PrimaryExpression_Await : 'this'
+	0,                        // PrimaryExpression_Await : IdentifierReference_Await
+	0,                        // PrimaryExpression_Await : Literal
+	0,                        // PrimaryExpression_Await : ArrayLiteral_Await
+	0,                        // PrimaryExpression_Await : ObjectLiteral_Await
+	0,                        // PrimaryExpression_Await : FunctionExpression
+	0,                        // PrimaryExpression_Await : ClassExpression_Await
+	0,                        // PrimaryExpression_Await : GeneratorExpression
+	0,                        // PrimaryExpression_Await : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_Await : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await : TemplateLiteral_Await
+	Parenthesized,            // PrimaryExpression_Await : CoverParenthesizedExpressionAndArrowParameterList_Await
+	0,                        // PrimaryExpression_Await : JSXElement_Await
+	This,                     // PrimaryExpression_Await_NoAsync_NoLet : 'this'
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : IdentifierReference_Await_NoAsync_NoLet
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : Literal
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : ArrayLiteral_Await
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : ObjectLiteral_Await
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : FunctionExpression
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : ClassExpression_Await
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : GeneratorExpression
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_Await_NoAsync_NoLet : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : TemplateLiteral_Await
+	Parenthesized,            // PrimaryExpression_Await_NoAsync_NoLet : CoverParenthesizedExpressionAndArrowParameterList_Await
+	0,                        // PrimaryExpression_Await_NoAsync_NoLet : JSXElement_Await
+	This,                     // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : 'this'
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : IdentifierReference_Await_NoLet
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : Literal
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : ArrayLiteral_Await
+	Regexp,                   // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : TemplateLiteral_Await
+	Parenthesized,            // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : CoverParenthesizedExpressionAndArrowParameterList_Await
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : JSXElement_Await
+	This,                     // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : 'this'
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : IdentifierReference_Await
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : Literal
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : ArrayLiteral_Await
+	Regexp,                   // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : TemplateLiteral_Await
+	Parenthesized,            // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : CoverParenthesizedExpressionAndArrowParameterList_Await
+	0,                        // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : JSXElement_Await
+	This,                     // PrimaryExpression_Await_NoLet : 'this'
+	0,                        // PrimaryExpression_Await_NoLet : IdentifierReference_Await_NoLet
+	0,                        // PrimaryExpression_Await_NoLet : Literal
+	0,                        // PrimaryExpression_Await_NoLet : ArrayLiteral_Await
+	0,                        // PrimaryExpression_Await_NoLet : ObjectLiteral_Await
+	0,                        // PrimaryExpression_Await_NoLet : FunctionExpression
+	0,                        // PrimaryExpression_Await_NoLet : ClassExpression_Await
+	0,                        // PrimaryExpression_Await_NoLet : GeneratorExpression
+	0,                        // PrimaryExpression_Await_NoLet : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_Await_NoLet : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_NoLet : TemplateLiteral_Await
+	Parenthesized,            // PrimaryExpression_Await_NoLet : CoverParenthesizedExpressionAndArrowParameterList_Await
+	0,                        // PrimaryExpression_Await_NoLet : JSXElement_Await
+	This,                     // PrimaryExpression_Await_NoLet_NoObjLiteral : 'this'
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : IdentifierReference_Await_NoLet
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : Literal
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : ArrayLiteral_Await
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : FunctionExpression
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : ClassExpression_Await
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : GeneratorExpression
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_Await_NoLet_NoObjLiteral : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : TemplateLiteral_Await
+	Parenthesized,            // PrimaryExpression_Await_NoLet_NoObjLiteral : CoverParenthesizedExpressionAndArrowParameterList_Await
+	0,                        // PrimaryExpression_Await_NoLet_NoObjLiteral : JSXElement_Await
+	This,                     // PrimaryExpression_Await_NoLet_Yield : 'this'
+	0,                        // PrimaryExpression_Await_NoLet_Yield : IdentifierReference_Await_NoLet_Yield
+	0,                        // PrimaryExpression_Await_NoLet_Yield : Literal
+	0,                        // PrimaryExpression_Await_NoLet_Yield : ArrayLiteral_Await_Yield
+	0,                        // PrimaryExpression_Await_NoLet_Yield : ObjectLiteral_Await_Yield
+	0,                        // PrimaryExpression_Await_NoLet_Yield : FunctionExpression
+	0,                        // PrimaryExpression_Await_NoLet_Yield : ClassExpression_Await_Yield
+	0,                        // PrimaryExpression_Await_NoLet_Yield : GeneratorExpression
+	0,                        // PrimaryExpression_Await_NoLet_Yield : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_Await_NoLet_Yield : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_NoLet_Yield : TemplateLiteral_Await_Yield
+	Parenthesized,            // PrimaryExpression_Await_NoLet_Yield : CoverParenthesizedExpressionAndArrowParameterList_Await_Yield
+	0,                        // PrimaryExpression_Await_NoLet_Yield : JSXElement_Await_Yield
+	This,                     // PrimaryExpression_Await_NoObjLiteral : 'this'
+	0,                        // PrimaryExpression_Await_NoObjLiteral : IdentifierReference_Await
+	0,                        // PrimaryExpression_Await_NoObjLiteral : Literal
+	0,                        // PrimaryExpression_Await_NoObjLiteral : ArrayLiteral_Await
+	0,                        // PrimaryExpression_Await_NoObjLiteral : FunctionExpression
+	0,                        // PrimaryExpression_Await_NoObjLiteral : ClassExpression_Await
+	0,                        // PrimaryExpression_Await_NoObjLiteral : GeneratorExpression
+	0,                        // PrimaryExpression_Await_NoObjLiteral : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_Await_NoObjLiteral : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_NoObjLiteral : TemplateLiteral_Await
+	Parenthesized,            // PrimaryExpression_Await_NoObjLiteral : CoverParenthesizedExpressionAndArrowParameterList_Await
+	0,                        // PrimaryExpression_Await_NoObjLiteral : JSXElement_Await
+	This,                     // PrimaryExpression_Await_Yield : 'this'
+	0,                        // PrimaryExpression_Await_Yield : IdentifierReference_Await_Yield
+	0,                        // PrimaryExpression_Await_Yield : Literal
+	0,                        // PrimaryExpression_Await_Yield : ArrayLiteral_Await_Yield
+	0,                        // PrimaryExpression_Await_Yield : ObjectLiteral_Await_Yield
+	0,                        // PrimaryExpression_Await_Yield : FunctionExpression
+	0,                        // PrimaryExpression_Await_Yield : ClassExpression_Await_Yield
+	0,                        // PrimaryExpression_Await_Yield : GeneratorExpression
+	0,                        // PrimaryExpression_Await_Yield : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_Await_Yield : RegularExpressionLiteral
+	0,                        // PrimaryExpression_Await_Yield : TemplateLiteral_Await_Yield
+	Parenthesized,            // PrimaryExpression_Await_Yield : CoverParenthesizedExpressionAndArrowParameterList_Await_Yield
+	0,                        // PrimaryExpression_Await_Yield : JSXElement_Await_Yield
+	This,                     // PrimaryExpression_NoAsync_NoLet : 'this'
+	0,                        // PrimaryExpression_NoAsync_NoLet : IdentifierReference_NoAsync_NoLet
+	0,                        // PrimaryExpression_NoAsync_NoLet : Literal
+	0,                        // PrimaryExpression_NoAsync_NoLet : ArrayLiteral
+	0,                        // PrimaryExpression_NoAsync_NoLet : ObjectLiteral
+	0,                        // PrimaryExpression_NoAsync_NoLet : FunctionExpression
+	0,                        // PrimaryExpression_NoAsync_NoLet : ClassExpression
+	0,                        // PrimaryExpression_NoAsync_NoLet : GeneratorExpression
+	0,                        // PrimaryExpression_NoAsync_NoLet : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_NoAsync_NoLet : RegularExpressionLiteral
+	0,                        // PrimaryExpression_NoAsync_NoLet : TemplateLiteral
+	Parenthesized,            // PrimaryExpression_NoAsync_NoLet : CoverParenthesizedExpressionAndArrowParameterList
+	0,                        // PrimaryExpression_NoAsync_NoLet : JSXElement
+	This,                     // PrimaryExpression_NoAsync_NoLet_Yield : 'this'
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : IdentifierReference_NoAsync_NoLet_Yield
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : Literal
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : ArrayLiteral_Yield
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : ObjectLiteral_Yield
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : FunctionExpression
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : ClassExpression_Yield
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : GeneratorExpression
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : AsyncFunctionExpression
+	Regexp,                   // PrimaryExpression_NoAsync_NoLet_Yield : RegularExpressionLiteral
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : TemplateLiteral_Yield
+	Parenthesized,            // PrimaryExpression_NoAsync_NoLet_Yield : CoverParenthesizedExpressionAndArrowParameterList_Yield
+	0,                        // PrimaryExpression_NoAsync_NoLet_Yield : JSXElement_Yield
 	This,                     // PrimaryExpression_NoFuncClass : 'this'
 	0,                        // PrimaryExpression_NoFuncClass : IdentifierReference
 	0,                        // PrimaryExpression_NoFuncClass : Literal
@@ -719,6 +996,7 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PrimaryExpression_NoLet : FunctionExpression
 	0,                        // PrimaryExpression_NoLet : ClassExpression
 	0,                        // PrimaryExpression_NoLet : GeneratorExpression
+	0,                        // PrimaryExpression_NoLet : AsyncFunctionExpression
 	Regexp,                   // PrimaryExpression_NoLet : RegularExpressionLiteral
 	0,                        // PrimaryExpression_NoLet : TemplateLiteral
 	Parenthesized,            // PrimaryExpression_NoLet : CoverParenthesizedExpressionAndArrowParameterList
@@ -730,6 +1008,7 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PrimaryExpression_NoLet_NoObjLiteral : FunctionExpression
 	0,                        // PrimaryExpression_NoLet_NoObjLiteral : ClassExpression
 	0,                        // PrimaryExpression_NoLet_NoObjLiteral : GeneratorExpression
+	0,                        // PrimaryExpression_NoLet_NoObjLiteral : AsyncFunctionExpression
 	Regexp,                   // PrimaryExpression_NoLet_NoObjLiteral : RegularExpressionLiteral
 	0,                        // PrimaryExpression_NoLet_NoObjLiteral : TemplateLiteral
 	Parenthesized,            // PrimaryExpression_NoLet_NoObjLiteral : CoverParenthesizedExpressionAndArrowParameterList
@@ -742,6 +1021,7 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PrimaryExpression_NoLet_Yield : FunctionExpression
 	0,                        // PrimaryExpression_NoLet_Yield : ClassExpression_Yield
 	0,                        // PrimaryExpression_NoLet_Yield : GeneratorExpression
+	0,                        // PrimaryExpression_NoLet_Yield : AsyncFunctionExpression
 	Regexp,                   // PrimaryExpression_NoLet_Yield : RegularExpressionLiteral
 	0,                        // PrimaryExpression_NoLet_Yield : TemplateLiteral_Yield
 	Parenthesized,            // PrimaryExpression_NoLet_Yield : CoverParenthesizedExpressionAndArrowParameterList_Yield
@@ -753,6 +1033,7 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PrimaryExpression_NoObjLiteral : FunctionExpression
 	0,                        // PrimaryExpression_NoObjLiteral : ClassExpression
 	0,                        // PrimaryExpression_NoObjLiteral : GeneratorExpression
+	0,                        // PrimaryExpression_NoObjLiteral : AsyncFunctionExpression
 	Regexp,                   // PrimaryExpression_NoObjLiteral : RegularExpressionLiteral
 	0,                        // PrimaryExpression_NoObjLiteral : TemplateLiteral
 	Parenthesized,            // PrimaryExpression_NoObjLiteral : CoverParenthesizedExpressionAndArrowParameterList
@@ -765,6 +1046,7 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PrimaryExpression_Yield : FunctionExpression
 	0,                        // PrimaryExpression_Yield : ClassExpression_Yield
 	0,                        // PrimaryExpression_Yield : GeneratorExpression
+	0,                        // PrimaryExpression_Yield : AsyncFunctionExpression
 	Regexp,                   // PrimaryExpression_Yield : RegularExpressionLiteral
 	0,                        // PrimaryExpression_Yield : TemplateLiteral_Yield
 	Parenthesized,            // PrimaryExpression_Yield : CoverParenthesizedExpressionAndArrowParameterList_Yield
@@ -776,6 +1058,20 @@ var ruleNodeType = [...]NodeType{
 	0,                        // CoverParenthesizedExpressionAndArrowParameterList : '(' Expression_In ',' '...' BindingIdentifier ')'
 	0,                        // CoverParenthesizedExpressionAndArrowParameterList : '(' Expression_In ',' '...' BindingPattern ')'
 	0,                        // CoverParenthesizedExpressionAndArrowParameterList : '(' SyntaxError ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await : '(' Expression_Await_In ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await : '(' ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await : '(' '...' BindingIdentifier_Await ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await : '(' '...' BindingPattern_Await ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await : '(' Expression_Await_In ',' '...' BindingIdentifier_Await ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await : '(' Expression_Await_In ',' '...' BindingPattern_Await ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await : '(' SyntaxError ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await_Yield : '(' Expression_Await_In_Yield ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await_Yield : '(' ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await_Yield : '(' '...' BindingIdentifier_Await_Yield ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await_Yield : '(' '...' BindingPattern_Await_Yield ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await_Yield : '(' Expression_Await_In_Yield ',' '...' BindingIdentifier_Await_Yield ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await_Yield : '(' Expression_Await_In_Yield ',' '...' BindingPattern_Await_Yield ')'
+	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Await_Yield : '(' SyntaxError ')'
 	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Yield : '(' Expression_In_Yield ')'
 	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Yield : '(' ')'
 	0,                        // CoverParenthesizedExpressionAndArrowParameterList_Yield : '(' '...' BindingIdentifier_Yield ')'
@@ -791,6 +1087,12 @@ var ruleNodeType = [...]NodeType{
 	ArrayLiteral,             // ArrayLiteral : '[' Elisionopt ']'
 	ArrayLiteral,             // ArrayLiteral : '[' ElementList ']'
 	ArrayLiteral,             // ArrayLiteral : '[' ElementList ',' Elisionopt ']'
+	ArrayLiteral,             // ArrayLiteral_Await : '[' Elisionopt ']'
+	ArrayLiteral,             // ArrayLiteral_Await : '[' ElementList_Await ']'
+	ArrayLiteral,             // ArrayLiteral_Await : '[' ElementList_Await ',' Elisionopt ']'
+	ArrayLiteral,             // ArrayLiteral_Await_Yield : '[' Elisionopt ']'
+	ArrayLiteral,             // ArrayLiteral_Await_Yield : '[' ElementList_Await_Yield ']'
+	ArrayLiteral,             // ArrayLiteral_Await_Yield : '[' ElementList_Await_Yield ',' Elisionopt ']'
 	ArrayLiteral,             // ArrayLiteral_Yield : '[' Elisionopt ']'
 	ArrayLiteral,             // ArrayLiteral_Yield : '[' ElementList_Yield ']'
 	ArrayLiteral,             // ArrayLiteral_Yield : '[' ElementList_Yield ',' Elisionopt ']'
@@ -798,6 +1100,14 @@ var ruleNodeType = [...]NodeType{
 	0,                        // ElementList : Elisionopt SpreadElement
 	0,                        // ElementList : ElementList ',' Elisionopt AssignmentExpression_In
 	0,                        // ElementList : ElementList ',' Elisionopt SpreadElement
+	0,                        // ElementList_Await : Elisionopt AssignmentExpression_Await_In
+	0,                        // ElementList_Await : Elisionopt SpreadElement_Await
+	0,                        // ElementList_Await : ElementList_Await ',' Elisionopt AssignmentExpression_Await_In
+	0,                        // ElementList_Await : ElementList_Await ',' Elisionopt SpreadElement_Await
+	0,                        // ElementList_Await_Yield : Elisionopt AssignmentExpression_Await_In_Yield
+	0,                        // ElementList_Await_Yield : Elisionopt SpreadElement_Await_Yield
+	0,                        // ElementList_Await_Yield : ElementList_Await_Yield ',' Elisionopt AssignmentExpression_Await_In_Yield
+	0,                        // ElementList_Await_Yield : ElementList_Await_Yield ',' Elisionopt SpreadElement_Await_Yield
 	0,                        // ElementList_Yield : Elisionopt AssignmentExpression_In_Yield
 	0,                        // ElementList_Yield : Elisionopt SpreadElement_Yield
 	0,                        // ElementList_Yield : ElementList_Yield ',' Elisionopt AssignmentExpression_In_Yield
@@ -805,15 +1115,27 @@ var ruleNodeType = [...]NodeType{
 	0,                        // Elision : ','
 	0,                        // Elision : Elision ','
 	SpreadElement,            // SpreadElement : '...' AssignmentExpression_In
+	SpreadElement,            // SpreadElement_Await : '...' AssignmentExpression_Await_In
+	SpreadElement,            // SpreadElement_Await_Yield : '...' AssignmentExpression_Await_In_Yield
 	SpreadElement,            // SpreadElement_Yield : '...' AssignmentExpression_In_Yield
 	ObjectLiteral,            // ObjectLiteral : '{' '}'
 	ObjectLiteral,            // ObjectLiteral : '{' PropertyDefinitionList '}'
 	ObjectLiteral,            // ObjectLiteral : '{' PropertyDefinitionList ',' '}'
+	ObjectLiteral,            // ObjectLiteral_Await : '{' '}'
+	ObjectLiteral,            // ObjectLiteral_Await : '{' PropertyDefinitionList_Await '}'
+	ObjectLiteral,            // ObjectLiteral_Await : '{' PropertyDefinitionList_Await ',' '}'
+	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' '}'
+	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' PropertyDefinitionList_Await_Yield '}'
+	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' PropertyDefinitionList_Await_Yield ',' '}'
 	ObjectLiteral,            // ObjectLiteral_Yield : '{' '}'
 	ObjectLiteral,            // ObjectLiteral_Yield : '{' PropertyDefinitionList_Yield '}'
 	ObjectLiteral,            // ObjectLiteral_Yield : '{' PropertyDefinitionList_Yield ',' '}'
 	0,                        // PropertyDefinitionList : PropertyDefinition
 	0,                        // PropertyDefinitionList : PropertyDefinitionList ',' PropertyDefinition
+	0,                        // PropertyDefinitionList_Await : PropertyDefinition_Await
+	0,                        // PropertyDefinitionList_Await : PropertyDefinitionList_Await ',' PropertyDefinition_Await
+	0,                        // PropertyDefinitionList_Await_Yield : PropertyDefinition_Await_Yield
+	0,                        // PropertyDefinitionList_Await_Yield : PropertyDefinitionList_Await_Yield ',' PropertyDefinition_Await_Yield
 	0,                        // PropertyDefinitionList_Yield : PropertyDefinition_Yield
 	0,                        // PropertyDefinitionList_Yield : PropertyDefinitionList_Yield ',' PropertyDefinition_Yield
 	ShorthandProperty,        // PropertyDefinition : IdentifierReference
@@ -821,6 +1143,16 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PropertyDefinition : MethodDefinition
 	SyntaxProblem,            // PropertyDefinition : CoverInitializedName
 	0,                        // PropertyDefinition : SyntaxError
+	ShorthandProperty,        // PropertyDefinition_Await : IdentifierReference_Await
+	Property,                 // PropertyDefinition_Await : PropertyName_Await ':' AssignmentExpression_Await_In
+	0,                        // PropertyDefinition_Await : MethodDefinition_Await
+	SyntaxProblem,            // PropertyDefinition_Await : CoverInitializedName_Await
+	0,                        // PropertyDefinition_Await : SyntaxError
+	ShorthandProperty,        // PropertyDefinition_Await_Yield : IdentifierReference_Await_Yield
+	Property,                 // PropertyDefinition_Await_Yield : PropertyName_Await_Yield ':' AssignmentExpression_Await_In_Yield
+	0,                        // PropertyDefinition_Await_Yield : MethodDefinition_Await_Yield
+	SyntaxProblem,            // PropertyDefinition_Await_Yield : CoverInitializedName_Await_Yield
+	0,                        // PropertyDefinition_Await_Yield : SyntaxError
 	ShorthandProperty,        // PropertyDefinition_Yield : IdentifierReference_Yield
 	Property,                 // PropertyDefinition_Yield : PropertyName_Yield ':' AssignmentExpression_In_Yield
 	0,                        // PropertyDefinition_Yield : MethodDefinition_Yield
@@ -828,29 +1160,52 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PropertyDefinition_Yield : SyntaxError
 	0,                        // PropertyName : LiteralPropertyName
 	0,                        // PropertyName : ComputedPropertyName
+	0,                        // PropertyName_Await : LiteralPropertyName
+	0,                        // PropertyName_Await : ComputedPropertyName_Await
+	0,                        // PropertyName_Await_Yield : LiteralPropertyName
+	0,                        // PropertyName_Await_Yield : ComputedPropertyName_Await_Yield
 	0,                        // PropertyName_Yield : LiteralPropertyName
 	0,                        // PropertyName_Yield : ComputedPropertyName_Yield
 	LiteralPropertyName,      // LiteralPropertyName : IdentifierNameDecl
 	LiteralPropertyName,      // LiteralPropertyName : StringLiteral
 	LiteralPropertyName,      // LiteralPropertyName : NumericLiteral
 	ComputedPropertyName,     // ComputedPropertyName : '[' AssignmentExpression_In ']'
+	ComputedPropertyName,     // ComputedPropertyName_Await : '[' AssignmentExpression_Await_In ']'
+	ComputedPropertyName,     // ComputedPropertyName_Await_Yield : '[' AssignmentExpression_Await_In_Yield ']'
 	ComputedPropertyName,     // ComputedPropertyName_Yield : '[' AssignmentExpression_In_Yield ']'
 	0,                        // CoverInitializedName : IdentifierReference Initializer_In
+	0,                        // CoverInitializedName_Await : IdentifierReference_Await Initializer_Await_In
+	0,                        // CoverInitializedName_Await_Yield : IdentifierReference_Await_Yield Initializer_Await_In_Yield
 	0,                        // CoverInitializedName_Yield : IdentifierReference_Yield Initializer_In_Yield
 	Initializer,              // Initializer : '=' AssignmentExpression
+	Initializer,              // Initializer_Await : '=' AssignmentExpression_Await
+	Initializer,              // Initializer_Await_In : '=' AssignmentExpression_Await_In
+	Initializer,              // Initializer_Await_In_Yield : '=' AssignmentExpression_Await_In_Yield
 	Initializer,              // Initializer_In : '=' AssignmentExpression_In
 	Initializer,              // Initializer_In_Yield : '=' AssignmentExpression_In_Yield
 	Initializer,              // Initializer_Yield : '=' AssignmentExpression_Yield
 	TemplateLiteral,          // TemplateLiteral : NoSubstitutionTemplate
 	TemplateLiteral,          // TemplateLiteral : TemplateHead Expression_In TemplateSpans
+	TemplateLiteral,          // TemplateLiteral_Await : NoSubstitutionTemplate
+	TemplateLiteral,          // TemplateLiteral_Await : TemplateHead Expression_Await_In TemplateSpans_Await
+	TemplateLiteral,          // TemplateLiteral_Await_Yield : NoSubstitutionTemplate
+	TemplateLiteral,          // TemplateLiteral_Await_Yield : TemplateHead Expression_Await_In_Yield TemplateSpans_Await_Yield
 	TemplateLiteral,          // TemplateLiteral_Yield : NoSubstitutionTemplate
 	TemplateLiteral,          // TemplateLiteral_Yield : TemplateHead Expression_In_Yield TemplateSpans_Yield
 	0,                        // TemplateSpans : TemplateTail
 	0,                        // TemplateSpans : TemplateMiddleList TemplateTail
+	0,                        // TemplateSpans_Await : TemplateTail
+	0,                        // TemplateSpans_Await : TemplateMiddleList_Await TemplateTail
+	0,                        // TemplateSpans_Await_Yield : TemplateTail
+	0,                        // TemplateSpans_Await_Yield : TemplateMiddleList_Await_Yield TemplateTail
 	0,                        // TemplateSpans_Yield : TemplateTail
 	0,                        // TemplateSpans_Yield : TemplateMiddleList_Yield TemplateTail
 	0,                        // TemplateMiddleList : TemplateMiddle Expression_In
 	0,                        // TemplateMiddleList : TemplateMiddleList TemplateMiddle Expression_In
+	0,                        // TemplateMiddleList_Await : TemplateMiddle Expression_Await_In
+	0,                        // TemplateMiddleList_Await : TemplateMiddleList_Await TemplateMiddle Expression_Await_In
+	0,                        // TemplateMiddleList_Await_Yield : TemplateMiddle Expression_Await_In_Yield
+	0,                        // TemplateMiddleList_Await_Yield : TemplateMiddleList_Await_Yield TemplateMiddle Expression_Await_In_Yield
 	0,                        // TemplateMiddleList_Yield : TemplateMiddle Expression_In_Yield
 	0,                        // TemplateMiddleList_Yield : TemplateMiddleList_Yield TemplateMiddle Expression_In_Yield
 	0,                        // MemberExpression : PrimaryExpression
@@ -860,6 +1215,104 @@ var ruleNodeType = [...]NodeType{
 	0,                        // MemberExpression : SuperProperty
 	0,                        // MemberExpression : MetaProperty
 	NewExpression,            // MemberExpression : 'new' MemberExpression Arguments
+	0,                        // MemberExpression_Await : PrimaryExpression_Await
+	IndexAccess,              // MemberExpression_Await : MemberExpression_Await '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await : MemberExpression_Await '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await : MemberExpression_Await TemplateLiteral_Await
+	0,                        // MemberExpression_Await : SuperProperty_Await
+	0,                        // MemberExpression_Await : MetaProperty
+	NewExpression,            // MemberExpression_Await : 'new' MemberExpression_Await Arguments_Await
+	0,                        // MemberExpression_Await_NoAsync_NoLet : PrimaryExpression_Await_NoAsync_NoLet
+	IndexAccess,              // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoAsync_NoLet : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoAsync_NoLet : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoAsync_NoLet : 'new' MemberExpression_Await Arguments_Await
+	0,                        // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : PrimaryExpression_Await_NoFuncClass_NoObjLiteral
+	IndexAccess,              // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
+	0,                        // MemberExpression_Await_NoLet : PrimaryExpression_Await_NoLet
+	IndexAccess,              // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoLet : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoLet : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoLet : 'new' MemberExpression_Await Arguments_Await
+	0,                        // MemberExpression_Await_NoLetOnly : PrimaryExpression_Await_NoLet
+	IndexAccess,              // MemberExpression_Await_NoLetOnly : MemberExpression_Await '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoLetOnly : MemberExpression_Await '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoLetOnly : MemberExpression_Await TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoLetOnly : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoLetOnly : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoLetOnly : 'new' MemberExpression_Await Arguments_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral
+	IndexAccess,              // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoLet : PrimaryExpression_Await_NoLet
+	IndexAccess,              // MemberExpression_Await_NoLetOnly_NoLet : MemberExpression_Await_NoLet '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoLetOnly_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoLet : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoLet : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoLetOnly_NoLet : 'new' MemberExpression_Await Arguments_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoObjLiteral : PrimaryExpression_Await_NoLet_NoObjLiteral
+	IndexAccess,              // MemberExpression_Await_NoLetOnly_NoObjLiteral : MemberExpression_Await_NoObjLiteral '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoLetOnly_NoObjLiteral : MemberExpression_Await_NoObjLiteral '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_NoObjLiteral : MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoObjLiteral : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoLetOnly_NoObjLiteral : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoLetOnly_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
+	IndexAccess,              // MemberExpression_Await_NoLetOnly_StartWithLet : MemberExpression_Await_NoLetOnly_StartWithLet '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoLetOnly_StartWithLet : MemberExpression_Await_StartWithLet '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_StartWithLet : MemberExpression_Await_StartWithLet TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoLetOnly_Yield : PrimaryExpression_Await_NoLet_Yield
+	IndexAccess,              // MemberExpression_Await_NoLetOnly_Yield : MemberExpression_Await_Yield '[' Expression_Await_In_Yield ']'
+	PropertyAccess,           // MemberExpression_Await_NoLetOnly_Yield : MemberExpression_Await_Yield '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_Yield : MemberExpression_Await_Yield TemplateLiteral_Await_Yield
+	0,                        // MemberExpression_Await_NoLetOnly_Yield : SuperProperty_Await_Yield
+	0,                        // MemberExpression_Await_NoLetOnly_Yield : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoLetOnly_Yield : 'new' MemberExpression_Await_Yield Arguments_Await_Yield
+	0,                        // MemberExpression_Await_NoObjLiteral : PrimaryExpression_Await_NoObjLiteral
+	IndexAccess,              // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
+	0,                        // MemberExpression_Await_NoObjLiteral : SuperProperty_Await
+	0,                        // MemberExpression_Await_NoObjLiteral : MetaProperty
+	NewExpression,            // MemberExpression_Await_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
+	IdentifierReference,      // MemberExpression_Await_StartWithLet : 'let'
+	IndexAccess,              // MemberExpression_Await_StartWithLet : MemberExpression_Await_NoLetOnly_StartWithLet '[' Expression_Await_In ']'
+	PropertyAccess,           // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet TemplateLiteral_Await
+	0,                        // MemberExpression_Await_Yield : PrimaryExpression_Await_Yield
+	IndexAccess,              // MemberExpression_Await_Yield : MemberExpression_Await_Yield '[' Expression_Await_In_Yield ']'
+	PropertyAccess,           // MemberExpression_Await_Yield : MemberExpression_Await_Yield '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_Await_Yield : MemberExpression_Await_Yield TemplateLiteral_Await_Yield
+	0,                        // MemberExpression_Await_Yield : SuperProperty_Await_Yield
+	0,                        // MemberExpression_Await_Yield : MetaProperty
+	NewExpression,            // MemberExpression_Await_Yield : 'new' MemberExpression_Await_Yield Arguments_Await_Yield
+	0,                        // MemberExpression_NoAsync_NoLet : PrimaryExpression_NoAsync_NoLet
+	IndexAccess,              // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet '[' Expression_In ']'
+	PropertyAccess,           // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet TemplateLiteral
+	0,                        // MemberExpression_NoAsync_NoLet : SuperProperty
+	0,                        // MemberExpression_NoAsync_NoLet : MetaProperty
+	NewExpression,            // MemberExpression_NoAsync_NoLet : 'new' MemberExpression Arguments
+	0,                        // MemberExpression_NoAsync_NoLet_Yield : PrimaryExpression_NoAsync_NoLet_Yield
+	IndexAccess,              // MemberExpression_NoAsync_NoLet_Yield : MemberExpression_NoLet_Yield '[' Expression_In_Yield ']'
+	PropertyAccess,           // MemberExpression_NoAsync_NoLet_Yield : MemberExpression_NoLet_Yield '.' IdentifierNameRef
+	TaggedTemplate,           // MemberExpression_NoAsync_NoLet_Yield : MemberExpression_NoLet_Yield TemplateLiteral_Yield
+	0,                        // MemberExpression_NoAsync_NoLet_Yield : SuperProperty_Yield
+	0,                        // MemberExpression_NoAsync_NoLet_Yield : MetaProperty
+	NewExpression,            // MemberExpression_NoAsync_NoLet_Yield : 'new' MemberExpression_Yield Arguments_Yield
 	0,                        // MemberExpression_NoFuncClass : PrimaryExpression_NoFuncClass
 	IndexAccess,              // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass '.' IdentifierNameRef
@@ -982,12 +1435,33 @@ var ruleNodeType = [...]NodeType{
 	SuperExpression,          // SuperExpression : 'super'
 	IndexAccess,              // SuperProperty : SuperExpression '[' Expression_In ']'
 	PropertyAccess,           // SuperProperty : SuperExpression '.' IdentifierNameRef
+	IndexAccess,              // SuperProperty_Await : SuperExpression '[' Expression_Await_In ']'
+	PropertyAccess,           // SuperProperty_Await : SuperExpression '.' IdentifierNameRef
+	IndexAccess,              // SuperProperty_Await_Yield : SuperExpression '[' Expression_Await_In_Yield ']'
+	PropertyAccess,           // SuperProperty_Await_Yield : SuperExpression '.' IdentifierNameRef
 	IndexAccess,              // SuperProperty_Yield : SuperExpression '[' Expression_In_Yield ']'
 	PropertyAccess,           // SuperProperty_Yield : SuperExpression '.' IdentifierNameRef
 	0,                        // MetaProperty : NewTarget
 	NewTarget,                // NewTarget : 'new' '.' 'target'
 	0,                        // NewExpression : MemberExpression
 	NewExpression,            // NewExpression : 'new' NewExpression
+	0,                        // NewExpression_Await : MemberExpression_Await
+	NewExpression,            // NewExpression_Await : 'new' NewExpression_Await
+	0,                        // NewExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoAsync_NoLet
+	NewExpression,            // NewExpression_Await_NoAsync_NoLet : 'new' NewExpression_Await
+	0,                        // NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	NewExpression,            // NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'new' NewExpression_Await
+	0,                        // NewExpression_Await_NoLet : MemberExpression_Await_NoLet
+	NewExpression,            // NewExpression_Await_NoLet : 'new' NewExpression_Await
+	0,                        // NewExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral
+	NewExpression,            // NewExpression_Await_NoObjLiteral : 'new' NewExpression_Await
+	0,                        // NewExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet
+	0,                        // NewExpression_Await_Yield : MemberExpression_Await_Yield
+	NewExpression,            // NewExpression_Await_Yield : 'new' NewExpression_Await_Yield
+	0,                        // NewExpression_NoAsync_NoLet : MemberExpression_NoAsync_NoLet
+	NewExpression,            // NewExpression_NoAsync_NoLet : 'new' NewExpression
+	0,                        // NewExpression_NoAsync_NoLet_Yield : MemberExpression_NoAsync_NoLet_Yield
+	NewExpression,            // NewExpression_NoAsync_NoLet_Yield : 'new' NewExpression_Yield
 	0,                        // NewExpression_NoFuncClass : MemberExpression_NoFuncClass
 	NewExpression,            // NewExpression_NoFuncClass : 'new' NewExpression
 	0,                        // NewExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral
@@ -1004,80 +1478,167 @@ var ruleNodeType = [...]NodeType{
 	0,                        // NewExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield
 	0,                        // NewExpression_Yield : MemberExpression_Yield
 	NewExpression,            // NewExpression_Yield : 'new' NewExpression_Yield
-	CallExpression,           // CallExpression : MemberExpression Arguments
+	CallExpression,           // CallExpression : CoverCallExpressionAndAsyncArrowHead
 	CallExpression,           // CallExpression : SuperCall
 	CallExpression,           // CallExpression : CallExpression Arguments
 	IndexAccess,              // CallExpression : CallExpression '[' Expression_In ']'
 	PropertyAccess,           // CallExpression : CallExpression '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression : CallExpression TemplateLiteral
-	CallExpression,           // CallExpression_NoFuncClass : MemberExpression_NoFuncClass Arguments
+	CallExpression,           // CallExpression_Await : CoverCallExpressionAndAsyncArrowHead_Await
+	CallExpression,           // CallExpression_Await : SuperCall_Await
+	CallExpression,           // CallExpression_Await : CallExpression_Await Arguments_Await
+	IndexAccess,              // CallExpression_Await : CallExpression_Await '[' Expression_Await_In ']'
+	PropertyAccess,           // CallExpression_Await : CallExpression_Await '.' IdentifierNameRef
+	TaggedTemplate,           // CallExpression_Await : CallExpression_Await TemplateLiteral_Await
+	CallExpression,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	CallExpression,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : SuperCall_Await
+	CallExpression,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
+	IndexAccess,              // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_Await_In ']'
+	PropertyAccess,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
+	TaggedTemplate,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
+	CallExpression,           // CallExpression_Await_NoLet : CoverCallExpressionAndAsyncArrowHead_Await_NoLet
+	CallExpression,           // CallExpression_Await_NoLet : SuperCall_Await
+	CallExpression,           // CallExpression_Await_NoLet : CallExpression_Await_NoLet Arguments_Await
+	IndexAccess,              // CallExpression_Await_NoLet : CallExpression_Await_NoLet '[' Expression_Await_In ']'
+	PropertyAccess,           // CallExpression_Await_NoLet : CallExpression_Await_NoLet '.' IdentifierNameRef
+	TaggedTemplate,           // CallExpression_Await_NoLet : CallExpression_Await_NoLet TemplateLiteral_Await
+	CallExpression,           // CallExpression_Await_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoObjLiteral
+	CallExpression,           // CallExpression_Await_NoObjLiteral : SuperCall_Await
+	CallExpression,           // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral Arguments_Await
+	IndexAccess,              // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral '[' Expression_Await_In ']'
+	PropertyAccess,           // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral '.' IdentifierNameRef
+	TaggedTemplate,           // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral TemplateLiteral_Await
+	CallExpression,           // CallExpression_Await_StartWithLet : CoverCallExpressionAndAsyncArrowHead_Await_StartWithLet
+	CallExpression,           // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet Arguments_Await
+	IndexAccess,              // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet '[' Expression_Await_In ']'
+	PropertyAccess,           // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet '.' IdentifierNameRef
+	TaggedTemplate,           // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet TemplateLiteral_Await
+	CallExpression,           // CallExpression_Await_Yield : CoverCallExpressionAndAsyncArrowHead_Await_Yield
+	CallExpression,           // CallExpression_Await_Yield : SuperCall_Await_Yield
+	CallExpression,           // CallExpression_Await_Yield : CallExpression_Await_Yield Arguments_Await_Yield
+	IndexAccess,              // CallExpression_Await_Yield : CallExpression_Await_Yield '[' Expression_Await_In_Yield ']'
+	PropertyAccess,           // CallExpression_Await_Yield : CallExpression_Await_Yield '.' IdentifierNameRef
+	TaggedTemplate,           // CallExpression_Await_Yield : CallExpression_Await_Yield TemplateLiteral_Await_Yield
+	CallExpression,           // CallExpression_NoFuncClass : CoverCallExpressionAndAsyncArrowHead_NoFuncClass
 	CallExpression,           // CallExpression_NoFuncClass : SuperCall
 	CallExpression,           // CallExpression_NoFuncClass : CallExpression_NoFuncClass Arguments
 	IndexAccess,              // CallExpression_NoFuncClass : CallExpression_NoFuncClass '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoFuncClass : CallExpression_NoFuncClass '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoFuncClass : CallExpression_NoFuncClass TemplateLiteral
-	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
+	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : SuperCall
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 	IndexAccess,              // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
-	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
+	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : SuperCall_Yield
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
-	CallExpression,           // CallExpression_NoLet : MemberExpression_NoLet Arguments
+	CallExpression,           // CallExpression_NoLet : CoverCallExpressionAndAsyncArrowHead_NoLet
 	CallExpression,           // CallExpression_NoLet : SuperCall
 	CallExpression,           // CallExpression_NoLet : CallExpression_NoLet Arguments
 	IndexAccess,              // CallExpression_NoLet : CallExpression_NoLet '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoLet : CallExpression_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoLet : CallExpression_NoLet TemplateLiteral
-	CallExpression,           // CallExpression_NoLet_Yield : MemberExpression_NoLet_Yield Arguments_Yield
+	CallExpression,           // CallExpression_NoLet_Yield : CoverCallExpressionAndAsyncArrowHead_NoLet_Yield
 	CallExpression,           // CallExpression_NoLet_Yield : SuperCall_Yield
 	CallExpression,           // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield TemplateLiteral_Yield
-	CallExpression,           // CallExpression_NoObjLiteral : MemberExpression_NoObjLiteral Arguments
+	CallExpression,           // CallExpression_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoObjLiteral
 	CallExpression,           // CallExpression_NoObjLiteral : SuperCall
 	CallExpression,           // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral Arguments
 	IndexAccess,              // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral TemplateLiteral
-	CallExpression,           // CallExpression_StartWithLet : MemberExpression_StartWithLet Arguments
+	CallExpression,           // CallExpression_StartWithLet : CoverCallExpressionAndAsyncArrowHead_StartWithLet
 	CallExpression,           // CallExpression_StartWithLet : CallExpression_StartWithLet Arguments
 	IndexAccess,              // CallExpression_StartWithLet : CallExpression_StartWithLet '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_StartWithLet : CallExpression_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_StartWithLet : CallExpression_StartWithLet TemplateLiteral
-	CallExpression,           // CallExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield Arguments_Yield
+	CallExpression,           // CallExpression_StartWithLet_Yield : CoverCallExpressionAndAsyncArrowHead_StartWithLet_Yield
 	CallExpression,           // CallExpression_StartWithLet_Yield : CallExpression_StartWithLet_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_StartWithLet_Yield : CallExpression_StartWithLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // CallExpression_StartWithLet_Yield : CallExpression_StartWithLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_StartWithLet_Yield : CallExpression_StartWithLet_Yield TemplateLiteral_Yield
-	CallExpression,           // CallExpression_Yield : MemberExpression_Yield Arguments_Yield
+	CallExpression,           // CallExpression_Yield : CoverCallExpressionAndAsyncArrowHead_Yield
 	CallExpression,           // CallExpression_Yield : SuperCall_Yield
 	CallExpression,           // CallExpression_Yield : CallExpression_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_Yield : CallExpression_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // CallExpression_Yield : CallExpression_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // CallExpression_Yield : CallExpression_Yield TemplateLiteral_Yield
+	0,                        // CoverCallExpressionAndAsyncArrowHead : MemberExpression Arguments
+	0,                        // CoverCallExpressionAndAsyncArrowHead_Await : MemberExpression_Await Arguments_Await
+	0,                        // CoverCallExpressionAndAsyncArrowHead_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
+	0,                        // CoverCallExpressionAndAsyncArrowHead_Await_NoLet : MemberExpression_Await_NoLet Arguments_Await
+	0,                        // CoverCallExpressionAndAsyncArrowHead_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral Arguments_Await
+	0,                        // CoverCallExpressionAndAsyncArrowHead_Await_StartWithLet : MemberExpression_Await_StartWithLet Arguments_Await
+	0,                        // CoverCallExpressionAndAsyncArrowHead_Await_Yield : MemberExpression_Await_Yield Arguments_Await_Yield
+	0,                        // CoverCallExpressionAndAsyncArrowHead_NoFuncClass : MemberExpression_NoFuncClass Arguments
+	0,                        // CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
+	0,                        // CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
+	0,                        // CoverCallExpressionAndAsyncArrowHead_NoLet : MemberExpression_NoLet Arguments
+	0,                        // CoverCallExpressionAndAsyncArrowHead_NoLet_Yield : MemberExpression_NoLet_Yield Arguments_Yield
+	0,                        // CoverCallExpressionAndAsyncArrowHead_NoObjLiteral : MemberExpression_NoObjLiteral Arguments
+	0,                        // CoverCallExpressionAndAsyncArrowHead_StartWithLet : MemberExpression_StartWithLet Arguments
+	0,                        // CoverCallExpressionAndAsyncArrowHead_StartWithLet_Yield : MemberExpression_StartWithLet_Yield Arguments_Yield
+	0,                        // CoverCallExpressionAndAsyncArrowHead_Yield : MemberExpression_Yield Arguments_Yield
 	0,                        // SuperCall : SuperExpression Arguments
+	0,                        // SuperCall_Await : SuperExpression Arguments_Await
+	0,                        // SuperCall_Await_Yield : SuperExpression Arguments_Await_Yield
 	0,                        // SuperCall_Yield : SuperExpression Arguments_Yield
+	Arguments,                // Arguments : '(' ArgumentList ',' ')'
 	Arguments,                // Arguments : '(' ArgumentList ')'
 	Arguments,                // Arguments : '(' ')'
+	Arguments,                // Arguments_Await : '(' ArgumentList_Await ',' ')'
+	Arguments,                // Arguments_Await : '(' ArgumentList_Await ')'
+	Arguments,                // Arguments_Await : '(' ')'
+	Arguments,                // Arguments_Await_Yield : '(' ArgumentList_Await_Yield ',' ')'
+	Arguments,                // Arguments_Await_Yield : '(' ArgumentList_Await_Yield ')'
+	Arguments,                // Arguments_Await_Yield : '(' ')'
+	Arguments,                // Arguments_Yield : '(' ArgumentList_Yield ',' ')'
 	Arguments,                // Arguments_Yield : '(' ArgumentList_Yield ')'
 	Arguments,                // Arguments_Yield : '(' ')'
 	0,                        // ArgumentList : AssignmentExpression_In
 	0,                        // ArgumentList : SpreadElement
 	0,                        // ArgumentList : ArgumentList ',' AssignmentExpression_In
 	0,                        // ArgumentList : ArgumentList ',' SpreadElement
+	0,                        // ArgumentList_Await : AssignmentExpression_Await_In
+	0,                        // ArgumentList_Await : SpreadElement_Await
+	0,                        // ArgumentList_Await : ArgumentList_Await ',' AssignmentExpression_Await_In
+	0,                        // ArgumentList_Await : ArgumentList_Await ',' SpreadElement_Await
+	0,                        // ArgumentList_Await_Yield : AssignmentExpression_Await_In_Yield
+	0,                        // ArgumentList_Await_Yield : SpreadElement_Await_Yield
+	0,                        // ArgumentList_Await_Yield : ArgumentList_Await_Yield ',' AssignmentExpression_Await_In_Yield
+	0,                        // ArgumentList_Await_Yield : ArgumentList_Await_Yield ',' SpreadElement_Await_Yield
 	0,                        // ArgumentList_Yield : AssignmentExpression_In_Yield
 	0,                        // ArgumentList_Yield : SpreadElement_Yield
 	0,                        // ArgumentList_Yield : ArgumentList_Yield ',' AssignmentExpression_In_Yield
 	0,                        // ArgumentList_Yield : ArgumentList_Yield ',' SpreadElement_Yield
 	0,                        // LeftHandSideExpression : NewExpression
 	0,                        // LeftHandSideExpression : CallExpression
+	0,                        // LeftHandSideExpression_Await : NewExpression_Await
+	0,                        // LeftHandSideExpression_Await : CallExpression_Await
+	0,                        // LeftHandSideExpression_Await_NoAsync_NoLet : NewExpression_Await_NoAsync_NoLet
+	0,                        // LeftHandSideExpression_Await_NoAsync_NoLet : CallExpression_Await_NoLet
+	0,                        // LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                        // LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                        // LeftHandSideExpression_Await_NoLet : NewExpression_Await_NoLet
+	0,                        // LeftHandSideExpression_Await_NoLet : CallExpression_Await_NoLet
+	0,                        // LeftHandSideExpression_Await_NoObjLiteral : NewExpression_Await_NoObjLiteral
+	0,                        // LeftHandSideExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral
+	0,                        // LeftHandSideExpression_Await_StartWithLet : NewExpression_Await_StartWithLet
+	0,                        // LeftHandSideExpression_Await_StartWithLet : CallExpression_Await_StartWithLet
+	0,                        // LeftHandSideExpression_Await_Yield : NewExpression_Await_Yield
+	0,                        // LeftHandSideExpression_Await_Yield : CallExpression_Await_Yield
+	0,                        // LeftHandSideExpression_NoAsync_NoLet : NewExpression_NoAsync_NoLet
+	0,                        // LeftHandSideExpression_NoAsync_NoLet : CallExpression_NoLet
+	0,                        // LeftHandSideExpression_NoAsync_NoLet_Yield : NewExpression_NoAsync_NoLet_Yield
+	0,                        // LeftHandSideExpression_NoAsync_NoLet_Yield : CallExpression_NoLet_Yield
 	0,                        // LeftHandSideExpression_NoFuncClass : NewExpression_NoFuncClass
 	0,                        // LeftHandSideExpression_NoFuncClass : CallExpression_NoFuncClass
 	0,                        // LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral : NewExpression_NoFuncClass_NoLetSq_NoObjLiteral
@@ -1101,6 +1662,34 @@ var ruleNodeType = [...]NodeType{
 	PostDec,                  // UpdateExpression : LeftHandSideExpression .noLineBreak '--'
 	PreInc,                   // UpdateExpression : '++' UnaryExpression
 	PreDec,                   // UpdateExpression : '--' UnaryExpression
+	0,                        // UpdateExpression_Await : LeftHandSideExpression_Await
+	PostInc,                  // UpdateExpression_Await : LeftHandSideExpression_Await .noLineBreak '++'
+	PostDec,                  // UpdateExpression_Await : LeftHandSideExpression_Await .noLineBreak '--'
+	PreInc,                   // UpdateExpression_Await : '++' UnaryExpression_Await
+	PreDec,                   // UpdateExpression_Await : '--' UnaryExpression_Await
+	0,                        // UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	PostInc,                  // UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '++'
+	PostDec,                  // UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '--'
+	PreInc,                   // UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '++' UnaryExpression_Await
+	PreDec,                   // UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '--' UnaryExpression_Await
+	0,                        // UpdateExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet
+	PostInc,                  // UpdateExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet .noLineBreak '++'
+	PostDec,                  // UpdateExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet .noLineBreak '--'
+	PreInc,                   // UpdateExpression_Await_NoLet : '++' UnaryExpression_Await
+	PreDec,                   // UpdateExpression_Await_NoLet : '--' UnaryExpression_Await
+	0,                        // UpdateExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral
+	PostInc,                  // UpdateExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral .noLineBreak '++'
+	PostDec,                  // UpdateExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral .noLineBreak '--'
+	PreInc,                   // UpdateExpression_Await_NoObjLiteral : '++' UnaryExpression_Await
+	PreDec,                   // UpdateExpression_Await_NoObjLiteral : '--' UnaryExpression_Await
+	0,                        // UpdateExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet
+	PostInc,                  // UpdateExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet .noLineBreak '++'
+	PostDec,                  // UpdateExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet .noLineBreak '--'
+	0,                        // UpdateExpression_Await_Yield : LeftHandSideExpression_Await_Yield
+	PostInc,                  // UpdateExpression_Await_Yield : LeftHandSideExpression_Await_Yield .noLineBreak '++'
+	PostDec,                  // UpdateExpression_Await_Yield : LeftHandSideExpression_Await_Yield .noLineBreak '--'
+	PreInc,                   // UpdateExpression_Await_Yield : '++' UnaryExpression_Await_Yield
+	PreDec,                   // UpdateExpression_Await_Yield : '--' UnaryExpression_Await_Yield
 	0,                        // UpdateExpression_NoFuncClass : LeftHandSideExpression_NoFuncClass
 	PostInc,                  // UpdateExpression_NoFuncClass : LeftHandSideExpression_NoFuncClass .noLineBreak '++'
 	PostDec,                  // UpdateExpression_NoFuncClass : LeftHandSideExpression_NoFuncClass .noLineBreak '--'
@@ -1150,6 +1739,52 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression : '-' UnaryExpression
 	UnaryExpression,          // UnaryExpression : '~' UnaryExpression
 	UnaryExpression,          // UnaryExpression : '!' UnaryExpression
+	0,                        // UnaryExpression_Await : UpdateExpression_Await
+	UnaryExpression,          // UnaryExpression_Await : 'delete' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await : 'void' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await : 'typeof' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await : '+' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await : '-' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await : '~' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await : '!' UnaryExpression_Await
+	0,                        // UnaryExpression_Await : AwaitExpression
+	0,                        // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'delete' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'void' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'typeof' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '+' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '-' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '~' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '!' UnaryExpression_Await
+	0,                        // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : AwaitExpression
+	0,                        // UnaryExpression_Await_NoLet : UpdateExpression_Await_NoLet
+	UnaryExpression,          // UnaryExpression_Await_NoLet : 'delete' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoLet : 'void' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoLet : 'typeof' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoLet : '+' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoLet : '-' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoLet : '~' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoLet : '!' UnaryExpression_Await
+	0,                        // UnaryExpression_Await_NoLet : AwaitExpression
+	0,                        // UnaryExpression_Await_NoObjLiteral : UpdateExpression_Await_NoObjLiteral
+	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : 'delete' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : 'void' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : 'typeof' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : '+' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : '-' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : '~' UnaryExpression_Await
+	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : '!' UnaryExpression_Await
+	0,                        // UnaryExpression_Await_NoObjLiteral : AwaitExpression
+	0,                        // UnaryExpression_Await_StartWithLet : UpdateExpression_Await_StartWithLet
+	0,                        // UnaryExpression_Await_Yield : UpdateExpression_Await_Yield
+	UnaryExpression,          // UnaryExpression_Await_Yield : 'delete' UnaryExpression_Await_Yield
+	UnaryExpression,          // UnaryExpression_Await_Yield : 'void' UnaryExpression_Await_Yield
+	UnaryExpression,          // UnaryExpression_Await_Yield : 'typeof' UnaryExpression_Await_Yield
+	UnaryExpression,          // UnaryExpression_Await_Yield : '+' UnaryExpression_Await_Yield
+	UnaryExpression,          // UnaryExpression_Await_Yield : '-' UnaryExpression_Await_Yield
+	UnaryExpression,          // UnaryExpression_Await_Yield : '~' UnaryExpression_Await_Yield
+	UnaryExpression,          // UnaryExpression_Await_Yield : '!' UnaryExpression_Await_Yield
+	0,                        // UnaryExpression_Await_Yield : AwaitExpression_Yield
 	0,                        // UnaryExpression_NoFuncClass : UpdateExpression_NoFuncClass
 	UnaryExpression,          // UnaryExpression_NoFuncClass : 'delete' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoFuncClass : 'void' UnaryExpression
@@ -1218,6 +1853,66 @@ var ruleNodeType = [...]NodeType{
 	MultiplicativeExpression, // ArithmeticExpression : ArithmeticExpression '/' ArithmeticExpression
 	MultiplicativeExpression, // ArithmeticExpression : ArithmeticExpression '%' ArithmeticExpression
 	ExponentiationExpression, // ArithmeticExpression : UpdateExpression '**' ArithmeticExpression
+	0,                        // ArithmeticExpression_Await : UnaryExpression_Await
+	AdditiveExpression,       // ArithmeticExpression_Await : ArithmeticExpression_Await '+' ArithmeticExpression_Await
+	AdditiveExpression,       // ArithmeticExpression_Await : ArithmeticExpression_Await '-' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await : ArithmeticExpression_Await '<<' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await : ArithmeticExpression_Await '>>' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await : ArithmeticExpression_Await '>>>' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await : ArithmeticExpression_Await '*' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await : ArithmeticExpression_Await '/' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await : ArithmeticExpression_Await '%' ArithmeticExpression_Await
+	ExponentiationExpression, // ArithmeticExpression_Await : UpdateExpression_Await '**' ArithmeticExpression_Await
+	0,                        // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	AdditiveExpression,       // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '+' ArithmeticExpression_Await
+	AdditiveExpression,       // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '-' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '<<' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '>>' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '>>>' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '*' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '/' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '%' ArithmeticExpression_Await
+	ExponentiationExpression, // ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '**' ArithmeticExpression_Await
+	0,                        // ArithmeticExpression_Await_NoLet : UnaryExpression_Await_NoLet
+	AdditiveExpression,       // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '+' ArithmeticExpression_Await
+	AdditiveExpression,       // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '-' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '<<' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '>>' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '>>>' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '*' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '/' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoLet : ArithmeticExpression_Await_NoLet '%' ArithmeticExpression_Await
+	ExponentiationExpression, // ArithmeticExpression_Await_NoLet : UpdateExpression_Await_NoLet '**' ArithmeticExpression_Await
+	0,                        // ArithmeticExpression_Await_NoObjLiteral : UnaryExpression_Await_NoObjLiteral
+	AdditiveExpression,       // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '+' ArithmeticExpression_Await
+	AdditiveExpression,       // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '-' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '<<' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '>>' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '>>>' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '*' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '/' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral '%' ArithmeticExpression_Await
+	ExponentiationExpression, // ArithmeticExpression_Await_NoObjLiteral : UpdateExpression_Await_NoObjLiteral '**' ArithmeticExpression_Await
+	0,                        // ArithmeticExpression_Await_StartWithLet : UnaryExpression_Await_StartWithLet
+	AdditiveExpression,       // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '+' ArithmeticExpression_Await
+	AdditiveExpression,       // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '-' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '<<' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '>>' ArithmeticExpression_Await
+	ShiftExpression,          // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '>>>' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '*' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '/' ArithmeticExpression_Await
+	MultiplicativeExpression, // ArithmeticExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet '%' ArithmeticExpression_Await
+	ExponentiationExpression, // ArithmeticExpression_Await_StartWithLet : UpdateExpression_Await_StartWithLet '**' ArithmeticExpression_Await
+	0,                        // ArithmeticExpression_Await_Yield : UnaryExpression_Await_Yield
+	AdditiveExpression,       // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '+' ArithmeticExpression_Await_Yield
+	AdditiveExpression,       // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '-' ArithmeticExpression_Await_Yield
+	ShiftExpression,          // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '<<' ArithmeticExpression_Await_Yield
+	ShiftExpression,          // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '>>' ArithmeticExpression_Await_Yield
+	ShiftExpression,          // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '>>>' ArithmeticExpression_Await_Yield
+	MultiplicativeExpression, // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '*' ArithmeticExpression_Await_Yield
+	MultiplicativeExpression, // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '/' ArithmeticExpression_Await_Yield
+	MultiplicativeExpression, // ArithmeticExpression_Await_Yield : ArithmeticExpression_Await_Yield '%' ArithmeticExpression_Await_Yield
+	ExponentiationExpression, // ArithmeticExpression_Await_Yield : UpdateExpression_Await_Yield '**' ArithmeticExpression_Await_Yield
 	0,                        // ArithmeticExpression_NoFuncClass : UnaryExpression_NoFuncClass
 	AdditiveExpression,       // ArithmeticExpression_NoFuncClass : ArithmeticExpression_NoFuncClass '+' ArithmeticExpression
 	AdditiveExpression,       // ArithmeticExpression_NoFuncClass : ArithmeticExpression_NoFuncClass '-' ArithmeticExpression
@@ -1323,6 +2018,145 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,  // BinaryExpression : BinaryExpression '|' BinaryExpression
 	LogicalANDExpression, // BinaryExpression : BinaryExpression '&&' BinaryExpression
 	LogicalORExpression,  // BinaryExpression : BinaryExpression '||' BinaryExpression
+	0,                    // BinaryExpression_Await : ArithmeticExpression_Await
+	RelationalExpression, // BinaryExpression_Await : BinaryExpression_Await '<' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await : BinaryExpression_Await '>' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await : BinaryExpression_Await '<=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await : BinaryExpression_Await '>=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await : BinaryExpression_Await 'instanceof' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await : BinaryExpression_Await '==' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await : BinaryExpression_Await '!=' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await : BinaryExpression_Await '===' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await : BinaryExpression_Await '!==' BinaryExpression_Await
+	BitwiseANDExpression, // BinaryExpression_Await : BinaryExpression_Await '&' BinaryExpression_Await
+	BitwiseXORExpression, // BinaryExpression_Await : BinaryExpression_Await '^' BinaryExpression_Await
+	BitwiseORExpression,  // BinaryExpression_Await : BinaryExpression_Await '|' BinaryExpression_Await
+	LogicalANDExpression, // BinaryExpression_Await : BinaryExpression_Await '&&' BinaryExpression_Await
+	LogicalORExpression,  // BinaryExpression_Await : BinaryExpression_Await '||' BinaryExpression_Await
+	0,                    // BinaryExpression_Await_In : ArithmeticExpression_Await
+	RelationalExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In '<' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In '>' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In '<=' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In '>=' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In 'instanceof' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In 'in' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In : BinaryExpression_Await_In '==' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In : BinaryExpression_Await_In '!=' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In : BinaryExpression_Await_In '===' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In : BinaryExpression_Await_In '!==' BinaryExpression_Await_In
+	BitwiseANDExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In '&' BinaryExpression_Await_In
+	BitwiseXORExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In '^' BinaryExpression_Await_In
+	BitwiseORExpression,  // BinaryExpression_Await_In : BinaryExpression_Await_In '|' BinaryExpression_Await_In
+	LogicalANDExpression, // BinaryExpression_Await_In : BinaryExpression_Await_In '&&' BinaryExpression_Await_In
+	LogicalORExpression,  // BinaryExpression_Await_In : BinaryExpression_Await_In '||' BinaryExpression_Await_In
+	0,                    // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	RelationalExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '<' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '>' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '<=' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '>=' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral 'instanceof' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral 'in' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '==' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '!=' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '===' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '!==' BinaryExpression_Await_In
+	BitwiseANDExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '&' BinaryExpression_Await_In
+	BitwiseXORExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '^' BinaryExpression_Await_In
+	BitwiseORExpression,  // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '|' BinaryExpression_Await_In
+	LogicalANDExpression, // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '&&' BinaryExpression_Await_In
+	LogicalORExpression,  // BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '||' BinaryExpression_Await_In
+	0,                    // BinaryExpression_Await_In_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral
+	RelationalExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '<' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '>' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '<=' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '>=' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral 'instanceof' BinaryExpression_Await_In
+	RelationalExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral 'in' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '==' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '!=' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '===' BinaryExpression_Await_In
+	EqualityExpression,   // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '!==' BinaryExpression_Await_In
+	BitwiseANDExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '&' BinaryExpression_Await_In
+	BitwiseXORExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '^' BinaryExpression_Await_In
+	BitwiseORExpression,  // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '|' BinaryExpression_Await_In
+	LogicalANDExpression, // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '&&' BinaryExpression_Await_In
+	LogicalORExpression,  // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '||' BinaryExpression_Await_In
+	0,                    // BinaryExpression_Await_In_Yield : ArithmeticExpression_Await_Yield
+	RelationalExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '<' BinaryExpression_Await_In_Yield
+	RelationalExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '>' BinaryExpression_Await_In_Yield
+	RelationalExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '<=' BinaryExpression_Await_In_Yield
+	RelationalExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '>=' BinaryExpression_Await_In_Yield
+	RelationalExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield 'instanceof' BinaryExpression_Await_In_Yield
+	RelationalExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield 'in' BinaryExpression_Await_In_Yield
+	EqualityExpression,   // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '==' BinaryExpression_Await_In_Yield
+	EqualityExpression,   // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '!=' BinaryExpression_Await_In_Yield
+	EqualityExpression,   // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '===' BinaryExpression_Await_In_Yield
+	EqualityExpression,   // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '!==' BinaryExpression_Await_In_Yield
+	BitwiseANDExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '&' BinaryExpression_Await_In_Yield
+	BitwiseXORExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '^' BinaryExpression_Await_In_Yield
+	BitwiseORExpression,  // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '|' BinaryExpression_Await_In_Yield
+	LogicalANDExpression, // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '&&' BinaryExpression_Await_In_Yield
+	LogicalORExpression,  // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '||' BinaryExpression_Await_In_Yield
+	0,                    // BinaryExpression_Await_NoLet : ArithmeticExpression_Await_NoLet
+	RelationalExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '<' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '<=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet 'instanceof' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '==' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '!=' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '===' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '!==' BinaryExpression_Await
+	BitwiseANDExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '&' BinaryExpression_Await
+	BitwiseXORExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '^' BinaryExpression_Await
+	BitwiseORExpression,  // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '|' BinaryExpression_Await
+	LogicalANDExpression, // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '&&' BinaryExpression_Await
+	LogicalORExpression,  // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '||' BinaryExpression_Await
+	0,                    // BinaryExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral
+	RelationalExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '<' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '<=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral 'instanceof' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '==' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '!=' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '===' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '!==' BinaryExpression_Await
+	BitwiseANDExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '&' BinaryExpression_Await
+	BitwiseXORExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '^' BinaryExpression_Await
+	BitwiseORExpression,  // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '|' BinaryExpression_Await
+	LogicalANDExpression, // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '&&' BinaryExpression_Await
+	LogicalORExpression,  // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '||' BinaryExpression_Await
+	0,                    // BinaryExpression_Await_StartWithLet : ArithmeticExpression_Await_StartWithLet
+	RelationalExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '<' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '>' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '<=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '>=' BinaryExpression_Await
+	RelationalExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet 'instanceof' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '==' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '!=' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '===' BinaryExpression_Await
+	EqualityExpression,   // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '!==' BinaryExpression_Await
+	BitwiseANDExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '&' BinaryExpression_Await
+	BitwiseXORExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '^' BinaryExpression_Await
+	BitwiseORExpression,  // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '|' BinaryExpression_Await
+	LogicalANDExpression, // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '&&' BinaryExpression_Await
+	LogicalORExpression,  // BinaryExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '||' BinaryExpression_Await
+	0,                    // BinaryExpression_Await_Yield : ArithmeticExpression_Await_Yield
+	RelationalExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '<' BinaryExpression_Await_Yield
+	RelationalExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '>' BinaryExpression_Await_Yield
+	RelationalExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '<=' BinaryExpression_Await_Yield
+	RelationalExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '>=' BinaryExpression_Await_Yield
+	RelationalExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield 'instanceof' BinaryExpression_Await_Yield
+	EqualityExpression,   // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '==' BinaryExpression_Await_Yield
+	EqualityExpression,   // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '!=' BinaryExpression_Await_Yield
+	EqualityExpression,   // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '===' BinaryExpression_Await_Yield
+	EqualityExpression,   // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '!==' BinaryExpression_Await_Yield
+	BitwiseANDExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '&' BinaryExpression_Await_Yield
+	BitwiseXORExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '^' BinaryExpression_Await_Yield
+	BitwiseORExpression,  // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '|' BinaryExpression_Await_Yield
+	LogicalANDExpression, // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '&&' BinaryExpression_Await_Yield
+	LogicalORExpression,  // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '||' BinaryExpression_Await_Yield
 	0,                    // BinaryExpression_In : ArithmeticExpression
 	RelationalExpression, // BinaryExpression_In : BinaryExpression_In '<' BinaryExpression_In
 	RelationalExpression, // BinaryExpression_In : BinaryExpression_In '>' BinaryExpression_In
@@ -1511,6 +2345,24 @@ var ruleNodeType = [...]NodeType{
 	LogicalORExpression,  // BinaryExpression_Yield : BinaryExpression_Yield '||' BinaryExpression_Yield
 	0,                    // ConditionalExpression : BinaryExpression
 	ConditionalExpression, // ConditionalExpression : BinaryExpression '?' AssignmentExpression_In ':' AssignmentExpression
+	0, // ConditionalExpression_Await : BinaryExpression_Await
+	ConditionalExpression, // ConditionalExpression_Await : BinaryExpression_Await '?' AssignmentExpression_Await_In ':' AssignmentExpression_Await
+	0, // ConditionalExpression_Await_In : BinaryExpression_Await_In
+	ConditionalExpression, // ConditionalExpression_Await_In : BinaryExpression_Await_In '?' AssignmentExpression_Await_In ':' AssignmentExpression_Await_In
+	0, // ConditionalExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral
+	ConditionalExpression, // ConditionalExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral '?' AssignmentExpression_Await_In ':' AssignmentExpression_Await_In
+	0, // ConditionalExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral
+	ConditionalExpression, // ConditionalExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '?' AssignmentExpression_Await_In ':' AssignmentExpression_Await_In
+	0, // ConditionalExpression_Await_In_Yield : BinaryExpression_Await_In_Yield
+	ConditionalExpression, // ConditionalExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '?' AssignmentExpression_Await_In_Yield ':' AssignmentExpression_Await_In_Yield
+	0, // ConditionalExpression_Await_NoLet : BinaryExpression_Await_NoLet
+	ConditionalExpression, // ConditionalExpression_Await_NoLet : BinaryExpression_Await_NoLet '?' AssignmentExpression_Await_In ':' AssignmentExpression_Await
+	0, // ConditionalExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral
+	ConditionalExpression, // ConditionalExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '?' AssignmentExpression_Await_In ':' AssignmentExpression_Await
+	0, // ConditionalExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet
+	ConditionalExpression, // ConditionalExpression_Await_StartWithLet : BinaryExpression_Await_StartWithLet '?' AssignmentExpression_Await_In ':' AssignmentExpression_Await
+	0, // ConditionalExpression_Await_Yield : BinaryExpression_Await_Yield
+	ConditionalExpression, // ConditionalExpression_Await_Yield : BinaryExpression_Await_Yield '?' AssignmentExpression_Await_In_Yield ':' AssignmentExpression_Await_Yield
 	0, // ConditionalExpression_In : BinaryExpression_In
 	ConditionalExpression, // ConditionalExpression_In : BinaryExpression_In '?' AssignmentExpression_In ':' AssignmentExpression_In
 	0, // ConditionalExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass
@@ -1537,45 +2389,100 @@ var ruleNodeType = [...]NodeType{
 	ConditionalExpression, // ConditionalExpression_Yield : BinaryExpression_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
 	0,                     // AssignmentExpression : ConditionalExpression
 	0,                     // AssignmentExpression : ArrowFunction
+	0,                     // AssignmentExpression : AsyncArrowFunction
 	AssignmentExpression,  // AssignmentExpression : LeftHandSideExpression '=' AssignmentExpression
 	AssignmentExpression,  // AssignmentExpression : LeftHandSideExpression AssignmentOperator AssignmentExpression
+	0,                     // AssignmentExpression_Await : ConditionalExpression_Await
+	0,                     // AssignmentExpression_Await : ArrowFunction_Await
+	0,                     // AssignmentExpression_Await : AsyncArrowFunction_Await
+	AssignmentExpression,  // AssignmentExpression_Await : LeftHandSideExpression_Await '=' AssignmentExpression_Await
+	AssignmentExpression,  // AssignmentExpression_Await : LeftHandSideExpression_Await AssignmentOperator AssignmentExpression_Await
+	0,                     // AssignmentExpression_Await_In : ConditionalExpression_Await_In
+	0,                     // AssignmentExpression_Await_In : ArrowFunction_Await_In
+	0,                     // AssignmentExpression_Await_In : AsyncArrowFunction_Await_In
+	AssignmentExpression,  // AssignmentExpression_Await_In : LeftHandSideExpression_Await '=' AssignmentExpression_Await_In
+	AssignmentExpression,  // AssignmentExpression_Await_In : LeftHandSideExpression_Await AssignmentOperator AssignmentExpression_Await_In
+	0,                     // AssignmentExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : ConditionalExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                     // AssignmentExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : ArrowFunction_Await_In
+	0,                     // AssignmentExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : AsyncArrowFunction_Await_In_NoFuncClass_NoLetSq_NoObjLiteral
+	AssignmentExpression,  // AssignmentExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '=' AssignmentExpression_Await_In
+	AssignmentExpression,  // AssignmentExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral AssignmentOperator AssignmentExpression_Await_In
+	0,                     // AssignmentExpression_Await_In_NoObjLiteral : ConditionalExpression_Await_In_NoObjLiteral
+	0,                     // AssignmentExpression_Await_In_NoObjLiteral : ArrowFunction_Await_In
+	0,                     // AssignmentExpression_Await_In_NoObjLiteral : AsyncArrowFunction_Await_In_NoObjLiteral
+	AssignmentExpression,  // AssignmentExpression_Await_In_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral '=' AssignmentExpression_Await_In
+	AssignmentExpression,  // AssignmentExpression_Await_In_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral AssignmentOperator AssignmentExpression_Await_In
+	0,                     // AssignmentExpression_Await_In_Yield : ConditionalExpression_Await_In_Yield
+	0,                     // AssignmentExpression_Await_In_Yield : YieldExpression_Await_In
+	0,                     // AssignmentExpression_Await_In_Yield : ArrowFunction_Await_In_Yield
+	0,                     // AssignmentExpression_Await_In_Yield : AsyncArrowFunction_Await_In_Yield
+	AssignmentExpression,  // AssignmentExpression_Await_In_Yield : LeftHandSideExpression_Await_Yield '=' AssignmentExpression_Await_In_Yield
+	AssignmentExpression,  // AssignmentExpression_Await_In_Yield : LeftHandSideExpression_Await_Yield AssignmentOperator AssignmentExpression_Await_In_Yield
+	0,                     // AssignmentExpression_Await_NoLet : ConditionalExpression_Await_NoLet
+	0,                     // AssignmentExpression_Await_NoLet : ArrowFunction_Await
+	0,                     // AssignmentExpression_Await_NoLet : AsyncArrowFunction_Await_NoLet
+	AssignmentExpression,  // AssignmentExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet '=' AssignmentExpression_Await
+	AssignmentExpression,  // AssignmentExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet AssignmentOperator AssignmentExpression_Await
+	0,                     // AssignmentExpression_Await_NoObjLiteral : ConditionalExpression_Await_NoObjLiteral
+	0,                     // AssignmentExpression_Await_NoObjLiteral : ArrowFunction_Await
+	0,                     // AssignmentExpression_Await_NoObjLiteral : AsyncArrowFunction_Await_NoObjLiteral
+	AssignmentExpression,  // AssignmentExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral '=' AssignmentExpression_Await
+	AssignmentExpression,  // AssignmentExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral AssignmentOperator AssignmentExpression_Await
+	0,                     // AssignmentExpression_Await_StartWithLet : ConditionalExpression_Await_StartWithLet
+	AssignmentExpression,  // AssignmentExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet '=' AssignmentExpression_Await
+	AssignmentExpression,  // AssignmentExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet AssignmentOperator AssignmentExpression_Await
+	0,                     // AssignmentExpression_Await_Yield : ConditionalExpression_Await_Yield
+	0,                     // AssignmentExpression_Await_Yield : YieldExpression_Await
+	0,                     // AssignmentExpression_Await_Yield : ArrowFunction_Await_Yield
+	0,                     // AssignmentExpression_Await_Yield : AsyncArrowFunction_Await_Yield
+	AssignmentExpression,  // AssignmentExpression_Await_Yield : LeftHandSideExpression_Await_Yield '=' AssignmentExpression_Await_Yield
+	AssignmentExpression,  // AssignmentExpression_Await_Yield : LeftHandSideExpression_Await_Yield AssignmentOperator AssignmentExpression_Await_Yield
 	0,                     // AssignmentExpression_In : ConditionalExpression_In
 	0,                     // AssignmentExpression_In : ArrowFunction_In
+	0,                     // AssignmentExpression_In : AsyncArrowFunction_In
 	AssignmentExpression,  // AssignmentExpression_In : LeftHandSideExpression '=' AssignmentExpression_In
 	AssignmentExpression,  // AssignmentExpression_In : LeftHandSideExpression AssignmentOperator AssignmentExpression_In
 	0,                     // AssignmentExpression_In_NoFuncClass : ConditionalExpression_In_NoFuncClass
 	0,                     // AssignmentExpression_In_NoFuncClass : ArrowFunction_In
+	0,                     // AssignmentExpression_In_NoFuncClass : AsyncArrowFunction_In_NoFuncClass
 	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass : LeftHandSideExpression_NoFuncClass '=' AssignmentExpression_In
 	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass : LeftHandSideExpression_NoFuncClass AssignmentOperator AssignmentExpression_In
 	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral : ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
 	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral : ArrowFunction_In
+	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral : AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral
 	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral : LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral '=' AssignmentExpression_In
 	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral : LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral AssignmentOperator AssignmentExpression_In
 	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : ConditionalExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : YieldExpression_In
 	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : ArrowFunction_In_Yield
+	0,                     // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '=' AssignmentExpression_In_Yield
 	AssignmentExpression,  // AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield AssignmentOperator AssignmentExpression_In_Yield
 	0,                     // AssignmentExpression_In_NoObjLiteral : ConditionalExpression_In_NoObjLiteral
 	0,                     // AssignmentExpression_In_NoObjLiteral : ArrowFunction_In
+	0,                     // AssignmentExpression_In_NoObjLiteral : AsyncArrowFunction_In_NoObjLiteral
 	AssignmentExpression,  // AssignmentExpression_In_NoObjLiteral : LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression_In
 	AssignmentExpression,  // AssignmentExpression_In_NoObjLiteral : LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression_In
 	0,                     // AssignmentExpression_In_Yield : ConditionalExpression_In_Yield
 	0,                     // AssignmentExpression_In_Yield : YieldExpression_In
 	0,                     // AssignmentExpression_In_Yield : ArrowFunction_In_Yield
+	0,                     // AssignmentExpression_In_Yield : AsyncArrowFunction_In_Yield
 	AssignmentExpression,  // AssignmentExpression_In_Yield : LeftHandSideExpression_Yield '=' AssignmentExpression_In_Yield
 	AssignmentExpression,  // AssignmentExpression_In_Yield : LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_In_Yield
 	0,                     // AssignmentExpression_NoLet : ConditionalExpression_NoLet
 	0,                     // AssignmentExpression_NoLet : ArrowFunction
+	0,                     // AssignmentExpression_NoLet : AsyncArrowFunction_NoLet
 	AssignmentExpression,  // AssignmentExpression_NoLet : LeftHandSideExpression_NoLet '=' AssignmentExpression
 	AssignmentExpression,  // AssignmentExpression_NoLet : LeftHandSideExpression_NoLet AssignmentOperator AssignmentExpression
 	0,                     // AssignmentExpression_NoLet_Yield : ConditionalExpression_NoLet_Yield
 	0,                     // AssignmentExpression_NoLet_Yield : YieldExpression
 	0,                     // AssignmentExpression_NoLet_Yield : ArrowFunction_Yield
+	0,                     // AssignmentExpression_NoLet_Yield : AsyncArrowFunction_NoLet_Yield
 	AssignmentExpression,  // AssignmentExpression_NoLet_Yield : LeftHandSideExpression_NoLet_Yield '=' AssignmentExpression_Yield
 	AssignmentExpression,  // AssignmentExpression_NoLet_Yield : LeftHandSideExpression_NoLet_Yield AssignmentOperator AssignmentExpression_Yield
 	0,                     // AssignmentExpression_NoObjLiteral : ConditionalExpression_NoObjLiteral
 	0,                     // AssignmentExpression_NoObjLiteral : ArrowFunction
+	0,                     // AssignmentExpression_NoObjLiteral : AsyncArrowFunction_NoObjLiteral
 	AssignmentExpression,  // AssignmentExpression_NoObjLiteral : LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression
 	AssignmentExpression,  // AssignmentExpression_NoObjLiteral : LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression
 	0,                     // AssignmentExpression_StartWithLet : ConditionalExpression_StartWithLet
@@ -1587,6 +2494,7 @@ var ruleNodeType = [...]NodeType{
 	0,                     // AssignmentExpression_Yield : ConditionalExpression_Yield
 	0,                     // AssignmentExpression_Yield : YieldExpression
 	0,                     // AssignmentExpression_Yield : ArrowFunction_Yield
+	0,                     // AssignmentExpression_Yield : AsyncArrowFunction_Yield
 	AssignmentExpression,  // AssignmentExpression_Yield : LeftHandSideExpression_Yield '=' AssignmentExpression_Yield
 	AssignmentExpression,  // AssignmentExpression_Yield : LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_Yield
 	AssignmentOperator,    // AssignmentOperator : '*='
@@ -1601,6 +2509,11 @@ var ruleNodeType = [...]NodeType{
 	AssignmentOperator,    // AssignmentOperator : '^='
 	AssignmentOperator,    // AssignmentOperator : '|='
 	AssignmentOperator,    // AssignmentOperator : '**='
+	CommaExpression,       // CommaExpression_Await_In : Expression_Await_In ',' AssignmentExpression_Await_In
+	CommaExpression,       // CommaExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : Expression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral ',' AssignmentExpression_Await_In
+	CommaExpression,       // CommaExpression_Await_In_Yield : Expression_Await_In_Yield ',' AssignmentExpression_Await_In_Yield
+	CommaExpression,       // CommaExpression_Await_NoLet : Expression_Await_NoLet ',' AssignmentExpression_Await
+	CommaExpression,       // CommaExpression_Await_StartWithLet : Expression_Await_StartWithLet ',' AssignmentExpression_Await
 	CommaExpression,       // CommaExpression_In : Expression_In ',' AssignmentExpression_In
 	CommaExpression,       // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral : Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ',' AssignmentExpression_In
 	CommaExpression,       // CommaExpression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ',' AssignmentExpression_In_Yield
@@ -1609,6 +2522,16 @@ var ruleNodeType = [...]NodeType{
 	CommaExpression,       // CommaExpression_NoLet_Yield : Expression_NoLet_Yield ',' AssignmentExpression_Yield
 	CommaExpression,       // CommaExpression_StartWithLet : Expression_StartWithLet ',' AssignmentExpression
 	CommaExpression,       // CommaExpression_StartWithLet_Yield : Expression_StartWithLet_Yield ',' AssignmentExpression_Yield
+	0,                     // Expression_Await_In : AssignmentExpression_Await_In
+	0,                     // Expression_Await_In : CommaExpression_Await_In
+	0,                     // Expression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : AssignmentExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                     // Expression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : CommaExpression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                     // Expression_Await_In_Yield : AssignmentExpression_Await_In_Yield
+	0,                     // Expression_Await_In_Yield : CommaExpression_Await_In_Yield
+	0,                     // Expression_Await_NoLet : AssignmentExpression_Await_NoLet
+	0,                     // Expression_Await_NoLet : CommaExpression_Await_NoLet
+	0,                     // Expression_Await_StartWithLet : AssignmentExpression_Await_StartWithLet
+	0,                     // Expression_Await_StartWithLet : CommaExpression_Await_StartWithLet
 	0,                     // Expression_In : AssignmentExpression_In
 	0,                     // Expression_In : CommaExpression_In
 	0,                     // Expression_In_NoFuncClass_NoLetSq_NoObjLiteral : AssignmentExpression_In_NoFuncClass_NoLetSq_NoObjLiteral
@@ -1638,6 +2561,20 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Statement : ThrowStatement
 	0,                     // Statement : TryStatement
 	0,                     // Statement : DebuggerStatement
+	0,                     // Statement_Await_Return : BlockStatement_Await_Return
+	0,                     // Statement_Await_Return : VariableStatement_Await
+	0,                     // Statement_Await_Return : EmptyStatement
+	0,                     // Statement_Await_Return : ExpressionStatement_Await
+	0,                     // Statement_Await_Return : IfStatement_Await_Return
+	0,                     // Statement_Await_Return : BreakableStatement_Await_Return
+	0,                     // Statement_Await_Return : ContinueStatement_Await
+	0,                     // Statement_Await_Return : BreakStatement_Await
+	0,                     // Statement_Await_Return : ReturnStatement_Await
+	0,                     // Statement_Await_Return : WithStatement_Await_Return
+	0,                     // Statement_Await_Return : LabelledStatement_Await_Return
+	0,                     // Statement_Await_Return : ThrowStatement_Await
+	0,                     // Statement_Await_Return : TryStatement_Await_Return
+	0,                     // Statement_Await_Return : DebuggerStatement
 	0,                     // Statement_Return : BlockStatement_Return
 	0,                     // Statement_Return : VariableStatement
 	0,                     // Statement_Return : EmptyStatement
@@ -1669,32 +2606,48 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration : HoistableDeclaration
 	0,                     // Declaration : ClassDeclaration
 	0,                     // Declaration : LexicalDeclaration_In
+	0,                     // Declaration_Await : HoistableDeclaration_Await
+	0,                     // Declaration_Await : ClassDeclaration_Await
+	0,                     // Declaration_Await : LexicalDeclaration_Await_In
 	0,                     // Declaration_Yield : HoistableDeclaration_Yield
 	0,                     // Declaration_Yield : ClassDeclaration_Yield
 	0,                     // Declaration_Yield : LexicalDeclaration_In_Yield
 	0,                     // HoistableDeclaration : FunctionDeclaration
 	0,                     // HoistableDeclaration : GeneratorDeclaration
+	0,                     // HoistableDeclaration : AsyncFunctionDeclaration
+	0,                     // HoistableDeclaration_Await : FunctionDeclaration_Await
+	0,                     // HoistableDeclaration_Await : GeneratorDeclaration_Await
+	0,                     // HoistableDeclaration_Await : AsyncFunctionDeclaration_Await
 	0,                     // HoistableDeclaration_Default : FunctionDeclaration_Default
 	0,                     // HoistableDeclaration_Default : GeneratorDeclaration_Default
+	0,                     // HoistableDeclaration_Default : AsyncFunctionDeclaration_Default
 	0,                     // HoistableDeclaration_Yield : FunctionDeclaration_Yield
 	0,                     // HoistableDeclaration_Yield : GeneratorDeclaration_Yield
+	0,                     // HoistableDeclaration_Yield : AsyncFunctionDeclaration_Yield
 	0,                     // BreakableStatement : IterationStatement
 	0,                     // BreakableStatement : SwitchStatement
+	0,                     // BreakableStatement_Await_Return : IterationStatement_Await_Return
+	0,                     // BreakableStatement_Await_Return : SwitchStatement_Await_Return
 	0,                     // BreakableStatement_Return : IterationStatement_Return
 	0,                     // BreakableStatement_Return : SwitchStatement_Return
 	0,                     // BreakableStatement_Return_Yield : IterationStatement_Return_Yield
 	0,                     // BreakableStatement_Return_Yield : SwitchStatement_Return_Yield
 	0,                     // BlockStatement : Block
+	0,                     // BlockStatement_Await_Return : Block_Await_Return
 	0,                     // BlockStatement_Return : Block_Return
 	0,                     // BlockStatement_Return_Yield : Block_Return_Yield
 	Block,                 // Block : '{' StatementList '}'
 	Block,                 // Block : '{' '}'
+	Block,                 // Block_Await_Return : '{' StatementList_Await_Return '}'
+	Block,                 // Block_Await_Return : '{' '}'
 	Block,                 // Block_Return : '{' StatementList_Return '}'
 	Block,                 // Block_Return : '{' '}'
 	Block,                 // Block_Return_Yield : '{' StatementList_Return_Yield '}'
 	Block,                 // Block_Return_Yield : '{' '}'
 	0,                     // StatementList : StatementListItem
 	0,                     // StatementList : StatementList StatementListItem
+	0,                     // StatementList_Await_Return : StatementListItem_Await_Return
+	0,                     // StatementList_Await_Return : StatementList_Await_Return StatementListItem_Await_Return
 	0,                     // StatementList_Return : StatementListItem_Return
 	0,                     // StatementList_Return : StatementList_Return StatementListItem_Return
 	0,                     // StatementList_Return_Yield : StatementListItem_Return_Yield
@@ -1702,18 +2655,26 @@ var ruleNodeType = [...]NodeType{
 	0,                     // StatementListItem : Statement
 	0,                     // StatementListItem : Declaration
 	SyntaxProblem,         // StatementListItem : error ';'
+	0,                     // StatementListItem_Await_Return : Statement_Await_Return
+	0,                     // StatementListItem_Await_Return : Declaration_Await
+	SyntaxProblem,         // StatementListItem_Await_Return : error ';'
 	0,                     // StatementListItem_Return : Statement_Return
 	0,                     // StatementListItem_Return : Declaration
 	SyntaxProblem,         // StatementListItem_Return : error ';'
 	0,                     // StatementListItem_Return_Yield : Statement_Return_Yield
 	0,                     // StatementListItem_Return_Yield : Declaration_Yield
 	SyntaxProblem,         // StatementListItem_Return_Yield : error ';'
+	LexicalDeclaration,    // LexicalDeclaration_Await_In : LetOrConst BindingList_Await_In ';'
 	LexicalDeclaration,    // LexicalDeclaration_In : LetOrConst BindingList_In ';'
 	LexicalDeclaration,    // LexicalDeclaration_In_Yield : LetOrConst BindingList_In_Yield ';'
 	0,                     // LetOrConst : 'let'
 	0,                     // LetOrConst : 'const'
 	0,                     // BindingList : LexicalBinding
 	0,                     // BindingList : BindingList ',' LexicalBinding
+	0,                     // BindingList_Await : LexicalBinding_Await
+	0,                     // BindingList_Await : BindingList_Await ',' LexicalBinding_Await
+	0,                     // BindingList_Await_In : LexicalBinding_Await_In
+	0,                     // BindingList_Await_In : BindingList_Await_In ',' LexicalBinding_Await_In
 	0,                     // BindingList_In : LexicalBinding_In
 	0,                     // BindingList_In : BindingList_In ',' LexicalBinding_In
 	0,                     // BindingList_In_Yield : LexicalBinding_In_Yield
@@ -1722,6 +2683,10 @@ var ruleNodeType = [...]NodeType{
 	0,                     // BindingList_Yield : BindingList_Yield ',' LexicalBinding_Yield
 	LexicalBinding,        // LexicalBinding : BindingIdentifier Initializeropt
 	LexicalBinding,        // LexicalBinding : BindingPattern Initializer
+	LexicalBinding,        // LexicalBinding_Await : BindingIdentifier_Await Initializeropt_Await
+	LexicalBinding,        // LexicalBinding_Await : BindingPattern_Await Initializer_Await
+	LexicalBinding,        // LexicalBinding_Await_In : BindingIdentifier_Await Initializeropt_Await_In
+	LexicalBinding,        // LexicalBinding_Await_In : BindingPattern_Await Initializer_Await_In
 	LexicalBinding,        // LexicalBinding_In : BindingIdentifier Initializeropt_In
 	LexicalBinding,        // LexicalBinding_In : BindingPattern Initializer_In
 	LexicalBinding,        // LexicalBinding_In_Yield : BindingIdentifier_Yield Initializeropt_In_Yield
@@ -1729,9 +2694,14 @@ var ruleNodeType = [...]NodeType{
 	LexicalBinding,        // LexicalBinding_Yield : BindingIdentifier_Yield Initializeropt_Yield
 	LexicalBinding,        // LexicalBinding_Yield : BindingPattern_Yield Initializer_Yield
 	VariableStatement,     // VariableStatement : 'var' VariableDeclarationList_In ';'
+	VariableStatement,     // VariableStatement_Await : 'var' VariableDeclarationList_Await_In ';'
 	VariableStatement,     // VariableStatement_Yield : 'var' VariableDeclarationList_In_Yield ';'
 	0,                     // VariableDeclarationList : VariableDeclaration
 	0,                     // VariableDeclarationList : VariableDeclarationList ',' VariableDeclaration
+	0,                     // VariableDeclarationList_Await : VariableDeclaration_Await
+	0,                     // VariableDeclarationList_Await : VariableDeclarationList_Await ',' VariableDeclaration_Await
+	0,                     // VariableDeclarationList_Await_In : VariableDeclaration_Await_In
+	0,                     // VariableDeclarationList_Await_In : VariableDeclarationList_Await_In ',' VariableDeclaration_Await_In
 	0,                     // VariableDeclarationList_In : VariableDeclaration_In
 	0,                     // VariableDeclarationList_In : VariableDeclarationList_In ',' VariableDeclaration_In
 	0,                     // VariableDeclarationList_In_Yield : VariableDeclaration_In_Yield
@@ -1740,6 +2710,10 @@ var ruleNodeType = [...]NodeType{
 	0,                     // VariableDeclarationList_Yield : VariableDeclarationList_Yield ',' VariableDeclaration_Yield
 	VariableDeclaration,   // VariableDeclaration : BindingIdentifier Initializeropt
 	VariableDeclaration,   // VariableDeclaration : BindingPattern Initializer
+	VariableDeclaration,   // VariableDeclaration_Await : BindingIdentifier_Await Initializeropt_Await
+	VariableDeclaration,   // VariableDeclaration_Await : BindingPattern_Await Initializer_Await
+	VariableDeclaration,   // VariableDeclaration_Await_In : BindingIdentifier_Await Initializeropt_Await_In
+	VariableDeclaration,   // VariableDeclaration_Await_In : BindingPattern_Await Initializer_Await_In
 	VariableDeclaration,   // VariableDeclaration_In : BindingIdentifier Initializeropt_In
 	VariableDeclaration,   // VariableDeclaration_In : BindingPattern Initializer_In
 	VariableDeclaration,   // VariableDeclaration_In_Yield : BindingIdentifier_Yield Initializeropt_In_Yield
@@ -1748,14 +2722,28 @@ var ruleNodeType = [...]NodeType{
 	VariableDeclaration,   // VariableDeclaration_Yield : BindingPattern_Yield Initializer_Yield
 	0,                     // BindingPattern : ObjectBindingPattern
 	0,                     // BindingPattern : ArrayBindingPattern
+	0,                     // BindingPattern_Await : ObjectBindingPattern_Await
+	0,                     // BindingPattern_Await : ArrayBindingPattern_Await
+	0,                     // BindingPattern_Await_Yield : ObjectBindingPattern_Await_Yield
+	0,                     // BindingPattern_Await_Yield : ArrayBindingPattern_Await_Yield
 	0,                     // BindingPattern_Yield : ObjectBindingPattern_Yield
 	0,                     // BindingPattern_Yield : ArrayBindingPattern_Yield
 	ObjectPattern,         // ObjectBindingPattern : '{' '}'
 	ObjectPattern,         // ObjectBindingPattern : '{' PropertyPattern_list_Comma_separated ',' '}'
 	ObjectPattern,         // ObjectBindingPattern : '{' PropertyPattern_list_Comma_separated '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' PropertyPattern_Await_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' PropertyPattern_Await_list_Comma_separated '}'
+	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' '}'
+	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' PropertyPattern_Await_Yield_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' PropertyPattern_Await_Yield_list_Comma_separated '}'
 	ObjectPattern,         // ObjectBindingPattern_Yield : '{' '}'
 	ObjectPattern,         // ObjectBindingPattern_Yield : '{' PropertyPattern_Yield_list_Comma_separated ',' '}'
 	ObjectPattern,         // ObjectBindingPattern_Yield : '{' PropertyPattern_Yield_list_Comma_separated '}'
+	0,                     // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await_list_Comma_separated ',' PropertyPattern_Await
+	0,                     // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await
+	0,                     // PropertyPattern_Await_Yield_list_Comma_separated : PropertyPattern_Await_Yield_list_Comma_separated ',' PropertyPattern_Await_Yield
+	0,                     // PropertyPattern_Await_Yield_list_Comma_separated : PropertyPattern_Await_Yield
 	0,                     // PropertyPattern_list_Comma_separated : PropertyPattern_list_Comma_separated ',' PropertyPattern
 	0,                     // PropertyPattern_list_Comma_separated : PropertyPattern
 	0,                     // PropertyPattern_Yield_list_Comma_separated : PropertyPattern_Yield_list_Comma_separated ',' PropertyPattern_Yield
@@ -1763,38 +2751,71 @@ var ruleNodeType = [...]NodeType{
 	ArrayPattern,          // ArrayBindingPattern : '[' Elisionopt BindingRestElementopt ']'
 	ArrayPattern,          // ArrayBindingPattern : '[' ElementPatternList ']'
 	ArrayPattern,          // ArrayBindingPattern : '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,          // ArrayBindingPattern_Await : '[' Elisionopt BindingRestElementopt_Await ']'
+	ArrayPattern,          // ArrayBindingPattern_Await : '[' ElementPatternList_Await ']'
+	ArrayPattern,          // ArrayBindingPattern_Await : '[' ElementPatternList_Await ',' Elisionopt BindingRestElementopt_Await ']'
+	ArrayPattern,          // ArrayBindingPattern_Await_Yield : '[' Elisionopt BindingRestElementopt_Await_Yield ']'
+	ArrayPattern,          // ArrayBindingPattern_Await_Yield : '[' ElementPatternList_Await_Yield ']'
+	ArrayPattern,          // ArrayBindingPattern_Await_Yield : '[' ElementPatternList_Await_Yield ',' Elisionopt BindingRestElementopt_Await_Yield ']'
 	ArrayPattern,          // ArrayBindingPattern_Yield : '[' Elisionopt BindingRestElementopt_Yield ']'
 	ArrayPattern,          // ArrayBindingPattern_Yield : '[' ElementPatternList_Yield ']'
 	ArrayPattern,          // ArrayBindingPattern_Yield : '[' ElementPatternList_Yield ',' Elisionopt BindingRestElementopt_Yield ']'
 	0,                     // ElementPatternList : BindingElisionElement
 	0,                     // ElementPatternList : ElementPatternList ',' BindingElisionElement
+	0,                     // ElementPatternList_Await : BindingElisionElement_Await
+	0,                     // ElementPatternList_Await : ElementPatternList_Await ',' BindingElisionElement_Await
+	0,                     // ElementPatternList_Await_Yield : BindingElisionElement_Await_Yield
+	0,                     // ElementPatternList_Await_Yield : ElementPatternList_Await_Yield ',' BindingElisionElement_Await_Yield
 	0,                     // ElementPatternList_Yield : BindingElisionElement_Yield
 	0,                     // ElementPatternList_Yield : ElementPatternList_Yield ',' BindingElisionElement_Yield
 	0,                     // BindingElisionElement : Elision ElementPattern
 	0,                     // BindingElisionElement : ElementPattern
+	0,                     // BindingElisionElement_Await : Elision ElementPattern_Await
+	0,                     // BindingElisionElement_Await : ElementPattern_Await
+	0,                     // BindingElisionElement_Await_Yield : Elision ElementPattern_Await_Yield
+	0,                     // BindingElisionElement_Await_Yield : ElementPattern_Await_Yield
 	0,                     // BindingElisionElement_Yield : Elision ElementPattern_Yield
 	0,                     // BindingElisionElement_Yield : ElementPattern_Yield
 	0,                     // PropertyPattern : SingleNameBinding
 	PropertyBinding,       // PropertyPattern : PropertyName ':' ElementPattern
 	0,                     // PropertyPattern : SyntaxError
+	0,                     // PropertyPattern_Await : SingleNameBinding_Await
+	PropertyBinding,       // PropertyPattern_Await : PropertyName_Await ':' ElementPattern_Await
+	0,                     // PropertyPattern_Await : SyntaxError
+	0,                     // PropertyPattern_Await_Yield : SingleNameBinding_Await_Yield
+	PropertyBinding,       // PropertyPattern_Await_Yield : PropertyName_Await_Yield ':' ElementPattern_Await_Yield
+	0,                     // PropertyPattern_Await_Yield : SyntaxError
 	0,                     // PropertyPattern_Yield : SingleNameBinding_Yield
 	PropertyBinding,       // PropertyPattern_Yield : PropertyName_Yield ':' ElementPattern_Yield
 	0,                     // PropertyPattern_Yield : SyntaxError
 	0,                     // ElementPattern : SingleNameBinding
 	ElementBinding,        // ElementPattern : BindingPattern Initializeropt_In
 	0,                     // ElementPattern : SyntaxError
+	0,                     // ElementPattern_Await : SingleNameBinding_Await
+	ElementBinding,        // ElementPattern_Await : BindingPattern_Await Initializeropt_Await_In
+	0,                     // ElementPattern_Await : SyntaxError
+	0,                     // ElementPattern_Await_Yield : SingleNameBinding_Await_Yield
+	ElementBinding,        // ElementPattern_Await_Yield : BindingPattern_Await_Yield Initializeropt_Await_In_Yield
+	0,                     // ElementPattern_Await_Yield : SyntaxError
 	0,                     // ElementPattern_Yield : SingleNameBinding_Yield
 	ElementBinding,        // ElementPattern_Yield : BindingPattern_Yield Initializeropt_In_Yield
 	0,                     // ElementPattern_Yield : SyntaxError
 	SingleNameBinding,     // SingleNameBinding : BindingIdentifier Initializeropt_In
+	SingleNameBinding,     // SingleNameBinding_Await : BindingIdentifier_Await Initializeropt_Await_In
+	SingleNameBinding,     // SingleNameBinding_Await_Yield : BindingIdentifier_Await_Yield Initializeropt_Await_In_Yield
 	SingleNameBinding,     // SingleNameBinding_Yield : BindingIdentifier_Yield Initializeropt_In_Yield
 	BindingRestElement,    // BindingRestElement : '...' BindingIdentifier
+	BindingRestElement,    // BindingRestElement_Await : '...' BindingIdentifier_Await
+	BindingRestElement,    // BindingRestElement_Await_Yield : '...' BindingIdentifier_Await_Yield
 	BindingRestElement,    // BindingRestElement_Yield : '...' BindingIdentifier_Yield
 	EmptyStatement,        // EmptyStatement : ';' .emptyStatement
 	ExpressionStatement,   // ExpressionStatement : Expression_In_NoFuncClass_NoLetSq_NoObjLiteral ';'
+	ExpressionStatement,   // ExpressionStatement_Await : Expression_Await_In_NoFuncClass_NoLetSq_NoObjLiteral ';'
 	ExpressionStatement,   // ExpressionStatement_Yield : Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ';'
 	IfStatement,           // IfStatement : 'if' '(' Expression_In ')' Statement 'else' Statement
 	IfStatement,           // IfStatement : 'if' '(' Expression_In ')' Statement %prec 'else'
+	IfStatement,           // IfStatement_Await_Return : 'if' '(' Expression_Await_In ')' Statement_Await_Return 'else' Statement_Await_Return
+	IfStatement,           // IfStatement_Await_Return : 'if' '(' Expression_Await_In ')' Statement_Await_Return %prec 'else'
 	IfStatement,           // IfStatement_Return : 'if' '(' Expression_In ')' Statement_Return 'else' Statement_Return
 	IfStatement,           // IfStatement_Return : 'if' '(' Expression_In ')' Statement_Return %prec 'else'
 	IfStatement,           // IfStatement_Return_Yield : 'if' '(' Expression_In_Yield ')' Statement_Return_Yield 'else' Statement_Return_Yield
@@ -1809,9 +2830,24 @@ var ruleNodeType = [...]NodeType{
 	ForInStatement,        // IterationStatement : 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement
 	ForInStatementWithVar, // IterationStatement : 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement
 	ForInStatementWithVar, // IterationStatement : 'for' '(' ForDeclaration 'in' Expression_In ')' Statement
-	ForOfStatement,        // IterationStatement : 'for' '(' LeftHandSideExpression_NoLet 'of' AssignmentExpression_In ')' Statement
+	ForOfStatement,        // IterationStatement : 'for' '(' LeftHandSideExpression_NoAsync_NoLet 'of' AssignmentExpression_In ')' Statement
+	ForOfStatement,        // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
 	ForOfStatementWithVar, // IterationStatement : 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement
 	ForOfStatementWithVar, // IterationStatement : 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement
+	DoWhileStatement,      // IterationStatement_Await_Return : 'do' Statement_Await_Return 'while' '(' Expression_Await_In ')' ';' .doWhile
+	WhileStatement,        // IterationStatement_Await_Return : 'while' '(' Expression_Await_In ')' Statement_Await_Return
+	ForStatement,          // IterationStatement_Await_Return : 'for' '(' Expressionopt_Await_NoLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
+	ForStatement,          // IterationStatement_Await_Return : 'for' '(' Expression_Await_StartWithLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
+	ForStatementWithVar,   // IterationStatement_Await_Return : 'for' '(' 'var' VariableDeclarationList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
+	ForStatementWithVar,   // IterationStatement_Await_Return : 'for' '(' LetOrConst BindingList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
+	ForInStatement,        // IterationStatement_Await_Return : 'for' '(' LeftHandSideExpression_Await_NoLet 'in' Expression_Await_In ')' Statement_Await_Return
+	ForInStatement,        // IterationStatement_Await_Return : 'for' '(' LeftHandSideExpression_Await_StartWithLet 'in' Expression_Await_In ')' Statement_Await_Return
+	ForInStatementWithVar, // IterationStatement_Await_Return : 'for' '(' 'var' ForBinding_Await 'in' Expression_Await_In ')' Statement_Await_Return
+	ForInStatementWithVar, // IterationStatement_Await_Return : 'for' '(' ForDeclaration_Await 'in' Expression_Await_In ')' Statement_Await_Return
+	ForOfStatement,        // IterationStatement_Await_Return : 'for' '(' LeftHandSideExpression_Await_NoAsync_NoLet 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
+	ForOfStatement,        // IterationStatement_Await_Return : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
+	ForOfStatementWithVar, // IterationStatement_Await_Return : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
+	ForOfStatementWithVar, // IterationStatement_Await_Return : 'for' '(' ForDeclaration_Await 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
 	DoWhileStatement,      // IterationStatement_Return : 'do' Statement_Return 'while' '(' Expression_In ')' ';' .doWhile
 	WhileStatement,        // IterationStatement_Return : 'while' '(' Expression_In ')' Statement_Return
 	ForStatement,          // IterationStatement_Return : 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
@@ -1822,7 +2858,8 @@ var ruleNodeType = [...]NodeType{
 	ForInStatement,        // IterationStatement_Return : 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement_Return
 	ForInStatementWithVar, // IterationStatement_Return : 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement_Return
 	ForInStatementWithVar, // IterationStatement_Return : 'for' '(' ForDeclaration 'in' Expression_In ')' Statement_Return
-	ForOfStatement,        // IterationStatement_Return : 'for' '(' LeftHandSideExpression_NoLet 'of' AssignmentExpression_In ')' Statement_Return
+	ForOfStatement,        // IterationStatement_Return : 'for' '(' LeftHandSideExpression_NoAsync_NoLet 'of' AssignmentExpression_In ')' Statement_Return
+	ForOfStatement,        // IterationStatement_Return : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement_Return
 	ForOfStatementWithVar, // IterationStatement_Return : 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement_Return
 	ForOfStatementWithVar, // IterationStatement_Return : 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement_Return
 	DoWhileStatement,      // IterationStatement_Return_Yield : 'do' Statement_Return_Yield 'while' '(' Expression_In_Yield ')' ';' .doWhile
@@ -1835,241 +2872,421 @@ var ruleNodeType = [...]NodeType{
 	ForInStatement,        // IterationStatement_Return_Yield : 'for' '(' LeftHandSideExpression_StartWithLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
 	ForInStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
 	ForInStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' ForDeclaration_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForOfStatement,        // IterationStatement_Return_Yield : 'for' '(' LeftHandSideExpression_NoLet_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
+	ForOfStatement,        // IterationStatement_Return_Yield : 'for' '(' LeftHandSideExpression_NoAsync_NoLet_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
+	ForOfStatement,        // IterationStatement_Return_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
 	ForOfStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
 	ForOfStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' ForDeclaration_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
-	0,                   // ForDeclaration : LetOrConst ForBinding
-	0,                   // ForDeclaration_Yield : LetOrConst ForBinding_Yield
-	ForBinding,          // ForBinding : BindingIdentifier
-	ForBinding,          // ForBinding : BindingPattern
-	ForBinding,          // ForBinding_Yield : BindingIdentifier_Yield
-	ForBinding,          // ForBinding_Yield : BindingPattern_Yield
-	ForCondition,        // ForCondition : Expressionopt_In
-	ForCondition,        // ForCondition_Yield : Expressionopt_In_Yield
-	ForFinalExpression,  // ForFinalExpression : Expressionopt_In
-	ForFinalExpression,  // ForFinalExpression_Yield : Expressionopt_In_Yield
-	ContinueStatement,   // ContinueStatement : 'continue' ';'
-	ContinueStatement,   // ContinueStatement : 'continue' .noLineBreak LabelIdentifier ';'
-	ContinueStatement,   // ContinueStatement_Yield : 'continue' ';'
-	ContinueStatement,   // ContinueStatement_Yield : 'continue' .noLineBreak LabelIdentifier_Yield ';'
-	BreakStatement,      // BreakStatement : 'break' ';'
-	BreakStatement,      // BreakStatement : 'break' .noLineBreak LabelIdentifier ';'
-	BreakStatement,      // BreakStatement_Yield : 'break' ';'
-	BreakStatement,      // BreakStatement_Yield : 'break' .noLineBreak LabelIdentifier_Yield ';'
-	ReturnStatement,     // ReturnStatement : 'return' ';'
-	ReturnStatement,     // ReturnStatement : 'return' .noLineBreak Expression_In ';'
-	ReturnStatement,     // ReturnStatement_Yield : 'return' ';'
-	ReturnStatement,     // ReturnStatement_Yield : 'return' .noLineBreak Expression_In_Yield ';'
-	WithStatement,       // WithStatement : 'with' '(' Expression_In ')' Statement
-	WithStatement,       // WithStatement_Return : 'with' '(' Expression_In ')' Statement_Return
-	WithStatement,       // WithStatement_Return_Yield : 'with' '(' Expression_In_Yield ')' Statement_Return_Yield
-	SwitchStatement,     // SwitchStatement : 'switch' '(' Expression_In ')' CaseBlock
-	SwitchStatement,     // SwitchStatement_Return : 'switch' '(' Expression_In ')' CaseBlock_Return
-	SwitchStatement,     // SwitchStatement_Return_Yield : 'switch' '(' Expression_In_Yield ')' CaseBlock_Return_Yield
-	Block,               // CaseBlock : '{' CaseClausesopt '}'
-	Block,               // CaseBlock_Return : '{' CaseClausesopt_Return '}'
-	Block,               // CaseBlock_Return_Yield : '{' CaseClausesopt_Return_Yield '}'
-	0,                   // CaseClauses : CaseClause
-	0,                   // CaseClauses : CaseClauses CaseClause
-	0,                   // CaseClauses_Return : CaseClause_Return
-	0,                   // CaseClauses_Return : CaseClauses_Return CaseClause_Return
-	0,                   // CaseClauses_Return_Yield : CaseClause_Return_Yield
-	0,                   // CaseClauses_Return_Yield : CaseClauses_Return_Yield CaseClause_Return_Yield
-	Case,                // CaseClause : 'case' Expression_In ':' StatementList
-	Case,                // CaseClause : 'case' Expression_In ':'
-	Default,             // CaseClause : 'default' ':' StatementList
-	Default,             // CaseClause : 'default' ':'
-	Case,                // CaseClause_Return : 'case' Expression_In ':' StatementList_Return
-	Case,                // CaseClause_Return : 'case' Expression_In ':'
-	Default,             // CaseClause_Return : 'default' ':' StatementList_Return
-	Default,             // CaseClause_Return : 'default' ':'
-	Case,                // CaseClause_Return_Yield : 'case' Expression_In_Yield ':' StatementList_Return_Yield
-	Case,                // CaseClause_Return_Yield : 'case' Expression_In_Yield ':'
-	Default,             // CaseClause_Return_Yield : 'default' ':' StatementList_Return_Yield
-	Default,             // CaseClause_Return_Yield : 'default' ':'
-	LabelledStatement,   // LabelledStatement : LabelIdentifier ':' LabelledItem
-	LabelledStatement,   // LabelledStatement_Return : LabelIdentifier ':' LabelledItem_Return
-	LabelledStatement,   // LabelledStatement_Return_Yield : LabelIdentifier_Yield ':' LabelledItem_Return_Yield
-	0,                   // LabelledItem : Statement
-	0,                   // LabelledItem : FunctionDeclaration
-	0,                   // LabelledItem_Return : Statement_Return
-	0,                   // LabelledItem_Return : FunctionDeclaration
-	0,                   // LabelledItem_Return_Yield : Statement_Return_Yield
-	0,                   // LabelledItem_Return_Yield : FunctionDeclaration_Yield
-	ThrowStatement,      // ThrowStatement : 'throw' .noLineBreak Expression_In ';'
-	ThrowStatement,      // ThrowStatement_Yield : 'throw' .noLineBreak Expression_In_Yield ';'
-	TryStatement,        // TryStatement : 'try' Block Catch
-	TryStatement,        // TryStatement : 'try' Block Catch Finally
-	TryStatement,        // TryStatement : 'try' Block Finally
-	TryStatement,        // TryStatement_Return : 'try' Block_Return Catch_Return
-	TryStatement,        // TryStatement_Return : 'try' Block_Return Catch_Return Finally_Return
-	TryStatement,        // TryStatement_Return : 'try' Block_Return Finally_Return
-	TryStatement,        // TryStatement_Return_Yield : 'try' Block_Return_Yield Catch_Return_Yield
-	TryStatement,        // TryStatement_Return_Yield : 'try' Block_Return_Yield Catch_Return_Yield Finally_Return_Yield
-	TryStatement,        // TryStatement_Return_Yield : 'try' Block_Return_Yield Finally_Return_Yield
-	Catch,               // Catch : 'catch' '(' CatchParameter ')' Block
-	Catch,               // Catch_Return : 'catch' '(' CatchParameter ')' Block_Return
-	Catch,               // Catch_Return_Yield : 'catch' '(' CatchParameter_Yield ')' Block_Return_Yield
-	Finally,             // Finally : 'finally' Block
-	Finally,             // Finally_Return : 'finally' Block_Return
-	Finally,             // Finally_Return_Yield : 'finally' Block_Return_Yield
-	0,                   // CatchParameter : BindingIdentifier
-	0,                   // CatchParameter : BindingPattern
-	0,                   // CatchParameter_Yield : BindingIdentifier_Yield
-	0,                   // CatchParameter_Yield : BindingPattern_Yield
-	DebuggerStatement,   // DebuggerStatement : 'debugger' ';'
-	Function,            // FunctionDeclaration : 'function' BindingIdentifier FormalParameters FunctionBody
-	Function,            // FunctionDeclaration_Default : 'function' BindingIdentifier FormalParameters FunctionBody
-	Function,            // FunctionDeclaration_Default : 'function' FormalParameters FunctionBody
-	Function,            // FunctionDeclaration_Yield : 'function' BindingIdentifier_Yield FormalParameters FunctionBody
-	FunctionExpression,  // FunctionExpression : 'function' BindingIdentifier FormalParameters FunctionBody
-	FunctionExpression,  // FunctionExpression : 'function' FormalParameters FunctionBody
-	0,                   // StrictFormalParameters : FormalParameters
-	0,                   // StrictFormalParameters_Yield : FormalParameters_Yield
-	Parameters,          // FormalParameters : '(' FormalParameterList ')'
-	Parameters,          // FormalParameters : '(' ')'
-	Parameters,          // FormalParameters_Yield : '(' FormalParameterList_Yield ')'
-	Parameters,          // FormalParameters_Yield : '(' ')'
-	0,                   // FormalParameterList : FunctionRestParameter
-	0,                   // FormalParameterList : FormalsList
-	0,                   // FormalParameterList : FormalsList ',' FunctionRestParameter
-	0,                   // FormalParameterList_Yield : FunctionRestParameter_Yield
-	0,                   // FormalParameterList_Yield : FormalsList_Yield
-	0,                   // FormalParameterList_Yield : FormalsList_Yield ',' FunctionRestParameter_Yield
-	0,                   // FormalsList : FormalParameter
-	0,                   // FormalsList : FormalsList ',' FormalParameter
-	0,                   // FormalsList_Yield : FormalParameter_Yield
-	0,                   // FormalsList_Yield : FormalsList_Yield ',' FormalParameter_Yield
-	RestParameter,       // FunctionRestParameter : BindingRestElement
-	RestParameter,       // FunctionRestParameter_Yield : BindingRestElement_Yield
-	Parameter,           // FormalParameter : ElementPattern
-	Parameter,           // FormalParameter_Yield : ElementPattern_Yield
-	Body,                // FunctionBody : '{' StatementList_Return '}'
-	Body,                // FunctionBody : '{' '}'
-	Body,                // FunctionBody_Yield : '{' StatementList_Return_Yield '}'
-	Body,                // FunctionBody_Yield : '{' '}'
-	ArrowFunction,       // ArrowFunction : ArrowParameters .noLineBreak '=>' ConciseBody
-	ArrowFunction,       // ArrowFunction_In : ArrowParameters .noLineBreak '=>' ConciseBody_In
-	ArrowFunction,       // ArrowFunction_In_Yield : ArrowParameters_Yield .noLineBreak '=>' ConciseBody_In
-	ArrowFunction,       // ArrowFunction_Yield : ArrowParameters_Yield .noLineBreak '=>' ConciseBody
-	Parameters,          // ArrowParameters : BindingIdentifier
-	Parameters,          // ArrowParameters : CoverParenthesizedExpressionAndArrowParameterList
-	Parameters,          // ArrowParameters_Yield : BindingIdentifier_Yield
-	Parameters,          // ArrowParameters_Yield : CoverParenthesizedExpressionAndArrowParameterList_Yield
-	ConciseBody,         // ConciseBody : AssignmentExpression_NoObjLiteral
-	0,                   // ConciseBody : FunctionBody
-	ConciseBody,         // ConciseBody_In : AssignmentExpression_In_NoObjLiteral
-	0,                   // ConciseBody_In : FunctionBody
-	Method,              // MethodDefinition : PropertyName StrictFormalParameters FunctionBody
-	0,                   // MethodDefinition : GeneratorMethod
-	Getter,              // MethodDefinition : 'get' PropertyName '(' ')' FunctionBody
-	Setter,              // MethodDefinition : 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
-	Method,              // MethodDefinition_Yield : PropertyName_Yield StrictFormalParameters_Yield FunctionBody_Yield
-	0,                   // MethodDefinition_Yield : GeneratorMethod_Yield
-	Getter,              // MethodDefinition_Yield : 'get' PropertyName_Yield '(' ')' FunctionBody_Yield
-	Setter,              // MethodDefinition_Yield : 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody_Yield
-	0,                   // PropertySetParameterList : FormalParameter
-	GeneratorMethod,     // GeneratorMethod : '*' PropertyName StrictFormalParameters_Yield GeneratorBody
-	GeneratorMethod,     // GeneratorMethod_Yield : '*' PropertyName_Yield StrictFormalParameters_Yield GeneratorBody
-	Generator,           // GeneratorDeclaration : 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
-	Generator,           // GeneratorDeclaration_Default : 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
-	Generator,           // GeneratorDeclaration_Default : 'function' '*' FormalParameters_Yield GeneratorBody
-	Generator,           // GeneratorDeclaration_Yield : 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
-	GeneratorExpression, // GeneratorExpression : 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
-	GeneratorExpression, // GeneratorExpression : 'function' '*' FormalParameters_Yield GeneratorBody
-	0,                   // GeneratorBody : FunctionBody_Yield
-	Yield,               // YieldExpression : 'yield'
-	Yield,               // YieldExpression : 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
-	Yield,               // YieldExpression : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
-	Yield,               // YieldExpression_In : 'yield'
-	Yield,               // YieldExpression_In : 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
-	Yield,               // YieldExpression_In : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
-	Class,               // ClassDeclaration : 'class' BindingIdentifier ClassTail
-	Class,               // ClassDeclaration_Default : 'class' BindingIdentifier ClassTail
-	Class,               // ClassDeclaration_Default : 'class' ClassTail
-	Class,               // ClassDeclaration_Yield : 'class' BindingIdentifier_Yield ClassTail_Yield
-	ClassExpr,           // ClassExpression : 'class' BindingIdentifier ClassTail
-	ClassExpr,           // ClassExpression : 'class' ClassTail
-	ClassExpr,           // ClassExpression_Yield : 'class' BindingIdentifier_Yield ClassTail_Yield
-	ClassExpr,           // ClassExpression_Yield : 'class' ClassTail_Yield
-	0,                   // ClassTail : ClassHeritage ClassBody
-	0,                   // ClassTail : ClassBody
-	0,                   // ClassTail_Yield : ClassHeritage_Yield ClassBody_Yield
-	0,                   // ClassTail_Yield : ClassBody_Yield
-	Extends,             // ClassHeritage : 'extends' LeftHandSideExpression
-	Extends,             // ClassHeritage_Yield : 'extends' LeftHandSideExpression_Yield
-	ClassBody,           // ClassBody : '{' ClassElementList '}'
-	ClassBody,           // ClassBody : '{' '}'
-	ClassBody,           // ClassBody_Yield : '{' ClassElementList_Yield '}'
-	ClassBody,           // ClassBody_Yield : '{' '}'
-	0,                   // ClassElementList : ClassElement
-	0,                   // ClassElementList : ClassElementList ClassElement
-	0,                   // ClassElementList_Yield : ClassElement_Yield
-	0,                   // ClassElementList_Yield : ClassElementList_Yield ClassElement_Yield
-	0,                   // ClassElement : MethodDefinition
-	StaticMethod,        // ClassElement : 'static' MethodDefinition
-	EmptyDecl,           // ClassElement : ';'
-	0,                   // ClassElement_Yield : MethodDefinition_Yield
-	StaticMethod,        // ClassElement_Yield : 'static' MethodDefinition_Yield
-	EmptyDecl,           // ClassElement_Yield : ';'
-	Module,              // Module : ModuleBodyopt
-	0,                   // ModuleBody : ModuleItemList
-	0,                   // ModuleItemList : ModuleItem
-	0,                   // ModuleItemList : ModuleItemList ModuleItem
-	0,                   // ModuleItem : ImportDeclaration
-	0,                   // ModuleItem : ExportDeclaration
-	0,                   // ModuleItem : StatementListItem
-	ImportDeclaration,   // ImportDeclaration : 'import' ImportClause FromClause ';'
-	ImportDeclaration,   // ImportDeclaration : 'import' ModuleSpecifier ';'
-	0,                   // ImportClause : ImportedDefaultBinding
-	0,                   // ImportClause : NameSpaceImport
-	0,                   // ImportClause : NamedImports
-	0,                   // ImportClause : ImportedDefaultBinding ',' NameSpaceImport
-	0,                   // ImportClause : ImportedDefaultBinding ',' NamedImports
-	0,                   // ImportedDefaultBinding : ImportedBinding
-	NameSpaceImport,     // NameSpaceImport : '*' 'as' ImportedBinding
-	0,                   // FromClause : 'from' ModuleSpecifier
-	0,                   // NamedImport_list_Comma_separated : NamedImport_list_Comma_separated ',' NamedImport
-	0,                   // NamedImport_list_Comma_separated : NamedImport
-	NamedImports,        // NamedImports : '{' '}'
-	NamedImports,        // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
-	NamedImports,        // NamedImports : '{' NamedImport_list_Comma_separated '}'
-	ImportSpecifier,     // NamedImport : ImportedBinding
-	ImportSpecifier,     // NamedImport : IdentifierNameRef 'as' ImportedBinding
-	SyntaxProblem,       // NamedImport : error
-	ModuleSpecifier,     // ModuleSpecifier : StringLiteral
-	0,                   // ImportedBinding : BindingIdentifier
-	ExportDeclaration,   // ExportDeclaration : 'export' '*' FromClause ';'
-	ExportDeclaration,   // ExportDeclaration : 'export' ExportClause FromClause ';'
-	ExportDeclaration,   // ExportDeclaration : 'export' ExportClause ';'
-	ExportDeclaration,   // ExportDeclaration : 'export' VariableStatement
-	ExportDeclaration,   // ExportDeclaration : 'export' Declaration
-	ExportDefault,       // ExportDeclaration : 'export' 'default' HoistableDeclaration_Default
-	ExportDefault,       // ExportDeclaration : 'export' 'default' ClassDeclaration_Default
-	ExportDefault,       // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
-	ExportClause,        // ExportClause : '{' '}'
-	ExportClause,        // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
-	ExportClause,        // ExportClause : '{' ExportElement_list_Comma_separated '}'
-	0,                   // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
-	0,                   // ExportElement_list_Comma_separated : ExportElement
-	ExportSpecifier,     // ExportElement : IdentifierNameRef
-	ExportSpecifier,     // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
-	SyntaxProblem,       // ExportElement : error
-	0,                   // JSXChild_optlist : JSXChild_optlist JSXChild
-	0,                   // JSXChild_optlist :
-	0,                   // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield
-	0,                   // JSXChild_Yield_optlist :
-	JSXElement,          // JSXElement : JSXSelfClosingElement
-	JSXElement,          // JSXElement : JSXOpeningElement JSXChild_optlist JSXClosingElement
-	JSXElement,          // JSXElement_Yield : JSXSelfClosingElement_Yield
-	JSXElement,          // JSXElement_Yield : JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
-	0,                   // JSXAttribute_optlist : JSXAttribute_optlist JSXAttribute
-	0,                   // JSXAttribute_optlist :
-	0,                   // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
-	0,                   // JSXAttribute_Yield_optlist :
+	0,                       // ForDeclaration : LetOrConst ForBinding
+	0,                       // ForDeclaration_Await : LetOrConst ForBinding_Await
+	0,                       // ForDeclaration_Yield : LetOrConst ForBinding_Yield
+	ForBinding,              // ForBinding : BindingIdentifier
+	ForBinding,              // ForBinding : BindingPattern
+	ForBinding,              // ForBinding_Await : BindingIdentifier_Await
+	ForBinding,              // ForBinding_Await : BindingPattern_Await
+	ForBinding,              // ForBinding_Yield : BindingIdentifier_Yield
+	ForBinding,              // ForBinding_Yield : BindingPattern_Yield
+	ForCondition,            // ForCondition : Expressionopt_In
+	ForCondition,            // ForCondition_Await : Expressionopt_Await_In
+	ForCondition,            // ForCondition_Yield : Expressionopt_In_Yield
+	ForFinalExpression,      // ForFinalExpression : Expressionopt_In
+	ForFinalExpression,      // ForFinalExpression_Await : Expressionopt_Await_In
+	ForFinalExpression,      // ForFinalExpression_Yield : Expressionopt_In_Yield
+	ContinueStatement,       // ContinueStatement : 'continue' ';'
+	ContinueStatement,       // ContinueStatement : 'continue' .noLineBreak LabelIdentifier ';'
+	ContinueStatement,       // ContinueStatement_Await : 'continue' ';'
+	ContinueStatement,       // ContinueStatement_Await : 'continue' .noLineBreak LabelIdentifier_Await ';'
+	ContinueStatement,       // ContinueStatement_Yield : 'continue' ';'
+	ContinueStatement,       // ContinueStatement_Yield : 'continue' .noLineBreak LabelIdentifier_Yield ';'
+	BreakStatement,          // BreakStatement : 'break' ';'
+	BreakStatement,          // BreakStatement : 'break' .noLineBreak LabelIdentifier ';'
+	BreakStatement,          // BreakStatement_Await : 'break' ';'
+	BreakStatement,          // BreakStatement_Await : 'break' .noLineBreak LabelIdentifier_Await ';'
+	BreakStatement,          // BreakStatement_Yield : 'break' ';'
+	BreakStatement,          // BreakStatement_Yield : 'break' .noLineBreak LabelIdentifier_Yield ';'
+	ReturnStatement,         // ReturnStatement : 'return' ';'
+	ReturnStatement,         // ReturnStatement : 'return' .noLineBreak Expression_In ';'
+	ReturnStatement,         // ReturnStatement_Await : 'return' ';'
+	ReturnStatement,         // ReturnStatement_Await : 'return' .noLineBreak Expression_Await_In ';'
+	ReturnStatement,         // ReturnStatement_Yield : 'return' ';'
+	ReturnStatement,         // ReturnStatement_Yield : 'return' .noLineBreak Expression_In_Yield ';'
+	WithStatement,           // WithStatement : 'with' '(' Expression_In ')' Statement
+	WithStatement,           // WithStatement_Await_Return : 'with' '(' Expression_Await_In ')' Statement_Await_Return
+	WithStatement,           // WithStatement_Return : 'with' '(' Expression_In ')' Statement_Return
+	WithStatement,           // WithStatement_Return_Yield : 'with' '(' Expression_In_Yield ')' Statement_Return_Yield
+	SwitchStatement,         // SwitchStatement : 'switch' '(' Expression_In ')' CaseBlock
+	SwitchStatement,         // SwitchStatement_Await_Return : 'switch' '(' Expression_Await_In ')' CaseBlock_Await_Return
+	SwitchStatement,         // SwitchStatement_Return : 'switch' '(' Expression_In ')' CaseBlock_Return
+	SwitchStatement,         // SwitchStatement_Return_Yield : 'switch' '(' Expression_In_Yield ')' CaseBlock_Return_Yield
+	Block,                   // CaseBlock : '{' CaseClausesopt '}'
+	Block,                   // CaseBlock_Await_Return : '{' CaseClausesopt_Await_Return '}'
+	Block,                   // CaseBlock_Return : '{' CaseClausesopt_Return '}'
+	Block,                   // CaseBlock_Return_Yield : '{' CaseClausesopt_Return_Yield '}'
+	0,                       // CaseClauses : CaseClause
+	0,                       // CaseClauses : CaseClauses CaseClause
+	0,                       // CaseClauses_Await_Return : CaseClause_Await_Return
+	0,                       // CaseClauses_Await_Return : CaseClauses_Await_Return CaseClause_Await_Return
+	0,                       // CaseClauses_Return : CaseClause_Return
+	0,                       // CaseClauses_Return : CaseClauses_Return CaseClause_Return
+	0,                       // CaseClauses_Return_Yield : CaseClause_Return_Yield
+	0,                       // CaseClauses_Return_Yield : CaseClauses_Return_Yield CaseClause_Return_Yield
+	Case,                    // CaseClause : 'case' Expression_In ':' StatementList
+	Case,                    // CaseClause : 'case' Expression_In ':'
+	Default,                 // CaseClause : 'default' ':' StatementList
+	Default,                 // CaseClause : 'default' ':'
+	Case,                    // CaseClause_Await_Return : 'case' Expression_Await_In ':' StatementList_Await_Return
+	Case,                    // CaseClause_Await_Return : 'case' Expression_Await_In ':'
+	Default,                 // CaseClause_Await_Return : 'default' ':' StatementList_Await_Return
+	Default,                 // CaseClause_Await_Return : 'default' ':'
+	Case,                    // CaseClause_Return : 'case' Expression_In ':' StatementList_Return
+	Case,                    // CaseClause_Return : 'case' Expression_In ':'
+	Default,                 // CaseClause_Return : 'default' ':' StatementList_Return
+	Default,                 // CaseClause_Return : 'default' ':'
+	Case,                    // CaseClause_Return_Yield : 'case' Expression_In_Yield ':' StatementList_Return_Yield
+	Case,                    // CaseClause_Return_Yield : 'case' Expression_In_Yield ':'
+	Default,                 // CaseClause_Return_Yield : 'default' ':' StatementList_Return_Yield
+	Default,                 // CaseClause_Return_Yield : 'default' ':'
+	LabelledStatement,       // LabelledStatement : LabelIdentifier ':' LabelledItem
+	LabelledStatement,       // LabelledStatement_Await_Return : LabelIdentifier_Await ':' LabelledItem_Await_Return
+	LabelledStatement,       // LabelledStatement_Return : LabelIdentifier ':' LabelledItem_Return
+	LabelledStatement,       // LabelledStatement_Return_Yield : LabelIdentifier_Yield ':' LabelledItem_Return_Yield
+	0,                       // LabelledItem : Statement
+	0,                       // LabelledItem : FunctionDeclaration
+	0,                       // LabelledItem_Await_Return : Statement_Await_Return
+	0,                       // LabelledItem_Await_Return : FunctionDeclaration_Await
+	0,                       // LabelledItem_Return : Statement_Return
+	0,                       // LabelledItem_Return : FunctionDeclaration
+	0,                       // LabelledItem_Return_Yield : Statement_Return_Yield
+	0,                       // LabelledItem_Return_Yield : FunctionDeclaration_Yield
+	ThrowStatement,          // ThrowStatement : 'throw' .noLineBreak Expression_In ';'
+	ThrowStatement,          // ThrowStatement_Await : 'throw' .noLineBreak Expression_Await_In ';'
+	ThrowStatement,          // ThrowStatement_Yield : 'throw' .noLineBreak Expression_In_Yield ';'
+	TryStatement,            // TryStatement : 'try' Block Catch
+	TryStatement,            // TryStatement : 'try' Block Catch Finally
+	TryStatement,            // TryStatement : 'try' Block Finally
+	TryStatement,            // TryStatement_Await_Return : 'try' Block_Await_Return Catch_Await_Return
+	TryStatement,            // TryStatement_Await_Return : 'try' Block_Await_Return Catch_Await_Return Finally_Await_Return
+	TryStatement,            // TryStatement_Await_Return : 'try' Block_Await_Return Finally_Await_Return
+	TryStatement,            // TryStatement_Return : 'try' Block_Return Catch_Return
+	TryStatement,            // TryStatement_Return : 'try' Block_Return Catch_Return Finally_Return
+	TryStatement,            // TryStatement_Return : 'try' Block_Return Finally_Return
+	TryStatement,            // TryStatement_Return_Yield : 'try' Block_Return_Yield Catch_Return_Yield
+	TryStatement,            // TryStatement_Return_Yield : 'try' Block_Return_Yield Catch_Return_Yield Finally_Return_Yield
+	TryStatement,            // TryStatement_Return_Yield : 'try' Block_Return_Yield Finally_Return_Yield
+	Catch,                   // Catch : 'catch' '(' CatchParameter ')' Block
+	Catch,                   // Catch_Await_Return : 'catch' '(' CatchParameter_Await ')' Block_Await_Return
+	Catch,                   // Catch_Return : 'catch' '(' CatchParameter ')' Block_Return
+	Catch,                   // Catch_Return_Yield : 'catch' '(' CatchParameter_Yield ')' Block_Return_Yield
+	Finally,                 // Finally : 'finally' Block
+	Finally,                 // Finally_Await_Return : 'finally' Block_Await_Return
+	Finally,                 // Finally_Return : 'finally' Block_Return
+	Finally,                 // Finally_Return_Yield : 'finally' Block_Return_Yield
+	0,                       // CatchParameter : BindingIdentifier
+	0,                       // CatchParameter : BindingPattern
+	0,                       // CatchParameter_Await : BindingIdentifier_Await
+	0,                       // CatchParameter_Await : BindingPattern_Await
+	0,                       // CatchParameter_Yield : BindingIdentifier_Yield
+	0,                       // CatchParameter_Yield : BindingPattern_Yield
+	DebuggerStatement,       // DebuggerStatement : 'debugger' ';'
+	Function,                // FunctionDeclaration : 'function' BindingIdentifier FormalParameters FunctionBody
+	Function,                // FunctionDeclaration_Await : 'function' BindingIdentifier_Await FormalParameters FunctionBody
+	Function,                // FunctionDeclaration_Default : 'function' BindingIdentifier FormalParameters FunctionBody
+	Function,                // FunctionDeclaration_Default : 'function' FormalParameters FunctionBody
+	Function,                // FunctionDeclaration_Yield : 'function' BindingIdentifier_Yield FormalParameters FunctionBody
+	FunctionExpression,      // FunctionExpression : 'function' BindingIdentifier FormalParameters FunctionBody
+	FunctionExpression,      // FunctionExpression : 'function' FormalParameters FunctionBody
+	0,                       // UniqueFormalParameters : FormalParameters
+	0,                       // UniqueFormalParameters_Await : FormalParameters_Await
+	0,                       // UniqueFormalParameters_Yield : FormalParameters_Yield
+	Parameters,              // FormalParameters : '(' FormalParameterList ')'
+	Parameters,              // FormalParameters : '(' ')'
+	Parameters,              // FormalParameters_Await : '(' FormalParameterList_Await ')'
+	Parameters,              // FormalParameters_Await : '(' ')'
+	Parameters,              // FormalParameters_Yield : '(' FormalParameterList_Yield ')'
+	Parameters,              // FormalParameters_Yield : '(' ')'
+	0,                       // FormalParameterList : FunctionRestParameter
+	0,                       // FormalParameterList : FormalsList ','
+	0,                       // FormalParameterList : FormalsList
+	0,                       // FormalParameterList : FormalsList ',' FunctionRestParameter
+	0,                       // FormalParameterList_Await : FunctionRestParameter_Await
+	0,                       // FormalParameterList_Await : FormalsList_Await ','
+	0,                       // FormalParameterList_Await : FormalsList_Await
+	0,                       // FormalParameterList_Await : FormalsList_Await ',' FunctionRestParameter_Await
+	0,                       // FormalParameterList_Yield : FunctionRestParameter_Yield
+	0,                       // FormalParameterList_Yield : FormalsList_Yield ','
+	0,                       // FormalParameterList_Yield : FormalsList_Yield
+	0,                       // FormalParameterList_Yield : FormalsList_Yield ',' FunctionRestParameter_Yield
+	0,                       // FormalsList : FormalParameter
+	0,                       // FormalsList : FormalsList ',' FormalParameter
+	0,                       // FormalsList_Await : FormalParameter_Await
+	0,                       // FormalsList_Await : FormalsList_Await ',' FormalParameter_Await
+	0,                       // FormalsList_Yield : FormalParameter_Yield
+	0,                       // FormalsList_Yield : FormalsList_Yield ',' FormalParameter_Yield
+	RestParameter,           // FunctionRestParameter : BindingRestElement
+	RestParameter,           // FunctionRestParameter_Await : BindingRestElement_Await
+	RestParameter,           // FunctionRestParameter_Yield : BindingRestElement_Yield
+	Parameter,               // FormalParameter : ElementPattern
+	Parameter,               // FormalParameter_Await : ElementPattern_Await
+	Parameter,               // FormalParameter_Yield : ElementPattern_Yield
+	Body,                    // FunctionBody : '{' StatementList_Return '}'
+	Body,                    // FunctionBody : '{' '}'
+	Body,                    // FunctionBody_Await : '{' StatementList_Await_Return '}'
+	Body,                    // FunctionBody_Await : '{' '}'
+	Body,                    // FunctionBody_Yield : '{' StatementList_Return_Yield '}'
+	Body,                    // FunctionBody_Yield : '{' '}'
+	ArrowFunction,           // ArrowFunction : ArrowParameters .noLineBreak '=>' ConciseBody
+	ArrowFunction,           // ArrowFunction_Await : ArrowParameters_Await .noLineBreak '=>' ConciseBody
+	ArrowFunction,           // ArrowFunction_Await_In : ArrowParameters_Await .noLineBreak '=>' ConciseBody_In
+	ArrowFunction,           // ArrowFunction_Await_In_Yield : ArrowParameters_Await_Yield .noLineBreak '=>' ConciseBody_In
+	ArrowFunction,           // ArrowFunction_Await_Yield : ArrowParameters_Await_Yield .noLineBreak '=>' ConciseBody
+	ArrowFunction,           // ArrowFunction_In : ArrowParameters .noLineBreak '=>' ConciseBody_In
+	ArrowFunction,           // ArrowFunction_In_Yield : ArrowParameters_Yield .noLineBreak '=>' ConciseBody_In
+	ArrowFunction,           // ArrowFunction_Yield : ArrowParameters_Yield .noLineBreak '=>' ConciseBody
+	Parameters,              // ArrowParameters : BindingIdentifier
+	Parameters,              // ArrowParameters : CoverParenthesizedExpressionAndArrowParameterList
+	Parameters,              // ArrowParameters_Await : BindingIdentifier_Await
+	Parameters,              // ArrowParameters_Await : CoverParenthesizedExpressionAndArrowParameterList_Await
+	Parameters,              // ArrowParameters_Await_Yield : BindingIdentifier_Await_Yield
+	Parameters,              // ArrowParameters_Await_Yield : CoverParenthesizedExpressionAndArrowParameterList_Await_Yield
+	Parameters,              // ArrowParameters_Yield : BindingIdentifier_Yield
+	Parameters,              // ArrowParameters_Yield : CoverParenthesizedExpressionAndArrowParameterList_Yield
+	ConciseBody,             // ConciseBody : AssignmentExpression_NoObjLiteral
+	0,                       // ConciseBody : FunctionBody
+	ConciseBody,             // ConciseBody_In : AssignmentExpression_In_NoObjLiteral
+	0,                       // ConciseBody_In : FunctionBody
+	AsyncArrowFunction,      // AsyncArrowFunction : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction : CoverCallExpressionAndAsyncArrowHead .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await : CoverCallExpressionAndAsyncArrowHead_Await .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In : CoverCallExpressionAndAsyncArrowHead_Await .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier_Yield .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_Yield : CoverCallExpressionAndAsyncArrowHead_Await_Yield .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoLet : CoverCallExpressionAndAsyncArrowHead_Await_NoLet .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoObjLiteral .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_StartWithLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_StartWithLet : CoverCallExpressionAndAsyncArrowHead_Await_StartWithLet .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier_Yield .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_Yield : CoverCallExpressionAndAsyncArrowHead_Await_Yield .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_In : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In : CoverCallExpressionAndAsyncArrowHead .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass : CoverCallExpressionAndAsyncArrowHead_NoFuncClass .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier_Yield .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier_Yield .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_Yield : CoverCallExpressionAndAsyncArrowHead_Yield .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_NoLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoLet : CoverCallExpressionAndAsyncArrowHead_NoLet .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoLet_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier_Yield .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoLet_Yield : CoverCallExpressionAndAsyncArrowHead_NoLet_Yield .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoObjLiteral .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet : CoverCallExpressionAndAsyncArrowHead_StartWithLet .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier_Yield .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet_Yield : CoverCallExpressionAndAsyncArrowHead_StartWithLet_Yield .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier_Yield .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Yield : CoverCallExpressionAndAsyncArrowHead_Yield .noLineBreak '=>' AsyncConciseBody
+	ConciseBody,             // AsyncConciseBody : AssignmentExpression_Await_NoObjLiteral
+	0,                       // AsyncConciseBody : AsyncFunctionBody
+	ConciseBody,             // AsyncConciseBody_In : AssignmentExpression_Await_In_NoObjLiteral
+	0,                       // AsyncConciseBody_In : AsyncFunctionBody
+	Method,                  // MethodDefinition : PropertyName UniqueFormalParameters FunctionBody
+	0,                       // MethodDefinition : GeneratorMethod
+	0,                       // MethodDefinition : AsyncMethod
+	Getter,                  // MethodDefinition : 'get' PropertyName '(' ')' FunctionBody
+	Setter,                  // MethodDefinition : 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
+	Method,                  // MethodDefinition_Await : PropertyName_Await UniqueFormalParameters FunctionBody
+	0,                       // MethodDefinition_Await : GeneratorMethod_Await
+	0,                       // MethodDefinition_Await : AsyncMethod_Await
+	Getter,                  // MethodDefinition_Await : 'get' PropertyName_Await '(' ')' FunctionBody
+	Setter,                  // MethodDefinition_Await : 'set' PropertyName_Await '(' PropertySetParameterList ')' FunctionBody
+	Method,                  // MethodDefinition_Await_Yield : PropertyName_Await_Yield UniqueFormalParameters FunctionBody
+	0,                       // MethodDefinition_Await_Yield : GeneratorMethod_Await_Yield
+	0,                       // MethodDefinition_Await_Yield : AsyncMethod_Await_Yield
+	Getter,                  // MethodDefinition_Await_Yield : 'get' PropertyName_Await_Yield '(' ')' FunctionBody
+	Setter,                  // MethodDefinition_Await_Yield : 'set' PropertyName_Await_Yield '(' PropertySetParameterList ')' FunctionBody
+	Method,                  // MethodDefinition_Yield : PropertyName_Yield UniqueFormalParameters FunctionBody
+	0,                       // MethodDefinition_Yield : GeneratorMethod_Yield
+	0,                       // MethodDefinition_Yield : AsyncMethod_Yield
+	Getter,                  // MethodDefinition_Yield : 'get' PropertyName_Yield '(' ')' FunctionBody
+	Setter,                  // MethodDefinition_Yield : 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody
+	0,                       // PropertySetParameterList : FormalParameter
+	GeneratorMethod,         // GeneratorMethod : '*' PropertyName UniqueFormalParameters_Yield GeneratorBody
+	GeneratorMethod,         // GeneratorMethod_Await : '*' PropertyName_Await UniqueFormalParameters_Yield GeneratorBody
+	GeneratorMethod,         // GeneratorMethod_Await_Yield : '*' PropertyName_Await_Yield UniqueFormalParameters_Yield GeneratorBody
+	GeneratorMethod,         // GeneratorMethod_Yield : '*' PropertyName_Yield UniqueFormalParameters_Yield GeneratorBody
+	Generator,               // GeneratorDeclaration : 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	Generator,               // GeneratorDeclaration_Await : 'function' '*' BindingIdentifier_Await FormalParameters_Yield GeneratorBody
+	Generator,               // GeneratorDeclaration_Default : 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	Generator,               // GeneratorDeclaration_Default : 'function' '*' FormalParameters_Yield GeneratorBody
+	Generator,               // GeneratorDeclaration_Yield : 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
+	GeneratorExpression,     // GeneratorExpression : 'function' '*' BindingIdentifier_Yield FormalParameters_Yield GeneratorBody
+	GeneratorExpression,     // GeneratorExpression : 'function' '*' FormalParameters_Yield GeneratorBody
+	0,                       // GeneratorBody : FunctionBody_Yield
+	Yield,                   // YieldExpression : 'yield'
+	Yield,                   // YieldExpression : 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
+	Yield,                   // YieldExpression : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
+	Yield,                   // YieldExpression_Await : 'yield'
+	Yield,                   // YieldExpression_Await : 'yield' .afterYield .noLineBreak AssignmentExpression_Await_Yield
+	Yield,                   // YieldExpression_Await : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Await_Yield
+	Yield,                   // YieldExpression_Await_In : 'yield'
+	Yield,                   // YieldExpression_Await_In : 'yield' .afterYield .noLineBreak AssignmentExpression_Await_In_Yield
+	Yield,                   // YieldExpression_Await_In : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Await_In_Yield
+	Yield,                   // YieldExpression_In : 'yield'
+	Yield,                   // YieldExpression_In : 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
+	Yield,                   // YieldExpression_In : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
+	AsyncMethod,             // AsyncMethod : 'async' .noLineBreak PropertyName UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncMethod,             // AsyncMethod_Await : 'async' .noLineBreak PropertyName_Await UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncMethod,             // AsyncMethod_Await_Yield : 'async' .noLineBreak PropertyName_Await_Yield UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncMethod,             // AsyncMethod_Yield : 'async' .noLineBreak PropertyName_Yield UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration : 'async' .noLineBreak 'function' BindingIdentifier FormalParameters AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration_Await : 'async' .noLineBreak 'function' BindingIdentifier_Await FormalParameters_Await AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration_Default : 'async' .noLineBreak 'function' BindingIdentifier FormalParameters AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration_Default : 'async' .noLineBreak 'function' FormalParameters AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration_Yield : 'async' .noLineBreak 'function' BindingIdentifier_Yield FormalParameters AsyncFunctionBody
+	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .noLineBreak 'function' BindingIdentifier_Await FormalParameters_Await AsyncFunctionBody
+	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
+	0,                 // AsyncFunctionBody : FunctionBody_Await
+	AwaitExpression,   // AwaitExpression : 'await' UnaryExpression_Await
+	AwaitExpression,   // AwaitExpression_Yield : 'await' UnaryExpression_Await_Yield
+	Class,             // ClassDeclaration : 'class' BindingIdentifier ClassTail
+	Class,             // ClassDeclaration_Await : 'class' BindingIdentifier_Await ClassTail_Await
+	Class,             // ClassDeclaration_Default : 'class' BindingIdentifier ClassTail
+	Class,             // ClassDeclaration_Default : 'class' ClassTail
+	Class,             // ClassDeclaration_Yield : 'class' BindingIdentifier_Yield ClassTail_Yield
+	ClassExpr,         // ClassExpression : 'class' BindingIdentifier ClassTail
+	ClassExpr,         // ClassExpression : 'class' ClassTail
+	ClassExpr,         // ClassExpression_Await : 'class' BindingIdentifier_Await ClassTail_Await
+	ClassExpr,         // ClassExpression_Await : 'class' ClassTail_Await
+	ClassExpr,         // ClassExpression_Await_Yield : 'class' BindingIdentifier_Await_Yield ClassTail_Await_Yield
+	ClassExpr,         // ClassExpression_Await_Yield : 'class' ClassTail_Await_Yield
+	ClassExpr,         // ClassExpression_Yield : 'class' BindingIdentifier_Yield ClassTail_Yield
+	ClassExpr,         // ClassExpression_Yield : 'class' ClassTail_Yield
+	0,                 // ClassTail : ClassHeritage ClassBody
+	0,                 // ClassTail : ClassBody
+	0,                 // ClassTail_Await : ClassHeritage_Await ClassBody_Await
+	0,                 // ClassTail_Await : ClassBody_Await
+	0,                 // ClassTail_Await_Yield : ClassHeritage_Await_Yield ClassBody_Await_Yield
+	0,                 // ClassTail_Await_Yield : ClassBody_Await_Yield
+	0,                 // ClassTail_Yield : ClassHeritage_Yield ClassBody_Yield
+	0,                 // ClassTail_Yield : ClassBody_Yield
+	Extends,           // ClassHeritage : 'extends' LeftHandSideExpression
+	Extends,           // ClassHeritage_Await : 'extends' LeftHandSideExpression_Await
+	Extends,           // ClassHeritage_Await_Yield : 'extends' LeftHandSideExpression_Await_Yield
+	Extends,           // ClassHeritage_Yield : 'extends' LeftHandSideExpression_Yield
+	ClassBody,         // ClassBody : '{' ClassElementList '}'
+	ClassBody,         // ClassBody : '{' '}'
+	ClassBody,         // ClassBody_Await : '{' ClassElementList_Await '}'
+	ClassBody,         // ClassBody_Await : '{' '}'
+	ClassBody,         // ClassBody_Await_Yield : '{' ClassElementList_Await_Yield '}'
+	ClassBody,         // ClassBody_Await_Yield : '{' '}'
+	ClassBody,         // ClassBody_Yield : '{' ClassElementList_Yield '}'
+	ClassBody,         // ClassBody_Yield : '{' '}'
+	0,                 // ClassElementList : ClassElement
+	0,                 // ClassElementList : ClassElementList ClassElement
+	0,                 // ClassElementList_Await : ClassElement_Await
+	0,                 // ClassElementList_Await : ClassElementList_Await ClassElement_Await
+	0,                 // ClassElementList_Await_Yield : ClassElement_Await_Yield
+	0,                 // ClassElementList_Await_Yield : ClassElementList_Await_Yield ClassElement_Await_Yield
+	0,                 // ClassElementList_Yield : ClassElement_Yield
+	0,                 // ClassElementList_Yield : ClassElementList_Yield ClassElement_Yield
+	0,                 // ClassElement : MethodDefinition
+	StaticMethod,      // ClassElement : 'static' MethodDefinition
+	EmptyDecl,         // ClassElement : ';'
+	0,                 // ClassElement_Await : MethodDefinition_Await
+	StaticMethod,      // ClassElement_Await : 'static' MethodDefinition_Await
+	EmptyDecl,         // ClassElement_Await : ';'
+	0,                 // ClassElement_Await_Yield : MethodDefinition_Await_Yield
+	StaticMethod,      // ClassElement_Await_Yield : 'static' MethodDefinition_Await_Yield
+	EmptyDecl,         // ClassElement_Await_Yield : ';'
+	0,                 // ClassElement_Yield : MethodDefinition_Yield
+	StaticMethod,      // ClassElement_Yield : 'static' MethodDefinition_Yield
+	EmptyDecl,         // ClassElement_Yield : ';'
+	Module,            // Module : ModuleBodyopt
+	0,                 // ModuleBody : ModuleItemList
+	0,                 // ModuleItemList : ModuleItem
+	0,                 // ModuleItemList : ModuleItemList ModuleItem
+	0,                 // ModuleItem : ImportDeclaration
+	0,                 // ModuleItem : ExportDeclaration
+	0,                 // ModuleItem : StatementListItem
+	ImportDeclaration, // ImportDeclaration : 'import' ImportClause FromClause ';'
+	ImportDeclaration, // ImportDeclaration : 'import' ModuleSpecifier ';'
+	0,                 // ImportClause : ImportedDefaultBinding
+	0,                 // ImportClause : NameSpaceImport
+	0,                 // ImportClause : NamedImports
+	0,                 // ImportClause : ImportedDefaultBinding ',' NameSpaceImport
+	0,                 // ImportClause : ImportedDefaultBinding ',' NamedImports
+	0,                 // ImportedDefaultBinding : ImportedBinding
+	NameSpaceImport,   // NameSpaceImport : '*' 'as' ImportedBinding
+	0,                 // FromClause : 'from' ModuleSpecifier
+	0,                 // NamedImport_list_Comma_separated : NamedImport_list_Comma_separated ',' NamedImport
+	0,                 // NamedImport_list_Comma_separated : NamedImport
+	NamedImports,      // NamedImports : '{' '}'
+	NamedImports,      // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
+	NamedImports,      // NamedImports : '{' NamedImport_list_Comma_separated '}'
+	ImportSpecifier,   // NamedImport : ImportedBinding
+	ImportSpecifier,   // NamedImport : IdentifierNameRef 'as' ImportedBinding
+	SyntaxProblem,     // NamedImport : error
+	ModuleSpecifier,   // ModuleSpecifier : StringLiteral
+	0,                 // ImportedBinding : BindingIdentifier
+	ExportDeclaration, // ExportDeclaration : 'export' '*' FromClause ';'
+	ExportDeclaration, // ExportDeclaration : 'export' ExportClause FromClause ';'
+	ExportDeclaration, // ExportDeclaration : 'export' ExportClause ';'
+	ExportDeclaration, // ExportDeclaration : 'export' VariableStatement
+	ExportDeclaration, // ExportDeclaration : 'export' Declaration
+	ExportDefault,     // ExportDeclaration : 'export' 'default' HoistableDeclaration_Default
+	ExportDefault,     // ExportDeclaration : 'export' 'default' ClassDeclaration_Default
+	ExportDefault,     // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
+	ExportClause,      // ExportClause : '{' '}'
+	ExportClause,      // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
+	ExportClause,      // ExportClause : '{' ExportElement_list_Comma_separated '}'
+	0,                 // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
+	0,                 // ExportElement_list_Comma_separated : ExportElement
+	ExportSpecifier,   // ExportElement : IdentifierNameRef
+	ExportSpecifier,   // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
+	SyntaxProblem,     // ExportElement : error
+	0,                 // JSXChild_Await_optlist : JSXChild_Await_optlist JSXChild_Await
+	0,                 // JSXChild_Await_optlist :
+	0,                 // JSXChild_Await_Yield_optlist : JSXChild_Await_Yield_optlist JSXChild_Await_Yield
+	0,                 // JSXChild_Await_Yield_optlist :
+	0,                 // JSXChild_optlist : JSXChild_optlist JSXChild
+	0,                 // JSXChild_optlist :
+	0,                 // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield
+	0,                 // JSXChild_Yield_optlist :
+	JSXElement,        // JSXElement : JSXSelfClosingElement
+	JSXElement,        // JSXElement : JSXOpeningElement JSXChild_optlist JSXClosingElement
+	JSXElement,        // JSXElement_Await : JSXSelfClosingElement_Await
+	JSXElement,        // JSXElement_Await : JSXOpeningElement_Await JSXChild_Await_optlist JSXClosingElement
+	JSXElement,        // JSXElement_Await_Yield : JSXSelfClosingElement_Await_Yield
+	JSXElement,        // JSXElement_Await_Yield : JSXOpeningElement_Await_Yield JSXChild_Await_Yield_optlist JSXClosingElement
+	JSXElement,        // JSXElement_Yield : JSXSelfClosingElement_Yield
+	JSXElement,        // JSXElement_Yield : JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
+	0,                 // JSXAttribute_Await_optlist : JSXAttribute_Await_optlist JSXAttribute_Await
+	0,                 // JSXAttribute_Await_optlist :
+	0,                 // JSXAttribute_Await_Yield_optlist : JSXAttribute_Await_Yield_optlist JSXAttribute_Await_Yield
+	0,                 // JSXAttribute_Await_Yield_optlist :
+	0,                 // JSXAttribute_optlist : JSXAttribute_optlist JSXAttribute
+	0,                 // JSXAttribute_optlist :
+	0,                 // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
+	0,                 // JSXAttribute_Yield_optlist :
 	JSXSelfClosingElement, // JSXSelfClosingElement : '<' JSXElementName JSXAttribute_optlist '/' '>'
+	JSXSelfClosingElement, // JSXSelfClosingElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '/' '>'
+	JSXSelfClosingElement, // JSXSelfClosingElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '/' '>'
 	JSXSelfClosingElement, // JSXSelfClosingElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '/' '>'
 	JSXOpeningElement,     // JSXOpeningElement : '<' JSXElementName JSXAttribute_optlist '>'
+	JSXOpeningElement,     // JSXOpeningElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '>'
+	JSXOpeningElement,     // JSXOpeningElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '>'
 	JSXOpeningElement,     // JSXOpeningElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '>'
 	JSXClosingElement,     // JSXClosingElement : '<' '/' JSXElementName '>'
 	JSXElementName,        // JSXElementName : jsxIdentifier
@@ -2079,6 +3296,10 @@ var ruleNodeType = [...]NodeType{
 	0,                     // JSXMemberExpression : JSXMemberExpression '.' jsxIdentifier
 	JSXNormalAttribute,    // JSXAttribute : JSXAttributeName '=' JSXAttributeValue
 	JSXSpreadAttribute,    // JSXAttribute : '{' '...' AssignmentExpression_In '}'
+	JSXNormalAttribute,    // JSXAttribute_Await : JSXAttributeName '=' JSXAttributeValue_Await
+	JSXSpreadAttribute,    // JSXAttribute_Await : '{' '...' AssignmentExpression_Await_In '}'
+	JSXNormalAttribute,    // JSXAttribute_Await_Yield : JSXAttributeName '=' JSXAttributeValue_Await_Yield
+	JSXSpreadAttribute,    // JSXAttribute_Await_Yield : '{' '...' AssignmentExpression_Await_In_Yield '}'
 	JSXNormalAttribute,    // JSXAttribute_Yield : JSXAttributeName '=' JSXAttributeValue_Yield
 	JSXSpreadAttribute,    // JSXAttribute_Yield : '{' '...' AssignmentExpression_In_Yield '}'
 	JSXAttributeName,      // JSXAttributeName : jsxIdentifier
@@ -2086,6 +3307,12 @@ var ruleNodeType = [...]NodeType{
 	JSXLiteral,            // JSXAttributeValue : jsxStringLiteral
 	JSXExpression,         // JSXAttributeValue : '{' AssignmentExpression_In '}'
 	0,                     // JSXAttributeValue : JSXElement
+	JSXLiteral,            // JSXAttributeValue_Await : jsxStringLiteral
+	JSXExpression,         // JSXAttributeValue_Await : '{' AssignmentExpression_Await_In '}'
+	0,                     // JSXAttributeValue_Await : JSXElement_Await
+	JSXLiteral,            // JSXAttributeValue_Await_Yield : jsxStringLiteral
+	JSXExpression,         // JSXAttributeValue_Await_Yield : '{' AssignmentExpression_Await_In_Yield '}'
+	0,                     // JSXAttributeValue_Await_Yield : JSXElement_Await_Yield
 	JSXLiteral,            // JSXAttributeValue_Yield : jsxStringLiteral
 	JSXExpression,         // JSXAttributeValue_Yield : '{' AssignmentExpression_In_Yield '}'
 	0,                     // JSXAttributeValue_Yield : JSXElement_Yield
@@ -2093,6 +3320,14 @@ var ruleNodeType = [...]NodeType{
 	0,                     // JSXChild : JSXElement
 	JSXExpression,         // JSXChild : '{' AssignmentExpressionopt_In '}'
 	JSXSpreadExpression,   // JSXChild : '{' '...' AssignmentExpressionopt_In '}'
+	JSXText,               // JSXChild_Await : jsxText
+	0,                     // JSXChild_Await : JSXElement_Await
+	JSXExpression,         // JSXChild_Await : '{' AssignmentExpressionopt_Await_In '}'
+	JSXSpreadExpression,   // JSXChild_Await : '{' '...' AssignmentExpressionopt_Await_In '}'
+	JSXText,               // JSXChild_Await_Yield : jsxText
+	0,                     // JSXChild_Await_Yield : JSXElement_Await_Yield
+	JSXExpression,         // JSXChild_Await_Yield : '{' AssignmentExpressionopt_Await_In_Yield '}'
+	JSXSpreadExpression,   // JSXChild_Await_Yield : '{' '...' AssignmentExpressionopt_Await_In_Yield '}'
 	JSXText,               // JSXChild_Yield : jsxText
 	0,                     // JSXChild_Yield : JSXElement_Yield
 	JSXExpression,         // JSXChild_Yield : '{' AssignmentExpressionopt_In_Yield '}'
@@ -2101,6 +3336,12 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Elisionopt :
 	0,                     // Initializeropt : Initializer
 	0,                     // Initializeropt :
+	0,                     // Initializeropt_Await : Initializer_Await
+	0,                     // Initializeropt_Await :
+	0,                     // Initializeropt_Await_In : Initializer_Await_In
+	0,                     // Initializeropt_Await_In :
+	0,                     // Initializeropt_Await_In_Yield : Initializer_Await_In_Yield
+	0,                     // Initializeropt_Await_In_Yield :
 	0,                     // Initializeropt_In : Initializer_In
 	0,                     // Initializeropt_In :
 	0,                     // Initializeropt_In_Yield : Initializer_In_Yield
@@ -2109,8 +3350,16 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Initializeropt_Yield :
 	0,                     // BindingRestElementopt : BindingRestElement
 	0,                     // BindingRestElementopt :
+	0,                     // BindingRestElementopt_Await : BindingRestElement_Await
+	0,                     // BindingRestElementopt_Await :
+	0,                     // BindingRestElementopt_Await_Yield : BindingRestElement_Await_Yield
+	0,                     // BindingRestElementopt_Await_Yield :
 	0,                     // BindingRestElementopt_Yield : BindingRestElement_Yield
 	0,                     // BindingRestElementopt_Yield :
+	0,                     // Expressionopt_Await_In : Expression_Await_In
+	0,                     // Expressionopt_Await_In :
+	0,                     // Expressionopt_Await_NoLet : Expression_Await_NoLet
+	0,                     // Expressionopt_Await_NoLet :
 	0,                     // Expressionopt_In : Expression_In
 	0,                     // Expressionopt_In :
 	0,                     // Expressionopt_In_Yield : Expression_In_Yield
@@ -2121,12 +3370,18 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Expressionopt_NoLet_Yield :
 	0,                     // CaseClausesopt : CaseClauses
 	0,                     // CaseClausesopt :
+	0,                     // CaseClausesopt_Await_Return : CaseClauses_Await_Return
+	0,                     // CaseClausesopt_Await_Return :
 	0,                     // CaseClausesopt_Return : CaseClauses_Return
 	0,                     // CaseClausesopt_Return :
 	0,                     // CaseClausesopt_Return_Yield : CaseClauses_Return_Yield
 	0,                     // CaseClausesopt_Return_Yield :
 	0,                     // ModuleBodyopt : ModuleBody
 	0,                     // ModuleBodyopt :
+	0,                     // AssignmentExpressionopt_Await_In : AssignmentExpression_Await_In
+	0,                     // AssignmentExpressionopt_Await_In :
+	0,                     // AssignmentExpressionopt_Await_In_Yield : AssignmentExpression_Await_In_Yield
+	0,                     // AssignmentExpressionopt_Await_In_Yield :
 	0,                     // AssignmentExpressionopt_In : AssignmentExpression_In
 	0,                     // AssignmentExpressionopt_In :
 	0,                     // AssignmentExpressionopt_In_Yield : AssignmentExpression_In_Yield

@@ -26,6 +26,16 @@ func ToJsNode(n Node) JsNode {
 		return &AssignmentExpression{n}
 	case js.AssignmentOperator:
 		return &AssignmentOperator{n}
+	case js.AsyncArrowFunction:
+		return &AsyncArrowFunction{n}
+	case js.AsyncFunction:
+		return &AsyncFunction{n}
+	case js.AsyncFunctionExpression:
+		return &AsyncFunctionExpression{n}
+	case js.AsyncMethod:
+		return &AsyncMethod{n}
+	case js.AwaitExpression:
+		return &AwaitExpression{n}
 	case js.BindingIdentifier:
 		return &BindingIdentifier{n}
 	case js.BindingRestElement:

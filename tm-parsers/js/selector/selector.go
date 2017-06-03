@@ -17,6 +17,11 @@ var (
 	ArrowFunction            = func(t js.NodeType) bool { return t == js.ArrowFunction }
 	AssignmentExpression     = func(t js.NodeType) bool { return t == js.AssignmentExpression }
 	AssignmentOperator       = func(t js.NodeType) bool { return t == js.AssignmentOperator }
+	AsyncArrowFunction       = func(t js.NodeType) bool { return t == js.AsyncArrowFunction }
+	AsyncFunction            = func(t js.NodeType) bool { return t == js.AsyncFunction }
+	AsyncFunctionExpression  = func(t js.NodeType) bool { return t == js.AsyncFunctionExpression }
+	AsyncMethod              = func(t js.NodeType) bool { return t == js.AsyncMethod }
+	AwaitExpression          = func(t js.NodeType) bool { return t == js.AwaitExpression }
 	BindingIdentifier        = func(t js.NodeType) bool { return t == js.BindingIdentifier }
 	BindingRestElement       = func(t js.NodeType) bool { return t == js.BindingRestElement }
 	BitwiseANDExpression     = func(t js.NodeType) bool { return t == js.BitwiseANDExpression }

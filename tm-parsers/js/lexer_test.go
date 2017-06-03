@@ -103,6 +103,7 @@ var lexerTests = []struct {
 	}},
 
 	// Keywords.
+	{js.AWAIT, []string{`«await»`}},
 	{js.BREAK, []string{`«break» break2 brea hmm b`}},
 	{js.CASE, []string{`«case»`}},
 	{js.CATCH, []string{`«catch»`}},
@@ -138,7 +139,6 @@ var lexerTests = []struct {
 	{js.YIELD, []string{`«yield»`}},
 
 	// Reserved keywords.
-	{js.AWAIT, []string{`«await»`}},
 	{js.ENUM, []string{`«enum»`}},
 
 	// Literals.
@@ -148,6 +148,7 @@ var lexerTests = []struct {
 
 	// Soft (contextual) keywords.
 	{js.AS, []string{`«as»`}},
+	{js.ASYNC, []string{`«async»`}},
 	{js.FROM, []string{`«from»`}},
 	{js.GET, []string{`«get»`}},
 	{js.LET, []string{`«let»`}},
