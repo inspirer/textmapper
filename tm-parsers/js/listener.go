@@ -2501,53 +2501,40 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Statement : BreakableStatement
 	0,                     // Statement : ContinueStatement
 	0,                     // Statement : BreakStatement
+	0,                     // Statement : ReturnStatement
 	0,                     // Statement : WithStatement
 	0,                     // Statement : LabelledStatement
 	0,                     // Statement : ThrowStatement
 	0,                     // Statement : TryStatement
 	0,                     // Statement : DebuggerStatement
-	0,                     // Statement_Await_Return : BlockStatement_Await_Return
-	0,                     // Statement_Await_Return : VariableStatement_Await
-	0,                     // Statement_Await_Return : EmptyStatement
-	0,                     // Statement_Await_Return : ExpressionStatement_Await
-	0,                     // Statement_Await_Return : IfStatement_Await_Return
-	0,                     // Statement_Await_Return : BreakableStatement_Await_Return
-	0,                     // Statement_Await_Return : ContinueStatement
-	0,                     // Statement_Await_Return : BreakStatement
-	0,                     // Statement_Await_Return : ReturnStatement_Await
-	0,                     // Statement_Await_Return : WithStatement_Await_Return
-	0,                     // Statement_Await_Return : LabelledStatement_Await_Return
-	0,                     // Statement_Await_Return : ThrowStatement_Await
-	0,                     // Statement_Await_Return : TryStatement_Await_Return
-	0,                     // Statement_Await_Return : DebuggerStatement
-	0,                     // Statement_Return : BlockStatement_Return
-	0,                     // Statement_Return : VariableStatement
-	0,                     // Statement_Return : EmptyStatement
-	0,                     // Statement_Return : ExpressionStatement
-	0,                     // Statement_Return : IfStatement_Return
-	0,                     // Statement_Return : BreakableStatement_Return
-	0,                     // Statement_Return : ContinueStatement
-	0,                     // Statement_Return : BreakStatement
-	0,                     // Statement_Return : ReturnStatement
-	0,                     // Statement_Return : WithStatement_Return
-	0,                     // Statement_Return : LabelledStatement_Return
-	0,                     // Statement_Return : ThrowStatement
-	0,                     // Statement_Return : TryStatement_Return
-	0,                     // Statement_Return : DebuggerStatement
-	0,                     // Statement_Return_Yield : BlockStatement_Return_Yield
-	0,                     // Statement_Return_Yield : VariableStatement_Yield
-	0,                     // Statement_Return_Yield : EmptyStatement
-	0,                     // Statement_Return_Yield : ExpressionStatement_Yield
-	0,                     // Statement_Return_Yield : IfStatement_Return_Yield
-	0,                     // Statement_Return_Yield : BreakableStatement_Return_Yield
-	0,                     // Statement_Return_Yield : ContinueStatement
-	0,                     // Statement_Return_Yield : BreakStatement
-	0,                     // Statement_Return_Yield : ReturnStatement_Yield
-	0,                     // Statement_Return_Yield : WithStatement_Return_Yield
-	0,                     // Statement_Return_Yield : LabelledStatement_Return_Yield
-	0,                     // Statement_Return_Yield : ThrowStatement_Yield
-	0,                     // Statement_Return_Yield : TryStatement_Return_Yield
-	0,                     // Statement_Return_Yield : DebuggerStatement
+	0,                     // Statement_Await : BlockStatement_Await
+	0,                     // Statement_Await : VariableStatement_Await
+	0,                     // Statement_Await : EmptyStatement
+	0,                     // Statement_Await : ExpressionStatement_Await
+	0,                     // Statement_Await : IfStatement_Await
+	0,                     // Statement_Await : BreakableStatement_Await
+	0,                     // Statement_Await : ContinueStatement
+	0,                     // Statement_Await : BreakStatement
+	0,                     // Statement_Await : ReturnStatement_Await
+	0,                     // Statement_Await : WithStatement_Await
+	0,                     // Statement_Await : LabelledStatement_Await
+	0,                     // Statement_Await : ThrowStatement_Await
+	0,                     // Statement_Await : TryStatement_Await
+	0,                     // Statement_Await : DebuggerStatement
+	0,                     // Statement_Yield : BlockStatement_Yield
+	0,                     // Statement_Yield : VariableStatement_Yield
+	0,                     // Statement_Yield : EmptyStatement
+	0,                     // Statement_Yield : ExpressionStatement_Yield
+	0,                     // Statement_Yield : IfStatement_Yield
+	0,                     // Statement_Yield : BreakableStatement_Yield
+	0,                     // Statement_Yield : ContinueStatement
+	0,                     // Statement_Yield : BreakStatement
+	0,                     // Statement_Yield : ReturnStatement_Yield
+	0,                     // Statement_Yield : WithStatement_Yield
+	0,                     // Statement_Yield : LabelledStatement_Yield
+	0,                     // Statement_Yield : ThrowStatement_Yield
+	0,                     // Statement_Yield : TryStatement_Yield
+	0,                     // Statement_Yield : DebuggerStatement
 	0,                     // Declaration : HoistableDeclaration
 	0,                     // Declaration : ClassDeclaration
 	0,                     // Declaration : LexicalDeclaration_In
@@ -2565,44 +2552,34 @@ var ruleNodeType = [...]NodeType{
 	0,                     // HoistableDeclaration_Await : AsyncFunctionDeclaration_Await
 	0,                     // BreakableStatement : IterationStatement
 	0,                     // BreakableStatement : SwitchStatement
-	0,                     // BreakableStatement_Await_Return : IterationStatement_Await_Return
-	0,                     // BreakableStatement_Await_Return : SwitchStatement_Await_Return
-	0,                     // BreakableStatement_Return : IterationStatement_Return
-	0,                     // BreakableStatement_Return : SwitchStatement_Return
-	0,                     // BreakableStatement_Return_Yield : IterationStatement_Return_Yield
-	0,                     // BreakableStatement_Return_Yield : SwitchStatement_Return_Yield
+	0,                     // BreakableStatement_Await : IterationStatement_Await
+	0,                     // BreakableStatement_Await : SwitchStatement_Await
+	0,                     // BreakableStatement_Yield : IterationStatement_Yield
+	0,                     // BreakableStatement_Yield : SwitchStatement_Yield
 	0,                     // BlockStatement : Block
-	0,                     // BlockStatement_Await_Return : Block_Await_Return
-	0,                     // BlockStatement_Return : Block_Return
-	0,                     // BlockStatement_Return_Yield : Block_Return_Yield
+	0,                     // BlockStatement_Await : Block_Await
+	0,                     // BlockStatement_Yield : Block_Yield
 	Block,                 // Block : '{' StatementList '}'
 	Block,                 // Block : '{' '}'
-	Block,                 // Block_Await_Return : '{' StatementList_Await_Return '}'
-	Block,                 // Block_Await_Return : '{' '}'
-	Block,                 // Block_Return : '{' StatementList_Return '}'
-	Block,                 // Block_Return : '{' '}'
-	Block,                 // Block_Return_Yield : '{' StatementList_Return_Yield '}'
-	Block,                 // Block_Return_Yield : '{' '}'
+	Block,                 // Block_Await : '{' StatementList_Await '}'
+	Block,                 // Block_Await : '{' '}'
+	Block,                 // Block_Yield : '{' StatementList_Yield '}'
+	Block,                 // Block_Yield : '{' '}'
 	0,                     // StatementList : StatementListItem
 	0,                     // StatementList : StatementList StatementListItem
-	0,                     // StatementList_Await_Return : StatementListItem_Await_Return
-	0,                     // StatementList_Await_Return : StatementList_Await_Return StatementListItem_Await_Return
-	0,                     // StatementList_Return : StatementListItem_Return
-	0,                     // StatementList_Return : StatementList_Return StatementListItem_Return
-	0,                     // StatementList_Return_Yield : StatementListItem_Return_Yield
-	0,                     // StatementList_Return_Yield : StatementList_Return_Yield StatementListItem_Return_Yield
+	0,                     // StatementList_Await : StatementListItem_Await
+	0,                     // StatementList_Await : StatementList_Await StatementListItem_Await
+	0,                     // StatementList_Yield : StatementListItem_Yield
+	0,                     // StatementList_Yield : StatementList_Yield StatementListItem_Yield
 	0,                     // StatementListItem : Statement
 	0,                     // StatementListItem : Declaration
 	SyntaxProblem,         // StatementListItem : error ';'
-	0,                     // StatementListItem_Await_Return : Statement_Await_Return
-	0,                     // StatementListItem_Await_Return : Declaration_Await
-	SyntaxProblem,         // StatementListItem_Await_Return : error ';'
-	0,                     // StatementListItem_Return : Statement_Return
-	0,                     // StatementListItem_Return : Declaration
-	SyntaxProblem,         // StatementListItem_Return : error ';'
-	0,                     // StatementListItem_Return_Yield : Statement_Return_Yield
-	0,                     // StatementListItem_Return_Yield : Declaration_Yield
-	SyntaxProblem,         // StatementListItem_Return_Yield : error ';'
+	0,                     // StatementListItem_Await : Statement_Await
+	0,                     // StatementListItem_Await : Declaration_Await
+	SyntaxProblem,         // StatementListItem_Await : error ';'
+	0,                     // StatementListItem_Yield : Statement_Yield
+	0,                     // StatementListItem_Yield : Declaration_Yield
+	SyntaxProblem,         // StatementListItem_Yield : error ';'
 	LexicalDeclaration,    // LexicalDeclaration_Await_In : LetOrConst BindingList_Await_In ';'
 	LexicalDeclaration,    // LexicalDeclaration_In : LetOrConst BindingList_In ';'
 	LexicalDeclaration,    // LexicalDeclaration_In_Yield : LetOrConst BindingList_In_Yield ';'
@@ -2750,12 +2727,10 @@ var ruleNodeType = [...]NodeType{
 	ExpressionStatement,   // ExpressionStatement_Yield : Expression_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield ';'
 	IfStatement,           // IfStatement : 'if' '(' Expression_In ')' Statement 'else' Statement
 	IfStatement,           // IfStatement : 'if' '(' Expression_In ')' Statement %prec 'else'
-	IfStatement,           // IfStatement_Await_Return : 'if' '(' Expression_Await_In ')' Statement_Await_Return 'else' Statement_Await_Return
-	IfStatement,           // IfStatement_Await_Return : 'if' '(' Expression_Await_In ')' Statement_Await_Return %prec 'else'
-	IfStatement,           // IfStatement_Return : 'if' '(' Expression_In ')' Statement_Return 'else' Statement_Return
-	IfStatement,           // IfStatement_Return : 'if' '(' Expression_In ')' Statement_Return %prec 'else'
-	IfStatement,           // IfStatement_Return_Yield : 'if' '(' Expression_In_Yield ')' Statement_Return_Yield 'else' Statement_Return_Yield
-	IfStatement,           // IfStatement_Return_Yield : 'if' '(' Expression_In_Yield ')' Statement_Return_Yield %prec 'else'
+	IfStatement,           // IfStatement_Await : 'if' '(' Expression_Await_In ')' Statement_Await 'else' Statement_Await
+	IfStatement,           // IfStatement_Await : 'if' '(' Expression_Await_In ')' Statement_Await %prec 'else'
+	IfStatement,           // IfStatement_Yield : 'if' '(' Expression_In_Yield ')' Statement_Yield 'else' Statement_Yield
+	IfStatement,           // IfStatement_Yield : 'if' '(' Expression_In_Yield ')' Statement_Yield %prec 'else'
 	DoWhileStatement,      // IterationStatement : 'do' Statement 'while' '(' Expression_In ')' ';' .doWhile
 	WhileStatement,        // IterationStatement : 'while' '(' Expression_In ')' Statement
 	ForStatement,          // IterationStatement : 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
@@ -2770,48 +2745,34 @@ var ruleNodeType = [...]NodeType{
 	ForOfStatement,        // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
 	ForOfStatementWithVar, // IterationStatement : 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement
 	ForOfStatementWithVar, // IterationStatement : 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement
-	DoWhileStatement,      // IterationStatement_Await_Return : 'do' Statement_Await_Return 'while' '(' Expression_Await_In ')' ';' .doWhile
-	WhileStatement,        // IterationStatement_Await_Return : 'while' '(' Expression_Await_In ')' Statement_Await_Return
-	ForStatement,          // IterationStatement_Await_Return : 'for' '(' Expressionopt_Await_NoLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
-	ForStatement,          // IterationStatement_Await_Return : 'for' '(' Expression_Await_StartWithLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
-	ForStatementWithVar,   // IterationStatement_Await_Return : 'for' '(' 'var' VariableDeclarationList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
-	ForStatementWithVar,   // IterationStatement_Await_Return : 'for' '(' LetOrConst BindingList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await_Return
-	ForInStatement,        // IterationStatement_Await_Return : 'for' '(' LeftHandSideExpression_Await_NoLet 'in' Expression_Await_In ')' Statement_Await_Return
-	ForInStatement,        // IterationStatement_Await_Return : 'for' '(' LeftHandSideExpression_Await_StartWithLet 'in' Expression_Await_In ')' Statement_Await_Return
-	ForInStatementWithVar, // IterationStatement_Await_Return : 'for' '(' 'var' ForBinding_Await 'in' Expression_Await_In ')' Statement_Await_Return
-	ForInStatementWithVar, // IterationStatement_Await_Return : 'for' '(' ForDeclaration_Await 'in' Expression_Await_In ')' Statement_Await_Return
-	ForOfStatement,        // IterationStatement_Await_Return : 'for' '(' LeftHandSideExpression_Await_NoAsync_NoLet 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
-	ForOfStatement,        // IterationStatement_Await_Return : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
-	ForOfStatementWithVar, // IterationStatement_Await_Return : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
-	ForOfStatementWithVar, // IterationStatement_Await_Return : 'for' '(' ForDeclaration_Await 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
-	DoWhileStatement,      // IterationStatement_Return : 'do' Statement_Return 'while' '(' Expression_In ')' ';' .doWhile
-	WhileStatement,        // IterationStatement_Return : 'while' '(' Expression_In ')' Statement_Return
-	ForStatement,          // IterationStatement_Return : 'for' '(' Expressionopt_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForStatement,          // IterationStatement_Return : 'for' '(' Expression_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForStatementWithVar,   // IterationStatement_Return : 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForStatementWithVar,   // IterationStatement_Return : 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement_Return
-	ForInStatement,        // IterationStatement_Return : 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement_Return
-	ForInStatement,        // IterationStatement_Return : 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement_Return
-	ForInStatementWithVar, // IterationStatement_Return : 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement_Return
-	ForInStatementWithVar, // IterationStatement_Return : 'for' '(' ForDeclaration 'in' Expression_In ')' Statement_Return
-	ForOfStatement,        // IterationStatement_Return : 'for' '(' LeftHandSideExpression_NoAsync_NoLet 'of' AssignmentExpression_In ')' Statement_Return
-	ForOfStatement,        // IterationStatement_Return : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement_Return
-	ForOfStatementWithVar, // IterationStatement_Return : 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement_Return
-	ForOfStatementWithVar, // IterationStatement_Return : 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement_Return
-	DoWhileStatement,      // IterationStatement_Return_Yield : 'do' Statement_Return_Yield 'while' '(' Expression_In_Yield ')' ';' .doWhile
-	WhileStatement,        // IterationStatement_Return_Yield : 'while' '(' Expression_In_Yield ')' Statement_Return_Yield
-	ForStatement,          // IterationStatement_Return_Yield : 'for' '(' Expressionopt_NoLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForStatement,          // IterationStatement_Return_Yield : 'for' '(' Expression_StartWithLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForStatementWithVar,   // IterationStatement_Return_Yield : 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForStatementWithVar,   // IterationStatement_Return_Yield : 'for' '(' LetOrConst BindingList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Return_Yield
-	ForInStatement,        // IterationStatement_Return_Yield : 'for' '(' LeftHandSideExpression_NoLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForInStatement,        // IterationStatement_Return_Yield : 'for' '(' LeftHandSideExpression_StartWithLet_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForInStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForInStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' ForDeclaration_Yield 'in' Expression_In_Yield ')' Statement_Return_Yield
-	ForOfStatement,        // IterationStatement_Return_Yield : 'for' '(' LeftHandSideExpression_NoAsync_NoLet_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
-	ForOfStatement,        // IterationStatement_Return_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
-	ForOfStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
-	ForOfStatementWithVar, // IterationStatement_Return_Yield : 'for' '(' ForDeclaration_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
+	DoWhileStatement,      // IterationStatement_Await : 'do' Statement_Await 'while' '(' Expression_Await_In ')' ';' .doWhile
+	WhileStatement,        // IterationStatement_Await : 'while' '(' Expression_Await_In ')' Statement_Await
+	ForStatement,          // IterationStatement_Await : 'for' '(' Expressionopt_Await_NoLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	ForStatement,          // IterationStatement_Await : 'for' '(' Expression_Await_StartWithLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	ForStatementWithVar,   // IterationStatement_Await : 'for' '(' 'var' VariableDeclarationList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	ForStatementWithVar,   // IterationStatement_Await : 'for' '(' LetOrConst BindingList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	ForInStatement,        // IterationStatement_Await : 'for' '(' LeftHandSideExpression_Await_NoLet 'in' Expression_Await_In ')' Statement_Await
+	ForInStatement,        // IterationStatement_Await : 'for' '(' LeftHandSideExpression_Await_StartWithLet 'in' Expression_Await_In ')' Statement_Await
+	ForInStatementWithVar, // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'in' Expression_Await_In ')' Statement_Await
+	ForInStatementWithVar, // IterationStatement_Await : 'for' '(' ForDeclaration_Await 'in' Expression_Await_In ')' Statement_Await
+	ForOfStatement,        // IterationStatement_Await : 'for' '(' LeftHandSideExpression_Await_NoAsync_NoLet 'of' AssignmentExpression_Await_In ')' Statement_Await
+	ForOfStatement,        // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
+	ForOfStatementWithVar, // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_Await_In ')' Statement_Await
+	ForOfStatementWithVar, // IterationStatement_Await : 'for' '(' ForDeclaration_Await 'of' AssignmentExpression_Await_In ')' Statement_Await
+	DoWhileStatement,      // IterationStatement_Yield : 'do' Statement_Yield 'while' '(' Expression_In_Yield ')' ';' .doWhile
+	WhileStatement,        // IterationStatement_Yield : 'while' '(' Expression_In_Yield ')' Statement_Yield
+	ForStatement,          // IterationStatement_Yield : 'for' '(' Expressionopt_NoLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	ForStatement,          // IterationStatement_Yield : 'for' '(' Expression_StartWithLet_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	ForStatementWithVar,   // IterationStatement_Yield : 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	ForStatementWithVar,   // IterationStatement_Yield : 'for' '(' LetOrConst BindingList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	ForInStatement,        // IterationStatement_Yield : 'for' '(' LeftHandSideExpression_NoLet_Yield 'in' Expression_In_Yield ')' Statement_Yield
+	ForInStatement,        // IterationStatement_Yield : 'for' '(' LeftHandSideExpression_StartWithLet_Yield 'in' Expression_In_Yield ')' Statement_Yield
+	ForInStatementWithVar, // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Yield
+	ForInStatementWithVar, // IterationStatement_Yield : 'for' '(' ForDeclaration_Yield 'in' Expression_In_Yield ')' Statement_Yield
+	ForOfStatement,        // IterationStatement_Yield : 'for' '(' LeftHandSideExpression_NoAsync_NoLet_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	ForOfStatement,        // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	ForOfStatementWithVar, // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	ForOfStatementWithVar, // IterationStatement_Yield : 'for' '(' ForDeclaration_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 	0,                       // ForDeclaration : LetOrConst ForBinding
 	0,                       // ForDeclaration_Await : LetOrConst ForBinding_Await
 	0,                       // ForDeclaration_Yield : LetOrConst ForBinding_Yield
@@ -2838,76 +2799,59 @@ var ruleNodeType = [...]NodeType{
 	ReturnStatement,         // ReturnStatement_Yield : 'return' ';'
 	ReturnStatement,         // ReturnStatement_Yield : 'return' .noLineBreak Expression_In_Yield ';'
 	WithStatement,           // WithStatement : 'with' '(' Expression_In ')' Statement
-	WithStatement,           // WithStatement_Await_Return : 'with' '(' Expression_Await_In ')' Statement_Await_Return
-	WithStatement,           // WithStatement_Return : 'with' '(' Expression_In ')' Statement_Return
-	WithStatement,           // WithStatement_Return_Yield : 'with' '(' Expression_In_Yield ')' Statement_Return_Yield
+	WithStatement,           // WithStatement_Await : 'with' '(' Expression_Await_In ')' Statement_Await
+	WithStatement,           // WithStatement_Yield : 'with' '(' Expression_In_Yield ')' Statement_Yield
 	SwitchStatement,         // SwitchStatement : 'switch' '(' Expression_In ')' CaseBlock
-	SwitchStatement,         // SwitchStatement_Await_Return : 'switch' '(' Expression_Await_In ')' CaseBlock_Await_Return
-	SwitchStatement,         // SwitchStatement_Return : 'switch' '(' Expression_In ')' CaseBlock_Return
-	SwitchStatement,         // SwitchStatement_Return_Yield : 'switch' '(' Expression_In_Yield ')' CaseBlock_Return_Yield
+	SwitchStatement,         // SwitchStatement_Await : 'switch' '(' Expression_Await_In ')' CaseBlock_Await
+	SwitchStatement,         // SwitchStatement_Yield : 'switch' '(' Expression_In_Yield ')' CaseBlock_Yield
 	Block,                   // CaseBlock : '{' CaseClausesopt '}'
-	Block,                   // CaseBlock_Await_Return : '{' CaseClausesopt_Await_Return '}'
-	Block,                   // CaseBlock_Return : '{' CaseClausesopt_Return '}'
-	Block,                   // CaseBlock_Return_Yield : '{' CaseClausesopt_Return_Yield '}'
+	Block,                   // CaseBlock_Await : '{' CaseClausesopt_Await '}'
+	Block,                   // CaseBlock_Yield : '{' CaseClausesopt_Yield '}'
 	0,                       // CaseClauses : CaseClause
 	0,                       // CaseClauses : CaseClauses CaseClause
-	0,                       // CaseClauses_Await_Return : CaseClause_Await_Return
-	0,                       // CaseClauses_Await_Return : CaseClauses_Await_Return CaseClause_Await_Return
-	0,                       // CaseClauses_Return : CaseClause_Return
-	0,                       // CaseClauses_Return : CaseClauses_Return CaseClause_Return
-	0,                       // CaseClauses_Return_Yield : CaseClause_Return_Yield
-	0,                       // CaseClauses_Return_Yield : CaseClauses_Return_Yield CaseClause_Return_Yield
+	0,                       // CaseClauses_Await : CaseClause_Await
+	0,                       // CaseClauses_Await : CaseClauses_Await CaseClause_Await
+	0,                       // CaseClauses_Yield : CaseClause_Yield
+	0,                       // CaseClauses_Yield : CaseClauses_Yield CaseClause_Yield
 	Case,                    // CaseClause : 'case' Expression_In ':' StatementList
 	Case,                    // CaseClause : 'case' Expression_In ':'
 	Default,                 // CaseClause : 'default' ':' StatementList
 	Default,                 // CaseClause : 'default' ':'
-	Case,                    // CaseClause_Await_Return : 'case' Expression_Await_In ':' StatementList_Await_Return
-	Case,                    // CaseClause_Await_Return : 'case' Expression_Await_In ':'
-	Default,                 // CaseClause_Await_Return : 'default' ':' StatementList_Await_Return
-	Default,                 // CaseClause_Await_Return : 'default' ':'
-	Case,                    // CaseClause_Return : 'case' Expression_In ':' StatementList_Return
-	Case,                    // CaseClause_Return : 'case' Expression_In ':'
-	Default,                 // CaseClause_Return : 'default' ':' StatementList_Return
-	Default,                 // CaseClause_Return : 'default' ':'
-	Case,                    // CaseClause_Return_Yield : 'case' Expression_In_Yield ':' StatementList_Return_Yield
-	Case,                    // CaseClause_Return_Yield : 'case' Expression_In_Yield ':'
-	Default,                 // CaseClause_Return_Yield : 'default' ':' StatementList_Return_Yield
-	Default,                 // CaseClause_Return_Yield : 'default' ':'
+	Case,                    // CaseClause_Await : 'case' Expression_Await_In ':' StatementList_Await
+	Case,                    // CaseClause_Await : 'case' Expression_Await_In ':'
+	Default,                 // CaseClause_Await : 'default' ':' StatementList_Await
+	Default,                 // CaseClause_Await : 'default' ':'
+	Case,                    // CaseClause_Yield : 'case' Expression_In_Yield ':' StatementList_Yield
+	Case,                    // CaseClause_Yield : 'case' Expression_In_Yield ':'
+	Default,                 // CaseClause_Yield : 'default' ':' StatementList_Yield
+	Default,                 // CaseClause_Yield : 'default' ':'
 	LabelledStatement,       // LabelledStatement : LabelIdentifier ':' LabelledItem
-	LabelledStatement,       // LabelledStatement_Await_Return : LabelIdentifier ':' LabelledItem_Await_Return
-	LabelledStatement,       // LabelledStatement_Return : LabelIdentifier ':' LabelledItem_Return
-	LabelledStatement,       // LabelledStatement_Return_Yield : LabelIdentifier ':' LabelledItem_Return_Yield
+	LabelledStatement,       // LabelledStatement_Await : LabelIdentifier ':' LabelledItem_Await
+	LabelledStatement,       // LabelledStatement_Yield : LabelIdentifier ':' LabelledItem_Yield
 	0,                       // LabelledItem : Statement
 	0,                       // LabelledItem : FunctionDeclaration
-	0,                       // LabelledItem_Await_Return : Statement_Await_Return
-	0,                       // LabelledItem_Await_Return : FunctionDeclaration
-	0,                       // LabelledItem_Return : Statement_Return
-	0,                       // LabelledItem_Return : FunctionDeclaration
-	0,                       // LabelledItem_Return_Yield : Statement_Return_Yield
-	0,                       // LabelledItem_Return_Yield : FunctionDeclaration
+	0,                       // LabelledItem_Await : Statement_Await
+	0,                       // LabelledItem_Await : FunctionDeclaration
+	0,                       // LabelledItem_Yield : Statement_Yield
+	0,                       // LabelledItem_Yield : FunctionDeclaration
 	ThrowStatement,          // ThrowStatement : 'throw' .noLineBreak Expression_In ';'
 	ThrowStatement,          // ThrowStatement_Await : 'throw' .noLineBreak Expression_Await_In ';'
 	ThrowStatement,          // ThrowStatement_Yield : 'throw' .noLineBreak Expression_In_Yield ';'
 	TryStatement,            // TryStatement : 'try' Block Catch
 	TryStatement,            // TryStatement : 'try' Block Catch Finally
 	TryStatement,            // TryStatement : 'try' Block Finally
-	TryStatement,            // TryStatement_Await_Return : 'try' Block_Await_Return Catch_Await_Return
-	TryStatement,            // TryStatement_Await_Return : 'try' Block_Await_Return Catch_Await_Return Finally_Await_Return
-	TryStatement,            // TryStatement_Await_Return : 'try' Block_Await_Return Finally_Await_Return
-	TryStatement,            // TryStatement_Return : 'try' Block_Return Catch_Return
-	TryStatement,            // TryStatement_Return : 'try' Block_Return Catch_Return Finally_Return
-	TryStatement,            // TryStatement_Return : 'try' Block_Return Finally_Return
-	TryStatement,            // TryStatement_Return_Yield : 'try' Block_Return_Yield Catch_Return_Yield
-	TryStatement,            // TryStatement_Return_Yield : 'try' Block_Return_Yield Catch_Return_Yield Finally_Return_Yield
-	TryStatement,            // TryStatement_Return_Yield : 'try' Block_Return_Yield Finally_Return_Yield
+	TryStatement,            // TryStatement_Await : 'try' Block_Await Catch_Await
+	TryStatement,            // TryStatement_Await : 'try' Block_Await Catch_Await Finally_Await
+	TryStatement,            // TryStatement_Await : 'try' Block_Await Finally_Await
+	TryStatement,            // TryStatement_Yield : 'try' Block_Yield Catch_Yield
+	TryStatement,            // TryStatement_Yield : 'try' Block_Yield Catch_Yield Finally_Yield
+	TryStatement,            // TryStatement_Yield : 'try' Block_Yield Finally_Yield
 	Catch,                   // Catch : 'catch' '(' CatchParameter ')' Block
-	Catch,                   // Catch_Await_Return : 'catch' '(' CatchParameter_Await ')' Block_Await_Return
-	Catch,                   // Catch_Return : 'catch' '(' CatchParameter ')' Block_Return
-	Catch,                   // Catch_Return_Yield : 'catch' '(' CatchParameter_Yield ')' Block_Return_Yield
+	Catch,                   // Catch_Await : 'catch' '(' CatchParameter_Await ')' Block_Await
+	Catch,                   // Catch_Yield : 'catch' '(' CatchParameter_Yield ')' Block_Yield
 	Finally,                 // Finally : 'finally' Block
-	Finally,                 // Finally_Await_Return : 'finally' Block_Await_Return
-	Finally,                 // Finally_Return : 'finally' Block_Return
-	Finally,                 // Finally_Return_Yield : 'finally' Block_Return_Yield
+	Finally,                 // Finally_Await : 'finally' Block_Await
+	Finally,                 // Finally_Yield : 'finally' Block_Yield
 	0,                       // CatchParameter : BindingIdentifier
 	0,                       // CatchParameter : BindingPattern
 	0,                       // CatchParameter_Await : BindingIdentifier
@@ -2950,11 +2894,11 @@ var ruleNodeType = [...]NodeType{
 	Parameter,               // FormalParameter : ElementPattern
 	Parameter,               // FormalParameter_Await : ElementPattern_Await
 	Parameter,               // FormalParameter_Yield : ElementPattern_Yield
-	Body,                    // FunctionBody : '{' StatementList_Return '}'
+	Body,                    // FunctionBody : '{' StatementList '}'
 	Body,                    // FunctionBody : '{' '}'
-	Body,                    // FunctionBody_Await : '{' StatementList_Await_Return '}'
+	Body,                    // FunctionBody_Await : '{' StatementList_Await '}'
 	Body,                    // FunctionBody_Await : '{' '}'
-	Body,                    // FunctionBody_Yield : '{' StatementList_Return_Yield '}'
+	Body,                    // FunctionBody_Yield : '{' StatementList_Yield '}'
 	Body,                    // FunctionBody_Yield : '{' '}'
 	ArrowFunction,           // ArrowFunction : ArrowParameters .noLineBreak '=>' ConciseBody
 	ArrowFunction,           // ArrowFunction_Await : ArrowParameters_Await .noLineBreak '=>' ConciseBody
@@ -3284,12 +3228,10 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Expressionopt_NoLet_Yield :
 	0,                     // CaseClausesopt : CaseClauses
 	0,                     // CaseClausesopt :
-	0,                     // CaseClausesopt_Await_Return : CaseClauses_Await_Return
-	0,                     // CaseClausesopt_Await_Return :
-	0,                     // CaseClausesopt_Return : CaseClauses_Return
-	0,                     // CaseClausesopt_Return :
-	0,                     // CaseClausesopt_Return_Yield : CaseClauses_Return_Yield
-	0,                     // CaseClausesopt_Return_Yield :
+	0,                     // CaseClausesopt_Await : CaseClauses_Await
+	0,                     // CaseClausesopt_Await :
+	0,                     // CaseClausesopt_Yield : CaseClauses_Yield
+	0,                     // CaseClausesopt_Yield :
 	0,                     // ModuleBodyopt : ModuleBody
 	0,                     // ModuleBodyopt :
 	0,                     // AssignmentExpressionopt_Await_In : AssignmentExpression_Await_In

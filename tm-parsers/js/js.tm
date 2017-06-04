@@ -259,7 +259,6 @@ tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 %flag In;
 %flag Yield;
 %flag Await;
-%flag Return;
 %flag NoAsync = false;
 
 %lookahead flag NoLet = false;
@@ -615,7 +614,7 @@ Expression<In, Yield, Await> -> Expression /* interface */ :
 
 %interface Statement, Declaration;
 
-Statement<Yield, Await, Return> -> Statement /* interface */ :
+Statement<Yield, Await> -> Statement /* interface */ :
     BlockStatement
   | VariableStatement
   | EmptyStatement
@@ -624,7 +623,7 @@ Statement<Yield, Await, Return> -> Statement /* interface */ :
   | BreakableStatement
   | ContinueStatement
   | BreakStatement
-  | [Return] ReturnStatement
+  | ReturnStatement
   | WithStatement
   | LabelledStatement
   | ThrowStatement
@@ -644,25 +643,25 @@ HoistableDeclaration<Await> -> Declaration /* interface */ :
   | AsyncFunctionDeclaration
 ;
 
-BreakableStatement<Yield, Await, Return> -> Statement /* interface */ :
+BreakableStatement<Yield, Await> -> Statement /* interface */ :
     IterationStatement
   | SwitchStatement
 ;
 
-BlockStatement<Yield, Await, Return> :
+BlockStatement<Yield, Await> :
     Block ;
 
-Block<Yield, Await, Return> -> Block :
+Block<Yield, Await> -> Block :
     '{' StatementList? '}' ;
 
-StatementList<Yield, Await, Return> :
+StatementList<Yield, Await> :
     StatementListItem
   | StatementList StatementListItem
 ;
 
 %interface StatementListItem, BindingPattern, PropertyPattern, ElementPattern, CaseClause;
 
-StatementListItem<Yield, Await, Return> -> StatementListItem /* interface */ :
+StatementListItem<Yield, Await> -> StatementListItem /* interface */ :
     Statement
   | Declaration
   | error ';'                                         -> SyntaxProblem
@@ -753,12 +752,12 @@ ExpressionStatement<Yield, Await> -> ExpressionStatement :
 
 %right 'else';
 
-IfStatement<Yield, Await, Return> -> IfStatement :
+IfStatement<Yield, Await> -> IfStatement :
     'if' '(' Expression<+In> ')' then=Statement 'else' else=Statement
   | 'if' '(' Expression<+In> ')' then=Statement %prec 'else'
 ;
 
-IterationStatement<Yield, Await, Return> -> Statement /* interface */ :
+IterationStatement<Yield, Await> -> Statement /* interface */ :
     'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       -> DoWhileStatement
   | 'while' '(' Expression<+In> ')' Statement                         -> WhileStatement
   | 'for' '(' var=Expressionopt<~In,+NoLet> ';' .forSC ForCondition
@@ -817,32 +816,32 @@ ReturnStatement<Yield, Await> -> ReturnStatement :
   | 'return' .noLineBreak Expression<+In> ';'
 ;
 
-WithStatement<Yield, Await, Return> -> WithStatement :
+WithStatement<Yield, Await> -> WithStatement :
     'with' '(' Expression<+In> ')' Statement
 ;
 
-SwitchStatement<Yield, Await, Return> -> SwitchStatement :
+SwitchStatement<Yield, Await> -> SwitchStatement :
     'switch' '(' Expression<+In> ')' CaseBlock
 ;
 
-CaseBlock<Yield, Await, Return> -> Block :
+CaseBlock<Yield, Await> -> Block :
     '{' CaseClausesopt '}'
 ;
 
-CaseClauses<Yield, Await, Return> :
+CaseClauses<Yield, Await> :
     CaseClause
   | CaseClauses CaseClause
 ;
 
-CaseClause<Yield, Await, Return> -> CaseClause /* interface */ :
+CaseClause<Yield, Await> -> CaseClause /* interface */ :
     'case' Expression<+In> ':' StatementList?         -> Case
   | 'default' ':' StatementList?                      -> Default
 ;
 
-LabelledStatement<Yield, Await, Return> -> LabelledStatement :
+LabelledStatement<Yield, Await> -> LabelledStatement :
     LabelIdentifier ':' LabelledItem ;
 
-LabelledItem<Yield, Await, Return> :
+LabelledItem<Yield, Await> :
     Statement
   | FunctionDeclaration
 ;
@@ -851,16 +850,16 @@ ThrowStatement<Yield, Await> -> ThrowStatement :
     'throw' .noLineBreak Expression<+In> ';'
 ;
 
-TryStatement<Yield, Await, Return> -> TryStatement :
+TryStatement<Yield, Await> -> TryStatement :
     'try' Block Catch
   | 'try' Block Catch? Finally
 ;
 
-Catch<Yield, Await, Return> -> Catch :
+Catch<Yield, Await> -> Catch :
     'catch' '(' CatchParameter ')' Block
 ;
 
-Finally<Yield, Await, Return> -> Finally :
+Finally<Yield, Await> -> Finally :
     'finally' Block
 ;
 
@@ -907,7 +906,7 @@ FormalParameter<Yield, Await> -> Parameter :
     ElementPattern ;
 
 FunctionBody<Yield, Await> -> Body :
-    '{' StatementList<+Return>? '}' ;
+    '{' StatementList? '}' ;
 
 ArrowFunction<In, Yield, Await> -> ArrowFunction :
     ArrowParameters .noLineBreak '=>' ConciseBody ;
@@ -1026,7 +1025,7 @@ ModuleItemList :
 ModuleItem -> ModuleItem /* interface */ :
     ImportDeclaration
   | ExportDeclaration
-  | StatementListItem<~Yield, ~Await, ~Return>
+  | StatementListItem<~Yield, ~Await>
 ;
 
 ImportDeclaration -> ImportDeclaration :
