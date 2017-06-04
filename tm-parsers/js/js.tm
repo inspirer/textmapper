@@ -319,22 +319,24 @@ IdentifierReference<Yield, Await, NoAsync> -> IdentifierReference :
   | 'as' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
 ;
 
-BindingIdentifier<Yield, Await> -> BindingIdentifier :
+BindingIdentifier -> BindingIdentifier :
     Identifier
-  | [!Yield] 'yield'
-  | [!Await] 'await'
+
+  # These are allowed or not, depending on the context.
+  | 'yield' | 'await'
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
 ;
 
-AsyncArrowBindingIdentifier<Yield> :
-  BindingIdentifier<+Await> ;
+AsyncArrowBindingIdentifier :
+  BindingIdentifier ;
 
-LabelIdentifier<Yield, Await> -> LabelIdentifier :
+LabelIdentifier -> LabelIdentifier :
     Identifier
-  | [!Yield] 'yield'
-  | [!Await] 'await'
+
+  # These are allowed or not, depending on the context.
+  | 'yield' | 'await'
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
@@ -636,7 +638,7 @@ Declaration<Yield, Await> -> Declaration /* interface */ :
   | LexicalDeclaration<+In>
 ;
 
-HoistableDeclaration<Yield, Await> -> Declaration /* interface */ :
+HoistableDeclaration<Await> -> Declaration /* interface */ :
     FunctionDeclaration
   | GeneratorDeclaration
   | AsyncFunctionDeclaration
@@ -739,7 +741,7 @@ SingleNameBinding<Yield, Await> -> SingleNameBinding :
     BindingIdentifier Initializeropt<+In>
 ;
 
-BindingRestElement<Yield, Await> -> BindingRestElement :
+BindingRestElement -> BindingRestElement :
     '...' BindingIdentifier
 ;
 
@@ -800,12 +802,12 @@ ForCondition<Yield, Await> -> ForCondition :
 ForFinalExpression<Yield, Await> -> ForFinalExpression :
     Expressionopt<+In> ;
 
-ContinueStatement<Yield, Await> -> ContinueStatement :
+ContinueStatement -> ContinueStatement :
     'continue' ';'
   | 'continue' .noLineBreak LabelIdentifier ';'
 ;
 
-BreakStatement<Yield, Await> -> BreakStatement :
+BreakStatement -> BreakStatement :
     'break' ';'
   | 'break' .noLineBreak LabelIdentifier ';'
 ;
@@ -875,12 +877,11 @@ DebuggerStatement -> DebuggerStatement :
 
 %interface ClassElement, MethodDefinition;
 
-FunctionDeclaration<Yield, Await> -> Function :
+FunctionDeclaration -> Function :
     'function' BindingIdentifier? FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> ;
 
 FunctionExpression -> FunctionExpression :
-    'function' BindingIdentifier<~Yield, ~Await>? FormalParameters<~Yield, ~Await>
-        FunctionBody<~Yield, ~Await> ;
+    'function' BindingIdentifier? FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> ;
 
 UniqueFormalParameters<Yield, Await> :
     FormalParameters ;
@@ -899,7 +900,7 @@ FormalsList<Yield, Await> :
   | FormalsList ',' FormalParameter
 ;
 
-FunctionRestParameter<Yield, Await> -> RestParameter :
+FunctionRestParameter -> RestParameter :
     BindingRestElement ;
 
 FormalParameter<Yield, Await> -> Parameter :
@@ -948,11 +949,11 @@ PropertySetParameterList :
 GeneratorMethod<Yield, Await> -> GeneratorMethod :
     '*' PropertyName UniqueFormalParameters<+Yield, ~Await> GeneratorBody ;
 
-GeneratorDeclaration<Yield, Await> -> Generator :
+GeneratorDeclaration -> Generator :
     'function' '*' BindingIdentifier? FormalParameters<+Yield, ~Await> GeneratorBody ;
 
 GeneratorExpression -> GeneratorExpression :
-    'function' '*' BindingIdentifier<+Yield, ~Await>? FormalParameters<+Yield, ~Await> GeneratorBody ;
+    'function' '*' BindingIdentifier/* no yield*/? FormalParameters<+Yield, ~Await> GeneratorBody ;
 
 GeneratorBody :
     FunctionBody<+Yield, ~Await> ;
@@ -966,12 +967,11 @@ YieldExpression<In, Await> -> Yield :
 AsyncMethod<Yield, Await> -> AsyncMethod :
     'async' .noLineBreak PropertyName UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
-AsyncFunctionDeclaration<Yield, Await> -> AsyncFunction :
+AsyncFunctionDeclaration<Await> -> AsyncFunction :
     'async' .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield> AsyncFunctionBody ;
 
 AsyncFunctionExpression -> AsyncFunctionExpression :
-    'async' .noLineBreak 'function' BindingIdentifier<~Yield, +Await>?
-          FormalParameters<~Yield, +Await> AsyncFunctionBody ;
+    'async' .noLineBreak 'function' BindingIdentifier/* no await*/? FormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
 AsyncFunctionBody :
     FunctionBody<~Yield, +Await> ;
@@ -1066,7 +1066,7 @@ ModuleSpecifier -> ModuleSpecifier :
     StringLiteral ;
 
 ImportedBinding :
-    BindingIdentifier<~Yield, ~Await> ;
+    BindingIdentifier ;
 
 ExportDeclaration -> ModuleItem /* interface */ :
     'export' '*' FromClause ';'                       -> ExportDeclaration
@@ -1074,8 +1074,8 @@ ExportDeclaration -> ModuleItem /* interface */ :
   | 'export' ExportClause ';'                         -> ExportDeclaration
   | 'export' VariableStatement<~Yield, ~Await>        -> ExportDeclaration
   | 'export' Declaration<~Yield, ~Await>              -> ExportDeclaration
-  | 'export' 'default' HoistableDeclaration<~Yield, ~Await>              -> ExportDefault
-  | 'export' 'default' ClassDeclaration<~Yield, ~Await>                  -> ExportDefault
+  | 'export' 'default' HoistableDeclaration<~Await>                                -> ExportDefault
+  | 'export' 'default' ClassDeclaration<~Yield, ~Await>                            -> ExportDefault
   | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
 ;
 
