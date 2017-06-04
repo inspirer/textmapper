@@ -3,18 +3,18 @@
 package js
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 4176, lexer)
+	return p.parse(0, 4172, lexer)
 }
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
-	case 2291: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
+	case 2288: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2305: // IterationStatement_Await_Return : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
+	case 2302: // IterationStatement_Await_Return : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await_Return
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2319: // IterationStatement_Return : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement_Return
+	case 2316: // IterationStatement_Return : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement_Return
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2333: // IterationStatement_Return_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
+	case 2330: // IterationStatement_Return_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Return_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	}
 	nt := ruleNodeType[rule]

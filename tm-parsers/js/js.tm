@@ -259,7 +259,6 @@ tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 %flag In;
 %flag Yield;
 %flag Await;
-%flag Default;
 %flag Return;
 %flag NoAsync = false;
 
@@ -632,12 +631,12 @@ Statement<Yield, Await, Return> -> Statement /* interface */ :
 ;
 
 Declaration<Yield, Await> -> Declaration /* interface */ :
-    HoistableDeclaration<~Default>
-  | ClassDeclaration<~Default>
+    HoistableDeclaration
+  | ClassDeclaration
   | LexicalDeclaration<+In>
 ;
 
-HoistableDeclaration<Yield, Await, Default> -> Declaration /* interface */ :
+HoistableDeclaration<Yield, Await> -> Declaration /* interface */ :
     FunctionDeclaration
   | GeneratorDeclaration
   | AsyncFunctionDeclaration
@@ -843,7 +842,7 @@ LabelledStatement<Yield, Await, Return> -> LabelledStatement :
 
 LabelledItem<Yield, Await, Return> :
     Statement
-  | FunctionDeclaration<~Default>
+  | FunctionDeclaration
 ;
 
 ThrowStatement<Yield, Await> -> ThrowStatement :
@@ -876,10 +875,8 @@ DebuggerStatement -> DebuggerStatement :
 
 %interface ClassElement, MethodDefinition;
 
-FunctionDeclaration<Yield, Await, Default> -> Function :
-    'function' BindingIdentifier FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await>
-  | [Default] 'function' FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await>
-;
+FunctionDeclaration<Yield, Await> -> Function :
+    'function' BindingIdentifier? FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> ;
 
 FunctionExpression -> FunctionExpression :
     'function' BindingIdentifier<~Yield, ~Await>? FormalParameters<~Yield, ~Await>
@@ -951,10 +948,8 @@ PropertySetParameterList :
 GeneratorMethod<Yield, Await> -> GeneratorMethod :
     '*' PropertyName UniqueFormalParameters<+Yield, ~Await> GeneratorBody ;
 
-GeneratorDeclaration<Yield, Await, Default> -> Generator :
-    'function' '*' BindingIdentifier FormalParameters<+Yield, ~Await> GeneratorBody
-  | [Default] 'function' '*' FormalParameters<+Yield, ~Await> GeneratorBody
-;
+GeneratorDeclaration<Yield, Await> -> Generator :
+    'function' '*' BindingIdentifier? FormalParameters<+Yield, ~Await> GeneratorBody ;
 
 GeneratorExpression -> GeneratorExpression :
     'function' '*' BindingIdentifier<+Yield, ~Await>? FormalParameters<+Yield, ~Await> GeneratorBody ;
@@ -971,10 +966,8 @@ YieldExpression<In, Await> -> Yield :
 AsyncMethod<Yield, Await> -> AsyncMethod :
     'async' .noLineBreak PropertyName UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
-AsyncFunctionDeclaration<Yield, Await, Default> -> AsyncFunction :
-    'async' .noLineBreak 'function' BindingIdentifier FormalParameters<~Yield> AsyncFunctionBody
-  | [Default] 'async' .noLineBreak 'function' FormalParameters<~Yield> AsyncFunctionBody
-;
+AsyncFunctionDeclaration<Yield, Await> -> AsyncFunction :
+    'async' .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield> AsyncFunctionBody ;
 
 AsyncFunctionExpression -> AsyncFunctionExpression :
     'async' .noLineBreak 'function' BindingIdentifier<~Yield, +Await>?
@@ -986,9 +979,8 @@ AsyncFunctionBody :
 AwaitExpression<Yield> -> AwaitExpression :
   'await' UnaryExpression<+Await> ;
 
-ClassDeclaration<Yield, Await, Default> -> Declaration /* interface */ :
-    'class' BindingIdentifier ClassTail   -> Class
-  | [Default] 'class' ClassTail           -> Class
+ClassDeclaration<Yield, Await> -> Declaration /* interface */ :
+    'class' BindingIdentifier? ClassTail   -> Class
 ;
 
 ClassExpression<Yield, Await> -> ClassExpr :
@@ -1082,8 +1074,8 @@ ExportDeclaration -> ModuleItem /* interface */ :
   | 'export' ExportClause ';'                         -> ExportDeclaration
   | 'export' VariableStatement<~Yield, ~Await>        -> ExportDeclaration
   | 'export' Declaration<~Yield, ~Await>              -> ExportDeclaration
-  | 'export' 'default' HoistableDeclaration<+Default, ~Yield, ~Await>              -> ExportDefault
-  | 'export' 'default' ClassDeclaration<+Default, ~Yield, ~Await>                  -> ExportDefault
+  | 'export' 'default' HoistableDeclaration<~Yield, ~Await>              -> ExportDefault
+  | 'export' 'default' ClassDeclaration<~Yield, ~Await>                  -> ExportDefault
   | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
 ;
 
