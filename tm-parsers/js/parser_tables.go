@@ -113,6 +113,39 @@ var noLineBreakStates = map[int]bool{
 	3565: true,
 }
 
+var afterAsyncStates = map[int]bool{
+	33:   true,
+	173:  true,
+	212:  true,
+	216:  true,
+	247:  true,
+	416:  true,
+	458:  true,
+	497:  true,
+	555:  true,
+	772:  true,
+	867:  true,
+	1216: true,
+	1289: true,
+	1365: true,
+	1582: true,
+	1596: true,
+	1668: true,
+	1724: true,
+	1849: true,
+	1888: true,
+	1906: true,
+	2236: true,
+	2302: true,
+	2315: true,
+	2458: true,
+	2664: true,
+	2750: true,
+	2822: true,
+	2845: true,
+	3260: true,
+}
+
 const emptyStatementState = 44
 
 var forSCStates = map[int]bool{

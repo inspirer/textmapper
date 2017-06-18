@@ -2920,49 +2920,49 @@ var ruleNodeType = [...]NodeType{
 	0,                       // ConciseBody : FunctionBody
 	ConciseBody,             // ConciseBody_In : AssignmentExpression_In_NoObjLiteral
 	0,                       // ConciseBody_In : FunctionBody
-	AsyncArrowFunction,      // AsyncArrowFunction : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction : CoverCallExpressionAndAsyncArrowHead .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_Await : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_Await : CoverCallExpressionAndAsyncArrowHead_Await .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_In : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_In : CoverCallExpressionAndAsyncArrowHead_Await .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoFuncClass_NoLetSq_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoObjLiteral : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_Yield : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_In_Yield : CoverCallExpressionAndAsyncArrowHead_Await_Yield .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoLet : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoLet : CoverCallExpressionAndAsyncArrowHead_Await_NoLet .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoObjLiteral : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_Await_NoObjLiteral .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_StartWithLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_StartWithLet : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_StartWithLet : CoverCallExpressionAndAsyncArrowHead_Await_StartWithLet .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_Await_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Await_Yield : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_Await_Yield : CoverCallExpressionAndAsyncArrowHead_Await_Yield .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_In : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_In : CoverCallExpressionAndAsyncArrowHead .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass : CoverCallExpressionAndAsyncArrowHead_NoFuncClass .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_In_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CoverCallExpressionAndAsyncArrowHead_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_In_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_NoObjLiteral : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_In_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoObjLiteral .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_In_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
+	AsyncArrowFunction,      // AsyncArrowFunction_In_Yield : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody_In
 	AsyncArrowFunction,      // AsyncArrowFunction_In_Yield : CoverCallExpressionAndAsyncArrowHead_Yield .noLineBreak '=>' AsyncConciseBody_In
-	AsyncArrowFunction,      // AsyncArrowFunction_NoLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoLet : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_NoLet : CoverCallExpressionAndAsyncArrowHead_NoLet .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_NoLet_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoLet_Yield : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_NoLet_Yield : CoverCallExpressionAndAsyncArrowHead_NoLet_Yield .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_NoObjLiteral : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_NoObjLiteral : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_NoObjLiteral : CoverCallExpressionAndAsyncArrowHead_NoObjLiteral .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet : CoverCallExpressionAndAsyncArrowHead_StartWithLet .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet_Yield : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_StartWithLet_Yield : CoverCallExpressionAndAsyncArrowHead_StartWithLet_Yield .noLineBreak '=>' AsyncConciseBody
-	AsyncArrowFunction,      // AsyncArrowFunction_Yield : 'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+	AsyncArrowFunction,      // AsyncArrowFunction_Yield : 'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_Yield : CoverCallExpressionAndAsyncArrowHead_Yield .noLineBreak '=>' AsyncConciseBody
 	ConciseBody,             // AsyncConciseBody : AssignmentExpression_Await_NoObjLiteral
 	0,                       // AsyncConciseBody : AsyncFunctionBody
@@ -3010,16 +3010,16 @@ var ruleNodeType = [...]NodeType{
 	Yield,                   // YieldExpression_In : 'yield'
 	Yield,                   // YieldExpression_In : 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
 	Yield,                   // YieldExpression_In : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
-	AsyncMethod,             // AsyncMethod : 'async' .noLineBreak PropertyName UniqueFormalParameters_Await AsyncFunctionBody
-	AsyncMethod,             // AsyncMethod_Await : 'async' .noLineBreak PropertyName_Await UniqueFormalParameters_Await AsyncFunctionBody
-	AsyncMethod,             // AsyncMethod_Await_Yield : 'async' .noLineBreak PropertyName_Await_Yield UniqueFormalParameters_Await AsyncFunctionBody
-	AsyncMethod,             // AsyncMethod_Yield : 'async' .noLineBreak PropertyName_Yield UniqueFormalParameters_Await AsyncFunctionBody
-	AsyncFunction,           // AsyncFunctionDeclaration : 'async' .noLineBreak 'function' BindingIdentifier FormalParameters AsyncFunctionBody
-	AsyncFunction,           // AsyncFunctionDeclaration : 'async' .noLineBreak 'function' FormalParameters AsyncFunctionBody
-	AsyncFunction,           // AsyncFunctionDeclaration_Await : 'async' .noLineBreak 'function' BindingIdentifier FormalParameters_Await AsyncFunctionBody
-	AsyncFunction,           // AsyncFunctionDeclaration_Await : 'async' .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
-	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .noLineBreak 'function' BindingIdentifier FormalParameters_Await AsyncFunctionBody
-	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
+	AsyncMethod,             // AsyncMethod : 'async' .afterAsync .noLineBreak PropertyName UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncMethod,             // AsyncMethod_Await : 'async' .afterAsync .noLineBreak PropertyName_Await UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncMethod,             // AsyncMethod_Await_Yield : 'async' .afterAsync .noLineBreak PropertyName_Await_Yield UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncMethod,             // AsyncMethod_Yield : 'async' .afterAsync .noLineBreak PropertyName_Yield UniqueFormalParameters_Await AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration : 'async' .afterAsync .noLineBreak 'function' BindingIdentifier FormalParameters AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration : 'async' .afterAsync .noLineBreak 'function' FormalParameters AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration_Await : 'async' .afterAsync .noLineBreak 'function' BindingIdentifier FormalParameters_Await AsyncFunctionBody
+	AsyncFunction,           // AsyncFunctionDeclaration_Await : 'async' .afterAsync .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
+	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .afterAsync .noLineBreak 'function' BindingIdentifier FormalParameters_Await AsyncFunctionBody
+	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .afterAsync .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
 	0,                 // AsyncFunctionBody : FunctionBody_Await
 	AwaitExpression,   // AwaitExpression : 'await' UnaryExpression_Await
 	AwaitExpression,   // AwaitExpression_Yield : 'await' UnaryExpression_Await_Yield

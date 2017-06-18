@@ -921,8 +921,10 @@ ConciseBody<In> :
   | FunctionBody<~Yield, ~Await>
 ;
 
+# Note: some post-processing is needed if CoverCallExpressionAndAsyncArrowHead contains a line
+# break.
 AsyncArrowFunction<In, Yield, Await> -> AsyncArrowFunction :
-    'async' .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
+    'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
   | CoverCallExpressionAndAsyncArrowHead /* as AsyncArrowHead */  .noLineBreak '=>' AsyncConciseBody
 ;
 
@@ -964,13 +966,13 @@ YieldExpression<In, Await> -> Yield :
 ;
 
 AsyncMethod<Yield, Await> -> AsyncMethod :
-    'async' .noLineBreak PropertyName UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
+    'async' .afterAsync .noLineBreak PropertyName UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
 AsyncFunctionDeclaration<Await> -> AsyncFunction :
-    'async' .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield> AsyncFunctionBody ;
+    'async' .afterAsync .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield> AsyncFunctionBody ;
 
 AsyncFunctionExpression -> AsyncFunctionExpression :
-    'async' .noLineBreak 'function' BindingIdentifier/* no await*/? FormalParameters<~Yield, +Await> AsyncFunctionBody ;
+    'async' .afterAsync .noLineBreak 'function' BindingIdentifier/* no await*/? FormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
 AsyncFunctionBody :
     FunctionBody<~Yield, +Await> ;

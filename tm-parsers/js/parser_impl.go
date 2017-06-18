@@ -336,6 +336,10 @@ restart:
 			// No reduce actions are expected, so we can take a shortcut and check
 			// the current state.
 			restricted = afterYieldStates[int(p.stack[len(p.stack)-1].state)]
+		case ASYNC:
+			// No reduce actions are expected, so we can take a shortcut and check
+			// the current state.
+			restricted = afterAsyncStates[int(p.stack[len(p.stack)-1].state)]
 		}
 
 		if restricted {

@@ -356,6 +356,10 @@ var parseTests = []struct {
 	}},
 	{js.ExpressionStatement, []string{
 		`«1+2;» «v();»`,
+		`function a() {
+			«yield»
+			«yield()»
+		}`,
 	}},
 	{js.IfStatement, []string{
 		`«if (a in b); else continue;»`,
@@ -511,6 +515,12 @@ var parseTests = []struct {
 	{js.ArrowFunction, []string{
 		`(«a => a + 1»)(1);`,
 		`(«(a,b) => { return a*b; }»)(1);`,
+		`
+		 var a = async
+		 «v => 1»
+
+		 var b = async
+		 «(v, c) => 1»`,
 	}},
 	{js.ConciseBody, []string{
 		`(a => «a + 1»)(1);`,
@@ -547,16 +557,44 @@ var parseTests = []struct {
 	}},
 	{js.Yield, []string{
 		`function *gen(){
+		   «yield»
+		   a()
+		   «yield»
+		   +1
+		   «yield +1»
 		   «yield 1»; «yield»; «yield *2»;
 		   function foo(yield) {
+		     yield
 		     return yield + 5
 		   }
+		   var f = v => yield + 1
+		   «yield 22»
 		 } {}`,
 	}},
 	{js.AsyncArrowFunction, []string{
 		`/*no expectations*/ for(«async of=>5»;;) {}`,
 		`/*no expectations*/ for(«async (of)=>5»;;) {}`,
 		`/*no expectations*/ for(«async (of)=>{}»;;) {}`,
+		`var f = «async v => await + 1»
+		 await + 1
+     ;
+		 var a = async
+		 v => 1
+     ;
+		 var a = «async v => 1»
+     ;
+		 async
+		 v => 1
+     ;
+		 «async v => 1»
+     ;
+		 async
+		 (v) => 1
+     ;
+		 «async (v) => 1»
+		 `,
+		`var f = «async v => await + 1»
+		 await + 1`,
 	}},
 	{js.AsyncMethod, []string{
 		`class A {
@@ -564,13 +602,26 @@ var parseTests = []struct {
 		  «async yield() {}»
 		  «async await() {}»
 		}`,
+		`/*no expectations*/ class A {
+		  async
+		  §a() §{}
+		}`,
 	}},
 	{js.AsyncFunction, []string{
 		`«async function add2(x) {
        var a = await resolveAfter2Seconds(20);
        var b = await resolveAfter2Seconds(30);
        return x + a + b;
-     }»`,
+     }»
+
+     async++
+		 function nop() {}
+		 a = async
+		 function nop() {}
+		 async;
+		 function nop() {}
+		 async /* no semicolon */
+		 function nop() {}`,
 	}},
 	{js.AsyncFunctionExpression, []string{
 		`var a = «async function(x) {
@@ -591,12 +642,16 @@ var parseTests = []struct {
        const baz = bar * foo;
        console.log(baz);
 	   }»);`,
+		`/*no expectations*/ var a = async
+		 function(x) {}`,
 	}},
 	{js.AwaitExpression, []string{
 		`async function gogo() {
        var b = «await func1(10)»;
        return b + 1;
      }`,
+		`var f = async v => «await go()»
+		 await + 1`,
 	}},
 	{js.Class, []string{
 		`«class A {}»`,
