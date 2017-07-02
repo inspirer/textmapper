@@ -42,19 +42,19 @@ ${end-}
 		return tmAction[state];
 	}
 
-	${self->methAccess()} int tmGoto(int state, int symbol) {
-		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
+	${self->methAccess()} int gotoState(int state, int symbol) {
+		int min = tmGoto[symbol], max = tmGoto[symbol + 1];
 		int i, e;
 
-		while (min <= max) {
-			e = (min + max) >> 1;
-			i = lapg_sym_from[e];
+		while (min < max) {
+			e = (min + max) >> 2 << 1;
+			i = tmFromTo[e];
 			if (i == state) {
-				return lapg_sym_to[e];
+				return tmFromTo[e+1];
 			} else if (i < state) {
-				min = e + 1;
+				min = e + 2;
 			} else {
-				max = e - 1;
+				max = e;
 			}
 		}
 		return -1;
@@ -151,7 +151,7 @@ ${end-}
 		if (tmNext.symbol == 0) {
 			return false;
 		}
-		while (tmHead >= 0 && tmGoto(tmStack[tmHead].state, ${self->errorToken()}) == -1) {
+		while (tmHead >= 0 && gotoState(tmStack[tmHead].state, ${self->errorToken()}) == -1) {
 			dispose(tmStack[tmHead]);
 			tmStack[tmHead] = null;
 			tmHead--;
@@ -160,7 +160,7 @@ ${end-}
 			tmStack[++tmHead] = new ${self->java.symbolClassName()}();
 			tmStack[tmHead].symbol = ${self->errorToken()};
 			tmStack[tmHead].value = null;
-			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, ${self->errorToken()});
+			tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, ${self->errorToken()});
 ${foreach l in self->util.locationList()-}
 			tmStack[tmHead].${l} = tmNext.${l};
 ${end-}
@@ -177,7 +177,7 @@ ${if self->lazyNext()-}
 		}
 ${end-}
 		tmStack[++tmHead] = tmNext;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, tmNext.symbol);
 ${call debugShift-}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = ${
@@ -225,7 +225,7 @@ ${end-}
 			tmStack[tmHead--] = null;
 		}
 		tmStack[++tmHead] = left;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 ${call applyRule-}
@@ -308,11 +308,9 @@ ${if self->needActionsTable()-}
 	private static final int[] tmLalr = ${opts.prefix}Lexer.${parser.lalr->java_pack.packInt()};
 
 ${end-}
-	private static final int[] lapg_sym_goto = ${opts.prefix}Lexer.${parser.symGoto->java_pack.packInt()};
+	private static final int[] tmGoto = ${opts.prefix}Lexer.${parser.symGoto->java_pack.packInt()};
 
-	private static final int[] lapg_sym_from = ${opts.prefix}Lexer.${parser.symFrom->java_pack.packInt()};
-
-	private static final int[] lapg_sym_to = ${opts.prefix}Lexer.${parser.symTo->java_pack.packInt()};
+	private static final int[] tmFromTo = ${opts.prefix}Lexer.${parser.symFromTo->java_pack.packInt()};
 
 	private static final int[] tmRuleLen = ${opts.prefix}Lexer.${parser.ruleLength->java_pack.packInt()};
 

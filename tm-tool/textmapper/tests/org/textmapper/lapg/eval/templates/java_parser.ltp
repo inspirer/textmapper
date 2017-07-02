@@ -4,9 +4,8 @@ ${template parserCtor-}
 
 	private final int[] tmAction;
 	private final int[] tmLalr;
-	private final int[] lapg_sym_goto;
-	private final int[] lapg_sym_from;
-	private final int[] lapg_sym_to;
+	private final int[] tmGoto;
+	private final int[] tmFromTo;
 	private final int[] tmRuleLen;
 	private final int[] tmRuleSymbol;
 
@@ -17,9 +16,8 @@ ${template parserCtor-}
 		this.grammar = grammar;
 		this.tmAction = tables.getAction();
 		this.tmLalr = tables.getLalr();
-		this.lapg_sym_goto = tables.getSymGoto();
-		this.lapg_sym_to = tables.getSymTo();
-		this.lapg_sym_from = tables.getSymFrom();
+		this.tmGoto = tables.getSymGoto();
+		this.tmFromTo = tables.getSymFromTo();
 		this.tmRuleLen = tables.getRuleLength();
 		this.tmRuleSymbol = tables.getLeft();
 		this.debugSyntax = debugSyntax;

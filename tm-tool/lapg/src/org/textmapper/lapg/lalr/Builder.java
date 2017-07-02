@@ -425,10 +425,15 @@ public class Builder extends Lalr1 {
 			rleft[nrules] = r.getDefaultTarget().getIndex();
 			rlen[nrules++] = 0;
 		}
+		int[] goto_ = Arrays.copyOf(term_goto, term_goto.length);
+		for (int i = 0; i < goto_.length; i++) {
+			goto_[i] *= 2;
+		}
+
 		return new ParserTables(sym,
 				nrules, nsyms, nterms, nstates,
 				rleft, rlen,
-				term_goto, term_from, term_to,
+				goto_, interleave(term_from, term_to),
 				action_table, action_index, final_states,
 				markers, resolutionRules);
 	}
@@ -436,5 +441,18 @@ public class Builder extends Lalr1 {
 	public static ParserData compile(Grammar g, ProcessingStatus status) {
 		Builder en = new Builder(g, status);
 		return en.generate();
+	}
+
+	private static int[] interleave(int[] arr1, int[] arr2) {
+		if (arr1 == null || arr2 == null || arr1.length != arr2.length) {
+			throw new IllegalArgumentException("cannot interleave arrays of different length");
+		}
+		int[] result = new int[arr1.length * 2];
+		int idx = 0;
+		for (int i = 0; i < arr1.length; i++) {
+			result[idx++] = arr1[i];
+			result[idx++] = arr2[i];
+		}
+		return result;
 	}
 }

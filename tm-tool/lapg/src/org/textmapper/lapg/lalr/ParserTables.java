@@ -28,7 +28,7 @@ class ParserTables implements ParserData {
 	private Symbol[] sym;
 	private int rules, nsyms, nterms, nstates;
 	private int[] rleft, rlen;
-	private int[] sym_goto, sym_from, sym_to, action_table;
+	private int[] sym_goto, sym_fromto, action_table;
 	private int[] action_index;
 	private int[] final_states;
 	private Marker[] markers;
@@ -37,7 +37,7 @@ class ParserTables implements ParserData {
 	ParserTables(Symbol[] sym,
 				 int rules, int nsyms, int nterms, int nstates,
 				 int[] rleft, int[] rlen,
-				 int[] sym_goto, int[] sym_from, int[] sym_to,
+				 int[] sym_goto, int[] sym_fromto,
 				 int[] action_table, int[] action_index, int[] final_states,
 				 Marker[] markers, LookaheadRule[] lookaheadRules) {
 		this.sym = sym;
@@ -48,8 +48,7 @@ class ParserTables implements ParserData {
 		this.rleft = rleft;
 		this.rlen = rlen;
 		this.sym_goto = sym_goto;
-		this.sym_from = sym_from;
-		this.sym_to = sym_to;
+		this.sym_fromto = sym_fromto;
 		this.action_table = action_table;
 		this.action_index = action_index;
 		this.final_states = final_states;
@@ -93,13 +92,8 @@ class ParserTables implements ParserData {
 	}
 
 	@Override
-	public int[] getSymFrom() {
-		return sym_from;
-	}
-
-	@Override
-	public int[] getSymTo() {
-		return sym_to;
+	public int[] getSymFromTo() {
+		return sym_fromto;
 	}
 
 	@Override
@@ -142,7 +136,7 @@ class ParserTables implements ParserData {
 		if (sym_goto.length > 0) {
 			int max = sym_goto[sym_goto.length - 1];
 			result += sym_goto.length * byteSize(max);
-			result += (sym_from.length + sym_to.length) * byteSize(nstates);
+			result += sym_fromto.length * byteSize(nstates);
 		}
 		result += (action_index.length + action_table.length) * 4;
 		result += (rlen.length + rleft.length) * byteSize(nsyms);

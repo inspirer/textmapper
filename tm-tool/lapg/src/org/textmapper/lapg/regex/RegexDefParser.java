@@ -65,23 +65,22 @@ public class RegexDefParser {
 		"\22\0\uffff\uffff\0\0\35\0\15\0\35\0\16\0\35\0\uffff\uffff\ufffe\uffff\1\0\uffff" +
 		"\uffff\2\0\uffff\uffff\3\0\27\0\24\0\27\0\25\0\27\0\uffff\uffff\ufffe\uffff");
 
-	private static final int[] lapg_sym_goto = RegexDefLexer.unpack_int(31,
-		"\0\0\1\0\12\0\23\0\33\0\37\0\40\0\41\0\42\0\43\0\43\0\43\0\43\0\47\0\51\0\52\0\52" +
-		"\0\56\0\62\0\66\0\67\0\71\0\75\0\76\0\100\0\104\0\110\0\114\0\116\0\121\0\124\0");
+	private static final int[] tmGoto = RegexDefLexer.unpack_int(31,
+		"\0\0\2\0\24\0\46\0\66\0\76\0\100\0\102\0\104\0\106\0\106\0\106\0\106\0\116\0\122" +
+		"\0\124\0\124\0\134\0\144\0\154\0\156\0\162\0\172\0\174\0\200\0\210\0\220\0\230\0" +
+		"\234\0\242\0\250\0");
 
-	private static final int[] lapg_sym_from = RegexDefLexer.unpack_int(84,
-		"\45\0\0\0\5\0\6\0\7\0\15\0\25\0\26\0\27\0\37\0\0\0\5\0\6\0\7\0\15\0\25\0\26\0\27" +
-		"\0\37\0\0\0\5\0\6\0\7\0\15\0\25\0\26\0\27\0\0\0\5\0\15\0\27\0\14\0\14\0\14\0\14\0" +
-		"\0\0\5\0\15\0\27\0\12\0\17\0\17\0\0\0\5\0\15\0\27\0\0\0\5\0\15\0\27\0\0\0\5\0\15" +
-		"\0\27\0\0\0\25\0\26\0\6\0\7\0\25\0\26\0\0\0\0\0\5\0\0\0\5\0\15\0\27\0\0\0\5\0\15" +
-		"\0\27\0\6\0\7\0\25\0\26\0\6\0\7\0\0\0\5\0\27\0\0\0\5\0\27\0");
-
-	private static final int[] lapg_sym_to = RegexDefLexer.unpack_int(84,
-		"\46\0\1\0\1\0\20\0\20\0\1\0\20\0\20\0\1\0\43\0\2\0\2\0\21\0\21\0\2\0\21\0\21\0\2" +
-		"\0\44\0\3\0\3\0\22\0\22\0\3\0\22\0\22\0\3\0\4\0\4\0\4\0\4\0\30\0\31\0\32\0\33\0\5" +
-		"\0\5\0\5\0\5\0\27\0\27\0\35\0\6\0\6\0\6\0\6\0\7\0\7\0\7\0\7\0\10\0\10\0\10\0\10\0" +
-		"\11\0\36\0\41\0\23\0\23\0\37\0\37\0\45\0\12\0\17\0\13\0\13\0\34\0\13\0\14\0\14\0" +
-		"\14\0\14\0\24\0\24\0\40\0\40\0\25\0\26\0\15\0\15\0\15\0\16\0\16\0\42\0");
+	private static final int[] tmFromTo = RegexDefLexer.unpack_int(168,
+		"\45\0\46\0\0\0\1\0\5\0\1\0\6\0\20\0\7\0\20\0\15\0\1\0\25\0\20\0\26\0\20\0\27\0\1" +
+		"\0\37\0\43\0\0\0\2\0\5\0\2\0\6\0\21\0\7\0\21\0\15\0\2\0\25\0\21\0\26\0\21\0\27\0" +
+		"\2\0\37\0\44\0\0\0\3\0\5\0\3\0\6\0\22\0\7\0\22\0\15\0\3\0\25\0\22\0\26\0\22\0\27" +
+		"\0\3\0\0\0\4\0\5\0\4\0\15\0\4\0\27\0\4\0\14\0\30\0\14\0\31\0\14\0\32\0\14\0\33\0" +
+		"\0\0\5\0\5\0\5\0\15\0\5\0\27\0\5\0\12\0\27\0\17\0\27\0\17\0\35\0\0\0\6\0\5\0\6\0" +
+		"\15\0\6\0\27\0\6\0\0\0\7\0\5\0\7\0\15\0\7\0\27\0\7\0\0\0\10\0\5\0\10\0\15\0\10\0" +
+		"\27\0\10\0\0\0\11\0\25\0\36\0\26\0\41\0\6\0\23\0\7\0\23\0\25\0\37\0\26\0\37\0\0\0" +
+		"\45\0\0\0\12\0\5\0\17\0\0\0\13\0\5\0\13\0\15\0\34\0\27\0\13\0\0\0\14\0\5\0\14\0\15" +
+		"\0\14\0\27\0\14\0\6\0\24\0\7\0\24\0\25\0\40\0\26\0\40\0\6\0\25\0\7\0\26\0\0\0\15" +
+		"\0\5\0\15\0\27\0\15\0\0\0\16\0\5\0\16\0\27\0\42\0");
 
 	private static final int[] tmRuleLen = RegexDefLexer.unpack_int(30,
 		"\1\0\1\0\1\0\3\0\1\0\2\0\2\0\2\0\2\0\1\0\1\0\1\0\1\0\3\0\3\0\3\0\1\0\1\0\1\0\1\0" +
@@ -155,19 +154,19 @@ public class RegexDefParser {
 		return tmAction[state];
 	}
 
-	protected static int tmGoto(int state, int symbol) {
-		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
+	protected static int gotoState(int state, int symbol) {
+		int min = tmGoto[symbol], max = tmGoto[symbol + 1];
 		int i, e;
 
-		while (min <= max) {
-			e = (min + max) >> 1;
-			i = lapg_sym_from[e];
+		while (min < max) {
+			e = (min + max) >> 2 << 1;
+			i = tmFromTo[e];
 			if (i == state) {
-				return lapg_sym_to[e];
+				return tmFromTo[e+1];
 			} else if (i < state) {
-				min = e + 1;
+				min = e + 2;
 			} else {
-				max = e - 1;
+				max = e;
 			}
 		}
 		return -1;
@@ -212,7 +211,7 @@ public class RegexDefParser {
 
 	protected void shift() throws IOException {
 		tmStack[++tmHead] = tmNext;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
@@ -237,7 +236,7 @@ public class RegexDefParser {
 			tmStack[tmHead--] = null;
 		}
 		tmStack[++tmHead] = left;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

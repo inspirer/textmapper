@@ -222,17 +222,25 @@ func lalr(action, next int32) int32 {
 
 func gotoState(state int16, symbol int32) int16 {
 	min := tmGoto[symbol]
-	max := tmGoto[symbol+1] - 1
+	max := tmGoto[symbol+1]
 
-	for min <= max {
-		e := (min + max) >> 1
-		i := tmFrom[e]
-		if i == state {
-			return tmTo[e]
-		} else if i < state {
-			min = e + 1
-		} else {
-			max = e - 1
+	if max-min < 32 {
+		for i := min; i <= max; i += 2 {
+			if tmFromTo[i] == state {
+				return tmFromTo[i+1]
+			}
+		}
+	} else {
+		for min < max {
+			e := (min + max) >> 1 &^ int32(1)
+			i := tmFromTo[e]
+			if i == state {
+				return tmFromTo[e+1]
+			} else if i < state {
+				min = e + 2
+			} else {
+				max = e
+			}
 		}
 	}
 	return -1

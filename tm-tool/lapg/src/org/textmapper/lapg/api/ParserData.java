@@ -32,9 +32,7 @@ public interface ParserData {
 
 	int[] getSymGoto();
 
-	int[] getSymFrom();
-
-	int[] getSymTo();
+	int[] getSymFromTo();
 
 	int[] getLalr();
 

@@ -42,9 +42,8 @@ public class GenericParser {
 
 	private final int[] tmAction;
 	private final int[] tmLalr;
-	private final int[] lapg_sym_goto;
-	private final int[] lapg_sym_from;
-	private final int[] lapg_sym_to;
+	private final int[] tmGoto;
+	private final int[] tmFromTo;
 	private final int[] tmRuleLen;
 	private final int[] tmRuleSymbol;
 
@@ -55,9 +54,8 @@ public class GenericParser {
 		this.grammar = grammar;
 		this.tmAction = tables.getAction();
 		this.tmLalr = tables.getLalr();
-		this.lapg_sym_goto = tables.getSymGoto();
-		this.lapg_sym_to = tables.getSymTo();
-		this.lapg_sym_from = tables.getSymFrom();
+		this.tmGoto = tables.getSymGoto();
+		this.tmFromTo = tables.getSymFromTo();
 		this.tmRuleLen = tables.getRuleLength();
 		this.tmRuleSymbol = tables.getLeft();
 		this.debugSyntax = debugSyntax;
@@ -85,19 +83,19 @@ public class GenericParser {
 		return tmAction[state];
 	}
 
-	protected final int tmGoto(int state, int symbol) {
-		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
+	protected final int gotoState(int state, int symbol) {
+		int min = tmGoto[symbol], max = tmGoto[symbol + 1];
 		int i, e;
 
-		while (min <= max) {
-			e = (min + max) >> 1;
-			i = lapg_sym_from[e];
+		while (min < max) {
+			e = (min + max) >> 2 << 1;
+			i = tmFromTo[e];
 			if (i == state) {
-				return lapg_sym_to[e];
+				return tmFromTo[e+1];
 			} else if (i < state) {
-				min = e + 1;
+				min = e + 2;
 			} else {
-				max = e - 1;
+				max = e;
 			}
 		}
 		return -1;
@@ -173,7 +171,7 @@ public class GenericParser {
 		if (tmNext.symbol == 0) {
 			return false;
 		}
-		while (tmHead >= 0 && tmGoto(tmStack[tmHead].state, grammar.getError().getIndex()) == -1) {
+		while (tmHead >= 0 && gotoState(tmStack[tmHead].state, grammar.getError().getIndex()) == -1) {
 			dispose(tmStack[tmHead]);
 			tmStack[tmHead] = null;
 			tmHead--;
@@ -182,7 +180,7 @@ public class GenericParser {
 			tmStack[++tmHead] = new Span();
 			tmStack[tmHead].symbol = grammar.getError().getIndex();
 			tmStack[tmHead].value = null;
-			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, grammar.getError().getIndex());
+			tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, grammar.getError().getIndex());
 			tmStack[tmHead].line = tmNext.line;
 			tmStack[tmHead].offset = tmNext.offset;
 			tmStack[tmHead].endoffset = tmNext.endoffset;
@@ -196,7 +194,7 @@ public class GenericParser {
 			tmNext = tmLexer.next();
 		}
 		tmStack[++tmHead] = tmNext;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (debugSyntax) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getNameText(), tmLexer.tokenText()));
 		}
@@ -223,7 +221,7 @@ public class GenericParser {
 			tmStack[tmHead--] = null;
 		}
 		tmStack[++tmHead] = left;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	protected void applyRule(Span tmLeft, int rule, int ruleLength) {

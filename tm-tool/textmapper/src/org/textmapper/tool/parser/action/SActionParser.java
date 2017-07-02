@@ -45,14 +45,12 @@ public class SActionParser {
 		"\1\0\uffff\uffff\3\0\5\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\3\0\5\0\uffff\uffff" +
 		"\ufffe\uffff\1\0\uffff\uffff\3\0\4\0\uffff\uffff\ufffe\uffff");
 
-	private static final int[] lapg_sym_goto = SActionLexer.unpack_int(9,
-		"\0\0\0\0\4\0\4\0\6\0\7\0\11\0\14\0\16\0");
+	private static final int[] tmGoto = SActionLexer.unpack_int(9,
+		"\0\0\0\0\10\0\10\0\14\0\16\0\22\0\30\0\34\0");
 
-	private static final int[] lapg_sym_from = SActionLexer.unpack_int(14,
-		"\0\0\1\0\2\0\3\0\5\0\6\0\0\0\1\0\2\0\1\0\2\0\3\0\1\0\2\0");
-
-	private static final int[] lapg_sym_to = SActionLexer.unpack_int(14,
-		"\1\0\2\0\2\0\2\0\10\0\11\0\12\0\3\0\3\0\4\0\4\0\7\0\5\0\6\0");
+	private static final int[] tmFromTo = SActionLexer.unpack_int(28,
+		"\0\0\1\0\1\0\2\0\2\0\2\0\3\0\2\0\5\0\10\0\6\0\11\0\0\0\12\0\1\0\3\0\2\0\3\0\1\0\4" +
+		"\0\2\0\4\0\3\0\7\0\1\0\5\0\2\0\6\0");
 
 	private static final int[] tmRuleLen = SActionLexer.unpack_int(6,
 		"\3\0\2\0\1\0\3\0\1\0\0\0");
@@ -101,19 +99,19 @@ public class SActionParser {
 		return tmAction[state];
 	}
 
-	protected static int tmGoto(int state, int symbol) {
-		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
+	protected static int gotoState(int state, int symbol) {
+		int min = tmGoto[symbol], max = tmGoto[symbol + 1];
 		int i, e;
 
-		while (min <= max) {
-			e = (min + max) >> 1;
-			i = lapg_sym_from[e];
+		while (min < max) {
+			e = (min + max) >> 2 << 1;
+			i = tmFromTo[e];
 			if (i == state) {
-				return lapg_sym_to[e];
+				return tmFromTo[e+1];
 			} else if (i < state) {
-				min = e + 1;
+				min = e + 2;
 			} else {
-				max = e - 1;
+				max = e;
 			}
 		}
 		return -1;
@@ -165,7 +163,7 @@ public class SActionParser {
 			tmNext = tmLexer.next();
 		}
 		tmStack[++tmHead] = tmNext;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
@@ -190,7 +188,7 @@ public class SActionParser {
 			tmStack[tmHead--] = null;
 		}
 		tmStack[++tmHead] = left;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

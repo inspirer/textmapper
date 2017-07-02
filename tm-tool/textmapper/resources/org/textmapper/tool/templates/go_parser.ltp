@@ -290,17 +290,25 @@ func lalr(action, next int32) int32 {
 ${end-}
 func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 	min := tmGoto[symbol]
-	max := tmGoto[symbol+1] - 1
+	max := tmGoto[symbol+1]
 
-	for min <= max {
-		e := (min + max) >> 1
-		i := tmFrom[e]
-		if i == state {
-			return tmTo[e]
-		} else if i < state {
-			min = e + 1
-		} else {
-			max = e - 1
+	if max-min < 32 {
+		for i := min; i <= max; i += 2 {
+			if tmFromTo[i] == state {
+				return tmFromTo[i+1]
+			}
+		}
+	} else {
+		for min < max {
+			e := (min + max) >> 1 &^ int32(1)
+			i := tmFromTo[e]
+			if i == state {
+				return tmFromTo[e+1]
+			} else if i < state {
+				min = e + 2
+			} else {
+				max = e
+			}
 		}
 	}
 	return -1
@@ -515,12 +523,8 @@ var tmGoto = []int32{
 	${util.format(parser.symGoto, 16, 1)},
 }
 
-var tmFrom = []${self->stateType()}{
-	${util.format(parser.symFrom, 16, 1)},
-}
-
-var tmTo = []${self->stateType()}{
-	${util.format(parser.symTo, 16, 1)},
+var tmFromTo = []${self->stateType()}{
+	${util.format(parser.symFromTo, 16, 1)},
 }
 
 var tmRuleLen = []int${util.bitsForElement(parser.ruleLength)}{

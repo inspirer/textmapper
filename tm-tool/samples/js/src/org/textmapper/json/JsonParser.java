@@ -27,21 +27,18 @@ public class JsonParser {
 		"\13\0\uffff\uffff\16\0\17\0\uffff\uffff\uffff\uffff\10\0\uffff\uffff\15\0\uffff\uffff" +
 		"\12\0\14\0\20\0\uffff\uffff\ufffe\uffff");
 
-	private static final int[] lapg_sym_goto = JsonLexer.unpack_int(21,
-		"\0\0\1\0\5\0\7\0\13\0\15\0\16\0\20\0\20\0\26\0\32\0\36\0\42\0\46\0\47\0\53\0\57\0" +
-		"\61\0\62\0\66\0\67\0");
+	private static final int[] tmGoto = JsonLexer.unpack_int(21,
+		"\0\0\2\0\12\0\16\0\26\0\32\0\34\0\40\0\40\0\54\0\64\0\74\0\104\0\114\0\116\0\126" +
+		"\0\136\0\142\0\144\0\154\0\156\0");
 
-	private static final int[] lapg_sym_from = JsonLexer.unpack_int(55,
-		"\32\0\0\0\2\0\22\0\26\0\1\0\16\0\0\0\2\0\22\0\26\0\2\0\21\0\14\0\16\0\21\0\0\0\1" +
-		"\0\2\0\22\0\24\0\26\0\0\0\2\0\22\0\26\0\0\0\2\0\22\0\26\0\0\0\2\0\22\0\26\0\0\0\2" +
-		"\0\22\0\26\0\0\0\0\0\2\0\22\0\26\0\0\0\2\0\22\0\26\0\1\0\24\0\1\0\0\0\2\0\22\0\26" +
-		"\0\2\0");
-
-	private static final int[] lapg_sym_to = JsonLexer.unpack_int(55,
-		"\33\0\1\0\1\0\1\0\1\0\13\0\23\0\2\0\2\0\2\0\2\0\17\0\25\0\22\0\24\0\26\0\3\0\14\0" +
-		"\3\0\3\0\14\0\3\0\4\0\4\0\4\0\4\0\5\0\5\0\5\0\5\0\6\0\6\0\6\0\6\0\7\0\7\0\7\0\7\0" +
-		"\32\0\10\0\20\0\27\0\31\0\11\0\11\0\11\0\11\0\15\0\30\0\16\0\12\0\12\0\12\0\12\0" +
-		"\21\0");
+	private static final int[] tmFromTo = JsonLexer.unpack_int(110,
+		"\32\0\33\0\0\0\1\0\2\0\1\0\22\0\1\0\26\0\1\0\1\0\13\0\16\0\23\0\0\0\2\0\2\0\2\0\22" +
+		"\0\2\0\26\0\2\0\2\0\17\0\21\0\25\0\14\0\22\0\16\0\24\0\21\0\26\0\0\0\3\0\1\0\14\0" +
+		"\2\0\3\0\22\0\3\0\24\0\14\0\26\0\3\0\0\0\4\0\2\0\4\0\22\0\4\0\26\0\4\0\0\0\5\0\2" +
+		"\0\5\0\22\0\5\0\26\0\5\0\0\0\6\0\2\0\6\0\22\0\6\0\26\0\6\0\0\0\7\0\2\0\7\0\22\0\7" +
+		"\0\26\0\7\0\0\0\32\0\0\0\10\0\2\0\20\0\22\0\27\0\26\0\31\0\0\0\11\0\2\0\11\0\22\0" +
+		"\11\0\26\0\11\0\1\0\15\0\24\0\30\0\1\0\16\0\0\0\12\0\2\0\12\0\22\0\12\0\26\0\12\0" +
+		"\2\0\21\0");
 
 	private static final int[] tmRuleLen = JsonLexer.unpack_int(17,
 		"\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\3\0\2\0\3\0\1\0\3\0\3\0\2\0\1\0\3\0");
@@ -94,19 +91,19 @@ public class JsonParser {
 		return tmAction[state];
 	}
 
-	protected static int tmGoto(int state, int symbol) {
-		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
+	protected static int gotoState(int state, int symbol) {
+		int min = tmGoto[symbol], max = tmGoto[symbol + 1];
 		int i, e;
 
-		while (min <= max) {
-			e = (min + max) >> 1;
-			i = lapg_sym_from[e];
+		while (min < max) {
+			e = (min + max) >> 2 << 1;
+			i = tmFromTo[e];
 			if (i == state) {
-				return lapg_sym_to[e];
+				return tmFromTo[e+1];
 			} else if (i < state) {
-				min = e + 1;
+				min = e + 2;
 			} else {
-				max = e - 1;
+				max = e;
 			}
 		}
 		return -1;
@@ -151,7 +148,7 @@ public class JsonParser {
 
 	protected void shift() throws IOException {
 		tmStack[++tmHead] = tmNext;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
@@ -177,7 +174,7 @@ public class JsonParser {
 			tmStack[tmHead--] = null;
 		}
 		tmStack[++tmHead] = left;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
+		tmStack[tmHead].state = gotoState(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
