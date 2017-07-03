@@ -33,6 +33,7 @@ import org.textmapper.templates.storage.Resource;
 import org.textmapper.templates.storage.ResourceRegistry;
 import org.textmapper.templates.types.TiInstance;
 import org.textmapper.templates.types.TypesRegistry;
+import org.textmapper.tool.compiler.TMDataUtil;
 import org.textmapper.tool.compiler.TMEventMapper;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.compiler.TMMapper;
@@ -94,8 +95,33 @@ public final class TMGenerator {
 				}
 			}
 
-			// Generate tables
+			// Generate user actions.
 			long start = System.currentTimeMillis();
+			TemplatesRegistry registry = createTemplateRegistry(
+					s.getTemplates(), resources, types, templatesStatus);
+			EvaluationContext context = createEvaluationContext(types, s, astModel,
+					genOptions, null, null);
+
+			TemplatesFacade ruleEnv = new TemplatesFacade(
+					new GrammarIxFactory(s, getTemplatePackage(s), context), registry);
+			if (s.getGrammar().getRules() != null) {
+				for (Rule rule : s.getGrammar().getRules()) {
+					String action = ruleEnv.executeTemplate(getTemplatePackage(s) + ".parserAction",
+							context, new Object[]{rule}, null);
+					if (action.isEmpty()) continue;
+					TMDataUtil.putCode(rule, action);
+				}
+			}
+			for (LexerRule rule : s.getGrammar().getLexerRules()) {
+				String action = ruleEnv.executeTemplate(getTemplatePackage(s) + ".lexerAction",
+						context, new Object[]{rule}, null);
+				if (action.isEmpty()) continue;
+				TMDataUtil.putCode(rule, action);
+			}
+			long userActionsTime = System.currentTimeMillis() - start;
+
+			// Generate tables
+			start = System.currentTimeMillis();
 			ParserData r = null;
 			if (s.getGrammar().getRules() != null) {
 				r = LapgCore.generateParser(s.getGrammar(), status);
@@ -114,45 +140,18 @@ public final class TMGenerator {
 
 			// Generate text
 			start = System.currentTimeMillis();
-			Object nashornValue = genOptions.get("nashorn");
-			if (nashornValue instanceof String) {
-				String script = (String) nashornValue;
-
-				ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-				engine.put("syntax", s);
-				engine.put("lex", l);
-				engine.put("parser", r);
-				if (astModel != null) {
-					engine.put("ast", astModel);
-				}
-				engine.put("opts", genOptions);
-				ScriptBuiltin builtin = new ScriptBuiltin(engine, resources, genOptions);
-				engine.put("__context", builtin);
-
-				engine.eval("function write(name, content) { __context.write(name, content); }\n"
-						+ "function load(name) { __context.load(name); }");
-				builtin.load(script);
-
-				Invocable invocable = (Invocable) engine;
-				invocable.invokeFunction("main");
-
-			} else {
-				TemplatesRegistry registry = createTemplateRegistry(
-						s.getTemplates(), resources, types, templatesStatus);
-				EvaluationContext context = createEvaluationContext(types, s, astModel,
-						genOptions, l, r);
-				TemplatesFacade env = new TemplatesFacadeExt(
-						new GrammarIxFactory(s, getTemplatePackage(s), context),
-						registry, genOptions);
-				env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
-			}
-			long textTime = System.currentTimeMillis() - start;
+			context = createEvaluationContext(types, s, astModel, genOptions, l, r);
+			TemplatesFacade env = new TemplatesFacadeExt(
+					new GrammarIxFactory(s, getTemplatePackage(s), context),
+					registry, genOptions);
+			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
+			long textTime = userActionsTime + (System.currentTimeMillis() - start);
 			StringBuilder sb = new StringBuilder();
 			sb.append("lalr: ").append(generationTime / 1000.).append("s");
 			sb.append(", text: ").append(textTime / 1000.).append("s");
 			if (r != null) {
 				sb.append(", parser: ").append(r.getStatesCount()).append(" states, ")
-						.append(r.getByteSize()/1024).append("KB");
+						.append(r.getByteSize() / 1024).append("KB");
 			}
 			status.report(ProcessingStatus.KIND_INFO, sb.toString());
 			return true;

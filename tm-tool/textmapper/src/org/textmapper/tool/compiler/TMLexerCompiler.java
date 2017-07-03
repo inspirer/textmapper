@@ -183,7 +183,7 @@ public class TMLexerCompiler {
 			LexerRule liLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, classTerm, regex,
 					states, priority, null, lexeme);
 			classMatchers.put(liLexerRule, matcher);
-			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
+			TMDataUtil.putCodeTemplate(liLexerRule, lexeme.getCommand());
 		}
 
 		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
@@ -278,7 +278,7 @@ public class TMLexerCompiler {
 
 			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex,
 					states, priority, classRule, lexeme);
-			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
+			TMDataUtil.putCodeTemplate(liLexerRule, lexeme.getCommand());
 		}
 	}
 

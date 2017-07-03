@@ -17,8 +17,12 @@ ${end-}
 ${end-}
 ${end}
 
-${template parserAction-}
-${eval getAction()}
+${template lexerAction(rule)-}
+${call java_lexer.lexerAction('token.value', 'token.symbol') for rule-}
+${end}
+
+${template parserAction(rule)-}
+${rule->java_parser.parserAction()-}
 ${end}
 
 ${template astAction(code)-}

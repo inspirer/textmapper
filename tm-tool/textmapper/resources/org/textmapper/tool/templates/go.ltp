@@ -9,6 +9,14 @@ ${call go_filter.main-}
 ${end-}
 ${end}
 
+${template parserAction(rule)-}
+${util.extractStatements(rule->go_parser.parserAction('lhs.value'))-}
+${end}
+
+${template lexerAction(rule)-}
+${rule->go_lexer.lexerAction('l.value', 'token')-}
+${end}
+
 ${query escapeGoReserved() =
     [
         'break',        'default',     'func',         'interface',    'select',

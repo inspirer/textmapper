@@ -104,7 +104,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object getProperty(SourceElement caller, String propertyName)
 				throws EvaluationException {
-			if ("action".equals(propertyName)) {
+			if ("codeTemplate".equals(propertyName)) {
+				return TMDataUtil.getCodeTemplate(lexerRule);
+			}
+			if ("code".equals(propertyName)) {
 				return TMDataUtil.getCode(lexerRule);
 			}
 			return super.getProperty(caller, propertyName);
@@ -164,7 +167,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 		public Object callMethod(SourceElement caller, String methodName, Object... args)
 				throws EvaluationException {
 			if (args == null || args.length == 0) {
-				if ("getAction".equals(methodName)) {
+				if ("codeTemplate".equals(methodName)) {
+					return TMDataUtil.getCodeTemplate(rule);
+				}
+				if ("code".equals(methodName)) {
 					return TMDataUtil.getCode(rule);
 				}
 				if ("precedence".equals(methodName)) {
@@ -493,7 +499,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				return false;
 			}
 			for (LexerRule rule : grammar.getLexerRules()) {
-				if (TMDataUtil.getCode(rule) != null) {
+				if (TMDataUtil.getCodeTemplate(rule) != null) {
 					return false;
 				}
 

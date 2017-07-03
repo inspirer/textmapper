@@ -81,7 +81,7 @@ public class InputTest extends LapgTestCase {
 		assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexerRules[1]
 				.getRegexp().toString());
 		assertEquals("[\\t\\r\\n ]+", lexerRules[2].getRegexp().toString());
-		assertEquals("{ continue; }", TMDataUtil.getCode(lexerRules[2]).getText());
+		assertEquals("{ continue; }", TMDataUtil.getCodeTemplate(lexerRules[2]).getText());
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class InputTest extends LapgTestCase {
 		assertEquals("subitem", syms[9].getNameText());
 		assertEquals("listopt", syms[10].getNameText());
 		assertEquals(13, g.getGrammar().getRules().length);
-		assertEquals("{  ${for a in b}..!..$$  }", TMDataUtil.getCode(g.getGrammar().getRules()[5]).getText());
+		assertEquals("{  ${for a in b}..!..$$  }", TMDataUtil.getCodeTemplate(g.getGrammar().getRules()[5]).getText());
 		assertEquals(1, g.getGrammar().getRules()[9].getRight().length);
 	}
 

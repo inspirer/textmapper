@@ -288,18 +288,24 @@ ${end}
 
 ${template applyRule-}
 	applyRule: function(tmLeft, ruleIndex, ruleLength) {
-${if syntax.rules.exists(r|r.getAction())-}
+${if syntax.rules.exists(r|r.codeTemplate())-}
 		switch (ruleIndex) {
 ${foreach rule in syntax.rules-}
-${if rule.getAction()-}
+${if rule.codeTemplate()-}
 		case ${rule.getIndex()}:  // ${rule}
-			${call js.parserAction for rule-}
+			${rule.code()-}
 ${if opts.breaks }			break;$/
 ${end-}
 ${end-}
 		}
 ${end-}
 	}
+${end}
+
+${template parserAction-}
+${if codeTemplate()-}
+${eval codeTemplate()}
+${end-}
 ${end}
 
 ${template debugShift-}

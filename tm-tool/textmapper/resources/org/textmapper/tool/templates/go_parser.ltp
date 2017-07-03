@@ -454,11 +454,11 @@ ${end}
 
 ${template applyRule-}
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
-${if syntax.rules.exists(r|self->hasAction(r)) || self->needExplicitLookahead()-}
+${if syntax.rules.exists(r|r.code()) || self->needExplicitLookahead()-}
 	switch rule {
-${foreach rule in syntax.rules.select(r|self->hasAction(r))-}
+${foreach rule in syntax.rules.select(r|r.code())-}
 	case ${rule.getIndex()}: // ${rule}
-		${util.extractStatements(rule->parserAction('lhs.value'))-}
+		${rule.code()-}
 ${end-}
 ${call caseLookaheadRules-}
 	}
@@ -551,11 +551,9 @@ ${query needExplicitLookahead() = parser.lookaheadRules.size() > 0}
 
 ${cached query hasRecovering() = syntax.error}
 
-${query hasAction(rule) = rule.getAction() || opts.genast && self->go_ast.astcode(rule) || rule.customRanges()}
-
 ${template parserAction($)-}
-${if getAction()-}
-${eval getAction()}
+${if codeTemplate()-}
+${eval codeTemplate()}
 ${else if context.opts.genast && context->go_ast.astcode(self)-}
 ${eval context->go_ast.astcode(self), '#[generated action for ' + self + ']'}
 ${end-}

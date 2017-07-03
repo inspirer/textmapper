@@ -219,13 +219,13 @@ ${else-}
 
 	token := tmToken[rule]
 	space := false
-${if syntax.lexerRules.exists(r|r->hasActions())-}
+${if syntax.lexerRules.exists(r|r.code)-}
 	switch rule {
 	case 0:
 ${call handleInvalidToken-}
-${foreach rule in syntax.lexerRules.select(r|r->hasActions())-}
+${foreach rule in syntax.lexerRules.select(r|r.code)-}
 	case ${rule.index+2}: // ${rule.symbol.name}: /${rule.regexp}/
-${call lexerAction('l.value', 'token') for rule-}
+${rule.code-}
 ${end-}
 	}
 ${else-}
@@ -445,14 +445,12 @@ ${template lexerAction($, symbol)-}
 ${if self->isSpace()-}
 		space = true
 ${end-}
-${if action-}
-		${eval action}
+${if codeTemplate-}
+		${eval codeTemplate}
 ${end-}
 ${end}
 
 ${cached query runeClassType() = lex.nchars < 256 ? 'uint8' : lex.nchars < 65536 ? 'uint16' : 'int32' }
-
-${cached query hasActions() = self.action || self->isSpace() }
 
 ${cached query isSpace() = self.kindAsText == 'space' && !context.opts.reportTokens.exists(tok|tok == self.symbol)}
 

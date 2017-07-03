@@ -330,7 +330,7 @@ public class TMParserCompiler {
 				right.getPrefix().getAnnotations() : null, "AnnotateRule");
 
 		TMDataUtil.putAnnotations(rule, annotations);
-		TMDataUtil.putCode(rule, lastAction);
+		TMDataUtil.putCodeTemplate(rule, lastAction);
 	}
 
 	private RhsPredicate convertPredicate(ITmaPredicateExpression e, Nonterminal context) {
@@ -394,7 +394,7 @@ public class TMParserCompiler {
 			Nonterminal codeSym = resolver.createNestedNonTerm(outer, astCode);
 			RhsSequence actionRule = builder.empty(astCode);
 			builder.addRule(codeSym, actionRule);
-			TMDataUtil.putCode(actionRule, astCode);
+			TMDataUtil.putCodeTemplate(actionRule, astCode);
 			return builder.symbol(codeSym, null, astCode);
 		} else if (part instanceof TmaRhsLookahead) {
 			List<LookaheadPredicate> rules = new ArrayList<>();

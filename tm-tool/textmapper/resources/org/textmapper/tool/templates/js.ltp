@@ -18,8 +18,12 @@ root.${opts.module} = ${opts.module};
 ${end-}
 ${end}
 
-${template parserAction-}
-${eval getAction()}
+${template lexerAction(rule)-}
+${call js_lexer.lexerAction('lapg_n.value', 'lapg_n.symbol') for rule-}
+${end}
+
+${template parserAction(rule)-}
+${rule->js_parser.parserAction()-}
 ${end}
 
 ${query symText(property) =

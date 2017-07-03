@@ -28,6 +28,7 @@ import java.util.*;
 public class TMDataUtil {
 
 	private static final String UD_CODE = "code";
+	private static final String UD_CODE_TEMPLATE = "codeTemplate";
 	private static final String UD_ANNOTATIONS = "annotations";
 	private static final String UD_IDENTIFIER = "id";
 	private static final String UD_CUSTOM_TYPE = "customType";
@@ -63,12 +64,20 @@ public class TMDataUtil {
 		return (Map<String, Object>) lookupUserData(element, UD_ANNOTATIONS);
 	}
 
-	public static void putCode(UserDataHolder element, TmaCommand code) {
+	public static void putCodeTemplate(UserDataHolder element, TmaCommand code) {
+		element.putUserData(UD_CODE_TEMPLATE, code);
+	}
+
+	public static TmaCommand getCodeTemplate(UserDataHolder element) {
+		return (TmaCommand) lookupUserData(element, UD_CODE_TEMPLATE);
+	}
+
+	public static void putCode(UserDataHolder element, String code) {
 		element.putUserData(UD_CODE, code);
 	}
 
-	public static TmaCommand getCode(UserDataHolder element) {
-		return (TmaCommand) lookupUserData(element, UD_CODE);
+	public static String getCode(UserDataHolder rule) {
+		return (String) rule.getUserData(UD_CODE);
 	}
 
 	public static void putId(Symbol element, String identifier) {

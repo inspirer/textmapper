@@ -259,13 +259,13 @@ ${end}
 ${template applyRule-}
 	@SuppressWarnings("unchecked")
 	protected void applyRule(${self->java.symbolClassName()} tmLeft, int ruleIndex, int ruleLength) {
-${if syntax.rules.exists(r|r.getAction()) || opts.genast -}
+${if syntax.rules.exists(r|r.code()) || opts.genast -}
 		switch (ruleIndex) {
 ${foreach rule in syntax.rules-}
-${if rule.getAction() || opts.genast && self->java_ast.astcode(rule)-}
+${if rule.code() || opts.genast && self->java_ast.astcode(rule)-}
 			case ${rule.getIndex()}:  // ${rule}
-${if rule.getAction()-}
-				${call java.parserAction for rule-}
+${if rule.code()-}
+				${rule.code()-}
 ${if opts.breaks }				break;$/
 ${else-}
 ${util.shiftRight(rule->java.astAction(self->java_ast.astcode(rule)), 4)-}
@@ -357,6 +357,12 @@ ${template parseException-}
 		public ParseException() {
 		}
 	}
+${end}
+
+${template parserAction-}
+${if codeTemplate()-}
+${eval codeTemplate()}
+${end-}
 ${end}
 
 ${cached query hasRecovering() = syntax.error}

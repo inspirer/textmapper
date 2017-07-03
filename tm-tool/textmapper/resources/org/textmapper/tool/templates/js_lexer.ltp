@@ -118,9 +118,9 @@ ${foreach rule in syntax.lexerRules-}
 ${if rule.kindAsText == 'class'-}
 		case ${rule.index}:
 			return this.create${rule->classRuleName()}Token(lapg_n, ruleIndex);
-${else if rule->hasActions() && !rule.classRule-}
+${else if rule.code && !rule.classRule-}
 		case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
-${call lexerAction('lapg_n.value', 'lapg_n.symbol') for rule-}
+${rule.code-}
 			break;
 ${end-}
 ${end-}
@@ -147,20 +147,20 @@ ${if classRule->classHasInstances()-}
 			lapg_n.symbol = this.tmRuleSymbol[ruleIndex];
 		}
 ${end-}
-${if classRule->classInstances().exists(x|x->hasActions()) || classRule->hasActions()-}
+${if classRule->classInstances().exists(x|x.code) || classRule.code-}
 		var spaceToken = false;
 		switch(ruleIndex) {
-${foreach instance in classRule->classInstances().select(x|x->hasActions())-}
+${foreach instance in classRule->classInstances().select(x|x.code)-}
 		case ${instance.index}:  // ${instance.regexp.constantValue}
-${call lexerAction('lapg_n.value', 'lapg_n.symbol') for instance-}
+${instance.code-}
 			break;
 ${end-}
-${if classRule->hasActions()-}
-${foreach instance in classRule->classInstances().select(x|!x.action && x.kindAsText == 'soft')-}
+${if classRule.code-}
+${foreach instance in classRule->classInstances().select(x|!x.codeTemplate && x.kindAsText == 'soft')-}
 		case ${instance.index}:  // ${instance.regexp.constantValue} (soft)
 ${end-}
 		case ${classRule.index}:  // <default>
-${call lexerAction('lapg_n.value', 'lapg_n.symbol') for classRule-}
+${classRule.code-}
 			break;
 ${end-}
 		}
@@ -194,8 +194,8 @@ ${template lexerAction($, symbol)-}
 ${if self.kindAsText == 'space'-}
 			spaceToken = true;
 ${end-}
-${if action-}
-			${eval action}
+${if codeTemplate-}
+			${eval codeTemplate}
 ${end-}
 ${end}
 
@@ -244,9 +244,7 @@ ${end}
 ${cached query stateId() = self.name->js.escapeJsReserved()}
 
 ${cached query hasLexerActions() =
-	syntax.lexerRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
-
-${cached query hasActions() = self.action || self.kindAsText == 'space' }
+	syntax.lexerRules.exists(l|l.code && !l.classRule || l.kindAsText == 'class')}
 
 ${cached query classRules() = syntax.lexerRules.select(x|x.kindAsText == 'class')}
 

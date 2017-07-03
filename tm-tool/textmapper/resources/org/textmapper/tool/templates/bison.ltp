@@ -32,12 +32,22 @@ ${template rhs(rule)-}
 ${if rule.getRight().length == 0}%empty${else-}
 ${foreach sym in rule.getRight() separator ' '}${sym.target->symbolName()}${end-}${end-}
 ${if rule.precedence()} %prec ${rule.precedence()->symbolName()}${end-}
-${if rule.getAction()}
-			${call parserAction for rule-}${end-}
+${if rule.codeTemplate()}
+			${call bisonAction for rule-}${end-}
 ${end}
 
-${template parserAction-}
-${eval getAction()-}
+${template lexerAction(rule)-}
+${rule.codeTemplate ? rule.codeTemplate : ''-}
+${end}
+
+${template parserAction(rule)-}
+${if rule.codeTemplate()-}
+${call bisonAction for rule-}
+${end-}
+${end}
+
+${template bisonAction-}
+${eval codeTemplate()-}
 ${end}
 
 
