@@ -755,6 +755,11 @@ public class TemplatesParser {
 		int map_entriesopt = 121;
 	}
 
+	// set(follow error)
+	private static int[] afterErr = {
+		36, 37
+	};
+
 	/**
 	 * -3-n   Lookahead (state id)
 	 * -2     Error

@@ -83,3 +83,6 @@ var tmRuleSymbol = []int32{
 var Literals = []int32{
 	2,
 }
+
+// set(follow error) =
+var afterErr = []int32{}

@@ -898,6 +898,8 @@ var parseTests = []struct {
 
 		// Semicolon insertion during recovery.
 		`{1} «(1+2) §3»`,
+		`function a() { §«*l;» }`, /* not needed */
+		`function a() { §«*l» }`,  /* required for recovery */
 
 		// Statements
 		`function a() {
@@ -920,14 +922,14 @@ var parseTests = []struct {
 		   let {a: [q, §«888+2»,b,c], c:{p} } = i;
 		 }`,
 		`function a(i) {
-		   let { c:{««8»»§}, e:{«8:«»»§} } = i;
+		   let { c:{«8»§}, e:{8:«»§}, d:{8:§«function»} } = i;
 		 }`,
 
 		// ObjectLiteral
 		`{a=b;} ({«a = b»});`,
 		`function a(i) {
 		   let a = {«b = 5»};
-		   let b = {««c:» »§};
+		   let b = {q: 1, «c: »§};
 		 }`,
 	}},
 

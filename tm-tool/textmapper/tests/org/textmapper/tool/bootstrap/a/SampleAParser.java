@@ -85,6 +85,11 @@ public class SampleAParser {
 		int classdeflistopt = 10;
 	}
 
+	// set(follow error)
+	private static int[] afterErr = {
+		3, 5
+	};
+
 	/**
 	 * -3-n   Lookahead (state id)
 	 * -2     Error

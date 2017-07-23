@@ -97,18 +97,19 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
-			if debugSyntax {
-				fmt.Printf("reduce to: %v\n", Symbol(entry.sym.symbol))
-			}
-			if ln == 0 {
-				entry.sym.offset = p.next.offset
-				entry.sym.endoffset = p.next.offset
-			} else {
-				entry.sym.offset = p.stack[len(p.stack)-ln].sym.offset
-				entry.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
-			}
-			p.applyRule(rule, &entry, p.stack[len(p.stack)-ln:])
+			rhs := p.stack[len(p.stack)-ln:]
 			p.stack = p.stack[:len(p.stack)-ln]
+			if ln == 0 {
+				entry.sym.offset, _ = lexer.Pos()
+				entry.sym.endoffset = entry.sym.offset
+			} else {
+				entry.sym.offset = rhs[0].sym.offset
+				entry.sym.endoffset = rhs[ln-1].sym.endoffset
+			}
+			p.applyRule(rule, &entry, rhs)
+			if debugSyntax {
+				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
+			}
 			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			p.stack = append(p.stack, entry)
@@ -160,8 +161,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 					return lastErr
 				}
 			}
-			skipToken := recovering >= 3
-			if !p.recover(skipToken) {
+			if !p.recoverFromError() {
 				return lastErr
 			}
 			p.healthy = true
@@ -182,29 +182,93 @@ func canRecoverOn(symbol int32) bool {
 	return false
 }
 
-func (p *Parser) recover(skipToken bool) bool {
-	if p.next.symbol == eoiToken {
+// willShift checks if "symbol" is going to be shifted in the given state.
+// This function does not support empty productions and returns false if they occur before "symbol".
+func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
+	if state == -1 {
 		return false
 	}
-	e := p.next.offset
-	s := e
-	for len(p.stack) > 0 && gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
-		s = p.stack[len(p.stack)-1].sym.offset
-		p.stack = p.stack[:len(p.stack)-1]
+
+	for state != p.endState {
+		action := tmAction[state]
+		if action < -2 {
+			action = lalr(action, symbol)
+		}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+			if ln == 0 {
+				// we do not support empty productions
+				return false
+			}
+			stackPos -= ln - 1
+			state = gotoState(p.stack[stackPos-1].state, tmRuleSymbol[rule])
+		} else {
+			return action == -1 && gotoState(state, symbol) >= 0
+		}
 	}
-	if len(p.stack) > 0 {
-		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
-		p.stack = append(p.stack, stackEntry{
+	return symbol == eoiToken
+}
+
+func (p *Parser) recoverFromError() bool {
+	var seen map[int32]bool
+	var recoverPos []int
+
+	for size := len(p.stack); size > 0; size-- {
+		if gotoState(p.stack[size-1].state, errSymbol) == -1 {
+			continue
+		}
+		recoverPos = append(recoverPos, size)
+	}
+	if len(recoverPos) == 0 {
+		return false
+	}
+
+	if p.next.symbol == noToken {
+		p.fetchNext()
+	}
+	s := p.next.offset
+	e := s
+	for {
+		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol]) {
+			e = p.next.endoffset
+			p.fetchNext()
+		}
+
+		var matchingPos int
+		for _, pos := range recoverPos {
+			errState := gotoState(p.stack[pos-1].state, errSymbol)
+			if p.willShift(pos, gotoState(p.stack[pos-1].state, errSymbol), p.next.symbol) {
+				matchingPos = pos
+				break
+			}
+			// Semicolon insertion is not reliable on broken input, try to look behind the semicolon.
+			if p.afterNext.symbol != -1 && p.willShift(pos, errState, p.afterNext.symbol) {
+				p.fetchNext()
+				matchingPos = pos
+				break
+			}
+		}
+		if matchingPos == 0 {
+			if seen == nil {
+				seen = make(map[int32]bool)
+			}
+			if p.next.symbol == eoiToken {
+				return false
+			}
+			seen[p.next.symbol] = true
+			continue
+		}
+
+		if matchingPos < len(p.stack) {
+			s = p.stack[matchingPos].sym.offset
+		}
+		p.stack = append(p.stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
-			state: state,
+			state: gotoState(p.stack[matchingPos-1].state, errSymbol),
 		})
-		if p.next.symbol == noToken || skipToken {
-			p.fetchNext()
-		}
-		for p.next.symbol != eoiToken && !canRecoverOn(p.next.symbol) {
-			p.fetchNext()
-		}
-		p.stack[len(p.stack)-1].sym.endoffset = p.next.offset
 		return true
 	}
 	return false
@@ -231,8 +295,8 @@ func (p *Parser) reportIgnoredTokens() {
 // reduceAll simulates all pending reductions and return true if the parser
 // can consume the next token. This function also returns the state of the
 // parser after the reductions have been applied.
-func (p *Parser) reduceAll() (state int16, success bool) {
-	if p.next.symbol == noToken {
+func (p *Parser) reduceAll(next int32) (state int16, success bool) {
+	if next == noToken {
 		panic("a valid next token is expected")
 	}
 
@@ -245,7 +309,7 @@ func (p *Parser) reduceAll() (state int16, success bool) {
 	for state != p.endState {
 		action := tmAction[state]
 		if action < -2 {
-			action = lalr(action, p.next.symbol)
+			action = lalr(action, next)
 		}
 
 		if action >= 0 {
@@ -267,7 +331,7 @@ func (p *Parser) reduceAll() (state int16, success bool) {
 			state = gotoState(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
-			success = (action == -1 && gotoState(state, p.next.symbol) >= 0)
+			success = (action == -1 && gotoState(state, next) >= 0)
 			return
 		}
 	}
@@ -278,12 +342,14 @@ func (p *Parser) reduceAll() (state int16, success bool) {
 // insertSC inserts and reports a semicolon, unless there is a overriding rule
 // forbidding insertion in this particular location.
 func (p *Parser) insertSC(state int16, offset int) {
-	stateAfterSC := gotoState(state, int32(SEMICOLON))
-	if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
-		// ".. a semicolon is never inserted automatically if the semicolon would
-		// then be parsed as an empty statement or if that semicolon would become
-		// one of the two semicolons in the header of a for statement."
-		return
+	if p.healthy {
+		stateAfterSC := gotoState(state, int32(SEMICOLON))
+		if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
+			// ".. a semicolon is never inserted automatically if the semicolon would
+			// then be parsed as an empty statement or if that semicolon would become
+			// one of the two semicolons in the header of a for statement."
+			return
+		}
 	}
 
 	p.afterNext = p.next
@@ -323,6 +389,17 @@ restart:
 		return
 	}
 
+	if !p.healthy {
+		// When recovering from a syntax error, we cannot rely on the current state
+		// of the stack and assume that the next token won't be accepted by the
+		// parser, so in general we insert more semicolons than needed. This is
+		// exactly what we want.
+		if newLine || token == RBRACE || token == EOI {
+			p.insertSC(-1 /* no state */, lastEnd)
+		}
+		return
+	}
+
 	// We might need to insert a semicolon.
 	// See 11.9.1 Rules of Automatic Semicolon Insertion
 	if newLine {
@@ -350,7 +427,7 @@ restart:
 
 	// Simulate all pending reductions and check if the current next token
 	// will be accepted by the parser.
-	state, success := p.reduceAll()
+	state, success := p.reduceAll(p.next.symbol)
 
 	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS) {
 		if noLineBreakStates[int(state)] {
@@ -359,15 +436,19 @@ restart:
 		}
 	}
 
-	// When recovering from a syntax error, we cannot rely on the current state
-	// of the stack and assume that the next token won't be accepted by the
-	// parser, so in general we insert more semicolons than needed. This is
-	// exactly what we want.
-	if success && p.healthy {
+	if success {
 		return
 	}
 
-	if newLine || token == RBRACE || token == EOI {
+	if token == RBRACE {
+		// Not all closing braces require a semicolon. Double checking.
+		if _, success = p.reduceAll(int32(SEMICOLON)); success {
+			p.insertSC(state, lastEnd)
+		}
+		return
+	}
+
+	if newLine || token == EOI {
 		p.insertSC(state, lastEnd)
 		return
 	}

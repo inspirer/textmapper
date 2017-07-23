@@ -1767,6 +1767,12 @@ public class TMParser {
 		int expression_array = 211;  // expression : '[' expression_list_Comma_separated_opt ']'
 	}
 
+	// set(follow error)
+	private static int[] afterErr = {
+		6, 7, 8, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 34, 35,
+		36, 37, 41, 44, 77
+	};
+
 	/**
 	 * -3-n   Lookahead (state id)
 	 * -2     Error

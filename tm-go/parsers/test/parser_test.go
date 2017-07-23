@@ -77,11 +77,7 @@ func TestParser(t *testing.T) {
 		for _, input := range tc.inputs {
 			pt := parsertest.New(t, tc.nt.String(), input)
 			l.Init(pt.Source())
-			errHandler := func(se test.SyntaxError) bool {
-				pt.ConsumeError(t, se.Offset, se.Endoffset)
-				return true
-			}
-			p.Init(errHandler, func(tn test.NodeType, offset, endoffset int) {
+			p.Init(func(tn test.NodeType, offset, endoffset int) {
 				if tn == tc.nt {
 					pt.Consume(t, offset, endoffset)
 				}

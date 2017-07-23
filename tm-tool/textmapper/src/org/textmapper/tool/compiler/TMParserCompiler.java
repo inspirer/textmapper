@@ -53,7 +53,18 @@ public class TMParserCompiler {
 		collectAnnotations();
 		collectAstTypes();
 		collectRules();
-		collectDirectives();
+
+		Set<String> seenSets = new HashSet<>();
+		collectDirectives(seenSets);
+
+		// Automatic error recovery needs to know which tokens can follow errors.
+		Symbol err = resolver.getSymbol("error");
+		if (err != null && err.isTerm() && !seenSets.contains("afterErr")) {
+			// %generate afterErr = set(follow error);
+			builder.addSet(LapgCore.name("afterErr"),
+					builder.set(Operation.Follow, err, null, null, err),
+					err);
+		}
 
 		if (!hasInputs) {
 			Symbol input = resolver.getSymbol("input");
@@ -193,9 +204,7 @@ public class TMParserCompiler {
 		}
 	}
 
-	private void collectDirectives() {
-		Set<String> seenSets = new HashSet<>();
-
+	private void collectDirectives(Set<String> seenSets) {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaDirectivePrio) {
 				TmaDirectivePrio directive = (TmaDirectivePrio) clause;

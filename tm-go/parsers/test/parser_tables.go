@@ -66,3 +66,6 @@ var tmRuleSymbol = []int32{
 	23, 23, 24, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 27,
 	28,
 }
+
+// set(follow error) =
+var afterErr = []int32{}

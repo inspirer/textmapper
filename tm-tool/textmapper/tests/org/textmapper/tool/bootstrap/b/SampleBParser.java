@@ -104,6 +104,11 @@ public class SampleBParser {
 		int classdeflistopt = 21;
 	}
 
+	// set(follow error)
+	private static int[] afterErr = {
+		1, 3, 6
+	};
+
 	/**
 	 * -3-n   Lookahead (state id)
 	 * -2     Error

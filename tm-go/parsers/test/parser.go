@@ -6,13 +6,8 @@ import (
 	"fmt"
 )
 
-// ErrorHandler is called every time a parser is unable to process some part of the input.
-// This handler can return false to abort the parser.
-type ErrorHandler func(err SyntaxError) bool
-
 // Parser is a table-driven LALR parser for test.
 type Parser struct {
-	eh       ErrorHandler
 	listener Listener
 
 	stack         []stackEntry
@@ -42,8 +37,7 @@ type stackEntry struct {
 	value interface{}
 }
 
-func (p *Parser) Init(eh ErrorHandler, l Listener) {
-	p.eh = eh
+func (p *Parser) Init(l Listener) {
 	p.listener = l
 }
 
@@ -69,8 +63,6 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 		p.ignoredTokens = p.ignoredTokens[:0]
 	}
 	state := start
-	var lastErr SyntaxError
-	recovering := 0
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
 	p.lexer = lexer
@@ -93,18 +85,19 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
+			rhs := p.stack[len(p.stack)-ln:]
+			p.stack = p.stack[:len(p.stack)-ln]
 			if ln == 0 {
 				entry.sym.offset, _ = lexer.Pos()
 				entry.sym.endoffset = entry.sym.offset
 			} else {
-				entry.sym.offset = p.stack[len(p.stack)-ln].sym.offset
-				entry.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
+				entry.sym.offset = rhs[0].sym.offset
+				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, p.stack[len(p.stack)-ln:])
+			p.applyRule(rule, &entry, rhs)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
-			p.stack = p.stack[:len(p.stack)-ln]
 			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			p.stack = append(p.stack, entry)
@@ -133,42 +126,14 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
 			}
-			if recovering > 0 {
-				recovering--
-			}
 		}
 
 		if action == -2 || state == -1 {
-			if p.recover() {
-				state = p.stack[len(p.stack)-1].state
-				if recovering == 0 {
-					offset, endoffset := lexer.Pos()
-					lastErr = SyntaxError{
-						Offset:    offset,
-						Endoffset: endoffset,
-					}
-					if !p.eh(lastErr) {
-						return lastErr
-					}
-				}
-				if recovering >= 3 {
-					p.fetchNext()
-				}
-				recovering = 4
-				continue
-			}
-			if len(p.stack) == 0 {
-				state = start
-				p.stack = append(p.stack, stackEntry{state: state})
-			}
 			break
 		}
 	}
 
 	if state != end {
-		if recovering > 0 {
-			return lastErr
-		}
 		offset, endoffset := lexer.Pos()
 		err := SyntaxError{
 			Offset:    offset,
@@ -178,35 +143,6 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 	}
 
 	return nil
-}
-
-const errSymbol = 22
-
-func (p *Parser) recover() bool {
-	if p.next.symbol == noToken {
-		p.fetchNext()
-	}
-	if p.next.symbol == eoiToken {
-		return false
-	}
-	e, _ := p.lexer.Pos()
-	s := e
-	for len(p.stack) > 0 && gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
-		// TODO cleanup
-		p.stack = p.stack[:len(p.stack)-1]
-		if len(p.stack) > 0 {
-			s = p.stack[len(p.stack)-1].sym.offset
-		}
-	}
-	if len(p.stack) > 0 {
-		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
-		p.stack = append(p.stack, stackEntry{
-			sym:   symbol{errSymbol, s, e},
-			state: state,
-		})
-		return true
-	}
-	return false
 }
 
 func lalr(action, next int32) int32 {

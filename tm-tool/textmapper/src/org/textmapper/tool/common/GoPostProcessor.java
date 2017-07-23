@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class GoPostProcessor {
 
 	private static Pattern QUALIFIED_REFERENCE = Pattern.compile("\"((?:[^\"]+/)?(\\w+))(?: as " +
-			"(\\w+))?\".([a-zA-Z_][a-zA-Z_0-9]*)");
+			"(\\w+))?\"\\.([a-zA-Z_][a-zA-Z_0-9]*)");
 	private static Pattern PACKAGE = Pattern.compile(
 			"^((?:(?://[^\\r\\n]*)?\\s*\\r?\\n)*)package\\s*((?:[.\\w-]+/)*" +
 			"([a-zA-Z_][a-zA-Z_0-9]*))\\s*(\\r?\\n){1,2}");

@@ -18,6 +18,7 @@ type Parser struct {
 	stack         []stackEntry
 	lexer         *Lexer
 	next          symbol
+	endState      int16
 	ignoredTokens []symbol // to be reported with the next shift
 }
 
@@ -78,6 +79,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
 	p.lexer = lexer
+	p.endState = end
 	p.fetchNext()
 
 	for state != end {
@@ -97,18 +99,19 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
+			rhs := p.stack[len(p.stack)-ln:]
+			p.stack = p.stack[:len(p.stack)-ln]
 			if ln == 0 {
 				entry.sym.offset, _ = lexer.Pos()
 				entry.sym.endoffset = entry.sym.offset
 			} else {
-				entry.sym.offset = p.stack[len(p.stack)-ln].sym.offset
-				entry.sym.endoffset = p.stack[len(p.stack)-1].sym.endoffset
+				entry.sym.offset = rhs[0].sym.offset
+				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, p.stack[len(p.stack)-ln:])
+			p.applyRule(rule, &entry, rhs)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
-			p.stack = p.stack[:len(p.stack)-ln]
 			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			p.stack = append(p.stack, entry)
@@ -138,44 +141,23 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 		}
 
 		if action == -2 || state == -1 {
-			if p.recover() {
-				state = p.stack[len(p.stack)-1].state
-				if recovering == 0 {
-					offset, endoffset := lexer.Pos()
-					lastErr = SyntaxError{
-						Line:      lexer.Line(),
-						Offset:    offset,
-						Endoffset: endoffset,
-					}
-					if !p.eh(lastErr) {
-						return lastErr
-					}
+			if recovering == 0 {
+				offset, endoffset := lexer.Pos()
+				lastErr = SyntaxError{
+					Line:      lexer.Line(),
+					Offset:    offset,
+					Endoffset: endoffset,
 				}
-				if recovering >= 3 {
-					p.fetchNext()
+				if !p.eh(lastErr) {
+					return lastErr
 				}
-				recovering = 4
-				continue
 			}
-			if len(p.stack) == 0 {
-				state = start
-				p.stack = append(p.stack, stackEntry{state: state})
+			if !p.recoverFromError() {
+				return lastErr
 			}
-			break
+			state = p.stack[len(p.stack)-1].state
+			recovering = 4
 		}
-	}
-
-	if state != end {
-		if recovering > 0 {
-			return lastErr
-		}
-		offset, endoffset := lexer.Pos()
-		err := SyntaxError{
-			Line:      lexer.Line(),
-			Offset:    offset,
-			Endoffset: endoffset,
-		}
-		return err
 	}
 
 	return nil
@@ -183,27 +165,93 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 
 const errSymbol = 36
 
-func (p *Parser) recover() bool {
+func canRecoverOn(symbol int32) bool {
+	for _, v := range afterErr {
+		if v == symbol {
+			return true
+		}
+	}
+	return false
+}
+
+// willShift checks if "symbol" is going to be shifted in the given state.
+// This function does not support empty productions and returns false if they occur before "symbol".
+func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
+	if state == -1 {
+		return false
+	}
+
+	for state != p.endState {
+		action := tmAction[state]
+		if action < -2 {
+			action = lalr(action, symbol)
+		}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+			if ln == 0 {
+				// we do not support empty productions
+				return false
+			}
+			stackPos -= ln - 1
+			state = gotoState(p.stack[stackPos-1].state, tmRuleSymbol[rule])
+		} else {
+			return action == -1 && gotoState(state, symbol) >= 0
+		}
+	}
+	return symbol == eoiToken
+}
+func (p *Parser) recoverFromError() bool {
+	var seen map[int32]bool
+	var recoverPos []int
+
+	for size := len(p.stack); size > 0; size-- {
+		if gotoState(p.stack[size-1].state, errSymbol) == -1 {
+			continue
+		}
+		recoverPos = append(recoverPos, size)
+	}
+	if len(recoverPos) == 0 {
+		return false
+	}
+
 	if p.next.symbol == noToken {
 		p.fetchNext()
 	}
-	if p.next.symbol == eoiToken {
-		return false
-	}
-	e, _ := p.lexer.Pos()
-	s := e
-	for len(p.stack) > 0 && gotoState(p.stack[len(p.stack)-1].state, errSymbol) == -1 {
-		// TODO cleanup
-		p.stack = p.stack[:len(p.stack)-1]
-		if len(p.stack) > 0 {
-			s = p.stack[len(p.stack)-1].sym.offset
+	s := p.next.offset
+	e := s
+	for {
+		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol]) {
+			e = p.next.endoffset
+			p.fetchNext()
 		}
-	}
-	if len(p.stack) > 0 {
-		state := gotoState(p.stack[len(p.stack)-1].state, errSymbol)
-		p.stack = append(p.stack, stackEntry{
+
+		var matchingPos int
+		for _, pos := range recoverPos {
+			if p.willShift(pos, gotoState(p.stack[pos-1].state, errSymbol), p.next.symbol) {
+				matchingPos = pos
+				break
+			}
+		}
+		if matchingPos == 0 {
+			if seen == nil {
+				seen = make(map[int32]bool)
+			}
+			if p.next.symbol == eoiToken {
+				return false
+			}
+			seen[p.next.symbol] = true
+			continue
+		}
+
+		if matchingPos < len(p.stack) {
+			s = p.stack[matchingPos].sym.offset
+		}
+		p.stack = append(p.stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
-			state: state,
+			state: gotoState(p.stack[matchingPos-1].state, errSymbol),
 		})
 		return true
 	}
