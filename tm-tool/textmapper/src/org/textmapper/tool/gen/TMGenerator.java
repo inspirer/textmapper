@@ -82,16 +82,18 @@ public final class TMGenerator {
 			}
 
 			// Language-specific processing.
-			boolean genast = Boolean.TRUE.equals(genOptions.get("genast"));
-			boolean eventBased = Boolean.TRUE.equals(genOptions.get("eventBased"));
-
 			AstModel astModel = null;
-			if (genast || eventBased) {
-				boolean hasAny = Boolean.TRUE.equals(genOptions.get("__hasAny"));
-				if (genast) {
-					astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
-				} else {
-					new TMEventMapper(s.getGrammar(), genOptions, status).deriveTypes();
+			if (s.getGrammar().getRules() != null) {
+				boolean genast = Boolean.TRUE.equals(genOptions.get("genast"));
+				boolean eventBased = Boolean.TRUE.equals(genOptions.get("eventBased"));
+
+				if (genast || eventBased) {
+					boolean hasAny = Boolean.TRUE.equals(genOptions.get("__hasAny"));
+					if (genast) {
+						astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
+					} else {
+						new TMEventMapper(s.getGrammar(), genOptions, status).deriveTypes();
+					}
 				}
 			}
 

@@ -1,7 +1,8 @@
 0.9.14
 ------
 
-...
+[+] Better error recovery
+[!] Various runtime performance optimizations and minor fixes.
 
 0.9.13
 ------
