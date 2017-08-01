@@ -14,7 +14,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
-<idea-plugin version="2">
+<idea-plugin url="https://plugins.jetbrains.com/plugin/7291-textmapper">
 	<id>org.textmapper.idea</id>
 	<name>Textmapper</name>
 	<category>Custom Languages</category>
