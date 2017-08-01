@@ -1,7 +1,7 @@
 0.9.15
 ------
 
-...
+[!] Fix a bug in the gotoState function.
 
 0.9.14
 ------
