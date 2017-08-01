@@ -391,7 +391,6 @@
 	<target name="archive-plugin" depends="plugin">
 		<zip destfile="${build.folder}/tm-idea-${suffix}.zip">
 			<zipfileset dir="${build.folder}/tm-idea" prefix="textmapper"/>
-			<zipfileset file="${tm.idea.dir}/README.txt"/>
 		</zip>
 	</target>
 
