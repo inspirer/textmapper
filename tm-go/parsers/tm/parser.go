@@ -203,6 +203,7 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
 	}
 	return symbol == eoiToken
 }
+
 func (p *Parser) recoverFromError() bool {
 	var seen map[int32]bool
 	var recoverPos []int
@@ -273,7 +274,7 @@ func gotoState(state int16, symbol int32) int16 {
 	max := tmGoto[symbol+1]
 
 	if max-min < 32 {
-		for i := min; i <= max; i += 2 {
+		for i := min; i < max; i += 2 {
 			if tmFromTo[i] == state {
 				return tmFromTo[i+1]
 			}

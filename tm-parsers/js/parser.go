@@ -2,8 +2,62 @@
 
 package js
 
+import (
+	"fmt"
+)
+
+// ErrorHandler is called every time a parser is unable to process some part of the input.
+// This handler can return false to abort the parser.
+type ErrorHandler func(err SyntaxError) bool
+
+type SyntaxError struct {
+	Line      int
+	Offset    int
+	Endoffset int
+}
+
+func (e SyntaxError) Error() string {
+	return fmt.Sprintf("syntax error at line %v", e.Line)
+}
+
 func (p *Parser) Parse(lexer *Lexer) error {
 	return p.parse(0, 3884, lexer)
+}
+
+func lalr(action, next int32) int32 {
+	a := -action - 3
+	for ; tmLalr[a] >= 0; a += 2 {
+		if tmLalr[a] == next {
+			break
+		}
+	}
+	return tmLalr[a+1]
+}
+
+func gotoState(state int16, symbol int32) int16 {
+	min := tmGoto[symbol]
+	max := tmGoto[symbol+1]
+
+	if max-min < 32 {
+		for i := min; i < max; i += 2 {
+			if tmFromTo[i] == state {
+				return tmFromTo[i+1]
+			}
+		}
+	} else {
+		for min < max {
+			e := (min + max) >> 1 &^ int32(1)
+			i := tmFromTo[e]
+			if i == state {
+				return tmFromTo[e+1]
+			} else if i < state {
+				min = e + 2
+			} else {
+				max = e
+			}
+		}
+	}
+	return -1
 }
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
@@ -23,3 +77,60 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 }
 
 const errSymbol = 2
+
+func canRecoverOn(symbol int32) bool {
+	for _, v := range afterErr {
+		if v == symbol {
+			return true
+		}
+	}
+	return false
+}
+
+// willShift checks if "symbol" is going to be shifted in the given state.
+// This function does not support empty productions and returns false if they occur before "symbol".
+func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
+	if state == -1 {
+		return false
+	}
+
+	for state != p.endState {
+		action := tmAction[state]
+		if action < -2 {
+			action = lalr(action, symbol)
+		}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+			if ln == 0 {
+				// we do not support empty productions
+				return false
+			}
+			stackPos -= ln - 1
+			state = gotoState(p.stack[stackPos-1].state, tmRuleSymbol[rule])
+		} else {
+			return action == -1 && gotoState(state, symbol) >= 0
+		}
+	}
+	return symbol == eoiToken
+}
+
+func (p *Parser) reportIgnoredTokens() {
+	for _, c := range p.ignoredTokens {
+		var t NodeType
+		switch Token(c.symbol) {
+		case MULTILINECOMMENT:
+			t = MultiLineComment
+		case SINGLELINECOMMENT:
+			t = SingleLineComment
+		case INVALID_TOKEN:
+			t = InvalidToken
+		default:
+			continue
+		}
+		p.listener(t, c.offset, c.endoffset)
+	}
+	p.ignoredTokens = p.ignoredTokens[:0]
+}

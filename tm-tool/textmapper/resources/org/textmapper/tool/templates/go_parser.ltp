@@ -16,6 +16,24 @@ ${template errorHandler-}
 type ErrorHandler func(err SyntaxError) bool
 ${end}
 
+${template SyntaxError-}
+type SyntaxError struct {
+${if opts.tokenLine-}
+	Line      int
+${end-}
+	Offset    int
+	Endoffset int
+}
+
+func (e SyntaxError) Error() string {
+${if opts.tokenLine-}
+	return "fmt".Sprintf("syntax error at line %v", e.Line)
+${else-}
+	return "syntax error"
+${end-}
+}
+${end}
+
 ${template parser-}
 package ${self->go.package()}
 
@@ -43,22 +61,7 @@ ${end-}
 ${call stateVars-}
 }
 
-type SyntaxError struct {
-${if opts.tokenLine-}
-	Line      int
-${end-}
-	Offset    int
-	Endoffset int
-}
-
-func (e SyntaxError) Error() string {
-${if opts.tokenLine-}
-	return "fmt".Sprintf("syntax error at line %v", e.Line)
-${else-}
-	return "syntax error"
-${end-}
-}
-
+${call SyntaxError}
 type symbol struct {
 	symbol    int32
 	offset    int
@@ -92,7 +95,8 @@ ${end-}
 	eoiToken       = int32(EOI)
 	debugSyntax    = false
 )
-${foreach inp in syntax.input.select(it|it.requested)}
+
+${foreach inp in syntax.input.select(it|it.requested)-}
 func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) ${if !self->hasAssocValueFor(inp)}error${else}(error, ${inp.target->go.type()})${end} {
 ${if self->hasAssocValuesForInput()-}
 	err, ${if self->hasAssocValueFor(inp)}v${else}_${end} := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
@@ -106,8 +110,31 @@ ${else-}
 	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 ${end-}
 }
-${end-}
 
+${end-}
+${call parseFunc}
+${if self->hasRecovering()-}
+const errSymbol = ${syntax.error.index}
+
+${call canRecoverOn}
+${call willShift}
+${call recoverFromError}
+${end-}
+${if self->needActionsTable()-}
+${call lalr}
+${end-}
+${call gotoState}
+${call fetchNext}
+${if self->needExplicitLookahead()-}
+${call lookahead}
+${end-}
+${call applyRule-}
+${if self->ignoredReportTokens()}
+${call reportIgnoredTokens-}
+${end-}
+${end}
+
+${template parseFunc-}
 func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(error, ${self->valueType()})${end} {
 	if cap(p.stack) < startStackSize {
 		p.stack = make([]stackEntry, 0, startStackSize)
@@ -242,10 +269,9 @@ ${end-}
 ${end-}
 	return nil${if self->hasAssocValuesForInput()}, p.stack[len(p.stack)-2].value${end}
 }
-${if self->hasRecovering()-}
+${end}
 
-const errSymbol = ${syntax.error.index}
-
+${template canRecoverOn-}
 func canRecoverOn(symbol int32) bool {
 	for _, v := range afterErr {
 		if v == symbol {
@@ -254,7 +280,9 @@ func canRecoverOn(symbol int32) bool {
 	}
 	return false
 }
+${end}
 
+${template willShift-}
 // willShift checks if "symbol" is going to be shifted in the given state.
 // This function does not support empty productions and returns false if they occur before "symbol".
 func (p *Parser) willShift(stackPos int, state ${self->stateType()}, symbol int32) bool {
@@ -284,6 +312,9 @@ func (p *Parser) willShift(stackPos int, state ${self->stateType()}, symbol int3
 	}
 	return symbol == eoiToken
 }
+${end}
+
+${template recoverFromError-}
 func (p *Parser) recoverFromError() bool {
 	var seen map[int32]bool
 	var recoverPos []int
@@ -338,9 +369,9 @@ func (p *Parser) recoverFromError() bool {
 	}
 	return false
 }
-${end-}
+${end}
 
-${if self->needActionsTable()-}
+${template lalr-}
 func lalr(action, next int32) int32 {
 	a := -action - 3
 	for ; tmLalr[a] >= 0; a += 2 {
@@ -350,8 +381,9 @@ func lalr(action, next int32) int32 {
 	}
 	return tmLalr[a+1]
 }
+${end}
 
-${end-}
+${template gotoState-}
 func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1]
@@ -377,15 +409,6 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 	}
 	return -1
 }
-
-${call fetchNext}
-${if self->needExplicitLookahead()-}
-${call lookahead}
-${end-}
-${call applyRule-}
-${if self->ignoredReportTokens()}
-${call reportIgnoredTokens-}
-${end-}
 ${end}
 
 ${template fetchNext-}

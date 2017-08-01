@@ -30,11 +30,11 @@ error:
 WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
 
 commentChars = /([^*]|\*+[^*\/])*\**/
-MultiLineComment:  /\/\*{commentChars}\*\//
+MultiLineComment:  /\/\*{commentChars}\*\//     (space)
 # Note: the following rule disables backtracking for incomplete multiline comments, which
 # would otherwise be reported as '/', '*', etc.
 invalid_token: /\/\*{commentChars}/
-SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
+SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/   (space)
 
 # Note: see http://unicode.org/reports/tr31/
 IDStart = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
@@ -1261,18 +1261,28 @@ ${end}
 
 ${template go_parser.parser-}
 package ${self->go.package()}
-${foreach inp in syntax.input.select(it|it.requested)}
+
+${call errorHandler}
+${call SyntaxError}
+${foreach inp in syntax.input.select(it|it.requested)-}
 func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) error {
 	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 }
 
 ${if self->needExplicitLookahead()-}
 ${call lookahead}
+${end}
 ${end-}
-${end-}
-
-${call go_parser.applyRule-}
-${if self->go_parser.hasRecovering()}
+${call lalr}
+${call gotoState}
+${call applyRule}
+${if self->go_parser.hasRecovering()-}
 const errSymbol = ${syntax.error.index}
+
+${call canRecoverOn}
+${call willShift}
+${end-}
+${if self->ignoredReportTokens()-}
+${call reportIgnoredTokens}
 ${end-}
 ${end}
