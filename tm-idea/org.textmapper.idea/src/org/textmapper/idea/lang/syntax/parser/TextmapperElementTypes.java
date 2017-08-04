@@ -24,7 +24,7 @@ import org.textmapper.tool.parser.TMParser.Nonterminals;
 
 public interface TextmapperElementTypes {
 	IFileElementType FILE = new IFileElementType(TMFileType.TM_LANGUAGE);
-	IElementType GRAMMAR = new TMElementType(Nonterminals.input, "grammar");
+	IElementType GRAMMAR = new TMElementType(Nonterminals.input1, "grammar");
 
 	IElementType HEADER = new TMElementType(Nonterminals.header, "header");
 	IElementType IMPORT = new TMElementType(Nonterminals.import_, "import");

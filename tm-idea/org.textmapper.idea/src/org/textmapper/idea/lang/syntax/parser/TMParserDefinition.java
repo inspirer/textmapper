@@ -68,7 +68,7 @@ public class TMParserDefinition implements ParserDefinition {
 	public PsiElement createElement(ASTNode node) {
 		IElementType type = node.getElementType();
 		switch (((TMElementType) type).getSymbol()) {
-			case Nonterminals.input:
+			case Nonterminals.input1:
 				return new TmGrammar(node);
 			case Nonterminals.header:
 				return new TmHeader(node);

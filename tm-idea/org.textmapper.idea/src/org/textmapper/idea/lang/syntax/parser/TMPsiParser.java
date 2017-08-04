@@ -84,7 +84,7 @@ public class TMPsiParser implements PsiParser {
 			parser.markers.pop().drop();
 		}
 		if (cannotRecover) {
-			parser.mark().error("	syntax error");
+			parser.mark().error("syntax error");
 		}
 		while (!builder.eof()) {
 			builder.advanceLexer();
@@ -169,7 +169,7 @@ public class TMPsiParser implements PsiParser {
 					}
 				}
 			}
-			if (left.symbol == Nonterminals.input) {
+			if (left.symbol == Nonterminals.input1) {
 				drop(left);
 			}
 		}
