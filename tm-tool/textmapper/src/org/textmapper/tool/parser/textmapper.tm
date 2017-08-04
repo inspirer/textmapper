@@ -84,55 +84,55 @@ error:
 
 ID {String}: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = tokenText(); }
 
-Ltrue: /true/
-Lfalse: /false/
-Lnew: /new/
-Lseparator: /separator/
-Las: /as/
-Limport: /import/
-Lset: /set/
-Limplements: /implements/
+'true': /true/
+'false': /false/
+'new': /new/
+'separator': /separator/
+'as': /as/
+'import': /import/
+'set': /set/
+'implements': /implements/
 
-Lbrackets: /brackets/   (soft)
-Ls: /s/                 (soft)
-Lx: /x/                 (soft)
+'brackets': /brackets/   (soft)
+'s': /s/                 (soft)
+'x': /x/                 (soft)
 
-Linline: /inline/       (soft)
+'inline': /inline/       (soft)
 
-Lprec:  /prec/          (soft)
-Lshift: /shift/         (soft)
+'prec':  /prec/          (soft)
+'shift': /shift/         (soft)
 
-Lreturns: /returns/     (soft)
+'returns': /returns/     (soft)
 
-Linput: /input/         (soft)
-Lleft:  /left/          (soft)
-Lright: /right/         (soft)
-Lnonassoc: /nonassoc/   (soft)
+'input': /input/         (soft)
+'left':  /left/          (soft)
+'right': /right/         (soft)
+'nonassoc': /nonassoc/   (soft)
 
-Lgenerate: /generate/   (soft)
-Lassert: /assert/       (soft)
-Lempty: /empty/         (soft)
-Lnonempty: /nonempty/   (soft)
+'generate': /generate/   (soft)
+'assert': /assert/       (soft)
+'empty': /empty/         (soft)
+'nonempty': /nonempty/   (soft)
 
-Lglobal: /global/       (soft)
-Lexplicit: /explicit/   (soft)
-Llookahead: /lookahead/ (soft)
-Lparam: /param/         (soft)
-Lflag: /flag/           (soft)
+'global': /global/       (soft)
+'explicit': /explicit/   (soft)
+'lookahead': /lookahead/ (soft)
+'param': /param/         (soft)
+'flag': /flag/           (soft)
 
-Lnoeoi: /no-eoi/        (soft)
+'noeoi': /no-eoi/        (soft)
 
-Lsoft: /soft/           (soft)
-Lclass: /class/         (soft)
-Linterface: /interface/ (soft)
-Lvoid: /void/           (soft)
-Lspace: /space/         (soft)
-Llayout: /layout/       (soft)
-Llanguage: /language/   (soft)
-Llalr: /lalr/           (soft)
+'soft': /soft/           (soft)
+'class': /class/         (soft)
+'interface': /interface/ (soft)
+'void': /void/           (soft)
+'space': /space/         (soft)
+'layout': /layout/       (soft)
+'language': /language/   (soft)
+'lalr': /lalr/           (soft)
 
-Llexer: /lexer/         (soft)
-Lparser: /parser/       (soft)
+'lexer': /lexer/         (soft)
+'parser': /parser/       (soft)
 
 <initial, afterID, afterColonOrEq>
 code:   /\{/                                { skipAction(); token.endoffset = getOffset(); }
@@ -154,19 +154,19 @@ input :
     header imports=import_* options=option* lexer=lexer_section parser=parser_section? ;
 
 header :
-    Llanguage name ('(' target=name ')')? parsing_algorithmopt ';' ;
+    'language' name ('(' target=name ')')? parsing_algorithmopt ';' ;
 
 lexer_section :
-    '::' Llexer @pass lexer_parts ;
+    '::' 'lexer' @pass lexer_parts ;
 
 parser_section :
-    '::' Lparser @pass grammar_parts ;
+    '::' 'parser' @pass grammar_parts ;
 
 parsing_algorithm :
-    Llalr '(' la=icon ')' ;
+    'lalr' '(' la=icon ')' ;
 
 import_ :
-    Limport alias=ID? file=scon ';' ;
+    'import' alias=ID? file=scon ';' ;
 
 option :
     key=ID '=' value=expression
@@ -222,18 +222,18 @@ lexeme_attrs :
     '(' kind=lexeme_attribute ')' ;
 
 lexeme_attribute :
-    Lsoft
-  | Lclass
-  | Lspace
-  | Llayout
+    'soft'
+  | 'class'
+  | 'space'
+  | 'layout'
 ;
 
 brackets_directive returns lexer_part :
-    '%' Lbrackets opening=symref_noargs closing=symref_noargs ';' ;
+    '%' 'brackets' opening=symref_noargs closing=symref_noargs ';' ;
 
 states_clause returns lexer_part :
-    '%' exclusive=Ls as false states=(lexer_state separator ',')+ ';'
-  | '%' exclusive=Lx as true states=(lexer_state separator ',')+ ';'
+    '%' exclusive='s' as false states=(lexer_state separator ',')+ ';'
+  | '%' exclusive='x' as true states=(lexer_state separator ',')+ ';'
 ;
 
 stateref class :
@@ -256,23 +256,26 @@ nonterm :
           defaultAction=reportClause? ':' rules ';' ;
 
 nonterm_type interface :
-    Lreturns reference=symref_noargs                                     -> nontermTypeAST
-  | inline=Linline? kind=Lclass name=identifieropt implements_clauseopt  -> nontermTypeHint
-  | kind=Linterface name=identifieropt implements_clauseopt              -> nontermTypeHint
-  | kind=Lvoid                                                           -> nontermTypeHint
+    'returns' reference=symref_noargs                                     -> nontermTypeAST
+  | inline='inline'? kind='class' name=identifieropt implements_clauseopt  -> nontermTypeHint
+  | kind='interface' name=identifieropt implements_clauseopt              -> nontermTypeHint
+  | kind='void'                                                           -> nontermTypeHint
   | rawType
 ;
 
 implements_clause :
-    Limplements @pass references_cs ;
+    'implements' @pass references_cs ;
 
 assoc :
-    Lleft | Lright | Lnonassoc ;
+    'left'
+  | 'right'
+  | 'nonassoc'
+;
 
 param_modifier :
-    Lexplicit
-  | Lglobal
-  | Llookahead
+    'explicit'
+  | 'global'
+  | 'lookahead'
 ;
 
 template_param returns grammar_part :
@@ -281,14 +284,14 @@ template_param returns grammar_part :
 
 directive returns grammar_part :
     '%' assoc symbols=references ';'                         -> directivePrio
-  | '%' Linput inputRefs=(inputref separator ',')+ ';'       -> directiveInput
-  | '%' Linterface ids=(identifier separator ',')+ ';'       -> directiveInterface
-  | '%' Lassert (kind=Lempty | kind=Lnonempty) rhsSet ';'    -> directiveAssert
-  | '%' Lgenerate name=ID '=' rhsSet ';'                     -> directiveSet
+  | '%' 'input' inputRefs=(inputref separator ',')+ ';'       -> directiveInput
+  | '%' 'interface' ids=(identifier separator ',')+ ';'       -> directiveInterface
+  | '%' 'assert' (kind='empty' | kind='nonempty') rhsSet ';'    -> directiveAssert
+  | '%' 'generate' name=ID '=' rhsSet ';'                     -> directiveSet
 ;
 
 inputref :
-    reference=symref_noargs noeoi=Lnoeoi? ;
+    reference=symref_noargs noeoi='noeoi'? ;
 
 references :
     symref_noargs
@@ -316,8 +319,8 @@ rhsPrefix :
 ;
 
 rhsSuffix :
-    '%' kind=Lprec symref=symref_noargs
-  | '%' kind=Lshift symref=symref_noargs
+    '%' kind='prec' symref=symref_noargs
+  | '%' kind='shift' symref=symref_noargs
 ;
 
 reportClause :
@@ -366,8 +369,8 @@ rhsOptional returns rhsPart :
 
 rhsCast returns rhsPart :
     rhsClass
-  | inner=rhsClass Las target=symref
-  | inner=rhsClass Las literal              -> rhsAsLiteral
+  | inner=rhsClass 'as' target=symref
+  | inner=rhsClass 'as' literal              -> rhsAsLiteral
 ;
 
 rhsUnordered returns rhsPart :
@@ -382,8 +385,8 @@ rhsClass returns rhsPart :
 rhsPrimary returns rhsPart :
     reference=symref                        -> rhsSymbol
   | '(' rules ')'                           -> rhsNested
-  | '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='+' as true   -> rhsList
-  | '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='*' as false  -> rhsList
+  | '(' ruleParts=rhsParts 'separator' separator_=references ')' atLeastOne='+' as true   -> rhsList
+  | '(' ruleParts=rhsParts 'separator' separator_=references ')' atLeastOne='*' as false  -> rhsList
   | inner=rhsPrimary quantifier='*'         -> rhsQuantifier
   | inner=rhsPrimary quantifier='+'         -> rhsQuantifier
   | '$' '(' rules ')'                       -> rhsIgnored
@@ -391,7 +394,7 @@ rhsPrimary returns rhsPart :
 ;
 
 rhsSet returns rhsPart :
-    Lset '(' expr=setExpression ')'
+    'set' '(' expr=setExpression ')'
 ;
 
 setPrimary returns setExpression :
@@ -436,7 +439,9 @@ argument :
 ;
 
 param_type :
-    Lflag | Lparam ;
+    'flag'
+  | 'param'
+;
 
 param_value :
     literal
@@ -464,7 +469,7 @@ predicate_expression interface :
 expression :
     literal
   | symref
-  | Lnew className=name '(' entries=(map_entry separator ',')* ')'   -> instance
+  | 'new' className=name '(' entries=(map_entry separator ',')* ')'   -> instance
   | '[' content=(expression separator ',')* ']'                      -> array
   | syntax_problem
 ;
@@ -475,8 +480,8 @@ map_entry :
 literal :
     value=scon
   | value=icon
-  | value=Ltrue as true
-  | value=Lfalse as false
+  | value='true' as true
+  | value='false' as false
 ;
 
 name class :
@@ -588,7 +593,7 @@ ${end}
 
 ${template java_tree.parseStatements-}
 ${call base-}
-${if inp.target.id == 'input'-}
+${if inp.target.id == 'input1'-}
 if (result != null) {
 	result.setTemplatesStart(lexer.getTemplatesStart());
 }
@@ -599,13 +604,13 @@ ${query java_ast.astSource() = 'source'}
 ${query java_ast.astNodeExtends() = ' extends org.textmapper.lapg.api.@TextSourceElement'}
 
 ${template java_ast.ast_class_fields(cl)-}
-${if cl.name == 'Input'-}
+${if cl.name == 'Input1'-}
 	private int templatesStart = -1;
 ${end-}
 ${end}
 
 ${template java_ast.ast_class_methods(cl)-}
-${if cl.name == 'Input'}
+${if cl.name == 'Input1'}
 	public int getTemplatesStart() {
 		return templatesStart;
 	}
@@ -631,37 +636,37 @@ case Tokens.Colon:
 	this.state = States.afterColonOrEq;
 	break;
 case Tokens.ID:
-case Tokens.Lleft:
-case Tokens.Lright:
-case Tokens.Lnonassoc:
-case Tokens.Lgenerate:
-case Tokens.Lassert:
-case Tokens.Lempty:
-case Tokens.Lbrackets:
-case Tokens.Linline:
-case Tokens.Lprec:
-case Tokens.Lshift:
-case Tokens.Lreturns:
-case Tokens.Linput:
-case Tokens.Lnonempty:
-case Tokens.Lglobal:
-case Tokens.Lexplicit:
-case Tokens.Llookahead:
-case Tokens.Lparam:
-case Tokens.Lflag:
-case Tokens.Lnoeoi:
-case Tokens.Ls:
-case Tokens.Lx:
-case Tokens.Lsoft:
-case Tokens.Lclass:
-case Tokens.Linterface:
-case Tokens.Lvoid:
-case Tokens.Lspace:
-case Tokens.Llayout:
-case Tokens.Llanguage:
-case Tokens.Llalr:
-case Tokens.Llexer:
-case Tokens.Lparser:
+case Tokens.left:
+case Tokens.right:
+case Tokens.nonassoc:
+case Tokens.generate:
+case Tokens._assert:
+case Tokens.empty:
+case Tokens.brackets:
+case Tokens.inline:
+case Tokens.prec:
+case Tokens.shift:
+case Tokens.returns:
+case Tokens.input:
+case Tokens.nonempty:
+case Tokens.global:
+case Tokens.explicit:
+case Tokens.lookahead:
+case Tokens.param:
+case Tokens.flag:
+case Tokens.noMinuseoi:
+case Tokens.char_s:
+case Tokens.char_x:
+case Tokens.soft:
+case Tokens._class:
+case Tokens._interface:
+case Tokens._void:
+case Tokens.space:
+case Tokens.layout:
+case Tokens.language:
+case Tokens.lalr:
+case Tokens.lexer:
+case Tokens.parser:
   this.state = States.afterID;
   break;
 case Tokens._skip:

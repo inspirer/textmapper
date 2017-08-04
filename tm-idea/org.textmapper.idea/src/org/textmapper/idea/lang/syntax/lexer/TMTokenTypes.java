@@ -88,57 +88,57 @@ public interface TMTokenTypes {
 	TokenSet quantifiers = TokenSet.create(OP_PLUS, OP_QMARK, OP_STAR);
 
 	// keywords
-	IElementType KW_TRUE = new TMElementType(Tokens.Ltrue, "true");
-	IElementType KW_FALSE = new TMElementType(Tokens.Lfalse, "false");
-	IElementType KW_NEW = new TMElementType(Tokens.Lnew, "new");
-	IElementType KW_SEPARATOR = new TMElementType(Tokens.Lseparator, "separator");
-	IElementType KW_AS = new TMElementType(Tokens.Las, "as");
-	IElementType KW_IMPORT = new TMElementType(Tokens.Limport, "import");
-	IElementType KW_SET = new TMElementType(Tokens.Lset, "set");
-	IElementType KW_IMPLEMENTS = new TMElementType(Tokens.Limplements, "implements");
+	IElementType KW_TRUE = new TMElementType(Tokens._true, "true");
+	IElementType KW_FALSE = new TMElementType(Tokens._false, "false");
+	IElementType KW_NEW = new TMElementType(Tokens._new, "new");
+	IElementType KW_SEPARATOR = new TMElementType(Tokens.separator, "separator");
+	IElementType KW_AS = new TMElementType(Tokens.as, "as");
+	IElementType KW_IMPORT = new TMElementType(Tokens._import, "import");
+	IElementType KW_SET = new TMElementType(Tokens.set, "set");
+	IElementType KW_IMPLEMENTS = new TMElementType(Tokens._implements, "implements");
 
 	// soft keywords
-	IElementType KW_BRACKETS = new TMElementType(Tokens.Lbrackets, "brackets");
-	IElementType KW_S = new TMElementType(Tokens.Ls, "s");
-	IElementType KW_X = new TMElementType(Tokens.Lx, "x");
-	IElementType KW_INLINE = new TMElementType(Tokens.Linline, "inline");
+	IElementType KW_BRACKETS = new TMElementType(Tokens.brackets, "brackets");
+	IElementType KW_S = new TMElementType(Tokens.char_s, "s");
+	IElementType KW_X = new TMElementType(Tokens.char_x, "x");
+	IElementType KW_INLINE = new TMElementType(Tokens.inline, "inline");
 
-	IElementType KW_PREC = new TMElementType(Tokens.Lprec, "prec");
-	IElementType KW_SHIFT = new TMElementType(Tokens.Lshift, "shift");
+	IElementType KW_PREC = new TMElementType(Tokens.prec, "prec");
+	IElementType KW_SHIFT = new TMElementType(Tokens.shift, "shift");
 
-	IElementType KW_RETURNS = new TMElementType(Tokens.Lreturns, "returns");
+	IElementType KW_RETURNS = new TMElementType(Tokens.returns, "returns");
 
-	IElementType KW_INPUT = new TMElementType(Tokens.Linput, "input");
-	IElementType KW_LEFT = new TMElementType(Tokens.Lleft, "left");
-	IElementType KW_RIGHT = new TMElementType(Tokens.Lright, "right");
-	IElementType KW_NONASSOC = new TMElementType(Tokens.Lnonassoc, "nonassoc");
+	IElementType KW_INPUT = new TMElementType(Tokens.input, "input");
+	IElementType KW_LEFT = new TMElementType(Tokens.left, "left");
+	IElementType KW_RIGHT = new TMElementType(Tokens.right, "right");
+	IElementType KW_NONASSOC = new TMElementType(Tokens.nonassoc, "nonassoc");
 
-	IElementType KW_GENERATE = new TMElementType(Tokens.Lgenerate, "generate");
-	IElementType KW_ASSERT = new TMElementType(Tokens.Lassert, "assert");
-	IElementType KW_EMPTY = new TMElementType(Tokens.Lempty, "empty");
-	IElementType KW_NONEMPTY = new TMElementType(Tokens.Lnonempty, "nonempty");
+	IElementType KW_GENERATE = new TMElementType(Tokens.generate, "generate");
+	IElementType KW_ASSERT = new TMElementType(Tokens._assert, "assert");
+	IElementType KW_EMPTY = new TMElementType(Tokens.empty, "empty");
+	IElementType KW_NONEMPTY = new TMElementType(Tokens.nonempty, "nonempty");
 
-	IElementType KW_EXPLICIT = new TMElementType(Tokens.Lexplicit, "explicit");
-	IElementType KW_GLOBAL = new TMElementType(Tokens.Lglobal, "global");
-	IElementType KW_LOOKAHEAD = new TMElementType(Tokens.Llookahead, "lookahead");
-	IElementType KW_PARAM = new TMElementType(Tokens.Lparam, "param");
-	IElementType KW_FLAG = new TMElementType(Tokens.Lflag, "flag");
+	IElementType KW_EXPLICIT = new TMElementType(Tokens.explicit, "explicit");
+	IElementType KW_GLOBAL = new TMElementType(Tokens.global, "global");
+	IElementType KW_LOOKAHEAD = new TMElementType(Tokens.lookahead, "lookahead");
+	IElementType KW_PARAM = new TMElementType(Tokens.param, "param");
+	IElementType KW_FLAG = new TMElementType(Tokens.flag, "flag");
 
-	IElementType KW_NOEOI = new TMElementType(Tokens.Lnoeoi, "no-eoi");
+	IElementType KW_NOEOI = new TMElementType(Tokens.noMinuseoi, "no-eoi");
 
-	IElementType KW_SOFT = new TMElementType(Tokens.Lsoft, "soft");
-	IElementType KW_CLASS = new TMElementType(Tokens.Lclass, "class");
-	IElementType KW_INTERFACE = new TMElementType(Tokens.Linterface, "interface");
-	IElementType KW_VOID = new TMElementType(Tokens.Lvoid, "void");
-	IElementType KW_SPACE = new TMElementType(Tokens.Lspace, "space");
-	IElementType KW_LAYOUT = new TMElementType(Tokens.Llayout, "layout");
-	IElementType KW_LANGUAGE = new TMElementType(Tokens.Llanguage, "language");
-	IElementType KW_LALR = new TMElementType(Tokens.Llalr, "lalr");
+	IElementType KW_SOFT = new TMElementType(Tokens.soft, "soft");
+	IElementType KW_CLASS = new TMElementType(Tokens._class, "class");
+	IElementType KW_INTERFACE = new TMElementType(Tokens._interface, "interface");
+	IElementType KW_VOID = new TMElementType(Tokens._void, "void");
+	IElementType KW_SPACE = new TMElementType(Tokens.space, "space");
+	IElementType KW_LAYOUT = new TMElementType(Tokens.layout, "layout");
+	IElementType KW_LANGUAGE = new TMElementType(Tokens.language, "language");
+	IElementType KW_LALR = new TMElementType(Tokens.lalr, "lalr");
 
-	IElementType KW_LEXER = new TMElementType(Tokens.Llexer, "lexer");
-	IElementType KW_LEXER_ACC = new TMElementType(Tokens.Llexer, "lexer");
-	IElementType KW_PARSER = new TMElementType(Tokens.Lparser, "parser");
-	IElementType KW_PARSER_ACC = new TMElementType(Tokens.Lparser, "parser");
+	IElementType KW_LEXER = new TMElementType(Tokens.lexer, "lexer");
+	IElementType KW_LEXER_ACC = new TMElementType(Tokens.lexer, "lexer");
+	IElementType KW_PARSER = new TMElementType(Tokens.parser, "parser");
+	IElementType KW_PARSER_ACC = new TMElementType(Tokens.parser, "parser");
 
 	TokenSet keywords = TokenSet.create(
 			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT, KW_SET, KW_IMPLEMENTS);

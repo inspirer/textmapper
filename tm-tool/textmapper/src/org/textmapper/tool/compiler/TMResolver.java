@@ -44,7 +44,7 @@ public class TMResolver {
 	public static final String RESOLVER_SOURCE = "problem.resolver";
 	public static final Name INITIAL_STATE = LapgCore.name("initial");
 
-	private final TMTree<TmaInput> tree;
+	private final TMTree<TmaInput1> tree;
 	private final GrammarBuilder builder;
 	private final AstBuilder rawTypesBuilder;
 
@@ -52,13 +52,13 @@ public class TMResolver {
 	private final Namespace<LexerState> lexerStates = new Namespace<>();
 	private final Map<String, RegexPart> namedPatternsMap = new HashMap<>();
 
-	public TMResolver(TMTree<TmaInput> tree, GrammarBuilder builder) {
+	public TMResolver(TMTree<TmaInput1> tree, GrammarBuilder builder) {
 		this.tree = tree;
 		this.builder = builder;
 		this.rawTypesBuilder = GrammarFacade.createAstBuilder();
 	}
 
-	public TMTree<TmaInput> getTree() {
+	public TMTree<TmaInput1> getTree() {
 		return tree;
 	}
 
@@ -248,18 +248,18 @@ public class TMResolver {
 				Name name = name(param.getName().getID(), param.getName());
 				if (name == null) continue;
 
-				Type type = (param.getParamType() == TmaParamType.LFLAG) ? Type.Flag : Type.Symbol;
+				Type type = (param.getParamType() == TmaParamType.FLAG) ? Type.Flag : Type.Symbol;
 
 				Modifier mod = Modifier.Default;
 				if (param.getModifier() != null) {
 					switch (param.getModifier()) {
-						case LEXPLICIT:
+						case EXPLICIT:
 							mod = Modifier.Explicit;
 							break;
-						case LGLOBAL:
+						case GLOBAL:
 							mod = Modifier.Global;
 							break;
-						case LLOOKAHEAD:
+						case LOOKAHEAD:
 							mod = Modifier.Lookahead;
 							break;
 					}

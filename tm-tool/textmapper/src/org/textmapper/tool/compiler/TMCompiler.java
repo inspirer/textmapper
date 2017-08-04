@@ -18,7 +18,6 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
-import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.templates.api.types.IClass;
 import org.textmapper.templates.api.types.IFeature;
 import org.textmapper.templates.types.TypesRegistry;
@@ -30,10 +29,10 @@ import java.util.Map;
 
 public class TMCompiler {
 
-	private final TMTree<TmaInput> tree;
+	private final TMTree<TmaInput1> tree;
 	private final TypesRegistry types;
 
-	public TMCompiler(TMTree<TmaInput> tree, TypesRegistry types) {
+	public TMCompiler(TMTree<TmaInput1> tree, TypesRegistry types) {
 		this.tree = tree;
 		this.types = types;
 	}

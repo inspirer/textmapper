@@ -210,93 +210,93 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_DIV;
 
 			// keywords
-			case Tokens.Ltrue:
+			case Tokens._true:
 				return KW_TRUE;
-			case Tokens.Lfalse:
+			case Tokens._false:
 				return KW_FALSE;
-			case Tokens.Lnew:
+			case Tokens._new:
 				return KW_NEW;
-			case Tokens.Lseparator:
+			case Tokens.separator:
 				return KW_SEPARATOR;
-			case Tokens.Las:
+			case Tokens.as:
 				return KW_AS;
-			case Tokens.Limport:
+			case Tokens._import:
 				return KW_IMPORT;
-			case Tokens.Lset:
+			case Tokens.set:
 				return KW_SET;
-			case Tokens.Limplements:
+			case Tokens._implements:
 				return KW_IMPLEMENTS;
 
 			// soft keywords
-			case Tokens.Lbrackets:
+			case Tokens.brackets:
 				return KW_BRACKETS;
-			case Tokens.Ls:
+			case Tokens.char_s:
 				return KW_S;
-			case Tokens.Lx:
+			case Tokens.char_x:
 				return KW_X;
-			case Tokens.Linline:
+			case Tokens.inline:
 				return KW_INLINE;
 
-			case Tokens.Lprec:
+			case Tokens.prec:
 				return KW_PREC;
-			case Tokens.Lshift:
+			case Tokens.shift:
 				return KW_SHIFT;
-			case Tokens.Lreturns:
+			case Tokens.returns:
 				return KW_RETURNS;
 
-			case Tokens.Linput:
+			case Tokens.input:
 				return KW_INPUT;
-			case Tokens.Lleft:
+			case Tokens.left:
 				return KW_LEFT;
-			case Tokens.Lright:
+			case Tokens.right:
 				return KW_RIGHT;
-			case Tokens.Lnonassoc:
+			case Tokens.nonassoc:
 				return KW_NONASSOC;
 
-			case Tokens.Lgenerate:
+			case Tokens.generate:
 				return KW_GENERATE;
-			case Tokens.Lassert:
+			case Tokens._assert:
 				return KW_ASSERT;
-			case Tokens.Lempty:
+			case Tokens.empty:
 				return KW_EMPTY;
-			case Tokens.Lnonempty:
+			case Tokens.nonempty:
 				return KW_NONEMPTY;
 
-			case Tokens.Lexplicit:
+			case Tokens.explicit:
 				return KW_EXPLICIT;
-			case Tokens.Lglobal:
+			case Tokens.global:
 				return KW_GLOBAL;
-			case Tokens.Llookahead:
+			case Tokens.lookahead:
 				return KW_LOOKAHEAD;
-			case Tokens.Lparam:
+			case Tokens.param:
 				return KW_PARAM;
-			case Tokens.Lflag:
+			case Tokens.flag:
 				return KW_FLAG;
 
-			case Tokens.Lnoeoi:
+			case Tokens.noMinuseoi:
 				return KW_NOEOI;
 
-			case Tokens.Lsoft:
+			case Tokens.soft:
 				return KW_SOFT;
-			case Tokens.Lclass:
+			case Tokens._class:
 				return KW_CLASS;
-			case Tokens.Linterface:
+			case Tokens._interface:
 				return KW_INTERFACE;
-			case Tokens.Lvoid:
+			case Tokens._void:
 				return KW_VOID;
-			case Tokens.Lspace:
+			case Tokens.space:
 				return KW_SPACE;
 
-			case Tokens.Llayout:
+			case Tokens.layout:
 				return KW_LAYOUT;
-			case Tokens.Llanguage:
+			case Tokens.language:
 				return KW_LANGUAGE;
-			case Tokens.Llalr:
+			case Tokens.lalr:
 				return KW_LALR;
 
-			case Tokens.Llexer:
+			case Tokens.lexer:
 				return fState == STATE_AFTER_COLONCOLON ? KW_LEXER_ACC : KW_LEXER;
-			case Tokens.Lparser:
+			case Tokens.parser:
 				return fState == STATE_AFTER_COLONCOLON ? KW_PARSER_ACC : KW_PARSER;
 		}
 

@@ -16,7 +16,7 @@
 package org.textmapper.tool.parser.ast;
 
 public enum TmaAssoc {
-	LLEFT,
-	LRIGHT,
-	LNONASSOC,
+	LEFT,
+	RIGHT,
+	NONASSOC,
 }

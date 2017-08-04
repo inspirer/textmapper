@@ -47,7 +47,7 @@ public class TmaDirectiveAssert extends TmaNode implements ITmaGrammarPart {
 	}
 
 	public enum TmaKindKind {
-		LEMPTY,
-		LNONEMPTY,
+		EMPTY,
+		NONEMPTY,
 	}
 }

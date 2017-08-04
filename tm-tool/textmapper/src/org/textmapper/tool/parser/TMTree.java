@@ -55,7 +55,7 @@ public class TMTree<T> {
 	}
 
 
-	public static TMTree<TmaInput> parseInput(TextSource source) {
+	public static TMTree<TmaInput1> parseInput1(TextSource source) {
 		final List<TMProblem> list = new ArrayList<>();
 		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new TMProblem(KIND_ERROR, message, line, offset, endoffset, null));
@@ -66,7 +66,7 @@ public class TMTree<T> {
 
 			TMParser parser = new TMParser(reporter);
 			parser.source = source;
-			TmaInput result = parser.parseInput(lexer);
+			TmaInput1 result = parser.parseInput1(lexer);
 			if (result != null) {
 				result.setTemplatesStart(lexer.getTemplatesStart());
 			}

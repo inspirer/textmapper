@@ -16,7 +16,7 @@
 package org.textmapper.tool.parser.ast;
 
 public enum TmaParamModifier {
-	LEXPLICIT,
-	LGLOBAL,
-	LLOOKAHEAD,
+	EXPLICIT,
+	GLOBAL,
+	LOOKAHEAD,
 }

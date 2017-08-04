@@ -81,45 +81,45 @@ public class TMLexer {
 		int Atsign = 35;
 		int error = 36;
 		int ID = 37;
-		int Ltrue = 38;
-		int Lfalse = 39;
-		int Lnew = 40;
-		int Lseparator = 41;
-		int Las = 42;
-		int Limport = 43;
-		int Lset = 44;
-		int Limplements = 45;
-		int Lbrackets = 46;
-		int Ls = 47;
-		int Lx = 48;
-		int Linline = 49;
-		int Lprec = 50;
-		int Lshift = 51;
-		int Lreturns = 52;
-		int Linput = 53;
-		int Lleft = 54;
-		int Lright = 55;
-		int Lnonassoc = 56;
-		int Lgenerate = 57;
-		int Lassert = 58;
-		int Lempty = 59;
-		int Lnonempty = 60;
-		int Lglobal = 61;
-		int Lexplicit = 62;
-		int Llookahead = 63;
-		int Lparam = 64;
-		int Lflag = 65;
-		int Lnoeoi = 66;
-		int Lsoft = 67;
-		int Lclass = 68;
-		int Linterface = 69;
-		int Lvoid = 70;
-		int Lspace = 71;
-		int Llayout = 72;
-		int Llanguage = 73;
-		int Llalr = 74;
-		int Llexer = 75;
-		int Lparser = 76;
+		int _true = 38;
+		int _false = 39;
+		int _new = 40;
+		int separator = 41;
+		int as = 42;
+		int _import = 43;
+		int set = 44;
+		int _implements = 45;
+		int brackets = 46;
+		int char_s = 47;
+		int char_x = 48;
+		int inline = 49;
+		int prec = 50;
+		int shift = 51;
+		int returns = 52;
+		int input = 53;
+		int left = 54;
+		int right = 55;
+		int nonassoc = 56;
+		int generate = 57;
+		int _assert = 58;
+		int empty = 59;
+		int nonempty = 60;
+		int global = 61;
+		int explicit = 62;
+		int lookahead = 63;
+		int param = 64;
+		int flag = 65;
+		int noMinuseoi = 66;
+		int soft = 67;
+		int _class = 68;
+		int _interface = 69;
+		int _void = 70;
+		int space = 71;
+		int layout = 72;
+		int language = 73;
+		int lalr = 74;
+		int lexer = 75;
+		int parser = 76;
 		int code = 77;
 		int Lbrace = 78;
 		int regexp = 79;
@@ -425,37 +425,37 @@ public class TMLexer {
 			this.state = States.afterColonOrEq;
 			break;
 		case Tokens.ID:
-		case Tokens.Lleft:
-		case Tokens.Lright:
-		case Tokens.Lnonassoc:
-		case Tokens.Lgenerate:
-		case Tokens.Lassert:
-		case Tokens.Lempty:
-		case Tokens.Lbrackets:
-		case Tokens.Linline:
-		case Tokens.Lprec:
-		case Tokens.Lshift:
-		case Tokens.Lreturns:
-		case Tokens.Linput:
-		case Tokens.Lnonempty:
-		case Tokens.Lglobal:
-		case Tokens.Lexplicit:
-		case Tokens.Llookahead:
-		case Tokens.Lparam:
-		case Tokens.Lflag:
-		case Tokens.Lnoeoi:
-		case Tokens.Ls:
-		case Tokens.Lx:
-		case Tokens.Lsoft:
-		case Tokens.Lclass:
-		case Tokens.Linterface:
-		case Tokens.Lvoid:
-		case Tokens.Lspace:
-		case Tokens.Llayout:
-		case Tokens.Llanguage:
-		case Tokens.Llalr:
-		case Tokens.Llexer:
-		case Tokens.Lparser:
+		case Tokens.left:
+		case Tokens.right:
+		case Tokens.nonassoc:
+		case Tokens.generate:
+		case Tokens._assert:
+		case Tokens.empty:
+		case Tokens.brackets:
+		case Tokens.inline:
+		case Tokens.prec:
+		case Tokens.shift:
+		case Tokens.returns:
+		case Tokens.input:
+		case Tokens.nonempty:
+		case Tokens.global:
+		case Tokens.explicit:
+		case Tokens.lookahead:
+		case Tokens.param:
+		case Tokens.flag:
+		case Tokens.noMinuseoi:
+		case Tokens.char_s:
+		case Tokens.char_x:
+		case Tokens.soft:
+		case Tokens._class:
+		case Tokens._interface:
+		case Tokens._void:
+		case Tokens.space:
+		case Tokens.layout:
+		case Tokens.language:
+		case Tokens.lalr:
+		case Tokens.lexer:
+		case Tokens.parser:
 		  this.state = States.afterID;
 		  break;
 		case Tokens._skip:

@@ -45,7 +45,7 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaInput n) {
+	protected boolean visit(TmaInput1 n) {
 		return true;
 	}
 

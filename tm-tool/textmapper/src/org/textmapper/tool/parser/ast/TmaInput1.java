@@ -18,7 +18,7 @@ package org.textmapper.tool.parser.ast;
 import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaInput extends TmaNode {
+public class TmaInput1 extends TmaNode {
 
 	private final TmaHeader header;
 	private final List<TmaImport> imports;
@@ -27,7 +27,7 @@ public class TmaInput extends TmaNode {
 	private final List<ITmaGrammarPart> parser;
 	private int templatesStart = -1;
 
-	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> parser, TextSource source, int line, int offset, int endoffset) {
+	public TmaInput1(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> parser, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.header = header;
 		this.imports = imports;

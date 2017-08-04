@@ -65,8 +65,8 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 	}
 
 	public enum TmaKindKind {
-		LCLASS,
-		LVOID,
-		LINTERFACE,
+		CLASS,
+		VOID,
+		INTERFACE,
 	}
 }

@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class TMLexerCompiler {
 
-	private final TMTree<TmaInput> tree;
+	private final TMTree<TmaInput1> tree;
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 
@@ -74,7 +74,7 @@ public class TMLexerCompiler {
 								   RegexPart regex) {
 		LexerRule result = null;
 		TmaLexemeAttrs attrs = l.getAttrs();
-		boolean isClass = attrs != null && attrs.getKind() == TmaLexemeAttribute.LCLASS;
+		boolean isClass = attrs != null && attrs.getKind() == TmaLexemeAttribute.CLASS;
 		if (regex.isConstant() && !isClass) {
 			for (LexerRule rule : classMatchers.keySet()) {
 				TmaLexeme astClassLexeme = (TmaLexeme) ((DerivedSourceElement) rule).getOrigin();
@@ -100,13 +100,13 @@ public class TMLexerCompiler {
 			return LexerRule.KIND_NONE;
 		}
 		switch (attr.getKind()) {
-			case LCLASS:
+			case CLASS:
 				return LexerRule.KIND_CLASS;
-			case LLAYOUT:
+			case LAYOUT:
 				return LexerRule.KIND_LAYOUT;
-			case LSOFT:
+			case SOFT:
 				return LexerRule.KIND_SOFT;
-			case LSPACE:
+			case SPACE:
 				return LexerRule.KIND_SPACE;
 		}
 
@@ -147,7 +147,7 @@ public class TMLexerCompiler {
 
 		for (TmaLexeme lexeme : resolver.getLexerParts(TmaLexeme.class)) {
 			TmaLexemeAttrs attrs = lexeme.getAttrs();
-			if (attrs == null || attrs.getKind() != TmaLexemeAttribute.LCLASS) {
+			if (attrs == null || attrs.getKind() != TmaLexemeAttribute.CLASS) {
 				continue;
 			}
 			if (lexeme.getPattern() == null) {

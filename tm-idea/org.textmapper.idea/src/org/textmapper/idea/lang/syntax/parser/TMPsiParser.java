@@ -72,7 +72,7 @@ public class TMPsiParser implements PsiParser {
 
 		TMParserEx parser = new TMParserEx(builder);
 		try {
-			parser.parseInput(new TMLexerEx(builder));
+			parser.parseInput1(new TMLexerEx(builder));
 		} catch (IOException e) {
 			/* cannot happen */
 		} catch (ParseException e) {

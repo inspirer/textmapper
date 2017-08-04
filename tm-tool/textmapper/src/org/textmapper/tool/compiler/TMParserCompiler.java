@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class TMParserCompiler {
 
-	private final TMTree<TmaInput> tree;
+	private final TMTree<TmaInput1> tree;
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 	private TMExpressionResolver expressionResolver;
@@ -153,13 +153,13 @@ public class TMParserCompiler {
 
 					TMTypeHint.Kind kind;
 					switch (hint.getKind()) {
-						case LCLASS:
+						case CLASS:
 							kind = Kind.CLASS;
 							break;
-						case LINTERFACE:
+						case INTERFACE:
 							kind = Kind.INTERFACE;
 							break;
-						case LVOID:
+						case VOID:
 							kind = Kind.VOID;
 							break;
 						default:
@@ -211,11 +211,11 @@ public class TMParserCompiler {
 				TmaAssoc key = directive.getAssoc();
 				List<Terminal> val = resolveTerminals(directive.getSymbols());
 				int prio;
-				if (key == TmaAssoc.LLEFT) {
+				if (key == TmaAssoc.LEFT) {
 					prio = Prio.LEFT;
-				} else if (key == TmaAssoc.LRIGHT) {
+				} else if (key == TmaAssoc.RIGHT) {
 					prio = Prio.RIGHT;
-				} else if (key == TmaAssoc.LNONASSOC) {
+				} else if (key == TmaAssoc.NONASSOC) {
 					prio = Prio.NONASSOC;
 				} else {
 					error(directive, "unknown directive identifier used: `" + key + "`");
@@ -311,7 +311,7 @@ public class TMParserCompiler {
 		}
 		TmaRhsSuffix ruleAttribute = right.getSuffix();
 		TmaSymref rulePrio = ruleAttribute != null &&
-				ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPREC
+				ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.PREC
 				? ruleAttribute.getSymref() : null;
 		Terminal prio = null;
 		if (rulePrio != null) {

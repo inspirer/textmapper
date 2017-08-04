@@ -1481,45 +1481,45 @@ public class TMParser {
 		"'@'",
 		"error",
 		"ID",
-		"Ltrue",
-		"Lfalse",
-		"Lnew",
-		"Lseparator",
-		"Las",
-		"Limport",
-		"Lset",
-		"Limplements",
-		"Lbrackets",
-		"Ls",
-		"Lx",
-		"Linline",
-		"Lprec",
-		"Lshift",
-		"Lreturns",
-		"Linput",
-		"Lleft",
-		"Lright",
-		"Lnonassoc",
-		"Lgenerate",
-		"Lassert",
-		"Lempty",
-		"Lnonempty",
-		"Lglobal",
-		"Lexplicit",
-		"Llookahead",
-		"Lparam",
-		"Lflag",
-		"Lnoeoi",
-		"Lsoft",
-		"Lclass",
-		"Linterface",
-		"Lvoid",
-		"Lspace",
-		"Llayout",
-		"Llanguage",
-		"Llalr",
-		"Llexer",
-		"Lparser",
+		"'true'",
+		"'false'",
+		"'new'",
+		"'separator'",
+		"'as'",
+		"'import'",
+		"'set'",
+		"'implements'",
+		"'brackets'",
+		"'s'",
+		"'x'",
+		"'inline'",
+		"'prec'",
+		"'shift'",
+		"'returns'",
+		"'input'",
+		"'left'",
+		"'right'",
+		"'nonassoc'",
+		"'generate'",
+		"'assert'",
+		"'empty'",
+		"'nonempty'",
+		"'global'",
+		"'explicit'",
+		"'lookahead'",
+		"'param'",
+		"'flag'",
+		"'noeoi'",
+		"'soft'",
+		"'class'",
+		"'interface'",
+		"'void'",
+		"'space'",
+		"'layout'",
+		"'language'",
+		"'lalr'",
+		"'lexer'",
+		"'parser'",
 		"code",
 		"'{'",
 		"regexp",
@@ -1628,7 +1628,7 @@ public class TMParser {
 	public interface Nonterminals extends Tokens {
 		// non-terminals
 		int import__optlist = 81;
-		int input = 82;
+		int input1 = 82;
 		int option_optlist = 83;
 		int header = 84;
 		int lexer_section = 85;
@@ -1729,23 +1729,23 @@ public class TMParser {
 	}
 
 	public interface Rules {
-		int nonterm_type_nontermTypeAST = 73;  // nonterm_type : Lreturns symref_noargs
-		int nonterm_type_nontermTypeHint = 74;  // nonterm_type : Linline Lclass identifieropt implements_clauseopt
-		int nonterm_type_nontermTypeHint2 = 75;  // nonterm_type : Lclass identifieropt implements_clauseopt
-		int nonterm_type_nontermTypeHint3 = 76;  // nonterm_type : Linterface identifieropt implements_clauseopt
-		int nonterm_type_nontermTypeHint4 = 77;  // nonterm_type : Lvoid
+		int nonterm_type_nontermTypeAST = 73;  // nonterm_type : 'returns' symref_noargs
+		int nonterm_type_nontermTypeHint = 74;  // nonterm_type : 'inline' 'class' identifieropt implements_clauseopt
+		int nonterm_type_nontermTypeHint2 = 75;  // nonterm_type : 'class' identifieropt implements_clauseopt
+		int nonterm_type_nontermTypeHint3 = 76;  // nonterm_type : 'interface' identifieropt implements_clauseopt
+		int nonterm_type_nontermTypeHint4 = 77;  // nonterm_type : 'void'
 		int directive_directivePrio = 90;  // directive : '%' assoc references ';'
-		int directive_directiveInput = 91;  // directive : '%' Linput inputref_list_Comma_separated ';'
-		int directive_directiveInterface = 92;  // directive : '%' Linterface identifier_list_Comma_separated ';'
-		int directive_directiveAssert = 93;  // directive : '%' Lassert Lempty rhsSet ';'
-		int directive_directiveAssert2 = 94;  // directive : '%' Lassert Lnonempty rhsSet ';'
-		int directive_directiveSet = 95;  // directive : '%' Lgenerate ID '=' rhsSet ';'
+		int directive_directiveInput = 91;  // directive : '%' 'input' inputref_list_Comma_separated ';'
+		int directive_directiveInterface = 92;  // directive : '%' 'interface' identifier_list_Comma_separated ';'
+		int directive_directiveAssert = 93;  // directive : '%' 'assert' 'empty' rhsSet ';'
+		int directive_directiveAssert2 = 94;  // directive : '%' 'assert' 'nonempty' rhsSet ';'
+		int directive_directiveSet = 95;  // directive : '%' 'generate' ID '=' rhsSet ';'
 		int rhsOptional_rhsQuantifier = 152;  // rhsOptional : rhsCast '?'
-		int rhsCast_rhsAsLiteral = 155;  // rhsCast : rhsClass Las literal
+		int rhsCast_rhsAsLiteral = 155;  // rhsCast : rhsClass 'as' literal
 		int rhsPrimary_rhsSymbol = 159;  // rhsPrimary : symref
 		int rhsPrimary_rhsNested = 160;  // rhsPrimary : '(' rules ')'
-		int rhsPrimary_rhsList = 161;  // rhsPrimary : '(' rhsParts Lseparator references ')' '+'
-		int rhsPrimary_rhsList2 = 162;  // rhsPrimary : '(' rhsParts Lseparator references ')' '*'
+		int rhsPrimary_rhsList = 161;  // rhsPrimary : '(' rhsParts 'separator' references ')' '+'
+		int rhsPrimary_rhsList2 = 162;  // rhsPrimary : '(' rhsParts 'separator' references ')' '*'
 		int rhsPrimary_rhsQuantifier = 163;  // rhsPrimary : rhsPrimary '*'
 		int rhsPrimary_rhsQuantifier2 = 164;  // rhsPrimary : rhsPrimary '+'
 		int rhsPrimary_rhsIgnored = 165;  // rhsPrimary : '$' '(' rules ')'
@@ -1763,7 +1763,7 @@ public class TMParser {
 		int predicate_primary_comparePredicate2 = 204;  // predicate_primary : param_ref '!=' literal
 		int predicate_expression_predicateBinary = 206;  // predicate_expression : predicate_expression '&&' predicate_expression
 		int predicate_expression_predicateBinary2 = 207;  // predicate_expression : predicate_expression '||' predicate_expression
-		int expression_instance = 210;  // expression : Lnew name '(' map_entry_list_Comma_separated_opt ')'
+		int expression_instance = 210;  // expression : 'new' name '(' map_entry_list_Comma_separated_opt ')'
 		int expression_array = 211;  // expression : '[' expression_list_Comma_separated_opt ']'
 	}
 
@@ -1930,7 +1930,7 @@ public class TMParser {
 				tmLeft.value = new ArrayList();
 				break;
 			case 2:  // input : header import__optlist option_optlist lexer_section parser_section
-				tmLeft.value = new TmaInput(
+				tmLeft.value = new TmaInput1(
 						((TmaHeader)tmStack[tmHead - 4].value) /* header */,
 						((List<TmaImport>)tmStack[tmHead - 3].value) /* imports */,
 						((List<TmaOption>)tmStack[tmHead - 2].value) /* options */,
@@ -1939,7 +1939,7 @@ public class TMParser {
 						source, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 3:  // input : header import__optlist option_optlist lexer_section
-				tmLeft.value = new TmaInput(
+				tmLeft.value = new TmaInput1(
 						((TmaHeader)tmStack[tmHead - 3].value) /* header */,
 						((List<TmaImport>)tmStack[tmHead - 2].value) /* imports */,
 						((List<TmaOption>)tmStack[tmHead - 1].value) /* options */,
@@ -1953,38 +1953,38 @@ public class TMParser {
 			case 5:  // option_optlist :
 				tmLeft.value = new ArrayList();
 				break;
-			case 6:  // header : Llanguage name '(' name ')' parsing_algorithmopt ';'
+			case 6:  // header : 'language' name '(' name ')' parsing_algorithmopt ';'
 				tmLeft.value = new TmaHeader(
 						((TmaName)tmStack[tmHead - 5].value) /* name */,
 						((TmaName)tmStack[tmHead - 3].value) /* target */,
 						((TmaParsingAlgorithm)tmStack[tmHead - 1].value) /* parsingAlgorithm */,
 						source, tmStack[tmHead - 6].line, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
 				break;
-			case 7:  // header : Llanguage name parsing_algorithmopt ';'
+			case 7:  // header : 'language' name parsing_algorithmopt ';'
 				tmLeft.value = new TmaHeader(
 						((TmaName)tmStack[tmHead - 2].value) /* name */,
 						null /* target */,
 						((TmaParsingAlgorithm)tmStack[tmHead - 1].value) /* parsingAlgorithm */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 8:  // lexer_section : '::' Llexer lexer_parts
+			case 8:  // lexer_section : '::' 'lexer' lexer_parts
 				tmLeft.value = ((List<ITmaLexerPart>)tmStack[tmHead].value);
 				break;
-			case 9:  // parser_section : '::' Lparser grammar_parts
+			case 9:  // parser_section : '::' 'parser' grammar_parts
 				tmLeft.value = ((List<ITmaGrammarPart>)tmStack[tmHead].value);
 				break;
-			case 10:  // parsing_algorithm : Llalr '(' icon ')'
+			case 10:  // parsing_algorithm : 'lalr' '(' icon ')'
 				tmLeft.value = new TmaParsingAlgorithm(
 						((Integer)tmStack[tmHead - 1].value) /* la */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 11:  // import_ : Limport ID scon ';'
+			case 11:  // import_ : 'import' ID scon ';'
 				tmLeft.value = new TmaImport(
 						((String)tmStack[tmHead - 2].value) /* alias */,
 						((String)tmStack[tmHead - 1].value) /* file */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 12:  // import_ : Limport scon ';'
+			case 12:  // import_ : 'import' scon ';'
 				tmLeft.value = new TmaImport(
 						null /* alias */,
 						((String)tmStack[tmHead - 1].value) /* file */,
@@ -2124,19 +2124,19 @@ public class TMParser {
 						((TmaLexemeAttribute)tmStack[tmHead - 1].value) /* kind */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 40:  // lexeme_attribute : Lsoft
-				tmLeft.value = TmaLexemeAttribute.LSOFT;
+			case 40:  // lexeme_attribute : 'soft'
+				tmLeft.value = TmaLexemeAttribute.SOFT;
 				break;
-			case 41:  // lexeme_attribute : Lclass
-				tmLeft.value = TmaLexemeAttribute.LCLASS;
+			case 41:  // lexeme_attribute : 'class'
+				tmLeft.value = TmaLexemeAttribute.CLASS;
 				break;
-			case 42:  // lexeme_attribute : Lspace
-				tmLeft.value = TmaLexemeAttribute.LSPACE;
+			case 42:  // lexeme_attribute : 'space'
+				tmLeft.value = TmaLexemeAttribute.SPACE;
 				break;
-			case 43:  // lexeme_attribute : Llayout
-				tmLeft.value = TmaLexemeAttribute.LLAYOUT;
+			case 43:  // lexeme_attribute : 'layout'
+				tmLeft.value = TmaLexemeAttribute.LAYOUT;
 				break;
-			case 44:  // brackets_directive : '%' Lbrackets symref_noargs symref_noargs ';'
+			case 44:  // brackets_directive : '%' 'brackets' symref_noargs symref_noargs ';'
 				tmLeft.value = new TmaBracketsDirective(
 						((TmaSymref)tmStack[tmHead - 2].value) /* opening */,
 						((TmaSymref)tmStack[tmHead - 1].value) /* closing */,
@@ -2149,13 +2149,13 @@ public class TMParser {
 				tmLeft.value = new ArrayList();
 				((List<TmaLexerState>)tmLeft.value).add(((TmaLexerState)tmStack[tmHead].value));
 				break;
-			case 47:  // states_clause : '%' Ls lexer_state_list_Comma_separated ';'
+			case 47:  // states_clause : '%' 's' lexer_state_list_Comma_separated ';'
 				tmLeft.value = new TmaStatesClause(
 						false /* exclusive */,
 						((List<TmaLexerState>)tmStack[tmHead - 1].value) /* states */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 48:  // states_clause : '%' Lx lexer_state_list_Comma_separated ';'
+			case 48:  // states_clause : '%' 'x' lexer_state_list_Comma_separated ';'
 				tmLeft.value = new TmaStatesClause(
 						true /* exclusive */,
 						((List<TmaLexerState>)tmStack[tmHead - 1].value) /* states */,
@@ -2341,63 +2341,63 @@ public class TMParser {
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 73:  // nonterm_type : Lreturns symref_noargs
+			case 73:  // nonterm_type : 'returns' symref_noargs
 				tmLeft.value = new TmaNontermTypeAST(
 						((TmaSymref)tmStack[tmHead].value) /* reference */,
 						source, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 74:  // nonterm_type : Linline Lclass identifieropt implements_clauseopt
+			case 74:  // nonterm_type : 'inline' 'class' identifieropt implements_clauseopt
 				tmLeft.value = new TmaNontermTypeHint(
 						true /* inline */,
-						TmaNontermTypeHint.TmaKindKind.LCLASS /* kind */,
+						TmaNontermTypeHint.TmaKindKind.CLASS /* kind */,
 						((TmaIdentifier)tmStack[tmHead - 1].value) /* name */,
 						((List<TmaSymref>)tmStack[tmHead].value) /* implementsClause */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 75:  // nonterm_type : Lclass identifieropt implements_clauseopt
+			case 75:  // nonterm_type : 'class' identifieropt implements_clauseopt
 				tmLeft.value = new TmaNontermTypeHint(
 						false /* inline */,
-						TmaNontermTypeHint.TmaKindKind.LCLASS /* kind */,
+						TmaNontermTypeHint.TmaKindKind.CLASS /* kind */,
 						((TmaIdentifier)tmStack[tmHead - 1].value) /* name */,
 						((List<TmaSymref>)tmStack[tmHead].value) /* implementsClause */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 76:  // nonterm_type : Linterface identifieropt implements_clauseopt
+			case 76:  // nonterm_type : 'interface' identifieropt implements_clauseopt
 				tmLeft.value = new TmaNontermTypeHint(
 						false /* inline */,
-						TmaNontermTypeHint.TmaKindKind.LINTERFACE /* kind */,
+						TmaNontermTypeHint.TmaKindKind.INTERFACE /* kind */,
 						((TmaIdentifier)tmStack[tmHead - 1].value) /* name */,
 						((List<TmaSymref>)tmStack[tmHead].value) /* implementsClause */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 77:  // nonterm_type : Lvoid
+			case 77:  // nonterm_type : 'void'
 				tmLeft.value = new TmaNontermTypeHint(
 						false /* inline */,
-						TmaNontermTypeHint.TmaKindKind.LVOID /* kind */,
+						TmaNontermTypeHint.TmaKindKind.VOID /* kind */,
 						null /* name */,
 						null /* implementsClause */,
 						source, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 79:  // implements_clause : Limplements references_cs
+			case 79:  // implements_clause : 'implements' references_cs
 				tmLeft.value = ((List<TmaSymref>)tmStack[tmHead].value);
 				break;
-			case 80:  // assoc : Lleft
-				tmLeft.value = TmaAssoc.LLEFT;
+			case 80:  // assoc : 'left'
+				tmLeft.value = TmaAssoc.LEFT;
 				break;
-			case 81:  // assoc : Lright
-				tmLeft.value = TmaAssoc.LRIGHT;
+			case 81:  // assoc : 'right'
+				tmLeft.value = TmaAssoc.RIGHT;
 				break;
-			case 82:  // assoc : Lnonassoc
-				tmLeft.value = TmaAssoc.LNONASSOC;
+			case 82:  // assoc : 'nonassoc'
+				tmLeft.value = TmaAssoc.NONASSOC;
 				break;
-			case 83:  // param_modifier : Lexplicit
-				tmLeft.value = TmaParamModifier.LEXPLICIT;
+			case 83:  // param_modifier : 'explicit'
+				tmLeft.value = TmaParamModifier.EXPLICIT;
 				break;
-			case 84:  // param_modifier : Lglobal
-				tmLeft.value = TmaParamModifier.LGLOBAL;
+			case 84:  // param_modifier : 'global'
+				tmLeft.value = TmaParamModifier.GLOBAL;
 				break;
-			case 85:  // param_modifier : Llookahead
-				tmLeft.value = TmaParamModifier.LLOOKAHEAD;
+			case 85:  // param_modifier : 'lookahead'
+				tmLeft.value = TmaParamModifier.LOOKAHEAD;
 				break;
 			case 86:  // template_param : '%' param_modifier param_type identifier '=' param_value ';'
 				tmLeft.value = new TmaTemplateParam(
@@ -2437,29 +2437,29 @@ public class TMParser {
 						((List<TmaSymref>)tmStack[tmHead - 1].value) /* symbols */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 91:  // directive : '%' Linput inputref_list_Comma_separated ';'
+			case 91:  // directive : '%' 'input' inputref_list_Comma_separated ';'
 				tmLeft.value = new TmaDirectiveInput(
 						((List<TmaInputref>)tmStack[tmHead - 1].value) /* inputRefs */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 92:  // directive : '%' Linterface identifier_list_Comma_separated ';'
+			case 92:  // directive : '%' 'interface' identifier_list_Comma_separated ';'
 				tmLeft.value = new TmaDirectiveInterface(
 						((List<TmaIdentifier>)tmStack[tmHead - 1].value) /* ids */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 93:  // directive : '%' Lassert Lempty rhsSet ';'
+			case 93:  // directive : '%' 'assert' 'empty' rhsSet ';'
 				tmLeft.value = new TmaDirectiveAssert(
-						TmaDirectiveAssert.TmaKindKind.LEMPTY /* kind */,
+						TmaDirectiveAssert.TmaKindKind.EMPTY /* kind */,
 						((TmaRhsSet)tmStack[tmHead - 1].value) /* rhsSet */,
 						source, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 94:  // directive : '%' Lassert Lnonempty rhsSet ';'
+			case 94:  // directive : '%' 'assert' 'nonempty' rhsSet ';'
 				tmLeft.value = new TmaDirectiveAssert(
-						TmaDirectiveAssert.TmaKindKind.LNONEMPTY /* kind */,
+						TmaDirectiveAssert.TmaKindKind.NONEMPTY /* kind */,
 						((TmaRhsSet)tmStack[tmHead - 1].value) /* rhsSet */,
 						source, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 95:  // directive : '%' Lgenerate ID '=' rhsSet ';'
+			case 95:  // directive : '%' 'generate' ID '=' rhsSet ';'
 				tmLeft.value = new TmaDirectiveSet(
 						((String)tmStack[tmHead - 3].value) /* name */,
 						((TmaRhsSet)tmStack[tmHead - 1].value) /* rhsSet */,
@@ -2479,7 +2479,7 @@ public class TMParser {
 				tmLeft.value = new ArrayList();
 				((List<TmaInputref>)tmLeft.value).add(((TmaInputref)tmStack[tmHead].value));
 				break;
-			case 100:  // inputref : symref_noargs Lnoeoi
+			case 100:  // inputref : symref_noargs 'noeoi'
 				tmLeft.value = new TmaInputref(
 						((TmaSymref)tmStack[tmHead - 1].value) /* reference */,
 						true /* noeoi */,
@@ -2690,15 +2690,15 @@ public class TMParser {
 						((TmaAnnotations)tmStack[tmHead - 1].value) /* annotations */,
 						source, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 128:  // rhsSuffix : '%' Lprec symref_noargs
+			case 128:  // rhsSuffix : '%' 'prec' symref_noargs
 				tmLeft.value = new TmaRhsSuffix(
-						TmaRhsSuffix.TmaKindKind.LPREC /* kind */,
+						TmaRhsSuffix.TmaKindKind.PREC /* kind */,
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 129:  // rhsSuffix : '%' Lshift symref_noargs
+			case 129:  // rhsSuffix : '%' 'shift' symref_noargs
 				tmLeft.value = new TmaRhsSuffix(
-						TmaRhsSuffix.TmaKindKind.LSHIFT /* kind */,
+						TmaRhsSuffix.TmaKindKind.SHIFT /* kind */,
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
@@ -2779,13 +2779,13 @@ public class TMParser {
 						TmaRhsQuantifier.TmaQuantifierKind.QUEST /* quantifier */,
 						source, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 154:  // rhsCast : rhsClass Las symref
+			case 154:  // rhsCast : rhsClass 'as' symref
 				tmLeft.value = new TmaRhsCast(
 						((ITmaRhsPart)tmStack[tmHead - 2].value) /* inner */,
 						((TmaSymref)tmStack[tmHead].value) /* target */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 155:  // rhsCast : rhsClass Las literal
+			case 155:  // rhsCast : rhsClass 'as' literal
 				tmLeft.value = new TmaRhsAsLiteral(
 						((ITmaRhsPart)tmStack[tmHead - 2].value) /* inner */,
 						((TmaLiteral)tmStack[tmHead].value) /* literal */,
@@ -2813,14 +2813,14 @@ public class TMParser {
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 161:  // rhsPrimary : '(' rhsParts Lseparator references ')' '+'
+			case 161:  // rhsPrimary : '(' rhsParts 'separator' references ')' '+'
 				tmLeft.value = new TmaRhsList(
 						((List<ITmaRhsPart>)tmStack[tmHead - 4].value) /* ruleParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* separator */,
 						true /* atLeastOne */,
 						source, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
-			case 162:  // rhsPrimary : '(' rhsParts Lseparator references ')' '*'
+			case 162:  // rhsPrimary : '(' rhsParts 'separator' references ')' '*'
 				tmLeft.value = new TmaRhsList(
 						((List<ITmaRhsPart>)tmStack[tmHead - 4].value) /* ruleParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* separator */,
@@ -2844,7 +2844,7 @@ public class TMParser {
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 167:  // rhsSet : Lset '(' setExpression ')'
+			case 167:  // rhsSet : 'set' '(' setExpression ')'
 				tmLeft.value = new TmaRhsSet(
 						((ITmaSetExpression)tmStack[tmHead - 1].value) /* expr */,
 						source, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
@@ -2989,11 +2989,11 @@ public class TMParser {
 						null /* bool */,
 						source, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 197:  // param_type : Lflag
-				tmLeft.value = TmaParamType.LFLAG;
+			case 197:  // param_type : 'flag'
+				tmLeft.value = TmaParamType.FLAG;
 				break;
-			case 198:  // param_type : Lparam
-				tmLeft.value = TmaParamType.LPARAM;
+			case 198:  // param_type : 'param'
+				tmLeft.value = TmaParamType.PARAM;
 				break;
 			case 201:  // predicate_primary : '!' param_ref
 				tmLeft.value = new TmaBoolPredicate(
@@ -3035,7 +3035,7 @@ public class TMParser {
 						((ITmaPredicateExpression)tmStack[tmHead].value) /* right */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 210:  // expression : Lnew name '(' map_entry_list_Comma_separated_opt ')'
+			case 210:  // expression : 'new' name '(' map_entry_list_Comma_separated_opt ')'
 				tmLeft.value = new TmaInstance(
 						((TmaName)tmStack[tmHead - 3].value) /* className */,
 						((List<TmaMapEntry>)tmStack[tmHead - 1].value) /* entries */,
@@ -3076,12 +3076,12 @@ public class TMParser {
 						((Integer)tmStack[tmHead].value) /* value */,
 						source, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 224:  // literal : Ltrue
+			case 224:  // literal : 'true'
 				tmLeft.value = new TmaLiteral(
 						true /* value */,
 						source, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 225:  // literal : Lfalse
+			case 225:  // literal : 'false'
 				tmLeft.value = new TmaLiteral(
 						false /* value */,
 						source, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
@@ -3117,8 +3117,8 @@ public class TMParser {
 	protected void cleanup(Span value) {
 	}
 
-	public TmaInput parseInput(TMLexer lexer) throws IOException, ParseException {
-		return (TmaInput) parse(lexer, 0, 454);
+	public TmaInput1 parseInput1(TMLexer lexer) throws IOException, ParseException {
+		return (TmaInput1) parse(lexer, 0, 454);
 	}
 
 	public ITmaExpression parseExpression(TMLexer lexer) throws IOException, ParseException {

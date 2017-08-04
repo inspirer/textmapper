@@ -47,7 +47,7 @@ public class TmaRhsSuffix extends TmaNode {
 	}
 
 	public enum TmaKindKind {
-		LPREC,
-		LSHIFT,
+		PREC,
+		SHIFT,
 	}
 }

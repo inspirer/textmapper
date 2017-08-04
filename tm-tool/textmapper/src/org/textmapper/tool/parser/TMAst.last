@@ -4,7 +4,7 @@
 import__optlist  : list<Import>
 	(this+=import_)* ;
 
-class Input {
+class Input1 {
 	Header header;
 	list<Import> imports;
 	list<Option> options;
@@ -12,7 +12,7 @@ class Input {
 	list<GrammarPart> parser;
 }
 
-input  : Input ::=
+input  : Input1 ::=
 	{header} imports=import__optlist options=option_optlist lexer=lexer_section parser=parser_section?
 ;
 
@@ -26,15 +26,15 @@ class Header {
 }
 
 header  : Header ::=
-	Llanguage {name} ('(' target=name ')')? parsingAlgorithm=parsing_algorithmopt ';'
+	'language' {name} ('(' target=name ')')? parsingAlgorithm=parsing_algorithmopt ';'
 ;
 
 lexer_section  : list<LexerPart> ::=
-	'::' Llexer this=lexer_parts
+	'::' 'lexer' this=lexer_parts
 ;
 
 parser_section  : list<GrammarPart> ::=
-	'::' Lparser this=grammar_parts
+	'::' 'parser' this=grammar_parts
 ;
 
 class ParsingAlgorithm {
@@ -42,7 +42,7 @@ class ParsingAlgorithm {
 }
 
 parsing_algorithm  : ParsingAlgorithm ::=
-	Llalr '(' la=icon ')'
+	'lalr' '(' la=icon ')'
 ;
 
 class Import {
@@ -51,7 +51,7 @@ class Import {
 }
 
 import_  : Import ::=
-	Limport alias=ID? file=scon ';'
+	'import' alias=ID? file=scon ';'
 ;
 
 class Option {
@@ -170,17 +170,17 @@ lexeme_attrs  : LexemeAttrs ::=
 ;
 
 enum LexemeAttribute {
-	LSOFT,
-	LCLASS,
-	LSPACE,
-	LLAYOUT
+	SOFT,
+	CLASS,
+	SPACE,
+	LAYOUT
 }
 
 lexeme_attribute  : LexemeAttribute ::=
-	this=Lsoft as LexemeAttribute.LSOFT
-  | this=Lclass as LexemeAttribute.LCLASS
-  | this=Lspace as LexemeAttribute.LSPACE
-  | this=Llayout as LexemeAttribute.LLAYOUT
+	this='soft' as LexemeAttribute.SOFT
+  | this='class' as LexemeAttribute.CLASS
+  | this='space' as LexemeAttribute.SPACE
+  | this='layout' as LexemeAttribute.LAYOUT
 ;
 
 class BracketsDirective : LexerPart {
@@ -189,7 +189,7 @@ class BracketsDirective : LexerPart {
 }
 
 brackets_directive  : BracketsDirective ::=
-	this=new.BracketsDirective: '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'
+	this=new.BracketsDirective: '%' 'brackets' opening=symref_noargs closing=symref_noargs ';'
 ;
 
 lexer_state_list_Comma_separated  : list<LexerState>
@@ -202,8 +202,8 @@ class StatesClause : LexerPart {
 }
 
 states_clause  : StatesClause ::=
-	this=new.StatesClause: '%' exclusive=Ls as false states=lexer_state_list_Comma_separated ';'
-  | this=new.StatesClause: '%' exclusive=Lx as true states=lexer_state_list_Comma_separated ';'
+	this=new.StatesClause: '%' exclusive='s' as false states=lexer_state_list_Comma_separated ';'
+  | this=new.StatesClause: '%' exclusive='x' as true states=lexer_state_list_Comma_separated ';'
 ;
 
 class Stateref {
@@ -261,46 +261,46 @@ class NontermTypeHint : NontermType {
 	Identifier name;
 	list<Symref> implementsClause;
 	enum KindKind {
-		LCLASS,
-		LVOID,
-		LINTERFACE
+		CLASS,
+		VOID,
+		INTERFACE
 	}
 }
 
 nonterm_type  : NontermType ::=
-	this=new.NontermTypeAST: Lreturns reference=symref_noargs
-  | this=new.NontermTypeHint: inline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implementsClause=implements_clauseopt
-  | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt implementsClause=implements_clauseopt
-  | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
+	this=new.NontermTypeAST: 'returns' reference=symref_noargs
+  | this=new.NontermTypeHint: inline='inline' as true? kind='class' as KindKind.CLASS name=identifieropt implementsClause=implements_clauseopt
+  | this=new.NontermTypeHint: kind='interface' as KindKind.INTERFACE name=identifieropt implementsClause=implements_clauseopt
+  | this=new.NontermTypeHint: kind='void' as KindKind.VOID
   | this=rawType
 ;
 
 implements_clause  : list<Symref> ::=
-	Limplements this=references_cs
+	'implements' this=references_cs
 ;
 
 enum Assoc {
-	LLEFT,
-	LRIGHT,
-	LNONASSOC
+	LEFT,
+	RIGHT,
+	NONASSOC
 }
 
 assoc  : Assoc ::=
-	this=Lleft as Assoc.LLEFT
-  | this=Lright as Assoc.LRIGHT
-  | this=Lnonassoc as Assoc.LNONASSOC
+	this='left' as Assoc.LEFT
+  | this='right' as Assoc.RIGHT
+  | this='nonassoc' as Assoc.NONASSOC
 ;
 
 enum ParamModifier {
-	LEXPLICIT,
-	LGLOBAL,
-	LLOOKAHEAD
+	EXPLICIT,
+	GLOBAL,
+	LOOKAHEAD
 }
 
 param_modifier  : ParamModifier ::=
-	this=Lexplicit as ParamModifier.LEXPLICIT
-  | this=Lglobal as ParamModifier.LGLOBAL
-  | this=Llookahead as ParamModifier.LLOOKAHEAD
+	this='explicit' as ParamModifier.EXPLICIT
+  | this='global' as ParamModifier.GLOBAL
+  | this='lookahead' as ParamModifier.LOOKAHEAD
 ;
 
 class TemplateParam : GrammarPart {
@@ -331,8 +331,8 @@ class DirectiveAssert : GrammarPart {
 	KindKind kind;
 	RhsSet rhsSet;
 	enum KindKind {
-		LEMPTY,
-		LNONEMPTY
+		EMPTY,
+		NONEMPTY
 	}
 }
 
@@ -343,10 +343,10 @@ class DirectiveSet : GrammarPart {
 
 directive  : GrammarPart ::=
 	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
-  | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list_Comma_separated ';'
-  | this=new.DirectiveInterface: '%' Linterface ids=identifier_list_Comma_separated ';'
-  | this=new.DirectiveAssert: '%' Lassert (kind=Lempty as KindKind.LEMPTY | kind=Lnonempty as KindKind.LNONEMPTY) {rhsSet} ';'
-  | this=new.DirectiveSet: '%' Lgenerate name=ID '=' {rhsSet} ';'
+  | this=new.DirectiveInput: '%' 'input' inputRefs=inputref_list_Comma_separated ';'
+  | this=new.DirectiveInterface: '%' 'interface' ids=identifier_list_Comma_separated ';'
+  | this=new.DirectiveAssert: '%' 'assert' (kind='empty' as KindKind.EMPTY | kind='nonempty' as KindKind.NONEMPTY) {rhsSet} ';'
+  | this=new.DirectiveSet: '%' 'generate' name=ID '=' {rhsSet} ';'
 ;
 
 identifier_list_Comma_separated  : list<Identifier>
@@ -363,7 +363,7 @@ class Inputref {
 }
 
 inputref  : Inputref ::=
-	reference=symref_noargs noeoi=Lnoeoi as true?
+	reference=symref_noargs noeoi='noeoi' as true?
 ;
 
 references  : list<Symref>
@@ -414,14 +414,14 @@ class RhsSuffix {
 	KindKind kind;
 	Symref symref;
 	enum KindKind {
-		LPREC,
-		LSHIFT
+		PREC,
+		SHIFT
 	}
 }
 
 rhsSuffix  : RhsSuffix ::=
-	'%' kind=Lprec as KindKind.LPREC symref=symref_noargs
-  | '%' kind=Lshift as KindKind.LSHIFT symref=symref_noargs
+	'%' kind='prec' as KindKind.PREC symref=symref_noargs
+  | '%' kind='shift' as KindKind.SHIFT symref=symref_noargs
 ;
 
 class ReportClause {
@@ -525,8 +525,8 @@ class RhsAsLiteral : RhsPart {
 
 rhsCast  : RhsPart ::=
 	this=rhsClass
-  | this=new.RhsCast: inner=rhsClass Las target=symref
-  | this=new.RhsAsLiteral: inner=rhsClass Las {literal}
+  | this=new.RhsCast: inner=rhsClass 'as' target=symref
+  | this=new.RhsAsLiteral: inner=rhsClass 'as' {literal}
 ;
 
 class RhsUnordered : RhsPart {
@@ -569,8 +569,8 @@ class RhsIgnored : RhsPart {
 rhsPrimary  : RhsPart ::=
 	this=new.RhsSymbol: reference=symref
   | this=new.RhsNested: '(' {rules} ')'
-  | this=new.RhsList: '(' ruleParts=rhsParts Lseparator separator=references ')' atLeastOne='+' as true
-  | this=new.RhsList: '(' ruleParts=rhsParts Lseparator separator=references ')' atLeastOne='*' as false
+  | this=new.RhsList: '(' ruleParts=rhsParts 'separator' separator=references ')' atLeastOne='+' as true
+  | this=new.RhsList: '(' ruleParts=rhsParts 'separator' separator=references ')' atLeastOne='*' as false
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
   | this=new.RhsIgnored: '$' '(' {rules} ')'
@@ -582,7 +582,7 @@ class RhsSet : RhsPart {
 }
 
 rhsSet  : RhsSet ::=
-	this=new.RhsSet: Lset '(' expr=setExpression ')'
+	this=new.RhsSet: 'set' '(' expr=setExpression ')'
 ;
 
 interface SetExpression {
@@ -711,13 +711,13 @@ argument  : Argument ::=
 ;
 
 enum ParamType {
-	LFLAG,
-	LPARAM
+	FLAG,
+	PARAM
 }
 
 param_type  : ParamType ::=
-	this=Lflag as ParamType.LFLAG
-  | this=Lparam as ParamType.LPARAM
+	this='flag' as ParamType.FLAG
+  | this='param' as ParamType.PARAM
 ;
 
 interface ParamValue {
@@ -779,7 +779,7 @@ class Array : Expression {
 expression  : Expression ::=
 	this=literal
   | this=symref
-  | this=new.Instance: Lnew className=name '(' entries=map_entry_list_Comma_separated_opt ')'
+  | this=new.Instance: 'new' className=name '(' entries=map_entry_list_Comma_separated_opt ')'
   | this=new.Array: '[' content=expression_list_Comma_separated_opt ']'
   | this=syntax_problem
 ;
@@ -816,8 +816,8 @@ class Literal : ParamValue, Expression {
 literal  : Literal ::=
 	value=scon
   | value=icon
-  | value=Ltrue as true
-  | value=Lfalse as false
+  | value='true' as true
+  | value='false' as false
 ;
 
 class Name {
