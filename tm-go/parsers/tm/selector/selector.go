@@ -44,6 +44,7 @@ var (
 	LexerSection         = func(t tm.NodeType) bool { return t == tm.LexerSection }
 	LexerState           = func(t tm.NodeType) bool { return t == tm.LexerState }
 	ListSeparator        = func(t tm.NodeType) bool { return t == tm.ListSeparator }
+	LookaheadPredicate   = func(t tm.NodeType) bool { return t == tm.LookaheadPredicate }
 	Name                 = func(t tm.NodeType) bool { return t == tm.Name }
 	NamedPattern         = func(t tm.NodeType) bool { return t == tm.NamedPattern }
 	Nonterm              = func(t tm.NodeType) bool { return t == tm.Nonterm }
@@ -63,9 +64,11 @@ var (
 	References           = func(t tm.NodeType) bool { return t == tm.References }
 	ReportClause         = func(t tm.NodeType) bool { return t == tm.ReportClause }
 	RhsAnnotated         = func(t tm.NodeType) bool { return t == tm.RhsAnnotated }
+	RhsAsLiteral         = func(t tm.NodeType) bool { return t == tm.RhsAsLiteral }
 	RhsAssignment        = func(t tm.NodeType) bool { return t == tm.RhsAssignment }
 	RhsCast              = func(t tm.NodeType) bool { return t == tm.RhsCast }
 	RhsIgnored           = func(t tm.NodeType) bool { return t == tm.RhsIgnored }
+	RhsLookahead         = func(t tm.NodeType) bool { return t == tm.RhsLookahead }
 	RhsNested            = func(t tm.NodeType) bool { return t == tm.RhsNested }
 	RhsOptional          = func(t tm.NodeType) bool { return t == tm.RhsOptional }
 	RhsPlusAssignment    = func(t tm.NodeType) bool { return t == tm.RhsPlusAssignment }
@@ -83,6 +86,7 @@ var (
 	SetSymbol            = func(t tm.NodeType) bool { return t == tm.SetSymbol }
 	StartConditions      = func(t tm.NodeType) bool { return t == tm.StartConditions }
 	StartConditionsScope = func(t tm.NodeType) bool { return t == tm.StartConditionsScope }
+	StateMarker          = func(t tm.NodeType) bool { return t == tm.StateMarker }
 	Stateref             = func(t tm.NodeType) bool { return t == tm.Stateref }
 	StringLiteral        = func(t tm.NodeType) bool { return t == tm.StringLiteral }
 	SubType              = func(t tm.NodeType) bool { return t == tm.SubType }

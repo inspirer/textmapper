@@ -58,11 +58,15 @@ const (
 	Predicate          // PredicateExpression
 	RhsSuffix          // Symref
 	ReportClause       // action=Identifier kind=Identifier?
+	RhsLookahead       // predicates=(LookaheadPredicate)+
+	LookaheadPredicate // Symref
+	StateMarker        // name=Identifier
 	RhsAnnotated       // Annotations inner=RhsPart
 	RhsAssignment      // id=Identifier inner=RhsPart
 	RhsPlusAssignment  // id=Identifier inner=RhsPart
 	RhsOptional        // inner=RhsPart
 	RhsCast            // inner=RhsPart target=Symref
+	RhsAsLiteral       // inner=RhsPart Literal
 	ListSeparator      // separator_=References
 	RhsSymbol          // reference=Symref
 	RhsNested          // (Rule0)+
@@ -147,11 +151,15 @@ var nodeTypeStr = [...]string{
 	"Predicate",
 	"RhsSuffix",
 	"ReportClause",
+	"RhsLookahead",
+	"LookaheadPredicate",
+	"StateMarker",
 	"RhsAnnotated",
 	"RhsAssignment",
 	"RhsPlusAssignment",
 	"RhsOptional",
 	"RhsCast",
+	"RhsAsLiteral",
 	"ListSeparator",
 	"RhsSymbol",
 	"RhsNested",
@@ -277,9 +285,11 @@ var PredicateExpression = []NodeType{
 var RhsPart = []NodeType{
 	Command,
 	RhsAnnotated,
+	RhsAsLiteral,
 	RhsAssignment,
 	RhsCast,
 	RhsIgnored,
+	RhsLookahead,
 	RhsNested,
 	RhsOptional,
 	RhsPlusAssignment,
@@ -288,6 +298,7 @@ var RhsPart = []NodeType{
 	RhsSet,
 	RhsStarList,
 	RhsSymbol,
+	StateMarker,
 	SyntaxProblem,
 }
 
@@ -517,9 +528,19 @@ var ruleNodeType = [...]NodeType{
 	0,                    // rhsParts : rhsParts rhsPart_OrSyntaxError
 	0,                    // rhsPart : rhsAnnotated
 	0,                    // rhsPart : command
+	0,                    // rhsPart : rhsStateMarker
+	0,                    // rhsPart : rhsLookahead
 	0,                    // rhsPart_OrSyntaxError : rhsAnnotated
 	0,                    // rhsPart_OrSyntaxError : command
+	0,                    // rhsPart_OrSyntaxError : rhsStateMarker
+	0,                    // rhsPart_OrSyntaxError : rhsLookahead
 	0,                    // rhsPart_OrSyntaxError : syntax_problem
+	0,                    // lookahead_predicate_list_And_separated : lookahead_predicate_list_And_separated '&' lookahead_predicate
+	0,                    // lookahead_predicate_list_And_separated : lookahead_predicate
+	RhsLookahead,         // rhsLookahead : '(?=' lookahead_predicate_list_And_separated ')'
+	LookaheadPredicate,   // lookahead_predicate : '!' symref
+	LookaheadPredicate,   // lookahead_predicate : symref
+	StateMarker,          // rhsStateMarker : '.' identifier
 	0,                    // rhsAnnotated : rhsAssignment
 	RhsAnnotated,         // rhsAnnotated : annotations rhsAssignment
 	0,                    // rhsAssignment : rhsOptional
@@ -529,6 +550,7 @@ var ruleNodeType = [...]NodeType{
 	RhsOptional,          // rhsOptional : rhsCast '?'
 	0,                    // rhsCast : rhsPrimary
 	RhsCast,              // rhsCast : rhsPrimary 'as' symref_Args
+	RhsAsLiteral,         // rhsCast : rhsPrimary 'as' literal
 	ListSeparator,        // listSeparator : 'separator' references
 	RhsSymbol,            // rhsPrimary : symref_Args
 	RhsNested,            // rhsPrimary : '(' rules ')'

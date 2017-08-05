@@ -89,7 +89,6 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'implements':/implements/
 'import':    /import/
 'separator': /separator/
-'new':       /new/
 'set':       /set/
 'true':      /true/
 
@@ -153,6 +152,29 @@ identifier class :
   | 'layout'   | 'language' | 'lalr'       | 'lexer'   | 'parser'
 ;
 
+literal :
+    value=scon
+  | value=icon
+  | value='true' as true
+  | value='false' as false
+;
+
+pattern class :
+    regexp ;
+
+qualified_id {String} :
+    identifier                         { $$ = $identifier.getText(); }
+  | qualified_id '.' identifier        { $$ = $qualified_id + "." + $identifier.getText(); }
+;
+
+name class :
+    qualified_id ;
+
+command class :
+    code ;
+
+syntax_problem class implements lexer_part, grammar_part, rhsPart :
+    error ;
 
 %input input, expression;
 
@@ -187,10 +209,6 @@ symref_noargs returns symref :
 
 rawType class :
     code ;
-
-pattern class :
-    regexp
-;
 
 lexer_parts :
     lexer_part
@@ -286,11 +304,11 @@ template_param returns grammar_part :
 ;
 
 directive returns grammar_part :
-    '%' assoc symbols=references ';'                         -> directivePrio
-  | '%' 'input' inputRefs=(inputref separator ',')+ ';'       -> directiveInput
-  | '%' 'interface' ids=(identifier separator ',')+ ';'       -> directiveInterface
-  | '%' 'assert' (kind='empty' | kind='nonempty') rhsSet ';'    -> directiveAssert
-  | '%' 'generate' name=identifier '=' rhsSet ';'                     -> directiveSet
+    '%' assoc symbols=references ';'                           -> directivePrio
+  | '%' 'input' inputRefs=(inputref separator ',')+ ';'        -> directiveInput
+  | '%' 'interface' ids=(identifier separator ',')+ ';'        -> directiveInterface
+  | '%' 'assert' (kind='empty' | kind='nonempty') rhsSet ';'   -> directiveAssert
+  | '%' 'generate' name=identifier '=' rhsSet ';'              -> directiveSet
 ;
 
 inputref :
@@ -310,16 +328,12 @@ rules :
     (rule0 separator '|')+ ;
 
 rule0 :
-    predicate? prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt action=reportClause?
+    predicate? list=rhsParts? suffix=rhsSuffixopt action=reportClause?
   | error=syntax_problem
 ;
 
 predicate :
     '[' @pass predicate_expression ']' ;
-
-rhsPrefix :
-    annotations ':'
-;
 
 rhsSuffix :
     '%' kind='prec' symref=symref_noargs
@@ -335,12 +349,8 @@ rhsParts :
   | rhsParts syntax_problem
 ;
 
-%left '|';
-%left '&';
-
 rhsPart :
     rhsAnnotated
-  | rhsUnordered
   | command
   | rhsStateMarker
   | rhsLookahead
@@ -371,18 +381,9 @@ rhsOptional returns rhsPart :
 ;
 
 rhsCast returns rhsPart :
-    rhsClass
-  | inner=rhsClass 'as' target=symref
-  | inner=rhsClass 'as' literal              -> rhsAsLiteral
-;
-
-rhsUnordered returns rhsPart :
-    left=rhsPart '&' right=rhsPart
-;
-
-rhsClass returns rhsPart :
     rhsPrimary
-  | identifier ':' inner=rhsPrimary
+  | inner=rhsPrimary 'as' target=symref
+  | inner=rhsPrimary 'as' literal              -> rhsAsLiteral
 ;
 
 rhsPrimary returns rhsPart :
@@ -397,14 +398,16 @@ rhsPrimary returns rhsPart :
 ;
 
 rhsSet returns rhsPart :
-    'set' '(' expr=setExpression ')'
-;
+    'set' '(' expr=setExpression ')' ;
 
 setPrimary returns setExpression :
     operator=identifier? symbol=symref              -> setSymbol
   | '(' inner=setExpression ')'             -> setCompound
   | '~' inner=setPrimary                    -> setComplement
 ;
+
+%left '|';
+%left '&';
 
 setExpression interface :
     setPrimary
@@ -465,42 +468,12 @@ predicate_expression interface :
   | left=predicate_expression kind='||' right=predicate_expression   -> predicateBinary
 ;
 
-##### EXPRESSIONS
-
-# TODO use json, get rid of new & symref
-
 expression :
     literal
   | symref
-  | 'new' className=name '(' entries=(map_entry separator ',')* ')'   -> instance
   | '[' content=(expression separator ',')* ']'                      -> array
   | syntax_problem
 ;
-
-map_entry :
-    name=identifier ':' value=expression ;
-
-literal :
-    value=scon
-  | value=icon
-  | value='true' as true
-  | value='false' as false
-;
-
-name class :
-    qualified_id ;
-
-qualified_id {String} :
-    identifier                         { $$ = $identifier.getText(); }
-  | qualified_id '.' identifier        { $$ = $qualified_id + "." + $identifier.getText(); }
-;
-
-command class :
-    code
-;
-
-syntax_problem class implements lexer_part, grammar_part, rhsPart :
-    error ;
 
 ##################################################################################
 

@@ -224,7 +224,6 @@ public class TMFormattingBlock extends AbstractBlock {
 				}
 			}
 			if (type == TextmapperElementTypes.RHS_PART || type == TextmapperElementTypes.ACTION
-					|| type == TextmapperElementTypes.RHS_UNORDERED || type == TextmapperElementTypes.RHS_SUFFIX
 					|| type == TextmapperElementTypes.RHS_SUFFIX) {
 				return Indent.getContinuationIndent();
 			}

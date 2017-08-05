@@ -59,9 +59,6 @@ public class AnnotationsTest extends LapgTestCase {
 		assertEquals("wwo", lg.getAnnotation(s, "name"));
 		assertEquals(Boolean.TRUE, lg.getAnnotation(s, "noast"));
 
-		assertEquals("rule1", lg.getAnnotation(listItemRules[0], "name"));
-		assertEquals("rule2", lg.getAnnotation(listItemRules[1], "name"));
-
 		Object val = lg.getAnnotation(listItemRules[0].getRight()[0], "ids");
 		assertTrue(val instanceof List<?>);
 

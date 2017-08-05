@@ -37,15 +37,31 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaInstance n) {
-		return true;
-	}
-
 	protected boolean visit(TmaArray n) {
 		return true;
 	}
 
 	protected boolean visit(TmaIdentifier n) {
+		return true;
+	}
+
+	protected boolean visit(TmaLiteral n) {
+		return true;
+	}
+
+	protected boolean visit(TmaPattern n) {
+		return true;
+	}
+
+	protected boolean visit(TmaName n) {
+		return true;
+	}
+
+	protected boolean visit(TmaCommand n) {
+		return true;
+	}
+
+	protected boolean visit(TmaSyntaxProblem n) {
 		return true;
 	}
 
@@ -74,10 +90,6 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaRawType n) {
-		return true;
-	}
-
-	protected boolean visit(TmaPattern n) {
 		return true;
 	}
 
@@ -118,10 +130,6 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaRule0 n) {
-		return true;
-	}
-
-	protected boolean visit(TmaRhsPrefix n) {
 		return true;
 	}
 
@@ -166,26 +174,6 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaArgument n) {
-		return true;
-	}
-
-	protected boolean visit(TmaMapEntry n) {
-		return true;
-	}
-
-	protected boolean visit(TmaLiteral n) {
-		return true;
-	}
-
-	protected boolean visit(TmaName n) {
-		return true;
-	}
-
-	protected boolean visit(TmaCommand n) {
-		return true;
-	}
-
-	protected boolean visit(TmaSyntaxProblem n) {
 		return true;
 	}
 
@@ -238,14 +226,6 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaRhsAsLiteral n) {
-		return true;
-	}
-
-	protected boolean visit(TmaRhsUnordered n) {
-		return true;
-	}
-
-	protected boolean visit(TmaRhsClass n) {
 		return true;
 	}
 

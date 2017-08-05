@@ -373,8 +373,20 @@ rhsParts :
 rhsPart<OrSyntaxError> -> RhsPart :
     rhsAnnotated
   | command
+  | rhsStateMarker
+  | rhsLookahead
   | [OrSyntaxError] syntax_problem
 ;
+
+rhsLookahead -> RhsLookahead :
+    '(?=' predicates=(lookahead_predicate separator '&')+ ')' ;
+
+# TODO: negate
+lookahead_predicate -> LookaheadPredicate :
+    '!'? symref<~Args> ;
+
+rhsStateMarker -> StateMarker :
+    '.' name=identifier ;
 
 rhsAnnotated -> RhsPart :
     rhsAssignment
@@ -395,6 +407,7 @@ rhsOptional -> RhsPart :
 rhsCast -> RhsPart :
     rhsPrimary
   | inner=rhsPrimary 'as' target=symref<+Args> -> RhsCast
+  | inner=rhsPrimary 'as' literal              -> RhsAsLiteral   /* TODO remove */
 ;
 
 listSeparator -> ListSeparator :

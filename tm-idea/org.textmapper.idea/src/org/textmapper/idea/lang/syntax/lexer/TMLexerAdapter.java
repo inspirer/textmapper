@@ -214,8 +214,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return KW_TRUE;
 			case Tokens._false:
 				return KW_FALSE;
-			case Tokens._new:
-				return KW_NEW;
 			case Tokens.separator:
 				return KW_SEPARATOR;
 			case Tokens.as:

@@ -47,11 +47,9 @@ public interface TextmapperElementTypes {
 	IElementType DIRECTIVE = new TMElementType(Nonterminals.directive, "directive");
 
 	IElementType RULE = new TMElementType(Nonterminals.rule0, "rule");
-	IElementType RHS_PREFIX = new TMElementType(Nonterminals.rhsPrefix, "rhs prefix");
 	IElementType RHS_SUFFIX = new TMElementType(Nonterminals.rhsSuffix, "rhs suffix");
 	IElementType REPORT_CLAUSE = new TMElementType(Nonterminals.reportClause, "report clause");
 	IElementType RHS_PART = new TMElementType(Nonterminals.rhsAnnotated, "rhs part");
-	IElementType RHS_UNORDERED = new TMElementType(Nonterminals.rhsUnordered, "rhs unordered");
 	IElementType RHS_PRIMARY = new TMElementType(Nonterminals.rhsPrimary, "rhs primary");
 	IElementType RHS_STATE_MARKER = new TMElementType(Nonterminals.rhsStateMarker, "rhs state marker");
 
@@ -72,16 +70,15 @@ public interface TextmapperElementTypes {
 
 	IElementType PARAMREF = new TMElementType(Nonterminals.param_ref, "parameter reference");
 	IElementType TEMPLATE_ARG = new TMElementType(Nonterminals.argument, "template argument");
-	IElementType MAP_ENTRY = new TMElementType(Nonterminals.map_entry, "map entry");
 
 	IElementType[] allElements = {
 			HEADER, IMPORT, OPTION,
 			LEXEM, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE, BRACKETS_DIRECTIVE, STATES_CLAUSE,
 			START_CONDITIONS, START_CONDITIONS_SCOPE,
 			NONTERM, TEMPLATE_PARAM, NONTERM_PARAMS, NONTERM_PARAM, NONTERM_TYPE, DIRECTIVE,
-			RULE, RHS_PREFIX, RHS_SUFFIX, REPORT_CLAUSE, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, RHS_STATE_MARKER,
+			RULE, RHS_SUFFIX, REPORT_CLAUSE, RHS_PART, RHS_PRIMARY, RHS_STATE_MARKER,
 			ACTION, RAW_TYPE, LOOKAHEAD, LOOKAHEAD_PREDICATE, ANNOTATION, EXPRESSION, PREDICATE, PREDICATE_EXPRESSION,
 			SYMREF, SYMREF_ARGS, SYMREF_NA, STATEREF, IDENTIFIER, QUALIFIED_ID,
-			PARAMREF, TEMPLATE_ARG, MAP_ENTRY
+			PARAMREF, TEMPLATE_ARG
 	};
 }

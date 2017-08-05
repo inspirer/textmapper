@@ -335,10 +335,7 @@ public class TMParserCompiler {
 		RhsPredicate predicate = convertPredicate(right.getPredicate(), left);
 		builder.addRule(left, predicate == null
 				? rule : builder.conditional(predicate, rule, right));
-		Map<String, Object> annotations = expressionResolver.convert(right.getPrefix() != null ?
-				right.getPrefix().getAnnotations() : null, "AnnotateRule");
 
-		TMDataUtil.putAnnotations(rule, annotations);
 		TMDataUtil.putCodeTemplate(rule, lastAction);
 	}
 
@@ -427,22 +424,6 @@ public class TMParserCompiler {
 
 			return builder.symbol(builder.lookahead(rules, outer, part), null, part);
 
-		} else if (part instanceof TmaRhsUnordered) {
-			List<ITmaRhsPart> refParts = new ArrayList<>();
-			extractUnorderedParts(part, refParts);
-			if (refParts.size() < 2 || refParts.size() > 5) {
-				error(part, "max 5 elements are allowed for permutation");
-				return null;
-			}
-			List<RhsPart> resolved = new ArrayList<>(refParts.size());
-			for (ITmaRhsPart refPart : refParts) {
-				RhsPart rulePart = convertPart(outer, refPart);
-				if (rulePart == null) {
-					return null;
-				}
-				resolved.add(rulePart);
-			}
-			return builder.unordered(resolved, part);
 		} else if (part instanceof TmaRhsStateMarker) {
 
 			return builder.stateMarker(((TmaRhsStateMarker) part).getName().getText(), part);
@@ -478,12 +459,6 @@ public class TMParserCompiler {
 			part = literalCast.getInner();
 		}
 
-		TmaRhsClass cl = null;
-		if (part instanceof TmaRhsClass) {
-			cl = (TmaRhsClass) part;
-			part = cl.getInner();
-		}
-
 		boolean canInline = (annotations == null);
 		RhsPart result;
 
@@ -517,11 +492,6 @@ public class TMParserCompiler {
 			} else {
 				error(literalCast, "cannot apply `as literal' to a group");
 			}
-		}
-
-		if (cl != null) {
-			// TODO apply class name to `result'
-			error(cl, "internal error: classes are not supported yet");
 		}
 
 		if (optional != null) {
@@ -795,7 +765,6 @@ public class TMParserCompiler {
 	private boolean isSimpleNonEmpty(TmaRule0 rule, boolean allowPredicates) {
 		return rule != null
 				&& (allowPredicates || rule.getPredicate() == null)
-				&& rule.getPrefix() == null
 				&& rule.getSuffix() == null
 				&& rule.getList() != null && !rule.getList().isEmpty()
 				&& rule.getError() == null;
@@ -803,17 +772,6 @@ public class TMParserCompiler {
 
 	private TmaRule0 getGroupRule(ITmaRhsPart symbolRef) {
 		return ((TmaRhsNested) symbolRef).getRules().get(0);
-	}
-
-	private void extractUnorderedParts(ITmaRhsPart unorderedRulePart, List<ITmaRhsPart> result) {
-		if (unorderedRulePart instanceof TmaRhsUnordered) {
-			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getLeft(), result);
-			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getRight(), result);
-		} else if (unorderedRulePart instanceof TmaCommand) {
-			error(unorderedRulePart, "semantic action cannot be used as a part of unordered group");
-		} else if (!(unorderedRulePart instanceof TmaSyntaxProblem)) {
-			result.add(unorderedRulePart);
-		}
 	}
 
 	private List<Terminal> resolveTerminals(List<TmaSymref> input) {

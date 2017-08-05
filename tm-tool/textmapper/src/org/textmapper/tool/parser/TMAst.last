@@ -39,6 +39,52 @@ identifier  : Identifier ::=
   | 'parser'
 ;
 
+class Literal : ParamValue, Expression {
+	any value;
+}
+
+literal  : Literal ::=
+	value=scon
+  | value=icon
+  | value='true' as true
+  | value='false' as false
+;
+
+class Pattern {
+	String regexp;
+}
+
+pattern  : Pattern ::=
+	{regexp}
+;
+
+qualified_id (String) ::=
+	identifier
+  | qualified_id '.' identifier
+;
+
+class Name {
+	String qualifiedId;
+}
+
+name  : Name ::=
+	qualifiedId=qualified_id
+;
+
+class Command : RhsPart {
+}
+
+command  : Command ::=
+	code
+;
+
+class SyntaxProblem : LexerPart, GrammarPart, RhsPart, Expression {
+}
+
+syntax_problem  : SyntaxProblem ::=
+	error
+;
+
 import__optlist  : list<Import>
 	(this+=import_)* ;
 
@@ -121,14 +167,6 @@ class RawType : NontermType {
 
 rawType  : RawType ::=
 	code
-;
-
-class Pattern {
-	String regexp;
-}
-
-pattern  : Pattern ::=
-	{regexp}
 ;
 
 lexer_parts  : list<LexerPart>
@@ -412,7 +450,6 @@ rules  : list<Rule0> ::=
 
 class Rule0 {
 	PredicateExpression predicate;
-	RhsPrefix prefix;
 	list<RhsPart> list;
 	RhsSuffix suffix;
 	ReportClause action;
@@ -420,7 +457,7 @@ class Rule0 {
 }
 
 rule0  : Rule0 ::=
-	{predicate}? prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt action=reportClause?
+	{predicate}? list=rhsParts? suffix=rhsSuffixopt action=reportClause?
   | error=syntax_problem
 ;
 
@@ -429,14 +466,6 @@ interface PredicateExpression {
 
 predicate  : PredicateExpression ::=
 	'[' this=predicate_expression ']'
-;
-
-class RhsPrefix {
-	Annotations annotations;
-}
-
-rhsPrefix  : RhsPrefix ::=
-	{annotations} ':'
 ;
 
 class RhsSuffix {
@@ -471,7 +500,6 @@ interface RhsPart {
 
 rhsPart  : RhsPart ::=
 	this=rhsAnnotated
-  | this=rhsUnordered
   | this=command
   | this=rhsStateMarker
   | this=rhsLookahead
@@ -553,28 +581,9 @@ class RhsAsLiteral : RhsPart {
 }
 
 rhsCast  : RhsPart ::=
-	this=rhsClass
-  | this=new.RhsCast: inner=rhsClass 'as' target=symref
-  | this=new.RhsAsLiteral: inner=rhsClass 'as' {literal}
-;
-
-class RhsUnordered : RhsPart {
-	RhsPart left;
-	RhsPart right;
-}
-
-rhsUnordered  : RhsUnordered ::=
-	this=new.RhsUnordered: left=rhsPart '&' right=rhsPart
-;
-
-class RhsClass : RhsPart {
-	Identifier identifier;
-	RhsPart inner;
-}
-
-rhsClass  : RhsPart ::=
 	this=rhsPrimary
-  | this=new.RhsClass: {identifier} ':' inner=rhsPrimary
+  | this=new.RhsCast: inner=rhsPrimary 'as' target=symref
+  | this=new.RhsAsLiteral: inner=rhsPrimary 'as' {literal}
 ;
 
 class RhsSymbol : RhsPart {
@@ -796,11 +805,6 @@ predicate_expression  : PredicateExpression ::=
 interface Expression {
 }
 
-class Instance : Expression {
-	Name className;
-	list<MapEntry> entries;
-}
-
 class Array : Expression {
 	list<Expression> content;
 }
@@ -808,7 +812,6 @@ class Array : Expression {
 expression  : Expression ::=
 	this=literal
   | this=symref
-  | this=new.Instance: 'new' className=name '(' entries=map_entry_list_Comma_separated_opt ')'
   | this=new.Array: '[' content=expression_list_Comma_separated_opt ']'
   | this=syntax_problem
 ;
@@ -819,61 +822,6 @@ expression_list_Comma_separated  : list<Expression>
 
 expression_list_Comma_separated_opt  : list<Expression> ::=
 	this=expression_list_Comma_separated?
-;
-
-map_entry_list_Comma_separated  : list<MapEntry>
-	(this+=map_entry
-		separator ',')+ ;
-
-map_entry_list_Comma_separated_opt  : list<MapEntry> ::=
-	this=map_entry_list_Comma_separated?
-;
-
-class MapEntry {
-	Identifier name;
-	Expression value;
-}
-
-map_entry  : MapEntry ::=
-	name=identifier ':' value=expression
-;
-
-class Literal : ParamValue, Expression {
-	any value;
-}
-
-literal  : Literal ::=
-	value=scon
-  | value=icon
-  | value='true' as true
-  | value='false' as false
-;
-
-class Name {
-	String qualifiedId;
-}
-
-name  : Name ::=
-	qualifiedId=qualified_id
-;
-
-qualified_id (String) ::=
-	identifier
-  | qualified_id '.' identifier
-;
-
-class Command : RhsPart {
-}
-
-command  : Command ::=
-	code
-;
-
-class SyntaxProblem : LexerPart, GrammarPart, RhsPart, Expression {
-}
-
-syntax_problem  : SyntaxProblem ::=
-	error
 ;
 
 parsing_algorithmopt  : ParsingAlgorithm ::=

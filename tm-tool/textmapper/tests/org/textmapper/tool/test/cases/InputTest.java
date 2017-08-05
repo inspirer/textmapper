@@ -42,16 +42,6 @@ public class InputTest extends LapgTestCase {
 	}
 
 	@Test
-	public void testOptions() {
-		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1options", FileUtil.getFileContents(openStream("syntax1options", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), new TestStatus(), createDefaultTypesRegistry());
-		assertNotNull(g);
-		assertEquals(0, g.getGrammar().getEoi().getIndex());
-
-		Object container = g.getOptions().get("container");
-		assertNotNull(container);
-	}
-
-	@Test
 	public void testCheckSimple1() {
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1", FileUtil.getFileContents(openStream("syntax1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);

@@ -101,20 +101,6 @@ public class TMExpressionResolver {
 
 			@Override
 			public Object resolve(ITmaExpression expression, IType type) {
-				if (expression instanceof TmaInstance) {
-					List<TmaMapEntry> list = ((TmaInstance) expression).getEntries();
-					Map<String, ITmaExpression> props = new HashMap<>();
-					if (list != null) {
-						for (TmaMapEntry entry : list) {
-							props.put(entry.getName().getText(), entry.getValue());
-						}
-					}
-					String name = ((TmaInstance) expression).getClassName().getQualifiedId();
-					if (name.indexOf('.') < 0) {
-						name = myTypesPackage + "." + name;
-					}
-					return convertNew(expression, name, props, type);
-				}
 				if (expression instanceof TmaArray) {
 					List<ITmaExpression> list = ((TmaArray) expression).getContent();
 					return convertArray(expression, list, type);

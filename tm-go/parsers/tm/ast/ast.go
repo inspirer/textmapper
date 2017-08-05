@@ -67,6 +67,7 @@ func (LexemeAttrs) tmNodeNode()          {}
 func (LexerSection) tmNodeNode()         {}
 func (LexerState) tmNodeNode()           {}
 func (ListSeparator) tmNodeNode()        {}
+func (LookaheadPredicate) tmNodeNode()   {}
 func (Name) tmNodeNode()                 {}
 func (NamedPattern) tmNodeNode()         {}
 func (Nonterm) tmNodeNode()              {}
@@ -86,9 +87,11 @@ func (RawType) tmNodeNode()              {}
 func (References) tmNodeNode()           {}
 func (ReportClause) tmNodeNode()         {}
 func (RhsAnnotated) tmNodeNode()         {}
+func (RhsAsLiteral) tmNodeNode()         {}
 func (RhsAssignment) tmNodeNode()        {}
 func (RhsCast) tmNodeNode()              {}
 func (RhsIgnored) tmNodeNode()           {}
+func (RhsLookahead) tmNodeNode()         {}
 func (RhsNested) tmNodeNode()            {}
 func (RhsOptional) tmNodeNode()          {}
 func (RhsPlusAssignment) tmNodeNode()    {}
@@ -106,6 +109,7 @@ func (SetOr) tmNodeNode()                {}
 func (SetSymbol) tmNodeNode()            {}
 func (StartConditions) tmNodeNode()      {}
 func (StartConditionsScope) tmNodeNode() {}
+func (StateMarker) tmNodeNode()          {}
 func (Stateref) tmNodeNode()             {}
 func (StringLiteral) tmNodeNode()        {}
 func (SubType) tmNodeNode()              {}
@@ -273,9 +277,11 @@ type RhsPart interface {
 //
 func (Command) rhsPartNode()           {}
 func (RhsAnnotated) rhsPartNode()      {}
+func (RhsAsLiteral) rhsPartNode()      {}
 func (RhsAssignment) rhsPartNode()     {}
 func (RhsCast) rhsPartNode()           {}
 func (RhsIgnored) rhsPartNode()        {}
+func (RhsLookahead) rhsPartNode()      {}
 func (RhsNested) rhsPartNode()         {}
 func (RhsOptional) rhsPartNode()       {}
 func (RhsPlusAssignment) rhsPartNode() {}
@@ -284,6 +290,7 @@ func (RhsQuantifier) rhsPartNode()     {}
 func (RhsSet) rhsPartNode()            {}
 func (RhsStarList) rhsPartNode()       {}
 func (RhsSymbol) rhsPartNode()         {}
+func (StateMarker) rhsPartNode()       {}
 func (SyntaxProblem) rhsPartNode()     {}
 
 type Rule0 interface {
@@ -726,6 +733,14 @@ func (n ListSeparator) Separator() References {
 	return References{n.Child(selector.References)}
 }
 
+type LookaheadPredicate struct {
+	Node
+}
+
+func (n LookaheadPredicate) Symref() Symref {
+	return Symref{n.Child(selector.Symref)}
+}
+
 type Name struct {
 	Node
 }
@@ -952,6 +967,18 @@ func (n RhsAnnotated) Inner() RhsPart {
 	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
+type RhsAsLiteral struct {
+	Node
+}
+
+func (n RhsAsLiteral) Inner() RhsPart {
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
+}
+
+func (n RhsAsLiteral) Literal() Literal {
+	return ToTmNode(n.Child(selector.Literal)).(Literal)
+}
+
 type RhsAssignment struct {
 	Node
 }
@@ -985,6 +1012,19 @@ func (n RhsIgnored) Rule0() []Rule0 {
 	var result []Rule0 = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Rule0))
+	}
+	return result
+}
+
+type RhsLookahead struct {
+	Node
+}
+
+func (n RhsLookahead) Predicates() []LookaheadPredicate {
+	nodes := n.Children(selector.LookaheadPredicate)
+	var result []LookaheadPredicate = make([]LookaheadPredicate, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, LookaheadPredicate{node})
 	}
 	return result
 }
@@ -1205,6 +1245,14 @@ func (n StartConditionsScope) LexerPart() []LexerPart {
 		result = append(result, ToTmNode(node).(LexerPart))
 	}
 	return result
+}
+
+type StateMarker struct {
+	Node
+}
+
+func (n StateMarker) Name() Identifier {
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 type Stateref struct {

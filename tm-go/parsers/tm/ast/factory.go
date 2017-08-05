@@ -80,6 +80,8 @@ func ToTmNode(n Node) TmNode {
 		return &LexerState{n}
 	case tm.ListSeparator:
 		return &ListSeparator{n}
+	case tm.LookaheadPredicate:
+		return &LookaheadPredicate{n}
 	case tm.Name:
 		return &Name{n}
 	case tm.NamedPattern:
@@ -118,12 +120,16 @@ func ToTmNode(n Node) TmNode {
 		return &ReportClause{n}
 	case tm.RhsAnnotated:
 		return &RhsAnnotated{n}
+	case tm.RhsAsLiteral:
+		return &RhsAsLiteral{n}
 	case tm.RhsAssignment:
 		return &RhsAssignment{n}
 	case tm.RhsCast:
 		return &RhsCast{n}
 	case tm.RhsIgnored:
 		return &RhsIgnored{n}
+	case tm.RhsLookahead:
+		return &RhsLookahead{n}
 	case tm.RhsNested:
 		return &RhsNested{n}
 	case tm.RhsOptional:
@@ -158,6 +164,8 @@ func ToTmNode(n Node) TmNode {
 		return &StartConditions{n}
 	case tm.StartConditionsScope:
 		return &StartConditionsScope{n}
+	case tm.StateMarker:
+		return &StateMarker{n}
 	case tm.Stateref:
 		return &Stateref{n}
 	case tm.StringLiteral:

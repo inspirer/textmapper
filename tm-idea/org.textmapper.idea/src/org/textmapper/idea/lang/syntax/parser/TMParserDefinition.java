@@ -88,16 +88,12 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmLexerState(node);
 			case Nonterminals.rule0:
 				return new TmRule(node);
-			case Nonterminals.rhsPrefix:
-				return new TmRhsPrefix(node);
 			case Nonterminals.reportClause:
 				return new TmReportClause(node);
 			case Nonterminals.rhsSuffix:
 				return new TmRhsSuffix(node);
 			case Nonterminals.rhsAnnotated:
 				return new TmRhsAnnotated(node);
-			case Nonterminals.rhsUnordered:
-				return new TmRhsUnordered(node);
 			case Nonterminals.rhsPrimary:
 				return new TmRhsPrimary(node);
 			case Nonterminals.command:
@@ -151,8 +147,6 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmParameterReference(node);
 			case Nonterminals.argument:
 				return new TmTemplateArg(node);
-			case Nonterminals.map_entry:
-				return new TmMapEntry(node);
 		}
 
 		return new TmElement(node);

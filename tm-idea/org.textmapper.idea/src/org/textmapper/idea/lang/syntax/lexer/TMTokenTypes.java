@@ -90,7 +90,6 @@ public interface TMTokenTypes {
 	// keywords
 	IElementType KW_TRUE = new TMElementType(Tokens._true, "true");
 	IElementType KW_FALSE = new TMElementType(Tokens._false, "false");
-	IElementType KW_NEW = new TMElementType(Tokens._new, "new");
 	IElementType KW_SEPARATOR = new TMElementType(Tokens.separator, "separator");
 	IElementType KW_AS = new TMElementType(Tokens.as, "as");
 	IElementType KW_IMPORT = new TMElementType(Tokens._import, "import");
@@ -141,7 +140,7 @@ public interface TMTokenTypes {
 	IElementType KW_PARSER_ACC = new TMElementType(Tokens.parser, "parser");
 
 	TokenSet keywords = TokenSet.create(
-			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT, KW_SET, KW_IMPLEMENTS);
+			KW_TRUE, KW_FALSE, KW_SEPARATOR, KW_AS, KW_IMPORT, KW_SET, KW_IMPLEMENTS);
 
 	TokenSet softKeywords = TokenSet.create(
 			KW_BRACKETS, KW_INLINE, KW_S, KW_X,

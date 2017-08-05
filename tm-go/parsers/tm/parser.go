@@ -57,11 +57,11 @@ const (
 )
 
 func (p *Parser) ParseInput(lexer *Lexer) error {
-	return p.parse(0, 467, lexer)
+	return p.parse(0, 483, lexer)
 }
 
 func (p *Parser) ParseExpression(lexer *Lexer) error {
-	return p.parse(1, 468, lexer)
+	return p.parse(1, 484, lexer)
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
