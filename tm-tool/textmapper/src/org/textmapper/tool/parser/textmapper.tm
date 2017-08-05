@@ -182,16 +182,13 @@ input :
     header imports=import_* options=option* lexer=lexer_section parser=parser_section? ;
 
 header :
-    'language' name ('(' target=name ')')? parsing_algorithmopt ';' ;
+    'language' name ('(' target=name ')')? ';' ;
 
 lexer_section :
     '::' 'lexer' @pass lexer_parts ;
 
 parser_section :
     '::' 'parser' @pass grammar_parts ;
-
-parsing_algorithm :
-    'lalr' '(' la=icon ')' ;
 
 import_ :
     'import' alias=identifier? file=scon ';' ;
@@ -270,7 +267,10 @@ grammar_parts :
 ;
 
 grammar_part :
-    nonterm | template_param | directive ;
+    nonterm
+  | template_param
+  | directive
+;
 
 nonterm :
     annotations? name=identifier params=nonterm_params? type=nonterm_type?

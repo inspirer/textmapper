@@ -73,10 +73,6 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaParsingAlgorithm n) {
-		return true;
-	}
-
 	protected boolean visit(TmaImport n) {
 		return true;
 	}

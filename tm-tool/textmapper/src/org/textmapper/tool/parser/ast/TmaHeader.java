@@ -21,13 +21,11 @@ public class TmaHeader extends TmaNode {
 
 	private final TmaName name;
 	private final TmaName target;
-	private final TmaParsingAlgorithm parsingAlgorithm;
 
-	public TmaHeader(TmaName name, TmaName target, TmaParsingAlgorithm parsingAlgorithm, TextSource source, int line, int offset, int endoffset) {
+	public TmaHeader(TmaName name, TmaName target, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.target = target;
-		this.parsingAlgorithm = parsingAlgorithm;
 	}
 
 	public TmaName getName() {
@@ -36,10 +34,6 @@ public class TmaHeader extends TmaNode {
 
 	public TmaName getTarget() {
 		return target;
-	}
-
-	public TmaParsingAlgorithm getParsingAlgorithm() {
-		return parsingAlgorithm;
 	}
 
 	@Override
@@ -52,9 +46,6 @@ public class TmaHeader extends TmaNode {
 		}
 		if (target != null) {
 			target.accept(v);
-		}
-		if (parsingAlgorithm != null) {
-			parsingAlgorithm.accept(v);
 		}
 	}
 }

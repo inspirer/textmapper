@@ -106,11 +106,10 @@ option_optlist  : list<Option>
 class Header {
 	Name name;
 	Name target;
-	ParsingAlgorithm parsingAlgorithm;
 }
 
 header  : Header ::=
-	'language' {name} ('(' target=name ')')? parsingAlgorithm=parsing_algorithmopt ';'
+	'language' {name} ('(' target=name ')')? ';'
 ;
 
 lexer_section  : list<LexerPart> ::=
@@ -119,14 +118,6 @@ lexer_section  : list<LexerPart> ::=
 
 parser_section  : list<GrammarPart> ::=
 	'::' 'parser' this=grammar_parts
-;
-
-class ParsingAlgorithm {
-	Integer la;
-}
-
-parsing_algorithm  : ParsingAlgorithm ::=
-	'lalr' '(' la=icon ')'
 ;
 
 class Import {
@@ -822,10 +813,6 @@ expression_list_Comma_separated  : list<Expression>
 
 expression_list_Comma_separated_opt  : list<Expression> ::=
 	this=expression_list_Comma_separated?
-;
-
-parsing_algorithmopt  : ParsingAlgorithm ::=
-	this=parsing_algorithm?
 ;
 
 rawTypeopt  : RawType ::=
