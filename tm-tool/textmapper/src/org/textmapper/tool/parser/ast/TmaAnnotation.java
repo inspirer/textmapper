@@ -19,18 +19,18 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaAnnotation extends TmaNode {
 
-	private final String name;
+	private final TmaIdentifier name;
 	private final ITmaExpression expression;
 	private final TmaSyntaxProblem syntaxProblem;
 
-	public TmaAnnotation(String name, ITmaExpression expression, TmaSyntaxProblem syntaxProblem, TextSource source, int line, int offset, int endoffset) {
+	public TmaAnnotation(TmaIdentifier name, ITmaExpression expression, TmaSyntaxProblem syntaxProblem, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.expression = expression;
 		this.syntaxProblem = syntaxProblem;
 	}
 
-	public String getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
@@ -46,6 +46,9 @@ public class TmaAnnotation extends TmaNode {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (name != null) {
+			name.accept(v);
 		}
 		if (expression != null) {
 			expression.accept(v);

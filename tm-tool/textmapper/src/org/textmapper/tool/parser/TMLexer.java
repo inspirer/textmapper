@@ -81,45 +81,45 @@ public class TMLexer {
 		int Atsign = 35;
 		int error = 36;
 		int ID = 37;
-		int _true = 38;
+		int as = 38;
 		int _false = 39;
-		int _new = 40;
-		int separator = 41;
-		int as = 42;
-		int _import = 43;
+		int _implements = 40;
+		int _import = 41;
+		int separator = 42;
+		int _new = 43;
 		int set = 44;
-		int _implements = 45;
-		int brackets = 46;
-		int char_s = 47;
-		int char_x = 48;
-		int inline = 49;
-		int prec = 50;
-		int shift = 51;
-		int returns = 52;
-		int input = 53;
-		int left = 54;
-		int right = 55;
-		int nonassoc = 56;
-		int generate = 57;
-		int _assert = 58;
-		int empty = 59;
-		int nonempty = 60;
-		int global = 61;
-		int explicit = 62;
-		int lookahead = 63;
-		int param = 64;
-		int flag = 65;
-		int noMinuseoi = 66;
-		int soft = 67;
-		int _class = 68;
-		int _interface = 69;
-		int _void = 70;
-		int space = 71;
-		int layout = 72;
-		int language = 73;
-		int lalr = 74;
-		int lexer = 75;
-		int parser = 76;
+		int _true = 45;
+		int _assert = 46;
+		int brackets = 47;
+		int _class = 48;
+		int empty = 49;
+		int explicit = 50;
+		int flag = 51;
+		int generate = 52;
+		int global = 53;
+		int inline = 54;
+		int input = 55;
+		int _interface = 56;
+		int lalr = 57;
+		int language = 58;
+		int layout = 59;
+		int left = 60;
+		int lexer = 61;
+		int lookahead = 62;
+		int noMinuseoi = 63;
+		int nonassoc = 64;
+		int nonempty = 65;
+		int param = 66;
+		int parser = 67;
+		int prec = 68;
+		int returns = 69;
+		int right = 70;
+		int char_s = 71;
+		int shift = 72;
+		int soft = 73;
+		int space = 74;
+		int _void = 75;
+		int char_x = 76;
 		int code = 77;
 		int Lbrace = 78;
 		int regexp = 79;
@@ -514,45 +514,45 @@ public class TMLexer {
 
 	private static Map<String,Integer> subTokensOfID = new HashMap<>();
 	static {
-		subTokensOfID.put("true", 39);
+		subTokensOfID.put("as", 39);
 		subTokensOfID.put("false", 40);
-		subTokensOfID.put("new", 41);
-		subTokensOfID.put("separator", 42);
-		subTokensOfID.put("as", 43);
-		subTokensOfID.put("import", 44);
+		subTokensOfID.put("implements", 41);
+		subTokensOfID.put("import", 42);
+		subTokensOfID.put("separator", 43);
+		subTokensOfID.put("new", 44);
 		subTokensOfID.put("set", 45);
-		subTokensOfID.put("implements", 46);
-		subTokensOfID.put("brackets", 47);
-		subTokensOfID.put("s", 48);
-		subTokensOfID.put("x", 49);
-		subTokensOfID.put("inline", 50);
-		subTokensOfID.put("prec", 51);
-		subTokensOfID.put("shift", 52);
-		subTokensOfID.put("returns", 53);
-		subTokensOfID.put("input", 54);
-		subTokensOfID.put("left", 55);
-		subTokensOfID.put("right", 56);
-		subTokensOfID.put("nonassoc", 57);
-		subTokensOfID.put("generate", 58);
-		subTokensOfID.put("assert", 59);
-		subTokensOfID.put("empty", 60);
-		subTokensOfID.put("nonempty", 61);
-		subTokensOfID.put("global", 62);
-		subTokensOfID.put("explicit", 63);
-		subTokensOfID.put("lookahead", 64);
-		subTokensOfID.put("param", 65);
-		subTokensOfID.put("flag", 66);
-		subTokensOfID.put("no-eoi", 67);
-		subTokensOfID.put("soft", 68);
-		subTokensOfID.put("class", 69);
-		subTokensOfID.put("interface", 70);
-		subTokensOfID.put("void", 71);
-		subTokensOfID.put("space", 72);
-		subTokensOfID.put("layout", 73);
-		subTokensOfID.put("language", 74);
-		subTokensOfID.put("lalr", 75);
-		subTokensOfID.put("lexer", 76);
-		subTokensOfID.put("parser", 77);
+		subTokensOfID.put("true", 46);
+		subTokensOfID.put("assert", 47);
+		subTokensOfID.put("brackets", 48);
+		subTokensOfID.put("class", 49);
+		subTokensOfID.put("empty", 50);
+		subTokensOfID.put("explicit", 51);
+		subTokensOfID.put("flag", 52);
+		subTokensOfID.put("generate", 53);
+		subTokensOfID.put("global", 54);
+		subTokensOfID.put("inline", 55);
+		subTokensOfID.put("input", 56);
+		subTokensOfID.put("interface", 57);
+		subTokensOfID.put("lalr", 58);
+		subTokensOfID.put("language", 59);
+		subTokensOfID.put("layout", 60);
+		subTokensOfID.put("left", 61);
+		subTokensOfID.put("lexer", 62);
+		subTokensOfID.put("lookahead", 63);
+		subTokensOfID.put("no-eoi", 64);
+		subTokensOfID.put("nonassoc", 65);
+		subTokensOfID.put("nonempty", 66);
+		subTokensOfID.put("param", 67);
+		subTokensOfID.put("parser", 68);
+		subTokensOfID.put("prec", 69);
+		subTokensOfID.put("returns", 70);
+		subTokensOfID.put("right", 71);
+		subTokensOfID.put("s", 72);
+		subTokensOfID.put("shift", 73);
+		subTokensOfID.put("soft", 74);
+		subTokensOfID.put("space", 75);
+		subTokensOfID.put("void", 76);
+		subTokensOfID.put("x", 77);
 	}
 
 	protected boolean createIDToken(Span token, int ruleIndex) {
@@ -561,44 +561,7 @@ public class TMLexer {
 			ruleIndex = replacement;
 			token.symbol = tmRuleSymbol[ruleIndex];
 		}
-		boolean spaceToken = false;
-		switch(ruleIndex) {
-			case 47:	// brackets (soft)
-			case 48:	// s (soft)
-			case 49:	// x (soft)
-			case 50:	// inline (soft)
-			case 51:	// prec (soft)
-			case 52:	// shift (soft)
-			case 53:	// returns (soft)
-			case 54:	// input (soft)
-			case 55:	// left (soft)
-			case 56:	// right (soft)
-			case 57:	// nonassoc (soft)
-			case 58:	// generate (soft)
-			case 59:	// assert (soft)
-			case 60:	// empty (soft)
-			case 61:	// nonempty (soft)
-			case 62:	// global (soft)
-			case 63:	// explicit (soft)
-			case 64:	// lookahead (soft)
-			case 65:	// param (soft)
-			case 66:	// flag (soft)
-			case 67:	// no-eoi (soft)
-			case 68:	// soft (soft)
-			case 69:	// class (soft)
-			case 70:	// interface (soft)
-			case 71:	// void (soft)
-			case 72:	// space (soft)
-			case 73:	// layout (soft)
-			case 74:	// language (soft)
-			case 75:	// lalr (soft)
-			case 76:	// lexer (soft)
-			case 77:	// parser (soft)
-			case 2:	// <default>
-				{ token.value = tokenText(); }
-				break;
-		}
-		return !(spaceToken);
+		return true;
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

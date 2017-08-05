@@ -76,12 +76,12 @@ invalid_token:
 
 ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 
-'as': /as/
-'false': /false/
-'import': /import/
+'as':        /as/
+'false':     /false/
+'import':    /import/
 'separator': /separator/
-'set': /set/
-'true':  /true/
+'set':       /set/
+'true':      /true/
 
 # Soft keywords.
 
@@ -110,8 +110,8 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'prec':      /prec/
 'returns':   /returns/
 'right':     /right/
-'shift':     /shift/
 's':         /s/
+'shift':     /shift/
 'soft':      /soft/
 'space':     /space/
 'void':      /void/

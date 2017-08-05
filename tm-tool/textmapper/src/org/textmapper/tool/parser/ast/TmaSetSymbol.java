@@ -19,16 +19,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaSetSymbol extends TmaNode implements ITmaSetExpression {
 
-	private final String operator;
+	private final TmaIdentifier operator;
 	private final TmaSymref symbol;
 
-	public TmaSetSymbol(String operator, TmaSymref symbol, TextSource source, int line, int offset, int endoffset) {
+	public TmaSetSymbol(TmaIdentifier operator, TmaSymref symbol, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.operator = operator;
 		this.symbol = symbol;
 	}
 
-	public String getOperator() {
+	public TmaIdentifier getOperator() {
 		return operator;
 	}
 
@@ -40,6 +40,9 @@ public class TmaSetSymbol extends TmaNode implements ITmaSetExpression {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (operator != null) {
+			operator.accept(v);
 		}
 		if (symbol != null) {
 			symbol.accept(v);

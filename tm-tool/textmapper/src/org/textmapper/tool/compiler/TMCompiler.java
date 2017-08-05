@@ -130,7 +130,7 @@ public class TMCompiler {
 				continue;
 			}
 
-			String key = option.getKey();
+			String key = option.getKey().getText();
 			IFeature feature = optionsClass.getFeature(key);
 			if (feature == null) {
 				resolver.error(option, "unknown option `" + key + "`");

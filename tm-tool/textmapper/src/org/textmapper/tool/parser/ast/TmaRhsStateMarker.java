@@ -19,19 +19,24 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsStateMarker extends TmaNode implements ITmaRhsPart {
 
-	private final String name;
+	private final TmaIdentifier name;
 
-	public TmaRhsStateMarker(String name, TextSource source, int line, int offset, int endoffset) {
+	public TmaRhsStateMarker(TmaIdentifier name, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 	}
 
-	public String getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
 	@Override
 	public void accept(TmaVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (name != null) {
+			name.accept(v);
+		}
 	}
 }

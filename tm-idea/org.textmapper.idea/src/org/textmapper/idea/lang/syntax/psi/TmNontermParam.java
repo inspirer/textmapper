@@ -17,6 +17,7 @@
 package org.textmapper.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class TmNontermParam extends TmNamedElement {
@@ -26,5 +27,14 @@ public class TmNontermParam extends TmNamedElement {
 
 	boolean isInline() {
 		return !(getFirstChild() instanceof TmParameterReference);
+	}
+
+	@Override
+	public TmIdentifier getNameIdentifier() {
+		TmIdentifier[] all = PsiTreeUtil.getChildrenOfType(this, TmIdentifier.class);
+		if (all != null && all.length >= 2) {
+			return all[1];
+		}
+		return null;
 	}
 }

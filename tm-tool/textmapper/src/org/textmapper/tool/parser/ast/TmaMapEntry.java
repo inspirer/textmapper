@@ -19,16 +19,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaMapEntry extends TmaNode {
 
-	private final String name;
+	private final TmaIdentifier name;
 	private final ITmaExpression value;
 
-	public TmaMapEntry(String name, ITmaExpression value, TextSource source, int line, int offset, int endoffset) {
+	public TmaMapEntry(TmaIdentifier name, ITmaExpression value, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.value = value;
 	}
 
-	public String getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
@@ -40,6 +40,9 @@ public class TmaMapEntry extends TmaNode {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (name != null) {
+			name.accept(v);
 		}
 		if (value != null) {
 			value.accept(v);

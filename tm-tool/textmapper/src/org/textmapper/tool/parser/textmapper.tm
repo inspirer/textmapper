@@ -48,91 +48,84 @@ commentChars = /([^*]|\*+[^*\/])*\**/
 _skip_multiline: /\/\*{commentChars}\*\// (space)
 
 
-'%':   /%/
-'::':  /::/
-'|':   /\|/
-'||':  /\|\|/
-'=':   /=/
-'==':  /==/
-'!=':  /!=/
-';':   /;/
-'.':   /\./
-',':   /,/
-':':   /:/
-'[':   /\[/
-']':   /\]/
-'(':   /\(/
+'%':    /%/
+'::':   /::/
+'|':    /\|/
+'||':   /\|\|/
+'=':    /=/
+'==':   /==/
+'!=':   /!=/
+';':    /;/
+'.':    /\./
+',':    /,/
+':':    /:/
+'[':    /\[/
+']':    /\]/
+'(':    /\(/
 '(?=': /\(\?=/
 # TODO overlaps with ID
-'->':  /->/
-')':   /\)/
-'}':   /\}/
-'<':   /</
-'>':   />/
-'*':   /\*/
-'+':   /+/
-'+=':  /+=/
-'?':   /?/
-'!':   /!/
-'~':   /~/
-'&':   /&/
-'&&':  /&&/
-'$':   /$/
-'@':   /@/
+'->':   /->/
+')':    /\)/
+'}':    /\}/
+'<':    /</
+'>':    />/
+'*':    /\*/
+'+':    /+/
+'+=':   /+=/
+'?':    /?/
+'!':    /!/
+'~':    /~/
+'&':    /&/
+'&&':   /&&/
+'$':    /$/
+'@':    /@/
 
 error:
 
-ID {String}: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = tokenText(); }
+ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 
-'true': /true/
-'false': /false/
-'new': /new/
+'as':        /as/
+'false':     /false/
+'implements':/implements/
+'import':    /import/
 'separator': /separator/
-'as': /as/
-'import': /import/
-'set': /set/
-'implements': /implements/
+'new':       /new/
+'set':       /set/
+'true':      /true/
 
-'brackets': /brackets/   (soft)
-'s': /s/                 (soft)
-'x': /x/                 (soft)
+# Soft keywords.
 
-'inline': /inline/       (soft)
-
-'prec':  /prec/          (soft)
-'shift': /shift/         (soft)
-
-'returns': /returns/     (soft)
-
-'input': /input/         (soft)
-'left':  /left/          (soft)
-'right': /right/         (soft)
-'nonassoc': /nonassoc/   (soft)
-
-'generate': /generate/   (soft)
-'assert': /assert/       (soft)
-'empty': /empty/         (soft)
-'nonempty': /nonempty/   (soft)
-
-'global': /global/       (soft)
-'explicit': /explicit/   (soft)
-'lookahead': /lookahead/ (soft)
-'param': /param/         (soft)
-'flag': /flag/           (soft)
-
-'noeoi': /no-eoi/        (soft)
-
-'soft': /soft/           (soft)
-'class': /class/         (soft)
-'interface': /interface/ (soft)
-'void': /void/           (soft)
-'space': /space/         (soft)
-'layout': /layout/       (soft)
-'language': /language/   (soft)
-'lalr': /lalr/           (soft)
-
-'lexer': /lexer/         (soft)
-'parser': /parser/       (soft)
+'assert':    /assert/
+'brackets':  /brackets/
+'class':     /class/
+'empty':     /empty/
+'explicit':  /explicit/
+'flag':      /flag/
+'generate':  /generate/
+'global':    /global/
+'inline':    /inline/
+'input':     /input/
+'interface': /interface/
+'lalr':      /lalr/
+'language':  /language/
+'layout':    /layout/
+'left':      /left/
+'lexer':     /lexer/
+'lookahead': /lookahead/
+'no-eoi':    /no-eoi/
+'nonassoc':  /nonassoc/
+'nonempty':  /nonempty/
+'param':     /param/
+'parser':    /parser/
+'prec':      /prec/
+'returns':   /returns/
+'right':     /right/
+'s':         /s/
+'shift':     /shift/
+'soft':      /soft/
+'space':     /space/
+'void':      /void/
+'x':         /x/
 
 <initial, afterID, afterColonOrEq>
 code:   /\{/                                { skipAction(); token.endoffset = getOffset(); }
@@ -147,6 +140,19 @@ regexp {String}: /\/{reFirst}{reChar}*\//   { $$ = tokenText().substring(1, toke
 '/':    /\//
 
 :: parser
+
+identifier class :
+    ID
+
+  # Soft keywords
+  | 'brackets' | 'inline'   | 'prec'     | 'shift'     | 'returns' | 'input'
+  | 'left'     | 'right'    | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
+  | 'nonempty' | 'global'   | 'explicit' | 'lookahead' | 'param'   | 'flag'
+  | 'no-eoi'   | 's'        | 'x'
+  | 'soft'     | 'class'    | 'interface'  | 'void'    | 'space'
+  | 'layout'   | 'language' | 'lalr'       | 'lexer'   | 'parser'
+;
+
 
 %input input, expression;
 
@@ -166,21 +172,18 @@ parsing_algorithm :
     'lalr' '(' la=icon ')' ;
 
 import_ :
-    'import' alias=ID? file=scon ';' ;
+    'import' alias=identifier? file=scon ';' ;
 
 option :
-    key=ID '=' value=expression
+    key=identifier '=' value=expression
   | syntax_problem
 ;
 
-identifier class :
-    ID ;
-
 symref class :
-    name=ID args=symref_args? ;
+    name=identifier args=symref_args? ;
 
 symref_noargs returns symref :
-    name=ID ;
+    name=identifier ;
 
 rawType class :
     code ;
@@ -204,7 +207,7 @@ lexer_part :
 ;
 
 named_pattern :
-    name=ID '=' pattern ;
+    name=identifier '=' pattern ;
 
 start_conditions_scope :
     start_conditions '{' lexer_parts '}' ;
@@ -237,7 +240,7 @@ states_clause returns lexer_part :
 ;
 
 stateref class :
-    name=ID ;
+    name=identifier ;
 
 lexer_state :
     name=identifier ;
@@ -287,11 +290,11 @@ directive returns grammar_part :
   | '%' 'input' inputRefs=(inputref separator ',')+ ';'       -> directiveInput
   | '%' 'interface' ids=(identifier separator ',')+ ';'       -> directiveInterface
   | '%' 'assert' (kind='empty' | kind='nonempty') rhsSet ';'    -> directiveAssert
-  | '%' 'generate' name=ID '=' rhsSet ';'                     -> directiveSet
+  | '%' 'generate' name=identifier '=' rhsSet ';'                     -> directiveSet
 ;
 
 inputref :
-    reference=symref_noargs noeoi='noeoi'? ;
+    reference=symref_noargs noeoi='no-eoi'? ;
 
 references :
     symref_noargs
@@ -350,7 +353,7 @@ lookahead_predicate :
     negate='!'? symref_noargs ;
 
 rhsStateMarker :
-    '.' name=ID ;
+    '.' name=identifier ;
 
 rhsAnnotated returns rhsPart :
     rhsAssignment
@@ -398,7 +401,7 @@ rhsSet returns rhsPart :
 ;
 
 setPrimary returns setExpression :
-    operator=ID? symbol=symref              -> setSymbol
+    operator=identifier? symbol=symref              -> setSymbol
   | '(' inner=setExpression ')'             -> setCompound
   | '~' inner=setPrimary                    -> setComplement
 ;
@@ -413,7 +416,7 @@ annotations class :
     annotations=annotation+ ;
 
 annotation :
-    '@' name=ID ('=' expression)?
+    '@' name=identifier ('=' expression)?
   | '@' syntax_problem
 ;
 
@@ -424,7 +427,7 @@ nonterm_params :
 
 nonterm_param interface :
     param_ref
-  | param_type=ID name=identifier ('=' param_value)?  -> inlineParameter
+  | param_type=identifier name=identifier ('=' param_value)?  -> inlineParameter
 ;
 
 param_ref :
@@ -475,7 +478,7 @@ expression :
 ;
 
 map_entry :
-    name=ID ':' value=expression ;
+    name=identifier ':' value=expression ;
 
 literal :
     value=scon
@@ -488,8 +491,8 @@ name class :
     qualified_id ;
 
 qualified_id {String} :
-    ID
-  | qualified_id '.' ID        { $$ = $qualified_id + "." + $ID; }
+    identifier                         { $$ = $identifier.getText(); }
+  | qualified_id '.' identifier        { $$ = $qualified_id + "." + $identifier.getText(); }
 ;
 
 command class :

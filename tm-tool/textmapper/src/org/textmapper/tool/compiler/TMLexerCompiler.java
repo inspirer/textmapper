@@ -57,7 +57,7 @@ public class TMLexerCompiler {
 			return resolver.allStates();
 		}
 		for (TmaStateref ref : refs) {
-			LexerState applicable = resolver.getState(ref.getName());
+			LexerState applicable = resolver.getState(ref.getName().getText());
 			if (applicable != null) {
 				result.add(applicable);
 			} else {
@@ -155,7 +155,7 @@ public class TMLexerCompiler {
 				continue;
 			}
 
-			Symbol s = resolver.getSymbol(lexeme.getName().getID());
+			Symbol s = resolver.getSymbol(lexeme.getName().getText());
 			if (!(s instanceof Terminal)) {
 				// not a terminal? already reported, ignore
 				continue;
@@ -195,7 +195,7 @@ public class TMLexerCompiler {
 				continue;
 			}
 
-			Symbol s = resolver.getSymbol(lexeme.getName().getID());
+			Symbol s = resolver.getSymbol(lexeme.getName().getText());
 			if (!(s instanceof Terminal)) {
 				// not a terminal? already reported, ignore
 				continue;
@@ -216,13 +216,13 @@ public class TMLexerCompiler {
 
 			if (lexeme.getPattern() == null) {
 				if (isSoft) {
-					error(lexeme, "soft lexeme rule `" + lexeme.getName().getID() +
+					error(lexeme, "soft lexeme rule `" + lexeme.getName().getText() +
 							"' should have a regular expression");
 				}
 				continue;
 			}
 
-			String name = lexeme.getName().getID();
+			String name = lexeme.getName().getText();
 			RegexPart regex;
 			try {
 				regex = LapgCore.parse(name, lexeme.getPattern().getRegexp());
@@ -233,7 +233,7 @@ public class TMLexerCompiler {
 
 			if (isSoft && lexeme.getCommand() != null) {
 				// TODO Note: soft lexeme is able to override the code
-				error(lexeme.getCommand(), "soft lexeme rule `" + lexeme.getName().getID() +
+				error(lexeme.getCommand(), "soft lexeme rule `" + lexeme.getName().getText() +
 						"' cannot have a semantic action");
 			}
 			LexerRule classRule = getClassRule(classMatchers, lexeme, regex);

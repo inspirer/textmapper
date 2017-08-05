@@ -67,7 +67,7 @@ public class TMExpressionResolver {
 			if (entry.getSyntaxProblem() != null) {
 				continue;
 			}
-			String name = entry.getName();
+			String name = entry.getName().getText();
 			IFeature feature = annoClass.getFeature(name);
 			if (feature == null) {
 				error(entry, "unknown annotation `" + name + "`");
@@ -106,7 +106,7 @@ public class TMExpressionResolver {
 					Map<String, ITmaExpression> props = new HashMap<>();
 					if (list != null) {
 						for (TmaMapEntry entry : list) {
-							props.put(entry.getName(), entry.getValue());
+							props.put(entry.getName().getText(), entry.getValue());
 						}
 					}
 					String name = ((TmaInstance) expression).getClassName().getQualifiedId();

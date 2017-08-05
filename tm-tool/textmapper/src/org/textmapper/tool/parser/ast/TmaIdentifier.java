@@ -19,15 +19,8 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaIdentifier extends TmaNode {
 
-	private final String ID;
-
-	public TmaIdentifier(String ID, TextSource source, int line, int offset, int endoffset) {
+	public TmaIdentifier(TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.ID = ID;
-	}
-
-	public String getID() {
-		return ID;
 	}
 
 	@Override

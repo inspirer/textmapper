@@ -81,7 +81,7 @@ public class TMParserCompiler {
 	}
 
 	private Nonterminal asNonterminalWithoutType(TmaSymref ref, Set<String> withType) {
-		String name = ref.getName();
+		String name = ref.getName().getText();
 		Symbol type = resolver.getSymbol(name);
 		if (type == null) {
 			error(ref, name + " cannot be resolved");
@@ -101,17 +101,17 @@ public class TMParserCompiler {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				if (nonterm.getType() instanceof TmaRawType) {
-					withType.add(nonterm.getName().getID());
+					withType.add(nonterm.getName().getText());
 				}
 			} else if (clause instanceof TmaDirectiveInterface) {
 				for (TmaIdentifier id : ((TmaDirectiveInterface) clause).getIds()) {
-					String name = id.getID();
+					String name = id.getText();
 					if (name.equals(TMEventMapper.TOKEN_CATEGORY)) {
 						error(id, TMEventMapper.TOKEN_CATEGORY +
 								" is reserved for a set of token node types");
 						continue;
 					}
-					if (!interfaces.add(id.getID())) {
+					if (!interfaces.add(id.getText())) {
 						error(id, "a duplicate interface identifier");
 					}
 				}
@@ -121,19 +121,20 @@ public class TMParserCompiler {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				Symbol left = resolver.getSymbol(nonterm.getName().getID());
+				Symbol left = resolver.getSymbol(nonterm.getName().getText());
 				if (!(left instanceof Nonterminal)) continue; /* error is already reported */
 
 				TmaReportClause defaultAction = nonterm.getDefaultAction();
 				if (defaultAction != null) {
-					String name = defaultAction.getAction().getID();
+					String name = defaultAction.getAction().getText();
 					if (name.equals(TMEventMapper.TOKEN_CATEGORY)) {
 						error(defaultAction.getAction(), TMEventMapper.TOKEN_CATEGORY +
 								" is reserved for a set of token node types");
 					} else {
 						TMDataUtil.putRangeType(left, new RangeType(name,
-								defaultAction.getKind() != null ? defaultAction.getKind().getID() :
-										null,
+								defaultAction.getKind() != null
+										? defaultAction.getKind().getText()
+										: null,
 								interfaces.contains(name)));
 					}
 				}
@@ -166,7 +167,7 @@ public class TMParserCompiler {
 							throw new IllegalStateException();
 					}
 					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind,
-							hint.getName() == null ? null : hint.getName().getID()));
+							hint.getName() == null ? null : hint.getName().getText()));
 
 					if (hint.getImplementsClause() != null
 							&& !hint.getImplementsClause().isEmpty()) {
@@ -192,7 +193,7 @@ public class TMParserCompiler {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				Symbol left = resolver.getSymbol(nonterm.getName().getID());
+				Symbol left = resolver.getSymbol(nonterm.getName().getText());
 				if (!(left instanceof Nonterminal)) continue; /* error is already reported */
 
 				for (TmaRule0 right : nonterm.getRules()) {
@@ -248,14 +249,14 @@ public class TMParserCompiler {
 
 			} else if (clause instanceof TmaDirectiveSet) {
 				TmaDirectiveSet namedSet = (TmaDirectiveSet) clause;
-				if (!seenSets.add(namedSet.getName())) {
-					error(clause, "named set `" + namedSet.getName() + "' already exists");
+				if (!seenSets.add(namedSet.getName().getText())) {
+					error(clause, "named set `" + namedSet.getName().getText() + "' already exists");
 					continue;
 				}
 
 				RhsSet set = convertSet(namedSet.getRhsSet().getExpr(), null);
 				if (set != null) {
-					builder.addSet(LapgCore.name(namedSet.getName()), set, clause);
+					builder.addSet(LapgCore.name(namedSet.getName().getText()), set, clause);
 				}
 			}
 		}
@@ -263,7 +264,7 @@ public class TMParserCompiler {
 
 	private void addSymbolAnnotations(TmaIdentifier id, Map<String, Object> annotations) {
 		if (annotations != null) {
-			Symbol sym = resolver.getSymbol(id.getID());
+			Symbol sym = resolver.getSymbol(id.getText());
 			Map<String, Object> symAnnotations = TMDataUtil.getAnnotations(sym);
 			if (symAnnotations == null) {
 				symAnnotations = new HashMap<>();
@@ -272,7 +273,7 @@ public class TMParserCompiler {
 			for (Map.Entry<String, Object> ann : annotations.entrySet()) {
 				if (symAnnotations.containsKey(ann.getKey())) {
 					error(id, "redeclaration of annotation `" + ann.getKey() +
-							"' for non-terminal: " + id.getID()
+							"' for non-terminal: " + id.getText()
 							+ ", skipped");
 				} else {
 					symAnnotations.put(ann.getKey(), ann.getValue());
@@ -326,7 +327,7 @@ public class TMParserCompiler {
 		// TODO store %shift attribute
 		TmaReportClause action = right.getAction();
 		String alias = action != null && action.getAction() != null
-				? action.getAction().getID() : null;
+				? action.getAction().getText() : null;
 		RhsSequence rule = builder.sequence(alias, rhs, right);
 		if (prio != null) {
 			rule = builder.addPrecedence(rule, prio);
@@ -445,7 +446,7 @@ public class TMParserCompiler {
 			return builder.unordered(resolved, part);
 		} else if (part instanceof TmaRhsStateMarker) {
 
-			return builder.stateMarker(((TmaRhsStateMarker) part).getName(), part);
+			return builder.stateMarker(((TmaRhsStateMarker) part).getName().getText(), part);
 		}
 
 		Map<String, Object> annotations = null;
@@ -529,7 +530,7 @@ public class TMParserCompiler {
 		}
 
 		if (assignment != null) {
-			result = builder.assignment(assignment.getId().getID(), result,
+			result = builder.assignment(assignment.getId().getText(), result,
 					assignment.isAddition(), assignment);
 		}
 
@@ -548,7 +549,7 @@ public class TMParserCompiler {
 	private void annotateSequence(RhsSequence seq, TmaReportClause clause) {
 		if (clause == null) return;
 
-		String name = clause.getAction().getID();
+		String name = clause.getAction().getText();
 		if (interfaces.contains(name)) {
 			error(clause.getAction(), "interface types are not expected here");
 			return;
@@ -560,7 +561,7 @@ public class TMParserCompiler {
 		}
 
 		TMDataUtil.putRangeType(seq, new RangeType(name,
-				clause.getKind() != null ? clause.getKind().getID() : null,
+				clause.getKind() != null ? clause.getKind().getText() : null,
 				false /*interface*/));
 	}
 
@@ -593,7 +594,7 @@ public class TMParserCompiler {
 
 			Operation kind = Operation.Any;
 			if (ss.getOperator() != null) {
-				String op = ss.getOperator();
+				String op = ss.getOperator().getText();
 				switch (op) {
 					case "first":
 						kind = Operation.First;

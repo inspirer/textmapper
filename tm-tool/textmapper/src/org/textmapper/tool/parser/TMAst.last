@@ -1,6 +1,44 @@
 
 // Ast
 
+class Identifier {
+}
+
+identifier  : Identifier ::=
+	ID
+  | 'brackets'
+  | 'inline'
+  | 'prec'
+  | 'shift'
+  | 'returns'
+  | 'input'
+  | 'left'
+  | 'right'
+  | 'nonassoc'
+  | 'generate'
+  | 'assert'
+  | 'empty'
+  | 'nonempty'
+  | 'global'
+  | 'explicit'
+  | 'lookahead'
+  | 'param'
+  | 'flag'
+  | 'no-eoi'
+  | 's'
+  | 'x'
+  | 'soft'
+  | 'class'
+  | 'interface'
+  | 'void'
+  | 'space'
+  | 'layout'
+  | 'language'
+  | 'lalr'
+  | 'lexer'
+  | 'parser'
+;
+
 import__optlist  : list<Import>
 	(this+=import_)* ;
 
@@ -46,44 +84,36 @@ parsing_algorithm  : ParsingAlgorithm ::=
 ;
 
 class Import {
-	String alias;
+	Identifier alias;
 	String file;
 }
 
 import_  : Import ::=
-	'import' alias=ID? file=scon ';'
+	'import' alias=identifier? file=scon ';'
 ;
 
 class Option {
-	String key;
+	Identifier key;
 	Expression value;
 	SyntaxProblem syntaxProblem;
 }
 
 option  : Option ::=
-	key=ID '=' value=expression
+	key=identifier '=' value=expression
   | syntaxProblem=syntax_problem
 ;
 
-class Identifier {
-	String ID;
-}
-
-identifier  : Identifier ::=
-	{ID}
-;
-
 class Symref : Expression, ParamValue {
-	String name;
+	Identifier name;
 	SymrefArgs args;
 }
 
 symref  : Symref ::=
-	name=ID args=symref_args?
+	name=identifier args=symref_args?
 ;
 
 symref_noargs  : Symref ::=
-	name=ID
+	name=identifier
 ;
 
 class RawType : NontermType {
@@ -117,12 +147,12 @@ lexer_part  : LexerPart ::=
 ;
 
 class NamedPattern : LexerPart {
-	String name;
+	Identifier name;
 	Pattern pattern;
 }
 
 named_pattern  : NamedPattern ::=
-	name=ID '=' {pattern}
+	name=identifier '=' {pattern}
 ;
 
 class StartConditionsScope : LexerPart {
@@ -207,11 +237,11 @@ states_clause  : StatesClause ::=
 ;
 
 class Stateref {
-	String name;
+	Identifier name;
 }
 
 stateref  : Stateref ::=
-	name=ID
+	name=identifier
 ;
 
 class LexerState {
@@ -337,7 +367,7 @@ class DirectiveAssert : GrammarPart {
 }
 
 class DirectiveSet : GrammarPart {
-	String name;
+	Identifier name;
 	RhsSet rhsSet;
 }
 
@@ -346,7 +376,7 @@ directive  : GrammarPart ::=
   | this=new.DirectiveInput: '%' 'input' inputRefs=inputref_list_Comma_separated ';'
   | this=new.DirectiveInterface: '%' 'interface' ids=identifier_list_Comma_separated ';'
   | this=new.DirectiveAssert: '%' 'assert' (kind='empty' as KindKind.EMPTY | kind='nonempty' as KindKind.NONEMPTY) {rhsSet} ';'
-  | this=new.DirectiveSet: '%' 'generate' name=ID '=' {rhsSet} ';'
+  | this=new.DirectiveSet: '%' 'generate' name=identifier '=' {rhsSet} ';'
 ;
 
 identifier_list_Comma_separated  : list<Identifier>
@@ -363,7 +393,7 @@ class Inputref {
 }
 
 inputref  : Inputref ::=
-	reference=symref_noargs noeoi='noeoi' as true?
+	reference=symref_noargs noeoi='no-eoi' as true?
 ;
 
 references  : list<Symref>
@@ -470,11 +500,11 @@ lookahead_predicate  : LookaheadPredicate ::=
 ;
 
 class RhsStateMarker : RhsPart {
-	String name;
+	Identifier name;
 }
 
 rhsStateMarker  : RhsStateMarker ::=
-	'.' name=ID
+	'.' name=identifier
 ;
 
 class RhsAnnotated : RhsPart {
@@ -589,7 +619,7 @@ interface SetExpression {
 }
 
 class SetSymbol : SetExpression {
-	String operator;
+	Identifier operator;
 	Symref symbol;
 }
 
@@ -602,7 +632,7 @@ class SetComplement : SetExpression {
 }
 
 setPrimary  : SetExpression ::=
-	this=new.SetSymbol: operator=ID? symbol=symref
+	this=new.SetSymbol: operator=identifier? symbol=symref
   | this=new.SetCompound: '(' inner=setExpression ')'
   | this=new.SetComplement: '~' inner=setPrimary
 ;
@@ -635,13 +665,13 @@ annotations  : Annotations ::=
 ;
 
 class Annotation {
-	String name;
+	Identifier name;
 	Expression expression;
 	SyntaxProblem syntaxProblem;
 }
 
 annotation  : Annotation ::=
-	'@' name=ID ('=' {expression})?
+	'@' name=identifier ('=' {expression})?
   | '@' syntaxProblem=syntax_problem
 ;
 
@@ -661,14 +691,14 @@ interface NontermParam {
 }
 
 class InlineParameter : NontermParam {
-	String paramType;
+	Identifier paramType;
 	Identifier name;
 	ParamValue paramValue;
 }
 
 nonterm_param  : NontermParam ::=
 	this=param_ref
-  | this=new.InlineParameter: paramType=ID name=identifier ('=' paramValue=param_value)?
+  | this=new.InlineParameter: paramType=identifier name=identifier ('=' paramValue=param_value)?
 ;
 
 class ParamRef : NontermParam {
@@ -801,12 +831,12 @@ map_entry_list_Comma_separated_opt  : list<MapEntry> ::=
 ;
 
 class MapEntry {
-	String name;
+	Identifier name;
 	Expression value;
 }
 
 map_entry  : MapEntry ::=
-	name=ID ':' value=expression
+	name=identifier ':' value=expression
 ;
 
 class Literal : ParamValue, Expression {
@@ -829,8 +859,8 @@ name  : Name ::=
 ;
 
 qualified_id (String) ::=
-	ID
-  | qualified_id '.' ID
+	identifier
+  | qualified_id '.' identifier
 ;
 
 class Command : RhsPart {

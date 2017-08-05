@@ -19,16 +19,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaSymref extends TmaNode implements ITmaExpression, ITmaParamValue {
 
-	private final String name;
+	private final TmaIdentifier name;
 	private final TmaSymrefArgs args;
 
-	public TmaSymref(String name, TmaSymrefArgs args, TextSource source, int line, int offset, int endoffset) {
+	public TmaSymref(TmaIdentifier name, TmaSymrefArgs args, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.args = args;
 	}
 
-	public String getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
@@ -40,6 +40,9 @@ public class TmaSymref extends TmaNode implements ITmaExpression, ITmaParamValue
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (name != null) {
+			name.accept(v);
 		}
 		if (args != null) {
 			args.accept(v);

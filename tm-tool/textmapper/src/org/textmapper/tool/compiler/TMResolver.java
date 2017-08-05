@@ -118,7 +118,7 @@ public class TMResolver {
 
 		for (TmaStatesClause clause : getLexerParts(TmaStatesClause.class)) {
 			for (TmaLexerState state : clause.getStates()) {
-				if (state.getName().getID().equals(INITIAL_STATE.text())) {
+				if (state.getName().getText().equals(INITIAL_STATE.text())) {
 					if (initialOrigin != null) {
 						error(state, "redeclaration of `initial', ignored");
 						continue;
@@ -139,8 +139,8 @@ public class TMResolver {
 		for (TmaStatesClause clause : getLexerParts(TmaStatesClause.class)) {
 			boolean exclusive = clause.isExclusive();
 			for (TmaLexerState state : clause.getStates()) {
-				Name name = name(state.getName().getID(), state.getName());
-				if (name == null || state.getName().getID().equals(INITIAL_STATE.text())) {
+				Name name = name(state.getName().getText(), state.getName());
+				if (name == null || state.getName().getText().equals(INITIAL_STATE.text())) {
 					continue;
 				}
 
@@ -203,7 +203,7 @@ public class TMResolver {
 
 	private void collectLexerSymbols() {
 		for (TmaNamedPattern astpattern : getLexerParts(TmaNamedPattern.class)) {
-			Name name = name(astpattern.getName(), astpattern);
+			Name name = name(astpattern.getName().getText(), astpattern);
 			if (name == null) continue;
 			RegexPart regex;
 			try {
@@ -245,7 +245,7 @@ public class TMResolver {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaTemplateParam) {
 				TmaTemplateParam param = (TmaTemplateParam) clause;
-				Name name = name(param.getName().getID(), param.getName());
+				Name name = name(param.getName().getText(), param.getName());
 				if (name == null) continue;
 
 				Type type = (param.getParamType() == TmaParamType.FLAG) ? Type.Flag : Type.Symbol;
@@ -270,7 +270,7 @@ public class TMResolver {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				Symbol s = getSymbol(nonterm.getName().getID());
+				Symbol s = getSymbol(nonterm.getName().getText());
 
 				// Error is already reported.
 				if (!(s instanceof Nonterminal)) continue;
@@ -283,11 +283,11 @@ public class TMResolver {
 						if (p != null) parameters.add(p);
 					} else if (param instanceof TmaInlineParameter) {
 						TmaInlineParameter tmaParam = (TmaInlineParameter) param;
-						Name subname = name(tmaParam.getName().getID(), tmaParam.getName());
+						Name subname = name(tmaParam.getName().getText(), tmaParam.getName());
 						if (subname == null) continue;
 						Name name = s.getName().subName(subname);
 						Type type;
-						switch (tmaParam.getParamType()) {
+						switch (tmaParam.getParamType().getText()) {
 							case "flag":
 								type = Type.Flag;
 								break;
@@ -363,12 +363,12 @@ public class TMResolver {
 
 
 	private Symbol create(TmaIdentifier id, AstType type, boolean isTerm) {
-		Name name = name(id.getID(), id);
+		Name name = name(id.getText(), id);
 		if (name == null) return null;
 
 		NamedElement existing = namespace.canInsert(name);
 		if (existing != null && !(existing instanceof Symbol)) {
-			nameConflict(id.getID(), id, existing);
+			nameConflict(id.getText(), id, existing);
 			existing = null;
 		}
 
@@ -414,7 +414,7 @@ public class TMResolver {
 
 	Collection<RhsArgument> resolveArgs(TmaSymref ref, Nonterminal context) {
 		TemplateParameter targetParam = tryResolveParam(ref, context);
-		Symbol target = targetParam != null ? null : getSymbol(ref.getName());
+		Symbol target = targetParam != null ? null : getSymbol(ref.getName().getText());
 		TmaSymrefArgs args = ref.getArgs();
 		if (target != null && !(target instanceof Nonterminal)) {
 			if (args != null) {
@@ -438,7 +438,7 @@ public class TMResolver {
 						&& param.getModifier() != Modifier.Lookahead
 						&& (requiredParameters == null || !requiredParameters.contains(param))) {
 					error(arg, "Template parameter " + arg.getName() + " is not expected by "
-							+ ref.getName());
+							+ ref.getName().getText());
 					continue;
 				}
 
@@ -525,11 +525,11 @@ public class TMResolver {
 
 	TemplateParameter resolveParam(TmaParamRef ref, Nonterminal context) {
 		TemplateParameter param =
-				namespace.resolve(ref.getRef().getID(),
+				namespace.resolve(ref.getRef().getText(),
 						context == null ? null : context.getName(), TemplateParameter.class);
 		if (param != null) return param;
 
-		error(ref, ref.getRef().getID() + " cannot be resolved");
+		error(ref, ref.getRef().getText() + " cannot be resolved");
 		return null;
 	}
 
@@ -542,20 +542,20 @@ public class TMResolver {
 	}
 
 	TemplateParameter tryResolveParam(TmaSymref id, Nonterminal context) {
-		return namespace.resolve(id.getName(),
+		return namespace.resolve(id.getName().getText(),
 				context == null ? null : context.getName(), TemplateParameter.class);
 	}
 
 	Symbol resolve(TmaSymref id) {
-		String name = id.getName();
+		String name = id.getName().getText();
 		Symbol sym = namespace.resolve(name, null, Symbol.class);
 		if (sym == null) {
 			// TODO make "opt" configurable in options
 			if (name.length() > 3 && name.endsWith("opt")) {
 				sym = namespace.resolve(name.substring(0, name.length() - 3), null, Symbol.class);
 				if (sym != null) {
-					TmaIdentifier tmaId = new TmaIdentifier(id.getName(), id.getSource(),
-							id.getLine(), id.getOffset(), id.getEndoffset());
+					TmaIdentifier tmaId = new TmaIdentifier(id.getSource(),
+							id.getLine(), id.getName().getOffset(), id.getName().getEndoffset());
 					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false);
 					if (symopt == null) return null;
 					builder.addRule(symopt,

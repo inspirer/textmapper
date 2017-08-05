@@ -19,16 +19,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaNamedPattern extends TmaNode implements ITmaLexerPart {
 
-	private final String name;
+	private final TmaIdentifier name;
 	private final TmaPattern pattern;
 
-	public TmaNamedPattern(String name, TmaPattern pattern, TextSource source, int line, int offset, int endoffset) {
+	public TmaNamedPattern(TmaIdentifier name, TmaPattern pattern, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.pattern = pattern;
 	}
 
-	public String getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
@@ -40,6 +40,9 @@ public class TmaNamedPattern extends TmaNode implements ITmaLexerPart {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (name != null) {
+			name.accept(v);
 		}
 		if (pattern != null) {
 			pattern.accept(v);

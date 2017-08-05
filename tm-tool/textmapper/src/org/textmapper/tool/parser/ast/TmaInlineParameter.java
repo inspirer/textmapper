@@ -19,18 +19,18 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaInlineParameter extends TmaNode implements ITmaNontermParam {
 
-	private final String paramType;
+	private final TmaIdentifier paramType;
 	private final TmaIdentifier name;
 	private final ITmaParamValue paramValue;
 
-	public TmaInlineParameter(String paramType, TmaIdentifier name, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
+	public TmaInlineParameter(TmaIdentifier paramType, TmaIdentifier name, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.paramType = paramType;
 		this.name = name;
 		this.paramValue = paramValue;
 	}
 
-	public String getParamType() {
+	public TmaIdentifier getParamType() {
 		return paramType;
 	}
 
@@ -46,6 +46,9 @@ public class TmaInlineParameter extends TmaNode implements ITmaNontermParam {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (paramType != null) {
+			paramType.accept(v);
 		}
 		if (name != null) {
 			name.accept(v);

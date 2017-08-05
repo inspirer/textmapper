@@ -45,6 +45,10 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaIdentifier n) {
+		return true;
+	}
+
 	protected boolean visit(TmaInput1 n) {
 		return true;
 	}
@@ -62,10 +66,6 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaOption n) {
-		return true;
-	}
-
-	protected boolean visit(TmaIdentifier n) {
 		return true;
 	}
 

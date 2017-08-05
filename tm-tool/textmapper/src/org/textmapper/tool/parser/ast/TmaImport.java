@@ -19,16 +19,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaImport extends TmaNode {
 
-	private final String alias;
+	private final TmaIdentifier alias;
 	private final String file;
 
-	public TmaImport(String alias, String file, TextSource source, int line, int offset, int endoffset) {
+	public TmaImport(TmaIdentifier alias, String file, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.alias = alias;
 		this.file = file;
 	}
 
-	public String getAlias() {
+	public TmaIdentifier getAlias() {
 		return alias;
 	}
 
@@ -38,6 +38,11 @@ public class TmaImport extends TmaNode {
 
 	@Override
 	public void accept(TmaVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (alias != null) {
+			alias.accept(v);
+		}
 	}
 }

@@ -82,8 +82,8 @@ const (
 	PREC       // prec
 	RETURNS    // returns
 	RIGHT      // right
-	SHIFT      // shift
 	CHAR_S     // s
+	SHIFT      // shift
 	SOFT       // soft
 	SPACE      // space
 	VOID       // void
@@ -167,8 +167,8 @@ var tokenStr = [...]string{
 	"prec",
 	"returns",
 	"right",
-	"shift",
 	"s",
+	"shift",
 	"soft",
 	"space",
 	"void",

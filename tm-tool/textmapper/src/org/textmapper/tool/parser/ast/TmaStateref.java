@@ -19,19 +19,24 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaStateref extends TmaNode {
 
-	private final String name;
+	private final TmaIdentifier name;
 
-	public TmaStateref(String name, TextSource source, int line, int offset, int endoffset) {
+	public TmaStateref(TmaIdentifier name, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 	}
 
-	public String getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
 	@Override
 	public void accept(TmaVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (name != null) {
+			name.accept(v);
+		}
 	}
 }
