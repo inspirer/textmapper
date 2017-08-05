@@ -57,11 +57,11 @@ const (
 )
 
 func (p *Parser) ParseInput(lexer *Lexer) error {
-	return p.parse(0, 460, lexer)
+	return p.parse(0, 467, lexer)
 }
 
 func (p *Parser) ParseExpression(lexer *Lexer) error {
-	return p.parse(1, 461, lexer)
+	return p.parse(1, 468, lexer)
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
@@ -163,7 +163,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	return nil
 }
 
-const errSymbol = 36
+const errSymbol = 37
 
 func canRecoverOn(symbol int32) bool {
 	for _, v := range afterErr {

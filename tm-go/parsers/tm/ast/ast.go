@@ -41,6 +41,7 @@ func (ArgumentTrue) tmNodeNode()         {}
 func (Array) tmNodeNode()                {}
 func (Assoc) tmNodeNode()                {}
 func (BooleanLiteral) tmNodeNode()       {}
+func (ClassType) tmNodeNode()            {}
 func (Command) tmNodeNode()              {}
 func (DirectiveAssert) tmNodeNode()      {}
 func (DirectiveBrackets) tmNodeNode()    {}
@@ -51,6 +52,7 @@ func (DirectiveSet) tmNodeNode()         {}
 func (ExclusiveStates) tmNodeNode()      {}
 func (Header) tmNodeNode()               {}
 func (Identifier) tmNodeNode()           {}
+func (Implements) tmNodeNode()           {}
 func (Import) tmNodeNode()               {}
 func (InclusiveStates) tmNodeNode()      {}
 func (InlineParameter) tmNodeNode()      {}
@@ -216,6 +218,7 @@ type NontermType interface {
 // nontermTypeNode() ensures that only the following types can be
 // assigned to NontermType.
 //
+func (ClassType) nontermTypeNode()     {}
 func (InterfaceType) nontermTypeNode() {}
 func (RawType) nontermTypeNode()       {}
 func (SubType) nontermTypeNode()       {}
@@ -390,6 +393,17 @@ type BooleanLiteral struct {
 	Node
 }
 
+type ClassType struct {
+	Node
+}
+
+func (n ClassType) Implements() *Implements {
+	if child := n.Child(selector.Implements); child != nil {
+		return &Implements{child}
+	}
+	return nil
+}
+
 type Command struct {
 	Node
 }
@@ -494,6 +508,19 @@ func (n Header) Target() *Name {
 
 type Identifier struct {
 	Node
+}
+
+type Implements struct {
+	Node
+}
+
+func (n Implements) Symref() []Symref {
+	nodes := n.Children(selector.Symref)
+	var result []Symref = make([]Symref, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Symref{node})
+	}
+	return result
 }
 
 type Import struct {

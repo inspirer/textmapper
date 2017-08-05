@@ -41,7 +41,9 @@ const (
 	Nonterm           // Annotations? name=Identifier params=NontermParams? NontermType? ReportClause? (Rule0)+
 	SubType           // reference=Symref
 	InterfaceType
+	ClassType // Implements?
 	VoidType
+	Implements // (Symref)+
 	Assoc
 	ParamModifier
 	TemplateParam      // modifier=ParamModifier? ParamType name=Identifier ParamValue?
@@ -128,7 +130,9 @@ var nodeTypeStr = [...]string{
 	"Nonterm",
 	"SubType",
 	"InterfaceType",
+	"ClassType",
 	"VoidType",
+	"Implements",
 	"Assoc",
 	"ParamModifier",
 	"TemplateParam",
@@ -242,6 +246,7 @@ var NontermParam = []NodeType{
 }
 
 var NontermType = []NodeType{
+	ClassType,
 	InterfaceType,
 	RawType,
 	SubType,
@@ -461,8 +466,11 @@ var ruleNodeType = [...]NodeType{
 	Nonterm,              // nonterm : identifier ':' rules ';'
 	SubType,              // nonterm_type : 'returns' symref
 	InterfaceType,        // nonterm_type : 'interface'
+	ClassType,            // nonterm_type : 'class' implements_clause
+	ClassType,            // nonterm_type : 'class'
 	VoidType,             // nonterm_type : 'void'
 	0,                    // nonterm_type : rawType
+	Implements,           // implements_clause : 'implements' references_cs
 	Assoc,                // assoc : 'left'
 	Assoc,                // assoc : 'right'
 	Assoc,                // assoc : 'nonassoc'
@@ -487,6 +495,8 @@ var ruleNodeType = [...]NodeType{
 	Inputref,             // inputref : symref
 	References,           // references : symref
 	References,           // references : references symref
+	0,                    // references_cs : symref
+	0,                    // references_cs : references_cs ',' symref
 	0,                    // rules : rule0
 	0,                    // rules : rules '|' rule0
 	Rule,                 // rule0 : predicate rhsParts rhsSuffixopt reportClause

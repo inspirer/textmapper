@@ -139,9 +139,9 @@ interface LexerPart {
 }
 
 lexer_part  : LexerPart ::=
-	this=states_clause
-  | this=named_pattern
+	this=named_pattern
   | this=lexeme
+  | this=states_clause
   | this=brackets_directive
   | this=start_conditions_scope
 ;
@@ -288,7 +288,6 @@ class NontermTypeAST : NontermType {
 class NontermTypeHint : NontermType {
 	boolean inline;
 	KindKind kind;
-	Identifier name;
 	list<Symref> implementsClause;
 	enum KindKind {
 		CLASS,
@@ -299,8 +298,8 @@ class NontermTypeHint : NontermType {
 
 nonterm_type  : NontermType ::=
 	this=new.NontermTypeAST: 'returns' reference=symref_noargs
-  | this=new.NontermTypeHint: inline='inline' as true? kind='class' as KindKind.CLASS name=identifieropt implementsClause=implements_clauseopt
-  | this=new.NontermTypeHint: kind='interface' as KindKind.INTERFACE name=identifieropt implementsClause=implements_clauseopt
+  | this=new.NontermTypeHint: inline='inline' as true? kind='class' as KindKind.CLASS implementsClause=implements_clauseopt
+  | this=new.NontermTypeHint: kind='interface' as KindKind.INTERFACE
   | this=new.NontermTypeHint: kind='void' as KindKind.VOID
   | this=rawType
 ;
@@ -895,10 +894,6 @@ lexeme_attrsopt  : LexemeAttrs ::=
 
 commandopt  : Command ::=
 	this=command?
-;
-
-identifieropt  : Identifier ::=
-	this=identifier?
 ;
 
 implements_clauseopt  : list<Symref> ::=

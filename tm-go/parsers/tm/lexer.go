@@ -264,6 +264,11 @@ recovered:
 				token = FLAG
 				break
 			}
+		case 48:
+			if hash == 0xc97057b0 && "implements" == l.source[l.tokenOffset:l.offset] {
+				token = IMPLEMENTS
+				break
+			}
 		case 50:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
 				token = AS

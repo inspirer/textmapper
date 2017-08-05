@@ -20,39 +20,41 @@ const (
 	WHITESPACE
 	COMMENT
 	MULTILINE_COMMENT
-	REM          // %
-	COLONCOLON   // ::
-	OR           // |
-	OROR         // ||
-	ASSIGN       // =
-	ASSIGNASSIGN // ==
-	EXCLASSIGN   // !=
-	SEMICOLON    // ;
-	DOT          // .
-	COMMA        // ,
-	COLON        // :
-	LBRACK       // [
-	RBRACK       // ]
-	LPAREN       // (
-	MINUSGT      // ->
-	RPAREN       // )
-	RBRACE       // }
-	LT           // <
-	GT           // >
-	MULT         // *
-	PLUS         // +
-	PLUSASSIGN   // +=
-	QUEST        // ?
-	EXCL         // !
-	TILDE        // ~
-	AND          // &
-	ANDAND       // &&
-	DOLLAR       // $
-	ATSIGN       // @
+	REM               // %
+	COLONCOLON        // ::
+	OR                // |
+	OROR              // ||
+	ASSIGN            // =
+	ASSIGNASSIGN      // ==
+	EXCLASSIGN        // !=
+	SEMICOLON         // ;
+	DOT               // .
+	COMMA             // ,
+	COLON             // :
+	LBRACK            // [
+	RBRACK            // ]
+	LPAREN            // (
+	LPARENQUESTASSIGN // (?=
+	MINUSGT           // ->
+	RPAREN            // )
+	RBRACE            // }
+	LT                // <
+	GT                // >
+	MULT              // *
+	PLUS              // +
+	PLUSASSIGN        // +=
+	QUEST             // ?
+	EXCL              // !
+	TILDE             // ~
+	AND               // &
+	ANDAND            // &&
+	DOLLAR            // $
+	ATSIGN            // @
 	ERROR
 	ID
 	AS         // as
 	FALSE      // false
+	IMPLEMENTS // implements
 	IMPORT     // import
 	SEPARATOR  // separator
 	SET        // set
@@ -119,6 +121,7 @@ var tokenStr = [...]string{
 	"[",
 	"]",
 	"(",
+	"(?=",
 	"->",
 	")",
 	"}",
@@ -138,6 +141,7 @@ var tokenStr = [...]string{
 	"ID",
 	"as",
 	"false",
+	"implements",
 	"import",
 	"separator",
 	"set",

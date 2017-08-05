@@ -54,6 +54,7 @@ multiline_comment: /\/\*{commentChars}\*\//   (space)
 '[':    /\[/
 ']':    /\]/
 '(':    /\(/
+'(?=': /\(\?=/
 # TODO overlaps with ID
 '->':   /->/
 ')':    /\)/
@@ -78,6 +79,7 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 
 'as':        /as/
 'false':     /false/
+'implements':/implements/
 'import':    /import/
 'separator': /separator/
 'set':       /set/
@@ -118,7 +120,7 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'x':         /x/
 
 <initial, afterID, afterColonOrEq> {
-  code:   /\{[^\{\}]*\}/    /* TODO */
+  code:   /\{[^\{\}]*\}/    /* TODO skipAction() */
 }
 <afterGT>'{':    /\{/
 
@@ -292,9 +294,14 @@ nonterm -> Nonterm :
 nonterm_type -> NontermType :
     'returns' reference=symref<~Args>                      -> SubType
   | 'interface'                                            -> InterfaceType
+  | 'class' implements_clause?                             -> ClassType
   | 'void'                                                 -> VoidType
   | rawType
 ;
+
+implements_clause -> Implements :
+    'implements' references_cs ;
+
 
 assoc -> Assoc :
     'left'

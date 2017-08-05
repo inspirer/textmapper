@@ -18,6 +18,7 @@ var (
 	Array                = func(t tm.NodeType) bool { return t == tm.Array }
 	Assoc                = func(t tm.NodeType) bool { return t == tm.Assoc }
 	BooleanLiteral       = func(t tm.NodeType) bool { return t == tm.BooleanLiteral }
+	ClassType            = func(t tm.NodeType) bool { return t == tm.ClassType }
 	Command              = func(t tm.NodeType) bool { return t == tm.Command }
 	DirectiveAssert      = func(t tm.NodeType) bool { return t == tm.DirectiveAssert }
 	DirectiveBrackets    = func(t tm.NodeType) bool { return t == tm.DirectiveBrackets }
@@ -28,6 +29,7 @@ var (
 	ExclusiveStates      = func(t tm.NodeType) bool { return t == tm.ExclusiveStates }
 	Header               = func(t tm.NodeType) bool { return t == tm.Header }
 	Identifier           = func(t tm.NodeType) bool { return t == tm.Identifier }
+	Implements           = func(t tm.NodeType) bool { return t == tm.Implements }
 	Import               = func(t tm.NodeType) bool { return t == tm.Import }
 	InclusiveStates      = func(t tm.NodeType) bool { return t == tm.InclusiveStates }
 	InlineParameter      = func(t tm.NodeType) bool { return t == tm.InlineParameter }

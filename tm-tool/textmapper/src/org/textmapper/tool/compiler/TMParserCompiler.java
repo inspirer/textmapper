@@ -166,8 +166,7 @@ public class TMParserCompiler {
 						default:
 							throw new IllegalStateException();
 					}
-					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind,
-							hint.getName() == null ? null : hint.getName().getText()));
+					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind, null));
 
 					if (hint.getImplementsClause() != null
 							&& !hint.getImplementsClause().isEmpty()) {

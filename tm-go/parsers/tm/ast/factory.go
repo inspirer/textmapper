@@ -28,6 +28,8 @@ func ToTmNode(n Node) TmNode {
 		return &Assoc{n}
 	case tm.BooleanLiteral:
 		return &BooleanLiteral{n}
+	case tm.ClassType:
+		return &ClassType{n}
 	case tm.Command:
 		return &Command{n}
 	case tm.DirectiveAssert:
@@ -48,6 +50,8 @@ func ToTmNode(n Node) TmNode {
 		return &Header{n}
 	case tm.Identifier:
 		return &Identifier{n}
+	case tm.Implements:
+		return &Implements{n}
 	case tm.Import:
 		return &Import{n}
 	case tm.InclusiveStates:

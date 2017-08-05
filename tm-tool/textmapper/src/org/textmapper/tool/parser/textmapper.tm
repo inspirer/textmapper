@@ -199,9 +199,9 @@ lexer_parts :
 ;
 
 lexer_part :
-    states_clause
-  | named_pattern
+    named_pattern
   | lexeme
+  | states_clause
   | brackets_directive
   | start_conditions_scope
 ;
@@ -260,8 +260,8 @@ nonterm :
 
 nonterm_type interface :
     'returns' reference=symref_noargs                                     -> nontermTypeAST
-  | inline='inline'? kind='class' name=identifieropt implements_clauseopt  -> nontermTypeHint
-  | kind='interface' name=identifieropt implements_clauseopt              -> nontermTypeHint
+  | inline='inline'? kind='class' implements_clauseopt                    -> nontermTypeHint
+  | kind='interface'                                                      -> nontermTypeHint
   | kind='void'                                                           -> nontermTypeHint
   | rawType
 ;

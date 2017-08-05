@@ -22,14 +22,12 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 
 	private final boolean inline;
 	private final TmaNontermTypeHint.TmaKindKind kind;
-	private final TmaIdentifier name;
 	private final List<TmaSymref> implementsClause;
 
-	public TmaNontermTypeHint(boolean inline, TmaNontermTypeHint.TmaKindKind kind, TmaIdentifier name, List<TmaSymref> implementsClause, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermTypeHint(boolean inline, TmaNontermTypeHint.TmaKindKind kind, List<TmaSymref> implementsClause, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.inline = inline;
 		this.kind = kind;
-		this.name = name;
 		this.implementsClause = implementsClause;
 	}
 
@@ -41,10 +39,6 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 		return kind;
 	}
 
-	public TmaIdentifier getName() {
-		return name;
-	}
-
 	public List<TmaSymref> getImplementsClause() {
 		return implementsClause;
 	}
@@ -53,9 +47,6 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
-		}
-		if (name != null) {
-			name.accept(v);
 		}
 		if (implementsClause != null) {
 			for (TmaSymref it : implementsClause) {
