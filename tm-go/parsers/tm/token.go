@@ -90,8 +90,8 @@ const (
 	SPACE      // space
 	VOID       // void
 	CHAR_X     // x
-	CODE
-	LBRACE // {
+	CODE       // {
+	LBRACE     // {
 	REGEXP
 	DIV // /
 
@@ -177,7 +177,7 @@ var tokenStr = [...]string{
 	"space",
 	"void",
 	"x",
-	"CODE",
+	"{",
 	"{",
 	"REGEXP",
 	"/",

@@ -375,6 +375,11 @@ recovered:
 		l.State = StateAfterID
 	case ASSIGN, COLON:
 		l.State = StateAfterColonOrEq
+	case CODE:
+		if !l.skipAction() {
+			token = INVALID_TOKEN
+		}
+		fallthrough
 	default:
 		l.State = StateInitial
 	}

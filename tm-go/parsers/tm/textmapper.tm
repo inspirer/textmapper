@@ -119,17 +119,17 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'void':      /void/
 'x':         /x/
 
-<initial, afterID, afterColonOrEq> {
-  code:   /\{[^\{\}]*\}/    /* TODO skipAction() */
-}
-<afterGT>'{':    /\{/
+<initial, afterID, afterColonOrEq>
+code:   /\{/    /* We skip the rest in a post-processing action. */
 
-<afterColonOrEq> {
-  regexp: /\/{reFirst}{reChar}*\//
-}
-<initial, afterID, afterGT> {
-  '/':    /\//
-}
+<afterGT>
+'{':  /\{/
+
+<afterColonOrEq>
+regexp: /\/{reFirst}{reChar}*\//
+
+<initial, afterID, afterGT>
+'/':    /\//
 
 :: parser
 
@@ -262,8 +262,8 @@ lexeme_attribute -> LexemeAttribute :
 
 lexer_directive -> LexerPart :
     '%' 'brackets' opening=symref<~Args> closing=symref<~Args> ';'    -> DirectiveBrackets
-  | '%' 's' states=(lexer_state separator ',')+                       -> InclusiveStates
-  | '%' 'x' states=(lexer_state separator ',')+                       -> ExclusiveStates
+  | '%' 's' states=(lexer_state separator ',')+ ';'                   -> InclusiveStates
+  | '%' 'x' states=(lexer_state separator ',')+ ';'                   -> ExclusiveStates
 ;
 
 stateref -> Stateref :
@@ -301,7 +301,6 @@ nonterm_type -> NontermType :
 
 implements_clause -> Implements :
     'implements' references_cs ;
-
 
 assoc -> Assoc :
     'left'
@@ -542,14 +541,19 @@ ${template go_lexer.onAfterNext-}
 			l.State = StateInitial
 		}
 	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
-       BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
-       NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
-       NOMINUSEOI, CHAR_S, CHAR_X,
-       SOFT, CLASS, INTERFACE, VOID, SPACE,
-       LAYOUT, LANGUAGE, LALR, LEXER, PARSER:
-    l.State = StateAfterID
+		BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
+		NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
+		NOMINUSEOI, CHAR_S, CHAR_X,
+		SOFT, CLASS, INTERFACE, VOID, SPACE,
+		LAYOUT, LANGUAGE, LALR, LEXER, PARSER:
+		l.State = StateAfterID
 	case ASSIGN, COLON:
 		l.State = StateAfterColonOrEq
+	case CODE:
+		if !l.skipAction() {
+			token = INVALID_TOKEN
+		}
+		fallthrough
 	default:
 		l.State = StateInitial
 	}

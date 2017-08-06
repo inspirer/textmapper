@@ -444,8 +444,8 @@ var ruleNodeType = [...]NodeType{
 	LexemeAttribute,      // lexeme_attribute : 'space'
 	LexemeAttribute,      // lexeme_attribute : 'layout'
 	DirectiveBrackets,    // lexer_directive : '%' 'brackets' symref symref ';'
-	InclusiveStates,      // lexer_directive : '%' 's' lexer_state_list_Comma_separated
-	ExclusiveStates,      // lexer_directive : '%' 'x' lexer_state_list_Comma_separated
+	InclusiveStates,      // lexer_directive : '%' 's' lexer_state_list_Comma_separated ';'
+	ExclusiveStates,      // lexer_directive : '%' 'x' lexer_state_list_Comma_separated ';'
 	0,                    // lexer_state_list_Comma_separated : lexer_state_list_Comma_separated ',' lexer_state
 	0,                    // lexer_state_list_Comma_separated : lexer_state
 	Stateref,             // stateref : identifier

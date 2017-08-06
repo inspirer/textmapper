@@ -8,89 +8,99 @@ eventBased = true
 
 :: lexer
 
-%s initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxText;
+%s initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv;
+%x jsxTag, jsxClosingTag, jsxText;
 
-[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxText]
+# Accept end-of-input in all states.
+<*> eoi: /{eoi}/
 
-# Accept end-of input in all states.
-eoi: /{eoi}/
+invalid_token:
+error:
 
-[initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv]
+<initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag> {
+  WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+}
 
-WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
-
-LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
+# LineTerminatorSequence
+WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
 
 commentChars = /([^*]|\*+[^*\/])*\**/
-MultiLineComment: /\/\*{commentChars}\*\// (space)
-SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/ (space)
+MultiLineComment:  /\/\*{commentChars}\*\//     (space)
+# Note: the following rule disables backtracking for incomplete multiline comments, which
+# would otherwise be reported as '/', '*', etc.
+invalid_token: /\/\*{commentChars}/
+SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/   (space)
 
 # Note: see http://unicode.org/reports/tr31/
-ID_Start = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
-ID_Continue = /{ID_Start}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}/
-Join_Control = /\u200c|\u200d/
+IDStart = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
+IDContinue = /{IDStart}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}/
+JoinControl = /\u200c|\u200d/
 
 hex = /[0-9a-fA-F]/
 unicodeEscapeSequence = /u(\{{hex}+\}|{hex}{4})/
+brokenEscapeSequence = /\\(u({hex}{0,3}|\{{hex}*))?/
 
-identifierStart = /{ID_Start}|$|_|\\{unicodeEscapeSequence}/
-identifierPart = /{identifierStart}|{ID_Continue}|{Join_Control}/
+identifierStart = /{IDStart}|$|_|\\{unicodeEscapeSequence}/
+identifierPart =  /{identifierStart}|{IDContinue}|{JoinControl}/
 
 Identifier: /{identifierStart}{identifierPart}*/    (class)
+# Note: the following rule disables backtracking for incomplete identifiers.
+invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 
 # Keywords.
-'break': /break/
-'case': /case/
-'catch': /catch/
-'class': /class/
-'const': /const/
-'continue': /continue/
-'debugger': /debugger/
-'default': /default/
-'delete': /delete/
-'do': /do/
-'else': /else/
-'export': /export/
-'extends': /extends/
-'finally': /finally/
-'for': /for/
-'function': /function/
-'if': /if/
-'import': /import/
-'in': /in/
+'await':      /await/
+'break':      /break/
+'case':       /case/
+'catch':      /catch/
+'class':      /class/
+'const':      /const/
+'continue':   /continue/
+'debugger':   /debugger/
+'default':    /default/
+'delete':     /delete/
+'do':         /do/
+'else':       /else/
+'export':     /export/
+'extends':    /extends/
+'finally':    /finally/
+'for':        /for/
+'function':   /function/
+'if':         /if/
+'import':     /import/
+'in':         /in/
 'instanceof': /instanceof/
-'new': /new/
-'return': /return/
-'super': /super/
-'switch': /switch/
-'this': /this/
-'throw': /throw/
-'try': /try/
-'typeof': /typeof/
-'var': /var/
-'void': /void/
-'while': /while/
-'with': /with/
-'yield': /yield/
+'new':        /new/
+'return':     /return/
+'super':      /super/
+'switch':     /switch/
+'this':       /this/
+'throw':      /throw/
+'try':        /try/
+'typeof':     /typeof/
+'var':        /var/
+'void':       /void/
+'while':      /while/
+'with':       /with/
+'yield':      /yield/
 
 # Future-reserved.
-'await': /await/
-'enum': /enum/
+'enum':  /enum/
 
 # Literals.
-'null': /null/
-'true': /true/
+'null':  /null/
+'true':  /true/
 'false': /false/
 
 # Soft (contextual) keywords.
-'as':		/as/
-'from':		/from/
-'get':		/get/
-'let':		/let/
-'of':		/of/
-'set':		/set/
-'static':	/static/
-'target':	/target/
+'as':     /as/
+'async':  /async/
+'from':   /from/
+'get':    /get/
+'let':    /let/
+'of':     /of/
+'set':    /set/
+'static': /static/
+'target': /target/
 
 # In strict mode:
 #'implements': /implements/
@@ -138,6 +148,7 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '[': /\[/
 ']': /\]/
 '.': /\./
+invalid_token: /\.\./
 '...': /\.\.\./
 ';': /;/
 ',': /,/
@@ -184,12 +195,25 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 '**': /\*\*/
 '**=': /\*\*=/
 
+# Numeric literals starting with zero in V8:
+#   00000 == 0, 00001 = 1, 00.0 => error
+#   055 == 45, 099 == 99
+#   09.5 == 9.5, 059.5 == 59.5, 05.5 => error, 05.9 => error
+
+int = /(0+([0-7]*[89][0-9]*)?|[1-9][0-9]*)/
+frac = /\.[0-9]*/
 exp = /[eE][+-]?[0-9]+/
-NumericLiteral: /(0|[1-9][0-9]*)(\.[0-9]*)?{exp}?/
+bad_exp = /[eE][+-]?/
+NumericLiteral: /{int}{frac}?{exp}?/
 NumericLiteral: /\.[0-9]+{exp}?/
-NumericLiteral: /0[Xx]{hex}+/
+NumericLiteral: /0[xX]{hex}+/
 NumericLiteral: /0[oO][0-7]+/
+NumericLiteral: /0+[0-7]+/      1 # (Takes priority over the float rule above)
 NumericLiteral: /0[bB][01]+/
+
+invalid_token: /0[xXbBoO]/
+invalid_token: /{int}{frac}?{bad_exp}/
+invalid_token: /\.[0-9]+{bad_exp}/
 
 escape = /\\([^1-9xu\n\r\u2028\u2029]|x{hex}{2}|{unicodeEscapeSequence})/
 lineCont = /\\([\n\r\u2028\u2029]|\r\n)/
@@ -203,54 +227,56 @@ StringLiteral: /'{ssChar}*'/
 
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
-[initial, div, jsxTemplate, jsxTemplateDiv]
+<initial, div, jsxTemplate, jsxTemplateDiv> {
+  '}': /\}/
 
-'}': /\}/
+  NoSubstitutionTemplate: /`{tplChars}`/
+  TemplateHead: /`{tplChars}\$\{/
+}
 
-NoSubstitutionTemplate: /`{tplChars}`/
-TemplateHead: /`{tplChars}\$\{/
+<template, templateDiv> {
+  TemplateMiddle: /\}{tplChars}\$\{/
+  TemplateTail: /\}{tplChars}`/
+}
 
-[template, templateDiv]
+<initial, template, jsxTemplate> {
+  reBS = /\\[^\n\r\u2028\u2029]/
+  reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
+  reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
+  reChar = /{reFirst}|\*/
+  reFlags = /[a-z]*/
 
-TemplateMiddle: /\}{tplChars}\$\{/
-TemplateTail: /\}{tplChars}`/
+  RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{reFlags}/
+}
 
-[initial, template, jsxTemplate]
+<div, templateDiv, jsxTemplateDiv> {
+  '/': /\//
+  '/=': /\/=/
+}
 
-reBS = /\\[^\n\r\u2028\u2029]/
-reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
-reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
-reChar = /{reFirst}|\*/
+<jsxTag, jsxClosingTag> {
+  '<': /</
+  '>': />/
+  '/': /\//
+  '{': /\{/
+  ':': /:/
+  '.': /\./
+  '=': /=/
 
-RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
+  jsxStringLiteral: /'[^']*'/
+  jsxStringLiteral: /"[^"]*"/
 
-[div, templateDiv, jsxTemplateDiv]
+  jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
+  # Note: the following rule disables backtracking for incomplete identifiers.
+  invalid_token: /({identifierStart}({identifierPart}|-)*)?{brokenEscapeSequence}/
+}
 
-'/': /\//
-'/=': /\/=/
+<jsxText> {
+  '{': /\{/
+  '<': /</
 
-[jsxTag]
-
-'{': /\{/
-'}': /\}/
-'<': /</
-'>': />/
-'/': /\//
-':': /:/
-'.': /\./
-'=': /=/
-
-jsxStringLiteral: /'[^']*'/
-jsxStringLiteral: /"[^"]*"/
-
-jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
-
-[jsxText]
-
-'}': /\}/
-'<': /</
-
-jsxText : /[^{}<>]+/
+  jsxText: /[^{}<>]+/
+}
 
 :: parser
 

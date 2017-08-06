@@ -30,7 +30,7 @@ breaks = true
 # 1 - after character/group - enables qualifiers
 # 2 - in character set
 
-[initial, afterChar, inSet]
+%s initial, afterChar, inSet;
 
 char: /[^()\[\]\.|\\\/*?+-]/					{ this.quantifierReady(); }
 escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/ 	{ this.quantifierReady(); }
@@ -44,44 +44,42 @@ charclass: /\\p\{\w+\}/							{ this.quantifierReady(); }
 
 '.':  /\./										{ this.quantifierReady(); }
 
-[afterChar]
+<afterChar> {
+	'*':  /\*/                                      { this.state = jsregex.States.initial; }
+	'+':  /+/                                       { this.state = jsregex.States.initial; }
+	'?':  /?/                                       { this.state = jsregex.States.initial; }
+	quantifier:  /\{[0-9]+(,[0-9]*)?\}/             { this.state = jsregex.States.initial; }
 
-'*':  /\*/                                      { this.state = jsregex.States.initial; }
-'+':  /+/                                       { this.state = jsregex.States.initial; }
-'?':  /?/                                       { this.state = jsregex.States.initial; }
-quantifier:  /\{[0-9]+(,[0-9]*)?\}/             { this.state = jsregex.States.initial; }
+	op_minus:		/\{\-\}/                        { this.state = jsregex.States.initial; }
+	op_union:		/\{\+\}/                        { this.state = jsregex.States.initial; }
+	op_intersect:	/\{&&\}/                        { this.state = jsregex.States.initial; }
+}
 
-op_minus:		/\{\-\}/                        { this.state = jsregex.States.initial; }
-op_union:		/\{\+\}/                        { this.state = jsregex.States.initial; }
-op_intersect:	/\{&&\}/                        { this.state = jsregex.States.initial; }
+<initial, inSet> char: /[*+?]/									{ this.quantifierReady(); }
 
-[initial, inSet]
+<initial, afterChar> {
+	'(':  /\(/										{ this.state = 0; }
+	'|':  /\|/										{ this.state = 0; }
+	')':  /\)/										{ this.quantifierReady(); }
 
-char: /[*+?]/									{ this.quantifierReady(); }
+	'(?':	/\(\?[is-]+:/						{ this.state = 0; }
 
-[initial, afterChar]
+	'[':	/\[/                    { this.state = jsregex.States.inSet; }
+	'[^':	/\[^/                   { this.state = jsregex.States.inSet; }
+	char:  /-/										{ this.quantifierReady(); }
 
-'(':  /\(/										{ this.state = 0; }
-'|':  /\|/										{ this.state = 0; }
-')':  /\)/										{ this.quantifierReady(); }
+	identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
 
-'(?':	/\(\?[is-]+:/							{ this.state = 0; }
+	expand:			/\{{identifier}\}/	(class)		{ this.quantifierReady(); }
+	kw_eoi:			/\{eoi\}/						{ this.state = 0; }
+}
 
-'[':	/\[/                                    { this.state = jsregex.States.inSet; }
-'[^':	/\[^/                                   { this.state = jsregex.States.inSet; }
-char:  /-/										{ this.quantifierReady(); }
+<inSet> {
 
-identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
-
-expand:			/\{{identifier}\}/	(class)		{ this.quantifierReady(); }
-kw_eoi:			/\{eoi\}/						{ this.state = 0; }
-
-[inSet]
-
-']':  /\]/										{ this.state = 0; this.quantifierReady(); }
-'-':  /-/
-char:  /[\(\|\)]/
-
+	']':  /\]/										{ this.state = 0; this.quantifierReady(); }
+	'-':  /-/
+	char:  /[\(\|\)]/
+}
 :: parser
 
 %input pattern;
