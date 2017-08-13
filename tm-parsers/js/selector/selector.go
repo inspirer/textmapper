@@ -10,10 +10,12 @@ type Selector func(nt js.NodeType) bool
 
 var (
 	Any                      = func(t js.NodeType) bool { return true }
+	AccessibilityModifier    = func(t js.NodeType) bool { return t == js.AccessibilityModifier }
 	AdditiveExpression       = func(t js.NodeType) bool { return t == js.AdditiveExpression }
 	Arguments                = func(t js.NodeType) bool { return t == js.Arguments }
 	ArrayLiteral             = func(t js.NodeType) bool { return t == js.ArrayLiteral }
 	ArrayPattern             = func(t js.NodeType) bool { return t == js.ArrayPattern }
+	ArrayType                = func(t js.NodeType) bool { return t == js.ArrayType }
 	ArrowFunction            = func(t js.NodeType) bool { return t == js.ArrowFunction }
 	AssignmentExpression     = func(t js.NodeType) bool { return t == js.AssignmentExpression }
 	AssignmentOperator       = func(t js.NodeType) bool { return t == js.AssignmentOperator }
@@ -31,6 +33,7 @@ var (
 	Body                     = func(t js.NodeType) bool { return t == js.Body }
 	BreakStatement           = func(t js.NodeType) bool { return t == js.BreakStatement }
 	CallExpression           = func(t js.NodeType) bool { return t == js.CallExpression }
+	CallSignature            = func(t js.NodeType) bool { return t == js.CallSignature }
 	Case                     = func(t js.NodeType) bool { return t == js.Case }
 	Catch                    = func(t js.NodeType) bool { return t == js.Catch }
 	Class                    = func(t js.NodeType) bool { return t == js.Class }
@@ -40,9 +43,12 @@ var (
 	ComputedPropertyName     = func(t js.NodeType) bool { return t == js.ComputedPropertyName }
 	ConciseBody              = func(t js.NodeType) bool { return t == js.ConciseBody }
 	ConditionalExpression    = func(t js.NodeType) bool { return t == js.ConditionalExpression }
+	ConstructSignature       = func(t js.NodeType) bool { return t == js.ConstructSignature }
+	ConstructorType          = func(t js.NodeType) bool { return t == js.ConstructorType }
 	ContinueStatement        = func(t js.NodeType) bool { return t == js.ContinueStatement }
 	DebuggerStatement        = func(t js.NodeType) bool { return t == js.DebuggerStatement }
 	Default                  = func(t js.NodeType) bool { return t == js.Default }
+	DefaultParameter         = func(t js.NodeType) bool { return t == js.DefaultParameter }
 	DoWhileStatement         = func(t js.NodeType) bool { return t == js.DoWhileStatement }
 	ElementBinding           = func(t js.NodeType) bool { return t == js.ElementBinding }
 	EmptyDecl                = func(t js.NodeType) bool { return t == js.EmptyDecl }
@@ -67,6 +73,7 @@ var (
 	ForStatementWithVar      = func(t js.NodeType) bool { return t == js.ForStatementWithVar }
 	Function                 = func(t js.NodeType) bool { return t == js.Function }
 	FunctionExpression       = func(t js.NodeType) bool { return t == js.FunctionExpression }
+	FunctionType             = func(t js.NodeType) bool { return t == js.FunctionType }
 	Generator                = func(t js.NodeType) bool { return t == js.Generator }
 	GeneratorExpression      = func(t js.NodeType) bool { return t == js.GeneratorExpression }
 	GeneratorMethod          = func(t js.NodeType) bool { return t == js.GeneratorMethod }
@@ -76,7 +83,9 @@ var (
 	ImportDeclaration        = func(t js.NodeType) bool { return t == js.ImportDeclaration }
 	ImportSpecifier          = func(t js.NodeType) bool { return t == js.ImportSpecifier }
 	IndexAccess              = func(t js.NodeType) bool { return t == js.IndexAccess }
+	IndexSignature           = func(t js.NodeType) bool { return t == js.IndexSignature }
 	Initializer              = func(t js.NodeType) bool { return t == js.Initializer }
+	IntersectionType         = func(t js.NodeType) bool { return t == js.IntersectionType }
 	JSXAttributeName         = func(t js.NodeType) bool { return t == js.JSXAttributeName }
 	JSXClosingElement        = func(t js.NodeType) bool { return t == js.JSXClosingElement }
 	JSXElement               = func(t js.NodeType) bool { return t == js.JSXElement }
@@ -98,6 +107,7 @@ var (
 	LogicalANDExpression     = func(t js.NodeType) bool { return t == js.LogicalANDExpression }
 	LogicalORExpression      = func(t js.NodeType) bool { return t == js.LogicalORExpression }
 	Method                   = func(t js.NodeType) bool { return t == js.Method }
+	MethodSignature          = func(t js.NodeType) bool { return t == js.MethodSignature }
 	Module                   = func(t js.NodeType) bool { return t == js.Module }
 	ModuleSpecifier          = func(t js.NodeType) bool { return t == js.ModuleSpecifier }
 	MultiplicativeExpression = func(t js.NodeType) bool { return t == js.MultiplicativeExpression }
@@ -107,16 +117,19 @@ var (
 	NewTarget                = func(t js.NodeType) bool { return t == js.NewTarget }
 	ObjectLiteral            = func(t js.NodeType) bool { return t == js.ObjectLiteral }
 	ObjectPattern            = func(t js.NodeType) bool { return t == js.ObjectPattern }
-	Parameter                = func(t js.NodeType) bool { return t == js.Parameter }
+	ObjectType               = func(t js.NodeType) bool { return t == js.ObjectType }
 	Parameters               = func(t js.NodeType) bool { return t == js.Parameters }
 	Parenthesized            = func(t js.NodeType) bool { return t == js.Parenthesized }
+	ParenthesizedType        = func(t js.NodeType) bool { return t == js.ParenthesizedType }
 	PostDec                  = func(t js.NodeType) bool { return t == js.PostDec }
 	PostInc                  = func(t js.NodeType) bool { return t == js.PostInc }
 	PreDec                   = func(t js.NodeType) bool { return t == js.PreDec }
 	PreInc                   = func(t js.NodeType) bool { return t == js.PreInc }
+	PredefinedType           = func(t js.NodeType) bool { return t == js.PredefinedType }
 	Property                 = func(t js.NodeType) bool { return t == js.Property }
 	PropertyAccess           = func(t js.NodeType) bool { return t == js.PropertyAccess }
 	PropertyBinding          = func(t js.NodeType) bool { return t == js.PropertyBinding }
+	PropertySignature        = func(t js.NodeType) bool { return t == js.PropertySignature }
 	Regexp                   = func(t js.NodeType) bool { return t == js.Regexp }
 	RelationalExpression     = func(t js.NodeType) bool { return t == js.RelationalExpression }
 	RestParameter            = func(t js.NodeType) bool { return t == js.RestParameter }
@@ -133,9 +146,23 @@ var (
 	TaggedTemplate           = func(t js.NodeType) bool { return t == js.TaggedTemplate }
 	TemplateLiteral          = func(t js.NodeType) bool { return t == js.TemplateLiteral }
 	This                     = func(t js.NodeType) bool { return t == js.This }
+	ThisType                 = func(t js.NodeType) bool { return t == js.ThisType }
 	ThrowStatement           = func(t js.NodeType) bool { return t == js.ThrowStatement }
 	TryStatement             = func(t js.NodeType) bool { return t == js.TryStatement }
+	TsLiteralParameter       = func(t js.NodeType) bool { return t == js.TsLiteralParameter }
+	TsNamespaceName          = func(t js.NodeType) bool { return t == js.TsNamespaceName }
+	TupleType                = func(t js.NodeType) bool { return t == js.TupleType }
+	TypeAliasDeclaration     = func(t js.NodeType) bool { return t == js.TypeAliasDeclaration }
+	TypeAnnotation           = func(t js.NodeType) bool { return t == js.TypeAnnotation }
+	TypeArguments            = func(t js.NodeType) bool { return t == js.TypeArguments }
+	TypeConstraint           = func(t js.NodeType) bool { return t == js.TypeConstraint }
+	TypeName                 = func(t js.NodeType) bool { return t == js.TypeName }
+	TypeParameter            = func(t js.NodeType) bool { return t == js.TypeParameter }
+	TypeParameters           = func(t js.NodeType) bool { return t == js.TypeParameters }
+	TypeQuery                = func(t js.NodeType) bool { return t == js.TypeQuery }
+	TypeReference            = func(t js.NodeType) bool { return t == js.TypeReference }
 	UnaryExpression          = func(t js.NodeType) bool { return t == js.UnaryExpression }
+	UnionType                = func(t js.NodeType) bool { return t == js.UnionType }
 	VariableDeclaration      = func(t js.NodeType) bool { return t == js.VariableDeclaration }
 	VariableStatement        = func(t js.NodeType) bool { return t == js.VariableStatement }
 	WhileStatement           = func(t js.NodeType) bool { return t == js.WhileStatement }
@@ -158,12 +185,15 @@ var (
 	MethodDefinition         = OneOf(js.MethodDefinition...)
 	ModuleItem               = OneOf(js.ModuleItem...)
 	NamedImport              = OneOf(js.NamedImport...)
+	Parameter                = OneOf(js.Parameter...)
 	PropertyDefinition       = OneOf(js.PropertyDefinition...)
 	PropertyName             = OneOf(js.PropertyName...)
 	PropertyPattern          = OneOf(js.PropertyPattern...)
 	Statement                = OneOf(js.Statement...)
 	StatementListItem        = OneOf(js.StatementListItem...)
 	TokenSet                 = OneOf(js.TokenSet...)
+	TsType                   = OneOf(js.TsType...)
+	TypeMember               = OneOf(js.TypeMember...)
 )
 
 func OneOf(types ...js.NodeType) Selector {

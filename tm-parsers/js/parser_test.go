@@ -508,7 +508,7 @@ var parseTests = []struct {
 		`function q(«...a») {}`,
 		`function q(b,c, «...a») {}`,
 	}},
-	{js.Parameter, []string{
+	{js.DefaultParameter, []string{
 		`function q(«a», «b») {}`,
 		`function q(«[id]», «{name: name}») {}`,
 	}},
@@ -887,6 +887,100 @@ var parseTests = []struct {
 	}},
 	{js.JSXLiteral, []string{
 		`var a = <a href={"chrome://about"} target=«"123"»/>;`,
+	}},
+
+	// Typescript
+	{js.PredefinedType, []string{
+		`let isDone: «boolean» = false;`,
+		`let color: «string» = "blue";`,
+		`let list: «number»[] = [1, 2, 3];`,
+		`let x: [«string», «number»];`,
+	}},
+	{js.ArrayType, []string{
+		`let list: «number[]» = [1, 2, 3];`,
+	}},
+	{js.TupleType, []string{
+		`let x: «[string, number]»;`,
+	}},
+	{js.ParenthesizedType, []string{
+		`var x: «([string, number])»;`,
+	}},
+	{js.TypeReference, []string{
+		`var x: «abc»;`,
+		`function f(foo: «bar») {}`,
+	}},
+	{js.ObjectType, []string{
+		`var x: «{a: string}»;`,
+		`var x: «{a: string;}»;`,
+		`var x: «{a: string; [a:string] : never}»;`,
+	}},
+	{js.IndexSignature, []string{
+		`var x: {«[a:string] : ()=>string»};`,
+		// TODO `var x: {«[a:string] : <T>(a: T)=>string»};`,
+		// TODO `var x: {«[a:string] : (a)=>string»};`,
+	}},
+	{js.PropertySignature, []string{
+		`var x: {«a:string»;};`,
+	}},
+	{js.CallSignature, []string{
+		`var x: {«(foo) : number»,};`,
+	}},
+	{js.ConstructSignature, []string{
+	// TODO `var x: {«new(foo) : number»,};`,
+	}},
+	{js.MethodSignature, []string{
+		`var x: {«bar(foo) : number»,};`,
+	}},
+	{js.ConstructorType, []string{
+	// TODO `var x: {a: string; «new() => never»};`,
+	}},
+	{js.TypeParameters, []string{
+		`function identity«<T>»(arg: T): T {}`,
+	}},
+	{js.TypeArguments, []string{
+		`function loggingIdentity<T>(arg: Array«<T>»): Array«<T>» {}`,
+	}},
+	{js.TypeParameter, []string{
+		`function foo<«T», «Q extends T»>() {}`,
+	}},
+	{js.TypeConstraint, []string{
+		`function foo<T, Q «extends T&Foo»>() {}`,
+	}},
+	{js.UnionType, []string{
+		`function foo<Q extends «T | Foo»>() {}`,
+	}},
+	{js.IntersectionType, []string{
+		`function foo<Q extends «T & Foo»>() {}`,
+	}},
+	{js.ThisType, []string{
+		`class Foo {
+		   add(operand: number): «this» {}
+		 }`,
+	}},
+	{js.TypeName, []string{
+		`function foo<T>() : «T» {}`,
+	}},
+	{js.TsNamespaceName, []string{
+	// TODO
+	}},
+	{js.FunctionType, []string{
+	// TODO
+	}},
+	{js.TypeQuery, []string{
+		`function foo(a) : «typeof a.b.c» {}`,
+	}},
+	{js.TypeAnnotation, []string{
+	// TODO
+	}},
+	{js.TsLiteralParameter, []string{
+		`function a(«kind?:"read"») {}`,
+	}},
+	{js.AccessibilityModifier, []string{
+	// TODO
+	}},
+	{js.TypeAliasDeclaration, []string{
+		`«type Foo = bar;»`,
+		`«type Foo<T> = T»`,
 	}},
 
 	// Error Recovery

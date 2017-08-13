@@ -8,7 +8,7 @@ package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 eventFields = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
-                NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
+NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]
 
 :: lexer
@@ -23,7 +23,7 @@ invalid_token:
 error:
 
 <initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag> {
-  WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 }
 
 # LineTerminatorSequence
@@ -229,54 +229,54 @@ StringLiteral: /'{ssChar}*'/
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
 <initial, div, jsxTemplate, jsxTemplateDiv> {
-  '}': /\}/
+'}': /\}/
 
-  NoSubstitutionTemplate: /`{tplChars}`/
-  TemplateHead: /`{tplChars}\$\{/
+NoSubstitutionTemplate: /`{tplChars}`/
+TemplateHead: /`{tplChars}\$\{/
 }
 
 <template, templateDiv> {
-  TemplateMiddle: /\}{tplChars}\$\{/
-  TemplateTail: /\}{tplChars}`/
+TemplateMiddle: /\}{tplChars}\$\{/
+TemplateTail: /\}{tplChars}`/
 }
 
 <initial, template, jsxTemplate> {
-  reBS = /\\[^\n\r\u2028\u2029]/
-  reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
-  reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
-  reChar = /{reFirst}|\*/
-  reFlags = /[a-z]*/
+reBS = /\\[^\n\r\u2028\u2029]/
+reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
+reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
+reChar = /{reFirst}|\*/
+reFlags = /[a-z]*/
 
-  RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{reFlags}/
+RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{reFlags}/
 }
 
 <div, templateDiv, jsxTemplateDiv> {
-  '/': /\//
-  '/=': /\/=/
+'/': /\//
+'/=': /\/=/
 }
 
 <jsxTag, jsxClosingTag> {
-  '<': /</
-  '>': />/
-  '/': /\//
-  '{': /\{/
-  ':': /:/
-  '.': /\./
-  '=': /=/
+'<': /</
+'>': />/
+'/': /\//
+'{': /\{/
+':': /:/
+'.': /\./
+'=': /=/
 
-  jsxStringLiteral: /'[^']*'/
-  jsxStringLiteral: /"[^"]*"/
+jsxStringLiteral: /'[^']*'/
+jsxStringLiteral: /"[^"]*"/
 
-  jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
-  # Note: the following rule disables backtracking for incomplete identifiers.
+jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
+# Note: the following rule disables backtracking for incomplete identifiers.
   invalid_token: /({identifierStart}({identifierPart}|-)*)?{brokenEscapeSequence}/
 }
 
 <jsxText> {
-  '{': /\{/
-  '<': /</
+'{': /\{/
+'<': /</
 
-  jsxText: /[^{}<>]+/
+jsxText: /[^{}<>]+/
 }
 
 :: parser
@@ -292,6 +292,9 @@ tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 %flag Await;
 %flag NoAsync = false;
 
+%flag WithoutNew = false;
+%flag WithoutPredefinedTypes = false;
+
 %lookahead flag NoLet = false;
 %lookahead flag NoLetSq = false;
 %lookahead flag NoObjLiteral = false;
@@ -301,14 +304,15 @@ tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 SyntaxError -> SyntaxProblem :
     error ;
 
-IdentifierName :
+IdentifierName<WithoutNew> :
     Identifier
 
-  # Keywords
+# Keywords
+  | [!WithoutNew] 'new'
   | 'await'
   | 'break'      | 'do'         | 'in'         | 'typeof'
   | 'case'       | 'else'       | 'instanceof' | 'var'
-  | 'catch'      | 'export'     | 'new'        | 'void'
+  | 'catch'      | 'export'     | 'void'
   | 'class'      | 'extends'    | 'return'     | 'while'
   | 'const'      | 'finally'    | 'super'      | 'with'
   | 'continue'   | 'for'        | 'switch'     | 'yield'
@@ -331,7 +335,7 @@ IdentifierName :
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
 ;
 
-IdentifierNameDecl :
+IdentifierNameDecl<WithoutNew> :
     IdentifierName                                    -> BindingIdentifier
 ;
 
@@ -341,7 +345,7 @@ IdentifierNameRef :
 
 # A.2 Expressions
 
-IdentifierReference<Yield, Await, NoAsync> -> IdentifierReference :
+IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> IdentifierReference :
 # V8 runtime functions start with a percent sign.
 # See http://stackoverflow.com/questions/11202824/what-is-in-javascript
     '%'? Identifier
@@ -355,7 +359,7 @@ IdentifierReference<Yield, Await, NoAsync> -> IdentifierReference :
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
-  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | [!WithoutPredefinedTypes] ('any' | 'boolean' | 'number' | 'string' | 'symbol')
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
 ;
 
@@ -375,7 +379,7 @@ BindingIdentifier -> BindingIdentifier :
 ;
 
 AsyncArrowBindingIdentifier :
-  BindingIdentifier ;
+    BindingIdentifier ;
 
 LabelIdentifier -> LabelIdentifier :
     Identifier
@@ -469,12 +473,12 @@ PropertyDefinition<Yield, Await> -> PropertyDefinition /* interface */ :
   | SyntaxError
 ;
 
-PropertyName<Yield, Await> -> PropertyName /* interface */ :
+PropertyName<Yield, Await, WithoutNew> -> PropertyName /* interface */ :
     LiteralPropertyName
   | ComputedPropertyName
 ;
 
-LiteralPropertyName -> LiteralPropertyName :
+LiteralPropertyName<WithoutNew> -> LiteralPropertyName :
     IdentifierNameDecl
   | StringLiteral
   | NumericLiteral
@@ -686,6 +690,7 @@ Declaration<Yield, Await> -> Declaration /* interface */ :
     HoistableDeclaration
   | ClassDeclaration
   | LexicalDeclaration<+In>
+  | TypeAliasDeclaration
 ;
 
 HoistableDeclaration<Await> -> Declaration /* interface */ :
@@ -732,8 +737,8 @@ BindingList<In, Yield, Await> :
 ;
 
 LexicalBinding<In, Yield, Await> -> LexicalBinding :
-    BindingIdentifier Initializeropt
-  | BindingPattern Initializer
+    BindingIdentifier TypeAnnotationopt Initializeropt
+  | BindingPattern TypeAnnotationopt Initializer
 ;
 
 VariableStatement<Yield, Await> -> VariableStatement :
@@ -746,8 +751,8 @@ VariableDeclarationList<In, Yield, Await> :
 ;
 
 VariableDeclaration<In, Yield, Await> -> VariableDeclaration :
-    BindingIdentifier Initializeropt
-  | BindingPattern Initializer
+    BindingIdentifier TypeAnnotationopt Initializeropt
+  | BindingPattern TypeAnnotationopt Initializer
 ;
 
 BindingPattern<Yield, Await> -> BindingPattern /* interface */ :
@@ -936,26 +941,6 @@ FunctionExpression -> FunctionExpression :
 UniqueFormalParameters<Yield, Await> :
     FormalParameters ;
 
-FormalParameters<Yield, Await> -> Parameters :
-      '(' FormalParameterList? ')' ;
-
-FormalParameterList<Yield, Await> :
-    FunctionRestParameter
-  | FormalsList ','?
-  | FormalsList ',' FunctionRestParameter
-;
-
-FormalsList<Yield, Await> :
-    FormalParameter
-  | FormalsList ',' FormalParameter
-;
-
-FunctionRestParameter -> RestParameter :
-    BindingRestElement ;
-
-FormalParameter<Yield, Await> -> Parameter :
-    ElementPattern ;
-
 FunctionBody<Yield, Await> -> Body :
     '{' StatementList? '}' ;
 
@@ -991,12 +976,12 @@ MethodDefinition<Yield, Await> -> MethodDefinition /* interface */ :
     PropertyName UniqueFormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await>      -> Method
   | GeneratorMethod
   | AsyncMethod
-  | 'get' PropertyName '(' ')' FunctionBody<~Yield, ~Await>                               -> Getter
-  | 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody<~Yield, ~Await>      -> Setter
+  | 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>                               -> Getter
+  | 'set' PropertyName '(' PropertySetParameterList ')'  FunctionBody<~Yield, ~Await>      -> Setter
 ;
 
 PropertySetParameterList :
-    FormalParameter<~Yield, ~Await> ;
+    Parameter<~Yield, ~Await> ;
 
 GeneratorMethod<Yield, Await> -> GeneratorMethod :
     '*' PropertyName UniqueFormalParameters<+Yield, ~Await> GeneratorBody ;
@@ -1029,7 +1014,7 @@ AsyncFunctionBody :
     FunctionBody<~Yield, +Await> ;
 
 AwaitExpression<Yield> -> AwaitExpression :
-  'await' UnaryExpression<+Await> ;
+    'await' UnaryExpression<+Await> ;
 
 ClassDeclaration<Yield, Await> -> Declaration /* interface */ :
     'class' BindingIdentifier? ClassTail   -> Class
@@ -1195,6 +1180,186 @@ JSXChild<Yield, Await> -> JSXChild /* interface */ :
   | '{' AssignmentExpressionopt<+In> '}'              -> JSXExpression
   | '{' '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpression
 ;
+
+# Typescript
+
+# A.1 Types
+
+%interface TsType, TypeMember;
+
+Type<Yield, Await> -> TsType /* interface */ :
+    UnionOrIntersectionOrPrimaryType
+  | FunctionType
+  | ConstructorType
+;
+
+TypeParameters<Yield, Await> -> TypeParameters :
+    '<' (TypeParameter separator ',')+ '>' ;
+
+TypeParameter<Yield, Await> -> TypeParameter :
+    BindingIdentifier Constraintopt ;
+
+Constraint<Yield, Await> -> TypeConstraint :
+    'extends' Type ;
+
+TypeArguments<Yield, Await> -> TypeArguments :
+    '<' (Type separator ',')+ '>' ;
+
+UnionOrIntersectionOrPrimaryType<Yield, Await> -> TsType /* interface */ :
+    left=UnionOrIntersectionOrPrimaryType '|' right=IntersectionOrPrimaryType          -> UnionType
+  | IntersectionOrPrimaryType
+;
+
+IntersectionOrPrimaryType<Yield, Await> -> TsType /* interface */ :
+    left=IntersectionOrPrimaryType '&' right=PrimaryType         -> IntersectionType
+  | PrimaryType
+;
+
+PrimaryType<Yield, Await> -> TsType /* interface */ :
+    ParenthesizedType
+  | PredefinedType
+  | TypeReference
+  | ObjectType
+  | ArrayType
+  | TupleType
+  | TypeQuery
+  | 'this'                           -> ThisType
+;
+
+ParenthesizedType<Yield, Await> -> ParenthesizedType :
+    '(' (?= !StartOfFunctionType) Type ')' ;
+
+PredefinedType -> PredefinedType :
+    'any'
+  | 'number'
+  | 'boolean'
+  | 'string'
+  | 'symbol'
+  | 'void'
+;
+
+TypeReference<Yield, Await> -> TypeReference :
+    TypeName .noLineBreak TypeArgumentsopt ;
+
+TypeName<Yield, Await> -> TypeName :
+    IdentifierReference<+WithoutPredefinedTypes>
+  | NamespaceName '.' IdentifierReference
+;
+
+NamespaceName<Yield, Await> -> TsNamespaceName :
+    IdentifierReference
+  | NamespaceName '.' IdentifierReference
+;
+
+ObjectType<Yield, Await> -> ObjectType :
+    '{' TypeBodyopt '}' ;
+
+TypeBody<Yield, Await> :
+    TypeMemberList
+  | TypeMemberList ','
+  | TypeMemberList ';'
+;
+
+TypeMemberList<Yield, Await> :
+    TypeMember
+  | TypeMemberList ';' TypeMember
+  | TypeMemberList ',' TypeMember
+;
+
+TypeMember<Yield, Await> -> TypeMember /* interface */ :
+    PropertySignature
+  | CallSignature
+  | ConstructSignature
+  | IndexSignature
+  | MethodSignature
+;
+
+ArrayType<Yield, Await> -> ArrayType :
+    PrimaryType .noLineBreak '[' ']' ;
+
+TupleType<Yield, Await> -> TupleType :
+    '[' (Type separator ',')+ ']' ;
+
+# This lookahead rule disambiguates FunctionType vs ParenthesizedType
+# productions by enumerating all prefixes of FunctionType that would
+# lead to parse failure if interpreted as Type.
+# (partially inspired by isUnambiguouslyStartOfFunctionType() in
+# src/compiler/parser.ts)
+StartOfFunctionType :
+    AccessibilityModifier? BindingIdentifier (':' | ',' | '?' | '=' | ')' '=>')
+  | AccessibilityModifier? BindingPattern<~Yield, ~Await> (':' | ',' | '?' | '=' | ')' '=>')
+  | '...'
+  | ')'
+;
+
+FunctionType<Yield, Await> -> FunctionType :
+    TypeParameters '(' ParameterListopt ')' '=>' Type
+  | '(' (?= StartOfFunctionType) ParameterListopt ')' '=>' Type
+;
+
+ConstructorType<Yield, Await> -> ConstructorType :
+    'new' TypeParameters? '(' ParameterListopt ')' '=>' Type ;
+
+TypeQuery<Yield, Await> -> TypeQuery :
+    'typeof' TypeQueryExpression ;
+
+TypeQueryExpression<Yield, Await> :
+    IdentifierReference
+  | TypeQueryExpression '.' IdentifierName
+;
+
+PropertySignature<Yield, Await> -> PropertySignature :
+    PropertyName<+WithoutNew> '?'? TypeAnnotationopt ;
+
+TypeAnnotation<Yield, Await> -> TypeAnnotation :
+    ':' Type ;
+
+FormalParameters<Yield, Await> :
+    TypeParameters? ParameterList TypeAnnotationopt ;
+
+CallSignature<Yield, Await> -> CallSignature :
+    TypeParameters? ParameterList TypeAnnotationopt ;
+
+ParameterList<Yield, Await> -> Parameters :
+    '(' (Parameter separator ',')+? ','? ')' ;
+
+%interface Parameter;
+
+Parameter<Yield, Await> -> Parameter :
+    AccessibilityModifier? BindingIdentifier '?'? TypeAnnotationopt              -> DefaultParameter
+  | AccessibilityModifier? BindingPattern '?'? TypeAnnotationopt                 -> DefaultParameter
+  | AccessibilityModifier? BindingIdentifier TypeAnnotationopt Initializer<+In>  -> DefaultParameter
+  | AccessibilityModifier? BindingPattern TypeAnnotationopt Initializer<+In>     -> DefaultParameter
+  | BindingIdentifier '?'? ':' StringLiteral                                     -> TsLiteralParameter
+  | '...' BindingIdentifier TypeAnnotationopt                                    -> RestParameter
+;
+
+AccessibilityModifier -> AccessibilityModifier :
+    'public'
+  | 'private'
+  | 'protected'
+;
+
+BindingIdentifierOrPattern<Yield, Await> :
+    BindingIdentifier
+  | BindingPattern
+;
+
+ConstructSignature<Yield, Await> -> ConstructSignature :
+    'new' TypeParameters? '(' ParameterListopt ')' TypeAnnotationopt ;
+
+# Note: using IdentifierName instead of BindingIdentifier to avoid r/r
+# conflicts with ComputedPropertyName.
+IndexSignature<Yield, Await> -> IndexSignature :
+    '[' IdentifierName ':' 'string' ']' TypeAnnotation
+  | '[' IdentifierName ':' 'number' ']' TypeAnnotation
+;
+
+MethodSignature<Yield, Await> -> MethodSignature :
+    PropertyName<+WithoutNew> '?'? CallSignature ;
+
+TypeAliasDeclaration<Yield, Await> -> TypeAliasDeclaration :
+    'type' BindingIdentifier TypeParameters? '=' Type ';' ;
 
 %%
 

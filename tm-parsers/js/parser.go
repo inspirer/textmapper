@@ -21,7 +21,70 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 4226, lexer)
+	return p.parse(1, 5088, lexer)
+}
+
+func lookaheadNext(lexer *Lexer) int32 {
+restart:
+	tok := lexer.Next()
+	switch tok {
+	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
+		goto restart
+	}
+	return int32(tok)
+}
+
+func (p *Parser) lookahead(start, end int16) bool {
+	var lexer Lexer = *p.lexer
+
+	var allocated [64]stackEntry
+	state := start
+	stack := append(allocated[:0], stackEntry{state: state})
+	next := p.next.symbol
+
+	for state != end {
+		action := tmAction[state]
+		if action < -2 {
+			// Lookahead is needed.
+			if next == noToken {
+				next = lookaheadNext(&lexer)
+			}
+			action = lalr(action, next)
+		}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+
+			var entry stackEntry
+			entry.sym.symbol = tmRuleSymbol[rule]
+			stack = stack[:len(stack)-ln]
+			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			entry.state = state
+			stack = append(stack, entry)
+
+		} else if action == -1 {
+			// Shift.
+			if next == noToken {
+				next = lookaheadNext(&lexer)
+			}
+			state = gotoState(state, next)
+			stack = append(stack, stackEntry{
+				sym:   symbol{symbol: next},
+				state: state,
+			})
+			if state != -1 && next != eoiToken {
+				next = noToken
+			}
+		}
+
+		if action == -2 || state == -1 {
+			break
+		}
+	}
+
+	return state == end
 }
 
 func lalr(action, next int32) int32 {
@@ -62,12 +125,19 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
-	case 2454: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
+	case 2634: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2468: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
+	case 2648: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2482: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	case 2662: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3519:
+		if p.lookahead(0, 5086) /* StartOfFunctionType */ {
+			lhs.sym.symbol = 908 /* lookahead_StartOfFunctionType */
+		} else {
+			lhs.sym.symbol = 861 /* lookahead_notStartOfFunctionType */
+		}
+		return
 	}
 	nt := ruleNodeType[rule]
 	if nt == 0 {
