@@ -67,6 +67,24 @@ const (
 	SET                // set
 	STATIC             // static
 	TARGET             // target
+	IMPLEMENTS         // implements
+	INTERFACE          // interface
+	PRIVATE            // private
+	PROTECTED          // protected
+	PUBLIC             // public
+	ANY                // any
+	BOOLEAN            // boolean
+	NUMBER             // number
+	STRING             // string
+	SYMBOL             // symbol
+	ABSTRACT           // abstract
+	CONSTRUCTOR        // constructor
+	DECLARE            // declare
+	IS                 // is
+	MODULE             // module
+	NAMESPACE          // namespace
+	REQUIRE            // require
+	TYPE               // type
 	LBRACE             // {
 	RBRACE             // }
 	LPAREN             // (
@@ -189,6 +207,24 @@ var tokenStr = [...]string{
 	"set",
 	"static",
 	"target",
+	"implements",
+	"interface",
+	"private",
+	"protected",
+	"public",
+	"any",
+	"boolean",
+	"number",
+	"string",
+	"symbol",
+	"abstract",
+	"constructor",
+	"declare",
+	"is",
+	"module",
+	"namespace",
+	"require",
+	"type",
 	"{",
 	"}",
 	"(",

@@ -110,6 +110,37 @@ invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 # Strict mode keywords:
 #   implements interface package private protected public
 
+# Typescript. A.0 Keywords
+
+# The following keywords cannot be used as identifiers in strict mode code, but
+# are otherwise not restricted:
+'implements':   /implements/
+'interface':    /interface/
+'private':      /private/
+'protected':    /protected/
+'public':       /public/
+
+# The following keywords cannot be used as user defined type names, but are
+# otherwise not restricted:
+'any':     /any/
+'boolean': /boolean/
+'number':  /number/
+'string':  /string/
+'symbol':  /symbol/
+
+# The following keywords have special meaning in certain contexts, but are
+# valid identifiers:
+'abstract':    /abstract/
+'constructor': /constructor/
+'declare':     /declare/
+'is':          /is/
+'module':      /module/
+'namespace':   /namespace/
+'require':     /require/
+'type':        /type/
+
+# End of typescript keywords.
+
 # Punctuation
 '{': /\{/
 '}':          /* See below */
@@ -293,6 +324,11 @@ IdentifierName :
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+
+  # Typescript.
+  | 'implements' | 'interface' | 'private' | 'protected' | 'public'
+  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
 ;
 
 IdentifierNameDecl :
@@ -316,6 +352,11 @@ IdentifierReference<Yield, Await, NoAsync> -> IdentifierReference :
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
+
+  # Typescript.
+  | 'implements' | 'interface' | 'private' | 'protected' | 'public'
+  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
 ;
 
 BindingIdentifier -> BindingIdentifier :
@@ -326,6 +367,11 @@ BindingIdentifier -> BindingIdentifier :
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+
+  # Typescript.
+  | 'implements' | 'interface' | 'private' | 'protected' | 'public'
+  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
 ;
 
 AsyncArrowBindingIdentifier :
@@ -339,6 +385,11 @@ LabelIdentifier -> LabelIdentifier :
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+
+  # Typescript.
+  | 'implements' | 'interface' | 'private' | 'protected' | 'public'
+  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
 ;
 
 PrimaryExpression<Yield, Await, NoAsync> -> Expression /* interface */ :

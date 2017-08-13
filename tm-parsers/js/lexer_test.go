@@ -157,6 +157,26 @@ var lexerTests = []struct {
 	{js.STATIC, []string{`«static»`}},
 	{js.TARGET, []string{`«target»`}},
 
+	// Typescript keywords.
+	{js.IMPLEMENTS, []string{`«implements»`}},
+	{js.INTERFACE, []string{`«interface»`}},
+	{js.PRIVATE, []string{`«private»`}},
+	{js.PROTECTED, []string{`«protected»`}},
+	{js.PUBLIC, []string{`«public»`}},
+	{js.ANY, []string{`«any»`}},
+	{js.BOOLEAN, []string{`«boolean»`}},
+	{js.NUMBER, []string{`«number»`}},
+	{js.STRING, []string{`«string»`}},
+	{js.SYMBOL, []string{`«symbol»`}},
+	{js.ABSTRACT, []string{`«abstract»`}},
+	{js.CONSTRUCTOR, []string{`«constructor»`}},
+	{js.DECLARE, []string{`«declare»`}},
+	{js.IS, []string{`«is»`}},
+	{js.MODULE, []string{`«module»`}},
+	{js.NAMESPACE, []string{`«namespace»`}},
+	{js.REQUIRE, []string{`«require»`}},
+	{js.TYPE, []string{`«type»`}},
+
 	// Operators.
 	{js.LBRACE, []string{`«{»`}},
 	{js.RBRACE, []string{`«}»`}},
