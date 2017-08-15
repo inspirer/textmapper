@@ -21,7 +21,7 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(1, 5088, lexer)
+	return p.parse(1, 5082, lexer)
 }
 
 func lookaheadNext(lexer *Lexer) int32 {
@@ -131,9 +131,9 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 2662: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3519:
-		if p.lookahead(0, 5086) /* StartOfFunctionType */ {
-			lhs.sym.symbol = 908 /* lookahead_StartOfFunctionType */
+	case 3597:
+		if p.lookahead(0, 5080) /* StartOfFunctionType */ {
+			lhs.sym.symbol = 912 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 861 /* lookahead_notStartOfFunctionType */
 		}

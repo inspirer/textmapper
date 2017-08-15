@@ -150,7 +150,6 @@ var (
 	ThrowStatement           = func(t js.NodeType) bool { return t == js.ThrowStatement }
 	TryStatement             = func(t js.NodeType) bool { return t == js.TryStatement }
 	TsLiteralParameter       = func(t js.NodeType) bool { return t == js.TsLiteralParameter }
-	TsNamespaceName          = func(t js.NodeType) bool { return t == js.TsNamespaceName }
 	TupleType                = func(t js.NodeType) bool { return t == js.TupleType }
 	TypeAliasDeclaration     = func(t js.NodeType) bool { return t == js.TypeAliasDeclaration }
 	TypeAnnotation           = func(t js.NodeType) bool { return t == js.TypeAnnotation }

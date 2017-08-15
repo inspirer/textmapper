@@ -1197,7 +1197,7 @@ TypeParameters<Yield, Await> -> TypeParameters :
     '<' (TypeParameter separator ',')+ '>' ;
 
 TypeParameter<Yield, Await> -> TypeParameter :
-    BindingIdentifier Constraintopt ;
+    BindingIdentifier Constraint? ;
 
 Constraint<Yield, Await> -> TypeConstraint :
     'extends' Type ;
@@ -1239,20 +1239,20 @@ PredefinedType -> PredefinedType :
 ;
 
 TypeReference<Yield, Await> -> TypeReference :
-    TypeName .noLineBreak TypeArgumentsopt ;
+    TypeName .noLineBreak TypeArguments? ;
 
 TypeName<Yield, Await> -> TypeName :
-    IdentifierReference<+WithoutPredefinedTypes>
-  | NamespaceName '.' IdentifierReference
+    ref+=IdentifierReference<+WithoutPredefinedTypes>
+  | NamespaceName '.' ref+=IdentifierReference
 ;
 
-NamespaceName<Yield, Await> -> TsNamespaceName :
-    IdentifierReference
-  | NamespaceName '.' IdentifierReference
+NamespaceName<Yield, Await> :
+    ref+=IdentifierReference
+  | NamespaceName '.' ref+=IdentifierReference
 ;
 
 ObjectType<Yield, Await> -> ObjectType :
-    '{' TypeBodyopt '}' ;
+    '{' TypeBody? '}' ;
 
 TypeBody<Yield, Await> :
     TypeMemberList
@@ -1293,12 +1293,13 @@ StartOfFunctionType :
 ;
 
 FunctionType<Yield, Await> -> FunctionType :
-    TypeParameters '(' ParameterListopt ')' '=>' Type
-  | '(' (?= StartOfFunctionType) ParameterListopt ')' '=>' Type
-;
+    TypeParameters? FunctionTypeParameterList '=>' Type ;
+
+FunctionTypeParameterList<Yield, Await> -> Parameters :
+    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
 
 ConstructorType<Yield, Await> -> ConstructorType :
-    'new' TypeParameters? '(' ParameterListopt ')' '=>' Type ;
+    'new' TypeParameters? ParameterList '=>' Type ;
 
 TypeQuery<Yield, Await> -> TypeQuery :
     'typeof' TypeQueryExpression ;
@@ -1309,16 +1310,16 @@ TypeQueryExpression<Yield, Await> :
 ;
 
 PropertySignature<Yield, Await> -> PropertySignature :
-    PropertyName<+WithoutNew> '?'? TypeAnnotationopt ;
+    PropertyName<+WithoutNew> '?'? TypeAnnotation? ;
 
 TypeAnnotation<Yield, Await> -> TypeAnnotation :
     ':' Type ;
 
 FormalParameters<Yield, Await> :
-    TypeParameters? ParameterList TypeAnnotationopt ;
+    TypeParameters? ParameterList TypeAnnotation? ;
 
 CallSignature<Yield, Await> -> CallSignature :
-    TypeParameters? ParameterList TypeAnnotationopt ;
+    TypeParameters? ParameterList TypeAnnotation? ;
 
 ParameterList<Yield, Await> -> Parameters :
     '(' (Parameter separator ',')+? ','? ')' ;
@@ -1326,12 +1327,12 @@ ParameterList<Yield, Await> -> Parameters :
 %interface Parameter;
 
 Parameter<Yield, Await> -> Parameter :
-    AccessibilityModifier? BindingIdentifier '?'? TypeAnnotationopt              -> DefaultParameter
-  | AccessibilityModifier? BindingPattern '?'? TypeAnnotationopt                 -> DefaultParameter
-  | AccessibilityModifier? BindingIdentifier TypeAnnotationopt Initializer<+In>  -> DefaultParameter
-  | AccessibilityModifier? BindingPattern TypeAnnotationopt Initializer<+In>     -> DefaultParameter
+    AccessibilityModifier? BindingIdentifier '?'? TypeAnnotation?              -> DefaultParameter
+  | AccessibilityModifier? BindingPattern '?'? TypeAnnotation?                 -> DefaultParameter
+  | AccessibilityModifier? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
+  | AccessibilityModifier? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
   | BindingIdentifier '?'? ':' StringLiteral                                     -> TsLiteralParameter
-  | '...' BindingIdentifier TypeAnnotationopt                                    -> RestParameter
+  | '...' BindingIdentifier TypeAnnotation?                                    -> RestParameter
 ;
 
 AccessibilityModifier -> AccessibilityModifier :
@@ -1346,7 +1347,7 @@ BindingIdentifierOrPattern<Yield, Await> :
 ;
 
 ConstructSignature<Yield, Await> -> ConstructSignature :
-    'new' TypeParameters? '(' ParameterListopt ')' TypeAnnotationopt ;
+    'new' TypeParameters? ParameterList TypeAnnotation? ;
 
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.

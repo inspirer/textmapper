@@ -292,8 +292,6 @@ func ToJsNode(n Node) JsNode {
 		return &TryStatement{n}
 	case js.TsLiteralParameter:
 		return &TsLiteralParameter{n}
-	case js.TsNamespaceName:
-		return &TsNamespaceName{n}
 	case js.TupleType:
 		return &TupleType{n}
 	case js.TypeAliasDeclaration:

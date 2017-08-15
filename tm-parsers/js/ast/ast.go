@@ -173,7 +173,6 @@ func (ThisType) jsNodeNode()                 {}
 func (ThrowStatement) jsNodeNode()           {}
 func (TryStatement) jsNodeNode()             {}
 func (TsLiteralParameter) jsNodeNode()       {}
-func (TsNamespaceName) jsNodeNode()          {}
 func (TupleType) jsNodeNode()                {}
 func (TypeAliasDeclaration) jsNodeNode()     {}
 func (TypeAnnotation) jsNodeNode()           {}
@@ -1119,11 +1118,8 @@ func (n ConstructSignature) TypeParameters() *TypeParameters {
 	return nil
 }
 
-func (n ConstructSignature) Parameters() *Parameters {
-	if child := n.Child(selector.Parameters); child != nil {
-		return &Parameters{child}
-	}
-	return nil
+func (n ConstructSignature) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n ConstructSignature) TypeAnnotation() *TypeAnnotation {
@@ -1144,11 +1140,8 @@ func (n ConstructorType) TypeParameters() *TypeParameters {
 	return nil
 }
 
-func (n ConstructorType) Parameters() *Parameters {
-	if child := n.Child(selector.Parameters); child != nil {
-		return &Parameters{child}
-	}
-	return nil
+func (n ConstructorType) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n ConstructorType) TsType() TsType {
@@ -1621,11 +1614,8 @@ func (n FunctionType) TypeParameters() *TypeParameters {
 	return nil
 }
 
-func (n FunctionType) Parameters() *Parameters {
-	if child := n.Child(selector.Parameters); child != nil {
-		return &Parameters{child}
-	}
-	return nil
+func (n FunctionType) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
 }
 
 func (n FunctionType) TsType() TsType {
@@ -2639,21 +2629,6 @@ func (n TsLiteralParameter) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-type TsNamespaceName struct {
-	Node
-}
-
-func (n TsNamespaceName) TsNamespaceName() *TsNamespaceName {
-	if child := n.Child(selector.TsNamespaceName); child != nil {
-		return &TsNamespaceName{child}
-	}
-	return nil
-}
-
-func (n TsNamespaceName) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
-}
-
 type TupleType struct {
 	Node
 }
@@ -2719,15 +2694,13 @@ type TypeName struct {
 	Node
 }
 
-func (n TypeName) TsNamespaceName() *TsNamespaceName {
-	if child := n.Child(selector.TsNamespaceName); child != nil {
-		return &TsNamespaceName{child}
+func (n TypeName) Ref() []IdentifierReference {
+	nodes := n.Children(selector.IdentifierReference)
+	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, IdentifierReference{node})
 	}
-	return nil
-}
-
-func (n TypeName) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+	return result
 }
 
 type TypeParameter struct {

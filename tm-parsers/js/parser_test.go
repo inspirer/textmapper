@@ -917,7 +917,7 @@ var parseTests = []struct {
 	{js.IndexSignature, []string{
 		`var x: {«[a:string] : ()=>string»};`,
 		// TODO `var x: {«[a:string] : <T>(a: T)=>string»};`,
-		// TODO `var x: {«[a:string] : (a)=>string»};`,
+		`var x: {«[a:string] : (a)=>string»};`,
 	}},
 	{js.PropertySignature, []string{
 		`var x: {«a:string»;};`,
@@ -926,19 +926,21 @@ var parseTests = []struct {
 		`var x: {«(foo) : number»,};`,
 	}},
 	{js.ConstructSignature, []string{
-	// TODO `var x: {«new(foo) : number»,};`,
+		`var x: {«new(foo) : number»,};`,
 	}},
 	{js.MethodSignature, []string{
 		`var x: {«bar(foo) : number»,};`,
 	}},
 	{js.ConstructorType, []string{
-	// TODO `var x: {a: string; «new() => never»};`,
+		`var x: {a: «new() => never»};`,
+		`var x: {a: «new(private x : number) => never»};`,
 	}},
 	{js.TypeParameters, []string{
 		`function identity«<T>»(arg: T): T {}`,
 	}},
 	{js.TypeArguments, []string{
 		`function loggingIdentity<T>(arg: Array«<T>»): Array«<T>» {}`,
+		// TODO add tests
 	}},
 	{js.TypeParameter, []string{
 		`function foo<«T», «Q extends T»>() {}`,
@@ -960,23 +962,24 @@ var parseTests = []struct {
 	{js.TypeName, []string{
 		`function foo<T>() : «T» {}`,
 	}},
-	{js.TsNamespaceName, []string{
-	// TODO
-	}},
 	{js.FunctionType, []string{
-	// TODO
+		`function foo<T>() : «()=>number» {}`,
+		`function foo<T>() : «(abc)=>number» {}`,
+		`function foo<T>() : «(abc,def)=>number» {}`,
+		`function foo<T>() : «(abc:any)=>number» {}`,
+		`function foo<T>() : «(abc?:"abc")=>«()=>any»» {}`,
 	}},
 	{js.TypeQuery, []string{
 		`function foo(a) : «typeof a.b.c» {}`,
 	}},
 	{js.TypeAnnotation, []string{
-	// TODO
+		`var a «: T» = function (kind?«:A») «: B» {}`,
 	}},
 	{js.TsLiteralParameter, []string{
 		`function a(«kind?:"read"») {}`,
 	}},
 	{js.AccessibilityModifier, []string{
-	// TODO
+		`function a(«public» kind?:number) {}`,
 	}},
 	{js.TypeAliasDeclaration, []string{
 		`«type Foo = bar;»`,
