@@ -84,6 +84,7 @@ var (
 	ImportSpecifier          = func(t js.NodeType) bool { return t == js.ImportSpecifier }
 	IndexAccess              = func(t js.NodeType) bool { return t == js.IndexAccess }
 	IndexSignature           = func(t js.NodeType) bool { return t == js.IndexSignature }
+	IndexedAccessType        = func(t js.NodeType) bool { return t == js.IndexedAccessType }
 	Initializer              = func(t js.NodeType) bool { return t == js.Initializer }
 	IntersectionType         = func(t js.NodeType) bool { return t == js.IntersectionType }
 	JSXAttributeName         = func(t js.NodeType) bool { return t == js.JSXAttributeName }
@@ -98,14 +99,17 @@ var (
 	JSXSpreadAttribute       = func(t js.NodeType) bool { return t == js.JSXSpreadAttribute }
 	JSXSpreadExpression      = func(t js.NodeType) bool { return t == js.JSXSpreadExpression }
 	JSXText                  = func(t js.NodeType) bool { return t == js.JSXText }
+	KeyOfType                = func(t js.NodeType) bool { return t == js.KeyOfType }
 	LabelIdentifier          = func(t js.NodeType) bool { return t == js.LabelIdentifier }
 	LabelledStatement        = func(t js.NodeType) bool { return t == js.LabelledStatement }
 	LexicalBinding           = func(t js.NodeType) bool { return t == js.LexicalBinding }
 	LexicalDeclaration       = func(t js.NodeType) bool { return t == js.LexicalDeclaration }
 	Literal                  = func(t js.NodeType) bool { return t == js.Literal }
 	LiteralPropertyName      = func(t js.NodeType) bool { return t == js.LiteralPropertyName }
+	LiteralType              = func(t js.NodeType) bool { return t == js.LiteralType }
 	LogicalANDExpression     = func(t js.NodeType) bool { return t == js.LogicalANDExpression }
 	LogicalORExpression      = func(t js.NodeType) bool { return t == js.LogicalORExpression }
+	MappedType               = func(t js.NodeType) bool { return t == js.MappedType }
 	Method                   = func(t js.NodeType) bool { return t == js.Method }
 	MethodSignature          = func(t js.NodeType) bool { return t == js.MethodSignature }
 	Module                   = func(t js.NodeType) bool { return t == js.Module }
@@ -149,7 +153,6 @@ var (
 	ThisType                 = func(t js.NodeType) bool { return t == js.ThisType }
 	ThrowStatement           = func(t js.NodeType) bool { return t == js.ThrowStatement }
 	TryStatement             = func(t js.NodeType) bool { return t == js.TryStatement }
-	TsLiteralParameter       = func(t js.NodeType) bool { return t == js.TsLiteralParameter }
 	TupleType                = func(t js.NodeType) bool { return t == js.TupleType }
 	TypeAliasDeclaration     = func(t js.NodeType) bool { return t == js.TypeAliasDeclaration }
 	TypeAnnotation           = func(t js.NodeType) bool { return t == js.TypeAnnotation }

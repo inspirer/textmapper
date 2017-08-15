@@ -975,8 +975,11 @@ var parseTests = []struct {
 	{js.TypeAnnotation, []string{
 		`var a «: T» = function (kind?«:A») «: B» {}`,
 	}},
-	{js.TsLiteralParameter, []string{
-		`function a(«kind?:"read"») {}`,
+	{js.LiteralType, []string{
+		`function a(kind?:«"read"») {}`,
+		`const TRUE: «true» = true;`,
+		`let zeroOrOne: «0» | «1»;`,
+		`let plusMinusOne: «-1» | «1»;`,
 	}},
 	{js.AccessibilityModifier, []string{
 		`function a(«public» kind?:number) {}`,
@@ -984,6 +987,26 @@ var parseTests = []struct {
 	{js.TypeAliasDeclaration, []string{
 		`«type Foo = bar;»`,
 		`«type Foo<T> = T»`,
+		`«type K1 = keyof Person;»`,
+		`«type K3 = keyof { [x: string]: Person };»  // string`,
+		`«type Partial<T> = {
+       [P in keyof T]?: T[P];
+     };»`,
+	}},
+	{js.KeyOfType, []string{
+		`type K3 = «keyof { [x: string]: Person }»;  // string`,
+		`function getProperty<T, K extends «keyof T»>(obj: T, key: K) {}`,
+	}},
+	{js.IndexedAccessType, []string{
+		`type P1 = «Person["name"]»;  // string
+     type P2 = «Person["name" | "age"]»;  // string | number
+     type P3 = «string["charAt"]»;  // (pos: number) => string
+     type P4 = «string[]["push"]»;  // (...items: string[]) => number
+     type P5 = «string[0]»[];  // string`,
+	}},
+	{js.MappedType, []string{
+		`type Partial<T> = «{ [P in keyof T]?: T[P] }»`,
+		`type Readonly<T> = «{ /* */ readonly [P in keyof T]: T[P]; }»`,
 	}},
 
 	// Error Recovery

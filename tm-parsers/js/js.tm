@@ -139,6 +139,10 @@ invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'require':     /require/
 'type':        /type/
 
+# Typescript 2.0+
+'readonly': /readonly/
+'keyof': /keyof/
+
 # End of typescript keywords.
 
 # Punctuation
@@ -333,6 +337,7 @@ IdentifierName<WithoutNew> :
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'readonly' | 'keyof'
 ;
 
 IdentifierNameDecl<WithoutNew> :
@@ -361,6 +366,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> Identifier
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | [!WithoutPredefinedTypes] ('any' | 'boolean' | 'number' | 'string' | 'symbol')
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'readonly' | [!WithoutPredefinedTypes] 'keyof'
 ;
 
 BindingIdentifier -> BindingIdentifier :
@@ -376,6 +382,7 @@ BindingIdentifier -> BindingIdentifier :
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'readonly' | 'keyof'
 ;
 
 AsyncArrowBindingIdentifier :
@@ -394,6 +401,7 @@ LabelIdentifier -> LabelIdentifier :
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'readonly' | 'keyof'
 ;
 
 PrimaryExpression<Yield, Await, NoAsync> -> Expression /* interface */ :
@@ -1183,51 +1191,70 @@ JSXChild<Yield, Await> -> JSXChild /* interface */ :
 
 # Typescript
 
+# Note: yield and await do not apply to type contexts.
+
 # A.1 Types
 
 %interface TsType, TypeMember;
 
-Type<Yield, Await> -> TsType /* interface */ :
+Type -> TsType /* interface */ :
     UnionOrIntersectionOrPrimaryType
   | FunctionType
   | ConstructorType
 ;
 
-TypeParameters<Yield, Await> -> TypeParameters :
+TypeParameters -> TypeParameters :
     '<' (TypeParameter separator ',')+ '>' ;
 
-TypeParameter<Yield, Await> -> TypeParameter :
+TypeParameter -> TypeParameter :
     BindingIdentifier Constraint? ;
 
-Constraint<Yield, Await> -> TypeConstraint :
+Constraint -> TypeConstraint :
     'extends' Type ;
 
-TypeArguments<Yield, Await> -> TypeArguments :
+TypeArguments -> TypeArguments :
     '<' (Type separator ',')+ '>' ;
 
-UnionOrIntersectionOrPrimaryType<Yield, Await> -> TsType /* interface */ :
+UnionOrIntersectionOrPrimaryType -> TsType /* interface */ :
     left=UnionOrIntersectionOrPrimaryType '|' right=IntersectionOrPrimaryType          -> UnionType
   | IntersectionOrPrimaryType
 ;
 
-IntersectionOrPrimaryType<Yield, Await> -> TsType /* interface */ :
-    left=IntersectionOrPrimaryType '&' right=PrimaryType         -> IntersectionType
+IntersectionOrPrimaryType -> TsType /* interface */ :
+    left=IntersectionOrPrimaryType '&' right=KeyOfOrPrimaryType         -> IntersectionType
+  | KeyOfOrPrimaryType
+;
+
+KeyOfOrPrimaryType -> TsType /* interface */ :
+    KeyOfType
   | PrimaryType
 ;
 
-PrimaryType<Yield, Await> -> TsType /* interface */ :
+PrimaryType -> TsType /* interface */ :
     ParenthesizedType
   | PredefinedType
   | TypeReference
   | ObjectType
+  | MappedType
   | ArrayType
+  | IndexedAccessType
+  | LiteralType
   | TupleType
   | TypeQuery
   | 'this'                           -> ThisType
 ;
 
-ParenthesizedType<Yield, Await> -> ParenthesizedType :
+ParenthesizedType -> ParenthesizedType :
     '(' (?= !StartOfFunctionType) Type ')' ;
+
+# 2.0
+LiteralType -> LiteralType :
+    StringLiteral
+  | '-'? NumericLiteral
+  | 'null'
+  | 'true'
+  | 'false'
+;
 
 PredefinedType -> PredefinedType :
     'any'
@@ -1238,35 +1265,35 @@ PredefinedType -> PredefinedType :
   | 'void'
 ;
 
-TypeReference<Yield, Await> -> TypeReference :
+TypeReference -> TypeReference :
     TypeName .noLineBreak TypeArguments? ;
 
-TypeName<Yield, Await> -> TypeName :
-    ref+=IdentifierReference<+WithoutPredefinedTypes>
-  | NamespaceName '.' ref+=IdentifierReference
+TypeName -> TypeName :
+    ref+=IdentifierReference<+WithoutPredefinedTypes, ~Yield, ~Await>
+  | NamespaceName '.' ref+=IdentifierReference<~Yield, ~Await>
 ;
 
-NamespaceName<Yield, Await> :
-    ref+=IdentifierReference
-  | NamespaceName '.' ref+=IdentifierReference
+NamespaceName :
+    ref+=IdentifierReference<~Yield, ~Await>
+  | NamespaceName '.' ref+=IdentifierReference<~Yield, ~Await>
 ;
 
-ObjectType<Yield, Await> -> ObjectType :
-    '{' TypeBody? '}' ;
+ObjectType -> ObjectType :
+    '{' (?= !StartOfMappedType) TypeBody? '}' ;
 
-TypeBody<Yield, Await> :
+TypeBody :
     TypeMemberList
   | TypeMemberList ','
   | TypeMemberList ';'
 ;
 
-TypeMemberList<Yield, Await> :
+TypeMemberList :
     TypeMember
   | TypeMemberList ';' TypeMember
   | TypeMemberList ',' TypeMember
 ;
 
-TypeMember<Yield, Await> -> TypeMember /* interface */ :
+TypeMember -> TypeMember /* interface */ :
     PropertySignature
   | CallSignature
   | ConstructSignature
@@ -1274,10 +1301,22 @@ TypeMember<Yield, Await> -> TypeMember /* interface */ :
   | MethodSignature
 ;
 
-ArrayType<Yield, Await> -> ArrayType :
+ArrayType -> ArrayType :
     PrimaryType .noLineBreak '[' ']' ;
 
-TupleType<Yield, Await> -> TupleType :
+# 2.1
+IndexedAccessType -> IndexedAccessType :
+    left=PrimaryType .noLineBreak '[' index=Type ']' ;
+
+# 2.1
+StartOfMappedType :
+    'readonly'? '[' IdentifierName 'in' ;
+
+# 2.1
+MappedType -> MappedType :
+    '{' (?= StartOfMappedType) 'readonly'? '[' Identifier 'in' Type ']' '?'? TypeAnnotation ';'? '}' ;
+
+TupleType -> TupleType :
     '[' (Type separator ',')+ ']' ;
 
 # This lookahead rule disambiguates FunctionType vs ParenthesizedType
@@ -1292,34 +1331,38 @@ StartOfFunctionType :
   | ')'
 ;
 
-FunctionType<Yield, Await> -> FunctionType :
+FunctionType -> FunctionType :
     TypeParameters? FunctionTypeParameterList '=>' Type ;
 
-FunctionTypeParameterList<Yield, Await> -> Parameters :
-    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
+FunctionTypeParameterList -> Parameters :
+    '(' (?= StartOfFunctionType) (Parameter<~Yield, ~Await> separator ',')+? ','? ')' ;
 
-ConstructorType<Yield, Await> -> ConstructorType :
-    'new' TypeParameters? ParameterList '=>' Type ;
+ConstructorType -> ConstructorType :
+    'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
-TypeQuery<Yield, Await> -> TypeQuery :
+# 2.1
+KeyOfType -> KeyOfType :
+    'keyof' KeyOfOrPrimaryType ;
+
+TypeQuery -> TypeQuery :
     'typeof' TypeQueryExpression ;
 
-TypeQueryExpression<Yield, Await> :
-    IdentifierReference
+TypeQueryExpression :
+    IdentifierReference<~Yield, ~Await>
   | TypeQueryExpression '.' IdentifierName
 ;
 
-PropertySignature<Yield, Await> -> PropertySignature :
-    PropertyName<+WithoutNew> '?'? TypeAnnotation? ;
+PropertySignature -> PropertySignature :
+    PropertyName<+WithoutNew, ~Yield, ~Await> '?'? TypeAnnotation? ;
 
-TypeAnnotation<Yield, Await> -> TypeAnnotation :
+TypeAnnotation -> TypeAnnotation :
     ':' Type ;
 
 FormalParameters<Yield, Await> :
     TypeParameters? ParameterList TypeAnnotation? ;
 
-CallSignature<Yield, Await> -> CallSignature :
-    TypeParameters? ParameterList TypeAnnotation? ;
+CallSignature -> CallSignature :
+    TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? ;
 
 ParameterList<Yield, Await> -> Parameters :
     '(' (Parameter separator ',')+? ','? ')' ;
@@ -1331,7 +1374,6 @@ Parameter<Yield, Await> -> Parameter :
   | AccessibilityModifier? BindingPattern '?'? TypeAnnotation?                 -> DefaultParameter
   | AccessibilityModifier? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
   | AccessibilityModifier? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
-  | BindingIdentifier '?'? ':' StringLiteral                                     -> TsLiteralParameter
   | '...' BindingIdentifier TypeAnnotation?                                    -> RestParameter
 ;
 
@@ -1346,20 +1388,20 @@ BindingIdentifierOrPattern<Yield, Await> :
   | BindingPattern
 ;
 
-ConstructSignature<Yield, Await> -> ConstructSignature :
-    'new' TypeParameters? ParameterList TypeAnnotation? ;
+ConstructSignature -> ConstructSignature :
+    'new' TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? ;
 
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.
-IndexSignature<Yield, Await> -> IndexSignature :
+IndexSignature -> IndexSignature :
     '[' IdentifierName ':' 'string' ']' TypeAnnotation
   | '[' IdentifierName ':' 'number' ']' TypeAnnotation
 ;
 
-MethodSignature<Yield, Await> -> MethodSignature :
-    PropertyName<+WithoutNew> '?'? CallSignature ;
+MethodSignature -> MethodSignature :
+    PropertyName<+WithoutNew, ~Yield, ~Await> '?'? CallSignature ;
 
-TypeAliasDeclaration<Yield, Await> -> TypeAliasDeclaration :
+TypeAliasDeclaration -> TypeAliasDeclaration :
     'type' BindingIdentifier TypeParameters? '=' Type ';' ;
 
 %%

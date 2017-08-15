@@ -21,7 +21,7 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(1, 5082, lexer)
+	return p.parse(2, 4769, lexer)
 }
 
 func lookaheadNext(lexer *Lexer) int32 {
@@ -125,17 +125,24 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
-	case 2634: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
+	case 2585: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2648: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
+	case 2599: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2662: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	case 2613: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3597:
-		if p.lookahead(0, 5080) /* StartOfFunctionType */ {
-			lhs.sym.symbol = 912 /* lookahead_StartOfFunctionType */
+	case 3303:
+		if p.lookahead(1, 4767) /* StartOfMappedType */ {
+			lhs.sym.symbol = 843 /* lookahead_StartOfMappedType */
 		} else {
-			lhs.sym.symbol = 861 /* lookahead_notStartOfFunctionType */
+			lhs.sym.symbol = 835 /* lookahead_notStartOfMappedType */
+		}
+		return
+	case 3304:
+		if p.lookahead(0, 4766) /* StartOfFunctionType */ {
+			lhs.sym.symbol = 849 /* lookahead_StartOfFunctionType */
+		} else {
+			lhs.sym.symbol = 828 /* lookahead_notStartOfFunctionType */
 		}
 		return
 	}

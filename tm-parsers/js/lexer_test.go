@@ -176,6 +176,8 @@ var lexerTests = []struct {
 	{js.NAMESPACE, []string{`«namespace»`}},
 	{js.REQUIRE, []string{`«require»`}},
 	{js.TYPE, []string{`«type»`}},
+	{js.READONLY, []string{`«readonly»`}},
+	{js.KEYOF, []string{`«keyof»`}},
 
 	// Operators.
 	{js.LBRACE, []string{`«{»`}},

@@ -107,6 +107,7 @@ func (ImportDeclaration) jsNodeNode()        {}
 func (ImportSpecifier) jsNodeNode()          {}
 func (IndexAccess) jsNodeNode()              {}
 func (IndexSignature) jsNodeNode()           {}
+func (IndexedAccessType) jsNodeNode()        {}
 func (Initializer) jsNodeNode()              {}
 func (IntersectionType) jsNodeNode()         {}
 func (JSXAttributeName) jsNodeNode()         {}
@@ -121,14 +122,17 @@ func (JSXSelfClosingElement) jsNodeNode()    {}
 func (JSXSpreadAttribute) jsNodeNode()       {}
 func (JSXSpreadExpression) jsNodeNode()      {}
 func (JSXText) jsNodeNode()                  {}
+func (KeyOfType) jsNodeNode()                {}
 func (LabelIdentifier) jsNodeNode()          {}
 func (LabelledStatement) jsNodeNode()        {}
 func (LexicalBinding) jsNodeNode()           {}
 func (LexicalDeclaration) jsNodeNode()       {}
 func (Literal) jsNodeNode()                  {}
 func (LiteralPropertyName) jsNodeNode()      {}
+func (LiteralType) jsNodeNode()              {}
 func (LogicalANDExpression) jsNodeNode()     {}
 func (LogicalORExpression) jsNodeNode()      {}
+func (MappedType) jsNodeNode()               {}
 func (Method) jsNodeNode()                   {}
 func (MethodSignature) jsNodeNode()          {}
 func (Module) jsNodeNode()                   {}
@@ -172,7 +176,6 @@ func (This) jsNodeNode()                     {}
 func (ThisType) jsNodeNode()                 {}
 func (ThrowStatement) jsNodeNode()           {}
 func (TryStatement) jsNodeNode()             {}
-func (TsLiteralParameter) jsNodeNode()       {}
 func (TupleType) jsNodeNode()                {}
 func (TypeAliasDeclaration) jsNodeNode()     {}
 func (TypeAnnotation) jsNodeNode()           {}
@@ -431,9 +434,8 @@ type Parameter interface {
 // parameterNode() ensures that only the following types can be
 // assigned to Parameter.
 //
-func (DefaultParameter) parameterNode()   {}
-func (RestParameter) parameterNode()      {}
-func (TsLiteralParameter) parameterNode() {}
+func (DefaultParameter) parameterNode() {}
+func (RestParameter) parameterNode()    {}
 
 type PropertyDefinition interface {
 	JsNode
@@ -555,7 +557,11 @@ type TsType interface {
 func (ArrayType) tsTypeNode()         {}
 func (ConstructorType) tsTypeNode()   {}
 func (FunctionType) tsTypeNode()      {}
+func (IndexedAccessType) tsTypeNode() {}
 func (IntersectionType) tsTypeNode()  {}
+func (KeyOfType) tsTypeNode()         {}
+func (LiteralType) tsTypeNode()       {}
+func (MappedType) tsTypeNode()        {}
 func (ObjectType) tsTypeNode()        {}
 func (ParenthesizedType) tsTypeNode() {}
 func (PredefinedType) tsTypeNode()    {}
@@ -1824,6 +1830,18 @@ func (n IndexSignature) TypeAnnotation() TypeAnnotation {
 	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
+type IndexedAccessType struct {
+	Node
+}
+
+func (n IndexedAccessType) Left() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+func (n IndexedAccessType) Index() TsType {
+	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
+}
+
 type Initializer struct {
 	Node
 }
@@ -1978,6 +1996,14 @@ type JSXText struct {
 	Node
 }
 
+type KeyOfType struct {
+	Node
+}
+
+func (n KeyOfType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
 type LabelIdentifier struct {
 	Node
 }
@@ -2064,6 +2090,10 @@ func (n LiteralPropertyName) BindingIdentifier() *BindingIdentifier {
 	return nil
 }
 
+type LiteralType struct {
+	Node
+}
+
 type LogicalANDExpression struct {
 	Node
 }
@@ -2086,6 +2116,18 @@ func (n LogicalORExpression) Left() Expression {
 
 func (n LogicalORExpression) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+}
+
+type MappedType struct {
+	Node
+}
+
+func (n MappedType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+func (n MappedType) TypeAnnotation() TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type Method struct {
@@ -2619,14 +2661,6 @@ func (n TryStatement) Finally() *Finally {
 		return &Finally{child}
 	}
 	return nil
-}
-
-type TsLiteralParameter struct {
-	Node
-}
-
-func (n TsLiteralParameter) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 type TupleType struct {

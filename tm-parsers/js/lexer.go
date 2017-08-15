@@ -332,6 +332,11 @@ restart:
 				token = DEFAULT
 				break
 			}
+		case 66:
+			if hash == 0xcc56be42 && "readonly" == l.source[l.tokenOffset:l.offset] {
+				token = READONLY
+				break
+			}
 		case 70:
 			if hash == 0x37b0c6 && "with" == l.source[l.tokenOffset:l.offset] {
 				token = WITH
@@ -412,6 +417,11 @@ restart:
 		case 110:
 			if hash == 0xcacdce6e && "static" == l.source[l.tokenOffset:l.offset] {
 				token = STATIC
+				break
+			}
+		case 118:
+			if hash == 0x6139076 && "keyof" == l.source[l.tokenOffset:l.offset] {
+				token = KEYOF
 				break
 			}
 		case 120:

@@ -160,6 +160,8 @@ func ToJsNode(n Node) JsNode {
 		return &IndexAccess{n}
 	case js.IndexSignature:
 		return &IndexSignature{n}
+	case js.IndexedAccessType:
+		return &IndexedAccessType{n}
 	case js.Initializer:
 		return &Initializer{n}
 	case js.IntersectionType:
@@ -188,6 +190,8 @@ func ToJsNode(n Node) JsNode {
 		return &JSXSpreadExpression{n}
 	case js.JSXText:
 		return &JSXText{n}
+	case js.KeyOfType:
+		return &KeyOfType{n}
 	case js.LabelIdentifier:
 		return &LabelIdentifier{n}
 	case js.LabelledStatement:
@@ -200,10 +204,14 @@ func ToJsNode(n Node) JsNode {
 		return &Literal{n}
 	case js.LiteralPropertyName:
 		return &LiteralPropertyName{n}
+	case js.LiteralType:
+		return &LiteralType{n}
 	case js.LogicalANDExpression:
 		return &LogicalANDExpression{n}
 	case js.LogicalORExpression:
 		return &LogicalORExpression{n}
+	case js.MappedType:
+		return &MappedType{n}
 	case js.Method:
 		return &Method{n}
 	case js.MethodSignature:
@@ -290,8 +298,6 @@ func ToJsNode(n Node) JsNode {
 		return &ThrowStatement{n}
 	case js.TryStatement:
 		return &TryStatement{n}
-	case js.TsLiteralParameter:
-		return &TsLiteralParameter{n}
 	case js.TupleType:
 		return &TupleType{n}
 	case js.TypeAliasDeclaration:

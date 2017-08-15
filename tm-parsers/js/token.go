@@ -85,6 +85,8 @@ const (
 	NAMESPACE          // namespace
 	REQUIRE            // require
 	TYPE               // type
+	READONLY           // readonly
+	KEYOF              // keyof
 	LBRACE             // {
 	RBRACE             // }
 	LPAREN             // (
@@ -225,6 +227,8 @@ var tokenStr = [...]string{
 	"namespace",
 	"require",
 	"type",
+	"readonly",
+	"keyof",
 	"{",
 	"}",
 	"(",
