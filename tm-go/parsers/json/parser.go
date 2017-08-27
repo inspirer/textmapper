@@ -206,6 +206,10 @@ restart:
 	return int32(tok)
 }
 
+func (p *Parser) AtEmptyObject() bool {
+	return p.lookahead(0, 42)
+}
+
 func (p *Parser) lookahead(start, end int8) bool {
 	var lexer Lexer = *p.lexer
 
@@ -262,7 +266,7 @@ func (p *Parser) lookahead(start, end int8) bool {
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
 	case 32:
-		if p.lookahead(0, 42) /* EmptyObject */ {
+		if p.AtEmptyObject() {
 			lhs.sym.symbol = 23 /* lookahead_EmptyObject */
 		} else {
 			lhs.sym.symbol = 25 /* lookahead_notEmptyObject */

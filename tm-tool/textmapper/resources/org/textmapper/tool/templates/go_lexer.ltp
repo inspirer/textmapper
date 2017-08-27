@@ -11,7 +11,7 @@ ${end}
 
 ${template lexer-}
 package ${self->go.package()}
-${if syntax.lexerStates.size() > 1}
+${if syntax.lexerStates.size() > 1-}
 // Lexer states.
 const (
 ${foreach state in syntax.lexerStates-}
@@ -19,7 +19,18 @@ ${foreach state in syntax.lexerStates-}
 ${end-}
 )
 ${end-}
+${call lexerType-}
+${call lexerInit-}
+${call lexerNext-}
+${call lexerPos-}
+${if opts.tokenLine-}
+${call lexerLine-}
+${end-}
+${call lexerText-}
+${call lexerValue-}
+${end}
 
+${template lexerType}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
@@ -41,7 +52,9 @@ ${end-}
 	State int // lexer state, modifiable
 ${call stateVars-}
 }
+${end}
 
+${template lexerInit}
 var bomSeq = "\xef\xbb\xbf"
 
 // Init prepares the lexer l to tokenize source by performing the full reset
@@ -80,7 +93,9 @@ ${call initStateVars-}
 		l.ch = -1 // EOI
 	}
 }
+${end}
 
+${template lexerNext}
 // Next finds and returns the next token in l.source. The source end is
 // indicated by Token.EOI.
 //
@@ -174,9 +189,9 @@ ${end-}
 	}
 
 ${if self->canInlineLexerRules()-}
-	token := Token(tmFirstRule-state)
+	token := Token(tmFirstRule - state)
 ${else-}
-	rule := tmFirstRule-state
+	rule := tmFirstRule - state
 ${end-}
 ${if lex.backtracking.length > 0-}
 recovered:
@@ -189,7 +204,7 @@ ${if self->canInlineLexerRules()-}
 ${else-}
 	case ${classRule.index+2}:
 ${end-}
-		hh := hash&${classRule->rangeSwitchSize() - 1}
+		hh := hash & ${classRule->rangeSwitchSize() - 1}
 		switch hh {
 ${foreach instance in classRule->classInstances().groupBy(it|util.rangedHash(it.regexp.constantValue, classRule->rangeSwitchSize())).sort(it|util.rangedHash((it is java.util.List ? it[0] : it).regexp.constantValue, classRule->rangeSwitchSize()))-}
 ${if instance is java.util.List-}
@@ -240,24 +255,32 @@ ${end-}
 ${call onAfterNext-}
 	return token
 }
+${end}
 
+${template lexerPos}
 // Pos returns the start and end positions of the last token returned by Next().
 func (l *Lexer) Pos() (start, end int) {
 	start = l.tokenOffset
 	end = l.offset
 	return
 }
-${if opts.tokenLine}
+${end}
+
+${template lexerLine}
 // Line returns the line number of the last token returned by Next().
 func (l *Lexer) Line() int {
 	return l.tokenLine
 }
 ${end}
+
+${template lexerText}
 // Text returns the substring of the input corresponding to the last token.
 func (l *Lexer) Text() string {
 	return l.source[l.tokenOffset:l.offset]
 }
+${end}
 
+${template lexerValue}
 // Value returns the value associated with the last returned token.
 func (l *Lexer) Value() interface{} {
 	return l.value
@@ -266,74 +289,74 @@ ${end}
 
 ${template handleInvalidToken-}
 ${if lex.backtracking.length > 0-}
-	scanNext := false
-	if ${self->backupVar()} >= 0 {
+		scanNext := false
+		if ${self->backupVar()} >= 0 {
 ${if opts.tokenLine-}
-		// Update line information
-		l.line = backupLine
+			// Update line information
+			l.line = backupLine
 ${end-}
 ${if opts.tokenLineOffset-}
-		l.lineOffset = backupLineOffset
+			l.lineOffset = backupLineOffset
 ${end-}
 
 ${if self->canInlineLexerRules()-}
-		token = Token(backupToken)
+			token = Token(backupToken)
 ${else-}
-		rule = backupRule
+			rule = backupRule
 ${end-}
 ${if self->useCustomMap()-}
-		hash = backupHash
+			hash = backupHash
 ${end-}
-		l.scanOffset = backupOffset
-		scanNext = true
-	} else if l.offset == l.tokenOffset {
+			l.scanOffset = backupOffset
+			scanNext = true
+		} else if l.offset == l.tokenOffset {
 ${if opts.tokenLine-}
-		if l.ch == '\n' {
-			l.line++
+			if l.ch == '\n' {
+				l.line++
 ${if opts.tokenLineOffset-}
-			l.lineOffset = l.offset
+				l.lineOffset = l.offset
 ${end-}
-		}
-
-${end-}
-		scanNext = true
-	}
-	if scanNext {
-${else-}
-	if l.offset == l.tokenOffset {
-${if opts.tokenLine-}
-		if l.ch == '\n' {
-			l.line++
-${if opts.tokenLineOffset-}
-			l.lineOffset = l.offset
-${end-}
-		}
-
-${end-}
-${end-}
-		// Scan the next character.
-		// Note: the following code is inlined to avoid performance implications.
-		l.offset = l.scanOffset
-		if l.offset < len(l.source) {
-			r, w := rune(l.source[l.offset]), 1
-			if r >= 0x80 {
-				// not ASCII
-				r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
 			}
-			l.scanOffset += w
-			l.ch = r
-		} else {
-			l.ch = -1 // EOI
+
+${end-}
+			scanNext = true
 		}
-	}
+		if scanNext {
+${else-}
+		if l.offset == l.tokenOffset {
+${if opts.tokenLine-}
+			if l.ch == '\n' {
+				l.line++
+${if opts.tokenLineOffset-}
+				l.lineOffset = l.offset
+${end-}
+			}
+
+${end-}
+${end-}
+			// Scan the next character.
+			// Note: the following code is inlined to avoid performance implications.
+			l.offset = l.scanOffset
+			if l.offset < len(l.source) {
+				r, w := rune(l.source[l.offset]), 1
+				if r >= 0x80 {
+					// not ASCII
+					r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
+				}
+				l.scanOffset += w
+				l.ch = r
+			} else {
+				l.ch = -1 // EOI
+			}
+		}
 ${if lex.backtracking.length > 0-}
 ${if self->canInlineLexerRules()-}
-	if token != ${self->go_token.invalidTokenName()} {
+		if token != ${self->go_token.invalidTokenName()} {
 ${else-}
-	if rule != 0 {
+		if rule != 0 {
 ${end-}
-		goto recovered
-	}
+			goto recovered
+		}
 ${end-}
 ${end}
 
@@ -438,8 +461,6 @@ ${end-}
 }
 ${end-}
 ${end}
-
-
 
 ${template lexerAction($, symbol)-}
 ${if self->isSpace()-}

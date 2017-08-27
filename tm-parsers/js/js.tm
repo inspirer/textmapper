@@ -1406,16 +1406,35 @@ TypeAliasDeclaration -> TypeAliasDeclaration :
 
 %%
 
+${template go_lexer.lexerType}
+type Dialect int
+
+const (
+	Javascript Dialect = iota
+	Typescript
+	TypescriptJsx
+)
+${call base-}
+${end}
+
 ${template go_lexer.stateVars}
-	token  Token // last token
-	Stack  []int // stack of JSX states, non-empty for StateJsx*
-	Opened []int // number of opened curly braces per jsxTemplate* state
+	Dialect Dialect
+	token   Token // last token
+	Stack   []int // stack of JSX states, non-empty for StateJsx*
+	Opened  []int // number of opened curly braces per jsxTemplate* state
 ${end}
 
 ${template go_lexer.initStateVars-}
+	l.Dialect = Javascript
 	l.token = UNAVAILABLE
 	l.Stack = nil
 	l.Opened = nil
+${end}
+
+${template go_parser.setupLookaheadLexer-}
+	var alloc2, alloc3 [8]int
+	lexer.Stack = alloc2[:0]
+	lexer.Opened = alloc3[:0]
 ${end}
 
 ${template go_lexer.onBeforeNext-}
@@ -1459,8 +1478,10 @@ ${template go_lexer.onAfterNext}
 		case LT:
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
-				l.Stack = append(l.Stack, l.State|1)
-				l.State = StateJsxTag
+				if l.Dialect != Typescript {
+				  l.Stack = append(l.Stack, l.State|1)
+				  l.State = StateJsxTag
+				}
 			} else {
 				l.State &^= 1
 			}
@@ -1475,8 +1496,8 @@ ${template go_lexer.onAfterNext}
 				l.Opened[last]--
 				if l.Opened[last] == 0 {
 					l.Opened = l.Opened[:last]
-					l.State = l.Stack[len(l.Stack) - 1]
-					l.Stack = l.Stack[:len(l.Stack) - 1]
+					l.State = l.Stack[len(l.Stack)-1]
+					l.Stack = l.Stack[:len(l.Stack)-1]
 					break
 				}
 			}
@@ -1496,14 +1517,14 @@ ${template go_lexer.onAfterNext}
 		case DIV:
 			if l.State == StateJsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == StateJsxText {
 				l.State = StateJsxClosingTag
-				l.Stack = l.Stack[:len(l.Stack) - 1]
+				l.Stack = l.Stack[:len(l.Stack)-1]
 			}
 		case GT:
 			if l.State == StateJsxClosingTag || l.token == DIV {
-				l.State = l.Stack[len(l.Stack) - 1]
-				l.Stack = l.Stack[:len(l.Stack) - 1]
+				l.State = l.Stack[len(l.Stack)-1]
+				l.Stack = l.Stack[:len(l.Stack)-1]
 			} else {
-					l.State = StateJsxText
+				l.State = StateJsxText
 			}
 		case LBRACE:
 			l.Opened = append(l.Opened, 1)
@@ -1530,7 +1551,7 @@ func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(i
 
 ${if self->needExplicitLookahead()-}
 ${call lookahead}
-${end}
+${end-}
 ${end-}
 ${call lalr}
 ${call gotoState}

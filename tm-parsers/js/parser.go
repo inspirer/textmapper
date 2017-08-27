@@ -34,8 +34,19 @@ restart:
 	return int32(tok)
 }
 
+func (p *Parser) AtStartOfFunctionType() bool {
+	return p.lookahead(0, 4766)
+}
+
+func (p *Parser) AtStartOfMappedType() bool {
+	return p.lookahead(1, 4767)
+}
+
 func (p *Parser) lookahead(start, end int16) bool {
 	var lexer Lexer = *p.lexer
+	var alloc2, alloc3 [8]int
+	lexer.Stack = alloc2[:0]
+	lexer.Opened = alloc3[:0]
 
 	var allocated [64]stackEntry
 	state := start
@@ -132,14 +143,14 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	case 2613: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3303:
-		if p.lookahead(1, 4767) /* StartOfMappedType */ {
+		if p.AtStartOfMappedType() {
 			lhs.sym.symbol = 843 /* lookahead_StartOfMappedType */
 		} else {
 			lhs.sym.symbol = 835 /* lookahead_notStartOfMappedType */
 		}
 		return
 	case 3304:
-		if p.lookahead(0, 4766) /* StartOfFunctionType */ {
+		if p.AtStartOfFunctionType() {
 			lhs.sym.symbol = 849 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 828 /* lookahead_notStartOfFunctionType */

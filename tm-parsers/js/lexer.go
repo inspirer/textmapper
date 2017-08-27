@@ -20,6 +20,14 @@ const (
 	StateJsxText        = 8
 )
 
+type Dialect int
+
+const (
+	Javascript Dialect = iota
+	Typescript
+	TypescriptJsx
+)
+
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
@@ -35,9 +43,10 @@ type Lexer struct {
 
 	State int // lexer state, modifiable
 
-	token  Token // last token
-	Stack  []int // stack of JSX states, non-empty for StateJsx*
-	Opened []int // number of opened curly braces per jsxTemplate* state
+	Dialect Dialect
+	token   Token // last token
+	Stack   []int // stack of JSX states, non-empty for StateJsx*
+	Opened  []int // number of opened curly braces per jsxTemplate* state
 }
 
 var bomSeq = "\xef\xbb\xbf"
@@ -54,6 +63,7 @@ func (l *Lexer) Init(source string) {
 	l.tokenLine = 1
 	l.scanOffset = 0
 	l.State = 0
+	l.Dialect = Javascript
 	l.token = UNAVAILABLE
 	l.Stack = nil
 	l.Opened = nil
@@ -514,8 +524,10 @@ restart:
 		case LT:
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
-				l.Stack = append(l.Stack, l.State|1)
-				l.State = StateJsxTag
+				if l.Dialect != Typescript {
+					l.Stack = append(l.Stack, l.State|1)
+					l.State = StateJsxTag
+				}
 			} else {
 				l.State &^= 1
 			}

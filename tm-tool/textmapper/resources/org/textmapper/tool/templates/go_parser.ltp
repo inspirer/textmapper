@@ -468,11 +468,25 @@ ${end-}
 }
 ${end}
 
-${template lookahead-}
-${call lookaheadNext-}
+${cached query laMethodName() = 'At' + self.target.name}
 
+${template lookaheadMethods-}
+${foreach inp in syntax.input.select(it|!it.hasEoi())-}
+func (p *Parser) ${inp->laMethodName()}() bool {
+	return p.lookahead(${inp.index}, ${parser.finalStates[inp.index]});
+}
+
+${end-}
+${end}
+
+${template setupLookaheadLexer}${end}
+
+${template lookahead-}
+${call lookaheadNext}
+${call lookaheadMethods-}
 func (p *Parser) lookahead(start, end ${self->stateType()}) bool {
 	var lexer Lexer = *p.lexer
+${call setupLookaheadLexer-}
 
 	var allocated [64]stackEntry
 	state := start
@@ -530,7 +544,7 @@ ${end}
 ${template caseLookaheadRules-}
 ${foreach rule in parser.lookaheadRules-}
 	case ${rule.getIndex()}:
-		${foreach c in rule.cases}if ${c.isNegated() ? '!' : ''}p.lookahead(${c.input.index}, ${parser.finalStates[c.input.index]}) /* ${c.input.target.name} */ {
+		${foreach c in rule.cases}if ${c.isNegated() ? '!' : ''}p.${c.input->laMethodName()}() {
 			lhs.sym.symbol = ${c.target.index} /* ${c.target.name} */;
 		} else ${end}{
 			lhs.sym.symbol = ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
