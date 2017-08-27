@@ -33,167 +33,193 @@ type Token struct {
 }
 
 // All types implement JsNode.
-func (AccessibilityModifier) jsNodeNode()    {}
-func (AdditiveExpression) jsNodeNode()       {}
-func (Arguments) jsNodeNode()                {}
-func (ArrayLiteral) jsNodeNode()             {}
-func (ArrayPattern) jsNodeNode()             {}
-func (ArrayType) jsNodeNode()                {}
-func (ArrowFunction) jsNodeNode()            {}
-func (AssignmentExpression) jsNodeNode()     {}
-func (AssignmentOperator) jsNodeNode()       {}
-func (AsyncArrowFunction) jsNodeNode()       {}
-func (AsyncFunction) jsNodeNode()            {}
-func (AsyncFunctionExpression) jsNodeNode()  {}
-func (AsyncMethod) jsNodeNode()              {}
-func (AwaitExpression) jsNodeNode()          {}
-func (BindingIdentifier) jsNodeNode()        {}
-func (BindingRestElement) jsNodeNode()       {}
-func (BitwiseANDExpression) jsNodeNode()     {}
-func (BitwiseORExpression) jsNodeNode()      {}
-func (BitwiseXORExpression) jsNodeNode()     {}
-func (Block) jsNodeNode()                    {}
-func (Body) jsNodeNode()                     {}
-func (BreakStatement) jsNodeNode()           {}
-func (CallExpression) jsNodeNode()           {}
-func (CallSignature) jsNodeNode()            {}
-func (Case) jsNodeNode()                     {}
-func (Catch) jsNodeNode()                    {}
-func (Class) jsNodeNode()                    {}
-func (ClassBody) jsNodeNode()                {}
-func (ClassExpr) jsNodeNode()                {}
-func (CommaExpression) jsNodeNode()          {}
-func (ComputedPropertyName) jsNodeNode()     {}
-func (ConciseBody) jsNodeNode()              {}
-func (ConditionalExpression) jsNodeNode()    {}
-func (ConstructSignature) jsNodeNode()       {}
-func (ConstructorType) jsNodeNode()          {}
-func (ContinueStatement) jsNodeNode()        {}
-func (DebuggerStatement) jsNodeNode()        {}
-func (Default) jsNodeNode()                  {}
-func (DefaultParameter) jsNodeNode()         {}
-func (DoWhileStatement) jsNodeNode()         {}
-func (ElementBinding) jsNodeNode()           {}
-func (EmptyDecl) jsNodeNode()                {}
-func (EmptyStatement) jsNodeNode()           {}
-func (EqualityExpression) jsNodeNode()       {}
-func (ExponentiationExpression) jsNodeNode() {}
-func (ExportClause) jsNodeNode()             {}
-func (ExportDeclaration) jsNodeNode()        {}
-func (ExportDefault) jsNodeNode()            {}
-func (ExportSpecifier) jsNodeNode()          {}
-func (ExpressionStatement) jsNodeNode()      {}
-func (Extends) jsNodeNode()                  {}
-func (Finally) jsNodeNode()                  {}
-func (ForBinding) jsNodeNode()               {}
-func (ForCondition) jsNodeNode()             {}
-func (ForFinalExpression) jsNodeNode()       {}
-func (ForInStatement) jsNodeNode()           {}
-func (ForInStatementWithVar) jsNodeNode()    {}
-func (ForOfStatement) jsNodeNode()           {}
-func (ForOfStatementWithVar) jsNodeNode()    {}
-func (ForStatement) jsNodeNode()             {}
-func (ForStatementWithVar) jsNodeNode()      {}
-func (Function) jsNodeNode()                 {}
-func (FunctionExpression) jsNodeNode()       {}
-func (FunctionType) jsNodeNode()             {}
-func (Generator) jsNodeNode()                {}
-func (GeneratorExpression) jsNodeNode()      {}
-func (GeneratorMethod) jsNodeNode()          {}
-func (Getter) jsNodeNode()                   {}
-func (IdentifierReference) jsNodeNode()      {}
-func (IfStatement) jsNodeNode()              {}
-func (ImportDeclaration) jsNodeNode()        {}
-func (ImportSpecifier) jsNodeNode()          {}
-func (IndexAccess) jsNodeNode()              {}
-func (IndexSignature) jsNodeNode()           {}
-func (IndexedAccessType) jsNodeNode()        {}
-func (Initializer) jsNodeNode()              {}
-func (IntersectionType) jsNodeNode()         {}
-func (JSXAttributeName) jsNodeNode()         {}
-func (JSXClosingElement) jsNodeNode()        {}
-func (JSXElement) jsNodeNode()               {}
-func (JSXElementName) jsNodeNode()           {}
-func (JSXExpression) jsNodeNode()            {}
-func (JSXLiteral) jsNodeNode()               {}
-func (JSXNormalAttribute) jsNodeNode()       {}
-func (JSXOpeningElement) jsNodeNode()        {}
-func (JSXSelfClosingElement) jsNodeNode()    {}
-func (JSXSpreadAttribute) jsNodeNode()       {}
-func (JSXSpreadExpression) jsNodeNode()      {}
-func (JSXText) jsNodeNode()                  {}
-func (KeyOfType) jsNodeNode()                {}
-func (LabelIdentifier) jsNodeNode()          {}
-func (LabelledStatement) jsNodeNode()        {}
-func (LexicalBinding) jsNodeNode()           {}
-func (LexicalDeclaration) jsNodeNode()       {}
-func (Literal) jsNodeNode()                  {}
-func (LiteralPropertyName) jsNodeNode()      {}
-func (LiteralType) jsNodeNode()              {}
-func (LogicalANDExpression) jsNodeNode()     {}
-func (LogicalORExpression) jsNodeNode()      {}
-func (MappedType) jsNodeNode()               {}
-func (Method) jsNodeNode()                   {}
-func (MethodSignature) jsNodeNode()          {}
-func (Module) jsNodeNode()                   {}
-func (ModuleSpecifier) jsNodeNode()          {}
-func (MultiplicativeExpression) jsNodeNode() {}
-func (NameSpaceImport) jsNodeNode()          {}
-func (NamedImports) jsNodeNode()             {}
-func (NewExpression) jsNodeNode()            {}
-func (NewTarget) jsNodeNode()                {}
-func (ObjectLiteral) jsNodeNode()            {}
-func (ObjectPattern) jsNodeNode()            {}
-func (ObjectType) jsNodeNode()               {}
-func (Parameters) jsNodeNode()               {}
-func (Parenthesized) jsNodeNode()            {}
-func (ParenthesizedType) jsNodeNode()        {}
-func (PostDec) jsNodeNode()                  {}
-func (PostInc) jsNodeNode()                  {}
-func (PreDec) jsNodeNode()                   {}
-func (PreInc) jsNodeNode()                   {}
-func (PredefinedType) jsNodeNode()           {}
-func (Property) jsNodeNode()                 {}
-func (PropertyAccess) jsNodeNode()           {}
-func (PropertyBinding) jsNodeNode()          {}
-func (PropertySignature) jsNodeNode()        {}
-func (Regexp) jsNodeNode()                   {}
-func (RelationalExpression) jsNodeNode()     {}
-func (RestParameter) jsNodeNode()            {}
-func (ReturnStatement) jsNodeNode()          {}
-func (Setter) jsNodeNode()                   {}
-func (ShiftExpression) jsNodeNode()          {}
-func (ShorthandProperty) jsNodeNode()        {}
-func (SingleNameBinding) jsNodeNode()        {}
-func (SpreadElement) jsNodeNode()            {}
-func (StaticMethod) jsNodeNode()             {}
-func (SuperExpression) jsNodeNode()          {}
-func (SwitchStatement) jsNodeNode()          {}
-func (SyntaxProblem) jsNodeNode()            {}
-func (TaggedTemplate) jsNodeNode()           {}
-func (TemplateLiteral) jsNodeNode()          {}
-func (This) jsNodeNode()                     {}
-func (ThisType) jsNodeNode()                 {}
-func (ThrowStatement) jsNodeNode()           {}
-func (TryStatement) jsNodeNode()             {}
-func (TupleType) jsNodeNode()                {}
-func (TypeAliasDeclaration) jsNodeNode()     {}
-func (TypeAnnotation) jsNodeNode()           {}
-func (TypeArguments) jsNodeNode()            {}
-func (TypeConstraint) jsNodeNode()           {}
-func (TypeName) jsNodeNode()                 {}
-func (TypeParameter) jsNodeNode()            {}
-func (TypeParameters) jsNodeNode()           {}
-func (TypeQuery) jsNodeNode()                {}
-func (TypeReference) jsNodeNode()            {}
-func (UnaryExpression) jsNodeNode()          {}
-func (UnionType) jsNodeNode()                {}
-func (VariableDeclaration) jsNodeNode()      {}
-func (VariableStatement) jsNodeNode()        {}
-func (WhileStatement) jsNodeNode()           {}
-func (WithStatement) jsNodeNode()            {}
-func (Yield) jsNodeNode()                    {}
-func (Token) jsNodeNode()                    {}
+func (AccessibilityModifier) jsNodeNode()      {}
+func (AdditiveExpression) jsNodeNode()         {}
+func (Arguments) jsNodeNode()                  {}
+func (ArrayLiteral) jsNodeNode()               {}
+func (ArrayPattern) jsNodeNode()               {}
+func (ArrayType) jsNodeNode()                  {}
+func (ArrowFunction) jsNodeNode()              {}
+func (AssignmentExpression) jsNodeNode()       {}
+func (AssignmentOperator) jsNodeNode()         {}
+func (AsyncArrowFunction) jsNodeNode()         {}
+func (AsyncFunction) jsNodeNode()              {}
+func (AsyncFunctionExpression) jsNodeNode()    {}
+func (AsyncMethod) jsNodeNode()                {}
+func (AwaitExpression) jsNodeNode()            {}
+func (BindingIdentifier) jsNodeNode()          {}
+func (BindingRestElement) jsNodeNode()         {}
+func (BitwiseANDExpression) jsNodeNode()       {}
+func (BitwiseORExpression) jsNodeNode()        {}
+func (BitwiseXORExpression) jsNodeNode()       {}
+func (Block) jsNodeNode()                      {}
+func (Body) jsNodeNode()                       {}
+func (BreakStatement) jsNodeNode()             {}
+func (CallExpression) jsNodeNode()             {}
+func (CallSignature) jsNodeNode()              {}
+func (Case) jsNodeNode()                       {}
+func (Catch) jsNodeNode()                      {}
+func (Class) jsNodeNode()                      {}
+func (ClassBody) jsNodeNode()                  {}
+func (ClassExpr) jsNodeNode()                  {}
+func (CommaExpression) jsNodeNode()            {}
+func (ComputedPropertyName) jsNodeNode()       {}
+func (ConciseBody) jsNodeNode()                {}
+func (ConditionalExpression) jsNodeNode()      {}
+func (ConstructSignature) jsNodeNode()         {}
+func (ConstructorType) jsNodeNode()            {}
+func (ContinueStatement) jsNodeNode()          {}
+func (DebuggerStatement) jsNodeNode()          {}
+func (Default) jsNodeNode()                    {}
+func (DefaultParameter) jsNodeNode()           {}
+func (DoWhileStatement) jsNodeNode()           {}
+func (ElementBinding) jsNodeNode()             {}
+func (EmptyDecl) jsNodeNode()                  {}
+func (EmptyStatement) jsNodeNode()             {}
+func (EqualityExpression) jsNodeNode()         {}
+func (ExponentiationExpression) jsNodeNode()   {}
+func (ExportClause) jsNodeNode()               {}
+func (ExportDeclaration) jsNodeNode()          {}
+func (ExportDefault) jsNodeNode()              {}
+func (ExportSpecifier) jsNodeNode()            {}
+func (ExpressionStatement) jsNodeNode()        {}
+func (Extends) jsNodeNode()                    {}
+func (Finally) jsNodeNode()                    {}
+func (ForBinding) jsNodeNode()                 {}
+func (ForCondition) jsNodeNode()               {}
+func (ForFinalExpression) jsNodeNode()         {}
+func (ForInStatement) jsNodeNode()             {}
+func (ForInStatementWithVar) jsNodeNode()      {}
+func (ForOfStatement) jsNodeNode()             {}
+func (ForOfStatementWithVar) jsNodeNode()      {}
+func (ForStatement) jsNodeNode()               {}
+func (ForStatementWithVar) jsNodeNode()        {}
+func (Function) jsNodeNode()                   {}
+func (FunctionExpression) jsNodeNode()         {}
+func (FunctionType) jsNodeNode()               {}
+func (Generator) jsNodeNode()                  {}
+func (GeneratorExpression) jsNodeNode()        {}
+func (GeneratorMethod) jsNodeNode()            {}
+func (Getter) jsNodeNode()                     {}
+func (IdentifierReference) jsNodeNode()        {}
+func (IfStatement) jsNodeNode()                {}
+func (ImportDeclaration) jsNodeNode()          {}
+func (ImportSpecifier) jsNodeNode()            {}
+func (IndexAccess) jsNodeNode()                {}
+func (IndexSignature) jsNodeNode()             {}
+func (IndexedAccessType) jsNodeNode()          {}
+func (Initializer) jsNodeNode()                {}
+func (IntersectionType) jsNodeNode()           {}
+func (JSXAttributeName) jsNodeNode()           {}
+func (JSXClosingElement) jsNodeNode()          {}
+func (JSXElement) jsNodeNode()                 {}
+func (JSXElementName) jsNodeNode()             {}
+func (JSXExpression) jsNodeNode()              {}
+func (JSXLiteral) jsNodeNode()                 {}
+func (JSXNormalAttribute) jsNodeNode()         {}
+func (JSXOpeningElement) jsNodeNode()          {}
+func (JSXSelfClosingElement) jsNodeNode()      {}
+func (JSXSpreadAttribute) jsNodeNode()         {}
+func (JSXSpreadExpression) jsNodeNode()        {}
+func (JSXText) jsNodeNode()                    {}
+func (KeyOfType) jsNodeNode()                  {}
+func (LabelIdentifier) jsNodeNode()            {}
+func (LabelledStatement) jsNodeNode()          {}
+func (LexicalBinding) jsNodeNode()             {}
+func (LexicalDeclaration) jsNodeNode()         {}
+func (Literal) jsNodeNode()                    {}
+func (LiteralPropertyName) jsNodeNode()        {}
+func (LiteralType) jsNodeNode()                {}
+func (LogicalANDExpression) jsNodeNode()       {}
+func (LogicalORExpression) jsNodeNode()        {}
+func (MappedType) jsNodeNode()                 {}
+func (MemberMethod) jsNodeNode()               {}
+func (MemberVar) jsNodeNode()                  {}
+func (Method) jsNodeNode()                     {}
+func (MethodSignature) jsNodeNode()            {}
+func (Module) jsNodeNode()                     {}
+func (ModuleSpecifier) jsNodeNode()            {}
+func (MultiplicativeExpression) jsNodeNode()   {}
+func (NameSpaceImport) jsNodeNode()            {}
+func (NamedImports) jsNodeNode()               {}
+func (NewExpression) jsNodeNode()              {}
+func (NewTarget) jsNodeNode()                  {}
+func (ObjectLiteral) jsNodeNode()              {}
+func (ObjectPattern) jsNodeNode()              {}
+func (ObjectType) jsNodeNode()                 {}
+func (Parameters) jsNodeNode()                 {}
+func (Parenthesized) jsNodeNode()              {}
+func (ParenthesizedType) jsNodeNode()          {}
+func (PostDec) jsNodeNode()                    {}
+func (PostInc) jsNodeNode()                    {}
+func (PreDec) jsNodeNode()                     {}
+func (PreInc) jsNodeNode()                     {}
+func (PredefinedType) jsNodeNode()             {}
+func (Property) jsNodeNode()                   {}
+func (PropertyAccess) jsNodeNode()             {}
+func (PropertyBinding) jsNodeNode()            {}
+func (PropertySignature) jsNodeNode()          {}
+func (Regexp) jsNodeNode()                     {}
+func (RelationalExpression) jsNodeNode()       {}
+func (RestParameter) jsNodeNode()              {}
+func (ReturnStatement) jsNodeNode()            {}
+func (Setter) jsNodeNode()                     {}
+func (ShiftExpression) jsNodeNode()            {}
+func (ShorthandProperty) jsNodeNode()          {}
+func (SingleNameBinding) jsNodeNode()          {}
+func (SpreadElement) jsNodeNode()              {}
+func (Static) jsNodeNode()                     {}
+func (SuperExpression) jsNodeNode()            {}
+func (SwitchStatement) jsNodeNode()            {}
+func (SyntaxProblem) jsNodeNode()              {}
+func (TaggedTemplate) jsNodeNode()             {}
+func (TemplateLiteral) jsNodeNode()            {}
+func (This) jsNodeNode()                       {}
+func (ThisType) jsNodeNode()                   {}
+func (ThrowStatement) jsNodeNode()             {}
+func (TryStatement) jsNodeNode()               {}
+func (TsAmbientBinding) jsNodeNode()           {}
+func (TsAmbientClass) jsNodeNode()             {}
+func (TsAmbientClassBody) jsNodeNode()         {}
+func (TsAmbientEnum) jsNodeNode()              {}
+func (TsAmbientFunction) jsNodeNode()          {}
+func (TsAmbientFunctionMember) jsNodeNode()    {}
+func (TsAmbientImportAlias) jsNodeNode()       {}
+func (TsAmbientIndexMember) jsNodeNode()       {}
+func (TsAmbientInterface) jsNodeNode()         {}
+func (TsAmbientNamespace) jsNodeNode()         {}
+func (TsAmbientPropertyMember) jsNodeNode()    {}
+func (TsAmbientVar) jsNodeNode()               {}
+func (TsEnum) jsNodeNode()                     {}
+func (TsEnumBody) jsNodeNode()                 {}
+func (TsEnumMember) jsNodeNode()               {}
+func (TsExportAssignment) jsNodeNode()         {}
+func (TsImplementsClause) jsNodeNode()         {}
+func (TsImportAliasDeclaration) jsNodeNode()   {}
+func (TsImportRequireDeclaration) jsNodeNode() {}
+func (TsIndexMemberDeclaration) jsNodeNode()   {}
+func (TsInterface) jsNodeNode()                {}
+func (TsInterfaceExtends) jsNodeNode()         {}
+func (TsNamespace) jsNodeNode()                {}
+func (TsNamespaceBody) jsNodeNode()            {}
+func (TupleType) jsNodeNode()                  {}
+func (TypeAliasDeclaration) jsNodeNode()       {}
+func (TypeAnnotation) jsNodeNode()             {}
+func (TypeArguments) jsNodeNode()              {}
+func (TypeConstraint) jsNodeNode()             {}
+func (TypeName) jsNodeNode()                   {}
+func (TypeParameter) jsNodeNode()              {}
+func (TypeParameters) jsNodeNode()             {}
+func (TypeQuery) jsNodeNode()                  {}
+func (TypeReference) jsNodeNode()              {}
+func (UnaryExpression) jsNodeNode()            {}
+func (UnionType) jsNodeNode()                  {}
+func (VariableDeclaration) jsNodeNode()        {}
+func (VariableStatement) jsNodeNode()          {}
+func (WhileStatement) jsNodeNode()             {}
+func (WithStatement) jsNodeNode()              {}
+func (Yield) jsNodeNode()                      {}
+func (Token) jsNodeNode()                      {}
 
 type BindingPattern interface {
 	JsNode
@@ -225,13 +251,10 @@ type ClassElement interface {
 // classElementNode() ensures that only the following types can be
 // assigned to ClassElement.
 //
-func (AsyncMethod) classElementNode()     {}
-func (EmptyDecl) classElementNode()       {}
-func (GeneratorMethod) classElementNode() {}
-func (Getter) classElementNode()          {}
-func (Method) classElementNode()          {}
-func (Setter) classElementNode()          {}
-func (StaticMethod) classElementNode()    {}
+func (EmptyDecl) classElementNode()                {}
+func (MemberMethod) classElementNode()             {}
+func (MemberVar) classElementNode()                {}
+func (TsIndexMemberDeclaration) classElementNode() {}
 
 type Declaration interface {
 	JsNode
@@ -241,12 +264,23 @@ type Declaration interface {
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
 //
-func (AsyncFunction) declarationNode()        {}
-func (Class) declarationNode()                {}
-func (Function) declarationNode()             {}
-func (Generator) declarationNode()            {}
-func (LexicalDeclaration) declarationNode()   {}
-func (TypeAliasDeclaration) declarationNode() {}
+func (AsyncFunction) declarationNode()            {}
+func (Class) declarationNode()                    {}
+func (Function) declarationNode()                 {}
+func (Generator) declarationNode()                {}
+func (LexicalDeclaration) declarationNode()       {}
+func (TsAmbientClass) declarationNode()           {}
+func (TsAmbientEnum) declarationNode()            {}
+func (TsAmbientFunction) declarationNode()        {}
+func (TsAmbientImportAlias) declarationNode()     {}
+func (TsAmbientInterface) declarationNode()       {}
+func (TsAmbientNamespace) declarationNode()       {}
+func (TsAmbientVar) declarationNode()             {}
+func (TsEnum) declarationNode()                   {}
+func (TsImportAliasDeclaration) declarationNode() {}
+func (TsInterface) declarationNode()              {}
+func (TsNamespace) declarationNode()              {}
+func (TypeAliasDeclaration) declarationNode()     {}
 
 type ElementPattern interface {
 	JsNode
@@ -382,38 +416,51 @@ type ModuleItem interface {
 // moduleItemNode() ensures that only the following types can be
 // assigned to ModuleItem.
 //
-func (AsyncFunction) moduleItemNode()         {}
-func (Block) moduleItemNode()                 {}
-func (BreakStatement) moduleItemNode()        {}
-func (Class) moduleItemNode()                 {}
-func (ContinueStatement) moduleItemNode()     {}
-func (DebuggerStatement) moduleItemNode()     {}
-func (DoWhileStatement) moduleItemNode()      {}
-func (EmptyStatement) moduleItemNode()        {}
-func (ExportDeclaration) moduleItemNode()     {}
-func (ExportDefault) moduleItemNode()         {}
-func (ExpressionStatement) moduleItemNode()   {}
-func (ForInStatement) moduleItemNode()        {}
-func (ForInStatementWithVar) moduleItemNode() {}
-func (ForOfStatement) moduleItemNode()        {}
-func (ForOfStatementWithVar) moduleItemNode() {}
-func (ForStatement) moduleItemNode()          {}
-func (ForStatementWithVar) moduleItemNode()   {}
-func (Function) moduleItemNode()              {}
-func (Generator) moduleItemNode()             {}
-func (IfStatement) moduleItemNode()           {}
-func (ImportDeclaration) moduleItemNode()     {}
-func (LabelledStatement) moduleItemNode()     {}
-func (LexicalDeclaration) moduleItemNode()    {}
-func (ReturnStatement) moduleItemNode()       {}
-func (SwitchStatement) moduleItemNode()       {}
-func (SyntaxProblem) moduleItemNode()         {}
-func (ThrowStatement) moduleItemNode()        {}
-func (TryStatement) moduleItemNode()          {}
-func (TypeAliasDeclaration) moduleItemNode()  {}
-func (VariableStatement) moduleItemNode()     {}
-func (WhileStatement) moduleItemNode()        {}
-func (WithStatement) moduleItemNode()         {}
+func (AsyncFunction) moduleItemNode()              {}
+func (Block) moduleItemNode()                      {}
+func (BreakStatement) moduleItemNode()             {}
+func (Class) moduleItemNode()                      {}
+func (ContinueStatement) moduleItemNode()          {}
+func (DebuggerStatement) moduleItemNode()          {}
+func (DoWhileStatement) moduleItemNode()           {}
+func (EmptyStatement) moduleItemNode()             {}
+func (ExportDeclaration) moduleItemNode()          {}
+func (ExportDefault) moduleItemNode()              {}
+func (ExpressionStatement) moduleItemNode()        {}
+func (ForInStatement) moduleItemNode()             {}
+func (ForInStatementWithVar) moduleItemNode()      {}
+func (ForOfStatement) moduleItemNode()             {}
+func (ForOfStatementWithVar) moduleItemNode()      {}
+func (ForStatement) moduleItemNode()               {}
+func (ForStatementWithVar) moduleItemNode()        {}
+func (Function) moduleItemNode()                   {}
+func (Generator) moduleItemNode()                  {}
+func (IfStatement) moduleItemNode()                {}
+func (ImportDeclaration) moduleItemNode()          {}
+func (LabelledStatement) moduleItemNode()          {}
+func (LexicalDeclaration) moduleItemNode()         {}
+func (ReturnStatement) moduleItemNode()            {}
+func (SwitchStatement) moduleItemNode()            {}
+func (SyntaxProblem) moduleItemNode()              {}
+func (ThrowStatement) moduleItemNode()             {}
+func (TryStatement) moduleItemNode()               {}
+func (TsAmbientClass) moduleItemNode()             {}
+func (TsAmbientEnum) moduleItemNode()              {}
+func (TsAmbientFunction) moduleItemNode()          {}
+func (TsAmbientImportAlias) moduleItemNode()       {}
+func (TsAmbientInterface) moduleItemNode()         {}
+func (TsAmbientNamespace) moduleItemNode()         {}
+func (TsAmbientVar) moduleItemNode()               {}
+func (TsEnum) moduleItemNode()                     {}
+func (TsExportAssignment) moduleItemNode()         {}
+func (TsImportAliasDeclaration) moduleItemNode()   {}
+func (TsImportRequireDeclaration) moduleItemNode() {}
+func (TsInterface) moduleItemNode()                {}
+func (TsNamespace) moduleItemNode()                {}
+func (TypeAliasDeclaration) moduleItemNode()       {}
+func (VariableStatement) moduleItemNode()          {}
+func (WhileStatement) moduleItemNode()             {}
+func (WithStatement) moduleItemNode()              {}
 
 type NamedImport interface {
 	JsNode
@@ -516,35 +563,74 @@ type StatementListItem interface {
 // statementListItemNode() ensures that only the following types can be
 // assigned to StatementListItem.
 //
-func (AsyncFunction) statementListItemNode()         {}
-func (Block) statementListItemNode()                 {}
-func (BreakStatement) statementListItemNode()        {}
-func (Class) statementListItemNode()                 {}
-func (ContinueStatement) statementListItemNode()     {}
-func (DebuggerStatement) statementListItemNode()     {}
-func (DoWhileStatement) statementListItemNode()      {}
-func (EmptyStatement) statementListItemNode()        {}
-func (ExpressionStatement) statementListItemNode()   {}
-func (ForInStatement) statementListItemNode()        {}
-func (ForInStatementWithVar) statementListItemNode() {}
-func (ForOfStatement) statementListItemNode()        {}
-func (ForOfStatementWithVar) statementListItemNode() {}
-func (ForStatement) statementListItemNode()          {}
-func (ForStatementWithVar) statementListItemNode()   {}
-func (Function) statementListItemNode()              {}
-func (Generator) statementListItemNode()             {}
-func (IfStatement) statementListItemNode()           {}
-func (LabelledStatement) statementListItemNode()     {}
-func (LexicalDeclaration) statementListItemNode()    {}
-func (ReturnStatement) statementListItemNode()       {}
-func (SwitchStatement) statementListItemNode()       {}
-func (SyntaxProblem) statementListItemNode()         {}
-func (ThrowStatement) statementListItemNode()        {}
-func (TryStatement) statementListItemNode()          {}
-func (TypeAliasDeclaration) statementListItemNode()  {}
-func (VariableStatement) statementListItemNode()     {}
-func (WhileStatement) statementListItemNode()        {}
-func (WithStatement) statementListItemNode()         {}
+func (AsyncFunction) statementListItemNode()            {}
+func (Block) statementListItemNode()                    {}
+func (BreakStatement) statementListItemNode()           {}
+func (Class) statementListItemNode()                    {}
+func (ContinueStatement) statementListItemNode()        {}
+func (DebuggerStatement) statementListItemNode()        {}
+func (DoWhileStatement) statementListItemNode()         {}
+func (EmptyStatement) statementListItemNode()           {}
+func (ExpressionStatement) statementListItemNode()      {}
+func (ForInStatement) statementListItemNode()           {}
+func (ForInStatementWithVar) statementListItemNode()    {}
+func (ForOfStatement) statementListItemNode()           {}
+func (ForOfStatementWithVar) statementListItemNode()    {}
+func (ForStatement) statementListItemNode()             {}
+func (ForStatementWithVar) statementListItemNode()      {}
+func (Function) statementListItemNode()                 {}
+func (Generator) statementListItemNode()                {}
+func (IfStatement) statementListItemNode()              {}
+func (LabelledStatement) statementListItemNode()        {}
+func (LexicalDeclaration) statementListItemNode()       {}
+func (ReturnStatement) statementListItemNode()          {}
+func (SwitchStatement) statementListItemNode()          {}
+func (SyntaxProblem) statementListItemNode()            {}
+func (ThrowStatement) statementListItemNode()           {}
+func (TryStatement) statementListItemNode()             {}
+func (TsAmbientClass) statementListItemNode()           {}
+func (TsAmbientEnum) statementListItemNode()            {}
+func (TsAmbientFunction) statementListItemNode()        {}
+func (TsAmbientImportAlias) statementListItemNode()     {}
+func (TsAmbientInterface) statementListItemNode()       {}
+func (TsAmbientNamespace) statementListItemNode()       {}
+func (TsAmbientVar) statementListItemNode()             {}
+func (TsEnum) statementListItemNode()                   {}
+func (TsImportAliasDeclaration) statementListItemNode() {}
+func (TsInterface) statementListItemNode()              {}
+func (TsNamespace) statementListItemNode()              {}
+func (TypeAliasDeclaration) statementListItemNode()     {}
+func (VariableStatement) statementListItemNode()        {}
+func (WhileStatement) statementListItemNode()           {}
+func (WithStatement) statementListItemNode()            {}
+
+type TsAmbientClassElement interface {
+	JsNode
+	tsAmbientClassElementNode()
+}
+
+// tsAmbientClassElementNode() ensures that only the following types can be
+// assigned to TsAmbientClassElement.
+//
+func (TsAmbientFunctionMember) tsAmbientClassElementNode() {}
+func (TsAmbientIndexMember) tsAmbientClassElementNode()    {}
+func (TsAmbientPropertyMember) tsAmbientClassElementNode() {}
+
+type TsAmbientElement interface {
+	JsNode
+	tsAmbientElementNode()
+}
+
+// tsAmbientElementNode() ensures that only the following types can be
+// assigned to TsAmbientElement.
+//
+func (TsAmbientClass) tsAmbientElementNode()       {}
+func (TsAmbientEnum) tsAmbientElementNode()        {}
+func (TsAmbientFunction) tsAmbientElementNode()    {}
+func (TsAmbientImportAlias) tsAmbientElementNode() {}
+func (TsAmbientInterface) tsAmbientElementNode()   {}
+func (TsAmbientNamespace) tsAmbientElementNode()   {}
+func (TsAmbientVar) tsAmbientElementNode()         {}
 
 type TsType interface {
 	JsNode
@@ -1023,9 +1109,23 @@ func (n Class) BindingIdentifier() *BindingIdentifier {
 	return nil
 }
 
+func (n Class) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
 func (n Class) Extends() *Extends {
 	if child := n.Child(selector.Extends); child != nil {
 		return &Extends{child}
+	}
+	return nil
+}
+
+func (n Class) TsImplementsClause() *TsImplementsClause {
+	if child := n.Child(selector.TsImplementsClause); child != nil {
+		return &TsImplementsClause{child}
 	}
 	return nil
 }
@@ -1058,9 +1158,23 @@ func (n ClassExpr) BindingIdentifier() *BindingIdentifier {
 	return nil
 }
 
+func (n ClassExpr) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
 func (n ClassExpr) Extends() *Extends {
 	if child := n.Child(selector.Extends); child != nil {
 		return &Extends{child}
+	}
+	return nil
+}
+
+func (n ClassExpr) TsImplementsClause() *TsImplementsClause {
+	if child := n.Child(selector.TsImplementsClause); child != nil {
+		return &TsImplementsClause{child}
 	}
 	return nil
 }
@@ -2130,6 +2244,64 @@ func (n MappedType) TypeAnnotation() TypeAnnotation {
 	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
+type MemberMethod struct {
+	Node
+}
+
+func (n MemberMethod) AccessibilityModifier() *AccessibilityModifier {
+	if child := n.Child(selector.AccessibilityModifier); child != nil {
+		return &AccessibilityModifier{child}
+	}
+	return nil
+}
+
+func (n MemberMethod) Static() *Static {
+	if child := n.Child(selector.Static); child != nil {
+		return &Static{child}
+	}
+	return nil
+}
+
+func (n MemberMethod) MethodDefinition() MethodDefinition {
+	return ToJsNode(n.Child(selector.MethodDefinition)).(MethodDefinition)
+}
+
+type MemberVar struct {
+	Node
+}
+
+func (n MemberVar) AccessibilityModifier() *AccessibilityModifier {
+	if child := n.Child(selector.AccessibilityModifier); child != nil {
+		return &AccessibilityModifier{child}
+	}
+	return nil
+}
+
+func (n MemberVar) Static() *Static {
+	if child := n.Child(selector.Static); child != nil {
+		return &Static{child}
+	}
+	return nil
+}
+
+func (n MemberVar) PropertyName() PropertyName {
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+}
+
+func (n MemberVar) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
+	}
+	return nil
+}
+
+func (n MemberVar) Initializer() *Initializer {
+	if child := n.Child(selector.Initializer); child != nil {
+		return &Initializer{child}
+	}
+	return nil
+}
+
 type Method struct {
 	Node
 }
@@ -2549,12 +2721,8 @@ func (n SpreadElement) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-type StaticMethod struct {
+type Static struct {
 	Node
-}
-
-func (n StaticMethod) MethodDefinition() MethodDefinition {
-	return ToJsNode(n.Child(selector.MethodDefinition)).(MethodDefinition)
 }
 
 type SuperExpression struct {
@@ -2661,6 +2829,378 @@ func (n TryStatement) Finally() *Finally {
 		return &Finally{child}
 	}
 	return nil
+}
+
+type TsAmbientBinding struct {
+	Node
+}
+
+func (n TsAmbientBinding) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsAmbientBinding) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
+	}
+	return nil
+}
+
+type TsAmbientClass struct {
+	Node
+}
+
+func (n TsAmbientClass) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsAmbientClass) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
+func (n TsAmbientClass) Extends() *Extends {
+	if child := n.Child(selector.Extends); child != nil {
+		return &Extends{child}
+	}
+	return nil
+}
+
+func (n TsAmbientClass) TsImplementsClause() *TsImplementsClause {
+	if child := n.Child(selector.TsImplementsClause); child != nil {
+		return &TsImplementsClause{child}
+	}
+	return nil
+}
+
+func (n TsAmbientClass) TsAmbientClassBody() TsAmbientClassBody {
+	return TsAmbientClassBody{n.Child(selector.TsAmbientClassBody)}
+}
+
+type TsAmbientClassBody struct {
+	Node
+}
+
+func (n TsAmbientClassBody) TsAmbientClassElement() []TsAmbientClassElement {
+	nodes := n.Children(selector.TsAmbientClassElement)
+	var result []TsAmbientClassElement = make([]TsAmbientClassElement, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(TsAmbientClassElement))
+	}
+	return result
+}
+
+type TsAmbientEnum struct {
+	Node
+}
+
+func (n TsAmbientEnum) TsEnum() TsEnum {
+	return TsEnum{n.Child(selector.TsEnum)}
+}
+
+type TsAmbientFunction struct {
+	Node
+}
+
+func (n TsAmbientFunction) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsAmbientFunction) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
+func (n TsAmbientFunction) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
+}
+
+func (n TsAmbientFunction) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
+	}
+	return nil
+}
+
+type TsAmbientFunctionMember struct {
+	Node
+}
+
+func (n TsAmbientFunctionMember) AccessibilityModifier() *AccessibilityModifier {
+	if child := n.Child(selector.AccessibilityModifier); child != nil {
+		return &AccessibilityModifier{child}
+	}
+	return nil
+}
+
+func (n TsAmbientFunctionMember) Static() *Static {
+	if child := n.Child(selector.Static); child != nil {
+		return &Static{child}
+	}
+	return nil
+}
+
+func (n TsAmbientFunctionMember) PropertyName() PropertyName {
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+}
+
+func (n TsAmbientFunctionMember) CallSignature() CallSignature {
+	return CallSignature{n.Child(selector.CallSignature)}
+}
+
+type TsAmbientImportAlias struct {
+	Node
+}
+
+func (n TsAmbientImportAlias) TsImportAliasDeclaration() TsImportAliasDeclaration {
+	return TsImportAliasDeclaration{n.Child(selector.TsImportAliasDeclaration)}
+}
+
+type TsAmbientIndexMember struct {
+	Node
+}
+
+func (n TsAmbientIndexMember) IndexSignature() IndexSignature {
+	return IndexSignature{n.Child(selector.IndexSignature)}
+}
+
+type TsAmbientInterface struct {
+	Node
+}
+
+func (n TsAmbientInterface) TsInterface() TsInterface {
+	return TsInterface{n.Child(selector.TsInterface)}
+}
+
+type TsAmbientNamespace struct {
+	Node
+}
+
+func (n TsAmbientNamespace) BindingIdentifier() []BindingIdentifier {
+	nodes := n.Children(selector.BindingIdentifier)
+	var result []BindingIdentifier = make([]BindingIdentifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, BindingIdentifier{node})
+	}
+	return result
+}
+
+func (n TsAmbientNamespace) TsAmbientElement() []TsAmbientElement {
+	nodes := n.Children(selector.TsAmbientElement)
+	var result []TsAmbientElement = make([]TsAmbientElement, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(TsAmbientElement))
+	}
+	return result
+}
+
+type TsAmbientPropertyMember struct {
+	Node
+}
+
+func (n TsAmbientPropertyMember) AccessibilityModifier() *AccessibilityModifier {
+	if child := n.Child(selector.AccessibilityModifier); child != nil {
+		return &AccessibilityModifier{child}
+	}
+	return nil
+}
+
+func (n TsAmbientPropertyMember) Static() *Static {
+	if child := n.Child(selector.Static); child != nil {
+		return &Static{child}
+	}
+	return nil
+}
+
+func (n TsAmbientPropertyMember) PropertyName() PropertyName {
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+}
+
+func (n TsAmbientPropertyMember) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
+	}
+	return nil
+}
+
+type TsAmbientVar struct {
+	Node
+}
+
+func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
+	nodes := n.Children(selector.TsAmbientBinding)
+	var result []TsAmbientBinding = make([]TsAmbientBinding, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, TsAmbientBinding{node})
+	}
+	return result
+}
+
+type TsEnum struct {
+	Node
+}
+
+func (n TsEnum) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsEnum) TsEnumBody() TsEnumBody {
+	return TsEnumBody{n.Child(selector.TsEnumBody)}
+}
+
+type TsEnumBody struct {
+	Node
+}
+
+func (n TsEnumBody) TsEnumMember() []TsEnumMember {
+	nodes := n.Children(selector.TsEnumMember)
+	var result []TsEnumMember = make([]TsEnumMember, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, TsEnumMember{node})
+	}
+	return result
+}
+
+type TsEnumMember struct {
+	Node
+}
+
+func (n TsEnumMember) PropertyName() PropertyName {
+	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+}
+
+func (n TsEnumMember) Expression() Expression {
+	if child := n.Child(selector.Expression); child != nil {
+		return ToJsNode(child).(Expression)
+	}
+	return nil
+}
+
+type TsExportAssignment struct {
+	Node
+}
+
+func (n TsExportAssignment) IdentifierReference() IdentifierReference {
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
+}
+
+type TsImplementsClause struct {
+	Node
+}
+
+func (n TsImplementsClause) TypeReference() []TypeReference {
+	nodes := n.Children(selector.TypeReference)
+	var result []TypeReference = make([]TypeReference, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, TypeReference{node})
+	}
+	return result
+}
+
+type TsImportAliasDeclaration struct {
+	Node
+}
+
+func (n TsImportAliasDeclaration) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsImportAliasDeclaration) Ref() []IdentifierReference {
+	nodes := n.Children(selector.IdentifierReference)
+	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, IdentifierReference{node})
+	}
+	return result
+}
+
+type TsImportRequireDeclaration struct {
+	Node
+}
+
+func (n TsImportRequireDeclaration) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+type TsIndexMemberDeclaration struct {
+	Node
+}
+
+func (n TsIndexMemberDeclaration) IndexSignature() IndexSignature {
+	return IndexSignature{n.Child(selector.IndexSignature)}
+}
+
+type TsInterface struct {
+	Node
+}
+
+func (n TsInterface) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsInterface) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
+func (n TsInterface) TsInterfaceExtends() *TsInterfaceExtends {
+	if child := n.Child(selector.TsInterfaceExtends); child != nil {
+		return &TsInterfaceExtends{child}
+	}
+	return nil
+}
+
+func (n TsInterface) ObjectType() ObjectType {
+	return ObjectType{n.Child(selector.ObjectType)}
+}
+
+type TsInterfaceExtends struct {
+	Node
+}
+
+func (n TsInterfaceExtends) TypeReference() []TypeReference {
+	nodes := n.Children(selector.TypeReference)
+	var result []TypeReference = make([]TypeReference, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, TypeReference{node})
+	}
+	return result
+}
+
+type TsNamespace struct {
+	Node
+}
+
+func (n TsNamespace) BindingIdentifier() []BindingIdentifier {
+	nodes := n.Children(selector.BindingIdentifier)
+	var result []BindingIdentifier = make([]BindingIdentifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, BindingIdentifier{node})
+	}
+	return result
+}
+
+func (n TsNamespace) TsNamespaceBody() TsNamespaceBody {
+	return TsNamespaceBody{n.Child(selector.TsNamespaceBody)}
+}
+
+type TsNamespaceBody struct {
+	Node
+}
+
+func (n TsNamespaceBody) ModuleItem() []ModuleItem {
+	nodes := n.Children(selector.ModuleItem)
+	var result []ModuleItem = make([]ModuleItem, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(ModuleItem))
+	}
+	return result
 }
 
 type TupleType struct {

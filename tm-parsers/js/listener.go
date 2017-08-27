@@ -94,38 +94,44 @@ const (
 	Catch                 // BindingIdentifier? BindingPattern? Block
 	Finally               // Block
 	DebuggerStatement
-	Function                // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	FunctionExpression      // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	Body                    // (StatementListItem)*
-	ArrowFunction           // Parameters Body? ConciseBody?
-	Parameters              // Expression? (Parameter)* SyntaxProblem? BindingIdentifier? BindingPattern?
-	ConciseBody             // Expression
-	AsyncArrowFunction      // BindingIdentifier? expr=Expression? Arguments? Body? ConciseBody?
-	Method                  // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Getter                  // PropertyName TypeAnnotation? Body
-	Setter                  // PropertyName Parameter Body
-	GeneratorMethod         // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Generator               // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	GeneratorExpression     // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	Yield                   // Expression?
-	AsyncMethod             // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFunction           // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFunctionExpression // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	AwaitExpression         // Expression
-	Class                   // BindingIdentifier? Extends? ClassBody
-	ClassExpr               // BindingIdentifier? Extends? ClassBody
-	Extends                 // Expression
-	ClassBody               // (ClassElement)*
-	StaticMethod            // MethodDefinition
+	Function                 // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	FunctionExpression       // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	Body                     // (StatementListItem)*
+	ArrowFunction            // Parameters Body? ConciseBody?
+	Parameters               // Expression? (Parameter)* SyntaxProblem? BindingIdentifier? BindingPattern?
+	ConciseBody              // Expression
+	AsyncArrowFunction       // BindingIdentifier? expr=Expression? Arguments? Body? ConciseBody?
+	Method                   // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Getter                   // PropertyName TypeAnnotation? Body
+	Setter                   // PropertyName Parameter Body
+	GeneratorMethod          // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Generator                // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	GeneratorExpression      // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	Yield                    // Expression?
+	AsyncMethod              // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	AsyncFunction            // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncFunctionExpression  // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	AwaitExpression          // Expression
+	Class                    // BindingIdentifier? TypeParameters? Extends? TsImplementsClause? ClassBody
+	ClassExpr                // BindingIdentifier? TypeParameters? Extends? TsImplementsClause? ClassBody
+	Extends                  // Expression
+	TsImplementsClause       // (TypeReference)+
+	ClassBody                // (ClassElement)*
+	MemberMethod             // AccessibilityModifier? Static? MethodDefinition
+	MemberVar                // AccessibilityModifier? Static? PropertyName TypeAnnotation? Initializer?
+	TsIndexMemberDeclaration // IndexSignature
 	EmptyDecl
-	Module            // (ModuleItem)*
-	ImportDeclaration // BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
-	NameSpaceImport   // BindingIdentifier
-	NamedImports      // (NamedImport)*
-	ImportSpecifier   // IdentifierReference? BindingIdentifier
+	Static
+	Module                     // (ModuleItem)*
+	ImportDeclaration          // BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
+	TsImportRequireDeclaration // BindingIdentifier
+	NameSpaceImport            // BindingIdentifier
+	NamedImports               // (NamedImport)*
+	ImportSpecifier            // IdentifierReference? BindingIdentifier
 	ModuleSpecifier
 	ExportDeclaration     // Declaration? ExportClause? VariableStatement? ModuleSpecifier?
 	ExportDefault         // Declaration? Expression?
+	TsExportAssignment    // IdentifierReference
 	ExportClause          // (ExportElement)*
 	ExportSpecifier       // IdentifierReference BindingIdentifier?
 	JSXElement            // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
@@ -167,10 +173,30 @@ const (
 	DefaultParameter  // AccessibilityModifier? BindingIdentifier? BindingPattern? TypeAnnotation? Initializer?
 	RestParameter     // BindingIdentifier TypeAnnotation?
 	AccessibilityModifier
-	ConstructSignature   // TypeParameters? Parameters TypeAnnotation?
-	IndexSignature       // TypeAnnotation
-	MethodSignature      // PropertyName CallSignature
-	TypeAliasDeclaration // BindingIdentifier TypeParameters? TsType
+	ConstructSignature       // TypeParameters? Parameters TypeAnnotation?
+	IndexSignature           // TypeAnnotation
+	MethodSignature          // PropertyName CallSignature
+	TypeAliasDeclaration     // BindingIdentifier TypeParameters? TsType
+	TsInterface              // BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
+	TsInterfaceExtends       // (TypeReference)+
+	TsEnum                   // BindingIdentifier TsEnumBody
+	TsEnumBody               // (TsEnumMember)*
+	TsEnumMember             // PropertyName Expression?
+	TsNamespace              // (BindingIdentifier)+ TsNamespaceBody
+	TsNamespaceBody          // (ModuleItem)*
+	TsImportAliasDeclaration // BindingIdentifier ref=(IdentifierReference)+
+	TsAmbientVar             // (TsAmbientBinding)+
+	TsAmbientFunction        // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
+	TsAmbientClass           // BindingIdentifier TypeParameters? Extends? TsImplementsClause? TsAmbientClassBody
+	TsAmbientEnum            // TsEnum
+	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
+	TsAmbientBinding         // BindingIdentifier TypeAnnotation?
+	TsAmbientClassBody       // (TsAmbientClassElement)*
+	TsAmbientPropertyMember  // AccessibilityModifier? Static? PropertyName TypeAnnotation?
+	TsAmbientFunctionMember  // AccessibilityModifier? Static? PropertyName CallSignature
+	TsAmbientIndexMember     // IndexSignature
+	TsAmbientInterface       // TsInterface
+	TsAmbientImportAlias     // TsImportAliasDeclaration
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -288,17 +314,23 @@ var nodeTypeStr = [...]string{
 	"Class",
 	"ClassExpr",
 	"Extends",
+	"TsImplementsClause",
 	"ClassBody",
-	"StaticMethod",
+	"MemberMethod",
+	"MemberVar",
+	"TsIndexMemberDeclaration",
 	"EmptyDecl",
+	"Static",
 	"Module",
 	"ImportDeclaration",
+	"TsImportRequireDeclaration",
 	"NameSpaceImport",
 	"NamedImports",
 	"ImportSpecifier",
 	"ModuleSpecifier",
 	"ExportDeclaration",
 	"ExportDefault",
+	"TsExportAssignment",
 	"ExportClause",
 	"ExportSpecifier",
 	"JSXElement",
@@ -344,6 +376,26 @@ var nodeTypeStr = [...]string{
 	"IndexSignature",
 	"MethodSignature",
 	"TypeAliasDeclaration",
+	"TsInterface",
+	"TsInterfaceExtends",
+	"TsEnum",
+	"TsEnumBody",
+	"TsEnumMember",
+	"TsNamespace",
+	"TsNamespaceBody",
+	"TsImportAliasDeclaration",
+	"TsAmbientVar",
+	"TsAmbientFunction",
+	"TsAmbientClass",
+	"TsAmbientEnum",
+	"TsAmbientNamespace",
+	"TsAmbientBinding",
+	"TsAmbientClassBody",
+	"TsAmbientPropertyMember",
+	"TsAmbientFunctionMember",
+	"TsAmbientIndexMember",
+	"TsAmbientInterface",
+	"TsAmbientImportAlias",
 	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",
@@ -372,13 +424,10 @@ var CaseClause = []NodeType{
 }
 
 var ClassElement = []NodeType{
-	AsyncMethod,
 	EmptyDecl,
-	GeneratorMethod,
-	Getter,
-	Method,
-	Setter,
-	StaticMethod,
+	MemberMethod,
+	MemberVar,
+	TsIndexMemberDeclaration,
 }
 
 var Declaration = []NodeType{
@@ -387,6 +436,17 @@ var Declaration = []NodeType{
 	Function,
 	Generator,
 	LexicalDeclaration,
+	TsAmbientClass,
+	TsAmbientEnum,
+	TsAmbientFunction,
+	TsAmbientImportAlias,
+	TsAmbientInterface,
+	TsAmbientNamespace,
+	TsAmbientVar,
+	TsEnum,
+	TsImportAliasDeclaration,
+	TsInterface,
+	TsNamespace,
 	TypeAliasDeclaration,
 }
 
@@ -503,6 +563,19 @@ var ModuleItem = []NodeType{
 	SyntaxProblem,
 	ThrowStatement,
 	TryStatement,
+	TsAmbientClass,
+	TsAmbientEnum,
+	TsAmbientFunction,
+	TsAmbientImportAlias,
+	TsAmbientInterface,
+	TsAmbientNamespace,
+	TsAmbientVar,
+	TsEnum,
+	TsExportAssignment,
+	TsImportAliasDeclaration,
+	TsImportRequireDeclaration,
+	TsInterface,
+	TsNamespace,
 	TypeAliasDeclaration,
 	VariableStatement,
 	WhileStatement,
@@ -592,6 +665,17 @@ var StatementListItem = []NodeType{
 	SyntaxProblem,
 	ThrowStatement,
 	TryStatement,
+	TsAmbientClass,
+	TsAmbientEnum,
+	TsAmbientFunction,
+	TsAmbientImportAlias,
+	TsAmbientInterface,
+	TsAmbientNamespace,
+	TsAmbientVar,
+	TsEnum,
+	TsImportAliasDeclaration,
+	TsInterface,
+	TsNamespace,
 	TypeAliasDeclaration,
 	VariableStatement,
 	WhileStatement,
@@ -603,6 +687,22 @@ var TokenSet = []NodeType{
 	TemplateHead,
 	TemplateMiddle,
 	TemplateTail,
+}
+
+var TsAmbientClassElement = []NodeType{
+	TsAmbientFunctionMember,
+	TsAmbientIndexMember,
+	TsAmbientPropertyMember,
+}
+
+var TsAmbientElement = []NodeType{
+	TsAmbientClass,
+	TsAmbientEnum,
+	TsAmbientFunction,
+	TsAmbientImportAlias,
+	TsAmbientInterface,
+	TsAmbientNamespace,
+	TsAmbientVar,
 }
 
 var TsType = []NodeType{
@@ -1174,6 +1274,37 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,        // BindingIdentifier : 'type'
 	BindingIdentifier,        // BindingIdentifier : 'readonly'
 	BindingIdentifier,        // BindingIdentifier : 'keyof'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : Identifier
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'yield'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'await'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'as'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'from'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'get'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'let'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'of'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'set'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'static'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'target'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'async'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'interface'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'private'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'protected'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'public'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'any'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'boolean'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'number'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'string'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'symbol'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'abstract'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'constructor'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'declare'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'is'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'module'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'namespace'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'require'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'type'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'readonly'
+	BindingIdentifier,        // BindingIdentifier_WithoutImplements : 'keyof'
 	0,                        // AsyncArrowBindingIdentifier : BindingIdentifier
 	LabelIdentifier,          // LabelIdentifier : Identifier
 	LabelIdentifier,          // LabelIdentifier : 'yield'
@@ -3012,14 +3143,29 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration : ClassDeclaration
 	0,                     // Declaration : LexicalDeclaration_In
 	0,                     // Declaration : TypeAliasDeclaration
+	0,                     // Declaration : NamespaceDeclaration
+	0,                     // Declaration : InterfaceDeclaration
+	0,                     // Declaration : EnumDeclaration
+	0,                     // Declaration : ImportAliasDeclaration
+	0,                     // Declaration : AmbientDeclaration
 	0,                     // Declaration_Await : HoistableDeclaration_Await
 	0,                     // Declaration_Await : ClassDeclaration_Await
 	0,                     // Declaration_Await : LexicalDeclaration_Await_In
 	0,                     // Declaration_Await : TypeAliasDeclaration
+	0,                     // Declaration_Await : NamespaceDeclaration
+	0,                     // Declaration_Await : InterfaceDeclaration
+	0,                     // Declaration_Await : EnumDeclaration
+	0,                     // Declaration_Await : ImportAliasDeclaration
+	0,                     // Declaration_Await : AmbientDeclaration
 	0,                     // Declaration_Yield : HoistableDeclaration
 	0,                     // Declaration_Yield : ClassDeclaration_Yield
 	0,                     // Declaration_Yield : LexicalDeclaration_In_Yield
 	0,                     // Declaration_Yield : TypeAliasDeclaration
+	0,                     // Declaration_Yield : NamespaceDeclaration
+	0,                     // Declaration_Yield : InterfaceDeclaration
+	0,                     // Declaration_Yield : EnumDeclaration
+	0,                     // Declaration_Yield : ImportAliasDeclaration
+	0,                     // Declaration_Yield : AmbientDeclaration
 	0,                     // HoistableDeclaration : FunctionDeclaration
 	0,                     // HoistableDeclaration : GeneratorDeclaration
 	0,                     // HoistableDeclaration : AsyncFunctionDeclaration
@@ -3344,10 +3490,13 @@ var ruleNodeType = [...]NodeType{
 	0,                       // UniqueFormalParameters_Yield : FormalParameters_Yield
 	Body,                    // FunctionBody : '{' StatementList '}'
 	Body,                    // FunctionBody : '{' '}'
+	Body,                    // FunctionBody : ';'
 	Body,                    // FunctionBody_Await : '{' StatementList_Await '}'
 	Body,                    // FunctionBody_Await : '{' '}'
+	Body,                    // FunctionBody_Await : ';'
 	Body,                    // FunctionBody_Yield : '{' StatementList_Yield '}'
 	Body,                    // FunctionBody_Yield : '{' '}'
+	Body,                    // FunctionBody_Yield : ';'
 	ArrowFunction,           // ArrowFunction : ArrowParameters .noLineBreak '=>' ConciseBody
 	ArrowFunction,           // ArrowFunction_Await : ArrowParameters_Await .noLineBreak '=>' ConciseBody
 	ArrowFunction,           // ArrowFunction_Await_In : ArrowParameters_Await .noLineBreak '=>' ConciseBody_In
@@ -3468,472 +3617,595 @@ var ruleNodeType = [...]NodeType{
 	AsyncFunction,           // AsyncFunctionDeclaration_Await : 'async' .afterAsync .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
 	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .afterAsync .noLineBreak 'function' BindingIdentifier FormalParameters_Await AsyncFunctionBody
 	AsyncFunctionExpression, // AsyncFunctionExpression : 'async' .afterAsync .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
-	0,                 // AsyncFunctionBody : FunctionBody_Await
-	AwaitExpression,   // AwaitExpression : 'await' UnaryExpression_Await
-	AwaitExpression,   // AwaitExpression_Yield : 'await' UnaryExpression_Await_Yield
-	Class,             // ClassDeclaration : 'class' BindingIdentifier ClassTail
-	Class,             // ClassDeclaration : 'class' ClassTail
-	Class,             // ClassDeclaration_Await : 'class' BindingIdentifier ClassTail_Await
-	Class,             // ClassDeclaration_Await : 'class' ClassTail_Await
-	Class,             // ClassDeclaration_Yield : 'class' BindingIdentifier ClassTail_Yield
-	Class,             // ClassDeclaration_Yield : 'class' ClassTail_Yield
-	ClassExpr,         // ClassExpression : 'class' BindingIdentifier ClassTail
-	ClassExpr,         // ClassExpression : 'class' ClassTail
-	ClassExpr,         // ClassExpression_Await : 'class' BindingIdentifier ClassTail_Await
-	ClassExpr,         // ClassExpression_Await : 'class' ClassTail_Await
-	ClassExpr,         // ClassExpression_Await_Yield : 'class' BindingIdentifier ClassTail_Await_Yield
-	ClassExpr,         // ClassExpression_Await_Yield : 'class' ClassTail_Await_Yield
-	ClassExpr,         // ClassExpression_Yield : 'class' BindingIdentifier ClassTail_Yield
-	ClassExpr,         // ClassExpression_Yield : 'class' ClassTail_Yield
-	0,                 // ClassTail : ClassHeritage ClassBody
-	0,                 // ClassTail : ClassBody
-	0,                 // ClassTail_Await : ClassHeritage_Await ClassBody_Await
-	0,                 // ClassTail_Await : ClassBody_Await
-	0,                 // ClassTail_Await_Yield : ClassHeritage_Await_Yield ClassBody_Await_Yield
-	0,                 // ClassTail_Await_Yield : ClassBody_Await_Yield
-	0,                 // ClassTail_Yield : ClassHeritage_Yield ClassBody_Yield
-	0,                 // ClassTail_Yield : ClassBody_Yield
-	Extends,           // ClassHeritage : 'extends' LeftHandSideExpression
-	Extends,           // ClassHeritage_Await : 'extends' LeftHandSideExpression_Await
-	Extends,           // ClassHeritage_Await_Yield : 'extends' LeftHandSideExpression_Await_Yield
-	Extends,           // ClassHeritage_Yield : 'extends' LeftHandSideExpression_Yield
-	ClassBody,         // ClassBody : '{' ClassElementList '}'
-	ClassBody,         // ClassBody : '{' '}'
-	ClassBody,         // ClassBody_Await : '{' ClassElementList_Await '}'
-	ClassBody,         // ClassBody_Await : '{' '}'
-	ClassBody,         // ClassBody_Await_Yield : '{' ClassElementList_Await_Yield '}'
-	ClassBody,         // ClassBody_Await_Yield : '{' '}'
-	ClassBody,         // ClassBody_Yield : '{' ClassElementList_Yield '}'
-	ClassBody,         // ClassBody_Yield : '{' '}'
-	0,                 // ClassElementList : ClassElement
-	0,                 // ClassElementList : ClassElementList ClassElement
-	0,                 // ClassElementList_Await : ClassElement_Await
-	0,                 // ClassElementList_Await : ClassElementList_Await ClassElement_Await
-	0,                 // ClassElementList_Await_Yield : ClassElement_Await_Yield
-	0,                 // ClassElementList_Await_Yield : ClassElementList_Await_Yield ClassElement_Await_Yield
-	0,                 // ClassElementList_Yield : ClassElement_Yield
-	0,                 // ClassElementList_Yield : ClassElementList_Yield ClassElement_Yield
-	0,                 // ClassElement : MethodDefinition
-	StaticMethod,      // ClassElement : 'static' MethodDefinition
-	EmptyDecl,         // ClassElement : ';'
-	0,                 // ClassElement_Await : MethodDefinition_Await
-	StaticMethod,      // ClassElement_Await : 'static' MethodDefinition_Await
-	EmptyDecl,         // ClassElement_Await : ';'
-	0,                 // ClassElement_Await_Yield : MethodDefinition_Await_Yield
-	StaticMethod,      // ClassElement_Await_Yield : 'static' MethodDefinition_Await_Yield
-	EmptyDecl,         // ClassElement_Await_Yield : ';'
-	0,                 // ClassElement_Yield : MethodDefinition_Yield
-	StaticMethod,      // ClassElement_Yield : 'static' MethodDefinition_Yield
-	EmptyDecl,         // ClassElement_Yield : ';'
-	Module,            // Module : ModuleBodyopt
-	0,                 // ModuleBody : ModuleItemList
-	0,                 // ModuleItemList : ModuleItem
-	0,                 // ModuleItemList : ModuleItemList ModuleItem
-	0,                 // ModuleItem : ImportDeclaration
-	0,                 // ModuleItem : ExportDeclaration
-	0,                 // ModuleItem : StatementListItem
-	ImportDeclaration, // ImportDeclaration : 'import' ImportClause FromClause ';'
-	ImportDeclaration, // ImportDeclaration : 'import' ModuleSpecifier ';'
-	0,                 // ImportClause : ImportedDefaultBinding
-	0,                 // ImportClause : NameSpaceImport
-	0,                 // ImportClause : NamedImports
-	0,                 // ImportClause : ImportedDefaultBinding ',' NameSpaceImport
-	0,                 // ImportClause : ImportedDefaultBinding ',' NamedImports
-	0,                 // ImportedDefaultBinding : ImportedBinding
-	NameSpaceImport,   // NameSpaceImport : '*' 'as' ImportedBinding
-	0,                 // FromClause : 'from' ModuleSpecifier
-	0,                 // NamedImport_list_Comma_separated : NamedImport_list_Comma_separated ',' NamedImport
-	0,                 // NamedImport_list_Comma_separated : NamedImport
-	NamedImports,      // NamedImports : '{' '}'
-	NamedImports,      // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
-	NamedImports,      // NamedImports : '{' NamedImport_list_Comma_separated '}'
-	ImportSpecifier,   // NamedImport : ImportedBinding
-	ImportSpecifier,   // NamedImport : IdentifierNameRef 'as' ImportedBinding
-	SyntaxProblem,     // NamedImport : error
-	ModuleSpecifier,   // ModuleSpecifier : StringLiteral
-	0,                 // ImportedBinding : BindingIdentifier
-	ExportDeclaration, // ExportDeclaration : 'export' '*' FromClause ';'
-	ExportDeclaration, // ExportDeclaration : 'export' ExportClause FromClause ';'
-	ExportDeclaration, // ExportDeclaration : 'export' ExportClause ';'
-	ExportDeclaration, // ExportDeclaration : 'export' VariableStatement
-	ExportDeclaration, // ExportDeclaration : 'export' Declaration
-	ExportDefault,     // ExportDeclaration : 'export' 'default' HoistableDeclaration
-	ExportDefault,     // ExportDeclaration : 'export' 'default' ClassDeclaration
-	ExportDefault,     // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
-	ExportClause,      // ExportClause : '{' '}'
-	ExportClause,      // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
-	ExportClause,      // ExportClause : '{' ExportElement_list_Comma_separated '}'
-	0,                 // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
-	0,                 // ExportElement_list_Comma_separated : ExportElement
-	ExportSpecifier,   // ExportElement : IdentifierNameRef
-	ExportSpecifier,   // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
-	SyntaxProblem,     // ExportElement : error
-	0,                 // JSXChild_Await_optlist : JSXChild_Await_optlist JSXChild_Await
-	0,                 // JSXChild_Await_optlist :
-	0,                 // JSXChild_Await_Yield_optlist : JSXChild_Await_Yield_optlist JSXChild_Await_Yield
-	0,                 // JSXChild_Await_Yield_optlist :
-	0,                 // JSXChild_optlist : JSXChild_optlist JSXChild
-	0,                 // JSXChild_optlist :
-	0,                 // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield
-	0,                 // JSXChild_Yield_optlist :
-	JSXElement,        // JSXElement : JSXSelfClosingElement
-	JSXElement,        // JSXElement : JSXOpeningElement JSXChild_optlist JSXClosingElement
-	JSXElement,        // JSXElement_Await : JSXSelfClosingElement_Await
-	JSXElement,        // JSXElement_Await : JSXOpeningElement_Await JSXChild_Await_optlist JSXClosingElement
-	JSXElement,        // JSXElement_Await_Yield : JSXSelfClosingElement_Await_Yield
-	JSXElement,        // JSXElement_Await_Yield : JSXOpeningElement_Await_Yield JSXChild_Await_Yield_optlist JSXClosingElement
-	JSXElement,        // JSXElement_Yield : JSXSelfClosingElement_Yield
-	JSXElement,        // JSXElement_Yield : JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
-	0,                 // JSXAttribute_Await_optlist : JSXAttribute_Await_optlist JSXAttribute_Await
-	0,                 // JSXAttribute_Await_optlist :
-	0,                 // JSXAttribute_Await_Yield_optlist : JSXAttribute_Await_Yield_optlist JSXAttribute_Await_Yield
-	0,                 // JSXAttribute_Await_Yield_optlist :
-	0,                 // JSXAttribute_optlist : JSXAttribute_optlist JSXAttribute
-	0,                 // JSXAttribute_optlist :
-	0,                 // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
-	0,                 // JSXAttribute_Yield_optlist :
-	JSXSelfClosingElement, // JSXSelfClosingElement : '<' JSXElementName JSXAttribute_optlist '/' '>'
-	JSXSelfClosingElement, // JSXSelfClosingElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '/' '>'
-	JSXSelfClosingElement, // JSXSelfClosingElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '/' '>'
-	JSXSelfClosingElement, // JSXSelfClosingElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '/' '>'
-	JSXOpeningElement,     // JSXOpeningElement : '<' JSXElementName JSXAttribute_optlist '>'
-	JSXOpeningElement,     // JSXOpeningElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '>'
-	JSXOpeningElement,     // JSXOpeningElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '>'
-	JSXOpeningElement,     // JSXOpeningElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '>'
-	JSXClosingElement,     // JSXClosingElement : '<' '/' JSXElementName '>'
-	JSXElementName,        // JSXElementName : jsxIdentifier
-	JSXElementName,        // JSXElementName : jsxIdentifier ':' jsxIdentifier
-	JSXElementName,        // JSXElementName : JSXMemberExpression
-	0,                     // JSXMemberExpression : jsxIdentifier '.' jsxIdentifier
-	0,                     // JSXMemberExpression : JSXMemberExpression '.' jsxIdentifier
-	JSXNormalAttribute,    // JSXAttribute : JSXAttributeName '=' JSXAttributeValue
-	JSXSpreadAttribute,    // JSXAttribute : '{' '...' AssignmentExpression_In '}'
-	JSXNormalAttribute,    // JSXAttribute_Await : JSXAttributeName '=' JSXAttributeValue_Await
-	JSXSpreadAttribute,    // JSXAttribute_Await : '{' '...' AssignmentExpression_Await_In '}'
-	JSXNormalAttribute,    // JSXAttribute_Await_Yield : JSXAttributeName '=' JSXAttributeValue_Await_Yield
-	JSXSpreadAttribute,    // JSXAttribute_Await_Yield : '{' '...' AssignmentExpression_Await_In_Yield '}'
-	JSXNormalAttribute,    // JSXAttribute_Yield : JSXAttributeName '=' JSXAttributeValue_Yield
-	JSXSpreadAttribute,    // JSXAttribute_Yield : '{' '...' AssignmentExpression_In_Yield '}'
-	JSXAttributeName,      // JSXAttributeName : jsxIdentifier
-	JSXAttributeName,      // JSXAttributeName : jsxIdentifier ':' jsxIdentifier
-	JSXLiteral,            // JSXAttributeValue : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue : '{' AssignmentExpression_In '}'
-	0,                     // JSXAttributeValue : JSXElement
-	JSXLiteral,            // JSXAttributeValue_Await : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue_Await : '{' AssignmentExpression_Await_In '}'
-	0,                     // JSXAttributeValue_Await : JSXElement_Await
-	JSXLiteral,            // JSXAttributeValue_Await_Yield : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue_Await_Yield : '{' AssignmentExpression_Await_In_Yield '}'
-	0,                     // JSXAttributeValue_Await_Yield : JSXElement_Await_Yield
-	JSXLiteral,            // JSXAttributeValue_Yield : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue_Yield : '{' AssignmentExpression_In_Yield '}'
-	0,                     // JSXAttributeValue_Yield : JSXElement_Yield
-	JSXText,               // JSXChild : jsxText
-	0,                     // JSXChild : JSXElement
-	JSXExpression,         // JSXChild : '{' AssignmentExpressionopt_In '}'
-	JSXSpreadExpression,   // JSXChild : '{' '...' AssignmentExpressionopt_In '}'
-	JSXText,               // JSXChild_Await : jsxText
-	0,                     // JSXChild_Await : JSXElement_Await
-	JSXExpression,         // JSXChild_Await : '{' AssignmentExpressionopt_Await_In '}'
-	JSXSpreadExpression,   // JSXChild_Await : '{' '...' AssignmentExpressionopt_Await_In '}'
-	JSXText,               // JSXChild_Await_Yield : jsxText
-	0,                     // JSXChild_Await_Yield : JSXElement_Await_Yield
-	JSXExpression,         // JSXChild_Await_Yield : '{' AssignmentExpressionopt_Await_In_Yield '}'
-	JSXSpreadExpression,   // JSXChild_Await_Yield : '{' '...' AssignmentExpressionopt_Await_In_Yield '}'
-	JSXText,               // JSXChild_Yield : jsxText
-	0,                     // JSXChild_Yield : JSXElement_Yield
-	JSXExpression,         // JSXChild_Yield : '{' AssignmentExpressionopt_In_Yield '}'
-	JSXSpreadExpression,   // JSXChild_Yield : '{' '...' AssignmentExpressionopt_In_Yield '}'
-	0,                     // Type : UnionOrIntersectionOrPrimaryType
-	0,                     // Type : FunctionType
-	0,                     // Type : ConstructorType
-	0,                     // TypeParameter_list_Comma_separated : TypeParameter_list_Comma_separated ',' TypeParameter
-	0,                     // TypeParameter_list_Comma_separated : TypeParameter
-	TypeParameters,        // TypeParameters : '<' TypeParameter_list_Comma_separated '>'
-	TypeParameter,         // TypeParameter : BindingIdentifier Constraint
-	TypeParameter,         // TypeParameter : BindingIdentifier
-	TypeConstraint,        // Constraint : 'extends' Type
-	0,                     // Type_list_Comma_separated : Type_list_Comma_separated ',' Type
-	0,                     // Type_list_Comma_separated : Type
-	TypeArguments,         // TypeArguments : '<' Type_list_Comma_separated '>'
-	UnionType,             // UnionOrIntersectionOrPrimaryType : UnionOrIntersectionOrPrimaryType '|' IntersectionOrPrimaryType
-	0,                     // UnionOrIntersectionOrPrimaryType : IntersectionOrPrimaryType
-	IntersectionType,      // IntersectionOrPrimaryType : IntersectionOrPrimaryType '&' KeyOfOrPrimaryType
-	0,                     // IntersectionOrPrimaryType : KeyOfOrPrimaryType
-	0,                     // KeyOfOrPrimaryType : KeyOfType
-	0,                     // KeyOfOrPrimaryType : PrimaryType
-	0,                     // PrimaryType : ParenthesizedType
-	0,                     // PrimaryType : PredefinedType
-	0,                     // PrimaryType : TypeReference
-	0,                     // PrimaryType : ObjectType
-	0,                     // PrimaryType : MappedType
-	0,                     // PrimaryType : ArrayType
-	0,                     // PrimaryType : IndexedAccessType
-	0,                     // PrimaryType : LiteralType
-	0,                     // PrimaryType : TupleType
-	0,                     // PrimaryType : TypeQuery
-	ThisType,              // PrimaryType : 'this'
-	0,                     // lookahead_notStartOfFunctionType :
-	ParenthesizedType,     // ParenthesizedType : '(' lookahead_notStartOfFunctionType Type ')'
-	LiteralType,           // LiteralType : StringLiteral
-	LiteralType,           // LiteralType : '-' NumericLiteral
-	LiteralType,           // LiteralType : NumericLiteral
-	LiteralType,           // LiteralType : 'null'
-	LiteralType,           // LiteralType : 'true'
-	LiteralType,           // LiteralType : 'false'
-	PredefinedType,        // PredefinedType : 'any'
-	PredefinedType,        // PredefinedType : 'number'
-	PredefinedType,        // PredefinedType : 'boolean'
-	PredefinedType,        // PredefinedType : 'string'
-	PredefinedType,        // PredefinedType : 'symbol'
-	PredefinedType,        // PredefinedType : 'void'
-	TypeReference,         // TypeReference : TypeName .noLineBreak TypeArguments
-	TypeReference,         // TypeReference : TypeName .noLineBreak
-	TypeName,              // TypeName : IdentifierReference_WithoutPredefinedTypes
-	TypeName,              // TypeName : NamespaceName '.' IdentifierReference
-	0,                     // NamespaceName : IdentifierReference
-	0,                     // NamespaceName : NamespaceName '.' IdentifierReference
-	0,                     // lookahead_notStartOfMappedType :
-	ObjectType,            // ObjectType : '{' lookahead_notStartOfMappedType TypeBody '}'
-	ObjectType,            // ObjectType : '{' lookahead_notStartOfMappedType '}'
-	0,                     // TypeBody : TypeMemberList
-	0,                     // TypeBody : TypeMemberList ','
-	0,                     // TypeBody : TypeMemberList ';'
-	0,                     // TypeMemberList : TypeMember
-	0,                     // TypeMemberList : TypeMemberList ';' TypeMember
-	0,                     // TypeMemberList : TypeMemberList ',' TypeMember
-	0,                     // TypeMember : PropertySignature
-	0,                     // TypeMember : CallSignature
-	0,                     // TypeMember : ConstructSignature
-	0,                     // TypeMember : IndexSignature
-	0,                     // TypeMember : MethodSignature
-	ArrayType,             // ArrayType : PrimaryType .noLineBreak '[' ']'
-	IndexedAccessType,     // IndexedAccessType : PrimaryType .noLineBreak '[' Type ']'
-	0,                     // StartOfMappedType : 'readonly' '[' IdentifierName 'in'
-	0,                     // StartOfMappedType : '[' IdentifierName 'in'
-	0,                     // lookahead_StartOfMappedType :
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation '}'
-	TupleType,             // TupleType : '[' Type_list_Comma_separated ']'
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingIdentifier ':'
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingIdentifier ','
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingIdentifier '?'
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingIdentifier '='
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingIdentifier ')' '=>'
-	0,                     // StartOfFunctionType : BindingIdentifier ':'
-	0,                     // StartOfFunctionType : BindingIdentifier ','
-	0,                     // StartOfFunctionType : BindingIdentifier '?'
-	0,                     // StartOfFunctionType : BindingIdentifier '='
-	0,                     // StartOfFunctionType : BindingIdentifier ')' '=>'
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingPattern ':'
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingPattern ','
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingPattern '?'
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingPattern '='
-	0,                     // StartOfFunctionType : AccessibilityModifier BindingPattern ')' '=>'
-	0,                     // StartOfFunctionType : BindingPattern ':'
-	0,                     // StartOfFunctionType : BindingPattern ','
-	0,                     // StartOfFunctionType : BindingPattern '?'
-	0,                     // StartOfFunctionType : BindingPattern '='
-	0,                     // StartOfFunctionType : BindingPattern ')' '=>'
-	0,                     // StartOfFunctionType : '...'
-	0,                     // StartOfFunctionType : ')'
-	FunctionType,          // FunctionType : TypeParameters FunctionTypeParameterList '=>' Type
-	FunctionType,          // FunctionType : FunctionTypeParameterList '=>' Type
-	Parameters,            // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ',' ')'
-	Parameters,            // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ')'
-	Parameters,            // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType ',' ')'
-	Parameters,            // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType ')'
-	0,                     // lookahead_StartOfFunctionType :
-	0,                     // Parameter_list_Comma_separated : Parameter_list_Comma_separated ',' Parameter
-	0,                     // Parameter_list_Comma_separated : Parameter
-	ConstructorType,       // ConstructorType : 'new' TypeParameters ParameterList '=>' Type
-	ConstructorType,       // ConstructorType : 'new' ParameterList '=>' Type
-	KeyOfType,             // KeyOfType : 'keyof' KeyOfOrPrimaryType
-	TypeQuery,             // TypeQuery : 'typeof' TypeQueryExpression
-	0,                     // TypeQueryExpression : IdentifierReference
-	0,                     // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
-	PropertySignature,     // PropertySignature : PropertyName_WithoutNew '?' TypeAnnotation
-	PropertySignature,     // PropertySignature : PropertyName_WithoutNew '?'
-	PropertySignature,     // PropertySignature : PropertyName_WithoutNew TypeAnnotation
-	PropertySignature,     // PropertySignature : PropertyName_WithoutNew
-	TypeAnnotation,        // TypeAnnotation : ':' Type
-	0,                     // FormalParameters : TypeParameters ParameterList TypeAnnotation
-	0,                     // FormalParameters : TypeParameters ParameterList
-	0,                     // FormalParameters : ParameterList TypeAnnotation
-	0,                     // FormalParameters : ParameterList
-	0,                     // FormalParameters_Await : TypeParameters ParameterList_Await TypeAnnotation
-	0,                     // FormalParameters_Await : TypeParameters ParameterList_Await
-	0,                     // FormalParameters_Await : ParameterList_Await TypeAnnotation
-	0,                     // FormalParameters_Await : ParameterList_Await
-	0,                     // FormalParameters_Yield : TypeParameters ParameterList_Yield TypeAnnotation
-	0,                     // FormalParameters_Yield : TypeParameters ParameterList_Yield
-	0,                     // FormalParameters_Yield : ParameterList_Yield TypeAnnotation
-	0,                     // FormalParameters_Yield : ParameterList_Yield
-	CallSignature,         // CallSignature : TypeParameters ParameterList TypeAnnotation
-	CallSignature,         // CallSignature : TypeParameters ParameterList
-	CallSignature,         // CallSignature : ParameterList TypeAnnotation
-	CallSignature,         // CallSignature : ParameterList
-	0,                     // Parameter_Await_list_Comma_separated : Parameter_Await_list_Comma_separated ',' Parameter_Await
-	0,                     // Parameter_Await_list_Comma_separated : Parameter_Await
-	0,                     // Parameter_list_Comma_separated1 : Parameter_list_Comma_separated1 ',' Parameter
-	0,                     // Parameter_list_Comma_separated1 : Parameter
-	0,                     // Parameter_Yield_list_Comma_separated : Parameter_Yield_list_Comma_separated ',' Parameter_Yield
-	0,                     // Parameter_Yield_list_Comma_separated : Parameter_Yield
-	Parameters,            // ParameterList : '(' Parameter_list_Comma_separated1 ',' ')'
-	Parameters,            // ParameterList : '(' Parameter_list_Comma_separated1 ')'
-	Parameters,            // ParameterList : '(' ',' ')'
-	Parameters,            // ParameterList : '(' ')'
-	Parameters,            // ParameterList_Await : '(' Parameter_Await_list_Comma_separated ',' ')'
-	Parameters,            // ParameterList_Await : '(' Parameter_Await_list_Comma_separated ')'
-	Parameters,            // ParameterList_Await : '(' ',' ')'
-	Parameters,            // ParameterList_Await : '(' ')'
-	Parameters,            // ParameterList_Yield : '(' Parameter_Yield_list_Comma_separated ',' ')'
-	Parameters,            // ParameterList_Yield : '(' Parameter_Yield_list_Comma_separated ')'
-	Parameters,            // ParameterList_Yield : '(' ',' ')'
-	Parameters,            // ParameterList_Yield : '(' ')'
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingIdentifier '?'
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingIdentifier TypeAnnotation
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingIdentifier
-	DefaultParameter,      // Parameter : BindingIdentifier '?' TypeAnnotation
-	DefaultParameter,      // Parameter : BindingIdentifier '?'
-	DefaultParameter,      // Parameter : BindingIdentifier TypeAnnotation
-	DefaultParameter,      // Parameter : BindingIdentifier
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingPattern '?' TypeAnnotation
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingPattern '?'
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingPattern TypeAnnotation
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingPattern
-	DefaultParameter,      // Parameter : BindingPattern '?' TypeAnnotation
-	DefaultParameter,      // Parameter : BindingPattern '?'
-	DefaultParameter,      // Parameter : BindingPattern TypeAnnotation
-	DefaultParameter,      // Parameter : BindingPattern
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingIdentifier TypeAnnotation Initializer_In
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingIdentifier Initializer_In
-	DefaultParameter,      // Parameter : BindingIdentifier TypeAnnotation Initializer_In
-	DefaultParameter,      // Parameter : BindingIdentifier Initializer_In
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingPattern TypeAnnotation Initializer_In
-	DefaultParameter,      // Parameter : AccessibilityModifier BindingPattern Initializer_In
-	DefaultParameter,      // Parameter : BindingPattern TypeAnnotation Initializer_In
-	DefaultParameter,      // Parameter : BindingPattern Initializer_In
-	RestParameter,         // Parameter : '...' BindingIdentifier TypeAnnotation
-	RestParameter,         // Parameter : '...' BindingIdentifier
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier '?'
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier TypeAnnotation
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier
-	DefaultParameter,      // Parameter_Await : BindingIdentifier '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Await : BindingIdentifier '?'
-	DefaultParameter,      // Parameter_Await : BindingIdentifier TypeAnnotation
-	DefaultParameter,      // Parameter_Await : BindingIdentifier
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingPattern_Await '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingPattern_Await '?'
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingPattern_Await TypeAnnotation
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingPattern_Await
-	DefaultParameter,      // Parameter_Await : BindingPattern_Await '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Await : BindingPattern_Await '?'
-	DefaultParameter,      // Parameter_Await : BindingPattern_Await TypeAnnotation
-	DefaultParameter,      // Parameter_Await : BindingPattern_Await
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier TypeAnnotation Initializer_Await_In
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier Initializer_Await_In
-	DefaultParameter,      // Parameter_Await : BindingIdentifier TypeAnnotation Initializer_Await_In
-	DefaultParameter,      // Parameter_Await : BindingIdentifier Initializer_Await_In
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingPattern_Await TypeAnnotation Initializer_Await_In
-	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingPattern_Await Initializer_Await_In
-	DefaultParameter,      // Parameter_Await : BindingPattern_Await TypeAnnotation Initializer_Await_In
-	DefaultParameter,      // Parameter_Await : BindingPattern_Await Initializer_Await_In
-	RestParameter,         // Parameter_Await : '...' BindingIdentifier TypeAnnotation
-	RestParameter,         // Parameter_Await : '...' BindingIdentifier
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier '?'
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier
-	DefaultParameter,      // Parameter_Yield : BindingIdentifier '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : BindingIdentifier '?'
-	DefaultParameter,      // Parameter_Yield : BindingIdentifier TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : BindingIdentifier
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingPattern_Yield '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingPattern_Yield '?'
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingPattern_Yield TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingPattern_Yield
-	DefaultParameter,      // Parameter_Yield : BindingPattern_Yield '?' TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : BindingPattern_Yield '?'
-	DefaultParameter,      // Parameter_Yield : BindingPattern_Yield TypeAnnotation
-	DefaultParameter,      // Parameter_Yield : BindingPattern_Yield
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier TypeAnnotation Initializer_In_Yield
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier Initializer_In_Yield
-	DefaultParameter,      // Parameter_Yield : BindingIdentifier TypeAnnotation Initializer_In_Yield
-	DefaultParameter,      // Parameter_Yield : BindingIdentifier Initializer_In_Yield
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingPattern_Yield TypeAnnotation Initializer_In_Yield
-	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingPattern_Yield Initializer_In_Yield
-	DefaultParameter,      // Parameter_Yield : BindingPattern_Yield TypeAnnotation Initializer_In_Yield
-	DefaultParameter,      // Parameter_Yield : BindingPattern_Yield Initializer_In_Yield
-	RestParameter,         // Parameter_Yield : '...' BindingIdentifier TypeAnnotation
-	RestParameter,         // Parameter_Yield : '...' BindingIdentifier
-	AccessibilityModifier, // AccessibilityModifier : 'public'
-	AccessibilityModifier, // AccessibilityModifier : 'private'
-	AccessibilityModifier, // AccessibilityModifier : 'protected'
-	ConstructSignature,    // ConstructSignature : 'new' TypeParameters ParameterList TypeAnnotation
-	ConstructSignature,    // ConstructSignature : 'new' TypeParameters ParameterList
-	ConstructSignature,    // ConstructSignature : 'new' ParameterList TypeAnnotation
-	ConstructSignature,    // ConstructSignature : 'new' ParameterList
-	IndexSignature,        // IndexSignature : '[' IdentifierName ':' 'string' ']' TypeAnnotation
-	IndexSignature,        // IndexSignature : '[' IdentifierName ':' 'number' ']' TypeAnnotation
-	MethodSignature,       // MethodSignature : PropertyName_WithoutNew '?' CallSignature
-	MethodSignature,       // MethodSignature : PropertyName_WithoutNew CallSignature
-	TypeAliasDeclaration,  // TypeAliasDeclaration : 'type' BindingIdentifier TypeParameters '=' Type ';'
-	TypeAliasDeclaration,  // TypeAliasDeclaration : 'type' BindingIdentifier '=' Type ';'
-	0,                     // Elisionopt : Elision
-	0,                     // Elisionopt :
-	0,                     // TypeAnnotationopt : TypeAnnotation
-	0,                     // TypeAnnotationopt :
-	0,                     // Initializeropt : Initializer
-	0,                     // Initializeropt :
-	0,                     // Initializeropt_Await : Initializer_Await
-	0,                     // Initializeropt_Await :
-	0,                     // Initializeropt_Await_In : Initializer_Await_In
-	0,                     // Initializeropt_Await_In :
-	0,                     // Initializeropt_Await_In_Yield : Initializer_Await_In_Yield
-	0,                     // Initializeropt_Await_In_Yield :
-	0,                     // Initializeropt_In : Initializer_In
-	0,                     // Initializeropt_In :
-	0,                     // Initializeropt_In_Yield : Initializer_In_Yield
-	0,                     // Initializeropt_In_Yield :
-	0,                     // Initializeropt_Yield : Initializer_Yield
-	0,                     // Initializeropt_Yield :
-	0,                     // BindingRestElementopt : BindingRestElement
-	0,                     // BindingRestElementopt :
-	0,                     // Expressionopt_Await_In : Expression_Await_In
-	0,                     // Expressionopt_Await_In :
-	0,                     // Expressionopt_Await_NoLet : Expression_Await_NoLet
-	0,                     // Expressionopt_Await_NoLet :
-	0,                     // Expressionopt_In : Expression_In
-	0,                     // Expressionopt_In :
-	0,                     // Expressionopt_In_Yield : Expression_In_Yield
-	0,                     // Expressionopt_In_Yield :
-	0,                     // Expressionopt_NoLet : Expression_NoLet
-	0,                     // Expressionopt_NoLet :
-	0,                     // Expressionopt_NoLet_Yield : Expression_NoLet_Yield
-	0,                     // Expressionopt_NoLet_Yield :
-	0,                     // CaseClausesopt : CaseClauses
-	0,                     // CaseClausesopt :
-	0,                     // CaseClausesopt_Await : CaseClauses_Await
-	0,                     // CaseClausesopt_Await :
-	0,                     // CaseClausesopt_Yield : CaseClauses_Yield
-	0,                     // CaseClausesopt_Yield :
-	0,                     // ModuleBodyopt : ModuleBody
-	0,                     // ModuleBodyopt :
-	0,                     // AssignmentExpressionopt_Await_In : AssignmentExpression_Await_In
-	0,                     // AssignmentExpressionopt_Await_In :
-	0,                     // AssignmentExpressionopt_Await_In_Yield : AssignmentExpression_Await_In_Yield
-	0,                     // AssignmentExpressionopt_Await_In_Yield :
-	0,                     // AssignmentExpressionopt_In : AssignmentExpression_In
-	0,                     // AssignmentExpressionopt_In :
-	0,                     // AssignmentExpressionopt_In_Yield : AssignmentExpression_In_Yield
-	0,                     // AssignmentExpressionopt_In_Yield :
+	0,                          // AsyncFunctionBody : FunctionBody_Await
+	AwaitExpression,            // AwaitExpression : 'await' UnaryExpression_Await
+	AwaitExpression,            // AwaitExpression_Yield : 'await' UnaryExpression_Await_Yield
+	Class,                      // ClassDeclaration : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail
+	Class,                      // ClassDeclaration : 'class' TypeParametersopt ClassTail
+	Class,                      // ClassDeclaration_Await : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Await
+	Class,                      // ClassDeclaration_Await : 'class' TypeParametersopt ClassTail_Await
+	Class,                      // ClassDeclaration_Yield : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Yield
+	Class,                      // ClassDeclaration_Yield : 'class' TypeParametersopt ClassTail_Yield
+	ClassExpr,                  // ClassExpression : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail
+	ClassExpr,                  // ClassExpression : 'class' BindingIdentifier_WithoutImplements ClassTail
+	ClassExpr,                  // ClassExpression : 'class' TypeParameters ClassTail
+	ClassExpr,                  // ClassExpression : 'class' ClassTail
+	ClassExpr,                  // ClassExpression_Await : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await : 'class' BindingIdentifier_WithoutImplements ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await : 'class' TypeParameters ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await : 'class' ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await_Yield : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Await_Yield : 'class' BindingIdentifier_WithoutImplements ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Await_Yield : 'class' TypeParameters ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Await_Yield : 'class' ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Yield : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield
+	ClassExpr,                  // ClassExpression_Yield : 'class' BindingIdentifier_WithoutImplements ClassTail_Yield
+	ClassExpr,                  // ClassExpression_Yield : 'class' TypeParameters ClassTail_Yield
+	ClassExpr,                  // ClassExpression_Yield : 'class' ClassTail_Yield
+	0,                          // ClassTail : ClassHeritage ClassBody
+	0,                          // ClassTail_Await : ClassHeritage_Await ClassBody_Await
+	0,                          // ClassTail_Await_Yield : ClassHeritage_Await_Yield ClassBody_Await_Yield
+	0,                          // ClassTail_Yield : ClassHeritage_Yield ClassBody_Yield
+	0,                          // ClassHeritage : ClassExtendsClause ImplementsClause
+	0,                          // ClassHeritage : ClassExtendsClause
+	0,                          // ClassHeritage : ImplementsClause
+	0,                          // ClassHeritage :
+	0,                          // ClassHeritage_Await : ClassExtendsClause_Await ImplementsClause
+	0,                          // ClassHeritage_Await : ClassExtendsClause_Await
+	0,                          // ClassHeritage_Await : ImplementsClause
+	0,                          // ClassHeritage_Await :
+	0,                          // ClassHeritage_Await_Yield : ClassExtendsClause_Await_Yield ImplementsClause
+	0,                          // ClassHeritage_Await_Yield : ClassExtendsClause_Await_Yield
+	0,                          // ClassHeritage_Await_Yield : ImplementsClause
+	0,                          // ClassHeritage_Await_Yield :
+	0,                          // ClassHeritage_Yield : ClassExtendsClause_Yield ImplementsClause
+	0,                          // ClassHeritage_Yield : ClassExtendsClause_Yield
+	0,                          // ClassHeritage_Yield : ImplementsClause
+	0,                          // ClassHeritage_Yield :
+	Extends,                    // ClassExtendsClause : 'extends' LeftHandSideExpression
+	Extends,                    // ClassExtendsClause_Await : 'extends' LeftHandSideExpression_Await
+	Extends,                    // ClassExtendsClause_Await_Yield : 'extends' LeftHandSideExpression_Await_Yield
+	Extends,                    // ClassExtendsClause_Yield : 'extends' LeftHandSideExpression_Yield
+	TsImplementsClause,         // ImplementsClause : 'implements' TypeReference_list_Comma_separated
+	0,                          // TypeReference_list_Comma_separated : TypeReference_list_Comma_separated ',' TypeReference
+	0,                          // TypeReference_list_Comma_separated : TypeReference
+	ClassBody,                  // ClassBody : '{' ClassElementList '}'
+	ClassBody,                  // ClassBody : '{' '}'
+	ClassBody,                  // ClassBody_Await : '{' ClassElementList_Await '}'
+	ClassBody,                  // ClassBody_Await : '{' '}'
+	ClassBody,                  // ClassBody_Await_Yield : '{' ClassElementList_Await_Yield '}'
+	ClassBody,                  // ClassBody_Await_Yield : '{' '}'
+	ClassBody,                  // ClassBody_Yield : '{' ClassElementList_Yield '}'
+	ClassBody,                  // ClassBody_Yield : '{' '}'
+	0,                          // ClassElementList : ClassElement
+	0,                          // ClassElementList : ClassElementList ClassElement
+	0,                          // ClassElementList_Await : ClassElement_Await
+	0,                          // ClassElementList_Await : ClassElementList_Await ClassElement_Await
+	0,                          // ClassElementList_Await_Yield : ClassElement_Await_Yield
+	0,                          // ClassElementList_Await_Yield : ClassElementList_Await_Yield ClassElement_Await_Yield
+	0,                          // ClassElementList_Yield : ClassElement_Yield
+	0,                          // ClassElementList_Yield : ClassElementList_Yield ClassElement_Yield
+	MemberMethod,               // ClassElement : AccessibilityModifier Static MethodDefinition
+	MemberMethod,               // ClassElement : AccessibilityModifier MethodDefinition
+	MemberMethod,               // ClassElement : Static MethodDefinition
+	MemberMethod,               // ClassElement : MethodDefinition
+	MemberVar,                  // ClassElement : AccessibilityModifier Static PropertyName TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                  // ClassElement : AccessibilityModifier PropertyName TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                  // ClassElement : Static PropertyName TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                  // ClassElement : PropertyName TypeAnnotationopt Initializeropt_In ';'
+	TsIndexMemberDeclaration,   // ClassElement : IndexSignature ';'
+	EmptyDecl,                  // ClassElement : ';'
+	MemberMethod,               // ClassElement_Await : AccessibilityModifier Static MethodDefinition_Await
+	MemberMethod,               // ClassElement_Await : AccessibilityModifier MethodDefinition_Await
+	MemberMethod,               // ClassElement_Await : Static MethodDefinition_Await
+	MemberMethod,               // ClassElement_Await : MethodDefinition_Await
+	MemberVar,                  // ClassElement_Await : AccessibilityModifier Static PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                  // ClassElement_Await : AccessibilityModifier PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                  // ClassElement_Await : Static PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                  // ClassElement_Await : PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
+	TsIndexMemberDeclaration,   // ClassElement_Await : IndexSignature ';'
+	EmptyDecl,                  // ClassElement_Await : ';'
+	MemberMethod,               // ClassElement_Await_Yield : AccessibilityModifier Static MethodDefinition_Await_Yield
+	MemberMethod,               // ClassElement_Await_Yield : AccessibilityModifier MethodDefinition_Await_Yield
+	MemberMethod,               // ClassElement_Await_Yield : Static MethodDefinition_Await_Yield
+	MemberMethod,               // ClassElement_Await_Yield : MethodDefinition_Await_Yield
+	MemberVar,                  // ClassElement_Await_Yield : AccessibilityModifier Static PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                  // ClassElement_Await_Yield : AccessibilityModifier PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                  // ClassElement_Await_Yield : Static PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                  // ClassElement_Await_Yield : PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	TsIndexMemberDeclaration,   // ClassElement_Await_Yield : IndexSignature ';'
+	EmptyDecl,                  // ClassElement_Await_Yield : ';'
+	MemberMethod,               // ClassElement_Yield : AccessibilityModifier Static MethodDefinition_Yield
+	MemberMethod,               // ClassElement_Yield : AccessibilityModifier MethodDefinition_Yield
+	MemberMethod,               // ClassElement_Yield : Static MethodDefinition_Yield
+	MemberMethod,               // ClassElement_Yield : MethodDefinition_Yield
+	MemberVar,                  // ClassElement_Yield : AccessibilityModifier Static PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                  // ClassElement_Yield : AccessibilityModifier PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                  // ClassElement_Yield : Static PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                  // ClassElement_Yield : PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	TsIndexMemberDeclaration,   // ClassElement_Yield : IndexSignature ';'
+	EmptyDecl,                  // ClassElement_Yield : ';'
+	Static,                     // Static : 'static'
+	Module,                     // Module : ModuleBodyopt
+	0,                          // ModuleBody : ModuleItemList
+	0,                          // ModuleItemList : ModuleItem
+	0,                          // ModuleItemList : ModuleItemList ModuleItem
+	0,                          // ModuleItem : ImportDeclaration
+	0,                          // ModuleItem : ImportRequireDeclaration
+	0,                          // ModuleItem : ExportDeclaration
+	0,                          // ModuleItem : StatementListItem
+	ImportDeclaration,          // ImportDeclaration : 'import' ImportClause FromClause ';'
+	ImportDeclaration,          // ImportDeclaration : 'import' ModuleSpecifier ';'
+	TsImportRequireDeclaration, // ImportRequireDeclaration : 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
+	0,                  // ImportClause : ImportedDefaultBinding
+	0,                  // ImportClause : NameSpaceImport
+	0,                  // ImportClause : NamedImports
+	0,                  // ImportClause : ImportedDefaultBinding ',' NameSpaceImport
+	0,                  // ImportClause : ImportedDefaultBinding ',' NamedImports
+	0,                  // ImportedDefaultBinding : ImportedBinding
+	NameSpaceImport,    // NameSpaceImport : '*' 'as' ImportedBinding
+	0,                  // FromClause : 'from' ModuleSpecifier
+	0,                  // NamedImport_list_Comma_separated : NamedImport_list_Comma_separated ',' NamedImport
+	0,                  // NamedImport_list_Comma_separated : NamedImport
+	NamedImports,       // NamedImports : '{' '}'
+	NamedImports,       // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
+	NamedImports,       // NamedImports : '{' NamedImport_list_Comma_separated '}'
+	ImportSpecifier,    // NamedImport : ImportedBinding
+	ImportSpecifier,    // NamedImport : IdentifierNameRef 'as' ImportedBinding
+	SyntaxProblem,      // NamedImport : error
+	ModuleSpecifier,    // ModuleSpecifier : StringLiteral
+	0,                  // ImportedBinding : BindingIdentifier
+	ExportDeclaration,  // ExportDeclaration : 'export' '*' FromClause ';'
+	ExportDeclaration,  // ExportDeclaration : 'export' ExportClause FromClause ';'
+	ExportDeclaration,  // ExportDeclaration : 'export' ExportClause ';'
+	ExportDeclaration,  // ExportDeclaration : 'export' VariableStatement
+	ExportDeclaration,  // ExportDeclaration : 'export' Declaration
+	ExportDefault,      // ExportDeclaration : 'export' 'default' HoistableDeclaration
+	ExportDefault,      // ExportDeclaration : 'export' 'default' ClassDeclaration
+	ExportDefault,      // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
+	TsExportAssignment, // ExportDeclaration : 'export' '=' IdentifierReference ';'
+	ExportClause,       // ExportClause : '{' '}'
+	ExportClause,       // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
+	ExportClause,       // ExportClause : '{' ExportElement_list_Comma_separated '}'
+	0,                  // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
+	0,                  // ExportElement_list_Comma_separated : ExportElement
+	ExportSpecifier,    // ExportElement : IdentifierNameRef
+	ExportSpecifier,    // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
+	SyntaxProblem,      // ExportElement : error
+	0,                  // JSXChild_Await_optlist : JSXChild_Await_optlist JSXChild_Await
+	0,                  // JSXChild_Await_optlist :
+	0,                  // JSXChild_Await_Yield_optlist : JSXChild_Await_Yield_optlist JSXChild_Await_Yield
+	0,                  // JSXChild_Await_Yield_optlist :
+	0,                  // JSXChild_optlist : JSXChild_optlist JSXChild
+	0,                  // JSXChild_optlist :
+	0,                  // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield
+	0,                  // JSXChild_Yield_optlist :
+	JSXElement,         // JSXElement : JSXSelfClosingElement
+	JSXElement,         // JSXElement : JSXOpeningElement JSXChild_optlist JSXClosingElement
+	JSXElement,         // JSXElement_Await : JSXSelfClosingElement_Await
+	JSXElement,         // JSXElement_Await : JSXOpeningElement_Await JSXChild_Await_optlist JSXClosingElement
+	JSXElement,         // JSXElement_Await_Yield : JSXSelfClosingElement_Await_Yield
+	JSXElement,         // JSXElement_Await_Yield : JSXOpeningElement_Await_Yield JSXChild_Await_Yield_optlist JSXClosingElement
+	JSXElement,         // JSXElement_Yield : JSXSelfClosingElement_Yield
+	JSXElement,         // JSXElement_Yield : JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
+	0,                  // JSXAttribute_Await_optlist : JSXAttribute_Await_optlist JSXAttribute_Await
+	0,                  // JSXAttribute_Await_optlist :
+	0,                  // JSXAttribute_Await_Yield_optlist : JSXAttribute_Await_Yield_optlist JSXAttribute_Await_Yield
+	0,                  // JSXAttribute_Await_Yield_optlist :
+	0,                  // JSXAttribute_optlist : JSXAttribute_optlist JSXAttribute
+	0,                  // JSXAttribute_optlist :
+	0,                  // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
+	0,                  // JSXAttribute_Yield_optlist :
+	JSXSelfClosingElement,    // JSXSelfClosingElement : '<' JSXElementName JSXAttribute_optlist '/' '>'
+	JSXSelfClosingElement,    // JSXSelfClosingElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '/' '>'
+	JSXSelfClosingElement,    // JSXSelfClosingElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '/' '>'
+	JSXSelfClosingElement,    // JSXSelfClosingElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '/' '>'
+	JSXOpeningElement,        // JSXOpeningElement : '<' JSXElementName JSXAttribute_optlist '>'
+	JSXOpeningElement,        // JSXOpeningElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '>'
+	JSXOpeningElement,        // JSXOpeningElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '>'
+	JSXOpeningElement,        // JSXOpeningElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '>'
+	JSXClosingElement,        // JSXClosingElement : '<' '/' JSXElementName '>'
+	JSXElementName,           // JSXElementName : jsxIdentifier
+	JSXElementName,           // JSXElementName : jsxIdentifier ':' jsxIdentifier
+	JSXElementName,           // JSXElementName : JSXMemberExpression
+	0,                        // JSXMemberExpression : jsxIdentifier '.' jsxIdentifier
+	0,                        // JSXMemberExpression : JSXMemberExpression '.' jsxIdentifier
+	JSXNormalAttribute,       // JSXAttribute : JSXAttributeName '=' JSXAttributeValue
+	JSXSpreadAttribute,       // JSXAttribute : '{' '...' AssignmentExpression_In '}'
+	JSXNormalAttribute,       // JSXAttribute_Await : JSXAttributeName '=' JSXAttributeValue_Await
+	JSXSpreadAttribute,       // JSXAttribute_Await : '{' '...' AssignmentExpression_Await_In '}'
+	JSXNormalAttribute,       // JSXAttribute_Await_Yield : JSXAttributeName '=' JSXAttributeValue_Await_Yield
+	JSXSpreadAttribute,       // JSXAttribute_Await_Yield : '{' '...' AssignmentExpression_Await_In_Yield '}'
+	JSXNormalAttribute,       // JSXAttribute_Yield : JSXAttributeName '=' JSXAttributeValue_Yield
+	JSXSpreadAttribute,       // JSXAttribute_Yield : '{' '...' AssignmentExpression_In_Yield '}'
+	JSXAttributeName,         // JSXAttributeName : jsxIdentifier
+	JSXAttributeName,         // JSXAttributeName : jsxIdentifier ':' jsxIdentifier
+	JSXLiteral,               // JSXAttributeValue : jsxStringLiteral
+	JSXExpression,            // JSXAttributeValue : '{' AssignmentExpression_In '}'
+	0,                        // JSXAttributeValue : JSXElement
+	JSXLiteral,               // JSXAttributeValue_Await : jsxStringLiteral
+	JSXExpression,            // JSXAttributeValue_Await : '{' AssignmentExpression_Await_In '}'
+	0,                        // JSXAttributeValue_Await : JSXElement_Await
+	JSXLiteral,               // JSXAttributeValue_Await_Yield : jsxStringLiteral
+	JSXExpression,            // JSXAttributeValue_Await_Yield : '{' AssignmentExpression_Await_In_Yield '}'
+	0,                        // JSXAttributeValue_Await_Yield : JSXElement_Await_Yield
+	JSXLiteral,               // JSXAttributeValue_Yield : jsxStringLiteral
+	JSXExpression,            // JSXAttributeValue_Yield : '{' AssignmentExpression_In_Yield '}'
+	0,                        // JSXAttributeValue_Yield : JSXElement_Yield
+	JSXText,                  // JSXChild : jsxText
+	0,                        // JSXChild : JSXElement
+	JSXExpression,            // JSXChild : '{' AssignmentExpressionopt_In '}'
+	JSXSpreadExpression,      // JSXChild : '{' '...' AssignmentExpressionopt_In '}'
+	JSXText,                  // JSXChild_Await : jsxText
+	0,                        // JSXChild_Await : JSXElement_Await
+	JSXExpression,            // JSXChild_Await : '{' AssignmentExpressionopt_Await_In '}'
+	JSXSpreadExpression,      // JSXChild_Await : '{' '...' AssignmentExpressionopt_Await_In '}'
+	JSXText,                  // JSXChild_Await_Yield : jsxText
+	0,                        // JSXChild_Await_Yield : JSXElement_Await_Yield
+	JSXExpression,            // JSXChild_Await_Yield : '{' AssignmentExpressionopt_Await_In_Yield '}'
+	JSXSpreadExpression,      // JSXChild_Await_Yield : '{' '...' AssignmentExpressionopt_Await_In_Yield '}'
+	JSXText,                  // JSXChild_Yield : jsxText
+	0,                        // JSXChild_Yield : JSXElement_Yield
+	JSXExpression,            // JSXChild_Yield : '{' AssignmentExpressionopt_In_Yield '}'
+	JSXSpreadExpression,      // JSXChild_Yield : '{' '...' AssignmentExpressionopt_In_Yield '}'
+	0,                        // Type : UnionOrIntersectionOrPrimaryType
+	0,                        // Type : FunctionType
+	0,                        // Type : ConstructorType
+	0,                        // TypeParameter_list_Comma_separated : TypeParameter_list_Comma_separated ',' TypeParameter
+	0,                        // TypeParameter_list_Comma_separated : TypeParameter
+	TypeParameters,           // TypeParameters : '<' TypeParameter_list_Comma_separated '>'
+	TypeParameter,            // TypeParameter : BindingIdentifier Constraint
+	TypeParameter,            // TypeParameter : BindingIdentifier
+	TypeConstraint,           // Constraint : 'extends' Type
+	0,                        // Type_list_Comma_separated : Type_list_Comma_separated ',' Type
+	0,                        // Type_list_Comma_separated : Type
+	TypeArguments,            // TypeArguments : '<' Type_list_Comma_separated '>'
+	UnionType,                // UnionOrIntersectionOrPrimaryType : UnionOrIntersectionOrPrimaryType '|' IntersectionOrPrimaryType
+	0,                        // UnionOrIntersectionOrPrimaryType : IntersectionOrPrimaryType
+	IntersectionType,         // IntersectionOrPrimaryType : IntersectionOrPrimaryType '&' KeyOfOrPrimaryType
+	0,                        // IntersectionOrPrimaryType : KeyOfOrPrimaryType
+	0,                        // KeyOfOrPrimaryType : KeyOfType
+	0,                        // KeyOfOrPrimaryType : PrimaryType
+	0,                        // PrimaryType : ParenthesizedType
+	0,                        // PrimaryType : PredefinedType
+	0,                        // PrimaryType : TypeReference
+	0,                        // PrimaryType : ObjectType
+	0,                        // PrimaryType : MappedType
+	0,                        // PrimaryType : ArrayType
+	0,                        // PrimaryType : IndexedAccessType
+	0,                        // PrimaryType : LiteralType
+	0,                        // PrimaryType : TupleType
+	0,                        // PrimaryType : TypeQuery
+	ThisType,                 // PrimaryType : 'this'
+	0,                        // lookahead_notStartOfFunctionType :
+	ParenthesizedType,        // ParenthesizedType : '(' lookahead_notStartOfFunctionType Type ')'
+	LiteralType,              // LiteralType : StringLiteral
+	LiteralType,              // LiteralType : '-' NumericLiteral
+	LiteralType,              // LiteralType : NumericLiteral
+	LiteralType,              // LiteralType : 'null'
+	LiteralType,              // LiteralType : 'true'
+	LiteralType,              // LiteralType : 'false'
+	PredefinedType,           // PredefinedType : 'any'
+	PredefinedType,           // PredefinedType : 'number'
+	PredefinedType,           // PredefinedType : 'boolean'
+	PredefinedType,           // PredefinedType : 'string'
+	PredefinedType,           // PredefinedType : 'symbol'
+	PredefinedType,           // PredefinedType : 'void'
+	TypeReference,            // TypeReference : TypeName .noLineBreak TypeArguments
+	TypeReference,            // TypeReference : TypeName .noLineBreak
+	TypeName,                 // TypeName : IdentifierReference_WithoutPredefinedTypes
+	TypeName,                 // TypeName : NamespaceName '.' IdentifierReference
+	0,                        // NamespaceName : IdentifierReference
+	0,                        // NamespaceName : NamespaceName '.' IdentifierReference
+	0,                        // lookahead_notStartOfMappedType :
+	ObjectType,               // ObjectType : '{' lookahead_notStartOfMappedType TypeBody '}'
+	ObjectType,               // ObjectType : '{' lookahead_notStartOfMappedType '}'
+	0,                        // TypeBody : TypeMemberList
+	0,                        // TypeBody : TypeMemberList ','
+	0,                        // TypeBody : TypeMemberList ';'
+	0,                        // TypeMemberList : TypeMember
+	0,                        // TypeMemberList : TypeMemberList ';' TypeMember
+	0,                        // TypeMemberList : TypeMemberList ',' TypeMember
+	0,                        // TypeMember : PropertySignature
+	0,                        // TypeMember : CallSignature
+	0,                        // TypeMember : ConstructSignature
+	0,                        // TypeMember : IndexSignature
+	0,                        // TypeMember : MethodSignature
+	ArrayType,                // ArrayType : PrimaryType .noLineBreak '[' ']'
+	IndexedAccessType,        // IndexedAccessType : PrimaryType .noLineBreak '[' Type ']'
+	0,                        // StartOfMappedType : 'readonly' '[' IdentifierName 'in'
+	0,                        // StartOfMappedType : '[' IdentifierName 'in'
+	0,                        // lookahead_StartOfMappedType :
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation '}'
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
+	MappedType,               // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation '}'
+	TupleType,                // TupleType : '[' Type_list_Comma_separated ']'
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingIdentifier ':'
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingIdentifier ','
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingIdentifier '?'
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingIdentifier '='
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingIdentifier ')' '=>'
+	0,                        // StartOfFunctionType : BindingIdentifier ':'
+	0,                        // StartOfFunctionType : BindingIdentifier ','
+	0,                        // StartOfFunctionType : BindingIdentifier '?'
+	0,                        // StartOfFunctionType : BindingIdentifier '='
+	0,                        // StartOfFunctionType : BindingIdentifier ')' '=>'
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingPattern ':'
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingPattern ','
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingPattern '?'
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingPattern '='
+	0,                        // StartOfFunctionType : AccessibilityModifier BindingPattern ')' '=>'
+	0,                        // StartOfFunctionType : BindingPattern ':'
+	0,                        // StartOfFunctionType : BindingPattern ','
+	0,                        // StartOfFunctionType : BindingPattern '?'
+	0,                        // StartOfFunctionType : BindingPattern '='
+	0,                        // StartOfFunctionType : BindingPattern ')' '=>'
+	0,                        // StartOfFunctionType : '...'
+	0,                        // StartOfFunctionType : ')'
+	FunctionType,             // FunctionType : TypeParameters FunctionTypeParameterList '=>' Type
+	FunctionType,             // FunctionType : FunctionTypeParameterList '=>' Type
+	Parameters,               // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ',' ')'
+	Parameters,               // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ')'
+	Parameters,               // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType ',' ')'
+	Parameters,               // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType ')'
+	0,                        // lookahead_StartOfFunctionType :
+	0,                        // Parameter_list_Comma_separated : Parameter_list_Comma_separated ',' Parameter
+	0,                        // Parameter_list_Comma_separated : Parameter
+	ConstructorType,          // ConstructorType : 'new' TypeParameters ParameterList '=>' Type
+	ConstructorType,          // ConstructorType : 'new' ParameterList '=>' Type
+	KeyOfType,                // KeyOfType : 'keyof' KeyOfOrPrimaryType
+	TypeQuery,                // TypeQuery : 'typeof' TypeQueryExpression
+	0,                        // TypeQueryExpression : IdentifierReference
+	0,                        // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
+	PropertySignature,        // PropertySignature : PropertyName_WithoutNew '?' TypeAnnotation
+	PropertySignature,        // PropertySignature : PropertyName_WithoutNew '?'
+	PropertySignature,        // PropertySignature : PropertyName_WithoutNew TypeAnnotation
+	PropertySignature,        // PropertySignature : PropertyName_WithoutNew
+	TypeAnnotation,           // TypeAnnotation : ':' Type
+	0,                        // FormalParameters : TypeParameters ParameterList TypeAnnotation
+	0,                        // FormalParameters : TypeParameters ParameterList
+	0,                        // FormalParameters : ParameterList TypeAnnotation
+	0,                        // FormalParameters : ParameterList
+	0,                        // FormalParameters_Await : TypeParameters ParameterList_Await TypeAnnotation
+	0,                        // FormalParameters_Await : TypeParameters ParameterList_Await
+	0,                        // FormalParameters_Await : ParameterList_Await TypeAnnotation
+	0,                        // FormalParameters_Await : ParameterList_Await
+	0,                        // FormalParameters_Yield : TypeParameters ParameterList_Yield TypeAnnotation
+	0,                        // FormalParameters_Yield : TypeParameters ParameterList_Yield
+	0,                        // FormalParameters_Yield : ParameterList_Yield TypeAnnotation
+	0,                        // FormalParameters_Yield : ParameterList_Yield
+	CallSignature,            // CallSignature : TypeParameters ParameterList TypeAnnotation
+	CallSignature,            // CallSignature : TypeParameters ParameterList
+	CallSignature,            // CallSignature : ParameterList TypeAnnotation
+	CallSignature,            // CallSignature : ParameterList
+	0,                        // Parameter_Await_list_Comma_separated : Parameter_Await_list_Comma_separated ',' Parameter_Await
+	0,                        // Parameter_Await_list_Comma_separated : Parameter_Await
+	0,                        // Parameter_list_Comma_separated1 : Parameter_list_Comma_separated1 ',' Parameter
+	0,                        // Parameter_list_Comma_separated1 : Parameter
+	0,                        // Parameter_Yield_list_Comma_separated : Parameter_Yield_list_Comma_separated ',' Parameter_Yield
+	0,                        // Parameter_Yield_list_Comma_separated : Parameter_Yield
+	Parameters,               // ParameterList : '(' Parameter_list_Comma_separated1 ',' ')'
+	Parameters,               // ParameterList : '(' Parameter_list_Comma_separated1 ')'
+	Parameters,               // ParameterList : '(' ',' ')'
+	Parameters,               // ParameterList : '(' ')'
+	Parameters,               // ParameterList_Await : '(' Parameter_Await_list_Comma_separated ',' ')'
+	Parameters,               // ParameterList_Await : '(' Parameter_Await_list_Comma_separated ')'
+	Parameters,               // ParameterList_Await : '(' ',' ')'
+	Parameters,               // ParameterList_Await : '(' ')'
+	Parameters,               // ParameterList_Yield : '(' Parameter_Yield_list_Comma_separated ',' ')'
+	Parameters,               // ParameterList_Yield : '(' Parameter_Yield_list_Comma_separated ')'
+	Parameters,               // ParameterList_Yield : '(' ',' ')'
+	Parameters,               // ParameterList_Yield : '(' ')'
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingIdentifier '?'
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingIdentifier TypeAnnotation
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingIdentifier
+	DefaultParameter,         // Parameter : BindingIdentifier '?' TypeAnnotation
+	DefaultParameter,         // Parameter : BindingIdentifier '?'
+	DefaultParameter,         // Parameter : BindingIdentifier TypeAnnotation
+	DefaultParameter,         // Parameter : BindingIdentifier
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingPattern '?' TypeAnnotation
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingPattern '?'
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingPattern TypeAnnotation
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingPattern
+	DefaultParameter,         // Parameter : BindingPattern '?' TypeAnnotation
+	DefaultParameter,         // Parameter : BindingPattern '?'
+	DefaultParameter,         // Parameter : BindingPattern TypeAnnotation
+	DefaultParameter,         // Parameter : BindingPattern
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingIdentifier TypeAnnotation Initializer_In
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingIdentifier Initializer_In
+	DefaultParameter,         // Parameter : BindingIdentifier TypeAnnotation Initializer_In
+	DefaultParameter,         // Parameter : BindingIdentifier Initializer_In
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingPattern TypeAnnotation Initializer_In
+	DefaultParameter,         // Parameter : AccessibilityModifier BindingPattern Initializer_In
+	DefaultParameter,         // Parameter : BindingPattern TypeAnnotation Initializer_In
+	DefaultParameter,         // Parameter : BindingPattern Initializer_In
+	RestParameter,            // Parameter : '...' BindingIdentifier TypeAnnotation
+	RestParameter,            // Parameter : '...' BindingIdentifier
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingIdentifier '?'
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingIdentifier TypeAnnotation
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingIdentifier
+	DefaultParameter,         // Parameter_Await : BindingIdentifier '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Await : BindingIdentifier '?'
+	DefaultParameter,         // Parameter_Await : BindingIdentifier TypeAnnotation
+	DefaultParameter,         // Parameter_Await : BindingIdentifier
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingPattern_Await '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingPattern_Await '?'
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingPattern_Await TypeAnnotation
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingPattern_Await
+	DefaultParameter,         // Parameter_Await : BindingPattern_Await '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Await : BindingPattern_Await '?'
+	DefaultParameter,         // Parameter_Await : BindingPattern_Await TypeAnnotation
+	DefaultParameter,         // Parameter_Await : BindingPattern_Await
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingIdentifier TypeAnnotation Initializer_Await_In
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingIdentifier Initializer_Await_In
+	DefaultParameter,         // Parameter_Await : BindingIdentifier TypeAnnotation Initializer_Await_In
+	DefaultParameter,         // Parameter_Await : BindingIdentifier Initializer_Await_In
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingPattern_Await TypeAnnotation Initializer_Await_In
+	DefaultParameter,         // Parameter_Await : AccessibilityModifier BindingPattern_Await Initializer_Await_In
+	DefaultParameter,         // Parameter_Await : BindingPattern_Await TypeAnnotation Initializer_Await_In
+	DefaultParameter,         // Parameter_Await : BindingPattern_Await Initializer_Await_In
+	RestParameter,            // Parameter_Await : '...' BindingIdentifier TypeAnnotation
+	RestParameter,            // Parameter_Await : '...' BindingIdentifier
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingIdentifier '?'
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingIdentifier TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingIdentifier
+	DefaultParameter,         // Parameter_Yield : BindingIdentifier '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : BindingIdentifier '?'
+	DefaultParameter,         // Parameter_Yield : BindingIdentifier TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : BindingIdentifier
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingPattern_Yield '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingPattern_Yield '?'
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingPattern_Yield TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingPattern_Yield
+	DefaultParameter,         // Parameter_Yield : BindingPattern_Yield '?' TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : BindingPattern_Yield '?'
+	DefaultParameter,         // Parameter_Yield : BindingPattern_Yield TypeAnnotation
+	DefaultParameter,         // Parameter_Yield : BindingPattern_Yield
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingIdentifier TypeAnnotation Initializer_In_Yield
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingIdentifier Initializer_In_Yield
+	DefaultParameter,         // Parameter_Yield : BindingIdentifier TypeAnnotation Initializer_In_Yield
+	DefaultParameter,         // Parameter_Yield : BindingIdentifier Initializer_In_Yield
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingPattern_Yield TypeAnnotation Initializer_In_Yield
+	DefaultParameter,         // Parameter_Yield : AccessibilityModifier BindingPattern_Yield Initializer_In_Yield
+	DefaultParameter,         // Parameter_Yield : BindingPattern_Yield TypeAnnotation Initializer_In_Yield
+	DefaultParameter,         // Parameter_Yield : BindingPattern_Yield Initializer_In_Yield
+	RestParameter,            // Parameter_Yield : '...' BindingIdentifier TypeAnnotation
+	RestParameter,            // Parameter_Yield : '...' BindingIdentifier
+	AccessibilityModifier,    // AccessibilityModifier : 'public'
+	AccessibilityModifier,    // AccessibilityModifier : 'private'
+	AccessibilityModifier,    // AccessibilityModifier : 'protected'
+	ConstructSignature,       // ConstructSignature : 'new' TypeParameters ParameterList TypeAnnotation
+	ConstructSignature,       // ConstructSignature : 'new' TypeParameters ParameterList
+	ConstructSignature,       // ConstructSignature : 'new' ParameterList TypeAnnotation
+	ConstructSignature,       // ConstructSignature : 'new' ParameterList
+	IndexSignature,           // IndexSignature : '[' IdentifierName ':' 'string' ']' TypeAnnotation
+	IndexSignature,           // IndexSignature : '[' IdentifierName ':' 'number' ']' TypeAnnotation
+	MethodSignature,          // MethodSignature : PropertyName_WithoutNew '?' CallSignature
+	MethodSignature,          // MethodSignature : PropertyName_WithoutNew CallSignature
+	TypeAliasDeclaration,     // TypeAliasDeclaration : 'type' BindingIdentifier TypeParameters '=' Type ';'
+	TypeAliasDeclaration,     // TypeAliasDeclaration : 'type' BindingIdentifier '=' Type ';'
+	TsInterface,              // InterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
+	TsInterface,              // InterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt ObjectType
+	TsInterfaceExtends,       // InterfaceExtendsClause : 'extends' TypeReference_list_Comma_separated
+	TsEnum,                   // EnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	TsEnum,                   // EnumDeclaration : 'enum' BindingIdentifier EnumBody
+	TsEnumBody,               // EnumBody : '{' EnumMember_list_Comma_separated ',' '}'
+	TsEnumBody,               // EnumBody : '{' EnumMember_list_Comma_separated '}'
+	TsEnumBody,               // EnumBody : '{' '}'
+	0,                        // EnumMember_list_Comma_separated : EnumMember_list_Comma_separated ',' EnumMember
+	0,                        // EnumMember_list_Comma_separated : EnumMember
+	TsEnumMember,             // EnumMember : PropertyName
+	TsEnumMember,             // EnumMember : PropertyName '=' AssignmentExpression_In
+	TsNamespace,              // NamespaceDeclaration : 'namespace' IdentifierPath NamespaceBody
+	0,                        // IdentifierPath : BindingIdentifier
+	0,                        // IdentifierPath : IdentifierPath '.' BindingIdentifier
+	TsNamespaceBody,          // NamespaceBody : '{' ModuleItemList '}'
+	TsNamespaceBody,          // NamespaceBody : '{' '}'
+	TsImportAliasDeclaration, // ImportAliasDeclaration : 'import' BindingIdentifier '=' EntityName ';'
+	0,                  // EntityName : NamespaceName
+	TsAmbientVar,       // AmbientDeclaration : 'declare' AmbientVariableDeclaration
+	TsAmbientFunction,  // AmbientDeclaration : 'declare' AmbientFunctionDeclaration
+	TsAmbientClass,     // AmbientDeclaration : 'declare' AmbientClassDeclaration
+	TsAmbientEnum,      // AmbientDeclaration : 'declare' AmbientEnumDeclaration
+	TsAmbientNamespace, // AmbientDeclaration : 'declare' AmbientNamespaceDeclaration
+	0,                  // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
+	0,                  // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
+	0,                  // AmbientVariableDeclaration : 'const' AmbientBindingList ';'
+	0,                  // AmbientBindingList : AmbientBinding
+	0,                  // AmbientBindingList : AmbientBindingList ',' AmbientBinding
+	TsAmbientBinding,   // AmbientBinding : BindingIdentifier TypeAnnotation
+	TsAmbientBinding,   // AmbientBinding : BindingIdentifier
+	0,                  // AmbientFunctionDeclaration : 'function' BindingIdentifier FormalParameters ';'
+	0,                  // AmbientClassDeclaration : 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
+	TsAmbientClassBody, // AmbientClassBody : '{' AmbientClassBodyElement_list '}'
+	TsAmbientClassBody, // AmbientClassBody : '{' '}'
+	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement_list AmbientClassBodyElement
+	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement
+	TsAmbientPropertyMember, // AmbientClassBodyElement : AccessibilityModifier Static PropertyName TypeAnnotationopt ';'
+	TsAmbientPropertyMember, // AmbientClassBodyElement : AccessibilityModifier PropertyName TypeAnnotationopt ';'
+	TsAmbientPropertyMember, // AmbientClassBodyElement : Static PropertyName TypeAnnotationopt ';'
+	TsAmbientPropertyMember, // AmbientClassBodyElement : PropertyName TypeAnnotationopt ';'
+	TsAmbientFunctionMember, // AmbientClassBodyElement : AccessibilityModifier Static PropertyName CallSignature ';'
+	TsAmbientFunctionMember, // AmbientClassBodyElement : AccessibilityModifier PropertyName CallSignature ';'
+	TsAmbientFunctionMember, // AmbientClassBodyElement : Static PropertyName CallSignature ';'
+	TsAmbientFunctionMember, // AmbientClassBodyElement : PropertyName CallSignature ';'
+	TsAmbientIndexMember,    // AmbientClassBodyElement : IndexSignature ';'
+	0,                       // AmbientEnumDeclaration : EnumDeclaration
+	0,                       // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
+	0,                       // AmbientNamespaceBody : '{' AmbientNamespaceElement_list '}'
+	0,                       // AmbientNamespaceBody : '{' '}'
+	0,                       // AmbientNamespaceElement_list : AmbientNamespaceElement_list AmbientNamespaceElement
+	0,                       // AmbientNamespaceElement_list : AmbientNamespaceElement
+	TsAmbientVar,            // AmbientNamespaceElement : 'export' AmbientVariableDeclaration
+	TsAmbientVar,            // AmbientNamespaceElement : AmbientVariableDeclaration
+	TsAmbientFunction,       // AmbientNamespaceElement : 'export' AmbientFunctionDeclaration
+	TsAmbientFunction,       // AmbientNamespaceElement : AmbientFunctionDeclaration
+	TsAmbientClass,          // AmbientNamespaceElement : 'export' AmbientClassDeclaration
+	TsAmbientClass,          // AmbientNamespaceElement : AmbientClassDeclaration
+	TsAmbientInterface,      // AmbientNamespaceElement : 'export' InterfaceDeclaration
+	TsAmbientInterface,      // AmbientNamespaceElement : InterfaceDeclaration
+	TsAmbientEnum,           // AmbientNamespaceElement : 'export' AmbientEnumDeclaration
+	TsAmbientEnum,           // AmbientNamespaceElement : AmbientEnumDeclaration
+	TsAmbientNamespace,      // AmbientNamespaceElement : 'export' AmbientNamespaceDeclaration
+	TsAmbientNamespace,      // AmbientNamespaceElement : AmbientNamespaceDeclaration
+	TsAmbientImportAlias,    // AmbientNamespaceElement : 'export' ImportAliasDeclaration
+	TsAmbientImportAlias,    // AmbientNamespaceElement : ImportAliasDeclaration
+	0,                       // Elisionopt : Elision
+	0,                       // Elisionopt :
+	0,                       // TypeAnnotationopt : TypeAnnotation
+	0,                       // TypeAnnotationopt :
+	0,                       // Initializeropt : Initializer
+	0,                       // Initializeropt :
+	0,                       // Initializeropt_Await : Initializer_Await
+	0,                       // Initializeropt_Await :
+	0,                       // Initializeropt_Await_In : Initializer_Await_In
+	0,                       // Initializeropt_Await_In :
+	0,                       // Initializeropt_Await_In_Yield : Initializer_Await_In_Yield
+	0,                       // Initializeropt_Await_In_Yield :
+	0,                       // Initializeropt_In : Initializer_In
+	0,                       // Initializeropt_In :
+	0,                       // Initializeropt_In_Yield : Initializer_In_Yield
+	0,                       // Initializeropt_In_Yield :
+	0,                       // Initializeropt_Yield : Initializer_Yield
+	0,                       // Initializeropt_Yield :
+	0,                       // BindingRestElementopt : BindingRestElement
+	0,                       // BindingRestElementopt :
+	0,                       // Expressionopt_Await_In : Expression_Await_In
+	0,                       // Expressionopt_Await_In :
+	0,                       // Expressionopt_Await_NoLet : Expression_Await_NoLet
+	0,                       // Expressionopt_Await_NoLet :
+	0,                       // Expressionopt_In : Expression_In
+	0,                       // Expressionopt_In :
+	0,                       // Expressionopt_In_Yield : Expression_In_Yield
+	0,                       // Expressionopt_In_Yield :
+	0,                       // Expressionopt_NoLet : Expression_NoLet
+	0,                       // Expressionopt_NoLet :
+	0,                       // Expressionopt_NoLet_Yield : Expression_NoLet_Yield
+	0,                       // Expressionopt_NoLet_Yield :
+	0,                       // CaseClausesopt : CaseClauses
+	0,                       // CaseClausesopt :
+	0,                       // CaseClausesopt_Await : CaseClauses_Await
+	0,                       // CaseClausesopt_Await :
+	0,                       // CaseClausesopt_Yield : CaseClauses_Yield
+	0,                       // CaseClausesopt_Yield :
+	0,                       // TypeParametersopt : TypeParameters
+	0,                       // TypeParametersopt :
+	0,                       // ModuleBodyopt : ModuleBody
+	0,                       // ModuleBodyopt :
+	0,                       // AssignmentExpressionopt_Await_In : AssignmentExpression_Await_In
+	0,                       // AssignmentExpressionopt_Await_In :
+	0,                       // AssignmentExpressionopt_Await_In_Yield : AssignmentExpression_Await_In_Yield
+	0,                       // AssignmentExpressionopt_Await_In_Yield :
+	0,                       // AssignmentExpressionopt_In : AssignmentExpression_In
+	0,                       // AssignmentExpressionopt_In :
+	0,                       // AssignmentExpressionopt_In_Yield : AssignmentExpression_In_Yield
+	0,                       // AssignmentExpressionopt_In_Yield :
 }

@@ -685,13 +685,18 @@ var parseTests = []struct {
 		   «;» «;»
 		 }`,
 	}},
-	{js.Javascript, js.StaticMethod, []string{
+	{js.Javascript, js.MemberMethod, []string{
 		`class A extends B {
 		   ;
 		   «static a() { return 1}»
-		   *a() { yield 1; yield 2}
+		   «*a() { yield 1; yield 2}»
 		   «static get x() { return this.x}»
-		   set x(val) { this.x = val}
+		   «set x(val) { this.x = val}»
+		 }`,
+	}},
+	{js.Javascript, js.Static, []string{
+		`class A {
+		   «static» b() { return 1}
 		 }`,
 	}},
 	{js.Javascript, js.Module, []string{
@@ -1012,6 +1017,125 @@ var parseTests = []struct {
 	{js.Typescript, js.MappedType, []string{
 		`type Partial<T> = «{ [P in keyof T]?: T[P] }»`,
 		`type Readonly<T> = «{ /* */ readonly [P in keyof T]: T[P]; }»`,
+	}},
+	{js.Typescript, js.TsImplementsClause, []string{
+		`class A «implements B» {}
+		 class C extends A «implements B» {}`,
+	}},
+	{js.Typescript, js.MemberVar, []string{
+		`class A {
+		   «private a = 5;»
+		   «static a : int = 5;»
+		 }`,
+	}},
+	{js.Typescript, js.Static, []string{
+		`class A {
+		   «static» a : int = 5;
+		   private «static» b() { return 1}
+		 }`,
+	}},
+	{js.Typescript, js.MemberMethod, []string{
+		`class A extends B {
+		   ;
+		   «private static a() { return 1}»
+		   «public *a() { yield 1; yield 2}»
+		   «protected static get x() { return this.x}»
+		   «private set x(val) { this.x = val}»
+		 }`,
+	}},
+	{js.Typescript, js.TsIndexMemberDeclaration, []string{
+		`class A {
+		   «[a:string] : int;»
+		   «[key:number] : string;»
+		 }`,
+	}},
+	{js.Typescript, js.TsInterface, []string{
+		`«interface A {}»`,
+		`«interface A<Q> extends B { a : int, b : string }»`,
+	}},
+	{js.Typescript, js.TsInterfaceExtends, []string{
+		`interface A<Q> «extends B» { a : int, b : string }`,
+	}},
+	{js.Typescript, js.TsEnum, []string{
+		`«enum A {}»`,
+		`«const enum A { X = 1, Y = 2 }»`,
+	}},
+	{js.Typescript, js.TsEnumBody, []string{
+		`const enum A «{ X = 1, Y = 2 }»`,
+	}},
+	{js.Typescript, js.TsEnumMember, []string{
+		`const enum A { «X = 1», «Y = 2», }`,
+	}},
+	{js.Typescript, js.TsNamespace, []string{
+		`«namespace A {}»`,
+		`«namespace foo.bar { function a () {} }»`,
+	}},
+	{js.Typescript, js.TsNamespaceBody, []string{
+		`namespace foo.bar «{ function a () {} }»`,
+	}},
+	{js.Typescript, js.TsImportAliasDeclaration, []string{
+		`«import foo = abc.foo;»`,
+	}},
+	{js.Typescript, js.TsImportRequireDeclaration, []string{
+		`«import foo = require('somefoo');»`,
+		`«import foo = require("somefoo");»`,
+	}},
+	{js.Typescript, js.TsExportAssignment, []string{
+		`«export = abc;»`,
+	}},
+	{js.Typescript, js.TsAmbientVar, []string{
+		`«declare var a : int, b : string;»`,
+		`«declare const i;»`,
+		`declare namespace foo { «export const i;» }`,
+	}},
+	{js.Typescript, js.TsAmbientBinding, []string{
+		`declare var «a : int», «b : string»;`,
+		`declare const «i»;`,
+	}},
+	{js.Typescript, js.TsAmbientFunction, []string{
+		`«declare function go();»`,
+		`«declare function go<T>(a : string) : T;»`,
+		`declare namespace foo { «export function go();» }`,
+	}},
+	{js.Typescript, js.TsAmbientClass, []string{
+		`«declare class A {}»`,
+		`«declare class A {  [a:number]:string; private static a; private static foo<T>() : string; }»`,
+		`declare namespace foo { «export class A {}» }`,
+	}},
+	{js.Typescript, js.TsAmbientClassBody, []string{
+		`declare class A «{}»`,
+		`declare class A «{  [a:number]:string; private static a; private static foo<T>() : string; }»`,
+	}},
+	{js.Typescript, js.TsAmbientEnum, []string{
+		`«declare enum Kind { A, B }»`,
+		`declare namespace foo { «export enum A {}» }`,
+	}},
+	{js.Typescript, js.TsAmbientInterface, []string{
+		`declare namespace foo { «export interface A {}» }`,
+	}},
+	{js.Typescript, js.TsAmbientNamespace, []string{
+		`«declare namespace foo.bar {  }»`,
+	}},
+	{js.Typescript, js.TsAmbientPropertyMember, []string{
+		`declare class A {
+			«a : Q<X>;»
+			«private static b;»
+		}`,
+	}},
+	{js.Typescript, js.TsAmbientFunctionMember, []string{
+		`declare class A {
+			«a(x : number) : Q<X>;»
+			«private static b(abc);»
+		}`,
+	}},
+	{js.Typescript, js.TsAmbientIndexMember, []string{
+		`declare class A {
+			«[key : number] : string;»
+		}`,
+	}},
+	{js.Typescript, js.TsAmbientImportAlias, []string{
+		`declare namespace foo { «import a = foo;» }`,
+		`declare namespace foo { «export import a = foo;» }`,
 	}},
 
 	// Error Recovery

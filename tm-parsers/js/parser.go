@@ -21,7 +21,7 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(2, 4769, lexer)
+	return p.parse(2, 5143, lexer)
 }
 
 func lookaheadNext(lexer *Lexer) int32 {
@@ -35,11 +35,11 @@ restart:
 }
 
 func (p *Parser) AtStartOfFunctionType() bool {
-	return p.lookahead(0, 4766)
+	return p.lookahead(0, 5140)
 }
 
 func (p *Parser) AtStartOfMappedType() bool {
-	return p.lookahead(1, 4767)
+	return p.lookahead(1, 5141)
 }
 
 func (p *Parser) lookahead(start, end int16) bool {
@@ -136,24 +136,24 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
-	case 2585: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
+	case 2631: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2599: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
+	case 2645: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2613: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	case 2659: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3303:
+	case 3475:
 		if p.AtStartOfMappedType() {
-			lhs.sym.symbol = 843 /* lookahead_StartOfMappedType */
+			lhs.sym.symbol = 852 /* lookahead_StartOfMappedType */
 		} else {
-			lhs.sym.symbol = 835 /* lookahead_notStartOfMappedType */
+			lhs.sym.symbol = 844 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 3304:
+	case 3476:
 		if p.AtStartOfFunctionType() {
-			lhs.sym.symbol = 849 /* lookahead_StartOfFunctionType */
+			lhs.sym.symbol = 858 /* lookahead_StartOfFunctionType */
 		} else {
-			lhs.sym.symbol = 828 /* lookahead_notStartOfFunctionType */
+			lhs.sym.symbol = 837 /* lookahead_notStartOfFunctionType */
 		}
 		return
 	}

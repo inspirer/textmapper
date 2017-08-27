@@ -212,6 +212,10 @@ func ToJsNode(n Node) JsNode {
 		return &LogicalORExpression{n}
 	case js.MappedType:
 		return &MappedType{n}
+	case js.MemberMethod:
+		return &MemberMethod{n}
+	case js.MemberVar:
+		return &MemberVar{n}
 	case js.Method:
 		return &Method{n}
 	case js.MethodSignature:
@@ -278,8 +282,8 @@ func ToJsNode(n Node) JsNode {
 		return &SingleNameBinding{n}
 	case js.SpreadElement:
 		return &SpreadElement{n}
-	case js.StaticMethod:
-		return &StaticMethod{n}
+	case js.Static:
+		return &Static{n}
 	case js.SuperExpression:
 		return &SuperExpression{n}
 	case js.SwitchStatement:
@@ -298,6 +302,54 @@ func ToJsNode(n Node) JsNode {
 		return &ThrowStatement{n}
 	case js.TryStatement:
 		return &TryStatement{n}
+	case js.TsAmbientBinding:
+		return &TsAmbientBinding{n}
+	case js.TsAmbientClass:
+		return &TsAmbientClass{n}
+	case js.TsAmbientClassBody:
+		return &TsAmbientClassBody{n}
+	case js.TsAmbientEnum:
+		return &TsAmbientEnum{n}
+	case js.TsAmbientFunction:
+		return &TsAmbientFunction{n}
+	case js.TsAmbientFunctionMember:
+		return &TsAmbientFunctionMember{n}
+	case js.TsAmbientImportAlias:
+		return &TsAmbientImportAlias{n}
+	case js.TsAmbientIndexMember:
+		return &TsAmbientIndexMember{n}
+	case js.TsAmbientInterface:
+		return &TsAmbientInterface{n}
+	case js.TsAmbientNamespace:
+		return &TsAmbientNamespace{n}
+	case js.TsAmbientPropertyMember:
+		return &TsAmbientPropertyMember{n}
+	case js.TsAmbientVar:
+		return &TsAmbientVar{n}
+	case js.TsEnum:
+		return &TsEnum{n}
+	case js.TsEnumBody:
+		return &TsEnumBody{n}
+	case js.TsEnumMember:
+		return &TsEnumMember{n}
+	case js.TsExportAssignment:
+		return &TsExportAssignment{n}
+	case js.TsImplementsClause:
+		return &TsImplementsClause{n}
+	case js.TsImportAliasDeclaration:
+		return &TsImportAliasDeclaration{n}
+	case js.TsImportRequireDeclaration:
+		return &TsImportRequireDeclaration{n}
+	case js.TsIndexMemberDeclaration:
+		return &TsIndexMemberDeclaration{n}
+	case js.TsInterface:
+		return &TsInterface{n}
+	case js.TsInterfaceExtends:
+		return &TsInterfaceExtends{n}
+	case js.TsNamespace:
+		return &TsNamespace{n}
+	case js.TsNamespaceBody:
+		return &TsNamespaceBody{n}
 	case js.TupleType:
 		return &TupleType{n}
 	case js.TypeAliasDeclaration:
