@@ -41,6 +41,7 @@ const (
 	PreInc                   // Expression
 	PreDec                   // Expression
 	UnaryExpression          // Expression
+	TsCastExpression         // TsType Expression
 	AdditiveExpression       // left=Expression right=Expression
 	ShiftExpression          // left=Expression right=Expression
 	MultiplicativeExpression // left=Expression right=Expression
@@ -240,6 +241,7 @@ var nodeTypeStr = [...]string{
 	"PreInc",
 	"PreDec",
 	"UnaryExpression",
+	"TsCastExpression",
 	"AdditiveExpression",
 	"ShiftExpression",
 	"MultiplicativeExpression",
@@ -504,6 +506,7 @@ var Expression = []NodeType{
 	TaggedTemplate,
 	TemplateLiteral,
 	This,
+	TsCastExpression,
 	UnaryExpression,
 	Yield,
 }
@@ -2288,6 +2291,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression : '-' UnaryExpression
 	UnaryExpression,          // UnaryExpression : '~' UnaryExpression
 	UnaryExpression,          // UnaryExpression : '!' UnaryExpression
+	TsCastExpression,         // UnaryExpression : '<' Type '>' UnaryExpression
 	0,                        // UnaryExpression_Await : UpdateExpression_Await
 	UnaryExpression,          // UnaryExpression_Await : 'delete' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await : 'void' UnaryExpression_Await
@@ -2297,6 +2301,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_Await : '~' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await : '!' UnaryExpression_Await
 	0,                        // UnaryExpression_Await : AwaitExpression
+	TsCastExpression,         // UnaryExpression_Await : '<' Type '>' UnaryExpression_Await
 	0,                        // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
 	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'delete' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'void' UnaryExpression_Await
@@ -2306,6 +2311,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '~' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '!' UnaryExpression_Await
 	0,                        // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : AwaitExpression
+	TsCastExpression,         // UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : '<' Type '>' UnaryExpression_Await
 	0,                        // UnaryExpression_Await_NoLet : UpdateExpression_Await_NoLet
 	UnaryExpression,          // UnaryExpression_Await_NoLet : 'delete' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await_NoLet : 'void' UnaryExpression_Await
@@ -2315,6 +2321,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_Await_NoLet : '~' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await_NoLet : '!' UnaryExpression_Await
 	0,                        // UnaryExpression_Await_NoLet : AwaitExpression
+	TsCastExpression,         // UnaryExpression_Await_NoLet : '<' Type '>' UnaryExpression_Await
 	0,                        // UnaryExpression_Await_NoObjLiteral : UpdateExpression_Await_NoObjLiteral
 	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : 'delete' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : 'void' UnaryExpression_Await
@@ -2324,6 +2331,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : '~' UnaryExpression_Await
 	UnaryExpression,          // UnaryExpression_Await_NoObjLiteral : '!' UnaryExpression_Await
 	0,                        // UnaryExpression_Await_NoObjLiteral : AwaitExpression
+	TsCastExpression,         // UnaryExpression_Await_NoObjLiteral : '<' Type '>' UnaryExpression_Await
 	0,                        // UnaryExpression_Await_StartWithLet : UpdateExpression_Await_StartWithLet
 	0,                        // UnaryExpression_Await_Yield : UpdateExpression_Await_Yield
 	UnaryExpression,          // UnaryExpression_Await_Yield : 'delete' UnaryExpression_Await_Yield
@@ -2334,6 +2342,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_Await_Yield : '~' UnaryExpression_Await_Yield
 	UnaryExpression,          // UnaryExpression_Await_Yield : '!' UnaryExpression_Await_Yield
 	0,                        // UnaryExpression_Await_Yield : AwaitExpression_Yield
+	TsCastExpression,         // UnaryExpression_Await_Yield : '<' Type '>' UnaryExpression_Await_Yield
 	0,                        // UnaryExpression_NoFuncClass : UpdateExpression_NoFuncClass
 	UnaryExpression,          // UnaryExpression_NoFuncClass : 'delete' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoFuncClass : 'void' UnaryExpression
@@ -2342,6 +2351,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_NoFuncClass : '-' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoFuncClass : '~' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoFuncClass : '!' UnaryExpression
+	TsCastExpression,         // UnaryExpression_NoFuncClass : '<' Type '>' UnaryExpression
 	0,                        // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral : UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral : 'delete' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral : 'void' UnaryExpression
@@ -2350,6 +2360,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral : '-' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral : '~' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral : '!' UnaryExpression
+	TsCastExpression,         // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral : '<' Type '>' UnaryExpression
 	0,                        // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'delete' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'void' UnaryExpression_Yield
@@ -2358,6 +2369,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : '-' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : '~' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : '!' UnaryExpression_Yield
+	TsCastExpression,         // UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : '<' Type '>' UnaryExpression_Yield
 	0,                        // UnaryExpression_NoLet : UpdateExpression_NoLet
 	UnaryExpression,          // UnaryExpression_NoLet : 'delete' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoLet : 'void' UnaryExpression
@@ -2366,6 +2378,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_NoLet : '-' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoLet : '~' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoLet : '!' UnaryExpression
+	TsCastExpression,         // UnaryExpression_NoLet : '<' Type '>' UnaryExpression
 	0,                        // UnaryExpression_NoLet_Yield : UpdateExpression_NoLet_Yield
 	UnaryExpression,          // UnaryExpression_NoLet_Yield : 'delete' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_NoLet_Yield : 'void' UnaryExpression_Yield
@@ -2374,6 +2387,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_NoLet_Yield : '-' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_NoLet_Yield : '~' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_NoLet_Yield : '!' UnaryExpression_Yield
+	TsCastExpression,         // UnaryExpression_NoLet_Yield : '<' Type '>' UnaryExpression_Yield
 	0,                        // UnaryExpression_NoObjLiteral : UpdateExpression_NoObjLiteral
 	UnaryExpression,          // UnaryExpression_NoObjLiteral : 'delete' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoObjLiteral : 'void' UnaryExpression
@@ -2382,6 +2396,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_NoObjLiteral : '-' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoObjLiteral : '~' UnaryExpression
 	UnaryExpression,          // UnaryExpression_NoObjLiteral : '!' UnaryExpression
+	TsCastExpression,         // UnaryExpression_NoObjLiteral : '<' Type '>' UnaryExpression
 	0,                        // UnaryExpression_StartWithLet : UpdateExpression_StartWithLet
 	0,                        // UnaryExpression_StartWithLet_Yield : UpdateExpression_StartWithLet_Yield
 	0,                        // UnaryExpression_Yield : UpdateExpression_Yield
@@ -2392,6 +2407,7 @@ var ruleNodeType = [...]NodeType{
 	UnaryExpression,          // UnaryExpression_Yield : '-' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_Yield : '~' UnaryExpression_Yield
 	UnaryExpression,          // UnaryExpression_Yield : '!' UnaryExpression_Yield
+	TsCastExpression,         // UnaryExpression_Yield : '<' Type '>' UnaryExpression_Yield
 	0,                        // ArithmeticExpression : UnaryExpression
 	AdditiveExpression,       // ArithmeticExpression : ArithmeticExpression '+' ArithmeticExpression
 	AdditiveExpression,       // ArithmeticExpression : ArithmeticExpression '-' ArithmeticExpression

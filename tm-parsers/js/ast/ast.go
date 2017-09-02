@@ -190,6 +190,7 @@ func (TsAmbientInterface) jsNodeNode()         {}
 func (TsAmbientNamespace) jsNodeNode()         {}
 func (TsAmbientPropertyMember) jsNodeNode()    {}
 func (TsAmbientVar) jsNodeNode()               {}
+func (TsCastExpression) jsNodeNode()           {}
 func (TsEnum) jsNodeNode()                     {}
 func (TsEnumBody) jsNodeNode()                 {}
 func (TsEnumMember) jsNodeNode()               {}
@@ -355,6 +356,7 @@ func (SuperExpression) expressionNode()          {}
 func (TaggedTemplate) expressionNode()           {}
 func (TemplateLiteral) expressionNode()          {}
 func (This) expressionNode()                     {}
+func (TsCastExpression) expressionNode()         {}
 func (UnaryExpression) expressionNode()          {}
 func (Yield) expressionNode()                    {}
 
@@ -1573,11 +1575,11 @@ type ForOfStatement struct {
 }
 
 func (n ForOfStatement) Var() JsNode {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield))).(JsNode)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.UnaryExpression, js.Yield))).(JsNode)
 }
 
 func (n ForOfStatement) Iterable() Expression {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatement) Statement() Statement {
@@ -3038,6 +3040,18 @@ func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
 		result = append(result, TsAmbientBinding{node})
 	}
 	return result
+}
+
+type TsCastExpression struct {
+	Node
+}
+
+func (n TsCastExpression) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+func (n TsCastExpression) Expression() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type TsEnum struct {

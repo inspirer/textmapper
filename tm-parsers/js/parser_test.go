@@ -896,6 +896,10 @@ var parseTests = []struct {
 	}},
 
 	// Typescript
+	{js.Typescript, js.TsCastExpression, []string{
+		`var a = «<string>b»;`,
+		`var a = «<string>b.run()»;`,
+	}},
 	{js.Typescript, js.PredefinedType, []string{
 		`let isDone: «boolean» = false;`,
 		`let color: «string» = "blue";`,

@@ -167,6 +167,7 @@ var (
 	TsAmbientNamespace         = func(t js.NodeType) bool { return t == js.TsAmbientNamespace }
 	TsAmbientPropertyMember    = func(t js.NodeType) bool { return t == js.TsAmbientPropertyMember }
 	TsAmbientVar               = func(t js.NodeType) bool { return t == js.TsAmbientVar }
+	TsCastExpression           = func(t js.NodeType) bool { return t == js.TsCastExpression }
 	TsEnum                     = func(t js.NodeType) bool { return t == js.TsEnum }
 	TsEnumBody                 = func(t js.NodeType) bool { return t == js.TsEnumBody }
 	TsEnumMember               = func(t js.NodeType) bool { return t == js.TsEnumMember }

@@ -602,7 +602,7 @@ UnaryExpression<Yield, Await> -> Expression /* interface */:
   | [!StartWithLet] '~' UnaryExpression               -> UnaryExpression
   | [!StartWithLet] '!' UnaryExpression               -> UnaryExpression
   | [!StartWithLet && Await] AwaitExpression
-# TODO | [!StartWithLet]  '<' Type '>' UnaryExpression
+  | [!StartWithLet]  '<' Type '>' UnaryExpression     -> TsCastExpression
 ;
 
 %left '||';
