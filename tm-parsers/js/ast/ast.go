@@ -695,6 +695,13 @@ type Arguments struct {
 	Node
 }
 
+func (n Arguments) TypeArguments() *TypeArguments {
+	if child := n.Child(selector.TypeArguments); child != nil {
+		return &TypeArguments{child}
+	}
+	return nil
+}
+
 func (n Arguments) List() []Expression {
 	nodes := n.Children(selector.Expression)
 	var result []Expression = make([]Expression, 0, len(nodes))

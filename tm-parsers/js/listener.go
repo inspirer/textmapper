@@ -35,7 +35,7 @@ const (
 	SuperExpression
 	NewTarget
 	CallExpression           // expr=Expression Arguments
-	Arguments                // list=(Expression)*
+	Arguments                // TypeArguments? list=(Expression)*
 	PostInc                  // Expression
 	PostDec                  // Expression
 	PreInc                   // Expression
@@ -1995,40 +1995,41 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,           // SuperProperty_Yield : SuperExpression '.' IdentifierNameRef
 	0,                        // MetaProperty : NewTarget
 	NewTarget,                // NewTarget : 'new' '.' 'target'
-	0,                        // NewExpression : MemberExpression
+	0,                        // lookahead_notStartOfParametrizedCall :
+	0,                        // NewExpression : MemberExpression lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression : 'new' NewExpression
-	0,                        // NewExpression_Await : MemberExpression_Await
+	0,                        // NewExpression_Await : MemberExpression_Await lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_Await : 'new' NewExpression_Await
-	0,                        // NewExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoAsync_NoLet
+	0,                        // NewExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoAsync_NoLet lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_Await_NoAsync_NoLet : 'new' NewExpression_Await
-	0,                        // NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                        // NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'new' NewExpression_Await
-	0,                        // NewExpression_Await_NoLet : MemberExpression_Await_NoLet
+	0,                        // NewExpression_Await_NoLet : MemberExpression_Await_NoLet lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_Await_NoLet : 'new' NewExpression_Await
-	0,                        // NewExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral
+	0,                        // NewExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_Await_NoObjLiteral : 'new' NewExpression_Await
-	0,                        // NewExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet
-	0,                        // NewExpression_Await_Yield : MemberExpression_Await_Yield
+	0,                        // NewExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                        // NewExpression_Await_Yield : MemberExpression_Await_Yield lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_Await_Yield : 'new' NewExpression_Await_Yield
-	0,                        // NewExpression_NoAsync_NoLet : MemberExpression_NoAsync_NoLet
+	0,                        // NewExpression_NoAsync_NoLet : MemberExpression_NoAsync_NoLet lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoAsync_NoLet : 'new' NewExpression
-	0,                        // NewExpression_NoAsync_NoLet_Yield : MemberExpression_NoAsync_NoLet_Yield
+	0,                        // NewExpression_NoAsync_NoLet_Yield : MemberExpression_NoAsync_NoLet_Yield lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoAsync_NoLet_Yield : 'new' NewExpression_Yield
-	0,                        // NewExpression_NoFuncClass : MemberExpression_NoFuncClass
+	0,                        // NewExpression_NoFuncClass : MemberExpression_NoFuncClass lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoFuncClass : 'new' NewExpression
-	0,                        // NewExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                        // NewExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoFuncClass_NoLetSq_NoObjLiteral : 'new' NewExpression
-	0,                        // NewExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	0,                        // NewExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'new' NewExpression_Yield
-	0,                        // NewExpression_NoLet : MemberExpression_NoLet
+	0,                        // NewExpression_NoLet : MemberExpression_NoLet lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoLet : 'new' NewExpression
-	0,                        // NewExpression_NoLet_Yield : MemberExpression_NoLet_Yield
+	0,                        // NewExpression_NoLet_Yield : MemberExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoLet_Yield : 'new' NewExpression_Yield
-	0,                        // NewExpression_NoObjLiteral : MemberExpression_NoObjLiteral
+	0,                        // NewExpression_NoObjLiteral : MemberExpression_NoObjLiteral lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_NoObjLiteral : 'new' NewExpression
-	0,                        // NewExpression_StartWithLet : MemberExpression_StartWithLet
-	0,                        // NewExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield
-	0,                        // NewExpression_Yield : MemberExpression_Yield
+	0,                        // NewExpression_StartWithLet : MemberExpression_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                        // NewExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield lookahead_notStartOfParametrizedCall
+	0,                        // NewExpression_Yield : MemberExpression_Yield lookahead_notStartOfParametrizedCall
 	NewExpression,            // NewExpression_Yield : 'new' NewExpression_Yield
 	CallExpression,           // CallExpression : CoverCallExpressionAndAsyncArrowHead
 	CallExpression,           // CallExpression : SuperCall
@@ -2143,18 +2144,32 @@ var ruleNodeType = [...]NodeType{
 	0,                        // SuperCall_Await : SuperExpression Arguments_Await
 	0,                        // SuperCall_Await_Yield : SuperExpression Arguments_Await_Yield
 	0,                        // SuperCall_Yield : SuperExpression Arguments_Yield
+	Arguments,                // Arguments : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList ',' ')'
+	Arguments,                // Arguments : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList ')'
+	Arguments,                // Arguments : lookahead_StartOfParametrizedCall TypeArguments '(' ')'
 	Arguments,                // Arguments : '(' ArgumentList ',' ')'
 	Arguments,                // Arguments : '(' ArgumentList ')'
 	Arguments,                // Arguments : '(' ')'
+	Arguments,                // Arguments_Await : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList_Await ',' ')'
+	Arguments,                // Arguments_Await : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList_Await ')'
+	Arguments,                // Arguments_Await : lookahead_StartOfParametrizedCall TypeArguments '(' ')'
 	Arguments,                // Arguments_Await : '(' ArgumentList_Await ',' ')'
 	Arguments,                // Arguments_Await : '(' ArgumentList_Await ')'
 	Arguments,                // Arguments_Await : '(' ')'
+	Arguments,                // Arguments_Await_Yield : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList_Await_Yield ',' ')'
+	Arguments,                // Arguments_Await_Yield : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList_Await_Yield ')'
+	Arguments,                // Arguments_Await_Yield : lookahead_StartOfParametrizedCall TypeArguments '(' ')'
 	Arguments,                // Arguments_Await_Yield : '(' ArgumentList_Await_Yield ',' ')'
 	Arguments,                // Arguments_Await_Yield : '(' ArgumentList_Await_Yield ')'
 	Arguments,                // Arguments_Await_Yield : '(' ')'
+	Arguments,                // Arguments_Yield : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList_Yield ',' ')'
+	Arguments,                // Arguments_Yield : lookahead_StartOfParametrizedCall TypeArguments '(' ArgumentList_Yield ')'
+	Arguments,                // Arguments_Yield : lookahead_StartOfParametrizedCall TypeArguments '(' ')'
 	Arguments,                // Arguments_Yield : '(' ArgumentList_Yield ',' ')'
 	Arguments,                // Arguments_Yield : '(' ArgumentList_Yield ')'
 	Arguments,                // Arguments_Yield : '(' ')'
+	0,                        // lookahead_StartOfParametrizedCall :
+	0,                        // StartOfParametrizedCall : TypeArguments '('
 	0,                        // ArgumentList : AssignmentExpression_In
 	0,                        // ArgumentList : SpreadElement
 	0,                        // ArgumentList : ArgumentList ',' AssignmentExpression_In
@@ -2172,43 +2187,43 @@ var ruleNodeType = [...]NodeType{
 	0,                        // ArgumentList_Yield : ArgumentList_Yield ',' AssignmentExpression_In_Yield
 	0,                        // ArgumentList_Yield : ArgumentList_Yield ',' SpreadElement_Yield
 	0,                        // LeftHandSideExpression : NewExpression
-	0,                        // LeftHandSideExpression : CallExpression
+	0,                        // LeftHandSideExpression : CallExpression lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Await : NewExpression_Await
-	0,                        // LeftHandSideExpression_Await : CallExpression_Await
+	0,                        // LeftHandSideExpression_Await : CallExpression_Await lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Await_NoAsync_NoLet : NewExpression_Await_NoAsync_NoLet
-	0,                        // LeftHandSideExpression_Await_NoAsync_NoLet : CallExpression_Await_NoLet
+	0,                        // LeftHandSideExpression_Await_NoAsync_NoLet : CallExpression_Await_NoLet lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-	0,                        // LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                        // LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Await_NoLet : NewExpression_Await_NoLet
-	0,                        // LeftHandSideExpression_Await_NoLet : CallExpression_Await_NoLet
+	0,                        // LeftHandSideExpression_Await_NoLet : CallExpression_Await_NoLet lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Await_NoObjLiteral : NewExpression_Await_NoObjLiteral
-	0,                        // LeftHandSideExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral
+	0,                        // LeftHandSideExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Await_StartWithLet : NewExpression_Await_StartWithLet
-	0,                        // LeftHandSideExpression_Await_StartWithLet : CallExpression_Await_StartWithLet
+	0,                        // LeftHandSideExpression_Await_StartWithLet : CallExpression_Await_StartWithLet lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Await_Yield : NewExpression_Await_Yield
-	0,                        // LeftHandSideExpression_Await_Yield : CallExpression_Await_Yield
+	0,                        // LeftHandSideExpression_Await_Yield : CallExpression_Await_Yield lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoAsync_NoLet : NewExpression_NoAsync_NoLet
-	0,                        // LeftHandSideExpression_NoAsync_NoLet : CallExpression_NoLet
+	0,                        // LeftHandSideExpression_NoAsync_NoLet : CallExpression_NoLet lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoAsync_NoLet_Yield : NewExpression_NoAsync_NoLet_Yield
-	0,                        // LeftHandSideExpression_NoAsync_NoLet_Yield : CallExpression_NoLet_Yield
+	0,                        // LeftHandSideExpression_NoAsync_NoLet_Yield : CallExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoFuncClass : NewExpression_NoFuncClass
-	0,                        // LeftHandSideExpression_NoFuncClass : CallExpression_NoFuncClass
+	0,                        // LeftHandSideExpression_NoFuncClass : CallExpression_NoFuncClass lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral : NewExpression_NoFuncClass_NoLetSq_NoObjLiteral
-	0,                        // LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral
+	0,                        // LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : NewExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-	0,                        // LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+	0,                        // LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoLet : NewExpression_NoLet
-	0,                        // LeftHandSideExpression_NoLet : CallExpression_NoLet
+	0,                        // LeftHandSideExpression_NoLet : CallExpression_NoLet lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoLet_Yield : NewExpression_NoLet_Yield
-	0,                        // LeftHandSideExpression_NoLet_Yield : CallExpression_NoLet_Yield
+	0,                        // LeftHandSideExpression_NoLet_Yield : CallExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_NoObjLiteral : NewExpression_NoObjLiteral
-	0,                        // LeftHandSideExpression_NoObjLiteral : CallExpression_NoObjLiteral
+	0,                        // LeftHandSideExpression_NoObjLiteral : CallExpression_NoObjLiteral lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_StartWithLet : NewExpression_StartWithLet
-	0,                        // LeftHandSideExpression_StartWithLet : CallExpression_StartWithLet
+	0,                        // LeftHandSideExpression_StartWithLet : CallExpression_StartWithLet lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_StartWithLet_Yield : NewExpression_StartWithLet_Yield
-	0,                        // LeftHandSideExpression_StartWithLet_Yield : CallExpression_StartWithLet_Yield
+	0,                        // LeftHandSideExpression_StartWithLet_Yield : CallExpression_StartWithLet_Yield lookahead_notStartOfParametrizedCall
 	0,                        // LeftHandSideExpression_Yield : NewExpression_Yield
-	0,                        // LeftHandSideExpression_Yield : CallExpression_Yield
+	0,                        // LeftHandSideExpression_Yield : CallExpression_Yield lookahead_notStartOfParametrizedCall
 	0,                        // UpdateExpression : LeftHandSideExpression
 	PostInc,                  // UpdateExpression : LeftHandSideExpression .noLineBreak '++'
 	PostDec,                  // UpdateExpression : LeftHandSideExpression .noLineBreak '--'

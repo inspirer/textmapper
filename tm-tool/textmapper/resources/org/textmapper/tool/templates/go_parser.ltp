@@ -468,12 +468,20 @@ ${end-}
 }
 ${end}
 
+${template lookaheadRule-}
+func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
+	switch rule {
+${call caseLookaheadRules(true)-}
+	}
+}
+${end}
+
 ${cached query laMethodName() = 'At' + self.target.name}
 
 ${template lookaheadMethods-}
 ${foreach inp in syntax.input.select(it|!it.hasEoi())-}
-func (p *Parser) ${inp->laMethodName()}() bool {
-	return p.lookahead(${inp.index}, ${parser.finalStates[inp.index]});
+func ${inp->laMethodName()}(lexer *Lexer, next int32) bool {
+	return lookahead(lexer, next, ${inp.index}, ${parser.finalStates[inp.index]});
 }
 
 ${end-}
@@ -483,15 +491,17 @@ ${template setupLookaheadLexer}${end}
 
 ${template lookahead-}
 ${call lookaheadNext}
+${if opts.recursiveLookaheads-}
+${call lookaheadRule}
+${end-}
 ${call lookaheadMethods-}
-func (p *Parser) lookahead(start, end ${self->stateType()}) bool {
-	var lexer Lexer = *p.lexer
+func lookahead(l *Lexer, next int32, start, end ${self->stateType()}) bool {
+	var lexer Lexer = *l
 ${call setupLookaheadLexer-}
 
 	var allocated [64]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
-	next := p.next.symbol
 
 	for state != end {
 		action := tmAction[state]
@@ -513,6 +523,9 @@ ${end-}
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
+${if opts.recursiveLookaheads-}
+			lookaheadRule(&lexer, next, rule, &entry)
+${end-}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -541,10 +554,15 @@ ${end-}
 }
 ${end}
 
-${template caseLookaheadRules-}
+${query callLaMethod(recurse) =
+  recurse
+    ? 'lookahead(lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] + ')'
+    : self->laMethodName() + '(p.lexer, p.next.symbol)' }
+
+${template caseLookaheadRules(recurse)-}
 ${foreach rule in parser.lookaheadRules-}
 	case ${rule.getIndex()}:
-		${foreach c in rule.cases}if ${c.isNegated() ? '!' : ''}p.${c.input->laMethodName()}() {
+		${foreach c in rule.cases}if ${c.isNegated() ? '!' : ''}${c.input->callLaMethod(recurse)} {
 			lhs.sym.symbol = ${c.target.index} /* ${c.target.name} */;
 		} else ${end}{
 			lhs.sym.symbol = ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
@@ -561,7 +579,7 @@ ${foreach rule in syntax.rules.select(r|r.code())-}
 	case ${rule.getIndex()}: // ${rule}
 		${rule.code()-}
 ${end-}
-${call caseLookaheadRules-}
+${call caseLookaheadRules(false)-}
 	}
 ${end-}
 ${if self->eventBased()-}

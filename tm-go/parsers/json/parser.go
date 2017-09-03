@@ -206,17 +206,16 @@ restart:
 	return int32(tok)
 }
 
-func (p *Parser) AtEmptyObject() bool {
-	return p.lookahead(0, 42)
+func AtEmptyObject(lexer *Lexer, next int32) bool {
+	return lookahead(lexer, next, 0, 42)
 }
 
-func (p *Parser) lookahead(start, end int8) bool {
-	var lexer Lexer = *p.lexer
+func lookahead(l *Lexer, next int32, start, end int8) bool {
+	var lexer Lexer = *l
 
 	var allocated [64]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
-	next := p.next.symbol
 
 	for state != end {
 		action := tmAction[state]
@@ -266,7 +265,7 @@ func (p *Parser) lookahead(start, end int8) bool {
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
 	case 32:
-		if p.AtEmptyObject() {
+		if AtEmptyObject(p.lexer, p.next.symbol) {
 			lhs.sym.symbol = 23 /* lookahead_EmptyObject */
 		} else {
 			lhs.sym.symbol = 25 /* lookahead_notEmptyObject */

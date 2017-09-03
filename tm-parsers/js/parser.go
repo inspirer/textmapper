@@ -21,7 +21,7 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(2, 5191, lexer)
+	return p.parse(3, 5252, lexer)
 }
 
 func lookaheadNext(lexer *Lexer) int32 {
@@ -34,16 +34,46 @@ restart:
 	return int32(tok)
 }
 
-func (p *Parser) AtStartOfFunctionType() bool {
-	return p.lookahead(0, 5188)
+func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
+	switch rule {
+	case 3503:
+		if lookahead(lexer, next, 0, 5248) {
+			lhs.sym.symbol = 347 /* lookahead_StartOfParametrizedCall */
+		} else {
+			lhs.sym.symbol = 287 /* lookahead_notStartOfParametrizedCall */
+		}
+		return
+	case 3504:
+		if lookahead(lexer, next, 2, 5250) {
+			lhs.sym.symbol = 855 /* lookahead_StartOfMappedType */
+		} else {
+			lhs.sym.symbol = 847 /* lookahead_notStartOfMappedType */
+		}
+		return
+	case 3505:
+		if lookahead(lexer, next, 1, 5249) {
+			lhs.sym.symbol = 861 /* lookahead_StartOfFunctionType */
+		} else {
+			lhs.sym.symbol = 840 /* lookahead_notStartOfFunctionType */
+		}
+		return
+	}
 }
 
-func (p *Parser) AtStartOfMappedType() bool {
-	return p.lookahead(1, 5189)
+func AtStartOfParametrizedCall(lexer *Lexer, next int32) bool {
+	return lookahead(lexer, next, 0, 5248)
 }
 
-func (p *Parser) lookahead(start, end int16) bool {
-	var lexer Lexer = *p.lexer
+func AtStartOfFunctionType(lexer *Lexer, next int32) bool {
+	return lookahead(lexer, next, 1, 5249)
+}
+
+func AtStartOfMappedType(lexer *Lexer, next int32) bool {
+	return lookahead(lexer, next, 2, 5250)
+}
+
+func lookahead(l *Lexer, next int32, start, end int16) bool {
+	var lexer Lexer = *l
 	var alloc2, alloc3 [8]int
 	lexer.Stack = alloc2[:0]
 	lexer.Opened = alloc3[:0]
@@ -51,7 +81,6 @@ func (p *Parser) lookahead(start, end int16) bool {
 	var allocated [64]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
-	next := p.next.symbol
 
 	for state != end {
 		action := tmAction[state]
@@ -71,6 +100,7 @@ func (p *Parser) lookahead(start, end int16) bool {
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
+			lookaheadRule(&lexer, next, rule, &entry)
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -136,24 +166,31 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 	switch rule {
-	case 2644: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
+	case 2659: // IterationStatement : 'for' '(' 'async' 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2658: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
+	case 2673: // IterationStatement_Await : 'for' '(' 'async' 'of' AssignmentExpression_Await_In ')' Statement_Await
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2672: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	case 2687: // IterationStatement_Yield : 'for' '(' 'async' 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3488:
-		if p.AtStartOfMappedType() {
-			lhs.sym.symbol = 852 /* lookahead_StartOfMappedType */
+	case 3503:
+		if AtStartOfParametrizedCall(p.lexer, p.next.symbol) {
+			lhs.sym.symbol = 347 /* lookahead_StartOfParametrizedCall */
 		} else {
-			lhs.sym.symbol = 844 /* lookahead_notStartOfMappedType */
+			lhs.sym.symbol = 287 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 3489:
-		if p.AtStartOfFunctionType() {
-			lhs.sym.symbol = 858 /* lookahead_StartOfFunctionType */
+	case 3504:
+		if AtStartOfMappedType(p.lexer, p.next.symbol) {
+			lhs.sym.symbol = 855 /* lookahead_StartOfMappedType */
 		} else {
-			lhs.sym.symbol = 837 /* lookahead_notStartOfFunctionType */
+			lhs.sym.symbol = 847 /* lookahead_notStartOfMappedType */
+		}
+		return
+	case 3505:
+		if AtStartOfFunctionType(p.lexer, p.next.symbol) {
+			lhs.sym.symbol = 861 /* lookahead_StartOfFunctionType */
+		} else {
+			lhs.sym.symbol = 840 /* lookahead_notStartOfFunctionType */
 		}
 		return
 	}

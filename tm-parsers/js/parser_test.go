@@ -955,6 +955,12 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TypeArguments, []string{
 		`function loggingIdentity<T>(arg: Array«<T>»): Array«<T>» {}`,
+		`var a = loggingIdentity«<(A«<5>»)>»([1,2,3])`,
+		`var a = loggingIdentity«<A«<5>» >»([1,2,3])`,
+		`var a = loggingIdentity«<(private abc: number)=> number>» (num)`,
+		`var a = loggingIdentity«<()=>()=>(number)>» (num)`,
+		`var a = loggingIdentity«< <T>(abc: number) => number>» (num)`,
+		// Note: as of 2.5 Typescript does not support merging multiple > or < into <<, >>, or >>>.
 	}},
 	{js.Typescript, js.TypeParameter, []string{
 		`function foo<«T», «Q extends T»>() {}`,

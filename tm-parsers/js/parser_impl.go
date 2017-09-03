@@ -85,6 +85,9 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := p.stack[len(p.stack)-ln:]
 			p.stack = p.stack[:len(p.stack)-ln]
+			for ln > 0 && rhs[ln-1].sym.offset == rhs[ln-1].sym.endoffset {
+				ln--
+			}
 			if ln == 0 {
 				entry.sym.offset, _ = lexer.Pos()
 				entry.sym.endoffset = entry.sym.offset

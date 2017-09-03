@@ -7,8 +7,9 @@ lang = "js"
 package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 eventFields = true
+recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
-NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
+                NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]
 
 :: lexer
@@ -548,7 +549,7 @@ NewTarget -> NewTarget :
     'new' '.' 'target' ;
 
 NewExpression<Yield, Await, NoAsync> -> Expression /* interface */:
-    MemberExpression
+    MemberExpression  (?= !StartOfParametrizedCall)
   | [!StartWithLet] 'new' expr=NewExpression<~NoAsync>      -> NewExpression
 ;
 
@@ -569,8 +570,12 @@ SuperCall<Yield, Await> :
 ;
 
 Arguments<Yield, Await> -> Arguments :
-    # TODO TypeArgumentsopt
-    '(' (list=ArgumentList ','?)? ')' ;
+    (?= StartOfParametrizedCall) TypeArguments '(' (list=ArgumentList ','?)? ')'
+  | '(' (list=ArgumentList ','?)? ')'
+;
+
+StartOfParametrizedCall:
+    TypeArguments '(' ;
 
 ArgumentList<Yield, Await> :
     AssignmentExpression<+In>
@@ -581,7 +586,7 @@ ArgumentList<Yield, Await> :
 
 LeftHandSideExpression<Yield, Await, NoAsync> -> Expression /* interface */:
     NewExpression
-  | CallExpression
+  | CallExpression (?= !StartOfParametrizedCall)
 ;
 
 UpdateExpression<Yield, Await> -> Expression /* interface */:
