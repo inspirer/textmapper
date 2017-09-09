@@ -506,10 +506,20 @@ restart:
 		switch token {
 		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
 			l.State &^= 1
-		case TEMPLATEHEAD, TEMPLATEMIDDLE:
+		case TEMPLATEHEAD:
+			if len(l.Stack) != 0 || l.State > StateDiv {
+				l.Stack = append(l.Stack, l.State|1)
+			}
+			fallthrough
+		case TEMPLATEMIDDLE:
 			l.State = StateTemplate
 		case TEMPLATETAIL:
-			l.State = StateDiv
+			if len(l.Stack) != 0 {
+				l.State = l.Stack[len(l.Stack)-1]
+				l.Stack = l.Stack[:len(l.Stack)-1]
+			} else {
+				l.State = StateDiv
+			}
 		case RPAREN, RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1

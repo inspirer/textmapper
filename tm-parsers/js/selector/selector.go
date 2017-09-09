@@ -145,6 +145,7 @@ var (
 	ShorthandProperty          = func(t js.NodeType) bool { return t == js.ShorthandProperty }
 	SingleNameBinding          = func(t js.NodeType) bool { return t == js.SingleNameBinding }
 	SpreadElement              = func(t js.NodeType) bool { return t == js.SpreadElement }
+	SpreadProperty             = func(t js.NodeType) bool { return t == js.SpreadProperty }
 	Static                     = func(t js.NodeType) bool { return t == js.Static }
 	SuperExpression            = func(t js.NodeType) bool { return t == js.SuperExpression }
 	SwitchStatement            = func(t js.NodeType) bool { return t == js.SwitchStatement }
@@ -166,6 +167,7 @@ var (
 	TsAmbientInterface         = func(t js.NodeType) bool { return t == js.TsAmbientInterface }
 	TsAmbientNamespace         = func(t js.NodeType) bool { return t == js.TsAmbientNamespace }
 	TsAmbientPropertyMember    = func(t js.NodeType) bool { return t == js.TsAmbientPropertyMember }
+	TsAmbientTypeAlias         = func(t js.NodeType) bool { return t == js.TsAmbientTypeAlias }
 	TsAmbientVar               = func(t js.NodeType) bool { return t == js.TsAmbientVar }
 	TsCastExpression           = func(t js.NodeType) bool { return t == js.TsCastExpression }
 	TsEnum                     = func(t js.NodeType) bool { return t == js.TsEnum }
@@ -180,6 +182,7 @@ var (
 	TsInterfaceExtends         = func(t js.NodeType) bool { return t == js.TsInterfaceExtends }
 	TsNamespace                = func(t js.NodeType) bool { return t == js.TsNamespace }
 	TsNamespaceBody            = func(t js.NodeType) bool { return t == js.TsNamespaceBody }
+	TsNonNull                  = func(t js.NodeType) bool { return t == js.TsNonNull }
 	TupleType                  = func(t js.NodeType) bool { return t == js.TupleType }
 	TypeAliasDeclaration       = func(t js.NodeType) bool { return t == js.TypeAliasDeclaration }
 	TypeAnnotation             = func(t js.NodeType) bool { return t == js.TypeAnnotation }

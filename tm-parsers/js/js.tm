@@ -233,9 +233,10 @@ StringLiteral: /'{ssChar}*'/
 
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
-<initial, div, jsxTemplate, jsxTemplateDiv> {
+<initial, div, jsxTemplate, jsxTemplateDiv>
 '}': /\}/
 
+<initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv> {
 NoSubstitutionTemplate: /`{tplChars}`/
 TemplateHead: /`{tplChars}\$\{/
 }
@@ -482,6 +483,7 @@ PropertyDefinition<Yield, Await> -> PropertyDefinition /* interface */:
   | MethodDefinition
   | CoverInitializedName                                  -> SyntaxProblem
   | SyntaxError
+  | '...' AssignmentExpression<+In>                       -> SpreadProperty
 ;
 
 PropertyName<Yield, Await, WithoutNew> -> PropertyName /* interface */:
@@ -528,6 +530,7 @@ MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expression /*
   | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq, ~NoAsync> '[' index=Expression<+In> ']'   -> IndexAccess
   | expr=MemberExpression<~NoAsync> '.' selector=IdentifierNameRef        -> PropertyAccess
   | tag=MemberExpression<~NoAsync> literal=TemplateLiteral                -> TaggedTemplate
+  | expr=MemberExpression<~NoAsync> .noLineBreak '!'                      -> TsNonNull
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
   | [!StartWithLet] 'new' expr=MemberExpression<~NoAsync> Arguments       -> NewExpression
@@ -1198,7 +1201,7 @@ JSXMemberExpression :
 ;
 
 JSXAttribute<Yield, Await> -> JSXAttribute /* interface */:
-    JSXAttributeName '=' JSXAttributeValue            -> JSXNormalAttribute
+    JSXAttributeName ('=' JSXAttributeValue)?         -> JSXNormalAttribute
   | '{' '...' AssignmentExpression<+In> '}'           -> JSXSpreadAttribute
 ;
 
@@ -1533,6 +1536,7 @@ AmbientNamespaceElement -> TsAmbientElement /* interface */:
   | 'export'? AmbientEnumDeclaration        -> TsAmbientEnum
   | 'export'? AmbientNamespaceDeclaration   -> TsAmbientNamespace
   | 'export'? ImportAliasDeclaration        -> TsAmbientImportAlias
+  | 'export'? TypeAliasDeclaration          -> TsAmbientTypeAlias
 ;
 
 AmbientModuleDeclaration -> TsAmbientModule:
@@ -1594,10 +1598,20 @@ ${template go_lexer.onAfterNext}
 		switch token {
 		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
 			l.State &^= 1
-		case TEMPLATEHEAD, TEMPLATEMIDDLE:
+		case TEMPLATEHEAD:
+			if len(l.Stack) != 0 || l.State > StateDiv {
+			  l.Stack = append(l.Stack, l.State|1)
+			}
+			fallthrough
+		case TEMPLATEMIDDLE:
 			l.State = StateTemplate
 		case TEMPLATETAIL:
-			l.State = StateDiv
+			if len(l.Stack) != 0 {
+				l.State = l.Stack[len(l.Stack)-1]
+				l.Stack = l.Stack[:len(l.Stack)-1]
+			} else {
+			  l.State = StateDiv
+			}
 		case RPAREN, RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1

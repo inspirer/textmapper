@@ -24,6 +24,7 @@ const (
 	ObjectLiteral        // (PropertyDefinition)*
 	ShorthandProperty    // IdentifierReference
 	Property             // PropertyName value=Expression
+	SpreadProperty       // Expression
 	LiteralPropertyName  // BindingIdentifier?
 	ComputedPropertyName // Expression
 	Initializer          // Expression
@@ -31,6 +32,7 @@ const (
 	IndexAccess          // expr=Expression index=Expression
 	PropertyAccess       // expr=Expression selector=IdentifierReference
 	TaggedTemplate       // tag=Expression literal=TemplateLiteral
+	TsNonNull            // expr=Expression
 	NewExpression        // expr=Expression Arguments?
 	SuperExpression
 	NewTarget
@@ -140,7 +142,7 @@ const (
 	JSXOpeningElement     // JSXElementName (JSXAttribute)*
 	JSXClosingElement     // JSXElementName
 	JSXElementName
-	JSXNormalAttribute // JSXAttributeName JSXAttributeValue
+	JSXNormalAttribute // JSXAttributeName JSXAttributeValue?
 	JSXSpreadAttribute // Expression
 	JSXAttributeName
 	JSXLiteral
@@ -198,6 +200,7 @@ const (
 	TsAmbientIndexMember     // IndexSignature
 	TsAmbientInterface       // TsInterface
 	TsAmbientImportAlias     // TsImportAliasDeclaration
+	TsAmbientTypeAlias       // TypeAliasDeclaration
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -224,6 +227,7 @@ var nodeTypeStr = [...]string{
 	"ObjectLiteral",
 	"ShorthandProperty",
 	"Property",
+	"SpreadProperty",
 	"LiteralPropertyName",
 	"ComputedPropertyName",
 	"Initializer",
@@ -231,6 +235,7 @@ var nodeTypeStr = [...]string{
 	"IndexAccess",
 	"PropertyAccess",
 	"TaggedTemplate",
+	"TsNonNull",
 	"NewExpression",
 	"SuperExpression",
 	"NewTarget",
@@ -398,6 +403,7 @@ var nodeTypeStr = [...]string{
 	"TsAmbientIndexMember",
 	"TsAmbientInterface",
 	"TsAmbientImportAlias",
+	"TsAmbientTypeAlias",
 	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",
@@ -444,6 +450,7 @@ var Declaration = []NodeType{
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientNamespace,
+	TsAmbientTypeAlias,
 	TsAmbientVar,
 	TsEnum,
 	TsImportAliasDeclaration,
@@ -507,6 +514,7 @@ var Expression = []NodeType{
 	TemplateLiteral,
 	This,
 	TsCastExpression,
+	TsNonNull,
 	UnaryExpression,
 	Yield,
 }
@@ -572,6 +580,7 @@ var ModuleItem = []NodeType{
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientNamespace,
+	TsAmbientTypeAlias,
 	TsAmbientVar,
 	TsEnum,
 	TsExportAssignment,
@@ -603,6 +612,7 @@ var PropertyDefinition = []NodeType{
 	Property,
 	Setter,
 	ShorthandProperty,
+	SpreadProperty,
 	SyntaxProblem,
 }
 
@@ -674,6 +684,7 @@ var StatementListItem = []NodeType{
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientNamespace,
+	TsAmbientTypeAlias,
 	TsAmbientVar,
 	TsEnum,
 	TsImportAliasDeclaration,
@@ -705,6 +716,7 @@ var TsAmbientElement = []NodeType{
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientNamespace,
+	TsAmbientTypeAlias,
 	TsAmbientVar,
 }
 
@@ -1690,21 +1702,25 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PropertyDefinition : MethodDefinition
 	SyntaxProblem,            // PropertyDefinition : CoverInitializedName
 	0,                        // PropertyDefinition : SyntaxError
+	SpreadProperty,           // PropertyDefinition : '...' AssignmentExpression_In
 	ShorthandProperty,        // PropertyDefinition_Await : IdentifierReference_Await
 	Property,                 // PropertyDefinition_Await : PropertyName_Await ':' AssignmentExpression_Await_In
 	0,                        // PropertyDefinition_Await : MethodDefinition_Await
 	SyntaxProblem,            // PropertyDefinition_Await : CoverInitializedName_Await
 	0,                        // PropertyDefinition_Await : SyntaxError
+	SpreadProperty,           // PropertyDefinition_Await : '...' AssignmentExpression_Await_In
 	ShorthandProperty,        // PropertyDefinition_Await_Yield : IdentifierReference_Await_Yield
 	Property,                 // PropertyDefinition_Await_Yield : PropertyName_Await_Yield ':' AssignmentExpression_Await_In_Yield
 	0,                        // PropertyDefinition_Await_Yield : MethodDefinition_Await_Yield
 	SyntaxProblem,            // PropertyDefinition_Await_Yield : CoverInitializedName_Await_Yield
 	0,                        // PropertyDefinition_Await_Yield : SyntaxError
+	SpreadProperty,           // PropertyDefinition_Await_Yield : '...' AssignmentExpression_Await_In_Yield
 	ShorthandProperty,        // PropertyDefinition_Yield : IdentifierReference_Yield
 	Property,                 // PropertyDefinition_Yield : PropertyName_Yield ':' AssignmentExpression_In_Yield
 	0,                        // PropertyDefinition_Yield : MethodDefinition_Yield
 	SyntaxProblem,            // PropertyDefinition_Yield : CoverInitializedName_Yield
 	0,                        // PropertyDefinition_Yield : SyntaxError
+	SpreadProperty,           // PropertyDefinition_Yield : '...' AssignmentExpression_In_Yield
 	0,                        // PropertyName : LiteralPropertyName
 	0,                        // PropertyName : ComputedPropertyName
 	0,                        // PropertyName_Await : LiteralPropertyName
@@ -1764,6 +1780,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression : MemberExpression '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression : MemberExpression '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression : MemberExpression TemplateLiteral
+	TsNonNull,                // MemberExpression : MemberExpression .noLineBreak '!'
 	0,                        // MemberExpression : SuperProperty
 	0,                        // MemberExpression : MetaProperty
 	NewExpression,            // MemberExpression : 'new' MemberExpression Arguments
@@ -1771,6 +1788,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await : MemberExpression_Await '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await : MemberExpression_Await '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await : MemberExpression_Await TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await : MemberExpression_Await .noLineBreak '!'
 	0,                        // MemberExpression_Await : SuperProperty_Await
 	0,                        // MemberExpression_Await : MetaProperty
 	NewExpression,            // MemberExpression_Await : 'new' MemberExpression_Await Arguments_Await
@@ -1778,6 +1796,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoAsync_NoLet : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoAsync_NoLet : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoAsync_NoLet : 'new' MemberExpression_Await Arguments_Await
@@ -1785,6 +1804,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
@@ -1792,6 +1812,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoLet : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoLet : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoLet : 'new' MemberExpression_Await Arguments_Await
@@ -1799,6 +1820,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoLetOnly : MemberExpression_Await '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoLetOnly : MemberExpression_Await '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoLetOnly : MemberExpression_Await TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoLetOnly : MemberExpression_Await .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoLetOnly : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoLetOnly : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoLetOnly : 'new' MemberExpression_Await Arguments_Await
@@ -1806,6 +1828,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
@@ -1813,6 +1836,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoLetOnly_NoLet : MemberExpression_Await_NoLet '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoLetOnly_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoLetOnly_NoLet : MemberExpression_Await_NoLet .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoLetOnly_NoLet : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoLetOnly_NoLet : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoLetOnly_NoLet : 'new' MemberExpression_Await Arguments_Await
@@ -1820,16 +1844,19 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoLetOnly_NoObjLiteral : MemberExpression_Await_NoObjLiteral '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoLetOnly_NoObjLiteral : MemberExpression_Await_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_NoObjLiteral : MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoLetOnly_NoObjLiteral : MemberExpression_Await_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoLetOnly_NoObjLiteral : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoLetOnly_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoLetOnly_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
 	IndexAccess,              // MemberExpression_Await_NoLetOnly_StartWithLet : MemberExpression_Await_NoLetOnly_StartWithLet '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoLetOnly_StartWithLet : MemberExpression_Await_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_StartWithLet : MemberExpression_Await_StartWithLet TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoLetOnly_StartWithLet : MemberExpression_Await_StartWithLet .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoLetOnly_Yield : PrimaryExpression_Await_NoLet_Yield
 	IndexAccess,              // MemberExpression_Await_NoLetOnly_Yield : MemberExpression_Await_Yield '[' Expression_Await_In_Yield ']'
 	PropertyAccess,           // MemberExpression_Await_NoLetOnly_Yield : MemberExpression_Await_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoLetOnly_Yield : MemberExpression_Await_Yield TemplateLiteral_Await_Yield
+	TsNonNull,                // MemberExpression_Await_NoLetOnly_Yield : MemberExpression_Await_Yield .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoLetOnly_Yield : SuperProperty_Await_Yield
 	0,                        // MemberExpression_Await_NoLetOnly_Yield : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoLetOnly_Yield : 'new' MemberExpression_Await_Yield Arguments_Await_Yield
@@ -1837,6 +1864,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_Await_NoObjLiteral : SuperProperty_Await
 	0,                        // MemberExpression_Await_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_Await_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
@@ -1844,10 +1872,12 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_Await_StartWithLet : MemberExpression_Await_NoLetOnly_StartWithLet '[' Expression_Await_In ']'
 	PropertyAccess,           // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet TemplateLiteral_Await
+	TsNonNull,                // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet .noLineBreak '!'
 	0,                        // MemberExpression_Await_Yield : PrimaryExpression_Await_Yield
 	IndexAccess,              // MemberExpression_Await_Yield : MemberExpression_Await_Yield '[' Expression_Await_In_Yield ']'
 	PropertyAccess,           // MemberExpression_Await_Yield : MemberExpression_Await_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Await_Yield : MemberExpression_Await_Yield TemplateLiteral_Await_Yield
+	TsNonNull,                // MemberExpression_Await_Yield : MemberExpression_Await_Yield .noLineBreak '!'
 	0,                        // MemberExpression_Await_Yield : SuperProperty_Await_Yield
 	0,                        // MemberExpression_Await_Yield : MetaProperty
 	NewExpression,            // MemberExpression_Await_Yield : 'new' MemberExpression_Await_Yield Arguments_Await_Yield
@@ -1855,6 +1885,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet TemplateLiteral
+	TsNonNull,                // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet .noLineBreak '!'
 	0,                        // MemberExpression_NoAsync_NoLet : SuperProperty
 	0,                        // MemberExpression_NoAsync_NoLet : MetaProperty
 	NewExpression,            // MemberExpression_NoAsync_NoLet : 'new' MemberExpression Arguments
@@ -1862,6 +1893,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoAsync_NoLet_Yield : MemberExpression_NoLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_NoAsync_NoLet_Yield : MemberExpression_NoLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoAsync_NoLet_Yield : MemberExpression_NoLet_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_NoAsync_NoLet_Yield : MemberExpression_NoLet_Yield .noLineBreak '!'
 	0,                        // MemberExpression_NoAsync_NoLet_Yield : SuperProperty_Yield
 	0,                        // MemberExpression_NoAsync_NoLet_Yield : MetaProperty
 	NewExpression,            // MemberExpression_NoAsync_NoLet_Yield : 'new' MemberExpression_Yield Arguments_Yield
@@ -1869,6 +1901,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass TemplateLiteral
+	TsNonNull,                // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass .noLineBreak '!'
 	0,                        // MemberExpression_NoFuncClass : SuperProperty
 	0,                        // MemberExpression_NoFuncClass : MetaProperty
 	NewExpression,            // MemberExpression_NoFuncClass : 'new' MemberExpression Arguments
@@ -1876,6 +1909,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
+	TsNonNull,                // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral : SuperProperty
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral : 'new' MemberExpression Arguments
@@ -1883,6 +1917,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '!'
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : SuperProperty_Yield
 	0,                        // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MetaProperty
 	NewExpression,            // MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'new' MemberExpression_Yield Arguments_Yield
@@ -1890,6 +1925,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLet : MemberExpression_NoLet '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoLet : MemberExpression_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLet : MemberExpression_NoLet TemplateLiteral
+	TsNonNull,                // MemberExpression_NoLet : MemberExpression_NoLet .noLineBreak '!'
 	0,                        // MemberExpression_NoLet : SuperProperty
 	0,                        // MemberExpression_NoLet : MetaProperty
 	NewExpression,            // MemberExpression_NoLet : 'new' MemberExpression Arguments
@@ -1897,6 +1933,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLet_Yield : MemberExpression_NoLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_NoLet_Yield : MemberExpression_NoLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLet_Yield : MemberExpression_NoLet_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_NoLet_Yield : MemberExpression_NoLet_Yield .noLineBreak '!'
 	0,                        // MemberExpression_NoLet_Yield : SuperProperty_Yield
 	0,                        // MemberExpression_NoLet_Yield : MetaProperty
 	NewExpression,            // MemberExpression_NoLet_Yield : 'new' MemberExpression_Yield Arguments_Yield
@@ -1904,6 +1941,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLetOnly : MemberExpression '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly : MemberExpression '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly : MemberExpression TemplateLiteral
+	TsNonNull,                // MemberExpression_NoLetOnly : MemberExpression .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly : SuperProperty
 	0,                        // MemberExpression_NoLetOnly : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly : 'new' MemberExpression Arguments
@@ -1911,6 +1949,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLetOnly_NoFuncClass : MemberExpression_NoFuncClass '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass : MemberExpression_NoFuncClass '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoFuncClass : MemberExpression_NoFuncClass TemplateLiteral
+	TsNonNull,                // MemberExpression_NoLetOnly_NoFuncClass : MemberExpression_NoFuncClass .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass : SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoFuncClass : 'new' MemberExpression Arguments
@@ -1918,6 +1957,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
+	TsNonNull,                // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral : 'new' MemberExpression Arguments
@@ -1925,6 +1965,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield : SuperProperty_Yield
 	0,                        // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'new' MemberExpression_Yield Arguments_Yield
@@ -1932,6 +1973,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLetOnly_NoLet : MemberExpression_NoLet '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_NoLet : MemberExpression_NoLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoLet : MemberExpression_NoLet TemplateLiteral
+	TsNonNull,                // MemberExpression_NoLetOnly_NoLet : MemberExpression_NoLet .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_NoLet : SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoLet : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoLet : 'new' MemberExpression Arguments
@@ -1939,6 +1981,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLetOnly_NoLet_Yield : MemberExpression_NoLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_NoLet_Yield : MemberExpression_NoLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoLet_Yield : MemberExpression_NoLet_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_NoLetOnly_NoLet_Yield : MemberExpression_NoLet_Yield .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_NoLet_Yield : SuperProperty_Yield
 	0,                        // MemberExpression_NoLetOnly_NoLet_Yield : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoLet_Yield : 'new' MemberExpression_Yield Arguments_Yield
@@ -1946,19 +1989,23 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoLetOnly_NoObjLiteral : MemberExpression_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_NoObjLiteral : MemberExpression_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_NoObjLiteral : MemberExpression_NoObjLiteral TemplateLiteral
+	TsNonNull,                // MemberExpression_NoLetOnly_NoObjLiteral : MemberExpression_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_NoObjLiteral : SuperProperty
 	0,                        // MemberExpression_NoLetOnly_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_NoObjLiteral : 'new' MemberExpression Arguments
 	IndexAccess,              // MemberExpression_NoLetOnly_StartWithLet : MemberExpression_NoLetOnly_StartWithLet '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_StartWithLet : MemberExpression_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_StartWithLet : MemberExpression_StartWithLet TemplateLiteral
+	TsNonNull,                // MemberExpression_NoLetOnly_StartWithLet : MemberExpression_StartWithLet .noLineBreak '!'
 	IndexAccess,              // MemberExpression_NoLetOnly_StartWithLet_Yield : MemberExpression_NoLetOnly_StartWithLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_StartWithLet_Yield : MemberExpression_StartWithLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_StartWithLet_Yield : MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_NoLetOnly_StartWithLet_Yield : MemberExpression_StartWithLet_Yield .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_Yield : PrimaryExpression_NoLet_Yield
 	IndexAccess,              // MemberExpression_NoLetOnly_Yield : MemberExpression_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_NoLetOnly_Yield : MemberExpression_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoLetOnly_Yield : MemberExpression_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_NoLetOnly_Yield : MemberExpression_Yield .noLineBreak '!'
 	0,                        // MemberExpression_NoLetOnly_Yield : SuperProperty_Yield
 	0,                        // MemberExpression_NoLetOnly_Yield : MetaProperty
 	NewExpression,            // MemberExpression_NoLetOnly_Yield : 'new' MemberExpression_Yield Arguments_Yield
@@ -1966,6 +2013,7 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral TemplateLiteral
+	TsNonNull,                // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral .noLineBreak '!'
 	0,                        // MemberExpression_NoObjLiteral : SuperProperty
 	0,                        // MemberExpression_NoObjLiteral : MetaProperty
 	NewExpression,            // MemberExpression_NoObjLiteral : 'new' MemberExpression Arguments
@@ -1973,14 +2021,17 @@ var ruleNodeType = [...]NodeType{
 	IndexAccess,              // MemberExpression_StartWithLet : MemberExpression_NoLetOnly_StartWithLet '[' Expression_In ']'
 	PropertyAccess,           // MemberExpression_StartWithLet : MemberExpression_StartWithLet '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_StartWithLet : MemberExpression_StartWithLet TemplateLiteral
+	TsNonNull,                // MemberExpression_StartWithLet : MemberExpression_StartWithLet .noLineBreak '!'
 	IdentifierReference,      // MemberExpression_StartWithLet_Yield : 'let'
 	IndexAccess,              // MemberExpression_StartWithLet_Yield : MemberExpression_NoLetOnly_StartWithLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield .noLineBreak '!'
 	0,                        // MemberExpression_Yield : PrimaryExpression_Yield
 	IndexAccess,              // MemberExpression_Yield : MemberExpression_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // MemberExpression_Yield : MemberExpression_Yield '.' IdentifierNameRef
 	TaggedTemplate,           // MemberExpression_Yield : MemberExpression_Yield TemplateLiteral_Yield
+	TsNonNull,                // MemberExpression_Yield : MemberExpression_Yield .noLineBreak '!'
 	0,                        // MemberExpression_Yield : SuperProperty_Yield
 	0,                        // MemberExpression_Yield : MetaProperty
 	NewExpression,            // MemberExpression_Yield : 'new' MemberExpression_Yield Arguments_Yield
@@ -3842,12 +3893,16 @@ var ruleNodeType = [...]NodeType{
 	0,                        // JSXMemberExpression : jsxIdentifier '.' jsxIdentifier
 	0,                        // JSXMemberExpression : JSXMemberExpression '.' jsxIdentifier
 	JSXNormalAttribute,       // JSXAttribute : JSXAttributeName '=' JSXAttributeValue
+	JSXNormalAttribute,       // JSXAttribute : JSXAttributeName
 	JSXSpreadAttribute,       // JSXAttribute : '{' '...' AssignmentExpression_In '}'
 	JSXNormalAttribute,       // JSXAttribute_Await : JSXAttributeName '=' JSXAttributeValue_Await
+	JSXNormalAttribute,       // JSXAttribute_Await : JSXAttributeName
 	JSXSpreadAttribute,       // JSXAttribute_Await : '{' '...' AssignmentExpression_Await_In '}'
 	JSXNormalAttribute,       // JSXAttribute_Await_Yield : JSXAttributeName '=' JSXAttributeValue_Await_Yield
+	JSXNormalAttribute,       // JSXAttribute_Await_Yield : JSXAttributeName
 	JSXSpreadAttribute,       // JSXAttribute_Await_Yield : '{' '...' AssignmentExpression_Await_In_Yield '}'
 	JSXNormalAttribute,       // JSXAttribute_Yield : JSXAttributeName '=' JSXAttributeValue_Yield
+	JSXNormalAttribute,       // JSXAttribute_Yield : JSXAttributeName
 	JSXSpreadAttribute,       // JSXAttribute_Yield : '{' '...' AssignmentExpression_In_Yield '}'
 	JSXAttributeName,         // JSXAttributeName : jsxIdentifier
 	JSXAttributeName,         // JSXAttributeName : jsxIdentifier ':' jsxIdentifier
@@ -4189,6 +4244,8 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientNamespace,      // AmbientNamespaceElement : AmbientNamespaceDeclaration
 	TsAmbientImportAlias,    // AmbientNamespaceElement : 'export' ImportAliasDeclaration
 	TsAmbientImportAlias,    // AmbientNamespaceElement : ImportAliasDeclaration
+	TsAmbientTypeAlias,      // AmbientNamespaceElement : 'export' TypeAliasDeclaration
+	TsAmbientTypeAlias,      // AmbientNamespaceElement : TypeAliasDeclaration
 	0,                       // Elisionopt : Elision
 	0,                       // Elisionopt :
 	0,                       // TypeAnnotationopt : TypeAnnotation

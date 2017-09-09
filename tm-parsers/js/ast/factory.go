@@ -282,6 +282,8 @@ func ToJsNode(n Node) JsNode {
 		return &SingleNameBinding{n}
 	case js.SpreadElement:
 		return &SpreadElement{n}
+	case js.SpreadProperty:
+		return &SpreadProperty{n}
 	case js.Static:
 		return &Static{n}
 	case js.SuperExpression:
@@ -324,6 +326,8 @@ func ToJsNode(n Node) JsNode {
 		return &TsAmbientNamespace{n}
 	case js.TsAmbientPropertyMember:
 		return &TsAmbientPropertyMember{n}
+	case js.TsAmbientTypeAlias:
+		return &TsAmbientTypeAlias{n}
 	case js.TsAmbientVar:
 		return &TsAmbientVar{n}
 	case js.TsCastExpression:
@@ -352,6 +356,8 @@ func ToJsNode(n Node) JsNode {
 		return &TsNamespace{n}
 	case js.TsNamespaceBody:
 		return &TsNamespaceBody{n}
+	case js.TsNonNull:
+		return &TsNonNull{n}
 	case js.TupleType:
 		return &TupleType{n}
 	case js.TypeAliasDeclaration:

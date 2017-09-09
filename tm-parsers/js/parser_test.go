@@ -124,9 +124,11 @@ var parseTests = []struct {
 	}},
 	{js.Javascript, js.NoSubstitutionTemplate, []string{
 		"print «`abc`»",
+		"print `ab${«``»}c`", // we also parse nested template literals
 	}},
 	{js.Javascript, js.TemplateHead, []string{
 		"print «`ab${»123}c`",
+		"print «`ab${» «`as${»q}p`}c`", // we also parse nested template literals
 	}},
 	{js.Javascript, js.TemplateMiddle, []string{
 		"/*no expectations*/ print `a${123}bc`",
@@ -758,6 +760,11 @@ var parseTests = []struct {
 		`export {«a as b», «c», }`,
 	}},
 
+	// JS next: https://tc39.github.io/proposal-object-rest-spread/
+	{js.Javascript, js.SpreadProperty, []string{
+		`let n = { x, y, «...z» };`,
+	}},
+
 	// Automatic Semicolon Insertion
 	{js.Javascript, js.InsertedSemicolon, []string{
 		/* at EOI, before '}', and after ')' */
@@ -853,9 +860,11 @@ var parseTests = []struct {
 		`var a = «<q>{ «<a href={ {a: {b: 1}}.a.b }/>» }</q>»;`,
 		`var a = «<q>{ [1,2,3].map(a => («<a href={a}/>»)) }</q>»;`,
 		`var a = «<X comp=«<Y text=«<h1>Title</h1>» />» />»;`,
+		"var a = «<input value={`test ${index/4|0}`} disabled={foo%10 ? null : true} />»",
 	}},
 	{js.Javascript, js.JSXSelfClosingElement, []string{
 		`var a = «<div / >»;`,
+		`if (alt) return «<div boolean-attr />»;`,
 	}},
 	{js.Javascript, js.JSXOpeningElement, []string{
 		`var a = «<div name="a">»  </div>;`,
@@ -1146,6 +1155,12 @@ var parseTests = []struct {
 	{js.Typescript, js.TsAmbientImportAlias, []string{
 		`declare namespace foo { «import a = foo;» }`,
 		`declare namespace foo { «export import a = foo;» }`,
+	}},
+	{js.Typescript, js.TsAmbientTypeAlias, []string{
+		`declare namespace foo { «type Abc<Foo, Bar> = Function<Foo> | typeof Bar;» }`,
+	}},
+	{js.Typescript, js.TsNonNull, []string{
+		`var a = «a!».b`,
 	}},
 
 	// Error Recovery

@@ -168,6 +168,7 @@ func (ShiftExpression) jsNodeNode()            {}
 func (ShorthandProperty) jsNodeNode()          {}
 func (SingleNameBinding) jsNodeNode()          {}
 func (SpreadElement) jsNodeNode()              {}
+func (SpreadProperty) jsNodeNode()             {}
 func (Static) jsNodeNode()                     {}
 func (SuperExpression) jsNodeNode()            {}
 func (SwitchStatement) jsNodeNode()            {}
@@ -189,6 +190,7 @@ func (TsAmbientIndexMember) jsNodeNode()       {}
 func (TsAmbientInterface) jsNodeNode()         {}
 func (TsAmbientNamespace) jsNodeNode()         {}
 func (TsAmbientPropertyMember) jsNodeNode()    {}
+func (TsAmbientTypeAlias) jsNodeNode()         {}
 func (TsAmbientVar) jsNodeNode()               {}
 func (TsCastExpression) jsNodeNode()           {}
 func (TsEnum) jsNodeNode()                     {}
@@ -203,6 +205,7 @@ func (TsInterface) jsNodeNode()                {}
 func (TsInterfaceExtends) jsNodeNode()         {}
 func (TsNamespace) jsNodeNode()                {}
 func (TsNamespaceBody) jsNodeNode()            {}
+func (TsNonNull) jsNodeNode()                  {}
 func (TupleType) jsNodeNode()                  {}
 func (TypeAliasDeclaration) jsNodeNode()       {}
 func (TypeAnnotation) jsNodeNode()             {}
@@ -276,6 +279,7 @@ func (TsAmbientFunction) declarationNode()        {}
 func (TsAmbientImportAlias) declarationNode()     {}
 func (TsAmbientInterface) declarationNode()       {}
 func (TsAmbientNamespace) declarationNode()       {}
+func (TsAmbientTypeAlias) declarationNode()       {}
 func (TsAmbientVar) declarationNode()             {}
 func (TsEnum) declarationNode()                   {}
 func (TsImportAliasDeclaration) declarationNode() {}
@@ -357,6 +361,7 @@ func (TaggedTemplate) expressionNode()           {}
 func (TemplateLiteral) expressionNode()          {}
 func (This) expressionNode()                     {}
 func (TsCastExpression) expressionNode()         {}
+func (TsNonNull) expressionNode()                {}
 func (UnaryExpression) expressionNode()          {}
 func (Yield) expressionNode()                    {}
 
@@ -452,6 +457,7 @@ func (TsAmbientFunction) moduleItemNode()          {}
 func (TsAmbientImportAlias) moduleItemNode()       {}
 func (TsAmbientInterface) moduleItemNode()         {}
 func (TsAmbientNamespace) moduleItemNode()         {}
+func (TsAmbientTypeAlias) moduleItemNode()         {}
 func (TsAmbientVar) moduleItemNode()               {}
 func (TsEnum) moduleItemNode()                     {}
 func (TsExportAssignment) moduleItemNode()         {}
@@ -501,6 +507,7 @@ func (Method) propertyDefinitionNode()            {}
 func (Property) propertyDefinitionNode()          {}
 func (Setter) propertyDefinitionNode()            {}
 func (ShorthandProperty) propertyDefinitionNode() {}
+func (SpreadProperty) propertyDefinitionNode()    {}
 func (SyntaxProblem) propertyDefinitionNode()     {}
 
 type PropertyName interface {
@@ -596,6 +603,7 @@ func (TsAmbientFunction) statementListItemNode()        {}
 func (TsAmbientImportAlias) statementListItemNode()     {}
 func (TsAmbientInterface) statementListItemNode()       {}
 func (TsAmbientNamespace) statementListItemNode()       {}
+func (TsAmbientTypeAlias) statementListItemNode()       {}
 func (TsAmbientVar) statementListItemNode()             {}
 func (TsEnum) statementListItemNode()                   {}
 func (TsImportAliasDeclaration) statementListItemNode() {}
@@ -632,6 +640,7 @@ func (TsAmbientFunction) tsAmbientElementNode()    {}
 func (TsAmbientImportAlias) tsAmbientElementNode() {}
 func (TsAmbientInterface) tsAmbientElementNode()   {}
 func (TsAmbientNamespace) tsAmbientElementNode()   {}
+func (TsAmbientTypeAlias) tsAmbientElementNode()   {}
 func (TsAmbientVar) tsAmbientElementNode()         {}
 
 type TsType interface {
@@ -1582,11 +1591,11 @@ type ForOfStatement struct {
 }
 
 func (n ForOfStatement) Var() JsNode {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.UnaryExpression, js.Yield))).(JsNode)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.TsNonNull, js.UnaryExpression, js.Yield))).(JsNode)
 }
 
 func (n ForOfStatement) Iterable() Expression {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.TsNonNull, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatement) Statement() Statement {
@@ -2059,7 +2068,10 @@ func (n JSXNormalAttribute) JSXAttributeName() JSXAttributeName {
 }
 
 func (n JSXNormalAttribute) JSXAttributeValue() JSXAttributeValue {
-	return ToJsNode(n.Child(selector.JSXAttributeValue)).(JSXAttributeValue)
+	if child := n.Child(selector.JSXAttributeValue); child != nil {
+		return ToJsNode(child).(JSXAttributeValue)
+	}
+	return nil
 }
 
 type JSXOpeningElement struct {
@@ -2730,6 +2742,14 @@ func (n SpreadElement) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
+type SpreadProperty struct {
+	Node
+}
+
+func (n SpreadProperty) Expression() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
 type Static struct {
 	Node
 }
@@ -3036,6 +3056,14 @@ func (n TsAmbientPropertyMember) TypeAnnotation() *TypeAnnotation {
 	return nil
 }
 
+type TsAmbientTypeAlias struct {
+	Node
+}
+
+func (n TsAmbientTypeAlias) TypeAliasDeclaration() TypeAliasDeclaration {
+	return TypeAliasDeclaration{n.Child(selector.TypeAliasDeclaration)}
+}
+
 type TsAmbientVar struct {
 	Node
 }
@@ -3222,6 +3250,14 @@ func (n TsNamespaceBody) ModuleItem() []ModuleItem {
 		result = append(result, ToJsNode(node).(ModuleItem))
 	}
 	return result
+}
+
+type TsNonNull struct {
+	Node
+}
+
+func (n TsNonNull) Expr() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type TupleType struct {
