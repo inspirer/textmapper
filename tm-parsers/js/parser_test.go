@@ -1056,6 +1056,7 @@ var parseTests = []struct {
 		`class A {
 		   «static» a : int = 5;
 		   private «static» b() { return 1}
+		   «static» displayName?:string;
 		 }`,
 	}},
 	{js.Typescript, js.Abstract, []string{
@@ -1161,7 +1162,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TsAmbientFunctionMember, []string{
 		`declare class A {
-			«a(x : number) : Q<X>;»
+			«a?(x : number) : Q<X>;»
 			«private static b(abc);»
 		}`,
 	}},

@@ -1001,11 +1001,11 @@ AsyncConciseBody<In> :
 ;
 
 MethodDefinition<Yield, Await> -> MethodDefinition /* interface */:
-    PropertyName UniqueFormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await>     -> Method
+    PropertyName '?'? UniqueFormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> -> Method
   | GeneratorMethod
   | AsyncMethod
-  | 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>            -> Getter
-  | 'set' PropertyName '(' PropertySetParameterList ')'  FunctionBody<~Yield, ~Await>    -> Setter
+  | 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>             -> Getter
+  | 'set' PropertyName '(' PropertySetParameterList ')'  FunctionBody<~Yield, ~Await>     -> Setter
 ;
 
 PropertySetParameterList :
@@ -1088,7 +1088,7 @@ Modifiers:
 
 ClassElement<Yield, Await> -> ClassElement /* interface */:
     Modifiers? MethodDefinition                 -> MemberMethod
-  | Modifiers? PropertyName TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
+  | Modifiers? PropertyName '?'? TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
   | IndexSignature ';'                          -> TsIndexMemberDeclaration
   | ';'                                         -> EmptyDecl
 ;
@@ -1525,8 +1525,8 @@ AmbientClassBody -> TsAmbientClassBody:
     '{' AmbientClassBodyElement+? '}' ;
 
 AmbientClassBodyElement -> TsAmbientClassElement /* interface */:
-    Modifiers? PropertyName<~Yield, ~Await> TypeAnnotationopt ';'  -> TsAmbientPropertyMember
-  | Modifiers? PropertyName<~Yield, ~Await> CallSignature ';'      -> TsAmbientFunctionMember
+    Modifiers? PropertyName<~Yield, ~Await> '?'? TypeAnnotationopt ';'  -> TsAmbientPropertyMember
+  | Modifiers? PropertyName<~Yield, ~Await> '?'? CallSignature ';'      -> TsAmbientFunctionMember
   | IndexSignature ';' -> TsAmbientIndexMember
 ;
 

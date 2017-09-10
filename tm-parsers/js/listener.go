@@ -3658,21 +3658,25 @@ var ruleNodeType = [...]NodeType{
 	0,                       // AsyncConciseBody : AsyncFunctionBody
 	ConciseBody,             // AsyncConciseBody_In : AssignmentExpression_Await_In_NoObjLiteral
 	0,                       // AsyncConciseBody_In : AsyncFunctionBody
+	Method,                  // MethodDefinition : PropertyName '?' UniqueFormalParameters FunctionBody
 	Method,                  // MethodDefinition : PropertyName UniqueFormalParameters FunctionBody
 	0,                       // MethodDefinition : GeneratorMethod
 	0,                       // MethodDefinition : AsyncMethod
 	Getter,                  // MethodDefinition : 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody
 	Setter,                  // MethodDefinition : 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
+	Method,                  // MethodDefinition_Await : PropertyName_Await '?' UniqueFormalParameters FunctionBody
 	Method,                  // MethodDefinition_Await : PropertyName_Await UniqueFormalParameters FunctionBody
 	0,                       // MethodDefinition_Await : GeneratorMethod_Await
 	0,                       // MethodDefinition_Await : AsyncMethod_Await
 	Getter,                  // MethodDefinition_Await : 'get' PropertyName_Await '(' ')' TypeAnnotationopt FunctionBody
 	Setter,                  // MethodDefinition_Await : 'set' PropertyName_Await '(' PropertySetParameterList ')' FunctionBody
+	Method,                  // MethodDefinition_Await_Yield : PropertyName_Await_Yield '?' UniqueFormalParameters FunctionBody
 	Method,                  // MethodDefinition_Await_Yield : PropertyName_Await_Yield UniqueFormalParameters FunctionBody
 	0,                       // MethodDefinition_Await_Yield : GeneratorMethod_Await_Yield
 	0,                       // MethodDefinition_Await_Yield : AsyncMethod_Await_Yield
 	Getter,                  // MethodDefinition_Await_Yield : 'get' PropertyName_Await_Yield '(' ')' TypeAnnotationopt FunctionBody
 	Setter,                  // MethodDefinition_Await_Yield : 'set' PropertyName_Await_Yield '(' PropertySetParameterList ')' FunctionBody
+	Method,                  // MethodDefinition_Yield : PropertyName_Yield '?' UniqueFormalParameters FunctionBody
 	Method,                  // MethodDefinition_Yield : PropertyName_Yield UniqueFormalParameters FunctionBody
 	0,                       // MethodDefinition_Yield : GeneratorMethod_Yield
 	0,                       // MethodDefinition_Yield : AsyncMethod_Yield
@@ -3808,25 +3812,33 @@ var ruleNodeType = [...]NodeType{
 	0,                          // Modifiers : Modifiers Modifier
 	MemberMethod,               // ClassElement : Modifiers MethodDefinition
 	MemberMethod,               // ClassElement : MethodDefinition
+	MemberVar,                  // ClassElement : Modifiers PropertyName '?' TypeAnnotationopt Initializeropt_In ';'
 	MemberVar,                  // ClassElement : Modifiers PropertyName TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                  // ClassElement : PropertyName '?' TypeAnnotationopt Initializeropt_In ';'
 	MemberVar,                  // ClassElement : PropertyName TypeAnnotationopt Initializeropt_In ';'
 	TsIndexMemberDeclaration,   // ClassElement : IndexSignature ';'
 	EmptyDecl,                  // ClassElement : ';'
 	MemberMethod,               // ClassElement_Await : Modifiers MethodDefinition_Await
 	MemberMethod,               // ClassElement_Await : MethodDefinition_Await
+	MemberVar,                  // ClassElement_Await : Modifiers PropertyName_Await '?' TypeAnnotationopt Initializeropt_Await_In ';'
 	MemberVar,                  // ClassElement_Await : Modifiers PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                  // ClassElement_Await : PropertyName_Await '?' TypeAnnotationopt Initializeropt_Await_In ';'
 	MemberVar,                  // ClassElement_Await : PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
 	TsIndexMemberDeclaration,   // ClassElement_Await : IndexSignature ';'
 	EmptyDecl,                  // ClassElement_Await : ';'
 	MemberMethod,               // ClassElement_Await_Yield : Modifiers MethodDefinition_Await_Yield
 	MemberMethod,               // ClassElement_Await_Yield : MethodDefinition_Await_Yield
+	MemberVar,                  // ClassElement_Await_Yield : Modifiers PropertyName_Await_Yield '?' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	MemberVar,                  // ClassElement_Await_Yield : Modifiers PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                  // ClassElement_Await_Yield : PropertyName_Await_Yield '?' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	MemberVar,                  // ClassElement_Await_Yield : PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	TsIndexMemberDeclaration,   // ClassElement_Await_Yield : IndexSignature ';'
 	EmptyDecl,                  // ClassElement_Await_Yield : ';'
 	MemberMethod,               // ClassElement_Yield : Modifiers MethodDefinition_Yield
 	MemberMethod,               // ClassElement_Yield : MethodDefinition_Yield
+	MemberVar,                  // ClassElement_Yield : Modifiers PropertyName_Yield '?' TypeAnnotationopt Initializeropt_In_Yield ';'
 	MemberVar,                  // ClassElement_Yield : Modifiers PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                  // ClassElement_Yield : PropertyName_Yield '?' TypeAnnotationopt Initializeropt_In_Yield ';'
 	MemberVar,                  // ClassElement_Yield : PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
 	TsIndexMemberDeclaration,   // ClassElement_Yield : IndexSignature ';'
 	EmptyDecl,                  // ClassElement_Yield : ';'
@@ -4238,9 +4250,13 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientClassBody, // AmbientClassBody : '{' '}'
 	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement_list AmbientClassBodyElement
 	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement
+	TsAmbientPropertyMember, // AmbientClassBodyElement : Modifiers PropertyName '?' TypeAnnotationopt ';'
 	TsAmbientPropertyMember, // AmbientClassBodyElement : Modifiers PropertyName TypeAnnotationopt ';'
+	TsAmbientPropertyMember, // AmbientClassBodyElement : PropertyName '?' TypeAnnotationopt ';'
 	TsAmbientPropertyMember, // AmbientClassBodyElement : PropertyName TypeAnnotationopt ';'
+	TsAmbientFunctionMember, // AmbientClassBodyElement : Modifiers PropertyName '?' CallSignature ';'
 	TsAmbientFunctionMember, // AmbientClassBodyElement : Modifiers PropertyName CallSignature ';'
+	TsAmbientFunctionMember, // AmbientClassBodyElement : PropertyName '?' CallSignature ';'
 	TsAmbientFunctionMember, // AmbientClassBodyElement : PropertyName CallSignature ';'
 	TsAmbientIndexMember,    // AmbientClassBodyElement : IndexSignature ';'
 	0,                       // AmbientEnumDeclaration : EnumDeclaration
