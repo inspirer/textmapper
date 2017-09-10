@@ -1178,6 +1178,9 @@ var parseTests = []struct {
 	{js.Typescript, js.TsAmbientTypeAlias, []string{
 		`declare namespace foo { «type Abc<Foo, Bar> = Function<Foo> | typeof Bar;» }`,
 	}},
+	{js.Typescript, js.TsAmbientModule, []string{
+		`«declare module "foo" { export = foo; }»`,
+	}},
 	{js.Typescript, js.TsNonNull, []string{
 		`var a = «a!».b`,
 	}},

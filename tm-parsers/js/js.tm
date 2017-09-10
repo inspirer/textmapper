@@ -716,6 +716,7 @@ Declaration<Yield, Await> -> Declaration /* interface */:
   | EnumDeclaration
   | ImportAliasDeclaration
   | AmbientDeclaration
+  | AmbientModuleDeclaration
 ;
 
 HoistableDeclaration<Await> -> Declaration /* interface */:

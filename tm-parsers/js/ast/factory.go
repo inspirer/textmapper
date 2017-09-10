@@ -326,6 +326,8 @@ func ToJsNode(n Node) JsNode {
 		return &TsAmbientIndexMember{n}
 	case js.TsAmbientInterface:
 		return &TsAmbientInterface{n}
+	case js.TsAmbientModule:
+		return &TsAmbientModule{n}
 	case js.TsAmbientNamespace:
 		return &TsAmbientNamespace{n}
 	case js.TsAmbientPropertyMember:

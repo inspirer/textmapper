@@ -190,6 +190,7 @@ func (TsAmbientFunctionMember) jsNodeNode()    {}
 func (TsAmbientImportAlias) jsNodeNode()       {}
 func (TsAmbientIndexMember) jsNodeNode()       {}
 func (TsAmbientInterface) jsNodeNode()         {}
+func (TsAmbientModule) jsNodeNode()            {}
 func (TsAmbientNamespace) jsNodeNode()         {}
 func (TsAmbientPropertyMember) jsNodeNode()    {}
 func (TsAmbientTypeAlias) jsNodeNode()         {}
@@ -280,6 +281,7 @@ func (TsAmbientEnum) declarationNode()            {}
 func (TsAmbientFunction) declarationNode()        {}
 func (TsAmbientImportAlias) declarationNode()     {}
 func (TsAmbientInterface) declarationNode()       {}
+func (TsAmbientModule) declarationNode()          {}
 func (TsAmbientNamespace) declarationNode()       {}
 func (TsAmbientTypeAlias) declarationNode()       {}
 func (TsAmbientVar) declarationNode()             {}
@@ -471,6 +473,7 @@ func (TsAmbientEnum) moduleItemNode()              {}
 func (TsAmbientFunction) moduleItemNode()          {}
 func (TsAmbientImportAlias) moduleItemNode()       {}
 func (TsAmbientInterface) moduleItemNode()         {}
+func (TsAmbientModule) moduleItemNode()            {}
 func (TsAmbientNamespace) moduleItemNode()         {}
 func (TsAmbientTypeAlias) moduleItemNode()         {}
 func (TsAmbientVar) moduleItemNode()               {}
@@ -617,6 +620,7 @@ func (TsAmbientEnum) statementListItemNode()            {}
 func (TsAmbientFunction) statementListItemNode()        {}
 func (TsAmbientImportAlias) statementListItemNode()     {}
 func (TsAmbientInterface) statementListItemNode()       {}
+func (TsAmbientModule) statementListItemNode()          {}
 func (TsAmbientNamespace) statementListItemNode()       {}
 func (TsAmbientTypeAlias) statementListItemNode()       {}
 func (TsAmbientVar) statementListItemNode()             {}
@@ -3045,6 +3049,19 @@ type TsAmbientInterface struct {
 
 func (n TsAmbientInterface) TsInterface() TsInterface {
 	return TsInterface{n.Child(selector.TsInterface)}
+}
+
+type TsAmbientModule struct {
+	Node
+}
+
+func (n TsAmbientModule) ModuleItem() []ModuleItem {
+	nodes := n.Children(selector.ModuleItem)
+	var result []ModuleItem = make([]ModuleItem, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(ModuleItem))
+	}
+	return result
 }
 
 type TsAmbientNamespace struct {

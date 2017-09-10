@@ -203,6 +203,7 @@ const (
 	TsAmbientInterface       // TsInterface
 	TsAmbientImportAlias     // TsImportAliasDeclaration
 	TsAmbientTypeAlias       // TypeAliasDeclaration
+	TsAmbientModule          // (ModuleItem)*
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -408,6 +409,7 @@ var nodeTypeStr = [...]string{
 	"TsAmbientInterface",
 	"TsAmbientImportAlias",
 	"TsAmbientTypeAlias",
+	"TsAmbientModule",
 	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",
@@ -453,6 +455,7 @@ var Declaration = []NodeType{
 	TsAmbientFunction,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
+	TsAmbientModule,
 	TsAmbientNamespace,
 	TsAmbientTypeAlias,
 	TsAmbientVar,
@@ -590,6 +593,7 @@ var ModuleItem = []NodeType{
 	TsAmbientFunction,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
+	TsAmbientModule,
 	TsAmbientNamespace,
 	TsAmbientTypeAlias,
 	TsAmbientVar,
@@ -694,6 +698,7 @@ var StatementListItem = []NodeType{
 	TsAmbientFunction,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
+	TsAmbientModule,
 	TsAmbientNamespace,
 	TsAmbientTypeAlias,
 	TsAmbientVar,
@@ -3241,6 +3246,7 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration : EnumDeclaration
 	0,                     // Declaration : ImportAliasDeclaration
 	0,                     // Declaration : AmbientDeclaration
+	0,                     // Declaration : AmbientModuleDeclaration
 	0,                     // Declaration_Await : HoistableDeclaration_Await
 	0,                     // Declaration_Await : ClassDeclaration_Await
 	0,                     // Declaration_Await : LexicalDeclaration_Await_In
@@ -3250,6 +3256,7 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration_Await : EnumDeclaration
 	0,                     // Declaration_Await : ImportAliasDeclaration
 	0,                     // Declaration_Await : AmbientDeclaration
+	0,                     // Declaration_Await : AmbientModuleDeclaration
 	0,                     // Declaration_Yield : HoistableDeclaration
 	0,                     // Declaration_Yield : ClassDeclaration_Yield
 	0,                     // Declaration_Yield : LexicalDeclaration_In_Yield
@@ -3259,6 +3266,7 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration_Yield : EnumDeclaration
 	0,                     // Declaration_Yield : ImportAliasDeclaration
 	0,                     // Declaration_Yield : AmbientDeclaration
+	0,                     // Declaration_Yield : AmbientModuleDeclaration
 	0,                     // HoistableDeclaration : FunctionDeclaration
 	0,                     // HoistableDeclaration : GeneratorDeclaration
 	0,                     // HoistableDeclaration : AsyncFunctionDeclaration
@@ -4281,6 +4289,7 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientImportAlias,    // AmbientNamespaceElement : ImportAliasDeclaration
 	TsAmbientTypeAlias,      // AmbientNamespaceElement : 'export' TypeAliasDeclaration
 	TsAmbientTypeAlias,      // AmbientNamespaceElement : TypeAliasDeclaration
+	TsAmbientModule,         // AmbientModuleDeclaration : 'declare' 'module' StringLiteral '{' ModuleBodyopt '}'
 	0,                       // Elisionopt : Elision
 	0,                       // Elisionopt :
 	0,                       // TypeAnnotationopt : TypeAnnotation

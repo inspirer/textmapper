@@ -167,6 +167,7 @@ var (
 	TsAmbientImportAlias       = func(t js.NodeType) bool { return t == js.TsAmbientImportAlias }
 	TsAmbientIndexMember       = func(t js.NodeType) bool { return t == js.TsAmbientIndexMember }
 	TsAmbientInterface         = func(t js.NodeType) bool { return t == js.TsAmbientInterface }
+	TsAmbientModule            = func(t js.NodeType) bool { return t == js.TsAmbientModule }
 	TsAmbientNamespace         = func(t js.NodeType) bool { return t == js.TsAmbientNamespace }
 	TsAmbientPropertyMember    = func(t js.NodeType) bool { return t == js.TsAmbientPropertyMember }
 	TsAmbientTypeAlias         = func(t js.NodeType) bool { return t == js.TsAmbientTypeAlias }
