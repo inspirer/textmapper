@@ -21,7 +21,7 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(3, 5275, lexer)
+	return p.parse(3, 5281, lexer)
 }
 
 func lookaheadNext(lexer *Lexer) int32 {
@@ -37,21 +37,21 @@ restart:
 func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
 	switch rule {
 	case 3548:
-		if lookahead(lexer, next, 0, 5271) {
+		if lookahead(lexer, next, 0, 5277) {
 			lhs.sym.symbol = 347 /* lookahead_StartOfParametrizedCall */
 		} else {
 			lhs.sym.symbol = 287 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
 	case 3549:
-		if lookahead(lexer, next, 2, 5273) {
+		if lookahead(lexer, next, 2, 5279) {
 			lhs.sym.symbol = 855 /* lookahead_StartOfMappedType */
 		} else {
 			lhs.sym.symbol = 847 /* lookahead_notStartOfMappedType */
 		}
 		return
 	case 3550:
-		if lookahead(lexer, next, 1, 5272) {
+		if lookahead(lexer, next, 1, 5278) {
 			lhs.sym.symbol = 861 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 840 /* lookahead_notStartOfFunctionType */
@@ -61,15 +61,15 @@ func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
 }
 
 func AtStartOfParametrizedCall(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 0, 5271)
+	return lookahead(lexer, next, 0, 5277)
 }
 
 func AtStartOfFunctionType(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 1, 5272)
+	return lookahead(lexer, next, 1, 5278)
 }
 
 func AtStartOfMappedType(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 2, 5273)
+	return lookahead(lexer, next, 2, 5279)
 }
 
 func lookahead(l *Lexer, next int32, start, end int16) bool {

@@ -64,7 +64,7 @@ const (
 	LexicalBinding      // BindingIdentifier? BindingPattern? TypeAnnotation? Initializer?
 	VariableStatement   // (VariableDeclaration)+
 	VariableDeclaration // BindingIdentifier? BindingPattern? TypeAnnotation? Initializer?
-	ObjectPattern       // (PropertyPattern)*
+	ObjectPattern       // (PropertyPattern)* BindingRestElement?
 	ArrayPattern        // (ElementPattern)* BindingRestElement?
 	PropertyBinding     // PropertyName ElementPattern
 	ElementBinding      // BindingPattern Initializer?
@@ -3348,17 +3348,17 @@ var ruleNodeType = [...]NodeType{
 	0,                     // BindingPattern_Await_Yield : ArrayBindingPattern_Await_Yield
 	0,                     // BindingPattern_Yield : ObjectBindingPattern_Yield
 	0,                     // BindingPattern_Yield : ArrayBindingPattern_Yield
-	ObjectPattern,         // ObjectBindingPattern : '{' '}'
-	ObjectPattern,         // ObjectBindingPattern : '{' PropertyPattern_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern : '{' BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern : '{' PropertyPattern_list_Comma_separated ',' BindingRestElementopt '}'
 	ObjectPattern,         // ObjectBindingPattern : '{' PropertyPattern_list_Comma_separated '}'
-	ObjectPattern,         // ObjectBindingPattern_Await : '{' '}'
-	ObjectPattern,         // ObjectBindingPattern_Await : '{' PropertyPattern_Await_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' PropertyPattern_Await_list_Comma_separated ',' BindingRestElementopt '}'
 	ObjectPattern,         // ObjectBindingPattern_Await : '{' PropertyPattern_Await_list_Comma_separated '}'
-	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' '}'
-	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' PropertyPattern_Await_Yield_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' PropertyPattern_Await_Yield_list_Comma_separated ',' BindingRestElementopt '}'
 	ObjectPattern,         // ObjectBindingPattern_Await_Yield : '{' PropertyPattern_Await_Yield_list_Comma_separated '}'
-	ObjectPattern,         // ObjectBindingPattern_Yield : '{' '}'
-	ObjectPattern,         // ObjectBindingPattern_Yield : '{' PropertyPattern_Yield_list_Comma_separated ',' '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield : '{' BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield : '{' PropertyPattern_Yield_list_Comma_separated ',' BindingRestElementopt '}'
 	ObjectPattern,         // ObjectBindingPattern_Yield : '{' PropertyPattern_Yield_list_Comma_separated '}'
 	0,                     // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await_list_Comma_separated ',' PropertyPattern_Await
 	0,                     // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await

@@ -764,6 +764,9 @@ var parseTests = []struct {
 	{js.Javascript, js.SpreadProperty, []string{
 		`let n = { x, y, «...z» };`,
 	}},
+	{js.Javascript, js.BindingRestElement, []string{
+		`let { x, y, «...z» } = { x: 1, y: 2, a: 3, b: 4 };`,
+	}},
 
 	// Automatic Semicolon Insertion
 	{js.Javascript, js.InsertedSemicolon, []string{

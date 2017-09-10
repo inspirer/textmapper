@@ -2460,6 +2460,13 @@ func (n ObjectPattern) PropertyPattern() []PropertyPattern {
 	return result
 }
 
+func (n ObjectPattern) BindingRestElement() *BindingRestElement {
+	if child := n.Child(selector.BindingRestElement); child != nil {
+		return &BindingRestElement{child}
+	}
+	return nil
+}
+
 type ObjectType struct {
 	Node
 }

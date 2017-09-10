@@ -786,8 +786,8 @@ BindingPattern<Yield, Await> -> BindingPattern /* interface */:
 ;
 
 ObjectBindingPattern<Yield, Await> -> ObjectPattern :
-    '{' '}'
-  | '{' (PropertyPattern separator ',')+ ','? '}'
+    '{' BindingRestElementopt '}'
+  | '{' (PropertyPattern separator ',')+ (',' BindingRestElementopt)? '}'
 ;
 
 ArrayBindingPattern<Yield, Await> -> ArrayPattern :
