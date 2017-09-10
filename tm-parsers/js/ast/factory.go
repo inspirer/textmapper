@@ -12,6 +12,8 @@ func ToJsNode(n Node) JsNode {
 		return nil
 	}
 	switch n.Type() {
+	case js.Abstract:
+		return &Abstract{n}
 	case js.AccessibilityModifier:
 		return &AccessibilityModifier{n}
 	case js.AdditiveExpression:
@@ -264,6 +266,8 @@ func ToJsNode(n Node) JsNode {
 		return &PropertyBinding{n}
 	case js.PropertySignature:
 		return &PropertySignature{n}
+	case js.Readonly:
+		return &Readonly{n}
 	case js.Regexp:
 		return &Regexp{n}
 	case js.RelationalExpression:

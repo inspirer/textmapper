@@ -97,34 +97,36 @@ const (
 	Catch                 // BindingIdentifier? BindingPattern? Block
 	Finally               // Block
 	DebuggerStatement
-	Function                 // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	FunctionExpression       // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	Body                     // (StatementListItem)*
-	ArrowFunction            // Parameters Body? ConciseBody?
-	Parameters               // Expression? (Parameter)* SyntaxProblem? BindingIdentifier? BindingPattern?
-	ConciseBody              // Expression
-	AsyncArrowFunction       // BindingIdentifier? expr=Expression? Arguments? Body? ConciseBody?
-	Method                   // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Getter                   // PropertyName TypeAnnotation? Body
-	Setter                   // PropertyName Parameter Body
-	GeneratorMethod          // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Generator                // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	GeneratorExpression      // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	Yield                    // Expression?
-	AsyncMethod              // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFunction            // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFunctionExpression  // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
-	AwaitExpression          // Expression
-	Class                    // BindingIdentifier? TypeParameters? Extends? TsImplementsClause? ClassBody
-	ClassExpr                // BindingIdentifier? TypeParameters? Extends? TsImplementsClause? ClassBody
-	Extends                  // Expression
-	TsImplementsClause       // (TypeReference)+
-	ClassBody                // (ClassElement)*
-	MemberMethod             // AccessibilityModifier? Static? MethodDefinition
-	MemberVar                // AccessibilityModifier? Static? PropertyName TypeAnnotation? Initializer?
+	Function                // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	FunctionExpression      // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	Body                    // (StatementListItem)*
+	ArrowFunction           // Parameters Body? ConciseBody?
+	Parameters              // Expression? (Parameter)* SyntaxProblem? BindingIdentifier? BindingPattern?
+	ConciseBody             // Expression
+	AsyncArrowFunction      // BindingIdentifier? expr=Expression? Arguments? Body? ConciseBody?
+	Method                  // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Getter                  // PropertyName TypeAnnotation? Body
+	Setter                  // PropertyName Parameter Body
+	GeneratorMethod         // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Generator               // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	GeneratorExpression     // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	Yield                   // Expression?
+	AsyncMethod             // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	AsyncFunction           // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncFunctionExpression // BindingIdentifier? TypeParameters? Parameters TypeAnnotation? Body
+	AwaitExpression         // Expression
+	Class                   // (Modifier)* BindingIdentifier? TypeParameters? Extends? TsImplementsClause? ClassBody
+	ClassExpr               // (Modifier)* BindingIdentifier? TypeParameters? Extends? TsImplementsClause? ClassBody
+	Extends                 // Expression
+	TsImplementsClause      // (TypeReference)+
+	ClassBody               // (ClassElement)*
+	Static
+	Abstract
+	Readonly
+	MemberMethod             // (Modifier)* MethodDefinition
+	MemberVar                // (Modifier)* PropertyName TypeAnnotation? Initializer?
 	TsIndexMemberDeclaration // IndexSignature
 	EmptyDecl
-	Static
 	Module                     // (ModuleItem)*
 	ImportDeclaration          // BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
 	TsImportRequireDeclaration // BindingIdentifier
@@ -190,13 +192,13 @@ const (
 	TsImportAliasDeclaration // BindingIdentifier ref=(IdentifierReference)+
 	TsAmbientVar             // (TsAmbientBinding)+
 	TsAmbientFunction        // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
-	TsAmbientClass           // BindingIdentifier TypeParameters? Extends? TsImplementsClause? TsAmbientClassBody
+	TsAmbientClass           // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? TsAmbientClassBody
 	TsAmbientEnum            // TsEnum
 	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
 	TsAmbientBinding         // BindingIdentifier TypeAnnotation?
 	TsAmbientClassBody       // (TsAmbientClassElement)*
-	TsAmbientPropertyMember  // AccessibilityModifier? Static? PropertyName TypeAnnotation?
-	TsAmbientFunctionMember  // AccessibilityModifier? Static? PropertyName CallSignature
+	TsAmbientPropertyMember  // (Modifier)* PropertyName TypeAnnotation?
+	TsAmbientFunctionMember  // (Modifier)* PropertyName CallSignature
 	TsAmbientIndexMember     // IndexSignature
 	TsAmbientInterface       // TsInterface
 	TsAmbientImportAlias     // TsImportAliasDeclaration
@@ -323,11 +325,13 @@ var nodeTypeStr = [...]string{
 	"Extends",
 	"TsImplementsClause",
 	"ClassBody",
+	"Static",
+	"Abstract",
+	"Readonly",
 	"MemberMethod",
 	"MemberVar",
 	"TsIndexMemberDeclaration",
 	"EmptyDecl",
-	"Static",
 	"Module",
 	"ImportDeclaration",
 	"TsImportRequireDeclaration",
@@ -543,6 +547,13 @@ var MethodDefinition = []NodeType{
 	Getter,
 	Method,
 	Setter,
+}
+
+var Modifier = []NodeType{
+	Abstract,
+	AccessibilityModifier,
+	Readonly,
+	Static,
 }
 
 var ModuleItem = []NodeType{
@@ -3702,24 +3713,46 @@ var ruleNodeType = [...]NodeType{
 	0,                          // AsyncFunctionBody : FunctionBody_Await
 	AwaitExpression,            // AwaitExpression : 'await' UnaryExpression_Await
 	AwaitExpression,            // AwaitExpression_Yield : 'await' UnaryExpression_Await_Yield
+	Class,                      // ClassDeclaration : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail
+	Class,                      // ClassDeclaration : Modifiers 'class' TypeParametersopt ClassTail
 	Class,                      // ClassDeclaration : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail
 	Class,                      // ClassDeclaration : 'class' TypeParametersopt ClassTail
+	Class,                      // ClassDeclaration_Await : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Await
+	Class,                      // ClassDeclaration_Await : Modifiers 'class' TypeParametersopt ClassTail_Await
 	Class,                      // ClassDeclaration_Await : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Await
 	Class,                      // ClassDeclaration_Await : 'class' TypeParametersopt ClassTail_Await
+	Class,                      // ClassDeclaration_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Yield
+	Class,                      // ClassDeclaration_Yield : Modifiers 'class' TypeParametersopt ClassTail_Yield
 	Class,                      // ClassDeclaration_Yield : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Yield
 	Class,                      // ClassDeclaration_Yield : 'class' TypeParametersopt ClassTail_Yield
+	ClassExpr,                  // ClassExpression : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail
+	ClassExpr,                  // ClassExpression : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail
+	ClassExpr,                  // ClassExpression : Modifiers 'class' TypeParameters ClassTail
+	ClassExpr,                  // ClassExpression : Modifiers 'class' ClassTail
 	ClassExpr,                  // ClassExpression : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail
 	ClassExpr,                  // ClassExpression : 'class' BindingIdentifier_WithoutImplements ClassTail
 	ClassExpr,                  // ClassExpression : 'class' TypeParameters ClassTail
 	ClassExpr,                  // ClassExpression : 'class' ClassTail
+	ClassExpr,                  // ClassExpression_Await : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await : Modifiers 'class' TypeParameters ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await : Modifiers 'class' ClassTail_Await
 	ClassExpr,                  // ClassExpression_Await : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await
 	ClassExpr,                  // ClassExpression_Await : 'class' BindingIdentifier_WithoutImplements ClassTail_Await
 	ClassExpr,                  // ClassExpression_Await : 'class' TypeParameters ClassTail_Await
 	ClassExpr,                  // ClassExpression_Await : 'class' ClassTail_Await
+	ClassExpr,                  // ClassExpression_Await_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Await_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Await_Yield : Modifiers 'class' TypeParameters ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Await_Yield : Modifiers 'class' ClassTail_Await_Yield
 	ClassExpr,                  // ClassExpression_Await_Yield : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await_Yield
 	ClassExpr,                  // ClassExpression_Await_Yield : 'class' BindingIdentifier_WithoutImplements ClassTail_Await_Yield
 	ClassExpr,                  // ClassExpression_Await_Yield : 'class' TypeParameters ClassTail_Await_Yield
 	ClassExpr,                  // ClassExpression_Await_Yield : 'class' ClassTail_Await_Yield
+	ClassExpr,                  // ClassExpression_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield
+	ClassExpr,                  // ClassExpression_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail_Yield
+	ClassExpr,                  // ClassExpression_Yield : Modifiers 'class' TypeParameters ClassTail_Yield
+	ClassExpr,                  // ClassExpression_Yield : Modifiers 'class' ClassTail_Yield
 	ClassExpr,                  // ClassExpression_Yield : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield
 	ClassExpr,                  // ClassExpression_Yield : 'class' BindingIdentifier_WithoutImplements ClassTail_Yield
 	ClassExpr,                  // ClassExpression_Yield : 'class' TypeParameters ClassTail_Yield
@@ -3767,47 +3800,36 @@ var ruleNodeType = [...]NodeType{
 	0,                          // ClassElementList_Await_Yield : ClassElementList_Await_Yield ClassElement_Await_Yield
 	0,                          // ClassElementList_Yield : ClassElement_Yield
 	0,                          // ClassElementList_Yield : ClassElementList_Yield ClassElement_Yield
-	MemberMethod,               // ClassElement : AccessibilityModifier Static MethodDefinition
-	MemberMethod,               // ClassElement : AccessibilityModifier MethodDefinition
-	MemberMethod,               // ClassElement : Static MethodDefinition
+	0,                          // Modifier : AccessibilityModifier
+	Static,                     // Modifier : 'static'
+	Abstract,                   // Modifier : 'abstract'
+	Readonly,                   // Modifier : 'readonly'
+	0,                          // Modifiers : Modifier
+	0,                          // Modifiers : Modifiers Modifier
+	MemberMethod,               // ClassElement : Modifiers MethodDefinition
 	MemberMethod,               // ClassElement : MethodDefinition
-	MemberVar,                  // ClassElement : AccessibilityModifier Static PropertyName TypeAnnotationopt Initializeropt_In ';'
-	MemberVar,                  // ClassElement : AccessibilityModifier PropertyName TypeAnnotationopt Initializeropt_In ';'
-	MemberVar,                  // ClassElement : Static PropertyName TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                  // ClassElement : Modifiers PropertyName TypeAnnotationopt Initializeropt_In ';'
 	MemberVar,                  // ClassElement : PropertyName TypeAnnotationopt Initializeropt_In ';'
 	TsIndexMemberDeclaration,   // ClassElement : IndexSignature ';'
 	EmptyDecl,                  // ClassElement : ';'
-	MemberMethod,               // ClassElement_Await : AccessibilityModifier Static MethodDefinition_Await
-	MemberMethod,               // ClassElement_Await : AccessibilityModifier MethodDefinition_Await
-	MemberMethod,               // ClassElement_Await : Static MethodDefinition_Await
+	MemberMethod,               // ClassElement_Await : Modifiers MethodDefinition_Await
 	MemberMethod,               // ClassElement_Await : MethodDefinition_Await
-	MemberVar,                  // ClassElement_Await : AccessibilityModifier Static PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
-	MemberVar,                  // ClassElement_Await : AccessibilityModifier PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
-	MemberVar,                  // ClassElement_Await : Static PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                  // ClassElement_Await : Modifiers PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
 	MemberVar,                  // ClassElement_Await : PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
 	TsIndexMemberDeclaration,   // ClassElement_Await : IndexSignature ';'
 	EmptyDecl,                  // ClassElement_Await : ';'
-	MemberMethod,               // ClassElement_Await_Yield : AccessibilityModifier Static MethodDefinition_Await_Yield
-	MemberMethod,               // ClassElement_Await_Yield : AccessibilityModifier MethodDefinition_Await_Yield
-	MemberMethod,               // ClassElement_Await_Yield : Static MethodDefinition_Await_Yield
+	MemberMethod,               // ClassElement_Await_Yield : Modifiers MethodDefinition_Await_Yield
 	MemberMethod,               // ClassElement_Await_Yield : MethodDefinition_Await_Yield
-	MemberVar,                  // ClassElement_Await_Yield : AccessibilityModifier Static PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
-	MemberVar,                  // ClassElement_Await_Yield : AccessibilityModifier PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
-	MemberVar,                  // ClassElement_Await_Yield : Static PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                  // ClassElement_Await_Yield : Modifiers PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	MemberVar,                  // ClassElement_Await_Yield : PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	TsIndexMemberDeclaration,   // ClassElement_Await_Yield : IndexSignature ';'
 	EmptyDecl,                  // ClassElement_Await_Yield : ';'
-	MemberMethod,               // ClassElement_Yield : AccessibilityModifier Static MethodDefinition_Yield
-	MemberMethod,               // ClassElement_Yield : AccessibilityModifier MethodDefinition_Yield
-	MemberMethod,               // ClassElement_Yield : Static MethodDefinition_Yield
+	MemberMethod,               // ClassElement_Yield : Modifiers MethodDefinition_Yield
 	MemberMethod,               // ClassElement_Yield : MethodDefinition_Yield
-	MemberVar,                  // ClassElement_Yield : AccessibilityModifier Static PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
-	MemberVar,                  // ClassElement_Yield : AccessibilityModifier PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
-	MemberVar,                  // ClassElement_Yield : Static PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                  // ClassElement_Yield : Modifiers PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
 	MemberVar,                  // ClassElement_Yield : PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
 	TsIndexMemberDeclaration,   // ClassElement_Yield : IndexSignature ';'
 	EmptyDecl,                  // ClassElement_Yield : ';'
-	Static,                     // Static : 'static'
 	Module,                     // Module : ModuleBodyopt
 	0,                          // ModuleBody : ModuleItemList
 	0,                          // ModuleItemList : ModuleItem
@@ -4210,18 +4232,15 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientBinding,   // AmbientBinding : BindingIdentifier TypeAnnotation
 	TsAmbientBinding,   // AmbientBinding : BindingIdentifier
 	0,                  // AmbientFunctionDeclaration : 'function' BindingIdentifier FormalParameters ';'
+	0,                  // AmbientClassDeclaration : Modifiers 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
 	0,                  // AmbientClassDeclaration : 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
 	TsAmbientClassBody, // AmbientClassBody : '{' AmbientClassBodyElement_list '}'
 	TsAmbientClassBody, // AmbientClassBody : '{' '}'
 	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement_list AmbientClassBodyElement
 	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement
-	TsAmbientPropertyMember, // AmbientClassBodyElement : AccessibilityModifier Static PropertyName TypeAnnotationopt ';'
-	TsAmbientPropertyMember, // AmbientClassBodyElement : AccessibilityModifier PropertyName TypeAnnotationopt ';'
-	TsAmbientPropertyMember, // AmbientClassBodyElement : Static PropertyName TypeAnnotationopt ';'
+	TsAmbientPropertyMember, // AmbientClassBodyElement : Modifiers PropertyName TypeAnnotationopt ';'
 	TsAmbientPropertyMember, // AmbientClassBodyElement : PropertyName TypeAnnotationopt ';'
-	TsAmbientFunctionMember, // AmbientClassBodyElement : AccessibilityModifier Static PropertyName CallSignature ';'
-	TsAmbientFunctionMember, // AmbientClassBodyElement : AccessibilityModifier PropertyName CallSignature ';'
-	TsAmbientFunctionMember, // AmbientClassBodyElement : Static PropertyName CallSignature ';'
+	TsAmbientFunctionMember, // AmbientClassBodyElement : Modifiers PropertyName CallSignature ';'
 	TsAmbientFunctionMember, // AmbientClassBodyElement : PropertyName CallSignature ';'
 	TsAmbientIndexMember,    // AmbientClassBodyElement : IndexSignature ';'
 	0,                       // AmbientEnumDeclaration : EnumDeclaration

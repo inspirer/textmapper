@@ -33,6 +33,7 @@ type Token struct {
 }
 
 // All types implement JsNode.
+func (Abstract) jsNodeNode()                   {}
 func (AccessibilityModifier) jsNodeNode()      {}
 func (AdditiveExpression) jsNodeNode()         {}
 func (Arguments) jsNodeNode()                  {}
@@ -159,6 +160,7 @@ func (Property) jsNodeNode()                   {}
 func (PropertyAccess) jsNodeNode()             {}
 func (PropertyBinding) jsNodeNode()            {}
 func (PropertySignature) jsNodeNode()          {}
+func (Readonly) jsNodeNode()                   {}
 func (Regexp) jsNodeNode()                     {}
 func (RelationalExpression) jsNodeNode()       {}
 func (RestParameter) jsNodeNode()              {}
@@ -414,6 +416,19 @@ func (GeneratorMethod) methodDefinitionNode() {}
 func (Getter) methodDefinitionNode()          {}
 func (Method) methodDefinitionNode()          {}
 func (Setter) methodDefinitionNode()          {}
+
+type Modifier interface {
+	JsNode
+	modifierNode()
+}
+
+// modifierNode() ensures that only the following types can be
+// assigned to Modifier.
+//
+func (Abstract) modifierNode()              {}
+func (AccessibilityModifier) modifierNode() {}
+func (Readonly) modifierNode()              {}
+func (Static) modifierNode()                {}
 
 type ModuleItem interface {
 	JsNode
@@ -683,6 +698,10 @@ func (MethodSignature) typeMemberNode()    {}
 func (PropertySignature) typeMemberNode()  {}
 
 // Types.
+
+type Abstract struct {
+	Node
+}
 
 type AccessibilityModifier struct {
 	Node
@@ -1120,6 +1139,15 @@ type Class struct {
 	Node
 }
 
+func (n Class) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
 func (n Class) BindingIdentifier() *BindingIdentifier {
 	if child := n.Child(selector.BindingIdentifier); child != nil {
 		return &BindingIdentifier{child}
@@ -1167,6 +1195,15 @@ func (n ClassBody) ClassElement() []ClassElement {
 
 type ClassExpr struct {
 	Node
+}
+
+func (n ClassExpr) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
 }
 
 func (n ClassExpr) BindingIdentifier() *BindingIdentifier {
@@ -2269,18 +2306,13 @@ type MemberMethod struct {
 	Node
 }
 
-func (n MemberMethod) AccessibilityModifier() *AccessibilityModifier {
-	if child := n.Child(selector.AccessibilityModifier); child != nil {
-		return &AccessibilityModifier{child}
+func (n MemberMethod) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
 	}
-	return nil
-}
-
-func (n MemberMethod) Static() *Static {
-	if child := n.Child(selector.Static); child != nil {
-		return &Static{child}
-	}
-	return nil
+	return result
 }
 
 func (n MemberMethod) MethodDefinition() MethodDefinition {
@@ -2291,18 +2323,13 @@ type MemberVar struct {
 	Node
 }
 
-func (n MemberVar) AccessibilityModifier() *AccessibilityModifier {
-	if child := n.Child(selector.AccessibilityModifier); child != nil {
-		return &AccessibilityModifier{child}
+func (n MemberVar) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
 	}
-	return nil
-}
-
-func (n MemberVar) Static() *Static {
-	if child := n.Child(selector.Static); child != nil {
-		return &Static{child}
-	}
-	return nil
+	return result
 }
 
 func (n MemberVar) PropertyName() PropertyName {
@@ -2648,6 +2675,10 @@ func (n PropertySignature) TypeAnnotation() *TypeAnnotation {
 	return nil
 }
 
+type Readonly struct {
+	Node
+}
+
 type Regexp struct {
 	Node
 }
@@ -2886,6 +2917,15 @@ type TsAmbientClass struct {
 	Node
 }
 
+func (n TsAmbientClass) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
 func (n TsAmbientClass) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
@@ -2966,18 +3006,13 @@ type TsAmbientFunctionMember struct {
 	Node
 }
 
-func (n TsAmbientFunctionMember) AccessibilityModifier() *AccessibilityModifier {
-	if child := n.Child(selector.AccessibilityModifier); child != nil {
-		return &AccessibilityModifier{child}
+func (n TsAmbientFunctionMember) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
 	}
-	return nil
-}
-
-func (n TsAmbientFunctionMember) Static() *Static {
-	if child := n.Child(selector.Static); child != nil {
-		return &Static{child}
-	}
-	return nil
+	return result
 }
 
 func (n TsAmbientFunctionMember) PropertyName() PropertyName {
@@ -3038,18 +3073,13 @@ type TsAmbientPropertyMember struct {
 	Node
 }
 
-func (n TsAmbientPropertyMember) AccessibilityModifier() *AccessibilityModifier {
-	if child := n.Child(selector.AccessibilityModifier); child != nil {
-		return &AccessibilityModifier{child}
+func (n TsAmbientPropertyMember) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
 	}
-	return nil
-}
-
-func (n TsAmbientPropertyMember) Static() *Static {
-	if child := n.Child(selector.Static); child != nil {
-		return &Static{child}
-	}
-	return nil
+	return result
 }
 
 func (n TsAmbientPropertyMember) PropertyName() PropertyName {

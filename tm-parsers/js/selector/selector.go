@@ -10,6 +10,7 @@ type Selector func(nt js.NodeType) bool
 
 var (
 	Any                        = func(t js.NodeType) bool { return true }
+	Abstract                   = func(t js.NodeType) bool { return t == js.Abstract }
 	AccessibilityModifier      = func(t js.NodeType) bool { return t == js.AccessibilityModifier }
 	AdditiveExpression         = func(t js.NodeType) bool { return t == js.AdditiveExpression }
 	Arguments                  = func(t js.NodeType) bool { return t == js.Arguments }
@@ -136,6 +137,7 @@ var (
 	PropertyAccess             = func(t js.NodeType) bool { return t == js.PropertyAccess }
 	PropertyBinding            = func(t js.NodeType) bool { return t == js.PropertyBinding }
 	PropertySignature          = func(t js.NodeType) bool { return t == js.PropertySignature }
+	Readonly                   = func(t js.NodeType) bool { return t == js.Readonly }
 	Regexp                     = func(t js.NodeType) bool { return t == js.Regexp }
 	RelationalExpression       = func(t js.NodeType) bool { return t == js.RelationalExpression }
 	RestParameter              = func(t js.NodeType) bool { return t == js.RestParameter }
@@ -215,6 +217,7 @@ var (
 	JSXAttributeValue          = OneOf(js.JSXAttributeValue...)
 	JSXChild                   = OneOf(js.JSXChild...)
 	MethodDefinition           = OneOf(js.MethodDefinition...)
+	Modifier                   = OneOf(js.Modifier...)
 	ModuleItem                 = OneOf(js.ModuleItem...)
 	NamedImport                = OneOf(js.NamedImport...)
 	Parameter                  = OneOf(js.Parameter...)

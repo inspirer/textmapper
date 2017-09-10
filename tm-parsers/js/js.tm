@@ -1045,11 +1045,11 @@ AwaitExpression<Yield> -> AwaitExpression :
     'await' UnaryExpression<+Await> ;
 
 ClassDeclaration<Yield, Await> -> Declaration /* interface */:
-    'class' BindingIdentifier<+WithoutImplements>? TypeParametersopt ClassTail   -> Class
+    Modifiers? 'class' BindingIdentifier<+WithoutImplements>? TypeParametersopt ClassTail   -> Class
 ;
 
 ClassExpression<Yield, Await> -> ClassExpr :
-    'class' BindingIdentifier<+WithoutImplements>? TypeParameters? ClassTail
+    Modifiers? 'class' BindingIdentifier<+WithoutImplements>? TypeParameters? ClassTail
 ;
 
 ClassTail<Yield, Await> :
@@ -1072,15 +1072,26 @@ ClassElementList<Yield, Await> :
   | ClassElementList ClassElement
 ;
 
+%interface Modifier;
+
+Modifier -> Modifier:
+    AccessibilityModifier
+  | 'static'                -> Static
+  | 'abstract'              -> Abstract
+  | 'readonly'              -> Readonly
+;
+
+Modifiers:
+    Modifier
+  | Modifiers Modifier
+;
+
 ClassElement<Yield, Await> -> ClassElement /* interface */:
-    AccessibilityModifier? Static? MethodDefinition                   -> MemberMethod
-  | AccessibilityModifier? Static? PropertyName TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
+    Modifiers? MethodDefinition                 -> MemberMethod
+  | Modifiers? PropertyName TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
   | IndexSignature ';'                          -> TsIndexMemberDeclaration
   | ';'                                         -> EmptyDecl
 ;
-
-Static -> Static:
-    'static' ;
 
 # A.5 Scripts and Modules
 
@@ -1508,14 +1519,14 @@ AmbientFunctionDeclaration:
     'function' BindingIdentifier FormalParameters<~Yield, ~Await> ';' ;
 
 AmbientClassDeclaration:
-    'class' BindingIdentifier TypeParametersopt ClassHeritage<~Yield, ~Await> AmbientClassBody ;
+    Modifiers? 'class' BindingIdentifier TypeParametersopt ClassHeritage<~Yield, ~Await> AmbientClassBody ;
 
 AmbientClassBody -> TsAmbientClassBody:
     '{' AmbientClassBodyElement+? '}' ;
 
 AmbientClassBodyElement -> TsAmbientClassElement /* interface */:
-    AccessibilityModifier? Static? PropertyName<~Yield, ~Await> TypeAnnotationopt ';'  -> TsAmbientPropertyMember
-  | AccessibilityModifier? Static? PropertyName<~Yield, ~Await> CallSignature ';'      -> TsAmbientFunctionMember
+    Modifiers? PropertyName<~Yield, ~Await> TypeAnnotationopt ';'  -> TsAmbientPropertyMember
+  | Modifiers? PropertyName<~Yield, ~Await> CallSignature ';'      -> TsAmbientFunctionMember
   | IndexSignature ';' -> TsAmbientIndexMember
 ;
 

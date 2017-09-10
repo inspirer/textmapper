@@ -760,6 +760,8 @@ var parseTests = []struct {
 		`export {«a as b», «c», }`,
 	}},
 
+	// TODO: https://github.com/tc39/proposal-template-literal-revision (ES '18)
+
 	// JS next: https://tc39.github.io/proposal-object-rest-spread/
 	{js.Javascript, js.SpreadProperty, []string{
 		`let n = { x, y, «...z» };`,
@@ -1054,6 +1056,19 @@ var parseTests = []struct {
 		`class A {
 		   «static» a : int = 5;
 		   private «static» b() { return 1}
+		 }`,
+	}},
+	{js.Typescript, js.Abstract, []string{
+		`«abstract» class Base {
+		   «abstract» name: string;
+		   «abstract» get value();
+		   «abstract» set value(v: number);
+		 }`,
+	}},
+	{js.Typescript, js.Readonly, []string{
+		`class Foo {
+		   «readonly» a = 1;
+		   «readonly» b: string;
 		 }`,
 	}},
 	{js.Typescript, js.MemberMethod, []string{
