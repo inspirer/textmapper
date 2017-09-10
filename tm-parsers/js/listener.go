@@ -151,6 +151,7 @@ const (
 	JSXExpression // Expression?
 	JSXText
 	JSXSpreadExpression // Expression?
+	TypePredicate       // paramref=IdentifierReference TsType
 	TypeParameters      // (TypeParameter)+
 	TypeParameter       // BindingIdentifier TypeConstraint?
 	TypeConstraint      // TsType
@@ -173,7 +174,7 @@ const (
 	ConstructorType   // TypeParameters? Parameters TsType
 	KeyOfType         // TsType
 	TypeQuery         // (IdentifierReference)*
-	PropertySignature // PropertyName TypeAnnotation?
+	PropertySignature // (Modifier)* PropertyName TypeAnnotation?
 	TypeAnnotation    // TsType
 	CallSignature     // TypeParameters? Parameters TypeAnnotation?
 	DefaultParameter  // AccessibilityModifier? BindingIdentifier? BindingPattern? TypeAnnotation? Initializer?
@@ -181,7 +182,7 @@ const (
 	AccessibilityModifier
 	ConstructSignature       // TypeParameters? Parameters TypeAnnotation?
 	IndexSignature           // TypeAnnotation
-	MethodSignature          // PropertyName CallSignature
+	MethodSignature          // (Modifier)* PropertyName CallSignature
 	TypeAliasDeclaration     // BindingIdentifier TypeParameters? TsType
 	TsInterface              // BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
 	TsInterfaceExtends       // (TypeReference)+
@@ -358,6 +359,7 @@ var nodeTypeStr = [...]string{
 	"JSXExpression",
 	"JSXText",
 	"JSXSpreadExpression",
+	"TypePredicate",
 	"TypeParameters",
 	"TypeParameter",
 	"TypeConstraint",
@@ -754,6 +756,7 @@ var TsType = []NodeType{
 	PredefinedType,
 	ThisType,
 	TupleType,
+	TypePredicate,
 	TypeQuery,
 	TypeReference,
 	UnionType,
@@ -3898,6 +3901,7 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Type : UnionOrIntersectionOrPrimaryType %prec resolveShift
 	0,                     // Type : FunctionType
 	0,                     // Type : ConstructorType
+	TypePredicate,         // Type : IdentifierNameRef 'is' Type
 	0,                     // TypeParameter_list_Comma_separated : TypeParameter_list_Comma_separated ',' TypeParameter
 	0,                     // TypeParameter_list_Comma_separated : TypeParameter
 	TypeParameters,        // TypeParameters : '<' TypeParameter_list_Comma_separated '>'
@@ -3956,10 +3960,10 @@ var ruleNodeType = [...]NodeType{
 	0,                     // TypeMemberList : TypeMemberList ';' TypeMember
 	0,                     // TypeMemberList : TypeMemberList ',' TypeMember
 	0,                     // TypeMember : PropertySignature
+	0,                     // TypeMember : MethodSignature
 	0,                     // TypeMember : CallSignature
 	0,                     // TypeMember : ConstructSignature
 	0,                     // TypeMember : IndexSignature
-	0,                     // TypeMember : MethodSignature
 	ArrayType,             // ArrayType : PrimaryType .noLineBreak '[' ']'
 	IndexedAccessType,     // IndexedAccessType : PrimaryType .noLineBreak '[' Type ']'
 	0,                     // StartOfMappedType : 'readonly' '[' IdentifierName 'in'
@@ -4011,6 +4015,10 @@ var ruleNodeType = [...]NodeType{
 	TypeQuery,             // TypeQuery : 'typeof' TypeQueryExpression
 	0,                     // TypeQueryExpression : IdentifierReference
 	0,                     // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
+	PropertySignature,     // PropertySignature : Modifiers PropertyName_WithoutNew '?' TypeAnnotation
+	PropertySignature,     // PropertySignature : Modifiers PropertyName_WithoutNew '?'
+	PropertySignature,     // PropertySignature : Modifiers PropertyName_WithoutNew TypeAnnotation
+	PropertySignature,     // PropertySignature : Modifiers PropertyName_WithoutNew
 	PropertySignature,     // PropertySignature : PropertyName_WithoutNew '?' TypeAnnotation
 	PropertySignature,     // PropertySignature : PropertyName_WithoutNew '?'
 	PropertySignature,     // PropertySignature : PropertyName_WithoutNew TypeAnnotation
@@ -4140,6 +4148,8 @@ var ruleNodeType = [...]NodeType{
 	ConstructSignature,       // ConstructSignature : 'new' ParameterList
 	IndexSignature,           // IndexSignature : '[' IdentifierName ':' 'string' ']' TypeAnnotation
 	IndexSignature,           // IndexSignature : '[' IdentifierName ':' 'number' ']' TypeAnnotation
+	MethodSignature,          // MethodSignature : Modifiers PropertyName_WithoutNew '?' CallSignature
+	MethodSignature,          // MethodSignature : Modifiers PropertyName_WithoutNew CallSignature
 	MethodSignature,          // MethodSignature : PropertyName_WithoutNew '?' CallSignature
 	MethodSignature,          // MethodSignature : PropertyName_WithoutNew CallSignature
 	TypeAliasDeclaration,     // TypeAliasDeclaration : 'type' BindingIdentifier TypeParameters '=' Type ';'

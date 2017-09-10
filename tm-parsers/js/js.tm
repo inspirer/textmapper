@@ -1245,6 +1245,7 @@ Type -> TsType /* interface */:
     UnionOrIntersectionOrPrimaryType %prec resolveShift
   | FunctionType
   | ConstructorType
+  | paramref=IdentifierNameRef 'is' Type -> TypePredicate
 ;
 
 TypeParameters -> TypeParameters :
@@ -1339,10 +1340,10 @@ TypeMemberList :
 
 TypeMember -> TypeMember /* interface */:
     PropertySignature
+  | MethodSignature
   | CallSignature
   | ConstructSignature
   | IndexSignature
-  | MethodSignature
 ;
 
 ArrayType -> ArrayType :
@@ -1384,6 +1385,9 @@ FunctionTypeParameterList -> Parameters :
 ConstructorType -> ConstructorType :
     'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
+%left 'keyof' 'typeof';
+%nonassoc 'is';
+
 # 2.1
 KeyOfType -> KeyOfType :
     'keyof' KeyOfOrPrimaryType ;
@@ -1397,7 +1401,7 @@ TypeQueryExpression :
 ;
 
 PropertySignature -> PropertySignature :
-    PropertyName<+WithoutNew, ~Yield, ~Await> '?'? TypeAnnotation? ;
+    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? TypeAnnotation? ;
 
 TypeAnnotation -> TypeAnnotation :
     ':' Type ;
@@ -1444,7 +1448,7 @@ IndexSignature -> IndexSignature :
 ;
 
 MethodSignature -> MethodSignature :
-    PropertyName<+WithoutNew, ~Yield, ~Await> '?'? CallSignature ;
+    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? CallSignature ;
 
 TypeAliasDeclaration -> TypeAliasDeclaration :
     'type' BindingIdentifier TypeParameters? '=' Type ';' ;

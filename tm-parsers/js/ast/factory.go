@@ -382,6 +382,8 @@ func ToJsNode(n Node) JsNode {
 		return &TypeParameter{n}
 	case js.TypeParameters:
 		return &TypeParameters{n}
+	case js.TypePredicate:
+		return &TypePredicate{n}
 	case js.TypeQuery:
 		return &TypeQuery{n}
 	case js.TypeReference:

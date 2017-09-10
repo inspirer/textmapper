@@ -1006,6 +1006,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TypeQuery, []string{
 		`function foo(a) : «typeof a.b.c» {}`,
+		`function foo(a) : «typeof is» {}`,
 	}},
 	{js.Typescript, js.TypeAnnotation, []string{
 		`var a «: T» = function (kind?«:A») «: B» {}`,
@@ -1071,6 +1072,10 @@ var parseTests = []struct {
 		`class Foo {
 		   «readonly» a = 1;
 		   «readonly» b: string;
+		 }`,
+		`export interface ReadonlyMap<T> {
+		   forEach(action: (value: T, key: string) => void): void;
+		   «readonly» size: number;
 		 }`,
 	}},
 	{js.Typescript, js.MemberMethod, []string{
@@ -1198,6 +1203,12 @@ var parseTests = []struct {
 		 var b = c
 		 as (T1)  // <- new line`,
 		`for (let as = «A as B»; as < 10; as++) {}`,
+	}},
+	{js.Typescript, js.TypePredicate, []string{
+		`function isFish(pet: Fish | Bird): «pet is Fish» {}`,
+		`declare class Foo<T> {
+      filter<U extends T>(predicate: (x: T) => «x is U»): Foo<U>;
+     }`,
 	}},
 
 	// Error Recovery

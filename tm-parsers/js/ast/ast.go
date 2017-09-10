@@ -218,6 +218,7 @@ func (TypeConstraint) jsNodeNode()             {}
 func (TypeName) jsNodeNode()                   {}
 func (TypeParameter) jsNodeNode()              {}
 func (TypeParameters) jsNodeNode()             {}
+func (TypePredicate) jsNodeNode()              {}
 func (TypeQuery) jsNodeNode()                  {}
 func (TypeReference) jsNodeNode()              {}
 func (UnaryExpression) jsNodeNode()            {}
@@ -686,6 +687,7 @@ func (ParenthesizedType) tsTypeNode() {}
 func (PredefinedType) tsTypeNode()    {}
 func (ThisType) tsTypeNode()          {}
 func (TupleType) tsTypeNode()         {}
+func (TypePredicate) tsTypeNode()     {}
 func (TypeQuery) tsTypeNode()         {}
 func (TypeReference) tsTypeNode()     {}
 func (UnionType) tsTypeNode()         {}
@@ -2423,6 +2425,15 @@ type MethodSignature struct {
 	Node
 }
 
+func (n MethodSignature) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
 func (n MethodSignature) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
@@ -2659,6 +2670,15 @@ func (n PropertyBinding) ElementPattern() ElementPattern {
 
 type PropertySignature struct {
 	Node
+}
+
+func (n PropertySignature) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
 }
 
 func (n PropertySignature) PropertyName() PropertyName {
@@ -3419,6 +3439,18 @@ func (n TypeParameters) TypeParameter() []TypeParameter {
 		result = append(result, TypeParameter{node})
 	}
 	return result
+}
+
+type TypePredicate struct {
+	Node
+}
+
+func (n TypePredicate) Paramref() IdentifierReference {
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
+}
+
+func (n TypePredicate) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
 type TypeQuery struct {

@@ -195,6 +195,7 @@ var (
 	TypeName                   = func(t js.NodeType) bool { return t == js.TypeName }
 	TypeParameter              = func(t js.NodeType) bool { return t == js.TypeParameter }
 	TypeParameters             = func(t js.NodeType) bool { return t == js.TypeParameters }
+	TypePredicate              = func(t js.NodeType) bool { return t == js.TypePredicate }
 	TypeQuery                  = func(t js.NodeType) bool { return t == js.TypeQuery }
 	TypeReference              = func(t js.NodeType) bool { return t == js.TypeReference }
 	UnaryExpression            = func(t js.NodeType) bool { return t == js.UnaryExpression }
