@@ -285,6 +285,9 @@ jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
 jsxText: /[^{}<>]+/
 }
 
+# For precedence resolution.
+resolveShift:
+
 :: parser
 
 %input Module;
@@ -306,6 +309,7 @@ jsxText: /[^{}<>]+/
 %lookahead flag NoLetSq = false;
 %lookahead flag NoObjLiteral = false;
 %lookahead flag NoFuncClass = false;
+%lookahead flag NoAs = false;
 %lookahead flag StartWithLet = false;
 
 SyntaxError -> SyntaxProblem :
@@ -360,7 +364,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> Identifier
   | [!Yield] 'yield'
   | [!Await] 'await'
   | [!NoLet] 'let'
-  | [!NoAsync] 'async'
+  | [!NoAsync] 'async' (?= !StartOfArrowFunction)
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
@@ -388,9 +392,6 @@ BindingIdentifier<WithoutImplements> -> BindingIdentifier :
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
   | 'readonly' | 'keyof'
 ;
-
-AsyncArrowBindingIdentifier :
-    BindingIdentifier ;
 
 LabelIdentifier -> LabelIdentifier :
     Identifier
@@ -420,17 +421,12 @@ PrimaryExpression<Yield, Await, NoAsync> -> Expression /* interface */:
   | [!NoFuncClass] AsyncFunctionExpression
   | RegularExpressionLiteral                               -> Regexp
   | TemplateLiteral
-  | CoverParenthesizedExpressionAndArrowParameterList      -> Parenthesized
-  | JSXElement
+  | (?= !StartOfArrowFunction) Parenthesized
+  | (?= !StartOfArrowFunction) JSXElement
 ;
 
-CoverParenthesizedExpressionAndArrowParameterList<Yield, Await> :
+Parenthesized<Yield, Await> -> Parenthesized:
     '(' Expression<+In> ')'
-  | '(' ')'
-  | '(' '...' BindingIdentifier ')'
-  | '(' '...' BindingPattern ')'
-  | '(' Expression<+In> ',' '...' BindingIdentifier ')'
-  | '(' Expression<+In> ',' '...' BindingPattern ')'
   | '(' SyntaxError ')'
 ;
 
@@ -557,16 +553,13 @@ NewExpression<Yield, Await, NoAsync> -> Expression /* interface */:
 ;
 
 CallExpression<Yield, Await> -> Expression /* interface */:
-    CoverCallExpressionAndAsyncArrowHead                        -> CallExpression
+    expr=MemberExpression Arguments                             -> CallExpression
   | [!StartWithLet] SuperCall                                   -> CallExpression
   | expr=CallExpression Arguments                               -> CallExpression
   | expr=CallExpression '[' index=Expression<+In> ']'           -> IndexAccess
   | expr=CallExpression '.' selector=IdentifierNameRef          -> PropertyAccess
   | tag=CallExpression literal=TemplateLiteral                  -> TaggedTemplate
 ;
-
-CoverCallExpressionAndAsyncArrowHead<Yield, Await> :
-    expr=MemberExpression Arguments ;
 
 SuperCall<Yield, Await> :
     expr=SuperExpression Arguments
@@ -610,8 +603,10 @@ UnaryExpression<Yield, Await> -> Expression /* interface */:
   | [!StartWithLet] '~' UnaryExpression               -> UnaryExpression
   | [!StartWithLet] '!' UnaryExpression               -> UnaryExpression
   | [!StartWithLet && Await] AwaitExpression
-  | [!StartWithLet]  '<' Type '>' UnaryExpression     -> TsCastExpression
+  | [!StartWithLet] (?= !StartOfArrowFunction) '<' Type '>' UnaryExpression -> TsCastExpression
 ;
+
+%left resolveShift;
 
 %left '||';
 %left '&&';
@@ -619,7 +614,7 @@ UnaryExpression<Yield, Await> -> Expression /* interface */:
 %left '^';
 %left '&';
 %left '==' '!=' '===' '!==';
-%left '<' '>' '<=' '>=' 'instanceof' 'in';
+%left '<' '>' '<=' '>=' 'instanceof' 'in' 'as';
 %left '<<' '>>' '>>>';
 %left '-' '+';
 %left '*' '/' '%';
@@ -646,6 +641,7 @@ BinaryExpression<In, Yield, Await> -> Expression /* interface */:
   | left=BinaryExpression '>=' right=BinaryExpression               -> RelationalExpression
   | left=BinaryExpression 'instanceof' right=BinaryExpression       -> RelationalExpression
   | [In] left=BinaryExpression 'in' right=BinaryExpression          -> RelationalExpression
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type            -> TsAsExpression
   | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpression
@@ -830,7 +826,7 @@ EmptyStatement -> EmptyStatement :
     ';' .emptyStatement ;
 
 ExpressionStatement<Yield, Await> -> ExpressionStatement :
-    Expression<+In, +NoFuncClass, +NoObjLiteral, +NoLetSq> ';' ;
+    Expression<+In, +NoFuncClass, +NoAs, +NoObjLiteral, +NoLetSq> ';' ;
 
 %right 'else';
 
@@ -844,7 +840,7 @@ IterationStatement<Yield, Await> -> Statement /* interface */:
   | 'while' '(' Expression<+In> ')' Statement                         -> WhileStatement
   | 'for' '(' var=Expressionopt<~In,+NoLet> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
-  | 'for' '(' var=Expression<~In,+StartWithLet> ';' .forSC ForCondition
+  | 'for' '(' var=Expression<~In,+StartWithLet, +NoAs> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
   | 'for' '(' 'var' VariableDeclarationList<~In> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStatementWithVar
@@ -860,7 +856,7 @@ IterationStatement<Yield, Await> -> Statement /* interface */:
           'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
-  | 'for' '(' var=('async' -> IdentifierReference)
+  | 'for' '(' var=('async' -> IdentifierReference) (?= !StartOfArrowFunction)
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
   | 'for' '(' 'var' ForBinding
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
@@ -873,7 +869,7 @@ ForDeclaration<Yield, Await> :
 ;
 
 ForBinding<Yield, Await> -> ForBinding :
-    BindingIdentifier
+    BindingIdentifier (?= !StartOfArrowFunction)
   | BindingPattern
 ;
 
@@ -972,13 +968,14 @@ FunctionBody<Yield, Await> -> Body :
   | ';'
 ;
 
-ArrowFunction<In, Yield, Await> -> ArrowFunction :
-    ArrowParameters .noLineBreak '=>' ConciseBody ;
+ArrowFunction<In> -> ArrowFunction :
+    BindingIdentifier .noLineBreak '=>' ConciseBody
+  | (?= StartOfArrowFunction) FormalParameters<~Yield, ~Await> .noLineBreak '=>' ConciseBody
+;
 
-ArrowParameters<Yield, Await> -> Parameters :
+ArrowParameters:
     BindingIdentifier
-  | CoverParenthesizedExpressionAndArrowParameterList
-# TODO  | CallSignature
+  | FormalParameters<~Yield, ~Await>
 ;
 
 ConciseBody<In> :
@@ -986,12 +983,13 @@ ConciseBody<In> :
   | FunctionBody<~Yield, ~Await>
 ;
 
-# Note: some post-processing is needed if CoverCallExpressionAndAsyncArrowHead contains a line
-# break.
-AsyncArrowFunction<In, Yield, Await> -> AsyncArrowFunction :
-    'async' .afterAsync .noLineBreak AsyncArrowBindingIdentifier .noLineBreak '=>' AsyncConciseBody
-  | CoverCallExpressionAndAsyncArrowHead /* as AsyncArrowHead */  .noLineBreak '=>' AsyncConciseBody
+StartOfArrowFunction:
+    BindingIdentifier '=>'
+  | TypeParameters? ParameterList<~Yield, ~Await> ('=>' | ':' | '{')
 ;
+
+AsyncArrowFunction<In> -> AsyncArrowFunction :
+    'async' .afterAsync .noLineBreak (?= StartOfArrowFunction) ArrowParameters .noLineBreak '=>' AsyncConciseBody ;
 
 # AsyncArrowHead :
 #      'async' .noLineBreak ArrowFormalParameters<~Yield, +Await> ;
@@ -1244,7 +1242,7 @@ JSXChild<Yield, Await> -> JSXChild /* interface */:
 %interface TsType, TypeMember;
 
 Type -> TsType /* interface */:
-    UnionOrIntersectionOrPrimaryType
+    UnionOrIntersectionOrPrimaryType %prec resolveShift
   | FunctionType
   | ConstructorType
 ;
@@ -1262,12 +1260,12 @@ TypeArguments -> TypeArguments :
     '<' (Type separator ',')+ '>' ;
 
 UnionOrIntersectionOrPrimaryType -> TsType /* interface */:
-    left=UnionOrIntersectionOrPrimaryType '|' right=IntersectionOrPrimaryType          -> UnionType
-  | IntersectionOrPrimaryType
+    inner+=UnionOrIntersectionOrPrimaryType? '|' inner+=IntersectionOrPrimaryType -> UnionType
+  | IntersectionOrPrimaryType %prec resolveShift
 ;
 
 IntersectionOrPrimaryType -> TsType /* interface */:
-    left=IntersectionOrPrimaryType '&' right=KeyOfOrPrimaryType         -> IntersectionType
+    inner+=IntersectionOrPrimaryType? '&' inner+=KeyOfOrPrimaryType -> IntersectionType
   | KeyOfOrPrimaryType
 ;
 
@@ -1312,7 +1310,7 @@ PredefinedType -> PredefinedType :
 ;
 
 TypeReference -> TypeReference :
-    TypeName .noLineBreak TypeArguments? ;
+    TypeName .noLineBreak TypeArguments? %prec resolveShift ;
 
 TypeName -> TypeName :
     ref+=IdentifierReference<+WithoutPredefinedTypes, ~Yield, ~Await>
@@ -1421,6 +1419,7 @@ Parameter<Yield, Await> -> Parameter :
   | AccessibilityModifier? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
   | AccessibilityModifier? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
   | '...' BindingIdentifier TypeAnnotation?                                    -> RestParameter
+  | SyntaxError
 ;
 
 AccessibilityModifier -> AccessibilityModifier :

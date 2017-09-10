@@ -504,7 +504,8 @@ var parseTests = []struct {
 		`function q«(...a)» {}`,
 
 		// in arrow functions
-		`(«a» => a + 1)(1);`,
+		`a = «(a,)» => b;`,
+		`(async «(a)» => a + 1)(1);`,
 		`(«(a,b)» => { return a*b; })(1);`,
 	}},
 	{js.Javascript, js.RestParameter, []string{
@@ -575,9 +576,9 @@ var parseTests = []struct {
 		 } {}`,
 	}},
 	{js.Javascript, js.AsyncArrowFunction, []string{
-		`/*no expectations*/ for(«async of=>5»;;) {}`,
-		`/*no expectations*/ for(«async (of)=>5»;;) {}`,
-		`/*no expectations*/ for(«async (of)=>{}»;;) {}`,
+		`for(«async of=>5»;;) {}`,
+		`for(«async (of)=>5»;;) {}`,
+		`for(«async (of)=>{}»;;) {}`,
 		`var f = «async v => await + 1»
 		 await + 1
      ;
@@ -1182,7 +1183,21 @@ var parseTests = []struct {
 		`«declare module "foo" { export = foo; }»`,
 	}},
 	{js.Typescript, js.TsNonNull, []string{
-		`var a = «a!».b`,
+		`var a = «a!».b
+		 var c = «a!»(5)
+		 var d = a
+		 !(5)`,
+	}},
+	{js.Typescript, js.TsAsExpression, []string{
+		`var a = «a as b»`,
+		`var a = «a as b|c»`,
+		`var a = null == «a as b|c&d» && true`,
+		`var a = «1 + a as b|c&d» && true`,
+		`var a = x(«a as b|c»)
+		 let as = 5;
+		 var b = c
+		 as (T1)  // <- new line`,
+		`for (let as = «A as B»; as < 10; as++) {}`,
 	}},
 
 	// Error Recovery
@@ -1190,7 +1205,7 @@ var parseTests = []struct {
 		// Parenthesized expressions
 		`a = («5+»§)`,
 		`a = («a.b[10].»§)`,
-		`a = («a,»§) => b;`,
+		`a = («(«function§,») => b»);`,
 
 		// Semicolon insertion during recovery.
 		`{1} «(1+2) §3»`,

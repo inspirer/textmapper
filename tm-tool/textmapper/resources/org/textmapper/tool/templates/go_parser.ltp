@@ -243,6 +243,11 @@ ${end-}
 				}
 			}
 			if !p.recoverFromError() {
+${if self->ignoredReportTokens()-}
+				if len(p.ignoredTokens) > 0 {
+					p.reportIgnoredTokens()
+				}
+${end-}
 				return lastErr${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
 			}
 			state = p.stack[len(p.stack)-1].state

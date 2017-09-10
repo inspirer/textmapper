@@ -260,6 +260,7 @@ func TestLexer(t *testing.T) {
 	seen := map[js.Token]bool{}
 	seen[js.WHITESPACE] = true
 	seen[js.ERROR] = true
+	seen[js.RESOLVESHIFT] = true
 	for _, tc := range lexerTests {
 		seen[tc.tok] = true
 		for _, input := range tc.inputs {

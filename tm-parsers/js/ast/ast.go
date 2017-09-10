@@ -195,6 +195,7 @@ func (TsAmbientNamespace) jsNodeNode()         {}
 func (TsAmbientPropertyMember) jsNodeNode()    {}
 func (TsAmbientTypeAlias) jsNodeNode()         {}
 func (TsAmbientVar) jsNodeNode()               {}
+func (TsAsExpression) jsNodeNode()             {}
 func (TsCastExpression) jsNodeNode()           {}
 func (TsEnum) jsNodeNode()                     {}
 func (TsEnumBody) jsNodeNode()                 {}
@@ -364,6 +365,7 @@ func (SuperExpression) expressionNode()          {}
 func (TaggedTemplate) expressionNode()           {}
 func (TemplateLiteral) expressionNode()          {}
 func (This) expressionNode()                     {}
+func (TsAsExpression) expressionNode()           {}
 func (TsCastExpression) expressionNode()         {}
 func (TsNonNull) expressionNode()                {}
 func (UnaryExpression) expressionNode()          {}
@@ -509,6 +511,7 @@ type Parameter interface {
 //
 func (DefaultParameter) parameterNode() {}
 func (RestParameter) parameterNode()    {}
+func (SyntaxProblem) parameterNode()    {}
 
 type PropertyDefinition interface {
 	JsNode
@@ -788,8 +791,32 @@ type ArrowFunction struct {
 	Node
 }
 
-func (n ArrowFunction) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+func (n ArrowFunction) BindingIdentifier() *BindingIdentifier {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
+		return &BindingIdentifier{child}
+	}
+	return nil
+}
+
+func (n ArrowFunction) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
+func (n ArrowFunction) Parameters() *Parameters {
+	if child := n.Child(selector.Parameters); child != nil {
+		return &Parameters{child}
+	}
+	return nil
+}
+
+func (n ArrowFunction) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
+	}
+	return nil
 }
 
 func (n ArrowFunction) Body() *Body {
@@ -840,16 +867,23 @@ func (n AsyncArrowFunction) BindingIdentifier() *BindingIdentifier {
 	return nil
 }
 
-func (n AsyncArrowFunction) Expr() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
+func (n AsyncArrowFunction) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
 	}
 	return nil
 }
 
-func (n AsyncArrowFunction) Arguments() *Arguments {
-	if child := n.Child(selector.Arguments); child != nil {
-		return &Arguments{child}
+func (n AsyncArrowFunction) Parameters() *Parameters {
+	if child := n.Child(selector.Parameters); child != nil {
+		return &Parameters{child}
+	}
+	return nil
+}
+
+func (n AsyncArrowFunction) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
 	}
 	return nil
 }
@@ -1632,11 +1666,11 @@ type ForOfStatement struct {
 }
 
 func (n ForOfStatement) Var() JsNode {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.TsNonNull, js.UnaryExpression, js.Yield))).(JsNode)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsExpression, js.TsCastExpression, js.TsNonNull, js.UnaryExpression, js.Yield))).(JsNode)
 }
 
 func (n ForOfStatement) Iterable() Expression {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsCastExpression, js.TsNonNull, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsExpression, js.TsCastExpression, js.TsNonNull, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatement) Statement() Statement {
@@ -2027,12 +2061,13 @@ type IntersectionType struct {
 	Node
 }
 
-func (n IntersectionType) Left() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
-}
-
-func (n IntersectionType) Right() TsType {
-	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
+func (n IntersectionType) Inner() []TsType {
+	nodes := n.Children(selector.TsType)
+	var result []TsType = make([]TsType, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(TsType))
+	}
+	return result
 }
 
 type JSXAttributeName struct {
@@ -2515,13 +2550,6 @@ type Parameters struct {
 	Node
 }
 
-func (n Parameters) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
-}
-
 func (n Parameters) Parameter() []Parameter {
 	nodes := n.Children(selector.Parameter)
 	var result []Parameter = make([]Parameter, 0, len(nodes))
@@ -2529,27 +2557,6 @@ func (n Parameters) Parameter() []Parameter {
 		result = append(result, ToJsNode(node).(Parameter))
 	}
 	return result
-}
-
-func (n Parameters) SyntaxProblem() *SyntaxProblem {
-	if child := n.Child(selector.SyntaxProblem); child != nil {
-		return &SyntaxProblem{child}
-	}
-	return nil
-}
-
-func (n Parameters) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
-}
-
-func (n Parameters) BindingPattern() BindingPattern {
-	if child := n.Child(selector.BindingPattern); child != nil {
-		return ToJsNode(child).(BindingPattern)
-	}
-	return nil
 }
 
 type Parenthesized struct {
@@ -2566,20 +2573,6 @@ func (n Parenthesized) Expression() Expression {
 func (n Parenthesized) SyntaxProblem() *SyntaxProblem {
 	if child := n.Child(selector.SyntaxProblem); child != nil {
 		return &SyntaxProblem{child}
-	}
-	return nil
-}
-
-func (n Parenthesized) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
-}
-
-func (n Parenthesized) BindingPattern() BindingPattern {
-	if child := n.Child(selector.BindingPattern); child != nil {
-		return ToJsNode(child).(BindingPattern)
 	}
 	return nil
 }
@@ -3131,6 +3124,18 @@ func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
 	return result
 }
 
+type TsAsExpression struct {
+	Node
+}
+
+func (n TsAsExpression) Left() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n TsAsExpression) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
 type TsCastExpression struct {
 	Node
 }
@@ -3456,12 +3461,13 @@ type UnionType struct {
 	Node
 }
 
-func (n UnionType) Left() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
-}
-
-func (n UnionType) Right() TsType {
-	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
+func (n UnionType) Inner() []TsType {
+	nodes := n.Children(selector.TsType)
+	var result []TsType = make([]TsType, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(TsType))
+	}
+	return result
 }
 
 type VariableDeclaration struct {

@@ -153,6 +153,9 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				}
 			}
 			if !p.recoverFromError() {
+				if len(p.ignoredTokens) > 0 {
+					p.reportIgnoredTokens()
+				}
 				return lastErr
 			}
 			state = p.stack[len(p.stack)-1].state

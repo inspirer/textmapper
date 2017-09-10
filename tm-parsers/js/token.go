@@ -149,6 +149,7 @@ const (
 	JSXSTRINGLITERAL
 	JSXIDENTIFIER
 	JSXTEXT
+	RESOLVESHIFT
 
 	NumTokens
 )
@@ -291,6 +292,7 @@ var tokenStr = [...]string{
 	"JSXSTRINGLITERAL",
 	"JSXIDENTIFIER",
 	"JSXTEXT",
+	"RESOLVESHIFT",
 }
 
 func (tok Token) String() string {

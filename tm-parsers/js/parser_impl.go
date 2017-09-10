@@ -151,6 +151,9 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				}
 			}
 			if !p.recoverFromError() {
+				if len(p.ignoredTokens) > 0 {
+					p.reportIgnoredTokens()
+				}
 				return lastErr
 			}
 			p.healthy = true
@@ -361,7 +364,7 @@ restart:
 	// will be accepted by the parser.
 	state, success := p.reduceAll(p.next.symbol)
 
-	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS) {
+	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS || token == AS || token == EXCL) {
 		if noLineBreakStates[int(state)] {
 			p.insertSC(state, lastEnd)
 			return
