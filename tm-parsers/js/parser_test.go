@@ -1213,6 +1213,12 @@ var parseTests = []struct {
       filter<U extends T>(predicate: (x: T) => «x is U»): Foo<U>;
      }`,
 	}},
+	{js.Typescript, js.TsThisParameter, []string{
+		`function f(«this: void») {} /* 2.0 Specifying the type of this for functions */`,
+	}},
+	{js.Typescript, js.Catch, []string{
+		`try {} «catch { throw e }» /* 2.5 Optional catch clause variables */`,
+	}},
 
 	// Error Recovery
 	{js.Javascript, js.SyntaxProblem, []string{

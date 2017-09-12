@@ -366,6 +366,8 @@ func ToJsNode(n Node) JsNode {
 		return &TsNamespaceBody{n}
 	case js.TsNonNull:
 		return &TsNonNull{n}
+	case js.TsThisParameter:
+		return &TsThisParameter{n}
 	case js.TupleType:
 		return &TupleType{n}
 	case js.TypeAliasDeclaration:

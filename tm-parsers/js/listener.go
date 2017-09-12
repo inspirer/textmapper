@@ -179,6 +179,7 @@ const (
 	CallSignature     // TypeParameters? Parameters TypeAnnotation?
 	DefaultParameter  // AccessibilityModifier? BindingIdentifier? BindingPattern? TypeAnnotation? Initializer?
 	RestParameter     // BindingIdentifier TypeAnnotation?
+	TsThisParameter   // TypeAnnotation
 	AccessibilityModifier
 	ConstructSignature       // TypeParameters? Parameters TypeAnnotation?
 	IndexSignature           // TypeAnnotation
@@ -387,6 +388,7 @@ var nodeTypeStr = [...]string{
 	"CallSignature",
 	"DefaultParameter",
 	"RestParameter",
+	"TsThisParameter",
 	"AccessibilityModifier",
 	"ConstructSignature",
 	"IndexSignature",
@@ -623,6 +625,7 @@ var Parameter = []NodeType{
 	DefaultParameter,
 	RestParameter,
 	SyntaxProblem,
+	TsThisParameter,
 }
 
 var PropertyDefinition = []NodeType{
@@ -3536,8 +3539,11 @@ var ruleNodeType = [...]NodeType{
 	TryStatement,            // TryStatement_Yield : 'try' Block_Yield Catch_Yield Finally_Yield
 	TryStatement,            // TryStatement_Yield : 'try' Block_Yield Finally_Yield
 	Catch,                   // Catch : 'catch' '(' CatchParameter ')' Block
+	Catch,                   // Catch : 'catch' Block
 	Catch,                   // Catch_Await : 'catch' '(' CatchParameter_Await ')' Block_Await
+	Catch,                   // Catch_Await : 'catch' Block_Await
 	Catch,                   // Catch_Yield : 'catch' '(' CatchParameter_Yield ')' Block_Yield
+	Catch,                   // Catch_Yield : 'catch' Block_Yield
 	Finally,                 // Finally : 'finally' Block
 	Finally,                 // Finally_Await : 'finally' Block_Await
 	Finally,                 // Finally_Yield : 'finally' Block_Yield
@@ -4084,6 +4090,7 @@ var ruleNodeType = [...]NodeType{
 	DefaultParameter,      // Parameter : BindingPattern Initializer_In
 	RestParameter,         // Parameter : '...' BindingIdentifier TypeAnnotation
 	RestParameter,         // Parameter : '...' BindingIdentifier
+	TsThisParameter,       // Parameter : 'this' TypeAnnotation
 	0,                     // Parameter : SyntaxError
 	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
 	DefaultParameter,      // Parameter_Await : AccessibilityModifier BindingIdentifier '?'
@@ -4111,6 +4118,7 @@ var ruleNodeType = [...]NodeType{
 	DefaultParameter,      // Parameter_Await : BindingPattern_Await Initializer_Await_In
 	RestParameter,         // Parameter_Await : '...' BindingIdentifier TypeAnnotation
 	RestParameter,         // Parameter_Await : '...' BindingIdentifier
+	TsThisParameter,       // Parameter_Await : 'this' TypeAnnotation
 	0,                     // Parameter_Await : SyntaxError
 	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier '?' TypeAnnotation
 	DefaultParameter,      // Parameter_Yield : AccessibilityModifier BindingIdentifier '?'
@@ -4138,6 +4146,7 @@ var ruleNodeType = [...]NodeType{
 	DefaultParameter,      // Parameter_Yield : BindingPattern_Yield Initializer_In_Yield
 	RestParameter,         // Parameter_Yield : '...' BindingIdentifier TypeAnnotation
 	RestParameter,         // Parameter_Yield : '...' BindingIdentifier
+	TsThisParameter,       // Parameter_Yield : 'this' TypeAnnotation
 	0,                     // Parameter_Yield : SyntaxError
 	AccessibilityModifier,    // AccessibilityModifier : 'public'
 	AccessibilityModifier,    // AccessibilityModifier : 'private'

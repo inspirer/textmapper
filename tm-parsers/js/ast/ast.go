@@ -210,6 +210,7 @@ func (TsInterfaceExtends) jsNodeNode()         {}
 func (TsNamespace) jsNodeNode()                {}
 func (TsNamespaceBody) jsNodeNode()            {}
 func (TsNonNull) jsNodeNode()                  {}
+func (TsThisParameter) jsNodeNode()            {}
 func (TupleType) jsNodeNode()                  {}
 func (TypeAliasDeclaration) jsNodeNode()       {}
 func (TypeAnnotation) jsNodeNode()             {}
@@ -513,6 +514,7 @@ type Parameter interface {
 func (DefaultParameter) parameterNode() {}
 func (RestParameter) parameterNode()    {}
 func (SyntaxProblem) parameterNode()    {}
+func (TsThisParameter) parameterNode()  {}
 
 type PropertyDefinition interface {
 	JsNode
@@ -3337,6 +3339,14 @@ type TsNonNull struct {
 
 func (n TsNonNull) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+type TsThisParameter struct {
+	Node
+}
+
+func (n TsThisParameter) TypeAnnotation() TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type TupleType struct {

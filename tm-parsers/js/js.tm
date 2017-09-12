@@ -934,7 +934,7 @@ TryStatement<Yield, Await> -> TryStatement :
 ;
 
 Catch<Yield, Await> -> Catch :
-    'catch' '(' CatchParameter ')' Block
+    'catch' ('(' CatchParameter ')')? Block
 ;
 
 Finally<Yield, Await> -> Finally :
@@ -1423,6 +1423,7 @@ Parameter<Yield, Await> -> Parameter :
   | AccessibilityModifier? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
   | AccessibilityModifier? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
   | '...' BindingIdentifier TypeAnnotation?                                    -> RestParameter
+  | 'this' TypeAnnotation                                                      -> TsThisParameter
   | SyntaxError
 ;
 
