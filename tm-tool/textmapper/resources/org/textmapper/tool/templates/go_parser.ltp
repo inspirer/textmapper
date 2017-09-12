@@ -471,6 +471,7 @@ ${end-}
 	}
 	return int32(tok)
 }
+
 ${end}
 
 ${template lookaheadRule-}
@@ -479,6 +480,7 @@ func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
 ${call caseLookaheadRules(true)-}
 	}
 }
+
 ${end}
 
 ${cached query laMethodName() = 'At' + self.target.name}
@@ -493,11 +495,12 @@ ${end-}
 ${end}
 
 ${template setupLookaheadLexer}${end}
+${template callLookaheadNext}lookaheadNext(&lexer)${end}
 
 ${template lookahead-}
-${call lookaheadNext}
+${call lookaheadNext-}
 ${if opts.recursiveLookaheads-}
-${call lookaheadRule}
+${call lookaheadRule-}
 ${end-}
 ${call lookaheadMethods-}
 func lookahead(l *Lexer, next int32, start, end ${self->stateType()}) bool {
@@ -514,7 +517,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if next == noToken {
-				next = lookaheadNext(&lexer)
+				next = ${call callLookaheadNext}
 			}
 			action = lalr(action, next)
 		}
@@ -538,7 +541,7 @@ ${end-}
 		} else if action == -1 {
 			// Shift.
 			if next == noToken {
-				next = lookaheadNext(&lexer)
+				next = ${call callLookaheadNext}
 			}
 			state = gotoState(state, next)
 			stack = append(stack, stackEntry{

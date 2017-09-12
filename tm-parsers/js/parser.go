@@ -24,16 +24,6 @@ func (p *Parser) Parse(lexer *Lexer) error {
 	return p.parse(4, 5348, lexer)
 }
 
-func lookaheadNext(lexer *Lexer) int32 {
-restart:
-	tok := lexer.Next()
-	switch tok {
-	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
-		goto restart
-	}
-	return int32(tok)
-}
-
 func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
 	switch rule {
 	case 3503:
@@ -98,7 +88,7 @@ func lookahead(l *Lexer, next int32, start, end int16) bool {
 		if action < -2 {
 			// Lookahead is needed.
 			if next == noToken {
-				next = lookaheadNext(&lexer)
+				next = lookaheadNext(&lexer, end, stack)
 			}
 			action = lalr(action, next)
 		}
@@ -119,7 +109,7 @@ func lookahead(l *Lexer, next int32, start, end int16) bool {
 		} else if action == -1 {
 			// Shift.
 			if next == noToken {
-				next = lookaheadNext(&lexer)
+				next = lookaheadNext(&lexer, end, stack)
 			}
 			state = gotoState(state, next)
 			stack = append(stack, stackEntry{

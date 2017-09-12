@@ -227,21 +227,39 @@ func (p *Parser) recoverFromError() bool {
 	return false
 }
 
+func lookaheadNext(lexer *Lexer, endState int16, stack []stackEntry) int32 {
+restart:
+	tok := lexer.Next()
+	switch tok {
+	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
+		goto restart
+	case GTGT, GTGTGT:
+		if _, success := reduceAll(int32(tok), endState, stack); !success {
+			tok = GT
+			lexer.offset = lexer.tokenOffset + 1
+			lexer.scanOffset = lexer.offset + 1
+			lexer.ch = '>'
+			lexer.token = tok
+		}
+	}
+	return int32(tok)
+}
+
 // reduceAll simulates all pending reductions and return true if the parser
 // can consume the next token. This function also returns the state of the
 // parser after the reductions have been applied.
-func (p *Parser) reduceAll(next int32) (state int16, success bool) {
+func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, success bool) {
 	if next == noToken {
 		panic("a valid next token is expected")
 	}
 
-	size := len(p.stack)
-	state = p.stack[size-1].state
+	size := len(stack)
+	state = stack[size-1].state
 
 	var stack2alloc [4]int16
 	stack2 := stack2alloc[:0]
 
-	for state != p.endState {
+	for state != endState {
 		action := tmAction[state]
 		if action < -2 {
 			action = lalr(action, next)
@@ -259,7 +277,7 @@ func (p *Parser) reduceAll(next int32) (state int16, success bool) {
 					stack2 = stack2[:len(stack2)-ln]
 				} else {
 					size -= ln - len(stack2)
-					state = p.stack[size-1].state
+					state = stack[size-1].state
 					stack2 = stack2alloc[:0]
 				}
 			}
@@ -311,6 +329,14 @@ restart:
 		s, e := p.lexer.Pos()
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(token), s, e})
 		goto restart
+	case GTGT, GTGTGT:
+		if _, success := reduceAll(int32(token), p.endState, p.stack); !success {
+			token = GT
+			p.lexer.offset = p.lexer.tokenOffset + 1
+			p.lexer.scanOffset = p.lexer.offset + 1
+			p.lexer.ch = '>'
+			p.lexer.token = token
+		}
 	}
 	p.lastToken = token
 	p.next.symbol = int32(token)
@@ -362,7 +388,7 @@ restart:
 
 	// Simulate all pending reductions and check if the current next token
 	// will be accepted by the parser.
-	state, success := p.reduceAll(p.next.symbol)
+	state, success := reduceAll(p.next.symbol, p.endState, p.stack)
 
 	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS || token == AS || token == EXCL) {
 		if noLineBreakStates[int(state)] {
@@ -377,7 +403,7 @@ restart:
 
 	if token == RBRACE {
 		// Not all closing braces require a semicolon. Double checking.
-		if _, success = p.reduceAll(int32(SEMICOLON)); success {
+		if _, success = reduceAll(int32(SEMICOLON), p.endState, p.stack); success {
 			p.insertSC(state, lastEnd)
 		}
 		return

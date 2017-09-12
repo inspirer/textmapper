@@ -1729,3 +1729,6 @@ ${if self->ignoredReportTokens()-}
 ${call reportIgnoredTokens}
 ${end-}
 ${end}
+
+${template go_parser.lookaheadNext}${end}
+${template go_parser.callLookaheadNext}lookaheadNext(&lexer, end, stack)${end}
