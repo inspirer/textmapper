@@ -982,6 +982,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TypeParameter, []string{
 		`function foo<«T», «Q extends T»>() {}`,
+		`declare function create<«T extends Foo = Bar»>() : Baz<T>;`,
 	}},
 	{js.Typescript, js.TypeConstraint, []string{
 		`function foo<T, Q «extends T&Foo»>() {}`,

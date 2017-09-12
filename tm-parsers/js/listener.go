@@ -153,7 +153,7 @@ const (
 	JSXSpreadExpression // Expression?
 	TypePredicate       // paramref=IdentifierReference TsType
 	TypeParameters      // (TypeParameter)+
-	TypeParameter       // BindingIdentifier TypeConstraint?
+	TypeParameter       // BindingIdentifier TypeConstraint? TsType?
 	TypeConstraint      // TsType
 	TypeArguments       // (TsType)+
 	UnionType           // inner=(TsType)*
@@ -3911,7 +3911,9 @@ var ruleNodeType = [...]NodeType{
 	0,                     // TypeParameter_list_Comma_separated : TypeParameter_list_Comma_separated ',' TypeParameter
 	0,                     // TypeParameter_list_Comma_separated : TypeParameter
 	TypeParameters,        // TypeParameters : '<' TypeParameter_list_Comma_separated '>'
+	TypeParameter,         // TypeParameter : BindingIdentifier Constraint '=' Type
 	TypeParameter,         // TypeParameter : BindingIdentifier Constraint
+	TypeParameter,         // TypeParameter : BindingIdentifier '=' Type
 	TypeParameter,         // TypeParameter : BindingIdentifier
 	TypeConstraint,        // Constraint : 'extends' Type
 	0,                     // Type_list_Comma_separated : Type_list_Comma_separated ',' Type

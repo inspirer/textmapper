@@ -1252,7 +1252,7 @@ TypeParameters -> TypeParameters :
     '<' (TypeParameter separator ',')+ '>' ;
 
 TypeParameter -> TypeParameter :
-    BindingIdentifier Constraint? ;
+    BindingIdentifier Constraint? ('=' Type)?;
 
 Constraint -> TypeConstraint :
     'extends' Type ;

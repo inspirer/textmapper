@@ -3438,6 +3438,13 @@ func (n TypeParameter) TypeConstraint() *TypeConstraint {
 	return nil
 }
 
+func (n TypeParameter) TsType() TsType {
+	if child := n.Child(selector.TsType); child != nil {
+		return ToJsNode(child).(TsType)
+	}
+	return nil
+}
+
 type TypeParameters struct {
 	Node
 }
