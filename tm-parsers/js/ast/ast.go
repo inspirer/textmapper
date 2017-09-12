@@ -1397,11 +1397,13 @@ type DefaultParameter struct {
 	Node
 }
 
-func (n DefaultParameter) AccessibilityModifier() *AccessibilityModifier {
-	if child := n.Child(selector.AccessibilityModifier); child != nil {
-		return &AccessibilityModifier{child}
+func (n DefaultParameter) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
 	}
-	return nil
+	return result
 }
 
 func (n DefaultParameter) BindingIdentifier() *BindingIdentifier {
@@ -1582,7 +1584,17 @@ type Extends struct {
 }
 
 func (n Extends) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+	if child := n.Child(selector.Expression); child != nil {
+		return ToJsNode(child).(Expression)
+	}
+	return nil
+}
+
+func (n Extends) TypeReference() *TypeReference {
+	if child := n.Child(selector.TypeReference); child != nil {
+		return &TypeReference{child}
+	}
+	return nil
 }
 
 type Finally struct {
@@ -2440,8 +2452,22 @@ func (n MethodSignature) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n MethodSignature) CallSignature() CallSignature {
-	return CallSignature{n.Child(selector.CallSignature)}
+func (n MethodSignature) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
+func (n MethodSignature) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
+}
+
+func (n MethodSignature) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
+	}
+	return nil
 }
 
 type Module struct {
@@ -3038,8 +3064,22 @@ func (n TsAmbientFunctionMember) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n TsAmbientFunctionMember) CallSignature() CallSignature {
-	return CallSignature{n.Child(selector.CallSignature)}
+func (n TsAmbientFunctionMember) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
+func (n TsAmbientFunctionMember) Parameters() Parameters {
+	return Parameters{n.Child(selector.Parameters)}
+}
+
+func (n TsAmbientFunctionMember) TypeAnnotation() *TypeAnnotation {
+	if child := n.Child(selector.TypeAnnotation); child != nil {
+		return &TypeAnnotation{child}
+	}
+	return nil
 }
 
 type TsAmbientImportAlias struct {

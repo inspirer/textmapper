@@ -558,6 +558,7 @@ CallExpression<Yield, Await> -> Expression /* interface */:
   | expr=CallExpression Arguments                               -> CallExpression
   | expr=CallExpression '[' index=Expression<+In> ']'           -> IndexAccess
   | expr=CallExpression '.' selector=IdentifierNameRef          -> PropertyAccess
+  | expr=CallExpression .noLineBreak '!'                        -> TsNonNull
   | tag=CallExpression literal=TemplateLiteral                  -> TaggedTemplate
 ;
 
@@ -1057,8 +1058,13 @@ ClassTail<Yield, Await> :
 ClassHeritage<Yield, Await>:
     ClassExtendsClause? ImplementsClause? ;
 
+StartsOfExtendsTypeRef:
+    TypeReference ('implements' | '{') ;
+
 ClassExtendsClause<Yield, Await> -> Extends:
-    'extends' LeftHandSideExpression ;
+    'extends' (?= StartsOfExtendsTypeRef) TypeReference
+  | 'extends' (?= !StartsOfExtendsTypeRef) LeftHandSideExpression
+;
 
 ImplementsClause -> TsImplementsClause:
     'implements' (TypeReference separator ',')+ ;
@@ -1370,9 +1376,10 @@ TupleType -> TupleType :
 # (partially inspired by isUnambiguouslyStartOfFunctionType() in
 # src/compiler/parser.ts)
 StartOfFunctionType :
-    AccessibilityModifier? BindingIdentifier (':' | ',' | '?' | '=' | ')' '=>')
-  | AccessibilityModifier? BindingPattern<~Yield, ~Await> (':' | ',' | '?' | '=' | ')' '=>')
+    Modifiers? BindingIdentifier (':' | ',' | '?' | '=' | ')' '=>')
+  | Modifiers? BindingPattern<~Yield, ~Await> (':' | ',' | '?' | '=' | ')' '=>')
   | '...'
+  | 'this' ':'
   | ')'
 ;
 
@@ -1418,12 +1425,12 @@ ParameterList<Yield, Await> -> Parameters :
 %interface Parameter;
 
 Parameter<Yield, Await> -> Parameter :
-    AccessibilityModifier? BindingIdentifier '?'? TypeAnnotation?              -> DefaultParameter
-  | AccessibilityModifier? BindingPattern '?'? TypeAnnotation?                 -> DefaultParameter
-  | AccessibilityModifier? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
-  | AccessibilityModifier? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
-  | '...' BindingIdentifier TypeAnnotation?                                    -> RestParameter
-  | 'this' TypeAnnotation                                                      -> TsThisParameter
+    Modifiers? BindingIdentifier '?'? TypeAnnotation?              -> DefaultParameter
+  | Modifiers? BindingPattern '?'? TypeAnnotation?                 -> DefaultParameter
+  | Modifiers? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
+  | Modifiers? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
+  | '...' BindingIdentifier TypeAnnotation?                        -> RestParameter
+  | 'this' TypeAnnotation                                          -> TsThisParameter
   | SyntaxError
 ;
 
@@ -1449,7 +1456,7 @@ IndexSignature -> IndexSignature :
 ;
 
 MethodSignature -> MethodSignature :
-    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? CallSignature ;
+    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await> ;
 
 TypeAliasDeclaration -> TypeAliasDeclaration :
     'type' BindingIdentifier TypeParameters? '=' Type ';' ;
@@ -1530,8 +1537,8 @@ AmbientClassBody -> TsAmbientClassBody:
     '{' AmbientClassBodyElement+? '}' ;
 
 AmbientClassBodyElement -> TsAmbientClassElement /* interface */:
-    Modifiers? PropertyName<~Yield, ~Await> '?'? TypeAnnotationopt ';'  -> TsAmbientPropertyMember
-  | Modifiers? PropertyName<~Yield, ~Await> '?'? CallSignature ';'      -> TsAmbientFunctionMember
+    Modifiers? PropertyName<~Yield, ~Await> '?'? TypeAnnotationopt ';'                -> TsAmbientPropertyMember
+  | Modifiers? PropertyName<~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await> ';' -> TsAmbientFunctionMember
   | IndexSignature ';' -> TsAmbientIndexMember
 ;
 

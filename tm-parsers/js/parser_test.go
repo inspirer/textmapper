@@ -676,6 +676,7 @@ var parseTests = []struct {
 		`class A «extends B» {; ;}`,
 		`class A «extends compose(B,C)» {}`,
 		`(class «extends (A)» {});`,
+		`class NonModuleBuilder «extends Foo<Bar>» {}`,
 	}},
 	{js.Javascript, js.ClassBody, []string{
 		`class A extends B «{; ;}»`,
@@ -1196,6 +1197,7 @@ var parseTests = []struct {
 		 var c = «a!»(5)
 		 var d = a
 		 !(5)`,
+		`function foo() { return «foo()!»; }`,
 	}},
 	{js.Typescript, js.TsAsExpression, []string{
 		`var a = «a as b»`,
