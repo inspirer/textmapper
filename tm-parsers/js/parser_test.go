@@ -542,8 +542,11 @@ var parseTests = []struct {
 		`class A { get x() { return this.x; } «set x(val) { this.x = val; }»}`,
 	}},
 	{js.Javascript, js.Method, []string{
-		`({ «run(){ console.log('executed'); }»}).run();`,
+		`({ private «run(){ console.log('executed'); }»}).run();`,
 		`class A { «noop(input) {}»}`,
+	}},
+	{js.Javascript, js.ObjectMethod, []string{
+		`({ «@abc run(){ console.log('executed'); }»}).run();`,
 	}},
 	{js.Javascript, js.GeneratorMethod, []string{
 		`({«*gen(){ yield 1; yield 2; }»}).run();`,
@@ -916,6 +919,12 @@ var parseTests = []struct {
 	{js.Javascript, js.JSXLiteral, []string{
 		`var a = <a href={"chrome://about"} target=«"123"»/>;`,
 	}},
+	{js.Javascript, js.DecoratorExpr, []string{
+		`«@a» «@b.c» class C {};`,
+	}},
+	{js.Javascript, js.DecoratorCall, []string{
+		`«@foo()» «@foo.bar()» class C {};`,
+	}},
 
 	// Typescript
 	{js.Typescript, js.TsCastExpression, []string{
@@ -1124,6 +1133,7 @@ var parseTests = []struct {
 	{js.Typescript, js.TsNamespace, []string{
 		`«namespace A {}»`,
 		`«namespace foo.bar { function a () {} }»`,
+		`export «module StaticServices {}»`,
 	}},
 	{js.Typescript, js.TsNamespaceBody, []string{
 		`namespace foo.bar «{ function a () {} }»`,
@@ -1198,6 +1208,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TsAmbientModule, []string{
 		`«declare module "foo" { export = foo; }»`,
+		`declare namespace Foo { «export module bar {}» }`,
 	}},
 	{js.Typescript, js.TsNonNull, []string{
 		`var a = «a!».b

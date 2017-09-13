@@ -71,6 +71,8 @@ func (ConstructSignature) jsNodeNode()         {}
 func (ConstructorType) jsNodeNode()            {}
 func (ContinueStatement) jsNodeNode()          {}
 func (DebuggerStatement) jsNodeNode()          {}
+func (DecoratorCall) jsNodeNode()              {}
+func (DecoratorExpr) jsNodeNode()              {}
 func (Default) jsNodeNode()                    {}
 func (DefaultParameter) jsNodeNode()           {}
 func (DoWhileStatement) jsNodeNode()           {}
@@ -146,6 +148,7 @@ func (NamedImports) jsNodeNode()               {}
 func (NewExpression) jsNodeNode()              {}
 func (NewTarget) jsNodeNode()                  {}
 func (ObjectLiteral) jsNodeNode()              {}
+func (ObjectMethod) jsNodeNode()               {}
 func (ObjectPattern) jsNodeNode()              {}
 func (ObjectType) jsNodeNode()                 {}
 func (Parameters) jsNodeNode()                 {}
@@ -294,6 +297,17 @@ func (TsInterface) declarationNode()              {}
 func (TsNamespace) declarationNode()              {}
 func (TypeAliasDeclaration) declarationNode()     {}
 
+type Decorator interface {
+	JsNode
+	decoratorNode()
+}
+
+// decoratorNode() ensures that only the following types can be
+// assigned to Decorator.
+//
+func (DecoratorCall) decoratorNode() {}
+func (DecoratorExpr) decoratorNode() {}
+
 type ElementPattern interface {
 	JsNode
 	elementPatternNode()
@@ -433,6 +447,8 @@ type Modifier interface {
 //
 func (Abstract) modifierNode()              {}
 func (AccessibilityModifier) modifierNode() {}
+func (DecoratorCall) modifierNode()         {}
+func (DecoratorExpr) modifierNode()         {}
 func (Readonly) modifierNode()              {}
 func (Static) modifierNode()                {}
 
@@ -524,12 +540,8 @@ type PropertyDefinition interface {
 // propertyDefinitionNode() ensures that only the following types can be
 // assigned to PropertyDefinition.
 //
-func (AsyncMethod) propertyDefinitionNode()       {}
-func (GeneratorMethod) propertyDefinitionNode()   {}
-func (Getter) propertyDefinitionNode()            {}
-func (Method) propertyDefinitionNode()            {}
+func (ObjectMethod) propertyDefinitionNode()      {}
 func (Property) propertyDefinitionNode()          {}
-func (Setter) propertyDefinitionNode()            {}
 func (ShorthandProperty) propertyDefinitionNode() {}
 func (SpreadProperty) propertyDefinitionNode()    {}
 func (SyntaxProblem) propertyDefinitionNode()     {}
@@ -664,6 +676,7 @@ func (TsAmbientEnum) tsAmbientElementNode()        {}
 func (TsAmbientFunction) tsAmbientElementNode()    {}
 func (TsAmbientImportAlias) tsAmbientElementNode() {}
 func (TsAmbientInterface) tsAmbientElementNode()   {}
+func (TsAmbientModule) tsAmbientElementNode()      {}
 func (TsAmbientNamespace) tsAmbientElementNode()   {}
 func (TsAmbientTypeAlias) tsAmbientElementNode()   {}
 func (TsAmbientVar) tsAmbientElementNode()         {}
@@ -1389,6 +1402,36 @@ type DebuggerStatement struct {
 	Node
 }
 
+type DecoratorCall struct {
+	Node
+}
+
+func (n DecoratorCall) IdentifierReference() []IdentifierReference {
+	nodes := n.Children(selector.IdentifierReference)
+	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, IdentifierReference{node})
+	}
+	return result
+}
+
+func (n DecoratorCall) Arguments() Arguments {
+	return Arguments{n.Child(selector.Arguments)}
+}
+
+type DecoratorExpr struct {
+	Node
+}
+
+func (n DecoratorExpr) IdentifierReference() []IdentifierReference {
+	nodes := n.Children(selector.IdentifierReference)
+	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, IdentifierReference{node})
+	}
+	return result
+}
+
 type Default struct {
 	Node
 }
@@ -1519,13 +1562,6 @@ type ExportDeclaration struct {
 	Node
 }
 
-func (n ExportDeclaration) Declaration() Declaration {
-	if child := n.Child(selector.Declaration); child != nil {
-		return ToJsNode(child).(Declaration)
-	}
-	return nil
-}
-
 func (n ExportDeclaration) ExportClause() *ExportClause {
 	if child := n.Child(selector.ExportClause); child != nil {
 		return &ExportClause{child}
@@ -1533,9 +1569,25 @@ func (n ExportDeclaration) ExportClause() *ExportClause {
 	return nil
 }
 
+func (n ExportDeclaration) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
 func (n ExportDeclaration) VariableStatement() *VariableStatement {
 	if child := n.Child(selector.VariableStatement); child != nil {
 		return &VariableStatement{child}
+	}
+	return nil
+}
+
+func (n ExportDeclaration) Declaration() Declaration {
+	if child := n.Child(selector.Declaration); child != nil {
+		return ToJsNode(child).(Declaration)
 	}
 	return nil
 }
@@ -1551,16 +1603,25 @@ type ExportDefault struct {
 	Node
 }
 
-func (n ExportDefault) Declaration() Declaration {
-	if child := n.Child(selector.Declaration); child != nil {
-		return ToJsNode(child).(Declaration)
+func (n ExportDefault) Expression() Expression {
+	if child := n.Child(selector.Expression); child != nil {
+		return ToJsNode(child).(Expression)
 	}
 	return nil
 }
 
-func (n ExportDefault) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
+func (n ExportDefault) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
+func (n ExportDefault) Declaration() Declaration {
+	if child := n.Child(selector.Declaration); child != nil {
+		return ToJsNode(child).(Declaration)
 	}
 	return nil
 }
@@ -2570,6 +2631,23 @@ func (n ObjectLiteral) PropertyDefinition() []PropertyDefinition {
 	return result
 }
 
+type ObjectMethod struct {
+	Node
+}
+
+func (n ObjectMethod) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
+func (n ObjectMethod) MethodDefinition() MethodDefinition {
+	return ToJsNode(n.Child(selector.MethodDefinition)).(MethodDefinition)
+}
+
 type ObjectPattern struct {
 	Node
 }
@@ -2680,6 +2758,15 @@ type PredefinedType struct {
 
 type Property struct {
 	Node
+}
+
+func (n Property) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
 }
 
 func (n Property) PropertyName() PropertyName {

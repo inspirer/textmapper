@@ -166,6 +166,7 @@ invalid_token: /\.\./
 '!=': /!=/
 '===': /===/
 '!==': /!==/
+'@': /@/
 '+': /\+/
 '-': /-/
 '*': /\*/
@@ -475,8 +476,8 @@ PropertyDefinitionList<Yield, Await> :
 
 PropertyDefinition<Yield, Await> -> PropertyDefinition /* interface */:
     IdentifierReference                                   -> ShorthandProperty
-  | PropertyName ':' value=AssignmentExpression<+In>      -> Property
-  | MethodDefinition
+  | Modifiers? PropertyName ':' value=AssignmentExpression<+In>      -> Property
+  | Modifiers? MethodDefinition                           -> ObjectMethod
   | CoverInitializedName                                  -> SyntaxProblem
   | SyntaxError
   | '...' AssignmentExpression<+In>                       -> SpreadProperty
@@ -713,7 +714,6 @@ Declaration<Yield, Await> -> Declaration /* interface */:
   | EnumDeclaration
   | ImportAliasDeclaration
   | AmbientDeclaration
-  | AmbientModuleDeclaration
 ;
 
 HoistableDeclaration<Await> -> Declaration /* interface */:
@@ -1081,6 +1081,7 @@ ClassElementList<Yield, Await> :
 
 Modifier -> Modifier:
     AccessibilityModifier
+  | Decorator<~Await, ~Yield>
   | 'static'                -> Static
   | 'abstract'              -> Abstract
   | 'readonly'              -> Readonly
@@ -1167,9 +1168,9 @@ ExportDeclaration -> ModuleItem /* interface */:
   | 'export' ExportClause FromClause ';'              -> ExportDeclaration
   | 'export' ExportClause ';'                         -> ExportDeclaration
   | 'export' VariableStatement<~Yield, ~Await>        -> ExportDeclaration
-  | 'export' Declaration<~Yield, ~Await>              -> ExportDeclaration
+  | Modifiers? 'export' Declaration<~Yield, ~Await>              -> ExportDeclaration
   | 'export' 'default' HoistableDeclaration<~Await>                                -> ExportDefault
-  | 'export' 'default' ClassDeclaration<~Yield, ~Await>                            -> ExportDefault
+  | Modifiers? 'export' 'default' ClassDeclaration<~Yield, ~Await>                            -> ExportDefault
   | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
   | 'export' '=' IdentifierReference<~Yield, ~Await> ';'     -> TsExportAssignment
 ;
@@ -1184,6 +1185,23 @@ ExportElement -> ExportElement /* interface */:
   | IdentifierNameRef 'as' IdentifierNameDecl         -> ExportSpecifier
   | error                                             -> SyntaxProblem
 ;
+
+# ES next: https://github.com/tc39/proposal-decorators
+
+%interface Decorator;
+
+Decorator<Yield, Await> -> Decorator /* interface */:
+    '@' DecoratorMemberExpression       -> DecoratorExpr
+  | '@' DecoratorCallExpression         -> DecoratorCall
+;
+
+DecoratorMemberExpression<Yield, Await>:
+    IdentifierReference
+  | DecoratorMemberExpression '.' IdentifierName
+;
+
+DecoratorCallExpression<Yield, Await>:
+  DecoratorMemberExpression Arguments ;
 
 # Extensions
 
@@ -1511,6 +1529,7 @@ AmbientDeclaration -> TsAmbientElement /* interface */:
   | 'declare' AmbientClassDeclaration           -> TsAmbientClass
   | 'declare' AmbientEnumDeclaration            -> TsAmbientEnum
   | 'declare' AmbientNamespaceDeclaration       -> TsAmbientNamespace
+  | 'declare' AmbientModuleDeclaration          -> TsAmbientModule
   | 'declare' TypeAliasDeclaration              -> TsAmbientTypeAlias
 ;
 
@@ -1549,6 +1568,9 @@ AmbientEnumDeclaration:
 AmbientNamespaceDeclaration:
     'namespace' IdentifierPath AmbientNamespaceBody ;
 
+AmbientModuleDeclaration:
+    'module' (StringLiteral | IdentifierNameDecl) '{' ModuleBodyopt '}' ;
+
 AmbientNamespaceBody:
     '{' AmbientNamespaceElement+? '}' ;
 
@@ -1559,12 +1581,10 @@ AmbientNamespaceElement -> TsAmbientElement /* interface */:
   | 'export'? InterfaceDeclaration          -> TsAmbientInterface
   | 'export'? AmbientEnumDeclaration        -> TsAmbientEnum
   | 'export'? AmbientNamespaceDeclaration   -> TsAmbientNamespace
+  | 'export'? AmbientModuleDeclaration      -> TsAmbientModule
   | 'export'? ImportAliasDeclaration        -> TsAmbientImportAlias
   | 'export'? TypeAliasDeclaration          -> TsAmbientTypeAlias
 ;
-
-AmbientModuleDeclaration -> TsAmbientModule:
-    'declare' 'module' (StringLiteral | IdentifierNameDecl) '{' ModuleBodyopt '}' ;
 
 %%
 

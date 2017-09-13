@@ -88,6 +88,10 @@ func ToJsNode(n Node) JsNode {
 		return &ContinueStatement{n}
 	case js.DebuggerStatement:
 		return &DebuggerStatement{n}
+	case js.DecoratorCall:
+		return &DecoratorCall{n}
+	case js.DecoratorExpr:
+		return &DecoratorExpr{n}
 	case js.Default:
 		return &Default{n}
 	case js.DefaultParameter:
@@ -238,6 +242,8 @@ func ToJsNode(n Node) JsNode {
 		return &NewTarget{n}
 	case js.ObjectLiteral:
 		return &ObjectLiteral{n}
+	case js.ObjectMethod:
+		return &ObjectMethod{n}
 	case js.ObjectPattern:
 		return &ObjectPattern{n}
 	case js.ObjectType:

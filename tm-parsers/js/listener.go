@@ -23,7 +23,8 @@ const (
 	SpreadElement        // Expression
 	ObjectLiteral        // (PropertyDefinition)*
 	ShorthandProperty    // IdentifierReference
-	Property             // PropertyName value=Expression
+	Property             // (Modifier)* PropertyName value=Expression
+	ObjectMethod         // (Modifier)* MethodDefinition
 	SpreadProperty       // Expression
 	LiteralPropertyName  // BindingIdentifier?
 	ComputedPropertyName // Expression
@@ -134,11 +135,13 @@ const (
 	NamedImports               // (NamedImport)*
 	ImportSpecifier            // IdentifierReference? BindingIdentifier
 	ModuleSpecifier
-	ExportDeclaration     // Declaration? ExportClause? VariableStatement? ModuleSpecifier?
-	ExportDefault         // Declaration? Expression?
+	ExportDeclaration     // ExportClause? (Modifier)* VariableStatement? Declaration? ModuleSpecifier?
+	ExportDefault         // Expression? (Modifier)* Declaration?
 	TsExportAssignment    // IdentifierReference
 	ExportClause          // (ExportElement)*
 	ExportSpecifier       // IdentifierReference BindingIdentifier?
+	DecoratorExpr         // (IdentifierReference)*
+	DecoratorCall         // (IdentifierReference)* Arguments
 	JSXElement            // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
 	JSXSelfClosingElement // JSXElementName (JSXAttribute)*
 	JSXOpeningElement     // JSXElementName (JSXAttribute)*
@@ -198,6 +201,7 @@ const (
 	TsAmbientClass           // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? TsAmbientClassBody
 	TsAmbientEnum            // TsEnum
 	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
+	TsAmbientModule          // BindingIdentifier? (ModuleItem)*
 	TsAmbientTypeAlias       // TypeAliasDeclaration
 	TsAmbientBinding         // BindingIdentifier TypeAnnotation?
 	TsAmbientClassBody       // (TsAmbientClassElement)*
@@ -206,7 +210,6 @@ const (
 	TsAmbientIndexMember     // IndexSignature
 	TsAmbientInterface       // TsInterface
 	TsAmbientImportAlias     // TsImportAliasDeclaration
-	TsAmbientModule          // BindingIdentifier? (ModuleItem)*
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -233,6 +236,7 @@ var nodeTypeStr = [...]string{
 	"ObjectLiteral",
 	"ShorthandProperty",
 	"Property",
+	"ObjectMethod",
 	"SpreadProperty",
 	"LiteralPropertyName",
 	"ComputedPropertyName",
@@ -348,6 +352,8 @@ var nodeTypeStr = [...]string{
 	"TsExportAssignment",
 	"ExportClause",
 	"ExportSpecifier",
+	"DecoratorExpr",
+	"DecoratorCall",
 	"JSXElement",
 	"JSXSelfClosingElement",
 	"JSXOpeningElement",
@@ -407,6 +413,7 @@ var nodeTypeStr = [...]string{
 	"TsAmbientClass",
 	"TsAmbientEnum",
 	"TsAmbientNamespace",
+	"TsAmbientModule",
 	"TsAmbientTypeAlias",
 	"TsAmbientBinding",
 	"TsAmbientClassBody",
@@ -415,7 +422,6 @@ var nodeTypeStr = [...]string{
 	"TsAmbientIndexMember",
 	"TsAmbientInterface",
 	"TsAmbientImportAlias",
-	"TsAmbientModule",
 	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",
@@ -470,6 +476,11 @@ var Declaration = []NodeType{
 	TsInterface,
 	TsNamespace,
 	TypeAliasDeclaration,
+}
+
+var Decorator = []NodeType{
+	DecoratorCall,
+	DecoratorExpr,
 }
 
 var ElementPattern = []NodeType{
@@ -562,6 +573,8 @@ var MethodDefinition = []NodeType{
 var Modifier = []NodeType{
 	Abstract,
 	AccessibilityModifier,
+	DecoratorCall,
+	DecoratorExpr,
 	Readonly,
 	Static,
 }
@@ -629,12 +642,8 @@ var Parameter = []NodeType{
 }
 
 var PropertyDefinition = []NodeType{
-	AsyncMethod,
-	GeneratorMethod,
-	Getter,
-	Method,
+	ObjectMethod,
 	Property,
-	Setter,
 	ShorthandProperty,
 	SpreadProperty,
 	SyntaxProblem,
@@ -740,6 +749,7 @@ var TsAmbientElement = []NodeType{
 	TsAmbientFunction,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
+	TsAmbientModule,
 	TsAmbientNamespace,
 	TsAmbientTypeAlias,
 	TsAmbientVar,
@@ -1704,26 +1714,34 @@ var ruleNodeType = [...]NodeType{
 	0,                        // PropertyDefinitionList_Yield : PropertyDefinition_Yield
 	0,                        // PropertyDefinitionList_Yield : PropertyDefinitionList_Yield ',' PropertyDefinition_Yield
 	ShorthandProperty,        // PropertyDefinition : IdentifierReference
+	Property,                 // PropertyDefinition : Modifiers PropertyName ':' AssignmentExpression_In
 	Property,                 // PropertyDefinition : PropertyName ':' AssignmentExpression_In
-	0,                        // PropertyDefinition : MethodDefinition
+	ObjectMethod,             // PropertyDefinition : Modifiers MethodDefinition
+	ObjectMethod,             // PropertyDefinition : MethodDefinition
 	SyntaxProblem,            // PropertyDefinition : CoverInitializedName
 	0,                        // PropertyDefinition : SyntaxError
 	SpreadProperty,           // PropertyDefinition : '...' AssignmentExpression_In
 	ShorthandProperty,        // PropertyDefinition_Await : IdentifierReference_Await
+	Property,                 // PropertyDefinition_Await : Modifiers PropertyName_Await ':' AssignmentExpression_Await_In
 	Property,                 // PropertyDefinition_Await : PropertyName_Await ':' AssignmentExpression_Await_In
-	0,                        // PropertyDefinition_Await : MethodDefinition_Await
+	ObjectMethod,             // PropertyDefinition_Await : Modifiers MethodDefinition_Await
+	ObjectMethod,             // PropertyDefinition_Await : MethodDefinition_Await
 	SyntaxProblem,            // PropertyDefinition_Await : CoverInitializedName_Await
 	0,                        // PropertyDefinition_Await : SyntaxError
 	SpreadProperty,           // PropertyDefinition_Await : '...' AssignmentExpression_Await_In
 	ShorthandProperty,        // PropertyDefinition_Await_Yield : IdentifierReference_Await_Yield
+	Property,                 // PropertyDefinition_Await_Yield : Modifiers PropertyName_Await_Yield ':' AssignmentExpression_Await_In_Yield
 	Property,                 // PropertyDefinition_Await_Yield : PropertyName_Await_Yield ':' AssignmentExpression_Await_In_Yield
-	0,                        // PropertyDefinition_Await_Yield : MethodDefinition_Await_Yield
+	ObjectMethod,             // PropertyDefinition_Await_Yield : Modifiers MethodDefinition_Await_Yield
+	ObjectMethod,             // PropertyDefinition_Await_Yield : MethodDefinition_Await_Yield
 	SyntaxProblem,            // PropertyDefinition_Await_Yield : CoverInitializedName_Await_Yield
 	0,                        // PropertyDefinition_Await_Yield : SyntaxError
 	SpreadProperty,           // PropertyDefinition_Await_Yield : '...' AssignmentExpression_Await_In_Yield
 	ShorthandProperty,        // PropertyDefinition_Yield : IdentifierReference_Yield
+	Property,                 // PropertyDefinition_Yield : Modifiers PropertyName_Yield ':' AssignmentExpression_In_Yield
 	Property,                 // PropertyDefinition_Yield : PropertyName_Yield ':' AssignmentExpression_In_Yield
-	0,                        // PropertyDefinition_Yield : MethodDefinition_Yield
+	ObjectMethod,             // PropertyDefinition_Yield : Modifiers MethodDefinition_Yield
+	ObjectMethod,             // PropertyDefinition_Yield : MethodDefinition_Yield
 	SyntaxProblem,            // PropertyDefinition_Yield : CoverInitializedName_Yield
 	0,                        // PropertyDefinition_Yield : SyntaxError
 	SpreadProperty,           // PropertyDefinition_Yield : '...' AssignmentExpression_In_Yield
@@ -3252,7 +3270,6 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration : EnumDeclaration
 	0,                     // Declaration : ImportAliasDeclaration
 	0,                     // Declaration : AmbientDeclaration
-	0,                     // Declaration : AmbientModuleDeclaration
 	0,                     // Declaration_Await : HoistableDeclaration_Await
 	0,                     // Declaration_Await : ClassDeclaration_Await
 	0,                     // Declaration_Await : LexicalDeclaration_Await_In
@@ -3262,7 +3279,6 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration_Await : EnumDeclaration
 	0,                     // Declaration_Await : ImportAliasDeclaration
 	0,                     // Declaration_Await : AmbientDeclaration
-	0,                     // Declaration_Await : AmbientModuleDeclaration
 	0,                     // Declaration_Yield : HoistableDeclaration
 	0,                     // Declaration_Yield : ClassDeclaration_Yield
 	0,                     // Declaration_Yield : LexicalDeclaration_In_Yield
@@ -3272,7 +3288,6 @@ var ruleNodeType = [...]NodeType{
 	0,                     // Declaration_Yield : EnumDeclaration
 	0,                     // Declaration_Yield : ImportAliasDeclaration
 	0,                     // Declaration_Yield : AmbientDeclaration
-	0,                     // Declaration_Yield : AmbientModuleDeclaration
 	0,                     // HoistableDeclaration : FunctionDeclaration
 	0,                     // HoistableDeclaration : GeneratorDeclaration
 	0,                     // HoistableDeclaration : AsyncFunctionDeclaration
@@ -3765,6 +3780,7 @@ var ruleNodeType = [...]NodeType{
 	0,                          // ClassElementList_Yield : ClassElement_Yield
 	0,                          // ClassElementList_Yield : ClassElementList_Yield ClassElement_Yield
 	0,                          // Modifier : AccessibilityModifier
+	0,                          // Modifier : Decorator
 	Static,                     // Modifier : 'static'
 	Abstract,                   // Modifier : 'abstract'
 	Readonly,                   // Modifier : 'readonly'
@@ -3836,8 +3852,10 @@ var ruleNodeType = [...]NodeType{
 	ExportDeclaration,  // ExportDeclaration : 'export' ExportClause FromClause ';'
 	ExportDeclaration,  // ExportDeclaration : 'export' ExportClause ';'
 	ExportDeclaration,  // ExportDeclaration : 'export' VariableStatement
+	ExportDeclaration,  // ExportDeclaration : Modifiers 'export' Declaration
 	ExportDeclaration,  // ExportDeclaration : 'export' Declaration
 	ExportDefault,      // ExportDeclaration : 'export' 'default' HoistableDeclaration
+	ExportDefault,      // ExportDeclaration : Modifiers 'export' 'default' ClassDeclaration
 	ExportDefault,      // ExportDeclaration : 'export' 'default' ClassDeclaration
 	ExportDefault,      // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
 	TsExportAssignment, // ExportDeclaration : 'export' '=' IdentifierReference ';'
@@ -3849,6 +3867,11 @@ var ruleNodeType = [...]NodeType{
 	ExportSpecifier,    // ExportElement : IdentifierNameRef
 	ExportSpecifier,    // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
 	SyntaxProblem,      // ExportElement : error
+	DecoratorExpr,      // Decorator : '@' DecoratorMemberExpression
+	DecoratorCall,      // Decorator : '@' DecoratorCallExpression
+	0,                  // DecoratorMemberExpression : IdentifierReference
+	0,                  // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
+	0,                  // DecoratorCallExpression : DecoratorMemberExpression Arguments
 	0,                  // JSXChild_Await_optlist : JSXChild_Await_optlist JSXChild_Await
 	0,                  // JSXChild_Await_optlist :
 	0,                  // JSXChild_Await_Yield_optlist : JSXChild_Await_Yield_optlist JSXChild_Await_Yield
@@ -4222,6 +4245,7 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientClass,     // AmbientDeclaration : 'declare' AmbientClassDeclaration
 	TsAmbientEnum,      // AmbientDeclaration : 'declare' AmbientEnumDeclaration
 	TsAmbientNamespace, // AmbientDeclaration : 'declare' AmbientNamespaceDeclaration
+	TsAmbientModule,    // AmbientDeclaration : 'declare' AmbientModuleDeclaration
 	TsAmbientTypeAlias, // AmbientDeclaration : 'declare' TypeAliasDeclaration
 	0,                  // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
 	0,                  // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
@@ -4248,6 +4272,8 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientIndexMember,    // AmbientClassBodyElement : IndexSignature ';'
 	0,                       // AmbientEnumDeclaration : EnumDeclaration
 	0,                       // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
+	0,                       // AmbientModuleDeclaration : 'module' StringLiteral '{' ModuleBodyopt '}'
+	0,                       // AmbientModuleDeclaration : 'module' IdentifierNameDecl '{' ModuleBodyopt '}'
 	0,                       // AmbientNamespaceBody : '{' AmbientNamespaceElement_list '}'
 	0,                       // AmbientNamespaceBody : '{' '}'
 	0,                       // AmbientNamespaceElement_list : AmbientNamespaceElement_list AmbientNamespaceElement
@@ -4264,12 +4290,12 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientEnum,           // AmbientNamespaceElement : AmbientEnumDeclaration
 	TsAmbientNamespace,      // AmbientNamespaceElement : 'export' AmbientNamespaceDeclaration
 	TsAmbientNamespace,      // AmbientNamespaceElement : AmbientNamespaceDeclaration
+	TsAmbientModule,         // AmbientNamespaceElement : 'export' AmbientModuleDeclaration
+	TsAmbientModule,         // AmbientNamespaceElement : AmbientModuleDeclaration
 	TsAmbientImportAlias,    // AmbientNamespaceElement : 'export' ImportAliasDeclaration
 	TsAmbientImportAlias,    // AmbientNamespaceElement : ImportAliasDeclaration
 	TsAmbientTypeAlias,      // AmbientNamespaceElement : 'export' TypeAliasDeclaration
 	TsAmbientTypeAlias,      // AmbientNamespaceElement : TypeAliasDeclaration
-	TsAmbientModule,         // AmbientModuleDeclaration : 'declare' 'module' StringLiteral '{' ModuleBodyopt '}'
-	TsAmbientModule,         // AmbientModuleDeclaration : 'declare' 'module' IdentifierNameDecl '{' ModuleBodyopt '}'
 	0,                       // Elisionopt : Elision
 	0,                       // Elisionopt :
 	0,                       // TypeAnnotationopt : TypeAnnotation

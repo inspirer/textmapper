@@ -105,6 +105,7 @@ const (
 	EXCLASSIGN         // !=
 	ASSIGNASSIGNASSIGN // ===
 	EXCLASSIGNASSIGN   // !==
+	ATSIGN             // @
 	PLUS               // +
 	MINUS              // -
 	MULT               // *
@@ -248,6 +249,7 @@ var tokenStr = [...]string{
 	"!=",
 	"===",
 	"!==",
+	"@",
 	"+",
 	"-",
 	"*",

@@ -199,6 +199,7 @@ var lexerTests = []struct {
 	{js.EXCLASSIGN, []string{`«!=»`}},
 	{js.ASSIGNASSIGNASSIGN, []string{`«===»`}},
 	{js.EXCLASSIGNASSIGN, []string{`«!==»`}},
+	{js.ATSIGN, []string{`«@»`}},
 	{js.PLUS, []string{`«+»`}},
 	{js.MINUS, []string{`«-»`}},
 	{js.MULT, []string{`«*»`}},

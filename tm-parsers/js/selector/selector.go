@@ -48,6 +48,8 @@ var (
 	ConstructorType            = func(t js.NodeType) bool { return t == js.ConstructorType }
 	ContinueStatement          = func(t js.NodeType) bool { return t == js.ContinueStatement }
 	DebuggerStatement          = func(t js.NodeType) bool { return t == js.DebuggerStatement }
+	DecoratorCall              = func(t js.NodeType) bool { return t == js.DecoratorCall }
+	DecoratorExpr              = func(t js.NodeType) bool { return t == js.DecoratorExpr }
 	Default                    = func(t js.NodeType) bool { return t == js.Default }
 	DefaultParameter           = func(t js.NodeType) bool { return t == js.DefaultParameter }
 	DoWhileStatement           = func(t js.NodeType) bool { return t == js.DoWhileStatement }
@@ -123,6 +125,7 @@ var (
 	NewExpression              = func(t js.NodeType) bool { return t == js.NewExpression }
 	NewTarget                  = func(t js.NodeType) bool { return t == js.NewTarget }
 	ObjectLiteral              = func(t js.NodeType) bool { return t == js.ObjectLiteral }
+	ObjectMethod               = func(t js.NodeType) bool { return t == js.ObjectMethod }
 	ObjectPattern              = func(t js.NodeType) bool { return t == js.ObjectPattern }
 	ObjectType                 = func(t js.NodeType) bool { return t == js.ObjectType }
 	Parameters                 = func(t js.NodeType) bool { return t == js.Parameters }
@@ -214,6 +217,7 @@ var (
 	CaseClause                 = OneOf(js.CaseClause...)
 	ClassElement               = OneOf(js.ClassElement...)
 	Declaration                = OneOf(js.Declaration...)
+	Decorator                  = OneOf(js.Decorator...)
 	ElementPattern             = OneOf(js.ElementPattern...)
 	ExportElement              = OneOf(js.ExportElement...)
 	Expression                 = OneOf(js.Expression...)
