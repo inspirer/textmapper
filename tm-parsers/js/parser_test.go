@@ -75,6 +75,8 @@ var parseTests = []struct {
 	{js.Javascript, js.Regexp, []string{
 		`«/abc/i».test('aaa')`,
 		`1 / ++«/^[a-z]+\//ii».lastIndex`,
+		`var a = «/abc/g», b = («/abc/g»)`,
+		`var a = {regexp: «/abc/g»}`,
 	}},
 	{js.Javascript, js.Parenthesized, []string{
 		`c = «(1+2)»;`,
@@ -100,12 +102,14 @@ var parseTests = []struct {
 		`for (let {} of «{}»);`,
 		`a = «{a: [], c: 1}»;`,
 		`a = «{a: «{}»,}»;`,
+		`a = foo(«{name,text}»);`,
 	}},
 	{js.Javascript, js.ShorthandProperty, []string{
 		`{} ({«a»,b: 1 in {}, f() {}, });`,
 	}},
 	{js.Javascript, js.Property, []string{
 		`{} ({a,«b: 1 in {}», f() {}, });`,
+		"console.log(`${Object.keys({a,«b: a/a», «c: /abc/g»})}`)",
 	}},
 	{js.Javascript, js.LiteralPropertyName, []string{
 		`{} ({a,«b»: 1 in {}, «f»() {}, get «d»() { return 1;}});`,
@@ -121,6 +125,7 @@ var parseTests = []struct {
 	{js.Javascript, js.TemplateLiteral, []string{
 		"print «`abc`»",
 		"«`ab${ expr }${ expr2 }c`»",
+		"var a = «`Method call: \"${foo({name,text})}\"`»",
 	}},
 	{js.Javascript, js.NoSubstitutionTemplate, []string{
 		"print «`abc`»",
@@ -1188,6 +1193,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TsAmbientTypeAlias, []string{
 		`declare namespace foo { «type Abc<Foo, Bar> = Function<Foo> | typeof Bar;» }`,
+		`«declare type Abc = Foo | Bar;»`,
 	}},
 	{js.Typescript, js.TsAmbientModule, []string{
 		`«declare module "foo" { export = foo; }»`,

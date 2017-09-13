@@ -198,6 +198,7 @@ const (
 	TsAmbientClass           // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? TsAmbientClassBody
 	TsAmbientEnum            // TsEnum
 	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
+	TsAmbientTypeAlias       // TypeAliasDeclaration
 	TsAmbientBinding         // BindingIdentifier TypeAnnotation?
 	TsAmbientClassBody       // (TsAmbientClassElement)*
 	TsAmbientPropertyMember  // (Modifier)* PropertyName TypeAnnotation?
@@ -205,7 +206,6 @@ const (
 	TsAmbientIndexMember     // IndexSignature
 	TsAmbientInterface       // TsInterface
 	TsAmbientImportAlias     // TsImportAliasDeclaration
-	TsAmbientTypeAlias       // TypeAliasDeclaration
 	TsAmbientModule          // (ModuleItem)*
 	InsertedSemicolon
 	MultiLineComment
@@ -407,6 +407,7 @@ var nodeTypeStr = [...]string{
 	"TsAmbientClass",
 	"TsAmbientEnum",
 	"TsAmbientNamespace",
+	"TsAmbientTypeAlias",
 	"TsAmbientBinding",
 	"TsAmbientClassBody",
 	"TsAmbientPropertyMember",
@@ -414,7 +415,6 @@ var nodeTypeStr = [...]string{
 	"TsAmbientIndexMember",
 	"TsAmbientInterface",
 	"TsAmbientImportAlias",
-	"TsAmbientTypeAlias",
 	"TsAmbientModule",
 	"InsertedSemicolon",
 	"MultiLineComment",
@@ -4214,6 +4214,7 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientClass,     // AmbientDeclaration : 'declare' AmbientClassDeclaration
 	TsAmbientEnum,      // AmbientDeclaration : 'declare' AmbientEnumDeclaration
 	TsAmbientNamespace, // AmbientDeclaration : 'declare' AmbientNamespaceDeclaration
+	TsAmbientTypeAlias, // AmbientDeclaration : 'declare' TypeAliasDeclaration
 	0,                  // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
 	0,                  // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
 	0,                  // AmbientVariableDeclaration : 'const' AmbientBindingList ';'

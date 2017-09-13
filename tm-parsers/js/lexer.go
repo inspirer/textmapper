@@ -9,15 +9,17 @@ import (
 
 // Lexer states.
 const (
-	StateInitial        = 0
-	StateDiv            = 1
-	StateTemplate       = 2
-	StateTemplateDiv    = 3
-	StateJsxTemplate    = 4
-	StateJsxTemplateDiv = 5
-	StateJsxTag         = 6
-	StateJsxClosingTag  = 7
-	StateJsxText        = 8
+	StateInitial         = 0
+	StateDiv             = 1
+	StateTemplate        = 2
+	StateTemplateDiv     = 3
+	StateTemplateExpr    = 4
+	StateTemplateExprDiv = 5
+	StateJsxTemplate     = 6
+	StateJsxTemplateDiv  = 7
+	StateJsxTag          = 8
+	StateJsxClosingTag   = 9
+	StateJsxText         = 10
 )
 
 type Dialect int
@@ -507,19 +509,14 @@ restart:
 		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
 			l.State &^= 1
 		case TEMPLATEHEAD:
-			if len(l.Stack) != 0 || l.State > StateDiv {
-				l.Stack = append(l.Stack, l.State|1)
-			}
+			l.Stack = append(l.Stack, l.State|1)
+			l.Opened = append(l.Opened, 1)
 			fallthrough
 		case TEMPLATEMIDDLE:
 			l.State = StateTemplate
 		case TEMPLATETAIL:
-			if len(l.Stack) != 0 {
-				l.State = l.Stack[len(l.Stack)-1]
-				l.Stack = l.Stack[:len(l.Stack)-1]
-			} else {
-				l.State = StateDiv
-			}
+			l.State = l.Stack[len(l.Stack)-1]
+			l.Stack = l.Stack[:len(l.Stack)-1]
 		case RPAREN, RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1
@@ -542,12 +539,15 @@ restart:
 				l.State &^= 1
 			}
 		case LBRACE:
-			if l.State >= StateJsxTemplate {
+			if l.State >= StateTemplate {
 				l.Opened[len(l.Opened)-1]++
+				if l.State < StateTemplateExpr {
+					l.State = StateTemplateExpr
+				}
 			}
 			l.State &^= 1
 		case RBRACE:
-			if l.State >= StateJsxTemplate {
+			if l.State >= StateTemplate {
 				last := len(l.Opened) - 1
 				l.Opened[last]--
 				if l.Opened[last] == 0 {
@@ -555,6 +555,8 @@ restart:
 					l.State = l.Stack[len(l.Stack)-1]
 					l.Stack = l.Stack[:len(l.Stack)-1]
 					break
+				} else if l.Opened[last] == 1 && l.State <= StateTemplateExprDiv {
+					l.State = StateTemplate
 				}
 			}
 			l.State &^= 1

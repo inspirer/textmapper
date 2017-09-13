@@ -14,7 +14,7 @@ extraTypes = ["InsertedSemicolon"]
 
 :: lexer
 
-%s initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv;
+%s initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv;
 %x jsxTag, jsxClosingTag, jsxText;
 
 # Accept end-of-input in all states.
@@ -23,7 +23,7 @@ extraTypes = ["InsertedSemicolon"]
 invalid_token:
 error:
 
-<initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag> {
+<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag> {
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 }
 
@@ -233,10 +233,10 @@ StringLiteral: /'{ssChar}*'/
 
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
-<initial, div, jsxTemplate, jsxTemplateDiv>
+<initial, div, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv>
 '}': /\}/
 
-<initial, div, template, templateDiv, jsxTemplate, jsxTemplateDiv> {
+<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv> {
 NoSubstitutionTemplate: /`{tplChars}`/
 TemplateHead: /`{tplChars}\$\{/
 }
@@ -256,7 +256,7 @@ reFlags = /[a-z]*/
 RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{reFlags}/
 }
 
-<div, templateDiv, jsxTemplateDiv> {
+<div, templateDiv, templateExprDiv, jsxTemplateDiv> {
 '/': /\//
 '/=': /\/=/
 }
@@ -1511,6 +1511,7 @@ AmbientDeclaration -> TsAmbientElement /* interface */:
   | 'declare' AmbientClassDeclaration           -> TsAmbientClass
   | 'declare' AmbientEnumDeclaration            -> TsAmbientEnum
   | 'declare' AmbientNamespaceDeclaration       -> TsAmbientNamespace
+  | 'declare' TypeAliasDeclaration              -> TsAmbientTypeAlias
 ;
 
 AmbientVariableDeclaration:
@@ -1622,19 +1623,14 @@ ${template go_lexer.onAfterNext}
 		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
 			l.State &^= 1
 		case TEMPLATEHEAD:
-			if len(l.Stack) != 0 || l.State > StateDiv {
-			  l.Stack = append(l.Stack, l.State|1)
-			}
+			l.Stack = append(l.Stack, l.State|1)
+			l.Opened = append(l.Opened, 1)
 			fallthrough
 		case TEMPLATEMIDDLE:
 			l.State = StateTemplate
 		case TEMPLATETAIL:
-			if len(l.Stack) != 0 {
-				l.State = l.Stack[len(l.Stack)-1]
-				l.Stack = l.Stack[:len(l.Stack)-1]
-			} else {
-			  l.State = StateDiv
-			}
+			l.State = l.Stack[len(l.Stack)-1]
+			l.Stack = l.Stack[:len(l.Stack)-1]
 		case RPAREN, RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1
@@ -1650,19 +1646,22 @@ ${template go_lexer.onAfterNext}
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
 				if l.Dialect != Typescript {
-				  l.Stack = append(l.Stack, l.State|1)
-				  l.State = StateJsxTag
+					l.Stack = append(l.Stack, l.State|1)
+					l.State = StateJsxTag
 				}
 			} else {
 				l.State &^= 1
 			}
 		case LBRACE:
-			if l.State >= StateJsxTemplate {
+			if l.State >= StateTemplate {
 				l.Opened[len(l.Opened)-1]++
+				if l.State < StateTemplateExpr {
+					l.State = StateTemplateExpr
+				}
 			}
 			l.State &^= 1
 		case RBRACE:
-			if l.State >= StateJsxTemplate {
+			if l.State >= StateTemplate {
 				last := len(l.Opened) - 1
 				l.Opened[last]--
 				if l.Opened[last] == 0 {
@@ -1670,6 +1669,8 @@ ${template go_lexer.onAfterNext}
 					l.State = l.Stack[len(l.Stack)-1]
 					l.Stack = l.Stack[:len(l.Stack)-1]
 					break
+				} else if l.Opened[last] == 1 && l.State <= StateTemplateExprDiv {
+					l.State = StateTemplate
 				}
 			}
 			l.State &^= 1

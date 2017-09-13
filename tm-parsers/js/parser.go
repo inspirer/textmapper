@@ -21,41 +21,41 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(5, 5395, lexer)
+	return p.parse(5, 5396, lexer)
 }
 
 func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
 	switch rule {
-	case 3536:
-		if lookahead(lexer, next, 0, 5389) {
+	case 3537:
+		if lookahead(lexer, next, 0, 5390) {
 			lhs.sym.symbol = 654 /* lookahead_StartOfArrowFunction */
 		} else {
 			lhs.sym.symbol = 155 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 3537:
-		if lookahead(lexer, next, 1, 5390) {
+	case 3538:
+		if lookahead(lexer, next, 1, 5391) {
 			lhs.sym.symbol = 332 /* lookahead_StartOfParametrizedCall */
 		} else {
 			lhs.sym.symbol = 288 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 3538:
-		if lookahead(lexer, next, 4, 5393) {
+	case 3539:
+		if lookahead(lexer, next, 4, 5394) {
 			lhs.sym.symbol = 808 /* lookahead_StartOfMappedType */
 		} else {
 			lhs.sym.symbol = 800 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 3539:
-		if lookahead(lexer, next, 3, 5392) {
+	case 3540:
+		if lookahead(lexer, next, 3, 5393) {
 			lhs.sym.symbol = 814 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 793 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 3540:
-		if lookahead(lexer, next, 2, 5391) {
+	case 3541:
+		if lookahead(lexer, next, 2, 5392) {
 			lhs.sym.symbol = 710 /* lookahead_StartsOfExtendsTypeRef */
 		} else {
 			lhs.sym.symbol = 709 /* lookahead_notStartsOfExtendsTypeRef */
@@ -65,23 +65,23 @@ func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
 }
 
 func AtStartOfArrowFunction(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 0, 5389)
+	return lookahead(lexer, next, 0, 5390)
 }
 
 func AtStartOfParametrizedCall(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 1, 5390)
+	return lookahead(lexer, next, 1, 5391)
 }
 
 func AtStartsOfExtendsTypeRef(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 2, 5391)
+	return lookahead(lexer, next, 2, 5392)
 }
 
 func AtStartOfFunctionType(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 3, 5392)
+	return lookahead(lexer, next, 3, 5393)
 }
 
 func AtStartOfMappedType(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 4, 5393)
+	return lookahead(lexer, next, 4, 5394)
 }
 
 func lookahead(l *Lexer, next int32, start, end int16) bool {
@@ -184,35 +184,35 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 2704: // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3536:
+	case 3537:
 		if AtStartOfArrowFunction(p.lexer, p.next.symbol) {
 			lhs.sym.symbol = 654 /* lookahead_StartOfArrowFunction */
 		} else {
 			lhs.sym.symbol = 155 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 3537:
+	case 3538:
 		if AtStartOfParametrizedCall(p.lexer, p.next.symbol) {
 			lhs.sym.symbol = 332 /* lookahead_StartOfParametrizedCall */
 		} else {
 			lhs.sym.symbol = 288 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 3538:
+	case 3539:
 		if AtStartOfMappedType(p.lexer, p.next.symbol) {
 			lhs.sym.symbol = 808 /* lookahead_StartOfMappedType */
 		} else {
 			lhs.sym.symbol = 800 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 3539:
+	case 3540:
 		if AtStartOfFunctionType(p.lexer, p.next.symbol) {
 			lhs.sym.symbol = 814 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 793 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 3540:
+	case 3541:
 		if AtStartsOfExtendsTypeRef(p.lexer, p.next.symbol) {
 			lhs.sym.symbol = 710 /* lookahead_StartsOfExtendsTypeRef */
 		} else {

@@ -100,6 +100,7 @@ var lexerTests = []struct {
 	{js.TEMPLATETAIL, []string{
 		"`${a«}`» /",
 		"`aa ${ 'aa' }q${ /aaa/ «} `»",
+		"`Method call: \"${foo({name,text})«}\"`»",
 	}},
 
 	// Keywords.
