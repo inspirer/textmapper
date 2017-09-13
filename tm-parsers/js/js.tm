@@ -1126,7 +1126,7 @@ ImportDeclaration -> ImportDeclaration :
 ;
 
 ImportRequireDeclaration -> TsImportRequireDeclaration:
-    'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
+    'export'? 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
 
 ImportClause :
     ImportedDefaultBinding
@@ -1446,13 +1446,13 @@ BindingIdentifierOrPattern<Yield, Await> :
 ;
 
 ConstructSignature -> ConstructSignature :
-    'new' TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? ;
+    Modifiers? 'new' TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? ;
 
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.
 IndexSignature -> IndexSignature :
-    '[' IdentifierName ':' 'string' ']' TypeAnnotation
-  | '[' IdentifierName ':' 'number' ']' TypeAnnotation
+    Modifiers? '[' IdentifierName ':' 'string' ']' TypeAnnotation
+  | Modifiers? '[' IdentifierName ':' 'number' ']' TypeAnnotation
 ;
 
 MethodSignature -> MethodSignature :
@@ -1485,7 +1485,7 @@ EnumMember -> TsEnumMember:
 # A.8 Namespaces
 
 NamespaceDeclaration -> TsNamespace:
-    'namespace' IdentifierPath NamespaceBody ;
+    ('namespace' | 'module') IdentifierPath NamespaceBody ;
 
 IdentifierPath:
     BindingIdentifier
@@ -1564,7 +1564,7 @@ AmbientNamespaceElement -> TsAmbientElement /* interface */:
 ;
 
 AmbientModuleDeclaration -> TsAmbientModule:
-    'declare' 'module' StringLiteral '{' ModuleBodyopt '}' ;
+    'declare' 'module' (StringLiteral | IdentifierNameDecl) '{' ModuleBodyopt '}' ;
 
 %%
 

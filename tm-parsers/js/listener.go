@@ -181,8 +181,8 @@ const (
 	RestParameter     // BindingIdentifier TypeAnnotation?
 	TsThisParameter   // TypeAnnotation
 	AccessibilityModifier
-	ConstructSignature       // TypeParameters? Parameters TypeAnnotation?
-	IndexSignature           // TypeAnnotation
+	ConstructSignature       // (Modifier)* TypeParameters? Parameters TypeAnnotation?
+	IndexSignature           // (Modifier)* TypeAnnotation
 	MethodSignature          // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
 	TypeAliasDeclaration     // BindingIdentifier TypeParameters? TsType
 	TsInterface              // BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
@@ -206,7 +206,7 @@ const (
 	TsAmbientIndexMember     // IndexSignature
 	TsAmbientInterface       // TsInterface
 	TsAmbientImportAlias     // TsImportAliasDeclaration
-	TsAmbientModule          // (ModuleItem)*
+	TsAmbientModule          // BindingIdentifier? (ModuleItem)*
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -3812,6 +3812,7 @@ var ruleNodeType = [...]NodeType{
 	0,                          // ModuleItem : StatementListItem
 	ImportDeclaration,          // ImportDeclaration : 'import' ImportClause FromClause ';'
 	ImportDeclaration,          // ImportDeclaration : 'import' ModuleSpecifier ';'
+	TsImportRequireDeclaration, // ImportRequireDeclaration : 'export' 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
 	TsImportRequireDeclaration, // ImportRequireDeclaration : 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
 	0,                  // ImportClause : ImportedDefaultBinding
 	0,                  // ImportClause : NameSpaceImport
@@ -4178,11 +4179,17 @@ var ruleNodeType = [...]NodeType{
 	AccessibilityModifier,    // AccessibilityModifier : 'public'
 	AccessibilityModifier,    // AccessibilityModifier : 'private'
 	AccessibilityModifier,    // AccessibilityModifier : 'protected'
+	ConstructSignature,       // ConstructSignature : Modifiers 'new' TypeParameters ParameterList TypeAnnotation
+	ConstructSignature,       // ConstructSignature : Modifiers 'new' TypeParameters ParameterList
+	ConstructSignature,       // ConstructSignature : Modifiers 'new' ParameterList TypeAnnotation
+	ConstructSignature,       // ConstructSignature : Modifiers 'new' ParameterList
 	ConstructSignature,       // ConstructSignature : 'new' TypeParameters ParameterList TypeAnnotation
 	ConstructSignature,       // ConstructSignature : 'new' TypeParameters ParameterList
 	ConstructSignature,       // ConstructSignature : 'new' ParameterList TypeAnnotation
 	ConstructSignature,       // ConstructSignature : 'new' ParameterList
+	IndexSignature,           // IndexSignature : Modifiers '[' IdentifierName ':' 'string' ']' TypeAnnotation
 	IndexSignature,           // IndexSignature : '[' IdentifierName ':' 'string' ']' TypeAnnotation
+	IndexSignature,           // IndexSignature : Modifiers '[' IdentifierName ':' 'number' ']' TypeAnnotation
 	IndexSignature,           // IndexSignature : '[' IdentifierName ':' 'number' ']' TypeAnnotation
 	MethodSignature,          // MethodSignature : Modifiers PropertyName_WithoutNew '?' FormalParameters
 	MethodSignature,          // MethodSignature : Modifiers PropertyName_WithoutNew FormalParameters
@@ -4203,6 +4210,7 @@ var ruleNodeType = [...]NodeType{
 	TsEnumMember,             // EnumMember : PropertyName
 	TsEnumMember,             // EnumMember : PropertyName '=' AssignmentExpression_In
 	TsNamespace,              // NamespaceDeclaration : 'namespace' IdentifierPath NamespaceBody
+	TsNamespace,              // NamespaceDeclaration : 'module' IdentifierPath NamespaceBody
 	0,                        // IdentifierPath : BindingIdentifier
 	0,                        // IdentifierPath : IdentifierPath '.' BindingIdentifier
 	TsNamespaceBody,          // NamespaceBody : '{' ModuleItemList '}'
@@ -4261,6 +4269,7 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientTypeAlias,      // AmbientNamespaceElement : 'export' TypeAliasDeclaration
 	TsAmbientTypeAlias,      // AmbientNamespaceElement : TypeAliasDeclaration
 	TsAmbientModule,         // AmbientModuleDeclaration : 'declare' 'module' StringLiteral '{' ModuleBodyopt '}'
+	TsAmbientModule,         // AmbientModuleDeclaration : 'declare' 'module' IdentifierNameDecl '{' ModuleBodyopt '}'
 	0,                       // Elisionopt : Elision
 	0,                       // Elisionopt :
 	0,                       // TypeAnnotationopt : TypeAnnotation

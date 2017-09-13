@@ -1328,6 +1328,15 @@ type ConstructSignature struct {
 	Node
 }
 
+func (n ConstructSignature) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
 func (n ConstructSignature) TypeParameters() *TypeParameters {
 	if child := n.Child(selector.TypeParameters); child != nil {
 		return &TypeParameters{child}
@@ -2047,6 +2056,15 @@ func (n IndexAccess) Index() Expression {
 
 type IndexSignature struct {
 	Node
+}
+
+func (n IndexSignature) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
 }
 
 func (n IndexSignature) TypeAnnotation() TypeAnnotation {
@@ -3108,6 +3126,13 @@ func (n TsAmbientInterface) TsInterface() TsInterface {
 
 type TsAmbientModule struct {
 	Node
+}
+
+func (n TsAmbientModule) BindingIdentifier() *BindingIdentifier {
+	if child := n.Child(selector.BindingIdentifier); child != nil {
+		return &BindingIdentifier{child}
+	}
+	return nil
 }
 
 func (n TsAmbientModule) ModuleItem() []ModuleItem {

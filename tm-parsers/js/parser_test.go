@@ -1086,6 +1086,7 @@ var parseTests = []struct {
 		`export interface ReadonlyMap<T> {
 		   forEach(action: (value: T, key: string) => void): void;
 		   «readonly» size: number;
+		   «readonly» [index: number]: string;
 		 }`,
 	}},
 	{js.Typescript, js.MemberMethod, []string{
