@@ -1157,6 +1157,10 @@ var parseTests = []struct {
 	{js.Typescript, js.TsExportAssignment, []string{
 		`«export = abc;»`,
 	}},
+	{js.Typescript, js.TsNamespaceExportDeclaration, []string{
+		`«export as namespace abc»`,
+		`«export as namespace abc;»`,
+	}},
 	{js.Typescript, js.TsAmbientVar, []string{
 		`«declare var a : int, b : string;»`,
 		`«declare const i;»`,

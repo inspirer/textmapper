@@ -372,6 +372,8 @@ func ToJsNode(n Node) JsNode {
 		return &TsNamespace{n}
 	case js.TsNamespaceBody:
 		return &TsNamespaceBody{n}
+	case js.TsNamespaceExportDeclaration:
+		return &TsNamespaceExportDeclaration{n}
 	case js.TsNonNull:
 		return &TsNonNull{n}
 	case js.TsThisParameter:

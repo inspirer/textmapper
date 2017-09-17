@@ -14,10 +14,10 @@ import (
 )
 
 var supportedExts = map[string]bool{
-	"tm": true,
-	"js": true,
+	"tm":  true,
+	"js":  true,
 	"jsx": true,
-	"ts": true,
+	"ts":  true,
 }
 
 type file struct {

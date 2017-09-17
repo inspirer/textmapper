@@ -136,17 +136,18 @@ const (
 	NamedImports               // (NamedImport)*
 	ImportSpecifier            // IdentifierReference? BindingIdentifier
 	ModuleSpecifier
-	ExportDeclaration     // ExportClause? (Modifier)* VariableStatement? Declaration? ModuleSpecifier?
-	ExportDefault         // Expression? (Modifier)* Declaration?
-	TsExportAssignment    // IdentifierReference
-	ExportClause          // (ExportElement)*
-	ExportSpecifier       // IdentifierReference BindingIdentifier?
-	DecoratorExpr         // (IdentifierReference)*
-	DecoratorCall         // (IdentifierReference)* Arguments
-	JSXElement            // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
-	JSXSelfClosingElement // JSXElementName (JSXAttribute)*
-	JSXOpeningElement     // JSXElementName (JSXAttribute)*
-	JSXClosingElement     // JSXElementName
+	ExportDeclaration            // ExportClause? (Modifier)* VariableStatement? Declaration? ModuleSpecifier?
+	ExportDefault                // Expression? (Modifier)* Declaration?
+	TsExportAssignment           // IdentifierReference
+	TsNamespaceExportDeclaration // BindingIdentifier
+	ExportClause                 // (ExportElement)*
+	ExportSpecifier              // IdentifierReference BindingIdentifier?
+	DecoratorExpr                // (IdentifierReference)*
+	DecoratorCall                // (IdentifierReference)* Arguments
+	JSXElement                   // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
+	JSXSelfClosingElement        // JSXElementName (JSXAttribute)*
+	JSXOpeningElement            // JSXElementName (JSXAttribute)*
+	JSXClosingElement            // JSXElementName
 	JSXElementName
 	JSXNormalAttribute // JSXAttributeName JSXAttributeValue?
 	JSXSpreadAttribute // Expression
@@ -352,6 +353,7 @@ var nodeTypeStr = [...]string{
 	"ExportDeclaration",
 	"ExportDefault",
 	"TsExportAssignment",
+	"TsNamespaceExportDeclaration",
 	"ExportClause",
 	"ExportSpecifier",
 	"DecoratorExpr",
@@ -626,6 +628,7 @@ var ModuleItem = []NodeType{
 	TsImportRequireDeclaration,
 	TsInterface,
 	TsNamespace,
+	TsNamespaceExportDeclaration,
 	TypeAliasDeclaration,
 	VariableStatement,
 	WhileStatement,
@@ -3844,72 +3847,73 @@ var ruleNodeType = [...]NodeType{
 	ImportDeclaration,          // ImportDeclaration : 'import' ModuleSpecifier ';'
 	TsImportRequireDeclaration, // ImportRequireDeclaration : 'export' 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
 	TsImportRequireDeclaration, // ImportRequireDeclaration : 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
-	0,                  // ImportClause : ImportedDefaultBinding
-	0,                  // ImportClause : NameSpaceImport
-	0,                  // ImportClause : NamedImports
-	0,                  // ImportClause : ImportedDefaultBinding ',' NameSpaceImport
-	0,                  // ImportClause : ImportedDefaultBinding ',' NamedImports
-	0,                  // ImportedDefaultBinding : ImportedBinding
-	NameSpaceImport,    // NameSpaceImport : '*' 'as' ImportedBinding
-	0,                  // FromClause : 'from' ModuleSpecifier
-	0,                  // NamedImport_list_Comma_separated : NamedImport_list_Comma_separated ',' NamedImport
-	0,                  // NamedImport_list_Comma_separated : NamedImport
-	NamedImports,       // NamedImports : '{' '}'
-	NamedImports,       // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
-	NamedImports,       // NamedImports : '{' NamedImport_list_Comma_separated '}'
-	ImportSpecifier,    // NamedImport : ImportedBinding
-	ImportSpecifier,    // NamedImport : IdentifierNameRef 'as' ImportedBinding
-	SyntaxProblem,      // NamedImport : error
-	ModuleSpecifier,    // ModuleSpecifier : StringLiteral
-	0,                  // ImportedBinding : BindingIdentifier
-	ExportDeclaration,  // ExportDeclaration : 'export' '*' FromClause ';'
-	ExportDeclaration,  // ExportDeclaration : 'export' ExportClause FromClause ';'
-	ExportDeclaration,  // ExportDeclaration : 'export' ExportClause ';'
-	ExportDeclaration,  // ExportDeclaration : 'export' VariableStatement
-	ExportDeclaration,  // ExportDeclaration : Modifiers 'export' Declaration
-	ExportDeclaration,  // ExportDeclaration : 'export' Declaration
-	ExportDefault,      // ExportDeclaration : 'export' 'default' HoistableDeclaration
-	ExportDefault,      // ExportDeclaration : Modifiers 'export' 'default' ClassDeclaration
-	ExportDefault,      // ExportDeclaration : 'export' 'default' ClassDeclaration
-	ExportDefault,      // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
-	TsExportAssignment, // ExportDeclaration : 'export' '=' IdentifierReference ';'
-	ExportClause,       // ExportClause : '{' '}'
-	ExportClause,       // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
-	ExportClause,       // ExportClause : '{' ExportElement_list_Comma_separated '}'
-	0,                  // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
-	0,                  // ExportElement_list_Comma_separated : ExportElement
-	ExportSpecifier,    // ExportElement : IdentifierNameRef
-	ExportSpecifier,    // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
-	SyntaxProblem,      // ExportElement : error
-	DecoratorExpr,      // Decorator : '@' DecoratorMemberExpression
-	DecoratorCall,      // Decorator : '@' DecoratorCallExpression
-	0,                  // DecoratorMemberExpression : IdentifierReference
-	0,                  // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
-	0,                  // DecoratorCallExpression : DecoratorMemberExpression Arguments
-	0,                  // JSXChild_Await_optlist : JSXChild_Await_optlist JSXChild_Await
-	0,                  // JSXChild_Await_optlist :
-	0,                  // JSXChild_Await_Yield_optlist : JSXChild_Await_Yield_optlist JSXChild_Await_Yield
-	0,                  // JSXChild_Await_Yield_optlist :
-	0,                  // JSXChild_optlist : JSXChild_optlist JSXChild
-	0,                  // JSXChild_optlist :
-	0,                  // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield
-	0,                  // JSXChild_Yield_optlist :
-	JSXElement,         // JSXElement : JSXSelfClosingElement
-	JSXElement,         // JSXElement : JSXOpeningElement JSXChild_optlist JSXClosingElement
-	JSXElement,         // JSXElement_Await : JSXSelfClosingElement_Await
-	JSXElement,         // JSXElement_Await : JSXOpeningElement_Await JSXChild_Await_optlist JSXClosingElement
-	JSXElement,         // JSXElement_Await_Yield : JSXSelfClosingElement_Await_Yield
-	JSXElement,         // JSXElement_Await_Yield : JSXOpeningElement_Await_Yield JSXChild_Await_Yield_optlist JSXClosingElement
-	JSXElement,         // JSXElement_Yield : JSXSelfClosingElement_Yield
-	JSXElement,         // JSXElement_Yield : JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
-	0,                  // JSXAttribute_Await_optlist : JSXAttribute_Await_optlist JSXAttribute_Await
-	0,                  // JSXAttribute_Await_optlist :
-	0,                  // JSXAttribute_Await_Yield_optlist : JSXAttribute_Await_Yield_optlist JSXAttribute_Await_Yield
-	0,                  // JSXAttribute_Await_Yield_optlist :
-	0,                  // JSXAttribute_optlist : JSXAttribute_optlist JSXAttribute
-	0,                  // JSXAttribute_optlist :
-	0,                  // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
-	0,                  // JSXAttribute_Yield_optlist :
+	0,                            // ImportClause : ImportedDefaultBinding
+	0,                            // ImportClause : NameSpaceImport
+	0,                            // ImportClause : NamedImports
+	0,                            // ImportClause : ImportedDefaultBinding ',' NameSpaceImport
+	0,                            // ImportClause : ImportedDefaultBinding ',' NamedImports
+	0,                            // ImportedDefaultBinding : ImportedBinding
+	NameSpaceImport,              // NameSpaceImport : '*' 'as' ImportedBinding
+	0,                            // FromClause : 'from' ModuleSpecifier
+	0,                            // NamedImport_list_Comma_separated : NamedImport_list_Comma_separated ',' NamedImport
+	0,                            // NamedImport_list_Comma_separated : NamedImport
+	NamedImports,                 // NamedImports : '{' '}'
+	NamedImports,                 // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
+	NamedImports,                 // NamedImports : '{' NamedImport_list_Comma_separated '}'
+	ImportSpecifier,              // NamedImport : ImportedBinding
+	ImportSpecifier,              // NamedImport : IdentifierNameRef 'as' ImportedBinding
+	SyntaxProblem,                // NamedImport : error
+	ModuleSpecifier,              // ModuleSpecifier : StringLiteral
+	0,                            // ImportedBinding : BindingIdentifier
+	ExportDeclaration,            // ExportDeclaration : 'export' '*' FromClause ';'
+	ExportDeclaration,            // ExportDeclaration : 'export' ExportClause FromClause ';'
+	ExportDeclaration,            // ExportDeclaration : 'export' ExportClause ';'
+	ExportDeclaration,            // ExportDeclaration : 'export' VariableStatement
+	ExportDeclaration,            // ExportDeclaration : Modifiers 'export' Declaration
+	ExportDeclaration,            // ExportDeclaration : 'export' Declaration
+	ExportDefault,                // ExportDeclaration : 'export' 'default' HoistableDeclaration
+	ExportDefault,                // ExportDeclaration : Modifiers 'export' 'default' ClassDeclaration
+	ExportDefault,                // ExportDeclaration : 'export' 'default' ClassDeclaration
+	ExportDefault,                // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
+	TsExportAssignment,           // ExportDeclaration : 'export' '=' IdentifierReference ';'
+	TsNamespaceExportDeclaration, // ExportDeclaration : 'export' 'as' 'namespace' BindingIdentifier ';'
+	ExportClause,                 // ExportClause : '{' '}'
+	ExportClause,                 // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
+	ExportClause,                 // ExportClause : '{' ExportElement_list_Comma_separated '}'
+	0,                            // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
+	0,                            // ExportElement_list_Comma_separated : ExportElement
+	ExportSpecifier,              // ExportElement : IdentifierNameRef
+	ExportSpecifier,              // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
+	SyntaxProblem,                // ExportElement : error
+	DecoratorExpr,                // Decorator : '@' DecoratorMemberExpression
+	DecoratorCall,                // Decorator : '@' DecoratorCallExpression
+	0,                            // DecoratorMemberExpression : IdentifierReference
+	0,                            // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
+	0,                            // DecoratorCallExpression : DecoratorMemberExpression Arguments
+	0,                            // JSXChild_Await_optlist : JSXChild_Await_optlist JSXChild_Await
+	0,                            // JSXChild_Await_optlist :
+	0,                            // JSXChild_Await_Yield_optlist : JSXChild_Await_Yield_optlist JSXChild_Await_Yield
+	0,                            // JSXChild_Await_Yield_optlist :
+	0,                            // JSXChild_optlist : JSXChild_optlist JSXChild
+	0,                            // JSXChild_optlist :
+	0,                            // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield
+	0,                            // JSXChild_Yield_optlist :
+	JSXElement,                   // JSXElement : JSXSelfClosingElement
+	JSXElement,                   // JSXElement : JSXOpeningElement JSXChild_optlist JSXClosingElement
+	JSXElement,                   // JSXElement_Await : JSXSelfClosingElement_Await
+	JSXElement,                   // JSXElement_Await : JSXOpeningElement_Await JSXChild_Await_optlist JSXClosingElement
+	JSXElement,                   // JSXElement_Await_Yield : JSXSelfClosingElement_Await_Yield
+	JSXElement,                   // JSXElement_Await_Yield : JSXOpeningElement_Await_Yield JSXChild_Await_Yield_optlist JSXClosingElement
+	JSXElement,                   // JSXElement_Yield : JSXSelfClosingElement_Yield
+	JSXElement,                   // JSXElement_Yield : JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
+	0,                            // JSXAttribute_Await_optlist : JSXAttribute_Await_optlist JSXAttribute_Await
+	0,                            // JSXAttribute_Await_optlist :
+	0,                            // JSXAttribute_Await_Yield_optlist : JSXAttribute_Await_Yield_optlist JSXAttribute_Await_Yield
+	0,                            // JSXAttribute_Await_Yield_optlist :
+	0,                            // JSXAttribute_optlist : JSXAttribute_optlist JSXAttribute
+	0,                            // JSXAttribute_optlist :
+	0,                            // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
+	0,                            // JSXAttribute_Yield_optlist :
 	JSXSelfClosingElement, // JSXSelfClosingElement : '<' JSXElementName JSXAttribute_optlist '/' '>'
 	JSXSelfClosingElement, // JSXSelfClosingElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '/' '>'
 	JSXSelfClosingElement, // JSXSelfClosingElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '/' '>'

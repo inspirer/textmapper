@@ -1177,6 +1177,7 @@ ExportDeclaration -> ModuleItem /* interface */:
   | Modifiers? 'export' 'default' ClassDeclaration<~Yield, ~Await>                            -> ExportDefault
   | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
   | 'export' '=' IdentifierReference<~Yield, ~Await> ';'     -> TsExportAssignment
+  | 'export' 'as' 'namespace' BindingIdentifier ';'   -> TsNamespaceExportDeclaration
 ;
 
 ExportClause -> ExportClause :
