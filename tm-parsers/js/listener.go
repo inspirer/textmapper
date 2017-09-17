@@ -38,6 +38,7 @@ const (
 	SuperExpression
 	NewTarget
 	CallExpression           // expr=Expression Arguments
+	TsDynamicImport          // Arguments
 	Arguments                // TypeArguments? list=(Expression)*
 	PostInc                  // Expression
 	PostDec                  // Expression
@@ -250,6 +251,7 @@ var nodeTypeStr = [...]string{
 	"SuperExpression",
 	"NewTarget",
 	"CallExpression",
+	"TsDynamicImport",
 	"Arguments",
 	"PostInc",
 	"PostDec",
@@ -539,6 +541,7 @@ var Expression = []NodeType{
 	This,
 	TsAsExpression,
 	TsCastExpression,
+	TsDynamicImport,
 	TsNonNull,
 	UnaryExpression,
 	Yield,
@@ -2108,6 +2111,7 @@ var ruleNodeType = [...]NodeType{
 	NewExpression,            // NewExpression_Yield : 'new' NewExpression_Yield
 	CallExpression,           // CallExpression : MemberExpression Arguments
 	CallExpression,           // CallExpression : SuperCall
+	TsDynamicImport,          // CallExpression : 'import' Arguments
 	CallExpression,           // CallExpression : CallExpression Arguments
 	IndexAccess,              // CallExpression : CallExpression '[' Expression_In ']'
 	PropertyAccess,           // CallExpression : CallExpression '.' IdentifierNameRef
@@ -2115,6 +2119,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression : CallExpression TemplateLiteral
 	CallExpression,           // CallExpression_Await : MemberExpression_Await Arguments_Await
 	CallExpression,           // CallExpression_Await : SuperCall_Await
+	TsDynamicImport,          // CallExpression_Await : 'import' Arguments_Await
 	CallExpression,           // CallExpression_Await : CallExpression_Await Arguments_Await
 	IndexAccess,              // CallExpression_Await : CallExpression_Await '[' Expression_Await_In ']'
 	PropertyAccess,           // CallExpression_Await : CallExpression_Await '.' IdentifierNameRef
@@ -2122,6 +2127,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_Await : CallExpression_Await TemplateLiteral_Await
 	CallExpression,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
 	CallExpression,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : SuperCall_Await
+	TsDynamicImport,          // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : 'import' Arguments_Await
 	CallExpression,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
 	IndexAccess,              // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_Await_In ']'
 	PropertyAccess,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
@@ -2129,6 +2135,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 	CallExpression,           // CallExpression_Await_NoLet : MemberExpression_Await_NoLet Arguments_Await
 	CallExpression,           // CallExpression_Await_NoLet : SuperCall_Await
+	TsDynamicImport,          // CallExpression_Await_NoLet : 'import' Arguments_Await
 	CallExpression,           // CallExpression_Await_NoLet : CallExpression_Await_NoLet Arguments_Await
 	IndexAccess,              // CallExpression_Await_NoLet : CallExpression_Await_NoLet '[' Expression_Await_In ']'
 	PropertyAccess,           // CallExpression_Await_NoLet : CallExpression_Await_NoLet '.' IdentifierNameRef
@@ -2136,6 +2143,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_Await_NoLet : CallExpression_Await_NoLet TemplateLiteral_Await
 	CallExpression,           // CallExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral Arguments_Await
 	CallExpression,           // CallExpression_Await_NoObjLiteral : SuperCall_Await
+	TsDynamicImport,          // CallExpression_Await_NoObjLiteral : 'import' Arguments_Await
 	CallExpression,           // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral Arguments_Await
 	IndexAccess,              // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral '[' Expression_Await_In ']'
 	PropertyAccess,           // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral '.' IdentifierNameRef
@@ -2149,6 +2157,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet TemplateLiteral_Await
 	CallExpression,           // CallExpression_Await_Yield : MemberExpression_Await_Yield Arguments_Await_Yield
 	CallExpression,           // CallExpression_Await_Yield : SuperCall_Await_Yield
+	TsDynamicImport,          // CallExpression_Await_Yield : 'import' Arguments_Await_Yield
 	CallExpression,           // CallExpression_Await_Yield : CallExpression_Await_Yield Arguments_Await_Yield
 	IndexAccess,              // CallExpression_Await_Yield : CallExpression_Await_Yield '[' Expression_Await_In_Yield ']'
 	PropertyAccess,           // CallExpression_Await_Yield : CallExpression_Await_Yield '.' IdentifierNameRef
@@ -2156,6 +2165,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_Await_Yield : CallExpression_Await_Yield TemplateLiteral_Await_Yield
 	CallExpression,           // CallExpression_NoFuncClass : MemberExpression_NoFuncClass Arguments
 	CallExpression,           // CallExpression_NoFuncClass : SuperCall
+	TsDynamicImport,          // CallExpression_NoFuncClass : 'import' Arguments
 	CallExpression,           // CallExpression_NoFuncClass : CallExpression_NoFuncClass Arguments
 	IndexAccess,              // CallExpression_NoFuncClass : CallExpression_NoFuncClass '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoFuncClass : CallExpression_NoFuncClass '.' IdentifierNameRef
@@ -2163,6 +2173,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_NoFuncClass : CallExpression_NoFuncClass TemplateLiteral
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : SuperCall
+	TsDynamicImport,          // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : 'import' Arguments
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 	IndexAccess,              // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
@@ -2170,6 +2181,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : SuperCall_Yield
+	TsDynamicImport,          // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : 'import' Arguments_Yield
 	CallExpression,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
@@ -2177,6 +2189,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 	CallExpression,           // CallExpression_NoLet : MemberExpression_NoLet Arguments
 	CallExpression,           // CallExpression_NoLet : SuperCall
+	TsDynamicImport,          // CallExpression_NoLet : 'import' Arguments
 	CallExpression,           // CallExpression_NoLet : CallExpression_NoLet Arguments
 	IndexAccess,              // CallExpression_NoLet : CallExpression_NoLet '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoLet : CallExpression_NoLet '.' IdentifierNameRef
@@ -2184,6 +2197,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_NoLet : CallExpression_NoLet TemplateLiteral
 	CallExpression,           // CallExpression_NoLet_Yield : MemberExpression_NoLet_Yield Arguments_Yield
 	CallExpression,           // CallExpression_NoLet_Yield : SuperCall_Yield
+	TsDynamicImport,          // CallExpression_NoLet_Yield : 'import' Arguments_Yield
 	CallExpression,           // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield '.' IdentifierNameRef
@@ -2191,6 +2205,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_NoLet_Yield : CallExpression_NoLet_Yield TemplateLiteral_Yield
 	CallExpression,           // CallExpression_NoObjLiteral : MemberExpression_NoObjLiteral Arguments
 	CallExpression,           // CallExpression_NoObjLiteral : SuperCall
+	TsDynamicImport,          // CallExpression_NoObjLiteral : 'import' Arguments
 	CallExpression,           // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral Arguments
 	IndexAccess,              // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral '[' Expression_In ']'
 	PropertyAccess,           // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral '.' IdentifierNameRef
@@ -2210,6 +2225,7 @@ var ruleNodeType = [...]NodeType{
 	TaggedTemplate,           // CallExpression_StartWithLet_Yield : CallExpression_StartWithLet_Yield TemplateLiteral_Yield
 	CallExpression,           // CallExpression_Yield : MemberExpression_Yield Arguments_Yield
 	CallExpression,           // CallExpression_Yield : SuperCall_Yield
+	TsDynamicImport,          // CallExpression_Yield : 'import' Arguments_Yield
 	CallExpression,           // CallExpression_Yield : CallExpression_Yield Arguments_Yield
 	IndexAccess,              // CallExpression_Yield : CallExpression_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,           // CallExpression_Yield : CallExpression_Yield '.' IdentifierNameRef

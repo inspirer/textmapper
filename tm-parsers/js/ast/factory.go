@@ -346,6 +346,8 @@ func ToJsNode(n Node) JsNode {
 		return &TsAsExpression{n}
 	case js.TsCastExpression:
 		return &TsCastExpression{n}
+	case js.TsDynamicImport:
+		return &TsDynamicImport{n}
 	case js.TsEnum:
 		return &TsEnum{n}
 	case js.TsEnumBody:

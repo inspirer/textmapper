@@ -1145,6 +1145,13 @@ var parseTests = []struct {
 		`«import foo = require('somefoo');»`,
 		`«import foo = require("somefoo");»`,
 	}},
+	{js.Typescript, js.TsDynamicImport, []string{
+		`const foo = «import('foo')»;`,
+		`async function getFoo(): Promise<Foo> {
+    		const foo = await «import('./foo')»;
+    		return foo;
+		 }`,
+	}},
 	{js.Typescript, js.TsExportAssignment, []string{
 		`«export = abc;»`,
 	}},

@@ -177,6 +177,7 @@ var (
 	TsAmbientVar               = func(t js.NodeType) bool { return t == js.TsAmbientVar }
 	TsAsExpression             = func(t js.NodeType) bool { return t == js.TsAsExpression }
 	TsCastExpression           = func(t js.NodeType) bool { return t == js.TsCastExpression }
+	TsDynamicImport            = func(t js.NodeType) bool { return t == js.TsDynamicImport }
 	TsEnum                     = func(t js.NodeType) bool { return t == js.TsEnum }
 	TsEnumBody                 = func(t js.NodeType) bool { return t == js.TsEnumBody }
 	TsEnumMember               = func(t js.NodeType) bool { return t == js.TsEnumMember }

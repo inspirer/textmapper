@@ -556,6 +556,7 @@ NewExpression<Yield, Await, NoAsync> -> Expression /* interface */:
 CallExpression<Yield, Await> -> Expression /* interface */:
     expr=MemberExpression Arguments                             -> CallExpression
   | [!StartWithLet] SuperCall                                   -> CallExpression
+  | [!StartWithLet] 'import' Arguments                          -> TsDynamicImport
   | expr=CallExpression Arguments                               -> CallExpression
   | expr=CallExpression '[' index=Expression<+In> ']'           -> IndexAccess
   | expr=CallExpression '.' selector=IdentifierNameRef          -> PropertyAccess
