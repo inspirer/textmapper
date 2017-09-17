@@ -18,6 +18,8 @@ var lexerTests = []struct {
 		`«_abc_»`,
 	}},
 	{js.SINGLELINECOMMENT, []string{
+		`«#!/usr/bin/env node»
+		 abc`,
 		` «// abc»
 		  «// abc2»
 

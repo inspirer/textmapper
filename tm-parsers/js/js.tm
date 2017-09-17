@@ -37,6 +37,9 @@ MultiLineComment:  /\/\*{commentChars}\*\//     (space)
 invalid_token: /\/\*{commentChars}/
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/   (space)
 
+# Shebang.
+SingleLineComment: /#![^\n\r\u2028\u2029]*/   (space)
+
 # Note: see http://unicode.org/reports/tr31/
 IDStart = /\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}/
 IDContinue = /{IDStart}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}/
