@@ -200,16 +200,16 @@ const (
 	TsAmbientVar             // (TsAmbientBinding)+
 	TsAmbientFunction        // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
 	TsAmbientClass           // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? TsAmbientClassBody
+	TsAmbientInterface       // (Modifier)* BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
 	TsAmbientEnum            // TsEnum
 	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
-	TsAmbientModule          // BindingIdentifier? (ModuleItem)*
+	TsAmbientModule          // (BindingIdentifier)* (ModuleItem)*
 	TsAmbientTypeAlias       // TypeAliasDeclaration
 	TsAmbientBinding         // BindingIdentifier TypeAnnotation?
 	TsAmbientClassBody       // (TsAmbientClassElement)*
 	TsAmbientPropertyMember  // (Modifier)* PropertyName TypeAnnotation?
 	TsAmbientFunctionMember  // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
 	TsAmbientIndexMember     // IndexSignature
-	TsAmbientInterface       // TsInterface
 	TsAmbientImportAlias     // TsImportAliasDeclaration
 	InsertedSemicolon
 	MultiLineComment
@@ -413,6 +413,7 @@ var nodeTypeStr = [...]string{
 	"TsAmbientVar",
 	"TsAmbientFunction",
 	"TsAmbientClass",
+	"TsAmbientInterface",
 	"TsAmbientEnum",
 	"TsAmbientNamespace",
 	"TsAmbientModule",
@@ -422,7 +423,6 @@ var nodeTypeStr = [...]string{
 	"TsAmbientPropertyMember",
 	"TsAmbientFunctionMember",
 	"TsAmbientIndexMember",
-	"TsAmbientInterface",
 	"TsAmbientImportAlias",
 	"InsertedSemicolon",
 	"MultiLineComment",
@@ -4259,6 +4259,7 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientVar,       // AmbientDeclaration : 'declare' AmbientVariableDeclaration
 	TsAmbientFunction,  // AmbientDeclaration : 'declare' AmbientFunctionDeclaration
 	TsAmbientClass,     // AmbientDeclaration : 'declare' AmbientClassDeclaration
+	TsAmbientInterface, // AmbientDeclaration : 'declare' AmbientInterfaceDeclaration
 	TsAmbientEnum,      // AmbientDeclaration : 'declare' AmbientEnumDeclaration
 	TsAmbientNamespace, // AmbientDeclaration : 'declare' AmbientNamespaceDeclaration
 	TsAmbientModule,    // AmbientDeclaration : 'declare' AmbientModuleDeclaration
@@ -4273,6 +4274,10 @@ var ruleNodeType = [...]NodeType{
 	0,                  // AmbientFunctionDeclaration : 'function' BindingIdentifier FormalParameters ';'
 	0,                  // AmbientClassDeclaration : Modifiers 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
 	0,                  // AmbientClassDeclaration : 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
+	0,                  // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
+	0,                  // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt ObjectType
+	0,                  // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
+	0,                  // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt ObjectType
 	TsAmbientClassBody, // AmbientClassBody : '{' AmbientClassBodyElement_list '}'
 	TsAmbientClassBody, // AmbientClassBody : '{' '}'
 	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement_list AmbientClassBodyElement
@@ -4289,7 +4294,7 @@ var ruleNodeType = [...]NodeType{
 	0,                       // AmbientEnumDeclaration : EnumDeclaration
 	0,                       // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
 	0,                       // AmbientModuleDeclaration : 'module' StringLiteral '{' ModuleBodyopt '}'
-	0,                       // AmbientModuleDeclaration : 'module' IdentifierNameDecl '{' ModuleBodyopt '}'
+	0,                       // AmbientModuleDeclaration : 'module' IdentifierPath '{' ModuleBodyopt '}'
 	0,                       // AmbientNamespaceBody : '{' AmbientNamespaceElement_list '}'
 	0,                       // AmbientNamespaceBody : '{' '}'
 	0,                       // AmbientNamespaceElement_list : AmbientNamespaceElement_list AmbientNamespaceElement
@@ -4300,8 +4305,8 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientFunction,       // AmbientNamespaceElement : AmbientFunctionDeclaration
 	TsAmbientClass,          // AmbientNamespaceElement : 'export' AmbientClassDeclaration
 	TsAmbientClass,          // AmbientNamespaceElement : AmbientClassDeclaration
-	TsAmbientInterface,      // AmbientNamespaceElement : 'export' InterfaceDeclaration
-	TsAmbientInterface,      // AmbientNamespaceElement : InterfaceDeclaration
+	TsAmbientInterface,      // AmbientNamespaceElement : 'export' AmbientInterfaceDeclaration
+	TsAmbientInterface,      // AmbientNamespaceElement : AmbientInterfaceDeclaration
 	TsAmbientEnum,           // AmbientNamespaceElement : 'export' AmbientEnumDeclaration
 	TsAmbientEnum,           // AmbientNamespaceElement : AmbientEnumDeclaration
 	TsAmbientNamespace,      // AmbientNamespaceElement : 'export' AmbientNamespaceDeclaration

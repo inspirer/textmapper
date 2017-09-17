@@ -1528,6 +1528,7 @@ AmbientDeclaration -> TsAmbientElement /* interface */:
     'declare' AmbientVariableDeclaration        -> TsAmbientVar
   | 'declare' AmbientFunctionDeclaration        -> TsAmbientFunction
   | 'declare' AmbientClassDeclaration           -> TsAmbientClass
+  | 'declare' AmbientInterfaceDeclaration       -> TsAmbientInterface
   | 'declare' AmbientEnumDeclaration            -> TsAmbientEnum
   | 'declare' AmbientNamespaceDeclaration       -> TsAmbientNamespace
   | 'declare' AmbientModuleDeclaration          -> TsAmbientModule
@@ -1554,6 +1555,9 @@ AmbientFunctionDeclaration:
 AmbientClassDeclaration:
     Modifiers? 'class' BindingIdentifier TypeParametersopt ClassHeritage<~Yield, ~Await> AmbientClassBody ;
 
+AmbientInterfaceDeclaration:
+    Modifiers? 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause? ObjectType ;
+
 AmbientClassBody -> TsAmbientClassBody:
     '{' AmbientClassBodyElement+? '}' ;
 
@@ -1570,7 +1574,7 @@ AmbientNamespaceDeclaration:
     'namespace' IdentifierPath AmbientNamespaceBody ;
 
 AmbientModuleDeclaration:
-    'module' (StringLiteral | IdentifierNameDecl) '{' ModuleBodyopt '}' ;
+    'module' (StringLiteral | IdentifierPath) '{' ModuleBodyopt '}' ;
 
 AmbientNamespaceBody:
     '{' AmbientNamespaceElement+? '}' ;
@@ -1579,7 +1583,7 @@ AmbientNamespaceElement -> TsAmbientElement /* interface */:
     'export'? AmbientVariableDeclaration    -> TsAmbientVar
   | 'export'? AmbientFunctionDeclaration    -> TsAmbientFunction
   | 'export'? AmbientClassDeclaration       -> TsAmbientClass
-  | 'export'? InterfaceDeclaration          -> TsAmbientInterface
+  | 'export'? AmbientInterfaceDeclaration   -> TsAmbientInterface
   | 'export'? AmbientEnumDeclaration        -> TsAmbientEnum
   | 'export'? AmbientNamespaceDeclaration   -> TsAmbientNamespace
   | 'export'? AmbientModuleDeclaration      -> TsAmbientModule

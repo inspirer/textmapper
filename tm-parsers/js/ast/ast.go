@@ -3209,19 +3209,48 @@ type TsAmbientInterface struct {
 	Node
 }
 
-func (n TsAmbientInterface) TsInterface() TsInterface {
-	return TsInterface{n.Child(selector.TsInterface)}
+func (n TsAmbientInterface) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var result []Modifier = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToJsNode(node).(Modifier))
+	}
+	return result
+}
+
+func (n TsAmbientInterface) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsAmbientInterface) TypeParameters() *TypeParameters {
+	if child := n.Child(selector.TypeParameters); child != nil {
+		return &TypeParameters{child}
+	}
+	return nil
+}
+
+func (n TsAmbientInterface) TsInterfaceExtends() *TsInterfaceExtends {
+	if child := n.Child(selector.TsInterfaceExtends); child != nil {
+		return &TsInterfaceExtends{child}
+	}
+	return nil
+}
+
+func (n TsAmbientInterface) ObjectType() ObjectType {
+	return ObjectType{n.Child(selector.ObjectType)}
 }
 
 type TsAmbientModule struct {
 	Node
 }
 
-func (n TsAmbientModule) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
+func (n TsAmbientModule) BindingIdentifier() []BindingIdentifier {
+	nodes := n.Children(selector.BindingIdentifier)
+	var result []BindingIdentifier = make([]BindingIdentifier, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, BindingIdentifier{node})
 	}
-	return nil
+	return result
 }
 
 func (n TsAmbientModule) ModuleItem() []ModuleItem {

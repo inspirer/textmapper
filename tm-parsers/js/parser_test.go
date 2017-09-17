@@ -1174,6 +1174,11 @@ var parseTests = []struct {
 		`«declare class A {  [a:number]:string; private static a; private static foo<T>() : string; }»`,
 		`declare namespace foo { «export class A {}» }`,
 	}},
+	{js.Typescript, js.TsAmbientInterface, []string{
+		`«declare interface A {}»`,
+		`«declare interface A {  [a:number]:string; private static a; private static foo<T>() : string; }»`,
+		`declare namespace foo { «export interface A {}» }`,
+	}},
 	{js.Typescript, js.TsAmbientClassBody, []string{
 		`declare class A «{}»`,
 		`declare class A «{  [a:number]:string; private static a; private static foo<T>() : string; }»`,
@@ -1181,9 +1186,6 @@ var parseTests = []struct {
 	{js.Typescript, js.TsAmbientEnum, []string{
 		`«declare enum Kind { A, B }»`,
 		`declare namespace foo { «export enum A {}» }`,
-	}},
-	{js.Typescript, js.TsAmbientInterface, []string{
-		`declare namespace foo { «export interface A {}» }`,
 	}},
 	{js.Typescript, js.TsAmbientNamespace, []string{
 		`«declare namespace foo.bar {  }»`,
@@ -1215,6 +1217,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TsAmbientModule, []string{
 		`«declare module "foo" { export = foo; }»`,
+		`«declare module foo.bar { export = foo; }»`,
 		`declare namespace Foo { «export module bar {}» }`,
 	}},
 	{js.Typescript, js.TsNonNull, []string{
