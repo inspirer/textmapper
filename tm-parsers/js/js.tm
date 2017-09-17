@@ -987,7 +987,7 @@ ConciseBody<In> :
 
 StartOfArrowFunction:
     BindingIdentifier '=>'
-  | TypeParameters? ParameterList<~Yield, ~Await> ('=>' | ':' | '{')
+  | TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? '=>'
 ;
 
 AsyncArrowFunction<In> -> AsyncArrowFunction :

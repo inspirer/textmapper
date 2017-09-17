@@ -3629,12 +3629,10 @@ var ruleNodeType = [...]NodeType{
 	ConciseBody,             // ConciseBody_In : AssignmentExpression_In_NoObjLiteral
 	0,                       // ConciseBody_In : FunctionBody
 	0,                       // StartOfArrowFunction : BindingIdentifier '=>'
+	0,                       // StartOfArrowFunction : TypeParameters ParameterList TypeAnnotation '=>'
 	0,                       // StartOfArrowFunction : TypeParameters ParameterList '=>'
-	0,                       // StartOfArrowFunction : TypeParameters ParameterList ':'
-	0,                       // StartOfArrowFunction : TypeParameters ParameterList '{'
+	0,                       // StartOfArrowFunction : ParameterList TypeAnnotation '=>'
 	0,                       // StartOfArrowFunction : ParameterList '=>'
-	0,                       // StartOfArrowFunction : ParameterList ':'
-	0,                       // StartOfArrowFunction : ParameterList '{'
 	AsyncArrowFunction,      // AsyncArrowFunction : 'async' .afterAsync .noLineBreak lookahead_StartOfArrowFunction ArrowParameters .noLineBreak '=>' AsyncConciseBody
 	AsyncArrowFunction,      // AsyncArrowFunction_In : 'async' .afterAsync .noLineBreak lookahead_StartOfArrowFunction ArrowParameters .noLineBreak '=>' AsyncConciseBody_In
 	ConciseBody,             // AsyncConciseBody : AssignmentExpression_Await_NoObjLiteral

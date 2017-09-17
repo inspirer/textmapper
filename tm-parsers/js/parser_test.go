@@ -284,6 +284,8 @@ var parseTests = []struct {
 	{js.Javascript, js.ConditionalExpression, []string{
 		`(«a ? b : c»)`,
 		`(«a ? «b1 ? b : c» : «b2 ? b : c»»)`,
+		`(«false ? «true ? 1 : 2» : 3») == 3;`,
+		`«a.b==4 ? (a) : a.b=6»`,
 	}},
 	{js.Javascript, js.AssignmentExpression, []string{
 		`{ «a = 5» }`,
