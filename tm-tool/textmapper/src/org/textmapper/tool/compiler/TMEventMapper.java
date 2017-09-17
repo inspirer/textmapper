@@ -44,6 +44,7 @@ public class TMEventMapper {
 	private final Map<String, List<Nonterminal>> categoryNonterms = new HashMap<>();
 	private final Set<Nonterminal> entered = new HashSet<>();
 	private final Map<Symbol, TMPhrase> phrases = new HashMap<>();
+	private final Set<Nonterminal> recursive = new LinkedHashSet<>();
 
 
 	public TMEventMapper(Grammar grammar, Map<String, Object> opts, ProcessingStatus status) {
@@ -153,7 +154,12 @@ public class TMEventMapper {
 		for (Symbol symbol : grammar.getSymbols()) {
 			if (!(symbol instanceof Nonterminal)) continue;
 
-			computePhrase((Nonterminal) symbol, false);
+			TMPhrase p = computePhrase((Nonterminal) symbol, false);
+			if (recursive.contains(symbol) && !p.isEmpty()) {
+				status.report(ProcessingStatus.KIND_ERROR,
+						"Non-empty `" + symbol.getNameText() + "' recursively contain itself",
+						symbol);
+			}
 		}
 
 		// Build a set of types behind each interface.
@@ -296,9 +302,6 @@ public class TMEventMapper {
 
 	private TMPhrase computePhrase(Nonterminal nt, boolean internal) {
 		RangeType rangeType = TMDataUtil.getRangeType(nt);
-		if (rangeType != null && rangeType.getName().equals("void")) {
-			return TMPhrase.empty(nt);
-		}
 
 		TMPhrase result;
 		if (!internal) {
@@ -306,17 +309,13 @@ public class TMEventMapper {
 			if (result != null) return result;
 
 			if (!entered.add(nt)) {
-				status.report(ProcessingStatus.KIND_ERROR,
-						"`" + nt.getNameText() + "' recursively contain itself", nt);
-				result = TMPhrase.empty(nt);
+				recursive.add(nt);
+				return TMPhrase.empty(nt);
 			}
 
 			// -> something
-			if (result == null && rangeType != null && rangeType.isInterface()) {
+			if (rangeType != null && rangeType.isInterface()) {
 				result = TMPhrase.type(rangeType.getName(), nt);
-			}
-
-			if (result != null) {
 				phrases.put(nt, result);
 				return result;
 			}
