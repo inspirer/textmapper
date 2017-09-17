@@ -10,7 +10,15 @@ import (
 	"unicode/utf8"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
 )
+
+var supportedExts = map[string]bool{
+	"tm": true,
+	"js": true,
+	"jsx": true,
+	"ts": true,
+}
 
 type file struct {
 	name    string
@@ -25,24 +33,11 @@ func (f file) ext() string {
 	return ext
 }
 
-func (f file) tryParse() string {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("%v: recovered: %v\n", f.name, r)
-		}
-	}()
-
+func parseJS(f file, dialect js.Dialect) string {
 	l := new(js.Lexer)
 	p := new(js.Parser)
 	l.Init(f.content)
-	switch f.ext() {
-	case "js":
-		l.Dialect = js.Javascript
-	case "ts":
-		l.Dialect = js.Typescript
-	case "tsx":
-		l.Dialect = js.TypescriptJsx
-	}
+	l.Dialect = dialect
 	result := "ok"
 	errHandler := func(se js.SyntaxError) bool { return false }
 	p.Init(errHandler, func(nt js.NodeType, offset, endoffset int) {})
@@ -55,6 +50,45 @@ func (f file) tryParse() string {
 		fmt.Printf("%v: %v%v\n", f.name, err, suffix)
 	}
 	return result
+}
+
+func parseTM(f file) string {
+	l := new(tm.Lexer)
+	p := new(tm.Parser)
+	l.Init(f.content)
+	result := "ok"
+	errHandler := func(se tm.SyntaxError) bool { return false }
+	p.Init(errHandler, func(nt tm.NodeType, offset, endoffset int) {})
+	if err := p.ParseInput(l); err != nil {
+		result = "parse_err"
+		var suffix string
+		if err, ok := err.(tm.SyntaxError); ok {
+			suffix = fmt.Sprintf(" on `%v`", f.content[err.Offset:err.Endoffset])
+		}
+		fmt.Printf("%v: %v%v\n", f.name, err, suffix)
+	}
+	return result
+}
+
+func (f file) tryParse() string {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("%v: recovered: %v\n", f.name, r)
+		}
+	}()
+
+	switch f.ext() {
+	case "js", "jsx":
+		return parseJS(f, js.Javascript)
+	case "ts":
+		return parseJS(f, js.Typescript)
+	case "tsx":
+		return parseJS(f, js.TypescriptJsx)
+	case "tm":
+		return parseTM(f)
+	}
+
+	return "no_parser"
 }
 
 func preloadAll(root string) ([]file, error) {
@@ -70,8 +104,8 @@ func preloadAll(root string) ([]file, error) {
 			}
 			return nil
 		}
-		ext := filepath.Ext(path)
-		if ext != ".ts" && ext != ".js" {
+
+		if ext := strings.TrimPrefix(filepath.Ext(path), "."); !supportedExts[ext] {
 			return nil
 		}
 		data, err := ioutil.ReadFile(path)
