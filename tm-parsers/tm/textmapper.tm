@@ -17,7 +17,7 @@
 language textmapper(go);
 
 lang = "tm"
-package = "github.com/inspirer/textmapper/tm-go/parsers/tm"
+package = "github.com/inspirer/textmapper/tm-parsers/tm"
 eventBased = true
 eventFields = true
 reportTokens = [invalid_token, multiline_comment, comment]

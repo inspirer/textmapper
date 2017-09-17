@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inspirer/textmapper/tm-go/parsers/tm"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
 )
 
 var parseTests = []struct {

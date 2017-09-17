@@ -171,10 +171,10 @@
 	<target name="go">
 		<echo message="JS parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-parsers/js"/>
+		<echo message="TM parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-parsers/tm"/>
 		<echo message="JSON parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/json"/>
-		<echo message="TM parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/tm"/>
 		<echo message="Test parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/test"/>
 	</target>

@@ -3,7 +3,7 @@
 package selector
 
 import (
-	"github.com/inspirer/textmapper/tm-go/parsers/tm"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
 )
 
 type Selector func(nt tm.NodeType) bool

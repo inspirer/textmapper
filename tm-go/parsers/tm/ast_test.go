@@ -1,12 +1,12 @@
-package ast_test
+package tm_test
 
 import (
 	"bytes"
 	"fmt"
 	"testing"
 
-	"github.com/inspirer/textmapper/tm-go/parsers/tm"
-	"github.com/inspirer/textmapper/tm-go/parsers/tm/ast"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
+	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 )
 
 const testInput = `
