@@ -14,7 +14,7 @@ extraTypes = ["InsertedSemicolon"]
 
 :: lexer
 
-%s initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv;
+%s initial, div, template, templateDiv, templateExpr, templateExprDiv;
 %x jsxTag, jsxClosingTag, jsxText;
 
 # Accept end-of-input in all states.
@@ -23,7 +23,7 @@ extraTypes = ["InsertedSemicolon"]
 invalid_token:
 error:
 
-<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv, jsxTag, jsxClosingTag> {
+<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTag, jsxClosingTag> {
 WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 }
 
@@ -237,10 +237,10 @@ StringLiteral: /'{ssChar}*'/
 
 tplChars = /([^\$`\\]|\$*{escape}|\$*{lineCont}|\$+[^\$\{`\\])*\$*/
 
-<initial, div, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv>
+<initial, div, templateExpr, templateExprDiv>
 '}': /\}/
 
-<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTemplate, jsxTemplateDiv> {
+<initial, div, template, templateDiv, templateExpr, templateExprDiv> {
 NoSubstitutionTemplate: /`{tplChars}`/
 TemplateHead: /`{tplChars}\$\{/
 }
@@ -250,7 +250,7 @@ TemplateMiddle: /\}{tplChars}\$\{/
 TemplateTail: /\}{tplChars}`/
 }
 
-<initial, template, jsxTemplate> {
+<initial, template, templateExpr> {
 reBS = /\\[^\n\r\u2028\u2029]/
 reClass = /\[([^\n\r\u2028\u2029\]\\]|{reBS})*\]/
 reFirst = /[^\n\r\u2028\u2029\*\[\\\/]|{reBS}|{reClass}/
@@ -260,7 +260,7 @@ reFlags = /[a-z]*/
 RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{reFlags}/
 }
 
-<div, templateDiv, templateExprDiv, jsxTemplateDiv> {
+<div, templateDiv, templateExprDiv> {
 '/': /\//
 '/=': /\/=/
 }
@@ -279,7 +279,7 @@ jsxStringLiteral: /"[^"]*"/
 
 jsxIdentifier: /{identifierStart}({identifierPart}|-)*/
 # Note: the following rule disables backtracking for incomplete identifiers.
-  invalid_token: /({identifierStart}({identifierPart}|-)*)?{brokenEscapeSequence}/
+invalid_token: /({identifierStart}({identifierPart}|-)*)?{brokenEscapeSequence}/
 }
 
 <jsxText> {
@@ -1612,20 +1612,17 @@ ${template go_lexer.stateVars}
 	Dialect Dialect
 	token   Token // last token
 	Stack   []int // stack of JSX states, non-empty for StateJsx*
-	Opened  []int // number of opened curly braces per jsxTemplate* state
 ${end}
 
 ${template go_lexer.initStateVars-}
 	l.Dialect = Javascript
 	l.token = UNAVAILABLE
 	l.Stack = nil
-	l.Opened = nil
 ${end}
 
 ${template go_parser.setupLookaheadLexer-}
-	var alloc2, alloc3 [8]int
+	var alloc2 [8]int
 	lexer.Stack = alloc2[:0]
-	lexer.Opened = alloc3[:0]
 ${end}
 
 ${template go_lexer.onBeforeNext-}
@@ -1643,7 +1640,7 @@ ${template go_lexer.onAfterNext}
 	// See the following thread for more details:
 	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
 
-	if l.State <= StateJsxTemplateDiv {
+	if l.State <= StateTemplateExprDiv {
 		// The lowest bit of "l.State" determines how to interpret a forward
 		// slash if it happens to be the next character.
 		//   unset: start of a regular expression literal
@@ -1652,14 +1649,12 @@ ${template go_lexer.onAfterNext}
 		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
 			l.State &^= 1
 		case TEMPLATEHEAD:
-			l.Stack = append(l.Stack, l.State|1)
-			l.Opened = append(l.Opened, 1)
-			fallthrough
+			l.State |= 1
+			l.pushState(StateTemplate)
 		case TEMPLATEMIDDLE:
 			l.State = StateTemplate
 		case TEMPLATETAIL:
-			l.State = l.Stack[len(l.Stack)-1]
-			l.Stack = l.Stack[:len(l.Stack)-1]
+			l.popState()
 		case RPAREN, RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1
@@ -1675,34 +1670,22 @@ ${template go_lexer.onAfterNext}
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
 				if l.Dialect != Typescript {
-					l.Stack = append(l.Stack, l.State|1)
-					l.State = StateJsxTag
+					l.State |= 1
+					l.pushState(StateJsxTag)
 				}
 			} else {
 				l.State &^= 1
 			}
 		case LBRACE:
-			if l.State >= StateTemplate {
-				l.Opened[len(l.Opened)-1]++
-				if l.State < StateTemplateExpr {
-					l.State = StateTemplateExpr
-				}
-			}
 			l.State &^= 1
+			if l.State >= StateTemplate {
+				l.pushState(StateTemplateExpr)
+			}
 		case RBRACE:
-			if l.State >= StateTemplate {
-				last := len(l.Opened) - 1
-				l.Opened[last]--
-				if l.Opened[last] == 0 {
-					l.Opened = l.Opened[:last]
-					l.State = l.Stack[len(l.Stack)-1]
-					l.Stack = l.Stack[:len(l.Stack)-1]
-					break
-				} else if l.Opened[last] == 1 && l.State <= StateTemplateExprDiv {
-					l.State = StateTemplate
-				}
-			}
 			l.State &^= 1
+			if l.State >= StateTemplate {
+				l.popState()
+			}
 		case SINGLELINECOMMENT, MULTILINECOMMENT:
 			break
 		default:
@@ -1716,28 +1699,44 @@ ${template go_lexer.onAfterNext}
 		// Handling JSX states.
 		switch token {
 		case DIV:
-			if l.State == StateJsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == StateJsxText {
+			if l.State == StateJsxTag && l.token == LT {
 				l.State = StateJsxClosingTag
-				l.Stack = l.Stack[:len(l.Stack)-1]
+				if len(l.Stack) > 0 {
+					l.Stack = l.Stack[:len(l.Stack)-1]
+				}
 			}
 		case GT:
 			if l.State == StateJsxClosingTag || l.token == DIV {
-				l.State = l.Stack[len(l.Stack)-1]
-				l.Stack = l.Stack[:len(l.Stack)-1]
+				l.popState()
 			} else {
 				l.State = StateJsxText
 			}
 		case LBRACE:
-			l.Opened = append(l.Opened, 1)
-			l.Stack = append(l.Stack, l.State)
-			l.State = StateJsxTemplate
+			l.pushState(StateTemplateExpr)
 		case LT:
 			// Start a new JSX tag.
-			l.Stack = append(l.Stack, l.State)
-			l.State = StateJsxTag
+			l.pushState(StateJsxTag)
 		}
 	}
 	l.token = token
+${end}
+
+${template go_lexer.lexerNext-}
+${call base-}
+
+func (l *Lexer) pushState(newState int) {
+	l.Stack = append(l.Stack, l.State)
+	l.State = newState
+}
+
+func (l *Lexer) popState() {
+	if ln := len(l.Stack); ln > 0 {
+		l.State = l.Stack[ln-1]
+		l.Stack = l.Stack[:ln-1]
+	} else {
+		l.State = StateDiv
+	}
+}
 ${end}
 
 ${template go_parser.parser-}

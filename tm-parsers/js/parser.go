@@ -86,9 +86,8 @@ func AtStartOfMappedType(lexer *Lexer, next int32) bool {
 
 func lookahead(l *Lexer, next int32, start, end int16) bool {
 	var lexer Lexer = *l
-	var alloc2, alloc3 [8]int
+	var alloc2 [8]int
 	lexer.Stack = alloc2[:0]
-	lexer.Opened = alloc3[:0]
 
 	var allocated [64]stackEntry
 	state := start

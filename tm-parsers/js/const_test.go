@@ -20,7 +20,7 @@ func TestTokenRanges(t *testing.T) {
 }
 
 func TestStateValues(t *testing.T) {
-	if StateDiv&^1 != StateInitial || StateJsxTemplateDiv&^1 != StateJsxTemplate || StateTemplateDiv&^1 != StateTemplate {
+	if StateDiv&^1 != StateInitial || StateTemplateDiv&^1 != StateTemplate || StateTemplateExprDiv&^1 != StateTemplateExpr {
 		t.Error("div states must be odd and one greater than non-div states")
 	}
 }
