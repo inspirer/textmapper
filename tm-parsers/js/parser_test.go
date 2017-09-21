@@ -1299,6 +1299,9 @@ var parseTests = []struct {
 		   let a = {«b = 5»};
 		   let b = {q: 1, «c: »§};
 		 }`,
+
+		// TODO: fix reported ranges.
+		`««a = ({§«{{a>>5»}}»})»`,
 	}},
 
 	{js.Javascript, js.InvalidToken, []string{

@@ -255,6 +255,9 @@ func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, suc
 
 	size := len(stack)
 	state = stack[size-1].state
+	if state < 0 {
+		return 0, false
+	}
 
 	var stack2alloc [4]int16
 	stack2 := stack2alloc[:0]
