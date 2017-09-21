@@ -15,11 +15,9 @@ const (
 	StateTemplateDiv     = 3
 	StateTemplateExpr    = 4
 	StateTemplateExprDiv = 5
-	StateJsxTemplate     = 6
-	StateJsxTemplateDiv  = 7
-	StateJsxTag          = 8
-	StateJsxClosingTag   = 9
-	StateJsxText         = 10
+	StateJsxTag          = 6
+	StateJsxClosingTag   = 7
+	StateJsxText         = 8
 )
 
 type Dialect int
@@ -48,7 +46,6 @@ type Lexer struct {
 	Dialect Dialect
 	token   Token // last token
 	Stack   []int // stack of JSX states, non-empty for StateJsx*
-	Opened  []int // number of opened curly braces per jsxTemplate* state
 }
 
 var bomSeq = "\xef\xbb\xbf"
@@ -68,7 +65,6 @@ func (l *Lexer) Init(source string) {
 	l.Dialect = Javascript
 	l.token = UNAVAILABLE
 	l.Stack = nil
-	l.Opened = nil
 
 	if strings.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
@@ -500,7 +496,7 @@ restart:
 	// See the following thread for more details:
 	// http://stackoverflow.com/questions/5519596/when-parsing-javascript-what
 
-	if l.State <= StateJsxTemplateDiv {
+	if l.State <= StateTemplateExprDiv {
 		// The lowest bit of "l.State" determines how to interpret a forward
 		// slash if it happens to be the next character.
 		//   unset: start of a regular expression literal
@@ -509,14 +505,12 @@ restart:
 		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
 			l.State &^= 1
 		case TEMPLATEHEAD:
-			l.Stack = append(l.Stack, l.State|1)
-			l.Opened = append(l.Opened, 1)
-			fallthrough
+			l.State |= 1
+			l.pushState(StateTemplate)
 		case TEMPLATEMIDDLE:
 			l.State = StateTemplate
 		case TEMPLATETAIL:
-			l.State = l.Stack[len(l.Stack)-1]
-			l.Stack = l.Stack[:len(l.Stack)-1]
+			l.popState()
 		case RPAREN, RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1
@@ -532,34 +526,22 @@ restart:
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
 				if l.Dialect != Typescript {
-					l.Stack = append(l.Stack, l.State|1)
-					l.State = StateJsxTag
+					l.State |= 1
+					l.pushState(StateJsxTag)
 				}
 			} else {
 				l.State &^= 1
 			}
 		case LBRACE:
-			if l.State >= StateTemplate {
-				l.Opened[len(l.Opened)-1]++
-				if l.State < StateTemplateExpr {
-					l.State = StateTemplateExpr
-				}
-			}
 			l.State &^= 1
+			if l.State >= StateTemplate {
+				l.pushState(StateTemplateExpr)
+			}
 		case RBRACE:
-			if l.State >= StateTemplate {
-				last := len(l.Opened) - 1
-				l.Opened[last]--
-				if l.Opened[last] == 0 {
-					l.Opened = l.Opened[:last]
-					l.State = l.Stack[len(l.Stack)-1]
-					l.Stack = l.Stack[:len(l.Stack)-1]
-					break
-				} else if l.Opened[last] == 1 && l.State <= StateTemplateExprDiv {
-					l.State = StateTemplate
-				}
-			}
 			l.State &^= 1
+			if l.State >= StateTemplate {
+				l.popState()
+			}
 		case SINGLELINECOMMENT, MULTILINECOMMENT:
 			break
 		default:
@@ -573,29 +555,41 @@ restart:
 		// Handling JSX states.
 		switch token {
 		case DIV:
-			if l.State == StateJsxTag && l.token == LT && l.Stack[len(l.Stack)-1] == StateJsxText {
+			if l.State == StateJsxTag && l.token == LT {
 				l.State = StateJsxClosingTag
-				l.Stack = l.Stack[:len(l.Stack)-1]
+				if len(l.Stack) > 0 {
+					l.Stack = l.Stack[:len(l.Stack)-1]
+				}
 			}
 		case GT:
 			if l.State == StateJsxClosingTag || l.token == DIV {
-				l.State = l.Stack[len(l.Stack)-1]
-				l.Stack = l.Stack[:len(l.Stack)-1]
+				l.popState()
 			} else {
 				l.State = StateJsxText
 			}
 		case LBRACE:
-			l.Opened = append(l.Opened, 1)
-			l.Stack = append(l.Stack, l.State)
-			l.State = StateJsxTemplate
+			l.pushState(StateTemplateExpr)
 		case LT:
 			// Start a new JSX tag.
-			l.Stack = append(l.Stack, l.State)
-			l.State = StateJsxTag
+			l.pushState(StateJsxTag)
 		}
 	}
 	l.token = token
 	return token
+}
+
+func (l *Lexer) pushState(newState int) {
+	l.Stack = append(l.Stack, l.State)
+	l.State = newState
+}
+
+func (l *Lexer) popState() {
+	if ln := len(l.Stack); ln > 0 {
+		l.State = l.Stack[ln-1]
+		l.Stack = l.Stack[:ln-1]
+	} else {
+		l.State = StateDiv
+	}
 }
 
 // Pos returns the start and end positions of the last token returned by Next().
