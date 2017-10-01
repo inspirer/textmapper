@@ -10,7 +10,6 @@ type Parser struct {
 	listener Listener
 
 	stack         []stackEntry
-	lexer         *Lexer
 	next          symbol
 	afterNext     symbol
 	ignoredTokens []symbol // to be reported with the next shift
@@ -63,15 +62,14 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	p.healthy = true
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
-	p.lexer = lexer
-	p.fetchNext()
+	p.fetchNext(lexer)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -95,7 +93,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs)
+			p.applyRule(rule, &entry, rhs, lexer)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -106,7 +104,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, stackEntry{
@@ -150,7 +148,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 					return lastErr
 				}
 			}
-			if !p.recoverFromError() {
+			if !p.recoverFromError(lexer) {
 				if len(p.ignoredTokens) > 0 {
 					p.reportIgnoredTokens()
 				}
@@ -165,8 +163,8 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	return nil
 }
 
-func (p *Parser) recoverFromError() bool {
-	var seen map[int32]bool
+func (p *Parser) recoverFromError(lexer *Lexer) bool {
+	var seen [1 + NumTokens/8]uint8
 	var recoverPos []int
 
 	for size := len(p.stack); size > 0; size-- {
@@ -180,14 +178,14 @@ func (p *Parser) recoverFromError() bool {
 	}
 
 	if p.next.symbol == noToken {
-		p.fetchNext()
+		p.fetchNext(lexer)
 	}
 	s := p.next.offset
 	e := s
 	for {
-		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol]) {
+		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol/8]&(1<<uint32(p.next.symbol%8)) != 0) {
 			e = p.next.endoffset
-			p.fetchNext()
+			p.fetchNext(lexer)
 		}
 
 		var matchingPos int
@@ -199,19 +197,16 @@ func (p *Parser) recoverFromError() bool {
 			}
 			// Semicolon insertion is not reliable on broken input, try to look behind the semicolon.
 			if p.afterNext.symbol != -1 && p.willShift(pos, errState, p.afterNext.symbol) {
-				p.fetchNext()
+				p.fetchNext(lexer)
 				matchingPos = pos
 				break
 			}
 		}
 		if matchingPos == 0 {
-			if seen == nil {
-				seen = make(map[int32]bool)
-			}
 			if p.next.symbol == eoiToken {
 				return false
 			}
-			seen[p.next.symbol] = true
+			seen[p.next.symbol/8] |= 1 << uint32(p.next.symbol%8)
 			continue
 		}
 
@@ -316,7 +311,7 @@ func (p *Parser) insertSC(state int16, offset int) {
 // fetchNext fetches the next token from the lexer and puts it into "p.next".
 // This function also takes care of semicolons by implementing the "Automatic
 // Semicolon Insertion" rules.
-func (p *Parser) fetchNext() {
+func (p *Parser) fetchNext(lexer *Lexer) {
 	if p.afterNext.symbol != -1 {
 		p.next = p.afterNext
 		p.afterNext.symbol = -1
@@ -326,25 +321,25 @@ func (p *Parser) fetchNext() {
 	lastToken := p.lastToken
 	lastEnd := p.next.endoffset
 restart:
-	token := p.lexer.Next()
+	token := lexer.Next()
 	switch token {
 	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
-		s, e := p.lexer.Pos()
+		s, e := lexer.Pos()
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(token), s, e})
 		goto restart
 	case GTGT, GTGTGT:
 		if _, success := reduceAll(int32(token), p.endState, p.stack); !success {
 			token = GT
-			p.lexer.offset = p.lexer.tokenOffset + 1
-			p.lexer.scanOffset = p.lexer.offset + 1
-			p.lexer.ch = '>'
-			p.lexer.token = token
+			lexer.offset = lexer.tokenOffset + 1
+			lexer.scanOffset = lexer.offset + 1
+			lexer.ch = '>'
+			lexer.token = token
 		}
 	}
 	p.lastToken = token
 	p.next.symbol = int32(token)
-	p.next.offset, p.next.endoffset = p.lexer.Pos()
-	line := p.lexer.Line()
+	p.next.offset, p.next.endoffset = lexer.Pos()
+	line := lexer.Line()
 
 	newLine := line != p.lastLine
 	p.lastLine = line

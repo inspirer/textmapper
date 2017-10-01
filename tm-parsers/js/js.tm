@@ -1621,8 +1621,18 @@ ${template go_lexer.initStateVars-}
 ${end}
 
 ${template go_parser.setupLookaheadLexer-}
-	var alloc2 [8]int
-	lexer.Stack = alloc2[:0]
+	var lexer Lexer
+	lexer.source = l.source
+	lexer.ch= l.ch
+	lexer.offset= l.offset
+	lexer.tokenOffset = l.tokenOffset
+	lexer.line = l.line
+	lexer.tokenLine = l.tokenLine
+	lexer.scanOffset = l.scanOffset
+	lexer.State = l.State
+	lexer.Dialect = l.Dialect
+	lexer.token = l.token
+	// Note: Stack is intentionally omitted.
 ${end}
 
 ${template go_lexer.onBeforeNext-}

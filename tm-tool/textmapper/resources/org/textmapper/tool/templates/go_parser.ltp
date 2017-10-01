@@ -50,7 +50,6 @@ ${if self->eventBased()-}
 ${end-}
 
 	stack     []stackEntry
-	lexer     *Lexer
 	next      symbol
 ${if self->hasRecovering()-}
 	endState  ${self->stateType()}
@@ -153,11 +152,10 @@ ${if self->hasRecovering()-}
 ${end-}
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
-	p.lexer = lexer
 ${if self->hasRecovering()-}
 	p.endState = end
 ${end-}
-	p.fetchNext()
+	p.fetchNext(lexer)
 
 	for state != end {
 		action := tmAction[state]
@@ -165,7 +163,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -187,7 +185,7 @@ ${end-}
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs)
+			p.applyRule(rule, &entry, rhs, lexer)
 			if debugSyntax {
 				"fmt".Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -198,7 +196,7 @@ ${end-}
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, stackEntry{
@@ -242,7 +240,7 @@ ${end-}
 					return lastErr${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
 				}
 			}
-			if !p.recoverFromError() {
+			if !p.recoverFromError(lexer) {
 ${if self->ignoredReportTokens()-}
 				if len(p.ignoredTokens) > 0 {
 					p.reportIgnoredTokens()
@@ -320,8 +318,8 @@ func (p *Parser) willShift(stackPos int, state ${self->stateType()}, symbol int3
 ${end}
 
 ${template recoverFromError-}
-func (p *Parser) recoverFromError() bool {
-	var seen map[int32]bool
+func (p *Parser) recoverFromError(lexer *Lexer) bool {
+	var seen [1 + NumTokens/8]uint8
 	var recoverPos []int
 
 	for size := len(p.stack); size > 0; size-- {
@@ -335,14 +333,14 @@ func (p *Parser) recoverFromError() bool {
 	}
 
 	if p.next.symbol == noToken {
-		p.fetchNext()
+		p.fetchNext(lexer)
 	}
 	s := p.next.offset
 	e := s
 	for {
-		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol]) {
+		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol/8]&(1<<uint32(p.next.symbol%8)) != 0) {
 			e = p.next.endoffset
-			p.fetchNext()
+			p.fetchNext(lexer)
 		}
 
 		var matchingPos int
@@ -353,13 +351,10 @@ func (p *Parser) recoverFromError() bool {
 			}
 		}
 		if matchingPos == 0 {
-			if seen == nil {
-				seen = make(map[int32]bool)
-			}
 			if p.next.symbol == eoiToken {
 				return false
 			}
-			seen[p.next.symbol] = true
+			seen[p.next.symbol/8] |= 1 << uint32(p.next.symbol%8)
 			continue
 		}
 
@@ -417,13 +412,13 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 ${end}
 
 ${template fetchNext-}
-func (p *Parser) fetchNext() {
+func (p *Parser) fetchNext(lexer *Lexer) {
 restart:
-	tok := p.lexer.Next()
+	tok := lexer.Next()
 	switch tok {
 ${if self->ignoredReportTokens()-}
 	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenName())->util.join(', ')}:
-		s, e := p.lexer.Pos()
+		s, e := lexer.Pos()
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
 		goto restart
 ${end-}
@@ -433,7 +428,7 @@ ${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 ${end-}
 	}
 	p.next.symbol = int32(tok)
-	p.next.offset, p.next.endoffset = p.lexer.Pos()
+	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 ${end}
 
@@ -475,10 +470,11 @@ ${end-}
 ${end}
 
 ${template lookaheadRule-}
-func lookaheadRule(lexer *Lexer, next, rule int32, lhs *stackEntry) {
+func lookaheadRule(lexer *Lexer, next, rule int32) int32 {
 	switch rule {
 ${call caseLookaheadRules(true)-}
 	}
+	return 0
 }
 
 ${end}
@@ -494,7 +490,9 @@ func ${inp->laMethodName()}(lexer *Lexer, next int32) bool {
 ${end-}
 ${end}
 
-${template setupLookaheadLexer}${end}
+${template setupLookaheadLexer-}
+	var lexer Lexer = *l
+${end}
 ${template callLookaheadNext}lookaheadNext(&lexer)${end}
 
 ${template lookahead-}
@@ -504,7 +502,6 @@ ${call lookaheadRule-}
 ${end-}
 ${call lookaheadMethods-}
 func lookahead(l *Lexer, next int32, start, end ${self->stateType()}) bool {
-	var lexer Lexer = *l
 ${call setupLookaheadLexer-}
 
 	var allocated [64]stackEntry
@@ -532,7 +529,9 @@ ${end-}
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
 ${if opts.recursiveLookaheads-}
-			lookaheadRule(&lexer, next, rule, &entry)
+			if sym := lookaheadRule(&lexer, next, rule); sym != 0 {
+			  entry.sym.symbol = sym
+			}
 ${end-}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
@@ -565,22 +564,24 @@ ${end}
 ${query callLaMethod(recurse) =
   recurse
     ? 'lookahead(lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] + ')'
-    : self->laMethodName() + '(p.lexer, p.next.symbol)' }
+    : self->laMethodName() + '(lexer, p.next.symbol)' }
 
 ${template caseLookaheadRules(recurse)-}
 ${foreach rule in parser.lookaheadRules-}
 	case ${rule.getIndex()}:
 		${foreach c in rule.cases}if ${c.isNegated() ? '!' : ''}${c.input->callLaMethod(recurse)} {
-			lhs.sym.symbol = ${c.target.index} /* ${c.target.name} */;
+			${if recurse}return${else}lhs.sym.symbol =${end} ${c.target.index} /* ${c.target.name} */;
 		} else ${end}{
-			lhs.sym.symbol = ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
+			${if recurse}return${else}lhs.sym.symbol =${end} ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
 		}
+${if !recurse-}
 		return
+${end-}
 ${end-}
 ${end}
 
 ${template applyRule-}
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) {
 ${if syntax.rules.exists(r|r.code()) || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|r.code())-}

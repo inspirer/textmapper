@@ -16,7 +16,6 @@ type Parser struct {
 	listener Listener
 
 	stack         []stackEntry
-	lexer         *Lexer
 	next          symbol
 	endState      int16
 	ignoredTokens []symbol // to be reported with the next shift
@@ -78,16 +77,15 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	recovering := 0
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
-	p.lexer = lexer
 	p.endState = end
-	p.fetchNext()
+	p.fetchNext(lexer)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -108,7 +106,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs)
+			p.applyRule(rule, &entry, rhs, lexer)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -119,7 +117,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, stackEntry{
@@ -152,7 +150,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 					return lastErr
 				}
 			}
-			if !p.recoverFromError() {
+			if !p.recoverFromError(lexer) {
 				if len(p.ignoredTokens) > 0 {
 					p.reportIgnoredTokens()
 				}
@@ -207,8 +205,8 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
 	return symbol == eoiToken
 }
 
-func (p *Parser) recoverFromError() bool {
-	var seen map[int32]bool
+func (p *Parser) recoverFromError(lexer *Lexer) bool {
+	var seen [1 + NumTokens/8]uint8
 	var recoverPos []int
 
 	for size := len(p.stack); size > 0; size-- {
@@ -222,14 +220,14 @@ func (p *Parser) recoverFromError() bool {
 	}
 
 	if p.next.symbol == noToken {
-		p.fetchNext()
+		p.fetchNext(lexer)
 	}
 	s := p.next.offset
 	e := s
 	for {
-		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol]) {
+		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol/8]&(1<<uint32(p.next.symbol%8)) != 0) {
 			e = p.next.endoffset
-			p.fetchNext()
+			p.fetchNext(lexer)
 		}
 
 		var matchingPos int
@@ -240,13 +238,10 @@ func (p *Parser) recoverFromError() bool {
 			}
 		}
 		if matchingPos == 0 {
-			if seen == nil {
-				seen = make(map[int32]bool)
-			}
 			if p.next.symbol == eoiToken {
 				return false
 			}
-			seen[p.next.symbol] = true
+			seen[p.next.symbol/8] |= 1 << uint32(p.next.symbol%8)
 			continue
 		}
 
@@ -298,20 +293,20 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func (p *Parser) fetchNext() {
+func (p *Parser) fetchNext(lexer *Lexer) {
 restart:
-	tok := p.lexer.Next()
+	tok := lexer.Next()
 	switch tok {
 	case INVALID_TOKEN, MULTILINE_COMMENT, COMMENT:
-		s, e := p.lexer.Pos()
+		s, e := lexer.Pos()
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
 		goto restart
 	}
 	p.next.symbol = int32(tok)
-	p.next.offset, p.next.endoffset = p.lexer.Pos()
+	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) {
 	nt := ruleNodeType[rule]
 	if nt == 0 {
 		return

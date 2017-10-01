@@ -11,7 +11,6 @@ type Parser struct {
 	listener Listener
 
 	stack         []stackEntry
-	lexer         *Lexer
 	next          symbol
 	ignoredTokens []symbol // to be reported with the next shift
 }
@@ -66,15 +65,14 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 	state := start
 
 	p.stack = append(p.stack[:0], stackEntry{state: state})
-	p.lexer = lexer
-	p.fetchNext()
+	p.fetchNext(lexer)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -95,7 +93,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs)
+			p.applyRule(rule, &entry, rhs, lexer)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -106,7 +104,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext()
+				p.fetchNext(lexer)
 			}
 			state = gotoState(state, p.next.symbol)
 			p.stack = append(p.stack, stackEntry{
@@ -183,17 +181,17 @@ func gotoState(state int8, symbol int32) int8 {
 	return -1
 }
 
-func (p *Parser) fetchNext() {
+func (p *Parser) fetchNext(lexer *Lexer) {
 restart:
-	tok := p.lexer.Next()
+	tok := lexer.Next()
 	switch tok {
 	case MULTILINECOMMENT, INVALID_TOKEN:
-		s, e := p.lexer.Pos()
+		s, e := lexer.Pos()
 		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
 		goto restart
 	}
 	p.next.symbol = int32(tok)
-	p.next.offset, p.next.endoffset = p.lexer.Pos()
+	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 
 func lookaheadNext(lexer *Lexer) int32 {
@@ -262,10 +260,10 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 	return state == end
 }
 
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) {
 	switch rule {
 	case 32:
-		if AtEmptyObject(p.lexer, p.next.symbol) {
+		if AtEmptyObject(lexer, p.next.symbol) {
 			lhs.sym.symbol = 23 /* lookahead_EmptyObject */
 		} else {
 			lhs.sym.symbol = 25 /* lookahead_notEmptyObject */
