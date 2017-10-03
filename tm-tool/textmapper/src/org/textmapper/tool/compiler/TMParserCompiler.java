@@ -466,12 +466,18 @@ public class TMParserCompiler {
 		if (canInline && isGroupPart(part)) {
 			TmaRule0 rule = getGroupRule(part);
 			result = convertGroup(outer, rule.getList(), part);
+			if (result == null) {
+				return null;
+			}
 			annotateSequence((RhsSequence) result, rule.getAction());
 
 			// inline (...|...|...)
 		} else if (canInline && isChoicePart(part)) {
 			List<TmaRule0> rules = ((TmaRhsNested) part).getRules();
 			result = convertChoice(outer, rules, part);
+			if (result == null) {
+				return null;
+			}
 		} else {
 			result = convertPrimary(outer, part);
 			if (result == null) {
@@ -641,6 +647,9 @@ public class TMParserCompiler {
 
 			RhsSequence inner = convertGroup(outer, listWithSeparator.getRuleParts(),
 					listWithSeparator);
+			if (inner == null) {
+				return null;
+			}
 			List<RhsPart> sep = new ArrayList<>();
 			for (TmaSymref ref : listWithSeparator.getSeparator()) {
 				Symbol s = resolver.resolve(ref);
@@ -664,6 +673,9 @@ public class TMParserCompiler {
 			if (isGroupPart(innerSymRef)) {
 				TmaRule0 rule = getGroupRule(innerSymRef);
 				inner = convertGroup(outer, rule.getList(), innerSymRef);
+				if (inner == null) {
+					return null;
+				}
 			} else {
 				RhsSymbol symref = convertPrimary(outer, innerSymRef);
 				if (symref == null) {
