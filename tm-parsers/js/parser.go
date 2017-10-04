@@ -246,7 +246,7 @@ func canRecoverOn(symbol int32) bool {
 
 // willShift checks if "symbol" is going to be shifted in the given state.
 // This function does not support empty productions and returns false if they occur before "symbol".
-func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
+func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
 	if state == -1 {
 		return false
 	}
@@ -266,7 +266,7 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
 				return false
 			}
 			stackPos -= ln - 1
-			state = gotoState(p.stack[stackPos-1].state, tmRuleSymbol[rule])
+			state = gotoState(stack[stackPos-1].state, tmRuleSymbol[rule])
 		} else {
 			return action == -1 && gotoState(state, symbol) >= 0
 		}
@@ -274,20 +274,17 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
 	return symbol == eoiToken
 }
 
-func (p *Parser) reportIgnoredTokens() {
-	for _, c := range p.ignoredTokens {
-		var t NodeType
-		switch Token(c.symbol) {
-		case MULTILINECOMMENT:
-			t = MultiLineComment
-		case SINGLELINECOMMENT:
-			t = SingleLineComment
-		case INVALID_TOKEN:
-			t = InvalidToken
-		default:
-			continue
-		}
-		p.listener(t, c.offset, c.endoffset)
+func (p *Parser) reportIgnoredToken(tok symbol) {
+	var t NodeType
+	switch Token(tok.symbol) {
+	case MULTILINECOMMENT:
+		t = MultiLineComment
+	case SINGLELINECOMMENT:
+		t = SingleLineComment
+	case INVALID_TOKEN:
+		t = InvalidToken
+	default:
+		return
 	}
-	p.ignoredTokens = p.ignoredTokens[:0]
+	p.listener(t, tok.offset, tok.endoffset)
 }

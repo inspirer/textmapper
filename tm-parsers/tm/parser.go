@@ -15,10 +15,8 @@ type Parser struct {
 	eh       ErrorHandler
 	listener Listener
 
-	stack         []stackEntry
-	next          symbol
-	endState      int16
-	ignoredTokens []symbol // to be reported with the next shift
+	next     symbol
+	endState int16
 }
 
 type SyntaxError struct {
@@ -48,7 +46,7 @@ func (p *Parser) Init(eh ErrorHandler, l Listener) {
 }
 
 const (
-	startStackSize       = 512
+	startStackSize       = 256
 	startTokenBufferSize = 16
 	noToken              = int32(UNAVAILABLE)
 	eoiToken             = int32(EOI)
@@ -64,28 +62,22 @@ func (p *Parser) ParseExpression(lexer *Lexer) error {
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
-	if cap(p.stack) < startStackSize {
-		p.stack = make([]stackEntry, 0, startStackSize)
-	}
-	if cap(p.ignoredTokens) < startTokenBufferSize {
-		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
-	} else {
-		p.ignoredTokens = p.ignoredTokens[:0]
-	}
+	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 	state := start
 	var lastErr SyntaxError
 	recovering := 0
 
-	p.stack = append(p.stack[:0], stackEntry{state: state})
+	var alloc [startStackSize]stackEntry
+	stack := append(alloc[:0], stackEntry{state: state})
 	p.endState = end
-	p.fetchNext(lexer)
+	ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer)
+				ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -97,8 +89,8 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
-			rhs := p.stack[len(p.stack)-ln:]
-			p.stack = p.stack[:len(p.stack)-ln]
+			rhs := stack[len(stack)-ln:]
+			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				entry.sym.offset, _ = lexer.Pos()
 				entry.sym.endoffset = entry.sym.offset
@@ -110,25 +102,28 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
-			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
+			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
-			p.stack = append(p.stack, entry)
+			stack = append(stack, entry)
 
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer)
+				p.fetchNext(lexer, stack, nil)
 			}
 			state = gotoState(state, p.next.symbol)
-			p.stack = append(p.stack, stackEntry{
+			stack = append(stack, stackEntry{
 				sym:   p.next,
 				state: state,
 			})
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 			}
-			if len(p.ignoredTokens) > 0 {
-				p.reportIgnoredTokens()
+			if len(ignoredTokens) > 0 {
+				for _, tok := range ignoredTokens {
+					p.reportIgnoredToken(tok)
+				}
+				ignoredTokens = ignoredTokens[:0]
 			}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
@@ -150,13 +145,16 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 					return lastErr
 				}
 			}
-			if !p.recoverFromError(lexer) {
-				if len(p.ignoredTokens) > 0 {
-					p.reportIgnoredTokens()
+			if stack = p.recoverFromError(lexer, stack); stack == nil {
+				if len(ignoredTokens) > 0 {
+					for _, tok := range ignoredTokens {
+						p.reportIgnoredToken(tok)
+					}
+					ignoredTokens = ignoredTokens[:0]
 				}
 				return lastErr
 			}
-			state = p.stack[len(p.stack)-1].state
+			state = stack[len(stack)-1].state
 			recovering = 4
 		}
 	}
@@ -177,7 +175,7 @@ func canRecoverOn(symbol int32) bool {
 
 // willShift checks if "symbol" is going to be shifted in the given state.
 // This function does not support empty productions and returns false if they occur before "symbol".
-func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
+func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
 	if state == -1 {
 		return false
 	}
@@ -197,7 +195,7 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
 				return false
 			}
 			stackPos -= ln - 1
-			state = gotoState(p.stack[stackPos-1].state, tmRuleSymbol[rule])
+			state = gotoState(stack[stackPos-1].state, tmRuleSymbol[rule])
 		} else {
 			return action == -1 && gotoState(state, symbol) >= 0
 		}
@@ -205,56 +203,56 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32) bool {
 	return symbol == eoiToken
 }
 
-func (p *Parser) recoverFromError(lexer *Lexer) bool {
+func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
 	var seen [1 + NumTokens/8]uint8
 	var recoverPos []int
 
-	for size := len(p.stack); size > 0; size-- {
-		if gotoState(p.stack[size-1].state, errSymbol) == -1 {
+	for size := len(stack); size > 0; size-- {
+		if gotoState(stack[size-1].state, errSymbol) == -1 {
 			continue
 		}
 		recoverPos = append(recoverPos, size)
 	}
 	if len(recoverPos) == 0 {
-		return false
+		return nil
 	}
 
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer)
+		p.fetchNext(lexer, stack, nil)
 	}
 	s := p.next.offset
 	e := s
 	for {
 		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol/8]&(1<<uint32(p.next.symbol%8)) != 0) {
 			e = p.next.endoffset
-			p.fetchNext(lexer)
+			p.fetchNext(lexer, stack, nil)
 		}
 
 		var matchingPos int
 		for _, pos := range recoverPos {
-			if p.willShift(pos, gotoState(p.stack[pos-1].state, errSymbol), p.next.symbol) {
+			if p.willShift(pos, gotoState(stack[pos-1].state, errSymbol), p.next.symbol, stack) {
 				matchingPos = pos
 				break
 			}
 		}
 		if matchingPos == 0 {
 			if p.next.symbol == eoiToken {
-				return false
+				return nil
 			}
 			seen[p.next.symbol/8] |= 1 << uint32(p.next.symbol%8)
 			continue
 		}
 
-		if matchingPos < len(p.stack) {
-			s = p.stack[matchingPos].sym.offset
+		if matchingPos < len(stack) {
+			s = stack[matchingPos].sym.offset
 		}
-		p.stack = append(p.stack[:matchingPos], stackEntry{
+		stack = append(stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
-			state: gotoState(p.stack[matchingPos-1].state, errSymbol),
+			state: gotoState(stack[matchingPos-1].state, errSymbol),
 		})
-		return true
+		return stack
 	}
-	return false
+	return nil
 }
 
 func lalr(action, next int32) int32 {
@@ -293,17 +291,23 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func (p *Parser) fetchNext(lexer *Lexer) {
+func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []symbol) []symbol {
 restart:
-	tok := lexer.Next()
-	switch tok {
+	token := lexer.Next()
+	switch token {
 	case INVALID_TOKEN, MULTILINE_COMMENT, COMMENT:
 		s, e := lexer.Pos()
-		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(tok), s, e})
+		tok := symbol{int32(token), s, e}
+		if ignoredTokens == nil {
+			p.reportIgnoredToken(tok)
+		} else {
+			ignoredTokens = append(ignoredTokens, tok)
+		}
 		goto restart
 	}
-	p.next.symbol = int32(tok)
+	p.next.symbol = int32(token)
 	p.next.offset, p.next.endoffset = lexer.Pos()
+	return ignoredTokens
 }
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) {
@@ -314,20 +318,17 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 }
 
-func (p *Parser) reportIgnoredTokens() {
-	for _, c := range p.ignoredTokens {
-		var t NodeType
-		switch Token(c.symbol) {
-		case INVALID_TOKEN:
-			t = InvalidToken
-		case MULTILINE_COMMENT:
-			t = MultilineComment
-		case COMMENT:
-			t = Comment
-		default:
-			continue
-		}
-		p.listener(t, c.offset, c.endoffset)
+func (p *Parser) reportIgnoredToken(tok symbol) {
+	var t NodeType
+	switch Token(tok.symbol) {
+	case INVALID_TOKEN:
+		t = InvalidToken
+	case MULTILINE_COMMENT:
+		t = MultilineComment
+	case COMMENT:
+		t = Comment
+	default:
+		return
 	}
-	p.ignoredTokens = p.ignoredTokens[:0]
+	p.listener(t, tok.offset, tok.endoffset)
 }

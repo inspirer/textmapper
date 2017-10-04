@@ -1773,7 +1773,7 @@ ${call canRecoverOn}
 ${call willShift}
 ${end-}
 ${if self->ignoredReportTokens()-}
-${call reportIgnoredTokens}
+${call reportIgnoredToken}
 ${end-}
 ${end}
 

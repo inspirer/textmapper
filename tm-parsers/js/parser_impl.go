@@ -9,11 +9,9 @@ type Parser struct {
 	eh       ErrorHandler
 	listener Listener
 
-	stack         []stackEntry
-	next          symbol
-	afterNext     symbol
-	ignoredTokens []symbol // to be reported with the next shift
-	healthy       bool
+	next      symbol
+	afterNext symbol
+	healthy   bool
 
 	lastToken Token
 	lastLine  int
@@ -39,7 +37,7 @@ func (p *Parser) Init(eh ErrorHandler, l Listener) {
 }
 
 const (
-	startStackSize       = 512
+	startStackSize       = 256
 	startTokenBufferSize = 16
 	noToken              = int32(UNAVAILABLE)
 	eoiToken             = int32(EOI)
@@ -47,29 +45,24 @@ const (
 )
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
-	if cap(p.stack) < startStackSize {
-		p.stack = make([]stackEntry, 0, startStackSize)
-	}
-	if cap(p.ignoredTokens) < startTokenBufferSize {
-		p.ignoredTokens = make([]symbol, 0, startTokenBufferSize)
-	} else {
-		p.ignoredTokens = p.ignoredTokens[:0]
-	}
+	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
+
 	state := start
 	p.endState = end
 	var lastErr SyntaxError
 	recovering := 0
 	p.healthy = true
 
-	p.stack = append(p.stack[:0], stackEntry{state: state})
-	p.fetchNext(lexer)
+	var alloc [startStackSize]stackEntry
+	stack := append(alloc[:0], stackEntry{state: state})
+	ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer)
+				ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -81,8 +74,8 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
-			rhs := p.stack[len(p.stack)-ln:]
-			p.stack = p.stack[:len(p.stack)-ln]
+			rhs := stack[len(stack)-ln:]
+			stack = stack[:len(stack)-ln]
 			for ln > 0 && rhs[ln-1].sym.offset == rhs[ln-1].sym.endoffset {
 				ln--
 			}
@@ -97,25 +90,28 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
-			state = gotoState(p.stack[len(p.stack)-1].state, entry.sym.symbol)
+			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
-			p.stack = append(p.stack, entry)
+			stack = append(stack, entry)
 
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer)
+				p.fetchNext(lexer, stack, nil)
 			}
 			state = gotoState(state, p.next.symbol)
-			p.stack = append(p.stack, stackEntry{
+			stack = append(stack, stackEntry{
 				sym:   p.next,
 				state: state,
 			})
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 			}
-			if len(p.ignoredTokens) > 0 {
-				p.reportIgnoredTokens()
+			if len(ignoredTokens) > 0 {
+				for _, tok := range ignoredTokens {
+					p.reportIgnoredToken(tok)
+				}
+				ignoredTokens = ignoredTokens[:0]
 			}
 			switch Token(p.next.symbol) {
 			case NOSUBSTITUTIONTEMPLATE:
@@ -148,14 +144,17 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 					return lastErr
 				}
 			}
-			if !p.recoverFromError(lexer) {
-				if len(p.ignoredTokens) > 0 {
-					p.reportIgnoredTokens()
+			if stack = p.recoverFromError(lexer, stack); stack == nil {
+				if len(ignoredTokens) > 0 {
+					for _, tok := range ignoredTokens {
+						p.reportIgnoredToken(tok)
+					}
+					ignoredTokens = ignoredTokens[:0]
 				}
 				return lastErr
 			}
 			p.healthy = true
-			state = p.stack[len(p.stack)-1].state
+			state = stack[len(stack)-1].state
 			recovering = 4
 		}
 	}
@@ -163,63 +162,63 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	return nil
 }
 
-func (p *Parser) recoverFromError(lexer *Lexer) bool {
+func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
 	var seen [1 + NumTokens/8]uint8
 	var recoverPos []int
 
-	for size := len(p.stack); size > 0; size-- {
-		if gotoState(p.stack[size-1].state, errSymbol) == -1 {
+	for size := len(stack); size > 0; size-- {
+		if gotoState(stack[size-1].state, errSymbol) == -1 {
 			continue
 		}
 		recoverPos = append(recoverPos, size)
 	}
 	if len(recoverPos) == 0 {
-		return false
+		return nil
 	}
 
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer)
+		p.fetchNext(lexer, stack, nil)
 	}
 	s := p.next.offset
 	e := s
 	for {
 		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol/8]&(1<<uint32(p.next.symbol%8)) != 0) {
 			e = p.next.endoffset
-			p.fetchNext(lexer)
+			p.fetchNext(lexer, stack, nil)
 		}
 
 		var matchingPos int
 		for _, pos := range recoverPos {
-			errState := gotoState(p.stack[pos-1].state, errSymbol)
-			if p.willShift(pos, gotoState(p.stack[pos-1].state, errSymbol), p.next.symbol) {
+			errState := gotoState(stack[pos-1].state, errSymbol)
+			if p.willShift(pos, gotoState(stack[pos-1].state, errSymbol), p.next.symbol, stack) {
 				matchingPos = pos
 				break
 			}
 			// Semicolon insertion is not reliable on broken input, try to look behind the semicolon.
-			if p.afterNext.symbol != -1 && p.willShift(pos, errState, p.afterNext.symbol) {
-				p.fetchNext(lexer)
+			if p.afterNext.symbol != -1 && p.willShift(pos, errState, p.afterNext.symbol, stack) {
+				p.fetchNext(lexer, stack, nil)
 				matchingPos = pos
 				break
 			}
 		}
 		if matchingPos == 0 {
 			if p.next.symbol == eoiToken {
-				return false
+				return nil
 			}
 			seen[p.next.symbol/8] |= 1 << uint32(p.next.symbol%8)
 			continue
 		}
 
-		if matchingPos < len(p.stack) {
-			s = p.stack[matchingPos].sym.offset
+		if matchingPos < len(stack) {
+			s = stack[matchingPos].sym.offset
 		}
-		p.stack = append(p.stack[:matchingPos], stackEntry{
+		stack = append(stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
-			state: gotoState(p.stack[matchingPos-1].state, errSymbol),
+			state: gotoState(stack[matchingPos-1].state, errSymbol),
 		})
-		return true
+		return stack
 	}
-	return false
+	return nil
 }
 
 func lookaheadNext(lexer *Lexer, endState int16, stack []stackEntry) int32 {
@@ -311,11 +310,11 @@ func (p *Parser) insertSC(state int16, offset int) {
 // fetchNext fetches the next token from the lexer and puts it into "p.next".
 // This function also takes care of semicolons by implementing the "Automatic
 // Semicolon Insertion" rules.
-func (p *Parser) fetchNext(lexer *Lexer) {
+func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []symbol) []symbol {
 	if p.afterNext.symbol != -1 {
 		p.next = p.afterNext
 		p.afterNext.symbol = -1
-		return
+		return ignoredTokens
 	}
 
 	lastToken := p.lastToken
@@ -325,10 +324,15 @@ restart:
 	switch token {
 	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
 		s, e := lexer.Pos()
-		p.ignoredTokens = append(p.ignoredTokens, symbol{int32(token), s, e})
+		tok := symbol{int32(token), s, e}
+		if ignoredTokens == nil {
+			p.reportIgnoredToken(tok)
+		} else {
+			ignoredTokens = append(ignoredTokens, tok)
+		}
 		goto restart
 	case GTGT, GTGTGT:
-		if _, success := reduceAll(int32(token), p.endState, p.stack); !success {
+		if _, success := reduceAll(int32(token), p.endState, stack); !success {
 			token = GT
 			lexer.offset = lexer.tokenOffset + 1
 			lexer.scanOffset = lexer.offset + 1
@@ -345,7 +349,7 @@ restart:
 	p.lastLine = line
 
 	if !(newLine || token == RBRACE || token == EOI || lastToken == RPAREN) || lastToken == SEMICOLON {
-		return
+		return ignoredTokens
 	}
 
 	if !p.healthy {
@@ -356,7 +360,7 @@ restart:
 		if newLine || token == RBRACE || token == EOI {
 			p.insertSC(-1 /* no state */, lastEnd)
 		}
-		return
+		return ignoredTokens
 	}
 
 	// We might need to insert a semicolon.
@@ -371,49 +375,50 @@ restart:
 		case YIELD:
 			// No reduce actions are expected, so we can take a shortcut and check
 			// the current state.
-			restricted = afterYieldStates[int(p.stack[len(p.stack)-1].state)]
+			restricted = afterYieldStates[int(stack[len(stack)-1].state)]
 		case ASYNC:
 			// No reduce actions are expected, so we can take a shortcut and check
 			// the current state.
-			restricted = afterAsyncStates[int(p.stack[len(p.stack)-1].state)]
+			restricted = afterAsyncStates[int(stack[len(stack)-1].state)]
 		}
 
 		if restricted {
-			p.insertSC(p.stack[len(p.stack)-1].state, lastEnd)
-			return
+			p.insertSC(stack[len(stack)-1].state, lastEnd)
+			return ignoredTokens
 		}
 	}
 
 	// Simulate all pending reductions and check if the current next token
 	// will be accepted by the parser.
-	state, success := reduceAll(p.next.symbol, p.endState, p.stack)
+	state, success := reduceAll(p.next.symbol, p.endState, stack)
 
 	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS || token == AS || token == EXCL) {
 		if noLineBreakStates[int(state)] {
 			p.insertSC(state, lastEnd)
-			return
+			return ignoredTokens
 		}
 	}
 
 	if success {
-		return
+		return ignoredTokens
 	}
 
 	if token == RBRACE {
 		// Not all closing braces require a semicolon. Double checking.
-		if _, success = reduceAll(int32(SEMICOLON), p.endState, p.stack); success {
+		if _, success = reduceAll(int32(SEMICOLON), p.endState, stack); success {
 			p.insertSC(state, lastEnd)
 		}
-		return
+		return ignoredTokens
 	}
 
 	if newLine || token == EOI {
 		p.insertSC(state, lastEnd)
-		return
+		return ignoredTokens
 	}
 
 	if lastToken == RPAREN && doWhileStates[int(gotoState(state, int32(SEMICOLON)))] {
 		p.insertSC(state, lastEnd)
-		return
+		return ignoredTokens
 	}
+	return ignoredTokens
 }
