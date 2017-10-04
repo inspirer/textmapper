@@ -1,3 +1,9 @@
+0.9.17
+------
+
+[+] Speed-up all parsers by consuming less heap memory.
+
+
 0.9.16
 ------
 

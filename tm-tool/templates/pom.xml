@@ -20,12 +20,12 @@
 	<artifactId>templates</artifactId>
 	<packaging>jar</packaging>
 	<name>Textmapper templates</name>
-	<version>0.9.16-SNAPSHOT</version>
+	<version>0.9.17-SNAPSHOT</version>
 	<url>http://textmapper.org</url>
 	<parent>
 		<groupId>org.textmapper</groupId>
 		<artifactId>tm-master</artifactId>
-		<version>0.9.16-SNAPSHOT</version>
+		<version>0.9.17-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
