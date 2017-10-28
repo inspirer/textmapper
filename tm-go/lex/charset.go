@@ -2,10 +2,15 @@ package lex
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"sort"
 	"unicode"
 	"unicode/utf8"
+)
+
+var (
+	errUnknownUnicodeClass = errors.New("unknown unicode character class")
 )
 
 // charset is a sorted list of non-overlapping ranges.
@@ -51,6 +56,10 @@ func (c *charset) invert() {
 		out = append(out, next, unicode.MaxRune)
 	}
 	*c = out
+}
+
+func (c charset) oneRune() bool {
+	return len(c) == 2 && c[0] == c[1]
 }
 
 // subtract removes all elements found in the other set
@@ -110,10 +119,10 @@ func writeEscaped(b *bytes.Buffer, r rune) {
 		default:
 			fmt.Fprintf(b, `\x%02x`, r)
 		}
-	case r == '\\' || r == '-':
-		b.WriteRune('\\')
+	case isid(r) || r == ' ':
 		b.WriteRune(r)
-	case r < 0x80:
+	case r < 0x7f:
+		b.WriteRune('\\')
 		b.WriteRune(r)
 	case r > utf8.MaxRune:
 		r = 0xFFFD
@@ -172,6 +181,9 @@ func appendRange(r []rune, lo, hi rune) []rune {
 }
 
 func appendTable(r []rune, x *unicode.RangeTable) []rune {
+	if x == nil {
+		return r
+	}
 	for _, xr := range x.R16 {
 		lo, hi, stride := rune(xr.Lo), rune(xr.Hi), rune(xr.Stride)
 		if stride == 1 {
@@ -193,6 +205,30 @@ func appendTable(r []rune, x *unicode.RangeTable) []rune {
 		}
 	}
 	return r
+}
+
+func appendNamedSet(r []rune, name string, sensitive bool) ([]rune, error) {
+	if name == "Any" {
+		r = append(r[:0], 0, unicode.MaxRune)
+		return r, nil
+	}
+	if t := unicode.Categories[name]; t != nil {
+		r = appendTable(r, t)
+		if sensitive {
+			r = appendTable(r, unicode.FoldCategory[name])
+		}
+		return r, nil
+	}
+	if t := unicode.Scripts[name]; t != nil {
+		r = appendTable(r, t)
+		r = appendTable(r, unicode.FoldScript[name])
+		return r, nil
+	}
+	return nil, errUnknownUnicodeClass
+}
+
+func isid(r rune) bool {
+	return r >= 'a' && r <= 'z' || r == '_' || r >= '0' && r <= '9' || r >= 'A' && r <= 'Z'
 }
 
 // ranges implements sort.Interface and provides a natural order for a list of closed intervals.

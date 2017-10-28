@@ -3,8 +3,8 @@ package lex
 import (
 	"fmt"
 	"strconv"
-	"testing"
 	"strings"
+	"testing"
 	"unicode"
 )
 
@@ -38,7 +38,7 @@ var charsetTests = []struct {
 	// Inverted.
 	{`^`, `\x00-\U0010ffff`},
 	{`^\n`, `\x00-\t\x0b-\U0010ffff`},
-	{`^\x00-\x1f0-9`, ` -/:-\U0010ffff`},
+	{`^\x00-\x1f0-9`, ` -\/\:-\U0010ffff`},
 	{`^\x20-\U0010ffff`, `\x00-\x1f`},
 	{`^\x00-\U0010ffff`, ``},
 
@@ -144,26 +144,41 @@ func TestSubtract(t *testing.T) {
 	}
 }
 
-func TestUnicodeTables(t *testing.T) {
-	got := newCharset(appendTable(nil, unicode.Pc)).String()
-	if !strings.HasPrefix(got, "_") {
-		t.Errorf("charset(unicode.Pc) = %v, want: starts with '_'", got)
-	}
+var unicodeTests = []struct {
+	name      string
+	sensitive bool
+	intersect charset
+	want      string
+}{
+	{"Ll", true, charset{0, 0x7f}, `A-Za-z`},
+	{"Ll", false, charset{0, 0x7f}, `a-z`},
+	{"N", false, charset{0, 0x7f}, `0-9`},
+	{"Pc", true, charset{0, 0x7f}, `_`},
+	{"", false, nil, `err: unknown unicode character class`},
+	{"Lower", true, nil, `err: unknown unicode character class`},
+	{"Any", true, charset{0, unicode.MaxRune}, `\x00-\U0010ffff`},
+	{"Greek", false, charset{0, 0x380}, `\u0370-\u0373\u0375-\u0377\u037a-\u037d\u037f`},
+}
 
-	got = newCharset(appendTable(nil, unicode.L)).String()
-	if !strings.HasPrefix(got, "A-Za-z") {
-		t.Errorf("charset(unicode.L) = %v, want: starts with 'A-Za-z'", got)
-	}
-
-	got = newCharset(appendTable(nil, unicode.N)).String()
-	if !strings.HasPrefix(got, "0-9") {
-		t.Errorf("charset(unicode.N) = %v, want: starts with '0-9'", got)
+func TestUnicode(t *testing.T) {
+	for _, test := range unicodeTests {
+		r, err := appendNamedSet(nil, test.name, test.sensitive)
+		var got string
+		if err != nil {
+			got = "err: " + err.Error()
+		} else {
+			set := intersect(newCharset(r), test.intersect)
+			got = set.String()
+		}
+		if got != test.want {
+			t.Errorf("\\p{%v} (case:%v) = %#q, want: %#q", test.name, test.sensitive, got, test.want)
+		}
 	}
 }
 
 func parseRanges(s string) ([]rune, error) {
 	if s == `\MaxRune+1` {
-		return []rune{unicode.MaxRune+1, unicode.MaxRune+1}, nil
+		return []rune{unicode.MaxRune + 1, unicode.MaxRune + 1}, nil
 	}
 
 	var ranges []rune
