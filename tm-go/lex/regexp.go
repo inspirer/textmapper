@@ -2,9 +2,9 @@ package lex
 
 import (
 	"fmt"
+	"strconv"
 	"unicode"
 	"unicode/utf8"
-	"strconv"
 )
 
 // Regexp is a parsed regular expression suitable for use in a generated lexer. The set of supported
@@ -58,14 +58,13 @@ func (re Regexp) empty() bool {
 	return false
 }
 
-func ParseRegex(input string, sensitive bool) (*Regexp, error) {
+func ParseRegex(input string, fold bool) (*Regexp, error) {
 	var buf [16]rune
 	var p parser
 	p.source = input
-	p.sensitive = sensitive
 	p.set = buf[:0]
 	p.next()
-	re := p.parse()
+	re := p.parse(fold)
 	if p.err.msg != "" {
 		return nil, p.err
 	}
@@ -74,7 +73,6 @@ func ParseRegex(input string, sensitive bool) (*Regexp, error) {
 
 type parser struct {
 	source     string
-	sensitive  bool
 	offset     int
 	scanOffset int
 	ch         rune
@@ -100,7 +98,7 @@ func (p *parser) next() {
 	}
 }
 
-func (p *parser) parse() *Regexp {
+func (p *parser) parse(fold bool) *Regexp {
 	var alloc [8]*Regexp
 	stack := append(alloc[:0], &Regexp{op: opParen})
 	var literalStart int
@@ -128,9 +126,9 @@ func (p *parser) parse() *Regexp {
 		case '\\', '[':
 			var cs charset
 			if p.ch == '\\' {
-				cs = p.parseEscape()
+				cs = p.parseEscape(fold)
 			} else {
-				cs = p.parseClass()
+				cs = p.parseClass(fold)
 			}
 			re := &Regexp{op: opCharClass}
 			re.charset = append(re.charset0[:0], cs...)
@@ -178,7 +176,12 @@ func (p *parser) parse() *Regexp {
 			fallthrough
 		default:
 			last := stack[len(stack)-1]
-			if last.op == opLiteral && p.canAppend() {
+			if fold && foldable(p.ch) {
+				re := &Regexp{op: opCharClass}
+				re.charset = append(re.charset0[:0], p.ch, p.ch)
+				re.charset.fold()
+				stack = append(stack, re)
+			} else if last.op == opLiteral && p.canAppend() {
 				last.text = p.source[literalStart:p.scanOffset]
 			} else {
 				literalStart = p.offset
@@ -285,13 +288,17 @@ func (p *parser) error(msg string) {
 	}
 }
 
-func (p *parser) rune(r rune) charset {
+func (p *parser) rune(r rune, fold bool) charset {
 	p.set = append(p.set[:0], r, r)
-	return charset(p.set)
+	cs := charset(p.set)
+	if fold {
+		cs.fold()
+	}
+	return cs
 }
 
-func (p *parser) parseClass() charset {
-	p.next()  // skip [
+func (p *parser) parseClass(fold bool) charset {
+	p.next() // skip [
 	var negated bool
 	if p.ch == '^' {
 		negated = true
@@ -314,7 +321,7 @@ func (p *parser) parseClass() charset {
 			p.error("missing closing bracket")
 			return nil
 		case '\\':
-			cs := p.parseEscape()
+			cs := p.parseEscape(false)
 			if !cs.oneRune() {
 				r = append(r, cs...)
 				continue
@@ -326,14 +333,14 @@ func (p *parser) parseClass() charset {
 		}
 
 		if so := p.scanOffset; p.ch != '-' || so == len(p.source) || p.source[so] == ']' {
-			r = append(r, lo, lo)
+			r = appendRange(r, lo, lo)
 			continue
 		}
 
 		p.next()
 		var hi rune
 		if p.ch == '\\' {
-			cs := p.parseEscape()
+			cs := p.parseEscape(false)
 			if !cs.oneRune() {
 				p.error("invalid character class range")
 				return nil
@@ -347,10 +354,13 @@ func (p *parser) parseClass() charset {
 			p.error("invalid character class range")
 			return nil
 		}
-		r = append(r, lo, hi)
+		r = appendRange(r, lo, hi)
 	}
 
 	cs := newCharset(r)
+	if fold {
+		cs.fold()
+	}
 	if negated {
 		cs.invert()
 	}
@@ -358,7 +368,7 @@ func (p *parser) parseClass() charset {
 	return cs
 }
 
-func (p *parser) parseEscape() charset {
+func (p *parser) parseEscape(fold bool) charset {
 	p.next() // skip \
 	var r rune
 	switch p.ch {
@@ -372,7 +382,7 @@ func (p *parser) parseEscape() charset {
 			r = r<<3 + d
 			p.next()
 		}
-		return p.rune(r)
+		return p.rune(r, fold)
 	case 'p', 'P':
 		negated := p.ch == 'P'
 		p.next()
@@ -396,7 +406,7 @@ func (p *parser) parseEscape() charset {
 		}
 		p.next()
 		var err error
-		p.set, err = appendNamedSet(p.set, name, p.sensitive)
+		p.set, err = appendNamedSet(p.set, name, fold)
 		if err != nil {
 			p.error(err.Error())
 		}
@@ -440,7 +450,7 @@ func (p *parser) parseEscape() charset {
 				p.next()
 			}
 		}
-		return p.rune(r)
+		return p.rune(r, fold)
 	case 'a':
 		r = '\a'
 	case 'f':
@@ -464,7 +474,7 @@ func (p *parser) parseEscape() charset {
 		r = p.ch
 	}
 	p.next()
-	return p.rune(r)
+	return p.rune(r, fold)
 }
 
 func hexval(r rune) rune {

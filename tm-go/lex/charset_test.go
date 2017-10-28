@@ -146,7 +146,7 @@ func TestSubtract(t *testing.T) {
 
 var unicodeTests = []struct {
 	name      string
-	sensitive bool
+	fold      bool
 	intersect charset
 	want      string
 }{
@@ -162,7 +162,7 @@ var unicodeTests = []struct {
 
 func TestUnicode(t *testing.T) {
 	for _, test := range unicodeTests {
-		r, err := appendNamedSet(nil, test.name, test.sensitive)
+		r, err := appendNamedSet(nil, test.name, test.fold)
 		var got string
 		if err != nil {
 			got = "err: " + err.Error()
@@ -171,7 +171,7 @@ func TestUnicode(t *testing.T) {
 			got = set.String()
 		}
 		if got != test.want {
-			t.Errorf("\\p{%v} (case:%v) = %#q, want: %#q", test.name, test.sensitive, got, test.want)
+			t.Errorf("\\p{%v} (case:%v) = %#q, want: %#q", test.name, test.fold, got, test.want)
 		}
 	}
 }

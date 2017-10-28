@@ -3,13 +3,13 @@ package lex
 import (
 	"bytes"
 	"fmt"
-	"testing"
 	"strings"
+	"testing"
 )
 
 var parseTests = []struct {
 	input string
-	want string
+	want  string
 }{
 	{``, `cat{}`},
 	{`a()`, `str{a}`},
@@ -44,6 +44,14 @@ var parseTests = []struct {
 	{`[\000-\n\014-\125]`, `cc{\x00-\n\x0c-U}`},
 	{`[-\n\014-\125]`, `cc{\n\x0c-U}`},
 	{`[-a-zA-Z-]`, `cc{\-A-Za-z}`},
+
+	// Case folding.
+	{`(?i)abC`, `cat{cc{Aa}cc{Bb}cc{Cc}}`},
+	{`(?i)[a-en-q]`, `cc{A-EN-Qa-en-q}`},
+	{`(?i)\u0041`, `cc{Aa}`},
+	{`(?i)\101b`, `cat{cc{Aa}cc{Bb}}`},
+	{`(?i)[^b-e]`, `cc{\x00-AF-af-\U0010ffff}`},
+	{`(?i)+[^]]`, `cat{str{+}cc{\x00-\\\^-\U0010ffff}}`},
 
 	// Escapes.
 	{`\(\)`, `cat{cc{\(}cc{\)}}`},
@@ -96,13 +104,13 @@ var parseTests = []struct {
 
 func TestParse(t *testing.T) {
 	for _, test := range parseTests {
-		var sensitive bool
+		var fold bool
 		input := test.input
 		if strings.HasPrefix(input, "(?i)") {
-			sensitive = true
+			fold = true
 			input = strings.TrimPrefix(input, "(?i)")
 		}
-		re, err := ParseRegex(input, sensitive)
+		re, err := ParseRegex(input, fold)
 		var got string
 		if err != nil {
 			got = fmt.Sprintf("err{%v}", err)

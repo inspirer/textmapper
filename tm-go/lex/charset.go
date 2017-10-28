@@ -93,6 +93,20 @@ mainLoop:
 	*c = out
 }
 
+func (c *charset) fold() {
+	r := *c
+	out := r
+	for i := 0; i < len(r); i += 2 {
+		lo, hi := r[i], r[i+1]
+		for c := lo; c <= hi; c++ {
+			for f := unicode.SimpleFold(c); f != c; f = unicode.SimpleFold(f) {
+				out = appendRange(out, f, f)
+			}
+		}
+	}
+	*c = newCharset(out)
+}
+
 func (c charset) String() string {
 	var b bytes.Buffer
 	for i := 0; i < len(c); i += 2 {
@@ -162,6 +176,10 @@ func intersect(a, b charset) charset {
 	return out
 }
 
+func foldable(r rune) bool {
+	return r != unicode.SimpleFold(r)
+}
+
 func appendRange(r []rune, lo, hi rune) []rune {
 	l := len(r)
 	if l < 2 {
@@ -207,14 +225,14 @@ func appendTable(r []rune, x *unicode.RangeTable) []rune {
 	return r
 }
 
-func appendNamedSet(r []rune, name string, sensitive bool) ([]rune, error) {
+func appendNamedSet(r []rune, name string, fold bool) ([]rune, error) {
 	if name == "Any" {
 		r = append(r[:0], 0, unicode.MaxRune)
 		return r, nil
 	}
 	if t := unicode.Categories[name]; t != nil {
 		r = appendTable(r, t)
-		if sensitive {
+		if fold {
 			r = appendTable(r, unicode.FoldCategory[name])
 		}
 		return r, nil
