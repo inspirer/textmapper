@@ -3,7 +3,6 @@ package lex
 import (
 	"bytes"
 	"fmt"
-	"strings"
 	"testing"
 )
 
@@ -52,6 +51,14 @@ var parseTests = []struct {
 	{`(?i)\101b`, `cat{cc{Aa}cc{Bb}}`},
 	{`(?i)[^b-e]`, `cc{\x00-AF-af-\U0010ffff}`},
 	{`(?i)+[^]]`, `cat{str{+}cc{\x00-\\\^-\U0010ffff}}`},
+	{`abc((?i)ab)`, `cat{str{abc}cat{cc{Aa}cc{Bb}}}`},
+	{`abc(?i:ab)`, `cat{str{abc}cat{cc{Aa}cc{Bb}}}`},
+	{`abc(((?i:ab)))`, `cat{str{abc}cat{cc{Aa}cc{Bb}}}`},
+	{`abc(((?:ab)))`, `cat{str{abc}str{ab}}`},
+	{`abc(?i)`, `str{abc}`},
+	{`a(?i:a)a`, `cat{str{a}cc{Aa}str{a}}`},
+	{`(?i)a(?-i:a)a`, `cat{cc{Aa}str{a}cc{Aa}}`},
+	{`(?i)a(?i-:a(?i)b)a`, `cat{cc{Aa}cat{str{a}cc{Bb}}cc{Aa}}`},
 
 	// Escapes.
 	{`\(\)`, `cat{cc{\(}cc{\)}}`},
@@ -59,9 +66,20 @@ var parseTests = []struct {
 	{`\123\000`, `cat{cc{S}cc{\x00}}`},
 	{`\x00\x01`, `cat{cc{\x00}cc{\x01}}`},
 	{`\_`, `cc{_}`},
+	{`\Q+?-\Eabc`, `cat{str{+?-}str{abc}}`},
+	{`\Q+abc+`, `str{+abc+}`},
+	{`+\Q+*+\E+`, `cat{str{+}str{+*+}+}`},
+	{`\d\D`, `cat{cc{0-9}cc{\x00-\/\:-\U0010ffff}}`},
+	{`\w`, `cc{0-9A-Z_a-z}`},
+	{`[^\W]`, `cc{0-9A-Z_a-z}`},
+	{`[\W]`, "cc{\\x00-\\/\\:-\\@\\[-\\^\\`\\{-\\U0010ffff}"},
+	{`[\s]`, `cc{\t-\n\x0c-\r }`},
+	{`[^\s]`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
+	{`\S`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
+	{`[\S]`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
 
 	// Unicode.
-	{`\p{Any}+`, `cc{\x00-\U0010ffff}+`},
+	{`\p{Any}+\pZ`, `cat{cc{\x00-\U0010ffff}+cc{ \u00a0\u1680\u2000-\u200a\u2028-\u2029\u202f\u205f\u3000}}`},
 	{`\P{Any}+`, `cc{}+`},
 	{`\p{^Any}+`, `cc{}+`},
 	{`\pZ`, `cc{ \u00a0\u1680\u2000-\u200a\u2028-\u2029\u202f\u205f\u3000}`},
@@ -76,11 +94,12 @@ var parseTests = []struct {
 
 	// Errors.
 	{"\xfe\xfe", `err{broken regexp: invalid rune}`},
+	{"\\Q\xfe\xfe\\E", `err{broken regexp: invalid rune}`},
 	{`(`, `err{broken regexp: missing closing parenthesis}`},
 	{`(a`, `err{broken regexp: missing closing parenthesis}`},
 	{`)`, `err{broken regexp: unexpected closing parenthesis}`},
 	{`a\`, `err{broken regexp: trailing backslash at end of regular expression}`},
-	{`\Q`, `err{broken regexp: invalid escape sequence}`},
+	{`\T`, `err{broken regexp: invalid escape sequence}`},
 	{`(a))`, `err{broken regexp: unexpected closing parenthesis}`},
 	{`\p{`, `err{broken regexp: invalid \p{} range}`},
 	{`\p{}`, `err{broken regexp: invalid \p{} range}`},
@@ -100,17 +119,14 @@ var parseTests = []struct {
 	{`\00`, `err{broken regexp: invalid escape sequence}`},
 	{`\u123`, `err{broken regexp: invalid escape sequence}`},
 	{`\u{ }`, `err{broken regexp: invalid escape sequence}`},
+	{`abc(?`, `err{broken regexp: unknown perl flags}`},
+	{`abc(?ie`, `err{broken regexp: unknown perl flags}`},
 }
 
 func TestParse(t *testing.T) {
 	for _, test := range parseTests {
-		var fold bool
 		input := test.input
-		if strings.HasPrefix(input, "(?i)") {
-			fold = true
-			input = strings.TrimPrefix(input, "(?i)")
-		}
-		re, err := ParseRegex(input, fold)
+		re, err := ParseRegex(input)
 		var got string
 		if err != nil {
 			got = fmt.Sprintf("err{%v}", err)

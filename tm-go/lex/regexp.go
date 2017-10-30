@@ -3,6 +3,7 @@ package lex
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 )
@@ -58,13 +59,13 @@ func (re Regexp) empty() bool {
 	return false
 }
 
-func ParseRegex(input string, fold bool) (*Regexp, error) {
+func ParseRegex(input string) (*Regexp, error) {
 	var buf [16]rune
 	var p parser
 	p.source = input
 	p.set = buf[:0]
 	p.next()
-	re := p.parse(fold)
+	re := p.parse()
 	if p.err.msg != "" {
 		return nil, p.err
 	}
@@ -98,10 +99,12 @@ func (p *parser) next() {
 	}
 }
 
-func (p *parser) parse(fold bool) *Regexp {
+func (p *parser) parse() *Regexp {
+	var fold bool
 	var alloc [8]*Regexp
 	stack := append(alloc[:0], &Regexp{op: opParen})
 	var literalStart int
+	var foldStack []bool
 
 	for p.ch != -1 {
 		switch p.ch {
@@ -109,7 +112,33 @@ func (p *parser) parse(fold bool) *Regexp {
 			re := &Regexp{op: opCharClass, charset: []rune{0, '\n' - 1, '\n' + 1, unicode.MaxRune}}
 			stack = append(stack, re)
 		case '(':
+			p.next()
+			var setFold, neg bool
+			if p.ch == '?' {
+				for p.next(); p.ch != ':' && p.ch != ')'; p.next() {
+					switch p.ch {
+					case 'i':
+						setFold = true
+					case '-':
+						neg = true
+					default:
+						p.error("unknown perl flags")
+						return nil
+					}
+				}
+				if p.ch == ')' {
+					fold = true
+					break
+				} else {
+					p.next()
+				}
+			}
+			foldStack = append(foldStack, fold)
+			if setFold {
+				fold = !neg
+			}
 			stack = append(stack, &Regexp{op: opParen})
+			continue
 		case '|':
 			stack = reduce(stack)
 		case ')':
@@ -118,12 +147,38 @@ func (p *parser) parse(fold bool) *Regexp {
 				p.error("unexpected closing parenthesis")
 				return nil
 			}
+			fold = foldStack[len(foldStack)-1]
+			foldStack = foldStack[:len(foldStack)-1]
 			last := len(stack) - 1
 			stack[last].op = opAlternate
 			if len(stack[last].sub) == 1 {
 				stack[last] = stack[last].sub[0]
 			}
 		case '\\', '[':
+			if p.ch == '\\' && p.scanOffset < len(p.source) && p.source[p.scanOffset] == 'Q' {
+				// \Q ... \E
+				var lit string
+				literalStart = p.scanOffset + 1
+				if i := strings.Index(p.source[literalStart:], `\E`); i < 0 {
+					lit = p.source[literalStart:]
+					p.scanOffset = len(p.source)
+				} else {
+					lit = p.source[literalStart : literalStart+i]
+					p.scanOffset = literalStart + i + 2
+				}
+				p.next()
+				stack = append(stack, &Regexp{op: opLiteral, text: lit})
+				for lit != "" {
+					r, size := utf8.DecodeRuneInString(lit)
+					if r == utf8.RuneError && size == 1 {
+						p.error("invalid rune")
+						return nil
+					}
+					lit = lit[size:]
+				}
+				continue
+			}
+
 			var cs charset
 			if p.ch == '\\' {
 				cs = p.parseEscape(fold)
@@ -181,7 +236,7 @@ func (p *parser) parse(fold bool) *Regexp {
 				re.charset = append(re.charset0[:0], p.ch, p.ch)
 				re.charset.fold()
 				stack = append(stack, re)
-			} else if last.op == opLiteral && p.canAppend() {
+			} else if last.op == opLiteral && last.text == p.source[literalStart:p.offset] && p.canAppend() {
 				last.text = p.source[literalStart:p.scanOffset]
 			} else {
 				literalStart = p.offset
@@ -406,11 +461,36 @@ func (p *parser) parseEscape(fold bool) charset {
 		}
 		p.next()
 		var err error
-		p.set, err = appendNamedSet(p.set, name, fold)
+		p.set, err = appendNamedSet(p.set[:0], name, fold)
 		if err != nil {
 			p.error(err.Error())
 		}
 		ret := newCharset(p.set)
+		if negated {
+			ret.invert()
+		}
+		return ret
+
+	case 'd':
+		p.next()
+		return charset(append(p.set[:0], '0', '9'))
+
+	case 'D':
+		p.next()
+		return charset(append(p.set[:0], 0, '0'-1, '9'+1, unicode.MaxRune))
+
+	case 'w':
+		p.next()
+		return charset(append(p.set[:0], '0', '9', 'A', 'Z', '_', '_', 'a', 'z'))
+
+	case 'W':
+		p.next()
+		return charset(append(p.set[:0], 0, '0'-1, '9'+1, 'A'-1, 'Z'+1, '_'-1, '_'+1, 'a'-1, 'z'+1, unicode.MaxRune))
+
+	case 's', 'S':
+		negated := p.ch == 'S'
+		p.next()
+		ret := charset(append(p.set[:0], '\t', '\t', '\n', '\n', '\f', '\f', '\r', '\r', ' ', ' '))
 		if negated {
 			ret.invert()
 		}

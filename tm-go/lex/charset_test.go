@@ -157,7 +157,7 @@ var unicodeTests = []struct {
 	{"", false, nil, `err: unknown unicode character class`},
 	{"Lower", true, nil, `err: unknown unicode character class`},
 	{"Any", true, charset{0, unicode.MaxRune}, `\x00-\U0010ffff`},
-	{"Greek", false, charset{0, 0x380}, `\u0370-\u0373\u0375-\u0377\u037a-\u037d\u037f`},
+	{"Greek", false, charset{0x370, 0x380}, `\u0370-\u0373\u0375-\u0377\u037a-\u037d\u037f`},
 }
 
 func TestUnicode(t *testing.T) {
