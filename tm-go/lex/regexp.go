@@ -59,7 +59,8 @@ func (re Regexp) empty() bool {
 	return false
 }
 
-func ParseRegex(input string) (*Regexp, error) {
+// ParseRegexp parses a regular expression from a string.
+func ParseRegexp(input string) (*Regexp, error) {
 	var buf [16]rune
 	var p parser
 	p.source = input

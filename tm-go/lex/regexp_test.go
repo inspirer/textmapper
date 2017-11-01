@@ -126,7 +126,7 @@ var parseTests = []struct {
 func TestParse(t *testing.T) {
 	for _, test := range parseTests {
 		input := test.input
-		re, err := ParseRegex(input)
+		re, err := ParseRegexp(input)
 		var got string
 		if err != nil {
 			got = fmt.Sprintf("err{%v}", err)

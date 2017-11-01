@@ -6,7 +6,7 @@
 package lex
 
 func Fuzz(data []byte) int {
-	_, err := ParseRegex(string(data), true)
+	_, err := ParseRegexp(string(data), true)
 	if err != nil {
 		return 0
 	}
