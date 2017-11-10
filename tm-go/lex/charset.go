@@ -13,7 +13,7 @@ var (
 	errUnknownUnicodeClass = errors.New("unknown unicode character class")
 )
 
-// charset is a sorted list of non-overlapping ranges.
+// charset is a sorted list of non-overlapping ranges stored as flattened pairs of runes.
 type charset []rune
 
 // newCharset creates a new character set from an unsorted list of ranges.
@@ -260,12 +260,12 @@ func (ro rangeOrder) Less(i, j int) bool {
 	return r[i] < r[j] || r[i] == r[j] && r[i+1] > r[j+1]
 }
 
-func (o rangeOrder) Len() int {
-	return len(o.r) / 2
+func (ro rangeOrder) Len() int {
+	return len(ro.r) / 2
 }
 
-func (o rangeOrder) Swap(i, j int) {
-	r := o.r
+func (ro rangeOrder) Swap(i, j int) {
+	r := ro.r
 	i, j = i*2, j*2
 	r[i], r[i+1], r[j], r[j+1] = r[j], r[j+1], r[i], r[i+1]
 }

@@ -88,11 +88,11 @@ func TestIntersect(t *testing.T) {
 	for _, test := range intersectTests {
 		a, err := parseRanges(test.a)
 		if err != nil {
-			t.Errorf("parseRanges() failed with %v", err)
+			t.Errorf("parseRanges(%q) failed with %v", test.a, err)
 		}
 		b, err := parseRanges(test.b)
 		if err != nil {
-			t.Errorf("parseRanges() failed with %v", err)
+			t.Errorf("parseRanges(%q) failed with %v", test.b, err)
 		}
 		out := intersect(newCharset(a), newCharset(b))
 		if got := out.String(); got != test.want {
