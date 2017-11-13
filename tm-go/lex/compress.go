@@ -3,6 +3,7 @@ package lex
 import (
 	"encoding/binary"
 	"sort"
+	"unicode"
 )
 
 // symlist is a sorted list of DFA input symbols.
@@ -30,10 +31,6 @@ func compressCharsets(sets []charset) (out []symlist, inputMap []RangeEntry) {
 		}
 	}
 
-	if len(ranges) == 0 {
-		return nil, nil
-	}
-
 	sort.Slice(ranges, func(i, j int) bool {
 		if ranges[i].start != ranges[j].start {
 			return ranges[i].start < ranges[j].start
@@ -51,40 +48,36 @@ func compressCharsets(sets []charset) (out []symlist, inputMap []RangeEntry) {
 	var start rune
 	var first int
 
-	counter := Sym(2)
+	counter := Sym(1)
 	m := make(map[string]Sym)
 	dd := make(map[[2]int]bool)
 	l := len(ranges)
-	for {
+	for start <= unicode.MaxRune {
 		for first < l && ranges[first].end < start {
 			first += ranges[first].delta
 		}
-		if first == l {
-			break
-		}
-		if ranges[first].start > start {
-			start = ranges[first].start
+		chunk = chunk[:0]
+		end := unicode.MaxRune
+		if first < l {
+			i := first
+			prev := &first
+			for ; i < l && ranges[i].start <= start; i += ranges[i].delta {
+				if ranges[i].end < start {
+					*prev += ranges[i].delta
+					continue
+				}
+				if ranges[i].end < end {
+					end = ranges[i].end
+				}
+				chunk = append(chunk, ranges[i].index)
+				prev = &ranges[i].delta
+			}
+			sort.Ints(chunk)
+			if i < l && ranges[i].start-1 < end {
+				end = ranges[i].start - 1
+			}
 		}
 
-		prev := &first
-		chunk = chunk[:0]
-		end := ranges[first].end
-		var i int
-		for i = first; i < l && ranges[i].start <= start; i += ranges[i].delta {
-			if ranges[i].end < start {
-				*prev += ranges[i].delta
-				continue
-			}
-			if ranges[i].end < end {
-				end = ranges[i].end
-			}
-			chunk = append(chunk, ranges[i].index)
-			prev = &ranges[i].delta
-		}
-		if i < l && ranges[i].start-1 < end {
-			end = ranges[i].start - 1
-		}
-		sort.Ints(chunk)
 		var size int
 		for _, index := range chunk {
 			binary.LittleEndian.PutUint32(b[size:], uint32(index))
@@ -106,7 +99,7 @@ func compressCharsets(sets []charset) (out []symlist, inputMap []RangeEntry) {
 			out[index] = append(out[index], id)
 			dd[key] = true
 		}
-		inputMap = append(inputMap, RangeEntry{start, end, id})
+		inputMap = append(inputMap, RangeEntry{start, id})
 		start = end + 1
 	}
 	return

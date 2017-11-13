@@ -17,10 +17,10 @@ type Regexp struct {
 	op       op         // operator
 	sub      []*Regexp  // subexpressions, if any
 	sub0     [1]*Regexp // storage for short sub
-	charset  charset    // for OpCharClass
+	charset  charset    // for opCharClass
 	charset0 [2]rune    // storage for short character sets
-	min, max int        // min, max for OpRepeat
-	text     string     // matched text for OpLiteral, or a reference for opExternal
+	min, max int        // min, max for opRepeat
+	text     string     // matched text for opLiteral, or a reference for opExternal
 }
 
 // op is a single regular expression operator.

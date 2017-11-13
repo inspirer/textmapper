@@ -16,26 +16,23 @@ type Rule struct {
 // generated lexer.
 type Sym int
 
-// Predefined symbols.
-const (
-	EOI    Sym = 0 // end of stream indicator.
-	Others Sym = 1 // all runes not explicitly mentioned in the grammar (can be empty).
-)
+// End of stream indicator.
+const EOI Sym = 0
 
 // RangeEntry translates a segment of runes into a DFA input symbol.
 type RangeEntry struct {
-	Start, End rune // inclusive
-	Target     Sym
+	Start   rune // inclusive
+	Target  Sym
 }
 
 func (re RangeEntry) String() string {
-	return fmt.Sprintf("%v=>%v", charset{re.Start, re.End}.String(), re.Target)
+	return fmt.Sprintf("%v=>%v", charset{re.Start, re.Start}.String(), re.Target)
 }
 
 // Tables holds generated lexer tables.
 type Tables struct {
 	// SymbolMap translates runes into DFA symbols. This slice is sorted by "Start" and covers all
-	// unicode runes except those that map to "Others".
+	// unicode runes.
 	SymbolMap []RangeEntry
 	// The maximum value in SymbolMap.Target plus one.
 	NumSymbols int
