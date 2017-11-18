@@ -52,7 +52,7 @@ func TestParser(t *testing.T) {
 					test.Consume(t, offset, endoffset)
 				}
 			})
-			test.Done(t, p.ParseInput(l))
+			test.Done(t, p.Parse(l))
 		}
 	}
 	for n := tm.NodeType(1); n < tm.NodeTypeMax; n++ {
@@ -98,7 +98,7 @@ func TestExistingFiles(t *testing.T) {
 		p := new(tm.Parser)
 		errHandler := func(se tm.SyntaxError) bool { return false }
 		p.Init(errHandler, func(nt tm.NodeType, offset, endoffset int) { /* noop */ })
-		err = p.ParseInput(l)
+		err = p.Parse(l)
 		if err != nil {
 			t.Errorf("%v: parser failed with %v", path, err)
 		}

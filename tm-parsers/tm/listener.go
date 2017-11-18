@@ -19,7 +19,7 @@ const (
 	Name // (Identifier)+
 	Command
 	SyntaxProblem
-	Input         // Header imports=(Import)* options=(Option)* lexer=LexerSection parser=ParserSection?
+	File          // Header imports=(Import)* options=(Option)* lexer=LexerSection parser=ParserSection?
 	Header        // name=Name target=Name?
 	LexerSection  // (LexerPart)+
 	ParserSection // (GrammarPart)+
@@ -112,7 +112,7 @@ var nodeTypeStr = [...]string{
 	"Name",
 	"Command",
 	"SyntaxProblem",
-	"Input",
+	"File",
 	"Header",
 	"LexerSection",
 	"ParserSection",
@@ -399,10 +399,10 @@ var ruleNodeType = [...]NodeType{
 	Name,                 // name : qualified_name
 	Command,              // command : code
 	SyntaxProblem,        // syntax_problem : error
+	File,                 // file : header import__optlist option_optlist lexer_section parser_section
+	File,                 // file : header import__optlist option_optlist lexer_section
 	0,                    // import__optlist : import__optlist import_
 	0,                    // import__optlist :
-	Input,                // input : header import__optlist option_optlist lexer_section parser_section
-	Input,                // input : header import__optlist option_optlist lexer_section
 	0,                    // option_optlist : option_optlist option
 	0,                    // option_optlist :
 	Header,               // header : 'language' name '(' name ')' ';'

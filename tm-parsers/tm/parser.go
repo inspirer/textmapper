@@ -53,12 +53,8 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) ParseInput(lexer *Lexer) error {
-	return p.parse(0, 485, lexer)
-}
-
-func (p *Parser) ParseExpression(lexer *Lexer) error {
-	return p.parse(1, 486, lexer)
+func (p *Parser) Parse(lexer *Lexer) error {
+	return p.parse(0, 483, lexer)
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {

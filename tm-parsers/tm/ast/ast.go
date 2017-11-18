@@ -50,13 +50,13 @@ func (DirectiveInterface) tmNodeNode()   {}
 func (DirectivePrio) tmNodeNode()        {}
 func (DirectiveSet) tmNodeNode()         {}
 func (ExclusiveStates) tmNodeNode()      {}
+func (File) tmNodeNode()                 {}
 func (Header) tmNodeNode()               {}
 func (Identifier) tmNodeNode()           {}
 func (Implements) tmNodeNode()           {}
 func (Import) tmNodeNode()               {}
 func (InclusiveStates) tmNodeNode()      {}
 func (InlineParameter) tmNodeNode()      {}
-func (Input) tmNodeNode()                {}
 func (Inputref) tmNodeNode()             {}
 func (IntegerLiteral) tmNodeNode()       {}
 func (InterfaceType) tmNodeNode()        {}
@@ -498,6 +498,43 @@ func (n ExclusiveStates) States() []LexerState {
 	return result
 }
 
+type File struct {
+	Node
+}
+
+func (n File) Header() Header {
+	return Header{n.Child(selector.Header)}
+}
+
+func (n File) Imports() []Import {
+	nodes := n.Children(selector.Import)
+	var result []Import = make([]Import, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, Import{node})
+	}
+	return result
+}
+
+func (n File) Options() []Option {
+	nodes := n.Children(selector.Option)
+	var result []Option = make([]Option, 0, len(nodes))
+	for _, node := range nodes {
+		result = append(result, ToTmNode(node).(Option))
+	}
+	return result
+}
+
+func (n File) Lexer() LexerSection {
+	return LexerSection{n.Child(selector.LexerSection)}
+}
+
+func (n File) Parser() *ParserSection {
+	if child := n.Child(selector.ParserSection); child != nil {
+		return &ParserSection{child}
+	}
+	return nil
+}
+
 type Header struct {
 	Node
 }
@@ -573,43 +610,6 @@ func (n InlineParameter) Name() Identifier {
 func (n InlineParameter) ParamValue() ParamValue {
 	if child := n.Child(selector.ParamValue); child != nil {
 		return ToTmNode(child).(ParamValue)
-	}
-	return nil
-}
-
-type Input struct {
-	Node
-}
-
-func (n Input) Header() Header {
-	return Header{n.Child(selector.Header)}
-}
-
-func (n Input) Imports() []Import {
-	nodes := n.Children(selector.Import)
-	var result []Import = make([]Import, 0, len(nodes))
-	for _, node := range nodes {
-		result = append(result, Import{node})
-	}
-	return result
-}
-
-func (n Input) Options() []Option {
-	nodes := n.Children(selector.Option)
-	var result []Option = make([]Option, 0, len(nodes))
-	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Option))
-	}
-	return result
-}
-
-func (n Input) Lexer() LexerSection {
-	return LexerSection{n.Child(selector.LexerSection)}
-}
-
-func (n Input) Parser() *ParserSection {
-	if child := n.Child(selector.ParserSection); child != nil {
-		return &ParserSection{child}
 	}
 	return nil
 }
