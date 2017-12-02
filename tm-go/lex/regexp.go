@@ -1,6 +1,7 @@
 package lex
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -576,4 +577,61 @@ func octval(r rune) rune {
 		return r - '0'
 	}
 	return -1
+}
+
+func (r *Regexp) String() string {
+	var b bytes.Buffer
+	regexpString(r, &b, false)
+	return b.String()
+}
+
+func regexpString(re *Regexp, b *bytes.Buffer, paren bool) {
+	if paren {
+		b.WriteString("(")
+		defer b.WriteString(")")
+	}
+	switch re.op {
+	case opLiteral:
+		fmt.Fprintf(b, `%s`, re.text)
+	case opCharClass:
+		fmt.Fprintf(b, "[%s]", re.charset)
+	case opRepeat:
+		var addParens bool
+		switch re.sub[0].op {
+		case opLiteral:
+			addParens = len(re.text) > 1
+		case opAlternate, opConcat:
+			addParens = true
+		}
+		regexpString(re.sub[0], b, addParens)
+		switch {
+		case re.min == 0 && re.max == -1:
+			b.WriteString("*")
+		case re.min == 1 && re.max == -1:
+			b.WriteString("+")
+		case re.min == 0 && re.max == 1:
+			b.WriteString("?")
+		case re.max == re.min:
+			fmt.Fprintf(b, "{%v}", re.min)
+		case re.max == -1:
+			fmt.Fprintf(b, "{%v,}", re.min)
+		default:
+			fmt.Fprintf(b, "{%v,%v}", re.min, re.max)
+		}
+	case opConcat:
+		for _, s := range re.sub {
+			regexpString(s, b, s.op == opAlternate)
+		}
+	case opAlternate:
+		for i, s := range re.sub {
+			if i > 0 {
+				b.WriteString("|")
+			}
+			regexpString(s, b, s.op == opAlternate)
+		}
+	case opExternal:
+		fmt.Fprintf(b, "{%s}", re.text)
+	default:
+		b.WriteString("unknown")
+	}
 }

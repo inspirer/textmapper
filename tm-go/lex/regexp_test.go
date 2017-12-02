@@ -139,6 +139,70 @@ func TestParse(t *testing.T) {
 	}
 }
 
+var stringTests = []struct {
+	input string
+	want  string
+}{
+	{``, ``},
+	{`a`, `a`},
+	{`ab`, `ab`},
+	{`a()`, `a`},
+	{`(a)`, `a`},
+	{`((())a())`, `a`},
+	{`+`, `+`},
+	{`++`, `++`},
+	{`|+`, `|+`},
+	{`a|+`, `a|+`},
+	{`.+`, `[\x00-\t\x0b-\U0010ffff]+`},
+	{`([.a-z])+`, `[\x00-\t\x0b-\U0010ffff]+`},
+	{`a.b`, `a[\x00-\t\x0b-\U0010ffff]b`},
+	{`ab+`, `ab+`},
+	{`ab?`, `ab?`},
+	{`ab*`, `ab*`},
+	{`{abc}`, `{abc}`},
+	{`{abc}{5}`, `{abc}{5}`},
+	{`{abc}{5,}`, `{abc}{5,}`},
+	{`{abc}{5,8}`, `{abc}{5,8}`},
+	{`{abc}{123,543}`, `{abc}{123,543}`},
+	{`ab{1,3}`, `ab{1,3}`},
+	{`a(b)`, `ab`},
+	{`a(b|c)`, `a(b|c)`},
+	{`a(b|c)+`, `a(b|c)+`},
+	{`[]]`, `[\]]`},
+	{`[^]]`, `[\x00-\\\^-\U0010ffff]`},
+	{`[arz\n-]`, `[\n\-arz]`},
+	{`[a-z]`, `[a-z]`},
+	{`[\000-\n\014-\125]`, `[\x00-\n\x0c-U]`},
+	{`[-\n\014-\125]`, `[\n\x0c-U]`},
+	{`[-a-zA-Z-]`, `[\-A-Za-z]`},
+
+	// Case folding.
+	{`(?i)abC`, `[Aa][Bb][Cc]`},
+	{`(?i)[a-en-q]`, `[A-EN-Qa-en-q]`},
+
+	// Escapes.
+	{`\d\D`, `[0-9][\x00-\/\:-\U0010ffff]`},
+	{`\w+`, `[0-9A-Z_a-z]+`},
+	{`\S`, `[\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff]`},
+
+	// Parentheses.
+	{`a+|(b|cd|)`, `a+|(b|cd|)`},
+}
+
+func TestString(t *testing.T) {
+	for _, test := range stringTests {
+		input := test.input
+		re, err := ParseRegexp(input)
+		if err != nil {
+			t.Errorf("ParseRegexp(%v) failed with %v", input, err)
+			continue
+		}
+		if got := re.String(); test.want != got {
+			t.Errorf("ParseRegexp(%v).String() = %v, want: %v", input, got, test.want)
+		}
+	}
+}
+
 func dump(re *Regexp) string {
 	var b bytes.Buffer
 	dumpRegexp(re, &b)
