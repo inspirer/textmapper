@@ -157,3 +157,8 @@ func (n node) Text() string {
 	start, end := n.file.parsed[n.index].offset, n.file.parsed[n.index].endoffset
 	return n.file.content[start:end]
 }
+
+// SourceRange implements status.SourceNode
+func (n node) SourceRange() status.SourceRange {
+	return n.file.sourceRange(n.file.parsed[n.index].offset, n.file.parsed[n.index].endoffset)
+}

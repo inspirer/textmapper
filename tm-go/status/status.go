@@ -22,6 +22,11 @@ type SourceRange struct {
 	Column    int    // column number, 1-based (in bytes)
 }
 
+// SourceNode is an element of a parse tree with well-defined source positions.
+type SourceNode interface {
+	SourceRange() SourceRange
+}
+
 func (r *SourceRange) String() string {
 	if *byteOffsets {
 		return fmt.Sprintf("%s:%v:%v", r.Filename, r.Offset, r.EndOffset)
@@ -44,7 +49,7 @@ func (e Error) Error() string {
 	return e.Origin.String() + ": " + e.Msg
 }
 
-// Status is a list of errors.
+// Status is a potentially empty list of errors.
 type Status []*Error
 
 // Add adds an Error with given source range and error message to an Status.
@@ -52,7 +57,7 @@ func (s *Status) Add(r SourceRange, msg string) {
 	*s = append(*s, &Error{r, msg})
 }
 
-// Add adds an Error unpacking it if needed.
+// AddError adds an error unpacking status error when needed.
 func (s *Status) AddError(err error) {
 	if list, ok := err.(Status); ok {
 		*s = append(*s, list...)

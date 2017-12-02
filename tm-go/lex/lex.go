@@ -1,7 +1,11 @@
 // Package lex implements a lexer generator.
 package lex
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/inspirer/textmapper/tm-go/status"
+)
 
 // Rule is a lexer generator rule.
 type Rule struct {
@@ -9,7 +13,7 @@ type Rule struct {
 	StartConditions []int // An empty list is equivalent to the initial start condition (== 0).
 	Precedence      int   // Precedence disambiguates between rules that match the same prefix.
 	Action          int
-	Location        interface{}
+	Origin          status.SourceNode
 }
 
 // Sym is a DFA input symbol, which represents zero or more runes indistinguishable by the
@@ -21,8 +25,8 @@ const EOI Sym = 0
 
 // RangeEntry translates a segment of runes into a DFA input symbol.
 type RangeEntry struct {
-	Start   rune // inclusive
-	Target  Sym
+	Start  rune // inclusive
+	Target Sym
 }
 
 func (re RangeEntry) String() string {
@@ -46,8 +50,26 @@ type Tables struct {
 	Backtrack []int
 }
 
+// Resolver retrieves named regular expressions.
+type Resolver interface {
+	Resolve(name string) *Regexp
+}
+
 // Compile combines a set of rules into a lexer.
-func Compile(rules []Rule) (*Tables, error) {
+func Compile(rules []Rule, resolver Resolver) (*Tables, error) {
+	var s status.Status
+	var index []int
+	c := newCompiler(resolver)
+	for _, r := range rules {
+		i, err := c.addRegexp(r.RE, r.Action)
+		if err != nil {
+			s.Add(r.Origin.SourceRange(), err.Error())
+		}
+		index = append(index, i)
+	}
+	ins, inputMap := c.compile()
+	_, _ = ins, inputMap
+
 	// TODO implement
 	return nil, nil
 }
