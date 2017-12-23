@@ -10,7 +10,11 @@ type inst struct {
 	action  int     // A non-negative value accepts the current input.
 }
 
-// reCompiler translates a set of regular expressions into a single instruction list.
+func (i inst) intermediate() bool {
+	return i.action == -1 && len(i.consume) == 0
+}
+
+// reCompiler translates a set of regular expressions into a single list of instructions.
 type reCompiler struct {
 	resolver   Resolver
 	sets       []charset
@@ -35,6 +39,7 @@ func (c *reCompiler) addRegexp(re *Regexp, action int) (int, error) {
 	c.serialize(re)
 	accept := c.emit(nil)
 	c.out[accept].action = action
+	transitiveClosure(c.out[ret:])
 	return ret, c.err
 }
 
@@ -44,6 +49,15 @@ func (c *reCompiler) compile() (ins []inst, inputMap []RangeEntry) {
 		if id >= 0 {
 			c.out[i].consume = symlists[id]
 		}
+	}
+	for src := range c.out {
+		nlinks := c.out[src].links[:0]
+		for _, delta := range c.out[src].links {
+			if !c.out[src+delta].intermediate() {
+				nlinks = append(nlinks, delta)
+			}
+		}
+		c.out[src].links = nlinks
 	}
 	return c.out, inputMap
 }
@@ -156,4 +170,54 @@ func (c *reCompiler) emit(cs charset) int {
 
 	c.consume = append(c.consume, id)
 	return len(c.out) - 1
+}
+
+type bitset []uint32
+
+func newBitset(size int) bitset {
+	return make([]uint32, (31+size)/32)
+}
+
+func (b bitset) set(i int) {
+	b[uint(i)/32] |= 1 << (uint(i) % 32)
+}
+
+func (b bitset) get(i int) bool {
+	return (b[uint(i)/32] & (1 << (uint(i) % 32))) != 0
+}
+
+func (b bitset) clear() {
+	for i := len(b) - 1; i >= 0; i-- {
+		b[i] = 0
+	}
+}
+
+func transitiveClosure(code []inst) {
+	seen := newBitset(len(code))
+
+	var visit func(int, int)
+	visit = func(origin, src int) {
+		for _, delta := range code[src].links {
+			dst := src + delta
+			if !seen.get(dst) {
+				code[origin].links = append(code[origin].links, dst-origin)
+				seen.set(dst)
+				visit(origin, dst)
+			}
+		}
+	}
+
+	for src, ins := range code {
+		if len(ins.links) == 0 {
+			continue
+		}
+		seen.clear()
+		seen.set(src)
+		for _, delta := range ins.links {
+			seen.set(src + delta)
+		}
+		for _, delta := range ins.links {
+			visit(src, src+delta)
+		}
+	}
 }
