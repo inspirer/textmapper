@@ -1,0 +1,26 @@
+{
+  "name": "textmapper-support",
+  "displayName": "Textmapper Support",
+  "description": "Textmapper Language Support",
+  "version": "0.0.1",
+  "publisher": "inspirer",
+  "engines": {
+    "vscode": "^1.19.0"
+  },
+  "categories": [
+    "Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "textmapper",
+      "aliases": ["Textmapper", "textmapper"],
+      "extensions": [".tm"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "textmapper",
+      "scopeName": "source.textmapper",
+      "path": "./syntaxes/textmapper.tmLanguage.json"
+    }]
+  }
+}

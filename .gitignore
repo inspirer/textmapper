@@ -9,6 +9,7 @@ dictionaries
 /tm-idea/availables.xml
 /tm-idea/caches
 /tm-eclipse/plugins/org.textmapper/textmapper*
+.vscode
 target
 bin
 classes

@@ -1,0 +1,439 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"fileTypes": [
+		".tm"
+	],
+	"name": "Textmapper",
+	"scopeName": "source.textmapper",
+	"patterns": [
+		{
+			"include": "#header"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#lexer.start"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.textmapper",
+					"match": "\\b(true|false|separator|as|import|set)\\b"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.block.textmapper",
+					"begin": "/\\*",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.textmapper"
+						}
+					},
+					"end": "\\*/",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.textmapper"
+						}
+					}
+				},
+				{
+					"begin": "(^[ \\t]+)?(#)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.whitespace.comment.leading.textmapper"
+						},
+						"2": {
+							"name": "comment.line.sharp.textmapper"
+						}
+					},
+					"end": "(?=^)",
+					"contentName": "comment.line.sharp.textmapper"
+				}
+			]
+		},
+		"header": {
+			"begin": "(^[ \\t]+)?\\b(language)\\b",
+			"beginCaptures": {
+				"2": {
+					"name": "keyword.other.textmapper"
+				}
+			},
+			"end": ";",
+			"endCaptures": {
+				"0": {
+					"name": "keyword.other.textmapper"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#keywords"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.textmapper",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.textmapper",
+					"match": "\\\\."
+				}
+			]
+		},
+		"lexer.start": {
+			"begin": "^:: lexer",
+			"beginCaptures": {
+				"0": {
+					"name": "entity.name.class.section.textmapper"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#keywords"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#regex"
+				},
+				{
+					"include": "#parser.start"
+				},
+				{
+					"include": "#templates"
+				},
+				{
+					"include": "#reference"
+				},
+				{
+					"include": "#directive"
+				}
+			]
+		},
+		"parser.start": {
+			"begin": "^:: parser",
+			"beginCaptures": {
+				"0": {
+					"name": "entity.name.class.section.textmapper"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#templates"
+				},
+				{
+					"include": "#rule"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#keywords"
+				},
+				{
+					"include": "#directive"
+				}
+			]
+		},
+		"directive": {
+			"name": "meta.directive.textmapper",
+			"begin": "(%)\\s*(\\w+|assert\\s*(non)?empty\\b)",
+			"beginCaptures": {
+				"2": {
+					"name": "keyword.other.directive.textmapper"
+				}
+			},
+			"end": ";",
+			"endCaptures": {
+				"0": {
+					"name": "keyword.other.directive.end.textmapper"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#angle"
+				},
+				{
+					"include": "#keywords"
+				},
+				{
+					"include": "#reference"
+				}
+			]
+		},
+		"angle": {
+			"begin": "<",
+			"end": ">",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#keywords"
+				},
+				{
+					"name": "entity.other.inherited-class.textmapper",
+					"match": "\\b(?!flag\\b)(\\w+)\\b"
+				},
+				{
+					"match": "(?<=[<,])\\s*(flag\\b)",
+					"captures": {
+						"1": {
+							"name": "keyword.other.template.parameter.textmapper"
+						}
+					}
+				}
+			]
+		},
+		"predicate": {
+			"begin": "\\[",
+			"end": "\\]",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#keywords"
+				},
+				{
+					"name": "entity.other.inherited-class.textmapper",
+					"match": "\\b(\\w+)\\b"
+				}
+			]
+		},
+		"rule": {
+			"begin": "([a-zA-Z_](?:[a-zA-Z_\\-0-9]*[a-zA-Z_0-9])?)|('([^\\n\\\\']|\\\\.)*')",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.name.nonterminal.textmapper"
+				},
+				"2": {
+					"name": "constant.other.terminal.textmapper"
+				}
+			},
+			"end": ";",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#angle"
+				},
+				{
+					"include": "#predicate"
+				},
+				{
+					"include": "#report-clause"
+				},
+				{
+					"include": "#keywords"
+				},
+				{
+					"include": "#rule.code"
+				},
+				{
+					"include": "#reference"
+				}
+			]
+		},
+		"rule.code": {
+			"begin": "{",
+			"end": "}",
+			"name": "comment.code.embedded.textmapper",
+			"patterns": [
+				{
+					"include": "#rule.code"
+				}
+			]
+		},
+		"templates": {
+			"begin": "^%%",
+			"beginCaptures": {
+				"0": {
+					"name": "comment.templates.start.textmapper"
+				}
+			},
+			"contentName": "comment.templates.textmapper",
+			"patterns": []
+		},
+		"regex": {
+			"patterns": [
+				{
+					"name": "meta.string.regexp.textmapper",
+					"begin": "(?<=[=:])\\s*(\\/)(?![\\/*])(?=(?:[^\\/\\\\\\[]|\\\\.|\\[([^\\]\\\\]|\\\\.)+\\])+\\/(?![\\/*]))",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.other.regex.begin.textmapper"
+						}
+					},
+					"end": "/",
+					"endCaptures": {
+						"0": {
+							"name": "keyword.other.regex.end.textmapper"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#regexp"
+						}
+					]
+				}
+			]
+		},
+		"reference": {
+			"patterns": [
+				{
+					"name": "constant.other.terminal.textmapper",
+					"match": "'([^\\n\\\\']|\\\\.)*'"
+				}
+			]
+		},
+		"regexp": {
+			"patterns": [
+				{
+					"name": "keyword.operator.quantifier.regexp",
+					"match": "[?+*]|\\{(\\d+,\\d+|\\d+,|,\\d+|\\d+)\\}\\??"
+				},
+				{
+					"name": "keyword.operator.or.regexp",
+					"match": "\\|"
+				},
+				{
+					"name": "constant.character.import.named.regexp",
+					"match": "\\{\\w+\\}"
+				},
+				{
+					"name": "meta.group.regexp",
+					"begin": "\\(",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.group.regexp"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.group.regexp"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#regexp"
+						}
+					]
+				},
+				{
+					"name": "constant.other.character-class.set.regexp",
+					"begin": "(\\[)(\\^)?",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.character-class.regexp"
+						},
+						"2": {
+							"name": "keyword.operator.negation.regexp"
+						}
+					},
+					"end": "(\\])",
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.definition.character-class.regexp"
+						}
+					},
+					"patterns": [
+						{
+							"name": "constant.other.character-class.range.regexp",
+							"match": "(?:.|(\\\\(?:[0-7]{3}|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}))|(\\\\c[A-Z])|(\\\\.))\\-(?:[^\\]\\\\]|(\\\\(?:[0-7]{3}|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}))|(\\\\c[A-Z])|(\\\\.))",
+							"captures": {
+								"1": {
+									"name": "constant.character.numeric.regexp"
+								},
+								"2": {
+									"name": "constant.character.control.regexp"
+								},
+								"3": {
+									"name": "constant.character.escape.backslash.regexp"
+								},
+								"4": {
+									"name": "constant.character.numeric.regexp"
+								},
+								"5": {
+									"name": "constant.character.control.regexp"
+								},
+								"6": {
+									"name": "constant.character.escape.backslash.regexp"
+								}
+							}
+						},
+						{
+							"include": "#regex-character-class"
+						}
+					]
+				},
+				{
+					"include": "#regex-character-class"
+				}
+			]
+		},
+		"report-clause": {
+			"patterns": [
+				{
+					"match": "(->)\\s*([a-zA-Z$_][a-zA-Z$_0-9]*)(?:\\s*(\\/)\\s*([a-zA-Z$_][a-zA-Z$_0-9]*))?",
+					"captures": {
+						"1": {
+							"name": "entity.name.class.report.arrow.textmapper"
+						},
+						"2": {
+							"name": "entity.name.class.report.type.textmapper"
+						},
+						"3": {
+							"name": "entity.name.class.report.slash.textmapper"
+						},
+						"4": {
+							"name": "entity.name.class.report.subtype.textmapper"
+						}
+					}
+				}
+			]
+		},
+		"regex-character-class": {
+			"patterns": [
+				{
+					"name": "constant.other.character-class.regexp",
+					"match": "\\\\[wWsSdDtrnvf]|\\."
+				},
+				{
+					"name": "constant.character.numeric.regexp",
+					"match": "\\\\([0-7]{3}|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4})"
+				},
+				{
+					"name": "constant.character.control.regexp",
+					"match": "\\\\c[A-Z]"
+				},
+				{
+					"name": "constant.character.escape.backslash.regexp",
+					"match": "\\\\."
+				}
+			]
+		}
+	}
+}
