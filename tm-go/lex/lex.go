@@ -20,7 +20,7 @@ type Rule struct {
 // generated lexer.
 type Sym int
 
-// End of stream indicator.
+// EOI is an end of stream indicator.
 const EOI Sym = 0
 
 // RangeEntry translates a segment of runes into a DFA input symbol.

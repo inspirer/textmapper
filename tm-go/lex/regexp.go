@@ -579,9 +579,9 @@ func octval(r rune) rune {
 	return -1
 }
 
-func (r *Regexp) String() string {
+func (re *Regexp) String() string {
 	var b bytes.Buffer
-	regexpString(r, &b, false)
+	regexpString(re, &b, false)
 	return b.String()
 }
 
