@@ -60,6 +60,15 @@ func (re Regexp) empty() bool {
 	return false
 }
 
+// MustParse is a panic-on-error version of ParseRegexp.
+func MustParse(input string) *Regexp {
+	re, err := ParseRegexp(input)
+	if err != nil {
+		panic(fmt.Sprintf("%q: %v", input, err))
+	}
+	return re
+}
+
 // ParseRegexp parses a regular expression from a string.
 func ParseRegexp(input string) (*Regexp, error) {
 	var buf [16]rune

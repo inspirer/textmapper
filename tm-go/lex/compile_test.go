@@ -3,7 +3,7 @@ package lex
 import (
 	"bytes"
 	"fmt"
-	"log"
+	"strings"
 	"testing"
 )
 
@@ -15,25 +15,25 @@ func (m patternMap) Resolve(name string) *Regexp {
 }
 
 var testPatterns = patternMap{
-	"hex": mustParse(`[0-9a-fA-F]`),
+	"hex": MustParse(`[0-9a-fA-F]`),
 }
 
 var compileTests = []struct {
-	rules []Rule
+	rules []*Rule
 	want  []string
 }{
 	{
-		rules: []Rule{
-			{RE: mustParse(`abcd{2,}`), Action: 1}, // whitespace
+		rules: []*Rule{
+			{RE: MustParse(`abcd{2,}`), Action: 1},
 		},
 		want: []string{
 			`[2],[3],[4],[5],[5],[5]+2,-1+1,=>1`,
 		},
 	},
 	{
-		rules: []Rule{
-			{RE: mustParse(`\s+{hex}+`), Action: 0}, // whitespace
-			{RE: mustParse(`\w+`), Action: 1},
+		rules: []*Rule{
+			{RE: MustParse(`\s+{hex}+`), Action: 0},
+			{RE: MustParse(`\w+`), Action: 1},
 		},
 		want: []string{
 			`[2],[2]+2,-1+1,[3],[3]+2,-1+1,=>0`,
@@ -41,16 +41,16 @@ var compileTests = []struct {
 		},
 	},
 	{
-		rules: []Rule{
-			{RE: mustParse(`([0-9]|[a-z])+`), Action: 0}, // whitespace
+		rules: []*Rule{
+			{RE: MustParse(`([0-9]|[a-z])+`), Action: 0},
 		},
 		want: []string{
 			`+1+3,[2],+4+6+9,[3],+2+4+7,+1+3+6,[2],-1+1+4,[3],-3-1+2,-4-2+1,=>0`,
 		},
 	},
 	{
-		rules: []Rule{
-			{RE: mustParse(`(a+)+`), Action: 42}, // whitespace
+		rules: []*Rule{
+			{RE: MustParse(`(a+)+`), Action: 42},
 		},
 		want: []string{
 			`[2],[2]+2+6,-1+1+5,[2]+4,[2]-1+3,-1-2+2,-3+1,=>42`,
@@ -63,7 +63,7 @@ func TestCompile(t *testing.T) {
 		var index []int
 		c := newCompiler(testPatterns)
 		for i, r := range test.rules {
-			offset, err := c.addRegexp(r.RE, r.Action)
+			offset, err := c.addRegexp(r.RE, r.Action, r)
 			if err != nil {
 				t.Fatalf("cannot compile regexp in test #%v", i)
 			}
@@ -99,14 +99,6 @@ func TestCompile(t *testing.T) {
 	}
 }
 
-func mustParse(pattern string) *Regexp {
-	re, err := ParseRegexp(pattern)
-	if err != nil {
-		log.Fatalf("%q: %v", pattern, err)
-	}
-	return re
-}
-
 func dumpInst(i int, inst inst, b *bytes.Buffer) {
 	if len(inst.consume) > 0 {
 		b.WriteString("[")
@@ -123,7 +115,20 @@ func dumpInst(i int, inst inst, b *bytes.Buffer) {
 	for _, link := range inst.links {
 		fmt.Fprintf(b, "%+d", link)
 	}
-	if inst.action >= 0 {
-		fmt.Fprintf(b, "=>%v", inst.action)
+	if inst.rule != nil {
+		fmt.Fprintf(b, "=>%v", inst.rule.Action)
+	}
+}
+
+func TestErrors(t *testing.T) {
+	c := newCompiler(testPatterns)
+	r := &Rule{
+		RE:         MustParse(`((asdasd)?|[abc]?)`),
+		Action:     42,
+		OriginName: "rule1",
+	}
+	_, err := c.addRegexp(r.RE, r.Action, r)
+	if err == nil || !strings.Contains(err.Error(), "`rule1` accepts empty text") {
+		t.Errorf("addRegexp() = %v, want: accepts empty text", err)
 	}
 }

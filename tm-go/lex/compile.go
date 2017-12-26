@@ -9,11 +9,11 @@ import (
 type inst struct {
 	consume symlist // An empty list means we cannot advance to the next instruction.
 	links   []int   // Relative offsets of other instructions that should be considered at the same time.
-	action  int     // A non-negative value accepts the current input.
+	rule    *Rule   // Original rule for error reporting and precedence.
 }
 
-func (i inst) intermediate() bool {
-	return i.action == -1 && len(i.consume) == 0
+func (i inst) core() bool {
+	return i.rule != nil || len(i.consume) != 0
 }
 
 // reCompiler translates a set of regular expressions into a single list of instructions.
@@ -35,13 +35,22 @@ func newCompiler(resolver Resolver) *reCompiler {
 	}
 }
 
-func (c *reCompiler) addRegexp(re *Regexp, action int) (int, error) {
+func (c *reCompiler) addRegexp(r *Regexp, action int, rule *Rule) (int, error) {
 	c.err = nil
 	ret := c.next()
-	c.serialize(re)
+	c.serialize(r)
 	accept := c.emit(nil)
-	c.out[accept].action = action
+	c.out[accept].rule = rule
 	transitiveClosure(c.out[ret:])
+
+	for _, delta := range c.out[ret].links {
+		dst := ret + delta
+		if c.out[dst].rule != nil {
+			c.errorf("`%v` accepts empty text", rule.OriginName)
+			break
+		}
+	}
+
 	return ret, c.err
 }
 
@@ -55,7 +64,7 @@ func (c *reCompiler) compile() (ins []inst, inputMap []RangeEntry) {
 	for src := range c.out {
 		nlinks := c.out[src].links[:0]
 		for _, delta := range c.out[src].links {
-			if !c.out[src+delta].intermediate() {
+			if c.out[src+delta].core() {
 				nlinks = append(nlinks, delta)
 			}
 		}
@@ -151,7 +160,7 @@ func (c *reCompiler) link(src, dst int) {
 }
 
 func (c *reCompiler) emit(cs charset) int {
-	c.out = append(c.out, inst{action: -1})
+	c.out = append(c.out, inst{})
 
 	id := -1
 	if len(cs) != 0 {

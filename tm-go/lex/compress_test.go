@@ -61,3 +61,17 @@ func parseCharsets(input string) ([]charset, error) {
 	}
 	return ret, nil
 }
+
+func TestContains(t *testing.T) {
+	input := symlist{0, 2, 7, 8, 10, 12, 15, 17, 20, 30, 40, 50, 52, 63}
+	elements := make(map[Sym]bool)
+	for _, sym := range input {
+		elements[sym] = true
+	}
+	for sym := Sym(0); sym < 64; sym++ {
+		want := elements[sym]
+		if got := input.contains(sym); got != want {
+			t.Errorf("symlist.contains(%v) = %v, want: %v", sym, got, want)
+		}
+	}
+}

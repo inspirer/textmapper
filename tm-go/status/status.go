@@ -59,6 +59,10 @@ func (s *Status) Add(r SourceRange, msg string) {
 
 // AddError adds an error unpacking status error when needed.
 func (s *Status) AddError(err error) {
+	if err == nil {
+		return
+	}
+
 	if list, ok := err.(Status); ok {
 		*s = append(*s, list...)
 		return

@@ -38,7 +38,7 @@ func (m *IntSliceMap) Get(key []int) interface{} {
 
 	keyCopy := make([]int, len(key))
 	copy(keyCopy, key)
-	val := m.allocate(key)
+	val := m.allocate(keyCopy)
 	m.data[hash] = append(m.data[hash], entry{keyCopy, val})
 	return val
 }

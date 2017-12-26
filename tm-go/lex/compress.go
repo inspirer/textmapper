@@ -9,6 +9,20 @@ import (
 // symlist is a sorted list of DFA input symbols.
 type symlist []Sym
 
+func (l symlist) contains(s Sym) bool {
+	if len(l) < 10 {
+		for _, elem := range l {
+			if elem == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	n := sort.Search(len(l), func(i int) bool { return l[i] >= s })
+	return n < len(l) && l[n] == s
+}
+
 // compressCharsets combines unicode runes into equivalence classes that become input symbols for
 // the generated DFA. All characters mapped into one symbol are either a subset or do not belong
 // to any of the given charsets.

@@ -14,6 +14,7 @@ type Rule struct {
 	Precedence      int   // Precedence disambiguates between rules that match the same prefix.
 	Action          int
 	Origin          status.SourceNode
+	OriginName      string
 }
 
 // Sym is a DFA input symbol, which represents zero or more runes indistinguishable by the
@@ -56,13 +57,13 @@ type Resolver interface {
 }
 
 // Compile combines a set of rules into a lexer.
-func Compile(rules []Rule, resolver Resolver) (*Tables, error) {
+func Compile(rules []*Rule, resolver Resolver) (*Tables, error) {
 	var s status.Status
 	var index []int
 	var maxSC int
 	c := newCompiler(resolver)
 	for _, r := range rules {
-		i, err := c.addRegexp(r.RE, r.Action)
+		i, err := c.addRegexp(r.RE, r.Action, r)
 		if err != nil {
 			s.Add(r.Origin.SourceRange(), err.Error())
 		}
@@ -75,6 +76,14 @@ func Compile(rules []Rule, resolver Resolver) (*Tables, error) {
 	}
 	ins, inputMap := c.compile()
 
+	var maxSym Sym
+	for _, re := range inputMap {
+		if re.Target > maxSym {
+			maxSym = re.Target
+		}
+	}
+	numSymbols := int(maxSym) + 1
+
 	startStates := make([][]int, maxSC+1)
 	for i, r := range rules {
 		if len(r.StartConditions) == 0 {
@@ -85,7 +94,7 @@ func Compile(rules []Rule, resolver Resolver) (*Tables, error) {
 		}
 	}
 
-	g := newGenerator(ins)
+	g := newGenerator(ins, numSymbols)
 	stateMap := make([]int, maxSC+1)
 	for i, states := range startStates {
 		stateMap[i] = g.addState(states)
@@ -93,16 +102,9 @@ func Compile(rules []Rule, resolver Resolver) (*Tables, error) {
 	dfa, backtrack, err := g.generate()
 	s.AddError(err)
 
-	var maxSym Sym
-	for _, re := range inputMap {
-		if re.Target > maxSym {
-			maxSym = re.Target
-		}
-	}
-
 	ret := &Tables{
 		SymbolMap:  inputMap,
-		NumSymbols: int(maxSym) + 1,
+		NumSymbols: numSymbols,
 		StateMap:   stateMap,
 		Dfa:        dfa,
 		Backtrack:  backtrack,
