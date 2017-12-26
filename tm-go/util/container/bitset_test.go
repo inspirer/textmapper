@@ -2,6 +2,7 @@ package container_test
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/util/container"
@@ -28,5 +29,24 @@ func TestBitSet(t *testing.T) {
 	}
 	if gotStr := fmt.Sprintf("%v", got); gotStr != "[20 40 63]" {
 		t.Errorf("Found %v set bits, want: [20 40 63]", got)
+	}
+
+	got = s.Slice(nil)
+	if gotStr := fmt.Sprintf("%v", got); gotStr != "[20 40 63]" {
+		t.Errorf("Slice() = %v, want: [20 40 63]", got)
+	}
+}
+
+func BenchmarkBitSetSlice(b *testing.B) {
+	s := container.NewBitSet(1024)
+	r := rand.New(rand.NewSource(99))
+	for i := 0; i < 20; i++ {
+		s.Set(r.Intn(1024))
+	}
+	val := s.Slice(nil)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s.Slice(val)
 	}
 }
