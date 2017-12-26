@@ -1,15 +1,15 @@
 package main
 
 import (
-	"path/filepath"
-	"os"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
 var genCmd = &command{
-	Name: "generate",
+	Name:  "generate",
 	Title: "generate grammars",
 	Usage: " [flags] [grammars...]",
 	Help: `By default, Textmapper generates code for all grammars in the current directory.
@@ -73,12 +73,12 @@ func generate(files []string) error {
 			return err
 		}
 		inputs = append(inputs, input{
-			path:       path,
-			content:    string(content),
-			outputDir:  *outputDir,
-			noBuiltins: *noBuiltins,
+			path:        path,
+			content:     string(content),
+			outputDir:   *outputDir,
+			noBuiltins:  *noBuiltins,
 			includeDirs: includes,
-			debug: *debug,
+			debug:       *debug,
 		})
 	}
 

@@ -59,17 +59,53 @@ type Resolver interface {
 func Compile(rules []Rule, resolver Resolver) (*Tables, error) {
 	var s status.Status
 	var index []int
+	var maxSC int
 	c := newCompiler(resolver)
 	for _, r := range rules {
 		i, err := c.addRegexp(r.RE, r.Action)
 		if err != nil {
 			s.Add(r.Origin.SourceRange(), err.Error())
 		}
+		for _, sc := range r.StartConditions {
+			if sc > maxSC {
+				maxSC = sc
+			}
+		}
 		index = append(index, i)
 	}
 	ins, inputMap := c.compile()
-	_, _ = ins, inputMap
 
-	// TODO implement
-	return nil, nil
+	startStates := make([][]int, maxSC+1)
+	for i, r := range rules {
+		if len(r.StartConditions) == 0 {
+			startStates[0] = append(startStates[0], index[i])
+		}
+		for _, sc := range r.StartConditions {
+			startStates[sc] = append(startStates[sc], index[i])
+		}
+	}
+
+	g := newGenerator(ins)
+	stateMap := make([]int, maxSC+1)
+	for i, states := range startStates {
+		stateMap[i] = g.addState(states)
+	}
+	dfa, backtrack, err := g.generate()
+	s.AddError(err)
+
+	var maxSym Sym
+	for _, re := range inputMap {
+		if re.Target > maxSym {
+			maxSym = re.Target
+		}
+	}
+
+	ret := &Tables{
+		SymbolMap:  inputMap,
+		NumSymbols: int(maxSym) + 1,
+		StateMap:   stateMap,
+		Dfa:        dfa,
+		Backtrack:  backtrack,
+	}
+	return ret, s.Err()
 }

@@ -1,16 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"text/template"
-	"bytes"
-	"log"
 )
 
 const (
-	version     = `0.10.1`
+	version       = `0.10.1`
 	usageTemplate = `Textmapper is an LALR parser and lexer generator.
 
 Usage:
@@ -72,9 +72,9 @@ func usage() {
 }
 
 var versionCmd = &command{
-	Name: "version",
+	Name:  "version",
 	Title: "print the Textmapper version",
-	Help: `This command prints the Textmapper version.`,
+	Help:  `This command prints the Textmapper version.`,
 	Run: func(args []string) error {
 		fmt.Fprintf(os.Stderr, "textmapper ver %v\n", version)
 		return nil
@@ -82,10 +82,10 @@ var versionCmd = &command{
 }
 
 var helpCmd = &command{
-	Name: "help",
+	Name:  "help",
 	Title: "generate grammars",
 	Usage: " [command]",
-	Help: `Outputs command-specific flags and usage help.`,
+	Help:  `Outputs command-specific flags and usage help.`,
 }
 
 func init() {

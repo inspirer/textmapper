@@ -2,6 +2,8 @@ package lex
 
 import (
 	"fmt"
+
+	"github.com/inspirer/textmapper/tm-go/util/container"
 )
 
 type inst struct {
@@ -172,36 +174,16 @@ func (c *reCompiler) emit(cs charset) int {
 	return len(c.out) - 1
 }
 
-type bitset []uint32
-
-func newBitset(size int) bitset {
-	return make([]uint32, (31+size)/32)
-}
-
-func (b bitset) set(i int) {
-	b[uint(i)/32] |= 1 << (uint(i) % 32)
-}
-
-func (b bitset) get(i int) bool {
-	return (b[uint(i)/32] & (1 << (uint(i) % 32))) != 0
-}
-
-func (b bitset) clear() {
-	for i := len(b) - 1; i >= 0; i-- {
-		b[i] = 0
-	}
-}
-
 func transitiveClosure(code []inst) {
-	seen := newBitset(len(code))
+	seen := container.NewBitSet(len(code))
 
 	var visit func(int, int)
 	visit = func(origin, src int) {
 		for _, delta := range code[src].links {
 			dst := src + delta
-			if !seen.get(dst) {
+			if !seen.Get(dst) {
 				code[origin].links = append(code[origin].links, dst-origin)
-				seen.set(dst)
+				seen.Set(dst)
 				visit(origin, dst)
 			}
 		}
@@ -211,10 +193,10 @@ func transitiveClosure(code []inst) {
 		if len(ins.links) == 0 {
 			continue
 		}
-		seen.clear()
-		seen.set(src)
+		seen.Clear()
+		seen.Set(src)
 		for _, delta := range ins.links {
-			seen.set(src + delta)
+			seen.Set(src + delta)
 		}
 		for _, delta := range ins.links {
 			visit(src, src+delta)
