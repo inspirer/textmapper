@@ -111,8 +111,8 @@ ${call parseFunc}
 ${if self->hasRecovering()-}
 const errSymbol = ${syntax.error.index}
 
-${call canRecoverOn}
 ${call willShift}
+${call skipBrokenCode}
 ${call recoverFromError}
 ${end-}
 ${if self->needActionsTable()-}
@@ -284,17 +284,6 @@ ${end-}
 }
 ${end}
 
-${template canRecoverOn-}
-func canRecoverOn(symbol int32) bool {
-	for _, v := range afterErr {
-		if v == symbol {
-			return true
-		}
-	}
-	return false
-}
-${end}
-
 ${template checkForCancellation-}
 			if shiftCounter++; shiftCounter & 0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
@@ -338,9 +327,20 @@ func (p *Parser) willShift(stackPos int, state ${self->stateType()}, symbol int3
 }
 ${end}
 
+${template skipBrokenCode-}
+func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func (symbol int32) bool) int {
+	var e int
+	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
+		e = p.next.endoffset
+		p.fetchNext(lexer, stack, nil)
+	}
+	return e
+}
+${end}
+
 ${template recoverFromError-}
 func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
-	var seen [1 + NumTokens/8]uint8
+	var recoverSyms [1 + NumTokens/8]uint8
 	var recoverPos []int
 
 	for size := len(stack); size > 0; size-- {
@@ -353,15 +353,20 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		return nil
 	}
 
+	for _, v := range afterErr {
+		recoverSyms[v/8] |= 1 << uint32(v%8)
+	}
+	canRecover := func (symbol int32) bool {
+		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
+	}
 	if p.next.symbol == noToken {
 		p.fetchNext(lexer, stack, nil)
 	}
 	s := p.next.offset
 	e := s
 	for {
-		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol/8]&(1<<uint32(p.next.symbol%8)) != 0) {
-			e = p.next.endoffset
-			p.fetchNext(lexer, stack, nil)
+		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
+			e = endoffset
 		}
 
 		var matchingPos int
@@ -375,7 +380,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 			if p.next.symbol == eoiToken {
 				return nil
 			}
-			seen[p.next.symbol/8] |= 1 << uint32(p.next.symbol%8)
+			recoverSyms[p.next.symbol/8] &^= 1 << uint32(p.next.symbol%8)
 			continue
 		}
 

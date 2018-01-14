@@ -160,15 +160,6 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 
 const errSymbol = 37
 
-func canRecoverOn(symbol int32) bool {
-	for _, v := range afterErr {
-		if v == symbol {
-			return true
-		}
-	}
-	return false
-}
-
 // willShift checks if "symbol" is going to be shifted in the given state.
 // This function does not support empty productions and returns false if they occur before "symbol".
 func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
@@ -199,8 +190,17 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stac
 	return symbol == eoiToken
 }
 
+func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
+	var e int
+	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
+		e = p.next.endoffset
+		p.fetchNext(lexer, stack, nil)
+	}
+	return e
+}
+
 func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
-	var seen [1 + NumTokens/8]uint8
+	var recoverSyms [1 + NumTokens/8]uint8
 	var recoverPos []int
 
 	for size := len(stack); size > 0; size-- {
@@ -213,15 +213,20 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		return nil
 	}
 
+	for _, v := range afterErr {
+		recoverSyms[v/8] |= 1 << uint32(v%8)
+	}
+	canRecover := func(symbol int32) bool {
+		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
+	}
 	if p.next.symbol == noToken {
 		p.fetchNext(lexer, stack, nil)
 	}
 	s := p.next.offset
 	e := s
 	for {
-		for p.next.symbol != eoiToken && (!canRecoverOn(p.next.symbol) || seen[p.next.symbol/8]&(1<<uint32(p.next.symbol%8)) != 0) {
-			e = p.next.endoffset
-			p.fetchNext(lexer, stack, nil)
+		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
+			e = endoffset
 		}
 
 		var matchingPos int
@@ -235,7 +240,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 			if p.next.symbol == eoiToken {
 				return nil
 			}
-			seen[p.next.symbol/8] |= 1 << uint32(p.next.symbol%8)
+			recoverSyms[p.next.symbol/8] &^= 1 << uint32(p.next.symbol%8)
 			continue
 		}
 

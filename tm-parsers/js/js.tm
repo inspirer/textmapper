@@ -1770,7 +1770,7 @@ ${call applyRule}
 ${if self->go_parser.hasRecovering()-}
 const errSymbol = ${syntax.error.index}
 
-${call canRecoverOn}
+${call skipBrokenCode}
 ${call willShift}
 ${end-}
 ${if self->ignoredReportTokens()-}

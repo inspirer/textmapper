@@ -236,13 +236,13 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 
 const errSymbol = 2
 
-func canRecoverOn(symbol int32) bool {
-	for _, v := range afterErr {
-		if v == symbol {
-			return true
-		}
+func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
+	var e int
+	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
+		e = p.next.endoffset
+		p.fetchNext(lexer, stack, nil)
 	}
-	return false
+	return e
 }
 
 // willShift checks if "symbol" is going to be shifted in the given state.
