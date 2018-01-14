@@ -3,6 +3,7 @@
 package test
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -46,13 +47,14 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 30, lexer)
+func (p *Parser) Parse(ctx context.Context, lexer *Lexer) error {
+	return p.parse(ctx, 0, 30, lexer)
 }
 
-func (p *Parser) parse(start, end int8, lexer *Lexer) error {
+func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) error {
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 	state := start
+	var shiftCounter int
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
@@ -93,6 +95,15 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			stack = append(stack, entry)
 
 		} else if action == -1 {
+			if shiftCounter++; shiftCounter&0x1ff == 0 {
+				// Note: checking for context cancellation is expensive so we do it from time to time.
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				default:
+				}
+			}
+
 			// Shift.
 			if p.next.symbol == noToken {
 				p.fetchNext(lexer, stack, nil)

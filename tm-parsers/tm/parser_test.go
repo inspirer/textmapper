@@ -83,7 +83,7 @@ func TestExistingFiles(t *testing.T) {
 		t.Errorf("cannot collect all Textmapper files: %v", err)
 	}
 	if len(sources) != wantTextmapperFiles {
-		t.Errorf("found %v Textmapper files, want: %v", len(sources), wantTextmapperFiles)
+		t.Errorf("found %v Textmapper files, want: %v\n%v", len(sources), wantTextmapperFiles, strings.Join(sources, "\n"))
 	}
 
 	for _, path := range sources {

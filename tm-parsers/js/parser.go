@@ -3,6 +3,7 @@
 package js
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -20,8 +21,8 @@ func (e SyntaxError) Error() string {
 	return fmt.Sprintf("syntax error at line %v", e.Line)
 }
 
-func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(5, 5506, lexer)
+func (p *Parser) Parse(ctx context.Context, lexer *Lexer) error {
+	return p.parse(ctx, 5, 5506, lexer)
 }
 
 func lookaheadRule(lexer *Lexer, next, rule int32) int32 {

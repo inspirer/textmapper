@@ -1,6 +1,7 @@
 package js
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -44,12 +45,13 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) parse(start, end int16, lexer *Lexer) error {
+func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 
 	state := start
 	p.endState = end
 	var lastErr SyntaxError
+	var shiftCounter int
 	recovering := 0
 	p.healthy = true
 
@@ -95,6 +97,15 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			stack = append(stack, entry)
 
 		} else if action == -1 {
+			if shiftCounter++; shiftCounter&0x1ff == 0 {
+				// Note: checking for context cancellation is expensive so we do it from time to time.
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				default:
+				}
+			}
+
 			// Shift.
 			if p.next.symbol == noToken {
 				p.fetchNext(lexer, stack, nil)

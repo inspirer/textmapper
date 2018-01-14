@@ -3,6 +3,7 @@ package js_test
 import (
 	"testing"
 
+	"context"
 	"github.com/inspirer/textmapper/tm-parsers/js"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
@@ -1317,6 +1318,7 @@ func TestParser(t *testing.T) {
 	p := new(js.Parser)
 
 	seen := map[js.NodeType]bool{}
+	ctx := context.Background()
 	for _, tc := range parseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
@@ -1332,7 +1334,7 @@ func TestParser(t *testing.T) {
 					test.Consume(t, offset, endoffset)
 				}
 			})
-			test.Done(t, p.Parse(l))
+			test.Done(t, p.Parse(ctx, l))
 		}
 	}
 	for n := js.NodeType(1); n < js.NodeTypeMax; n++ {
@@ -1350,10 +1352,11 @@ func BenchmarkParser(b *testing.B) {
 		return false
 	}
 
+	ctx := context.Background()
 	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
 	for i := 0; i < b.N; i++ {
 		l.Init(jsBenchmarkCode)
-		p.Parse(l)
+		p.Parse(ctx, l)
 	}
 	b.SetBytes(int64(len(jsBenchmarkCode)))
 }

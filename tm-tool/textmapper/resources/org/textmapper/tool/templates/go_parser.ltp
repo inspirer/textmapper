@@ -92,9 +92,9 @@ ${end-}
 )
 
 ${foreach inp in syntax.input.select(it|it.requested)-}
-func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) ${if !self->hasAssocValueFor(inp)}error${else}(error, ${inp.target->go.type()})${end} {
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(${call contextParam}lexer *Lexer) ${if !self->hasAssocValueFor(inp)}error${else}(error, ${inp.target->go.type()})${end} {
 ${if self->hasAssocValuesForInput()-}
-	err, ${if self->hasAssocValueFor(inp)}v${else}_${end} := p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
+	err, ${if self->hasAssocValueFor(inp)}v${else}_${end} := p.parse(${call contextArg}${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 ${if self->hasAssocValueFor(inp)-}
 	val, _ := v.(${inp.target->go.type()})
 	return err, val
@@ -102,7 +102,7 @@ ${else-}
 	return err
 ${end-}
 ${else-}
-	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
+	return p.parse(${call contextArg}${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 ${end-}
 }
 
@@ -129,12 +129,23 @@ ${call reportIgnoredToken-}
 ${end-}
 ${end}
 
+${template contextParam-}
+${if opts.cancellable}ctx "context".Context, ${end-}
+${end}
+
+${template contextArg-}
+${if opts.cancellable}ctx, ${end-}
+${end}
+
 ${template parseFunc-}
-func (p *Parser) parse(start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(error, ${self->valueType()})${end} {
+func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(error, ${self->valueType()})${end} {
 ${if self->ignoredReportTokens()-}
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 ${end-}
 	state := start
+${if opts.cancellable-}
+  var shiftCounter int
+${end-}
 ${if self->hasRecovering()-}
   var lastErr SyntaxError
 	recovering := 0
@@ -184,6 +195,9 @@ ${end-}
 			stack = append(stack, entry)
 
 		} else if action == -1 {
+${if opts.cancellable-}
+${call checkForCancellation}
+${end-}
 			// Shift.
 			if p.next.symbol == noToken {
 				p.fetchNext(lexer, stack, nil)
@@ -279,6 +293,17 @@ func canRecoverOn(symbol int32) bool {
 	}
 	return false
 }
+${end}
+
+${template checkForCancellation-}
+			if shiftCounter++; shiftCounter & 0x1ff == 0 {
+				// Note: checking for context cancellation is expensive so we do it from time to time.
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				default:
+				}
+			}
 ${end}
 
 ${template willShift-}

@@ -3,6 +3,7 @@ package test_test
 import (
 	"testing"
 
+	"context"
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
@@ -72,6 +73,7 @@ func TestParser(t *testing.T) {
 	p := new(test.Parser)
 
 	seen := map[test.NodeType]bool{}
+	ctx := context.Background()
 	for _, tc := range parseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
@@ -82,7 +84,7 @@ func TestParser(t *testing.T) {
 					pt.Consume(t, offset, endoffset)
 				}
 			})
-			pt.Done(t, p.Parse(l))
+			pt.Done(t, p.Parse(ctx, l))
 		}
 	}
 	for n := test.NodeType(1); n < test.NodeTypeMax; n++ {

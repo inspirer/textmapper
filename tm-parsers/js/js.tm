@@ -7,6 +7,7 @@ lang = "js"
 package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 eventFields = true
+cancellable = true
 recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
                 NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
@@ -1755,8 +1756,8 @@ package ${self->go.package()}
 ${call errorHandler}
 ${call SyntaxError}
 ${foreach inp in syntax.input.select(it|it.requested)-}
-func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(lexer *Lexer) error {
-	return p.parse(${inp.index}, ${parser.finalStates[inp.index]}, lexer)
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(${call contextParam}lexer *Lexer) error {
+	return p.parse(${call contextArg}${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 }
 
 ${if self->needExplicitLookahead()-}
