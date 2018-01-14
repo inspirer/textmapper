@@ -30,8 +30,8 @@ import java.io.*;
  */
 public class Tool {
 
-	public static final String VERSION = "0.9.17/java";
-	public static final String BUILD = "2017";
+	public static final String VERSION = "0.9.18/java";
+	public static final String BUILD = "2018";
 
 	public static final String HELP_MESSAGE =
 			"textmapper - Lexer and Parser generator\n" +
