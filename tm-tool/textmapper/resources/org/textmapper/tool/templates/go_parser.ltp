@@ -709,15 +709,15 @@ ${query needExplicitLookahead() = parser.lookaheadRules.size() > 0}
 ${cached query hasRecovering() = syntax.error && syntax.sets.exists(it|it.name.camelCase == 'afterErr' && it.elements.length > 0)}
 
 ${template parserAction($)-}
-${if codeTemplate()-}
-${eval codeTemplate()}
-${else if context.opts.genast && context->go_ast.astcode(self)-}
-${eval context->go_ast.astcode(self), '#[generated action for ' + self + ']'}
-${end-}
 ${if customRanges()-}
 ${foreach range in customRanges()-}
 		p.listener(${range.rangeType()}, ${range.first().offset}, ${range.last().endoffset})
 ${end-}
+${end-}
+${if codeTemplate()-}
+${eval codeTemplate()}
+${else if context.opts.genast && context->go_ast.astcode(self)-}
+${eval context->go_ast.astcode(self), '#[generated action for ' + self + ']'}
 ${end-}
 ${end}
 
