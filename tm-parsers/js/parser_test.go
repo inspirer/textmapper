@@ -1278,6 +1278,12 @@ var parseTests = []struct {
 		   a §= b;»
 		   b = a;
 		 }`,
+		`var b = (function() {
+       «a+§)»
+     })();`,
+		`var b = (function() {
+       «a §b»
+     })();`,
 
 		// Binding
 		`function a(i) {

@@ -467,8 +467,8 @@ SpreadElement<Yield, Await> -> Expression /* interface */:
 
 ObjectLiteral<Yield, Await> -> ObjectLiteral :
     '{' '}'
-  | '{' PropertyDefinitionList '}'
-  | '{' PropertyDefinitionList ',' '}'
+  | '{' .recoveryScope PropertyDefinitionList '}'
+  | '{' .recoveryScope PropertyDefinitionList ',' '}'
 ;
 
 PropertyDefinitionList<Yield, Await> :
@@ -736,7 +736,7 @@ BlockStatement<Yield, Await> :
     Block ;
 
 Block<Yield, Await> -> Block :
-    '{' StatementList? '}' ;
+    '{' .recoveryScope StatementList? '}' ;
 
 StatementList<Yield, Await> :
     StatementListItem
@@ -789,8 +789,8 @@ BindingPattern<Yield, Await> -> BindingPattern /* interface */:
 ;
 
 ObjectBindingPattern<Yield, Await> -> ObjectPattern :
-    '{' BindingRestElementopt '}'
-  | '{' (PropertyPattern separator ',')+ (',' BindingRestElementopt)? '}'
+    '{' .recoveryScope BindingRestElementopt '}'
+  | '{' .recoveryScope (PropertyPattern separator ',')+ (',' BindingRestElementopt)? '}'
 ;
 
 ArrayBindingPattern<Yield, Await> -> ArrayPattern :
@@ -909,7 +909,7 @@ SwitchStatement<Yield, Await> -> SwitchStatement :
 ;
 
 CaseBlock<Yield, Await> -> Block :
-    '{' CaseClausesopt '}'
+    '{' .recoveryScope CaseClausesopt '}'
 ;
 
 CaseClauses<Yield, Await> :
@@ -970,7 +970,7 @@ UniqueFormalParameters<Yield, Await> :
     FormalParameters ;
 
 FunctionBody<Yield, Await> -> Body :
-    '{' StatementList? '}'
+    '{' .recoveryScope StatementList? '}'
   | ';'
 ;
 
@@ -1075,7 +1075,7 @@ ImplementsClause -> TsImplementsClause:
     'implements' (TypeReference separator ',')+ ;
 
 ClassBody<Yield, Await> -> ClassBody :
-    '{' ClassElementList? '}' ;
+    '{' .recoveryScope ClassElementList? '}' ;
 
 ClassElementList<Yield, Await> :
     ClassElement
@@ -1242,7 +1242,7 @@ JSXMemberExpression :
 
 JSXAttribute<Yield, Await> -> JSXAttribute /* interface */:
     JSXAttributeName ('=' JSXAttributeValue)?         -> JSXNormalAttribute
-  | '{' '...' AssignmentExpression<+In> '}'           -> JSXSpreadAttribute
+  | '{' .recoveryScope '...' AssignmentExpression<+In> '}'           -> JSXSpreadAttribute
 ;
 
 JSXAttributeName -> JSXAttributeName :
@@ -1252,15 +1252,15 @@ JSXAttributeName -> JSXAttributeName :
 
 JSXAttributeValue<Yield, Await> -> JSXAttributeValue /* interface */:
     jsxStringLiteral                                  -> JSXLiteral
-  | '{' AssignmentExpression<+In> '}'                 -> JSXExpression
+  | '{' .recoveryScope AssignmentExpression<+In> '}'                 -> JSXExpression
   | JSXElement
 ;
 
 JSXChild<Yield, Await> -> JSXChild /* interface */:
     jsxText                                           -> JSXText
   | JSXElement
-  | '{' AssignmentExpressionopt<+In> '}'              -> JSXExpression
-  | '{' '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpression
+  | '{' .recoveryScope AssignmentExpressionopt<+In> '}'              -> JSXExpression
+  | '{' .recoveryScope '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpression
 ;
 
 # Typescript
@@ -1354,7 +1354,7 @@ NamespaceName :
 ;
 
 ObjectType -> ObjectType :
-    '{' (?= !StartOfMappedType) TypeBody? '}' ;
+    '{' .recoveryScope (?= !StartOfMappedType) TypeBody? '}' ;
 
 TypeBody :
     TypeMemberList
@@ -1389,7 +1389,7 @@ StartOfMappedType :
 
 # 2.1
 MappedType -> MappedType :
-    '{' (?= StartOfMappedType) 'readonly'? '[' Identifier 'in' Type ']' '?'? TypeAnnotation ';'? '}' ;
+    '{' .recoveryScope (?= StartOfMappedType) 'readonly'? '[' Identifier 'in' Type ']' '?'? TypeAnnotation ';'? '}' ;
 
 TupleType -> TupleType :
     '[' (Type separator ',')+ ']' ;
@@ -1499,7 +1499,7 @@ EnumDeclaration -> TsEnum:
     'const'? 'enum' BindingIdentifier EnumBody ;
 
 EnumBody -> TsEnumBody:
-    '{' ((EnumMember separator ',')+ ','?)? '}' ;
+    '{' .recoveryScope ((EnumMember separator ',')+ ','?)? '}' ;
 
 EnumMember -> TsEnumMember:
     PropertyName<~Yield, ~Await>
@@ -1517,7 +1517,7 @@ IdentifierPath:
 ;
 
 NamespaceBody -> TsNamespaceBody:
-    '{' ModuleItemList? '}' ;
+    '{' .recoveryScope ModuleItemList? '}' ;
 
 ImportAliasDeclaration -> TsImportAliasDeclaration:
     'import' BindingIdentifier '=' EntityName ';' ;
@@ -1564,7 +1564,7 @@ AmbientInterfaceDeclaration:
     Modifiers? 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause? ObjectType ;
 
 AmbientClassBody -> TsAmbientClassBody:
-    '{' AmbientClassBodyElement+? '}' ;
+    '{' .recoveryScope AmbientClassBodyElement+? '}' ;
 
 AmbientClassBodyElement -> TsAmbientClassElement /* interface */:
     Modifiers? PropertyName<~Yield, ~Await> '?'? TypeAnnotationopt ';'                -> TsAmbientPropertyMember
@@ -1579,10 +1579,10 @@ AmbientNamespaceDeclaration:
     'namespace' IdentifierPath AmbientNamespaceBody ;
 
 AmbientModuleDeclaration:
-    'module' (StringLiteral | IdentifierPath) '{' ModuleBodyopt '}' ;
+    'module' (StringLiteral | IdentifierPath) '{' .recoveryScope ModuleBodyopt '}' ;
 
 AmbientNamespaceBody:
-    '{' AmbientNamespaceElement+? '}' ;
+    '{' .recoveryScope AmbientNamespaceElement+? '}' ;
 
 AmbientNamespaceElement -> TsAmbientElement /* interface */:
     'export'? AmbientVariableDeclaration    -> TsAmbientVar

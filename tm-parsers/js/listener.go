@@ -1700,17 +1700,17 @@ var ruleNodeType = [...]NodeType{
 	SpreadElement,            // SpreadElement_Await_Yield : '...' AssignmentExpression_Await_In_Yield
 	SpreadElement,            // SpreadElement_Yield : '...' AssignmentExpression_In_Yield
 	ObjectLiteral,            // ObjectLiteral : '{' '}'
-	ObjectLiteral,            // ObjectLiteral : '{' PropertyDefinitionList '}'
-	ObjectLiteral,            // ObjectLiteral : '{' PropertyDefinitionList ',' '}'
+	ObjectLiteral,            // ObjectLiteral : '{' .recoveryScope PropertyDefinitionList '}'
+	ObjectLiteral,            // ObjectLiteral : '{' .recoveryScope PropertyDefinitionList ',' '}'
 	ObjectLiteral,            // ObjectLiteral_Await : '{' '}'
-	ObjectLiteral,            // ObjectLiteral_Await : '{' PropertyDefinitionList_Await '}'
-	ObjectLiteral,            // ObjectLiteral_Await : '{' PropertyDefinitionList_Await ',' '}'
+	ObjectLiteral,            // ObjectLiteral_Await : '{' .recoveryScope PropertyDefinitionList_Await '}'
+	ObjectLiteral,            // ObjectLiteral_Await : '{' .recoveryScope PropertyDefinitionList_Await ',' '}'
 	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' '}'
-	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' PropertyDefinitionList_Await_Yield '}'
-	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' PropertyDefinitionList_Await_Yield ',' '}'
+	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' .recoveryScope PropertyDefinitionList_Await_Yield '}'
+	ObjectLiteral,            // ObjectLiteral_Await_Yield : '{' .recoveryScope PropertyDefinitionList_Await_Yield ',' '}'
 	ObjectLiteral,            // ObjectLiteral_Yield : '{' '}'
-	ObjectLiteral,            // ObjectLiteral_Yield : '{' PropertyDefinitionList_Yield '}'
-	ObjectLiteral,            // ObjectLiteral_Yield : '{' PropertyDefinitionList_Yield ',' '}'
+	ObjectLiteral,            // ObjectLiteral_Yield : '{' .recoveryScope PropertyDefinitionList_Yield '}'
+	ObjectLiteral,            // ObjectLiteral_Yield : '{' .recoveryScope PropertyDefinitionList_Yield ',' '}'
 	0,                        // PropertyDefinitionList : PropertyDefinition
 	0,                        // PropertyDefinitionList : PropertyDefinitionList ',' PropertyDefinition
 	0,                        // PropertyDefinitionList_Await : PropertyDefinition_Await
@@ -3322,12 +3322,12 @@ var ruleNodeType = [...]NodeType{
 	0,                     // BlockStatement : Block
 	0,                     // BlockStatement_Await : Block_Await
 	0,                     // BlockStatement_Yield : Block_Yield
-	Block,                 // Block : '{' StatementList '}'
-	Block,                 // Block : '{' '}'
-	Block,                 // Block_Await : '{' StatementList_Await '}'
-	Block,                 // Block_Await : '{' '}'
-	Block,                 // Block_Yield : '{' StatementList_Yield '}'
-	Block,                 // Block_Yield : '{' '}'
+	Block,                 // Block : '{' .recoveryScope StatementList '}'
+	Block,                 // Block : '{' .recoveryScope '}'
+	Block,                 // Block_Await : '{' .recoveryScope StatementList_Await '}'
+	Block,                 // Block_Await : '{' .recoveryScope '}'
+	Block,                 // Block_Yield : '{' .recoveryScope StatementList_Yield '}'
+	Block,                 // Block_Yield : '{' .recoveryScope '}'
 	0,                     // StatementList : StatementListItem
 	0,                     // StatementList : StatementList StatementListItem
 	0,                     // StatementList_Await : StatementListItem_Await
@@ -3405,15 +3405,15 @@ var ruleNodeType = [...]NodeType{
 	0,                     // BindingPattern_Await : ArrayBindingPattern_Await
 	0,                     // BindingPattern_Yield : ObjectBindingPattern_Yield
 	0,                     // BindingPattern_Yield : ArrayBindingPattern_Yield
-	ObjectPattern,         // ObjectBindingPattern : '{' BindingRestElementopt '}'
-	ObjectPattern,         // ObjectBindingPattern : '{' PropertyPattern_list_Comma_separated ',' BindingRestElementopt '}'
-	ObjectPattern,         // ObjectBindingPattern : '{' PropertyPattern_list_Comma_separated '}'
-	ObjectPattern,         // ObjectBindingPattern_Await : '{' BindingRestElementopt '}'
-	ObjectPattern,         // ObjectBindingPattern_Await : '{' PropertyPattern_Await_list_Comma_separated ',' BindingRestElementopt '}'
-	ObjectPattern,         // ObjectBindingPattern_Await : '{' PropertyPattern_Await_list_Comma_separated '}'
-	ObjectPattern,         // ObjectBindingPattern_Yield : '{' BindingRestElementopt '}'
-	ObjectPattern,         // ObjectBindingPattern_Yield : '{' PropertyPattern_Yield_list_Comma_separated ',' BindingRestElementopt '}'
-	ObjectPattern,         // ObjectBindingPattern_Yield : '{' PropertyPattern_Yield_list_Comma_separated '}'
+	ObjectPattern,         // ObjectBindingPattern : '{' .recoveryScope BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern : '{' .recoveryScope PropertyPattern_list_Comma_separated ',' BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern : '{' .recoveryScope PropertyPattern_list_Comma_separated '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' .recoveryScope BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' .recoveryScope PropertyPattern_Await_list_Comma_separated ',' BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern_Await : '{' .recoveryScope PropertyPattern_Await_list_Comma_separated '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield : '{' .recoveryScope BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield : '{' .recoveryScope PropertyPattern_Yield_list_Comma_separated ',' BindingRestElementopt '}'
+	ObjectPattern,         // ObjectBindingPattern_Yield : '{' .recoveryScope PropertyPattern_Yield_list_Comma_separated '}'
 	0,                     // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await_list_Comma_separated ',' PropertyPattern_Await
 	0,                     // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await
 	0,                     // PropertyPattern_list_Comma_separated : PropertyPattern_list_Comma_separated ',' PropertyPattern
@@ -3546,9 +3546,9 @@ var ruleNodeType = [...]NodeType{
 	SwitchStatement,         // SwitchStatement : 'switch' '(' Expression_In ')' CaseBlock
 	SwitchStatement,         // SwitchStatement_Await : 'switch' '(' Expression_Await_In ')' CaseBlock_Await
 	SwitchStatement,         // SwitchStatement_Yield : 'switch' '(' Expression_In_Yield ')' CaseBlock_Yield
-	Block,                   // CaseBlock : '{' CaseClausesopt '}'
-	Block,                   // CaseBlock_Await : '{' CaseClausesopt_Await '}'
-	Block,                   // CaseBlock_Yield : '{' CaseClausesopt_Yield '}'
+	Block,                   // CaseBlock : '{' .recoveryScope CaseClausesopt '}'
+	Block,                   // CaseBlock_Await : '{' .recoveryScope CaseClausesopt_Await '}'
+	Block,                   // CaseBlock_Yield : '{' .recoveryScope CaseClausesopt_Yield '}'
 	0,                       // CaseClauses : CaseClause
 	0,                       // CaseClauses : CaseClauses CaseClause
 	0,                       // CaseClauses_Await : CaseClause_Await
@@ -3611,14 +3611,14 @@ var ruleNodeType = [...]NodeType{
 	0,                       // UniqueFormalParameters : FormalParameters
 	0,                       // UniqueFormalParameters_Await : FormalParameters_Await
 	0,                       // UniqueFormalParameters_Yield : FormalParameters_Yield
-	Body,                    // FunctionBody : '{' StatementList '}'
-	Body,                    // FunctionBody : '{' '}'
+	Body,                    // FunctionBody : '{' .recoveryScope StatementList '}'
+	Body,                    // FunctionBody : '{' .recoveryScope '}'
 	Body,                    // FunctionBody : ';'
-	Body,                    // FunctionBody_Await : '{' StatementList_Await '}'
-	Body,                    // FunctionBody_Await : '{' '}'
+	Body,                    // FunctionBody_Await : '{' .recoveryScope StatementList_Await '}'
+	Body,                    // FunctionBody_Await : '{' .recoveryScope '}'
 	Body,                    // FunctionBody_Await : ';'
-	Body,                    // FunctionBody_Yield : '{' StatementList_Yield '}'
-	Body,                    // FunctionBody_Yield : '{' '}'
+	Body,                    // FunctionBody_Yield : '{' .recoveryScope StatementList_Yield '}'
+	Body,                    // FunctionBody_Yield : '{' .recoveryScope '}'
 	Body,                    // FunctionBody_Yield : ';'
 	ArrowFunction,           // ArrowFunction : BindingIdentifier .noLineBreak '=>' ConciseBody
 	ArrowFunction,           // ArrowFunction : lookahead_StartOfArrowFunction FormalParameters .noLineBreak '=>' ConciseBody
@@ -3780,14 +3780,14 @@ var ruleNodeType = [...]NodeType{
 	TsImplementsClause,         // ImplementsClause : 'implements' TypeReference_list_Comma_separated
 	0,                          // TypeReference_list_Comma_separated : TypeReference_list_Comma_separated ',' TypeReference
 	0,                          // TypeReference_list_Comma_separated : TypeReference
-	ClassBody,                  // ClassBody : '{' ClassElementList '}'
-	ClassBody,                  // ClassBody : '{' '}'
-	ClassBody,                  // ClassBody_Await : '{' ClassElementList_Await '}'
-	ClassBody,                  // ClassBody_Await : '{' '}'
-	ClassBody,                  // ClassBody_Await_Yield : '{' ClassElementList_Await_Yield '}'
-	ClassBody,                  // ClassBody_Await_Yield : '{' '}'
-	ClassBody,                  // ClassBody_Yield : '{' ClassElementList_Yield '}'
-	ClassBody,                  // ClassBody_Yield : '{' '}'
+	ClassBody,                  // ClassBody : '{' .recoveryScope ClassElementList '}'
+	ClassBody,                  // ClassBody : '{' .recoveryScope '}'
+	ClassBody,                  // ClassBody_Await : '{' .recoveryScope ClassElementList_Await '}'
+	ClassBody,                  // ClassBody_Await : '{' .recoveryScope '}'
+	ClassBody,                  // ClassBody_Await_Yield : '{' .recoveryScope ClassElementList_Await_Yield '}'
+	ClassBody,                  // ClassBody_Await_Yield : '{' .recoveryScope '}'
+	ClassBody,                  // ClassBody_Yield : '{' .recoveryScope ClassElementList_Yield '}'
+	ClassBody,                  // ClassBody_Yield : '{' .recoveryScope '}'
 	0,                          // ClassElementList : ClassElement
 	0,                          // ClassElementList : ClassElementList ClassElement
 	0,                          // ClassElementList_Await : ClassElement_Await
@@ -3930,46 +3930,46 @@ var ruleNodeType = [...]NodeType{
 	0,                     // JSXMemberExpression : JSXMemberExpression '.' jsxIdentifier
 	JSXNormalAttribute,    // JSXAttribute : JSXAttributeName '=' JSXAttributeValue
 	JSXNormalAttribute,    // JSXAttribute : JSXAttributeName
-	JSXSpreadAttribute,    // JSXAttribute : '{' '...' AssignmentExpression_In '}'
+	JSXSpreadAttribute,    // JSXAttribute : '{' .recoveryScope '...' AssignmentExpression_In '}'
 	JSXNormalAttribute,    // JSXAttribute_Await : JSXAttributeName '=' JSXAttributeValue_Await
 	JSXNormalAttribute,    // JSXAttribute_Await : JSXAttributeName
-	JSXSpreadAttribute,    // JSXAttribute_Await : '{' '...' AssignmentExpression_Await_In '}'
+	JSXSpreadAttribute,    // JSXAttribute_Await : '{' .recoveryScope '...' AssignmentExpression_Await_In '}'
 	JSXNormalAttribute,    // JSXAttribute_Await_Yield : JSXAttributeName '=' JSXAttributeValue_Await_Yield
 	JSXNormalAttribute,    // JSXAttribute_Await_Yield : JSXAttributeName
-	JSXSpreadAttribute,    // JSXAttribute_Await_Yield : '{' '...' AssignmentExpression_Await_In_Yield '}'
+	JSXSpreadAttribute,    // JSXAttribute_Await_Yield : '{' .recoveryScope '...' AssignmentExpression_Await_In_Yield '}'
 	JSXNormalAttribute,    // JSXAttribute_Yield : JSXAttributeName '=' JSXAttributeValue_Yield
 	JSXNormalAttribute,    // JSXAttribute_Yield : JSXAttributeName
-	JSXSpreadAttribute,    // JSXAttribute_Yield : '{' '...' AssignmentExpression_In_Yield '}'
+	JSXSpreadAttribute,    // JSXAttribute_Yield : '{' .recoveryScope '...' AssignmentExpression_In_Yield '}'
 	JSXAttributeName,      // JSXAttributeName : jsxIdentifier
 	JSXAttributeName,      // JSXAttributeName : jsxIdentifier ':' jsxIdentifier
 	JSXLiteral,            // JSXAttributeValue : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue : '{' AssignmentExpression_In '}'
+	JSXExpression,         // JSXAttributeValue : '{' .recoveryScope AssignmentExpression_In '}'
 	0,                     // JSXAttributeValue : JSXElement
 	JSXLiteral,            // JSXAttributeValue_Await : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue_Await : '{' AssignmentExpression_Await_In '}'
+	JSXExpression,         // JSXAttributeValue_Await : '{' .recoveryScope AssignmentExpression_Await_In '}'
 	0,                     // JSXAttributeValue_Await : JSXElement_Await
 	JSXLiteral,            // JSXAttributeValue_Await_Yield : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue_Await_Yield : '{' AssignmentExpression_Await_In_Yield '}'
+	JSXExpression,         // JSXAttributeValue_Await_Yield : '{' .recoveryScope AssignmentExpression_Await_In_Yield '}'
 	0,                     // JSXAttributeValue_Await_Yield : JSXElement_Await_Yield
 	JSXLiteral,            // JSXAttributeValue_Yield : jsxStringLiteral
-	JSXExpression,         // JSXAttributeValue_Yield : '{' AssignmentExpression_In_Yield '}'
+	JSXExpression,         // JSXAttributeValue_Yield : '{' .recoveryScope AssignmentExpression_In_Yield '}'
 	0,                     // JSXAttributeValue_Yield : JSXElement_Yield
 	JSXText,               // JSXChild : jsxText
 	0,                     // JSXChild : JSXElement
-	JSXExpression,         // JSXChild : '{' AssignmentExpressionopt_In '}'
-	JSXSpreadExpression,   // JSXChild : '{' '...' AssignmentExpressionopt_In '}'
+	JSXExpression,         // JSXChild : '{' .recoveryScope AssignmentExpressionopt_In '}'
+	JSXSpreadExpression,   // JSXChild : '{' .recoveryScope '...' AssignmentExpressionopt_In '}'
 	JSXText,               // JSXChild_Await : jsxText
 	0,                     // JSXChild_Await : JSXElement_Await
-	JSXExpression,         // JSXChild_Await : '{' AssignmentExpressionopt_Await_In '}'
-	JSXSpreadExpression,   // JSXChild_Await : '{' '...' AssignmentExpressionopt_Await_In '}'
+	JSXExpression,         // JSXChild_Await : '{' .recoveryScope AssignmentExpressionopt_Await_In '}'
+	JSXSpreadExpression,   // JSXChild_Await : '{' .recoveryScope '...' AssignmentExpressionopt_Await_In '}'
 	JSXText,               // JSXChild_Await_Yield : jsxText
 	0,                     // JSXChild_Await_Yield : JSXElement_Await_Yield
-	JSXExpression,         // JSXChild_Await_Yield : '{' AssignmentExpressionopt_Await_In_Yield '}'
-	JSXSpreadExpression,   // JSXChild_Await_Yield : '{' '...' AssignmentExpressionopt_Await_In_Yield '}'
+	JSXExpression,         // JSXChild_Await_Yield : '{' .recoveryScope AssignmentExpressionopt_Await_In_Yield '}'
+	JSXSpreadExpression,   // JSXChild_Await_Yield : '{' .recoveryScope '...' AssignmentExpressionopt_Await_In_Yield '}'
 	JSXText,               // JSXChild_Yield : jsxText
 	0,                     // JSXChild_Yield : JSXElement_Yield
-	JSXExpression,         // JSXChild_Yield : '{' AssignmentExpressionopt_In_Yield '}'
-	JSXSpreadExpression,   // JSXChild_Yield : '{' '...' AssignmentExpressionopt_In_Yield '}'
+	JSXExpression,         // JSXChild_Yield : '{' .recoveryScope AssignmentExpressionopt_In_Yield '}'
+	JSXSpreadExpression,   // JSXChild_Yield : '{' .recoveryScope '...' AssignmentExpressionopt_In_Yield '}'
 	0,                     // Type : UnionOrIntersectionOrPrimaryType %prec resolveShift
 	0,                     // Type : FunctionType
 	0,                     // Type : ConstructorType
@@ -4025,8 +4025,8 @@ var ruleNodeType = [...]NodeType{
 	0,                     // NamespaceName : IdentifierReference
 	0,                     // NamespaceName : NamespaceName '.' IdentifierReference
 	0,                     // lookahead_notStartOfMappedType :
-	ObjectType,            // ObjectType : '{' lookahead_notStartOfMappedType TypeBody '}'
-	ObjectType,            // ObjectType : '{' lookahead_notStartOfMappedType '}'
+	ObjectType,            // ObjectType : '{' .recoveryScope lookahead_notStartOfMappedType TypeBody '}'
+	ObjectType,            // ObjectType : '{' .recoveryScope lookahead_notStartOfMappedType '}'
 	0,                     // TypeBody : TypeMemberList
 	0,                     // TypeBody : TypeMemberList ','
 	0,                     // TypeBody : TypeMemberList ';'
@@ -4043,14 +4043,14 @@ var ruleNodeType = [...]NodeType{
 	0,                     // StartOfMappedType : 'readonly' '[' IdentifierName 'in'
 	0,                     // StartOfMappedType : '[' IdentifierName 'in'
 	0,                     // lookahead_StartOfMappedType :
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
-	MappedType,            // MappedType : '{' lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' Identifier 'in' Type ']' TypeAnnotation '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
+	MappedType,            // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation '}'
 	TupleType,             // TupleType : '[' Type_list_Comma_separated ']'
 	0,                     // StartOfFunctionType : Modifiers BindingIdentifier ':'
 	0,                     // StartOfFunctionType : Modifiers BindingIdentifier ','
@@ -4243,9 +4243,9 @@ var ruleNodeType = [...]NodeType{
 	TsInterfaceExtends,       // InterfaceExtendsClause : 'extends' TypeReference_list_Comma_separated
 	TsEnum,                   // EnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
 	TsEnum,                   // EnumDeclaration : 'enum' BindingIdentifier EnumBody
-	TsEnumBody,               // EnumBody : '{' EnumMember_list_Comma_separated ',' '}'
-	TsEnumBody,               // EnumBody : '{' EnumMember_list_Comma_separated '}'
-	TsEnumBody,               // EnumBody : '{' '}'
+	TsEnumBody,               // EnumBody : '{' .recoveryScope EnumMember_list_Comma_separated ',' '}'
+	TsEnumBody,               // EnumBody : '{' .recoveryScope EnumMember_list_Comma_separated '}'
+	TsEnumBody,               // EnumBody : '{' .recoveryScope '}'
 	0,                        // EnumMember_list_Comma_separated : EnumMember_list_Comma_separated ',' EnumMember
 	0,                        // EnumMember_list_Comma_separated : EnumMember
 	TsEnumMember,             // EnumMember : PropertyName
@@ -4254,8 +4254,8 @@ var ruleNodeType = [...]NodeType{
 	TsNamespace,              // NamespaceDeclaration : 'module' IdentifierPath NamespaceBody
 	0,                        // IdentifierPath : BindingIdentifier
 	0,                        // IdentifierPath : IdentifierPath '.' BindingIdentifier
-	TsNamespaceBody,          // NamespaceBody : '{' ModuleItemList '}'
-	TsNamespaceBody,          // NamespaceBody : '{' '}'
+	TsNamespaceBody,          // NamespaceBody : '{' .recoveryScope ModuleItemList '}'
+	TsNamespaceBody,          // NamespaceBody : '{' .recoveryScope '}'
 	TsImportAliasDeclaration, // ImportAliasDeclaration : 'import' BindingIdentifier '=' EntityName ';'
 	0,                  // EntityName : NamespaceName
 	TsAmbientVar,       // AmbientDeclaration : 'declare' AmbientVariableDeclaration
@@ -4280,8 +4280,8 @@ var ruleNodeType = [...]NodeType{
 	0,                  // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt ObjectType
 	0,                  // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
 	0,                  // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt ObjectType
-	TsAmbientClassBody, // AmbientClassBody : '{' AmbientClassBodyElement_list '}'
-	TsAmbientClassBody, // AmbientClassBody : '{' '}'
+	TsAmbientClassBody, // AmbientClassBody : '{' .recoveryScope AmbientClassBodyElement_list '}'
+	TsAmbientClassBody, // AmbientClassBody : '{' .recoveryScope '}'
 	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement_list AmbientClassBodyElement
 	0,                  // AmbientClassBodyElement_list : AmbientClassBodyElement
 	TsAmbientPropertyMember, // AmbientClassBodyElement : Modifiers PropertyName '?' TypeAnnotationopt ';'
@@ -4295,10 +4295,10 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientIndexMember,    // AmbientClassBodyElement : IndexSignature ';'
 	0,                       // AmbientEnumDeclaration : EnumDeclaration
 	0,                       // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
-	0,                       // AmbientModuleDeclaration : 'module' StringLiteral '{' ModuleBodyopt '}'
-	0,                       // AmbientModuleDeclaration : 'module' IdentifierPath '{' ModuleBodyopt '}'
-	0,                       // AmbientNamespaceBody : '{' AmbientNamespaceElement_list '}'
-	0,                       // AmbientNamespaceBody : '{' '}'
+	0,                       // AmbientModuleDeclaration : 'module' StringLiteral '{' .recoveryScope ModuleBodyopt '}'
+	0,                       // AmbientModuleDeclaration : 'module' IdentifierPath '{' .recoveryScope ModuleBodyopt '}'
+	0,                       // AmbientNamespaceBody : '{' .recoveryScope AmbientNamespaceElement_list '}'
+	0,                       // AmbientNamespaceBody : '{' .recoveryScope '}'
 	0,                       // AmbientNamespaceElement_list : AmbientNamespaceElement_list AmbientNamespaceElement
 	0,                       // AmbientNamespaceElement_list : AmbientNamespaceElement
 	TsAmbientVar,            // AmbientNamespaceElement : 'export' AmbientVariableDeclaration
