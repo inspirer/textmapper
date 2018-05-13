@@ -1,3 +1,7 @@
+0.9.19
+------
+[+] Stop error recovery at recoveryScope markers
+
 0.9.18
 ------
 
