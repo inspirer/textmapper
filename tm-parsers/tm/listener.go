@@ -429,7 +429,7 @@ var ruleNodeType = [...]NodeType{
 	0,                    // lexer_part_OrSyntaxError : start_conditions_scope
 	0,                    // lexer_part_OrSyntaxError : syntax_problem
 	NamedPattern,         // named_pattern : identifier '=' pattern
-	StartConditionsScope, // start_conditions_scope : start_conditions '{' lexer_parts '}'
+	StartConditionsScope, // start_conditions_scope : start_conditions '{' .recoveryScope lexer_parts '}'
 	StartConditions,      // start_conditions : '<' '*' '>'
 	StartConditions,      // start_conditions : '<' stateref_list_Comma_separated '>'
 	0,                    // stateref_list_Comma_separated : stateref_list_Comma_separated ',' stateref

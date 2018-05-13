@@ -348,6 +348,17 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 			continue
 		}
 		recoverPos = append(recoverPos, size)
+${foreach marker in parser.markers.select(it|it.name.toLowerCase() == 'recoveryscope')-}
+${if marker.states.length == 1-}
+		if ${marker.name}State == stack[size-1].state {
+			break
+		}
+${else-}
+		if ${marker.name}States[int(stack[size-1].state)] {
+			break
+		}
+${end-}
+${end-}
 	}
 	if len(recoverPos) == 0 {
 		return nil

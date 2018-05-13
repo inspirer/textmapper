@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+const recoveryScopeState = 143
+
 // Symbol represents a set of all terminal and non-terminal symbols of the tm language.
 type Symbol int
 

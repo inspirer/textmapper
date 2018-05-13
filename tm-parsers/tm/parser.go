@@ -208,6 +208,9 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 			continue
 		}
 		recoverPos = append(recoverPos, size)
+		if recoveryScopeState == stack[size-1].state {
+			break
+		}
 	}
 	if len(recoverPos) == 0 {
 		return nil

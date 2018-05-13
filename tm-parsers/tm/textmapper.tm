@@ -239,7 +239,7 @@ named_pattern -> NamedPattern:
     name=identifier '=' pattern ;
 
 start_conditions_scope -> StartConditionsScope:
-    start_conditions '{' lexer_parts '}' ;
+    start_conditions '{' .recoveryScope lexer_parts '}' ;
 
 start_conditions -> StartConditions:
     '<' '*'  '>'
