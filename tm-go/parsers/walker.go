@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -33,7 +34,7 @@ func (f file) ext() string {
 	return ext
 }
 
-func parseJS(f file, dialect js.Dialect) string {
+func parseJS(ctx context.Context, f file, dialect js.Dialect) string {
 	l := new(js.Lexer)
 	p := new(js.Parser)
 	l.Init(f.content)
@@ -41,7 +42,7 @@ func parseJS(f file, dialect js.Dialect) string {
 	result := "ok"
 	errHandler := func(se js.SyntaxError) bool { return false }
 	p.Init(errHandler, func(nt js.NodeType, offset, endoffset int) {})
-	if err := p.Parse(l); err != nil {
+	if err := p.Parse(ctx, l); err != nil {
 		result = "parse_err"
 		var suffix string
 		if err, ok := err.(js.SyntaxError); ok {
@@ -70,7 +71,7 @@ func parseTM(f file) string {
 	return result
 }
 
-func (f file) tryParse() string {
+func (f file) tryParse(ctx context.Context) string {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("%v: recovered: %v\n", f.name, r)
@@ -79,11 +80,11 @@ func (f file) tryParse() string {
 
 	switch f.ext() {
 	case "js", "jsx":
-		return parseJS(f, js.Javascript)
+		return parseJS(ctx, f, js.Javascript)
 	case "ts":
-		return parseJS(f, js.Typescript)
+		return parseJS(ctx, f, js.Typescript)
 	case "tsx":
-		return parseJS(f, js.TypescriptJsx)
+		return parseJS(ctx, f, js.TypescriptJsx)
 	case "tm":
 		return parseTM(f)
 	}
@@ -126,6 +127,7 @@ func preloadAll(root string) ([]file, error) {
 }
 
 func main() {
+	ctx := context.Background()
 	files, err := preloadAll(os.Args[1])
 	if err != nil {
 		fmt.Println(err)
@@ -136,7 +138,7 @@ func main() {
 
 	results := map[string]int{}
 	for _, f := range files {
-		outcome := f.tryParse()
+		outcome := f.tryParse(ctx)
 		results[outcome+" ("+f.ext()+")"]++
 	}
 

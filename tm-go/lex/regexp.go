@@ -48,7 +48,7 @@ func (e parseError) Error() string {
 	return fmt.Sprintf("broken regexp: %v", e.msg)
 }
 
-func (re Regexp) empty() bool {
+func (re *Regexp) empty() bool {
 	switch re.op {
 	case opConcat, opAlternate:
 		return len(re.sub) == 0
@@ -58,6 +58,31 @@ func (re Regexp) empty() bool {
 		return re.max == 0
 	}
 	return false
+}
+
+// Checks if this regular expression matches exactly one target string, and returns that string on
+// success.
+func (re *Regexp) Constant() (string, bool) {
+	switch re.op {
+	case opCharClass:
+		if re.charset.oneRune() {
+			return string(re.charset[0]), true
+		}
+		return "", false
+	case opLiteral:
+		return re.text, true
+	case opConcat:
+		var text []string
+		for _, sub := range re.sub {
+			val, ok := sub.Constant()
+			if !ok {
+				return "", false
+			}
+			text = append(text, val)
+		}
+		return strings.Join(text, ""), true
+	}
+	return "", false
 }
 
 // MustParse is a panic-on-error version of ParseRegexp.
@@ -603,6 +628,10 @@ func regexpString(re *Regexp, b *bytes.Buffer, paren bool) {
 	case opLiteral:
 		fmt.Fprintf(b, `%s`, re.text)
 	case opCharClass:
+		if re.charset.oneRune() {
+			b.WriteString(re.charset.String())
+			break
+		}
 		fmt.Fprintf(b, "[%s]", re.charset)
 	case opRepeat:
 		var addParens bool

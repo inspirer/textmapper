@@ -77,6 +77,7 @@ var parseTests = []struct {
 	{`[^\s]`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
 	{`\S`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
 	{`[\S]`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
+	{`+\+`, `cat{str{+}cc{\+}}`},
 
 	// Unicode.
 	{`\p{Any}+\pZ`, `cat{cc{\x00-\U0010ffff}+cc{ \u00a0\u1680\u2000-\u200a\u2028-\u2029\u202f\u205f\u3000}}`},
@@ -151,6 +152,7 @@ var stringTests = []struct {
 	{`((())a())`, `a`},
 	{`+`, `+`},
 	{`++`, `++`},
+	{`\+\+`, `\+\+`},
 	{`|+`, `|+`},
 	{`a|+`, `a|+`},
 	{`.+`, `[\x00-\t\x0b-\U0010ffff]+`},
@@ -168,7 +170,7 @@ var stringTests = []struct {
 	{`a(b)`, `ab`},
 	{`a(b|c)`, `a(b|c)`},
 	{`a(b|c)+`, `a(b|c)+`},
-	{`[]]`, `[\]]`},
+	{`[]]`, `\]`},
 	{`[^]]`, `[\x00-\\\^-\U0010ffff]`},
 	{`[arz\n-]`, `[\n\-arz]`},
 	{`[a-z]`, `[a-z]`},
@@ -199,6 +201,39 @@ func TestString(t *testing.T) {
 		}
 		if got := re.String(); test.want != got {
 			t.Errorf("ParseRegexp(%v).String() = %v, want: %v", input, got, test.want)
+		}
+	}
+}
+
+var constTests = []struct {
+	input string
+	want  string
+}{
+	{`a`, `a`},
+	{`ab`, `ab`},
+	{`a()`, `a`},
+	{`a(b)`, `ab`},
+	{`(a)`, `a`},
+	{`((())a())`, `a`},
+	{`+`, `+`},
+	{`++`, ``},
+	{`\+\+`, `++`},
+}
+
+func TestConstants(t *testing.T) {
+	for _, test := range constTests {
+		input := test.input
+		re, err := ParseRegexp(input)
+		if err != nil {
+			t.Errorf("ParseRegexp(%v) failed with %v", input, err)
+			continue
+		}
+		got, ok := re.Constant()
+		if (got != "") != ok {
+			t.Errorf("ParseRegexp(%v).Constant() returned %v with ok=%v", input, got, ok)
+		}
+		if test.want != got {
+			t.Errorf("ParseRegexp(%v).Constant() = %q, %v; want: %q", input, got, ok, test.want)
 		}
 	}
 }
