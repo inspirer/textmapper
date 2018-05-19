@@ -118,7 +118,7 @@ class TMPhrase implements DerivedSourceElement {
 		if (fields.isEmpty()) {
 			return TMPhrase.empty(anchor);
 		}
-		TMField field = TMField.merge(name, fields.toArray(new TMField[fields.size()]));
+		TMField field = TMField.merge(name, fields.toArray(new TMField[0]));
 		if (nullable) {
 			field = field.makeNullable();
 		}
@@ -145,11 +145,7 @@ class TMPhrase implements DerivedSourceElement {
 					namedFields.add(signature);
 				}
 				allFields.add(signature);
-				List<TMField> list = bySignature.get(signature);
-				if (list == null) {
-					bySignature.put(signature, list = new ArrayList<>());
-				}
-				list.add(f);
+				bySignature.computeIfAbsent(signature, k -> new ArrayList<>()).add(f);
 			}
 			namedFields.flush();
 			allFields.flush();
@@ -166,7 +162,7 @@ class TMPhrase implements DerivedSourceElement {
 		if (sortedSignatures == null) {
 			Set<String> unnamed = new HashSet<>(bySignature.keySet());
 			unnamed.removeAll(Arrays.asList(order));
-			String[] unnamedArr = unnamed.toArray(new String[unnamed.size()]);
+			String[] unnamedArr = unnamed.toArray(new String[0]);
 			Arrays.sort(unnamedArr);
 			assert unnamedArr.length + order.length == bySignature.size();
 			sortedSignatures = new String[bySignature.size()];
@@ -181,7 +177,7 @@ class TMPhrase implements DerivedSourceElement {
 			if (fields.size() == 1) {
 				composite = fields.get(0);
 			} else {
-				composite = TMField.merge(null, fields.toArray(new TMField[fields.size()]));
+				composite = TMField.merge(null, fields.toArray(new TMField[0]));
 			}
 			if (fields.size() < phrases.size()) {
 				composite = composite.makeNullable();

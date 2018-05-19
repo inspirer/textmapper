@@ -188,6 +188,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				if ("rangeType".equals(methodName)) {
 					RangeType rangeType = TMDataUtil.getRangeType(rule);
 					return rangeType != null && rangeType.getName() != null
+							&& !"__ignoreContent".equals(rangeType.getName())
 							? rangeType.getName() : "";
 				}
 				if ("customRanges".equals(methodName)) {

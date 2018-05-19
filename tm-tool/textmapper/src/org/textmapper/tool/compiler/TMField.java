@@ -64,7 +64,7 @@ class TMField implements RangeField {
 				newTypes.add(type);
 			}
 		}
-		String[] newTypesArr = newTypes.toArray(new String[newTypes.size()]);
+		String[] newTypesArr = newTypes.toArray(new String[0]);
 		Arrays.sort(newTypesArr);
 
 		TMField result = new TMField(name, newTypesArr, hasExplicitName, isList, nullable,
@@ -106,7 +106,6 @@ class TMField implements RangeField {
 		if (signature != null) return signature;
 
 		signature = this.name +
-				(isList ? "+" : "") +
 				(hasExplicitName ? "=" : "");
 		return signature;
 	}
@@ -173,7 +172,7 @@ class TMField implements RangeField {
 	}
 
 	/**
-	 *  Merges fields that are either simple non-list elements, or share the same signature.
+	 *  Merges fields that share either the type or the name.
 	 */
 	static TMField merge(String nameHint, TMField... fields) {
 		if (fields.length == 0) {
@@ -190,7 +189,7 @@ class TMField implements RangeField {
 			types.addAll(Arrays.asList(field.types));
 			nullable |= field.nullable;
 		}
-		String[] arr = types.toArray(new String[types.size()]);
+		String[] arr = types.toArray(new String[0]);
 		Arrays.sort(arr);
 		if (!sameName && nameHint == null) {
 			throw new IllegalStateException();

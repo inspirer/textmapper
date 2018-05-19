@@ -92,10 +92,13 @@ public class TMEventMapper {
 				RangeType rt = TMDataUtil.getRangeType(rhsPart);
 				if (rt == null || rt.getName() == null) return;
 
-				List<RhsSequence> typeSeqs = typeIndex.get(rt.getName());
+				String name = rt.getName();
+				if (name.equals("__ignoreContent")) return;
+
+				List<RhsSequence> typeSeqs = typeIndex.get(name);
 				if (typeSeqs == null) {
-					typeIndex.put(rt.getName(), typeSeqs = new ArrayList<>());
-					allTypes.add(rt.getName());
+					typeIndex.put(name, typeSeqs = new ArrayList<>());
+					allTypes.add(name);
 				}
 				typeSeqs.add((RhsSequence) rhsPart);
 
@@ -417,6 +420,9 @@ public class TMEventMapper {
 						return TMPhrase.type(type.getIface(), part);
 					}
 					if (type != null && type.getName() != null) {
+						if (type.getName().equals("__ignoreContent")) {
+							return TMPhrase.empty(part);
+						}
 						return TMPhrase.type(type.getName(), part);
 					}
 				}
@@ -457,11 +463,11 @@ public class TMEventMapper {
 		private Rule rule;
 		private Map<RhsSymbol, Integer> index;
 
-		public RuleIndex(Rule rule) {
+		RuleIndex(Rule rule) {
 			this.rule = rule;
 		}
 
-		public CustomRange compute(RhsSequence rhsPart, RangeType rt) {
+		CustomRange compute(RhsSequence rhsPart, RangeType rt) {
 			if (index == null) {
 				index = new HashMap<>();
 				int i = 0;
