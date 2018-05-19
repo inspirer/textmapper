@@ -85,6 +85,7 @@ func (PredicateNotEq) tmNodeNode()       {}
 func (PredicateOr) tmNodeNode()          {}
 func (RawType) tmNodeNode()              {}
 func (References) tmNodeNode()           {}
+func (ReportAs) tmNodeNode()             {}
 func (ReportClause) tmNodeNode()         {}
 func (RhsAnnotated) tmNodeNode()         {}
 func (RhsAsLiteral) tmNodeNode()         {}
@@ -940,6 +941,14 @@ func (n References) Symref() Symref {
 	return Symref{n.Child(selector.Symref)}
 }
 
+type ReportAs struct {
+	Node
+}
+
+func (n ReportAs) Identifier() Identifier {
+	return Identifier{n.Child(selector.Identifier)}
+}
+
 type ReportClause struct {
 	Node
 }
@@ -951,6 +960,13 @@ func (n ReportClause) Action() Identifier {
 func (n ReportClause) Kind() *Identifier {
 	if child := n.Child(selector.Identifier).Next(selector.Identifier); child != nil {
 		return &Identifier{child}
+	}
+	return nil
+}
+
+func (n ReportClause) ReportAs() *ReportAs {
+	if child := n.Child(selector.ReportAs); child != nil {
+		return &ReportAs{child}
 	}
 	return nil
 }

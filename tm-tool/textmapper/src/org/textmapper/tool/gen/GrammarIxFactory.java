@@ -187,14 +187,15 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				if ("rangeType".equals(methodName)) {
 					RangeType rangeType = TMDataUtil.getRangeType(rule);
-					return rangeType != null ? rangeType.getName() : "";
+					return rangeType != null && rangeType.getName() != null
+							? rangeType.getName() : "";
 				}
 				if ("customRanges".equals(methodName)) {
 					Collection<CustomRange> customRanges = TMDataUtil.getCustomRanges(rule);
 					if (customRanges != null) {
 						CustomRange prev = null;
 						for (CustomRange cr : customRanges) {
-							if (prev != null && prev.compareTo(cr) == 1) {
+							if (prev != null && prev.compareTo(cr) > 0) {
 								throw new IllegalStateException("unsorted");
 							}
 							prev = cr;

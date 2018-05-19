@@ -360,7 +360,10 @@ rhsSuffix -> RhsSuffix:
 ;
 
 reportClause -> ReportClause:
-    '->' action=identifier ('/' kind=identifier)?  ;
+    '->' action=identifier ('/' kind=identifier)? reportAs? ;
+
+reportAs -> ReportAs:
+    'as' identifier ;
 
 rhsParts:
     rhsPart

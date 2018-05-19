@@ -341,7 +341,10 @@ rhsSuffix :
 ;
 
 reportClause :
-    '->' action=identifier ('/' kind=identifier)?  ;
+    '->' action=identifier ('/' kind=identifier)? reportAs? ;
+
+reportAs:
+    'as' identifier ;
 
 rhsParts :
     rhsPart

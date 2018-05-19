@@ -17,29 +17,17 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaReportClause extends TmaNode {
+public class TmaReportAs extends TmaNode {
 
-	private final TmaIdentifier action;
-	private final TmaIdentifier kind;
-	private final TmaReportAs reportAs;
+	private final TmaIdentifier identifier;
 
-	public TmaReportClause(TmaIdentifier action, TmaIdentifier kind, TmaReportAs reportAs, TextSource source, int line, int offset, int endoffset) {
+	public TmaReportAs(TmaIdentifier identifier, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.action = action;
-		this.kind = kind;
-		this.reportAs = reportAs;
+		this.identifier = identifier;
 	}
 
-	public TmaIdentifier getAction() {
-		return action;
-	}
-
-	public TmaIdentifier getKind() {
-		return kind;
-	}
-
-	public TmaReportAs getReportAs() {
-		return reportAs;
+	public TmaIdentifier getIdentifier() {
+		return identifier;
 	}
 
 	@Override
@@ -47,14 +35,8 @@ public class TmaReportClause extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (action != null) {
-			action.accept(v);
-		}
-		if (kind != null) {
-			kind.accept(v);
-		}
-		if (reportAs != null) {
-			reportAs.accept(v);
+		if (identifier != null) {
+			identifier.accept(v);
 		}
 	}
 }

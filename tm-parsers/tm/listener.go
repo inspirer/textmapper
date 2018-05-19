@@ -57,7 +57,8 @@ const (
 	Rule               // Predicate? (RhsPart)* RhsSuffix? ReportClause?
 	Predicate          // PredicateExpression
 	RhsSuffix          // Symref
-	ReportClause       // action=Identifier kind=Identifier?
+	ReportClause       // action=Identifier kind=Identifier? ReportAs?
+	ReportAs           // Identifier
 	RhsLookahead       // predicates=(LookaheadPredicate)+
 	LookaheadPredicate // Symref
 	StateMarker        // name=Identifier
@@ -151,6 +152,7 @@ var nodeTypeStr = [...]string{
 	"Predicate",
 	"RhsSuffix",
 	"ReportClause",
+	"ReportAs",
 	"RhsLookahead",
 	"LookaheadPredicate",
 	"StateMarker",
@@ -522,8 +524,11 @@ var ruleNodeType = [...]NodeType{
 	Predicate,            // predicate : '[' predicate_expression ']'
 	RhsSuffix,            // rhsSuffix : '%' 'prec' symref
 	RhsSuffix,            // rhsSuffix : '%' 'shift' symref
+	ReportClause,         // reportClause : '->' identifier '/' identifier reportAs
 	ReportClause,         // reportClause : '->' identifier '/' identifier
+	ReportClause,         // reportClause : '->' identifier reportAs
 	ReportClause,         // reportClause : '->' identifier
+	ReportAs,             // reportAs : 'as' identifier
 	0,                    // rhsParts : rhsPart
 	0,                    // rhsParts : rhsParts rhsPart_OrSyntaxError
 	0,                    // rhsPart : rhsAnnotated

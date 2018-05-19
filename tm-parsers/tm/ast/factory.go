@@ -116,6 +116,8 @@ func ToTmNode(n Node) TmNode {
 		return &RawType{n}
 	case tm.References:
 		return &References{n}
+	case tm.ReportAs:
+		return &ReportAs{n}
 	case tm.ReportClause:
 		return &ReportClause{n}
 	case tm.RhsAnnotated:

@@ -19,12 +19,12 @@ public class RangeType {
 
 	private String name;
 	private String kind;
-	private boolean isInterface;
+	private String iface;
 
-	public RangeType(String name, String kind, boolean isInterface) {
+	public RangeType(String name, String kind, String iface) {
 		this.name = name;
 		this.kind = kind;
-		this.isInterface = isInterface;
+		this.iface = iface;
 	}
 
 	public String getName() {
@@ -35,7 +35,7 @@ public class RangeType {
 		return kind;
 	}
 
-	public boolean isInterface() {
-		return isInterface;
+	public String getIface() {
+		return iface;
 	}
 }

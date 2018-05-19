@@ -476,10 +476,19 @@ rhsSuffix  : RhsSuffix ::=
 class ReportClause {
 	Identifier action;
 	Identifier kind;
+	ReportAs reportAs;
 }
 
 reportClause  : ReportClause ::=
-	'->' action=identifier ('/' kind=identifier)?
+	'->' action=identifier ('/' kind=identifier)? {reportAs}?
+;
+
+class ReportAs {
+	Identifier identifier;
+}
+
+reportAs  : ReportAs ::=
+	'as' {identifier}
 ;
 
 rhsParts  : list<RhsPart>

@@ -137,6 +137,10 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaReportAs n) {
+		return true;
+	}
+
 	protected boolean visit(TmaRhsLookahead n) {
 		return true;
 	}

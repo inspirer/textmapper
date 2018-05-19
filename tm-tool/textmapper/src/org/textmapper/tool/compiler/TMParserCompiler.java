@@ -124,21 +124,7 @@ public class TMParserCompiler {
 				Symbol left = resolver.getSymbol(nonterm.getName().getText());
 				if (!(left instanceof Nonterminal)) continue; /* error is already reported */
 
-				TmaReportClause defaultAction = nonterm.getDefaultAction();
-				if (defaultAction != null) {
-					String name = defaultAction.getAction().getText();
-					if (name.equals(TMEventMapper.TOKEN_CATEGORY)) {
-						error(defaultAction.getAction(), TMEventMapper.TOKEN_CATEGORY +
-								" is reserved for a set of token node types");
-					} else {
-						TMDataUtil.putRangeType(left, new RangeType(name,
-								defaultAction.getKind() != null
-										? defaultAction.getKind().getText()
-										: null,
-								interfaces.contains(name)));
-					}
-				}
-
+				annotateWithRangeType(left, nonterm.getDefaultAction(), null);
 				if (nonterm.getType() instanceof TmaNontermTypeAST) {
 					final TmaNontermTypeAST astType = (TmaNontermTypeAST) nonterm.getType();
 					Nonterminal type = asNonterminalWithoutType(astType.getReference(), withType);
@@ -331,7 +317,7 @@ public class TMParserCompiler {
 		if (prio != null) {
 			rule = builder.addPrecedence(rule, prio);
 		}
-		annotateSequence(rule, action);
+		annotateWithRangeType(rule, action, left);
 		RhsPredicate predicate = convertPredicate(right.getPredicate(), left);
 		builder.addRule(left, predicate == null
 				? rule : builder.conditional(predicate, rule, right));
@@ -469,7 +455,7 @@ public class TMParserCompiler {
 			if (result == null) {
 				return null;
 			}
-			annotateSequence((RhsSequence) result, rule.getAction());
+			annotateWithRangeType(result, rule.getAction(), null);
 
 			// inline (...|...|...)
 		} else if (canInline && isChoicePart(part)) {
@@ -521,23 +507,61 @@ public class TMParserCompiler {
 		return Arrays.asList(sets);
 	}
 
-	private void annotateSequence(RhsSequence seq, TmaReportClause clause) {
+	private void annotateWithRangeType(
+			UserDataHolder seqOrNonterm, TmaReportClause clause, UserDataHolder override) {
 		if (clause == null) return;
 
 		String name = clause.getAction().getText();
-		if (interfaces.contains(name)) {
-			error(clause.getAction(), "interface types are not expected here");
-			return;
-		}
 		if (name.equals(TMEventMapper.TOKEN_CATEGORY)) {
 			error(clause.getAction(), TMEventMapper.TOKEN_CATEGORY +
 					" is reserved for a set of token node types");
 			return;
 		}
 
-		TMDataUtil.putRangeType(seq, new RangeType(name,
-				clause.getKind() != null ? clause.getKind().getText() : null,
-				false /*interface*/));
+		String overrideInterface = null;
+		if (override != null) {
+			RangeType parentType = TMDataUtil.getRangeType(override);
+			overrideInterface = parentType != null ? parentType.getIface() : null;
+		}
+
+		String kind = clause.getKind() != null ? clause.getKind().getText() : null;
+		TmaReportAs as = clause.getReportAs();
+		if (as != null) {
+			if (overrideInterface != null) {
+				error(clause.getReportAs(),
+						"rules cannot override the interface of a nonterminal");
+				return;
+			}
+			if (interfaces.contains(name)) {
+				error(clause.getAction(),
+						"interface types are not expected on the left-hand side of the 'as' clause");
+				return;
+			}
+			String iface = as.getIdentifier().getText();
+			if (!interfaces.contains(iface)) {
+				error(clause.getReportAs(), "interface type is expected");
+				return;
+			}
+
+			TMDataUtil.putRangeType(seqOrNonterm, new RangeType(name, kind, iface));
+			return;
+		}
+
+		if (interfaces.contains(name)) {
+			if (kind != null) {
+				error(clause.getKind(), "interface types cannot have a subtype clause");
+				return;
+			}
+			if (overrideInterface != null) {
+				error(clause.getAction(),
+						"rules cannot override the interface of a nonterminal");
+				return;
+			}
+			TMDataUtil.putRangeType(seqOrNonterm, new RangeType(null, null, name /*iface*/));
+			return;
+		}
+
+		TMDataUtil.putRangeType(seqOrNonterm, new RangeType(name, kind, overrideInterface));
 	}
 
 	private RhsSet convertSet(ITmaSetExpression expr, Nonterminal context) {
@@ -703,7 +727,7 @@ public class TMParserCompiler {
 			if (abstractRulePart == null) {
 				return null;
 			}
-			annotateSequence(abstractRulePart, rule.getAction());
+			annotateWithRangeType(abstractRulePart, rule.getAction(), null);
 			RhsPredicate predicate = convertPredicate(rule.getPredicate(), outer);
 			if (predicate != null) {
 				result.add(builder.conditional(predicate, abstractRulePart, rule));

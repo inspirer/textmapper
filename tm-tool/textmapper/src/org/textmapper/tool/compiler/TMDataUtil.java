@@ -136,9 +136,6 @@ public class TMDataUtil {
 	}
 
 	public static void putRangeType(UserDataHolder udh, RangeType type) {
-		if (udh instanceof RhsSequence && type.isInterface()) {
-			throw new IllegalArgumentException();
-		}
 		udh.putUserData(UD_RANGE_TYPE, type);
 	}
 
@@ -149,10 +146,7 @@ public class TMDataUtil {
 		RangeType rangeType = (RangeType) lookupUserData(udh, UD_RANGE_TYPE);
 		if (rangeType == null && udh instanceof RhsSequence && ((RhsSequence) udh).getContext() == null) {
 			// For top-level sequences, we also check the nonterminal default type.
-			rangeType = (RangeType) lookupUserData(((RhsSequence) udh).getLeft(), UD_RANGE_TYPE);
-			if (rangeType != null && rangeType.isInterface()) {
-				return null;
-			}
+			return (RangeType) lookupUserData(((RhsSequence) udh).getLeft(), UD_RANGE_TYPE);
 		}
 		return rangeType;
 	}

@@ -41,7 +41,7 @@ public class TMEventMapper {
 	private final Set<Nonterminal> lists = new HashSet<>();
 	private final Map<String, Set<String>> categories = new HashMap<>();
 
-	private final Map<String, List<Nonterminal>> categoryNonterms = new HashMap<>();
+	private final Map<String, List<RhsSequence>> categorySeqs = new HashMap<>();
 	private final Set<Nonterminal> entered = new HashSet<>();
 	private final Map<Symbol, TMPhrase> phrases = new HashMap<>();
 	private final Set<Nonterminal> recursive = new LinkedHashSet<>();
@@ -74,18 +74,15 @@ public class TMEventMapper {
 		for (Rule rule : grammar.getRules()) {
 			RhsSequence seq = rule.getSource();
 			RangeType rangeType = TMDataUtil.getRangeType(seq);
-			String type = rangeType != null ? rangeType.getName() : "";
+			String type = rangeType != null && rangeType.getName() != null
+					? rangeType.getName() : "";
 			String existing;
 			if ((existing = sequenceTypes.putIfAbsent(seq, type)) != null) {
 				if (!existing.equals(type)) {
 					throw new IllegalStateException();
 				}
 			} else {
-				List<RhsSequence> list = index.get(seq.getLeft());
-				if (list == null) {
-					index.put(seq.getLeft(), list = new ArrayList<>());
-				}
-				list.add(seq);
+				index.computeIfAbsent(seq.getLeft(), k -> new ArrayList<>()).add(seq);
 			}
 
 			RuleIndex ri = new RuleIndex(rule);
@@ -93,7 +90,7 @@ public class TMEventMapper {
 				if (!(rhsPart instanceof RhsSequence)) return;
 
 				RangeType rt = TMDataUtil.getRangeType(rhsPart);
-				if (rt == null) return;
+				if (rt == null || rt.getName() == null) return;
 
 				List<RhsSequence> typeSeqs = typeIndex.get(rt.getName());
 				if (typeSeqs == null) {
@@ -131,30 +128,34 @@ public class TMEventMapper {
 		}
 
 		// Collect categories.
-		for (Symbol symbol : grammar.getSymbols()) {
-			if (!(symbol instanceof Nonterminal)) continue;
-			Nonterminal n = (Nonterminal) symbol;
+		for (Rule rule : grammar.getRules()) {
+			RhsSequence seq = rule.getSource();
+			RhsUtil.traverse(seq, rhsPart -> {
+				if (!(rhsPart instanceof RhsSequence)) return;
 
-			RangeType rangeType = TMDataUtil.getRangeType(n);
-			if (rangeType == null || !rangeType.isInterface()) continue;
+				RangeType rt = TMDataUtil.getRangeType(rhsPart);
+				if (rt == null) return;
 
-			String category = rangeType.getName();
-			if (!categories.containsKey(category)) {
-				categories.put(category, new LinkedHashSet<>());
-				categoryNonterms.put(category, new ArrayList<>());
-			}
-			categoryNonterms.get(category).add(n);
+				String category = rt.getIface();
+				if (category != null) {
+					if (!categories.containsKey(category)) {
+						categories.put(category, new LinkedHashSet<>());
+						categorySeqs.put(category, new ArrayList<>());
+					}
+					categorySeqs.get(category).add((RhsSequence) rhsPart);
+				}
+			});
 		}
 
 		// A special category of tokens.
 		categories.put(TOKEN_CATEGORY, new LinkedHashSet<>());
-		categoryNonterms.put(TOKEN_CATEGORY, Collections.emptyList());
+		categorySeqs.put(TOKEN_CATEGORY, Collections.emptyList());
 
 		// Pre-compute phrases for all nonterminals.
 		for (Symbol symbol : grammar.getSymbols()) {
 			if (!(symbol instanceof Nonterminal)) continue;
 
-			TMPhrase p = computePhrase((Nonterminal) symbol, false);
+			TMPhrase p = computePhrase((Nonterminal) symbol);
 			if (recursive.contains(symbol) && !p.isEmpty()) {
 				status.report(ProcessingStatus.KIND_ERROR,
 						"Non-empty `" + symbol.getNameText() + "' recursively contain itself",
@@ -230,8 +231,8 @@ public class TMEventMapper {
 			}
 
 			final String name;
-			int node;
-			int[] deps;
+			private int node;
+			private int[] deps;
 		}
 		List<Category> catList = new ArrayList<>();
 		for (String name : allCategories) {
@@ -248,14 +249,24 @@ public class TMEventMapper {
 		SetBuilder categorySet = new SetBuilder(catIndex.size());
 
 		for (String catName : allCategories) {
-			List<Nonterminal> nonterminals = this.categoryNonterms.get(catName);
+			List<RhsSequence> seqs = this.categorySeqs.get(catName);
 			Category cat = catList.get(catIndex.get(catName));
-			for (Nonterminal nt : nonterminals) {
-				TMPhrase phrase = computePhrase(nt, true);
+			for (RhsSequence seq : seqs) {
+				RangeType rt = TMDataUtil.getRangeType(seq);
+				if (rt.getName() != null) {
+					Integer type = typeIndex.get(rt.getName());
+					if (type != null) {
+						typeSet.add(type);
+					}
+					continue;
+				}
+
+				TMPhrase phrase = computePhrase(seq, true);
 				if (!phrase.isUnnamedField() || phrase.first().isList()) {
+					String name = seq.getName() != null ? seq.getName() : seq.toString();
 					status.report(ProcessingStatus.KIND_ERROR,
-							nt.getNameText() + " cannot be used as an interface: "
-									+ phrase.toString(), nt);
+							name + " cannot be used as an interface: "
+									+ phrase.toString(), seq);
 					continue;
 				}
 				for (String catOrType : phrase.first().getTypes()) {
@@ -300,32 +311,30 @@ public class TMEventMapper {
 		return NonterminalUtil.isList(n) || lists.contains(n);
 	}
 
-	private TMPhrase computePhrase(Nonterminal nt, boolean internal) {
+	private TMPhrase computePhrase(Nonterminal nt) {
 		RangeType rangeType = TMDataUtil.getRangeType(nt);
 
-		TMPhrase result;
-		if (!internal) {
-			result = phrases.get(nt);
-			if (result != null) return result;
+		TMPhrase result = phrases.get(nt);
+		if (result != null) return result;
 
-			if (!entered.add(nt)) {
-				recursive.add(nt);
-				return TMPhrase.empty(nt);
-			}
-
-			// -> something
-			if (rangeType != null && rangeType.isInterface()) {
-				result = TMPhrase.type(rangeType.getName(), nt);
-				phrases.put(nt, result);
-				return result;
-			}
+		if (!entered.add(nt)) {
+			recursive.add(nt);
+			return TMPhrase.empty(nt);
 		}
+
+		// -> something
+		if (rangeType != null && rangeType.getIface() != null) {
+			result = TMPhrase.type(rangeType.getIface(), nt);
+			phrases.put(nt, result);
+			return result;
+		}
+
 
 		List<TMPhrase> list = new ArrayList<>();
 		for (RhsSequence p : index.get(nt)) {
 			list.add(computePhrase(p, false));
 		}
-		if (rangeType != null) {
+		if (rangeType != null && rangeType.getName() != null) {
 			result = TMPhrase.mergeSet(rangeType.getName(), list, nt, status);
 		} else {
 			result = TMPhrase.merge(list, nt, status);
@@ -343,7 +352,7 @@ public class TMEventMapper {
 				result = TMPhrase.empty(nt);
 			}
 		}
-		if (!internal) phrases.put(nt, result);
+		phrases.put(nt, result);
 		return result;
 	}
 
@@ -351,7 +360,7 @@ public class TMEventMapper {
 		return computePhrase(part, false);
 	}
 
-	private TMPhrase computePhrase(RhsPart part, boolean internal) {
+	private TMPhrase computePhrase(RhsPart part, boolean lookInto) {
 		switch (part.getKind()) {
 			case Assignment: {
 				RhsAssignment assignment = (RhsAssignment) part;
@@ -397,14 +406,17 @@ public class TMEventMapper {
 				if (isListSelfReference((RhsSymbol) part) || target.isTerm()) {
 					return TMPhrase.empty(part);
 				}
-				return computePhrase((Nonterminal) target, false);
+				return computePhrase((Nonterminal) target);
 			}
 			case Optional:
 				return computePhrase(((RhsOptional) part).getPart(), false).makeNullable(part);
 			case Sequence:
-				if (!internal) {
+				if (!lookInto) {
 					RangeType type = TMDataUtil.getRangeType(part);
-					if (type != null) {
+					if (type != null && type.getIface() != null) {
+						return TMPhrase.type(type.getIface(), part);
+					}
+					if (type != null && type.getName() != null) {
 						return TMPhrase.type(type.getName(), part);
 					}
 				}
