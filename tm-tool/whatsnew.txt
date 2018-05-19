@@ -1,5 +1,12 @@
+0.9.20
+------
+
+[+] Syntax for casting specific events to interfaces.
+[+] -> __ignoreContent
+
 0.9.19
 ------
+
 [+] Stop error recovery at recoveryScope markers
 
 0.9.18
