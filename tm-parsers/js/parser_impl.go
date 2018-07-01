@@ -45,8 +45,11 @@ const (
 	debugSyntax          = false
 )
 
+type lookaheadCache map[uint64]bool
+
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
+	cache := make(lookaheadCache)
 
 	state := start
 	p.endState = end
@@ -88,7 +91,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs, lexer)
+			p.applyRule(rule, &entry, rhs, lexer, cache)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}

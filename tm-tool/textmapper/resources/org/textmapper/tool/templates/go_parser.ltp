@@ -107,6 +107,9 @@ ${end-}
 }
 
 ${end-}
+${if self->needLookaheadCache()-}
+${call lookaheadCache}
+${end-}
 ${call parseFunc}
 ${if self->hasRecovering()-}
 const errSymbol = ${syntax.error.index}
@@ -137,17 +140,24 @@ ${template contextArg-}
 ${if opts.cancellable}ctx, ${end-}
 ${end}
 
+${template lookaheadCache-}
+type lookaheadCache map[uint64]bool
+${end}
+
 ${template parseFunc-}
 func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(error, ${self->valueType()})${end} {
 ${if self->ignoredReportTokens()-}
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 ${end-}
+${if self->needLookaheadCache()-}
+	cache := make(lookaheadCache)
+${end-}
 	state := start
 ${if opts.cancellable-}
-  var shiftCounter int
+	var shiftCounter int
 ${end-}
 ${if self->hasRecovering()-}
-  var lastErr SyntaxError
+	var lastErr SyntaxError
 	recovering := 0
 ${end-}
 
@@ -186,7 +196,7 @@ ${end-}
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs, lexer)
+			p.applyRule(rule, &entry, rhs, lexer${self->needLookaheadCache() ? ', cache' : ''})
 			if debugSyntax {
 				"fmt".Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -510,7 +520,7 @@ ${end-}
 ${end}
 
 ${template lookaheadRule-}
-func lookaheadRule(lexer *Lexer, next, rule int32) int32 {
+func lookaheadRule(lexer *Lexer, next, rule int32, cache lookaheadCache) int32 {
 	switch rule {
 ${call caseLookaheadRules(true)-}
 	}
@@ -523,8 +533,8 @@ ${cached query laMethodName() = 'At' + self.target.name}
 
 ${template lookaheadMethods-}
 ${foreach inp in syntax.input.select(it|!it.hasEoi())-}
-func ${inp->laMethodName()}(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, ${inp.index}, ${parser.finalStates[inp.index]});
+func ${inp->laMethodName()}(lexer *Lexer, next int32${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
+	return lookahead(lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${opts.recursiveLookaheads ? ', cache' : ''});
 }
 
 ${end-}
@@ -533,7 +543,7 @@ ${end}
 ${template setupLookaheadLexer-}
 	var lexer Lexer = *l
 ${end}
-${template callLookaheadNext}lookaheadNext(&lexer)${end}
+${template callLookaheadNext(memoization)}lookaheadNext(&lexer)${end}
 
 ${template lookahead-}
 ${call lookaheadNext-}
@@ -541,9 +551,18 @@ ${if opts.recursiveLookaheads-}
 ${call lookaheadRule-}
 ${end-}
 ${call lookaheadMethods-}
-func lookahead(l *Lexer, next int32, start, end ${self->stateType()}) bool {
+func lookahead(l *Lexer, next int32, start, end ${self->stateType()}${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
 ${call setupLookaheadLexer-}
-
+${if opts.recursiveLookaheads}
+	// Use memoization for recursive lookaheads.
+	if next == noToken {
+		next = ${call callLookaheadNext(true)}
+	}
+	key := uint64(l.tokenOffset) + uint64(end)<<40
+	if ret, ok := cache[key]; ok {
+		return ret
+	}
+${end}
 	var allocated [64]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
@@ -554,7 +573,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if next == noToken {
-				next = ${call callLookaheadNext}
+				next = ${call callLookaheadNext(false)}
 			}
 			action = lalr(action, next)
 		}
@@ -569,8 +588,8 @@ ${end-}
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
 ${if opts.recursiveLookaheads-}
-			if sym := lookaheadRule(&lexer, next, rule); sym != 0 {
-			  entry.sym.symbol = sym
+			if sym := lookaheadRule(&lexer, next, rule, cache); sym != 0 {
+				entry.sym.symbol = sym
 			}
 ${end-}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
@@ -580,7 +599,7 @@ ${end-}
 		} else if action == -1 {
 			// Shift.
 			if next == noToken {
-				next = ${call callLookaheadNext}
+				next = ${call callLookaheadNext(false)}
 			}
 			state = gotoState(state, next)
 			stack = append(stack, stackEntry{
@@ -597,14 +616,18 @@ ${end-}
 		}
 	}
 
+${if opts.recursiveLookaheads-}
+	cache[key] = state == end
+${end-}
 	return state == end
 }
 ${end}
 
 ${query callLaMethod(recurse) =
   recurse
-    ? 'lookahead(lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] + ')'
-    : self->laMethodName() + '(lexer, p.next.symbol)' }
+    ? 'lookahead(lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] +
+        (context.opts.recursiveLookaheads ? ', cache)' : ')')
+    : self->laMethodName() + '(lexer, p.next.symbol' + (context.opts.recursiveLookaheads ? ', cache)' : ')') }
 
 ${template caseLookaheadRules(recurse)-}
 ${foreach rule in parser.lookaheadRules-}
@@ -621,7 +644,7 @@ ${end-}
 ${end}
 
 ${template applyRule-}
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needLookaheadCache() ? ', cache lookaheadCache' : ''}) {
 ${if syntax.rules.exists(r|r.code()) || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|r.code())-}
@@ -716,6 +739,8 @@ ${end}
 ${query needActionsTable() = parser.lalr.size() > 0}
 
 ${query needExplicitLookahead() = parser.lookaheadRules.size() > 0}
+
+${query needLookaheadCache() = self->needExplicitLookahead() && context.opts.recursiveLookaheads}
 
 ${cached query hasRecovering() = syntax.error && syntax.sets.exists(it|it.name.camelCase == 'afterErr' && it.elements.length > 0)}
 

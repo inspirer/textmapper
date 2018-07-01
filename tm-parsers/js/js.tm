@@ -1779,4 +1779,4 @@ ${end-}
 ${end}
 
 ${template go_parser.lookaheadNext}${end}
-${template go_parser.callLookaheadNext}lookaheadNext(&lexer, end, stack)${end}
+${template go_parser.callLookaheadNext(memoization)}lookaheadNext(&lexer, end, ${memoization?'nil /*empty stack*/':'stack'})${end}

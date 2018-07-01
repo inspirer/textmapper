@@ -25,34 +25,34 @@ func (p *Parser) Parse(ctx context.Context, lexer *Lexer) error {
 	return p.parse(ctx, 5, 5503, lexer)
 }
 
-func lookaheadRule(lexer *Lexer, next, rule int32) int32 {
+func lookaheadRule(lexer *Lexer, next, rule int32, cache lookaheadCache) int32 {
 	switch rule {
 	case 3579:
-		if lookahead(lexer, next, 0, 5497) {
+		if lookahead(lexer, next, 0, 5497, cache) {
 			return 655 /* lookahead_StartOfArrowFunction */
 		} else {
 			return 156 /* lookahead_notStartOfArrowFunction */
 		}
 	case 3580:
-		if lookahead(lexer, next, 1, 5498) {
+		if lookahead(lexer, next, 1, 5498, cache) {
 			return 333 /* lookahead_StartOfParametrizedCall */
 		} else {
 			return 289 /* lookahead_notStartOfParametrizedCall */
 		}
 	case 3581:
-		if lookahead(lexer, next, 4, 5501) {
+		if lookahead(lexer, next, 4, 5501, cache) {
 			return 812 /* lookahead_StartOfMappedType */
 		} else {
 			return 804 /* lookahead_notStartOfMappedType */
 		}
 	case 3582:
-		if lookahead(lexer, next, 3, 5500) {
+		if lookahead(lexer, next, 3, 5500, cache) {
 			return 818 /* lookahead_StartOfFunctionType */
 		} else {
 			return 797 /* lookahead_notStartOfFunctionType */
 		}
 	case 3583:
-		if lookahead(lexer, next, 2, 5499) {
+		if lookahead(lexer, next, 2, 5499, cache) {
 			return 711 /* lookahead_StartOfExtendsTypeRef */
 		} else {
 			return 710 /* lookahead_notStartOfExtendsTypeRef */
@@ -61,27 +61,27 @@ func lookaheadRule(lexer *Lexer, next, rule int32) int32 {
 	return 0
 }
 
-func AtStartOfArrowFunction(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 0, 5497)
+func AtStartOfArrowFunction(lexer *Lexer, next int32, cache lookaheadCache) bool {
+	return lookahead(lexer, next, 0, 5497, cache)
 }
 
-func AtStartOfParametrizedCall(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 1, 5498)
+func AtStartOfParametrizedCall(lexer *Lexer, next int32, cache lookaheadCache) bool {
+	return lookahead(lexer, next, 1, 5498, cache)
 }
 
-func AtStartOfExtendsTypeRef(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 2, 5499)
+func AtStartOfExtendsTypeRef(lexer *Lexer, next int32, cache lookaheadCache) bool {
+	return lookahead(lexer, next, 2, 5499, cache)
 }
 
-func AtStartOfFunctionType(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 3, 5500)
+func AtStartOfFunctionType(lexer *Lexer, next int32, cache lookaheadCache) bool {
+	return lookahead(lexer, next, 3, 5500, cache)
 }
 
-func AtStartOfMappedType(lexer *Lexer, next int32) bool {
-	return lookahead(lexer, next, 4, 5501)
+func AtStartOfMappedType(lexer *Lexer, next int32, cache lookaheadCache) bool {
+	return lookahead(lexer, next, 4, 5501, cache)
 }
 
-func lookahead(l *Lexer, next int32, start, end int16) bool {
+func lookahead(l *Lexer, next int32, start, end int16, cache lookaheadCache) bool {
 	var lexer Lexer
 	lexer.source = l.source
 	lexer.ch = l.ch
@@ -94,6 +94,15 @@ func lookahead(l *Lexer, next int32, start, end int16) bool {
 	lexer.Dialect = l.Dialect
 	lexer.token = l.token
 	// Note: Stack is intentionally omitted.
+
+	// Use memoization for recursive lookaheads.
+	if next == noToken {
+		next = lookaheadNext(&lexer, end, nil /*empty stack*/)
+	}
+	key := uint64(l.tokenOffset) + uint64(end)<<40
+	if ret, ok := cache[key]; ok {
+		return ret
+	}
 
 	var allocated [64]stackEntry
 	state := start
@@ -117,7 +126,7 @@ func lookahead(l *Lexer, next int32, start, end int16) bool {
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
-			if sym := lookaheadRule(&lexer, next, rule); sym != 0 {
+			if sym := lookaheadRule(&lexer, next, rule, cache); sym != 0 {
 				entry.sym.symbol = sym
 			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
@@ -144,6 +153,7 @@ func lookahead(l *Lexer, next int32, start, end int16) bool {
 		}
 	}
 
+	cache[key] = state == end
 	return state == end
 }
 
@@ -183,7 +193,7 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, cache lookaheadCache) {
 	switch rule {
 	case 2694: // IterationStatement : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
@@ -192,35 +202,35 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 	case 2722: // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3579:
-		if AtStartOfArrowFunction(lexer, p.next.symbol) {
+		if AtStartOfArrowFunction(lexer, p.next.symbol, cache) {
 			lhs.sym.symbol = 655 /* lookahead_StartOfArrowFunction */
 		} else {
 			lhs.sym.symbol = 156 /* lookahead_notStartOfArrowFunction */
 		}
 		return
 	case 3580:
-		if AtStartOfParametrizedCall(lexer, p.next.symbol) {
+		if AtStartOfParametrizedCall(lexer, p.next.symbol, cache) {
 			lhs.sym.symbol = 333 /* lookahead_StartOfParametrizedCall */
 		} else {
 			lhs.sym.symbol = 289 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
 	case 3581:
-		if AtStartOfMappedType(lexer, p.next.symbol) {
+		if AtStartOfMappedType(lexer, p.next.symbol, cache) {
 			lhs.sym.symbol = 812 /* lookahead_StartOfMappedType */
 		} else {
 			lhs.sym.symbol = 804 /* lookahead_notStartOfMappedType */
 		}
 		return
 	case 3582:
-		if AtStartOfFunctionType(lexer, p.next.symbol) {
+		if AtStartOfFunctionType(lexer, p.next.symbol, cache) {
 			lhs.sym.symbol = 818 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 797 /* lookahead_notStartOfFunctionType */
 		}
 		return
 	case 3583:
-		if AtStartOfExtendsTypeRef(lexer, p.next.symbol) {
+		if AtStartOfExtendsTypeRef(lexer, p.next.symbol, cache) {
 			lhs.sym.symbol = 711 /* lookahead_StartOfExtendsTypeRef */
 		} else {
 			lhs.sym.symbol = 710 /* lookahead_notStartOfExtendsTypeRef */
