@@ -3518,11 +3518,11 @@ var ruleNodeType = [...]NodeType{
 	0,                       // ForDeclaration : LetOrConst ForBinding
 	0,                       // ForDeclaration_Await : LetOrConst ForBinding_Await
 	0,                       // ForDeclaration_Yield : LetOrConst ForBinding_Yield
-	ForBinding,              // ForBinding : BindingIdentifier lookahead_notStartOfArrowFunction
+	ForBinding,              // ForBinding : BindingIdentifier
 	ForBinding,              // ForBinding : BindingPattern
-	ForBinding,              // ForBinding_Await : BindingIdentifier lookahead_notStartOfArrowFunction
+	ForBinding,              // ForBinding_Await : BindingIdentifier
 	ForBinding,              // ForBinding_Await : BindingPattern_Await
-	ForBinding,              // ForBinding_Yield : BindingIdentifier lookahead_notStartOfArrowFunction
+	ForBinding,              // ForBinding_Yield : BindingIdentifier
 	ForBinding,              // ForBinding_Yield : BindingPattern_Yield
 	ForCondition,            // ForCondition : Expressionopt_In
 	ForCondition,            // ForCondition_Await : Expressionopt_Await_In
@@ -3765,18 +3765,18 @@ var ruleNodeType = [...]NodeType{
 	0,                          // ClassHeritage_Yield : ClassExtendsClause_Yield
 	0,                          // ClassHeritage_Yield : ImplementsClause
 	0,                          // ClassHeritage_Yield :
-	0,                          // StartsOfExtendsTypeRef : TypeReference 'implements'
-	0,                          // StartsOfExtendsTypeRef : TypeReference '{'
-	Extends,                    // ClassExtendsClause : 'extends' lookahead_StartsOfExtendsTypeRef TypeReference
-	Extends,                    // ClassExtendsClause : 'extends' lookahead_notStartsOfExtendsTypeRef LeftHandSideExpression
-	Extends,                    // ClassExtendsClause_Await : 'extends' lookahead_StartsOfExtendsTypeRef TypeReference
-	Extends,                    // ClassExtendsClause_Await : 'extends' lookahead_notStartsOfExtendsTypeRef LeftHandSideExpression_Await
-	Extends,                    // ClassExtendsClause_Await_Yield : 'extends' lookahead_StartsOfExtendsTypeRef TypeReference
-	Extends,                    // ClassExtendsClause_Await_Yield : 'extends' lookahead_notStartsOfExtendsTypeRef LeftHandSideExpression_Await_Yield
-	Extends,                    // ClassExtendsClause_Yield : 'extends' lookahead_StartsOfExtendsTypeRef TypeReference
-	Extends,                    // ClassExtendsClause_Yield : 'extends' lookahead_notStartsOfExtendsTypeRef LeftHandSideExpression_Yield
-	0,                          // lookahead_notStartsOfExtendsTypeRef :
-	0,                          // lookahead_StartsOfExtendsTypeRef :
+	0,                          // StartOfExtendsTypeRef : TypeReference 'implements'
+	0,                          // StartOfExtendsTypeRef : TypeReference '{'
+	Extends,                    // ClassExtendsClause : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	Extends,                    // ClassExtendsClause : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression
+	Extends,                    // ClassExtendsClause_Await : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	Extends,                    // ClassExtendsClause_Await : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Await
+	Extends,                    // ClassExtendsClause_Await_Yield : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	Extends,                    // ClassExtendsClause_Await_Yield : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Await_Yield
+	Extends,                    // ClassExtendsClause_Yield : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	Extends,                    // ClassExtendsClause_Yield : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Yield
+	0,                          // lookahead_notStartOfExtendsTypeRef :
+	0,                          // lookahead_StartOfExtendsTypeRef :
 	TsImplementsClause,         // ImplementsClause : 'implements' TypeReference_list_Comma_separated
 	0,                          // TypeReference_list_Comma_separated : TypeReference_list_Comma_separated ',' TypeReference
 	0,                          // TypeReference_list_Comma_separated : TypeReference

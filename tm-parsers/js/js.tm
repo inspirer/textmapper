@@ -875,7 +875,7 @@ ForDeclaration<Yield, Await> :
 ;
 
 ForBinding<Yield, Await> -> ForBinding :
-    BindingIdentifier (?= !StartOfArrowFunction)
+    BindingIdentifier
   | BindingPattern
 ;
 
@@ -1063,12 +1063,12 @@ ClassTail<Yield, Await> :
 ClassHeritage<Yield, Await>:
     ClassExtendsClause? ImplementsClause? ;
 
-StartsOfExtendsTypeRef:
+StartOfExtendsTypeRef:
     TypeReference ('implements' | '{') ;
 
 ClassExtendsClause<Yield, Await> -> Extends:
-    'extends' (?= StartsOfExtendsTypeRef) TypeReference
-  | 'extends' (?= !StartsOfExtendsTypeRef) LeftHandSideExpression
+    'extends' (?= StartOfExtendsTypeRef) TypeReference
+  | 'extends' (?= !StartOfExtendsTypeRef) LeftHandSideExpression
 ;
 
 ImplementsClause -> TsImplementsClause:

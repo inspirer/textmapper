@@ -1,9 +1,10 @@
 package js_test
 
 import (
+	"context"
+	"fmt"
 	"testing"
 
-	"context"
 	"github.com/inspirer/textmapper/tm-parsers/js"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
@@ -1365,4 +1366,27 @@ func BenchmarkParser(b *testing.B) {
 		p.Parse(ctx, l)
 	}
 	b.SetBytes(int64(len(jsBenchmarkCode)))
+}
+
+func BenchmarkLookahead(b *testing.B) {
+	l := new(js.Lexer)
+	p := new(js.Parser)
+	onError := func(se js.SyntaxError) bool {
+		b.Errorf("unexpected: %v", se)
+		return false
+	}
+
+	expr := "()=>1"
+	for i := 0; i < 10; i++ {
+		expr = fmt.Sprintf("(a=(%v)())=>a+1", expr)
+	}
+
+	ctx := context.Background()
+	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		l.Init(expr)
+		p.Parse(ctx, l)
+	}
+	b.SetBytes(int64(len(expr)))
 }
