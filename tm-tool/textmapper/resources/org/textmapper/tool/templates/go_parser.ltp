@@ -133,11 +133,11 @@ ${end-}
 ${end}
 
 ${template contextParam-}
-${if opts.cancellable}ctx "context".Context, ${end-}
+${if context.opts.cancellable}ctx "context".Context, ${end-}
 ${end}
 
 ${template contextArg-}
-${if opts.cancellable}ctx, ${end-}
+${if context.opts.cancellable}ctx, ${end-}
 ${end}
 
 ${template lookaheadCache-}
@@ -145,7 +145,7 @@ type lookaheadCache map[uint64]bool
 ${end}
 
 ${template parseFunc-}
-func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(error, ${self->valueType()})${end} {
+func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(${self->valueType()}, error)${end} {
 ${if self->ignoredReportTokens()-}
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 ${end-}
@@ -196,7 +196,9 @@ ${end-}
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs, lexer${self->needLookaheadCache() ? ', cache' : ''})
+			if err := p.applyRule(${call contextArg}rule, &entry, rhs, lexer${self->needLookaheadCache() ? ', cache' : ''}); err != nil {
+			  return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}err
+			}
 			if debugSyntax {
 				"fmt".Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -206,7 +208,7 @@ ${end-}
 
 		} else if action == -1 {
 ${if opts.cancellable-}
-${call checkForCancellation}
+${call checkForCancellation(self->hasAssocValuesForInput() ? self->valueTypeDefaultVal() + ', ' : '')}
 ${end-}
 			// Shift.
 			if p.next.symbol == noToken {
@@ -254,7 +256,7 @@ ${end-}
 					Endoffset: endoffset,
 				}
 				if !p.eh(lastErr) {
-					return lastErr${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
+					return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 				}
 			}
 			if stack = p.recoverFromError(lexer, stack); stack == nil {
@@ -266,7 +268,7 @@ ${if self->ignoredReportTokens()-}
 					ignoredTokens = ignoredTokens[:0]
 				}
 ${end-}
-				return lastErr${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
+				return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 			}
 			state = stack[len(stack)-1].state
 			recovering = 4
@@ -286,20 +288,20 @@ ${end-}
 			Offset: offset,
 			Endoffset: endoffset,
 		}
-		return err${if self->hasAssocValuesForInput()}, ${self->valueTypeDefaultVal()}${end}
+		return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}err
 	}
 
 ${end-}
-	return nil${if self->hasAssocValuesForInput()}, stack[len(stack)-2].value${end}
+	return ${if self->hasAssocValuesForInput()}stack[len(stack)-2].value, ${end}nil
 }
 ${end}
 
-${template checkForCancellation-}
+${template checkForCancellation(returnPrefix)-}
 			if shiftCounter++; shiftCounter & 0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
 				case <-ctx.Done():
-					return ctx.Err()
+					return ${returnPrefix}ctx.Err()
 				default:
 				}
 			}
@@ -520,7 +522,7 @@ ${end-}
 ${end}
 
 ${template lookaheadRule-}
-func lookaheadRule(lexer *Lexer, next, rule int32, cache lookaheadCache) int32 {
+func lookaheadRule(${call contextParam}lexer *Lexer, next, rule int32, cache lookaheadCache) int32 {
 	switch rule {
 ${call caseLookaheadRules(true)-}
 	}
@@ -533,8 +535,8 @@ ${cached query laMethodName() = 'At' + self.target.name}
 
 ${template lookaheadMethods-}
 ${foreach inp in syntax.input.select(it|!it.hasEoi())-}
-func ${inp->laMethodName()}(lexer *Lexer, next int32${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
-	return lookahead(lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${opts.recursiveLookaheads ? ', cache' : ''});
+func ${inp->laMethodName()}(${call contextParam}lexer *Lexer, next int32${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
+	return lookahead(${call contextArg}lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${opts.recursiveLookaheads ? ', cache' : ''});
 }
 
 ${end-}
@@ -551,7 +553,7 @@ ${if opts.recursiveLookaheads-}
 ${call lookaheadRule-}
 ${end-}
 ${call lookaheadMethods-}
-func lookahead(l *Lexer, next int32, start, end ${self->stateType()}${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
+func lookahead(${call contextParam}l *Lexer, next int32, start, end ${self->stateType()}${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
 ${call setupLookaheadLexer-}
 ${if opts.recursiveLookaheads}
 	// Use memoization for recursive lookaheads.
@@ -588,7 +590,7 @@ ${end-}
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
 ${if opts.recursiveLookaheads-}
-			if sym := lookaheadRule(&lexer, next, rule, cache); sym != 0 {
+			if sym := lookaheadRule(${call contextArg}&lexer, next, rule, cache); sym != 0 {
 				entry.sym.symbol = sym
 			}
 ${end-}
@@ -625,9 +627,9 @@ ${end}
 
 ${query callLaMethod(recurse) =
   recurse
-    ? 'lookahead(lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] +
+    ? 'lookahead('+self->contextArg()+'lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] +
         (context.opts.recursiveLookaheads ? ', cache)' : ')')
-    : self->laMethodName() + '(lexer, p.next.symbol' + (context.opts.recursiveLookaheads ? ', cache)' : ')') }
+    : self->laMethodName() + '('+self->contextArg()+'lexer, p.next.symbol' + (context.opts.recursiveLookaheads ? ', cache)' : ')') }
 
 ${template caseLookaheadRules(recurse)-}
 ${foreach rule in parser.lookaheadRules-}
@@ -638,13 +640,13 @@ ${foreach rule in parser.lookaheadRules-}
 			${if recurse}return${else}lhs.sym.symbol =${end} ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
 		}
 ${if !recurse-}
-		return
+		return nil
 ${end-}
 ${end-}
 ${end}
 
 ${template applyRule-}
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needLookaheadCache() ? ', cache lookaheadCache' : ''}) {
+func (p *Parser) applyRule(${call contextParam}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needLookaheadCache() ? ', cache lookaheadCache' : ''}) error {
 ${if syntax.rules.exists(r|r.code()) || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|r.code())-}
@@ -656,11 +658,11 @@ ${call caseLookaheadRules(false)-}
 ${end-}
 ${if self->eventBased()-}
 	nt := rule${self->go_listener.nodeType()}[rule]
-	if nt == 0 {
-		return
+	if nt != 0 {
+		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
-	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 ${end-}
+	return nil
 }
 ${end}
 

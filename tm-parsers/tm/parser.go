@@ -94,7 +94,9 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs, lexer)
+			if err := p.applyRule(rule, &entry, rhs, lexer); err != nil {
+				return err
+			}
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -314,12 +316,12 @@ restart:
 	return ignoredTokens
 }
 
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) error {
 	nt := ruleNodeType[rule]
-	if nt == 0 {
-		return
+	if nt != 0 {
+		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
-	p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
+	return nil
 }
 
 func (p *Parser) reportIgnoredToken(tok symbol) {

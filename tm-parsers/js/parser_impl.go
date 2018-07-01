@@ -91,7 +91,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(rule, &entry, rhs, lexer, cache)
+			p.applyRule(ctx, rule, &entry, rhs, lexer, cache)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
