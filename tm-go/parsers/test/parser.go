@@ -206,7 +206,7 @@ restart:
 	return ignoredTokens
 }
 
-func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) error {
+func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
 	case 5: // Declaration : '{' '-' '-' Declaration_list '}'
 		p.listener(Negation, rhs[1].sym.offset, rhs[2].sym.endoffset)
@@ -241,7 +241,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 	if nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
-	return nil
+	return
 }
 
 func (p *Parser) reportIgnoredToken(tok symbol) {

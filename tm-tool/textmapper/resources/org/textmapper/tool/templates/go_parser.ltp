@@ -522,11 +522,11 @@ ${end-}
 ${end}
 
 ${template lookaheadRule-}
-func lookaheadRule(${call contextParam}lexer *Lexer, next, rule int32, cache lookaheadCache) int32 {
+func lookaheadRule(${call contextParam}lexer *Lexer, next, rule int32, cache lookaheadCache) (sym int32${if opts.cancellable}, err error${end}) {
 	switch rule {
 ${call caseLookaheadRules(true)-}
 	}
-	return 0
+	return 0${if opts.cancellable}, nil${end}
 }
 
 ${end}
@@ -535,7 +535,7 @@ ${cached query laMethodName() = 'At' + self.target.name}
 
 ${template lookaheadMethods-}
 ${foreach inp in syntax.input.select(it|!it.hasEoi())-}
-func ${inp->laMethodName()}(${call contextParam}lexer *Lexer, next int32${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
+func ${inp->laMethodName()}(${call contextParam}lexer *Lexer, next int32${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
 	return lookahead(${call contextArg}lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${opts.recursiveLookaheads ? ', cache' : ''});
 }
 
@@ -553,7 +553,7 @@ ${if opts.recursiveLookaheads-}
 ${call lookaheadRule-}
 ${end-}
 ${call lookaheadMethods-}
-func lookahead(${call contextParam}l *Lexer, next int32, start, end ${self->stateType()}${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) bool {
+func lookahead(${call contextParam}l *Lexer, next int32, start, end ${self->stateType()}${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
 ${call setupLookaheadLexer-}
 ${if opts.recursiveLookaheads}
 	// Use memoization for recursive lookaheads.
@@ -562,7 +562,7 @@ ${if opts.recursiveLookaheads}
 	}
 	key := uint64(l.tokenOffset) + uint64(end)<<40
 	if ret, ok := cache[key]; ok {
-		return ret
+		return ret${if opts.cancellable}, nil${end}
 	}
 ${end}
 	var allocated [64]stackEntry
@@ -590,7 +590,13 @@ ${end-}
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
 ${if opts.recursiveLookaheads-}
-			if sym := lookaheadRule(${call contextArg}&lexer, next, rule, cache); sym != 0 {
+			sym${if opts.cancellable}, err${end} := lookaheadRule(${call contextArg}&lexer, next, rule, cache)
+${if opts.cancellable-}
+			if err != nil {
+				return false, err
+			}
+${end-}
+			if sym != 0 {
 				entry.sym.symbol = sym
 			}
 ${end-}
@@ -621,7 +627,7 @@ ${end-}
 ${if opts.recursiveLookaheads-}
 	cache[key] = state == end
 ${end-}
-	return state == end
+	return state == end${if opts.cancellable}, nil${end}
 }
 ${end}
 
@@ -634,19 +640,20 @@ ${query callLaMethod(recurse) =
 ${template caseLookaheadRules(recurse)-}
 ${foreach rule in parser.lookaheadRules-}
 	case ${rule.getIndex()}:
-		${foreach c in rule.cases}if ${c.isNegated() ? '!' : ''}${c.input->callLaMethod(recurse)} {
-			${if recurse}return${else}lhs.sym.symbol =${end} ${c.target.index} /* ${c.target.name} */;
-		} else ${end}{
-			${if recurse}return${else}lhs.sym.symbol =${end} ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
-		}
-${if !recurse-}
-		return nil
+${if opts.cancellable-}
+		var ok bool
 ${end-}
+		${foreach c in rule.cases}if ${if opts.cancellable}ok, err = ${c.input->callLaMethod(recurse)}; ${c.isNegated() ? '!ok' : 'ok'}${else}${c.isNegated() ? '!' : ''}${c.input->callLaMethod(recurse)}${end} {
+			${if recurse}sym${else}lhs.sym.symbol${end} = ${c.target.index} /* ${c.target.name} */;
+		} else ${end}{
+			${if recurse}sym${else}lhs.sym.symbol${end} = ${rule.defaultTarget.index} /* ${rule.defaultTarget.name} */;
+		}
+		return
 ${end-}
 ${end}
 
 ${template applyRule-}
-func (p *Parser) applyRule(${call contextParam}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needLookaheadCache() ? ', cache lookaheadCache' : ''}) error {
+func (p *Parser) applyRule(${call contextParam}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needLookaheadCache() ? ', cache lookaheadCache' : ''}) (err error) {
 ${if syntax.rules.exists(r|r.code()) || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|r.code())-}
@@ -662,7 +669,7 @@ ${if self->eventBased()-}
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 ${end-}
-	return nil
+	return
 }
 ${end}
 

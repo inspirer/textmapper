@@ -263,7 +263,7 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 	return state == end
 }
 
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) error {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
 	case 32:
 		if AtEmptyObject(lexer, p.next.symbol) {
@@ -271,13 +271,13 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 		} else {
 			lhs.sym.symbol = 25 /* lookahead_notEmptyObject */
 		}
-		return nil
+		return
 	}
 	nt := ruleNodeType[rule]
 	if nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
-	return nil
+	return
 }
 
 func (p *Parser) reportIgnoredToken(tok symbol) {
