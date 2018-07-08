@@ -53,8 +53,8 @@ func (p *Parser) Parse(ctx context.Context, lexer *Lexer) error {
 
 func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) error {
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
-	state := start
 	var shiftCounter int
+	state := start
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})

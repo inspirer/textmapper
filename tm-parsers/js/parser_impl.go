@@ -45,16 +45,19 @@ const (
 	debugSyntax          = false
 )
 
-type lookaheadCache map[uint64]bool
+type session struct {
+	shiftCounter int32
+	cache        map[uint64]bool
+}
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
-	cache := make(lookaheadCache)
+	var s session
+	s.cache = make(map[uint64]bool)
 
 	state := start
 	p.endState = end
 	var lastErr SyntaxError
-	var shiftCounter int
 	recovering := 0
 	p.healthy = true
 
@@ -91,7 +94,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(ctx, rule, &entry, rhs, lexer, cache)
+			p.applyRule(ctx, rule, &entry, rhs, lexer, &s)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
 			}
@@ -100,7 +103,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 			stack = append(stack, entry)
 
 		} else if action == -1 {
-			if shiftCounter++; shiftCounter&0x1ff == 0 {
+			if s.shiftCounter++; s.shiftCounter&0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
 				case <-ctx.Done():

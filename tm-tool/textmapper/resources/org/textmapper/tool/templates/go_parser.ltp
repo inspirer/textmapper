@@ -107,8 +107,8 @@ ${end-}
 }
 
 ${end-}
-${if self->needLookaheadCache()-}
-${call lookaheadCache}
+${if self->needSession()-}
+${call session}
 ${end-}
 ${call parseFunc}
 ${if self->hasRecovering()-}
@@ -140,8 +140,15 @@ ${template contextArg-}
 ${if context.opts.cancellable}ctx, ${end-}
 ${end}
 
-${template lookaheadCache-}
-type lookaheadCache map[uint64]bool
+${template session-}
+type session struct {
+${if context.opts.cancellable-}
+	shiftCounter int32
+${end-}
+${if context.opts.recursiveLookaheads-}
+	cache map[uint64]bool
+${end-}
+}
 ${end}
 
 ${template parseFunc-}
@@ -149,13 +156,15 @@ func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexe
 ${if self->ignoredReportTokens()-}
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 ${end-}
-${if self->needLookaheadCache()-}
-	cache := make(lookaheadCache)
+${if self->needSession()-}
+	var s session
+${if context.opts.recursiveLookaheads-}
+	s.cache = make(map[uint64]bool)
+${end-}
+${else if opts.cancellable-}
+  var shiftCounter int
 ${end-}
 	state := start
-${if opts.cancellable-}
-	var shiftCounter int
-${end-}
 ${if self->hasRecovering()-}
 	var lastErr SyntaxError
 	recovering := 0
@@ -196,7 +205,7 @@ ${end-}
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule(${call contextArg}rule, &entry, rhs, lexer${self->needLookaheadCache() ? ', cache' : ''}); err != nil {
+			if err := p.applyRule(${call contextArg}rule, &entry, rhs, lexer${self->needSession() ? ', &s' : ''}); err != nil {
 			  return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}err
 			}
 			if debugSyntax {
@@ -297,7 +306,7 @@ ${end-}
 ${end}
 
 ${template checkForCancellation(returnPrefix)-}
-			if shiftCounter++; shiftCounter & 0x1ff == 0 {
+			if ${if self->needSession()}s.${end}shiftCounter++; ${if self->needSession()}s.${end}shiftCounter & 0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
 				case <-ctx.Done():
@@ -522,7 +531,7 @@ ${end-}
 ${end}
 
 ${template lookaheadRule-}
-func lookaheadRule(${call contextParam}lexer *Lexer, next, rule int32, cache lookaheadCache) (sym int32${if opts.cancellable}, err error${end}) {
+func lookaheadRule(${call contextParam}lexer *Lexer, next, rule int32, s *session) (sym int32${if opts.cancellable}, err error${end}) {
 	switch rule {
 ${call caseLookaheadRules(true)-}
 	}
@@ -535,8 +544,8 @@ ${cached query laMethodName() = 'At' + self.target.name}
 
 ${template lookaheadMethods-}
 ${foreach inp in syntax.input.select(it|!it.hasEoi())-}
-func ${inp->laMethodName()}(${call contextParam}lexer *Lexer, next int32${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
-	return lookahead(${call contextArg}lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${opts.recursiveLookaheads ? ', cache' : ''});
+func ${inp->laMethodName()}(${call contextParam}lexer *Lexer, next int32${self->needSession() ? ', s *session' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
+	return lookahead(${call contextArg}lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${self->needSession() ? ', s' : ''});
 }
 
 ${end-}
@@ -553,7 +562,7 @@ ${if opts.recursiveLookaheads-}
 ${call lookaheadRule-}
 ${end-}
 ${call lookaheadMethods-}
-func lookahead(${call contextParam}l *Lexer, next int32, start, end ${self->stateType()}${opts.recursiveLookaheads ? ', cache lookaheadCache' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
+func lookahead(${call contextParam}l *Lexer, next int32, start, end ${self->stateType()}${self->needSession() ? ', s *session' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
 ${call setupLookaheadLexer-}
 ${if opts.recursiveLookaheads}
 	// Use memoization for recursive lookaheads.
@@ -561,7 +570,7 @@ ${if opts.recursiveLookaheads}
 		next = ${call callLookaheadNext(true)}
 	}
 	key := uint64(l.tokenOffset) + uint64(end)<<40
-	if ret, ok := cache[key]; ok {
+	if ret, ok := s.cache[key]; ok {
 		return ret${if opts.cancellable}, nil${end}
 	}
 ${end}
@@ -590,7 +599,7 @@ ${end-}
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
 ${if opts.recursiveLookaheads-}
-			sym${if opts.cancellable}, err${end} := lookaheadRule(${call contextArg}&lexer, next, rule, cache)
+			sym${if opts.cancellable}, err${end} := lookaheadRule(${call contextArg}&lexer, next, rule, s)
 ${if opts.cancellable-}
 			if err != nil {
 				return false, err
@@ -605,6 +614,9 @@ ${end-}
 			stack = append(stack, entry)
 
 		} else if action == -1 {
+${if opts.cancellable-}
+${call checkForCancellation(opts.cancellable ? 'false, ' : '')}
+${end-}
 			// Shift.
 			if next == noToken {
 				next = ${call callLookaheadNext(false)}
@@ -625,7 +637,7 @@ ${end-}
 	}
 
 ${if opts.recursiveLookaheads-}
-	cache[key] = state == end
+	s.cache[key] = state == end
 ${end-}
 	return state == end${if opts.cancellable}, nil${end}
 }
@@ -634,8 +646,8 @@ ${end}
 ${query callLaMethod(recurse) =
   recurse
     ? 'lookahead('+self->contextArg()+'lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] +
-        (context.opts.recursiveLookaheads ? ', cache)' : ')')
-    : self->laMethodName() + '('+self->contextArg()+'lexer, p.next.symbol' + (context.opts.recursiveLookaheads ? ', cache)' : ')') }
+        (self->needSession() ? ', s)' : ')')
+    : self->laMethodName() + '('+self->contextArg()+'lexer, p.next.symbol' + (self->needSession() ? ', s)' : ')') }
 
 ${template caseLookaheadRules(recurse)-}
 ${foreach rule in parser.lookaheadRules-}
@@ -653,7 +665,7 @@ ${end-}
 ${end}
 
 ${template applyRule-}
-func (p *Parser) applyRule(${call contextParam}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needLookaheadCache() ? ', cache lookaheadCache' : ''}) (err error) {
+func (p *Parser) applyRule(${call contextParam}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needSession() ? ', s *session' : ''}) (err error) {
 ${if syntax.rules.exists(r|r.code()) || self->needExplicitLookahead()-}
 	switch rule {
 ${foreach rule in syntax.rules.select(r|r.code())-}
@@ -747,9 +759,9 @@ ${end}
 
 ${query needActionsTable() = parser.lalr.size() > 0}
 
-${query needExplicitLookahead() = parser.lookaheadRules.size() > 0}
+${query needExplicitLookahead() = context.parser.lookaheadRules.size() > 0}
 
-${query needLookaheadCache() = self->needExplicitLookahead() && context.opts.recursiveLookaheads}
+${query needSession() = self->needExplicitLookahead() && (context.opts.recursiveLookaheads || context.opts.cancellable)}
 
 ${cached query hasRecovering() = syntax.error && syntax.sets.exists(it|it.name.camelCase == 'afterErr' && it.elements.length > 0)}
 
