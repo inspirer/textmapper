@@ -268,15 +268,15 @@ ${end-}
 					return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 				}
 			}
-			if stack = p.recoverFromError(lexer, stack); stack == nil {
 ${if self->ignoredReportTokens()-}
-				if len(ignoredTokens) > 0 {
-					for _, tok := range ignoredTokens {
-						p.reportIgnoredToken(tok)
-					}
-					ignoredTokens = ignoredTokens[:0]
+			if len(ignoredTokens) > 0 {
+				for _, tok := range ignoredTokens {
+					p.reportIgnoredToken(tok)
 				}
+				ignoredTokens = ignoredTokens[:0]
+			}
 ${end-}
+			if stack = p.recoverFromError(lexer, stack); stack == nil {
 				return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 			}
 			state = stack[len(stack)-1].state

@@ -143,13 +143,13 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 					return lastErr
 				}
 			}
-			if stack = p.recoverFromError(lexer, stack); stack == nil {
-				if len(ignoredTokens) > 0 {
-					for _, tok := range ignoredTokens {
-						p.reportIgnoredToken(tok)
-					}
-					ignoredTokens = ignoredTokens[:0]
+			if len(ignoredTokens) > 0 {
+				for _, tok := range ignoredTokens {
+					p.reportIgnoredToken(tok)
 				}
+				ignoredTokens = ignoredTokens[:0]
+			}
+			if stack = p.recoverFromError(lexer, stack); stack == nil {
 				return lastErr
 			}
 			state = stack[len(stack)-1].state
