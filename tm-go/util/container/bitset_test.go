@@ -19,7 +19,9 @@ func TestBitSet(t *testing.T) {
 	s := container.NewBitSet(64)
 	s.Set(20)
 	s.Set(40)
+	s.Set(42)
 	s.Set(63)
+	s.Clear(42)
 
 	var got []int
 	for i := 0; i < 64; i++ {

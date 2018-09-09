@@ -70,6 +70,28 @@ func TestMerge(t *testing.T) {
 	}
 }
 
+var intBitSetTests = []container.IntSet{
+	set(),
+	set(1),
+	set(1, 5),
+	set(0, 1, 2, 99),
+	complementOf(),
+	complementOf(0, 1, 2, 99),
+}
+
+func TestIntBitSets(t *testing.T) {
+	for _, test := range intBitSetTests {
+		bs := test.BitSet(100)
+		if test.Inverse {
+			bs.Complement()
+		}
+		d := container.IntSet{Set: bs.Slice(nil), Inverse: test.Inverse}
+		if got := d.String(); got != test.String() {
+			t.Errorf("%v.BitSet().Slice() = %v, want: %v", test, got, test.String())
+		}
+	}
+}
+
 func set(ints ...int) container.IntSet {
 	return container.IntSet{Set: ints}
 }

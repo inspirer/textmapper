@@ -20,6 +20,21 @@ func (s IntSet) Complement() IntSet {
 	return IntSet{!s.Inverse, s.Set}
 }
 
+func (s IntSet) BitSet(size int) BitSet {
+	ret := NewBitSet(size)
+	if s.Inverse {
+		ret.SetAll()
+		for _, v := range s.Set {
+			ret.Clear(v)
+		}
+	} else {
+		for _, v := range s.Set {
+			ret.Set(v)
+		}
+	}
+	return ret
+}
+
 func (s IntSet) String() string {
 	var prefix string
 	if s.Inverse {

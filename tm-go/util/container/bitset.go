@@ -18,6 +18,11 @@ func (b BitSet) Set(i int) {
 	b[uint(i)/32] |= 1 << (uint(i) % 32)
 }
 
+// Set sets the bit at a given index to 1.
+func (b BitSet) Clear(i int) {
+	b[uint(i)/32] &^= 1 << (uint(i) % 32)
+}
+
 // Get tests if the bit at a given index is 1.
 func (b BitSet) Get(i int) bool {
 	return (b[uint(i)/32] & (1 << (uint(i) % 32))) != 0
@@ -38,9 +43,23 @@ func (b BitSet) Slice(reuse []int) []int {
 	return ret
 }
 
+// Clear sets all bits to 1.
+func (b BitSet) SetAll() {
+	for i := len(b) - 1; i >= 0; i-- {
+		b[i] = ^uint32(0)
+	}
+}
+
 // Clear sets all bits to 0.
-func (b BitSet) Clear() {
+func (b BitSet) ClearAll() {
 	for i := len(b) - 1; i >= 0; i-- {
 		b[i] = 0
+	}
+}
+
+// Complement reverses the value of each bit (in-place).
+func (b BitSet) Complement() {
+	for i := len(b) - 1; i >= 0; i-- {
+		b[i] = ^b[i]
 	}
 }

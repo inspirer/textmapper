@@ -57,7 +57,7 @@ func (g *generator) allocateState(key []int) interface{} {
 }
 
 func (g *generator) addState(set []int) int {
-	g.closure.Clear()
+	g.closure.ClearAll()
 	for _, i := range set {
 		if g.ins[i].core() {
 			g.closure.Set(i)
@@ -83,7 +83,7 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 		// taking us to some other state.
 		var acceptRule *Rule
 		accept := -1
-		g.shift.Clear()
+		g.shift.ClearAll()
 		for _, i := range state.set {
 			inst := g.ins[i]
 			for _, sym := range inst.consume {
