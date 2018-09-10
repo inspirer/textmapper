@@ -43,6 +43,19 @@ func (s IntSet) String() string {
 	return fmt.Sprintf("%v%v", prefix, s.Set)
 }
 
+// Equals compares two sets for equality.
+func (s IntSet) Equals(oth IntSet) bool {
+	if s.Inverse != oth.Inverse || len(s.Set) != len(oth.Set) {
+		return false
+	}
+	for i := range s.Set {
+		if s.Set[i] != oth.Set[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // Intersect computes an intersection of two sets.
 func Intersect(a, b IntSet, reuse []int) IntSet {
 	switch {
