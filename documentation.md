@@ -350,7 +350,7 @@ Semantic actions are code in the target language, which is executed when the par
 To refer to the values of the right-hand side symbols, use a dollar sign followed by the position or the name of the symbol. Symbols are numbered from left to right starting with 0, so the leftmost one can be referred to as ```$0```. If a symbol is not matched, its associated value will be null (nil, NULL, 0, etc., depending on the target language and type).
 
 	# using names
-	IfExpression {*IfNode} : 'if' '(' expr ')' stmt   { $$ = &IfNode{$expr, $stmt) } ;
+	IfExpression {*IfNode} : 'if' '(' expr ')' stmt   { $$ = &IfNode{$expr, $stmt} } ;
 
 	# using positions. For "a - b": $0 = "a", $2 = null,  $4 = "b"
 	input : id ('+' id | '-' id)? { /* action */ } ;
