@@ -66,7 +66,7 @@ func rule(s string) string {
 	return `language l(a); :: lexer a = /abc/ :: parser ` + s
 }
 
-const wantTextmapperFiles = 29
+const wantTextmapperFiles = 30
 
 func TestExistingFiles(t *testing.T) {
 	var sources []string

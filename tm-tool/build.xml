@@ -177,6 +177,8 @@
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/json"/>
 		<echo message="Test parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/test"/>
+		<echo message="Simple parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/../tm-go/parsers/simple"/>
 	</target>
 
 	<target name="syntax">

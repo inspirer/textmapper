@@ -102,7 +102,9 @@ ${template lexerNext}
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
 ${call onBeforeNext-}
+${if !self->canInlineLexerRules() || syntax.lexerRules.exists(r|r->isSpace())-}
 restart:
+${end-}
 ${if opts.tokenLine-}
 	l.tokenLine = l.line
 ${end-}

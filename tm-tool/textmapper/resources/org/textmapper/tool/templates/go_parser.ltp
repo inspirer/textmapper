@@ -175,7 +175,11 @@ ${end-}
 ${if self->hasRecovering()-}
 	p.endState = end
 ${end-}
+${if self->ignoredReportTokens()-}
 	ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+${else-}
+	p.fetchNext(lexer, stack)
+${end-}
 
 	for state != end {
 		action := tmAction[state]
@@ -183,7 +187,11 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
+${if self->ignoredReportTokens()-}
 				ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+${else-}
+				p.fetchNext(lexer, stack)
+${end-}
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -221,7 +229,7 @@ ${call checkForCancellation(self->hasAssocValuesForInput() ? self->valueTypeDefa
 ${end-}
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack, nil)
+				p.fetchNext(lexer, stack${if self->ignoredReportTokens()}, nil${end})
 			}
 			state = gotoState(state, p.next.symbol)
 			stack = append(stack, stackEntry{
@@ -353,7 +361,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack, nil)
+		p.fetchNext(lexer, stack${if self->ignoredReportTokens()}, nil${end})
 	}
 	return e
 }
@@ -392,7 +400,7 @@ ${end-}
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack, nil)
+		p.fetchNext(lexer, stack${if self->ignoredReportTokens()}, nil${end})
 	}
 	s := p.next.offset
 	e := s
@@ -470,7 +478,7 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 ${end}
 
 ${template fetchNext-}
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []symbol) []symbol {
+func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry${if self->ignoredReportTokens()}, ignoredTokens []symbol) []symbol${else})${end} {
 restart:
 	token := lexer.Next()
 	switch token {
@@ -492,7 +500,9 @@ ${end-}
 	}
 	p.next.symbol = int32(token)
 	p.next.offset, p.next.endoffset = lexer.Pos()
+${if self->ignoredReportTokens()-}
 	return ignoredTokens
+${end-}
 }
 ${end}
 
