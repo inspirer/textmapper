@@ -41,7 +41,7 @@ ${end-}
 ${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
 	${name->nodeTypeValueRef()->go.declarationName()}
 ${end-}
-	${self->nodeType()}Max
+	${self->nodeType()}Max${if syntax.rangeTypes.length == 0 && opts.extraTypes.length == 0 && !opts.reportTokens.exists(it|it->go_token.tokenNodeName())} = 1${end}
 )
 
 var nodeTypeStr = [...]string{

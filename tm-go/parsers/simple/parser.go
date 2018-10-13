@@ -8,6 +8,8 @@ import (
 
 // Parser is a table-driven LALR parser for simple.
 type Parser struct {
+	listener Listener
+
 	next symbol
 }
 
@@ -32,7 +34,8 @@ type stackEntry struct {
 	state int8
 }
 
-func (p *Parser) Init() {
+func (p *Parser) Init(l Listener) {
+	p.listener = l
 }
 
 const (
@@ -156,5 +159,9 @@ restart:
 }
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
+	nt := ruleNodeType[rule]
+	if nt != 0 {
+		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
+	}
 	return
 }
