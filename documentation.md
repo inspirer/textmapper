@@ -86,7 +86,7 @@ When the string type is chosen for a terminal, the matched text is taken as the 
 
 ## Lexer conflicts
 
-When a string of characters is matched by two rules, Textmapper reports a conflict. In most cases one of the regular expressions can be rewritten to exclude the conflicting string. Although that is possible in theory, in practice it may lead to enormously long and unreadable definitions. Textmapper has two mechanisms to avoid this problem. The first one is applicable when one of the rules matches only one specific string. I.e. we have a more general and a more specific rule matching the same string. Marking the general one with the _(class)_ attribute tells Textmapper to prefer specific rules over it.
+When a sequence of characters is matched by two rules, Textmapper reports a conflict. In most cases one of the regular expressions can be rewritten to exclude the conflicting string. Although that is possible in theory, in practice it may lead to enormously long and unreadable definitions. Textmapper has two mechanisms to avoid this problem. The first one is applicable when one of the rules matches only one specific string. I.e. we have a more general and a more specific rule matching the same text. Marking the general one with the _(class)_ attribute tells Textmapper to prefer specific rules over it.
 
 	# 'keyword' has a priority over identifier, since it is a more specific rule.
 	identifier: /[a-zA-Z]+/   (class)
@@ -119,17 +119,23 @@ There are two types of start conditions: inclusive and exclusive, which get decl
 	%x inComment, inStringLiteral;
 
 	identifier: /[a-zA-Z_]+/        # This rule is active in initial and afterComma states.
-	<initial> ',':  /,/                      { l.State = StateAfterComma }
+	<initial> ',':  /,/             { l.State = StateAfterComma }
 
 Substituting a list of start conditions with a star character activates a rule in all available inclusive and exclusive start conditions.
 
 	<*> /[\t\x20]+/   (space)
 
-If several lexer rules are applicable in the same set of start conditions, they can be put together into a start conditions clause. Each rule in the clause inherits the applicability from the clause but can override it if needed. Such clauses combined with exclusive start conditions are a good way of representing lexers within lexers, which tokenize pieces of the input that are syntactically different from the rest (e.g. comments and embedded languages). Start condition clauses can nest.
+By default, the EOI token is reported in inclusive start conditions only. In exclusive start conditions, whenever the lexer reaches the end of the input it produces an `invalid_token`. This behavior can be changed by providing explicit rules handling /{eoi}/ in specific start conditions.
+
+	# Accept end-of-input in all start conditions.
+	<*> eoi: /{eoi}/
+
+If several lexer rules are applicable in the same set of start conditions, they can be put together into a start conditions clause. Each rule in the clause inherits the applicability from the clause but can override it if needed. Such clauses combined with exclusive start conditions are a good way of representing lexers within lexers, which tokenize pieces of the input that are syntactically different from the rest (e.g. comments and embedded languages). Start condition clauses can nest. It is typical to handle `eoi` in such clauses and reset the lexer state to _initial_.
 
 	<inComment, inJavadoc> {
 	  commentText: /*|[^*]+/  (space)
 	  commentEnd: /\*\// (space)   { l.State = StateInitial }
+	  eoi: /{eoi}/     { ... report an unexpected end of file ... ; l.State = StateInitial }
 
 	  <inJavadoc> {
 	    # some extra rules available in Javadoc comments only
@@ -320,15 +326,6 @@ In-group alternation is a way to avoid repetitions.
 
 	# accepts "block ID code" and "block ID semicolon"
 	element : block ID (code | semicolon) ;
-
-Unordered sequences accept their elements in any order but each element must appear exactly once (unless it is optional). Such sequences are formed by joining the elements with an ampersand ('&') operator. Parentheses can be used to override precedence or to improve readability.
-
-	# accepts all permutations of A, B and C as well as an empty string
-	ABC : (A & B & C)? ;
-
-	# accepts: int i, const int i, int volatile i, etc.
-	Var : Type & Modifiers? ID ;
-	Modifiers : const | volatile ;
 
 Lists can be introduced on the right-hand side of a rule without the need for a separate nonterminal. An element which may appear multiple times should be followed by a quantifier. This can be either a plus (one or more elements are accepted) or a star (in this case, an empty string is accepted as well). There is a special syntax for lists with a separator. The sequence of separator tokens follows the list element, prefixed with the ```separator``` keyword. A quantifier should then be applied to the whole block enclosed in parentheses.
 
