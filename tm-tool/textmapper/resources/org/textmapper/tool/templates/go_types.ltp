@@ -41,7 +41,7 @@ ${if tokens = opts.reportTokens
 ${end-}
 ${call customRules-}
 	}
-	"log".Fatalf("unknown node type %v\n", n.Type())
+	panic("fmt".Errorf("ast: unknown node type %v", n.Type()))
 	return nil
 }
 ${end}
