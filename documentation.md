@@ -336,7 +336,7 @@ In-group alternation is a way to avoid repetitions.
 	# accepts "block ID code" and "block ID semicolon"
 	element : block ID (code | semicolon) ;
 
-Lists can be introduced on the right-hand side of a rule without the need for a separate nonterminal. An element which may appear multiple times should be followed by a quantifier. This can be either a plus (one or more elements are accepted) or a star (in this case, an empty string is accepted as well). There is a special syntax for lists with a separator. The sequence of separator tokens follows the list element, prefixed with the ```separator``` keyword. A quantifier should then be applied to the whole block enclosed in parentheses.
+Lists can be introduced on the right-hand side of a rule without the need for a separate nonterminal. An element which may appear multiple times should be followed by a quantifier. This can be either a plus (one or more elements are accepted) or a star (in this case, an empty string is accepted as well). There is a special syntax for lists with a separator. The sequence of separator tokens follows the list element, prefixed with the `separator` keyword. A quantifier should then be applied to the whole block enclosed in parentheses.
 
 	# one or more methods
 	input : method+ ;
@@ -344,16 +344,16 @@ Lists can be introduced on the right-hand side of a rule without the need for a 
 	# comma separated list of zero or more parameters
 	methodHeader : Identifier '(' (parameter separator comma)* ')' ;
 
-As with **opt** versus ```?```, there are two ways to express lists accepting an empty string. The star quantifier handles an empty production in the created list nonterminal, while the ```+?``` operator inlines it on the caller side. Inlining is more verbose, but less likely to cause LR conflicts.
+As with **opt** versus `?`, there are two ways to express lists accepting an empty string. The star quantifier handles an empty production in the created list nonterminal, while the `+?` operator inlines it on the caller side. Inlining is more verbose, but less likely to cause LR conflicts.
 
 ## Semantic Actions
 
-Semantic actions are code in the target language, which is executed when the parser reaches that point in the grammar. Most actions are declared at the end of the rule, where they can be used to compute the resulting associated value for the left-hand nonterminal. ```$$``` stands for the resulting variable.
+Semantic actions are code in the target language, which is executed when the parser reaches that point in the grammar. Most actions are declared at the end of the rule, where they can be used to compute the resulting associated value for the left-hand nonterminal. `$$` stands for the resulting variable.
 
 	# simple action
 	One {int} : '1'   { $$ = 1; } ;
 
-To refer to the values of the right-hand side symbols, use a dollar sign followed by the position or the name of the symbol. Symbols are numbered from left to right starting with 0, so the leftmost one can be referred to as ```$0```. If a symbol is not matched, its associated value will be null (nil, NULL, 0, etc., depending on the target language and type).
+To refer to the values of the right-hand side symbols, use a dollar sign followed by the position or the name of the symbol. Symbols are numbered from left to right starting with 0, so the leftmost one can be referred to as `$0`. If a symbol is not matched, its associated value will be null (nil, NULL, 0, etc., depending on the target language and type).
 
 	# using names
 	IfExpression {*IfNode} : 'if' '(' expr ')' stmt   { $$ = &IfNode{$expr, $stmt} } ;
@@ -361,9 +361,9 @@ To refer to the values of the right-hand side symbols, use a dollar sign followe
 	# using positions. For "a - b": $0 = "a", $2 = null,  $4 = "b"
 	input : id ('+' id | '-' id)? { /* action */ } ;
 
-An associated value for the symbol can be used only if its type is declared. In the previous example ```$1``` and ```$3``` are undefined and their usages are reported as compile-time errors.
+An associated value for the symbol can be used only if its type is declared. In the previous example `$1` and `$3` are undefined and their usages are reported as compile-time errors.
 
-When the same symbol is used twice on the right-hand side of a rule, it cannot be referred to by its own name due to ambiguity (reported as an error). In this case we can provide an alias for it: ```alias=symbol```.
+When the same symbol is used twice on the right-hand side of a rule, it cannot be referred to by its own name due to ambiguity (reported as an error). In this case we can provide an alias for it: `alias=symbol`.
 
 	expr {int} :
 	    left=expr '+' right=expr  { $$ = $left + $right; }
@@ -378,7 +378,7 @@ It is possible to declare actions in the middle of a rule. Only symbols to the l
 	  | expr { methodAccess($expr); } '.' 'ID' '(' arguments ')'
 	;
 
-Although mid-rule actions have associated nonterminals, they don't have associated values (the use of ```$$``` is forbidden). This keeps the syntax clean, while for scenarios where associated data is needed one can still extract an action into a separate nonterminal.
+Although mid-rule actions have associated nonterminals, they don't have associated values (the use of `$$` is forbidden). This keeps the syntax clean, while for scenarios where associated data is needed one can still extract an action into a separate nonterminal.
 
 Due to syntax extensions, it may not be completely clear if the action is a mid-rule action (and so requires an additional nonterminal). If no symbol can appear after the action, it is considered as a rule action. If there are multiple rule actions, they are executed left to right when the rule is reduced.
 
@@ -404,11 +404,11 @@ Expressions in rule actions are evaluated in the context of the current rule. In
 	${first()}  refers to the first symbol on the RHS (only for non-empty rules)
 	${last()}   refers to the last symbol on the RHS (only for non-empty rules)
 
-Although ```${left()}``` and ```$$``` denote the same entity, their output differs for strictly-typed target languages:
+Although `${left()}` and `$$` denote the same entity, their output differs for strictly-typed target languages:
 
-```$$```: Must be used for writing data to the associated value of the current rule. This value is usually stored in a variable of the most general type (e.g. Object in Java). If the data is read through the ```$$``` shortcut, the value is returned "as is" with no type casting.
+`$$`: Must be used for writing data to the associated value of the current rule. This value is usually stored in a variable of the most general type (e.g. Object in Java). If the data is read through the `$$` shortcut, the value is returned "as is" with no type casting.
 
-```${left()}```: Should be used for reading typed data; it returns an associated value cast to the rule's nonterminal type. It cannot be used to modify values.
+`${left()}`: Should be used for reading typed data; it returns an associated value cast to the rule's nonterminal type. It cannot be used to modify values.
 
 	# Building lists in Java. ${left()} is equivalent to ((List<Method>)$$)
 	methods {List<Method>}
@@ -466,7 +466,7 @@ The following example shows the parsing steps for the variable declaration const
 
 The decision on which action to execute is made at each step, depending on the stack content and the following items in the input stream (so-called lookahead tokens). Textmapper uses LR parsing techniques to come to this decision quickly.
 
-Instead of analyzing the whole stack each time, an aggregated value describing the stack content is used. This value is called a parser state. The parser state is effectively maintained for every element of the stack using a special table in the generated code (called the *goto* table). When a terminal or nonterminal symbol is pushed onto the stack the new state is calculated as ```goto[s, newSymbol]``` where **s** is the previous state on top of the stack.
+Instead of analyzing the whole stack each time, an aggregated value describing the stack content is used. This value is called a parser state. The parser state is effectively maintained for every element of the stack using a special table in the generated code (called the *goto* table). When a terminal or nonterminal symbol is pushed onto the stack the new state is calculated as `goto[s, newSymbol]` where **s** is the previous state on top of the stack.
 
 In each state there may be one or more actions that lead to a successful parse. If there are many, we have to examine lookahead tokens to disambiguate. The generated parser scans them one by one until the ambiguity is resolved. Then it applies the only remaining valid action, or reports a syntax error. The pre-computed *action* table is used by the parser to look up the next action for the current state and the next input terminal. In addition to *Shift* and *Reduce*, the action table may contain two more types of actions:
 
@@ -507,7 +507,7 @@ The rule modifier should be used with care, as it may silently resolve more conf
 
 Mathematical expressions appear in many languages, and every language defines its own order in which parts of an expression are evaluated. For example, without parentheses, multiplication is typically done before addition. From the parsing point of view, it does make sense to have an AST that reflects the chosen operator precedence, i.e. operators with higher precedence are reduced first, and remain closer to the leaves in the AST. This allows us to evaluate an expression using a simple recursive tree traversal.
 
-For operators of the same precedence, the order of execution remains unclear. For example, ```a+b+c``` can be interpreted either as ```(a+b)+c```, or ```a+(b+c)```. We may resolve it by defining an operator as left-associative (operations are grouped left-to-right), right-associative, or non-associative. Non-associative operators produce a syntax error when applied to a term of the same precedence (e.g. a range operator is non-associative ```1..100```).
+For operators of the same precedence, the order of execution remains unclear. For example, `a+b+c` can be interpreted either as `(a+b)+c`, or `a+(b+c)`. We may resolve it by defining an operator as left-associative (operations are grouped left-to-right), right-associative, or non-associative. Non-associative operators produce a syntax error when applied to a term of the same precedence (e.g. a range operator is non-associative `1..100`).
 
 The following grammar snippet produces a bunch of **Shift/Reduce** conflicts. Obviously, without precedences and associativities, there are multiple ways to parse any complex expression.
 
@@ -535,13 +535,13 @@ It is heavy, verbose, and requires many excess reductions (every single constant
 
 Operators on the first line have the lowest precedence. Each subsequent line introduces a new, higher precedence level. On the same level, operators are interchangeable and have the same associativity (left, right, or nonassoc).
 
-Textmapper uses precedences to resolve shift/reduce conflicts. First, it assigns a precedence to a rule which can be reduced. By default, it takes the precedence of the last terminal on the right-hand side of the rule. This can be overridden using a ```%prec <terminal>``` rule modifier. If precedences are defined for both the rule and the lookahead token, Textmapper can compare them and perform:
+Textmapper uses precedences to resolve shift/reduce conflicts. First, it assigns a precedence to a rule which can be reduced. By default, it takes the precedence of the last terminal on the right-hand side of the rule. This can be overridden using a `%prec <terminal>` rule modifier. If precedences are defined for both the rule and the lookahead token, Textmapper can compare them and perform:
 
 * **Shift** if the lookahead token has higher precedence than the rule, or they have equal precedence with right associativity
 * **Reduce** if the lookahead token has lower precedence than the rule, or they have equal precedence with left associativity
 * **Error** if the lookahead token and the rule are of the same precedence and are non-associative
 
-For example, the following conflict will be resolved as *Shift* for the ```'*'``` lookahead token and as *Reduce* for ```'+'``` (which is left-associative).
+For example, the following conflict will be resolved as *Shift* for the `'*'` lookahead token and as *Reduce* for `'+'` (which is left-associative).
 
 	input: MethodHeader '{' expr '+' expr
 	shift/reduce conflict (next: '+', '*')
@@ -565,11 +565,11 @@ The unary minus requires a separate operator terminal as it has higher precedenc
 	   | '-' expr %prec unaryMinus
 	;
 
-Without the *unaryMinus* precedence, ```-1-1``` can be parsed in two ways: either as ```-(1-1)```, or as ```(-1)-1```.
+Without the *unaryMinus* precedence, `-1-1` can be parsed in two ways: either as `-(1-1)`, or as `(-1)-1`.
 
 ## State markers
 
-It is possible to mark any position on the right-hand side of a rule with a state marker. The syntax for state markers is a period followed by an identifier. The main purpose of state markers is to expose parser internals to generated code for advanced parsing techniques, such as semicolon insertion. The same marker identifier can occur multiple times in a grammar, capturing parser states including one of its positions. Keep in mind that one parser state corresponds to multiple positions in the grammar, and vice versa, one position in the grammar usually participates in more than one state.
+It is possible to mark any position on the right-hand side of a rule with a state marker. The syntax for state markers is a period followed by an identifier. The main purpose of state markers is to expose parser internals to generated code for advanced parsing techniques, such as semicolon insertion. The same marker identifier can occur multiple times in a grammar, capturing parser states that include at least one of its positions. Keep in mind that one parser state corresponds to multiple positions in the grammar, and vice versa, one position in the grammar usually participates in more than one state.
 
 	ReturnStatement:
 	    'return' ';'
@@ -587,7 +587,7 @@ Now, we can implement the rules of semicolon insertion by inspecting the current
 
 ## Error Recovery
 
-By default, the generated parser stops when it encounters the first syntax error. This may not be desirable in some scenarios such as parsing a user-typed text in an editor, where most of the time the syntactic structure is broken (often locally). Introducing a token with the predefined name ```error``` turns on the recovery mechanism. The *error* terminal represents a part of the stream which cannot be successfully parsed.
+By default, the generated parser stops when it encounters the first syntax error. This may not be desirable in some scenarios such as parsing a user-typed text in an editor, where most of the time the syntactic structure is broken (often locally). Introducing a token with the predefined name `error` turns on the recovery mechanism. The *error* terminal represents a part of the stream which cannot be successfully parsed.
 
 	# Note: error token cannot have an associated regular expression
 	error:
