@@ -167,7 +167,7 @@ Backtracking might lead to unexpected results for broken input - the prefix of a
 	'*': /\*/
 	'/': /\//
 
-This can be improved by having an explicit rule for ```invalid_token``` capturing broken comments.
+This can be improved by having an explicit rule for `invalid_token` capturing broken comments.
 
 	# Note: the following rule disables backtracking for incomplete multiline comments, which
 	# would otherwise be reported as '/', '*', etc.
@@ -179,6 +179,15 @@ A similar situation happens in grammars which have a token for tree dots.
 	'.': /\./
 	invalid_token: /\.\./
 	'...': /\.\.\./
+
+Most grammars do not require backtracking and it is best to ensure that generated code does not contain a backtracking table. If it does, keep adding more invalid_token rules until the table disappears.
+
+	... lexer_tables.go for the previous example without the invalid token rule
+	var tmBacktracking = []int{
+		4, 3, // in '.'
+	}
+
+There are legitimate use-cases for backtracking such as allowing identifiers to have dashes or escaped Unicode characters but those are relatively rare.
 
 ## Regular expressions
 
@@ -461,7 +470,7 @@ Instead of analyzing the whole stack each time, an aggregated value describing t
 
 In each state there may be one or more actions that lead to a successful parse. If there are many, we have to examine lookahead tokens to disambiguate. The generated parser scans them one by one until the ambiguity is resolved. Then it applies the only remaining valid action, or reports a syntax error. The pre-computed *action* table is used by the parser to look up the next action for the current state and the next input terminal. In addition to *Shift* and *Reduce*, the action table may contain two more types of actions:
 
-**Error** reports a syntax error. The parser may also try to recover if this feature is on.
+**Error** reports a syntax error. The parser may also try to recover if error recovery is enabled.
 
 **Lookahead** means that one more token is needed to disambiguate. It takes a new lookahead state as an argument. Lookahead states extend a set of parser states, and can be used as keys in the *action* table (but not in the *goto* table). When the parser encounters this action, it fetches the next lookahead token. It then continues the lookup for the new state and the new token until no more Lookahead actions are returned.
 
@@ -558,6 +567,24 @@ The unary minus requires a separate operator terminal as it has higher precedenc
 
 Without the *unaryMinus* precedence, ```-1-1``` can be parsed in two ways: either as ```-(1-1)```, or as ```(-1)-1```.
 
+## State markers
+
+It is possible to mark any position on the right-hand side of a rule with a state marker. The syntax for state markers is a period followed by an identifier. The main purpose of state markers is to expose parser internals to generated code for advanced parsing techniques, such as semicolon insertion. The same marker identifier can occur multiple times in a grammar, capturing parser states including one of its positions. Keep in mind that one parser state corresponds to multiple positions in the grammar, and vice versa, one position in the grammar usually participates in more than one state.
+
+	ReturnStatement:
+	    'return' ';'
+	  | 'return' .noLineBreak Expression ';'
+	;
+
+The previous snippet generates a map available to the parser code at runtime. This is the only visible effect of state markers, so one can also use them for purely documentation purposes.
+
+	var noLineBreakStates = map[int]bool{
+		27: true,
+		92: true,
+	}
+
+Now, we can implement the rules of semicolon insertion by inspecting the current parser state at line breaks and checking whether the state allows or disallows semicolons (noLineBreak means eagerly insert a semicolon even if the next line parses fine without one).
+
 ## Error Recovery
 
 By default, the generated parser stops when it encounters the first syntax error. This may not be desirable in some scenarios such as parsing a user-typed text in an editor, where most of the time the syntactic structure is broken (often locally). Introducing a token with the predefined name ```error``` turns on the recovery mechanism. The *error* terminal represents a part of the stream which cannot be successfully parsed.
@@ -574,7 +601,18 @@ This terminal can then be used in production rules to specify the contexts where
 
 When the generated parser encounters a syntax error, it starts discarding the parsing context from the stack until it finds a state in which the *error* terminal is accepted. This means that even if an error occurred in an expression, the stack is unwound up to the statement context in which the appropriate recovery rule is defined. The parser then creates a new error token, pushes it onto the stack, and continues parsing.
 
-It may happen that the next few tokens in the stream contribute to the error, so the parser remains in the recovery mode until three consecutive input tokens have been successfully shifted. No new syntax errors are reported during this time.
+It may happen that the next few tokens in the stream contribute to the error, so the parser remains in the recovery mode until three consecutive input tokens have been successfully shifted. No new syntax errors are reported during this time. The logic for error recovery tries to skip as few tokens as possible and makes sure that the parser will accept the next token after the error. This significantly reduces the number of reported errors compared to Bison and other LALR parser generators.
+
+Textmapper supports restricting the error recovery mechanism to a given production rule. Once the parser passes by a `.recoveryScope` marker in a rule, the recovery becomes confined within that rule. The text range of any injected `error` token will start after the marker. The feature teaches the parser to respect structural parentheses and makes the parsing output more predictable on broken input.
+
+	# Input:
+	#   delay(func() {
+	#       foo)       // <- unexpected parenthesis, this whole line is reported as BrokenStatement
+	#   })
+	Block:
+		'{' .recoveryScope Statement* '}' ;
+
+Without `.recoveryScope`, the parser matches the offending closing parenthesis with the opening parenthesis of the delay call, completely messing up the parse tree.
 
 ## Abstract Syntax Tree
 

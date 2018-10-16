@@ -6,7 +6,7 @@ kind: home
 
 ### Introduction
 
-Textmapper is a tool for language development. It takes a formal language specification (a grammar) and generates code to parse that language - a lexer/parser and a set of AST classes. Textmapper supports EBNF-like production rules and can map a grammar to an AST, or even derive an AST automatically from the grammar. This means you can get code transforming a sequence of characters into an AST without any additional coding work. Textmapper also provides back-transformation of AST into text, and by annotating the rules, you can get it perfectly formatted. Textmapper has a sophisticated scanner generator built-in.
+Textmapper is a tool for language development. It takes a formal language specification (a grammar) and generates code to parse that language - a lexer/parser and a set of AST classes. Textmapper supports EBNF-like production rules and can map a grammar to an AST, or even derive an AST automatically from the grammar. This means you can get code transforming a sequence of characters into an AST without any additional coding work. Textmapper has a sophisticated scanner generator built-in.
 
 Textmapper supports multiple target languages. By avoiding code in the grammar, Textmapper gives you exactly the same parsing functionality in different languages as well as clean and concise grammars. By default, the generated parser code has no runtime dependencies and contains all required algorithms.
 
@@ -20,6 +20,6 @@ Textmapper comes as a separate command-line tool, with integration plugins for E
 
 ### License
 
-TextMapper tool is distributed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
+Textmapper tool is distributed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 Plug-ins for Eclipse and IntelliJ IDEA are made available under the Eclipse Public License and the General Public License (version 3 or above), respectively.
