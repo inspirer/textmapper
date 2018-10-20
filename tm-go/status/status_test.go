@@ -53,5 +53,26 @@ func TestStatus(t *testing.T) {
 		if got := b.String(); got != test.wantPrinted {
 			t.Errorf("Print(%v) = %v; want: %v", i, got, test.wantPrinted)
 		}
+		s2 := FromError(s.Err())
+		b.Reset()
+		Print(&b, s2.Err())
+		if got := b.String(); got != test.wantPrinted {
+			t.Errorf("Print(FromError(%v.Err())) = %v; want: %v", i, got, test.wantPrinted)
+		}
+	}
+}
+
+type testNode SourceRange
+
+func (tn testNode) SourceRange() SourceRange {
+	return SourceRange(tn)
+}
+
+func TestErrorf(t *testing.T) {
+	n := testNode(SourceRange{"file1", 80, 81, 20, 12})
+	s := Errorf(n, "failure")
+	want := "file1:20:12: failure"
+	if got := s.Error(); got != want {
+		t.Errorf("Errorf(\"failure\") = %v; want: %v", got, want)
 	}
 }

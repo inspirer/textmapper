@@ -56,7 +56,7 @@ func parseCharsets(input string) ([]charset, error) {
 	if p.ch != -1 {
 		p.error("unexpected end of input")
 	}
-	if p.err.msg != "" {
+	if p.err.Msg != "" {
 		return nil, p.err
 	}
 	return ret, nil

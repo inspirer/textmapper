@@ -39,13 +39,14 @@ const (
 	opParen
 )
 
-type parseError struct {
-	msg    string
-	offset int
+// ParseError represents a syntax error in a regular expression.
+type ParseError struct {
+	Msg    string
+	Offset int
 }
 
-func (e parseError) Error() string {
-	return fmt.Sprintf("broken regexp: %v", e.msg)
+func (e ParseError) Error() string {
+	return fmt.Sprintf("broken regexp: %v", e.Msg)
 }
 
 func (re *Regexp) empty() bool {
@@ -102,7 +103,7 @@ func ParseRegexp(input string) (*Regexp, error) {
 	p.set = buf[:0]
 	p.next()
 	re := p.parse()
-	if p.err.msg != "" {
+	if p.err.Msg != "" {
 		return nil, p.err
 	}
 	return re, nil
@@ -114,7 +115,7 @@ type parser struct {
 	scanOffset int
 	ch         rune
 	set        []rune
-	err        parseError
+	err        ParseError
 }
 
 func (p *parser) next() {
@@ -374,8 +375,8 @@ func (p *parser) canAppend() bool {
 }
 
 func (p *parser) error(msg string) {
-	if len(p.err.msg) == 0 {
-		p.err = parseError{msg: msg, offset: p.offset}
+	if len(p.err.Msg) == 0 {
+		p.err = ParseError{Msg: msg, Offset: p.offset}
 	}
 }
 

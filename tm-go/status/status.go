@@ -41,7 +41,7 @@ type Error struct {
 }
 
 // Error implements the error interface.
-func (e Error) Error() string {
+func (e *Error) Error() string {
 	if e.Origin.Filename == "" {
 		// for I/O errors
 		return e.Msg
@@ -59,17 +59,17 @@ func (s *Status) Add(r SourceRange, msg string) {
 
 // AddError adds an error unpacking status error when needed.
 func (s *Status) AddError(err error) {
-	if err == nil {
+	switch err := err.(type) {
+	case nil:
 		return
+	case Status:
+		*s = append(*s, err...)
+	case *Error:
+		*s = append(*s, err)
+	default:
+		// I/O errors don't originate in source code.
+		*s = append(*s, &Error{SourceRange{}, err.Error()})
 	}
-
-	if list, ok := err.(Status); ok {
-		*s = append(*s, list...)
-		return
-	}
-
-	// I/O errors don't originate in source code.
-	*s = append(*s, &Error{SourceRange{}, err.Error()})
 }
 
 // Sort sorts errors by their filename, offset, and message.
@@ -127,4 +127,16 @@ func Print(w io.Writer, err error) {
 	} else if err != nil {
 		fmt.Fprintf(w, "%s\n", err)
 	}
+}
+
+// FromError unpacks Status stored as an error.
+func FromError(err error) Status {
+	var s Status
+	s.AddError(err)
+	return s
+}
+
+// Errorf returns a Status-compatible error.
+func Errorf(n SourceNode, format string, a ...interface{}) error {
+	return &Error{Origin: n.SourceRange(), Msg: fmt.Sprintf(format, a...)}
 }

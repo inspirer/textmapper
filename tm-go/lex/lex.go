@@ -24,6 +24,9 @@ type Sym int
 // EOI is an end of stream indicator.
 const EOI Sym = 0
 
+// Initial is the name of the default lexer start condition.
+const Initial = "initial"
+
 // RangeEntry translates a segment of runes into a DFA input symbol.
 type RangeEntry struct {
 	Start  rune // inclusive
