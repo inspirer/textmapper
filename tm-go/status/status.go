@@ -72,6 +72,12 @@ func (s *Status) AddError(err error) {
 	}
 }
 
+// Errorf adds a new error to the status.
+func (s *Status) Errorf(n SourceNode, format string, a ...interface{}) {
+	err := &Error{Origin: n.SourceRange(), Msg: fmt.Sprintf(format, a...)}
+	*s = append(*s, err)
+}
+
 // Sort sorts errors by their filename, offset, and message.
 func (s Status) Sort() {
 	sort.Slice(s, func(i, j int) bool {
@@ -137,6 +143,6 @@ func FromError(err error) Status {
 }
 
 // Errorf returns a Status-compatible error.
-func Errorf(n SourceNode, format string, a ...interface{}) error {
+func Errorf(n SourceNode, format string, a ...interface{}) *Error {
 	return &Error{Origin: n.SourceRange(), Msg: fmt.Sprintf(format, a...)}
 }

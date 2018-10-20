@@ -5,12 +5,29 @@ import (
 	"github.com/inspirer/textmapper/tm-go/status"
 )
 
+// Names of common terminals with predefined meaning.
+const (
+	Eoi = "eoi"
+	Error = "error"
+	InvalidToken = "invalid_token"
+)
+
 // Symbol is a grammar symbol.
 type Symbol struct {
 	Index   int
-	ID      string // identifier to be used in generated code
+	ID      string // unique identifier to be used in generated code
 	Name    string
 	Comment string
+	Type    string
+	Origin  status.SourceNode
+}
+
+// PrettyType returns a user-friendly representation of the symbol type.
+func (sym *Symbol) PrettyType() string {
+	if sym.Type != "" {
+		return sym.Type
+	}
+	return "<no type>"
 }
 
 // Grammar is a fully resolved and compiled Textmapper grammar.

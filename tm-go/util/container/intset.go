@@ -20,6 +20,7 @@ func (s IntSet) Complement() IntSet {
 	return IntSet{!s.Inverse, s.Set}
 }
 
+// BitSet turns this IntSet into a BitSet of the given size.
 func (s IntSet) BitSet(size int) BitSet {
 	ret := NewBitSet(size)
 	if s.Inverse {

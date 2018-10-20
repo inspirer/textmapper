@@ -1,0 +1,24 @@
+language lexer(go);
+
+:: lexer
+
+%s initial;
+# err: redeclaration of initial
+%x «initial»;
+
+idChar = /[a-zA-Z_]/
+# err: redeclaration of idChar
+«idChar» = /[a-zA-Z_0-9]/
+
+id:      /{idChar}+/
+scon:    /"([^\n\\"]|\\.)*"/
+# err: terminal type redeclaration for id, was <no type>
+id «{fff}»:      /'[a-z]+'/
+
+whitespace: /[\n\r\t ]+/   (space)
+
+# err: syntax error
+«%brackets '(' ')';»
+
+'(': /\(/
+')': /\)/

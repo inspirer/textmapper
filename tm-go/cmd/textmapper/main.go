@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"text/template"
+
+	"github.com/inspirer/textmapper/tm-go/status"
 )
 
 const (
@@ -56,7 +58,7 @@ func main() {
 	args = cmd.Flags.Args()
 	err := cmd.Run(args)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "textmapper: %v.\n", err)
+		status.Print(os.Stderr, err)
 		os.Exit(2)
 	}
 }

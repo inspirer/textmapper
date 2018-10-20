@@ -6,6 +6,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/inspirer/textmapper/tm-go/status"
+	"github.com/inspirer/textmapper/tm-go/grammar"
+	"github.com/inspirer/textmapper/tm-go/parser"
 )
 
 var genCmd = &command{
@@ -66,31 +70,27 @@ func generate(files []string) error {
 		}
 	}
 
-	var inputs []input
+	var s status.Status
 	for _, path := range files {
 		content, err := ioutil.ReadFile(path)
 		if err != nil {
-			return err
+			s.AddError(err)
+			continue
 		}
-		inputs = append(inputs, input{
-			path:        path,
-			content:     string(content),
-			outputDir:   *outputDir,
-			noBuiltins:  *noBuiltins,
-			includeDirs: includes,
-			debug:       *debug,
-		})
+
+		file, err := parser.Parse(path, string(content))
+		if err != nil {
+			s.AddError(err)
+			continue
+		}
+
+		_, err = grammar.Compile(file)
+		if err != nil {
+			s.AddError(err)
+			continue
+		}
+
+		// TODO
 	}
-
-	// TODO
-	return nil
-}
-
-type input struct {
-	path        string
-	content     string
-	outputDir   string
-	includeDirs []string
-	noBuiltins  bool
-	debug       bool
+	return s.Err()
 }

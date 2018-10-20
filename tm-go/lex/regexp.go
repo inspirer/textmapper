@@ -61,8 +61,8 @@ func (re *Regexp) empty() bool {
 	return false
 }
 
-// Checks if this regular expression matches exactly one target string, and returns that string on
-// success.
+// Constant checks if this regular expression matches exactly one target string, and returns that
+// string on success.
 func (re *Regexp) Constant() (string, bool) {
 	switch re.op {
 	case opCharClass:
