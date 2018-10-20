@@ -44,8 +44,8 @@ func ToTmNode(n Node) TmNode {
 		return &DirectivePrio{n}
 	case tm.DirectiveSet:
 		return &DirectiveSet{n}
-	case tm.ExclusiveStates:
-		return &ExclusiveStates{n}
+	case tm.ExclusiveStartConds:
+		return &ExclusiveStartConds{n}
 	case tm.File:
 		return &File{n}
 	case tm.Header:
@@ -56,8 +56,8 @@ func ToTmNode(n Node) TmNode {
 		return &Implements{n}
 	case tm.Import:
 		return &Import{n}
-	case tm.InclusiveStates:
-		return &InclusiveStates{n}
+	case tm.InclusiveStartConds:
+		return &InclusiveStartConds{n}
 	case tm.InlineParameter:
 		return &InlineParameter{n}
 	case tm.Inputref:

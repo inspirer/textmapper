@@ -262,8 +262,8 @@ lexeme_attribute -> LexemeAttribute:
 
 lexer_directive -> LexerPart:
     '%' 'brackets' opening=symref<~Args> closing=symref<~Args> ';'    -> DirectiveBrackets
-  | '%' 's' states=(lexer_state separator ',')+ ';'                   -> InclusiveStates
-  | '%' 'x' states=(lexer_state separator ',')+ ';'                   -> ExclusiveStates
+  | '%' 's' states=(lexer_state separator ',')+ ';'                   -> InclusiveStartConds
+  | '%' 'x' states=(lexer_state separator ',')+ ';'                   -> ExclusiveStartConds
 ;
 
 stateref -> Stateref:
@@ -560,4 +560,8 @@ ${template go_lexer.onAfterNext-}
 	default:
 		l.State = StateInitial
 	}
+${end}
+
+${template go_types.wrappedTypeExt-}
+	SourceRange() "github.com/inspirer/textmapper/tm-go/status".SourceRange
 ${end}

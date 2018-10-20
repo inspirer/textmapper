@@ -26,13 +26,13 @@ var (
 	DirectiveInterface   = func(t tm.NodeType) bool { return t == tm.DirectiveInterface }
 	DirectivePrio        = func(t tm.NodeType) bool { return t == tm.DirectivePrio }
 	DirectiveSet         = func(t tm.NodeType) bool { return t == tm.DirectiveSet }
-	ExclusiveStates      = func(t tm.NodeType) bool { return t == tm.ExclusiveStates }
+	ExclusiveStartConds  = func(t tm.NodeType) bool { return t == tm.ExclusiveStartConds }
 	File                 = func(t tm.NodeType) bool { return t == tm.File }
 	Header               = func(t tm.NodeType) bool { return t == tm.Header }
 	Identifier           = func(t tm.NodeType) bool { return t == tm.Identifier }
 	Implements           = func(t tm.NodeType) bool { return t == tm.Implements }
 	Import               = func(t tm.NodeType) bool { return t == tm.Import }
-	InclusiveStates      = func(t tm.NodeType) bool { return t == tm.InclusiveStates }
+	InclusiveStartConds  = func(t tm.NodeType) bool { return t == tm.InclusiveStartConds }
 	InlineParameter      = func(t tm.NodeType) bool { return t == tm.InlineParameter }
 	Inputref             = func(t tm.NodeType) bool { return t == tm.Inputref }
 	IntegerLiteral       = func(t tm.NodeType) bool { return t == tm.IntegerLiteral }

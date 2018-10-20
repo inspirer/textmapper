@@ -3,6 +3,7 @@
 package ast
 
 import (
+	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-parsers/tm"
 	"github.com/inspirer/textmapper/tm-parsers/tm/selector"
 )
@@ -19,6 +20,7 @@ type Node interface {
 	// NextAll returns all following siblings of the node that match the selector.
 	NextAll(sel selector.Selector) []Node
 	Text() string
+	SourceRange() status.SourceRange
 }
 
 // Interfaces.
@@ -49,13 +51,13 @@ func (DirectiveInput) tmNodeNode()       {}
 func (DirectiveInterface) tmNodeNode()   {}
 func (DirectivePrio) tmNodeNode()        {}
 func (DirectiveSet) tmNodeNode()         {}
-func (ExclusiveStates) tmNodeNode()      {}
+func (ExclusiveStartConds) tmNodeNode()  {}
 func (File) tmNodeNode()                 {}
 func (Header) tmNodeNode()               {}
 func (Identifier) tmNodeNode()           {}
 func (Implements) tmNodeNode()           {}
 func (Import) tmNodeNode()               {}
-func (InclusiveStates) tmNodeNode()      {}
+func (InclusiveStartConds) tmNodeNode()  {}
 func (InlineParameter) tmNodeNode()      {}
 func (Inputref) tmNodeNode()             {}
 func (IntegerLiteral) tmNodeNode()       {}
@@ -185,8 +187,8 @@ type LexerPart interface {
 // assigned to LexerPart.
 //
 func (DirectiveBrackets) lexerPartNode()    {}
-func (ExclusiveStates) lexerPartNode()      {}
-func (InclusiveStates) lexerPartNode()      {}
+func (ExclusiveStartConds) lexerPartNode()  {}
+func (InclusiveStartConds) lexerPartNode()  {}
 func (Lexeme) lexerPartNode()               {}
 func (NamedPattern) lexerPartNode()         {}
 func (StartConditionsScope) lexerPartNode() {}
@@ -486,11 +488,11 @@ func (n DirectiveSet) RhsSet() RhsSet {
 	return RhsSet{n.Child(selector.RhsSet)}
 }
 
-type ExclusiveStates struct {
+type ExclusiveStartConds struct {
 	Node
 }
 
-func (n ExclusiveStates) States() []LexerState {
+func (n ExclusiveStartConds) States() []LexerState {
 	nodes := n.Children(selector.LexerState)
 	var result []LexerState = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {
@@ -583,11 +585,11 @@ func (n Import) Path() StringLiteral {
 	return StringLiteral{n.Child(selector.StringLiteral)}
 }
 
-type InclusiveStates struct {
+type InclusiveStartConds struct {
 	Node
 }
 
-func (n InclusiveStates) States() []LexerState {
+func (n InclusiveStartConds) States() []LexerState {
 	nodes := n.Children(selector.LexerState)
 	var result []LexerState = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {

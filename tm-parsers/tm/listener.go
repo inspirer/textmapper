@@ -33,13 +33,13 @@ const (
 	Lexeme               // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
 	LexemeAttrs          // LexemeAttribute
 	LexemeAttribute
-	DirectiveBrackets // opening=Symref closing=Symref
-	InclusiveStates   // states=(LexerState)+
-	ExclusiveStates   // states=(LexerState)+
-	Stateref          // name=Identifier
-	LexerState        // name=Identifier
-	Nonterm           // Annotations? name=Identifier params=NontermParams? NontermType? ReportClause? (Rule0)+
-	SubType           // reference=Symref
+	DirectiveBrackets   // opening=Symref closing=Symref
+	InclusiveStartConds // states=(LexerState)+
+	ExclusiveStartConds // states=(LexerState)+
+	Stateref            // name=Identifier
+	LexerState          // name=Identifier
+	Nonterm             // Annotations? name=Identifier params=NontermParams? NontermType? ReportClause? (Rule0)+
+	SubType             // reference=Symref
 	InterfaceType
 	ClassType // Implements?
 	VoidType
@@ -128,8 +128,8 @@ var nodeTypeStr = [...]string{
 	"LexemeAttrs",
 	"LexemeAttribute",
 	"DirectiveBrackets",
-	"InclusiveStates",
-	"ExclusiveStates",
+	"InclusiveStartConds",
+	"ExclusiveStartConds",
 	"Stateref",
 	"LexerState",
 	"Nonterm",
@@ -236,8 +236,8 @@ var GrammarPart = []NodeType{
 
 var LexerPart = []NodeType{
 	DirectiveBrackets,
-	ExclusiveStates,
-	InclusiveStates,
+	ExclusiveStartConds,
+	InclusiveStartConds,
 	Lexeme,
 	NamedPattern,
 	StartConditionsScope,
@@ -446,8 +446,8 @@ var ruleNodeType = [...]NodeType{
 	LexemeAttribute,      // lexeme_attribute : 'space'
 	LexemeAttribute,      // lexeme_attribute : 'layout'
 	DirectiveBrackets,    // lexer_directive : '%' 'brackets' symref symref ';'
-	InclusiveStates,      // lexer_directive : '%' 's' lexer_state_list_Comma_separated ';'
-	ExclusiveStates,      // lexer_directive : '%' 'x' lexer_state_list_Comma_separated ';'
+	InclusiveStartConds,  // lexer_directive : '%' 's' lexer_state_list_Comma_separated ';'
+	ExclusiveStartConds,  // lexer_directive : '%' 'x' lexer_state_list_Comma_separated ';'
 	0,                    // lexer_state_list_Comma_separated : lexer_state_list_Comma_separated ',' lexer_state
 	0,                    // lexer_state_list_Comma_separated : lexer_state
 	Stateref,             // stateref : identifier
