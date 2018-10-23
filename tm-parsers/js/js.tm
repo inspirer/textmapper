@@ -1099,7 +1099,7 @@ Modifiers:
 
 ClassElement<Yield, Await> -> ClassElement /* interface */:
     Modifiers? MethodDefinition                 -> MemberMethod
-  | Modifiers? PropertyName '?'? TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
+  | Modifiers? PropertyName ('?'|'!')? TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
   | IndexSignature ';'                          -> TsIndexMemberDeclaration
   | ';'                                         -> EmptyDecl
 ;

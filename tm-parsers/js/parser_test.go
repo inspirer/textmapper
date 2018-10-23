@@ -1074,6 +1074,7 @@ var parseTests = []struct {
 	{js.Typescript, js.MemberVar, []string{
 		`class A {
 		   «private a = 5;»
+                   «private b! : string;»
 		   «static a : int = 5;»
 		 }`,
 	}},
