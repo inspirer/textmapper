@@ -11,7 +11,8 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	Test NodeType = iota + 1 // (Declaration)+
+	NoType NodeType = iota
+	Test            // (Declaration)+
 	Negation
 	Block // Negation? (Declaration)*
 	Int

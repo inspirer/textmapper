@@ -32,8 +32,9 @@ type ${self->nodeTypeRef()->go.declarationName()} int
 type Listener func(t ${self->nodeTypeRef()}, offset, endoffset int)
 
 const (
+	NoType ${self->nodeTypeRef()} = iota
 ${foreach rangeType in syntax.rangeTypes-}
-	${rangeType->nodeTypeValueRef()->go.declarationName()}${if index == 0} ${self->nodeTypeRef()} = iota + 1${end}${call typedescr(rangeType)}
+	${rangeType->nodeTypeValueRef()->go.declarationName()}${call typedescr(rangeType)}
 ${end-}
 ${foreach extraType in opts.extraTypes-}
 	${extraType->nodeTypeValueRef()->go.declarationName()}
@@ -41,7 +42,7 @@ ${end-}
 ${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
 	${name->nodeTypeValueRef()->go.declarationName()}
 ${end-}
-	${self->nodeType()}Max${if syntax.rangeTypes.length == 0 && opts.extraTypes.length == 0 && !opts.reportTokens.exists(it|it->go_token.tokenNodeName())} = 1${end}
+	${self->nodeType()}Max
 )
 
 var nodeTypeStr = [...]string{

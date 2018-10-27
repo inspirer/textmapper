@@ -73,8 +73,7 @@ type node struct {
 // Type implements ast.Node
 func (n node) Type() tm.NodeType {
 	if n.file == nil {
-		// TODO: introduce InvalidType
-		return tm.SyntaxProblem
+		return tm.NoType
 	}
 	return n.file.parsed[n.index].t
 }

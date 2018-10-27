@@ -11,7 +11,8 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	SyntaxProblem NodeType = iota + 1 // IdentifierReference? Initializer?
+	NoType        NodeType = iota
+	SyntaxProblem          // IdentifierReference? Initializer?
 	BindingIdentifier
 	IdentifierReference
 	LabelIdentifier

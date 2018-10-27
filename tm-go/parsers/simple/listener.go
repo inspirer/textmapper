@@ -11,7 +11,8 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	NodeTypeMax = 1
+	NoType NodeType = iota
+	NodeTypeMax
 )
 
 var nodeTypeStr = [...]string{

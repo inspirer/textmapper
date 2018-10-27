@@ -11,7 +11,8 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	Identifier NodeType = iota + 1
+	NoType NodeType = iota
+	Identifier
 	IntegerLiteral
 	StringLiteral
 	BooleanLiteral

@@ -11,7 +11,8 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	JSONText NodeType = iota + 1
+	NoType NodeType = iota
+	JSONText
 	JSONValue
 	EmptyObject
 	JSONObject
