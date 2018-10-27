@@ -3,8 +3,8 @@
 package ast
 
 import (
+	"fmt"
 	"github.com/inspirer/textmapper/tm-parsers/js"
-	"log"
 )
 
 func ToJsNode(n Node) JsNode {
@@ -417,6 +417,6 @@ func ToJsNode(n Node) JsNode {
 	case js.MultiLineComment, js.SingleLineComment, js.InvalidToken, js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail:
 		return &Token{n}
 	}
-	log.Fatalf("unknown node type %v\n", n.Type())
+	panic(fmt.Errorf("ast: unknown node type %v", n.Type()))
 	return nil
 }

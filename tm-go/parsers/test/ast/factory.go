@@ -3,8 +3,8 @@
 package ast
 
 import (
+	"fmt"
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
-	"log"
 )
 
 func ToTestNode(n Node) TestNode {
@@ -27,6 +27,6 @@ func ToTestNode(n Node) TestNode {
 	case test.MultiLineComment, test.SingleLineComment, test.InvalidToken, test.Identifier:
 		return &Token{n}
 	}
-	log.Fatalf("unknown node type %v\n", n.Type())
+	panic(fmt.Errorf("ast: unknown node type %v", n.Type()))
 	return nil
 }

@@ -3,8 +3,8 @@
 package ast
 
 import (
+	"fmt"
 	"github.com/inspirer/textmapper/tm-parsers/tm"
-	"log"
 )
 
 func ToTmNode(n Node) TmNode {
@@ -187,6 +187,6 @@ func ToTmNode(n Node) TmNode {
 	case tm.InvalidToken, tm.MultilineComment, tm.Comment:
 		return &Token{n}
 	}
-	log.Fatalf("unknown node type %v\n", n.Type())
+	panic(fmt.Errorf("ast: unknown node type %v", n.Type()))
 	return nil
 }
