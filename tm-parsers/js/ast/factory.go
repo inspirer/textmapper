@@ -7,10 +7,7 @@ import (
 	"github.com/inspirer/textmapper/tm-parsers/js"
 )
 
-func ToJsNode(n Node) JsNode {
-	if n == nil {
-		return nil
-	}
+func ToJsNode(n *Node) JsNode {
 	switch n.Type() {
 	case js.Abstract:
 		return &Abstract{n}

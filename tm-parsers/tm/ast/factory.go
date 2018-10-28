@@ -7,10 +7,7 @@ import (
 	"github.com/inspirer/textmapper/tm-parsers/tm"
 )
 
-func ToTmNode(n Node) TmNode {
-	if n == nil {
-		return nil
-	}
+func ToTmNode(n *Node) TmNode {
 	switch n.Type() {
 	case tm.AnnotationImpl:
 		return &AnnotationImpl{n}

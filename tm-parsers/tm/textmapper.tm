@@ -20,6 +20,8 @@ lang = "tm"
 package = "github.com/inspirer/textmapper/tm-parsers/tm"
 eventBased = true
 eventFields = true
+eventAST = true
+fileNode = "File"
 reportTokens = [invalid_token, multiline_comment, comment]
 
 :: lexer

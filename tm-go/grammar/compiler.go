@@ -8,7 +8,7 @@ import (
 )
 
 // Compile validates and compiles grammar files.
-func Compile(file *ast.File) (*Grammar, error) {
+func Compile(file ast.File) (*Grammar, error) {
 	c := &compiler{
 		file: file,
 		out: &Grammar{
@@ -21,7 +21,7 @@ func Compile(file *ast.File) (*Grammar, error) {
 }
 
 type compiler struct {
-	file *ast.File
+	file ast.File
 	out  *Grammar
 	s    status.Status
 
@@ -42,7 +42,7 @@ func (c *compiler) collectStartConds() {
 	conds := make(map[string]bool)
 	var names []string
 
-	insert := func(n ast.Node, excl bool) {
+	insert := func(n *ast.Node, excl bool) {
 		name := n.Text()
 		if _, exists := conds[name]; exists {
 			c.errorf(n, "redeclaration of %v", name)
@@ -55,11 +55,11 @@ func (c *compiler) collectStartConds() {
 		switch p := p.(type) {
 		case *ast.ExclusiveStartConds:
 			for _, s := range p.States() {
-				insert(s, false)
+				insert(s.Node, false)
 			}
 		case *ast.InclusiveStartConds:
 			for _, s := range p.States() {
-				insert(s, true)
+				insert(s.Node, true)
 			}
 		}
 	}
@@ -138,7 +138,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 			newDefaults := c.resolveSC(p.StartConditions())
 			c.traverseLexer(p.LexerPart(), newDefaults, ps)
 		case *ast.SyntaxProblem, *ast.DirectiveBrackets:
-			c.errorf(p, "syntax error")
+			c.errorf(p.TmNode(), "syntax error")
 		}
 	}
 }

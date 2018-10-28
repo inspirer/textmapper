@@ -58,8 +58,7 @@ func parseTM(f file) string {
 	p := new(tm.Parser)
 	l.Init(f.content)
 	result := "ok"
-	errHandler := func(se tm.SyntaxError) bool { return false }
-	p.Init(errHandler, func(nt tm.NodeType, offset, endoffset int) {})
+	p.Init(tm.StopOnFirstError, func(nt tm.NodeType, offset, endoffset int) {})
 	if err := p.Parse(l); err != nil {
 		result = "parse_err"
 		var suffix string

@@ -1,10 +1,11 @@
-package parser
+package ast
 
 import (
 	"fmt"
-	"github.com/inspirer/textmapper/tm-go/status"
 	"strings"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-go/status"
 )
 
 var offsetTests = []struct {
@@ -42,12 +43,13 @@ var rangeTests = []struct {
 
 func TestSourceRange(t *testing.T) {
 	for _, test := range rangeTests {
-		f := newFile(testFile, test.content)
+		tree := newTree(testFile, test.content)
 		i := strings.Index(test.content, test.substr)
 		if i == -1 {
 			t.Fatalf("%q is not found in %q", test.substr, test.content)
 		}
-		if got := f.sourceRange(i, i+len(test.substr)); got != test.want {
+		n := &Node{tree: tree, offset: i, endoffset: i + len(test.substr)}
+		if got := n.SourceRange(); got != test.want {
 			t.Errorf("sourceRange(%q,%q) = %v, want: %v", test.content, test.substr, got, test.want)
 		}
 	}

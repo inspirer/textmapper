@@ -402,8 +402,8 @@ var ruleNodeType = [...]NodeType{
 	Name,                 // name : qualified_name
 	Command,              // command : code
 	SyntaxProblem,        // syntax_problem : error
-	File,                 // file : header import__optlist option_optlist lexer_section parser_section
-	File,                 // file : header import__optlist option_optlist lexer_section
+	0,                    // file : header import__optlist option_optlist lexer_section parser_section
+	0,                    // file : header import__optlist option_optlist lexer_section
 	0,                    // import__optlist : import__optlist import_
 	0,                    // import__optlist :
 	0,                    // option_optlist : option_optlist option

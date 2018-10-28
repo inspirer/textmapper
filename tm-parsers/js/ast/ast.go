@@ -7,234 +7,219 @@ import (
 	"github.com/inspirer/textmapper/tm-parsers/js/selector"
 )
 
-type Node interface {
-	Type() js.NodeType
-	Offset() int
-	Endoffset() int
-	// Child returns the first child node that matches the selector.
-	Child(sel selector.Selector) Node
-	Children(sel selector.Selector) []Node
-	// Next returns the first element among the following siblings that matches the selector.
-	Next(sel selector.Selector) Node
-	// NextAll returns all following siblings of the node that match the selector.
-	NextAll(sel selector.Selector) []Node
-	Text() string
-}
-
 // Interfaces.
 
 type JsNode interface {
-	Node
-	jsNodeNode()
+	JsNode() *Node
 }
 
 type Token struct {
-	Node
+	*Node
 }
 
 // All types implement JsNode.
-func (Abstract) jsNodeNode()                     {}
-func (AccessibilityModifier) jsNodeNode()        {}
-func (AdditiveExpression) jsNodeNode()           {}
-func (Arguments) jsNodeNode()                    {}
-func (ArrayLiteral) jsNodeNode()                 {}
-func (ArrayPattern) jsNodeNode()                 {}
-func (ArrayType) jsNodeNode()                    {}
-func (ArrowFunction) jsNodeNode()                {}
-func (AssignmentExpression) jsNodeNode()         {}
-func (AssignmentOperator) jsNodeNode()           {}
-func (AsyncArrowFunction) jsNodeNode()           {}
-func (AsyncFunction) jsNodeNode()                {}
-func (AsyncFunctionExpression) jsNodeNode()      {}
-func (AsyncMethod) jsNodeNode()                  {}
-func (AwaitExpression) jsNodeNode()              {}
-func (BindingIdentifier) jsNodeNode()            {}
-func (BindingRestElement) jsNodeNode()           {}
-func (BitwiseANDExpression) jsNodeNode()         {}
-func (BitwiseORExpression) jsNodeNode()          {}
-func (BitwiseXORExpression) jsNodeNode()         {}
-func (Block) jsNodeNode()                        {}
-func (Body) jsNodeNode()                         {}
-func (BreakStatement) jsNodeNode()               {}
-func (CallExpression) jsNodeNode()               {}
-func (CallSignature) jsNodeNode()                {}
-func (Case) jsNodeNode()                         {}
-func (Catch) jsNodeNode()                        {}
-func (Class) jsNodeNode()                        {}
-func (ClassBody) jsNodeNode()                    {}
-func (ClassExpr) jsNodeNode()                    {}
-func (CommaExpression) jsNodeNode()              {}
-func (ComputedPropertyName) jsNodeNode()         {}
-func (ConciseBody) jsNodeNode()                  {}
-func (ConditionalExpression) jsNodeNode()        {}
-func (ConstructSignature) jsNodeNode()           {}
-func (ConstructorType) jsNodeNode()              {}
-func (ContinueStatement) jsNodeNode()            {}
-func (DebuggerStatement) jsNodeNode()            {}
-func (DecoratorCall) jsNodeNode()                {}
-func (DecoratorExpr) jsNodeNode()                {}
-func (Default) jsNodeNode()                      {}
-func (DefaultParameter) jsNodeNode()             {}
-func (DoWhileStatement) jsNodeNode()             {}
-func (ElementBinding) jsNodeNode()               {}
-func (EmptyDecl) jsNodeNode()                    {}
-func (EmptyStatement) jsNodeNode()               {}
-func (EqualityExpression) jsNodeNode()           {}
-func (ExponentiationExpression) jsNodeNode()     {}
-func (ExportClause) jsNodeNode()                 {}
-func (ExportDeclaration) jsNodeNode()            {}
-func (ExportDefault) jsNodeNode()                {}
-func (ExportSpecifier) jsNodeNode()              {}
-func (ExpressionStatement) jsNodeNode()          {}
-func (Extends) jsNodeNode()                      {}
-func (Finally) jsNodeNode()                      {}
-func (ForBinding) jsNodeNode()                   {}
-func (ForCondition) jsNodeNode()                 {}
-func (ForFinalExpression) jsNodeNode()           {}
-func (ForInStatement) jsNodeNode()               {}
-func (ForInStatementWithVar) jsNodeNode()        {}
-func (ForOfStatement) jsNodeNode()               {}
-func (ForOfStatementWithVar) jsNodeNode()        {}
-func (ForStatement) jsNodeNode()                 {}
-func (ForStatementWithVar) jsNodeNode()          {}
-func (Function) jsNodeNode()                     {}
-func (FunctionExpression) jsNodeNode()           {}
-func (FunctionType) jsNodeNode()                 {}
-func (Generator) jsNodeNode()                    {}
-func (GeneratorExpression) jsNodeNode()          {}
-func (GeneratorMethod) jsNodeNode()              {}
-func (Getter) jsNodeNode()                       {}
-func (IdentifierReference) jsNodeNode()          {}
-func (IfStatement) jsNodeNode()                  {}
-func (ImportDeclaration) jsNodeNode()            {}
-func (ImportSpecifier) jsNodeNode()              {}
-func (IndexAccess) jsNodeNode()                  {}
-func (IndexSignature) jsNodeNode()               {}
-func (IndexedAccessType) jsNodeNode()            {}
-func (Initializer) jsNodeNode()                  {}
-func (IntersectionType) jsNodeNode()             {}
-func (JSXAttributeName) jsNodeNode()             {}
-func (JSXClosingElement) jsNodeNode()            {}
-func (JSXElement) jsNodeNode()                   {}
-func (JSXElementName) jsNodeNode()               {}
-func (JSXExpression) jsNodeNode()                {}
-func (JSXLiteral) jsNodeNode()                   {}
-func (JSXNormalAttribute) jsNodeNode()           {}
-func (JSXOpeningElement) jsNodeNode()            {}
-func (JSXSelfClosingElement) jsNodeNode()        {}
-func (JSXSpreadAttribute) jsNodeNode()           {}
-func (JSXSpreadExpression) jsNodeNode()          {}
-func (JSXText) jsNodeNode()                      {}
-func (KeyOfType) jsNodeNode()                    {}
-func (LabelIdentifier) jsNodeNode()              {}
-func (LabelledStatement) jsNodeNode()            {}
-func (LexicalBinding) jsNodeNode()               {}
-func (LexicalDeclaration) jsNodeNode()           {}
-func (Literal) jsNodeNode()                      {}
-func (LiteralPropertyName) jsNodeNode()          {}
-func (LiteralType) jsNodeNode()                  {}
-func (LogicalANDExpression) jsNodeNode()         {}
-func (LogicalORExpression) jsNodeNode()          {}
-func (MappedType) jsNodeNode()                   {}
-func (MemberMethod) jsNodeNode()                 {}
-func (MemberVar) jsNodeNode()                    {}
-func (Method) jsNodeNode()                       {}
-func (MethodSignature) jsNodeNode()              {}
-func (Module) jsNodeNode()                       {}
-func (ModuleSpecifier) jsNodeNode()              {}
-func (MultiplicativeExpression) jsNodeNode()     {}
-func (NameSpaceImport) jsNodeNode()              {}
-func (NamedImports) jsNodeNode()                 {}
-func (NewExpression) jsNodeNode()                {}
-func (NewTarget) jsNodeNode()                    {}
-func (ObjectLiteral) jsNodeNode()                {}
-func (ObjectMethod) jsNodeNode()                 {}
-func (ObjectPattern) jsNodeNode()                {}
-func (ObjectType) jsNodeNode()                   {}
-func (Parameters) jsNodeNode()                   {}
-func (Parenthesized) jsNodeNode()                {}
-func (ParenthesizedType) jsNodeNode()            {}
-func (PostDec) jsNodeNode()                      {}
-func (PostInc) jsNodeNode()                      {}
-func (PreDec) jsNodeNode()                       {}
-func (PreInc) jsNodeNode()                       {}
-func (PredefinedType) jsNodeNode()               {}
-func (Property) jsNodeNode()                     {}
-func (PropertyAccess) jsNodeNode()               {}
-func (PropertyBinding) jsNodeNode()              {}
-func (PropertySignature) jsNodeNode()            {}
-func (Readonly) jsNodeNode()                     {}
-func (Regexp) jsNodeNode()                       {}
-func (RelationalExpression) jsNodeNode()         {}
-func (RestParameter) jsNodeNode()                {}
-func (ReturnStatement) jsNodeNode()              {}
-func (Setter) jsNodeNode()                       {}
-func (ShiftExpression) jsNodeNode()              {}
-func (ShorthandProperty) jsNodeNode()            {}
-func (SingleNameBinding) jsNodeNode()            {}
-func (SpreadElement) jsNodeNode()                {}
-func (SpreadProperty) jsNodeNode()               {}
-func (Static) jsNodeNode()                       {}
-func (SuperExpression) jsNodeNode()              {}
-func (SwitchStatement) jsNodeNode()              {}
-func (SyntaxProblem) jsNodeNode()                {}
-func (TaggedTemplate) jsNodeNode()               {}
-func (TemplateLiteral) jsNodeNode()              {}
-func (This) jsNodeNode()                         {}
-func (ThisType) jsNodeNode()                     {}
-func (ThrowStatement) jsNodeNode()               {}
-func (TryStatement) jsNodeNode()                 {}
-func (TsAmbientBinding) jsNodeNode()             {}
-func (TsAmbientClass) jsNodeNode()               {}
-func (TsAmbientClassBody) jsNodeNode()           {}
-func (TsAmbientEnum) jsNodeNode()                {}
-func (TsAmbientFunction) jsNodeNode()            {}
-func (TsAmbientFunctionMember) jsNodeNode()      {}
-func (TsAmbientImportAlias) jsNodeNode()         {}
-func (TsAmbientIndexMember) jsNodeNode()         {}
-func (TsAmbientInterface) jsNodeNode()           {}
-func (TsAmbientModule) jsNodeNode()              {}
-func (TsAmbientNamespace) jsNodeNode()           {}
-func (TsAmbientPropertyMember) jsNodeNode()      {}
-func (TsAmbientTypeAlias) jsNodeNode()           {}
-func (TsAmbientVar) jsNodeNode()                 {}
-func (TsAsExpression) jsNodeNode()               {}
-func (TsCastExpression) jsNodeNode()             {}
-func (TsDynamicImport) jsNodeNode()              {}
-func (TsEnum) jsNodeNode()                       {}
-func (TsEnumBody) jsNodeNode()                   {}
-func (TsEnumMember) jsNodeNode()                 {}
-func (TsExportAssignment) jsNodeNode()           {}
-func (TsImplementsClause) jsNodeNode()           {}
-func (TsImportAliasDeclaration) jsNodeNode()     {}
-func (TsImportRequireDeclaration) jsNodeNode()   {}
-func (TsIndexMemberDeclaration) jsNodeNode()     {}
-func (TsInterface) jsNodeNode()                  {}
-func (TsInterfaceExtends) jsNodeNode()           {}
-func (TsNamespace) jsNodeNode()                  {}
-func (TsNamespaceBody) jsNodeNode()              {}
-func (TsNamespaceExportDeclaration) jsNodeNode() {}
-func (TsNonNull) jsNodeNode()                    {}
-func (TsThisParameter) jsNodeNode()              {}
-func (TupleType) jsNodeNode()                    {}
-func (TypeAliasDeclaration) jsNodeNode()         {}
-func (TypeAnnotation) jsNodeNode()               {}
-func (TypeArguments) jsNodeNode()                {}
-func (TypeConstraint) jsNodeNode()               {}
-func (TypeName) jsNodeNode()                     {}
-func (TypeParameter) jsNodeNode()                {}
-func (TypeParameters) jsNodeNode()               {}
-func (TypePredicate) jsNodeNode()                {}
-func (TypeQuery) jsNodeNode()                    {}
-func (TypeReference) jsNodeNode()                {}
-func (UnaryExpression) jsNodeNode()              {}
-func (UnionType) jsNodeNode()                    {}
-func (VariableDeclaration) jsNodeNode()          {}
-func (VariableStatement) jsNodeNode()            {}
-func (WhileStatement) jsNodeNode()               {}
-func (WithStatement) jsNodeNode()                {}
-func (Yield) jsNodeNode()                        {}
-func (Token) jsNodeNode()                        {}
+func (n Abstract) JsNode() *Node                     { return n.Node }
+func (n AccessibilityModifier) JsNode() *Node        { return n.Node }
+func (n AdditiveExpression) JsNode() *Node           { return n.Node }
+func (n Arguments) JsNode() *Node                    { return n.Node }
+func (n ArrayLiteral) JsNode() *Node                 { return n.Node }
+func (n ArrayPattern) JsNode() *Node                 { return n.Node }
+func (n ArrayType) JsNode() *Node                    { return n.Node }
+func (n ArrowFunction) JsNode() *Node                { return n.Node }
+func (n AssignmentExpression) JsNode() *Node         { return n.Node }
+func (n AssignmentOperator) JsNode() *Node           { return n.Node }
+func (n AsyncArrowFunction) JsNode() *Node           { return n.Node }
+func (n AsyncFunction) JsNode() *Node                { return n.Node }
+func (n AsyncFunctionExpression) JsNode() *Node      { return n.Node }
+func (n AsyncMethod) JsNode() *Node                  { return n.Node }
+func (n AwaitExpression) JsNode() *Node              { return n.Node }
+func (n BindingIdentifier) JsNode() *Node            { return n.Node }
+func (n BindingRestElement) JsNode() *Node           { return n.Node }
+func (n BitwiseANDExpression) JsNode() *Node         { return n.Node }
+func (n BitwiseORExpression) JsNode() *Node          { return n.Node }
+func (n BitwiseXORExpression) JsNode() *Node         { return n.Node }
+func (n Block) JsNode() *Node                        { return n.Node }
+func (n Body) JsNode() *Node                         { return n.Node }
+func (n BreakStatement) JsNode() *Node               { return n.Node }
+func (n CallExpression) JsNode() *Node               { return n.Node }
+func (n CallSignature) JsNode() *Node                { return n.Node }
+func (n Case) JsNode() *Node                         { return n.Node }
+func (n Catch) JsNode() *Node                        { return n.Node }
+func (n Class) JsNode() *Node                        { return n.Node }
+func (n ClassBody) JsNode() *Node                    { return n.Node }
+func (n ClassExpr) JsNode() *Node                    { return n.Node }
+func (n CommaExpression) JsNode() *Node              { return n.Node }
+func (n ComputedPropertyName) JsNode() *Node         { return n.Node }
+func (n ConciseBody) JsNode() *Node                  { return n.Node }
+func (n ConditionalExpression) JsNode() *Node        { return n.Node }
+func (n ConstructSignature) JsNode() *Node           { return n.Node }
+func (n ConstructorType) JsNode() *Node              { return n.Node }
+func (n ContinueStatement) JsNode() *Node            { return n.Node }
+func (n DebuggerStatement) JsNode() *Node            { return n.Node }
+func (n DecoratorCall) JsNode() *Node                { return n.Node }
+func (n DecoratorExpr) JsNode() *Node                { return n.Node }
+func (n Default) JsNode() *Node                      { return n.Node }
+func (n DefaultParameter) JsNode() *Node             { return n.Node }
+func (n DoWhileStatement) JsNode() *Node             { return n.Node }
+func (n ElementBinding) JsNode() *Node               { return n.Node }
+func (n EmptyDecl) JsNode() *Node                    { return n.Node }
+func (n EmptyStatement) JsNode() *Node               { return n.Node }
+func (n EqualityExpression) JsNode() *Node           { return n.Node }
+func (n ExponentiationExpression) JsNode() *Node     { return n.Node }
+func (n ExportClause) JsNode() *Node                 { return n.Node }
+func (n ExportDeclaration) JsNode() *Node            { return n.Node }
+func (n ExportDefault) JsNode() *Node                { return n.Node }
+func (n ExportSpecifier) JsNode() *Node              { return n.Node }
+func (n ExpressionStatement) JsNode() *Node          { return n.Node }
+func (n Extends) JsNode() *Node                      { return n.Node }
+func (n Finally) JsNode() *Node                      { return n.Node }
+func (n ForBinding) JsNode() *Node                   { return n.Node }
+func (n ForCondition) JsNode() *Node                 { return n.Node }
+func (n ForFinalExpression) JsNode() *Node           { return n.Node }
+func (n ForInStatement) JsNode() *Node               { return n.Node }
+func (n ForInStatementWithVar) JsNode() *Node        { return n.Node }
+func (n ForOfStatement) JsNode() *Node               { return n.Node }
+func (n ForOfStatementWithVar) JsNode() *Node        { return n.Node }
+func (n ForStatement) JsNode() *Node                 { return n.Node }
+func (n ForStatementWithVar) JsNode() *Node          { return n.Node }
+func (n Function) JsNode() *Node                     { return n.Node }
+func (n FunctionExpression) JsNode() *Node           { return n.Node }
+func (n FunctionType) JsNode() *Node                 { return n.Node }
+func (n Generator) JsNode() *Node                    { return n.Node }
+func (n GeneratorExpression) JsNode() *Node          { return n.Node }
+func (n GeneratorMethod) JsNode() *Node              { return n.Node }
+func (n Getter) JsNode() *Node                       { return n.Node }
+func (n IdentifierReference) JsNode() *Node          { return n.Node }
+func (n IfStatement) JsNode() *Node                  { return n.Node }
+func (n ImportDeclaration) JsNode() *Node            { return n.Node }
+func (n ImportSpecifier) JsNode() *Node              { return n.Node }
+func (n IndexAccess) JsNode() *Node                  { return n.Node }
+func (n IndexSignature) JsNode() *Node               { return n.Node }
+func (n IndexedAccessType) JsNode() *Node            { return n.Node }
+func (n Initializer) JsNode() *Node                  { return n.Node }
+func (n IntersectionType) JsNode() *Node             { return n.Node }
+func (n JSXAttributeName) JsNode() *Node             { return n.Node }
+func (n JSXClosingElement) JsNode() *Node            { return n.Node }
+func (n JSXElement) JsNode() *Node                   { return n.Node }
+func (n JSXElementName) JsNode() *Node               { return n.Node }
+func (n JSXExpression) JsNode() *Node                { return n.Node }
+func (n JSXLiteral) JsNode() *Node                   { return n.Node }
+func (n JSXNormalAttribute) JsNode() *Node           { return n.Node }
+func (n JSXOpeningElement) JsNode() *Node            { return n.Node }
+func (n JSXSelfClosingElement) JsNode() *Node        { return n.Node }
+func (n JSXSpreadAttribute) JsNode() *Node           { return n.Node }
+func (n JSXSpreadExpression) JsNode() *Node          { return n.Node }
+func (n JSXText) JsNode() *Node                      { return n.Node }
+func (n KeyOfType) JsNode() *Node                    { return n.Node }
+func (n LabelIdentifier) JsNode() *Node              { return n.Node }
+func (n LabelledStatement) JsNode() *Node            { return n.Node }
+func (n LexicalBinding) JsNode() *Node               { return n.Node }
+func (n LexicalDeclaration) JsNode() *Node           { return n.Node }
+func (n Literal) JsNode() *Node                      { return n.Node }
+func (n LiteralPropertyName) JsNode() *Node          { return n.Node }
+func (n LiteralType) JsNode() *Node                  { return n.Node }
+func (n LogicalANDExpression) JsNode() *Node         { return n.Node }
+func (n LogicalORExpression) JsNode() *Node          { return n.Node }
+func (n MappedType) JsNode() *Node                   { return n.Node }
+func (n MemberMethod) JsNode() *Node                 { return n.Node }
+func (n MemberVar) JsNode() *Node                    { return n.Node }
+func (n Method) JsNode() *Node                       { return n.Node }
+func (n MethodSignature) JsNode() *Node              { return n.Node }
+func (n Module) JsNode() *Node                       { return n.Node }
+func (n ModuleSpecifier) JsNode() *Node              { return n.Node }
+func (n MultiplicativeExpression) JsNode() *Node     { return n.Node }
+func (n NameSpaceImport) JsNode() *Node              { return n.Node }
+func (n NamedImports) JsNode() *Node                 { return n.Node }
+func (n NewExpression) JsNode() *Node                { return n.Node }
+func (n NewTarget) JsNode() *Node                    { return n.Node }
+func (n ObjectLiteral) JsNode() *Node                { return n.Node }
+func (n ObjectMethod) JsNode() *Node                 { return n.Node }
+func (n ObjectPattern) JsNode() *Node                { return n.Node }
+func (n ObjectType) JsNode() *Node                   { return n.Node }
+func (n Parameters) JsNode() *Node                   { return n.Node }
+func (n Parenthesized) JsNode() *Node                { return n.Node }
+func (n ParenthesizedType) JsNode() *Node            { return n.Node }
+func (n PostDec) JsNode() *Node                      { return n.Node }
+func (n PostInc) JsNode() *Node                      { return n.Node }
+func (n PreDec) JsNode() *Node                       { return n.Node }
+func (n PreInc) JsNode() *Node                       { return n.Node }
+func (n PredefinedType) JsNode() *Node               { return n.Node }
+func (n Property) JsNode() *Node                     { return n.Node }
+func (n PropertyAccess) JsNode() *Node               { return n.Node }
+func (n PropertyBinding) JsNode() *Node              { return n.Node }
+func (n PropertySignature) JsNode() *Node            { return n.Node }
+func (n Readonly) JsNode() *Node                     { return n.Node }
+func (n Regexp) JsNode() *Node                       { return n.Node }
+func (n RelationalExpression) JsNode() *Node         { return n.Node }
+func (n RestParameter) JsNode() *Node                { return n.Node }
+func (n ReturnStatement) JsNode() *Node              { return n.Node }
+func (n Setter) JsNode() *Node                       { return n.Node }
+func (n ShiftExpression) JsNode() *Node              { return n.Node }
+func (n ShorthandProperty) JsNode() *Node            { return n.Node }
+func (n SingleNameBinding) JsNode() *Node            { return n.Node }
+func (n SpreadElement) JsNode() *Node                { return n.Node }
+func (n SpreadProperty) JsNode() *Node               { return n.Node }
+func (n Static) JsNode() *Node                       { return n.Node }
+func (n SuperExpression) JsNode() *Node              { return n.Node }
+func (n SwitchStatement) JsNode() *Node              { return n.Node }
+func (n SyntaxProblem) JsNode() *Node                { return n.Node }
+func (n TaggedTemplate) JsNode() *Node               { return n.Node }
+func (n TemplateLiteral) JsNode() *Node              { return n.Node }
+func (n This) JsNode() *Node                         { return n.Node }
+func (n ThisType) JsNode() *Node                     { return n.Node }
+func (n ThrowStatement) JsNode() *Node               { return n.Node }
+func (n TryStatement) JsNode() *Node                 { return n.Node }
+func (n TsAmbientBinding) JsNode() *Node             { return n.Node }
+func (n TsAmbientClass) JsNode() *Node               { return n.Node }
+func (n TsAmbientClassBody) JsNode() *Node           { return n.Node }
+func (n TsAmbientEnum) JsNode() *Node                { return n.Node }
+func (n TsAmbientFunction) JsNode() *Node            { return n.Node }
+func (n TsAmbientFunctionMember) JsNode() *Node      { return n.Node }
+func (n TsAmbientImportAlias) JsNode() *Node         { return n.Node }
+func (n TsAmbientIndexMember) JsNode() *Node         { return n.Node }
+func (n TsAmbientInterface) JsNode() *Node           { return n.Node }
+func (n TsAmbientModule) JsNode() *Node              { return n.Node }
+func (n TsAmbientNamespace) JsNode() *Node           { return n.Node }
+func (n TsAmbientPropertyMember) JsNode() *Node      { return n.Node }
+func (n TsAmbientTypeAlias) JsNode() *Node           { return n.Node }
+func (n TsAmbientVar) JsNode() *Node                 { return n.Node }
+func (n TsAsExpression) JsNode() *Node               { return n.Node }
+func (n TsCastExpression) JsNode() *Node             { return n.Node }
+func (n TsDynamicImport) JsNode() *Node              { return n.Node }
+func (n TsEnum) JsNode() *Node                       { return n.Node }
+func (n TsEnumBody) JsNode() *Node                   { return n.Node }
+func (n TsEnumMember) JsNode() *Node                 { return n.Node }
+func (n TsExportAssignment) JsNode() *Node           { return n.Node }
+func (n TsImplementsClause) JsNode() *Node           { return n.Node }
+func (n TsImportAliasDeclaration) JsNode() *Node     { return n.Node }
+func (n TsImportRequireDeclaration) JsNode() *Node   { return n.Node }
+func (n TsIndexMemberDeclaration) JsNode() *Node     { return n.Node }
+func (n TsInterface) JsNode() *Node                  { return n.Node }
+func (n TsInterfaceExtends) JsNode() *Node           { return n.Node }
+func (n TsNamespace) JsNode() *Node                  { return n.Node }
+func (n TsNamespaceBody) JsNode() *Node              { return n.Node }
+func (n TsNamespaceExportDeclaration) JsNode() *Node { return n.Node }
+func (n TsNonNull) JsNode() *Node                    { return n.Node }
+func (n TsThisParameter) JsNode() *Node              { return n.Node }
+func (n TupleType) JsNode() *Node                    { return n.Node }
+func (n TypeAliasDeclaration) JsNode() *Node         { return n.Node }
+func (n TypeAnnotation) JsNode() *Node               { return n.Node }
+func (n TypeArguments) JsNode() *Node                { return n.Node }
+func (n TypeConstraint) JsNode() *Node               { return n.Node }
+func (n TypeName) JsNode() *Node                     { return n.Node }
+func (n TypeParameter) JsNode() *Node                { return n.Node }
+func (n TypeParameters) JsNode() *Node               { return n.Node }
+func (n TypePredicate) JsNode() *Node                { return n.Node }
+func (n TypeQuery) JsNode() *Node                    { return n.Node }
+func (n TypeReference) JsNode() *Node                { return n.Node }
+func (n UnaryExpression) JsNode() *Node              { return n.Node }
+func (n UnionType) JsNode() *Node                    { return n.Node }
+func (n VariableDeclaration) JsNode() *Node          { return n.Node }
+func (n VariableStatement) JsNode() *Node            { return n.Node }
+func (n WhileStatement) JsNode() *Node               { return n.Node }
+func (n WithStatement) JsNode() *Node                { return n.Node }
+func (n Yield) JsNode() *Node                        { return n.Node }
+func (n Token) JsNode() *Node                        { return n.Node }
 
 type BindingPattern interface {
 	JsNode
@@ -728,15 +713,15 @@ func (PropertySignature) typeMemberNode()  {}
 // Types.
 
 type Abstract struct {
-	Node
+	*Node
 }
 
 type AccessibilityModifier struct {
-	Node
+	*Node
 }
 
 type AdditiveExpression struct {
-	Node
+	*Node
 }
 
 func (n AdditiveExpression) Left() Expression {
@@ -748,7 +733,7 @@ func (n AdditiveExpression) Right() Expression {
 }
 
 type Arguments struct {
-	Node
+	*Node
 }
 
 func (n Arguments) TypeArguments() *TypeArguments {
@@ -760,7 +745,7 @@ func (n Arguments) TypeArguments() *TypeArguments {
 
 func (n Arguments) List() []Expression {
 	nodes := n.Children(selector.Expression)
-	var result []Expression = make([]Expression, 0, len(nodes))
+	var result = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Expression))
 	}
@@ -768,12 +753,12 @@ func (n Arguments) List() []Expression {
 }
 
 type ArrayLiteral struct {
-	Node
+	*Node
 }
 
 func (n ArrayLiteral) List() []Expression {
 	nodes := n.Children(selector.Expression)
-	var result []Expression = make([]Expression, 0, len(nodes))
+	var result = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Expression))
 	}
@@ -781,12 +766,12 @@ func (n ArrayLiteral) List() []Expression {
 }
 
 type ArrayPattern struct {
-	Node
+	*Node
 }
 
 func (n ArrayPattern) ElementPattern() []ElementPattern {
 	nodes := n.Children(selector.ElementPattern)
-	var result []ElementPattern = make([]ElementPattern, 0, len(nodes))
+	var result = make([]ElementPattern, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ElementPattern))
 	}
@@ -801,7 +786,7 @@ func (n ArrayPattern) BindingRestElement() *BindingRestElement {
 }
 
 type ArrayType struct {
-	Node
+	*Node
 }
 
 func (n ArrayType) TsType() TsType {
@@ -809,7 +794,7 @@ func (n ArrayType) TsType() TsType {
 }
 
 type ArrowFunction struct {
-	Node
+	*Node
 }
 
 func (n ArrowFunction) BindingIdentifier() *BindingIdentifier {
@@ -855,7 +840,7 @@ func (n ArrowFunction) ConciseBody() *ConciseBody {
 }
 
 type AssignmentExpression struct {
-	Node
+	*Node
 }
 
 func (n AssignmentExpression) Left() Expression {
@@ -874,11 +859,11 @@ func (n AssignmentExpression) Right() Expression {
 }
 
 type AssignmentOperator struct {
-	Node
+	*Node
 }
 
 type AsyncArrowFunction struct {
-	Node
+	*Node
 }
 
 func (n AsyncArrowFunction) BindingIdentifier() *BindingIdentifier {
@@ -924,7 +909,7 @@ func (n AsyncArrowFunction) ConciseBody() *ConciseBody {
 }
 
 type AsyncFunction struct {
-	Node
+	*Node
 }
 
 func (n AsyncFunction) BindingIdentifier() *BindingIdentifier {
@@ -957,7 +942,7 @@ func (n AsyncFunction) Body() Body {
 }
 
 type AsyncFunctionExpression struct {
-	Node
+	*Node
 }
 
 func (n AsyncFunctionExpression) BindingIdentifier() *BindingIdentifier {
@@ -990,7 +975,7 @@ func (n AsyncFunctionExpression) Body() Body {
 }
 
 type AsyncMethod struct {
-	Node
+	*Node
 }
 
 func (n AsyncMethod) PropertyName() PropertyName {
@@ -1020,7 +1005,7 @@ func (n AsyncMethod) Body() Body {
 }
 
 type AwaitExpression struct {
-	Node
+	*Node
 }
 
 func (n AwaitExpression) Expression() Expression {
@@ -1028,11 +1013,11 @@ func (n AwaitExpression) Expression() Expression {
 }
 
 type BindingIdentifier struct {
-	Node
+	*Node
 }
 
 type BindingRestElement struct {
-	Node
+	*Node
 }
 
 func (n BindingRestElement) BindingIdentifier() BindingIdentifier {
@@ -1040,7 +1025,7 @@ func (n BindingRestElement) BindingIdentifier() BindingIdentifier {
 }
 
 type BitwiseANDExpression struct {
-	Node
+	*Node
 }
 
 func (n BitwiseANDExpression) Left() Expression {
@@ -1052,7 +1037,7 @@ func (n BitwiseANDExpression) Right() Expression {
 }
 
 type BitwiseORExpression struct {
-	Node
+	*Node
 }
 
 func (n BitwiseORExpression) Left() Expression {
@@ -1064,7 +1049,7 @@ func (n BitwiseORExpression) Right() Expression {
 }
 
 type BitwiseXORExpression struct {
-	Node
+	*Node
 }
 
 func (n BitwiseXORExpression) Left() Expression {
@@ -1076,12 +1061,12 @@ func (n BitwiseXORExpression) Right() Expression {
 }
 
 type Block struct {
-	Node
+	*Node
 }
 
 func (n Block) CaseClause() []CaseClause {
 	nodes := n.Children(selector.CaseClause)
-	var result []CaseClause = make([]CaseClause, 0, len(nodes))
+	var result = make([]CaseClause, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(CaseClause))
 	}
@@ -1090,7 +1075,7 @@ func (n Block) CaseClause() []CaseClause {
 
 func (n Block) StatementListItem() []StatementListItem {
 	nodes := n.Children(selector.StatementListItem)
-	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
+	var result = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
 	}
@@ -1098,12 +1083,12 @@ func (n Block) StatementListItem() []StatementListItem {
 }
 
 type Body struct {
-	Node
+	*Node
 }
 
 func (n Body) StatementListItem() []StatementListItem {
 	nodes := n.Children(selector.StatementListItem)
-	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
+	var result = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
 	}
@@ -1111,7 +1096,7 @@ func (n Body) StatementListItem() []StatementListItem {
 }
 
 type BreakStatement struct {
-	Node
+	*Node
 }
 
 func (n BreakStatement) LabelIdentifier() *LabelIdentifier {
@@ -1122,7 +1107,7 @@ func (n BreakStatement) LabelIdentifier() *LabelIdentifier {
 }
 
 type CallExpression struct {
-	Node
+	*Node
 }
 
 func (n CallExpression) Expr() Expression {
@@ -1134,7 +1119,7 @@ func (n CallExpression) Arguments() Arguments {
 }
 
 type CallSignature struct {
-	Node
+	*Node
 }
 
 func (n CallSignature) TypeParameters() *TypeParameters {
@@ -1156,7 +1141,7 @@ func (n CallSignature) TypeAnnotation() *TypeAnnotation {
 }
 
 type Case struct {
-	Node
+	*Node
 }
 
 func (n Case) Expression() Expression {
@@ -1165,7 +1150,7 @@ func (n Case) Expression() Expression {
 
 func (n Case) StatementListItem() []StatementListItem {
 	nodes := n.Children(selector.StatementListItem)
-	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
+	var result = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
 	}
@@ -1173,7 +1158,7 @@ func (n Case) StatementListItem() []StatementListItem {
 }
 
 type Catch struct {
-	Node
+	*Node
 }
 
 func (n Catch) BindingIdentifier() *BindingIdentifier {
@@ -1195,12 +1180,12 @@ func (n Catch) Block() Block {
 }
 
 type Class struct {
-	Node
+	*Node
 }
 
 func (n Class) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -1240,12 +1225,12 @@ func (n Class) ClassBody() ClassBody {
 }
 
 type ClassBody struct {
-	Node
+	*Node
 }
 
 func (n ClassBody) ClassElement() []ClassElement {
 	nodes := n.Children(selector.ClassElement)
-	var result []ClassElement = make([]ClassElement, 0, len(nodes))
+	var result = make([]ClassElement, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ClassElement))
 	}
@@ -1253,12 +1238,12 @@ func (n ClassBody) ClassElement() []ClassElement {
 }
 
 type ClassExpr struct {
-	Node
+	*Node
 }
 
 func (n ClassExpr) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -1298,7 +1283,7 @@ func (n ClassExpr) ClassBody() ClassBody {
 }
 
 type CommaExpression struct {
-	Node
+	*Node
 }
 
 func (n CommaExpression) Left() Expression {
@@ -1310,7 +1295,7 @@ func (n CommaExpression) Right() Expression {
 }
 
 type ComputedPropertyName struct {
-	Node
+	*Node
 }
 
 func (n ComputedPropertyName) Expression() Expression {
@@ -1318,7 +1303,7 @@ func (n ComputedPropertyName) Expression() Expression {
 }
 
 type ConciseBody struct {
-	Node
+	*Node
 }
 
 func (n ConciseBody) Expression() Expression {
@@ -1326,7 +1311,7 @@ func (n ConciseBody) Expression() Expression {
 }
 
 type ConditionalExpression struct {
-	Node
+	*Node
 }
 
 func (n ConditionalExpression) Cond() Expression {
@@ -1342,12 +1327,12 @@ func (n ConditionalExpression) Else() Expression {
 }
 
 type ConstructSignature struct {
-	Node
+	*Node
 }
 
 func (n ConstructSignature) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -1373,7 +1358,7 @@ func (n ConstructSignature) TypeAnnotation() *TypeAnnotation {
 }
 
 type ConstructorType struct {
-	Node
+	*Node
 }
 
 func (n ConstructorType) TypeParameters() *TypeParameters {
@@ -1392,7 +1377,7 @@ func (n ConstructorType) TsType() TsType {
 }
 
 type ContinueStatement struct {
-	Node
+	*Node
 }
 
 func (n ContinueStatement) LabelIdentifier() *LabelIdentifier {
@@ -1403,16 +1388,16 @@ func (n ContinueStatement) LabelIdentifier() *LabelIdentifier {
 }
 
 type DebuggerStatement struct {
-	Node
+	*Node
 }
 
 type DecoratorCall struct {
-	Node
+	*Node
 }
 
 func (n DecoratorCall) IdentifierReference() []IdentifierReference {
 	nodes := n.Children(selector.IdentifierReference)
-	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	var result = make([]IdentifierReference, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, IdentifierReference{node})
 	}
@@ -1424,12 +1409,12 @@ func (n DecoratorCall) Arguments() Arguments {
 }
 
 type DecoratorExpr struct {
-	Node
+	*Node
 }
 
 func (n DecoratorExpr) IdentifierReference() []IdentifierReference {
 	nodes := n.Children(selector.IdentifierReference)
-	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	var result = make([]IdentifierReference, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, IdentifierReference{node})
 	}
@@ -1437,12 +1422,12 @@ func (n DecoratorExpr) IdentifierReference() []IdentifierReference {
 }
 
 type Default struct {
-	Node
+	*Node
 }
 
 func (n Default) StatementListItem() []StatementListItem {
 	nodes := n.Children(selector.StatementListItem)
-	var result []StatementListItem = make([]StatementListItem, 0, len(nodes))
+	var result = make([]StatementListItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(StatementListItem))
 	}
@@ -1450,12 +1435,12 @@ func (n Default) StatementListItem() []StatementListItem {
 }
 
 type DefaultParameter struct {
-	Node
+	*Node
 }
 
 func (n DefaultParameter) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -1491,7 +1476,7 @@ func (n DefaultParameter) Initializer() *Initializer {
 }
 
 type DoWhileStatement struct {
-	Node
+	*Node
 }
 
 func (n DoWhileStatement) Statement() Statement {
@@ -1503,7 +1488,7 @@ func (n DoWhileStatement) Expression() Expression {
 }
 
 type ElementBinding struct {
-	Node
+	*Node
 }
 
 func (n ElementBinding) BindingPattern() BindingPattern {
@@ -1518,15 +1503,15 @@ func (n ElementBinding) Initializer() *Initializer {
 }
 
 type EmptyDecl struct {
-	Node
+	*Node
 }
 
 type EmptyStatement struct {
-	Node
+	*Node
 }
 
 type EqualityExpression struct {
-	Node
+	*Node
 }
 
 func (n EqualityExpression) Left() Expression {
@@ -1538,7 +1523,7 @@ func (n EqualityExpression) Right() Expression {
 }
 
 type ExponentiationExpression struct {
-	Node
+	*Node
 }
 
 func (n ExponentiationExpression) Left() Expression {
@@ -1550,12 +1535,12 @@ func (n ExponentiationExpression) Right() Expression {
 }
 
 type ExportClause struct {
-	Node
+	*Node
 }
 
 func (n ExportClause) ExportElement() []ExportElement {
 	nodes := n.Children(selector.ExportElement)
-	var result []ExportElement = make([]ExportElement, 0, len(nodes))
+	var result = make([]ExportElement, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ExportElement))
 	}
@@ -1563,7 +1548,7 @@ func (n ExportClause) ExportElement() []ExportElement {
 }
 
 type ExportDeclaration struct {
-	Node
+	*Node
 }
 
 func (n ExportDeclaration) ExportClause() *ExportClause {
@@ -1575,7 +1560,7 @@ func (n ExportDeclaration) ExportClause() *ExportClause {
 
 func (n ExportDeclaration) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -1604,7 +1589,7 @@ func (n ExportDeclaration) ModuleSpecifier() *ModuleSpecifier {
 }
 
 type ExportDefault struct {
-	Node
+	*Node
 }
 
 func (n ExportDefault) Expression() Expression {
@@ -1616,7 +1601,7 @@ func (n ExportDefault) Expression() Expression {
 
 func (n ExportDefault) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -1631,7 +1616,7 @@ func (n ExportDefault) Declaration() Declaration {
 }
 
 type ExportSpecifier struct {
-	Node
+	*Node
 }
 
 func (n ExportSpecifier) IdentifierReference() IdentifierReference {
@@ -1646,7 +1631,7 @@ func (n ExportSpecifier) BindingIdentifier() *BindingIdentifier {
 }
 
 type ExpressionStatement struct {
-	Node
+	*Node
 }
 
 func (n ExpressionStatement) Expression() Expression {
@@ -1654,7 +1639,7 @@ func (n ExpressionStatement) Expression() Expression {
 }
 
 type Extends struct {
-	Node
+	*Node
 }
 
 func (n Extends) Expression() Expression {
@@ -1672,7 +1657,7 @@ func (n Extends) TypeReference() *TypeReference {
 }
 
 type Finally struct {
-	Node
+	*Node
 }
 
 func (n Finally) Block() Block {
@@ -1680,7 +1665,7 @@ func (n Finally) Block() Block {
 }
 
 type ForBinding struct {
-	Node
+	*Node
 }
 
 func (n ForBinding) BindingIdentifier() *BindingIdentifier {
@@ -1698,7 +1683,7 @@ func (n ForBinding) BindingPattern() BindingPattern {
 }
 
 type ForCondition struct {
-	Node
+	*Node
 }
 
 func (n ForCondition) Expression() Expression {
@@ -1709,7 +1694,7 @@ func (n ForCondition) Expression() Expression {
 }
 
 type ForFinalExpression struct {
-	Node
+	*Node
 }
 
 func (n ForFinalExpression) Expression() Expression {
@@ -1720,7 +1705,7 @@ func (n ForFinalExpression) Expression() Expression {
 }
 
 type ForInStatement struct {
-	Node
+	*Node
 }
 
 func (n ForInStatement) Var() Expression {
@@ -1736,7 +1721,7 @@ func (n ForInStatement) Statement() Statement {
 }
 
 type ForInStatementWithVar struct {
-	Node
+	*Node
 }
 
 func (n ForInStatementWithVar) ForBinding() ForBinding {
@@ -1752,7 +1737,7 @@ func (n ForInStatementWithVar) Statement() Statement {
 }
 
 type ForOfStatement struct {
-	Node
+	*Node
 }
 
 func (n ForOfStatement) Var() JsNode {
@@ -1768,7 +1753,7 @@ func (n ForOfStatement) Statement() Statement {
 }
 
 type ForOfStatementWithVar struct {
-	Node
+	*Node
 }
 
 func (n ForOfStatementWithVar) ForBinding() ForBinding {
@@ -1784,7 +1769,7 @@ func (n ForOfStatementWithVar) Statement() Statement {
 }
 
 type ForStatement struct {
-	Node
+	*Node
 }
 
 func (n ForStatement) Var() Expression {
@@ -1807,12 +1792,12 @@ func (n ForStatement) Statement() Statement {
 }
 
 type ForStatementWithVar struct {
-	Node
+	*Node
 }
 
 func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
 	nodes := n.Children(selector.LexicalBinding)
-	var result []LexicalBinding = make([]LexicalBinding, 0, len(nodes))
+	var result = make([]LexicalBinding, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexicalBinding{node})
 	}
@@ -1821,7 +1806,7 @@ func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
 
 func (n ForStatementWithVar) VariableDeclaration() []VariableDeclaration {
 	nodes := n.Children(selector.VariableDeclaration)
-	var result []VariableDeclaration = make([]VariableDeclaration, 0, len(nodes))
+	var result = make([]VariableDeclaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, VariableDeclaration{node})
 	}
@@ -1841,7 +1826,7 @@ func (n ForStatementWithVar) Statement() Statement {
 }
 
 type Function struct {
-	Node
+	*Node
 }
 
 func (n Function) BindingIdentifier() *BindingIdentifier {
@@ -1874,7 +1859,7 @@ func (n Function) Body() Body {
 }
 
 type FunctionExpression struct {
-	Node
+	*Node
 }
 
 func (n FunctionExpression) BindingIdentifier() *BindingIdentifier {
@@ -1907,7 +1892,7 @@ func (n FunctionExpression) Body() Body {
 }
 
 type FunctionType struct {
-	Node
+	*Node
 }
 
 func (n FunctionType) TypeParameters() *TypeParameters {
@@ -1926,7 +1911,7 @@ func (n FunctionType) TsType() TsType {
 }
 
 type Generator struct {
-	Node
+	*Node
 }
 
 func (n Generator) BindingIdentifier() *BindingIdentifier {
@@ -1959,7 +1944,7 @@ func (n Generator) Body() Body {
 }
 
 type GeneratorExpression struct {
-	Node
+	*Node
 }
 
 func (n GeneratorExpression) BindingIdentifier() *BindingIdentifier {
@@ -1992,7 +1977,7 @@ func (n GeneratorExpression) Body() Body {
 }
 
 type GeneratorMethod struct {
-	Node
+	*Node
 }
 
 func (n GeneratorMethod) PropertyName() PropertyName {
@@ -2022,7 +2007,7 @@ func (n GeneratorMethod) Body() Body {
 }
 
 type Getter struct {
-	Node
+	*Node
 }
 
 func (n Getter) PropertyName() PropertyName {
@@ -2041,11 +2026,11 @@ func (n Getter) Body() Body {
 }
 
 type IdentifierReference struct {
-	Node
+	*Node
 }
 
 type IfStatement struct {
-	Node
+	*Node
 }
 
 func (n IfStatement) Expression() Expression {
@@ -2064,7 +2049,7 @@ func (n IfStatement) Else() Statement {
 }
 
 type ImportDeclaration struct {
-	Node
+	*Node
 }
 
 func (n ImportDeclaration) BindingIdentifier() *BindingIdentifier {
@@ -2093,7 +2078,7 @@ func (n ImportDeclaration) ModuleSpecifier() ModuleSpecifier {
 }
 
 type ImportSpecifier struct {
-	Node
+	*Node
 }
 
 func (n ImportSpecifier) IdentifierReference() *IdentifierReference {
@@ -2108,7 +2093,7 @@ func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
 }
 
 type IndexAccess struct {
-	Node
+	*Node
 }
 
 func (n IndexAccess) Expr() Expression {
@@ -2120,12 +2105,12 @@ func (n IndexAccess) Index() Expression {
 }
 
 type IndexSignature struct {
-	Node
+	*Node
 }
 
 func (n IndexSignature) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -2137,7 +2122,7 @@ func (n IndexSignature) TypeAnnotation() TypeAnnotation {
 }
 
 type IndexedAccessType struct {
-	Node
+	*Node
 }
 
 func (n IndexedAccessType) Left() TsType {
@@ -2149,7 +2134,7 @@ func (n IndexedAccessType) Index() TsType {
 }
 
 type Initializer struct {
-	Node
+	*Node
 }
 
 func (n Initializer) Expression() Expression {
@@ -2157,12 +2142,12 @@ func (n Initializer) Expression() Expression {
 }
 
 type IntersectionType struct {
-	Node
+	*Node
 }
 
 func (n IntersectionType) Inner() []TsType {
 	nodes := n.Children(selector.TsType)
-	var result []TsType = make([]TsType, 0, len(nodes))
+	var result = make([]TsType, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(TsType))
 	}
@@ -2170,11 +2155,11 @@ func (n IntersectionType) Inner() []TsType {
 }
 
 type JSXAttributeName struct {
-	Node
+	*Node
 }
 
 type JSXClosingElement struct {
-	Node
+	*Node
 }
 
 func (n JSXClosingElement) JSXElementName() JSXElementName {
@@ -2182,7 +2167,7 @@ func (n JSXClosingElement) JSXElementName() JSXElementName {
 }
 
 type JSXElement struct {
-	Node
+	*Node
 }
 
 func (n JSXElement) JSXOpeningElement() *JSXOpeningElement {
@@ -2201,7 +2186,7 @@ func (n JSXElement) JSXSelfClosingElement() *JSXSelfClosingElement {
 
 func (n JSXElement) JSXChild() []JSXChild {
 	nodes := n.Children(selector.JSXChild)
-	var result []JSXChild = make([]JSXChild, 0, len(nodes))
+	var result = make([]JSXChild, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JSXChild))
 	}
@@ -2216,11 +2201,11 @@ func (n JSXElement) JSXClosingElement() *JSXClosingElement {
 }
 
 type JSXElementName struct {
-	Node
+	*Node
 }
 
 type JSXExpression struct {
-	Node
+	*Node
 }
 
 func (n JSXExpression) Expression() Expression {
@@ -2231,11 +2216,11 @@ func (n JSXExpression) Expression() Expression {
 }
 
 type JSXLiteral struct {
-	Node
+	*Node
 }
 
 type JSXNormalAttribute struct {
-	Node
+	*Node
 }
 
 func (n JSXNormalAttribute) JSXAttributeName() JSXAttributeName {
@@ -2250,7 +2235,7 @@ func (n JSXNormalAttribute) JSXAttributeValue() JSXAttributeValue {
 }
 
 type JSXOpeningElement struct {
-	Node
+	*Node
 }
 
 func (n JSXOpeningElement) JSXElementName() JSXElementName {
@@ -2259,7 +2244,7 @@ func (n JSXOpeningElement) JSXElementName() JSXElementName {
 
 func (n JSXOpeningElement) JSXAttribute() []JSXAttribute {
 	nodes := n.Children(selector.JSXAttribute)
-	var result []JSXAttribute = make([]JSXAttribute, 0, len(nodes))
+	var result = make([]JSXAttribute, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JSXAttribute))
 	}
@@ -2267,7 +2252,7 @@ func (n JSXOpeningElement) JSXAttribute() []JSXAttribute {
 }
 
 type JSXSelfClosingElement struct {
-	Node
+	*Node
 }
 
 func (n JSXSelfClosingElement) JSXElementName() JSXElementName {
@@ -2276,7 +2261,7 @@ func (n JSXSelfClosingElement) JSXElementName() JSXElementName {
 
 func (n JSXSelfClosingElement) JSXAttribute() []JSXAttribute {
 	nodes := n.Children(selector.JSXAttribute)
-	var result []JSXAttribute = make([]JSXAttribute, 0, len(nodes))
+	var result = make([]JSXAttribute, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(JSXAttribute))
 	}
@@ -2284,7 +2269,7 @@ func (n JSXSelfClosingElement) JSXAttribute() []JSXAttribute {
 }
 
 type JSXSpreadAttribute struct {
-	Node
+	*Node
 }
 
 func (n JSXSpreadAttribute) Expression() Expression {
@@ -2292,7 +2277,7 @@ func (n JSXSpreadAttribute) Expression() Expression {
 }
 
 type JSXSpreadExpression struct {
-	Node
+	*Node
 }
 
 func (n JSXSpreadExpression) Expression() Expression {
@@ -2303,11 +2288,11 @@ func (n JSXSpreadExpression) Expression() Expression {
 }
 
 type JSXText struct {
-	Node
+	*Node
 }
 
 type KeyOfType struct {
-	Node
+	*Node
 }
 
 func (n KeyOfType) TsType() TsType {
@@ -2315,11 +2300,11 @@ func (n KeyOfType) TsType() TsType {
 }
 
 type LabelIdentifier struct {
-	Node
+	*Node
 }
 
 type LabelledStatement struct {
-	Node
+	*Node
 }
 
 func (n LabelledStatement) LabelIdentifier() LabelIdentifier {
@@ -2341,7 +2326,7 @@ func (n LabelledStatement) Statement() Statement {
 }
 
 type LexicalBinding struct {
-	Node
+	*Node
 }
 
 func (n LexicalBinding) BindingIdentifier() *BindingIdentifier {
@@ -2373,12 +2358,12 @@ func (n LexicalBinding) Initializer() *Initializer {
 }
 
 type LexicalDeclaration struct {
-	Node
+	*Node
 }
 
 func (n LexicalDeclaration) LexicalBinding() []LexicalBinding {
 	nodes := n.Children(selector.LexicalBinding)
-	var result []LexicalBinding = make([]LexicalBinding, 0, len(nodes))
+	var result = make([]LexicalBinding, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexicalBinding{node})
 	}
@@ -2386,11 +2371,11 @@ func (n LexicalDeclaration) LexicalBinding() []LexicalBinding {
 }
 
 type Literal struct {
-	Node
+	*Node
 }
 
 type LiteralPropertyName struct {
-	Node
+	*Node
 }
 
 func (n LiteralPropertyName) BindingIdentifier() *BindingIdentifier {
@@ -2401,11 +2386,11 @@ func (n LiteralPropertyName) BindingIdentifier() *BindingIdentifier {
 }
 
 type LiteralType struct {
-	Node
+	*Node
 }
 
 type LogicalANDExpression struct {
-	Node
+	*Node
 }
 
 func (n LogicalANDExpression) Left() Expression {
@@ -2417,7 +2402,7 @@ func (n LogicalANDExpression) Right() Expression {
 }
 
 type LogicalORExpression struct {
-	Node
+	*Node
 }
 
 func (n LogicalORExpression) Left() Expression {
@@ -2429,7 +2414,7 @@ func (n LogicalORExpression) Right() Expression {
 }
 
 type MappedType struct {
-	Node
+	*Node
 }
 
 func (n MappedType) TsType() TsType {
@@ -2441,12 +2426,12 @@ func (n MappedType) TypeAnnotation() TypeAnnotation {
 }
 
 type MemberMethod struct {
-	Node
+	*Node
 }
 
 func (n MemberMethod) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -2458,12 +2443,12 @@ func (n MemberMethod) MethodDefinition() MethodDefinition {
 }
 
 type MemberVar struct {
-	Node
+	*Node
 }
 
 func (n MemberVar) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -2489,7 +2474,7 @@ func (n MemberVar) Initializer() *Initializer {
 }
 
 type Method struct {
-	Node
+	*Node
 }
 
 func (n Method) PropertyName() PropertyName {
@@ -2519,12 +2504,12 @@ func (n Method) Body() Body {
 }
 
 type MethodSignature struct {
-	Node
+	*Node
 }
 
 func (n MethodSignature) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -2554,12 +2539,12 @@ func (n MethodSignature) TypeAnnotation() *TypeAnnotation {
 }
 
 type Module struct {
-	Node
+	*Node
 }
 
 func (n Module) ModuleItem() []ModuleItem {
 	nodes := n.Children(selector.ModuleItem)
-	var result []ModuleItem = make([]ModuleItem, 0, len(nodes))
+	var result = make([]ModuleItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ModuleItem))
 	}
@@ -2567,11 +2552,11 @@ func (n Module) ModuleItem() []ModuleItem {
 }
 
 type ModuleSpecifier struct {
-	Node
+	*Node
 }
 
 type MultiplicativeExpression struct {
-	Node
+	*Node
 }
 
 func (n MultiplicativeExpression) Left() Expression {
@@ -2583,7 +2568,7 @@ func (n MultiplicativeExpression) Right() Expression {
 }
 
 type NameSpaceImport struct {
-	Node
+	*Node
 }
 
 func (n NameSpaceImport) BindingIdentifier() BindingIdentifier {
@@ -2591,12 +2576,12 @@ func (n NameSpaceImport) BindingIdentifier() BindingIdentifier {
 }
 
 type NamedImports struct {
-	Node
+	*Node
 }
 
 func (n NamedImports) NamedImport() []NamedImport {
 	nodes := n.Children(selector.NamedImport)
-	var result []NamedImport = make([]NamedImport, 0, len(nodes))
+	var result = make([]NamedImport, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(NamedImport))
 	}
@@ -2604,7 +2589,7 @@ func (n NamedImports) NamedImport() []NamedImport {
 }
 
 type NewExpression struct {
-	Node
+	*Node
 }
 
 func (n NewExpression) Expr() Expression {
@@ -2619,16 +2604,16 @@ func (n NewExpression) Arguments() *Arguments {
 }
 
 type NewTarget struct {
-	Node
+	*Node
 }
 
 type ObjectLiteral struct {
-	Node
+	*Node
 }
 
 func (n ObjectLiteral) PropertyDefinition() []PropertyDefinition {
 	nodes := n.Children(selector.PropertyDefinition)
-	var result []PropertyDefinition = make([]PropertyDefinition, 0, len(nodes))
+	var result = make([]PropertyDefinition, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(PropertyDefinition))
 	}
@@ -2636,12 +2621,12 @@ func (n ObjectLiteral) PropertyDefinition() []PropertyDefinition {
 }
 
 type ObjectMethod struct {
-	Node
+	*Node
 }
 
 func (n ObjectMethod) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -2653,12 +2638,12 @@ func (n ObjectMethod) MethodDefinition() MethodDefinition {
 }
 
 type ObjectPattern struct {
-	Node
+	*Node
 }
 
 func (n ObjectPattern) PropertyPattern() []PropertyPattern {
 	nodes := n.Children(selector.PropertyPattern)
-	var result []PropertyPattern = make([]PropertyPattern, 0, len(nodes))
+	var result = make([]PropertyPattern, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(PropertyPattern))
 	}
@@ -2673,12 +2658,12 @@ func (n ObjectPattern) BindingRestElement() *BindingRestElement {
 }
 
 type ObjectType struct {
-	Node
+	*Node
 }
 
 func (n ObjectType) TypeMember() []TypeMember {
 	nodes := n.Children(selector.TypeMember)
-	var result []TypeMember = make([]TypeMember, 0, len(nodes))
+	var result = make([]TypeMember, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(TypeMember))
 	}
@@ -2686,12 +2671,12 @@ func (n ObjectType) TypeMember() []TypeMember {
 }
 
 type Parameters struct {
-	Node
+	*Node
 }
 
 func (n Parameters) Parameter() []Parameter {
 	nodes := n.Children(selector.Parameter)
-	var result []Parameter = make([]Parameter, 0, len(nodes))
+	var result = make([]Parameter, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Parameter))
 	}
@@ -2699,7 +2684,7 @@ func (n Parameters) Parameter() []Parameter {
 }
 
 type Parenthesized struct {
-	Node
+	*Node
 }
 
 func (n Parenthesized) Expression() Expression {
@@ -2717,7 +2702,7 @@ func (n Parenthesized) SyntaxProblem() *SyntaxProblem {
 }
 
 type ParenthesizedType struct {
-	Node
+	*Node
 }
 
 func (n ParenthesizedType) TsType() TsType {
@@ -2725,7 +2710,7 @@ func (n ParenthesizedType) TsType() TsType {
 }
 
 type PostDec struct {
-	Node
+	*Node
 }
 
 func (n PostDec) Expression() Expression {
@@ -2733,7 +2718,7 @@ func (n PostDec) Expression() Expression {
 }
 
 type PostInc struct {
-	Node
+	*Node
 }
 
 func (n PostInc) Expression() Expression {
@@ -2741,7 +2726,7 @@ func (n PostInc) Expression() Expression {
 }
 
 type PreDec struct {
-	Node
+	*Node
 }
 
 func (n PreDec) Expression() Expression {
@@ -2749,7 +2734,7 @@ func (n PreDec) Expression() Expression {
 }
 
 type PreInc struct {
-	Node
+	*Node
 }
 
 func (n PreInc) Expression() Expression {
@@ -2757,16 +2742,16 @@ func (n PreInc) Expression() Expression {
 }
 
 type PredefinedType struct {
-	Node
+	*Node
 }
 
 type Property struct {
-	Node
+	*Node
 }
 
 func (n Property) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -2782,7 +2767,7 @@ func (n Property) Value() Expression {
 }
 
 type PropertyAccess struct {
-	Node
+	*Node
 }
 
 func (n PropertyAccess) Expr() Expression {
@@ -2794,7 +2779,7 @@ func (n PropertyAccess) Selector() IdentifierReference {
 }
 
 type PropertyBinding struct {
-	Node
+	*Node
 }
 
 func (n PropertyBinding) PropertyName() PropertyName {
@@ -2806,12 +2791,12 @@ func (n PropertyBinding) ElementPattern() ElementPattern {
 }
 
 type PropertySignature struct {
-	Node
+	*Node
 }
 
 func (n PropertySignature) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -2830,15 +2815,15 @@ func (n PropertySignature) TypeAnnotation() *TypeAnnotation {
 }
 
 type Readonly struct {
-	Node
+	*Node
 }
 
 type Regexp struct {
-	Node
+	*Node
 }
 
 type RelationalExpression struct {
-	Node
+	*Node
 }
 
 func (n RelationalExpression) Left() Expression {
@@ -2850,7 +2835,7 @@ func (n RelationalExpression) Right() Expression {
 }
 
 type RestParameter struct {
-	Node
+	*Node
 }
 
 func (n RestParameter) BindingIdentifier() BindingIdentifier {
@@ -2865,7 +2850,7 @@ func (n RestParameter) TypeAnnotation() *TypeAnnotation {
 }
 
 type ReturnStatement struct {
-	Node
+	*Node
 }
 
 func (n ReturnStatement) Expression() Expression {
@@ -2876,7 +2861,7 @@ func (n ReturnStatement) Expression() Expression {
 }
 
 type Setter struct {
-	Node
+	*Node
 }
 
 func (n Setter) PropertyName() PropertyName {
@@ -2892,7 +2877,7 @@ func (n Setter) Body() Body {
 }
 
 type ShiftExpression struct {
-	Node
+	*Node
 }
 
 func (n ShiftExpression) Left() Expression {
@@ -2904,7 +2889,7 @@ func (n ShiftExpression) Right() Expression {
 }
 
 type ShorthandProperty struct {
-	Node
+	*Node
 }
 
 func (n ShorthandProperty) IdentifierReference() IdentifierReference {
@@ -2912,7 +2897,7 @@ func (n ShorthandProperty) IdentifierReference() IdentifierReference {
 }
 
 type SingleNameBinding struct {
-	Node
+	*Node
 }
 
 func (n SingleNameBinding) BindingIdentifier() BindingIdentifier {
@@ -2927,7 +2912,7 @@ func (n SingleNameBinding) Initializer() *Initializer {
 }
 
 type SpreadElement struct {
-	Node
+	*Node
 }
 
 func (n SpreadElement) Expression() Expression {
@@ -2935,7 +2920,7 @@ func (n SpreadElement) Expression() Expression {
 }
 
 type SpreadProperty struct {
-	Node
+	*Node
 }
 
 func (n SpreadProperty) Expression() Expression {
@@ -2943,15 +2928,15 @@ func (n SpreadProperty) Expression() Expression {
 }
 
 type Static struct {
-	Node
+	*Node
 }
 
 type SuperExpression struct {
-	Node
+	*Node
 }
 
 type SwitchStatement struct {
-	Node
+	*Node
 }
 
 func (n SwitchStatement) Expression() Expression {
@@ -2963,7 +2948,7 @@ func (n SwitchStatement) Block() Block {
 }
 
 type SyntaxProblem struct {
-	Node
+	*Node
 }
 
 func (n SyntaxProblem) IdentifierReference() *IdentifierReference {
@@ -2981,7 +2966,7 @@ func (n SyntaxProblem) Initializer() *Initializer {
 }
 
 type TaggedTemplate struct {
-	Node
+	*Node
 }
 
 func (n TaggedTemplate) Tag() Expression {
@@ -2993,12 +2978,12 @@ func (n TaggedTemplate) Literal() TemplateLiteral {
 }
 
 type TemplateLiteral struct {
-	Node
+	*Node
 }
 
 func (n TemplateLiteral) Template() []Token {
 	nodes := n.Children(selector.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail))
-	var result []Token = make([]Token, 0, len(nodes))
+	var result = make([]Token, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Token))
 	}
@@ -3007,7 +2992,7 @@ func (n TemplateLiteral) Template() []Token {
 
 func (n TemplateLiteral) Substitution() []Expression {
 	nodes := n.Children(selector.Expression)
-	var result []Expression = make([]Expression, 0, len(nodes))
+	var result = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Expression))
 	}
@@ -3015,15 +3000,15 @@ func (n TemplateLiteral) Substitution() []Expression {
 }
 
 type This struct {
-	Node
+	*Node
 }
 
 type ThisType struct {
-	Node
+	*Node
 }
 
 type ThrowStatement struct {
-	Node
+	*Node
 }
 
 func (n ThrowStatement) Expression() Expression {
@@ -3031,7 +3016,7 @@ func (n ThrowStatement) Expression() Expression {
 }
 
 type TryStatement struct {
-	Node
+	*Node
 }
 
 func (n TryStatement) Block() Block {
@@ -3053,7 +3038,7 @@ func (n TryStatement) Finally() *Finally {
 }
 
 type TsAmbientBinding struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientBinding) BindingIdentifier() BindingIdentifier {
@@ -3068,12 +3053,12 @@ func (n TsAmbientBinding) TypeAnnotation() *TypeAnnotation {
 }
 
 type TsAmbientClass struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientClass) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -3110,12 +3095,12 @@ func (n TsAmbientClass) TsAmbientClassBody() TsAmbientClassBody {
 }
 
 type TsAmbientClassBody struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientClassBody) TsAmbientClassElement() []TsAmbientClassElement {
 	nodes := n.Children(selector.TsAmbientClassElement)
-	var result []TsAmbientClassElement = make([]TsAmbientClassElement, 0, len(nodes))
+	var result = make([]TsAmbientClassElement, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(TsAmbientClassElement))
 	}
@@ -3123,7 +3108,7 @@ func (n TsAmbientClassBody) TsAmbientClassElement() []TsAmbientClassElement {
 }
 
 type TsAmbientEnum struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientEnum) TsEnum() TsEnum {
@@ -3131,7 +3116,7 @@ func (n TsAmbientEnum) TsEnum() TsEnum {
 }
 
 type TsAmbientFunction struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientFunction) BindingIdentifier() BindingIdentifier {
@@ -3157,12 +3142,12 @@ func (n TsAmbientFunction) TypeAnnotation() *TypeAnnotation {
 }
 
 type TsAmbientFunctionMember struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientFunctionMember) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -3192,7 +3177,7 @@ func (n TsAmbientFunctionMember) TypeAnnotation() *TypeAnnotation {
 }
 
 type TsAmbientImportAlias struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientImportAlias) TsImportAliasDeclaration() TsImportAliasDeclaration {
@@ -3200,7 +3185,7 @@ func (n TsAmbientImportAlias) TsImportAliasDeclaration() TsImportAliasDeclaratio
 }
 
 type TsAmbientIndexMember struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientIndexMember) IndexSignature() IndexSignature {
@@ -3208,12 +3193,12 @@ func (n TsAmbientIndexMember) IndexSignature() IndexSignature {
 }
 
 type TsAmbientInterface struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientInterface) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -3243,12 +3228,12 @@ func (n TsAmbientInterface) ObjectType() ObjectType {
 }
 
 type TsAmbientModule struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientModule) BindingIdentifier() []BindingIdentifier {
 	nodes := n.Children(selector.BindingIdentifier)
-	var result []BindingIdentifier = make([]BindingIdentifier, 0, len(nodes))
+	var result = make([]BindingIdentifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, BindingIdentifier{node})
 	}
@@ -3257,7 +3242,7 @@ func (n TsAmbientModule) BindingIdentifier() []BindingIdentifier {
 
 func (n TsAmbientModule) ModuleItem() []ModuleItem {
 	nodes := n.Children(selector.ModuleItem)
-	var result []ModuleItem = make([]ModuleItem, 0, len(nodes))
+	var result = make([]ModuleItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ModuleItem))
 	}
@@ -3265,12 +3250,12 @@ func (n TsAmbientModule) ModuleItem() []ModuleItem {
 }
 
 type TsAmbientNamespace struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientNamespace) BindingIdentifier() []BindingIdentifier {
 	nodes := n.Children(selector.BindingIdentifier)
-	var result []BindingIdentifier = make([]BindingIdentifier, 0, len(nodes))
+	var result = make([]BindingIdentifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, BindingIdentifier{node})
 	}
@@ -3279,7 +3264,7 @@ func (n TsAmbientNamespace) BindingIdentifier() []BindingIdentifier {
 
 func (n TsAmbientNamespace) TsAmbientElement() []TsAmbientElement {
 	nodes := n.Children(selector.TsAmbientElement)
-	var result []TsAmbientElement = make([]TsAmbientElement, 0, len(nodes))
+	var result = make([]TsAmbientElement, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(TsAmbientElement))
 	}
@@ -3287,12 +3272,12 @@ func (n TsAmbientNamespace) TsAmbientElement() []TsAmbientElement {
 }
 
 type TsAmbientPropertyMember struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientPropertyMember) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
-	var result []Modifier = make([]Modifier, 0, len(nodes))
+	var result = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(Modifier))
 	}
@@ -3311,7 +3296,7 @@ func (n TsAmbientPropertyMember) TypeAnnotation() *TypeAnnotation {
 }
 
 type TsAmbientTypeAlias struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientTypeAlias) TypeAliasDeclaration() TypeAliasDeclaration {
@@ -3319,12 +3304,12 @@ func (n TsAmbientTypeAlias) TypeAliasDeclaration() TypeAliasDeclaration {
 }
 
 type TsAmbientVar struct {
-	Node
+	*Node
 }
 
 func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
 	nodes := n.Children(selector.TsAmbientBinding)
-	var result []TsAmbientBinding = make([]TsAmbientBinding, 0, len(nodes))
+	var result = make([]TsAmbientBinding, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, TsAmbientBinding{node})
 	}
@@ -3332,7 +3317,7 @@ func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
 }
 
 type TsAsExpression struct {
-	Node
+	*Node
 }
 
 func (n TsAsExpression) Left() Expression {
@@ -3344,7 +3329,7 @@ func (n TsAsExpression) TsType() TsType {
 }
 
 type TsCastExpression struct {
-	Node
+	*Node
 }
 
 func (n TsCastExpression) TsType() TsType {
@@ -3356,7 +3341,7 @@ func (n TsCastExpression) Expression() Expression {
 }
 
 type TsDynamicImport struct {
-	Node
+	*Node
 }
 
 func (n TsDynamicImport) Arguments() Arguments {
@@ -3364,7 +3349,7 @@ func (n TsDynamicImport) Arguments() Arguments {
 }
 
 type TsEnum struct {
-	Node
+	*Node
 }
 
 func (n TsEnum) BindingIdentifier() BindingIdentifier {
@@ -3376,12 +3361,12 @@ func (n TsEnum) TsEnumBody() TsEnumBody {
 }
 
 type TsEnumBody struct {
-	Node
+	*Node
 }
 
 func (n TsEnumBody) TsEnumMember() []TsEnumMember {
 	nodes := n.Children(selector.TsEnumMember)
-	var result []TsEnumMember = make([]TsEnumMember, 0, len(nodes))
+	var result = make([]TsEnumMember, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, TsEnumMember{node})
 	}
@@ -3389,7 +3374,7 @@ func (n TsEnumBody) TsEnumMember() []TsEnumMember {
 }
 
 type TsEnumMember struct {
-	Node
+	*Node
 }
 
 func (n TsEnumMember) PropertyName() PropertyName {
@@ -3404,7 +3389,7 @@ func (n TsEnumMember) Expression() Expression {
 }
 
 type TsExportAssignment struct {
-	Node
+	*Node
 }
 
 func (n TsExportAssignment) IdentifierReference() IdentifierReference {
@@ -3412,12 +3397,12 @@ func (n TsExportAssignment) IdentifierReference() IdentifierReference {
 }
 
 type TsImplementsClause struct {
-	Node
+	*Node
 }
 
 func (n TsImplementsClause) TypeReference() []TypeReference {
 	nodes := n.Children(selector.TypeReference)
-	var result []TypeReference = make([]TypeReference, 0, len(nodes))
+	var result = make([]TypeReference, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, TypeReference{node})
 	}
@@ -3425,7 +3410,7 @@ func (n TsImplementsClause) TypeReference() []TypeReference {
 }
 
 type TsImportAliasDeclaration struct {
-	Node
+	*Node
 }
 
 func (n TsImportAliasDeclaration) BindingIdentifier() BindingIdentifier {
@@ -3434,7 +3419,7 @@ func (n TsImportAliasDeclaration) BindingIdentifier() BindingIdentifier {
 
 func (n TsImportAliasDeclaration) Ref() []IdentifierReference {
 	nodes := n.Children(selector.IdentifierReference)
-	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	var result = make([]IdentifierReference, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, IdentifierReference{node})
 	}
@@ -3442,7 +3427,7 @@ func (n TsImportAliasDeclaration) Ref() []IdentifierReference {
 }
 
 type TsImportRequireDeclaration struct {
-	Node
+	*Node
 }
 
 func (n TsImportRequireDeclaration) BindingIdentifier() BindingIdentifier {
@@ -3450,7 +3435,7 @@ func (n TsImportRequireDeclaration) BindingIdentifier() BindingIdentifier {
 }
 
 type TsIndexMemberDeclaration struct {
-	Node
+	*Node
 }
 
 func (n TsIndexMemberDeclaration) IndexSignature() IndexSignature {
@@ -3458,7 +3443,7 @@ func (n TsIndexMemberDeclaration) IndexSignature() IndexSignature {
 }
 
 type TsInterface struct {
-	Node
+	*Node
 }
 
 func (n TsInterface) BindingIdentifier() BindingIdentifier {
@@ -3484,12 +3469,12 @@ func (n TsInterface) ObjectType() ObjectType {
 }
 
 type TsInterfaceExtends struct {
-	Node
+	*Node
 }
 
 func (n TsInterfaceExtends) TypeReference() []TypeReference {
 	nodes := n.Children(selector.TypeReference)
-	var result []TypeReference = make([]TypeReference, 0, len(nodes))
+	var result = make([]TypeReference, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, TypeReference{node})
 	}
@@ -3497,12 +3482,12 @@ func (n TsInterfaceExtends) TypeReference() []TypeReference {
 }
 
 type TsNamespace struct {
-	Node
+	*Node
 }
 
 func (n TsNamespace) BindingIdentifier() []BindingIdentifier {
 	nodes := n.Children(selector.BindingIdentifier)
-	var result []BindingIdentifier = make([]BindingIdentifier, 0, len(nodes))
+	var result = make([]BindingIdentifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, BindingIdentifier{node})
 	}
@@ -3514,12 +3499,12 @@ func (n TsNamespace) TsNamespaceBody() TsNamespaceBody {
 }
 
 type TsNamespaceBody struct {
-	Node
+	*Node
 }
 
 func (n TsNamespaceBody) ModuleItem() []ModuleItem {
 	nodes := n.Children(selector.ModuleItem)
-	var result []ModuleItem = make([]ModuleItem, 0, len(nodes))
+	var result = make([]ModuleItem, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(ModuleItem))
 	}
@@ -3527,7 +3512,7 @@ func (n TsNamespaceBody) ModuleItem() []ModuleItem {
 }
 
 type TsNamespaceExportDeclaration struct {
-	Node
+	*Node
 }
 
 func (n TsNamespaceExportDeclaration) BindingIdentifier() BindingIdentifier {
@@ -3535,7 +3520,7 @@ func (n TsNamespaceExportDeclaration) BindingIdentifier() BindingIdentifier {
 }
 
 type TsNonNull struct {
-	Node
+	*Node
 }
 
 func (n TsNonNull) Expr() Expression {
@@ -3543,7 +3528,7 @@ func (n TsNonNull) Expr() Expression {
 }
 
 type TsThisParameter struct {
-	Node
+	*Node
 }
 
 func (n TsThisParameter) TypeAnnotation() TypeAnnotation {
@@ -3551,12 +3536,12 @@ func (n TsThisParameter) TypeAnnotation() TypeAnnotation {
 }
 
 type TupleType struct {
-	Node
+	*Node
 }
 
 func (n TupleType) TsType() []TsType {
 	nodes := n.Children(selector.TsType)
-	var result []TsType = make([]TsType, 0, len(nodes))
+	var result = make([]TsType, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(TsType))
 	}
@@ -3564,7 +3549,7 @@ func (n TupleType) TsType() []TsType {
 }
 
 type TypeAliasDeclaration struct {
-	Node
+	*Node
 }
 
 func (n TypeAliasDeclaration) BindingIdentifier() BindingIdentifier {
@@ -3583,7 +3568,7 @@ func (n TypeAliasDeclaration) TsType() TsType {
 }
 
 type TypeAnnotation struct {
-	Node
+	*Node
 }
 
 func (n TypeAnnotation) TsType() TsType {
@@ -3591,12 +3576,12 @@ func (n TypeAnnotation) TsType() TsType {
 }
 
 type TypeArguments struct {
-	Node
+	*Node
 }
 
 func (n TypeArguments) TsType() []TsType {
 	nodes := n.Children(selector.TsType)
-	var result []TsType = make([]TsType, 0, len(nodes))
+	var result = make([]TsType, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(TsType))
 	}
@@ -3604,7 +3589,7 @@ func (n TypeArguments) TsType() []TsType {
 }
 
 type TypeConstraint struct {
-	Node
+	*Node
 }
 
 func (n TypeConstraint) TsType() TsType {
@@ -3612,12 +3597,12 @@ func (n TypeConstraint) TsType() TsType {
 }
 
 type TypeName struct {
-	Node
+	*Node
 }
 
 func (n TypeName) Ref() []IdentifierReference {
 	nodes := n.Children(selector.IdentifierReference)
-	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	var result = make([]IdentifierReference, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, IdentifierReference{node})
 	}
@@ -3625,7 +3610,7 @@ func (n TypeName) Ref() []IdentifierReference {
 }
 
 type TypeParameter struct {
-	Node
+	*Node
 }
 
 func (n TypeParameter) BindingIdentifier() BindingIdentifier {
@@ -3647,12 +3632,12 @@ func (n TypeParameter) TsType() TsType {
 }
 
 type TypeParameters struct {
-	Node
+	*Node
 }
 
 func (n TypeParameters) TypeParameter() []TypeParameter {
 	nodes := n.Children(selector.TypeParameter)
-	var result []TypeParameter = make([]TypeParameter, 0, len(nodes))
+	var result = make([]TypeParameter, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, TypeParameter{node})
 	}
@@ -3660,7 +3645,7 @@ func (n TypeParameters) TypeParameter() []TypeParameter {
 }
 
 type TypePredicate struct {
-	Node
+	*Node
 }
 
 func (n TypePredicate) Paramref() IdentifierReference {
@@ -3672,12 +3657,12 @@ func (n TypePredicate) TsType() TsType {
 }
 
 type TypeQuery struct {
-	Node
+	*Node
 }
 
 func (n TypeQuery) IdentifierReference() []IdentifierReference {
 	nodes := n.Children(selector.IdentifierReference)
-	var result []IdentifierReference = make([]IdentifierReference, 0, len(nodes))
+	var result = make([]IdentifierReference, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, IdentifierReference{node})
 	}
@@ -3685,7 +3670,7 @@ func (n TypeQuery) IdentifierReference() []IdentifierReference {
 }
 
 type TypeReference struct {
-	Node
+	*Node
 }
 
 func (n TypeReference) TypeName() TypeName {
@@ -3700,7 +3685,7 @@ func (n TypeReference) TypeArguments() *TypeArguments {
 }
 
 type UnaryExpression struct {
-	Node
+	*Node
 }
 
 func (n UnaryExpression) Expression() Expression {
@@ -3708,12 +3693,12 @@ func (n UnaryExpression) Expression() Expression {
 }
 
 type UnionType struct {
-	Node
+	*Node
 }
 
 func (n UnionType) Inner() []TsType {
 	nodes := n.Children(selector.TsType)
-	var result []TsType = make([]TsType, 0, len(nodes))
+	var result = make([]TsType, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToJsNode(node).(TsType))
 	}
@@ -3721,7 +3706,7 @@ func (n UnionType) Inner() []TsType {
 }
 
 type VariableDeclaration struct {
-	Node
+	*Node
 }
 
 func (n VariableDeclaration) BindingIdentifier() *BindingIdentifier {
@@ -3753,12 +3738,12 @@ func (n VariableDeclaration) Initializer() *Initializer {
 }
 
 type VariableStatement struct {
-	Node
+	*Node
 }
 
 func (n VariableStatement) VariableDeclaration() []VariableDeclaration {
 	nodes := n.Children(selector.VariableDeclaration)
-	var result []VariableDeclaration = make([]VariableDeclaration, 0, len(nodes))
+	var result = make([]VariableDeclaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, VariableDeclaration{node})
 	}
@@ -3766,7 +3751,7 @@ func (n VariableStatement) VariableDeclaration() []VariableDeclaration {
 }
 
 type WhileStatement struct {
-	Node
+	*Node
 }
 
 func (n WhileStatement) Expression() Expression {
@@ -3778,7 +3763,7 @@ func (n WhileStatement) Statement() Statement {
 }
 
 type WithStatement struct {
-	Node
+	*Node
 }
 
 func (n WithStatement) Expression() Expression {
@@ -3790,7 +3775,7 @@ func (n WithStatement) Statement() Statement {
 }
 
 type Yield struct {
-	Node
+	*Node
 }
 
 func (n Yield) Expression() Expression {

@@ -24,8 +24,7 @@ type Node interface {
 // Interfaces.
 
 type TestNode interface {
-	Node
-	testNodeNode()
+	TestNode() Node
 }
 
 type Token struct {
@@ -33,13 +32,13 @@ type Token struct {
 }
 
 // All types implement TestNode.
-func (Block) testNodeNode()    {}
-func (Decl1) testNodeNode()    {}
-func (Decl2) testNodeNode()    {}
-func (Int) testNodeNode()      {}
-func (Negation) testNodeNode() {}
-func (Test) testNodeNode()     {}
-func (Token) testNodeNode()    {}
+func (n Block) TestNode() Node    { return n.Node }
+func (n Decl1) TestNode() Node    { return n.Node }
+func (n Decl2) TestNode() Node    { return n.Node }
+func (n Int) TestNode() Node      { return n.Node }
+func (n Negation) TestNode() Node { return n.Node }
+func (n Test) TestNode() Node     { return n.Node }
+func (n Token) TestNode() Node    { return n.Node }
 
 type Declaration interface {
 	TestNode
@@ -69,7 +68,7 @@ func (n Block) Negation() *Negation {
 
 func (n Block) Declaration() []Declaration {
 	nodes := n.Children(selector.Declaration)
-	var result []Declaration = make([]Declaration, 0, len(nodes))
+	var result = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTestNode(node).(Declaration))
 	}
@@ -82,7 +81,7 @@ type Decl1 struct {
 
 func (n Decl1) Identifier() []Token {
 	nodes := n.Children(selector.Identifier)
-	var result []Token = make([]Token, 0, len(nodes))
+	var result = make([]Token, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Token{node})
 	}
@@ -107,7 +106,7 @@ type Test struct {
 
 func (n Test) Declaration() []Declaration {
 	nodes := n.Children(selector.Declaration)
-	var result []Declaration = make([]Declaration, 0, len(nodes))
+	var result = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTestNode(node).(Declaration))
 	}

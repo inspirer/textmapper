@@ -14,12 +14,15 @@ class Options extends common.Options {
 	bool cancellable = false;
 	bool eventBased = false;
 	bool eventFields = false;
+	bool eventAST = false;
 	bool recursiveLookaheads = false;
 	common.Symbol* reportTokens[0..*] = [];
 	string extraTypes[0..*] = [];
 
 	bool tokenLine = true;
 	bool tokenLineOffset = false;
+
+	string fileNode = "";
 
 	bool __hasAny = true;
 }
