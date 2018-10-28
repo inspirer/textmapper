@@ -334,7 +334,7 @@ ${template interfaces-}
 // Interfaces.
 
 type ${self->baseNode()} interface {
-  ${self->baseNode()}() ${self->wrappedTypeRef()}
+	${self->baseNode()}() ${self->wrappedTypeRef()}
 }
 
 ${if opts.reportTokens.length > 0-}
@@ -353,7 +353,7 @@ ${end-}
 
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet')-}
 type ${cat->astInterfaceRef()->go.declarationName()} interface {
-  ${self->baseNode()}
+	${self->baseNode()}
 	${cat->asInterfaceMethod()}()
 }
 

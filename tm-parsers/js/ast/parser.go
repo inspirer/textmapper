@@ -4,7 +4,6 @@ package ast
 
 import (
 	"context"
-	"errors"
 	"github.com/inspirer/textmapper/tm-parsers/js"
 )
 
@@ -73,15 +72,11 @@ func (b *builder) addNode(t js.NodeType, offset, endoffset int) {
 	}
 }
 
-var errNumRoots = errors.New("exactly one root node is expected")
-
 func (b *builder) build() (*Tree, error) {
 	if b.err != nil {
 		return nil, b.err
 	}
-	if len(b.stack) != 1 {
-		return nil, errNumRoots
-	}
+	b.addNode(js.Module, 0, len(b.tree.content))
 	b.tree.root = b.stack[0]
 	return b.tree, nil
 }

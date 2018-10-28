@@ -718,9 +718,9 @@ var parseTests = []struct {
 	}},
 	{js.Javascript, js.Module, []string{
 		`«»`,
-		`
-		«»`,
-		` «a = 4» `,
+		`«
+		»`,
+		`« a = 4 »`,
 	}},
 	{js.Javascript, js.ImportDeclaration, []string{
 		`«import './aaa'»`,
@@ -1337,12 +1337,17 @@ func TestParser(t *testing.T) {
 				test.ConsumeError(t, se.Offset, se.Endoffset)
 				return true
 			}
-			p.Init(errHandler, func(nt js.NodeType, offset, endoffset int) {
+			f := func(nt js.NodeType, offset, endoffset int) {
 				if nt == tc.nt {
 					test.Consume(t, offset, endoffset)
 				}
-			})
-			test.Done(t, p.Parse(ctx, l))
+			}
+			p.Init(errHandler, f)
+			err := p.Parse(ctx, l)
+			if err == nil {
+				f(js.Module, 0, len(test.Source()))
+			}
+			test.Done(t, err)
 		}
 	}
 	for n := js.NodeType(1); n < js.NodeTypeMax; n++ {

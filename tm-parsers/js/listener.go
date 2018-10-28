@@ -3844,7 +3844,7 @@ var ruleNodeType = [...]NodeType{
 	MemberVar,                  // ClassElement_Yield : PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
 	TsIndexMemberDeclaration,   // ClassElement_Yield : IndexSignature ';'
 	EmptyDecl,                  // ClassElement_Yield : ';'
-	Module,                     // Module : ModuleBodyopt
+	0,                          // Module : ModuleBodyopt
 	0,                          // ModuleBody : ModuleItemList
 	0,                          // ModuleItemList : ModuleItem
 	0,                          // ModuleItemList : ModuleItemList ModuleItem

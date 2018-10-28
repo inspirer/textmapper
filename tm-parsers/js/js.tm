@@ -8,6 +8,7 @@ package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 eventFields = true
 eventAST = true
+fileNode = "Module"
 cancellable = true
 recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
