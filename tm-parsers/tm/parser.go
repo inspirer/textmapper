@@ -10,6 +10,9 @@ import (
 // This handler can return false to abort the parser.
 type ErrorHandler func(err SyntaxError) bool
 
+// StopOnFirstError is an error handler that forces the parser to stop on and return the first error.
+func StopOnFirstError(_ SyntaxError) bool { return false }
+
 // Parser is a table-driven LALR parser for tm.
 type Parser struct {
 	eh       ErrorHandler

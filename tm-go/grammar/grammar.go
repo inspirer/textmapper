@@ -7,8 +7,8 @@ import (
 
 // Names of common terminals with predefined meaning.
 const (
-	Eoi = "eoi"
-	Error = "error"
+	Eoi          = "eoi"
+	Error        = "error"
 	InvalidToken = "invalid_token"
 )
 

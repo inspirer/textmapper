@@ -96,8 +96,7 @@ func TestExistingFiles(t *testing.T) {
 		l := new(tm.Lexer)
 		l.Init(string(content))
 		p := new(tm.Parser)
-		errHandler := func(se tm.SyntaxError) bool { return false }
-		p.Init(errHandler, func(nt tm.NodeType, offset, endoffset int) { /* noop */ })
+		p.Init(tm.StopOnFirstError, func(nt tm.NodeType, offset, endoffset int) { /* noop */ })
 		err = p.Parse(l)
 		if err != nil {
 			t.Errorf("%v: parser failed with %v", path, err)

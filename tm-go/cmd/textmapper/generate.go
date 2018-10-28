@@ -7,9 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/grammar"
-	"github.com/inspirer/textmapper/tm-go/parser"
+	"github.com/inspirer/textmapper/tm-go/status"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
+	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 )
 
 var genCmd = &command{
@@ -78,13 +79,13 @@ func generate(files []string) error {
 			continue
 		}
 
-		file, err := parser.Parse(path, string(content))
+		tree, err := ast.Parse(path, string(content), tm.StopOnFirstError)
 		if err != nil {
 			s.AddError(err)
 			continue
 		}
 
-		_, err = grammar.Compile(file)
+		_, err = grammar.Compile(ast.File{Node: tree.Root()})
 		if err != nil {
 			s.AddError(err)
 			continue

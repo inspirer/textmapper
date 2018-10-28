@@ -3,125 +3,107 @@
 package ast
 
 import (
-	"github.com/inspirer/textmapper/tm-go/status"
-	"github.com/inspirer/textmapper/tm-parsers/tm"
 	"github.com/inspirer/textmapper/tm-parsers/tm/selector"
 )
-
-type Node interface {
-	Type() tm.NodeType
-	Offset() int
-	Endoffset() int
-	// Child returns the first child node that matches the selector.
-	Child(sel selector.Selector) Node
-	Children(sel selector.Selector) []Node
-	// Next returns the first element among the following siblings that matches the selector.
-	Next(sel selector.Selector) Node
-	// NextAll returns all following siblings of the node that match the selector.
-	NextAll(sel selector.Selector) []Node
-	Text() string
-	SourceRange() status.SourceRange
-}
 
 // Interfaces.
 
 type TmNode interface {
-	Node
-	tmNodeNode()
+	TmNode() *Node
 }
 
 type Token struct {
-	Node
+	*Node
 }
 
 // All types implement TmNode.
-func (AnnotationImpl) tmNodeNode()       {}
-func (Annotations) tmNodeNode()          {}
-func (ArgumentFalse) tmNodeNode()        {}
-func (ArgumentImpl) tmNodeNode()         {}
-func (ArgumentTrue) tmNodeNode()         {}
-func (Array) tmNodeNode()                {}
-func (Assoc) tmNodeNode()                {}
-func (BooleanLiteral) tmNodeNode()       {}
-func (ClassType) tmNodeNode()            {}
-func (Command) tmNodeNode()              {}
-func (DirectiveAssert) tmNodeNode()      {}
-func (DirectiveBrackets) tmNodeNode()    {}
-func (DirectiveInput) tmNodeNode()       {}
-func (DirectiveInterface) tmNodeNode()   {}
-func (DirectivePrio) tmNodeNode()        {}
-func (DirectiveSet) tmNodeNode()         {}
-func (ExclusiveStartConds) tmNodeNode()  {}
-func (File) tmNodeNode()                 {}
-func (Header) tmNodeNode()               {}
-func (Identifier) tmNodeNode()           {}
-func (Implements) tmNodeNode()           {}
-func (Import) tmNodeNode()               {}
-func (InclusiveStartConds) tmNodeNode()  {}
-func (InlineParameter) tmNodeNode()      {}
-func (Inputref) tmNodeNode()             {}
-func (IntegerLiteral) tmNodeNode()       {}
-func (InterfaceType) tmNodeNode()        {}
-func (KeyValue) tmNodeNode()             {}
-func (Lexeme) tmNodeNode()               {}
-func (LexemeAttribute) tmNodeNode()      {}
-func (LexemeAttrs) tmNodeNode()          {}
-func (LexerSection) tmNodeNode()         {}
-func (LexerState) tmNodeNode()           {}
-func (ListSeparator) tmNodeNode()        {}
-func (LookaheadPredicate) tmNodeNode()   {}
-func (Name) tmNodeNode()                 {}
-func (NamedPattern) tmNodeNode()         {}
-func (Nonterm) tmNodeNode()              {}
-func (NontermParams) tmNodeNode()        {}
-func (ParamModifier) tmNodeNode()        {}
-func (ParamRef) tmNodeNode()             {}
-func (ParamType) tmNodeNode()            {}
-func (ParserSection) tmNodeNode()        {}
-func (Pattern) tmNodeNode()              {}
-func (Predicate) tmNodeNode()            {}
-func (PredicateAnd) tmNodeNode()         {}
-func (PredicateEq) tmNodeNode()          {}
-func (PredicateNot) tmNodeNode()         {}
-func (PredicateNotEq) tmNodeNode()       {}
-func (PredicateOr) tmNodeNode()          {}
-func (RawType) tmNodeNode()              {}
-func (References) tmNodeNode()           {}
-func (ReportAs) tmNodeNode()             {}
-func (ReportClause) tmNodeNode()         {}
-func (RhsAnnotated) tmNodeNode()         {}
-func (RhsAsLiteral) tmNodeNode()         {}
-func (RhsAssignment) tmNodeNode()        {}
-func (RhsCast) tmNodeNode()              {}
-func (RhsIgnored) tmNodeNode()           {}
-func (RhsLookahead) tmNodeNode()         {}
-func (RhsNested) tmNodeNode()            {}
-func (RhsOptional) tmNodeNode()          {}
-func (RhsPlusAssignment) tmNodeNode()    {}
-func (RhsPlusList) tmNodeNode()          {}
-func (RhsQuantifier) tmNodeNode()        {}
-func (RhsSet) tmNodeNode()               {}
-func (RhsStarList) tmNodeNode()          {}
-func (RhsSuffix) tmNodeNode()            {}
-func (RhsSymbol) tmNodeNode()            {}
-func (Rule) tmNodeNode()                 {}
-func (SetAnd) tmNodeNode()               {}
-func (SetComplement) tmNodeNode()        {}
-func (SetCompound) tmNodeNode()          {}
-func (SetOr) tmNodeNode()                {}
-func (SetSymbol) tmNodeNode()            {}
-func (StartConditions) tmNodeNode()      {}
-func (StartConditionsScope) tmNodeNode() {}
-func (StateMarker) tmNodeNode()          {}
-func (Stateref) tmNodeNode()             {}
-func (StringLiteral) tmNodeNode()        {}
-func (SubType) tmNodeNode()              {}
-func (Symref) tmNodeNode()               {}
-func (SymrefArgs) tmNodeNode()           {}
-func (SyntaxProblem) tmNodeNode()        {}
-func (TemplateParam) tmNodeNode()        {}
-func (VoidType) tmNodeNode()             {}
-func (Token) tmNodeNode()                {}
+func (n AnnotationImpl) TmNode() *Node       { return n.Node }
+func (n Annotations) TmNode() *Node          { return n.Node }
+func (n ArgumentFalse) TmNode() *Node        { return n.Node }
+func (n ArgumentImpl) TmNode() *Node         { return n.Node }
+func (n ArgumentTrue) TmNode() *Node         { return n.Node }
+func (n Array) TmNode() *Node                { return n.Node }
+func (n Assoc) TmNode() *Node                { return n.Node }
+func (n BooleanLiteral) TmNode() *Node       { return n.Node }
+func (n ClassType) TmNode() *Node            { return n.Node }
+func (n Command) TmNode() *Node              { return n.Node }
+func (n DirectiveAssert) TmNode() *Node      { return n.Node }
+func (n DirectiveBrackets) TmNode() *Node    { return n.Node }
+func (n DirectiveInput) TmNode() *Node       { return n.Node }
+func (n DirectiveInterface) TmNode() *Node   { return n.Node }
+func (n DirectivePrio) TmNode() *Node        { return n.Node }
+func (n DirectiveSet) TmNode() *Node         { return n.Node }
+func (n ExclusiveStartConds) TmNode() *Node  { return n.Node }
+func (n File) TmNode() *Node                 { return n.Node }
+func (n Header) TmNode() *Node               { return n.Node }
+func (n Identifier) TmNode() *Node           { return n.Node }
+func (n Implements) TmNode() *Node           { return n.Node }
+func (n Import) TmNode() *Node               { return n.Node }
+func (n InclusiveStartConds) TmNode() *Node  { return n.Node }
+func (n InlineParameter) TmNode() *Node      { return n.Node }
+func (n Inputref) TmNode() *Node             { return n.Node }
+func (n IntegerLiteral) TmNode() *Node       { return n.Node }
+func (n InterfaceType) TmNode() *Node        { return n.Node }
+func (n KeyValue) TmNode() *Node             { return n.Node }
+func (n Lexeme) TmNode() *Node               { return n.Node }
+func (n LexemeAttribute) TmNode() *Node      { return n.Node }
+func (n LexemeAttrs) TmNode() *Node          { return n.Node }
+func (n LexerSection) TmNode() *Node         { return n.Node }
+func (n LexerState) TmNode() *Node           { return n.Node }
+func (n ListSeparator) TmNode() *Node        { return n.Node }
+func (n LookaheadPredicate) TmNode() *Node   { return n.Node }
+func (n Name) TmNode() *Node                 { return n.Node }
+func (n NamedPattern) TmNode() *Node         { return n.Node }
+func (n Nonterm) TmNode() *Node              { return n.Node }
+func (n NontermParams) TmNode() *Node        { return n.Node }
+func (n ParamModifier) TmNode() *Node        { return n.Node }
+func (n ParamRef) TmNode() *Node             { return n.Node }
+func (n ParamType) TmNode() *Node            { return n.Node }
+func (n ParserSection) TmNode() *Node        { return n.Node }
+func (n Pattern) TmNode() *Node              { return n.Node }
+func (n Predicate) TmNode() *Node            { return n.Node }
+func (n PredicateAnd) TmNode() *Node         { return n.Node }
+func (n PredicateEq) TmNode() *Node          { return n.Node }
+func (n PredicateNot) TmNode() *Node         { return n.Node }
+func (n PredicateNotEq) TmNode() *Node       { return n.Node }
+func (n PredicateOr) TmNode() *Node          { return n.Node }
+func (n RawType) TmNode() *Node              { return n.Node }
+func (n References) TmNode() *Node           { return n.Node }
+func (n ReportAs) TmNode() *Node             { return n.Node }
+func (n ReportClause) TmNode() *Node         { return n.Node }
+func (n RhsAnnotated) TmNode() *Node         { return n.Node }
+func (n RhsAsLiteral) TmNode() *Node         { return n.Node }
+func (n RhsAssignment) TmNode() *Node        { return n.Node }
+func (n RhsCast) TmNode() *Node              { return n.Node }
+func (n RhsIgnored) TmNode() *Node           { return n.Node }
+func (n RhsLookahead) TmNode() *Node         { return n.Node }
+func (n RhsNested) TmNode() *Node            { return n.Node }
+func (n RhsOptional) TmNode() *Node          { return n.Node }
+func (n RhsPlusAssignment) TmNode() *Node    { return n.Node }
+func (n RhsPlusList) TmNode() *Node          { return n.Node }
+func (n RhsQuantifier) TmNode() *Node        { return n.Node }
+func (n RhsSet) TmNode() *Node               { return n.Node }
+func (n RhsStarList) TmNode() *Node          { return n.Node }
+func (n RhsSuffix) TmNode() *Node            { return n.Node }
+func (n RhsSymbol) TmNode() *Node            { return n.Node }
+func (n Rule) TmNode() *Node                 { return n.Node }
+func (n SetAnd) TmNode() *Node               { return n.Node }
+func (n SetComplement) TmNode() *Node        { return n.Node }
+func (n SetCompound) TmNode() *Node          { return n.Node }
+func (n SetOr) TmNode() *Node                { return n.Node }
+func (n SetSymbol) TmNode() *Node            { return n.Node }
+func (n StartConditions) TmNode() *Node      { return n.Node }
+func (n StartConditionsScope) TmNode() *Node { return n.Node }
+func (n StateMarker) TmNode() *Node          { return n.Node }
+func (n Stateref) TmNode() *Node             { return n.Node }
+func (n StringLiteral) TmNode() *Node        { return n.Node }
+func (n SubType) TmNode() *Node              { return n.Node }
+func (n Symref) TmNode() *Node               { return n.Node }
+func (n SymrefArgs) TmNode() *Node           { return n.Node }
+func (n SyntaxProblem) TmNode() *Node        { return n.Node }
+func (n TemplateParam) TmNode() *Node        { return n.Node }
+func (n VoidType) TmNode() *Node             { return n.Node }
+func (n Token) TmNode() *Node                { return n.Node }
 
 type Annotation interface {
 	TmNode
@@ -324,7 +306,7 @@ func (SetSymbol) setExpressionNode()     {}
 // Types.
 
 type AnnotationImpl struct {
-	Node
+	*Node
 }
 
 func (n AnnotationImpl) Name() Identifier {
@@ -339,12 +321,12 @@ func (n AnnotationImpl) Expression() Expression {
 }
 
 type Annotations struct {
-	Node
+	*Node
 }
 
 func (n Annotations) Annotation() []Annotation {
 	nodes := n.Children(selector.Annotation)
-	var result []Annotation = make([]Annotation, 0, len(nodes))
+	var result = make([]Annotation, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Annotation))
 	}
@@ -352,7 +334,7 @@ func (n Annotations) Annotation() []Annotation {
 }
 
 type ArgumentFalse struct {
-	Node
+	*Node
 }
 
 func (n ArgumentFalse) Name() ParamRef {
@@ -360,7 +342,7 @@ func (n ArgumentFalse) Name() ParamRef {
 }
 
 type ArgumentImpl struct {
-	Node
+	*Node
 }
 
 func (n ArgumentImpl) Name() ParamRef {
@@ -375,7 +357,7 @@ func (n ArgumentImpl) Val() ParamValue {
 }
 
 type ArgumentTrue struct {
-	Node
+	*Node
 }
 
 func (n ArgumentTrue) Name() ParamRef {
@@ -383,12 +365,12 @@ func (n ArgumentTrue) Name() ParamRef {
 }
 
 type Array struct {
-	Node
+	*Node
 }
 
 func (n Array) Expression() []Expression {
 	nodes := n.Children(selector.Expression)
-	var result []Expression = make([]Expression, 0, len(nodes))
+	var result = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Expression))
 	}
@@ -396,15 +378,15 @@ func (n Array) Expression() []Expression {
 }
 
 type Assoc struct {
-	Node
+	*Node
 }
 
 type BooleanLiteral struct {
-	Node
+	*Node
 }
 
 type ClassType struct {
-	Node
+	*Node
 }
 
 func (n ClassType) Implements() *Implements {
@@ -415,11 +397,11 @@ func (n ClassType) Implements() *Implements {
 }
 
 type Command struct {
-	Node
+	*Node
 }
 
 type DirectiveAssert struct {
-	Node
+	*Node
 }
 
 func (n DirectiveAssert) RhsSet() RhsSet {
@@ -427,7 +409,7 @@ func (n DirectiveAssert) RhsSet() RhsSet {
 }
 
 type DirectiveBrackets struct {
-	Node
+	*Node
 }
 
 func (n DirectiveBrackets) Opening() Symref {
@@ -439,12 +421,12 @@ func (n DirectiveBrackets) Closing() Symref {
 }
 
 type DirectiveInput struct {
-	Node
+	*Node
 }
 
 func (n DirectiveInput) InputRefs() []Inputref {
 	nodes := n.Children(selector.Inputref)
-	var result []Inputref = make([]Inputref, 0, len(nodes))
+	var result = make([]Inputref, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Inputref{node})
 	}
@@ -452,12 +434,12 @@ func (n DirectiveInput) InputRefs() []Inputref {
 }
 
 type DirectiveInterface struct {
-	Node
+	*Node
 }
 
 func (n DirectiveInterface) Ids() []Identifier {
 	nodes := n.Children(selector.Identifier)
-	var result []Identifier = make([]Identifier, 0, len(nodes))
+	var result = make([]Identifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Identifier{node})
 	}
@@ -465,7 +447,7 @@ func (n DirectiveInterface) Ids() []Identifier {
 }
 
 type DirectivePrio struct {
-	Node
+	*Node
 }
 
 func (n DirectivePrio) Assoc() Assoc {
@@ -477,7 +459,7 @@ func (n DirectivePrio) Symbols() References {
 }
 
 type DirectiveSet struct {
-	Node
+	*Node
 }
 
 func (n DirectiveSet) Name() Identifier {
@@ -489,12 +471,12 @@ func (n DirectiveSet) RhsSet() RhsSet {
 }
 
 type ExclusiveStartConds struct {
-	Node
+	*Node
 }
 
 func (n ExclusiveStartConds) States() []LexerState {
 	nodes := n.Children(selector.LexerState)
-	var result []LexerState = make([]LexerState, 0, len(nodes))
+	var result = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexerState{node})
 	}
@@ -502,7 +484,7 @@ func (n ExclusiveStartConds) States() []LexerState {
 }
 
 type File struct {
-	Node
+	*Node
 }
 
 func (n File) Header() Header {
@@ -511,7 +493,7 @@ func (n File) Header() Header {
 
 func (n File) Imports() []Import {
 	nodes := n.Children(selector.Import)
-	var result []Import = make([]Import, 0, len(nodes))
+	var result = make([]Import, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Import{node})
 	}
@@ -520,7 +502,7 @@ func (n File) Imports() []Import {
 
 func (n File) Options() []Option {
 	nodes := n.Children(selector.Option)
-	var result []Option = make([]Option, 0, len(nodes))
+	var result = make([]Option, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Option))
 	}
@@ -539,7 +521,7 @@ func (n File) Parser() *ParserSection {
 }
 
 type Header struct {
-	Node
+	*Node
 }
 
 func (n Header) Name() Name {
@@ -554,16 +536,16 @@ func (n Header) Target() *Name {
 }
 
 type Identifier struct {
-	Node
+	*Node
 }
 
 type Implements struct {
-	Node
+	*Node
 }
 
 func (n Implements) Symref() []Symref {
 	nodes := n.Children(selector.Symref)
-	var result []Symref = make([]Symref, 0, len(nodes))
+	var result = make([]Symref, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Symref{node})
 	}
@@ -571,7 +553,7 @@ func (n Implements) Symref() []Symref {
 }
 
 type Import struct {
-	Node
+	*Node
 }
 
 func (n Import) Alias() *Identifier {
@@ -586,12 +568,12 @@ func (n Import) Path() StringLiteral {
 }
 
 type InclusiveStartConds struct {
-	Node
+	*Node
 }
 
 func (n InclusiveStartConds) States() []LexerState {
 	nodes := n.Children(selector.LexerState)
-	var result []LexerState = make([]LexerState, 0, len(nodes))
+	var result = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LexerState{node})
 	}
@@ -599,7 +581,7 @@ func (n InclusiveStartConds) States() []LexerState {
 }
 
 type InlineParameter struct {
-	Node
+	*Node
 }
 
 func (n InlineParameter) ParamType() Identifier {
@@ -618,7 +600,7 @@ func (n InlineParameter) ParamValue() ParamValue {
 }
 
 type Inputref struct {
-	Node
+	*Node
 }
 
 func (n Inputref) Reference() Symref {
@@ -626,15 +608,15 @@ func (n Inputref) Reference() Symref {
 }
 
 type IntegerLiteral struct {
-	Node
+	*Node
 }
 
 type InterfaceType struct {
-	Node
+	*Node
 }
 
 type KeyValue struct {
-	Node
+	*Node
 }
 
 func (n KeyValue) Key() Identifier {
@@ -646,7 +628,7 @@ func (n KeyValue) Value() Expression {
 }
 
 type Lexeme struct {
-	Node
+	*Node
 }
 
 func (n Lexeme) StartConditions() *StartConditions {
@@ -696,11 +678,11 @@ func (n Lexeme) Command() *Command {
 }
 
 type LexemeAttribute struct {
-	Node
+	*Node
 }
 
 type LexemeAttrs struct {
-	Node
+	*Node
 }
 
 func (n LexemeAttrs) LexemeAttribute() LexemeAttribute {
@@ -708,12 +690,12 @@ func (n LexemeAttrs) LexemeAttribute() LexemeAttribute {
 }
 
 type LexerSection struct {
-	Node
+	*Node
 }
 
 func (n LexerSection) LexerPart() []LexerPart {
 	nodes := n.Children(selector.LexerPart)
-	var result []LexerPart = make([]LexerPart, 0, len(nodes))
+	var result = make([]LexerPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(LexerPart))
 	}
@@ -721,7 +703,7 @@ func (n LexerSection) LexerPart() []LexerPart {
 }
 
 type LexerState struct {
-	Node
+	*Node
 }
 
 func (n LexerState) Name() Identifier {
@@ -729,7 +711,7 @@ func (n LexerState) Name() Identifier {
 }
 
 type ListSeparator struct {
-	Node
+	*Node
 }
 
 func (n ListSeparator) Separator() References {
@@ -737,7 +719,7 @@ func (n ListSeparator) Separator() References {
 }
 
 type LookaheadPredicate struct {
-	Node
+	*Node
 }
 
 func (n LookaheadPredicate) Symref() Symref {
@@ -745,12 +727,12 @@ func (n LookaheadPredicate) Symref() Symref {
 }
 
 type Name struct {
-	Node
+	*Node
 }
 
 func (n Name) Identifier() []Identifier {
 	nodes := n.Children(selector.Identifier)
-	var result []Identifier = make([]Identifier, 0, len(nodes))
+	var result = make([]Identifier, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Identifier{node})
 	}
@@ -758,7 +740,7 @@ func (n Name) Identifier() []Identifier {
 }
 
 type NamedPattern struct {
-	Node
+	*Node
 }
 
 func (n NamedPattern) Name() Identifier {
@@ -770,7 +752,7 @@ func (n NamedPattern) Pattern() Pattern {
 }
 
 type Nonterm struct {
-	Node
+	*Node
 }
 
 func (n Nonterm) Annotations() *Annotations {
@@ -807,7 +789,7 @@ func (n Nonterm) ReportClause() *ReportClause {
 
 func (n Nonterm) Rule0() []Rule0 {
 	nodes := n.Children(selector.Rule0)
-	var result []Rule0 = make([]Rule0, 0, len(nodes))
+	var result = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Rule0))
 	}
@@ -815,12 +797,12 @@ func (n Nonterm) Rule0() []Rule0 {
 }
 
 type NontermParams struct {
-	Node
+	*Node
 }
 
 func (n NontermParams) List() []NontermParam {
 	nodes := n.Children(selector.NontermParam)
-	var result []NontermParam = make([]NontermParam, 0, len(nodes))
+	var result = make([]NontermParam, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(NontermParam))
 	}
@@ -828,11 +810,11 @@ func (n NontermParams) List() []NontermParam {
 }
 
 type ParamModifier struct {
-	Node
+	*Node
 }
 
 type ParamRef struct {
-	Node
+	*Node
 }
 
 func (n ParamRef) Identifier() Identifier {
@@ -840,16 +822,16 @@ func (n ParamRef) Identifier() Identifier {
 }
 
 type ParamType struct {
-	Node
+	*Node
 }
 
 type ParserSection struct {
-	Node
+	*Node
 }
 
 func (n ParserSection) GrammarPart() []GrammarPart {
 	nodes := n.Children(selector.GrammarPart)
-	var result []GrammarPart = make([]GrammarPart, 0, len(nodes))
+	var result = make([]GrammarPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(GrammarPart))
 	}
@@ -857,11 +839,11 @@ func (n ParserSection) GrammarPart() []GrammarPart {
 }
 
 type Pattern struct {
-	Node
+	*Node
 }
 
 type Predicate struct {
-	Node
+	*Node
 }
 
 func (n Predicate) PredicateExpression() PredicateExpression {
@@ -869,7 +851,7 @@ func (n Predicate) PredicateExpression() PredicateExpression {
 }
 
 type PredicateAnd struct {
-	Node
+	*Node
 }
 
 func (n PredicateAnd) Left() PredicateExpression {
@@ -881,7 +863,7 @@ func (n PredicateAnd) Right() PredicateExpression {
 }
 
 type PredicateEq struct {
-	Node
+	*Node
 }
 
 func (n PredicateEq) ParamRef() ParamRef {
@@ -893,7 +875,7 @@ func (n PredicateEq) Literal() Literal {
 }
 
 type PredicateNot struct {
-	Node
+	*Node
 }
 
 func (n PredicateNot) ParamRef() ParamRef {
@@ -901,7 +883,7 @@ func (n PredicateNot) ParamRef() ParamRef {
 }
 
 type PredicateNotEq struct {
-	Node
+	*Node
 }
 
 func (n PredicateNotEq) ParamRef() ParamRef {
@@ -913,7 +895,7 @@ func (n PredicateNotEq) Literal() Literal {
 }
 
 type PredicateOr struct {
-	Node
+	*Node
 }
 
 func (n PredicateOr) Left() PredicateExpression {
@@ -925,11 +907,11 @@ func (n PredicateOr) Right() PredicateExpression {
 }
 
 type RawType struct {
-	Node
+	*Node
 }
 
 type References struct {
-	Node
+	*Node
 }
 
 func (n References) References() *References {
@@ -944,7 +926,7 @@ func (n References) Symref() Symref {
 }
 
 type ReportAs struct {
-	Node
+	*Node
 }
 
 func (n ReportAs) Identifier() Identifier {
@@ -952,7 +934,7 @@ func (n ReportAs) Identifier() Identifier {
 }
 
 type ReportClause struct {
-	Node
+	*Node
 }
 
 func (n ReportClause) Action() Identifier {
@@ -974,7 +956,7 @@ func (n ReportClause) ReportAs() *ReportAs {
 }
 
 type RhsAnnotated struct {
-	Node
+	*Node
 }
 
 func (n RhsAnnotated) Annotations() Annotations {
@@ -986,7 +968,7 @@ func (n RhsAnnotated) Inner() RhsPart {
 }
 
 type RhsAsLiteral struct {
-	Node
+	*Node
 }
 
 func (n RhsAsLiteral) Inner() RhsPart {
@@ -998,7 +980,7 @@ func (n RhsAsLiteral) Literal() Literal {
 }
 
 type RhsAssignment struct {
-	Node
+	*Node
 }
 
 func (n RhsAssignment) Id() Identifier {
@@ -1010,7 +992,7 @@ func (n RhsAssignment) Inner() RhsPart {
 }
 
 type RhsCast struct {
-	Node
+	*Node
 }
 
 func (n RhsCast) Inner() RhsPart {
@@ -1022,12 +1004,12 @@ func (n RhsCast) Target() Symref {
 }
 
 type RhsIgnored struct {
-	Node
+	*Node
 }
 
 func (n RhsIgnored) Rule0() []Rule0 {
 	nodes := n.Children(selector.Rule0)
-	var result []Rule0 = make([]Rule0, 0, len(nodes))
+	var result = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Rule0))
 	}
@@ -1035,12 +1017,12 @@ func (n RhsIgnored) Rule0() []Rule0 {
 }
 
 type RhsLookahead struct {
-	Node
+	*Node
 }
 
 func (n RhsLookahead) Predicates() []LookaheadPredicate {
 	nodes := n.Children(selector.LookaheadPredicate)
-	var result []LookaheadPredicate = make([]LookaheadPredicate, 0, len(nodes))
+	var result = make([]LookaheadPredicate, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, LookaheadPredicate{node})
 	}
@@ -1048,12 +1030,12 @@ func (n RhsLookahead) Predicates() []LookaheadPredicate {
 }
 
 type RhsNested struct {
-	Node
+	*Node
 }
 
 func (n RhsNested) Rule0() []Rule0 {
 	nodes := n.Children(selector.Rule0)
-	var result []Rule0 = make([]Rule0, 0, len(nodes))
+	var result = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Rule0))
 	}
@@ -1061,7 +1043,7 @@ func (n RhsNested) Rule0() []Rule0 {
 }
 
 type RhsOptional struct {
-	Node
+	*Node
 }
 
 func (n RhsOptional) Inner() RhsPart {
@@ -1069,7 +1051,7 @@ func (n RhsOptional) Inner() RhsPart {
 }
 
 type RhsPlusAssignment struct {
-	Node
+	*Node
 }
 
 func (n RhsPlusAssignment) Id() Identifier {
@@ -1081,12 +1063,12 @@ func (n RhsPlusAssignment) Inner() RhsPart {
 }
 
 type RhsPlusList struct {
-	Node
+	*Node
 }
 
 func (n RhsPlusList) RuleParts() []RhsPart {
 	nodes := n.Children(selector.RhsPart)
-	var result []RhsPart = make([]RhsPart, 0, len(nodes))
+	var result = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(RhsPart))
 	}
@@ -1098,7 +1080,7 @@ func (n RhsPlusList) ListSeparator() ListSeparator {
 }
 
 type RhsQuantifier struct {
-	Node
+	*Node
 }
 
 func (n RhsQuantifier) Inner() RhsPart {
@@ -1106,7 +1088,7 @@ func (n RhsQuantifier) Inner() RhsPart {
 }
 
 type RhsSet struct {
-	Node
+	*Node
 }
 
 func (n RhsSet) Expr() SetExpression {
@@ -1114,12 +1096,12 @@ func (n RhsSet) Expr() SetExpression {
 }
 
 type RhsStarList struct {
-	Node
+	*Node
 }
 
 func (n RhsStarList) RuleParts() []RhsPart {
 	nodes := n.Children(selector.RhsPart)
-	var result []RhsPart = make([]RhsPart, 0, len(nodes))
+	var result = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(RhsPart))
 	}
@@ -1131,7 +1113,7 @@ func (n RhsStarList) ListSeparator() ListSeparator {
 }
 
 type RhsSuffix struct {
-	Node
+	*Node
 }
 
 func (n RhsSuffix) Symref() Symref {
@@ -1139,7 +1121,7 @@ func (n RhsSuffix) Symref() Symref {
 }
 
 type RhsSymbol struct {
-	Node
+	*Node
 }
 
 func (n RhsSymbol) Reference() Symref {
@@ -1147,7 +1129,7 @@ func (n RhsSymbol) Reference() Symref {
 }
 
 type Rule struct {
-	Node
+	*Node
 }
 
 func (n Rule) Predicate() *Predicate {
@@ -1159,7 +1141,7 @@ func (n Rule) Predicate() *Predicate {
 
 func (n Rule) RhsPart() []RhsPart {
 	nodes := n.Children(selector.RhsPart)
-	var result []RhsPart = make([]RhsPart, 0, len(nodes))
+	var result = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(RhsPart))
 	}
@@ -1181,7 +1163,7 @@ func (n Rule) ReportClause() *ReportClause {
 }
 
 type SetAnd struct {
-	Node
+	*Node
 }
 
 func (n SetAnd) Left() SetExpression {
@@ -1193,7 +1175,7 @@ func (n SetAnd) Right() SetExpression {
 }
 
 type SetComplement struct {
-	Node
+	*Node
 }
 
 func (n SetComplement) Inner() SetExpression {
@@ -1201,7 +1183,7 @@ func (n SetComplement) Inner() SetExpression {
 }
 
 type SetCompound struct {
-	Node
+	*Node
 }
 
 func (n SetCompound) Inner() SetExpression {
@@ -1209,7 +1191,7 @@ func (n SetCompound) Inner() SetExpression {
 }
 
 type SetOr struct {
-	Node
+	*Node
 }
 
 func (n SetOr) Left() SetExpression {
@@ -1221,7 +1203,7 @@ func (n SetOr) Right() SetExpression {
 }
 
 type SetSymbol struct {
-	Node
+	*Node
 }
 
 func (n SetSymbol) Operator() *Identifier {
@@ -1236,12 +1218,12 @@ func (n SetSymbol) Symbol() Symref {
 }
 
 type StartConditions struct {
-	Node
+	*Node
 }
 
 func (n StartConditions) Stateref() []Stateref {
 	nodes := n.Children(selector.Stateref)
-	var result []Stateref = make([]Stateref, 0, len(nodes))
+	var result = make([]Stateref, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, Stateref{node})
 	}
@@ -1249,7 +1231,7 @@ func (n StartConditions) Stateref() []Stateref {
 }
 
 type StartConditionsScope struct {
-	Node
+	*Node
 }
 
 func (n StartConditionsScope) StartConditions() StartConditions {
@@ -1258,7 +1240,7 @@ func (n StartConditionsScope) StartConditions() StartConditions {
 
 func (n StartConditionsScope) LexerPart() []LexerPart {
 	nodes := n.Children(selector.LexerPart)
-	var result []LexerPart = make([]LexerPart, 0, len(nodes))
+	var result = make([]LexerPart, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(LexerPart))
 	}
@@ -1266,7 +1248,7 @@ func (n StartConditionsScope) LexerPart() []LexerPart {
 }
 
 type StateMarker struct {
-	Node
+	*Node
 }
 
 func (n StateMarker) Name() Identifier {
@@ -1274,7 +1256,7 @@ func (n StateMarker) Name() Identifier {
 }
 
 type Stateref struct {
-	Node
+	*Node
 }
 
 func (n Stateref) Name() Identifier {
@@ -1282,11 +1264,11 @@ func (n Stateref) Name() Identifier {
 }
 
 type StringLiteral struct {
-	Node
+	*Node
 }
 
 type SubType struct {
-	Node
+	*Node
 }
 
 func (n SubType) Reference() Symref {
@@ -1294,7 +1276,7 @@ func (n SubType) Reference() Symref {
 }
 
 type Symref struct {
-	Node
+	*Node
 }
 
 func (n Symref) Name() Identifier {
@@ -1309,12 +1291,12 @@ func (n Symref) Args() *SymrefArgs {
 }
 
 type SymrefArgs struct {
-	Node
+	*Node
 }
 
 func (n SymrefArgs) ArgList() []Argument {
 	nodes := n.Children(selector.Argument)
-	var result []Argument = make([]Argument, 0, len(nodes))
+	var result = make([]Argument, 0, len(nodes))
 	for _, node := range nodes {
 		result = append(result, ToTmNode(node).(Argument))
 	}
@@ -1322,11 +1304,11 @@ func (n SymrefArgs) ArgList() []Argument {
 }
 
 type SyntaxProblem struct {
-	Node
+	*Node
 }
 
 type TemplateParam struct {
-	Node
+	*Node
 }
 
 func (n TemplateParam) Modifier() *ParamModifier {
@@ -1352,5 +1334,5 @@ func (n TemplateParam) ParamValue() ParamValue {
 }
 
 type VoidType struct {
-	Node
+	*Node
 }

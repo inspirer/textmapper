@@ -1,4 +1,4 @@
-package parser
+package ast
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/tm"
-	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 	"github.com/inspirer/textmapper/tm-parsers/tm/selector"
 )
 
@@ -30,7 +29,7 @@ var builderTests = []struct {
 	}},
 }
 
-func serialize(n ast.Node, b *bytes.Buffer) {
+func serialize(n *Node, b *bytes.Buffer) {
 	b.Write([]byte("("))
 	defer b.Write([]byte(")"))
 
@@ -57,13 +56,13 @@ func TestBuilder(t *testing.T) {
 			b.addNode(testType, i, i+len(r))
 		}
 
-		if err := b.status.Err(); err != nil {
-			t.Fatalf("builder failed with %v", err)
+		tree, err := b.build()
+		if err != nil {
+			t.Fatalf("builder failed with %v", b.err)
 		}
-		b.file.parsed = b.chunks
 
 		var buf bytes.Buffer
-		serialize(b.file.root(), &buf)
+		serialize(tree.Root(), &buf)
 		got := buf.String()
 		if got != tc.want {
 			t.Errorf("builder returned %v, want: %v", got, tc.want)
@@ -91,15 +90,16 @@ a : 'q'+ ;
 `
 
 func TestParser(t *testing.T) {
-	file, err := Parse("file1", testInput)
+	tree, err := Parse("file1", testInput, tm.StopOnFirstError)
 	if err != nil {
 		t.Errorf("cannot parse %q: %v", testInput, err)
 	}
 
 	var buf bytes.Buffer
+	file := File{tree.Root()}
 	for _, lp := range file.Lexer().LexerPart() {
 		switch lp := lp.(type) {
-		case *ast.Lexeme:
+		case *Lexeme:
 			fmt.Fprintf(&buf, "token %v\n", lp.Name().Text())
 		}
 	}

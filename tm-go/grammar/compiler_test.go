@@ -6,9 +6,10 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/grammar"
-	"github.com/inspirer/textmapper/tm-go/parser"
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
+	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func TestErrors(t *testing.T) {
 
 		inp := string(content)
 		pt := parsertest.New(t, "error", inp)
-		file, err := parser.Parse(file, pt.Source())
+		tree, err := ast.Parse(file, pt.Source(), tm.StopOnFirstError)
 		if err != nil {
 			t.Errorf("parsing failed with %v\n%v", err, inp)
 			continue
@@ -40,7 +41,7 @@ func TestErrors(t *testing.T) {
 			}
 		}
 
-		_, err = grammar.Compile(file)
+		_, err = grammar.Compile(ast.File{Node: tree.Root()})
 		if err != nil {
 			for _, e := range status.FromError(err) {
 				pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
