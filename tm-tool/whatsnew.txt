@@ -1,3 +1,9 @@
+0.9.22
+------
+
+[!] Template fixes for simple grammars.
+[!] Generate AST classes for event based parsers.
+
 0.9.21
 ------
 
