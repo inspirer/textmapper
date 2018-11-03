@@ -94,34 +94,35 @@ var parseTests = []struct {
 	{"\u0370\u0371+", "cat{str{\u0370}str{\u0371}+}"},
 
 	// Errors.
-	{"\xfe\xfe", `err{broken regexp: invalid rune}`},
-	{"\\Q\xfe\xfe\\E", `err{broken regexp: invalid rune}`},
-	{`(`, `err{broken regexp: missing closing parenthesis}`},
-	{`(a`, `err{broken regexp: missing closing parenthesis}`},
-	{`)`, `err{broken regexp: unexpected closing parenthesis}`},
-	{`a\`, `err{broken regexp: trailing backslash at end of regular expression}`},
-	{`\T`, `err{broken regexp: invalid escape sequence}`},
-	{`(a))`, `err{broken regexp: unexpected closing parenthesis}`},
-	{`\p{`, `err{broken regexp: invalid \p{} range}`},
-	{`\p{}`, `err{broken regexp: invalid \p{} range}`},
-	{`\p{z}`, `err{broken regexp: unknown unicode character class}`},
-	{`{1,3}`, `err{broken regexp: unexpected quantifier}`},
-	{`{abc}{543,123}`, `err{broken regexp: invalid quantifier}`},
-	{`{abc}{,123}`, `err{broken regexp: invalid external regexp reference}`},
-	{`{abc}{99999999999999999999}`, `err{broken regexp: cannot parse quantifier}`},
-	{`{abc}{1,99999999999999999999}`, `err{broken regexp: cannot parse quantifier}`},
-	{`{abc}{1,`, `err{broken regexp: cannot parse quantifier}`},
-	{`ab{`, `err{broken regexp: invalid external regexp reference}`},
-	{`{`, `err{broken regexp: invalid external regexp reference}`},
-	{`[a-z`, `err{broken regexp: missing closing bracket}`},
-	{`[\p{L}-z`, `err{broken regexp: missing closing bracket}`},
-	{`[a-\p{L}]`, `err{broken regexp: invalid character class range}`},
-	{`[z-a]`, `err{broken regexp: invalid character class range}`},
-	{`\00`, `err{broken regexp: invalid escape sequence}`},
-	{`\u123`, `err{broken regexp: invalid escape sequence}`},
-	{`\u{ }`, `err{broken regexp: invalid escape sequence}`},
-	{`abc(?`, `err{broken regexp: unknown perl flags}`},
-	{`abc(?ie`, `err{broken regexp: unknown perl flags}`},
+	{"\xfe\xfe", "err{invalid rune}: «\xfe»\xfe"},
+	{"\\Q\xfe\xfe\\E", "err{invalid rune}: \\Q«\xfe»\xfe\\E"},
+	{"\\Q\u0370\xfe\xfe\\E", "err{invalid rune}: \\Q\u0370«\xfe»\xfe\\E"},
+	{`(`, `err{missing closing parenthesis}: («»`},
+	{`(a`, `err{missing closing parenthesis}: (a«»`},
+	{`)`, `err{unexpected closing parenthesis}: «)»`},
+	{`a\`, `err{trailing backslash at end of regular expression}: a«\»`},
+	{`\T`, `err{invalid escape sequence}: «\T»`},
+	{`(a))`, `err{unexpected closing parenthesis}: (a)«)»`},
+	{`\p{`, `err{invalid \p{} range}: «\p{»`},
+	{`\p{}`, `err{invalid \p{} range}: «\p{}»`},
+	{`\p{z}`, `err{unknown unicode character class}: «\p{z}»`},
+	{`{1,3}`, `err{unexpected quantifier}: «{»1,3}`},
+	{`{abc}{543,123}`, `err{invalid quantifier}: {abc}«{543,123}»`},
+	{`{abc}{,123}`, `err{invalid external regexp reference}: {abc}«{,»123}`},
+	{`{abc}{99999999999999999999}`, `err{cannot parse quantifier}: {abc}{«99999999999999999999»}`},
+	{`{abc}{1,99999999999999999999}`, `err{cannot parse quantifier}: {abc}{1,«99999999999999999999»}`},
+	{`{abc}{1,`, `err{cannot parse quantifier}: {abc}{«1,»`},
+	{`ab{`, `err{invalid external regexp reference}: ab«{»`},
+	{`{`, `err{invalid external regexp reference}: «{»`},
+	{`[a-z`, `err{missing closing bracket}: «[a-z»`},
+	{`[\p{L}-z`, `err{missing closing bracket}: «[\p{L}-z»`},
+	{`[qa-\p{L}]`, `err{invalid character class range}: [q«a-\p{L}»]`},
+	{`[z-a]`, `err{invalid character class range}: [«z-a»]`},
+	{`\00`, `err{invalid escape sequence}: «\00»`},
+	{`\u123`, `err{invalid escape sequence}: «\u123»`},
+	{`\u{ }`, `err{invalid escape sequence}: \u{« »}`},
+	{`abc(?`, `err{unknown perl flags}: abc(?«»`},
+	{`abc(?ie`, `err{unknown perl flags}: abc(?i«e»`},
 }
 
 func TestParse(t *testing.T) {
@@ -130,7 +131,12 @@ func TestParse(t *testing.T) {
 		re, err := ParseRegexp(input)
 		var got string
 		if err != nil {
-			got = fmt.Sprintf("err{%v}", err)
+			err := err.(ParseError)
+			if err.Offset > err.EndOffset || err.Offset < 0 || err.EndOffset > len(input) {
+				t.Errorf("invalid error offsets for %v: %v, %v (%v)", input, err.Offset, err.EndOffset, err.Msg)
+				continue
+			}
+			got = fmt.Sprintf("err{%v}: %v«%v»%v", err.Msg, input[:err.Offset], input[err.Offset:err.EndOffset], input[err.EndOffset:])
 		} else {
 			got = dump(re)
 		}

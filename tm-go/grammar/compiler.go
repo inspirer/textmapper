@@ -80,6 +80,19 @@ func (c *compiler) collectStartConds() {
 	}
 }
 
+func (c *compiler) resolveSC(sc ast.StartConditions) []int {
+	var ret []int
+	for _, ref := range sc.Stateref() {
+		name := ref.Name().Text()
+		if val, ok := c.conds[name]; ok {
+			ret = append(ret, val)
+			continue
+		}
+		c.errorf(ref.Name(), "unresolved reference %v", name)
+	}
+	return ret
+}
+
 func (c *compiler) addToken(name string, t *ast.RawType, n status.SourceNode) int {
 	var rawType string
 	if t != nil {
@@ -143,19 +156,6 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 	}
 }
 
-func (c *compiler) resolveSC(sc ast.StartConditions) []int {
-	var ret []int
-	for _, ref := range sc.Stateref() {
-		name := ref.Name().Text()
-		if val, ok := c.conds[name]; ok {
-			ret = append(ret, val)
-			continue
-		}
-		c.errorf(ref.Name(), "unresolved reference %v", name)
-	}
-	return ret
-}
-
 func (c *compiler) errorf(n status.SourceNode, format string, a ...interface{}) {
 	c.s.Errorf(n, format, a...)
 }
@@ -190,14 +190,20 @@ func (p *patterns) add(np *ast.NamedPattern) error {
 }
 
 func parsePattern(p ast.Pattern) (*lex.Regexp, error) {
-	re, err := lex.ParseRegexp(p.Text())
+	text := p.Text()
+	text = text[1 : len(text)-1]
+	re, err := lex.ParseRegexp(text)
 	if err != nil {
 		rng := p.SourceRange()
-		offset := err.(lex.ParseError).Offset + 1
-		if rng.Offset+offset < rng.EndOffset-1 {
-			rng.EndOffset--
-			rng.Offset += offset
-			rng.Column += offset
+		err := err.(lex.ParseError)
+		if err.Offset <= err.EndOffset && err.EndOffset <= len(text) && err.Offset < len(text) {
+			if err.Offset < err.EndOffset {
+				rng.EndOffset = rng.Offset + err.EndOffset + 1
+			} else {
+				rng.EndOffset--
+			}
+			rng.Offset += err.Offset + 1
+			rng.Column += err.Offset + 1
 		}
 		return emptyRE, &status.Error{Origin: rng, Msg: err.Error()}
 	}

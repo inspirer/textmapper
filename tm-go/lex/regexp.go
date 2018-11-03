@@ -41,8 +41,9 @@ const (
 
 // ParseError represents a syntax error in a regular expression.
 type ParseError struct {
-	Msg    string
-	Offset int
+	Msg       string
+	Offset    int
+	EndOffset int
 }
 
 func (e ParseError) Error() string {
@@ -126,7 +127,7 @@ func (p *parser) next() {
 			// not ASCII
 			r, w = utf8.DecodeRuneInString(p.source[p.offset:])
 			if r == utf8.RuneError && w == 1 {
-				p.error("invalid rune")
+				p.error("invalid rune", p.offset, p.offset+1)
 			}
 		}
 		p.scanOffset += w
@@ -140,7 +141,7 @@ func (p *parser) parse() *Regexp {
 	var fold bool
 	var alloc [8]*Regexp
 	stack := append(alloc[:0], &Regexp{op: opParen})
-	var literalStart int
+	var start int
 	var foldStack []bool
 
 	for p.ch != -1 {
@@ -159,7 +160,7 @@ func (p *parser) parse() *Regexp {
 					case '-':
 						neg = true
 					default:
-						p.error("unknown perl flags")
+						p.error("unknown perl flags", p.offset, p.scanOffset)
 						return nil
 					}
 				}
@@ -181,7 +182,7 @@ func (p *parser) parse() *Regexp {
 		case ')':
 			stack = reduce(stack)
 			if len(stack) == 1 {
-				p.error("unexpected closing parenthesis")
+				p.error("unexpected closing parenthesis", p.offset, p.scanOffset)
 				return nil
 			}
 			fold = foldStack[len(foldStack)-1]
@@ -195,23 +196,24 @@ func (p *parser) parse() *Regexp {
 			if p.ch == '\\' && p.scanOffset < len(p.source) && p.source[p.scanOffset] == 'Q' {
 				// \Q ... \E
 				var lit string
-				literalStart = p.scanOffset + 1
-				if i := strings.Index(p.source[literalStart:], `\E`); i < 0 {
-					lit = p.source[literalStart:]
+				start = p.scanOffset + 1
+				if i := strings.Index(p.source[start:], `\E`); i < 0 {
+					lit = p.source[start:]
 					p.scanOffset = len(p.source)
 				} else {
-					lit = p.source[literalStart : literalStart+i]
-					p.scanOffset = literalStart + i + 2
+					lit = p.source[start : start+i]
+					p.scanOffset = start + i + 2
 				}
 				p.next()
 				stack = append(stack, &Regexp{op: opLiteral, text: lit})
 				for lit != "" {
 					r, size := utf8.DecodeRuneInString(lit)
 					if r == utf8.RuneError && size == 1 {
-						p.error("invalid rune")
+						p.error("invalid rune", start, start+1)
 						return nil
 					}
 					lit = lit[size:]
+					start += size
 				}
 				continue
 			}
@@ -232,7 +234,7 @@ func (p *parser) parse() *Regexp {
 			if p.ch >= '0' && p.ch <= '9' {
 				last := len(stack) - 1
 				if stack[last].op == opParen {
-					p.error("unexpected quantifier")
+					p.error("unexpected quantifier", p.offset-1, p.offset)
 					return nil
 				}
 				min, max := p.parseQuantifier()
@@ -246,7 +248,7 @@ func (p *parser) parse() *Regexp {
 					p.next()
 				}
 				if p.ch != '}' || start == p.offset {
-					p.error("invalid external regexp reference")
+					p.error("invalid external regexp reference", start-1, p.scanOffset)
 				}
 				stack = append(stack, &Regexp{op: opExternal, text: p.source[start:p.offset]})
 			}
@@ -273,18 +275,18 @@ func (p *parser) parse() *Regexp {
 				re.charset = append(re.charset0[:0], p.ch, p.ch)
 				re.charset.fold()
 				stack = append(stack, re)
-			} else if last.op == opLiteral && last.text == p.source[literalStart:p.offset] && p.canAppend() {
-				last.text = p.source[literalStart:p.scanOffset]
+			} else if last.op == opLiteral && last.text == p.source[start:p.offset] && p.canAppend() {
+				last.text = p.source[start:p.scanOffset]
 			} else {
-				literalStart = p.offset
-				stack = append(stack, &Regexp{op: opLiteral, text: p.source[literalStart:p.scanOffset]})
+				start = p.offset
+				stack = append(stack, &Regexp{op: opLiteral, text: p.source[start:p.scanOffset]})
 			}
 		}
 		p.next()
 	}
 	stack = reduce(stack)
 	if len(stack) != 1 {
-		p.error("missing closing parenthesis")
+		p.error("missing closing parenthesis", p.offset, p.offset)
 		return nil
 	}
 	switch len(stack[0].sub) {
@@ -302,7 +304,7 @@ func (p *parser) parseQuantifier() (min, max int) {
 	}
 	min, err := strconv.Atoi(p.source[start:p.offset])
 	if err != nil {
-		p.error("cannot parse quantifier")
+		p.error("cannot parse quantifier", start, p.offset)
 		return
 	}
 
@@ -310,24 +312,24 @@ func (p *parser) parseQuantifier() (min, max int) {
 	if p.ch == ',' {
 		p.next()
 		max = -1
-		start := p.offset
+		toStart := p.offset
 		for p.ch >= '0' && p.ch <= '9' {
 			p.next()
 		}
-		if start < p.offset {
-			if max, err = strconv.Atoi(p.source[start:p.offset]); err != nil {
-				p.error("cannot parse quantifier")
+		if toStart < p.offset {
+			if max, err = strconv.Atoi(p.source[toStart:p.offset]); err != nil {
+				p.error("cannot parse quantifier", toStart, p.offset)
 				return
 			}
 			if max < min {
-				p.error("invalid quantifier")
+				p.error("invalid quantifier", start-1, p.scanOffset)
 				return
 			}
 		}
 	}
 
 	if p.ch != '}' {
-		p.error("cannot parse quantifier")
+		p.error("cannot parse quantifier", start, p.scanOffset)
 		return
 	}
 	p.next()
@@ -374,9 +376,9 @@ func (p *parser) canAppend() bool {
 	return true
 }
 
-func (p *parser) error(msg string) {
+func (p *parser) error(msg string, offset, endOffset int) {
 	if len(p.err.Msg) == 0 {
-		p.err = ParseError{Msg: msg, Offset: p.offset}
+		p.err = ParseError{Msg: msg, Offset: offset, EndOffset: endOffset}
 	}
 }
 
@@ -390,6 +392,7 @@ func (p *parser) rune(r rune, fold bool) charset {
 }
 
 func (p *parser) parseClass(fold bool) charset {
+	start := p.offset
 	p.next() // skip [
 	var negated bool
 	if p.ch == '^' {
@@ -404,13 +407,14 @@ func (p *parser) parseClass(fold bool) charset {
 	}
 	for p.ch != ']' {
 		var lo rune
+		loStart := p.offset
 		switch p.ch {
 		case '.':
 			r = append(r, 0, '\n'-1, '\n'+1, unicode.MaxRune)
 			p.next()
 			continue
 		case -1:
-			p.error("missing closing bracket")
+			p.error("missing closing bracket", start, p.offset)
 			return nil
 		case '\\':
 			cs := p.parseEscape(false)
@@ -434,7 +438,7 @@ func (p *parser) parseClass(fold bool) charset {
 		if p.ch == '\\' {
 			cs := p.parseEscape(false)
 			if !cs.oneRune() {
-				p.error("invalid character class range")
+				p.error("invalid character class range", loStart, p.offset)
 				return nil
 			}
 			hi = cs[0]
@@ -443,7 +447,7 @@ func (p *parser) parseClass(fold bool) charset {
 		}
 
 		if hi < lo {
-			p.error("invalid character class range")
+			p.error("invalid character class range", loStart, p.scanOffset)
 			return nil
 		}
 		r = appendRange(r, lo, hi)
@@ -461,6 +465,7 @@ func (p *parser) parseClass(fold bool) charset {
 }
 
 func (p *parser) parseEscape(fold bool) charset {
+	start := p.offset
 	p.next() // skip \
 	var r rune
 	switch p.ch {
@@ -468,7 +473,7 @@ func (p *parser) parseEscape(fold bool) charset {
 		for i := 0; i < 3; i++ {
 			d := octval(p.ch)
 			if d == -1 {
-				p.error("invalid escape sequence")
+				p.error("invalid escape sequence", start, p.scanOffset)
 				return nil
 			}
 			r = r<<3 + d
@@ -485,14 +490,14 @@ func (p *parser) parseEscape(fold bool) charset {
 				negated = !negated
 				p.next()
 			}
-			start := p.offset
+			nameStart := p.offset
 			for isid(p.ch) {
 				p.next()
 			}
-			if p.ch != '}' || start == p.offset {
-				p.error("invalid \\p{} range")
+			if p.ch != '}' || nameStart == p.offset {
+				p.error("invalid \\p{} range", start, p.scanOffset)
 			}
-			name = p.source[start:p.offset]
+			name = p.source[nameStart:p.offset]
 		} else {
 			name = p.source[p.offset:p.scanOffset]
 		}
@@ -500,7 +505,7 @@ func (p *parser) parseEscape(fold bool) charset {
 		var err error
 		p.set, err = appendNamedSet(p.set[:0], name, fold)
 		if err != nil {
-			p.error(err.Error())
+			p.error(err.Error(), start, p.offset)
 		}
 		ret := newCharset(p.set)
 		if negated {
@@ -543,10 +548,11 @@ func (p *parser) parseEscape(fold bool) charset {
 		p.next()
 		if p.ch == '{' {
 			p.next()
+			start := p.offset
 			for {
 				d := hexval(p.ch)
 				if d == -1 {
-					p.error("invalid escape sequence")
+					p.error("invalid escape sequence", start, p.scanOffset)
 					return nil
 				}
 				r = r<<4 + d
@@ -560,7 +566,7 @@ func (p *parser) parseEscape(fold bool) charset {
 			for i := 0; i < l; i++ {
 				d := hexval(p.ch)
 				if d == -1 {
-					p.error("invalid escape sequence")
+					p.error("invalid escape sequence", start, p.scanOffset)
 					return nil
 				}
 				r = r<<4 + d
@@ -581,11 +587,11 @@ func (p *parser) parseEscape(fold bool) charset {
 	case 'v':
 		r = '\v'
 	case -1:
-		p.error("trailing backslash at end of regular expression")
+		p.error("trailing backslash at end of regular expression", start, p.offset)
 		return nil
 	default:
 		if p.ch >= utf8.RuneSelf || p.ch != '_' && isid(p.ch) {
-			p.error("invalid escape sequence")
+			p.error("invalid escape sequence", start, p.scanOffset)
 			return nil
 		}
 		r = p.ch

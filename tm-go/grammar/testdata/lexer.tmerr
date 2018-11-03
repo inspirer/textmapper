@@ -22,3 +22,10 @@ whitespace: /[\n\r\t ]+/   (space)
 
 '(': /\(/
 ')': /\)/
+
+# err: broken regexp: invalid escape sequence
+broken_regex: /asd«\0a»bc/
+# err: broken regexp: unexpected closing parenthesis
+broken_regex: /asd«)»/
+# err: broken regexp: missing closing parenthesis
+broken_regex: «/(asd/»
