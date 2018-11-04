@@ -326,11 +326,11 @@ type Annotations struct {
 
 func (n Annotations) Annotation() []Annotation {
 	nodes := n.Children(selector.Annotation)
-	var result = make([]Annotation, 0, len(nodes))
+	var ret = make([]Annotation, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Annotation))
+		ret = append(ret, ToTmNode(node).(Annotation))
 	}
-	return result
+	return ret
 }
 
 type ArgumentFalse struct {
@@ -370,11 +370,11 @@ type Array struct {
 
 func (n Array) Expression() []Expression {
 	nodes := n.Children(selector.Expression)
-	var result = make([]Expression, 0, len(nodes))
+	var ret = make([]Expression, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Expression))
+		ret = append(ret, ToTmNode(node).(Expression))
 	}
-	return result
+	return ret
 }
 
 type Assoc struct {
@@ -426,11 +426,11 @@ type DirectiveInput struct {
 
 func (n DirectiveInput) InputRefs() []Inputref {
 	nodes := n.Children(selector.Inputref)
-	var result = make([]Inputref, 0, len(nodes))
+	var ret = make([]Inputref, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, Inputref{node})
+		ret = append(ret, Inputref{node})
 	}
-	return result
+	return ret
 }
 
 type DirectiveInterface struct {
@@ -439,11 +439,11 @@ type DirectiveInterface struct {
 
 func (n DirectiveInterface) Ids() []Identifier {
 	nodes := n.Children(selector.Identifier)
-	var result = make([]Identifier, 0, len(nodes))
+	var ret = make([]Identifier, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, Identifier{node})
+		ret = append(ret, Identifier{node})
 	}
-	return result
+	return ret
 }
 
 type DirectivePrio struct {
@@ -476,11 +476,11 @@ type ExclusiveStartConds struct {
 
 func (n ExclusiveStartConds) States() []LexerState {
 	nodes := n.Children(selector.LexerState)
-	var result = make([]LexerState, 0, len(nodes))
+	var ret = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, LexerState{node})
+		ret = append(ret, LexerState{node})
 	}
-	return result
+	return ret
 }
 
 type File struct {
@@ -493,20 +493,20 @@ func (n File) Header() Header {
 
 func (n File) Imports() []Import {
 	nodes := n.Children(selector.Import)
-	var result = make([]Import, 0, len(nodes))
+	var ret = make([]Import, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, Import{node})
+		ret = append(ret, Import{node})
 	}
-	return result
+	return ret
 }
 
 func (n File) Options() []Option {
 	nodes := n.Children(selector.Option)
-	var result = make([]Option, 0, len(nodes))
+	var ret = make([]Option, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Option))
+		ret = append(ret, ToTmNode(node).(Option))
 	}
-	return result
+	return ret
 }
 
 func (n File) Lexer() LexerSection {
@@ -545,11 +545,11 @@ type Implements struct {
 
 func (n Implements) Symref() []Symref {
 	nodes := n.Children(selector.Symref)
-	var result = make([]Symref, 0, len(nodes))
+	var ret = make([]Symref, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, Symref{node})
+		ret = append(ret, Symref{node})
 	}
-	return result
+	return ret
 }
 
 type Import struct {
@@ -573,11 +573,11 @@ type InclusiveStartConds struct {
 
 func (n InclusiveStartConds) States() []LexerState {
 	nodes := n.Children(selector.LexerState)
-	var result = make([]LexerState, 0, len(nodes))
+	var ret = make([]LexerState, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, LexerState{node})
+		ret = append(ret, LexerState{node})
 	}
-	return result
+	return ret
 }
 
 type InlineParameter struct {
@@ -695,11 +695,11 @@ type LexerSection struct {
 
 func (n LexerSection) LexerPart() []LexerPart {
 	nodes := n.Children(selector.LexerPart)
-	var result = make([]LexerPart, 0, len(nodes))
+	var ret = make([]LexerPart, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(LexerPart))
+		ret = append(ret, ToTmNode(node).(LexerPart))
 	}
-	return result
+	return ret
 }
 
 type LexerState struct {
@@ -732,11 +732,11 @@ type Name struct {
 
 func (n Name) Identifier() []Identifier {
 	nodes := n.Children(selector.Identifier)
-	var result = make([]Identifier, 0, len(nodes))
+	var ret = make([]Identifier, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, Identifier{node})
+		ret = append(ret, Identifier{node})
 	}
-	return result
+	return ret
 }
 
 type NamedPattern struct {
@@ -789,11 +789,11 @@ func (n Nonterm) ReportClause() *ReportClause {
 
 func (n Nonterm) Rule0() []Rule0 {
 	nodes := n.Children(selector.Rule0)
-	var result = make([]Rule0, 0, len(nodes))
+	var ret = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Rule0))
+		ret = append(ret, ToTmNode(node).(Rule0))
 	}
-	return result
+	return ret
 }
 
 type NontermParams struct {
@@ -802,11 +802,11 @@ type NontermParams struct {
 
 func (n NontermParams) List() []NontermParam {
 	nodes := n.Children(selector.NontermParam)
-	var result = make([]NontermParam, 0, len(nodes))
+	var ret = make([]NontermParam, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(NontermParam))
+		ret = append(ret, ToTmNode(node).(NontermParam))
 	}
-	return result
+	return ret
 }
 
 type ParamModifier struct {
@@ -831,11 +831,11 @@ type ParserSection struct {
 
 func (n ParserSection) GrammarPart() []GrammarPart {
 	nodes := n.Children(selector.GrammarPart)
-	var result = make([]GrammarPart, 0, len(nodes))
+	var ret = make([]GrammarPart, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(GrammarPart))
+		ret = append(ret, ToTmNode(node).(GrammarPart))
 	}
-	return result
+	return ret
 }
 
 type Pattern struct {
@@ -1009,11 +1009,11 @@ type RhsIgnored struct {
 
 func (n RhsIgnored) Rule0() []Rule0 {
 	nodes := n.Children(selector.Rule0)
-	var result = make([]Rule0, 0, len(nodes))
+	var ret = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Rule0))
+		ret = append(ret, ToTmNode(node).(Rule0))
 	}
-	return result
+	return ret
 }
 
 type RhsLookahead struct {
@@ -1022,11 +1022,11 @@ type RhsLookahead struct {
 
 func (n RhsLookahead) Predicates() []LookaheadPredicate {
 	nodes := n.Children(selector.LookaheadPredicate)
-	var result = make([]LookaheadPredicate, 0, len(nodes))
+	var ret = make([]LookaheadPredicate, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, LookaheadPredicate{node})
+		ret = append(ret, LookaheadPredicate{node})
 	}
-	return result
+	return ret
 }
 
 type RhsNested struct {
@@ -1035,11 +1035,11 @@ type RhsNested struct {
 
 func (n RhsNested) Rule0() []Rule0 {
 	nodes := n.Children(selector.Rule0)
-	var result = make([]Rule0, 0, len(nodes))
+	var ret = make([]Rule0, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Rule0))
+		ret = append(ret, ToTmNode(node).(Rule0))
 	}
-	return result
+	return ret
 }
 
 type RhsOptional struct {
@@ -1068,11 +1068,11 @@ type RhsPlusList struct {
 
 func (n RhsPlusList) RuleParts() []RhsPart {
 	nodes := n.Children(selector.RhsPart)
-	var result = make([]RhsPart, 0, len(nodes))
+	var ret = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(RhsPart))
+		ret = append(ret, ToTmNode(node).(RhsPart))
 	}
-	return result
+	return ret
 }
 
 func (n RhsPlusList) ListSeparator() ListSeparator {
@@ -1101,11 +1101,11 @@ type RhsStarList struct {
 
 func (n RhsStarList) RuleParts() []RhsPart {
 	nodes := n.Children(selector.RhsPart)
-	var result = make([]RhsPart, 0, len(nodes))
+	var ret = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(RhsPart))
+		ret = append(ret, ToTmNode(node).(RhsPart))
 	}
-	return result
+	return ret
 }
 
 func (n RhsStarList) ListSeparator() ListSeparator {
@@ -1141,11 +1141,11 @@ func (n Rule) Predicate() *Predicate {
 
 func (n Rule) RhsPart() []RhsPart {
 	nodes := n.Children(selector.RhsPart)
-	var result = make([]RhsPart, 0, len(nodes))
+	var ret = make([]RhsPart, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(RhsPart))
+		ret = append(ret, ToTmNode(node).(RhsPart))
 	}
-	return result
+	return ret
 }
 
 func (n Rule) RhsSuffix() *RhsSuffix {
@@ -1223,11 +1223,11 @@ type StartConditions struct {
 
 func (n StartConditions) Stateref() []Stateref {
 	nodes := n.Children(selector.Stateref)
-	var result = make([]Stateref, 0, len(nodes))
+	var ret = make([]Stateref, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, Stateref{node})
+		ret = append(ret, Stateref{node})
 	}
-	return result
+	return ret
 }
 
 type StartConditionsScope struct {
@@ -1240,11 +1240,11 @@ func (n StartConditionsScope) StartConditions() StartConditions {
 
 func (n StartConditionsScope) LexerPart() []LexerPart {
 	nodes := n.Children(selector.LexerPart)
-	var result = make([]LexerPart, 0, len(nodes))
+	var ret = make([]LexerPart, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(LexerPart))
+		ret = append(ret, ToTmNode(node).(LexerPart))
 	}
-	return result
+	return ret
 }
 
 type StateMarker struct {
@@ -1296,11 +1296,11 @@ type SymrefArgs struct {
 
 func (n SymrefArgs) ArgList() []Argument {
 	nodes := n.Children(selector.Argument)
-	var result = make([]Argument, 0, len(nodes))
+	var ret = make([]Argument, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTmNode(node).(Argument))
+		ret = append(ret, ToTmNode(node).(Argument))
 	}
-	return result
+	return ret
 }
 
 type SyntaxProblem struct {

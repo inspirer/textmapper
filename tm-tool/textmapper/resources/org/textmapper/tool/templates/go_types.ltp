@@ -431,11 +431,11 @@ ${end}
 ${template getterImpl(field)-}
 ${if field.isList()-}
 	nodes := ${self->getFieldNode(field)}
-	var result = make([]${self->getterInnerType(field)}, 0, len(nodes))
+	var ret = make([]${self->getterInnerType(field)}, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ${self->convertNode(field, 'node')})
+		ret = append(ret, ${self->convertNode(field, 'node')})
 	}
-	return result
+	return ret
 ${else if !field.isNullable()-}
 	return ${self->convertNode(field, self->getFieldNode(field))}
 ${else-}

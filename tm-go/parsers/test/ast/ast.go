@@ -68,11 +68,11 @@ func (n Block) Negation() *Negation {
 
 func (n Block) Declaration() []Declaration {
 	nodes := n.Children(selector.Declaration)
-	var result = make([]Declaration, 0, len(nodes))
+	var ret = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTestNode(node).(Declaration))
+		ret = append(ret, ToTestNode(node).(Declaration))
 	}
-	return result
+	return ret
 }
 
 type Decl1 struct {
@@ -81,11 +81,11 @@ type Decl1 struct {
 
 func (n Decl1) Identifier() []Token {
 	nodes := n.Children(selector.Identifier)
-	var result = make([]Token, 0, len(nodes))
+	var ret = make([]Token, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, Token{node})
+		ret = append(ret, Token{node})
 	}
-	return result
+	return ret
 }
 
 type Decl2 struct {
@@ -106,9 +106,9 @@ type Test struct {
 
 func (n Test) Declaration() []Declaration {
 	nodes := n.Children(selector.Declaration)
-	var result = make([]Declaration, 0, len(nodes))
+	var ret = make([]Declaration, 0, len(nodes))
 	for _, node := range nodes {
-		result = append(result, ToTestNode(node).(Declaration))
+		ret = append(ret, ToTestNode(node).(Declaration))
 	}
-	return result
+	return ret
 }
