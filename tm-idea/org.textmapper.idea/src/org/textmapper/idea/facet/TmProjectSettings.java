@@ -22,9 +22,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 
 @State(name = "Textmapper",
 		storages = {
-				@Storage(file = StoragePathMacros.PROJECT_FILE),
-				@Storage(file = StoragePathMacros.PROJECT_CONFIG_DIR + "/textmapper.xml",
-						scheme = StorageScheme.DIRECTORY_BASED)
+				@Storage(file = StoragePathMacros.WORKSPACE_FILE),
 		})
 public class TmProjectSettings extends TmSettings implements PersistentStateComponent<TmConfigurationBean> {
 	public static TmSettings getInstance(Project project) {

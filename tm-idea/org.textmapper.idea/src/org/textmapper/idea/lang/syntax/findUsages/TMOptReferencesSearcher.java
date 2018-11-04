@@ -38,7 +38,7 @@ public class TMOptReferencesSearcher extends QueryExecutorBase<PsiReference, Sea
 	}
 
 	@Override
-	public void processQuery(@NotNull ReferencesSearch.SearchParameters queryParameters, @NotNull Processor<PsiReference> consumer) {
+	public void processQuery(@NotNull ReferencesSearch.SearchParameters queryParameters, @NotNull Processor<? super PsiReference> consumer) {
 		PsiElement refElement = queryParameters.getElementToSearch();
 		if (!(refElement instanceof TmNamedElement)) return;
 
