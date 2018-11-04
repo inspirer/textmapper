@@ -139,7 +139,7 @@ func (n *Node) NextAll(sel selector.Selector) []*Node {
 			ret = append(ret, c)
 		}
 	}
-	return nil
+	return ret
 }
 
 // Text returns the text of the node.

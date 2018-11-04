@@ -213,7 +213,7 @@ func (n *Node) NextAll(sel ${self->go_filter.nodeSelectorTypeRef()}) []*Node {
 			ret = append(ret, c)
 		}
 	}
-	return nil
+	return ret
 }
 
 // Text returns the text of the node.
