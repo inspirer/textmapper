@@ -31,6 +31,10 @@ type Token struct {
 	Node
 }
 
+type nilNode struct{}
+
+var nilInstance = &nilNode{}
+
 // All types implement TestNode.
 func (n Block) TestNode() Node    { return n.Node }
 func (n Decl1) TestNode() Node    { return n.Node }
@@ -39,6 +43,7 @@ func (n Int) TestNode() Node      { return n.Node }
 func (n Negation) TestNode() Node { return n.Node }
 func (n Test) TestNode() Node     { return n.Node }
 func (n Token) TestNode() Node    { return n.Node }
+func (nilNode) TestNode() Node    { return nil }
 
 type Declaration interface {
 	TestNode
@@ -48,10 +53,11 @@ type Declaration interface {
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
 //
-func (Block) declarationNode() {}
-func (Decl1) declarationNode() {}
-func (Decl2) declarationNode() {}
-func (Int) declarationNode()   {}
+func (Block) declarationNode()   {}
+func (Decl1) declarationNode()   {}
+func (Decl2) declarationNode()   {}
+func (Int) declarationNode()     {}
+func (nilNode) declarationNode() {}
 
 // Types.
 
@@ -59,11 +65,8 @@ type Block struct {
 	Node
 }
 
-func (n Block) Negation() *Negation {
-	if child := n.Child(selector.Negation); child != nil {
-		return &Negation{child}
-	}
-	return nil
+func (n Block) Negation() /*opt*/ Negation {
+	return Negation{n.Child(selector.Negation)}
 }
 
 func (n Block) Declaration() []Declaration {

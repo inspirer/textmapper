@@ -17,6 +17,10 @@ type Token struct {
 	*Node
 }
 
+type nilNode struct{}
+
+var nilInstance = &nilNode{}
+
 // All types implement JsNode.
 func (n Abstract) JsNode() *Node                     { return n.Node }
 func (n AccessibilityModifier) JsNode() *Node        { return n.Node }
@@ -220,6 +224,7 @@ func (n WhileStatement) JsNode() *Node               { return n.Node }
 func (n WithStatement) JsNode() *Node                { return n.Node }
 func (n Yield) JsNode() *Node                        { return n.Node }
 func (n Token) JsNode() *Node                        { return n.Node }
+func (nilNode) JsNode() *Node                        { return nil }
 
 type BindingPattern interface {
 	JsNode
@@ -231,6 +236,7 @@ type BindingPattern interface {
 //
 func (ArrayPattern) bindingPatternNode()  {}
 func (ObjectPattern) bindingPatternNode() {}
+func (nilNode) bindingPatternNode()       {}
 
 type CaseClause interface {
 	JsNode
@@ -242,6 +248,7 @@ type CaseClause interface {
 //
 func (Case) caseClauseNode()    {}
 func (Default) caseClauseNode() {}
+func (nilNode) caseClauseNode() {}
 
 type ClassElement interface {
 	JsNode
@@ -255,6 +262,7 @@ func (EmptyDecl) classElementNode()                {}
 func (MemberMethod) classElementNode()             {}
 func (MemberVar) classElementNode()                {}
 func (TsIndexMemberDeclaration) classElementNode() {}
+func (nilNode) classElementNode()                  {}
 
 type Declaration interface {
 	JsNode
@@ -283,6 +291,7 @@ func (TsImportAliasDeclaration) declarationNode() {}
 func (TsInterface) declarationNode()              {}
 func (TsNamespace) declarationNode()              {}
 func (TypeAliasDeclaration) declarationNode()     {}
+func (nilNode) declarationNode()                  {}
 
 type Decorator interface {
 	JsNode
@@ -294,6 +303,7 @@ type Decorator interface {
 //
 func (DecoratorCall) decoratorNode() {}
 func (DecoratorExpr) decoratorNode() {}
+func (nilNode) decoratorNode()       {}
 
 type ElementPattern interface {
 	JsNode
@@ -306,6 +316,7 @@ type ElementPattern interface {
 func (ElementBinding) elementPatternNode()    {}
 func (SingleNameBinding) elementPatternNode() {}
 func (SyntaxProblem) elementPatternNode()     {}
+func (nilNode) elementPatternNode()           {}
 
 type ExportElement interface {
 	JsNode
@@ -317,6 +328,7 @@ type ExportElement interface {
 //
 func (ExportSpecifier) exportElementNode() {}
 func (SyntaxProblem) exportElementNode()   {}
+func (nilNode) exportElementNode()         {}
 
 type Expression interface {
 	JsNode
@@ -374,6 +386,7 @@ func (TsDynamicImport) expressionNode()          {}
 func (TsNonNull) expressionNode()                {}
 func (UnaryExpression) expressionNode()          {}
 func (Yield) expressionNode()                    {}
+func (nilNode) expressionNode()                  {}
 
 type JSXAttribute interface {
 	JsNode
@@ -385,6 +398,7 @@ type JSXAttribute interface {
 //
 func (JSXNormalAttribute) jSXAttributeNode() {}
 func (JSXSpreadAttribute) jSXAttributeNode() {}
+func (nilNode) jSXAttributeNode()            {}
 
 type JSXAttributeValue interface {
 	JsNode
@@ -397,6 +411,7 @@ type JSXAttributeValue interface {
 func (JSXElement) jSXAttributeValueNode()    {}
 func (JSXExpression) jSXAttributeValueNode() {}
 func (JSXLiteral) jSXAttributeValueNode()    {}
+func (nilNode) jSXAttributeValueNode()       {}
 
 type JSXChild interface {
 	JsNode
@@ -410,6 +425,7 @@ func (JSXElement) jSXChildNode()          {}
 func (JSXExpression) jSXChildNode()       {}
 func (JSXSpreadExpression) jSXChildNode() {}
 func (JSXText) jSXChildNode()             {}
+func (nilNode) jSXChildNode()             {}
 
 type MethodDefinition interface {
 	JsNode
@@ -424,6 +440,7 @@ func (GeneratorMethod) methodDefinitionNode() {}
 func (Getter) methodDefinitionNode()          {}
 func (Method) methodDefinitionNode()          {}
 func (Setter) methodDefinitionNode()          {}
+func (nilNode) methodDefinitionNode()         {}
 
 type Modifier interface {
 	JsNode
@@ -439,6 +456,7 @@ func (DecoratorCall) modifierNode()         {}
 func (DecoratorExpr) modifierNode()         {}
 func (Readonly) modifierNode()              {}
 func (Static) modifierNode()                {}
+func (nilNode) modifierNode()               {}
 
 type ModuleItem interface {
 	JsNode
@@ -496,6 +514,7 @@ func (TypeAliasDeclaration) moduleItemNode()         {}
 func (VariableStatement) moduleItemNode()            {}
 func (WhileStatement) moduleItemNode()               {}
 func (WithStatement) moduleItemNode()                {}
+func (nilNode) moduleItemNode()                      {}
 
 type NamedImport interface {
 	JsNode
@@ -507,6 +526,7 @@ type NamedImport interface {
 //
 func (ImportSpecifier) namedImportNode() {}
 func (SyntaxProblem) namedImportNode()   {}
+func (nilNode) namedImportNode()         {}
 
 type Parameter interface {
 	JsNode
@@ -520,6 +540,7 @@ func (DefaultParameter) parameterNode() {}
 func (RestParameter) parameterNode()    {}
 func (SyntaxProblem) parameterNode()    {}
 func (TsThisParameter) parameterNode()  {}
+func (nilNode) parameterNode()          {}
 
 type PropertyDefinition interface {
 	JsNode
@@ -534,6 +555,7 @@ func (Property) propertyDefinitionNode()          {}
 func (ShorthandProperty) propertyDefinitionNode() {}
 func (SpreadProperty) propertyDefinitionNode()    {}
 func (SyntaxProblem) propertyDefinitionNode()     {}
+func (nilNode) propertyDefinitionNode()           {}
 
 type PropertyName interface {
 	JsNode
@@ -545,6 +567,7 @@ type PropertyName interface {
 //
 func (ComputedPropertyName) propertyNameNode() {}
 func (LiteralPropertyName) propertyNameNode()  {}
+func (nilNode) propertyNameNode()              {}
 
 type PropertyPattern interface {
 	JsNode
@@ -557,6 +580,7 @@ type PropertyPattern interface {
 func (PropertyBinding) propertyPatternNode()   {}
 func (SingleNameBinding) propertyPatternNode() {}
 func (SyntaxProblem) propertyPatternNode()     {}
+func (nilNode) propertyPatternNode()           {}
 
 type Statement interface {
 	JsNode
@@ -588,6 +612,7 @@ func (TryStatement) statementNode()          {}
 func (VariableStatement) statementNode()     {}
 func (WhileStatement) statementNode()        {}
 func (WithStatement) statementNode()         {}
+func (nilNode) statementNode()               {}
 
 type StatementListItem interface {
 	JsNode
@@ -639,6 +664,7 @@ func (TypeAliasDeclaration) statementListItemNode()     {}
 func (VariableStatement) statementListItemNode()        {}
 func (WhileStatement) statementListItemNode()           {}
 func (WithStatement) statementListItemNode()            {}
+func (nilNode) statementListItemNode()                  {}
 
 type TsAmbientClassElement interface {
 	JsNode
@@ -651,6 +677,7 @@ type TsAmbientClassElement interface {
 func (TsAmbientFunctionMember) tsAmbientClassElementNode() {}
 func (TsAmbientIndexMember) tsAmbientClassElementNode()    {}
 func (TsAmbientPropertyMember) tsAmbientClassElementNode() {}
+func (nilNode) tsAmbientClassElementNode()                 {}
 
 type TsAmbientElement interface {
 	JsNode
@@ -669,6 +696,7 @@ func (TsAmbientModule) tsAmbientElementNode()      {}
 func (TsAmbientNamespace) tsAmbientElementNode()   {}
 func (TsAmbientTypeAlias) tsAmbientElementNode()   {}
 func (TsAmbientVar) tsAmbientElementNode()         {}
+func (nilNode) tsAmbientElementNode()              {}
 
 type TsType interface {
 	JsNode
@@ -695,6 +723,7 @@ func (TypePredicate) tsTypeNode()     {}
 func (TypeQuery) tsTypeNode()         {}
 func (TypeReference) tsTypeNode()     {}
 func (UnionType) tsTypeNode()         {}
+func (nilNode) tsTypeNode()           {}
 
 type TypeMember interface {
 	JsNode
@@ -709,6 +738,7 @@ func (ConstructSignature) typeMemberNode() {}
 func (IndexSignature) typeMemberNode()     {}
 func (MethodSignature) typeMemberNode()    {}
 func (PropertySignature) typeMemberNode()  {}
+func (nilNode) typeMemberNode()            {}
 
 // Types.
 
@@ -736,11 +766,8 @@ type Arguments struct {
 	*Node
 }
 
-func (n Arguments) TypeArguments() *TypeArguments {
-	if child := n.Child(selector.TypeArguments); child != nil {
-		return &TypeArguments{child}
-	}
-	return nil
+func (n Arguments) TypeArguments() /*opt*/ TypeArguments {
+	return TypeArguments{n.Child(selector.TypeArguments)}
 }
 
 func (n Arguments) List() []Expression {
@@ -778,11 +805,8 @@ func (n ArrayPattern) ElementPattern() []ElementPattern {
 	return ret
 }
 
-func (n ArrayPattern) BindingRestElement() *BindingRestElement {
-	if child := n.Child(selector.BindingRestElement); child != nil {
-		return &BindingRestElement{child}
-	}
-	return nil
+func (n ArrayPattern) BindingRestElement() /*opt*/ BindingRestElement {
+	return BindingRestElement{n.Child(selector.BindingRestElement)}
 }
 
 type ArrayType struct {
@@ -797,46 +821,28 @@ type ArrowFunction struct {
 	*Node
 }
 
-func (n ArrowFunction) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n ArrowFunction) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n ArrowFunction) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n ArrowFunction) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
-func (n ArrowFunction) Parameters() *Parameters {
-	if child := n.Child(selector.Parameters); child != nil {
-		return &Parameters{child}
-	}
-	return nil
+func (n ArrowFunction) Parameters() /*opt*/ Parameters {
+	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n ArrowFunction) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n ArrowFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
-func (n ArrowFunction) Body() *Body {
-	if child := n.Child(selector.Body); child != nil {
-		return &Body{child}
-	}
-	return nil
+func (n ArrowFunction) Body() /*opt*/ Body {
+	return Body{n.Child(selector.Body)}
 }
 
-func (n ArrowFunction) ConciseBody() *ConciseBody {
-	if child := n.Child(selector.ConciseBody); child != nil {
-		return &ConciseBody{child}
-	}
-	return nil
+func (n ArrowFunction) ConciseBody() /*opt*/ ConciseBody {
+	return ConciseBody{n.Child(selector.ConciseBody)}
 }
 
 type AssignmentExpression struct {
@@ -847,11 +853,8 @@ func (n AssignmentExpression) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n AssignmentExpression) AssignmentOperator() *AssignmentOperator {
-	if child := n.Child(selector.AssignmentOperator); child != nil {
-		return &AssignmentOperator{child}
-	}
-	return nil
+func (n AssignmentExpression) AssignmentOperator() /*opt*/ AssignmentOperator {
+	return AssignmentOperator{n.Child(selector.AssignmentOperator)}
 }
 
 func (n AssignmentExpression) Right() Expression {
@@ -866,75 +869,48 @@ type AsyncArrowFunction struct {
 	*Node
 }
 
-func (n AsyncArrowFunction) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n AsyncArrowFunction) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n AsyncArrowFunction) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n AsyncArrowFunction) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
-func (n AsyncArrowFunction) Parameters() *Parameters {
-	if child := n.Child(selector.Parameters); child != nil {
-		return &Parameters{child}
-	}
-	return nil
+func (n AsyncArrowFunction) Parameters() /*opt*/ Parameters {
+	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncArrowFunction) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n AsyncArrowFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
-func (n AsyncArrowFunction) Body() *Body {
-	if child := n.Child(selector.Body); child != nil {
-		return &Body{child}
-	}
-	return nil
+func (n AsyncArrowFunction) Body() /*opt*/ Body {
+	return Body{n.Child(selector.Body)}
 }
 
-func (n AsyncArrowFunction) ConciseBody() *ConciseBody {
-	if child := n.Child(selector.ConciseBody); child != nil {
-		return &ConciseBody{child}
-	}
-	return nil
+func (n AsyncArrowFunction) ConciseBody() /*opt*/ ConciseBody {
+	return ConciseBody{n.Child(selector.ConciseBody)}
 }
 
 type AsyncFunction struct {
 	*Node
 }
 
-func (n AsyncFunction) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n AsyncFunction) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n AsyncFunction) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n AsyncFunction) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n AsyncFunction) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncFunction) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n AsyncFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n AsyncFunction) Body() Body {
@@ -945,29 +921,20 @@ type AsyncFunctionExpression struct {
 	*Node
 }
 
-func (n AsyncFunctionExpression) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n AsyncFunctionExpression) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n AsyncFunctionExpression) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n AsyncFunctionExpression) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n AsyncFunctionExpression) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncFunctionExpression) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n AsyncFunctionExpression) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n AsyncFunctionExpression) Body() Body {
@@ -982,22 +949,16 @@ func (n AsyncMethod) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n AsyncMethod) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n AsyncMethod) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n AsyncMethod) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncMethod) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n AsyncMethod) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n AsyncMethod) Body() Body {
@@ -1099,11 +1060,8 @@ type BreakStatement struct {
 	*Node
 }
 
-func (n BreakStatement) LabelIdentifier() *LabelIdentifier {
-	if child := n.Child(selector.LabelIdentifier); child != nil {
-		return &LabelIdentifier{child}
-	}
-	return nil
+func (n BreakStatement) LabelIdentifier() /*opt*/ LabelIdentifier {
+	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
 }
 
 type CallExpression struct {
@@ -1122,22 +1080,16 @@ type CallSignature struct {
 	*Node
 }
 
-func (n CallSignature) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n CallSignature) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n CallSignature) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n CallSignature) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n CallSignature) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type Case struct {
@@ -1161,18 +1113,12 @@ type Catch struct {
 	*Node
 }
 
-func (n Catch) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n Catch) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 func (n Catch) BindingPattern() BindingPattern {
-	if child := n.Child(selector.BindingPattern); child != nil {
-		return ToJsNode(child).(BindingPattern)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
 func (n Catch) Block() Block {
@@ -1192,32 +1138,20 @@ func (n Class) Modifier() []Modifier {
 	return ret
 }
 
-func (n Class) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n Class) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n Class) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n Class) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
-func (n Class) Extends() *Extends {
-	if child := n.Child(selector.Extends); child != nil {
-		return &Extends{child}
-	}
-	return nil
+func (n Class) Extends() /*opt*/ Extends {
+	return Extends{n.Child(selector.Extends)}
 }
 
-func (n Class) TsImplementsClause() *TsImplementsClause {
-	if child := n.Child(selector.TsImplementsClause); child != nil {
-		return &TsImplementsClause{child}
-	}
-	return nil
+func (n Class) TsImplementsClause() /*opt*/ TsImplementsClause {
+	return TsImplementsClause{n.Child(selector.TsImplementsClause)}
 }
 
 func (n Class) ClassBody() ClassBody {
@@ -1250,32 +1184,20 @@ func (n ClassExpr) Modifier() []Modifier {
 	return ret
 }
 
-func (n ClassExpr) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n ClassExpr) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n ClassExpr) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n ClassExpr) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
-func (n ClassExpr) Extends() *Extends {
-	if child := n.Child(selector.Extends); child != nil {
-		return &Extends{child}
-	}
-	return nil
+func (n ClassExpr) Extends() /*opt*/ Extends {
+	return Extends{n.Child(selector.Extends)}
 }
 
-func (n ClassExpr) TsImplementsClause() *TsImplementsClause {
-	if child := n.Child(selector.TsImplementsClause); child != nil {
-		return &TsImplementsClause{child}
-	}
-	return nil
+func (n ClassExpr) TsImplementsClause() /*opt*/ TsImplementsClause {
+	return TsImplementsClause{n.Child(selector.TsImplementsClause)}
 }
 
 func (n ClassExpr) ClassBody() ClassBody {
@@ -1339,33 +1261,24 @@ func (n ConstructSignature) Modifier() []Modifier {
 	return ret
 }
 
-func (n ConstructSignature) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n ConstructSignature) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n ConstructSignature) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n ConstructSignature) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n ConstructSignature) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type ConstructorType struct {
 	*Node
 }
 
-func (n ConstructorType) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n ConstructorType) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n ConstructorType) Parameters() Parameters {
@@ -1380,11 +1293,8 @@ type ContinueStatement struct {
 	*Node
 }
 
-func (n ContinueStatement) LabelIdentifier() *LabelIdentifier {
-	if child := n.Child(selector.LabelIdentifier); child != nil {
-		return &LabelIdentifier{child}
-	}
-	return nil
+func (n ContinueStatement) LabelIdentifier() /*opt*/ LabelIdentifier {
+	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
 }
 
 type DebuggerStatement struct {
@@ -1447,32 +1357,20 @@ func (n DefaultParameter) Modifier() []Modifier {
 	return ret
 }
 
-func (n DefaultParameter) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n DefaultParameter) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 func (n DefaultParameter) BindingPattern() BindingPattern {
-	if child := n.Child(selector.BindingPattern); child != nil {
-		return ToJsNode(child).(BindingPattern)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n DefaultParameter) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n DefaultParameter) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
-func (n DefaultParameter) Initializer() *Initializer {
-	if child := n.Child(selector.Initializer); child != nil {
-		return &Initializer{child}
-	}
-	return nil
+func (n DefaultParameter) Initializer() /*opt*/ Initializer {
+	return Initializer{n.Child(selector.Initializer)}
 }
 
 type DoWhileStatement struct {
@@ -1495,11 +1393,8 @@ func (n ElementBinding) BindingPattern() BindingPattern {
 	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n ElementBinding) Initializer() *Initializer {
-	if child := n.Child(selector.Initializer); child != nil {
-		return &Initializer{child}
-	}
-	return nil
+func (n ElementBinding) Initializer() /*opt*/ Initializer {
+	return Initializer{n.Child(selector.Initializer)}
 }
 
 type EmptyDecl struct {
@@ -1551,11 +1446,8 @@ type ExportDeclaration struct {
 	*Node
 }
 
-func (n ExportDeclaration) ExportClause() *ExportClause {
-	if child := n.Child(selector.ExportClause); child != nil {
-		return &ExportClause{child}
-	}
-	return nil
+func (n ExportDeclaration) ExportClause() /*opt*/ ExportClause {
+	return ExportClause{n.Child(selector.ExportClause)}
 }
 
 func (n ExportDeclaration) Modifier() []Modifier {
@@ -1567,25 +1459,16 @@ func (n ExportDeclaration) Modifier() []Modifier {
 	return ret
 }
 
-func (n ExportDeclaration) VariableStatement() *VariableStatement {
-	if child := n.Child(selector.VariableStatement); child != nil {
-		return &VariableStatement{child}
-	}
-	return nil
+func (n ExportDeclaration) VariableStatement() /*opt*/ VariableStatement {
+	return VariableStatement{n.Child(selector.VariableStatement)}
 }
 
 func (n ExportDeclaration) Declaration() Declaration {
-	if child := n.Child(selector.Declaration); child != nil {
-		return ToJsNode(child).(Declaration)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Declaration)).(Declaration)
 }
 
-func (n ExportDeclaration) ModuleSpecifier() *ModuleSpecifier {
-	if child := n.Child(selector.ModuleSpecifier); child != nil {
-		return &ModuleSpecifier{child}
-	}
-	return nil
+func (n ExportDeclaration) ModuleSpecifier() /*opt*/ ModuleSpecifier {
+	return ModuleSpecifier{n.Child(selector.ModuleSpecifier)}
 }
 
 type ExportDefault struct {
@@ -1593,10 +1476,7 @@ type ExportDefault struct {
 }
 
 func (n ExportDefault) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ExportDefault) Modifier() []Modifier {
@@ -1609,10 +1489,7 @@ func (n ExportDefault) Modifier() []Modifier {
 }
 
 func (n ExportDefault) Declaration() Declaration {
-	if child := n.Child(selector.Declaration); child != nil {
-		return ToJsNode(child).(Declaration)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Declaration)).(Declaration)
 }
 
 type ExportSpecifier struct {
@@ -1623,11 +1500,8 @@ func (n ExportSpecifier) IdentifierReference() IdentifierReference {
 	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
-func (n ExportSpecifier) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n ExportSpecifier) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 type ExpressionStatement struct {
@@ -1643,17 +1517,11 @@ type Extends struct {
 }
 
 func (n Extends) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n Extends) TypeReference() *TypeReference {
-	if child := n.Child(selector.TypeReference); child != nil {
-		return &TypeReference{child}
-	}
-	return nil
+func (n Extends) TypeReference() /*opt*/ TypeReference {
+	return TypeReference{n.Child(selector.TypeReference)}
 }
 
 type Finally struct {
@@ -1668,18 +1536,12 @@ type ForBinding struct {
 	*Node
 }
 
-func (n ForBinding) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n ForBinding) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 func (n ForBinding) BindingPattern() BindingPattern {
-	if child := n.Child(selector.BindingPattern); child != nil {
-		return ToJsNode(child).(BindingPattern)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
 type ForCondition struct {
@@ -1687,10 +1549,7 @@ type ForCondition struct {
 }
 
 func (n ForCondition) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type ForFinalExpression struct {
@@ -1698,10 +1557,7 @@ type ForFinalExpression struct {
 }
 
 func (n ForFinalExpression) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type ForInStatement struct {
@@ -1773,10 +1629,7 @@ type ForStatement struct {
 }
 
 func (n ForStatement) Var() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 func (n ForStatement) ForCondition() ForCondition {
@@ -1829,29 +1682,20 @@ type Function struct {
 	*Node
 }
 
-func (n Function) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n Function) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n Function) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n Function) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n Function) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n Function) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n Function) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n Function) Body() Body {
@@ -1862,29 +1706,20 @@ type FunctionExpression struct {
 	*Node
 }
 
-func (n FunctionExpression) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n FunctionExpression) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n FunctionExpression) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n FunctionExpression) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n FunctionExpression) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n FunctionExpression) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n FunctionExpression) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n FunctionExpression) Body() Body {
@@ -1895,11 +1730,8 @@ type FunctionType struct {
 	*Node
 }
 
-func (n FunctionType) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n FunctionType) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n FunctionType) Parameters() Parameters {
@@ -1914,29 +1746,20 @@ type Generator struct {
 	*Node
 }
 
-func (n Generator) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n Generator) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n Generator) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n Generator) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n Generator) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n Generator) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n Generator) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n Generator) Body() Body {
@@ -1947,29 +1770,20 @@ type GeneratorExpression struct {
 	*Node
 }
 
-func (n GeneratorExpression) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n GeneratorExpression) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n GeneratorExpression) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n GeneratorExpression) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n GeneratorExpression) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n GeneratorExpression) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n GeneratorExpression) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n GeneratorExpression) Body() Body {
@@ -1984,22 +1798,16 @@ func (n GeneratorMethod) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n GeneratorMethod) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n GeneratorMethod) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n GeneratorMethod) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n GeneratorMethod) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n GeneratorMethod) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n GeneratorMethod) Body() Body {
@@ -2014,11 +1822,8 @@ func (n Getter) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n Getter) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n Getter) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n Getter) Body() Body {
@@ -2042,35 +1847,23 @@ func (n IfStatement) Then() Statement {
 }
 
 func (n IfStatement) Else() Statement {
-	if child := n.Child(selector.Statement).Next(selector.Statement); child != nil {
-		return ToJsNode(child).(Statement)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Statement).Next(selector.Statement)).(Statement)
 }
 
 type ImportDeclaration struct {
 	*Node
 }
 
-func (n ImportDeclaration) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n ImportDeclaration) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n ImportDeclaration) NameSpaceImport() *NameSpaceImport {
-	if child := n.Child(selector.NameSpaceImport); child != nil {
-		return &NameSpaceImport{child}
-	}
-	return nil
+func (n ImportDeclaration) NameSpaceImport() /*opt*/ NameSpaceImport {
+	return NameSpaceImport{n.Child(selector.NameSpaceImport)}
 }
 
-func (n ImportDeclaration) NamedImports() *NamedImports {
-	if child := n.Child(selector.NamedImports); child != nil {
-		return &NamedImports{child}
-	}
-	return nil
+func (n ImportDeclaration) NamedImports() /*opt*/ NamedImports {
+	return NamedImports{n.Child(selector.NamedImports)}
 }
 
 func (n ImportDeclaration) ModuleSpecifier() ModuleSpecifier {
@@ -2081,11 +1874,8 @@ type ImportSpecifier struct {
 	*Node
 }
 
-func (n ImportSpecifier) IdentifierReference() *IdentifierReference {
-	if child := n.Child(selector.IdentifierReference); child != nil {
-		return &IdentifierReference{child}
-	}
-	return nil
+func (n ImportSpecifier) IdentifierReference() /*opt*/ IdentifierReference {
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
 func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
@@ -2170,18 +1960,12 @@ type JSXElement struct {
 	*Node
 }
 
-func (n JSXElement) JSXOpeningElement() *JSXOpeningElement {
-	if child := n.Child(selector.JSXOpeningElement); child != nil {
-		return &JSXOpeningElement{child}
-	}
-	return nil
+func (n JSXElement) JSXOpeningElement() /*opt*/ JSXOpeningElement {
+	return JSXOpeningElement{n.Child(selector.JSXOpeningElement)}
 }
 
-func (n JSXElement) JSXSelfClosingElement() *JSXSelfClosingElement {
-	if child := n.Child(selector.JSXSelfClosingElement); child != nil {
-		return &JSXSelfClosingElement{child}
-	}
-	return nil
+func (n JSXElement) JSXSelfClosingElement() /*opt*/ JSXSelfClosingElement {
+	return JSXSelfClosingElement{n.Child(selector.JSXSelfClosingElement)}
 }
 
 func (n JSXElement) JSXChild() []JSXChild {
@@ -2193,11 +1977,8 @@ func (n JSXElement) JSXChild() []JSXChild {
 	return ret
 }
 
-func (n JSXElement) JSXClosingElement() *JSXClosingElement {
-	if child := n.Child(selector.JSXClosingElement); child != nil {
-		return &JSXClosingElement{child}
-	}
-	return nil
+func (n JSXElement) JSXClosingElement() /*opt*/ JSXClosingElement {
+	return JSXClosingElement{n.Child(selector.JSXClosingElement)}
 }
 
 type JSXElementName struct {
@@ -2209,10 +1990,7 @@ type JSXExpression struct {
 }
 
 func (n JSXExpression) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type JSXLiteral struct {
@@ -2228,10 +2006,7 @@ func (n JSXNormalAttribute) JSXAttributeName() JSXAttributeName {
 }
 
 func (n JSXNormalAttribute) JSXAttributeValue() JSXAttributeValue {
-	if child := n.Child(selector.JSXAttributeValue); child != nil {
-		return ToJsNode(child).(JSXAttributeValue)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.JSXAttributeValue)).(JSXAttributeValue)
 }
 
 type JSXOpeningElement struct {
@@ -2281,10 +2056,7 @@ type JSXSpreadExpression struct {
 }
 
 func (n JSXSpreadExpression) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type JSXText struct {
@@ -2311,50 +2083,32 @@ func (n LabelledStatement) LabelIdentifier() LabelIdentifier {
 	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
 }
 
-func (n LabelledStatement) Function() *Function {
-	if child := n.Child(selector.Function); child != nil {
-		return &Function{child}
-	}
-	return nil
+func (n LabelledStatement) Function() /*opt*/ Function {
+	return Function{n.Child(selector.Function)}
 }
 
 func (n LabelledStatement) Statement() Statement {
-	if child := n.Child(selector.Statement); child != nil {
-		return ToJsNode(child).(Statement)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
 type LexicalBinding struct {
 	*Node
 }
 
-func (n LexicalBinding) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n LexicalBinding) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 func (n LexicalBinding) BindingPattern() BindingPattern {
-	if child := n.Child(selector.BindingPattern); child != nil {
-		return ToJsNode(child).(BindingPattern)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n LexicalBinding) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n LexicalBinding) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
-func (n LexicalBinding) Initializer() *Initializer {
-	if child := n.Child(selector.Initializer); child != nil {
-		return &Initializer{child}
-	}
-	return nil
+func (n LexicalBinding) Initializer() /*opt*/ Initializer {
+	return Initializer{n.Child(selector.Initializer)}
 }
 
 type LexicalDeclaration struct {
@@ -2378,11 +2132,8 @@ type LiteralPropertyName struct {
 	*Node
 }
 
-func (n LiteralPropertyName) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n LiteralPropertyName) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 type LiteralType struct {
@@ -2459,18 +2210,12 @@ func (n MemberVar) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n MemberVar) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n MemberVar) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
-func (n MemberVar) Initializer() *Initializer {
-	if child := n.Child(selector.Initializer); child != nil {
-		return &Initializer{child}
-	}
-	return nil
+func (n MemberVar) Initializer() /*opt*/ Initializer {
+	return Initializer{n.Child(selector.Initializer)}
 }
 
 type Method struct {
@@ -2481,22 +2226,16 @@ func (n Method) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n Method) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n Method) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n Method) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n Method) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n Method) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 func (n Method) Body() Body {
@@ -2520,22 +2259,16 @@ func (n MethodSignature) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n MethodSignature) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n MethodSignature) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n MethodSignature) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n MethodSignature) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n MethodSignature) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type Module struct {
@@ -2596,11 +2329,8 @@ func (n NewExpression) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n NewExpression) Arguments() *Arguments {
-	if child := n.Child(selector.Arguments); child != nil {
-		return &Arguments{child}
-	}
-	return nil
+func (n NewExpression) Arguments() /*opt*/ Arguments {
+	return Arguments{n.Child(selector.Arguments)}
 }
 
 type NewTarget struct {
@@ -2650,11 +2380,8 @@ func (n ObjectPattern) PropertyPattern() []PropertyPattern {
 	return ret
 }
 
-func (n ObjectPattern) BindingRestElement() *BindingRestElement {
-	if child := n.Child(selector.BindingRestElement); child != nil {
-		return &BindingRestElement{child}
-	}
-	return nil
+func (n ObjectPattern) BindingRestElement() /*opt*/ BindingRestElement {
+	return BindingRestElement{n.Child(selector.BindingRestElement)}
 }
 
 type ObjectType struct {
@@ -2688,17 +2415,11 @@ type Parenthesized struct {
 }
 
 func (n Parenthesized) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n Parenthesized) SyntaxProblem() *SyntaxProblem {
-	if child := n.Child(selector.SyntaxProblem); child != nil {
-		return &SyntaxProblem{child}
-	}
-	return nil
+func (n Parenthesized) SyntaxProblem() /*opt*/ SyntaxProblem {
+	return SyntaxProblem{n.Child(selector.SyntaxProblem)}
 }
 
 type ParenthesizedType struct {
@@ -2807,11 +2528,8 @@ func (n PropertySignature) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n PropertySignature) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n PropertySignature) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type Readonly struct {
@@ -2842,11 +2560,8 @@ func (n RestParameter) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n RestParameter) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n RestParameter) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type ReturnStatement struct {
@@ -2854,10 +2569,7 @@ type ReturnStatement struct {
 }
 
 func (n ReturnStatement) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type Setter struct {
@@ -2904,11 +2616,8 @@ func (n SingleNameBinding) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n SingleNameBinding) Initializer() *Initializer {
-	if child := n.Child(selector.Initializer); child != nil {
-		return &Initializer{child}
-	}
-	return nil
+func (n SingleNameBinding) Initializer() /*opt*/ Initializer {
+	return Initializer{n.Child(selector.Initializer)}
 }
 
 type SpreadElement struct {
@@ -2951,18 +2660,12 @@ type SyntaxProblem struct {
 	*Node
 }
 
-func (n SyntaxProblem) IdentifierReference() *IdentifierReference {
-	if child := n.Child(selector.IdentifierReference); child != nil {
-		return &IdentifierReference{child}
-	}
-	return nil
+func (n SyntaxProblem) IdentifierReference() /*opt*/ IdentifierReference {
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
-func (n SyntaxProblem) Initializer() *Initializer {
-	if child := n.Child(selector.Initializer); child != nil {
-		return &Initializer{child}
-	}
-	return nil
+func (n SyntaxProblem) Initializer() /*opt*/ Initializer {
+	return Initializer{n.Child(selector.Initializer)}
 }
 
 type TaggedTemplate struct {
@@ -3023,18 +2726,12 @@ func (n TryStatement) Block() Block {
 	return Block{n.Child(selector.Block)}
 }
 
-func (n TryStatement) Catch() *Catch {
-	if child := n.Child(selector.Catch); child != nil {
-		return &Catch{child}
-	}
-	return nil
+func (n TryStatement) Catch() /*opt*/ Catch {
+	return Catch{n.Child(selector.Catch)}
 }
 
-func (n TryStatement) Finally() *Finally {
-	if child := n.Child(selector.Finally); child != nil {
-		return &Finally{child}
-	}
-	return nil
+func (n TryStatement) Finally() /*opt*/ Finally {
+	return Finally{n.Child(selector.Finally)}
 }
 
 type TsAmbientBinding struct {
@@ -3045,11 +2742,8 @@ func (n TsAmbientBinding) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientBinding) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n TsAmbientBinding) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type TsAmbientClass struct {
@@ -3069,25 +2763,16 @@ func (n TsAmbientClass) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientClass) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n TsAmbientClass) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
-func (n TsAmbientClass) Extends() *Extends {
-	if child := n.Child(selector.Extends); child != nil {
-		return &Extends{child}
-	}
-	return nil
+func (n TsAmbientClass) Extends() /*opt*/ Extends {
+	return Extends{n.Child(selector.Extends)}
 }
 
-func (n TsAmbientClass) TsImplementsClause() *TsImplementsClause {
-	if child := n.Child(selector.TsImplementsClause); child != nil {
-		return &TsImplementsClause{child}
-	}
-	return nil
+func (n TsAmbientClass) TsImplementsClause() /*opt*/ TsImplementsClause {
+	return TsImplementsClause{n.Child(selector.TsImplementsClause)}
 }
 
 func (n TsAmbientClass) TsAmbientClassBody() TsAmbientClassBody {
@@ -3123,22 +2808,16 @@ func (n TsAmbientFunction) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientFunction) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n TsAmbientFunction) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n TsAmbientFunction) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n TsAmbientFunction) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n TsAmbientFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type TsAmbientFunctionMember struct {
@@ -3158,22 +2837,16 @@ func (n TsAmbientFunctionMember) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n TsAmbientFunctionMember) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n TsAmbientFunctionMember) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n TsAmbientFunctionMember) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n TsAmbientFunctionMember) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n TsAmbientFunctionMember) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type TsAmbientImportAlias struct {
@@ -3209,18 +2882,12 @@ func (n TsAmbientInterface) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientInterface) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n TsAmbientInterface) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
-func (n TsAmbientInterface) TsInterfaceExtends() *TsInterfaceExtends {
-	if child := n.Child(selector.TsInterfaceExtends); child != nil {
-		return &TsInterfaceExtends{child}
-	}
-	return nil
+func (n TsAmbientInterface) TsInterfaceExtends() /*opt*/ TsInterfaceExtends {
+	return TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
 }
 
 func (n TsAmbientInterface) ObjectType() ObjectType {
@@ -3288,11 +2955,8 @@ func (n TsAmbientPropertyMember) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n TsAmbientPropertyMember) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n TsAmbientPropertyMember) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
 type TsAmbientTypeAlias struct {
@@ -3382,10 +3046,7 @@ func (n TsEnumMember) PropertyName() PropertyName {
 }
 
 func (n TsEnumMember) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type TsExportAssignment struct {
@@ -3450,18 +3111,12 @@ func (n TsInterface) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsInterface) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n TsInterface) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
-func (n TsInterface) TsInterfaceExtends() *TsInterfaceExtends {
-	if child := n.Child(selector.TsInterfaceExtends); child != nil {
-		return &TsInterfaceExtends{child}
-	}
-	return nil
+func (n TsInterface) TsInterfaceExtends() /*opt*/ TsInterfaceExtends {
+	return TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
 }
 
 func (n TsInterface) ObjectType() ObjectType {
@@ -3556,11 +3211,8 @@ func (n TypeAliasDeclaration) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TypeAliasDeclaration) TypeParameters() *TypeParameters {
-	if child := n.Child(selector.TypeParameters); child != nil {
-		return &TypeParameters{child}
-	}
-	return nil
+func (n TypeAliasDeclaration) TypeParameters() /*opt*/ TypeParameters {
+	return TypeParameters{n.Child(selector.TypeParameters)}
 }
 
 func (n TypeAliasDeclaration) TsType() TsType {
@@ -3617,18 +3269,12 @@ func (n TypeParameter) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TypeParameter) TypeConstraint() *TypeConstraint {
-	if child := n.Child(selector.TypeConstraint); child != nil {
-		return &TypeConstraint{child}
-	}
-	return nil
+func (n TypeParameter) TypeConstraint() /*opt*/ TypeConstraint {
+	return TypeConstraint{n.Child(selector.TypeConstraint)}
 }
 
 func (n TypeParameter) TsType() TsType {
-	if child := n.Child(selector.TsType); child != nil {
-		return ToJsNode(child).(TsType)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
 type TypeParameters struct {
@@ -3677,11 +3323,8 @@ func (n TypeReference) TypeName() TypeName {
 	return TypeName{n.Child(selector.TypeName)}
 }
 
-func (n TypeReference) TypeArguments() *TypeArguments {
-	if child := n.Child(selector.TypeArguments); child != nil {
-		return &TypeArguments{child}
-	}
-	return nil
+func (n TypeReference) TypeArguments() /*opt*/ TypeArguments {
+	return TypeArguments{n.Child(selector.TypeArguments)}
 }
 
 type UnaryExpression struct {
@@ -3709,32 +3352,20 @@ type VariableDeclaration struct {
 	*Node
 }
 
-func (n VariableDeclaration) BindingIdentifier() *BindingIdentifier {
-	if child := n.Child(selector.BindingIdentifier); child != nil {
-		return &BindingIdentifier{child}
-	}
-	return nil
+func (n VariableDeclaration) BindingIdentifier() /*opt*/ BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
 func (n VariableDeclaration) BindingPattern() BindingPattern {
-	if child := n.Child(selector.BindingPattern); child != nil {
-		return ToJsNode(child).(BindingPattern)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n VariableDeclaration) TypeAnnotation() *TypeAnnotation {
-	if child := n.Child(selector.TypeAnnotation); child != nil {
-		return &TypeAnnotation{child}
-	}
-	return nil
+func (n VariableDeclaration) TypeAnnotation() /*opt*/ TypeAnnotation {
+	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
 }
 
-func (n VariableDeclaration) Initializer() *Initializer {
-	if child := n.Child(selector.Initializer); child != nil {
-		return &Initializer{child}
-	}
-	return nil
+func (n VariableDeclaration) Initializer() /*opt*/ Initializer {
+	return Initializer{n.Child(selector.Initializer)}
 }
 
 type VariableStatement struct {
@@ -3779,8 +3410,5 @@ type Yield struct {
 }
 
 func (n Yield) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToJsNode(child).(Expression)
-	}
-	return nil
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }

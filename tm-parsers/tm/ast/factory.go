@@ -183,6 +183,8 @@ func ToTmNode(n *Node) TmNode {
 		return &VoidType{n}
 	case tm.InvalidToken, tm.MultilineComment, tm.Comment:
 		return &Token{n}
+	case tm.NoType:
+		return nilInstance
 	}
 	panic(fmt.Errorf("ast: unknown node type %v", n.Type()))
 	return nil

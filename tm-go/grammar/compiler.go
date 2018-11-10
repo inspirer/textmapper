@@ -31,8 +31,8 @@ type compiler struct {
 }
 
 func (c *compiler) compileLexer() {
-	c.addToken(Eoi, nil, nil)
-	c.addToken(InvalidToken, nil, nil)
+	c.addToken(Eoi, ast.RawType{}, nil)
+	c.addToken(InvalidToken, ast.RawType{}, nil)
 
 	c.collectStartConds()
 	c.traverseLexer(c.file.Lexer().LexerPart(), c.inclusiveSC, nil /*parent patterns*/)
@@ -93,16 +93,16 @@ func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 	return ret
 }
 
-func (c *compiler) addToken(name string, t *ast.RawType, n status.SourceNode) int {
+func (c *compiler) addToken(name string, t ast.RawType, n status.SourceNode) int {
 	var rawType string
-	if t != nil {
+	if t.IsValid() {
 		rawType = t.Text()
 	}
 	if i, exists := c.syms[name]; exists {
 		sym := c.out.Syms[i]
 		if sym.Type != rawType {
 			anchor := n
-			if t != nil {
+			if t.IsValid() {
 				anchor = t
 			}
 			c.errorf(anchor, "terminal type redeclaration for %v, was %v", name, sym.PrettyType())
@@ -131,15 +131,15 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 		switch p := p.(type) {
 		case *ast.Lexeme:
 			tok := c.addToken(p.Name().Text(), p.RawType(), p.Name())
-			if pat := p.Pattern(); pat != nil {
-				re, err := parsePattern(*pat)
+			if pat := p.Pattern(); pat.IsValid() {
+				re, err := parsePattern(pat)
 				c.s.AddError(err)
 				rule := &lex.Rule{RE: re, StartConditions: defaultSCs, Origin: p, OriginName: p.Name().Text()}
-				if prio := p.Priority(); prio != nil {
+				if prio := p.Priority(); prio.IsValid() {
 					rule.Precedence, _ = strconv.Atoi(prio.Text())
 				}
-				if sc := p.StartConditions(); sc != nil {
-					rule.StartConditions = c.resolveSC(*sc)
+				if sc := p.StartConditions(); sc.IsValid() {
+					rule.StartConditions = c.resolveSC(sc)
 				}
 				// TODO take the action instead
 				rule.Action = tok

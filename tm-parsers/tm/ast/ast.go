@@ -16,6 +16,10 @@ type Token struct {
 	*Node
 }
 
+type nilNode struct{}
+
+var nilInstance = &nilNode{}
+
 // All types implement TmNode.
 func (n AnnotationImpl) TmNode() *Node       { return n.Node }
 func (n Annotations) TmNode() *Node          { return n.Node }
@@ -104,6 +108,7 @@ func (n SyntaxProblem) TmNode() *Node        { return n.Node }
 func (n TemplateParam) TmNode() *Node        { return n.Node }
 func (n VoidType) TmNode() *Node             { return n.Node }
 func (n Token) TmNode() *Node                { return n.Node }
+func (nilNode) TmNode() *Node                { return nil }
 
 type Annotation interface {
 	TmNode
@@ -115,6 +120,7 @@ type Annotation interface {
 //
 func (AnnotationImpl) annotationNode() {}
 func (SyntaxProblem) annotationNode()  {}
+func (nilNode) annotationNode()        {}
 
 type Argument interface {
 	TmNode
@@ -127,6 +133,7 @@ type Argument interface {
 func (ArgumentFalse) argumentNode() {}
 func (ArgumentImpl) argumentNode()  {}
 func (ArgumentTrue) argumentNode()  {}
+func (nilNode) argumentNode()       {}
 
 type Expression interface {
 	TmNode
@@ -142,6 +149,7 @@ func (IntegerLiteral) expressionNode() {}
 func (StringLiteral) expressionNode()  {}
 func (Symref) expressionNode()         {}
 func (SyntaxProblem) expressionNode()  {}
+func (nilNode) expressionNode()        {}
 
 type GrammarPart interface {
 	TmNode
@@ -159,6 +167,7 @@ func (DirectiveSet) grammarPartNode()       {}
 func (Nonterm) grammarPartNode()            {}
 func (SyntaxProblem) grammarPartNode()      {}
 func (TemplateParam) grammarPartNode()      {}
+func (nilNode) grammarPartNode()            {}
 
 type LexerPart interface {
 	TmNode
@@ -175,6 +184,7 @@ func (Lexeme) lexerPartNode()               {}
 func (NamedPattern) lexerPartNode()         {}
 func (StartConditionsScope) lexerPartNode() {}
 func (SyntaxProblem) lexerPartNode()        {}
+func (nilNode) lexerPartNode()              {}
 
 type Literal interface {
 	TmNode
@@ -187,6 +197,7 @@ type Literal interface {
 func (BooleanLiteral) literalNode() {}
 func (IntegerLiteral) literalNode() {}
 func (StringLiteral) literalNode()  {}
+func (nilNode) literalNode()        {}
 
 type NontermParam interface {
 	TmNode
@@ -198,6 +209,7 @@ type NontermParam interface {
 //
 func (InlineParameter) nontermParamNode() {}
 func (ParamRef) nontermParamNode()        {}
+func (nilNode) nontermParamNode()         {}
 
 type NontermType interface {
 	TmNode
@@ -212,6 +224,7 @@ func (InterfaceType) nontermTypeNode() {}
 func (RawType) nontermTypeNode()       {}
 func (SubType) nontermTypeNode()       {}
 func (VoidType) nontermTypeNode()      {}
+func (nilNode) nontermTypeNode()       {}
 
 type Option interface {
 	TmNode
@@ -223,6 +236,7 @@ type Option interface {
 //
 func (KeyValue) optionNode()      {}
 func (SyntaxProblem) optionNode() {}
+func (nilNode) optionNode()       {}
 
 type ParamValue interface {
 	TmNode
@@ -236,6 +250,7 @@ func (BooleanLiteral) paramValueNode() {}
 func (IntegerLiteral) paramValueNode() {}
 func (ParamRef) paramValueNode()       {}
 func (StringLiteral) paramValueNode()  {}
+func (nilNode) paramValueNode()        {}
 
 type PredicateExpression interface {
 	TmNode
@@ -251,6 +266,7 @@ func (PredicateEq) predicateExpressionNode()    {}
 func (PredicateNot) predicateExpressionNode()   {}
 func (PredicateNotEq) predicateExpressionNode() {}
 func (PredicateOr) predicateExpressionNode()    {}
+func (nilNode) predicateExpressionNode()        {}
 
 type RhsPart interface {
 	TmNode
@@ -277,6 +293,7 @@ func (RhsStarList) rhsPartNode()       {}
 func (RhsSymbol) rhsPartNode()         {}
 func (StateMarker) rhsPartNode()       {}
 func (SyntaxProblem) rhsPartNode()     {}
+func (nilNode) rhsPartNode()           {}
 
 type Rule0 interface {
 	TmNode
@@ -288,6 +305,7 @@ type Rule0 interface {
 //
 func (Rule) rule0Node()          {}
 func (SyntaxProblem) rule0Node() {}
+func (nilNode) rule0Node()       {}
 
 type SetExpression interface {
 	TmNode
@@ -302,6 +320,7 @@ func (SetComplement) setExpressionNode() {}
 func (SetCompound) setExpressionNode()   {}
 func (SetOr) setExpressionNode()         {}
 func (SetSymbol) setExpressionNode()     {}
+func (nilNode) setExpressionNode()       {}
 
 // Types.
 
@@ -314,10 +333,7 @@ func (n AnnotationImpl) Name() Identifier {
 }
 
 func (n AnnotationImpl) Expression() Expression {
-	if child := n.Child(selector.Expression); child != nil {
-		return ToTmNode(child).(Expression)
-	}
-	return nil
+	return ToTmNode(n.Child(selector.Expression)).(Expression)
 }
 
 type Annotations struct {
@@ -350,10 +366,7 @@ func (n ArgumentImpl) Name() ParamRef {
 }
 
 func (n ArgumentImpl) Val() ParamValue {
-	if child := n.Child(selector.ParamRef).Next(selector.ParamValue); child != nil {
-		return ToTmNode(child).(ParamValue)
-	}
-	return nil
+	return ToTmNode(n.Child(selector.ParamRef).Next(selector.ParamValue)).(ParamValue)
 }
 
 type ArgumentTrue struct {
@@ -389,11 +402,8 @@ type ClassType struct {
 	*Node
 }
 
-func (n ClassType) Implements() *Implements {
-	if child := n.Child(selector.Implements); child != nil {
-		return &Implements{child}
-	}
-	return nil
+func (n ClassType) Implements() /*opt*/ Implements {
+	return Implements{n.Child(selector.Implements)}
 }
 
 type Command struct {
@@ -513,11 +523,8 @@ func (n File) Lexer() LexerSection {
 	return LexerSection{n.Child(selector.LexerSection)}
 }
 
-func (n File) Parser() *ParserSection {
-	if child := n.Child(selector.ParserSection); child != nil {
-		return &ParserSection{child}
-	}
-	return nil
+func (n File) Parser() /*opt*/ ParserSection {
+	return ParserSection{n.Child(selector.ParserSection)}
 }
 
 type Header struct {
@@ -528,11 +535,8 @@ func (n Header) Name() Name {
 	return Name{n.Child(selector.Name)}
 }
 
-func (n Header) Target() *Name {
-	if child := n.Child(selector.Name).Next(selector.Name); child != nil {
-		return &Name{child}
-	}
-	return nil
+func (n Header) Target() /*opt*/ Name {
+	return Name{n.Child(selector.Name).Next(selector.Name)}
 }
 
 type Identifier struct {
@@ -556,11 +560,8 @@ type Import struct {
 	*Node
 }
 
-func (n Import) Alias() *Identifier {
-	if child := n.Child(selector.Identifier); child != nil {
-		return &Identifier{child}
-	}
-	return nil
+func (n Import) Alias() /*opt*/ Identifier {
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n Import) Path() StringLiteral {
@@ -593,10 +594,7 @@ func (n InlineParameter) Name() Identifier {
 }
 
 func (n InlineParameter) ParamValue() ParamValue {
-	if child := n.Child(selector.ParamValue); child != nil {
-		return ToTmNode(child).(ParamValue)
-	}
-	return nil
+	return ToTmNode(n.Child(selector.ParamValue)).(ParamValue)
 }
 
 type Inputref struct {
@@ -631,50 +629,32 @@ type Lexeme struct {
 	*Node
 }
 
-func (n Lexeme) StartConditions() *StartConditions {
-	if child := n.Child(selector.StartConditions); child != nil {
-		return &StartConditions{child}
-	}
-	return nil
+func (n Lexeme) StartConditions() /*opt*/ StartConditions {
+	return StartConditions{n.Child(selector.StartConditions)}
 }
 
 func (n Lexeme) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n Lexeme) RawType() *RawType {
-	if child := n.Child(selector.RawType); child != nil {
-		return &RawType{child}
-	}
-	return nil
+func (n Lexeme) RawType() /*opt*/ RawType {
+	return RawType{n.Child(selector.RawType)}
 }
 
-func (n Lexeme) Pattern() *Pattern {
-	if child := n.Child(selector.Pattern); child != nil {
-		return &Pattern{child}
-	}
-	return nil
+func (n Lexeme) Pattern() /*opt*/ Pattern {
+	return Pattern{n.Child(selector.Pattern)}
 }
 
-func (n Lexeme) Priority() *IntegerLiteral {
-	if child := n.Child(selector.IntegerLiteral); child != nil {
-		return &IntegerLiteral{child}
-	}
-	return nil
+func (n Lexeme) Priority() /*opt*/ IntegerLiteral {
+	return IntegerLiteral{n.Child(selector.IntegerLiteral)}
 }
 
-func (n Lexeme) Attrs() *LexemeAttrs {
-	if child := n.Child(selector.LexemeAttrs); child != nil {
-		return &LexemeAttrs{child}
-	}
-	return nil
+func (n Lexeme) Attrs() /*opt*/ LexemeAttrs {
+	return LexemeAttrs{n.Child(selector.LexemeAttrs)}
 }
 
-func (n Lexeme) Command() *Command {
-	if child := n.Child(selector.Command); child != nil {
-		return &Command{child}
-	}
-	return nil
+func (n Lexeme) Command() /*opt*/ Command {
+	return Command{n.Child(selector.Command)}
 }
 
 type LexemeAttribute struct {
@@ -755,36 +735,24 @@ type Nonterm struct {
 	*Node
 }
 
-func (n Nonterm) Annotations() *Annotations {
-	if child := n.Child(selector.Annotations); child != nil {
-		return &Annotations{child}
-	}
-	return nil
+func (n Nonterm) Annotations() /*opt*/ Annotations {
+	return Annotations{n.Child(selector.Annotations)}
 }
 
 func (n Nonterm) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n Nonterm) Params() *NontermParams {
-	if child := n.Child(selector.NontermParams); child != nil {
-		return &NontermParams{child}
-	}
-	return nil
+func (n Nonterm) Params() /*opt*/ NontermParams {
+	return NontermParams{n.Child(selector.NontermParams)}
 }
 
 func (n Nonterm) NontermType() NontermType {
-	if child := n.Child(selector.NontermType); child != nil {
-		return ToTmNode(child).(NontermType)
-	}
-	return nil
+	return ToTmNode(n.Child(selector.NontermType)).(NontermType)
 }
 
-func (n Nonterm) ReportClause() *ReportClause {
-	if child := n.Child(selector.ReportClause); child != nil {
-		return &ReportClause{child}
-	}
-	return nil
+func (n Nonterm) ReportClause() /*opt*/ ReportClause {
+	return ReportClause{n.Child(selector.ReportClause)}
 }
 
 func (n Nonterm) Rule0() []Rule0 {
@@ -914,11 +882,8 @@ type References struct {
 	*Node
 }
 
-func (n References) References() *References {
-	if child := n.Child(selector.References); child != nil {
-		return &References{child}
-	}
-	return nil
+func (n References) References() /*opt*/ References {
+	return References{n.Child(selector.References)}
 }
 
 func (n References) Symref() Symref {
@@ -941,18 +906,12 @@ func (n ReportClause) Action() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n ReportClause) Kind() *Identifier {
-	if child := n.Child(selector.Identifier).Next(selector.Identifier); child != nil {
-		return &Identifier{child}
-	}
-	return nil
+func (n ReportClause) Kind() /*opt*/ Identifier {
+	return Identifier{n.Child(selector.Identifier).Next(selector.Identifier)}
 }
 
-func (n ReportClause) ReportAs() *ReportAs {
-	if child := n.Child(selector.ReportAs); child != nil {
-		return &ReportAs{child}
-	}
-	return nil
+func (n ReportClause) ReportAs() /*opt*/ ReportAs {
+	return ReportAs{n.Child(selector.ReportAs)}
 }
 
 type RhsAnnotated struct {
@@ -1132,11 +1091,8 @@ type Rule struct {
 	*Node
 }
 
-func (n Rule) Predicate() *Predicate {
-	if child := n.Child(selector.Predicate); child != nil {
-		return &Predicate{child}
-	}
-	return nil
+func (n Rule) Predicate() /*opt*/ Predicate {
+	return Predicate{n.Child(selector.Predicate)}
 }
 
 func (n Rule) RhsPart() []RhsPart {
@@ -1148,18 +1104,12 @@ func (n Rule) RhsPart() []RhsPart {
 	return ret
 }
 
-func (n Rule) RhsSuffix() *RhsSuffix {
-	if child := n.Child(selector.RhsSuffix); child != nil {
-		return &RhsSuffix{child}
-	}
-	return nil
+func (n Rule) RhsSuffix() /*opt*/ RhsSuffix {
+	return RhsSuffix{n.Child(selector.RhsSuffix)}
 }
 
-func (n Rule) ReportClause() *ReportClause {
-	if child := n.Child(selector.ReportClause); child != nil {
-		return &ReportClause{child}
-	}
-	return nil
+func (n Rule) ReportClause() /*opt*/ ReportClause {
+	return ReportClause{n.Child(selector.ReportClause)}
 }
 
 type SetAnd struct {
@@ -1206,11 +1156,8 @@ type SetSymbol struct {
 	*Node
 }
 
-func (n SetSymbol) Operator() *Identifier {
-	if child := n.Child(selector.Identifier); child != nil {
-		return &Identifier{child}
-	}
-	return nil
+func (n SetSymbol) Operator() /*opt*/ Identifier {
+	return Identifier{n.Child(selector.Identifier)}
 }
 
 func (n SetSymbol) Symbol() Symref {
@@ -1283,11 +1230,8 @@ func (n Symref) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n Symref) Args() *SymrefArgs {
-	if child := n.Child(selector.SymrefArgs); child != nil {
-		return &SymrefArgs{child}
-	}
-	return nil
+func (n Symref) Args() /*opt*/ SymrefArgs {
+	return SymrefArgs{n.Child(selector.SymrefArgs)}
 }
 
 type SymrefArgs struct {
@@ -1311,11 +1255,8 @@ type TemplateParam struct {
 	*Node
 }
 
-func (n TemplateParam) Modifier() *ParamModifier {
-	if child := n.Child(selector.ParamModifier); child != nil {
-		return &ParamModifier{child}
-	}
-	return nil
+func (n TemplateParam) Modifier() /*opt*/ ParamModifier {
+	return ParamModifier{n.Child(selector.ParamModifier)}
 }
 
 func (n TemplateParam) ParamType() ParamType {
@@ -1327,10 +1268,7 @@ func (n TemplateParam) Name() Identifier {
 }
 
 func (n TemplateParam) ParamValue() ParamValue {
-	if child := n.Child(selector.ParamValue); child != nil {
-		return ToTmNode(child).(ParamValue)
-	}
-	return nil
+	return ToTmNode(n.Child(selector.ParamValue)).(ParamValue)
 }
 
 type VoidType struct {

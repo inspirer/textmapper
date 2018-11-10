@@ -413,6 +413,8 @@ func ToJsNode(n *Node) JsNode {
 		return &Yield{n}
 	case js.MultiLineComment, js.SingleLineComment, js.InvalidToken, js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail:
 		return &Token{n}
+	case js.NoType:
+		return nilInstance
 	}
 	panic(fmt.Errorf("ast: unknown node type %v", n.Type()))
 	return nil

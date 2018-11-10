@@ -26,6 +26,8 @@ func ToTestNode(n Node) TestNode {
 		return &Test{n}
 	case test.MultiLineComment, test.SingleLineComment, test.InvalidToken, test.Identifier:
 		return &Token{n}
+	case test.NoType:
+		return nilInstance
 	}
 	panic(fmt.Errorf("ast: unknown node type %v", n.Type()))
 	return nil

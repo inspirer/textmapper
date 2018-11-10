@@ -49,6 +49,8 @@ ${if tokens = opts.reportTokens
 	case ${tokens}:
 		return &Token{n}
 ${end-}
+	case ${self->noType()}:
+	  return nilInstance
 ${call customRules-}
 	}
 	panic("fmt".Errorf("ast: unknown node type %v", n.Type()))
@@ -343,12 +345,18 @@ type Token struct {
 }
 
 ${end-}
+type nilNode struct {}
+
+var nilInstance = &nilNode{}
+
 // All types implement ${self->baseNode()}.
 ${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
 func (n ${rangeType->astClassRef()->go.declarationName()}) ${self->baseNode()}() ${self->wrappedTypeRef()} { return n.Node }
 ${end-}
 ${if opts.reportTokens.length > 0-}
 func (n Token) ${self->baseNode()}() ${self->wrappedTypeRef()} { return n.Node }
+func (nilNode) ${self->baseNode()}() ${self->wrappedTypeRef()} { return nil }
+
 ${end-}
 
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet')-}
@@ -363,6 +371,7 @@ type ${cat->astInterfaceRef()->go.declarationName()} interface {
 ${foreach type in syntax.categoryTypes(cat)-}
 func (${type->astClassRef()->go.declarationName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
+func (nilNode) ${cat->asInterfaceMethod()}() {}
 
 ${end-}
 ${end}
@@ -388,13 +397,12 @@ ${end}
 ${end}
 
 
-${cached query needPtr(field) =
-  field.interfaceType ? false :
+${cached query isOpt(field) =
   field.isNullable() && !field.isList() && field.types.length == 1 }
 
 ${cached query getterType(field) =
   (field.isList() ? '[]' : '') +
-  (self->needPtr(field) ? '*' : '') +
+  (self->isOpt(field) ? '/*opt*/' : '') +
    self->getterInnerType(field) }
 
 
@@ -424,8 +432,8 @@ ${query getFieldNode(field) =
 
 ${template convertNode(field, node)-}
 ${if self->isOneType(field)-}
-${(self->needPtr(field) ? '&' : '') + self->getterInnerType(field)}{${node}}${else-}
-To${self->baseNode()}(${node}).(${(self->needPtr(field) ? '*' : '') + self->getterInnerType(field)})${end-}
+${self->getterInnerType(field)}{${node}}${else-}
+To${self->baseNode()}(${node}).(${self->getterInnerType(field)})${end-}
 ${end}
 
 ${template getterImpl(field)-}
@@ -436,13 +444,8 @@ ${if field.isList()-}
 		ret = append(ret, ${self->convertNode(field, 'node')})
 	}
 	return ret
-${else if !field.isNullable()-}
-	return ${self->convertNode(field, self->getFieldNode(field))}
 ${else-}
-	if child := ${self->getFieldNode(field)}; child != nil {
-		return ${self->convertNode(field, 'child')}
-	}
-	return nil
+	return ${self->convertNode(field, self->getFieldNode(field))}
 ${end-}
 ${end}
 
@@ -456,6 +459,7 @@ ${query package() = self->go.package() + '/ast'}
 ${query localWrappedType() = self->package()->go.element(self->wrappedTypeRef()->go.declarationName()) == self->wrappedTypeRef()}
 ${query wrappedTypeRef() = (context.opts.eventAST ? '*' : '') +
                            self->package()->go.element('Node')}
+${query noType() = 'NoType'->go_listener.nodeTypeValueRef()}
 ${query baseNode() = util.toCamelCase(opts.lang, true) + 'Node'}
 
 ${query asInterfaceMethod() = util.toFirstLower(self->go_listener.asRangeTypeName()) + 'Node' }
