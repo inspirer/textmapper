@@ -345,9 +345,9 @@ type Token struct {
 }
 
 ${end-}
-type nilNode struct {}
+type NilNode struct {}
 
-var nilInstance = &nilNode{}
+var nilInstance = &NilNode{}
 
 // All types implement ${self->baseNode()}.
 ${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
@@ -355,9 +355,8 @@ func (n ${rangeType->astClassRef()->go.declarationName()}) ${self->baseNode()}()
 ${end-}
 ${if opts.reportTokens.length > 0-}
 func (n Token) ${self->baseNode()}() ${self->wrappedTypeRef()} { return n.Node }
-func (nilNode) ${self->baseNode()}() ${self->wrappedTypeRef()} { return nil }
-
 ${end-}
+func (NilNode) ${self->baseNode()}() ${self->wrappedTypeRef()} { return nil }
 
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet')-}
 type ${cat->astInterfaceRef()->go.declarationName()} interface {
@@ -371,7 +370,7 @@ type ${cat->astInterfaceRef()->go.declarationName()} interface {
 ${foreach type in syntax.categoryTypes(cat)-}
 func (${type->astClassRef()->go.declarationName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
-func (nilNode) ${cat->asInterfaceMethod()}() {}
+func (NilNode) ${cat->asInterfaceMethod()}() {}
 
 ${end-}
 ${end}

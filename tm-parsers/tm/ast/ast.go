@@ -16,9 +16,9 @@ type Token struct {
 	*Node
 }
 
-type nilNode struct{}
+type NilNode struct{}
 
-var nilInstance = &nilNode{}
+var nilInstance = &NilNode{}
 
 // All types implement TmNode.
 func (n AnnotationImpl) TmNode() *Node       { return n.Node }
@@ -108,7 +108,7 @@ func (n SyntaxProblem) TmNode() *Node        { return n.Node }
 func (n TemplateParam) TmNode() *Node        { return n.Node }
 func (n VoidType) TmNode() *Node             { return n.Node }
 func (n Token) TmNode() *Node                { return n.Node }
-func (nilNode) TmNode() *Node                { return nil }
+func (NilNode) TmNode() *Node                { return nil }
 
 type Annotation interface {
 	TmNode
@@ -120,7 +120,7 @@ type Annotation interface {
 //
 func (AnnotationImpl) annotationNode() {}
 func (SyntaxProblem) annotationNode()  {}
-func (nilNode) annotationNode()        {}
+func (NilNode) annotationNode()        {}
 
 type Argument interface {
 	TmNode
@@ -133,7 +133,7 @@ type Argument interface {
 func (ArgumentFalse) argumentNode() {}
 func (ArgumentImpl) argumentNode()  {}
 func (ArgumentTrue) argumentNode()  {}
-func (nilNode) argumentNode()       {}
+func (NilNode) argumentNode()       {}
 
 type Expression interface {
 	TmNode
@@ -149,7 +149,7 @@ func (IntegerLiteral) expressionNode() {}
 func (StringLiteral) expressionNode()  {}
 func (Symref) expressionNode()         {}
 func (SyntaxProblem) expressionNode()  {}
-func (nilNode) expressionNode()        {}
+func (NilNode) expressionNode()        {}
 
 type GrammarPart interface {
 	TmNode
@@ -167,7 +167,7 @@ func (DirectiveSet) grammarPartNode()       {}
 func (Nonterm) grammarPartNode()            {}
 func (SyntaxProblem) grammarPartNode()      {}
 func (TemplateParam) grammarPartNode()      {}
-func (nilNode) grammarPartNode()            {}
+func (NilNode) grammarPartNode()            {}
 
 type LexerPart interface {
 	TmNode
@@ -184,7 +184,7 @@ func (Lexeme) lexerPartNode()               {}
 func (NamedPattern) lexerPartNode()         {}
 func (StartConditionsScope) lexerPartNode() {}
 func (SyntaxProblem) lexerPartNode()        {}
-func (nilNode) lexerPartNode()              {}
+func (NilNode) lexerPartNode()              {}
 
 type Literal interface {
 	TmNode
@@ -197,7 +197,7 @@ type Literal interface {
 func (BooleanLiteral) literalNode() {}
 func (IntegerLiteral) literalNode() {}
 func (StringLiteral) literalNode()  {}
-func (nilNode) literalNode()        {}
+func (NilNode) literalNode()        {}
 
 type NontermParam interface {
 	TmNode
@@ -209,7 +209,7 @@ type NontermParam interface {
 //
 func (InlineParameter) nontermParamNode() {}
 func (ParamRef) nontermParamNode()        {}
-func (nilNode) nontermParamNode()         {}
+func (NilNode) nontermParamNode()         {}
 
 type NontermType interface {
 	TmNode
@@ -224,7 +224,7 @@ func (InterfaceType) nontermTypeNode() {}
 func (RawType) nontermTypeNode()       {}
 func (SubType) nontermTypeNode()       {}
 func (VoidType) nontermTypeNode()      {}
-func (nilNode) nontermTypeNode()       {}
+func (NilNode) nontermTypeNode()       {}
 
 type Option interface {
 	TmNode
@@ -236,7 +236,7 @@ type Option interface {
 //
 func (KeyValue) optionNode()      {}
 func (SyntaxProblem) optionNode() {}
-func (nilNode) optionNode()       {}
+func (NilNode) optionNode()       {}
 
 type ParamValue interface {
 	TmNode
@@ -250,7 +250,7 @@ func (BooleanLiteral) paramValueNode() {}
 func (IntegerLiteral) paramValueNode() {}
 func (ParamRef) paramValueNode()       {}
 func (StringLiteral) paramValueNode()  {}
-func (nilNode) paramValueNode()        {}
+func (NilNode) paramValueNode()        {}
 
 type PredicateExpression interface {
 	TmNode
@@ -266,7 +266,7 @@ func (PredicateEq) predicateExpressionNode()    {}
 func (PredicateNot) predicateExpressionNode()   {}
 func (PredicateNotEq) predicateExpressionNode() {}
 func (PredicateOr) predicateExpressionNode()    {}
-func (nilNode) predicateExpressionNode()        {}
+func (NilNode) predicateExpressionNode()        {}
 
 type RhsPart interface {
 	TmNode
@@ -293,7 +293,7 @@ func (RhsStarList) rhsPartNode()       {}
 func (RhsSymbol) rhsPartNode()         {}
 func (StateMarker) rhsPartNode()       {}
 func (SyntaxProblem) rhsPartNode()     {}
-func (nilNode) rhsPartNode()           {}
+func (NilNode) rhsPartNode()           {}
 
 type Rule0 interface {
 	TmNode
@@ -305,7 +305,7 @@ type Rule0 interface {
 //
 func (Rule) rule0Node()          {}
 func (SyntaxProblem) rule0Node() {}
-func (nilNode) rule0Node()       {}
+func (NilNode) rule0Node()       {}
 
 type SetExpression interface {
 	TmNode
@@ -320,7 +320,7 @@ func (SetComplement) setExpressionNode() {}
 func (SetCompound) setExpressionNode()   {}
 func (SetOr) setExpressionNode()         {}
 func (SetSymbol) setExpressionNode()     {}
-func (nilNode) setExpressionNode()       {}
+func (NilNode) setExpressionNode()       {}
 
 // Types.
 

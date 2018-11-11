@@ -17,9 +17,9 @@ type Token struct {
 	*Node
 }
 
-type nilNode struct{}
+type NilNode struct{}
 
-var nilInstance = &nilNode{}
+var nilInstance = &NilNode{}
 
 // All types implement JsNode.
 func (n Abstract) JsNode() *Node                     { return n.Node }
@@ -224,7 +224,7 @@ func (n WhileStatement) JsNode() *Node               { return n.Node }
 func (n WithStatement) JsNode() *Node                { return n.Node }
 func (n Yield) JsNode() *Node                        { return n.Node }
 func (n Token) JsNode() *Node                        { return n.Node }
-func (nilNode) JsNode() *Node                        { return nil }
+func (NilNode) JsNode() *Node                        { return nil }
 
 type BindingPattern interface {
 	JsNode
@@ -236,7 +236,7 @@ type BindingPattern interface {
 //
 func (ArrayPattern) bindingPatternNode()  {}
 func (ObjectPattern) bindingPatternNode() {}
-func (nilNode) bindingPatternNode()       {}
+func (NilNode) bindingPatternNode()       {}
 
 type CaseClause interface {
 	JsNode
@@ -248,7 +248,7 @@ type CaseClause interface {
 //
 func (Case) caseClauseNode()    {}
 func (Default) caseClauseNode() {}
-func (nilNode) caseClauseNode() {}
+func (NilNode) caseClauseNode() {}
 
 type ClassElement interface {
 	JsNode
@@ -262,7 +262,7 @@ func (EmptyDecl) classElementNode()                {}
 func (MemberMethod) classElementNode()             {}
 func (MemberVar) classElementNode()                {}
 func (TsIndexMemberDeclaration) classElementNode() {}
-func (nilNode) classElementNode()                  {}
+func (NilNode) classElementNode()                  {}
 
 type Declaration interface {
 	JsNode
@@ -291,7 +291,7 @@ func (TsImportAliasDeclaration) declarationNode() {}
 func (TsInterface) declarationNode()              {}
 func (TsNamespace) declarationNode()              {}
 func (TypeAliasDeclaration) declarationNode()     {}
-func (nilNode) declarationNode()                  {}
+func (NilNode) declarationNode()                  {}
 
 type Decorator interface {
 	JsNode
@@ -303,7 +303,7 @@ type Decorator interface {
 //
 func (DecoratorCall) decoratorNode() {}
 func (DecoratorExpr) decoratorNode() {}
-func (nilNode) decoratorNode()       {}
+func (NilNode) decoratorNode()       {}
 
 type ElementPattern interface {
 	JsNode
@@ -316,7 +316,7 @@ type ElementPattern interface {
 func (ElementBinding) elementPatternNode()    {}
 func (SingleNameBinding) elementPatternNode() {}
 func (SyntaxProblem) elementPatternNode()     {}
-func (nilNode) elementPatternNode()           {}
+func (NilNode) elementPatternNode()           {}
 
 type ExportElement interface {
 	JsNode
@@ -328,7 +328,7 @@ type ExportElement interface {
 //
 func (ExportSpecifier) exportElementNode() {}
 func (SyntaxProblem) exportElementNode()   {}
-func (nilNode) exportElementNode()         {}
+func (NilNode) exportElementNode()         {}
 
 type Expression interface {
 	JsNode
@@ -386,7 +386,7 @@ func (TsDynamicImport) expressionNode()          {}
 func (TsNonNull) expressionNode()                {}
 func (UnaryExpression) expressionNode()          {}
 func (Yield) expressionNode()                    {}
-func (nilNode) expressionNode()                  {}
+func (NilNode) expressionNode()                  {}
 
 type JSXAttribute interface {
 	JsNode
@@ -398,7 +398,7 @@ type JSXAttribute interface {
 //
 func (JSXNormalAttribute) jSXAttributeNode() {}
 func (JSXSpreadAttribute) jSXAttributeNode() {}
-func (nilNode) jSXAttributeNode()            {}
+func (NilNode) jSXAttributeNode()            {}
 
 type JSXAttributeValue interface {
 	JsNode
@@ -411,7 +411,7 @@ type JSXAttributeValue interface {
 func (JSXElement) jSXAttributeValueNode()    {}
 func (JSXExpression) jSXAttributeValueNode() {}
 func (JSXLiteral) jSXAttributeValueNode()    {}
-func (nilNode) jSXAttributeValueNode()       {}
+func (NilNode) jSXAttributeValueNode()       {}
 
 type JSXChild interface {
 	JsNode
@@ -425,7 +425,7 @@ func (JSXElement) jSXChildNode()          {}
 func (JSXExpression) jSXChildNode()       {}
 func (JSXSpreadExpression) jSXChildNode() {}
 func (JSXText) jSXChildNode()             {}
-func (nilNode) jSXChildNode()             {}
+func (NilNode) jSXChildNode()             {}
 
 type MethodDefinition interface {
 	JsNode
@@ -440,7 +440,7 @@ func (GeneratorMethod) methodDefinitionNode() {}
 func (Getter) methodDefinitionNode()          {}
 func (Method) methodDefinitionNode()          {}
 func (Setter) methodDefinitionNode()          {}
-func (nilNode) methodDefinitionNode()         {}
+func (NilNode) methodDefinitionNode()         {}
 
 type Modifier interface {
 	JsNode
@@ -456,7 +456,7 @@ func (DecoratorCall) modifierNode()         {}
 func (DecoratorExpr) modifierNode()         {}
 func (Readonly) modifierNode()              {}
 func (Static) modifierNode()                {}
-func (nilNode) modifierNode()               {}
+func (NilNode) modifierNode()               {}
 
 type ModuleItem interface {
 	JsNode
@@ -514,7 +514,7 @@ func (TypeAliasDeclaration) moduleItemNode()         {}
 func (VariableStatement) moduleItemNode()            {}
 func (WhileStatement) moduleItemNode()               {}
 func (WithStatement) moduleItemNode()                {}
-func (nilNode) moduleItemNode()                      {}
+func (NilNode) moduleItemNode()                      {}
 
 type NamedImport interface {
 	JsNode
@@ -526,7 +526,7 @@ type NamedImport interface {
 //
 func (ImportSpecifier) namedImportNode() {}
 func (SyntaxProblem) namedImportNode()   {}
-func (nilNode) namedImportNode()         {}
+func (NilNode) namedImportNode()         {}
 
 type Parameter interface {
 	JsNode
@@ -540,7 +540,7 @@ func (DefaultParameter) parameterNode() {}
 func (RestParameter) parameterNode()    {}
 func (SyntaxProblem) parameterNode()    {}
 func (TsThisParameter) parameterNode()  {}
-func (nilNode) parameterNode()          {}
+func (NilNode) parameterNode()          {}
 
 type PropertyDefinition interface {
 	JsNode
@@ -555,7 +555,7 @@ func (Property) propertyDefinitionNode()          {}
 func (ShorthandProperty) propertyDefinitionNode() {}
 func (SpreadProperty) propertyDefinitionNode()    {}
 func (SyntaxProblem) propertyDefinitionNode()     {}
-func (nilNode) propertyDefinitionNode()           {}
+func (NilNode) propertyDefinitionNode()           {}
 
 type PropertyName interface {
 	JsNode
@@ -567,7 +567,7 @@ type PropertyName interface {
 //
 func (ComputedPropertyName) propertyNameNode() {}
 func (LiteralPropertyName) propertyNameNode()  {}
-func (nilNode) propertyNameNode()              {}
+func (NilNode) propertyNameNode()              {}
 
 type PropertyPattern interface {
 	JsNode
@@ -580,7 +580,7 @@ type PropertyPattern interface {
 func (PropertyBinding) propertyPatternNode()   {}
 func (SingleNameBinding) propertyPatternNode() {}
 func (SyntaxProblem) propertyPatternNode()     {}
-func (nilNode) propertyPatternNode()           {}
+func (NilNode) propertyPatternNode()           {}
 
 type Statement interface {
 	JsNode
@@ -612,7 +612,7 @@ func (TryStatement) statementNode()          {}
 func (VariableStatement) statementNode()     {}
 func (WhileStatement) statementNode()        {}
 func (WithStatement) statementNode()         {}
-func (nilNode) statementNode()               {}
+func (NilNode) statementNode()               {}
 
 type StatementListItem interface {
 	JsNode
@@ -664,7 +664,7 @@ func (TypeAliasDeclaration) statementListItemNode()     {}
 func (VariableStatement) statementListItemNode()        {}
 func (WhileStatement) statementListItemNode()           {}
 func (WithStatement) statementListItemNode()            {}
-func (nilNode) statementListItemNode()                  {}
+func (NilNode) statementListItemNode()                  {}
 
 type TsAmbientClassElement interface {
 	JsNode
@@ -677,7 +677,7 @@ type TsAmbientClassElement interface {
 func (TsAmbientFunctionMember) tsAmbientClassElementNode() {}
 func (TsAmbientIndexMember) tsAmbientClassElementNode()    {}
 func (TsAmbientPropertyMember) tsAmbientClassElementNode() {}
-func (nilNode) tsAmbientClassElementNode()                 {}
+func (NilNode) tsAmbientClassElementNode()                 {}
 
 type TsAmbientElement interface {
 	JsNode
@@ -696,7 +696,7 @@ func (TsAmbientModule) tsAmbientElementNode()      {}
 func (TsAmbientNamespace) tsAmbientElementNode()   {}
 func (TsAmbientTypeAlias) tsAmbientElementNode()   {}
 func (TsAmbientVar) tsAmbientElementNode()         {}
-func (nilNode) tsAmbientElementNode()              {}
+func (NilNode) tsAmbientElementNode()              {}
 
 type TsType interface {
 	JsNode
@@ -723,7 +723,7 @@ func (TypePredicate) tsTypeNode()     {}
 func (TypeQuery) tsTypeNode()         {}
 func (TypeReference) tsTypeNode()     {}
 func (UnionType) tsTypeNode()         {}
-func (nilNode) tsTypeNode()           {}
+func (NilNode) tsTypeNode()           {}
 
 type TypeMember interface {
 	JsNode
@@ -738,7 +738,7 @@ func (ConstructSignature) typeMemberNode() {}
 func (IndexSignature) typeMemberNode()     {}
 func (MethodSignature) typeMemberNode()    {}
 func (PropertySignature) typeMemberNode()  {}
-func (nilNode) typeMemberNode()            {}
+func (NilNode) typeMemberNode()            {}
 
 // Types.
 

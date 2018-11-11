@@ -31,9 +31,9 @@ type Token struct {
 	Node
 }
 
-type nilNode struct{}
+type NilNode struct{}
 
-var nilInstance = &nilNode{}
+var nilInstance = &NilNode{}
 
 // All types implement TestNode.
 func (n Block) TestNode() Node    { return n.Node }
@@ -43,7 +43,7 @@ func (n Int) TestNode() Node      { return n.Node }
 func (n Negation) TestNode() Node { return n.Node }
 func (n Test) TestNode() Node     { return n.Node }
 func (n Token) TestNode() Node    { return n.Node }
-func (nilNode) TestNode() Node    { return nil }
+func (NilNode) TestNode() Node    { return nil }
 
 type Declaration interface {
 	TestNode
@@ -57,7 +57,7 @@ func (Block) declarationNode()   {}
 func (Decl1) declarationNode()   {}
 func (Decl2) declarationNode()   {}
 func (Int) declarationNode()     {}
-func (nilNode) declarationNode() {}
+func (NilNode) declarationNode() {}
 
 // Types.
 
