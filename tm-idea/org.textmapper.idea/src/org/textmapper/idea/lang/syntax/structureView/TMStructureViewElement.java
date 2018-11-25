@@ -19,11 +19,14 @@ package org.textmapper.idea.lang.syntax.structureView;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.util.PsiIconUtil;
+import org.jetbrains.annotations.NotNull;
+import org.textmapper.idea.TMIcons;
 import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
-import org.textmapper.idea.lang.syntax.psi.*;
+import org.textmapper.idea.lang.syntax.psi.TmGrammar;
+import org.textmapper.idea.lang.syntax.psi.TmLexeme;
+import org.textmapper.idea.lang.syntax.psi.TmNamedElement;
+import org.textmapper.idea.lang.syntax.psi.TmNonterm;
 
 import javax.swing.*;
 import java.util.List;
@@ -79,13 +82,7 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 
 			@Override
 			public Icon getIcon(boolean open) {
-				if (myElement.isValid()) {
-					return PsiIconUtil.getProvidersIcon(
-							myElement,
-							open ? Iconable.ICON_FLAG_OPEN : Iconable.ICON_FLAG_CLOSED);
-				}
-
-				return null;
+				return getElementIcon();
 			}
 		};
 
@@ -102,6 +99,14 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 		return "unknown";
 	}
 
+	private Icon getElementIcon() {
+		if (myElement instanceof TMPsiFile) {
+			return TMIcons.TM_ICON;
+		}
+		return null;
+	}
+
+	@NotNull
 	@Override
 	public TreeElement[] getChildren() {
 		if (myElement instanceof TMPsiFile) {
