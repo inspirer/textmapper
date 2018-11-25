@@ -50,4 +50,12 @@
       <module name="tool" target="1.8" />
     </bytecodeTargetLevel>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="js" options="-Xlint -Xlint:-serial" />
+      <module name="lapg" options="-Xlint -Xlint:-serial" />
+      <module name="templates" options="-Xlint -Xlint:-serial" />
+      <module name="textmapper" options="-Xlint -Xlint:-serial" />
+    </option>
+  </component>
 </project>
