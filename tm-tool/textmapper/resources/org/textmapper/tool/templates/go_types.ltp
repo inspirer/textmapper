@@ -400,9 +400,11 @@ ${cached query isOpt(field) =
   field.isNullable() && !field.isList() && field.types.length == 1 }
 
 ${cached query getterType(field) =
-  (field.isList() ? '[]' : '') +
-  (self->isOpt(field) ? '/*opt*/' : '') +
-   self->getterInnerType(field) }
+  (self->isOpt(field) ?
+    '(' + self->getterInnerType(field) + ', bool)' :
+    (field.isList() ? '[]' : '') + self->getterInnerType(field)
+  )
+}
 
 
 
@@ -443,6 +445,9 @@ ${if field.isList()-}
 		ret = append(ret, ${self->convertNode(field, 'node')})
 	}
 	return ret
+${else if self->isOpt(field)-}
+	field := ${self->convertNode(field, self->getFieldNode(field))}
+	return field, field.IsValid()
 ${else-}
 	return ${self->convertNode(field, self->getFieldNode(field))}
 ${end-}
