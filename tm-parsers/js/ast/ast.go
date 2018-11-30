@@ -766,8 +766,9 @@ type Arguments struct {
 	*Node
 }
 
-func (n Arguments) TypeArguments() /*opt*/ TypeArguments {
-	return TypeArguments{n.Child(selector.TypeArguments)}
+func (n Arguments) TypeArguments() (TypeArguments, bool) {
+	field := TypeArguments{n.Child(selector.TypeArguments)}
+	return field, field.IsValid()
 }
 
 func (n Arguments) List() []Expression {
@@ -805,8 +806,9 @@ func (n ArrayPattern) ElementPattern() []ElementPattern {
 	return ret
 }
 
-func (n ArrayPattern) BindingRestElement() /*opt*/ BindingRestElement {
-	return BindingRestElement{n.Child(selector.BindingRestElement)}
+func (n ArrayPattern) BindingRestElement() (BindingRestElement, bool) {
+	field := BindingRestElement{n.Child(selector.BindingRestElement)}
+	return field, field.IsValid()
 }
 
 type ArrayType struct {
@@ -821,28 +823,34 @@ type ArrowFunction struct {
 	*Node
 }
 
-func (n ArrowFunction) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ArrowFunction) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n ArrowFunction) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n ArrowFunction) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
-func (n ArrowFunction) Parameters() /*opt*/ Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+func (n ArrowFunction) Parameters() (Parameters, bool) {
+	field := Parameters{n.Child(selector.Parameters)}
+	return field, field.IsValid()
 }
 
-func (n ArrowFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n ArrowFunction) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
-func (n ArrowFunction) Body() /*opt*/ Body {
-	return Body{n.Child(selector.Body)}
+func (n ArrowFunction) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
-func (n ArrowFunction) ConciseBody() /*opt*/ ConciseBody {
-	return ConciseBody{n.Child(selector.ConciseBody)}
+func (n ArrowFunction) ConciseBody() (ConciseBody, bool) {
+	field := ConciseBody{n.Child(selector.ConciseBody)}
+	return field, field.IsValid()
 }
 
 type AssignmentExpression struct {
@@ -853,8 +861,9 @@ func (n AssignmentExpression) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n AssignmentExpression) AssignmentOperator() /*opt*/ AssignmentOperator {
-	return AssignmentOperator{n.Child(selector.AssignmentOperator)}
+func (n AssignmentExpression) AssignmentOperator() (AssignmentOperator, bool) {
+	field := AssignmentOperator{n.Child(selector.AssignmentOperator)}
+	return field, field.IsValid()
 }
 
 func (n AssignmentExpression) Right() Expression {
@@ -869,48 +878,57 @@ type AsyncArrowFunction struct {
 	*Node
 }
 
-func (n AsyncArrowFunction) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n AsyncArrowFunction) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n AsyncArrowFunction) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) Parameters() /*opt*/ Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+func (n AsyncArrowFunction) Parameters() (Parameters, bool) {
+	field := Parameters{n.Child(selector.Parameters)}
+	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n AsyncArrowFunction) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) Body() /*opt*/ Body {
-	return Body{n.Child(selector.Body)}
+func (n AsyncArrowFunction) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) ConciseBody() /*opt*/ ConciseBody {
-	return ConciseBody{n.Child(selector.ConciseBody)}
+func (n AsyncArrowFunction) ConciseBody() (ConciseBody, bool) {
+	field := ConciseBody{n.Child(selector.ConciseBody)}
+	return field, field.IsValid()
 }
 
 type AsyncFunction struct {
 	*Node
 }
 
-func (n AsyncFunction) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n AsyncFunction) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n AsyncFunction) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n AsyncFunction) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n AsyncFunction) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n AsyncFunction) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n AsyncFunction) Body() Body {
@@ -921,20 +939,23 @@ type AsyncFunctionExpression struct {
 	*Node
 }
 
-func (n AsyncFunctionExpression) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n AsyncFunctionExpression) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n AsyncFunctionExpression) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n AsyncFunctionExpression) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n AsyncFunctionExpression) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncFunctionExpression) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n AsyncFunctionExpression) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n AsyncFunctionExpression) Body() Body {
@@ -949,16 +970,18 @@ func (n AsyncMethod) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n AsyncMethod) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n AsyncMethod) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n AsyncMethod) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncMethod) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n AsyncMethod) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n AsyncMethod) Body() Body {
@@ -1060,8 +1083,9 @@ type BreakStatement struct {
 	*Node
 }
 
-func (n BreakStatement) LabelIdentifier() /*opt*/ LabelIdentifier {
-	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
+func (n BreakStatement) LabelIdentifier() (LabelIdentifier, bool) {
+	field := LabelIdentifier{n.Child(selector.LabelIdentifier)}
+	return field, field.IsValid()
 }
 
 type CallExpression struct {
@@ -1080,16 +1104,18 @@ type CallSignature struct {
 	*Node
 }
 
-func (n CallSignature) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n CallSignature) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n CallSignature) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n CallSignature) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n CallSignature) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type Case struct {
@@ -1113,8 +1139,9 @@ type Catch struct {
 	*Node
 }
 
-func (n Catch) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n Catch) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
 func (n Catch) BindingPattern() BindingPattern {
@@ -1138,20 +1165,24 @@ func (n Class) Modifier() []Modifier {
 	return ret
 }
 
-func (n Class) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n Class) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n Class) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n Class) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
-func (n Class) Extends() /*opt*/ Extends {
-	return Extends{n.Child(selector.Extends)}
+func (n Class) Extends() (Extends, bool) {
+	field := Extends{n.Child(selector.Extends)}
+	return field, field.IsValid()
 }
 
-func (n Class) TsImplementsClause() /*opt*/ TsImplementsClause {
-	return TsImplementsClause{n.Child(selector.TsImplementsClause)}
+func (n Class) TsImplementsClause() (TsImplementsClause, bool) {
+	field := TsImplementsClause{n.Child(selector.TsImplementsClause)}
+	return field, field.IsValid()
 }
 
 func (n Class) ClassBody() ClassBody {
@@ -1184,20 +1215,24 @@ func (n ClassExpr) Modifier() []Modifier {
 	return ret
 }
 
-func (n ClassExpr) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ClassExpr) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n ClassExpr) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n ClassExpr) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
-func (n ClassExpr) Extends() /*opt*/ Extends {
-	return Extends{n.Child(selector.Extends)}
+func (n ClassExpr) Extends() (Extends, bool) {
+	field := Extends{n.Child(selector.Extends)}
+	return field, field.IsValid()
 }
 
-func (n ClassExpr) TsImplementsClause() /*opt*/ TsImplementsClause {
-	return TsImplementsClause{n.Child(selector.TsImplementsClause)}
+func (n ClassExpr) TsImplementsClause() (TsImplementsClause, bool) {
+	field := TsImplementsClause{n.Child(selector.TsImplementsClause)}
+	return field, field.IsValid()
 }
 
 func (n ClassExpr) ClassBody() ClassBody {
@@ -1261,24 +1296,27 @@ func (n ConstructSignature) Modifier() []Modifier {
 	return ret
 }
 
-func (n ConstructSignature) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n ConstructSignature) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n ConstructSignature) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n ConstructSignature) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n ConstructSignature) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type ConstructorType struct {
 	*Node
 }
 
-func (n ConstructorType) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n ConstructorType) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n ConstructorType) Parameters() Parameters {
@@ -1293,8 +1331,9 @@ type ContinueStatement struct {
 	*Node
 }
 
-func (n ContinueStatement) LabelIdentifier() /*opt*/ LabelIdentifier {
-	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
+func (n ContinueStatement) LabelIdentifier() (LabelIdentifier, bool) {
+	field := LabelIdentifier{n.Child(selector.LabelIdentifier)}
+	return field, field.IsValid()
 }
 
 type DebuggerStatement struct {
@@ -1357,20 +1396,23 @@ func (n DefaultParameter) Modifier() []Modifier {
 	return ret
 }
 
-func (n DefaultParameter) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n DefaultParameter) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
 func (n DefaultParameter) BindingPattern() BindingPattern {
 	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n DefaultParameter) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n DefaultParameter) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
-func (n DefaultParameter) Initializer() /*opt*/ Initializer {
-	return Initializer{n.Child(selector.Initializer)}
+func (n DefaultParameter) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
 }
 
 type DoWhileStatement struct {
@@ -1393,8 +1435,9 @@ func (n ElementBinding) BindingPattern() BindingPattern {
 	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n ElementBinding) Initializer() /*opt*/ Initializer {
-	return Initializer{n.Child(selector.Initializer)}
+func (n ElementBinding) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
 }
 
 type EmptyDecl struct {
@@ -1446,8 +1489,9 @@ type ExportDeclaration struct {
 	*Node
 }
 
-func (n ExportDeclaration) ExportClause() /*opt*/ ExportClause {
-	return ExportClause{n.Child(selector.ExportClause)}
+func (n ExportDeclaration) ExportClause() (ExportClause, bool) {
+	field := ExportClause{n.Child(selector.ExportClause)}
+	return field, field.IsValid()
 }
 
 func (n ExportDeclaration) Modifier() []Modifier {
@@ -1459,16 +1503,18 @@ func (n ExportDeclaration) Modifier() []Modifier {
 	return ret
 }
 
-func (n ExportDeclaration) VariableStatement() /*opt*/ VariableStatement {
-	return VariableStatement{n.Child(selector.VariableStatement)}
+func (n ExportDeclaration) VariableStatement() (VariableStatement, bool) {
+	field := VariableStatement{n.Child(selector.VariableStatement)}
+	return field, field.IsValid()
 }
 
 func (n ExportDeclaration) Declaration() Declaration {
 	return ToJsNode(n.Child(selector.Declaration)).(Declaration)
 }
 
-func (n ExportDeclaration) ModuleSpecifier() /*opt*/ ModuleSpecifier {
-	return ModuleSpecifier{n.Child(selector.ModuleSpecifier)}
+func (n ExportDeclaration) ModuleSpecifier() (ModuleSpecifier, bool) {
+	field := ModuleSpecifier{n.Child(selector.ModuleSpecifier)}
+	return field, field.IsValid()
 }
 
 type ExportDefault struct {
@@ -1500,8 +1546,9 @@ func (n ExportSpecifier) IdentifierReference() IdentifierReference {
 	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
-func (n ExportSpecifier) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ExportSpecifier) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
 type ExpressionStatement struct {
@@ -1520,8 +1567,9 @@ func (n Extends) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n Extends) TypeReference() /*opt*/ TypeReference {
-	return TypeReference{n.Child(selector.TypeReference)}
+func (n Extends) TypeReference() (TypeReference, bool) {
+	field := TypeReference{n.Child(selector.TypeReference)}
+	return field, field.IsValid()
 }
 
 type Finally struct {
@@ -1536,8 +1584,9 @@ type ForBinding struct {
 	*Node
 }
 
-func (n ForBinding) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ForBinding) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
 func (n ForBinding) BindingPattern() BindingPattern {
@@ -1682,20 +1731,23 @@ type Function struct {
 	*Node
 }
 
-func (n Function) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n Function) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n Function) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n Function) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n Function) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n Function) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n Function) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n Function) Body() Body {
@@ -1706,20 +1758,23 @@ type FunctionExpression struct {
 	*Node
 }
 
-func (n FunctionExpression) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n FunctionExpression) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n FunctionExpression) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n FunctionExpression) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n FunctionExpression) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n FunctionExpression) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n FunctionExpression) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n FunctionExpression) Body() Body {
@@ -1730,8 +1785,9 @@ type FunctionType struct {
 	*Node
 }
 
-func (n FunctionType) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n FunctionType) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n FunctionType) Parameters() Parameters {
@@ -1746,20 +1802,23 @@ type Generator struct {
 	*Node
 }
 
-func (n Generator) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n Generator) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n Generator) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n Generator) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n Generator) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n Generator) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n Generator) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n Generator) Body() Body {
@@ -1770,20 +1829,23 @@ type GeneratorExpression struct {
 	*Node
 }
 
-func (n GeneratorExpression) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n GeneratorExpression) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n GeneratorExpression) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n GeneratorExpression) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n GeneratorExpression) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n GeneratorExpression) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n GeneratorExpression) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n GeneratorExpression) Body() Body {
@@ -1798,16 +1860,18 @@ func (n GeneratorMethod) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n GeneratorMethod) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n GeneratorMethod) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n GeneratorMethod) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n GeneratorMethod) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n GeneratorMethod) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n GeneratorMethod) Body() Body {
@@ -1822,8 +1886,9 @@ func (n Getter) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n Getter) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n Getter) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n Getter) Body() Body {
@@ -1854,16 +1919,19 @@ type ImportDeclaration struct {
 	*Node
 }
 
-func (n ImportDeclaration) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ImportDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
-func (n ImportDeclaration) NameSpaceImport() /*opt*/ NameSpaceImport {
-	return NameSpaceImport{n.Child(selector.NameSpaceImport)}
+func (n ImportDeclaration) NameSpaceImport() (NameSpaceImport, bool) {
+	field := NameSpaceImport{n.Child(selector.NameSpaceImport)}
+	return field, field.IsValid()
 }
 
-func (n ImportDeclaration) NamedImports() /*opt*/ NamedImports {
-	return NamedImports{n.Child(selector.NamedImports)}
+func (n ImportDeclaration) NamedImports() (NamedImports, bool) {
+	field := NamedImports{n.Child(selector.NamedImports)}
+	return field, field.IsValid()
 }
 
 func (n ImportDeclaration) ModuleSpecifier() ModuleSpecifier {
@@ -1874,8 +1942,9 @@ type ImportSpecifier struct {
 	*Node
 }
 
-func (n ImportSpecifier) IdentifierReference() /*opt*/ IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n ImportSpecifier) IdentifierReference() (IdentifierReference, bool) {
+	field := IdentifierReference{n.Child(selector.IdentifierReference)}
+	return field, field.IsValid()
 }
 
 func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
@@ -1960,12 +2029,14 @@ type JSXElement struct {
 	*Node
 }
 
-func (n JSXElement) JSXOpeningElement() /*opt*/ JSXOpeningElement {
-	return JSXOpeningElement{n.Child(selector.JSXOpeningElement)}
+func (n JSXElement) JSXOpeningElement() (JSXOpeningElement, bool) {
+	field := JSXOpeningElement{n.Child(selector.JSXOpeningElement)}
+	return field, field.IsValid()
 }
 
-func (n JSXElement) JSXSelfClosingElement() /*opt*/ JSXSelfClosingElement {
-	return JSXSelfClosingElement{n.Child(selector.JSXSelfClosingElement)}
+func (n JSXElement) JSXSelfClosingElement() (JSXSelfClosingElement, bool) {
+	field := JSXSelfClosingElement{n.Child(selector.JSXSelfClosingElement)}
+	return field, field.IsValid()
 }
 
 func (n JSXElement) JSXChild() []JSXChild {
@@ -1977,8 +2048,9 @@ func (n JSXElement) JSXChild() []JSXChild {
 	return ret
 }
 
-func (n JSXElement) JSXClosingElement() /*opt*/ JSXClosingElement {
-	return JSXClosingElement{n.Child(selector.JSXClosingElement)}
+func (n JSXElement) JSXClosingElement() (JSXClosingElement, bool) {
+	field := JSXClosingElement{n.Child(selector.JSXClosingElement)}
+	return field, field.IsValid()
 }
 
 type JSXElementName struct {
@@ -2083,8 +2155,9 @@ func (n LabelledStatement) LabelIdentifier() LabelIdentifier {
 	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
 }
 
-func (n LabelledStatement) Function() /*opt*/ Function {
-	return Function{n.Child(selector.Function)}
+func (n LabelledStatement) Function() (Function, bool) {
+	field := Function{n.Child(selector.Function)}
+	return field, field.IsValid()
 }
 
 func (n LabelledStatement) Statement() Statement {
@@ -2095,20 +2168,23 @@ type LexicalBinding struct {
 	*Node
 }
 
-func (n LexicalBinding) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n LexicalBinding) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
 func (n LexicalBinding) BindingPattern() BindingPattern {
 	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n LexicalBinding) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n LexicalBinding) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
-func (n LexicalBinding) Initializer() /*opt*/ Initializer {
-	return Initializer{n.Child(selector.Initializer)}
+func (n LexicalBinding) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
 }
 
 type LexicalDeclaration struct {
@@ -2132,8 +2208,9 @@ type LiteralPropertyName struct {
 	*Node
 }
 
-func (n LiteralPropertyName) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n LiteralPropertyName) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
 type LiteralType struct {
@@ -2210,12 +2287,14 @@ func (n MemberVar) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n MemberVar) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n MemberVar) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
-func (n MemberVar) Initializer() /*opt*/ Initializer {
-	return Initializer{n.Child(selector.Initializer)}
+func (n MemberVar) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
 }
 
 type Method struct {
@@ -2226,16 +2305,18 @@ func (n Method) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n Method) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n Method) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n Method) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n Method) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n Method) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 func (n Method) Body() Body {
@@ -2259,16 +2340,18 @@ func (n MethodSignature) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n MethodSignature) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n MethodSignature) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n MethodSignature) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n MethodSignature) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n MethodSignature) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type Module struct {
@@ -2329,8 +2412,9 @@ func (n NewExpression) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n NewExpression) Arguments() /*opt*/ Arguments {
-	return Arguments{n.Child(selector.Arguments)}
+func (n NewExpression) Arguments() (Arguments, bool) {
+	field := Arguments{n.Child(selector.Arguments)}
+	return field, field.IsValid()
 }
 
 type NewTarget struct {
@@ -2380,8 +2464,9 @@ func (n ObjectPattern) PropertyPattern() []PropertyPattern {
 	return ret
 }
 
-func (n ObjectPattern) BindingRestElement() /*opt*/ BindingRestElement {
-	return BindingRestElement{n.Child(selector.BindingRestElement)}
+func (n ObjectPattern) BindingRestElement() (BindingRestElement, bool) {
+	field := BindingRestElement{n.Child(selector.BindingRestElement)}
+	return field, field.IsValid()
 }
 
 type ObjectType struct {
@@ -2418,8 +2503,9 @@ func (n Parenthesized) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n Parenthesized) SyntaxProblem() /*opt*/ SyntaxProblem {
-	return SyntaxProblem{n.Child(selector.SyntaxProblem)}
+func (n Parenthesized) SyntaxProblem() (SyntaxProblem, bool) {
+	field := SyntaxProblem{n.Child(selector.SyntaxProblem)}
+	return field, field.IsValid()
 }
 
 type ParenthesizedType struct {
@@ -2528,8 +2614,9 @@ func (n PropertySignature) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n PropertySignature) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n PropertySignature) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type Readonly struct {
@@ -2560,8 +2647,9 @@ func (n RestParameter) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n RestParameter) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n RestParameter) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type ReturnStatement struct {
@@ -2616,8 +2704,9 @@ func (n SingleNameBinding) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n SingleNameBinding) Initializer() /*opt*/ Initializer {
-	return Initializer{n.Child(selector.Initializer)}
+func (n SingleNameBinding) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
 }
 
 type SpreadElement struct {
@@ -2660,12 +2749,14 @@ type SyntaxProblem struct {
 	*Node
 }
 
-func (n SyntaxProblem) IdentifierReference() /*opt*/ IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n SyntaxProblem) IdentifierReference() (IdentifierReference, bool) {
+	field := IdentifierReference{n.Child(selector.IdentifierReference)}
+	return field, field.IsValid()
 }
 
-func (n SyntaxProblem) Initializer() /*opt*/ Initializer {
-	return Initializer{n.Child(selector.Initializer)}
+func (n SyntaxProblem) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
 }
 
 type TaggedTemplate struct {
@@ -2726,12 +2817,14 @@ func (n TryStatement) Block() Block {
 	return Block{n.Child(selector.Block)}
 }
 
-func (n TryStatement) Catch() /*opt*/ Catch {
-	return Catch{n.Child(selector.Catch)}
+func (n TryStatement) Catch() (Catch, bool) {
+	field := Catch{n.Child(selector.Catch)}
+	return field, field.IsValid()
 }
 
-func (n TryStatement) Finally() /*opt*/ Finally {
-	return Finally{n.Child(selector.Finally)}
+func (n TryStatement) Finally() (Finally, bool) {
+	field := Finally{n.Child(selector.Finally)}
+	return field, field.IsValid()
 }
 
 type TsAmbientBinding struct {
@@ -2742,8 +2835,9 @@ func (n TsAmbientBinding) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientBinding) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n TsAmbientBinding) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type TsAmbientClass struct {
@@ -2763,16 +2857,19 @@ func (n TsAmbientClass) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientClass) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n TsAmbientClass) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
-func (n TsAmbientClass) Extends() /*opt*/ Extends {
-	return Extends{n.Child(selector.Extends)}
+func (n TsAmbientClass) Extends() (Extends, bool) {
+	field := Extends{n.Child(selector.Extends)}
+	return field, field.IsValid()
 }
 
-func (n TsAmbientClass) TsImplementsClause() /*opt*/ TsImplementsClause {
-	return TsImplementsClause{n.Child(selector.TsImplementsClause)}
+func (n TsAmbientClass) TsImplementsClause() (TsImplementsClause, bool) {
+	field := TsImplementsClause{n.Child(selector.TsImplementsClause)}
+	return field, field.IsValid()
 }
 
 func (n TsAmbientClass) TsAmbientClassBody() TsAmbientClassBody {
@@ -2808,16 +2905,18 @@ func (n TsAmbientFunction) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientFunction) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n TsAmbientFunction) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n TsAmbientFunction) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n TsAmbientFunction) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n TsAmbientFunction) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type TsAmbientFunctionMember struct {
@@ -2837,16 +2936,18 @@ func (n TsAmbientFunctionMember) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n TsAmbientFunctionMember) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n TsAmbientFunctionMember) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n TsAmbientFunctionMember) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n TsAmbientFunctionMember) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n TsAmbientFunctionMember) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type TsAmbientImportAlias struct {
@@ -2882,12 +2983,14 @@ func (n TsAmbientInterface) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsAmbientInterface) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n TsAmbientInterface) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
-func (n TsAmbientInterface) TsInterfaceExtends() /*opt*/ TsInterfaceExtends {
-	return TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
+func (n TsAmbientInterface) TsInterfaceExtends() (TsInterfaceExtends, bool) {
+	field := TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
+	return field, field.IsValid()
 }
 
 func (n TsAmbientInterface) ObjectType() ObjectType {
@@ -2955,8 +3058,9 @@ func (n TsAmbientPropertyMember) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n TsAmbientPropertyMember) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n TsAmbientPropertyMember) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
 type TsAmbientTypeAlias struct {
@@ -3111,12 +3215,14 @@ func (n TsInterface) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TsInterface) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n TsInterface) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
-func (n TsInterface) TsInterfaceExtends() /*opt*/ TsInterfaceExtends {
-	return TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
+func (n TsInterface) TsInterfaceExtends() (TsInterfaceExtends, bool) {
+	field := TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
+	return field, field.IsValid()
 }
 
 func (n TsInterface) ObjectType() ObjectType {
@@ -3211,8 +3317,9 @@ func (n TypeAliasDeclaration) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TypeAliasDeclaration) TypeParameters() /*opt*/ TypeParameters {
-	return TypeParameters{n.Child(selector.TypeParameters)}
+func (n TypeAliasDeclaration) TypeParameters() (TypeParameters, bool) {
+	field := TypeParameters{n.Child(selector.TypeParameters)}
+	return field, field.IsValid()
 }
 
 func (n TypeAliasDeclaration) TsType() TsType {
@@ -3269,8 +3376,9 @@ func (n TypeParameter) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
-func (n TypeParameter) TypeConstraint() /*opt*/ TypeConstraint {
-	return TypeConstraint{n.Child(selector.TypeConstraint)}
+func (n TypeParameter) TypeConstraint() (TypeConstraint, bool) {
+	field := TypeConstraint{n.Child(selector.TypeConstraint)}
+	return field, field.IsValid()
 }
 
 func (n TypeParameter) TsType() TsType {
@@ -3323,8 +3431,9 @@ func (n TypeReference) TypeName() TypeName {
 	return TypeName{n.Child(selector.TypeName)}
 }
 
-func (n TypeReference) TypeArguments() /*opt*/ TypeArguments {
-	return TypeArguments{n.Child(selector.TypeArguments)}
+func (n TypeReference) TypeArguments() (TypeArguments, bool) {
+	field := TypeArguments{n.Child(selector.TypeArguments)}
+	return field, field.IsValid()
 }
 
 type UnaryExpression struct {
@@ -3352,20 +3461,23 @@ type VariableDeclaration struct {
 	*Node
 }
 
-func (n VariableDeclaration) BindingIdentifier() /*opt*/ BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n VariableDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+	return field, field.IsValid()
 }
 
 func (n VariableDeclaration) BindingPattern() BindingPattern {
 	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 }
 
-func (n VariableDeclaration) TypeAnnotation() /*opt*/ TypeAnnotation {
-	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+func (n VariableDeclaration) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
+	return field, field.IsValid()
 }
 
-func (n VariableDeclaration) Initializer() /*opt*/ Initializer {
-	return Initializer{n.Child(selector.Initializer)}
+func (n VariableDeclaration) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
 }
 
 type VariableStatement struct {

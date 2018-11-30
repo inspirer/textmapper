@@ -72,6 +72,7 @@ type ${self->wrappedTypeRef()->go.declarationName()} interface {
 	// NextAll returns all following siblings of the node that match the selector.
 	NextAll(sel ${self->go_filter.nodeSelectorTypeRef()}) []Node
 	Text() string
+	IsValid() bool
 ${call wrappedTypeExt-}
 }
 

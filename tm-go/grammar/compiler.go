@@ -130,15 +130,16 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 	for _, p := range parts {
 		switch p := p.(type) {
 		case *ast.Lexeme:
-			tok := c.addToken(p.Name().Text(), p.RawType(), p.Name())
-			if pat := p.Pattern(); pat.IsValid() {
+			rawType, _ := p.RawType()
+			tok := c.addToken(p.Name().Text(), rawType, p.Name())
+			if pat, ok := p.Pattern(); ok {
 				re, err := parsePattern(pat)
 				c.s.AddError(err)
 				rule := &lex.Rule{RE: re, StartConditions: defaultSCs, Origin: p, OriginName: p.Name().Text()}
-				if prio := p.Priority(); prio.IsValid() {
+				if prio, ok := p.Priority(); ok {
 					rule.Precedence, _ = strconv.Atoi(prio.Text())
 				}
-				if sc := p.StartConditions(); sc.IsValid() {
+				if sc, ok := p.StartConditions(); ok {
 					rule.StartConditions = c.resolveSC(sc)
 				}
 				// TODO take the action instead
