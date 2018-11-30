@@ -402,8 +402,9 @@ type ClassType struct {
 	*Node
 }
 
-func (n ClassType) Implements() /*opt*/ Implements {
-	return Implements{n.Child(selector.Implements)}
+func (n ClassType) Implements() (Implements, bool) {
+	field := Implements{n.Child(selector.Implements)}
+	return field, field.IsValid()
 }
 
 type Command struct {
@@ -523,8 +524,9 @@ func (n File) Lexer() LexerSection {
 	return LexerSection{n.Child(selector.LexerSection)}
 }
 
-func (n File) Parser() /*opt*/ ParserSection {
-	return ParserSection{n.Child(selector.ParserSection)}
+func (n File) Parser() (ParserSection, bool) {
+	field := ParserSection{n.Child(selector.ParserSection)}
+	return field, field.IsValid()
 }
 
 type Header struct {
@@ -535,8 +537,9 @@ func (n Header) Name() Name {
 	return Name{n.Child(selector.Name)}
 }
 
-func (n Header) Target() /*opt*/ Name {
-	return Name{n.Child(selector.Name).Next(selector.Name)}
+func (n Header) Target() (Name, bool) {
+	field := Name{n.Child(selector.Name).Next(selector.Name)}
+	return field, field.IsValid()
 }
 
 type Identifier struct {
@@ -560,8 +563,9 @@ type Import struct {
 	*Node
 }
 
-func (n Import) Alias() /*opt*/ Identifier {
-	return Identifier{n.Child(selector.Identifier)}
+func (n Import) Alias() (Identifier, bool) {
+	field := Identifier{n.Child(selector.Identifier)}
+	return field, field.IsValid()
 }
 
 func (n Import) Path() StringLiteral {
@@ -629,32 +633,38 @@ type Lexeme struct {
 	*Node
 }
 
-func (n Lexeme) StartConditions() /*opt*/ StartConditions {
-	return StartConditions{n.Child(selector.StartConditions)}
+func (n Lexeme) StartConditions() (StartConditions, bool) {
+	field := StartConditions{n.Child(selector.StartConditions)}
+	return field, field.IsValid()
 }
 
 func (n Lexeme) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n Lexeme) RawType() /*opt*/ RawType {
-	return RawType{n.Child(selector.RawType)}
+func (n Lexeme) RawType() (RawType, bool) {
+	field := RawType{n.Child(selector.RawType)}
+	return field, field.IsValid()
 }
 
-func (n Lexeme) Pattern() /*opt*/ Pattern {
-	return Pattern{n.Child(selector.Pattern)}
+func (n Lexeme) Pattern() (Pattern, bool) {
+	field := Pattern{n.Child(selector.Pattern)}
+	return field, field.IsValid()
 }
 
-func (n Lexeme) Priority() /*opt*/ IntegerLiteral {
-	return IntegerLiteral{n.Child(selector.IntegerLiteral)}
+func (n Lexeme) Priority() (IntegerLiteral, bool) {
+	field := IntegerLiteral{n.Child(selector.IntegerLiteral)}
+	return field, field.IsValid()
 }
 
-func (n Lexeme) Attrs() /*opt*/ LexemeAttrs {
-	return LexemeAttrs{n.Child(selector.LexemeAttrs)}
+func (n Lexeme) Attrs() (LexemeAttrs, bool) {
+	field := LexemeAttrs{n.Child(selector.LexemeAttrs)}
+	return field, field.IsValid()
 }
 
-func (n Lexeme) Command() /*opt*/ Command {
-	return Command{n.Child(selector.Command)}
+func (n Lexeme) Command() (Command, bool) {
+	field := Command{n.Child(selector.Command)}
+	return field, field.IsValid()
 }
 
 type LexemeAttribute struct {
@@ -735,24 +745,27 @@ type Nonterm struct {
 	*Node
 }
 
-func (n Nonterm) Annotations() /*opt*/ Annotations {
-	return Annotations{n.Child(selector.Annotations)}
+func (n Nonterm) Annotations() (Annotations, bool) {
+	field := Annotations{n.Child(selector.Annotations)}
+	return field, field.IsValid()
 }
 
 func (n Nonterm) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n Nonterm) Params() /*opt*/ NontermParams {
-	return NontermParams{n.Child(selector.NontermParams)}
+func (n Nonterm) Params() (NontermParams, bool) {
+	field := NontermParams{n.Child(selector.NontermParams)}
+	return field, field.IsValid()
 }
 
 func (n Nonterm) NontermType() NontermType {
 	return ToTmNode(n.Child(selector.NontermType)).(NontermType)
 }
 
-func (n Nonterm) ReportClause() /*opt*/ ReportClause {
-	return ReportClause{n.Child(selector.ReportClause)}
+func (n Nonterm) ReportClause() (ReportClause, bool) {
+	field := ReportClause{n.Child(selector.ReportClause)}
+	return field, field.IsValid()
 }
 
 func (n Nonterm) Rule0() []Rule0 {
@@ -882,8 +895,9 @@ type References struct {
 	*Node
 }
 
-func (n References) References() /*opt*/ References {
-	return References{n.Child(selector.References)}
+func (n References) References() (References, bool) {
+	field := References{n.Child(selector.References)}
+	return field, field.IsValid()
 }
 
 func (n References) Symref() Symref {
@@ -906,12 +920,14 @@ func (n ReportClause) Action() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n ReportClause) Kind() /*opt*/ Identifier {
-	return Identifier{n.Child(selector.Identifier).Next(selector.Identifier)}
+func (n ReportClause) Kind() (Identifier, bool) {
+	field := Identifier{n.Child(selector.Identifier).Next(selector.Identifier)}
+	return field, field.IsValid()
 }
 
-func (n ReportClause) ReportAs() /*opt*/ ReportAs {
-	return ReportAs{n.Child(selector.ReportAs)}
+func (n ReportClause) ReportAs() (ReportAs, bool) {
+	field := ReportAs{n.Child(selector.ReportAs)}
+	return field, field.IsValid()
 }
 
 type RhsAnnotated struct {
@@ -1091,8 +1107,9 @@ type Rule struct {
 	*Node
 }
 
-func (n Rule) Predicate() /*opt*/ Predicate {
-	return Predicate{n.Child(selector.Predicate)}
+func (n Rule) Predicate() (Predicate, bool) {
+	field := Predicate{n.Child(selector.Predicate)}
+	return field, field.IsValid()
 }
 
 func (n Rule) RhsPart() []RhsPart {
@@ -1104,12 +1121,14 @@ func (n Rule) RhsPart() []RhsPart {
 	return ret
 }
 
-func (n Rule) RhsSuffix() /*opt*/ RhsSuffix {
-	return RhsSuffix{n.Child(selector.RhsSuffix)}
+func (n Rule) RhsSuffix() (RhsSuffix, bool) {
+	field := RhsSuffix{n.Child(selector.RhsSuffix)}
+	return field, field.IsValid()
 }
 
-func (n Rule) ReportClause() /*opt*/ ReportClause {
-	return ReportClause{n.Child(selector.ReportClause)}
+func (n Rule) ReportClause() (ReportClause, bool) {
+	field := ReportClause{n.Child(selector.ReportClause)}
+	return field, field.IsValid()
 }
 
 type SetAnd struct {
@@ -1156,8 +1175,9 @@ type SetSymbol struct {
 	*Node
 }
 
-func (n SetSymbol) Operator() /*opt*/ Identifier {
-	return Identifier{n.Child(selector.Identifier)}
+func (n SetSymbol) Operator() (Identifier, bool) {
+	field := Identifier{n.Child(selector.Identifier)}
+	return field, field.IsValid()
 }
 
 func (n SetSymbol) Symbol() Symref {
@@ -1230,8 +1250,9 @@ func (n Symref) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n Symref) Args() /*opt*/ SymrefArgs {
-	return SymrefArgs{n.Child(selector.SymrefArgs)}
+func (n Symref) Args() (SymrefArgs, bool) {
+	field := SymrefArgs{n.Child(selector.SymrefArgs)}
+	return field, field.IsValid()
 }
 
 type SymrefArgs struct {
@@ -1255,8 +1276,9 @@ type TemplateParam struct {
 	*Node
 }
 
-func (n TemplateParam) Modifier() /*opt*/ ParamModifier {
-	return ParamModifier{n.Child(selector.ParamModifier)}
+func (n TemplateParam) Modifier() (ParamModifier, bool) {
+	field := ParamModifier{n.Child(selector.ParamModifier)}
+	return field, field.IsValid()
 }
 
 func (n TemplateParam) ParamType() ParamType {

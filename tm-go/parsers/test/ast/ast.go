@@ -19,6 +19,7 @@ type Node interface {
 	// NextAll returns all following siblings of the node that match the selector.
 	NextAll(sel selector.Selector) []Node
 	Text() string
+	IsValid() bool
 }
 
 // Interfaces.
@@ -65,8 +66,9 @@ type Block struct {
 	Node
 }
 
-func (n Block) Negation() /*opt*/ Negation {
-	return Negation{n.Child(selector.Negation)}
+func (n Block) Negation() (Negation, bool) {
+	field := Negation{n.Child(selector.Negation)}
+	return field, field.IsValid()
 }
 
 func (n Block) Declaration() []Declaration {
