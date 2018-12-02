@@ -398,7 +398,7 @@ ${end}
 
 
 ${cached query isOpt(field) =
-  field.isNullable() && !field.isList() && field.types.length == 1 }
+  field.isNullable() && !field.isList() }
 
 ${cached query getterType(field) =
   (self->isOpt(field) ?
@@ -448,7 +448,7 @@ ${if field.isList()-}
 	return ret
 ${else if self->isOpt(field)-}
 	field := ${self->convertNode(field, self->getFieldNode(field))}
-	return field, field.IsValid()
+	return field, ${if self->isOneType(field)}field.IsValid()${else}field.${self->baseNode()}() != nil${end}
 ${else-}
 	return ${self->convertNode(field, self->getFieldNode(field))}
 ${end-}

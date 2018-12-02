@@ -332,8 +332,9 @@ func (n AnnotationImpl) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n AnnotationImpl) Expression() Expression {
-	return ToTmNode(n.Child(selector.Expression)).(Expression)
+func (n AnnotationImpl) Expression() (Expression, bool) {
+	field := ToTmNode(n.Child(selector.Expression)).(Expression)
+	return field, field.TmNode() != nil
 }
 
 type Annotations struct {
@@ -365,8 +366,9 @@ func (n ArgumentImpl) Name() ParamRef {
 	return ParamRef{n.Child(selector.ParamRef)}
 }
 
-func (n ArgumentImpl) Val() ParamValue {
-	return ToTmNode(n.Child(selector.ParamRef).Next(selector.ParamValue)).(ParamValue)
+func (n ArgumentImpl) Val() (ParamValue, bool) {
+	field := ToTmNode(n.Child(selector.ParamRef).Next(selector.ParamValue)).(ParamValue)
+	return field, field.TmNode() != nil
 }
 
 type ArgumentTrue struct {
@@ -597,8 +599,9 @@ func (n InlineParameter) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier).Next(selector.Identifier)}
 }
 
-func (n InlineParameter) ParamValue() ParamValue {
-	return ToTmNode(n.Child(selector.ParamValue)).(ParamValue)
+func (n InlineParameter) ParamValue() (ParamValue, bool) {
+	field := ToTmNode(n.Child(selector.ParamValue)).(ParamValue)
+	return field, field.TmNode() != nil
 }
 
 type Inputref struct {
@@ -759,8 +762,9 @@ func (n Nonterm) Params() (NontermParams, bool) {
 	return field, field.IsValid()
 }
 
-func (n Nonterm) NontermType() NontermType {
-	return ToTmNode(n.Child(selector.NontermType)).(NontermType)
+func (n Nonterm) NontermType() (NontermType, bool) {
+	field := ToTmNode(n.Child(selector.NontermType)).(NontermType)
+	return field, field.TmNode() != nil
 }
 
 func (n Nonterm) ReportClause() (ReportClause, bool) {
@@ -1289,8 +1293,9 @@ func (n TemplateParam) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n TemplateParam) ParamValue() ParamValue {
-	return ToTmNode(n.Child(selector.ParamValue)).(ParamValue)
+func (n TemplateParam) ParamValue() (ParamValue, bool) {
+	field := ToTmNode(n.Child(selector.ParamValue)).(ParamValue)
+	return field, field.TmNode() != nil
 }
 
 type VoidType struct {

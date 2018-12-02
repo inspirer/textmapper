@@ -1144,8 +1144,9 @@ func (n Catch) BindingIdentifier() (BindingIdentifier, bool) {
 	return field, field.IsValid()
 }
 
-func (n Catch) BindingPattern() BindingPattern {
-	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+func (n Catch) BindingPattern() (BindingPattern, bool) {
+	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+	return field, field.JsNode() != nil
 }
 
 func (n Catch) Block() Block {
@@ -1401,8 +1402,9 @@ func (n DefaultParameter) BindingIdentifier() (BindingIdentifier, bool) {
 	return field, field.IsValid()
 }
 
-func (n DefaultParameter) BindingPattern() BindingPattern {
-	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+func (n DefaultParameter) BindingPattern() (BindingPattern, bool) {
+	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+	return field, field.JsNode() != nil
 }
 
 func (n DefaultParameter) TypeAnnotation() (TypeAnnotation, bool) {
@@ -1508,8 +1510,9 @@ func (n ExportDeclaration) VariableStatement() (VariableStatement, bool) {
 	return field, field.IsValid()
 }
 
-func (n ExportDeclaration) Declaration() Declaration {
-	return ToJsNode(n.Child(selector.Declaration)).(Declaration)
+func (n ExportDeclaration) Declaration() (Declaration, bool) {
+	field := ToJsNode(n.Child(selector.Declaration)).(Declaration)
+	return field, field.JsNode() != nil
 }
 
 func (n ExportDeclaration) ModuleSpecifier() (ModuleSpecifier, bool) {
@@ -1521,8 +1524,9 @@ type ExportDefault struct {
 	*Node
 }
 
-func (n ExportDefault) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ExportDefault) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 func (n ExportDefault) Modifier() []Modifier {
@@ -1534,8 +1538,9 @@ func (n ExportDefault) Modifier() []Modifier {
 	return ret
 }
 
-func (n ExportDefault) Declaration() Declaration {
-	return ToJsNode(n.Child(selector.Declaration)).(Declaration)
+func (n ExportDefault) Declaration() (Declaration, bool) {
+	field := ToJsNode(n.Child(selector.Declaration)).(Declaration)
+	return field, field.JsNode() != nil
 }
 
 type ExportSpecifier struct {
@@ -1563,8 +1568,9 @@ type Extends struct {
 	*Node
 }
 
-func (n Extends) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Extends) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 func (n Extends) TypeReference() (TypeReference, bool) {
@@ -1589,24 +1595,27 @@ func (n ForBinding) BindingIdentifier() (BindingIdentifier, bool) {
 	return field, field.IsValid()
 }
 
-func (n ForBinding) BindingPattern() BindingPattern {
-	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+func (n ForBinding) BindingPattern() (BindingPattern, bool) {
+	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+	return field, field.JsNode() != nil
 }
 
 type ForCondition struct {
 	*Node
 }
 
-func (n ForCondition) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForCondition) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 type ForFinalExpression struct {
 	*Node
 }
 
-func (n ForFinalExpression) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForFinalExpression) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 type ForInStatement struct {
@@ -1677,8 +1686,9 @@ type ForStatement struct {
 	*Node
 }
 
-func (n ForStatement) Var() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForStatement) Var() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 func (n ForStatement) ForCondition() ForCondition {
@@ -1911,8 +1921,9 @@ func (n IfStatement) Then() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-func (n IfStatement) Else() Statement {
-	return ToJsNode(n.Child(selector.Statement).Next(selector.Statement)).(Statement)
+func (n IfStatement) Else() (Statement, bool) {
+	field := ToJsNode(n.Child(selector.Statement).Next(selector.Statement)).(Statement)
+	return field, field.JsNode() != nil
 }
 
 type ImportDeclaration struct {
@@ -2061,8 +2072,9 @@ type JSXExpression struct {
 	*Node
 }
 
-func (n JSXExpression) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n JSXExpression) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 type JSXLiteral struct {
@@ -2077,8 +2089,9 @@ func (n JSXNormalAttribute) JSXAttributeName() JSXAttributeName {
 	return JSXAttributeName{n.Child(selector.JSXAttributeName)}
 }
 
-func (n JSXNormalAttribute) JSXAttributeValue() JSXAttributeValue {
-	return ToJsNode(n.Child(selector.JSXAttributeValue)).(JSXAttributeValue)
+func (n JSXNormalAttribute) JSXAttributeValue() (JSXAttributeValue, bool) {
+	field := ToJsNode(n.Child(selector.JSXAttributeValue)).(JSXAttributeValue)
+	return field, field.JsNode() != nil
 }
 
 type JSXOpeningElement struct {
@@ -2127,8 +2140,9 @@ type JSXSpreadExpression struct {
 	*Node
 }
 
-func (n JSXSpreadExpression) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n JSXSpreadExpression) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 type JSXText struct {
@@ -2160,8 +2174,9 @@ func (n LabelledStatement) Function() (Function, bool) {
 	return field, field.IsValid()
 }
 
-func (n LabelledStatement) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n LabelledStatement) Statement() (Statement, bool) {
+	field := ToJsNode(n.Child(selector.Statement)).(Statement)
+	return field, field.JsNode() != nil
 }
 
 type LexicalBinding struct {
@@ -2173,8 +2188,9 @@ func (n LexicalBinding) BindingIdentifier() (BindingIdentifier, bool) {
 	return field, field.IsValid()
 }
 
-func (n LexicalBinding) BindingPattern() BindingPattern {
-	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+func (n LexicalBinding) BindingPattern() (BindingPattern, bool) {
+	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+	return field, field.JsNode() != nil
 }
 
 func (n LexicalBinding) TypeAnnotation() (TypeAnnotation, bool) {
@@ -2499,8 +2515,9 @@ type Parenthesized struct {
 	*Node
 }
 
-func (n Parenthesized) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Parenthesized) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 func (n Parenthesized) SyntaxProblem() (SyntaxProblem, bool) {
@@ -2656,8 +2673,9 @@ type ReturnStatement struct {
 	*Node
 }
 
-func (n ReturnStatement) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ReturnStatement) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 type Setter struct {
@@ -3149,8 +3167,9 @@ func (n TsEnumMember) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n TsEnumMember) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TsEnumMember) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
 
 type TsExportAssignment struct {
@@ -3381,8 +3400,9 @@ func (n TypeParameter) TypeConstraint() (TypeConstraint, bool) {
 	return field, field.IsValid()
 }
 
-func (n TypeParameter) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+func (n TypeParameter) TsType() (TsType, bool) {
+	field := ToJsNode(n.Child(selector.TsType)).(TsType)
+	return field, field.JsNode() != nil
 }
 
 type TypeParameters struct {
@@ -3466,8 +3486,9 @@ func (n VariableDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
 	return field, field.IsValid()
 }
 
-func (n VariableDeclaration) BindingPattern() BindingPattern {
-	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+func (n VariableDeclaration) BindingPattern() (BindingPattern, bool) {
+	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+	return field, field.JsNode() != nil
 }
 
 func (n VariableDeclaration) TypeAnnotation() (TypeAnnotation, bool) {
@@ -3521,6 +3542,7 @@ type Yield struct {
 	*Node
 }
 
-func (n Yield) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Yield) Expression() (Expression, bool) {
+	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+	return field, field.JsNode() != nil
 }
