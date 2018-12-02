@@ -448,10 +448,14 @@ ${if field.isList()-}
 	return ret
 ${else if self->isOpt(field)-}
 	field := ${self->convertNode(field, self->getFieldNode(field))}
-	return field, ${if self->isOneType(field)}field.IsValid()${else}field.${self->underyingNodeMethod()}() != nil${end}
+	return field, ${call getterIsValid-}
 ${else-}
 	return ${self->convertNode(field, self->getFieldNode(field))}
 ${end-}
+${end}
+
+${template getterIsValid-}
+${if self->isOneType(field)}field.IsValid()${else}field.${self->underyingNodeMethod()}() != nil${end-}
 ${end}
 
 
