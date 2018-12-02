@@ -337,7 +337,7 @@ ${template interfaces-}
 // Interfaces.
 
 type ${self->baseNode()} interface {
-	${self->baseNode()}() ${self->wrappedTypeRef()}
+	${self->underyingNodeMethod()}() ${self->wrappedTypeRef()}
 }
 
 ${if opts.reportTokens.length > 0-}
@@ -352,16 +352,16 @@ var nilInstance = &NilNode{}
 
 // All types implement ${self->baseNode()}.
 ${foreach rangeType in syntax.rangeTypes.sort(it|it)-}
-func (n ${rangeType->astClassRef()->go.declarationName()}) ${self->baseNode()}() ${self->wrappedTypeRef()} { return n.Node }
+func (n ${rangeType->astClassRef()->go.declarationName()}) ${self->underyingNodeMethod()}() ${self->wrappedTypeRef()} { return n.Node }
 ${end-}
 ${if opts.reportTokens.length > 0-}
-func (n Token) ${self->baseNode()}() ${self->wrappedTypeRef()} { return n.Node }
+func (n Token) ${self->underyingNodeMethod()}() ${self->wrappedTypeRef()} { return n.Node }
 ${end-}
-func (NilNode) ${self->baseNode()}() ${self->wrappedTypeRef()} { return nil }
+func (NilNode) ${self->underyingNodeMethod()}() ${self->wrappedTypeRef()} { return nil }
 
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet')-}
 type ${cat->astInterfaceRef()->go.declarationName()} interface {
-	${self->baseNode()}
+	${self->underyingNodeMethod()}
 	${cat->asInterfaceMethod()}()
 }
 
@@ -448,7 +448,7 @@ ${if field.isList()-}
 	return ret
 ${else if self->isOpt(field)-}
 	field := ${self->convertNode(field, self->getFieldNode(field))}
-	return field, ${if self->isOneType(field)}field.IsValid()${else}field.${self->baseNode()}() != nil${end}
+	return field, ${if self->isOneType(field)}field.IsValid()${else}field.${self->underyingNodeMethod()}() != nil${end}
 ${else-}
 	return ${self->convertNode(field, self->getFieldNode(field))}
 ${end-}
@@ -475,3 +475,5 @@ ${query astClassRef() = self->package()->go.element(self->go_listener.asRangeTyp
 ${query astInterfaceRef() = self->package()->go.element(self->go_listener.asRangeTypeName())}
 
 ${template customRules}${end}
+
+${query underyingNodeMethod() = self->baseNode()}
