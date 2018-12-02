@@ -522,8 +522,9 @@ func (n File) Options() []Option {
 	return ret
 }
 
-func (n File) Lexer() LexerSection {
-	return LexerSection{n.Child(selector.LexerSection)}
+func (n File) Lexer() (LexerSection, bool) {
+	field := LexerSection{n.Child(selector.LexerSection)}
+	return field, field.IsValid()
 }
 
 func (n File) Parser() (ParserSection, bool) {

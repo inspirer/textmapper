@@ -193,7 +193,7 @@ syntax_problem -> SyntaxProblem:
     error ;
 
 file -> File:
-    header imports=import_* options=option* lexer=lexer_section parser=parser_section? ;
+    header imports=import_* options=option* lexer=lexer_section? parser=parser_section? ;
 
 header -> Header:
     'language' name=name ('(' target=name ')')? ';' ;
@@ -250,7 +250,7 @@ start_conditions -> StartConditions:
 
 lexeme -> Lexeme:
     start_conditions? name=identifier rawTypeopt ':'
-          (pattern priority=integer_literalopt attrs=lexeme_attrsopt commandopt)? ;
+          (pattern priority=integer_literal? attrs=lexeme_attrs? command?)? ;
 
 lexeme_attrs -> LexemeAttrs:
     '(' lexeme_attribute ')' ;
@@ -349,7 +349,7 @@ rules:
 %interface Rule0;
 
 rule0 -> Rule0:
-    predicate? rhsParts? rhsSuffixopt reportClause?       -> Rule
+    predicate? rhsParts? rhsSuffix? reportClause?       -> Rule
   | syntax_problem
 ;
 
@@ -527,10 +527,12 @@ expression -> Expression:
 
 ${template go_lexer.stateVars}
 	inStatesSelector bool
+	prev             Token
 ${end}
 
 ${template go_lexer.initStateVars-}
 	l.inStatesSelector = false
+	l.prev = UNAVAILABLE
 ${end}
 
 ${template go_lexer.onAfterNext-}
@@ -548,10 +550,15 @@ ${template go_lexer.onAfterNext-}
 	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
 		BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
 		NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
-		NOMINUSEOI, CHAR_S, CHAR_X,
-		SOFT, CLASS, INTERFACE, VOID, SPACE,
-		LAYOUT, LANGUAGE, LALR, LEXER, PARSER:
+		CHAR_S, CHAR_X, SOFT, CLASS, INTERFACE, VOID, SPACE,
+		LAYOUT, LANGUAGE, LALR:
 		l.State = StateAfterID
+	case LEXER, PARSER:
+		if l.prev == COLONCOLON {
+			l.State = StateInitial
+		} else {
+			l.State = StateAfterID
+		}
 	case ASSIGN, COLON:
 		l.State = StateAfterColonOrEq
 	case CODE:
@@ -562,6 +569,7 @@ ${template go_lexer.onAfterNext-}
 	default:
 		l.State = StateInitial
 	}
+	l.prev = token
 ${end}
 
 ${template go_types.wrappedTypeExt-}

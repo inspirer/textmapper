@@ -63,6 +63,7 @@ var lexerTests = []struct {
 
 		`«{ skip("{{{", '}', '\''); }» `,
 		`«{ skip("\"}\\"); }» `,
+		"language l(a); :: lexer\n<*> { error: /abc/ «{}» }",
 	}},
 	{tm.LBRACE, []string{
 		`<a> «{» error: }`,

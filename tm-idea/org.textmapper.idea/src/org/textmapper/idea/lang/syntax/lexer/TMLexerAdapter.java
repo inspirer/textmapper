@@ -318,8 +318,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 	}
 
 	private static class IdeaLapgLexer extends TMLexer {
-		private boolean fAfterColonColon = false;
-
 		public IdeaLapgLexer(CharSequence input) throws IOException {
 			super(input, (message, line, offset, endoffset) -> {
 			});
@@ -327,8 +325,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 
 		@Override
 		public void setState(int state) {
-			fAfterColonColon = (state == STATE_AFTER_COLONCOLON);
-			if (fAfterColonColon) {
+			afterColonColon = (state == STATE_AFTER_COLONCOLON);
+			if (afterColonColon) {
 				state = States.initial;
 			}
 			inStatesSelector = (state&16) != 0;
@@ -340,29 +338,14 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 
 		@Override
 		public int getState() {
-			if (fAfterColonColon) return STATE_AFTER_COLONCOLON;
+			if (afterColonColon) return STATE_AFTER_COLONCOLON;
 			return super.getState() + (inStatesSelector ? 16 : 0);
-		}
-
-		@Override
-		public void reset(CharSequence input) throws IOException {
-			fAfterColonColon = false;
-			super.reset(input);
 		}
 
 		@Override
 		protected boolean createToken(Span token, int ruleIndex) throws IOException {
 			super.createToken(token, ruleIndex);
 			return true;
-		}
-
-		@Override
-		public Span next() throws IOException {
-			Span next = super.next();
-			if (next.symbol != Tokens._skip && next.symbol != Tokens._skip_comment && next.symbol != Tokens._skip_multiline) {
-				fAfterColonColon = (next.symbol == Tokens.ColonColon && super.getState() == States.initial && !inStatesSelector);
-			}
-			return next;
 		}
 	}
 }

@@ -35,7 +35,8 @@ func (c *compiler) compileLexer() {
 	c.addToken(InvalidToken, ast.RawType{}, nil)
 
 	c.collectStartConds()
-	c.traverseLexer(c.file.Lexer().LexerPart(), c.inclusiveSC, nil /*parent patterns*/)
+	lexer, _ := c.file.Lexer()
+	c.traverseLexer(lexer.LexerPart(), c.inclusiveSC, nil /*parent patterns*/)
 }
 
 func (c *compiler) collectStartConds() {
@@ -51,7 +52,8 @@ func (c *compiler) collectStartConds() {
 		conds[name] = excl
 		names = append(names, name)
 	}
-	for _, p := range c.file.Lexer().LexerPart() {
+	lexer, _ := c.file.Lexer()
+	for _, p := range lexer.LexerPart() {
 		switch p := p.(type) {
 		case *ast.ExclusiveStartConds:
 			for _, s := range p.States() {

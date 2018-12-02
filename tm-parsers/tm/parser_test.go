@@ -16,20 +16,48 @@ var parseTests = []struct {
 	inputs []string
 }{
 
+	{tm.Name, []string{
+		`  language «a»(«b»); :: lexer error: `,
+	}},
+	{tm.KeyValue, []string{
+		header + ` «a = 5»  «list = [5]»  «feature = true» `,
+	}},
+	{tm.IntegerLiteral, []string{
+		header + ` a = «5»  list = [«5»]  feature = true `,
+	}},
+	{tm.BooleanLiteral, []string{
+		header + ` a = «true»`,
+	}},
+	{tm.Lexeme, []string{
+		lexerPre + ` «error:»`,
+		lexerPre + ` «<foo, bar> error:»`,
+		lexerPre + ` <foo, bar> { «error:» }`,
+		lexerPre + ` «error: /abc/ -1»  «def:»`,
+		lexerPre + ` «error: /abc/ {}»`,
+		lexerPre + ` <*> { «error: /abc/ {}» }`,
+		lexerPre + ` «int {Type}: /[0-9]+/ { $$ = parseInt(); }»`,
+	}},
+	{tm.Command, []string{
+		lexerPre + ` abc: /abc/ «{}»`,
+		lexerPre + ` abc: /abc/ «{ printf("}") }»`,
+	}},
 	{tm.Comment, []string{
-		rule(` «# abc»
+		parserPre + ` «# abc»
 		  «# abc2»
 		  a : abc ;    «# 8»
-		  «# abc2»`),
+		  «# abc2»`,
 	}},
 	{tm.MultilineComment, []string{
-		rule(`a void : «/* te ** / st */» ;`),
-		rule(`«/* abc */» a:b;`),
+		parserPre + `a void : «/* te ** / st */» ;`,
+		parserPre + `«/* abc */» a:b;`,
 	}},
 	{tm.InvalidToken, []string{
-		rule("a : «'»\n   ;"),
+		parserPre + "a : «'»\n   ;",
 	}},
 
+	{tm.Rule, []string{
+		parserPre + " a : /* empty */ «»| «abc» | «abc -> def» ; ",
+	}},
 	// TODO add tests
 }
 
@@ -37,7 +65,8 @@ func TestParser(t *testing.T) {
 	l := new(tm.Lexer)
 	p := new(tm.Parser)
 
-	seen := map[tm.NodeType]bool{}
+	seen := make(map[tm.NodeType]bool)
+	seen[tm.File] = true
 	for _, tc := range parseTests {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
@@ -62,9 +91,9 @@ func TestParser(t *testing.T) {
 	}
 }
 
-func rule(s string) string {
-	return `language l(a); :: lexer a = /abc/ :: parser ` + s
-}
+const header = "language l(a); "
+const lexerPre = "language l(a); :: lexer\n"
+const parserPre = "language l(a); :: lexer a = /abc/ :: parser "
 
 const wantTextmapperFiles = 30
 

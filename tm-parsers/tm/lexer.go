@@ -31,6 +31,7 @@ type Lexer struct {
 	State int // lexer state, modifiable
 
 	inStatesSelector bool
+	prev             Token
 }
 
 var bomSeq = "\xef\xbb\xbf"
@@ -48,6 +49,7 @@ func (l *Lexer) Init(source string) {
 	l.scanOffset = 0
 	l.State = 0
 	l.inStatesSelector = false
+	l.prev = UNAVAILABLE
 
 	if strings.HasPrefix(source, bomSeq) {
 		l.scanOffset += len(bomSeq)
@@ -369,10 +371,15 @@ recovered:
 	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
 		BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
 		NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
-		NOMINUSEOI, CHAR_S, CHAR_X,
-		SOFT, CLASS, INTERFACE, VOID, SPACE,
-		LAYOUT, LANGUAGE, LALR, LEXER, PARSER:
+		CHAR_S, CHAR_X, SOFT, CLASS, INTERFACE, VOID, SPACE,
+		LAYOUT, LANGUAGE, LALR:
 		l.State = StateAfterID
+	case LEXER, PARSER:
+		if l.prev == COLONCOLON {
+			l.State = StateInitial
+		} else {
+			l.State = StateAfterID
+		}
 	case ASSIGN, COLON:
 		l.State = StateAfterColonOrEq
 	case CODE:
@@ -383,6 +390,7 @@ recovered:
 	default:
 		l.State = StateInitial
 	}
+	l.prev = token
 	return token
 }
 

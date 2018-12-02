@@ -97,7 +97,8 @@ func TestParser(t *testing.T) {
 
 	var buf bytes.Buffer
 	file := File{tree.Root()}
-	for _, lp := range file.Lexer().LexerPart() {
+	lexer, _ := file.Lexer()
+	for _, lp := range lexer.LexerPart() {
 		switch lp := lp.(type) {
 		case *Lexeme:
 			fmt.Fprintf(&buf, "token %v\n", lp.Name().Text())

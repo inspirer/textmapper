@@ -20,7 +20,7 @@ const (
 	Name // (Identifier)+
 	Command
 	SyntaxProblem
-	File          // Header imports=(Import)* options=(Option)* lexer=LexerSection parser=ParserSection?
+	File          // Header imports=(Import)* options=(Option)* lexer=LexerSection? parser=ParserSection?
 	Header        // name=Name target=Name?
 	LexerSection  // (LexerPart)+
 	ParserSection // (GrammarPart)+
@@ -404,6 +404,8 @@ var ruleNodeType = [...]NodeType{
 	SyntaxProblem,        // syntax_problem : error
 	0,                    // file : header import__optlist option_optlist lexer_section parser_section
 	0,                    // file : header import__optlist option_optlist lexer_section
+	0,                    // file : header import__optlist option_optlist parser_section
+	0,                    // file : header import__optlist option_optlist
 	0,                    // import__optlist : import__optlist import_
 	0,                    // import__optlist :
 	0,                    // option_optlist : option_optlist option
@@ -437,9 +439,23 @@ var ruleNodeType = [...]NodeType{
 	StartConditions,      // start_conditions : '<' stateref_list_Comma_separated '>'
 	0,                    // stateref_list_Comma_separated : stateref_list_Comma_separated ',' stateref
 	0,                    // stateref_list_Comma_separated : stateref
-	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern integer_literalopt lexeme_attrsopt commandopt
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern integer_literal lexeme_attrs command
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern integer_literal lexeme_attrs
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern integer_literal command
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern integer_literal
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern lexeme_attrs command
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern lexeme_attrs
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern command
+	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':' pattern
 	Lexeme,               // lexeme : start_conditions identifier rawTypeopt ':'
-	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern integer_literalopt lexeme_attrsopt commandopt
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern integer_literal lexeme_attrs command
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern integer_literal lexeme_attrs
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern integer_literal command
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern integer_literal
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern lexeme_attrs command
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern lexeme_attrs
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern command
+	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern
 	Lexeme,               // lexeme : identifier rawTypeopt ':'
 	LexemeAttrs,          // lexeme_attrs : '(' lexeme_attribute ')'
 	LexemeAttribute,      // lexeme_attribute : 'soft'
@@ -513,14 +529,22 @@ var ruleNodeType = [...]NodeType{
 	0,                    // references_cs : references_cs ',' symref
 	0,                    // rules : rule0
 	0,                    // rules : rules '|' rule0
-	Rule,                 // rule0 : predicate rhsParts rhsSuffixopt reportClause
-	Rule,                 // rule0 : predicate rhsParts rhsSuffixopt
-	Rule,                 // rule0 : predicate rhsSuffixopt reportClause
-	Rule,                 // rule0 : predicate rhsSuffixopt
-	Rule,                 // rule0 : rhsParts rhsSuffixopt reportClause
-	Rule,                 // rule0 : rhsParts rhsSuffixopt
-	Rule,                 // rule0 : rhsSuffixopt reportClause
-	Rule,                 // rule0 : rhsSuffixopt
+	Rule,                 // rule0 : predicate rhsParts rhsSuffix reportClause
+	Rule,                 // rule0 : predicate rhsParts rhsSuffix
+	Rule,                 // rule0 : predicate rhsParts reportClause
+	Rule,                 // rule0 : predicate rhsParts
+	Rule,                 // rule0 : predicate rhsSuffix reportClause
+	Rule,                 // rule0 : predicate rhsSuffix
+	Rule,                 // rule0 : predicate reportClause
+	Rule,                 // rule0 : predicate
+	Rule,                 // rule0 : rhsParts rhsSuffix reportClause
+	Rule,                 // rule0 : rhsParts rhsSuffix
+	Rule,                 // rule0 : rhsParts reportClause
+	Rule,                 // rule0 : rhsParts
+	Rule,                 // rule0 : rhsSuffix reportClause
+	Rule,                 // rule0 : rhsSuffix
+	Rule,                 // rule0 : reportClause
+	Rule,                 // rule0 :
 	0,                    // rule0 : syntax_problem
 	Predicate,            // predicate : '[' predicate_expression ']'
 	RhsSuffix,            // rhsSuffix : '%' 'prec' symref
@@ -617,12 +641,4 @@ var ruleNodeType = [...]NodeType{
 	0,                    // expression_list_Comma_separated_opt :
 	0,                    // rawTypeopt : rawType
 	0,                    // rawTypeopt :
-	0,                    // integer_literalopt : integer_literal
-	0,                    // integer_literalopt :
-	0,                    // lexeme_attrsopt : lexeme_attrs
-	0,                    // lexeme_attrsopt :
-	0,                    // commandopt : command
-	0,                    // commandopt :
-	0,                    // rhsSuffixopt : rhsSuffix
-	0,                    // rhsSuffixopt :
 }

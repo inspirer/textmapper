@@ -147,6 +147,7 @@ public class TMLexer {
 	private int currOffset;
 
 	protected boolean inStatesSelector = false;
+	protected boolean afterColonColon = false;
 	private int templatesStart = -1;
 	private boolean skipComments = true;
 
@@ -228,6 +229,7 @@ public class TMLexer {
 			chr = Character.toCodePoint((char) chr, input.charAt(l++));
 		}
 		inStatesSelector = false;
+		afterColonColon = false;
 	}
 
 	protected void advance() {
@@ -453,17 +455,21 @@ public class TMLexer {
 		case Tokens.layout:
 		case Tokens.language:
 		case Tokens.lalr:
+		  this.state = States.afterID;
+		  break;
 		case Tokens.lexer:
 		case Tokens.parser:
-		  this.state = States.afterID;
+		  this.state = afterColonColon ? States.initial : States.afterID;
 		  break;
 		case Tokens._skip:
 		case Tokens._skip_comment:
 		case Tokens._skip_multiline:
-			break;
+		  // Note: these do not affect the '::' tracking.
+			return token;
 		default:
 			this.state = States.initial;
 		}
+		this.afterColonColon = (token.symbol == Tokens.ColonColon);
 		return token;
 	}
 
