@@ -86,6 +86,7 @@
 			  ~ git checkout -b vx.y.z
 			  ~ mvn versions:set -DnewVersion=x.y.z
 			  ~ mvn clean install
+			  ~ export GPG_TTY=$(tty)
 			  ~ mvn clean deploy -Dmaven.test.skip=true -P oss-release
 			  ~
 			  ~ mvn nexus-staging:release
