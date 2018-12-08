@@ -10,8 +10,9 @@ import (
 // Rule is a lexer generator rule.
 type Rule struct {
 	RE              *Regexp
-	StartConditions []int // An empty list is equivalent to the initial start condition (== 0).
-	Precedence      int   // Precedence disambiguates between rules that match the same prefix.
+	Resolver        Resolver
+	StartConditions []int
+	Precedence      int // Precedence disambiguates between rules that match the same prefix.
 	Action          int
 	Origin          status.SourceNode
 	OriginName      string
@@ -60,11 +61,11 @@ type Resolver interface {
 }
 
 // Compile combines a set of rules into a lexer.
-func Compile(rules []*Rule, resolver Resolver) (*Tables, error) {
+func Compile(rules []*Rule) (*Tables, error) {
 	var s status.Status
 	var index []int
 	var maxSC int
-	c := newCompiler(resolver)
+	c := newCompiler()
 	for _, r := range rules {
 		i, err := c.addRegexp(r.RE, r.Action, r)
 		if err != nil {
@@ -89,9 +90,6 @@ func Compile(rules []*Rule, resolver Resolver) (*Tables, error) {
 
 	startStates := make([][]int, maxSC+1)
 	for i, r := range rules {
-		if len(r.StartConditions) == 0 {
-			startStates[0] = append(startStates[0], index[i])
-		}
 		for _, sc := range r.StartConditions {
 			startStates[sc] = append(startStates[sc], index[i])
 		}

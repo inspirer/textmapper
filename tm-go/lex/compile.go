@@ -18,7 +18,6 @@ func (i inst) core() bool {
 
 // reCompiler translates a set of regular expressions into a single list of instructions.
 type reCompiler struct {
-	resolver   Resolver
 	sets       []charset
 	out        []inst
 	consume    []int
@@ -27,9 +26,8 @@ type reCompiler struct {
 	err        error
 }
 
-func newCompiler(resolver Resolver) *reCompiler {
+func newCompiler() *reCompiler {
 	return &reCompiler{
-		resolver:   resolver,
 		runes:      make(map[rune]int),
 		inExternal: make(map[string]bool),
 	}
@@ -38,7 +36,7 @@ func newCompiler(resolver Resolver) *reCompiler {
 func (c *reCompiler) addRegexp(r *Regexp, action int, rule *Rule) (int, error) {
 	c.err = nil
 	ret := c.next()
-	c.serialize(r)
+	c.serialize(r, rule.Resolver)
 	accept := c.emit(nil)
 	c.out[accept].rule = rule
 	transitiveClosure(c.out[ret:])
@@ -73,7 +71,7 @@ func (c *reCompiler) compile() (ins []inst, inputMap []RangeEntry) {
 	return c.out, inputMap
 }
 
-func (c *reCompiler) serialize(re *Regexp) {
+func (c *reCompiler) serialize(re *Regexp, resolver Resolver) {
 	if c.err != nil {
 		return
 	}
@@ -90,13 +88,13 @@ func (c *reCompiler) serialize(re *Regexp) {
 			c.errorf("named patterns cannot recursively depend on each other (in %s)", re.text)
 			return
 		}
-		ext := c.resolver.Resolve(re.text)
+		ext := resolver.Resolve(re.text)
 		if ext == nil {
 			c.errorf("cannot find named pattern: %s", re.text)
 			return
 		}
 		c.inExternal[re.text] = true
-		c.serialize(ext)
+		c.serialize(ext, resolver)
 		delete(c.inExternal, re.text)
 	case opRepeat:
 		if re.min > 16 || re.max > 16 {
@@ -105,11 +103,11 @@ func (c *reCompiler) serialize(re *Regexp) {
 		}
 
 		for i := 0; i < re.min; i++ {
-			c.serialize(re.sub[0])
+			c.serialize(re.sub[0], resolver)
 		}
 		if re.max == -1 {
 			start := c.next()
-			c.serialize(re.sub[0])
+			c.serialize(re.sub[0], resolver)
 			barrier := c.emit(nil)
 			c.link(barrier, start)
 			c.link(start, c.next())
@@ -117,7 +115,7 @@ func (c *reCompiler) serialize(re *Regexp) {
 			var subs []int
 			for i := re.max - re.min; i >= 0; i-- {
 				subs = append(subs, c.next())
-				c.serialize(re.sub[0])
+				c.serialize(re.sub[0], resolver)
 			}
 			barrier := c.emit(nil)
 			for _, sub := range subs {
@@ -130,7 +128,7 @@ func (c *reCompiler) serialize(re *Regexp) {
 		var ends []int
 		for _, s := range re.sub {
 			c.link(alt, c.next())
-			c.serialize(s)
+			c.serialize(s, resolver)
 			ends = append(ends, c.emit(nil))
 		}
 		for _, end := range ends {
@@ -138,7 +136,7 @@ func (c *reCompiler) serialize(re *Regexp) {
 		}
 	case opConcat:
 		for _, s := range re.sub {
-			c.serialize(s)
+			c.serialize(s, resolver)
 		}
 	default:
 		panic("unknown regexp operation")

@@ -84,7 +84,15 @@ func (c *compiler) collectStartConds() {
 
 func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 	var ret []int
-	for _, ref := range sc.Stateref() {
+	refs := sc.Stateref()
+	if len(refs) == 0 {
+		// <*>
+		for i := range c.out.StartConditions {
+			ret = append(ret, i)
+		}
+		return ret
+	}
+	for _, ref := range refs {
 		name := ref.Name().Text()
 		if val, ok := c.conds[name]; ok {
 			ret = append(ret, val)
@@ -124,6 +132,7 @@ func (c *compiler) addToken(name string, t ast.RawType, n status.SourceNode) int
 }
 
 func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *patterns) {
+	inClause := p != nil
 	ps := &patterns{
 		parent: p,
 		set:    make(map[string]*lex.Regexp),
@@ -137,7 +146,13 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 			if pat, ok := p.Pattern(); ok {
 				re, err := parsePattern(pat)
 				c.s.AddError(err)
-				rule := &lex.Rule{RE: re, StartConditions: defaultSCs, Origin: p, OriginName: p.Name().Text()}
+				rule := &lex.Rule{
+					RE:              re,
+					StartConditions: defaultSCs,
+					Origin:          p,
+					OriginName:      p.Name().Text(),
+				}
+
 				if prio, ok := p.Priority(); ok {
 					rule.Precedence, _ = strconv.Atoi(prio.Text())
 				}
@@ -155,6 +170,11 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 			c.traverseLexer(p.LexerPart(), newDefaults, ps)
 		case *ast.SyntaxProblem, *ast.DirectiveBrackets:
 			c.errorf(p.TmNode(), "syntax error")
+		case *ast.ExclusiveStartConds, *ast.InclusiveStartConds:
+			if inClause {
+				// %s and %x are not allowed inside start condition clauses.
+				c.errorf(p.TmNode(), "syntax error")
+			}
 		}
 	}
 }

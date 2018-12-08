@@ -32,7 +32,7 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`\s+{hex}+`), Action: 0},
+			{RE: MustParse(`\s+{hex}+`), Action: 0, Resolver: testPatterns},
 			{RE: MustParse(`\w+`), Action: 1},
 		},
 		want: []string{
@@ -61,7 +61,7 @@ var compileTests = []struct {
 func TestCompile(t *testing.T) {
 	for n, test := range compileTests {
 		var index []int
-		c := newCompiler(testPatterns)
+		c := newCompiler()
 		for i, r := range test.rules {
 			offset, err := c.addRegexp(r.RE, r.Action, r)
 			if err != nil {
@@ -121,7 +121,7 @@ func dumpInst(i int, inst inst, b *bytes.Buffer) {
 }
 
 func TestErrors(t *testing.T) {
-	c := newCompiler(testPatterns)
+	c := newCompiler()
 	r := &Rule{
 		RE:         MustParse(`((asdasd)?|[abc]?)`),
 		Action:     42,

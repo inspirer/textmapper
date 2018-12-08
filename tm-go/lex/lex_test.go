@@ -15,7 +15,7 @@ var lexTests = []struct {
 }{
 	{
 		rules: []*Rule{
-			{RE: MustParse(`a`), Action: 1},
+			{RE: MustParse(`a`), Action: 1, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a] -> 1;`,
@@ -24,7 +24,7 @@ var lexTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`[a-z]+`), Action: 1},
+			{RE: MustParse(`[a-z]+`), Action: 1, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a-z] -> 1;`,
@@ -33,8 +33,8 @@ var lexTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`[ \t]+`), Action: 0},
-			{RE: MustParse(`[a-zA-Z_][a-zA-Z_0-9]*`), Action: 2},
+			{RE: MustParse(`[ \t]+`), Action: 0, StartConditions: []int{0}},
+			{RE: MustParse(`[a-zA-Z_][a-zA-Z_0-9]*`), Action: 2, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [\t ] -> 1; [A-Z_a-z] -> 2;`,
@@ -44,8 +44,8 @@ var lexTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`(abcd?)`), Action: 1},
-			{RE: MustParse(`ab`), Action: 2},
+			{RE: MustParse(`(abcd?)`), Action: 1, StartConditions: []int{0}},
+			{RE: MustParse(`ab`), Action: 2, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a] -> 1;`,
@@ -60,7 +60,7 @@ var lexTests = []struct {
 
 func TestLex(t *testing.T) {
 	for _, tc := range lexTests {
-		tables, err := Compile(tc.rules, nil)
+		tables, err := Compile(tc.rules)
 		if err != nil {
 			t.Errorf("Compile(%v) failed with %v", tc.rules, err)
 		}

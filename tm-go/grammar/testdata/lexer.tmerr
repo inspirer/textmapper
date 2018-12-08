@@ -29,3 +29,8 @@ broken_regex: /asd«\0a»bc/
 broken_regex: /asd«)»/
 # err: broken regexp: missing closing parenthesis
 broken_regex: «/(asd/»
+
+<*> {
+   «%s foo;»
+# err: syntax error
+}
