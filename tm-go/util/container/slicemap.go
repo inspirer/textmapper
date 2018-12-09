@@ -31,7 +31,7 @@ func (m *IntSliceMap) Get(key []int) interface{} {
 	}
 
 	for _, entry := range m.data[hash] {
-		if sliceEqual(key, entry.key) {
+		if SliceEqual(key, entry.key) {
 			return entry.value
 		}
 	}
@@ -43,7 +43,8 @@ func (m *IntSliceMap) Get(key []int) interface{} {
 	return val
 }
 
-func sliceEqual(a, b []int) bool {
+// SliceEqual compares two slices for equality.
+func SliceEqual(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
 	}

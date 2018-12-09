@@ -44,14 +44,15 @@ func (g *Grammar) Tokens() []Symbol {
 
 // SemanticAction is a piece of code that will be executed upon some event.
 type SemanticAction struct {
-	Index  int
+	Action int
 	Code   string
+	Space  bool // this is a space token
 	Origin status.SourceNode
 }
 
 // ClassAction resolves class terminals into more specific tokens (such as keywords).
 type ClassAction struct {
-	Index  int
+	Action int
 	Custom map[string]int // maps constant terminals back into actions
 }
 

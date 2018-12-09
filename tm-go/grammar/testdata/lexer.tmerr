@@ -10,6 +10,9 @@ idChar = /[a-zA-Z_]/
 # err: redeclaration of idChar
 «idChar» = /[a-zA-Z_0-9]/
 
+# err: unused pattern 'unusedP'
+«unusedP» = /useless/
+
 id:      /{idChar}+/
 scon:    /"([^\n\\"]|\\.)*"/
 # err: terminal type redeclaration for id, was <no type>
@@ -34,3 +37,26 @@ broken_regex: «/(asd/»
    «%s foo;»
 # err: syntax error
 }
+
+# err: unresolved reference initia
+<«initia»> q: /qqq/
+
+%x off1;
+
+<initial, off1> a1: /%[a-z]+/ (class)
+# err: a2 must be applicable in the same set of start conditions as a1
+«<off1> a2: /%abc/»
+# OK
+<*> a3: /%def/
+# OK: order does not matter
+<off1, initial> a4: /%xyz/
+
+# err: two rules are identical: conflict_with_id and id
+«conflict_with_id: /ppp/»
+<off1> no_id_conflict: /ppp/
+
+# err: two rules are identical: ppp and no_id_conflict
+«<off1> ppp: /ppp/»
+
+# err: class rule without specializations 'noSpecializations'
+«noSpecializations: /567/ (class)»

@@ -3,7 +3,9 @@ package grammar
 import (
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
+	"github.com/inspirer/textmapper/tm-go/util/container"
 	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
+	"sort"
 	"strconv"
 )
 
@@ -14,7 +16,9 @@ func Compile(file ast.File) (*Grammar, error) {
 		out: &Grammar{
 			Lexer: &Lexer{},
 		},
-		syms: make(map[string]int),
+		syms:       make(map[string]int),
+		symAction:  make(map[int]int),
+		codeAction: make(map[symCode]int),
 	}
 	c.compileLexer()
 	return c.out, c.s.Err()
@@ -28,15 +32,37 @@ type compiler struct {
 	syms        map[string]int
 	conds       map[string]int
 	inclusiveSC []int
+	patterns    []*patterns // to keep track of unused patterns
+	classRules  []*lex.Rule
+	rules       []*lex.Rule
+	symAction   map[int]int
+	codeAction  map[symCode]int
+}
+
+type symCode struct {
+	code  string
+	space bool
+	sym   int
 }
 
 func (c *compiler) compileLexer() {
 	c.addToken(Eoi, ast.RawType{}, nil)
-	c.addToken(InvalidToken, ast.RawType{}, nil)
+	c.out.InvalidToken = c.addToken(InvalidToken, ast.RawType{}, nil)
 
 	c.collectStartConds()
 	lexer, _ := c.file.Lexer()
 	c.traverseLexer(lexer.LexerPart(), c.inclusiveSC, nil /*parent patterns*/)
+	c.resolveClasses()
+
+	var err error
+	c.out.Tables, err = lex.Compile(c.rules)
+	c.s.AddError(err)
+
+	for _, p := range c.patterns {
+		for name, unused := range p.unused {
+			c.errorf(unused, "unused pattern '%v'", name)
+		}
+	}
 }
 
 func (c *compiler) collectStartConds() {
@@ -57,11 +83,11 @@ func (c *compiler) collectStartConds() {
 		switch p := p.(type) {
 		case *ast.ExclusiveStartConds:
 			for _, s := range p.States() {
-				insert(s.Node, false)
+				insert(s.Node, true)
 			}
 		case *ast.InclusiveStartConds:
 			for _, s := range p.States() {
-				insert(s.Node, true)
+				insert(s.Node, false)
 			}
 		}
 	}
@@ -100,6 +126,7 @@ func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 		}
 		c.errorf(ref.Name(), "unresolved reference %v", name)
 	}
+	sort.Ints(ret)
 	return ret
 }
 
@@ -131,37 +158,90 @@ func (c *compiler) addToken(name string, t ast.RawType, n status.SourceNode) int
 	return sym.Index
 }
 
+func (c *compiler) addLexerAction(cmd ast.Command, space ast.LexemeAttribute, sym int) int {
+	if !cmd.IsValid() && !space.IsValid() {
+		if a, ok := c.symAction[sym]; ok {
+			return a
+		}
+		a := len(c.out.RuleToken)
+		c.out.RuleToken = append(c.out.RuleToken, sym)
+		c.symAction[sym] = a
+		return a
+	}
+
+	key := symCode{cmd.Text(), space.IsValid(), sym}
+	if a, ok := c.codeAction[key]; ok {
+		return a
+	}
+	a := len(c.out.RuleToken)
+	c.out.RuleToken = append(c.out.RuleToken, sym)
+	c.codeAction[key] = a
+
+	act := SemanticAction{Action: a, Code: key.code, Space: space.IsValid()}
+	if cmd.IsValid() {
+		act.Origin = cmd
+	} else {
+		act.Origin = space
+	}
+	c.out.Actions = append(c.out.Actions, act)
+	return a
+}
+
 func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *patterns) {
 	inClause := p != nil
 	ps := &patterns{
 		parent: p,
 		set:    make(map[string]*lex.Regexp),
-		used:   make(map[string]bool),
+		unused: make(map[string]status.SourceNode),
 	}
+	c.patterns = append(c.patterns, ps)
+
 	for _, p := range parts {
 		switch p := p.(type) {
 		case *ast.Lexeme:
 			rawType, _ := p.RawType()
 			tok := c.addToken(p.Name().Text(), rawType, p.Name())
-			if pat, ok := p.Pattern(); ok {
-				re, err := parsePattern(pat)
-				c.s.AddError(err)
-				rule := &lex.Rule{
-					RE:              re,
-					StartConditions: defaultSCs,
-					Origin:          p,
-					OriginName:      p.Name().Text(),
-				}
+			pat, ok := p.Pattern()
+			if !ok {
+				break
+			}
 
-				if prio, ok := p.Priority(); ok {
-					rule.Precedence, _ = strconv.Atoi(prio.Text())
+			re, err := parsePattern(pat)
+			c.s.AddError(err)
+			rule := &lex.Rule{
+				RE:              re,
+				StartConditions: defaultSCs,
+				Resolver:        ps,
+				Origin:          p,
+				OriginName:      p.Name().Text(),
+			}
+
+			if prio, ok := p.Priority(); ok {
+				rule.Precedence, _ = strconv.Atoi(prio.Text())
+			}
+			if sc, ok := p.StartConditions(); ok {
+				rule.StartConditions = c.resolveSC(sc)
+			}
+
+			var class bool
+			var space ast.LexemeAttribute
+			if attrs, ok := p.Attrs(); ok {
+				switch name := attrs.LexemeAttribute().Text(); name {
+				case "class":
+					class = true
+				case "space":
+					space = attrs.LexemeAttribute()
+				default:
+					c.errorf(attrs.LexemeAttribute(), "unsupported attribute")
 				}
-				if sc, ok := p.StartConditions(); ok {
-					rule.StartConditions = c.resolveSC(sc)
-				}
-				// TODO take the action instead
-				rule.Action = tok
-				// TODO do something with the rule
+			}
+
+			cmd, _ := p.Command()
+			rule.Action = c.addLexerAction(cmd, space, tok)
+			if class {
+				c.classRules = append(c.classRules, rule)
+			} else {
+				c.rules = append(c.rules, rule)
 			}
 		case *ast.NamedPattern:
 			c.s.AddError(ps.add(p))
@@ -179,6 +259,77 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 	}
 }
 
+func (c *compiler) resolveClasses() {
+	if len(c.classRules) == 0 {
+		return
+	}
+
+	var rewritten []*lex.Rule
+	for index, r := range c.classRules {
+		fork := new(lex.Rule)
+		*fork = *r
+		fork.Action = index
+		rewritten = append(rewritten, fork)
+	}
+	tables, err := lex.Compile(rewritten)
+	c.s.AddError(err)
+	if err != nil {
+		// Pretend that these class rules do not exist in the grammar and keep going.
+		return
+	}
+
+	// Pre-create class actions.
+	for _, r := range c.classRules {
+		ca := ClassAction{
+			Action: r.Action,
+			Custom: make(map[string]int),
+		}
+		c.out.ClassActions = append(c.out.ClassActions, ca)
+	}
+
+	out := c.rules[:0]
+	for _, r := range c.rules {
+		val, isConst := r.RE.Constant()
+		if !isConst {
+			out = append(out, r)
+			continue
+		}
+
+		classRule := -1
+		for _, start := range r.StartConditions {
+			size, result := tables.Scan(start, val)
+			if size == len(val) && result >= 0 {
+				classRule = result
+				break
+			}
+		}
+		if classRule == -1 {
+			out = append(out, r)
+			continue
+		}
+		class := c.classRules[classRule]
+
+		if !container.SliceEqual(class.StartConditions, r.StartConditions) {
+			c.errorf(r.Origin, "%v must be applicable in the same set of start conditions as %v", r.OriginName, class.OriginName)
+
+			// Fixing the problem for now and keep going.
+			r.StartConditions = class.StartConditions
+		}
+
+		// Move the rule under its class rule.
+		c.out.ClassActions[classRule].Custom[val] = r.Action
+	}
+
+	for i, r := range c.classRules {
+		if len(c.out.ClassActions[i].Custom) == 0 {
+			c.errorf(r.Origin, "class rule without specializations '%v'", r.OriginName)
+		}
+	}
+
+	c.rules = append(out, c.classRules...)
+	c.classRules = nil
+}
+
 func (c *compiler) errorf(n status.SourceNode, format string, a ...interface{}) {
 	c.s.Errorf(n, format, a...)
 }
@@ -186,11 +337,12 @@ func (c *compiler) errorf(n status.SourceNode, format string, a ...interface{}) 
 type patterns struct {
 	parent *patterns
 	set    map[string]*lex.Regexp
-	used   map[string]bool
+	unused map[string]status.SourceNode
 }
 
 func (p *patterns) Resolve(name string) *lex.Regexp {
 	if v, ok := p.set[name]; ok {
+		delete(p.unused, name)
 		return v
 	}
 	if p.parent != nil {
@@ -209,6 +361,7 @@ func (p *patterns) add(np *ast.NamedPattern) error {
 
 	re, err := parsePattern(np.Pattern())
 	p.set[name] = re
+	p.unused[name] = np.Name()
 	return err
 }
 

@@ -43,7 +43,9 @@ func TestErrors(t *testing.T) {
 
 		_, err = grammar.Compile(ast.File{Node: tree.Root()})
 		if err != nil {
-			for _, e := range status.FromError(err) {
+			s := status.FromError(err)
+			s.Sort()
+			for _, e := range s {
 				pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
 				if len(want) == 0 {
 					t.Errorf("unexpected error at line %v: %v", e.Origin.Line, e.Msg)
