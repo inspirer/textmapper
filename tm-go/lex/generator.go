@@ -12,15 +12,11 @@ var (
 	errNoStartStates = errors.New("lexer has no start states")
 )
 
-type checkpoint struct {
-	targetState int
-	action      int
-}
-
 type state struct {
 	index  int
 	set    []int
 	action []int // -1 invalid token, -2 eoi, -3... lexer rule #0
+	accept int   // a matched action for the current prefix, or -1 if there is none
 }
 
 // generator assembles regex instructions into a lexer DFA.
@@ -82,17 +78,17 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 		// Compute whether we can accept the current prefix, and also collect all transition symbols
 		// taking us to some other state.
 		var acceptRule *Rule
-		accept := -1
+		state.accept = -1
 		g.shift.ClearAll()
 		for _, i := range state.set {
 			inst := g.ins[i]
 			for _, sym := range inst.consume {
 				g.shift.Set(int(sym))
 			}
-			if inst.rule != nil && accept != inst.rule.Action {
+			if inst.rule != nil && state.accept != inst.rule.Action {
 				switch {
-				case accept == -1 || acceptRule.Precedence < inst.rule.Precedence:
-					accept = inst.rule.Action
+				case state.accept == -1 || acceptRule.Precedence < inst.rule.Precedence:
+					state.accept = inst.rule.Action
 					acceptRule = inst.rule
 				case acceptRule.Precedence == inst.rule.Precedence:
 					msg := fmt.Sprintf("two rules are identical: %v and %v", inst.rule.OriginName, acceptRule.OriginName)
@@ -104,8 +100,8 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 		// Record all transitions.
 		state.action = make([]int, g.numSymbols)
 		defAction := -1
-		if accept >= 0 {
-			defAction = -3 - accept
+		if state.accept >= 0 {
+			defAction = -3 - state.accept
 		}
 		for sym := 0; sym < g.numSymbols; sym++ {
 			if !g.shift.Get(sym) {
@@ -127,7 +123,49 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 		first.action[0] = -2
 	}
 
-	// TODO implement backtracking
+	// Adding backtracking states.
+	type checkpoint struct {
+		targetState int
+		accept      int
+	}
+	var bt map[checkpoint]int
+	var numBtStates int
+	for _, state := range g.states {
+		if state.accept == -1 {
+			continue
+		}
+		for i, val := range state.action {
+			if val < 0 || g.states[val].accept >= 0 {
+				continue
+			}
+
+			// This transition requires backtracking.
+			key := checkpoint{val, state.accept}
+			if btState, ok := bt[key]; ok {
+				state.action[i] = btState
+				continue
+			}
+			if bt == nil {
+				bt = make(map[checkpoint]int)
+			}
+			btState := len(g.states) + numBtStates
+			bt[key] = btState
+			backtrack = append(backtrack, key.accept, key.targetState)
+			numBtStates++
+			state.action[i] = btState
+		}
+	}
+
+	// Make room for backtracking states in the action space.
+	for _, state := range g.states {
+		for i, val := range state.action {
+			if val >= len(g.states) {
+				state.action[i] = -1 - (val - len(g.states))
+			} else if val < 0 {
+				state.action[i] -= numBtStates
+			}
+		}
+	}
 
 	// Assemble the DFA table.
 	dfa = make([]int, len(g.states)*g.numSymbols)
@@ -136,5 +174,5 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 		offset += copy(dfa[offset:], state.action)
 	}
 
-	return dfa, nil, g.s.Err()
+	return dfa, backtrack, g.s.Err()
 }

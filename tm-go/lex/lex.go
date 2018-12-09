@@ -3,6 +3,7 @@ package lex
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/inspirer/textmapper/tm-go/status"
 )
@@ -53,6 +54,36 @@ type Tables struct {
 	Dfa []int
 	// A flattened array of pairs [action to backtrack to, next state to try].
 	Backtrack []int
+}
+
+// Scan applies the lexer to a given string and returns the first discovered token.
+func (t *Tables) Scan(start int, text string) (size, action int) {
+	state := t.StateMap[start]
+	actionStart := -1 - len(t.Backtrack)/2
+	for index, r := range text {
+		i := sort.Search(len(t.SymbolMap), func(i int) bool { return i+1 == len(t.SymbolMap) || t.SymbolMap[i+1].Start > r })
+		ch := int(t.SymbolMap[i].Target)
+		state = t.Dfa[state*t.NumSymbols+ch]
+		if state < 0 {
+			if state > actionStart {
+				i := (-1 - state) * 2
+				action, state = t.Backtrack[i], t.Backtrack[i+1]
+				size = index
+				continue
+			}
+			if actionStart == state && size > 0 {
+				// Backtrack.
+				return
+			}
+			return index, actionStart - state - 2
+		}
+	}
+	state = t.Dfa[state*t.NumSymbols] // end-of-input transition
+	if actionStart == state && size > 0 {
+		// Backtrack.
+		return
+	}
+	return len(text), actionStart - state - 2
 }
 
 // Resolver retrieves named regular expressions.
