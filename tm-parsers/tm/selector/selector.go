@@ -45,7 +45,6 @@ var (
 	LexerState           = func(t tm.NodeType) bool { return t == tm.LexerState }
 	ListSeparator        = func(t tm.NodeType) bool { return t == tm.ListSeparator }
 	LookaheadPredicate   = func(t tm.NodeType) bool { return t == tm.LookaheadPredicate }
-	Name                 = func(t tm.NodeType) bool { return t == tm.Name }
 	NamedPattern         = func(t tm.NodeType) bool { return t == tm.NamedPattern }
 	Nonterm              = func(t tm.NodeType) bool { return t == tm.Nonterm }
 	NontermParams        = func(t tm.NodeType) bool { return t == tm.NontermParams }

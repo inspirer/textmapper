@@ -17,11 +17,10 @@ const (
 	StringLiteral
 	BooleanLiteral
 	Pattern
-	Name // (Identifier)+
 	Command
 	SyntaxProblem
 	File          // Header imports=(Import)* options=(Option)* lexer=LexerSection? parser=ParserSection?
-	Header        // name=Name target=Name?
+	Header        // name=Identifier target=Identifier?
 	LexerSection  // (LexerPart)+
 	ParserSection // (GrammarPart)+
 	Import        // alias=Identifier? path=StringLiteral
@@ -111,7 +110,6 @@ var nodeTypeStr = [...]string{
 	"StringLiteral",
 	"BooleanLiteral",
 	"Pattern",
-	"Name",
 	"Command",
 	"SyntaxProblem",
 	"File",
@@ -397,9 +395,6 @@ var ruleNodeType = [...]NodeType{
 	0,                    // literal : integer_literal
 	0,                    // literal : boolean_literal
 	Pattern,              // pattern : regexp
-	0,                    // qualified_name : identifier
-	0,                    // qualified_name : qualified_name '.' identifier_Kw
-	Name,                 // name : qualified_name
 	Command,              // command : code
 	SyntaxProblem,        // syntax_problem : error
 	0,                    // file : header import__optlist option_optlist lexer_section parser_section
@@ -410,8 +405,8 @@ var ruleNodeType = [...]NodeType{
 	0,                    // import__optlist :
 	0,                    // option_optlist : option_optlist option
 	0,                    // option_optlist :
-	Header,               // header : 'language' name '(' name ')' ';'
-	Header,               // header : 'language' name ';'
+	Header,               // header : 'language' identifier_Kw '(' identifier_Kw ')' ';'
+	Header,               // header : 'language' identifier_Kw ';'
 	LexerSection,         // lexer_section : '::' 'lexer' lexer_parts
 	ParserSection,        // parser_section : '::' 'parser' grammar_parts
 	Import,               // import_ : 'import' identifier string_literal ';'

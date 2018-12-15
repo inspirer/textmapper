@@ -16,8 +16,8 @@ var parseTests = []struct {
 	inputs []string
 }{
 
-	{tm.Name, []string{
-		`  language «a»(«b»); :: lexer error: `,
+	{tm.Identifier, []string{
+		`  language «a»(«b»); :: lexer «error»: `,
 	}},
 	{tm.KeyValue, []string{
 		header + ` «a = 5»  «list = [5]»  «feature = true» `,

@@ -178,14 +178,6 @@ literal -> Literal:
 pattern -> Pattern:
     regexp ;
 
-qualified_name:
-    identifier
-  | qualified_name '.' identifier<+KW>
-;
-
-name -> Name:
-    qualified_name ;
-
 command -> Command:
     code ;
 
@@ -196,7 +188,7 @@ file -> File:
     header imports=import_* options=option* lexer=lexer_section? parser=parser_section? ;
 
 header -> Header:
-    'language' name=name ('(' target=name ')')? ';' ;
+    'language' name=identifier<+KW> ('(' target=identifier<+KW> ')')? ';' ;
 
 lexer_section -> LexerSection:
     '::' 'lexer' lexer_parts ;

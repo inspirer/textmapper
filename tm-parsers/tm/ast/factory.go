@@ -79,8 +79,6 @@ func ToTmNode(n *Node) TmNode {
 		return &ListSeparator{n}
 	case tm.LookaheadPredicate:
 		return &LookaheadPredicate{n}
-	case tm.Name:
-		return &Name{n}
 	case tm.NamedPattern:
 		return &NamedPattern{n}
 	case tm.Nonterm:

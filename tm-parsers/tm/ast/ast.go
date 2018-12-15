@@ -56,7 +56,6 @@ func (n LexerSection) TmNode() *Node         { return n.Node }
 func (n LexerState) TmNode() *Node           { return n.Node }
 func (n ListSeparator) TmNode() *Node        { return n.Node }
 func (n LookaheadPredicate) TmNode() *Node   { return n.Node }
-func (n Name) TmNode() *Node                 { return n.Node }
 func (n NamedPattern) TmNode() *Node         { return n.Node }
 func (n Nonterm) TmNode() *Node              { return n.Node }
 func (n NontermParams) TmNode() *Node        { return n.Node }
@@ -536,12 +535,12 @@ type Header struct {
 	*Node
 }
 
-func (n Header) Name() Name {
-	return Name{n.Child(selector.Name)}
+func (n Header) Name() Identifier {
+	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n Header) Target() (Name, bool) {
-	field := Name{n.Child(selector.Name).Next(selector.Name)}
+func (n Header) Target() (Identifier, bool) {
+	field := Identifier{n.Child(selector.Identifier).Next(selector.Identifier)}
 	return field, field.IsValid()
 }
 
@@ -718,19 +717,6 @@ type LookaheadPredicate struct {
 
 func (n LookaheadPredicate) Symref() Symref {
 	return Symref{n.Child(selector.Symref)}
-}
-
-type Name struct {
-	*Node
-}
-
-func (n Name) Identifier() []Identifier {
-	nodes := n.Children(selector.Identifier)
-	var ret = make([]Identifier, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, Identifier{node})
-	}
-	return ret
 }
 
 type NamedPattern struct {
