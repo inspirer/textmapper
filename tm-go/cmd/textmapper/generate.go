@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/inspirer/textmapper/tm-go/gen"
 	"github.com/inspirer/textmapper/tm-go/grammar"
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-parsers/tm"
@@ -85,13 +86,28 @@ func generate(files []string) error {
 			continue
 		}
 
-		_, err = grammar.Compile(ast.File{Node: tree.Root()})
+		g, err := grammar.Compile(ast.File{Node: tree.Root()})
 		if err != nil {
 			s.AddError(err)
 			continue
 		}
 
-		// TODO
+		if g.TargetLang == "" {
+			// A source-only grammar.
+			continue
+		}
+
+		err = gen.Generate(g, writer{})
+		if err != nil {
+			s.AddError(err)
+		}
 	}
 	return s.Err()
+}
+
+type writer struct{}
+
+func (w writer) Write(filename, content string) error {
+	// TODO implement
+	return fmt.Errorf("cannot write to %v", filename)
 }

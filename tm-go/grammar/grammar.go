@@ -32,8 +32,10 @@ func (sym *Symbol) PrettyType() string {
 
 // Grammar is a fully resolved and compiled Textmapper grammar.
 type Grammar struct {
-	Syms      []Symbol
-	NumTokens int
+	Name       string // lowercase
+	TargetLang string
+	Syms       []Symbol
+	NumTokens  int
 	*Lexer
 }
 

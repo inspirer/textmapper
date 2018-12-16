@@ -11,10 +11,13 @@ import (
 
 // Compile validates and compiles grammar files.
 func Compile(file ast.File) (*Grammar, error) {
+	targetLang, _ := file.Header().Target()
 	c := &compiler{
 		file: file,
 		out: &Grammar{
-			Lexer: &Lexer{},
+			Name:       file.Header().Name().Text(),
+			TargetLang: targetLang.Text(),
+			Lexer:      &Lexer{},
 		},
 		syms:       make(map[string]int),
 		symAction:  make(map[int]int),
