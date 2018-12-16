@@ -37,6 +37,7 @@ type Grammar struct {
 	Syms       []Symbol
 	NumTokens  int
 	*Lexer
+	*Options
 }
 
 // Tokens returns all lexical tokens defined in the grammar.
@@ -66,4 +67,9 @@ type Lexer struct {
 	Actions         []SemanticAction
 	InvalidToken    int
 	RuleToken       []int // maps actions into tokens; empty if the mapping is 1:1
+}
+
+type Options struct {
+	TokenLine       bool // true by default
+	TokenLineOffset bool
 }

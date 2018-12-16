@@ -56,6 +56,28 @@ type Tables struct {
 	Backtrack []int
 }
 
+// LastMapEntry returns the last entry of the symbol map.
+func (t *Tables) LastMapEntry() RangeEntry {
+	return t.SymbolMap[len(t.SymbolMap)-1]
+}
+
+// SymbolArr returns a simple array representation of the symbol map (except the last segment).
+func (t *Tables) SymbolArr() []int {
+	if len(t.SymbolMap) == 1 {
+		return nil
+	}
+	ret := make([]int, t.LastMapEntry().Start)
+	var index rune
+	var target int
+	for _, e := range t.SymbolMap {
+		for ; index < e.Start; index++ {
+			ret[index] = target
+		}
+		target = int(e.Target)
+	}
+	return ret
+}
+
 // Scan applies the lexer to a given string and returns the first discovered token.
 func (t *Tables) Scan(start int, text string) (size, action int) {
 	state := t.StateMap[start]

@@ -18,6 +18,9 @@ func Compile(file ast.File) (*Grammar, error) {
 			Name:       file.Header().Name().Text(),
 			TargetLang: targetLang.Text(),
 			Lexer:      &Lexer{},
+			Options: &Options{
+				TokenLine: true,
+			},
 		},
 		syms:       make(map[string]int),
 		symAction:  make(map[int]int),

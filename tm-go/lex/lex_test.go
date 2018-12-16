@@ -206,3 +206,21 @@ func dumpTables(tables *Tables) string {
 	}
 	return strings.TrimSuffix(buf.String(), "\n")
 }
+
+func TestSymbolArr(t *testing.T) {
+	var tests = []struct {
+		input []RangeEntry
+		want  string
+	}{
+		{[]RangeEntry{{Start: 0, Target: 1}}, "[]"},
+		{[]RangeEntry{{Start: 0, Target: 1}, {Start: 1, Target: 2}, {Start: 3, Target: 4}}, "[1 2 2]"},
+		{[]RangeEntry{{Start: 0, Target: 7}, {Start: 5, Target: 3}}, "[7 7 7 7 7]"},
+	}
+	for _, tc := range tests {
+		tables := Tables{SymbolMap: tc.input}
+		arr := tables.SymbolArr()
+		if got := fmt.Sprintf("%v", arr); got != tc.want {
+			t.Errorf("SymbolArr(%v) = %v, want: %v", tc.input, got, tc.want)
+		}
+	}
+}
