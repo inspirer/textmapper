@@ -83,7 +83,8 @@ public class RegexpCompiler {
 
 		@Override
 		public Void caseChar(RegexChar c) {
-			yield(RegexInstructionKind.Symbol, inputSymbols.addCharacter(c.getChar()));
+			inputSymbols.addCharacter(c.getChar());
+			yield(RegexInstructionKind.Symbol, c.getChar());
 			return null;
 		}
 

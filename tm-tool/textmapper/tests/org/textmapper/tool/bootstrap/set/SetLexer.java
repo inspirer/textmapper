@@ -127,10 +127,10 @@ public class SetLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 11, 12, 13, 14, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 2, 3, 4, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+		1, 6, 7, 8, 9, 10, 11, 12, 13, 14
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(15,
@@ -139,9 +139,9 @@ public class SetLexer {
 	private static final int tmClassesCount = 15;
 
 	private static final short[] tmGoto = unpack_vc_short(210,
-		"\1\ufffe\1\uffff\1\15\1\14\1\13\1\12\1\11\1\10\1\7\1\6\1\5\1\4\1\3\1\2\1\1\17\ufff1" +
-		"\17\ufff2\17\ufff3\17\ufff4\17\ufff5\17\ufff6\17\ufff7\17\ufff8\17\ufff9\17\ufffa" +
-		"\17\ufffb\17\ufffc\17\ufffd");
+		"\1\ufffe\1\uffff\1\15\1\14\1\13\1\12\1\11\1\10\1\7\1\6\1\5\1\4\1\3\1\2\1\1\17\ufff5" +
+		"\17\ufff6\17\ufff7\17\ufff8\17\ufff9\17\ufffa\17\ufffb\17\ufffc\17\ufffd\17\ufff1" +
+		"\17\ufff2\17\ufff3\17\ufff4");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

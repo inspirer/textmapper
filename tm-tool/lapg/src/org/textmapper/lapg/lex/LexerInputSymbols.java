@@ -138,6 +138,21 @@ public class LexerInputSymbols {
 			}
 		}
 
+		// "Sort" output symbols by the first rune they appear at.
+		int[] perm = new int[symbolCount];
+		Arrays.fill(perm, -1);
+		perm[0] = 0;
+		perm[1] = 1;
+		int curr = 2;
+		for (int sym : character2symbol) {
+			if (perm[sym] == -1) {
+				perm[sym] = curr++;
+			}
+		}
+		for (int i = 0; i < character2symbol.length; i++) {
+			character2symbol[i] = perm[character2symbol[i]];
+		}
+
 		set2symbols = new int[setpool.size()][];
 		for (int setind = 0; setind < setpool.size(); setind++) {
 			CharacterSet set = setpool.get(setind);

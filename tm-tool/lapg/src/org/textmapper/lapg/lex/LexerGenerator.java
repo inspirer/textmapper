@@ -402,7 +402,8 @@ public class LexerGenerator {
 						}
 						break;
 					case Symbol:
-						int symValue = instruction.getValue();
+						int val = instruction.getValue();
+						int symValue = val == -1 /*eoi*/ ? 0 : char2no[val];
 						toshift.set(symValue);
 						break;
 					case Any: /* except \n and eof */
@@ -448,7 +449,8 @@ public class LexerGenerator {
 								}
 								break;
 							case Symbol:
-								if (sym == instruction.getValue()) {
+								int val = instruction.getValue();
+								if (sym == (val == -1 /*eoi*/ ? 0 : char2no[val])) {
 									next[nnext++] = cset[p] + 1;
 								}
 								break;

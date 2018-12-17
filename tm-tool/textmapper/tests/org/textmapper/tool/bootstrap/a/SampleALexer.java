@@ -147,14 +147,14 @@ public class SampleALexer {
 	}
 
 	private static final short tmCharClass[] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 1, 1, 10, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1,
-		1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 1, 1, 1, 8,
-		1, 4, 8, 2, 8, 8, 8, 8, 8, 8, 8, 8, 3, 8, 8, 8,
-		8, 8, 8, 5, 8, 8, 8, 8, 8, 8, 8, 6, 1, 7
+		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1,
+		1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+		4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4,
+		1, 5, 4, 6, 4, 4, 4, 4, 4, 4, 4, 4, 7, 4, 4, 4,
+		4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 9, 1, 10
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(7,
@@ -163,10 +163,9 @@ public class SampleALexer {
 	private static final int tmClassesCount = 11;
 
 	private static final short[] tmGoto = unpack_vc_short(110,
-		"\1\ufffe\1\uffff\1\5\3\4\1\3\1\2\1\4\1\uffff\1\1\12\ufffc\1\1\13\ufff9\13\ufffa\2" +
-		"\ufffd\4\4\2\ufffd\2\4\3\ufffd\1\4\1\6\2\4\2\ufffd\2\4\3\ufffd\2\4\1\7\1\4\2\ufffd" +
-		"\2\4\3\ufffd\3\4\1\10\2\ufffd\2\4\3\ufffd\3\4\1\11\2\ufffd\2\4\1\ufffd\2\ufffb\4" +
-		"\4\2\ufffb\2\4\1\ufffb");
+		"\1\ufffe\1\uffff\1\11\1\uffff\2\10\1\3\2\10\1\2\1\1\13\ufff9\13\ufffa\3\ufffd\4\10" +
+		"\1\4\1\10\5\ufffd\2\10\1\5\3\10\5\ufffd\5\10\1\6\5\ufffd\5\10\1\7\2\ufffd\3\ufffb" +
+		"\6\10\2\ufffb\3\ufffd\6\10\2\ufffd\2\ufffc\1\11\10\ufffc");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

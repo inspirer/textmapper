@@ -151,18 +151,18 @@ public class JsonLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 22, 22, 1, 1, 22, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		22, 1, 8, 1, 1, 1, 1, 1, 1, 1, 1, 28, 7, 11, 13, 23,
-		12, 26, 26, 26, 26, 26, 26, 26, 26, 26, 6, 1, 1, 1, 1, 1,
-		1, 24, 24, 24, 24, 27, 24, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 9, 5, 1, 1,
-		1, 20, 25, 24, 24, 18, 19, 1, 1, 1, 1, 1, 15, 1, 14, 1,
-		1, 1, 17, 21, 16, 10, 1, 1, 1, 1, 1, 2, 1, 3
+		2, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 4, 5, 6, 7, 8,
+		9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 1, 1, 1, 1, 1,
+		1, 12, 12, 12, 12, 13, 12, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 16, 1, 1,
+		1, 17, 18, 12, 12, 19, 20, 1, 1, 1, 1, 1, 21, 1, 22, 1,
+		1, 1, 23, 24, 25, 26, 1, 1, 1, 1, 1, 27, 1, 28
 	};
 
 	private static final short tmBacktracking[] = {
-		10, 5, 10, 2
+		10, 23, 10, 20
 	};
 
 	private static final int tmFirstRule = -3;
@@ -173,19 +173,19 @@ public class JsonLexer {
 	private static final int tmClassesCount = 29;
 
 	private static final short[] tmGoto = unpack_vc_short(1044,
-		"\1\ufffc\1\ufffd\1\43\1\42\1\41\1\40\1\37\1\36\1\27\2\ufffd\1\26\1\25\1\ufffd\1\21" +
-		"\1\ufffd\1\15\2\ufffd\1\10\2\ufffd\1\7\3\ufffd\1\1\2\ufffd\14\ufff3\1\1\1\uffff\4" +
-		"\ufff3\1\ufffe\7\ufff3\1\1\1\ufffe\1\ufff3\13\ufffd\1\4\1\3\15\ufffd\1\3\1\ufffd" +
-		"\1\4\14\ufff3\1\3\15\ufff3\1\3\2\ufff3\14\ufffd\1\3\15\ufffd\1\3\16\ufffd\1\6\15" +
-		"\ufffd\1\6\2\ufffd\14\ufff3\1\6\5\ufff3\1\ufffe\7\ufff3\1\6\1\ufffe\1\ufff3\26\ufff5" +
-		"\1\7\6\ufff5\24\ufffd\1\11\27\ufffd\1\12\42\ufffd\1\13\31\ufffd\1\14\12\ufffd\35" +
-		"\ufff0\21\ufffd\1\16\25\ufffd\1\17\44\ufffd\1\20\12\ufffd\35\ufff1\12\ufffd\1\22" +
-		"\41\ufffd\1\23\34\ufffd\1\24\15\ufffd\35\ufff2\15\ufff3\1\uffff\4\ufff3\1\ufffe\10" +
-		"\ufff3\1\ufffe\1\ufff3\14\ufffd\1\25\15\ufffd\1\1\3\ufffd\7\27\1\35\1\30\23\27\10" +
-		"\ufffd\2\27\1\31\3\ufffd\1\27\1\ufffd\2\27\1\ufffd\1\27\3\ufffd\1\27\1\ufffd\1\27" +
-		"\17\ufffd\1\32\5\ufffd\3\32\3\ufffd\4\32\15\ufffd\1\33\5\ufffd\3\33\3\ufffd\4\33" +
-		"\15\ufffd\1\34\5\ufffd\3\34\3\ufffd\4\34\15\ufffd\1\27\5\ufffd\3\27\3\ufffd\4\27" +
-		"\1\ufffd\35\ufff4\35\ufff6\35\ufff7\35\ufff8\35\ufff9\35\ufffa\35\ufffb");
+		"\1\ufffc\1\ufffd\1\43\1\34\1\ufffd\1\33\1\32\2\ufffd\1\31\1\23\1\22\2\ufffd\1\21" +
+		"\1\ufffd\1\20\3\ufffd\1\13\1\ufffd\1\7\2\ufffd\1\3\1\ufffd\1\2\1\1\35\ufffa\35\ufffb" +
+		"\27\ufffd\1\4\37\ufffd\1\5\25\ufffd\1\6\11\ufffd\35\ufff1\32\ufffd\1\10\27\ufffd" +
+		"\1\11\34\ufffd\1\12\7\ufffd\35\ufff2\21\ufffd\1\14\40\ufffd\1\15\37\ufffd\1\16\27" +
+		"\ufffd\1\17\11\ufffd\35\ufff0\35\ufff8\35\ufff9\35\ufff7\7\ufff3\1\uffff\1\ufff3" +
+		"\2\23\2\ufff3\1\ufffe\5\ufff3\1\ufffe\11\ufff3\4\ufffd\1\26\1\ufffd\1\26\2\ufffd" +
+		"\2\25\22\ufffd\11\ufff3\2\25\22\ufff3\11\ufffd\2\25\33\ufffd\2\30\22\ufffd\11\ufff3" +
+		"\2\30\2\ufff3\1\ufffe\5\ufff3\1\ufffe\20\ufff3\1\uffff\5\ufff3\1\ufffe\5\ufff3\1" +
+		"\ufffe\11\ufff3\11\ufffd\1\31\1\23\22\ufffd\35\ufff6\1\ufffd\2\34\1\42\13\34\1\35" +
+		"\15\34\3\ufffd\1\34\4\ufffd\1\34\6\ufffd\1\34\2\ufffd\1\34\1\ufffd\1\34\1\ufffd\2" +
+		"\34\1\ufffd\1\34\1\36\13\ufffd\2\37\1\ufffd\2\37\3\ufffd\4\37\21\ufffd\2\40\1\ufffd" +
+		"\2\40\3\ufffd\4\40\21\ufffd\2\41\1\ufffd\2\41\3\ufffd\4\41\21\ufffd\2\34\1\ufffd" +
+		"\2\34\3\ufffd\4\34\10\ufffd\35\ufff4\2\ufff5\1\43\32\ufff5");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

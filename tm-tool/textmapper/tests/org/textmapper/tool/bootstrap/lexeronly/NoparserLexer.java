@@ -119,14 +119,14 @@ public abstract class NoparserLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 6, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 3, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 7
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 1, 7
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(7,
@@ -135,9 +135,9 @@ public abstract class NoparserLexer {
 	private static final int tmClassesCount = 8;
 
 	private static final short[] tmGoto = unpack_vc_short(80,
-		"\1\ufffe\1\11\1\10\1\5\2\11\1\2\1\1\10\ufff9\1\uffff\3\2\1\4\1\uffff\1\3\1\2\10\ufffb" +
-		"\1\uffff\4\2\1\uffff\2\2\1\uffff\2\5\1\7\1\6\1\uffff\2\5\1\uffff\4\5\1\uffff\2\5" +
-		"\10\ufffc\10\ufffd\1\ufffa\1\11\2\ufffa\2\11\2\ufffa");
+		"\1\ufffe\2\11\1\6\1\3\1\11\1\2\1\1\10\ufff9\10\ufffd\1\uffff\1\3\1\uffff\1\3\1\5" +
+		"\1\4\2\3\1\uffff\1\3\1\uffff\5\3\10\ufffc\1\uffff\1\6\1\uffff\1\10\1\6\1\7\2\6\1" +
+		"\uffff\1\6\1\uffff\5\6\10\ufffb\1\ufffa\2\11\2\ufffa\1\11\2\ufffa");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

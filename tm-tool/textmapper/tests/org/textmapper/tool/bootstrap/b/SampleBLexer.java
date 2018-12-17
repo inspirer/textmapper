@@ -143,14 +143,14 @@ public class SampleBLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 12, 12, 1, 1, 12, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		12, 1, 1, 1, 1, 1, 1, 1, 6, 7, 1, 1, 1, 1, 1, 1,
-		2, 11, 11, 11, 11, 11, 11, 11, 9, 9, 1, 1, 1, 1, 1, 1,
-		1, 10, 10, 10, 10, 10, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 1, 1, 1, 8,
-		1, 10, 10, 10, 10, 10, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 3, 8, 8, 4, 1, 5
+		2, 1, 1, 1, 1, 1, 1, 1, 3, 4, 1, 1, 1, 1, 1, 1,
+		5, 6, 6, 6, 6, 6, 6, 6, 7, 7, 1, 1, 1, 1, 1, 1,
+		1, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+		9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 9,
+		1, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+		9, 9, 9, 9, 9, 9, 9, 9, 10, 9, 9, 11, 1, 12
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(17,
@@ -160,11 +160,10 @@ public class SampleBLexer {
 	private static final int tmClassesCount = 13;
 
 	private static final short[] tmGoto = unpack_vc_short(169,
-		"\1\ufffe\1\uffff\1\11\1\10\1\7\1\6\1\5\1\4\1\10\1\2\1\10\1\2\1\1\14\ufff9\1\1\2\uffff" +
-		"\1\3\6\uffff\1\3\1\uffff\1\3\1\uffff\2\ufffa\1\3\6\ufffa\1\3\1\ufffa\1\3\1\ufffa" +
-		"\15\ufff3\15\ufff4\15\ufff5\15\ufff6\2\ufffd\2\10\4\ufffd\4\10\1\ufffd\2\uffff\1" +
-		"\14\1\12\7\uffff\1\14\3\uffff\1\13\6\uffff\3\13\1\uffff\2\ufffc\1\13\6\ufffc\3\13" +
-		"\1\ufffc\2\ufffb\1\14\10\ufffb\1\14\1\ufffb");
+		"\1\ufffe\1\uffff\1\14\1\13\1\12\1\6\2\4\3\3\1\2\1\1\15\ufff5\15\ufff6\5\ufffd\6\3" +
+		"\2\ufffd\5\uffff\3\5\5\uffff\5\ufffa\3\5\5\ufffa\5\uffff\2\11\3\uffff\1\7\7\uffff" +
+		"\4\10\4\uffff\5\ufffc\4\10\4\ufffc\5\ufffb\2\11\6\ufffb\15\ufff3\15\ufff4\2\ufff9" +
+		"\1\14\12\ufff9");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
