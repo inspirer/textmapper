@@ -44,23 +44,25 @@ func bitsPerElement(arr []int) int {
 }
 
 func intArray(arr []int, padding string, maxWidth int) string {
-	var buf [20]byte
+	var buf [21]byte
 	var b strings.Builder
 	b.Grow(len(arr) * 10)
-	var col int
-	for index, val := range arr {
+	col := maxWidth
+	for _, val := range arr {
 		str := strconv.AppendInt(buf[:0], int64(val), 10)
-		col += len(str) + 2
-		if index > 0 && col < maxWidth {
-			b.WriteString(", ")
+		str = append(str, ',')
+		col += len(str) + 1
+		if col <= maxWidth {
+			b.WriteString(" ")
 		} else {
-			if index > 0 {
-				b.WriteString(",\n")
-			}
+			b.WriteByte('\n')
 			b.WriteString(padding)
 			col = len(padding) + len(str)
 		}
 		b.Write(str)
+	}
+	if len(arr) > 0 {
+		b.WriteByte('\n')
 	}
 	return b.String()
 }

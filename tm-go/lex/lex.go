@@ -78,10 +78,15 @@ func (t *Tables) SymbolArr() []int {
 	return ret
 }
 
+// ActionStart returns the index of the very first action.
+func (t *Tables) ActionStart() int {
+	return -1 - len(t.Backtrack)/2
+}
+
 // Scan applies the lexer to a given string and returns the first discovered token.
 func (t *Tables) Scan(start int, text string) (size, action int) {
 	state := t.StateMap[start]
-	actionStart := -1 - len(t.Backtrack)/2
+	actionStart := t.ActionStart()
 	for index, r := range text {
 		i := sort.Search(len(t.SymbolMap), func(i int) bool { return i+1 == len(t.SymbolMap) || t.SymbolMap[i+1].Start > r })
 		ch := int(t.SymbolMap[i].Target)
