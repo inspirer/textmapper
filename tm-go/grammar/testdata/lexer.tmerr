@@ -60,3 +60,7 @@ broken_regex: «/(asd/»
 
 # err: class rule without specializations 'noSpecializations'
 «noSpecializations: /567/ (class)»
+
+rrr-ppp: /\$rrrppp/
+# err: rrr_ppp and rrr-ppp get the same ID in generated code
+«rrr_ppp»: /\$rrrppp2/

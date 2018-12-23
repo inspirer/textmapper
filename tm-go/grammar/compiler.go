@@ -23,6 +23,7 @@ func Compile(file ast.File) (*Grammar, error) {
 			},
 		},
 		syms:       make(map[string]int),
+		ids:        make(map[string]int),
 		symAction:  make(map[int]int),
 		codeAction: make(map[symCode]int),
 	}
@@ -36,6 +37,7 @@ type compiler struct {
 	s    status.Status
 
 	syms        map[string]int
+	ids         map[string]int
 	conds       map[string]int
 	inclusiveSC []int
 	patterns    []*patterns // to keep track of unused patterns
@@ -52,13 +54,16 @@ type symCode struct {
 }
 
 func (c *compiler) compileLexer() {
-	c.addToken(Eoi, ast.RawType{}, nil)
-	c.out.InvalidToken = c.addToken(InvalidToken, ast.RawType{}, nil)
+	eoi := c.addToken(Eoi, "EOI", ast.RawType{}, nil)
+	c.out.InvalidToken = c.addToken(InvalidToken, "INVALID_TOKEN", ast.RawType{}, nil)
+	c.out.RuleToken = append(c.out.RuleToken, c.out.InvalidToken, eoi)
 
 	c.collectStartConds()
 	lexer, _ := c.file.Lexer()
 	c.traverseLexer(lexer.LexerPart(), c.inclusiveSC, nil /*parent patterns*/)
+	c.resolveTokenComments()
 	c.resolveClasses()
+	c.out.NumTokens = len(c.out.Syms)
 
 	var err error
 	c.out.Tables, err = lex.Compile(c.rules)
@@ -136,7 +141,7 @@ func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 	return ret
 }
 
-func (c *compiler) addToken(name string, t ast.RawType, n status.SourceNode) int {
+func (c *compiler) addToken(name, id string, t ast.RawType, n status.SourceNode) int {
 	var rawType string
 	if t.IsValid() {
 		rawType = t.Text()
@@ -152,14 +157,23 @@ func (c *compiler) addToken(name string, t ast.RawType, n status.SourceNode) int
 		}
 		return sym.Index
 	}
+	if id == "" {
+		id = SymbolID(name, UpperCase)
+	}
+	if i, exists := c.ids[id]; exists {
+		prev := c.out.Syms[i].Name
+		c.errorf(n, "%v and %v get the same ID in generated code", name, prev)
+	}
 
 	sym := Symbol{
 		Index:  len(c.syms),
 		Type:   rawType,
+		ID:     id,
 		Name:   name,
 		Origin: n,
 	}
 	c.syms[name] = sym.Index
+	c.ids[id] = sym.Index
 	c.out.Syms = append(c.out.Syms, sym)
 	return sym.Index
 }
@@ -206,7 +220,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 		switch p := p.(type) {
 		case *ast.Lexeme:
 			rawType, _ := p.RawType()
-			tok := c.addToken(p.Name().Text(), rawType, p.Name())
+			tok := c.addToken(p.Name().Text(), "" /*id*/, rawType, p.Name())
 			pat, ok := p.Pattern()
 			if !ok {
 				break
@@ -262,6 +276,22 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				c.errorf(p.TmNode(), "syntax error")
 			}
 		}
+	}
+}
+
+func (c *compiler) resolveTokenComments() {
+	comments := make(map[int]string)
+	for _, r := range c.rules {
+		tok := c.out.RuleToken[r.Action]
+		if _, ok := comments[tok]; ok {
+			comments[tok] = ""
+			continue
+		}
+		val, _ := r.RE.Constant()
+		comments[tok] = val
+	}
+	for tok, val := range comments {
+		c.out.Syms[tok].Comment = val
 	}
 }
 
