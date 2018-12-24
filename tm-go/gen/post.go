@@ -28,7 +28,7 @@ func Format(filename, content string) (string, error) {
 }
 
 var qualifierRE = regexp.MustCompile(`("((?:[\w-]+/)*([\w-]+))(?:\s*as\s*(\w+))?")\.\w+`)
-var packageRE = regexp.MustCompile(`^package\s*\w+`)
+var packageRE = regexp.MustCompile(`(?m)^package\s*\w+`)
 
 // Extract imports rewrites the content of a generated Go file, deriving imports from "special"
 // qualified names that can appear anywhere in src, where one can reference a symbol from another

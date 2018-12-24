@@ -12,6 +12,7 @@ var funcMap = template.FuncMap{
 	"ranged_hash":      rangedHash,
 	"bits_per_element": bitsPerElement,
 	"int_array":        intArray,
+	"str_literal":      strconv.Quote,
 }
 
 func stringHash(s string) string {

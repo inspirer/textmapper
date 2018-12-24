@@ -39,10 +39,12 @@ var importTests = []struct {
 	// No package.
 	{"var f \"abc/def\".Foo", "import (\n\t\"abc/def\"\n)\n\nvar f def.Foo"},
 	// Several imports.
-	{`package foo
+	{`// foo is great!
+package foo
 
 var a = make(map[string]"def/abc".Imp
-func f(q []"abc/def as foo".Temp) {}`, `package foo
+func f(q []"abc/def as foo".Temp) {}`, `// foo is great!
+package foo
 
 import (
 	foo "abc/def"

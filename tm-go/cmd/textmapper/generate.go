@@ -108,6 +108,6 @@ func generate(files []string) error {
 type writer struct{}
 
 func (w writer) Write(filename, content string) error {
-	// TODO implement
-	return fmt.Errorf("cannot write to %v", filename)
+	fmt.Println(content)
+	return nil
 }
