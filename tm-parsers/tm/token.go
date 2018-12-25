@@ -13,7 +13,6 @@ type Token int
 const (
 	UNAVAILABLE Token = iota - 1
 	EOI
-
 	INVALID_TOKEN
 	SCON
 	ICON
@@ -100,7 +99,6 @@ const (
 
 var tokenStr = [...]string{
 	"EOI",
-
 	"INVALID_TOKEN",
 	"SCON",
 	"ICON",

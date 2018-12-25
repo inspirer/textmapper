@@ -13,7 +13,6 @@ type Token int
 const (
 	UNAVAILABLE Token = iota - 1
 	EOI
-
 	INVALID_TOKEN
 	WHITESPACE
 	MULTILINECOMMENT
@@ -42,7 +41,6 @@ const (
 
 var tokenStr = [...]string{
 	"EOI",
-
 	"INVALID_TOKEN",
 	"WHITESPACE",
 	"MULTILINECOMMENT",

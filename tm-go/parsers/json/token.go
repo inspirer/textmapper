@@ -13,7 +13,6 @@ type Token int
 const (
 	UNAVAILABLE Token = iota - 1
 	EOI
-
 	INVALID_TOKEN
 	LBRACE // {
 	RBRACE // }
@@ -38,7 +37,6 @@ const (
 
 var tokenStr = [...]string{
 	"EOI",
-
 	"INVALID_TOKEN",
 	"{",
 	"}",

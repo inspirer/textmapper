@@ -15,7 +15,6 @@ type Token int
 const (
 	UNAVAILABLE Token = iota-1
 	EOI
-
 ${for i in [1, syntax.terminals - 1]-}
 	${syntax.symbols[i]->tokenName()}${if syntax.symbols[i].isConstant()} // ${util.escape(syntax.symbols[i].getConstantValue())}${end}
 ${end-}
@@ -25,7 +24,6 @@ ${end-}
 
 var tokenStr = [...]string{
 	"EOI",
-
 ${for i in [1, syntax.terminals - 1]-}
 	"${util.escape(syntax.symbols[i].isConstant() ? util.escape(syntax.symbols[i].getConstantValue()) : syntax.symbols[i].id)}",
 ${end-}
