@@ -132,18 +132,14 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		if (table.length == 0) {
 			return "";
 		}
-		int col = padding.length();
+		int col = maxwidth;
 		StringBuilder sb = new StringBuilder();
-		sb.append(padding);
 		for (int i = 0; i < table.length; i++) {
-			int size = 0;
-			if (table[i] == 0 || table[i] < 0) {
-				size++;
-			}
+			int size = table[i] <= 0 ? 1 : 0;
 			for (int val = Math.abs(table[i]); val > 0; val /= 10) {
 				size++;
 			}
-			col += size + 2;
+			col += size + 2 /* space and , */;
 			if (col < maxwidth) {
 				sb.append(' ');
 			} else {
@@ -155,7 +151,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			sb.append(',');
 		}
 		sb.append('\n');
-		return sb.toString();
+		return sb.toString().substring(1);
 	}
 
 	public static String format(int[][] table, Integer leftpadding, String

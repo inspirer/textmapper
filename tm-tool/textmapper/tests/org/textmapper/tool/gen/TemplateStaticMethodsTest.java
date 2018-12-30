@@ -55,6 +55,15 @@ public class TemplateStaticMethodsTest {
 	}
 
 	@Test
+	public void testFormatEx() {
+		assertEquals("\t1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, " +
+				"1, 1,\n\t1,\n", new TemplateStaticMethods()
+				.formatEx(new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1,
+						1, 1, 1, 1,
+						1, 1}, "\t", 79));
+	}
+
+	@Test
 	public void testShiftRightForEmpty() {
 		assertEquals("", new TemplateStaticMethods().shiftRight("", 1));
 	}
@@ -207,15 +216,19 @@ public class TemplateStaticMethodsTest {
 
 	@Test
 	public void testPackAsMapRanges() throws Exception {
-		testRanges(new int[] {2,3,4,5,6,1});
-		testRanges(new int[] {1,2,3,3,3,4,1,1,1,1,1});
-		testRanges(new int[] {1,1,1,1,1,1,22,1,1,1,1,1});
-		testRanges(new int[] {0});
-		testRanges(new int[] {0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,22});
-		testRanges(new int[] {0,1,1,1,0,1,1,1,1,1});
-		testRanges(new int[] {0,1,1,1,1,1,1,1,1,1,2,3,8,6,3,10,10,10,10,10,10,10,10,0,1,1,1,1,1});
-		testRanges(new int[] {0,2,2,2,1,1,1,1,1,1,1,1,1,2,3,8,6,3,10,10,10,10,10,10,10,10,0,1,1,1,1,1});
-		testRanges(new int[] {1,1,1,1,2,2,2,2,8,8,8,8,1,1,1,1,1,4,4,4,1,1,1,1,1,1,1,1,1});
+		testRanges(new int[]{2, 3, 4, 5, 6, 1});
+		testRanges(new int[]{1, 2, 3, 3, 3, 4, 1, 1, 1, 1, 1});
+		testRanges(new int[]{1, 1, 1, 1, 1, 1, 22, 1, 1, 1, 1, 1});
+		testRanges(new int[]{0});
+		testRanges(new int[]{0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 22});
+		testRanges(new int[]{0, 1, 1, 1, 0, 1, 1, 1, 1, 1});
+		testRanges(new int[]{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 8, 6, 3, 10, 10, 10, 10, 10, 10,
+				10, 10, 0, 1, 1, 1, 1, 1});
+		testRanges(new int[]{0, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 8, 6, 3, 10, 10, 10, 10,
+				10, 10, 10, 10, 0, 1, 1, 1, 1, 1});
+		testRanges(new int[]{1, 1, 1, 1, 2, 2, 2, 2, 8, 8, 8, 8, 1, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1,
+				1, 1, 1, 1, 1, 1});
 	}
 
 	@Test
