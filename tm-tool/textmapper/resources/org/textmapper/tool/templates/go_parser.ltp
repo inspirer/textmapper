@@ -736,36 +736,36 @@ func (n Symbol) String() string {
 }
 
 var tmAction = []int32{
-	${util.format(parser.action, 16, 1)},
+${util.formatEx(parser.action, '\t', 79)-}
 }
 
 ${if self->needActionsTable()-}
 var tmLalr = []int32{
-	${util.format(parser.lalr, 16, 1)},
+${util.formatEx(parser.lalr, '\t', 79)-}
 }
 
 ${end-}
 var tmGoto = []int32{
-	${util.format(parser.symGoto, 16, 1)},
+${util.formatEx(parser.symGoto, '\t', 79)-}
 }
 
 var tmFromTo = []${self->stateType()}{
-	${util.format(parser.symFromTo, 16, 1)},
+${util.formatEx(parser.symFromTo, '\t', 79)-}
 }
 
 var tmRuleLen = []int${util.bitsForElement(parser.ruleLength)}{
-	${util.format(parser.ruleLength, 16, 1)},
+${util.formatEx(parser.ruleLength, '\t', 79)-}
 }
 
 var tmRuleSymbol = []int32{
-	${util.format(parser.left, 16, 1)},
+${util.formatEx(parser.left, '\t', 79)-}
 }
 ${foreach set in syntax.sets-}
 
 // ${set.set} = ${set.elements.collect(i | syntax.symbols[i]->go_token.tokenName())->util.join(', ')}
 var ${set.name} = []int32{
 ${if set.elements.size() > 0-}
-	${util.format(set.elements, 16, 1)},
+${util.formatEx(set.elements, '\t', 79)-}
 ${end-}
 }
 ${end-}

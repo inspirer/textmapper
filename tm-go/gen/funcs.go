@@ -53,7 +53,7 @@ func intArray(arr []int, padding string, maxWidth int) string {
 		str := strconv.AppendInt(buf[:0], int64(val), 10)
 		str = append(str, ',')
 		col += len(str) + 1
-		if col <= maxWidth {
+		if col < maxWidth {
 			b.WriteString(" ")
 		} else {
 			b.WriteByte('\n')

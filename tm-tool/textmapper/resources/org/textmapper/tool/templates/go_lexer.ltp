@@ -409,7 +409,7 @@ func mapRune(c rune) int {
 
 // Latin-1 characters.
 var tmRuneClass = []${self->runeClassType()}{
-	${util.format(util.head(lex.char2no, 256), 16, 1)},
+${util.formatEx(util.head(lex.char2no, 256), '\t', 79)-}
 }
 
 const tmRuneClassLen = 256
@@ -418,13 +418,13 @@ const tmFirstRule = ${-1 - (lex.backtracking.length / 2)}
 var tmRuneRanges = []mapRange{
 ${foreach r in util.packAsMapRanges(util.tail(lex.char2no, 256), 256)-}
 	{${r.lo}, ${r.hi}, ${r.defaultVal}, ${if r.val}[]${self->runeClassType()}{
-		${util.format(r.val, 16, 2)},
+${util.formatEx(r.val, '\t\t', 78)-}
 	}${else}nil${end}},
 ${end-}
 }
 ${else-}
 var tmRuneClass = []${self->runeClassType()}{
-	${util.format(lex.char2no, 16, 1)},
+${util.formatEx(lex.char2no, '\t', 79)-}
 }
 
 const tmRuneClassLen = ${lex.char2no.length}
@@ -432,12 +432,12 @@ const tmFirstRule = ${-1 - (lex.backtracking.length / 2)}
 ${end-}
 
 var tmStateMap = []int{
-	${util.format(lex.groupset, 16, 1)},
+${util.formatEx(lex.groupset, '\t', 79)-}
 }
 
 ${if !self->canInlineLexerRules()-}
 var tmToken = []Token{
-	${util.format(syntax.lexerRuleTokens, 16, 1)},
+${util.formatEx(syntax.lexerRuleTokens, '\t', 79)-}
 }
 
 ${end-}
@@ -446,7 +446,7 @@ ${if change = self->canInlineLexerRules()
               : lex.change,
      true -}
 var tmLexerAction = []int${util.bitsForElement(change)}{
-	${util.format(change, 16, 1)},
+${util.formatEx(change, '\t', 79)-}
 }
 
 ${end-}

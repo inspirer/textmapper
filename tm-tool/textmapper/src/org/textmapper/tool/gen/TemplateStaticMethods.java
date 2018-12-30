@@ -128,8 +128,38 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		return sb.toString();
 	}
 
+	public String formatEx(int[] table, String padding, Integer maxwidth) {
+		if (table.length == 0) {
+			return "";
+		}
+		int col = padding.length();
+		StringBuilder sb = new StringBuilder();
+		sb.append(padding);
+		for (int i = 0; i < table.length; i++) {
+			int size = 0;
+			if (table[i] == 0 || table[i] < 0) {
+				size++;
+			}
+			for (int val = Math.abs(table[i]); val > 0; val /= 10) {
+				size++;
+			}
+			col += size + 2;
+			if (col < maxwidth) {
+				sb.append(' ');
+			} else {
+				sb.append('\n');
+				sb.append(padding);
+				col = padding.length() + size + 1;
+			}
+			sb.append(table[i]);
+			sb.append(',');
+		}
+		sb.append('\n');
+		return sb.toString();
+	}
+
 	public static String format(int[][] table, Integer leftpadding, String
-								startrow, String endrow) {
+			startrow, String endrow) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < table.length; i++) {
 			if (i > 0) {
@@ -288,7 +318,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		int lastStart = 0;
 		Matcher m = STMT.matcher(code);
 		while (m.find()) {
-			sb.append(code.substring(lastStart, m.start()));
+			sb.append(code, lastStart, m.start());
 			lastStart = m.end();
 			String stmt = m.group(1).trim();
 			if (seen.add(stmt)) {
@@ -316,13 +346,13 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 	public int stringHash(String s) {
 		int hash = 0;
 		for (char c : s.toCharArray()) {
-			hash = hash*31 + c;
+			hash = hash * 31 + c;
 		}
 		return hash;
 	}
 
 	public int rangedHash(String s, int range) {
-		int i = stringHash(s)%range;
+		int i = stringHash(s) % range;
 		if (i < 0) i += range;
 		return i;
 	}
