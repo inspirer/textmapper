@@ -2,16 +2,12 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/gen"
-	"github.com/inspirer/textmapper/tm-go/grammar"
 	"github.com/inspirer/textmapper/tm-go/status"
-	"github.com/inspirer/textmapper/tm-parsers/tm"
-	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 )
 
 var genCmd = &command{
@@ -74,31 +70,7 @@ func generate(files []string) error {
 
 	var s status.Status
 	for _, path := range files {
-		content, err := ioutil.ReadFile(path)
-		if err != nil {
-			s.AddError(err)
-			continue
-		}
-
-		tree, err := ast.Parse(path, string(content), tm.StopOnFirstError)
-		if err != nil {
-			s.AddError(err)
-			continue
-		}
-
-		g, err := grammar.Compile(ast.File{Node: tree.Root()})
-		if err != nil {
-			s.AddError(err)
-			continue
-		}
-
-		if g.TargetLang == "" {
-			// A source-only grammar.
-			continue
-		}
-
-		err = gen.Generate(g, writer{})
-		if err != nil {
+		if err := gen.GenerateFile(path, writer{}); err != nil {
 			s.AddError(err)
 		}
 	}

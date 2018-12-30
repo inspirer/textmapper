@@ -3,7 +3,11 @@ package gen
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/inspirer/textmapper/tm-go/grammar"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
+	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
+	"io/ioutil"
 	"text/template"
 )
 
@@ -12,6 +16,7 @@ type Writer interface {
 	Write(filename, content string) error
 }
 
+// Generate generates code for a grammar.
 func Generate(g *grammar.Grammar, w Writer) error {
 	tmpl, err := template.New("tokenTpl").Funcs(funcMap).Parse(tokenTpl)
 	if err != nil {
@@ -34,4 +39,29 @@ func Generate(g *grammar.Grammar, w Writer) error {
 	}
 
 	return w.Write(filename, ret)
+}
+
+// GenerateFile reads, compiles, and generates code for a grammar stored in a file.
+func GenerateFile(path string, w Writer) error {
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	tree, err := ast.Parse(path, string(content), tm.StopOnFirstError)
+	if err != nil {
+		return err
+	}
+
+	g, err := grammar.Compile(ast.File{Node: tree.Root()})
+	if err != nil {
+		return err
+	}
+
+	if g.TargetLang == "" {
+		// A source-only grammar.
+		return fmt.Errorf("no target language")
+	}
+
+	return Generate(g, w)
 }

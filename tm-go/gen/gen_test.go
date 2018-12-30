@@ -1,12 +1,8 @@
 package gen_test
 
 import (
-	"fmt"
 	"github.com/inspirer/textmapper/tm-go/gen"
-	"github.com/inspirer/textmapper/tm-go/grammar"
 	"github.com/inspirer/textmapper/tm-go/util/diff"
-	"github.com/inspirer/textmapper/tm-parsers/tm"
-	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -28,7 +24,7 @@ func TestGenerate(t *testing.T) {
 		filename := filename
 		t.Run(filename, func(t *testing.T) {
 			w := make(mapWriter)
-			err := generate(filename, w)
+			err := gen.GenerateFile(filename, w)
 			if err != nil {
 				t.Errorf("failed with %v", err)
 				return
@@ -47,28 +43,4 @@ func TestGenerate(t *testing.T) {
 			}
 		})
 	}
-}
-
-func generate(path string, w gen.Writer) error {
-	content, err := ioutil.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
-	tree, err := ast.Parse(path, string(content), tm.StopOnFirstError)
-	if err != nil {
-		return err
-	}
-
-	g, err := grammar.Compile(ast.File{Node: tree.Root()})
-	if err != nil {
-		return err
-	}
-
-	if g.TargetLang == "" {
-		// A source-only grammar.
-		return fmt.Errorf("no target language")
-	}
-
-	return gen.Generate(g, w)
 }
