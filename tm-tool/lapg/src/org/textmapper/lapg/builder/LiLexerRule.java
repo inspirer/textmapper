@@ -21,7 +21,7 @@ import org.textmapper.lapg.api.regex.RegexPart;
 class LiLexerRule extends LiUserDataHolder implements LexerRule, DerivedSourceElement {
 
 	private final int kind;
-	private final int index;
+	int index;
 	private final Terminal sym;
 	private final RegexPart regexp;
 	private final Iterable<LexerState> states;

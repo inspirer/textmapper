@@ -420,13 +420,13 @@ public class JsLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		89, 33, 89, 38, 94, 53, 90, 60, 2, 90, 95, 45
+		89, 33, 89, 38, 94, 53, 90, 60, 6, 90, 95, 45
 	};
 
 	private static final int tmFirstRule = -7;
 
 	private static final int[] tmRuleSymbol = unpack_int(97,
-		"\uffff\uffff\0\0\5\0\1\0\2\0\3\0\4\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17" +
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17" +
 		"\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37" +
 		"\0\40\0\41\0\42\0\43\0\44\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56\0\57" +
 		"\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77" +
@@ -454,8 +454,8 @@ public class JsLexer {
 		"\7\ufff9\2\47\22\ufff9\23\uff9e\2\47\6\uff9e\2\47\7\uff9e\2\47\22\uff9e\1\ufff9\2" +
 		"\60\2\ufff9\10\60\1\55\4\60\1\54\14\60\1\52\1\51\25\60\1\ufff9\1\60\1\ufff9\2\60" +
 		"\2\ufff9\61\60\1\ufff9\1\60\1\ufff9\2\52\2\ufff9\33\52\1\53\1\60\24\52\1\ufff9\1" +
-		"\52\1\ufff9\2\52\2\ufff9\61\52\1\ufff9\1\52\1\ufff3\2\54\2\ufff3\61\54\1\ufff3\1" +
-		"\54\1\ufff9\14\55\1\56\52\55\1\ufff9\14\55\1\56\4\55\1\57\45\55\70\ufff4\1\ufff9" +
+		"\52\1\ufff9\2\52\2\ufff9\61\52\1\ufff9\1\52\1\ufff4\2\54\2\ufff4\61\54\1\ufff4\1" +
+		"\54\1\ufff9\14\55\1\56\52\55\1\ufff9\14\55\1\56\4\55\1\57\45\55\70\ufff5\1\ufff9" +
 		"\2\60\2\ufff9\15\60\1\64\14\60\1\62\1\61\25\60\1\ufff9\1\60\1\ufff9\2\60\2\ufff9" +
 		"\61\60\1\ufff9\1\60\1\ufff9\2\62\2\ufff9\33\62\1\63\1\60\24\62\1\ufff9\1\62\1\ufff9" +
 		"\2\62\2\ufff9\61\62\1\ufff9\1\62\7\uff9b\1\64\13\uff9b\2\64\6\uff9b\4\64\1\uff9b" +
@@ -472,9 +472,9 @@ public class JsLexer {
 		"\2\117\7\ufff9\2\117\45\ufff9\2\120\6\ufff9\2\120\7\ufff9\2\120\45\ufff9\2\121\6" +
 		"\ufff9\2\121\7\ufff9\2\121\45\ufff9\2\112\6\ufff9\2\112\7\ufff9\2\112\23\ufff9\3" +
 		"\112\1\ufff9\5\112\1\123\25\112\1\113\25\112\1\ufff9\1\112\70\uff9c\11\uffb7\1\126" +
-		"\16\uffb7\1\125\37\uffb7\70\uffa6\70\uffb2\30\uffbd\1\130\37\uffbd\70\uffaa\7\ufff7" +
-		"\1\131\13\ufff7\2\131\6\ufff7\4\131\1\ufff7\1\ufffb\2\ufff7\6\131\4\ufff7\11\131" +
-		"\1\ufff7\1\131\47\ufff9\1\133\43\ufff9\2\134\6\ufff9\2\134\7\ufff9\2\134\45\ufff9" +
+		"\16\uffb7\1\125\37\uffb7\70\uffa6\70\uffb2\30\uffbd\1\130\37\uffbd\70\uffaa\7\ufff3" +
+		"\1\131\13\ufff3\2\131\6\ufff3\4\131\1\ufff3\1\ufffb\2\ufff3\6\131\4\ufff3\11\131" +
+		"\1\ufff3\1\131\47\ufff9\1\133\43\ufff9\2\134\6\ufff9\2\134\7\ufff9\2\134\45\ufff9" +
 		"\2\135\6\ufff9\2\135\7\ufff9\2\135\45\ufff9\2\136\6\ufff9\2\136\7\ufff9\2\136\45" +
 		"\ufff9\2\131\6\ufff9\2\131\7\ufff9\2\131\23\ufff9\2\137\2\ufff9\1\137\1\150\31\137" +
 		"\1\140\25\137\1\ufff9\1\137\1\ufff9\3\137\1\147\17\137\1\ufff9\22\137\1\143\1\141" +
@@ -482,8 +482,8 @@ public class JsLexer {
 		"\ufff9\2\137\45\ufff9\2\144\6\ufff9\2\144\7\ufff9\2\144\45\ufff9\2\145\6\ufff9\2" +
 		"\145\7\ufff9\2\145\45\ufff9\2\146\6\ufff9\2\146\7\ufff9\2\146\45\ufff9\2\137\6\ufff9" +
 		"\2\137\7\ufff9\2\137\23\ufff9\3\137\1\ufff9\1\137\1\150\31\137\1\140\25\137\1\ufff9" +
-		"\1\137\70\uff9d\30\uffb4\1\152\37\uffb4\30\uffc3\1\153\37\uffc3\70\uffc1\3\ufff5" +
-		"\1\155\154\ufff5\70\ufff6\2\ufff9\1\156\1\155\1\154\1\151\1\137\1\131\1\127\1\124" +
+		"\1\137\70\uff9d\30\uffb4\1\152\37\uffb4\30\uffc3\1\153\37\uffc3\70\uffc1\3\ufff6" +
+		"\1\155\154\ufff6\70\ufff7\2\ufff9\1\156\1\155\1\154\1\151\1\137\1\131\1\127\1\124" +
 		"\1\112\1\111\1\110\1\106\1\103\1\102\1\77\1\72\1\160\1\45\1\40\1\37\1\36\1\32\1\27" +
 		"\1\21\1\20\4\131\1\17\1\12\1\11\1\7\6\131\1\6\1\3\1\2\1\1\3\131\3\ufff9\1\131\2\ufff9" +
 		"\1\155\1\ufff9\15\uff9a\1\ufffa\4\uff9a\1\54\5\uff9a\1\161\37\uff9a\70\uff99");
@@ -579,20 +579,20 @@ public class JsLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 2:
+			case 2: // space: /[\t\v\f \xa0\ufeff\p{Zs}]/
+				spaceToken = true;
+				break;
+			case 3: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
+				spaceToken = true;
+				break;
+			case 4: // MultiLineComment: /\/\*{commentChars}?\*\//
+				spaceToken = true;
+				break;
+			case 5: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
+				spaceToken = true;
+				break;
+			case 6:
 				return createIdentifierToken(token, ruleIndex);
-			case 3: // space: /[\t\v\f \xa0\ufeff\p{Zs}]/
-				spaceToken = true;
-				break;
-			case 4: // LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/
-				spaceToken = true;
-				break;
-			case 5: // MultiLineComment: /\/\*{commentChars}?\*\//
-				spaceToken = true;
-				break;
-			case 6: // SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/
-				spaceToken = true;
-				break;
 		}
 		return !(spaceToken);
 	}

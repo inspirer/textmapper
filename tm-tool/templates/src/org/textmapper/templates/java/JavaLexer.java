@@ -323,13 +323,13 @@ public class JavaLexer {
 	private static final short tmBacktracking[] = {
 		57, 35, 57, 33, 62, 37, 57, 42, 61, 44, 61, 46, 61, 50, 57, 70,
 		57, 66, 57, 53, 57, 52, 58, 62, 58, 56, 58, 55, 64, 58, 60, 68,
-		59, 70, 59, 35, 59, 73, 98, 78, 78, 84, 61, 83, 2, 113
+		59, 70, 59, 35, 59, 73, 98, 78, 78, 84, 61, 83, 6, 113
 	};
 
 	private static final int tmFirstRule = -24;
 
 	private static final int[] tmRuleSymbol = unpack_int(118,
-		"\uffff\uffff\0\0\4\0\0\0\1\0\2\0\3\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16" +
+		"\uffff\uffff\0\0\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16" +
 		"\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36" +
 		"\0\37\0\40\0\41\0\42\0\43\0\44\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56" +
 		"\0\57\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\67\0\67\0\67\0\70\0\70\0\70\0\70" +
@@ -375,8 +375,8 @@ public class JavaLexer {
 		"\33\uffe8\5\106\22\uffe8\1\107\11\uffe8\22\uffad\1\53\1\uffad\4\110\1\uffef\11\uffad" +
 		"\1\50\1\uffee\1\112\6\uffad\1\uffed\1\uffad\1\50\7\uffad\24\uffe8\4\110\1\106\22" +
 		"\uffe8\1\111\11\uffe8\65\uffad\16\uff86\1\uffec\4\uff86\1\115\10\uff86\1\114\30\uff86" +
-		"\65\uff7b\1\uffe3\2\115\2\uffe3\60\115\1\uffe8\15\116\1\117\46\116\1\uffe8\15\116" +
-		"\1\117\4\116\1\120\41\116\65\uffe2\22\uff9a\1\uffeb\1\uff9a\5\122\34\uff9a\24\uffab" +
+		"\65\uff7b\1\uffe4\2\115\2\uffe4\60\115\1\uffe8\15\116\1\117\46\116\1\uffe8\15\116" +
+		"\1\117\4\116\1\120\41\116\65\uffe3\22\uff9a\1\uffeb\1\uff9a\5\122\34\uff9a\24\uffab" +
 		"\5\122\11\uffab\1\60\1\ufffb\7\uffab\1\uffea\1\uffab\1\60\7\uffab\24\uffe8\5\122" +
 		"\22\uffe8\1\123\33\uffe8\1\125\42\uffe8\65\uff99\21\uff88\1\130\12\uff88\1\127\30" +
 		"\uff88\65\uff7d\65\uff8a\65\uff9b\17\uff89\1\134\14\uff89\1\133\30\uff89\65\uff7e" +
@@ -387,8 +387,8 @@ public class JavaLexer {
 		"\146\10\uffe8\2\146\33\uffe8\5\152\7\uffe8\4\152\10\uffe8\2\152\22\uffe8\1\150\10" +
 		"\uffe8\4\152\35\uffe8\65\uffa5\13\uffe8\1\150\10\uffe8\4\147\50\uffe8\1\150\51\uffe8" +
 		"\12\uff85\1\155\21\uff85\1\154\30\uff85\65\uff7a\65\uff8d\34\uff82\1\157\30\uff82" +
-		"\65\uff77\10\uffe6\1\160\13\uffe6\5\160\7\uffe6\7\160\1\uffe6\1\uffe9\2\uffe6\5\160" +
-		"\4\uffe6\1\160\57\uffe8\1\162\31\uffe8\5\163\7\uffe8\4\163\10\uffe8\2\163\1\uffe8" +
+		"\65\uff77\10\uffe2\1\160\13\uffe2\5\160\7\uffe2\7\160\1\uffe2\1\uffe9\2\uffe2\5\160" +
+		"\4\uffe2\1\160\57\uffe8\1\162\31\uffe8\5\163\7\uffe8\4\163\10\uffe8\2\163\1\uffe8" +
 		"\1\162\31\uffe8\5\164\7\uffe8\4\164\10\uffe8\2\164\33\uffe8\5\165\7\uffe8\4\165\10" +
 		"\uffe8\2\165\33\uffe8\5\160\7\uffe8\4\160\10\uffe8\2\160\10\uffe8\2\166\2\uffe8\2" +
 		"\166\1\176\40\166\1\167\14\166\7\uffe8\1\166\3\uffe8\1\166\10\uffe8\3\175\1\174\20" +
@@ -396,8 +396,8 @@ public class JavaLexer {
 		"\1\170\31\uffe8\5\172\7\uffe8\4\172\10\uffe8\2\172\33\uffe8\5\173\7\uffe8\4\173\10" +
 		"\uffe8\2\173\33\uffe8\5\166\7\uffe8\4\166\10\uffe8\2\166\10\uffe8\2\166\2\uffe8\2" +
 		"\166\1\176\40\166\1\167\14\166\1\uffe8\2\166\2\uffe8\2\166\1\176\14\166\4\174\20" +
-		"\166\1\167\14\166\65\uffa4\34\uff95\1\200\30\uff95\65\uff8e\65\uffe5\3\uffe4\1\203" +
-		"\146\uffe4");
+		"\166\1\167\14\166\65\uffa4\34\uff95\1\200\30\uff95\65\uff8e\65\uffe6\3\uffe5\1\203" +
+		"\146\uffe5");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -490,17 +490,17 @@ public class JavaLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 2:
+			case 3: // WhiteSpace: /[\r\n\t\f ]|\r\n/
+				spaceToken = true;
+				break;
+			case 4: // EndOfLineComment: /\/\/[^\r\n]*/
+				spaceToken = true;
+				break;
+			case 5: // TraditionalComment: /\/\*([^*]|\*+[^\/*])*\*+\//
+				spaceToken = true;
+				break;
+			case 6:
 				return createIdentifierToken(token, ruleIndex);
-			case 4: // WhiteSpace: /[\r\n\t\f ]|\r\n/
-				spaceToken = true;
-				break;
-			case 5: // EndOfLineComment: /\/\/[^\r\n]*/
-				spaceToken = true;
-				break;
-			case 6: // TraditionalComment: /\/\*([^*]|\*+[^\/*])*\*+\//
-				spaceToken = true;
-				break;
 		}
 		return !(spaceToken);
 	}

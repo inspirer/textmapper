@@ -243,13 +243,13 @@ public class TemplatesLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		5, 4
+		4, 4
 	};
 
 	private static final int tmFirstRule = -2;
 
 	private static final int[] tmRuleSymbol = unpack_int(66,
-		"\uffff\uffff\0\0\7\0\1\0\2\0\3\0\4\0\5\0\6\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17" +
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17" +
 		"\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36\0\37" +
 		"\0\40\0\41\0\42\0\43\0\44\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56\0\57" +
 		"\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77" +
@@ -259,9 +259,9 @@ public class TemplatesLexer {
 
 	private static final short[] tmGoto = unpack_vc_short(1887,
 		"\1\ufffd\6\11\1\1\35\11\7\ufffe\1\10\12\ufffe\1\7\2\6\5\ufffe\2\3\3\ufffe\3\3\1\2" +
-		"\2\ufffe\45\ufff7\6\ufff9\1\uffff\14\ufff9\2\3\5\ufff9\2\3\3\ufff9\3\3\3\ufff9\23" +
-		"\ufffe\2\5\20\ufffe\23\ufff9\2\5\20\ufff9\23\ufff8\2\6\20\ufff8\45\ufff6\45\ufffa" +
-		"\1\ufffb\6\11\1\ufffb\35\11\2\ufffe\2\62\1\60\2\ufffe\1\57\1\56\1\54\1\45\1\44\1" +
+		"\2\ufffe\45\ufff8\6\ufffa\1\uffff\14\ufffa\2\3\5\ufffa\2\3\3\ufffa\3\3\3\ufffa\23" +
+		"\ufffe\2\5\20\ufffe\23\ufffa\2\5\20\ufffa\23\ufff9\2\6\20\ufff9\45\ufff7\45\ufffb" +
+		"\1\ufffc\6\11\1\ufffc\35\11\2\ufffe\2\62\1\60\2\ufffe\1\57\1\56\1\54\1\45\1\44\1" +
 		"\43\1\42\1\41\1\40\1\35\1\34\1\33\2\32\1\31\1\27\1\24\1\22\1\21\2\57\1\20\1\ufffe" +
 		"\1\17\3\57\1\16\1\14\1\13\45\uffd9\43\uffd1\1\15\1\uffd1\45\uffc9\45\uffda\45\uffcf" +
 		"\45\uffd0\45\uffbe\27\uffc0\1\23\15\uffc0\45\uffc2\27\uffc7\1\26\1\25\14\uffc7\45" +
@@ -272,7 +272,7 @@ public class TemplatesLexer {
 		"\2\50\5\ufffe\1\50\4\ufffe\1\50\6\ufffe\2\45\1\ufffe\6\45\1\53\10\45\2\50\5\45\1" +
 		"\50\2\45\1\46\1\45\1\50\5\45\1\ufffe\2\45\1\ufffe\6\45\1\53\10\45\1\52\11\45\1\46" +
 		"\7\45\1\ufffe\2\45\1\ufffe\6\45\1\53\22\45\1\46\7\45\45\ufff4\11\ufffe\1\55\33\ufffe" +
-		"\45\uffca\45\uffd3\7\ufffc\1\57\13\ufffc\2\57\5\ufffc\2\57\3\ufffc\3\57\3\ufffc\27" +
+		"\45\uffca\45\uffd3\7\ufff6\1\57\13\ufff6\2\57\5\ufff6\2\57\3\ufff6\3\57\3\ufff6\27" +
 		"\uffd2\1\61\15\uffd2\45\uffc6\2\uffbd\2\62\41\uffbd");
 
 	private static short[] unpack_vc_short(int size, String... st) {
@@ -366,17 +366,17 @@ public class TemplatesLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 2:
-				return createIdentifierToken(token, ruleIndex);
-			case 5: // escid: /$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/
+			case 4: // escid: /$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/
 				{ token.value = tokenText().substring(1, tokenSize()); }
 				break;
-			case 6: // escint: /$[0-9]+/
+			case 5: // escint: /$[0-9]+/
 				{ token.value = Integer.parseInt(tokenText().substring(1, tokenSize())); }
 				break;
-			case 7: // '${': /$\{/
+			case 6: // '${': /$\{/
 				{ state = States.query; deep = 1;}
 				break;
+			case 8:
+				return createIdentifierToken(token, ruleIndex);
 			case 9: // icon: /[0-9]+/
 				{ token.value = Integer.parseInt(tokenText()); }
 				break;
@@ -436,7 +436,7 @@ public class TemplatesLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 2:	// <default>
+			case 8:	// <default>
 				{ token.value = tokenText(); }
 				break;
 		}

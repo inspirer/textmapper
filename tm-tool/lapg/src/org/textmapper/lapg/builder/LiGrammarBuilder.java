@@ -661,6 +661,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			expandNonterminal((Nonterminal) symbolArr[i], expansionContext);
 		}
 
+		// Use a stable order for lexer rules that follows the symbols IDs.
+		lexerRules.sort(Comparator.comparingInt(o -> o.getSymbol().getIndex()));
+		int counter = 0;
+		for (LiLexerRule rule : lexerRules) {
+			rule.index = counter++;
+		}
+
 		LiLexerRule[] lexerRulesArr = lexerRules.toArray(new LiLexerRule[lexerRules.size()]);
 		NamedPattern[] patternsArr = patternScope.toArray(NamedPattern[]::new);
 

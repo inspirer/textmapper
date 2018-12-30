@@ -154,16 +154,16 @@ public class SampleBLexer {
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(17,
-		"\uffff\uffff\0\0\1\0\14\0\15\0\16\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\17\0\20" +
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\14\0\15\0\16\0\17\0\20" +
 		"\0");
 
 	private static final int tmClassesCount = 13;
 
 	private static final short[] tmGoto = unpack_vc_short(169,
-		"\1\ufffe\1\uffff\1\14\1\13\1\12\1\6\2\4\3\3\1\2\1\1\15\ufff5\15\ufff6\5\ufffd\6\3" +
-		"\2\ufffd\5\uffff\3\5\5\uffff\5\ufffa\3\5\5\ufffa\5\uffff\2\11\3\uffff\1\7\7\uffff" +
-		"\4\10\4\uffff\5\ufffc\4\10\4\ufffc\5\ufffb\2\11\6\ufffb\15\ufff3\15\ufff4\2\ufff9" +
-		"\1\14\12\ufff9");
+		"\1\ufffe\1\uffff\1\14\1\13\1\12\1\6\2\4\3\3\1\2\1\1\15\ufff8\15\ufff9\5\ufffd\6\3" +
+		"\2\ufffd\5\uffff\3\5\5\uffff\5\ufff1\3\5\5\ufff1\5\uffff\2\11\3\uffff\1\7\7\uffff" +
+		"\4\10\4\uffff\5\ufff3\4\10\4\ufff3\5\ufff2\2\11\6\ufff2\15\ufff6\15\ufff7\2\ufffc" +
+		"\1\14\12\ufffc");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -250,25 +250,25 @@ public class SampleBLexer {
 		switch (ruleIndex) {
 			case 2:
 				return createIdentifierToken(token, ruleIndex);
-			case 3:
-				return createNumericToken(token, ruleIndex);
-			case 4:
-				return createOctalToken(token, ruleIndex);
-			case 5:
-				return createDecimalToken(token, ruleIndex);
-			case 6: // _skip: /[\n\t\r ]+/
+			case 3: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
+			case 12:
+				return createNumericToken(token, ruleIndex);
+			case 13:
+				return createOctalToken(token, ruleIndex);
+			case 14:
+				return createDecimalToken(token, ruleIndex);
 		}
 		return !(spaceToken);
 	}
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<>();
 	static {
-		subTokensOfIdentifier.put("class", 7);
-		subTokensOfIdentifier.put("extends", 8);
-		subTokensOfIdentifier.put("interface", 13);
-		subTokensOfIdentifier.put("enum", 14);
+		subTokensOfIdentifier.put("class", 4);
+		subTokensOfIdentifier.put("extends", 5);
+		subTokensOfIdentifier.put("interface", 10);
+		subTokensOfIdentifier.put("enum", 11);
 		subTokensOfIdentifier.put("xyzzz", 16);
 	}
 
@@ -280,16 +280,16 @@ public class SampleBLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 7:	// class
+			case 4:	// class
 				{ token.value = "class"; }
 				break;
-			case 13:	// interface
+			case 10:	// interface
 				{ token.value = "interface"; }
 				break;
-			case 14:	// enum
+			case 11:	// enum
 				{ token.value = new Object(); }
 				break;
-			case 8:	// extends (soft)
+			case 5:	// extends (soft)
 			case 16:	// xyzzz (soft)
 			case 2:	// <default>
 				{ token.value = tokenText(); }
@@ -305,7 +305,7 @@ public class SampleBLexer {
 	protected boolean createOctalToken(Span token, int ruleIndex) {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 4:	// <default>
+			case 13:	// <default>
 				{ token.value = Integer.parseInt(tokenText(), 8); }
 				break;
 		}

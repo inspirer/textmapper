@@ -107,7 +107,7 @@ restart:
 	rule := tmFirstRule - state
 recovered:
 	switch rule {
-	case 2:
+	case 5:
 		hh := hash & 7
 		switch hh {
 		case 0:
@@ -161,7 +161,7 @@ recovered:
 		if rule != 0 {
 			goto recovered
 		}
-	case 3: // WhiteSpace: /[ \t\r\n]/
+	case 2: // WhiteSpace: /[ \t\r\n]/
 		space = true
 	case 6: // IntegerConstant: /[0-9]+/
 		{
