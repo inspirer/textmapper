@@ -38,7 +38,7 @@ var idTests = []struct {
 	{"'a\u789a'", UpperUnderscores, "A_U00789A"},
 	{"'a\u789a'", CamelCase, "AU00789a"},
 	{"'a\u789a'", CamelLower, "aU00789a"},
-	{"'\x7f'", UpperCase, "CHARX7F"},
+	{"'\x7f'", UpperCase, "CHAR_X7F"},
 	{"'\x7f'", UpperUnderscores, "CHAR_X7F"},
 	{"'\x7f'", CamelCase, "CharX7f"},
 	{"'\x7f'", CamelLower, "charX7f"},
@@ -56,8 +56,12 @@ var idTests = []struct {
 
 	{"'s'", CamelCase, "CharS"},
 	{"'s'", CamelLower, "charS"},
-	{"'s'", UpperCase, "CHARS"},
+	{"'s'", UpperCase, "CHAR_S"},
 	{"'s'", UpperUnderscores, "CHAR_S"},
+	{"'0'", UpperCase, "CHAR_X30"},
+	{"'00'", UpperCase, "X30X30"},
+	{"'0'", UpperUnderscores, "CHAR_X30"},
+	{"'00'", UpperUnderscores, "X30_X30"},
 }
 
 func TestSymbolID(t *testing.T) {

@@ -86,6 +86,10 @@ func SymbolID(name string, style nameStyle) string {
 		r, _ := utf8.DecodeRuneInString(name)
 		if _, ok := charName[r]; !ok {
 			write("char")
+			if style == UpperCase {
+				// Insert an underscore anyway, as with UpperUnderscores.
+				buf.WriteByte('_')
+			}
 		}
 	}
 	var cont bool
