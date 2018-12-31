@@ -304,7 +304,7 @@ public class TMLexer {
 	private static final int tmFirstRule = -4;
 
 	private static final int[] tmRuleSymbol = unpack_int(81,
-		"\uffff\uffff\0\0\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16" +
+		"\uffff\uffff\0\0\1\0\2\0\0\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16" +
 		"\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36" +
 		"\0\37\0\40\0\41\0\42\0\43\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56\0\57" +
 		"\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77" +
@@ -319,14 +319,14 @@ public class TMLexer {
 		"\1\3\1\2\1\1\44\uffdb\44\uffe3\41\ufff2\1\4\2\ufff2\44\ufff1\44\uffaf\44\uffe8\44" +
 		"\uffe9\21\uffd6\1\uffff\2\uffd6\1\10\7\uffd6\1\10\7\uffd6\21\ufffc\1\11\2\ufffc\1" +
 		"\10\7\ufffc\1\10\7\ufffc\44\uffd7\44\uffdd\44\uffe1\30\ufff0\1\16\13\ufff0\44\uffef" +
-		"\44\uffe2\44\uffed\25\uffea\1\22\16\uffea\44\ufff3\24\ufff8\1\23\17\ufff8\16\uffac" +
+		"\44\uffe2\44\uffed\25\uffea\1\22\16\uffea\44\ufff3\24\ufff9\1\23\17\ufff9\16\uffac" +
 		"\1\ufffe\25\uffac\1\ufffc\15\25\1\26\25\25\1\ufffc\15\25\1\26\4\25\1\27\20\25\44" +
 		"\ufff5\44\uffec\24\ufffc\1\23\4\ufffc\1\32\12\ufffc\44\uffe5\44\uffeb\30\uffdf\1" +
 		"\35\13\uffdf\44\uffde\44\uffe0\44\uffe4\32\uffe7\1\ufffd\11\uffe7\30\ufffc\1\42\13" +
 		"\ufffc\44\uffe6\1\ufffc\2\43\1\ufffc\7\43\1\45\22\43\1\44\5\43\1\ufffc\2\43\1\ufffc" +
-		"\40\43\44\uffd6\12\uffda\1\47\31\uffda\44\uffd9\11\ufff4\1\51\32\ufff4\1\ufffa\2" +
-		"\51\1\52\40\51\44\ufffa\44\uffd8\1\ufff6\2\54\1\55\40\54\44\ufff6\1\ufffc\2\56\1" +
-		"\ufffc\2\56\1\60\27\56\1\57\5\56\1\ufffc\2\56\1\ufffc\40\56\44\ufff9\30\uffdc\1\62" +
+		"\40\43\44\uffd6\12\uffda\1\47\31\uffda\44\uffd9\11\ufff4\1\51\32\ufff4\1\ufff8\2" +
+		"\51\1\52\40\51\44\ufff8\44\uffd8\1\ufff6\2\54\1\55\40\54\44\ufff6\1\ufffc\2\56\1" +
+		"\ufffc\2\56\1\60\27\56\1\57\5\56\1\ufffc\2\56\1\ufffc\40\56\44\ufffa\30\uffdc\1\62" +
 		"\13\uffdc\44\uffee\2\ufff7\3\63\37\ufff7\2\ufffc\3\63\1\61\1\56\1\54\1\53\1\50\1" +
 		"\46\1\43\1\40\1\37\1\36\1\34\1\33\1\31\1\30\1\65\1\23\1\21\1\20\1\17\1\15\1\14\1" +
 		"\13\1\12\1\10\1\7\1\ufffc\1\6\1\5\1\3\1\2\1\1\1\ufffc\2\71\2\ufffc\11\71\1\25\4\71" +
@@ -486,14 +486,14 @@ public class TMLexer {
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 2: // eoi: /%%.*(\r?\n)?/
-				{ templatesStart = token.endoffset; }
-				break;
-			case 3: // scon: /"([^\n\\"]|\\.)*"/
+			case 2: // scon: /"([^\n\\"]|\\.)*"/
 				{ token.value = unescape(tokenText(), 1, tokenSize()-1); }
 				break;
-			case 4: // icon: /\-?[0-9]+/
+			case 3: // icon: /\-?[0-9]+/
 				{ token.value = Integer.parseInt(tokenText()); }
+				break;
+			case 4: // eoi: /%%.*(\r?\n)?/
+				{ templatesStart = token.endoffset; }
 				break;
 			case 5: // _skip: /[\n\r\t ]+/
 				spaceToken = true;

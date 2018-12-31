@@ -145,7 +145,9 @@ public class TMLexerCompiler {
 		RegexContext context = resolver.createRegexContext();
 		Map<LexerRule, RegexMatcher> classMatchers = new LinkedHashMap<>();
 
+		int order = 0;
 		for (TmaLexeme lexeme : resolver.getLexerParts(TmaLexeme.class)) {
+			order++;
 			TmaLexemeAttrs attrs = lexeme.getAttrs();
 			if (attrs == null || attrs.getKind() != TmaLexemeAttribute.CLASS) {
 				continue;
@@ -181,14 +183,16 @@ public class TMLexerCompiler {
 			}
 
 			LexerRule liLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, classTerm, regex,
-					states, priority, null, lexeme);
+					states, priority, order, null, lexeme);
 			classMatchers.put(liLexerRule, matcher);
 			TMDataUtil.putCodeTemplate(liLexerRule, lexeme.getCommand());
 		}
 
 		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
 
+		order = 0;
 		for (TmaLexeme lexeme : resolver.getLexerParts(TmaLexeme.class)) {
+			order++;
 			TmaLexemeAttrs attrs = lexeme.getAttrs();
 			int kind = getLexerRuleKind(attrs);
 			if (kind == LexerRule.KIND_CLASS) {
@@ -277,7 +281,7 @@ public class TMLexerCompiler {
 			}
 
 			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex,
-					states, priority, classRule, lexeme);
+					states, priority, order, classRule, lexeme);
 			TMDataUtil.putCodeTemplate(liLexerRule, lexeme.getCommand());
 		}
 	}

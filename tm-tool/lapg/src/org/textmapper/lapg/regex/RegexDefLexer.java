@@ -184,44 +184,44 @@ public class RegexDefLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		2, 3, 28, 47, 2, 60, 2, 58, 2, 56, 2, 53
+		2, 3, 26, 47, 2, 60, 2, 58, 2, 56, 2, 53
 	};
 
 	private static final int tmFirstRule = -7;
 
 	private static final int[] tmRuleSymbol = unpack_int(38,
-		"\uffff\uffff\0\0\1\0\1\0\1\0\1\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0" +
-		"\3\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16\0\17\0\20\0\21\0\22\0\23" +
-		"\0\24\0\25\0");
+		"\uffff\uffff\0\0\1\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\3\0\3\0\4\0" +
+		"\5\0\6\0\7\0\10\0\11\0\12\0\13\0\1\0\14\0\15\0\16\0\17\0\20\0\21\0\1\0\22\0\23\0" +
+		"\24\0\25\0\1\0");
 
 	private static final int tmClassesCount = 41;
 
 	private static final short[] tmGoto = unpack_vc_short(2870,
 		"\1\ufff8\3\62\1\56\1\55\2\54\1\62\1\53\1\52\1\ufff9\3\62\1\54\6\62\1\50\1\6\1\ufff9" +
-		"\15\62\1\2\1\1\1\62\51\uffdc\20\ufff7\6\uffff\4\ufff7\14\uffff\3\ufff7\11\ufff9\1" +
-		"\5\2\ufff9\2\3\2\ufff9\6\3\4\ufff9\14\3\2\ufff9\1\4\51\uffd7\11\ufff9\1\5\2\ufff9" +
+		"\15\62\1\2\1\1\1\62\51\uffde\20\ufff7\6\uffff\4\ufff7\14\uffff\3\ufff7\11\ufff9\1" +
+		"\5\2\ufff9\2\3\2\ufff9\6\3\4\ufff9\14\3\2\ufff9\1\4\51\uffd8\11\ufff9\1\5\2\ufff9" +
 		"\2\3\2\ufff9\6\3\4\ufff9\14\3\4\ufff9\1\47\1\ufff9\11\47\1\44\1\ufff9\3\47\1\43\1" +
 		"\47\1\ufff9\1\43\1\32\4\47\1\31\1\30\1\27\1\47\1\26\1\22\1\21\1\43\1\20\1\13\1\12" +
 		"\1\7\3\47\14\ufff9\2\10\2\ufff9\2\10\10\ufff9\3\10\30\ufff9\2\11\2\ufff9\2\11\10" +
-		"\ufff9\3\11\14\ufff9\51\uffea\51\uffec\14\ufff9\2\14\2\ufff9\2\14\10\ufff9\3\14\30" +
+		"\ufff9\3\11\14\ufff9\51\uffed\51\uffef\14\ufff9\2\14\2\ufff9\2\14\10\ufff9\3\14\30" +
 		"\ufff9\2\15\2\ufff9\2\15\10\ufff9\3\15\30\ufff9\2\16\2\ufff9\2\16\10\ufff9\3\16\30" +
-		"\ufff9\2\17\2\ufff9\2\17\10\ufff9\3\17\14\ufff9\51\uffe9\51\uffed\51\uffee\46\ufff9" +
+		"\ufff9\2\17\2\ufff9\2\17\10\ufff9\3\17\14\ufff9\51\uffec\51\ufff0\51\ufff1\46\ufff9" +
 		"\1\23\16\ufff9\2\24\2\ufff9\6\24\4\ufff9\14\24\17\ufff9\2\24\2\ufff9\6\24\4\ufff9" +
-		"\14\24\2\ufff9\1\25\51\uffe6\51\uffef\51\ufff0\51\ufff1\51\ufff2\14\ufff9\2\33\2" +
+		"\14\24\2\ufff9\1\25\51\uffe9\51\ufff2\51\ufff3\51\ufff4\51\ufff5\14\ufff9\2\33\2" +
 		"\ufff9\2\33\10\ufff9\3\33\30\ufff9\2\34\2\ufff9\2\34\10\ufff9\3\34\30\ufff9\2\35" +
 		"\2\ufff9\2\35\10\ufff9\3\35\30\ufff9\2\36\2\ufff9\2\36\10\ufff9\3\36\30\ufff9\2\37" +
 		"\2\ufff9\2\37\10\ufff9\3\37\30\ufff9\2\40\2\ufff9\2\40\10\ufff9\3\40\30\ufff9\2\41" +
 		"\2\ufff9\2\41\10\ufff9\3\41\30\ufff9\2\42\2\ufff9\2\42\10\ufff9\3\42\14\ufff9\51" +
-		"\uffe8\51\uffe7\14\ufff9\1\45\50\ufff9\1\46\34\ufff9\51\uffeb\51\ufff3\31\uffd9\1" +
-		"\51\17\uffd9\51\uffd8\51\uffe5\51\ufff5\51\ufff6\51\uffdb\17\uffdd\1\ufffe\31\uffdd" +
+		"\uffeb\51\uffea\14\ufff9\1\45\50\ufff9\1\46\34\ufff9\51\uffee\51\ufff6\31\uffdb\1" +
+		"\51\17\uffdb\51\uffda\51\uffe8\51\uffd9\51\uffe0\51\uffdd\17\uffdf\1\ufffe\31\uffdf" +
 		"\11\ufff9\1\60\23\ufff9\1\60\3\ufff9\1\60\20\ufff9\1\60\4\ufff9\1\61\16\ufff9\1\60" +
-		"\3\ufff9\1\60\7\ufff9\51\uffda\51\ufff7\1\ufff9\3\62\1\56\1\55\1\101\1\100\1\62\1" +
+		"\3\ufff9\1\60\7\ufff9\51\uffdc\51\ufff7\1\ufff9\3\62\1\56\1\55\1\101\1\100\1\62\1" +
 		"\53\1\52\1\ufff9\3\62\1\77\6\62\1\50\1\6\1\ufff9\15\62\1\64\1\1\1\62\3\ufff7\1\ufffd" +
 		"\3\ufff7\1\ufffc\1\ufff7\1\ufffb\2\ufff7\2\ufffa\2\ufff7\6\uffff\4\ufff7\14\uffff" +
-		"\3\ufff7\10\ufff9\1\67\3\ufff9\2\65\32\ufff9\1\66\51\uffe1\14\ufff9\2\67\32\ufff9" +
-		"\1\66\50\ufff9\1\71\51\uffe0\50\ufff9\1\73\51\uffdf\3\ufff9\1\75\115\ufff9\1\76\51" +
-		"\uffde\51\uffe2\51\uffe3\51\uffe4\1\ufff9\3\62\2\105\2\54\1\62\1\104\1\52\1\ufff9" +
-		"\3\62\1\54\6\62\1\ufff9\1\6\1\103\16\62\1\105\1\62\51\uffd5\51\uffd4\51\ufff4");
+		"\3\ufff7\10\ufff9\1\67\3\ufff9\2\65\32\ufff9\1\66\51\uffe4\14\ufff9\2\67\32\ufff9" +
+		"\1\66\50\ufff9\1\71\51\uffe3\50\ufff9\1\73\51\uffe2\3\ufff9\1\75\115\ufff9\1\76\51" +
+		"\uffe1\51\uffe5\51\uffe6\51\uffe7\1\ufff9\3\62\2\105\2\54\1\62\1\104\1\52\1\ufff9" +
+		"\3\62\1\54\6\62\1\ufff9\1\6\1\103\16\62\1\105\1\62\51\uffd6\51\uffd5\51\uffd4");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -317,103 +317,103 @@ public class RegexDefLexer {
 			case 2: // char: /[^()\[\]\.|\\\/*?+\-]/
 				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
 				break;
-			case 3: // char: /[*+?]/
-				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
-				break;
-			case 4: // char: /\-/
-				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
-				break;
-			case 5: // char: /[(|)]/
-				{ token.value = tokenText().codePointAt(0); }
-				break;
-			case 6: // escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
+			case 3: // escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
 				{ token.value = (int) tokenText().charAt(1); quantifierReady(); }
 				break;
-			case 7: // escaped: /\\a/
+			case 4: // escaped: /\\a/
 				{ token.value = (int) 7; quantifierReady(); }
 				break;
-			case 8: // escaped: /\\b/
+			case 5: // escaped: /\\b/
 				{ token.value = (int) '\b'; quantifierReady(); }
 				break;
-			case 9: // escaped: /\\f/
+			case 6: // escaped: /\\f/
 				{ token.value = (int) '\f'; quantifierReady(); }
 				break;
-			case 10: // escaped: /\\n/
+			case 7: // escaped: /\\n/
 				{ token.value = (int) '\n'; quantifierReady(); }
 				break;
-			case 11: // escaped: /\\r/
+			case 8: // escaped: /\\r/
 				{ token.value = (int) '\r'; quantifierReady(); }
 				break;
-			case 12: // escaped: /\\t/
+			case 9: // escaped: /\\t/
 				{ token.value = (int) '\t'; quantifierReady(); }
 				break;
-			case 13: // escaped: /\\v/
+			case 10: // escaped: /\\v/
 				{ token.value = (int) 0xb; quantifierReady(); }
 				break;
-			case 14: // escaped: /\\[0-7][0-7][0-7]/
+			case 11: // escaped: /\\[0-7][0-7][0-7]/
 				{ token.value = RegexUtil.unescapeOct(tokenText().substring(1)); quantifierReady(); }
 				break;
-			case 15: // escaped: /\\x{hx}{2}/
+			case 12: // escaped: /\\x{hx}{2}/
 				{ token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
 				break;
-			case 16: // escaped: /\\u{hx}{4}/
+			case 13: // escaped: /\\u{hx}{4}/
 				{ token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
 				break;
-			case 17: // escaped: /\\U{hx}{8}/
+			case 14: // escaped: /\\U{hx}{8}/
 				{ token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
 				break;
-			case 18: // charclass: /\\[wWsSdD]/
+			case 15: // charclass: /\\[wWsSdD]/
 				{ token.value = tokenText().substring(1); quantifierReady(); }
 				break;
-			case 19: // charclass: /\\p\{\w+\}/
+			case 16: // charclass: /\\p\{\w+\}/
 				{ token.value = tokenText().substring(3, tokenSize() - 1); quantifierReady(); }
 				break;
-			case 20: // '.': /\./
+			case 17: // '.': /\./
 				{ quantifierReady(); }
 				break;
-			case 21: // '*': /\*/
+			case 18: // '*': /\*/
 				{ state = States.initial; }
 				break;
-			case 22: // '+': /\+/
+			case 19: // '+': /\+/
 				{ state = States.initial; }
 				break;
-			case 23: // '?': /\?/
+			case 20: // '?': /\?/
 				{ state = States.initial; }
 				break;
-			case 24: // quantifier: /\{[0-9]+(,[0-9]*)?\}/
+			case 21: // quantifier: /\{[0-9]+(,[0-9]*)?\}/
 				{ state = States.initial; }
 				break;
-			case 25: // op_minus: /\{\-\}/
+			case 22: // op_minus: /\{\-\}/
 				{ state = States.initial; }
 				break;
-			case 26: // op_union: /\{\+\}/
+			case 23: // op_union: /\{\+\}/
 				{ state = States.initial; }
 				break;
-			case 27: // op_intersect: /\{&&\}/
+			case 24: // op_intersect: /\{&&\}/
 				{ state = States.initial; }
 				break;
-			case 28: // '(': /\(/
+			case 25: // char: /[*+?]/
+				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
+				break;
+			case 26: // '(': /\(/
 				{ state = 0; }
 				break;
-			case 29: // '|': /\|/
+			case 27: // '|': /\|/
 				{ state = 0; }
 				break;
-			case 30: // ')': /\)/
+			case 28: // ')': /\)/
 				{ quantifierReady(); }
 				break;
-			case 31: // '(?': /\(\?[is\-]+:/
+			case 29: // '(?': /\(\?[is\-]+:/
 				{ state = 0; }
 				break;
-			case 32: // '[': /\[/
+			case 30: // '[': /\[/
 				{ state = States.inSet; }
 				break;
-			case 33: // '[^': /\[\^/
+			case 31: // '[^': /\[\^/
 				{ state = States.inSet; }
 				break;
-			case 34:
+			case 32: // char: /\-/
+				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
+				break;
+			case 33:
 				return createExpandToken(token, ruleIndex);
-			case 36: // ']': /\]/
+			case 35: // ']': /\]/
 				{ state = 0; quantifierReady(); }
+				break;
+			case 37: // char: /[(|)]/
+				{ token.value = tokenText().codePointAt(0); }
 				break;
 		}
 		return !(spaceToken);
@@ -421,7 +421,7 @@ public class RegexDefLexer {
 
 	private static Map<String,Integer> subTokensOfExpand = new HashMap<>();
 	static {
-		subTokensOfExpand.put("{eoi}", 35);
+		subTokensOfExpand.put("{eoi}", 34);
 	}
 
 	protected boolean createExpandToken(Span token, int ruleIndex) {
@@ -432,10 +432,10 @@ public class RegexDefLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 35:	// {eoi}
+			case 34:	// {eoi}
 				{ state = 0; }
 				break;
-			case 34:	// <default>
+			case 33:	// <default>
 				{ quantifierReady(); }
 				break;
 		}

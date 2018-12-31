@@ -48,7 +48,7 @@ public interface GrammarBuilder extends GrammarMapper {
 	LexerState addState(Name name, SourceElement origin);
 
 	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states,
-						   int priority, LexerRule classLexerRule, SourceElement origin);
+						   int priority, int order, LexerRule classLexerRule, SourceElement origin);
 
 	NamedSet addSet(Name name, RhsSet set, SourceElement origin);
 

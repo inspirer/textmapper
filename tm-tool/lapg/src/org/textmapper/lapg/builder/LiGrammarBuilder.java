@@ -174,7 +174,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	@Override
 	public LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp,
 								  Iterable<LexerState> states, int priority,
-								  LexerRule classLexerRule, SourceElement origin) {
+								  int order, LexerRule classLexerRule, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
@@ -195,7 +195,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			throw new IllegalArgumentException("no states passed");
 		}
 		LiLexerRule l = new LiLexerRule(kind, lexerRules.size(), sym, regexp, liStates, priority,
-				classLexerRule, origin);
+				order, classLexerRule, origin);
 		lexerRules.add(l);
 		((LiTerminal) sym).addRule(l);
 		return l;
@@ -662,7 +662,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 
 		// Use a stable order for lexer rules that follows the symbols IDs.
-		lexerRules.sort(Comparator.comparingInt(o -> o.getSymbol().getIndex()));
+		lexerRules.sort(Comparator.comparingInt(o -> o.order));
 		int counter = 0;
 		for (LiLexerRule rule : lexerRules) {
 			rule.index = counter++;

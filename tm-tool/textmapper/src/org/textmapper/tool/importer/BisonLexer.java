@@ -233,34 +233,34 @@ public class BisonLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		8, 7, 9, 13, 22, 63, 31, 101, 40, 234, 70, 314, 70, 324, 70, 320,
+		59, 7, 4, 13, 18, 63, 27, 101, 36, 234, 70, 314, 70, 324, 70, 320,
 		70, 342, 70, 328, 70, 344, 70, 363, 70, 349
 	};
 
 	private static final int tmFirstRule = -14;
 
 	private static final int[] tmRuleSymbol = unpack_int(74,
-		"\uffff\uffff\0\0\2\0\3\0\3\0\3\0\3\0\3\0\3\0\4\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13" +
-		"\0\14\0\15\0\16\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33" +
-		"\0\34\0\35\0\36\0\37\0\40\0\41\0\42\0\43\0\44\0\45\0\46\0\47\0\50\0\51\0\52\0\53" +
-		"\0\54\0\55\0\56\0\57\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73" +
+		"\uffff\uffff\0\0\2\0\3\0\4\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\3\0\16" +
+		"\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36" +
+		"\0\37\0\40\0\41\0\42\0\43\0\44\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56" +
+		"\0\57\0\60\0\61\0\62\0\63\0\64\0\65\0\3\0\3\0\3\0\3\0\66\0\67\0\70\0\71\0\72\0\73" +
 		"\0\74\0\75\0\76\0\77\0\100\0\101\0\102\0\103\0");
 
 	private static final int tmClassesCount = 52;
 
 	private static final short[] tmGoto = unpack_vc_short(19552,
 		"\1\ufff1\1\ufff2\3\u0135\1\u0126\1\45\1\25\2\ufff2\1\24\1\17\1\14\2\13\1\12\1\11" +
-		"\1\5\2\ufff2\3\24\1\4\1\ufff2\1\3\27\24\1\2\1\1\1\ufff2\64\uffe2\64\uffed\64\uffdf" +
-		"\64\uffe0\10\uffea\1\uffff\11\uffea\1\6\41\uffea\64\uffe4\22\ufff2\1\10\41\ufff2" +
-		"\64\uffe5\64\uffe1\64\uffef\14\uffe9\3\13\61\uffe9\3\13\7\uffe9\1\ufffe\30\uffe9" +
-		"\1\ufffe\4\uffe9\14\ufff2\3\16\5\ufff2\1\16\5\ufff2\6\16\24\ufff2\14\uffe8\3\16\5" +
-		"\uffe8\1\16\5\uffe8\6\16\24\uffe8\10\ufff2\1\21\2\ufff2\1\20\50\ufff2\1\uffde\2\20" +
-		"\2\uffde\57\20\1\ufff2\7\21\1\22\53\21\1\ufff2\7\21\1\22\2\21\1\23\50\21\64\uffdd" +
+		"\1\5\2\ufff2\3\24\1\4\1\ufff2\1\3\27\24\1\2\1\1\1\ufff2\64\uffe7\64\uffba\64\uffe4" +
+		"\64\uffe5\10\uffb7\1\uffff\11\uffb7\1\6\41\uffb7\64\uffe9\22\ufff2\1\10\41\ufff2" +
+		"\64\uffea\64\uffe6\64\uffef\14\uffee\3\13\61\uffee\3\13\7\uffee\1\ufffe\30\uffee" +
+		"\1\ufffe\4\uffee\14\ufff2\3\16\5\ufff2\1\16\5\ufff2\6\16\24\ufff2\14\uffed\3\16\5" +
+		"\uffed\1\16\5\uffed\6\16\24\uffed\10\ufff2\1\21\2\ufff2\1\20\50\ufff2\1\uffe2\2\20" +
+		"\2\uffe2\57\20\1\ufff2\7\21\1\22\53\21\1\ufff2\7\21\1\22\2\21\1\23\50\21\64\uffe1" +
 		"\11\ufff0\2\24\1\ufff0\3\24\5\ufff0\3\24\3\ufff0\27\24\3\ufff0\1\ufff2\2\44\2\ufff2" +
 		"\2\44\1\ufff2\20\44\1\26\33\44\5\ufff2\1\44\1\ufff2\1\44\4\ufff2\2\42\5\ufff2\1\44" +
 		"\1\ufff2\1\36\2\ufff2\1\44\1\ufff2\2\44\3\ufff2\1\44\6\ufff2\1\44\3\ufff2\1\44\1" +
 		"\ufff2\1\44\1\32\1\44\1\27\20\ufff2\3\30\5\ufff2\1\30\5\ufff2\6\30\33\ufff2\1\31" +
-		"\4\ufff2\3\30\5\ufff2\1\30\5\ufff2\6\30\24\ufff2\64\uffe7\14\ufff2\3\33\5\ufff2\1" +
+		"\4\ufff2\3\30\5\ufff2\1\30\5\ufff2\6\30\24\ufff2\64\uffec\14\ufff2\3\33\5\ufff2\1" +
 		"\33\5\ufff2\6\33\40\ufff2\3\34\5\ufff2\1\34\5\ufff2\6\34\40\ufff2\3\35\5\ufff2\1" +
 		"\35\5\ufff2\6\35\40\ufff2\3\44\5\ufff2\1\44\5\ufff2\6\44\40\ufff2\3\37\5\ufff2\1" +
 		"\37\5\ufff2\6\37\40\ufff2\3\40\5\ufff2\1\40\5\ufff2\6\40\40\ufff2\3\41\5\ufff2\1" +
@@ -268,59 +268,59 @@ public class BisonLexer {
 		"\43\55\ufff2\1\31\4\ufff2\2\44\55\ufff2\1\31\62\ufff2\1\u0125\12\ufff2\1\u011f\1" +
 		"\ufff2\1\u011d\10\ufff2\1\u0119\1\375\1\344\1\331\1\317\1\ufff2\1\301\1\ufff2\1\266" +
 		"\1\261\1\165\1\157\1\134\1\ufff2\1\121\1\105\1\67\1\62\1\53\1\ufff2\1\47\1\46\2\ufff2" +
-		"\64\uffeb\32\ufff2\1\50\65\ufff2\1\51\63\ufff2\1\52\27\ufff2\64\uffb7\36\ufff2\1" +
+		"\64\uffb8\32\ufff2\1\50\65\ufff2\1\51\63\ufff2\1\52\27\ufff2\64\uffbb\36\ufff2\1" +
 		"\54\77\ufff2\1\55\44\ufff2\1\56\77\ufff2\1\57\67\ufff2\1\60\46\ufff2\1\61\25\ufff2" +
-		"\64\uffb8\46\ufff2\1\63\57\ufff2\1\64\70\ufff2\1\65\62\ufff2\1\66\15\ufff2\64\uffb9" +
-		"\47\ufff2\1\73\10\ufff2\1\70\53\ufff2\1\71\51\ufff2\1\72\25\ufff2\64\uffda\43\ufff2" +
-		"\1\74\56\ufff2\1\75\73\ufff2\1\76\15\ufff2\11\uffdc\1\ufffd\52\uffdc\54\ufff2\1\100" +
-		"\41\ufff2\1\101\64\ufff2\1\102\74\ufff2\1\103\55\ufff2\1\104\25\ufff2\64\uffba\43" +
+		"\64\uffbc\46\ufff2\1\63\57\ufff2\1\64\70\ufff2\1\65\62\ufff2\1\66\15\ufff2\64\uffbd" +
+		"\47\ufff2\1\73\10\ufff2\1\70\53\ufff2\1\71\51\ufff2\1\72\25\ufff2\64\uffde\43\ufff2" +
+		"\1\74\56\ufff2\1\75\73\ufff2\1\76\15\ufff2\11\uffe0\1\ufffd\52\uffe0\54\ufff2\1\100" +
+		"\41\ufff2\1\101\64\ufff2\1\102\74\ufff2\1\103\55\ufff2\1\104\25\ufff2\64\uffbe\43" +
 		"\ufff2\1\112\10\ufff2\1\106\41\ufff2\1\107\103\ufff2\1\110\65\ufff2\1\111\7\ufff2" +
-		"\64\uffbb\36\ufff2\1\113\71\ufff2\1\114\55\ufff2\1\115\101\ufff2\1\116\56\ufff2\1" +
-		"\117\62\ufff2\1\120\15\ufff2\64\uffbc\36\ufff2\1\126\3\ufff2\1\122\61\ufff2\1\123" +
-		"\64\ufff2\1\124\76\ufff2\1\125\7\ufff2\64\uffd6\51\ufff2\1\127\67\ufff2\1\130\50" +
-		"\ufff2\1\131\73\ufff2\1\132\47\ufff2\1\133\25\ufff2\64\uffbd\32\ufff2\1\153\17\ufff2" +
+		"\64\uffbf\36\ufff2\1\113\71\ufff2\1\114\55\ufff2\1\115\101\ufff2\1\116\56\ufff2\1" +
+		"\117\62\ufff2\1\120\15\ufff2\64\uffc0\36\ufff2\1\126\3\ufff2\1\122\61\ufff2\1\123" +
+		"\64\ufff2\1\124\76\ufff2\1\125\7\ufff2\64\uffda\51\ufff2\1\127\67\ufff2\1\130\50" +
+		"\ufff2\1\131\73\ufff2\1\132\47\ufff2\1\133\25\ufff2\64\uffc1\32\ufff2\1\153\17\ufff2" +
 		"\1\135\47\ufff2\1\143\3\ufff2\1\136\67\ufff2\1\137\71\ufff2\1\140\45\ufff2\1\141" +
-		"\77\ufff2\1\142\11\ufff2\64\uffd8\34\ufff2\1\144\27\ufff2\36\uffd3\1\ufffc\25\uffd3" +
+		"\77\ufff2\1\142\11\ufff2\64\uffdc\34\ufff2\1\144\27\ufff2\36\uffd7\1\ufffc\25\uffd7" +
 		"\35\ufff2\1\146\64\ufff2\1\147\73\ufff2\1\150\51\ufff2\1\151\65\ufff2\1\152\25\ufff2" +
-		"\64\uffd4\52\ufff2\1\154\43\ufff2\1\155\76\ufff2\1\156\16\ufff2\64\uffbe\55\ufff2" +
-		"\1\160\62\ufff2\1\161\57\ufff2\1\162\70\ufff2\1\163\62\ufff2\1\164\7\ufff2\64\uffbf" +
+		"\64\uffd8\52\ufff2\1\154\43\ufff2\1\155\76\ufff2\1\156\16\ufff2\64\uffc2\55\ufff2" +
+		"\1\160\62\ufff2\1\161\57\ufff2\1\162\70\ufff2\1\163\62\ufff2\1\164\7\ufff2\64\uffc3" +
 		"\32\ufff2\1\247\14\ufff2\1\172\4\ufff2\1\166\45\ufff2\1\167\77\ufff2\1\170\56\ufff2" +
-		"\1\171\16\ufff2\64\uffdb\11\ufff2\1\225\34\ufff2\1\173\47\ufff2\1\220\2\ufff2\1\174" +
+		"\1\171\16\ufff2\64\uffdf\11\ufff2\1\225\34\ufff2\1\173\47\ufff2\1\220\2\ufff2\1\174" +
 		"\64\ufff2\1\175\101\ufff2\1\176\45\ufff2\1\177\77\ufff2\1\200\56\ufff2\1\201\60\ufff2" +
 		"\1\202\67\ufff2\1\203\57\ufff2\1\204\74\ufff2\1\205\64\ufff2\1\206\51\ufff2\1\207" +
 		"\55\ufff2\1\210\40\ufff2\1\211\122\ufff2\1\212\45\ufff2\1\213\103\ufff2\1\214\64" +
-		"\ufff2\1\215\46\ufff2\1\216\77\ufff2\1\217\11\ufff2\64\uffc0\53\ufff2\1\221\63\ufff2" +
-		"\1\222\57\ufff2\1\223\50\ufff2\1\224\27\ufff2\64\uffd5\35\ufff2\1\233\6\ufff2\1\226" +
-		"\61\ufff2\1\227\67\ufff2\1\230\53\ufff2\1\231\100\ufff2\1\232\10\ufff2\64\uffc1\36" +
+		"\ufff2\1\215\46\ufff2\1\216\77\ufff2\1\217\11\ufff2\64\uffc4\53\ufff2\1\221\63\ufff2" +
+		"\1\222\57\ufff2\1\223\50\ufff2\1\224\27\ufff2\64\uffd9\35\ufff2\1\233\6\ufff2\1\226" +
+		"\61\ufff2\1\227\67\ufff2\1\230\53\ufff2\1\231\100\ufff2\1\232\10\ufff2\64\uffc5\36" +
 		"\ufff2\1\234\64\ufff2\1\235\56\ufff2\1\236\106\ufff2\1\237\52\ufff2\1\240\73\ufff2" +
 		"\1\241\20\ufff2\1\242\122\ufff2\1\243\65\ufff2\1\244\47\ufff2\1\245\61\ufff2\1\246" +
-		"\27\ufff2\64\uffc2\45\ufff2\1\250\54\ufff2\1\251\36\ufff2\1\252\122\ufff2\1\253\65" +
+		"\27\ufff2\64\uffc6\45\ufff2\1\250\54\ufff2\1\251\36\ufff2\1\252\122\ufff2\1\253\65" +
 		"\ufff2\1\254\47\ufff2\1\255\64\ufff2\1\256\66\ufff2\1\257\100\ufff2\1\260\4\ufff2" +
-		"\64\uffc3\36\ufff2\1\262\77\ufff2\1\263\51\ufff2\1\264\61\ufff2\1\265\25\ufff2\64" +
-		"\uffd1\32\ufff2\1\272\3\ufff2\1\267\64\ufff2\1\270\100\ufff2\1\271\7\ufff2\64\uffd7" +
+		"\64\uffc7\36\ufff2\1\262\77\ufff2\1\263\51\ufff2\1\264\61\ufff2\1\265\25\ufff2\64" +
+		"\uffd5\32\ufff2\1\272\3\ufff2\1\267\64\ufff2\1\270\100\ufff2\1\271\7\ufff2\64\uffdb" +
 		"\46\ufff2\1\273\55\ufff2\1\274\100\ufff2\1\275\40\ufff2\1\276\71\ufff2\1\277\61\ufff2" +
-		"\1\300\25\ufff2\64\uffc4\46\ufff2\1\302\57\ufff2\1\303\75\ufff2\1\304\51\ufff2\1" +
+		"\1\300\25\ufff2\64\uffc8\46\ufff2\1\302\57\ufff2\1\303\75\ufff2\1\304\51\ufff2\1" +
 		"\305\53\ufff2\1\306\75\ufff2\1\307\30\ufff2\1\310\104\ufff2\1\311\65\ufff2\1\312" +
-		"\103\ufff2\1\313\51\ufff2\1\314\70\ufff2\1\315\62\ufff2\1\316\15\ufff2\64\uffc5\44" +
+		"\103\ufff2\1\313\51\ufff2\1\314\70\ufff2\1\315\62\ufff2\1\316\15\ufff2\64\uffc9\44" +
 		"\ufff2\1\320\71\ufff2\1\321\22\ufff2\1\322\122\ufff2\1\323\45\ufff2\1\324\103\ufff2" +
-		"\1\325\64\ufff2\1\326\46\ufff2\1\327\77\ufff2\1\330\11\ufff2\64\uffc6\42\ufff2\1" +
+		"\1\325\64\ufff2\1\326\46\ufff2\1\327\77\ufff2\1\330\11\ufff2\64\uffca\42\ufff2\1" +
 		"\332\65\ufff2\1\333\55\ufff2\1\334\36\ufff2\1\335\122\ufff2\1\336\65\ufff2\1\337" +
-		"\47\ufff2\1\340\64\ufff2\1\341\66\ufff2\1\342\100\ufff2\1\343\4\ufff2\64\uffc7\45" +
+		"\47\ufff2\1\340\64\ufff2\1\341\66\ufff2\1\342\100\ufff2\1\343\4\ufff2\64\uffcb\45" +
 		"\ufff2\1\371\4\ufff2\1\355\4\ufff2\1\345\54\ufff2\1\346\51\ufff2\1\347\61\ufff2\1" +
-		"\350\103\ufff2\1\351\7\ufff2\11\uffca\1\ufffb\52\uffca\52\ufff2\1\353\63\ufff2\1" +
-		"\354\11\ufff2\64\uffc9\52\ufff2\1\356\60\ufff2\1\357\66\ufff2\1\360\22\ufff2\1\361" +
+		"\350\103\ufff2\1\351\7\ufff2\11\uffce\1\ufffb\52\uffce\52\ufff2\1\353\63\ufff2\1" +
+		"\354\11\ufff2\64\uffcd\52\ufff2\1\356\60\ufff2\1\357\66\ufff2\1\360\22\ufff2\1\361" +
 		"\130\ufff2\1\362\43\ufff2\1\363\77\ufff2\1\364\44\ufff2\1\365\77\ufff2\1\366\67\ufff2" +
-		"\1\367\46\ufff2\1\370\25\ufff2\64\uffcb\50\ufff2\1\372\67\ufff2\1\373\67\ufff2\1" +
-		"\374\3\ufff2\64\uffcc\36\ufff2\1\u0102\11\ufff2\1\376\65\ufff2\1\377\47\ufff2\1\u0100" +
-		"\61\ufff2\1\u0101\27\ufff2\64\uffd2\37\ufff2\1\u010b\13\ufff2\1\u0103\64\ufff2\1" +
+		"\1\367\46\ufff2\1\370\25\ufff2\64\uffcf\50\ufff2\1\372\67\ufff2\1\373\67\ufff2\1" +
+		"\374\3\ufff2\64\uffd0\36\ufff2\1\u0102\11\ufff2\1\376\65\ufff2\1\377\47\ufff2\1\u0100" +
+		"\61\ufff2\1\u0101\27\ufff2\64\uffd6\37\ufff2\1\u010b\13\ufff2\1\u0103\64\ufff2\1" +
 		"\u0104\61\ufff2\1\u0105\66\ufff2\1\u0106\42\ufff2\1\u0107\103\ufff2\1\u0108\56\ufff2" +
-		"\1\u0109\66\ufff2\1\u010a\11\ufff2\64\uffd9\32\ufff2\1\u0110\7\ufff2\1\u010c\67\ufff2" +
-		"\1\u010d\53\ufff2\1\u010e\25\ufff2\53\uffce\1\u010f\10\uffce\64\uffcd\55\ufff2\1" +
+		"\1\u0109\66\ufff2\1\u010a\11\ufff2\64\uffdd\32\ufff2\1\u0110\7\ufff2\1\u010c\67\ufff2" +
+		"\1\u010d\53\ufff2\1\u010e\25\ufff2\53\uffd2\1\u010f\10\uffd2\64\uffd1\55\ufff2\1" +
 		"\u0111\52\ufff2\1\u0112\73\ufff2\1\u0113\20\ufff2\1\u0114\122\ufff2\1\u0115\65\ufff2" +
-		"\1\u0116\47\ufff2\1\u0117\61\ufff2\1\u0118\27\ufff2\64\uffcf\47\ufff2\1\u011a\51" +
-		"\ufff2\1\u011b\64\ufff2\1\u011c\25\ufff2\64\uffd0\2\ufff2\3\u011d\54\ufff2\1\u011e" +
-		"\2\ufff2\64\uffec\37\ufff2\1\u0120\70\ufff2\1\u0121\51\ufff2\1\u0122\71\ufff2\1\u0123" +
-		"\45\ufff2\1\u0124\41\ufff2\64\uffc8\64\uffe3\1\ufff2\2\u0126\2\ufff2\1\u0134\22\u0126" +
+		"\1\u0116\47\ufff2\1\u0117\61\ufff2\1\u0118\27\ufff2\64\uffd3\47\ufff2\1\u011a\51" +
+		"\ufff2\1\u011b\64\ufff2\1\u011c\25\ufff2\64\uffd4\2\ufff2\3\u011d\54\ufff2\1\u011e" +
+		"\2\ufff2\64\uffb9\37\ufff2\1\u0120\70\ufff2\1\u0121\51\ufff2\1\u0122\71\ufff2\1\u0123" +
+		"\45\ufff2\1\u0124\41\ufff2\64\uffcc\64\uffe8\1\ufff2\2\u0126\2\ufff2\1\u0134\22\u0126" +
 		"\1\u0127\33\u0126\5\ufff2\1\u0126\1\ufff2\1\u0126\4\ufff2\2\u0132\5\ufff2\1\u0126" +
 		"\1\ufff2\1\u012e\2\ufff2\1\u0126\1\ufff2\2\u0126\3\ufff2\1\u0126\6\ufff2\1\u0126" +
 		"\3\ufff2\1\u0126\1\ufff2\1\u0126\1\u012a\1\u0126\1\u0128\20\ufff2\3\u0129\5\ufff2" +
@@ -332,7 +332,7 @@ public class BisonLexer {
 		"\5\ufff2\6\u0130\40\ufff2\3\u0131\5\ufff2\1\u0131\5\ufff2\6\u0131\40\ufff2\3\u012a" +
 		"\5\ufff2\1\u012a\5\ufff2\6\u012a\25\ufff2\2\u0126\2\ufff2\1\u0134\6\u0126\2\u0133" +
 		"\12\u0126\1\u0127\33\u0126\1\ufff2\2\u0126\2\ufff2\1\u0134\22\u0126\1\u0127\33\u0126" +
-		"\64\uffe6\2\uffee\3\u0135\57\uffee\1\ufff2\4\u016c\1\u015c\1\u0157\1\u0147\3\u016c" +
+		"\64\uffeb\2\uffe3\3\u0135\57\uffe3\1\ufff2\4\u016c\1\u015c\1\u0157\1\u0147\3\u016c" +
 		"\1\u013f\5\u016c\1\u0139\37\u016c\1\u0138\1\u016c\1\u0137\64\uffb6\64\uffab\6\uffac" +
 		"\1\u013e\12\uffac\1\u013d\6\uffac\1\ufffa\33\uffac\2\ufff2\1\u013a\1\u013c\1\u013b" +
 		"\62\ufff2\1\u013c\66\ufff2\1\u013e\12\ufff2\1\u013d\6\ufff2\1\u013a\33\ufff2\64\uffa9" +
@@ -475,33 +475,33 @@ public class BisonLexer {
 			reporter.error("Unexpected colon", token.line, token.offset, token.endoffset);
 	}
 				break;
-			case 4: // skip: /[\r\n\t\f\v ]+/
+			case 10: // '%%': /%%/
+				{ if (++sectionCounter == 2) token.symbol = Tokens.eoi; }
+				break;
+			case 15: // skip: /[\r\n\t\f\v ]+/
 				spaceToken = true;
 				break;
-			case 5: // skip: /\{/
+			case 16: // skip_comment: /\/\/[^\r\n]*/
+				spaceToken = true;
+				break;
+			case 17: // skip_ml_comment: /\/\*([^*]|\*+[^\/*])*\*+\//
+				spaceToken = true;
+				break;
+			case 56: // skip: /\{/
 				spaceToken = true;
 				{ state = States.bracedCode; nesting = 0; lexemeStart = token.offset; }
 				break;
-			case 6: // skip: /%\?[ \f\r\n\t\v]*\{/
+			case 57: // skip: /%\?[ \f\r\n\t\v]*\{/
 				spaceToken = true;
 				{ state = States.predicate; nesting = 0; lexemeStart = token.offset; }
 				break;
-			case 7: // skip: /%\{/
+			case 58: // skip: /%\{/
 				spaceToken = true;
 				{ state = States.prologue; nesting = 0; lexemeStart = token.offset; }
 				break;
-			case 8: // skip: /</
+			case 59: // skip: /</
 				spaceToken = true;
 				{ state = States.tag; nesting = 0; lexemeStart = token.offset; }
-				break;
-			case 15: // '%%': /%%/
-				{ if (++sectionCounter == 2) token.symbol = Tokens.eoi; }
-				break;
-			case 20: // skip_comment: /\/\/[^\r\n]*/
-				spaceToken = true;
-				break;
-			case 21: // skip_ml_comment: /\/\*([^*]|\*+[^\/*])*\*+\//
-				spaceToken = true;
 				break;
 			case 60: // '{...}': /\}/
 				{
