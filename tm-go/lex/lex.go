@@ -49,11 +49,18 @@ type Tables struct {
 	// Maps start conditions into DFA states.
 	StateMap []int
 	// A matrix of NumSymbols x NumStates. Positive values denote transitions to other states. Low
-	// negative values [-1 .. -len(Backtrack)/2] are reserved for backtracking rules. Other
+	// negative values [-1 .. -len(Backtrack)] are reserved for backtracking rules. Other
 	// negative values accept the current prefix, leaving the current character for the next token.
 	Dfa []int
-	// A flattened array of pairs [action to backtrack to, next state to try].
-	Backtrack []int
+	// Backtracking rules the dfa might resort to.
+	Backtrack []Checkpoint
+}
+
+// Checkpoint describes one backtracking situation.
+type Checkpoint struct {
+	Action    int // The default action to be accepted if a longer token is not found.
+	NextState int
+	Details   string
 }
 
 // LastMapEntry returns the last entry of the symbol map.
@@ -80,7 +87,7 @@ func (t *Tables) SymbolArr() []int {
 
 // ActionStart returns the index of the very first action.
 func (t *Tables) ActionStart() int {
-	return -1 - len(t.Backtrack)/2
+	return -1 - len(t.Backtrack)
 }
 
 // Scan applies the lexer to a given string and returns the first discovered token.
@@ -93,8 +100,8 @@ func (t *Tables) Scan(start int, text string) (size, action int) {
 		state = t.Dfa[state*t.NumSymbols+ch]
 		if state < 0 {
 			if state > actionStart {
-				i := (-1 - state) * 2
-				action, state = t.Backtrack[i], t.Backtrack[i+1]
+				bt := t.Backtrack[-1-state]
+				action, state = bt.Action-2, bt.NextState
 				size = index
 				continue
 			}

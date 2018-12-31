@@ -56,7 +56,6 @@ type symCode struct {
 func (c *compiler) compileLexer() {
 	eoi := c.addToken(Eoi, "EOI", ast.RawType{}, nil)
 	c.out.InvalidToken = c.addToken(InvalidToken, "INVALID_TOKEN", ast.RawType{}, nil)
-	c.out.RuleToken = append(c.out.RuleToken, c.out.InvalidToken, eoi)
 
 	c.collectStartConds()
 	lexer, _ := c.file.Lexer()
@@ -64,6 +63,12 @@ func (c *compiler) compileLexer() {
 	c.resolveTokenComments()
 	c.resolveClasses()
 	c.out.NumTokens = len(c.out.Syms)
+
+	// Prepend EOI and InvalidToken to the rule token array to simplify handling of -1 and -2 actions.
+	c.out.RuleToken = append(c.out.RuleToken, 0, 0)
+	copy(c.out.RuleToken[2:], c.out.RuleToken)
+	c.out.RuleToken[0] = c.out.InvalidToken
+	c.out.RuleToken[1] = eoi
 
 	var err error
 	c.out.Tables, err = lex.Compile(c.rules)

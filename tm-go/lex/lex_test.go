@@ -168,14 +168,14 @@ func dumpTables(tables *Tables) string {
 		cs[re.Target] = append(cs[re.Target], re.Start, end)
 	}
 
-	actionStart := -1 - len(tables.Backtrack)/2
+	actionStart := -1 - len(tables.Backtrack)
 	actionText := func(i int) string {
 		switch {
 		case i >= 0:
 			return fmt.Sprintf("-> %v", i)
 		case i > actionStart:
-			i = (-1 - i) * 2
-			return fmt.Sprintf("bt(exec %v) -> %v", tables.Backtrack[i], tables.Backtrack[i+1])
+			bt := tables.Backtrack[-1-i]
+			return fmt.Sprintf("bt(exec %v) -> %v", bt.Action-2, bt.NextState)
 		case i == actionStart:
 			return "error"
 		case i == actionStart-1:

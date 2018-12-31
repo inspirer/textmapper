@@ -16,7 +16,7 @@ type state struct {
 	index  int
 	set    []int
 	action []int // -1 invalid token, -2 eoi, -3... lexer rule #0
-	accept int   // a matched action for the current prefix, or -1 if there is none
+	accept *Rule // a matched rule for the current prefix
 }
 
 // generator assembles regex instructions into a lexer DFA.
@@ -67,7 +67,7 @@ func (g *generator) addState(set []int) int {
 	return g.powerset.Get(set).(*state).index
 }
 
-func (g *generator) generate() (dfa []int, backtrack []int, err error) {
+func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 	if len(g.states) == 0 {
 		return nil, nil, errNoStartStates
 	}
@@ -78,19 +78,17 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 		// Compute whether we can accept the current prefix, and also collect all transition symbols
 		// taking us to some other state.
 		var acceptRule *Rule
-		state.accept = -1
 		g.shift.ClearAll()
 		for _, i := range state.set {
 			inst := g.ins[i]
 			for _, sym := range inst.consume {
 				g.shift.Set(int(sym))
 			}
-			if inst.rule != nil && state.accept != inst.rule.Action {
+			if inst.rule != nil {
 				switch {
-				case state.accept == -1 || acceptRule.Precedence < inst.rule.Precedence:
-					state.accept = inst.rule.Action
+				case acceptRule == nil || acceptRule.Precedence < inst.rule.Precedence:
 					acceptRule = inst.rule
-				case acceptRule.Precedence == inst.rule.Precedence:
+				case acceptRule.Precedence == inst.rule.Precedence && acceptRule.Action != inst.rule.Action:
 					msg := fmt.Sprintf("two rules are identical: %v and %v", inst.rule.OriginName, acceptRule.OriginName)
 					g.s.Add(inst.rule.Origin.SourceRange(), msg)
 				}
@@ -99,9 +97,10 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 
 		// Record all transitions.
 		state.action = make([]int, g.numSymbols)
+		state.accept = acceptRule
 		defAction := -1
-		if state.accept >= 0 {
-			defAction = -3 - state.accept
+		if acceptRule != nil {
+			defAction = -3 - acceptRule.Action
 		}
 		for sym := 0; sym < g.numSymbols; sym++ {
 			if !g.shift.Get(sym) {
@@ -124,33 +123,39 @@ func (g *generator) generate() (dfa []int, backtrack []int, err error) {
 	}
 
 	// Adding backtracking states.
-	type checkpoint struct {
+	type checkpointKey struct {
 		targetState int
 		accept      int
 	}
-	var bt map[checkpoint]int
+	var bt map[checkpointKey]int
 	var numBtStates int
 	for _, state := range g.states {
-		if state.accept == -1 {
+		if state.accept == nil {
 			continue
 		}
 		for i, val := range state.action {
-			if val < 0 || g.states[val].accept >= 0 {
+			if val < 0 || g.states[val].accept != nil {
 				continue
 			}
 
 			// This transition requires backtracking.
-			key := checkpoint{val, state.accept}
+			key := checkpointKey{val, state.accept.Action}
 			if btState, ok := bt[key]; ok {
 				state.action[i] = btState
 				continue
 			}
 			if bt == nil {
-				bt = make(map[checkpoint]int)
+				bt = make(map[checkpointKey]int)
 			}
 			btState := len(g.states) + numBtStates
 			bt[key] = btState
-			backtrack = append(backtrack, key.accept, key.targetState)
+
+			// Note: adding 2 to make room for accept EOI and accept InvalidToken actions.
+			backtrack = append(backtrack, Checkpoint{
+				Action:    key.accept + 2, // TODO get rid of +2 and align the ranges with dfa
+				NextState: key.targetState,
+				Details:   "in " + state.accept.OriginName,
+			})
 			numBtStates++
 			state.action[i] = btState
 		}

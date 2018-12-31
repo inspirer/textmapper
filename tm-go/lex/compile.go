@@ -9,7 +9,7 @@ import (
 type inst struct {
 	consume symlist // An empty list means we cannot advance to the next instruction.
 	links   []int   // Relative offsets of other instructions that should be considered at the same time.
-	rule    *Rule   // Original rule for error reporting and precedence.
+	rule    *Rule   // The rule to be accepted.
 }
 
 func (i inst) core() bool {
