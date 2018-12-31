@@ -56,6 +56,14 @@ var compileTests = []struct {
 			`[2],[2]+2+6,-1+1+5,[2]+4,[2]-1+3,-1-2+2,-3+1,=>42`,
 		},
 	},
+	{
+		rules: []*Rule{
+			{RE: MustParse(`-?0`), Action: 42},
+		},
+		want: []string{
+			`[2]+2,+1,[3],=>42`,
+		},
+	},
 }
 
 func TestCompile(t *testing.T) {

@@ -72,8 +72,7 @@ var lexTests = []struct {
 			`1: [b] -> 2;`,
 			`2: EOI exec 2; other exec 2; [a-bd] exec 2; [c] -> 3;`,
 			`3: EOI exec 1; other exec 1; [a-c] exec 1; [d] -> 4;`,
-			`4: EOI exec 1; other exec 1; [a-c] exec 1; [d] -> 5;`,
-			`5: EOI exec 1; other exec 1; [a-d] exec 1;`,
+			`4: EOI exec 1; other exec 1; [a-d] exec 1;`,
 		},
 		testOn: []input{
 			{`«ab»d `, 2},
@@ -114,6 +113,18 @@ var lexTests = []struct {
 			{`«keyword» def`, 1},
 			{`«keyworddef»!`, 2},
 			{`«keywordDef»!`, 3},
+		},
+	},
+	{
+		// Numbers.
+		rules: []*Rule{
+			{RE: MustParse(`-?(0|[1-9][0-9]*)`), Action: 1, StartConditions: []int{0}},
+		},
+		testOn: []input{
+			{`«-100» `, 1},
+			{`«-0»1 `, 1},
+			{`«-0» `, 1},
+			{`«-»-0 `, -2 /*Invalid token*/},
 		},
 	},
 }

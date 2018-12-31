@@ -113,7 +113,7 @@ func (c *reCompiler) serialize(re *Regexp, resolver Resolver) {
 			c.link(start, c.next())
 		} else if re.max > re.min {
 			var subs []int
-			for i := re.max - re.min; i >= 0; i-- {
+			for i := re.max - re.min; i > 0; i-- {
 				subs = append(subs, c.next())
 				c.serialize(re.sub[0], resolver)
 			}
