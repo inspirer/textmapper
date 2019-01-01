@@ -101,6 +101,8 @@ func (c *reCompiler) serialize(re *Regexp, resolver Resolver) {
 			c.errorf("cannot expand the regexp, too many entities to repeat (max. 16)")
 			return
 		}
+		barrier := c.emit(nil)
+		c.link(barrier, c.next())
 
 		for i := 0; i < re.min; i++ {
 			c.serialize(re.sub[0], resolver)

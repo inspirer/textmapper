@@ -107,6 +107,12 @@ func (c *compiler) canInlineRules() bool {
 			return false
 		}
 	}
+	// TODO inline rules with actions
+	for _, a := range c.out.Actions {
+		if a.Code != "" {
+			return false
+		}
+	}
 	return true
 }
 

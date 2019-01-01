@@ -127,6 +127,20 @@ var lexTests = []struct {
 			{`«-»-0 `, -2 /*Invalid token*/},
 		},
 	},
+	{
+		// Advanced backtracking.
+		rules: []*Rule{
+			{RE: MustParse(`[a-z](-*[a-z])*`), Action: 1, StartConditions: []int{0}},
+			{RE: MustParse(`test(foo)?-+>`), Action: 2, StartConditions: []int{0}},
+		},
+		testOn: []input{
+			{`«abc» `, 1},
+			{`«abc»- `, 1},
+			{`«abc-d» `, 1},
+			{`«testfoo»--- `, 1},
+			{`«testfoo--->» `, 2},
+		},
+	},
 }
 
 func TestLex(t *testing.T) {
