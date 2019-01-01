@@ -17,6 +17,7 @@ type state struct {
 	set    []int
 	action []int // -1 invalid token, -2 eoi, -3... lexer rule #0
 	accept *Rule // a matched rule for the current prefix
+	next   *state
 }
 
 // generator assembles regex instructions into a lexer DFA.
@@ -29,6 +30,8 @@ type generator struct {
 	closure    container.BitSet
 	arena      []int
 	shift      container.BitSet
+	first      *state
+	last       *state
 }
 
 func newGenerator(ins []inst, numSymbols int) *generator {
@@ -52,7 +55,7 @@ func (g *generator) allocateState(key []int) interface{} {
 	return s
 }
 
-func (g *generator) addState(set []int) int {
+func (g *generator) addState(set []int, after *state) *state {
 	g.closure.ClearAll()
 	for _, i := range set {
 		if g.ins[i].core() {
@@ -64,7 +67,21 @@ func (g *generator) addState(set []int) int {
 	}
 
 	set = g.closure.Slice(g.arena)
-	return g.powerset.Get(set).(*state).index
+	state := g.powerset.Get(set).(*state)
+	if state.next == nil && state != g.last {
+		// This is a newly added state. Insert it after "after".
+		if g.first == nil {
+			g.first = state
+			g.last = state
+		} else if after != nil && after != g.last {
+			state.next = after.next
+			after.next = state
+		} else {
+			g.last.next = state
+			g.last = state
+		}
+	}
+	return state
 }
 
 func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
@@ -72,9 +89,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 		return nil, nil, errNoStartStates
 	}
 
-	for si := 0; si < len(g.states); si++ {
-		state := g.states[si]
-
+	for state := g.first; state != nil; state = state.next {
 		// Compute whether we can accept the current prefix, and also collect all transition symbols
 		// taking us to some other state.
 		var acceptRule *Rule
@@ -113,7 +128,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 					next = append(next, i+1)
 				}
 			}
-			state.action[sym] = g.addState(next)
+			state.action[sym] = g.addState(next, state).index
 		}
 	}
 
@@ -161,12 +176,25 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 		}
 	}
 
-	// Make room for backtracking states in the action space.
+	// Reorder states for better cache locality, and make room for backtracking states in the action
+	// space.
+	permutation := make([]int, len(g.states))
+	var counter int
+	for state := g.first; state != nil; state = state.next {
+		permutation[state.index] = counter
+		counter++
+	}
+	for i := range backtrack {
+		backtrack[i].NextState = permutation[backtrack[i].NextState]
+	}
 	for _, state := range g.states {
+		state.index = permutation[state.index]
 		for i, val := range state.action {
 			if val >= len(g.states) {
 				state.action[i] = -1 - (val - len(g.states))
-			} else if val < 0 {
+			} else if val >= 0 {
+				state.action[i] = permutation[val]
+			} else {
 				state.action[i] -= numBtStates
 			}
 		}
@@ -175,7 +203,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 	// Assemble the DFA table.
 	dfa = make([]int, len(g.states)*g.numSymbols)
 	var offset int
-	for _, state := range g.states {
+	for state := g.first; state != nil; state = state.next {
 		offset += copy(dfa[offset:], state.action)
 	}
 

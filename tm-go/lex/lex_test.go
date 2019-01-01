@@ -53,9 +53,9 @@ var lexTests = []struct {
 			{RE: MustParse(`[a-zA-Z_][a-zA-Z_0-9]*`), Action: 2, StartConditions: []int{0}},
 		},
 		want: []string{
-			`0: EOI accept; [\t ] -> 1; [A-Z_a-z] -> 2;`,
-			`1: EOI exec 0; other exec 0; [0-9A-Z_a-z] exec 0; [\t ] -> 1;`,
-			`2: EOI exec 2; other exec 2; [\t ] exec 2; [0-9A-Z_a-z] -> 2;`,
+			`0: EOI accept; [A-Z_a-z] -> 1; [\t ] -> 2;`,
+			`1: EOI exec 2; other exec 2; [\t ] exec 2; [0-9A-Z_a-z] -> 1;`,
+			`2: EOI exec 0; other exec 0; [0-9A-Z_a-z] exec 0; [\t ] -> 2;`,
 		},
 		testOn: []input{
 			{`«axe9_» `, 2},

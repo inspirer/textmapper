@@ -161,9 +161,9 @@ func Compile(rules []*Rule) (*Tables, error) {
 	}
 
 	g := newGenerator(ins, numSymbols)
-	stateMap := make([]int, maxSC+1)
+	stateMap := make([]*state, maxSC+1)
 	for i, states := range startStates {
-		stateMap[i] = g.addState(states)
+		stateMap[i] = g.addState(states, nil /*after*/)
 	}
 	dfa, backtrack, err := g.generate()
 	s.AddError(err)
@@ -171,9 +171,11 @@ func Compile(rules []*Rule) (*Tables, error) {
 	ret := &Tables{
 		SymbolMap:  inputMap,
 		NumSymbols: numSymbols,
-		StateMap:   stateMap,
 		Dfa:        dfa,
 		Backtrack:  backtrack,
+	}
+	for _, state := range stateMap {
+		ret.StateMap = append(ret.StateMap, state.index)
 	}
 	return ret, s.Err()
 }
