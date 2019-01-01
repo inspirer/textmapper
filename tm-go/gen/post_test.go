@@ -9,10 +9,7 @@ func TestFormat(t *testing.T) {
 	const file = "a.go"
 	const input = "package   foo\n  import \"fmt\"\n   // Aa returns a string.\nfunc Aa( ) string {   return fmt.Sprintf(\"%v\", 123) }"
 
-	got, err := gen.Format(file, input)
-	if err != nil {
-		t.Errorf("Format(%v) failed with %v", input, err)
-	}
+	got := gen.Format(file, input)
 	const want = "package foo\n\nimport \"fmt\"\n\n// Aa returns a string.\nfunc Aa() string { return fmt.Sprintf(\"%v\", 123) }\n"
 
 	if want != got {
@@ -20,13 +17,10 @@ func TestFormat(t *testing.T) {
 	}
 
 	const errInput = "package   foo\n     bar("
-	_, err = gen.Format(file, errInput)
-	if err == nil {
-		t.Fatalf("Format(%q) suceeded", errInput)
-	}
-	wantErr := "a.go:2:6: expected declaration, found bar"
-	if got := err.Error(); got != wantErr {
-		t.Errorf("Format(%q) failed with %v, want: %v", errInput, got, wantErr)
+	got = gen.Format(file, errInput)
+	const wantErr = "// go fmt failed with: a.go:2:6: expected declaration, found bar\n" + errInput
+	if got != wantErr {
+		t.Errorf("Format(%q) = %v, want: %v", errInput, got, wantErr)
 	}
 }
 

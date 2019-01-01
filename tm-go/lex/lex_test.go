@@ -220,18 +220,47 @@ func dumpTables(tables *Tables) string {
 
 func TestSymbolArr(t *testing.T) {
 	var tests = []struct {
-		input []RangeEntry
-		want  string
+		input   []RangeEntry
+		maxRune rune
+		want    string
 	}{
-		{[]RangeEntry{{Start: 0, Target: 1}}, "[]"},
-		{[]RangeEntry{{Start: 0, Target: 1}, {Start: 1, Target: 2}, {Start: 3, Target: 4}}, "[1 2 2]"},
-		{[]RangeEntry{{Start: 0, Target: 7}, {Start: 5, Target: 3}}, "[7 7 7 7 7]"},
+		{[]RangeEntry{{0, 1}}, 0, "[]"},
+		{[]RangeEntry{{0, 1}}, 1, "[]"},
+		{[]RangeEntry{{0, 1}, {1, 2}, {3, 4}}, 0, "[1 2 2]"},
+		{[]RangeEntry{{0, 1}, {1, 2}, {3, 4}}, 2, "[1 2]"},
+		{[]RangeEntry{{0, 7}, {5, 3}}, 0, "[7 7 7 7 7]"},
+		{[]RangeEntry{{0, 7}, {5, 3}}, 4, "[7 7 7 7]"},
+		{[]RangeEntry{{0, 7}, {5, 3}}, 1, "[7]"},
 	}
 	for _, tc := range tests {
 		tables := Tables{SymbolMap: tc.input}
-		arr := tables.SymbolArr()
+		arr := tables.SymbolArr(tc.maxRune)
 		if got := fmt.Sprintf("%v", arr); got != tc.want {
-			t.Errorf("SymbolArr(%v) = %v, want: %v", tc.input, got, tc.want)
+			t.Errorf("SymbolArr(%v, %v) = %v, want: %v", tc.input, tc.maxRune, got, tc.want)
+		}
+	}
+}
+
+func TestCompressedMap(t *testing.T) {
+	var tests = []struct {
+		input []RangeEntry
+		start rune
+		want  string
+	}{
+		{[]RangeEntry{{0, 7}, {5, 100}, {200, 1}}, 0, "[[0,200]=[7 7 7 7 7],default=100]"},
+		{[]RangeEntry{{0, 7}, {5, 100}, {200, 1}}, 4, "[[4,200]=[7],default=100]"},
+		{[]RangeEntry{{0, 7}, {5, 3}, {200, 1}, {220, 2}, {240, 1}},
+			0, "[[0,200]=[7 7 7 7 7],default=3 [220,240]=[],default=2]"},
+		{[]RangeEntry{{0, 7}, {5, 3}, {10, 1}, {220, 2}, {240, 1}},
+			0, "[[0,220]=[7 7 7 7 7 3 3 3 3 3],default=1 [220,240]=[],default=2]"},
+		{[]RangeEntry{{0, 7}, {5, 3}, {200, 1}, {220, 2}, {240, 1}},
+			200, "[[220,240]=[],default=2]"},
+	}
+	for _, tc := range tests {
+		tables := Tables{SymbolMap: tc.input}
+		m := tables.CompressedMap(tc.start)
+		if got := fmt.Sprintf("%v", m); got != tc.want {
+			t.Errorf("CompressedMap(%v, %v) = %v, want: %v", tc.input, tc.start, got, tc.want)
 		}
 	}
 }

@@ -12,19 +12,19 @@ import (
 )
 
 // Format formats the content of a generated Go file.
-func Format(filename, content string) (string, error) {
+func Format(filename, content string) string {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, content, parser.ParseComments)
 	if err != nil {
-		return "", err
+		return fmt.Sprintf("// go fmt failed with: %v\n%s", err, content)
 	}
 
 	var buf bytes.Buffer
 	err = format.Node(&buf, fset, file)
 	if err != nil {
-		return "", err
+		return fmt.Sprintf("// go fmt failed with: %v\n%s", err, content)
 	}
-	return buf.String(), nil
+	return buf.String()
 }
 
 var qualifierRE = regexp.MustCompile(`("((?:[\w-]+/)*([\w-]+))(?:\s*as\s*(\w+))?")\.\w+`)

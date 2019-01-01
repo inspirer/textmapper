@@ -69,19 +69,92 @@ func (t *Tables) LastMapEntry() RangeEntry {
 }
 
 // SymbolArr returns a simple array representation of the symbol map (except the last segment).
-func (t *Tables) SymbolArr() []int {
+func (t *Tables) SymbolArr(maxRune rune) []int {
 	if len(t.SymbolMap) == 1 {
 		return nil
 	}
-	ret := make([]int, t.LastMapEntry().Start)
+	size := t.LastMapEntry().Start
+	if maxRune != 0 && maxRune < size {
+		size = maxRune
+	}
+	ret := make([]int, size)
 	var index rune
 	var target int
 	for _, e := range t.SymbolMap {
-		for ; index < e.Start; index++ {
+		for ; index < e.Start && index < size; index++ {
 			ret[index] = target
+		}
+		if index == size {
+			break
 		}
 		target = int(e.Target)
 	}
+	return ret
+}
+
+// CompressedEntry is a single entry of a compressed map from runes to DFA symbols.
+type CompressedEntry struct {
+	Lo, Hi     rune
+	DefaultVal int
+	Vals       []int
+}
+
+func (e CompressedEntry) String() string {
+	return fmt.Sprintf("[%v,%v]=%v,default=%v", e.Lo, e.Hi, e.Vals, e.DefaultVal)
+}
+
+// CompressedMap returns the compressed representation of the symbol map (except the last segment).
+func (t *Tables) CompressedMap(start rune) []CompressedEntry {
+	defaultVal := t.LastMapEntry().Target
+	var curr CompressedEntry
+	curr.Lo = -1
+
+	var ret []CompressedEntry
+	emit := func() {
+		if curr.Lo == -1 {
+			return
+		}
+		curr.DefaultVal = curr.Vals[len(curr.Vals)-1]
+		size := len(curr.Vals)
+		for ; size > 0 && curr.Vals[size-1] == curr.DefaultVal; size-- {
+		}
+		if size == 0 {
+			curr.Vals = nil
+		} else {
+			curr.Vals = curr.Vals[:size]
+		}
+		ret = append(ret, curr)
+		curr.Lo = -1
+	}
+	consume := func(lo, hi rune, target Sym, strike int) {
+		if curr.Lo == -1 {
+			if target == defaultVal {
+				return
+			}
+			curr = CompressedEntry{Lo: lo, Hi: hi}
+		} else {
+			curr.Hi = hi
+		}
+		for i := lo; i < hi; i++ {
+			curr.Vals = append(curr.Vals, int(target))
+		}
+		if count := int(hi - lo); target == defaultVal && strike+count > 8 || count > 8 {
+			emit()
+			return
+		}
+	}
+
+	var strike int
+	startIdx := sort.Search(len(t.SymbolMap), func(i int) bool { return i+1 == len(t.SymbolMap) || t.SymbolMap[i+1].Start > start })
+	index := start
+	target := t.SymbolMap[startIdx].Target
+	for _, e := range t.SymbolMap[startIdx+1:] {
+		consume(index, e.Start, target, strike)
+		target = e.Target
+		strike = int(e.Start - index)
+		index = e.Start
+	}
+	emit()
 	return ret
 }
 

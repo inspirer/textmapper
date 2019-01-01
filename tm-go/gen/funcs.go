@@ -10,6 +10,7 @@ import (
 var funcMap = template.FuncMap{
 	"string_hash":      stringHash,
 	"ranged_hash":      rangedHash,
+	"bits":             bits,
 	"bits_per_element": bitsPerElement,
 	"int_array":        intArray,
 	"str_literal":      strconv.Quote,
@@ -29,6 +30,16 @@ func rangedHash(s string, limit uint32) uint32 {
 		hash = hash*uint32(31) + uint32(r)
 	}
 	return hash % limit
+}
+
+func bits(i int) int {
+	if i < math.MinInt8 || i > math.MaxInt8 {
+		if i < math.MinInt16 || i > math.MaxInt16 {
+			return 32
+		}
+		return 16
+	}
+	return 8
 }
 
 func bitsPerElement(arr []int) int {

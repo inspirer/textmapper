@@ -359,6 +359,10 @@ func (c *compiler) resolveClasses() {
 
 		classRule := -1
 		for _, start := range r.StartConditions {
+			if start >= len(tables.StateMap) {
+				// This start condition is not covered by class rules.
+				continue
+			}
 			size, result := tables.Scan(start, val)
 			if size == len(val) && result >= 0 {
 				classRule = result

@@ -2,12 +2,12 @@
 package gen
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/inspirer/textmapper/tm-go/grammar"
 	"github.com/inspirer/textmapper/tm-parsers/tm"
 	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 	"io/ioutil"
+	"strings"
 	"text/template"
 )
 
@@ -18,27 +18,27 @@ type Writer interface {
 
 // Generate generates code for a grammar.
 func Generate(g *grammar.Grammar, w Writer) error {
-	tmpl, err := template.New("tokenTpl").Funcs(funcMap).Parse(tokenTpl)
+	base, err := template.New("main").Funcs(funcMap).Parse(sharedDefs)
 	if err != nil {
 		return err
 	}
-	if _, err = tmpl.Parse(sharedDefs); err != nil {
-		return err
-	}
-	var buf bytes.Buffer
-	err = tmpl.Execute(&buf, g)
-	if err != nil {
-		return err
-	}
-	src := ExtractImports(buf.String())
+	for _, f := range genFiles {
+		tmpl, err := template.Must(base.Clone()).Parse(f.template)
+		if err != nil {
+			return err
+		}
 
-	const filename = "token.go"
-	ret, err := Format(filename, src)
-	if err != nil {
-		return err
+		var buf strings.Builder
+		err = tmpl.Execute(&buf, g)
+		if err != nil {
+			return err
+		}
+		src := Format(f.name, ExtractImports(buf.String()))
+		if err := w.Write(f.name, src); err != nil {
+			return err
+		}
 	}
-
-	return w.Write(filename, ret)
+	return nil
 }
 
 // GenerateFile reads, compiles, and generates code for a grammar stored in a file.
