@@ -24,7 +24,6 @@ func Compile(file ast.File) (*Grammar, error) {
 		},
 		syms:       make(map[string]int),
 		ids:        make(map[string]int),
-		symAction:  make(map[int]int),
 		codeAction: make(map[symCode]int),
 	}
 	c.compileLexer()
@@ -43,13 +42,13 @@ type compiler struct {
 	patterns    []*patterns // to keep track of unused patterns
 	classRules  []*lex.Rule
 	rules       []*lex.Rule
-	symAction   map[int]int
 	codeAction  map[symCode]int
 }
 
 type symCode struct {
 	code  string
 	space bool
+	class bool
 	sym   int
 }
 
@@ -64,21 +63,51 @@ func (c *compiler) compileLexer() {
 	c.resolveClasses()
 	c.out.NumTokens = len(c.out.Syms)
 
-	// Prepend EOI and InvalidToken to the rule token array to simplify handling of -1 and -2 actions.
-	c.out.RuleToken = append(c.out.RuleToken, 0, 0)
-	copy(c.out.RuleToken[2:], c.out.RuleToken)
-	c.out.RuleToken[0] = c.out.InvalidToken
-	c.out.RuleToken[1] = eoi
+	if c.canInlineRules() {
+		// The mapping is 1:1
+		c.out.RuleToken = nil
+	} else {
+		// Prepend EOI and InvalidToken to the rule token array to simplify handling of -1 and -2
+		// actions.
+		c.out.RuleToken = append(c.out.RuleToken, 0, 0)
+		copy(c.out.RuleToken[2:], c.out.RuleToken)
+		c.out.RuleToken[0] = c.out.InvalidToken
+		c.out.RuleToken[1] = eoi
+	}
 
 	var err error
 	c.out.Tables, err = lex.Compile(c.rules)
 	c.s.AddError(err)
+
+	if c.out.RuleToken == nil {
+		// We need to swap EOI and InvalidToken actions.
+		// TODO get rid of this code
+		start := c.out.Tables.ActionStart()
+		for i, val := range c.out.Tables.Dfa {
+			if val == start {
+				c.out.Tables.Dfa[i] = start - 1
+			} else if val == start-1 {
+				c.out.Tables.Dfa[i] = start
+			}
+		}
+	}
 
 	for _, p := range c.patterns {
 		for name, unused := range p.unused {
 			c.errorf(unused, "unused pattern '%v'", name)
 		}
 	}
+}
+
+// canInlineRules decides whether we can replace rule ids directly with token ids.
+func (c *compiler) canInlineRules() bool {
+	for i, e := range c.out.RuleToken {
+		// Note: the first two actions are reserved for InvalidToken and EOI respectively.
+		if i+2 != e {
+			return false
+		}
+	}
+	return true
 }
 
 func (c *compiler) collectStartConds() {
@@ -183,18 +212,8 @@ func (c *compiler) addToken(name, id string, t ast.RawType, n status.SourceNode)
 	return sym.Index
 }
 
-func (c *compiler) addLexerAction(cmd ast.Command, space ast.LexemeAttribute, sym int) int {
-	if !cmd.IsValid() && !space.IsValid() {
-		if a, ok := c.symAction[sym]; ok {
-			return a
-		}
-		a := len(c.out.RuleToken)
-		c.out.RuleToken = append(c.out.RuleToken, sym)
-		c.symAction[sym] = a
-		return a
-	}
-
-	key := symCode{cmd.Text(), space.IsValid(), sym}
+func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int) int {
+	key := symCode{code: cmd.Text(), space: space.IsValid(), class: class.IsValid(), sym: sym}
 	if a, ok := c.codeAction[key]; ok {
 		return a
 	}
@@ -202,6 +221,9 @@ func (c *compiler) addLexerAction(cmd ast.Command, space ast.LexemeAttribute, sy
 	c.out.RuleToken = append(c.out.RuleToken, sym)
 	c.codeAction[key] = a
 
+	if !cmd.IsValid() && !space.IsValid() {
+		return a
+	}
 	act := SemanticAction{Action: a, Code: key.code, Space: space.IsValid()}
 	if cmd.IsValid() {
 		act.Origin = cmd
@@ -248,12 +270,11 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				rule.StartConditions = c.resolveSC(sc)
 			}
 
-			var class bool
-			var space ast.LexemeAttribute
+			var space, class ast.LexemeAttribute
 			if attrs, ok := p.Attrs(); ok {
 				switch name := attrs.LexemeAttribute().Text(); name {
 				case "class":
-					class = true
+					class = attrs.LexemeAttribute()
 				case "space":
 					space = attrs.LexemeAttribute()
 				default:
@@ -262,8 +283,8 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 			}
 
 			cmd, _ := p.Command()
-			rule.Action = c.addLexerAction(cmd, space, tok)
-			if class {
+			rule.Action = c.addLexerAction(cmd, space, class, tok)
+			if class.IsValid() {
 				c.classRules = append(c.classRules, rule)
 			} else {
 				c.rules = append(c.rules, rule)
