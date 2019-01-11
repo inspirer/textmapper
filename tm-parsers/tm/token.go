@@ -18,7 +18,7 @@ const (
 	ICON
 	WHITESPACE
 	COMMENT
-	MULTILINE_COMMENT
+	MULTILINECOMMENT
 	REM               // %
 	COLONCOLON        // ::
 	OR                // |
@@ -104,7 +104,7 @@ var tokenStr = [...]string{
 	"ICON",
 	"WHITESPACE",
 	"COMMENT",
-	"MULTILINE_COMMENT",
+	"MULTILINECOMMENT",
 	"%",
 	"::",
 	"|",

@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-language textmapper(go);
+language tm(go);
 
 lang = "tm"
 package = "github.com/inspirer/textmapper/tm-parsers/tm"
@@ -22,7 +22,7 @@ eventBased = true
 eventFields = true
 eventAST = true
 fileNode = "File"
-reportTokens = [invalid_token, multiline_comment, comment]
+reportTokens = [invalid_token, multilineComment, comment]
 
 :: lexer
 
@@ -40,7 +40,7 @@ whitespace: /[\n\r\t ]+/                      (space)
 comment:    /(#|\/\/)[^\r\n]*/                (space)
 
 commentChars = /([^*]|\*+[^*\/])*\**/
-multiline_comment: /\/\*{commentChars}\*\//   (space)
+multilineComment: /\/\*{commentChars}\*\//   (space)
 
 '%':    /%/
 '::':   /::/

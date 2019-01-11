@@ -305,7 +305,7 @@ func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []sym
 restart:
 	token := lexer.Next()
 	switch token {
-	case INVALID_TOKEN, MULTILINE_COMMENT, COMMENT:
+	case INVALID_TOKEN, MULTILINECOMMENT, COMMENT:
 		s, e := lexer.Pos()
 		tok := symbol{int32(token), s, e}
 		if ignoredTokens == nil {
@@ -333,7 +333,7 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 	switch Token(tok.symbol) {
 	case INVALID_TOKEN:
 		t = InvalidToken
-	case MULTILINE_COMMENT:
+	case MULTILINECOMMENT:
 		t = MultilineComment
 	case COMMENT:
 		t = Comment
