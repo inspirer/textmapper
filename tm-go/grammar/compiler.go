@@ -107,12 +107,12 @@ func (c *compiler) compileLexer() {
 // canInlineRules decides whether we can replace rule ids directly with token ids.
 func (c *compiler) canInlineRules() bool {
 	// Note: the first two actions are reserved for InvalidToken and EOI respectively.
-	var prev = 1
+	seen := container.NewBitSet(c.out.NumTokens)
 	for _, e := range c.out.RuleToken {
-		if e <= prev {
+		if e < 2 || seen.Get(e) {
 			return false
 		}
-		prev = e
+		seen.Set(e)
 	}
 	// TODO inline rules with actions
 	for _, a := range c.out.Actions {
@@ -333,11 +333,11 @@ func (c *compiler) resolveTokenComments() {
 			continue
 		}
 		tok := c.out.RuleToken[r.Action]
-		if _, ok := comments[tok]; ok {
+		val, _ := r.RE.Constant()
+		if old, ok := comments[tok]; ok && val != old {
 			comments[tok] = ""
 			continue
 		}
-		val, _ := r.RE.Constant()
 		comments[tok] = val
 	}
 	for tok, val := range comments {

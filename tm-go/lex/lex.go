@@ -127,18 +127,23 @@ func (t *Tables) CompressedMap(start rune) []CompressedEntry {
 		curr.Lo = -1
 	}
 	consume := func(lo, hi rune, target Sym, strike int) {
+		count := int(hi - lo)
 		if curr.Lo == -1 {
 			if target == defaultVal {
 				return
 			}
 			curr = CompressedEntry{Lo: lo, Hi: hi}
 		} else {
+			if target == defaultVal && strike+count > 8 {
+				emit()
+				return
+			}
 			curr.Hi = hi
 		}
 		for i := lo; i < hi; i++ {
 			curr.Vals = append(curr.Vals, int(target))
 		}
-		if count := int(hi - lo); target == defaultVal && strike+count > 8 || count > 8 {
+		if count > 8 {
 			emit()
 			return
 		}

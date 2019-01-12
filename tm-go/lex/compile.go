@@ -84,6 +84,11 @@ func (c *reCompiler) serialize(re *Regexp, resolver Resolver) {
 	case opCharClass:
 		c.emit(re.charset)
 	case opExternal:
+		if re.text == "eoi" {
+			eoi := c.emit(nil)
+			c.out[eoi].consume = symlist{EOI}
+			return
+		}
 		if _, ok := c.inExternal[re.text]; ok {
 			c.errorf("named patterns cannot recursively depend on each other (in %s)", re.text)
 			return
