@@ -63,10 +63,8 @@ func (c *compiler) compileLexer() {
 	c.resolveClasses()
 	c.out.NumTokens = len(c.out.Syms)
 
-	if c.canInlineRules() {
-		// The mapping is 1:1
-		c.out.RuleToken = nil
-	} else {
+	inline := c.canInlineRules()
+	if !inline {
 		// Prepend EOI and InvalidToken to the rule token array to simplify handling of -1 and -2
 		// actions.
 		c.out.RuleToken = append(c.out.RuleToken, 0, 0)
@@ -79,17 +77,24 @@ func (c *compiler) compileLexer() {
 	c.out.Tables, err = lex.Compile(c.rules)
 	c.s.AddError(err)
 
-	if c.out.RuleToken == nil {
+	if inline {
+		// There is at most one action per token, so it is possible to use tokens IDs as actions.
 		// We need to swap EOI and InvalidToken actions.
-		// TODO get rid of this code
+		// TODO simplify
 		start := c.out.Tables.ActionStart()
 		for i, val := range c.out.Tables.Dfa {
 			if val == start {
 				c.out.Tables.Dfa[i] = start - 1
 			} else if val == start-1 {
 				c.out.Tables.Dfa[i] = start
+			} else if val < start {
+				c.out.Tables.Dfa[i] = start - c.out.RuleToken[start-val-2]
 			}
 		}
+		for i, val := range c.out.Tables.Backtrack {
+			c.out.Tables.Backtrack[i].Action = c.out.RuleToken[val.Action-2]
+		}
+		c.out.RuleToken = nil
 	}
 
 	for _, p := range c.patterns {
@@ -101,11 +106,13 @@ func (c *compiler) compileLexer() {
 
 // canInlineRules decides whether we can replace rule ids directly with token ids.
 func (c *compiler) canInlineRules() bool {
-	for i, e := range c.out.RuleToken {
-		// Note: the first two actions are reserved for InvalidToken and EOI respectively.
-		if i+2 != e {
+	// Note: the first two actions are reserved for InvalidToken and EOI respectively.
+	var prev = 1
+	for _, e := range c.out.RuleToken {
+		if e <= prev {
 			return false
 		}
+		prev = e
 	}
 	// TODO inline rules with actions
 	for _, a := range c.out.Actions {
@@ -219,6 +226,14 @@ func (c *compiler) addToken(name, id string, t ast.RawType, n status.SourceNode)
 }
 
 func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int) int {
+	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() {
+		if sym == int(lex.EOI) {
+			return -1
+		} else if sym == c.out.InvalidToken {
+			return -2
+		}
+	}
+
 	key := symCode{code: cmd.Text(), space: space.IsValid(), class: class.IsValid(), sym: sym}
 	if a, ok := c.codeAction[key]; ok {
 		return a
@@ -314,6 +329,9 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 func (c *compiler) resolveTokenComments() {
 	comments := make(map[int]string)
 	for _, r := range c.rules {
+		if r.Action < 0 {
+			continue
+		}
 		tok := c.out.RuleToken[r.Action]
 		if _, ok := comments[tok]; ok {
 			comments[tok] = ""

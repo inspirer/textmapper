@@ -12,6 +12,7 @@ var grammars = []string{
 	"../parsers/json/json.tm",
 	"../parsers/simple/simple.tm",
 	"../parsers/test/test.tm",
+	"../../tm-parsers/tm/textmapper.tm",
 }
 
 type mapWriter map[string]string

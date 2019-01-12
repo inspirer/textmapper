@@ -133,8 +133,8 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 	}
 
 	// First group (only) succeeds on EOI, unless there is an explicit EOI rule.
-	if first := g.states[0]; first.action[0] == -1 {
-		first.action[0] = -2
+	if g.first.action[0] == -1 {
+		g.first.action[0] = -2
 	}
 
 	// Adding backtracking states.
@@ -144,7 +144,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 	}
 	var bt map[checkpointKey]int
 	var numBtStates int
-	for _, state := range g.states {
+	for state := g.first; state != nil; state = state.next {
 		if state.accept == nil {
 			continue
 		}
