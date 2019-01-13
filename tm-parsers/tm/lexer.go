@@ -69,8 +69,7 @@ restart:
 	state := tmStateMap[l.State]
 	hash := uint32(0)
 	backupToken := -1
-	backupOffset := 0
-	backupLine := 0
+	var backupOffset int
 	backupHash := hash
 	for state >= 0 {
 		var ch int
@@ -88,7 +87,6 @@ restart:
 				state = (-1 - state) * 2
 				backupToken = tmBacktracking[state]
 				backupOffset = l.offset
-				backupLine = l.line
 				backupHash = hash
 				state = tmBacktracking[state+1]
 			}
@@ -306,37 +304,12 @@ recovered:
 	}
 	switch token {
 	case INVALID_TOKEN:
-		scanNext := false
 		if backupToken >= 0 {
-			// Update line information
-			l.line = backupLine
-
 			token = Token(backupToken)
 			hash = backupHash
-			l.scanOffset = backupOffset
-			scanNext = true
+			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
-			if l.ch == '\n' {
-				l.line++
-			}
-
-			scanNext = true
-		}
-		if scanNext {
-			// Scan the next character.
-			// Note: the following code is inlined to avoid performance implications.
-			l.offset = l.scanOffset
-			if l.offset < len(l.source) {
-				r, w := rune(l.source[l.offset]), 1
-				if r >= 0x80 {
-					// not ASCII
-					r, w = utf8.DecodeRuneInString(l.source[l.offset:])
-				}
-				l.scanOffset += w
-				l.ch = r
-			} else {
-				l.ch = -1 // EOI
-			}
+			l.rewind(l.offset + 1)
 		}
 		if token != INVALID_TOKEN {
 			goto recovered

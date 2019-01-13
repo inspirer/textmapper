@@ -52,7 +52,7 @@ restart:
 	state := tmStateMap[l.State]
 	hash := uint32(0)
 	backupRule := -1
-	backupOffset := 0
+	var backupOffset int
 	backupHash := hash
 	for state >= 0 {
 		var ch int
@@ -120,31 +120,12 @@ recovered:
 	space := false
 	switch rule {
 	case 0:
-		scanNext := false
 		if backupRule >= 0 {
-
 			rule = backupRule
 			hash = backupHash
-			l.scanOffset = backupOffset
-			scanNext = true
+			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
-			scanNext = true
-		}
-		if scanNext {
-			// Scan the next character.
-			// Note: the following code is inlined to avoid performance implications.
-			l.offset = l.scanOffset
-			if l.offset < len(l.source) {
-				r, w := rune(l.source[l.offset]), 1
-				if r >= 0x80 {
-					// not ASCII
-					r, w = utf8.DecodeRuneInString(l.source[l.offset:])
-				}
-				l.scanOffset += w
-				l.ch = r
-			} else {
-				l.ch = -1 // EOI
-			}
+			l.rewind(l.offset + 1)
 		}
 		if rule != 0 {
 			goto recovered

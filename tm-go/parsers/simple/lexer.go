@@ -90,24 +90,7 @@ func (l *Lexer) Next() Token {
 	switch token {
 	case INVALID_TOKEN:
 		if l.offset == l.tokenOffset {
-			if l.ch == '\n' {
-				l.line++
-			}
-
-			// Scan the next character.
-			// Note: the following code is inlined to avoid performance implications.
-			l.offset = l.scanOffset
-			if l.offset < len(l.source) {
-				r, w := rune(l.source[l.offset]), 1
-				if r >= 0x80 {
-					// not ASCII
-					r, w = utf8.DecodeRuneInString(l.source[l.offset:])
-				}
-				l.scanOffset += w
-				l.ch = r
-			} else {
-				l.ch = -1 // EOI
-			}
+			l.rewind(l.offset + 1)
 		}
 	}
 	return token

@@ -105,15 +105,9 @@ ${if self->useCustomMap()-}
 ${end-}
 ${if lex.backtracking.length > 0-}
 	${self->backupVar()} := -1
-	backupOffset := 0
-${if opts.tokenLine-}
-	backupLine := 0
-${end-}
+	var backupOffset int
 ${if self->useCustomMap()-}
 	backupHash := hash
-${end-}
-${if opts.tokenLineOffset-}
-	backupLineOffset := 0
 ${end-}
 ${end-}
 	for state >= 0 {
@@ -137,12 +131,6 @@ ${if lex.backtracking.length > 0-}
 				state = (-1 - state) * 2
 				${self->backupVar()} = tmBacktracking[state]
 				backupOffset = l.offset
-${if opts.tokenLine-}
-				backupLine = l.line
-${end-}
-${if opts.tokenLineOffset-}
-				backupLineOffset = l.lineOffset
-${end-}
 ${if self->useCustomMap()-}
 				backupHash = hash
 ${end-}
@@ -284,10 +272,13 @@ ${template lexerRewind}
 func (l *Lexer) rewind(offset int) {
 ${if opts.tokenLine-}
 	if offset < l.offset {
-		l.line -= strings.Count(l.source[offset:l.offset], "\n")
+		l.line -= "strings".Count(l.source[offset:l.offset], "\n")
 	} else {
-		l.line += strings.Count(l.source[l.offset:offset], "\n")
+		l.line += "strings".Count(l.source[l.offset:offset], "\n")
 	}
+${if opts.tokenLineOffset-}
+	l.lineOffset = 1 + "strings".LastIndexByte(l.source[:offset], '\n')
+${end-}
 
 ${end-}
 	// Scan the next character.
@@ -309,16 +300,7 @@ ${end}
 
 ${template handleInvalidToken-}
 ${if lex.backtracking.length > 0-}
-		scanNext := false
 		if ${self->backupVar()} >= 0 {
-${if opts.tokenLine-}
-			// Update line information
-			l.line = backupLine
-${end-}
-${if opts.tokenLineOffset-}
-			l.lineOffset = backupLineOffset
-${end-}
-
 ${if self->canInlineLexerRules()-}
 			token = Token(backupToken)
 ${else-}
@@ -327,55 +309,20 @@ ${end-}
 ${if self->useCustomMap()-}
 			hash = backupHash
 ${end-}
-			l.scanOffset = backupOffset
-			scanNext = true
+			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
-${if opts.tokenLine-}
-			if l.ch == '\n' {
-				l.line++
-${if opts.tokenLineOffset-}
-				l.lineOffset = l.offset
-${end-}
-			}
-
-${end-}
-			scanNext = true
+			l.rewind(l.offset+1)
 		}
-		if scanNext {
-${else-}
-		if l.offset == l.tokenOffset {
-${if opts.tokenLine-}
-			if l.ch == '\n' {
-				l.line++
-${if opts.tokenLineOffset-}
-				l.lineOffset = l.offset
-${end-}
-			}
-
-${end-}
-${end-}
-			// Scan the next character.
-			// Note: the following code is inlined to avoid performance implications.
-			l.offset = l.scanOffset
-			if l.offset < len(l.source) {
-				r, w := rune(l.source[l.offset]), 1
-				if r >= 0x80 {
-					// not ASCII
-					r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
-				}
-				l.scanOffset += w
-				l.ch = r
-			} else {
-				l.ch = -1 // EOI
-			}
-		}
-${if lex.backtracking.length > 0-}
 ${if self->canInlineLexerRules()-}
 		if token != ${self->go_token.invalidTokenName()} {
 ${else-}
 		if rule != 0 {
 ${end-}
 			goto recovered
+		}
+${else-}
+		if l.offset == l.tokenOffset {
+			l.rewind(l.offset+1)
 		}
 ${end-}
 ${end}
