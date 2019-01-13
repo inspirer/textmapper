@@ -28,6 +28,7 @@ ${call lexerLine-}
 ${end-}
 ${call lexerText-}
 ${call lexerValue-}
+${call lexerRewind-}
 ${end}
 
 ${template lexerType}
@@ -72,26 +73,14 @@ ${end-}
 ${if opts.tokenLineOffset-}
 	l.lineOffset = 0
 ${end-}
-	l.scanOffset = 0
 	l.State = 0
 ${call initStateVars-}
 
 	if "strings".HasPrefix(source, bomSeq) {
-		l.scanOffset += len(bomSeq)
+		l.offset += len(bomSeq)
 	}
 
-	l.offset = l.scanOffset
-	if l.offset < len(l.source) {
-		r, w := rune(l.source[l.offset]), 1
-		if r >= 0x80 {
-			// not ASCII
-			r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
-		}
-		l.scanOffset += w
-		l.ch = r
-	} else {
-		l.ch = -1 // EOI
-	}
+	l.rewind(l.offset)
 }
 ${end}
 
@@ -286,6 +275,35 @@ ${template lexerValue}
 // Value returns the value associated with the last returned token.
 func (l *Lexer) Value() interface{} {
 	return l.value
+}
+${end}
+
+${template lexerRewind}
+// rewind can be used in lexer actions to accept a portion of a scanned token, or to include
+// more text into it.
+func (l *Lexer) rewind(offset int) {
+${if opts.tokenLine-}
+	if offset < l.offset {
+		l.line -= strings.Count(l.source[offset:l.offset], "\n")
+	} else {
+		l.line += strings.Count(l.source[l.offset:offset], "\n")
+	}
+
+${end-}
+	// Scan the next character.
+	l.scanOffset = offset
+	l.offset = offset
+	if l.offset < len(l.source) {
+		r, w := rune(l.source[l.offset]), 1
+		if r >= 0x80 {
+			// not ASCII
+			r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
+		}
+		l.scanOffset += w
+		l.ch = r
+	} else {
+		l.ch = -1 // EOI
+	}
 }
 ${end}
 
