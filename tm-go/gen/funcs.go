@@ -2,34 +2,33 @@ package gen
 
 import (
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 	"text/template"
 )
 
 var funcMap = template.FuncMap{
-	"string_hash":      stringHash,
-	"ranged_hash":      rangedHash,
+	"hex":              hex,
 	"bits":             bits,
 	"bits_per_element": bitsPerElement,
 	"int_array":        intArray,
 	"str_literal":      strconv.Quote,
+	"title":            strings.Title,
+	"sum":              sum,
+	"string_switch":    asStringSwitch,
+	"quote":            strconv.Quote,
 }
 
-func stringHash(s string) string {
-	var hash uint32
-	for _, r := range s {
-		hash = hash*uint32(31) + uint32(r)
-	}
-	return "0x" + strconv.FormatUint(uint64(hash), 16)
+func sum(a, b int) int {
+	return a + b
 }
 
-func rangedHash(s string, limit uint32) uint32 {
-	var hash uint32
-	for _, r := range s {
-		hash = hash*uint32(31) + uint32(r)
+func hex(val uint32) string {
+	if val < 10 {
+		return strconv.FormatUint(uint64(val), 10)
 	}
-	return hash % limit
+	return "0x" + strconv.FormatUint(uint64(val), 16)
 }
 
 func bits(i int) int {
@@ -77,4 +76,67 @@ func intArray(arr []int, padding string, maxWidth int) string {
 		b.WriteByte('\n')
 	}
 	return b.String()
+}
+
+type stringSwitch struct {
+	Size  uint32 // power of two
+	Cases []stringHashCase
+}
+
+func (s stringSwitch) Mask() uint32 {
+	return s.Size - 1
+}
+
+type stringHashCase struct {
+	Value    uint32
+	Subcases []stringSwitchCase
+}
+
+type stringSwitchCase struct {
+	Hash   uint32
+	Str    string
+	Action int
+}
+
+func asStringSwitch(m map[string]int) stringSwitch {
+	size := uint32(8)
+	for int(size) < len(m) {
+		size *= 2
+	}
+
+	var list []string
+	for s := range m {
+		list = append(list, s)
+	}
+	sort.Strings(list)
+
+	index := make(map[uint32]int)
+	ret := stringSwitch{Size: size}
+	for _, str := range list {
+		hash := stringHash(str)
+		rng := hash % size
+		i, ok := index[rng]
+		if !ok {
+			i = len(ret.Cases)
+			index[rng] = i
+			ret.Cases = append(ret.Cases, stringHashCase{Value: rng})
+		}
+		ret.Cases[i].Subcases = append(ret.Cases[i].Subcases, stringSwitchCase{
+			Hash:   hash,
+			Str:    str,
+			Action: m[str],
+		})
+	}
+	sort.Slice(ret.Cases, func(i, j int) bool {
+		return ret.Cases[i].Value < ret.Cases[j].Value
+	})
+	return ret
+}
+
+func stringHash(s string) uint32 {
+	var hash uint32
+	for _, r := range s {
+		hash = hash*uint32(31) + uint32(r)
+	}
+	return hash
 }

@@ -1,6 +1,8 @@
 package grammar
 
 import (
+	"sort"
+
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
 )
@@ -47,10 +49,11 @@ func (g *Grammar) Tokens() []Symbol {
 
 // SemanticAction is a piece of code that will be executed upon some event.
 type SemanticAction struct {
-	Action int
-	Code   string
-	Space  bool // this is a space token
-	Origin status.SourceNode
+	Action  int
+	Code    string
+	Space   bool // this is a space token
+	Comment string
+	Origin  status.SourceNode
 }
 
 // ClassAction resolves class terminals into more specific tokens (such as keywords).
@@ -67,6 +70,29 @@ type Lexer struct {
 	Actions         []SemanticAction
 	InvalidToken    int
 	RuleToken       []int // maps actions into tokens; empty if the mapping is 1:1
+}
+
+// SpaceActions returns a sorted list of space-only actions.
+func (l *Lexer) SpaceActions() []int {
+	var ret []int
+	for _, a := range l.Actions {
+		if a.Code == "" && a.Space {
+			ret = append(ret, a.Action)
+		}
+	}
+	sort.Ints(ret)
+	return ret
+}
+
+// CodeActions returns a list of non-empty code actions.
+func (l *Lexer) CodeActions() []SemanticAction {
+	var ret []SemanticAction
+	for _, a := range l.Actions {
+		if a.Code != "" {
+			ret = append(ret, a)
+		}
+	}
+	return ret
 }
 
 type Options struct {

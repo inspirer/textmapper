@@ -1,30 +1,28 @@
 package gen
 
 import (
+	"fmt"
 	"math/rand"
+	"strings"
 	"testing"
 )
 
 func TestHashing(t *testing.T) {
 	tests := []struct {
-		input     string
-		want      string
-		wantIndex uint32
+		input string
+		want  string
 	}{
-		{"", "0x0", 0},
-		{" ", "0x20", 0},
-		{"__", "0xbe0", 0},
-		{"shift", "0x6856c82", 2},
-		{"inline", "0xb96da299", 25},
-		{"verylongstring", "0x1200fb43", 3},
+		{"", "0"},
+		{" ", "0x20"},
+		{"__", "0xbe0"},
+		{"shift", "0x6856c82"},
+		{"inline", "0xb96da299"},
+		{"verylongstring", "0x1200fb43"},
 	}
 
 	for _, tc := range tests {
-		if got := stringHash(tc.input); got != tc.want {
+		if got := hex(stringHash(tc.input)); got != tc.want {
 			t.Errorf("stringHash(%v) = %v, want: %v", tc.input, got, tc.want)
-		}
-		if got := rangedHash(tc.input, 32); got != tc.wantIndex {
-			t.Errorf("rangedHash(%v) = %v, want: %v", tc.input, got, tc.wantIndex)
 		}
 	}
 }
@@ -66,6 +64,42 @@ func TestIntArray(t *testing.T) {
 			t.Errorf("intArray(%v) = %q, want: %q", tc.input, got, tc.want)
 		}
 	}
+}
+
+func TestStringSwitch(t *testing.T) {
+	swtch := asStringSwitch(map[string]int{
+		"abc":  1,
+		"def":  2,
+		"a":    3,
+		"z":    4,
+		"abba": 5,
+		"e":    6,
+		"y":    7,
+	})
+	const want = "/8=>[0=>[(0x2d9420,abba)=>5] 1=>[(0x61,a)=>3 (0x79,y)=>7] 2=>[(0x17862,abc)=>1 (0x7a,z)=>4] 5=>[(0x18405,def)=>2 (0x65,e)=>6]]"
+	if got := switchString(swtch); got != want {
+		t.Errorf("stringSwitch() = %v, want: %v", got, want)
+	}
+}
+
+func switchString(s stringSwitch) string {
+	var buf strings.Builder
+	fmt.Fprintf(&buf, "/%v=>[", s.Size)
+	for i, c := range s.Cases {
+		if i > 0 {
+			buf.WriteRune(' ')
+		}
+		fmt.Fprintf(&buf, "%v=>[", hex(c.Value))
+		for i, s := range c.Subcases {
+			if i > 0 {
+				buf.WriteRune(' ')
+			}
+			fmt.Fprintf(&buf, "(%v,%v)=>%v", hex(s.Hash), s.Str, s.Action)
+		}
+		buf.WriteRune(']')
+	}
+	buf.WriteRune(']')
+	return buf.String()
 }
 
 func BenchmarkIntArray(b *testing.B) {

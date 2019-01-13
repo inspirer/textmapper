@@ -8,6 +8,7 @@ type file struct {
 var genFiles = []file{
 	{"token.go", tokenTpl},
 	{"lexer_tables.go", lexerTablesTpl},
+// TODO	{"lexer.go", lexerTpl},
 }
 
 const sharedDefs = `
@@ -132,3 +133,325 @@ var tmBacktracking = []int{
 {{- end}}
 }
 {{- end}}`
+
+const lexerTpl = `
+{{template "header" . -}}
+package {{.Name}}
+
+{{- if gt (len .Lexer.StartConditions) 1}}
+
+// Lexer states.
+const (
+{{- range $index, $el := .Lexer.StartConditions}}
+	State{{title .}} = {{$index}}
+{{- end}}
+)
+{{- end}}
+
+{{template "lexerType" .}}
+{{template "lexerInit" .}}
+{{template "lexerNext" .}}
+{{template "lexerPos" .}}
+{{- if .Options.TokenLine}}
+{{template "lexerLine" .}}
+{{- end}}
+{{template "lexerText" .}}
+{{template "lexerValue" .}}
+{{template "lexerRewind" .}}
+
+{{- define "lexerType" -}}
+// Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
+// the string starts with a BOM character, it gets skipped.
+type Lexer struct {
+	source string
+
+	ch          rune // current character, -1 means EOI
+	offset      int  // character offset
+	tokenOffset int  // last token offset
+{{- if .Options.TokenLine}}
+	line        int  // current line number (1-based)
+	tokenLine   int  // last token line
+{{- end}}
+{{- if .Options.TokenLineOffset}}
+	lineOffset  int  // current line offset
+{{- end}}
+	scanOffset  int  // scanning offset
+	value       interface{}
+
+	State int // lexer state, modifiable
+{{- block "stateVars" .}}{{end}}
+}
+{{end -}}
+
+{{- define "lexerInit" -}}
+var bomSeq = "\xef\xbb\xbf"
+
+// Init prepares the lexer l to tokenize source by performing the full reset
+// of the internal state.
+func (l *Lexer) Init(source string) {
+	l.source = source
+
+	l.ch = 0
+	l.offset = 0
+	l.tokenOffset = 0
+{{- if .Options.TokenLine}}
+	l.line = 1
+	l.tokenLine = 1
+{{- end}}
+{{- if .Options.TokenLineOffset}}
+	l.lineOffset = 0
+{{- end}}
+	l.State = 0
+{{- block "initStateVars" .}}{{end}}
+
+	if "strings".HasPrefix(source, bomSeq) {
+		l.offset += len(bomSeq)
+	}
+
+	l.rewind(l.offset)
+}
+{{end -}}
+
+{{- define "lexerNext" -}}
+// Next finds and returns the next token in l.source. The source end is
+// indicated by Token.EOI.
+//
+// The token text can be retrieved later by calling the Text() method.
+func (l *Lexer) Next() Token {
+{{- block "onBeforeNext" .}}{{end}}
+{{- $spaceRules := .Lexer.SpaceActions}}
+{{- if or $spaceRules .Lexer.RuleToken }}
+restart:
+{{- end}}
+{{- if .Options.TokenLine}}
+	l.tokenLine = l.line
+{{- end}}
+	l.tokenOffset = l.offset
+
+	state := tmStateMap[l.State]
+{{- if .Lexer.ClassActions}}
+	hash := uint32(0)
+{{- end}}
+{{- if .Lexer.Tables.Backtrack}}
+	backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} := -1
+	var backupOffset int
+{{- if .Lexer.ClassActions}}
+	backupHash := hash
+{{- end}}
+{{- end}}
+	for state >= 0 {
+		var ch int
+		if uint(l.ch) < tmRuneClassLen {
+			ch = int(tmRuneClass[l.ch])
+		} else if l.ch < 0 {
+			state = int(tmLexerAction[state*tmNumClasses])
+			continue
+		} else {
+{{- if gt .Lexer.Tables.LastMapEntry.Start 2048}}
+			ch = mapRune(l.ch)
+{{- else}}
+			ch = 1
+{{- end}}
+		}
+		state = int(tmLexerAction[state*tmNumClasses+ch])
+		if state > tmFirstRule {
+{{- if .Lexer.Tables.Backtrack}}
+			if state < 0 {
+				state = (-1 - state) * 2
+				backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} = tmBacktracking[state]
+				backupOffset = l.offset
+{{- if .Lexer.ClassActions}}
+				backupHash = hash
+{{- end}}
+				state = tmBacktracking[state+1]
+			}
+{{- end}}
+{{- if .Lexer.ClassActions}}
+			hash = hash*uint32(31) + uint32(l.ch)
+{{end}}
+{{- if .Options.TokenLine}}
+			if l.ch == '\n' {
+				l.line++
+{{- if .Options.TokenLineOffset}}
+				l.lineOffset = l.offset
+{{- end}}
+			}
+{{- end}}
+
+			// Scan the next character.
+			// Note: the following code is inlined to avoid performance implications.
+			l.offset = l.scanOffset
+			if l.offset < len(l.source) {
+				r, w := rune(l.source[l.offset]), 1
+				if r >= 0x80 {
+					// not ASCII
+					r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
+				}
+				l.scanOffset += w
+				l.ch = r
+			} else {
+				l.ch = -1 // EOI
+			}
+		}
+	}
+{{if .Lexer.RuleToken}}
+	rule := tmFirstRule - state
+{{- else}}
+	token := Token(tmFirstRule - state)
+{{- end}}
+{{- if .Lexer.Tables.Backtrack}}
+recovered:
+{{- end}}
+{{- if .Lexer.ClassActions}}
+	switch {{if .Lexer.RuleToken}}rule{{else}}token{{end}} {
+{{- range .Lexer.ClassActions}}
+{{- if $.Lexer.RuleToken}}
+	case {{.Action}}:
+{{- else}}
+	case {{(index $.Syms (sum .Action 2)).ID}}:
+{{- end}}
+{{- with string_switch .Custom }}
+		hh := hash & {{.Mask}}
+		switch hh {
+{{- range .Cases}}
+		case {{.Value}}:
+{{- range .Subcases}}
+			if hash == {{hex .Hash}} && {{quote .Str}} == l.source[l.tokenOffset:l.offset] {
+{{- if $.Lexer.RuleToken}}
+				rule = {{.Action}}
+{{- else}}
+				token = {{(index $.Syms (sum .Action 2)).ID}}
+{{- end}}
+				break
+			}
+{{- end}}
+{{- end}}
+		}
+{{- end}}
+{{- end}}
+	}
+{{- end}}
+{{- if .Lexer.RuleToken}}
+
+	token := tmToken[rule]
+	space := false
+{{- $codeActions := .Lexer.CodeActions }}
+{{- if $codeActions}}
+	switch rule {
+	case 0:
+{{- template "handleInvalidToken" .}}
+{{- range $codeActions}}
+	case {{sum .Action 2}}: // {{.Comment}}
+{{.Code}}
+{{- end}}
+	}
+{{- else}}
+	if rule == 0 {
+{{- template "handleInvalidToken" .}}
+	}
+{{- end}}
+	if space {
+		goto restart
+	}
+{{- else}}
+	switch token {
+	case {{(index $.Syms .Lexer.InvalidToken).ID}}:
+{{- template "handleInvalidToken" .}}
+{{- if $spaceRules}}
+	case {{range $i, $val := $spaceRules}}{{if gt $i 0}}, {{end}}{{$val}}{{end}}:
+		goto restart
+{{- end}}
+	}
+{{- end}}
+{{- block "onAfterNext" .}}{{end}}
+	return token
+}
+{{end -}}
+
+{{- define "lexerPos" -}}
+// Pos returns the start and end positions of the last token returned by Next().
+func (l *Lexer) Pos() (start, end int) {
+	start = l.tokenOffset
+	end = l.offset
+	return
+}
+{{end -}}
+
+{{- define "lexerLine" -}}
+// Line returns the line number of the last token returned by Next().
+func (l *Lexer) Line() int {
+	return l.tokenLine
+}
+{{end -}}
+
+{{- define "lexerText" -}}
+// Text returns the substring of the input corresponding to the last token.
+func (l *Lexer) Text() string {
+	return l.source[l.tokenOffset:l.offset]
+}
+{{end -}}
+
+{{- define "lexerValue" -}}
+// Value returns the value associated with the last returned token.
+func (l *Lexer) Value() interface{} {
+	return l.value
+}
+{{end -}}
+
+{{- define "lexerRewind" -}}
+// rewind can be used in lexer actions to accept a portion of a scanned token, or to include
+// more text into it.
+func (l *Lexer) rewind(offset int) {
+{{- if .Options.TokenLine}}
+	if offset < l.offset {
+		l.line -= strings.Count(l.source[offset:l.offset], "\n")
+	} else {
+		l.line += strings.Count(l.source[l.offset:offset], "\n")
+	}
+{{end}}
+	// Scan the next character.
+	l.scanOffset = offset
+	l.offset = offset
+	if l.offset < len(l.source) {
+		r, w := rune(l.source[l.offset]), 1
+		if r >= 0x80 {
+			// not ASCII
+			r, w = "unicode/utf8".DecodeRuneInString(l.source[l.offset:])
+		}
+		l.scanOffset += w
+		l.ch = r
+	} else {
+		l.ch = -1 // EOI
+	}
+}
+{{end -}}
+
+{{- define "handleInvalidToken" -}}
+{{if .Lexer.Tables.Backtrack}}
+		if backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} >= 0 {
+{{- if .Lexer.RuleToken}}
+			rule = backupRule
+{{- else}}
+			token = Token(backupToken)
+{{- end}}
+{{- if .Lexer.ClassActions}}
+			hash = backupHash
+{{- end}}
+			l.rewind(backupOffset)
+		} else if l.offset == l.tokenOffset {
+			l.rewind(l.offset + 1)
+		}
+{{- if .Lexer.RuleToken}}
+		if rule != 0 {
+{{- else}}
+		if token != {{(index $.Syms .Lexer.InvalidToken).ID}} {
+{{- end}}
+			goto recovered
+		}
+{{- else}}
+		if l.offset == l.tokenOffset {
+			l.rewind(l.offset + 1)
+		}
+{{- end -}}
+{{end -}}
+`
