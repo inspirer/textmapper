@@ -33,6 +33,7 @@ type ParserTest struct {
 // New creates a new test by parsing out expectations (marked by guillemets) from the given
 // input string.
 func New(t *testing.T, name, input string) *ParserTest {
+	t.Helper()
 	out, exp, errors := splitInput(t, name, input)
 	expectFailure := strings.Contains(input, "/*fails*/")
 	return &ParserTest{
@@ -51,6 +52,7 @@ func (pt *ParserTest) Source() string {
 
 // ConsumeError records the reported syntax error and fails the test if the error is not expected.
 func (pt *ParserTest) ConsumeError(t *testing.T, offset, endoffset int) {
+	t.Helper()
 	if len(pt.expErrors) > 0 && pt.expErrors[0] == offset {
 		pt.expErrors = pt.expErrors[1:]
 		return
@@ -64,6 +66,7 @@ func (n node) highlight(s string) string {
 
 // Consume records the reported range and checks if it is expected.
 func (pt *ParserTest) Consume(t *testing.T, offset, endoffset int) {
+	t.Helper()
 	if offset > endoffset || endoffset > len(pt.source) {
 		t.Errorf("Test %s: [%v, %v] must be a subrange of [0, %v]", pt.name, offset, endoffset, len(pt.source))
 		return
@@ -82,6 +85,7 @@ func (pt *ParserTest) Consume(t *testing.T, offset, endoffset int) {
 
 // Done checks that all expectations have been satisfied.
 func (pt *ParserTest) Done(t *testing.T, err error) {
+	t.Helper()
 	if (err != nil) != pt.expectFailure {
 		t.Errorf("Test %s: Parse() = %v for `%s`", pt.name, err, pt.source)
 		return
@@ -94,6 +98,7 @@ func (pt *ParserTest) Done(t *testing.T, err error) {
 }
 
 func splitInput(t *testing.T, name, input string) (out string, exp map[node]int, errors []int) {
+	t.Helper()
 	var stack []int
 	var buffer bytes.Buffer
 
