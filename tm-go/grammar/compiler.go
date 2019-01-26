@@ -27,6 +27,7 @@ func Compile(file ast.File) (*Grammar, error) {
 		codeAction: make(map[symCode]int),
 	}
 	c.compileLexer()
+	c.parseOptions()
 	return c.out, c.s.Err()
 }
 
@@ -426,6 +427,114 @@ func (c *compiler) resolveClasses() {
 
 func (c *compiler) errorf(n status.SourceNode, format string, a ...interface{}) {
 	c.s.Errorf(n, format, a...)
+}
+
+func (c *compiler) parseExpr(e ast.Expression, defaultVal interface{}) interface{} {
+	switch e := e.(type) {
+	case *ast.Array:
+		if _, ok := defaultVal.([]int); ok {
+			var ret []int
+			for _, el := range e.Expression() {
+				if ref, ok := el.(*ast.Symref); ok {
+					id := ref.Name().Text()
+					sym, ok := c.syms[id]
+					if !ok {
+						c.errorf(el.TmNode(), "unresolved reference '%v'", id)
+						continue
+					}
+					// TODO correctly resolve templated nonterminals
+					ret = append(ret, sym)
+					continue
+				}
+				c.errorf(el.TmNode(), "symbol reference is expected")
+			}
+			return ret
+		}
+		if _, ok := defaultVal.([]string); ok {
+			var ret []string
+			for _, el := range e.Expression() {
+				if lit, ok := el.(*ast.StringLiteral); ok {
+					s, err := strconv.Unquote(lit.Text())
+					if err != nil {
+						c.errorf(el.TmNode(), "cannot parse string literal: %v", err)
+						continue
+					}
+					ret = append(ret, s)
+					continue
+				}
+				c.errorf(el.TmNode(), "string is expected")
+			}
+			return ret
+		}
+	case *ast.BooleanLiteral:
+		if _, ok := defaultVal.(bool); ok {
+			return e.Text() == "true"
+		}
+	case *ast.StringLiteral:
+		if _, ok := defaultVal.(string); ok {
+			s, err := strconv.Unquote(e.Text())
+			if err != nil {
+				c.errorf(e, "cannot parse string literal: %v", err)
+				return defaultVal
+			}
+			return s
+		}
+	}
+	switch defaultVal.(type) {
+	case []int:
+		c.errorf(e.TmNode(), "list of symbols is expected")
+	default:
+		c.errorf(e.TmNode(), "%T is expected", defaultVal)
+	}
+	return defaultVal
+}
+
+func (c *compiler) parseOptions() {
+	opts := c.out.Options
+	seen := make(map[string]int)
+	for _, opt := range c.file.Options() {
+		kv, ok := opt.(*ast.KeyValue)
+		if !ok {
+			continue
+		}
+		name := kv.Key().Text()
+		if line, ok := seen[name]; ok {
+			c.errorf(kv.Key(), "reinitialization of '%v', previously declared on line %v", name, line)
+		}
+		line, _ := kv.Key().LineColumn()
+		seen[name] = line
+		switch name {
+		case "package":
+			opts.Package = c.parseExpr(kv.Value(), opts.Package).(string)
+		case "genCopyright":
+			opts.Copyright = c.parseExpr(kv.Value(), opts.Copyright).(bool)
+		case "tokenLine":
+			opts.TokenLine = c.parseExpr(kv.Value(), opts.TokenLine).(bool)
+		case "tokenLineOffset":
+			opts.TokenLineOffset = c.parseExpr(kv.Value(), opts.TokenLineOffset).(bool)
+		case "cancellable":
+			opts.Cancellable = c.parseExpr(kv.Value(), opts.Cancellable).(bool)
+		case "recursiveLookaheads":
+			opts.RecursiveLookaheads = c.parseExpr(kv.Value(), opts.RecursiveLookaheads).(bool)
+		case "eventBased":
+			opts.EventBased = c.parseExpr(kv.Value(), opts.EventBased).(bool)
+		case "eventFields":
+			opts.EventFields = c.parseExpr(kv.Value(), opts.EventFields).(bool)
+		case "eventAST":
+			opts.EventAST = c.parseExpr(kv.Value(), opts.EventAST).(bool)
+		case "reportTokens":
+			opts.ReportTokens = c.parseExpr(kv.Value(), opts.ReportTokens).([]int)
+		case "extraTypes":
+			opts.ExtraTypes = c.parseExpr(kv.Value(), opts.ExtraTypes).([]string)
+		case "fileNode":
+			opts.FileNode = c.parseExpr(kv.Value(), opts.FileNode).(string)
+		case "lang":
+			// This option often occurs in existing grammars. Ignore it.
+			c.parseExpr(kv.Value(), "")
+		default:
+			c.errorf(kv.Key(), "unknown option '%v'", name)
+		}
+	}
 }
 
 type patterns struct {

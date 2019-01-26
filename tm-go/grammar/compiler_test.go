@@ -15,6 +15,8 @@ import (
 
 var testFiles = []string{
 	`lexer.tmerr`,
+	`opts.tmerr`,
+	`opts_ok.tmerr`,
 }
 
 func TestErrors(t *testing.T) {
@@ -48,17 +50,17 @@ func TestErrors(t *testing.T) {
 			for _, e := range s {
 				pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
 				if len(want) == 0 {
-					t.Errorf("unexpected error at line %v: %v", e.Origin.Line, e.Msg)
+					t.Errorf("%v: unexpected error at line %v: %v", file, e.Origin.Line, e.Msg)
 					continue
 				}
 				if want[0] != e.Msg {
-					t.Errorf("unexpected error at line %v: %v, want: %v", e.Origin.Line, e.Msg, want[0])
+					t.Errorf("%v: unexpected error at line %v: %v, want: %v", file, e.Origin.Line, e.Msg, want[0])
 				}
 				want = want[1:]
 			}
 		}
 		if len(want) != 0 {
-			t.Errorf("not reported errors:\n%v", want)
+			t.Errorf("%v: not reported errors:\n%v", file, want)
 		}
 		pt.Done(t, nil)
 	}

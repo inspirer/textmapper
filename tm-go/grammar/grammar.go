@@ -95,7 +95,22 @@ func (l *Lexer) CodeActions() []SemanticAction {
 	return ret
 }
 
+// Grammar generation options.
 type Options struct {
-	TokenLine       bool // true by default
-	TokenLineOffset bool
+	Package   string
+	Copyright bool
+
+	// Parser features.
+	TokenLine           bool // true by default
+	TokenLineOffset     bool
+	Cancellable         bool
+	RecursiveLookaheads bool
+
+	// AST generation.
+	EventBased   bool
+	EventFields  bool
+	EventAST     bool
+	ReportTokens []int // Tokens that should appear in the AST.
+	ExtraTypes   []string
+	FileNode     string // The top-level node gets the byte range of the whole input.
 }

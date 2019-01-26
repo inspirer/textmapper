@@ -591,6 +591,9 @@ func (l *Lexer) rewind(offset int) {
 	if offset < l.offset {
 		l.line -= strings.Count(l.source[offset:l.offset], "\n")
 	} else {
+		if offset > len(l.source) {
+			offset = len(l.source)
+		}
 		l.line += strings.Count(l.source[l.offset:offset], "\n")
 	}
 

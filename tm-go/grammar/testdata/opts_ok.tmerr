@@ -1,0 +1,25 @@
+language lexer(go);
+
+
+# Options are case-sensitive.
+# err: unknown option 'ExtraTypes'
+«ExtraTypes» = ""
+
+# The list of all options.
+package = "github.com/example"
+genCopyright = true
+tokenLine = false
+tokenLineOffset = false
+cancellable = true
+recursiveLookaheads = true
+eventBased = true
+eventFields = true
+eventAST = true
+fileNode = "File"
+reportTokens = [foo, eoi]
+extraTypes = ["a", "b"]
+
+:: lexer
+
+eoi:
+foo: /foo/
