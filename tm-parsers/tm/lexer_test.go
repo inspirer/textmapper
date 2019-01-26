@@ -27,7 +27,7 @@ var lexerTests = []struct {
 		`,
 		`«// abc»`,
 	}},
-	{tm.MULTILINE_COMMENT, []string{
+	{tm.MULTILINECOMMENT, []string{
 		`«/**
 		   * comment ****
 		   */»`,
