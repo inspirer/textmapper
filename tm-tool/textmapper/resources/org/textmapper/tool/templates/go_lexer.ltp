@@ -204,7 +204,7 @@ ${if self->canInlineLexerRules()-}
 	switch token {
 	case ${self->go_token.invalidTokenName()}:
 ${call handleInvalidToken-}
-${if list = syntax.lexerRules.select(r|r->isSpace()).collectUnique(r|r.symbol.index), list.size() > 0}
+${if list = syntax.lexerRules.select(r|r->isSpace()).collectUnique(r|r.symbol.index), list.size() > 0-}
 	case ${list->util.join(', ')}:
 		goto restart
 ${end-}

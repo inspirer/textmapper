@@ -47,6 +47,30 @@ func (g *Grammar) Tokens() []Symbol {
 	return g.Syms[:g.NumTokens]
 }
 
+// SpaceActions returns a sorted list of space-only actions (taking into account tokens reported
+// into the AST).
+func (g *Grammar) SpaceActions() []int {
+	exclude := make(map[int]bool)
+	for _, tok := range g.Options.ReportTokens {
+		exclude[tok] = true
+	}
+
+	var ret []int
+	for _, a := range g.Actions {
+		if a.Code == "" && a.Space {
+			tok := a.Action
+			if len(g.RuleToken) > 0 {
+				tok = g.RuleToken[tok]
+			}
+			if !exclude[tok] {
+				ret = append(ret, a.Action)
+			}
+		}
+	}
+	sort.Ints(ret)
+	return ret
+}
+
 // SemanticAction is a piece of code that will be executed upon some event.
 type SemanticAction struct {
 	Action  int
@@ -70,18 +94,6 @@ type Lexer struct {
 	Actions         []SemanticAction
 	InvalidToken    int
 	RuleToken       []int // maps actions into tokens; empty if the mapping is 1:1
-}
-
-// SpaceActions returns a sorted list of space-only actions.
-func (l *Lexer) SpaceActions() []int {
-	var ret []int
-	for _, a := range l.Actions {
-		if a.Code == "" && a.Space {
-			ret = append(ret, a.Action)
-		}
-	}
-	sort.Ints(ret)
-	return ret
 }
 
 // CodeActions returns a list of non-empty code actions.

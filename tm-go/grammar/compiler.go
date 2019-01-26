@@ -95,7 +95,12 @@ func (c *compiler) compileLexer() {
 		for i, val := range c.out.Tables.Backtrack {
 			c.out.Tables.Backtrack[i].Action = c.out.RuleToken[val.Action-2]
 		}
-		// TODO same for ClassActions?
+		for i, val := range c.out.ClassActions {
+			c.out.ClassActions[i].Action = c.out.RuleToken[val.Action]
+			for k, v := range val.Custom {
+				val.Custom[k] = c.out.RuleToken[v]
+			}
+		}
 		for i, val := range c.out.Actions {
 			c.out.Actions[i].Action = c.out.RuleToken[val.Action]
 		}

@@ -145,7 +145,6 @@ recovered:
 		if token != INVALID_TOKEN {
 			goto recovered
 		}
-
 	case 8:
 		goto restart
 	}

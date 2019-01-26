@@ -8,7 +8,7 @@ type file struct {
 var genFiles = []file{
 	{"token.go", tokenTpl},
 	{"lexer_tables.go", lexerTablesTpl},
-// TODO	{"lexer.go", lexerTpl},
+	// TODO {"lexer.go", lexerTpl},
 }
 
 const sharedDefs = `
@@ -219,7 +219,7 @@ func (l *Lexer) Init(source string) {
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
 {{- block "onBeforeNext" .}}{{end}}
-{{- $spaceRules := .Lexer.SpaceActions}}
+{{- $spaceRules := .SpaceActions}}
 {{- if or $spaceRules .Lexer.RuleToken }}
 restart:
 {{- end}}
@@ -276,8 +276,7 @@ restart:
 				l.lineOffset = l.offset
 {{- end}}
 			}
-{{- end}}
-
+{{end}}
 			// Scan the next character.
 			// Note: the following code is inlined to avoid performance implications.
 			l.offset = l.scanOffset
@@ -306,9 +305,9 @@ recovered:
 	switch {{if .Lexer.RuleToken}}rule{{else}}token{{end}} {
 {{- range .Lexer.ClassActions}}
 {{- if $.Lexer.RuleToken}}
-	case {{.Action}}:
+	case {{sum .Action 2}}:
 {{- else}}
-	case {{(index $.Syms (sum .Action 2)).ID}}:
+	case {{(index $.Syms .Action).ID}}:
 {{- end}}
 {{- with string_switch .Custom }}
 		hh := hash & {{.Mask}}
@@ -318,9 +317,9 @@ recovered:
 {{- range .Subcases}}
 			if hash == {{hex .Hash}} && {{quote .Str}} == l.source[l.tokenOffset:l.offset] {
 {{- if $.Lexer.RuleToken}}
-				rule = {{.Action}}
+				rule = {{sum .Action 2}}
 {{- else}}
-				token = {{(index $.Syms (sum .Action 2)).ID}}
+				token = {{(index $.Syms .Action).ID}}
 {{- end}}
 				break
 			}
@@ -406,6 +405,9 @@ func (l *Lexer) rewind(offset int) {
 	if offset < l.offset {
 		l.line -= strings.Count(l.source[offset:l.offset], "\n")
 	} else {
+		if offset > len(l.source) {
+			offset = len(l.source)
+		}
 		l.line += strings.Count(l.source[l.offset:offset], "\n")
 	}
 {{end}}

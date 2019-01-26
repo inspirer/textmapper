@@ -452,7 +452,6 @@ restart:
 		if l.offset == l.tokenOffset {
 			l.rewind(l.offset + 1)
 		}
-
 	case 3:
 		goto restart
 	}
