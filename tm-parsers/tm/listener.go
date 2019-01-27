@@ -100,6 +100,7 @@ const (
 	InvalidToken
 	MultilineComment
 	Comment
+	Templates
 	NodeTypeMax
 )
 
@@ -193,6 +194,7 @@ var nodeTypeStr = [...]string{
 	"InvalidToken",
 	"MultilineComment",
 	"Comment",
+	"Templates",
 }
 
 func (t NodeType) String() string {

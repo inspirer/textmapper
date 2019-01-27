@@ -22,7 +22,7 @@ eventBased = true
 eventFields = true
 eventAST = true
 fileNode = "File"
-reportTokens = [invalid_token, multilineComment, comment]
+reportTokens = [invalid_token, multilineComment, comment, templates]
 
 :: lexer
 
@@ -35,9 +35,9 @@ reChar = /{reFirst}|\*/
 scon:    /"([^\n\\"]|\\.)*"/
 icon:    /-?[0-9]+/
 
-eoi:        /%%.*(\r?\n)?/
-whitespace: /[\n\r\t ]+/                      (space)
-comment:    /(#|\/\/)[^\r\n]*/                (space)
+templates:  /%%/                             (space)   { l.rewind(len(l.source)) }
+whitespace: /[\n\r\t ]+/                     (space)
+comment:    /(#|\/\/)[^\r\n]*/               (space)
 
 commentChars = /([^*]|\*+[^*\/])*\**/
 multilineComment: /\/\*{commentChars}\*\//   (space)

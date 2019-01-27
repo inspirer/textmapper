@@ -68,7 +68,7 @@ restart:
 
 	state := tmStateMap[l.State]
 	hash := uint32(0)
-	backupToken := -1
+	backupRule := -1
 	var backupOffset int
 	backupHash := hash
 	for state >= 0 {
@@ -85,7 +85,7 @@ restart:
 		if state > tmFirstRule {
 			if state < 0 {
 				state = (-1 - state) * 2
-				backupToken = tmBacktracking[state]
+				backupRule = tmBacktracking[state]
 				backupOffset = l.offset
 				backupHash = hash
 				state = tmBacktracking[state+1]
@@ -113,208 +113,218 @@ restart:
 		}
 	}
 
-	token := Token(tmFirstRule - state)
+	rule := tmFirstRule - state
 recovered:
-	switch token {
-	case ID:
+	switch rule {
+	case 38:
 		hh := hash & 63
 		switch hh {
 		case 2:
 			if hash == 0x43733a82 && "lookahead" == l.source[l.tokenOffset:l.offset] {
-				token = LOOKAHEAD
+				rule = 62
 				break
 			}
 			if hash == 0x6856c82 && "shift" == l.source[l.tokenOffset:l.offset] {
-				token = SHIFT
+				rule = 72
 				break
 			}
 		case 3:
 			if hash == 0x41796943 && "returns" == l.source[l.tokenOffset:l.offset] {
-				token = RETURNS
+				rule = 69
 				break
 			}
 		case 6:
 			if hash == 0xac107346 && "assert" == l.source[l.tokenOffset:l.offset] {
-				token = ASSERT
+				rule = 46
 				break
 			}
 			if hash == 0x688f106 && "space" == l.source[l.tokenOffset:l.offset] {
-				token = SPACE
+				rule = 74
 				break
 			}
 		case 7:
 			if hash == 0x32a007 && "left" == l.source[l.tokenOffset:l.offset] {
-				token = LEFT
+				rule = 60
 				break
 			}
 		case 10:
 			if hash == 0x5fb57ca && "input" == l.source[l.tokenOffset:l.offset] {
-				token = INPUT
+				rule = 55
 				break
 			}
 		case 11:
 			if hash == 0xfde4e8cb && "brackets" == l.source[l.tokenOffset:l.offset] {
-				token = BRACKETS
+				rule = 47
 				break
 			}
 		case 12:
 			if hash == 0x621a30c && "lexer" == l.source[l.tokenOffset:l.offset] {
-				token = LEXER
+				rule = 61
 				break
 			}
 		case 13:
 			if hash == 0x5c2854d && "empty" == l.source[l.tokenOffset:l.offset] {
-				token = EMPTY
+				rule = 49
 				break
 			}
 			if hash == 0x658188d && "param" == l.source[l.tokenOffset:l.offset] {
-				token = PARAM
+				rule = 66
 				break
 			}
 		case 14:
 			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
-				token = TRUE
+				rule = 45
 				break
 			}
 		case 20:
 			if hash == 0x375194 && "void" == l.source[l.tokenOffset:l.offset] {
-				token = VOID
+				rule = 75
 				break
 			}
 		case 24:
 			if hash == 0x9fd29358 && "language" == l.source[l.tokenOffset:l.offset] {
-				token = LANGUAGE
+				rule = 58
 				break
 			}
 		case 25:
 			if hash == 0xb96da299 && "inline" == l.source[l.tokenOffset:l.offset] {
-				token = INLINE
+				rule = 54
 				break
 			}
 		case 28:
 			if hash == 0x677c21c && "right" == l.source[l.tokenOffset:l.offset] {
-				token = RIGHT
+				rule = 70
 				break
 			}
 		case 31:
 			if hash == 0xc4ab3c1f && "parser" == l.source[l.tokenOffset:l.offset] {
-				token = PARSER
+				rule = 67
 				break
 			}
 		case 32:
 			if hash == 0x540c92a0 && "nonempty" == l.source[l.tokenOffset:l.offset] {
-				token = NONEMPTY
+				rule = 65
 				break
 			}
 			if hash == 0x34a220 && "prec" == l.source[l.tokenOffset:l.offset] {
-				token = PREC
+				rule = 68
 				break
 			}
 		case 34:
 			if hash == 0x1bc62 && "set" == l.source[l.tokenOffset:l.offset] {
-				token = SET
+				rule = 44
 				break
 			}
 		case 35:
 			if hash == 0x5cb1923 && "false" == l.source[l.tokenOffset:l.offset] {
-				token = FALSE
+				rule = 40
 				break
 			}
 			if hash == 0xb5e903a3 && "global" == l.source[l.tokenOffset:l.offset] {
-				token = GLOBAL
+				rule = 53
 				break
 			}
 		case 37:
 			if hash == 0xb96173a5 && "import" == l.source[l.tokenOffset:l.offset] {
-				token = IMPORT
+				rule = 42
 				break
 			}
 			if hash == 0x6748e2e5 && "separator" == l.source[l.tokenOffset:l.offset] {
-				token = SEPARATOR
+				rule = 43
 				break
 			}
 		case 40:
 			if hash == 0x53d6f968 && "nonassoc" == l.source[l.tokenOffset:l.offset] {
-				token = NONASSOC
+				rule = 64
 				break
 			}
 		case 42:
 			if hash == 0xbddafb2a && "layout" == l.source[l.tokenOffset:l.offset] {
-				token = LAYOUT
+				rule = 59
 				break
 			}
 			if hash == 0x35f42a && "soft" == l.source[l.tokenOffset:l.offset] {
-				token = SOFT
+				rule = 73
 				break
 			}
 		case 44:
 			if hash == 0x2fff6c && "flag" == l.source[l.tokenOffset:l.offset] {
-				token = FLAG
+				rule = 51
 				break
 			}
 		case 48:
 			if hash == 0xc97057b0 && "implements" == l.source[l.tokenOffset:l.offset] {
-				token = IMPLEMENTS
+				rule = 41
 				break
 			}
 		case 50:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
-				token = AS
+				rule = 39
 				break
 			}
 		case 51:
 			if hash == 0xc1e742f3 && "no-eoi" == l.source[l.tokenOffset:l.offset] {
-				token = NOMINUSEOI
+				rule = 63
 				break
 			}
 			if hash == 0x73 && "s" == l.source[l.tokenOffset:l.offset] {
-				token = CHAR_S
+				rule = 71
 				break
 			}
 		case 52:
 			if hash == 0x8d046634 && "explicit" == l.source[l.tokenOffset:l.offset] {
-				token = EXPLICIT
+				rule = 50
 				break
 			}
 		case 53:
 			if hash == 0x6be81575 && "generate" == l.source[l.tokenOffset:l.offset] {
-				token = GENERATE
+				rule = 52
 				break
 			}
 		case 56:
 			if hash == 0x5a5a978 && "class" == l.source[l.tokenOffset:l.offset] {
-				token = CLASS
+				rule = 48
 				break
 			}
 			if hash == 0x78 && "x" == l.source[l.tokenOffset:l.offset] {
-				token = CHAR_X
+				rule = 76
 				break
 			}
 		case 57:
 			if hash == 0x1df56d39 && "interface" == l.source[l.tokenOffset:l.offset] {
-				token = INTERFACE
+				rule = 56
 				break
 			}
 		case 59:
 			if hash == 0x3291bb && "lalr" == l.source[l.tokenOffset:l.offset] {
-				token = LALR
+				rule = 57
 				break
 			}
 		}
 	}
-	switch token {
-	case INVALID_TOKEN:
-		if backupToken >= 0 {
-			token = Token(backupToken)
+
+	token := tmToken[rule]
+	space := false
+	switch rule {
+	case 0:
+		if backupRule >= 0 {
+			rule = backupRule
 			hash = backupHash
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
 			l.rewind(l.offset + 1)
 		}
-		if token != INVALID_TOKEN {
+		if rule != 0 {
 			goto recovered
 		}
-	case 4:
+	case 4: // templates: /%%/
+		{
+			l.rewind(len(l.source))
+		}
+	case 5: // whitespace: /[\n\r\t ]+/
+		space = true
+	}
+	if space {
 		goto restart
 	}
 	switch token {

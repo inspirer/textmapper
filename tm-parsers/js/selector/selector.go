@@ -211,6 +211,9 @@ var (
 	WhileStatement               = func(t js.NodeType) bool { return t == js.WhileStatement }
 	WithStatement                = func(t js.NodeType) bool { return t == js.WithStatement }
 	Yield                        = func(t js.NodeType) bool { return t == js.Yield }
+	MultiLineComment             = func(t js.NodeType) bool { return t == js.MultiLineComment }
+	SingleLineComment            = func(t js.NodeType) bool { return t == js.SingleLineComment }
+	InvalidToken                 = func(t js.NodeType) bool { return t == js.InvalidToken }
 	NoSubstitutionTemplate       = func(t js.NodeType) bool { return t == js.NoSubstitutionTemplate }
 	TemplateHead                 = func(t js.NodeType) bool { return t == js.TemplateHead }
 	TemplateMiddle               = func(t js.NodeType) bool { return t == js.TemplateMiddle }

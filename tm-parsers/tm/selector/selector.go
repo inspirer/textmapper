@@ -95,6 +95,10 @@ var (
 	SyntaxProblem        = func(t tm.NodeType) bool { return t == tm.SyntaxProblem }
 	TemplateParam        = func(t tm.NodeType) bool { return t == tm.TemplateParam }
 	VoidType             = func(t tm.NodeType) bool { return t == tm.VoidType }
+	InvalidToken         = func(t tm.NodeType) bool { return t == tm.InvalidToken }
+	MultilineComment     = func(t tm.NodeType) bool { return t == tm.MultilineComment }
+	Comment              = func(t tm.NodeType) bool { return t == tm.Comment }
+	Templates            = func(t tm.NodeType) bool { return t == tm.Templates }
 	Annotation           = OneOf(tm.Annotation...)
 	Argument             = OneOf(tm.Argument...)
 	Expression           = OneOf(tm.Expression...)

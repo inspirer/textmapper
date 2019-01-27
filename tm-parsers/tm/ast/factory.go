@@ -179,7 +179,7 @@ func ToTmNode(n *Node) TmNode {
 		return &TemplateParam{n}
 	case tm.VoidType:
 		return &VoidType{n}
-	case tm.InvalidToken, tm.MultilineComment, tm.Comment:
+	case tm.InvalidToken, tm.MultilineComment, tm.Comment, tm.Templates:
 		return &Token{n}
 	case tm.NoType:
 		return nilInstance

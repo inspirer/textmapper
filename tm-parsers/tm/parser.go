@@ -164,7 +164,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	return nil
 }
 
-const errSymbol = 37
+const errSymbol = 38
 
 // willShift checks if "symbol" is going to be shifted in the given state.
 // This function does not support empty productions and returns false if they occur before "symbol".
@@ -305,7 +305,7 @@ func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []sym
 restart:
 	token := lexer.Next()
 	switch token {
-	case INVALID_TOKEN, MULTILINECOMMENT, COMMENT:
+	case INVALID_TOKEN, MULTILINECOMMENT, COMMENT, TEMPLATES:
 		s, e := lexer.Pos()
 		tok := symbol{int32(token), s, e}
 		if ignoredTokens == nil {
@@ -337,6 +337,8 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 		t = MultilineComment
 	case COMMENT:
 		t = Comment
+	case TEMPLATES:
+		t = Templates
 	default:
 		return
 	}

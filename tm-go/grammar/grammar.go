@@ -40,6 +40,7 @@ type Grammar struct {
 	NumTokens  int
 	*Lexer
 	*Options
+	CustomTemplates string
 }
 
 // Tokens returns all lexical tokens defined in the grammar.

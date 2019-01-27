@@ -9,16 +9,19 @@ import (
 type Selector func(nt test.NodeType) bool
 
 var (
-	Any         = func(t test.NodeType) bool { return true }
-	Block       = func(t test.NodeType) bool { return t == test.Block }
-	Decl1       = func(t test.NodeType) bool { return t == test.Decl1 }
-	Decl2       = func(t test.NodeType) bool { return t == test.Decl2 }
-	Int         = func(t test.NodeType) bool { return t == test.Int }
-	Negation    = func(t test.NodeType) bool { return t == test.Negation }
-	Test        = func(t test.NodeType) bool { return t == test.Test }
-	Identifier  = func(t test.NodeType) bool { return t == test.Identifier }
-	Declaration = OneOf(test.Declaration...)
-	TokenSet    = OneOf(test.TokenSet...)
+	Any               = func(t test.NodeType) bool { return true }
+	Block             = func(t test.NodeType) bool { return t == test.Block }
+	Decl1             = func(t test.NodeType) bool { return t == test.Decl1 }
+	Decl2             = func(t test.NodeType) bool { return t == test.Decl2 }
+	Int               = func(t test.NodeType) bool { return t == test.Int }
+	Negation          = func(t test.NodeType) bool { return t == test.Negation }
+	Test              = func(t test.NodeType) bool { return t == test.Test }
+	MultiLineComment  = func(t test.NodeType) bool { return t == test.MultiLineComment }
+	SingleLineComment = func(t test.NodeType) bool { return t == test.SingleLineComment }
+	InvalidToken      = func(t test.NodeType) bool { return t == test.InvalidToken }
+	Identifier        = func(t test.NodeType) bool { return t == test.Identifier }
+	Declaration       = OneOf(test.Declaration...)
+	TokenSet          = OneOf(test.TokenSet...)
 )
 
 func OneOf(types ...test.NodeType) Selector {

@@ -1,12 +1,15 @@
 package grammar
 
 import (
+	"sort"
+	"strconv"
+	"strings"
+
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
 	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
-	"sort"
-	"strconv"
+	"github.com/inspirer/textmapper/tm-parsers/tm/selector"
 )
 
 // Compile validates and compiles grammar files.
@@ -28,6 +31,9 @@ func Compile(file ast.File) (*Grammar, error) {
 	}
 	c.compileLexer()
 	c.parseOptions()
+
+	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
+	c.out.CustomTemplates = parseInGrammarTemplates(tpl)
 	return c.out, c.s.Err()
 }
 
@@ -592,4 +598,17 @@ func parsePattern(p ast.Pattern) (*lex.Regexp, error) {
 		return emptyRE, &status.Error{Origin: rng, Msg: err.Error()}
 	}
 	return re, nil
+}
+
+var tplMap = map[string]string{
+	"go_lexer.stateVars":     "stateVars",
+	"go_lexer.initStateVars": "initStateVars",
+	"go_lexer.onAfterNext":   "onAfterNext",
+	"go_lexer.onBeforeNext":  "onBeforeNext",
+}
+
+// parseInGrammarTemplates converts old Textmapper templates into Go ones.
+func parseInGrammarTemplates(templates string) string {
+	// TODO implement
+	return templates
 }

@@ -16,6 +16,7 @@ const (
 	INVALID_TOKEN
 	SCON
 	ICON
+	TEMPLATES // %%
 	WHITESPACE
 	COMMENT
 	MULTILINECOMMENT
@@ -102,6 +103,7 @@ var tokenStr = [...]string{
 	"INVALID_TOKEN",
 	"SCON",
 	"ICON",
+	"%%",
 	"WHITESPACE",
 	"COMMENT",
 	"MULTILINECOMMENT",
