@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/gen"
 	"github.com/inspirer/textmapper/tm-go/status"
+	"github.com/inspirer/textmapper/tm-go/util/diff"
 )
 
 var genCmd = &command{
@@ -24,6 +26,7 @@ var (
 	includeDirs = genCmd.Flags.String("i", "", "comma-separated list of directories with code generation templates")
 	noBuiltins  = genCmd.Flags.Bool("x", false, "do not use built-in templates for code generation")
 	debug       = genCmd.Flags.Bool("d", false, "output extra debug info")
+	diffFlag    = genCmd.Flags.Bool("diff", false, "compare generated content against files on disk")
 )
 
 func init() {
@@ -79,7 +82,18 @@ func generate(files []string) error {
 
 type writer struct{}
 
-func (w writer) Write(filename, content string) error {
-	fmt.Println(content)
-	return nil
+func (w writer) Write(genfile, content string) error {
+	path := filepath.Join(*outputDir, genfile)
+	if *diffFlag {
+		ondisk, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		if diff := diff.LineDiff(string(ondisk), content); diff != "" {
+			fmt.Printf("The on-disk content differs from the generated one.\n--- %v\n+++ %v (generated)\n%v\n", path, genfile, diff)
+		}
+		return nil
+	}
+
+	return ioutil.WriteFile(path, []byte(content), 0644)
 }
