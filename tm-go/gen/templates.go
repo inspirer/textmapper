@@ -8,7 +8,7 @@ type file struct {
 var genFiles = []file{
 	{"token.go", tokenTpl},
 	{"lexer_tables.go", lexerTablesTpl},
-	// TODO {"lexer.go", lexerTpl},
+	{"lexer.go", lexerTpl},
 }
 
 const sharedDefs = `
@@ -158,6 +158,7 @@ const (
 {{template "lexerText" .}}
 {{template "lexerValue" .}}
 {{template "lexerRewind" .}}
+{{- block "onAfterLexer" .}}{{end}}
 
 {{- define "lexerType" -}}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -334,14 +335,18 @@ recovered:
 
 	token := tmToken[rule]
 	space := false
-{{- $codeActions := .Lexer.CodeActions }}
-{{- if $codeActions}}
+{{- if .Lexer.Actions}}
 	switch rule {
 	case 0:
 {{- template "handleInvalidToken" .}}
-{{- range $codeActions}}
+{{- range .Lexer.Actions}}
 	case {{sum .Action 2}}: // {{.Comment}}
+{{- if .Space }}
+		space = true
+{{- end}}
+{{- if .Code }}
 {{.Code}}
+{{- end}}
 {{- end}}
 	}
 {{- else}}

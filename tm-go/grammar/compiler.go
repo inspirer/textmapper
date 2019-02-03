@@ -1,6 +1,8 @@
 package grammar
 
 import (
+	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -29,8 +31,10 @@ func Compile(file ast.File) (*Grammar, error) {
 		ids:        make(map[string]int),
 		codeAction: make(map[symCode]int),
 	}
-	c.compileLexer()
 	c.parseOptions()
+	c.compileLexer()
+
+	c.resolveOptions()
 
 	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
 	c.out.CustomTemplates = parseInGrammarTemplates(tpl)
@@ -42,14 +46,16 @@ type compiler struct {
 	out  *Grammar
 	s    status.Status
 
-	syms        map[string]int
-	ids         map[string]int
-	conds       map[string]int
-	inclusiveSC []int
-	patterns    []*patterns // to keep track of unused patterns
-	classRules  []*lex.Rule
-	rules       []*lex.Rule
-	codeAction  map[symCode]int
+	syms         map[string]int
+	ids          map[string]int
+	conds        map[string]int
+	inclusiveSC  []int
+	patterns     []*patterns // to keep track of unused patterns
+	classRules   []*lex.Rule
+	rules        []*lex.Rule
+	codeAction   map[symCode]int
+	reportTokens map[string]bool
+	reportList   []ast.Identifier
 }
 
 type symCode struct {
@@ -59,9 +65,11 @@ type symCode struct {
 	sym   int
 }
 
+var noSpace = ast.LexemeAttribute{}
+
 func (c *compiler) compileLexer() {
-	eoi := c.addToken(Eoi, "EOI", ast.RawType{}, nil)
-	c.out.InvalidToken = c.addToken(InvalidToken, "INVALID_TOKEN", ast.RawType{}, nil)
+	eoi := c.addToken(Eoi, "EOI", ast.RawType{}, noSpace, nil)
+	c.out.InvalidToken = c.addToken(InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
 
 	c.collectStartConds()
 	lexer, _ := c.file.Lexer()
@@ -204,7 +212,7 @@ func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 	return ret
 }
 
-func (c *compiler) addToken(name, id string, t ast.RawType, n status.SourceNode) int {
+func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttribute, n status.SourceNode) int {
 	var rawType string
 	if t.IsValid() {
 		rawType = t.Text()
@@ -218,6 +226,13 @@ func (c *compiler) addToken(name, id string, t ast.RawType, n status.SourceNode)
 			}
 			c.errorf(anchor, "terminal type redeclaration for %v, was %v", name, sym.PrettyType())
 		}
+		if sym.Space != space.IsValid() {
+			anchor := n
+			if space.IsValid() {
+				anchor = space
+			}
+			c.errorf(anchor, "%v is declared as both a space and non-space terminal", name)
+		}
 		return sym.Index
 	}
 	if id == "" {
@@ -230,9 +245,10 @@ func (c *compiler) addToken(name, id string, t ast.RawType, n status.SourceNode)
 
 	sym := Symbol{
 		Index:  len(c.syms),
-		Type:   rawType,
 		ID:     id,
 		Name:   name,
+		Type:   rawType,
+		Space:  space.IsValid(),
 		Origin: n,
 	}
 	c.syms[name] = sym.Index
@@ -284,29 +300,6 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 		switch p := p.(type) {
 		case *ast.Lexeme:
 			rawType, _ := p.RawType()
-			tok := c.addToken(p.Name().Text(), "" /*id*/, rawType, p.Name())
-			pat, ok := p.Pattern()
-			if !ok {
-				break
-			}
-
-			re, err := parsePattern(pat)
-			c.s.AddError(err)
-			rule := &lex.Rule{
-				RE:              re,
-				StartConditions: defaultSCs,
-				Resolver:        ps,
-				Origin:          p,
-				OriginName:      p.Name().Text(),
-			}
-
-			if prio, ok := p.Priority(); ok {
-				rule.Precedence, _ = strconv.Atoi(prio.Text())
-			}
-			if sc, ok := p.StartConditions(); ok {
-				rule.StartConditions = c.resolveSC(sc)
-			}
-
 			var space, class ast.LexemeAttribute
 			if attrs, ok := p.Attrs(); ok {
 				switch name := attrs.LexemeAttribute().Text(); name {
@@ -319,7 +312,36 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				}
 			}
 
+			name := p.Name().Text()
+			tok := c.addToken(name, "" /*id*/, rawType, space, p.Name())
+			pat, ok := p.Pattern()
+			if !ok {
+				break
+			}
+
+			re, err := parsePattern(pat)
+			c.s.AddError(err)
+			rule := &lex.Rule{
+				RE:              re,
+				StartConditions: defaultSCs,
+				Resolver:        ps,
+				Origin:          p,
+				OriginName:      name,
+			}
+
+			if prio, ok := p.Priority(); ok {
+				rule.Precedence, _ = strconv.Atoi(prio.Text())
+			}
+			if sc, ok := p.StartConditions(); ok {
+				rule.StartConditions = c.resolveSC(sc)
+			}
+
 			cmd, _ := p.Command()
+			if c.reportTokens[name] && space.IsValid() {
+				// This token needs to be reported from the lexer to appear in the AST. It will be ignored
+				// in the parser.
+				space = noSpace
+			}
 			rule.Action = c.addLexerAction(cmd, space, class, tok)
 			if class.IsValid() {
 				c.classRules = append(c.classRules, rule)
@@ -440,27 +462,29 @@ func (c *compiler) errorf(n status.SourceNode, format string, a ...interface{}) 
 	c.s.Errorf(n, format, a...)
 }
 
+func (c *compiler) parseTokenList(e ast.Expression) []ast.Identifier {
+	if arr, ok := e.(*ast.Array); ok {
+		var ret []ast.Identifier
+		for _, el := range arr.Expression() {
+			if ref, ok := el.(*ast.Symref); ok {
+				if args, ok := ref.Args(); ok {
+					c.errorf(args, "terminals cannot be templated")
+					continue
+				}
+				ret = append(ret, ref.Name())
+				continue
+			}
+			c.errorf(el.TmNode(), "symbol reference is expected")
+		}
+		return ret
+	}
+	c.errorf(e.TmNode(), "list of symbols is expected")
+	return nil
+}
+
 func (c *compiler) parseExpr(e ast.Expression, defaultVal interface{}) interface{} {
 	switch e := e.(type) {
 	case *ast.Array:
-		if _, ok := defaultVal.([]int); ok {
-			var ret []int
-			for _, el := range e.Expression() {
-				if ref, ok := el.(*ast.Symref); ok {
-					id := ref.Name().Text()
-					sym, ok := c.syms[id]
-					if !ok {
-						c.errorf(el.TmNode(), "unresolved reference '%v'", id)
-						continue
-					}
-					// TODO correctly resolve templated nonterminals
-					ret = append(ret, sym)
-					continue
-				}
-				c.errorf(el.TmNode(), "symbol reference is expected")
-			}
-			return ret
-		}
 		if _, ok := defaultVal.([]string); ok {
 			var ret []string
 			for _, el := range e.Expression() {
@@ -534,7 +558,11 @@ func (c *compiler) parseOptions() {
 		case "eventAST":
 			opts.EventAST = c.parseExpr(kv.Value(), opts.EventAST).(bool)
 		case "reportTokens":
-			opts.ReportTokens = c.parseExpr(kv.Value(), opts.ReportTokens).([]int)
+			c.reportList = c.parseTokenList(kv.Value())
+			c.reportTokens = make(map[string]bool)
+			for _, id := range c.reportList {
+				c.reportTokens[id.Text()] = true
+			}
 		case "extraTypes":
 			opts.ExtraTypes = c.parseExpr(kv.Value(), opts.ExtraTypes).([]string)
 		case "fileNode":
@@ -545,6 +573,19 @@ func (c *compiler) parseOptions() {
 		default:
 			c.errorf(kv.Key(), "unknown option '%v'", name)
 		}
+	}
+}
+
+func (c *compiler) resolveOptions() {
+	opts := c.out.Options
+	opts.ReportTokens = make([]int, 0, len(c.reportList))
+	for _, id := range c.reportList {
+		sym, ok := c.syms[id.Text()]
+		if !ok {
+			c.errorf(id, "unresolved reference '%v'", id.Text())
+			continue
+		}
+		opts.ReportTokens = append(opts.ReportTokens, sym)
 	}
 }
 
@@ -607,8 +648,28 @@ var tplMap = map[string]string{
 	"go_lexer.onBeforeNext":  "onBeforeNext",
 }
 
+var tplRE = regexp.MustCompile(`(?s)\${template ([\w.]+)(-?)}(.*?)\${end}`)
+
 // parseInGrammarTemplates converts old Textmapper templates into Go ones.
+// TODO get rid of this function after deleting the Java implementation
 func parseInGrammarTemplates(templates string) string {
-	// TODO implement
-	return templates
+	const start = "${template newTemplates-}"
+	const end = "${end}"
+
+	var buf strings.Builder
+	if i := strings.Index(templates, start); i >= 0 {
+		templates := templates[i+len(start):]
+		i = strings.Index(templates, end)
+		if i >= 0 {
+			buf.WriteString(templates[:i])
+		}
+	}
+
+	for _, match := range tplRE.FindAllStringSubmatch(templates, -1) {
+		name, content := match[1], match[3]
+		if name, ok := tplMap[name]; ok {
+			fmt.Fprintf(&buf, `{{define "%v"}}%v{{- end}}`, name, content)
+		}
+	}
+	return buf.String()
 }

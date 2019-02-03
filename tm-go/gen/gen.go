@@ -28,6 +28,12 @@ func Generate(g *grammar.Grammar, w Writer) error {
 			return err
 		}
 
+		// TODO come up with a way to parse this once
+		_, err = tmpl.Parse(g.CustomTemplates)
+		if err != nil {
+			return err
+		}
+
 		var buf strings.Builder
 		err = tmpl.Execute(&buf, g)
 		if err != nil {

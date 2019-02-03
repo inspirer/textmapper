@@ -517,7 +517,8 @@ expression -> Expression:
 
 %%
 
-${template go_lexer.stateVars}
+${template go_lexer.stateVars-}
+
 	inStatesSelector bool
 	prev             Token
 ${end}

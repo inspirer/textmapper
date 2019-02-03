@@ -99,3 +99,15 @@ func mustParseInt(s string) int {
 	return i
 }
 ${end}
+
+${template newTemplates-}
+{{define "onAfterLexer"}}
+func mustParseInt(s string) int {
+	i, err := "strconv".Atoi(s)
+	if err != nil {
+		panic(`lexer internal error: ` + err.Error())
+	}
+	return i
+}
+{{end}}
+${end}
