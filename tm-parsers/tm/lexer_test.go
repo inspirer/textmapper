@@ -68,6 +68,13 @@ var lexerTests = []struct {
 	{tm.LBRACE, []string{
 		`<a> «{» error: }`,
 	}},
+	{tm.TEMPLATES, []string{
+		`  «%%  »`,
+		`asd
+    «%% 
+     foo bar
+        »`,
+	}},
 
 	// Punctuation.
 	{tm.REM, []string{`«%»`}},
