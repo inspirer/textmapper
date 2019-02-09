@@ -340,12 +340,12 @@ recovered:
 	case 0:
 {{- template "handleInvalidToken" .}}
 {{- range .Lexer.Actions}}
-	case {{sum .Action 2}}: // {{.Comment}}
+	case {{sum .Action 2}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
 {{- if .Space }}
 		space = true
 {{- end}}
 {{- if .Code }}
-{{.Code}}
+{{lexer_action .Code}}
 {{- end}}
 {{- end}}
 	}

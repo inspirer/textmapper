@@ -18,6 +18,8 @@ var funcMap = template.FuncMap{
 	"sum":              sum,
 	"string_switch":    asStringSwitch,
 	"quote":            strconv.Quote,
+	"join":             strings.Join,
+	"lexer_action":     lexerAction,
 }
 
 func sum(a, b int) int {
@@ -139,4 +141,8 @@ func stringHash(s string) uint32 {
 		hash = hash*uint32(31) + uint32(r)
 	}
 	return hash
+}
+
+func lexerAction(s string) string {
+	return strings.Replace(s, "$$", "l.value", -1)
 }

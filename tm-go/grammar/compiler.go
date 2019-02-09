@@ -29,7 +29,8 @@ func Compile(file ast.File) (*Grammar, error) {
 		},
 		syms:       make(map[string]int),
 		ids:        make(map[string]int),
-		codeAction: make(map[symCode]int),
+		codeRule:   make(map[symRule]int),
+		codeAction: make(map[symAction]int),
 	}
 	c.parseOptions()
 	c.compileLexer()
@@ -53,12 +54,18 @@ type compiler struct {
 	patterns     []*patterns // to keep track of unused patterns
 	classRules   []*lex.Rule
 	rules        []*lex.Rule
-	codeAction   map[symCode]int
+	codeRule     map[symRule]int   // -> index in c.out.RuleToken
+	codeAction   map[symAction]int // -> index in c.out.Actions
 	reportTokens map[string]bool
 	reportList   []ast.Identifier
 }
 
-type symCode struct {
+type symAction struct {
+	code  string
+	space bool
+}
+
+type symRule struct {
 	code  string
 	space bool
 	class bool
@@ -257,7 +264,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 	return sym.Index
 }
 
-func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int) int {
+func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
 	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() {
 		if sym == int(lex.EOI) {
 			return -1
@@ -266,23 +273,30 @@ func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttrib
 		}
 	}
 
-	key := symCode{code: cmd.Text(), space: space.IsValid(), class: class.IsValid(), sym: sym}
-	if a, ok := c.codeAction[key]; ok {
+	key := symRule{code: cmd.Text(), space: space.IsValid(), class: class.IsValid(), sym: sym}
+	if a, ok := c.codeRule[key]; ok {
+		if ca, ok := c.codeAction[symAction{key.code, key.space}]; ok && comment != "" {
+			c.out.Actions[ca].Comments = append(c.out.Actions[ca].Comments, comment)
+		}
 		return a
 	}
 	a := len(c.out.RuleToken)
 	c.out.RuleToken = append(c.out.RuleToken, sym)
-	c.codeAction[key] = a
+	c.codeRule[key] = a
 
 	if !cmd.IsValid() && !space.IsValid() {
 		return a
 	}
 	act := SemanticAction{Action: a, Code: key.code, Space: space.IsValid()}
+	if comment != "" {
+		act.Comments = append(act.Comments, comment)
+	}
 	if cmd.IsValid() {
 		act.Origin = cmd
 	} else {
 		act.Origin = space
 	}
+	c.codeAction[symAction{key.code, key.space}] = len(c.out.Actions)
 	c.out.Actions = append(c.out.Actions, act)
 	return a
 }
@@ -328,6 +342,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				Origin:          p,
 				OriginName:      name,
 			}
+			comment := fmt.Sprintf("%v: %v", name, pat.Text())
 
 			if prio, ok := p.Priority(); ok {
 				rule.Precedence, _ = strconv.Atoi(prio.Text())
@@ -342,7 +357,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				// in the parser.
 				space = noSpace
 			}
-			rule.Action = c.addLexerAction(cmd, space, class, tok)
+			rule.Action = c.addLexerAction(cmd, space, class, tok, comment)
 			if class.IsValid() {
 				c.classRules = append(c.classRules, rule)
 			} else {

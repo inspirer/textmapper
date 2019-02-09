@@ -63,11 +63,11 @@ func (g *Grammar) SpaceActions() []int {
 
 // SemanticAction is a piece of code that will be executed upon some event.
 type SemanticAction struct {
-	Action  int
-	Code    string
-	Space   bool // this is a space token
-	Comment string
-	Origin  status.SourceNode
+	Action   int
+	Code     string
+	Space    bool // this is a space token
+	Comments []string
+	Origin   status.SourceNode
 }
 
 // ClassAction resolves class terminals into more specific tokens (such as keywords).
