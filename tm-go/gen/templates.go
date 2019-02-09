@@ -20,7 +20,7 @@ const sharedDefs = `
 `
 
 const tokenTpl = `
-{{template "header" . -}}
+{{- template "header" . -}}
 package {{.Name}}
 
 // Token is an enum of all terminal symbols of the {{.Name}} language.
@@ -28,7 +28,7 @@ type Token int
 
 // Token values.
 const (
-	UNAVAILABLE Token = iota-1
+	UNAVAILABLE Token = iota - 1
 {{- range .Tokens}}
 	{{.ID}}{{if .Comment}}  // {{.Comment}}{{end}}
 {{- end}}
@@ -51,7 +51,7 @@ func (tok Token) String() string {
 `
 
 const lexerTablesTpl = `
-{{template "header" . -}}
+{{- template "header" . -}}
 package {{.Name}}
 
 const tmNumClasses = {{.Lexer.Tables.NumSymbols}}
@@ -95,15 +95,13 @@ const tmRuneClassLen = 256
 const tmFirstRule = {{.Lexer.Tables.ActionStart}}
 
 var tmRuneRanges = []mapRange{
-{{range .Lexer.Tables.CompressedMap 256 -}}
-	{ {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
-{{- int_array .Vals "\t\t" 78 -}}
-	}{{else}}nil{{end -}} },
+{{range .Lexer.Tables.CompressedMap 256}}	{ {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
+{{- int_array .Vals "\t\t" 78}}	}{{else}}nil{{end -}} },
 {{end -}}
 }
 
 {{else -}}
-{{ $runeArr := .Lexer.Tables.SymbolArr 0 }}
+{{ $runeArr := .Lexer.Tables.SymbolArr 0 -}}
 var tmRuneClass = []uint{{$runeType}}{
 {{- int_array $runeArr "\t" 79 -}}
 }
@@ -126,16 +124,18 @@ var tmLexerAction = []int{{bits_per_element .Lexer.Tables.Dfa}}{
 {{- int_array .Lexer.Tables.Dfa "\t" 79 -}}
 }
 
-{{if .Lexer.Tables.Backtrack}}
+{{- if .Lexer.Tables.Backtrack}}
+
 var tmBacktracking = []int{
 {{- range .Lexer.Tables.Backtrack}}
-	{{.Action}}, {{.NextState}},{{if .Details}}  // {{.Details}}{{end}}
+	{{.Action}}, {{.NextState}},{{if .Details}} // {{.Details}}{{end}}
 {{- end}}
 }
-{{- end}}`
+{{- end}}
+`
 
 const lexerTpl = `
-{{template "header" . -}}
+{{- template "header" . -}}
 package {{.Name}}
 
 {{- if gt (len .Lexer.StartConditions) 1}}
@@ -147,7 +147,7 @@ const (
 {{- end}}
 )
 {{- end}}
-
+{{block "onBeforeLexer" .}}{{end}}
 {{template "lexerType" .}}
 {{template "lexerInit" .}}
 {{template "lexerNext" .}}

@@ -41,10 +41,6 @@ func TestGenerate(t *testing.T) {
 					t.Errorf("ReadFile(%v) failed with %v", genfile, err)
 					continue
 				}
-				if genfile == "lexer.go" && filename == "../../tm-parsers/js/js.tm" {
-					// TODO fix this
-					continue
-				}
 				if diff := diff.LineDiff(string(ondisk), content); diff != "" {
 					t.Errorf("The on-disk content differs from the generated one.\n--- %v\n+++ %v (generated)\n%v", p, genfile, diff)
 				}

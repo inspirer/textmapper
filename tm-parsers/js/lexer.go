@@ -41,8 +41,7 @@ type Lexer struct {
 	scanOffset  int  // scanning offset
 	value       interface{}
 
-	State int // lexer state, modifiable
-
+	State   int // lexer state, modifiable
 	Dialect Dialect
 	token   Token // last token
 	Stack   []int // stack of JSX states, non-empty for StateJsx*
@@ -548,20 +547,6 @@ restart:
 	return token
 }
 
-func (l *Lexer) pushState(newState int) {
-	l.Stack = append(l.Stack, l.State)
-	l.State = newState
-}
-
-func (l *Lexer) popState() {
-	if ln := len(l.Stack); ln > 0 {
-		l.State = l.Stack[ln-1]
-		l.Stack = l.Stack[:ln-1]
-	} else {
-		l.State = StateDiv
-	}
-}
-
 // Pos returns the start and end positions of the last token returned by Next().
 func (l *Lexer) Pos() (start, end int) {
 	start = l.tokenOffset
@@ -609,5 +594,19 @@ func (l *Lexer) rewind(offset int) {
 		l.ch = r
 	} else {
 		l.ch = -1 // EOI
+	}
+}
+
+func (l *Lexer) pushState(newState int) {
+	l.Stack = append(l.Stack, l.State)
+	l.State = newState
+}
+
+func (l *Lexer) popState() {
+	if ln := len(l.Stack); ln > 0 {
+		l.State = l.Stack[ln-1]
+		l.Stack = l.Stack[:ln-1]
+	} else {
+		l.State = StateDiv
 	}
 }

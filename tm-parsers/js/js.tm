@@ -1611,7 +1611,7 @@ const (
 ${call base-}
 ${end}
 
-${template go_lexer.stateVars}
+${template go_lexer.stateVars-}
 	Dialect Dialect
 	token   Token // last token
 	Stack   []int // stack of JSX states, non-empty for StateJsx*
@@ -1642,7 +1642,8 @@ ${template go_lexer.onBeforeNext-}
 	prevLine := l.tokenLine
 ${end}
 
-${template go_lexer.onAfterNext}
+${template go_lexer.onAfterNext-}
+
 	// There is an ambiguity in the language that a slash can either represent
 	// a division operator, or start a regular expression literal. This gets
 	// disambiguated at the grammar level - division always follows an
@@ -1734,7 +1735,7 @@ ${template go_lexer.onAfterNext}
 	l.token = token
 ${end}
 
-${template go_lexer.lexerNext-}
+${template go_lexer.lexer-}
 ${call base-}
 
 func (l *Lexer) pushState(newState int) {
@@ -1782,3 +1783,31 @@ ${end}
 
 ${template go_parser.lookaheadNext}${end}
 ${template go_parser.callLookaheadNext(memoization)}lookaheadNext(&lexer, end, ${memoization?'nil /*empty stack*/':'stack'})${end}
+
+${template newTemplates-}
+{{define "onBeforeLexer"}}
+type Dialect int
+
+const (
+	Javascript Dialect = iota
+	Typescript
+	TypescriptJsx
+)
+{{end}}
+
+{{define "onAfterLexer"}}
+func (l *Lexer) pushState(newState int) {
+	l.Stack = append(l.Stack, l.State)
+	l.State = newState
+}
+
+func (l *Lexer) popState() {
+	if ln := len(l.Stack); ln > 0 {
+		l.State = l.Stack[ln-1]
+		l.Stack = l.Stack[:ln-1]
+	} else {
+		l.State = StateDiv
+	}
+}
+{{end}}
+${end}
