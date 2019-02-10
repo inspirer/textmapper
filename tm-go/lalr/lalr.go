@@ -79,14 +79,14 @@ type StateMarker struct {
 // triggered when two or more lookahead nonterminals can be reduced and the parser needs to decide
 // which of them to reduce in order to proceed.
 type LookaheadRule struct {
-	Cases []LookaheadCase
+	Cases         []LookaheadCase
 	DefaultTarget Sym
 }
 
 // LookaheadCase describes a single lookahead attempt.
 type LookaheadCase struct {
 	Predicate
-	Target  Sym // an empty lookahead nonterminal helping guide the parser into an unambiguous state.
+	Target Sym // an empty lookahead nonterminal helping guide the parser into an unambiguous state.
 }
 
 // Predicate is a lookahead expression that evaluates to true or false on the remaining input.
