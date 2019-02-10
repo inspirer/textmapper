@@ -86,7 +86,7 @@ type Lexer struct {
 	RuleToken       []int // maps actions into tokens; empty if the mapping is 1:1
 }
 
-// Grammar generation options.
+// Options carries grammar generation parameters.
 type Options struct {
 	Package   string
 	Copyright bool
