@@ -11,6 +11,11 @@ type Sym int
 // EOI is an "end of stream" terminal.
 const EOI Sym = 0
 
+// IsStateMarker returns true for state marker symbols.
+func (s Sym) IsStateMarker() bool {
+	return s < 0
+}
+
 // Input describes a start nonterminal in a grammar.
 type Input struct {
 	Nonterminal Sym
@@ -46,14 +51,22 @@ type Precedence struct {
 	Terminals []Sym
 }
 
+// Lookahead is a special kind of nonterminal that accepts an empty string, but is able to survive
+// reduce/reduce conflicts. When two or more lookahead nonterminals can be reduced in the same
+// state, their predicates are used to determine which one should be reduced.
+type Lookahead struct {
+	Nonterminal Sym
+	Predicates  []Predicate
+}
+
 // Grammar is an input to the parser generator.
 type Grammar struct {
 	Inputs     []Input
 	Rules      []Rule
 	Terminals  int
+	Symbols    int
 	Precedence []Precedence // later declarations have higher precedence
-
-	// TODO add predicates for lookahead nonterminals
+	Lookaheads []Lookahead  // Note: each lookahead nonterminal should have an empty rule in Rules
 }
 
 // Tables holds generated parser tables.
@@ -71,7 +84,7 @@ type Tables struct {
 
 // StateMarker contains the list of actual states behind a given marker.
 type StateMarker struct {
-	Name   string
+	Index  Sym
 	States []int
 }
 
