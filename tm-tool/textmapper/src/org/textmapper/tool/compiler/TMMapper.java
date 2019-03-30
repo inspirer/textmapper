@@ -245,8 +245,7 @@ public class TMMapper {
 				if (master != null) {
 					Symbol target = master.getTarget();
 					assert target != null;
-					if (target instanceof Terminal &&
-							(target.getType() == null || ((Terminal) target).isSoft())) {
+					if (target instanceof Terminal && target.getType() == null) {
 						// cannot map a terminal without a type, ignoring decorator
 						continue;
 					}

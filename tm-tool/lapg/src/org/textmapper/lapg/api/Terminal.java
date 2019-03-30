@@ -22,13 +22,9 @@ import java.util.Collection;
  */
 public interface Terminal extends Symbol {
 
-	boolean isSoft();
-
 	boolean isConstant();
 
 	String getConstantValue();
-
-	Symbol getSoftClass();
 
 	Collection<LexerRule> getRules();
 }

@@ -49,7 +49,6 @@ public class SampleBLexer {
 		int octal = 13;
 		int decimal = 14;
 		int eleven = 15;
-		int _skipSoftKW = 16;
 	}
 
 	public interface ErrorReporter {
@@ -153,9 +152,8 @@ public class SampleBLexer {
 		9, 9, 9, 9, 9, 9, 9, 9, 10, 9, 9, 11, 1, 12
 	};
 
-	private static final int[] tmRuleSymbol = unpack_int(17,
-		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\14\0\15\0\16\0\17\0\20" +
-		"\0");
+	private static final int[] tmRuleSymbol = unpack_int(16,
+		"\uffff\uffff\0\0\1\0\2\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\14\0\15\0\16\0\17\0");
 
 	private static final int tmClassesCount = 13;
 
@@ -269,7 +267,6 @@ public class SampleBLexer {
 		subTokensOfIdentifier.put("extends", 5);
 		subTokensOfIdentifier.put("interface", 10);
 		subTokensOfIdentifier.put("enum", 11);
-		subTokensOfIdentifier.put("xyzzz", 16);
 	}
 
 	protected boolean createIdentifierToken(Span token, int ruleIndex) {
@@ -289,8 +286,6 @@ public class SampleBLexer {
 			case 11:	// enum
 				{ token.value = new Object(); }
 				break;
-			case 5:	// extends (soft)
-			case 16:	// xyzzz (soft)
 			case 2:	// <default>
 				{ token.value = tokenText(); }
 				break;

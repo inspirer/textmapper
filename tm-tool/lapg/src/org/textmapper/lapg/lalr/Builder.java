@@ -220,15 +220,6 @@ public class Builder extends Lalr1 {
 					assert next[termSym] == -2;
 					next[termSym] = -1;
 					actionset[setsize++] = termSym;
-
-					// shift soft terms
-					if (classterm[termSym] == -1 && !t.softConflicts) {
-						for (int soft = softterms[termSym]; soft != -1; soft = softterms[soft]) {
-							assert next[soft] == -2;
-							next[soft] = -1;
-							actionset[setsize++] = soft;
-						}
-					}
 				}
 
 				// reset conflicts
@@ -262,7 +253,7 @@ public class Builder extends Lalr1 {
 
 				// merge conflicts
 				List<LalrConflict> mergedConflicts = conflicts.getMergedConflicts(t.number,
-						getInput(t.number), next, classterm);
+						getInput(t.number), next);
 				for (ParserConflict conflict : mergedConflicts) {
 					status.report(conflict);
 					switch (conflict.getKind()) {

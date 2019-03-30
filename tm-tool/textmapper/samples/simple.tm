@@ -22,9 +22,7 @@ int_literal: /0|[1-9][0-9]*/
 # keyword
 class: /class/
 null: /null/
-
-# soft keyword
-get: /get/		(soft)
+get: /get/
 
 # operators
 

@@ -109,23 +109,6 @@ public class InputTest extends LapgTestCase {
 	}
 
 	@Test
-	public void testClassLexemes() {
-		TestStatus notifier = new TestStatus("",
-				"syntax_lexemes,25: regex matches two classes `identifier' and `identifierX', using first\n" +
-						"syntax_lexemes,28: soft lexeme rule `L0choice' doesn't match any class rule\n" +
-						"syntax_lexemes,31: soft lexeme rule `int' should have a constant regexp\n" +
-						"syntax_lexemes,39: redeclaration of soft class for `abcde': found icon instead of identifier\n" +
-						"syntax_lexemes,42: redeclaration of soft terminal: ssss\n" +
-						"syntax_lexemes,45: soft lexeme rule `wact' cannot have a semantic action\n" +
-						"syntax_lexemes,48: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
-						"syntax_lexemes,55: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
-		);
-		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_lexemes", FileUtil.getFileContents(openStream("syntax_lexemes", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), notifier, createDefaultTypesRegistry());
-		notifier.assertDone();
-		assertNull(g);
-	}
-
-	@Test
 	public void testNamedPatterns() {
 		TestStatus notifier = new TestStatus("",
 				"syntax_patterns,10: regexp is incomplete\n" +

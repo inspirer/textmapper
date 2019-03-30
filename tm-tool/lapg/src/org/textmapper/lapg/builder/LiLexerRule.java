@@ -68,8 +68,6 @@ class LiLexerRule extends LiUserDataHolder implements LexerRule, DerivedSourceEl
 		switch (kind) {
 			case KIND_CLASS:
 				return "class";
-			case KIND_SOFT:
-				return "soft";
 			case KIND_SPACE:
 				return "space";
 		}

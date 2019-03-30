@@ -28,7 +28,6 @@ import java.util.List;
  */
 public class LiTerminal extends LiSymbol implements Terminal {
 
-	private Symbol softClass;
 	private List<LexerRule> rules = new ArrayList<>();
 
 	public LiTerminal(Name name, AstType type, SourceElement origin) {
@@ -42,38 +41,12 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	}
 
 	@Override
-	public Symbol getSoftClass() {
-		return softClass;
-	}
-
-	@Override
 	public Collection<LexerRule> getRules() {
 		return rules;
 	}
 
 	void addRule(LexerRule rule) {
 		rules.add(rule);
-	}
-
-	void setSoftClass(Terminal sc) {
-		assert softClass == null;
-		assert getType() == null;
-		assert !sc.isSoft();
-
-		softClass = sc;
-	}
-
-	@Override
-	public AstType getType() {
-		if (softClass != null) {
-			return softClass.getType();
-		}
-		return super.getType();
-	}
-
-	@Override
-	public boolean isSoft() {
-		return softClass != null;
 	}
 
 	@Override
@@ -92,7 +65,7 @@ public class LiTerminal extends LiSymbol implements Terminal {
 			}
 		}
 
-		return (isSoft() || getType() == null) ? value : null;
+		return (getType() == null) ? value : null;
 	}
 
 	@Override

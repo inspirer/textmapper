@@ -313,9 +313,6 @@ ${instance.code-}
 				break;
 ${end-}
 ${if classRule.code-}
-${foreach instance in classRule->classInstances().select(x|!x.codeTemplate && x.kindAsText == 'soft')-}
-			case ${instance.index+2}:	// ${instance.regexp.constantValue} (soft)
-${end-}
 			case ${classRule.index+2}:	// <default>
 ${classRule.code-}
 				break;

@@ -116,7 +116,6 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'right':     /right/
 's':         /s/
 'shift':     /shift/
-'soft':      /soft/
 'space':     /space/
 'void':      /void/
 'x':         /x/
@@ -149,7 +148,7 @@ identifier<flag KW = false> -> Identifier:
   | 'left'     | 'right'    | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
   | 'nonempty' | 'global'   | 'explicit' | 'lookahead' | 'param'   | 'flag'
   | 'no-eoi'   | 's'        | 'x'
-  | 'soft'     | 'class'    | 'interface'  | 'void'    | 'space'
+  | 'class'    | 'interface'  | 'void'    | 'space'
   | 'layout'   | 'language' | 'lalr'       | 'lexer'   | 'parser'
 
   # KW
@@ -248,8 +247,7 @@ lexeme_attrs -> LexemeAttrs:
     '(' lexeme_attribute ')' ;
 
 lexeme_attribute -> LexemeAttribute:
-    'soft'
-  | 'class'
+    'class'
   | 'space'
   | 'layout'
 ;
@@ -543,7 +541,7 @@ ${template go_lexer.onAfterNext-}
 	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
 		BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
 		NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
-		CHAR_S, CHAR_X, SOFT, CLASS, INTERFACE, VOID, SPACE,
+		CHAR_S, CHAR_X, CLASS, INTERFACE, VOID, SPACE,
 		LAYOUT, LANGUAGE, LALR:
 		l.State = StateAfterID
 	case LEXER, PARSER:

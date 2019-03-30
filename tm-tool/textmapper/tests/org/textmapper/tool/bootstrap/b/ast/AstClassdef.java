@@ -23,15 +23,13 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 	private final boolean tc;
 	private final String ID;
 	private final List<AstClassdeflistItem> classdeflist;
-	private final boolean te;
 	private final String identifier;
 
-	public AstClassdef(boolean tc, String ID, List<AstClassdeflistItem> classdeflist, boolean te, String identifier, TextSource source, int offset, int endoffset) {
+	public AstClassdef(boolean tc, String ID, List<AstClassdeflistItem> classdeflist, String identifier, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.tc = tc;
 		this.ID = ID;
 		this.classdeflist = classdeflist;
-		this.te = te;
 		this.identifier = identifier;
 	}
 
@@ -45,10 +43,6 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 
 	public List<AstClassdeflistItem> getClassdeflist() {
 		return classdeflist;
-	}
-
-	public boolean isTe() {
-		return te;
 	}
 
 	public String getIdentifier() {

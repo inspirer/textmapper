@@ -36,9 +36,13 @@ epilogue_T_a2 :
 
 assignment :
   identifier Assign object
-			{ $$ = combine($0, $2); }
-| identifier object
 			{ $$ = combine($0, $1); }
+| identifier object
+			{ $$ = combine($0, null); }
+| kw_object Assign object
+			{ $$ = combine(null, $1); }
+| kw_object object
+			{ $$ = combine(null, null); }
 ;
 
 object :

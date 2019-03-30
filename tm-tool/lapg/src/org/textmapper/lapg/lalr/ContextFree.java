@@ -39,8 +39,6 @@ abstract class ContextFree {
 	final int[] priorul;
 	final int[] rleft, rindex, rright, rprio;
 	final boolean[] sym_empty;
-	final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
-	final int[] softterms; /* a -1 terminated list of soft terms for a class */
 
 	final Map<Integer, Set<String>> itemMarkers = new HashMap<>();
 
@@ -69,23 +67,6 @@ abstract class ContextFree {
 		this.items = computeItems(wrules);
 
 		this.priorul = getPriorityRules(g.getPriorities());
-
-		this.classterm = new int[nterms];
-		this.softterms = new int[nterms];
-		Arrays.fill(this.softterms, -1);
-		Arrays.fill(this.classterm, 0);
-		for (int i = 0; i < nterms; i++) {
-			Terminal term = (Terminal) this.sym[i];
-			if (term.isSoft()) {
-				int classindex = term.getSoftClass().getIndex();
-				assert classindex < nterms && this.sym[classindex] instanceof Terminal &&
-						!((Terminal) this.sym[classindex]).isSoft();
-				this.classterm[i] = classindex;
-				this.classterm[classindex] = -1;
-				this.softterms[i] = this.softterms[classindex];
-				this.softterms[classindex] = i;
-			}
-		}
 
 		this.rleft = new int[rules];
 		this.rprio = new int[rules];

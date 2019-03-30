@@ -27,7 +27,6 @@ identifier  : Identifier ::=
   | 'no-eoi'
   | 's'
   | 'x'
-  | 'soft'
   | 'class'
   | 'interface'
   | 'void'
@@ -229,15 +228,13 @@ lexeme_attrs  : LexemeAttrs ::=
 ;
 
 enum LexemeAttribute {
-	SOFT,
 	CLASS,
 	SPACE,
 	LAYOUT
 }
 
 lexeme_attribute  : LexemeAttribute ::=
-	this='soft' as LexemeAttribute.SOFT
-  | this='class' as LexemeAttribute.CLASS
+	this='class' as LexemeAttribute.CLASS
   | this='space' as LexemeAttribute.SPACE
   | this='layout' as LexemeAttribute.LAYOUT
 ;

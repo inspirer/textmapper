@@ -27,8 +27,6 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	Terminal addTerminal(Name name, AstType type, SourceElement origin);
 
-	void makeSoft(Terminal terminal, Terminal softClass);
-
 	Nonterminal addNonterminal(Name name, SourceElement origin);
 
 	Nonterminal addAnonymous(String nameHint, Symbol anchor, SourceElement origin);

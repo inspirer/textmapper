@@ -139,7 +139,7 @@ recovered:
 				break
 			}
 			if hash == 0x688f106 && "space" == l.source[l.tokenOffset:l.offset] {
-				rule = 74
+				rule = 73
 				break
 			}
 		case 7:
@@ -178,7 +178,7 @@ recovered:
 			}
 		case 20:
 			if hash == 0x375194 && "void" == l.source[l.tokenOffset:l.offset] {
-				rule = 75
+				rule = 74
 				break
 			}
 		case 24:
@@ -243,10 +243,6 @@ recovered:
 				rule = 59
 				break
 			}
-			if hash == 0x35f42a && "soft" == l.source[l.tokenOffset:l.offset] {
-				rule = 73
-				break
-			}
 		case 44:
 			if hash == 0x2fff6c && "flag" == l.source[l.tokenOffset:l.offset] {
 				rule = 51
@@ -287,7 +283,7 @@ recovered:
 				break
 			}
 			if hash == 0x78 && "x" == l.source[l.tokenOffset:l.offset] {
-				rule = 76
+				rule = 75
 				break
 			}
 		case 57:
@@ -341,7 +337,7 @@ recovered:
 	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
 		BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
 		NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
-		CHAR_S, CHAR_X, SOFT, CLASS, INTERFACE, VOID, SPACE,
+		CHAR_S, CHAR_X, CLASS, INTERFACE, VOID, SPACE,
 		LAYOUT, LANGUAGE, LALR:
 		l.State = StateAfterID
 	case LEXER, PARSER:

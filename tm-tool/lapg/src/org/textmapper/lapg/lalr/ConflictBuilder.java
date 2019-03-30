@@ -63,18 +63,9 @@ public class ConflictBuilder {
 	}
 
 	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input,
-												 int[] next, int[] classterm) {
+												 int[] next) {
 		if (conflicts.isEmpty()) {
 			return Collections.emptyList();
-		}
-
-		for (ConflictData d : conflicts) {
-			int term = d.getConflictingTerm();
-			if (classterm[term] > 0) {
-				if (!hasConflict(classterm[term]) && next[classterm[term]] >= -1) {
-					d.setSoft();
-				}
-			}
 		}
 
 		Map<Object, ConflictData> map = new HashMap<>();

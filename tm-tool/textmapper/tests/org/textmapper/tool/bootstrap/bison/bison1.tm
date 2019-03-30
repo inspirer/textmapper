@@ -10,7 +10,7 @@ scon:       /"([^\n\\"]|\\.)*"/
 
 # soft keyword
 
-kw_object: /object/       (soft)
+kw_object: /object/
 
 skip: /[\n\t\r ]+/        (space)
 comment:  /#.*(\r?\n)?/   (space)
@@ -45,7 +45,7 @@ epilogue :
 ;
 
 assignment :
-	  identifier '='? object				{ $$ = combine($0, $2); }
+	  (identifier | kw_object) '='? object				{ $$ = combine($0, $2); }
 ;
 
 object :

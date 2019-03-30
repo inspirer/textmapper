@@ -121,7 +121,6 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'right':     /right/
 's':         /s/
 'shift':     /shift/
-'soft':      /soft/
 'space':     /space/
 'void':      /void/
 'x':         /x/
@@ -148,7 +147,7 @@ identifier class :
   | 'left'     | 'right'    | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
   | 'nonempty' | 'global'   | 'explicit' | 'lookahead' | 'param'   | 'flag'
   | 'no-eoi'   | 's'        | 'x'
-  | 'soft'     | 'class'    | 'interface'  | 'void'    | 'space'
+  | 'class'    | 'interface'  | 'void'    | 'space'
   | 'layout'   | 'language' | 'lalr'       | 'lexer'   | 'parser'
 ;
 
@@ -240,8 +239,7 @@ lexeme_attrs :
     '(' kind=lexeme_attribute ')' ;
 
 lexeme_attribute :
-    'soft'
-  | 'class'
+    'class'
   | 'space'
   | 'layout'
 ;
@@ -638,7 +636,6 @@ case Tokens.flag:
 case Tokens.noMinuseoi:
 case Tokens.char_s:
 case Tokens.char_x:
-case Tokens.soft:
 case Tokens._class:
 case Tokens._interface:
 case Tokens._void:

@@ -104,7 +104,6 @@ lexer1.Lexer.prototype = {
     }
     var spaceToken = false;
     switch(ruleIndex) {
-    case 5:  // class (soft)
     case 0:  // <default>
       { lapg_n.value = this.token; }
       break;

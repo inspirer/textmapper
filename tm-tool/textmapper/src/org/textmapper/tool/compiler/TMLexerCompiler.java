@@ -104,8 +104,6 @@ public class TMLexerCompiler {
 				return LexerRule.KIND_CLASS;
 			case LAYOUT:
 				return LexerRule.KIND_LAYOUT;
-			case SOFT:
-				return LexerRule.KIND_SOFT;
 			case SPACE:
 				return LexerRule.KIND_SPACE;
 		}
@@ -130,9 +128,6 @@ public class TMLexerCompiler {
 	}
 
 	public void compile() {
-		Map<Terminal, Terminal> softToClass = new HashMap<>();
-		Set<Terminal> nonSoft = new HashSet<>();
-
 		// Step 1. Collect states.
 
 		List<LexerState> defaultStates = resolver.inclusiveStates();
@@ -163,7 +158,6 @@ public class TMLexerCompiler {
 				continue;
 			}
 			Terminal classTerm = (Terminal) s;
-			nonSoft.add(classTerm);
 
 			RegexPart regex;
 			RegexMatcher matcher;
@@ -188,7 +182,7 @@ public class TMLexerCompiler {
 			TMDataUtil.putCodeTemplate(liLexerRule, lexeme.getCommand());
 		}
 
-		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
+		// Step 3. Process other lexical rules.
 
 		order = 0;
 		for (TmaLexeme lexeme : resolver.getLexerParts(TmaLexeme.class)) {
@@ -205,24 +199,7 @@ public class TMLexerCompiler {
 				continue;
 			}
 			Terminal term = (Terminal) s;
-
-			boolean isSoft = (kind == LexerRule.KIND_SOFT);
-			if (isSoft && nonSoft.contains(term)) {
-				error(lexeme, "redeclaration of non-soft terminal: " + lexeme.getName());
-				continue;
-			} else if (!isSoft) {
-				if (softToClass.containsKey(term)) {
-					error(lexeme, "redeclaration of soft terminal: " + lexeme.getName());
-					continue;
-				}
-				nonSoft.add(term);
-			}
-
 			if (lexeme.getPattern() == null) {
-				if (isSoft) {
-					error(lexeme, "soft lexeme rule `" + lexeme.getName().getText() +
-							"' should have a regular expression");
-				}
 				continue;
 			}
 
@@ -235,44 +212,7 @@ public class TMLexerCompiler {
 				continue;
 			}
 
-			if (isSoft && lexeme.getCommand() != null) {
-				// TODO Note: soft lexeme is able to override the code
-				error(lexeme.getCommand(), "soft lexeme rule `" + lexeme.getName().getText() +
-						"' cannot have a semantic action");
-			}
 			LexerRule classRule = getClassRule(classMatchers, lexeme, regex);
-			if (isSoft) {
-				if (classRule == null) {
-					error(lexeme, "soft lexeme rule `" + name + "' " +
-							(regex.isConstant() ? "doesn't match any class rule" :
-									"should have a constant regexp"));
-					continue;
-				}
-				Terminal softClass = classRule.getSymbol();
-
-				String type = getRawTypeText(lexeme.getRawType());
-				String classtype = getSymbolType(softClass);
-				if (type != null && !type.equals(classtype)) {
-					error(lexeme, "soft terminal `" + name + "' overrides base type: expected `" +
-							(classtype == null ? "<no type>" : classtype) + "', found `" + type +
-							"'");
-					continue;
-				}
-
-				final Terminal oldClass = softToClass.get(term);
-				if (oldClass != null && oldClass != softClass) {
-					error(lexeme, "redeclaration of soft class for `" + term.getNameText() +
-							"': found " + softClass.getNameText() + " instead of " +
-							oldClass.getNameText());
-					continue;
-				} else if (oldClass == null) {
-					builder.makeSoft(term, softClass);
-					softToClass.put(term, softClass);
-				}
-
-				// TODO check applicable states
-			}
-
 			int priority = lexeme.getPriority() == null ? 0 : lexeme.getPriority();
 			List<LexerState> states = attributes.get(lexeme).getApplicableInStates();
 			if (states.isEmpty()) {
@@ -284,19 +224,6 @@ public class TMLexerCompiler {
 					states, priority, order, classRule, lexeme);
 			TMDataUtil.putCodeTemplate(liLexerRule, lexeme.getCommand());
 		}
-	}
-
-	private static String getSymbolType(Symbol s) {
-		final AstType type = s.getType();
-		return type instanceof AstRawType ? ((AstRawType) type).getRawType() : null;
-	}
-
-	private static String getRawTypeText(TmaRawType type) {
-		if (type == null) {
-			return null;
-		}
-		String text = type.getText();
-		return text.substring(1, text.length() - 1);
 	}
 
 	private static class RuleAttributes {

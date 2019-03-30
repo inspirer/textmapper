@@ -111,8 +111,7 @@ public class GrammarFacadeTest {
 		LexerRule idLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, id, LapgCore.parse("id", "[a-z]+"), Collections.singleton(initial), 0, 0, null, null);
 
 		Terminal kw = builder.addTerminal(LapgCore.name("kw"), null, null);
-		builder.makeSoft(kw, id);
-		builder.addLexerRule(LexerRule.KIND_SOFT, kw, LapgCore.parse("kw", "keyword"), Collections.singleton(initial), 0, 0, idLexerRule, null);
+		builder.addLexerRule(LexerRule.KIND_NONE, kw, LapgCore.parse("kw", "keyword"), Collections.singleton(initial), 0, 0, idLexerRule, null);
 		Terminal spc = builder.addTerminal(LapgCore.name("spc"), null, null);
 		builder.addLexerRule(LexerRule.KIND_SPACE, spc, LapgCore.parse("spc", "[\t ]+"), Collections.singleton(initial), 0, 0, null, null);
 		Grammar grammar = builder.create();
@@ -125,15 +124,11 @@ public class GrammarFacadeTest {
 		assertEquals("id", symbols[1].getNameText());
 		assertTrue(symbols[1].isTerm());
 		assertTrue(symbols[1] instanceof Terminal);
-		assertFalse(((Terminal)symbols[1]).isSoft());
-		assertNull(((Terminal)symbols[1]).getSoftClass());
 
 		// kw
 		assertEquals("kw", symbols[2].getNameText());
 		assertTrue(symbols[2].isTerm());
 		assertTrue(symbols[2] instanceof Terminal);
-		assertTrue(((Terminal)symbols[2]).isSoft());
-		assertTrue(symbols[1] == ((Terminal)symbols[2]).getSoftClass());
 
 		// spc
 		assertEquals("spc", symbols[3].getNameText());
@@ -164,8 +159,8 @@ public class GrammarFacadeTest {
 		assertTrue(lRules[1].getRegexp().isConstant());
 		assertEquals("keyword", lRules[1].getRegexp().getConstantValue());
 		assertLexerStates(Collections.singleton(initial), lRules[1].getStates());
-		assertEquals(LexerRule.KIND_SOFT, lRules[1].getKind());
-		assertEquals("soft", lRules[1].getKindAsText());
+		assertEquals(LexerRule.KIND_NONE, lRules[1].getKind());
+		assertEquals("none", lRules[1].getKindAsText());
 		assertTrue(lRules[1].isExcluded());
 		// spc
 		assertTrue(symbols[3] == lRules[2].getSymbol());

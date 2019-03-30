@@ -341,7 +341,6 @@ var ruleNodeType = [...]NodeType{
 	Identifier,           // identifier : 'no-eoi'
 	Identifier,           // identifier : 's'
 	Identifier,           // identifier : 'x'
-	Identifier,           // identifier : 'soft'
 	Identifier,           // identifier : 'class'
 	Identifier,           // identifier : 'interface'
 	Identifier,           // identifier : 'void'
@@ -373,7 +372,6 @@ var ruleNodeType = [...]NodeType{
 	Identifier,           // identifier_Kw : 'no-eoi'
 	Identifier,           // identifier_Kw : 's'
 	Identifier,           // identifier_Kw : 'x'
-	Identifier,           // identifier_Kw : 'soft'
 	Identifier,           // identifier_Kw : 'class'
 	Identifier,           // identifier_Kw : 'interface'
 	Identifier,           // identifier_Kw : 'void'
@@ -455,7 +453,6 @@ var ruleNodeType = [...]NodeType{
 	Lexeme,               // lexeme : identifier rawTypeopt ':' pattern
 	Lexeme,               // lexeme : identifier rawTypeopt ':'
 	LexemeAttrs,          // lexeme_attrs : '(' lexeme_attribute ')'
-	LexemeAttribute,      // lexeme_attribute : 'soft'
 	LexemeAttribute,      // lexeme_attribute : 'class'
 	LexemeAttribute,      // lexeme_attribute : 'space'
 	LexemeAttribute,      // lexeme_attribute : 'layout'

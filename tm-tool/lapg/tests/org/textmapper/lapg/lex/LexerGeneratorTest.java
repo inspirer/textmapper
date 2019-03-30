@@ -355,11 +355,6 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
-				public boolean isSoft() {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
 				public boolean isConstant() {
 					throw new UnsupportedOperationException();
 				}
@@ -367,11 +362,6 @@ public class LexerGeneratorTest {
 				@Override
 				public String getConstantValue() {
 					return null;
-				}
-
-				@Override
-				public Symbol getSoftClass() {
-					throw new UnsupportedOperationException();
 				}
 
 				@Override

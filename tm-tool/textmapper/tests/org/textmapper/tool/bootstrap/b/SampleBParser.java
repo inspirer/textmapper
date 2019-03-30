@@ -42,33 +42,31 @@ public class SampleBParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int[] tmAction = SampleBLexer.unpack_int(26,
+	private static final int[] tmAction = SampleBLexer.unpack_int(24,
 		"\uffff\uffff\uffff\uffff\0\0\3\0\uffff\uffff\uffff\uffff\ufffd\uffff\uffff\uffff" +
-		"\uffff\uffff\11\0\4\0\uffef\uffff\uffff\uffff\uffe3\uffff\uffff\uffff\uffff\uffff" +
-		"\5\0\1\0\uffff\uffff\uffff\uffff\6\0\uffff\uffff\2\0\7\0\10\0\ufffe\uffff");
+		"\uffff\uffff\10\0\4\0\ufff3\uffff\uffff\uffff\uffeb\uffff\uffff\uffff\uffff\uffff" +
+		"\5\0\1\0\uffff\uffff\6\0\uffff\uffff\2\0\7\0\ufffe\uffff");
 
-	private static final int[] tmLalr = SampleBLexer.unpack_int(40,
-		"\1\0\uffff\uffff\20\0\uffff\uffff\4\0\uffff\uffff\3\0\uffff\uffff\13\0\uffff\uffff" +
-		"\6\0\13\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\20\0\uffff\uffff\4\0\uffff\uffff" +
-		"\3\0\uffff\uffff\6\0\12\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\20\0\uffff\uffff" +
-		"\4\0\uffff\uffff\3\0\uffff\uffff\13\0\uffff\uffff\6\0\13\0\uffff\uffff\ufffe\uffff");
+	private static final int[] tmLalr = SampleBLexer.unpack_int(28,
+		"\1\0\uffff\uffff\3\0\uffff\uffff\13\0\uffff\uffff\6\0\12\0\uffff\uffff\ufffe\uffff" +
+		"\1\0\uffff\uffff\3\0\uffff\uffff\6\0\11\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff" +
+		"\3\0\uffff\uffff\13\0\uffff\uffff\6\0\12\0\uffff\uffff\ufffe\uffff");
 
-	private static final int[] tmGoto = SampleBLexer.unpack_int(23,
-		"\0\0\0\0\12\0\12\0\22\0\40\0\44\0\50\0\54\0\62\0\62\0\62\0\66\0\66\0\66\0\66\0\66" +
-		"\0\100\0\102\0\112\0\114\0\120\0\124\0");
+	private static final int[] tmGoto = SampleBLexer.unpack_int(22,
+		"\0\0\0\0\12\0\12\0\22\0\24\0\30\0\34\0\40\0\44\0\44\0\44\0\50\0\50\0\50\0\50\0\50" +
+		"\0\52\0\62\0\64\0\70\0\74\0");
 
-	private static final int[] tmFromTo = SampleBLexer.unpack_int(84,
-		"\1\0\3\0\5\0\7\0\6\0\10\0\13\0\17\0\15\0\10\0\0\0\1\0\6\0\1\0\13\0\1\0\15\0\1\0\1" +
-		"\0\3\0\4\0\5\0\5\0\7\0\6\0\10\0\13\0\17\0\15\0\10\0\16\0\23\0\4\0\6\0\7\0\15\0\14" +
-		"\0\21\0\22\0\26\0\10\0\16\0\17\0\25\0\16\0\24\0\23\0\27\0\25\0\30\0\6\0\11\0\15\0" +
-		"\11\0\1\0\3\0\5\0\7\0\6\0\10\0\13\0\17\0\15\0\10\0\0\0\31\0\0\0\2\0\6\0\12\0\13\0" +
-		"\20\0\15\0\12\0\1\0\4\0\6\0\13\0\15\0\13\0\6\0\14\0\15\0\22\0");
+	private static final int[] tmFromTo = SampleBLexer.unpack_int(60,
+		"\1\0\3\0\5\0\7\0\6\0\10\0\13\0\17\0\15\0\10\0\0\0\1\0\6\0\1\0\13\0\1\0\15\0\1\0\4" +
+		"\0\5\0\4\0\6\0\7\0\15\0\14\0\21\0\22\0\25\0\10\0\16\0\17\0\24\0\16\0\23\0\24\0\26" +
+		"\0\6\0\11\0\15\0\11\0\0\0\27\0\0\0\2\0\6\0\12\0\13\0\20\0\15\0\12\0\1\0\4\0\6\0\13" +
+		"\0\15\0\13\0\6\0\14\0\15\0\22\0");
 
-	private static final int[] tmRuleLen = SampleBLexer.unpack_int(12,
-		"\1\0\5\0\7\0\1\0\1\0\2\0\3\0\4\0\4\0\1\0\1\0\0\0");
+	private static final int[] tmRuleLen = SampleBLexer.unpack_int(11,
+		"\1\0\5\0\7\0\1\0\1\0\2\0\3\0\4\0\1\0\1\0\0\0");
 
-	private static final int[] tmRuleSymbol = SampleBLexer.unpack_int(12,
-		"\21\0\22\0\22\0\23\0\24\0\24\0\24\0\24\0\24\0\24\0\25\0\25\0");
+	private static final int[] tmRuleSymbol = SampleBLexer.unpack_int(11,
+		"\20\0\21\0\21\0\22\0\23\0\23\0\23\0\23\0\23\0\24\0\24\0");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -87,7 +85,6 @@ public class SampleBParser {
 		"octal",
 		"decimal",
 		"eleven",
-		"_skipSoftKW",
 		"classdef_no_eoi",
 		"classdef",
 		"ID",
@@ -97,11 +94,11 @@ public class SampleBParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		int classdef_no_eoi = 17;
-		int classdef = 18;
-		int ID = 19;
-		int classdeflist = 20;
-		int classdeflistopt = 21;
+		int classdef_no_eoi = 16;
+		int classdef = 17;
+		int ID = 18;
+		int classdeflist = 19;
+		int classdeflistopt = 20;
 	}
 
 	// set(follow error)
@@ -165,7 +162,7 @@ public class SampleBParser {
 		tmStack[0].state = 0;
 		tmNext = tmLexer.next();
 
-		while (tmStack[tmHead].state != 25) {
+		while (tmStack[tmHead].state != 23) {
 			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Tokens.Unavailable_ : tmNext.symbol);
 			if (action <= -3 && tmNext == null) {
 				tmNext = tmLexer.next();
@@ -199,7 +196,7 @@ public class SampleBParser {
 			}
 		}
 
-		if (tmStack[tmHead].state != 25) {
+		if (tmStack[tmHead].state != 23) {
 			if (tmShiftsAfterError >= 4) {
 				reporter.error(MessageFormat.format("syntax error before line {0}",
 								tmLexer.getTokenLine()), tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getOffset() : tmNext.endoffset);
@@ -274,7 +271,6 @@ public class SampleBParser {
 						true /* tc */,
 						((String)tmStack[tmHead - 3].value) /* ID */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
-						false /* te */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
@@ -283,7 +279,6 @@ public class SampleBParser {
 						true /* tc */,
 						((String)tmStack[tmHead - 5].value) /* ID */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
-						true /* te */,
 						((String)tmStack[tmHead - 3].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
 				break;
@@ -307,16 +302,13 @@ public class SampleBParser {
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
-			case 7:  // classdeflist : identifier '(' Lextends ')'
-				{ String s = /* should be string */ ((String)tmStack[tmHead - 1].value); }
-				break;
-			case 8:  // classdeflist : classdeflist identifier '(' ')'
+			case 7:  // classdeflist : classdeflist identifier '(' ')'
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset));
 				break;
-			case 9:  // classdeflist : error
+			case 8:  // classdeflist : error
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,

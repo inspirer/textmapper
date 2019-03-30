@@ -36,7 +36,7 @@ identifier {String}: /[a-zA-Z_][a-zA-Z_0-9]*/ (class)
 _skip:          /[\n\t\r ]+/ (space)
 
 Lclass: /class/								{ $$ = "class"; }
-Lextends: /extends/  (soft)
+Lextends: /extends/
 '{': /\{/
 '}': /\}/
 '(': /\(/
@@ -62,9 +62,6 @@ decimal:  /[1-9][0-9]+/			(class)
 # instance of decimal
 eleven:   /11/				          { $$ = 11; }
 
-# soft
-_skipSoftKW: /xyzzz/	(soft)
-
 
 :: parser
 
@@ -75,7 +72,7 @@ classdef_no_eoi interface :
 
 classdef :
 	tc=Lclass ID '{' classdeflistopt '}'
-  | tc=Lclass ID te=Lextends identifier '{' classdeflistopt '}'
+  | tc=Lclass ID Lextends identifier '{' classdeflistopt '}'
 ;
 
 ID :
@@ -85,7 +82,6 @@ classdeflist :
 	classdef
   | classdeflist classdef
   | identifier '(' ')'
-  | identifier '(' Lextends ')'				{ String s = /* should be string */ $Lextends; }
   | classdeflist identifier '(' ')'
   | error
 ;

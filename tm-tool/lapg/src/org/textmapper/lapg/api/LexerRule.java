@@ -24,9 +24,8 @@ public interface LexerRule extends SourceElement, UserDataHolder {
 
 	int KIND_NONE = 0;
 	int KIND_CLASS = 1;
-	int KIND_SOFT = 2;
-	int KIND_SPACE = 3;
-	int KIND_LAYOUT = 4;
+	int KIND_SPACE = 2;
+	int KIND_LAYOUT = 3;
 
 	int getIndex();
 

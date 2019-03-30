@@ -16,7 +16,6 @@
 package org.textmapper.tool.parser.ast;
 
 public enum TmaLexemeAttribute {
-	SOFT,
 	CLASS,
 	SPACE,
 	LAYOUT,

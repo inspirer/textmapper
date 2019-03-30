@@ -78,32 +78,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				new LiNonterminal(null /* name */, nameHint, origin), anchor);
 	}
 
-	@Override
-	public void makeSoft(Terminal terminal, Terminal softClass) {
-		check(terminal);
-		check(softClass);
-		if (terminal == softClass) {
-			throw new IllegalArgumentException("terminal cannot be a class of itself");
-		}
-		if (terminal.isSoft()) {
-			throw new IllegalStateException("terminal is already soft");
-		}
-		if (terminal.getType() != null && !terminal.getType().equals(softClass.getType())) {
-			throw new IllegalStateException(
-					"soft terminal cannot override class terminal's type");
-		}
-		if (sealedTerminals.contains(terminal)) {
-			throw new IllegalArgumentException(
-					"cannot convert terminal into a soft terminal (was already used as non-soft)");
-		}
-		if (softClass.isSoft()) {
-			throw new IllegalArgumentException(
-					"cannot use soft terminal as a class terminal");
-		}
-		sealedTerminals.add(softClass);
-		((LiTerminal) terminal).setSoftClass(softClass);
-	}
-
 	private <T extends LiSymbol> T addSymbol(T sym, Symbol anchor) {
 		Name name = sym.getName();
 		if (!symScope.insert(sym, anchor)) {
@@ -180,9 +154,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			throw new NullPointerException();
 		}
 		sealedTerminals.add(sym);
-		if (sym.isSoft() != (kind == LexerRule.KIND_SOFT)) {
-			throw new IllegalArgumentException("wrong rule kind, doesn't match symbol kind");
-		}
 		List<LexerState> liStates = new ArrayList<>();
 		for (LexerState state : states) {
 			if (!statesScope.contains(state)) {

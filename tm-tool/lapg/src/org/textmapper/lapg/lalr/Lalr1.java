@@ -143,14 +143,6 @@ class Lalr1 extends LR0 {
 				symnum = state[t.shifts[i]].symbol;
 				symshiftCounter[symnum]++;
 				ngotos++;
-
-				// handle soft terms
-				if(symnum < nterms && classterm[symnum] == -1 && !t.softConflicts) {
-					for (int soft = softterms[symnum]; soft != -1; soft = softterms[soft]) {
-						symshiftCounter[soft]++;
-						ngotos++;
-					}
-				}
 			}
 		}
 
@@ -170,15 +162,6 @@ class Lalr1 extends LR0 {
 				e = symshiftCounter[symnum]++;
 				term_from[e] = t.number;
 				term_to[e] = newstate;
-
-				// handle soft terms
-				if(symnum < nterms && classterm[symnum] == -1 && !t.softConflicts) {
-					for (int soft = softterms[symnum]; soft != -1; soft = softterms[soft]) {
-						e = symshiftCounter[soft]++;
-						term_from[e] = t.number;
-						term_to[e] = newstate;
-					}
-				}
 			}
 		}
 
@@ -256,13 +239,6 @@ class Lalr1 extends LR0 {
 			for (; shifts_ind < nshifts && state[shifts[shifts_ind]].symbol < nterms; shifts_ind++) {
 				int sym = state[shifts[shifts_ind]].symbol;
 				follow[settrav + sym / BITS] |= (1 << (sym % BITS));
-
-				// add soft terms
-				if(classterm[sym] == -1) {
-					for (int soft = softterms[sym]; soft != -1; soft = softterms[soft]) {
-						follow[settrav + soft / BITS] |= (1 << (soft % BITS));
-					}
-				}
 			}
 
 			for (; shifts_ind < nshifts; shifts_ind++) {

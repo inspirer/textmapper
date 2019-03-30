@@ -17,7 +17,7 @@ _skip:      /\/\/.*/       (space)
 _skip:      /[\t\r\n ]+/    (space)
 
 run:  /run/
-class: /class/ (soft)
+class: /class/
 
 <state2>
 method:  /method/

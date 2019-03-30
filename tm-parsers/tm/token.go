@@ -86,7 +86,6 @@ const (
 	RIGHT      // right
 	CHAR_S     // s
 	SHIFT      // shift
-	SOFT       // soft
 	SPACE      // space
 	VOID       // void
 	CHAR_X     // x
@@ -173,7 +172,6 @@ var tokenStr = [...]string{
 	"right",
 	"s",
 	"shift",
-	"soft",
 	"space",
 	"void",
 	"x",
