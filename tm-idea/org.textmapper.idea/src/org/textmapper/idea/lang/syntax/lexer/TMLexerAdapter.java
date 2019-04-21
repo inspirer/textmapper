@@ -274,8 +274,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 			case Tokens.noMinuseoi:
 				return KW_NOEOI;
 
-			case Tokens.soft:
-				return KW_SOFT;
 			case Tokens._class:
 				return KW_CLASS;
 			case Tokens._interface:

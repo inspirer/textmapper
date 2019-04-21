@@ -125,7 +125,6 @@ public interface TMTokenTypes {
 
 	IElementType KW_NOEOI = new TMElementType(Tokens.noMinuseoi, "no-eoi");
 
-	IElementType KW_SOFT = new TMElementType(Tokens.soft, "soft");
 	IElementType KW_CLASS = new TMElementType(Tokens._class, "class");
 	IElementType KW_INTERFACE = new TMElementType(Tokens._interface, "interface");
 	IElementType KW_VOID = new TMElementType(Tokens._void, "void");
@@ -150,6 +149,6 @@ public interface TMTokenTypes {
 			KW_GENERATE, KW_ASSERT, KW_EMPTY, KW_NONEMPTY,
 			KW_EXPLICIT, KW_GLOBAL, KW_LOOKAHEAD, KW_PARAM, KW_FLAG,
 			KW_NOEOI,
-			KW_SOFT, KW_CLASS, KW_INTERFACE, KW_VOID, KW_SPACE, KW_LAYOUT, KW_LANGUAGE, KW_LALR,
+			KW_CLASS, KW_INTERFACE, KW_VOID, KW_SPACE, KW_LAYOUT, KW_LANGUAGE, KW_LALR,
 			KW_LEXER, KW_PARSER);
 }
