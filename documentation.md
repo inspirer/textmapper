@@ -225,11 +225,17 @@ Character classes
 	\P{prop}       a non-prop character: [^\p{prop}]
 	\p{Lu}         an uppercase letter (simple category)
 
+`[^a-z]` matches a newline, unless '\n' is explicitly added into the negated class: `[^a-z\n]`<br/>
+{:.alert .alert-info}
+
 Logical operators
 
 	RS             R followed by S (concatenation)
 	R|S            either R or S (union)
 	(R)            matches an `R' (parentheses are used to override precedence)
+
+Coming soon: case-insensitive regular expressions. `/(?i)foo/`
+{:.alert .alert-success}
 
 Quantifiers
 
@@ -239,6 +245,9 @@ Quantifiers
 	R{n}           R, exactly n times
 	R{n,}          R, at least n times
 	R{n,m}         R, at least n but not more than m times
+
+`bar*` is equivalent to `ba(r*)`, use parentheses to override precedence: `(bar)*`
+{:.alert .alert-info}
 
 Pattern definitions
 
@@ -280,11 +289,6 @@ Supported unicode categories (in `\p{xx}`)
 	Cs             Other, surrogate
 	Co             Other, private use
 	Cn             Other, not assigned (including non-characters)
-
-Notes
-
-	[^a-z] matches a newline, unless '\n' is explicitly added into the negated class: [^a-z\n]
-	bar* is equivalent to ba(r*), use parentheses to override precedence: (bar)*
 
 ## Parser
 
@@ -589,10 +593,10 @@ Now, we can implement the rules of semicolon insertion by inspecting the current
 
 By default, the generated parser stops when it encounters the first syntax error. This may not be desirable in some scenarios such as parsing a user-typed text in an editor, where most of the time the syntactic structure is broken (often locally). Introducing a token with the predefined name `error` turns on the recovery mechanism. The *error* terminal represents a part of the stream which cannot be successfully parsed.
 
-	# Note: error token cannot have an associated regular expression
+	# Note: the error token cannot have an associated regular expression
 	error:
 
-This terminal can then be used in production rules to specify the contexts where an error is expected and can be properly handled.
+This terminal can then be used in production rules to specify the contexts in which an error is expected and can be properly handled.
 
 	statement :
 	    expr_statement ';'
@@ -600,6 +604,8 @@ This terminal can then be used in production rules to specify the contexts where
 	;
 
 When the generated parser encounters a syntax error, it starts discarding the parsing context from the stack until it finds a state in which the *error* terminal is accepted. This means that even if an error occurred in an expression, the stack is unwound up to the statement context in which the appropriate recovery rule is defined. The parser then creates a new error token, pushes it onto the stack, and continues parsing.
+
+The *error* token range covers all skipped tokens, even those that were successfully reduced into nonterminals before. If the range is empty, it gets positioned right before the next accepted token.
 
 It may happen that the next few tokens in the stream contribute to the error, so the parser remains in the recovery mode until three consecutive input tokens have been successfully shifted. No new syntax errors are reported during this time. The logic for error recovery tries to skip as few tokens as possible and makes sure that the parser will accept the next token after the error. This significantly reduces the number of reported errors compared to Bison and other LALR parser generators.
 
@@ -614,8 +620,32 @@ Textmapper supports restricting the error recovery mechanism to a given producti
 
 Without `.recoveryScope`, the parser matches the offending closing parenthesis with the opening parenthesis of the delay call, completely messing up the parse tree.
 
-## Abstract Syntax Tree
+## Abstract Syntax Tree __New__{:.badge}
 
-In most grammars, authors use semantic actions to build an intermediate representation of the input, moving most or all of the semantic processing out of the parser. Usually, this representation is a compact version of the parse tree and is called an Abstract Syntax Tree (AST). The generated parser then becomes a simple component which is able to transform an input text into an AST. This approach pays off when you need to reuse the parser in different environments (e.g. for providing code completion in an IDE).
+In most grammars, authors use semantic actions to build an intermediate representation of the input, moving most or all of the semantic processing out of the parser. Usually, this representation is a compact version of the parse tree and is called an Abstract Syntax Tree (AST). The generated parser then becomes a simple component which is able to transform input text into an AST. This approach pays off when you need to reuse the parser in different environments (e.g. in a compiler and for providing code completion in an IDE).
+
+	expr {Expression} :
+	    id             { $$ = IdExpr{$id} }
+	  | '(' expr ')'   { $$ = Parenthesized{$expr} }
+	;
+	
+	expr_list {[]Expression} :
+	    expr                 { $$ = []Expression{$expr} }
+	  | expr_list ',' expr   { $$ = append($expr_list, $expr) }
+	;
+	
+	input {[]Expression} :
+	    expr_list ;
+
+This grammar is quite verbose but your generated *parse* function will immediately start returning the assembled AST (or a syntax error).
+
+	func (p *Parser) Parse(lexer *Lexer) ([]Expression, error)
+
+If you prefer to keep your grammar clean, there is a different way to produce ASTs out of Textmapper grammars. You can declare your parser 'event-based', and use the _arrow notation_ to map nonterminals (or their parts) into AST nodes.
+
+## Arrow notation
+
+	eventBased = true
 
 ... to be continued
+
