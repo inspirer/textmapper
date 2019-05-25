@@ -143,7 +143,6 @@ var lexerTests = []struct {
 	{tm.RIGHT, []string{`«right»`}},
 	{tm.CHAR_S, []string{`«s»`}},
 	{tm.SHIFT, []string{`«shift»`}},
-	{tm.SOFT, []string{`«soft»`}},
 	{tm.SPACE, []string{`«space»`}},
 	{tm.VOID, []string{`«void»`}},
 	{tm.CHAR_X, []string{`«x»`}},
