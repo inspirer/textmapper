@@ -2,6 +2,7 @@ package lex
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/inspirer/textmapper/tm-go/util/container"
 )
@@ -146,7 +147,7 @@ func (c *reCompiler) serialize(re *Regexp, resolver Resolver) {
 			c.serialize(s, resolver)
 		}
 	default:
-		panic("unknown regexp operation")
+		log.Fatal("unknown regexp operation")
 	}
 }
 
