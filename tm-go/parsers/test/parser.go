@@ -47,11 +47,18 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) Parse(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 0, 30, lexer)
+func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
+	_, err := p.parse(ctx, 0, 32, lexer)
+	return err
 }
 
-func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) error {
+func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
+	v, err := p.parse(ctx, 1, 33, lexer)
+	val, _ := v.(int)
+	return val, err
+}
+
+func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (interface{}, error) {
 	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
 	var shiftCounter int
 	state := start
@@ -87,7 +94,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) error
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
 			if err := p.applyRule(ctx, rule, &entry, rhs, lexer); err != nil {
-				return err
+				return nil, err
 			}
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
@@ -101,7 +108,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) error
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
 				case <-ctx.Done():
-					return ctx.Err()
+					return nil, ctx.Err()
 				default:
 				}
 			}
@@ -145,10 +152,10 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) error
 			Offset:    offset,
 			Endoffset: endoffset,
 		}
-		return err
+		return nil, err
 	}
 
-	return nil
+	return stack[len(stack)-2].value, nil
 }
 
 func lalr(action, next int32) int32 {

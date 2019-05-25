@@ -84,7 +84,7 @@ func TestParser(t *testing.T) {
 					pt.Consume(t, offset, endoffset)
 				}
 			})
-			pt.Done(t, p.Parse(ctx, l))
+			pt.Done(t, p.ParseTest(ctx, l))
 		}
 	}
 	for n := test.NodeType(1); n < test.NodeTypeMax; n++ {

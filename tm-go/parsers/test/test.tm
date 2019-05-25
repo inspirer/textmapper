@@ -49,7 +49,7 @@ invalid_token:
 
 :: parser
 
-%input Test;
+%input Test, Decl1;
 
 Test -> Test :
     Declaration+ ;
@@ -80,7 +80,7 @@ QualifiedName :
   | QualifiedName '.' Identifier
 ;
 
-Decl1 -> Decl1 :
+Decl1 {int} -> Decl1 :
     'decl1' '(' QualifiedName ')' ;
 
 Decl2 :

@@ -96,12 +96,12 @@ ${end-}
 )
 
 ${foreach inp in syntax.input.select(it|it.requested)-}
-func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(${call contextParam}lexer *Lexer) ${if !self->hasAssocValueFor(inp)}error${else}(error, ${inp.target->go.type()})${end} {
+func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(${call contextParam}lexer *Lexer) ${if !self->hasAssocValueFor(inp)}error${else}(${inp.target->go.type()}, error)${end} {
 ${if self->hasAssocValuesForInput()-}
-	err, ${if self->hasAssocValueFor(inp)}v${else}_${end} := p.parse(${call contextArg}${inp.index}, ${parser.finalStates[inp.index]}, lexer)
+	${if self->hasAssocValueFor(inp)}v${else}_${end}, err := p.parse(${call contextArg}${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 ${if self->hasAssocValueFor(inp)-}
 	val, _ := v.(${inp.target->go.type()})
-	return err, val
+	return val, err
 ${else-}
 	return err
 ${end-}
