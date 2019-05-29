@@ -446,7 +446,7 @@ func (l *Lexer) rewind(offset int) {
 {{- end}}
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
-			l.rewind(l.offset + 1)
+			l.rewind(l.scanOffset)
 		}
 {{- if .Lexer.RuleToken}}
 		if rule != 0 {
@@ -457,7 +457,7 @@ func (l *Lexer) rewind(offset int) {
 		}
 {{- else}}
 		if l.offset == l.tokenOffset {
-			l.rewind(l.offset + 1)
+			l.rewind(l.scanOffset)
 		}
 {{- end -}}
 {{end -}}

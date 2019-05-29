@@ -90,7 +90,7 @@ func (l *Lexer) Next() Token {
 	switch token {
 	case INVALID_TOKEN:
 		if l.offset == l.tokenOffset {
-			l.rewind(l.offset + 1)
+			l.rewind(l.scanOffset)
 		}
 	}
 	return token
