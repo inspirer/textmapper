@@ -6,6 +6,6 @@
 
    Textmapper
    http://textmapper.org/
-   Copyright 2002-2018 Evgeny Gryaznov
+   Copyright 2002-2019 Evgeny Gryaznov
 
    This product is developed by Evgeny Gryaznov, egryaznov@gmail.com

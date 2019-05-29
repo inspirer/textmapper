@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2018 Evgeny Gryaznov
+ * Copyright 2002-2019 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import java.io.*;
 public class Tool {
 
 	public static final String VERSION = "0.9.24/java";
-	public static final String BUILD = "2018";
+	public static final String BUILD = "2019";
 
 	public static final String HELP_MESSAGE =
 			"textmapper - Lexer and Parser generator\n" +

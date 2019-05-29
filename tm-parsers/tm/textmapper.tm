@@ -1,6 +1,6 @@
 #  syntax: lalr1 generator source grammar
 
-#  Copyright 2002-2018 Evgeny Gryaznov
+#  Copyright 2002-2019 Evgeny Gryaznov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
