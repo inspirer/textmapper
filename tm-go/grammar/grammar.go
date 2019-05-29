@@ -96,6 +96,7 @@ type Options struct {
 	TokenLineOffset     bool
 	Cancellable         bool
 	RecursiveLookaheads bool
+	DebugParser         bool
 
 	// AST generation.
 	EventBased   bool

@@ -568,6 +568,8 @@ func (c *compiler) parseOptions() {
 			opts.RecursiveLookaheads = c.parseExpr(kv.Value(), opts.RecursiveLookaheads).(bool)
 		case "eventBased":
 			opts.EventBased = c.parseExpr(kv.Value(), opts.EventBased).(bool)
+		case "debugParser":
+			opts.DebugParser = c.parseExpr(kv.Value(), opts.DebugParser).(bool)
 		case "eventFields":
 			opts.EventFields = c.parseExpr(kv.Value(), opts.EventFields).(bool)
 		case "eventAST":

@@ -15,6 +15,7 @@ class Options extends common.Options {
 	bool eventBased = false;
 	bool eventFields = false;
 	bool eventAST = false;
+	bool debugParser = false;
 	bool recursiveLookaheads = false;
 	common.Symbol* reportTokens[0..*] = [];
 	string extraTypes[0..*] = [];

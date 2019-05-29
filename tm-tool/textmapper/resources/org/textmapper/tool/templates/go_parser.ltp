@@ -92,7 +92,7 @@ ${if self->ignoredReportTokens()-}
 ${end-}
 	noToken        = int32(UNAVAILABLE)
 	eoiToken       = int32(EOI)
-	debugSyntax    = false
+	debugSyntax    = ${opts.debugParser}
 )
 
 ${foreach inp in syntax.input.select(it|it.requested)-}

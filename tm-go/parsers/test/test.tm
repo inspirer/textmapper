@@ -6,6 +6,7 @@ lang = "test"
 package = "github.com/inspirer/textmapper/tm-go/parsers/test"
 eventBased = true
 eventFields = true
+debugParser = true
 tokenLine = false
 cancellable = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
