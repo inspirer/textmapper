@@ -7,11 +7,10 @@ kind: download
 Download
 ========
 
-The latest development builds (beta), 0.9.4, Nov 16, 2014:
+The latest development builds (beta), 0.9.24, May 30, 2019:
 
-* [Lapg](http://sourceforge.net/projects/textmapper/files/0.9.4/textmapper-0.9.4.zip/download) (command-line utility)
-* [IntelliJ IDEA plug-in](http://sourceforge.net/projects/textmapper/files/0.9.4/tm-idea-0.9.4.zip/download) (includes textmapper)
-* [Eclipse plug-in](http://sourceforge.net/projects/textmapper/files/0.9.4/tm-eclipse-repo-0.9.4.zip/download) (includes textmapper)
+* [Lapg](https://github.com/inspirer/textmapper/releases/tag/0.9.24) (command-line utility)
+* [IntelliJ IDEA plug-in](https://plugins.jetbrains.com/plugin/7291-textmapper)
 
-You need Java 1.6 to run it.
+You need Java 8 to run it.
 
