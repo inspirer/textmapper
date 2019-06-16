@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -32,4 +33,20 @@ func TestMatrixClosure(t *testing.T) {
 	if got := count(); got != 36 {
 		t.Errorf("count() = %v, want: 36", got)
 	}
+}
+
+func TestGraph(t *testing.T) {
+	m := NewMatrix(10)
+	m.AddEdge(1, 5)
+	m.AddEdge(2, 9)
+	m.AddEdge(5, 1)
+	m.AddEdge(0, 0)
+	m.AddEdge(0, 1)
+	m.AddEdge(9, 9)
+	g := m.Graph(nil)
+	want := "[[0 1] [5] [9] [] [] [1] [] [] [] [9]]"
+	if got := fmt.Sprintf("%v", g); got != want {
+		t.Errorf("m.Graph() = %v, want: %v", got, want)
+	}
+
 }

@@ -64,7 +64,7 @@ type Grammar struct {
 	Inputs     []Input
 	Rules      []Rule
 	Terminals  int
-	Symbols    int
+	Symbols    []string
 	Precedence []Precedence // later declarations have higher precedence
 	Lookaheads []Lookahead  // Note: each lookahead nonterminal should have an empty rule in Rules
 }

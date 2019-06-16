@@ -41,3 +41,22 @@ func (m Matrix) Closure() {
 		}
 	}
 }
+
+// Graph returns the adjacency list representation of the graph.
+func (m Matrix) Graph(reuse []int) [][]int {
+	n := m.n
+	ret := make([][]int, n)
+	slice := m.set.Slice(reuse)
+	var start, index int
+	for i, val := range slice {
+		e := val / n
+		slice[i] = val % n
+		if e > index {
+			ret[index] = slice[start:i]
+			start = i
+			index = e
+		}
+	}
+	ret[index] = slice[start:]
+	return ret
+}

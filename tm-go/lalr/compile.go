@@ -1,6 +1,8 @@
 package lalr
 
 import (
+	"strings"
+
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
 	"github.com/inspirer/textmapper/tm-go/util/graph"
@@ -11,7 +13,7 @@ func Compile(grammar *Grammar) (*Tables, error) {
 	c := &compiler{
 		grammar: grammar,
 		out:     &Tables{},
-		empty:   container.NewBitSet(grammar.Symbols),
+		empty:   container.NewBitSet(len(grammar.Symbols)),
 	}
 
 	c.init()
@@ -31,6 +33,9 @@ type compiler struct {
 	right []int // all rules flattened into one slice, each position in this slice is an LR(0) item
 	empty container.BitSet
 
+	rules  []container.BitSet // nonterminal -> LR(0) items
+	shifts [][]int            // symbol -> [<the number of symbol occurrences in "right">]int
+
 	states []*state
 }
 
@@ -46,7 +51,7 @@ type state struct {
 
 func (c *compiler) init() {
 	right := make([]int, 0, len(c.grammar.Rules)*8)
-	for _, r := range c.grammar.Rules {
+	for i, r := range c.grammar.Rules {
 		c.index = append(c.index, len(right))
 		for _, sym := range r.RHS {
 			if sym.IsStateMarker() {
@@ -55,10 +60,23 @@ func (c *compiler) init() {
 			}
 			right = append(right, int(sym))
 		}
-		right = append(right, -1-int(r.LHS))
+		right = append(right, -1-i)
 	}
 	c.right = right
 
+	// Initialize c.shifts.
+	count := make([]int, len(c.grammar.Symbols))
+	for _, r := range right {
+		if r >= 0 {
+			count[r]++
+		}
+	}
+	buf := make([]int, len(c.right))
+	c.shifts = make([][]int, len(c.grammar.Symbols))
+	for i, ln := range count {
+		c.shifts[i] = buf[:0:ln] // override the cap
+		buf = buf[ln:]
+	}
 }
 
 // computeEmpty computes the set of nullable nonterminals.
@@ -89,23 +107,124 @@ func (c *compiler) computeEmpty() {
 
 func (c *compiler) computeSets() {
 	d := c.grammar.Terminals
-	n := c.grammar.Symbols - d
+	n := len(c.grammar.Symbols) - d
 	first := graph.NewMatrix(n)
 	for i, r := range c.grammar.Rules {
 		if e := c.right[c.index[i]]; e >= d {
 			first.AddEdge(int(r.LHS)-d, e-d)
 		}
 	}
-	first.Closure()
+	var rules []container.BitSet // nonterminal -> LR(0) items
 	for i := 0; i < n; i++ {
-		first.AddEdge(i, i)
+		rules = append(rules, container.NewBitSet(len(c.right)))
 	}
-	var rules []container.BitSet // nonterminal -> available rules
-	// TODO
-	_ = rules
+	for i, r := range c.grammar.Rules {
+		rules[int(r.LHS)-d].Set(c.index[i])
+	}
+
+	g := first.Graph(nil)
+	graph.Tarjan(g, func(nonterms []int, _ container.BitSet) {
+		set := rules[nonterms[0]]
+		for _, nt := range nonterms[1:] {
+			set.Or(rules[nt])
+			rules[nt] = set
+		}
+		for _, nt := range nonterms {
+			for _, target := range g[nt] {
+				set.Or(rules[target])
+			}
+		}
+	})
+	c.rules = rules
 }
 
 func (c *compiler) computeStates() {
-	container.NewIntSliceMap(func(key []int) interface{} { return new(state) })
+	for i := range c.grammar.Inputs {
+		c.states = append(c.states, &state{index: i})
+	}
+	stateMap := container.NewIntSliceMap(func(core []int) interface{} {
+		s := &state{
+			index:       len(c.states),
+			symbol:      Sym(c.right[core[0]-1]),
+			sourceState: -1,
+			core:        core,
+		}
+		c.states = append(c.states, s)
+		return s
+	})
 
+	set := container.NewBitSet(len(c.right))
+	reuse := make([]int, len(c.right))
+	for i := 0; i < len(c.states); i++ {
+		curr := c.states[i]
+		c.stateClosure(curr, set)
+		closure := set.Slice(reuse)
+
+		for _, item := range closure {
+			r := c.right[item]
+			if r >= 0 {
+				c.shifts[r] = append(c.shifts[r], item+1)
+			} else {
+				curr.reduce = append(curr.reduce, -1-r)
+			}
+		}
+		for sym, core := range c.shifts {
+			if len(core) == 0 {
+				continue
+			}
+			state := stateMap.Get(core).(*state)
+			if state.sourceState == -1 {
+				state.sourceState = curr.index
+			}
+			curr.shifts = append(curr.shifts, state.index)
+			c.shifts[sym] = core[:0]
+		}
+
+		nreduce := len(curr.reduce)
+		curr.lr0 = nreduce == 0 || nreduce == 1 && len(curr.shifts) == 0
+	}
+
+	// TODO add final states
+}
+
+func (c *compiler) stateClosure(state *state, out container.BitSet) {
+	out.ClearAll()
+	if state.index < len(c.grammar.Inputs) {
+		inp := c.grammar.Inputs[state.index]
+		out.Or(c.rules[int(inp.Nonterminal)-c.grammar.Terminals])
+		return
+	}
+
+	for _, item := range state.core {
+		out.Set(item)
+		if sym := c.right[item]; sym >= c.grammar.Terminals {
+			out.Or(c.rules[sym-c.grammar.Terminals])
+		}
+	}
+}
+
+func (c *compiler) writeItem(item int, out *strings.Builder) {
+	i := item
+	for c.right[i] >= 0 {
+		i++
+	}
+	rule := c.grammar.Rules[-1-c.right[i]]
+	pos := len(rule.RHS) - (i - item)
+	out.WriteString(c.grammar.Symbols[rule.LHS])
+	out.WriteString(" : ")
+	for i, sym := range rule.RHS {
+		if i > 0 {
+			out.WriteString(" ")
+		}
+		if i == pos {
+			out.WriteString("_ ")
+		}
+		out.WriteString(c.grammar.Symbols[sym])
+	}
+	if pos == len(rule.RHS) {
+		if pos > 0 {
+			out.WriteString(" ")
+		}
+		out.WriteString("_")
+	}
 }

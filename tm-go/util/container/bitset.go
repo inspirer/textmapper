@@ -2,6 +2,7 @@
 package container
 
 import (
+	"log"
 	"math/bits"
 )
 
@@ -61,5 +62,15 @@ func (b BitSet) ClearAll() {
 func (b BitSet) Complement() {
 	for i := len(b) - 1; i >= 0; i-- {
 		b[i] = ^b[i]
+	}
+}
+
+// Or sets all bits that are set in "other".
+func (b BitSet) Or(other BitSet) {
+	if len(b) != len(other) {
+		log.Fatalf("incompatible bitsets")
+	}
+	for i, oth := range other {
+		b[i] |= oth
 	}
 }
