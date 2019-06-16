@@ -46,40 +46,48 @@ var stateTests = []struct {
 	want  []string
 }{
 	{`S ->; S -> a`, []string{
-		`0 (from 0, EOI): a -> 1;`,
+		`0 (from 0, EOI): a -> 1; S -> 2; reduce S;`,
 		`1 (from 0, a): S : a _;`,
+		`2 (from 0, S): EOI -> 3;`,
+		`3 (from 2, EOI):`,
 	}},
 	{`S -> A; A -> aa`, []string{
-		`0 (from 0, EOI): a -> 1; A -> 2;`,
+		`0 (from 0, EOI): a -> 1; S -> 4; A -> 2;`,
 		`1 (from 0, a): A : a _ a; a -> 3;`,
 		`2 (from 0, A): S : A _;`,
 		`3 (from 1, a): A : a a _;`,
+		`4 (from 0, S): EOI -> 5;`,
+		`5 (from 4, EOI):`,
 	}},
 	{`S -> Sa; S -> a`, []string{
 		`0 (from 0, EOI): a -> 1; S -> 2;`,
 		`1 (from 0, a): S : a _;`,
-		`2 (from 0, S): S : S _ a; a -> 3;`,
+		`2 (from 0, S): S : S _ a; EOI -> 4; a -> 3;`,
 		`3 (from 2, a): S : S a _;`,
+		`4 (from 2, EOI):`,
 	}},
 	{`S -> A; S -> B; A -> ab; B -> ac`, []string{
-		`0 (from 0, EOI): a -> 1; A -> 2; B -> 3;`,
+		`0 (from 0, EOI): a -> 1; S -> 6; A -> 2; B -> 3;`,
 		`1 (from 0, a): A : a _ b; B : a _ c; b -> 4; c -> 5;`,
 		`2 (from 0, A): S : A _;`,
 		`3 (from 0, B): S : B _;`,
 		`4 (from 1, b): A : a b _;`,
 		`5 (from 1, c): B : a c _;`,
+		`6 (from 0, S): EOI -> 7;`,
+		`7 (from 6, EOI):`,
 	}},
 	{`S -> SA; S -> A; A -> a; A -> b`, []string{
 		`0 (from 0, EOI): a -> 1; b -> 2; S -> 3; A -> 4;`,
 		`1 (from 0, a): A : a _;`,
 		`2 (from 0, b): A : b _;`,
-		`3 (from 0, S): S : S _ A; a -> 1; b -> 2; A -> 5;`,
+		`3 (from 0, S): S : S _ A; EOI -> 6; a -> 1; b -> 2; A -> 5;`,
 		`4 (from 0, A): S : A _;`,
 		`5 (from 3, A): S : S A _;`,
+		`6 (from 3, EOI):`,
 	}},
 	{`S -> SA; S -> ; A -> B; B -> Ca; B -> CAp; C -> c; C ->`, []string{
-		`0 (from 0, EOI): S -> 1;`,
-		`1 (from 0, S): S : S _ A; c -> 2; A -> 3; B -> 4; C -> 5;`,
+		`0 (from 0, EOI): S -> 1; reduce S;`,
+		`1 (from 0, S): S : S _ A; EOI -> 9; c -> 2; A -> 3; B -> 4; C -> 5;`,
 		`2 (from 1, c): C : c _;`,
 		`3 (from 1, A): S : S A _;`,
 		`4 (from 1, B): A : B _;`,
@@ -87,6 +95,31 @@ var stateTests = []struct {
 		`6 (from 5, a): B : C a _;`,
 		`7 (from 5, A): B : C A _ p; p -> 8;`,
 		`8 (from 7, p): B : C A p _;`,
+		`9 (from 1, EOI):`,
+	}},
+	{`S -> A; A -> Bb; B -> Aa; B ->`, []string{
+		`0 (from 0, EOI): S -> 5; A -> 1; B -> 2; reduce B;`,
+		`1 (from 0, A): S : A _; B : A _ a; a -> 3;`,
+		`2 (from 0, B): A : B _ b; b -> 4;`,
+		`3 (from 1, a): B : A a _;`,
+		`4 (from 2, b): A : B b _;`,
+		`5 (from 0, S): EOI -> 6;`,
+		`6 (from 5, EOI):`,
+	}},
+
+	// No-eoi
+	{`S -> N; N -> xNy; N -> a; N -> b`, []string{
+		`0 (from 0, EOI): x -> 2; a -> 3; b -> 4; S -> 8; N -> 5;`,
+		`1 (from 0, EOI): x -> 2; a -> 3; b -> 4; N -> 10;`,
+		`2 (from 0, x): N : x _ N y; x -> 2; a -> 3; b -> 4; N -> 6;`,
+		`3 (from 0, a): N : a _;`,
+		`4 (from 0, b): N : b _;`,
+		`5 (from 0, N): S : N _;`,
+		`6 (from 2, N): N : x N _ y; y -> 7;`,
+		`7 (from 6, y): N : x N y _;`,
+		`8 (from 0, S): EOI -> 9;`,
+		`9 (from 8, EOI):`,
+		`10 (from 1, N):`,
 	}},
 }
 
@@ -95,6 +128,7 @@ func TestStates(t *testing.T) {
 		g := parseGrammar(t, tc.input)
 		c := &compiler{
 			grammar: g,
+			out:     &Tables{},
 			empty:   container.NewBitSet(len(g.Symbols)),
 		}
 		c.init()
@@ -103,7 +137,7 @@ func TestStates(t *testing.T) {
 		c.computeStates()
 
 		var buf strings.Builder
-		for _, state := range c.states {
+		for i, state := range c.states {
 			fmt.Fprintf(&buf, "%v (from %v, %v):", state.index, state.sourceState, g.Symbols[state.symbol])
 			for _, item := range state.core {
 				buf.WriteByte(' ')
@@ -113,6 +147,11 @@ func TestStates(t *testing.T) {
 			for _, target := range state.shifts {
 				state := c.states[target]
 				fmt.Fprintf(&buf, " %v -> %v;", c.grammar.Symbols[state.symbol], state.index)
+			}
+			if i < len(g.Inputs) {
+				for _, rule := range state.reduce {
+					fmt.Fprintf(&buf, " reduce %v;", c.grammar.Symbols[g.Rules[rule].LHS])
+				}
 			}
 			buf.WriteByte('\n')
 		}
@@ -165,6 +204,9 @@ func parseGrammar(t *testing.T, input string) *Grammar {
 			continue
 		}
 		t.Fatalf("cannot parse `%v`", line)
+	}
+	if sym, ok := index['N']; ok {
+		ret.Inputs = append(ret.Inputs, Input{Nonterminal: sym, Eoi: false})
 	}
 	ret.Symbols = symbols
 	return ret

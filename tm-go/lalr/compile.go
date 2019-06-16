@@ -44,8 +44,8 @@ type state struct {
 	symbol      Sym
 	sourceState int
 	core        []int
-	shifts      []int
-	reduce      []int
+	shifts      []int // slice of target state indices sorted by state.symbol
+	reduce      []int // slice of rule indices (sorted)
 	lr0         bool
 }
 
@@ -184,7 +184,51 @@ func (c *compiler) computeStates() {
 		curr.lr0 = nreduce == 0 || nreduce == 1 && len(curr.shifts) == 0
 	}
 
-	// TODO add final states
+	// Add final states (if needed).
+	finalStates := make([]int32, len(c.grammar.Inputs))
+	for i, inp := range c.grammar.Inputs {
+		var last *state
+		for _, target := range c.states[i].shifts {
+			if state := c.states[target]; state.symbol == inp.Nonterminal {
+				last = state
+				break
+			}
+		}
+		if last == nil {
+			last = &state{index: len(c.states), symbol: inp.Nonterminal, sourceState: i, lr0: true}
+			c.states = append(c.states, last)
+			c.addShift(c.states[i], last)
+		}
+
+		if !inp.Eoi {
+			// no-eoi inputs are accepted as soon as they are reduced without the last transition on EOI.
+			finalStates[i] = int32(last.symbol)
+			continue
+		}
+		afterEoi := &state{index: len(c.states), symbol: EOI, sourceState: last.index, lr0: true}
+		c.states = append(c.states, afterEoi)
+		c.addShift(last, afterEoi)
+		finalStates[i] = int32(afterEoi.symbol)
+	}
+	c.out.FinalStates = finalStates
+}
+
+func (c *compiler) addShift(from, to *state) {
+	if len(from.shifts) == 0 && len(from.reduce) > 0 {
+		from.lr0 = false
+	}
+	from.shifts = append(from.shifts, to.index)
+	if len(from.shifts) == 1 {
+		return
+	}
+	var i int
+	for i < len(from.shifts) && c.states[from.shifts[i]].symbol < to.symbol {
+		i++
+	}
+	if i+1 < len(from.shifts) {
+		copy(from.shifts[i+1:], from.shifts[i:])
+		from.shifts[i] = to.index
+	}
 }
 
 func (c *compiler) stateClosure(state *state, out container.BitSet) {
