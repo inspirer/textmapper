@@ -24,7 +24,7 @@ func (s IntSet) Complement() IntSet {
 func (s IntSet) BitSet(size int) BitSet {
 	ret := NewBitSet(size)
 	if s.Inverse {
-		ret.SetAll()
+		ret.SetAll(size)
 		for _, v := range s.Set {
 			ret.Clear(v)
 		}

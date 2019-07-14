@@ -73,8 +73,8 @@ type Grammar struct {
 type Tables struct {
 	Action      []int32
 	Lalr        []int32
-	Goto        []int32
-	FromTo      []int32
+	Goto        []int32 // sym -> index in FromTo
+	FromTo      []int32 // array of state pairs (from, to)
 	RuleLen     []int32
 	FinalStates []int32
 	RuleSymbol  []Sym

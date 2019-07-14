@@ -14,6 +14,18 @@ func NewBitSet(size int) BitSet {
 	return make([]uint32, (31+size)/32)
 }
 
+// NewBitSetSlice creates a slice of bit sets of a given size.
+func NewBitSetSlice(size, n int) []BitSet {
+	entry := (31 + size) / 32
+	pool := make([]uint32, entry*n)
+	ret := make([]BitSet, n)
+	for i := range ret {
+		ret[i] = pool[:entry]
+		pool = pool[entry:]
+	}
+	return ret
+}
+
 // Set sets the bit at a given index to 1.
 func (b BitSet) Set(i int) {
 	b[uint(i)/32] |= 1 << (uint(i) % 32)
@@ -44,24 +56,36 @@ func (b BitSet) Slice(reuse []int) []int {
 	return ret
 }
 
-// SetAll sets all bits to 1.
-func (b BitSet) SetAll() {
-	for i := len(b) - 1; i >= 0; i-- {
+// SetAll sets all bits in the range of [0, n) to 1.
+func (b BitSet) SetAll(n int) {
+	size := n / 32
+	for i := 0; i < size; i++ {
 		b[i] = ^uint32(0)
+	}
+	if rem := uint(n % 32); rem > 0 {
+		b[size] |= (uint32(1) << rem) - 1
 	}
 }
 
-// ClearAll sets all bits to 0.
-func (b BitSet) ClearAll() {
-	for i := len(b) - 1; i >= 0; i-- {
+// ClearAll sets all bits in the range of [0, n) to 0.
+func (b BitSet) ClearAll(n int) {
+	size := n / 32
+	for i := 0; i < size; i++ {
 		b[i] = 0
+	}
+	if rem := uint(n % 32); rem > 0 {
+		b[size] &= ^((uint32(1) << rem) - 1)
 	}
 }
 
 // Complement reverses the value of each bit (in-place).
-func (b BitSet) Complement() {
-	for i := len(b) - 1; i >= 0; i-- {
+func (b BitSet) Complement(n int) {
+	size := n / 32
+	for i := 0; i < size; i++ {
 		b[i] = ^b[i]
+	}
+	if rem := uint(n % 32); rem > 0 {
+		b[size] ^= (uint32(1) << rem) - 1
 	}
 }
 

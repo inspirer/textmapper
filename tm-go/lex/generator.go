@@ -56,7 +56,7 @@ func (g *generator) allocateState(key []int) interface{} {
 }
 
 func (g *generator) addState(set []int, after *state) *state {
-	g.closure.ClearAll()
+	g.closure.ClearAll(len(g.ins))
 	for _, i := range set {
 		if g.ins[i].core() {
 			g.closure.Set(i)
@@ -93,7 +93,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 		// Compute whether we can accept the current prefix, and also collect all transition symbols
 		// taking us to some other state.
 		var acceptRule *Rule
-		g.shift.ClearAll()
+		g.shift.ClearAll(g.numSymbols)
 		for _, i := range state.set {
 			inst := g.ins[i]
 			for _, sym := range inst.consume {

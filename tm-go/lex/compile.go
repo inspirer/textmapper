@@ -208,7 +208,7 @@ func transitiveClosure(code []inst) {
 		if len(ins.links) == 0 {
 			continue
 		}
-		seen.ClearAll()
+		seen.ClearAll(len(code))
 		seen.Set(src)
 		for _, delta := range ins.links {
 			seen.Set(src + delta)

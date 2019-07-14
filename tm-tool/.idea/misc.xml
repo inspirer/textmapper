@@ -30,9 +30,6 @@
     </option>
     <option name="diffsInCommentsNonSignificant" value="false" />
   </component>
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
-  </component>
   <component name="IdProvider" IDEtalkID="F997CCA85AF0A488A4B5BE45676D30BC" />
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
@@ -69,7 +66,7 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="11.0.2" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
 </project>

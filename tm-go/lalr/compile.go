@@ -232,7 +232,7 @@ func (c *compiler) addShift(from, to *state) {
 }
 
 func (c *compiler) stateClosure(state *state, out container.BitSet) {
-	out.ClearAll()
+	out.ClearAll(len(c.right))
 	if state.index < len(c.grammar.Inputs) {
 		inp := c.grammar.Inputs[state.index]
 		out.Or(c.rules[int(inp.Nonterminal)-c.grammar.Terminals])

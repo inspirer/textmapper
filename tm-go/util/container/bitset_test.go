@@ -37,6 +37,31 @@ func TestBitSet(t *testing.T) {
 	if gotStr := fmt.Sprintf("%v", got); gotStr != "[20 40 63]" {
 		t.Errorf("Slice() = %v, want: [20 40 63]", got)
 	}
+
+	s = container.NewBitSet(128)
+	s.SetAll(74)
+	s.ClearAll(72)
+
+	got = s.Slice(nil)
+	if gotStr := fmt.Sprintf("%v", got); gotStr != "[72 73]" {
+		t.Errorf("Slice() = %v, want: [72 73]", got)
+	}
+
+	s = container.NewBitSet(32)
+	s.SetAll(32)
+	if s[0] != ^uint32(0) {
+		t.Errorf("SetAll(32) = %b, want: 32x ones", s[0])
+	}
+
+	s.Complement(30)
+	if s[0] != 3<<30 {
+		t.Errorf("Complement(32) = %b, want: 110000..00 (30x zeroes)", s[0])
+	}
+
+	s.ClearAll(32)
+	if s[0] != 0 {
+		t.Errorf("ClearAll(32) = %b, want: 0", s[0])
+	}
 }
 
 func BenchmarkBitSetSlice(b *testing.B) {

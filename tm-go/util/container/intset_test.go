@@ -83,7 +83,7 @@ func TestIntBitSets(t *testing.T) {
 	for _, test := range intBitSetTests {
 		bs := test.BitSet(100)
 		if test.Inverse {
-			bs.Complement()
+			bs.Complement(100)
 		}
 		d := container.IntSet{Set: bs.Slice(nil), Inverse: test.Inverse}
 		if got := d.String(); got != test.String() {
