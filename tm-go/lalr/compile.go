@@ -1,6 +1,7 @@
 package lalr
 
 import (
+	"log"
 	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/status"
@@ -20,7 +21,10 @@ func Compile(grammar *Grammar) (*Tables, error) {
 	c.computeEmpty()
 	c.computeSets()
 	c.computeStates()
-	// TODO
+
+	c.initLalr()
+	c.buildFollow()
+	c.buildLA()
 	return c.out, c.s.Err()
 }
 
@@ -37,6 +41,8 @@ type compiler struct {
 	shifts [][]int            // symbol -> [<the number of symbol occurrences in "right">]int
 
 	states []*state
+
+	follow []container.BitSet // goto -> set of accepted terminals
 }
 
 type state struct {
@@ -47,6 +53,10 @@ type state struct {
 	shifts      []int // slice of target state indices sorted by state.symbol
 	reduce      []int // slice of rule indices (sorted)
 	lr0         bool
+
+	// for non-lr0 states
+	la       []container.BitSet // set of accepted terminals after each reduction in "reduce"
+	lookback [][]int            // slice of gotos per reduction to pull LA from
 }
 
 func (c *compiler) init() {
@@ -270,5 +280,209 @@ func (c *compiler) writeItem(item int, out *strings.Builder) {
 			out.WriteString(" ")
 		}
 		out.WriteString("_")
+	}
+}
+
+func (c *compiler) initLalr() {
+	// Initialize per-state variables.
+	var n int
+	for _, state := range c.states {
+		if !state.lr0 {
+			n += len(state.reduce)
+		}
+	}
+	la := container.NewBitSetSlice(c.grammar.Terminals, n)
+	pool := make([][]int, n)
+	for _, state := range c.states {
+		if state.lr0 {
+			continue
+		}
+		ln := len(state.reduce)
+		state.la = la[:ln]
+		la = la[ln:]
+		state.lookback = pool[:ln]
+		pool = pool[ln:]
+	}
+
+	// Initialize goto.
+	syms := len(c.grammar.Symbols)
+	count := make([]int, syms)
+	n = 0
+	for _, state := range c.states {
+		for _, target := range state.shifts {
+			count[c.states[target].symbol]++
+			n++
+		}
+	}
+	c.out.Goto = make([]int32, syms+1)
+	c.out.FromTo = make([]int32, 2*n)
+	n = 0
+	for i := range c.grammar.Symbols {
+		c.out.Goto[i] = int32(n)
+		n += count[i] * 2
+		count[i] = n
+	}
+	c.out.Goto[syms] = int32(n)
+	for i := len(c.states) - 1; i >= 0; i-- {
+		state := c.states[i]
+		for _, target := range state.shifts {
+			sym := c.states[target].symbol
+			i := count[sym] - 2
+			count[sym] = i
+			c.out.FromTo[i] = int32(state.index)
+			c.out.FromTo[i+1] = int32(target)
+		}
+	}
+}
+
+func (c *compiler) buildFollow() {
+	c.follow = container.NewBitSetSlice(c.grammar.Terminals, len(c.out.FromTo)/2)
+
+	// Step 1. Build in-rule follow set and process empty symbols.
+	empties := make([][]int, len(c.follow))
+	for gt, follow := range c.follow {
+		from, to := c.states[c.out.FromTo[2*gt]], c.states[c.out.FromTo[2*gt+1]]
+		if int(to.symbol) < c.grammar.Terminals {
+			continue
+		}
+
+		if from.index < len(c.grammar.Inputs) {
+			inp := c.grammar.Inputs[from.index]
+			if !inp.Eoi && c.out.FinalStates[from.index] == int32(to.index) {
+				follow.SetAll(c.grammar.Terminals)
+			}
+		}
+		for _, shift := range to.shifts {
+			sym := c.states[shift].symbol
+			if int(sym) < c.grammar.Terminals {
+				follow.Set(int(sym))
+			} else if c.empty.Get(int(sym)) {
+				empties[gt] = append(empties[gt], c.selectGoto(int32(to.index), int32(sym)))
+			}
+		}
+	}
+	c.updateFollow(empties)
+
+	// Step 2. Build cross-rule follow set and populate the lookback slice.
+	rules := make([][]int, len(c.grammar.Symbols)-c.grammar.Terminals)
+	for i, rule := range c.grammar.Rules {
+		nt := int(rule.LHS) - c.grammar.Terminals
+		rules[nt] = append(rules[nt], i)
+	}
+
+	states := make([]int32, 32)
+	g := empties
+	for i := range g {
+		g[i] = g[i][:0]
+	}
+	for gt := range c.follow {
+		state := c.states[c.out.FromTo[2*gt]]
+		sym := c.states[c.out.FromTo[2*gt+1]].symbol
+		if int(sym) < c.grammar.Terminals {
+			continue
+		}
+		for _, rule := range rules[int(sym)-c.grammar.Terminals] {
+			i := c.index[rule]
+			states = states[:0]
+			curr := int32(state.index)
+
+			for ; c.right[i] >= 0; i++ {
+				states = append(states, curr)
+				curr = c.gotoState(curr, Sym(c.right[i]))
+			}
+
+			if !c.states[curr].lr0 {
+				// Rule's lookahead symbols include follow set for the current goto (gt).
+				c.addLookback(curr, rule, gt)
+			}
+
+			i--
+			for is := len(states) - 1; is >= 0; is, i = is-1, i-1 {
+				curr, sym := states[is], c.right[i]
+				if sym < c.grammar.Terminals {
+					break
+				}
+				// Inner rule's goto inherits outer follow set.
+				g[gt] = append(g[gt], c.selectGoto(curr, int32(sym)))
+				if !c.empty.Get(sym) {
+					break
+				}
+			}
+		}
+	}
+	g = graph.Transpose(g)
+	c.updateFollow(g)
+}
+
+func (c *compiler) updateFollow(g [][]int) {
+	graph.Tarjan(g, func(gotos []int, _ container.BitSet) {
+		set := c.follow[gotos[0]]
+		for _, nt := range gotos[1:] {
+			set.Or(c.follow[nt])
+			c.follow[nt] = set
+		}
+		for _, nt := range gotos {
+			for _, target := range g[nt] {
+				set.Or(c.follow[target])
+			}
+		}
+	})
+}
+
+func (c *compiler) addLookback(state int32, rule, gt int) {
+	s := c.states[state]
+	for i, rr := range s.reduce {
+		if rr == rule {
+			s.lookback[i] = append(s.lookback[i], gt)
+			return
+		}
+	}
+	log.Fatal("internal error")
+}
+
+func (c *compiler) gotoState(state int32, sym Sym) int32 {
+	for _, target := range c.states[state].shifts {
+		if c.states[target].symbol == sym {
+			return int32(target)
+		}
+	}
+
+	log.Fatal("internal error")
+	return -1
+}
+
+func (c *compiler) selectGoto(state, sym int32) int {
+	min := c.out.Goto[sym]
+	max := c.out.Goto[sym+1]
+
+	if max-min < 32 {
+		for e := min; e < max; e += 2 {
+			if c.out.FromTo[e] == state {
+				return int(e / 2)
+			}
+		}
+	} else {
+		for min < max {
+			e := (min + max) >> 1 &^ int32(1)
+			i := c.out.FromTo[e]
+			if i == state {
+				return int(e / 2)
+			} else if i < state {
+				min = e + 2
+			} else {
+				max = e
+			}
+		}
+	}
+	return -1
+}
+
+func (c *compiler) buildLA() {
+	for _, state := range c.states {
+		for i, lookback := range state.lookback {
+			for _, from := range lookback {
+				state.la[i].Or(c.follow[from])
+			}
+		}
 	}
 }

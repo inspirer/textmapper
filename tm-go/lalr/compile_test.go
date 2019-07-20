@@ -46,7 +46,7 @@ var stateTests = []struct {
 	want  []string
 }{
 	{`S ->; S -> a`, []string{
-		`0 (from 0, EOI): a -> 1; S -> 2; reduce S;`,
+		`0 (from 0, EOI, LA): a -> 1; S -> 2; reduce S [EOI];`, // resolved S/R
 		`1 (from 0, a): S : a _;`,
 		`2 (from 0, S): EOI -> 3;`,
 		`3 (from 2, EOI):`,
@@ -62,7 +62,7 @@ var stateTests = []struct {
 	{`S -> Sa; S -> a`, []string{
 		`0 (from 0, EOI): a -> 1; S -> 2;`,
 		`1 (from 0, a): S : a _;`,
-		`2 (from 0, S): S : S _ a; EOI -> 4; a -> 3;`,
+		`2 (from 0, S): S : S _ a; EOI -> 4; a -> 3;`, // shift-shift is still LR0
 		`3 (from 2, a): S : S a _;`,
 		`4 (from 2, EOI):`,
 	}},
@@ -86,20 +86,20 @@ var stateTests = []struct {
 		`6 (from 3, EOI):`,
 	}},
 	{`S -> SA; S -> ; A -> B; B -> Ca; B -> CAp; C -> c; C ->`, []string{
-		`0 (from 0, EOI): S -> 1; reduce S;`,
-		`1 (from 0, S): S : S _ A; EOI -> 9; c -> 2; A -> 3; B -> 4; C -> 5;`,
+		`0 (from 0, EOI, LA): S -> 1; reduce S [EOI,a,c];`, // TODO no 'a'?
+		`1 (from 0, S, LA): S : S _ A; EOI -> 9; c -> 2; A -> 3; B -> 4; C -> 5; reduce C [a,c];`,
 		`2 (from 1, c): C : c _;`,
 		`3 (from 1, A): S : S A _;`,
 		`4 (from 1, B): A : B _;`,
-		`5 (from 1, C): B : C _ a; B : C _ A p; a -> 6; c -> 2; A -> 7; B -> 4; C -> 5;`,
+		`5 (from 1, C, LA): B : C _ a; B : C _ A p; a -> 6; c -> 2; A -> 7; B -> 4; C -> 5; reduce C [a,c];`, // shift-reduce conflict
 		`6 (from 5, a): B : C a _;`,
 		`7 (from 5, A): B : C A _ p; p -> 8;`,
 		`8 (from 7, p): B : C A p _;`,
 		`9 (from 1, EOI):`,
 	}},
 	{`S -> A; A -> Bb; B -> Aa; B ->`, []string{
-		`0 (from 0, EOI): S -> 5; A -> 1; B -> 2; reduce B;`,
-		`1 (from 0, A): S : A _; B : A _ a; a -> 3;`,
+		`0 (from 0, EOI, LA): S -> 5; A -> 1; B -> 2; reduce B [b];`,
+		`1 (from 0, A, LA): S : A _; B : A _ a; a -> 3; reduce S [EOI];`,
 		`2 (from 0, B): A : B _ b; b -> 4;`,
 		`3 (from 1, a): B : A a _;`,
 		`4 (from 2, b): A : B b _;`,
@@ -121,6 +121,18 @@ var stateTests = []struct {
 		`9 (from 8, EOI):`,
 		`10 (from 1, N):`,
 	}},
+
+	// Simple lookahead.
+	{`S -> Ca; S -> Bb; C -> a; B -> a`, []string{
+		`0 (from 0, EOI): a -> 1; S -> 6; C -> 2; B -> 3;`,
+		`1 (from 0, a, LA): C : a _; B : a _; reduce C [a]; reduce B [b];`,
+		`2 (from 0, C): S : C _ a; a -> 4;`,
+		`3 (from 0, B): S : B _ b; b -> 5;`,
+		`4 (from 2, a): S : C a _;`,
+		`5 (from 3, b): S : B b _;`,
+		`6 (from 0, S): EOI -> 7;`,
+		`7 (from 6, EOI):`,
+	}},
 }
 
 func TestStates(t *testing.T) {
@@ -136,9 +148,17 @@ func TestStates(t *testing.T) {
 		c.computeSets()
 		c.computeStates()
 
+		c.initLalr()
+		c.buildFollow()
+		c.buildLA()
+
 		var buf strings.Builder
 		for i, state := range c.states {
-			fmt.Fprintf(&buf, "%v (from %v, %v):", state.index, state.sourceState, g.Symbols[state.symbol])
+			var suffix string
+			if !state.lr0 {
+				suffix = ", LA"
+			}
+			fmt.Fprintf(&buf, "%v (from %v, %v%v):", state.index, state.sourceState, g.Symbols[state.symbol], suffix)
 			for _, item := range state.core {
 				buf.WriteByte(' ')
 				c.writeItem(item, &buf)
@@ -148,9 +168,23 @@ func TestStates(t *testing.T) {
 				state := c.states[target]
 				fmt.Fprintf(&buf, " %v -> %v;", c.grammar.Symbols[state.symbol], state.index)
 			}
-			if i < len(g.Inputs) {
-				for _, rule := range state.reduce {
-					fmt.Fprintf(&buf, " reduce %v;", c.grammar.Symbols[g.Rules[rule].LHS])
+			if i < len(g.Inputs) || !state.lr0 {
+				for i, rule := range state.reduce {
+					fmt.Fprintf(&buf, " reduce %v", c.grammar.Symbols[g.Rules[rule].LHS])
+					if !state.lr0 {
+						la := state.la[i].Slice(nil)
+						if len(la) > 0 {
+							buf.WriteString(" [")
+							for i, term := range la {
+								if i > 0 {
+									buf.WriteByte(',')
+								}
+								buf.WriteString(c.grammar.Symbols[term])
+							}
+							buf.WriteString("]")
+						}
+					}
+					buf.WriteByte(';')
 				}
 			}
 			buf.WriteByte('\n')
