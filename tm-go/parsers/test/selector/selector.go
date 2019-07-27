@@ -16,6 +16,7 @@ var (
 	Int               = func(t test.NodeType) bool { return t == test.Int }
 	Negation          = func(t test.NodeType) bool { return t == test.Negation }
 	Test              = func(t test.NodeType) bool { return t == test.Test }
+	TestClause        = func(t test.NodeType) bool { return t == test.TestClause }
 	MultiLineComment  = func(t test.NodeType) bool { return t == test.MultiLineComment }
 	SingleLineComment = func(t test.NodeType) bool { return t == test.SingleLineComment }
 	InvalidToken      = func(t test.NodeType) bool { return t == test.InvalidToken }

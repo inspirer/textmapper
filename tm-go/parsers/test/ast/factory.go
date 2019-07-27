@@ -24,6 +24,8 @@ func ToTestNode(n Node) TestNode {
 		return &Negation{n}
 	case test.Test:
 		return &Test{n}
+	case test.TestClause:
+		return &TestClause{n}
 	case test.MultiLineComment, test.SingleLineComment, test.InvalidToken, test.Identifier:
 		return &Token{n}
 	case test.NoType:

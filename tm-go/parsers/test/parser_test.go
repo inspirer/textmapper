@@ -52,6 +52,11 @@ var parseTests = []struct {
 		`{3 «9» 11 «9»}`,
 		`{-- 5 «9[]» 3}`,
 	}},
+	{test.TestClause, []string{
+		`«test {}»`,
+		`«test { decl1 }»`,
+		`«test { decl2 decl1 }»`,
+	}},
 
 	{test.MultiLineComment, []string{
 		` decl2 «/* ****/» decl1(a)`,

@@ -37,14 +37,15 @@ type NilNode struct{}
 var nilInstance = &NilNode{}
 
 // All types implement TestNode.
-func (n Block) TestNode() Node    { return n.Node }
-func (n Decl1) TestNode() Node    { return n.Node }
-func (n Decl2) TestNode() Node    { return n.Node }
-func (n Int) TestNode() Node      { return n.Node }
-func (n Negation) TestNode() Node { return n.Node }
-func (n Test) TestNode() Node     { return n.Node }
-func (n Token) TestNode() Node    { return n.Node }
-func (NilNode) TestNode() Node    { return nil }
+func (n Block) TestNode() Node      { return n.Node }
+func (n Decl1) TestNode() Node      { return n.Node }
+func (n Decl2) TestNode() Node      { return n.Node }
+func (n Int) TestNode() Node        { return n.Node }
+func (n Negation) TestNode() Node   { return n.Node }
+func (n Test) TestNode() Node       { return n.Node }
+func (n TestClause) TestNode() Node { return n.Node }
+func (n Token) TestNode() Node      { return n.Node }
+func (NilNode) TestNode() Node      { return nil }
 
 type Declaration interface {
 	TestNode
@@ -54,11 +55,12 @@ type Declaration interface {
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
 //
-func (Block) declarationNode()   {}
-func (Decl1) declarationNode()   {}
-func (Decl2) declarationNode()   {}
-func (Int) declarationNode()     {}
-func (NilNode) declarationNode() {}
+func (Block) declarationNode()      {}
+func (Decl1) declarationNode()      {}
+func (Decl2) declarationNode()      {}
+func (Int) declarationNode()        {}
+func (TestClause) declarationNode() {}
+func (NilNode) declarationNode()    {}
 
 // Types.
 
@@ -116,4 +118,8 @@ func (n Test) Declaration() []Declaration {
 		ret = append(ret, ToTestNode(node).(Declaration))
 	}
 	return ret
+}
+
+type TestClause struct {
+	Node
 }

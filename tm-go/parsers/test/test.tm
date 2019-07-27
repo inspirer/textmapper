@@ -47,6 +47,7 @@ backtrackingToken: /test(foo)?-+>/
 
 error:
 invalid_token:
+eoi:
 
 :: parser
 
@@ -72,6 +73,7 @@ Declaration -> Declaration :
           p.listener(Int9, ${first().offset}, ${last().endoffset})
         }
       }                                                  -> Int
+  | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
 ;
 
 # Test: a list of an exported terminal.
