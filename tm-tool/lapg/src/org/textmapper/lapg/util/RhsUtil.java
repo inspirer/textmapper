@@ -127,8 +127,6 @@ public class RhsUtil {
 				return Arrays.asList(((RhsAssignment) part).getPart());
 			case Choice:
 				return Arrays.asList(((RhsChoice) part).getParts());
-			case Unordered:
-				return Arrays.asList(((RhsUnordered) part).getParts());
 			case Set: {
 				RhsSet[] sets = ((RhsSet) part).getSets();
 				if (sets != null) return Arrays.asList(sets);
@@ -218,15 +216,6 @@ public class RhsUtil {
 				if (dependencies != null) dependencies.add(n);
 				return false;
 			}
-			case Unordered: {
-				boolean isNullable = true;
-				for (RhsPart inner : ((RhsUnordered) part).getParts()) {
-					// Note: we do not return immediately to collect all the dependencies.
-					if (!isNullable(inner, dependencies)) isNullable = false;
-				}
-				return isNullable;
-			}
-
 			case List: {
 				RhsList list = (RhsList) part;
 				if (!list.isNonEmpty()) return true;
@@ -244,8 +233,6 @@ public class RhsUtil {
 				return isNullable(((RhsAssignment) part).getPart(), dependencies);
 			case Cast:
 				return isNullable(((RhsCast) part).getPart(), dependencies);
-			case Ignored:
-				return isNullable(((RhsIgnored) part).getInner(), dependencies);
 			case Conditional:
 				throw new IllegalStateException("Unexpected templates left-over.");
 			default:

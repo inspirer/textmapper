@@ -276,9 +276,6 @@ class LiSetResolver {
 			case Cast:
 				collectTerminals(((RhsCast) p).getPart(), op);
 				break;
-			case Ignored:
-				collectTerminals(((RhsIgnored) p).getInner(), op);
-				break;
 			case List:
 				RhsList list = (RhsList) p;
 				for (RhsSequence s : list.asRules()) {
@@ -287,11 +284,6 @@ class LiSetResolver {
 				break;
 			case Optional:
 				collectTerminals(((RhsOptional) p).getPart(), op);
-				break;
-			case Unordered:
-				for (RhsPart inner : ((RhsUnordered) p).getParts()) {
-					collectTerminals(inner, op);
-				}
 				break;
 			case Choice:
 				for (RhsPart inner : ((RhsChoice) p).getParts()) {
@@ -338,8 +330,6 @@ class LiSetResolver {
 				return collectAdjacent(symbol, ((RhsAssignment) p).getPart(), reverse, isAfter);
 			case Cast:
 				return collectAdjacent(symbol, ((RhsCast) p).getPart(), reverse, isAfter);
-			case Ignored:
-				return collectAdjacent(symbol, ((RhsIgnored) p).getInner(), reverse, isAfter);
 			case Optional:
 				return collectAdjacent(symbol, ((RhsOptional) p).getPart(), reverse, isAfter)
 						|| isAfter;
@@ -357,20 +347,6 @@ class LiSetResolver {
 					result |= collectAdjacent(symbol, inner, reverse, isAfter);
 				}
 				return result;
-			}
-			case Unordered: {
-//				boolean result = false;
-//				for (RhsPart inner : ((RhsUnordered) p).getParts()) {
-//					result |= collectAdjacent(symbol, inner, reverse, isAfter);
-//				}
-//				if (result && !isAfter) {
-//					for (RhsPart inner : ((RhsUnordered) p).getParts()) {
-//						collectAdjacent(symbol, inner, reverse, true);
-//					}
-//				}
-//				return result;
-				// TODO!!!
-				throw new UnsupportedOperationException();
 			}
 			case Sequence: {
 				RhsPart[] parts = ((RhsSequence) p).getParts();

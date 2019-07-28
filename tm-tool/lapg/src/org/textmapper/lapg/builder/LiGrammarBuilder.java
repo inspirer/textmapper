@@ -416,19 +416,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin) {
-		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
-		int index = 0;
-		for (RhsPart p : parts) {
-			checkInner(p, Kind.Unordered);
-			liparts[index++] = (LiRhsPart) p;
-		}
-		LiRhsUnordered result = new LiRhsUnordered(liparts, origin);
-		rhsSet.add(result);
-		return result;
-	}
-
-	@Override
 	public RhsOptional optional(RhsPart inner, SourceElement origin) {
 		checkInner(inner, Kind.Optional);
 		LiRhsOptional result = new LiRhsOptional((LiRhsPart) inner, origin);

@@ -29,12 +29,10 @@ public interface RhsPart extends SourceElement, UserDataHolder {
 		Optional,
 		Sequence,
 		Symbol,
-		Unordered,
 		Assignment,
 		List,
 		Cast,
 		Set,
-		Ignored,
 		Conditional,
 		StateMarker,
 	}

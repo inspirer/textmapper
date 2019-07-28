@@ -212,9 +212,6 @@ class LiSetIndex {
 			case Cast:
 				traverse(((RhsCast) p).getPart());
 				break;
-			case Ignored:
-				traverse(((RhsIgnored) p).getInner());
-				break;
 			case List:
 				RhsList list = (RhsList) p;
 				if (list.getCustomInitialElement() != null) {
@@ -227,11 +224,6 @@ class LiSetIndex {
 				break;
 			case Optional:
 				traverse(((RhsOptional) p).getPart());
-				break;
-			case Unordered:
-				for (RhsPart inner : ((RhsUnordered) p).getParts()) {
-					traverse(inner);
-				}
 				break;
 			case Choice:
 				for (RhsPart inner : ((RhsChoice) p).getParts()) {

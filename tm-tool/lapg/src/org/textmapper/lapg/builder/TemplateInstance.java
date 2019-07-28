@@ -171,8 +171,6 @@ class TemplateInstance {
 			case Symbol:
 				return new LiRhsSymbol(resolveSymbol((TemplatedSymbolRef) p),
 						null /* args */, false, p);
-			case Unordered:
-				return new LiRhsUnordered(clone(((LiRhsUnordered) p).getParts()), p);
 			case Assignment: {
 				RhsAssignment source = (RhsAssignment) p;
 				return new LiRhsAssignment(
@@ -190,9 +188,6 @@ class TemplateInstance {
 				return new LiRhsCast(
 						resolveSymbol(cast), null /* args */, clone(cast.getPart()), p);
 			}
-			case Ignored:
-				// TODO implement
-				throw new UnsupportedOperationException();
 			case StateMarker: {
 				LiRhsStateMarker marker = (LiRhsStateMarker) p;
 				return new LiRhsStateMarker(marker.getName(), p);

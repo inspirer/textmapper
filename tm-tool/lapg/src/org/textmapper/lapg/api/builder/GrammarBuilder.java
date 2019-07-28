@@ -83,8 +83,6 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsSequence empty(SourceElement origin);
 
-	RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin);
-
 	RhsOptional optional(RhsPart inner, SourceElement origin);
 
 	RhsList list(RhsSequence inner, RhsPart separator, boolean nonEmpty, SourceElement origin);

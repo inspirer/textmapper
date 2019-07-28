@@ -447,10 +447,8 @@ public class TMEventMapper {
 
 			case StateMarker:
 			case Set:
-			case Ignored:
 				return TMPhrase.empty(part);
 			case Cast:
-			case Unordered:
 			case Conditional:
 			case List:
 				throw new UnsupportedOperationException();

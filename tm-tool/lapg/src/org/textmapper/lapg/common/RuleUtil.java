@@ -40,7 +40,6 @@ public class RuleUtil {
 				}
 				return hasAliases(a.getPart(), name);
 			}
-			case Ignored:
 			case Symbol:
 			case Set:
 			case StateMarker:
@@ -57,11 +56,6 @@ public class RuleUtil {
 				return false;
 			case Sequence:
 				for (RhsPart p : ((RhsSequence) part).getParts()) {
-					if (hasAliases(p, name)) return true;
-				}
-				return false;
-			case Unordered:
-				for (RhsPart p : ((RhsUnordered) part).getParts()) {
 					if (hasAliases(p, name)) return true;
 				}
 				return false;
@@ -104,8 +98,6 @@ public class RuleUtil {
 						return Collections.singleton((RhsSymbol) part);
 					}
 					return null;
-				case Unordered:
-					return fromList(((RhsUnordered) part).getParts());
 				case Sequence:
 					return fromList(((RhsSequence) part).getParts());
 				case Choice:
@@ -115,7 +107,6 @@ public class RuleUtil {
 				case Cast:
 					return resolve(((RhsCast) part).getPart());
 				case Set:
-				case Ignored:
 				case StateMarker:
 					// cannot contain named elements
 					return null;
