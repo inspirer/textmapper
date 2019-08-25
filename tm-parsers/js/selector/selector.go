@@ -141,6 +141,7 @@ var (
 	PropertyBinding              = func(t js.NodeType) bool { return t == js.PropertyBinding }
 	PropertySignature            = func(t js.NodeType) bool { return t == js.PropertySignature }
 	Readonly                     = func(t js.NodeType) bool { return t == js.Readonly }
+	ReadonlyType                 = func(t js.NodeType) bool { return t == js.ReadonlyType }
 	Regexp                       = func(t js.NodeType) bool { return t == js.Regexp }
 	RelationalExpression         = func(t js.NodeType) bool { return t == js.RelationalExpression }
 	RestParameter                = func(t js.NodeType) bool { return t == js.RestParameter }
@@ -177,10 +178,12 @@ var (
 	TsAmbientVar                 = func(t js.NodeType) bool { return t == js.TsAmbientVar }
 	TsAsExpression               = func(t js.NodeType) bool { return t == js.TsAsExpression }
 	TsCastExpression             = func(t js.NodeType) bool { return t == js.TsCastExpression }
+	TsConditional                = func(t js.NodeType) bool { return t == js.TsConditional }
 	TsDynamicImport              = func(t js.NodeType) bool { return t == js.TsDynamicImport }
 	TsEnum                       = func(t js.NodeType) bool { return t == js.TsEnum }
 	TsEnumBody                   = func(t js.NodeType) bool { return t == js.TsEnumBody }
 	TsEnumMember                 = func(t js.NodeType) bool { return t == js.TsEnumMember }
+	TsExclToken                  = func(t js.NodeType) bool { return t == js.TsExclToken }
 	TsExportAssignment           = func(t js.NodeType) bool { return t == js.TsExportAssignment }
 	TsImplementsClause           = func(t js.NodeType) bool { return t == js.TsImplementsClause }
 	TsImportAliasDeclaration     = func(t js.NodeType) bool { return t == js.TsImportAliasDeclaration }
@@ -204,8 +207,10 @@ var (
 	TypePredicate                = func(t js.NodeType) bool { return t == js.TypePredicate }
 	TypeQuery                    = func(t js.NodeType) bool { return t == js.TypeQuery }
 	TypeReference                = func(t js.NodeType) bool { return t == js.TypeReference }
+	TypeVar                      = func(t js.NodeType) bool { return t == js.TypeVar }
 	UnaryExpression              = func(t js.NodeType) bool { return t == js.UnaryExpression }
 	UnionType                    = func(t js.NodeType) bool { return t == js.UnionType }
+	UniqueType                   = func(t js.NodeType) bool { return t == js.UniqueType }
 	VariableDeclaration          = func(t js.NodeType) bool { return t == js.VariableDeclaration }
 	VariableStatement            = func(t js.NodeType) bool { return t == js.VariableStatement }
 	WhileStatement               = func(t js.NodeType) bool { return t == js.WhileStatement }

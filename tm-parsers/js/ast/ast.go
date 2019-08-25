@@ -153,6 +153,7 @@ func (n PropertyAccess) JsNode() *Node               { return n.Node }
 func (n PropertyBinding) JsNode() *Node              { return n.Node }
 func (n PropertySignature) JsNode() *Node            { return n.Node }
 func (n Readonly) JsNode() *Node                     { return n.Node }
+func (n ReadonlyType) JsNode() *Node                 { return n.Node }
 func (n Regexp) JsNode() *Node                       { return n.Node }
 func (n RelationalExpression) JsNode() *Node         { return n.Node }
 func (n RestParameter) JsNode() *Node                { return n.Node }
@@ -189,10 +190,12 @@ func (n TsAmbientTypeAlias) JsNode() *Node           { return n.Node }
 func (n TsAmbientVar) JsNode() *Node                 { return n.Node }
 func (n TsAsExpression) JsNode() *Node               { return n.Node }
 func (n TsCastExpression) JsNode() *Node             { return n.Node }
+func (n TsConditional) JsNode() *Node                { return n.Node }
 func (n TsDynamicImport) JsNode() *Node              { return n.Node }
 func (n TsEnum) JsNode() *Node                       { return n.Node }
 func (n TsEnumBody) JsNode() *Node                   { return n.Node }
 func (n TsEnumMember) JsNode() *Node                 { return n.Node }
+func (n TsExclToken) JsNode() *Node                  { return n.Node }
 func (n TsExportAssignment) JsNode() *Node           { return n.Node }
 func (n TsImplementsClause) JsNode() *Node           { return n.Node }
 func (n TsImportAliasDeclaration) JsNode() *Node     { return n.Node }
@@ -216,8 +219,10 @@ func (n TypeParameters) JsNode() *Node               { return n.Node }
 func (n TypePredicate) JsNode() *Node                { return n.Node }
 func (n TypeQuery) JsNode() *Node                    { return n.Node }
 func (n TypeReference) JsNode() *Node                { return n.Node }
+func (n TypeVar) JsNode() *Node                      { return n.Node }
 func (n UnaryExpression) JsNode() *Node              { return n.Node }
 func (n UnionType) JsNode() *Node                    { return n.Node }
+func (n UniqueType) JsNode() *Node                   { return n.Node }
 func (n VariableDeclaration) JsNode() *Node          { return n.Node }
 func (n VariableStatement) JsNode() *Node            { return n.Node }
 func (n WhileStatement) JsNode() *Node               { return n.Node }
@@ -717,12 +722,16 @@ func (MappedType) tsTypeNode()        {}
 func (ObjectType) tsTypeNode()        {}
 func (ParenthesizedType) tsTypeNode() {}
 func (PredefinedType) tsTypeNode()    {}
+func (ReadonlyType) tsTypeNode()      {}
 func (ThisType) tsTypeNode()          {}
+func (TsConditional) tsTypeNode()     {}
 func (TupleType) tsTypeNode()         {}
 func (TypePredicate) tsTypeNode()     {}
 func (TypeQuery) tsTypeNode()         {}
 func (TypeReference) tsTypeNode()     {}
+func (TypeVar) tsTypeNode()           {}
 func (UnionType) tsTypeNode()         {}
+func (UniqueType) tsTypeNode()        {}
 func (NilNode) tsTypeNode()           {}
 
 type TypeMember interface {
@@ -2193,6 +2202,11 @@ func (n LexicalBinding) BindingPattern() (BindingPattern, bool) {
 	return field, field.JsNode() != nil
 }
 
+func (n LexicalBinding) TsExclToken() (TsExclToken, bool) {
+	field := TsExclToken{n.Child(selector.TsExclToken)}
+	return field, field.IsValid()
+}
+
 func (n LexicalBinding) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
@@ -2638,6 +2652,14 @@ func (n PropertySignature) TypeAnnotation() (TypeAnnotation, bool) {
 
 type Readonly struct {
 	*Node
+}
+
+type ReadonlyType struct {
+	*Node
+}
+
+func (n ReadonlyType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
 type Regexp struct {
@@ -3126,6 +3148,26 @@ func (n TsCastExpression) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
+type TsConditional struct {
+	*Node
+}
+
+func (n TsConditional) Check() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+func (n TsConditional) Ext() TsType {
+	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
+}
+
+func (n TsConditional) Truet() TsType {
+	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType).Next(selector.TsType)).(TsType)
+}
+
+func (n TsConditional) Falset() TsType {
+	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType).Next(selector.TsType).Next(selector.TsType)).(TsType)
+}
+
 type TsDynamicImport struct {
 	*Node
 }
@@ -3170,6 +3212,10 @@ func (n TsEnumMember) PropertyName() PropertyName {
 func (n TsEnumMember) Expression() (Expression, bool) {
 	field := ToJsNode(n.Child(selector.Expression)).(Expression)
 	return field, field.JsNode() != nil
+}
+
+type TsExclToken struct {
+	*Node
 }
 
 type TsExportAssignment struct {
@@ -3456,6 +3502,10 @@ func (n TypeReference) TypeArguments() (TypeArguments, bool) {
 	return field, field.IsValid()
 }
 
+type TypeVar struct {
+	*Node
+}
+
 type UnaryExpression struct {
 	*Node
 }
@@ -3477,6 +3527,14 @@ func (n UnionType) Inner() []TsType {
 	return ret
 }
 
+type UniqueType struct {
+	*Node
+}
+
+func (n UniqueType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
 type VariableDeclaration struct {
 	*Node
 }
@@ -3489,6 +3547,11 @@ func (n VariableDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
 func (n VariableDeclaration) BindingPattern() (BindingPattern, bool) {
 	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 	return field, field.JsNode() != nil
+}
+
+func (n VariableDeclaration) TsExclToken() (TsExclToken, bool) {
+	field := TsExclToken{n.Child(selector.TsExclToken)}
+	return field, field.IsValid()
 }
 
 func (n VariableDeclaration) TypeAnnotation() (TypeAnnotation, bool) {

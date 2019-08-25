@@ -346,6 +346,21 @@ restart:
 				token = NUMBER
 				break
 			}
+		case 74:
+			if hash == 0xef05ac4a && "unknown" == l.source[l.tokenOffset:l.offset] {
+				token = UNKNOWN
+				break
+			}
+		case 78:
+			if hash == 0x5fb304e && "infer" == l.source[l.tokenOffset:l.offset] {
+				token = INFER
+				break
+			}
+		case 81:
+			if hash == 0xcde68bd1 && "unique" == l.source[l.tokenOffset:l.offset] {
+				token = UNIQUE
+				break
+			}
 		case 86:
 			if hash == 0x58e7956 && "await" == l.source[l.tokenOffset:l.offset] {
 				token = AWAIT

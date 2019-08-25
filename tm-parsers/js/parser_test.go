@@ -1056,6 +1056,20 @@ var parseTests = []struct {
 		`type K3 = «keyof { [x: string]: Person }»;  // string`,
 		`function getProperty<T, K extends «keyof T»>(obj: T, key: K) {}`,
 	}},
+	{js.Typescript, js.UniqueType, []string{
+		`let Bar: «unique symbol» = Symbol();`,
+	}},
+	{js.Typescript, js.ReadonlyType, []string{
+		`function foo(arr: «readonly string[]») {}`,
+		`function foo(pair: «readonly [string, string]») {}`,
+	}},
+	{js.Typescript, js.TypeVar, []string{
+		`type ReturnType<T> = T extends (...args: any[]) => «infer R» ? R : any;`,
+		`type Unpacked<T> =
+       T extends («infer U»)[] ? U :
+       T extends (...args: any[]) => «infer U» ? U :
+       T extends Promise<«infer U»> ? U : T;`,
+	}},
 	{js.Typescript, js.IndexedAccessType, []string{
 		`type P1 = «Person["name"]»;  // string
      type P2 = «Person["name" | "age"]»;  // string | number
@@ -1066,6 +1080,8 @@ var parseTests = []struct {
 	{js.Typescript, js.MappedType, []string{
 		`type Partial<T> = «{ [P in keyof T]?: T[P] }»`,
 		`type Readonly<T> = «{ /* */ readonly [P in keyof T]: T[P]; }»`,
+		`type MutableRequired<T> = «{ -readonly [P in keyof T]-?: T[P] }»;  // Remove readonly and ?`,
+		`type ReadonlyPartial<T> = «{ +readonly [P in keyof T]+?: T[P] }»;  // Add readonly and ?`,
 	}},
 	{js.Typescript, js.TsImplementsClause, []string{
 		`class A «implements B» {}
@@ -1258,6 +1274,15 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.Catch, []string{
 		`try {} «catch { throw e }» /* 2.5 Optional catch clause variables */`,
+	}},
+	{js.Typescript, js.TsExclToken, []string{
+		`let x«!»: number; /* 2.7 definite assignment assertions */`,
+	}},
+	{js.Typescript, js.TsConditional, []string{
+		`type TypeName<T> =
+    «T extends string ? "string" :
+    «T extends number ? "number" :
+    "object"»»;`,
 	}},
 
 	// Error Recovery

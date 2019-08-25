@@ -72,6 +72,7 @@ const (
 	PROTECTED          // protected
 	PUBLIC             // public
 	ANY                // any
+	UNKNOWN            // unknown
 	BOOLEAN            // boolean
 	NUMBER             // number
 	STRING             // string
@@ -86,6 +87,8 @@ const (
 	TYPE               // type
 	READONLY           // readonly
 	KEYOF              // keyof
+	UNIQUE             // unique
+	INFER              // infer
 	LBRACE             // {
 	RBRACE             // }
 	LPAREN             // (
@@ -215,6 +218,7 @@ var tokenStr = [...]string{
 	"protected",
 	"public",
 	"any",
+	"unknown",
 	"boolean",
 	"number",
 	"string",
@@ -229,6 +233,8 @@ var tokenStr = [...]string{
 	"type",
 	"readonly",
 	"keyof",
+	"unique",
+	"infer",
 	"{",
 	"}",
 	"(",

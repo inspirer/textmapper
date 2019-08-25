@@ -1,6 +1,7 @@
 # ECMAScript 2016 Language Grammar (Standard ECMA-262, 7th Edition / June 2016)
-# This grammar also covers JSX - a popular language extension for React.
-
+# This grammar also covers:
+#   JSX - a popular language extension for React.
+#   TypeScript 2.8 (see typescriptlang.org)
 language js(go);
 
 lang = "js"
@@ -130,6 +131,7 @@ invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 # The following keywords cannot be used as user defined type names, but are
 # otherwise not restricted:
 'any':     /any/
+'unknown': /unknown/
 'boolean': /boolean/
 'number':  /number/
 'string':  /string/
@@ -149,6 +151,8 @@ invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 # Typescript 2.0+
 'readonly': /readonly/
 'keyof': /keyof/
+'unique': /unique/
+'infer': /infer/
 
 # End of typescript keywords.
 
@@ -213,20 +217,25 @@ invalid_token: /\.\./
 #   055 == 45, 099 == 99
 #   09.5 == 9.5, 059.5 == 59.5, 05.5 => error, 05.9 => error
 
-int = /(0+([0-7]*[89][0-9]*)?|[1-9][0-9]*)/
-frac = /\.[0-9]*/
-exp = /[eE][+-]?[0-9]+/
-bad_exp = /[eE][+-]?/
+int = /(0+(([1-7](_*{oct})*_*)?[89](_*[0-9])*)?|[1-9](_*[0-9])*)/
+frac = /\.([0-9](_*[0-9])*)?/
+exp = /[eE][+-]?[0-9](_*[0-9])*/
+bad_exp = /[eE][+-]?([0-9](_*[0-9])*_+)?/
+oct = /[0-7]/
 NumericLiteral: /{int}{frac}?{exp}?/
-NumericLiteral: /\.[0-9]+{exp}?/
-NumericLiteral: /0[xX]{hex}+/
-NumericLiteral: /0[oO][0-7]+/
-NumericLiteral: /0+[0-7]+/      1 # (Takes priority over the float rule above)
-NumericLiteral: /0[bB][01]+/
+NumericLiteral: /\.[0-9](_*[0-9])*{exp}?/
+NumericLiteral: /0[xX]{hex}(_*{hex})*/
+NumericLiteral: /0[oO]{oct}(_*{oct})*/
+NumericLiteral: /0+[1-7](_*{oct})*/
+NumericLiteral: /0[bB][01](_*[01])*/
 
 invalid_token: /0[xXbBoO]/
-invalid_token: /{int}{frac}?{bad_exp}/
-invalid_token: /\.[0-9]+{bad_exp}/
+invalid_token: /0[xX]{hex}(_*{hex})*_+/
+invalid_token: /0[oO]{oct}(_*{oct})*_+([89a-fA-F][0-9a-fA-F_]*)?/
+invalid_token: /0[bB][01](_*[01])*_+([2-9a-fA-F][0-9a-fA-F_]*)?/
+invalid_token: /{int}{frac}?({bad_exp}|_+)|0+_+[0-9a-fA-F_]*|{int}_+{frac}_*({exp}|{bad_exp})?/
+invalid_token: /\.[0-9](_*[0-9])*({bad_exp}|_+)/
+invalid_token: /0+[1-7](_*{oct})*_+/
 
 escape = /\\([^1-9xu\n\r\u2028\u2029]|x{hex}{2}|{unicodeEscapeSequence})/
 lineCont = /\\([\n\r\u2028\u2029]|\r\n)/
@@ -349,9 +358,9 @@ IdentifierName<WithoutNew> :
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
-  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
-  | 'readonly' | 'keyof'
+  | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
 IdentifierNameDecl<WithoutNew> :
@@ -378,9 +387,9 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> Identifier
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
-  | [!WithoutPredefinedTypes] ('any' | 'boolean' | 'number' | 'string' | 'symbol')
+  | [!WithoutPredefinedTypes] ('any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol')
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
-  | 'readonly' | [!WithoutPredefinedTypes] 'keyof'
+  | [!WithoutPredefinedTypes] ('keyof' | 'unique' | 'readonly' | 'infer')
 ;
 
 BindingIdentifier<WithoutImplements> -> BindingIdentifier :
@@ -395,9 +404,9 @@ BindingIdentifier<WithoutImplements> -> BindingIdentifier :
   # Typescript.
   | [!WithoutImplements] 'implements'
   | 'interface' | 'private' | 'protected' | 'public'
-  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
-  | 'readonly' | 'keyof'
+  | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
 LabelIdentifier -> LabelIdentifier :
@@ -411,9 +420,9 @@ LabelIdentifier -> LabelIdentifier :
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
-  | 'any' | 'boolean' | 'number' | 'string' | 'symbol'
+  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
   | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
-  | 'readonly' | 'keyof'
+  | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
 PrimaryExpression<Yield, Await, NoAsync> -> Expression /* interface */:
@@ -766,9 +775,12 @@ BindingList<In, Yield, Await> :
   | BindingList ',' LexicalBinding
 ;
 
+ExclToken -> TsExclToken:
+    '!' ;
+
 LexicalBinding<In, Yield, Await> -> LexicalBinding :
-    BindingIdentifier TypeAnnotationopt Initializeropt
-  | BindingPattern TypeAnnotationopt Initializer
+    BindingIdentifier ExclToken? TypeAnnotationopt Initializeropt
+  | BindingPattern ExclToken? TypeAnnotationopt Initializer
 ;
 
 VariableStatement<Yield, Await> -> VariableStatement :
@@ -781,8 +793,8 @@ VariableDeclarationList<In, Yield, Await> :
 ;
 
 VariableDeclaration<In, Yield, Await> -> VariableDeclaration :
-    BindingIdentifier TypeAnnotationopt Initializeropt
-  | BindingPattern TypeAnnotationopt Initializer
+    BindingIdentifier ExclToken? TypeAnnotationopt Initializeropt
+  | BindingPattern ExclToken? TypeAnnotationopt Initializer
 ;
 
 BindingPattern<Yield, Await> -> BindingPattern /* interface */:
@@ -1273,8 +1285,9 @@ JSXChild<Yield, Await> -> JSXChild /* interface */:
 
 %interface TsType, TypeMember;
 
-Type -> TsType /* interface */:
+Type<flag WithConditionals = true> -> TsType /* interface */:
     UnionOrIntersectionOrPrimaryType %prec resolveShift
+  | [WithConditionals] check=UnionOrIntersectionOrPrimaryType 'extends' ext=Type<~WithConditionals> '?' truet=Type ':' falset=Type  -> TsConditional
   | FunctionType
   | ConstructorType
   | paramref=IdentifierNameRef 'is' Type -> TypePredicate
@@ -1298,13 +1311,16 @@ UnionOrIntersectionOrPrimaryType -> TsType /* interface */:
 ;
 
 IntersectionOrPrimaryType -> TsType /* interface */:
-    inner+=IntersectionOrPrimaryType? '&' inner+=KeyOfOrPrimaryType -> IntersectionType
-  | KeyOfOrPrimaryType
+    inner+=IntersectionOrPrimaryType? '&' inner+=TypeOperator -> IntersectionType
+  | TypeOperator
 ;
 
-KeyOfOrPrimaryType -> TsType /* interface */:
-    KeyOfType
-  | PrimaryType
+TypeOperator -> TsType /* interface */:
+    PrimaryType
+  | 'keyof' TypeOperator      -> KeyOfType
+  | 'unique' TypeOperator     -> UniqueType
+  | 'readonly' TypeOperator   -> ReadonlyType
+  | 'infer' IdentifierName    -> TypeVar
 ;
 
 PrimaryType -> TsType /* interface */:
@@ -1335,11 +1351,13 @@ LiteralType -> LiteralType :
 
 PredefinedType -> PredefinedType :
     'any'
+  | 'unknown'
   | 'number'
   | 'boolean'
   | 'string'
   | 'symbol'
   | 'void'
+  # TODO add bigint, undefined, never, object
 ;
 
 TypeReference -> TypeReference :
@@ -1387,11 +1405,13 @@ IndexedAccessType -> IndexedAccessType :
 
 # 2.1
 StartOfMappedType :
-    'readonly'? '[' IdentifierName 'in' ;
+    ('+' | '-') 'readonly'
+  | 'readonly'? '[' IdentifierName 'in'
+;
 
 # 2.1
 MappedType -> MappedType :
-    '{' .recoveryScope (?= StartOfMappedType) 'readonly'? '[' Identifier 'in' Type ']' '?'? TypeAnnotation ';'? '}' ;
+    '{' .recoveryScope (?= StartOfMappedType) (('+'|'-')? 'readonly')? '[' Identifier 'in' Type ']' (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
 
 TupleType -> TupleType :
     '[' (Type separator ',')+ ']' ;
@@ -1418,12 +1438,8 @@ FunctionTypeParameterList -> Parameters :
 ConstructorType -> ConstructorType :
     'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
-%left 'keyof' 'typeof';
+%left 'keyof' 'typeof' 'unique' 'readonly' 'infer';
 %nonassoc 'is';
-
-# 2.1
-KeyOfType -> KeyOfType :
-    'keyof' KeyOfOrPrimaryType ;
 
 TypeQuery -> TypeQuery :
     'typeof' TypeQueryExpression ;

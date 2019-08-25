@@ -271,6 +271,8 @@ func ToJsNode(n *Node) JsNode {
 		return &PropertySignature{n}
 	case js.Readonly:
 		return &Readonly{n}
+	case js.ReadonlyType:
+		return &ReadonlyType{n}
 	case js.Regexp:
 		return &Regexp{n}
 	case js.RelationalExpression:
@@ -343,6 +345,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsAsExpression{n}
 	case js.TsCastExpression:
 		return &TsCastExpression{n}
+	case js.TsConditional:
+		return &TsConditional{n}
 	case js.TsDynamicImport:
 		return &TsDynamicImport{n}
 	case js.TsEnum:
@@ -351,6 +355,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsEnumBody{n}
 	case js.TsEnumMember:
 		return &TsEnumMember{n}
+	case js.TsExclToken:
+		return &TsExclToken{n}
 	case js.TsExportAssignment:
 		return &TsExportAssignment{n}
 	case js.TsImplementsClause:
@@ -397,10 +403,14 @@ func ToJsNode(n *Node) JsNode {
 		return &TypeQuery{n}
 	case js.TypeReference:
 		return &TypeReference{n}
+	case js.TypeVar:
+		return &TypeVar{n}
 	case js.UnaryExpression:
 		return &UnaryExpression{n}
 	case js.UnionType:
 		return &UnionType{n}
+	case js.UniqueType:
+		return &UniqueType{n}
 	case js.VariableDeclaration:
 		return &VariableDeclaration{n}
 	case js.VariableStatement:
