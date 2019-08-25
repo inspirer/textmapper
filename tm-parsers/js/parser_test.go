@@ -1260,6 +1260,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TsAmbientModule, []string{
 		`«declare module "foo" { export = foo; }»`,
+		`«declare module "foo";»`,
 		`«declare module foo.bar { export = foo; }»`,
 		`declare namespace Foo { «export module bar {}» }`,
 	}},

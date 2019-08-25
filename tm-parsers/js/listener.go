@@ -4493,7 +4493,9 @@ var ruleNodeType = [...]NodeType{
 	0,                            // AmbientEnumDeclaration : EnumDeclaration
 	0,                            // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
 	0,                            // AmbientModuleDeclaration : 'module' StringLiteral '{' .recoveryScope ModuleBodyopt '}'
+	0,                            // AmbientModuleDeclaration : 'module' StringLiteral ';'
 	0,                            // AmbientModuleDeclaration : 'module' IdentifierPath '{' .recoveryScope ModuleBodyopt '}'
+	0,                            // AmbientModuleDeclaration : 'module' IdentifierPath ';'
 	0,                            // AmbientNamespaceBody : '{' .recoveryScope AmbientNamespaceElement_list '}'
 	0,                            // AmbientNamespaceBody : '{' .recoveryScope '}'
 	0,                            // AmbientNamespaceElement_list : AmbientNamespaceElement_list AmbientNamespaceElement

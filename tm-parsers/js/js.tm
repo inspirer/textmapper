@@ -1611,7 +1611,7 @@ AmbientNamespaceDeclaration:
     'namespace' IdentifierPath AmbientNamespaceBody ;
 
 AmbientModuleDeclaration:
-    'module' (StringLiteral | IdentifierPath) '{' .recoveryScope ModuleBodyopt '}' ;
+    'module' (StringLiteral | IdentifierPath) ('{' .recoveryScope ModuleBodyopt '}' | ';') ;
 
 AmbientNamespaceBody:
     '{' .recoveryScope AmbientNamespaceElement+? '}' ;
