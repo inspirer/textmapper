@@ -85,6 +85,7 @@ var (
 	IfStatement                  = func(t js.NodeType) bool { return t == js.IfStatement }
 	ImportDeclaration            = func(t js.NodeType) bool { return t == js.ImportDeclaration }
 	ImportSpecifier              = func(t js.NodeType) bool { return t == js.ImportSpecifier }
+	ImportType                   = func(t js.NodeType) bool { return t == js.ImportType }
 	IndexAccess                  = func(t js.NodeType) bool { return t == js.IndexAccess }
 	IndexSignature               = func(t js.NodeType) bool { return t == js.IndexSignature }
 	IndexedAccessType            = func(t js.NodeType) bool { return t == js.IndexedAccessType }

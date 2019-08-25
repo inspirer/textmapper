@@ -15,9 +15,10 @@ const (
 	StateTemplateDiv     = 3
 	StateTemplateExpr    = 4
 	StateTemplateExprDiv = 5
-	StateJsxTag          = 6
-	StateJsxClosingTag   = 7
-	StateJsxText         = 8
+	StateJsxTypeArgs     = 6
+	StateJsxTag          = 7
+	StateJsxClosingTag   = 8
+	StateJsxText         = 9
 )
 
 type Dialect int
@@ -546,16 +547,23 @@ restart:
 				}
 			}
 		case GT:
-			if l.State == StateJsxClosingTag || l.token == DIV {
+			if l.State == StateJsxTypeArgs || l.State == StateJsxClosingTag || l.token == DIV {
 				l.popState()
 			} else {
 				l.State = StateJsxText
 			}
 		case LBRACE:
-			l.pushState(StateTemplateExpr)
+			if l.State != StateJsxTypeArgs {
+				l.pushState(StateTemplateExpr)
+			}
 		case LT:
-			// Start a new JSX tag.
-			l.pushState(StateJsxTag)
+			if l.Dialect == TypescriptJsx && l.State != StateJsxText && l.token != ASSIGN {
+				// Type arguments.
+				l.pushState(StateJsxTypeArgs)
+			} else {
+				// Start a new JSX tag.
+				l.pushState(StateJsxTag)
+			}
 		}
 	}
 	l.token = token

@@ -97,6 +97,7 @@ func (n IdentifierReference) JsNode() *Node          { return n.Node }
 func (n IfStatement) JsNode() *Node                  { return n.Node }
 func (n ImportDeclaration) JsNode() *Node            { return n.Node }
 func (n ImportSpecifier) JsNode() *Node              { return n.Node }
+func (n ImportType) JsNode() *Node                   { return n.Node }
 func (n IndexAccess) JsNode() *Node                  { return n.Node }
 func (n IndexSignature) JsNode() *Node               { return n.Node }
 func (n IndexedAccessType) JsNode() *Node            { return n.Node }
@@ -714,6 +715,7 @@ type TsType interface {
 func (ArrayType) tsTypeNode()         {}
 func (ConstructorType) tsTypeNode()   {}
 func (FunctionType) tsTypeNode()      {}
+func (ImportType) tsTypeNode()        {}
 func (IndexedAccessType) tsTypeNode() {}
 func (IntersectionType) tsTypeNode()  {}
 func (KeyOfType) tsTypeNode()         {}
@@ -1971,6 +1973,28 @@ func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
 
+type ImportType struct {
+	*Node
+}
+
+func (n ImportType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+func (n ImportType) IdentifierReference() []IdentifierReference {
+	nodes := n.Children(selector.IdentifierReference)
+	var ret = make([]IdentifierReference, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, IdentifierReference{node})
+	}
+	return ret
+}
+
+func (n ImportType) TypeArguments() (TypeArguments, bool) {
+	field := TypeArguments{n.Child(selector.TypeArguments)}
+	return field, field.IsValid()
+}
+
 type IndexAccess struct {
 	*Node
 }
@@ -2111,6 +2135,11 @@ func (n JSXOpeningElement) JSXElementName() JSXElementName {
 	return JSXElementName{n.Child(selector.JSXElementName)}
 }
 
+func (n JSXOpeningElement) TypeArguments() (TypeArguments, bool) {
+	field := TypeArguments{n.Child(selector.TypeArguments)}
+	return field, field.IsValid()
+}
+
 func (n JSXOpeningElement) JSXAttribute() []JSXAttribute {
 	nodes := n.Children(selector.JSXAttribute)
 	var ret = make([]JSXAttribute, 0, len(nodes))
@@ -2126,6 +2155,11 @@ type JSXSelfClosingElement struct {
 
 func (n JSXSelfClosingElement) JSXElementName() JSXElementName {
 	return JSXElementName{n.Child(selector.JSXElementName)}
+}
+
+func (n JSXSelfClosingElement) TypeArguments() (TypeArguments, bool) {
+	field := TypeArguments{n.Child(selector.TypeArguments)}
+	return field, field.IsValid()
 }
 
 func (n JSXSelfClosingElement) JSXAttribute() []JSXAttribute {

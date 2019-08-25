@@ -1031,6 +1031,12 @@ var parseTests = []struct {
 		`function foo(a) : «typeof a.b.c» {}`,
 		`function foo(a) : «typeof is» {}`,
 	}},
+	{js.Typescript, js.ImportType, []string{
+		`function adopt(p: «import("./module").Pet») {}`,
+		`export declare const hash: «import("crypto").Hash»;`,
+		`export declare const hash: «import("crypto").Hash<foo, Bar>»;`,
+		`export declare const hash: «import("crypto")<X>»;`,
+	}},
 	{js.Typescript, js.TypeAnnotation, []string{
 		`var a «: T» = function (kind?«:A») «: B» {}`,
 	}},
@@ -1283,6 +1289,24 @@ var parseTests = []struct {
     «T extends string ? "string" :
     «T extends number ? "number" :
     "object"»»;`,
+	}},
+
+	// Typescript + JSX.
+	{js.TypescriptJsx, js.JSXElement, []string{
+		`var a = «<div>ABC</div>»;`,
+		`var a = «<div/>»;`,
+		`var a = «<Q>«<P/>»</Q>»;`,
+		`var a = «<div>< / div>»;`,
+		`var a = «<div / >»;`,
+		`var a = «<q>{ «<a href={ {a: {b: 1}}.a.b }/>» }</q>»;`,
+		`var a = «<q>{ [1,2,3].map(a => («<a href={a}/>»)) }</q>»;`,
+		`var a = «<X comp=«<Y text=«<h1>Title</h1>» />» />»;`,
+		"var a = «<input value={`test ${index/4|0}`} disabled={foo%10 ? null : true} />»",
+		// Type arguments.
+		`const x = «<GenericComponent<Props> a={10} b="hi"/>»;`, // TS 2.9
+	}},
+	{js.TypescriptJsx, js.TypeArguments, []string{
+		`const x = <GenericComponent«<Props>» a={10} b="hi"/>;`, // TS 2.9
 	}},
 
 	// Error Recovery

@@ -159,6 +159,8 @@ func ToJsNode(n *Node) JsNode {
 		return &ImportDeclaration{n}
 	case js.ImportSpecifier:
 		return &ImportSpecifier{n}
+	case js.ImportType:
+		return &ImportType{n}
 	case js.IndexAccess:
 		return &IndexAccess{n}
 	case js.IndexSignature:

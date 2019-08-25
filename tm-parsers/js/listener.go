@@ -147,8 +147,8 @@ const (
 	DecoratorExpr                // (IdentifierReference)*
 	DecoratorCall                // (IdentifierReference)* Arguments
 	JSXElement                   // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
-	JSXSelfClosingElement        // JSXElementName (JSXAttribute)*
-	JSXOpeningElement            // JSXElementName (JSXAttribute)*
+	JSXSelfClosingElement        // JSXElementName TypeArguments? (JSXAttribute)*
+	JSXOpeningElement            // JSXElementName TypeArguments? (JSXAttribute)*
 	JSXClosingElement            // JSXElementName
 	JSXElementName
 	JSXNormalAttribute // JSXAttributeName JSXAttributeValue?
@@ -185,6 +185,7 @@ const (
 	Parameters        // (Parameter)*
 	ConstructorType   // TypeParameters? Parameters TsType
 	TypeQuery         // (IdentifierReference)*
+	ImportType        // TsType (IdentifierReference)* TypeArguments?
 	PropertySignature // (Modifier)* PropertyName TypeAnnotation?
 	TypeAnnotation    // TsType
 	CallSignature     // TypeParameters? Parameters TypeAnnotation?
@@ -404,6 +405,7 @@ var nodeTypeStr = [...]string{
 	"Parameters",
 	"ConstructorType",
 	"TypeQuery",
+	"ImportType",
 	"PropertySignature",
 	"TypeAnnotation",
 	"CallSignature",
@@ -776,6 +778,7 @@ var TsType = []NodeType{
 	ArrayType,
 	ConstructorType,
 	FunctionType,
+	ImportType,
 	IndexedAccessType,
 	IntersectionType,
 	KeyOfType,
@@ -4009,13 +4012,21 @@ var ruleNodeType = [...]NodeType{
 	0,                            // JSXAttribute_optlist :
 	0,                            // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
 	0,                            // JSXAttribute_Yield_optlist :
+	JSXSelfClosingElement,        // JSXSelfClosingElement : '<' JSXElementName TypeArguments JSXAttribute_optlist '/' '>'
 	JSXSelfClosingElement,        // JSXSelfClosingElement : '<' JSXElementName JSXAttribute_optlist '/' '>'
+	JSXSelfClosingElement,        // JSXSelfClosingElement_Await : '<' JSXElementName TypeArguments JSXAttribute_Await_optlist '/' '>'
 	JSXSelfClosingElement,        // JSXSelfClosingElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '/' '>'
+	JSXSelfClosingElement,        // JSXSelfClosingElement_Await_Yield : '<' JSXElementName TypeArguments JSXAttribute_Await_Yield_optlist '/' '>'
 	JSXSelfClosingElement,        // JSXSelfClosingElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '/' '>'
+	JSXSelfClosingElement,        // JSXSelfClosingElement_Yield : '<' JSXElementName TypeArguments JSXAttribute_Yield_optlist '/' '>'
 	JSXSelfClosingElement,        // JSXSelfClosingElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '/' '>'
+	JSXOpeningElement,            // JSXOpeningElement : '<' JSXElementName TypeArguments JSXAttribute_optlist '>'
 	JSXOpeningElement,            // JSXOpeningElement : '<' JSXElementName JSXAttribute_optlist '>'
+	JSXOpeningElement,            // JSXOpeningElement_Await : '<' JSXElementName TypeArguments JSXAttribute_Await_optlist '>'
 	JSXOpeningElement,            // JSXOpeningElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '>'
+	JSXOpeningElement,            // JSXOpeningElement_Await_Yield : '<' JSXElementName TypeArguments JSXAttribute_Await_Yield_optlist '>'
 	JSXOpeningElement,            // JSXOpeningElement_Await_Yield : '<' JSXElementName JSXAttribute_Await_Yield_optlist '>'
+	JSXOpeningElement,            // JSXOpeningElement_Yield : '<' JSXElementName TypeArguments JSXAttribute_Yield_optlist '>'
 	JSXOpeningElement,            // JSXOpeningElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '>'
 	JSXClosingElement,            // JSXClosingElement : '<' '/' JSXElementName '>'
 	JSXElementName,               // JSXElementName : jsxIdentifier
@@ -4106,6 +4117,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryType : LiteralType
 	0,                            // PrimaryType : TupleType
 	0,                            // PrimaryType : TypeQuery
+	0,                            // PrimaryType : ImportType
 	ThisType,                     // PrimaryType : 'this'
 	0,                            // lookahead_notStartOfFunctionType :
 	ParenthesizedType,            // ParenthesizedType : '(' lookahead_notStartOfFunctionType Type ')'
@@ -4217,6 +4229,16 @@ var ruleNodeType = [...]NodeType{
 	ConstructorType,              // ConstructorType : 'new' TypeParameters ParameterList '=>' Type
 	ConstructorType,              // ConstructorType : 'new' ParameterList '=>' Type
 	TypeQuery,                    // TypeQuery : 'typeof' TypeQueryExpression
+	ImportType,                   // ImportType : 'typeof' 'import' '(' Type ')' list_of_'.'_and_1_elements .noLineBreak TypeArguments %prec resolveShift
+	ImportType,                   // ImportType : 'typeof' 'import' '(' Type ')' list_of_'.'_and_1_elements .noLineBreak %prec resolveShift
+	ImportType,                   // ImportType : 'typeof' 'import' '(' Type ')' .noLineBreak TypeArguments %prec resolveShift
+	ImportType,                   // ImportType : 'typeof' 'import' '(' Type ')' .noLineBreak %prec resolveShift
+	ImportType,                   // ImportType : 'import' '(' Type ')' list_of_'.'_and_1_elements .noLineBreak TypeArguments %prec resolveShift
+	ImportType,                   // ImportType : 'import' '(' Type ')' list_of_'.'_and_1_elements .noLineBreak %prec resolveShift
+	ImportType,                   // ImportType : 'import' '(' Type ')' .noLineBreak TypeArguments %prec resolveShift
+	ImportType,                   // ImportType : 'import' '(' Type ')' .noLineBreak %prec resolveShift
+	0,                            // list_of_'.'_and_1_elements : list_of_'.'_and_1_elements '.' IdentifierReference
+	0,                            // list_of_'.'_and_1_elements : '.' IdentifierReference
 	0,                            // TypeQueryExpression : IdentifierReference
 	0,                            // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
 	PropertySignature,            // PropertySignature : Modifiers PropertyName_WithoutNew '?' TypeAnnotation
