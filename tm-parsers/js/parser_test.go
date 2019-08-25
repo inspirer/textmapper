@@ -986,6 +986,7 @@ var parseTests = []struct {
 	{js.Typescript, js.MethodSignature, []string{
 		`var x: {«bar(foo) : number»,};`,
 		`var x: {«bar<T>(foo)»};`,
+		`var x: {«fun<R, TS extends any[] = []>(fn: (foo: Foo, ...args: TS) => R, ...args: TS): R»;}`,
 	}},
 	{js.Typescript, js.ConstructorType, []string{
 		`var x: {a: «new() => never»};`,

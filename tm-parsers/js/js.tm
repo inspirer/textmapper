@@ -1419,7 +1419,7 @@ MappedType -> MappedType :
     '{' .recoveryScope (?= StartOfMappedType) (('+'|'-')? 'readonly')? '[' Identifier 'in' Type ']' (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
 
 TupleType -> TupleType :
-    '[' (Type separator ',')+ ']' ;
+    '[' (Type separator ',')+? ']' ;
 
 # This lookahead rule disambiguates FunctionType vs ParenthesizedType
 # productions by enumerating all prefixes of FunctionType that would

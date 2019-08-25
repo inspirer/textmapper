@@ -182,7 +182,7 @@ const (
 	ArrayType         // TsType
 	IndexedAccessType // left=TsType index=TsType
 	MappedType        // TsType TypeAnnotation
-	TupleType         // (TsType)+
+	TupleType         // (TsType)*
 	FunctionType      // TypeParameters? Parameters TsType
 	Parameters        // (Parameter)*
 	ConstructorType   // TypeParameters? Parameters TsType
@@ -4228,6 +4228,7 @@ var ruleNodeType = [...]NodeType{
 	MappedType,                   // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
 	MappedType,                   // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation '}'
 	TupleType,                    // TupleType : '[' Type_list_Comma_separated ']'
+	TupleType,                    // TupleType : '[' ']'
 	0,                            // StartOfFunctionType : Modifiers BindingIdentifier ':'
 	0,                            // StartOfFunctionType : Modifiers BindingIdentifier ','
 	0,                            // StartOfFunctionType : Modifiers BindingIdentifier '?'
