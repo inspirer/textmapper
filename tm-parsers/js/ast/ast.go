@@ -2944,6 +2944,11 @@ func (n TsAmbientBinding) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
+func (n TsAmbientBinding) Initializer() (Initializer, bool) {
+	field := Initializer{n.Child(selector.Initializer)}
+	return field, field.IsValid()
+}
+
 type TsAmbientClass struct {
 	*Node
 }

@@ -1205,7 +1205,7 @@ var parseTests = []struct {
 		`declare namespace foo { «export const i;» }`,
 	}},
 	{js.Typescript, js.TsAmbientBinding, []string{
-		`declare var «a : int», «b : string»;`,
+		`declare var «a : int», «b : string = "a"», «c = "foo"»;`,
 		`declare const «i»;`,
 	}},
 	{js.Typescript, js.TsAmbientFunction, []string{

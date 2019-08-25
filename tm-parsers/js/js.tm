@@ -1584,7 +1584,7 @@ AmbientBindingList:
 ;
 
 AmbientBinding -> TsAmbientBinding:
-    BindingIdentifier TypeAnnotation? ;
+    BindingIdentifier TypeAnnotation? Initializer<+In, ~Yield, ~Await>? ;
 
 AmbientFunctionDeclaration:
     'function' BindingIdentifier FormalParameters<~Yield, ~Await> ';' ;

@@ -216,7 +216,7 @@ const (
 	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
 	TsAmbientModule          // (BindingIdentifier)* (ModuleItem)*
 	TsAmbientTypeAlias       // TypeAliasDeclaration
-	TsAmbientBinding         // BindingIdentifier TypeAnnotation?
+	TsAmbientBinding         // BindingIdentifier TypeAnnotation? Initializer?
 	TsAmbientClassBody       // (TsAmbientClassElement)*
 	TsAmbientPropertyMember  // (Modifier)* PropertyName TypeAnnotation?
 	TsAmbientFunctionMember  // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
@@ -4468,7 +4468,9 @@ var ruleNodeType = [...]NodeType{
 	0,                            // AmbientVariableDeclaration : 'const' AmbientBindingList ';'
 	0,                            // AmbientBindingList : AmbientBinding
 	0,                            // AmbientBindingList : AmbientBindingList ',' AmbientBinding
+	TsAmbientBinding,             // AmbientBinding : BindingIdentifier TypeAnnotation Initializer_In
 	TsAmbientBinding,             // AmbientBinding : BindingIdentifier TypeAnnotation
+	TsAmbientBinding,             // AmbientBinding : BindingIdentifier Initializer_In
 	TsAmbientBinding,             // AmbientBinding : BindingIdentifier
 	0,                            // AmbientFunctionDeclaration : 'function' BindingIdentifier FormalParameters ';'
 	0,                            // AmbientClassDeclaration : Modifiers 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
