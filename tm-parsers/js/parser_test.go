@@ -703,12 +703,13 @@ var parseTests = []struct {
 		 }`,
 	}},
 	{js.Javascript, js.MemberMethod, []string{
-		`class A extends B {
+		`class A<T> extends B {
 		   ;
 		   «static a() { return 1}»
 		   «*a() { yield 1; yield 2}»
 		   «static get x() { return this.x}»
 		   «set x(val) { this.x = val}»
+		   «isFoo(): this is T extends Bar ? Foo<Bar> : never»
 		 }`,
 	}},
 	{js.Javascript, js.Static, []string{

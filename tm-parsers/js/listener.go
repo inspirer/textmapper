@@ -4089,7 +4089,7 @@ var ruleNodeType = [...]NodeType{
 	TsConditional,                // Type : UnionOrIntersectionOrPrimaryType 'extends' Type1 '?' Type ':' Type
 	0,                            // Type : FunctionType
 	0,                            // Type : ConstructorType
-	TypePredicate,                // Type : IdentifierNameRef 'is' Type1
+	TypePredicate,                // Type : IdentifierNameRef 'is' Type
 	0,                            // Type1 : UnionOrIntersectionOrPrimaryType1 %prec resolveShift
 	0,                            // Type1 : FunctionType1
 	0,                            // Type1 : ConstructorType1

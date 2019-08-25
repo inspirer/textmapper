@@ -1292,7 +1292,7 @@ Type<AllowQuest> -> TsType /* interface */:
   | [AllowQuest] check=UnionOrIntersectionOrPrimaryType 'extends' ext=Type<~AllowQuest> '?' truet=Type ':' falset=Type  -> TsConditional
   | FunctionType
   | ConstructorType
-  | paramref=IdentifierNameRef 'is' Type<~AllowQuest> -> TypePredicate
+  | paramref=IdentifierNameRef 'is' Type -> TypePredicate
 ;
 
 TypeParameters -> TypeParameters :
