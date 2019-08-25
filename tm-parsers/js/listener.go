@@ -183,6 +183,7 @@ const (
 	IndexedAccessType // left=TsType index=TsType
 	MappedType        // TsType TypeAnnotation
 	TupleType         // (TsType)*
+	RestType          // TsType
 	FunctionType      // TypeParameters? Parameters TsType
 	Parameters        // (Parameter)*
 	ConstructorType   // TypeParameters? Parameters TsType
@@ -405,6 +406,7 @@ var nodeTypeStr = [...]string{
 	"IndexedAccessType",
 	"MappedType",
 	"TupleType",
+	"RestType",
 	"FunctionType",
 	"Parameters",
 	"ConstructorType",
@@ -794,6 +796,7 @@ var TsType = []NodeType{
 	ParenthesizedType,
 	PredefinedType,
 	ReadonlyType,
+	RestType,
 	ThisType,
 	TsConditional,
 	TupleType,
@@ -4227,8 +4230,12 @@ var ruleNodeType = [...]NodeType{
 	MappedType,                   // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' '?' TypeAnnotation '}'
 	MappedType,                   // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation ';' '}'
 	MappedType,                   // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' Identifier 'in' Type ']' TypeAnnotation '}'
-	TupleType,                    // TupleType : '[' Type_list_Comma_separated ']'
+	0,                            // TupleElementType_list_Comma_separated : TupleElementType_list_Comma_separated ',' TupleElementType
+	0,                            // TupleElementType_list_Comma_separated : TupleElementType
+	TupleType,                    // TupleType : '[' TupleElementType_list_Comma_separated ']'
 	TupleType,                    // TupleType : '[' ']'
+	0,                            // TupleElementType : Type
+	RestType,                     // TupleElementType : '...' Type
 	0,                            // StartOfFunctionType : Modifiers BindingIdentifier ':'
 	0,                            // StartOfFunctionType : Modifiers BindingIdentifier ','
 	0,                            // StartOfFunctionType : Modifiers BindingIdentifier '?'

@@ -949,6 +949,10 @@ var parseTests = []struct {
 	{js.Typescript, js.TupleType, []string{
 		`let x: «[string, number]»;`,
 		`let t: «[number, string?, boolean?]»;`,
+		`export type Bar = «[foo, ...(string | number)[]]»;`,
+	}},
+	{js.Typescript, js.RestType, []string{
+		`type Bar = [foo, «...(string | number)[]»];`,
 	}},
 	{js.Typescript, js.NullableType, []string{
 		`let t: [number, «string?», «boolean?»];`,

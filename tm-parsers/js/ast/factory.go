@@ -285,6 +285,8 @@ func ToJsNode(n *Node) JsNode {
 		return &RelationalExpression{n}
 	case js.RestParameter:
 		return &RestParameter{n}
+	case js.RestType:
+		return &RestType{n}
 	case js.ReturnStatement:
 		return &ReturnStatement{n}
 	case js.Setter:

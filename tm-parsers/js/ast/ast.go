@@ -160,6 +160,7 @@ func (n ReadonlyType) JsNode() *Node                 { return n.Node }
 func (n Regexp) JsNode() *Node                       { return n.Node }
 func (n RelationalExpression) JsNode() *Node         { return n.Node }
 func (n RestParameter) JsNode() *Node                { return n.Node }
+func (n RestType) JsNode() *Node                     { return n.Node }
 func (n ReturnStatement) JsNode() *Node              { return n.Node }
 func (n Setter) JsNode() *Node                       { return n.Node }
 func (n ShiftExpression) JsNode() *Node              { return n.Node }
@@ -729,6 +730,7 @@ func (ObjectType) tsTypeNode()        {}
 func (ParenthesizedType) tsTypeNode() {}
 func (PredefinedType) tsTypeNode()    {}
 func (ReadonlyType) tsTypeNode()      {}
+func (RestType) tsTypeNode()          {}
 func (ThisType) tsTypeNode()          {}
 func (TsConditional) tsTypeNode()     {}
 func (TupleType) tsTypeNode()         {}
@@ -2743,6 +2745,14 @@ func (n RestParameter) BindingIdentifier() BindingIdentifier {
 func (n RestParameter) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
+}
+
+type RestType struct {
+	*Node
+}
+
+func (n RestType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
 type ReturnStatement struct {

@@ -148,6 +148,7 @@ var (
 	Regexp                       = func(t js.NodeType) bool { return t == js.Regexp }
 	RelationalExpression         = func(t js.NodeType) bool { return t == js.RelationalExpression }
 	RestParameter                = func(t js.NodeType) bool { return t == js.RestParameter }
+	RestType                     = func(t js.NodeType) bool { return t == js.RestType }
 	ReturnStatement              = func(t js.NodeType) bool { return t == js.ReturnStatement }
 	Setter                       = func(t js.NodeType) bool { return t == js.Setter }
 	ShiftExpression              = func(t js.NodeType) bool { return t == js.ShiftExpression }
