@@ -239,6 +239,10 @@ func ToJsNode(n *Node) JsNode {
 		return &NewExpression{n}
 	case js.NewTarget:
 		return &NewTarget{n}
+	case js.NonNullableType:
+		return &NonNullableType{n}
+	case js.NullableType:
+		return &NullableType{n}
 	case js.ObjectLiteral:
 		return &ObjectLiteral{n}
 	case js.ObjectMethod:

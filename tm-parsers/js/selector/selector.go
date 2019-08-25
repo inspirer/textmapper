@@ -125,6 +125,8 @@ var (
 	NamedImports                 = func(t js.NodeType) bool { return t == js.NamedImports }
 	NewExpression                = func(t js.NodeType) bool { return t == js.NewExpression }
 	NewTarget                    = func(t js.NodeType) bool { return t == js.NewTarget }
+	NonNullableType              = func(t js.NodeType) bool { return t == js.NonNullableType }
+	NullableType                 = func(t js.NodeType) bool { return t == js.NullableType }
 	ObjectLiteral                = func(t js.NodeType) bool { return t == js.ObjectLiteral }
 	ObjectMethod                 = func(t js.NodeType) bool { return t == js.ObjectMethod }
 	ObjectPattern                = func(t js.NodeType) bool { return t == js.ObjectPattern }

@@ -137,6 +137,8 @@ func (n NameSpaceImport) JsNode() *Node              { return n.Node }
 func (n NamedImports) JsNode() *Node                 { return n.Node }
 func (n NewExpression) JsNode() *Node                { return n.Node }
 func (n NewTarget) JsNode() *Node                    { return n.Node }
+func (n NonNullableType) JsNode() *Node              { return n.Node }
+func (n NullableType) JsNode() *Node                 { return n.Node }
 func (n ObjectLiteral) JsNode() *Node                { return n.Node }
 func (n ObjectMethod) JsNode() *Node                 { return n.Node }
 func (n ObjectPattern) JsNode() *Node                { return n.Node }
@@ -721,6 +723,8 @@ func (IntersectionType) tsTypeNode()  {}
 func (KeyOfType) tsTypeNode()         {}
 func (LiteralType) tsTypeNode()       {}
 func (MappedType) tsTypeNode()        {}
+func (NonNullableType) tsTypeNode()   {}
+func (NullableType) tsTypeNode()      {}
 func (ObjectType) tsTypeNode()        {}
 func (ParenthesizedType) tsTypeNode() {}
 func (PredefinedType) tsTypeNode()    {}
@@ -2483,6 +2487,22 @@ func (n NewExpression) Arguments() (Arguments, bool) {
 
 type NewTarget struct {
 	*Node
+}
+
+type NonNullableType struct {
+	*Node
+}
+
+func (n NonNullableType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+type NullableType struct {
+	*Node
+}
+
+func (n NullableType) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
 type ObjectLiteral struct {

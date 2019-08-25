@@ -948,6 +948,13 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TupleType, []string{
 		`let x: «[string, number]»;`,
+		`let t: «[number, string?, boolean?]»;`,
+	}},
+	{js.Typescript, js.NullableType, []string{
+		`let t: [number, «string?», «boolean?»];`,
+	}},
+	{js.Typescript, js.NonNullableType, []string{
+		`let t: «a!»;`, // Note: this is valid in JSDocs only
 	}},
 	{js.Typescript, js.ParenthesizedType, []string{
 		`var x: «([string, number])»;`,

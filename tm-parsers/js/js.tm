@@ -659,7 +659,7 @@ BinaryExpression<In, Yield, Await> -> Expression /* interface */:
   | left=BinaryExpression '>=' right=BinaryExpression               -> RelationalExpression
   | left=BinaryExpression 'instanceof' right=BinaryExpression       -> RelationalExpression
   | [In] left=BinaryExpression 'in' right=BinaryExpression          -> RelationalExpression
-  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type            -> TsAsExpression
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<~AllowQuest> -> TsAsExpression
   | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpression
@@ -1285,12 +1285,14 @@ JSXChild<Yield, Await> -> JSXChild /* interface */:
 
 %interface TsType, TypeMember;
 
-Type<flag WithConditionals = true> -> TsType /* interface */:
+%flag AllowQuest = true;
+
+Type<AllowQuest> -> TsType /* interface */:
     UnionOrIntersectionOrPrimaryType %prec resolveShift
-  | [WithConditionals] check=UnionOrIntersectionOrPrimaryType 'extends' ext=Type<~WithConditionals> '?' truet=Type ':' falset=Type  -> TsConditional
+  | [AllowQuest] check=UnionOrIntersectionOrPrimaryType 'extends' ext=Type<~AllowQuest> '?' truet=Type ':' falset=Type  -> TsConditional
   | FunctionType
   | ConstructorType
-  | paramref=IdentifierNameRef 'is' Type -> TypePredicate
+  | paramref=IdentifierNameRef 'is' Type<~AllowQuest> -> TypePredicate
 ;
 
 TypeParameters -> TypeParameters :
@@ -1305,17 +1307,17 @@ Constraint -> TypeConstraint :
 TypeArguments -> TypeArguments :
     '<' (Type separator ',')+ '>' ;
 
-UnionOrIntersectionOrPrimaryType -> TsType /* interface */:
+UnionOrIntersectionOrPrimaryType<AllowQuest> -> TsType /* interface */:
     inner+=UnionOrIntersectionOrPrimaryType? '|' inner+=IntersectionOrPrimaryType -> UnionType
   | IntersectionOrPrimaryType %prec resolveShift
 ;
 
-IntersectionOrPrimaryType -> TsType /* interface */:
+IntersectionOrPrimaryType<AllowQuest> -> TsType /* interface */:
     inner+=IntersectionOrPrimaryType? '&' inner+=TypeOperator -> IntersectionType
   | TypeOperator
 ;
 
-TypeOperator -> TsType /* interface */:
+TypeOperator<AllowQuest> -> TsType /* interface */:
     PrimaryType
   | 'keyof' TypeOperator      -> KeyOfType
   | 'unique' TypeOperator     -> UniqueType
@@ -1323,7 +1325,7 @@ TypeOperator -> TsType /* interface */:
   | 'infer' IdentifierName    -> TypeVar
 ;
 
-PrimaryType -> TsType /* interface */:
+PrimaryType<AllowQuest> -> TsType /* interface */:
     ParenthesizedType
   | PredefinedType
   | TypeReference
@@ -1335,7 +1337,9 @@ PrimaryType -> TsType /* interface */:
   | TupleType
   | TypeQuery
   | ImportType
-  | 'this'                           -> ThisType
+  | 'this'                                        -> ThisType
+  | PrimaryType .noLineBreak '!'                  -> NonNullableType
+  | [AllowQuest] PrimaryType .noLineBreak '?'     -> NullableType
 ;
 
 ParenthesizedType -> ParenthesizedType :
@@ -1397,11 +1401,11 @@ TypeMember -> TypeMember /* interface */:
   | IndexSignature
 ;
 
-ArrayType -> ArrayType :
+ArrayType<AllowQuest> -> ArrayType :
     PrimaryType .noLineBreak '[' ']' ;
 
 # 2.1
-IndexedAccessType -> IndexedAccessType :
+IndexedAccessType<AllowQuest> -> IndexedAccessType :
     left=PrimaryType .noLineBreak '[' index=Type ']' ;
 
 # 2.1
@@ -1430,13 +1434,13 @@ StartOfFunctionType :
   | ')'
 ;
 
-FunctionType -> FunctionType :
+FunctionType<AllowQuest> -> FunctionType :
     TypeParameters? FunctionTypeParameterList '=>' Type ;
 
 FunctionTypeParameterList -> Parameters :
     '(' (?= StartOfFunctionType) (Parameter<~Yield, ~Await> separator ',')+? ','? ')' ;
 
-ConstructorType -> ConstructorType :
+ConstructorType<AllowQuest> -> ConstructorType :
     'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
 %left 'keyof' 'typeof' 'unique' 'readonly' 'infer';
