@@ -218,8 +218,7 @@ ${else-}
 					p.fetchNext(lexer, stack)
 ${end-}
 				}
-				entry.sym.offset, _ = lexer.Pos()
-				entry.sym.endoffset = entry.sym.offset
+				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
@@ -275,13 +274,19 @@ ${end-}
 		if action == -2 || state == -1 {
 ${if self->hasRecovering()-}
 			if recovering == 0 {
-				offset, endoffset := lexer.Pos()
+				if p.next.symbol == noToken {
+${if self->ignoredReportTokens()-}
+					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+${else-}
+					p.fetchNext(lexer, stack)
+${end-}
+				}
 				lastErr = SyntaxError{
 ${if opts.tokenLine-}
-					Line: lexer.Line(),
+					Line: ${call tokenLine},
 ${end-}
-					Offset:    offset,
-					Endoffset: endoffset,
+					Offset:    p.next.offset,
+					Endoffset: p.next.endoffset,
 				}
 				if !p.eh(lastErr) {
 					return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
@@ -308,13 +313,19 @@ ${end-}
 
 ${if !self->hasRecovering()-}
 	if state != end {
-		offset, endoffset := lexer.Pos()
+		if p.next.symbol == noToken {
+${if self->ignoredReportTokens()-}
+			ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+${else-}
+			p.fetchNext(lexer, stack)
+${end-}
+		}
 		err := SyntaxError{
 ${if opts.tokenLine-}
-			Line: lexer.Line(),
+			Line: ${call tokenLine},
 ${end-}
-			Offset: offset,
-			Endoffset: endoffset,
+			Offset: p.next.offset,
+			Endoffset: p.next.endoffset,
 		}
 		return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}err
 	}
@@ -831,3 +842,5 @@ ${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCo
 ${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_token.isSpace(tok))}
 
 ${cached query nonignoredReportTokens() = opts.reportTokens.select(tok|!self->go_token.isSpace(tok))}
+
+${cached query tokenLine() = 'lexer.Line()'}
