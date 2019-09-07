@@ -74,7 +74,10 @@ Declaration -> Declaration :
         }
       }                                                  -> Int
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
+  | 'test' '(' (empty1 -> Empty1) ')'
 ;
+
+empty1 : ;
 
 # Test: a list of an exported terminal.
 

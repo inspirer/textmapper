@@ -40,6 +40,7 @@ var nilInstance = &NilNode{}
 func (n Block) TestNode() Node      { return n.Node }
 func (n Decl1) TestNode() Node      { return n.Node }
 func (n Decl2) TestNode() Node      { return n.Node }
+func (n Empty1) TestNode() Node     { return n.Node }
 func (n Int) TestNode() Node        { return n.Node }
 func (n Negation) TestNode() Node   { return n.Node }
 func (n Test) TestNode() Node       { return n.Node }
@@ -58,6 +59,7 @@ type Declaration interface {
 func (Block) declarationNode()      {}
 func (Decl1) declarationNode()      {}
 func (Decl2) declarationNode()      {}
+func (Empty1) declarationNode()     {}
 func (Int) declarationNode()        {}
 func (TestClause) declarationNode() {}
 func (NilNode) declarationNode()    {}
@@ -96,6 +98,10 @@ func (n Decl1) Identifier() []Token {
 }
 
 type Decl2 struct {
+	Node
+}
+
+type Empty1 struct {
 	Node
 }
 

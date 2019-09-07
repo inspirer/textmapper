@@ -52,6 +52,9 @@ var parseTests = []struct {
 		`{3 «9» 11 «9»}`,
 		`{-- 5 «9[]» 3}`,
 	}},
+	{test.Empty1, []string{
+		` test (   «»)  `,
+	}},
 	{test.TestClause, []string{
 		`«test {}»`,
 		`«test { decl1 }»`,
