@@ -92,6 +92,9 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			rhs := stack[len(stack)-ln:]
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
+				if p.next.symbol == noToken {
+					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+				}
 				entry.sym.offset, _ = lexer.Pos()
 				entry.sym.endoffset = entry.sym.offset
 			} else {

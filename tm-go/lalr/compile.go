@@ -191,7 +191,8 @@ func (c *compiler) computeStates() {
 		}
 
 		nreduce := len(curr.reduce)
-		curr.lr0 = nreduce == 0 || nreduce == 1 && len(curr.shifts) == 0
+		hasShifts := len(curr.shifts) > 0 && int(c.states[curr.shifts[0]].symbol) < c.grammar.Terminals
+		curr.lr0 = nreduce == 0 || nreduce == 1 && !hasShifts
 	}
 
 	// Add final states (if needed).

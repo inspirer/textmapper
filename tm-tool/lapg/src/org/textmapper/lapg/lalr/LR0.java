@@ -362,17 +362,19 @@ class LR0 extends ContextFree {
 			current.shifts[i] = goto_state(symcanshift[i]);
 		}
 
+		boolean hasShifts = ntoshift > 0 && symcanshift[0] < nterms;
+
 		for (i = 0; i < ntoreduce; i++) {
 			current.reduce[i] = toreduce[i];
 		}
 
-		current.LR0 = !(ntoreduce > 1 || (ntoshift != 0 && ntoreduce != 0));
+		current.LR0 = !(ntoreduce > 1 || (hasShifts && ntoreduce != 0));
 		return true;
 	}
 
 	private void insert_shift(State t, int tostate) {
+		final int symbol = state[tostate].symbol;
 		if (t.shifts != null) {
-			final int symbol = state[tostate].symbol;
 			int[] old = t.shifts;
 			int i, e, n = t.nshifts;
 
@@ -392,10 +394,9 @@ class LR0 extends ContextFree {
 			t.nshifts = 1;
 			t.shifts = new int[1];
 			t.shifts[0] = tostate;
-
-			if (t.nreduce > 0) {
-				t.LR0 = false;
-			}
+		}
+		if (symbol < nterms && t.nreduce > 0) {
+			t.LR0 = false;
 		}
 	}
 

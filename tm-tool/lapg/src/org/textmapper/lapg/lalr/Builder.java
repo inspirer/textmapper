@@ -199,10 +199,10 @@ public class Builder extends Lalr1 {
 
 		for (State t = first; t != null; t = t.next) {
 			if (t.LR0) {
-				if (t.nshifts > 0) {
-					action_index[t.number] = -1;
-				} else if (t.nreduce > 0) {
+				if (t.nreduce > 0) {
 					action_index[t.number] = t.reduce[0];
+				} else if (t.nshifts > 0) {
+					action_index[t.number] = -1;
 				} else {
 					action_index[t.number] = -2;
 				}

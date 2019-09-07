@@ -86,7 +86,7 @@ var stateTests = []struct {
 		`6 (from 3, EOI):`,
 	}},
 	{`S -> SA; S -> ; A -> B; B -> Ca; B -> CAp; C -> c; C ->`, []string{
-		`0 (from 0, EOI, LA): S -> 1; reduce S [EOI,a,c];`, // TODO no 'a'?
+		`0 (from 0, EOI): S -> 1; reduce S;`,
 		`1 (from 0, S, LA): S : S _ A; EOI -> 9; c -> 2; A -> 3; B -> 4; C -> 5; reduce C [a,c];`,
 		`2 (from 1, c): C : c _;`,
 		`3 (from 1, A): S : S A _;`,
@@ -98,7 +98,7 @@ var stateTests = []struct {
 		`9 (from 1, EOI):`,
 	}},
 	{`S -> A; A -> Bb; B -> Aa; B ->`, []string{
-		`0 (from 0, EOI, LA): S -> 5; A -> 1; B -> 2; reduce B [b];`,
+		`0 (from 0, EOI): S -> 5; A -> 1; B -> 2; reduce B;`,
 		`1 (from 0, A, LA): S : A _; B : A _ a; a -> 3; reduce S [EOI];`,
 		`2 (from 0, B): A : B _ b; b -> 4;`,
 		`3 (from 1, a): B : A a _;`,

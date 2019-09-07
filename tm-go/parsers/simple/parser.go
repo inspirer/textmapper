@@ -69,6 +69,9 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			rhs := stack[len(stack)-ln:]
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
+				if p.next.symbol == noToken {
+					p.fetchNext(lexer, stack)
+				}
 				entry.sym.offset, _ = lexer.Pos()
 				entry.sym.endoffset = entry.sym.offset
 			} else {

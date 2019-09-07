@@ -57,38 +57,37 @@ public class TypesParser {
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int[] tmAction = TypesLexer.unpack_int(108,
 		"\uffff\uffff\uffff\uffff\ufffd\uffff\2\0\ufff7\uffff\1\0\uffff\uffff\73\0\uffff\uffff" +
-		"\67\0\ufff1\uffff\uffe9\uffff\uffe3\uffff\uffff\uffff\uffff\uffff\uffff\uffff\70" +
-		"\0\uffd5\uffff\uffcd\uffff\5\0\41\0\43\0\42\0\3\0\7\0\10\0\uffff\uffff\uffbf\uffff" +
-		"\uffb3\uffff\uffa3\uffff\13\0\uffff\uffff\uff9b\uffff\uffff\uffff\45\0\uffff\uffff" +
-		"\uffff\uffff\uff91\uffff\uffff\uffff\75\0\uff83\uffff\uff7d\uffff\uffff\uffff\24" +
-		"\0\14\0\46\0\uffff\uffff\27\0\uffff\uffff\uffff\uffff\uffff\uffff\17\0\uff73\uffff" +
-		"\21\0\uffff\uffff\77\0\uffff\uffff\uffff\uffff\uffff\uffff\40\0\uffff\uffff\uffff" +
-		"\uffff\uffff\uffff\uffff\uffff\20\0\51\0\52\0\53\0\uff6b\uffff\15\0\50\0\47\0\uffff" +
-		"\uffff\11\0\36\0\35\0\23\0\12\0\32\0\33\0\uff5d\uffff\31\0\uff55\uffff\16\0\62\0" +
-		"\uff4d\uffff\uffff\uffff\uff47\uffff\uffff\uffff\uffff\uffff\61\0\uffff\uffff\uff41" +
-		"\uffff\uffff\uffff\30\0\63\0\64\0\65\0\66\0\uffff\uffff\uffff\uffff\60\0\55\0\uffff" +
-		"\uffff\uffff\uffff\54\0\uffff\uffff\ufffe\uffff");
+		"\67\0\ufff1\uffff\uffe9\uffff\4\0\uffff\uffff\uffff\uffff\uffff\uffff\70\0\uffe3" +
+		"\uffff\uffdb\uffff\5\0\41\0\43\0\42\0\3\0\7\0\10\0\uffff\uffff\uffcd\uffff\uffc1" +
+		"\uffff\uffb1\uffff\13\0\uffff\uffff\uffa9\uffff\uffff\uffff\45\0\uffff\uffff\uffff" +
+		"\uffff\uff9f\uffff\uffff\uffff\75\0\uff91\uffff\uff8b\uffff\uffff\uffff\24\0\14\0" +
+		"\46\0\uffff\uffff\27\0\uffff\uffff\uffff\uffff\uffff\uffff\17\0\uff81\uffff\21\0" +
+		"\uffff\uffff\77\0\uffff\uffff\uffff\uffff\uffff\uffff\40\0\uffff\uffff\uffff\uffff" +
+		"\uffff\uffff\uffff\uffff\20\0\51\0\52\0\53\0\uff79\uffff\15\0\50\0\47\0\uffff\uffff" +
+		"\11\0\36\0\35\0\23\0\12\0\32\0\33\0\uff6b\uffff\31\0\uff63\uffff\16\0\62\0\uff5b" +
+		"\uffff\uffff\uffff\uff55\uffff\uffff\uffff\uffff\uffff\61\0\uffff\uffff\uff4f\uffff" +
+		"\uffff\uffff\30\0\63\0\64\0\65\0\66\0\uffff\uffff\uffff\uffff\60\0\55\0\uffff\uffff" +
+		"\uffff\uffff\54\0\uffff\uffff\ufffe\uffff");
 
-	private static final int[] tmLalr = TypesLexer.unpack_int(194,
+	private static final int[] tmLalr = TypesLexer.unpack_int(180,
 		"\24\0\uffff\uffff\0\0\0\0\uffff\uffff\ufffe\uffff\25\0\uffff\uffff\16\0\74\0\uffff" +
 		"\uffff\ufffe\uffff\7\0\uffff\uffff\12\0\71\0\16\0\71\0\uffff\uffff\ufffe\uffff\12" +
-		"\0\uffff\uffff\16\0\6\0\uffff\uffff\ufffe\uffff\1\0\4\0\16\0\4\0\17\0\4\0\26\0\4" +
-		"\0\27\0\4\0\30\0\4\0\uffff\uffff\ufffe\uffff\7\0\uffff\uffff\12\0\72\0\16\0\72\0" +
-		"\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\16\0\uffff\uffff\26\0\uffff\uffff\27\0\uffff" +
-		"\uffff\30\0\uffff\uffff\15\0\102\0\uffff\uffff\ufffe\uffff\22\0\uffff\uffff\1\0\37" +
-		"\0\12\0\37\0\15\0\37\0\21\0\37\0\uffff\uffff\ufffe\uffff\7\0\uffff\uffff\10\0\uffff" +
-		"\uffff\1\0\44\0\12\0\44\0\15\0\44\0\21\0\44\0\22\0\44\0\uffff\uffff\ufffe\uffff\12" +
-		"\0\uffff\uffff\15\0\101\0\21\0\101\0\uffff\uffff\ufffe\uffff\20\0\uffff\uffff\22" +
-		"\0\uffff\uffff\11\0\76\0\14\0\76\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\16\0\uffff" +
-		"\uffff\26\0\uffff\uffff\27\0\uffff\uffff\30\0\uffff\uffff\21\0\102\0\uffff\uffff" +
-		"\ufffe\uffff\14\0\uffff\uffff\11\0\100\0\uffff\uffff\ufffe\uffff\6\0\uffff\uffff" +
-		"\11\0\34\0\12\0\34\0\23\0\34\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\11\0\22\0" +
-		"\23\0\22\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\2\0\uffff\uffff\3\0\uffff\uffff" +
-		"\4\0\uffff\uffff\22\0\uffff\uffff\23\0\104\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff" +
-		"\11\0\25\0\23\0\25\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\11\0\26\0\23\0\26\0" +
-		"\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\23\0\103\0\uffff\uffff\ufffe\uffff\1\0" +
-		"\uffff\uffff\21\0\57\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\21\0\56\0\uffff\uffff" +
-		"\ufffe\uffff");
+		"\0\uffff\uffff\16\0\6\0\uffff\uffff\ufffe\uffff\7\0\uffff\uffff\12\0\72\0\16\0\72" +
+		"\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\16\0\uffff\uffff\26\0\uffff\uffff\27\0" +
+		"\uffff\uffff\30\0\uffff\uffff\15\0\102\0\uffff\uffff\ufffe\uffff\22\0\uffff\uffff" +
+		"\1\0\37\0\12\0\37\0\15\0\37\0\21\0\37\0\uffff\uffff\ufffe\uffff\7\0\uffff\uffff\10" +
+		"\0\uffff\uffff\1\0\44\0\12\0\44\0\15\0\44\0\21\0\44\0\22\0\44\0\uffff\uffff\ufffe" +
+		"\uffff\12\0\uffff\uffff\15\0\101\0\21\0\101\0\uffff\uffff\ufffe\uffff\20\0\uffff" +
+		"\uffff\22\0\uffff\uffff\11\0\76\0\14\0\76\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff" +
+		"\16\0\uffff\uffff\26\0\uffff\uffff\27\0\uffff\uffff\30\0\uffff\uffff\21\0\102\0\uffff" +
+		"\uffff\ufffe\uffff\14\0\uffff\uffff\11\0\100\0\uffff\uffff\ufffe\uffff\6\0\uffff" +
+		"\uffff\11\0\34\0\12\0\34\0\23\0\34\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\11" +
+		"\0\22\0\23\0\22\0\uffff\uffff\ufffe\uffff\1\0\uffff\uffff\2\0\uffff\uffff\3\0\uffff" +
+		"\uffff\4\0\uffff\uffff\22\0\uffff\uffff\23\0\104\0\uffff\uffff\ufffe\uffff\12\0\uffff" +
+		"\uffff\11\0\25\0\23\0\25\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\11\0\26\0\23" +
+		"\0\26\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\23\0\103\0\uffff\uffff\ufffe\uffff" +
+		"\1\0\uffff\uffff\21\0\57\0\uffff\uffff\ufffe\uffff\12\0\uffff\uffff\21\0\56\0\uffff" +
+		"\uffff\ufffe\uffff");
 
 	private static final int[] tmGoto = TypesLexer.unpack_int(62,
 		"\0\0\2\0\54\0\74\0\120\0\132\0\132\0\134\0\144\0\150\0\156\0\176\0\206\0\214\0\222" +
