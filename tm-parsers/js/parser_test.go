@@ -867,8 +867,8 @@ var parseTests = []struct {
 
 		/* restricted productions: ThrowStatement */
 		`throw A«»`,
-		`throw«»
-     §A«»`, /* recovers */
+		`throw«»§
+     A«»`, /* recovers */
 	}},
 
 	// JSX
@@ -1337,8 +1337,8 @@ var parseTests = []struct {
 
 		// Statements
 		`function a() {
-		   «var a = 1+» /* inserted semicolon */
-		   §«var b = 2+§;»
+		   «var a = 1+»§ /* inserted semicolon */
+		   «var b = 2+§;»
 		   «var c = 2+
 		   a §= b;»
 		   b = a;

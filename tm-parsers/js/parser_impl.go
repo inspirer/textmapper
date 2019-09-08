@@ -88,8 +88,10 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				ln--
 			}
 			if ln == 0 {
-				entry.sym.offset, _ = lexer.Pos()
-				entry.sym.endoffset = entry.sym.offset
+				if p.next.symbol == noToken {
+					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+				}
+				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
@@ -151,11 +153,13 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 		if action == -2 || state == -1 {
 			p.healthy = false
 			if recovering == 0 {
-				offset, endoffset := lexer.Pos()
+				if p.next.symbol == noToken {
+					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+				}
 				lastErr = SyntaxError{
 					Line:      lexer.Line(),
-					Offset:    offset,
-					Endoffset: endoffset,
+					Offset:    p.next.offset,
+					Endoffset: p.next.endoffset,
 				}
 				if !p.eh(lastErr) {
 					return lastErr
