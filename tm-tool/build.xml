@@ -4,7 +4,7 @@
 	Updating copyright:
 	$ grep -rl "Copyright 2002-2019" . | xargs sed -i "" 's/Copyright 2002-2019/Copyright 2002-2020/g'
 	-->
-	<property name="tm.version" value="0.9.24"/>
+	<property name="tm.version" value="0.9.25"/>
 	<property name="tm.qualifier" value="-SNAPSHOT"/>
 	<property name="suffix" value="${tm.version}"/>
 

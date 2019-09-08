@@ -20,7 +20,7 @@
 	<groupId>org.textmapper</groupId>
 	<artifactId>tm-master</artifactId>
 	<packaging>pom</packaging>
-	<version>0.9.24-SNAPSHOT</version>
+	<version>0.9.25-SNAPSHOT</version>
 	<name>Textmapper Master</name>
 	<url>http://textmapper.org</url>
 
