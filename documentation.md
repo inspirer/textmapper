@@ -445,6 +445,51 @@ The lexer also tracks the current line number for error reporting, and it can be
 Nullable nonterminals must be used with care if you rely on the default AST construction mechanism that comes with Textmapper (see the Arrow notation section below).
 {:.alert .alert-warning}
 
+## Token sets
+
+From the grammar, Textmapper knows which tokens can start, follow, or be found within a nonterminal, and it makes these sets available to use in the same grammar via the token set syntax. When `set(<setexpr>)` is found on the right-hand side of a grammar rule, it matches any terminal from `<setexpr>`.
+
+Expression syntax:
+
+	<term>                 represents itself
+	<nonterm>              all terminals that can be found within nonterm
+	first <nonterm>        all terminals that can start this nonterminal
+	last <nonterm>         all terminals that can end this nonterminal
+	follow <nonterm>       all terminals that can follow this nonterminal (careful about eoi)
+	precede <nonterm>      all terminals that can precede this nonterminal
+	<setexpr> | <setexpr>  union
+	<setexpr> & <setexpr>  intersection
+	~<setexpr>             negation (careful about eoi)
+	(<setexpr>)            grouping
+
+Only follow and negation expressions might contain `eoi`, and it is often preferable to remove it:
+
+	set(follow X & ~(eoi))
+	set(~(first X | eoi))
+
+The following code uses token sets to skip nested braces and avoids enumerating all terminals in the grammar.
+
+	BracesContent:
+	    '{' BracesContent+? '}'
+	  | set(~(eoi | '{' | '}'))
+	;
+
+Grammar lookaheads (see below) can use token sets to reduce the number of tokens they need to scan before making a decision.
+
+	# Accept that this is a type cast after looking at exactly one token after parentheses.
+	StartOfCast : '(' Type ')' set(first Primary) ;
+
+It is possible to make certain tokens sets available in generated code for the lexer and/or tests. The following set is generated automatically when error recovery is enabled.
+
+	%generate afterErr = set(follow Error);
+
+parser_tables.go will contain:
+
+	// set(follow error) = RPAREN, RBRACK, RBRACE, COMMA, SEMICOLON
+	var afterErr = []int32{
+		17, 40, 41, 42, 43,
+	}
+
 ## Prefix parsing
 
 Sometimes it is useful to parse a prefix of a string and ignore the remaining text (for lookaheads, for example). We can enable such behavior for any start nonterminal by adding `no-eoi` after its name in the _%input_ directive.
