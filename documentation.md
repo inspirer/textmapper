@@ -58,7 +58,7 @@ By omitting a lexical pattern, you can introduce a terminal symbol without a lex
 	# a marker of the broken part of the stream
 	error:
 
-Mapping an input string to a terminal can be handled by the associated code.
+Mapping an input string to a terminal can be handled by the associated code (see [the lexer hack](https://en.wikipedia.org/wiki/The_lexer_hack)).
 
 	# some of the identifiers are types
 	TYPE:
@@ -319,7 +319,7 @@ To use an optional symbol (meaning either that symbol or an empty string is acce
 
 ## Rule syntax extensions
 
-Textmapper supports extended syntax for production rules. It includes grouping, lists, unordered sequences, alternations and options. These extensions are substituted before the table generation step to form a context-free grammar. As a part of this process, rules containing any kind of internal alternation are replaced with several context-free rules having the same derivation.
+Textmapper supports extended syntax for production rules. It includes grouping, lists, alternations and options. These extensions are substituted before the table generation step to form a context-free grammar. As a part of this process, rules containing any kind of internal alternation are replaced with several context-free rules having the same derivation.
 
 Parentheses are used for grouping in the usual manner. A question mark after a symbol reference or a group means that reference or group is optional. The following rule is expanded into 4 rules, where all combinations are expressed individually.
 
@@ -333,7 +333,7 @@ Parentheses are used for grouping in the usual manner. A question mark after a s
 	  | import static qualifiedID '.' '*' ';'
 	  ;
 
-The difference between using the **opt** suffix and a question mark operator is that the latter does not introduce a new nonterminal. This may result in slightly more generated code, but helps to prevent LR conflicts.
+The difference between using the **opt** suffix and a question mark operator is that the latter does not introduce a new nonterminal. This may result in slightly more generated code but helps to prevent LR conflicts.
 
 In-group alternation is a way to avoid repetitions.
 
@@ -350,7 +350,7 @@ Lists can be introduced on the right-hand side of a rule without the need for a 
 
 As with **opt** versus `?`, there are two ways to express lists accepting an empty string. The star quantifier handles an empty production in the created list nonterminal, while the `+?` operator inlines it on the caller side. Inlining is more verbose, but less likely to cause LR conflicts.
 
-## Semantic Actions
+## Semantic actions
 
 Semantic actions are code in the target language, which is executed when the parser reaches that point in the grammar. Most actions are declared at the end of the rule, where they can be used to compute the resulting associated value for the left-hand nonterminal. `$$` stands for the resulting variable.
 
@@ -408,7 +408,7 @@ Expressions in rule actions are evaluated in the context of the current rule. In
 	${first()}  refers to the first symbol on the RHS (only for non-empty rules)
 	${last()}   refers to the last symbol on the RHS (only for non-empty rules)
 
-Although `${left()}` and `$$` denote the same entity, their output differs for strictly-typed target languages:
+Although `${left()}` and `$$` denote the same entity, their output differs for statically-typed target languages:
 
 `$$`: Must be used for writing data to the associated value of the current rule. This value is usually stored in a variable of the most general type (e.g. Object in Java). If the data is read through the `$$` shortcut, the value is returned "as is" with no type casting.
 
@@ -420,9 +420,9 @@ Although `${left()}` and `$$` denote the same entity, their output differs for s
 	  | methods method { ${first()}.add($method); }
 	  ;
 
-## Symbol Locations
+## Symbol locations
 
-The generated lexer and parser track byte offsets of the parsed elements in the source text. Location attributes of terminal symbols are filled out by the lexer. A nonterminal inherits its start and end positions from the first and last symbols on the right-hand side of the matched rule. If the rule is empty, then both locations are set to the starting position of the next non-whitespace token in the stream.
+The generated lexer and parser track byte offsets of the parsed elements in the source text. Location attributes of terminal symbols are filled out by the lexer. A nonterminal inherits its start and end positions from the first and last symbols on the right-hand side of the matched rule respectively. If the rule is empty, then both locations are set to the starting position of the next non-whitespace token in the stream.
 
 	# store line and offsets in the AST class
 	assignment {Assignment} :
@@ -430,7 +430,7 @@ The generated lexer and parser track byte offsets of the parsed elements in the 
 	      { $$ = new Assignment($ID, $expr, ${ID.offset}, ${expr.endoffset}); }
 	;
 
-Typically element boundaries should not include comments and whitespaces, but if a nonterminal ends with a missing **-opt** symbol, its range expands until the next non-whitespace token. Prefer using the question mark syntax to avoid such problems.
+Typically element boundaries should not include comments and whitespaces, but if a nonterminal ends with an omitted nullable symbol, its range expands until the next non-whitespace token. Prefer using the question mark syntax to avoid such problems.
 
 	# when parsing `( prefix  )`, the clause range spans until the closing parenthesis
 	clause : prefix suffixopt ;
@@ -442,7 +442,25 @@ The lexer also tracks the current line number for error reporting, and it can be
 
 	IntegerConstant {int}: /__LINE__/  { $$ = l.Line() }
 
-## Parser Algorithm
+Nullable nonterminals must be used with care if you rely on the default AST construction mechanism that comes with Textmapper (see the Arrow notation section below).
+{:.alert .alert-warning}
+
+## Prefix parsing
+
+Sometimes it is useful to parse a prefix of a string and ignore the remaining text (for lookaheads, for example). We can enable such behavior for any start nonterminal by adding `no-eoi` after its name in the _%input_ directive.
+
+	%input input no-eoi;
+	input : '(' ... ')' ;
+
+The main requirement for such inputs is that the state after consuming the last terminal of an accepted string is an LR(0) state, which means that it does not require a lookahead. Consider the following grammar:
+
+	file : declaration* ;
+
+After parsing each declaration, the parser needs to know if there are more declarations in the stream, and for this it has to check the next token (up to `eoi`). This nonterminal always consumes the full input.
+
+Most input symbols that end with a terminal (or a fixed set of them) fulfil this requirement.
+
+## Parser algorithm
 
 The generated parser is a [shift-reduce parser](http://en.wikipedia.org/wiki/Shift-reduce_parser). It builds a parse tree from the leaves upwards by scanning the input left-to-right. The processed part of the input is stored as a set of partially parsed trees in a stack. Initially the stack (called the parsing stack) is empty, and in the end it contains the only parse tree for the whole input (if parsing succeeded). The stack is also used to maintain the associated attributes for each symbol (like values and locations). The parser proceeds step-by-step by applying one of two simple actions:
 
@@ -459,12 +477,12 @@ The following example shows the parsing steps for the variable declaration const
 | int                     | i = 5 + 3;    | Reduce (type : int) |
 | type                    | i = 5 + 3;    | Shift |
 | type ID(i)              | = 5 + 3;      | Shift (2 times) |
-| type ID = 5             | + 3;          | Reduce (expr : integer_const) |
-| type ID = expr          | + 3;          | Shift (2 times) |
-| type ID = expr + 3      | ;             | Reduce (expr : integer_const) |
-| type ID = expr + expr   | ;             | Reduce (expr : expr '+' expr) |
-| type ID = expr          | ;             | Shift |
-| type ID = expr ;        |               | Reduce (var_decl : type ID '=' expr ';') |
+| type ID _=_ INT(5)             | + 3;          | Reduce (expr : integer_const) |
+| type ID _=_ expr          | + 3;          | Shift (2 times) |
+| type ID _=_ expr _+_ INT(3)      | ;             | Reduce (expr : integer_const) |
+| type ID _=_ expr _+_ expr   | ;             | Reduce (expr : expr _+_ expr) |
+| type ID _=_ expr          | ;             | Shift |
+| type ID _=_ expr ;        |               | Reduce (var_decl : type ID _=_ expr _;_) |
 | var_decl                |               | Reduce (input : var_decl) |
 | input                   |               | \<success\> |
 
@@ -480,7 +498,7 @@ In each state there may be one or more actions that lead to a successful parse. 
 
 There is no *Success* action, instead the parser continues until it reaches the success state.
 
-## Grammar Ambiguities
+## Grammar ambiguities
 
 While building the *action* table, Textmapper reports all unresolved ambiguities as compile-time errors. Most of these errors originate in the grammar design and can be fixed by changing the derivation and precedence rules. If a grammar was successfully compiled, the generated parser is deterministic and produces one unique parse tree for each input.
 
@@ -507,7 +525,7 @@ We can resolve this conflict manually by marking the appropriate rule with a %sh
 
 The rule modifier should be used with care, as it may silently resolve more conflicts than you expect. A good practice is to limit its usages to well-studied cases only.
 
-## Operator Precedence
+## Operator precedence
 
 Mathematical expressions appear in many languages, and every language defines its own order in which parts of an expression are evaluated. For example, without parentheses, multiplication is typically done before addition. From the parsing point of view, it does make sense to have an AST that reflects the chosen operator precedence, i.e. operators with higher precedence are reduced first, and remain closer to the leaves in the AST. This allows us to evaluate an expression using a simple recursive tree traversal.
 
@@ -534,8 +552,8 @@ We can rewrite it so that operator priorities and associativities are encoded in
 
 It is heavy, verbose, and requires many excess reductions (every single constant passes its way through all nonterminals). Instead, we can add precedence rules to solve all the ambiguities and stick to the original version. Note that operators are represented by terminal symbols.
 
-	%left '+', '-';
-	%left '*', '/', '%';
+	%left '+' '-';
+	%left '*' '/' '%';
 
 Operators on the first line have the lowest precedence. Each subsequent line introduces a new, higher precedence level. On the same level, operators are interchangeable and have the same associativity (left, right, or nonassoc).
 
@@ -554,7 +572,7 @@ For example, the following conflict will be resolved as *Shift* for the `'*'` lo
 The unary minus requires a separate operator terminal as it has higher precedence than the usual minus operator. This means we must specify this custom precedence in a rule modifier.
 
 	:: lexer
-	unaryMinus:
+	unaryMinus:       # introduce a "precedence" terminal
 	
 	:: parser
 	%left '+', '-';
@@ -570,6 +588,41 @@ The unary minus requires a separate operator terminal as it has higher precedenc
 	;
 
 Without the *unaryMinus* precedence, `-1-1` can be parsed in two ways: either as `-(1-1)`, or as `(-1)-1`.
+
+## Parser-powered lookaheads
+
+Some grammar ambiguities require more advanced lookaheads than those provided by LALR, or have to be addressed with backtracking. Both cases are covered with a special declarative syntax that instructs Textmapper to spawn sub-parsers and do the disambiguation at runtime.
+
+The grammar can contain lookahead terms in the form of `(?= ...)`. Each term acts like a predicate and declares a set of alternative nonterminals that either match or not match a prefix of the remaining input.
+
+	Lambda : (?= StartOfLambda) '(' Parameters ')' '->' LambdaBody ;
+	StartOfLambda : '(' Parameters ')' '->' ;
+
+A lookahead term becomes an empty nonterminal which needs to be reduced, so as long as there are no conflicts, the only price we pay for having it around is an extra reduce action to parse the containing rule but otherwise, this is a no-op.
+
+	# Negative lookahead.
+	Parenthesized : (?= !StartOfLambda) '(' Expression ')' ;
+
+If two or more lookahead tokens can be reduced at the same time, Textmapper decides on the smallest set of lookaheads and the order in which they need to be performed at runtime to decide which production to prefer. It actually builds a decision tree, so all conflicting terms must have mutually exclusive predicates. This is integrated into the LALR algorithm and produces compile-time errors if there is no way to properly disambiguate the grammar.
+
+In the example above, as soon as the parser sees an opening parenthesis, it creates a copy of the current lexer, and spawns a prefix sub-parser for _StartOfLambda_ to look behind parentheses and decide if this is a lambda or a parenthesized expression. The result is pushed back onto the parsing stack, and the parser continues with either one or another production.
+
+Disambiguating N productions requires N-1 lookaheads, and they are performed in the order in which they are mentioned in the lookaheads terms. In the following case, the parser will attempt CastStart first and then LambdaStart if CastStart fails.
+
+	Expr :
+	    (?= !CastStart & !LambdaStart) '(' Expr ')'
+	  | (?= CastStart & !LambaStart) '(' Type ')' Expr
+	  | (?= LambdaStart) '(' Parameters ')' '->' LambdaBody
+	;
+
+If your lookahead parsers contain rules that require lookaheads themselves, enable the recursive lookahead option:
+
+	recursiveLookaheads = true
+
+This option also adds memoization for decisions made by inner parsers, guarding against exponential complexity in lookaheads (turning it into worst-case quadratic). Consider the following input for the above rules: `((((((1))))))`.
+
+Lookahead sub-parsers never execute semantic actions or produce AST nodes.
+{:.alert .alert-info}
 
 ## State markers
 
@@ -589,7 +642,7 @@ The previous snippet generates a map available to the parser code at runtime. Th
 
 Now, we can implement the rules of semicolon insertion by inspecting the current parser state at line breaks and checking whether the state allows or disallows semicolons (noLineBreak means eagerly insert a semicolon even if the next line parses fine without one).
 
-## Error Recovery
+## Error recovery
 
 By default, the generated parser stops when it encounters the first syntax error. This may not be desirable in some scenarios such as parsing a user-typed text in an editor, where most of the time the syntactic structure is broken (often locally). Introducing a token with the predefined name `error` turns on the recovery mechanism. The *error* terminal represents a part of the stream which cannot be successfully parsed.
 
@@ -620,7 +673,7 @@ Textmapper supports restricting the error recovery mechanism to a given producti
 
 Without `.recoveryScope`, the parser matches the offending closing parenthesis with the opening parenthesis of the delay call, completely messing up the parse tree.
 
-## Abstract Syntax Tree __New__{:.badge}
+## Abstract syntax tree __New__{:.badge}
 
 In most grammars, authors use semantic actions to build an intermediate representation of the input, moving most or all of the semantic processing out of the parser. Usually, this representation is a compact version of the parse tree and is called an Abstract Syntax Tree (AST). The generated parser then becomes a simple component which is able to transform input text into an AST. This approach pays off when you need to reuse the parser in different environments (e.g. in a compiler and for providing code completion in an IDE).
 
@@ -641,7 +694,7 @@ This grammar is quite verbose but your generated *parse* function will immediate
 
 	func (p *Parser) Parse(lexer *Lexer) ([]Expression, error)
 
-If you prefer to keep your grammar clean, there is a different way to produce ASTs out of Textmapper grammars. You can declare your parser 'event-based', and use the _arrow notation_ to map nonterminals (or their parts) into AST nodes.
+If you prefer to keep your grammar clean, there is a different way to produce ASTs out of Textmapper grammars. You can declare your parser 'event-based', and use an _arrow notation_ to map nonterminals (or their parts) into AST nodes.
 
 ## Arrow notation
 
