@@ -741,9 +741,73 @@ This grammar is quite verbose but your generated *parse* function will immediate
 
 If you prefer to keep your grammar clean, there is a different way to produce ASTs out of Textmapper grammars. You can declare your parser 'event-based', and use an _arrow notation_ to map nonterminals (or their parts) into AST nodes.
 
-## Arrow notation
+## Arrow notation and event-based parsing
+
+Each token and each nonterminal during parsing have start and end byte offsets. Arrow notation tells the parser to report the range on the left-hand side of the arrow as an AST node of a given type. This turns the parser into a producer of (type, start, end) triples, and that stream completely defines the resulting AST (children nodes are reported before parents, they nest within parent nodes and don't overlap).
+
+Enable the event-based APIs:
 
 	eventBased = true
 
-... to be continued
+The most typical thing to start with is to report each non-list and non-nullable nonterminal as a separate node:
 
+	IfStatement -> IfStatement :
+	    'if' expr block
+	  | 'if' expr block 'else' block
+	;
+
+The arrow notation can also be applied to individual rules (with fallback to the nonterminal node type):
+
+	IfStatement -> IfStatement :
+	    'if' expr block                    # inherits the default type from its nonterminal
+	  | 'if' expr block 'else' block       -> IfElseStatement
+	;
+
+.. and even to individual parts of a rule (requires parentheses):
+
+	Foo :
+	  '(' (Parameters ','? -> Parameters) ')' ;
+
+The arrow notation is compatible with semantic actions and associated values but it must always be the last thing in a rule or nonterminal header.
+
+	Foo {int} -> Foo :
+	  IntegerConstant { $$ = $IntegerConstant; }   %prec IntegerConstant -> IntFoo ;
+
+Alternations require special treatment to make them easier to work with in reconstructed ASTs. We can declare an interface node that will represent all nodes that come out of certain production(s), and then use a generated selector for the interface node to locate its instances. Interface nodes are not reported but they do guarantee that all productions under them produce exactly one child.
+
+	%interface Statement;
+	Statement -> Statement:
+	    IfStatement
+	  | WhileStatement
+	  | ';'                -> EmptyStatement
+	  ...
+	;
+	# Statement is now a set of (IfStatement, WhileStatement, EmptyStatement, ...)
+	# ifStmt.Children(selector.Statement) returns one or two nodes ("then" + optional "else")
+
+The right-hand side of the arrow can contain both - a node and an interface node (joined with `as`), in which case the interface node starts covering the reported node.
+
+	CtorCall -> CtorCall as Statement:
+	   'this' '(' args ')' ';' ;
+
+Then we can merge CtorCall with Statements in a single production. `stmt+=` and `stmt=` show that we are merging statements coming from different productions (with different arity) into a single field in the AST.
+
+	CtorBody -> Body:
+	    '{' stmt+=CtorCall? stmts=Statements* '}' ;
+
+Simple terminals can also be turned into events by adding them to the reportTokens list. This works even if they are marked as (space), in which case the filtering gets moved into the parser.
+
+	reportTokens = [Comment, Identifier, invalid_token]
+
+The final AST gets reconstructed from those events. This is a very convenient way to write parsers since the grammar is not polluted with random chunks of code. Enable the AST code generation:
+
+	eventFields = true
+	eventAST = true
+
+Note: eventFields will enable more checks on the shape of the produced AST:
+1. All lists should have a single node type or an interface for their content.
+2. All nodes that appear multiple times in their parent should have roles in the AST: `expr -> Expr : left=expr '+' right=expr ;`
+
+## Grammar templates
+
+... to be continued
