@@ -502,7 +502,10 @@ public class LexerGenerator {
 					if (index == null) {
 						checkpoints.put(cp, index = checkpoints.size());
 						if (status.isDebugMode()) {
-							status.debug("Created a checkpoint for " + s.defaultRule.getRegexp());
+							status.debug("Created a checkpoint for " +
+									s.defaultRule.getRegexp() + " (" + s.number + " -> " +
+									statesArr[s.action[i]].number + ") in " +
+									Arrays.toString(s.set) + "\n");
 						}
 					}
 					s.action[i] = states + index;

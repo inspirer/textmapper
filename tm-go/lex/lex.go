@@ -17,6 +17,7 @@ type Rule struct {
 	Action          int
 	Origin          status.SourceNode
 	OriginName      string
+	RegexpText      string
 }
 
 // Sym is a DFA input symbol, which represents zero or more runes indistinguishable by the

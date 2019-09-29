@@ -110,15 +110,22 @@ func (c *reCompiler) serialize(re *Regexp, resolver Resolver) {
 		barrier := c.emit(nil)
 		c.link(barrier, c.next())
 
+		var last int
 		for i := 0; i < re.min; i++ {
+			last = c.next()
 			c.serialize(re.sub[0], resolver)
 		}
 		if re.max == -1 {
-			start := c.next()
-			c.serialize(re.sub[0], resolver)
+			if re.min == 0 {
+				last = c.next()
+				c.serialize(re.sub[0], resolver)
+			}
 			barrier := c.emit(nil)
-			c.link(barrier, start)
-			c.link(start, c.next())
+			c.link(barrier, last)
+			c.link(barrier, c.next())
+			if re.min == 0 {
+				c.link(last, c.next())
+			}
 		} else if re.max > re.min {
 			var subs []int
 			for i := re.max - re.min; i > 0; i-- {

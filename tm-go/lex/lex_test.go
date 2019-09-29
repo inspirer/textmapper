@@ -141,6 +141,23 @@ var lexTests = []struct {
 			{`«testfoo--->» `, 2},
 		},
 	},
+	{
+		// + should reuse states.
+		rules: []*Rule{
+			{RE: MustParse(`ab|a(bc+)?`), Action: 1, StartConditions: []int{0}},
+		},
+		want: []string{
+			`0: EOI accept; [a] -> 1;`,
+			`1: EOI exec 1; other exec 1; [ac] exec 1; [b] -> 2;`,
+			`2: EOI exec 1; other exec 1; [a-b] exec 1; [c] -> 2;`,
+		},
+		testOn: []input{
+			{`«a»- `, 1},
+			{`«ab»b `, 1},
+			{`«abc»- `, 1},
+			{`«abccc»- `, 1},
+		},
+	},
 }
 
 func TestLex(t *testing.T) {

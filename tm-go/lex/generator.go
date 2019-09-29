@@ -169,7 +169,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 			backtrack = append(backtrack, Checkpoint{
 				Action:    key.accept + 2, // TODO get rid of +2 and align the ranges with dfa
 				NextState: key.targetState,
-				Details:   "in " + state.accept.OriginName,
+				Details:   fmt.Sprintf("in %v", state.accept.OriginName), // TODO print position in regexp
 			})
 			numBtStates++
 			state.action[i] = btState

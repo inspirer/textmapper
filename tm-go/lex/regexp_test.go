@@ -1,8 +1,8 @@
 package lex
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -18,8 +18,8 @@ var parseTests = []struct {
 	{`ab`, `str{ab}`},
 	{`+`, `str{+}`},
 	{`++`, `str{+}+`},
-	{`|+`, `alt{cat{}str{+}}`},
-	{`a|+`, `alt{str{a}str{+}}`},
+	{`|+`, `alt{cat{},str{+}}`},
+	{`a|+`, `alt{str{a},str{+}}`},
 	{`.+`, `cc{\x00-\t\x0b-\U0010ffff}+`},
 	{`([.a-z])+`, `cc{\x00-\t\x0b-\U0010ffff}+`},
 	{`a.b`, `cat{str{a}cc{\x00-\t\x0b-\U0010ffff}str{b}}`},
@@ -33,8 +33,8 @@ var parseTests = []struct {
 	{`{abc}{123,543}`, `ext{abc}{123,543}`},
 	{`ab{1,3}`, `cat{str{a}str{b}{1,3}}`},
 	{`a(b)`, `cat{str{a}str{b}}`},
-	{`a(b|c)`, `cat{str{a}alt{str{b}str{c}}}`},
-	{`a(b|c)+`, `cat{str{a}alt{str{b}str{c}}+}`},
+	{`a(b|c)`, `cat{str{a}alt{str{b},str{c}}}`},
+	{`a(b|c)+`, `cat{str{a}alt{str{b},str{c}}+}`},
 	{`[]]`, `cc{\]}`},
 	{`[^]]`, `cc{\x00-\\\^-\U0010ffff}`},
 	{`[\000-\010\012-\025]`, `cc{\x00-\x08\n-\x15}`},
@@ -43,6 +43,7 @@ var parseTests = []struct {
 	{`[\000-\n\014-\125]`, `cc{\x00-\n\x0c-U}`},
 	{`[-\n\014-\125]`, `cc{\n\x0c-U}`},
 	{`[-a-zA-Z-]`, `cc{\-A-Za-z}`},
+	{`0o7(_*7)*_+`, `cat{str{0o7}cat{str{_}*str{7}}*str{_}+}`},
 
 	// Case folding.
 	{`(?i)abC`, `cat{cc{Aa}cc{Bb}cc{Cc}}`},
@@ -245,12 +246,12 @@ func TestConstants(t *testing.T) {
 }
 
 func dump(re *Regexp) string {
-	var b bytes.Buffer
+	var b strings.Builder
 	dumpRegexp(re, &b)
 	return b.String()
 }
 
-func dumpRegexp(re *Regexp, b *bytes.Buffer) {
+func dumpRegexp(re *Regexp, b *strings.Builder) {
 	switch re.op {
 	case opLiteral:
 		fmt.Fprintf(b, `str{%s}`, re.text)
@@ -276,7 +277,10 @@ func dumpRegexp(re *Regexp, b *bytes.Buffer) {
 		b.WriteString("}")
 	case opAlternate:
 		b.WriteString("alt{")
-		for _, s := range re.sub {
+		for i, s := range re.sub {
+			if i > 0 {
+				b.WriteByte(',')
+			}
 			dumpRegexp(s, b)
 		}
 		if len(re.sub) == 0 {

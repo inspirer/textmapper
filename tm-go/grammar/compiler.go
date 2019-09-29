@@ -114,7 +114,14 @@ func (c *compiler) compileLexer() {
 			}
 		}
 		for i, val := range c.out.Tables.Backtrack {
-			c.out.Tables.Backtrack[i].Action = c.out.RuleToken[val.Action-2]
+			switch val.Action {
+			case 0:
+				c.out.Tables.Backtrack[i].Action = c.out.InvalidToken
+			case 1:
+				c.out.Tables.Backtrack[i].Action = eoi
+			default:
+				c.out.Tables.Backtrack[i].Action = c.out.RuleToken[val.Action-2]
+			}
 		}
 		for i, val := range c.out.ClassActions {
 			c.out.ClassActions[i].Action = c.out.RuleToken[val.Action]
@@ -341,8 +348,9 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				Resolver:        ps,
 				Origin:          p,
 				OriginName:      name,
+				RegexpText:      pat.Text(),
 			}
-			comment := fmt.Sprintf("%v: %v", name, pat.Text())
+			comment := fmt.Sprintf("%v: %v", name, rule.RegexpText)
 
 			if prio, ok := p.Priority(); ok {
 				rule.Precedence, _ = strconv.Atoi(prio.Text())
