@@ -1,4 +1,4 @@
-// Package syntax analyzes and translates a context-free grammar in the Textmapper notation into a
+// Package syntax analyzes and translates context-free grammars in the Textmapper notation into a
 // simpler representation that is understood by a LALR parser generator.
 package syntax
 
@@ -13,6 +13,7 @@ type Model struct {
 	Nonterms  []Nonterm // all params and nonterms must have distinct names
 	Inputs    []Input
 	Sets      []TokenSet // extra token sets to compute
+	Cats      []string   // categories
 }
 
 // Input introduces a start nonterminal.
@@ -29,9 +30,21 @@ type Param struct {
 
 // Nonterm is a grammar nonterminal.
 type Nonterm struct {
-	Name   string
-	Value  Expr
+	Name       string
+	Value      Expr
+	TargetName string // -> {TargetName} (which can be a category name)
+
+	// When non-empty, this is a Lookahead nonterminal (implies Value is Empty). When two or more
+	// lookahead nonterminals can be reduced in the same state, their lookahead predicates are
+	// evaluated at runtime to determine which one should actually be reduced.
+	LA     []LAPredicate
 	Origin status.SourceNode
+}
+
+// LAPredicate is a restriction on the remaining input stream of tokens.
+type LAPredicate struct {
+	Input   int
+	Negated bool
 }
 
 // Expr represents the right-hand side of a production rule (or its part).
@@ -70,10 +83,17 @@ const (
 	Assign               // field={Sub0}
 	Append               // field+={Sub0}
 	Arrow                // {Sub0} -> {Name}
-	List                 // of {Sub0}, separator={Sub1} (if present), also {ListFlags}
 	Set                  // set({Set})
-	Conditional          // [{Predicate}] {Sub}
 	StateMarker          // .{Name}
+
+	// The following kinds can appear as children of a top-level Choice expression only (or be nested
+	// in one another).
+	Conditional // [{Predicate}] {Sub}
+	Prec        // {Sub0} %prec {Symbol}
+	Command     // {Sub0} { some code } - Pos references the original semantic action
+
+	// Top-level expressions.
+	List // of {Sub0}, separator={Sub1} (if present), also {ListFlags}
 )
 
 // TokenSet is a grammar expression that resolves to a set of tokens.
