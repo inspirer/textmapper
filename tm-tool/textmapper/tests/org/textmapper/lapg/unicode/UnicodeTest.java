@@ -43,18 +43,18 @@ import static org.junit.Assert.*;
  */
 public class UnicodeTest {
 
-	private static final boolean TEST_DATA_FILES = "true".equals(System.getProperty("TEST_DATA_FILES"));
+	private static final boolean TEST_DATA_FILES = true;
 
 	@Test
 	public void testFilesUpToDate() throws IOException {
 		if (!TEST_DATA_FILES) return;
-		testContent("data/UnicodeData.txt", "http://www.unicode.org/Public/10.0.0/ucd/UnicodeData.txt");
-		testContent("data/Blocks.txt", "http://www.unicode.org/Public/10.0.0/ucd/Blocks.txt");
-		testContent("data/Scripts.txt", "http://www.unicode.org/Public/10.0.0/ucd/Scripts.txt");
-		testContent("data/PropList.txt", "http://www.unicode.org/Public/10.0.0/ucd/PropList.txt");
-		testContent("data/DerivedCoreProperties.txt", "http://www.unicode.org/Public/10.0.0/ucd/DerivedCoreProperties.txt");
-		testContent("data/PropertyAliases.txt", "http://www.unicode.org/Public/10.0.0/ucd/PropertyAliases.txt");
-		testContent("data/PropertyValueAliases.txt", "http://www.unicode.org/Public/10.0.0/ucd/PropertyValueAliases.txt");
+		testContent("data/UnicodeData.txt", "http://www.unicode.org/Public/11.0.0/ucd/UnicodeData.txt");
+		testContent("data/Blocks.txt", "http://www.unicode.org/Public/11.0.0/ucd/Blocks.txt");
+		testContent("data/Scripts.txt", "http://www.unicode.org/Public/11.0.0/ucd/Scripts.txt");
+		testContent("data/PropList.txt", "http://www.unicode.org/Public/11.0.0/ucd/PropList.txt");
+		testContent("data/DerivedCoreProperties.txt", "http://www.unicode.org/Public/11.0.0/ucd/DerivedCoreProperties.txt");
+		testContent("data/PropertyAliases.txt", "http://www.unicode.org/Public/11.0.0/ucd/PropertyAliases.txt");
+		testContent("data/PropertyValueAliases.txt", "http://www.unicode.org/Public/11.0.0/ucd/PropertyValueAliases.txt");
 	}
 
 	@Test
