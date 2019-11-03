@@ -1,4 +1,5 @@
 language: java
 before_script: cd tm-tool
 jdk:
-  - oraclejdk9
+  - oraclejdk11
+sudo: required
