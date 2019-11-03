@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
  */
 public class UnicodeTest {
 
-	private static final boolean TEST_DATA_FILES = true;
+	private static final boolean TEST_DATA_FILES = "true".equals(System.getProperty("TEST_DATA_FILES"));
 
 	@Test
 	public void testFilesUpToDate() throws IOException {
@@ -118,7 +118,7 @@ public class UnicodeTest {
 			@Override
 			protected EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
 				HashMap<String, Object> res = new HashMap<>();
-				res.put("version", "10.0.0");
+				res.put("version", "11.0.0");
 				res.put("properties", properties);
 				res.put("aliases", aliases);
 				res.put("composites", compositeProperties);
