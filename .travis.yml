@@ -1,5 +1,11 @@
-language: java
-before_script: cd tm-tool
-jdk:
-  - oraclejdk11
-sudo: required
+matrix:
+  include:
+    - language: java
+      before_script: cd tm-tool
+      jdk:
+        - oraclejdk11
+      sudo: required
+    - language: go
+      before_script: cd tm-go
+      go:
+        - 1.x
