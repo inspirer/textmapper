@@ -255,6 +255,7 @@
 			<classpath>
 				<fileset dir="${tm.idea.dir}/org.textmapper.idea/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
+				<fileset dir="${ideaPath}/plugins/java/lib" includes="*.jar"/>
 				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
 			</classpath>
 		</javac>
@@ -296,6 +297,7 @@
 			<src path="${tm.idea.dir}/org.textmapper.idea/tm-java/src"/>
 			<classpath>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
+				<fileset dir="${ideaPath}/plugins/java/lib" includes="*.jar"/>
 				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
 				<pathelement path="${build.folder}/java.out/tm-idea-plugin"/>
 			</classpath>
