@@ -3,6 +3,7 @@ package grammar
 import (
 	"sort"
 
+	"github.com/inspirer/textmapper/tm-go/lalr"
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
 )
@@ -40,6 +41,7 @@ type Grammar struct {
 	Syms       []Symbol
 	NumTokens  int
 	*Lexer
+	*Parser
 	*Options
 	CustomTemplates string
 }
@@ -52,7 +54,7 @@ func (g *Grammar) Tokens() []Symbol {
 // SpaceActions returns a sorted list of space-only actions.
 func (g *Grammar) SpaceActions() []int {
 	var ret []int
-	for _, a := range g.Actions {
+	for _, a := range g.Lexer.Actions {
 		if a.Space {
 			ret = append(ret, a.Action)
 		}
@@ -84,6 +86,13 @@ type Lexer struct {
 	Actions         []SemanticAction
 	InvalidToken    int
 	RuleToken       []int // maps actions into tokens; empty if the mapping is 1:1
+}
+
+// Parser is a model of a generated parser.
+type Parser struct {
+	Inputs  []int // nonterminal symbols
+	Tables  *lalr.Tables
+	Actions []SemanticAction
 }
 
 // Options carries grammar generation parameters.

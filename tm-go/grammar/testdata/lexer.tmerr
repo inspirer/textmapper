@@ -3,11 +3,11 @@ language lexer(go);
 :: lexer
 
 %s initial;
-# err: redeclaration of initial
+# err: redeclaration of 'initial'
 %x «initial»;
 
 idChar = /[a-zA-Z_]/
-# err: redeclaration of idChar
+# err: redeclaration of 'idChar'
 «idChar» = /[a-zA-Z_0-9]/
 
 # err: unused pattern 'unusedP'

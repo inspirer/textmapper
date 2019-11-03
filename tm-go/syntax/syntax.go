@@ -19,20 +19,23 @@ type Model struct {
 // Input introduces a start nonterminal.
 type Input struct {
 	Symbol int
-	Args   []Arg
+	NoEoi  bool
 }
 
 // Param is a grammar-wide template parameter.
 type Param struct {
-	Name   string
-	Origin status.SourceNode
+	Name         string
+	DefaultValue string
+	Lookahead    bool
+	Origin       status.SourceNode
 }
 
 // Nonterm is a grammar nonterminal.
 type Nonterm struct {
-	Name       string
-	Value      Expr
-	TargetName string // -> {TargetName} (which can be a category name)
+	Name   string
+	Type   string // the type of the associated value
+	Params []int
+	Value  Expr
 
 	// When non-empty, this is a Lookahead nonterminal (implies Value is Empty). When two or more
 	// lookahead nonterminals can be reduced in the same state, their lookahead predicates are

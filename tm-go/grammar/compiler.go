@@ -9,6 +9,7 @@ import (
 
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
+	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/container"
 	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 	"github.com/inspirer/textmapper/tm-parsers/tm/selector"
@@ -28,12 +29,15 @@ func Compile(file ast.File) (*Grammar, error) {
 			},
 		},
 		syms:       make(map[string]int),
-		ids:        make(map[string]int),
+		ids:        make(map[string]string),
 		codeRule:   make(map[symRule]int),
 		codeAction: make(map[symAction]int),
+		params:     make(map[string]int),
+		nonterms:   make(map[string]int),
 	}
 	c.parseOptions()
 	c.compileLexer()
+	c.compileParser()
 
 	c.resolveOptions()
 
@@ -47,8 +51,10 @@ type compiler struct {
 	out  *Grammar
 	s    status.Status
 
-	syms         map[string]int
-	ids          map[string]int
+	syms map[string]int
+	ids  map[string]string // ID -> name
+
+	// Lexer
 	conds        map[string]int
 	inclusiveSC  []int
 	patterns     []*patterns // to keep track of unused patterns
@@ -58,6 +64,11 @@ type compiler struct {
 	codeAction   map[symAction]int // -> index in c.out.Actions
 	reportTokens map[string]bool
 	reportList   []ast.Identifier
+
+	// Parser
+	source   *syntax.Model
+	params   map[string]int // -> index in source.Params
+	nonterms map[string]int // -> index in source.Nonterms
 }
 
 type symAction struct {
@@ -75,8 +86,10 @@ type symRule struct {
 var noSpace = ast.LexemeAttribute{}
 
 func (c *compiler) compileLexer() {
+	out := c.out.Lexer
+
 	eoi := c.addToken(Eoi, "EOI", ast.RawType{}, noSpace, nil)
-	c.out.InvalidToken = c.addToken(InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
+	out.InvalidToken = c.addToken(InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
 
 	c.collectStartConds()
 	lexer, _ := c.file.Lexer()
@@ -89,50 +102,50 @@ func (c *compiler) compileLexer() {
 	if !inline {
 		// Prepend EOI and InvalidToken to the rule token array to simplify handling of -1 and -2
 		// actions.
-		c.out.RuleToken = append(c.out.RuleToken, 0, 0)
-		copy(c.out.RuleToken[2:], c.out.RuleToken)
-		c.out.RuleToken[0] = c.out.InvalidToken
-		c.out.RuleToken[1] = eoi
+		out.RuleToken = append(out.RuleToken, 0, 0)
+		copy(out.RuleToken[2:], out.RuleToken)
+		out.RuleToken[0] = out.InvalidToken
+		out.RuleToken[1] = eoi
 	}
 
 	var err error
-	c.out.Tables, err = lex.Compile(c.rules)
+	out.Tables, err = lex.Compile(c.rules)
 	c.s.AddError(err)
 
 	if inline {
 		// There is at most one action per token, so it is possible to use tokens IDs as actions.
 		// We need to swap EOI and InvalidToken actions.
 		// TODO simplify
-		start := c.out.Tables.ActionStart()
-		for i, val := range c.out.Tables.Dfa {
+		start := out.Tables.ActionStart()
+		for i, val := range out.Tables.Dfa {
 			if val == start {
-				c.out.Tables.Dfa[i] = start - 1
+				out.Tables.Dfa[i] = start - 1
 			} else if val == start-1 {
-				c.out.Tables.Dfa[i] = start
+				out.Tables.Dfa[i] = start
 			} else if val < start {
-				c.out.Tables.Dfa[i] = start - c.out.RuleToken[start-val-2]
+				out.Tables.Dfa[i] = start - out.RuleToken[start-val-2]
 			}
 		}
-		for i, val := range c.out.Tables.Backtrack {
+		for i, val := range out.Tables.Backtrack {
 			switch val.Action {
 			case 0:
-				c.out.Tables.Backtrack[i].Action = c.out.InvalidToken
+				out.Tables.Backtrack[i].Action = out.InvalidToken
 			case 1:
-				c.out.Tables.Backtrack[i].Action = eoi
+				out.Tables.Backtrack[i].Action = eoi
 			default:
-				c.out.Tables.Backtrack[i].Action = c.out.RuleToken[val.Action-2]
+				out.Tables.Backtrack[i].Action = out.RuleToken[val.Action-2]
 			}
 		}
-		for i, val := range c.out.ClassActions {
-			c.out.ClassActions[i].Action = c.out.RuleToken[val.Action]
+		for i, val := range out.ClassActions {
+			out.ClassActions[i].Action = out.RuleToken[val.Action]
 			for k, v := range val.Custom {
-				val.Custom[k] = c.out.RuleToken[v]
+				val.Custom[k] = out.RuleToken[v]
 			}
 		}
-		for i, val := range c.out.Actions {
-			c.out.Actions[i].Action = c.out.RuleToken[val.Action]
+		for i, val := range out.Actions {
+			out.Actions[i].Action = out.RuleToken[val.Action]
 		}
-		c.out.RuleToken = nil
+		out.RuleToken = nil
 	}
 
 	for _, p := range c.patterns {
@@ -153,7 +166,7 @@ func (c *compiler) canInlineRules() bool {
 		seen.Set(e)
 	}
 	// TODO inline rules with actions
-	for _, a := range c.out.Actions {
+	for _, a := range c.out.Lexer.Actions {
 		if a.Code != "" {
 			return false
 		}
@@ -168,7 +181,7 @@ func (c *compiler) collectStartConds() {
 	insert := func(n *ast.Node, excl bool) {
 		name := n.Text()
 		if _, exists := conds[name]; exists {
-			c.errorf(n, "redeclaration of %v", name)
+			c.errorf(n, "redeclaration of '%v'", name)
 			return
 		}
 		conds[name] = excl
@@ -252,8 +265,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 	if id == "" {
 		id = SymbolID(name, UpperCase)
 	}
-	if i, exists := c.ids[id]; exists {
-		prev := c.out.Syms[i].Name
+	if prev, exists := c.ids[id]; exists {
 		c.errorf(n, "%v and %v get the same ID in generated code", name, prev)
 	}
 
@@ -266,7 +278,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 		Origin: n,
 	}
 	c.syms[name] = sym.Index
-	c.ids[id] = sym.Index
+	c.ids[id] = name
 	c.out.Syms = append(c.out.Syms, sym)
 	return sym.Index
 }
@@ -280,15 +292,16 @@ func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttrib
 		}
 	}
 
+	out := c.out.Lexer
 	key := symRule{code: cmd.Text(), space: space.IsValid(), class: class.IsValid(), sym: sym}
 	if a, ok := c.codeRule[key]; ok {
 		if ca, ok := c.codeAction[symAction{key.code, key.space}]; ok && comment != "" {
-			c.out.Actions[ca].Comments = append(c.out.Actions[ca].Comments, comment)
+			out.Actions[ca].Comments = append(out.Actions[ca].Comments, comment)
 		}
 		return a
 	}
-	a := len(c.out.RuleToken)
-	c.out.RuleToken = append(c.out.RuleToken, sym)
+	a := len(out.RuleToken)
+	out.RuleToken = append(out.RuleToken, sym)
 	c.codeRule[key] = a
 
 	if !cmd.IsValid() && !space.IsValid() {
@@ -303,8 +316,8 @@ func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttrib
 	} else {
 		act.Origin = space
 	}
-	c.codeAction[symAction{key.code, key.space}] = len(c.out.Actions)
-	c.out.Actions = append(c.out.Actions, act)
+	c.codeAction[symAction{key.code, key.space}] = len(out.Actions)
+	out.Actions = append(out.Actions, act)
 	return a
 }
 
@@ -547,6 +560,162 @@ func (c *compiler) parseExpr(e ast.Expression, defaultVal interface{}) interface
 	return defaultVal
 }
 
+func (c *compiler) collectParams(p ast.ParserSection) {
+	for _, part := range p.GrammarPart() {
+		if param, ok := part.(*ast.TemplateParam); ok {
+			name := param.Name().Text()
+			if _, exists := c.params[name]; exists {
+				c.errorf(param.Name(), "redeclaration of '%v'", name)
+				continue
+			}
+			if _, exists := c.syms[name]; exists {
+				c.errorf(param.Name(), "template parameters cannot be named after terminals '%v'", name)
+				continue
+			}
+			p := syntax.Param{Name: name, Origin: param.Name()}
+			if val, ok := param.ParamValue(); ok {
+				switch val := val.(type) {
+				case *ast.BooleanLiteral:
+					p.DefaultValue = val.Text()
+				default:
+					c.errorf(val.TmNode(), "unsupported default value")
+				}
+			}
+			if mod, ok := param.Modifier(); ok {
+				if mod.Text() == "lookahead" {
+					p.Lookahead = true
+				} else {
+					c.errorf(mod, "unsupported syntax")
+				}
+			}
+			c.params[name] = len(c.source.Params)
+			c.source.Params = append(c.source.Params, p)
+		}
+	}
+}
+
+func (c *compiler) collectNonterms(p ast.ParserSection) {
+	for _, part := range p.GrammarPart() {
+		if nonterm, ok := part.(*ast.Nonterm); ok {
+			name := nonterm.Name().Text()
+			if _, exists := c.syms[name]; exists {
+				c.errorf(nonterm.Name(), "redeclaration of '%v'", name)
+				continue
+			}
+			if _, exists := c.nonterms[name]; exists {
+				c.errorf(nonterm.Name(), "redeclaration of '%v'", name)
+				continue
+			}
+			if _, exists := c.params[name]; exists {
+				c.errorf(nonterm.Name(), "redeclaration of a template parameter '%v'", name)
+				continue
+			}
+			id := SymbolID(name, CamelCase)
+			if prev, exists := c.ids[id]; exists {
+				c.errorf(nonterm.Name(), "%v and %v get the same ID in generated code", name, prev)
+			}
+			if ann, ok := nonterm.Annotations(); ok {
+				c.errorf(ann.TmNode(), "unsupported syntax")
+			}
+
+			nt := syntax.Nonterm{
+				Name:   name,
+				Origin: nonterm,
+			}
+			if t, ok := nonterm.NontermType(); ok {
+				rt, _ := t.(*ast.RawType)
+				if rt != nil {
+					nt.Type = rt.Text()
+				} else {
+					c.errorf(t.TmNode(), "unsupported syntax")
+				}
+			}
+
+			var seen map[string]bool
+			params, _ := nonterm.Params()
+			for _, param := range params.List() {
+				if seen == nil {
+					seen = make(map[string]bool)
+				}
+				switch param := param.(type) {
+				case *ast.ParamRef:
+					name := param.Identifier().Text()
+					if seen[name] {
+						c.errorf(param, "duplicate parameter reference '%v'", name)
+						continue
+					}
+					seen[name] = true
+					if i, ok := c.params[name]; ok {
+						nt.Params = append(nt.Params, i)
+						continue
+					}
+					c.errorf(param, "unresolved parameter reference '%v'", name)
+				case *ast.InlineParameter:
+					name := param.Name().Text()
+					if _, exists := c.params[name]; exists {
+						c.errorf(param.Name().TmNode(), "redeclaration of '%v'", name)
+						continue
+					}
+					p := syntax.Param{Name: name, Origin: param.Name().TmNode()}
+					if val, ok := param.ParamValue(); ok {
+						switch val := val.(type) {
+						case *ast.BooleanLiteral:
+							p.DefaultValue = val.Text()
+						default:
+							c.errorf(val.TmNode(), "unsupported default value")
+						}
+					}
+					nt.Params = append(nt.Params, len(c.source.Params))
+					c.source.Params = append(c.source.Params, p)
+				}
+			}
+			c.ids[id] = name
+			c.nonterms[name] = len(c.source.Nonterms)
+			c.source.Nonterms = append(c.source.Nonterms, nt)
+		}
+	}
+}
+
+func (c *compiler) collectInputs(p ast.ParserSection) {
+	for _, part := range p.GrammarPart() {
+		if input, ok := part.(*ast.DirectiveInput); ok {
+			for _, ref := range input.InputRefs() {
+				name := ref.Reference().Name()
+				nonterm, found := c.nonterms[name.Text()]
+				if !found {
+					c.errorf(name, "unresolved nonterminal '%v'", name.Text())
+					continue
+				}
+				if len(c.source.Nonterms[nonterm].Params) > 0 {
+					c.errorf(name, "input nonterminals cannot be parametrized")
+				}
+				// TODO support no-eoi inputs
+				c.source.Inputs = append(c.source.Inputs, syntax.Input{Symbol: nonterm})
+			}
+		}
+	}
+
+	if len(c.source.Inputs) > 0 {
+		return
+	}
+
+}
+
+func (c *compiler) compileParser() {
+	p, ok := c.file.Parser()
+	if !ok {
+		return
+	}
+	c.source = new(syntax.Model)
+	for _, sym := range c.out.Syms {
+		c.source.Terminals = append(c.source.Terminals, sym.Name)
+	}
+	c.collectParams(p)
+	c.collectNonterms(p)
+	c.collectInputs(p)
+	// TODO
+}
+
 func (c *compiler) parseOptions() {
 	opts := c.out.Options
 	seen := make(map[string]int)
@@ -636,7 +805,7 @@ var emptyRE = lex.MustParse("")
 func (p *patterns) add(np *ast.NamedPattern) error {
 	name := np.Name().Text()
 	if _, exists := p.set[name]; exists {
-		return status.Errorf(np.Name(), "redeclaration of %v", name)
+		return status.Errorf(np.Name(), "redeclaration of '%v'", name)
 	}
 
 	re, err := parsePattern(np.Pattern())

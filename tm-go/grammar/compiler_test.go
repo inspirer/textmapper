@@ -14,9 +14,10 @@ import (
 )
 
 var testFiles = []string{
-	`lexer.tmerr`,
-	`opts.tmerr`,
-	`opts_ok.tmerr`,
+	"lexer.tmerr",
+	"opts.tmerr",
+	"opts_ok.tmerr",
+	"parser.tmerr",
 }
 
 func TestErrors(t *testing.T) {

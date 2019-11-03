@@ -1,0 +1,55 @@
+language parser(go);
+
+:: lexer
+
+a: /a/
+b: /b/
+
+:: parser
+
+%«global» flag foo = «5»;
+# err: unsupported syntax
+# err: unsupported default value
+
+%flag «foo»;
+# err: redeclaration of 'foo'
+
+%lookahead flag bar = true;
+
+«a» : a;
+# err: redeclaration of 'a'
+
+c «returns b» : /*empty*/ ;
+# err: unsupported syntax
+
+d {Foo} -> Foo : /*empty*/ ;
+
+«d_» : /*empty*/ ;
+# err: d_ and d get the same ID in generated code
+
+«@Foo» e : d ;
+# err: unsupported syntax
+
+«d» {Foo} -> Foo : e ;
+# err: redeclaration of 'd'
+
+%input «eee»;
+# err: unresolved nonterminal 'eee'
+
+X <«Foo», foo> : /*empty*/ ;
+# err: unresolved parameter reference 'Foo'
+
+%input «X»;
+# err: input nonterminals cannot be parametrized
+
+Y1<param «foo»> : /*empty*/ ;
+# err: redeclaration of 'foo'
+
+Y2<param Foo = «123»> : /*empty*/ ;
+# err: unsupported default value
+
+%flag «a»;
+# err: template parameters cannot be named after terminals 'a'
+
+«foo»: /*empty*/ ;
+# err: redeclaration of a template parameter 'foo'
