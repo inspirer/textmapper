@@ -81,14 +81,7 @@ func SymbolID(name string, style nameStyle) string {
 			buf.WriteString(strings.ToUpper(word))
 		}
 	}
-	hasNonASCII := false
-	for _, r := range name {
-		if _, ok := charName[r]; ok {
-			hasNonASCII = true
-			break
-		}
-	}
-	if hasNonASCII {
+	if !isIdent(name) {
 		write("char")
 		if style == UpperCase {
 			// Insert an underscore anyway, as with UpperUnderscores.
@@ -129,4 +122,23 @@ func SymbolID(name string, style nameStyle) string {
 		write(word)
 	}
 	return buf.String()
+}
+
+// isIdent reports whether the given name is a valid Go identifier.
+func isIdent(name string) bool {
+	// From https://golang.org/ref/spec#Identifiers
+	//
+	//    identifier = letter { letter | unicode_digit } .
+	//    letter     = unicode_letter | "_" .
+	for i, r := range name {
+		isLetter := unicode.IsLetter(r) || r == '_'
+		if i == 0 && !isLetter {
+			return false
+		}
+		isDigit := unicode.IsDigit(r)
+		if !isLetter && !isDigit {
+			return false
+		}
+	}
+	return true
 }
