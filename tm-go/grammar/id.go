@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"unicode"
-	"unicode/utf8"
 )
 
 // nameStyle enumerates all supported identifier styles.
@@ -82,14 +81,18 @@ func SymbolID(name string, style nameStyle) string {
 			buf.WriteString(strings.ToUpper(word))
 		}
 	}
-	if inQuotes && len(name) == 1 {
-		r, _ := utf8.DecodeRuneInString(name)
-		if _, ok := charName[r]; !ok {
-			write("char")
-			if style == UpperCase {
-				// Insert an underscore anyway, as with UpperUnderscores.
-				buf.WriteByte('_')
-			}
+	hasNonASCII := false
+	for _, r := range name {
+		if _, ok := charName[r]; ok {
+			hasNonASCII = true
+			break
+		}
+	}
+	if hasNonASCII {
+		write("char")
+		if style == UpperCase {
+			// Insert an underscore anyway, as with UpperUnderscores.
+			buf.WriteByte('_')
 		}
 	}
 	var cont bool
