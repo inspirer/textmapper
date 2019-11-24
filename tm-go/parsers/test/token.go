@@ -15,7 +15,6 @@ const (
 	EOI
 	INVALID_TOKEN
 	WHITESPACE
-	MULTILINECOMMENT
 	SINGLELINECOMMENT
 	IDENTIFIER
 	INTEGERCONSTANT
@@ -35,6 +34,7 @@ const (
 	MINUSGT // ->
 	BACKTRACKINGTOKEN
 	ERROR
+	MULTILINECOMMENT
 
 	NumTokens
 )
@@ -43,7 +43,6 @@ var tokenStr = [...]string{
 	"EOI",
 	"INVALID_TOKEN",
 	"WHITESPACE",
-	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",
 	"IDENTIFIER",
 	"INTEGERCONSTANT",
@@ -63,6 +62,7 @@ var tokenStr = [...]string{
 	"->",
 	"BACKTRACKINGTOKEN",
 	"ERROR",
+	"MULTILINECOMMENT",
 }
 
 func (tok Token) String() string {

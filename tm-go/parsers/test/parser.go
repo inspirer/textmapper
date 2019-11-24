@@ -44,7 +44,7 @@ const (
 	startTokenBufferSize = 16
 	noToken              = int32(UNAVAILABLE)
 	eoiToken             = int32(EOI)
-	debugSyntax          = true
+	debugSyntax          = false
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {

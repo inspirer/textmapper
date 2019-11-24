@@ -51,8 +51,14 @@ var lexerTests = []struct {
 	{test.COLON, []string{"«:»"}},
 
 	{test.SINGLELINECOMMENT, []string{" «//abc»\r\n "}},
-	{test.MULTILINECOMMENT, []string{" «/**/» «/***/» «/*\r\n*/» "}},
-	{test.INVALID_TOKEN, []string{" «#» "}},
+	{test.MULTILINECOMMENT, []string{
+		" «/**/» «/***/» «/*\r\n*/» ",
+		" «/* /* ****/  */»  nested",
+	}},
+	{test.INVALID_TOKEN, []string{
+		" «#» ",
+		" /**/ «/* /* ****/  *  nested»", // unfinished comment
+	}},
 }
 
 func TestLexer(t *testing.T) {

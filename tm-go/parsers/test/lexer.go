@@ -8,6 +8,12 @@ import (
 	"unicode/utf8"
 )
 
+// Lexer states.
+const (
+	StateInitial     = 0
+	StateInMultiLine = 1
+)
+
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
 type Lexer struct {
@@ -46,6 +52,7 @@ func (l *Lexer) Init(source string) {
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() Token {
+	var commentOffset, commentDepth int
 restart:
 	l.tokenOffset = l.offset
 
@@ -95,22 +102,22 @@ restart:
 	rule := tmFirstRule - state
 recovered:
 	switch rule {
-	case 5:
+	case 4:
 		hh := hash & 7
 		switch hh {
 		case 0:
 			if hash == 0x5b098c8 && "decl2" == l.source[l.tokenOffset:l.offset] {
-				rule = 9
+				rule = 8
 				break
 			}
 		case 2:
 			if hash == 0x364492 && "test" == l.source[l.tokenOffset:l.offset] {
-				rule = 7
+				rule = 6
 				break
 			}
 		case 7:
 			if hash == 0x5b098c7 && "decl1" == l.source[l.tokenOffset:l.offset] {
-				rule = 8
+				rule = 7
 				break
 			}
 		}
@@ -132,9 +139,43 @@ recovered:
 		}
 	case 2: // WhiteSpace: /[ \t\r\n]/
 		space = true
-	case 6: // IntegerConstant: /[0-9]+/
+	case 5: // IntegerConstant: /[0-9]+/
 		{
 			l.value = mustParseInt(l.Text())
+		}
+	case 21: // MultiLineComment: /\/\*/
+		{
+			l.State = StateInMultiLine
+			commentOffset = l.tokenOffset
+			commentDepth = 0
+			space = true
+		}
+	case 22: // eoi: /{eoi}/
+		{
+			l.tokenOffset = commentOffset
+			l.State = StateInitial
+			token = INVALID_TOKEN
+		}
+	case 23: // MultiLineComment: /\/\*/
+		{
+			commentDepth++
+			space = true
+		}
+	case 24: // MultiLineComment: /\*\//
+		{
+			if commentDepth == 0 {
+				space = false
+				l.tokenOffset = commentOffset
+				l.State = StateInitial
+				break
+			}
+			space = true
+			commentDepth--
+		}
+	case 25: // WhiteSpace: /[^\/*]+|[*\/]/
+		space = true
+		{
+			space = true
 		}
 	}
 	if space {

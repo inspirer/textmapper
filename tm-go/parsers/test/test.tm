@@ -6,7 +6,7 @@ lang = "test"
 package = "github.com/inspirer/textmapper/tm-go/parsers/test"
 eventBased = true
 eventFields = true
-debugParser = true
+debugParser = false
 tokenLine = false
 cancellable = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
@@ -16,8 +16,6 @@ extraTypes = ["Int7", "Int9"]
 
 WhiteSpace: /[ \t\r\n]/ (space)
 
-commentChars = /([^*]|\*+[^*\/])*\**/
-MultiLineComment:  /\/\*{commentChars}\*\//    (space)
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
 
 Identifier: /[a-zA-Z_](-*[a-zA-Z_0-9])*/    (class)
@@ -48,6 +46,46 @@ backtrackingToken: /test(foo)?-+>/
 error:
 invalid_token:
 eoi:
+
+%x inMultiLine;
+
+# This is an example of how one can support nested block comments.
+MultiLineComment:  /\/\*/ (space)
+  {
+    l.State = StateInMultiLine
+    commentOffset = l.tokenOffset
+    commentDepth = 0
+    space = true
+  }
+
+<inMultiLine> {
+  eoi: /{eoi}/
+    {
+      l.tokenOffset = commentOffset
+      l.State = StateInitial
+      token = INVALID_TOKEN
+    }
+  MultiLineComment: /\/\*/ (space)
+    {
+      commentDepth++
+      space = true
+    }
+  MultiLineComment: /\*\// (space)
+    {
+      if commentDepth == 0 {
+        space = false
+        l.tokenOffset = commentOffset
+        l.State = StateInitial
+        break
+      }
+      space = true
+      commentDepth--
+    }
+
+  # Note: space = true below is needed only during the migration period to help the Go and Java
+  # implementations produce identical output (rather than just equivalent).
+  WhiteSpace: /[^\/*]+|[*\/]/ (space) { space = true }
+}
 
 :: parser
 
@@ -116,4 +154,8 @@ func mustParseInt(s string) int {
 	return i
 }
 {{end}}
+${end}
+
+${template go_lexer.onBeforeNext-}
+	var commentOffset, commentDepth int
 ${end}

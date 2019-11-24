@@ -85,7 +85,6 @@ var ruleNodeType = [...]NodeType{
 	0,          // Declaration : 'test' '(' empty1 ')'
 	0,          // setof_not_((eoi | '.') | '}') : invalid_token
 	0,          // setof_not_((eoi | '.') | '}') : WhiteSpace
-	0,          // setof_not_((eoi | '.') | '}') : MultiLineComment
 	0,          // setof_not_((eoi | '.') | '}') : SingleLineComment
 	0,          // setof_not_((eoi | '.') | '}') : Identifier
 	0,          // setof_not_((eoi | '.') | '}') : IntegerConstant
@@ -103,6 +102,7 @@ var ruleNodeType = [...]NodeType{
 	0,          // setof_not_((eoi | '.') | '}') : '->'
 	0,          // setof_not_((eoi | '.') | '}') : backtrackingToken
 	0,          // setof_not_((eoi | '.') | '}') : error
+	0,          // setof_not_((eoi | '.') | '}') : MultiLineComment
 	0,          // setof_not_((eoi | '.') | '}')_optlist : setof_not_((eoi | '.') | '}')_optlist setof_not_((eoi | '.') | '}')
 	0,          // setof_not_((eoi | '.') | '}')_optlist :
 	0,          // empty1 :
