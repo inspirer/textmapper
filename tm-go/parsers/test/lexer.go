@@ -150,11 +150,10 @@ recovered:
 			commentDepth = 0
 			space = true
 		}
-	case 22: // eoi: /{eoi}/
+	case 22: // invalid_token: /{eoi}/
 		{
 			l.tokenOffset = commentOffset
 			l.State = StateInitial
-			token = INVALID_TOKEN
 		}
 	case 23: // MultiLineComment: /\/\*/
 		{

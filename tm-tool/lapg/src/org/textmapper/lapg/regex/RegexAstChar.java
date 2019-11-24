@@ -44,6 +44,9 @@ class RegexAstChar extends RegexAstPart implements RegexChar {
 
 	@Override
 	public String getConstantValue() {
+		if (c == -1) {
+			return null;  // {eoi} is not constant
+		}
  		return new String(Character.toChars(c));
 	}
 

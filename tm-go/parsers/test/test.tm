@@ -59,11 +59,10 @@ MultiLineComment:  /\/\*/ (space)
   }
 
 <inMultiLine> {
-  eoi: /{eoi}/
+  invalid_token: /{eoi}/
     {
       l.tokenOffset = commentOffset
       l.State = StateInitial
-      token = INVALID_TOKEN
     }
   MultiLineComment: /\/\*/ (space)
     {
