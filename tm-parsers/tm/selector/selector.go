@@ -61,7 +61,6 @@ var (
 	PredicateNotEq       = func(t tm.NodeType) bool { return t == tm.PredicateNotEq }
 	PredicateOr          = func(t tm.NodeType) bool { return t == tm.PredicateOr }
 	RawType              = func(t tm.NodeType) bool { return t == tm.RawType }
-	References           = func(t tm.NodeType) bool { return t == tm.References }
 	ReportAs             = func(t tm.NodeType) bool { return t == tm.ReportAs }
 	ReportClause         = func(t tm.NodeType) bool { return t == tm.ReportClause }
 	RhsAnnotated         = func(t tm.NodeType) bool { return t == tm.RhsAnnotated }

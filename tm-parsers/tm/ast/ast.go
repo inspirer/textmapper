@@ -72,7 +72,6 @@ func (n PredicateNot) TmNode() *Node         { return n.Node }
 func (n PredicateNotEq) TmNode() *Node       { return n.Node }
 func (n PredicateOr) TmNode() *Node          { return n.Node }
 func (n RawType) TmNode() *Node              { return n.Node }
-func (n References) TmNode() *Node           { return n.Node }
 func (n ReportAs) TmNode() *Node             { return n.Node }
 func (n ReportClause) TmNode() *Node         { return n.Node }
 func (n RhsAnnotated) TmNode() *Node         { return n.Node }
@@ -467,8 +466,13 @@ func (n DirectivePrio) Assoc() Assoc {
 	return Assoc{n.Child(selector.Assoc)}
 }
 
-func (n DirectivePrio) Symbols() References {
-	return References{n.Child(selector.References)}
+func (n DirectivePrio) Symbols() []Symref {
+	nodes := n.Children(selector.Symref)
+	var ret = make([]Symref, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, Symref{node})
+	}
+	return ret
 }
 
 type DirectiveSet struct {
@@ -713,8 +717,13 @@ type ListSeparator struct {
 	*Node
 }
 
-func (n ListSeparator) Separator() References {
-	return References{n.Child(selector.References)}
+func (n ListSeparator) Separator() []Symref {
+	nodes := n.Children(selector.Symref)
+	var ret = make([]Symref, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, Symref{node})
+	}
+	return ret
 }
 
 type LookaheadPredicate struct {
@@ -890,19 +899,6 @@ func (n PredicateOr) Right() PredicateExpression {
 
 type RawType struct {
 	*Node
-}
-
-type References struct {
-	*Node
-}
-
-func (n References) References() (References, bool) {
-	field := References{n.Child(selector.References)}
-	return field, field.IsValid()
-}
-
-func (n References) Symref() Symref {
-	return Symref{n.Child(selector.Symref)}
 }
 
 type ReportAs struct {

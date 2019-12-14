@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/inspirer/textmapper/tm-go/lalr"
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/syntax"
@@ -67,6 +68,7 @@ type compiler struct {
 
 	// Parser
 	source   *syntax.Model
+	prec     []lalr.Precedence
 	params   map[string]int // -> index in source.Params
 	nonterms map[string]int // -> index in source.Nonterms
 }
@@ -710,6 +712,54 @@ func (c *compiler) collectInputs(p ast.ParserSection) {
 	c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: input})
 }
 
+func (c *compiler) collectDirectives(p ast.ParserSection) {
+	//cats := make(map[string]bool)
+	//sets := make(map[string]bool)
+	precTerms := container.NewBitSet(c.out.NumTokens)
+
+	for _, part := range p.GrammarPart() {
+		switch part := part.(type) {
+		case *ast.DirectiveAssert:
+			// TODO implement
+		case *ast.DirectiveInterface:
+			// TODO implement
+		case *ast.DirectivePrio:
+			var assoc lalr.Associativity
+			switch part.Assoc().Text() {
+			case "left":
+				assoc = lalr.Left
+			case "right":
+				assoc = lalr.Right
+			case "nonassoc":
+				assoc = lalr.NonAssoc
+			default:
+				c.errorf(part, "unsupported associativity")
+				continue
+			}
+			prec := lalr.Precedence{Associativity: assoc}
+			for _, ref := range part.Symbols() {
+				name := ref.Name()
+				sym, ok := c.syms[name.Text()]
+				if !ok || sym >= c.out.NumTokens {
+					c.errorf(name, "unresolved reference '%v'", name.Text())
+					continue
+				}
+				if precTerms.Get(sym) {
+					c.errorf(name, "second precedence rule for '%v'", name.Text())
+					continue
+				}
+				precTerms.Set(sym)
+				prec.Terminals = append(prec.Terminals, lalr.Sym(sym))
+			}
+			if len(prec.Terminals) > 0 {
+				c.prec = append(c.prec, prec)
+			}
+		case *ast.DirectiveSet:
+			// TODO implement
+		}
+	}
+}
+
 func (c *compiler) compileParser() {
 	p, ok := c.file.Parser()
 	if !ok {
@@ -722,6 +772,7 @@ func (c *compiler) compileParser() {
 	c.collectParams(p)
 	c.collectNonterms(p)
 	c.collectInputs(p)
+	c.collectDirectives(p)
 	// TODO
 }
 

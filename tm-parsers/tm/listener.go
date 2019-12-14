@@ -47,14 +47,13 @@ const (
 	Assoc
 	ParamModifier
 	TemplateParam      // modifier=ParamModifier? ParamType name=Identifier ParamValue?
-	DirectivePrio      // Assoc symbols=References
+	DirectivePrio      // Assoc symbols=(Symref)+
 	DirectiveInput     // inputRefs=(Inputref)+
 	DirectiveInterface // ids=(Identifier)+
 	DirectiveAssert    // RhsSet
 	DirectiveSet       // name=Identifier RhsSet
 	NoEoi
 	Inputref           // reference=Symref NoEoi?
-	References         // References? Symref
 	Rule               // Predicate? (RhsPart)* RhsSuffix? ReportClause?
 	Predicate          // PredicateExpression
 	RhsSuffix          // Symref
@@ -69,7 +68,7 @@ const (
 	RhsOptional        // inner=RhsPart
 	RhsCast            // inner=RhsPart target=Symref
 	RhsAsLiteral       // inner=RhsPart Literal
-	ListSeparator      // separator_=References
+	ListSeparator      // separator_=(Symref)+
 	RhsSymbol          // reference=Symref
 	RhsNested          // (Rule0)+
 	RhsPlusList        // ruleParts=(RhsPart)+ ListSeparator
@@ -149,7 +148,6 @@ var nodeTypeStr = [...]string{
 	"DirectiveSet",
 	"NoEoi",
 	"Inputref",
-	"References",
 	"Rule",
 	"Predicate",
 	"RhsSuffix",
@@ -519,8 +517,8 @@ var ruleNodeType = [...]NodeType{
 	0,                    // inputref_list_Comma_separated : inputref
 	Inputref,             // inputref : symref 'no-eoi'
 	Inputref,             // inputref : symref
-	References,           // references : symref
-	References,           // references : references symref
+	0,                    // references : symref
+	0,                    // references : references symref
 	0,                    // references_cs : symref
 	0,                    // references_cs : references_cs ',' symref
 	0,                    // rules : rule0

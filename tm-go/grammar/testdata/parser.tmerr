@@ -53,3 +53,17 @@ Y2<param Foo = «123»> : /*empty*/ ;
 
 «foo»: /*empty*/ ;
 # err: redeclaration of a template parameter 'foo'
+
+%left «unresolved»;
+# err: unresolved reference 'unresolved'
+
+%left «X»;
+# err: unresolved reference 'X'
+
+%left a «a»;
+# err: second precedence rule for 'a'
+
+%nonassoc b;
+
+%right «b»;
+# err: second precedence rule for 'b'
