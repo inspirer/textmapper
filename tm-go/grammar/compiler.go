@@ -620,11 +620,10 @@ func (c *compiler) collectNonterms(p ast.ParserSection) {
 
 			nt := syntax.Nonterm{
 				Name:   name,
-				Origin: nonterm,
+				Origin: nonterm.Name(),
 			}
 			if t, ok := nonterm.NontermType(); ok {
-				rt, _ := t.(*ast.RawType)
-				if rt != nil {
+				if rt, _ := t.(*ast.RawType); rt != nil {
 					nt.Type = rt.Text()
 				} else {
 					c.errorf(t.TmNode(), "unsupported syntax")
@@ -689,8 +688,8 @@ func (c *compiler) collectInputs(p ast.ParserSection) {
 				if len(c.source.Nonterms[nonterm].Params) > 0 {
 					c.errorf(name, "input nonterminals cannot be parametrized")
 				}
-				// TODO support no-eoi inputs
-				c.source.Inputs = append(c.source.Inputs, syntax.Input{Symbol: nonterm})
+				_, noeoi := ref.NoEoi()
+				c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: nonterm, NoEoi: noeoi})
 			}
 		}
 	}
@@ -699,6 +698,16 @@ func (c *compiler) collectInputs(p ast.ParserSection) {
 		return
 	}
 
+	input, found := c.nonterms["input"]
+	if found && len(c.source.Nonterms[input].Params) > 0 {
+		c.errorf(c.source.Nonterms[input].Origin, "the 'input' nonterminal cannot be parametrized")
+		found = false
+	}
+	if !found {
+		c.errorf(c.file.Header(), "the grammar does not specify an input nonterminal, use '%%input' to declare one")
+		return
+	}
+	c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: input})
 }
 
 func (c *compiler) compileParser() {

@@ -18,6 +18,8 @@ var testFiles = []string{
 	"opts.tmerr",
 	"opts_ok.tmerr",
 	"parser.tmerr",
+	"noinput.tmerr",
+	"badinput.tmerr",
 }
 
 func TestErrors(t *testing.T) {

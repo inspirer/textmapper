@@ -319,7 +319,7 @@ directive -> GrammarPart:
 ;
 
 inputref -> Inputref:
-    reference=symref<~Args> 'no-eoi'? ;
+    reference=symref<~Args> ('no-eoi' -> NoEoi)? ;
 
 references -> References:
     symref<~Args>

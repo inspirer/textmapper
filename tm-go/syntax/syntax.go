@@ -18,8 +18,8 @@ type Model struct {
 
 // Input introduces a start nonterminal.
 type Input struct {
-	Symbol int
-	NoEoi  bool
+	Nonterm int // Index in model.Nonterms
+	NoEoi   bool
 }
 
 // Param is a grammar-wide template parameter.

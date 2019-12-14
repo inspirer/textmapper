@@ -81,6 +81,8 @@ func ToTmNode(n *Node) TmNode {
 		return &LookaheadPredicate{n}
 	case tm.NamedPattern:
 		return &NamedPattern{n}
+	case tm.NoEoi:
+		return &NoEoi{n}
 	case tm.Nonterm:
 		return &Nonterm{n}
 	case tm.NontermParams:

@@ -52,7 +52,8 @@ const (
 	DirectiveInterface // ids=(Identifier)+
 	DirectiveAssert    // RhsSet
 	DirectiveSet       // name=Identifier RhsSet
-	Inputref           // reference=Symref
+	NoEoi
+	Inputref           // reference=Symref NoEoi?
 	References         // References? Symref
 	Rule               // Predicate? (RhsPart)* RhsSuffix? ReportClause?
 	Predicate          // PredicateExpression
@@ -146,6 +147,7 @@ var nodeTypeStr = [...]string{
 	"DirectiveInterface",
 	"DirectiveAssert",
 	"DirectiveSet",
+	"NoEoi",
 	"Inputref",
 	"References",
 	"Rule",

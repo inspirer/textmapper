@@ -57,6 +57,7 @@ func (n LexerState) TmNode() *Node           { return n.Node }
 func (n ListSeparator) TmNode() *Node        { return n.Node }
 func (n LookaheadPredicate) TmNode() *Node   { return n.Node }
 func (n NamedPattern) TmNode() *Node         { return n.Node }
+func (n NoEoi) TmNode() *Node                { return n.Node }
 func (n Nonterm) TmNode() *Node              { return n.Node }
 func (n NontermParams) TmNode() *Node        { return n.Node }
 func (n ParamModifier) TmNode() *Node        { return n.Node }
@@ -612,6 +613,11 @@ func (n Inputref) Reference() Symref {
 	return Symref{n.Child(selector.Symref)}
 }
 
+func (n Inputref) NoEoi() (NoEoi, bool) {
+	field := NoEoi{n.Child(selector.NoEoi)}
+	return field, field.IsValid()
+}
+
 type IntegerLiteral struct {
 	*Node
 }
@@ -729,6 +735,10 @@ func (n NamedPattern) Name() Identifier {
 
 func (n NamedPattern) Pattern() Pattern {
 	return Pattern{n.Child(selector.Pattern)}
+}
+
+type NoEoi struct {
+	*Node
 }
 
 type Nonterm struct {

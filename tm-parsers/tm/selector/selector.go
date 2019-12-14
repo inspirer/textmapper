@@ -46,6 +46,7 @@ var (
 	ListSeparator        = func(t tm.NodeType) bool { return t == tm.ListSeparator }
 	LookaheadPredicate   = func(t tm.NodeType) bool { return t == tm.LookaheadPredicate }
 	NamedPattern         = func(t tm.NodeType) bool { return t == tm.NamedPattern }
+	NoEoi                = func(t tm.NodeType) bool { return t == tm.NoEoi }
 	Nonterm              = func(t tm.NodeType) bool { return t == tm.Nonterm }
 	NontermParams        = func(t tm.NodeType) bool { return t == tm.NontermParams }
 	ParamModifier        = func(t tm.NodeType) bool { return t == tm.ParamModifier }
