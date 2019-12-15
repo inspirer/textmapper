@@ -127,7 +127,7 @@ const (
 type Arg struct {
 	Param    int
 	Value    string
-	TakeFrom int // when >= 0, the value should be taken from this parameter
+	TakeFrom int // if Value == "", the value should be taken from this parameter
 	Origin   status.SourceNode
 }
 

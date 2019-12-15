@@ -24,8 +24,8 @@ var nilInstance = &NilNode{}
 func (n AnnotationImpl) TmNode() *Node       { return n.Node }
 func (n Annotations) TmNode() *Node          { return n.Node }
 func (n ArgumentFalse) TmNode() *Node        { return n.Node }
-func (n ArgumentImpl) TmNode() *Node         { return n.Node }
 func (n ArgumentTrue) TmNode() *Node         { return n.Node }
+func (n ArgumentVal) TmNode() *Node          { return n.Node }
 func (n Array) TmNode() *Node                { return n.Node }
 func (n Assoc) TmNode() *Node                { return n.Node }
 func (n BooleanLiteral) TmNode() *Node       { return n.Node }
@@ -130,8 +130,8 @@ type Argument interface {
 // assigned to Argument.
 //
 func (ArgumentFalse) argumentNode() {}
-func (ArgumentImpl) argumentNode()  {}
 func (ArgumentTrue) argumentNode()  {}
+func (ArgumentVal) argumentNode()   {}
 func (NilNode) argumentNode()       {}
 
 type Expression interface {
@@ -357,25 +357,25 @@ func (n ArgumentFalse) Name() ParamRef {
 	return ParamRef{n.Child(selector.ParamRef)}
 }
 
-type ArgumentImpl struct {
-	*Node
-}
-
-func (n ArgumentImpl) Name() ParamRef {
-	return ParamRef{n.Child(selector.ParamRef)}
-}
-
-func (n ArgumentImpl) Val() (ParamValue, bool) {
-	field := ToTmNode(n.Child(selector.ParamRef).Next(selector.ParamValue)).(ParamValue)
-	return field, field.TmNode() != nil
-}
-
 type ArgumentTrue struct {
 	*Node
 }
 
 func (n ArgumentTrue) Name() ParamRef {
 	return ParamRef{n.Child(selector.ParamRef)}
+}
+
+type ArgumentVal struct {
+	*Node
+}
+
+func (n ArgumentVal) Name() ParamRef {
+	return ParamRef{n.Child(selector.ParamRef)}
+}
+
+func (n ArgumentVal) Val() (ParamValue, bool) {
+	field := ToTmNode(n.Child(selector.ParamRef).Next(selector.ParamValue)).(ParamValue)
+	return field, field.TmNode() != nil
 }
 
 type Array struct {

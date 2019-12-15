@@ -87,7 +87,7 @@ const (
 	InlineParameter    // param_type=Identifier name=Identifier ParamValue?
 	ParamRef           // Identifier
 	SymrefArgs         // arg_list=(Argument)*
-	ArgumentImpl       // name=ParamRef val=ParamValue?
+	ArgumentVal        // name=ParamRef val=ParamValue?
 	ArgumentTrue       // name=ParamRef
 	ArgumentFalse      // name=ParamRef
 	ParamType
@@ -181,7 +181,7 @@ var nodeTypeStr = [...]string{
 	"InlineParameter",
 	"ParamRef",
 	"SymrefArgs",
-	"ArgumentImpl",
+	"ArgumentVal",
 	"ArgumentTrue",
 	"ArgumentFalse",
 	"ParamType",
@@ -211,8 +211,8 @@ var Annotation = []NodeType{
 
 var Argument = []NodeType{
 	ArgumentFalse,
-	ArgumentImpl,
 	ArgumentTrue,
+	ArgumentVal,
 }
 
 var Expression = []NodeType{
@@ -610,8 +610,8 @@ var ruleNodeType = [...]NodeType{
 	0,                    // argument_list_Comma_separated_opt : argument_list_Comma_separated
 	0,                    // argument_list_Comma_separated_opt :
 	SymrefArgs,           // symref_args : '<' argument_list_Comma_separated_opt '>'
-	ArgumentImpl,         // argument : param_ref ':' param_value
-	ArgumentImpl,         // argument : param_ref
+	ArgumentVal,          // argument : param_ref ':' param_value
+	ArgumentVal,          // argument : param_ref
 	ArgumentTrue,         // argument : '+' param_ref
 	ArgumentFalse,        // argument : '~' param_ref
 	ParamType,            // param_type : 'flag'

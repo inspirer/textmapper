@@ -469,7 +469,7 @@ symref_args -> SymrefArgs:
 %interface Argument;
 
 argument -> Argument:
-    name=param_ref (':' val=param_value)?        -> ArgumentImpl
+    name=param_ref (':' val=param_value)?        -> ArgumentVal
   | '+' name=param_ref                           -> ArgumentTrue
   | '~' name=param_ref                           -> ArgumentFalse
 ;

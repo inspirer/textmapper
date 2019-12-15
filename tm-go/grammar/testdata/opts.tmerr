@@ -36,6 +36,9 @@ reportTokens = [«123», «124»]
 # err: cannot parse string literal: invalid syntax
 fileNode = «"\xTT"»
 
+lang = "go"
+debugParser = true
+
 :: lexer
 
 eoi:

@@ -33,6 +33,7 @@ func Compile(file ast.File) (*Grammar, error) {
 		ids:        make(map[string]string),
 		codeRule:   make(map[symRule]int),
 		codeAction: make(map[symAction]int),
+		namedSets:  make(map[string]int),
 		params:     make(map[string]int),
 		nonterms:   make(map[string]int),
 	}
@@ -67,10 +68,11 @@ type compiler struct {
 	reportList   []ast.Identifier
 
 	// Parser
-	source   *syntax.Model
-	prec     []lalr.Precedence
-	params   map[string]int // -> index in source.Params
-	nonterms map[string]int // -> index in source.Nonterms
+	source    *syntax.Model
+	prec      []lalr.Precedence
+	namedSets map[string]int // -> index in source.Sets
+	params    map[string]int // -> index in source.Params
+	nonterms  map[string]int // -> index in source.Nonterms
 }
 
 type symAction struct {
@@ -713,8 +715,6 @@ func (c *compiler) collectInputs(p ast.ParserSection) {
 }
 
 func (c *compiler) collectDirectives(p ast.ParserSection) {
-	//cats := make(map[string]bool)
-	//sets := make(map[string]bool)
 	precTerms := container.NewBitSet(c.out.NumTokens)
 
 	for _, part := range p.GrammarPart() {
@@ -755,9 +755,195 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 				c.prec = append(c.prec, prec)
 			}
 		case *ast.DirectiveSet:
-			// TODO implement
+			name := part.Name()
+			if _, ok := c.namedSets[name.Text()]; ok {
+				c.errorf(name, "redeclaration of token set '%v'", name.Text())
+				continue
+			}
+
+			set := c.convertSet(part.RhsSet().Expr())
+			c.namedSets[name.Text()] = len(c.source.Sets)
+			c.source.Sets = append(c.source.Sets, set)
 		}
 	}
+}
+
+func (c *compiler) convertSet(expr ast.SetExpression) syntax.TokenSet {
+	switch expr := expr.(type) {
+	case *ast.SetAnd:
+		return syntax.TokenSet{
+			Kind:   syntax.Intersection,
+			Sub:    []syntax.TokenSet{c.convertSet(expr.Left()), c.convertSet(expr.Right())},
+			Origin: expr,
+		}
+	case *ast.SetComplement:
+		return syntax.TokenSet{
+			Kind:   syntax.Complement,
+			Sub:    []syntax.TokenSet{c.convertSet(expr.Inner())},
+			Origin: expr,
+		}
+	case *ast.SetCompound:
+		return c.convertSet(expr.Inner())
+	case *ast.SetOr:
+		return syntax.TokenSet{
+			Kind:   syntax.Union,
+			Sub:    []syntax.TokenSet{c.convertSet(expr.Left()), c.convertSet(expr.Right())},
+			Origin: expr,
+		}
+	case *ast.SetSymbol:
+		ret := syntax.TokenSet{Kind: syntax.Any}
+		if op, ok := expr.Operator(); ok {
+			switch op.Text() {
+			case "first":
+				ret.Kind = syntax.First
+			case "last":
+				ret.Kind = syntax.Last
+			case "precede":
+				ret.Kind = syntax.Precede
+			case "follow":
+				ret.Kind = syntax.Follow
+			default:
+				c.errorf(op, "operator must be one of: first, last, precede or follow")
+			}
+		}
+		ret.Symbol, ret.Args = c.resolveRef(expr.Symbol(), nil /*nonterm*/)
+		return ret
+	default:
+		c.errorf(expr.TmNode(), "syntax error")
+		return syntax.TokenSet{} // == eoi
+	}
+}
+
+func (c *compiler) resolveParam(ref ast.ParamRef, nonterm syntax.Nonterm) (int, bool) {
+	name := ref.Identifier().Text()
+	for i, p := range nonterm.Params {
+		if name == c.source.Params[p].Name {
+			return i, true
+		}
+	}
+
+	c.errorf(ref.Identifier(), "unresolved parameter reference '%v' (in %v)", name, nonterm.Name)
+	return 0, false
+}
+
+func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []syntax.Arg) {
+	name := ref.Name()
+	index, ok := c.syms[name.Text()]
+	if !ok {
+		index, ok = c.nonterms[name.Text()]
+		if ok {
+			index += c.out.NumTokens
+		}
+	}
+	if !ok {
+		c.errorf(name, "unresolved reference '%v'", name.Text())
+		return 0, nil // == eoi
+	}
+
+	if index < c.out.NumTokens {
+		if args, ok := ref.Args(); ok {
+			c.errorf(args, "terminals cannot be parametrized")
+		}
+		return index, nil
+	}
+
+	target := c.source.Nonterms[index-c.out.NumTokens]
+	populated := container.NewBitSet(len(target.Params))
+	var args []syntax.Arg
+	if arguments, ok := ref.Args(); ok {
+		for _, arg := range arguments.ArgList() {
+			var ref ast.ParamRef
+			out := syntax.Arg{Origin: arg.TmNode()}
+			switch arg := arg.(type) {
+			case *ast.ArgumentFalse:
+				ref = arg.Name()
+				out.Value = "false"
+			case *ast.ArgumentTrue:
+				ref = arg.Name()
+				out.Value = "true"
+			case *ast.ArgumentVal:
+				ref = arg.Name()
+				if val, ok := arg.Val(); ok {
+					switch val := val.(type) {
+					case *ast.BooleanLiteral:
+						out.Value = val.Text()
+					case *ast.ParamRef:
+						if nonterm == nil {
+							c.errorf(val.Identifier(), "unresolved parameter reference '%v'", val.Identifier().Text())
+							continue
+						}
+						out.TakeFrom, ok = c.resolveParam(*val, *nonterm)
+						if !ok {
+							continue
+						}
+					default:
+						c.errorf(val.TmNode(), "unsupported value")
+						continue
+					}
+					break
+				}
+				if nonterm == nil {
+					c.errorf(ref, "missing value")
+					continue
+				}
+				// Note: matching by name enables value propagation between inline parameters.
+				out.TakeFrom, ok = c.resolveParam(ref, *nonterm)
+				if !ok {
+					continue
+				}
+			default:
+				c.errorf(arg.TmNode(), "syntax error")
+				continue
+			}
+			param, ok := c.resolveParam(ref, target)
+			if !ok {
+				continue
+			}
+			if populated.Get(param) {
+				c.errorf(ref, "second argument for '%v'", c.source.Params[target.Params[param]].Name)
+				continue
+			}
+			populated.Set(param)
+			out.Param = target.Params[param]
+			out.Origin = ref
+			args = append(args, out)
+		}
+	}
+
+	populated.Complement(len(target.Params))
+	var uninitialized []string
+	for _, i := range populated.Slice(nil) {
+		param := c.source.Params[target.Params[i]]
+		if nonterm != nil {
+			var found bool
+			for _, p := range nonterm.Params {
+				// Note: matching by name enables value propagation between inline parameters.
+				if param.Name == c.source.Params[p].Name {
+					args = append(args, syntax.Arg{
+						Param:    target.Params[i],
+						TakeFrom: p,
+					})
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+		}
+		if param.DefaultValue != "" {
+			args = append(args, syntax.Arg{
+				Param: target.Params[i],
+				Value: param.DefaultValue,
+			})
+			continue
+		}
+		uninitialized = append(uninitialized, param.Name)
+	}
+	if len(uninitialized) > 0 {
+		c.errorf(ref.Name(), "uninitialized parameters: %v", strings.Join(uninitialized, ", "))
+	}
+	return index, args
 }
 
 func (c *compiler) compileParser() {

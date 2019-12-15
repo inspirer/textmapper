@@ -36,11 +36,14 @@ d {Foo} -> Foo : /*empty*/ ;
 %input «eee»;
 # err: unresolved nonterminal 'eee'
 
-X <«Foo», foo> : /*empty*/ ;
+X <«Foo», foo, «foo»> : /*empty*/ ;
 # err: unresolved parameter reference 'Foo'
+# err: duplicate parameter reference 'foo'
 
 %input «X»;
 # err: input nonterminals cannot be parametrized
+
+%input e;
 
 Y1<param «foo»> : /*empty*/ ;
 # err: redeclaration of 'foo'
@@ -67,3 +70,37 @@ Y2<param Foo = «123»> : /*empty*/ ;
 
 %right «b»;
 # err: second precedence rule for 'b'
+
+%generate a = set(b);
+
+%generate «a» = set(b);
+# err: redeclaration of token set 'a'
+
+%generate b = set(«foo» b);
+# err: operator must be one of: first, last, precede or follow
+
+%generate c = set(first «b222»);
+# err: unresolved reference 'b222'
+
+%generate c1 = set(first «foo»); # foo is a "flag"
+# err: unresolved reference 'foo'
+
+%generate d = set(follow b«<Foo>»);
+# err: terminals cannot be parametrized
+
+X1<param T1, param T2> : ;
+X2<param T3 = true> : ;
+
+%generate e = set(last «X1» & precede X2);
+# err: uninitialized parameters: T1, T2
+
+%generate f = set(first «X1»<T1: true, T2: «"\xGGGG"», +«FooBar», T2: «FooBar2», +«T1»>);
+# err: uninitialized parameters: T2
+# err: unsupported value
+# err: unresolved parameter reference 'FooBar' (in X1)
+# err: unresolved parameter reference 'FooBar2'
+# err: second argument for 'T1'
+
+%generate g = set(first «X1»<«T1», ~T2> | ~(eoi));
+# err: uninitialized parameters: T1
+# err: missing value

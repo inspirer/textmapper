@@ -13,8 +13,8 @@ var (
 	AnnotationImpl       = func(t tm.NodeType) bool { return t == tm.AnnotationImpl }
 	Annotations          = func(t tm.NodeType) bool { return t == tm.Annotations }
 	ArgumentFalse        = func(t tm.NodeType) bool { return t == tm.ArgumentFalse }
-	ArgumentImpl         = func(t tm.NodeType) bool { return t == tm.ArgumentImpl }
 	ArgumentTrue         = func(t tm.NodeType) bool { return t == tm.ArgumentTrue }
+	ArgumentVal          = func(t tm.NodeType) bool { return t == tm.ArgumentVal }
 	Array                = func(t tm.NodeType) bool { return t == tm.Array }
 	Assoc                = func(t tm.NodeType) bool { return t == tm.Assoc }
 	BooleanLiteral       = func(t tm.NodeType) bool { return t == tm.BooleanLiteral }

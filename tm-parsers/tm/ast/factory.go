@@ -15,10 +15,10 @@ func ToTmNode(n *Node) TmNode {
 		return &Annotations{n}
 	case tm.ArgumentFalse:
 		return &ArgumentFalse{n}
-	case tm.ArgumentImpl:
-		return &ArgumentImpl{n}
 	case tm.ArgumentTrue:
 		return &ArgumentTrue{n}
+	case tm.ArgumentVal:
+		return &ArgumentVal{n}
 	case tm.Array:
 		return &Array{n}
 	case tm.Assoc:
