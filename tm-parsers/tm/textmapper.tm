@@ -314,7 +314,7 @@ directive -> GrammarPart:
     '%' assoc symbols=references ';'                                 -> DirectivePrio
   | '%' 'input' inputRefs=(inputref separator ',')+ ';'              -> DirectiveInput
   | '%' 'interface' ids=(identifier separator ',')+ ';'              -> DirectiveInterface
-  | '%' 'assert' ('empty' | 'nonempty') rhsSet ';'                   -> DirectiveAssert
+  | '%' 'assert' ('empty' -> Empty | 'nonempty' -> NonEmpty) rhsSet ';' -> DirectiveAssert
   | '%' 'generate' name=identifier '=' rhsSet ';'                    -> DirectiveSet
 ;
 

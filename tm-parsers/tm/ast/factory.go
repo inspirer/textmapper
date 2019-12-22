@@ -41,6 +41,8 @@ func ToTmNode(n *Node) TmNode {
 		return &DirectivePrio{n}
 	case tm.DirectiveSet:
 		return &DirectiveSet{n}
+	case tm.Empty:
+		return &Empty{n}
 	case tm.ExclusiveStartConds:
 		return &ExclusiveStartConds{n}
 	case tm.File:
@@ -83,6 +85,8 @@ func ToTmNode(n *Node) TmNode {
 		return &NamedPattern{n}
 	case tm.NoEoi:
 		return &NoEoi{n}
+	case tm.NonEmpty:
+		return &NonEmpty{n}
 	case tm.Nonterm:
 		return &Nonterm{n}
 	case tm.NontermParams:

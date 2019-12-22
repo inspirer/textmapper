@@ -37,6 +37,7 @@ func (n DirectiveInput) TmNode() *Node       { return n.Node }
 func (n DirectiveInterface) TmNode() *Node   { return n.Node }
 func (n DirectivePrio) TmNode() *Node        { return n.Node }
 func (n DirectiveSet) TmNode() *Node         { return n.Node }
+func (n Empty) TmNode() *Node                { return n.Node }
 func (n ExclusiveStartConds) TmNode() *Node  { return n.Node }
 func (n File) TmNode() *Node                 { return n.Node }
 func (n Header) TmNode() *Node               { return n.Node }
@@ -58,6 +59,7 @@ func (n ListSeparator) TmNode() *Node        { return n.Node }
 func (n LookaheadPredicate) TmNode() *Node   { return n.Node }
 func (n NamedPattern) TmNode() *Node         { return n.Node }
 func (n NoEoi) TmNode() *Node                { return n.Node }
+func (n NonEmpty) TmNode() *Node             { return n.Node }
 func (n Nonterm) TmNode() *Node              { return n.Node }
 func (n NontermParams) TmNode() *Node        { return n.Node }
 func (n ParamModifier) TmNode() *Node        { return n.Node }
@@ -416,6 +418,16 @@ type DirectiveAssert struct {
 	*Node
 }
 
+func (n DirectiveAssert) Empty() (Empty, bool) {
+	field := Empty{n.Child(selector.Empty)}
+	return field, field.IsValid()
+}
+
+func (n DirectiveAssert) NonEmpty() (NonEmpty, bool) {
+	field := NonEmpty{n.Child(selector.NonEmpty)}
+	return field, field.IsValid()
+}
+
 func (n DirectiveAssert) RhsSet() RhsSet {
 	return RhsSet{n.Child(selector.RhsSet)}
 }
@@ -485,6 +497,10 @@ func (n DirectiveSet) Name() Identifier {
 
 func (n DirectiveSet) RhsSet() RhsSet {
 	return RhsSet{n.Child(selector.RhsSet)}
+}
+
+type Empty struct {
+	*Node
 }
 
 type ExclusiveStartConds struct {
@@ -747,6 +763,10 @@ func (n NamedPattern) Pattern() Pattern {
 }
 
 type NoEoi struct {
+	*Node
+}
+
+type NonEmpty struct {
 	*Node
 }
 

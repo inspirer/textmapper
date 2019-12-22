@@ -326,6 +326,10 @@ restart:
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
+	case 189: // directive : '%' 'assert' 'empty' rhsSet ';'
+		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 190: // directive : '%' 'assert' 'nonempty' rhsSet ';'
+		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 196: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	}

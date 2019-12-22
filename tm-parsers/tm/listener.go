@@ -50,8 +50,10 @@ const (
 	DirectivePrio      // Assoc symbols=(Symref)+
 	DirectiveInput     // inputRefs=(Inputref)+
 	DirectiveInterface // ids=(Identifier)+
-	DirectiveAssert    // RhsSet
-	DirectiveSet       // name=Identifier RhsSet
+	Empty
+	NonEmpty
+	DirectiveAssert // Empty? NonEmpty? RhsSet
+	DirectiveSet    // name=Identifier RhsSet
 	NoEoi
 	Inputref           // reference=Symref NoEoi?
 	Rule               // Predicate? (RhsPart)* RhsSuffix? ReportClause?
@@ -144,6 +146,8 @@ var nodeTypeStr = [...]string{
 	"DirectivePrio",
 	"DirectiveInput",
 	"DirectiveInterface",
+	"Empty",
+	"NonEmpty",
 	"DirectiveAssert",
 	"DirectiveSet",
 	"NoEoi",

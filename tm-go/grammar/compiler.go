@@ -36,6 +36,7 @@ func Compile(file ast.File) (*Grammar, error) {
 		namedSets:  make(map[string]int),
 		params:     make(map[string]int),
 		nonterms:   make(map[string]int),
+		cats:       make(map[string]int),
 	}
 	c.parseOptions()
 	c.compileLexer()
@@ -71,8 +72,15 @@ type compiler struct {
 	source    *syntax.Model
 	prec      []lalr.Precedence
 	namedSets map[string]int // -> index in source.Sets
+	asserts   []assert
 	params    map[string]int // -> index in source.Params
 	nonterms  map[string]int // -> index in source.Nonterms
+	cats      map[string]int // -> index in source.Cats
+}
+
+type assert struct {
+	index int // in source.Sets
+	empty bool
 }
 
 type symAction struct {
@@ -720,9 +728,22 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 	for _, part := range p.GrammarPart() {
 		switch part := part.(type) {
 		case *ast.DirectiveAssert:
-			// TODO implement
+			set := c.convertSet(part.RhsSet().Expr())
+			index := len(c.source.Sets)
+			c.source.Sets = append(c.source.Sets, set)
+			_, empty := part.Empty()
+			c.asserts = append(c.asserts, assert{index: index, empty: empty})
 		case *ast.DirectiveInterface:
-			// TODO implement
+			for _, id := range part.Ids() {
+				text := id.Text()
+				if _, exists := c.cats[text]; exists {
+					c.errorf(id, "duplicate interface declaration of '%v'", text)
+					continue
+				}
+				index := len(c.source.Cats)
+				c.source.Cats = append(c.source.Cats, text)
+				c.cats[text] = index
+			}
 		case *ast.DirectivePrio:
 			var assoc lalr.Associativity
 			switch part.Assoc().Text() {

@@ -104,3 +104,10 @@ X2<param T3 = true> : ;
 %generate g = set(first «X1»<«T1», ~T2> | ~(eoi));
 # err: uninitialized parameters: T1
 # err: missing value
+
+%assert empty set(first «X1»<«T1», ~T2> | ~(eoi));
+# err: uninitialized parameters: T1
+# err: missing value
+
+%interface A, «A»;
+# err: duplicate interface declaration of 'A'

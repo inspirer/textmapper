@@ -26,6 +26,7 @@ var (
 	DirectiveInterface   = func(t tm.NodeType) bool { return t == tm.DirectiveInterface }
 	DirectivePrio        = func(t tm.NodeType) bool { return t == tm.DirectivePrio }
 	DirectiveSet         = func(t tm.NodeType) bool { return t == tm.DirectiveSet }
+	Empty                = func(t tm.NodeType) bool { return t == tm.Empty }
 	ExclusiveStartConds  = func(t tm.NodeType) bool { return t == tm.ExclusiveStartConds }
 	File                 = func(t tm.NodeType) bool { return t == tm.File }
 	Header               = func(t tm.NodeType) bool { return t == tm.Header }
@@ -47,6 +48,7 @@ var (
 	LookaheadPredicate   = func(t tm.NodeType) bool { return t == tm.LookaheadPredicate }
 	NamedPattern         = func(t tm.NodeType) bool { return t == tm.NamedPattern }
 	NoEoi                = func(t tm.NodeType) bool { return t == tm.NoEoi }
+	NonEmpty             = func(t tm.NodeType) bool { return t == tm.NonEmpty }
 	Nonterm              = func(t tm.NodeType) bool { return t == tm.Nonterm }
 	NontermParams        = func(t tm.NodeType) bool { return t == tm.NontermParams }
 	ParamModifier        = func(t tm.NodeType) bool { return t == tm.ParamModifier }
