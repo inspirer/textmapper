@@ -57,11 +57,13 @@ func (n LexerSection) TmNode() *Node         { return n.Node }
 func (n LexerState) TmNode() *Node           { return n.Node }
 func (n ListSeparator) TmNode() *Node        { return n.Node }
 func (n LookaheadPredicate) TmNode() *Node   { return n.Node }
+func (n Name) TmNode() *Node                 { return n.Node }
 func (n NamedPattern) TmNode() *Node         { return n.Node }
 func (n NoEoi) TmNode() *Node                { return n.Node }
 func (n NonEmpty) TmNode() *Node             { return n.Node }
 func (n Nonterm) TmNode() *Node              { return n.Node }
 func (n NontermParams) TmNode() *Node        { return n.Node }
+func (n Not) TmNode() *Node                  { return n.Node }
 func (n ParamModifier) TmNode() *Node        { return n.Node }
 func (n ParamRef) TmNode() *Node             { return n.Node }
 func (n ParamType) TmNode() *Node            { return n.Node }
@@ -86,9 +88,10 @@ func (n RhsNested) TmNode() *Node            { return n.Node }
 func (n RhsOptional) TmNode() *Node          { return n.Node }
 func (n RhsPlusAssignment) TmNode() *Node    { return n.Node }
 func (n RhsPlusList) TmNode() *Node          { return n.Node }
-func (n RhsQuantifier) TmNode() *Node        { return n.Node }
+func (n RhsPlusQuantifier) TmNode() *Node    { return n.Node }
 func (n RhsSet) TmNode() *Node               { return n.Node }
 func (n RhsStarList) TmNode() *Node          { return n.Node }
+func (n RhsStarQuantifier) TmNode() *Node    { return n.Node }
 func (n RhsSuffix) TmNode() *Node            { return n.Node }
 func (n RhsSymbol) TmNode() *Node            { return n.Node }
 func (n Rule) TmNode() *Node                 { return n.Node }
@@ -288,9 +291,10 @@ func (RhsNested) rhsPartNode()         {}
 func (RhsOptional) rhsPartNode()       {}
 func (RhsPlusAssignment) rhsPartNode() {}
 func (RhsPlusList) rhsPartNode()       {}
-func (RhsQuantifier) rhsPartNode()     {}
+func (RhsPlusQuantifier) rhsPartNode() {}
 func (RhsSet) rhsPartNode()            {}
 func (RhsStarList) rhsPartNode()       {}
+func (RhsStarQuantifier) rhsPartNode() {}
 func (RhsSymbol) rhsPartNode()         {}
 func (StateMarker) rhsPartNode()       {}
 func (SyntaxProblem) rhsPartNode()     {}
@@ -746,8 +750,17 @@ type LookaheadPredicate struct {
 	*Node
 }
 
+func (n LookaheadPredicate) Not() (Not, bool) {
+	field := Not{n.Child(selector.Not)}
+	return field, field.IsValid()
+}
+
 func (n LookaheadPredicate) Symref() Symref {
 	return Symref{n.Child(selector.Symref)}
+}
+
+type Name struct {
+	*Node
 }
 
 type NamedPattern struct {
@@ -818,6 +831,10 @@ func (n NontermParams) List() []NontermParam {
 		ret = append(ret, ToTmNode(node).(NontermParam))
 	}
 	return ret
+}
+
+type Not struct {
+	*Node
 }
 
 type ParamModifier struct {
@@ -1071,11 +1088,11 @@ func (n RhsPlusList) ListSeparator() ListSeparator {
 	return ListSeparator{n.Child(selector.ListSeparator)}
 }
 
-type RhsQuantifier struct {
+type RhsPlusQuantifier struct {
 	*Node
 }
 
-func (n RhsQuantifier) Inner() RhsPart {
+func (n RhsPlusQuantifier) Inner() RhsPart {
 	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
 }
 
@@ -1104,8 +1121,20 @@ func (n RhsStarList) ListSeparator() ListSeparator {
 	return ListSeparator{n.Child(selector.ListSeparator)}
 }
 
+type RhsStarQuantifier struct {
+	*Node
+}
+
+func (n RhsStarQuantifier) Inner() RhsPart {
+	return ToTmNode(n.Child(selector.RhsPart)).(RhsPart)
+}
+
 type RhsSuffix struct {
 	*Node
+}
+
+func (n RhsSuffix) Name() Name {
+	return Name{n.Child(selector.Name)}
 }
 
 func (n RhsSuffix) Symref() Symref {

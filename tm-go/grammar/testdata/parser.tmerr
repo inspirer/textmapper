@@ -111,3 +111,31 @@ X2<param T3 = true> : ;
 
 %interface A, «A»;
 # err: duplicate interface declaration of 'A'
+
+G -> G/«G1» as A : (G separator «G»)+ ;
+# err: unsupported syntax
+# err: separators must be terminals
+
+G2 -> A «as A» : G %prec «G» ;
+# err: reporting a selector node 'as' some other node is not supported
+# err: terminal is expected
+
+G3 -> BB «as BB» : «$(G)»  «%shift G» ;
+# err: 'as' expects a selector node
+# err: unsupported syntax (*ast.RhsIgnored)
+# err: unsupported syntax
+
+G4 : a (?= G2 & «a») b ;
+# err: lookahead expressions do not support terminals
+
+# opt terminals and nonterminals are ok
+nontermopt : ;
+
+# referencing a non-existent opt is not OK
+optcheck : aopt bopt Gopt «NonExistentopt» ;
+# err: unresolved reference 'NonExistentopt'
+
+# opt works with template args
+%generate goptcheck = set(first «X1opt»<«T1», ~T2> | ~(eoi));
+# err: uninitialized parameters: T1
+# err: missing value

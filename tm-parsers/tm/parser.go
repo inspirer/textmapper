@@ -332,6 +332,12 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 196: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 222: // rhsSuffix : '%' 'prec' symref
+		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 223: // rhsSuffix : '%' 'shift' symref
+		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 243: // lookahead_predicate : '!' symref
+		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
 	nt := ruleNodeType[rule]
 	if nt != 0 {

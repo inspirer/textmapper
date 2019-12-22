@@ -57,7 +57,6 @@ type Expr struct {
 	Sub       []Expr
 	Symbol    int
 	Args      []Arg
-	Set       *TokenSet
 	Predicate *Predicate
 	ListFlags ListFlags
 	Pos       int // Positional index of a reference in the original rule.
@@ -78,22 +77,24 @@ type ExprKind int8
 
 // All expression kinds.
 const (
-	Empty       ExprKind = iota
-	Optional             // of {Sub0}
-	Choice               // of 2+ Sub
-	Sequence             // of 2+ Sub
-	Reference            // {Symbol}<{Args}>
-	Assign               // field={Sub0}
-	Append               // field+={Sub0}
-	Arrow                // {Sub0} -> {Name}
-	Set                  // set({Set})
-	StateMarker          // .{Name}
+	Empty        ExprKind = iota
+	Optional              // of {Sub0}
+	Choice                // of 2+ Sub
+	Sequence              // of 2+ Sub
+	Reference             // {Symbol}<{Args}>
+	Assign                // field={Sub0}
+	Append                // field+={Sub0}
+	Arrow                 // {Sub0} -> {Name}
+	Set                   // set({Pos = index in Model.Sets})
+	StateMarker           // .{Name}
+	Command               // stored in {Name}
+	Lookahead             // (?= {Sub0} & {Sub1} ...)
+	LookaheadNot          // !{Sub0}   inside (?= ...)
 
 	// The following kinds can appear as children of a top-level Choice expression only (or be nested
 	// in one another).
 	Conditional // [{Predicate}] {Sub}
 	Prec        // {Sub0} %prec {Symbol}
-	Command     // {Sub0} { some code } - Pos references the original semantic action
 
 	// Top-level expressions.
 	List // of {Sub0}, separator={Sub1} (if present), also {ListFlags}

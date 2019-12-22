@@ -63,8 +63,8 @@ type compiler struct {
 	patterns     []*patterns // to keep track of unused patterns
 	classRules   []*lex.Rule
 	rules        []*lex.Rule
-	codeRule     map[symRule]int   // -> index in c.out.RuleToken
-	codeAction   map[symAction]int // -> index in c.out.Actions
+	codeRule     map[symRule]int   // -> index in c.out.Lexer.RuleToken
+	codeAction   map[symAction]int // -> index in c.out.Lexer.Actions
 	reportTokens map[string]bool
 	reportList   []ast.Identifier
 
@@ -606,7 +606,13 @@ func (c *compiler) collectParams(p ast.ParserSection) {
 	}
 }
 
-func (c *compiler) collectNonterms(p ast.ParserSection) {
+type nontermImpl struct {
+	nonterm int // in source.Nonterms
+	def     ast.Nonterm
+}
+
+func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
+	var ret []nontermImpl
 	for _, part := range p.GrammarPart() {
 		if nonterm, ok := part.(*ast.Nonterm); ok {
 			name := nonterm.Name().Text()
@@ -682,9 +688,11 @@ func (c *compiler) collectNonterms(p ast.ParserSection) {
 			}
 			c.ids[id] = name
 			c.nonterms[name] = len(c.source.Nonterms)
+			ret = append(ret, nontermImpl{len(c.source.Nonterms), *nonterm})
 			c.source.Nonterms = append(c.source.Nonterms, nt)
 		}
 	}
+	return ret
 }
 
 func (c *compiler) collectInputs(p ast.ParserSection) {
@@ -847,17 +855,48 @@ func (c *compiler) resolveParam(ref ast.ParamRef, nonterm syntax.Nonterm) (int, 
 	return 0, false
 }
 
+func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
+	nt := syntax.Nonterm{
+		Name:   name,
+		Origin: origin,
+	}
+
+	var ref syntax.Expr
+	target := name[:len(name)-3]
+	if index, ok := c.syms[target]; ok {
+		nt.Type = c.out.Syms[index].Type
+		ref = syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin}
+	} else if nonterm, ok := c.nonterms[target]; ok {
+		nt.Type = c.source.Nonterms[nonterm].Type
+		nt.Params = c.source.Nonterms[nonterm].Params
+		ref = syntax.Expr{Kind: syntax.Reference, Symbol: c.out.NumTokens + nonterm, Origin: origin}
+	} else {
+		// Unresolved.
+		return 0, false
+	}
+	nt.Value = syntax.Expr{Kind: syntax.Optional, Sub: []syntax.Expr{ref}, Origin: origin}
+
+	c.nonterms[name] = len(c.source.Nonterms)
+	index := c.out.NumTokens + len(c.source.Nonterms)
+	c.source.Nonterms = append(c.source.Nonterms, nt)
+	return index, true
+}
+
 func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []syntax.Arg) {
 	name := ref.Name()
-	index, ok := c.syms[name.Text()]
+	text := name.Text()
+	index, ok := c.syms[text]
 	if !ok {
-		index, ok = c.nonterms[name.Text()]
+		index, ok = c.nonterms[text]
 		if ok {
 			index += c.out.NumTokens
 		}
 	}
+	if !ok && len(text) > 3 && strings.HasSuffix(text, "opt") {
+		index, ok = c.instantiateOpt(text, ref)
+	}
 	if !ok {
-		c.errorf(name, "unresolved reference '%v'", name.Text())
+		c.errorf(name, "unresolved reference '%v'", text)
 		return 0, nil // == eoi
 	}
 
@@ -967,6 +1006,203 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 	return index, args
 }
 
+// convertReportClause returns between 0 and 2 nodes.
+func (c *compiler) convertReportClause(n ast.ReportClause) []string {
+	if id, ok := n.Kind(); ok {
+		c.errorf(id, "unsupported syntax")
+	}
+	action := n.Action().Text()
+	if len(action) == 0 {
+		return nil
+	}
+	if as, ok := n.ReportAs(); ok {
+		if _, exists := c.cats[action]; exists {
+			c.errorf(as, "reporting a selector node 'as' some other node is not supported")
+			return []string{action}
+		}
+		if _, exists := c.cats[as.Identifier().Text()]; !exists {
+			c.errorf(as, "'as' expects a selector node")
+			return []string{action}
+		}
+		return []string{action, as.Identifier().Text()}
+	}
+	return []string{action}
+}
+
+func (c *compiler) convertSeparator(sep ast.ListSeparator) syntax.Expr {
+	var subs []syntax.Expr
+	for _, ref := range sep.Separator() {
+		sym, _ := c.resolveRef(ref, nil /*nonterm*/)
+		if sym >= c.out.NumTokens {
+			c.errorf(ref, "separators must be terminals")
+			continue
+		}
+		expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref}
+		subs = append(subs, expr)
+	}
+	switch len(subs) {
+	case 0:
+		return syntax.Expr{Kind: syntax.Empty}
+	case 1:
+		return subs[0]
+	}
+	return syntax.Expr{
+		Kind:   syntax.Sequence,
+		Sub:    subs,
+		Origin: sep,
+	}
+}
+
+func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) syntax.Expr {
+	switch p := p.(type) {
+	case *ast.Command:
+		text := p.Text()
+		return syntax.Expr{Kind: syntax.Command, Name: text, Origin: p}
+	case *ast.RhsAssignment:
+		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return syntax.Expr{Kind: syntax.Assign, Name: p.Id().Text(), Sub: subs, Origin: p}
+	case *ast.RhsPlusAssignment:
+		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return syntax.Expr{Kind: syntax.Append, Name: p.Id().Text(), Sub: subs, Origin: p}
+	case *ast.RhsCast:
+		// TODO implement
+	case *ast.RhsLookahead:
+		var subs []syntax.Expr
+		for _, pred := range p.Predicates() {
+			sym, args := c.resolveRef(pred.Symref(), nonterm)
+			if sym < c.out.NumTokens {
+				c.errorf(pred.Symref(), "lookahead expressions do not support terminals")
+				continue
+			}
+			expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref()}
+			if _, not := pred.Not(); not {
+				expr = syntax.Expr{Kind: syntax.LookaheadNot, Sub: []syntax.Expr{expr}, Origin: pred}
+			}
+			subs = append(subs, expr)
+		}
+		if len(subs) == 0 {
+			return syntax.Expr{Kind: syntax.Empty}
+		}
+		return syntax.Expr{Kind: syntax.Lookahead, Sub: subs, Origin: p}
+	case *ast.RhsNested:
+		return c.convertRules(p.Rule0(), nonterm, nil /*defaultReport*/, p)
+	case *ast.RhsOptional:
+		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return syntax.Expr{Kind: syntax.Optional, Sub: subs, Origin: p}
+	case *ast.RhsPlusList:
+		seq := c.convertSequence(p.RuleParts(), nonterm, p)
+		subs := []syntax.Expr{seq}
+		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
+			subs = []syntax.Expr{seq, sep}
+		}
+		return syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
+	case *ast.RhsStarList:
+		seq := c.convertSequence(p.RuleParts(), nonterm, p)
+		subs := []syntax.Expr{seq}
+		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
+			subs = []syntax.Expr{seq, sep}
+		}
+		return syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
+	case *ast.RhsPlusQuantifier:
+		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
+	case *ast.RhsStarQuantifier:
+		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
+	case *ast.RhsSet:
+		set := c.convertSet(p.Expr())
+		index := len(c.source.Sets)
+		c.source.Sets = append(c.source.Sets, set)
+		return syntax.Expr{Kind: syntax.Set, Pos: index, Origin: p}
+	case *ast.RhsSymbol:
+		sym, args := c.resolveRef(p.Reference(), nonterm)
+		return syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: p}
+	case *ast.StateMarker:
+		return syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
+	case *ast.SyntaxProblem:
+		c.errorf(p, "syntax error")
+		return syntax.Expr{Kind: syntax.Empty}
+	}
+	c.errorf(p.TmNode(), "unsupported syntax (%T)", p)
+	return syntax.Expr{Kind: syntax.Empty}
+}
+
+func (c *compiler) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, origin status.SourceNode) syntax.Expr {
+	var subs []syntax.Expr
+	for _, p := range parts {
+		subs = append(subs, c.convertPart(p, nonterm))
+	}
+	switch len(subs) {
+	case 0:
+		return syntax.Expr{Kind: syntax.Empty}
+	case 1:
+		return subs[0]
+	}
+	return syntax.Expr{
+		Kind:   syntax.Sequence,
+		Sub:    subs,
+		Origin: origin,
+	}
+}
+
+func (c *compiler) isSelector(name string) bool {
+	_, ok := c.cats[name]
+	return ok
+}
+
+func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport []string, origin status.SourceNode) syntax.Expr {
+	var subs []syntax.Expr
+	for _, rule0 := range rules {
+		rule, ok := rule0.(*ast.Rule)
+		if !ok {
+			c.errorf(rule0.TmNode(), "syntax error")
+			continue
+		}
+
+		expr := c.convertSequence(rule.RhsPart(), nonterm, rule)
+		clause, _ := rule.ReportClause()
+		report := c.convertReportClause(clause)
+		switch {
+		case len(report) == 0:
+			report = defaultReport
+		case len(defaultReport) > 0 && c.isSelector(defaultReport[len(defaultReport)-1]):
+			last := defaultReport[len(defaultReport)-1]
+			if last != report[len(report)-1] {
+				report = append(report, last)
+			}
+		}
+		for _, node := range report {
+			expr = syntax.Expr{Kind: syntax.Arrow, Name: node, Sub: []syntax.Expr{expr}}
+		}
+		if suffix, ok := rule.RhsSuffix(); ok {
+			switch suffix.Name().Text() {
+			case "prec":
+				sym, _ := c.resolveRef(suffix.Symref(), nonterm)
+				if sym < c.out.NumTokens {
+					expr = syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []syntax.Expr{expr}}
+				} else {
+					c.errorf(suffix.Symref(), "terminal is expected")
+				}
+			default:
+				c.errorf(suffix, "unsupported syntax")
+			}
+		}
+
+		subs = append(subs, expr)
+	}
+	switch len(subs) {
+	case 0:
+		return syntax.Expr{Kind: syntax.Empty}
+	case 1:
+		return subs[0]
+	}
+	return syntax.Expr{
+		Kind:   syntax.Choice,
+		Sub:    subs,
+		Origin: origin,
+	}
+}
+
 func (c *compiler) compileParser() {
 	p, ok := c.file.Parser()
 	if !ok {
@@ -977,9 +1213,16 @@ func (c *compiler) compileParser() {
 		c.source.Terminals = append(c.source.Terminals, sym.Name)
 	}
 	c.collectParams(p)
-	c.collectNonterms(p)
+	nonterms := c.collectNonterms(p)
 	c.collectInputs(p)
 	c.collectDirectives(p)
+	for _, nt := range nonterms {
+		clause, _ := nt.def.ReportClause()
+		defaultReport := c.convertReportClause(clause)
+		expr := c.convertRules(nt.def.Rule0(), &c.source.Nonterms[nt.nonterm], defaultReport, nt.def)
+		c.source.Nonterms[nt.nonterm].Value = expr
+	}
+
 	// TODO
 }
 

@@ -347,8 +347,8 @@ predicate -> Predicate:
     '[' predicate_expression ']' ;
 
 rhsSuffix -> RhsSuffix:
-    '%' 'prec' symref<~Args>
-  | '%' 'shift' symref<~Args>
+    '%' ('prec' -> Name) symref<~Args>
+  | '%' ('shift' -> Name) symref<~Args>
 ;
 
 reportClause -> ReportClause:
@@ -375,9 +375,8 @@ rhsPart<OrSyntaxError> -> RhsPart:
 rhsLookahead -> RhsLookahead:
     '(?=' predicates=(lookahead_predicate separator '&')+ ')' ;
 
-# TODO: negate
 lookahead_predicate -> LookaheadPredicate:
-    '!'? symref<~Args> ;
+    ('!' -> Not)? symref<~Args> ;
 
 rhsStateMarker -> StateMarker:
     '.' name=identifier ;
@@ -412,8 +411,8 @@ rhsPrimary -> RhsPart:
   | '(' rules ')'                                     -> RhsNested
   | '(' ruleParts=rhsParts listSeparator ')' '+'      -> RhsPlusList
   | '(' ruleParts=rhsParts listSeparator ')' '*'      -> RhsStarList
-  | inner=rhsPrimary '+'                              -> RhsQuantifier
-  | inner=rhsPrimary '*'                              -> RhsQuantifier
+  | inner=rhsPrimary '+'                              -> RhsPlusQuantifier
+  | inner=rhsPrimary '*'                              -> RhsStarQuantifier
   | '$' '(' rules ')'                                 -> RhsIgnored
   | rhsSet
 ;

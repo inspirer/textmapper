@@ -55,14 +55,16 @@ const (
 	DirectiveAssert // Empty? NonEmpty? RhsSet
 	DirectiveSet    // name=Identifier RhsSet
 	NoEoi
-	Inputref           // reference=Symref NoEoi?
-	Rule               // Predicate? (RhsPart)* RhsSuffix? ReportClause?
-	Predicate          // PredicateExpression
-	RhsSuffix          // Symref
-	ReportClause       // action=Identifier kind=Identifier? ReportAs?
-	ReportAs           // Identifier
-	RhsLookahead       // predicates=(LookaheadPredicate)+
-	LookaheadPredicate // Symref
+	Inputref  // reference=Symref NoEoi?
+	Rule      // Predicate? (RhsPart)* RhsSuffix? ReportClause?
+	Predicate // PredicateExpression
+	Name
+	RhsSuffix    // Name Symref
+	ReportClause // action=Identifier kind=Identifier? ReportAs?
+	ReportAs     // Identifier
+	RhsLookahead // predicates=(LookaheadPredicate)+
+	Not
+	LookaheadPredicate // Not? Symref
 	StateMarker        // name=Identifier
 	RhsAnnotated       // Annotations inner=RhsPart
 	RhsAssignment      // id=Identifier inner=RhsPart
@@ -75,7 +77,8 @@ const (
 	RhsNested          // (Rule0)+
 	RhsPlusList        // ruleParts=(RhsPart)+ ListSeparator
 	RhsStarList        // ruleParts=(RhsPart)+ ListSeparator
-	RhsQuantifier      // inner=RhsPart
+	RhsPlusQuantifier  // inner=RhsPart
+	RhsStarQuantifier  // inner=RhsPart
 	RhsIgnored         // (Rule0)+
 	RhsSet             // expr=SetExpression
 	SetSymbol          // operator=Identifier? symbol=Symref
@@ -154,10 +157,12 @@ var nodeTypeStr = [...]string{
 	"Inputref",
 	"Rule",
 	"Predicate",
+	"Name",
 	"RhsSuffix",
 	"ReportClause",
 	"ReportAs",
 	"RhsLookahead",
+	"Not",
 	"LookaheadPredicate",
 	"StateMarker",
 	"RhsAnnotated",
@@ -171,7 +176,8 @@ var nodeTypeStr = [...]string{
 	"RhsNested",
 	"RhsPlusList",
 	"RhsStarList",
-	"RhsQuantifier",
+	"RhsPlusQuantifier",
+	"RhsStarQuantifier",
 	"RhsIgnored",
 	"RhsSet",
 	"SetSymbol",
@@ -301,9 +307,10 @@ var RhsPart = []NodeType{
 	RhsOptional,
 	RhsPlusAssignment,
 	RhsPlusList,
-	RhsQuantifier,
+	RhsPlusQuantifier,
 	RhsSet,
 	RhsStarList,
+	RhsStarQuantifier,
 	RhsSymbol,
 	StateMarker,
 	SyntaxProblem,
@@ -584,8 +591,8 @@ var ruleNodeType = [...]NodeType{
 	RhsNested,            // rhsPrimary : '(' rules ')'
 	RhsPlusList,          // rhsPrimary : '(' rhsParts listSeparator ')' '+'
 	RhsStarList,          // rhsPrimary : '(' rhsParts listSeparator ')' '*'
-	RhsQuantifier,        // rhsPrimary : rhsPrimary '+'
-	RhsQuantifier,        // rhsPrimary : rhsPrimary '*'
+	RhsPlusQuantifier,    // rhsPrimary : rhsPrimary '+'
+	RhsStarQuantifier,    // rhsPrimary : rhsPrimary '*'
 	RhsIgnored,           // rhsPrimary : '$' '(' rules ')'
 	0,                    // rhsPrimary : rhsSet
 	RhsSet,               // rhsSet : 'set' '(' setExpression ')'
