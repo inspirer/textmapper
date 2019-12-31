@@ -845,10 +845,15 @@ func (c *compiler) convertSet(expr ast.SetExpression) syntax.TokenSet {
 
 func (c *compiler) resolveParam(ref ast.ParamRef, nonterm syntax.Nonterm) (int, bool) {
 	name := ref.Identifier().Text()
-	for i, p := range nonterm.Params {
+	for _, p := range nonterm.Params {
 		if name == c.source.Params[p].Name {
-			return i, true
+			return p, true
 		}
+	}
+
+	if p, ok := c.params[name]; ok && c.source.Params[p].Lookahead {
+		// Lookahead parameters don't have to be declared.
+		return p, true
 	}
 
 	c.errorf(ref.Identifier(), "unresolved parameter reference '%v' (in %v)", name, nonterm.Name)
@@ -908,7 +913,11 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 	}
 
 	target := c.source.Nonterms[index-c.out.NumTokens]
-	populated := container.NewBitSet(len(target.Params))
+	required := container.NewBitSet(len(c.source.Params))
+	populated := container.NewBitSet(len(c.source.Params))
+	for _, p := range target.Params {
+		required.Set(p)
+	}
 	var args []syntax.Arg
 	if arguments, ok := ref.Args(); ok {
 		for _, arg := range arguments.ArgList() {
@@ -960,28 +969,32 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 				continue
 			}
 			if populated.Get(param) {
-				c.errorf(ref, "second argument for '%v'", c.source.Params[target.Params[param]].Name)
+				c.errorf(ref, "second argument for '%v'", c.source.Params[param].Name)
 				continue
 			}
 			populated.Set(param)
-			out.Param = target.Params[param]
+			required.Clear(param)
+			out.Param = param
 			out.Origin = ref
 			args = append(args, out)
 		}
 	}
 
-	populated.Complement(len(target.Params))
 	var uninitialized []string
-	for _, i := range populated.Slice(nil) {
-		param := c.source.Params[target.Params[i]]
+	for _, p := range required.Slice(nil) {
+		param := c.source.Params[p]
+		if param.Lookahead {
+			// These get propagated automatically.
+			continue
+		}
 		if nonterm != nil {
 			var found bool
-			for _, p := range nonterm.Params {
+			for _, from := range nonterm.Params {
 				// Note: matching by name enables value propagation between inline parameters.
-				if param.Name == c.source.Params[p].Name {
+				if param.Name == c.source.Params[from].Name {
 					args = append(args, syntax.Arg{
-						Param:    target.Params[i],
-						TakeFrom: p,
+						Param:    p,
+						TakeFrom: from,
 					})
 					found = true
 					break
@@ -993,7 +1006,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 		}
 		if param.DefaultValue != "" {
 			args = append(args, syntax.Arg{
-				Param: target.Params[i],
+				Param: p,
 				Value: param.DefaultValue,
 			})
 			continue
