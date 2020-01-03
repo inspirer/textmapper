@@ -65,8 +65,6 @@ func ToTmNode(n *Node) TmNode {
 		return &IntegerLiteral{n}
 	case tm.InterfaceType:
 		return &InterfaceType{n}
-	case tm.KeyValue:
-		return &KeyValue{n}
 	case tm.Lexeme:
 		return &Lexeme{n}
 	case tm.LexemeAttribute:
@@ -95,6 +93,8 @@ func ToTmNode(n *Node) TmNode {
 		return &NontermParams{n}
 	case tm.Not:
 		return &Not{n}
+	case tm.Option:
+		return &Option{n}
 	case tm.ParamModifier:
 		return &ParamModifier{n}
 	case tm.ParamRef:

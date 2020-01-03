@@ -58,7 +58,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 489, lexer)
+	return p.parse(0, 492, lexer)
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
@@ -203,6 +203,9 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stac
 func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
+		if debugSyntax {
+			fmt.Printf("skipped while recovering: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
+		}
 		e = p.next.endoffset
 		p.fetchNext(lexer, stack, nil)
 	}
@@ -218,7 +221,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 			continue
 		}
 		recoverPos = append(recoverPos, size)
-		if recoveryScopeState == stack[size-1].state {
+		if recoveryScopeStates[int(stack[size-1].state)] {
 			break
 		}
 	}
@@ -266,7 +269,6 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		})
 		return stack
 	}
-	return nil
 }
 
 func lalr(action, next int32) int32 {
@@ -326,17 +328,17 @@ restart:
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
-	case 189: // directive : '%' 'assert' 'empty' rhsSet ';'
+	case 192: // directive : '%' 'assert' 'empty' rhsSet ';'
 		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 190: // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	case 193: // directive : '%' 'assert' 'nonempty' rhsSet ';'
 		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 196: // inputref : symref 'no-eoi'
+	case 199: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 222: // rhsSuffix : '%' 'prec' symref
+	case 225: // rhsSuffix : '%' 'prec' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 223: // rhsSuffix : '%' 'shift' symref
+	case 226: // rhsSuffix : '%' 'shift' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 243: // lookahead_predicate : '!' symref
+	case 246: // lookahead_predicate : '!' symref
 		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
 	nt := ruleNodeType[rule]
@@ -359,6 +361,9 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 		t = Templates
 	default:
 		return
+	}
+	if debugSyntax {
+		fmt.Printf("ignored: %v as %v\n", Token(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }

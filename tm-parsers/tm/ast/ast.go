@@ -49,7 +49,6 @@ func (n InlineParameter) TmNode() *Node      { return n.Node }
 func (n Inputref) TmNode() *Node             { return n.Node }
 func (n IntegerLiteral) TmNode() *Node       { return n.Node }
 func (n InterfaceType) TmNode() *Node        { return n.Node }
-func (n KeyValue) TmNode() *Node             { return n.Node }
 func (n Lexeme) TmNode() *Node               { return n.Node }
 func (n LexemeAttribute) TmNode() *Node      { return n.Node }
 func (n LexemeAttrs) TmNode() *Node          { return n.Node }
@@ -64,6 +63,7 @@ func (n NonEmpty) TmNode() *Node             { return n.Node }
 func (n Nonterm) TmNode() *Node              { return n.Node }
 func (n NontermParams) TmNode() *Node        { return n.Node }
 func (n Not) TmNode() *Node                  { return n.Node }
+func (n Option) TmNode() *Node               { return n.Node }
 func (n ParamModifier) TmNode() *Node        { return n.Node }
 func (n ParamRef) TmNode() *Node             { return n.Node }
 func (n ParamType) TmNode() *Node            { return n.Node }
@@ -229,18 +229,6 @@ func (RawType) nontermTypeNode()       {}
 func (SubType) nontermTypeNode()       {}
 func (VoidType) nontermTypeNode()      {}
 func (NilNode) nontermTypeNode()       {}
-
-type Option interface {
-	TmNode
-	optionNode()
-}
-
-// optionNode() ensures that only the following types can be
-// assigned to Option.
-//
-func (KeyValue) optionNode()      {}
-func (SyntaxProblem) optionNode() {}
-func (NilNode) optionNode()       {}
 
 type ParamValue interface {
 	TmNode
@@ -541,9 +529,14 @@ func (n File) Options() []Option {
 	nodes := n.Children(selector.Option)
 	var ret = make([]Option, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToTmNode(node).(Option))
+		ret = append(ret, Option{node})
 	}
 	return ret
+}
+
+func (n File) SyntaxProblem() (SyntaxProblem, bool) {
+	field := SyntaxProblem{n.Child(selector.SyntaxProblem)}
+	return field, field.IsValid()
 }
 
 func (n File) Lexer() (LexerSection, bool) {
@@ -648,18 +641,6 @@ type IntegerLiteral struct {
 
 type InterfaceType struct {
 	*Node
-}
-
-type KeyValue struct {
-	*Node
-}
-
-func (n KeyValue) Key() Identifier {
-	return Identifier{n.Child(selector.Identifier)}
-}
-
-func (n KeyValue) Value() Expression {
-	return ToTmNode(n.Child(selector.Expression)).(Expression)
 }
 
 type Lexeme struct {
@@ -835,6 +816,18 @@ func (n NontermParams) List() []NontermParam {
 
 type Not struct {
 	*Node
+}
+
+type Option struct {
+	*Node
+}
+
+func (n Option) Key() Identifier {
+	return Identifier{n.Child(selector.Identifier)}
+}
+
+func (n Option) Value() Expression {
+	return ToTmNode(n.Child(selector.Expression)).(Expression)
 }
 
 type ParamModifier struct {

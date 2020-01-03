@@ -19,7 +19,7 @@ var parseTests = []struct {
 	{tm.Identifier, []string{
 		`  language «a»(«b»); :: lexer «error»: `,
 	}},
-	{tm.KeyValue, []string{
+	{tm.Option, []string{
 		header + ` «a = 5»  «list = [5]»  «feature = true» `,
 	}},
 	{tm.IntegerLiteral, []string{
@@ -50,6 +50,9 @@ var parseTests = []struct {
 	{tm.MultilineComment, []string{
 		parserPre + `a void : «/* te ** / st */» ;`,
 		parserPre + `«/* abc */» a:b;`,
+
+		// While recovering.
+		parserPre + " a : (§:: a «/*aaa*/» b ) ; ",
 	}},
 	{tm.InvalidToken, []string{
 		parserPre + "a : «'»\n   ;",
@@ -58,12 +61,18 @@ var parseTests = []struct {
 	{tm.Rule, []string{
 		parserPre + " a : /* empty */ «»| «abc» | «abc -> def» ; ",
 	}},
+	{tm.SyntaxProblem, []string{
+		parserPre + " a : (§«:: a /*aaa*/ b» ) ; ",
+		parserPre + " a : §«+ a» ; ",
+		header + ` a = 5  «b §a b c = 5» :: lexer a: /a/`,
+	}},
+
 	// TODO add tests
 }
 
 func TestParser(t *testing.T) {
-	l := new(tm.Lexer)
-	p := new(tm.Parser)
+	var l tm.Lexer
+	var p tm.Parser
 
 	seen := make(map[tm.NodeType]bool)
 	seen[tm.File] = true
@@ -81,7 +90,7 @@ func TestParser(t *testing.T) {
 					test.Consume(t, offset, endoffset)
 				}
 			})
-			test.Done(t, p.Parse(l))
+			test.Done(t, p.Parse(&l))
 		}
 	}
 	for n := tm.NodeType(1); n < tm.NodeTypeMax; n++ {

@@ -1243,52 +1243,48 @@ func (c *compiler) parseOptions() {
 	opts := c.out.Options
 	seen := make(map[string]int)
 	for _, opt := range c.file.Options() {
-		kv, ok := opt.(*ast.KeyValue)
-		if !ok {
-			continue
-		}
-		name := kv.Key().Text()
+		name := opt.Key().Text()
 		if line, ok := seen[name]; ok {
-			c.errorf(kv.Key(), "reinitialization of '%v', previously declared on line %v", name, line)
+			c.errorf(opt.Key(), "reinitialization of '%v', previously declared on line %v", name, line)
 		}
-		line, _ := kv.Key().LineColumn()
+		line, _ := opt.Key().LineColumn()
 		seen[name] = line
 		switch name {
 		case "package":
-			opts.Package = c.parseExpr(kv.Value(), opts.Package).(string)
+			opts.Package = c.parseExpr(opt.Value(), opts.Package).(string)
 		case "genCopyright":
-			opts.Copyright = c.parseExpr(kv.Value(), opts.Copyright).(bool)
+			opts.Copyright = c.parseExpr(opt.Value(), opts.Copyright).(bool)
 		case "tokenLine":
-			opts.TokenLine = c.parseExpr(kv.Value(), opts.TokenLine).(bool)
+			opts.TokenLine = c.parseExpr(opt.Value(), opts.TokenLine).(bool)
 		case "tokenLineOffset":
-			opts.TokenLineOffset = c.parseExpr(kv.Value(), opts.TokenLineOffset).(bool)
+			opts.TokenLineOffset = c.parseExpr(opt.Value(), opts.TokenLineOffset).(bool)
 		case "cancellable":
-			opts.Cancellable = c.parseExpr(kv.Value(), opts.Cancellable).(bool)
+			opts.Cancellable = c.parseExpr(opt.Value(), opts.Cancellable).(bool)
 		case "recursiveLookaheads":
-			opts.RecursiveLookaheads = c.parseExpr(kv.Value(), opts.RecursiveLookaheads).(bool)
+			opts.RecursiveLookaheads = c.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
 		case "eventBased":
-			opts.EventBased = c.parseExpr(kv.Value(), opts.EventBased).(bool)
+			opts.EventBased = c.parseExpr(opt.Value(), opts.EventBased).(bool)
 		case "debugParser":
-			opts.DebugParser = c.parseExpr(kv.Value(), opts.DebugParser).(bool)
+			opts.DebugParser = c.parseExpr(opt.Value(), opts.DebugParser).(bool)
 		case "eventFields":
-			opts.EventFields = c.parseExpr(kv.Value(), opts.EventFields).(bool)
+			opts.EventFields = c.parseExpr(opt.Value(), opts.EventFields).(bool)
 		case "eventAST":
-			opts.EventAST = c.parseExpr(kv.Value(), opts.EventAST).(bool)
+			opts.EventAST = c.parseExpr(opt.Value(), opts.EventAST).(bool)
 		case "reportTokens":
-			c.reportList = c.parseTokenList(kv.Value())
+			c.reportList = c.parseTokenList(opt.Value())
 			c.reportTokens = make(map[string]bool)
 			for _, id := range c.reportList {
 				c.reportTokens[id.Text()] = true
 			}
 		case "extraTypes":
-			opts.ExtraTypes = c.parseExpr(kv.Value(), opts.ExtraTypes).([]string)
+			opts.ExtraTypes = c.parseExpr(opt.Value(), opts.ExtraTypes).([]string)
 		case "fileNode":
-			opts.FileNode = c.parseExpr(kv.Value(), opts.FileNode).(string)
+			opts.FileNode = c.parseExpr(opt.Value(), opts.FileNode).(string)
 		case "lang":
 			// This option often occurs in existing grammars. Ignore it.
-			c.parseExpr(kv.Value(), "")
+			c.parseExpr(opt.Value(), "")
 		default:
-			c.errorf(kv.Key(), "unknown option '%v'", name)
+			c.errorf(opt.Key(), "unknown option '%v'", name)
 		}
 	}
 }

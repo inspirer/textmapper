@@ -184,26 +184,22 @@ syntax_problem -> SyntaxProblem:
     error ;
 
 file -> File:
-    header imports=import_* options=option* lexer=lexer_section? parser=parser_section? ;
+    header imports=import_* options=option* syntax_problem? lexer=lexer_section? parser=parser_section? ;
 
 header -> Header:
     'language' name=identifier<+KW> ('(' target=identifier<+KW> ')')? ';' ;
 
 lexer_section -> LexerSection:
-    '::' 'lexer' lexer_parts ;
+    '::' .recoveryScope 'lexer' lexer_parts ;
 
 parser_section -> ParserSection:
-    '::' 'parser' grammar_parts ;
+    '::' .recoveryScope 'parser' grammar_parts ;
 
 import_ -> Import:
     'import' alias=identifier? path=string_literal ';' ;
 
-%interface Option;
-
 option -> Option:
-    key=identifier '=' value=expression        -> KeyValue
-  | syntax_problem
-;
+    key=identifier '=' value=expression ;
 
 symref<flag Args> -> Symref:
     [Args]  name=identifier args=symref_args?
@@ -408,17 +404,17 @@ listSeparator -> ListSeparator:
 
 rhsPrimary -> RhsPart:
     reference=symref<+Args>                           -> RhsSymbol
-  | '(' rules ')'                                     -> RhsNested
-  | '(' ruleParts=rhsParts listSeparator ')' '+'      -> RhsPlusList
-  | '(' ruleParts=rhsParts listSeparator ')' '*'      -> RhsStarList
+  | '(' .recoveryScope rules ')'                                     -> RhsNested
+  | '(' .recoveryScope ruleParts=rhsParts listSeparator ')' '+'      -> RhsPlusList
+  | '(' .recoveryScope ruleParts=rhsParts listSeparator ')' '*'      -> RhsStarList
   | inner=rhsPrimary '+'                              -> RhsPlusQuantifier
   | inner=rhsPrimary '*'                              -> RhsStarQuantifier
-  | '$' '(' rules ')'                                 -> RhsIgnored
+  | '$' '(' .recoveryScope rules ')'                                 -> RhsIgnored
   | rhsSet
 ;
 
 rhsSet -> RhsSet:
-    'set' '(' expr=setExpression ')' ;
+    'set' '(' .recoveryScope expr=setExpression ')' ;
 
 %interface SetExpression;
 

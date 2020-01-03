@@ -19,12 +19,12 @@ const (
 	Pattern
 	Command
 	SyntaxProblem
-	File          // Header imports=(Import)* options=(Option)* lexer=LexerSection? parser=ParserSection?
+	File          // Header imports=(Import)* options=(Option)* SyntaxProblem? lexer=LexerSection? parser=ParserSection?
 	Header        // name=Identifier target=Identifier?
 	LexerSection  // (LexerPart)+
 	ParserSection // (GrammarPart)+
 	Import        // alias=Identifier? path=StringLiteral
-	KeyValue      // key=Identifier value=Expression
+	Option        // key=Identifier value=Expression
 	Symref        // name=Identifier args=SymrefArgs?
 	RawType
 	NamedPattern         // name=Identifier Pattern
@@ -123,7 +123,7 @@ var nodeTypeStr = [...]string{
 	"LexerSection",
 	"ParserSection",
 	"Import",
-	"KeyValue",
+	"Option",
 	"Symref",
 	"RawType",
 	"NamedPattern",
@@ -274,11 +274,6 @@ var NontermType = []NodeType{
 	VoidType,
 }
 
-var Option = []NodeType{
-	KeyValue,
-	SyntaxProblem,
-}
-
 var ParamValue = []NodeType{
 	BooleanLiteral,
 	IntegerLiteral,
@@ -408,6 +403,10 @@ var ruleNodeType = [...]NodeType{
 	Pattern,              // pattern : regexp
 	Command,              // command : code
 	SyntaxProblem,        // syntax_problem : error
+	0,                    // file : header import__optlist option_optlist syntax_problem lexer_section parser_section
+	0,                    // file : header import__optlist option_optlist syntax_problem lexer_section
+	0,                    // file : header import__optlist option_optlist syntax_problem parser_section
+	0,                    // file : header import__optlist option_optlist syntax_problem
 	0,                    // file : header import__optlist option_optlist lexer_section parser_section
 	0,                    // file : header import__optlist option_optlist lexer_section
 	0,                    // file : header import__optlist option_optlist parser_section
@@ -418,12 +417,11 @@ var ruleNodeType = [...]NodeType{
 	0,                    // option_optlist :
 	Header,               // header : 'language' identifier_Kw '(' identifier_Kw ')' ';'
 	Header,               // header : 'language' identifier_Kw ';'
-	LexerSection,         // lexer_section : '::' 'lexer' lexer_parts
-	ParserSection,        // parser_section : '::' 'parser' grammar_parts
+	LexerSection,         // lexer_section : '::' .recoveryScope 'lexer' lexer_parts
+	ParserSection,        // parser_section : '::' .recoveryScope 'parser' grammar_parts
 	Import,               // import_ : 'import' identifier string_literal ';'
 	Import,               // import_ : 'import' string_literal ';'
-	KeyValue,             // option : identifier '=' expression
-	0,                    // option : syntax_problem
+	Option,               // option : identifier '=' expression
 	Symref,               // symref : identifier
 	Symref,               // symref_Args : identifier symref_args
 	Symref,               // symref_Args : identifier
@@ -588,14 +586,14 @@ var ruleNodeType = [...]NodeType{
 	RhsAsLiteral,         // rhsCast : rhsPrimary 'as' literal
 	ListSeparator,        // listSeparator : 'separator' references
 	RhsSymbol,            // rhsPrimary : symref_Args
-	RhsNested,            // rhsPrimary : '(' rules ')'
-	RhsPlusList,          // rhsPrimary : '(' rhsParts listSeparator ')' '+'
-	RhsStarList,          // rhsPrimary : '(' rhsParts listSeparator ')' '*'
+	RhsNested,            // rhsPrimary : '(' .recoveryScope rules ')'
+	RhsPlusList,          // rhsPrimary : '(' .recoveryScope rhsParts listSeparator ')' '+'
+	RhsStarList,          // rhsPrimary : '(' .recoveryScope rhsParts listSeparator ')' '*'
 	RhsPlusQuantifier,    // rhsPrimary : rhsPrimary '+'
 	RhsStarQuantifier,    // rhsPrimary : rhsPrimary '*'
-	RhsIgnored,           // rhsPrimary : '$' '(' rules ')'
+	RhsIgnored,           // rhsPrimary : '$' '(' .recoveryScope rules ')'
 	0,                    // rhsPrimary : rhsSet
-	RhsSet,               // rhsSet : 'set' '(' setExpression ')'
+	RhsSet,               // rhsSet : 'set' '(' .recoveryScope setExpression ')'
 	SetSymbol,            // setPrimary : identifier symref_Args
 	SetSymbol,            // setPrimary : symref_Args
 	SetCompound,          // setPrimary : '(' setExpression ')'

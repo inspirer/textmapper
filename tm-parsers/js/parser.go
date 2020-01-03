@@ -281,6 +281,9 @@ const errSymbol = 2
 func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
+		if debugSyntax {
+			fmt.Printf("skipped while recovering: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
+		}
 		e = p.next.endoffset
 		p.fetchNext(lexer, stack, nil)
 	}
@@ -328,6 +331,9 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 		t = InvalidToken
 	default:
 		return
+	}
+	if debugSyntax {
+		fmt.Printf("ignored: %v as %v\n", Token(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }

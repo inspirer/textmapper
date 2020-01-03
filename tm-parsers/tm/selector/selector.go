@@ -38,7 +38,6 @@ var (
 	Inputref             = func(t tm.NodeType) bool { return t == tm.Inputref }
 	IntegerLiteral       = func(t tm.NodeType) bool { return t == tm.IntegerLiteral }
 	InterfaceType        = func(t tm.NodeType) bool { return t == tm.InterfaceType }
-	KeyValue             = func(t tm.NodeType) bool { return t == tm.KeyValue }
 	Lexeme               = func(t tm.NodeType) bool { return t == tm.Lexeme }
 	LexemeAttribute      = func(t tm.NodeType) bool { return t == tm.LexemeAttribute }
 	LexemeAttrs          = func(t tm.NodeType) bool { return t == tm.LexemeAttrs }
@@ -53,6 +52,7 @@ var (
 	Nonterm              = func(t tm.NodeType) bool { return t == tm.Nonterm }
 	NontermParams        = func(t tm.NodeType) bool { return t == tm.NontermParams }
 	Not                  = func(t tm.NodeType) bool { return t == tm.Not }
+	Option               = func(t tm.NodeType) bool { return t == tm.Option }
 	ParamModifier        = func(t tm.NodeType) bool { return t == tm.ParamModifier }
 	ParamRef             = func(t tm.NodeType) bool { return t == tm.ParamRef }
 	ParamType            = func(t tm.NodeType) bool { return t == tm.ParamType }
@@ -112,7 +112,6 @@ var (
 	Literal              = OneOf(tm.Literal...)
 	NontermParam         = OneOf(tm.NontermParam...)
 	NontermType          = OneOf(tm.NontermType...)
-	Option               = OneOf(tm.Option...)
 	ParamValue           = OneOf(tm.ParamValue...)
 	PredicateExpression  = OneOf(tm.PredicateExpression...)
 	RhsPart              = OneOf(tm.RhsPart...)

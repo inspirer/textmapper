@@ -269,5 +269,8 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 	default:
 		return
 	}
+	if debugSyntax {
+		fmt.Printf("ignored: %v as %v\n", Token(tok.symbol), t)
+	}
 	p.listener(t, tok.offset, tok.endoffset)
 }
