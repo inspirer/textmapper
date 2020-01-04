@@ -20,6 +20,7 @@ var parseTests = []struct {
 		  «// abc2»
 		  var i = 1;     «// 8»
 		  «// abc2»`,
+		` function f() {} «// abc»`,
 	}},
 	{js.Javascript, js.MultiLineComment, []string{
 		`const a «/* te ** / st */» = 5;`,
@@ -1387,6 +1388,7 @@ var parseTests = []struct {
 		`/*fails*/ function a() { «0x»§`,
 		`function a() { «"abc»
 		}`,
+		` function f() {} «0x»`,
 	}},
 }
 

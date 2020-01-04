@@ -19,8 +19,10 @@ type Parser struct {
 	eh       ErrorHandler
 	listener Listener
 
-	next     symbol
-	endState int16
+	next          symbol
+	endState      int16
+	ignoredTokens []symbol
+	buf           [startTokenBufferSize]symbol
 }
 
 type SyntaxError struct {
@@ -62,7 +64,10 @@ func (p *Parser) Parse(lexer *Lexer) error {
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
-	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
+	if cap(p.ignoredTokens) < startTokenBufferSize {
+		p.ignoredTokens = p.buf[:0]
+	}
+	p.ignoredTokens = p.ignoredTokens[:0]
 	state := start
 	var lastErr SyntaxError
 	recovering := 0
@@ -70,14 +75,14 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
 	p.endState = end
-	ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+	p.fetchNext(lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+				p.fetchNext(lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -93,7 +98,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+					p.fetchNext(lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -113,7 +118,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 		} else if action == -1 {
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack, nil)
+				p.fetchNext(lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			stack = append(stack, stackEntry{
@@ -123,11 +128,11 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 			}
-			if len(ignoredTokens) > 0 {
-				for _, tok := range ignoredTokens {
+			if len(p.ignoredTokens) > 0 {
+				for _, tok := range p.ignoredTokens {
 					p.reportIgnoredToken(tok)
 				}
-				ignoredTokens = ignoredTokens[:0]
+				p.ignoredTokens = p.ignoredTokens[:0]
 			}
 			if state != -1 && p.next.symbol != eoiToken {
 				p.next.symbol = noToken
@@ -140,7 +145,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 		if action == -2 || state == -1 {
 			if recovering == 0 {
 				if p.next.symbol == noToken {
-					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+					p.fetchNext(lexer, stack)
 				}
 				lastErr = SyntaxError{
 					Line:      lexer.Line(),
@@ -150,12 +155,6 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				if !p.eh(lastErr) {
 					return lastErr
 				}
-			}
-			if len(ignoredTokens) > 0 {
-				for _, tok := range ignoredTokens {
-					p.reportIgnoredToken(tok)
-				}
-				ignoredTokens = ignoredTokens[:0]
 			}
 			if stack = p.recoverFromError(lexer, stack); stack == nil {
 				return lastErr
@@ -207,7 +206,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 			fmt.Printf("skipped while recovering: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 		}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack, nil)
+		p.fetchNext(lexer, stack)
 	}
 	return e
 }
@@ -236,7 +235,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack, nil)
+		p.fetchNext(lexer, stack)
 	}
 	s := p.next.offset
 	e := s
@@ -307,23 +306,24 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []symbol) []symbol {
+func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+	if len(p.ignoredTokens) > 0 {
+		for _, tok := range p.ignoredTokens {
+			p.reportIgnoredToken(tok)
+		}
+		p.ignoredTokens = p.ignoredTokens[:0]
+	}
 restart:
 	token := lexer.Next()
 	switch token {
 	case INVALID_TOKEN, MULTILINECOMMENT, COMMENT, TEMPLATES:
 		s, e := lexer.Pos()
 		tok := symbol{int32(token), s, e}
-		if ignoredTokens == nil {
-			p.reportIgnoredToken(tok)
-		} else {
-			ignoredTokens = append(ignoredTokens, tok)
-		}
+		p.ignoredTokens = append(p.ignoredTokens, tok)
 		goto restart
 	}
 	p.next.symbol = int32(token)
 	p.next.offset, p.next.endoffset = lexer.Pos()
-	return ignoredTokens
 }
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
