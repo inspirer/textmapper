@@ -132,6 +132,10 @@ var parseTests = []struct {
 	{js.Javascript, js.NoSubstitutionTemplate, []string{
 		"print «`abc`»",
 		"print `ab${«``»}c`", // we also parse nested template literals
+
+		// While recovering:
+		"a.§«``» b; foo()",
+		"a. §. «``» b; foo()",
 	}},
 	{js.Javascript, js.TemplateHead, []string{
 		"print «`ab${»123}c`",
@@ -1371,6 +1375,8 @@ var parseTests = []struct {
 		   let a = {«b = 5»};
 		   let b = {q: 1, «c: »§};
 		 }`,
+		"«a.§`` b;» foo()",
+		"«a. §. `` b;» foo()",
 
 		// TODO: fix reported ranges.
 		`««a = ({§«{{a>>5»}}»})»`,

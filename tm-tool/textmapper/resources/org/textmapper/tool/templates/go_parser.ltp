@@ -262,6 +262,7 @@ ${if self->ignoredReportTokens()-}
 ${end-}
 ${call onAfterShift-}
 			if state != -1 && p.next.symbol != eoiToken {
+${call reportConsumedNext-}
 				p.next.symbol = noToken
 			}
 ${if self->hasRecovering()-}
@@ -385,6 +386,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 		if debugSyntax {
 			"fmt".Printf("skipped while recovering: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 		}
+${call reportConsumedNext-}
 		e = p.next.endoffset
 		p.fetchNext(lexer, stack${if self->ignoredReportTokens()}, nil${end})
 	}
@@ -546,6 +548,17 @@ ${end-}
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }
+${end}
+
+${template reportConsumedNext-}
+${if self->nonignoredReportTokens()-}
+			switch Token(p.next.symbol) {
+${foreach tok in self->nonignoredReportTokens()-}
+			case ${tok->go_token.tokenName()}:
+				p.listener(${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}, p.next.offset, p.next.endoffset)
+${end-}
+			}
+${end-}
 ${end}
 
 ${template lookaheadNext-}
@@ -816,17 +829,7 @@ ${end-}
 ${end}
 
 
-${template onAfterShift-}
-${if self->nonignoredReportTokens()-}
-			switch Token(p.next.symbol) {
-${foreach tok in self->nonignoredReportTokens()-}
-			case ${tok->go_token.tokenName()}:
-				p.listener(${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}, p.next.offset, p.next.endoffset)
-${end-}
-			}
-${end-}
-${end}
-
+${template onAfterShift}${end}
 ${template stateVars}${end}
 ${template initStateVars}${end}
 

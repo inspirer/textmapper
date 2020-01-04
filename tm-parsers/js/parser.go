@@ -284,6 +284,16 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 		if debugSyntax {
 			fmt.Printf("skipped while recovering: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
 		}
+		switch Token(p.next.symbol) {
+		case NOSUBSTITUTIONTEMPLATE:
+			p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
+		case TEMPLATEHEAD:
+			p.listener(TemplateHead, p.next.offset, p.next.endoffset)
+		case TEMPLATEMIDDLE:
+			p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
+		case TEMPLATETAIL:
+			p.listener(TemplateTail, p.next.offset, p.next.endoffset)
+		}
 		e = p.next.endoffset
 		p.fetchNext(lexer, stack, nil)
 	}

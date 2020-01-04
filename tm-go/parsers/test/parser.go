@@ -134,11 +134,11 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 				}
 				ignoredTokens = ignoredTokens[:0]
 			}
-			switch Token(p.next.symbol) {
-			case IDENTIFIER:
-				p.listener(Identifier, p.next.offset, p.next.endoffset)
-			}
 			if state != -1 && p.next.symbol != eoiToken {
+				switch Token(p.next.symbol) {
+				case IDENTIFIER:
+					p.listener(Identifier, p.next.offset, p.next.endoffset)
+				}
 				p.next.symbol = noToken
 			}
 		}

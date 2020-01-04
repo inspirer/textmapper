@@ -117,11 +117,11 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 				}
 				ignoredTokens = ignoredTokens[:0]
 			}
-			switch Token(p.next.symbol) {
-			case JSONSTRING:
-				p.listener(JsonString, p.next.offset, p.next.endoffset)
-			}
 			if state != -1 && p.next.symbol != eoiToken {
+				switch Token(p.next.symbol) {
+				case JSONSTRING:
+					p.listener(JsonString, p.next.offset, p.next.endoffset)
+				}
 				p.next.symbol = noToken
 			}
 		}
