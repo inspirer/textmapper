@@ -20,7 +20,7 @@
 	<groupId>org.textmapper</groupId>
 	<artifactId>tm-master</artifactId>
 	<packaging>pom</packaging>
-	<version>0.9.25-SNAPSHOT</version>
+	<version>0.9.26-SNAPSHOT</version>
 	<name>Textmapper Master</name>
 	<url>http://textmapper.org</url>
 
@@ -91,7 +91,7 @@
 			  ~
 			  ~ mvn nexus-staging:release
 			  ~ mvn nexus-staging:drop
-			  ~ grep -rl 0.9.1x * | xargs sed -i "" 's/0.9.1x/0.9.1y/g'
+			  ~ grep -rl 0.9.2x * | xargs sed -i "" 's/0.9.2x/0.9.2y/g'
 			  -->
 			<id>oss-release</id>
 			<build>
