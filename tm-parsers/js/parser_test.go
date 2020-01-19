@@ -306,6 +306,11 @@ var parseTests = []struct {
 		// Left associative.
 		`(««a || b» || c»)`,
 	}},
+	{js.Javascript, js.CoalesceExpression, []string{
+		`(«a ?? true»)`,
+		`(««a ?? b» ?? c»)`,
+		`(«a ?? b» ? a : b)`,
+	}},
 	{js.Javascript, js.ConditionalExpression, []string{
 		`(«a ? b : c»)`,
 		`(«a ? «b1 ? b : c» : «b2 ? b : c»»)`,

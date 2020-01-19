@@ -474,7 +474,7 @@ restart:
 		space = true
 	case 4: // WhiteSpace: /[\n\r\u2028\u2029]|\r\n/
 		space = true
-	case 117: // invalid_token: /\?\.[0-9]/
+	case 118: // invalid_token: /\?\.[0-9]/
 		{
 			l.rewind(l.tokenOffset + 1)
 			token = QUEST

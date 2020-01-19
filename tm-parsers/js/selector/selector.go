@@ -40,6 +40,7 @@ var (
 	Class                        = func(t js.NodeType) bool { return t == js.Class }
 	ClassBody                    = func(t js.NodeType) bool { return t == js.ClassBody }
 	ClassExpr                    = func(t js.NodeType) bool { return t == js.ClassExpr }
+	CoalesceExpression           = func(t js.NodeType) bool { return t == js.CoalesceExpression }
 	CommaExpression              = func(t js.NodeType) bool { return t == js.CommaExpression }
 	ComputedPropertyName         = func(t js.NodeType) bool { return t == js.ComputedPropertyName }
 	ConciseBody                  = func(t js.NodeType) bool { return t == js.ConciseBody }

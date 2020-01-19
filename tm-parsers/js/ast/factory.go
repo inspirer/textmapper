@@ -69,6 +69,8 @@ func ToJsNode(n *Node) JsNode {
 		return &ClassBody{n}
 	case js.ClassExpr:
 		return &ClassExpr{n}
+	case js.CoalesceExpression:
+		return &CoalesceExpression{n}
 	case js.CommaExpression:
 		return &CommaExpression{n}
 	case js.ComputedPropertyName:

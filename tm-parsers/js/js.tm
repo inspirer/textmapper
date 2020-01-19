@@ -195,6 +195,7 @@ invalid_token: /\.\./
 '&&': /&&/
 '||': /\|\|/
 '?': /\?/
+'??': /\?\?/
 invalid_token: /\?\.[0-9]/   { l.rewind(l.tokenOffset+1); token = QUEST }
 '?.': /\?\./
 ':': /:/
@@ -645,6 +646,7 @@ UnaryExpression<Yield, Await> -> Expression /* interface */:
 
 %left '||';
 %left '&&';
+%left '??';
 %left '|';
 %left '^';
 %left '&';
@@ -686,6 +688,7 @@ BinaryExpression<In, Yield, Await> -> Expression /* interface */:
   | left=BinaryExpression '|' right=BinaryExpression                -> BitwiseORExpression
   | left=BinaryExpression '&&' right=BinaryExpression               -> LogicalANDExpression
   | left=BinaryExpression '||' right=BinaryExpression               -> LogicalORExpression
+  | left=BinaryExpression '??' right=BinaryExpression               -> CoalesceExpression
 ;
 
 ConditionalExpression<In, Yield, Await> -> Expression /* interface */:

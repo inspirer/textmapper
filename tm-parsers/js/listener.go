@@ -63,6 +63,7 @@ const (
 	BitwiseORExpression      // left=Expression right=Expression
 	LogicalANDExpression     // left=Expression right=Expression
 	LogicalORExpression      // left=Expression right=Expression
+	CoalesceExpression       // left=Expression right=Expression
 	ConditionalExpression    // cond=Expression then=Expression else=Expression
 	AssignmentExpression     // left=Expression AssignmentOperator? right=Expression
 	AssignmentOperator
@@ -290,6 +291,7 @@ var nodeTypeStr = [...]string{
 	"BitwiseORExpression",
 	"LogicalANDExpression",
 	"LogicalORExpression",
+	"CoalesceExpression",
 	"ConditionalExpression",
 	"AssignmentExpression",
 	"AssignmentOperator",
@@ -538,6 +540,7 @@ var Expression = []NodeType{
 	BitwiseXORExpression,
 	CallExpression,
 	ClassExpr,
+	CoalesceExpression,
 	CommaExpression,
 	ConditionalExpression,
 	EqualityExpression,
@@ -2974,6 +2977,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression : BinaryExpression '|' BinaryExpression
 	LogicalANDExpression,         // BinaryExpression : BinaryExpression '&&' BinaryExpression
 	LogicalORExpression,          // BinaryExpression : BinaryExpression '||' BinaryExpression
+	CoalesceExpression,           // BinaryExpression : BinaryExpression '??' BinaryExpression
 	0,                            // BinaryExpression_Await : ArithmeticExpression_Await
 	RelationalExpression,         // BinaryExpression_Await : BinaryExpression_Await '<' BinaryExpression_Await
 	RelationalExpression,         // BinaryExpression_Await : BinaryExpression_Await '>' BinaryExpression_Await
@@ -2990,6 +2994,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await : BinaryExpression_Await '|' BinaryExpression_Await
 	LogicalANDExpression,         // BinaryExpression_Await : BinaryExpression_Await '&&' BinaryExpression_Await
 	LogicalORExpression,          // BinaryExpression_Await : BinaryExpression_Await '||' BinaryExpression_Await
+	CoalesceExpression,           // BinaryExpression_Await : BinaryExpression_Await '??' BinaryExpression_Await
 	0,                            // BinaryExpression_Await_In : ArithmeticExpression_Await
 	RelationalExpression,         // BinaryExpression_Await_In : BinaryExpression_Await_In '<' BinaryExpression_Await_In
 	RelationalExpression,         // BinaryExpression_Await_In : BinaryExpression_Await_In '>' BinaryExpression_Await_In
@@ -3007,6 +3012,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_In : BinaryExpression_Await_In '|' BinaryExpression_Await_In
 	LogicalANDExpression,         // BinaryExpression_Await_In : BinaryExpression_Await_In '&&' BinaryExpression_Await_In
 	LogicalORExpression,          // BinaryExpression_Await_In : BinaryExpression_Await_In '||' BinaryExpression_Await_In
+	CoalesceExpression,           // BinaryExpression_Await_In : BinaryExpression_Await_In '??' BinaryExpression_Await_In
 	0,                            // BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
 	RelationalExpression,         // BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '<' BinaryExpression_Await_In
 	RelationalExpression,         // BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '>' BinaryExpression_Await_In
@@ -3023,6 +3029,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '|' BinaryExpression_Await_In
 	LogicalANDExpression,         // BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '&&' BinaryExpression_Await_In
 	LogicalORExpression,          // BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '||' BinaryExpression_Await_In
+	CoalesceExpression,           // BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '??' BinaryExpression_Await_In
 	0,                            // BinaryExpression_Await_In_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral
 	RelationalExpression,         // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '<' BinaryExpression_Await_In
 	RelationalExpression,         // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '>' BinaryExpression_Await_In
@@ -3040,6 +3047,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '|' BinaryExpression_Await_In
 	LogicalANDExpression,         // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '&&' BinaryExpression_Await_In
 	LogicalORExpression,          // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '||' BinaryExpression_Await_In
+	CoalesceExpression,           // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral '??' BinaryExpression_Await_In
 	0,                            // BinaryExpression_Await_In_Yield : ArithmeticExpression_Await_Yield
 	RelationalExpression,         // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '<' BinaryExpression_Await_In_Yield
 	RelationalExpression,         // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '>' BinaryExpression_Await_In_Yield
@@ -3057,6 +3065,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '|' BinaryExpression_Await_In_Yield
 	LogicalANDExpression,         // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '&&' BinaryExpression_Await_In_Yield
 	LogicalORExpression,          // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '||' BinaryExpression_Await_In_Yield
+	CoalesceExpression,           // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield '??' BinaryExpression_Await_In_Yield
 	0,                            // BinaryExpression_Await_NoAs_StartWithLet : ArithmeticExpression_Await_StartWithLet
 	RelationalExpression,         // BinaryExpression_Await_NoAs_StartWithLet : BinaryExpression_Await_NoAs_StartWithLet '<' BinaryExpression_Await
 	RelationalExpression,         // BinaryExpression_Await_NoAs_StartWithLet : BinaryExpression_Await_NoAs_StartWithLet '>' BinaryExpression_Await
@@ -3072,6 +3081,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_NoAs_StartWithLet : BinaryExpression_Await_NoAs_StartWithLet '|' BinaryExpression_Await
 	LogicalANDExpression,         // BinaryExpression_Await_NoAs_StartWithLet : BinaryExpression_Await_NoAs_StartWithLet '&&' BinaryExpression_Await
 	LogicalORExpression,          // BinaryExpression_Await_NoAs_StartWithLet : BinaryExpression_Await_NoAs_StartWithLet '||' BinaryExpression_Await
+	CoalesceExpression,           // BinaryExpression_Await_NoAs_StartWithLet : BinaryExpression_Await_NoAs_StartWithLet '??' BinaryExpression_Await
 	0,                            // BinaryExpression_Await_NoLet : ArithmeticExpression_Await_NoLet
 	RelationalExpression,         // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '<' BinaryExpression_Await
 	RelationalExpression,         // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>' BinaryExpression_Await
@@ -3088,6 +3098,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '|' BinaryExpression_Await
 	LogicalANDExpression,         // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '&&' BinaryExpression_Await
 	LogicalORExpression,          // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '||' BinaryExpression_Await
+	CoalesceExpression,           // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '??' BinaryExpression_Await
 	0,                            // BinaryExpression_Await_NoObjLiteral : ArithmeticExpression_Await_NoObjLiteral
 	RelationalExpression,         // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '<' BinaryExpression_Await
 	RelationalExpression,         // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>' BinaryExpression_Await
@@ -3104,6 +3115,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '|' BinaryExpression_Await
 	LogicalANDExpression,         // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '&&' BinaryExpression_Await
 	LogicalORExpression,          // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '||' BinaryExpression_Await
+	CoalesceExpression,           // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '??' BinaryExpression_Await
 	0,                            // BinaryExpression_Await_Yield : ArithmeticExpression_Await_Yield
 	RelationalExpression,         // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '<' BinaryExpression_Await_Yield
 	RelationalExpression,         // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '>' BinaryExpression_Await_Yield
@@ -3120,6 +3132,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '|' BinaryExpression_Await_Yield
 	LogicalANDExpression,         // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '&&' BinaryExpression_Await_Yield
 	LogicalORExpression,          // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '||' BinaryExpression_Await_Yield
+	CoalesceExpression,           // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield '??' BinaryExpression_Await_Yield
 	0,                            // BinaryExpression_In : ArithmeticExpression
 	RelationalExpression,         // BinaryExpression_In : BinaryExpression_In '<' BinaryExpression_In
 	RelationalExpression,         // BinaryExpression_In : BinaryExpression_In '>' BinaryExpression_In
@@ -3137,6 +3150,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_In : BinaryExpression_In '|' BinaryExpression_In
 	LogicalANDExpression,         // BinaryExpression_In : BinaryExpression_In '&&' BinaryExpression_In
 	LogicalORExpression,          // BinaryExpression_In : BinaryExpression_In '||' BinaryExpression_In
+	CoalesceExpression,           // BinaryExpression_In : BinaryExpression_In '??' BinaryExpression_In
 	0,                            // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral
 	RelationalExpression,         // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '<' BinaryExpression_In
 	RelationalExpression,         // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '>' BinaryExpression_In
@@ -3153,6 +3167,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '|' BinaryExpression_In
 	LogicalANDExpression,         // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '&&' BinaryExpression_In
 	LogicalORExpression,          // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '||' BinaryExpression_In
+	CoalesceExpression,           // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral '??' BinaryExpression_In
 	0,                            // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield : ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 	RelationalExpression,         // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield '<' BinaryExpression_In_Yield
 	RelationalExpression,         // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield '>' BinaryExpression_In_Yield
@@ -3169,6 +3184,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield '|' BinaryExpression_In_Yield
 	LogicalANDExpression,         // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield '&&' BinaryExpression_In_Yield
 	LogicalORExpression,          // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield '||' BinaryExpression_In_Yield
+	CoalesceExpression,           // BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield : BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield '??' BinaryExpression_In_Yield
 	0,                            // BinaryExpression_In_NoFuncClass : ArithmeticExpression_NoFuncClass
 	RelationalExpression,         // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '<' BinaryExpression_In
 	RelationalExpression,         // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '>' BinaryExpression_In
@@ -3186,6 +3202,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '|' BinaryExpression_In
 	LogicalANDExpression,         // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '&&' BinaryExpression_In
 	LogicalORExpression,          // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '||' BinaryExpression_In
+	CoalesceExpression,           // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '??' BinaryExpression_In
 	0,                            // BinaryExpression_In_NoObjLiteral : ArithmeticExpression_NoObjLiteral
 	RelationalExpression,         // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '<' BinaryExpression_In
 	RelationalExpression,         // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '>' BinaryExpression_In
@@ -3203,6 +3220,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '|' BinaryExpression_In
 	LogicalANDExpression,         // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '&&' BinaryExpression_In
 	LogicalORExpression,          // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '||' BinaryExpression_In
+	CoalesceExpression,           // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '??' BinaryExpression_In
 	0,                            // BinaryExpression_In_Yield : ArithmeticExpression_Yield
 	RelationalExpression,         // BinaryExpression_In_Yield : BinaryExpression_In_Yield '<' BinaryExpression_In_Yield
 	RelationalExpression,         // BinaryExpression_In_Yield : BinaryExpression_In_Yield '>' BinaryExpression_In_Yield
@@ -3220,6 +3238,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_In_Yield : BinaryExpression_In_Yield '|' BinaryExpression_In_Yield
 	LogicalANDExpression,         // BinaryExpression_In_Yield : BinaryExpression_In_Yield '&&' BinaryExpression_In_Yield
 	LogicalORExpression,          // BinaryExpression_In_Yield : BinaryExpression_In_Yield '||' BinaryExpression_In_Yield
+	CoalesceExpression,           // BinaryExpression_In_Yield : BinaryExpression_In_Yield '??' BinaryExpression_In_Yield
 	0,                            // BinaryExpression_NoAs_StartWithLet : ArithmeticExpression_StartWithLet
 	RelationalExpression,         // BinaryExpression_NoAs_StartWithLet : BinaryExpression_NoAs_StartWithLet '<' BinaryExpression
 	RelationalExpression,         // BinaryExpression_NoAs_StartWithLet : BinaryExpression_NoAs_StartWithLet '>' BinaryExpression
@@ -3235,6 +3254,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_NoAs_StartWithLet : BinaryExpression_NoAs_StartWithLet '|' BinaryExpression
 	LogicalANDExpression,         // BinaryExpression_NoAs_StartWithLet : BinaryExpression_NoAs_StartWithLet '&&' BinaryExpression
 	LogicalORExpression,          // BinaryExpression_NoAs_StartWithLet : BinaryExpression_NoAs_StartWithLet '||' BinaryExpression
+	CoalesceExpression,           // BinaryExpression_NoAs_StartWithLet : BinaryExpression_NoAs_StartWithLet '??' BinaryExpression
 	0,                            // BinaryExpression_NoAs_StartWithLet_Yield : ArithmeticExpression_StartWithLet_Yield
 	RelationalExpression,         // BinaryExpression_NoAs_StartWithLet_Yield : BinaryExpression_NoAs_StartWithLet_Yield '<' BinaryExpression_Yield
 	RelationalExpression,         // BinaryExpression_NoAs_StartWithLet_Yield : BinaryExpression_NoAs_StartWithLet_Yield '>' BinaryExpression_Yield
@@ -3250,6 +3270,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_NoAs_StartWithLet_Yield : BinaryExpression_NoAs_StartWithLet_Yield '|' BinaryExpression_Yield
 	LogicalANDExpression,         // BinaryExpression_NoAs_StartWithLet_Yield : BinaryExpression_NoAs_StartWithLet_Yield '&&' BinaryExpression_Yield
 	LogicalORExpression,          // BinaryExpression_NoAs_StartWithLet_Yield : BinaryExpression_NoAs_StartWithLet_Yield '||' BinaryExpression_Yield
+	CoalesceExpression,           // BinaryExpression_NoAs_StartWithLet_Yield : BinaryExpression_NoAs_StartWithLet_Yield '??' BinaryExpression_Yield
 	0,                            // BinaryExpression_NoLet : ArithmeticExpression_NoLet
 	RelationalExpression,         // BinaryExpression_NoLet : BinaryExpression_NoLet '<' BinaryExpression
 	RelationalExpression,         // BinaryExpression_NoLet : BinaryExpression_NoLet '>' BinaryExpression
@@ -3266,6 +3287,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_NoLet : BinaryExpression_NoLet '|' BinaryExpression
 	LogicalANDExpression,         // BinaryExpression_NoLet : BinaryExpression_NoLet '&&' BinaryExpression
 	LogicalORExpression,          // BinaryExpression_NoLet : BinaryExpression_NoLet '||' BinaryExpression
+	CoalesceExpression,           // BinaryExpression_NoLet : BinaryExpression_NoLet '??' BinaryExpression
 	0,                            // BinaryExpression_NoLet_Yield : ArithmeticExpression_NoLet_Yield
 	RelationalExpression,         // BinaryExpression_NoLet_Yield : BinaryExpression_NoLet_Yield '<' BinaryExpression_Yield
 	RelationalExpression,         // BinaryExpression_NoLet_Yield : BinaryExpression_NoLet_Yield '>' BinaryExpression_Yield
@@ -3282,6 +3304,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_NoLet_Yield : BinaryExpression_NoLet_Yield '|' BinaryExpression_Yield
 	LogicalANDExpression,         // BinaryExpression_NoLet_Yield : BinaryExpression_NoLet_Yield '&&' BinaryExpression_Yield
 	LogicalORExpression,          // BinaryExpression_NoLet_Yield : BinaryExpression_NoLet_Yield '||' BinaryExpression_Yield
+	CoalesceExpression,           // BinaryExpression_NoLet_Yield : BinaryExpression_NoLet_Yield '??' BinaryExpression_Yield
 	0,                            // BinaryExpression_NoObjLiteral : ArithmeticExpression_NoObjLiteral
 	RelationalExpression,         // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '<' BinaryExpression
 	RelationalExpression,         // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '>' BinaryExpression
@@ -3298,6 +3321,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '|' BinaryExpression
 	LogicalANDExpression,         // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '&&' BinaryExpression
 	LogicalORExpression,          // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '||' BinaryExpression
+	CoalesceExpression,           // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '??' BinaryExpression
 	0,                            // BinaryExpression_Yield : ArithmeticExpression_Yield
 	RelationalExpression,         // BinaryExpression_Yield : BinaryExpression_Yield '<' BinaryExpression_Yield
 	RelationalExpression,         // BinaryExpression_Yield : BinaryExpression_Yield '>' BinaryExpression_Yield
@@ -3314,6 +3338,7 @@ var ruleNodeType = [...]NodeType{
 	BitwiseORExpression,          // BinaryExpression_Yield : BinaryExpression_Yield '|' BinaryExpression_Yield
 	LogicalANDExpression,         // BinaryExpression_Yield : BinaryExpression_Yield '&&' BinaryExpression_Yield
 	LogicalORExpression,          // BinaryExpression_Yield : BinaryExpression_Yield '||' BinaryExpression_Yield
+	CoalesceExpression,           // BinaryExpression_Yield : BinaryExpression_Yield '??' BinaryExpression_Yield
 	0,                            // ConditionalExpression : BinaryExpression
 	ConditionalExpression,        // ConditionalExpression : BinaryExpression '?' AssignmentExpression_In ':' AssignmentExpression
 	0,                            // ConditionalExpression_Await : BinaryExpression_Await
