@@ -39,7 +39,7 @@ class RegexAstOr extends RegexAstPart implements RegexOr {
 
 	public void addVariant(RegexAstPart part) {
 		variants.add(part);
-		include(part);
+		include(part.getOffset(), part.getEndOffset());
 	}
 
 	@Override

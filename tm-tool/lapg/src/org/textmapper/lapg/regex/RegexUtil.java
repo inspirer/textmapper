@@ -36,11 +36,12 @@ class RegexUtil {
 	private static final Pattern IDENTIFIER = Pattern.compile(
 			"[a-zA-Z_]([a-zA-Z_\\-0-9]*[a-zA-Z_0-9])?|'([^\\n\\\\']|\\\\.)*'");
 
-	static RegexAstPart wrap(RegexAstPart part) {
+	static RegexAstPart wrap(RegexAstPart part, int offset, int endoffset) {
 		if (!(part instanceof RegexAstList) || ((RegexAstList) part).isParenthesized()) {
 			part = new RegexAstList(part);
 		}
 		((RegexAstList) part).setInParentheses();
+		part.include(offset, endoffset);
 		return part;
 	}
 
@@ -104,7 +105,7 @@ class RegexUtil {
 		charset.add(right);
 	}
 
-	static RegexAstSet toSet(List<RegexAstPart> charset, ErrorReporter reporter, Builder builder, boolean inverted) {
+	static RegexAstSet toSet(List<RegexAstPart> charset, ErrorReporter reporter, Builder builder, boolean inverted, int offset, int endoffset) {
 		builder.clear();
 		for (RegexAstPart part : charset) {
 			if (part instanceof RegexAstChar) {
@@ -121,7 +122,7 @@ class RegexUtil {
 				throw new IllegalStateException("unknown part: " + part.getClass());
 			}
 		}
-		return new RegexAstSet(builder.create(inverted), charset, charset.get(0).getInput(), charset.get(0).getOffset(), charset.get(charset.size() - 1).getEndOffset());
+		return new RegexAstSet(builder.create(inverted), charset, charset.get(0).getInput(), offset, endoffset);
 	}
 
 	private static boolean isRangeChar(int c) {

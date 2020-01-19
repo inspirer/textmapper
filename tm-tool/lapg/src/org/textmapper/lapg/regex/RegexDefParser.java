@@ -276,13 +276,13 @@ public class RegexDefParser {
 				{ tmLeft.value = new RegexAstAny(source, tmLeft.offset, tmLeft.endoffset); }
 				break;
 			case 13:  // primitive_part : '(' pattern ')'
-				{ tmLeft.value = RegexUtil.wrap(((RegexAstPart)tmStack[tmHead - 1].value)); }
+				{ tmLeft.value = RegexUtil.wrap(((RegexAstPart)tmStack[tmHead - 1].value), tmLeft.offset, tmLeft.endoffset); }
 				break;
 			case 14:  // primitive_part : '[' charset ']'
-				{ tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, false); }
+				{ tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, false, tmLeft.offset, tmLeft.endoffset); }
 				break;
 			case 15:  // primitive_part : '[^' charset ']'
-				{ tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, true); }
+				{ tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, true, tmLeft.offset, tmLeft.endoffset); }
 				break;
 			case 16:  // primitive_part : expand
 				{ tmLeft.value = new RegexAstExpand(source, tmLeft.offset, tmLeft.endoffset); RegexUtil.checkExpand((RegexAstExpand) tmLeft.value, reporter); }

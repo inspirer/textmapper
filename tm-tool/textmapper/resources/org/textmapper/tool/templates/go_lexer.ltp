@@ -218,7 +218,7 @@ ${if syntax.lexerRules.exists(r|r.code)-}
 	case 0:
 ${call handleInvalidToken-}
 ${foreach rule in syntax.lexerRules.select(r|r.code)-}
-	case ${rule.index+2}: // ${rule.symbol.name}: /${rule.regexp}/
+	case ${rule.index+2}: // ${rule.symbol.name}: /${rule.regexp.text}/
 ${rule.code-}
 ${end-}
 	}

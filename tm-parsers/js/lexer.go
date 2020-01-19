@@ -470,7 +470,7 @@ restart:
 		if l.offset == l.tokenOffset {
 			l.rewind(l.scanOffset)
 		}
-	case 3: // WhiteSpace: /[\t\v\f \xa0\ufeff\p{Zs}]/
+	case 3: // WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/
 		space = true
 	case 4: // WhiteSpace: /[\n\r\u2028\u2029]|\r\n/
 		space = true

@@ -114,9 +114,9 @@ primitive_part {RegexAstPart} :
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
 	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
 	| '.'										{ $$ = new RegexAstAny(source, ${left().offset}, ${left().endoffset}); }
-	| '(' pattern ')'							{ $$ = RegexUtil.wrap($pattern); }
-	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false); }
-	| '[^' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true); }
+	| '(' pattern ')'							{ $$ = RegexUtil.wrap($pattern, ${left().offset}, ${left().endoffset}); }
+	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false, ${left().offset}, ${left().endoffset}); }
+	| '[^' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true, ${left().offset}, ${left().endoffset}); }
 	| expand									{ $$ = new RegexAstExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexAstExpand) $$, reporter); }
 ;
 

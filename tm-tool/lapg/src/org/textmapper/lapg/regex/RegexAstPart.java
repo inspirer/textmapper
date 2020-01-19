@@ -45,12 +45,17 @@ abstract class RegexAstPart implements RegexPart {
 		return source;
 	}
 
-	protected void include(RegexAstPart part) {
-		if (part.offset < this.offset) {
-			this.offset = part.offset;
+	@Override
+	public String getText() {
+		return source.getText(offset, endoffset);
+	}
+
+	protected void include(int offset, int endoffset) {
+		if (offset < this.offset) {
+			this.offset = offset;
 		}
-		if (part.endoffset > this.endoffset) {
-			this.endoffset = part.endoffset;
+		if (endoffset > this.endoffset) {
+			this.endoffset = endoffset;
 		}
 	}
 

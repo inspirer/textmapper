@@ -30,4 +30,6 @@ public interface RegexPart {
 	int getLength(RegexContext context);
 
 	<T> T accept(RegexSwitch<T> switch_);
+
+	String getText();
 }

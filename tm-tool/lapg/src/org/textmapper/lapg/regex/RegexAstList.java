@@ -44,7 +44,7 @@ class RegexAstList extends RegexAstPart implements RegexList {
 			throw new IllegalStateException("cannot add elements");
 		}
 		elements.add(part);
-		include(part);
+		include(part.getOffset(), part.getEndOffset());
 	}
 
 	@Override
