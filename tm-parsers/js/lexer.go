@@ -119,355 +119,368 @@ restart:
 		}
 	}
 
-	token := Token(tmFirstRule - state)
-	switch token {
-	case IDENTIFIER:
+	rule := tmFirstRule - state
+	switch rule {
+	case 9:
 		hh := hash & 127
 		switch hh {
 		case 1:
 			if hash == 0x2f9501 && "enum" == l.source[l.tokenOffset:l.offset] {
-				token = ENUM
+				rule = 45
 				break
 			}
 		case 3:
 			if hash == 0xcd244983 && "finally" == l.source[l.tokenOffset:l.offset] {
-				token = FINALLY
+				rule = 25
 				break
 			}
 			if hash == 0xed412583 && "private" == l.source[l.tokenOffset:l.offset] {
-				token = PRIVATE
+				rule = 60
 				break
 			}
 		case 7:
 			if hash == 0x33c587 && "null" == l.source[l.tokenOffset:l.offset] {
-				token = NULL
+				rule = 46
 				break
 			}
 		case 11:
 			if hash == 0xc8b && "do" == l.source[l.tokenOffset:l.offset] {
-				token = DO
+				rule = 21
 				break
 			}
 		case 13:
 			if hash == 0x6da5f8d && "yield" == l.source[l.tokenOffset:l.offset] {
-				token = YIELD
+				rule = 44
 				break
 			}
 		case 14:
 			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
-				token = TRUE
+				rule = 47
 				break
 			}
 		case 17:
 			if hash == 0xcad56011 && "string" == l.source[l.tokenOffset:l.offset] {
-				token = STRING
+				rule = 67
 				break
 			}
 			if hash == 0xcb7e7191 && "target" == l.source[l.tokenOffset:l.offset] {
-				token = TARGET
+				rule = 57
 				break
 			}
 			if hash == 0xcccfb691 && "typeof" == l.source[l.tokenOffset:l.offset] {
-				token = TYPEOF
+				rule = 39
 				break
 			}
 		case 20:
 			if hash == 0x375194 && "void" == l.source[l.tokenOffset:l.offset] {
-				token = VOID
+				rule = 41
 				break
 			}
 		case 24:
 			if hash == 0xcb197598 && "symbol" == l.source[l.tokenOffset:l.offset] {
-				token = SYMBOL
+				rule = 68
 				break
 			}
 		case 25:
 			if hash == 0xb22d2499 && "extends" == l.source[l.tokenOffset:l.offset] {
-				token = EXTENDS
+				rule = 24
 				break
 			}
 		case 27:
 			if hash == 0x1a21b && "let" == l.source[l.tokenOffset:l.offset] {
-				token = LET
+				rule = 53
 				break
 			}
 		case 29:
 			if hash == 0xd1d && "if" == l.source[l.tokenOffset:l.offset] {
-				token = IF
+				rule = 28
 				break
 			}
 		case 30:
 			if hash == 0x364e9e && "this" == l.source[l.tokenOffset:l.offset] {
-				token = THIS
+				rule = 36
 				break
 			}
 		case 32:
 			if hash == 0x1a9a0 && "new" == l.source[l.tokenOffset:l.offset] {
-				token = NEW
+				rule = 32
 				break
 			}
 		case 33:
 			if hash == 0x20a6f421 && "debugger" == l.source[l.tokenOffset:l.offset] {
-				token = DEBUGGER
+				rule = 18
 				break
 			}
 		case 34:
 			if hash == 0x6749f022 && "abstract" == l.source[l.tokenOffset:l.offset] {
-				token = ABSTRACT
+				rule = 69
 				break
 			}
 		case 35:
 			if hash == 0x5cb1923 && "false" == l.source[l.tokenOffset:l.offset] {
-				token = FALSE
+				rule = 48
 				break
 			}
 		case 37:
 			if hash == 0xb96173a5 && "import" == l.source[l.tokenOffset:l.offset] {
-				token = IMPORT
+				rule = 29
 				break
 			}
 			if hash == 0xd25 && "in" == l.source[l.tokenOffset:l.offset] {
-				token = IN
+				rule = 30
 				break
 			}
 		case 39:
 			if hash == 0xde312ca7 && "continue" == l.source[l.tokenOffset:l.offset] {
-				token = CONTINUE
+				rule = 17
 				break
 			}
 			if hash == 0x1c727 && "var" == l.source[l.tokenOffset:l.offset] {
-				token = VAR
+				rule = 40
 				break
 			}
 		case 40:
 			if hash == 0x3db6c28 && "boolean" == l.source[l.tokenOffset:l.offset] {
-				token = BOOLEAN
+				rule = 65
 				break
 			}
 		case 42:
 			if hash == 0x3017aa && "from" == l.source[l.tokenOffset:l.offset] {
-				token = FROM
+				rule = 51
 				break
 			}
 			if hash == 0xd2a && "is" == l.source[l.tokenOffset:l.offset] {
-				token = IS
+				rule = 72
 				break
 			}
 		case 43:
 			if hash == 0xb06685ab && "delete" == l.source[l.tokenOffset:l.offset] {
-				token = DELETE
+				rule = 20
 				break
 			}
 		case 44:
 			if hash == 0x35c3d12c && "instanceof" == l.source[l.tokenOffset:l.offset] {
-				token = INSTANCEOF
+				rule = 31
 				break
 			}
 		case 46:
 			if hash == 0xdbba6bae && "protected" == l.source[l.tokenOffset:l.offset] {
-				token = PROTECTED
+				rule = 61
 				break
 			}
 		case 48:
 			if hash == 0x2e7b30 && "case" == l.source[l.tokenOffset:l.offset] {
-				token = CASE
+				rule = 13
 				break
 			}
 			if hash == 0xc97057b0 && "implements" == l.source[l.tokenOffset:l.offset] {
-				token = IMPLEMENTS
+				rule = 58
 				break
 			}
 			if hash == 0xc84e3d30 && "return" == l.source[l.tokenOffset:l.offset] {
-				token = RETURN
+				rule = 33
 				break
 			}
 		case 49:
 			if hash == 0x6bdcb31 && "while" == l.source[l.tokenOffset:l.offset] {
-				token = WHILE
+				rule = 42
 				break
 			}
 		case 50:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
-				token = AS
+				rule = 49
 				break
 			}
 		case 52:
 			if hash == 0xb32913b4 && "export" == l.source[l.tokenOffset:l.offset] {
-				token = EXPORT
+				rule = 23
 				break
 			}
 			if hash == 0xcafbb734 && "switch" == l.source[l.tokenOffset:l.offset] {
-				token = SWITCH
+				rule = 35
 				break
 			}
 		case 57:
 			if hash == 0x2f8d39 && "else" == l.source[l.tokenOffset:l.offset] {
-				token = ELSE
+				rule = 22
 				break
 			}
 			if hash == 0x1df56d39 && "interface" == l.source[l.tokenOffset:l.offset] {
-				token = INTERFACE
+				rule = 59
 				break
 			}
 		case 58:
 			if hash == 0x368f3a && "type" == l.source[l.tokenOffset:l.offset] {
-				token = TYPE
+				rule = 76
 				break
 			}
 		case 59:
 			if hash == 0x5a0eebb && "catch" == l.source[l.tokenOffset:l.offset] {
-				token = CATCH
+				rule = 14
 				break
 			}
 			if hash == 0x1c1bb && "try" == l.source[l.tokenOffset:l.offset] {
-				token = TRY
+				rule = 38
 				break
 			}
 		case 65:
 			if hash == 0x5c13d641 && "default" == l.source[l.tokenOffset:l.offset] {
-				token = DEFAULT
+				rule = 19
 				break
 			}
 		case 66:
 			if hash == 0xcc56be42 && "readonly" == l.source[l.tokenOffset:l.offset] {
-				token = READONLY
+				rule = 77
 				break
 			}
 		case 70:
 			if hash == 0x37b0c6 && "with" == l.source[l.tokenOffset:l.offset] {
-				token = WITH
+				rule = 43
 				break
 			}
 		case 73:
 			if hash == 0x18cc9 && "for" == l.source[l.tokenOffset:l.offset] {
-				token = FOR
+				rule = 26
 				break
 			}
 			if hash == 0xc258db49 && "number" == l.source[l.tokenOffset:l.offset] {
-				token = NUMBER
+				rule = 66
 				break
 			}
 		case 74:
 			if hash == 0xef05ac4a && "unknown" == l.source[l.tokenOffset:l.offset] {
-				token = UNKNOWN
+				rule = 64
 				break
 			}
 		case 78:
 			if hash == 0x5fb304e && "infer" == l.source[l.tokenOffset:l.offset] {
-				token = INFER
+				rule = 80
 				break
 			}
 		case 81:
 			if hash == 0xcde68bd1 && "unique" == l.source[l.tokenOffset:l.offset] {
-				token = UNIQUE
+				rule = 79
 				break
 			}
 		case 86:
 			if hash == 0x58e7956 && "await" == l.source[l.tokenOffset:l.offset] {
-				token = AWAIT
+				rule = 11
 				break
 			}
 			if hash == 0x18f56 && "get" == l.source[l.tokenOffset:l.offset] {
-				token = GET
+				rule = 52
 				break
 			}
 		case 87:
 			if hash == 0xdd7 && "of" == l.source[l.tokenOffset:l.offset] {
-				token = OF
+				rule = 54
 				break
 			}
 		case 88:
 			if hash == 0x524f73d8 && "function" == l.source[l.tokenOffset:l.offset] {
-				token = FUNCTION
+				rule = 27
 				break
 			}
 		case 91:
 			if hash == 0x4aa3555b && "namespace" == l.source[l.tokenOffset:l.offset] {
-				token = NAMESPACE
+				rule = 74
 				break
 			}
 		case 98:
 			if hash == 0x1bc62 && "set" == l.source[l.tokenOffset:l.offset] {
-				token = SET
+				rule = 55
 				break
 			}
 		case 99:
 			if hash == 0x5a73763 && "const" == l.source[l.tokenOffset:l.offset] {
-				token = CONST
+				rule = 16
 				break
 			}
 		case 101:
 			if hash == 0x414f0165 && "require" == l.source[l.tokenOffset:l.offset] {
-				token = REQUIRE
+				rule = 75
 				break
 			}
 		case 102:
 			if hash == 0x693a6e6 && "throw" == l.source[l.tokenOffset:l.offset] {
-				token = THROW
+				rule = 37
 				break
 			}
 		case 105:
 			if hash == 0xc5bdb269 && "public" == l.source[l.tokenOffset:l.offset] {
-				token = PUBLIC
+				rule = 62
 				break
 			}
 		case 106:
 			if hash == 0x5bee456a && "declare" == l.source[l.tokenOffset:l.offset] {
-				token = DECLARE
+				rule = 71
 				break
 			}
 		case 108:
 			if hash == 0x179ec && "any" == l.source[l.tokenOffset:l.offset] {
-				token = ANY
+				rule = 63
 				break
 			}
 			if hash == 0xc04ba66c && "module" == l.source[l.tokenOffset:l.offset] {
-				token = MODULE
+				rule = 73
 				break
 			}
 		case 110:
 			if hash == 0xcacdce6e && "static" == l.source[l.tokenOffset:l.offset] {
-				token = STATIC
+				rule = 56
 				break
 			}
 		case 118:
 			if hash == 0x6139076 && "keyof" == l.source[l.tokenOffset:l.offset] {
-				token = KEYOF
+				rule = 78
 				break
 			}
 		case 120:
 			if hash == 0x5a5a978 && "class" == l.source[l.tokenOffset:l.offset] {
-				token = CLASS
+				rule = 15
 				break
 			}
 		case 122:
 			if hash == 0xa152d7fa && "constructor" == l.source[l.tokenOffset:l.offset] {
-				token = CONSTRUCTOR
+				rule = 70
 				break
 			}
 		case 123:
 			if hash == 0x68b6f7b && "super" == l.source[l.tokenOffset:l.offset] {
-				token = SUPER
+				rule = 34
 				break
 			}
 		case 124:
 			if hash == 0x58d027c && "async" == l.source[l.tokenOffset:l.offset] {
-				token = ASYNC
+				rule = 50
 				break
 			}
 		case 127:
 			if hash == 0x59a58ff && "break" == l.source[l.tokenOffset:l.offset] {
-				token = BREAK
+				rule = 12
 				break
 			}
 		}
 	}
-	switch token {
-	case INVALID_TOKEN:
+
+	token := tmToken[rule]
+	space := false
+	switch rule {
+	case 0:
 		if l.offset == l.tokenOffset {
 			l.rewind(l.scanOffset)
 		}
-	case 3:
+	case 3: // WhiteSpace: /[\t\v\f \xa0\ufeff\p{Zs}]/
+		space = true
+	case 4: // WhiteSpace: /[\n\r\u2028\u2029]|\r\n/
+		space = true
+	case 117: // invalid_token: /\?\.[0-9]/
+		{
+			l.rewind(l.tokenOffset + 1)
+			token = QUEST
+		}
+	}
+	if space {
 		goto restart
 	}
 

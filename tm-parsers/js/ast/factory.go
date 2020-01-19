@@ -251,6 +251,14 @@ func ToJsNode(n *Node) JsNode {
 		return &ObjectPattern{n}
 	case js.ObjectType:
 		return &ObjectType{n}
+	case js.OptionalCallExpression:
+		return &OptionalCallExpression{n}
+	case js.OptionalIndexAccess:
+		return &OptionalIndexAccess{n}
+	case js.OptionalPropertyAccess:
+		return &OptionalPropertyAccess{n}
+	case js.OptionalTaggedTemplate:
+		return &OptionalTaggedTemplate{n}
 	case js.Parameters:
 		return &Parameters{n}
 	case js.Parenthesized:

@@ -131,6 +131,10 @@ var (
 	ObjectMethod                 = func(t js.NodeType) bool { return t == js.ObjectMethod }
 	ObjectPattern                = func(t js.NodeType) bool { return t == js.ObjectPattern }
 	ObjectType                   = func(t js.NodeType) bool { return t == js.ObjectType }
+	OptionalCallExpression       = func(t js.NodeType) bool { return t == js.OptionalCallExpression }
+	OptionalIndexAccess          = func(t js.NodeType) bool { return t == js.OptionalIndexAccess }
+	OptionalPropertyAccess       = func(t js.NodeType) bool { return t == js.OptionalPropertyAccess }
+	OptionalTaggedTemplate       = func(t js.NodeType) bool { return t == js.OptionalTaggedTemplate }
 	Parameters                   = func(t js.NodeType) bool { return t == js.Parameters }
 	Parenthesized                = func(t js.NodeType) bool { return t == js.Parenthesized }
 	ParenthesizedType            = func(t js.NodeType) bool { return t == js.ParenthesizedType }

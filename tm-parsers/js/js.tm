@@ -195,6 +195,8 @@ invalid_token: /\.\./
 '&&': /&&/
 '||': /\|\|/
 '?': /\?/
+invalid_token: /\?\.[0-9]/   { l.rewind(l.tokenOffset+1); token = QUEST }
+'?.': /\?\./
 ':': /:/
 '=': /=/
 '+=': /\+=/
@@ -598,9 +600,24 @@ ArgumentList<Yield, Await> :
   | ArgumentList ',' SpreadElement
 ;
 
+OptionalLHS<Yield, Await> :
+    MemberExpression  | CallExpression | OptionalExpression ;
+
+OptionalExpression<Yield, Await> -> Expression:
+    expr=OptionalLHS '?.' '[' index=Expression<+In> ']'      -> OptionalIndexAccess
+  | expr=OptionalLHS '?.' selector=IdentifierNameRef         -> OptionalPropertyAccess
+  | expr=OptionalLHS '?.' Arguments                          -> OptionalCallExpression
+  | tag=OptionalLHS '?.' literal=TemplateLiteral             -> OptionalTaggedTemplate
+  | expr=OptionalExpression '[' index=Expression<+In> ']'    -> IndexAccess
+  | expr=OptionalExpression '.' selector=IdentifierNameRef   -> PropertyAccess
+  | expr=OptionalExpression Arguments                        -> CallExpression
+  | tag=OptionalExpression literal=TemplateLiteral           -> TaggedTemplate
+;
+
 LeftHandSideExpression<Yield, Await, NoAsync> -> Expression /* interface */:
     NewExpression
   | CallExpression (?= !StartOfParametrizedCall)
+  | OptionalExpression (?= !StartOfParametrizedCall)
 ;
 
 UpdateExpression<Yield, Await> -> Expression /* interface */:

@@ -152,12 +152,21 @@ var parseTests = []struct {
 	}},
 	{js.Javascript, js.TaggedTemplate, []string{
 		"«tpl`ab${ expr }${ expr2 }c`»",
+		"«tpl?.foo`ab${ expr }${ expr2 }c`»",
+	}},
+	{js.Javascript, js.OptionalTaggedTemplate, []string{
+		"«tpl?.`abc`»",
 	}},
 	{js.Javascript, js.IndexAccess, []string{
 		`«super[10]»();`,
 		`«super()[10]»();`,
 		`«s.a()[10]»();`,
 		`««s.a()[10]»[10]»();`,
+		`««s?.a()[10]»[10]»();`,
+	}},
+	{js.Javascript, js.OptionalIndexAccess, []string{
+		`«foo?.[10]»();`,
+		`««s?.a()?.[10]»?.[10]»();`,
 	}},
 	{js.Javascript, js.PropertyAccess, []string{
 		`for (««let.a».b» in b);`,
@@ -165,6 +174,11 @@ var parseTests = []struct {
 		`«a().b»();`,
 		`«a()[10].b»();`,
 		`«super.me»();`,
+		`«foo?.foo.bar»();`,
+	}},
+	{js.Javascript, js.OptionalPropertyAccess, []string{
+		`«foo?.foo»();`,
+		`«««s?.a»()?.foo»?.bar»();`,
 	}},
 	{js.Javascript, js.SuperExpression, []string{
 		`«super».me();`,
@@ -190,6 +204,11 @@ var parseTests = []struct {
 		`««super()»[123]()»;`,
 		`««let()»[123]()»;`,
 		`««super()»()»;`,
+		`«a?.()()»;`,
+	}},
+	{js.Javascript, js.OptionalCallExpression, []string{
+		`«a?.()»;`,
+		`«a?.()»();`,
 	}},
 	{js.Javascript, js.Arguments, []string{
 		`aa«()».bbb«()»«()»;`,

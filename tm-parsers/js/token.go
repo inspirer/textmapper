@@ -126,6 +126,7 @@ const (
 	ANDAND             // &&
 	OROR               // ||
 	QUEST              // ?
+	QUESTDOT           // ?.
 	COLON              // :
 	ASSIGN             // =
 	PLUSASSIGN         // +=
@@ -272,6 +273,7 @@ var tokenStr = [...]string{
 	"&&",
 	"||",
 	"?",
+	"?.",
 	":",
 	"=",
 	"+=",

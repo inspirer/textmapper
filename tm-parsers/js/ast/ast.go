@@ -143,6 +143,10 @@ func (n ObjectLiteral) JsNode() *Node                { return n.Node }
 func (n ObjectMethod) JsNode() *Node                 { return n.Node }
 func (n ObjectPattern) JsNode() *Node                { return n.Node }
 func (n ObjectType) JsNode() *Node                   { return n.Node }
+func (n OptionalCallExpression) JsNode() *Node       { return n.Node }
+func (n OptionalIndexAccess) JsNode() *Node          { return n.Node }
+func (n OptionalPropertyAccess) JsNode() *Node       { return n.Node }
+func (n OptionalTaggedTemplate) JsNode() *Node       { return n.Node }
 func (n Parameters) JsNode() *Node                   { return n.Node }
 func (n Parenthesized) JsNode() *Node                { return n.Node }
 func (n ParenthesizedType) JsNode() *Node            { return n.Node }
@@ -375,6 +379,10 @@ func (MultiplicativeExpression) expressionNode() {}
 func (NewExpression) expressionNode()            {}
 func (NewTarget) expressionNode()                {}
 func (ObjectLiteral) expressionNode()            {}
+func (OptionalCallExpression) expressionNode()   {}
+func (OptionalIndexAccess) expressionNode()      {}
+func (OptionalPropertyAccess) expressionNode()   {}
+func (OptionalTaggedTemplate) expressionNode()   {}
 func (Parenthesized) expressionNode()            {}
 func (PostDec) expressionNode()                  {}
 func (PostInc) expressionNode()                  {}
@@ -1672,11 +1680,11 @@ type ForOfStatement struct {
 }
 
 func (n ForOfStatement) Var() JsNode {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsExpression, js.TsCastExpression, js.TsDynamicImport, js.TsNonNull, js.UnaryExpression, js.Yield))).(JsNode)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.OptionalCallExpression, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsExpression, js.TsCastExpression, js.TsDynamicImport, js.TsNonNull, js.UnaryExpression, js.Yield))).(JsNode)
 }
 
 func (n ForOfStatement) Iterable() Expression {
-	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsExpression, js.TsCastExpression, js.TsDynamicImport, js.TsNonNull, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
+	return ToJsNode(n.Child(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CommaExpression, js.ConditionalExpression, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentifierReference, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.ObjectLiteral, js.OptionalCallExpression, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SpreadElement, js.SuperExpression, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsExpression, js.TsCastExpression, js.TsDynamicImport, js.TsNonNull, js.UnaryExpression, js.Yield)).Next(selector.Expression)).(Expression)
 }
 
 func (n ForOfStatement) Statement() Statement {
@@ -2566,6 +2574,54 @@ func (n ObjectType) TypeMember() []TypeMember {
 		ret = append(ret, ToJsNode(node).(TypeMember))
 	}
 	return ret
+}
+
+type OptionalCallExpression struct {
+	*Node
+}
+
+func (n OptionalCallExpression) Expr() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n OptionalCallExpression) Arguments() Arguments {
+	return Arguments{n.Child(selector.Arguments)}
+}
+
+type OptionalIndexAccess struct {
+	*Node
+}
+
+func (n OptionalIndexAccess) Expr() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n OptionalIndexAccess) Index() Expression {
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+}
+
+type OptionalPropertyAccess struct {
+	*Node
+}
+
+func (n OptionalPropertyAccess) Expr() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n OptionalPropertyAccess) Selector() IdentifierReference {
+	return IdentifierReference{n.Child(selector.Expression).Next(selector.IdentifierReference)}
+}
+
+type OptionalTaggedTemplate struct {
+	*Node
+}
+
+func (n OptionalTaggedTemplate) Tag() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n OptionalTaggedTemplate) Literal() TemplateLiteral {
+	return TemplateLiteral{n.Child(selector.Expression).Next(selector.TemplateLiteral)}
 }
 
 type Parameters struct {
