@@ -1,6 +1,7 @@
 package grammar_test
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -30,41 +31,43 @@ func TestErrors(t *testing.T) {
 			continue
 		}
 
-		inp := string(content)
-		pt := parsertest.New(t, "error", inp)
-		tree, err := ast.Parse(file, pt.Source(), tm.StopOnFirstError)
-		if err != nil {
-			t.Errorf("parsing failed with %v\n%v", err, inp)
-			continue
-		}
-
-		var want []string
-		for _, line := range strings.Split(inp, "\n") {
-			const prefix = "# err: "
-			if strings.HasPrefix(line, prefix) {
-				want = append(want, line[len(prefix):])
+		for _, compat := range []bool{true, false} {
+			inp := string(content)
+			pt := parsertest.New(t, fmt.Sprintf("error,compat=%v", compat), inp)
+			tree, err := ast.Parse(file, pt.Source(), tm.StopOnFirstError)
+			if err != nil {
+				t.Errorf("parsing failed with %v\n%v", err, inp)
+				continue
 			}
-		}
 
-		_, err = grammar.Compile(ast.File{Node: tree.Root()})
-		if err != nil {
-			s := status.FromError(err)
-			s.Sort()
-			for _, e := range s {
-				pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
-				if len(want) == 0 {
-					t.Errorf("%v: unexpected error at line %v: %v", file, e.Origin.Line, e.Msg)
-					continue
+			var want []string
+			for _, line := range strings.Split(inp, "\n") {
+				const prefix = "# err: "
+				if strings.HasPrefix(line, prefix) {
+					want = append(want, line[len(prefix):])
 				}
-				if want[0] != e.Msg {
-					t.Errorf("%v: unexpected error at line %v: %v, want: %v", file, e.Origin.Line, e.Msg, want[0])
-				}
-				want = want[1:]
 			}
+
+			_, err = grammar.Compile(ast.File{Node: tree.Root()}, compat)
+			if err != nil {
+				s := status.FromError(err)
+				s.Sort()
+				for _, e := range s {
+					pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
+					if len(want) == 0 {
+						t.Errorf("%v (compat=%v): unexpected error at line %v: %v", file, compat, e.Origin.Line, e.Msg)
+						continue
+					}
+					if want[0] != e.Msg {
+						t.Errorf("%v (compat=%v): unexpected error at line %v: %v, want: %v", file, compat, e.Origin.Line, e.Msg, want[0])
+					}
+					want = want[1:]
+				}
+			}
+			if len(want) != 0 {
+				t.Errorf("%v (compat=%v): not reported errors:\n%v", file, compat, want)
+			}
+			pt.Done(t, nil)
 		}
-		if len(want) != 0 {
-			t.Errorf("%v: not reported errors:\n%v", file, want)
-		}
-		pt.Done(t, nil)
 	}
 }

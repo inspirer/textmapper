@@ -28,7 +28,7 @@ func TestGenerate(t *testing.T) {
 		filename := filename
 		t.Run(filename, func(t *testing.T) {
 			w := make(mapWriter)
-			err := gen.GenerateFile(filename, w)
+			err := gen.GenerateFile(filename, w, true /*compat*/)
 			if err != nil {
 				t.Errorf("failed with %v", err)
 				return

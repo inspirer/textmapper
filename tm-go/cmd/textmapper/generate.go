@@ -27,6 +27,7 @@ var (
 	noBuiltins  = genCmd.Flags.Bool("x", false, "do not use built-in templates for code generation")
 	debug       = genCmd.Flags.Bool("d", false, "output extra debug info")
 	diffFlag    = genCmd.Flags.Bool("diff", false, "compare generated content against files on disk")
+	compatFlag  = genCmd.Flags.Bool("compat", false, "disable optimizations and attempt to produce the same output as the Java version")
 )
 
 func init() {
@@ -73,7 +74,7 @@ func generate(files []string) error {
 
 	var s status.Status
 	for _, path := range files {
-		if err := gen.GenerateFile(path, writer{}); err != nil {
+		if err := gen.GenerateFile(path, writer{}, *compatFlag); err != nil {
 			s.AddError(err)
 		}
 	}

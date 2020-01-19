@@ -17,7 +17,7 @@ import (
 )
 
 // Compile validates and compiles grammar files.
-func Compile(file ast.File) (*Grammar, error) {
+func Compile(file ast.File, compat bool) (*Grammar, error) {
 	targetLang, _ := file.Header().Target()
 	c := &compiler{
 		file: file,
@@ -29,6 +29,7 @@ func Compile(file ast.File) (*Grammar, error) {
 				TokenLine: true,
 			},
 		},
+		compat:     compat,
 		syms:       make(map[string]int),
 		ids:        make(map[string]string),
 		codeRule:   make(map[symRule]int),
@@ -50,9 +51,10 @@ func Compile(file ast.File) (*Grammar, error) {
 }
 
 type compiler struct {
-	file ast.File
-	out  *Grammar
-	s    status.Status
+	file   ast.File
+	out    *Grammar
+	s      status.Status
+	compat bool
 
 	syms map[string]int
 	ids  map[string]string // ID -> name
@@ -296,7 +298,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 }
 
 func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
-	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() {
+	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() && !c.compat {
 		if sym == int(lex.EOI) {
 			return -1
 		} else if sym == c.out.InvalidToken {
@@ -306,7 +308,7 @@ func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttrib
 
 	out := c.out.Lexer
 	key := symRule{code: cmd.Text(), space: space.IsValid(), class: class.IsValid(), sym: sym}
-	if a, ok := c.codeRule[key]; ok {
+	if a, ok := c.codeRule[key]; ok && !c.compat {
 		if ca, ok := c.codeAction[symAction{key.code, key.space}]; ok && comment != "" {
 			out.Actions[ca].Comments = append(out.Actions[ca].Comments, comment)
 		}
@@ -366,7 +368,10 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 			}
 
 			re, err := parsePattern(pat)
-			c.s.AddError(err)
+			if err != nil {
+				c.s.AddError(err)
+				continue
+			}
 			rule := &lex.Rule{
 				RE:              re,
 				StartConditions: defaultSCs,

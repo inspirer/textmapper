@@ -48,7 +48,7 @@ func Generate(g *grammar.Grammar, w Writer) error {
 }
 
 // GenerateFile reads, compiles, and generates code for a grammar stored in a file.
-func GenerateFile(path string, w Writer) error {
+func GenerateFile(path string, w Writer, compat bool) error {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func GenerateFile(path string, w Writer) error {
 		return err
 	}
 
-	g, err := grammar.Compile(ast.File{Node: tree.Root()})
+	g, err := grammar.Compile(ast.File{Node: tree.Root()}, compat)
 	if err != nil {
 		return err
 	}
