@@ -5,6 +5,7 @@ import (
 	"github.com/inspirer/textmapper/tm-go/util/diff"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -35,6 +36,11 @@ func TestGenerate(t *testing.T) {
 			}
 
 			for genfile, content := range w {
+				if strings.HasSuffix(genfile, ".y") {
+					// TODO compare final grammars
+					continue
+				}
+
 				p := filepath.Join(filepath.Dir(filename), genfile)
 				ondisk, err := ioutil.ReadFile(p)
 				if err != nil {

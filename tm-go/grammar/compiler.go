@@ -25,6 +25,7 @@ func Compile(file ast.File, compat bool) (*Grammar, error) {
 			Name:       file.Header().Name().Text(),
 			TargetLang: targetLang.Text(),
 			Lexer:      &Lexer{},
+			Parser:     &Parser{},
 			Options: &Options{
 				TokenLine: true,
 			},
@@ -72,7 +73,6 @@ type compiler struct {
 
 	// Parser
 	source    *syntax.Model
-	prec      []lalr.Precedence
 	namedSets map[string]int // -> index in source.Sets
 	asserts   []assert
 	params    map[string]int // -> index in source.Params
@@ -786,7 +786,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 				prec.Terminals = append(prec.Terminals, lalr.Sym(sym))
 			}
 			if len(prec.Terminals) > 0 {
-				c.prec = append(c.prec, prec)
+				c.out.Prec = append(c.out.Prec, prec)
 			}
 		case *ast.DirectiveSet:
 			name := part.Name()
@@ -875,11 +875,11 @@ func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 	target := name[:len(name)-3]
 	if index, ok := c.syms[target]; ok {
 		nt.Type = c.out.Syms[index].Type
-		ref = syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin}
+		ref = syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.source}
 	} else if nonterm, ok := c.nonterms[target]; ok {
 		nt.Type = c.source.Nonterms[nonterm].Type
 		nt.Params = c.source.Nonterms[nonterm].Params
-		ref = syntax.Expr{Kind: syntax.Reference, Symbol: c.out.NumTokens + nonterm, Origin: origin}
+		ref = syntax.Expr{Kind: syntax.Reference, Symbol: c.out.NumTokens + nonterm, Origin: origin, Model: c.source}
 	} else {
 		// Unresolved.
 		return 0, false
@@ -1055,7 +1055,7 @@ func (c *compiler) convertSeparator(sep ast.ListSeparator) syntax.Expr {
 			c.errorf(ref, "separators must be terminals")
 			continue
 		}
-		expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref}
+		expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref, Model: c.source}
 		subs = append(subs, expr)
 	}
 	switch len(subs) {
@@ -1092,7 +1092,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) syntax.Ex
 				c.errorf(pred.Symref(), "lookahead expressions do not support terminals")
 				continue
 			}
-			expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref()}
+			expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref(), Model: c.source}
 			if _, not := pred.Not(); not {
 				expr = syntax.Expr{Kind: syntax.LookaheadNot, Sub: []syntax.Expr{expr}, Origin: pred}
 			}
@@ -1131,10 +1131,10 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) syntax.Ex
 		set := c.convertSet(p.Expr())
 		index := len(c.source.Sets)
 		c.source.Sets = append(c.source.Sets, set)
-		return syntax.Expr{Kind: syntax.Set, Pos: index, Origin: p}
+		return syntax.Expr{Kind: syntax.Set, Pos: index, Origin: p, Model: c.source}
 	case *ast.RhsSymbol:
 		sym, args := c.resolveRef(p.Reference(), nonterm)
-		return syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: p}
+		return syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: p, Model: c.source}
 	case *ast.StateMarker:
 		return syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
 	case *ast.SyntaxProblem:
@@ -1197,7 +1197,7 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 			case "prec":
 				sym, _ := c.resolveRef(suffix.Symref(), nonterm)
 				if sym < c.out.NumTokens {
-					expr = syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []syntax.Expr{expr}}
+					expr = syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []syntax.Expr{expr}, Model: c.source}
 				} else {
 					c.errorf(suffix.Symref(), "terminal is expected")
 				}
@@ -1241,7 +1241,15 @@ func (c *compiler) compileParser() {
 		c.source.Nonterms[nt.nonterm].Value = expr
 	}
 
-	// TODO
+	// TODO instantiate templates
+
+	for i := range c.source.Terminals {
+		c.source.Terminals[i] = c.out.Syms[i].ID
+	}
+
+	out := c.out.Parser
+	out.Inputs = c.source.Inputs
+	out.Nonterms = c.source.Nonterms
 }
 
 func (c *compiler) parseOptions() {

@@ -11,8 +11,11 @@ import (
 	"strings"
 )
 
-// Format formats the content of a generated Go file.
+// Format formats the content of a generated file. Formats Go files only.
 func Format(filename, content string) string {
+	if !strings.HasSuffix(filename, ".go") {
+		return content
+	}
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, content, parser.ParseComments)
 	if err != nil {

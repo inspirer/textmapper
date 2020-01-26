@@ -6,6 +6,7 @@ import (
 	"github.com/inspirer/textmapper/tm-go/lalr"
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
+	"github.com/inspirer/textmapper/tm-go/syntax"
 )
 
 // Names of common terminals with predefined meaning.
@@ -90,9 +91,11 @@ type Lexer struct {
 
 // Parser is a model of a generated parser.
 type Parser struct {
-	Inputs  []int // nonterminal symbols
-	Tables  *lalr.Tables
-	Actions []SemanticAction
+	Inputs   []syntax.Input
+	Nonterms []syntax.Nonterm
+	Prec     []lalr.Precedence
+	Tables   *lalr.Tables
+	Actions  []SemanticAction
 }
 
 // Options carries grammar generation parameters.

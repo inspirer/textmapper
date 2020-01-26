@@ -18,11 +18,17 @@ type Writer interface {
 
 // Generate generates code for a grammar.
 func Generate(g *grammar.Grammar, w Writer) error {
+	var templates []file
+	templates = append(templates, lexerFiles...)
+	if g.Options.WriteBison {
+		templates = append(templates, file{name: g.Name + ".y", template: bisonTpl})
+	}
+
 	base, err := template.New("main").Funcs(funcMap).Parse(sharedDefs)
 	if err != nil {
 		return err
 	}
-	for _, f := range genFiles {
+	for _, f := range templates {
 		tmpl, err := template.Must(base.Clone()).Parse(f.template)
 		if err != nil {
 			return err

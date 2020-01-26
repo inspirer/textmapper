@@ -5,7 +5,7 @@ type file struct {
 	template string
 }
 
-var genFiles = []file{
+var lexerFiles = []file{
 	{"token.go", tokenTpl},
 	{"lexer_tables.go", lexerTablesTpl},
 	{"lexer.go", lexerTpl},
@@ -461,4 +461,34 @@ func (l *Lexer) rewind(offset int) {
 		}
 {{- end -}}
 {{end -}}
+`
+
+const bisonTpl = `%{
+%}
+{{range .Parser.Inputs}}
+%start {{(index $.Parser.Nonterms .Nonterm).Name}}{{if .NoEoi}} // no-eoi{{end}}
+{{- end}}
+{{range .Parser.Prec}}
+%{{.Associativity}}{{range .Terminals}} {{(index $.Syms .).ID}}{{end}}
+{{- end}}
+{{- range slice .Tokens 1}}
+%token {{.ID}}
+{{- end}}
+
+%%
+{{- range .Parser.Nonterms}}
+
+{{.Name}} :
+{{- if eq .Value.Kind 2 }}
+{{- range $i, $rule := .Value.Sub}}
+{{ if eq $i 0}}  {{else}}| {{end}}{{$rule}}
+{{- end}}
+{{- else }}
+  {{ .Value}}
+{{- end }}
+;
+{{- end}}
+
+%%
+
 `

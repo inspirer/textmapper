@@ -37,12 +37,18 @@ type Rule struct {
 // Associativity decides on grouping of repeated operators.
 type Associativity uint8
 
+func (a Associativity) String() string {
+	return assocStr[a]
+}
+
 // Available associativities.
 const (
 	Left     Associativity = iota // (x . y) . z
 	Right                         // x . (y . z)
 	NonAssoc                      // treat `x . y . z` as a syntax error
 )
+
+var assocStr = [...]string{"left", "right", "nonassoc"}
 
 // Precedence declares one or more terminals as operators with the same associativity
 // and precedence.
