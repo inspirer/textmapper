@@ -18,28 +18,7 @@ import (
 
 // Compile validates and compiles grammar files.
 func Compile(file ast.File, compat bool) (*Grammar, error) {
-	targetLang, _ := file.Header().Target()
-	c := &compiler{
-		file: file,
-		out: &Grammar{
-			Name:       file.Header().Name().Text(),
-			TargetLang: targetLang.Text(),
-			Lexer:      &Lexer{},
-			Parser:     &Parser{},
-			Options: &Options{
-				TokenLine: true,
-			},
-		},
-		compat:     compat,
-		syms:       make(map[string]int),
-		ids:        make(map[string]string),
-		codeRule:   make(map[symRule]int),
-		codeAction: make(map[symAction]int),
-		namedSets:  make(map[string]int),
-		params:     make(map[string]int),
-		nonterms:   make(map[string]int),
-		cats:       make(map[string]int),
-	}
+	c := newCompiler(file, compat)
 	c.parseOptions()
 	c.compileLexer()
 	c.compileParser()
@@ -78,6 +57,31 @@ type compiler struct {
 	params    map[string]int // -> index in source.Params
 	nonterms  map[string]int // -> index in source.Nonterms
 	cats      map[string]int // -> index in source.Cats
+}
+
+func newCompiler(file ast.File, compat bool) *compiler {
+	targetLang, _ := file.Header().Target()
+	return &compiler{
+		file: file,
+		out: &Grammar{
+			Name:       file.Header().Name().Text(),
+			TargetLang: targetLang.Text(),
+			Lexer:      &Lexer{},
+			Parser:     &Parser{},
+			Options: &Options{
+				TokenLine: true,
+			},
+		},
+		compat:     compat,
+		syms:       make(map[string]int),
+		ids:        make(map[string]string),
+		codeRule:   make(map[symRule]int),
+		codeAction: make(map[symAction]int),
+		namedSets:  make(map[string]int),
+		params:     make(map[string]int),
+		nonterms:   make(map[string]int),
+		cats:       make(map[string]int),
+	}
 }
 
 type assert struct {
@@ -1242,10 +1246,6 @@ func (c *compiler) compileParser() {
 	}
 
 	// TODO instantiate templates
-
-	for i := range c.source.Terminals {
-		c.source.Terminals[i] = c.out.Syms[i].ID
-	}
 
 	out := c.out.Parser
 	out.Inputs = c.source.Inputs

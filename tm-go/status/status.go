@@ -113,7 +113,7 @@ func (s Status) Error() string {
 	case 1:
 		return s[0].Error()
 	}
-	return fmt.Sprintf("%s (and %d more error(s))", s[0], len(s)-1)
+	return fmt.Sprintf("%s (and %d more error(s))", s[0].Error(), len(s)-1)
 }
 
 // Err returns an error equivalent to this status.

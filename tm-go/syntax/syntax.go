@@ -115,7 +115,7 @@ func (e Expr) String() string {
 		}
 		var sep string
 		if len(e.Sub) > 1 {
-			sep = fmt.Sprintf("separator %v", e.Sub[1])
+			sep = fmt.Sprintf(" separator %v", e.Sub[1])
 		}
 		return fmt.Sprintf("(%v%v)%v", e.Sub[0], sep, suffix)
 	case Sequence:

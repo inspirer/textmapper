@@ -11,6 +11,7 @@ genCopyright = true
 tokenLine = false
 tokenLineOffset = false
 cancellable = true
+writeBison = true
 recursiveLookaheads = true
 eventBased = true
 eventFields = true
