@@ -6,6 +6,9 @@ ${call go_parser.main-}
 ${call go_ast.main-}
 ${call go_types.main-}
 ${call go_filter.main-}
+${if opts.writeBison-}
+${file opts.lang.toLowerCase()+'.y'}${call bison.unit('$$')}${end-}
+${end-}
 ${end-}
 ${end}
 

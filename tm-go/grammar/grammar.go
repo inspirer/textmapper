@@ -111,6 +111,7 @@ type Options struct {
 	EventBased   bool
 	EventFields  bool
 	EventAST     bool
+	WriteBison   bool  // Output the expanded grammar in a Bison-like format.
 	ReportTokens []int // Tokens that should appear in the AST.
 	ExtraTypes   []string
 	FileNode     string // The top-level node gets the byte range of the whole input.

@@ -1,5 +1,4 @@
 %{
-#include <stdio.h>
 %}
 
 %start Program
@@ -97,7 +96,6 @@
 %token Div
 %token DivAssign
 
-%locations
 %%
 
 IdentifierName :

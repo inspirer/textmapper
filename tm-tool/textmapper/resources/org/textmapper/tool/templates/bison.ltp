@@ -69,7 +69,6 @@ ${end}
 ${cached query type() = self.type is LiRawAstType ? self.type : null }
 
 ${template prologue-}
-#include <stdio.h>
 ${end}
 
 ${template epilogue-}
@@ -77,8 +76,9 @@ ${end}
 
 ${template declarations-}
 
-${assert syntax.input.length <= 1 && syntax.input.forAll(it|it.hasEoi())-}
-%start ${self->startSymbol()}
+${foreach input in syntax.input-}
+%start ${input.target->symbolName()}${if !input.hasEoi()} // no-eoi${end}
+${end-}
 
 ${call tokens-}
 ${call directives-}
@@ -109,5 +109,4 @@ ${query startSymbol() =
 ${query symbolName() = self.id}
 
 ${template directives-}
-%locations
 ${end}

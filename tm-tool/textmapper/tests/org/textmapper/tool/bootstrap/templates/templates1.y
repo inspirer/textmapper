@@ -1,5 +1,4 @@
 %{
-#include <stdio.h>
 %}
 
 %start input
@@ -14,7 +13,6 @@
 %token char_b
 %token char_c
 
-%locations
 %%
 
 input :

@@ -1,5 +1,4 @@
 %{
-#include <stdio.h>
 %}
 
 %start input
@@ -19,7 +18,6 @@
 %token Comma
 %token Rparen
 
-%locations
 %%
 
 input :

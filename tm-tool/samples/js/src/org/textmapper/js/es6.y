@@ -1,5 +1,4 @@
 %{
-#include <stdio.h>
 %}
 
 %start Module
@@ -112,7 +111,6 @@
 %token Div
 %token DivAssign
 
-%locations
 %%
 
 IdentifierName :

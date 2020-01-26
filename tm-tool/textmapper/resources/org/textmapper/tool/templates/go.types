@@ -11,6 +11,7 @@ class Options extends common.Options {
 	bool tokensAllCaps = true;
 	bool genast = false;
 	bool genastdef = false;
+	bool writeBison = false;
 	bool cancellable = false;
 	bool eventBased = false;
 	bool eventFields = false;

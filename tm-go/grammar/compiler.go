@@ -1265,6 +1265,8 @@ func (c *compiler) parseOptions() {
 			opts.TokenLineOffset = c.parseExpr(opt.Value(), opts.TokenLineOffset).(bool)
 		case "cancellable":
 			opts.Cancellable = c.parseExpr(opt.Value(), opts.Cancellable).(bool)
+		case "writeBison":
+			opts.WriteBison = c.parseExpr(opt.Value(), opts.WriteBison).(bool)
 		case "recursiveLookaheads":
 			opts.RecursiveLookaheads = c.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
 		case "eventBased":
