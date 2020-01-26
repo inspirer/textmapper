@@ -21,6 +21,10 @@ ${end}
 
 
 ${template nonterm(nterm)-}
+${if nterm is LiLookahead-}
+// lookahead: ${foreach p in nterm.lookaheadPredicates separator ' && '-}
+${p.isNegated() ? '!' : ''}${p.input.target->symbolName()}${if p.input.hasEoi()}(with eoi)${end}${end}
+${end-}
 ${nterm->symbolName()} :
   ${foreach rule in self->nontermRules() separator '\n| '}${call rhs(rule)}${end}
 ;
@@ -30,7 +34,7 @@ ${query nontermRules() = syntax.rules[nterm].sort(it|it.getRight().length == 0 ?
 
 ${template rhs(rule)-}
 ${if rule.getRight().length == 0}%empty${else-}
-${foreach sym in rule.getRight() separator ' '}${sym.target->symbolName()}${end-}${end-}
+${foreach sym in rule.getRight() separator ' '}${sym.target ? sym.target->symbolName() : '/*.' + sym.name + '*/'}${end-}${end-}
 ${if rule.precedence()} %prec ${rule.precedence()->symbolName()}${end-}
 ${if rule.codeTemplate()}
 			${call bisonAction for rule-}${end-}

@@ -9,6 +9,7 @@ package = "github.com/inspirer/textmapper/tm-parsers/js"
 eventBased = true
 eventFields = true
 eventAST = true
+writeBison = true
 fileNode = "Module"
 cancellable = true
 recursiveLookaheads = true
