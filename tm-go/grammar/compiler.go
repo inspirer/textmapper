@@ -745,7 +745,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 	for _, part := range p.GrammarPart() {
 		switch part := part.(type) {
 		case *ast.DirectiveAssert:
-			set := c.convertSet(part.RhsSet().Expr())
+			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
 			index := len(c.source.Sets)
 			c.source.Sets = append(c.source.Sets, set)
 			_, empty := part.Empty()
@@ -799,33 +799,33 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 				continue
 			}
 
-			set := c.convertSet(part.RhsSet().Expr())
+			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
 			c.namedSets[name.Text()] = len(c.source.Sets)
 			c.source.Sets = append(c.source.Sets, set)
 		}
 	}
 }
 
-func (c *compiler) convertSet(expr ast.SetExpression) syntax.TokenSet {
+func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) syntax.TokenSet {
 	switch expr := expr.(type) {
 	case *ast.SetAnd:
 		return syntax.TokenSet{
 			Kind:   syntax.Intersection,
-			Sub:    []syntax.TokenSet{c.convertSet(expr.Left()), c.convertSet(expr.Right())},
+			Sub:    []syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
 			Origin: expr,
 		}
 	case *ast.SetComplement:
 		return syntax.TokenSet{
 			Kind:   syntax.Complement,
-			Sub:    []syntax.TokenSet{c.convertSet(expr.Inner())},
+			Sub:    []syntax.TokenSet{c.convertSet(expr.Inner(), nonterm)},
 			Origin: expr,
 		}
 	case *ast.SetCompound:
-		return c.convertSet(expr.Inner())
+		return c.convertSet(expr.Inner(), nonterm)
 	case *ast.SetOr:
 		return syntax.TokenSet{
 			Kind:   syntax.Union,
-			Sub:    []syntax.TokenSet{c.convertSet(expr.Left()), c.convertSet(expr.Right())},
+			Sub:    []syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
 			Origin: expr,
 		}
 	case *ast.SetSymbol:
@@ -844,11 +844,86 @@ func (c *compiler) convertSet(expr ast.SetExpression) syntax.TokenSet {
 				c.errorf(op, "operator must be one of: first, last, precede or follow")
 			}
 		}
-		ret.Symbol, ret.Args = c.resolveRef(expr.Symbol(), nil /*nonterm*/)
+		ret.Symbol, ret.Args = c.resolveRef(expr.Symbol(), nonterm)
 		return ret
 	default:
 		c.errorf(expr.TmNode(), "syntax error")
 		return syntax.TokenSet{} // == eoi
+	}
+}
+
+func (c *compiler) pred(ref ast.ParamRef, nonterm *syntax.Nonterm, op syntax.PredicateOp, val string, origin ast.PredicateExpression) *syntax.Predicate {
+	param, ok := c.resolveParam(ref, *nonterm)
+	if !ok {
+		return nil
+	}
+	return &syntax.Predicate{
+		Op:     op,
+		Param:  param,
+		Value:  val,
+		Origin: origin.TmNode(),
+	}
+}
+
+func (c *compiler) predNot(pred *syntax.Predicate, origin ast.PredicateExpression) *syntax.Predicate {
+	if pred == nil {
+		return nil
+	}
+	return &syntax.Predicate{
+		Op:     syntax.Not,
+		Sub:    []*syntax.Predicate{pred},
+		Origin: origin.TmNode(),
+	}
+}
+
+func (c *compiler) predLiteral(ref ast.ParamRef, nonterm *syntax.Nonterm, literal ast.Literal, origin ast.PredicateExpression) *syntax.Predicate {
+	lit, ok := literal.(*ast.StringLiteral)
+	if !ok {
+		c.errorf(literal.TmNode(), "string is expected")
+		return nil
+	}
+	val, err := strconv.Unquote(lit.Text())
+	if err != nil {
+		c.errorf(lit, "cannot parse string literal: %v", err)
+		return nil
+	}
+	return c.pred(ref, nonterm, syntax.Equals, val, origin)
+}
+
+func (c *compiler) predList(op syntax.PredicateOp, list []ast.PredicateExpression, nonterm *syntax.Nonterm, origin ast.PredicateExpression) *syntax.Predicate {
+	var out []*syntax.Predicate
+	for _, expr := range list {
+		if p := c.convertPredicate(expr, nonterm); p != nil {
+			out = append(out, p)
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return &syntax.Predicate{
+		Op:     syntax.Or,
+		Sub:    out,
+		Origin: origin.TmNode(),
+	}
+}
+
+func (c *compiler) convertPredicate(expr ast.PredicateExpression, nonterm *syntax.Nonterm) *syntax.Predicate {
+	switch expr := expr.(type) {
+	case *ast.PredicateOr:
+		return c.predList(syntax.Or, []ast.PredicateExpression{expr.Left(), expr.Right()}, nonterm, expr)
+	case *ast.PredicateAnd:
+		return c.predList(syntax.And, []ast.PredicateExpression{expr.Left(), expr.Right()}, nonterm, expr)
+	case *ast.ParamRef:
+		return c.pred(*expr, nonterm, syntax.Equals, "true", expr)
+	case *ast.PredicateNot:
+		return c.predNot(c.pred(expr.ParamRef(), nonterm, syntax.Equals, "true", expr), expr)
+	case *ast.PredicateEq:
+		return c.predLiteral(expr.ParamRef(), nonterm, expr.Literal(), expr)
+	case *ast.PredicateNotEq:
+		return c.predNot(c.predLiteral(expr.ParamRef(), nonterm, expr.Literal(), expr), expr)
+	default:
+		c.errorf(expr.TmNode(), "syntax error")
+		return nil
 	}
 }
 
@@ -1132,7 +1207,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) syntax.Ex
 		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
 		return syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
 	case *ast.RhsSet:
-		set := c.convertSet(p.Expr())
+		set := c.convertSet(p.Expr(), nonterm)
 		index := len(c.source.Sets)
 		c.source.Sets = append(c.source.Sets, set)
 		return syntax.Expr{Kind: syntax.Set, Pos: index, Origin: p, Model: c.source}
@@ -1208,6 +1283,10 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 			default:
 				c.errorf(suffix, "unsupported syntax")
 			}
+		}
+		if pred, ok := rule.Predicate(); ok {
+			pred := c.convertPredicate(pred.PredicateExpression(), nonterm)
+			expr = syntax.Expr{Kind: syntax.Conditional, Predicate: pred, Sub: []syntax.Expr{expr}, Model: c.source}
 		}
 
 		subs = append(subs, expr)

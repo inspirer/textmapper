@@ -86,7 +86,7 @@ type Expr struct {
 	ListFlags ListFlags
 	Pos       int // Positional index of a reference in the original rule.
 	Origin    status.SourceNode
-	Model     *Model // Kept for some kinds for easier debugging.
+	Model     *Model // Kept for some kinds for debugging.
 }
 
 func (e Expr) String() string {
@@ -292,13 +292,14 @@ type Arg struct {
 
 // Predicate is an expression which, given a template environment, evaluates to true or false.
 type Predicate struct {
-	Op    PredicateOp
-	Sub   []Predicate
-	Param int
-	Value string
+	Op     PredicateOp
+	Sub    []*Predicate
+	Param  int
+	Value  string
+	Origin status.SourceNode
 }
 
-func (p Predicate) String(m *Model) string {
+func (p *Predicate) String(m *Model) string {
 	switch p.Op {
 	case Or, And:
 		var buf strings.Builder
@@ -319,11 +320,7 @@ func (p Predicate) String(m *Model) string {
 		}
 		return buf.String()
 	case Not:
-		ret := fmt.Sprintf("!%v", p.Sub[0].String(m))
-		if p.Sub[0].Op != Equals {
-			ret = fmt.Sprintf("(%v)", ret)
-		}
-		return ret
+		return fmt.Sprintf("!(%v)", p.Sub[0].String(m))
 	case Equals:
 		return fmt.Sprintf("%v=%q", m.Params[p.Param].Name, p.Value)
 	default:

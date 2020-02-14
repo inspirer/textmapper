@@ -45,7 +45,7 @@ expr<Foo> -> Expr:
 
 delayed<Foo, Async> -> Delayed:
       '.' '.' expr
-    | [Async && Foo] '(' expr<~Foo> ')' '->' expr
+    | [Async && !Foo] '(' expr<~Foo> ')' '->' expr
 ;
 
 %%
@@ -56,12 +56,12 @@ Simple :
 expr<Foo> :
   Identifier -> Identifier -> Expr
 | '(' expr<Foo="false"> ')' -> Bar -> Expr
-| '{' (Identifier separator ',')+ '}' -> Init -> Expr
+| [Foo="true"] '{' (Identifier separator ',')+ '}' -> Init -> Expr
 | delayed<Async="true",Foo=Foo> -> Expr
 ;
 
 delayed<Foo, Async> :
   '.' '.' expr<Foo=Foo> -> Delayed
-| '(' expr<Foo="false"> ')' '->' expr<Foo=Foo> -> Delayed
+| [Async="true" | !(Foo="true")] '(' expr<Foo="false"> ')' '->' expr<Foo=Foo> -> Delayed
 ;
 

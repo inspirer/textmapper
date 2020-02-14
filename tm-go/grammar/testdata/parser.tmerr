@@ -139,3 +139,9 @@ optcheck : aopt bopt Gopt «NonExistentopt» ;
 %generate goptcheck = set(first «X1opt»<«T1», ~T2> | ~(eoi));
 # err: uninitialized parameters: T1
 # err: missing value
+
+c2<foo> : [foo == «"\x"»] c2 ;
+# err: cannot parse string literal: invalid syntax
+
+c3<foo> : [foo == «123»] c3  ;
+# err: string is expected
