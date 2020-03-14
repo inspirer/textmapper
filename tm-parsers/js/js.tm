@@ -106,15 +106,16 @@ invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'false': /false/
 
 # Soft (contextual) keywords.
-'as':     /as/
-'async':  /async/
-'from':   /from/
-'get':    /get/
-'let':    /let/
-'of':     /of/
-'set':    /set/
-'static': /static/
-'target': /target/
+'as':      /as/
+'asserts': /asserts/
+'async':   /async/
+'from':    /from/
+'get':     /get/
+'let':     /let/
+'of':      /of/
+'set':     /set/
+'static':  /static/
+'target':  /target/
 
 # Strict mode keywords:
 #   implements interface package private protected public
@@ -322,6 +323,8 @@ resolveShift:
 %flag NoAsync = false;
 
 %flag WithoutNew = false;
+%flag WithoutAsserts = false;
+%flag WithoutKeywords = false;
 %flag WithoutPredefinedTypes = false;
 %flag WithoutImplements = false;
 
@@ -335,27 +338,28 @@ resolveShift:
 SyntaxError -> SyntaxProblem :
     error ;
 
-IdentifierName<WithoutNew> :
+IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords> :
     Identifier
 
 # Keywords
   | [!WithoutNew] 'new'
-  | 'await'
-  | 'break'      | 'do'         | 'in'         | 'typeof'
-  | 'case'       | 'else'       | 'instanceof' | 'var'
-  | 'catch'      | 'export'     | 'void'
-  | 'class'      | 'extends'    | 'return'     | 'while'
-  | 'const'      | 'finally'    | 'super'      | 'with'
-  | 'continue'   | 'for'        | 'switch'     | 'yield'
-  | 'debugger'   | 'function'   | 'this'
-  | 'default'    | 'if'         | 'throw'
-  | 'delete'     | 'import'     | 'try'
+  | [!WithoutAsserts] 'asserts'
+  | [!WithoutKeywords] ('await'
+    | 'break'      | 'do'         | 'in'         | 'typeof'
+    | 'case'       | 'else'       | 'instanceof' | 'var'
+    | 'catch'      | 'export'     | 'void'
+    | 'class'      | 'extends'    | 'return'     | 'while'
+    | 'const'      | 'finally'    | 'super'      | 'with'
+    | 'continue'   | 'for'        | 'switch'     | 'yield'
+    | 'debugger'   | 'function'   | 'this'
+    | 'default'    | 'if'         | 'throw'
+    | 'delete'     | 'import'     | 'try'
 
-  # Future-reserved.
-  | 'enum'
+    # Future-reserved.
+    | 'enum'
 
-  # NullLiteral | BooleanLiteral
-  | 'null' | 'true' | 'false'
+    # NullLiteral | BooleanLiteral
+    | 'null' | 'true' | 'false')
 
   # Soft keywords
   | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
@@ -371,7 +375,7 @@ IdentifierNameDecl<WithoutNew> :
     IdentifierName                                    -> BindingIdentifier
 ;
 
-IdentifierNameRef :
+IdentifierNameRef<WithoutAsserts> :
     IdentifierName                                    -> IdentifierReference
 ;
 
@@ -387,7 +391,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> Identifier
   | [!NoAsync] 'async' (?= !StartOfArrowFunction)
 
   # Soft keywords
-  | 'as' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
+  | 'as' | 'asserts' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
@@ -403,7 +407,7 @@ BindingIdentifier<WithoutImplements> -> BindingIdentifier :
   | 'yield' | 'await'
 
   # Soft keywords
-  | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+  | 'as' | 'asserts' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
 
   # Typescript.
   | [!WithoutImplements] 'implements'
@@ -420,7 +424,7 @@ LabelIdentifier -> LabelIdentifier :
   | 'yield' | 'await'
 
   # Soft keywords
-  | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+  | 'as' | 'asserts' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
@@ -1313,8 +1317,21 @@ Type<AllowQuest> -> TsType /* interface */:
   | [AllowQuest] check=UnionOrIntersectionOrPrimaryType 'extends' ext=Type<~AllowQuest> '?' truet=Type ':' falset=Type  -> TsConditional
   | FunctionType
   | ConstructorType
-  | paramref=IdentifierNameRef 'is' Type -> TypePredicate
+  | [AllowQuest] AssertsType
+  | TypePredicate
 ;
+
+TypePredicate<AllowQuest> -> TypePredicate:
+    paramref=IdentifierNameRef<+WithoutAsserts> 'is' Type -> TypePredicate
+  | paramref=('asserts' -> IdentifierReference) (?= StartOfIs) 'is' Type<~AllowQuest> -> TypePredicate
+;
+
+# 3.7
+AssertsType<AllowQuest> -> AssertsType:
+    'asserts' .noLineBreak (?= !StartOfIs) ('this' | IdentifierName<+WithoutKeywords>) ('is' Type)? ;
+
+StartOfIs:
+      'is' ;
 
 TypeParameters -> TypeParameters :
     '<' (TypeParameter separator ',')+ '>' ;

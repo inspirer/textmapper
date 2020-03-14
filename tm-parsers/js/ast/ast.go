@@ -30,6 +30,7 @@ func (n ArrayLiteral) JsNode() *Node                 { return n.Node }
 func (n ArrayPattern) JsNode() *Node                 { return n.Node }
 func (n ArrayType) JsNode() *Node                    { return n.Node }
 func (n ArrowFunction) JsNode() *Node                { return n.Node }
+func (n AssertsType) JsNode() *Node                  { return n.Node }
 func (n AssignmentExpression) JsNode() *Node         { return n.Node }
 func (n AssignmentOperator) JsNode() *Node           { return n.Node }
 func (n AsyncArrowFunction) JsNode() *Node           { return n.Node }
@@ -726,6 +727,7 @@ type TsType interface {
 // assigned to TsType.
 //
 func (ArrayType) tsTypeNode()         {}
+func (AssertsType) tsTypeNode()       {}
 func (ConstructorType) tsTypeNode()   {}
 func (FunctionType) tsTypeNode()      {}
 func (ImportType) tsTypeNode()        {}
@@ -878,6 +880,15 @@ func (n ArrowFunction) Body() (Body, bool) {
 func (n ArrowFunction) ConciseBody() (ConciseBody, bool) {
 	field := ConciseBody{n.Child(selector.ConciseBody)}
 	return field, field.IsValid()
+}
+
+type AssertsType struct {
+	*Node
+}
+
+func (n AssertsType) TsType() (TsType, bool) {
+	field := ToJsNode(n.Child(selector.TsType)).(TsType)
+	return field, field.JsNode() != nil
 }
 
 type AssignmentExpression struct {

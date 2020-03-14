@@ -165,6 +165,7 @@ const (
 	JSXSpreadExpression // Expression?
 	TsConditional       // check=TsType ext=TsType truet=TsType falset=TsType
 	TypePredicate       // paramref=IdentifierReference TsType
+	AssertsType         // TsType?
 	TypeParameters      // (TypeParameter)+
 	TypeParameter       // BindingIdentifier TypeConstraint? TsType?
 	TypeConstraint      // TsType
@@ -393,6 +394,7 @@ var nodeTypeStr = [...]string{
 	"JSXSpreadExpression",
 	"TsConditional",
 	"TypePredicate",
+	"AssertsType",
 	"TypeParameters",
 	"TypeParameter",
 	"TypeConstraint",
@@ -797,6 +799,7 @@ var TsAmbientElement = []NodeType{
 
 var TsType = []NodeType{
 	ArrayType,
+	AssertsType,
 	ConstructorType,
 	FunctionType,
 	ImportType,
@@ -835,6 +838,7 @@ var ruleNodeType = [...]NodeType{
 	SyntaxProblem,                // SyntaxError : error
 	0,                            // IdentifierName : Identifier
 	0,                            // IdentifierName : 'new'
+	0,                            // IdentifierName : 'asserts'
 	0,                            // IdentifierName : 'await'
 	0,                            // IdentifierName : 'break'
 	0,                            // IdentifierName : 'do'
@@ -904,7 +908,114 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierName : 'keyof'
 	0,                            // IdentifierName : 'unique'
 	0,                            // IdentifierName : 'infer'
+	0,                            // IdentifierName_WithoutAsserts : Identifier
+	0,                            // IdentifierName_WithoutAsserts : 'new'
+	0,                            // IdentifierName_WithoutAsserts : 'await'
+	0,                            // IdentifierName_WithoutAsserts : 'break'
+	0,                            // IdentifierName_WithoutAsserts : 'do'
+	0,                            // IdentifierName_WithoutAsserts : 'in'
+	0,                            // IdentifierName_WithoutAsserts : 'typeof'
+	0,                            // IdentifierName_WithoutAsserts : 'case'
+	0,                            // IdentifierName_WithoutAsserts : 'else'
+	0,                            // IdentifierName_WithoutAsserts : 'instanceof'
+	0,                            // IdentifierName_WithoutAsserts : 'var'
+	0,                            // IdentifierName_WithoutAsserts : 'catch'
+	0,                            // IdentifierName_WithoutAsserts : 'export'
+	0,                            // IdentifierName_WithoutAsserts : 'void'
+	0,                            // IdentifierName_WithoutAsserts : 'class'
+	0,                            // IdentifierName_WithoutAsserts : 'extends'
+	0,                            // IdentifierName_WithoutAsserts : 'return'
+	0,                            // IdentifierName_WithoutAsserts : 'while'
+	0,                            // IdentifierName_WithoutAsserts : 'const'
+	0,                            // IdentifierName_WithoutAsserts : 'finally'
+	0,                            // IdentifierName_WithoutAsserts : 'super'
+	0,                            // IdentifierName_WithoutAsserts : 'with'
+	0,                            // IdentifierName_WithoutAsserts : 'continue'
+	0,                            // IdentifierName_WithoutAsserts : 'for'
+	0,                            // IdentifierName_WithoutAsserts : 'switch'
+	0,                            // IdentifierName_WithoutAsserts : 'yield'
+	0,                            // IdentifierName_WithoutAsserts : 'debugger'
+	0,                            // IdentifierName_WithoutAsserts : 'function'
+	0,                            // IdentifierName_WithoutAsserts : 'this'
+	0,                            // IdentifierName_WithoutAsserts : 'default'
+	0,                            // IdentifierName_WithoutAsserts : 'if'
+	0,                            // IdentifierName_WithoutAsserts : 'throw'
+	0,                            // IdentifierName_WithoutAsserts : 'delete'
+	0,                            // IdentifierName_WithoutAsserts : 'import'
+	0,                            // IdentifierName_WithoutAsserts : 'try'
+	0,                            // IdentifierName_WithoutAsserts : 'enum'
+	0,                            // IdentifierName_WithoutAsserts : 'null'
+	0,                            // IdentifierName_WithoutAsserts : 'true'
+	0,                            // IdentifierName_WithoutAsserts : 'false'
+	0,                            // IdentifierName_WithoutAsserts : 'as'
+	0,                            // IdentifierName_WithoutAsserts : 'from'
+	0,                            // IdentifierName_WithoutAsserts : 'get'
+	0,                            // IdentifierName_WithoutAsserts : 'let'
+	0,                            // IdentifierName_WithoutAsserts : 'of'
+	0,                            // IdentifierName_WithoutAsserts : 'set'
+	0,                            // IdentifierName_WithoutAsserts : 'static'
+	0,                            // IdentifierName_WithoutAsserts : 'target'
+	0,                            // IdentifierName_WithoutAsserts : 'async'
+	0,                            // IdentifierName_WithoutAsserts : 'implements'
+	0,                            // IdentifierName_WithoutAsserts : 'interface'
+	0,                            // IdentifierName_WithoutAsserts : 'private'
+	0,                            // IdentifierName_WithoutAsserts : 'protected'
+	0,                            // IdentifierName_WithoutAsserts : 'public'
+	0,                            // IdentifierName_WithoutAsserts : 'any'
+	0,                            // IdentifierName_WithoutAsserts : 'unknown'
+	0,                            // IdentifierName_WithoutAsserts : 'boolean'
+	0,                            // IdentifierName_WithoutAsserts : 'number'
+	0,                            // IdentifierName_WithoutAsserts : 'string'
+	0,                            // IdentifierName_WithoutAsserts : 'symbol'
+	0,                            // IdentifierName_WithoutAsserts : 'abstract'
+	0,                            // IdentifierName_WithoutAsserts : 'constructor'
+	0,                            // IdentifierName_WithoutAsserts : 'declare'
+	0,                            // IdentifierName_WithoutAsserts : 'is'
+	0,                            // IdentifierName_WithoutAsserts : 'module'
+	0,                            // IdentifierName_WithoutAsserts : 'namespace'
+	0,                            // IdentifierName_WithoutAsserts : 'require'
+	0,                            // IdentifierName_WithoutAsserts : 'type'
+	0,                            // IdentifierName_WithoutAsserts : 'readonly'
+	0,                            // IdentifierName_WithoutAsserts : 'keyof'
+	0,                            // IdentifierName_WithoutAsserts : 'unique'
+	0,                            // IdentifierName_WithoutAsserts : 'infer'
+	0,                            // IdentifierName_WithoutKeywords : Identifier
+	0,                            // IdentifierName_WithoutKeywords : 'new'
+	0,                            // IdentifierName_WithoutKeywords : 'asserts'
+	0,                            // IdentifierName_WithoutKeywords : 'as'
+	0,                            // IdentifierName_WithoutKeywords : 'from'
+	0,                            // IdentifierName_WithoutKeywords : 'get'
+	0,                            // IdentifierName_WithoutKeywords : 'let'
+	0,                            // IdentifierName_WithoutKeywords : 'of'
+	0,                            // IdentifierName_WithoutKeywords : 'set'
+	0,                            // IdentifierName_WithoutKeywords : 'static'
+	0,                            // IdentifierName_WithoutKeywords : 'target'
+	0,                            // IdentifierName_WithoutKeywords : 'async'
+	0,                            // IdentifierName_WithoutKeywords : 'implements'
+	0,                            // IdentifierName_WithoutKeywords : 'interface'
+	0,                            // IdentifierName_WithoutKeywords : 'private'
+	0,                            // IdentifierName_WithoutKeywords : 'protected'
+	0,                            // IdentifierName_WithoutKeywords : 'public'
+	0,                            // IdentifierName_WithoutKeywords : 'any'
+	0,                            // IdentifierName_WithoutKeywords : 'unknown'
+	0,                            // IdentifierName_WithoutKeywords : 'boolean'
+	0,                            // IdentifierName_WithoutKeywords : 'number'
+	0,                            // IdentifierName_WithoutKeywords : 'string'
+	0,                            // IdentifierName_WithoutKeywords : 'symbol'
+	0,                            // IdentifierName_WithoutKeywords : 'abstract'
+	0,                            // IdentifierName_WithoutKeywords : 'constructor'
+	0,                            // IdentifierName_WithoutKeywords : 'declare'
+	0,                            // IdentifierName_WithoutKeywords : 'is'
+	0,                            // IdentifierName_WithoutKeywords : 'module'
+	0,                            // IdentifierName_WithoutKeywords : 'namespace'
+	0,                            // IdentifierName_WithoutKeywords : 'require'
+	0,                            // IdentifierName_WithoutKeywords : 'type'
+	0,                            // IdentifierName_WithoutKeywords : 'readonly'
+	0,                            // IdentifierName_WithoutKeywords : 'keyof'
+	0,                            // IdentifierName_WithoutKeywords : 'unique'
+	0,                            // IdentifierName_WithoutKeywords : 'infer'
 	0,                            // IdentifierName_WithoutNew : Identifier
+	0,                            // IdentifierName_WithoutNew : 'asserts'
 	0,                            // IdentifierName_WithoutNew : 'await'
 	0,                            // IdentifierName_WithoutNew : 'break'
 	0,                            // IdentifierName_WithoutNew : 'do'
@@ -977,6 +1088,7 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,            // IdentifierNameDecl : IdentifierName
 	BindingIdentifier,            // IdentifierNameDecl_WithoutNew : IdentifierName_WithoutNew
 	IdentifierReference,          // IdentifierNameRef : IdentifierName
+	IdentifierReference,          // IdentifierNameRef_WithoutAsserts : IdentifierName_WithoutAsserts
 	IdentifierReference,          // IdentifierReference : '%' Identifier
 	IdentifierReference,          // IdentifierReference : Identifier
 	IdentifierReference,          // IdentifierReference : 'yield'
@@ -984,6 +1096,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference : 'let'
 	IdentifierReference,          // IdentifierReference : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference : 'as'
+	IdentifierReference,          // IdentifierReference : 'asserts'
 	IdentifierReference,          // IdentifierReference : 'from'
 	IdentifierReference,          // IdentifierReference : 'get'
 	IdentifierReference,          // IdentifierReference : 'of'
@@ -1019,6 +1132,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await : 'let'
 	IdentifierReference,          // IdentifierReference_Await : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_Await : 'as'
+	IdentifierReference,          // IdentifierReference_Await : 'asserts'
 	IdentifierReference,          // IdentifierReference_Await : 'from'
 	IdentifierReference,          // IdentifierReference_Await : 'get'
 	IdentifierReference,          // IdentifierReference_Await : 'of'
@@ -1052,6 +1166,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : Identifier
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'yield'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'as'
+	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'asserts'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'from'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'get'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'of'
@@ -1086,6 +1201,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'yield'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'as'
+	IdentifierReference,          // IdentifierReference_Await_NoLet : 'asserts'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'from'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'get'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'of'
@@ -1119,6 +1235,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : Identifier
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'as'
+	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'asserts'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'from'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'get'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'of'
@@ -1153,6 +1270,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'let'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'as'
+	IdentifierReference,          // IdentifierReference_Await_Yield : 'asserts'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'from'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'get'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'of'
@@ -1187,6 +1305,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'yield'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'await'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'as'
+	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'asserts'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'from'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'get'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'of'
@@ -1220,6 +1339,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : Identifier
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'await'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'as'
+	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'asserts'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'from'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'get'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'of'
@@ -1255,6 +1375,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoLet : 'await'
 	IdentifierReference,          // IdentifierReference_NoLet : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_NoLet : 'as'
+	IdentifierReference,          // IdentifierReference_NoLet : 'asserts'
 	IdentifierReference,          // IdentifierReference_NoLet : 'from'
 	IdentifierReference,          // IdentifierReference_NoLet : 'get'
 	IdentifierReference,          // IdentifierReference_NoLet : 'of'
@@ -1289,6 +1410,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'await'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'as'
+	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'asserts'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'from'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'get'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'of'
@@ -1325,6 +1447,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'let'
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'as'
+	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'asserts'
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'from'
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'get'
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'of'
@@ -1350,6 +1473,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Yield : 'let'
 	IdentifierReference,          // IdentifierReference_Yield : 'async' lookahead_notStartOfArrowFunction
 	IdentifierReference,          // IdentifierReference_Yield : 'as'
+	IdentifierReference,          // IdentifierReference_Yield : 'asserts'
 	IdentifierReference,          // IdentifierReference_Yield : 'from'
 	IdentifierReference,          // IdentifierReference_Yield : 'get'
 	IdentifierReference,          // IdentifierReference_Yield : 'of'
@@ -1384,6 +1508,7 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,            // BindingIdentifier : 'yield'
 	BindingIdentifier,            // BindingIdentifier : 'await'
 	BindingIdentifier,            // BindingIdentifier : 'as'
+	BindingIdentifier,            // BindingIdentifier : 'asserts'
 	BindingIdentifier,            // BindingIdentifier : 'from'
 	BindingIdentifier,            // BindingIdentifier : 'get'
 	BindingIdentifier,            // BindingIdentifier : 'let'
@@ -1419,6 +1544,7 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'yield'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'await'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'as'
+	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'asserts'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'from'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'get'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'let'
@@ -1453,6 +1579,7 @@ var ruleNodeType = [...]NodeType{
 	LabelIdentifier,              // LabelIdentifier : 'yield'
 	LabelIdentifier,              // LabelIdentifier : 'await'
 	LabelIdentifier,              // LabelIdentifier : 'as'
+	LabelIdentifier,              // LabelIdentifier : 'asserts'
 	LabelIdentifier,              // LabelIdentifier : 'from'
 	LabelIdentifier,              // LabelIdentifier : 'get'
 	LabelIdentifier,              // LabelIdentifier : 'let'
@@ -4321,11 +4448,27 @@ var ruleNodeType = [...]NodeType{
 	TsConditional,                // Type : UnionOrIntersectionOrPrimaryType 'extends' Type1 '?' Type ':' Type
 	0,                            // Type : FunctionType
 	0,                            // Type : ConstructorType
-	TypePredicate,                // Type : IdentifierNameRef 'is' Type
+	0,                            // Type : AssertsType
+	0,                            // Type : TypePredicate
 	0,                            // Type1 : UnionOrIntersectionOrPrimaryType1 %prec resolveShift
 	0,                            // Type1 : FunctionType1
 	0,                            // Type1 : ConstructorType1
-	TypePredicate,                // Type1 : IdentifierNameRef 'is' Type1
+	0,                            // Type1 : TypePredicate1
+	0,                            // lookahead_StartOfIs :
+	TypePredicate,                // TypePredicate : IdentifierNameRef_WithoutAsserts 'is' Type
+	TypePredicate,                // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type1
+	TypePredicate,                // TypePredicate1 : IdentifierNameRef_WithoutAsserts 'is' Type1
+	TypePredicate,                // TypePredicate1 : 'asserts' lookahead_StartOfIs 'is' Type1
+	AssertsType,                  // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
+	AssertsType,                  // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+	AssertsType,                  // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type
+	AssertsType,                  // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
+	AssertsType,                  // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type1
+	AssertsType,                  // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+	AssertsType,                  // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type1
+	AssertsType,                  // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
+	0,                            // lookahead_notStartOfIs :
+	0,                            // StartOfIs : 'is'
 	0,                            // TypeParameter_list_Comma_separated : TypeParameter_list_Comma_separated ',' TypeParameter
 	0,                            // TypeParameter_list_Comma_separated : TypeParameter
 	TypeParameters,               // TypeParameters : '<' TypeParameter_list_Comma_separated '>'

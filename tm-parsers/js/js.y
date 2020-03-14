@@ -4,6 +4,7 @@
 %start StartOfArrowFunction // no-eoi
 %start StartOfParametrizedCall // no-eoi
 %start StartOfExtendsTypeRef // no-eoi
+%start StartOfIs // no-eoi
 %start StartOfFunctionType // no-eoi
 %start StartOfMappedType // no-eoi
 %start Module
@@ -64,6 +65,7 @@
 %token NULL
 %token TRUE
 %token FALSE
+%token ASSERTS
 %token ASYNC
 %token FROM
 %token GET
@@ -142,6 +144,7 @@ SyntaxError :
 IdentifierName :
   IDENTIFIER
 | NEW
+| ASSERTS
 | AWAIT
 | BREAK
 | DO
@@ -213,8 +216,121 @@ IdentifierName :
 | INFER
 ;
 
+IdentifierName_WithoutAsserts :
+  IDENTIFIER
+| NEW
+| AWAIT
+| BREAK
+| DO
+| IN
+| TYPEOF
+| CASE
+| ELSE
+| INSTANCEOF
+| VAR
+| CATCH
+| EXPORT
+| VOID
+| CLASS
+| EXTENDS
+| RETURN
+| WHILE
+| CONST
+| FINALLY
+| SUPER
+| WITH
+| CONTINUE
+| FOR
+| SWITCH
+| YIELD
+| DEBUGGER
+| FUNCTION
+| THIS
+| DEFAULT
+| IF
+| THROW
+| DELETE
+| IMPORT
+| TRY
+| ENUM
+| NULL
+| TRUE
+| FALSE
+| AS
+| FROM
+| GET
+| LET
+| OF
+| SET
+| STATIC
+| TARGET
+| ASYNC
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| REQUIRE
+| TYPE
+| READONLY
+| KEYOF
+| UNIQUE
+| INFER
+;
+
+IdentifierName_WithoutKeywords :
+  IDENTIFIER
+| NEW
+| ASSERTS
+| AS
+| FROM
+| GET
+| LET
+| OF
+| SET
+| STATIC
+| TARGET
+| ASYNC
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| REQUIRE
+| TYPE
+| READONLY
+| KEYOF
+| UNIQUE
+| INFER
+;
+
 IdentifierName_WithoutNew :
   IDENTIFIER
+| ASSERTS
 | AWAIT
 | BREAK
 | DO
@@ -298,6 +414,10 @@ IdentifierNameRef :
   IdentifierName
 ;
 
+IdentifierNameRef_WithoutAsserts :
+  IdentifierName_WithoutAsserts
+;
+
 IdentifierReference :
   REM IDENTIFIER
 | IDENTIFIER
@@ -306,6 +426,7 @@ IdentifierReference :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -344,6 +465,7 @@ IdentifierReference_Await :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -380,6 +502,7 @@ IdentifierReference_Await_NoAsync_NoLet :
 | IDENTIFIER
 | YIELD
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -417,6 +540,7 @@ IdentifierReference_Await_NoLet :
 | YIELD
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -453,6 +577,7 @@ IdentifierReference_Await_NoLet_Yield :
 | IDENTIFIER
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -490,6 +615,7 @@ IdentifierReference_Await_Yield :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -527,6 +653,7 @@ IdentifierReference_NoAsync_NoLet :
 | YIELD
 | AWAIT
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -563,6 +690,7 @@ IdentifierReference_NoAsync_NoLet_Yield :
 | IDENTIFIER
 | AWAIT
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -601,6 +729,7 @@ IdentifierReference_NoLet :
 | AWAIT
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -638,6 +767,7 @@ IdentifierReference_NoLet_Yield :
 | AWAIT
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -677,6 +807,7 @@ IdentifierReference_WithoutPredefinedTypes :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -705,6 +836,7 @@ IdentifierReference_Yield :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERTS
 | FROM
 | GET
 | OF
@@ -746,6 +878,7 @@ BindingIdentifier :
 | YIELD
 | AWAIT
 | AS
+| ASSERTS
 | FROM
 | GET
 | LET
@@ -784,6 +917,7 @@ BindingIdentifier_WithoutImplements :
 | YIELD
 | AWAIT
 | AS
+| ASSERTS
 | FROM
 | GET
 | LET
@@ -821,6 +955,7 @@ LabelIdentifier :
 | YIELD
 | AWAIT
 | AS
+| ASSERTS
 | FROM
 | GET
 | LET
@@ -5674,14 +5809,53 @@ Type :
 | UnionOrIntersectionOrPrimaryType EXTENDS Type1 QUEST Type COLON Type
 | FunctionType
 | ConstructorType
-| IdentifierNameRef IS Type
+| AssertsType
+| TypePredicate
 ;
 
 Type1 :
   UnionOrIntersectionOrPrimaryType1 %prec RESOLVESHIFT
 | FunctionType1
 | ConstructorType1
-| IdentifierNameRef IS Type1
+| TypePredicate1
+;
+
+// lookahead: StartOfIs
+lookahead_StartOfIs :
+  %empty
+;
+
+TypePredicate :
+  IdentifierNameRef_WithoutAsserts IS Type
+| ASSERTS lookahead_StartOfIs IS Type1
+;
+
+TypePredicate1 :
+  IdentifierNameRef_WithoutAsserts IS Type1
+| ASSERTS lookahead_StartOfIs IS Type1
+;
+
+AssertsType :
+  ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords IS Type
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords
+;
+
+AssertsType1 :
+  ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type1
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords IS Type1
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords
+;
+
+// lookahead: !StartOfIs
+lookahead_notStartOfIs :
+  %empty
+;
+
+StartOfIs :
+  IS
 ;
 
 TypeParameter_list_Comma_separated :

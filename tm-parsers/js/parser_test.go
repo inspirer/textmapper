@@ -994,7 +994,9 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TypeReference, []string{
 		`var x: «abc»;`,
+		`var x: «asserts»;`,
 		`function f(foo: «bar») {}`,
+		`function f(foo: «bar»): «asserts» {}`,
 	}},
 	{js.Typescript, js.ObjectType, []string{
 		`var x: «{a: string}»;`,
@@ -1313,9 +1315,16 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TypePredicate, []string{
 		`function isFish(pet: Fish | Bird): «pet is Fish» {}`,
+		`function isFish(asserts: Fish | Bird): «asserts is Foo» {}`,
 		`declare class Foo<T> {
       filter<U extends T>(predicate: (x: T) => «x is U»): Foo<U>;
      }`,
+	}},
+	{js.Typescript, js.AssertsType, []string{
+		`declare function assert(value: unknown): «asserts value»;
+		 declare function assert(value: unknown): «asserts this»;
+		 declare function assertIsArrayOfStrings(obj: unknown): «asserts obj is string[]»;
+		 declare function assertNonNull<T>(obj: T): «asserts obj is NonNullable<T>»;`,
 	}},
 	{js.Typescript, js.TsThisParameter, []string{
 		`function f(«this: void») {} /* 2.0 Specifying the type of this for functions */`,

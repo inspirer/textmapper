@@ -58,6 +58,7 @@ const (
 	TRUE               // true
 	FALSE              // false
 	AS                 // as
+	ASSERTS            // asserts
 	ASYNC              // async
 	FROM               // from
 	GET                // get
@@ -206,6 +207,7 @@ var tokenStr = [...]string{
 	"true",
 	"false",
 	"as",
+	"asserts",
 	"async",
 	"from",
 	"get",
