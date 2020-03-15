@@ -205,29 +205,30 @@ const (
 	RestParameter     // BindingIdentifier TypeAnnotation?
 	TsThisParameter   // TypeAnnotation
 	AccessibilityModifier
-	ConstructSignature       // (Modifier)* TypeParameters? Parameters TypeAnnotation?
-	IndexSignature           // (Modifier)* TypeAnnotation
-	MethodSignature          // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
-	TypeAliasDeclaration     // BindingIdentifier TypeParameters? TsType
-	TsInterface              // BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
-	TsInterfaceExtends       // (TypeReference)+
-	TsEnum                   // BindingIdentifier TsEnumBody
-	TsEnumBody               // (TsEnumMember)*
-	TsEnumMember             // PropertyName Expression?
-	TsNamespace              // (BindingIdentifier)+ TsNamespaceBody
-	TsNamespaceBody          // (ModuleItem)*
-	TsImportAliasDeclaration // BindingIdentifier ref=(IdentifierReference)+
-	TsAmbientVar             // (TsAmbientBinding)+
-	TsAmbientFunction        // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
-	TsAmbientClass           // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? ClassBody
-	TsAmbientInterface       // (Modifier)* BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
-	TsAmbientEnum            // TsEnum
-	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
-	TsAmbientModule          // (BindingIdentifier)* (ModuleItem)*
-	TsAmbientGlobal          // (ModuleItem)*
-	TsAmbientTypeAlias       // TypeAliasDeclaration
-	TsAmbientBinding         // BindingIdentifier TypeAnnotation? Initializer?
-	TsAmbientImportAlias     // TsImportAliasDeclaration
+	ConstructSignature         // (Modifier)* TypeParameters? Parameters TypeAnnotation?
+	IndexSignature             // (Modifier)* TypeAnnotation
+	MethodSignature            // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
+	TypeAliasDeclaration       // BindingIdentifier TypeParameters? TsType
+	TsInterface                // BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
+	TsInterfaceExtends         // (TypeReference)+
+	TsEnum                     // BindingIdentifier TsEnumBody
+	TsEnumBody                 // (TsEnumMember)*
+	TsEnumMember               // PropertyName Expression?
+	TsNamespace                // (BindingIdentifier)+ TsNamespaceBody
+	TsNamespaceBody            // (ModuleItem)*
+	TsImportAliasDeclaration   // BindingIdentifier ref=(IdentifierReference)+
+	TsAmbientVar               // (TsAmbientBinding)+
+	TsAmbientFunction          // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
+	TsAmbientClass             // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? ClassBody
+	TsAmbientInterface         // (Modifier)* BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
+	TsAmbientEnum              // TsEnum
+	TsAmbientNamespace         // (BindingIdentifier)+ (TsAmbientElement)*
+	TsAmbientModule            // (BindingIdentifier)* (ModuleItem)*
+	TsAmbientGlobal            // (ModuleItem)*
+	TsAmbientTypeAlias         // TypeAliasDeclaration
+	TsAmbientBinding           // BindingIdentifier TypeAnnotation? Initializer?
+	TsAmbientImportAlias       // TsImportAliasDeclaration
+	TsAmbientExportDeclaration // ExportClause
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -457,6 +458,7 @@ var nodeTypeStr = [...]string{
 	"TsAmbientTypeAlias",
 	"TsAmbientBinding",
 	"TsAmbientImportAlias",
+	"TsAmbientExportDeclaration",
 	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",
@@ -499,6 +501,7 @@ var Declaration = []NodeType{
 	LexicalDeclaration,
 	TsAmbientClass,
 	TsAmbientEnum,
+	TsAmbientExportDeclaration,
 	TsAmbientFunction,
 	TsAmbientGlobal,
 	TsAmbientImportAlias,
@@ -654,6 +657,7 @@ var ModuleItem = []NodeType{
 	TryStatement,
 	TsAmbientClass,
 	TsAmbientEnum,
+	TsAmbientExportDeclaration,
 	TsAmbientFunction,
 	TsAmbientGlobal,
 	TsAmbientImportAlias,
@@ -759,6 +763,7 @@ var StatementListItem = []NodeType{
 	TryStatement,
 	TsAmbientClass,
 	TsAmbientEnum,
+	TsAmbientExportDeclaration,
 	TsAmbientFunction,
 	TsAmbientGlobal,
 	TsAmbientImportAlias,
@@ -787,6 +792,7 @@ var TokenSet = []NodeType{
 var TsAmbientElement = []NodeType{
 	TsAmbientClass,
 	TsAmbientEnum,
+	TsAmbientExportDeclaration,
 	TsAmbientFunction,
 	TsAmbientGlobal,
 	TsAmbientImportAlias,
@@ -5117,6 +5123,7 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientImportAlias,         // AmbientNamespaceElement : ImportAliasDeclaration
 	TsAmbientTypeAlias,           // AmbientNamespaceElement : 'export' TypeAliasDeclaration
 	TsAmbientTypeAlias,           // AmbientNamespaceElement : TypeAliasDeclaration
+	TsAmbientExportDeclaration,   // AmbientNamespaceElement : 'export' ExportClause ';'
 	0,                            // Elisionopt : Elision
 	0,                            // Elisionopt :
 	0,                            // TypeAnnotationopt : TypeAnnotation

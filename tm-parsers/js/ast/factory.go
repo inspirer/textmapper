@@ -341,6 +341,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsAmbientClass{n}
 	case js.TsAmbientEnum:
 		return &TsAmbientEnum{n}
+	case js.TsAmbientExportDeclaration:
+		return &TsAmbientExportDeclaration{n}
 	case js.TsAmbientFunction:
 		return &TsAmbientFunction{n}
 	case js.TsAmbientGlobal:

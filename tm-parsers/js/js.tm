@@ -1677,6 +1677,7 @@ AmbientNamespaceElement -> TsAmbientElement /* interface */:
   | 'export'? AmbientModuleDeclaration      -> TsAmbientModule
   | 'export'? ImportAliasDeclaration        -> TsAmbientImportAlias
   | 'export'? TypeAliasDeclaration          -> TsAmbientTypeAlias
+  | 'export' ExportClause ';'               -> TsAmbientExportDeclaration
 ;
 
 %%

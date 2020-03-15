@@ -6816,6 +6816,7 @@ AmbientNamespaceElement :
 | ImportAliasDeclaration
 | EXPORT TypeAliasDeclaration
 | TypeAliasDeclaration
+| EXPORT ExportClause SEMICOLON
 ;
 
 Elisionopt :

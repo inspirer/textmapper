@@ -796,6 +796,7 @@ var parseTests = []struct {
 		`«export const a = 1.2345»`,
 		`«export function sum (x, y) { return x + y }»`,
 		`«export class A {}»`,
+		`«export {};»`,
 	}},
 	{js.Javascript, js.ExportDefault, []string{
 		`«export default (x) => x*x»`,
@@ -1308,6 +1309,10 @@ var parseTests = []struct {
 	{js.Typescript, js.TsAmbientImportAlias, []string{
 		`declare namespace foo { «import a = foo;» }`,
 		`declare namespace foo { «export import a = foo;» }`,
+	}},
+	{js.Typescript, js.TsAmbientExportDeclaration, []string{
+		`declare namespace foo { «export{}» }`,
+		`declare namespace foo { «export {f};» }`,
 	}},
 	{js.Typescript, js.TsAmbientTypeAlias, []string{
 		`declare namespace foo { «type Abc<Foo, Bar> = Function<Foo> | typeof Bar;» }`,

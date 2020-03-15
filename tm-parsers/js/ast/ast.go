@@ -188,6 +188,7 @@ func (n TryStatement) JsNode() *Node                 { return n.Node }
 func (n TsAmbientBinding) JsNode() *Node             { return n.Node }
 func (n TsAmbientClass) JsNode() *Node               { return n.Node }
 func (n TsAmbientEnum) JsNode() *Node                { return n.Node }
+func (n TsAmbientExportDeclaration) JsNode() *Node   { return n.Node }
 func (n TsAmbientFunction) JsNode() *Node            { return n.Node }
 func (n TsAmbientGlobal) JsNode() *Node              { return n.Node }
 func (n TsAmbientImportAlias) JsNode() *Node         { return n.Node }
@@ -287,27 +288,28 @@ type Declaration interface {
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
 //
-func (AsyncFunction) declarationNode()            {}
-func (Class) declarationNode()                    {}
-func (Function) declarationNode()                 {}
-func (Generator) declarationNode()                {}
-func (LexicalDeclaration) declarationNode()       {}
-func (TsAmbientClass) declarationNode()           {}
-func (TsAmbientEnum) declarationNode()            {}
-func (TsAmbientFunction) declarationNode()        {}
-func (TsAmbientGlobal) declarationNode()          {}
-func (TsAmbientImportAlias) declarationNode()     {}
-func (TsAmbientInterface) declarationNode()       {}
-func (TsAmbientModule) declarationNode()          {}
-func (TsAmbientNamespace) declarationNode()       {}
-func (TsAmbientTypeAlias) declarationNode()       {}
-func (TsAmbientVar) declarationNode()             {}
-func (TsEnum) declarationNode()                   {}
-func (TsImportAliasDeclaration) declarationNode() {}
-func (TsInterface) declarationNode()              {}
-func (TsNamespace) declarationNode()              {}
-func (TypeAliasDeclaration) declarationNode()     {}
-func (NilNode) declarationNode()                  {}
+func (AsyncFunction) declarationNode()              {}
+func (Class) declarationNode()                      {}
+func (Function) declarationNode()                   {}
+func (Generator) declarationNode()                  {}
+func (LexicalDeclaration) declarationNode()         {}
+func (TsAmbientClass) declarationNode()             {}
+func (TsAmbientEnum) declarationNode()              {}
+func (TsAmbientExportDeclaration) declarationNode() {}
+func (TsAmbientFunction) declarationNode()          {}
+func (TsAmbientGlobal) declarationNode()            {}
+func (TsAmbientImportAlias) declarationNode()       {}
+func (TsAmbientInterface) declarationNode()         {}
+func (TsAmbientModule) declarationNode()            {}
+func (TsAmbientNamespace) declarationNode()         {}
+func (TsAmbientTypeAlias) declarationNode()         {}
+func (TsAmbientVar) declarationNode()               {}
+func (TsEnum) declarationNode()                     {}
+func (TsImportAliasDeclaration) declarationNode()   {}
+func (TsInterface) declarationNode()                {}
+func (TsNamespace) declarationNode()                {}
+func (TypeAliasDeclaration) declarationNode()       {}
+func (NilNode) declarationNode()                    {}
 
 type Decorator interface {
 	JsNode
@@ -519,6 +521,7 @@ func (ThrowStatement) moduleItemNode()               {}
 func (TryStatement) moduleItemNode()                 {}
 func (TsAmbientClass) moduleItemNode()               {}
 func (TsAmbientEnum) moduleItemNode()                {}
+func (TsAmbientExportDeclaration) moduleItemNode()   {}
 func (TsAmbientFunction) moduleItemNode()            {}
 func (TsAmbientGlobal) moduleItemNode()              {}
 func (TsAmbientImportAlias) moduleItemNode()         {}
@@ -646,50 +649,51 @@ type StatementListItem interface {
 // statementListItemNode() ensures that only the following types can be
 // assigned to StatementListItem.
 //
-func (AsyncFunction) statementListItemNode()            {}
-func (Block) statementListItemNode()                    {}
-func (BreakStatement) statementListItemNode()           {}
-func (Class) statementListItemNode()                    {}
-func (ContinueStatement) statementListItemNode()        {}
-func (DebuggerStatement) statementListItemNode()        {}
-func (DoWhileStatement) statementListItemNode()         {}
-func (EmptyStatement) statementListItemNode()           {}
-func (ExpressionStatement) statementListItemNode()      {}
-func (ForInStatement) statementListItemNode()           {}
-func (ForInStatementWithVar) statementListItemNode()    {}
-func (ForOfStatement) statementListItemNode()           {}
-func (ForOfStatementWithVar) statementListItemNode()    {}
-func (ForStatement) statementListItemNode()             {}
-func (ForStatementWithVar) statementListItemNode()      {}
-func (Function) statementListItemNode()                 {}
-func (Generator) statementListItemNode()                {}
-func (IfStatement) statementListItemNode()              {}
-func (LabelledStatement) statementListItemNode()        {}
-func (LexicalDeclaration) statementListItemNode()       {}
-func (ReturnStatement) statementListItemNode()          {}
-func (SwitchStatement) statementListItemNode()          {}
-func (SyntaxProblem) statementListItemNode()            {}
-func (ThrowStatement) statementListItemNode()           {}
-func (TryStatement) statementListItemNode()             {}
-func (TsAmbientClass) statementListItemNode()           {}
-func (TsAmbientEnum) statementListItemNode()            {}
-func (TsAmbientFunction) statementListItemNode()        {}
-func (TsAmbientGlobal) statementListItemNode()          {}
-func (TsAmbientImportAlias) statementListItemNode()     {}
-func (TsAmbientInterface) statementListItemNode()       {}
-func (TsAmbientModule) statementListItemNode()          {}
-func (TsAmbientNamespace) statementListItemNode()       {}
-func (TsAmbientTypeAlias) statementListItemNode()       {}
-func (TsAmbientVar) statementListItemNode()             {}
-func (TsEnum) statementListItemNode()                   {}
-func (TsImportAliasDeclaration) statementListItemNode() {}
-func (TsInterface) statementListItemNode()              {}
-func (TsNamespace) statementListItemNode()              {}
-func (TypeAliasDeclaration) statementListItemNode()     {}
-func (VariableStatement) statementListItemNode()        {}
-func (WhileStatement) statementListItemNode()           {}
-func (WithStatement) statementListItemNode()            {}
-func (NilNode) statementListItemNode()                  {}
+func (AsyncFunction) statementListItemNode()              {}
+func (Block) statementListItemNode()                      {}
+func (BreakStatement) statementListItemNode()             {}
+func (Class) statementListItemNode()                      {}
+func (ContinueStatement) statementListItemNode()          {}
+func (DebuggerStatement) statementListItemNode()          {}
+func (DoWhileStatement) statementListItemNode()           {}
+func (EmptyStatement) statementListItemNode()             {}
+func (ExpressionStatement) statementListItemNode()        {}
+func (ForInStatement) statementListItemNode()             {}
+func (ForInStatementWithVar) statementListItemNode()      {}
+func (ForOfStatement) statementListItemNode()             {}
+func (ForOfStatementWithVar) statementListItemNode()      {}
+func (ForStatement) statementListItemNode()               {}
+func (ForStatementWithVar) statementListItemNode()        {}
+func (Function) statementListItemNode()                   {}
+func (Generator) statementListItemNode()                  {}
+func (IfStatement) statementListItemNode()                {}
+func (LabelledStatement) statementListItemNode()          {}
+func (LexicalDeclaration) statementListItemNode()         {}
+func (ReturnStatement) statementListItemNode()            {}
+func (SwitchStatement) statementListItemNode()            {}
+func (SyntaxProblem) statementListItemNode()              {}
+func (ThrowStatement) statementListItemNode()             {}
+func (TryStatement) statementListItemNode()               {}
+func (TsAmbientClass) statementListItemNode()             {}
+func (TsAmbientEnum) statementListItemNode()              {}
+func (TsAmbientExportDeclaration) statementListItemNode() {}
+func (TsAmbientFunction) statementListItemNode()          {}
+func (TsAmbientGlobal) statementListItemNode()            {}
+func (TsAmbientImportAlias) statementListItemNode()       {}
+func (TsAmbientInterface) statementListItemNode()         {}
+func (TsAmbientModule) statementListItemNode()            {}
+func (TsAmbientNamespace) statementListItemNode()         {}
+func (TsAmbientTypeAlias) statementListItemNode()         {}
+func (TsAmbientVar) statementListItemNode()               {}
+func (TsEnum) statementListItemNode()                     {}
+func (TsImportAliasDeclaration) statementListItemNode()   {}
+func (TsInterface) statementListItemNode()                {}
+func (TsNamespace) statementListItemNode()                {}
+func (TypeAliasDeclaration) statementListItemNode()       {}
+func (VariableStatement) statementListItemNode()          {}
+func (WhileStatement) statementListItemNode()             {}
+func (WithStatement) statementListItemNode()              {}
+func (NilNode) statementListItemNode()                    {}
 
 type TsAmbientElement interface {
 	JsNode
@@ -699,17 +703,18 @@ type TsAmbientElement interface {
 // tsAmbientElementNode() ensures that only the following types can be
 // assigned to TsAmbientElement.
 //
-func (TsAmbientClass) tsAmbientElementNode()       {}
-func (TsAmbientEnum) tsAmbientElementNode()        {}
-func (TsAmbientFunction) tsAmbientElementNode()    {}
-func (TsAmbientGlobal) tsAmbientElementNode()      {}
-func (TsAmbientImportAlias) tsAmbientElementNode() {}
-func (TsAmbientInterface) tsAmbientElementNode()   {}
-func (TsAmbientModule) tsAmbientElementNode()      {}
-func (TsAmbientNamespace) tsAmbientElementNode()   {}
-func (TsAmbientTypeAlias) tsAmbientElementNode()   {}
-func (TsAmbientVar) tsAmbientElementNode()         {}
-func (NilNode) tsAmbientElementNode()              {}
+func (TsAmbientClass) tsAmbientElementNode()             {}
+func (TsAmbientEnum) tsAmbientElementNode()              {}
+func (TsAmbientExportDeclaration) tsAmbientElementNode() {}
+func (TsAmbientFunction) tsAmbientElementNode()          {}
+func (TsAmbientGlobal) tsAmbientElementNode()            {}
+func (TsAmbientImportAlias) tsAmbientElementNode()       {}
+func (TsAmbientInterface) tsAmbientElementNode()         {}
+func (TsAmbientModule) tsAmbientElementNode()            {}
+func (TsAmbientNamespace) tsAmbientElementNode()         {}
+func (TsAmbientTypeAlias) tsAmbientElementNode()         {}
+func (TsAmbientVar) tsAmbientElementNode()               {}
+func (NilNode) tsAmbientElementNode()                    {}
 
 type TsType interface {
 	JsNode
@@ -3084,6 +3089,14 @@ type TsAmbientEnum struct {
 
 func (n TsAmbientEnum) TsEnum() TsEnum {
 	return TsEnum{n.Child(selector.TsEnum)}
+}
+
+type TsAmbientExportDeclaration struct {
+	*Node
+}
+
+func (n TsAmbientExportDeclaration) ExportClause() ExportClause {
+	return ExportClause{n.Child(selector.ExportClause)}
 }
 
 type TsAmbientFunction struct {
