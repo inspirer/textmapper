@@ -6718,8 +6718,8 @@ AmbientFunctionDeclaration :
 ;
 
 AmbientClassDeclaration :
-  Modifiers CLASS BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
-| CLASS BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
+  Modifiers CLASS BindingIdentifier TypeParametersopt ClassTail
+| CLASS BindingIdentifier TypeParametersopt ClassTail
 ;
 
 AmbientInterfaceDeclaration :
@@ -6727,28 +6727,6 @@ AmbientInterfaceDeclaration :
 | Modifiers INTERFACE BindingIdentifier TypeParametersopt ObjectType
 | INTERFACE BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
 | INTERFACE BindingIdentifier TypeParametersopt ObjectType
-;
-
-AmbientClassBody :
-  LBRACE /*.recoveryScope*/ AmbientClassBodyElement_list RBRACE
-| LBRACE /*.recoveryScope*/ RBRACE
-;
-
-AmbientClassBodyElement_list :
-  AmbientClassBodyElement_list AmbientClassBodyElement
-| AmbientClassBodyElement
-;
-
-AmbientClassBodyElement :
-  Modifiers PropertyName QUEST TypeAnnotationopt SEMICOLON
-| Modifiers PropertyName TypeAnnotationopt SEMICOLON
-| PropertyName QUEST TypeAnnotationopt SEMICOLON
-| PropertyName TypeAnnotationopt SEMICOLON
-| Modifiers PropertyName QUEST FormalParameters SEMICOLON
-| Modifiers PropertyName FormalParameters SEMICOLON
-| PropertyName QUEST FormalParameters SEMICOLON
-| PropertyName FormalParameters SEMICOLON
-| IndexSignature SEMICOLON
 ;
 
 AmbientEnumDeclaration :

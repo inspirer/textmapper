@@ -187,16 +187,12 @@ func (n ThrowStatement) JsNode() *Node               { return n.Node }
 func (n TryStatement) JsNode() *Node                 { return n.Node }
 func (n TsAmbientBinding) JsNode() *Node             { return n.Node }
 func (n TsAmbientClass) JsNode() *Node               { return n.Node }
-func (n TsAmbientClassBody) JsNode() *Node           { return n.Node }
 func (n TsAmbientEnum) JsNode() *Node                { return n.Node }
 func (n TsAmbientFunction) JsNode() *Node            { return n.Node }
-func (n TsAmbientFunctionMember) JsNode() *Node      { return n.Node }
 func (n TsAmbientImportAlias) JsNode() *Node         { return n.Node }
-func (n TsAmbientIndexMember) JsNode() *Node         { return n.Node }
 func (n TsAmbientInterface) JsNode() *Node           { return n.Node }
 func (n TsAmbientModule) JsNode() *Node              { return n.Node }
 func (n TsAmbientNamespace) JsNode() *Node           { return n.Node }
-func (n TsAmbientPropertyMember) JsNode() *Node      { return n.Node }
 func (n TsAmbientTypeAlias) JsNode() *Node           { return n.Node }
 func (n TsAmbientVar) JsNode() *Node                 { return n.Node }
 func (n TsAsConstExpression) JsNode() *Node          { return n.Node }
@@ -690,19 +686,6 @@ func (VariableStatement) statementListItemNode()        {}
 func (WhileStatement) statementListItemNode()           {}
 func (WithStatement) statementListItemNode()            {}
 func (NilNode) statementListItemNode()                  {}
-
-type TsAmbientClassElement interface {
-	JsNode
-	tsAmbientClassElementNode()
-}
-
-// tsAmbientClassElementNode() ensures that only the following types can be
-// assigned to TsAmbientClassElement.
-//
-func (TsAmbientFunctionMember) tsAmbientClassElementNode() {}
-func (TsAmbientIndexMember) tsAmbientClassElementNode()    {}
-func (TsAmbientPropertyMember) tsAmbientClassElementNode() {}
-func (NilNode) tsAmbientClassElementNode()                 {}
 
 type TsAmbientElement interface {
 	JsNode
@@ -3086,21 +3069,8 @@ func (n TsAmbientClass) TsImplementsClause() (TsImplementsClause, bool) {
 	return field, field.IsValid()
 }
 
-func (n TsAmbientClass) TsAmbientClassBody() TsAmbientClassBody {
-	return TsAmbientClassBody{n.Child(selector.TsAmbientClassBody)}
-}
-
-type TsAmbientClassBody struct {
-	*Node
-}
-
-func (n TsAmbientClassBody) TsAmbientClassElement() []TsAmbientClassElement {
-	nodes := n.Children(selector.TsAmbientClassElement)
-	var ret = make([]TsAmbientClassElement, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(TsAmbientClassElement))
-	}
-	return ret
+func (n TsAmbientClass) ClassBody() ClassBody {
+	return ClassBody{n.Child(selector.ClassBody)}
 }
 
 type TsAmbientEnum struct {
@@ -3133,51 +3103,12 @@ func (n TsAmbientFunction) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-type TsAmbientFunctionMember struct {
-	*Node
-}
-
-func (n TsAmbientFunctionMember) Modifier() []Modifier {
-	nodes := n.Children(selector.Modifier)
-	var ret = make([]Modifier, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(Modifier))
-	}
-	return ret
-}
-
-func (n TsAmbientFunctionMember) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
-}
-
-func (n TsAmbientFunctionMember) TypeParameters() (TypeParameters, bool) {
-	field := TypeParameters{n.Child(selector.TypeParameters)}
-	return field, field.IsValid()
-}
-
-func (n TsAmbientFunctionMember) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
-}
-
-func (n TsAmbientFunctionMember) TypeAnnotation() (TypeAnnotation, bool) {
-	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
-	return field, field.IsValid()
-}
-
 type TsAmbientImportAlias struct {
 	*Node
 }
 
 func (n TsAmbientImportAlias) TsImportAliasDeclaration() TsImportAliasDeclaration {
 	return TsImportAliasDeclaration{n.Child(selector.TsImportAliasDeclaration)}
-}
-
-type TsAmbientIndexMember struct {
-	*Node
-}
-
-func (n TsAmbientIndexMember) IndexSignature() IndexSignature {
-	return IndexSignature{n.Child(selector.IndexSignature)}
 }
 
 type TsAmbientInterface struct {
@@ -3253,28 +3184,6 @@ func (n TsAmbientNamespace) TsAmbientElement() []TsAmbientElement {
 		ret = append(ret, ToJsNode(node).(TsAmbientElement))
 	}
 	return ret
-}
-
-type TsAmbientPropertyMember struct {
-	*Node
-}
-
-func (n TsAmbientPropertyMember) Modifier() []Modifier {
-	nodes := n.Children(selector.Modifier)
-	var ret = make([]Modifier, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(Modifier))
-	}
-	return ret
-}
-
-func (n TsAmbientPropertyMember) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
-}
-
-func (n TsAmbientPropertyMember) TypeAnnotation() (TypeAnnotation, bool) {
-	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
-	return field, field.IsValid()
 }
 
 type TsAmbientTypeAlias struct {

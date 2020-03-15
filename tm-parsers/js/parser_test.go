@@ -572,6 +572,9 @@ var parseTests = []struct {
 	}},
 	{js.Javascript, js.Getter, []string{
 		`class A { «get x() { return this.x; }» set x(val) { this.x = val; }}`,
+		`declare namespace foo {
+		   export class Foo { «get string(): CancellationToken;» }
+		 }`,
 	}},
 	{js.Javascript, js.Setter, []string{
 		`class A { get x() { return this.x; } «set x(val) { this.x = val; }»}`,
@@ -727,6 +730,8 @@ var parseTests = []struct {
 		   ;
 		   a() { return 1}
 		 }»`,
+		`declare class A «{}»`,
+		`declare class A «{  [a:number]:string; private static a; private static foo<T>() : string; }»`,
 	}},
 	{js.Javascript, js.EmptyDecl, []string{
 		`class A extends B {
@@ -1164,6 +1169,10 @@ var parseTests = []struct {
 		   «static a : int = 5;»
 		   «declare tt : foo;»
 		 }`,
+		`declare class A {
+		  «a : Q<X>;»
+		  «private static b;»
+		 }`,
 	}},
 	{js.Typescript, js.Declare, []string{
 		`class A {
@@ -1204,11 +1213,18 @@ var parseTests = []struct {
 		   «protected static get x() { return this.x}»
 		   «private set x(val) { this.x = val}»
 		 }`,
+		`declare class A {
+		   «a?(x : number) : Q<X>;»
+		   «private static b(abc);»
+		 }`,
 	}},
 	{js.Typescript, js.TsIndexMemberDeclaration, []string{
 		`class A {
 		   «[a:string] : int;»
 		   «[key:number] : string;»
+		 }`,
+		`declare class A {
+		   «[key : number] : string;»
 		 }`,
 	}},
 	{js.Typescript, js.TsInterface, []string{
@@ -1282,33 +1298,12 @@ var parseTests = []struct {
 		`«declare interface A {  [a:number]:string; private static a; private static foo<T>() : string; }»`,
 		`declare namespace foo { «export interface A {}» }`,
 	}},
-	{js.Typescript, js.TsAmbientClassBody, []string{
-		`declare class A «{}»`,
-		`declare class A «{  [a:number]:string; private static a; private static foo<T>() : string; }»`,
-	}},
 	{js.Typescript, js.TsAmbientEnum, []string{
 		`«declare enum Kind { A, B }»`,
 		`declare namespace foo { «export enum A {}» }`,
 	}},
 	{js.Typescript, js.TsAmbientNamespace, []string{
 		`«declare namespace foo.bar {  }»`,
-	}},
-	{js.Typescript, js.TsAmbientPropertyMember, []string{
-		`declare class A {
-			«a : Q<X>;»
-			«private static b;»
-		}`,
-	}},
-	{js.Typescript, js.TsAmbientFunctionMember, []string{
-		`declare class A {
-			«a?(x : number) : Q<X>;»
-			«private static b(abc);»
-		}`,
-	}},
-	{js.Typescript, js.TsAmbientIndexMember, []string{
-		`declare class A {
-			«[key : number] : string;»
-		}`,
 	}},
 	{js.Typescript, js.TsAmbientImportAlias, []string{
 		`declare namespace foo { «import a = foo;» }`,

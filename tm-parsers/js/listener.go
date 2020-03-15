@@ -219,17 +219,13 @@ const (
 	TsImportAliasDeclaration // BindingIdentifier ref=(IdentifierReference)+
 	TsAmbientVar             // (TsAmbientBinding)+
 	TsAmbientFunction        // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
-	TsAmbientClass           // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? TsAmbientClassBody
+	TsAmbientClass           // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? ClassBody
 	TsAmbientInterface       // (Modifier)* BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
 	TsAmbientEnum            // TsEnum
 	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
 	TsAmbientModule          // (BindingIdentifier)* (ModuleItem)*
 	TsAmbientTypeAlias       // TypeAliasDeclaration
 	TsAmbientBinding         // BindingIdentifier TypeAnnotation? Initializer?
-	TsAmbientClassBody       // (TsAmbientClassElement)*
-	TsAmbientPropertyMember  // (Modifier)* PropertyName TypeAnnotation?
-	TsAmbientFunctionMember  // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
-	TsAmbientIndexMember     // IndexSignature
 	TsAmbientImportAlias     // TsImportAliasDeclaration
 	InsertedSemicolon
 	MultiLineComment
@@ -458,10 +454,6 @@ var nodeTypeStr = [...]string{
 	"TsAmbientModule",
 	"TsAmbientTypeAlias",
 	"TsAmbientBinding",
-	"TsAmbientClassBody",
-	"TsAmbientPropertyMember",
-	"TsAmbientFunctionMember",
-	"TsAmbientIndexMember",
 	"TsAmbientImportAlias",
 	"InsertedSemicolon",
 	"MultiLineComment",
@@ -785,12 +777,6 @@ var TokenSet = []NodeType{
 	TemplateHead,
 	TemplateMiddle,
 	TemplateTail,
-}
-
-var TsAmbientClassElement = []NodeType{
-	TsAmbientFunctionMember,
-	TsAmbientIndexMember,
-	TsAmbientPropertyMember,
 }
 
 var TsAmbientElement = []NodeType{
@@ -5052,25 +5038,12 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientBinding,             // AmbientBinding : BindingIdentifier Initializer_In
 	TsAmbientBinding,             // AmbientBinding : BindingIdentifier
 	0,                            // AmbientFunctionDeclaration : 'function' BindingIdentifier FormalParameters ';'
-	0,                            // AmbientClassDeclaration : Modifiers 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
-	0,                            // AmbientClassDeclaration : 'class' BindingIdentifier TypeParametersopt ClassHeritage AmbientClassBody
+	0,                            // AmbientClassDeclaration : Modifiers 'class' BindingIdentifier TypeParametersopt ClassTail
+	0,                            // AmbientClassDeclaration : 'class' BindingIdentifier TypeParametersopt ClassTail
 	0,                            // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
 	0,                            // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt ObjectType
 	0,                            // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
 	0,                            // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt ObjectType
-	TsAmbientClassBody,           // AmbientClassBody : '{' .recoveryScope AmbientClassBodyElement_list '}'
-	TsAmbientClassBody,           // AmbientClassBody : '{' .recoveryScope '}'
-	0,                            // AmbientClassBodyElement_list : AmbientClassBodyElement_list AmbientClassBodyElement
-	0,                            // AmbientClassBodyElement_list : AmbientClassBodyElement
-	TsAmbientPropertyMember,      // AmbientClassBodyElement : Modifiers PropertyName '?' TypeAnnotationopt ';'
-	TsAmbientPropertyMember,      // AmbientClassBodyElement : Modifiers PropertyName TypeAnnotationopt ';'
-	TsAmbientPropertyMember,      // AmbientClassBodyElement : PropertyName '?' TypeAnnotationopt ';'
-	TsAmbientPropertyMember,      // AmbientClassBodyElement : PropertyName TypeAnnotationopt ';'
-	TsAmbientFunctionMember,      // AmbientClassBodyElement : Modifiers PropertyName '?' FormalParameters ';'
-	TsAmbientFunctionMember,      // AmbientClassBodyElement : Modifiers PropertyName FormalParameters ';'
-	TsAmbientFunctionMember,      // AmbientClassBodyElement : PropertyName '?' FormalParameters ';'
-	TsAmbientFunctionMember,      // AmbientClassBodyElement : PropertyName FormalParameters ';'
-	TsAmbientIndexMember,         // AmbientClassBodyElement : IndexSignature ';'
 	0,                            // AmbientEnumDeclaration : EnumDeclaration
 	0,                            // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
 	0,                            // AmbientModuleDeclaration : 'module' StringLiteral '{' .recoveryScope ModuleBodyopt '}'

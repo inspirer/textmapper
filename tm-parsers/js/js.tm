@@ -1644,19 +1644,10 @@ AmbientFunctionDeclaration:
     'function' BindingIdentifier FormalParameters<~Yield, ~Await> ';' ;
 
 AmbientClassDeclaration:
-    Modifiers? 'class' BindingIdentifier TypeParametersopt ClassHeritage<~Yield, ~Await> AmbientClassBody ;
+    Modifiers? 'class' BindingIdentifier TypeParametersopt ClassTail<~Yield, ~Await> ;
 
 AmbientInterfaceDeclaration:
     Modifiers? 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause? ObjectType ;
-
-AmbientClassBody -> TsAmbientClassBody:
-    '{' .recoveryScope AmbientClassBodyElement+? '}' ;
-
-AmbientClassBodyElement -> TsAmbientClassElement /* interface */:
-    Modifiers? PropertyName<~Yield, ~Await> '?'? TypeAnnotationopt ';'                -> TsAmbientPropertyMember
-  | Modifiers? PropertyName<~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await> ';' -> TsAmbientFunctionMember
-  | IndexSignature ';' -> TsAmbientIndexMember
-;
 
 AmbientEnumDeclaration:
     EnumDeclaration ;

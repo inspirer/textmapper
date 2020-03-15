@@ -339,26 +339,18 @@ func ToJsNode(n *Node) JsNode {
 		return &TsAmbientBinding{n}
 	case js.TsAmbientClass:
 		return &TsAmbientClass{n}
-	case js.TsAmbientClassBody:
-		return &TsAmbientClassBody{n}
 	case js.TsAmbientEnum:
 		return &TsAmbientEnum{n}
 	case js.TsAmbientFunction:
 		return &TsAmbientFunction{n}
-	case js.TsAmbientFunctionMember:
-		return &TsAmbientFunctionMember{n}
 	case js.TsAmbientImportAlias:
 		return &TsAmbientImportAlias{n}
-	case js.TsAmbientIndexMember:
-		return &TsAmbientIndexMember{n}
 	case js.TsAmbientInterface:
 		return &TsAmbientInterface{n}
 	case js.TsAmbientModule:
 		return &TsAmbientModule{n}
 	case js.TsAmbientNamespace:
 		return &TsAmbientNamespace{n}
-	case js.TsAmbientPropertyMember:
-		return &TsAmbientPropertyMember{n}
 	case js.TsAmbientTypeAlias:
 		return &TsAmbientTypeAlias{n}
 	case js.TsAmbientVar:

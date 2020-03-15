@@ -175,16 +175,12 @@ var (
 	TryStatement                 = func(t js.NodeType) bool { return t == js.TryStatement }
 	TsAmbientBinding             = func(t js.NodeType) bool { return t == js.TsAmbientBinding }
 	TsAmbientClass               = func(t js.NodeType) bool { return t == js.TsAmbientClass }
-	TsAmbientClassBody           = func(t js.NodeType) bool { return t == js.TsAmbientClassBody }
 	TsAmbientEnum                = func(t js.NodeType) bool { return t == js.TsAmbientEnum }
 	TsAmbientFunction            = func(t js.NodeType) bool { return t == js.TsAmbientFunction }
-	TsAmbientFunctionMember      = func(t js.NodeType) bool { return t == js.TsAmbientFunctionMember }
 	TsAmbientImportAlias         = func(t js.NodeType) bool { return t == js.TsAmbientImportAlias }
-	TsAmbientIndexMember         = func(t js.NodeType) bool { return t == js.TsAmbientIndexMember }
 	TsAmbientInterface           = func(t js.NodeType) bool { return t == js.TsAmbientInterface }
 	TsAmbientModule              = func(t js.NodeType) bool { return t == js.TsAmbientModule }
 	TsAmbientNamespace           = func(t js.NodeType) bool { return t == js.TsAmbientNamespace }
-	TsAmbientPropertyMember      = func(t js.NodeType) bool { return t == js.TsAmbientPropertyMember }
 	TsAmbientTypeAlias           = func(t js.NodeType) bool { return t == js.TsAmbientTypeAlias }
 	TsAmbientVar                 = func(t js.NodeType) bool { return t == js.TsAmbientVar }
 	TsAsConstExpression          = func(t js.NodeType) bool { return t == js.TsAsConstExpression }
@@ -258,7 +254,6 @@ var (
 	Statement                    = OneOf(js.Statement...)
 	StatementListItem            = OneOf(js.StatementListItem...)
 	TokenSet                     = OneOf(js.TokenSet...)
-	TsAmbientClassElement        = OneOf(js.TsAmbientClassElement...)
 	TsAmbientElement             = OneOf(js.TsAmbientElement...)
 	TsType                       = OneOf(js.TsType...)
 	TypeMember                   = OneOf(js.TypeMember...)
