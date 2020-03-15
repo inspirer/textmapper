@@ -62,6 +62,7 @@ func (n ConstructSignature) JsNode() *Node           { return n.Node }
 func (n ConstructorType) JsNode() *Node              { return n.Node }
 func (n ContinueStatement) JsNode() *Node            { return n.Node }
 func (n DebuggerStatement) JsNode() *Node            { return n.Node }
+func (n Declare) JsNode() *Node                      { return n.Node }
 func (n DecoratorCall) JsNode() *Node                { return n.Node }
 func (n DecoratorExpr) JsNode() *Node                { return n.Node }
 func (n Default) JsNode() *Node                      { return n.Node }
@@ -475,6 +476,7 @@ type Modifier interface {
 //
 func (Abstract) modifierNode()              {}
 func (AccessibilityModifier) modifierNode() {}
+func (Declare) modifierNode()               {}
 func (DecoratorCall) modifierNode()         {}
 func (DecoratorExpr) modifierNode()         {}
 func (Readonly) modifierNode()              {}
@@ -1391,6 +1393,10 @@ func (n ContinueStatement) LabelIdentifier() (LabelIdentifier, bool) {
 }
 
 type DebuggerStatement struct {
+	*Node
+}
+
+type Declare struct {
 	*Node
 }
 

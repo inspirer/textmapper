@@ -89,6 +89,8 @@ func ToJsNode(n *Node) JsNode {
 		return &ContinueStatement{n}
 	case js.DebuggerStatement:
 		return &DebuggerStatement{n}
+	case js.Declare:
+		return &Declare{n}
 	case js.DecoratorCall:
 		return &DecoratorCall{n}
 	case js.DecoratorExpr:

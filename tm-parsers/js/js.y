@@ -5611,60 +5611,74 @@ Modifier :
 | READONLY
 ;
 
+Modifier_WithDeclare :
+  AccessibilityModifier
+| Decorator
+| STATIC
+| ABSTRACT
+| READONLY
+| DECLARE
+;
+
 Modifiers :
   Modifier
 | Modifiers Modifier
 ;
 
+Modifiers_WithDeclare :
+  Modifier_WithDeclare
+| Modifiers_WithDeclare Modifier_WithDeclare
+;
+
 ClassElement :
-  Modifiers MethodDefinition
+  Modifiers_WithDeclare MethodDefinition
 | MethodDefinition
-| Modifiers PropertyName QUEST TypeAnnotationopt Initializeropt_In SEMICOLON
-| Modifiers PropertyName EXCL TypeAnnotationopt Initializeropt_In SEMICOLON
-| Modifiers PropertyName TypeAnnotationopt Initializeropt_In SEMICOLON
+| Modifiers_WithDeclare PropertyName QUEST TypeAnnotationopt Initializeropt_In SEMICOLON
+| Modifiers_WithDeclare PropertyName EXCL TypeAnnotationopt Initializeropt_In SEMICOLON
+| Modifiers_WithDeclare PropertyName TypeAnnotationopt Initializeropt_In SEMICOLON
 | PropertyName QUEST TypeAnnotationopt Initializeropt_In SEMICOLON
 | PropertyName EXCL TypeAnnotationopt Initializeropt_In SEMICOLON
 | PropertyName TypeAnnotationopt Initializeropt_In SEMICOLON
-| IndexSignature SEMICOLON
+| IndexSignature_WithDeclare SEMICOLON
 | SEMICOLON
 ;
 
 ClassElement_Await :
-  Modifiers MethodDefinition_Await
+  Modifiers_WithDeclare MethodDefinition_Await
 | MethodDefinition_Await
-| Modifiers PropertyName_Await QUEST TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| Modifiers PropertyName_Await EXCL TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| Modifiers PropertyName_Await TypeAnnotationopt Initializeropt_Await_In SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await QUEST TypeAnnotationopt Initializeropt_Await_In SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await EXCL TypeAnnotationopt Initializeropt_Await_In SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await TypeAnnotationopt Initializeropt_Await_In SEMICOLON
 | PropertyName_Await QUEST TypeAnnotationopt Initializeropt_Await_In SEMICOLON
 | PropertyName_Await EXCL TypeAnnotationopt Initializeropt_Await_In SEMICOLON
 | PropertyName_Await TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| IndexSignature SEMICOLON
+| IndexSignature_WithDeclare SEMICOLON
 | SEMICOLON
 ;
 
 ClassElement_Await_Yield :
-  Modifiers MethodDefinition_Await_Yield
+  Modifiers_WithDeclare MethodDefinition_Await_Yield
 | MethodDefinition_Await_Yield
-| Modifiers PropertyName_Await_Yield QUEST TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| Modifiers PropertyName_Await_Yield EXCL TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| Modifiers PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await_Yield QUEST TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await_Yield EXCL TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
 | PropertyName_Await_Yield QUEST TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
 | PropertyName_Await_Yield EXCL TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
 | PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| IndexSignature SEMICOLON
+| IndexSignature_WithDeclare SEMICOLON
 | SEMICOLON
 ;
 
 ClassElement_Yield :
-  Modifiers MethodDefinition_Yield
+  Modifiers_WithDeclare MethodDefinition_Yield
 | MethodDefinition_Yield
-| Modifiers PropertyName_Yield QUEST TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| Modifiers PropertyName_Yield EXCL TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| Modifiers PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+| Modifiers_WithDeclare PropertyName_Yield QUEST TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+| Modifiers_WithDeclare PropertyName_Yield EXCL TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+| Modifiers_WithDeclare PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
 | PropertyName_Yield QUEST TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
 | PropertyName_Yield EXCL TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
 | PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| IndexSignature SEMICOLON
+| IndexSignature_WithDeclare SEMICOLON
 | SEMICOLON
 ;
 
@@ -6595,6 +6609,13 @@ IndexSignature :
   Modifiers LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
 | LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
 | Modifiers LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
+| LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
+;
+
+IndexSignature_WithDeclare :
+  Modifiers_WithDeclare LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
+| LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
+| Modifiers_WithDeclare LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
 | LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
 ;
 

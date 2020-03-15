@@ -1132,23 +1132,26 @@ ClassElementList<Yield, Await> :
 
 %interface Modifier;
 
-Modifier -> Modifier:
+%flag WithDeclare = false;
+
+Modifier<WithDeclare> -> Modifier:
     AccessibilityModifier
   | Decorator<~Await, ~Yield>
   | 'static'                -> Static
   | 'abstract'              -> Abstract
   | 'readonly'              -> Readonly
+  | [WithDeclare] 'declare'               -> Declare
 ;
 
-Modifiers:
+Modifiers<WithDeclare>:
     Modifier
   | Modifiers Modifier
 ;
 
 ClassElement<Yield, Await> -> ClassElement /* interface */:
-    Modifiers? MethodDefinition                 -> MemberMethod
-  | Modifiers? PropertyName ('?'|'!')? TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
-  | IndexSignature ';'                          -> TsIndexMemberDeclaration
+    Modifiers<+WithDeclare>? MethodDefinition   -> MemberMethod
+  | Modifiers<+WithDeclare>? PropertyName ('?'|'!')? TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
+  | IndexSignature<+WithDeclare> ';'            -> TsIndexMemberDeclaration
   | ';'                                         -> EmptyDecl
 ;
 
@@ -1557,7 +1560,7 @@ ConstructSignature -> ConstructSignature :
 
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.
-IndexSignature -> IndexSignature :
+IndexSignature<WithDeclare> -> IndexSignature :
     Modifiers? '[' IdentifierName ':' 'string' ']' TypeAnnotation
   | Modifiers? '[' IdentifierName ':' 'number' ']' TypeAnnotation
 ;

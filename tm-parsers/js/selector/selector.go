@@ -50,6 +50,7 @@ var (
 	ConstructorType              = func(t js.NodeType) bool { return t == js.ConstructorType }
 	ContinueStatement            = func(t js.NodeType) bool { return t == js.ContinueStatement }
 	DebuggerStatement            = func(t js.NodeType) bool { return t == js.DebuggerStatement }
+	Declare                      = func(t js.NodeType) bool { return t == js.Declare }
 	DecoratorCall                = func(t js.NodeType) bool { return t == js.DecoratorCall }
 	DecoratorExpr                = func(t js.NodeType) bool { return t == js.DecoratorExpr }
 	Default                      = func(t js.NodeType) bool { return t == js.Default }

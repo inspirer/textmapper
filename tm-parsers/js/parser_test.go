@@ -1162,6 +1162,13 @@ var parseTests = []struct {
 		   «private a = 5;»
 		   «private b! : string;»
 		   «static a : int = 5;»
+		   «declare tt : foo;»
+		 }`,
+	}},
+	{js.Typescript, js.Declare, []string{
+		`class A {
+		   «declare» tt : foo;
+		   private «declare» static tt : foo;
 		 }`,
 	}},
 	{js.Typescript, js.Static, []string{

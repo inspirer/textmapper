@@ -133,6 +133,7 @@ const (
 	Static
 	Abstract
 	Readonly
+	Declare
 	MemberMethod             // (Modifier)* MethodDefinition
 	MemberVar                // (Modifier)* PropertyName TypeAnnotation? Initializer?
 	TsIndexMemberDeclaration // IndexSignature
@@ -364,6 +365,7 @@ var nodeTypeStr = [...]string{
 	"Static",
 	"Abstract",
 	"Readonly",
+	"Declare",
 	"MemberMethod",
 	"MemberVar",
 	"TsIndexMemberDeclaration",
@@ -619,6 +621,7 @@ var MethodDefinition = []NodeType{
 var Modifier = []NodeType{
 	Abstract,
 	AccessibilityModifier,
+	Declare,
 	DecoratorCall,
 	DecoratorExpr,
 	Readonly,
@@ -4437,47 +4440,55 @@ var ruleNodeType = [...]NodeType{
 	Static,                       // Modifier : 'static'
 	Abstract,                     // Modifier : 'abstract'
 	Readonly,                     // Modifier : 'readonly'
+	0,                            // Modifier_WithDeclare : AccessibilityModifier
+	0,                            // Modifier_WithDeclare : Decorator
+	Static,                       // Modifier_WithDeclare : 'static'
+	Abstract,                     // Modifier_WithDeclare : 'abstract'
+	Readonly,                     // Modifier_WithDeclare : 'readonly'
+	Declare,                      // Modifier_WithDeclare : 'declare'
 	0,                            // Modifiers : Modifier
 	0,                            // Modifiers : Modifiers Modifier
-	MemberMethod,                 // ClassElement : Modifiers MethodDefinition
+	0,                            // Modifiers_WithDeclare : Modifier_WithDeclare
+	0,                            // Modifiers_WithDeclare : Modifiers_WithDeclare Modifier_WithDeclare
+	MemberMethod,                 // ClassElement : Modifiers_WithDeclare MethodDefinition
 	MemberMethod,                 // ClassElement : MethodDefinition
-	MemberVar,                    // ClassElement : Modifiers PropertyName '?' TypeAnnotationopt Initializeropt_In ';'
-	MemberVar,                    // ClassElement : Modifiers PropertyName '!' TypeAnnotationopt Initializeropt_In ';'
-	MemberVar,                    // ClassElement : Modifiers PropertyName TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                    // ClassElement : Modifiers_WithDeclare PropertyName '?' TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                    // ClassElement : Modifiers_WithDeclare PropertyName '!' TypeAnnotationopt Initializeropt_In ';'
+	MemberVar,                    // ClassElement : Modifiers_WithDeclare PropertyName TypeAnnotationopt Initializeropt_In ';'
 	MemberVar,                    // ClassElement : PropertyName '?' TypeAnnotationopt Initializeropt_In ';'
 	MemberVar,                    // ClassElement : PropertyName '!' TypeAnnotationopt Initializeropt_In ';'
 	MemberVar,                    // ClassElement : PropertyName TypeAnnotationopt Initializeropt_In ';'
-	TsIndexMemberDeclaration,     // ClassElement : IndexSignature ';'
+	TsIndexMemberDeclaration,     // ClassElement : IndexSignature_WithDeclare ';'
 	EmptyDecl,                    // ClassElement : ';'
-	MemberMethod,                 // ClassElement_Await : Modifiers MethodDefinition_Await
+	MemberMethod,                 // ClassElement_Await : Modifiers_WithDeclare MethodDefinition_Await
 	MemberMethod,                 // ClassElement_Await : MethodDefinition_Await
-	MemberVar,                    // ClassElement_Await : Modifiers PropertyName_Await '?' TypeAnnotationopt Initializeropt_Await_In ';'
-	MemberVar,                    // ClassElement_Await : Modifiers PropertyName_Await '!' TypeAnnotationopt Initializeropt_Await_In ';'
-	MemberVar,                    // ClassElement_Await : Modifiers PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                    // ClassElement_Await : Modifiers_WithDeclare PropertyName_Await '?' TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                    // ClassElement_Await : Modifiers_WithDeclare PropertyName_Await '!' TypeAnnotationopt Initializeropt_Await_In ';'
+	MemberVar,                    // ClassElement_Await : Modifiers_WithDeclare PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
 	MemberVar,                    // ClassElement_Await : PropertyName_Await '?' TypeAnnotationopt Initializeropt_Await_In ';'
 	MemberVar,                    // ClassElement_Await : PropertyName_Await '!' TypeAnnotationopt Initializeropt_Await_In ';'
 	MemberVar,                    // ClassElement_Await : PropertyName_Await TypeAnnotationopt Initializeropt_Await_In ';'
-	TsIndexMemberDeclaration,     // ClassElement_Await : IndexSignature ';'
+	TsIndexMemberDeclaration,     // ClassElement_Await : IndexSignature_WithDeclare ';'
 	EmptyDecl,                    // ClassElement_Await : ';'
-	MemberMethod,                 // ClassElement_Await_Yield : Modifiers MethodDefinition_Await_Yield
+	MemberMethod,                 // ClassElement_Await_Yield : Modifiers_WithDeclare MethodDefinition_Await_Yield
 	MemberMethod,                 // ClassElement_Await_Yield : MethodDefinition_Await_Yield
-	MemberVar,                    // ClassElement_Await_Yield : Modifiers PropertyName_Await_Yield '?' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
-	MemberVar,                    // ClassElement_Await_Yield : Modifiers PropertyName_Await_Yield '!' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
-	MemberVar,                    // ClassElement_Await_Yield : Modifiers PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                    // ClassElement_Await_Yield : Modifiers_WithDeclare PropertyName_Await_Yield '?' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                    // ClassElement_Await_Yield : Modifiers_WithDeclare PropertyName_Await_Yield '!' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
+	MemberVar,                    // ClassElement_Await_Yield : Modifiers_WithDeclare PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	MemberVar,                    // ClassElement_Await_Yield : PropertyName_Await_Yield '?' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	MemberVar,                    // ClassElement_Await_Yield : PropertyName_Await_Yield '!' TypeAnnotationopt Initializeropt_Await_In_Yield ';'
 	MemberVar,                    // ClassElement_Await_Yield : PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield ';'
-	TsIndexMemberDeclaration,     // ClassElement_Await_Yield : IndexSignature ';'
+	TsIndexMemberDeclaration,     // ClassElement_Await_Yield : IndexSignature_WithDeclare ';'
 	EmptyDecl,                    // ClassElement_Await_Yield : ';'
-	MemberMethod,                 // ClassElement_Yield : Modifiers MethodDefinition_Yield
+	MemberMethod,                 // ClassElement_Yield : Modifiers_WithDeclare MethodDefinition_Yield
 	MemberMethod,                 // ClassElement_Yield : MethodDefinition_Yield
-	MemberVar,                    // ClassElement_Yield : Modifiers PropertyName_Yield '?' TypeAnnotationopt Initializeropt_In_Yield ';'
-	MemberVar,                    // ClassElement_Yield : Modifiers PropertyName_Yield '!' TypeAnnotationopt Initializeropt_In_Yield ';'
-	MemberVar,                    // ClassElement_Yield : Modifiers PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                    // ClassElement_Yield : Modifiers_WithDeclare PropertyName_Yield '?' TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                    // ClassElement_Yield : Modifiers_WithDeclare PropertyName_Yield '!' TypeAnnotationopt Initializeropt_In_Yield ';'
+	MemberVar,                    // ClassElement_Yield : Modifiers_WithDeclare PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
 	MemberVar,                    // ClassElement_Yield : PropertyName_Yield '?' TypeAnnotationopt Initializeropt_In_Yield ';'
 	MemberVar,                    // ClassElement_Yield : PropertyName_Yield '!' TypeAnnotationopt Initializeropt_In_Yield ';'
 	MemberVar,                    // ClassElement_Yield : PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
-	TsIndexMemberDeclaration,     // ClassElement_Yield : IndexSignature ';'
+	TsIndexMemberDeclaration,     // ClassElement_Yield : IndexSignature_WithDeclare ';'
 	EmptyDecl,                    // ClassElement_Yield : ';'
 	0,                            // Module : ModuleBodyopt
 	0,                            // ModuleBody : ModuleItemList
@@ -4993,6 +5004,10 @@ var ruleNodeType = [...]NodeType{
 	IndexSignature,               // IndexSignature : '[' IdentifierName ':' 'string' ']' TypeAnnotation
 	IndexSignature,               // IndexSignature : Modifiers '[' IdentifierName ':' 'number' ']' TypeAnnotation
 	IndexSignature,               // IndexSignature : '[' IdentifierName ':' 'number' ']' TypeAnnotation
+	IndexSignature,               // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' 'string' ']' TypeAnnotation
+	IndexSignature,               // IndexSignature_WithDeclare : '[' IdentifierName ':' 'string' ']' TypeAnnotation
+	IndexSignature,               // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' 'number' ']' TypeAnnotation
+	IndexSignature,               // IndexSignature_WithDeclare : '[' IdentifierName ':' 'number' ']' TypeAnnotation
 	MethodSignature,              // MethodSignature : Modifiers PropertyName_WithoutNew '?' FormalParameters
 	MethodSignature,              // MethodSignature : Modifiers PropertyName_WithoutNew FormalParameters
 	MethodSignature,              // MethodSignature : PropertyName_WithoutNew '?' FormalParameters
