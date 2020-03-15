@@ -1319,6 +1319,10 @@ var parseTests = []struct {
 		`«declare module foo.bar { export = foo; }»`,
 		`declare namespace Foo { «export module bar {}» }`,
 	}},
+	{js.Typescript, js.TsAmbientGlobal, []string{
+		`«declare global { export = foo; }»`,
+		`«declare global;»`,
+	}},
 	{js.Typescript, js.TsNonNull, []string{
 		`var a = «a!».b
 		 var c = «a!»(5)

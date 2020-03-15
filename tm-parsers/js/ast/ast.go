@@ -189,6 +189,7 @@ func (n TsAmbientBinding) JsNode() *Node             { return n.Node }
 func (n TsAmbientClass) JsNode() *Node               { return n.Node }
 func (n TsAmbientEnum) JsNode() *Node                { return n.Node }
 func (n TsAmbientFunction) JsNode() *Node            { return n.Node }
+func (n TsAmbientGlobal) JsNode() *Node              { return n.Node }
 func (n TsAmbientImportAlias) JsNode() *Node         { return n.Node }
 func (n TsAmbientInterface) JsNode() *Node           { return n.Node }
 func (n TsAmbientModule) JsNode() *Node              { return n.Node }
@@ -294,6 +295,7 @@ func (LexicalDeclaration) declarationNode()       {}
 func (TsAmbientClass) declarationNode()           {}
 func (TsAmbientEnum) declarationNode()            {}
 func (TsAmbientFunction) declarationNode()        {}
+func (TsAmbientGlobal) declarationNode()          {}
 func (TsAmbientImportAlias) declarationNode()     {}
 func (TsAmbientInterface) declarationNode()       {}
 func (TsAmbientModule) declarationNode()          {}
@@ -518,6 +520,7 @@ func (TryStatement) moduleItemNode()                 {}
 func (TsAmbientClass) moduleItemNode()               {}
 func (TsAmbientEnum) moduleItemNode()                {}
 func (TsAmbientFunction) moduleItemNode()            {}
+func (TsAmbientGlobal) moduleItemNode()              {}
 func (TsAmbientImportAlias) moduleItemNode()         {}
 func (TsAmbientInterface) moduleItemNode()           {}
 func (TsAmbientModule) moduleItemNode()              {}
@@ -671,6 +674,7 @@ func (TryStatement) statementListItemNode()             {}
 func (TsAmbientClass) statementListItemNode()           {}
 func (TsAmbientEnum) statementListItemNode()            {}
 func (TsAmbientFunction) statementListItemNode()        {}
+func (TsAmbientGlobal) statementListItemNode()          {}
 func (TsAmbientImportAlias) statementListItemNode()     {}
 func (TsAmbientInterface) statementListItemNode()       {}
 func (TsAmbientModule) statementListItemNode()          {}
@@ -698,6 +702,7 @@ type TsAmbientElement interface {
 func (TsAmbientClass) tsAmbientElementNode()       {}
 func (TsAmbientEnum) tsAmbientElementNode()        {}
 func (TsAmbientFunction) tsAmbientElementNode()    {}
+func (TsAmbientGlobal) tsAmbientElementNode()      {}
 func (TsAmbientImportAlias) tsAmbientElementNode() {}
 func (TsAmbientInterface) tsAmbientElementNode()   {}
 func (TsAmbientModule) tsAmbientElementNode()      {}
@@ -3101,6 +3106,19 @@ func (n TsAmbientFunction) Parameters() Parameters {
 func (n TsAmbientFunction) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
+}
+
+type TsAmbientGlobal struct {
+	*Node
+}
+
+func (n TsAmbientGlobal) ModuleItem() []ModuleItem {
+	nodes := n.Children(selector.ModuleItem)
+	var ret = make([]ModuleItem, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ToJsNode(node).(ModuleItem))
+	}
+	return ret
 }
 
 type TsAmbientImportAlias struct {

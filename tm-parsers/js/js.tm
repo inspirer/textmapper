@@ -145,6 +145,7 @@ invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'abstract':    /abstract/
 'constructor': /constructor/
 'declare':     /declare/
+'global':      /global/
 'is':          /is/
 'module':      /module/
 'namespace':   /namespace/
@@ -369,7 +370,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom> :
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
@@ -399,7 +400,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> Identifier
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | [!WithoutPredefinedTypes] ('any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol')
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
   | [!WithoutPredefinedTypes] ('keyof' | 'unique' | 'readonly' | 'infer')
 ;
 
@@ -416,7 +417,7 @@ BindingIdentifier<WithoutImplements> -> BindingIdentifier :
   | [!WithoutImplements] 'implements'
   | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
@@ -432,7 +433,7 @@ LabelIdentifier -> LabelIdentifier :
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
@@ -1624,6 +1625,7 @@ AmbientDeclaration -> TsAmbientElement /* interface */:
   | 'declare' AmbientEnumDeclaration            -> TsAmbientEnum
   | 'declare' AmbientNamespaceDeclaration       -> TsAmbientNamespace
   | 'declare' AmbientModuleDeclaration          -> TsAmbientModule
+  | 'declare' AmbientGlobalDeclaration          -> TsAmbientGlobal
   | 'declare' TypeAliasDeclaration              -> TsAmbientTypeAlias
 ;
 
@@ -1658,6 +1660,9 @@ AmbientNamespaceDeclaration:
 
 AmbientModuleDeclaration:
     'module' (StringLiteral | IdentifierPath) ('{' .recoveryScope ModuleBodyopt '}' | ';') ;
+
+AmbientGlobalDeclaration:
+    'global' ('{' .recoveryScope ModuleBodyopt '}' | ';') ;
 
 AmbientNamespaceBody:
     '{' .recoveryScope AmbientNamespaceElement+? '}' ;

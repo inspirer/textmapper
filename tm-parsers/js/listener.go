@@ -224,6 +224,7 @@ const (
 	TsAmbientEnum            // TsEnum
 	TsAmbientNamespace       // (BindingIdentifier)+ (TsAmbientElement)*
 	TsAmbientModule          // (BindingIdentifier)* (ModuleItem)*
+	TsAmbientGlobal          // (ModuleItem)*
 	TsAmbientTypeAlias       // TypeAliasDeclaration
 	TsAmbientBinding         // BindingIdentifier TypeAnnotation? Initializer?
 	TsAmbientImportAlias     // TsImportAliasDeclaration
@@ -452,6 +453,7 @@ var nodeTypeStr = [...]string{
 	"TsAmbientEnum",
 	"TsAmbientNamespace",
 	"TsAmbientModule",
+	"TsAmbientGlobal",
 	"TsAmbientTypeAlias",
 	"TsAmbientBinding",
 	"TsAmbientImportAlias",
@@ -498,6 +500,7 @@ var Declaration = []NodeType{
 	TsAmbientClass,
 	TsAmbientEnum,
 	TsAmbientFunction,
+	TsAmbientGlobal,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientModule,
@@ -652,6 +655,7 @@ var ModuleItem = []NodeType{
 	TsAmbientClass,
 	TsAmbientEnum,
 	TsAmbientFunction,
+	TsAmbientGlobal,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientModule,
@@ -756,6 +760,7 @@ var StatementListItem = []NodeType{
 	TsAmbientClass,
 	TsAmbientEnum,
 	TsAmbientFunction,
+	TsAmbientGlobal,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientModule,
@@ -783,6 +788,7 @@ var TsAmbientElement = []NodeType{
 	TsAmbientClass,
 	TsAmbientEnum,
 	TsAmbientFunction,
+	TsAmbientGlobal,
 	TsAmbientImportAlias,
 	TsAmbientInterface,
 	TsAmbientModule,
@@ -898,6 +904,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierName : 'namespace'
 	0,                            // IdentifierName : 'require'
 	0,                            // IdentifierName : 'type'
+	0,                            // IdentifierName : 'global'
 	0,                            // IdentifierName : 'readonly'
 	0,                            // IdentifierName : 'keyof'
 	0,                            // IdentifierName : 'unique'
@@ -969,6 +976,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierName_WithoutAsserts : 'namespace'
 	0,                            // IdentifierName_WithoutAsserts : 'require'
 	0,                            // IdentifierName_WithoutAsserts : 'type'
+	0,                            // IdentifierName_WithoutAsserts : 'global'
 	0,                            // IdentifierName_WithoutAsserts : 'readonly'
 	0,                            // IdentifierName_WithoutAsserts : 'keyof'
 	0,                            // IdentifierName_WithoutAsserts : 'unique'
@@ -1040,6 +1048,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierName_WithoutFrom : 'namespace'
 	0,                            // IdentifierName_WithoutFrom : 'require'
 	0,                            // IdentifierName_WithoutFrom : 'type'
+	0,                            // IdentifierName_WithoutFrom : 'global'
 	0,                            // IdentifierName_WithoutFrom : 'readonly'
 	0,                            // IdentifierName_WithoutFrom : 'keyof'
 	0,                            // IdentifierName_WithoutFrom : 'unique'
@@ -1075,6 +1084,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierName_WithoutKeywords : 'namespace'
 	0,                            // IdentifierName_WithoutKeywords : 'require'
 	0,                            // IdentifierName_WithoutKeywords : 'type'
+	0,                            // IdentifierName_WithoutKeywords : 'global'
 	0,                            // IdentifierName_WithoutKeywords : 'readonly'
 	0,                            // IdentifierName_WithoutKeywords : 'keyof'
 	0,                            // IdentifierName_WithoutKeywords : 'unique'
@@ -1146,6 +1156,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierName_WithoutNew : 'namespace'
 	0,                            // IdentifierName_WithoutNew : 'require'
 	0,                            // IdentifierName_WithoutNew : 'type'
+	0,                            // IdentifierName_WithoutNew : 'global'
 	0,                            // IdentifierName_WithoutNew : 'readonly'
 	0,                            // IdentifierName_WithoutNew : 'keyof'
 	0,                            // IdentifierName_WithoutNew : 'unique'
@@ -1188,6 +1199,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference : 'namespace'
 	IdentifierReference,          // IdentifierReference : 'require'
 	IdentifierReference,          // IdentifierReference : 'type'
+	IdentifierReference,          // IdentifierReference : 'global'
 	IdentifierReference,          // IdentifierReference : 'keyof'
 	IdentifierReference,          // IdentifierReference : 'unique'
 	IdentifierReference,          // IdentifierReference : 'readonly'
@@ -1224,6 +1236,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await : 'namespace'
 	IdentifierReference,          // IdentifierReference_Await : 'require'
 	IdentifierReference,          // IdentifierReference_Await : 'type'
+	IdentifierReference,          // IdentifierReference_Await : 'global'
 	IdentifierReference,          // IdentifierReference_Await : 'keyof'
 	IdentifierReference,          // IdentifierReference_Await : 'unique'
 	IdentifierReference,          // IdentifierReference_Await : 'readonly'
@@ -1258,6 +1271,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'namespace'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'require'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'type'
+	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'global'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'keyof'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'unique'
 	IdentifierReference,          // IdentifierReference_Await_NoAsync_NoLet : 'readonly'
@@ -1293,6 +1307,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'namespace'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'require'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'type'
+	IdentifierReference,          // IdentifierReference_Await_NoLet : 'global'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'keyof'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'unique'
 	IdentifierReference,          // IdentifierReference_Await_NoLet : 'readonly'
@@ -1327,6 +1342,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'namespace'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'require'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'type'
+	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'global'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'keyof'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'unique'
 	IdentifierReference,          // IdentifierReference_Await_NoLet_Yield : 'readonly'
@@ -1362,6 +1378,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'namespace'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'require'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'type'
+	IdentifierReference,          // IdentifierReference_Await_Yield : 'global'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'keyof'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'unique'
 	IdentifierReference,          // IdentifierReference_Await_Yield : 'readonly'
@@ -1397,6 +1414,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'namespace'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'require'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'type'
+	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'global'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'keyof'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'unique'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet : 'readonly'
@@ -1431,6 +1449,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'namespace'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'require'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'type'
+	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'global'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'keyof'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'unique'
 	IdentifierReference,          // IdentifierReference_NoAsync_NoLet_Yield : 'readonly'
@@ -1467,6 +1486,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoLet : 'namespace'
 	IdentifierReference,          // IdentifierReference_NoLet : 'require'
 	IdentifierReference,          // IdentifierReference_NoLet : 'type'
+	IdentifierReference,          // IdentifierReference_NoLet : 'global'
 	IdentifierReference,          // IdentifierReference_NoLet : 'keyof'
 	IdentifierReference,          // IdentifierReference_NoLet : 'unique'
 	IdentifierReference,          // IdentifierReference_NoLet : 'readonly'
@@ -1502,6 +1522,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'namespace'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'require'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'type'
+	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'global'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'keyof'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'unique'
 	IdentifierReference,          // IdentifierReference_NoLet_Yield : 'readonly'
@@ -1533,6 +1554,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'namespace'
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'require'
 	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'type'
+	IdentifierReference,          // IdentifierReference_WithoutPredefinedTypes : 'global'
 	IdentifierReference,          // IdentifierReference_Yield : '%' Identifier
 	IdentifierReference,          // IdentifierReference_Yield : Identifier
 	IdentifierReference,          // IdentifierReference_Yield : 'await'
@@ -1565,6 +1587,7 @@ var ruleNodeType = [...]NodeType{
 	IdentifierReference,          // IdentifierReference_Yield : 'namespace'
 	IdentifierReference,          // IdentifierReference_Yield : 'require'
 	IdentifierReference,          // IdentifierReference_Yield : 'type'
+	IdentifierReference,          // IdentifierReference_Yield : 'global'
 	IdentifierReference,          // IdentifierReference_Yield : 'keyof'
 	IdentifierReference,          // IdentifierReference_Yield : 'unique'
 	IdentifierReference,          // IdentifierReference_Yield : 'readonly'
@@ -1602,6 +1625,7 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,            // BindingIdentifier : 'namespace'
 	BindingIdentifier,            // BindingIdentifier : 'require'
 	BindingIdentifier,            // BindingIdentifier : 'type'
+	BindingIdentifier,            // BindingIdentifier : 'global'
 	BindingIdentifier,            // BindingIdentifier : 'readonly'
 	BindingIdentifier,            // BindingIdentifier : 'keyof'
 	BindingIdentifier,            // BindingIdentifier : 'unique'
@@ -1637,6 +1661,7 @@ var ruleNodeType = [...]NodeType{
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'namespace'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'require'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'type'
+	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'global'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'readonly'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'keyof'
 	BindingIdentifier,            // BindingIdentifier_WithoutImplements : 'unique'
@@ -1673,6 +1698,7 @@ var ruleNodeType = [...]NodeType{
 	LabelIdentifier,              // LabelIdentifier : 'namespace'
 	LabelIdentifier,              // LabelIdentifier : 'require'
 	LabelIdentifier,              // LabelIdentifier : 'type'
+	LabelIdentifier,              // LabelIdentifier : 'global'
 	LabelIdentifier,              // LabelIdentifier : 'readonly'
 	LabelIdentifier,              // LabelIdentifier : 'keyof'
 	LabelIdentifier,              // LabelIdentifier : 'unique'
@@ -5043,6 +5069,7 @@ var ruleNodeType = [...]NodeType{
 	TsAmbientEnum,                // AmbientDeclaration : 'declare' AmbientEnumDeclaration
 	TsAmbientNamespace,           // AmbientDeclaration : 'declare' AmbientNamespaceDeclaration
 	TsAmbientModule,              // AmbientDeclaration : 'declare' AmbientModuleDeclaration
+	TsAmbientGlobal,              // AmbientDeclaration : 'declare' AmbientGlobalDeclaration
 	TsAmbientTypeAlias,           // AmbientDeclaration : 'declare' TypeAliasDeclaration
 	0,                            // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
 	0,                            // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
@@ -5066,6 +5093,8 @@ var ruleNodeType = [...]NodeType{
 	0,                            // AmbientModuleDeclaration : 'module' StringLiteral ';'
 	0,                            // AmbientModuleDeclaration : 'module' IdentifierPath '{' .recoveryScope ModuleBodyopt '}'
 	0,                            // AmbientModuleDeclaration : 'module' IdentifierPath ';'
+	0,                            // AmbientGlobalDeclaration : 'global' '{' .recoveryScope ModuleBodyopt '}'
+	0,                            // AmbientGlobalDeclaration : 'global' ';'
 	0,                            // AmbientNamespaceBody : '{' .recoveryScope AmbientNamespaceElement_list '}'
 	0,                            // AmbientNamespaceBody : '{' .recoveryScope '}'
 	0,                            // AmbientNamespaceElement_list : AmbientNamespaceElement_list AmbientNamespaceElement

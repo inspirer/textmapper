@@ -177,6 +177,7 @@ var (
 	TsAmbientClass               = func(t js.NodeType) bool { return t == js.TsAmbientClass }
 	TsAmbientEnum                = func(t js.NodeType) bool { return t == js.TsAmbientEnum }
 	TsAmbientFunction            = func(t js.NodeType) bool { return t == js.TsAmbientFunction }
+	TsAmbientGlobal              = func(t js.NodeType) bool { return t == js.TsAmbientGlobal }
 	TsAmbientImportAlias         = func(t js.NodeType) bool { return t == js.TsAmbientImportAlias }
 	TsAmbientInterface           = func(t js.NodeType) bool { return t == js.TsAmbientInterface }
 	TsAmbientModule              = func(t js.NodeType) bool { return t == js.TsAmbientModule }

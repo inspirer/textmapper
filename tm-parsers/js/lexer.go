@@ -221,6 +221,10 @@ restart:
 				rule = 49
 				break
 			}
+			if hash == 0xb5e903a3 && "global" == l.source[l.tokenOffset:l.offset] {
+				rule = 74
+				break
+			}
 		case 37:
 			if hash == 0xb96173a5 && "import" == l.source[l.tokenOffset:l.offset] {
 				rule = 30
@@ -250,7 +254,7 @@ restart:
 				break
 			}
 			if hash == 0xd2a && "is" == l.source[l.tokenOffset:l.offset] {
-				rule = 74
+				rule = 75
 				break
 			}
 		case 43:
@@ -311,7 +315,7 @@ restart:
 			}
 		case 58:
 			if hash == 0x368f3a && "type" == l.source[l.tokenOffset:l.offset] {
-				rule = 78
+				rule = 79
 				break
 			}
 		case 59:
@@ -330,7 +334,7 @@ restart:
 			}
 		case 66:
 			if hash == 0xcc56be42 && "readonly" == l.source[l.tokenOffset:l.offset] {
-				rule = 79
+				rule = 80
 				break
 			}
 		case 70:
@@ -354,12 +358,12 @@ restart:
 			}
 		case 78:
 			if hash == 0x5fb304e && "infer" == l.source[l.tokenOffset:l.offset] {
-				rule = 82
+				rule = 83
 				break
 			}
 		case 81:
 			if hash == 0xcde68bd1 && "unique" == l.source[l.tokenOffset:l.offset] {
-				rule = 81
+				rule = 82
 				break
 			}
 		case 86:
@@ -383,7 +387,7 @@ restart:
 			}
 		case 91:
 			if hash == 0x4aa3555b && "namespace" == l.source[l.tokenOffset:l.offset] {
-				rule = 76
+				rule = 77
 				break
 			}
 		case 98:
@@ -398,7 +402,7 @@ restart:
 			}
 		case 101:
 			if hash == 0x414f0165 && "require" == l.source[l.tokenOffset:l.offset] {
-				rule = 77
+				rule = 78
 				break
 			}
 		case 102:
@@ -422,7 +426,7 @@ restart:
 				break
 			}
 			if hash == 0xc04ba66c && "module" == l.source[l.tokenOffset:l.offset] {
-				rule = 75
+				rule = 76
 				break
 			}
 		case 109:
@@ -437,7 +441,7 @@ restart:
 			}
 		case 118:
 			if hash == 0x6139076 && "keyof" == l.source[l.tokenOffset:l.offset] {
-				rule = 80
+				rule = 81
 				break
 			}
 		case 120:
@@ -479,7 +483,7 @@ restart:
 		space = true
 	case 4: // WhiteSpace: /[\n\r\u2028\u2029]|\r\n/
 		space = true
-	case 120: // invalid_token: /\?\.[0-9]/
+	case 121: // invalid_token: /\?\.[0-9]/
 		{
 			l.rewind(l.tokenOffset + 1)
 			token = QUEST

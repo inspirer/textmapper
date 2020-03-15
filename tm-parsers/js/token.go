@@ -82,6 +82,7 @@ const (
 	ABSTRACT           // abstract
 	CONSTRUCTOR        // constructor
 	DECLARE            // declare
+	GLOBAL             // global
 	IS                 // is
 	MODULE             // module
 	NAMESPACE          // namespace
@@ -232,6 +233,7 @@ var tokenStr = [...]string{
 	"abstract",
 	"constructor",
 	"declare",
+	"global",
 	"is",
 	"module",
 	"namespace",

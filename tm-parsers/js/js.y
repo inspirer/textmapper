@@ -90,6 +90,7 @@
 %token ABSTRACT
 %token CONSTRUCTOR
 %token DECLARE
+%token GLOBAL
 %token MODULE
 %token NAMESPACE
 %token REQUIRE
@@ -212,6 +213,7 @@ IdentifierName :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -286,6 +288,7 @@ IdentifierName_WithoutAsserts :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -360,6 +363,7 @@ IdentifierName_WithoutFrom :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -398,6 +402,7 @@ IdentifierName_WithoutKeywords :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -472,6 +477,7 @@ IdentifierName_WithoutNew :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -532,6 +538,7 @@ IdentifierReference :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -571,6 +578,7 @@ IdentifierReference_Await :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -608,6 +616,7 @@ IdentifierReference_Await_NoAsync_NoLet :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -646,6 +655,7 @@ IdentifierReference_Await_NoLet :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -683,6 +693,7 @@ IdentifierReference_Await_NoLet_Yield :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -721,6 +732,7 @@ IdentifierReference_Await_Yield :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -759,6 +771,7 @@ IdentifierReference_NoAsync_NoLet :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -796,6 +809,7 @@ IdentifierReference_NoAsync_NoLet_Yield :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -835,6 +849,7 @@ IdentifierReference_NoLet :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -873,6 +888,7 @@ IdentifierReference_NoLet_Yield :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -907,6 +923,7 @@ IdentifierReference_WithoutPredefinedTypes :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 ;
 
 IdentifierReference_Yield :
@@ -942,6 +959,7 @@ IdentifierReference_Yield :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | KEYOF
 | UNIQUE
 | READONLY
@@ -986,6 +1004,7 @@ BindingIdentifier :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -1024,6 +1043,7 @@ BindingIdentifier_WithoutImplements :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -1063,6 +1083,7 @@ LabelIdentifier :
 | NAMESPACE
 | REQUIRE
 | TYPE
+| GLOBAL
 | READONLY
 | KEYOF
 | UNIQUE
@@ -6708,6 +6729,7 @@ AmbientDeclaration :
 | DECLARE AmbientEnumDeclaration
 | DECLARE AmbientNamespaceDeclaration
 | DECLARE AmbientModuleDeclaration
+| DECLARE AmbientGlobalDeclaration
 | DECLARE TypeAliasDeclaration
 ;
 
@@ -6758,6 +6780,11 @@ AmbientModuleDeclaration :
 | MODULE STRINGLITERAL SEMICOLON
 | MODULE IdentifierPath LBRACE /*.recoveryScope*/ ModuleBodyopt RBRACE
 | MODULE IdentifierPath SEMICOLON
+;
+
+AmbientGlobalDeclaration :
+  GLOBAL LBRACE /*.recoveryScope*/ ModuleBodyopt RBRACE
+| GLOBAL SEMICOLON
 ;
 
 AmbientNamespaceBody :
