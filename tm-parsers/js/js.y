@@ -3400,6 +3400,7 @@ BinaryExpression :
 | BinaryExpression GTASSIGN BinaryExpression
 | BinaryExpression INSTANCEOF BinaryExpression
 | BinaryExpression /*.noLineBreak*/ AS Type1
+| BinaryExpression /*.noLineBreak*/ AS CONST
 | BinaryExpression ASSIGNASSIGN BinaryExpression
 | BinaryExpression EXCLASSIGN BinaryExpression
 | BinaryExpression ASSIGNASSIGNASSIGN BinaryExpression
@@ -3420,6 +3421,7 @@ BinaryExpression_Await :
 | BinaryExpression_Await GTASSIGN BinaryExpression_Await
 | BinaryExpression_Await INSTANCEOF BinaryExpression_Await
 | BinaryExpression_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await ASSIGNASSIGN BinaryExpression_Await
 | BinaryExpression_Await EXCLASSIGN BinaryExpression_Await
 | BinaryExpression_Await ASSIGNASSIGNASSIGN BinaryExpression_Await
@@ -3441,6 +3443,7 @@ BinaryExpression_Await_In :
 | BinaryExpression_Await_In INSTANCEOF BinaryExpression_Await_In
 | BinaryExpression_Await_In IN BinaryExpression_Await_In
 | BinaryExpression_Await_In /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_In /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_In ASSIGNASSIGN BinaryExpression_Await_In
 | BinaryExpression_Await_In EXCLASSIGN BinaryExpression_Await_In
 | BinaryExpression_Await_In ASSIGNASSIGNASSIGN BinaryExpression_Await_In
@@ -3482,6 +3485,7 @@ BinaryExpression_Await_In_NoObjLiteral :
 | BinaryExpression_Await_In_NoObjLiteral INSTANCEOF BinaryExpression_Await_In
 | BinaryExpression_Await_In_NoObjLiteral IN BinaryExpression_Await_In
 | BinaryExpression_Await_In_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_In_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_In_NoObjLiteral ASSIGNASSIGN BinaryExpression_Await_In
 | BinaryExpression_Await_In_NoObjLiteral EXCLASSIGN BinaryExpression_Await_In
 | BinaryExpression_Await_In_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression_Await_In
@@ -3503,6 +3507,7 @@ BinaryExpression_Await_In_Yield :
 | BinaryExpression_Await_In_Yield INSTANCEOF BinaryExpression_Await_In_Yield
 | BinaryExpression_Await_In_Yield IN BinaryExpression_Await_In_Yield
 | BinaryExpression_Await_In_Yield /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_In_Yield /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_In_Yield ASSIGNASSIGN BinaryExpression_Await_In_Yield
 | BinaryExpression_Await_In_Yield EXCLASSIGN BinaryExpression_Await_In_Yield
 | BinaryExpression_Await_In_Yield ASSIGNASSIGNASSIGN BinaryExpression_Await_In_Yield
@@ -3542,6 +3547,7 @@ BinaryExpression_Await_NoLet :
 | BinaryExpression_Await_NoLet GTASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoLet INSTANCEOF BinaryExpression_Await
 | BinaryExpression_Await_NoLet /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_NoLet /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_NoLet ASSIGNASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoLet EXCLASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoLet ASSIGNASSIGNASSIGN BinaryExpression_Await
@@ -3562,6 +3568,7 @@ BinaryExpression_Await_NoObjLiteral :
 | BinaryExpression_Await_NoObjLiteral GTASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral INSTANCEOF BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_NoObjLiteral ASSIGNASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral EXCLASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression_Await
@@ -3582,6 +3589,7 @@ BinaryExpression_Await_Yield :
 | BinaryExpression_Await_Yield GTASSIGN BinaryExpression_Await_Yield
 | BinaryExpression_Await_Yield INSTANCEOF BinaryExpression_Await_Yield
 | BinaryExpression_Await_Yield /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_Yield /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_Yield ASSIGNASSIGN BinaryExpression_Await_Yield
 | BinaryExpression_Await_Yield EXCLASSIGN BinaryExpression_Await_Yield
 | BinaryExpression_Await_Yield ASSIGNASSIGNASSIGN BinaryExpression_Await_Yield
@@ -3603,6 +3611,7 @@ BinaryExpression_In :
 | BinaryExpression_In INSTANCEOF BinaryExpression_In
 | BinaryExpression_In IN BinaryExpression_In
 | BinaryExpression_In /*.noLineBreak*/ AS Type1
+| BinaryExpression_In /*.noLineBreak*/ AS CONST
 | BinaryExpression_In ASSIGNASSIGN BinaryExpression_In
 | BinaryExpression_In EXCLASSIGN BinaryExpression_In
 | BinaryExpression_In ASSIGNASSIGNASSIGN BinaryExpression_In
@@ -3664,6 +3673,7 @@ BinaryExpression_In_NoFuncClass :
 | BinaryExpression_In_NoFuncClass INSTANCEOF BinaryExpression_In
 | BinaryExpression_In_NoFuncClass IN BinaryExpression_In
 | BinaryExpression_In_NoFuncClass /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_NoFuncClass /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_NoFuncClass ASSIGNASSIGN BinaryExpression_In
 | BinaryExpression_In_NoFuncClass EXCLASSIGN BinaryExpression_In
 | BinaryExpression_In_NoFuncClass ASSIGNASSIGNASSIGN BinaryExpression_In
@@ -3685,6 +3695,7 @@ BinaryExpression_In_NoObjLiteral :
 | BinaryExpression_In_NoObjLiteral INSTANCEOF BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral IN BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_NoObjLiteral ASSIGNASSIGN BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral EXCLASSIGN BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression_In
@@ -3706,6 +3717,7 @@ BinaryExpression_In_Yield :
 | BinaryExpression_In_Yield INSTANCEOF BinaryExpression_In_Yield
 | BinaryExpression_In_Yield IN BinaryExpression_In_Yield
 | BinaryExpression_In_Yield /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Yield /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_Yield ASSIGNASSIGN BinaryExpression_In_Yield
 | BinaryExpression_In_Yield EXCLASSIGN BinaryExpression_In_Yield
 | BinaryExpression_In_Yield ASSIGNASSIGNASSIGN BinaryExpression_In_Yield
@@ -3764,6 +3776,7 @@ BinaryExpression_NoLet :
 | BinaryExpression_NoLet GTASSIGN BinaryExpression
 | BinaryExpression_NoLet INSTANCEOF BinaryExpression
 | BinaryExpression_NoLet /*.noLineBreak*/ AS Type1
+| BinaryExpression_NoLet /*.noLineBreak*/ AS CONST
 | BinaryExpression_NoLet ASSIGNASSIGN BinaryExpression
 | BinaryExpression_NoLet EXCLASSIGN BinaryExpression
 | BinaryExpression_NoLet ASSIGNASSIGNASSIGN BinaryExpression
@@ -3784,6 +3797,7 @@ BinaryExpression_NoLet_Yield :
 | BinaryExpression_NoLet_Yield GTASSIGN BinaryExpression_Yield
 | BinaryExpression_NoLet_Yield INSTANCEOF BinaryExpression_Yield
 | BinaryExpression_NoLet_Yield /*.noLineBreak*/ AS Type1
+| BinaryExpression_NoLet_Yield /*.noLineBreak*/ AS CONST
 | BinaryExpression_NoLet_Yield ASSIGNASSIGN BinaryExpression_Yield
 | BinaryExpression_NoLet_Yield EXCLASSIGN BinaryExpression_Yield
 | BinaryExpression_NoLet_Yield ASSIGNASSIGNASSIGN BinaryExpression_Yield
@@ -3804,6 +3818,7 @@ BinaryExpression_NoObjLiteral :
 | BinaryExpression_NoObjLiteral GTASSIGN BinaryExpression
 | BinaryExpression_NoObjLiteral INSTANCEOF BinaryExpression
 | BinaryExpression_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_NoObjLiteral ASSIGNASSIGN BinaryExpression
 | BinaryExpression_NoObjLiteral EXCLASSIGN BinaryExpression
 | BinaryExpression_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression
@@ -3824,6 +3839,7 @@ BinaryExpression_Yield :
 | BinaryExpression_Yield GTASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield INSTANCEOF BinaryExpression_Yield
 | BinaryExpression_Yield /*.noLineBreak*/ AS Type1
+| BinaryExpression_Yield /*.noLineBreak*/ AS CONST
 | BinaryExpression_Yield ASSIGNASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield EXCLASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield ASSIGNASSIGNASSIGN BinaryExpression_Yield

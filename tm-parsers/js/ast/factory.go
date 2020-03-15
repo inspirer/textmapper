@@ -361,6 +361,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsAmbientTypeAlias{n}
 	case js.TsAmbientVar:
 		return &TsAmbientVar{n}
+	case js.TsAsConstExpression:
+		return &TsAsConstExpression{n}
 	case js.TsAsExpression:
 		return &TsAsExpression{n}
 	case js.TsCastExpression:

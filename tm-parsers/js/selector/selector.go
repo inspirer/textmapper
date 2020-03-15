@@ -186,6 +186,7 @@ var (
 	TsAmbientPropertyMember      = func(t js.NodeType) bool { return t == js.TsAmbientPropertyMember }
 	TsAmbientTypeAlias           = func(t js.NodeType) bool { return t == js.TsAmbientTypeAlias }
 	TsAmbientVar                 = func(t js.NodeType) bool { return t == js.TsAmbientVar }
+	TsAsConstExpression          = func(t js.NodeType) bool { return t == js.TsAsConstExpression }
 	TsAsExpression               = func(t js.NodeType) bool { return t == js.TsAsExpression }
 	TsCastExpression             = func(t js.NodeType) bool { return t == js.TsCastExpression }
 	TsConditional                = func(t js.NodeType) bool { return t == js.TsConditional }

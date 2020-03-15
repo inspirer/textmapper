@@ -691,6 +691,7 @@ BinaryExpression<In, Yield, Await> -> Expression /* interface */:
   | left=BinaryExpression 'instanceof' right=BinaryExpression       -> RelationalExpression
   | [In] left=BinaryExpression 'in' right=BinaryExpression          -> RelationalExpression
   | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<~AllowQuest> -> TsAsExpression
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' 'const'         -> TsAsConstExpression   # TS 3.4
   | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpression

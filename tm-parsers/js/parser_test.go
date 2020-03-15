@@ -1319,6 +1319,12 @@ var parseTests = []struct {
 		 as (T1)  // <- new line`,
 		`for (let as = «A as B»; as < 10; as++) {}`,
 	}},
+	{js.Typescript, js.TsAsConstExpression, []string{
+		`const a = foo ? «[a, b] as const» : undefined;`,
+		`declare namespace foo {
+		   export const commentPragmas = «{} as const»;
+		 }`,
+	}},
 	{js.Typescript, js.TypePredicate, []string{
 		`function isFish(pet: Fish | Bird): «pet is Fish» {}`,
 		`function isFish(asserts: Fish | Bird): «asserts is Foo» {}`,
