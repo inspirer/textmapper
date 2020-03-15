@@ -625,6 +625,7 @@ OptionalExpression<Yield, Await> -> Expression:
   | expr=OptionalExpression '.' selector=IdentifierNameRef   -> PropertyAccess
   | expr=OptionalExpression '.' selector=ClassPrivateRef     -> PropertyAccess
   | expr=OptionalExpression Arguments                        -> CallExpression
+  | expr=OptionalExpression .noLineBreak '!'                 -> TsNonNull
   | tag=OptionalExpression literal=TemplateLiteral           -> TaggedTemplate
 ;
 
@@ -1777,6 +1778,26 @@ ${template go_lexer.onAfterNext-}
 			}
 		case SINGLELINECOMMENT, MULTILINECOMMENT:
 			break
+		case EXCL:
+			if l.Dialect != Javascript {
+				switch l.token {
+				case RPAREN, RBRACK, RBRACE, PRIVATEIDENTIFIER, IDENTIFIER, NOSUBSTITUTIONTEMPLATE, THIS, NULL, TRUE, FALSE, STRINGLITERAL, NUMERICLITERAL:
+					// TS non-null assertion.
+					l.State |= 1
+				case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
+					l.State &^= 1
+				default:
+					if l.token >= keywordStart && l.token < keywordEnd {
+						// TS non-null assertion.
+						l.State |= 1
+					} else {
+						// Unary expression.
+						l.State &^= 1
+					}
+				}
+			} else {
+				l.State &^= 1
+			}
 		default:
 			if token >= punctuationStart && token < punctuationEnd {
 				l.State &^= 1

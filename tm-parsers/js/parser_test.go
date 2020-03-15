@@ -1323,8 +1323,13 @@ var parseTests = []struct {
 		`var a = «a!».b
 		 var c = «a!»(5)
 		 var d = a
+         call1(«a.getFoo()?.getBar(b)!».text)
 		 !(5)`,
 		`function foo() { return «foo()!»; }`,
+		`a = Math.round((«foo.bar()!» / 2));`,
+		`a = Math.round((«foo.bar!» / 2));`,
+		`a = Math.round((«foo.let!» / 2));`,
+		`a = Math.round((«foo.asserts!» / 2));`,
 	}},
 	{js.Typescript, js.TsAsExpression, []string{
 		`var a = «a as b»`,

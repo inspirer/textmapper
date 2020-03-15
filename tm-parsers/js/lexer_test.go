@@ -1,6 +1,7 @@
 package js_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
@@ -81,6 +82,8 @@ var lexerTests = []struct {
 		`[a] / «/aaa/».lastIndex`,
 		"`aa ${ «/aaa/».lastIndex / 1 }q`",
 		"`aa ${ 'aa' }q${ «/aaa/» } `",
+		`const a = !«/foo/»;   /*ts*/`,
+		`do !«/foo/».test(f); while(true);`,
 
 		// TODO if (a) /aaa/.compile()
 	}},
@@ -93,6 +96,7 @@ var lexerTests = []struct {
 		"`a` «/»",
 		`let «/»`,
 		"`aa ${ /aaa/.lastIndex «/» 1 }q`",
+		`const a = 1 «/» a.b! «/» 2; /*ts*/`,
 	}},
 	{js.DIVASSIGN, []string{
 		`b «/=» --/aaa/.lastIndex`,
@@ -301,6 +305,9 @@ func TestLexer(t *testing.T) {
 		for _, input := range tc.inputs {
 			test := parsertest.New(t, tc.tok.String(), input)
 			l.Init(test.Source())
+			if strings.Contains(input, "/*ts*/") {
+				l.Dialect = js.Typescript
+			}
 			tok := l.Next()
 			for tok != js.EOI {
 				if tok == tc.tok {

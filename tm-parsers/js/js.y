@@ -2652,6 +2652,7 @@ OptionalExpression :
 | OptionalExpression DOT IdentifierNameRef
 | OptionalExpression DOT ClassPrivateRef
 | OptionalExpression Arguments
+| OptionalExpression /*.noLineBreak*/ EXCL
 | OptionalExpression TemplateLiteral
 ;
 
@@ -2665,6 +2666,7 @@ OptionalExpression_Await :
 | OptionalExpression_Await DOT IdentifierNameRef
 | OptionalExpression_Await DOT ClassPrivateRef
 | OptionalExpression_Await Arguments_Await
+| OptionalExpression_Await /*.noLineBreak*/ EXCL
 | OptionalExpression_Await TemplateLiteral_Await
 ;
 
@@ -2678,6 +2680,7 @@ OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
+| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 ;
 
@@ -2691,6 +2694,7 @@ OptionalExpression_Await_NoLet :
 | OptionalExpression_Await_NoLet DOT IdentifierNameRef
 | OptionalExpression_Await_NoLet DOT ClassPrivateRef
 | OptionalExpression_Await_NoLet Arguments_Await
+| OptionalExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | OptionalExpression_Await_NoLet TemplateLiteral_Await
 ;
 
@@ -2704,6 +2708,7 @@ OptionalExpression_Await_NoObjLiteral :
 | OptionalExpression_Await_NoObjLiteral DOT IdentifierNameRef
 | OptionalExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_Await_NoObjLiteral Arguments_Await
+| OptionalExpression_Await_NoObjLiteral /*.noLineBreak*/ EXCL
 | OptionalExpression_Await_NoObjLiteral TemplateLiteral_Await
 ;
 
@@ -2717,6 +2722,7 @@ OptionalExpression_Await_StartWithLet :
 | OptionalExpression_Await_StartWithLet DOT IdentifierNameRef
 | OptionalExpression_Await_StartWithLet DOT ClassPrivateRef
 | OptionalExpression_Await_StartWithLet Arguments_Await
+| OptionalExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 | OptionalExpression_Await_StartWithLet TemplateLiteral_Await
 ;
 
@@ -2730,6 +2736,7 @@ OptionalExpression_Await_Yield :
 | OptionalExpression_Await_Yield DOT IdentifierNameRef
 | OptionalExpression_Await_Yield DOT ClassPrivateRef
 | OptionalExpression_Await_Yield Arguments_Await_Yield
+| OptionalExpression_Await_Yield /*.noLineBreak*/ EXCL
 | OptionalExpression_Await_Yield TemplateLiteral_Await_Yield
 ;
 
@@ -2743,6 +2750,7 @@ OptionalExpression_NoFuncClass :
 | OptionalExpression_NoFuncClass DOT IdentifierNameRef
 | OptionalExpression_NoFuncClass DOT ClassPrivateRef
 | OptionalExpression_NoFuncClass Arguments
+| OptionalExpression_NoFuncClass /*.noLineBreak*/ EXCL
 | OptionalExpression_NoFuncClass TemplateLiteral
 ;
 
@@ -2756,6 +2764,7 @@ OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral :
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
+| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 ;
 
@@ -2769,6 +2778,7 @@ OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
+| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 ;
 
@@ -2782,6 +2792,7 @@ OptionalExpression_NoLet :
 | OptionalExpression_NoLet DOT IdentifierNameRef
 | OptionalExpression_NoLet DOT ClassPrivateRef
 | OptionalExpression_NoLet Arguments
+| OptionalExpression_NoLet /*.noLineBreak*/ EXCL
 | OptionalExpression_NoLet TemplateLiteral
 ;
 
@@ -2795,6 +2806,7 @@ OptionalExpression_NoLet_Yield :
 | OptionalExpression_NoLet_Yield DOT IdentifierNameRef
 | OptionalExpression_NoLet_Yield DOT ClassPrivateRef
 | OptionalExpression_NoLet_Yield Arguments_Yield
+| OptionalExpression_NoLet_Yield /*.noLineBreak*/ EXCL
 | OptionalExpression_NoLet_Yield TemplateLiteral_Yield
 ;
 
@@ -2808,6 +2820,7 @@ OptionalExpression_NoObjLiteral :
 | OptionalExpression_NoObjLiteral DOT IdentifierNameRef
 | OptionalExpression_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_NoObjLiteral Arguments
+| OptionalExpression_NoObjLiteral /*.noLineBreak*/ EXCL
 | OptionalExpression_NoObjLiteral TemplateLiteral
 ;
 
@@ -2821,6 +2834,7 @@ OptionalExpression_StartWithLet :
 | OptionalExpression_StartWithLet DOT IdentifierNameRef
 | OptionalExpression_StartWithLet DOT ClassPrivateRef
 | OptionalExpression_StartWithLet Arguments
+| OptionalExpression_StartWithLet /*.noLineBreak*/ EXCL
 | OptionalExpression_StartWithLet TemplateLiteral
 ;
 
@@ -2834,6 +2848,7 @@ OptionalExpression_StartWithLet_Yield :
 | OptionalExpression_StartWithLet_Yield DOT IdentifierNameRef
 | OptionalExpression_StartWithLet_Yield DOT ClassPrivateRef
 | OptionalExpression_StartWithLet_Yield Arguments_Yield
+| OptionalExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
 | OptionalExpression_StartWithLet_Yield TemplateLiteral_Yield
 ;
 
@@ -2847,6 +2862,7 @@ OptionalExpression_Yield :
 | OptionalExpression_Yield DOT IdentifierNameRef
 | OptionalExpression_Yield DOT ClassPrivateRef
 | OptionalExpression_Yield Arguments_Yield
+| OptionalExpression_Yield /*.noLineBreak*/ EXCL
 | OptionalExpression_Yield TemplateLiteral_Yield
 ;
 

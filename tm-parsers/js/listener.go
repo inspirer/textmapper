@@ -2672,6 +2672,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression : OptionalExpression '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression : OptionalExpression '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression : OptionalExpression Arguments
+	TsNonNull,                    // OptionalExpression : OptionalExpression .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression : OptionalExpression TemplateLiteral
 	OptionalIndexAccess,          // OptionalExpression_Await : OptionalLHS_Await '?.' '[' Expression_Await_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_Await : OptionalLHS_Await '?.' IdentifierNameRef
@@ -2682,6 +2683,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_Await : OptionalExpression_Await '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_Await : OptionalExpression_Await '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_Await : OptionalExpression_Await Arguments_Await
+	TsNonNull,                    // OptionalExpression_Await : OptionalExpression_Await .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_Await : OptionalExpression_Await TemplateLiteral_Await
 	OptionalIndexAccess,          // OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral '?.' '[' Expression_Await_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral '?.' IdentifierNameRef
@@ -2692,6 +2694,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
+	TsNonNull,                    // OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 	OptionalIndexAccess,          // OptionalExpression_Await_NoLet : OptionalLHS_Await_NoLet '?.' '[' Expression_Await_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_Await_NoLet : OptionalLHS_Await_NoLet '?.' IdentifierNameRef
@@ -2702,6 +2705,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet Arguments_Await
+	TsNonNull,                    // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet TemplateLiteral_Await
 	OptionalIndexAccess,          // OptionalExpression_Await_NoObjLiteral : OptionalLHS_Await_NoObjLiteral '?.' '[' Expression_Await_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_Await_NoObjLiteral : OptionalLHS_Await_NoObjLiteral '?.' IdentifierNameRef
@@ -2712,6 +2716,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral Arguments_Await
+	TsNonNull,                    // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral TemplateLiteral_Await
 	OptionalIndexAccess,          // OptionalExpression_Await_StartWithLet : OptionalLHS_Await_StartWithLet '?.' '[' Expression_Await_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_Await_StartWithLet : OptionalLHS_Await_StartWithLet '?.' IdentifierNameRef
@@ -2722,6 +2727,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet Arguments_Await
+	TsNonNull,                    // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet TemplateLiteral_Await
 	OptionalIndexAccess,          // OptionalExpression_Await_Yield : OptionalLHS_Await_Yield '?.' '[' Expression_Await_In_Yield ']'
 	OptionalPropertyAccess,       // OptionalExpression_Await_Yield : OptionalLHS_Await_Yield '?.' IdentifierNameRef
@@ -2732,6 +2738,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_Await_Yield : OptionalExpression_Await_Yield '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_Await_Yield : OptionalExpression_Await_Yield '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_Await_Yield : OptionalExpression_Await_Yield Arguments_Await_Yield
+	TsNonNull,                    // OptionalExpression_Await_Yield : OptionalExpression_Await_Yield .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_Await_Yield : OptionalExpression_Await_Yield TemplateLiteral_Await_Yield
 	OptionalIndexAccess,          // OptionalExpression_NoFuncClass : OptionalLHS_NoFuncClass '?.' '[' Expression_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_NoFuncClass : OptionalLHS_NoFuncClass '?.' IdentifierNameRef
@@ -2742,6 +2749,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass Arguments
+	TsNonNull,                    // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass TemplateLiteral
 	OptionalIndexAccess,          // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral : OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral '?.' '[' Expression_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral : OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral '?.' IdentifierNameRef
@@ -2752,6 +2760,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
+	TsNonNull,                    // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 	OptionalIndexAccess,          // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield '?.' '[' Expression_In_Yield ']'
 	OptionalPropertyAccess,       // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield '?.' IdentifierNameRef
@@ -2762,6 +2771,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
+	TsNonNull,                    // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield : OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 	OptionalIndexAccess,          // OptionalExpression_NoLet : OptionalLHS_NoLet '?.' '[' Expression_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_NoLet : OptionalLHS_NoLet '?.' IdentifierNameRef
@@ -2772,6 +2782,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_NoLet : OptionalExpression_NoLet '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_NoLet : OptionalExpression_NoLet '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_NoLet : OptionalExpression_NoLet Arguments
+	TsNonNull,                    // OptionalExpression_NoLet : OptionalExpression_NoLet .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_NoLet : OptionalExpression_NoLet TemplateLiteral
 	OptionalIndexAccess,          // OptionalExpression_NoLet_Yield : OptionalLHS_NoLet_Yield '?.' '[' Expression_In_Yield ']'
 	OptionalPropertyAccess,       // OptionalExpression_NoLet_Yield : OptionalLHS_NoLet_Yield '?.' IdentifierNameRef
@@ -2782,6 +2793,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_NoLet_Yield : OptionalExpression_NoLet_Yield '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_NoLet_Yield : OptionalExpression_NoLet_Yield '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_NoLet_Yield : OptionalExpression_NoLet_Yield Arguments_Yield
+	TsNonNull,                    // OptionalExpression_NoLet_Yield : OptionalExpression_NoLet_Yield .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_NoLet_Yield : OptionalExpression_NoLet_Yield TemplateLiteral_Yield
 	OptionalIndexAccess,          // OptionalExpression_NoObjLiteral : OptionalLHS_NoObjLiteral '?.' '[' Expression_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_NoObjLiteral : OptionalLHS_NoObjLiteral '?.' IdentifierNameRef
@@ -2792,6 +2804,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral Arguments
+	TsNonNull,                    // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral TemplateLiteral
 	OptionalIndexAccess,          // OptionalExpression_StartWithLet : OptionalLHS_StartWithLet '?.' '[' Expression_In ']'
 	OptionalPropertyAccess,       // OptionalExpression_StartWithLet : OptionalLHS_StartWithLet '?.' IdentifierNameRef
@@ -2802,6 +2815,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet Arguments
+	TsNonNull,                    // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet TemplateLiteral
 	OptionalIndexAccess,          // OptionalExpression_StartWithLet_Yield : OptionalLHS_StartWithLet_Yield '?.' '[' Expression_In_Yield ']'
 	OptionalPropertyAccess,       // OptionalExpression_StartWithLet_Yield : OptionalLHS_StartWithLet_Yield '?.' IdentifierNameRef
@@ -2812,6 +2826,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_StartWithLet_Yield : OptionalExpression_StartWithLet_Yield '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_StartWithLet_Yield : OptionalExpression_StartWithLet_Yield '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_StartWithLet_Yield : OptionalExpression_StartWithLet_Yield Arguments_Yield
+	TsNonNull,                    // OptionalExpression_StartWithLet_Yield : OptionalExpression_StartWithLet_Yield .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_StartWithLet_Yield : OptionalExpression_StartWithLet_Yield TemplateLiteral_Yield
 	OptionalIndexAccess,          // OptionalExpression_Yield : OptionalLHS_Yield '?.' '[' Expression_In_Yield ']'
 	OptionalPropertyAccess,       // OptionalExpression_Yield : OptionalLHS_Yield '?.' IdentifierNameRef
@@ -2822,6 +2837,7 @@ var ruleNodeType = [...]NodeType{
 	PropertyAccess,               // OptionalExpression_Yield : OptionalExpression_Yield '.' IdentifierNameRef
 	PropertyAccess,               // OptionalExpression_Yield : OptionalExpression_Yield '.' ClassPrivateRef
 	CallExpression,               // OptionalExpression_Yield : OptionalExpression_Yield Arguments_Yield
+	TsNonNull,                    // OptionalExpression_Yield : OptionalExpression_Yield .noLineBreak '!'
 	TaggedTemplate,               // OptionalExpression_Yield : OptionalExpression_Yield TemplateLiteral_Yield
 	0,                            // LeftHandSideExpression : NewExpression
 	0,                            // LeftHandSideExpression : CallExpression lookahead_notStartOfParametrizedCall
