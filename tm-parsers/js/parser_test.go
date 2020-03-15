@@ -116,6 +116,7 @@ var parseTests = []struct {
 	{js.Javascript, js.LiteralPropertyName, []string{
 		`{} ({a,«b»: 1 in {}, «f»() {}, get «d»() { return 1;}});`,
 		`{} ({* «d»() { yield 1;}});`,
+		`class A { «#createdBy»; }`,
 	}},
 	{js.Javascript, js.ComputedPropertyName, []string{
 		`{} ({* «["a"+i]»() { yield 1;}});`,
@@ -172,9 +173,11 @@ var parseTests = []struct {
 		`for (««let.a».b» in b);`,
 		`«a.b»();`,
 		`«a().b»();`,
+		`«a().#b»();`,
 		`«a()[10].b»();`,
 		`«super.me»();`,
 		`«foo?.foo.bar»();`,
+		`«foo?.foo.#bar»();`,
 	}},
 	{js.Javascript, js.OptionalPropertyAccess, []string{
 		`«foo?.foo»();`,
@@ -734,6 +737,7 @@ var parseTests = []struct {
 		`class A<T> extends B {
 		   ;
 		   «static a() { return 1}»
+		   «static #a() { return 1}»
 		   «*a() { yield 1; yield 2}»
 		   «static get x() { return this.x}»
 		   «set x(val) { this.x = val}»
@@ -1138,8 +1142,10 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.MemberVar, []string{
 		`class A {
+		   «#a = 5;»
+		   «static #a = 5;»
 		   «private a = 5;»
-                   «private b! : string;»
+		   «private b! : string;»
 		   «static a : int = 5;»
 		 }`,
 	}},

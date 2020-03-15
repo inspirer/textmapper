@@ -26,57 +26,57 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 6, 6285, lexer)
+	return p.parse(ctx, 6, 6348, lexer)
 }
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 4110:
+	case 4196:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 6278, s); ok {
-			sym = 697 /* lookahead_StartOfArrowFunction */
+		if ok, err = lookahead(ctx, lexer, next, 0, 6341, s); ok {
+			sym = 699 /* lookahead_StartOfArrowFunction */
 		} else {
-			sym = 165 /* lookahead_notStartOfArrowFunction */
+			sym = 167 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 4111:
+	case 4197:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 1, 6279, s); ok {
-			sym = 342 /* lookahead_StartOfParametrizedCall */
+		if ok, err = lookahead(ctx, lexer, next, 1, 6342, s); ok {
+			sym = 344 /* lookahead_StartOfParametrizedCall */
 		} else {
-			sym = 298 /* lookahead_notStartOfParametrizedCall */
+			sym = 300 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 4112:
+	case 4198:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 3, 6281, s); ok {
-			sym = 830 /* lookahead_StartOfIs */
+		if ok, err = lookahead(ctx, lexer, next, 3, 6344, s); ok {
+			sym = 832 /* lookahead_StartOfIs */
 		} else {
-			sym = 835 /* lookahead_notStartOfIs */
+			sym = 837 /* lookahead_notStartOfIs */
 		}
 		return
-	case 4113:
+	case 4199:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 5, 6283, s); ok {
-			sym = 868 /* lookahead_StartOfMappedType */
+		if ok, err = lookahead(ctx, lexer, next, 5, 6346, s); ok {
+			sym = 870 /* lookahead_StartOfMappedType */
 		} else {
-			sym = 858 /* lookahead_notStartOfMappedType */
+			sym = 860 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 4114:
+	case 4200:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 4, 6282, s); ok {
-			sym = 877 /* lookahead_StartOfFunctionType */
+		if ok, err = lookahead(ctx, lexer, next, 4, 6345, s); ok {
+			sym = 879 /* lookahead_StartOfFunctionType */
 		} else {
-			sym = 851 /* lookahead_notStartOfFunctionType */
+			sym = 853 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 4115:
+	case 4201:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 2, 6280, s); ok {
-			sym = 753 /* lookahead_StartOfExtendsTypeRef */
+		if ok, err = lookahead(ctx, lexer, next, 2, 6343, s); ok {
+			sym = 755 /* lookahead_StartOfExtendsTypeRef */
 		} else {
-			sym = 752 /* lookahead_notStartOfExtendsTypeRef */
+			sym = 754 /* lookahead_notStartOfExtendsTypeRef */
 		}
 		return
 	}
@@ -84,27 +84,27 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtStartOfArrowFunction(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 0, 6278, s)
+	return lookahead(ctx, lexer, next, 0, 6341, s)
 }
 
 func AtStartOfParametrizedCall(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 1, 6279, s)
+	return lookahead(ctx, lexer, next, 1, 6342, s)
 }
 
 func AtStartOfExtendsTypeRef(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 2, 6280, s)
+	return lookahead(ctx, lexer, next, 2, 6343, s)
 }
 
 func AtStartOfIs(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 3, 6281, s)
+	return lookahead(ctx, lexer, next, 3, 6344, s)
 }
 
 func AtStartOfFunctionType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 4, 6282, s)
+	return lookahead(ctx, lexer, next, 4, 6345, s)
 }
 
 func AtStartOfMappedType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 5, 6283, s)
+	return lookahead(ctx, lexer, next, 5, 6346, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
@@ -234,62 +234,66 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, s *session) (err error) {
 	switch rule {
-	case 3107: // IterationStatement : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In ')' Statement
+	case 1144: // LiteralPropertyName : PrivateIdentifier
+		p.listener(BindingIdentifier, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 1148: // LiteralPropertyName_WithoutNew : PrivateIdentifier
+		p.listener(BindingIdentifier, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 3193: // IterationStatement : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3121: // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_Await_In ')' Statement_Await
+	case 3207: // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_Await_In ')' Statement_Await
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3135: // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	case 3221: // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3621: // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type1
+	case 3707: // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type1
 		p.listener(IdentifierReference, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 3623: // TypePredicate1 : 'asserts' lookahead_StartOfIs 'is' Type1
+	case 3709: // TypePredicate1 : 'asserts' lookahead_StartOfIs 'is' Type1
 		p.listener(IdentifierReference, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4110:
+	case 4196:
 		var ok bool
 		if ok, err = AtStartOfArrowFunction(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 697 /* lookahead_StartOfArrowFunction */
+			lhs.sym.symbol = 699 /* lookahead_StartOfArrowFunction */
 		} else {
-			lhs.sym.symbol = 165 /* lookahead_notStartOfArrowFunction */
+			lhs.sym.symbol = 167 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 4111:
+	case 4197:
 		var ok bool
 		if ok, err = AtStartOfParametrizedCall(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 342 /* lookahead_StartOfParametrizedCall */
+			lhs.sym.symbol = 344 /* lookahead_StartOfParametrizedCall */
 		} else {
-			lhs.sym.symbol = 298 /* lookahead_notStartOfParametrizedCall */
+			lhs.sym.symbol = 300 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 4112:
+	case 4198:
 		var ok bool
 		if ok, err = AtStartOfIs(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 830 /* lookahead_StartOfIs */
+			lhs.sym.symbol = 832 /* lookahead_StartOfIs */
 		} else {
-			lhs.sym.symbol = 835 /* lookahead_notStartOfIs */
+			lhs.sym.symbol = 837 /* lookahead_notStartOfIs */
 		}
 		return
-	case 4113:
+	case 4199:
 		var ok bool
 		if ok, err = AtStartOfMappedType(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 868 /* lookahead_StartOfMappedType */
+			lhs.sym.symbol = 870 /* lookahead_StartOfMappedType */
 		} else {
-			lhs.sym.symbol = 858 /* lookahead_notStartOfMappedType */
+			lhs.sym.symbol = 860 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 4114:
+	case 4200:
 		var ok bool
 		if ok, err = AtStartOfFunctionType(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 877 /* lookahead_StartOfFunctionType */
+			lhs.sym.symbol = 879 /* lookahead_StartOfFunctionType */
 		} else {
-			lhs.sym.symbol = 851 /* lookahead_notStartOfFunctionType */
+			lhs.sym.symbol = 853 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 4115:
+	case 4201:
 		var ok bool
 		if ok, err = AtStartOfExtendsTypeRef(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 753 /* lookahead_StartOfExtendsTypeRef */
+			lhs.sym.symbol = 755 /* lookahead_StartOfExtendsTypeRef */
 		} else {
-			lhs.sym.symbol = 752 /* lookahead_notStartOfExtendsTypeRef */
+			lhs.sym.symbol = 754 /* lookahead_notStartOfExtendsTypeRef */
 		}
 		return
 	}

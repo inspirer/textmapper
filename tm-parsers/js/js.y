@@ -31,6 +31,7 @@
 %token MULTILINECOMMENT
 %token SINGLELINECOMMENT
 %token IDENTIFIER
+%token PRIVATEIDENTIFIER
 %token AWAIT
 %token BREAK
 %token CASE
@@ -416,6 +417,10 @@ IdentifierNameRef :
 
 IdentifierNameRef_WithoutAsserts :
   IdentifierName_WithoutAsserts
+;
+
+ClassPrivateRef :
+  PRIVATEIDENTIFIER
 ;
 
 IdentifierReference :
@@ -1531,12 +1536,14 @@ PropertyName_Yield :
 
 LiteralPropertyName :
   IdentifierNameDecl
+| PRIVATEIDENTIFIER
 | STRINGLITERAL
 | NUMERICLITERAL
 ;
 
 LiteralPropertyName_WithoutNew :
   IdentifierNameDecl_WithoutNew
+| PRIVATEIDENTIFIER
 | STRINGLITERAL
 | NUMERICLITERAL
 ;
@@ -1665,6 +1672,7 @@ MemberExpression :
   PrimaryExpression
 | MemberExpression LBRACK Expression_In RBRACK
 | MemberExpression DOT IdentifierNameRef
+| MemberExpression DOT ClassPrivateRef
 | MemberExpression TemplateLiteral
 | MemberExpression /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1676,6 +1684,7 @@ MemberExpression_Await :
   PrimaryExpression_Await
 | MemberExpression_Await LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await DOT IdentifierNameRef
+| MemberExpression_Await DOT ClassPrivateRef
 | MemberExpression_Await TemplateLiteral_Await
 | MemberExpression_Await /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1687,6 +1696,7 @@ MemberExpression_Await_NoAsync_NoLet :
   PrimaryExpression_Await_NoAsync_NoLet
 | MemberExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_NoLet DOT IdentifierNameRef
+| MemberExpression_Await_NoLet DOT ClassPrivateRef
 | MemberExpression_Await_NoLet TemplateLiteral_Await
 | MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1698,6 +1708,7 @@ MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
   PrimaryExpression_Await_NoFuncClass_NoObjLiteral
 | MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 | MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1709,6 +1720,7 @@ MemberExpression_Await_NoLet :
   PrimaryExpression_Await_NoLet
 | MemberExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_NoLet DOT IdentifierNameRef
+| MemberExpression_Await_NoLet DOT ClassPrivateRef
 | MemberExpression_Await_NoLet TemplateLiteral_Await
 | MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1720,6 +1732,7 @@ MemberExpression_Await_NoLetOnly :
   PrimaryExpression_Await_NoLet
 | MemberExpression_Await LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await DOT IdentifierNameRef
+| MemberExpression_Await DOT ClassPrivateRef
 | MemberExpression_Await TemplateLiteral_Await
 | MemberExpression_Await /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1731,6 +1744,7 @@ MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral :
   PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral
 | MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 | MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1742,6 +1756,7 @@ MemberExpression_Await_NoLetOnly_NoLet :
   PrimaryExpression_Await_NoLet
 | MemberExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_NoLet DOT IdentifierNameRef
+| MemberExpression_Await_NoLet DOT ClassPrivateRef
 | MemberExpression_Await_NoLet TemplateLiteral_Await
 | MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1753,6 +1768,7 @@ MemberExpression_Await_NoLetOnly_NoObjLiteral :
   PrimaryExpression_Await_NoLet_NoObjLiteral
 | MemberExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
 | MemberExpression_Await_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1763,6 +1779,7 @@ MemberExpression_Await_NoLetOnly_NoObjLiteral :
 MemberExpression_Await_NoLetOnly_StartWithLet :
   MemberExpression_Await_NoLetOnly_StartWithLet LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_StartWithLet DOT IdentifierNameRef
+| MemberExpression_Await_StartWithLet DOT ClassPrivateRef
 | MemberExpression_Await_StartWithLet TemplateLiteral_Await
 | MemberExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 ;
@@ -1771,6 +1788,7 @@ MemberExpression_Await_NoLetOnly_Yield :
   PrimaryExpression_Await_NoLet_Yield
 | MemberExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
 | MemberExpression_Await_Yield DOT IdentifierNameRef
+| MemberExpression_Await_Yield DOT ClassPrivateRef
 | MemberExpression_Await_Yield TemplateLiteral_Await_Yield
 | MemberExpression_Await_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Await_Yield
@@ -1782,6 +1800,7 @@ MemberExpression_Await_NoObjLiteral :
   PrimaryExpression_Await_NoObjLiteral
 | MemberExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
 | MemberExpression_Await_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty_Await
@@ -1793,6 +1812,7 @@ MemberExpression_Await_StartWithLet :
   LET
 | MemberExpression_Await_NoLetOnly_StartWithLet LBRACK Expression_Await_In RBRACK
 | MemberExpression_Await_StartWithLet DOT IdentifierNameRef
+| MemberExpression_Await_StartWithLet DOT ClassPrivateRef
 | MemberExpression_Await_StartWithLet TemplateLiteral_Await
 | MemberExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 ;
@@ -1801,6 +1821,7 @@ MemberExpression_Await_Yield :
   PrimaryExpression_Await_Yield
 | MemberExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
 | MemberExpression_Await_Yield DOT IdentifierNameRef
+| MemberExpression_Await_Yield DOT ClassPrivateRef
 | MemberExpression_Await_Yield TemplateLiteral_Await_Yield
 | MemberExpression_Await_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Await_Yield
@@ -1812,6 +1833,7 @@ MemberExpression_NoAsync_NoLet :
   PrimaryExpression_NoAsync_NoLet
 | MemberExpression_NoLet LBRACK Expression_In RBRACK
 | MemberExpression_NoLet DOT IdentifierNameRef
+| MemberExpression_NoLet DOT ClassPrivateRef
 | MemberExpression_NoLet TemplateLiteral
 | MemberExpression_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1823,6 +1845,7 @@ MemberExpression_NoAsync_NoLet_Yield :
   PrimaryExpression_NoAsync_NoLet_Yield
 | MemberExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_NoLet_Yield DOT IdentifierNameRef
+| MemberExpression_NoLet_Yield DOT ClassPrivateRef
 | MemberExpression_NoLet_Yield TemplateLiteral_Yield
 | MemberExpression_NoLet_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
@@ -1834,6 +1857,7 @@ MemberExpression_NoFuncClass :
   PrimaryExpression_NoFuncClass
 | MemberExpression_NoFuncClass LBRACK Expression_In RBRACK
 | MemberExpression_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_NoFuncClass TemplateLiteral
 | MemberExpression_NoFuncClass /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1845,6 +1869,7 @@ MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral :
   PrimaryExpression_NoFuncClass_NoObjLiteral
 | MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1856,6 +1881,7 @@ MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   PrimaryExpression_NoFuncClass_NoObjLiteral_Yield
 | MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
+| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
@@ -1867,6 +1893,7 @@ MemberExpression_NoLet :
   PrimaryExpression_NoLet
 | MemberExpression_NoLet LBRACK Expression_In RBRACK
 | MemberExpression_NoLet DOT IdentifierNameRef
+| MemberExpression_NoLet DOT ClassPrivateRef
 | MemberExpression_NoLet TemplateLiteral
 | MemberExpression_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1878,6 +1905,7 @@ MemberExpression_NoLet_Yield :
   PrimaryExpression_NoLet_Yield
 | MemberExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_NoLet_Yield DOT IdentifierNameRef
+| MemberExpression_NoLet_Yield DOT ClassPrivateRef
 | MemberExpression_NoLet_Yield TemplateLiteral_Yield
 | MemberExpression_NoLet_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
@@ -1889,6 +1917,7 @@ MemberExpression_NoLetOnly :
   PrimaryExpression_NoLet
 | MemberExpression LBRACK Expression_In RBRACK
 | MemberExpression DOT IdentifierNameRef
+| MemberExpression DOT ClassPrivateRef
 | MemberExpression TemplateLiteral
 | MemberExpression /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1900,6 +1929,7 @@ MemberExpression_NoLetOnly_NoFuncClass :
   PrimaryExpression_NoFuncClass_NoLet
 | MemberExpression_NoFuncClass LBRACK Expression_In RBRACK
 | MemberExpression_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_NoFuncClass TemplateLiteral
 | MemberExpression_NoFuncClass /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1911,6 +1941,7 @@ MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral :
   PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral
 | MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1922,6 +1953,7 @@ MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield
 | MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
+| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 | MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
@@ -1933,6 +1965,7 @@ MemberExpression_NoLetOnly_NoLet :
   PrimaryExpression_NoLet
 | MemberExpression_NoLet LBRACK Expression_In RBRACK
 | MemberExpression_NoLet DOT IdentifierNameRef
+| MemberExpression_NoLet DOT ClassPrivateRef
 | MemberExpression_NoLet TemplateLiteral
 | MemberExpression_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1944,6 +1977,7 @@ MemberExpression_NoLetOnly_NoLet_Yield :
   PrimaryExpression_NoLet_Yield
 | MemberExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_NoLet_Yield DOT IdentifierNameRef
+| MemberExpression_NoLet_Yield DOT ClassPrivateRef
 | MemberExpression_NoLet_Yield TemplateLiteral_Yield
 | MemberExpression_NoLet_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
@@ -1955,6 +1989,7 @@ MemberExpression_NoLetOnly_NoObjLiteral :
   PrimaryExpression_NoLet_NoObjLiteral
 | MemberExpression_NoObjLiteral LBRACK Expression_In RBRACK
 | MemberExpression_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_NoObjLiteral TemplateLiteral
 | MemberExpression_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -1965,6 +2000,7 @@ MemberExpression_NoLetOnly_NoObjLiteral :
 MemberExpression_NoLetOnly_StartWithLet :
   MemberExpression_NoLetOnly_StartWithLet LBRACK Expression_In RBRACK
 | MemberExpression_StartWithLet DOT IdentifierNameRef
+| MemberExpression_StartWithLet DOT ClassPrivateRef
 | MemberExpression_StartWithLet TemplateLiteral
 | MemberExpression_StartWithLet /*.noLineBreak*/ EXCL
 ;
@@ -1972,6 +2008,7 @@ MemberExpression_NoLetOnly_StartWithLet :
 MemberExpression_NoLetOnly_StartWithLet_Yield :
   MemberExpression_NoLetOnly_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_StartWithLet_Yield DOT IdentifierNameRef
+| MemberExpression_StartWithLet_Yield DOT ClassPrivateRef
 | MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
 | MemberExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
 ;
@@ -1980,6 +2017,7 @@ MemberExpression_NoLetOnly_Yield :
   PrimaryExpression_NoLet_Yield
 | MemberExpression_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_Yield DOT IdentifierNameRef
+| MemberExpression_Yield DOT ClassPrivateRef
 | MemberExpression_Yield TemplateLiteral_Yield
 | MemberExpression_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
@@ -1991,6 +2029,7 @@ MemberExpression_NoObjLiteral :
   PrimaryExpression_NoObjLiteral
 | MemberExpression_NoObjLiteral LBRACK Expression_In RBRACK
 | MemberExpression_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_NoObjLiteral TemplateLiteral
 | MemberExpression_NoObjLiteral /*.noLineBreak*/ EXCL
 | SuperProperty
@@ -2002,6 +2041,7 @@ MemberExpression_StartWithLet :
   LET
 | MemberExpression_NoLetOnly_StartWithLet LBRACK Expression_In RBRACK
 | MemberExpression_StartWithLet DOT IdentifierNameRef
+| MemberExpression_StartWithLet DOT ClassPrivateRef
 | MemberExpression_StartWithLet TemplateLiteral
 | MemberExpression_StartWithLet /*.noLineBreak*/ EXCL
 ;
@@ -2010,6 +2050,7 @@ MemberExpression_StartWithLet_Yield :
   LET
 | MemberExpression_NoLetOnly_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_StartWithLet_Yield DOT IdentifierNameRef
+| MemberExpression_StartWithLet_Yield DOT ClassPrivateRef
 | MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
 | MemberExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
 ;
@@ -2018,6 +2059,7 @@ MemberExpression_Yield :
   PrimaryExpression_Yield
 | MemberExpression_Yield LBRACK Expression_In_Yield RBRACK
 | MemberExpression_Yield DOT IdentifierNameRef
+| MemberExpression_Yield DOT ClassPrivateRef
 | MemberExpression_Yield TemplateLiteral_Yield
 | MemberExpression_Yield /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
@@ -2161,6 +2203,7 @@ CallExpression :
 | CallExpression Arguments
 | CallExpression LBRACK Expression_In RBRACK
 | CallExpression DOT IdentifierNameRef
+| CallExpression DOT ClassPrivateRef
 | CallExpression /*.noLineBreak*/ EXCL
 | CallExpression TemplateLiteral
 ;
@@ -2172,6 +2215,7 @@ CallExpression_Await :
 | CallExpression_Await Arguments_Await
 | CallExpression_Await LBRACK Expression_Await_In RBRACK
 | CallExpression_Await DOT IdentifierNameRef
+| CallExpression_Await DOT ClassPrivateRef
 | CallExpression_Await /*.noLineBreak*/ EXCL
 | CallExpression_Await TemplateLiteral_Await
 ;
@@ -2183,6 +2227,7 @@ CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
 | CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
 | CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 ;
@@ -2194,6 +2239,7 @@ CallExpression_Await_NoLet :
 | CallExpression_Await_NoLet Arguments_Await
 | CallExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
 | CallExpression_Await_NoLet DOT IdentifierNameRef
+| CallExpression_Await_NoLet DOT ClassPrivateRef
 | CallExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | CallExpression_Await_NoLet TemplateLiteral_Await
 ;
@@ -2205,6 +2251,7 @@ CallExpression_Await_NoObjLiteral :
 | CallExpression_Await_NoObjLiteral Arguments_Await
 | CallExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | CallExpression_Await_NoObjLiteral DOT IdentifierNameRef
+| CallExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | CallExpression_Await_NoObjLiteral /*.noLineBreak*/ EXCL
 | CallExpression_Await_NoObjLiteral TemplateLiteral_Await
 ;
@@ -2214,6 +2261,7 @@ CallExpression_Await_StartWithLet :
 | CallExpression_Await_StartWithLet Arguments_Await
 | CallExpression_Await_StartWithLet LBRACK Expression_Await_In RBRACK
 | CallExpression_Await_StartWithLet DOT IdentifierNameRef
+| CallExpression_Await_StartWithLet DOT ClassPrivateRef
 | CallExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 | CallExpression_Await_StartWithLet TemplateLiteral_Await
 ;
@@ -2225,6 +2273,7 @@ CallExpression_Await_Yield :
 | CallExpression_Await_Yield Arguments_Await_Yield
 | CallExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
 | CallExpression_Await_Yield DOT IdentifierNameRef
+| CallExpression_Await_Yield DOT ClassPrivateRef
 | CallExpression_Await_Yield /*.noLineBreak*/ EXCL
 | CallExpression_Await_Yield TemplateLiteral_Await_Yield
 ;
@@ -2236,6 +2285,7 @@ CallExpression_NoFuncClass :
 | CallExpression_NoFuncClass Arguments
 | CallExpression_NoFuncClass LBRACK Expression_In RBRACK
 | CallExpression_NoFuncClass DOT IdentifierNameRef
+| CallExpression_NoFuncClass DOT ClassPrivateRef
 | CallExpression_NoFuncClass /*.noLineBreak*/ EXCL
 | CallExpression_NoFuncClass TemplateLiteral
 ;
@@ -2247,6 +2297,7 @@ CallExpression_NoFuncClass_NoLetSq_NoObjLiteral :
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 ;
@@ -2258,6 +2309,7 @@ CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
+| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
 | CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 ;
@@ -2269,6 +2321,7 @@ CallExpression_NoLet :
 | CallExpression_NoLet Arguments
 | CallExpression_NoLet LBRACK Expression_In RBRACK
 | CallExpression_NoLet DOT IdentifierNameRef
+| CallExpression_NoLet DOT ClassPrivateRef
 | CallExpression_NoLet /*.noLineBreak*/ EXCL
 | CallExpression_NoLet TemplateLiteral
 ;
@@ -2280,6 +2333,7 @@ CallExpression_NoLet_Yield :
 | CallExpression_NoLet_Yield Arguments_Yield
 | CallExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
 | CallExpression_NoLet_Yield DOT IdentifierNameRef
+| CallExpression_NoLet_Yield DOT ClassPrivateRef
 | CallExpression_NoLet_Yield /*.noLineBreak*/ EXCL
 | CallExpression_NoLet_Yield TemplateLiteral_Yield
 ;
@@ -2291,6 +2345,7 @@ CallExpression_NoObjLiteral :
 | CallExpression_NoObjLiteral Arguments
 | CallExpression_NoObjLiteral LBRACK Expression_In RBRACK
 | CallExpression_NoObjLiteral DOT IdentifierNameRef
+| CallExpression_NoObjLiteral DOT ClassPrivateRef
 | CallExpression_NoObjLiteral /*.noLineBreak*/ EXCL
 | CallExpression_NoObjLiteral TemplateLiteral
 ;
@@ -2300,6 +2355,7 @@ CallExpression_StartWithLet :
 | CallExpression_StartWithLet Arguments
 | CallExpression_StartWithLet LBRACK Expression_In RBRACK
 | CallExpression_StartWithLet DOT IdentifierNameRef
+| CallExpression_StartWithLet DOT ClassPrivateRef
 | CallExpression_StartWithLet /*.noLineBreak*/ EXCL
 | CallExpression_StartWithLet TemplateLiteral
 ;
@@ -2309,6 +2365,7 @@ CallExpression_StartWithLet_Yield :
 | CallExpression_StartWithLet_Yield Arguments_Yield
 | CallExpression_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
 | CallExpression_StartWithLet_Yield DOT IdentifierNameRef
+| CallExpression_StartWithLet_Yield DOT ClassPrivateRef
 | CallExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
 | CallExpression_StartWithLet_Yield TemplateLiteral_Yield
 ;
@@ -2320,6 +2377,7 @@ CallExpression_Yield :
 | CallExpression_Yield Arguments_Yield
 | CallExpression_Yield LBRACK Expression_In_Yield RBRACK
 | CallExpression_Yield DOT IdentifierNameRef
+| CallExpression_Yield DOT ClassPrivateRef
 | CallExpression_Yield /*.noLineBreak*/ EXCL
 | CallExpression_Yield TemplateLiteral_Yield
 ;
@@ -2512,10 +2570,12 @@ OptionalLHS_Yield :
 OptionalExpression :
   OptionalLHS QUESTDOT LBRACK Expression_In RBRACK
 | OptionalLHS QUESTDOT IdentifierNameRef
+| OptionalLHS QUESTDOT ClassPrivateRef
 | OptionalLHS QUESTDOT Arguments
 | OptionalLHS QUESTDOT TemplateLiteral
 | OptionalExpression LBRACK Expression_In RBRACK
 | OptionalExpression DOT IdentifierNameRef
+| OptionalExpression DOT ClassPrivateRef
 | OptionalExpression Arguments
 | OptionalExpression TemplateLiteral
 ;
@@ -2523,10 +2583,12 @@ OptionalExpression :
 OptionalExpression_Await :
   OptionalLHS_Await QUESTDOT LBRACK Expression_Await_In RBRACK
 | OptionalLHS_Await QUESTDOT IdentifierNameRef
+| OptionalLHS_Await QUESTDOT ClassPrivateRef
 | OptionalLHS_Await QUESTDOT Arguments_Await
 | OptionalLHS_Await QUESTDOT TemplateLiteral_Await
 | OptionalExpression_Await LBRACK Expression_Await_In RBRACK
 | OptionalExpression_Await DOT IdentifierNameRef
+| OptionalExpression_Await DOT ClassPrivateRef
 | OptionalExpression_Await Arguments_Await
 | OptionalExpression_Await TemplateLiteral_Await
 ;
@@ -2534,10 +2596,12 @@ OptionalExpression_Await :
 OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
   OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT LBRACK Expression_Await_In RBRACK
 | OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT IdentifierNameRef
+| OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT Arguments_Await
 | OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT TemplateLiteral_Await
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
 | OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 ;
@@ -2545,10 +2609,12 @@ OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
 OptionalExpression_Await_NoLet :
   OptionalLHS_Await_NoLet QUESTDOT LBRACK Expression_Await_In RBRACK
 | OptionalLHS_Await_NoLet QUESTDOT IdentifierNameRef
+| OptionalLHS_Await_NoLet QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_NoLet QUESTDOT Arguments_Await
 | OptionalLHS_Await_NoLet QUESTDOT TemplateLiteral_Await
 | OptionalExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
 | OptionalExpression_Await_NoLet DOT IdentifierNameRef
+| OptionalExpression_Await_NoLet DOT ClassPrivateRef
 | OptionalExpression_Await_NoLet Arguments_Await
 | OptionalExpression_Await_NoLet TemplateLiteral_Await
 ;
@@ -2556,10 +2622,12 @@ OptionalExpression_Await_NoLet :
 OptionalExpression_Await_NoObjLiteral :
   OptionalLHS_Await_NoObjLiteral QUESTDOT LBRACK Expression_Await_In RBRACK
 | OptionalLHS_Await_NoObjLiteral QUESTDOT IdentifierNameRef
+| OptionalLHS_Await_NoObjLiteral QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_NoObjLiteral QUESTDOT Arguments_Await
 | OptionalLHS_Await_NoObjLiteral QUESTDOT TemplateLiteral_Await
 | OptionalExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
 | OptionalExpression_Await_NoObjLiteral DOT IdentifierNameRef
+| OptionalExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_Await_NoObjLiteral Arguments_Await
 | OptionalExpression_Await_NoObjLiteral TemplateLiteral_Await
 ;
@@ -2567,10 +2635,12 @@ OptionalExpression_Await_NoObjLiteral :
 OptionalExpression_Await_StartWithLet :
   OptionalLHS_Await_StartWithLet QUESTDOT LBRACK Expression_Await_In RBRACK
 | OptionalLHS_Await_StartWithLet QUESTDOT IdentifierNameRef
+| OptionalLHS_Await_StartWithLet QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_StartWithLet QUESTDOT Arguments_Await
 | OptionalLHS_Await_StartWithLet QUESTDOT TemplateLiteral_Await
 | OptionalExpression_Await_StartWithLet LBRACK Expression_Await_In RBRACK
 | OptionalExpression_Await_StartWithLet DOT IdentifierNameRef
+| OptionalExpression_Await_StartWithLet DOT ClassPrivateRef
 | OptionalExpression_Await_StartWithLet Arguments_Await
 | OptionalExpression_Await_StartWithLet TemplateLiteral_Await
 ;
@@ -2578,10 +2648,12 @@ OptionalExpression_Await_StartWithLet :
 OptionalExpression_Await_Yield :
   OptionalLHS_Await_Yield QUESTDOT LBRACK Expression_Await_In_Yield RBRACK
 | OptionalLHS_Await_Yield QUESTDOT IdentifierNameRef
+| OptionalLHS_Await_Yield QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_Yield QUESTDOT Arguments_Await_Yield
 | OptionalLHS_Await_Yield QUESTDOT TemplateLiteral_Await_Yield
 | OptionalExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
 | OptionalExpression_Await_Yield DOT IdentifierNameRef
+| OptionalExpression_Await_Yield DOT ClassPrivateRef
 | OptionalExpression_Await_Yield Arguments_Await_Yield
 | OptionalExpression_Await_Yield TemplateLiteral_Await_Yield
 ;
@@ -2589,10 +2661,12 @@ OptionalExpression_Await_Yield :
 OptionalExpression_NoFuncClass :
   OptionalLHS_NoFuncClass QUESTDOT LBRACK Expression_In RBRACK
 | OptionalLHS_NoFuncClass QUESTDOT IdentifierNameRef
+| OptionalLHS_NoFuncClass QUESTDOT ClassPrivateRef
 | OptionalLHS_NoFuncClass QUESTDOT Arguments
 | OptionalLHS_NoFuncClass QUESTDOT TemplateLiteral
 | OptionalExpression_NoFuncClass LBRACK Expression_In RBRACK
 | OptionalExpression_NoFuncClass DOT IdentifierNameRef
+| OptionalExpression_NoFuncClass DOT ClassPrivateRef
 | OptionalExpression_NoFuncClass Arguments
 | OptionalExpression_NoFuncClass TemplateLiteral
 ;
@@ -2600,10 +2674,12 @@ OptionalExpression_NoFuncClass :
 OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral :
   OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT LBRACK Expression_In RBRACK
 | OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT IdentifierNameRef
+| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT ClassPrivateRef
 | OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT Arguments
 | OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT TemplateLiteral
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
+| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
 ;
@@ -2611,10 +2687,12 @@ OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral :
 OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
   OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
 | OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT IdentifierNameRef
+| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT ClassPrivateRef
 | OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT Arguments_Yield
 | OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT TemplateLiteral_Yield
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
+| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
 | OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
 ;
@@ -2622,10 +2700,12 @@ OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
 OptionalExpression_NoLet :
   OptionalLHS_NoLet QUESTDOT LBRACK Expression_In RBRACK
 | OptionalLHS_NoLet QUESTDOT IdentifierNameRef
+| OptionalLHS_NoLet QUESTDOT ClassPrivateRef
 | OptionalLHS_NoLet QUESTDOT Arguments
 | OptionalLHS_NoLet QUESTDOT TemplateLiteral
 | OptionalExpression_NoLet LBRACK Expression_In RBRACK
 | OptionalExpression_NoLet DOT IdentifierNameRef
+| OptionalExpression_NoLet DOT ClassPrivateRef
 | OptionalExpression_NoLet Arguments
 | OptionalExpression_NoLet TemplateLiteral
 ;
@@ -2633,10 +2713,12 @@ OptionalExpression_NoLet :
 OptionalExpression_NoLet_Yield :
   OptionalLHS_NoLet_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
 | OptionalLHS_NoLet_Yield QUESTDOT IdentifierNameRef
+| OptionalLHS_NoLet_Yield QUESTDOT ClassPrivateRef
 | OptionalLHS_NoLet_Yield QUESTDOT Arguments_Yield
 | OptionalLHS_NoLet_Yield QUESTDOT TemplateLiteral_Yield
 | OptionalExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
 | OptionalExpression_NoLet_Yield DOT IdentifierNameRef
+| OptionalExpression_NoLet_Yield DOT ClassPrivateRef
 | OptionalExpression_NoLet_Yield Arguments_Yield
 | OptionalExpression_NoLet_Yield TemplateLiteral_Yield
 ;
@@ -2644,10 +2726,12 @@ OptionalExpression_NoLet_Yield :
 OptionalExpression_NoObjLiteral :
   OptionalLHS_NoObjLiteral QUESTDOT LBRACK Expression_In RBRACK
 | OptionalLHS_NoObjLiteral QUESTDOT IdentifierNameRef
+| OptionalLHS_NoObjLiteral QUESTDOT ClassPrivateRef
 | OptionalLHS_NoObjLiteral QUESTDOT Arguments
 | OptionalLHS_NoObjLiteral QUESTDOT TemplateLiteral
 | OptionalExpression_NoObjLiteral LBRACK Expression_In RBRACK
 | OptionalExpression_NoObjLiteral DOT IdentifierNameRef
+| OptionalExpression_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_NoObjLiteral Arguments
 | OptionalExpression_NoObjLiteral TemplateLiteral
 ;
@@ -2655,10 +2739,12 @@ OptionalExpression_NoObjLiteral :
 OptionalExpression_StartWithLet :
   OptionalLHS_StartWithLet QUESTDOT LBRACK Expression_In RBRACK
 | OptionalLHS_StartWithLet QUESTDOT IdentifierNameRef
+| OptionalLHS_StartWithLet QUESTDOT ClassPrivateRef
 | OptionalLHS_StartWithLet QUESTDOT Arguments
 | OptionalLHS_StartWithLet QUESTDOT TemplateLiteral
 | OptionalExpression_StartWithLet LBRACK Expression_In RBRACK
 | OptionalExpression_StartWithLet DOT IdentifierNameRef
+| OptionalExpression_StartWithLet DOT ClassPrivateRef
 | OptionalExpression_StartWithLet Arguments
 | OptionalExpression_StartWithLet TemplateLiteral
 ;
@@ -2666,10 +2752,12 @@ OptionalExpression_StartWithLet :
 OptionalExpression_StartWithLet_Yield :
   OptionalLHS_StartWithLet_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
 | OptionalLHS_StartWithLet_Yield QUESTDOT IdentifierNameRef
+| OptionalLHS_StartWithLet_Yield QUESTDOT ClassPrivateRef
 | OptionalLHS_StartWithLet_Yield QUESTDOT Arguments_Yield
 | OptionalLHS_StartWithLet_Yield QUESTDOT TemplateLiteral_Yield
 | OptionalExpression_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
 | OptionalExpression_StartWithLet_Yield DOT IdentifierNameRef
+| OptionalExpression_StartWithLet_Yield DOT ClassPrivateRef
 | OptionalExpression_StartWithLet_Yield Arguments_Yield
 | OptionalExpression_StartWithLet_Yield TemplateLiteral_Yield
 ;
@@ -2677,10 +2765,12 @@ OptionalExpression_StartWithLet_Yield :
 OptionalExpression_Yield :
   OptionalLHS_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
 | OptionalLHS_Yield QUESTDOT IdentifierNameRef
+| OptionalLHS_Yield QUESTDOT ClassPrivateRef
 | OptionalLHS_Yield QUESTDOT Arguments_Yield
 | OptionalLHS_Yield QUESTDOT TemplateLiteral_Yield
 | OptionalExpression_Yield LBRACK Expression_In_Yield RBRACK
 | OptionalExpression_Yield DOT IdentifierNameRef
+| OptionalExpression_Yield DOT ClassPrivateRef
 | OptionalExpression_Yield Arguments_Yield
 | OptionalExpression_Yield TemplateLiteral_Yield
 ;

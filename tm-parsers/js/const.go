@@ -1,7 +1,7 @@
 package js
 
 const (
-	keywordStart = IDENTIFIER + 1
+	keywordStart = PRIVATEIDENTIFIER + 1
 	keywordEnd   = LBRACE
 
 	punctuationStart = LBRACE

@@ -58,8 +58,9 @@ identifierStart = /{IDStart}|$|_|\\{unicodeEscapeSequence}/
 identifierPart =  /{identifierStart}|{IDContinue}|{JoinControl}/
 
 Identifier: /{identifierStart}{identifierPart}*/    (class)
+PrivateIdentifier: /#{identifierStart}{identifierPart}*/
 # Note: the following rule disables backtracking for incomplete identifiers.
-invalid_token: /({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
+invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 
 # Keywords.
 'await':      /await/
@@ -371,13 +372,14 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords> :
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
-IdentifierNameDecl<WithoutNew> :
-    IdentifierName                                    -> BindingIdentifier
-;
+IdentifierNameDecl<WithoutNew> -> BindingIdentifier:
+    IdentifierName ;
 
-IdentifierNameRef<WithoutAsserts> :
-    IdentifierName                                    -> IdentifierReference
-;
+IdentifierNameRef<WithoutAsserts> -> IdentifierReference :
+    IdentifierName ;
+
+ClassPrivateRef -> IdentifierReference:
+    PrivateIdentifier ;
 
 # A.2 Expressions
 
@@ -513,6 +515,7 @@ PropertyName<Yield, Await, WithoutNew> -> PropertyName /* interface */:
 
 LiteralPropertyName<WithoutNew> -> LiteralPropertyName :
     IdentifierNameDecl
+  | (PrivateIdentifier -> BindingIdentifier)
   | StringLiteral
   | NumericLiteral
 ;
@@ -549,6 +552,7 @@ MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expression /*
   | [StartWithLet] expr=MemberExpression<+NoLetOnly, ~NoAsync> '[' index=Expression<+In> ']'            -> IndexAccess
   | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq, ~NoAsync> '[' index=Expression<+In> ']'   -> IndexAccess
   | expr=MemberExpression<~NoAsync> '.' selector=IdentifierNameRef        -> PropertyAccess
+  | expr=MemberExpression<~NoAsync> '.' selector=ClassPrivateRef          -> PropertyAccess
   | tag=MemberExpression<~NoAsync> literal=TemplateLiteral                -> TaggedTemplate
   | expr=MemberExpression<~NoAsync> .noLineBreak '!'                      -> TsNonNull
   | [!StartWithLet] SuperProperty
@@ -583,6 +587,7 @@ CallExpression<Yield, Await> -> Expression /* interface */:
   | expr=CallExpression Arguments                               -> CallExpression
   | expr=CallExpression '[' index=Expression<+In> ']'           -> IndexAccess
   | expr=CallExpression '.' selector=IdentifierNameRef          -> PropertyAccess
+  | expr=CallExpression '.' selector=ClassPrivateRef            -> PropertyAccess
   | expr=CallExpression .noLineBreak '!'                        -> TsNonNull
   | tag=CallExpression literal=TemplateLiteral                  -> TaggedTemplate
 ;
@@ -612,10 +617,12 @@ OptionalLHS<Yield, Await> :
 OptionalExpression<Yield, Await> -> Expression:
     expr=OptionalLHS '?.' '[' index=Expression<+In> ']'      -> OptionalIndexAccess
   | expr=OptionalLHS '?.' selector=IdentifierNameRef         -> OptionalPropertyAccess
+  | expr=OptionalLHS '?.' selector=ClassPrivateRef           -> OptionalPropertyAccess
   | expr=OptionalLHS '?.' Arguments                          -> OptionalCallExpression
   | tag=OptionalLHS '?.' literal=TemplateLiteral             -> OptionalTaggedTemplate
   | expr=OptionalExpression '[' index=Expression<+In> ']'    -> IndexAccess
   | expr=OptionalExpression '.' selector=IdentifierNameRef   -> PropertyAccess
+  | expr=OptionalExpression '.' selector=ClassPrivateRef     -> PropertyAccess
   | expr=OptionalExpression Arguments                        -> CallExpression
   | tag=OptionalExpression literal=TemplateLiteral           -> TaggedTemplate
 ;

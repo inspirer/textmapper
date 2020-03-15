@@ -19,6 +19,7 @@ const (
 	MULTILINECOMMENT
 	SINGLELINECOMMENT
 	IDENTIFIER
+	PRIVATEIDENTIFIER
 	AWAIT              // await
 	BREAK              // break
 	CASE               // case
@@ -168,6 +169,7 @@ var tokenStr = [...]string{
 	"MULTILINECOMMENT",
 	"SINGLELINECOMMENT",
 	"IDENTIFIER",
+	"PRIVATEIDENTIFIER",
 	"await",
 	"break",
 	"case",

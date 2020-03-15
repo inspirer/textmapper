@@ -17,6 +17,11 @@ var lexerTests = []struct {
 		`«abc123»`,
 		`«_abc_»`,
 	}},
+	{js.PRIVATEIDENTIFIER, []string{
+		`«#abc» `,
+		`«#abc123»`,
+		`«#_abc_»`,
+	}},
 	{js.SINGLELINECOMMENT, []string{
 		`«#!/usr/bin/env node»
 		 abc`,
@@ -269,7 +274,8 @@ var lexerTests = []struct {
 		` «0x»`,
 		` «0X» `,
 		` «0o» «0b» «0O» «0B»`,
-		` «#» 0«#» «#»«#»`,
+		` «ab\» «ab\u1»`,
+		` «#ab\» `,
 		` «0_89»`,
 		` «1__»`,
 		` «089_»`,
