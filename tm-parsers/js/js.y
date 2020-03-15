@@ -5776,7 +5776,7 @@ ExportDeclaration :
 | Modifiers EXPORT DEFAULT ClassDeclaration
 | EXPORT DEFAULT ClassDeclaration
 | EXPORT DEFAULT AssignmentExpression_In_NoFuncClass SEMICOLON
-| EXPORT ASSIGN IdentifierReference SEMICOLON
+| EXPORT ASSIGN AssignmentExpression_In_NoFuncClass SEMICOLON
 | EXPORT AS NAMESPACE BindingIdentifier SEMICOLON
 ;
 

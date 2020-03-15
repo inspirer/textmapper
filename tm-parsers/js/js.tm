@@ -1229,7 +1229,7 @@ ExportDeclaration -> ModuleItem /* interface */:
   | 'export' 'default' HoistableDeclaration<~Await>                                -> ExportDefault
   | Modifiers? 'export' 'default' ClassDeclaration<~Yield, ~Await>                            -> ExportDefault
   | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
-  | 'export' '=' IdentifierReference<~Yield, ~Await> ';'     -> TsExportAssignment
+  | 'export' '=' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';'     -> TsExportAssignment
   | 'export' 'as' 'namespace' BindingIdentifier ';'   -> TsNamespaceExportDeclaration
 ;
 

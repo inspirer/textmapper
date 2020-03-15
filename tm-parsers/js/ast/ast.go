@@ -3398,8 +3398,8 @@ type TsExportAssignment struct {
 	*Node
 }
 
-func (n TsExportAssignment) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n TsExportAssignment) Expression() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
 type TsImplementsClause struct {

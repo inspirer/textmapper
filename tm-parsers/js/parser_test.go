@@ -1245,6 +1245,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TsExportAssignment, []string{
 		`«export = abc;»`,
+		`«export = call1({})»`,
 	}},
 	{js.Typescript, js.TsNamespaceExportDeclaration, []string{
 		`«export as namespace abc»`,

@@ -147,7 +147,7 @@ const (
 	ModuleSpecifier
 	ExportDeclaration            // (Modifier)* TsTypeOnly? VariableStatement? BindingIdentifier? Declaration? ExportClause? ModuleSpecifier?
 	ExportDefault                // Expression? (Modifier)* Declaration?
-	TsExportAssignment           // IdentifierReference
+	TsExportAssignment           // Expression
 	TsNamespaceExportDeclaration // BindingIdentifier
 	ExportClause                 // (ExportElement)*
 	ExportSpecifier              // IdentifierReference BindingIdentifier?
@@ -4530,7 +4530,7 @@ var ruleNodeType = [...]NodeType{
 	ExportDefault,                // ExportDeclaration : Modifiers 'export' 'default' ClassDeclaration
 	ExportDefault,                // ExportDeclaration : 'export' 'default' ClassDeclaration
 	ExportDefault,                // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
-	TsExportAssignment,           // ExportDeclaration : 'export' '=' IdentifierReference ';'
+	TsExportAssignment,           // ExportDeclaration : 'export' '=' AssignmentExpression_In_NoFuncClass ';'
 	TsNamespaceExportDeclaration, // ExportDeclaration : 'export' 'as' 'namespace' BindingIdentifier ';'
 	ExportClause,                 // ExportClause : '{' '}'
 	ExportClause,                 // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
