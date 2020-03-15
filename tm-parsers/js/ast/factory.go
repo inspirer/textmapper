@@ -403,6 +403,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsNonNull{n}
 	case js.TsThisParameter:
 		return &TsThisParameter{n}
+	case js.TsTypeOnly:
+		return &TsTypeOnly{n}
 	case js.TupleType:
 		return &TupleType{n}
 	case js.TypeAliasDeclaration:

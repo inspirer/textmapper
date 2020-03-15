@@ -328,6 +328,7 @@ resolveShift:
 %flag WithoutKeywords = false;
 %flag WithoutPredefinedTypes = false;
 %flag WithoutImplements = false;
+%flag WithoutFrom = false;
 
 %lookahead flag NoLet = false;
 %lookahead flag NoLetSq = false;
@@ -339,7 +340,7 @@ resolveShift:
 SyntaxError -> SyntaxProblem :
     error ;
 
-IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords> :
+IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom> :
     Identifier
 
 # Keywords
@@ -363,7 +364,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords> :
     | 'null' | 'true' | 'false')
 
   # Soft keywords
-  | 'as' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+  | 'as' | [!WithoutFrom] 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
@@ -1174,12 +1175,16 @@ ModuleItem -> ModuleItem /* interface */:
 ;
 
 ImportDeclaration -> ImportDeclaration :
-    'import' ImportClause FromClause ';'
+    'import' (?= !StartOfTypeImport) ImportClause FromClause ';'
+  | 'import' (?= StartOfTypeImport) ('type' -> TsTypeOnly)  ImportClause FromClause ';'
   | 'import' ModuleSpecifier ';'
 ;
 
+StartOfTypeImport:
+      'type' ('*' | '{' | IdentifierName<+WithoutFrom>) ;
+
 ImportRequireDeclaration -> TsImportRequireDeclaration:
-    'export'? 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
+    'export'? 'import' (?= !StartOfTypeImport) BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
 
 ImportClause :
     ImportedDefaultBinding
@@ -1216,9 +1221,9 @@ ImportedBinding :
     BindingIdentifier ;
 
 ExportDeclaration -> ModuleItem /* interface */:
-    'export' '*' FromClause ';'                       -> ExportDeclaration
-  | 'export' ExportClause FromClause ';'              -> ExportDeclaration
-  | 'export' ExportClause ';'                         -> ExportDeclaration
+    'export' ('type' -> TsTypeOnly)? '*' ('as' ImportedBinding)? FromClause ';' -> ExportDeclaration
+  | 'export' ('type' -> TsTypeOnly)? ExportClause FromClause ';'                -> ExportDeclaration
+  | 'export' ('type' -> TsTypeOnly)? ExportClause ';'                           -> ExportDeclaration
   | 'export' VariableStatement<~Yield, ~Await>        -> ExportDeclaration
   | Modifiers? 'export' Declaration<~Yield, ~Await>              -> ExportDeclaration
   | 'export' 'default' HoistableDeclaration<~Await>                                -> ExportDefault
@@ -1598,7 +1603,7 @@ NamespaceBody -> TsNamespaceBody:
     '{' .recoveryScope ModuleItemList? '}' ;
 
 ImportAliasDeclaration -> TsImportAliasDeclaration:
-    'import' BindingIdentifier '=' EntityName ';' ;
+    'import' (?= !StartOfTypeImport) BindingIdentifier '=' EntityName ';' ;
 
 EntityName:
     NamespaceName ;

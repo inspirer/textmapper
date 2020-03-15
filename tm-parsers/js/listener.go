@@ -137,14 +137,15 @@ const (
 	MemberVar                // (Modifier)* PropertyName TypeAnnotation? Initializer?
 	TsIndexMemberDeclaration // IndexSignature
 	EmptyDecl
-	Module                     // (ModuleItem)*
-	ImportDeclaration          // BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
+	Module            // (ModuleItem)*
+	ImportDeclaration // TsTypeOnly? BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
+	TsTypeOnly
 	TsImportRequireDeclaration // BindingIdentifier
 	NameSpaceImport            // BindingIdentifier
 	NamedImports               // (NamedImport)*
 	ImportSpecifier            // IdentifierReference? BindingIdentifier
 	ModuleSpecifier
-	ExportDeclaration            // ExportClause? (Modifier)* VariableStatement? Declaration? ModuleSpecifier?
+	ExportDeclaration            // (Modifier)* TsTypeOnly? VariableStatement? BindingIdentifier? Declaration? ExportClause? ModuleSpecifier?
 	ExportDefault                // Expression? (Modifier)* Declaration?
 	TsExportAssignment           // IdentifierReference
 	TsNamespaceExportDeclaration // BindingIdentifier
@@ -369,6 +370,7 @@ var nodeTypeStr = [...]string{
 	"EmptyDecl",
 	"Module",
 	"ImportDeclaration",
+	"TsTypeOnly",
 	"TsImportRequireDeclaration",
 	"NameSpaceImport",
 	"NamedImports",
@@ -982,6 +984,77 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierName_WithoutAsserts : 'keyof'
 	0,                            // IdentifierName_WithoutAsserts : 'unique'
 	0,                            // IdentifierName_WithoutAsserts : 'infer'
+	0,                            // IdentifierName_WithoutFrom : Identifier
+	0,                            // IdentifierName_WithoutFrom : 'new'
+	0,                            // IdentifierName_WithoutFrom : 'asserts'
+	0,                            // IdentifierName_WithoutFrom : 'await'
+	0,                            // IdentifierName_WithoutFrom : 'break'
+	0,                            // IdentifierName_WithoutFrom : 'do'
+	0,                            // IdentifierName_WithoutFrom : 'in'
+	0,                            // IdentifierName_WithoutFrom : 'typeof'
+	0,                            // IdentifierName_WithoutFrom : 'case'
+	0,                            // IdentifierName_WithoutFrom : 'else'
+	0,                            // IdentifierName_WithoutFrom : 'instanceof'
+	0,                            // IdentifierName_WithoutFrom : 'var'
+	0,                            // IdentifierName_WithoutFrom : 'catch'
+	0,                            // IdentifierName_WithoutFrom : 'export'
+	0,                            // IdentifierName_WithoutFrom : 'void'
+	0,                            // IdentifierName_WithoutFrom : 'class'
+	0,                            // IdentifierName_WithoutFrom : 'extends'
+	0,                            // IdentifierName_WithoutFrom : 'return'
+	0,                            // IdentifierName_WithoutFrom : 'while'
+	0,                            // IdentifierName_WithoutFrom : 'const'
+	0,                            // IdentifierName_WithoutFrom : 'finally'
+	0,                            // IdentifierName_WithoutFrom : 'super'
+	0,                            // IdentifierName_WithoutFrom : 'with'
+	0,                            // IdentifierName_WithoutFrom : 'continue'
+	0,                            // IdentifierName_WithoutFrom : 'for'
+	0,                            // IdentifierName_WithoutFrom : 'switch'
+	0,                            // IdentifierName_WithoutFrom : 'yield'
+	0,                            // IdentifierName_WithoutFrom : 'debugger'
+	0,                            // IdentifierName_WithoutFrom : 'function'
+	0,                            // IdentifierName_WithoutFrom : 'this'
+	0,                            // IdentifierName_WithoutFrom : 'default'
+	0,                            // IdentifierName_WithoutFrom : 'if'
+	0,                            // IdentifierName_WithoutFrom : 'throw'
+	0,                            // IdentifierName_WithoutFrom : 'delete'
+	0,                            // IdentifierName_WithoutFrom : 'import'
+	0,                            // IdentifierName_WithoutFrom : 'try'
+	0,                            // IdentifierName_WithoutFrom : 'enum'
+	0,                            // IdentifierName_WithoutFrom : 'null'
+	0,                            // IdentifierName_WithoutFrom : 'true'
+	0,                            // IdentifierName_WithoutFrom : 'false'
+	0,                            // IdentifierName_WithoutFrom : 'as'
+	0,                            // IdentifierName_WithoutFrom : 'get'
+	0,                            // IdentifierName_WithoutFrom : 'let'
+	0,                            // IdentifierName_WithoutFrom : 'of'
+	0,                            // IdentifierName_WithoutFrom : 'set'
+	0,                            // IdentifierName_WithoutFrom : 'static'
+	0,                            // IdentifierName_WithoutFrom : 'target'
+	0,                            // IdentifierName_WithoutFrom : 'async'
+	0,                            // IdentifierName_WithoutFrom : 'implements'
+	0,                            // IdentifierName_WithoutFrom : 'interface'
+	0,                            // IdentifierName_WithoutFrom : 'private'
+	0,                            // IdentifierName_WithoutFrom : 'protected'
+	0,                            // IdentifierName_WithoutFrom : 'public'
+	0,                            // IdentifierName_WithoutFrom : 'any'
+	0,                            // IdentifierName_WithoutFrom : 'unknown'
+	0,                            // IdentifierName_WithoutFrom : 'boolean'
+	0,                            // IdentifierName_WithoutFrom : 'number'
+	0,                            // IdentifierName_WithoutFrom : 'string'
+	0,                            // IdentifierName_WithoutFrom : 'symbol'
+	0,                            // IdentifierName_WithoutFrom : 'abstract'
+	0,                            // IdentifierName_WithoutFrom : 'constructor'
+	0,                            // IdentifierName_WithoutFrom : 'declare'
+	0,                            // IdentifierName_WithoutFrom : 'is'
+	0,                            // IdentifierName_WithoutFrom : 'module'
+	0,                            // IdentifierName_WithoutFrom : 'namespace'
+	0,                            // IdentifierName_WithoutFrom : 'require'
+	0,                            // IdentifierName_WithoutFrom : 'type'
+	0,                            // IdentifierName_WithoutFrom : 'readonly'
+	0,                            // IdentifierName_WithoutFrom : 'keyof'
+	0,                            // IdentifierName_WithoutFrom : 'unique'
+	0,                            // IdentifierName_WithoutFrom : 'infer'
 	0,                            // IdentifierName_WithoutKeywords : Identifier
 	0,                            // IdentifierName_WithoutKeywords : 'new'
 	0,                            // IdentifierName_WithoutKeywords : 'asserts'
@@ -4414,10 +4487,16 @@ var ruleNodeType = [...]NodeType{
 	0,                            // ModuleItem : ImportRequireDeclaration
 	0,                            // ModuleItem : ExportDeclaration
 	0,                            // ModuleItem : StatementListItem
-	ImportDeclaration,            // ImportDeclaration : 'import' ImportClause FromClause ';'
+	ImportDeclaration,            // ImportDeclaration : 'import' lookahead_notStartOfTypeImport ImportClause FromClause ';'
+	ImportDeclaration,            // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause ';'
 	ImportDeclaration,            // ImportDeclaration : 'import' ModuleSpecifier ';'
-	TsImportRequireDeclaration,   // ImportRequireDeclaration : 'export' 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
-	TsImportRequireDeclaration,   // ImportRequireDeclaration : 'import' BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
+	0,                            // lookahead_notStartOfTypeImport :
+	0,                            // lookahead_StartOfTypeImport :
+	0,                            // StartOfTypeImport : 'type' '*'
+	0,                            // StartOfTypeImport : 'type' '{'
+	0,                            // StartOfTypeImport : 'type' IdentifierName_WithoutFrom
+	TsImportRequireDeclaration,   // ImportRequireDeclaration : 'export' 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
+	TsImportRequireDeclaration,   // ImportRequireDeclaration : 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
 	0,                            // ImportClause : ImportedDefaultBinding
 	0,                            // ImportClause : NameSpaceImport
 	0,                            // ImportClause : NamedImports
@@ -4436,8 +4515,13 @@ var ruleNodeType = [...]NodeType{
 	SyntaxProblem,                // NamedImport : error
 	ModuleSpecifier,              // ModuleSpecifier : StringLiteral
 	0,                            // ImportedBinding : BindingIdentifier
+	ExportDeclaration,            // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause ';'
+	ExportDeclaration,            // ExportDeclaration : 'export' 'type' '*' FromClause ';'
+	ExportDeclaration,            // ExportDeclaration : 'export' '*' 'as' ImportedBinding FromClause ';'
 	ExportDeclaration,            // ExportDeclaration : 'export' '*' FromClause ';'
+	ExportDeclaration,            // ExportDeclaration : 'export' 'type' ExportClause FromClause ';'
 	ExportDeclaration,            // ExportDeclaration : 'export' ExportClause FromClause ';'
+	ExportDeclaration,            // ExportDeclaration : 'export' 'type' ExportClause ';'
 	ExportDeclaration,            // ExportDeclaration : 'export' ExportClause ';'
 	ExportDeclaration,            // ExportDeclaration : 'export' VariableStatement
 	ExportDeclaration,            // ExportDeclaration : Modifiers 'export' Declaration
@@ -4933,7 +5017,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // IdentifierPath : IdentifierPath '.' BindingIdentifier
 	TsNamespaceBody,              // NamespaceBody : '{' .recoveryScope ModuleItemList '}'
 	TsNamespaceBody,              // NamespaceBody : '{' .recoveryScope '}'
-	TsImportAliasDeclaration,     // ImportAliasDeclaration : 'import' BindingIdentifier '=' EntityName ';'
+	TsImportAliasDeclaration,     // ImportAliasDeclaration : 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' EntityName ';'
 	0,                            // EntityName : NamespaceName
 	TsAmbientVar,                 // AmbientDeclaration : 'declare' AmbientVariableDeclaration
 	TsAmbientFunction,            // AmbientDeclaration : 'declare' AmbientFunctionDeclaration

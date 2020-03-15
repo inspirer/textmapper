@@ -207,6 +207,7 @@ var (
 	TsNamespaceExportDeclaration = func(t js.NodeType) bool { return t == js.TsNamespaceExportDeclaration }
 	TsNonNull                    = func(t js.NodeType) bool { return t == js.TsNonNull }
 	TsThisParameter              = func(t js.NodeType) bool { return t == js.TsThisParameter }
+	TsTypeOnly                   = func(t js.NodeType) bool { return t == js.TsTypeOnly }
 	TupleType                    = func(t js.NodeType) bool { return t == js.TupleType }
 	TypeAliasDeclaration         = func(t js.NodeType) bool { return t == js.TypeAliasDeclaration }
 	TypeAnnotation               = func(t js.NodeType) bool { return t == js.TypeAnnotation }

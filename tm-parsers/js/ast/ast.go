@@ -219,6 +219,7 @@ func (n TsNamespaceBody) JsNode() *Node              { return n.Node }
 func (n TsNamespaceExportDeclaration) JsNode() *Node { return n.Node }
 func (n TsNonNull) JsNode() *Node                    { return n.Node }
 func (n TsThisParameter) JsNode() *Node              { return n.Node }
+func (n TsTypeOnly) JsNode() *Node                   { return n.Node }
 func (n TupleType) JsNode() *Node                    { return n.Node }
 func (n TypeAliasDeclaration) JsNode() *Node         { return n.Node }
 func (n TypeAnnotation) JsNode() *Node               { return n.Node }
@@ -1543,11 +1544,6 @@ type ExportDeclaration struct {
 	*Node
 }
 
-func (n ExportDeclaration) ExportClause() (ExportClause, bool) {
-	field := ExportClause{n.Child(selector.ExportClause)}
-	return field, field.IsValid()
-}
-
 func (n ExportDeclaration) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
 	var ret = make([]Modifier, 0, len(nodes))
@@ -1557,14 +1553,29 @@ func (n ExportDeclaration) Modifier() []Modifier {
 	return ret
 }
 
+func (n ExportDeclaration) TsTypeOnly() (TsTypeOnly, bool) {
+	field := TsTypeOnly{n.Child(selector.TsTypeOnly)}
+	return field, field.IsValid()
+}
+
 func (n ExportDeclaration) VariableStatement() (VariableStatement, bool) {
 	field := VariableStatement{n.Child(selector.VariableStatement)}
+	return field, field.IsValid()
+}
+
+func (n ExportDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
+	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
 	return field, field.IsValid()
 }
 
 func (n ExportDeclaration) Declaration() (Declaration, bool) {
 	field := ToJsNode(n.Child(selector.Declaration)).(Declaration)
 	return field, field.JsNode() != nil
+}
+
+func (n ExportDeclaration) ExportClause() (ExportClause, bool) {
+	field := ExportClause{n.Child(selector.ExportClause)}
+	return field, field.IsValid()
 }
 
 func (n ExportDeclaration) ModuleSpecifier() (ModuleSpecifier, bool) {
@@ -1980,6 +1991,11 @@ func (n IfStatement) Else() (Statement, bool) {
 
 type ImportDeclaration struct {
 	*Node
+}
+
+func (n ImportDeclaration) TsTypeOnly() (TsTypeOnly, bool) {
+	field := TsTypeOnly{n.Child(selector.TsTypeOnly)}
+	return field, field.IsValid()
 }
 
 func (n ImportDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
@@ -3519,6 +3535,10 @@ type TsThisParameter struct {
 
 func (n TsThisParameter) TypeAnnotation() TypeAnnotation {
 	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+}
+
+type TsTypeOnly struct {
+	*Node
 }
 
 type TupleType struct {

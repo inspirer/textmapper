@@ -781,7 +781,10 @@ var parseTests = []struct {
 	}},
 	{js.Javascript, js.ExportDeclaration, []string{
 		`«export * from "aa/bb"»`,
+		`«export * as ns from "foo";»`,      // TS
+		`«export type * as ns from "foo";»`, // TS
 		`«export {} from "aa/bb"»`,
+		`«export type {} from "aa/bb"»`, // TS
 		`«export {a, b as c} from "aa/bb"»`,
 		`«export {q, t, }»`,
 		`«export var v = 5»`,
@@ -964,6 +967,18 @@ var parseTests = []struct {
 	}},
 
 	// Typescript
+	{js.Typescript, js.ImportDeclaration, []string{
+		`«import type * as Proto from '../protocol';»`,
+		`«import type {Foo} from '../protocol';»`,
+		`«import type Foo from '../protocol';»`,
+	}},
+	{js.Typescript, js.TsTypeOnly, []string{
+		`import «type» * as Proto from '../protocol';`,
+		`import «type» Foo from '../protocol';`,
+		`export «type» * from "aa/bb"`,
+		`export «type» {} from "aa/bb"`,
+		`export «type» {A}`,
+	}},
 	{js.Typescript, js.TsCastExpression, []string{
 		`var a = «<string>b»;`,
 		`var a = «<string>b.run()»;`,

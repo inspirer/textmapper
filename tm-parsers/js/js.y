@@ -4,6 +4,7 @@
 %start StartOfArrowFunction // no-eoi
 %start StartOfParametrizedCall // no-eoi
 %start StartOfExtendsTypeRef // no-eoi
+%start StartOfTypeImport // no-eoi
 %start StartOfIs // no-eoi
 %start StartOfFunctionType // no-eoi
 %start StartOfMappedType // no-eoi
@@ -259,6 +260,80 @@ IdentifierName_WithoutAsserts :
 | FALSE
 | AS
 | FROM
+| GET
+| LET
+| OF
+| SET
+| STATIC
+| TARGET
+| ASYNC
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| REQUIRE
+| TYPE
+| READONLY
+| KEYOF
+| UNIQUE
+| INFER
+;
+
+IdentifierName_WithoutFrom :
+  IDENTIFIER
+| NEW
+| ASSERTS
+| AWAIT
+| BREAK
+| DO
+| IN
+| TYPEOF
+| CASE
+| ELSE
+| INSTANCEOF
+| VAR
+| CATCH
+| EXPORT
+| VOID
+| CLASS
+| EXTENDS
+| RETURN
+| WHILE
+| CONST
+| FINALLY
+| SUPER
+| WITH
+| CONTINUE
+| FOR
+| SWITCH
+| YIELD
+| DEBUGGER
+| FUNCTION
+| THIS
+| DEFAULT
+| IF
+| THROW
+| DELETE
+| IMPORT
+| TRY
+| ENUM
+| NULL
+| TRUE
+| FALSE
+| AS
 | GET
 | LET
 | OF
@@ -5614,13 +5689,30 @@ ModuleItem :
 ;
 
 ImportDeclaration :
-  IMPORT ImportClause FromClause SEMICOLON
+  IMPORT lookahead_notStartOfTypeImport ImportClause FromClause SEMICOLON
+| IMPORT lookahead_StartOfTypeImport TYPE ImportClause FromClause SEMICOLON
 | IMPORT ModuleSpecifier SEMICOLON
 ;
 
+// lookahead: !StartOfTypeImport
+lookahead_notStartOfTypeImport :
+  %empty
+;
+
+// lookahead: StartOfTypeImport
+lookahead_StartOfTypeImport :
+  %empty
+;
+
+StartOfTypeImport :
+  TYPE MULT
+| TYPE LBRACE
+| TYPE IdentifierName_WithoutFrom
+;
+
 ImportRequireDeclaration :
-  EXPORT IMPORT BindingIdentifier ASSIGN REQUIRE LPAREN STRINGLITERAL RPAREN SEMICOLON
-| IMPORT BindingIdentifier ASSIGN REQUIRE LPAREN STRINGLITERAL RPAREN SEMICOLON
+  EXPORT IMPORT lookahead_notStartOfTypeImport BindingIdentifier ASSIGN REQUIRE LPAREN STRINGLITERAL RPAREN SEMICOLON
+| IMPORT lookahead_notStartOfTypeImport BindingIdentifier ASSIGN REQUIRE LPAREN STRINGLITERAL RPAREN SEMICOLON
 ;
 
 ImportClause :
@@ -5669,8 +5761,13 @@ ImportedBinding :
 ;
 
 ExportDeclaration :
-  EXPORT MULT FromClause SEMICOLON
+  EXPORT TYPE MULT AS ImportedBinding FromClause SEMICOLON
+| EXPORT TYPE MULT FromClause SEMICOLON
+| EXPORT MULT AS ImportedBinding FromClause SEMICOLON
+| EXPORT MULT FromClause SEMICOLON
+| EXPORT TYPE ExportClause FromClause SEMICOLON
 | EXPORT ExportClause FromClause SEMICOLON
+| EXPORT TYPE ExportClause SEMICOLON
 | EXPORT ExportClause SEMICOLON
 | EXPORT VariableStatement
 | Modifiers EXPORT Declaration
@@ -6559,7 +6656,7 @@ NamespaceBody :
 ;
 
 ImportAliasDeclaration :
-  IMPORT BindingIdentifier ASSIGN EntityName SEMICOLON
+  IMPORT lookahead_notStartOfTypeImport BindingIdentifier ASSIGN EntityName SEMICOLON
 ;
 
 EntityName :
