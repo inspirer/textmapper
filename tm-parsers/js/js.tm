@@ -912,7 +912,7 @@ IterationStatement<Yield, Await> -> Statement /* interface */:
           'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
-  | 'for' '(' var=('async' -> IdentifierReference) (?= !StartOfArrowFunction)
+  | 'for' '(' var=(('async' -> IdentifierReference) -> Expression) (?= !StartOfArrowFunction)
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
   | 'for' '(' 'var' ForBinding
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar

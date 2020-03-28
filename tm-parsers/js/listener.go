@@ -90,7 +90,7 @@ const (
 	ForStatementWithVar   // (LexicalBinding)* (VariableDeclaration)* ForCondition ForFinalExpression Statement
 	ForInStatement        // var=Expression object=Expression Statement
 	ForInStatementWithVar // ForBinding object=Expression Statement
-	ForOfStatement        // var=(Expression | IdentifierReference) iterable=Expression Statement
+	ForOfStatement        // var=Expression iterable=Expression Statement
 	ForOfStatementWithVar // ForBinding iterable=Expression Statement
 	ForBinding            // BindingIdentifier? BindingPattern?
 	ForCondition          // Expression?
