@@ -304,6 +304,25 @@ public class TMEventMapper {
 				catTypes.add(allTypes.get(typeId));
 			}
 		}
+
+		// Collect categories for extra types.
+		Object et = opts.get("extraTypes");
+		if (et instanceof Collection) {
+			for (Object o : (Collection<?>) et) {
+				if (!(o instanceof String)){
+					continue;
+				}
+				String[] hierarchy = ((String)o).split("->");
+				for (int i = 1; i < hierarchy.length; i++) {
+					Set<String> catTypes = this.categories.get(hierarchy[i]);
+					if (catTypes == null) {
+						// TODO consider reporting an error
+						continue;
+					}
+					catTypes.add(hierarchy[0]);
+				}
+			}
+		}
 	}
 
 	private boolean isListSelfReference(RhsSymbol ref) {

@@ -368,7 +368,7 @@ type ${cat->astInterfaceRef()->go.declarationName()} interface {
 // ${cat->asInterfaceMethod()}() ensures that only the following types can be
 // assigned to ${cat->astInterfaceRef()->go.declarationName()}.
 //
-${foreach type in syntax.categoryTypes(cat)-}
+${foreach type in syntax.categoryTypes(cat).select(it|self->typeSet().contains(it))-}
 func (${type->astClassRef()->go.declarationName()}) ${cat->asInterfaceMethod()}() {}
 ${end-}
 func (NilNode) ${cat->asInterfaceMethod()}() {}
@@ -396,6 +396,9 @@ ${call getterImpl(field)-}
 ${end}
 ${end}
 
+
+${cached query typeSet() =
+  syntax.rangeTypes.toSet() }
 
 ${cached query isOpt(field) =
   field.isNullable() && !field.isList() }
