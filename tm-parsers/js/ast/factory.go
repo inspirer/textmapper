@@ -443,6 +443,8 @@ func ToJsNode(n *Node) JsNode {
 		return &WithStatement{n}
 	case js.Yield:
 		return &Yield{n}
+	case js.InsertedSemicolon:
+		return &InsertedSemicolon{n}
 	case js.MultiLineComment, js.SingleLineComment, js.InvalidToken, js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail:
 		return &Token{n}
 	case js.NoType:

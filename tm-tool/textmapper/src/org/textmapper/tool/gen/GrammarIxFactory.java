@@ -30,10 +30,7 @@ import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.objects.JavaIxFactory;
-import org.textmapper.tool.compiler.CustomRange;
-import org.textmapper.tool.compiler.RangeType;
-import org.textmapper.tool.compiler.TMDataUtil;
-import org.textmapper.tool.compiler.TMGrammar;
+import org.textmapper.tool.compiler.*;
 
 import java.util.*;
 
@@ -560,7 +557,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 				return backtracking;
 			}
 			if (args.length == 1 && "rangeFields".equals(methodName)) {
-				return TMDataUtil.getRangeFields(grammar, (String) args[0]);
+				Collection<? extends RangeField> rangeFields = TMDataUtil.getRangeFields(grammar,
+						(String) args[0]);
+				return rangeFields == null ? Collections.emptyList() : rangeFields;
 			}
 			if (args.length == 1 && "categoryTypes".equals(methodName)) {
 				return TMDataUtil.getCategoryTypes(grammar, (String) args[0]);

@@ -96,7 +96,7 @@ ${cached query asRangeTypeName() =
 
 ${query localNodeType() = self->go.package()->go.element(self->nodeType()) == self->nodeTypeRef()}
 
-${query stripArrows() = ind = self.indexOf('->'), ind >= 0 ? self.substring(0, ind) : self};
+${query stripArrows() = ind = self.indexOf('->'), (ind >= 0 ? self.substring(0, ind) : self).trim()};
 ${query nodeType() = self->nodeTypeRef()->go.declarationName()}
 ${query nodeTypeRef() = self->go.package()->go.element('NodeType')}
 ${query nodeTypeValueRef() = self->go.package()->go.element(self->asRangeTypeName())}

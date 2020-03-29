@@ -45,6 +45,8 @@ func (n Int) TestNode() Node        { return n.Node }
 func (n Negation) TestNode() Node   { return n.Node }
 func (n Test) TestNode() Node       { return n.Node }
 func (n TestClause) TestNode() Node { return n.Node }
+func (n Int7) TestNode() Node       { return n.Node }
+func (n Int9) TestNode() Node       { return n.Node }
 func (n Token) TestNode() Node      { return n.Node }
 func (NilNode) TestNode() Node      { return nil }
 
@@ -127,5 +129,13 @@ func (n Test) Declaration() []Declaration {
 }
 
 type TestClause struct {
+	Node
+}
+
+type Int7 struct {
+	Node
+}
+
+type Int9 struct {
 	Node
 }

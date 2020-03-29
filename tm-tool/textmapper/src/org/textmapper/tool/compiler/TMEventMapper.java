@@ -314,12 +314,13 @@ public class TMEventMapper {
 				}
 				String[] hierarchy = ((String)o).split("->");
 				for (int i = 1; i < hierarchy.length; i++) {
-					Set<String> catTypes = this.categories.get(hierarchy[i]);
+					Set<String> catTypes = this.categories.get(hierarchy[i].trim());
 					if (catTypes == null) {
-						// TODO consider reporting an error
+						status.report(ProcessingStatus.KIND_ERROR,
+								"cannot find category '" + hierarchy[i].trim() + "' for '" + hierarchy[0].trim() + "'");
 						continue;
 					}
-					catTypes.add(hierarchy[0]);
+					catTypes.add(hierarchy[0].trim());
 				}
 			}
 		}

@@ -239,6 +239,7 @@ func (n VariableStatement) JsNode() *Node            { return n.Node }
 func (n WhileStatement) JsNode() *Node               { return n.Node }
 func (n WithStatement) JsNode() *Node                { return n.Node }
 func (n Yield) JsNode() *Node                        { return n.Node }
+func (n InsertedSemicolon) JsNode() *Node            { return n.Node }
 func (n Token) JsNode() *Node                        { return n.Node }
 func (NilNode) JsNode() *Node                        { return nil }
 
@@ -3734,4 +3735,8 @@ type Yield struct {
 func (n Yield) Expression() (Expression, bool) {
 	field := ToJsNode(n.Child(selector.Expression)).(Expression)
 	return field, field.JsNode() != nil
+}
+
+type InsertedSemicolon struct {
+	*Node
 }

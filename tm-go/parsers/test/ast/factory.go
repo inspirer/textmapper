@@ -28,6 +28,10 @@ func ToTestNode(n Node) TestNode {
 		return &Test{n}
 	case test.TestClause:
 		return &TestClause{n}
+	case test.Int7:
+		return &Int7{n}
+	case test.Int9:
+		return &Int9{n}
 	case test.MultiLineComment, test.SingleLineComment, test.InvalidToken, test.Identifier:
 		return &Token{n}
 	case test.NoType:
