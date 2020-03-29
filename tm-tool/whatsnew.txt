@@ -1,3 +1,8 @@
+0.9.27
+------
+
+[!] Properly support extraTypes as first-class AST elements.
+
 0.9.26
 ------
 

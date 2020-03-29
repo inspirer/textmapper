@@ -18,7 +18,7 @@
 	<id>org.textmapper.idea</id>
 	<name>Textmapper</name>
 	<category>Custom Languages</category>
-	<version>0.9.26</version>
+	<version>0.9.27</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 
 	<depends>com.intellij.modules.lang</depends>
