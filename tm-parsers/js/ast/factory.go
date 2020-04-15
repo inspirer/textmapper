@@ -157,6 +157,8 @@ func ToJsNode(n *Node) JsNode {
 		return &GeneratorMethod{n}
 	case js.Getter:
 		return &Getter{n}
+	case js.IdentExpr:
+		return &IdentExpr{n}
 	case js.IdentifierReference:
 		return &IdentifierReference{n}
 	case js.IfStatement:

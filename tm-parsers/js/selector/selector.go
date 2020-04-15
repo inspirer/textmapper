@@ -84,6 +84,7 @@ var (
 	GeneratorExpression          = func(t js.NodeType) bool { return t == js.GeneratorExpression }
 	GeneratorMethod              = func(t js.NodeType) bool { return t == js.GeneratorMethod }
 	Getter                       = func(t js.NodeType) bool { return t == js.Getter }
+	IdentExpr                    = func(t js.NodeType) bool { return t == js.IdentExpr }
 	IdentifierReference          = func(t js.NodeType) bool { return t == js.IdentifierReference }
 	IfStatement                  = func(t js.NodeType) bool { return t == js.IfStatement }
 	ImportDeclaration            = func(t js.NodeType) bool { return t == js.ImportDeclaration }

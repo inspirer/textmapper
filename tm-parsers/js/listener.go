@@ -17,6 +17,7 @@ const (
 	IdentifierReference
 	LabelIdentifier
 	This
+	IdentExpr // IdentifierReference
 	Regexp
 	Parenthesized // Expression? SyntaxProblem?
 	Literal
@@ -152,8 +153,8 @@ const (
 	TsNamespaceExportDeclaration // BindingIdentifier
 	ExportClause                 // (ExportElement)*
 	ExportSpecifier              // IdentifierReference BindingIdentifier?
-	DecoratorExpr                // (IdentifierReference)*
-	DecoratorCall                // (IdentifierReference)* Arguments
+	DecoratorExpr                // (IdentifierReference)+
+	DecoratorCall                // (IdentifierReference)+ Arguments
 	JSXElement                   // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
 	JSXSelfClosingElement        // JSXElementName TypeArguments? (JSXAttribute)*
 	JSXOpeningElement            // JSXElementName TypeArguments? (JSXAttribute)*
@@ -168,7 +169,7 @@ const (
 	JSXSpreadExpression // Expression?
 	TsConditional       // check=TsType ext=TsType truet=TsType falset=TsType
 	TypePredicate       // paramref=IdentifierReference TsType
-	AssertsType         // TsType?
+	AssertsType         // IdentifierReference TsType?
 	TypeParameters      // (TypeParameter)+
 	TypeParameter       // BindingIdentifier TypeConstraint? TsType?
 	TypeConstraint      // TsType
@@ -178,7 +179,7 @@ const (
 	KeyOfType           // TsType
 	UniqueType          // TsType
 	ReadonlyType        // TsType
-	TypeVar
+	TypeVar             // IdentifierReference
 	ThisType
 	NonNullableType   // TsType
 	NullableType      // TsType
@@ -196,7 +197,7 @@ const (
 	FunctionType      // TypeParameters? Parameters TsType
 	Parameters        // (Parameter)*
 	ConstructorType   // TypeParameters? Parameters TsType
-	TypeQuery         // (IdentifierReference)*
+	TypeQuery         // (IdentifierReference)+
 	ImportType        // TsType (IdentifierReference)* TypeArguments?
 	PropertySignature // (Modifier)* PropertyName TypeAnnotation?
 	TypeAnnotation    // TsType
@@ -206,7 +207,7 @@ const (
 	TsThisParameter   // TypeAnnotation
 	AccessibilityModifier
 	ConstructSignature         // (Modifier)* TypeParameters? Parameters TypeAnnotation?
-	IndexSignature             // (Modifier)* TypeAnnotation
+	IndexSignature             // (Modifier)* BindingIdentifier PredefinedType TypeAnnotation
 	MethodSignature            // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
 	TypeAliasDeclaration       // BindingIdentifier TypeParameters? TsType
 	TsInterface                // BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
@@ -221,7 +222,7 @@ const (
 	TsAmbientFunction          // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
 	TsAmbientClass             // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? ClassBody
 	TsAmbientInterface         // (Modifier)* BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
-	TsAmbientEnum              // TsEnum
+	TsAmbientEnum              // BindingIdentifier TsEnumBody
 	TsAmbientNamespace         // (BindingIdentifier)+ (TsAmbientElement)*
 	TsAmbientModule            // (BindingIdentifier)* (ModuleItem)*
 	TsAmbientGlobal            // (ModuleItem)*
@@ -247,6 +248,7 @@ var nodeTypeStr = [...]string{
 	"IdentifierReference",
 	"LabelIdentifier",
 	"This",
+	"IdentExpr",
 	"Regexp",
 	"Parenthesized",
 	"Literal",
@@ -553,7 +555,7 @@ var Expression = []NodeType{
 	ExponentiationExpression,
 	FunctionExpression,
 	GeneratorExpression,
-	IdentifierReference,
+	IdentExpr,
 	IndexAccess,
 	JSXElement,
 	Literal,
@@ -1710,7 +1712,7 @@ var ruleNodeType = [...]NodeType{
 	LabelIdentifier,              // LabelIdentifier : 'unique'
 	LabelIdentifier,              // LabelIdentifier : 'infer'
 	This,                         // PrimaryExpression : 'this'
-	0,                            // PrimaryExpression : IdentifierReference
+	IdentExpr,                    // PrimaryExpression : IdentifierReference
 	0,                            // PrimaryExpression : Literal
 	0,                            // PrimaryExpression : ArrayLiteral
 	0,                            // PrimaryExpression : ObjectLiteral
@@ -1723,7 +1725,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_Await : 'this'
-	0,                            // PrimaryExpression_Await : IdentifierReference_Await
+	IdentExpr,                    // PrimaryExpression_Await : IdentifierReference_Await
 	0,                            // PrimaryExpression_Await : Literal
 	0,                            // PrimaryExpression_Await : ArrayLiteral_Await
 	0,                            // PrimaryExpression_Await : ObjectLiteral_Await
@@ -1736,7 +1738,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await : lookahead_notStartOfArrowFunction Parenthesized_Await
 	0,                            // PrimaryExpression_Await : lookahead_notStartOfArrowFunction JSXElement_Await
 	This,                         // PrimaryExpression_Await_NoAsync_NoLet : 'this'
-	0,                            // PrimaryExpression_Await_NoAsync_NoLet : IdentifierReference_Await_NoAsync_NoLet
+	IdentExpr,                    // PrimaryExpression_Await_NoAsync_NoLet : IdentifierReference_Await_NoAsync_NoLet
 	0,                            // PrimaryExpression_Await_NoAsync_NoLet : Literal
 	0,                            // PrimaryExpression_Await_NoAsync_NoLet : ArrayLiteral_Await
 	0,                            // PrimaryExpression_Await_NoAsync_NoLet : ObjectLiteral_Await
@@ -1749,7 +1751,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Await
 	0,                            // PrimaryExpression_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXElement_Await
 	This,                         // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : IdentifierReference_Await_NoLet
+	IdentExpr,                    // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : IdentifierReference_Await_NoLet
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : ArrayLiteral_Await
 	Regexp,                       // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : RegularExpressionLiteral
@@ -1757,7 +1759,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized_Await
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement_Await
 	This,                         // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : IdentifierReference_Await
+	IdentExpr,                    // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : IdentifierReference_Await
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : ArrayLiteral_Await
 	Regexp,                       // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : RegularExpressionLiteral
@@ -1765,7 +1767,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized_Await
 	0,                            // PrimaryExpression_Await_NoFuncClass_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement_Await
 	This,                         // PrimaryExpression_Await_NoLet : 'this'
-	0,                            // PrimaryExpression_Await_NoLet : IdentifierReference_Await_NoLet
+	IdentExpr,                    // PrimaryExpression_Await_NoLet : IdentifierReference_Await_NoLet
 	0,                            // PrimaryExpression_Await_NoLet : Literal
 	0,                            // PrimaryExpression_Await_NoLet : ArrayLiteral_Await
 	0,                            // PrimaryExpression_Await_NoLet : ObjectLiteral_Await
@@ -1778,7 +1780,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Await
 	0,                            // PrimaryExpression_Await_NoLet : lookahead_notStartOfArrowFunction JSXElement_Await
 	This,                         // PrimaryExpression_Await_NoLet_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_Await_NoLet_NoObjLiteral : IdentifierReference_Await_NoLet
+	IdentExpr,                    // PrimaryExpression_Await_NoLet_NoObjLiteral : IdentifierReference_Await_NoLet
 	0,                            // PrimaryExpression_Await_NoLet_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_Await_NoLet_NoObjLiteral : ArrayLiteral_Await
 	0,                            // PrimaryExpression_Await_NoLet_NoObjLiteral : FunctionExpression
@@ -1790,7 +1792,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized_Await
 	0,                            // PrimaryExpression_Await_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement_Await
 	This,                         // PrimaryExpression_Await_NoLet_Yield : 'this'
-	0,                            // PrimaryExpression_Await_NoLet_Yield : IdentifierReference_Await_NoLet_Yield
+	IdentExpr,                    // PrimaryExpression_Await_NoLet_Yield : IdentifierReference_Await_NoLet_Yield
 	0,                            // PrimaryExpression_Await_NoLet_Yield : Literal
 	0,                            // PrimaryExpression_Await_NoLet_Yield : ArrayLiteral_Await_Yield
 	0,                            // PrimaryExpression_Await_NoLet_Yield : ObjectLiteral_Await_Yield
@@ -1803,7 +1805,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_NoLet_Yield : lookahead_notStartOfArrowFunction Parenthesized_Await_Yield
 	0,                            // PrimaryExpression_Await_NoLet_Yield : lookahead_notStartOfArrowFunction JSXElement_Await_Yield
 	This,                         // PrimaryExpression_Await_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_Await_NoObjLiteral : IdentifierReference_Await
+	IdentExpr,                    // PrimaryExpression_Await_NoObjLiteral : IdentifierReference_Await
 	0,                            // PrimaryExpression_Await_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_Await_NoObjLiteral : ArrayLiteral_Await
 	0,                            // PrimaryExpression_Await_NoObjLiteral : FunctionExpression
@@ -1815,7 +1817,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized_Await
 	0,                            // PrimaryExpression_Await_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement_Await
 	This,                         // PrimaryExpression_Await_Yield : 'this'
-	0,                            // PrimaryExpression_Await_Yield : IdentifierReference_Await_Yield
+	IdentExpr,                    // PrimaryExpression_Await_Yield : IdentifierReference_Await_Yield
 	0,                            // PrimaryExpression_Await_Yield : Literal
 	0,                            // PrimaryExpression_Await_Yield : ArrayLiteral_Await_Yield
 	0,                            // PrimaryExpression_Await_Yield : ObjectLiteral_Await_Yield
@@ -1828,7 +1830,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_Await_Yield : lookahead_notStartOfArrowFunction Parenthesized_Await_Yield
 	0,                            // PrimaryExpression_Await_Yield : lookahead_notStartOfArrowFunction JSXElement_Await_Yield
 	This,                         // PrimaryExpression_NoAsync_NoLet : 'this'
-	0,                            // PrimaryExpression_NoAsync_NoLet : IdentifierReference_NoAsync_NoLet
+	IdentExpr,                    // PrimaryExpression_NoAsync_NoLet : IdentifierReference_NoAsync_NoLet
 	0,                            // PrimaryExpression_NoAsync_NoLet : Literal
 	0,                            // PrimaryExpression_NoAsync_NoLet : ArrayLiteral
 	0,                            // PrimaryExpression_NoAsync_NoLet : ObjectLiteral
@@ -1841,7 +1843,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoAsync_NoLet : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_NoAsync_NoLet_Yield : 'this'
-	0,                            // PrimaryExpression_NoAsync_NoLet_Yield : IdentifierReference_NoAsync_NoLet_Yield
+	IdentExpr,                    // PrimaryExpression_NoAsync_NoLet_Yield : IdentifierReference_NoAsync_NoLet_Yield
 	0,                            // PrimaryExpression_NoAsync_NoLet_Yield : Literal
 	0,                            // PrimaryExpression_NoAsync_NoLet_Yield : ArrayLiteral_Yield
 	0,                            // PrimaryExpression_NoAsync_NoLet_Yield : ObjectLiteral_Yield
@@ -1854,7 +1856,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoAsync_NoLet_Yield : lookahead_notStartOfArrowFunction Parenthesized_Yield
 	0,                            // PrimaryExpression_NoAsync_NoLet_Yield : lookahead_notStartOfArrowFunction JSXElement_Yield
 	This,                         // PrimaryExpression_NoFuncClass : 'this'
-	0,                            // PrimaryExpression_NoFuncClass : IdentifierReference
+	IdentExpr,                    // PrimaryExpression_NoFuncClass : IdentifierReference
 	0,                            // PrimaryExpression_NoFuncClass : Literal
 	0,                            // PrimaryExpression_NoFuncClass : ArrayLiteral
 	0,                            // PrimaryExpression_NoFuncClass : ObjectLiteral
@@ -1863,7 +1865,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_NoFuncClass_NoLet : 'this'
-	0,                            // PrimaryExpression_NoFuncClass_NoLet : IdentifierReference_NoLet
+	IdentExpr,                    // PrimaryExpression_NoFuncClass_NoLet : IdentifierReference_NoLet
 	0,                            // PrimaryExpression_NoFuncClass_NoLet : Literal
 	0,                            // PrimaryExpression_NoFuncClass_NoLet : ArrayLiteral
 	0,                            // PrimaryExpression_NoFuncClass_NoLet : ObjectLiteral
@@ -1872,7 +1874,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoFuncClass_NoLet : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoFuncClass_NoLet : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : IdentifierReference_NoLet
+	IdentExpr,                    // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : IdentifierReference_NoLet
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : ArrayLiteral
 	Regexp,                       // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : RegularExpressionLiteral
@@ -1880,7 +1882,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : 'this'
-	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : IdentifierReference_NoLet_Yield
+	IdentExpr,                    // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : IdentifierReference_NoLet_Yield
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : Literal
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : ArrayLiteral_Yield
 	Regexp,                       // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : RegularExpressionLiteral
@@ -1888,7 +1890,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : lookahead_notStartOfArrowFunction Parenthesized_Yield
 	0,                            // PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield : lookahead_notStartOfArrowFunction JSXElement_Yield
 	This,                         // PrimaryExpression_NoFuncClass_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral : IdentifierReference
+	IdentExpr,                    // PrimaryExpression_NoFuncClass_NoObjLiteral : IdentifierReference
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral : ArrayLiteral
 	Regexp,                       // PrimaryExpression_NoFuncClass_NoObjLiteral : RegularExpressionLiteral
@@ -1896,7 +1898,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : 'this'
-	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : IdentifierReference_Yield
+	IdentExpr,                    // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : IdentifierReference_Yield
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : Literal
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : ArrayLiteral_Yield
 	Regexp,                       // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : RegularExpressionLiteral
@@ -1904,7 +1906,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : lookahead_notStartOfArrowFunction Parenthesized_Yield
 	0,                            // PrimaryExpression_NoFuncClass_NoObjLiteral_Yield : lookahead_notStartOfArrowFunction JSXElement_Yield
 	This,                         // PrimaryExpression_NoLet : 'this'
-	0,                            // PrimaryExpression_NoLet : IdentifierReference_NoLet
+	IdentExpr,                    // PrimaryExpression_NoLet : IdentifierReference_NoLet
 	0,                            // PrimaryExpression_NoLet : Literal
 	0,                            // PrimaryExpression_NoLet : ArrayLiteral
 	0,                            // PrimaryExpression_NoLet : ObjectLiteral
@@ -1917,7 +1919,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoLet : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoLet : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_NoLet_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_NoLet_NoObjLiteral : IdentifierReference_NoLet
+	IdentExpr,                    // PrimaryExpression_NoLet_NoObjLiteral : IdentifierReference_NoLet
 	0,                            // PrimaryExpression_NoLet_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_NoLet_NoObjLiteral : ArrayLiteral
 	0,                            // PrimaryExpression_NoLet_NoObjLiteral : FunctionExpression
@@ -1929,7 +1931,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoLet_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_NoLet_Yield : 'this'
-	0,                            // PrimaryExpression_NoLet_Yield : IdentifierReference_NoLet_Yield
+	IdentExpr,                    // PrimaryExpression_NoLet_Yield : IdentifierReference_NoLet_Yield
 	0,                            // PrimaryExpression_NoLet_Yield : Literal
 	0,                            // PrimaryExpression_NoLet_Yield : ArrayLiteral_Yield
 	0,                            // PrimaryExpression_NoLet_Yield : ObjectLiteral_Yield
@@ -1942,7 +1944,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoLet_Yield : lookahead_notStartOfArrowFunction Parenthesized_Yield
 	0,                            // PrimaryExpression_NoLet_Yield : lookahead_notStartOfArrowFunction JSXElement_Yield
 	This,                         // PrimaryExpression_NoObjLiteral : 'this'
-	0,                            // PrimaryExpression_NoObjLiteral : IdentifierReference
+	IdentExpr,                    // PrimaryExpression_NoObjLiteral : IdentifierReference
 	0,                            // PrimaryExpression_NoObjLiteral : Literal
 	0,                            // PrimaryExpression_NoObjLiteral : ArrayLiteral
 	0,                            // PrimaryExpression_NoObjLiteral : FunctionExpression
@@ -1954,7 +1956,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PrimaryExpression_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized
 	0,                            // PrimaryExpression_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement
 	This,                         // PrimaryExpression_Yield : 'this'
-	0,                            // PrimaryExpression_Yield : IdentifierReference_Yield
+	IdentExpr,                    // PrimaryExpression_Yield : IdentifierReference_Yield
 	0,                            // PrimaryExpression_Yield : Literal
 	0,                            // PrimaryExpression_Yield : ArrayLiteral_Yield
 	0,                            // PrimaryExpression_Yield : ObjectLiteral_Yield
@@ -2226,7 +2228,7 @@ var ruleNodeType = [...]NodeType{
 	0,                            // MemberExpression_Await_NoObjLiteral : SuperProperty_Await
 	0,                            // MemberExpression_Await_NoObjLiteral : MetaProperty
 	NewExpression,                // MemberExpression_Await_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
-	IdentifierReference,          // MemberExpression_Await_StartWithLet : 'let'
+	IdentExpr,                    // MemberExpression_Await_StartWithLet : 'let'
 	IndexAccess,                  // MemberExpression_Await_StartWithLet : MemberExpression_Await_NoLetOnly_StartWithLet '[' Expression_Await_In ']'
 	PropertyAccess,               // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet '.' IdentifierNameRef
 	PropertyAccess,               // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet '.' ClassPrivateRef
@@ -2395,13 +2397,13 @@ var ruleNodeType = [...]NodeType{
 	0,                            // MemberExpression_NoObjLiteral : SuperProperty
 	0,                            // MemberExpression_NoObjLiteral : MetaProperty
 	NewExpression,                // MemberExpression_NoObjLiteral : 'new' MemberExpression Arguments
-	IdentifierReference,          // MemberExpression_StartWithLet : 'let'
+	IdentExpr,                    // MemberExpression_StartWithLet : 'let'
 	IndexAccess,                  // MemberExpression_StartWithLet : MemberExpression_NoLetOnly_StartWithLet '[' Expression_In ']'
 	PropertyAccess,               // MemberExpression_StartWithLet : MemberExpression_StartWithLet '.' IdentifierNameRef
 	PropertyAccess,               // MemberExpression_StartWithLet : MemberExpression_StartWithLet '.' ClassPrivateRef
 	TaggedTemplate,               // MemberExpression_StartWithLet : MemberExpression_StartWithLet TemplateLiteral
 	TsNonNull,                    // MemberExpression_StartWithLet : MemberExpression_StartWithLet .noLineBreak '!'
-	IdentifierReference,          // MemberExpression_StartWithLet_Yield : 'let'
+	IdentExpr,                    // MemberExpression_StartWithLet_Yield : 'let'
 	IndexAccess,                  // MemberExpression_StartWithLet_Yield : MemberExpression_NoLetOnly_StartWithLet_Yield '[' Expression_In_Yield ']'
 	PropertyAccess,               // MemberExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield '.' IdentifierNameRef
 	PropertyAccess,               // MemberExpression_StartWithLet_Yield : MemberExpression_StartWithLet_Yield '.' ClassPrivateRef
@@ -5093,7 +5095,8 @@ var ruleNodeType = [...]NodeType{
 	0,                            // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt ObjectType
 	0,                            // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
 	0,                            // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt ObjectType
-	0,                            // AmbientEnumDeclaration : EnumDeclaration
+	0,                            // AmbientEnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	0,                            // AmbientEnumDeclaration : 'enum' BindingIdentifier EnumBody
 	0,                            // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
 	0,                            // AmbientModuleDeclaration : 'module' StringLiteral '{' .recoveryScope ModuleBodyopt '}'
 	0,                            // AmbientModuleDeclaration : 'module' StringLiteral ';'

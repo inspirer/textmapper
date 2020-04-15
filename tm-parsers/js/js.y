@@ -6768,7 +6768,8 @@ AmbientInterfaceDeclaration :
 ;
 
 AmbientEnumDeclaration :
-  EnumDeclaration
+  CONST ENUM BindingIdentifier EnumBody
+| ENUM BindingIdentifier EnumBody
 ;
 
 AmbientNamespaceDeclaration :

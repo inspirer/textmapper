@@ -26,62 +26,62 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) Parse(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 7, 6516, lexer)
+	return p.parse(ctx, 7, 6521, lexer)
 }
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 4333:
+	case 4334:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 6508, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 0, 6513, s); ok {
 			sym = 701 /* lookahead_StartOfArrowFunction */
 		} else {
 			sym = 169 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 4334:
+	case 4335:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 3, 6511, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 3, 6516, s); ok {
 			sym = 782 /* lookahead_StartOfTypeImport */
 		} else {
 			sym = 781 /* lookahead_notStartOfTypeImport */
 		}
 		return
-	case 4335:
+	case 4336:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 1, 6509, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 1, 6514, s); ok {
 			sym = 346 /* lookahead_StartOfParametrizedCall */
 		} else {
 			sym = 302 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 4336:
+	case 4337:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 4, 6512, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 4, 6517, s); ok {
 			sym = 839 /* lookahead_StartOfIs */
 		} else {
 			sym = 844 /* lookahead_notStartOfIs */
 		}
 		return
-	case 4337:
+	case 4338:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 6, 6514, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 6, 6519, s); ok {
 			sym = 877 /* lookahead_StartOfMappedType */
 		} else {
 			sym = 867 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 4338:
+	case 4339:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 5, 6513, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 5, 6518, s); ok {
 			sym = 886 /* lookahead_StartOfFunctionType */
 		} else {
 			sym = 860 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 4339:
+	case 4340:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 2, 6510, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 2, 6515, s); ok {
 			sym = 757 /* lookahead_StartOfExtendsTypeRef */
 		} else {
 			sym = 756 /* lookahead_notStartOfExtendsTypeRef */
@@ -92,31 +92,31 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtStartOfArrowFunction(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 0, 6508, s)
+	return lookahead(ctx, lexer, next, 0, 6513, s)
 }
 
 func AtStartOfParametrizedCall(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 1, 6509, s)
+	return lookahead(ctx, lexer, next, 1, 6514, s)
 }
 
 func AtStartOfExtendsTypeRef(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 2, 6510, s)
+	return lookahead(ctx, lexer, next, 2, 6515, s)
 }
 
 func AtStartOfTypeImport(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 3, 6511, s)
+	return lookahead(ctx, lexer, next, 3, 6516, s)
 }
 
 func AtStartOfIs(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 4, 6512, s)
+	return lookahead(ctx, lexer, next, 4, 6517, s)
 }
 
 func AtStartOfFunctionType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 5, 6513, s)
+	return lookahead(ctx, lexer, next, 5, 6518, s)
 }
 
 func AtStartOfMappedType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 6, 6514, s)
+	return lookahead(ctx, lexer, next, 6, 6519, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
@@ -250,12 +250,21 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(BindingIdentifier, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 1239: // LiteralPropertyName_WithoutNew : PrivateIdentifier
 		p.listener(BindingIdentifier, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 1385: // MemberExpression_Await_StartWithLet : 'let'
+		p.listener(IdentifierReference, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 1554: // MemberExpression_StartWithLet : 'let'
+		p.listener(IdentifierReference, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 1560: // MemberExpression_StartWithLet_Yield : 'let'
+		p.listener(IdentifierReference, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 3316: // IterationStatement : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In ')' Statement
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3330: // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_Await_In ')' Statement_Await
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3344: // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3692: // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause ';'
 		p.listener(TsTypeOnly, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3719: // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause ';'
@@ -266,11 +275,59 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 3725: // ExportDeclaration : 'export' 'type' ExportClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 3747: // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3849: // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type1
 		p.listener(IdentifierReference, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 3851: // TypePredicate1 : 'asserts' lookahead_StartOfIs 'is' Type1
 		p.listener(IdentifierReference, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4333:
+	case 3852: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3853: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3854: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3855: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3856: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type1
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3857: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3858: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type1
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3859: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 3889: // TypeOperator : 'infer' IdentifierName
+		p.listener(IdentifierReference, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 3894: // TypeOperator1 : 'infer' IdentifierName
+		p.listener(IdentifierReference, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 4054: // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
+		p.listener(IdentifierReference, rhs[2].sym.offset, rhs[2].sym.endoffset)
+	case 4193: // IndexSignature : Modifiers '[' IdentifierName ':' 'string' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(PredefinedType, rhs[4].sym.offset, rhs[4].sym.endoffset)
+	case 4194: // IndexSignature : '[' IdentifierName ':' 'string' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.listener(PredefinedType, rhs[3].sym.offset, rhs[3].sym.endoffset)
+	case 4195: // IndexSignature : Modifiers '[' IdentifierName ':' 'number' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(PredefinedType, rhs[4].sym.offset, rhs[4].sym.endoffset)
+	case 4196: // IndexSignature : '[' IdentifierName ':' 'number' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.listener(PredefinedType, rhs[3].sym.offset, rhs[3].sym.endoffset)
+	case 4197: // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' 'string' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(PredefinedType, rhs[4].sym.offset, rhs[4].sym.endoffset)
+	case 4198: // IndexSignature_WithDeclare : '[' IdentifierName ':' 'string' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.listener(PredefinedType, rhs[3].sym.offset, rhs[3].sym.endoffset)
+	case 4199: // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' 'number' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(PredefinedType, rhs[4].sym.offset, rhs[4].sym.endoffset)
+	case 4200: // IndexSignature_WithDeclare : '[' IdentifierName ':' 'number' ']' TypeAnnotation
+		p.listener(BindingIdentifier, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.listener(PredefinedType, rhs[3].sym.offset, rhs[3].sym.endoffset)
+	case 4334:
 		var ok bool
 		if ok, err = AtStartOfArrowFunction(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 701 /* lookahead_StartOfArrowFunction */
@@ -278,7 +335,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 169 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 4334:
+	case 4335:
 		var ok bool
 		if ok, err = AtStartOfTypeImport(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 782 /* lookahead_StartOfTypeImport */
@@ -286,7 +343,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 781 /* lookahead_notStartOfTypeImport */
 		}
 		return
-	case 4335:
+	case 4336:
 		var ok bool
 		if ok, err = AtStartOfParametrizedCall(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 346 /* lookahead_StartOfParametrizedCall */
@@ -294,7 +351,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 302 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 4336:
+	case 4337:
 		var ok bool
 		if ok, err = AtStartOfIs(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 839 /* lookahead_StartOfIs */
@@ -302,7 +359,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 844 /* lookahead_notStartOfIs */
 		}
 		return
-	case 4337:
+	case 4338:
 		var ok bool
 		if ok, err = AtStartOfMappedType(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 877 /* lookahead_StartOfMappedType */
@@ -310,7 +367,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 867 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 4338:
+	case 4339:
 		var ok bool
 		if ok, err = AtStartOfFunctionType(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 886 /* lookahead_StartOfFunctionType */
@@ -318,7 +375,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 860 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 4339:
+	case 4340:
 		var ok bool
 		if ok, err = AtStartOfExtendsTypeRef(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 757 /* lookahead_StartOfExtendsTypeRef */

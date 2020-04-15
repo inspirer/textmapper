@@ -96,6 +96,7 @@ func (n Generator) JsNode() *Node                    { return n.Node }
 func (n GeneratorExpression) JsNode() *Node          { return n.Node }
 func (n GeneratorMethod) JsNode() *Node              { return n.Node }
 func (n Getter) JsNode() *Node                       { return n.Node }
+func (n IdentExpr) JsNode() *Node                    { return n.Node }
 func (n IdentifierReference) JsNode() *Node          { return n.Node }
 func (n IfStatement) JsNode() *Node                  { return n.Node }
 func (n ImportDeclaration) JsNode() *Node            { return n.Node }
@@ -376,7 +377,7 @@ func (EqualityExpression) expressionNode()       {}
 func (ExponentiationExpression) expressionNode() {}
 func (FunctionExpression) expressionNode()       {}
 func (GeneratorExpression) expressionNode()      {}
-func (IdentifierReference) expressionNode()      {}
+func (IdentExpr) expressionNode()                {}
 func (IndexAccess) expressionNode()              {}
 func (JSXElement) expressionNode()               {}
 func (Literal) expressionNode()                  {}
@@ -883,6 +884,10 @@ func (n ArrowFunction) ConciseBody() (ConciseBody, bool) {
 
 type AssertsType struct {
 	*Node
+}
+
+func (n AssertsType) IdentifierReference() IdentifierReference {
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
 func (n AssertsType) TsType() (TsType, bool) {
@@ -1968,6 +1973,14 @@ func (n Getter) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
+type IdentExpr struct {
+	*Node
+}
+
+func (n IdentExpr) IdentifierReference() IdentifierReference {
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
+}
+
 type IdentifierReference struct {
 	*Node
 }
@@ -2075,6 +2088,14 @@ func (n IndexSignature) Modifier() []Modifier {
 		ret = append(ret, ToJsNode(node).(Modifier))
 	}
 	return ret
+}
+
+func (n IndexSignature) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n IndexSignature) PredefinedType() PredefinedType {
+	return PredefinedType{n.Child(selector.PredefinedType)}
 }
 
 func (n IndexSignature) TypeAnnotation() TypeAnnotation {
@@ -2652,7 +2673,7 @@ func (n OptionalPropertyAccess) Expr() Expression {
 }
 
 func (n OptionalPropertyAccess) Selector() IdentifierReference {
-	return IdentifierReference{n.Child(selector.Expression).Next(selector.IdentifierReference)}
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
 type OptionalTaggedTemplate struct {
@@ -2768,7 +2789,7 @@ func (n PropertyAccess) Expr() Expression {
 }
 
 func (n PropertyAccess) Selector() IdentifierReference {
-	return IdentifierReference{n.Child(selector.Expression).Next(selector.IdentifierReference)}
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
 type PropertyBinding struct {
@@ -3088,8 +3109,12 @@ type TsAmbientEnum struct {
 	*Node
 }
 
-func (n TsAmbientEnum) TsEnum() TsEnum {
-	return TsEnum{n.Child(selector.TsEnum)}
+func (n TsAmbientEnum) BindingIdentifier() BindingIdentifier {
+	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+}
+
+func (n TsAmbientEnum) TsEnumBody() TsEnumBody {
+	return TsEnumBody{n.Child(selector.TsEnumBody)}
 }
 
 type TsAmbientExportDeclaration struct {
@@ -3631,6 +3656,10 @@ func (n TypeReference) TypeArguments() (TypeArguments, bool) {
 
 type TypeVar struct {
 	*Node
+}
+
+func (n TypeVar) IdentifierReference() IdentifierReference {
+	return IdentifierReference{n.Child(selector.IdentifierReference)}
 }
 
 type UnaryExpression struct {

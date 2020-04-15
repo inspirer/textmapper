@@ -439,7 +439,7 @@ LabelIdentifier -> LabelIdentifier :
 
 PrimaryExpression<Yield, Await, NoAsync> -> Expression /* interface */:
     'this'                                                 -> This
-  | IdentifierReference
+  | IdentifierReference                                    -> IdentExpr
   | Literal
   | ArrayLiteral
   | [!NoObjLiteral] ObjectLiteral
@@ -550,7 +550,7 @@ TemplateMiddleList<Yield, Await> :
 MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expression /* interface */:
     [!NoLetOnly && !StartWithLet] PrimaryExpression
   | [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
-  | [StartWithLet && !NoLetOnly] 'let'                          -> IdentifierReference
+  | [StartWithLet && !NoLetOnly] ('let' -> IdentifierReference) -> IdentExpr
   | [StartWithLet] expr=MemberExpression<+NoLetOnly, ~NoAsync> '[' index=Expression<+In> ']'            -> IndexAccess
   | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq, ~NoAsync> '[' index=Expression<+In> ']'   -> IndexAccess
   | expr=MemberExpression<~NoAsync> '.' selector=IdentifierNameRef        -> PropertyAccess
@@ -912,7 +912,7 @@ IterationStatement<Yield, Await> -> Statement /* interface */:
           'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
-  | 'for' '(' var=(('async' -> IdentifierReference) -> Expression) (?= !StartOfArrowFunction)
+  | 'for' '(' var=((('async' -> IdentifierReference) -> IdentExpr) -> Expression) (?= !StartOfArrowFunction)
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
   | 'for' '(' 'var' ForBinding
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
@@ -1260,7 +1260,7 @@ Decorator<Yield, Await> -> Decorator /* interface */:
 
 DecoratorMemberExpression<Yield, Await>:
     IdentifierReference
-  | DecoratorMemberExpression '.' IdentifierName
+  | DecoratorMemberExpression '.' (IdentifierName -> IdentifierReference)
 ;
 
 DecoratorCallExpression<Yield, Await>:
@@ -1346,7 +1346,7 @@ TypePredicate<AllowQuest> -> TypePredicate:
 
 # 3.7
 AssertsType<AllowQuest> -> AssertsType:
-    'asserts' .noLineBreak (?= !StartOfIs) ('this' | IdentifierName<+WithoutKeywords>) ('is' Type)? ;
+    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> IdentifierReference | IdentifierName<+WithoutKeywords> -> IdentifierReference) ('is' Type)? ;
 
 StartOfIs:
       'is' ;
@@ -1378,7 +1378,7 @@ TypeOperator<AllowQuest> -> TsType /* interface */:
   | 'keyof' TypeOperator      -> KeyOfType
   | 'unique' TypeOperator     -> UniqueType
   | 'readonly' TypeOperator   -> ReadonlyType
-  | 'infer' IdentifierName    -> TypeVar
+  | 'infer' (IdentifierName -> IdentifierReference) -> TypeVar
 ;
 
 PrimaryType<AllowQuest> -> TsType /* interface */:
@@ -1516,7 +1516,7 @@ ImportType -> ImportType :
 
 TypeQueryExpression :
     IdentifierReference<~Yield, ~Await>
-  | TypeQueryExpression '.' IdentifierName
+  | TypeQueryExpression '.' (IdentifierName -> IdentifierReference)
 ;
 
 PropertySignature -> PropertySignature :
@@ -1563,8 +1563,8 @@ ConstructSignature -> ConstructSignature :
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.
 IndexSignature<WithDeclare> -> IndexSignature :
-    Modifiers? '[' IdentifierName ':' 'string' ']' TypeAnnotation
-  | Modifiers? '[' IdentifierName ':' 'number' ']' TypeAnnotation
+    Modifiers? '[' (IdentifierName -> BindingIdentifier) ':' ('string' -> PredefinedType) ']' TypeAnnotation
+  | Modifiers? '[' (IdentifierName -> BindingIdentifier) ':' ('number' -> PredefinedType) ']' TypeAnnotation
 ;
 
 MethodSignature -> MethodSignature :
@@ -1653,7 +1653,7 @@ AmbientInterfaceDeclaration:
     Modifiers? 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause? ObjectType ;
 
 AmbientEnumDeclaration:
-    EnumDeclaration ;
+    'const'? 'enum' BindingIdentifier EnumBody ;
 
 AmbientNamespaceDeclaration:
     'namespace' IdentifierPath AmbientNamespaceBody ;

@@ -25,6 +25,12 @@ var parseTests = []struct {
 		`const a «/* te ** / st */» = 5;`,
 		`var a = 5;  «/* abc */»`,
 	}},
+	{js.Javascript, js.IdentExpr, []string{
+		`«a» = «a» + 5;`,
+		`«a».foo = «a»[5];`,
+		`«let» = 5;`,
+		`for («async» of «foo») {}`,
+	}},
 	{js.Javascript, js.IdentifierReference, []string{
 		`/*no expectations*/ const a = 15;`,
 		`/*no expectations*/ var b = 7;`,
@@ -48,6 +54,10 @@ var parseTests = []struct {
 		    «a».«then»(of/*binding*/=>«console».«log»(«of»)); 0;
 		 }`,
 		`/*no expectations*/ for(async of=>5;;) {}`,
+		`@«a».«b» class a{}`,
+		`function assert(actual: any): asserts «actual» is «foo» {}`,
+		`function assert(actual: any): asserts «this» is number {}`,
+		`function foo(a) : typeof «a».«b».«c» {}`,
 	}},
 	{js.Javascript, js.BindingIdentifier, []string{
 		`const «a» = 15;`,
@@ -56,6 +66,10 @@ var parseTests = []struct {
 		`/*no expectations*/ for (; b < a; b++) { }`,
 		`var «c» = (function() {})();`,
 		`import {a as «b»} from './Test1';`,
+		`class «A» {
+		   [«a»:string] : int;
+		   [«key»:number] : string;
+		 }`,
 
 		// IdentifierName rules
 		`const «a» = {«cc»: 5}.cc;`,
@@ -996,6 +1010,10 @@ var parseTests = []struct {
 		`let color: «string» = "blue";`,
 		`let list: «number»[] = [1, 2, 3];`,
 		`let x: [«string», «number»];`,
+		`class A {
+		   [a:«string»] : int;
+		   [key:«number»] : «string»;
+		 }`,
 	}},
 	{js.Typescript, js.ArrayType, []string{
 		`let list: «number[]» = [1, 2, 3];`,
@@ -1236,7 +1254,9 @@ var parseTests = []struct {
 		`interface A<Q> «extends B» { a : int, b : string }`,
 	}},
 	{js.Typescript, js.TsEnum, []string{
-		`«enum A {}»`,
+		`«enum A {}»
+		 // but not
+		 declare enum Kind { A, B }`,
 		`«const enum A { X = 1, Y = 2 }»`,
 	}},
 	{js.Typescript, js.TsEnumBody, []string{
