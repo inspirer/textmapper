@@ -21,7 +21,8 @@ const (
 	Regexp
 	Parenthesized // Expression? SyntaxProblem?
 	Literal
-	ArrayLiteral         // list=(Expression)*
+	ArrayLiteral // list=(Expression)*
+	NoElement
 	SpreadElement        // Expression
 	ObjectLiteral        // (PropertyDefinition)*
 	ShorthandProperty    // IdentifierReference
@@ -58,41 +59,44 @@ const (
 	ExponentiationExpression // left=Expression right=Expression
 	RelationalExpression     // left=Expression right=Expression
 	TsAsExpression           // left=Expression TsType
-	TsAsConstExpression      // left=Expression
-	EqualityExpression       // left=Expression right=Expression
-	BitwiseANDExpression     // left=Expression right=Expression
-	BitwiseXORExpression     // left=Expression right=Expression
-	BitwiseORExpression      // left=Expression right=Expression
-	LogicalANDExpression     // left=Expression right=Expression
-	LogicalORExpression      // left=Expression right=Expression
-	CoalesceExpression       // left=Expression right=Expression
-	ConditionalExpression    // cond=Expression then=Expression else=Expression
-	AssignmentExpression     // left=Expression AssignmentOperator? right=Expression
+	TsConst
+	TsAsConstExpression   // left=Expression TsConst
+	EqualityExpression    // left=Expression right=Expression
+	BitwiseANDExpression  // left=Expression right=Expression
+	BitwiseXORExpression  // left=Expression right=Expression
+	BitwiseORExpression   // left=Expression right=Expression
+	LogicalANDExpression  // left=Expression right=Expression
+	LogicalORExpression   // left=Expression right=Expression
+	CoalesceExpression    // left=Expression right=Expression
+	ConditionalExpression // cond=Expression then=Expression else=Expression
+	AssignmentExpression  // left=Expression AssignmentOperator? right=Expression
 	AssignmentOperator
 	CommaExpression    // left=Expression right=Expression
 	Block              // (CaseClause)* (StatementListItem)*
-	LexicalDeclaration // (LexicalBinding)+
+	LexicalDeclaration // LetOrConst (LexicalBinding)+
+	LetOrConst
 	TsExclToken
 	LexicalBinding      // BindingIdentifier? BindingPattern? TsExclToken? TypeAnnotation? Initializer?
 	VariableStatement   // (VariableDeclaration)+
 	VariableDeclaration // BindingIdentifier? BindingPattern? TsExclToken? TypeAnnotation? Initializer?
 	ObjectPattern       // (PropertyPattern)* BindingRestElement?
-	ArrayPattern        // (ElementPattern)* BindingRestElement?
+	ArrayPattern        // list=(ElementPattern | Expression)* BindingRestElement?
 	PropertyBinding     // PropertyName ElementPattern
 	ElementBinding      // BindingPattern Initializer?
 	SingleNameBinding   // BindingIdentifier Initializer?
 	BindingRestElement  // BindingIdentifier
 	EmptyStatement
-	ExpressionStatement   // Expression
-	IfStatement           // Expression then=Statement else=Statement?
-	DoWhileStatement      // Statement Expression
-	WhileStatement        // Expression Statement
-	ForStatement          // var=Expression? ForCondition ForFinalExpression Statement
-	ForStatementWithVar   // (LexicalBinding)* (VariableDeclaration)* ForCondition ForFinalExpression Statement
+	ExpressionStatement // Expression
+	IfStatement         // Expression then=Statement else=Statement?
+	DoWhileStatement    // Statement Expression
+	WhileStatement      // Expression Statement
+	ForStatement        // var=Expression? ForCondition ForFinalExpression Statement
+	Var
+	ForStatementWithVar   // LetOrConst? Var? (LexicalBinding)* (VariableDeclaration)* ForCondition ForFinalExpression Statement
 	ForInStatement        // var=Expression object=Expression Statement
-	ForInStatementWithVar // ForBinding object=Expression Statement
+	ForInStatementWithVar // LetOrConst? Var? ForBinding object=Expression Statement
 	ForOfStatement        // var=Expression iterable=Expression Statement
-	ForOfStatementWithVar // ForBinding iterable=Expression Statement
+	ForOfStatementWithVar // LetOrConst? Var? ForBinding iterable=Expression Statement
 	ForBinding            // BindingIdentifier? BindingPattern?
 	ForCondition          // Expression?
 	ForFinalExpression    // Expression?
@@ -142,7 +146,8 @@ const (
 	Module            // (ModuleItem)*
 	ImportDeclaration // TsTypeOnly? BindingIdentifier? NameSpaceImport? NamedImports? ModuleSpecifier
 	TsTypeOnly
-	TsImportRequireDeclaration // BindingIdentifier
+	TsExport
+	TsImportRequireDeclaration // TsExport? BindingIdentifier
 	NameSpaceImport            // BindingIdentifier
 	NamedImports               // (NamedImport)*
 	ImportSpecifier            // IdentifierReference? BindingIdentifier
@@ -212,17 +217,17 @@ const (
 	TypeAliasDeclaration       // BindingIdentifier TypeParameters? TsType
 	TsInterface                // BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
 	TsInterfaceExtends         // (TypeReference)+
-	TsEnum                     // BindingIdentifier TsEnumBody
+	TsEnum                     // TsConst? BindingIdentifier TsEnumBody
 	TsEnumBody                 // (TsEnumMember)*
 	TsEnumMember               // PropertyName Expression?
 	TsNamespace                // (BindingIdentifier)+ TsNamespaceBody
 	TsNamespaceBody            // (ModuleItem)*
 	TsImportAliasDeclaration   // BindingIdentifier ref=(IdentifierReference)+
-	TsAmbientVar               // (TsAmbientBinding)+
+	TsAmbientVar               // LetOrConst? Var? (TsAmbientBinding)+
 	TsAmbientFunction          // BindingIdentifier TypeParameters? Parameters TypeAnnotation?
 	TsAmbientClass             // (Modifier)* BindingIdentifier TypeParameters? Extends? TsImplementsClause? ClassBody
 	TsAmbientInterface         // (Modifier)* BindingIdentifier TypeParameters? TsInterfaceExtends? ObjectType
-	TsAmbientEnum              // BindingIdentifier TsEnumBody
+	TsAmbientEnum              // TsConst? BindingIdentifier TsEnumBody
 	TsAmbientNamespace         // (BindingIdentifier)+ (TsAmbientElement)*
 	TsAmbientModule            // (BindingIdentifier)* (ModuleItem)*
 	TsAmbientGlobal            // (ModuleItem)*
@@ -253,6 +258,7 @@ var nodeTypeStr = [...]string{
 	"Parenthesized",
 	"Literal",
 	"ArrayLiteral",
+	"NoElement",
 	"SpreadElement",
 	"ObjectLiteral",
 	"ShorthandProperty",
@@ -289,6 +295,7 @@ var nodeTypeStr = [...]string{
 	"ExponentiationExpression",
 	"RelationalExpression",
 	"TsAsExpression",
+	"TsConst",
 	"TsAsConstExpression",
 	"EqualityExpression",
 	"BitwiseANDExpression",
@@ -303,6 +310,7 @@ var nodeTypeStr = [...]string{
 	"CommaExpression",
 	"Block",
 	"LexicalDeclaration",
+	"LetOrConst",
 	"TsExclToken",
 	"LexicalBinding",
 	"VariableStatement",
@@ -319,6 +327,7 @@ var nodeTypeStr = [...]string{
 	"DoWhileStatement",
 	"WhileStatement",
 	"ForStatement",
+	"Var",
 	"ForStatementWithVar",
 	"ForInStatement",
 	"ForInStatementWithVar",
@@ -373,6 +382,7 @@ var nodeTypeStr = [...]string{
 	"Module",
 	"ImportDeclaration",
 	"TsTypeOnly",
+	"TsExport",
 	"TsImportRequireDeclaration",
 	"NameSpaceImport",
 	"NamedImports",
@@ -526,6 +536,7 @@ var Decorator = []NodeType{
 
 var ElementPattern = []NodeType{
 	ElementBinding,
+	NoElement,
 	SingleNameBinding,
 	SyntaxProblem,
 }
@@ -564,6 +575,7 @@ var Expression = []NodeType{
 	MultiplicativeExpression,
 	NewExpression,
 	NewTarget,
+	NoElement,
 	ObjectLiteral,
 	OptionalCallExpression,
 	OptionalIndexAccess,
@@ -3996,8 +4008,8 @@ var ruleNodeType = [...]NodeType{
 	LexicalDeclaration,           // LexicalDeclaration_Await_In : LetOrConst BindingList_Await_In ';'
 	LexicalDeclaration,           // LexicalDeclaration_In : LetOrConst BindingList_In ';'
 	LexicalDeclaration,           // LexicalDeclaration_In_Yield : LetOrConst BindingList_In_Yield ';'
-	0,                            // LetOrConst : 'let'
-	0,                            // LetOrConst : 'const'
+	LetOrConst,                   // LetOrConst : 'let'
+	LetOrConst,                   // LetOrConst : 'const'
 	0,                            // BindingList : LexicalBinding
 	0,                            // BindingList : BindingList ',' LexicalBinding
 	0,                            // BindingList_Await : LexicalBinding_Await
@@ -4095,15 +4107,17 @@ var ruleNodeType = [...]NodeType{
 	0,                            // PropertyPattern_list_Comma_separated : PropertyPattern
 	0,                            // PropertyPattern_Yield_list_Comma_separated : PropertyPattern_Yield_list_Comma_separated ',' PropertyPattern_Yield
 	0,                            // PropertyPattern_Yield_list_Comma_separated : PropertyPattern_Yield
-	ArrayPattern,                 // ArrayBindingPattern : '[' Elisionopt BindingRestElementopt ']'
+	0,                            // ElementElision : ','
+	0,                            // ElementElision : Elision ','
+	ArrayPattern,                 // ArrayBindingPattern : '[' ElementElisionopt BindingRestElementopt ']'
 	ArrayPattern,                 // ArrayBindingPattern : '[' ElementPatternList ']'
-	ArrayPattern,                 // ArrayBindingPattern : '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'
-	ArrayPattern,                 // ArrayBindingPattern_Await : '[' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,                 // ArrayBindingPattern : '[' ElementPatternList ',' ElementElisionopt BindingRestElementopt ']'
+	ArrayPattern,                 // ArrayBindingPattern_Await : '[' ElementElisionopt BindingRestElementopt ']'
 	ArrayPattern,                 // ArrayBindingPattern_Await : '[' ElementPatternList_Await ']'
-	ArrayPattern,                 // ArrayBindingPattern_Await : '[' ElementPatternList_Await ',' Elisionopt BindingRestElementopt ']'
-	ArrayPattern,                 // ArrayBindingPattern_Yield : '[' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,                 // ArrayBindingPattern_Await : '[' ElementPatternList_Await ',' ElementElisionopt BindingRestElementopt ']'
+	ArrayPattern,                 // ArrayBindingPattern_Yield : '[' ElementElisionopt BindingRestElementopt ']'
 	ArrayPattern,                 // ArrayBindingPattern_Yield : '[' ElementPatternList_Yield ']'
-	ArrayPattern,                 // ArrayBindingPattern_Yield : '[' ElementPatternList_Yield ',' Elisionopt BindingRestElementopt ']'
+	ArrayPattern,                 // ArrayBindingPattern_Yield : '[' ElementPatternList_Yield ',' ElementElisionopt BindingRestElementopt ']'
 	0,                            // ElementPatternList : BindingElisionElement
 	0,                            // ElementPatternList : ElementPatternList ',' BindingElisionElement
 	0,                            // ElementPatternList_Await : BindingElisionElement_Await
@@ -5147,6 +5161,8 @@ var ruleNodeType = [...]NodeType{
 	0,                            // Initializeropt_Yield :
 	0,                            // BindingRestElementopt : BindingRestElement
 	0,                            // BindingRestElementopt :
+	0,                            // ElementElisionopt : ElementElision
+	0,                            // ElementElisionopt :
 	0,                            // Expressionopt_Await_In : Expression_Await_In
 	0,                            // Expressionopt_Await_In :
 	0,                            // Expressionopt_Await_NoLet : Expression_Await_NoLet

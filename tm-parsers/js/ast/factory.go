@@ -209,6 +209,8 @@ func ToJsNode(n *Node) JsNode {
 		return &LabelIdentifier{n}
 	case js.LabelledStatement:
 		return &LabelledStatement{n}
+	case js.LetOrConst:
+		return &LetOrConst{n}
 	case js.LexicalBinding:
 		return &LexicalBinding{n}
 	case js.LexicalDeclaration:
@@ -247,6 +249,8 @@ func ToJsNode(n *Node) JsNode {
 		return &NewExpression{n}
 	case js.NewTarget:
 		return &NewTarget{n}
+	case js.NoElement:
+		return &NoElement{n}
 	case js.NonNullableType:
 		return &NonNullableType{n}
 	case js.NullableType:
@@ -369,6 +373,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsCastExpression{n}
 	case js.TsConditional:
 		return &TsConditional{n}
+	case js.TsConst:
+		return &TsConst{n}
 	case js.TsDynamicImport:
 		return &TsDynamicImport{n}
 	case js.TsEnum:
@@ -379,6 +385,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsEnumMember{n}
 	case js.TsExclToken:
 		return &TsExclToken{n}
+	case js.TsExport:
+		return &TsExport{n}
 	case js.TsExportAssignment:
 		return &TsExportAssignment{n}
 	case js.TsImplementsClause:
@@ -435,6 +443,8 @@ func ToJsNode(n *Node) JsNode {
 		return &UnionType{n}
 	case js.UniqueType:
 		return &UniqueType{n}
+	case js.Var:
+		return &Var{n}
 	case js.VariableDeclaration:
 		return &VariableDeclaration{n}
 	case js.VariableStatement:

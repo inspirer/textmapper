@@ -110,6 +110,7 @@ var (
 	KeyOfType                    = func(t js.NodeType) bool { return t == js.KeyOfType }
 	LabelIdentifier              = func(t js.NodeType) bool { return t == js.LabelIdentifier }
 	LabelledStatement            = func(t js.NodeType) bool { return t == js.LabelledStatement }
+	LetOrConst                   = func(t js.NodeType) bool { return t == js.LetOrConst }
 	LexicalBinding               = func(t js.NodeType) bool { return t == js.LexicalBinding }
 	LexicalDeclaration           = func(t js.NodeType) bool { return t == js.LexicalDeclaration }
 	Literal                      = func(t js.NodeType) bool { return t == js.Literal }
@@ -129,6 +130,7 @@ var (
 	NamedImports                 = func(t js.NodeType) bool { return t == js.NamedImports }
 	NewExpression                = func(t js.NodeType) bool { return t == js.NewExpression }
 	NewTarget                    = func(t js.NodeType) bool { return t == js.NewTarget }
+	NoElement                    = func(t js.NodeType) bool { return t == js.NoElement }
 	NonNullableType              = func(t js.NodeType) bool { return t == js.NonNullableType }
 	NullableType                 = func(t js.NodeType) bool { return t == js.NullableType }
 	ObjectLiteral                = func(t js.NodeType) bool { return t == js.ObjectLiteral }
@@ -190,11 +192,13 @@ var (
 	TsAsExpression               = func(t js.NodeType) bool { return t == js.TsAsExpression }
 	TsCastExpression             = func(t js.NodeType) bool { return t == js.TsCastExpression }
 	TsConditional                = func(t js.NodeType) bool { return t == js.TsConditional }
+	TsConst                      = func(t js.NodeType) bool { return t == js.TsConst }
 	TsDynamicImport              = func(t js.NodeType) bool { return t == js.TsDynamicImport }
 	TsEnum                       = func(t js.NodeType) bool { return t == js.TsEnum }
 	TsEnumBody                   = func(t js.NodeType) bool { return t == js.TsEnumBody }
 	TsEnumMember                 = func(t js.NodeType) bool { return t == js.TsEnumMember }
 	TsExclToken                  = func(t js.NodeType) bool { return t == js.TsExclToken }
+	TsExport                     = func(t js.NodeType) bool { return t == js.TsExport }
 	TsExportAssignment           = func(t js.NodeType) bool { return t == js.TsExportAssignment }
 	TsImplementsClause           = func(t js.NodeType) bool { return t == js.TsImplementsClause }
 	TsImportAliasDeclaration     = func(t js.NodeType) bool { return t == js.TsImportAliasDeclaration }
@@ -223,6 +227,7 @@ var (
 	UnaryExpression              = func(t js.NodeType) bool { return t == js.UnaryExpression }
 	UnionType                    = func(t js.NodeType) bool { return t == js.UnionType }
 	UniqueType                   = func(t js.NodeType) bool { return t == js.UniqueType }
+	Var                          = func(t js.NodeType) bool { return t == js.Var }
 	VariableDeclaration          = func(t js.NodeType) bool { return t == js.VariableDeclaration }
 	VariableStatement            = func(t js.NodeType) bool { return t == js.VariableStatement }
 	WhileStatement               = func(t js.NodeType) bool { return t == js.WhileStatement }

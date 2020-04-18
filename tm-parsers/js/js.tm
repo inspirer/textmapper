@@ -468,20 +468,20 @@ Literal -> Literal :
 
 ArrayLiteral<Yield, Await> -> ArrayLiteral :
     '[' Elisionopt ']'
-  | '[' list=ElementList ']'
-  | '[' list=ElementList ',' Elisionopt ']'
+  | '[' ElementList ']'
+  | '[' ElementList ',' Elisionopt ']'
 ;
 
 ElementList<Yield, Await> :
-    Elisionopt AssignmentExpression<+In>
-  | Elisionopt SpreadElement
-  | ElementList ',' Elisionopt AssignmentExpression<+In>
-  | ElementList ',' Elisionopt SpreadElement
+    Elisionopt list+=AssignmentExpression<+In>
+  | Elisionopt list+=SpreadElement
+  | ElementList ',' Elisionopt list+=AssignmentExpression<+In>
+  | ElementList ',' Elisionopt list+=SpreadElement
 ;
 
 Elision :
-    ','
-  | Elision ','
+    list+=(',' -> NoElement as Expression)
+  | Elision list+=(',' -> NoElement as Expression)
 ;
 
 SpreadElement<Yield, Await> -> Expression /* interface */:
@@ -693,8 +693,8 @@ BinaryExpression<In, Yield, Await> -> Expression /* interface */:
   | left=BinaryExpression '>=' right=BinaryExpression               -> RelationalExpression
   | left=BinaryExpression 'instanceof' right=BinaryExpression       -> RelationalExpression
   | [In] left=BinaryExpression 'in' right=BinaryExpression          -> RelationalExpression
-  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<~AllowQuest> -> TsAsExpression
-  | [!NoAs] left=BinaryExpression .noLineBreak 'as' 'const'         -> TsAsConstExpression   # TS 3.4
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<~AllowQuest>    -> TsAsExpression
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' ('const' -> TsConst) -> TsAsConstExpression   # TS 3.4
   | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpression
   | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpression
@@ -801,7 +801,7 @@ StatementListItem<Yield, Await> -> StatementListItem /* interface */:
 LexicalDeclaration<In, Yield, Await> -> LexicalDeclaration :
     LetOrConst BindingList ';' ;
 
-LetOrConst :
+LetOrConst -> LetOrConst :
     'let'
   | 'const'
 ;
@@ -843,10 +843,15 @@ ObjectBindingPattern<Yield, Await> -> ObjectPattern :
   | '{' .recoveryScope (PropertyPattern separator ',')+ (',' BindingRestElementopt)? '}'
 ;
 
+ElementElision :
+    list+=(',' -> NoElement as ElementPattern)
+  | Elision list+=(',' -> NoElement as ElementPattern)
+;
+
 ArrayBindingPattern<Yield, Await> -> ArrayPattern :
-    '[' Elisionopt BindingRestElementopt ']'
+    '[' ElementElisionopt BindingRestElementopt ']'
   | '[' ElementPatternList ']'
-  | '[' ElementPatternList ',' Elisionopt BindingRestElementopt ']'
+  | '[' ElementPatternList ',' ElementElisionopt BindingRestElementopt ']'
 ;
 
 ElementPatternList<Yield, Await> :
@@ -855,8 +860,7 @@ ElementPatternList<Yield, Await> :
 ;
 
 BindingElisionElement<Yield, Await> :
-    Elision? ElementPattern
-;
+    Elision? list+=ElementPattern ;
 
 PropertyPattern<Yield, Await> -> PropertyPattern /* interface */:
     SingleNameBinding
@@ -898,7 +902,7 @@ IterationStatement<Yield, Await> -> Statement /* interface */:
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
   | 'for' '(' var=Expression<~In,+StartWithLet, +NoAs> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
-  | 'for' '(' 'var' VariableDeclarationList<~In> ';' .forSC ForCondition
+  | 'for' '(' ('var' -> Var) VariableDeclarationList<~In> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStatementWithVar
   | 'for' '(' LetOrConst BindingList<~In> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStatementWithVar
@@ -906,7 +910,7 @@ IterationStatement<Yield, Await> -> Statement /* interface */:
           'in' object=Expression<+In> ')' Statement                   -> ForInStatement
   | 'for' '(' var=LeftHandSideExpression<+StartWithLet>
           'in' object=Expression<+In> ')' Statement                   -> ForInStatement
-  | 'for' '(' 'var' ForBinding
+  | 'for' '(' ('var' -> Var) ForBinding
           'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
   | 'for' '(' ForDeclaration
           'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
@@ -914,7 +918,7 @@ IterationStatement<Yield, Await> -> Statement /* interface */:
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
   | 'for' '(' var=((('async' -> IdentifierReference) -> IdentExpr) -> Expression) (?= !StartOfArrowFunction)
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
-  | 'for' '(' 'var' ForBinding
+  | 'for' '(' ('var' -> Var) ForBinding
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
   | 'for' '(' ForDeclaration
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
@@ -1136,13 +1140,13 @@ ClassElementList<Yield, Await> :
 
 %flag WithDeclare = false;
 
-Modifier<WithDeclare> -> Modifier:
+Modifier<WithDeclare> -> Modifier /* interface */:
     AccessibilityModifier
   | Decorator<~Await, ~Yield>
-  | 'static'                -> Static
-  | 'abstract'              -> Abstract
-  | 'readonly'              -> Readonly
-  | [WithDeclare] 'declare'               -> Declare
+  | 'static'                 -> Static
+  | 'abstract'               -> Abstract
+  | 'readonly'               -> Readonly
+  | [WithDeclare] 'declare'  -> Declare
 ;
 
 Modifiers<WithDeclare>:
@@ -1189,7 +1193,7 @@ StartOfTypeImport:
       'type' ('*' | '{' | IdentifierName<+WithoutFrom>) ;
 
 ImportRequireDeclaration -> TsImportRequireDeclaration:
-    'export'? 'import' (?= !StartOfTypeImport) BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
+    ('export' -> TsExport)? 'import' (?= !StartOfTypeImport) BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
 
 ImportClause :
     ImportedDefaultBinding
@@ -1584,7 +1588,7 @@ InterfaceExtendsClause -> TsInterfaceExtends:
 # A.7 Enums
 
 EnumDeclaration -> TsEnum:
-    'const'? 'enum' BindingIdentifier EnumBody ;
+    ('const' -> TsConst)? 'enum' BindingIdentifier EnumBody ;
 
 EnumBody -> TsEnumBody:
     '{' .recoveryScope ((EnumMember separator ',')+ ','?)? '}' ;
@@ -1630,9 +1634,9 @@ AmbientDeclaration -> TsAmbientElement /* interface */:
 ;
 
 AmbientVariableDeclaration:
-    'var' AmbientBindingList ';'
-  | 'let' AmbientBindingList ';'
-  | 'const' AmbientBindingList ';'
+    ('var' -> Var) AmbientBindingList ';'
+  | ('let' -> LetOrConst) AmbientBindingList ';'
+  | ('const' -> LetOrConst) AmbientBindingList ';'
 ;
 
 AmbientBindingList:
@@ -1653,7 +1657,7 @@ AmbientInterfaceDeclaration:
     Modifiers? 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause? ObjectType ;
 
 AmbientEnumDeclaration:
-    'const'? 'enum' BindingIdentifier EnumBody ;
+    ('const' -> TsConst)? 'enum' BindingIdentifier EnumBody ;
 
 AmbientNamespaceDeclaration:
     'namespace' IdentifierPath AmbientNamespaceBody ;

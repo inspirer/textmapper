@@ -122,6 +122,7 @@ func (n JSXText) JsNode() *Node                      { return n.Node }
 func (n KeyOfType) JsNode() *Node                    { return n.Node }
 func (n LabelIdentifier) JsNode() *Node              { return n.Node }
 func (n LabelledStatement) JsNode() *Node            { return n.Node }
+func (n LetOrConst) JsNode() *Node                   { return n.Node }
 func (n LexicalBinding) JsNode() *Node               { return n.Node }
 func (n LexicalDeclaration) JsNode() *Node           { return n.Node }
 func (n Literal) JsNode() *Node                      { return n.Node }
@@ -141,6 +142,7 @@ func (n NameSpaceImport) JsNode() *Node              { return n.Node }
 func (n NamedImports) JsNode() *Node                 { return n.Node }
 func (n NewExpression) JsNode() *Node                { return n.Node }
 func (n NewTarget) JsNode() *Node                    { return n.Node }
+func (n NoElement) JsNode() *Node                    { return n.Node }
 func (n NonNullableType) JsNode() *Node              { return n.Node }
 func (n NullableType) JsNode() *Node                 { return n.Node }
 func (n ObjectLiteral) JsNode() *Node                { return n.Node }
@@ -202,11 +204,13 @@ func (n TsAsConstExpression) JsNode() *Node          { return n.Node }
 func (n TsAsExpression) JsNode() *Node               { return n.Node }
 func (n TsCastExpression) JsNode() *Node             { return n.Node }
 func (n TsConditional) JsNode() *Node                { return n.Node }
+func (n TsConst) JsNode() *Node                      { return n.Node }
 func (n TsDynamicImport) JsNode() *Node              { return n.Node }
 func (n TsEnum) JsNode() *Node                       { return n.Node }
 func (n TsEnumBody) JsNode() *Node                   { return n.Node }
 func (n TsEnumMember) JsNode() *Node                 { return n.Node }
 func (n TsExclToken) JsNode() *Node                  { return n.Node }
+func (n TsExport) JsNode() *Node                     { return n.Node }
 func (n TsExportAssignment) JsNode() *Node           { return n.Node }
 func (n TsImplementsClause) JsNode() *Node           { return n.Node }
 func (n TsImportAliasDeclaration) JsNode() *Node     { return n.Node }
@@ -235,6 +239,7 @@ func (n TypeVar) JsNode() *Node                      { return n.Node }
 func (n UnaryExpression) JsNode() *Node              { return n.Node }
 func (n UnionType) JsNode() *Node                    { return n.Node }
 func (n UniqueType) JsNode() *Node                   { return n.Node }
+func (n Var) JsNode() *Node                          { return n.Node }
 func (n VariableDeclaration) JsNode() *Node          { return n.Node }
 func (n VariableStatement) JsNode() *Node            { return n.Node }
 func (n WhileStatement) JsNode() *Node               { return n.Node }
@@ -334,6 +339,7 @@ type ElementPattern interface {
 // assigned to ElementPattern.
 //
 func (ElementBinding) elementPatternNode()    {}
+func (NoElement) elementPatternNode()         {}
 func (SingleNameBinding) elementPatternNode() {}
 func (SyntaxProblem) elementPatternNode()     {}
 func (NilNode) elementPatternNode()           {}
@@ -386,6 +392,7 @@ func (LogicalORExpression) expressionNode()      {}
 func (MultiplicativeExpression) expressionNode() {}
 func (NewExpression) expressionNode()            {}
 func (NewTarget) expressionNode()                {}
+func (NoElement) expressionNode()                {}
 func (ObjectLiteral) expressionNode()            {}
 func (OptionalCallExpression) expressionNode()   {}
 func (OptionalIndexAccess) expressionNode()      {}
@@ -826,11 +833,11 @@ type ArrayPattern struct {
 	*Node
 }
 
-func (n ArrayPattern) ElementPattern() []ElementPattern {
-	nodes := n.Children(selector.ElementPattern)
-	var ret = make([]ElementPattern, 0, len(nodes))
+func (n ArrayPattern) List() []JsNode {
+	nodes := n.Children(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CoalesceExpression, js.CommaExpression, js.ConditionalExpression, js.ElementBinding, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentExpr, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.NoElement, js.ObjectLiteral, js.OptionalCallExpression, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SingleNameBinding, js.SpreadElement, js.SuperExpression, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsConstExpression, js.TsAsExpression, js.TsCastExpression, js.TsDynamicImport, js.TsNonNull, js.UnaryExpression, js.Yield))
+	var ret = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(ElementPattern))
+		ret = append(ret, ToJsNode(node).(JsNode))
 	}
 	return ret
 }
@@ -1706,6 +1713,16 @@ type ForInStatementWithVar struct {
 	*Node
 }
 
+func (n ForInStatementWithVar) LetOrConst() (LetOrConst, bool) {
+	field := LetOrConst{n.Child(selector.LetOrConst)}
+	return field, field.IsValid()
+}
+
+func (n ForInStatementWithVar) Var() (Var, bool) {
+	field := Var{n.Child(selector.Var)}
+	return field, field.IsValid()
+}
+
 func (n ForInStatementWithVar) ForBinding() ForBinding {
 	return ForBinding{n.Child(selector.ForBinding)}
 }
@@ -1736,6 +1753,16 @@ func (n ForOfStatement) Statement() Statement {
 
 type ForOfStatementWithVar struct {
 	*Node
+}
+
+func (n ForOfStatementWithVar) LetOrConst() (LetOrConst, bool) {
+	field := LetOrConst{n.Child(selector.LetOrConst)}
+	return field, field.IsValid()
+}
+
+func (n ForOfStatementWithVar) Var() (Var, bool) {
+	field := Var{n.Child(selector.Var)}
+	return field, field.IsValid()
 }
 
 func (n ForOfStatementWithVar) ForBinding() ForBinding {
@@ -1773,6 +1800,16 @@ func (n ForStatement) Statement() Statement {
 
 type ForStatementWithVar struct {
 	*Node
+}
+
+func (n ForStatementWithVar) LetOrConst() (LetOrConst, bool) {
+	field := LetOrConst{n.Child(selector.LetOrConst)}
+	return field, field.IsValid()
+}
+
+func (n ForStatementWithVar) Var() (Var, bool) {
+	field := Var{n.Child(selector.Var)}
+	return field, field.IsValid()
 }
 
 func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
@@ -2300,6 +2337,10 @@ func (n LabelledStatement) Statement() (Statement, bool) {
 	return field, field.JsNode() != nil
 }
 
+type LetOrConst struct {
+	*Node
+}
+
 type LexicalBinding struct {
 	*Node
 }
@@ -2331,6 +2372,10 @@ func (n LexicalBinding) Initializer() (Initializer, bool) {
 
 type LexicalDeclaration struct {
 	*Node
+}
+
+func (n LexicalDeclaration) LetOrConst() LetOrConst {
+	return LetOrConst{n.Child(selector.LetOrConst)}
 }
 
 func (n LexicalDeclaration) LexicalBinding() []LexicalBinding {
@@ -2560,6 +2605,10 @@ func (n NewExpression) Arguments() (Arguments, bool) {
 }
 
 type NewTarget struct {
+	*Node
+}
+
+type NoElement struct {
 	*Node
 }
 
@@ -3109,6 +3158,11 @@ type TsAmbientEnum struct {
 	*Node
 }
 
+func (n TsAmbientEnum) TsConst() (TsConst, bool) {
+	field := TsConst{n.Child(selector.TsConst)}
+	return field, field.IsValid()
+}
+
 func (n TsAmbientEnum) BindingIdentifier() BindingIdentifier {
 	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
 }
@@ -3255,6 +3309,16 @@ type TsAmbientVar struct {
 	*Node
 }
 
+func (n TsAmbientVar) LetOrConst() (LetOrConst, bool) {
+	field := LetOrConst{n.Child(selector.LetOrConst)}
+	return field, field.IsValid()
+}
+
+func (n TsAmbientVar) Var() (Var, bool) {
+	field := Var{n.Child(selector.Var)}
+	return field, field.IsValid()
+}
+
 func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
 	nodes := n.Children(selector.TsAmbientBinding)
 	var ret = make([]TsAmbientBinding, 0, len(nodes))
@@ -3270,6 +3334,10 @@ type TsAsConstExpression struct {
 
 func (n TsAsConstExpression) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n TsAsConstExpression) TsConst() TsConst {
+	return TsConst{n.Child(selector.TsConst)}
 }
 
 type TsAsExpression struct {
@@ -3316,6 +3384,10 @@ func (n TsConditional) Falset() TsType {
 	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType).Next(selector.TsType).Next(selector.TsType)).(TsType)
 }
 
+type TsConst struct {
+	*Node
+}
+
 type TsDynamicImport struct {
 	*Node
 }
@@ -3326,6 +3398,11 @@ func (n TsDynamicImport) Arguments() Arguments {
 
 type TsEnum struct {
 	*Node
+}
+
+func (n TsEnum) TsConst() (TsConst, bool) {
+	field := TsConst{n.Child(selector.TsConst)}
+	return field, field.IsValid()
 }
 
 func (n TsEnum) BindingIdentifier() BindingIdentifier {
@@ -3363,6 +3440,10 @@ func (n TsEnumMember) Expression() (Expression, bool) {
 }
 
 type TsExclToken struct {
+	*Node
+}
+
+type TsExport struct {
 	*Node
 }
 
@@ -3406,6 +3487,11 @@ func (n TsImportAliasDeclaration) Ref() []IdentifierReference {
 
 type TsImportRequireDeclaration struct {
 	*Node
+}
+
+func (n TsImportRequireDeclaration) TsExport() (TsExport, bool) {
+	field := TsExport{n.Child(selector.TsExport)}
+	return field, field.IsValid()
 }
 
 func (n TsImportRequireDeclaration) BindingIdentifier() BindingIdentifier {
@@ -3689,6 +3775,10 @@ type UniqueType struct {
 
 func (n UniqueType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+type Var struct {
+	*Node
 }
 
 type VariableDeclaration struct {

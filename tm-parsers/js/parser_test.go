@@ -109,6 +109,10 @@ var parseTests = []struct {
 	{js.Javascript, js.ArrayLiteral, []string{
 		`c = «[4]».concat(«[1, 2, 3]»);`,
 	}},
+	{js.Javascript, js.NoElement, []string{
+		`c = [4,«,»«,»«,» ...a];`,
+		`let [«,» [A],«,»«,» {a},«,»] = y;`,
+	}},
 	{js.Javascript, js.SpreadElement, []string{
 		`c = [4,,,, «...a»];`,
 	}},
@@ -445,6 +449,18 @@ var parseTests = []struct {
 	{js.Javascript, js.ForFinalExpression, []string{
 		`for (a=0; a < 5; «a++»);`,
 		`for (var a; a < 5; «c++, d++»); for (;; «»);`,
+	}},
+	{js.Javascript, js.Var, []string{
+		`declare «var» a = 5;`,
+		`for («var» a=0; a < 5; a++);`,
+		`for («var» a of b);`,
+		`for («var» a in b);`,
+	}},
+	{js.Javascript, js.LetOrConst, []string{
+		`for («let» a in b) continue;`,
+		`for («const» a in b) continue; for (var a in b) continue;`,
+		`for («let» a of b);`,
+		`declare «let» a = 5;`,
 	}},
 	{js.Javascript, js.ForInStatement, []string{
 		`«for (a in b) continue;»`,
@@ -1253,6 +1269,14 @@ var parseTests = []struct {
 	{js.Typescript, js.TsInterfaceExtends, []string{
 		`interface A<Q> «extends B» { a : int, b : string }`,
 	}},
+	{js.Typescript, js.TsConst, []string{
+		`«const» enum A {}`,
+		`declare «const» enum A {}`,
+		`const a = foo ? [a, b] as «const» : undefined;`,
+		`declare namespace foo {
+		   export const commentPragmas = {} as «const»;
+		 }`,
+	}},
 	{js.Typescript, js.TsEnum, []string{
 		`«enum A {}»
 		 // but not
@@ -1278,7 +1302,10 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TsImportRequireDeclaration, []string{
 		`«import foo = require('somefoo');»`,
-		`«import foo = require("somefoo");»`,
+		`«export import foo = require("somefoo");»`,
+	}},
+	{js.Typescript, js.TsExport, []string{
+		`«export» import foo = require("somefoo");`,
 	}},
 	{js.Typescript, js.TsDynamicImport, []string{
 		`const foo = «import('foo')»;`,

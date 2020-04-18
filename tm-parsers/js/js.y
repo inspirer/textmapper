@@ -4781,22 +4781,27 @@ PropertyPattern_Yield_list_Comma_separated :
 | PropertyPattern_Yield
 ;
 
+ElementElision :
+  COMMA
+| Elision COMMA
+;
+
 ArrayBindingPattern :
-  LBRACK Elisionopt BindingRestElementopt RBRACK
+  LBRACK ElementElisionopt BindingRestElementopt RBRACK
 | LBRACK ElementPatternList RBRACK
-| LBRACK ElementPatternList COMMA Elisionopt BindingRestElementopt RBRACK
+| LBRACK ElementPatternList COMMA ElementElisionopt BindingRestElementopt RBRACK
 ;
 
 ArrayBindingPattern_Await :
-  LBRACK Elisionopt BindingRestElementopt RBRACK
+  LBRACK ElementElisionopt BindingRestElementopt RBRACK
 | LBRACK ElementPatternList_Await RBRACK
-| LBRACK ElementPatternList_Await COMMA Elisionopt BindingRestElementopt RBRACK
+| LBRACK ElementPatternList_Await COMMA ElementElisionopt BindingRestElementopt RBRACK
 ;
 
 ArrayBindingPattern_Yield :
-  LBRACK Elisionopt BindingRestElementopt RBRACK
+  LBRACK ElementElisionopt BindingRestElementopt RBRACK
 | LBRACK ElementPatternList_Yield RBRACK
-| LBRACK ElementPatternList_Yield COMMA Elisionopt BindingRestElementopt RBRACK
+| LBRACK ElementPatternList_Yield COMMA ElementElisionopt BindingRestElementopt RBRACK
 ;
 
 ElementPatternList :
@@ -6868,6 +6873,11 @@ Initializeropt_Yield :
 BindingRestElementopt :
   %empty
 | BindingRestElement
+;
+
+ElementElisionopt :
+  %empty
+| ElementElision
 ;
 
 Expressionopt_Await_In :
