@@ -16,9 +16,7 @@
 package org.textmapper.lapg.lex;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.regex.RegexContext;
-import org.textmapper.lapg.api.regex.RegexParseException;
-import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.regex.*;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.lapg.regex.RegexFacade;
 
@@ -87,6 +85,7 @@ public class LexerGenerator {
 	private static final int TABLE_SIZE = 1024; // should be a power of 2
 
 	// initial information
+	private final boolean allowBacktracking;
 	private final ProcessingStatus status;
 
 	// lexical analyzer description
@@ -109,7 +108,8 @@ public class LexerGenerator {
 	private int[] groupset;
 	private int[] backtracking;
 
-	private LexerGenerator(ProcessingStatus status) {
+	private LexerGenerator(boolean allowBacktracking, ProcessingStatus status) {
+		this.allowBacktracking = allowBacktracking;
 		this.status = status;
 	}
 
@@ -501,7 +501,40 @@ public class LexerGenerator {
 					Integer index = checkpoints.get(cp);
 					if (index == null) {
 						checkpoints.put(cp, index = checkpoints.size());
-						if (status.isDebugMode()) {
+						if (!this.allowBacktracking) {
+							StringBuilder sb = new StringBuilder("Needs backtracking since the following state(s) do not produce complete tokens:");
+							for (int csval : statesArr[s.action[i]].set) {
+								if (csval == -1) break;
+								int lex = lsym[csval];
+								RuleData rd = ldata[lex];
+								RegexInstruction instr = rd.pattern[csval - lindex[lex]];
+								RegexPart origin = instr.getOrigin();
+								switch (instr.getKind()) {
+									case Any:
+									case Symbol:
+									case Set:
+										break;
+									default:
+										continue;
+								}
+								if (origin == null) continue;
+								sb.append("\n\t").append(rd.name).append(": ");
+								if (!rd.name.equals(origin.getSource().getFile())) {
+									String rule = rd.lexerRule.getRegexp().getText();
+									sb.append("/").append(rule).append("/ -> ")
+											.append(origin.getSource().getFile()).append(" = ");
+								}
+								int offset = origin.getOffset();
+								CharSequence text = origin.getSource().getContents();
+								if (offset >= 0 && offset <= text.length()) {
+									sb.append("/").append(text, 0, offset).append("<STATE>")
+											.append(text, offset, text.length()).append("/");
+								} else {
+									sb.append(" at ").append(origin.getText());
+								}
+							}
+							status.report(ProcessingStatus.KIND_ERROR, sb.toString(), s.defaultRule);
+						} else if (status.isDebugMode()) {
 							status.debug("Created a checkpoint for " +
 									s.defaultRule.getRegexp() + " (" + s.number + " -> " +
 									statesArr[s.action[i]].number + ") in " +
@@ -727,8 +760,8 @@ public class LexerGenerator {
 	 * Generates lexer tables.
 	 */
 	public static LexerData generate(LexerState[] states, LexerRule[] lexerRules,
-									 NamedPattern[] patterns, ProcessingStatus status) {
-		LexerGenerator lb = new LexerGenerator(status);
+									 NamedPattern[] patterns, boolean allowBacktracking, ProcessingStatus status) {
+		LexerGenerator lb = new LexerGenerator(allowBacktracking, status);
 		return lb.generate(states, lexerRules, patterns);
 	}
 }

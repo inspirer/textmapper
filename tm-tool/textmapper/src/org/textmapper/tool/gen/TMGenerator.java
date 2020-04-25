@@ -131,7 +131,8 @@ public final class TMGenerator {
 					return false;
 				}
 			}
-			LexerData l = LapgCore.generateLexer(s.getGrammar(), status);
+			boolean allowBacktracking = !Boolean.TRUE.equals(genOptions.get("nonBacktracking"));
+			LexerData l = LapgCore.generateLexer(s.getGrammar(), allowBacktracking, status);
 			if (l == null) {
 				return false;
 			}

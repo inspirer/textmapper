@@ -48,7 +48,7 @@ public class GrammarTest extends LapgTestCase {
 		assertNotNull(g.getGrammar());
 
 		LexerData l = LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
-				g.getGrammar().getPatterns(), new TestStatus());
+				g.getGrammar().getPatterns(), true /*allowBacktracking*/, new TestStatus());
 		ParserData r = Builder.compile(g.getGrammar(), new TestStatus());
 		return new GenericParseContext(g.getGrammar(), r, l);
 	}

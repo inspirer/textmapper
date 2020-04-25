@@ -15,6 +15,8 @@
  */
 package org.textmapper.lapg.lex;
 
+import org.textmapper.lapg.api.regex.RegexPart;
+
 /**
  * evgeny, 6/10/12
  */
@@ -22,10 +24,12 @@ public class RegexInstruction {
 
 	private final RegexInstructionKind kind;
 	private final int value;
+	private final RegexPart origin;
 
-	public RegexInstruction(RegexInstructionKind kind, int value) {
+	public RegexInstruction(RegexInstructionKind kind, int value, RegexPart origin) {
 		this.kind = kind;
 		this.value = value;
+		this.origin = origin;
 	}
 
 	public RegexInstructionKind getKind() {
@@ -34,6 +38,10 @@ public class RegexInstruction {
 
 	public int getValue() {
 		return value;
+	}
+
+	public RegexPart getOrigin() {
+		return origin;
 	}
 
 	@Override

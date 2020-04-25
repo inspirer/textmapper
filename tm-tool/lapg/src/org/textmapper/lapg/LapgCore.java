@@ -55,8 +55,8 @@ public class LapgCore {
 		return Builder.compile(g, status);
 	}
 
-	public static LexerData generateLexer(Grammar g, ProcessingStatus status) {
-		return LexerGenerator.generate(g.getLexerStates(), g.getLexerRules(), g.getPatterns(), status);
+	public static LexerData generateLexer(Grammar g, boolean allowBacktracking, ProcessingStatus status) {
+		return LexerGenerator.generate(g.getLexerStates(), g.getLexerRules(), g.getPatterns(), allowBacktracking, status);
 	}
 
 	/**

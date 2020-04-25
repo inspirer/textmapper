@@ -140,57 +140,57 @@ public class RegexpParseTest {
 			RegexpCompiler rp = createTestCompiler();
 			RegexInstruction[] result = rp.compile(0, parseRegexp("()"));
 			assertArrayEquals(new RegexInstruction[]{
-					new RegexInstruction(RegexInstructionKind.Done, 0),
+					new RegexInstruction(RegexInstructionKind.Done, 0, null /*origin*/),
 			}, result);
 
 			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(a|)"));
 			assertArrayEquals(new RegexInstruction[]{
-					new RegexInstruction(RegexInstructionKind.LeftParen, 3),
-					new RegexInstruction(RegexInstructionKind.Symbol, 'a'),
-					new RegexInstruction(RegexInstructionKind.Or, 0),
-					new RegexInstruction(RegexInstructionKind.RightParen, 0),
-					new RegexInstruction(RegexInstructionKind.Done, 0),
+					new RegexInstruction(RegexInstructionKind.LeftParen, 3, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Symbol, 'a', null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Or, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Done, 0, null /*origin*/),
 			}, result);
 
 			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(.)"));
 			assertArrayEquals(new RegexInstruction[]{
-					new RegexInstruction(RegexInstructionKind.Any, 0),
-					new RegexInstruction(RegexInstructionKind.Done, 0),
+					new RegexInstruction(RegexInstructionKind.Any, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Done, 0, null /*origin*/),
 			}, result);
 
 			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(.)+"));
 			assertArrayEquals(new RegexInstruction[]{
-					new RegexInstruction(RegexInstructionKind.LeftParen, 2),
-					new RegexInstruction(RegexInstructionKind.Any, 0),
-					new RegexInstruction(RegexInstructionKind.RightParen, 0),
-					new RegexInstruction(RegexInstructionKind.OneOrMore, 0),
-					new RegexInstruction(RegexInstructionKind.Done, 0),
+					new RegexInstruction(RegexInstructionKind.LeftParen, 2, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Any, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.OneOrMore, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Done, 0, null /*origin*/),
 			}, result);
 
 			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp(".+"));
 			assertArrayEquals(new RegexInstruction[]{
-					new RegexInstruction(RegexInstructionKind.LeftParen, 2),
-					new RegexInstruction(RegexInstructionKind.Any, 0),
-					new RegexInstruction(RegexInstructionKind.RightParen, 0),
-					new RegexInstruction(RegexInstructionKind.OneOrMore, 0),
-					new RegexInstruction(RegexInstructionKind.Done, 0),
+					new RegexInstruction(RegexInstructionKind.LeftParen, 2, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Any, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.OneOrMore, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Done, 0, null /*origin*/),
 			}, result);
 
 			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(abc|)"));
 
 			assertArrayEquals(new RegexInstruction[]{
-					new RegexInstruction(RegexInstructionKind.LeftParen, 5),
-					new RegexInstruction(RegexInstructionKind.Symbol, 'a'),
-					new RegexInstruction(RegexInstructionKind.Symbol, 'b'),
-					new RegexInstruction(RegexInstructionKind.Symbol, 'c'),
-					new RegexInstruction(RegexInstructionKind.Or, 0),
-					new RegexInstruction(RegexInstructionKind.RightParen, 0),
-					new RegexInstruction(RegexInstructionKind.Done, 0),
+					new RegexInstruction(RegexInstructionKind.LeftParen, 5, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Symbol, 'a', null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Symbol, 'b', null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Symbol, 'c', null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Or, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0, null /*origin*/),
+					new RegexInstruction(RegexInstructionKind.Done, 0, null /*origin*/),
 			}, result);
 
 		} catch (RegexParseException e) {

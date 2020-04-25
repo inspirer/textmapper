@@ -158,14 +158,14 @@ public class LexerGeneratorTest {
 
 	private void checkMatch(String regex, String sample, boolean expected) {
 		TestRule[] input = {new TestRule(0, 0, "test", LEXER_STATES[0], regex)};
-		LexerData lt = LexerGenerator.generate(LEXER_STATES, input, NO_PATTERNS, new TestStatus());
+		LexerData lt = LexerGenerator.generate(LEXER_STATES, input, NO_PATTERNS, true /*allowBacktracking*/, new TestStatus());
 		int token = nextToken(lt, sample, input);
 		assertEquals(sample + " !~ /" + regex, expected, token == 0);
 	}
 
 	@Test
 	public void testGenerator() {
-		LexerData lt = LexerGenerator.generate(LEXER_STATES, INPUT1, NO_PATTERNS, new TestStatus
+		LexerData lt = LexerGenerator.generate(LEXER_STATES, INPUT1, NO_PATTERNS, true /*allowBacktracking*/, new TestStatus
 				());
 		for (TestRule tl : INPUT1) {
 			for (String s : tl.getSamples()) {
@@ -182,7 +182,7 @@ public class LexerGeneratorTest {
 				"",
 				"lexergentest,3: `empty' accepts empty text\n" +
 						"lexergentest,1: two rules are identical: string and number\n");
-		LexerGenerator.generate(LEXER_STATES, ERRINPUT, NO_PATTERNS, notifier);
+		LexerGenerator.generate(LEXER_STATES, ERRINPUT, NO_PATTERNS, true /*allowBacktracking*/, notifier);
 		notifier.assertDone();
 
 	}

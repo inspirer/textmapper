@@ -251,7 +251,7 @@ class RegexMatcherImpl implements RegexMatcher {
 		}
 
 		@Override
-		public void yield(RegexPart part, boolean optional, boolean multiple) {
+		public void yield(RegexPart part, boolean optional, boolean multiple, RegexPart origin) {
 			int startIndex = index();
 			part.accept(this);
 			if (optional) {

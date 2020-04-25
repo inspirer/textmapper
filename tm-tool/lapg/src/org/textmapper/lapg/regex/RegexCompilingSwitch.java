@@ -43,15 +43,15 @@ public abstract class RegexCompilingSwitch extends RegexSwitch<Void> {
 		assert min == 0 || min == 1;
 
 		while (max > 1) {
-			yield(c.getInner(), true, false);
+			yield(c.getInner(), true, false, c);
 			max--;
 		}
 
 		assert max == -1 || max == 1;
 
-		yield(c.getInner(), min == 0, max == -1);
+		yield(c.getInner(), min == 0, max == -1, c);
 		return null;
 	}
 
-	public abstract void yield(RegexPart part, boolean optional, boolean multiple);
+	public abstract void yield(RegexPart part, boolean optional, boolean multiple, RegexPart origin);
 }

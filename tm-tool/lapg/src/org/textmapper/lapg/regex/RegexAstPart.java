@@ -46,6 +46,11 @@ abstract class RegexAstPart implements RegexPart {
 	}
 
 	@Override
+	public TextSource getSource() {
+		return source;
+	}
+
+	@Override
 	public String getText() {
 		return source.getText(offset, endoffset);
 	}

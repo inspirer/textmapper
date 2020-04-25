@@ -137,7 +137,7 @@ public class InputTest extends LapgTestCase {
 						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
-				g.getGrammar().getPatterns(), ts);
+				g.getGrammar().getPatterns(), true /*allowBacktracking*/, ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -160,7 +160,7 @@ public class InputTest extends LapgTestCase {
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
-				g.getGrammar().getPatterns(), ts);
+				g.getGrammar().getPatterns(), true /*allowBacktracking*/, ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -188,7 +188,7 @@ public class InputTest extends LapgTestCase {
 
 		ts.reset("", "");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
-				g.getGrammar().getPatterns(), ts);
+				g.getGrammar().getPatterns(), true /*allowBacktracking*/, ts);
 		Builder.compile(g.getGrammar(), ts);
 		ts.assertDone();
 
@@ -218,7 +218,7 @@ public class InputTest extends LapgTestCase {
 				"    expr : expr '/' expr\n" +
 				"\n", "");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
-				g.getGrammar().getPatterns(), ts);
+				g.getGrammar().getPatterns(), true /*allowBacktracking*/, ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();

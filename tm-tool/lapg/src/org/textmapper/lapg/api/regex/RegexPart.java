@@ -15,6 +15,8 @@
  */
 package org.textmapper.lapg.api.regex;
 
+import org.textmapper.lapg.regex.RegexDefTree.TextSource;
+
 public interface RegexPart {
 
 	/**
@@ -32,4 +34,8 @@ public interface RegexPart {
 	<T> T accept(RegexSwitch<T> switch_);
 
 	String getText();
+
+	int getOffset();
+
+	TextSource getSource();
 }
