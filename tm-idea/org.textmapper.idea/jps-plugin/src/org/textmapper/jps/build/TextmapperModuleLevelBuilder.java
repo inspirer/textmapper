@@ -62,6 +62,12 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 		super(BuilderCategory.SOURCE_GENERATOR);
 	}
 
+	@NotNull
+	@Override
+	public List<String> getCompilableFileExtensions() {
+		return Collections.singletonList("tm");
+	}
+
 	@Override
 	public void buildStarted(final CompileContext context) {
 		context.addBuildListener(new BuildListener() {

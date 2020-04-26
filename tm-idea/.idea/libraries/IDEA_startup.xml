@@ -7,7 +7,6 @@
       <root url="jar://$APPLICATION_HOME_DIR$/lib/idea_rt.jar!/" />
       <root url="jar://$APPLICATION_HOME_DIR$/lib/jdom.jar!/" />
       <root url="jar://$APPLICATION_HOME_DIR$/lib/log4j.jar!/" />
-      <root url="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/" />
       <root url="jar://$APPLICATION_HOME_DIR$/lib/trove4j.jar!/" />
       <root url="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/" />
     </CLASSES>
