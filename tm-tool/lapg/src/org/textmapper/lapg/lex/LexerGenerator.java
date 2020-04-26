@@ -502,7 +502,7 @@ public class LexerGenerator {
 					if (index == null) {
 						checkpoints.put(cp, index = checkpoints.size());
 						if (!this.allowBacktracking) {
-							StringBuilder sb = new StringBuilder("Needs backtracking since the following state(s) do not produce complete tokens:");
+							StringBuilder sb = new StringBuilder("Needs backtracking since the following state(s) are prefixes of valid tokens but are not valid tokens themselves:");
 							for (int csval : statesArr[s.action[i]].set) {
 								if (csval == -1) break;
 								int lex = lsym[csval];
@@ -533,6 +533,7 @@ public class LexerGenerator {
 									sb.append(" at ").append(origin.getText());
 								}
 							}
+							sb.append("\nConsider removing 'nonBacktracking = true' or reporting these states as 'invalid_token' via separate lexer rules.");
 							status.report(ProcessingStatus.KIND_ERROR, sb.toString(), s.defaultRule);
 						} else if (status.isDebugMode()) {
 							status.debug("Created a checkpoint for " +
