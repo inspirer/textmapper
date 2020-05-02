@@ -64,7 +64,7 @@ var (
 	ExportDecl             = func(t js.NodeType) bool { return t == js.ExportDecl }
 	ExportDefault          = func(t js.NodeType) bool { return t == js.ExportDefault }
 	ExportSpecifier        = func(t js.NodeType) bool { return t == js.ExportSpecifier }
-	ExpressionStmt         = func(t js.NodeType) bool { return t == js.ExpressionStmt }
+	ExprStmt               = func(t js.NodeType) bool { return t == js.ExprStmt }
 	Extends                = func(t js.NodeType) bool { return t == js.Extends }
 	Finally                = func(t js.NodeType) bool { return t == js.Finally }
 	ForBinding             = func(t js.NodeType) bool { return t == js.ForBinding }
@@ -245,11 +245,12 @@ var (
 	BindingPattern         = OneOf(js.BindingPattern...)
 	CaseClause             = OneOf(js.CaseClause...)
 	ClassElement           = OneOf(js.ClassElement...)
-	Declaration            = OneOf(js.Declaration...)
+	Decl                   = OneOf(js.Decl...)
 	Decorator              = OneOf(js.Decorator...)
 	ElementPattern         = OneOf(js.ElementPattern...)
 	ExportElement          = OneOf(js.ExportElement...)
-	Expression             = OneOf(js.Expression...)
+	Expr                   = OneOf(js.Expr...)
+	IterationStmt          = OneOf(js.IterationStmt...)
 	JSXAttribute           = OneOf(js.JSXAttribute...)
 	JSXAttributeValue      = OneOf(js.JSXAttributeValue...)
 	JSXChild               = OneOf(js.JSXChild...)
@@ -261,8 +262,8 @@ var (
 	PropertyDefinition     = OneOf(js.PropertyDefinition...)
 	PropertyName           = OneOf(js.PropertyName...)
 	PropertyPattern        = OneOf(js.PropertyPattern...)
-	Statement              = OneOf(js.Statement...)
-	StatementListItem      = OneOf(js.StatementListItem...)
+	Stmt                   = OneOf(js.Stmt...)
+	StmtListItem           = OneOf(js.StmtListItem...)
 	TokenSet               = OneOf(js.TokenSet...)
 	TsAmbientElement       = OneOf(js.TsAmbientElement...)
 	TsType                 = OneOf(js.TsType...)

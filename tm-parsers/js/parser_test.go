@@ -420,7 +420,7 @@ var parseTests = []struct {
 		`while(true)«;»`,
 		`do«;» while(true);`,
 	}},
-	{js.Javascript, js.ExpressionStmt, []string{
+	{js.Javascript, js.ExprStmt, []string{
 		`«1+2;» «v();»`,
 		`function a() {
 			«yield»

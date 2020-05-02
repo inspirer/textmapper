@@ -117,8 +117,8 @@ func ToJsNode(n *Node) JsNode {
 		return &ExportDefault{n}
 	case js.ExportSpecifier:
 		return &ExportSpecifier{n}
-	case js.ExpressionStmt:
-		return &ExpressionStmt{n}
+	case js.ExprStmt:
+		return &ExprStmt{n}
 	case js.Extends:
 		return &Extends{n}
 	case js.Finally:

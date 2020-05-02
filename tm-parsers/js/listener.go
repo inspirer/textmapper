@@ -19,62 +19,62 @@ const (
 	This
 	IdentExpr // RefIdent
 	Regexp
-	Parenthesized // Expression? SyntaxProblem?
+	Parenthesized // Expr? SyntaxProblem?
 	Literal
-	ArrayLiteral // list=(Expression)*
+	ArrayLiteral // list=(Expr)*
 	NoElement
-	SpreadElement        // Expression
+	SpreadElement        // Expr
 	ObjectLiteral        // (PropertyDefinition)*
 	ShorthandProperty    // RefIdent
-	Property             // (Modifier)* PropertyName value=Expression
+	Property             // (Modifier)* PropertyName value=Expr
 	ObjectMethod         // (Modifier)* MethodDefinition
-	SpreadProperty       // Expression
+	SpreadProperty       // Expr
 	LiteralPropertyName  // NameIdent?
-	ComputedPropertyName // Expression
-	Initializer          // Expression
-	TemplateLiteral      // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expression)*
-	IndexAccess          // expr=Expression index=Expression
-	PropertyAccess       // expr=Expression selector=RefIdent
-	TaggedTemplate       // tag=Expression literal=TemplateLiteral
-	TsNonNull            // expr=Expression
-	NewExpr              // expr=Expression Arguments?
+	ComputedPropertyName // Expr
+	Initializer          // Expr
+	TemplateLiteral      // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expr)*
+	IndexAccess          // expr=Expr index=Expr
+	PropertyAccess       // expr=Expr selector=RefIdent
+	TaggedTemplate       // tag=Expr literal=TemplateLiteral
+	TsNonNull            // expr=Expr
+	NewExpr              // expr=Expr Arguments?
 	SuperExpr
 	NewTarget
-	CallExpr               // expr=Expression Arguments
+	CallExpr               // expr=Expr Arguments
 	TsDynamicImport        // Arguments
-	Arguments              // TypeArguments? list=(Expression)*
-	OptionalIndexAccess    // expr=Expression index=Expression
-	OptionalPropertyAccess // expr=Expression selector=RefIdent
-	OptionalCallExpr       // expr=Expression Arguments
-	OptionalTaggedTemplate // tag=Expression literal=TemplateLiteral
-	PostInc                // Expression
-	PostDec                // Expression
-	PreInc                 // Expression
-	PreDec                 // Expression
-	UnaryExpr              // Expression
-	TsCastExpr             // TsType Expression
-	AdditiveExpr           // left=Expression right=Expression
-	ShiftExpr              // left=Expression right=Expression
-	MultiplicativeExpr     // left=Expression right=Expression
-	ExponentiationExpr     // left=Expression right=Expression
-	RelationalExpr         // left=Expression right=Expression
-	InstanceOfExpr         // left=Expression right=Expression
-	TsAsExpr               // left=Expression TsType
+	Arguments              // TypeArguments? list=(Expr)*
+	OptionalIndexAccess    // expr=Expr index=Expr
+	OptionalPropertyAccess // expr=Expr selector=RefIdent
+	OptionalCallExpr       // expr=Expr Arguments
+	OptionalTaggedTemplate // tag=Expr literal=TemplateLiteral
+	PostInc                // Expr
+	PostDec                // Expr
+	PreInc                 // Expr
+	PreDec                 // Expr
+	UnaryExpr              // Expr
+	TsCastExpr             // TsType Expr
+	AdditiveExpr           // left=Expr right=Expr
+	ShiftExpr              // left=Expr right=Expr
+	MultiplicativeExpr     // left=Expr right=Expr
+	ExponentiationExpr     // left=Expr right=Expr
+	RelationalExpr         // left=Expr right=Expr
+	InstanceOfExpr         // left=Expr right=Expr
+	TsAsExpr               // left=Expr TsType
 	TsConst
-	TsAsConstExpr   // left=Expression TsConst
-	EqualityExpr    // left=Expression right=Expression
-	BitwiseAND      // left=Expression right=Expression
-	BitwiseXOR      // left=Expression right=Expression
-	BitwiseOR       // left=Expression right=Expression
-	LogicalAND      // left=Expression right=Expression
-	LogicalOR       // left=Expression right=Expression
-	CoalesceExpr    // left=Expression right=Expression
-	InExpr          // left=Expression right=Expression
-	ConditionalExpr // cond=Expression then=Expression else=Expression
-	AssignmentExpr  // left=Expression AssignmentOperator? right=Expression
+	TsAsConstExpr   // left=Expr TsConst
+	EqualityExpr    // left=Expr right=Expr
+	BitwiseAND      // left=Expr right=Expr
+	BitwiseXOR      // left=Expr right=Expr
+	BitwiseOR       // left=Expr right=Expr
+	LogicalAND      // left=Expr right=Expr
+	LogicalOR       // left=Expr right=Expr
+	CoalesceExpr    // left=Expr right=Expr
+	InExpr          // left=Expr right=Expr
+	ConditionalExpr // cond=Expr then=Expr else=Expr
+	AssignmentExpr  // left=Expr AssignmentOperator? right=Expr
 	AssignmentOperator
-	CommaExpr   // left=Expression right=Expression
-	Block       // (CaseClause)* (StatementListItem)*
+	CommaExpr   // left=Expr right=Expr
+	Block       // (CaseClause)* (StmtListItem)*
 	LexicalDecl // LetOrConst (LexicalBinding)+
 	LetOrConst
 	TsExclToken
@@ -82,44 +82,44 @@ const (
 	VariableStmt       // (VariableDecl)+
 	VariableDecl       // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
 	ObjectPattern      // (PropertyPattern)* BindingRestElement?
-	ArrayPattern       // list=(ElementPattern | Expression)* BindingRestElement?
+	ArrayPattern       // list=(ElementPattern | Expr)* BindingRestElement?
 	PropertyBinding    // PropertyName ElementPattern
 	ElementBinding     // BindingPattern Initializer?
 	SingleNameBinding  // NameIdent Initializer?
 	BindingRestElement // NameIdent
 	EmptyStmt
-	ExpressionStmt // Expression
-	IfStmt         // Expression then=Statement else=Statement?
-	DoWhileStmt    // Statement Expression
-	WhileStmt      // Expression Statement
-	ForStmt        // var=Expression? ForCondition ForFinalExpr Statement
+	ExprStmt    // Expr
+	IfStmt      // Expr then=Stmt else=Stmt?
+	DoWhileStmt // Stmt Expr
+	WhileStmt   // Expr Stmt
+	ForStmt     // var=Expr? ForCondition ForFinalExpr Stmt
 	Var
-	ForStmtWithVar   // LetOrConst? Var? (LexicalBinding)* (VariableDecl)* ForCondition ForFinalExpr Statement
-	ForInStmt        // var=Expression object=Expression Statement
-	ForInStmtWithVar // LetOrConst? Var? ForBinding object=Expression Statement
-	ForOfStmt        // var=Expression iterable=Expression Statement
-	ForOfStmtWithVar // LetOrConst? Var? ForBinding iterable=Expression Statement
+	ForStmtWithVar   // LetOrConst? Var? (LexicalBinding)* (VariableDecl)* ForCondition ForFinalExpr Stmt
+	ForInStmt        // var=Expr object=Expr Stmt
+	ForInStmtWithVar // LetOrConst? Var? ForBinding object=Expr Stmt
+	ForOfStmt        // var=Expr iterable=Expr Stmt
+	ForOfStmtWithVar // LetOrConst? Var? ForBinding iterable=Expr Stmt
 	ForBinding       // BindingPattern? NameIdent?
-	ForCondition     // Expression?
-	ForFinalExpr     // Expression?
+	ForCondition     // Expr?
+	ForFinalExpr     // Expr?
 	ContinueStmt     // LabelIdent?
 	BreakStmt        // LabelIdent?
-	ReturnStmt       // Expression?
-	WithStmt         // Expression Statement
-	SwitchStmt       // Expression Block
-	Case             // Expression (StatementListItem)*
-	Default          // (StatementListItem)*
-	LabelledStmt     // LabelIdent Function? Statement?
-	ThrowStmt        // Expression
+	ReturnStmt       // Expr?
+	WithStmt         // Expr Stmt
+	SwitchStmt       // Expr Block
+	Case             // Expr (StmtListItem)*
+	Default          // (StmtListItem)*
+	LabelledStmt     // LabelIdent Function? Stmt?
+	ThrowStmt        // Expr
 	TryStmt          // Block Catch? Finally?
 	Catch            // BindingPattern? NameIdent? Block
 	Finally          // Block
 	DebuggerStmt
 	Function           // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
 	FunctionExpr       // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	Body               // (StatementListItem)*
+	Body               // (StmtListItem)*
 	ArrowFunc          // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
-	ConciseBody        // Expression
+	ConciseBody        // Expr
 	AsyncArrowFunc     // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
 	Method             // PropertyName TypeParameters? Parameters TypeAnnotation? Body
 	Getter             // PropertyName TypeAnnotation? Body
@@ -127,14 +127,14 @@ const (
 	GeneratorMethod    // PropertyName TypeParameters? Parameters TypeAnnotation? Body
 	Generator          // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
 	GeneratorExpr      // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	Yield              // Expression?
+	Yield              // Expr?
 	AsyncMethod        // PropertyName TypeParameters? Parameters TypeAnnotation? Body
 	AsyncFunc          // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
 	AsyncFuncExpr      // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	AwaitExpr          // Expression
+	AwaitExpr          // Expr
 	Class              // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
 	ClassExpr          // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
-	Extends            // Expression? TypeReference?
+	Extends            // Expr? TypeReference?
 	TsImplementsClause // (TypeReference)+
 	ClassBody          // (ClassElement)*
 	Static
@@ -154,9 +154,9 @@ const (
 	NamedImports        // (NamedImport)*
 	ImportSpecifier     // RefIdent? NameIdent
 	ModuleSpecifier
-	ExportDecl            // (Modifier)* TsTypeOnly? VariableStmt? Declaration? ExportClause? NameIdent? ModuleSpecifier?
-	ExportDefault         // Expression? (Modifier)* Declaration?
-	TsExportAssignment    // Expression
+	ExportDecl            // (Modifier)* TsTypeOnly? VariableStmt? Decl? ExportClause? NameIdent? ModuleSpecifier?
+	ExportDefault         // Expr? (Modifier)* Decl?
+	TsExportAssignment    // Expr
 	TsNamespaceExportDecl // NameIdent
 	ExportClause          // (ExportElement)*
 	ExportSpecifier       // RefIdent NameIdent?
@@ -168,12 +168,12 @@ const (
 	JSXClosingElement     // JSXElementName
 	JSXElementName
 	JSXNormalAttribute // JSXAttributeName JSXAttributeValue?
-	JSXSpreadAttribute // Expression
+	JSXSpreadAttribute // Expr
 	JSXAttributeName
 	JSXLiteral
-	JSXExpr // Expression?
+	JSXExpr // Expr?
 	JSXText
-	JSXSpreadExpr    // Expression?
+	JSXSpreadExpr    // Expr?
 	TsConditional    // check=TsType ext=TsType truet=TsType falset=TsType
 	TypePredicate    // paramref=RefIdent TsType
 	AssertsType      // RefIdent TsType?
@@ -221,7 +221,7 @@ const (
 	TsInterfaceExtends   // (TypeReference)+
 	TsEnum               // TsConst? NameIdent TsEnumBody
 	TsEnumBody           // (TsEnumMember)*
-	TsEnumMember         // PropertyName Expression?
+	TsEnumMember         // PropertyName Expr?
 	TsNamespace          // (NameIdent)+ TsNamespaceBody
 	TsNamespaceBody      // (ModuleItem)*
 	TsImportAliasDecl    // NameIdent ref=(RefIdent)+
@@ -326,7 +326,7 @@ var nodeTypeStr = [...]string{
 	"SingleNameBinding",
 	"BindingRestElement",
 	"EmptyStmt",
-	"ExpressionStmt",
+	"ExprStmt",
 	"IfStmt",
 	"DoWhileStmt",
 	"WhileStmt",
@@ -509,7 +509,7 @@ var ClassElement = []NodeType{
 	TsIndexMemberDecl,
 }
 
-var Declaration = []NodeType{
+var Decl = []NodeType{
 	AsyncFunc,
 	Class,
 	Function,
@@ -550,7 +550,7 @@ var ExportElement = []NodeType{
 	SyntaxProblem,
 }
 
-var Expression = []NodeType{
+var Expr = []NodeType{
 	AdditiveExpr,
 	ArrayLiteral,
 	ArrowFunc,
@@ -610,6 +610,17 @@ var Expression = []NodeType{
 	Yield,
 }
 
+var IterationStmt = []NodeType{
+	DoWhileStmt,
+	ForInStmt,
+	ForInStmtWithVar,
+	ForOfStmt,
+	ForOfStmtWithVar,
+	ForStmt,
+	ForStmtWithVar,
+	WhileStmt,
+}
+
 var JSXAttribute = []NodeType{
 	JSXNormalAttribute,
 	JSXSpreadAttribute,
@@ -657,7 +668,7 @@ var ModuleItem = []NodeType{
 	EmptyStmt,
 	ExportDecl,
 	ExportDefault,
-	ExpressionStmt,
+	ExprStmt,
 	ForInStmt,
 	ForInStmtWithVar,
 	ForOfStmt,
@@ -730,14 +741,14 @@ var PropertyPattern = []NodeType{
 	SyntaxProblem,
 }
 
-var Statement = []NodeType{
+var Stmt = []NodeType{
 	Block,
 	BreakStmt,
 	ContinueStmt,
 	DebuggerStmt,
 	DoWhileStmt,
 	EmptyStmt,
-	ExpressionStmt,
+	ExprStmt,
 	ForInStmt,
 	ForInStmtWithVar,
 	ForOfStmt,
@@ -755,7 +766,7 @@ var Statement = []NodeType{
 	WithStmt,
 }
 
-var StatementListItem = []NodeType{
+var StmtListItem = []NodeType{
 	AsyncFunc,
 	Block,
 	BreakStmt,
@@ -764,7 +775,7 @@ var StatementListItem = []NodeType{
 	DebuggerStmt,
 	DoWhileStmt,
 	EmptyStmt,
-	ExpressionStmt,
+	ExprStmt,
 	ForInStmt,
 	ForInStmtWithVar,
 	ForOfStmt,
@@ -4159,9 +4170,9 @@ var ruleNodeType = [...]NodeType{
 	SingleNameBinding,      // SingleNameBinding_Yield : BindingIdentifier Initializeropt_In_Yield
 	BindingRestElement,     // BindingRestElement : '...' BindingIdentifier
 	EmptyStmt,              // EmptyStatement : ';' .emptyStatement
-	ExpressionStmt,         // ExpressionStatement : Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ';'
-	ExpressionStmt,         // ExpressionStatement_Await : Expression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ';'
-	ExpressionStmt,         // ExpressionStatement_Yield : Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield ';'
+	ExprStmt,               // ExpressionStatement : Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ';'
+	ExprStmt,               // ExpressionStatement_Await : Expression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ';'
+	ExprStmt,               // ExpressionStatement_Yield : Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield ';'
 	IfStmt,                 // IfStatement : 'if' '(' Expression_In ')' Statement 'else' Statement
 	IfStmt,                 // IfStatement : 'if' '(' Expression_In ')' Statement %prec 'else'
 	IfStmt,                 // IfStatement_Await : 'if' '(' Expression_Await_In ')' Statement_Await 'else' Statement_Await

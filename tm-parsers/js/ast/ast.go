@@ -76,7 +76,7 @@ func (n ExportClause) JsNode() *Node           { return n.Node }
 func (n ExportDecl) JsNode() *Node             { return n.Node }
 func (n ExportDefault) JsNode() *Node          { return n.Node }
 func (n ExportSpecifier) JsNode() *Node        { return n.Node }
-func (n ExpressionStmt) JsNode() *Node         { return n.Node }
+func (n ExprStmt) JsNode() *Node               { return n.Node }
 func (n Extends) JsNode() *Node                { return n.Node }
 func (n Finally) JsNode() *Node                { return n.Node }
 func (n ForBinding) JsNode() *Node             { return n.Node }
@@ -289,36 +289,36 @@ func (MemberVar) classElementNode()         {}
 func (TsIndexMemberDecl) classElementNode() {}
 func (NilNode) classElementNode()           {}
 
-type Declaration interface {
+type Decl interface {
 	JsNode
-	declarationNode()
+	declNode()
 }
 
-// declarationNode() ensures that only the following types can be
-// assigned to Declaration.
+// declNode() ensures that only the following types can be
+// assigned to Decl.
 //
-func (AsyncFunc) declarationNode()            {}
-func (Class) declarationNode()                {}
-func (Function) declarationNode()             {}
-func (Generator) declarationNode()            {}
-func (LexicalDecl) declarationNode()          {}
-func (TsAmbientClass) declarationNode()       {}
-func (TsAmbientEnum) declarationNode()        {}
-func (TsAmbientExportDecl) declarationNode()  {}
-func (TsAmbientFunc) declarationNode()        {}
-func (TsAmbientGlobal) declarationNode()      {}
-func (TsAmbientImportAlias) declarationNode() {}
-func (TsAmbientInterface) declarationNode()   {}
-func (TsAmbientModule) declarationNode()      {}
-func (TsAmbientNamespace) declarationNode()   {}
-func (TsAmbientTypeAlias) declarationNode()   {}
-func (TsAmbientVar) declarationNode()         {}
-func (TsEnum) declarationNode()               {}
-func (TsImportAliasDecl) declarationNode()    {}
-func (TsInterface) declarationNode()          {}
-func (TsNamespace) declarationNode()          {}
-func (TypeAliasDecl) declarationNode()        {}
-func (NilNode) declarationNode()              {}
+func (AsyncFunc) declNode()            {}
+func (Class) declNode()                {}
+func (Function) declNode()             {}
+func (Generator) declNode()            {}
+func (LexicalDecl) declNode()          {}
+func (TsAmbientClass) declNode()       {}
+func (TsAmbientEnum) declNode()        {}
+func (TsAmbientExportDecl) declNode()  {}
+func (TsAmbientFunc) declNode()        {}
+func (TsAmbientGlobal) declNode()      {}
+func (TsAmbientImportAlias) declNode() {}
+func (TsAmbientInterface) declNode()   {}
+func (TsAmbientModule) declNode()      {}
+func (TsAmbientNamespace) declNode()   {}
+func (TsAmbientTypeAlias) declNode()   {}
+func (TsAmbientVar) declNode()         {}
+func (TsEnum) declNode()               {}
+func (TsImportAliasDecl) declNode()    {}
+func (TsInterface) declNode()          {}
+func (TsNamespace) declNode()          {}
+func (TypeAliasDecl) declNode()        {}
+func (NilNode) declNode()              {}
 
 type Decorator interface {
 	JsNode
@@ -358,72 +358,90 @@ func (ExportSpecifier) exportElementNode() {}
 func (SyntaxProblem) exportElementNode()   {}
 func (NilNode) exportElementNode()         {}
 
-type Expression interface {
+type Expr interface {
 	JsNode
-	expressionNode()
+	exprNode()
 }
 
-// expressionNode() ensures that only the following types can be
-// assigned to Expression.
+// exprNode() ensures that only the following types can be
+// assigned to Expr.
 //
-func (AdditiveExpr) expressionNode()           {}
-func (ArrayLiteral) expressionNode()           {}
-func (ArrowFunc) expressionNode()              {}
-func (AssignmentExpr) expressionNode()         {}
-func (AsyncArrowFunc) expressionNode()         {}
-func (AsyncFuncExpr) expressionNode()          {}
-func (AwaitExpr) expressionNode()              {}
-func (BitwiseAND) expressionNode()             {}
-func (BitwiseOR) expressionNode()              {}
-func (BitwiseXOR) expressionNode()             {}
-func (CallExpr) expressionNode()               {}
-func (ClassExpr) expressionNode()              {}
-func (CoalesceExpr) expressionNode()           {}
-func (CommaExpr) expressionNode()              {}
-func (ConditionalExpr) expressionNode()        {}
-func (EqualityExpr) expressionNode()           {}
-func (ExponentiationExpr) expressionNode()     {}
-func (FunctionExpr) expressionNode()           {}
-func (GeneratorExpr) expressionNode()          {}
-func (IdentExpr) expressionNode()              {}
-func (InExpr) expressionNode()                 {}
-func (IndexAccess) expressionNode()            {}
-func (InstanceOfExpr) expressionNode()         {}
-func (JSXElement) expressionNode()             {}
-func (Literal) expressionNode()                {}
-func (LogicalAND) expressionNode()             {}
-func (LogicalOR) expressionNode()              {}
-func (MultiplicativeExpr) expressionNode()     {}
-func (NewExpr) expressionNode()                {}
-func (NewTarget) expressionNode()              {}
-func (NoElement) expressionNode()              {}
-func (ObjectLiteral) expressionNode()          {}
-func (OptionalCallExpr) expressionNode()       {}
-func (OptionalIndexAccess) expressionNode()    {}
-func (OptionalPropertyAccess) expressionNode() {}
-func (OptionalTaggedTemplate) expressionNode() {}
-func (Parenthesized) expressionNode()          {}
-func (PostDec) expressionNode()                {}
-func (PostInc) expressionNode()                {}
-func (PreDec) expressionNode()                 {}
-func (PreInc) expressionNode()                 {}
-func (PropertyAccess) expressionNode()         {}
-func (Regexp) expressionNode()                 {}
-func (RelationalExpr) expressionNode()         {}
-func (ShiftExpr) expressionNode()              {}
-func (SpreadElement) expressionNode()          {}
-func (SuperExpr) expressionNode()              {}
-func (TaggedTemplate) expressionNode()         {}
-func (TemplateLiteral) expressionNode()        {}
-func (This) expressionNode()                   {}
-func (TsAsConstExpr) expressionNode()          {}
-func (TsAsExpr) expressionNode()               {}
-func (TsCastExpr) expressionNode()             {}
-func (TsDynamicImport) expressionNode()        {}
-func (TsNonNull) expressionNode()              {}
-func (UnaryExpr) expressionNode()              {}
-func (Yield) expressionNode()                  {}
-func (NilNode) expressionNode()                {}
+func (AdditiveExpr) exprNode()           {}
+func (ArrayLiteral) exprNode()           {}
+func (ArrowFunc) exprNode()              {}
+func (AssignmentExpr) exprNode()         {}
+func (AsyncArrowFunc) exprNode()         {}
+func (AsyncFuncExpr) exprNode()          {}
+func (AwaitExpr) exprNode()              {}
+func (BitwiseAND) exprNode()             {}
+func (BitwiseOR) exprNode()              {}
+func (BitwiseXOR) exprNode()             {}
+func (CallExpr) exprNode()               {}
+func (ClassExpr) exprNode()              {}
+func (CoalesceExpr) exprNode()           {}
+func (CommaExpr) exprNode()              {}
+func (ConditionalExpr) exprNode()        {}
+func (EqualityExpr) exprNode()           {}
+func (ExponentiationExpr) exprNode()     {}
+func (FunctionExpr) exprNode()           {}
+func (GeneratorExpr) exprNode()          {}
+func (IdentExpr) exprNode()              {}
+func (InExpr) exprNode()                 {}
+func (IndexAccess) exprNode()            {}
+func (InstanceOfExpr) exprNode()         {}
+func (JSXElement) exprNode()             {}
+func (Literal) exprNode()                {}
+func (LogicalAND) exprNode()             {}
+func (LogicalOR) exprNode()              {}
+func (MultiplicativeExpr) exprNode()     {}
+func (NewExpr) exprNode()                {}
+func (NewTarget) exprNode()              {}
+func (NoElement) exprNode()              {}
+func (ObjectLiteral) exprNode()          {}
+func (OptionalCallExpr) exprNode()       {}
+func (OptionalIndexAccess) exprNode()    {}
+func (OptionalPropertyAccess) exprNode() {}
+func (OptionalTaggedTemplate) exprNode() {}
+func (Parenthesized) exprNode()          {}
+func (PostDec) exprNode()                {}
+func (PostInc) exprNode()                {}
+func (PreDec) exprNode()                 {}
+func (PreInc) exprNode()                 {}
+func (PropertyAccess) exprNode()         {}
+func (Regexp) exprNode()                 {}
+func (RelationalExpr) exprNode()         {}
+func (ShiftExpr) exprNode()              {}
+func (SpreadElement) exprNode()          {}
+func (SuperExpr) exprNode()              {}
+func (TaggedTemplate) exprNode()         {}
+func (TemplateLiteral) exprNode()        {}
+func (This) exprNode()                   {}
+func (TsAsConstExpr) exprNode()          {}
+func (TsAsExpr) exprNode()               {}
+func (TsCastExpr) exprNode()             {}
+func (TsDynamicImport) exprNode()        {}
+func (TsNonNull) exprNode()              {}
+func (UnaryExpr) exprNode()              {}
+func (Yield) exprNode()                  {}
+func (NilNode) exprNode()                {}
+
+type IterationStmt interface {
+	JsNode
+	iterationStmtNode()
+}
+
+// iterationStmtNode() ensures that only the following types can be
+// assigned to IterationStmt.
+//
+func (DoWhileStmt) iterationStmtNode()      {}
+func (ForInStmt) iterationStmtNode()        {}
+func (ForInStmtWithVar) iterationStmtNode() {}
+func (ForOfStmt) iterationStmtNode()        {}
+func (ForOfStmtWithVar) iterationStmtNode() {}
+func (ForStmt) iterationStmtNode()          {}
+func (ForStmtWithVar) iterationStmtNode()   {}
+func (WhileStmt) iterationStmtNode()        {}
+func (NilNode) iterationStmtNode()          {}
 
 type JSXAttribute interface {
 	JsNode
@@ -514,7 +532,7 @@ func (DoWhileStmt) moduleItemNode()           {}
 func (EmptyStmt) moduleItemNode()             {}
 func (ExportDecl) moduleItemNode()            {}
 func (ExportDefault) moduleItemNode()         {}
-func (ExpressionStmt) moduleItemNode()        {}
+func (ExprStmt) moduleItemNode()              {}
 func (ForInStmt) moduleItemNode()             {}
 func (ForInStmtWithVar) moduleItemNode()      {}
 func (ForOfStmt) moduleItemNode()             {}
@@ -622,91 +640,91 @@ func (SingleNameBinding) propertyPatternNode() {}
 func (SyntaxProblem) propertyPatternNode()     {}
 func (NilNode) propertyPatternNode()           {}
 
-type Statement interface {
+type Stmt interface {
 	JsNode
-	statementNode()
+	stmtNode()
 }
 
-// statementNode() ensures that only the following types can be
-// assigned to Statement.
+// stmtNode() ensures that only the following types can be
+// assigned to Stmt.
 //
-func (Block) statementNode()            {}
-func (BreakStmt) statementNode()        {}
-func (ContinueStmt) statementNode()     {}
-func (DebuggerStmt) statementNode()     {}
-func (DoWhileStmt) statementNode()      {}
-func (EmptyStmt) statementNode()        {}
-func (ExpressionStmt) statementNode()   {}
-func (ForInStmt) statementNode()        {}
-func (ForInStmtWithVar) statementNode() {}
-func (ForOfStmt) statementNode()        {}
-func (ForOfStmtWithVar) statementNode() {}
-func (ForStmt) statementNode()          {}
-func (ForStmtWithVar) statementNode()   {}
-func (IfStmt) statementNode()           {}
-func (LabelledStmt) statementNode()     {}
-func (ReturnStmt) statementNode()       {}
-func (SwitchStmt) statementNode()       {}
-func (ThrowStmt) statementNode()        {}
-func (TryStmt) statementNode()          {}
-func (VariableStmt) statementNode()     {}
-func (WhileStmt) statementNode()        {}
-func (WithStmt) statementNode()         {}
-func (NilNode) statementNode()          {}
+func (Block) stmtNode()            {}
+func (BreakStmt) stmtNode()        {}
+func (ContinueStmt) stmtNode()     {}
+func (DebuggerStmt) stmtNode()     {}
+func (DoWhileStmt) stmtNode()      {}
+func (EmptyStmt) stmtNode()        {}
+func (ExprStmt) stmtNode()         {}
+func (ForInStmt) stmtNode()        {}
+func (ForInStmtWithVar) stmtNode() {}
+func (ForOfStmt) stmtNode()        {}
+func (ForOfStmtWithVar) stmtNode() {}
+func (ForStmt) stmtNode()          {}
+func (ForStmtWithVar) stmtNode()   {}
+func (IfStmt) stmtNode()           {}
+func (LabelledStmt) stmtNode()     {}
+func (ReturnStmt) stmtNode()       {}
+func (SwitchStmt) stmtNode()       {}
+func (ThrowStmt) stmtNode()        {}
+func (TryStmt) stmtNode()          {}
+func (VariableStmt) stmtNode()     {}
+func (WhileStmt) stmtNode()        {}
+func (WithStmt) stmtNode()         {}
+func (NilNode) stmtNode()          {}
 
-type StatementListItem interface {
+type StmtListItem interface {
 	JsNode
-	statementListItemNode()
+	stmtListItemNode()
 }
 
-// statementListItemNode() ensures that only the following types can be
-// assigned to StatementListItem.
+// stmtListItemNode() ensures that only the following types can be
+// assigned to StmtListItem.
 //
-func (AsyncFunc) statementListItemNode()            {}
-func (Block) statementListItemNode()                {}
-func (BreakStmt) statementListItemNode()            {}
-func (Class) statementListItemNode()                {}
-func (ContinueStmt) statementListItemNode()         {}
-func (DebuggerStmt) statementListItemNode()         {}
-func (DoWhileStmt) statementListItemNode()          {}
-func (EmptyStmt) statementListItemNode()            {}
-func (ExpressionStmt) statementListItemNode()       {}
-func (ForInStmt) statementListItemNode()            {}
-func (ForInStmtWithVar) statementListItemNode()     {}
-func (ForOfStmt) statementListItemNode()            {}
-func (ForOfStmtWithVar) statementListItemNode()     {}
-func (ForStmt) statementListItemNode()              {}
-func (ForStmtWithVar) statementListItemNode()       {}
-func (Function) statementListItemNode()             {}
-func (Generator) statementListItemNode()            {}
-func (IfStmt) statementListItemNode()               {}
-func (LabelledStmt) statementListItemNode()         {}
-func (LexicalDecl) statementListItemNode()          {}
-func (ReturnStmt) statementListItemNode()           {}
-func (SwitchStmt) statementListItemNode()           {}
-func (SyntaxProblem) statementListItemNode()        {}
-func (ThrowStmt) statementListItemNode()            {}
-func (TryStmt) statementListItemNode()              {}
-func (TsAmbientClass) statementListItemNode()       {}
-func (TsAmbientEnum) statementListItemNode()        {}
-func (TsAmbientExportDecl) statementListItemNode()  {}
-func (TsAmbientFunc) statementListItemNode()        {}
-func (TsAmbientGlobal) statementListItemNode()      {}
-func (TsAmbientImportAlias) statementListItemNode() {}
-func (TsAmbientInterface) statementListItemNode()   {}
-func (TsAmbientModule) statementListItemNode()      {}
-func (TsAmbientNamespace) statementListItemNode()   {}
-func (TsAmbientTypeAlias) statementListItemNode()   {}
-func (TsAmbientVar) statementListItemNode()         {}
-func (TsEnum) statementListItemNode()               {}
-func (TsImportAliasDecl) statementListItemNode()    {}
-func (TsInterface) statementListItemNode()          {}
-func (TsNamespace) statementListItemNode()          {}
-func (TypeAliasDecl) statementListItemNode()        {}
-func (VariableStmt) statementListItemNode()         {}
-func (WhileStmt) statementListItemNode()            {}
-func (WithStmt) statementListItemNode()             {}
-func (NilNode) statementListItemNode()              {}
+func (AsyncFunc) stmtListItemNode()            {}
+func (Block) stmtListItemNode()                {}
+func (BreakStmt) stmtListItemNode()            {}
+func (Class) stmtListItemNode()                {}
+func (ContinueStmt) stmtListItemNode()         {}
+func (DebuggerStmt) stmtListItemNode()         {}
+func (DoWhileStmt) stmtListItemNode()          {}
+func (EmptyStmt) stmtListItemNode()            {}
+func (ExprStmt) stmtListItemNode()             {}
+func (ForInStmt) stmtListItemNode()            {}
+func (ForInStmtWithVar) stmtListItemNode()     {}
+func (ForOfStmt) stmtListItemNode()            {}
+func (ForOfStmtWithVar) stmtListItemNode()     {}
+func (ForStmt) stmtListItemNode()              {}
+func (ForStmtWithVar) stmtListItemNode()       {}
+func (Function) stmtListItemNode()             {}
+func (Generator) stmtListItemNode()            {}
+func (IfStmt) stmtListItemNode()               {}
+func (LabelledStmt) stmtListItemNode()         {}
+func (LexicalDecl) stmtListItemNode()          {}
+func (ReturnStmt) stmtListItemNode()           {}
+func (SwitchStmt) stmtListItemNode()           {}
+func (SyntaxProblem) stmtListItemNode()        {}
+func (ThrowStmt) stmtListItemNode()            {}
+func (TryStmt) stmtListItemNode()              {}
+func (TsAmbientClass) stmtListItemNode()       {}
+func (TsAmbientEnum) stmtListItemNode()        {}
+func (TsAmbientExportDecl) stmtListItemNode()  {}
+func (TsAmbientFunc) stmtListItemNode()        {}
+func (TsAmbientGlobal) stmtListItemNode()      {}
+func (TsAmbientImportAlias) stmtListItemNode() {}
+func (TsAmbientInterface) stmtListItemNode()   {}
+func (TsAmbientModule) stmtListItemNode()      {}
+func (TsAmbientNamespace) stmtListItemNode()   {}
+func (TsAmbientTypeAlias) stmtListItemNode()   {}
+func (TsAmbientVar) stmtListItemNode()         {}
+func (TsEnum) stmtListItemNode()               {}
+func (TsImportAliasDecl) stmtListItemNode()    {}
+func (TsInterface) stmtListItemNode()          {}
+func (TsNamespace) stmtListItemNode()          {}
+func (TypeAliasDecl) stmtListItemNode()        {}
+func (VariableStmt) stmtListItemNode()         {}
+func (WhileStmt) stmtListItemNode()            {}
+func (WithStmt) stmtListItemNode()             {}
+func (NilNode) stmtListItemNode()              {}
 
 type TsAmbientElement interface {
 	JsNode
@@ -794,12 +812,12 @@ type AdditiveExpr struct {
 	*Node
 }
 
-func (n AdditiveExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n AdditiveExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n AdditiveExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n AdditiveExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type Arguments struct {
@@ -811,11 +829,11 @@ func (n Arguments) TypeArguments() (TypeArguments, bool) {
 	return field, field.IsValid()
 }
 
-func (n Arguments) List() []Expression {
-	nodes := n.Children(selector.Expression)
-	var ret = make([]Expression, 0, len(nodes))
+func (n Arguments) List() []Expr {
+	nodes := n.Children(selector.Expr)
+	var ret = make([]Expr, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(Expression))
+		ret = append(ret, ToJsNode(node).(Expr))
 	}
 	return ret
 }
@@ -824,11 +842,11 @@ type ArrayLiteral struct {
 	*Node
 }
 
-func (n ArrayLiteral) List() []Expression {
-	nodes := n.Children(selector.Expression)
-	var ret = make([]Expression, 0, len(nodes))
+func (n ArrayLiteral) List() []Expr {
+	nodes := n.Children(selector.Expr)
+	var ret = make([]Expr, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(Expression))
+		ret = append(ret, ToJsNode(node).(Expr))
 	}
 	return ret
 }
@@ -910,8 +928,8 @@ type AssignmentExpr struct {
 	*Node
 }
 
-func (n AssignmentExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n AssignmentExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n AssignmentExpr) AssignmentOperator() (AssignmentOperator, bool) {
@@ -919,8 +937,8 @@ func (n AssignmentExpr) AssignmentOperator() (AssignmentOperator, bool) {
 	return field, field.IsValid()
 }
 
-func (n AssignmentExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n AssignmentExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type AssignmentOperator struct {
@@ -1045,8 +1063,8 @@ type AwaitExpr struct {
 	*Node
 }
 
-func (n AwaitExpr) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n AwaitExpr) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type BindingRestElement struct {
@@ -1061,36 +1079,36 @@ type BitwiseAND struct {
 	*Node
 }
 
-func (n BitwiseAND) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n BitwiseAND) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n BitwiseAND) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n BitwiseAND) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type BitwiseOR struct {
 	*Node
 }
 
-func (n BitwiseOR) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n BitwiseOR) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n BitwiseOR) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n BitwiseOR) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type BitwiseXOR struct {
 	*Node
 }
 
-func (n BitwiseXOR) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n BitwiseXOR) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n BitwiseXOR) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n BitwiseXOR) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type Block struct {
@@ -1106,11 +1124,11 @@ func (n Block) CaseClause() []CaseClause {
 	return ret
 }
 
-func (n Block) StatementListItem() []StatementListItem {
-	nodes := n.Children(selector.StatementListItem)
-	var ret = make([]StatementListItem, 0, len(nodes))
+func (n Block) StmtListItem() []StmtListItem {
+	nodes := n.Children(selector.StmtListItem)
+	var ret = make([]StmtListItem, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(StatementListItem))
+		ret = append(ret, ToJsNode(node).(StmtListItem))
 	}
 	return ret
 }
@@ -1119,11 +1137,11 @@ type Body struct {
 	*Node
 }
 
-func (n Body) StatementListItem() []StatementListItem {
-	nodes := n.Children(selector.StatementListItem)
-	var ret = make([]StatementListItem, 0, len(nodes))
+func (n Body) StmtListItem() []StmtListItem {
+	nodes := n.Children(selector.StmtListItem)
+	var ret = make([]StmtListItem, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(StatementListItem))
+		ret = append(ret, ToJsNode(node).(StmtListItem))
 	}
 	return ret
 }
@@ -1141,8 +1159,8 @@ type CallExpr struct {
 	*Node
 }
 
-func (n CallExpr) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n CallExpr) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n CallExpr) Arguments() Arguments {
@@ -1171,15 +1189,15 @@ type Case struct {
 	*Node
 }
 
-func (n Case) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Case) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n Case) StatementListItem() []StatementListItem {
-	nodes := n.Children(selector.StatementListItem)
-	var ret = make([]StatementListItem, 0, len(nodes))
+func (n Case) StmtListItem() []StmtListItem {
+	nodes := n.Children(selector.StmtListItem)
+	var ret = make([]StmtListItem, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(StatementListItem))
+		ret = append(ret, ToJsNode(node).(StmtListItem))
 	}
 	return ret
 }
@@ -1293,56 +1311,56 @@ type CoalesceExpr struct {
 	*Node
 }
 
-func (n CoalesceExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n CoalesceExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n CoalesceExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n CoalesceExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type CommaExpr struct {
 	*Node
 }
 
-func (n CommaExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n CommaExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n CommaExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n CommaExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type ComputedPropertyName struct {
 	*Node
 }
 
-func (n ComputedPropertyName) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ComputedPropertyName) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type ConciseBody struct {
 	*Node
 }
 
-func (n ConciseBody) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ConciseBody) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type ConditionalExpr struct {
 	*Node
 }
 
-func (n ConditionalExpr) Cond() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ConditionalExpr) Cond() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n ConditionalExpr) Then() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n ConditionalExpr) Then() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
-func (n ConditionalExpr) Else() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression).Next(selector.Expression)).(Expression)
+func (n ConditionalExpr) Else() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type ConstructSignature struct {
@@ -1440,11 +1458,11 @@ type Default struct {
 	*Node
 }
 
-func (n Default) StatementListItem() []StatementListItem {
-	nodes := n.Children(selector.StatementListItem)
-	var ret = make([]StatementListItem, 0, len(nodes))
+func (n Default) StmtListItem() []StmtListItem {
+	nodes := n.Children(selector.StmtListItem)
+	var ret = make([]StmtListItem, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(StatementListItem))
+		ret = append(ret, ToJsNode(node).(StmtListItem))
 	}
 	return ret
 }
@@ -1486,12 +1504,12 @@ type DoWhileStmt struct {
 	*Node
 }
 
-func (n DoWhileStmt) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n DoWhileStmt) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
-func (n DoWhileStmt) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n DoWhileStmt) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type ElementBinding struct {
@@ -1519,24 +1537,24 @@ type EqualityExpr struct {
 	*Node
 }
 
-func (n EqualityExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n EqualityExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n EqualityExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n EqualityExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type ExponentiationExpr struct {
 	*Node
 }
 
-func (n ExponentiationExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ExponentiationExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n ExponentiationExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n ExponentiationExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type ExportClause struct {
@@ -1575,8 +1593,8 @@ func (n ExportDecl) VariableStmt() (VariableStmt, bool) {
 	return field, field.IsValid()
 }
 
-func (n ExportDecl) Declaration() (Declaration, bool) {
-	field := ToJsNode(n.Child(selector.Declaration)).(Declaration)
+func (n ExportDecl) Decl() (Decl, bool) {
+	field := ToJsNode(n.Child(selector.Decl)).(Decl)
 	return field, field.JsNode() != nil
 }
 
@@ -1599,8 +1617,8 @@ type ExportDefault struct {
 	*Node
 }
 
-func (n ExportDefault) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ExportDefault) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -1613,8 +1631,8 @@ func (n ExportDefault) Modifier() []Modifier {
 	return ret
 }
 
-func (n ExportDefault) Declaration() (Declaration, bool) {
-	field := ToJsNode(n.Child(selector.Declaration)).(Declaration)
+func (n ExportDefault) Decl() (Decl, bool) {
+	field := ToJsNode(n.Child(selector.Decl)).(Decl)
 	return field, field.JsNode() != nil
 }
 
@@ -1631,20 +1649,20 @@ func (n ExportSpecifier) NameIdent() (NameIdent, bool) {
 	return field, field.IsValid()
 }
 
-type ExpressionStmt struct {
+type ExprStmt struct {
 	*Node
 }
 
-func (n ExpressionStmt) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ExprStmt) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type Extends struct {
 	*Node
 }
 
-func (n Extends) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Extends) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -1679,8 +1697,8 @@ type ForCondition struct {
 	*Node
 }
 
-func (n ForCondition) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForCondition) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -1688,8 +1706,8 @@ type ForFinalExpr struct {
 	*Node
 }
 
-func (n ForFinalExpr) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForFinalExpr) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -1697,16 +1715,16 @@ type ForInStmt struct {
 	*Node
 }
 
-func (n ForInStmt) Var() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForInStmt) Var() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n ForInStmt) Object() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n ForInStmt) Object() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
-func (n ForInStmt) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n ForInStmt) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type ForInStmtWithVar struct {
@@ -1727,28 +1745,28 @@ func (n ForInStmtWithVar) ForBinding() ForBinding {
 	return ForBinding{n.Child(selector.ForBinding)}
 }
 
-func (n ForInStmtWithVar) Object() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForInStmtWithVar) Object() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n ForInStmtWithVar) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n ForInStmtWithVar) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type ForOfStmt struct {
 	*Node
 }
 
-func (n ForOfStmt) Var() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForOfStmt) Var() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n ForOfStmt) Iterable() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n ForOfStmt) Iterable() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
-func (n ForOfStmt) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n ForOfStmt) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type ForOfStmtWithVar struct {
@@ -1769,20 +1787,20 @@ func (n ForOfStmtWithVar) ForBinding() ForBinding {
 	return ForBinding{n.Child(selector.ForBinding)}
 }
 
-func (n ForOfStmtWithVar) Iterable() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForOfStmtWithVar) Iterable() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n ForOfStmtWithVar) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n ForOfStmtWithVar) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type ForStmt struct {
 	*Node
 }
 
-func (n ForStmt) Var() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ForStmt) Var() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -1794,8 +1812,8 @@ func (n ForStmt) ForFinalExpr() ForFinalExpr {
 	return ForFinalExpr{n.Child(selector.ForFinalExpr)}
 }
 
-func (n ForStmt) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n ForStmt) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type ForStmtWithVar struct {
@@ -1838,8 +1856,8 @@ func (n ForStmtWithVar) ForFinalExpr() ForFinalExpr {
 	return ForFinalExpr{n.Child(selector.ForFinalExpr)}
 }
 
-func (n ForStmtWithVar) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n ForStmtWithVar) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type Function struct {
@@ -2022,16 +2040,16 @@ type IfStmt struct {
 	*Node
 }
 
-func (n IfStmt) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n IfStmt) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n IfStmt) Then() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n IfStmt) Then() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
-func (n IfStmt) Else() (Statement, bool) {
-	field := ToJsNode(n.Child(selector.Statement).Next(selector.Statement)).(Statement)
+func (n IfStmt) Else() (Stmt, bool) {
+	field := ToJsNode(n.Child(selector.Stmt).Next(selector.Stmt)).(Stmt)
 	return field, field.JsNode() != nil
 }
 
@@ -2102,24 +2120,24 @@ type InExpr struct {
 	*Node
 }
 
-func (n InExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n InExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n InExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n InExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type IndexAccess struct {
 	*Node
 }
 
-func (n IndexAccess) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n IndexAccess) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n IndexAccess) Index() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n IndexAccess) Index() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type IndexSignature struct {
@@ -2163,20 +2181,20 @@ type Initializer struct {
 	*Node
 }
 
-func (n Initializer) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Initializer) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type InstanceOfExpr struct {
 	*Node
 }
 
-func (n InstanceOfExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n InstanceOfExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n InstanceOfExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n InstanceOfExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type IntersectionType struct {
@@ -2240,8 +2258,8 @@ type JSXExpr struct {
 	*Node
 }
 
-func (n JSXExpr) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n JSXExpr) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -2310,16 +2328,16 @@ type JSXSpreadAttribute struct {
 	*Node
 }
 
-func (n JSXSpreadAttribute) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n JSXSpreadAttribute) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type JSXSpreadExpr struct {
 	*Node
 }
 
-func (n JSXSpreadExpr) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n JSXSpreadExpr) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -2352,8 +2370,8 @@ func (n LabelledStmt) Function() (Function, bool) {
 	return field, field.IsValid()
 }
 
-func (n LabelledStmt) Statement() (Statement, bool) {
-	field := ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n LabelledStmt) Stmt() (Stmt, bool) {
+	field := ToJsNode(n.Child(selector.Stmt)).(Stmt)
 	return field, field.JsNode() != nil
 }
 
@@ -2428,24 +2446,24 @@ type LogicalAND struct {
 	*Node
 }
 
-func (n LogicalAND) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n LogicalAND) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n LogicalAND) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n LogicalAND) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type LogicalOR struct {
 	*Node
 }
 
-func (n LogicalOR) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n LogicalOR) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n LogicalOR) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n LogicalOR) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type MappedType struct {
@@ -2582,12 +2600,12 @@ type MultiplicativeExpr struct {
 	*Node
 }
 
-func (n MultiplicativeExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n MultiplicativeExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n MultiplicativeExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n MultiplicativeExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type NameIdent struct {
@@ -2619,8 +2637,8 @@ type NewExpr struct {
 	*Node
 }
 
-func (n NewExpr) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n NewExpr) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n NewExpr) Arguments() (Arguments, bool) {
@@ -2717,8 +2735,8 @@ type OptionalCallExpr struct {
 	*Node
 }
 
-func (n OptionalCallExpr) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n OptionalCallExpr) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n OptionalCallExpr) Arguments() Arguments {
@@ -2729,20 +2747,20 @@ type OptionalIndexAccess struct {
 	*Node
 }
 
-func (n OptionalIndexAccess) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n OptionalIndexAccess) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n OptionalIndexAccess) Index() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n OptionalIndexAccess) Index() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type OptionalPropertyAccess struct {
 	*Node
 }
 
-func (n OptionalPropertyAccess) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n OptionalPropertyAccess) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n OptionalPropertyAccess) Selector() RefIdent {
@@ -2753,12 +2771,12 @@ type OptionalTaggedTemplate struct {
 	*Node
 }
 
-func (n OptionalTaggedTemplate) Tag() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n OptionalTaggedTemplate) Tag() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n OptionalTaggedTemplate) Literal() TemplateLiteral {
-	return TemplateLiteral{n.Child(selector.Expression).Next(selector.TemplateLiteral)}
+	return TemplateLiteral{n.Child(selector.Expr).Next(selector.TemplateLiteral)}
 }
 
 type Parameters struct {
@@ -2778,8 +2796,8 @@ type Parenthesized struct {
 	*Node
 }
 
-func (n Parenthesized) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Parenthesized) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -2800,32 +2818,32 @@ type PostDec struct {
 	*Node
 }
 
-func (n PostDec) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n PostDec) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type PostInc struct {
 	*Node
 }
 
-func (n PostInc) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n PostInc) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type PreDec struct {
 	*Node
 }
 
-func (n PreDec) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n PreDec) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type PreInc struct {
 	*Node
 }
 
-func (n PreInc) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n PreInc) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type PredefinedType struct {
@@ -2849,16 +2867,16 @@ func (n Property) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n Property) Value() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Property) Value() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type PropertyAccess struct {
 	*Node
 }
 
-func (n PropertyAccess) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n PropertyAccess) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n PropertyAccess) Selector() RefIdent {
@@ -2923,12 +2941,12 @@ type RelationalExpr struct {
 	*Node
 }
 
-func (n RelationalExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n RelationalExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n RelationalExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n RelationalExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type RestParameter struct {
@@ -2956,8 +2974,8 @@ type ReturnStmt struct {
 	*Node
 }
 
-func (n ReturnStmt) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ReturnStmt) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -2981,12 +2999,12 @@ type ShiftExpr struct {
 	*Node
 }
 
-func (n ShiftExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ShiftExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n ShiftExpr) Right() Expression {
-	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+func (n ShiftExpr) Right() Expr {
+	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type ShorthandProperty struct {
@@ -3014,16 +3032,16 @@ type SpreadElement struct {
 	*Node
 }
 
-func (n SpreadElement) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n SpreadElement) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type SpreadProperty struct {
 	*Node
 }
 
-func (n SpreadProperty) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n SpreadProperty) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type Static struct {
@@ -3038,8 +3056,8 @@ type SwitchStmt struct {
 	*Node
 }
 
-func (n SwitchStmt) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n SwitchStmt) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n SwitchStmt) Block() Block {
@@ -3064,12 +3082,12 @@ type TaggedTemplate struct {
 	*Node
 }
 
-func (n TaggedTemplate) Tag() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TaggedTemplate) Tag() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n TaggedTemplate) Literal() TemplateLiteral {
-	return TemplateLiteral{n.Child(selector.Expression).Next(selector.TemplateLiteral)}
+	return TemplateLiteral{n.Child(selector.Expr).Next(selector.TemplateLiteral)}
 }
 
 type TemplateLiteral struct {
@@ -3085,11 +3103,11 @@ func (n TemplateLiteral) Template() []Token {
 	return ret
 }
 
-func (n TemplateLiteral) Substitution() []Expression {
-	nodes := n.Children(selector.Expression)
-	var ret = make([]Expression, 0, len(nodes))
+func (n TemplateLiteral) Substitution() []Expr {
+	nodes := n.Children(selector.Expr)
+	var ret = make([]Expr, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(Expression))
+		ret = append(ret, ToJsNode(node).(Expr))
 	}
 	return ret
 }
@@ -3106,8 +3124,8 @@ type ThrowStmt struct {
 	*Node
 }
 
-func (n ThrowStmt) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n ThrowStmt) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type TryStmt struct {
@@ -3360,8 +3378,8 @@ type TsAsConstExpr struct {
 	*Node
 }
 
-func (n TsAsConstExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TsAsConstExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n TsAsConstExpr) TsConst() TsConst {
@@ -3372,8 +3390,8 @@ type TsAsExpr struct {
 	*Node
 }
 
-func (n TsAsExpr) Left() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TsAsExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 func (n TsAsExpr) TsType() TsType {
@@ -3388,8 +3406,8 @@ func (n TsCastExpr) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-func (n TsCastExpr) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TsCastExpr) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type TsConditional struct {
@@ -3462,8 +3480,8 @@ func (n TsEnumMember) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
 
-func (n TsEnumMember) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TsEnumMember) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 
@@ -3479,8 +3497,8 @@ type TsExportAssignment struct {
 	*Node
 }
 
-func (n TsExportAssignment) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TsExportAssignment) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type TsImplementsClause struct {
@@ -3611,8 +3629,8 @@ type TsNonNull struct {
 	*Node
 }
 
-func (n TsNonNull) Expr() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n TsNonNull) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type TsThisParameter struct {
@@ -3780,8 +3798,8 @@ type UnaryExpr struct {
 	*Node
 }
 
-func (n UnaryExpr) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n UnaryExpr) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type UnionType struct {
@@ -3855,32 +3873,32 @@ type WhileStmt struct {
 	*Node
 }
 
-func (n WhileStmt) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n WhileStmt) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n WhileStmt) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n WhileStmt) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type WithStmt struct {
 	*Node
 }
 
-func (n WithStmt) Expression() Expression {
-	return ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n WithStmt) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
-func (n WithStmt) Statement() Statement {
-	return ToJsNode(n.Child(selector.Statement)).(Statement)
+func (n WithStmt) Stmt() Stmt {
+	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
 }
 
 type Yield struct {
 	*Node
 }
 
-func (n Yield) Expression() (Expression, bool) {
-	field := ToJsNode(n.Child(selector.Expression)).(Expression)
+func (n Yield) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
 }
 

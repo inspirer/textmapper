@@ -437,7 +437,7 @@ LabelIdentifier -> LabelIdent :
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
-PrimaryExpression<Yield, Await, NoAsync> -> Expression /* interface */:
+PrimaryExpression<Yield, Await, NoAsync> -> Expr /* interface */:
     'this'                                                 -> This
   | IdentifierReference                                    -> IdentExpr
   | Literal
@@ -480,11 +480,11 @@ ElementList<Yield, Await> :
 ;
 
 Elision :
-    list+=(',' -> NoElement as Expression)
-  | Elision list+=(',' -> NoElement as Expression)
+    list+=(',' -> NoElement as Expr)
+  | Elision list+=(',' -> NoElement as Expr)
 ;
 
-SpreadElement<Yield, Await> -> Expression /* interface */:
+SpreadElement<Yield, Await> -> Expr /* interface */:
     '...' AssignmentExpression<+In>   -> SpreadElement
 ;
 
@@ -547,7 +547,7 @@ TemplateMiddleList<Yield, Await> :
   | TemplateMiddleList template+=TemplateMiddle substitution+=Expression<+In>
 ;
 
-MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expression /* interface */:
+MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expr /* interface */:
     [!NoLetOnly && !StartWithLet] PrimaryExpression
   | [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
   | [StartWithLet && !NoLetOnly] ('let' -> RefIdent) -> IdentExpr
@@ -562,11 +562,11 @@ MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expression /*
   | [!StartWithLet] 'new' expr=MemberExpression<~NoAsync> Arguments       -> NewExpr
 ;
 
-SuperExpression -> Expression /* interface */:
+SuperExpression -> Expr /* interface */:
     'super' -> SuperExpr
 ;
 
-SuperProperty<Yield, Await> -> Expression /* interface */:
+SuperProperty<Yield, Await> -> Expr /* interface */:
     expr=SuperExpression '[' index=Expression<+In> ']'          -> IndexAccess
   | expr=SuperExpression '.' selector=IdentifierNameRef         -> PropertyAccess
 ;
@@ -577,12 +577,12 @@ MetaProperty :
 NewTarget -> NewTarget :
     'new' '.' 'target' ;
 
-NewExpression<Yield, Await, NoAsync> -> Expression /* interface */:
+NewExpression<Yield, Await, NoAsync> -> Expr /* interface */:
     MemberExpression  (?= !StartOfParametrizedCall)
   | [!StartWithLet] 'new' expr=NewExpression<~NoAsync>      -> NewExpr
 ;
 
-CallExpression<Yield, Await> -> Expression /* interface */:
+CallExpression<Yield, Await> -> Expr /* interface */:
     expr=MemberExpression Arguments                             -> CallExpr
   | [!StartWithLet] SuperCall                                   -> CallExpr
   | [!StartWithLet] 'import' Arguments                          -> TsDynamicImport
@@ -616,7 +616,7 @@ ArgumentList<Yield, Await> :
 OptionalLHS<Yield, Await> :
     MemberExpression  | CallExpression | OptionalExpression ;
 
-OptionalExpression<Yield, Await> -> Expression:
+OptionalExpression<Yield, Await> -> Expr /* interface */:
     expr=OptionalLHS '?.' '[' index=Expression<+In> ']'      -> OptionalIndexAccess
   | expr=OptionalLHS '?.' selector=IdentifierNameRef         -> OptionalPropertyAccess
   | expr=OptionalLHS '?.' selector=ClassPrivateRef           -> OptionalPropertyAccess
@@ -630,13 +630,13 @@ OptionalExpression<Yield, Await> -> Expression:
   | tag=OptionalExpression literal=TemplateLiteral           -> TaggedTemplate
 ;
 
-LeftHandSideExpression<Yield, Await, NoAsync> -> Expression /* interface */:
+LeftHandSideExpression<Yield, Await, NoAsync> -> Expr /* interface */:
     NewExpression
   | CallExpression (?= !StartOfParametrizedCall)
   | OptionalExpression (?= !StartOfParametrizedCall)
 ;
 
-UpdateExpression<Yield, Await> -> Expression /* interface */:
+UpdateExpression<Yield, Await> -> Expr /* interface */:
     LeftHandSideExpression
   | LeftHandSideExpression .noLineBreak '++'          -> PostInc
   | LeftHandSideExpression .noLineBreak '--'          -> PostDec
@@ -644,7 +644,7 @@ UpdateExpression<Yield, Await> -> Expression /* interface */:
   | [!StartWithLet] '--' UnaryExpression              -> PreDec
 ;
 
-UnaryExpression<Yield, Await> -> Expression /* interface */:
+UnaryExpression<Yield, Await> -> Expr /* interface */:
     UpdateExpression
   | [!StartWithLet] 'delete' UnaryExpression          -> UnaryExpr
   | [!StartWithLet] 'void' UnaryExpression            -> UnaryExpr
@@ -672,7 +672,7 @@ UnaryExpression<Yield, Await> -> Expression /* interface */:
 %left '*' '/' '%';
 %right '**';
 
-ArithmeticExpression<Yield, Await> -> Expression /* interface */:
+ArithmeticExpression<Yield, Await> -> Expr /* interface */:
     UnaryExpression
   | left=ArithmeticExpression '+' right=ArithmeticExpression        -> AdditiveExpr
   | left=ArithmeticExpression '-' right=ArithmeticExpression        -> AdditiveExpr
@@ -685,7 +685,7 @@ ArithmeticExpression<Yield, Await> -> Expression /* interface */:
   | left=UpdateExpression '**' right=ArithmeticExpression           -> ExponentiationExpr
 ;
 
-BinaryExpression<In, Yield, Await> -> Expression /* interface */:
+BinaryExpression<In, Yield, Await> -> Expr /* interface */:
     ArithmeticExpression
   | left=BinaryExpression '<' right=BinaryExpression                -> RelationalExpr
   | left=BinaryExpression '>' right=BinaryExpression                -> RelationalExpr
@@ -707,13 +707,13 @@ BinaryExpression<In, Yield, Await> -> Expression /* interface */:
   | left=BinaryExpression '??' right=BinaryExpression               -> CoalesceExpr
 ;
 
-ConditionalExpression<In, Yield, Await> -> Expression /* interface */:
+ConditionalExpression<In, Yield, Await> -> Expr /* interface */:
     BinaryExpression
   | cond=BinaryExpression '?' then=AssignmentExpression<+In> ':' else=AssignmentExpression
         -> ConditionalExpr
 ;
 
-AssignmentExpression<In, Yield, Await> -> Expression /* interface */:
+AssignmentExpression<In, Yield, Await> -> Expr /* interface */:
     ConditionalExpression
   | [Yield && !StartWithLet] YieldExpression
   | [!StartWithLet] ArrowFunction
@@ -728,18 +728,18 @@ AssignmentOperator -> AssignmentOperator :
 CommaExpression<In, Yield, Await> -> CommaExpr :
     left=Expression ',' right=AssignmentExpression ;
 
-%interface Expression;
+%interface Expr;
 
-Expression<In, Yield, Await> -> Expression /* interface */:
+Expression<In, Yield, Await> -> Expr /* interface */:
     AssignmentExpression
   | CommaExpression
 ;
 
 # A.3 Statements
 
-%interface Statement, Declaration;
+%interface Stmt, Decl;
 
-Statement<Yield, Await> -> Statement /* interface */:
+Statement<Yield, Await> -> Stmt /* interface */:
     BlockStatement
   | VariableStatement
   | EmptyStatement
@@ -756,7 +756,7 @@ Statement<Yield, Await> -> Statement /* interface */:
   | DebuggerStatement
 ;
 
-Declaration<Yield, Await> -> Declaration /* interface */:
+Declaration<Yield, Await> -> Decl /* interface */:
     HoistableDeclaration
   | ClassDeclaration
   | LexicalDeclaration<+In>
@@ -768,13 +768,13 @@ Declaration<Yield, Await> -> Declaration /* interface */:
   | AmbientDeclaration
 ;
 
-HoistableDeclaration<Await> -> Declaration /* interface */:
+HoistableDeclaration<Await> -> Decl /* interface */:
     FunctionDeclaration
   | GeneratorDeclaration
   | AsyncFunctionDeclaration
 ;
 
-BreakableStatement<Yield, Await> -> Statement /* interface */:
+BreakableStatement<Yield, Await> -> Stmt /* interface */:
     IterationStatement
   | SwitchStatement
 ;
@@ -790,9 +790,9 @@ StatementList<Yield, Await> :
   | StatementList StatementListItem
 ;
 
-%interface StatementListItem, BindingPattern, PropertyPattern, ElementPattern, CaseClause;
+%interface StmtListItem, BindingPattern, PropertyPattern, ElementPattern, CaseClause;
 
-StatementListItem<Yield, Await> -> StatementListItem /* interface */:
+StatementListItem<Yield, Await> -> StmtListItem /* interface */:
     Statement
   | Declaration
   | error ';'                                         -> SyntaxProblem
@@ -885,7 +885,7 @@ BindingRestElement -> BindingRestElement :
 EmptyStatement -> EmptyStmt :
     ';' .emptyStatement ;
 
-ExpressionStatement<Yield, Await> -> ExpressionStmt :
+ExpressionStatement<Yield, Await> -> ExprStmt :
     Expression<+In, +NoFuncClass, +NoAs, +NoObjLiteral, +NoLetSq> ';' ;
 
 %right 'else';
@@ -895,7 +895,7 @@ IfStatement<Yield, Await> -> IfStmt :
   | 'if' '(' Expression<+In> ')' then=Statement %prec 'else'
 ;
 
-%interface IterationStatement;
+%interface IterationStmt;
 
 IterationStatement<Yield, Await> -> IterationStmt /* interface */:
     'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       -> DoWhileStmt
@@ -918,7 +918,7 @@ IterationStatement<Yield, Await> -> IterationStmt /* interface */:
           'in' object=Expression<+In> ')' Statement                   -> ForInStmtWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
-  | 'for' '(' var=((('async' -> RefIdent) -> IdentExpr) -> Expression) (?= !StartOfArrowFunction)
+  | 'for' '(' var=((('async' -> RefIdent) -> IdentExpr) -> Expr /* interface */) (?= !StartOfArrowFunction)
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
   | 'for' '(' ('var' -> Var) ForBinding
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmtWithVar
@@ -1105,7 +1105,7 @@ AsyncFunctionBody :
 AwaitExpression<Yield> -> AwaitExpr :
     'await' UnaryExpression<+Await> ;
 
-ClassDeclaration<Yield, Await> -> Declaration /* interface */:
+ClassDeclaration<Yield, Await> -> Decl /* interface */:
     Modifiers? 'class' BindingIdentifier<+WithoutImplements>? TypeParametersopt ClassTail   -> Class
 ;
 
