@@ -377,15 +377,15 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom> :
 IdentifierNameDecl<WithoutNew> -> NameIdent:
     IdentifierName ;
 
-IdentifierNameRef<WithoutAsserts> -> RefIdent :
+IdentifierNameRef<WithoutAsserts> -> ReferenceIdent :
     IdentifierName ;
 
-ClassPrivateRef -> RefIdent:
+ClassPrivateRef -> ReferenceIdent:
     PrivateIdentifier ;
 
 # A.2 Expressions
 
-IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> RefIdent :
+IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> ReferenceIdent :
 # V8 runtime functions start with a percent sign.
 # See http://stackoverflow.com/questions/11202824/what-is-in-javascript
     '%'? Identifier
@@ -550,7 +550,7 @@ TemplateMiddleList<Yield, Await> :
 MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expr /* interface */:
     [!NoLetOnly && !StartWithLet] PrimaryExpression
   | [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
-  | [StartWithLet && !NoLetOnly] ('let' -> RefIdent) -> IdentExpr
+  | [StartWithLet && !NoLetOnly] ('let' -> ReferenceIdent) -> IdentExpr
   | [StartWithLet] expr=MemberExpression<+NoLetOnly, ~NoAsync> '[' index=Expression<+In> ']'            -> IndexAccess
   | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq, ~NoAsync> '[' index=Expression<+In> ']'   -> IndexAccess
   | expr=MemberExpression<~NoAsync> '.' selector=IdentifierNameRef        -> PropertyAccess
@@ -819,7 +819,7 @@ LexicalBinding<In, Yield, Await> -> LexicalBinding :
   | BindingPattern ExclToken? TypeAnnotationopt Initializer
 ;
 
-VariableStatement<Yield, Await> -> VariableStmt :
+VariableStatement<Yield, Await> -> VarStmt :
     'var' VariableDeclarationList<+In> ';'
 ;
 
@@ -828,7 +828,7 @@ VariableDeclarationList<In, Yield, Await> :
   | VariableDeclarationList ',' VariableDeclaration
 ;
 
-VariableDeclaration<In, Yield, Await> -> VariableDecl :
+VariableDeclaration<In, Yield, Await> -> VarDecl :
     BindingIdentifier ExclToken? TypeAnnotationopt Initializeropt
   | BindingPattern ExclToken? TypeAnnotationopt Initializer
 ;
@@ -918,7 +918,7 @@ IterationStatement<Yield, Await> -> IterationStmt /* interface */:
           'in' object=Expression<+In> ')' Statement                   -> ForInStmtWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
-  | 'for' '(' var=((('async' -> RefIdent) -> IdentExpr) -> Expr /* interface */) (?= !StartOfArrowFunction)
+  | 'for' '(' var=((('async' -> ReferenceIdent) -> IdentExpr) -> Expr /* interface */) (?= !StartOfArrowFunction)
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
   | 'for' '(' ('var' -> Var) ForBinding
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmtWithVar
@@ -1016,10 +1016,10 @@ DebuggerStatement -> DebuggerStmt :
 
 %interface ClassElement, MethodDefinition;
 
-FunctionDeclaration -> Function :
+FunctionDeclaration -> Func :
     'function' BindingIdentifier? FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> ;
 
-FunctionExpression -> FunctionExpr :
+FunctionExpression -> FuncExpr :
     'function' BindingIdentifier? FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> ;
 
 UniqueFormalParameters<Yield, Await> :
@@ -1220,12 +1220,12 @@ NamedImports -> NamedImports :
 ;
 
 NamedImport -> NamedImport /* interface */:
-    ImportedBinding                                   -> ImportSpecifier
-  | IdentifierNameRef 'as' ImportedBinding            -> ImportSpecifier
+    ImportedBinding                                   -> ImportSpec
+  | IdentifierNameRef 'as' ImportedBinding            -> ImportSpec
   | error                                             -> SyntaxProblem
 ;
 
-ModuleSpecifier -> ModuleSpecifier :
+ModuleSpecifier -> ModuleSpec :
     StringLiteral ;
 
 ImportedBinding :
@@ -1250,8 +1250,8 @@ ExportClause -> ExportClause :
 ;
 
 ExportElement -> ExportElement /* interface */:
-    IdentifierNameRef                                 -> ExportSpecifier
-  | IdentifierNameRef 'as' IdentifierNameDecl         -> ExportSpecifier
+    IdentifierNameRef                                 -> ExportSpec
+  | IdentifierNameRef 'as' IdentifierNameDecl         -> ExportSpec
   | error                                             -> SyntaxProblem
 ;
 
@@ -1266,7 +1266,7 @@ Decorator<Yield, Await> -> Decorator /* interface */:
 
 DecoratorMemberExpression<Yield, Await>:
     IdentifierReference
-  | DecoratorMemberExpression '.' (IdentifierName -> RefIdent)
+  | DecoratorMemberExpression '.' (IdentifierName -> ReferenceIdent)
 ;
 
 DecoratorCallExpression<Yield, Await>:
@@ -1304,8 +1304,8 @@ JSXMemberExpression :
 ;
 
 JSXAttribute<Yield, Await> -> JSXAttribute /* interface */:
-    JSXAttributeName ('=' JSXAttributeValue)?         -> JSXNormalAttribute
-  | '{' .recoveryScope '...' AssignmentExpression<+In> '}'           -> JSXSpreadAttribute
+    JSXAttributeName ('=' JSXAttributeValue)?               -> JSXNormalAttribute
+  | '{' .recoveryScope '...' AssignmentExpression<+In> '}'  -> JSXSpreadAttribute
 ;
 
 JSXAttributeName -> JSXAttributeName :
@@ -1315,7 +1315,7 @@ JSXAttributeName -> JSXAttributeName :
 
 JSXAttributeValue<Yield, Await> -> JSXAttributeValue /* interface */:
     jsxStringLiteral                                  -> JSXLiteral
-  | '{' .recoveryScope AssignmentExpression<+In> '}'                 -> JSXExpr
+  | '{' .recoveryScope AssignmentExpression<+In> '}'  -> JSXExpr
   | JSXElement
 ;
 
@@ -1347,12 +1347,12 @@ Type<AllowQuest> -> TsType /* interface */:
 
 TypePredicate<AllowQuest> -> TypePredicate:
     paramref=IdentifierNameRef<+WithoutAsserts> 'is' Type -> TypePredicate
-  | paramref=('asserts' -> RefIdent) (?= StartOfIs) 'is' Type<~AllowQuest> -> TypePredicate
+  | paramref=('asserts' -> ReferenceIdent) (?= StartOfIs) 'is' Type<~AllowQuest> -> TypePredicate
 ;
 
 # 3.7
 AssertsType<AllowQuest> -> AssertsType:
-    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> RefIdent | IdentifierName<+WithoutKeywords> -> RefIdent) ('is' Type)? ;
+    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> ReferenceIdent | IdentifierName<+WithoutKeywords> -> ReferenceIdent) ('is' Type)? ;
 
 StartOfIs:
       'is' ;
@@ -1384,7 +1384,7 @@ TypeOperator<AllowQuest> -> TsType /* interface */:
   | 'keyof' TypeOperator      -> KeyOfType
   | 'unique' TypeOperator     -> UniqueType
   | 'readonly' TypeOperator   -> ReadonlyType
-  | 'infer' (IdentifierName -> RefIdent) -> TypeVar
+  | 'infer' (IdentifierName -> ReferenceIdent) -> TypeVar
 ;
 
 PrimaryType<AllowQuest> -> TsType /* interface */:
@@ -1501,7 +1501,7 @@ StartOfFunctionType :
   | ')'
 ;
 
-FunctionType<AllowQuest> -> FunctionType :
+FunctionType<AllowQuest> -> FuncType :
     TypeParameters? FunctionTypeParameterList '=>' Type ;
 
 FunctionTypeParameterList -> Parameters :
@@ -1522,7 +1522,7 @@ ImportType -> ImportType :
 
 TypeQueryExpression :
     IdentifierReference<~Yield, ~Await>
-  | TypeQueryExpression '.' (IdentifierName -> RefIdent)
+  | TypeQueryExpression '.' (IdentifierName -> ReferenceIdent)
 ;
 
 PropertySignature -> PropertySignature :

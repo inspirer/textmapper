@@ -12,12 +12,12 @@ type Listener func(t NodeType, offset, endoffset int)
 
 const (
 	NoType        NodeType = iota
-	SyntaxProblem          // RefIdent? Initializer?
+	SyntaxProblem          // ReferenceIdent? Initializer?
 	NameIdent
-	RefIdent
+	ReferenceIdent
 	LabelIdent
 	This
-	IdentExpr // RefIdent
+	IdentExpr // ReferenceIdent
 	Regexp
 	Parenthesized // Expr? SyntaxProblem?
 	Literal
@@ -25,7 +25,7 @@ const (
 	NoElement
 	SpreadElement        // Expr
 	ObjectLiteral        // (PropertyDefinition)*
-	ShorthandProperty    // RefIdent
+	ShorthandProperty    // ReferenceIdent
 	Property             // (Modifier)* PropertyName value=Expr
 	ObjectMethod         // (Modifier)* MethodDefinition
 	SpreadProperty       // Expr
@@ -34,7 +34,7 @@ const (
 	Initializer          // Expr
 	TemplateLiteral      // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expr)*
 	IndexAccess          // expr=Expr index=Expr
-	PropertyAccess       // expr=Expr selector=RefIdent
+	PropertyAccess       // expr=Expr selector=ReferenceIdent
 	TaggedTemplate       // tag=Expr literal=TemplateLiteral
 	TsNonNull            // expr=Expr
 	NewExpr              // expr=Expr Arguments?
@@ -44,7 +44,7 @@ const (
 	TsDynamicImport        // Arguments
 	Arguments              // TypeArguments? list=(Expr)*
 	OptionalIndexAccess    // expr=Expr index=Expr
-	OptionalPropertyAccess // expr=Expr selector=RefIdent
+	OptionalPropertyAccess // expr=Expr selector=ReferenceIdent
 	OptionalCallExpr       // expr=Expr Arguments
 	OptionalTaggedTemplate // tag=Expr literal=TemplateLiteral
 	PostInc                // Expr
@@ -79,8 +79,8 @@ const (
 	LetOrConst
 	TsExclToken
 	LexicalBinding     // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
-	VariableStmt       // (VariableDecl)+
-	VariableDecl       // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
+	VarStmt            // (VarDecl)+
+	VarDecl            // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
 	ObjectPattern      // (PropertyPattern)* BindingRestElement?
 	ArrayPattern       // list=(ElementPattern | Expr)* BindingRestElement?
 	PropertyBinding    // PropertyName ElementPattern
@@ -94,7 +94,7 @@ const (
 	WhileStmt   // Expr Stmt
 	ForStmt     // var=Expr? ForCondition ForFinalExpr Stmt
 	Var
-	ForStmtWithVar   // LetOrConst? Var? (LexicalBinding)* (VariableDecl)* ForCondition ForFinalExpr Stmt
+	ForStmtWithVar   // LetOrConst? Var? (LexicalBinding)* (VarDecl)* ForCondition ForFinalExpr Stmt
 	ForInStmt        // var=Expr object=Expr Stmt
 	ForInStmtWithVar // LetOrConst? Var? ForBinding object=Expr Stmt
 	ForOfStmt        // var=Expr iterable=Expr Stmt
@@ -109,14 +109,14 @@ const (
 	SwitchStmt       // Expr Block
 	Case             // Expr (StmtListItem)*
 	Default          // (StmtListItem)*
-	LabelledStmt     // LabelIdent Function? Stmt?
+	LabelledStmt     // LabelIdent Func? Stmt?
 	ThrowStmt        // Expr
 	TryStmt          // Block Catch? Finally?
 	Catch            // BindingPattern? NameIdent? Block
 	Finally          // Block
 	DebuggerStmt
-	Function           // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	FunctionExpr       // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	Func               // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	FuncExpr           // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
 	Body               // (StmtListItem)*
 	ArrowFunc          // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
 	ConciseBody        // Expr
@@ -146,22 +146,22 @@ const (
 	TsIndexMemberDecl // IndexSignature
 	EmptyDecl
 	Module     // (ModuleItem)*
-	ImportDecl // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpecifier
+	ImportDecl // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec
 	TsTypeOnly
 	TsExport
 	TsImportRequireDecl // TsExport? NameIdent
 	NameSpaceImport     // NameIdent
 	NamedImports        // (NamedImport)*
-	ImportSpecifier     // RefIdent? NameIdent
-	ModuleSpecifier
-	ExportDecl            // (Modifier)* TsTypeOnly? VariableStmt? Decl? ExportClause? NameIdent? ModuleSpecifier?
+	ImportSpec          // ReferenceIdent? NameIdent
+	ModuleSpec
+	ExportDecl            // (Modifier)* TsTypeOnly? VarStmt? Decl? ExportClause? NameIdent? ModuleSpec?
 	ExportDefault         // Expr? (Modifier)* Decl?
 	TsExportAssignment    // Expr
 	TsNamespaceExportDecl // NameIdent
 	ExportClause          // (ExportElement)*
-	ExportSpecifier       // RefIdent NameIdent?
-	DecoratorExpr         // (RefIdent)+
-	DecoratorCall         // (RefIdent)+ Arguments
+	ExportSpec            // ReferenceIdent NameIdent?
+	DecoratorExpr         // (ReferenceIdent)+
+	DecoratorCall         // (ReferenceIdent)+ Arguments
 	JSXElement            // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
 	JSXSelfClosingElement // JSXElementName TypeArguments? (JSXAttribute)*
 	JSXOpeningElement     // JSXElementName TypeArguments? (JSXAttribute)*
@@ -175,8 +175,8 @@ const (
 	JSXText
 	JSXSpreadExpr    // Expr?
 	TsConditional    // check=TsType ext=TsType truet=TsType falset=TsType
-	TypePredicate    // paramref=RefIdent TsType
-	AssertsType      // RefIdent TsType?
+	TypePredicate    // paramref=ReferenceIdent TsType
+	AssertsType      // ReferenceIdent TsType?
 	TypeParameters   // (TypeParameter)+
 	TypeParameter    // NameIdent TypeConstraint? TsType?
 	TypeConstraint   // TsType
@@ -186,7 +186,7 @@ const (
 	KeyOfType        // TsType
 	UniqueType       // TsType
 	ReadonlyType     // TsType
-	TypeVar          // RefIdent
+	TypeVar          // ReferenceIdent
 	ThisType
 	NonNullableType   // TsType
 	NullableType      // TsType
@@ -194,18 +194,18 @@ const (
 	LiteralType
 	PredefinedType
 	TypeReference     // TypeName TypeArguments?
-	TypeName          // ref=(RefIdent)+
+	TypeName          // ref=(ReferenceIdent)+
 	ObjectType        // (TypeMember)*
 	ArrayType         // TsType
 	IndexedAccessType // left=TsType index=TsType
 	MappedType        // TsType TypeAnnotation
 	TupleType         // (TsType)*
 	RestType          // TsType
-	FunctionType      // TypeParameters? Parameters TsType
+	FuncType          // TypeParameters? Parameters TsType
 	Parameters        // (Parameter)*
 	ConstructorType   // TypeParameters? Parameters TsType
-	TypeQuery         // (RefIdent)+
-	ImportType        // TsType (RefIdent)* TypeArguments?
+	TypeQuery         // (ReferenceIdent)+
+	ImportType        // TsType (ReferenceIdent)* TypeArguments?
 	PropertySignature // (Modifier)* PropertyName TypeAnnotation?
 	TypeAnnotation    // TsType
 	CallSignature     // TypeParameters? Parameters TypeAnnotation?
@@ -224,7 +224,7 @@ const (
 	TsEnumMember         // PropertyName Expr?
 	TsNamespace          // (NameIdent)+ TsNamespaceBody
 	TsNamespaceBody      // (ModuleItem)*
-	TsImportAliasDecl    // NameIdent ref=(RefIdent)+
+	TsImportAliasDecl    // NameIdent ref=(ReferenceIdent)+
 	TsAmbientVar         // LetOrConst? Var? (TsAmbientBinding)+
 	TsAmbientFunc        // NameIdent TypeParameters? Parameters TypeAnnotation?
 	TsAmbientClass       // (Modifier)* NameIdent TypeParameters? Extends? TsImplementsClause? ClassBody
@@ -252,7 +252,7 @@ var nodeTypeStr = [...]string{
 	"NONE",
 	"SyntaxProblem",
 	"NameIdent",
-	"RefIdent",
+	"ReferenceIdent",
 	"LabelIdent",
 	"This",
 	"IdentExpr",
@@ -317,8 +317,8 @@ var nodeTypeStr = [...]string{
 	"LetOrConst",
 	"TsExclToken",
 	"LexicalBinding",
-	"VariableStmt",
-	"VariableDecl",
+	"VarStmt",
+	"VarDecl",
 	"ObjectPattern",
 	"ArrayPattern",
 	"PropertyBinding",
@@ -353,8 +353,8 @@ var nodeTypeStr = [...]string{
 	"Catch",
 	"Finally",
 	"DebuggerStmt",
-	"Function",
-	"FunctionExpr",
+	"Func",
+	"FuncExpr",
 	"Body",
 	"ArrowFunc",
 	"ConciseBody",
@@ -390,14 +390,14 @@ var nodeTypeStr = [...]string{
 	"TsImportRequireDecl",
 	"NameSpaceImport",
 	"NamedImports",
-	"ImportSpecifier",
-	"ModuleSpecifier",
+	"ImportSpec",
+	"ModuleSpec",
 	"ExportDecl",
 	"ExportDefault",
 	"TsExportAssignment",
 	"TsNamespaceExportDecl",
 	"ExportClause",
-	"ExportSpecifier",
+	"ExportSpec",
 	"DecoratorExpr",
 	"DecoratorCall",
 	"JSXElement",
@@ -439,7 +439,7 @@ var nodeTypeStr = [...]string{
 	"MappedType",
 	"TupleType",
 	"RestType",
-	"FunctionType",
+	"FuncType",
 	"Parameters",
 	"ConstructorType",
 	"TypeQuery",
@@ -512,7 +512,7 @@ var ClassElement = []NodeType{
 var Decl = []NodeType{
 	AsyncFunc,
 	Class,
-	Function,
+	Func,
 	Generator,
 	LexicalDecl,
 	TsAmbientClass,
@@ -546,7 +546,7 @@ var ElementPattern = []NodeType{
 }
 
 var ExportElement = []NodeType{
-	ExportSpecifier,
+	ExportSpec,
 	SyntaxProblem,
 }
 
@@ -568,7 +568,7 @@ var Expr = []NodeType{
 	ConditionalExpr,
 	EqualityExpr,
 	ExponentiationExpr,
-	FunctionExpr,
+	FuncExpr,
 	GeneratorExpr,
 	IdentExpr,
 	InExpr,
@@ -675,7 +675,7 @@ var ModuleItem = []NodeType{
 	ForOfStmtWithVar,
 	ForStmt,
 	ForStmtWithVar,
-	Function,
+	Func,
 	Generator,
 	IfStmt,
 	ImportDecl,
@@ -705,13 +705,13 @@ var ModuleItem = []NodeType{
 	TsNamespace,
 	TsNamespaceExportDecl,
 	TypeAliasDecl,
-	VariableStmt,
+	VarStmt,
 	WhileStmt,
 	WithStmt,
 }
 
 var NamedImport = []NodeType{
-	ImportSpecifier,
+	ImportSpec,
 	SyntaxProblem,
 }
 
@@ -761,7 +761,7 @@ var Stmt = []NodeType{
 	SwitchStmt,
 	ThrowStmt,
 	TryStmt,
-	VariableStmt,
+	VarStmt,
 	WhileStmt,
 	WithStmt,
 }
@@ -782,7 +782,7 @@ var StmtListItem = []NodeType{
 	ForOfStmtWithVar,
 	ForStmt,
 	ForStmtWithVar,
-	Function,
+	Func,
 	Generator,
 	IfStmt,
 	LabelledStmt,
@@ -808,7 +808,7 @@ var StmtListItem = []NodeType{
 	TsInterface,
 	TsNamespace,
 	TypeAliasDecl,
-	VariableStmt,
+	VarStmt,
 	WhileStmt,
 	WithStmt,
 }
@@ -838,7 +838,7 @@ var TsType = []NodeType{
 	ArrayType,
 	AssertsType,
 	ConstructorType,
-	FunctionType,
+	FuncType,
 	ImportType,
 	IndexedAccessType,
 	IntersectionType,
@@ -1200,435 +1200,435 @@ var ruleNodeType = [...]NodeType{
 	0,                      // IdentifierName_WithoutNew : 'infer'
 	NameIdent,              // IdentifierNameDecl : IdentifierName
 	NameIdent,              // IdentifierNameDecl_WithoutNew : IdentifierName_WithoutNew
-	RefIdent,               // IdentifierNameRef : IdentifierName
-	RefIdent,               // IdentifierNameRef_WithoutAsserts : IdentifierName_WithoutAsserts
-	RefIdent,               // ClassPrivateRef : PrivateIdentifier
-	RefIdent,               // IdentifierReference : '%' Identifier
-	RefIdent,               // IdentifierReference : Identifier
-	RefIdent,               // IdentifierReference : 'yield'
-	RefIdent,               // IdentifierReference : 'await'
-	RefIdent,               // IdentifierReference : 'let'
-	RefIdent,               // IdentifierReference : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference : 'as'
-	RefIdent,               // IdentifierReference : 'asserts'
-	RefIdent,               // IdentifierReference : 'from'
-	RefIdent,               // IdentifierReference : 'get'
-	RefIdent,               // IdentifierReference : 'of'
-	RefIdent,               // IdentifierReference : 'set'
-	RefIdent,               // IdentifierReference : 'static'
-	RefIdent,               // IdentifierReference : 'target'
-	RefIdent,               // IdentifierReference : 'implements'
-	RefIdent,               // IdentifierReference : 'interface'
-	RefIdent,               // IdentifierReference : 'private'
-	RefIdent,               // IdentifierReference : 'protected'
-	RefIdent,               // IdentifierReference : 'public'
-	RefIdent,               // IdentifierReference : 'any'
-	RefIdent,               // IdentifierReference : 'unknown'
-	RefIdent,               // IdentifierReference : 'boolean'
-	RefIdent,               // IdentifierReference : 'number'
-	RefIdent,               // IdentifierReference : 'string'
-	RefIdent,               // IdentifierReference : 'symbol'
-	RefIdent,               // IdentifierReference : 'abstract'
-	RefIdent,               // IdentifierReference : 'constructor'
-	RefIdent,               // IdentifierReference : 'declare'
-	RefIdent,               // IdentifierReference : 'is'
-	RefIdent,               // IdentifierReference : 'module'
-	RefIdent,               // IdentifierReference : 'namespace'
-	RefIdent,               // IdentifierReference : 'require'
-	RefIdent,               // IdentifierReference : 'type'
-	RefIdent,               // IdentifierReference : 'global'
-	RefIdent,               // IdentifierReference : 'keyof'
-	RefIdent,               // IdentifierReference : 'unique'
-	RefIdent,               // IdentifierReference : 'readonly'
-	RefIdent,               // IdentifierReference : 'infer'
-	RefIdent,               // IdentifierReference_Await : '%' Identifier
-	RefIdent,               // IdentifierReference_Await : Identifier
-	RefIdent,               // IdentifierReference_Await : 'yield'
-	RefIdent,               // IdentifierReference_Await : 'let'
-	RefIdent,               // IdentifierReference_Await : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_Await : 'as'
-	RefIdent,               // IdentifierReference_Await : 'asserts'
-	RefIdent,               // IdentifierReference_Await : 'from'
-	RefIdent,               // IdentifierReference_Await : 'get'
-	RefIdent,               // IdentifierReference_Await : 'of'
-	RefIdent,               // IdentifierReference_Await : 'set'
-	RefIdent,               // IdentifierReference_Await : 'static'
-	RefIdent,               // IdentifierReference_Await : 'target'
-	RefIdent,               // IdentifierReference_Await : 'implements'
-	RefIdent,               // IdentifierReference_Await : 'interface'
-	RefIdent,               // IdentifierReference_Await : 'private'
-	RefIdent,               // IdentifierReference_Await : 'protected'
-	RefIdent,               // IdentifierReference_Await : 'public'
-	RefIdent,               // IdentifierReference_Await : 'any'
-	RefIdent,               // IdentifierReference_Await : 'unknown'
-	RefIdent,               // IdentifierReference_Await : 'boolean'
-	RefIdent,               // IdentifierReference_Await : 'number'
-	RefIdent,               // IdentifierReference_Await : 'string'
-	RefIdent,               // IdentifierReference_Await : 'symbol'
-	RefIdent,               // IdentifierReference_Await : 'abstract'
-	RefIdent,               // IdentifierReference_Await : 'constructor'
-	RefIdent,               // IdentifierReference_Await : 'declare'
-	RefIdent,               // IdentifierReference_Await : 'is'
-	RefIdent,               // IdentifierReference_Await : 'module'
-	RefIdent,               // IdentifierReference_Await : 'namespace'
-	RefIdent,               // IdentifierReference_Await : 'require'
-	RefIdent,               // IdentifierReference_Await : 'type'
-	RefIdent,               // IdentifierReference_Await : 'global'
-	RefIdent,               // IdentifierReference_Await : 'keyof'
-	RefIdent,               // IdentifierReference_Await : 'unique'
-	RefIdent,               // IdentifierReference_Await : 'readonly'
-	RefIdent,               // IdentifierReference_Await : 'infer'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : '%' Identifier
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : Identifier
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'yield'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'as'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'asserts'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'from'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'get'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'of'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'set'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'static'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'target'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'implements'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'interface'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'private'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'protected'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'public'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'any'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'unknown'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'boolean'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'number'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'string'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'symbol'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'abstract'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'constructor'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'declare'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'is'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'module'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'namespace'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'require'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'type'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'global'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'keyof'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'unique'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'readonly'
-	RefIdent,               // IdentifierReference_Await_NoAsync_NoLet : 'infer'
-	RefIdent,               // IdentifierReference_Await_NoLet : '%' Identifier
-	RefIdent,               // IdentifierReference_Await_NoLet : Identifier
-	RefIdent,               // IdentifierReference_Await_NoLet : 'yield'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_Await_NoLet : 'as'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'asserts'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'from'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'get'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'of'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'set'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'static'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'target'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'implements'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'interface'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'private'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'protected'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'public'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'any'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'unknown'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'boolean'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'number'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'string'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'symbol'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'abstract'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'constructor'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'declare'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'is'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'module'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'namespace'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'require'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'type'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'global'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'keyof'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'unique'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'readonly'
-	RefIdent,               // IdentifierReference_Await_NoLet : 'infer'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : '%' Identifier
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : Identifier
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'as'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'asserts'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'from'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'get'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'of'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'set'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'static'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'target'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'implements'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'interface'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'private'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'protected'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'public'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'any'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'unknown'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'boolean'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'number'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'string'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'symbol'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'abstract'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'constructor'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'declare'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'is'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'module'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'namespace'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'require'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'type'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'global'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'keyof'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'unique'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'readonly'
-	RefIdent,               // IdentifierReference_Await_NoLet_Yield : 'infer'
-	RefIdent,               // IdentifierReference_Await_Yield : '%' Identifier
-	RefIdent,               // IdentifierReference_Await_Yield : Identifier
-	RefIdent,               // IdentifierReference_Await_Yield : 'let'
-	RefIdent,               // IdentifierReference_Await_Yield : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_Await_Yield : 'as'
-	RefIdent,               // IdentifierReference_Await_Yield : 'asserts'
-	RefIdent,               // IdentifierReference_Await_Yield : 'from'
-	RefIdent,               // IdentifierReference_Await_Yield : 'get'
-	RefIdent,               // IdentifierReference_Await_Yield : 'of'
-	RefIdent,               // IdentifierReference_Await_Yield : 'set'
-	RefIdent,               // IdentifierReference_Await_Yield : 'static'
-	RefIdent,               // IdentifierReference_Await_Yield : 'target'
-	RefIdent,               // IdentifierReference_Await_Yield : 'implements'
-	RefIdent,               // IdentifierReference_Await_Yield : 'interface'
-	RefIdent,               // IdentifierReference_Await_Yield : 'private'
-	RefIdent,               // IdentifierReference_Await_Yield : 'protected'
-	RefIdent,               // IdentifierReference_Await_Yield : 'public'
-	RefIdent,               // IdentifierReference_Await_Yield : 'any'
-	RefIdent,               // IdentifierReference_Await_Yield : 'unknown'
-	RefIdent,               // IdentifierReference_Await_Yield : 'boolean'
-	RefIdent,               // IdentifierReference_Await_Yield : 'number'
-	RefIdent,               // IdentifierReference_Await_Yield : 'string'
-	RefIdent,               // IdentifierReference_Await_Yield : 'symbol'
-	RefIdent,               // IdentifierReference_Await_Yield : 'abstract'
-	RefIdent,               // IdentifierReference_Await_Yield : 'constructor'
-	RefIdent,               // IdentifierReference_Await_Yield : 'declare'
-	RefIdent,               // IdentifierReference_Await_Yield : 'is'
-	RefIdent,               // IdentifierReference_Await_Yield : 'module'
-	RefIdent,               // IdentifierReference_Await_Yield : 'namespace'
-	RefIdent,               // IdentifierReference_Await_Yield : 'require'
-	RefIdent,               // IdentifierReference_Await_Yield : 'type'
-	RefIdent,               // IdentifierReference_Await_Yield : 'global'
-	RefIdent,               // IdentifierReference_Await_Yield : 'keyof'
-	RefIdent,               // IdentifierReference_Await_Yield : 'unique'
-	RefIdent,               // IdentifierReference_Await_Yield : 'readonly'
-	RefIdent,               // IdentifierReference_Await_Yield : 'infer'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : '%' Identifier
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : Identifier
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'yield'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'await'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'as'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'asserts'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'from'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'get'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'of'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'set'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'static'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'target'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'implements'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'interface'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'private'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'protected'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'public'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'any'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'unknown'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'boolean'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'number'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'string'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'symbol'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'abstract'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'constructor'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'declare'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'is'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'module'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'namespace'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'require'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'type'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'global'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'keyof'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'unique'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'readonly'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet : 'infer'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : '%' Identifier
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : Identifier
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'await'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'as'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'asserts'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'from'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'get'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'of'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'set'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'static'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'target'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'implements'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'interface'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'private'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'protected'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'public'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'any'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'unknown'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'boolean'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'number'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'string'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'symbol'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'abstract'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'constructor'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'declare'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'is'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'module'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'namespace'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'require'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'type'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'global'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'keyof'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'unique'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'readonly'
-	RefIdent,               // IdentifierReference_NoAsync_NoLet_Yield : 'infer'
-	RefIdent,               // IdentifierReference_NoLet : '%' Identifier
-	RefIdent,               // IdentifierReference_NoLet : Identifier
-	RefIdent,               // IdentifierReference_NoLet : 'yield'
-	RefIdent,               // IdentifierReference_NoLet : 'await'
-	RefIdent,               // IdentifierReference_NoLet : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_NoLet : 'as'
-	RefIdent,               // IdentifierReference_NoLet : 'asserts'
-	RefIdent,               // IdentifierReference_NoLet : 'from'
-	RefIdent,               // IdentifierReference_NoLet : 'get'
-	RefIdent,               // IdentifierReference_NoLet : 'of'
-	RefIdent,               // IdentifierReference_NoLet : 'set'
-	RefIdent,               // IdentifierReference_NoLet : 'static'
-	RefIdent,               // IdentifierReference_NoLet : 'target'
-	RefIdent,               // IdentifierReference_NoLet : 'implements'
-	RefIdent,               // IdentifierReference_NoLet : 'interface'
-	RefIdent,               // IdentifierReference_NoLet : 'private'
-	RefIdent,               // IdentifierReference_NoLet : 'protected'
-	RefIdent,               // IdentifierReference_NoLet : 'public'
-	RefIdent,               // IdentifierReference_NoLet : 'any'
-	RefIdent,               // IdentifierReference_NoLet : 'unknown'
-	RefIdent,               // IdentifierReference_NoLet : 'boolean'
-	RefIdent,               // IdentifierReference_NoLet : 'number'
-	RefIdent,               // IdentifierReference_NoLet : 'string'
-	RefIdent,               // IdentifierReference_NoLet : 'symbol'
-	RefIdent,               // IdentifierReference_NoLet : 'abstract'
-	RefIdent,               // IdentifierReference_NoLet : 'constructor'
-	RefIdent,               // IdentifierReference_NoLet : 'declare'
-	RefIdent,               // IdentifierReference_NoLet : 'is'
-	RefIdent,               // IdentifierReference_NoLet : 'module'
-	RefIdent,               // IdentifierReference_NoLet : 'namespace'
-	RefIdent,               // IdentifierReference_NoLet : 'require'
-	RefIdent,               // IdentifierReference_NoLet : 'type'
-	RefIdent,               // IdentifierReference_NoLet : 'global'
-	RefIdent,               // IdentifierReference_NoLet : 'keyof'
-	RefIdent,               // IdentifierReference_NoLet : 'unique'
-	RefIdent,               // IdentifierReference_NoLet : 'readonly'
-	RefIdent,               // IdentifierReference_NoLet : 'infer'
-	RefIdent,               // IdentifierReference_NoLet_Yield : '%' Identifier
-	RefIdent,               // IdentifierReference_NoLet_Yield : Identifier
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'await'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'as'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'asserts'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'from'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'get'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'of'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'set'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'static'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'target'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'implements'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'interface'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'private'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'protected'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'public'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'any'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'unknown'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'boolean'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'number'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'string'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'symbol'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'abstract'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'constructor'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'declare'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'is'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'module'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'namespace'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'require'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'type'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'global'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'keyof'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'unique'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'readonly'
-	RefIdent,               // IdentifierReference_NoLet_Yield : 'infer'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : '%' Identifier
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : Identifier
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'yield'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'await'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'let'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'as'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'asserts'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'from'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'get'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'of'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'set'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'static'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'target'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'implements'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'interface'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'private'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'protected'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'public'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'abstract'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'constructor'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'declare'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'is'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'module'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'namespace'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'require'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'type'
-	RefIdent,               // IdentifierReference_WithoutPredefinedTypes : 'global'
-	RefIdent,               // IdentifierReference_Yield : '%' Identifier
-	RefIdent,               // IdentifierReference_Yield : Identifier
-	RefIdent,               // IdentifierReference_Yield : 'await'
-	RefIdent,               // IdentifierReference_Yield : 'let'
-	RefIdent,               // IdentifierReference_Yield : 'async' lookahead_notStartOfArrowFunction
-	RefIdent,               // IdentifierReference_Yield : 'as'
-	RefIdent,               // IdentifierReference_Yield : 'asserts'
-	RefIdent,               // IdentifierReference_Yield : 'from'
-	RefIdent,               // IdentifierReference_Yield : 'get'
-	RefIdent,               // IdentifierReference_Yield : 'of'
-	RefIdent,               // IdentifierReference_Yield : 'set'
-	RefIdent,               // IdentifierReference_Yield : 'static'
-	RefIdent,               // IdentifierReference_Yield : 'target'
-	RefIdent,               // IdentifierReference_Yield : 'implements'
-	RefIdent,               // IdentifierReference_Yield : 'interface'
-	RefIdent,               // IdentifierReference_Yield : 'private'
-	RefIdent,               // IdentifierReference_Yield : 'protected'
-	RefIdent,               // IdentifierReference_Yield : 'public'
-	RefIdent,               // IdentifierReference_Yield : 'any'
-	RefIdent,               // IdentifierReference_Yield : 'unknown'
-	RefIdent,               // IdentifierReference_Yield : 'boolean'
-	RefIdent,               // IdentifierReference_Yield : 'number'
-	RefIdent,               // IdentifierReference_Yield : 'string'
-	RefIdent,               // IdentifierReference_Yield : 'symbol'
-	RefIdent,               // IdentifierReference_Yield : 'abstract'
-	RefIdent,               // IdentifierReference_Yield : 'constructor'
-	RefIdent,               // IdentifierReference_Yield : 'declare'
-	RefIdent,               // IdentifierReference_Yield : 'is'
-	RefIdent,               // IdentifierReference_Yield : 'module'
-	RefIdent,               // IdentifierReference_Yield : 'namespace'
-	RefIdent,               // IdentifierReference_Yield : 'require'
-	RefIdent,               // IdentifierReference_Yield : 'type'
-	RefIdent,               // IdentifierReference_Yield : 'global'
-	RefIdent,               // IdentifierReference_Yield : 'keyof'
-	RefIdent,               // IdentifierReference_Yield : 'unique'
-	RefIdent,               // IdentifierReference_Yield : 'readonly'
-	RefIdent,               // IdentifierReference_Yield : 'infer'
+	ReferenceIdent,         // IdentifierNameRef : IdentifierName
+	ReferenceIdent,         // IdentifierNameRef_WithoutAsserts : IdentifierName_WithoutAsserts
+	ReferenceIdent,         // ClassPrivateRef : PrivateIdentifier
+	ReferenceIdent,         // IdentifierReference : '%' Identifier
+	ReferenceIdent,         // IdentifierReference : Identifier
+	ReferenceIdent,         // IdentifierReference : 'yield'
+	ReferenceIdent,         // IdentifierReference : 'await'
+	ReferenceIdent,         // IdentifierReference : 'let'
+	ReferenceIdent,         // IdentifierReference : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference : 'as'
+	ReferenceIdent,         // IdentifierReference : 'asserts'
+	ReferenceIdent,         // IdentifierReference : 'from'
+	ReferenceIdent,         // IdentifierReference : 'get'
+	ReferenceIdent,         // IdentifierReference : 'of'
+	ReferenceIdent,         // IdentifierReference : 'set'
+	ReferenceIdent,         // IdentifierReference : 'static'
+	ReferenceIdent,         // IdentifierReference : 'target'
+	ReferenceIdent,         // IdentifierReference : 'implements'
+	ReferenceIdent,         // IdentifierReference : 'interface'
+	ReferenceIdent,         // IdentifierReference : 'private'
+	ReferenceIdent,         // IdentifierReference : 'protected'
+	ReferenceIdent,         // IdentifierReference : 'public'
+	ReferenceIdent,         // IdentifierReference : 'any'
+	ReferenceIdent,         // IdentifierReference : 'unknown'
+	ReferenceIdent,         // IdentifierReference : 'boolean'
+	ReferenceIdent,         // IdentifierReference : 'number'
+	ReferenceIdent,         // IdentifierReference : 'string'
+	ReferenceIdent,         // IdentifierReference : 'symbol'
+	ReferenceIdent,         // IdentifierReference : 'abstract'
+	ReferenceIdent,         // IdentifierReference : 'constructor'
+	ReferenceIdent,         // IdentifierReference : 'declare'
+	ReferenceIdent,         // IdentifierReference : 'is'
+	ReferenceIdent,         // IdentifierReference : 'module'
+	ReferenceIdent,         // IdentifierReference : 'namespace'
+	ReferenceIdent,         // IdentifierReference : 'require'
+	ReferenceIdent,         // IdentifierReference : 'type'
+	ReferenceIdent,         // IdentifierReference : 'global'
+	ReferenceIdent,         // IdentifierReference : 'keyof'
+	ReferenceIdent,         // IdentifierReference : 'unique'
+	ReferenceIdent,         // IdentifierReference : 'readonly'
+	ReferenceIdent,         // IdentifierReference : 'infer'
+	ReferenceIdent,         // IdentifierReference_Await : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_Await : Identifier
+	ReferenceIdent,         // IdentifierReference_Await : 'yield'
+	ReferenceIdent,         // IdentifierReference_Await : 'let'
+	ReferenceIdent,         // IdentifierReference_Await : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_Await : 'as'
+	ReferenceIdent,         // IdentifierReference_Await : 'asserts'
+	ReferenceIdent,         // IdentifierReference_Await : 'from'
+	ReferenceIdent,         // IdentifierReference_Await : 'get'
+	ReferenceIdent,         // IdentifierReference_Await : 'of'
+	ReferenceIdent,         // IdentifierReference_Await : 'set'
+	ReferenceIdent,         // IdentifierReference_Await : 'static'
+	ReferenceIdent,         // IdentifierReference_Await : 'target'
+	ReferenceIdent,         // IdentifierReference_Await : 'implements'
+	ReferenceIdent,         // IdentifierReference_Await : 'interface'
+	ReferenceIdent,         // IdentifierReference_Await : 'private'
+	ReferenceIdent,         // IdentifierReference_Await : 'protected'
+	ReferenceIdent,         // IdentifierReference_Await : 'public'
+	ReferenceIdent,         // IdentifierReference_Await : 'any'
+	ReferenceIdent,         // IdentifierReference_Await : 'unknown'
+	ReferenceIdent,         // IdentifierReference_Await : 'boolean'
+	ReferenceIdent,         // IdentifierReference_Await : 'number'
+	ReferenceIdent,         // IdentifierReference_Await : 'string'
+	ReferenceIdent,         // IdentifierReference_Await : 'symbol'
+	ReferenceIdent,         // IdentifierReference_Await : 'abstract'
+	ReferenceIdent,         // IdentifierReference_Await : 'constructor'
+	ReferenceIdent,         // IdentifierReference_Await : 'declare'
+	ReferenceIdent,         // IdentifierReference_Await : 'is'
+	ReferenceIdent,         // IdentifierReference_Await : 'module'
+	ReferenceIdent,         // IdentifierReference_Await : 'namespace'
+	ReferenceIdent,         // IdentifierReference_Await : 'require'
+	ReferenceIdent,         // IdentifierReference_Await : 'type'
+	ReferenceIdent,         // IdentifierReference_Await : 'global'
+	ReferenceIdent,         // IdentifierReference_Await : 'keyof'
+	ReferenceIdent,         // IdentifierReference_Await : 'unique'
+	ReferenceIdent,         // IdentifierReference_Await : 'readonly'
+	ReferenceIdent,         // IdentifierReference_Await : 'infer'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : Identifier
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'yield'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'as'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'asserts'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'from'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'get'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'of'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'set'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'static'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'target'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'implements'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'interface'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'private'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'protected'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'public'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'any'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'unknown'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'boolean'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'number'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'string'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'symbol'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'abstract'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'constructor'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'declare'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'is'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'module'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'namespace'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'require'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'type'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'global'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'keyof'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'unique'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'readonly'
+	ReferenceIdent,         // IdentifierReference_Await_NoAsync_NoLet : 'infer'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : Identifier
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'yield'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'as'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'asserts'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'from'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'get'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'of'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'set'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'static'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'target'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'implements'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'interface'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'private'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'protected'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'public'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'any'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'unknown'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'boolean'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'number'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'string'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'symbol'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'abstract'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'constructor'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'declare'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'is'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'module'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'namespace'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'require'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'type'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'global'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'keyof'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'unique'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'readonly'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet : 'infer'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : Identifier
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'as'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'asserts'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'from'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'get'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'of'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'set'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'static'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'target'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'implements'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'interface'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'private'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'protected'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'public'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'any'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'unknown'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'boolean'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'number'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'string'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'symbol'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'abstract'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'constructor'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'declare'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'is'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'module'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'namespace'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'require'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'type'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'global'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'keyof'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'unique'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'readonly'
+	ReferenceIdent,         // IdentifierReference_Await_NoLet_Yield : 'infer'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_Await_Yield : Identifier
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'let'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'as'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'asserts'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'from'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'get'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'of'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'set'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'static'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'target'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'implements'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'interface'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'private'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'protected'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'public'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'any'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'unknown'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'boolean'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'number'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'string'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'symbol'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'abstract'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'constructor'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'declare'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'is'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'module'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'namespace'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'require'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'type'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'global'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'keyof'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'unique'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'readonly'
+	ReferenceIdent,         // IdentifierReference_Await_Yield : 'infer'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : Identifier
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'yield'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'await'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'as'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'asserts'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'from'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'get'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'of'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'set'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'static'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'target'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'implements'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'interface'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'private'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'protected'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'public'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'any'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'unknown'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'boolean'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'number'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'string'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'symbol'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'abstract'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'constructor'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'declare'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'is'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'module'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'namespace'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'require'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'type'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'global'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'keyof'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'unique'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'readonly'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet : 'infer'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : Identifier
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'await'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'as'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'asserts'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'from'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'get'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'of'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'set'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'static'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'target'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'implements'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'interface'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'private'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'protected'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'public'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'any'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'unknown'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'boolean'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'number'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'string'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'symbol'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'abstract'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'constructor'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'declare'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'is'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'module'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'namespace'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'require'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'type'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'global'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'keyof'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'unique'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'readonly'
+	ReferenceIdent,         // IdentifierReference_NoAsync_NoLet_Yield : 'infer'
+	ReferenceIdent,         // IdentifierReference_NoLet : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_NoLet : Identifier
+	ReferenceIdent,         // IdentifierReference_NoLet : 'yield'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'await'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_NoLet : 'as'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'asserts'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'from'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'get'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'of'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'set'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'static'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'target'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'implements'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'interface'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'private'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'protected'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'public'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'any'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'unknown'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'boolean'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'number'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'string'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'symbol'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'abstract'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'constructor'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'declare'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'is'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'module'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'namespace'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'require'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'type'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'global'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'keyof'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'unique'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'readonly'
+	ReferenceIdent,         // IdentifierReference_NoLet : 'infer'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : Identifier
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'await'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'as'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'asserts'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'from'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'get'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'of'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'set'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'static'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'target'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'implements'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'interface'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'private'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'protected'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'public'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'any'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'unknown'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'boolean'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'number'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'string'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'symbol'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'abstract'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'constructor'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'declare'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'is'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'module'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'namespace'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'require'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'type'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'global'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'keyof'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'unique'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'readonly'
+	ReferenceIdent,         // IdentifierReference_NoLet_Yield : 'infer'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : Identifier
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'yield'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'await'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'let'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'as'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'asserts'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'from'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'get'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'of'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'set'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'static'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'target'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'implements'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'interface'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'private'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'protected'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'public'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'abstract'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'constructor'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'declare'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'is'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'module'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'namespace'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'require'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'type'
+	ReferenceIdent,         // IdentifierReference_WithoutPredefinedTypes : 'global'
+	ReferenceIdent,         // IdentifierReference_Yield : '%' Identifier
+	ReferenceIdent,         // IdentifierReference_Yield : Identifier
+	ReferenceIdent,         // IdentifierReference_Yield : 'await'
+	ReferenceIdent,         // IdentifierReference_Yield : 'let'
+	ReferenceIdent,         // IdentifierReference_Yield : 'async' lookahead_notStartOfArrowFunction
+	ReferenceIdent,         // IdentifierReference_Yield : 'as'
+	ReferenceIdent,         // IdentifierReference_Yield : 'asserts'
+	ReferenceIdent,         // IdentifierReference_Yield : 'from'
+	ReferenceIdent,         // IdentifierReference_Yield : 'get'
+	ReferenceIdent,         // IdentifierReference_Yield : 'of'
+	ReferenceIdent,         // IdentifierReference_Yield : 'set'
+	ReferenceIdent,         // IdentifierReference_Yield : 'static'
+	ReferenceIdent,         // IdentifierReference_Yield : 'target'
+	ReferenceIdent,         // IdentifierReference_Yield : 'implements'
+	ReferenceIdent,         // IdentifierReference_Yield : 'interface'
+	ReferenceIdent,         // IdentifierReference_Yield : 'private'
+	ReferenceIdent,         // IdentifierReference_Yield : 'protected'
+	ReferenceIdent,         // IdentifierReference_Yield : 'public'
+	ReferenceIdent,         // IdentifierReference_Yield : 'any'
+	ReferenceIdent,         // IdentifierReference_Yield : 'unknown'
+	ReferenceIdent,         // IdentifierReference_Yield : 'boolean'
+	ReferenceIdent,         // IdentifierReference_Yield : 'number'
+	ReferenceIdent,         // IdentifierReference_Yield : 'string'
+	ReferenceIdent,         // IdentifierReference_Yield : 'symbol'
+	ReferenceIdent,         // IdentifierReference_Yield : 'abstract'
+	ReferenceIdent,         // IdentifierReference_Yield : 'constructor'
+	ReferenceIdent,         // IdentifierReference_Yield : 'declare'
+	ReferenceIdent,         // IdentifierReference_Yield : 'is'
+	ReferenceIdent,         // IdentifierReference_Yield : 'module'
+	ReferenceIdent,         // IdentifierReference_Yield : 'namespace'
+	ReferenceIdent,         // IdentifierReference_Yield : 'require'
+	ReferenceIdent,         // IdentifierReference_Yield : 'type'
+	ReferenceIdent,         // IdentifierReference_Yield : 'global'
+	ReferenceIdent,         // IdentifierReference_Yield : 'keyof'
+	ReferenceIdent,         // IdentifierReference_Yield : 'unique'
+	ReferenceIdent,         // IdentifierReference_Yield : 'readonly'
+	ReferenceIdent,         // IdentifierReference_Yield : 'infer'
 	0,                      // lookahead_notStartOfArrowFunction :
 	NameIdent,              // BindingIdentifier : Identifier
 	NameIdent,              // BindingIdentifier : 'yield'
@@ -4064,9 +4064,9 @@ var ruleNodeType = [...]NodeType{
 	LexicalBinding,         // LexicalBinding_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_Yield
 	LexicalBinding,         // LexicalBinding_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_Yield
 	LexicalBinding,         // LexicalBinding_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_Yield
-	VariableStmt,           // VariableStatement : 'var' VariableDeclarationList_In ';'
-	VariableStmt,           // VariableStatement_Await : 'var' VariableDeclarationList_Await_In ';'
-	VariableStmt,           // VariableStatement_Yield : 'var' VariableDeclarationList_In_Yield ';'
+	VarStmt,                // VariableStatement : 'var' VariableDeclarationList_In ';'
+	VarStmt,                // VariableStatement_Await : 'var' VariableDeclarationList_Await_In ';'
+	VarStmt,                // VariableStatement_Yield : 'var' VariableDeclarationList_In_Yield ';'
 	0,                      // VariableDeclarationList : VariableDeclaration
 	0,                      // VariableDeclarationList : VariableDeclarationList ',' VariableDeclaration
 	0,                      // VariableDeclarationList_Await : VariableDeclaration_Await
@@ -4079,30 +4079,30 @@ var ruleNodeType = [...]NodeType{
 	0,                      // VariableDeclarationList_In_Yield : VariableDeclarationList_In_Yield ',' VariableDeclaration_In_Yield
 	0,                      // VariableDeclarationList_Yield : VariableDeclaration_Yield
 	0,                      // VariableDeclarationList_Yield : VariableDeclarationList_Yield ',' VariableDeclaration_Yield
-	VariableDecl,           // VariableDeclaration : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt
-	VariableDecl,           // VariableDeclaration : BindingIdentifier TypeAnnotationopt Initializeropt
-	VariableDecl,           // VariableDeclaration : BindingPattern ExclToken TypeAnnotationopt Initializer
-	VariableDecl,           // VariableDeclaration : BindingPattern TypeAnnotationopt Initializer
-	VariableDecl,           // VariableDeclaration_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await
-	VariableDecl,           // VariableDeclaration_Await : BindingIdentifier TypeAnnotationopt Initializeropt_Await
-	VariableDecl,           // VariableDeclaration_Await : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await
-	VariableDecl,           // VariableDeclaration_Await : BindingPattern_Await TypeAnnotationopt Initializer_Await
-	VariableDecl,           // VariableDeclaration_Await_In : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await_In
-	VariableDecl,           // VariableDeclaration_Await_In : BindingIdentifier TypeAnnotationopt Initializeropt_Await_In
-	VariableDecl,           // VariableDeclaration_Await_In : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await_In
-	VariableDecl,           // VariableDeclaration_Await_In : BindingPattern_Await TypeAnnotationopt Initializer_Await_In
-	VariableDecl,           // VariableDeclaration_In : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In
-	VariableDecl,           // VariableDeclaration_In : BindingIdentifier TypeAnnotationopt Initializeropt_In
-	VariableDecl,           // VariableDeclaration_In : BindingPattern ExclToken TypeAnnotationopt Initializer_In
-	VariableDecl,           // VariableDeclaration_In : BindingPattern TypeAnnotationopt Initializer_In
-	VariableDecl,           // VariableDeclaration_In_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Yield
-	VariableDecl,           // VariableDeclaration_In_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_In_Yield
-	VariableDecl,           // VariableDeclaration_In_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_In_Yield
-	VariableDecl,           // VariableDeclaration_In_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_In_Yield
-	VariableDecl,           // VariableDeclaration_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Yield
-	VariableDecl,           // VariableDeclaration_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_Yield
-	VariableDecl,           // VariableDeclaration_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_Yield
-	VariableDecl,           // VariableDeclaration_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_Yield
+	VarDecl,                // VariableDeclaration : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt
+	VarDecl,                // VariableDeclaration : BindingIdentifier TypeAnnotationopt Initializeropt
+	VarDecl,                // VariableDeclaration : BindingPattern ExclToken TypeAnnotationopt Initializer
+	VarDecl,                // VariableDeclaration : BindingPattern TypeAnnotationopt Initializer
+	VarDecl,                // VariableDeclaration_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await
+	VarDecl,                // VariableDeclaration_Await : BindingIdentifier TypeAnnotationopt Initializeropt_Await
+	VarDecl,                // VariableDeclaration_Await : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await
+	VarDecl,                // VariableDeclaration_Await : BindingPattern_Await TypeAnnotationopt Initializer_Await
+	VarDecl,                // VariableDeclaration_Await_In : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await_In
+	VarDecl,                // VariableDeclaration_Await_In : BindingIdentifier TypeAnnotationopt Initializeropt_Await_In
+	VarDecl,                // VariableDeclaration_Await_In : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await_In
+	VarDecl,                // VariableDeclaration_Await_In : BindingPattern_Await TypeAnnotationopt Initializer_Await_In
+	VarDecl,                // VariableDeclaration_In : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In
+	VarDecl,                // VariableDeclaration_In : BindingIdentifier TypeAnnotationopt Initializeropt_In
+	VarDecl,                // VariableDeclaration_In : BindingPattern ExclToken TypeAnnotationopt Initializer_In
+	VarDecl,                // VariableDeclaration_In : BindingPattern TypeAnnotationopt Initializer_In
+	VarDecl,                // VariableDeclaration_In_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Yield
+	VarDecl,                // VariableDeclaration_In_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_In_Yield
+	VarDecl,                // VariableDeclaration_In_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_In_Yield
+	VarDecl,                // VariableDeclaration_In_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_In_Yield
+	VarDecl,                // VariableDeclaration_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Yield
+	VarDecl,                // VariableDeclaration_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_Yield
+	VarDecl,                // VariableDeclaration_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_Yield
+	VarDecl,                // VariableDeclaration_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_Yield
 	0,                      // BindingPattern : ObjectBindingPattern
 	0,                      // BindingPattern : ArrayBindingPattern
 	0,                      // BindingPattern_Await : ObjectBindingPattern_Await
@@ -4310,10 +4310,10 @@ var ruleNodeType = [...]NodeType{
 	0,                      // CatchParameter_Yield : BindingIdentifier
 	0,                      // CatchParameter_Yield : BindingPattern_Yield
 	DebuggerStmt,           // DebuggerStatement : 'debugger' ';'
-	Function,               // FunctionDeclaration : 'function' BindingIdentifier FormalParameters FunctionBody
-	Function,               // FunctionDeclaration : 'function' FormalParameters FunctionBody
-	FunctionExpr,           // FunctionExpression : 'function' BindingIdentifier FormalParameters FunctionBody
-	FunctionExpr,           // FunctionExpression : 'function' FormalParameters FunctionBody
+	Func,                   // FunctionDeclaration : 'function' BindingIdentifier FormalParameters FunctionBody
+	Func,                   // FunctionDeclaration : 'function' FormalParameters FunctionBody
+	FuncExpr,               // FunctionExpression : 'function' BindingIdentifier FormalParameters FunctionBody
+	FuncExpr,               // FunctionExpression : 'function' FormalParameters FunctionBody
 	0,                      // UniqueFormalParameters : FormalParameters
 	0,                      // UniqueFormalParameters_Await : FormalParameters_Await
 	0,                      // UniqueFormalParameters_Yield : FormalParameters_Yield
@@ -4588,10 +4588,10 @@ var ruleNodeType = [...]NodeType{
 	NamedImports,           // NamedImports : '{' '}'
 	NamedImports,           // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
 	NamedImports,           // NamedImports : '{' NamedImport_list_Comma_separated '}'
-	ImportSpecifier,        // NamedImport : ImportedBinding
-	ImportSpecifier,        // NamedImport : IdentifierNameRef 'as' ImportedBinding
+	ImportSpec,             // NamedImport : ImportedBinding
+	ImportSpec,             // NamedImport : IdentifierNameRef 'as' ImportedBinding
 	SyntaxProblem,          // NamedImport : error
-	ModuleSpecifier,        // ModuleSpecifier : StringLiteral
+	ModuleSpec,             // ModuleSpecifier : StringLiteral
 	0,                      // ImportedBinding : BindingIdentifier
 	ExportDecl,             // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause ';'
 	ExportDecl,             // ExportDeclaration : 'export' 'type' '*' FromClause ';'
@@ -4615,8 +4615,8 @@ var ruleNodeType = [...]NodeType{
 	ExportClause,           // ExportClause : '{' ExportElement_list_Comma_separated '}'
 	0,                      // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
 	0,                      // ExportElement_list_Comma_separated : ExportElement
-	ExportSpecifier,        // ExportElement : IdentifierNameRef
-	ExportSpecifier,        // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
+	ExportSpec,             // ExportElement : IdentifierNameRef
+	ExportSpec,             // ExportElement : IdentifierNameRef 'as' IdentifierNameDecl
 	SyntaxProblem,          // ExportElement : error
 	DecoratorExpr,          // Decorator : '@' DecoratorMemberExpression
 	DecoratorCall,          // Decorator : '@' DecoratorCallExpression
@@ -4901,10 +4901,10 @@ var ruleNodeType = [...]NodeType{
 	0,                      // StartOfFunctionType : '...'
 	0,                      // StartOfFunctionType : 'this' ':'
 	0,                      // StartOfFunctionType : ')'
-	FunctionType,           // FunctionType : TypeParameters FunctionTypeParameterList '=>' Type
-	FunctionType,           // FunctionType : FunctionTypeParameterList '=>' Type
-	FunctionType,           // FunctionType1 : TypeParameters FunctionTypeParameterList '=>' Type1
-	FunctionType,           // FunctionType1 : FunctionTypeParameterList '=>' Type1
+	FuncType,               // FunctionType : TypeParameters FunctionTypeParameterList '=>' Type
+	FuncType,               // FunctionType : FunctionTypeParameterList '=>' Type
+	FuncType,               // FunctionType1 : TypeParameters FunctionTypeParameterList '=>' Type1
+	FuncType,               // FunctionType1 : FunctionTypeParameterList '=>' Type1
 	Parameters,             // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ',' ')'
 	Parameters,             // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ')'
 	Parameters,             // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType ',' ')'

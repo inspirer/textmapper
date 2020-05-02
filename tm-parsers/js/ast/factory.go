@@ -115,8 +115,8 @@ func ToJsNode(n *Node) JsNode {
 		return &ExportDecl{n}
 	case js.ExportDefault:
 		return &ExportDefault{n}
-	case js.ExportSpecifier:
-		return &ExportSpecifier{n}
+	case js.ExportSpec:
+		return &ExportSpec{n}
 	case js.ExprStmt:
 		return &ExprStmt{n}
 	case js.Extends:
@@ -141,12 +141,12 @@ func ToJsNode(n *Node) JsNode {
 		return &ForStmt{n}
 	case js.ForStmtWithVar:
 		return &ForStmtWithVar{n}
-	case js.Function:
-		return &Function{n}
-	case js.FunctionExpr:
-		return &FunctionExpr{n}
-	case js.FunctionType:
-		return &FunctionType{n}
+	case js.Func:
+		return &Func{n}
+	case js.FuncExpr:
+		return &FuncExpr{n}
+	case js.FuncType:
+		return &FuncType{n}
 	case js.Generator:
 		return &Generator{n}
 	case js.GeneratorExpr:
@@ -161,8 +161,8 @@ func ToJsNode(n *Node) JsNode {
 		return &IfStmt{n}
 	case js.ImportDecl:
 		return &ImportDecl{n}
-	case js.ImportSpecifier:
-		return &ImportSpecifier{n}
+	case js.ImportSpec:
+		return &ImportSpec{n}
 	case js.ImportType:
 		return &ImportType{n}
 	case js.InExpr:
@@ -237,8 +237,8 @@ func ToJsNode(n *Node) JsNode {
 		return &MethodSignature{n}
 	case js.Module:
 		return &Module{n}
-	case js.ModuleSpecifier:
-		return &ModuleSpecifier{n}
+	case js.ModuleSpec:
+		return &ModuleSpec{n}
 	case js.MultiplicativeExpr:
 		return &MultiplicativeExpr{n}
 	case js.NameIdent:
@@ -301,8 +301,8 @@ func ToJsNode(n *Node) JsNode {
 		return &Readonly{n}
 	case js.ReadonlyType:
 		return &ReadonlyType{n}
-	case js.RefIdent:
-		return &RefIdent{n}
+	case js.ReferenceIdent:
+		return &ReferenceIdent{n}
 	case js.Regexp:
 		return &Regexp{n}
 	case js.RelationalExpr:
@@ -449,10 +449,10 @@ func ToJsNode(n *Node) JsNode {
 		return &UniqueType{n}
 	case js.Var:
 		return &Var{n}
-	case js.VariableDecl:
-		return &VariableDecl{n}
-	case js.VariableStmt:
-		return &VariableStmt{n}
+	case js.VarDecl:
+		return &VarDecl{n}
+	case js.VarStmt:
+		return &VarStmt{n}
 	case js.WhileStmt:
 		return &WhileStmt{n}
 	case js.WithStmt:

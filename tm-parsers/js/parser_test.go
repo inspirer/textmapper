@@ -31,7 +31,7 @@ var parseTests = []struct {
 		`«let» = 5;`,
 		`for («async» of «foo») {}`,
 	}},
-	{js.Javascript, js.RefIdent, []string{
+	{js.Javascript, js.ReferenceIdent, []string{
 		`/*no expectations*/ const a = 15;`,
 		`/*no expectations*/ var b = 7;`,
 		`var e = «aa»;`,
@@ -378,14 +378,14 @@ var parseTests = []struct {
 		`let «[a] = [5]»;`,
 		`const «{b: [c]} = a»;`,
 	}},
-	{js.Javascript, js.VariableStmt, []string{
+	{js.Javascript, js.VarStmt, []string{
 		`«var a;»`,
 		`«var a, b;»`,
 		`«var a = 5, b;»`,
 		`«var [a, b, c] = x, b;»`,
 		`«var q, {names: [name1, name2, ...others],} = param»`,
 	}},
-	{js.Javascript, js.VariableDecl, []string{
+	{js.Javascript, js.VarDecl, []string{
 		`var «q», «{obj1: {a,b,c}} = param»`,
 	}},
 	{js.Javascript, js.ObjectPattern, []string{
@@ -560,12 +560,12 @@ var parseTests = []struct {
 	{js.Javascript, js.DebuggerStmt, []string{
 		`«debugger;»`,
 	}},
-	{js.Javascript, js.Function, []string{
+	{js.Javascript, js.Func, []string{
 		`«function id() { yield = 1; }»`,
 		`export default «function() { yield = 1; }»`,
 		`«function sum(a,b) { return a + b; }»`,
 	}},
-	{js.Javascript, js.FunctionExpr, []string{
+	{js.Javascript, js.FuncExpr, []string{
 		`(«function() { yield = 1; }»)();`,
 		`(«function id() { yield = 1; }»)();`,
 		`(«function yield() { a++; }»)();`,
@@ -811,11 +811,11 @@ var parseTests = []struct {
 		`import «{}» from './aaa'`,
 		`import aaa, «{t as b}» from './aaa'`,
 	}},
-	{js.Javascript, js.ImportSpecifier, []string{
+	{js.Javascript, js.ImportSpec, []string{
 		`import {«q»,«o»,} from './aaa'`,
 		`import aaa, {«t as b»} from './aaa'`,
 	}},
-	{js.Javascript, js.ModuleSpecifier, []string{
+	{js.Javascript, js.ModuleSpec, []string{
 		`import «'./aaa'»`,
 		`import * as aaa from «'./aaa'»`,
 	}},
@@ -848,7 +848,7 @@ var parseTests = []struct {
 		`export «{q,}» from "aa/bb"`,
 		`export «{q as p, c}» from "aa/bb"`,
 	}},
-	{js.Javascript, js.ExportSpecifier, []string{
+	{js.Javascript, js.ExportSpec, []string{
 		`export {«a as b», «c», }`,
 	}},
 
@@ -1127,7 +1127,7 @@ var parseTests = []struct {
 	{js.Typescript, js.TypeName, []string{
 		`function foo<T>() : «T» {}`,
 	}},
-	{js.Typescript, js.FunctionType, []string{
+	{js.Typescript, js.FuncType, []string{
 		`function foo<T>() : «()=>number» {}`,
 		`function foo<T>() : «(abc)=>number» {}`,
 		`function foo<T>() : «(abc,def)=>number» {}`,

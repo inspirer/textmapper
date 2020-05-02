@@ -63,7 +63,7 @@ var (
 	ExportClause           = func(t js.NodeType) bool { return t == js.ExportClause }
 	ExportDecl             = func(t js.NodeType) bool { return t == js.ExportDecl }
 	ExportDefault          = func(t js.NodeType) bool { return t == js.ExportDefault }
-	ExportSpecifier        = func(t js.NodeType) bool { return t == js.ExportSpecifier }
+	ExportSpec             = func(t js.NodeType) bool { return t == js.ExportSpec }
 	ExprStmt               = func(t js.NodeType) bool { return t == js.ExprStmt }
 	Extends                = func(t js.NodeType) bool { return t == js.Extends }
 	Finally                = func(t js.NodeType) bool { return t == js.Finally }
@@ -76,9 +76,9 @@ var (
 	ForOfStmtWithVar       = func(t js.NodeType) bool { return t == js.ForOfStmtWithVar }
 	ForStmt                = func(t js.NodeType) bool { return t == js.ForStmt }
 	ForStmtWithVar         = func(t js.NodeType) bool { return t == js.ForStmtWithVar }
-	Function               = func(t js.NodeType) bool { return t == js.Function }
-	FunctionExpr           = func(t js.NodeType) bool { return t == js.FunctionExpr }
-	FunctionType           = func(t js.NodeType) bool { return t == js.FunctionType }
+	Func                   = func(t js.NodeType) bool { return t == js.Func }
+	FuncExpr               = func(t js.NodeType) bool { return t == js.FuncExpr }
+	FuncType               = func(t js.NodeType) bool { return t == js.FuncType }
 	Generator              = func(t js.NodeType) bool { return t == js.Generator }
 	GeneratorExpr          = func(t js.NodeType) bool { return t == js.GeneratorExpr }
 	GeneratorMethod        = func(t js.NodeType) bool { return t == js.GeneratorMethod }
@@ -86,7 +86,7 @@ var (
 	IdentExpr              = func(t js.NodeType) bool { return t == js.IdentExpr }
 	IfStmt                 = func(t js.NodeType) bool { return t == js.IfStmt }
 	ImportDecl             = func(t js.NodeType) bool { return t == js.ImportDecl }
-	ImportSpecifier        = func(t js.NodeType) bool { return t == js.ImportSpecifier }
+	ImportSpec             = func(t js.NodeType) bool { return t == js.ImportSpec }
 	ImportType             = func(t js.NodeType) bool { return t == js.ImportType }
 	InExpr                 = func(t js.NodeType) bool { return t == js.InExpr }
 	IndexAccess            = func(t js.NodeType) bool { return t == js.IndexAccess }
@@ -124,7 +124,7 @@ var (
 	Method                 = func(t js.NodeType) bool { return t == js.Method }
 	MethodSignature        = func(t js.NodeType) bool { return t == js.MethodSignature }
 	Module                 = func(t js.NodeType) bool { return t == js.Module }
-	ModuleSpecifier        = func(t js.NodeType) bool { return t == js.ModuleSpecifier }
+	ModuleSpec             = func(t js.NodeType) bool { return t == js.ModuleSpec }
 	MultiplicativeExpr     = func(t js.NodeType) bool { return t == js.MultiplicativeExpr }
 	NameIdent              = func(t js.NodeType) bool { return t == js.NameIdent }
 	NameSpaceImport        = func(t js.NodeType) bool { return t == js.NameSpaceImport }
@@ -156,7 +156,7 @@ var (
 	PropertySignature      = func(t js.NodeType) bool { return t == js.PropertySignature }
 	Readonly               = func(t js.NodeType) bool { return t == js.Readonly }
 	ReadonlyType           = func(t js.NodeType) bool { return t == js.ReadonlyType }
-	RefIdent               = func(t js.NodeType) bool { return t == js.RefIdent }
+	ReferenceIdent         = func(t js.NodeType) bool { return t == js.ReferenceIdent }
 	Regexp                 = func(t js.NodeType) bool { return t == js.Regexp }
 	RelationalExpr         = func(t js.NodeType) bool { return t == js.RelationalExpr }
 	RestParameter          = func(t js.NodeType) bool { return t == js.RestParameter }
@@ -230,8 +230,8 @@ var (
 	UnionType              = func(t js.NodeType) bool { return t == js.UnionType }
 	UniqueType             = func(t js.NodeType) bool { return t == js.UniqueType }
 	Var                    = func(t js.NodeType) bool { return t == js.Var }
-	VariableDecl           = func(t js.NodeType) bool { return t == js.VariableDecl }
-	VariableStmt           = func(t js.NodeType) bool { return t == js.VariableStmt }
+	VarDecl                = func(t js.NodeType) bool { return t == js.VarDecl }
+	VarStmt                = func(t js.NodeType) bool { return t == js.VarStmt }
 	WhileStmt              = func(t js.NodeType) bool { return t == js.WhileStmt }
 	WithStmt               = func(t js.NodeType) bool { return t == js.WithStmt }
 	Yield                  = func(t js.NodeType) bool { return t == js.Yield }
