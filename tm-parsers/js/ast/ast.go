@@ -22,232 +22,234 @@ type NilNode struct{}
 var nilInstance = &NilNode{}
 
 // All types implement JsNode.
-func (n Abstract) JsNode() *Node                     { return n.Node }
-func (n AccessibilityModifier) JsNode() *Node        { return n.Node }
-func (n AdditiveExpression) JsNode() *Node           { return n.Node }
-func (n Arguments) JsNode() *Node                    { return n.Node }
-func (n ArrayLiteral) JsNode() *Node                 { return n.Node }
-func (n ArrayPattern) JsNode() *Node                 { return n.Node }
-func (n ArrayType) JsNode() *Node                    { return n.Node }
-func (n ArrowFunction) JsNode() *Node                { return n.Node }
-func (n AssertsType) JsNode() *Node                  { return n.Node }
-func (n AssignmentExpression) JsNode() *Node         { return n.Node }
-func (n AssignmentOperator) JsNode() *Node           { return n.Node }
-func (n AsyncArrowFunction) JsNode() *Node           { return n.Node }
-func (n AsyncFunction) JsNode() *Node                { return n.Node }
-func (n AsyncFunctionExpression) JsNode() *Node      { return n.Node }
-func (n AsyncMethod) JsNode() *Node                  { return n.Node }
-func (n AwaitExpression) JsNode() *Node              { return n.Node }
-func (n BindingIdentifier) JsNode() *Node            { return n.Node }
-func (n BindingRestElement) JsNode() *Node           { return n.Node }
-func (n BitwiseANDExpression) JsNode() *Node         { return n.Node }
-func (n BitwiseORExpression) JsNode() *Node          { return n.Node }
-func (n BitwiseXORExpression) JsNode() *Node         { return n.Node }
-func (n Block) JsNode() *Node                        { return n.Node }
-func (n Body) JsNode() *Node                         { return n.Node }
-func (n BreakStatement) JsNode() *Node               { return n.Node }
-func (n CallExpression) JsNode() *Node               { return n.Node }
-func (n CallSignature) JsNode() *Node                { return n.Node }
-func (n Case) JsNode() *Node                         { return n.Node }
-func (n Catch) JsNode() *Node                        { return n.Node }
-func (n Class) JsNode() *Node                        { return n.Node }
-func (n ClassBody) JsNode() *Node                    { return n.Node }
-func (n ClassExpr) JsNode() *Node                    { return n.Node }
-func (n CoalesceExpression) JsNode() *Node           { return n.Node }
-func (n CommaExpression) JsNode() *Node              { return n.Node }
-func (n ComputedPropertyName) JsNode() *Node         { return n.Node }
-func (n ConciseBody) JsNode() *Node                  { return n.Node }
-func (n ConditionalExpression) JsNode() *Node        { return n.Node }
-func (n ConstructSignature) JsNode() *Node           { return n.Node }
-func (n ConstructorType) JsNode() *Node              { return n.Node }
-func (n ContinueStatement) JsNode() *Node            { return n.Node }
-func (n DebuggerStatement) JsNode() *Node            { return n.Node }
-func (n Declare) JsNode() *Node                      { return n.Node }
-func (n DecoratorCall) JsNode() *Node                { return n.Node }
-func (n DecoratorExpr) JsNode() *Node                { return n.Node }
-func (n Default) JsNode() *Node                      { return n.Node }
-func (n DefaultParameter) JsNode() *Node             { return n.Node }
-func (n DoWhileStatement) JsNode() *Node             { return n.Node }
-func (n ElementBinding) JsNode() *Node               { return n.Node }
-func (n EmptyDecl) JsNode() *Node                    { return n.Node }
-func (n EmptyStatement) JsNode() *Node               { return n.Node }
-func (n EqualityExpression) JsNode() *Node           { return n.Node }
-func (n ExponentiationExpression) JsNode() *Node     { return n.Node }
-func (n ExportClause) JsNode() *Node                 { return n.Node }
-func (n ExportDeclaration) JsNode() *Node            { return n.Node }
-func (n ExportDefault) JsNode() *Node                { return n.Node }
-func (n ExportSpecifier) JsNode() *Node              { return n.Node }
-func (n ExpressionStatement) JsNode() *Node          { return n.Node }
-func (n Extends) JsNode() *Node                      { return n.Node }
-func (n Finally) JsNode() *Node                      { return n.Node }
-func (n ForBinding) JsNode() *Node                   { return n.Node }
-func (n ForCondition) JsNode() *Node                 { return n.Node }
-func (n ForFinalExpression) JsNode() *Node           { return n.Node }
-func (n ForInStatement) JsNode() *Node               { return n.Node }
-func (n ForInStatementWithVar) JsNode() *Node        { return n.Node }
-func (n ForOfStatement) JsNode() *Node               { return n.Node }
-func (n ForOfStatementWithVar) JsNode() *Node        { return n.Node }
-func (n ForStatement) JsNode() *Node                 { return n.Node }
-func (n ForStatementWithVar) JsNode() *Node          { return n.Node }
-func (n Function) JsNode() *Node                     { return n.Node }
-func (n FunctionExpression) JsNode() *Node           { return n.Node }
-func (n FunctionType) JsNode() *Node                 { return n.Node }
-func (n Generator) JsNode() *Node                    { return n.Node }
-func (n GeneratorExpression) JsNode() *Node          { return n.Node }
-func (n GeneratorMethod) JsNode() *Node              { return n.Node }
-func (n Getter) JsNode() *Node                       { return n.Node }
-func (n IdentExpr) JsNode() *Node                    { return n.Node }
-func (n IdentifierReference) JsNode() *Node          { return n.Node }
-func (n IfStatement) JsNode() *Node                  { return n.Node }
-func (n ImportDeclaration) JsNode() *Node            { return n.Node }
-func (n ImportSpecifier) JsNode() *Node              { return n.Node }
-func (n ImportType) JsNode() *Node                   { return n.Node }
-func (n IndexAccess) JsNode() *Node                  { return n.Node }
-func (n IndexSignature) JsNode() *Node               { return n.Node }
-func (n IndexedAccessType) JsNode() *Node            { return n.Node }
-func (n Initializer) JsNode() *Node                  { return n.Node }
-func (n IntersectionType) JsNode() *Node             { return n.Node }
-func (n JSXAttributeName) JsNode() *Node             { return n.Node }
-func (n JSXClosingElement) JsNode() *Node            { return n.Node }
-func (n JSXElement) JsNode() *Node                   { return n.Node }
-func (n JSXElementName) JsNode() *Node               { return n.Node }
-func (n JSXExpression) JsNode() *Node                { return n.Node }
-func (n JSXLiteral) JsNode() *Node                   { return n.Node }
-func (n JSXNormalAttribute) JsNode() *Node           { return n.Node }
-func (n JSXOpeningElement) JsNode() *Node            { return n.Node }
-func (n JSXSelfClosingElement) JsNode() *Node        { return n.Node }
-func (n JSXSpreadAttribute) JsNode() *Node           { return n.Node }
-func (n JSXSpreadExpression) JsNode() *Node          { return n.Node }
-func (n JSXText) JsNode() *Node                      { return n.Node }
-func (n KeyOfType) JsNode() *Node                    { return n.Node }
-func (n LabelIdentifier) JsNode() *Node              { return n.Node }
-func (n LabelledStatement) JsNode() *Node            { return n.Node }
-func (n LetOrConst) JsNode() *Node                   { return n.Node }
-func (n LexicalBinding) JsNode() *Node               { return n.Node }
-func (n LexicalDeclaration) JsNode() *Node           { return n.Node }
-func (n Literal) JsNode() *Node                      { return n.Node }
-func (n LiteralPropertyName) JsNode() *Node          { return n.Node }
-func (n LiteralType) JsNode() *Node                  { return n.Node }
-func (n LogicalANDExpression) JsNode() *Node         { return n.Node }
-func (n LogicalORExpression) JsNode() *Node          { return n.Node }
-func (n MappedType) JsNode() *Node                   { return n.Node }
-func (n MemberMethod) JsNode() *Node                 { return n.Node }
-func (n MemberVar) JsNode() *Node                    { return n.Node }
-func (n Method) JsNode() *Node                       { return n.Node }
-func (n MethodSignature) JsNode() *Node              { return n.Node }
-func (n Module) JsNode() *Node                       { return n.Node }
-func (n ModuleSpecifier) JsNode() *Node              { return n.Node }
-func (n MultiplicativeExpression) JsNode() *Node     { return n.Node }
-func (n NameSpaceImport) JsNode() *Node              { return n.Node }
-func (n NamedImports) JsNode() *Node                 { return n.Node }
-func (n NewExpression) JsNode() *Node                { return n.Node }
-func (n NewTarget) JsNode() *Node                    { return n.Node }
-func (n NoElement) JsNode() *Node                    { return n.Node }
-func (n NonNullableType) JsNode() *Node              { return n.Node }
-func (n NullableType) JsNode() *Node                 { return n.Node }
-func (n ObjectLiteral) JsNode() *Node                { return n.Node }
-func (n ObjectMethod) JsNode() *Node                 { return n.Node }
-func (n ObjectPattern) JsNode() *Node                { return n.Node }
-func (n ObjectType) JsNode() *Node                   { return n.Node }
-func (n OptionalCallExpression) JsNode() *Node       { return n.Node }
-func (n OptionalIndexAccess) JsNode() *Node          { return n.Node }
-func (n OptionalPropertyAccess) JsNode() *Node       { return n.Node }
-func (n OptionalTaggedTemplate) JsNode() *Node       { return n.Node }
-func (n Parameters) JsNode() *Node                   { return n.Node }
-func (n Parenthesized) JsNode() *Node                { return n.Node }
-func (n ParenthesizedType) JsNode() *Node            { return n.Node }
-func (n PostDec) JsNode() *Node                      { return n.Node }
-func (n PostInc) JsNode() *Node                      { return n.Node }
-func (n PreDec) JsNode() *Node                       { return n.Node }
-func (n PreInc) JsNode() *Node                       { return n.Node }
-func (n PredefinedType) JsNode() *Node               { return n.Node }
-func (n Property) JsNode() *Node                     { return n.Node }
-func (n PropertyAccess) JsNode() *Node               { return n.Node }
-func (n PropertyBinding) JsNode() *Node              { return n.Node }
-func (n PropertySignature) JsNode() *Node            { return n.Node }
-func (n Readonly) JsNode() *Node                     { return n.Node }
-func (n ReadonlyType) JsNode() *Node                 { return n.Node }
-func (n Regexp) JsNode() *Node                       { return n.Node }
-func (n RelationalExpression) JsNode() *Node         { return n.Node }
-func (n RestParameter) JsNode() *Node                { return n.Node }
-func (n RestType) JsNode() *Node                     { return n.Node }
-func (n ReturnStatement) JsNode() *Node              { return n.Node }
-func (n Setter) JsNode() *Node                       { return n.Node }
-func (n ShiftExpression) JsNode() *Node              { return n.Node }
-func (n ShorthandProperty) JsNode() *Node            { return n.Node }
-func (n SingleNameBinding) JsNode() *Node            { return n.Node }
-func (n SpreadElement) JsNode() *Node                { return n.Node }
-func (n SpreadProperty) JsNode() *Node               { return n.Node }
-func (n Static) JsNode() *Node                       { return n.Node }
-func (n SuperExpression) JsNode() *Node              { return n.Node }
-func (n SwitchStatement) JsNode() *Node              { return n.Node }
-func (n SyntaxProblem) JsNode() *Node                { return n.Node }
-func (n TaggedTemplate) JsNode() *Node               { return n.Node }
-func (n TemplateLiteral) JsNode() *Node              { return n.Node }
-func (n This) JsNode() *Node                         { return n.Node }
-func (n ThisType) JsNode() *Node                     { return n.Node }
-func (n ThrowStatement) JsNode() *Node               { return n.Node }
-func (n TryStatement) JsNode() *Node                 { return n.Node }
-func (n TsAmbientBinding) JsNode() *Node             { return n.Node }
-func (n TsAmbientClass) JsNode() *Node               { return n.Node }
-func (n TsAmbientEnum) JsNode() *Node                { return n.Node }
-func (n TsAmbientExportDeclaration) JsNode() *Node   { return n.Node }
-func (n TsAmbientFunction) JsNode() *Node            { return n.Node }
-func (n TsAmbientGlobal) JsNode() *Node              { return n.Node }
-func (n TsAmbientImportAlias) JsNode() *Node         { return n.Node }
-func (n TsAmbientInterface) JsNode() *Node           { return n.Node }
-func (n TsAmbientModule) JsNode() *Node              { return n.Node }
-func (n TsAmbientNamespace) JsNode() *Node           { return n.Node }
-func (n TsAmbientTypeAlias) JsNode() *Node           { return n.Node }
-func (n TsAmbientVar) JsNode() *Node                 { return n.Node }
-func (n TsAsConstExpression) JsNode() *Node          { return n.Node }
-func (n TsAsExpression) JsNode() *Node               { return n.Node }
-func (n TsCastExpression) JsNode() *Node             { return n.Node }
-func (n TsConditional) JsNode() *Node                { return n.Node }
-func (n TsConst) JsNode() *Node                      { return n.Node }
-func (n TsDynamicImport) JsNode() *Node              { return n.Node }
-func (n TsEnum) JsNode() *Node                       { return n.Node }
-func (n TsEnumBody) JsNode() *Node                   { return n.Node }
-func (n TsEnumMember) JsNode() *Node                 { return n.Node }
-func (n TsExclToken) JsNode() *Node                  { return n.Node }
-func (n TsExport) JsNode() *Node                     { return n.Node }
-func (n TsExportAssignment) JsNode() *Node           { return n.Node }
-func (n TsImplementsClause) JsNode() *Node           { return n.Node }
-func (n TsImportAliasDeclaration) JsNode() *Node     { return n.Node }
-func (n TsImportRequireDeclaration) JsNode() *Node   { return n.Node }
-func (n TsIndexMemberDeclaration) JsNode() *Node     { return n.Node }
-func (n TsInterface) JsNode() *Node                  { return n.Node }
-func (n TsInterfaceExtends) JsNode() *Node           { return n.Node }
-func (n TsNamespace) JsNode() *Node                  { return n.Node }
-func (n TsNamespaceBody) JsNode() *Node              { return n.Node }
-func (n TsNamespaceExportDeclaration) JsNode() *Node { return n.Node }
-func (n TsNonNull) JsNode() *Node                    { return n.Node }
-func (n TsThisParameter) JsNode() *Node              { return n.Node }
-func (n TsTypeOnly) JsNode() *Node                   { return n.Node }
-func (n TupleType) JsNode() *Node                    { return n.Node }
-func (n TypeAliasDeclaration) JsNode() *Node         { return n.Node }
-func (n TypeAnnotation) JsNode() *Node               { return n.Node }
-func (n TypeArguments) JsNode() *Node                { return n.Node }
-func (n TypeConstraint) JsNode() *Node               { return n.Node }
-func (n TypeName) JsNode() *Node                     { return n.Node }
-func (n TypeParameter) JsNode() *Node                { return n.Node }
-func (n TypeParameters) JsNode() *Node               { return n.Node }
-func (n TypePredicate) JsNode() *Node                { return n.Node }
-func (n TypeQuery) JsNode() *Node                    { return n.Node }
-func (n TypeReference) JsNode() *Node                { return n.Node }
-func (n TypeVar) JsNode() *Node                      { return n.Node }
-func (n UnaryExpression) JsNode() *Node              { return n.Node }
-func (n UnionType) JsNode() *Node                    { return n.Node }
-func (n UniqueType) JsNode() *Node                   { return n.Node }
-func (n Var) JsNode() *Node                          { return n.Node }
-func (n VariableDeclaration) JsNode() *Node          { return n.Node }
-func (n VariableStatement) JsNode() *Node            { return n.Node }
-func (n WhileStatement) JsNode() *Node               { return n.Node }
-func (n WithStatement) JsNode() *Node                { return n.Node }
-func (n Yield) JsNode() *Node                        { return n.Node }
-func (n InsertedSemicolon) JsNode() *Node            { return n.Node }
-func (n Token) JsNode() *Node                        { return n.Node }
-func (NilNode) JsNode() *Node                        { return nil }
+func (n Abstract) JsNode() *Node               { return n.Node }
+func (n AccessibilityModifier) JsNode() *Node  { return n.Node }
+func (n AdditiveExpr) JsNode() *Node           { return n.Node }
+func (n Arguments) JsNode() *Node              { return n.Node }
+func (n ArrayLiteral) JsNode() *Node           { return n.Node }
+func (n ArrayPattern) JsNode() *Node           { return n.Node }
+func (n ArrayType) JsNode() *Node              { return n.Node }
+func (n ArrowFunc) JsNode() *Node              { return n.Node }
+func (n AssertsType) JsNode() *Node            { return n.Node }
+func (n AssignmentExpr) JsNode() *Node         { return n.Node }
+func (n AssignmentOperator) JsNode() *Node     { return n.Node }
+func (n AsyncArrowFunc) JsNode() *Node         { return n.Node }
+func (n AsyncFunc) JsNode() *Node              { return n.Node }
+func (n AsyncFuncExpr) JsNode() *Node          { return n.Node }
+func (n AsyncMethod) JsNode() *Node            { return n.Node }
+func (n AwaitExpr) JsNode() *Node              { return n.Node }
+func (n BindingRestElement) JsNode() *Node     { return n.Node }
+func (n BitwiseAND) JsNode() *Node             { return n.Node }
+func (n BitwiseOR) JsNode() *Node              { return n.Node }
+func (n BitwiseXOR) JsNode() *Node             { return n.Node }
+func (n Block) JsNode() *Node                  { return n.Node }
+func (n Body) JsNode() *Node                   { return n.Node }
+func (n BreakStmt) JsNode() *Node              { return n.Node }
+func (n CallExpr) JsNode() *Node               { return n.Node }
+func (n CallSignature) JsNode() *Node          { return n.Node }
+func (n Case) JsNode() *Node                   { return n.Node }
+func (n Catch) JsNode() *Node                  { return n.Node }
+func (n Class) JsNode() *Node                  { return n.Node }
+func (n ClassBody) JsNode() *Node              { return n.Node }
+func (n ClassExpr) JsNode() *Node              { return n.Node }
+func (n CoalesceExpr) JsNode() *Node           { return n.Node }
+func (n CommaExpr) JsNode() *Node              { return n.Node }
+func (n ComputedPropertyName) JsNode() *Node   { return n.Node }
+func (n ConciseBody) JsNode() *Node            { return n.Node }
+func (n ConditionalExpr) JsNode() *Node        { return n.Node }
+func (n ConstructSignature) JsNode() *Node     { return n.Node }
+func (n ConstructorType) JsNode() *Node        { return n.Node }
+func (n ContinueStmt) JsNode() *Node           { return n.Node }
+func (n DebuggerStmt) JsNode() *Node           { return n.Node }
+func (n Declare) JsNode() *Node                { return n.Node }
+func (n DecoratorCall) JsNode() *Node          { return n.Node }
+func (n DecoratorExpr) JsNode() *Node          { return n.Node }
+func (n Default) JsNode() *Node                { return n.Node }
+func (n DefaultParameter) JsNode() *Node       { return n.Node }
+func (n DoWhileStmt) JsNode() *Node            { return n.Node }
+func (n ElementBinding) JsNode() *Node         { return n.Node }
+func (n EmptyDecl) JsNode() *Node              { return n.Node }
+func (n EmptyStmt) JsNode() *Node              { return n.Node }
+func (n EqualityExpr) JsNode() *Node           { return n.Node }
+func (n ExponentiationExpr) JsNode() *Node     { return n.Node }
+func (n ExportClause) JsNode() *Node           { return n.Node }
+func (n ExportDecl) JsNode() *Node             { return n.Node }
+func (n ExportDefault) JsNode() *Node          { return n.Node }
+func (n ExportSpecifier) JsNode() *Node        { return n.Node }
+func (n ExpressionStmt) JsNode() *Node         { return n.Node }
+func (n Extends) JsNode() *Node                { return n.Node }
+func (n Finally) JsNode() *Node                { return n.Node }
+func (n ForBinding) JsNode() *Node             { return n.Node }
+func (n ForCondition) JsNode() *Node           { return n.Node }
+func (n ForFinalExpr) JsNode() *Node           { return n.Node }
+func (n ForInStmt) JsNode() *Node              { return n.Node }
+func (n ForInStmtWithVar) JsNode() *Node       { return n.Node }
+func (n ForOfStmt) JsNode() *Node              { return n.Node }
+func (n ForOfStmtWithVar) JsNode() *Node       { return n.Node }
+func (n ForStmt) JsNode() *Node                { return n.Node }
+func (n ForStmtWithVar) JsNode() *Node         { return n.Node }
+func (n Function) JsNode() *Node               { return n.Node }
+func (n FunctionExpr) JsNode() *Node           { return n.Node }
+func (n FunctionType) JsNode() *Node           { return n.Node }
+func (n Generator) JsNode() *Node              { return n.Node }
+func (n GeneratorExpr) JsNode() *Node          { return n.Node }
+func (n GeneratorMethod) JsNode() *Node        { return n.Node }
+func (n Getter) JsNode() *Node                 { return n.Node }
+func (n IdentExpr) JsNode() *Node              { return n.Node }
+func (n IfStmt) JsNode() *Node                 { return n.Node }
+func (n ImportDecl) JsNode() *Node             { return n.Node }
+func (n ImportSpecifier) JsNode() *Node        { return n.Node }
+func (n ImportType) JsNode() *Node             { return n.Node }
+func (n InExpr) JsNode() *Node                 { return n.Node }
+func (n IndexAccess) JsNode() *Node            { return n.Node }
+func (n IndexSignature) JsNode() *Node         { return n.Node }
+func (n IndexedAccessType) JsNode() *Node      { return n.Node }
+func (n Initializer) JsNode() *Node            { return n.Node }
+func (n InstanceOfExpr) JsNode() *Node         { return n.Node }
+func (n IntersectionType) JsNode() *Node       { return n.Node }
+func (n JSXAttributeName) JsNode() *Node       { return n.Node }
+func (n JSXClosingElement) JsNode() *Node      { return n.Node }
+func (n JSXElement) JsNode() *Node             { return n.Node }
+func (n JSXElementName) JsNode() *Node         { return n.Node }
+func (n JSXExpr) JsNode() *Node                { return n.Node }
+func (n JSXLiteral) JsNode() *Node             { return n.Node }
+func (n JSXNormalAttribute) JsNode() *Node     { return n.Node }
+func (n JSXOpeningElement) JsNode() *Node      { return n.Node }
+func (n JSXSelfClosingElement) JsNode() *Node  { return n.Node }
+func (n JSXSpreadAttribute) JsNode() *Node     { return n.Node }
+func (n JSXSpreadExpr) JsNode() *Node          { return n.Node }
+func (n JSXText) JsNode() *Node                { return n.Node }
+func (n KeyOfType) JsNode() *Node              { return n.Node }
+func (n LabelIdent) JsNode() *Node             { return n.Node }
+func (n LabelledStmt) JsNode() *Node           { return n.Node }
+func (n LetOrConst) JsNode() *Node             { return n.Node }
+func (n LexicalBinding) JsNode() *Node         { return n.Node }
+func (n LexicalDecl) JsNode() *Node            { return n.Node }
+func (n Literal) JsNode() *Node                { return n.Node }
+func (n LiteralPropertyName) JsNode() *Node    { return n.Node }
+func (n LiteralType) JsNode() *Node            { return n.Node }
+func (n LogicalAND) JsNode() *Node             { return n.Node }
+func (n LogicalOR) JsNode() *Node              { return n.Node }
+func (n MappedType) JsNode() *Node             { return n.Node }
+func (n MemberMethod) JsNode() *Node           { return n.Node }
+func (n MemberVar) JsNode() *Node              { return n.Node }
+func (n Method) JsNode() *Node                 { return n.Node }
+func (n MethodSignature) JsNode() *Node        { return n.Node }
+func (n Module) JsNode() *Node                 { return n.Node }
+func (n ModuleSpecifier) JsNode() *Node        { return n.Node }
+func (n MultiplicativeExpr) JsNode() *Node     { return n.Node }
+func (n NameIdent) JsNode() *Node              { return n.Node }
+func (n NameSpaceImport) JsNode() *Node        { return n.Node }
+func (n NamedImports) JsNode() *Node           { return n.Node }
+func (n NewExpr) JsNode() *Node                { return n.Node }
+func (n NewTarget) JsNode() *Node              { return n.Node }
+func (n NoElement) JsNode() *Node              { return n.Node }
+func (n NonNullableType) JsNode() *Node        { return n.Node }
+func (n NullableType) JsNode() *Node           { return n.Node }
+func (n ObjectLiteral) JsNode() *Node          { return n.Node }
+func (n ObjectMethod) JsNode() *Node           { return n.Node }
+func (n ObjectPattern) JsNode() *Node          { return n.Node }
+func (n ObjectType) JsNode() *Node             { return n.Node }
+func (n OptionalCallExpr) JsNode() *Node       { return n.Node }
+func (n OptionalIndexAccess) JsNode() *Node    { return n.Node }
+func (n OptionalPropertyAccess) JsNode() *Node { return n.Node }
+func (n OptionalTaggedTemplate) JsNode() *Node { return n.Node }
+func (n Parameters) JsNode() *Node             { return n.Node }
+func (n Parenthesized) JsNode() *Node          { return n.Node }
+func (n ParenthesizedType) JsNode() *Node      { return n.Node }
+func (n PostDec) JsNode() *Node                { return n.Node }
+func (n PostInc) JsNode() *Node                { return n.Node }
+func (n PreDec) JsNode() *Node                 { return n.Node }
+func (n PreInc) JsNode() *Node                 { return n.Node }
+func (n PredefinedType) JsNode() *Node         { return n.Node }
+func (n Property) JsNode() *Node               { return n.Node }
+func (n PropertyAccess) JsNode() *Node         { return n.Node }
+func (n PropertyBinding) JsNode() *Node        { return n.Node }
+func (n PropertySignature) JsNode() *Node      { return n.Node }
+func (n Readonly) JsNode() *Node               { return n.Node }
+func (n ReadonlyType) JsNode() *Node           { return n.Node }
+func (n RefIdent) JsNode() *Node               { return n.Node }
+func (n Regexp) JsNode() *Node                 { return n.Node }
+func (n RelationalExpr) JsNode() *Node         { return n.Node }
+func (n RestParameter) JsNode() *Node          { return n.Node }
+func (n RestType) JsNode() *Node               { return n.Node }
+func (n ReturnStmt) JsNode() *Node             { return n.Node }
+func (n Setter) JsNode() *Node                 { return n.Node }
+func (n ShiftExpr) JsNode() *Node              { return n.Node }
+func (n ShorthandProperty) JsNode() *Node      { return n.Node }
+func (n SingleNameBinding) JsNode() *Node      { return n.Node }
+func (n SpreadElement) JsNode() *Node          { return n.Node }
+func (n SpreadProperty) JsNode() *Node         { return n.Node }
+func (n Static) JsNode() *Node                 { return n.Node }
+func (n SuperExpr) JsNode() *Node              { return n.Node }
+func (n SwitchStmt) JsNode() *Node             { return n.Node }
+func (n SyntaxProblem) JsNode() *Node          { return n.Node }
+func (n TaggedTemplate) JsNode() *Node         { return n.Node }
+func (n TemplateLiteral) JsNode() *Node        { return n.Node }
+func (n This) JsNode() *Node                   { return n.Node }
+func (n ThisType) JsNode() *Node               { return n.Node }
+func (n ThrowStmt) JsNode() *Node              { return n.Node }
+func (n TryStmt) JsNode() *Node                { return n.Node }
+func (n TsAmbientBinding) JsNode() *Node       { return n.Node }
+func (n TsAmbientClass) JsNode() *Node         { return n.Node }
+func (n TsAmbientEnum) JsNode() *Node          { return n.Node }
+func (n TsAmbientExportDecl) JsNode() *Node    { return n.Node }
+func (n TsAmbientFunc) JsNode() *Node          { return n.Node }
+func (n TsAmbientGlobal) JsNode() *Node        { return n.Node }
+func (n TsAmbientImportAlias) JsNode() *Node   { return n.Node }
+func (n TsAmbientInterface) JsNode() *Node     { return n.Node }
+func (n TsAmbientModule) JsNode() *Node        { return n.Node }
+func (n TsAmbientNamespace) JsNode() *Node     { return n.Node }
+func (n TsAmbientTypeAlias) JsNode() *Node     { return n.Node }
+func (n TsAmbientVar) JsNode() *Node           { return n.Node }
+func (n TsAsConstExpr) JsNode() *Node          { return n.Node }
+func (n TsAsExpr) JsNode() *Node               { return n.Node }
+func (n TsCastExpr) JsNode() *Node             { return n.Node }
+func (n TsConditional) JsNode() *Node          { return n.Node }
+func (n TsConst) JsNode() *Node                { return n.Node }
+func (n TsDynamicImport) JsNode() *Node        { return n.Node }
+func (n TsEnum) JsNode() *Node                 { return n.Node }
+func (n TsEnumBody) JsNode() *Node             { return n.Node }
+func (n TsEnumMember) JsNode() *Node           { return n.Node }
+func (n TsExclToken) JsNode() *Node            { return n.Node }
+func (n TsExport) JsNode() *Node               { return n.Node }
+func (n TsExportAssignment) JsNode() *Node     { return n.Node }
+func (n TsImplementsClause) JsNode() *Node     { return n.Node }
+func (n TsImportAliasDecl) JsNode() *Node      { return n.Node }
+func (n TsImportRequireDecl) JsNode() *Node    { return n.Node }
+func (n TsIndexMemberDecl) JsNode() *Node      { return n.Node }
+func (n TsInterface) JsNode() *Node            { return n.Node }
+func (n TsInterfaceExtends) JsNode() *Node     { return n.Node }
+func (n TsNamespace) JsNode() *Node            { return n.Node }
+func (n TsNamespaceBody) JsNode() *Node        { return n.Node }
+func (n TsNamespaceExportDecl) JsNode() *Node  { return n.Node }
+func (n TsNonNull) JsNode() *Node              { return n.Node }
+func (n TsThisParameter) JsNode() *Node        { return n.Node }
+func (n TsTypeOnly) JsNode() *Node             { return n.Node }
+func (n TupleType) JsNode() *Node              { return n.Node }
+func (n TypeAliasDecl) JsNode() *Node          { return n.Node }
+func (n TypeAnnotation) JsNode() *Node         { return n.Node }
+func (n TypeArguments) JsNode() *Node          { return n.Node }
+func (n TypeConstraint) JsNode() *Node         { return n.Node }
+func (n TypeName) JsNode() *Node               { return n.Node }
+func (n TypeParameter) JsNode() *Node          { return n.Node }
+func (n TypeParameters) JsNode() *Node         { return n.Node }
+func (n TypePredicate) JsNode() *Node          { return n.Node }
+func (n TypeQuery) JsNode() *Node              { return n.Node }
+func (n TypeReference) JsNode() *Node          { return n.Node }
+func (n TypeVar) JsNode() *Node                { return n.Node }
+func (n UnaryExpr) JsNode() *Node              { return n.Node }
+func (n UnionType) JsNode() *Node              { return n.Node }
+func (n UniqueType) JsNode() *Node             { return n.Node }
+func (n Var) JsNode() *Node                    { return n.Node }
+func (n VariableDecl) JsNode() *Node           { return n.Node }
+func (n VariableStmt) JsNode() *Node           { return n.Node }
+func (n WhileStmt) JsNode() *Node              { return n.Node }
+func (n WithStmt) JsNode() *Node               { return n.Node }
+func (n Yield) JsNode() *Node                  { return n.Node }
+func (n InsertedSemicolon) JsNode() *Node      { return n.Node }
+func (n Token) JsNode() *Node                  { return n.Node }
+func (NilNode) JsNode() *Node                  { return nil }
 
 type BindingPattern interface {
 	JsNode
@@ -281,11 +283,11 @@ type ClassElement interface {
 // classElementNode() ensures that only the following types can be
 // assigned to ClassElement.
 //
-func (EmptyDecl) classElementNode()                {}
-func (MemberMethod) classElementNode()             {}
-func (MemberVar) classElementNode()                {}
-func (TsIndexMemberDeclaration) classElementNode() {}
-func (NilNode) classElementNode()                  {}
+func (EmptyDecl) classElementNode()         {}
+func (MemberMethod) classElementNode()      {}
+func (MemberVar) classElementNode()         {}
+func (TsIndexMemberDecl) classElementNode() {}
+func (NilNode) classElementNode()           {}
 
 type Declaration interface {
 	JsNode
@@ -295,28 +297,28 @@ type Declaration interface {
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
 //
-func (AsyncFunction) declarationNode()              {}
-func (Class) declarationNode()                      {}
-func (Function) declarationNode()                   {}
-func (Generator) declarationNode()                  {}
-func (LexicalDeclaration) declarationNode()         {}
-func (TsAmbientClass) declarationNode()             {}
-func (TsAmbientEnum) declarationNode()              {}
-func (TsAmbientExportDeclaration) declarationNode() {}
-func (TsAmbientFunction) declarationNode()          {}
-func (TsAmbientGlobal) declarationNode()            {}
-func (TsAmbientImportAlias) declarationNode()       {}
-func (TsAmbientInterface) declarationNode()         {}
-func (TsAmbientModule) declarationNode()            {}
-func (TsAmbientNamespace) declarationNode()         {}
-func (TsAmbientTypeAlias) declarationNode()         {}
-func (TsAmbientVar) declarationNode()               {}
-func (TsEnum) declarationNode()                     {}
-func (TsImportAliasDeclaration) declarationNode()   {}
-func (TsInterface) declarationNode()                {}
-func (TsNamespace) declarationNode()                {}
-func (TypeAliasDeclaration) declarationNode()       {}
-func (NilNode) declarationNode()                    {}
+func (AsyncFunc) declarationNode()            {}
+func (Class) declarationNode()                {}
+func (Function) declarationNode()             {}
+func (Generator) declarationNode()            {}
+func (LexicalDecl) declarationNode()          {}
+func (TsAmbientClass) declarationNode()       {}
+func (TsAmbientEnum) declarationNode()        {}
+func (TsAmbientExportDecl) declarationNode()  {}
+func (TsAmbientFunc) declarationNode()        {}
+func (TsAmbientGlobal) declarationNode()      {}
+func (TsAmbientImportAlias) declarationNode() {}
+func (TsAmbientInterface) declarationNode()   {}
+func (TsAmbientModule) declarationNode()      {}
+func (TsAmbientNamespace) declarationNode()   {}
+func (TsAmbientTypeAlias) declarationNode()   {}
+func (TsAmbientVar) declarationNode()         {}
+func (TsEnum) declarationNode()               {}
+func (TsImportAliasDecl) declarationNode()    {}
+func (TsInterface) declarationNode()          {}
+func (TsNamespace) declarationNode()          {}
+func (TypeAliasDecl) declarationNode()        {}
+func (NilNode) declarationNode()              {}
 
 type Decorator interface {
 	JsNode
@@ -364,62 +366,64 @@ type Expression interface {
 // expressionNode() ensures that only the following types can be
 // assigned to Expression.
 //
-func (AdditiveExpression) expressionNode()       {}
-func (ArrayLiteral) expressionNode()             {}
-func (ArrowFunction) expressionNode()            {}
-func (AssignmentExpression) expressionNode()     {}
-func (AsyncArrowFunction) expressionNode()       {}
-func (AsyncFunctionExpression) expressionNode()  {}
-func (AwaitExpression) expressionNode()          {}
-func (BitwiseANDExpression) expressionNode()     {}
-func (BitwiseORExpression) expressionNode()      {}
-func (BitwiseXORExpression) expressionNode()     {}
-func (CallExpression) expressionNode()           {}
-func (ClassExpr) expressionNode()                {}
-func (CoalesceExpression) expressionNode()       {}
-func (CommaExpression) expressionNode()          {}
-func (ConditionalExpression) expressionNode()    {}
-func (EqualityExpression) expressionNode()       {}
-func (ExponentiationExpression) expressionNode() {}
-func (FunctionExpression) expressionNode()       {}
-func (GeneratorExpression) expressionNode()      {}
-func (IdentExpr) expressionNode()                {}
-func (IndexAccess) expressionNode()              {}
-func (JSXElement) expressionNode()               {}
-func (Literal) expressionNode()                  {}
-func (LogicalANDExpression) expressionNode()     {}
-func (LogicalORExpression) expressionNode()      {}
-func (MultiplicativeExpression) expressionNode() {}
-func (NewExpression) expressionNode()            {}
-func (NewTarget) expressionNode()                {}
-func (NoElement) expressionNode()                {}
-func (ObjectLiteral) expressionNode()            {}
-func (OptionalCallExpression) expressionNode()   {}
-func (OptionalIndexAccess) expressionNode()      {}
-func (OptionalPropertyAccess) expressionNode()   {}
-func (OptionalTaggedTemplate) expressionNode()   {}
-func (Parenthesized) expressionNode()            {}
-func (PostDec) expressionNode()                  {}
-func (PostInc) expressionNode()                  {}
-func (PreDec) expressionNode()                   {}
-func (PreInc) expressionNode()                   {}
-func (PropertyAccess) expressionNode()           {}
-func (Regexp) expressionNode()                   {}
-func (RelationalExpression) expressionNode()     {}
-func (ShiftExpression) expressionNode()          {}
-func (SpreadElement) expressionNode()            {}
-func (SuperExpression) expressionNode()          {}
-func (TaggedTemplate) expressionNode()           {}
-func (TemplateLiteral) expressionNode()          {}
-func (This) expressionNode()                     {}
-func (TsAsConstExpression) expressionNode()      {}
-func (TsAsExpression) expressionNode()           {}
-func (TsCastExpression) expressionNode()         {}
-func (TsDynamicImport) expressionNode()          {}
-func (TsNonNull) expressionNode()                {}
-func (UnaryExpression) expressionNode()          {}
-func (Yield) expressionNode()                    {}
-func (NilNode) expressionNode()                  {}
+func (AdditiveExpr) expressionNode()           {}
+func (ArrayLiteral) expressionNode()           {}
+func (ArrowFunc) expressionNode()              {}
+func (AssignmentExpr) expressionNode()         {}
+func (AsyncArrowFunc) expressionNode()         {}
+func (AsyncFuncExpr) expressionNode()          {}
+func (AwaitExpr) expressionNode()              {}
+func (BitwiseAND) expressionNode()             {}
+func (BitwiseOR) expressionNode()              {}
+func (BitwiseXOR) expressionNode()             {}
+func (CallExpr) expressionNode()               {}
+func (ClassExpr) expressionNode()              {}
+func (CoalesceExpr) expressionNode()           {}
+func (CommaExpr) expressionNode()              {}
+func (ConditionalExpr) expressionNode()        {}
+func (EqualityExpr) expressionNode()           {}
+func (ExponentiationExpr) expressionNode()     {}
+func (FunctionExpr) expressionNode()           {}
+func (GeneratorExpr) expressionNode()          {}
+func (IdentExpr) expressionNode()              {}
+func (InExpr) expressionNode()                 {}
+func (IndexAccess) expressionNode()            {}
+func (InstanceOfExpr) expressionNode()         {}
+func (JSXElement) expressionNode()             {}
+func (Literal) expressionNode()                {}
+func (LogicalAND) expressionNode()             {}
+func (LogicalOR) expressionNode()              {}
+func (MultiplicativeExpr) expressionNode()     {}
+func (NewExpr) expressionNode()                {}
+func (NewTarget) expressionNode()              {}
+func (NoElement) expressionNode()              {}
+func (ObjectLiteral) expressionNode()          {}
+func (OptionalCallExpr) expressionNode()       {}
+func (OptionalIndexAccess) expressionNode()    {}
+func (OptionalPropertyAccess) expressionNode() {}
+func (OptionalTaggedTemplate) expressionNode() {}
+func (Parenthesized) expressionNode()          {}
+func (PostDec) expressionNode()                {}
+func (PostInc) expressionNode()                {}
+func (PreDec) expressionNode()                 {}
+func (PreInc) expressionNode()                 {}
+func (PropertyAccess) expressionNode()         {}
+func (Regexp) expressionNode()                 {}
+func (RelationalExpr) expressionNode()         {}
+func (ShiftExpr) expressionNode()              {}
+func (SpreadElement) expressionNode()          {}
+func (SuperExpr) expressionNode()              {}
+func (TaggedTemplate) expressionNode()         {}
+func (TemplateLiteral) expressionNode()        {}
+func (This) expressionNode()                   {}
+func (TsAsConstExpr) expressionNode()          {}
+func (TsAsExpr) expressionNode()               {}
+func (TsCastExpr) expressionNode()             {}
+func (TsDynamicImport) expressionNode()        {}
+func (TsNonNull) expressionNode()              {}
+func (UnaryExpr) expressionNode()              {}
+func (Yield) expressionNode()                  {}
+func (NilNode) expressionNode()                {}
 
 type JSXAttribute interface {
 	JsNode
@@ -441,10 +445,10 @@ type JSXAttributeValue interface {
 // jSXAttributeValueNode() ensures that only the following types can be
 // assigned to JSXAttributeValue.
 //
-func (JSXElement) jSXAttributeValueNode()    {}
-func (JSXExpression) jSXAttributeValueNode() {}
-func (JSXLiteral) jSXAttributeValueNode()    {}
-func (NilNode) jSXAttributeValueNode()       {}
+func (JSXElement) jSXAttributeValueNode() {}
+func (JSXExpr) jSXAttributeValueNode()    {}
+func (JSXLiteral) jSXAttributeValueNode() {}
+func (NilNode) jSXAttributeValueNode()    {}
 
 type JSXChild interface {
 	JsNode
@@ -454,11 +458,11 @@ type JSXChild interface {
 // jSXChildNode() ensures that only the following types can be
 // assigned to JSXChild.
 //
-func (JSXElement) jSXChildNode()          {}
-func (JSXExpression) jSXChildNode()       {}
-func (JSXSpreadExpression) jSXChildNode() {}
-func (JSXText) jSXChildNode()             {}
-func (NilNode) jSXChildNode()             {}
+func (JSXElement) jSXChildNode()    {}
+func (JSXExpr) jSXChildNode()       {}
+func (JSXSpreadExpr) jSXChildNode() {}
+func (JSXText) jSXChildNode()       {}
+func (NilNode) jSXChildNode()       {}
 
 type MethodDefinition interface {
 	JsNode
@@ -500,57 +504,57 @@ type ModuleItem interface {
 // moduleItemNode() ensures that only the following types can be
 // assigned to ModuleItem.
 //
-func (AsyncFunction) moduleItemNode()                {}
-func (Block) moduleItemNode()                        {}
-func (BreakStatement) moduleItemNode()               {}
-func (Class) moduleItemNode()                        {}
-func (ContinueStatement) moduleItemNode()            {}
-func (DebuggerStatement) moduleItemNode()            {}
-func (DoWhileStatement) moduleItemNode()             {}
-func (EmptyStatement) moduleItemNode()               {}
-func (ExportDeclaration) moduleItemNode()            {}
-func (ExportDefault) moduleItemNode()                {}
-func (ExpressionStatement) moduleItemNode()          {}
-func (ForInStatement) moduleItemNode()               {}
-func (ForInStatementWithVar) moduleItemNode()        {}
-func (ForOfStatement) moduleItemNode()               {}
-func (ForOfStatementWithVar) moduleItemNode()        {}
-func (ForStatement) moduleItemNode()                 {}
-func (ForStatementWithVar) moduleItemNode()          {}
-func (Function) moduleItemNode()                     {}
-func (Generator) moduleItemNode()                    {}
-func (IfStatement) moduleItemNode()                  {}
-func (ImportDeclaration) moduleItemNode()            {}
-func (LabelledStatement) moduleItemNode()            {}
-func (LexicalDeclaration) moduleItemNode()           {}
-func (ReturnStatement) moduleItemNode()              {}
-func (SwitchStatement) moduleItemNode()              {}
-func (SyntaxProblem) moduleItemNode()                {}
-func (ThrowStatement) moduleItemNode()               {}
-func (TryStatement) moduleItemNode()                 {}
-func (TsAmbientClass) moduleItemNode()               {}
-func (TsAmbientEnum) moduleItemNode()                {}
-func (TsAmbientExportDeclaration) moduleItemNode()   {}
-func (TsAmbientFunction) moduleItemNode()            {}
-func (TsAmbientGlobal) moduleItemNode()              {}
-func (TsAmbientImportAlias) moduleItemNode()         {}
-func (TsAmbientInterface) moduleItemNode()           {}
-func (TsAmbientModule) moduleItemNode()              {}
-func (TsAmbientNamespace) moduleItemNode()           {}
-func (TsAmbientTypeAlias) moduleItemNode()           {}
-func (TsAmbientVar) moduleItemNode()                 {}
-func (TsEnum) moduleItemNode()                       {}
-func (TsExportAssignment) moduleItemNode()           {}
-func (TsImportAliasDeclaration) moduleItemNode()     {}
-func (TsImportRequireDeclaration) moduleItemNode()   {}
-func (TsInterface) moduleItemNode()                  {}
-func (TsNamespace) moduleItemNode()                  {}
-func (TsNamespaceExportDeclaration) moduleItemNode() {}
-func (TypeAliasDeclaration) moduleItemNode()         {}
-func (VariableStatement) moduleItemNode()            {}
-func (WhileStatement) moduleItemNode()               {}
-func (WithStatement) moduleItemNode()                {}
-func (NilNode) moduleItemNode()                      {}
+func (AsyncFunc) moduleItemNode()             {}
+func (Block) moduleItemNode()                 {}
+func (BreakStmt) moduleItemNode()             {}
+func (Class) moduleItemNode()                 {}
+func (ContinueStmt) moduleItemNode()          {}
+func (DebuggerStmt) moduleItemNode()          {}
+func (DoWhileStmt) moduleItemNode()           {}
+func (EmptyStmt) moduleItemNode()             {}
+func (ExportDecl) moduleItemNode()            {}
+func (ExportDefault) moduleItemNode()         {}
+func (ExpressionStmt) moduleItemNode()        {}
+func (ForInStmt) moduleItemNode()             {}
+func (ForInStmtWithVar) moduleItemNode()      {}
+func (ForOfStmt) moduleItemNode()             {}
+func (ForOfStmtWithVar) moduleItemNode()      {}
+func (ForStmt) moduleItemNode()               {}
+func (ForStmtWithVar) moduleItemNode()        {}
+func (Function) moduleItemNode()              {}
+func (Generator) moduleItemNode()             {}
+func (IfStmt) moduleItemNode()                {}
+func (ImportDecl) moduleItemNode()            {}
+func (LabelledStmt) moduleItemNode()          {}
+func (LexicalDecl) moduleItemNode()           {}
+func (ReturnStmt) moduleItemNode()            {}
+func (SwitchStmt) moduleItemNode()            {}
+func (SyntaxProblem) moduleItemNode()         {}
+func (ThrowStmt) moduleItemNode()             {}
+func (TryStmt) moduleItemNode()               {}
+func (TsAmbientClass) moduleItemNode()        {}
+func (TsAmbientEnum) moduleItemNode()         {}
+func (TsAmbientExportDecl) moduleItemNode()   {}
+func (TsAmbientFunc) moduleItemNode()         {}
+func (TsAmbientGlobal) moduleItemNode()       {}
+func (TsAmbientImportAlias) moduleItemNode()  {}
+func (TsAmbientInterface) moduleItemNode()    {}
+func (TsAmbientModule) moduleItemNode()       {}
+func (TsAmbientNamespace) moduleItemNode()    {}
+func (TsAmbientTypeAlias) moduleItemNode()    {}
+func (TsAmbientVar) moduleItemNode()          {}
+func (TsEnum) moduleItemNode()                {}
+func (TsExportAssignment) moduleItemNode()    {}
+func (TsImportAliasDecl) moduleItemNode()     {}
+func (TsImportRequireDecl) moduleItemNode()   {}
+func (TsInterface) moduleItemNode()           {}
+func (TsNamespace) moduleItemNode()           {}
+func (TsNamespaceExportDecl) moduleItemNode() {}
+func (TypeAliasDecl) moduleItemNode()         {}
+func (VariableStmt) moduleItemNode()          {}
+func (WhileStmt) moduleItemNode()             {}
+func (WithStmt) moduleItemNode()              {}
+func (NilNode) moduleItemNode()               {}
 
 type NamedImport interface {
 	JsNode
@@ -626,29 +630,29 @@ type Statement interface {
 // statementNode() ensures that only the following types can be
 // assigned to Statement.
 //
-func (Block) statementNode()                 {}
-func (BreakStatement) statementNode()        {}
-func (ContinueStatement) statementNode()     {}
-func (DebuggerStatement) statementNode()     {}
-func (DoWhileStatement) statementNode()      {}
-func (EmptyStatement) statementNode()        {}
-func (ExpressionStatement) statementNode()   {}
-func (ForInStatement) statementNode()        {}
-func (ForInStatementWithVar) statementNode() {}
-func (ForOfStatement) statementNode()        {}
-func (ForOfStatementWithVar) statementNode() {}
-func (ForStatement) statementNode()          {}
-func (ForStatementWithVar) statementNode()   {}
-func (IfStatement) statementNode()           {}
-func (LabelledStatement) statementNode()     {}
-func (ReturnStatement) statementNode()       {}
-func (SwitchStatement) statementNode()       {}
-func (ThrowStatement) statementNode()        {}
-func (TryStatement) statementNode()          {}
-func (VariableStatement) statementNode()     {}
-func (WhileStatement) statementNode()        {}
-func (WithStatement) statementNode()         {}
-func (NilNode) statementNode()               {}
+func (Block) statementNode()            {}
+func (BreakStmt) statementNode()        {}
+func (ContinueStmt) statementNode()     {}
+func (DebuggerStmt) statementNode()     {}
+func (DoWhileStmt) statementNode()      {}
+func (EmptyStmt) statementNode()        {}
+func (ExpressionStmt) statementNode()   {}
+func (ForInStmt) statementNode()        {}
+func (ForInStmtWithVar) statementNode() {}
+func (ForOfStmt) statementNode()        {}
+func (ForOfStmtWithVar) statementNode() {}
+func (ForStmt) statementNode()          {}
+func (ForStmtWithVar) statementNode()   {}
+func (IfStmt) statementNode()           {}
+func (LabelledStmt) statementNode()     {}
+func (ReturnStmt) statementNode()       {}
+func (SwitchStmt) statementNode()       {}
+func (ThrowStmt) statementNode()        {}
+func (TryStmt) statementNode()          {}
+func (VariableStmt) statementNode()     {}
+func (WhileStmt) statementNode()        {}
+func (WithStmt) statementNode()         {}
+func (NilNode) statementNode()          {}
 
 type StatementListItem interface {
 	JsNode
@@ -658,51 +662,51 @@ type StatementListItem interface {
 // statementListItemNode() ensures that only the following types can be
 // assigned to StatementListItem.
 //
-func (AsyncFunction) statementListItemNode()              {}
-func (Block) statementListItemNode()                      {}
-func (BreakStatement) statementListItemNode()             {}
-func (Class) statementListItemNode()                      {}
-func (ContinueStatement) statementListItemNode()          {}
-func (DebuggerStatement) statementListItemNode()          {}
-func (DoWhileStatement) statementListItemNode()           {}
-func (EmptyStatement) statementListItemNode()             {}
-func (ExpressionStatement) statementListItemNode()        {}
-func (ForInStatement) statementListItemNode()             {}
-func (ForInStatementWithVar) statementListItemNode()      {}
-func (ForOfStatement) statementListItemNode()             {}
-func (ForOfStatementWithVar) statementListItemNode()      {}
-func (ForStatement) statementListItemNode()               {}
-func (ForStatementWithVar) statementListItemNode()        {}
-func (Function) statementListItemNode()                   {}
-func (Generator) statementListItemNode()                  {}
-func (IfStatement) statementListItemNode()                {}
-func (LabelledStatement) statementListItemNode()          {}
-func (LexicalDeclaration) statementListItemNode()         {}
-func (ReturnStatement) statementListItemNode()            {}
-func (SwitchStatement) statementListItemNode()            {}
-func (SyntaxProblem) statementListItemNode()              {}
-func (ThrowStatement) statementListItemNode()             {}
-func (TryStatement) statementListItemNode()               {}
-func (TsAmbientClass) statementListItemNode()             {}
-func (TsAmbientEnum) statementListItemNode()              {}
-func (TsAmbientExportDeclaration) statementListItemNode() {}
-func (TsAmbientFunction) statementListItemNode()          {}
-func (TsAmbientGlobal) statementListItemNode()            {}
-func (TsAmbientImportAlias) statementListItemNode()       {}
-func (TsAmbientInterface) statementListItemNode()         {}
-func (TsAmbientModule) statementListItemNode()            {}
-func (TsAmbientNamespace) statementListItemNode()         {}
-func (TsAmbientTypeAlias) statementListItemNode()         {}
-func (TsAmbientVar) statementListItemNode()               {}
-func (TsEnum) statementListItemNode()                     {}
-func (TsImportAliasDeclaration) statementListItemNode()   {}
-func (TsInterface) statementListItemNode()                {}
-func (TsNamespace) statementListItemNode()                {}
-func (TypeAliasDeclaration) statementListItemNode()       {}
-func (VariableStatement) statementListItemNode()          {}
-func (WhileStatement) statementListItemNode()             {}
-func (WithStatement) statementListItemNode()              {}
-func (NilNode) statementListItemNode()                    {}
+func (AsyncFunc) statementListItemNode()            {}
+func (Block) statementListItemNode()                {}
+func (BreakStmt) statementListItemNode()            {}
+func (Class) statementListItemNode()                {}
+func (ContinueStmt) statementListItemNode()         {}
+func (DebuggerStmt) statementListItemNode()         {}
+func (DoWhileStmt) statementListItemNode()          {}
+func (EmptyStmt) statementListItemNode()            {}
+func (ExpressionStmt) statementListItemNode()       {}
+func (ForInStmt) statementListItemNode()            {}
+func (ForInStmtWithVar) statementListItemNode()     {}
+func (ForOfStmt) statementListItemNode()            {}
+func (ForOfStmtWithVar) statementListItemNode()     {}
+func (ForStmt) statementListItemNode()              {}
+func (ForStmtWithVar) statementListItemNode()       {}
+func (Function) statementListItemNode()             {}
+func (Generator) statementListItemNode()            {}
+func (IfStmt) statementListItemNode()               {}
+func (LabelledStmt) statementListItemNode()         {}
+func (LexicalDecl) statementListItemNode()          {}
+func (ReturnStmt) statementListItemNode()           {}
+func (SwitchStmt) statementListItemNode()           {}
+func (SyntaxProblem) statementListItemNode()        {}
+func (ThrowStmt) statementListItemNode()            {}
+func (TryStmt) statementListItemNode()              {}
+func (TsAmbientClass) statementListItemNode()       {}
+func (TsAmbientEnum) statementListItemNode()        {}
+func (TsAmbientExportDecl) statementListItemNode()  {}
+func (TsAmbientFunc) statementListItemNode()        {}
+func (TsAmbientGlobal) statementListItemNode()      {}
+func (TsAmbientImportAlias) statementListItemNode() {}
+func (TsAmbientInterface) statementListItemNode()   {}
+func (TsAmbientModule) statementListItemNode()      {}
+func (TsAmbientNamespace) statementListItemNode()   {}
+func (TsAmbientTypeAlias) statementListItemNode()   {}
+func (TsAmbientVar) statementListItemNode()         {}
+func (TsEnum) statementListItemNode()               {}
+func (TsImportAliasDecl) statementListItemNode()    {}
+func (TsInterface) statementListItemNode()          {}
+func (TsNamespace) statementListItemNode()          {}
+func (TypeAliasDecl) statementListItemNode()        {}
+func (VariableStmt) statementListItemNode()         {}
+func (WhileStmt) statementListItemNode()            {}
+func (WithStmt) statementListItemNode()             {}
+func (NilNode) statementListItemNode()              {}
 
 type TsAmbientElement interface {
 	JsNode
@@ -712,18 +716,18 @@ type TsAmbientElement interface {
 // tsAmbientElementNode() ensures that only the following types can be
 // assigned to TsAmbientElement.
 //
-func (TsAmbientClass) tsAmbientElementNode()             {}
-func (TsAmbientEnum) tsAmbientElementNode()              {}
-func (TsAmbientExportDeclaration) tsAmbientElementNode() {}
-func (TsAmbientFunction) tsAmbientElementNode()          {}
-func (TsAmbientGlobal) tsAmbientElementNode()            {}
-func (TsAmbientImportAlias) tsAmbientElementNode()       {}
-func (TsAmbientInterface) tsAmbientElementNode()         {}
-func (TsAmbientModule) tsAmbientElementNode()            {}
-func (TsAmbientNamespace) tsAmbientElementNode()         {}
-func (TsAmbientTypeAlias) tsAmbientElementNode()         {}
-func (TsAmbientVar) tsAmbientElementNode()               {}
-func (NilNode) tsAmbientElementNode()                    {}
+func (TsAmbientClass) tsAmbientElementNode()       {}
+func (TsAmbientEnum) tsAmbientElementNode()        {}
+func (TsAmbientExportDecl) tsAmbientElementNode()  {}
+func (TsAmbientFunc) tsAmbientElementNode()        {}
+func (TsAmbientGlobal) tsAmbientElementNode()      {}
+func (TsAmbientImportAlias) tsAmbientElementNode() {}
+func (TsAmbientInterface) tsAmbientElementNode()   {}
+func (TsAmbientModule) tsAmbientElementNode()      {}
+func (TsAmbientNamespace) tsAmbientElementNode()   {}
+func (TsAmbientTypeAlias) tsAmbientElementNode()   {}
+func (TsAmbientVar) tsAmbientElementNode()         {}
+func (NilNode) tsAmbientElementNode()              {}
 
 type TsType interface {
 	JsNode
@@ -786,15 +790,15 @@ type AccessibilityModifier struct {
 	*Node
 }
 
-type AdditiveExpression struct {
+type AdditiveExpr struct {
 	*Node
 }
 
-func (n AdditiveExpression) Left() Expression {
+func (n AdditiveExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n AdditiveExpression) Right() Expression {
+func (n AdditiveExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -834,7 +838,7 @@ type ArrayPattern struct {
 }
 
 func (n ArrayPattern) List() []JsNode {
-	nodes := n.Children(selector.OneOf(js.AdditiveExpression, js.ArrayLiteral, js.ArrowFunction, js.AssignmentExpression, js.AsyncArrowFunction, js.AsyncFunctionExpression, js.AwaitExpression, js.BitwiseANDExpression, js.BitwiseORExpression, js.BitwiseXORExpression, js.CallExpression, js.ClassExpr, js.CoalesceExpression, js.CommaExpression, js.ConditionalExpression, js.ElementBinding, js.EqualityExpression, js.ExponentiationExpression, js.FunctionExpression, js.GeneratorExpression, js.IdentExpr, js.IndexAccess, js.JSXElement, js.Literal, js.LogicalANDExpression, js.LogicalORExpression, js.MultiplicativeExpression, js.NewExpression, js.NewTarget, js.NoElement, js.ObjectLiteral, js.OptionalCallExpression, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpression, js.ShiftExpression, js.SingleNameBinding, js.SpreadElement, js.SuperExpression, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsConstExpression, js.TsAsExpression, js.TsCastExpression, js.TsDynamicImport, js.TsNonNull, js.UnaryExpression, js.Yield))
+	nodes := n.Children(selector.OneOf(js.AdditiveExpr, js.ArrayLiteral, js.ArrowFunc, js.AssignmentExpr, js.AsyncArrowFunc, js.AsyncFuncExpr, js.AwaitExpr, js.BitwiseAND, js.BitwiseOR, js.BitwiseXOR, js.CallExpr, js.ClassExpr, js.CoalesceExpr, js.CommaExpr, js.ConditionalExpr, js.ElementBinding, js.EqualityExpr, js.ExponentiationExpr, js.FunctionExpr, js.GeneratorExpr, js.IdentExpr, js.InExpr, js.IndexAccess, js.InstanceOfExpr, js.JSXElement, js.Literal, js.LogicalAND, js.LogicalOR, js.MultiplicativeExpr, js.NewExpr, js.NewTarget, js.NoElement, js.ObjectLiteral, js.OptionalCallExpr, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpr, js.ShiftExpr, js.SingleNameBinding, js.SpreadElement, js.SuperExpr, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsConstExpr, js.TsAsExpr, js.TsCastExpr, js.TsDynamicImport, js.TsNonNull, js.UnaryExpr, js.Yield))
 	var ret = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
 		ret = append(ret, ToJsNode(node).(JsNode))
@@ -855,36 +859,36 @@ func (n ArrayType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-type ArrowFunction struct {
+type ArrowFunc struct {
 	*Node
 }
 
-func (n ArrowFunction) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ArrowFunc) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-func (n ArrowFunction) TypeParameters() (TypeParameters, bool) {
+func (n ArrowFunc) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n ArrowFunction) Parameters() (Parameters, bool) {
+func (n ArrowFunc) Parameters() (Parameters, bool) {
 	field := Parameters{n.Child(selector.Parameters)}
 	return field, field.IsValid()
 }
 
-func (n ArrowFunction) TypeAnnotation() (TypeAnnotation, bool) {
+func (n ArrowFunc) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
-func (n ArrowFunction) Body() (Body, bool) {
+func (n ArrowFunc) Body() (Body, bool) {
 	field := Body{n.Child(selector.Body)}
 	return field, field.IsValid()
 }
 
-func (n ArrowFunction) ConciseBody() (ConciseBody, bool) {
+func (n ArrowFunc) ConciseBody() (ConciseBody, bool) {
 	field := ConciseBody{n.Child(selector.ConciseBody)}
 	return field, field.IsValid()
 }
@@ -893,8 +897,8 @@ type AssertsType struct {
 	*Node
 }
 
-func (n AssertsType) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n AssertsType) RefIdent() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
 func (n AssertsType) TsType() (TsType, bool) {
@@ -902,20 +906,20 @@ func (n AssertsType) TsType() (TsType, bool) {
 	return field, field.JsNode() != nil
 }
 
-type AssignmentExpression struct {
+type AssignmentExpr struct {
 	*Node
 }
 
-func (n AssignmentExpression) Left() Expression {
+func (n AssignmentExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n AssignmentExpression) AssignmentOperator() (AssignmentOperator, bool) {
+func (n AssignmentExpr) AssignmentOperator() (AssignmentOperator, bool) {
 	field := AssignmentOperator{n.Child(selector.AssignmentOperator)}
 	return field, field.IsValid()
 }
 
-func (n AssignmentExpression) Right() Expression {
+func (n AssignmentExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -923,91 +927,91 @@ type AssignmentOperator struct {
 	*Node
 }
 
-type AsyncArrowFunction struct {
+type AsyncArrowFunc struct {
 	*Node
 }
 
-func (n AsyncArrowFunction) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n AsyncArrowFunc) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) TypeParameters() (TypeParameters, bool) {
+func (n AsyncArrowFunc) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) Parameters() (Parameters, bool) {
+func (n AsyncArrowFunc) Parameters() (Parameters, bool) {
 	field := Parameters{n.Child(selector.Parameters)}
 	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) TypeAnnotation() (TypeAnnotation, bool) {
+func (n AsyncArrowFunc) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) Body() (Body, bool) {
+func (n AsyncArrowFunc) Body() (Body, bool) {
 	field := Body{n.Child(selector.Body)}
 	return field, field.IsValid()
 }
 
-func (n AsyncArrowFunction) ConciseBody() (ConciseBody, bool) {
+func (n AsyncArrowFunc) ConciseBody() (ConciseBody, bool) {
 	field := ConciseBody{n.Child(selector.ConciseBody)}
 	return field, field.IsValid()
 }
 
-type AsyncFunction struct {
+type AsyncFunc struct {
 	*Node
 }
 
-func (n AsyncFunction) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n AsyncFunc) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-func (n AsyncFunction) TypeParameters() (TypeParameters, bool) {
+func (n AsyncFunc) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n AsyncFunction) Parameters() Parameters {
+func (n AsyncFunc) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncFunction) TypeAnnotation() (TypeAnnotation, bool) {
+func (n AsyncFunc) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
-func (n AsyncFunction) Body() Body {
+func (n AsyncFunc) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
-type AsyncFunctionExpression struct {
+type AsyncFuncExpr struct {
 	*Node
 }
 
-func (n AsyncFunctionExpression) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n AsyncFuncExpr) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-func (n AsyncFunctionExpression) TypeParameters() (TypeParameters, bool) {
+func (n AsyncFuncExpr) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n AsyncFunctionExpression) Parameters() Parameters {
+func (n AsyncFuncExpr) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n AsyncFunctionExpression) TypeAnnotation() (TypeAnnotation, bool) {
+func (n AsyncFuncExpr) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
-func (n AsyncFunctionExpression) Body() Body {
+func (n AsyncFuncExpr) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
@@ -1037,59 +1041,55 @@ func (n AsyncMethod) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
-type AwaitExpression struct {
+type AwaitExpr struct {
 	*Node
 }
 
-func (n AwaitExpression) Expression() Expression {
+func (n AwaitExpr) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
-}
-
-type BindingIdentifier struct {
-	*Node
 }
 
 type BindingRestElement struct {
 	*Node
 }
 
-func (n BindingRestElement) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n BindingRestElement) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
-type BitwiseANDExpression struct {
+type BitwiseAND struct {
 	*Node
 }
 
-func (n BitwiseANDExpression) Left() Expression {
+func (n BitwiseAND) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n BitwiseANDExpression) Right() Expression {
+func (n BitwiseAND) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-type BitwiseORExpression struct {
+type BitwiseOR struct {
 	*Node
 }
 
-func (n BitwiseORExpression) Left() Expression {
+func (n BitwiseOR) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n BitwiseORExpression) Right() Expression {
+func (n BitwiseOR) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-type BitwiseXORExpression struct {
+type BitwiseXOR struct {
 	*Node
 }
 
-func (n BitwiseXORExpression) Left() Expression {
+func (n BitwiseXOR) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n BitwiseXORExpression) Right() Expression {
+func (n BitwiseXOR) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -1128,24 +1128,24 @@ func (n Body) StatementListItem() []StatementListItem {
 	return ret
 }
 
-type BreakStatement struct {
+type BreakStmt struct {
 	*Node
 }
 
-func (n BreakStatement) LabelIdentifier() (LabelIdentifier, bool) {
-	field := LabelIdentifier{n.Child(selector.LabelIdentifier)}
+func (n BreakStmt) LabelIdent() (LabelIdent, bool) {
+	field := LabelIdent{n.Child(selector.LabelIdent)}
 	return field, field.IsValid()
 }
 
-type CallExpression struct {
+type CallExpr struct {
 	*Node
 }
 
-func (n CallExpression) Expr() Expression {
+func (n CallExpr) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n CallExpression) Arguments() Arguments {
+func (n CallExpr) Arguments() Arguments {
 	return Arguments{n.Child(selector.Arguments)}
 }
 
@@ -1188,14 +1188,14 @@ type Catch struct {
 	*Node
 }
 
-func (n Catch) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
-	return field, field.IsValid()
-}
-
 func (n Catch) BindingPattern() (BindingPattern, bool) {
 	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 	return field, field.JsNode() != nil
+}
+
+func (n Catch) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
 }
 
 func (n Catch) Block() Block {
@@ -1215,8 +1215,8 @@ func (n Class) Modifier() []Modifier {
 	return ret
 }
 
-func (n Class) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n Class) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
@@ -1265,8 +1265,8 @@ func (n ClassExpr) Modifier() []Modifier {
 	return ret
 }
 
-func (n ClassExpr) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ClassExpr) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
@@ -1289,27 +1289,27 @@ func (n ClassExpr) ClassBody() ClassBody {
 	return ClassBody{n.Child(selector.ClassBody)}
 }
 
-type CoalesceExpression struct {
+type CoalesceExpr struct {
 	*Node
 }
 
-func (n CoalesceExpression) Left() Expression {
+func (n CoalesceExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n CoalesceExpression) Right() Expression {
+func (n CoalesceExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-type CommaExpression struct {
+type CommaExpr struct {
 	*Node
 }
 
-func (n CommaExpression) Left() Expression {
+func (n CommaExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n CommaExpression) Right() Expression {
+func (n CommaExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -1329,19 +1329,19 @@ func (n ConciseBody) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-type ConditionalExpression struct {
+type ConditionalExpr struct {
 	*Node
 }
 
-func (n ConditionalExpression) Cond() Expression {
+func (n ConditionalExpr) Cond() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n ConditionalExpression) Then() Expression {
+func (n ConditionalExpr) Then() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-func (n ConditionalExpression) Else() Expression {
+func (n ConditionalExpr) Else() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -1389,16 +1389,16 @@ func (n ConstructorType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-type ContinueStatement struct {
+type ContinueStmt struct {
 	*Node
 }
 
-func (n ContinueStatement) LabelIdentifier() (LabelIdentifier, bool) {
-	field := LabelIdentifier{n.Child(selector.LabelIdentifier)}
+func (n ContinueStmt) LabelIdent() (LabelIdent, bool) {
+	field := LabelIdent{n.Child(selector.LabelIdent)}
 	return field, field.IsValid()
 }
 
-type DebuggerStatement struct {
+type DebuggerStmt struct {
 	*Node
 }
 
@@ -1410,11 +1410,11 @@ type DecoratorCall struct {
 	*Node
 }
 
-func (n DecoratorCall) IdentifierReference() []IdentifierReference {
-	nodes := n.Children(selector.IdentifierReference)
-	var ret = make([]IdentifierReference, 0, len(nodes))
+func (n DecoratorCall) RefIdent() []RefIdent {
+	nodes := n.Children(selector.RefIdent)
+	var ret = make([]RefIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, IdentifierReference{node})
+		ret = append(ret, RefIdent{node})
 	}
 	return ret
 }
@@ -1427,11 +1427,11 @@ type DecoratorExpr struct {
 	*Node
 }
 
-func (n DecoratorExpr) IdentifierReference() []IdentifierReference {
-	nodes := n.Children(selector.IdentifierReference)
-	var ret = make([]IdentifierReference, 0, len(nodes))
+func (n DecoratorExpr) RefIdent() []RefIdent {
+	nodes := n.Children(selector.RefIdent)
+	var ret = make([]RefIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, IdentifierReference{node})
+		ret = append(ret, RefIdent{node})
 	}
 	return ret
 }
@@ -1462,14 +1462,14 @@ func (n DefaultParameter) Modifier() []Modifier {
 	return ret
 }
 
-func (n DefaultParameter) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
-	return field, field.IsValid()
-}
-
 func (n DefaultParameter) BindingPattern() (BindingPattern, bool) {
 	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 	return field, field.JsNode() != nil
+}
+
+func (n DefaultParameter) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
 }
 
 func (n DefaultParameter) TypeAnnotation() (TypeAnnotation, bool) {
@@ -1482,15 +1482,15 @@ func (n DefaultParameter) Initializer() (Initializer, bool) {
 	return field, field.IsValid()
 }
 
-type DoWhileStatement struct {
+type DoWhileStmt struct {
 	*Node
 }
 
-func (n DoWhileStatement) Statement() Statement {
+func (n DoWhileStmt) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-func (n DoWhileStatement) Expression() Expression {
+func (n DoWhileStmt) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
@@ -1511,31 +1511,31 @@ type EmptyDecl struct {
 	*Node
 }
 
-type EmptyStatement struct {
+type EmptyStmt struct {
 	*Node
 }
 
-type EqualityExpression struct {
+type EqualityExpr struct {
 	*Node
 }
 
-func (n EqualityExpression) Left() Expression {
+func (n EqualityExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n EqualityExpression) Right() Expression {
+func (n EqualityExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-type ExponentiationExpression struct {
+type ExponentiationExpr struct {
 	*Node
 }
 
-func (n ExponentiationExpression) Left() Expression {
+func (n ExponentiationExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n ExponentiationExpression) Right() Expression {
+func (n ExponentiationExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -1552,11 +1552,11 @@ func (n ExportClause) ExportElement() []ExportElement {
 	return ret
 }
 
-type ExportDeclaration struct {
+type ExportDecl struct {
 	*Node
 }
 
-func (n ExportDeclaration) Modifier() []Modifier {
+func (n ExportDecl) Modifier() []Modifier {
 	nodes := n.Children(selector.Modifier)
 	var ret = make([]Modifier, 0, len(nodes))
 	for _, node := range nodes {
@@ -1565,32 +1565,32 @@ func (n ExportDeclaration) Modifier() []Modifier {
 	return ret
 }
 
-func (n ExportDeclaration) TsTypeOnly() (TsTypeOnly, bool) {
+func (n ExportDecl) TsTypeOnly() (TsTypeOnly, bool) {
 	field := TsTypeOnly{n.Child(selector.TsTypeOnly)}
 	return field, field.IsValid()
 }
 
-func (n ExportDeclaration) VariableStatement() (VariableStatement, bool) {
-	field := VariableStatement{n.Child(selector.VariableStatement)}
+func (n ExportDecl) VariableStmt() (VariableStmt, bool) {
+	field := VariableStmt{n.Child(selector.VariableStmt)}
 	return field, field.IsValid()
 }
 
-func (n ExportDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
-	return field, field.IsValid()
-}
-
-func (n ExportDeclaration) Declaration() (Declaration, bool) {
+func (n ExportDecl) Declaration() (Declaration, bool) {
 	field := ToJsNode(n.Child(selector.Declaration)).(Declaration)
 	return field, field.JsNode() != nil
 }
 
-func (n ExportDeclaration) ExportClause() (ExportClause, bool) {
+func (n ExportDecl) ExportClause() (ExportClause, bool) {
 	field := ExportClause{n.Child(selector.ExportClause)}
 	return field, field.IsValid()
 }
 
-func (n ExportDeclaration) ModuleSpecifier() (ModuleSpecifier, bool) {
+func (n ExportDecl) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
+}
+
+func (n ExportDecl) ModuleSpecifier() (ModuleSpecifier, bool) {
 	field := ModuleSpecifier{n.Child(selector.ModuleSpecifier)}
 	return field, field.IsValid()
 }
@@ -1622,20 +1622,20 @@ type ExportSpecifier struct {
 	*Node
 }
 
-func (n ExportSpecifier) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n ExportSpecifier) RefIdent() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
-func (n ExportSpecifier) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ExportSpecifier) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-type ExpressionStatement struct {
+type ExpressionStmt struct {
 	*Node
 }
 
-func (n ExpressionStatement) Expression() Expression {
+func (n ExpressionStmt) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
@@ -1665,14 +1665,14 @@ type ForBinding struct {
 	*Node
 }
 
-func (n ForBinding) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
-	return field, field.IsValid()
-}
-
 func (n ForBinding) BindingPattern() (BindingPattern, bool) {
 	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 	return field, field.JsNode() != nil
+}
+
+func (n ForBinding) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
 }
 
 type ForCondition struct {
@@ -1684,135 +1684,135 @@ func (n ForCondition) Expression() (Expression, bool) {
 	return field, field.JsNode() != nil
 }
 
-type ForFinalExpression struct {
+type ForFinalExpr struct {
 	*Node
 }
 
-func (n ForFinalExpression) Expression() (Expression, bool) {
+func (n ForFinalExpr) Expression() (Expression, bool) {
 	field := ToJsNode(n.Child(selector.Expression)).(Expression)
 	return field, field.JsNode() != nil
 }
 
-type ForInStatement struct {
+type ForInStmt struct {
 	*Node
 }
 
-func (n ForInStatement) Var() Expression {
+func (n ForInStmt) Var() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n ForInStatement) Object() Expression {
+func (n ForInStmt) Object() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-func (n ForInStatement) Statement() Statement {
+func (n ForInStmt) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-type ForInStatementWithVar struct {
+type ForInStmtWithVar struct {
 	*Node
 }
 
-func (n ForInStatementWithVar) LetOrConst() (LetOrConst, bool) {
+func (n ForInStmtWithVar) LetOrConst() (LetOrConst, bool) {
 	field := LetOrConst{n.Child(selector.LetOrConst)}
 	return field, field.IsValid()
 }
 
-func (n ForInStatementWithVar) Var() (Var, bool) {
+func (n ForInStmtWithVar) Var() (Var, bool) {
 	field := Var{n.Child(selector.Var)}
 	return field, field.IsValid()
 }
 
-func (n ForInStatementWithVar) ForBinding() ForBinding {
+func (n ForInStmtWithVar) ForBinding() ForBinding {
 	return ForBinding{n.Child(selector.ForBinding)}
 }
 
-func (n ForInStatementWithVar) Object() Expression {
+func (n ForInStmtWithVar) Object() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n ForInStatementWithVar) Statement() Statement {
+func (n ForInStmtWithVar) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-type ForOfStatement struct {
+type ForOfStmt struct {
 	*Node
 }
 
-func (n ForOfStatement) Var() Expression {
+func (n ForOfStmt) Var() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n ForOfStatement) Iterable() Expression {
+func (n ForOfStmt) Iterable() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-func (n ForOfStatement) Statement() Statement {
+func (n ForOfStmt) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-type ForOfStatementWithVar struct {
+type ForOfStmtWithVar struct {
 	*Node
 }
 
-func (n ForOfStatementWithVar) LetOrConst() (LetOrConst, bool) {
+func (n ForOfStmtWithVar) LetOrConst() (LetOrConst, bool) {
 	field := LetOrConst{n.Child(selector.LetOrConst)}
 	return field, field.IsValid()
 }
 
-func (n ForOfStatementWithVar) Var() (Var, bool) {
+func (n ForOfStmtWithVar) Var() (Var, bool) {
 	field := Var{n.Child(selector.Var)}
 	return field, field.IsValid()
 }
 
-func (n ForOfStatementWithVar) ForBinding() ForBinding {
+func (n ForOfStmtWithVar) ForBinding() ForBinding {
 	return ForBinding{n.Child(selector.ForBinding)}
 }
 
-func (n ForOfStatementWithVar) Iterable() Expression {
+func (n ForOfStmtWithVar) Iterable() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n ForOfStatementWithVar) Statement() Statement {
+func (n ForOfStmtWithVar) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-type ForStatement struct {
+type ForStmt struct {
 	*Node
 }
 
-func (n ForStatement) Var() (Expression, bool) {
+func (n ForStmt) Var() (Expression, bool) {
 	field := ToJsNode(n.Child(selector.Expression)).(Expression)
 	return field, field.JsNode() != nil
 }
 
-func (n ForStatement) ForCondition() ForCondition {
+func (n ForStmt) ForCondition() ForCondition {
 	return ForCondition{n.Child(selector.ForCondition)}
 }
 
-func (n ForStatement) ForFinalExpression() ForFinalExpression {
-	return ForFinalExpression{n.Child(selector.ForFinalExpression)}
+func (n ForStmt) ForFinalExpr() ForFinalExpr {
+	return ForFinalExpr{n.Child(selector.ForFinalExpr)}
 }
 
-func (n ForStatement) Statement() Statement {
+func (n ForStmt) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-type ForStatementWithVar struct {
+type ForStmtWithVar struct {
 	*Node
 }
 
-func (n ForStatementWithVar) LetOrConst() (LetOrConst, bool) {
+func (n ForStmtWithVar) LetOrConst() (LetOrConst, bool) {
 	field := LetOrConst{n.Child(selector.LetOrConst)}
 	return field, field.IsValid()
 }
 
-func (n ForStatementWithVar) Var() (Var, bool) {
+func (n ForStmtWithVar) Var() (Var, bool) {
 	field := Var{n.Child(selector.Var)}
 	return field, field.IsValid()
 }
 
-func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
+func (n ForStmtWithVar) LexicalBinding() []LexicalBinding {
 	nodes := n.Children(selector.LexicalBinding)
 	var ret = make([]LexicalBinding, 0, len(nodes))
 	for _, node := range nodes {
@@ -1821,24 +1821,24 @@ func (n ForStatementWithVar) LexicalBinding() []LexicalBinding {
 	return ret
 }
 
-func (n ForStatementWithVar) VariableDeclaration() []VariableDeclaration {
-	nodes := n.Children(selector.VariableDeclaration)
-	var ret = make([]VariableDeclaration, 0, len(nodes))
+func (n ForStmtWithVar) VariableDecl() []VariableDecl {
+	nodes := n.Children(selector.VariableDecl)
+	var ret = make([]VariableDecl, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, VariableDeclaration{node})
+		ret = append(ret, VariableDecl{node})
 	}
 	return ret
 }
 
-func (n ForStatementWithVar) ForCondition() ForCondition {
+func (n ForStmtWithVar) ForCondition() ForCondition {
 	return ForCondition{n.Child(selector.ForCondition)}
 }
 
-func (n ForStatementWithVar) ForFinalExpression() ForFinalExpression {
-	return ForFinalExpression{n.Child(selector.ForFinalExpression)}
+func (n ForStmtWithVar) ForFinalExpr() ForFinalExpr {
+	return ForFinalExpr{n.Child(selector.ForFinalExpr)}
 }
 
-func (n ForStatementWithVar) Statement() Statement {
+func (n ForStmtWithVar) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
@@ -1846,8 +1846,8 @@ type Function struct {
 	*Node
 }
 
-func (n Function) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n Function) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
@@ -1869,30 +1869,30 @@ func (n Function) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
-type FunctionExpression struct {
+type FunctionExpr struct {
 	*Node
 }
 
-func (n FunctionExpression) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n FunctionExpr) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-func (n FunctionExpression) TypeParameters() (TypeParameters, bool) {
+func (n FunctionExpr) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n FunctionExpression) Parameters() Parameters {
+func (n FunctionExpr) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n FunctionExpression) TypeAnnotation() (TypeAnnotation, bool) {
+func (n FunctionExpr) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
-func (n FunctionExpression) Body() Body {
+func (n FunctionExpr) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
@@ -1917,8 +1917,8 @@ type Generator struct {
 	*Node
 }
 
-func (n Generator) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n Generator) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
@@ -1940,30 +1940,30 @@ func (n Generator) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
-type GeneratorExpression struct {
+type GeneratorExpr struct {
 	*Node
 }
 
-func (n GeneratorExpression) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n GeneratorExpr) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-func (n GeneratorExpression) TypeParameters() (TypeParameters, bool) {
+func (n GeneratorExpr) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n GeneratorExpression) Parameters() Parameters {
+func (n GeneratorExpr) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n GeneratorExpression) TypeAnnotation() (TypeAnnotation, bool) {
+func (n GeneratorExpr) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
-func (n GeneratorExpression) Body() Body {
+func (n GeneratorExpr) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
@@ -2014,56 +2014,52 @@ type IdentExpr struct {
 	*Node
 }
 
-func (n IdentExpr) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n IdentExpr) RefIdent() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
-type IdentifierReference struct {
+type IfStmt struct {
 	*Node
 }
 
-type IfStatement struct {
-	*Node
-}
-
-func (n IfStatement) Expression() Expression {
+func (n IfStmt) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n IfStatement) Then() Statement {
+func (n IfStmt) Then() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-func (n IfStatement) Else() (Statement, bool) {
+func (n IfStmt) Else() (Statement, bool) {
 	field := ToJsNode(n.Child(selector.Statement).Next(selector.Statement)).(Statement)
 	return field, field.JsNode() != nil
 }
 
-type ImportDeclaration struct {
+type ImportDecl struct {
 	*Node
 }
 
-func (n ImportDeclaration) TsTypeOnly() (TsTypeOnly, bool) {
+func (n ImportDecl) TsTypeOnly() (TsTypeOnly, bool) {
 	field := TsTypeOnly{n.Child(selector.TsTypeOnly)}
 	return field, field.IsValid()
 }
 
-func (n ImportDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ImportDecl) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
-func (n ImportDeclaration) NameSpaceImport() (NameSpaceImport, bool) {
+func (n ImportDecl) NameSpaceImport() (NameSpaceImport, bool) {
 	field := NameSpaceImport{n.Child(selector.NameSpaceImport)}
 	return field, field.IsValid()
 }
 
-func (n ImportDeclaration) NamedImports() (NamedImports, bool) {
+func (n ImportDecl) NamedImports() (NamedImports, bool) {
 	field := NamedImports{n.Child(selector.NamedImports)}
 	return field, field.IsValid()
 }
 
-func (n ImportDeclaration) ModuleSpecifier() ModuleSpecifier {
+func (n ImportDecl) ModuleSpecifier() ModuleSpecifier {
 	return ModuleSpecifier{n.Child(selector.ModuleSpecifier)}
 }
 
@@ -2071,13 +2067,13 @@ type ImportSpecifier struct {
 	*Node
 }
 
-func (n ImportSpecifier) IdentifierReference() (IdentifierReference, bool) {
-	field := IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n ImportSpecifier) RefIdent() (RefIdent, bool) {
+	field := RefIdent{n.Child(selector.RefIdent)}
 	return field, field.IsValid()
 }
 
-func (n ImportSpecifier) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n ImportSpecifier) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 type ImportType struct {
@@ -2088,11 +2084,11 @@ func (n ImportType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-func (n ImportType) IdentifierReference() []IdentifierReference {
-	nodes := n.Children(selector.IdentifierReference)
-	var ret = make([]IdentifierReference, 0, len(nodes))
+func (n ImportType) RefIdent() []RefIdent {
+	nodes := n.Children(selector.RefIdent)
+	var ret = make([]RefIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, IdentifierReference{node})
+		ret = append(ret, RefIdent{node})
 	}
 	return ret
 }
@@ -2100,6 +2096,18 @@ func (n ImportType) IdentifierReference() []IdentifierReference {
 func (n ImportType) TypeArguments() (TypeArguments, bool) {
 	field := TypeArguments{n.Child(selector.TypeArguments)}
 	return field, field.IsValid()
+}
+
+type InExpr struct {
+	*Node
+}
+
+func (n InExpr) Left() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n InExpr) Right() Expression {
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type IndexAccess struct {
@@ -2127,8 +2135,8 @@ func (n IndexSignature) Modifier() []Modifier {
 	return ret
 }
 
-func (n IndexSignature) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n IndexSignature) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n IndexSignature) PredefinedType() PredefinedType {
@@ -2157,6 +2165,18 @@ type Initializer struct {
 
 func (n Initializer) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+type InstanceOfExpr struct {
+	*Node
+}
+
+func (n InstanceOfExpr) Left() Expression {
+	return ToJsNode(n.Child(selector.Expression)).(Expression)
+}
+
+func (n InstanceOfExpr) Right() Expression {
+	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
 type IntersectionType struct {
@@ -2216,11 +2236,11 @@ type JSXElementName struct {
 	*Node
 }
 
-type JSXExpression struct {
+type JSXExpr struct {
 	*Node
 }
 
-func (n JSXExpression) Expression() (Expression, bool) {
+func (n JSXExpr) Expression() (Expression, bool) {
 	field := ToJsNode(n.Child(selector.Expression)).(Expression)
 	return field, field.JsNode() != nil
 }
@@ -2294,11 +2314,11 @@ func (n JSXSpreadAttribute) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-type JSXSpreadExpression struct {
+type JSXSpreadExpr struct {
 	*Node
 }
 
-func (n JSXSpreadExpression) Expression() (Expression, bool) {
+func (n JSXSpreadExpr) Expression() (Expression, bool) {
 	field := ToJsNode(n.Child(selector.Expression)).(Expression)
 	return field, field.JsNode() != nil
 }
@@ -2315,24 +2335,24 @@ func (n KeyOfType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-type LabelIdentifier struct {
+type LabelIdent struct {
 	*Node
 }
 
-type LabelledStatement struct {
+type LabelledStmt struct {
 	*Node
 }
 
-func (n LabelledStatement) LabelIdentifier() LabelIdentifier {
-	return LabelIdentifier{n.Child(selector.LabelIdentifier)}
+func (n LabelledStmt) LabelIdent() LabelIdent {
+	return LabelIdent{n.Child(selector.LabelIdent)}
 }
 
-func (n LabelledStatement) Function() (Function, bool) {
+func (n LabelledStmt) Function() (Function, bool) {
 	field := Function{n.Child(selector.Function)}
 	return field, field.IsValid()
 }
 
-func (n LabelledStatement) Statement() (Statement, bool) {
+func (n LabelledStmt) Statement() (Statement, bool) {
 	field := ToJsNode(n.Child(selector.Statement)).(Statement)
 	return field, field.JsNode() != nil
 }
@@ -2345,14 +2365,14 @@ type LexicalBinding struct {
 	*Node
 }
 
-func (n LexicalBinding) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
-	return field, field.IsValid()
-}
-
 func (n LexicalBinding) BindingPattern() (BindingPattern, bool) {
 	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 	return field, field.JsNode() != nil
+}
+
+func (n LexicalBinding) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
 }
 
 func (n LexicalBinding) TsExclToken() (TsExclToken, bool) {
@@ -2370,15 +2390,15 @@ func (n LexicalBinding) Initializer() (Initializer, bool) {
 	return field, field.IsValid()
 }
 
-type LexicalDeclaration struct {
+type LexicalDecl struct {
 	*Node
 }
 
-func (n LexicalDeclaration) LetOrConst() LetOrConst {
+func (n LexicalDecl) LetOrConst() LetOrConst {
 	return LetOrConst{n.Child(selector.LetOrConst)}
 }
 
-func (n LexicalDeclaration) LexicalBinding() []LexicalBinding {
+func (n LexicalDecl) LexicalBinding() []LexicalBinding {
 	nodes := n.Children(selector.LexicalBinding)
 	var ret = make([]LexicalBinding, 0, len(nodes))
 	for _, node := range nodes {
@@ -2395,8 +2415,8 @@ type LiteralPropertyName struct {
 	*Node
 }
 
-func (n LiteralPropertyName) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n LiteralPropertyName) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
 }
 
@@ -2404,27 +2424,27 @@ type LiteralType struct {
 	*Node
 }
 
-type LogicalANDExpression struct {
+type LogicalAND struct {
 	*Node
 }
 
-func (n LogicalANDExpression) Left() Expression {
+func (n LogicalAND) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n LogicalANDExpression) Right() Expression {
+func (n LogicalAND) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
-type LogicalORExpression struct {
+type LogicalOR struct {
 	*Node
 }
 
-func (n LogicalORExpression) Left() Expression {
+func (n LogicalOR) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n LogicalORExpression) Right() Expression {
+func (n LogicalOR) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -2558,24 +2578,28 @@ type ModuleSpecifier struct {
 	*Node
 }
 
-type MultiplicativeExpression struct {
+type MultiplicativeExpr struct {
 	*Node
 }
 
-func (n MultiplicativeExpression) Left() Expression {
+func (n MultiplicativeExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n MultiplicativeExpression) Right() Expression {
+func (n MultiplicativeExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
+}
+
+type NameIdent struct {
+	*Node
 }
 
 type NameSpaceImport struct {
 	*Node
 }
 
-func (n NameSpaceImport) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n NameSpaceImport) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 type NamedImports struct {
@@ -2591,15 +2615,15 @@ func (n NamedImports) NamedImport() []NamedImport {
 	return ret
 }
 
-type NewExpression struct {
+type NewExpr struct {
 	*Node
 }
 
-func (n NewExpression) Expr() Expression {
+func (n NewExpr) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n NewExpression) Arguments() (Arguments, bool) {
+func (n NewExpr) Arguments() (Arguments, bool) {
 	field := Arguments{n.Child(selector.Arguments)}
 	return field, field.IsValid()
 }
@@ -2689,15 +2713,15 @@ func (n ObjectType) TypeMember() []TypeMember {
 	return ret
 }
 
-type OptionalCallExpression struct {
+type OptionalCallExpr struct {
 	*Node
 }
 
-func (n OptionalCallExpression) Expr() Expression {
+func (n OptionalCallExpr) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n OptionalCallExpression) Arguments() Arguments {
+func (n OptionalCallExpr) Arguments() Arguments {
 	return Arguments{n.Child(selector.Arguments)}
 }
 
@@ -2721,8 +2745,8 @@ func (n OptionalPropertyAccess) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n OptionalPropertyAccess) Selector() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n OptionalPropertyAccess) Selector() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
 type OptionalTaggedTemplate struct {
@@ -2837,8 +2861,8 @@ func (n PropertyAccess) Expr() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n PropertyAccess) Selector() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n PropertyAccess) Selector() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
 type PropertyBinding struct {
@@ -2887,19 +2911,23 @@ func (n ReadonlyType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
+type RefIdent struct {
+	*Node
+}
+
 type Regexp struct {
 	*Node
 }
 
-type RelationalExpression struct {
+type RelationalExpr struct {
 	*Node
 }
 
-func (n RelationalExpression) Left() Expression {
+func (n RelationalExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n RelationalExpression) Right() Expression {
+func (n RelationalExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -2907,8 +2935,8 @@ type RestParameter struct {
 	*Node
 }
 
-func (n RestParameter) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n RestParameter) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n RestParameter) TypeAnnotation() (TypeAnnotation, bool) {
@@ -2924,11 +2952,11 @@ func (n RestType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-type ReturnStatement struct {
+type ReturnStmt struct {
 	*Node
 }
 
-func (n ReturnStatement) Expression() (Expression, bool) {
+func (n ReturnStmt) Expression() (Expression, bool) {
 	field := ToJsNode(n.Child(selector.Expression)).(Expression)
 	return field, field.JsNode() != nil
 }
@@ -2949,15 +2977,15 @@ func (n Setter) Body() Body {
 	return Body{n.Child(selector.Body)}
 }
 
-type ShiftExpression struct {
+type ShiftExpr struct {
 	*Node
 }
 
-func (n ShiftExpression) Left() Expression {
+func (n ShiftExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n ShiftExpression) Right() Expression {
+func (n ShiftExpr) Right() Expression {
 	return ToJsNode(n.Child(selector.Expression).Next(selector.Expression)).(Expression)
 }
 
@@ -2965,16 +2993,16 @@ type ShorthandProperty struct {
 	*Node
 }
 
-func (n ShorthandProperty) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n ShorthandProperty) RefIdent() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
 type SingleNameBinding struct {
 	*Node
 }
 
-func (n SingleNameBinding) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n SingleNameBinding) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n SingleNameBinding) Initializer() (Initializer, bool) {
@@ -3002,19 +3030,19 @@ type Static struct {
 	*Node
 }
 
-type SuperExpression struct {
+type SuperExpr struct {
 	*Node
 }
 
-type SwitchStatement struct {
+type SwitchStmt struct {
 	*Node
 }
 
-func (n SwitchStatement) Expression() Expression {
+func (n SwitchStmt) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n SwitchStatement) Block() Block {
+func (n SwitchStmt) Block() Block {
 	return Block{n.Child(selector.Block)}
 }
 
@@ -3022,8 +3050,8 @@ type SyntaxProblem struct {
 	*Node
 }
 
-func (n SyntaxProblem) IdentifierReference() (IdentifierReference, bool) {
-	field := IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n SyntaxProblem) RefIdent() (RefIdent, bool) {
+	field := RefIdent{n.Child(selector.RefIdent)}
 	return field, field.IsValid()
 }
 
@@ -3074,28 +3102,28 @@ type ThisType struct {
 	*Node
 }
 
-type ThrowStatement struct {
+type ThrowStmt struct {
 	*Node
 }
 
-func (n ThrowStatement) Expression() Expression {
+func (n ThrowStmt) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-type TryStatement struct {
+type TryStmt struct {
 	*Node
 }
 
-func (n TryStatement) Block() Block {
+func (n TryStmt) Block() Block {
 	return Block{n.Child(selector.Block)}
 }
 
-func (n TryStatement) Catch() (Catch, bool) {
+func (n TryStmt) Catch() (Catch, bool) {
 	field := Catch{n.Child(selector.Catch)}
 	return field, field.IsValid()
 }
 
-func (n TryStatement) Finally() (Finally, bool) {
+func (n TryStmt) Finally() (Finally, bool) {
 	field := Finally{n.Child(selector.Finally)}
 	return field, field.IsValid()
 }
@@ -3104,8 +3132,8 @@ type TsAmbientBinding struct {
 	*Node
 }
 
-func (n TsAmbientBinding) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsAmbientBinding) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n TsAmbientBinding) TypeAnnotation() (TypeAnnotation, bool) {
@@ -3131,8 +3159,8 @@ func (n TsAmbientClass) Modifier() []Modifier {
 	return ret
 }
 
-func (n TsAmbientClass) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsAmbientClass) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n TsAmbientClass) TypeParameters() (TypeParameters, bool) {
@@ -3163,40 +3191,40 @@ func (n TsAmbientEnum) TsConst() (TsConst, bool) {
 	return field, field.IsValid()
 }
 
-func (n TsAmbientEnum) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsAmbientEnum) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n TsAmbientEnum) TsEnumBody() TsEnumBody {
 	return TsEnumBody{n.Child(selector.TsEnumBody)}
 }
 
-type TsAmbientExportDeclaration struct {
+type TsAmbientExportDecl struct {
 	*Node
 }
 
-func (n TsAmbientExportDeclaration) ExportClause() ExportClause {
+func (n TsAmbientExportDecl) ExportClause() ExportClause {
 	return ExportClause{n.Child(selector.ExportClause)}
 }
 
-type TsAmbientFunction struct {
+type TsAmbientFunc struct {
 	*Node
 }
 
-func (n TsAmbientFunction) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsAmbientFunc) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
-func (n TsAmbientFunction) TypeParameters() (TypeParameters, bool) {
+func (n TsAmbientFunc) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n TsAmbientFunction) Parameters() Parameters {
+func (n TsAmbientFunc) Parameters() Parameters {
 	return Parameters{n.Child(selector.Parameters)}
 }
 
-func (n TsAmbientFunction) TypeAnnotation() (TypeAnnotation, bool) {
+func (n TsAmbientFunc) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
@@ -3218,8 +3246,8 @@ type TsAmbientImportAlias struct {
 	*Node
 }
 
-func (n TsAmbientImportAlias) TsImportAliasDeclaration() TsImportAliasDeclaration {
-	return TsImportAliasDeclaration{n.Child(selector.TsImportAliasDeclaration)}
+func (n TsAmbientImportAlias) TsImportAliasDecl() TsImportAliasDecl {
+	return TsImportAliasDecl{n.Child(selector.TsImportAliasDecl)}
 }
 
 type TsAmbientInterface struct {
@@ -3235,8 +3263,8 @@ func (n TsAmbientInterface) Modifier() []Modifier {
 	return ret
 }
 
-func (n TsAmbientInterface) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsAmbientInterface) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n TsAmbientInterface) TypeParameters() (TypeParameters, bool) {
@@ -3257,11 +3285,11 @@ type TsAmbientModule struct {
 	*Node
 }
 
-func (n TsAmbientModule) BindingIdentifier() []BindingIdentifier {
-	nodes := n.Children(selector.BindingIdentifier)
-	var ret = make([]BindingIdentifier, 0, len(nodes))
+func (n TsAmbientModule) NameIdent() []NameIdent {
+	nodes := n.Children(selector.NameIdent)
+	var ret = make([]NameIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, BindingIdentifier{node})
+		ret = append(ret, NameIdent{node})
 	}
 	return ret
 }
@@ -3279,11 +3307,11 @@ type TsAmbientNamespace struct {
 	*Node
 }
 
-func (n TsAmbientNamespace) BindingIdentifier() []BindingIdentifier {
-	nodes := n.Children(selector.BindingIdentifier)
-	var ret = make([]BindingIdentifier, 0, len(nodes))
+func (n TsAmbientNamespace) NameIdent() []NameIdent {
+	nodes := n.Children(selector.NameIdent)
+	var ret = make([]NameIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, BindingIdentifier{node})
+		ret = append(ret, NameIdent{node})
 	}
 	return ret
 }
@@ -3301,8 +3329,8 @@ type TsAmbientTypeAlias struct {
 	*Node
 }
 
-func (n TsAmbientTypeAlias) TypeAliasDeclaration() TypeAliasDeclaration {
-	return TypeAliasDeclaration{n.Child(selector.TypeAliasDeclaration)}
+func (n TsAmbientTypeAlias) TypeAliasDecl() TypeAliasDecl {
+	return TypeAliasDecl{n.Child(selector.TypeAliasDecl)}
 }
 
 type TsAmbientVar struct {
@@ -3328,39 +3356,39 @@ func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
 	return ret
 }
 
-type TsAsConstExpression struct {
+type TsAsConstExpr struct {
 	*Node
 }
 
-func (n TsAsConstExpression) Left() Expression {
+func (n TsAsConstExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n TsAsConstExpression) TsConst() TsConst {
+func (n TsAsConstExpr) TsConst() TsConst {
 	return TsConst{n.Child(selector.TsConst)}
 }
 
-type TsAsExpression struct {
+type TsAsExpr struct {
 	*Node
 }
 
-func (n TsAsExpression) Left() Expression {
+func (n TsAsExpr) Left() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n TsAsExpression) TsType() TsType {
+func (n TsAsExpr) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-type TsCastExpression struct {
+type TsCastExpr struct {
 	*Node
 }
 
-func (n TsCastExpression) TsType() TsType {
+func (n TsCastExpr) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
-func (n TsCastExpression) Expression() Expression {
+func (n TsCastExpr) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
@@ -3405,8 +3433,8 @@ func (n TsEnum) TsConst() (TsConst, bool) {
 	return field, field.IsValid()
 }
 
-func (n TsEnum) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsEnum) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n TsEnum) TsEnumBody() TsEnumBody {
@@ -3468,41 +3496,41 @@ func (n TsImplementsClause) TypeReference() []TypeReference {
 	return ret
 }
 
-type TsImportAliasDeclaration struct {
+type TsImportAliasDecl struct {
 	*Node
 }
 
-func (n TsImportAliasDeclaration) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsImportAliasDecl) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
-func (n TsImportAliasDeclaration) Ref() []IdentifierReference {
-	nodes := n.Children(selector.IdentifierReference)
-	var ret = make([]IdentifierReference, 0, len(nodes))
+func (n TsImportAliasDecl) Ref() []RefIdent {
+	nodes := n.Children(selector.RefIdent)
+	var ret = make([]RefIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, IdentifierReference{node})
+		ret = append(ret, RefIdent{node})
 	}
 	return ret
 }
 
-type TsImportRequireDeclaration struct {
+type TsImportRequireDecl struct {
 	*Node
 }
 
-func (n TsImportRequireDeclaration) TsExport() (TsExport, bool) {
+func (n TsImportRequireDecl) TsExport() (TsExport, bool) {
 	field := TsExport{n.Child(selector.TsExport)}
 	return field, field.IsValid()
 }
 
-func (n TsImportRequireDeclaration) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsImportRequireDecl) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
-type TsIndexMemberDeclaration struct {
+type TsIndexMemberDecl struct {
 	*Node
 }
 
-func (n TsIndexMemberDeclaration) IndexSignature() IndexSignature {
+func (n TsIndexMemberDecl) IndexSignature() IndexSignature {
 	return IndexSignature{n.Child(selector.IndexSignature)}
 }
 
@@ -3510,8 +3538,8 @@ type TsInterface struct {
 	*Node
 }
 
-func (n TsInterface) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsInterface) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n TsInterface) TypeParameters() (TypeParameters, bool) {
@@ -3545,11 +3573,11 @@ type TsNamespace struct {
 	*Node
 }
 
-func (n TsNamespace) BindingIdentifier() []BindingIdentifier {
-	nodes := n.Children(selector.BindingIdentifier)
-	var ret = make([]BindingIdentifier, 0, len(nodes))
+func (n TsNamespace) NameIdent() []NameIdent {
+	nodes := n.Children(selector.NameIdent)
+	var ret = make([]NameIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, BindingIdentifier{node})
+		ret = append(ret, NameIdent{node})
 	}
 	return ret
 }
@@ -3571,12 +3599,12 @@ func (n TsNamespaceBody) ModuleItem() []ModuleItem {
 	return ret
 }
 
-type TsNamespaceExportDeclaration struct {
+type TsNamespaceExportDecl struct {
 	*Node
 }
 
-func (n TsNamespaceExportDeclaration) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TsNamespaceExportDecl) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 type TsNonNull struct {
@@ -3612,20 +3640,20 @@ func (n TupleType) TsType() []TsType {
 	return ret
 }
 
-type TypeAliasDeclaration struct {
+type TypeAliasDecl struct {
 	*Node
 }
 
-func (n TypeAliasDeclaration) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TypeAliasDecl) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
-func (n TypeAliasDeclaration) TypeParameters() (TypeParameters, bool) {
+func (n TypeAliasDecl) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
 }
 
-func (n TypeAliasDeclaration) TsType() TsType {
+func (n TypeAliasDecl) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
@@ -3662,11 +3690,11 @@ type TypeName struct {
 	*Node
 }
 
-func (n TypeName) Ref() []IdentifierReference {
-	nodes := n.Children(selector.IdentifierReference)
-	var ret = make([]IdentifierReference, 0, len(nodes))
+func (n TypeName) Ref() []RefIdent {
+	nodes := n.Children(selector.RefIdent)
+	var ret = make([]RefIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, IdentifierReference{node})
+		ret = append(ret, RefIdent{node})
 	}
 	return ret
 }
@@ -3675,8 +3703,8 @@ type TypeParameter struct {
 	*Node
 }
 
-func (n TypeParameter) BindingIdentifier() BindingIdentifier {
-	return BindingIdentifier{n.Child(selector.BindingIdentifier)}
+func (n TypeParameter) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 func (n TypeParameter) TypeConstraint() (TypeConstraint, bool) {
@@ -3706,8 +3734,8 @@ type TypePredicate struct {
 	*Node
 }
 
-func (n TypePredicate) Paramref() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n TypePredicate) Paramref() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
 func (n TypePredicate) TsType() TsType {
@@ -3718,11 +3746,11 @@ type TypeQuery struct {
 	*Node
 }
 
-func (n TypeQuery) IdentifierReference() []IdentifierReference {
-	nodes := n.Children(selector.IdentifierReference)
-	var ret = make([]IdentifierReference, 0, len(nodes))
+func (n TypeQuery) RefIdent() []RefIdent {
+	nodes := n.Children(selector.RefIdent)
+	var ret = make([]RefIdent, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, IdentifierReference{node})
+		ret = append(ret, RefIdent{node})
 	}
 	return ret
 }
@@ -3744,15 +3772,15 @@ type TypeVar struct {
 	*Node
 }
 
-func (n TypeVar) IdentifierReference() IdentifierReference {
-	return IdentifierReference{n.Child(selector.IdentifierReference)}
+func (n TypeVar) RefIdent() RefIdent {
+	return RefIdent{n.Child(selector.RefIdent)}
 }
 
-type UnaryExpression struct {
+type UnaryExpr struct {
 	*Node
 }
 
-func (n UnaryExpression) Expression() Expression {
+func (n UnaryExpr) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
@@ -3781,69 +3809,69 @@ type Var struct {
 	*Node
 }
 
-type VariableDeclaration struct {
+type VariableDecl struct {
 	*Node
 }
 
-func (n VariableDeclaration) BindingIdentifier() (BindingIdentifier, bool) {
-	field := BindingIdentifier{n.Child(selector.BindingIdentifier)}
-	return field, field.IsValid()
-}
-
-func (n VariableDeclaration) BindingPattern() (BindingPattern, bool) {
+func (n VariableDecl) BindingPattern() (BindingPattern, bool) {
 	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
 	return field, field.JsNode() != nil
 }
 
-func (n VariableDeclaration) TsExclToken() (TsExclToken, bool) {
+func (n VariableDecl) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
+}
+
+func (n VariableDecl) TsExclToken() (TsExclToken, bool) {
 	field := TsExclToken{n.Child(selector.TsExclToken)}
 	return field, field.IsValid()
 }
 
-func (n VariableDeclaration) TypeAnnotation() (TypeAnnotation, bool) {
+func (n VariableDecl) TypeAnnotation() (TypeAnnotation, bool) {
 	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
-func (n VariableDeclaration) Initializer() (Initializer, bool) {
+func (n VariableDecl) Initializer() (Initializer, bool) {
 	field := Initializer{n.Child(selector.Initializer)}
 	return field, field.IsValid()
 }
 
-type VariableStatement struct {
+type VariableStmt struct {
 	*Node
 }
 
-func (n VariableStatement) VariableDeclaration() []VariableDeclaration {
-	nodes := n.Children(selector.VariableDeclaration)
-	var ret = make([]VariableDeclaration, 0, len(nodes))
+func (n VariableStmt) VariableDecl() []VariableDecl {
+	nodes := n.Children(selector.VariableDecl)
+	var ret = make([]VariableDecl, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, VariableDeclaration{node})
+		ret = append(ret, VariableDecl{node})
 	}
 	return ret
 }
 
-type WhileStatement struct {
+type WhileStmt struct {
 	*Node
 }
 
-func (n WhileStatement) Expression() Expression {
+func (n WhileStmt) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n WhileStatement) Statement() Statement {
+func (n WhileStmt) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 
-type WithStatement struct {
+type WithStmt struct {
 	*Node
 }
 
-func (n WithStatement) Expression() Expression {
+func (n WithStmt) Expression() Expression {
 	return ToJsNode(n.Child(selector.Expression)).(Expression)
 }
 
-func (n WithStatement) Statement() Statement {
+func (n WithStmt) Statement() Statement {
 	return ToJsNode(n.Child(selector.Statement)).(Statement)
 }
 

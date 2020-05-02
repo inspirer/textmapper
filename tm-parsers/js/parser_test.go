@@ -31,7 +31,7 @@ var parseTests = []struct {
 		`«let» = 5;`,
 		`for («async» of «foo») {}`,
 	}},
-	{js.Javascript, js.IdentifierReference, []string{
+	{js.Javascript, js.RefIdent, []string{
 		`/*no expectations*/ const a = 15;`,
 		`/*no expectations*/ var b = 7;`,
 		`var e = «aa»;`,
@@ -59,7 +59,7 @@ var parseTests = []struct {
 		`function assert(actual: any): asserts «this» is number {}`,
 		`function foo(a) : typeof «a».«b».«c» {}`,
 	}},
-	{js.Javascript, js.BindingIdentifier, []string{
+	{js.Javascript, js.NameIdent, []string{
 		`const «a» = 15;`,
 		`var «b» = 7;`,
 		`var «e» = aa;`,
@@ -80,7 +80,7 @@ var parseTests = []struct {
 		   throw e
 		 }`,
 	}},
-	{js.Javascript, js.LabelIdentifier, []string{
+	{js.Javascript, js.LabelIdent, []string{
 		`«A»: for (;;) {continue «A»; }`,
 		`break «B»;`,
 	}},
@@ -201,10 +201,10 @@ var parseTests = []struct {
 		`«foo?.foo»();`,
 		`«««s?.a»()?.foo»?.bar»();`,
 	}},
-	{js.Javascript, js.SuperExpression, []string{
+	{js.Javascript, js.SuperExpr, []string{
 		`«super».me();`,
 	}},
-	{js.Javascript, js.NewExpression, []string{
+	{js.Javascript, js.NewExpr, []string{
 		`«new A»;`,
 		`«new A.b[10]»;`,
 		`«new A()»;`,
@@ -214,7 +214,7 @@ var parseTests = []struct {
 	{js.Javascript, js.NewTarget, []string{
 		`«new.target»;`,
 	}},
-	{js.Javascript, js.CallExpression, []string{
+	{js.Javascript, js.CallExpr, []string{
 		`«a()»;`,
 		`«let()»;`,
 		`«super(123)»;`,
@@ -227,7 +227,7 @@ var parseTests = []struct {
 		`««super()»()»;`,
 		`«a?.()()»;`,
 	}},
-	{js.Javascript, js.OptionalCallExpression, []string{
+	{js.Javascript, js.OptionalCallExpr, []string{
 		`«a?.()»;`,
 		`«a?.()»();`,
 	}},
@@ -247,7 +247,7 @@ var parseTests = []struct {
 	{js.Javascript, js.PreDec, []string{
 		`a(«--b», c)`,
 	}},
-	{js.Javascript, js.UnaryExpression, []string{
+	{js.Javascript, js.UnaryExpr, []string{
 		`«delete a»
 		 «void 1»
 		 «typeof s» == "string"
@@ -256,39 +256,44 @@ var parseTests = []struct {
 		 «+1» + «-2» & «~0»
 		 if («!(«typeof s» === "string")») {}`,
 	}},
-	{js.Javascript, js.ExponentiationExpression, []string{
+	{js.Javascript, js.ExponentiationExpr, []string{
 		`/*no expectations*/ 1;`,
 		`«1**2»;`,
 		`«1**«2**3»»;`,
 		`«1**«2**--a»»;`,
 		`«--1**«2**a++»»;`,
 	}},
-	{js.Javascript, js.MultiplicativeExpression, []string{
+	{js.Javascript, js.MultiplicativeExpr, []string{
 		`/*no expectations*/ 1;`,
 		`«1*2»;`,
 		`1+«2/3»;`,
 		`«-1%~2» << 3;`,
 	}},
-	{js.Javascript, js.AdditiveExpression, []string{
+	{js.Javascript, js.AdditiveExpr, []string{
 		`/*no expectations*/ 1;`,
 		`«1+2»;`,
 		`a ^ «1+2*3»;`,
 		`«1-2» << 3;`,
 	}},
-	{js.Javascript, js.ShiftExpression, []string{
+	{js.Javascript, js.ShiftExpr, []string{
 		`/*no expectations*/ 1;`,
 		`«1<<2»;`,
 		`«1>>2+3»;`,
 		`«1>>>1» < 3;`,
 	}},
-	{js.Javascript, js.RelationalExpression, []string{
+	{js.Javascript, js.RelationalExpr, []string{
 		`/*no expectations*/ 1;`,
-		`«1 in {}»;`,
 		`«1<2*4»;`,
 		`«1>2» != true;`,
-		`if («1 >= 1» && «1 <= 1» && «a instanceof Window») alert('true');`,
+		`if («1 >= 1» && «1 <= 1» && a instanceof Window) alert('true');`,
 	}},
-	{js.Javascript, js.EqualityExpression, []string{
+	{js.Javascript, js.InExpr, []string{
+		`«1 in {}»;`,
+	}},
+	{js.Javascript, js.InstanceOfExpr, []string{
+		`if (1 >= 1 && «a instanceof Window») alert('true');`,
+	}},
+	{js.Javascript, js.EqualityExpr, []string{
 		`if («a === b»);`,
 		`(«c !== 1+1»)`,
 		`(«c != 1/2»)`,
@@ -296,56 +301,56 @@ var parseTests = []struct {
 		// Left associative.
 		`(««a == 5» === true»)`,
 	}},
-	{js.Javascript, js.BitwiseANDExpression, []string{
+	{js.Javascript, js.BitwiseAND, []string{
 		`(«a&1»)`,
 		`(«a==7 & 3+3»)`,
 		// Left associative.
 		`(««a&7» & 3»)`,
 	}},
-	{js.Javascript, js.BitwiseXORExpression, []string{
+	{js.Javascript, js.BitwiseXOR, []string{
 		`(«a^1»)`,
 		`(«a&7 ^ 3»)`,
 		`(«7 ^ a==3»)`,
 		// Left associative.
 		`(««a^7» ^ 4»)`,
 	}},
-	{js.Javascript, js.BitwiseORExpression, []string{
+	{js.Javascript, js.BitwiseOR, []string{
 		`(«a|1»)`,
 		`(«a&7 | 1»)`,
 		`(a & («7|1»))`,
 		// Left associative.
 		`(««a|7» | 1»)`,
 	}},
-	{js.Javascript, js.LogicalANDExpression, []string{
+	{js.Javascript, js.LogicalAND, []string{
 		`(«a && true»)`,
 		`(«a && a==5»)`,
 		// Left associative.
 		`(««a && b» && c»)`,
 	}},
-	{js.Javascript, js.LogicalORExpression, []string{
+	{js.Javascript, js.LogicalOR, []string{
 		`(«a || true»)`,
 		// Left associative.
 		`(««a || b» || c»)`,
 	}},
-	{js.Javascript, js.CoalesceExpression, []string{
+	{js.Javascript, js.CoalesceExpr, []string{
 		`(«a ?? true»)`,
 		`(««a ?? b» ?? c»)`,
 		`(«a ?? b» ? a : b)`,
 	}},
-	{js.Javascript, js.ConditionalExpression, []string{
+	{js.Javascript, js.ConditionalExpr, []string{
 		`(«a ? b : c»)`,
 		`(«a ? «b1 ? b : c» : «b2 ? b : c»»)`,
 		`(«false ? «true ? 1 : 2» : 3») == 3;`,
 		`«a.b==4 ? (a) : a.b=6»`,
 	}},
-	{js.Javascript, js.AssignmentExpression, []string{
+	{js.Javascript, js.AssignmentExpr, []string{
 		`{ «a = 5» }`,
 		`{ «a ^= 5» }`,
 		`{ «a >>>= 5» }`,
 		`{ «a |= 5» }`,
 		`{ «a **= 5» }`,
 	}},
-	{js.Javascript, js.CommaExpression, []string{
+	{js.Javascript, js.CommaExpr, []string{
 		`{ «a = 5, b = 6» }`,
 		`{ a = («5,  6») }`,
 		`{ a((«5, 6»), 9) }`,
@@ -361,7 +366,7 @@ var parseTests = []struct {
 		`switch(a) «{}»`,
 		`switch(a) «{case 1: case 2: default: case 3:}»`,
 	}},
-	{js.Javascript, js.LexicalDeclaration, []string{
+	{js.Javascript, js.LexicalDecl, []string{
 		`«let a;»`,
 		`«let a = 5;»`,
 		`«let [a] = [5];»`,
@@ -373,14 +378,14 @@ var parseTests = []struct {
 		`let «[a] = [5]»;`,
 		`const «{b: [c]} = a»;`,
 	}},
-	{js.Javascript, js.VariableStatement, []string{
+	{js.Javascript, js.VariableStmt, []string{
 		`«var a;»`,
 		`«var a, b;»`,
 		`«var a = 5, b;»`,
 		`«var [a, b, c] = x, b;»`,
 		`«var q, {names: [name1, name2, ...others],} = param»`,
 	}},
-	{js.Javascript, js.VariableDeclaration, []string{
+	{js.Javascript, js.VariableDecl, []string{
 		`var «q», «{obj1: {a,b,c}} = param»`,
 	}},
 	{js.Javascript, js.ObjectPattern, []string{
@@ -409,35 +414,35 @@ var parseTests = []struct {
 		`let [x, «...rest»] = y;`,
 		`let [«...oth»] = y;`,
 	}},
-	{js.Javascript, js.EmptyStatement, []string{
+	{js.Javascript, js.EmptyStmt, []string{
 		`«;»`,
 		`for(;;)«;»`,
 		`while(true)«;»`,
 		`do«;» while(true);`,
 	}},
-	{js.Javascript, js.ExpressionStatement, []string{
+	{js.Javascript, js.ExpressionStmt, []string{
 		`«1+2;» «v();»`,
 		`function a() {
 			«yield»
 			«yield()»
 		}`,
 	}},
-	{js.Javascript, js.IfStatement, []string{
+	{js.Javascript, js.IfStmt, []string{
 		`«if (a in b); else continue;»`,
 		`«if (a in b); else «if (true) a(); else b();»»`,
 		`«if (a in b) {«if(a);»} else continue;»`,
 	}},
-	{js.Javascript, js.DoWhileStatement, []string{
+	{js.Javascript, js.DoWhileStmt, []string{
 		`«do {} while(a < 5);»`,
 		`«do; while(a < 5);»`,
 	}},
-	{js.Javascript, js.WhileStatement, []string{
+	{js.Javascript, js.WhileStmt, []string{
 		`«while(false in a);»`,
 	}},
-	{js.Javascript, js.ForStatement, []string{
+	{js.Javascript, js.ForStmt, []string{
 		`«for (a=0; a < 5; a++);»`,
 	}},
-	{js.Javascript, js.ForStatementWithVar, []string{
+	{js.Javascript, js.ForStmtWithVar, []string{
 		`«for (var a; a < 5; );»`,
 		`«for (var {a,b} = c; a < 5;);»`,
 	}},
@@ -446,7 +451,7 @@ var parseTests = []struct {
 		`for (var a; «a < 5»; );`,
 		`for (var {a,b} = c; «a < 5»;); for (; «»;);`,
 	}},
-	{js.Javascript, js.ForFinalExpression, []string{
+	{js.Javascript, js.ForFinalExpr, []string{
 		`for (a=0; a < 5; «a++»);`,
 		`for (var a; a < 5; «c++, d++»); for (;; «»);`,
 	}},
@@ -462,21 +467,21 @@ var parseTests = []struct {
 		`for («let» a of b);`,
 		`declare «let» a = 5;`,
 	}},
-	{js.Javascript, js.ForInStatement, []string{
+	{js.Javascript, js.ForInStmt, []string{
 		`«for (a in b) continue;»`,
 		`«for (let.a in b);»`,
 		`«for (let in b);»`,
 	}},
-	{js.Javascript, js.ForInStatementWithVar, []string{
+	{js.Javascript, js.ForInStmtWithVar, []string{
 		`«for (let [a] in b);»`,
 		`«for (let a in b);»`,
 		`«for (var a in b);»`,
 		`«for (var [a] in b);»`,
 	}},
-	{js.Javascript, js.ForOfStatement, []string{
+	{js.Javascript, js.ForOfStmt, []string{
 		`«for (a of b);»`,
 	}},
-	{js.Javascript, js.ForOfStatementWithVar, []string{
+	{js.Javascript, js.ForOfStmtWithVar, []string{
 		`«for (var {name:[name]} of b);»`,
 		`«for (const [[name]] of b);»`,
 	}},
@@ -487,23 +492,23 @@ var parseTests = []struct {
 		`for (let «[a]» in b);`,
 		`for (const «[,,,,...a]» in b);`,
 	}},
-	{js.Javascript, js.ContinueStatement, []string{
+	{js.Javascript, js.ContinueStmt, []string{
 		`for(;;){ «continue;» }`,
 		`A: do «continue A;» while(false);`,
 	}},
-	{js.Javascript, js.BreakStatement, []string{
+	{js.Javascript, js.BreakStmt, []string{
 		`for(;;){ «break;» }`,
 		`A: do «break A;» while(false);`,
 	}},
-	{js.Javascript, js.ReturnStatement, []string{
+	{js.Javascript, js.ReturnStmt, []string{
 		`function a() { «return 1;» }`,
 		`function b() { «return;» }`,
 	}},
-	{js.Javascript, js.WithStatement, []string{
+	{js.Javascript, js.WithStmt, []string{
 		`«with(window) aa();» {}`,
 		`«with(window) { addListener(); }» {}`,
 	}},
-	{js.Javascript, js.SwitchStatement, []string{
+	{js.Javascript, js.SwitchStmt, []string{
 		`«switch(a) {}»`,
 		`«switch(a) {case 1: case 2: default: case 3:}»`,
 		`«switch(a) {default: 1; case 3:}»`,
@@ -517,16 +522,16 @@ var parseTests = []struct {
 		`switch(a) {case 1: case 2: «default:» case 3:}`,
 		`function a() { switch(a) {«default: return;» case 3:} }`,
 	}},
-	{js.Javascript, js.LabelledStatement, []string{
+	{js.Javascript, js.LabelledStmt, []string{
 		`«yield: do break yield; while(false);»`,
 		`«A: for(;;) { break A; }»`,
 		`«A: function q() { return; }»`,
 	}},
-	{js.Javascript, js.ThrowStatement, []string{
+	{js.Javascript, js.ThrowStmt, []string{
 		`function a() { «throw new Error('oops!')» }`,
 		`function a() { «throw a(1)» }`,
 	}},
-	{js.Javascript, js.TryStatement, []string{
+	{js.Javascript, js.TryStmt, []string{
 		`«try {
        call();
      } catch (e) {
@@ -552,7 +557,7 @@ var parseTests = []struct {
 		   log.console('done')
 		 }»`,
 	}},
-	{js.Javascript, js.DebuggerStatement, []string{
+	{js.Javascript, js.DebuggerStmt, []string{
 		`«debugger;»`,
 	}},
 	{js.Javascript, js.Function, []string{
@@ -560,7 +565,7 @@ var parseTests = []struct {
 		`export default «function() { yield = 1; }»`,
 		`«function sum(a,b) { return a + b; }»`,
 	}},
-	{js.Javascript, js.FunctionExpression, []string{
+	{js.Javascript, js.FunctionExpr, []string{
 		`(«function() { yield = 1; }»)();`,
 		`(«function id() { yield = 1; }»)();`,
 		`(«function yield() { a++; }»)();`,
@@ -586,7 +591,7 @@ var parseTests = []struct {
 		`function q(«a», «b») {}`,
 		`function q(«[id]», «{name: name}») {}`,
 	}},
-	{js.Javascript, js.ArrowFunction, []string{
+	{js.Javascript, js.ArrowFunc, []string{
 		`(«a => a + 1»)(1);`,
 		`(«(a,b) => { return a*b; }»)(1);`,
 		`(«(a:A<B<C<D>>>,b) => { return a*b; }»)((a<b>c>>d));`,
@@ -623,7 +628,7 @@ var parseTests = []struct {
 		`«function *gen(){ yield 1; yield 2; }» {}`,
 		`export default «function*(){ yield 1; yield 2; }» {}`,
 	}},
-	{js.Javascript, js.GeneratorExpression, []string{
+	{js.Javascript, js.GeneratorExpr, []string{
 		`(«function*(){ yield 1; yield 2; }»)();`,
 		`(«function* a(){ yield 1; yield 2; }»)();`,
 	}},
@@ -652,7 +657,7 @@ var parseTests = []struct {
 		   «yield 22»
 		 } {}`,
 	}},
-	{js.Javascript, js.AsyncArrowFunction, []string{
+	{js.Javascript, js.AsyncArrowFunc, []string{
 		`for(«async of=>5»;;) {}`,
 		`for(«async (of)=>5»;;) {}`,
 		`for(«async (of)=>{}»;;) {}`,
@@ -688,7 +693,7 @@ var parseTests = []struct {
 		  §a() §{}
 		}`,
 	}},
-	{js.Javascript, js.AsyncFunction, []string{
+	{js.Javascript, js.AsyncFunc, []string{
 		`«async function add2(x) {
        var a = await resolveAfter2Seconds(20);
        var b = await resolveAfter2Seconds(30);
@@ -704,7 +709,7 @@ var parseTests = []struct {
 		 async /* no semicolon */
 		 function nop() {}`,
 	}},
-	{js.Javascript, js.AsyncFunctionExpression, []string{
+	{js.Javascript, js.AsyncFuncExpr, []string{
 		`var a = «async function(x) {
        var a = await resolveAfter2Seconds(20);
        var b = await resolveAfter2Seconds(30);
@@ -726,7 +731,7 @@ var parseTests = []struct {
 		`/*no expectations*/ var a = async
 		 function(x) {}`,
 	}},
-	{js.Javascript, js.AwaitExpression, []string{
+	{js.Javascript, js.AwaitExpr, []string{
 		`async function gogo() {
        var b = «await func1(10)»;
        return b + 1;
@@ -790,7 +795,7 @@ var parseTests = []struct {
 		»`,
 		`« a = 4 »`,
 	}},
-	{js.Javascript, js.ImportDeclaration, []string{
+	{js.Javascript, js.ImportDecl, []string{
 		`«import './aaa'»`,
 		`«import * as aaa from './aaa'»`,
 		`«import {b,c,} from './aaa'»`,
@@ -814,7 +819,7 @@ var parseTests = []struct {
 		`import «'./aaa'»`,
 		`import * as aaa from «'./aaa'»`,
 	}},
-	{js.Javascript, js.ExportDeclaration, []string{
+	{js.Javascript, js.ExportDecl, []string{
 		`«export * from "aa/bb"»`,
 		`«export * as ns from "foo";»`,      // TS
 		`«export type * as ns from "foo";»`, // TS
@@ -983,13 +988,13 @@ var parseTests = []struct {
 		`var a = <A:A>«bb»{1}«cc»{<abc/>}</A:A>;`,
 		`/*no expectations*/ var a = <A:A></A:A>;`,
 	}},
-	{js.Javascript, js.JSXExpression, []string{
+	{js.Javascript, js.JSXExpr, []string{
 		`var a = <A:A>«{ 22+{a:1}.a }»</A:A>;`,
 		`var a = <A:A>bb«{1}»cc«{<abc/>}»</A:A>;`,
 		`var a = <a href=«{1+{a:2}.a}»/>;`,
 		`/*no expectations*/ var a = <A:A></A:A>;`,
 	}},
-	{js.Javascript, js.JSXSpreadExpression, []string{
+	{js.Javascript, js.JSXSpreadExpr, []string{
 		`var a = <A:A>«{...[a,b,c] }»</A:A>;`,
 	}},
 	{js.Javascript, js.JSXLiteral, []string{
@@ -1003,7 +1008,7 @@ var parseTests = []struct {
 	}},
 
 	// Typescript
-	{js.Typescript, js.ImportDeclaration, []string{
+	{js.Typescript, js.ImportDecl, []string{
 		`«import type * as Proto from '../protocol';»`,
 		`«import type {Foo} from '../protocol';»`,
 		`«import type Foo from '../protocol';»`,
@@ -1015,7 +1020,7 @@ var parseTests = []struct {
 		`export «type» {} from "aa/bb"`,
 		`export «type» {A}`,
 	}},
-	{js.Typescript, js.TsCastExpression, []string{
+	{js.Typescript, js.TsCastExpr, []string{
 		`var a = «<string>b»;`,
 		`var a = «<string>b.run()»;`,
 		`var a = «<T<B>>b.run()»;`,
@@ -1151,7 +1156,7 @@ var parseTests = []struct {
 	{js.Typescript, js.AccessibilityModifier, []string{
 		`function a(«public» kind?:number) {}`,
 	}},
-	{js.Typescript, js.TypeAliasDeclaration, []string{
+	{js.Typescript, js.TypeAliasDecl, []string{
 		`«type Foo = bar;»`,
 		`«type Foo<T> = T»`,
 		`«type K1 = keyof Person;»`,
@@ -1253,7 +1258,7 @@ var parseTests = []struct {
 		   «private static b(abc);»
 		 }`,
 	}},
-	{js.Typescript, js.TsIndexMemberDeclaration, []string{
+	{js.Typescript, js.TsIndexMemberDecl, []string{
 		`class A {
 		   «[a:string] : int;»
 		   «[key:number] : string;»
@@ -1297,10 +1302,10 @@ var parseTests = []struct {
 	{js.Typescript, js.TsNamespaceBody, []string{
 		`namespace foo.bar «{ function a () {} }»`,
 	}},
-	{js.Typescript, js.TsImportAliasDeclaration, []string{
+	{js.Typescript, js.TsImportAliasDecl, []string{
 		`«import foo = abc.foo;»`,
 	}},
-	{js.Typescript, js.TsImportRequireDeclaration, []string{
+	{js.Typescript, js.TsImportRequireDecl, []string{
 		`«import foo = require('somefoo');»`,
 		`«export import foo = require("somefoo");»`,
 	}},
@@ -1318,7 +1323,7 @@ var parseTests = []struct {
 		`«export = abc;»`,
 		`«export = call1({})»`,
 	}},
-	{js.Typescript, js.TsNamespaceExportDeclaration, []string{
+	{js.Typescript, js.TsNamespaceExportDecl, []string{
 		`«export as namespace abc»`,
 		`«export as namespace abc;»`,
 	}},
@@ -1331,7 +1336,7 @@ var parseTests = []struct {
 		`declare var «a : int», «b : string = "a"», «c = "foo"»;`,
 		`declare const «i»;`,
 	}},
-	{js.Typescript, js.TsAmbientFunction, []string{
+	{js.Typescript, js.TsAmbientFunc, []string{
 		`«declare function go();»`,
 		`«declare function go<T>(a : string) : T;»`,
 		`declare namespace foo { «export function go();» }`,
@@ -1357,7 +1362,7 @@ var parseTests = []struct {
 		`declare namespace foo { «import a = foo;» }`,
 		`declare namespace foo { «export import a = foo;» }`,
 	}},
-	{js.Typescript, js.TsAmbientExportDeclaration, []string{
+	{js.Typescript, js.TsAmbientExportDecl, []string{
 		`declare namespace foo { «export{}» }`,
 		`declare namespace foo { «export {f};» }`,
 	}},
@@ -1387,7 +1392,7 @@ var parseTests = []struct {
 		`a = Math.round((«foo.let!» / 2));`,
 		`a = Math.round((«foo.asserts!» / 2));`,
 	}},
-	{js.Typescript, js.TsAsExpression, []string{
+	{js.Typescript, js.TsAsExpr, []string{
 		`var a = «a as b»`,
 		`var a = «a as b|c»`,
 		`var a = null == «a as b|c&d» && true`,
@@ -1398,7 +1403,7 @@ var parseTests = []struct {
 		 as (T1)  // <- new line`,
 		`for (let as = «A as B»; as < 10; as++) {}`,
 	}},
-	{js.Typescript, js.TsAsConstExpression, []string{
+	{js.Typescript, js.TsAsConstExpr, []string{
 		`const a = foo ? «[a, b] as const» : undefined;`,
 		`declare namespace foo {
 		   export const commentPragmas = «{} as const»;

@@ -13,8 +13,8 @@ func ToJsNode(n *Node) JsNode {
 		return &Abstract{n}
 	case js.AccessibilityModifier:
 		return &AccessibilityModifier{n}
-	case js.AdditiveExpression:
-		return &AdditiveExpression{n}
+	case js.AdditiveExpr:
+		return &AdditiveExpr{n}
 	case js.Arguments:
 		return &Arguments{n}
 	case js.ArrayLiteral:
@@ -23,42 +23,40 @@ func ToJsNode(n *Node) JsNode {
 		return &ArrayPattern{n}
 	case js.ArrayType:
 		return &ArrayType{n}
-	case js.ArrowFunction:
-		return &ArrowFunction{n}
+	case js.ArrowFunc:
+		return &ArrowFunc{n}
 	case js.AssertsType:
 		return &AssertsType{n}
-	case js.AssignmentExpression:
-		return &AssignmentExpression{n}
+	case js.AssignmentExpr:
+		return &AssignmentExpr{n}
 	case js.AssignmentOperator:
 		return &AssignmentOperator{n}
-	case js.AsyncArrowFunction:
-		return &AsyncArrowFunction{n}
-	case js.AsyncFunction:
-		return &AsyncFunction{n}
-	case js.AsyncFunctionExpression:
-		return &AsyncFunctionExpression{n}
+	case js.AsyncArrowFunc:
+		return &AsyncArrowFunc{n}
+	case js.AsyncFunc:
+		return &AsyncFunc{n}
+	case js.AsyncFuncExpr:
+		return &AsyncFuncExpr{n}
 	case js.AsyncMethod:
 		return &AsyncMethod{n}
-	case js.AwaitExpression:
-		return &AwaitExpression{n}
-	case js.BindingIdentifier:
-		return &BindingIdentifier{n}
+	case js.AwaitExpr:
+		return &AwaitExpr{n}
 	case js.BindingRestElement:
 		return &BindingRestElement{n}
-	case js.BitwiseANDExpression:
-		return &BitwiseANDExpression{n}
-	case js.BitwiseORExpression:
-		return &BitwiseORExpression{n}
-	case js.BitwiseXORExpression:
-		return &BitwiseXORExpression{n}
+	case js.BitwiseAND:
+		return &BitwiseAND{n}
+	case js.BitwiseOR:
+		return &BitwiseOR{n}
+	case js.BitwiseXOR:
+		return &BitwiseXOR{n}
 	case js.Block:
 		return &Block{n}
 	case js.Body:
 		return &Body{n}
-	case js.BreakStatement:
-		return &BreakStatement{n}
-	case js.CallExpression:
-		return &CallExpression{n}
+	case js.BreakStmt:
+		return &BreakStmt{n}
+	case js.CallExpr:
+		return &CallExpr{n}
 	case js.CallSignature:
 		return &CallSignature{n}
 	case js.Case:
@@ -71,24 +69,24 @@ func ToJsNode(n *Node) JsNode {
 		return &ClassBody{n}
 	case js.ClassExpr:
 		return &ClassExpr{n}
-	case js.CoalesceExpression:
-		return &CoalesceExpression{n}
-	case js.CommaExpression:
-		return &CommaExpression{n}
+	case js.CoalesceExpr:
+		return &CoalesceExpr{n}
+	case js.CommaExpr:
+		return &CommaExpr{n}
 	case js.ComputedPropertyName:
 		return &ComputedPropertyName{n}
 	case js.ConciseBody:
 		return &ConciseBody{n}
-	case js.ConditionalExpression:
-		return &ConditionalExpression{n}
+	case js.ConditionalExpr:
+		return &ConditionalExpr{n}
 	case js.ConstructSignature:
 		return &ConstructSignature{n}
 	case js.ConstructorType:
 		return &ConstructorType{n}
-	case js.ContinueStatement:
-		return &ContinueStatement{n}
-	case js.DebuggerStatement:
-		return &DebuggerStatement{n}
+	case js.ContinueStmt:
+		return &ContinueStmt{n}
+	case js.DebuggerStmt:
+		return &DebuggerStmt{n}
 	case js.Declare:
 		return &Declare{n}
 	case js.DecoratorCall:
@@ -99,28 +97,28 @@ func ToJsNode(n *Node) JsNode {
 		return &Default{n}
 	case js.DefaultParameter:
 		return &DefaultParameter{n}
-	case js.DoWhileStatement:
-		return &DoWhileStatement{n}
+	case js.DoWhileStmt:
+		return &DoWhileStmt{n}
 	case js.ElementBinding:
 		return &ElementBinding{n}
 	case js.EmptyDecl:
 		return &EmptyDecl{n}
-	case js.EmptyStatement:
-		return &EmptyStatement{n}
-	case js.EqualityExpression:
-		return &EqualityExpression{n}
-	case js.ExponentiationExpression:
-		return &ExponentiationExpression{n}
+	case js.EmptyStmt:
+		return &EmptyStmt{n}
+	case js.EqualityExpr:
+		return &EqualityExpr{n}
+	case js.ExponentiationExpr:
+		return &ExponentiationExpr{n}
 	case js.ExportClause:
 		return &ExportClause{n}
-	case js.ExportDeclaration:
-		return &ExportDeclaration{n}
+	case js.ExportDecl:
+		return &ExportDecl{n}
 	case js.ExportDefault:
 		return &ExportDefault{n}
 	case js.ExportSpecifier:
 		return &ExportSpecifier{n}
-	case js.ExpressionStatement:
-		return &ExpressionStatement{n}
+	case js.ExpressionStmt:
+		return &ExpressionStmt{n}
 	case js.Extends:
 		return &Extends{n}
 	case js.Finally:
@@ -129,46 +127,46 @@ func ToJsNode(n *Node) JsNode {
 		return &ForBinding{n}
 	case js.ForCondition:
 		return &ForCondition{n}
-	case js.ForFinalExpression:
-		return &ForFinalExpression{n}
-	case js.ForInStatement:
-		return &ForInStatement{n}
-	case js.ForInStatementWithVar:
-		return &ForInStatementWithVar{n}
-	case js.ForOfStatement:
-		return &ForOfStatement{n}
-	case js.ForOfStatementWithVar:
-		return &ForOfStatementWithVar{n}
-	case js.ForStatement:
-		return &ForStatement{n}
-	case js.ForStatementWithVar:
-		return &ForStatementWithVar{n}
+	case js.ForFinalExpr:
+		return &ForFinalExpr{n}
+	case js.ForInStmt:
+		return &ForInStmt{n}
+	case js.ForInStmtWithVar:
+		return &ForInStmtWithVar{n}
+	case js.ForOfStmt:
+		return &ForOfStmt{n}
+	case js.ForOfStmtWithVar:
+		return &ForOfStmtWithVar{n}
+	case js.ForStmt:
+		return &ForStmt{n}
+	case js.ForStmtWithVar:
+		return &ForStmtWithVar{n}
 	case js.Function:
 		return &Function{n}
-	case js.FunctionExpression:
-		return &FunctionExpression{n}
+	case js.FunctionExpr:
+		return &FunctionExpr{n}
 	case js.FunctionType:
 		return &FunctionType{n}
 	case js.Generator:
 		return &Generator{n}
-	case js.GeneratorExpression:
-		return &GeneratorExpression{n}
+	case js.GeneratorExpr:
+		return &GeneratorExpr{n}
 	case js.GeneratorMethod:
 		return &GeneratorMethod{n}
 	case js.Getter:
 		return &Getter{n}
 	case js.IdentExpr:
 		return &IdentExpr{n}
-	case js.IdentifierReference:
-		return &IdentifierReference{n}
-	case js.IfStatement:
-		return &IfStatement{n}
-	case js.ImportDeclaration:
-		return &ImportDeclaration{n}
+	case js.IfStmt:
+		return &IfStmt{n}
+	case js.ImportDecl:
+		return &ImportDecl{n}
 	case js.ImportSpecifier:
 		return &ImportSpecifier{n}
 	case js.ImportType:
 		return &ImportType{n}
+	case js.InExpr:
+		return &InExpr{n}
 	case js.IndexAccess:
 		return &IndexAccess{n}
 	case js.IndexSignature:
@@ -177,6 +175,8 @@ func ToJsNode(n *Node) JsNode {
 		return &IndexedAccessType{n}
 	case js.Initializer:
 		return &Initializer{n}
+	case js.InstanceOfExpr:
+		return &InstanceOfExpr{n}
 	case js.IntersectionType:
 		return &IntersectionType{n}
 	case js.JSXAttributeName:
@@ -187,8 +187,8 @@ func ToJsNode(n *Node) JsNode {
 		return &JSXElement{n}
 	case js.JSXElementName:
 		return &JSXElementName{n}
-	case js.JSXExpression:
-		return &JSXExpression{n}
+	case js.JSXExpr:
+		return &JSXExpr{n}
 	case js.JSXLiteral:
 		return &JSXLiteral{n}
 	case js.JSXNormalAttribute:
@@ -199,32 +199,32 @@ func ToJsNode(n *Node) JsNode {
 		return &JSXSelfClosingElement{n}
 	case js.JSXSpreadAttribute:
 		return &JSXSpreadAttribute{n}
-	case js.JSXSpreadExpression:
-		return &JSXSpreadExpression{n}
+	case js.JSXSpreadExpr:
+		return &JSXSpreadExpr{n}
 	case js.JSXText:
 		return &JSXText{n}
 	case js.KeyOfType:
 		return &KeyOfType{n}
-	case js.LabelIdentifier:
-		return &LabelIdentifier{n}
-	case js.LabelledStatement:
-		return &LabelledStatement{n}
+	case js.LabelIdent:
+		return &LabelIdent{n}
+	case js.LabelledStmt:
+		return &LabelledStmt{n}
 	case js.LetOrConst:
 		return &LetOrConst{n}
 	case js.LexicalBinding:
 		return &LexicalBinding{n}
-	case js.LexicalDeclaration:
-		return &LexicalDeclaration{n}
+	case js.LexicalDecl:
+		return &LexicalDecl{n}
 	case js.Literal:
 		return &Literal{n}
 	case js.LiteralPropertyName:
 		return &LiteralPropertyName{n}
 	case js.LiteralType:
 		return &LiteralType{n}
-	case js.LogicalANDExpression:
-		return &LogicalANDExpression{n}
-	case js.LogicalORExpression:
-		return &LogicalORExpression{n}
+	case js.LogicalAND:
+		return &LogicalAND{n}
+	case js.LogicalOR:
+		return &LogicalOR{n}
 	case js.MappedType:
 		return &MappedType{n}
 	case js.MemberMethod:
@@ -239,14 +239,16 @@ func ToJsNode(n *Node) JsNode {
 		return &Module{n}
 	case js.ModuleSpecifier:
 		return &ModuleSpecifier{n}
-	case js.MultiplicativeExpression:
-		return &MultiplicativeExpression{n}
+	case js.MultiplicativeExpr:
+		return &MultiplicativeExpr{n}
+	case js.NameIdent:
+		return &NameIdent{n}
 	case js.NameSpaceImport:
 		return &NameSpaceImport{n}
 	case js.NamedImports:
 		return &NamedImports{n}
-	case js.NewExpression:
-		return &NewExpression{n}
+	case js.NewExpr:
+		return &NewExpr{n}
 	case js.NewTarget:
 		return &NewTarget{n}
 	case js.NoElement:
@@ -263,8 +265,8 @@ func ToJsNode(n *Node) JsNode {
 		return &ObjectPattern{n}
 	case js.ObjectType:
 		return &ObjectType{n}
-	case js.OptionalCallExpression:
-		return &OptionalCallExpression{n}
+	case js.OptionalCallExpr:
+		return &OptionalCallExpr{n}
 	case js.OptionalIndexAccess:
 		return &OptionalIndexAccess{n}
 	case js.OptionalPropertyAccess:
@@ -299,20 +301,22 @@ func ToJsNode(n *Node) JsNode {
 		return &Readonly{n}
 	case js.ReadonlyType:
 		return &ReadonlyType{n}
+	case js.RefIdent:
+		return &RefIdent{n}
 	case js.Regexp:
 		return &Regexp{n}
-	case js.RelationalExpression:
-		return &RelationalExpression{n}
+	case js.RelationalExpr:
+		return &RelationalExpr{n}
 	case js.RestParameter:
 		return &RestParameter{n}
 	case js.RestType:
 		return &RestType{n}
-	case js.ReturnStatement:
-		return &ReturnStatement{n}
+	case js.ReturnStmt:
+		return &ReturnStmt{n}
 	case js.Setter:
 		return &Setter{n}
-	case js.ShiftExpression:
-		return &ShiftExpression{n}
+	case js.ShiftExpr:
+		return &ShiftExpr{n}
 	case js.ShorthandProperty:
 		return &ShorthandProperty{n}
 	case js.SingleNameBinding:
@@ -323,10 +327,10 @@ func ToJsNode(n *Node) JsNode {
 		return &SpreadProperty{n}
 	case js.Static:
 		return &Static{n}
-	case js.SuperExpression:
-		return &SuperExpression{n}
-	case js.SwitchStatement:
-		return &SwitchStatement{n}
+	case js.SuperExpr:
+		return &SuperExpr{n}
+	case js.SwitchStmt:
+		return &SwitchStmt{n}
 	case js.SyntaxProblem:
 		return &SyntaxProblem{n}
 	case js.TaggedTemplate:
@@ -337,20 +341,20 @@ func ToJsNode(n *Node) JsNode {
 		return &This{n}
 	case js.ThisType:
 		return &ThisType{n}
-	case js.ThrowStatement:
-		return &ThrowStatement{n}
-	case js.TryStatement:
-		return &TryStatement{n}
+	case js.ThrowStmt:
+		return &ThrowStmt{n}
+	case js.TryStmt:
+		return &TryStmt{n}
 	case js.TsAmbientBinding:
 		return &TsAmbientBinding{n}
 	case js.TsAmbientClass:
 		return &TsAmbientClass{n}
 	case js.TsAmbientEnum:
 		return &TsAmbientEnum{n}
-	case js.TsAmbientExportDeclaration:
-		return &TsAmbientExportDeclaration{n}
-	case js.TsAmbientFunction:
-		return &TsAmbientFunction{n}
+	case js.TsAmbientExportDecl:
+		return &TsAmbientExportDecl{n}
+	case js.TsAmbientFunc:
+		return &TsAmbientFunc{n}
 	case js.TsAmbientGlobal:
 		return &TsAmbientGlobal{n}
 	case js.TsAmbientImportAlias:
@@ -365,12 +369,12 @@ func ToJsNode(n *Node) JsNode {
 		return &TsAmbientTypeAlias{n}
 	case js.TsAmbientVar:
 		return &TsAmbientVar{n}
-	case js.TsAsConstExpression:
-		return &TsAsConstExpression{n}
-	case js.TsAsExpression:
-		return &TsAsExpression{n}
-	case js.TsCastExpression:
-		return &TsCastExpression{n}
+	case js.TsAsConstExpr:
+		return &TsAsConstExpr{n}
+	case js.TsAsExpr:
+		return &TsAsExpr{n}
+	case js.TsCastExpr:
+		return &TsCastExpr{n}
 	case js.TsConditional:
 		return &TsConditional{n}
 	case js.TsConst:
@@ -391,12 +395,12 @@ func ToJsNode(n *Node) JsNode {
 		return &TsExportAssignment{n}
 	case js.TsImplementsClause:
 		return &TsImplementsClause{n}
-	case js.TsImportAliasDeclaration:
-		return &TsImportAliasDeclaration{n}
-	case js.TsImportRequireDeclaration:
-		return &TsImportRequireDeclaration{n}
-	case js.TsIndexMemberDeclaration:
-		return &TsIndexMemberDeclaration{n}
+	case js.TsImportAliasDecl:
+		return &TsImportAliasDecl{n}
+	case js.TsImportRequireDecl:
+		return &TsImportRequireDecl{n}
+	case js.TsIndexMemberDecl:
+		return &TsIndexMemberDecl{n}
 	case js.TsInterface:
 		return &TsInterface{n}
 	case js.TsInterfaceExtends:
@@ -405,8 +409,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsNamespace{n}
 	case js.TsNamespaceBody:
 		return &TsNamespaceBody{n}
-	case js.TsNamespaceExportDeclaration:
-		return &TsNamespaceExportDeclaration{n}
+	case js.TsNamespaceExportDecl:
+		return &TsNamespaceExportDecl{n}
 	case js.TsNonNull:
 		return &TsNonNull{n}
 	case js.TsThisParameter:
@@ -415,8 +419,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsTypeOnly{n}
 	case js.TupleType:
 		return &TupleType{n}
-	case js.TypeAliasDeclaration:
-		return &TypeAliasDeclaration{n}
+	case js.TypeAliasDecl:
+		return &TypeAliasDecl{n}
 	case js.TypeAnnotation:
 		return &TypeAnnotation{n}
 	case js.TypeArguments:
@@ -437,22 +441,22 @@ func ToJsNode(n *Node) JsNode {
 		return &TypeReference{n}
 	case js.TypeVar:
 		return &TypeVar{n}
-	case js.UnaryExpression:
-		return &UnaryExpression{n}
+	case js.UnaryExpr:
+		return &UnaryExpr{n}
 	case js.UnionType:
 		return &UnionType{n}
 	case js.UniqueType:
 		return &UniqueType{n}
 	case js.Var:
 		return &Var{n}
-	case js.VariableDeclaration:
-		return &VariableDeclaration{n}
-	case js.VariableStatement:
-		return &VariableStatement{n}
-	case js.WhileStatement:
-		return &WhileStatement{n}
-	case js.WithStatement:
-		return &WithStatement{n}
+	case js.VariableDecl:
+		return &VariableDecl{n}
+	case js.VariableStmt:
+		return &VariableStmt{n}
+	case js.WhileStmt:
+		return &WhileStmt{n}
+	case js.WithStmt:
+		return &WithStmt{n}
 	case js.Yield:
 		return &Yield{n}
 	case js.InsertedSemicolon:

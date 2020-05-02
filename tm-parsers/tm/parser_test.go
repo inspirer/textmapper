@@ -104,7 +104,7 @@ const header = "language l(a); "
 const lexerPre = "language l(a); :: lexer\n"
 const parserPre = "language l(a); :: lexer a = /abc/ :: parser "
 
-const wantTextmapperFiles = 30
+const wantTextmapperFiles = 31
 
 func TestExistingFiles(t *testing.T) {
 	var sources []string

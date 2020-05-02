@@ -374,18 +374,18 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom> :
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
-IdentifierNameDecl<WithoutNew> -> BindingIdentifier:
+IdentifierNameDecl<WithoutNew> -> NameIdent:
     IdentifierName ;
 
-IdentifierNameRef<WithoutAsserts> -> IdentifierReference :
+IdentifierNameRef<WithoutAsserts> -> RefIdent :
     IdentifierName ;
 
-ClassPrivateRef -> IdentifierReference:
+ClassPrivateRef -> RefIdent:
     PrivateIdentifier ;
 
 # A.2 Expressions
 
-IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> IdentifierReference :
+IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> RefIdent :
 # V8 runtime functions start with a percent sign.
 # See http://stackoverflow.com/questions/11202824/what-is-in-javascript
     '%'? Identifier
@@ -404,7 +404,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> Identifier
   | [!WithoutPredefinedTypes] ('keyof' | 'unique' | 'readonly' | 'infer')
 ;
 
-BindingIdentifier<WithoutImplements> -> BindingIdentifier :
+BindingIdentifier<WithoutImplements> -> NameIdent :
     Identifier
 
   # These are allowed or not, depending on the context.
@@ -421,7 +421,7 @@ BindingIdentifier<WithoutImplements> -> BindingIdentifier :
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
-LabelIdentifier -> LabelIdentifier :
+LabelIdentifier -> LabelIdent :
     Identifier
 
   # These are allowed or not, depending on the context.
@@ -517,7 +517,7 @@ PropertyName<Yield, Await, WithoutNew> -> PropertyName /* interface */:
 
 LiteralPropertyName<WithoutNew> -> LiteralPropertyName :
     IdentifierNameDecl
-  | (PrivateIdentifier -> BindingIdentifier)
+  | (PrivateIdentifier -> NameIdent)
   | StringLiteral
   | NumericLiteral
 ;
@@ -550,7 +550,7 @@ TemplateMiddleList<Yield, Await> :
 MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expression /* interface */:
     [!NoLetOnly && !StartWithLet] PrimaryExpression
   | [NoLetOnly && !StartWithLet] PrimaryExpression<+NoLet>
-  | [StartWithLet && !NoLetOnly] ('let' -> IdentifierReference) -> IdentExpr
+  | [StartWithLet && !NoLetOnly] ('let' -> RefIdent) -> IdentExpr
   | [StartWithLet] expr=MemberExpression<+NoLetOnly, ~NoAsync> '[' index=Expression<+In> ']'            -> IndexAccess
   | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq, ~NoAsync> '[' index=Expression<+In> ']'   -> IndexAccess
   | expr=MemberExpression<~NoAsync> '.' selector=IdentifierNameRef        -> PropertyAccess
@@ -559,11 +559,11 @@ MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expression /*
   | expr=MemberExpression<~NoAsync> .noLineBreak '!'                      -> TsNonNull
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
-  | [!StartWithLet] 'new' expr=MemberExpression<~NoAsync> Arguments       -> NewExpression
+  | [!StartWithLet] 'new' expr=MemberExpression<~NoAsync> Arguments       -> NewExpr
 ;
 
 SuperExpression -> Expression /* interface */:
-    'super' -> SuperExpression
+    'super' -> SuperExpr
 ;
 
 SuperProperty<Yield, Await> -> Expression /* interface */:
@@ -579,14 +579,14 @@ NewTarget -> NewTarget :
 
 NewExpression<Yield, Await, NoAsync> -> Expression /* interface */:
     MemberExpression  (?= !StartOfParametrizedCall)
-  | [!StartWithLet] 'new' expr=NewExpression<~NoAsync>      -> NewExpression
+  | [!StartWithLet] 'new' expr=NewExpression<~NoAsync>      -> NewExpr
 ;
 
 CallExpression<Yield, Await> -> Expression /* interface */:
-    expr=MemberExpression Arguments                             -> CallExpression
-  | [!StartWithLet] SuperCall                                   -> CallExpression
+    expr=MemberExpression Arguments                             -> CallExpr
+  | [!StartWithLet] SuperCall                                   -> CallExpr
   | [!StartWithLet] 'import' Arguments                          -> TsDynamicImport
-  | expr=CallExpression Arguments                               -> CallExpression
+  | expr=CallExpression Arguments                               -> CallExpr
   | expr=CallExpression '[' index=Expression<+In> ']'           -> IndexAccess
   | expr=CallExpression '.' selector=IdentifierNameRef          -> PropertyAccess
   | expr=CallExpression '.' selector=ClassPrivateRef            -> PropertyAccess
@@ -620,12 +620,12 @@ OptionalExpression<Yield, Await> -> Expression:
     expr=OptionalLHS '?.' '[' index=Expression<+In> ']'      -> OptionalIndexAccess
   | expr=OptionalLHS '?.' selector=IdentifierNameRef         -> OptionalPropertyAccess
   | expr=OptionalLHS '?.' selector=ClassPrivateRef           -> OptionalPropertyAccess
-  | expr=OptionalLHS '?.' Arguments                          -> OptionalCallExpression
+  | expr=OptionalLHS '?.' Arguments                          -> OptionalCallExpr
   | tag=OptionalLHS '?.' literal=TemplateLiteral             -> OptionalTaggedTemplate
   | expr=OptionalExpression '[' index=Expression<+In> ']'    -> IndexAccess
   | expr=OptionalExpression '.' selector=IdentifierNameRef   -> PropertyAccess
   | expr=OptionalExpression '.' selector=ClassPrivateRef     -> PropertyAccess
-  | expr=OptionalExpression Arguments                        -> CallExpression
+  | expr=OptionalExpression Arguments                        -> CallExpr
   | expr=OptionalExpression .noLineBreak '!'                 -> TsNonNull
   | tag=OptionalExpression literal=TemplateLiteral           -> TaggedTemplate
 ;
@@ -646,15 +646,15 @@ UpdateExpression<Yield, Await> -> Expression /* interface */:
 
 UnaryExpression<Yield, Await> -> Expression /* interface */:
     UpdateExpression
-  | [!StartWithLet] 'delete' UnaryExpression          -> UnaryExpression
-  | [!StartWithLet] 'void' UnaryExpression            -> UnaryExpression
-  | [!StartWithLet] 'typeof' UnaryExpression          -> UnaryExpression
-  | [!StartWithLet] '+' UnaryExpression               -> UnaryExpression
-  | [!StartWithLet] '-' UnaryExpression               -> UnaryExpression
-  | [!StartWithLet] '~' UnaryExpression               -> UnaryExpression
-  | [!StartWithLet] '!' UnaryExpression               -> UnaryExpression
+  | [!StartWithLet] 'delete' UnaryExpression          -> UnaryExpr
+  | [!StartWithLet] 'void' UnaryExpression            -> UnaryExpr
+  | [!StartWithLet] 'typeof' UnaryExpression          -> UnaryExpr
+  | [!StartWithLet] '+' UnaryExpression               -> UnaryExpr
+  | [!StartWithLet] '-' UnaryExpression               -> UnaryExpr
+  | [!StartWithLet] '~' UnaryExpression               -> UnaryExpr
+  | [!StartWithLet] '!' UnaryExpression               -> UnaryExpr
   | [!StartWithLet && Await] AwaitExpression
-  | [!StartWithLet] (?= !StartOfArrowFunction) '<' Type '>' UnaryExpression -> TsCastExpression
+  | [!StartWithLet] (?= !StartOfArrowFunction) '<' Type '>' UnaryExpression -> TsCastExpr
 ;
 
 %left resolveShift;
@@ -674,43 +674,43 @@ UnaryExpression<Yield, Await> -> Expression /* interface */:
 
 ArithmeticExpression<Yield, Await> -> Expression /* interface */:
     UnaryExpression
-  | left=ArithmeticExpression '+' right=ArithmeticExpression        -> AdditiveExpression
-  | left=ArithmeticExpression '-' right=ArithmeticExpression        -> AdditiveExpression
-  | left=ArithmeticExpression '<<' right=ArithmeticExpression       -> ShiftExpression
-  | left=ArithmeticExpression '>>' right=ArithmeticExpression       -> ShiftExpression
-  | left=ArithmeticExpression '>>>' right=ArithmeticExpression      -> ShiftExpression
-  | left=ArithmeticExpression '*' right=ArithmeticExpression        -> MultiplicativeExpression
-  | left=ArithmeticExpression '/' right=ArithmeticExpression        -> MultiplicativeExpression
-  | left=ArithmeticExpression '%' right=ArithmeticExpression        -> MultiplicativeExpression
-  | left=UpdateExpression '**' right=ArithmeticExpression           -> ExponentiationExpression
+  | left=ArithmeticExpression '+' right=ArithmeticExpression        -> AdditiveExpr
+  | left=ArithmeticExpression '-' right=ArithmeticExpression        -> AdditiveExpr
+  | left=ArithmeticExpression '<<' right=ArithmeticExpression       -> ShiftExpr
+  | left=ArithmeticExpression '>>' right=ArithmeticExpression       -> ShiftExpr
+  | left=ArithmeticExpression '>>>' right=ArithmeticExpression      -> ShiftExpr
+  | left=ArithmeticExpression '*' right=ArithmeticExpression        -> MultiplicativeExpr
+  | left=ArithmeticExpression '/' right=ArithmeticExpression        -> MultiplicativeExpr
+  | left=ArithmeticExpression '%' right=ArithmeticExpression        -> MultiplicativeExpr
+  | left=UpdateExpression '**' right=ArithmeticExpression           -> ExponentiationExpr
 ;
 
 BinaryExpression<In, Yield, Await> -> Expression /* interface */:
     ArithmeticExpression
-  | left=BinaryExpression '<' right=BinaryExpression                -> RelationalExpression
-  | left=BinaryExpression '>' right=BinaryExpression                -> RelationalExpression
-  | left=BinaryExpression '<=' right=BinaryExpression               -> RelationalExpression
-  | left=BinaryExpression '>=' right=BinaryExpression               -> RelationalExpression
-  | left=BinaryExpression 'instanceof' right=BinaryExpression       -> RelationalExpression
-  | [In] left=BinaryExpression 'in' right=BinaryExpression          -> RelationalExpression
-  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<~AllowQuest>    -> TsAsExpression
-  | [!NoAs] left=BinaryExpression .noLineBreak 'as' ('const' -> TsConst) -> TsAsConstExpression   # TS 3.4
-  | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpression
-  | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpression
-  | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpression
-  | left=BinaryExpression '!==' right=BinaryExpression              -> EqualityExpression
-  | left=BinaryExpression '&' right=BinaryExpression                -> BitwiseANDExpression
-  | left=BinaryExpression '^' right=BinaryExpression                -> BitwiseXORExpression
-  | left=BinaryExpression '|' right=BinaryExpression                -> BitwiseORExpression
-  | left=BinaryExpression '&&' right=BinaryExpression               -> LogicalANDExpression
-  | left=BinaryExpression '||' right=BinaryExpression               -> LogicalORExpression
-  | left=BinaryExpression '??' right=BinaryExpression               -> CoalesceExpression
+  | left=BinaryExpression '<' right=BinaryExpression                -> RelationalExpr
+  | left=BinaryExpression '>' right=BinaryExpression                -> RelationalExpr
+  | left=BinaryExpression '<=' right=BinaryExpression               -> RelationalExpr
+  | left=BinaryExpression '>=' right=BinaryExpression               -> RelationalExpr
+  | left=BinaryExpression 'instanceof' right=BinaryExpression       -> InstanceOfExpr
+  | [In] left=BinaryExpression 'in' right=BinaryExpression          -> InExpr
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<~AllowQuest>    -> TsAsExpr
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' ('const' -> TsConst) -> TsAsConstExpr   # TS 3.4
+  | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpr
+  | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpr
+  | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpr
+  | left=BinaryExpression '!==' right=BinaryExpression              -> EqualityExpr
+  | left=BinaryExpression '&' right=BinaryExpression                -> BitwiseAND
+  | left=BinaryExpression '^' right=BinaryExpression                -> BitwiseXOR
+  | left=BinaryExpression '|' right=BinaryExpression                -> BitwiseOR
+  | left=BinaryExpression '&&' right=BinaryExpression               -> LogicalAND
+  | left=BinaryExpression '||' right=BinaryExpression               -> LogicalOR
+  | left=BinaryExpression '??' right=BinaryExpression               -> CoalesceExpr
 ;
 
 ConditionalExpression<In, Yield, Await> -> Expression /* interface */:
     BinaryExpression
   | cond=BinaryExpression '?' then=AssignmentExpression<+In> ':' else=AssignmentExpression
-        -> ConditionalExpression
+        -> ConditionalExpr
 ;
 
 AssignmentExpression<In, Yield, Await> -> Expression /* interface */:
@@ -718,14 +718,14 @@ AssignmentExpression<In, Yield, Await> -> Expression /* interface */:
   | [Yield && !StartWithLet] YieldExpression
   | [!StartWithLet] ArrowFunction
   | [!StartWithLet] AsyncArrowFunction
-  | left=LeftHandSideExpression '=' right=AssignmentExpression                -> AssignmentExpression
-  | left=LeftHandSideExpression AssignmentOperator right=AssignmentExpression -> AssignmentExpression
+  | left=LeftHandSideExpression '=' right=AssignmentExpression                -> AssignmentExpr
+  | left=LeftHandSideExpression AssignmentOperator right=AssignmentExpression -> AssignmentExpr
 ;
 
 AssignmentOperator -> AssignmentOperator :
     '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' ;
 
-CommaExpression<In, Yield, Await> -> CommaExpression :
+CommaExpression<In, Yield, Await> -> CommaExpr :
     left=Expression ',' right=AssignmentExpression ;
 
 %interface Expression;
@@ -798,7 +798,7 @@ StatementListItem<Yield, Await> -> StatementListItem /* interface */:
   | error ';'                                         -> SyntaxProblem
 ;
 
-LexicalDeclaration<In, Yield, Await> -> LexicalDeclaration :
+LexicalDeclaration<In, Yield, Await> -> LexicalDecl :
     LetOrConst BindingList ';' ;
 
 LetOrConst -> LetOrConst :
@@ -819,7 +819,7 @@ LexicalBinding<In, Yield, Await> -> LexicalBinding :
   | BindingPattern ExclToken? TypeAnnotationopt Initializer
 ;
 
-VariableStatement<Yield, Await> -> VariableStatement :
+VariableStatement<Yield, Await> -> VariableStmt :
     'var' VariableDeclarationList<+In> ';'
 ;
 
@@ -828,7 +828,7 @@ VariableDeclarationList<In, Yield, Await> :
   | VariableDeclarationList ',' VariableDeclaration
 ;
 
-VariableDeclaration<In, Yield, Await> -> VariableDeclaration :
+VariableDeclaration<In, Yield, Await> -> VariableDecl :
     BindingIdentifier ExclToken? TypeAnnotationopt Initializeropt
   | BindingPattern ExclToken? TypeAnnotationopt Initializer
 ;
@@ -882,46 +882,48 @@ BindingRestElement -> BindingRestElement :
     '...' BindingIdentifier
 ;
 
-EmptyStatement -> EmptyStatement :
+EmptyStatement -> EmptyStmt :
     ';' .emptyStatement ;
 
-ExpressionStatement<Yield, Await> -> ExpressionStatement :
+ExpressionStatement<Yield, Await> -> ExpressionStmt :
     Expression<+In, +NoFuncClass, +NoAs, +NoObjLiteral, +NoLetSq> ';' ;
 
 %right 'else';
 
-IfStatement<Yield, Await> -> IfStatement :
+IfStatement<Yield, Await> -> IfStmt :
     'if' '(' Expression<+In> ')' then=Statement 'else' else=Statement
   | 'if' '(' Expression<+In> ')' then=Statement %prec 'else'
 ;
 
-IterationStatement<Yield, Await> -> Statement /* interface */:
-    'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       -> DoWhileStatement
-  | 'while' '(' Expression<+In> ')' Statement                         -> WhileStatement
+%interface IterationStatement;
+
+IterationStatement<Yield, Await> -> IterationStmt /* interface */:
+    'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       -> DoWhileStmt
+  | 'while' '(' Expression<+In> ')' Statement                         -> WhileStmt
   | 'for' '(' var=Expressionopt<~In,+NoLet> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStmt
   | 'for' '(' var=Expression<~In,+StartWithLet, +NoAs> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatement
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStmt
   | 'for' '(' ('var' -> Var) VariableDeclarationList<~In> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatementWithVar
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStmtWithVar
   | 'for' '(' LetOrConst BindingList<~In> ';' .forSC ForCondition
-          ';' .forSC ForFinalExpression ')' Statement                 -> ForStatementWithVar
+          ';' .forSC ForFinalExpression ')' Statement                 -> ForStmtWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet>
-          'in' object=Expression<+In> ')' Statement                   -> ForInStatement
+          'in' object=Expression<+In> ')' Statement                   -> ForInStmt
   | 'for' '(' var=LeftHandSideExpression<+StartWithLet>
-          'in' object=Expression<+In> ')' Statement                   -> ForInStatement
+          'in' object=Expression<+In> ')' Statement                   -> ForInStmt
   | 'for' '(' ('var' -> Var) ForBinding
-          'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
+          'in' object=Expression<+In> ')' Statement                   -> ForInStmtWithVar
   | 'for' '(' ForDeclaration
-          'in' object=Expression<+In> ')' Statement                   -> ForInStatementWithVar
+          'in' object=Expression<+In> ')' Statement                   -> ForInStmtWithVar
   | 'for' '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
-          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
-  | 'for' '(' var=((('async' -> IdentifierReference) -> IdentExpr) -> Expression) (?= !StartOfArrowFunction)
-          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatement
+          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
+  | 'for' '(' var=((('async' -> RefIdent) -> IdentExpr) -> Expression) (?= !StartOfArrowFunction)
+          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
   | 'for' '(' ('var' -> Var) ForBinding
-          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
+          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmtWithVar
   | 'for' '(' ForDeclaration
-          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStatementWithVar
+          'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmtWithVar
 ;
 
 ForDeclaration<Yield, Await> :
@@ -936,29 +938,29 @@ ForBinding<Yield, Await> -> ForBinding :
 ForCondition<Yield, Await> -> ForCondition :
     Expressionopt<+In> ;
 
-ForFinalExpression<Yield, Await> -> ForFinalExpression :
+ForFinalExpression<Yield, Await> -> ForFinalExpr :
     Expressionopt<+In> ;
 
-ContinueStatement -> ContinueStatement :
+ContinueStatement -> ContinueStmt :
     'continue' ';'
   | 'continue' .noLineBreak LabelIdentifier ';'
 ;
 
-BreakStatement -> BreakStatement :
+BreakStatement -> BreakStmt :
     'break' ';'
   | 'break' .noLineBreak LabelIdentifier ';'
 ;
 
-ReturnStatement<Yield, Await> -> ReturnStatement :
+ReturnStatement<Yield, Await> -> ReturnStmt :
     'return' ';'
   | 'return' .noLineBreak Expression<+In> ';'
 ;
 
-WithStatement<Yield, Await> -> WithStatement :
+WithStatement<Yield, Await> -> WithStmt :
     'with' '(' Expression<+In> ')' Statement
 ;
 
-SwitchStatement<Yield, Await> -> SwitchStatement :
+SwitchStatement<Yield, Await> -> SwitchStmt :
     'switch' '(' Expression<+In> ')' CaseBlock
 ;
 
@@ -976,7 +978,7 @@ CaseClause<Yield, Await> -> CaseClause /* interface */:
   | 'default' ':' StatementList?                      -> Default
 ;
 
-LabelledStatement<Yield, Await> -> LabelledStatement :
+LabelledStatement<Yield, Await> -> LabelledStmt :
     LabelIdentifier ':' LabelledItem ;
 
 LabelledItem<Yield, Await> :
@@ -984,11 +986,11 @@ LabelledItem<Yield, Await> :
   | FunctionDeclaration
 ;
 
-ThrowStatement<Yield, Await> -> ThrowStatement :
+ThrowStatement<Yield, Await> -> ThrowStmt :
     'throw' .noLineBreak Expression<+In> ';'
 ;
 
-TryStatement<Yield, Await> -> TryStatement :
+TryStatement<Yield, Await> -> TryStmt :
     'try' Block Catch
   | 'try' Block Catch? Finally
 ;
@@ -1006,7 +1008,7 @@ CatchParameter<Yield, Await> :
   | BindingPattern
 ;
 
-DebuggerStatement -> DebuggerStatement :
+DebuggerStatement -> DebuggerStmt :
     'debugger' ';'
 ;
 
@@ -1017,7 +1019,7 @@ DebuggerStatement -> DebuggerStatement :
 FunctionDeclaration -> Function :
     'function' BindingIdentifier? FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> ;
 
-FunctionExpression -> FunctionExpression :
+FunctionExpression -> FunctionExpr :
     'function' BindingIdentifier? FormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> ;
 
 UniqueFormalParameters<Yield, Await> :
@@ -1028,7 +1030,7 @@ FunctionBody<Yield, Await> -> Body :
   | ';'
 ;
 
-ArrowFunction<In> -> ArrowFunction :
+ArrowFunction<In> -> ArrowFunc :
     BindingIdentifier .noLineBreak '=>' ConciseBody
   | (?= StartOfArrowFunction) FormalParameters<~Yield, ~Await> .noLineBreak '=>' ConciseBody
 ;
@@ -1048,7 +1050,7 @@ StartOfArrowFunction:
   | TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? '=>'
 ;
 
-AsyncArrowFunction<In> -> AsyncArrowFunction :
+AsyncArrowFunction<In> -> AsyncArrowFunc :
     'async' .afterAsync .noLineBreak (?= StartOfArrowFunction) ArrowParameters .noLineBreak '=>' AsyncConciseBody ;
 
 # AsyncArrowHead :
@@ -1076,7 +1078,7 @@ GeneratorMethod<Yield, Await> -> GeneratorMethod :
 GeneratorDeclaration -> Generator :
     'function' '*' BindingIdentifier? FormalParameters<+Yield, ~Await> GeneratorBody ;
 
-GeneratorExpression -> GeneratorExpression :
+GeneratorExpression -> GeneratorExpr :
     'function' '*' BindingIdentifier/* no yield*/? FormalParameters<+Yield, ~Await> GeneratorBody ;
 
 GeneratorBody :
@@ -1091,16 +1093,16 @@ YieldExpression<In, Await> -> Yield :
 AsyncMethod<Yield, Await> -> AsyncMethod :
     'async' .afterAsync .noLineBreak PropertyName UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
-AsyncFunctionDeclaration<Await> -> AsyncFunction :
+AsyncFunctionDeclaration<Await> -> AsyncFunc :
     'async' .afterAsync .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield> AsyncFunctionBody ;
 
-AsyncFunctionExpression -> AsyncFunctionExpression :
+AsyncFunctionExpression -> AsyncFuncExpr :
     'async' .afterAsync .noLineBreak 'function' BindingIdentifier/* no await*/? FormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
 AsyncFunctionBody :
     FunctionBody<~Yield, +Await> ;
 
-AwaitExpression<Yield> -> AwaitExpression :
+AwaitExpression<Yield> -> AwaitExpr :
     'await' UnaryExpression<+Await> ;
 
 ClassDeclaration<Yield, Await> -> Declaration /* interface */:
@@ -1157,7 +1159,7 @@ Modifiers<WithDeclare>:
 ClassElement<Yield, Await> -> ClassElement /* interface */:
     Modifiers<+WithDeclare>? MethodDefinition   -> MemberMethod
   | Modifiers<+WithDeclare>? PropertyName ('?'|'!')? TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
-  | IndexSignature<+WithDeclare> ';'            -> TsIndexMemberDeclaration
+  | IndexSignature<+WithDeclare> ';'            -> TsIndexMemberDecl
   | ';'                                         -> EmptyDecl
 ;
 
@@ -1183,7 +1185,7 @@ ModuleItem -> ModuleItem /* interface */:
   | StatementListItem<~Yield, ~Await>
 ;
 
-ImportDeclaration -> ImportDeclaration :
+ImportDeclaration -> ImportDecl :
     'import' (?= !StartOfTypeImport) ImportClause FromClause ';'
   | 'import' (?= StartOfTypeImport) ('type' -> TsTypeOnly)  ImportClause FromClause ';'
   | 'import' ModuleSpecifier ';'
@@ -1192,7 +1194,7 @@ ImportDeclaration -> ImportDeclaration :
 StartOfTypeImport:
       'type' ('*' | '{' | IdentifierName<+WithoutFrom>) ;
 
-ImportRequireDeclaration -> TsImportRequireDeclaration:
+ImportRequireDeclaration -> TsImportRequireDecl:
     ('export' -> TsExport)? 'import' (?= !StartOfTypeImport) BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
 
 ImportClause :
@@ -1230,16 +1232,16 @@ ImportedBinding :
     BindingIdentifier ;
 
 ExportDeclaration -> ModuleItem /* interface */:
-    'export' ('type' -> TsTypeOnly)? '*' ('as' ImportedBinding)? FromClause ';' -> ExportDeclaration
-  | 'export' ('type' -> TsTypeOnly)? ExportClause FromClause ';'                -> ExportDeclaration
-  | 'export' ('type' -> TsTypeOnly)? ExportClause ';'                           -> ExportDeclaration
-  | 'export' VariableStatement<~Yield, ~Await>        -> ExportDeclaration
-  | Modifiers? 'export' Declaration<~Yield, ~Await>              -> ExportDeclaration
+    'export' ('type' -> TsTypeOnly)? '*' ('as' ImportedBinding)? FromClause ';' -> ExportDecl
+  | 'export' ('type' -> TsTypeOnly)? ExportClause FromClause ';'                -> ExportDecl
+  | 'export' ('type' -> TsTypeOnly)? ExportClause ';'                           -> ExportDecl
+  | 'export' VariableStatement<~Yield, ~Await>        -> ExportDecl
+  | Modifiers? 'export' Declaration<~Yield, ~Await>              -> ExportDecl
   | 'export' 'default' HoistableDeclaration<~Await>                                -> ExportDefault
   | Modifiers? 'export' 'default' ClassDeclaration<~Yield, ~Await>                            -> ExportDefault
   | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
   | 'export' '=' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';'     -> TsExportAssignment
-  | 'export' 'as' 'namespace' BindingIdentifier ';'   -> TsNamespaceExportDeclaration
+  | 'export' 'as' 'namespace' BindingIdentifier ';'   -> TsNamespaceExportDecl
 ;
 
 ExportClause -> ExportClause :
@@ -1264,7 +1266,7 @@ Decorator<Yield, Await> -> Decorator /* interface */:
 
 DecoratorMemberExpression<Yield, Await>:
     IdentifierReference
-  | DecoratorMemberExpression '.' (IdentifierName -> IdentifierReference)
+  | DecoratorMemberExpression '.' (IdentifierName -> RefIdent)
 ;
 
 DecoratorCallExpression<Yield, Await>:
@@ -1313,15 +1315,15 @@ JSXAttributeName -> JSXAttributeName :
 
 JSXAttributeValue<Yield, Await> -> JSXAttributeValue /* interface */:
     jsxStringLiteral                                  -> JSXLiteral
-  | '{' .recoveryScope AssignmentExpression<+In> '}'                 -> JSXExpression
+  | '{' .recoveryScope AssignmentExpression<+In> '}'                 -> JSXExpr
   | JSXElement
 ;
 
 JSXChild<Yield, Await> -> JSXChild /* interface */:
     jsxText                                           -> JSXText
   | JSXElement
-  | '{' .recoveryScope AssignmentExpressionopt<+In> '}'              -> JSXExpression
-  | '{' .recoveryScope '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpression
+  | '{' .recoveryScope AssignmentExpressionopt<+In> '}'              -> JSXExpr
+  | '{' .recoveryScope '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpr
 ;
 
 # Typescript
@@ -1345,12 +1347,12 @@ Type<AllowQuest> -> TsType /* interface */:
 
 TypePredicate<AllowQuest> -> TypePredicate:
     paramref=IdentifierNameRef<+WithoutAsserts> 'is' Type -> TypePredicate
-  | paramref=('asserts' -> IdentifierReference) (?= StartOfIs) 'is' Type<~AllowQuest> -> TypePredicate
+  | paramref=('asserts' -> RefIdent) (?= StartOfIs) 'is' Type<~AllowQuest> -> TypePredicate
 ;
 
 # 3.7
 AssertsType<AllowQuest> -> AssertsType:
-    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> IdentifierReference | IdentifierName<+WithoutKeywords> -> IdentifierReference) ('is' Type)? ;
+    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> RefIdent | IdentifierName<+WithoutKeywords> -> RefIdent) ('is' Type)? ;
 
 StartOfIs:
       'is' ;
@@ -1382,7 +1384,7 @@ TypeOperator<AllowQuest> -> TsType /* interface */:
   | 'keyof' TypeOperator      -> KeyOfType
   | 'unique' TypeOperator     -> UniqueType
   | 'readonly' TypeOperator   -> ReadonlyType
-  | 'infer' (IdentifierName -> IdentifierReference) -> TypeVar
+  | 'infer' (IdentifierName -> RefIdent) -> TypeVar
 ;
 
 PrimaryType<AllowQuest> -> TsType /* interface */:
@@ -1520,7 +1522,7 @@ ImportType -> ImportType :
 
 TypeQueryExpression :
     IdentifierReference<~Yield, ~Await>
-  | TypeQueryExpression '.' (IdentifierName -> IdentifierReference)
+  | TypeQueryExpression '.' (IdentifierName -> RefIdent)
 ;
 
 PropertySignature -> PropertySignature :
@@ -1567,14 +1569,14 @@ ConstructSignature -> ConstructSignature :
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.
 IndexSignature<WithDeclare> -> IndexSignature :
-    Modifiers? '[' (IdentifierName -> BindingIdentifier) ':' ('string' -> PredefinedType) ']' TypeAnnotation
-  | Modifiers? '[' (IdentifierName -> BindingIdentifier) ':' ('number' -> PredefinedType) ']' TypeAnnotation
+    Modifiers? '[' (IdentifierName -> NameIdent) ':' ('string' -> PredefinedType) ']' TypeAnnotation
+  | Modifiers? '[' (IdentifierName -> NameIdent) ':' ('number' -> PredefinedType) ']' TypeAnnotation
 ;
 
 MethodSignature -> MethodSignature :
     Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await> ;
 
-TypeAliasDeclaration -> TypeAliasDeclaration :
+TypeAliasDeclaration -> TypeAliasDecl :
     'type' BindingIdentifier TypeParameters? '=' Type ';' ;
 
 # A.5 Interfaces
@@ -1611,7 +1613,7 @@ IdentifierPath:
 NamespaceBody -> TsNamespaceBody:
     '{' .recoveryScope ModuleItemList? '}' ;
 
-ImportAliasDeclaration -> TsImportAliasDeclaration:
+ImportAliasDeclaration -> TsImportAliasDecl:
     'import' (?= !StartOfTypeImport) BindingIdentifier '=' EntityName ';' ;
 
 EntityName:
@@ -1623,7 +1625,7 @@ EntityName:
 
 AmbientDeclaration -> TsAmbientElement /* interface */:
     'declare' AmbientVariableDeclaration        -> TsAmbientVar
-  | 'declare' AmbientFunctionDeclaration        -> TsAmbientFunction
+  | 'declare' AmbientFunctionDeclaration        -> TsAmbientFunc
   | 'declare' AmbientClassDeclaration           -> TsAmbientClass
   | 'declare' AmbientInterfaceDeclaration       -> TsAmbientInterface
   | 'declare' AmbientEnumDeclaration            -> TsAmbientEnum
@@ -1673,7 +1675,7 @@ AmbientNamespaceBody:
 
 AmbientNamespaceElement -> TsAmbientElement /* interface */:
     'export'? AmbientVariableDeclaration    -> TsAmbientVar
-  | 'export'? AmbientFunctionDeclaration    -> TsAmbientFunction
+  | 'export'? AmbientFunctionDeclaration    -> TsAmbientFunc
   | 'export'? AmbientClassDeclaration       -> TsAmbientClass
   | 'export'? AmbientInterfaceDeclaration   -> TsAmbientInterface
   | 'export'? AmbientEnumDeclaration        -> TsAmbientEnum
@@ -1681,7 +1683,7 @@ AmbientNamespaceElement -> TsAmbientElement /* interface */:
   | 'export'? AmbientModuleDeclaration      -> TsAmbientModule
   | 'export'? ImportAliasDeclaration        -> TsAmbientImportAlias
   | 'export'? TypeAliasDeclaration          -> TsAmbientTypeAlias
-  | 'export' ExportClause ';'               -> TsAmbientExportDeclaration
+  | 'export' ExportClause ';'               -> TsAmbientExportDecl
 ;
 
 %%
