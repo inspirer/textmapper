@@ -91,3 +91,4 @@ ${query nodeTypeRef() = self->go.package()->go.element('NodeType')}
 ${query nodeTypeValueRef() = self->go.package()->go.element(self->asRangeTypeName())}
 ${query interfaceEnumValueRef() = self->go.package()->go.element(self->asRangeTypeName())}
 ${query nodeTypeValueString() = self->asRangeTypeName()}
+${query listenerTypeRef() = self->go.package()->go.element('Listener')}

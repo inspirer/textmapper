@@ -50,7 +50,7 @@ ${if self->hasRecovering()-}
 	eh ErrorHandler
 ${end-}
 ${if self->eventBased()-}
-	listener Listener
+	listener ${self->go_listener.listenerTypeRef()}
 ${end-}
 
 	next      symbol
@@ -75,7 +75,7 @@ ${if self->hasAssocValues()-}
 ${end-}
 }
 
-func (p *Parser) Init(${if self->hasRecovering()}eh ErrorHandler${end}${if self->eventBased()}${if self->hasRecovering()}, ${end}l Listener${end}) {
+func (p *Parser) Init(${if self->hasRecovering()}eh ErrorHandler${end}${if self->eventBased()}${if self->hasRecovering()}, ${end}l ${self->go_listener.listenerTypeRef()}${end}) {
 ${if self->hasRecovering()-}
 	p.eh = eh
 ${end-}
@@ -820,7 +820,7 @@ ${cached query hasRecovering() = syntax.error && syntax.sets.exists(it|it.name.c
 ${template parserAction($)-}
 ${if customRanges()-}
 ${foreach range in customRanges()-}
-		p.listener(${range.rangeType()}, ${range.first().offset}, ${range.last().endoffset})
+		p.listener(${range.rangeType()->go_listener.nodeTypeValueRef()}, ${range.first().offset}, ${range.last().endoffset})
 ${end-}
 ${end-}
 ${if codeTemplate()-}
