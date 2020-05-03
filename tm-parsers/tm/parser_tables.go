@@ -15,10 +15,7 @@ var recoveryScopeStates = map[int]bool{
 	312: true,
 }
 
-// Symbol represents a set of all terminal and non-terminal symbols of the tm language.
-type Symbol int
-
-var symbolStr = [...]string{
+var tmNonterminals = [...]string{
 	"identifier",
 	"identifier_Kw",
 	"integer_literal",
@@ -111,15 +108,14 @@ var symbolStr = [...]string{
 	"rawTypeopt",
 }
 
-func (n Symbol) String() string {
-	if n < Symbol(NumTokens) {
-		return Token(n).String()
+func symbolName(sym int32) string {
+	if sym < int32(NumTokens) {
+		return Token(sym).String()
 	}
-	i := int(n) - int(NumTokens)
-	if i < len(symbolStr) {
-		return symbolStr[i]
+	if i := int(sym) - int(NumTokens); i < len(tmNonterminals) {
+		return tmNonterminals[i]
 	}
-	return fmt.Sprintf("nonterminal(%d)", n)
+	return fmt.Sprintf("nonterminal(%d)", sym)
 }
 
 var tmAction = []int32{

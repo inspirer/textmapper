@@ -104,7 +104,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				return err
 			}
 			if debugSyntax {
-				fmt.Printf("reduced to: %v\n", Symbol(entry.sym.symbol))
+				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
@@ -121,7 +121,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				state: state,
 			})
 			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
+				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
 			if len(ignoredTokens) > 0 {
 				for _, tok := range ignoredTokens {
@@ -204,7 +204,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
-			fmt.Printf("skipped while recovering: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
+			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 		}
 		e = p.next.endoffset
 		p.fetchNext(lexer, stack, nil)

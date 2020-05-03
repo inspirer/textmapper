@@ -467,7 +467,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
-			fmt.Printf("skipped while recovering: %v (%s)\n", Symbol(p.next.symbol), lexer.Text())
+			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 		}
 		switch Token(p.next.symbol) {
 		case NOSUBSTITUTIONTEMPLATE:

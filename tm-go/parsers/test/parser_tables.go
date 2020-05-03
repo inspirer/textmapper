@@ -6,10 +6,7 @@ import (
 	"fmt"
 )
 
-// Symbol represents a set of all terminal and non-terminal symbols of the test language.
-type Symbol int
-
-var symbolStr = [...]string{
+var tmNonterminals = [...]string{
 	"Declaration_list",
 	"Test",
 	"Declaration",
@@ -21,15 +18,14 @@ var symbolStr = [...]string{
 	"Decl2",
 }
 
-func (n Symbol) String() string {
-	if n < Symbol(NumTokens) {
-		return Token(n).String()
+func symbolName(sym int32) string {
+	if sym < int32(NumTokens) {
+		return Token(sym).String()
 	}
-	i := int(n) - int(NumTokens)
-	if i < len(symbolStr) {
-		return symbolStr[i]
+	if i := int(sym) - int(NumTokens); i < len(tmNonterminals) {
+		return tmNonterminals[i]
 	}
-	return fmt.Sprintf("nonterminal(%d)", n)
+	return fmt.Sprintf("nonterminal(%d)", sym)
 }
 
 var tmAction = []int32{
