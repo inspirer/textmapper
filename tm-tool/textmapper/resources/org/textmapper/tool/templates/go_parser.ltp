@@ -794,7 +794,7 @@ ${util.formatEx(parser.left, '\t', 79)-}
 ${if self->eventBased()}
 var tmRuleType = [...]${self->go_listener.nodeTypeRef()}{
 ${foreach rule in syntax.rules-}
-	${v = rule.rangeType(), v == '' || v == context.opts.fileNode ? 0 : v->go_listener.nodeTypeValueRef()}, // ${rule}
+	${v = rule.rangeType(), v == '' || self->isFileNode(v) ? 0 : v->go_listener.nodeTypeValueRef()}, // ${rule}
 ${end-}
 }
 ${end-}
@@ -808,6 +808,8 @@ ${end-}
 }
 ${end-}
 ${end}
+
+${cached query isFileNode(v) = v == context.opts.fileNode }
 
 ${query needActionsTable() = parser.lalr.size() > 0}
 
