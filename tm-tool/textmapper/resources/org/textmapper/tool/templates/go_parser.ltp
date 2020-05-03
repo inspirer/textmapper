@@ -726,8 +726,7 @@ ${call caseLookaheadRules(false)-}
 	}
 ${end-}
 ${if self->eventBased()-}
-	nt := rule${self->go_listener.nodeType()}[rule]
-	if nt != 0 {
+	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 ${end-}
@@ -792,6 +791,13 @@ ${util.formatEx(parser.ruleLength, '\t', 79)-}
 var tmRuleSymbol = []int32{
 ${util.formatEx(parser.left, '\t', 79)-}
 }
+${if self->eventBased()}
+var tmRuleType = [...]${self->go_listener.nodeTypeRef()}{
+${foreach rule in syntax.rules-}
+	${v = rule.rangeType(), v == '' || v == context.opts.fileNode ? 0 : v->go_listener.nodeTypeValueRef()}, // ${rule}
+${end-}
+}
+${end-}
 ${foreach set in syntax.sets-}
 
 // ${set.set} = ${set.elements.collect(i | syntax.symbols[i]->go_token.tokenName())->util.join(', ')}

@@ -15,7 +15,6 @@ ${if self->localNodeType()-}
 ${call nodeTypeImpl-}
 ${end-}
 ${call categories-}
-${call rules-}
 ${end}
 
 
@@ -77,16 +76,6 @@ ${end-}
 
 ${end-}
 ${end}
-
-${template rules-}
-var rule${self->nodeType()} = [...]${self->nodeTypeRef()}{
-${foreach rule in syntax.rules-}
-	${v = rule.rangeType(), v == '' || v == context.opts.fileNode ? 0 : v->nodeTypeValueRef()}, // ${rule}
-${end-}
-}
-
-${end}
-
 
 ${cached query reserve(scope) =
 	util.uniqueId(util.toCamelCase(self, true)->go.escapeGoReserved(), scope)}

@@ -69,6 +69,41 @@ var tmRuleSymbol = []int32{
 	22, 23, 24, 24, 25, 26, 27, 27, 28, 29, 29, 30, 30, 25,
 }
 
+var tmRuleType = [...]NodeType{
+	JSONText,    // JSONText : JSONValue_A
+	JSONValue,   // JSONValue : 'null'
+	JSONValue,   // JSONValue : 'true'
+	JSONValue,   // JSONValue : 'false'
+	JSONValue,   // JSONValue : 'B'
+	JSONValue,   // JSONValue : JSONObject
+	JSONValue,   // JSONValue : EmptyObject
+	JSONValue,   // JSONValue : JSONArray
+	JSONValue,   // JSONValue : JSONString
+	JSONValue,   // JSONValue : JSONNumber
+	JSONValue,   // JSONValue_A : 'null'
+	JSONValue,   // JSONValue_A : 'true'
+	JSONValue,   // JSONValue_A : 'false'
+	JSONValue,   // JSONValue_A : 'A'
+	JSONValue,   // JSONValue_A : JSONObject
+	JSONValue,   // JSONValue_A : EmptyObject
+	JSONValue,   // JSONValue_A : JSONArray
+	JSONValue,   // JSONValue_A : JSONString
+	JSONValue,   // JSONValue_A : JSONNumber
+	EmptyObject, // EmptyObject : lookahead_EmptyObject '{' '}'
+	0,           // lookahead_EmptyObject :
+	JSONObject,  // JSONObject : lookahead_notEmptyObject '{' JSONMemberList '}'
+	JSONObject,  // JSONObject : lookahead_notEmptyObject '{' '}'
+	0,           // lookahead_notEmptyObject :
+	JSONMember,  // JSONMember : JSONString ':' JSONValue
+	0,           // JSONMemberList : JSONMember
+	0,           // JSONMemberList : JSONMemberList ',' JSONMember
+	JSONArray,   // JSONArray : '[' JSONElementListopt ']'
+	0,           // JSONElementList : JSONValue_A
+	0,           // JSONElementList : JSONElementList ',' JSONValue_A
+	0,           // JSONElementListopt : JSONElementList
+	0,           // JSONElementListopt :
+}
+
 // set(first JSONValue<+A>) = LBRACE
 var Literals = []int32{
 	2,

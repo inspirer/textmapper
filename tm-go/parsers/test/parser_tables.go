@@ -70,5 +70,50 @@ var tmRuleSymbol = []int32{
 	29, 29, 30, 31,
 }
 
+var tmRuleType = [...]NodeType{
+	0,          // Declaration_list : Declaration_list Declaration
+	0,          // Declaration_list : Declaration
+	Test,       // Test : Declaration_list
+	0,          // Declaration : Decl1
+	0,          // Declaration : Decl2
+	Block,      // Declaration : '{' '-' '-' Declaration_list '}'
+	Block,      // Declaration : '{' '-' '-' '}'
+	Block,      // Declaration : '{' '-' Declaration_list '}'
+	Block,      // Declaration : '{' '-' '}'
+	Block,      // Declaration : '{' Declaration_list '}'
+	Block,      // Declaration : '{' '}'
+	Int,        // Declaration : IntegerConstant '[' ']'
+	Int,        // Declaration : IntegerConstant
+	TestClause, // Declaration : 'test' '{' setof_not_((eoi | '.') | '}')_optlist '}'
+	0,          // Declaration : 'test' '(' empty1 ')'
+	0,          // setof_not_((eoi | '.') | '}') : invalid_token
+	0,          // setof_not_((eoi | '.') | '}') : WhiteSpace
+	0,          // setof_not_((eoi | '.') | '}') : SingleLineComment
+	0,          // setof_not_((eoi | '.') | '}') : Identifier
+	0,          // setof_not_((eoi | '.') | '}') : IntegerConstant
+	0,          // setof_not_((eoi | '.') | '}') : 'test'
+	0,          // setof_not_((eoi | '.') | '}') : 'decl1'
+	0,          // setof_not_((eoi | '.') | '}') : 'decl2'
+	0,          // setof_not_((eoi | '.') | '}') : '{'
+	0,          // setof_not_((eoi | '.') | '}') : '('
+	0,          // setof_not_((eoi | '.') | '}') : ')'
+	0,          // setof_not_((eoi | '.') | '}') : '['
+	0,          // setof_not_((eoi | '.') | '}') : ']'
+	0,          // setof_not_((eoi | '.') | '}') : ','
+	0,          // setof_not_((eoi | '.') | '}') : ':'
+	0,          // setof_not_((eoi | '.') | '}') : '-'
+	0,          // setof_not_((eoi | '.') | '}') : '->'
+	0,          // setof_not_((eoi | '.') | '}') : backtrackingToken
+	0,          // setof_not_((eoi | '.') | '}') : error
+	0,          // setof_not_((eoi | '.') | '}') : MultiLineComment
+	0,          // setof_not_((eoi | '.') | '}')_optlist : setof_not_((eoi | '.') | '}')_optlist setof_not_((eoi | '.') | '}')
+	0,          // setof_not_((eoi | '.') | '}')_optlist :
+	0,          // empty1 :
+	0,          // QualifiedName : Identifier
+	0,          // QualifiedName : QualifiedName '.' Identifier
+	Decl1,      // Decl1 : 'decl1' '(' QualifiedName ')'
+	Decl2,      // Decl2 : 'decl2'
+}
+
 // set(follow error) =
 var afterErr = []int32{}

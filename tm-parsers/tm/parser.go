@@ -341,8 +341,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 	case 246: // lookahead_predicate : '!' symref
 		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
-	nt := ruleNodeType[rule]
-	if nt != 0 {
+	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return

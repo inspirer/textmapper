@@ -39,3 +39,7 @@ var tmRuleLen = []int8{
 var tmRuleSymbol = []int32{
 	3,
 }
+
+var tmRuleType = [...]NodeType{
+	0, // input : 'simple'
+}

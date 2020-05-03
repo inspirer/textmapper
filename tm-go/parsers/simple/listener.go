@@ -25,7 +25,3 @@ func (t NodeType) String() string {
 	}
 	return fmt.Sprintf("node(%d)", t)
 }
-
-var ruleNodeType = [...]NodeType{
-	0, // input : 'simple'
-}

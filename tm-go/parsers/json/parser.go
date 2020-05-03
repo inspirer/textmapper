@@ -277,8 +277,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 		}
 		return
 	}
-	nt := ruleNodeType[rule]
-	if nt != 0 {
+	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return
