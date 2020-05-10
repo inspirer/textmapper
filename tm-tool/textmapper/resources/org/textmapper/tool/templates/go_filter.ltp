@@ -1,5 +1,5 @@
 ${template main-}
-${if self->go_parser.eventBased() && opts.eventFields-}
+${if self->go_parser.eventBased() && (opts.eventFields || opts.genSelector)-}
 ${file self->filterFilename()-}
 ${call unit-}
 ${end-}

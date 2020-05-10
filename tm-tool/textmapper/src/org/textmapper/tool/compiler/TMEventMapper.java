@@ -34,6 +34,8 @@ public class TMEventMapper {
 	private final Grammar grammar;
 	private final Map<String, Object> opts;
 	private final ProcessingStatus status;
+	private final boolean eventFields;
+	private final boolean selectors;
 
 	private final Set<Symbol> reportedTokens = new HashSet<>();
 	private final Map<Nonterminal, List<RhsSequence>> index = new HashMap<>();
@@ -51,6 +53,8 @@ public class TMEventMapper {
 		this.grammar = grammar;
 		this.opts = opts;
 		this.status = status;
+		this.eventFields = Boolean.TRUE.equals(opts.get("eventFields"));
+		this.selectors = Boolean.TRUE.equals(opts.get("genSelector"));
 
 		Object rt = opts.get("reportTokens");
 		if (rt instanceof Collection && ((Collection<?>) rt).stream()
@@ -60,10 +64,9 @@ public class TMEventMapper {
 	}
 
 	public void deriveTypes() {
-		boolean withFields = Boolean.TRUE.equals(opts.get("eventFields"));
 		computeTypes();
-		if (withFields) {
-			computeFields();
+		if (this.eventFields || this.selectors) {
+			computeRelationships();
 		}
 	}
 
@@ -123,7 +126,7 @@ public class TMEventMapper {
 		return false;
 	}
 
-	private void computeFields() {
+	private void computeRelationships() {
 		// Detect lists.
 		for (Rule rule : grammar.getRules()) {
 			if (!isListRule(rule)) continue;
@@ -170,16 +173,18 @@ public class TMEventMapper {
 		collectCategoryTypes();
 
 		// Export fields.
-		for (Entry<String, List<RhsSequence>> e : typeIndex.entrySet()) {
-			String type = e.getKey();
-			List<TMPhrase> list = new ArrayList<>();
-			for (RhsSequence p : e.getValue()) {
-				list.add(computePhrase(p, true));
+		if (this.eventFields) {
+			for (Entry<String, List<RhsSequence>> e : typeIndex.entrySet()) {
+				String type = e.getKey();
+				List<TMPhrase> list = new ArrayList<>();
+				for (RhsSequence p : e.getValue()) {
+					list.add(computePhrase(p, true));
+				}
+				TMPhrase phrase = TMPhrase.merge(list, e.getValue().get(0), status);
+				phrase = phrase.resolve(categories);
+				TMPhrase.verify(phrase, status);
+				TMDataUtil.putRangeFields(grammar, type, extractFields(phrase));
 			}
-			TMPhrase phrase = TMPhrase.merge(list, e.getValue().get(0), status);
-			phrase = phrase.resolve(categories);
-			TMPhrase.verify(phrase, status);
-			TMDataUtil.putRangeFields(grammar, type, extractFields(phrase));
 		}
 
 		// Export categories.
