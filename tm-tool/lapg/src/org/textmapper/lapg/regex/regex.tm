@@ -92,9 +92,7 @@ charclass {String}: /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize()
 :: parser
 
 input {RegexAstPart} :
-	  pattern
-	| kw_eoi                                    { $$ = new RegexAstChar(-1, source, ${left().offset}, ${left().endoffset}); }
-;
+	  pattern ;
 
 pattern {RegexAstPart} :
 	  partsopt									{ $$ = RegexUtil.emptyIfNull($partsopt, source, ${partsopt.offset}); }
@@ -118,6 +116,7 @@ primitive_part {RegexAstPart} :
 	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false, ${left().offset}, ${left().endoffset}); }
 	| '[^' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true, ${left().offset}, ${left().endoffset}); }
 	| expand									{ $$ = new RegexAstExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexAstExpand) $$, reporter); }
+	| kw_eoi                     { $$ = new RegexAstChar(-1, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 setsymbol {RegexAstPart} :

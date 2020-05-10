@@ -15,6 +15,7 @@ const (
 	Test            // (Declaration)+
 	Negation
 	Block // Negation? (Declaration)*
+	LastInt
 	Int
 	TestClause
 	Empty1
@@ -34,6 +35,7 @@ var nodeTypeStr = [...]string{
 	"Test",
 	"Negation",
 	"Block",
+	"LastInt",
 	"Int",
 	"TestClause",
 	"Empty1",
@@ -60,6 +62,7 @@ var Declaration = []NodeType{
 	Decl2,
 	Empty1,
 	Int,
+	LastInt,
 	TestClause,
 }
 

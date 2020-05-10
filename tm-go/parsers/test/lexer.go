@@ -107,17 +107,17 @@ recovered:
 		switch hh {
 		case 0:
 			if hash == 0x5b098c8 && "decl2" == l.source[l.tokenOffset:l.offset] {
-				rule = 8
+				rule = 9
 				break
 			}
 		case 2:
 			if hash == 0x364492 && "test" == l.source[l.tokenOffset:l.offset] {
-				rule = 6
+				rule = 7
 				break
 			}
 		case 7:
 			if hash == 0x5b098c7 && "decl1" == l.source[l.tokenOffset:l.offset] {
-				rule = 7
+				rule = 8
 				break
 			}
 		}
@@ -143,24 +143,24 @@ recovered:
 		{
 			l.value = mustParseInt(l.Text())
 		}
-	case 21: // MultiLineComment: /\/\*/
+	case 22: // MultiLineComment: /\/\*/
 		{
 			l.State = StateInMultiLine
 			commentOffset = l.tokenOffset
 			commentDepth = 0
 			space = true
 		}
-	case 22: // invalid_token: /{eoi}/
+	case 23: // invalid_token: /{eoi}/
 		{
 			l.tokenOffset = commentOffset
 			l.State = StateInitial
 		}
-	case 23: // MultiLineComment: /\/\*/
+	case 24: // MultiLineComment: /\/\*/
 		{
 			commentDepth++
 			space = true
 		}
-	case 24: // MultiLineComment: /\*\//
+	case 25: // MultiLineComment: /\*\//
 		{
 			if commentDepth == 0 {
 				space = false
@@ -171,7 +171,7 @@ recovered:
 			space = true
 			commentDepth--
 		}
-	case 25: // WhiteSpace: /[^\/*]+|[*\/]/
+	case 26: // WhiteSpace: /[^\/*]+|[*\/]/
 		space = true
 		{
 			space = true

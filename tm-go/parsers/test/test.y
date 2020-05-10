@@ -9,6 +9,7 @@
 %token SINGLELINECOMMENT
 %token IDENTIFIER
 %token INTEGERCONSTANT
+%token LASTINT
 %token TEST
 %token DECL1
 %token DECL2
@@ -47,6 +48,7 @@ Declaration :
 | LBRACE MINUS RBRACE
 | LBRACE Declaration_list RBRACE
 | LBRACE RBRACE
+| LASTINT
 | INTEGERCONSTANT LBRACK RBRACK
 			{
         switch  {{nn0, _ := rhs[0].value.(int)}}nn0 {
@@ -75,6 +77,7 @@ setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceApos
 | SINGLELINECOMMENT
 | IDENTIFIER
 | INTEGERCONSTANT
+| LASTINT
 | TEST
 | DECL1
 | DECL2

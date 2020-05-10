@@ -22,6 +22,8 @@ func ToTestNode(n Node) TestNode {
 		return &Empty1{n}
 	case test.Int:
 		return &Int{n}
+	case test.LastInt:
+		return &LastInt{n}
 	case test.Negation:
 		return &Negation{n}
 	case test.Test:

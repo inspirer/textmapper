@@ -23,6 +23,8 @@ Identifier: /[a-zA-Z_](-*[a-zA-Z_0-9])*/    (class)
 
 IntegerConstant {int}: /[0-9]+/ { $$ = mustParseInt(l.Text()) }
 
+lastInt: /[0-9]+(\n|{eoi})/
+
 # Keywords.
 'test':      /test/
 'decl1':      /decl1/
@@ -102,6 +104,7 @@ Declaration -> Declaration :
     Decl1
   | Decl2
   | '{' ('-' '-'? -> Negation)? Declaration+? '}'        -> Block
+  | lastInt  -> LastInt
   | IntegerConstant ('[' ']')?
       {
         switch $IntegerConstant {

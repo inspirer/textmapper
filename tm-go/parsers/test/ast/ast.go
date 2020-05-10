@@ -42,6 +42,7 @@ func (n Decl1) TestNode() Node      { return n.Node }
 func (n Decl2) TestNode() Node      { return n.Node }
 func (n Empty1) TestNode() Node     { return n.Node }
 func (n Int) TestNode() Node        { return n.Node }
+func (n LastInt) TestNode() Node    { return n.Node }
 func (n Negation) TestNode() Node   { return n.Node }
 func (n Test) TestNode() Node       { return n.Node }
 func (n TestClause) TestNode() Node { return n.Node }
@@ -63,6 +64,7 @@ func (Decl1) declarationNode()      {}
 func (Decl2) declarationNode()      {}
 func (Empty1) declarationNode()     {}
 func (Int) declarationNode()        {}
+func (LastInt) declarationNode()    {}
 func (TestClause) declarationNode() {}
 func (NilNode) declarationNode()    {}
 
@@ -108,6 +110,10 @@ type Empty1 struct {
 }
 
 type Int struct {
+	Node
+}
+
+type LastInt struct {
 	Node
 }
 

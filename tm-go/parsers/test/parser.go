@@ -48,12 +48,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 0, 60, lexer)
+	_, err := p.parse(ctx, 0, 62, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 1, 61, lexer)
+	v, err := p.parse(ctx, 1, 63, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -227,7 +227,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 8: // Declaration : '{' '-' '}'
 		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 11: // Declaration : IntegerConstant '[' ']'
+	case 12: // Declaration : IntegerConstant '[' ']'
 		nn0, _ := rhs[0].value.(int)
 		{
 			switch nn0 {
@@ -237,7 +237,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 				p.listener(Int9, rhs[0].sym.offset, rhs[2].sym.endoffset)
 			}
 		}
-	case 12: // Declaration : IntegerConstant
+	case 13: // Declaration : IntegerConstant
 		nn0, _ := rhs[0].value.(int)
 		{
 			switch nn0 {
@@ -247,7 +247,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 				p.listener(Int9, rhs[0].sym.offset, rhs[0].sym.endoffset)
 			}
 		}
-	case 14: // Declaration : 'test' '(' empty1 ')'
+	case 15: // Declaration : 'test' '(' empty1 ')'
 		p.listener(Empty1, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {

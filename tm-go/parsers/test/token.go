@@ -18,6 +18,7 @@ const (
 	SINGLELINECOMMENT
 	IDENTIFIER
 	INTEGERCONSTANT
+	LASTINT
 	TEST    // test
 	DECL1   // decl1
 	DECL2   // decl2
@@ -46,6 +47,7 @@ var tokenStr = [...]string{
 	"SINGLELINECOMMENT",
 	"IDENTIFIER",
 	"INTEGERCONSTANT",
+	"LASTINT",
 	"test",
 	"decl1",
 	"decl2",
