@@ -1350,6 +1350,8 @@ func (c *compiler) parseOptions() {
 			opts.TokenLine = c.parseExpr(opt.Value(), opts.TokenLine).(bool)
 		case "tokenLineOffset":
 			opts.TokenLineOffset = c.parseExpr(opt.Value(), opts.TokenLineOffset).(bool)
+		case "nonBacktracking":
+			opts.NonBacktracking = c.parseExpr(opt.Value(), opts.NonBacktracking).(bool)
 		case "cancellable":
 			opts.Cancellable = c.parseExpr(opt.Value(), opts.Cancellable).(bool)
 		case "writeBison":
@@ -1358,6 +1360,8 @@ func (c *compiler) parseOptions() {
 			opts.RecursiveLookaheads = c.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
 		case "eventBased":
 			opts.EventBased = c.parseExpr(opt.Value(), opts.EventBased).(bool)
+		case "genSelector":
+			opts.GenSelector = c.parseExpr(opt.Value(), opts.GenSelector).(bool)
 		case "debugParser":
 			opts.DebugParser = c.parseExpr(opt.Value(), opts.DebugParser).(bool)
 		case "eventFields":

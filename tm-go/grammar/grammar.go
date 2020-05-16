@@ -106,12 +106,14 @@ type Options struct {
 	// Parser features.
 	TokenLine           bool // true by default
 	TokenLineOffset     bool
+	NonBacktracking     bool
 	Cancellable         bool
 	RecursiveLookaheads bool
 	DebugParser         bool
 
 	// AST generation.
 	EventBased   bool
+	GenSelector  bool
 	EventFields  bool
 	EventAST     bool
 	WriteBison   bool  // Output the expanded grammar in a Bison-like format.

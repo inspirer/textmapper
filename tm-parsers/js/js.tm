@@ -6,6 +6,7 @@ language js(go);
 
 lang = "js"
 package = "github.com/inspirer/textmapper/tm-parsers/js"
+nonBacktracking = true
 eventBased = true
 eventFields = true
 eventAST = true
