@@ -1352,7 +1352,7 @@ TypePredicate<AllowQuest> -> TypePredicate:
 
 # 3.7
 AssertsType<AllowQuest> -> AssertsType:
-    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> ReferenceIdent | IdentifierName<+WithoutKeywords> -> ReferenceIdent) ('is' Type)? ;
+    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> ThisType | IdentifierName<+WithoutKeywords> -> ReferenceIdent) ('is' Type)? ;
 
 StartOfIs:
       'is' ;
