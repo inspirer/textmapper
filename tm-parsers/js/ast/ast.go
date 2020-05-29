@@ -915,8 +915,14 @@ type AssertsType struct {
 	*Node
 }
 
-func (n AssertsType) ReferenceIdent() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+func (n AssertsType) ReferenceIdent() (ReferenceIdent, bool) {
+	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	return field, field.IsValid()
+}
+
+func (n AssertsType) This() (This, bool) {
+	field := This{n.Child(selector.This)}
+	return field, field.IsValid()
 }
 
 func (n AssertsType) TsType() (TsType, bool) {

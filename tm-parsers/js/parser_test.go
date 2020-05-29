@@ -56,8 +56,8 @@ var parseTests = []struct {
 		`/*no expectations*/ for(async of=>5;;) {}`,
 		`@«a».«b» class a{}`,
 		`function assert(actual: any): asserts «actual» is «foo» {}`,
-		`function assert(actual: any): asserts «this» is number {}`,
 		`function foo(a) : typeof «a».«b».«c» {}`,
+		`class A { isFoo(): «this» is «T» }`,
 	}},
 	{js.Javascript, js.NameIdent, []string{
 		`const «a» = 15;`,
@@ -87,6 +87,7 @@ var parseTests = []struct {
 	{js.Javascript, js.This, []string{
 		`const c = «this».e;`,
 		"`ab${ «this» }${ «this» }c`",
+		`function assert(actual: any): asserts «this» is number {}`,
 	}},
 	{js.Javascript, js.Regexp, []string{
 		`«/abc/i».test('aaa')`,

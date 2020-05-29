@@ -176,7 +176,7 @@ const (
 	JSXSpreadExpr    // Expr?
 	TsConditional    // check=TsType ext=TsType truet=TsType falset=TsType
 	TypePredicate    // paramref=ReferenceIdent TsType
-	AssertsType      // ReferenceIdent TsType?
+	AssertsType      // ReferenceIdent? This? TsType?
 	TypeParameters   // (TypeParameter)+
 	TypeParameter    // NameIdent TypeConstraint? TsType?
 	TypeConstraint   // TsType

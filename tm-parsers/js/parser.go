@@ -342,17 +342,17 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 	case 3853: // TypePredicate1 : 'asserts' lookahead_StartOfIs 'is' Type1
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 3854: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
-		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3855: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
-		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3856: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3857: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3858: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type1
-		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3859: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
-		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3860: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type1
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3861: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
