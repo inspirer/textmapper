@@ -198,7 +198,7 @@ const (
 	ObjectType        // (TypeMember)*
 	ArrayType         // TsType
 	IndexedAccessType // left=TsType index=TsType
-	MappedType        // TsType TypeAnnotation
+	MappedType        // NameIdent TsType TypeAnnotation
 	TupleType         // (TsType)*
 	RestType          // TsType
 	FuncType          // TypeParameters? Parameters TsType

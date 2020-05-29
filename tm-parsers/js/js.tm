@@ -1479,7 +1479,7 @@ StartOfMappedType :
 
 # 2.1
 MappedType -> MappedType :
-    '{' .recoveryScope (?= StartOfMappedType) (('+'|'-')? 'readonly')? '[' Identifier 'in' Type ']' (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
+    '{' .recoveryScope (?= StartOfMappedType) (('+'|'-')? 'readonly')? '[' BindingIdentifier 'in' Type ']' (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
 
 TupleType -> TupleType :
     '[' (TupleElementType separator ',')+? ']' ;
