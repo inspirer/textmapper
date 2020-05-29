@@ -6321,38 +6321,38 @@ lookahead_StartOfMappedType :
 ;
 
 MappedType :
-  LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK QUEST TypeAnnotation RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
-| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK IDENTIFIER IN Type RBRACK TypeAnnotation RBRACE
+  LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
 ;
 
 TupleElementType_list_Comma_separated :

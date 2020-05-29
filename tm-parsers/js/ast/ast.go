@@ -2476,6 +2476,10 @@ type MappedType struct {
 	*Node
 }
 
+func (n MappedType) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
+}
+
 func (n MappedType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
