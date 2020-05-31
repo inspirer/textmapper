@@ -22,6 +22,7 @@ type Regexp struct {
 	charset0 [2]rune    // storage for short character sets
 	min, max int        // min, max for opRepeat
 	text     string     // matched text for opLiteral, or a reference for opExternal
+	offset   int        // for opLiteral, opCharClass, and opExternal
 }
 
 // op is a single regular expression operator.
@@ -147,7 +148,7 @@ func (p *parser) parse() *Regexp {
 	for p.ch != -1 {
 		switch p.ch {
 		case '.':
-			re := &Regexp{op: opCharClass, charset: []rune{0, '\n' - 1, '\n' + 1, unicode.MaxRune}}
+			re := &Regexp{op: opCharClass, charset: []rune{0, '\n' - 1, '\n' + 1, unicode.MaxRune}, offset: p.offset}
 			stack = append(stack, re)
 		case '(':
 			p.next()
@@ -205,7 +206,7 @@ func (p *parser) parse() *Regexp {
 					p.scanOffset = start + i + 2
 				}
 				p.next()
-				stack = append(stack, &Regexp{op: opLiteral, text: lit})
+				stack = append(stack, &Regexp{op: opLiteral, text: lit, offset: start})
 				for lit != "" {
 					r, size := utf8.DecodeRuneInString(lit)
 					if r == utf8.RuneError && size == 1 {
@@ -219,17 +220,18 @@ func (p *parser) parse() *Regexp {
 			}
 
 			var cs charset
+			re := &Regexp{op: opCharClass, offset: p.offset}
 			if p.ch == '\\' {
 				cs = p.parseEscape(fold)
 			} else {
 				cs = p.parseClass(fold)
 			}
-			re := &Regexp{op: opCharClass}
 			re.charset = append(re.charset0[:0], cs...)
 			stack = append(stack, re)
 			continue
 
 		case '{':
+			offset := p.offset
 			p.next()
 			if p.ch >= '0' && p.ch <= '9' {
 				last := len(stack) - 1
@@ -248,9 +250,9 @@ func (p *parser) parse() *Regexp {
 					p.next()
 				}
 				if p.ch != '}' || start == p.offset {
-					p.error("invalid external regexp reference", start-1, p.scanOffset)
+					p.error("invalid external regexp reference", offset, p.scanOffset)
 				}
-				stack = append(stack, &Regexp{op: opExternal, text: p.source[start:p.offset]})
+				stack = append(stack, &Regexp{op: opExternal, text: p.source[start:p.offset], offset: offset})
 			}
 
 		case '*', '+', '?':
@@ -271,7 +273,7 @@ func (p *parser) parse() *Regexp {
 		default:
 			last := stack[len(stack)-1]
 			if fold && foldable(p.ch) {
-				re := &Regexp{op: opCharClass}
+				re := &Regexp{op: opCharClass, offset: p.offset}
 				re.charset = append(re.charset0[:0], p.ch, p.ch)
 				re.charset.fold()
 				stack = append(stack, re)
@@ -279,7 +281,7 @@ func (p *parser) parse() *Regexp {
 				last.text = p.source[start:p.scanOffset]
 			} else {
 				start = p.offset
-				stack = append(stack, &Regexp{op: opLiteral, text: p.source[start:p.scanOffset]})
+				stack = append(stack, &Regexp{op: opLiteral, text: p.source[start:p.scanOffset], offset: start})
 			}
 		}
 		p.next()

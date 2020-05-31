@@ -245,6 +245,53 @@ func TestConstants(t *testing.T) {
 	}
 }
 
+// All positions of character classes, literals, or external references are marked with underscores.
+var offsetTests = []string{
+	"_abcd123",
+	"_abc\\Q_ffffff\\E",
+	"_A_B+",
+	"(_AB)+",
+	"(_{foo}+)",
+	"(?i)_a_b_c",
+	"_[a-zA-Z]_[a-zA-Z0-9]+",
+	"_abc_\\p{L}_\\w_.",
+	"_[^abc]{1,2}",
+	"_\\012_5555",
+}
+
+func TestOffsets(t *testing.T) {
+	for _, tc := range offsetTests {
+		want := tc
+		input := strings.ReplaceAll(tc, "_", "")
+		re, err := ParseRegexp(input)
+		if err != nil {
+			t.Errorf("ParseRegexp(%v) failed with %v", input, err)
+			continue
+		}
+		var sb strings.Builder
+		var flush int
+		traverse(re, func(re *Regexp) {
+			switch re.op {
+			case opExternal, opLiteral, opCharClass:
+				sb.WriteString(input[flush:re.offset])
+				flush = re.offset
+				sb.WriteByte('_')
+			}
+		})
+		sb.WriteString(input[flush:])
+		if got := sb.String(); got != want {
+			t.Errorf("offsets(%v) = %v, want: %v", input, got, want)
+		}
+	}
+}
+
+func traverse(re *Regexp, consume func(re *Regexp)) {
+	consume(re)
+	for _, sub := range re.sub {
+		traverse(sub, consume)
+	}
+}
+
 func dump(re *Regexp) string {
 	var b strings.Builder
 	dumpRegexp(re, &b)
