@@ -21,7 +21,7 @@ var lexTests = []struct {
 }{
 	{
 		rules: []*Rule{
-			{RE: MustParse(`a`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("a", `a`), Action: 1, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a] -> 1;`,
@@ -36,7 +36,7 @@ var lexTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`[a-z]+`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("a", `[a-z]+`), Action: 1, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a-z] -> 1;`,
@@ -49,8 +49,8 @@ var lexTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`[ \t]+`), Action: 0, StartConditions: []int{0}},
-			{RE: MustParse(`[a-zA-Z_][a-zA-Z_0-9]*`), Action: 2, StartConditions: []int{0}},
+			{Pattern: pattern("a", `[ \t]+`), Action: 0, StartConditions: []int{0}},
+			{Pattern: pattern("b", `[a-zA-Z_][a-zA-Z_0-9]*`), Action: 2, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [A-Z_a-z] -> 1; [\t ] -> 2;`,
@@ -64,8 +64,8 @@ var lexTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`(abcd?)`), Action: 1, StartConditions: []int{0}},
-			{RE: MustParse(`ab`), Action: 2, StartConditions: []int{0}},
+			{Pattern: pattern("a", `(abcd?)`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("b", `ab`), Action: 2, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a] -> 1;`,
@@ -83,8 +83,8 @@ var lexTests = []struct {
 	{
 		// Simple backtracking.
 		rules: []*Rule{
-			{RE: MustParse(`aaaa`), Action: 1, StartConditions: []int{0}},
-			{RE: MustParse(`a`), Action: 2, StartConditions: []int{0}},
+			{Pattern: pattern("a", `aaaa`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("b", `a`), Action: 2, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a] -> 1;`,
@@ -103,9 +103,9 @@ var lexTests = []struct {
 	{
 		// Precedence resolution.
 		rules: []*Rule{
-			{RE: MustParse(`keyword`), Action: 1, StartConditions: []int{0}},
-			{RE: MustParse(`[a-z]+`), Action: 2, StartConditions: []int{0}, Precedence: -1},
-			{RE: MustParse(`[a-zA-Z]+`), Action: 3, StartConditions: []int{0}, Precedence: -2},
+			{Pattern: pattern("a", `keyword`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("b", `[a-z]+`), Action: 2, StartConditions: []int{0}, Precedence: -1},
+			{Pattern: pattern("c", `[a-zA-Z]+`), Action: 3, StartConditions: []int{0}, Precedence: -2},
 		},
 		testOn: []input{
 			{`«abc» def`, 2},
@@ -118,7 +118,7 @@ var lexTests = []struct {
 	{
 		// Numbers.
 		rules: []*Rule{
-			{RE: MustParse(`-?(0|[1-9][0-9]*)`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("a", `-?(0|[1-9][0-9]*)`), Action: 1, StartConditions: []int{0}},
 		},
 		testOn: []input{
 			{`«-100» `, 1},
@@ -130,8 +130,8 @@ var lexTests = []struct {
 	{
 		// Advanced backtracking.
 		rules: []*Rule{
-			{RE: MustParse(`[a-z](-*[a-z])*`), Action: 1, StartConditions: []int{0}},
-			{RE: MustParse(`test(foo)?-+>`), Action: 2, StartConditions: []int{0}},
+			{Pattern: pattern("a", `[a-z](-*[a-z])*`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("b", `test(foo)?-+>`), Action: 2, StartConditions: []int{0}},
 		},
 		testOn: []input{
 			{`«abc» `, 1},
@@ -144,7 +144,7 @@ var lexTests = []struct {
 	{
 		// + should reuse states.
 		rules: []*Rule{
-			{RE: MustParse(`ab|a(bc+)?`), Action: 1, StartConditions: []int{0}},
+			{Pattern: pattern("a", `ab|a(bc+)?`), Action: 1, StartConditions: []int{0}},
 		},
 		want: []string{
 			`0: EOI accept; [a] -> 1;`,

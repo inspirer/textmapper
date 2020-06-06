@@ -343,7 +343,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 	inClause := p != nil
 	ps := &patterns{
 		parent: p,
-		set:    make(map[string]*lex.Regexp),
+		set:    make(map[string]*lex.Pattern),
 		unused: make(map[string]status.SourceNode),
 	}
 	c.patterns = append(c.patterns, ps)
@@ -371,20 +371,18 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				break
 			}
 
-			re, err := parsePattern(pat)
+			pattern, err := parsePattern(name, pat)
 			if err != nil {
 				c.s.AddError(err)
 				continue
 			}
 			rule := &lex.Rule{
-				RE:              re,
+				Pattern:         pattern,
 				StartConditions: defaultSCs,
 				Resolver:        ps,
 				Origin:          p,
-				OriginName:      name,
-				RegexpText:      pat.Text(),
 			}
-			comment := fmt.Sprintf("%v: %v", name, rule.RegexpText)
+			comment := fmt.Sprintf("%v: /%v/", name, rule.Pattern.Text)
 
 			if prio, ok := p.Priority(); ok {
 				rule.Precedence, _ = strconv.Atoi(prio.Text())
@@ -428,7 +426,7 @@ func (c *compiler) resolveTokenComments() {
 			continue
 		}
 		tok := c.out.RuleToken[r.Action]
-		val, _ := r.RE.Constant()
+		val, _ := r.Pattern.RE.Constant()
 		if old, ok := comments[tok]; ok && val != old {
 			comments[tok] = ""
 			continue
@@ -470,7 +468,7 @@ func (c *compiler) resolveClasses() {
 
 	out := c.rules[:0]
 	for _, r := range c.rules {
-		val, isConst := r.RE.Constant()
+		val, isConst := r.Pattern.RE.Constant()
 		if !isConst {
 			out = append(out, r)
 			continue
@@ -495,7 +493,7 @@ func (c *compiler) resolveClasses() {
 		class := c.classRules[classRule]
 
 		if !container.SliceEqual(class.StartConditions, r.StartConditions) {
-			c.errorf(r.Origin, "%v must be applicable in the same set of start conditions as %v", r.OriginName, class.OriginName)
+			c.errorf(r.Origin, "%v must be applicable in the same set of start conditions as %v", r.Pattern.Name, class.Pattern.Name)
 
 			// Fixing the problem for now and keep going.
 			r.StartConditions = class.StartConditions
@@ -507,7 +505,7 @@ func (c *compiler) resolveClasses() {
 
 	for i, r := range c.classRules {
 		if len(c.out.ClassActions[i].Custom) == 0 {
-			c.errorf(r.Origin, "class rule without specializations '%v'", r.OriginName)
+			c.errorf(r.Origin, "class rule without specializations '%v'", r.Pattern.Name)
 		}
 	}
 
@@ -1402,11 +1400,11 @@ func (c *compiler) resolveOptions() {
 
 type patterns struct {
 	parent *patterns
-	set    map[string]*lex.Regexp
+	set    map[string]*lex.Pattern
 	unused map[string]status.SourceNode
 }
 
-func (p *patterns) Resolve(name string) *lex.Regexp {
+func (p *patterns) Resolve(name string) *lex.Pattern {
 	if v, ok := p.set[name]; ok {
 		delete(p.unused, name)
 		return v
@@ -1425,15 +1423,16 @@ func (p *patterns) add(np *ast.NamedPattern) error {
 		return status.Errorf(np.Name(), "redeclaration of '%v'", name)
 	}
 
-	re, err := parsePattern(np.Pattern())
-	p.set[name] = re
+	pattern, err := parsePattern(name, np.Pattern())
+	p.set[name] = pattern
 	p.unused[name] = np.Name()
 	return err
 }
 
-func parsePattern(p ast.Pattern) (*lex.Regexp, error) {
+func parsePattern(name string, p ast.Pattern) (*lex.Pattern, error) {
 	text := p.Text()
 	text = text[1 : len(text)-1]
+	ret := &lex.Pattern{Name: name, Text: text, RE: emptyRE, Origin: p}
 	re, err := lex.ParseRegexp(text)
 	if err != nil {
 		rng := p.SourceRange()
@@ -1447,9 +1446,10 @@ func parsePattern(p ast.Pattern) (*lex.Regexp, error) {
 			rng.Offset += err.Offset + 1
 			rng.Column += err.Offset + 1
 		}
-		return emptyRE, &status.Error{Origin: rng, Msg: err.Error()}
+		return ret, &status.Error{Origin: rng, Msg: err.Error()}
 	}
-	return re, nil
+	ret.RE = re
+	return ret, nil
 }
 
 var tplMap = map[string]string{

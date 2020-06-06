@@ -104,7 +104,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 				case acceptRule == nil || acceptRule.Precedence < inst.rule.Precedence:
 					acceptRule = inst.rule
 				case acceptRule.Precedence == inst.rule.Precedence && acceptRule.Action != inst.rule.Action:
-					msg := fmt.Sprintf("two rules are identical: %v and %v", inst.rule.OriginName, acceptRule.OriginName)
+					msg := fmt.Sprintf("two rules are identical: %v and %v", inst.rule.Pattern.Name, acceptRule.Pattern.Name)
 					g.s.Add(inst.rule.Origin.SourceRange(), msg)
 				}
 			}
@@ -169,7 +169,7 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 			backtrack = append(backtrack, Checkpoint{
 				Action:    key.accept + 2, // TODO get rid of +2 and align the ranges with dfa
 				NextState: key.targetState,
-				Details:   fmt.Sprintf("in %v", state.accept.OriginName), // TODO print position in regexp
+				Details:   fmt.Sprintf("in %v", state.accept.Pattern.Name), // TODO print position in regexp
 			})
 			numBtStates++
 			state.action[i] = btState

@@ -7,15 +7,18 @@ import (
 	"testing"
 )
 
-type patternMap map[string]*Regexp
+type patternMap map[string]*Pattern
 
 // Resolve implements lex.Resolver
-func (m patternMap) Resolve(name string) *Regexp {
+func (m patternMap) Resolve(name string) *Pattern {
 	return m[name]
 }
 
-var testPatterns = patternMap{
-	"hex": MustParse(`[0-9a-fA-F]`),
+var testPatterns = make(patternMap)
+
+func init() {
+	p := pattern("hex", "[0-9a-fA-F]")
+	testPatterns[p.Name] = p
 }
 
 var compileTests = []struct {
@@ -24,7 +27,7 @@ var compileTests = []struct {
 }{
 	{
 		rules: []*Rule{
-			{RE: MustParse(`abcd{2,}`), Action: 1},
+			rule("a", `abcd{2,}`, 1),
 		},
 		want: []string{
 			`[2],[3],[4],+1,[5],[5],-1+1,=>1`,
@@ -32,7 +35,7 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`AB|A(BC+)?`), Action: 1},
+			rule("a", `AB|A(BC+)?`, 1),
 		},
 		want: []string{
 			`+1+4,[2],[3],+9,[2],+1+7,[3]+6,+1,[4],-1+3,+2,+1,=>1`,
@@ -40,8 +43,8 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`\s+{hex}+`), Action: 0, Resolver: testPatterns},
-			{RE: MustParse(`\w+`), Action: 1},
+			rule("a", `\s+{hex}+`, 0),
+			rule("b", `\w+`, 1),
 		},
 		want: []string{
 			`+1,[2],-1+2,+1,[3],-1+1,=>0`,
@@ -50,7 +53,7 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`([0-9]|[a-z])+`), Action: 0},
+			rule("a", `([0-9]|[a-z])+`, 0),
 		},
 		want: []string{
 			`+2+4,+1+3,[2],-1+1+4,[3],-3-1+2,+1-4-2,=>0`,
@@ -58,7 +61,7 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`(a+)+`), Action: 42},
+			rule("a", `(a+)+`, 42),
 		},
 		want: []string{
 			`+2,+1,[2],-1+2,+1-2,=>42`,
@@ -66,7 +69,7 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`-?0`), Action: 42},
+			rule("a", `-?0`, 42),
 		},
 		want: []string{
 			`+1+3,[2]+2,+1,[3],=>42`,
@@ -74,7 +77,7 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`[a-z](-*[a-z])*`), Action: 11},
+			rule("a", `[a-z](-*[a-z])*`, 11),
 		},
 		want: []string{
 			`[3],+2+4+6,+1+5+3,[2]+2,-1+1,[3],+1-3-1,=>11`,
@@ -82,7 +85,7 @@ var compileTests = []struct {
 	},
 	{
 		rules: []*Rule{
-			{RE: MustParse(`{eoi}`), Action: 5},
+			rule("a", `{eoi}`, 5),
 		},
 		want: []string{
 			`[0],=>5`,
@@ -95,7 +98,7 @@ func TestCompile(t *testing.T) {
 		var index []int
 		c := newCompiler()
 		for i, r := range test.rules {
-			offset, err := c.addRegexp(r.RE, r.Action, r)
+			offset, err := c.addPattern(r.Pattern, r.Action, r)
 			if err != nil {
 				t.Fatalf("cannot compile regexp in test #%v", i)
 			}
@@ -125,7 +128,7 @@ func TestCompile(t *testing.T) {
 
 		for i := range got {
 			if got[i] != test.want[i] {
-				t.Errorf("#%v compile(%v) = %v, want: %v", n+1, test.rules[i].RE, got[i], test.want[i])
+				t.Errorf("#%v compile(%v) = %v, want: %v", n+1, test.rules[i].Pattern.Text, got[i], test.want[i])
 			}
 		}
 	}
@@ -154,13 +157,21 @@ func dumpInst(i int, inst inst, b *bytes.Buffer) {
 
 func TestErrors(t *testing.T) {
 	c := newCompiler()
-	r := &Rule{
-		RE:         MustParse(`((asdasd)?|[abc]?)`),
-		Action:     42,
-		OriginName: "rule1",
-	}
-	_, err := c.addRegexp(r.RE, r.Action, r)
+	r := rule("rule1", `((asdasd)?|[abc]?)`, 42)
+	_, err := c.addPattern(r.Pattern, r.Action, r)
 	if err == nil || !strings.Contains(err.Error(), "`rule1` accepts empty text") {
 		t.Errorf("addRegexp() = %v, want: accepts empty text", err)
+	}
+}
+
+func pattern(name, text string) *Pattern {
+	return &Pattern{Name: name, Text: text, RE: MustParse(text)}
+}
+
+func rule(name, re string, action int) *Rule {
+	return &Rule{
+		Pattern:  pattern(name, re),
+		Action:   action,
+		Resolver: testPatterns,
 	}
 }

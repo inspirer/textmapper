@@ -10,14 +10,12 @@ import (
 
 // Rule is a lexer generator rule.
 type Rule struct {
-	RE              *Regexp
+	Pattern         *Pattern
 	Resolver        Resolver
 	StartConditions []int
 	Precedence      int // Precedence disambiguates between rules that match the same prefix.
 	Action          int
 	Origin          status.SourceNode
-	OriginName      string
-	RegexpText      string
 }
 
 // Sym is a DFA input symbol, which represents zero or more runes indistinguishable by the
@@ -201,7 +199,7 @@ func (t *Tables) Scan(start int, text string) (size, action int) {
 
 // Resolver retrieves named regular expressions.
 type Resolver interface {
-	Resolve(name string) *Regexp
+	Resolve(name string) *Pattern
 }
 
 // Compile combines a set of rules into a lexer.
@@ -211,7 +209,7 @@ func Compile(rules []*Rule) (*Tables, error) {
 	var maxSC int
 	c := newCompiler()
 	for _, r := range rules {
-		i, err := c.addRegexp(r.RE, r.Action, r)
+		i, err := c.addPattern(r.Pattern, r.Action, r)
 		if err != nil {
 			s.Add(r.Origin.SourceRange(), err.Error())
 		}
