@@ -3,6 +3,7 @@ package lex
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
@@ -26,14 +27,27 @@ func (i inst) core() bool {
 	return i.rule != nil || len(i.consume) != 0
 }
 
+func (i inst) String() string {
+	var sb strings.Builder
+	i.trace.toString(&sb)
+	return sb.String()
+}
+
 type trace struct {
 	pattern *Pattern // The pattern that produced a given instruction.
 	offset  int      // The corresponding offset in pattern.Text.
-	trace   *trace   // The last pattern in this chain is a Rule.
+	caller  *trace   // The last pattern in this chain is a Rule.
 }
 
-func (t trace) String() string {
-	return fmt.Sprintf("/%v<STATE>%v/", t.pattern.Text[:t.offset], t.pattern.Text[t.offset:])
+func (t *trace) toString(sb *strings.Builder) {
+	if t.caller != nil {
+		t.caller.toString(sb)
+		sb.WriteString(" -> ")
+	} else {
+		sb.WriteString(t.pattern.Name)
+		sb.WriteString(": ")
+	}
+	fmt.Fprintf(sb, "/%v<STATE>%v/", t.pattern.Text[:t.offset], t.pattern.Text[t.offset:])
 }
 
 // reCompiler translates a set of regular expressions into a single list of instructions.
@@ -125,7 +139,7 @@ func (c *reCompiler) serialize(re *Regexp, resolver Resolver, t trace) {
 			return
 		}
 		c.inExternal[re.text] = true
-		child := trace{pattern: pattern, trace: &t}
+		child := trace{pattern: pattern, caller: &t}
 		c.serialize(pattern.RE, resolver, child)
 		delete(c.inExternal, re.text)
 	case opRepeat:

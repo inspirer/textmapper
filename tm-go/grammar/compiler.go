@@ -127,7 +127,8 @@ func (c *compiler) compileLexer() {
 	}
 
 	var err error
-	out.Tables, err = lex.Compile(c.rules)
+	allowBacktracking := !c.out.Options.NonBacktracking
+	out.Tables, err = lex.Compile(c.rules, allowBacktracking)
 	c.s.AddError(err)
 
 	if inline {
@@ -450,8 +451,7 @@ func (c *compiler) resolveClasses() {
 		fork.Action = index
 		rewritten = append(rewritten, fork)
 	}
-	tables, err := lex.Compile(rewritten)
-	c.s.AddError(err)
+	tables, err := lex.Compile(rewritten, true /*allowBacktracking*/)
 	if err != nil {
 		// Pretend that these class rules do not exist in the grammar and keep going.
 		return

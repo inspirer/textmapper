@@ -203,7 +203,7 @@ type Resolver interface {
 }
 
 // Compile combines a set of rules into a lexer.
-func Compile(rules []*Rule) (*Tables, error) {
+func Compile(rules []*Rule, allowBacktracking bool) (*Tables, error) {
 	var s status.Status
 	var index []int
 	var maxSC int
@@ -242,7 +242,7 @@ func Compile(rules []*Rule) (*Tables, error) {
 	for i, states := range startStates {
 		stateMap[i] = g.addState(states, nil /*after*/)
 	}
-	dfa, backtrack, err := g.generate()
+	dfa, backtrack, err := g.generate(allowBacktracking)
 	s.AddError(err)
 
 	ret := &Tables{

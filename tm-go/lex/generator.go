@@ -3,6 +3,7 @@ package lex
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
@@ -84,7 +85,7 @@ func (g *generator) addState(set []int, after *state) *state {
 	return state
 }
 
-func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
+func (g *generator) generate(allowBacktracking bool) (dfa []int, backtrack []Checkpoint, err error) {
 	if len(g.states) == 0 {
 		return nil, nil, errNoStartStates
 	}
@@ -164,6 +165,21 @@ func (g *generator) generate() (dfa []int, backtrack []Checkpoint, err error) {
 			}
 			btState := len(g.states) + numBtStates
 			bt[key] = btState
+
+			if !allowBacktracking {
+				var sb strings.Builder
+				sb.WriteString("Needs backtracking since the following state(s) are prefixes of valid tokens but are not valid tokens themselves:")
+				for _, i := range g.states[val].set {
+					inst := g.ins[i]
+					if len(inst.consume) == 0 {
+						continue
+					}
+					sb.WriteString("\n\t")
+					sb.WriteString(inst.String())
+				}
+				sb.WriteString("\nConsider removing 'nonBacktracking = true' or reporting these states as 'invalid_token' via separate lexer rules.")
+				g.s.Add(state.accept.Origin.SourceRange(), sb.String())
+			}
 
 			// Note: adding 2 to make room for accept EOI and accept InvalidToken actions.
 			backtrack = append(backtrack, Checkpoint{

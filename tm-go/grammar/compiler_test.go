@@ -23,6 +23,7 @@ var testFiles = []string{
 	"parser.tmerr",
 	"noinput.tmerr",
 	"badinput.tmerr",
+	"backtrack.tmerr",
 }
 
 func TestErrors(t *testing.T) {
@@ -50,26 +51,21 @@ func TestErrors(t *testing.T) {
 				}
 			}
 
+			var got []string
 			_, err = Compile(ast.File{Node: tree.Root()}, compat)
 			if err != nil {
 				s := status.FromError(err)
 				s.Sort()
 				for _, e := range s {
 					pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
-					if len(want) == 0 {
-						t.Errorf("%v (compat=%v): unexpected error at line %v: %v", file, compat, e.Origin.Line, e.Msg)
-						continue
-					}
-					if want[0] != e.Msg {
-						t.Errorf("%v (compat=%v): unexpected error at line %v: %v, want: %v", file, compat, e.Origin.Line, e.Msg, want[0])
-					}
-					want = want[1:]
+					got = append(got, e.Msg)
 				}
 			}
-			if len(want) != 0 {
-				t.Errorf("%v (compat=%v): not reported errors:\n%v", file, compat, want)
-			}
 			pt.Done(t, nil)
+			if diff := diff.LineDiff(strings.Join(want, "\n"), strings.Join(got, "\n")); diff != "" {
+				t.Errorf("%v (compat=%v): errors diff\n--- want\n+++ got\n%v\n", file, compat, diff)
+				break
+			}
 		}
 	}
 }

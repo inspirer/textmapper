@@ -163,7 +163,7 @@ var lexTests = []struct {
 func TestLex(t *testing.T) {
 	repl := strings.NewReplacer("«", "", "»", "")
 	for _, tc := range lexTests {
-		tables, err := Compile(tc.rules)
+		tables, err := Compile(tc.rules, true /*allowBacktracking*/)
 		if err != nil {
 			t.Errorf("Compile(%v) failed with %v", tc.rules, err)
 		}
