@@ -56,9 +56,16 @@ var lexerTests = []struct {
 		" «/**/» «/***/» «/*\r\n*/» ",
 		" «/* /* ****/  */»  nested",
 	}},
+	{test.SHARPATID, []string{
+		" Zfoo «Zfoob» «Zfo\\u1111ob» ",
+	}},
+	{test.ZFOO, []string{
+		" «Zfoo» Zfoob ",
+	}},
 	{test.INVALID_TOKEN, []string{
 		" «#» ",
 		" /**/ «/* /* ****/  *  nested»", // unfinished comment
+		" «Zff\\» ",
 	}},
 }
 

@@ -121,6 +121,15 @@ recovered:
 				break
 			}
 		}
+	case 21:
+		hh := hash & 7
+		switch hh {
+		case 4:
+			if hash == 0x2a762c && "Zfoo" == l.source[l.tokenOffset:l.offset] {
+				rule = 23
+				break
+			}
+		}
 	}
 
 	token := tmToken[rule]
@@ -143,24 +152,24 @@ recovered:
 		{
 			l.value = mustParseInt(l.Text())
 		}
-	case 22: // MultiLineComment: /\/\*/
+	case 25: // MultiLineComment: /\/\*/
 		{
 			l.State = StateInMultiLine
 			commentOffset = l.tokenOffset
 			commentDepth = 0
 			space = true
 		}
-	case 23: // invalid_token: /{eoi}/
+	case 26: // invalid_token: /{eoi}/
 		{
 			l.tokenOffset = commentOffset
 			l.State = StateInitial
 		}
-	case 24: // MultiLineComment: /\/\*/
+	case 27: // MultiLineComment: /\/\*/
 		{
 			commentDepth++
 			space = true
 		}
-	case 25: // MultiLineComment: /\*\//
+	case 28: // MultiLineComment: /\*\//
 		{
 			if commentDepth == 0 {
 				space = false
@@ -171,7 +180,7 @@ recovered:
 			space = true
 			commentDepth--
 		}
-	case 26: // WhiteSpace: /[^\/*]+|[*\/]/
+	case 29: // WhiteSpace: /[^\/*]+|[*\/]/
 		space = true
 		{
 			space = true

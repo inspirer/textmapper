@@ -33,6 +33,8 @@ const (
 	COLON   // :
 	MINUS   // -
 	MINUSGT // ->
+	SHARPATID
+	ZFOO // Zfoo
 	BACKTRACKINGTOKEN
 	ERROR
 	MULTILINECOMMENT
@@ -62,6 +64,8 @@ var tokenStr = [...]string{
 	":",
 	"-",
 	"->",
+	"SHARPATID",
+	"Zfoo",
 	"BACKTRACKINGTOKEN",
 	"ERROR",
 	"MULTILINECOMMENT",

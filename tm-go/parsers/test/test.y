@@ -24,6 +24,8 @@
 %token COLON
 %token MINUS
 %token MINUSGT
+%token SHARPATID
+%token ZFOO
 %token BACKTRACKINGTOKEN
 %token ERROR
 %token MULTILINECOMMENT
@@ -90,6 +92,8 @@ setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceApos
 | COLON
 | MINUS
 | MINUSGT
+| SHARPATID
+| ZFOO
 | BACKTRACKINGTOKEN
 | ERROR
 | MULTILINECOMMENT

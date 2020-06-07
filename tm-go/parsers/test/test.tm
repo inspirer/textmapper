@@ -19,7 +19,7 @@ WhiteSpace: /[ \t\r\n]/ (space)
 
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
 
-Identifier: /[a-zA-Z_](-*[a-zA-Z_0-9])*/    (class)
+Identifier: /[a-zA-Y](-*[a-zA-Z_0-9])*/    (class)
 
 IntegerConstant {int}: /[0-9]+/ { $$ = mustParseInt(l.Text()) }
 
@@ -43,7 +43,16 @@ lastInt: /[0-9]+(\n|{eoi})/
 '-': /-/
 '->': /->/
 
-# Backtracing.
+# No backtracking required.
+hex = /[0-9a-fA-F]/
+esc = /u{hex}{4}/
+idChar = /[a-zA-Z]|\\{esc}/
+
+SharpAtID: /Z{idChar}+/    (class)
+invalid_token: /Z{idChar}*\\(u{hex}{0,3})?/
+'Zfoo': /Zfoo/
+
+# Backtracing required.
 backtrackingToken: /test(foo)?-+>/
 
 error:
