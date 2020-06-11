@@ -357,9 +357,11 @@ func (p *Parser) willShift(stackPos int, state ${self->stateType()}, symbol int3
 
 	for state != p.endState {
 		action := tmAction[state]
+${if self->needActionsTable()-}
 		if action < -2 {
 			action = lalr(action, symbol)
 		}
+${end-}
 
 		if action >= 0 {
 			// Reduce.
