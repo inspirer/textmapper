@@ -60,7 +60,7 @@ type Nonterm struct {
 	Name   string
 	Type   string // the type of the associated value
 	Params []int
-	Value  Expr
+	Value  *Expr // non-nil
 
 	// When non-empty, this is a Lookahead nonterminal (implies Value is Empty). When two or more
 	// lookahead nonterminals can be reduced in the same state, their lookahead predicates are
@@ -79,7 +79,7 @@ type LAPredicate struct {
 type Expr struct {
 	Kind      ExprKind
 	Name      string
-	Sub       []Expr
+	Sub       []*Expr
 	Symbol    int
 	Args      []Arg
 	Predicate *Predicate
@@ -89,7 +89,7 @@ type Expr struct {
 	Model     *Model // Kept for some kinds for debugging.
 }
 
-func (e Expr) String() string {
+func (e *Expr) String() string {
 	switch e.Kind {
 	case Empty:
 		return "%empty"
@@ -163,7 +163,7 @@ func (e Expr) String() string {
 	}
 }
 
-func parenthesize(outer ExprKind, sub Expr) string {
+func parenthesize(outer ExprKind, sub *Expr) string {
 	var paren bool
 	switch sub.Kind {
 	case Command, Lookahead, Set, Empty, List:

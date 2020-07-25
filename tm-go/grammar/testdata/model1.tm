@@ -45,7 +45,7 @@ expr<Foo> -> Expr:
 
 delayed<Foo, Async> -> Delayed:
       '.' '.' expr
-    | [Async && !Foo] '(' expr<~Foo> ')' '->' expr
+    | [Async && !Foo || Foo] '(' expr<~Foo> ')' '->' expr
 ;
 
 %%
@@ -62,6 +62,6 @@ expr<Foo> :
 
 delayed<Foo, Async> :
   '.' '.' expr<Foo=Foo> -> Delayed
-| [Async="true" | !(Foo="true")] '(' expr<Foo="false"> ')' '->' expr<Foo=Foo> -> Delayed
+| [(Async="true" & !(Foo="true")) | Foo="true"] '(' expr<Foo="false"> ')' '->' expr<Foo=Foo> -> Delayed
 ;
 

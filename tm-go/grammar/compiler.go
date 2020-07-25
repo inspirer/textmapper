@@ -899,7 +899,7 @@ func (c *compiler) predList(op syntax.PredicateOp, list []ast.PredicateExpressio
 		return nil
 	}
 	return &syntax.Predicate{
-		Op:     syntax.Or,
+		Op:     op,
 		Sub:    out,
 		Origin: origin.TmNode(),
 	}
@@ -948,20 +948,20 @@ func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 		Origin: origin,
 	}
 
-	var ref syntax.Expr
+	var ref *syntax.Expr
 	target := name[:len(name)-3]
 	if index, ok := c.syms[target]; ok {
 		nt.Type = c.out.Syms[index].Type
-		ref = syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.source}
+		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.source}
 	} else if nonterm, ok := c.nonterms[target]; ok {
 		nt.Type = c.source.Nonterms[nonterm].Type
 		nt.Params = c.source.Nonterms[nonterm].Params
-		ref = syntax.Expr{Kind: syntax.Reference, Symbol: c.out.NumTokens + nonterm, Origin: origin, Model: c.source}
+		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: c.out.NumTokens + nonterm, Origin: origin, Model: c.source}
 	} else {
 		// Unresolved.
 		return 0, false
 	}
-	nt.Value = syntax.Expr{Kind: syntax.Optional, Sub: []syntax.Expr{ref}, Origin: origin}
+	nt.Value = &syntax.Expr{Kind: syntax.Optional, Sub: []*syntax.Expr{ref}, Origin: origin}
 
 	c.nonterms[name] = len(c.source.Nonterms)
 	index := c.out.NumTokens + len(c.source.Nonterms)
@@ -1124,116 +1124,116 @@ func (c *compiler) convertReportClause(n ast.ReportClause) []string {
 	return []string{action}
 }
 
-func (c *compiler) convertSeparator(sep ast.ListSeparator) syntax.Expr {
-	var subs []syntax.Expr
+func (c *compiler) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
+	var subs []*syntax.Expr
 	for _, ref := range sep.Separator() {
 		sym, _ := c.resolveRef(ref, nil /*nonterm*/)
 		if sym >= c.out.NumTokens {
 			c.errorf(ref, "separators must be terminals")
 			continue
 		}
-		expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref, Model: c.source}
+		expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref, Model: c.source}
 		subs = append(subs, expr)
 	}
 	switch len(subs) {
 	case 0:
-		return syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty}
 	case 1:
 		return subs[0]
 	}
-	return syntax.Expr{
+	return &syntax.Expr{
 		Kind:   syntax.Sequence,
 		Sub:    subs,
 		Origin: sep,
 	}
 }
 
-func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) syntax.Expr {
+func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.Expr {
 	switch p := p.(type) {
 	case *ast.Command:
 		text := p.Text()
-		return syntax.Expr{Kind: syntax.Command, Name: text, Origin: p}
+		return &syntax.Expr{Kind: syntax.Command, Name: text, Origin: p}
 	case *ast.RhsAssignment:
-		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return syntax.Expr{Kind: syntax.Assign, Name: p.Id().Text(), Sub: subs, Origin: p}
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return &syntax.Expr{Kind: syntax.Assign, Name: p.Id().Text(), Sub: subs, Origin: p}
 	case *ast.RhsPlusAssignment:
-		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return syntax.Expr{Kind: syntax.Append, Name: p.Id().Text(), Sub: subs, Origin: p}
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return &syntax.Expr{Kind: syntax.Append, Name: p.Id().Text(), Sub: subs, Origin: p}
 	case *ast.RhsCast:
 		// TODO implement
 	case *ast.RhsLookahead:
-		var subs []syntax.Expr
+		var subs []*syntax.Expr
 		for _, pred := range p.Predicates() {
 			sym, args := c.resolveRef(pred.Symref(), nonterm)
 			if sym < c.out.NumTokens {
 				c.errorf(pred.Symref(), "lookahead expressions do not support terminals")
 				continue
 			}
-			expr := syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref(), Model: c.source}
+			expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref(), Model: c.source}
 			if _, not := pred.Not(); not {
-				expr = syntax.Expr{Kind: syntax.LookaheadNot, Sub: []syntax.Expr{expr}, Origin: pred}
+				expr = &syntax.Expr{Kind: syntax.LookaheadNot, Sub: []*syntax.Expr{expr}, Origin: pred}
 			}
 			subs = append(subs, expr)
 		}
 		if len(subs) == 0 {
-			return syntax.Expr{Kind: syntax.Empty}
+			return &syntax.Expr{Kind: syntax.Empty}
 		}
-		return syntax.Expr{Kind: syntax.Lookahead, Sub: subs, Origin: p}
+		return &syntax.Expr{Kind: syntax.Lookahead, Sub: subs, Origin: p}
 	case *ast.RhsNested:
 		return c.convertRules(p.Rule0(), nonterm, nil /*defaultReport*/, p)
 	case *ast.RhsOptional:
-		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return syntax.Expr{Kind: syntax.Optional, Sub: subs, Origin: p}
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return &syntax.Expr{Kind: syntax.Optional, Sub: subs, Origin: p}
 	case *ast.RhsPlusList:
 		seq := c.convertSequence(p.RuleParts(), nonterm, p)
-		subs := []syntax.Expr{seq}
+		subs := []*syntax.Expr{seq}
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
-			subs = []syntax.Expr{seq, sep}
+			subs = []*syntax.Expr{seq, sep}
 		}
-		return syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
 	case *ast.RhsStarList:
 		seq := c.convertSequence(p.RuleParts(), nonterm, p)
-		subs := []syntax.Expr{seq}
+		subs := []*syntax.Expr{seq}
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
-			subs = []syntax.Expr{seq, sep}
+			subs = []*syntax.Expr{seq, sep}
 		}
-		return syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
 	case *ast.RhsPlusQuantifier:
-		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
 	case *ast.RhsStarQuantifier:
-		subs := []syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
 	case *ast.RhsSet:
 		set := c.convertSet(p.Expr(), nonterm)
 		index := len(c.source.Sets)
 		c.source.Sets = append(c.source.Sets, set)
-		return syntax.Expr{Kind: syntax.Set, Pos: index, Origin: p, Model: c.source}
+		return &syntax.Expr{Kind: syntax.Set, Pos: index, Origin: p, Model: c.source}
 	case *ast.RhsSymbol:
 		sym, args := c.resolveRef(p.Reference(), nonterm)
-		return syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: p, Model: c.source}
+		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: p, Model: c.source}
 	case *ast.StateMarker:
-		return syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
+		return &syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
 	case *ast.SyntaxProblem:
 		c.errorf(p, "syntax error")
-		return syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty}
 	}
 	c.errorf(p.TmNode(), "unsupported syntax (%T)", p)
-	return syntax.Expr{Kind: syntax.Empty}
+	return &syntax.Expr{Kind: syntax.Empty}
 }
 
-func (c *compiler) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, origin status.SourceNode) syntax.Expr {
-	var subs []syntax.Expr
+func (c *compiler) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, origin status.SourceNode) *syntax.Expr {
+	var subs []*syntax.Expr
 	for _, p := range parts {
 		subs = append(subs, c.convertPart(p, nonterm))
 	}
 	switch len(subs) {
 	case 0:
-		return syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty}
 	case 1:
 		return subs[0]
 	}
-	return syntax.Expr{
+	return &syntax.Expr{
 		Kind:   syntax.Sequence,
 		Sub:    subs,
 		Origin: origin,
@@ -1245,8 +1245,8 @@ func (c *compiler) isSelector(name string) bool {
 	return ok
 }
 
-func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport []string, origin status.SourceNode) syntax.Expr {
-	var subs []syntax.Expr
+func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport []string, origin status.SourceNode) *syntax.Expr {
+	var subs []*syntax.Expr
 	for _, rule0 := range rules {
 		rule, ok := rule0.(*ast.Rule)
 		if !ok {
@@ -1267,14 +1267,14 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 			}
 		}
 		for _, node := range report {
-			expr = syntax.Expr{Kind: syntax.Arrow, Name: node, Sub: []syntax.Expr{expr}}
+			expr = &syntax.Expr{Kind: syntax.Arrow, Name: node, Sub: []*syntax.Expr{expr}}
 		}
 		if suffix, ok := rule.RhsSuffix(); ok {
 			switch suffix.Name().Text() {
 			case "prec":
 				sym, _ := c.resolveRef(suffix.Symref(), nonterm)
 				if sym < c.out.NumTokens {
-					expr = syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []syntax.Expr{expr}, Model: c.source}
+					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.source}
 				} else {
 					c.errorf(suffix.Symref(), "terminal is expected")
 				}
@@ -1284,18 +1284,18 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 		}
 		if pred, ok := rule.Predicate(); ok {
 			pred := c.convertPredicate(pred.PredicateExpression(), nonterm)
-			expr = syntax.Expr{Kind: syntax.Conditional, Predicate: pred, Sub: []syntax.Expr{expr}, Model: c.source}
+			expr = &syntax.Expr{Kind: syntax.Conditional, Predicate: pred, Sub: []*syntax.Expr{expr}, Model: c.source}
 		}
 
 		subs = append(subs, expr)
 	}
 	switch len(subs) {
 	case 0:
-		return syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty}
 	case 1:
 		return subs[0]
 	}
-	return syntax.Expr{
+	return &syntax.Expr{
 		Kind:   syntax.Choice,
 		Sub:    subs,
 		Origin: origin,
