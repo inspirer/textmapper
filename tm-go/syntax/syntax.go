@@ -14,7 +14,7 @@ import (
 type Model struct {
 	Terminals []string
 	Params    []Param
-	Nonterms  []Nonterm // all params and nonterms must have distinct names
+	Nonterms  []*Nonterm // all params and nonterms must have distinct names
 	Inputs    []Input
 	Sets      []TokenSet // extra token sets to compute
 	Cats      []string   // categories

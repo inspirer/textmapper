@@ -110,7 +110,7 @@ func TestSourceModel(t *testing.T) {
 	}
 }
 
-func writeNonterm(nt syntax.Nonterm, m *syntax.Model, b *strings.Builder) {
+func writeNonterm(nt *syntax.Nonterm, m *syntax.Model, b *strings.Builder) {
 	b.WriteString(nt.Name)
 	if len(nt.Params) > 0 {
 		b.WriteByte('<')

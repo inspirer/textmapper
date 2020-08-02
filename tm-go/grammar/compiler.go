@@ -643,7 +643,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 				c.errorf(ann.TmNode(), "unsupported syntax")
 			}
 
-			nt := syntax.Nonterm{
+			nt := &syntax.Nonterm{
 				Name:   name,
 				Origin: nonterm.Name(),
 			}
@@ -851,7 +851,7 @@ func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) s
 }
 
 func (c *compiler) pred(ref ast.ParamRef, nonterm *syntax.Nonterm, op syntax.PredicateOp, val string, origin ast.PredicateExpression) *syntax.Predicate {
-	param, ok := c.resolveParam(ref, *nonterm)
+	param, ok := c.resolveParam(ref, nonterm)
 	if !ok {
 		return nil
 	}
@@ -925,7 +925,7 @@ func (c *compiler) convertPredicate(expr ast.PredicateExpression, nonterm *synta
 	}
 }
 
-func (c *compiler) resolveParam(ref ast.ParamRef, nonterm syntax.Nonterm) (int, bool) {
+func (c *compiler) resolveParam(ref ast.ParamRef, nonterm *syntax.Nonterm) (int, bool) {
 	name := ref.Identifier().Text()
 	for _, p := range nonterm.Params {
 		if name == c.source.Params[p].Name {
@@ -943,7 +943,7 @@ func (c *compiler) resolveParam(ref ast.ParamRef, nonterm syntax.Nonterm) (int, 
 }
 
 func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
-	nt := syntax.Nonterm{
+	nt := &syntax.Nonterm{
 		Name:   name,
 		Origin: origin,
 	}
@@ -1023,7 +1023,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 							c.errorf(val.Identifier(), "unresolved parameter reference '%v'", val.Identifier().Text())
 							continue
 						}
-						out.TakeFrom, ok = c.resolveParam(*val, *nonterm)
+						out.TakeFrom, ok = c.resolveParam(*val, nonterm)
 						if !ok {
 							continue
 						}
@@ -1038,7 +1038,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 					continue
 				}
 				// Note: matching by name enables value propagation between inline parameters.
-				out.TakeFrom, ok = c.resolveParam(ref, *nonterm)
+				out.TakeFrom, ok = c.resolveParam(ref, nonterm)
 				if !ok {
 					continue
 				}
@@ -1318,7 +1318,7 @@ func (c *compiler) compileParser() {
 	for _, nt := range nonterms {
 		clause, _ := nt.def.ReportClause()
 		defaultReport := c.convertReportClause(clause)
-		expr := c.convertRules(nt.def.Rule0(), &c.source.Nonterms[nt.nonterm], defaultReport, nt.def)
+		expr := c.convertRules(nt.def.Rule0(), c.source.Nonterms[nt.nonterm], defaultReport, nt.def)
 		c.source.Nonterms[nt.nonterm].Value = expr
 	}
 

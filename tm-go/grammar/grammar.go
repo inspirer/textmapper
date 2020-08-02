@@ -92,7 +92,7 @@ type Lexer struct {
 // Parser is a model of a generated parser.
 type Parser struct {
 	Inputs   []syntax.Input
-	Nonterms []syntax.Nonterm
+	Nonterms []*syntax.Nonterm
 	Prec     []lalr.Precedence
 	Tables   *lalr.Tables
 	Actions  []SemanticAction
