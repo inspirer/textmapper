@@ -36,7 +36,6 @@ func Diff(a, b interface{}) string {
 	}
 
 	return diff.LineDiff(left, right)
-
 }
 
 type dumper struct {
