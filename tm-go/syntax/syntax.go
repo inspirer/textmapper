@@ -339,3 +339,38 @@ const (
 	Not
 	Equals // true if {Param} == {Value}
 )
+
+// Simplify flattens lists and removes redundant nodes from a syntax expression (in-place).
+func Simplify(e *Expr) *Expr {
+	for i, sub := range e.Sub {
+		e.Sub[i] = Simplify(sub)
+	}
+	if e.Kind != Choice && e.Kind != Sequence {
+		return e
+	}
+	var rewrite bool
+	for _, sub := range e.Sub {
+		rewrite = rewrite || e.Kind == sub.Kind || sub.Kind == Empty && e.Kind == Sequence
+	}
+	if rewrite {
+		var out []*Expr
+		for _, sub := range e.Sub {
+			if sub.Kind == Empty && e.Kind == Sequence {
+				continue
+			}
+			if e.Kind == sub.Kind {
+				out = append(out, sub.Sub...)
+			} else {
+				out = append(out, sub)
+			}
+		}
+		e.Sub = out
+	}
+	switch len(e.Sub) {
+	case 0:
+		return &Expr{Kind: Empty, Origin: e.Origin}
+	case 1:
+		return e.Sub[0]
+	}
+	return e
+}

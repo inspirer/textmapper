@@ -5,8 +5,35 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/dump"
 )
+
+var simplifyTests = []struct {
+	input *syntax.Expr
+	want  *syntax.Expr
+}{
+	{
+		input: &syntax.Expr{
+			Kind: syntax.Sequence,
+			Sub: []*syntax.Expr{
+				{Kind: syntax.Sequence, Sub: []*syntax.Expr{{Kind: syntax.Empty}}},
+				{Kind: syntax.Choice},
+				{Kind: syntax.Empty},
+			},
+		},
+		want: &syntax.Expr{Kind: syntax.Empty},
+	},
+}
+
+func TestSimplify(t *testing.T) {
+	for _, tc := range simplifyTests {
+		got := syntax.Simplify(tc.input)
+		if diff := dump.Diff(tc.want, got); diff != "" {
+			t.Errorf("Simplify(%v) produced diff (-want +got):\n%s", tc.input, diff)
+		}
+	}
+}
 
 func TestLexer(t *testing.T) {
 	input := `A -> a B c(b .foo|C)* {as}; B -> Q<T="true"> %prec z; C -> set(B); %input C;`
