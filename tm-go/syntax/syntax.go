@@ -202,8 +202,8 @@ const (
 	Choice                // of 2+ Sub
 	Sequence              // of 2+ Sub
 	Reference             // {Symbol}<{Args}>
-	Assign                // field={Sub0}
-	Append                // field+={Sub0}
+	Assign                // {Name}={Sub0}
+	Append                // {Name}+={Sub0}
 	Arrow                 // {Sub0} -> {Name}
 	Set                   // set({Pos = index in Model.Sets})
 	StateMarker           // .{Name}
@@ -219,6 +219,32 @@ const (
 	// Top-level expressions.
 	List // of {Sub0}, separator={Sub1} (if present), also {ListFlags}
 )
+
+var kindStr = map[ExprKind]string{
+	Empty:        "Empty",
+	Optional:     "Optional",
+	Choice:       "Choice",
+	Sequence:     "Sequence",
+	Reference:    "Reference",
+	Assign:       "Assign",
+	Append:       "Append",
+	Arrow:        "Arrow",
+	Set:          "Set",
+	StateMarker:  "StateMarker",
+	Command:      "Command",
+	Lookahead:    "Lookahead",
+	LookaheadNot: "LookaheadNot",
+	Conditional:  "Conditional",
+	Prec:         "Prec",
+	List:         "List",
+}
+
+func (k ExprKind) GoString() string {
+	if val, ok := kindStr[k]; ok {
+		return val
+	}
+	return fmt.Sprintf("unknown(%v)", k)
+}
 
 // TokenSet is a grammar expression that resolves to a set of tokens.
 type TokenSet struct {
