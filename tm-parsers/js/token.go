@@ -147,6 +147,9 @@ const (
 	ASSIGNGT           // =>
 	MULTMULT           // **
 	MULTMULTASSIGN     // **=
+	QUESTQUESTASSIGN   // ??=
+	ORORASSIGN         // ||=
+	ANDANDASSIGN       // &&=
 	NUMERICLITERAL
 	STRINGLITERAL
 	NOSUBSTITUTIONTEMPLATE
@@ -298,6 +301,9 @@ var tokenStr = [...]string{
 	"=>",
 	"**",
 	"**=",
+	"??=",
+	"||=",
+	"&&=",
 	"NUMERICLITERAL",
 	"STRINGLITERAL",
 	"NOSUBSTITUTIONTEMPLATE",

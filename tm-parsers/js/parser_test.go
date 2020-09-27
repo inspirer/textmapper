@@ -350,6 +350,9 @@ var parseTests = []struct {
 		`{ «a >>>= 5» }`,
 		`{ «a |= 5» }`,
 		`{ «a **= 5» }`,
+		`{ «a ??= b» }`,
+		`{ «a ||= b» }`,
+		`{ «a &&= b» }`,
 	}},
 	{js.Javascript, js.CommaExpr, []string{
 		`{ «a = 5, b = 6» }`,
@@ -360,6 +363,7 @@ var parseTests = []struct {
 		` a«+=»1`,
 		` a«**=»2`,
 		` a«<<=» b «+=» 1`,
+		` a «??=» b `,
 	}},
 	{js.Javascript, js.Block, []string{
 		`«{}»`,
@@ -1042,11 +1046,26 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TupleType, []string{
 		`let x: «[string, number]»;`,
+		`type x = «[...Strings, ...Numbers]»;`,
+		`type Unbounded = «[...Strings, ...Numbers, boolean]»;`,
 		`let t: «[number, string?, boolean?]»;`,
 		`export type Bar = «[foo, ...(string | number)[]]»;`,
+		`type Arr = readonly any[];
+		 function concat<T extends Arr, U extends Arr>(arr1: T, arr2: U): «[...T, ...U]» {
+		   return [...arr1, ...arr2];
+		 }`,
+		`type Range = «[label1: number, label2: number]»;`,
+		`type Foo = «[first: number, second?: string, ...rest: any[]]»;`,
 	}},
 	{js.Typescript, js.RestType, []string{
 		`type Bar = [foo, «...(string | number)[]»];`,
+		`type Bar = [...b: «(string | number)[]»];`,
+		`function partialCall<T extends Arr, U extends Arr, R>(f: (...args: [«...T», «...U»]) => R, ...headArgs: T) {
+			return (...b: U) => f(...headArgs, ...b)
+		 }`,
+	}},
+	{js.Typescript, js.NamedTupleMember, []string{
+		`type Foo = [«first: number», «second?: string», «...rest: any[]»];`,
 	}},
 	{js.Typescript, js.NullableType, []string{
 		`let t: [number, «string?», «boolean?»];`,
@@ -1428,6 +1447,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.Catch, []string{
 		`try {} «catch { throw e }» /* 2.5 Optional catch clause variables */`,
+		`try {} «catch (a: unknown) {}» /* 4.0 catch parameter types */`,
 	}},
 	{js.Typescript, js.TsExclToken, []string{
 		`let x«!»: number; /* 2.7 definite assignment assertions */`,

@@ -112,7 +112,7 @@ const (
 	LabelledStmt     // LabelIdent Func? Stmt?
 	ThrowStmt        // Expr
 	TryStmt          // Block Catch? Finally?
-	Catch            // BindingPattern? NameIdent? Block
+	Catch            // BindingPattern? NameIdent? TypeAnnotation? Block
 	Finally          // Block
 	DebuggerStmt
 	Func               // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
@@ -199,7 +199,8 @@ const (
 	ArrayType         // TsType
 	IndexedAccessType // left=TsType index=TsType
 	MappedType        // NameIdent TsType TypeAnnotation
-	TupleType         // (TsType)*
+	TupleType         // (TupleMember)*
+	NamedTupleMember  // TsType
 	RestType          // TsType
 	FuncType          // TypeParameters? Parameters TsType
 	Parameters        // (Parameter)*
@@ -438,6 +439,7 @@ var nodeTypeStr = [...]string{
 	"IndexedAccessType",
 	"MappedType",
 	"TupleType",
+	"NamedTupleMember",
 	"RestType",
 	"FuncType",
 	"Parameters",
@@ -845,6 +847,36 @@ var TsType = []NodeType{
 	KeyOfType,
 	LiteralType,
 	MappedType,
+	NonNullableType,
+	NullableType,
+	ObjectType,
+	ParenthesizedType,
+	PredefinedType,
+	ReadonlyType,
+	RestType,
+	ThisType,
+	TsConditional,
+	TupleType,
+	TypePredicate,
+	TypeQuery,
+	TypeReference,
+	TypeVar,
+	UnionType,
+	UniqueType,
+}
+
+var TupleMember = []NodeType{
+	ArrayType,
+	AssertsType,
+	ConstructorType,
+	FuncType,
+	ImportType,
+	IndexedAccessType,
+	IntersectionType,
+	KeyOfType,
+	LiteralType,
+	MappedType,
+	NamedTupleMember,
 	NonNullableType,
 	NullableType,
 	ObjectType,

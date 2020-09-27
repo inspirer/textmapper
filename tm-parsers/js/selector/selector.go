@@ -129,6 +129,7 @@ var (
 	NameIdent              = func(t js.NodeType) bool { return t == js.NameIdent }
 	NameSpaceImport        = func(t js.NodeType) bool { return t == js.NameSpaceImport }
 	NamedImports           = func(t js.NodeType) bool { return t == js.NamedImports }
+	NamedTupleMember       = func(t js.NodeType) bool { return t == js.NamedTupleMember }
 	NewExpr                = func(t js.NodeType) bool { return t == js.NewExpr }
 	NewTarget              = func(t js.NodeType) bool { return t == js.NewTarget }
 	NoElement              = func(t js.NodeType) bool { return t == js.NoElement }
@@ -267,6 +268,7 @@ var (
 	TokenSet               = OneOf(js.TokenSet...)
 	TsAmbientElement       = OneOf(js.TsAmbientElement...)
 	TsType                 = OneOf(js.TsType...)
+	TupleMember            = OneOf(js.TupleMember...)
 	TypeMember             = OneOf(js.TypeMember...)
 )
 

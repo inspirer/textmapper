@@ -8,6 +8,7 @@
 %start StartOfIs // no-eoi
 %start StartOfFunctionType // no-eoi
 %start StartOfMappedType // no-eoi
+%start StartOfTupleElementName // no-eoi
 %start Module
 
 %left RESOLVESHIFT
@@ -127,6 +128,9 @@
 %token XORASSIGN
 %token ASSIGNGT
 %token MULTMULTASSIGN
+%token QUESTQUESTASSIGN
+%token ORORASSIGN
+%token ANDANDASSIGN
 %token NUMERICLITERAL
 %token STRINGLITERAL
 %token NOSUBSTITUTIONTEMPLATE
@@ -4263,6 +4267,9 @@ AssignmentOperator :
 | XORASSIGN
 | ORASSIGN
 | MULTMULTASSIGN
+| QUESTQUESTASSIGN
+| ORORASSIGN
+| ANDANDASSIGN
 ;
 
 CommaExpression_Await_In :
@@ -5201,17 +5208,23 @@ Finally_Yield :
 ;
 
 CatchParameter :
-  BindingIdentifier
+  BindingIdentifier TypeAnnotation
+| BindingIdentifier
+| BindingPattern TypeAnnotation
 | BindingPattern
 ;
 
 CatchParameter_Await :
-  BindingIdentifier
+  BindingIdentifier TypeAnnotation
+| BindingIdentifier
+| BindingPattern_Await TypeAnnotation
 | BindingPattern_Await
 ;
 
 CatchParameter_Yield :
-  BindingIdentifier
+  BindingIdentifier TypeAnnotation
+| BindingIdentifier
+| BindingPattern_Yield TypeAnnotation
 | BindingPattern_Yield
 ;
 
@@ -6365,9 +6378,28 @@ TupleType :
 | LBRACK RBRACK
 ;
 
+// lookahead: !StartOfTupleElementName
+lookahead_notStartOfTupleElementName :
+  %empty
+;
+
+// lookahead: StartOfTupleElementName
+lookahead_StartOfTupleElementName :
+  %empty
+;
+
 TupleElementType :
-  Type
-| DOTDOTDOT Type
+  lookahead_notStartOfTupleElementName Type
+| lookahead_StartOfTupleElementName IdentifierName QUEST COLON Type
+| lookahead_StartOfTupleElementName IdentifierName COLON Type
+| DOTDOTDOT lookahead_notStartOfTupleElementName Type
+| DOTDOTDOT lookahead_StartOfTupleElementName IdentifierName QUEST COLON Type
+| DOTDOTDOT lookahead_StartOfTupleElementName IdentifierName COLON Type
+;
+
+StartOfTupleElementName :
+  IdentifierName QUEST COLON
+| IdentifierName COLON
 ;
 
 StartOfFunctionType :

@@ -219,6 +219,9 @@ invalid_token: /\?\.[0-9]/   { l.rewind(l.tokenOffset+1); token = QUEST }
 '=>': /=>/
 '**': /\*\*/
 '**=': /\*\*=/
+'??=': /\?\?=/
+'||=': /\|\|=/
+'&&=': /&&=/
 
 # Numeric literals starting with zero in V8:
 #   00000 == 0, 00001 = 1, 00.0 => error
@@ -725,7 +728,7 @@ AssignmentExpression<In, Yield, Await> -> Expr /* interface */:
 ;
 
 AssignmentOperator -> AssignmentOperator :
-    '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' ;
+    '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '>>>=' | '&=' | '^=' | '|=' | '**=' | '??=' | '||=' | '&&=' ;
 
 CommaExpression<In, Yield, Await> -> CommaExpr :
     left=Expression ',' right=AssignmentExpression ;
@@ -1006,8 +1009,8 @@ Finally<Yield, Await> -> Finally :
 ;
 
 CatchParameter<Yield, Await> :
-    BindingIdentifier
-  | BindingPattern
+    BindingIdentifier TypeAnnotation?
+  | BindingPattern TypeAnnotation?
 ;
 
 DebuggerStatement -> DebuggerStmt :
@@ -1485,10 +1488,17 @@ MappedType -> MappedType :
 TupleType -> TupleType :
     '[' (TupleElementType separator ',')+? ']' ;
 
-TupleElementType -> TsType:
-    Type
-  | '...' Type  -> RestType
+%interface TupleMember;
+
+TupleElementType -> TupleMember:
+    (?= !StartOfTupleElementName) Type
+  | (?= StartOfTupleElementName) IdentifierName '?'? ':' Type -> NamedTupleMember
+  | '...' (?= !StartOfTupleElementName) Type  -> RestType
+  | '...' (?= StartOfTupleElementName) IdentifierName '?'? ':' (Type -> RestType as TsType) -> NamedTupleMember
 ;
+
+StartOfTupleElementName:
+      IdentifierName '?'? ':' ;
 
 # This lookahead rule disambiguates FunctionType vs ParenthesizedType
 # productions by enumerating all prefixes of FunctionType that would

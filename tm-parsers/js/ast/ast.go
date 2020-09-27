@@ -141,6 +141,7 @@ func (n MultiplicativeExpr) JsNode() *Node     { return n.Node }
 func (n NameIdent) JsNode() *Node              { return n.Node }
 func (n NameSpaceImport) JsNode() *Node        { return n.Node }
 func (n NamedImports) JsNode() *Node           { return n.Node }
+func (n NamedTupleMember) JsNode() *Node       { return n.Node }
 func (n NewExpr) JsNode() *Node                { return n.Node }
 func (n NewTarget) JsNode() *Node              { return n.Node }
 func (n NoElement) JsNode() *Node              { return n.Node }
@@ -783,6 +784,43 @@ func (UnionType) tsTypeNode()         {}
 func (UniqueType) tsTypeNode()        {}
 func (NilNode) tsTypeNode()           {}
 
+type TupleMember interface {
+	JsNode
+	tupleMemberNode()
+}
+
+// tupleMemberNode() ensures that only the following types can be
+// assigned to TupleMember.
+//
+func (ArrayType) tupleMemberNode()         {}
+func (AssertsType) tupleMemberNode()       {}
+func (ConstructorType) tupleMemberNode()   {}
+func (FuncType) tupleMemberNode()          {}
+func (ImportType) tupleMemberNode()        {}
+func (IndexedAccessType) tupleMemberNode() {}
+func (IntersectionType) tupleMemberNode()  {}
+func (KeyOfType) tupleMemberNode()         {}
+func (LiteralType) tupleMemberNode()       {}
+func (MappedType) tupleMemberNode()        {}
+func (NamedTupleMember) tupleMemberNode()  {}
+func (NonNullableType) tupleMemberNode()   {}
+func (NullableType) tupleMemberNode()      {}
+func (ObjectType) tupleMemberNode()        {}
+func (ParenthesizedType) tupleMemberNode() {}
+func (PredefinedType) tupleMemberNode()    {}
+func (ReadonlyType) tupleMemberNode()      {}
+func (RestType) tupleMemberNode()          {}
+func (ThisType) tupleMemberNode()          {}
+func (TsConditional) tupleMemberNode()     {}
+func (TupleType) tupleMemberNode()         {}
+func (TypePredicate) tupleMemberNode()     {}
+func (TypeQuery) tupleMemberNode()         {}
+func (TypeReference) tupleMemberNode()     {}
+func (TypeVar) tupleMemberNode()           {}
+func (UnionType) tupleMemberNode()         {}
+func (UniqueType) tupleMemberNode()        {}
+func (NilNode) tupleMemberNode()           {}
+
 type TypeMember interface {
 	JsNode
 	typeMemberNode()
@@ -1219,6 +1257,11 @@ func (n Catch) BindingPattern() (BindingPattern, bool) {
 
 func (n Catch) NameIdent() (NameIdent, bool) {
 	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
+}
+
+func (n Catch) TypeAnnotation() (TypeAnnotation, bool) {
+	field := TypeAnnotation{n.Child(selector.TypeAnnotation)}
 	return field, field.IsValid()
 }
 
@@ -2643,6 +2686,14 @@ func (n NamedImports) NamedImport() []NamedImport {
 	return ret
 }
 
+type NamedTupleMember struct {
+	*Node
+}
+
+func (n NamedTupleMember) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
 type NewExpr struct {
 	*Node
 }
@@ -3659,11 +3710,11 @@ type TupleType struct {
 	*Node
 }
 
-func (n TupleType) TsType() []TsType {
-	nodes := n.Children(selector.TsType)
-	var ret = make([]TsType, 0, len(nodes))
+func (n TupleType) TupleMember() []TupleMember {
+	nodes := n.Children(selector.TupleMember)
+	var ret = make([]TupleMember, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(TsType))
+		ret = append(ret, ToJsNode(node).(TupleMember))
 	}
 	return ret
 }

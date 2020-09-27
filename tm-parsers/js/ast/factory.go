@@ -247,6 +247,8 @@ func ToJsNode(n *Node) JsNode {
 		return &NameSpaceImport{n}
 	case js.NamedImports:
 		return &NamedImports{n}
+	case js.NamedTupleMember:
+		return &NamedTupleMember{n}
 	case js.NewExpr:
 		return &NewExpr{n}
 	case js.NewTarget:
