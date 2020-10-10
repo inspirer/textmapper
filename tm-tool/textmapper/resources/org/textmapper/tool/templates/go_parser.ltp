@@ -90,8 +90,8 @@ const (
 ${if self->ignoredReportTokens()-}
 	startTokenBufferSize = 16
 ${end-}
-	noToken        = int32(UNAVAILABLE)
-	eoiToken       = int32(EOI)
+	noToken        = int32(${self->go_token.unavailableRef()})
+	eoiToken       = int32(${self->go_token.eoiRef()})
 	debugSyntax    = ${opts.debugParser}
 )
 
@@ -398,7 +398,7 @@ ${end}
 
 ${template recoverFromError-}
 func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
-	var recoverSyms [1 + NumTokens/8]uint8
+	var recoverSyms [1 + ${self->go_token.numTokensRef()}/8]uint8
 	var recoverPos []int
 
 	for size := len(stack); size > 0; size-- {
@@ -508,12 +508,12 @@ ${end}
 ${template fetchNext-}
 func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry${if self->ignoredReportTokens()}, ignoredTokens []symbol) []symbol${else})${end} {
 restart:
-	token := lexer.Next()
-	switch token {
+	tok := lexer.Next()
+	switch tok {
 ${if self->ignoredReportTokens()-}
-	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenName())->util.join(', ')}:
+	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenRef())->util.join(', ')}:
 		s, e := lexer.Pos()
-		tok := symbol{int32(token), s, e}
+		tok := symbol{int32(tok), s, e}
 		if ignoredTokens == nil {
 			p.reportIgnoredToken(tok)
 		} else {
@@ -526,7 +526,7 @@ ${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 		goto restart
 ${end-}
 	}
-	p.next.symbol = int32(token)
+	p.next.symbol = int32(tok)
 	p.next.offset, p.next.endoffset = lexer.Pos()
 ${if self->ignoredReportTokens()-}
 	return ignoredTokens
@@ -537,16 +537,16 @@ ${end}
 ${template reportIgnoredToken-}
 func (p *Parser) reportIgnoredToken(tok symbol) {
 	var t ${self->go_listener.nodeTypeRef()}
-	switch Token(tok.symbol) {
+	switch ${self->go_token.tokenTypeRef()}(tok.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}
-	case ${tok->go_token.tokenName()}:
+	case ${tok->go_token.tokenRef()}:
 		t = ${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}
 ${end-}
 	default:
 		return
 	}
 	if debugSyntax {
-		"fmt".Printf("ignored: %v as %v\n", Token(tok.symbol), t)
+		"fmt".Printf("ignored: %v as %v\n", ${self->go_token.tokenTypeRef()}(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }
@@ -554,9 +554,9 @@ ${end}
 
 ${template reportConsumedNext-}
 ${if self->nonignoredReportTokens()-}
-			switch Token(p.next.symbol) {
+			switch ${self->go_token.tokenTypeRef()}(p.next.symbol) {
 ${foreach tok in self->nonignoredReportTokens()-}
-			case ${tok->go_token.tokenName()}:
+			case ${tok->go_token.tokenRef()}:
 				p.listener(${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}, p.next.offset, p.next.endoffset)
 ${end-}
 			}
@@ -569,7 +569,7 @@ restart:
 	tok := lexer.Next()
 	switch tok {
 ${if self->ignoredReportTokens()-}
-	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenName())->util.join(', ')}:
+	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenRef())->util.join(', ')}:
 		goto restart
 ${end-}
 ${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
@@ -759,10 +759,10 @@ ${end-}
 }
 
 func symbolName(sym int32) string {
-	if sym < int32(NumTokens) {
-		return Token(sym).String()
+	if sym < int32(${self->go_token.numTokensRef()}) {
+		return ${self->go_token.tokenTypeRef()}(sym).String()
 	}
-	if i := int(sym) - int(NumTokens); i < len(tmNonterminals) {
+	if i := int(sym) - int(${self->go_token.numTokensRef()}); i < len(tmNonterminals) {
 		return tmNonterminals[i]
 	}
 	return "fmt".Sprintf("nonterminal(%d)", sym)

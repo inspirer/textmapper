@@ -309,11 +309,11 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []symbol) []symbol {
 restart:
-	token := lexer.Next()
-	switch token {
+	tok := lexer.Next()
+	switch tok {
 	case INVALID_TOKEN, MULTILINECOMMENT, COMMENT, TEMPLATES:
 		s, e := lexer.Pos()
-		tok := symbol{int32(token), s, e}
+		tok := symbol{int32(tok), s, e}
 		if ignoredTokens == nil {
 			p.reportIgnoredToken(tok)
 		} else {
@@ -321,7 +321,7 @@ restart:
 		}
 		goto restart
 	}
-	p.next.symbol = int32(token)
+	p.next.symbol = int32(tok)
 	p.next.offset, p.next.endoffset = lexer.Pos()
 	return ignoredTokens
 }

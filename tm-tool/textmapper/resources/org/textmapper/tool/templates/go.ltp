@@ -17,7 +17,7 @@ ${util.extractStatements(rule->go_parser.parserAction('lhs.value'))-}
 ${end}
 
 ${template lexerAction(rule)-}
-${rule->go_lexer.lexerAction('l.value', 'token')-}
+${rule->go_lexer.lexerAction('l.value', 'tok')-}
 ${end}
 
 ${query escapeGoReserved() =

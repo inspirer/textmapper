@@ -334,7 +334,7 @@ recovered:
 {{- if .Lexer.RuleToken}}
 
 	token := tmToken[rule]
-	space := false
+	var space bool
 {{- if .Lexer.Actions}}
 	switch rule {
 	case 0:

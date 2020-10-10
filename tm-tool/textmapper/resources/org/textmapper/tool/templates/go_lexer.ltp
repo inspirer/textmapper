@@ -89,7 +89,7 @@ ${template lexerNext}
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() Token {
+func (l *Lexer) Next() ${self->go_token.tokenTypeRef()} {
 ${call onBeforeNext-}
 ${if !self->canInlineLexerRules() || syntax.lexerRules.exists(r|r->isSpace())-}
 restart:
@@ -168,7 +168,7 @@ ${end-}
 	}
 
 ${if self->canInlineLexerRules()-}
-	token := Token(tmFirstRule - state)
+	${self->go_token.tokenVar()} := ${self->go_token.tokenTypeRef()}(tmFirstRule - state)
 ${else-}
 	rule := tmFirstRule - state
 ${end-}
@@ -176,7 +176,7 @@ ${if lex.backtracking.length > 0-}
 recovered:
 ${end-}
 ${if self->classRules().exists(it|it->classHasInstances())-}
-	switch ${self->canInlineLexerRules() ? 'token' : 'rule'} {
+	switch ${self->canInlineLexerRules() ? self->go_token.tokenVar() : 'rule'} {
 ${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
 ${if self->canInlineLexerRules()-}
 	case ${classRule.symbol->go_token.tokenName()}:
@@ -201,7 +201,7 @@ ${end-}
 	}
 ${end-}
 ${if self->canInlineLexerRules()-}
-	switch token {
+	switch ${self->go_token.tokenVar()} {
 	case ${self->go_token.invalidTokenName()}:
 ${call handleInvalidToken-}
 ${if list = syntax.lexerRules.select(r|r->isSpace()).collectUnique(r|r.symbol.index), list.size() > 0-}
@@ -211,8 +211,8 @@ ${end-}
 	}
 ${else-}
 
-	token := tmToken[rule]
-	space := false
+	${self->go_token.tokenVar()} := tmToken[rule]
+	var space bool
 ${if syntax.lexerRules.exists(r|r.code)-}
 	switch rule {
 	case 0:
@@ -232,7 +232,7 @@ ${end-}
 	}
 ${end-}
 ${call onAfterNext-}
-	return token
+	return ${self->go_token.tokenVar()}
 }
 ${end}
 
@@ -305,7 +305,7 @@ ${template handleInvalidToken-}
 ${if lex.backtracking.length > 0-}
 		if ${self->backupVar()} >= 0 {
 ${if self->canInlineLexerRules()-}
-			token = Token(backupToken)
+			${self->go_token.tokenVar()} = ${self->go_token.tokenTypeRef()}(backupToken)
 ${else-}
 			rule = backupRule
 ${end-}
@@ -317,7 +317,7 @@ ${end-}
 			l.rewind(l.scanOffset)
 		}
 ${if self->canInlineLexerRules()-}
-		if token != ${self->go_token.invalidTokenName()} {
+		if ${self->go_token.tokenVar()} != ${self->go_token.invalidTokenName()} {
 ${else-}
 		if rule != 0 {
 ${end-}
@@ -333,7 +333,7 @@ ${end}
 ${template instanceToRuleIf(val,instanceRule)-}
 			if hash == 0x${util.hashHex(val)} && "${util.escape(val)}" == l.source[l.tokenOffset:l.offset] {
 ${if self->canInlineLexerRules()-}
-				token = ${instanceRule.symbol->go_token.tokenName()}
+				${self->go_token.tokenVar()} = ${instanceRule.symbol->go_token.tokenName()}
 ${else-}
 				rule = ${instanceRule.index+2}
 ${end-}
@@ -404,7 +404,7 @@ ${util.formatEx(lex.groupset, '\t', 79)-}
 }
 
 ${if !self->canInlineLexerRules()-}
-var tmToken = []Token{
+var tmToken = []${self->go_token.tokenTypeRef()}{
 ${util.formatEx(syntax.lexerRuleTokens, '\t', 79)-}
 }
 

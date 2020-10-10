@@ -1,12 +1,12 @@
 ${template main-}
-${file 'token.go'-}
+${file self->tokenFilename()-}
 ${call go.header-}
 ${call token-}
 ${end-}
 ${end}
 
 ${template token-}
-package ${self->go.package()}
+package ${self->package()}
 
 // Token is an enum of all terminal symbols of the ${opts.lang} language.
 type Token int
@@ -36,6 +36,16 @@ func (tok Token) String() string {
 	return "fmt".Sprintf("token(%d)", tok)
 }
 ${end}
+
+${query tokenFilename() = 'token.go'}
+${query package() = self->go.package()}
+
+${query tokenVar() = 'token'}
+${query tokenTypeRef() = self->package()->go.element('Token')}
+${query numTokensRef() = self->package()->go.element('NumTokens')}
+${query eoiRef() = self->package()->go.element('EOI')}
+${query unavailableRef() = self->package()->go.element('UNAVAILABLE')}
+${query tokenRef() = self->package()->go.element(self->tokenName())}
 
 ${cached query tokenName() = self.id->go.escapeGoReserved()}
 

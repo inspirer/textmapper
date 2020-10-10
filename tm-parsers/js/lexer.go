@@ -473,7 +473,7 @@ restart:
 	}
 
 	token := tmToken[rule]
-	space := false
+	var space bool
 	switch rule {
 	case 0:
 		if l.offset == l.tokenOffset {

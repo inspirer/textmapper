@@ -153,12 +153,12 @@ func gotoState(state int8, symbol int32) int8 {
 
 func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 restart:
-	token := lexer.Next()
-	switch token {
+	tok := lexer.Next()
+	switch tok {
 	case INVALID_TOKEN:
 		goto restart
 	}
-	p.next.symbol = int32(token)
+	p.next.symbol = int32(tok)
 	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 

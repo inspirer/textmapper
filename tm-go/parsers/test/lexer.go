@@ -133,7 +133,7 @@ recovered:
 	}
 
 	token := tmToken[rule]
-	space := false
+	var space bool
 	switch rule {
 	case 0:
 		if backupRule >= 0 {
