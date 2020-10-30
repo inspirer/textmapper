@@ -2,9 +2,9 @@ package syntax_test
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 
+	"github.com/inspirer/textmapper/tm-parsers/tm"
 	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/dump"
 )
@@ -45,15 +45,16 @@ func parse(input string) (*syntax.Model, error) {
 	}
 
 	// 2. Parse everything
-	p := parser{lexer: lexer{input: input}, out: ret}
+	p := parser{out: ret}
+	p.lexer.Init(input)
 	p.next()
-	for p.curr != EOI {
+	for p.curr != tm.EOI {
 		p.parseDecl()
-		if p.lexer.err != nil {
+		if p.err != nil {
 			break
 		}
 	}
-	return ret, p.lexer.err
+	return ret, p.err
 }
 
 var parserTests = []struct {
@@ -141,204 +142,70 @@ func TestParser(t *testing.T) {
 	}
 }
 
-func TestLexer(t *testing.T) {
-	input := `A: a B c(b .foo|C)* {as}; B: Q<T="true"> set(B) %prec z; C: set(B); %input C;`
-	l := lexer{input: input}
-	var got []string
-	for l.next() != EOI {
-		got = append(got, l.text())
-	}
-	if l.err != nil {
-		t.Fatalf("lexer(%v) failed with %v", input, l.err)
-	}
-
-	want := []string{"A", ":", "a", "B", "c", "(", "b", ".", "foo", "|", "C", ")", "*", "{as}", ";",
-		"B", ":", "Q", "<", "T", "=", `"true"`, ">", "set", "(", "B", ")",
-		"%", "prec", "z", ";",
-		"C", ":", "set", "(", "B", ")", ";",
-		"%", "input", "C", ";"}
-	if diff := dump.Diff(want, got); diff != "" {
-		t.Errorf("next(%v) produced diff (-want +got):\n%s", input, diff)
-	}
-
-	// Test failures.
-	l = lexer{input: `A - > g;`}
-	for l.next() != EOI {
-	}
-	wantErr := fmt.Errorf("unexpected input: %s", "A ▶- > g;")
-	if diff := dump.Diff(wantErr, l.err); diff != "" {
-		t.Errorf("lexer.err(%v) produced diff (-want +got):\n%s", l.input, diff)
-	}
-}
-
-type token uint16
-
-const (
-	EOI token = 0
-
-	ID token = iota + 256
-	TERM
-	NAME
-	CODE
-	LITERAL
-	PLUSEQ
-	LOOKAHEAD
-	ARROW
-	SEPARATOR
-	SET
-	AS
-)
-
-var tokenStr = map[token]string{
-	EOI:       "EOI",
-	ID:        "ID",
-	TERM:      "TERM",
-	NAME:      "NAME",
-	CODE:      "CODE",
-	LITERAL:   "LITERAL",
-	PLUSEQ:    "'+='",
-	LOOKAHEAD: "'(?='",
-	ARROW:     "'->'",
-	SEPARATOR: "separator",
-	SET:       "set",
-	AS:        "as",
-}
-
-func (t token) String() string {
-	if val, ok := tokenStr[t]; ok {
-		return val
-	}
-	if t < 256 {
-		return fmt.Sprintf("'%c'", t)
-	}
-	return "UNKNOWN"
-}
-
-// lexer is a simplified lexer for the textual representation of syntax.Model, supporting
-// a subset of the Textmapper language tokens.
-type lexer struct {
-	input      string
-	tokenStart int
-	offset     int
-	err        error
-}
-
-func (l *lexer) text() string {
-	return l.input[l.tokenStart:l.offset]
-}
-
-func (l *lexer) next() token {
-restart:
-	l.tokenStart = l.offset
-	if l.offset == len(l.input) {
-		return EOI
-	}
-	start := l.offset
-	s := l.input[start:]
-	ch := s[0]
-	if ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' {
-		for ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9' {
-			l.offset++
-			if l.offset >= len(l.input) {
-				break
-			}
-			ch = l.input[l.offset]
-		}
-		if strings.HasPrefix(l.input[l.offset:], "=") || strings.HasPrefix(l.input[l.offset:], "+=") {
-			return NAME
-		}
-		if l.offset-l.tokenStart == 1 && s[0] >= 'a' && s[0] <= 'z' {
-			return TERM
-		}
-		switch l.text() {
-		case "separator":
-			return SEPARATOR
-		case "set":
-			return SET
-		case "as":
-			return AS
-		}
-		return ID
-	}
-	switch ch {
-	case ' ', '\t', '\n', '\r':
-		l.offset++
-		goto restart
-	case '-':
-		if strings.HasPrefix(s, "->") {
-			l.offset += 2
-			return ARROW
-		}
-	case ';', ':', '(', ')', '|', '&', '?', '*', '+', '<', '>', ',', '=', '$', '%', '.':
-		if strings.HasPrefix(s, "+=") {
-			l.offset += 2
-			return PLUSEQ
-		}
-		if strings.HasPrefix(s, "(?=") {
-			l.offset += 3
-			return LOOKAHEAD
-		}
-		l.offset++
-		return token(ch)
-	case '{':
-		if i := strings.IndexByte(s, '}'); i >= 0 {
-			l.offset += i + 1
-			return CODE
-		}
-	case '"':
-		if i := strings.IndexByte(s[1:], '"'); i >= 0 {
-			l.offset += i + 2
-			return LITERAL
-		}
-	}
-
-	// Unexpected input.
-	l.err = fmt.Errorf("unexpected input: %v", l.input[:l.tokenStart]+"▶"+l.input[l.tokenStart:])
-	l.offset = len(l.input)
-	return EOI
+func isTerm(s string) bool {
+	return len(s) == 1 && s[0] >= 'a' && s[0] <= 'z'
 }
 
 func initSymbols(input string, out *syntax.Model) error {
-	l := lexer{input: input}
+	var l tm.Lexer
+	l.Init(input)
 	seen := make(map[string]bool)
 	out.Terminals = []string{"EOI"}
 	out.Nonterms = nil
-	var prev token
-	for tok := l.next(); tok != EOI; tok = l.next() {
-		switch tok {
-		case TERM:
-			if !seen[l.text()] {
-				out.Terminals = append(out.Terminals, l.text())
+	var prev tm.Token
+	for tok := l.Next(); tok != tm.EOI; tok = l.Next() {
+		if tok == tm.INVALID_TOKEN {
+			return fmt.Errorf("%v: invalid token: %s", l.Line(), l.Text())
+		}
+		if tok != tm.ID {
+			prev = tok
+			continue
+		}
+		copy := l
+		if la := copy.Next(); la == tm.ASSIGN || la == tm.PLUSASSIGN {
+			prev = tok
+			continue
+		}
+
+		if isTerm(l.Text()) {
+			if !seen[l.Text()] {
+				out.Terminals = append(out.Terminals, l.Text())
 			}
-			seen[l.text()] = true
-		case ID:
-			if prev == EOI || prev == ';' {
-				if seen[l.text()] {
-					if l.err != nil {
-						return l.err
-					}
-					return fmt.Errorf("redeclaration of " + l.text())
+			seen[l.Text()] = true
+		} else {
+			if prev == tm.EOI || prev == tm.SEMICOLON {
+				if seen[l.Text()] {
+					return fmt.Errorf("redeclaration of " + l.Text())
 				}
-				seen[l.text()] = true
-				out.Nonterms = append(out.Nonterms, &syntax.Nonterm{Name: l.text()})
+				seen[l.Text()] = true
+				out.Nonterms = append(out.Nonterms, &syntax.Nonterm{Name: l.Text()})
 			}
 		}
 		prev = tok
 	}
-	return l.err
+	return nil
 }
 
 type parser struct {
-	lexer lexer
-	curr  token
+	lexer tm.Lexer
+	curr  tm.Token
+	err   error
 	out   *syntax.Model
 }
 
 func (p *parser) next() {
-	p.curr = p.lexer.next()
+	p.curr = p.lexer.Next()
+	if tm.IsSoftKeyword(p.curr) {
+		p.curr = tm.ID
+	}
 }
 
-func (p *parser) consumeIf(tok token) bool {
+func (p *parser) lookahead() tm.Token {
+	l := p.lexer
+	return l.Next()
+}
+
+func (p *parser) consumeIf(tok tm.Token) bool {
 	if p.curr == tok {
 		p.next()
 		return true
@@ -346,7 +213,7 @@ func (p *parser) consumeIf(tok token) bool {
 	return false
 }
 
-func (p *parser) consume(tok token) {
+func (p *parser) consume(tok tm.Token) {
 	if p.curr != tok {
 		p.errorf("found %v, while %v is expected", p.curr, tok)
 	}
@@ -354,22 +221,22 @@ func (p *parser) consume(tok token) {
 }
 
 func (p *parser) errorf(format string, a ...interface{}) {
-	if p.lexer.err != nil {
+	if p.err != nil {
 		return
 	}
 	l := p.lexer
 	msg := fmt.Sprintf(format, a...)
-	p.lexer.err = fmt.Errorf("%v: %v", msg, l.input[:l.tokenStart]+"▶"+l.input[l.tokenStart:])
+	p.err = fmt.Errorf("line %v (at %v): %v", l.Line(), l.Text(), msg)
 }
 
 func (p *parser) parseDecl() {
 	switch p.curr {
-	case ID:
+	case tm.ID:
 		p.parseNonterm()
 		return
-	case '%':
+	case tm.REM:
 		p.next()
-		switch p.lexer.text() {
+		switch p.lexer.Text() {
 		case "flag", "lookahead":
 			p.parseFlag()
 			return
@@ -381,21 +248,19 @@ func (p *parser) parseDecl() {
 
 func (p *parser) parseFlag() {
 	var la bool
-	if p.lexer.text() == "lookahead" {
+	if p.lexer.Text() == "lookahead" {
 		la = true
 		p.next()
 	}
-	if p.lexer.text() != "flag" {
+	if p.lexer.Text() != "flag" {
 		p.errorf("'flag' is expected")
 	}
 	p.next()
-	name := p.lexer.text()
-	if !p.consumeIf(NAME) {
-		p.consume(ID)
-	}
+	name := p.lexer.Text()
+	p.consume(tm.ID)
 	var defaultVal string
-	if p.consumeIf('=') {
-		defaultVal = p.lexer.text()
+	if p.consumeIf(tm.ASSIGN) {
+		defaultVal = p.lexer.Text()
 		if defaultVal != "true" && defaultVal != "false" {
 			p.errorf("true or false expected")
 		}
@@ -406,35 +271,38 @@ func (p *parser) parseFlag() {
 		DefaultValue: defaultVal,
 		Lookahead:    la,
 	})
-	p.consume(';')
+	p.consume(tm.SEMICOLON)
 }
 
 func (p *parser) parseNonterm() {
 	_, ret := p.parseNontermRef()
-	if p.consumeIf('<') {
+	if ret == nil {
+		return
+	}
+	if p.consumeIf(tm.LT) {
 		ret.Params = append(ret.Params, p.parseParamRef())
-		for p.consumeIf(',') {
+		for p.consumeIf(tm.COMMA) {
 			ret.Params = append(ret.Params, p.parseParamRef())
 		}
-		p.consume('>')
+		p.consume(tm.GT)
 	}
-	if p.curr == CODE {
-		ret.Type = p.lexer.text()
+	if p.curr == tm.CODE {
+		ret.Type = p.lexer.Text()
 		p.next()
 	}
-	p.consume(':')
+	p.consume(tm.COLON)
 	ret.Value = &syntax.Expr{Kind: syntax.Choice}
 	ret.Value.Sub = append(ret.Value.Sub, p.parseRule())
-	for p.consumeIf('|') {
+	for p.consumeIf(tm.OR) {
 		ret.Value.Sub = append(ret.Value.Sub, p.parseRule())
 	}
 	ret.Value = syntax.Simplify(ret.Value)
-	p.consume(';')
+	p.consume(tm.SEMICOLON)
 }
 
 func (p *parser) parseNontermRef() (int, *syntax.Nonterm) {
-	name := p.lexer.text()
-	p.consume(ID)
+	name := p.lexer.Text()
+	p.consume(tm.ID)
 	for i, val := range p.out.Nonterms {
 		if val.Name == name {
 			return i + len(p.out.Terminals), val
@@ -445,8 +313,11 @@ func (p *parser) parseNontermRef() (int, *syntax.Nonterm) {
 }
 
 func (p *parser) parseTermRef() int {
-	name := p.lexer.text()
-	p.consume(TERM)
+	name := p.lexer.Text()
+	p.consume(tm.ID)
+	if !isTerm(name) {
+		p.errorf("terminal reference is expected (found %q)", name)
+	}
 	for i, val := range p.out.Terminals {
 		if val == name {
 			return i
@@ -457,10 +328,8 @@ func (p *parser) parseTermRef() int {
 }
 
 func (p *parser) parseParamRef() int {
-	name := p.lexer.text()
-	if !p.consumeIf(NAME) {
-		p.consume(ID)
-	}
+	name := p.lexer.Text()
+	p.consume(tm.ID)
 	for i, val := range p.out.Params {
 		if val.Name == name {
 			return i
@@ -473,12 +342,12 @@ func (p *parser) parseParamRef() int {
 func (p *parser) parseRule() *syntax.Expr {
 	// TODO parse predicate
 	ret := p.parseParts()
-	if p.consumeIf('%') {
+	if p.consumeIf(tm.REM) {
 		// TODO parse %prec
 	}
-	if p.consumeIf(ARROW) {
-		name := p.lexer.text()
-		p.consume(ID)
+	if p.consumeIf(tm.MINUSGT) {
+		name := p.lexer.Text()
+		p.consume(tm.ID)
 		ret = &syntax.Expr{Kind: syntax.Arrow, Name: name, Sub: []*syntax.Expr{ret}}
 	}
 	return ret
@@ -498,14 +367,17 @@ func (p *parser) parseParts() *syntax.Expr {
 
 func (p *parser) parsePart() *syntax.Expr {
 	switch p.curr {
-	case NAME:
-		name := p.lexer.text()
+	case tm.ID:
+		if la := p.lookahead(); la != tm.PLUSASSIGN && la != tm.ASSIGN {
+			break
+		}
+		name := p.lexer.Text()
 		p.next()
 		var kind syntax.ExprKind
 		switch p.curr {
-		case PLUSEQ:
+		case tm.PLUSASSIGN:
 			kind = syntax.Append
-		case '=':
+		case tm.ASSIGN:
 			kind = syntax.Assign
 		default:
 			p.errorf("wrong assignment")
@@ -514,16 +386,16 @@ func (p *parser) parsePart() *syntax.Expr {
 		p.next()
 		inner := p.parseOpt()
 		return &syntax.Expr{Kind: kind, Name: name, Sub: []*syntax.Expr{inner}}
-	case '.':
+	case tm.DOT:
 		p.next()
-		name := p.lexer.text()
-		p.consume(ID)
+		name := p.lexer.Text()
+		p.consume(tm.ID)
 		return &syntax.Expr{Kind: syntax.StateMarker, Name: name}
-	case CODE:
-		code := p.lexer.text()
+	case tm.CODE:
+		code := p.lexer.Text()
 		p.next()
 		return &syntax.Expr{Kind: syntax.Command, Name: code}
-	case LOOKAHEAD:
+	case tm.LOOKAHEAD:
 		p.next()
 		// TODO parse lookaheads
 	}
@@ -535,11 +407,11 @@ func (p *parser) parseOpt() *syntax.Expr {
 	if inner == nil {
 		return nil
 	}
-	if p.curr == AS {
+	if p.curr == tm.AS {
 		p.next()
 		// TODO parse as
 	}
-	if p.curr == '?' {
+	if p.curr == tm.QUEST {
 		p.next()
 		inner = &syntax.Expr{Kind: syntax.Optional, Sub: []*syntax.Expr{inner}}
 	}
@@ -547,25 +419,25 @@ func (p *parser) parseOpt() *syntax.Expr {
 }
 
 func (p *parser) parseSymref() *syntax.Expr {
-	if p.curr == TERM {
+	if isTerm(p.lexer.Text()) {
 		return &syntax.Expr{Kind: syntax.Reference, Symbol: p.parseTermRef()}
 	}
 	sym, _ := p.parseNontermRef()
 	var args []syntax.Arg
-	if p.consumeIf('<') {
+	if p.consumeIf(tm.LT) {
 		args = append(args, p.parseArg())
-		for p.consumeIf(',') {
+		for p.consumeIf(tm.COMMA) {
 			args = append(args, p.parseArg())
 		}
-		p.consume('>')
+		p.consume(tm.GT)
 	}
 	return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args}
 }
 
 func (p *parser) parseArg() syntax.Arg {
 	param := p.parseParamRef()
-	p.consume('=')
-	val := p.lexer.text()
+	p.consume(tm.ASSIGN)
+	val := p.lexer.Text()
 	if val == "true" || val == "false" {
 		p.next()
 		return syntax.Arg{Param: param, Value: val}
@@ -577,42 +449,42 @@ func (p *parser) parsePrimary() *syntax.Expr {
 	var ret *syntax.Expr
 	var sep *syntax.Expr
 	switch p.curr {
-	case TERM, ID:
+	case tm.ID:
 		ret = p.parseSymref()
-	case '(':
+	case tm.LPAREN:
 		p.next()
 		ret = &syntax.Expr{Kind: syntax.Choice}
 		ret.Sub = append(ret.Sub, p.parseRule())
-		if p.consumeIf(SEPARATOR) {
+		if p.consumeIf(tm.SEPARATOR) {
 			sep = &syntax.Expr{Kind: syntax.Sequence}
 			for {
 				sym := &syntax.Expr{Kind: syntax.Reference, Symbol: p.parseTermRef()}
 				sep.Sub = append(sep.Sub, sym)
-				if p.curr != TERM {
+				if p.curr != tm.ID {
 					break
 				}
 			}
-			p.consume(')')
-			if p.curr != '+' && p.curr != '*' {
+			p.consume(tm.RPAREN)
+			if p.curr != tm.PLUS && p.curr != tm.MULT {
 				p.errorf("qualifier is expected")
 			}
 			break
 		}
-		for p.consumeIf('|') {
+		for p.consumeIf(tm.OR) {
 			ret.Sub = append(ret.Sub, p.parseRule())
 		}
-		p.consume(')')
-	case SET:
+		p.consume(tm.RPAREN)
+	case tm.SET:
 		p.next()
-		p.consume('(')
+		p.consume(tm.LPAREN)
 		// TODO parse set
-		p.consume(')')
+		p.consume(tm.RPAREN)
 	default:
 		return nil
 	}
-	for p.curr == '+' || p.curr == '*' {
+	for p.curr == tm.PLUS || p.curr == tm.MULT {
 		var flags syntax.ListFlags
-		if p.curr == '+' {
+		if p.curr == tm.PLUS {
 			flags = syntax.OneOrMore
 		}
 		p.next()
