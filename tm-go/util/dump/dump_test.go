@@ -113,7 +113,7 @@ var tests = []struct {
 	// Depth check
 	{rec{}, `dump_test.rec{}`},
 	{&rec{}, `&dump_test.rec{}`},
-	{&rec{&rec{&rec{&rec{&rec{&rec{&rec{&rec{&rec{&rec{}}}}}}}}}}, `&dump_test.rec{
+	{&rec{&rec{&rec{&rec{&rec{&rec{&rec{&rec{&rec{&rec{&rec{}}}}}}}}}}}, `&dump_test.rec{
   I: &{
     I: &{
       I: &{
@@ -121,7 +121,11 @@ var tests = []struct {
           I: &{
             I: &{
               I: &{
-                I: &...,
+                I: &{
+                  I: &{
+                    I: &...,
+                  },
+                },
               },
             },
           },
@@ -136,7 +140,7 @@ func TestObject(t *testing.T) {
 	for _, tc := range tests {
 		got := dump.Object(tc.input)
 		if diff := diff.LineDiff(tc.want, got); diff != "" {
-			t.Errorf("diff for %v\n--- want\n+++ got\n%v\n", tc.input, diff)
+			t.Errorf("diff for %#v\n--- want\n+++ got\n%v\n", tc.input, diff)
 		}
 	}
 }

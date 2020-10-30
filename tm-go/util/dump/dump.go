@@ -53,7 +53,7 @@ func (d *dumper) nl() {
 }
 
 func (d *dumper) serialize(val reflect.Value, storedAs reflect.Type, depth int) {
-	if depth > 16 {
+	if depth > 20 {
 		d.WriteString("...")
 		d.incomplete = true
 		return

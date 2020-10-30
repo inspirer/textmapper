@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/inspirer/textmapper/tm-parsers/tm"
 	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/dump"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
 )
 
 var simplifyTests = []struct {
@@ -110,7 +110,7 @@ var parserTests = []struct {
 			},
 		},
 	}},
-	{`%flag T; %lookahead flag V = true; A {foo}: a B<T=V, V=true>; B<T,V>:;`, &syntax.Model{
+	{`%flag T; %lookahead flag V = true; A {foo}: a B<T=V, V=true>; B<T,V>:[T!=123];`, &syntax.Model{
 		Terminals: []string{"EOI", "a"},
 		Params: []syntax.Param{
 			{Name: "T"},
@@ -124,7 +124,36 @@ var parserTests = []struct {
 					{Param: 1, Value: "true"},
 				}},
 			}}},
-			{Name: "B", Params: []int{0, 1}, Value: &syntax.Expr{Kind: syntax.Empty}},
+			{Name: "B", Params: []int{0, 1}, Value: &syntax.Expr{
+				Kind: syntax.Conditional,
+				Predicate: &syntax.Predicate{Op: syntax.Not, Sub: []*syntax.Predicate{
+					{Op: syntax.Equals, Param: 0, Value: "123"},
+				}},
+				Sub: []*syntax.Expr{{Kind: syntax.Empty}},
+			}},
+		},
+	}},
+	{`%flag A; %flag B; input: [A==false && B || !A] a | b;`, &syntax.Model{
+		Terminals: []string{"EOI", "a", "b"},
+		Params: []syntax.Param{
+			{Name: "A"},
+			{Name: "B"},
+		},
+		Nonterms: []*syntax.Nonterm{
+			{Name: "input", Value: &syntax.Expr{Kind: syntax.Choice, Sub: []*syntax.Expr{
+				{Kind: syntax.Conditional, Sub: []*syntax.Expr{{Kind: syntax.Reference, Symbol: 1}},
+					Predicate: &syntax.Predicate{
+						Op: syntax.Or,
+						Sub: []*syntax.Predicate{{Op: syntax.And, Sub: []*syntax.Predicate{
+							{Op: syntax.Equals, Param: 0, Value: "false"},
+							{Op: syntax.Equals, Param: 1, Value: "true"},
+						}},
+						{Op: syntax.Not, Sub: []*syntax.Predicate{
+							{Op: syntax.Equals, Param: 0, Value: "true"},
+						}}},
+					}},
+				{Kind: syntax.Reference, Symbol: 2},
+			}}},
 		},
 	}},
 }
@@ -157,7 +186,7 @@ func initSymbols(input string, out *syntax.Model) error {
 		if tok == tm.INVALID_TOKEN {
 			return fmt.Errorf("%v: invalid token: %s", l.Line(), l.Text())
 		}
-		if tok != tm.ID {
+		if tok != tm.ID && !tm.IsSoftKeyword(tok) {
 			prev = tok
 			continue
 		}
@@ -340,15 +369,30 @@ func (p *parser) parseParamRef() int {
 }
 
 func (p *parser) parseRule() *syntax.Expr {
-	// TODO parse predicate
+	var chain []*syntax.Expr
+	if p.curr == tm.LBRACK {
+		chain = append(chain, &syntax.Expr{Kind: syntax.Conditional, Predicate: p.parsePredicate()})
+	}
+
 	ret := p.parseParts()
 	if p.consumeIf(tm.REM) {
-		// TODO parse %prec
+		switch p.lexer.Text() {
+		case "prec":
+			p.next()
+			chain = append(chain, &syntax.Expr{Kind: syntax.Prec, Symbol: p.parseTermRef()})
+		default:
+			p.errorf("%%%s is not supported", p.lexer.Text())
+		}
 	}
 	if p.consumeIf(tm.MINUSGT) {
 		name := p.lexer.Text()
 		p.consume(tm.ID)
 		ret = &syntax.Expr{Kind: syntax.Arrow, Name: name, Sub: []*syntax.Expr{ret}}
+	}
+
+	for i := len(chain) - 1; i >= 0; i-- {
+		chain[i].Sub = []*syntax.Expr{ret}
+		ret = chain[i]
 	}
 	return ret
 }
@@ -408,8 +452,7 @@ func (p *parser) parseOpt() *syntax.Expr {
 		return nil
 	}
 	if p.curr == tm.AS {
-		p.next()
-		// TODO parse as
+		p.errorf("'as' clauses are not supported")
 	}
 	if p.curr == tm.QUEST {
 		p.next()
@@ -496,4 +539,57 @@ func (p *parser) parsePrimary() *syntax.Expr {
 		ret = &syntax.Expr{Kind: syntax.List, ListFlags: flags, Sub: sub}
 	}
 	return ret
+}
+
+func (p *parser) parsePredicate() *syntax.Predicate {
+	p.consume(tm.LBRACK)
+	ret := p.parsePredicateAnd()
+	for p.consumeIf(tm.OROR) {
+		if ret.Op != syntax.Or {
+			ret = &syntax.Predicate{Op: syntax.Or, Sub: []*syntax.Predicate{ret}}
+		}
+		ret.Sub = append(ret.Sub, p.parsePredicateAnd())
+	}
+	p.consume(tm.RBRACK)
+	return ret
+}
+
+func (p *parser) parsePredicateAnd() *syntax.Predicate {
+	ret := p.parsePredicatePrimary()
+	for p.consumeIf(tm.ANDAND) {
+		if ret.Op != syntax.And {
+			ret = &syntax.Predicate{Op: syntax.And, Sub: []*syntax.Predicate{ret}}
+		}
+		ret.Sub = append(ret.Sub, p.parsePredicatePrimary())
+	}
+	return ret
+}
+
+func (p *parser) parsePredicatePrimary() *syntax.Predicate {
+	if p.consumeIf(tm.EXCL) {
+		return &syntax.Predicate{Op: syntax.Not, Sub: []*syntax.Predicate{
+			{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true"}}}
+	}
+	ret := &syntax.Predicate{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true"}
+	switch p.curr {
+	case tm.ASSIGNASSIGN:
+		p.next()
+		ret.Value = p.literal()
+	case tm.EXCLASSIGN:
+		p.next()
+		ret.Value = p.literal()
+		ret = &syntax.Predicate{Op: syntax.Not, Sub: []*syntax.Predicate{ret}}
+	}
+	return ret
+}
+
+func (p *parser) literal() string {
+	switch p.curr {
+	case tm.TRUE, tm.FALSE, tm.ICON:
+		val := p.lexer.Text()
+		p.next()
+		return val
+	}
+	p.errorf("unexpected literal %q", p.lexer.Text())
+	return ""
 }
