@@ -1,21 +1,21 @@
-package grammar_test
+package set_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/inspirer/textmapper/tm-go/grammar"
+	"github.com/inspirer/textmapper/tm-go/util/set"
 )
 
 func TestClosureEmpty(t *testing.T) {
-	c := grammar.NewClosure(0)
+	c := set.NewClosure(0)
 	if err := c.Compute(); err != nil {
 		t.Errorf("Compute() failed with %v", err)
 	}
 }
 
 func TestClosureSingle(t *testing.T) {
-	c := grammar.NewClosure(0)
+	c := set.NewClosure(0)
 	fs := c.Add([]int{2, 42})
 	fs.Include(fs)
 	if err := c.Compute(); err != nil {
@@ -27,7 +27,7 @@ func TestClosureSingle(t *testing.T) {
 }
 
 func TestClosureUnion(t *testing.T) {
-	c := grammar.NewClosure(100)
+	c := set.NewClosure(100)
 	fs1 := c.Add([]int{1, 2, 3})
 	fs2 := c.Add([]int{7, 8})
 	fs3 := c.Add([]int{13})
@@ -41,7 +41,7 @@ func TestClosureUnion(t *testing.T) {
 		t.Errorf("Compute() failed with %v", err)
 	}
 	var want = []struct {
-		*grammar.FutureSet
+		*set.FutureSet
 		want string
 	}{
 		{fs1, "[1 2 3 7 8 13]"},
@@ -57,7 +57,7 @@ func TestClosureUnion(t *testing.T) {
 }
 
 func TestClosureUnionCycle(t *testing.T) {
-	c := grammar.NewClosure(2)
+	c := set.NewClosure(2)
 	fs1 := c.Add([]int{78})
 	fs2 := c.Add([]int{1, 11, 12})
 	fs3 := c.Add([]int{7, 8})
@@ -73,7 +73,7 @@ func TestClosureUnionCycle(t *testing.T) {
 		t.Errorf("Compute() failed with %v", err)
 	}
 	var want = []struct {
-		*grammar.FutureSet
+		*set.FutureSet
 		want string
 	}{
 		{fs1, "[78]"},
@@ -90,7 +90,7 @@ func TestClosureUnionCycle(t *testing.T) {
 }
 
 func TestClosureIntersection(t *testing.T) {
-	c := grammar.NewClosure(0)
+	c := set.NewClosure(0)
 	fs1 := c.Add([]int{1, 2, 3, 4, 5, 6, 9})
 	fs2 := c.Add([]int{0, 3, 5, 9, 12})
 	fs3 := c.Add([]int{3, 7, 8})
@@ -112,7 +112,7 @@ func TestClosureIntersection(t *testing.T) {
 		t.Errorf("Compute() failed with %v", err)
 	}
 	var want = []struct {
-		*grammar.FutureSet
+		*set.FutureSet
 		want string
 	}{
 		{fs1, "[1 2 3 4 5 6 9]"},
@@ -134,7 +134,7 @@ func TestClosureIntersection(t *testing.T) {
 }
 
 func TestClosureComplement(t *testing.T) {
-	c := grammar.NewClosure(0)
+	c := set.NewClosure(0)
 	fs1 := c.Add([]int{1, 2, 3, 4, 5, 6, 9})
 	fs2 := c.Add([]int{0, 3, 5, 9, 12})
 
@@ -144,7 +144,7 @@ func TestClosureComplement(t *testing.T) {
 	}
 
 	var want = []struct {
-		*grammar.FutureSet
+		*set.FutureSet
 		want string
 	}{
 		{fs1, "[1 2 3 4 5 6 9]"},
@@ -158,7 +158,7 @@ func TestClosureComplement(t *testing.T) {
 }
 
 func TestClosureIntersectionCycle(t *testing.T) {
-	c := grammar.NewClosure(0)
+	c := set.NewClosure(0)
 	fs1 := c.Add([]int{1, 2, 3, 4, 5, 6, 9})
 	fs2 := c.Add([]int{0, 3, 5, 9, 12})
 
@@ -171,7 +171,7 @@ func TestClosureIntersectionCycle(t *testing.T) {
 	}
 
 	var want = []struct {
-		*grammar.FutureSet
+		*set.FutureSet
 		want string
 	}{
 		{fs1, "[1 2 3 4 5 6 9]"},
@@ -186,7 +186,7 @@ func TestClosureIntersectionCycle(t *testing.T) {
 }
 
 func TestClosureError(t *testing.T) {
-	c := grammar.NewClosure(0)
+	c := set.NewClosure(0)
 	fs1 := c.Add([]int{1, 2, 3, 4, 5, 6, 9})
 	fs2 := c.Add([]int{0, 3, 5, 9, 12})
 
@@ -195,7 +195,7 @@ func TestClosureError(t *testing.T) {
 	fs2.Include(compl)
 
 	err := c.Compute()
-	ce, ok := err.(grammar.ClosureError)
+	ce, ok := err.(set.ClosureError)
 	if !ok {
 		t.Errorf("Compute() returned %v, want: an error", err)
 		return
@@ -211,7 +211,7 @@ func TestClosureError(t *testing.T) {
 }
 
 func TestClosureComplexCycle(t *testing.T) {
-	c := grammar.NewClosure(0)
+	c := set.NewClosure(0)
 	fs1 := c.Add([]int{})
 	fs2 := c.Add([]int{})
 	fs3 := c.Add([]int{})
@@ -236,7 +236,7 @@ func TestClosureComplexCycle(t *testing.T) {
 	}
 
 	var want = []struct {
-		*grammar.FutureSet
+		*set.FutureSet
 		want string
 	}{
 		{fs1, "[]"},
