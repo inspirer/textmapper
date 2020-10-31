@@ -144,17 +144,50 @@ var parserTests = []struct {
 				{Kind: syntax.Conditional, Sub: []*syntax.Expr{{Kind: syntax.Reference, Symbol: 1}},
 					Predicate: &syntax.Predicate{
 						Op: syntax.Or,
-						Sub: []*syntax.Predicate{{Op: syntax.And, Sub: []*syntax.Predicate{
-							{Op: syntax.Equals, Param: 0, Value: "false"},
-							{Op: syntax.Equals, Param: 1, Value: "true"},
-						}},
-						{Op: syntax.Not, Sub: []*syntax.Predicate{
-							{Op: syntax.Equals, Param: 0, Value: "true"},
-						}}},
-					}},
+						Sub: []*syntax.Predicate{
+							{Op: syntax.And, Sub: []*syntax.Predicate{
+								{Op: syntax.Equals, Param: 0, Value: "false"},
+								{Op: syntax.Equals, Param: 1, Value: "true"},
+							}},
+							{Op: syntax.Not, Sub: []*syntax.Predicate{
+								{Op: syntax.Equals, Param: 0, Value: "true"},
+							}},
+						},
+					},
+				},
 				{Kind: syntax.Reference, Symbol: 2},
 			}}},
 		},
+	}},
+	{`A: set(a & B | c | ~first B & precede B & last P & follow P & ~Q); B: z; P:; Q:;`, &syntax.Model{
+		Terminals: []string{"EOI", "a", "c", "z"},
+		Nonterms: []*syntax.Nonterm{
+			{Name: "A", Value: &syntax.Expr{Kind: syntax.Set, Pos: 0}},
+			{Name: "B", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 3}},
+			{Name: "P", Value: &syntax.Expr{Kind: syntax.Empty}},
+			{Name: "Q", Value: &syntax.Expr{Kind: syntax.Empty}},
+		},
+		Sets: []*syntax.TokenSet{{
+			Kind: syntax.Union,
+			Sub: []*syntax.TokenSet{
+				{Kind: syntax.Intersection, Sub: []*syntax.TokenSet{
+					{Kind: syntax.Any, Symbol: 1},
+					{Kind: syntax.Any, Symbol: 5},
+				}},
+				{Kind: syntax.Any, Symbol: 2},
+				{Kind: syntax.Intersection, Sub: []*syntax.TokenSet{
+					{Kind: syntax.Complement, Sub: []*syntax.TokenSet{
+						{Kind: syntax.First, Symbol: 5},
+					}},
+					{Kind: syntax.Precede, Symbol: 5},
+					{Kind: syntax.Last, Symbol: 6},
+					{Kind: syntax.Follow, Symbol: 6},
+					{Kind: syntax.Complement, Sub: []*syntax.TokenSet{
+						{Kind: syntax.Any, Symbol: 7},
+					}},
+				}},
+			},
+		}},
 	}},
 }
 
@@ -269,8 +302,9 @@ func (p *parser) parseDecl() {
 		case "flag", "lookahead":
 			p.parseFlag()
 			return
+		case "input", "generate", "interface":
+			p.errorf("TODO parse %v", p.lexer.Text())
 		}
-		// TODO parse %input, %generate, %interface
 	}
 	p.errorf("syntax error")
 }
@@ -441,7 +475,7 @@ func (p *parser) parsePart() *syntax.Expr {
 		return &syntax.Expr{Kind: syntax.Command, Name: code}
 	case tm.LOOKAHEAD:
 		p.next()
-		// TODO parse lookaheads
+		p.errorf("TODO parse lookaheads")
 	}
 	return p.parseOpt()
 }
@@ -519,9 +553,9 @@ func (p *parser) parsePrimary() *syntax.Expr {
 		p.consume(tm.RPAREN)
 	case tm.SET:
 		p.next()
-		p.consume(tm.LPAREN)
-		// TODO parse set
-		p.consume(tm.RPAREN)
+		pos := len(p.out.Sets)
+		p.out.Sets = append(p.out.Sets, p.parseSet())
+		return &syntax.Expr{Kind: syntax.Set, Pos: pos}
 	default:
 		return nil
 	}
@@ -592,4 +626,61 @@ func (p *parser) literal() string {
 	}
 	p.errorf("unexpected literal %q", p.lexer.Text())
 	return ""
+}
+
+func (p *parser) parseSet() *syntax.TokenSet {
+	p.consume(tm.LPAREN)
+	ret := p.parseSetAnd()
+	for p.consumeIf(tm.OR) {
+		if ret.Kind != syntax.Union {
+			ret = &syntax.TokenSet{Kind: syntax.Union, Sub: []*syntax.TokenSet{ret}}
+		}
+		ret.Sub = append(ret.Sub, p.parseSetAnd())
+	}
+	p.consume(tm.RPAREN)
+	return ret
+}
+
+func (p *parser) parseSetAnd() *syntax.TokenSet {
+	ret := p.parseSetPrimary()
+	for p.consumeIf(tm.AND) {
+		if ret.Kind != syntax.Intersection {
+			ret = &syntax.TokenSet{Kind: syntax.Intersection, Sub: []*syntax.TokenSet{ret}}
+		}
+		ret.Sub = append(ret.Sub, p.parseSetPrimary())
+	}
+	return ret
+}
+
+func (p *parser) parseSetPrimary() *syntax.TokenSet {
+	if p.curr == tm.LPAREN {
+		return p.parseSet()
+	}
+	compl := p.consumeIf(tm.TILDE)
+	var op string
+	if p.lookahead() == tm.ID {
+		op = p.lexer.Text()
+		p.next()
+	}
+	ret := &syntax.TokenSet{}
+	switch op {
+	case "":
+		ret.Kind = syntax.Any
+	case "precede":
+		ret.Kind = syntax.Precede
+	case "follow":
+		ret.Kind = syntax.Follow
+	case "first":
+		ret.Kind = syntax.First
+	case "last":
+		ret.Kind = syntax.Last
+	default:
+		p.errorf("unsupported operator %v", op)
+	}
+	expr := p.parseSymref()
+	ret.Symbol, ret.Args = expr.Symbol, expr.Args
+	if compl {
+		ret = &syntax.TokenSet{Kind: syntax.Complement, Sub: []*syntax.TokenSet{ret}}
+	}
+	return ret
 }

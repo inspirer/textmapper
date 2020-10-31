@@ -804,30 +804,30 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 	}
 }
 
-func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) syntax.TokenSet {
+func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) *syntax.TokenSet {
 	switch expr := expr.(type) {
 	case *ast.SetAnd:
-		return syntax.TokenSet{
+		return &syntax.TokenSet{
 			Kind:   syntax.Intersection,
-			Sub:    []syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
+			Sub:    []*syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
 			Origin: expr,
 		}
 	case *ast.SetComplement:
-		return syntax.TokenSet{
+		return &syntax.TokenSet{
 			Kind:   syntax.Complement,
-			Sub:    []syntax.TokenSet{c.convertSet(expr.Inner(), nonterm)},
+			Sub:    []*syntax.TokenSet{c.convertSet(expr.Inner(), nonterm)},
 			Origin: expr,
 		}
 	case *ast.SetCompound:
 		return c.convertSet(expr.Inner(), nonterm)
 	case *ast.SetOr:
-		return syntax.TokenSet{
+		return &syntax.TokenSet{
 			Kind:   syntax.Union,
-			Sub:    []syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
+			Sub:    []*syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
 			Origin: expr,
 		}
 	case *ast.SetSymbol:
-		ret := syntax.TokenSet{Kind: syntax.Any}
+		ret := &syntax.TokenSet{Kind: syntax.Any}
 		if op, ok := expr.Operator(); ok {
 			switch op.Text() {
 			case "first":
@@ -846,7 +846,7 @@ func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) s
 		return ret
 	default:
 		c.errorf(expr.TmNode(), "syntax error")
-		return syntax.TokenSet{} // == eoi
+		return &syntax.TokenSet{} // == eoi
 	}
 }
 

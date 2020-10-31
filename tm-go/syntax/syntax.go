@@ -16,8 +16,8 @@ type Model struct {
 	Params    []Param
 	Nonterms  []*Nonterm // all params and nonterms must have distinct names
 	Inputs    []Input
-	Sets      []TokenSet // extra token sets to compute
-	Cats      []string   // categories
+	Sets      []*TokenSet // extra token sets to compute
+	Cats      []string    // categories
 }
 
 func (m *Model) Ref(sym int, args []Arg) string {
@@ -251,11 +251,11 @@ type TokenSet struct {
 	Kind   SetOp
 	Symbol int
 	Args   []Arg
-	Sub    []TokenSet
+	Sub    []*TokenSet
 	Origin status.SourceNode
 }
 
-func (ts TokenSet) String(m *Model) string {
+func (ts *TokenSet) String(m *Model) string {
 	switch ts.Kind {
 	case Any:
 		return m.Ref(ts.Symbol, ts.Args)
