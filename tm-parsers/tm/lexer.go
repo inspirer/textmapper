@@ -25,6 +25,7 @@ type Lexer struct {
 	tokenOffset int  // last token offset
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
+	lineOffset  int  // current line offset
 	scanOffset  int  // scanning offset
 	value       interface{}
 
@@ -46,6 +47,7 @@ func (l *Lexer) Init(source string) {
 	l.tokenOffset = 0
 	l.line = 1
 	l.tokenLine = 1
+	l.lineOffset = 0
 	l.State = 0
 	l.inStatesSelector = false
 	l.prev = UNAVAILABLE
@@ -94,6 +96,7 @@ restart:
 
 			if l.ch == '\n' {
 				l.line++
+				l.lineOffset = l.offset
 			}
 
 			// Scan the next character.
@@ -393,6 +396,7 @@ func (l *Lexer) rewind(offset int) {
 		}
 		l.line += strings.Count(l.source[l.offset:offset], "\n")
 	}
+	l.lineOffset = 1 + strings.LastIndexByte(l.source[:offset], '\n')
 
 	// Scan the next character.
 	l.scanOffset = offset

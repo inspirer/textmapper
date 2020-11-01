@@ -408,13 +408,16 @@ func (l *Lexer) Value() interface{} {
 func (l *Lexer) rewind(offset int) {
 {{- if .Options.TokenLine}}
 	if offset < l.offset {
-		l.line -= strings.Count(l.source[offset:l.offset], "\n")
+		l.line -= "strings".Count(l.source[offset:l.offset], "\n")
 	} else {
 		if offset > len(l.source) {
 			offset = len(l.source)
 		}
-		l.line += strings.Count(l.source[l.offset:offset], "\n")
+		l.line += "strings".Count(l.source[l.offset:offset], "\n")
 	}
+{{- if .Options.TokenLineOffset}}
+	l.lineOffset = 1 + "strings".LastIndexByte(l.source[:offset], '\n')
+{{- end}}
 {{end}}
 	// Scan the next character.
 	l.scanOffset = offset
