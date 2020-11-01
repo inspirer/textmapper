@@ -26,6 +26,9 @@ ${call lexerPos-}
 ${if opts.tokenLine-}
 ${call lexerLine-}
 ${end-}
+${if opts.tokenColumn-}
+${call lexerColumn-}
+${end-}
 ${call lexerText-}
 ${call lexerValue-}
 ${call lexerRewind-}
@@ -44,8 +47,11 @@ ${if opts.tokenLine-}
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
 ${end-}
-${if opts.tokenLineOffset-}
+${if opts.tokenLineOffset || opts.tokenColumn-}
 	lineOffset  int  // current line offset
+${end-}
+${if opts.tokenColumn-}
+	tokenColumn int  // last token column (in bytes)
 ${end-}
 	scanOffset  int  // scanning offset
 	value       interface{}
@@ -70,8 +76,11 @@ ${if opts.tokenLine-}
 	l.line = 1
 	l.tokenLine = 1
 ${end-}
-${if opts.tokenLineOffset-}
+${if opts.tokenLineOffset || opts.tokenColumn-}
 	l.lineOffset = 0
+${end-}
+${if opts.tokenColumn-}
+	l.tokenColumn = 0
 ${end-}
 	l.State = 0
 ${call initStateVars-}
@@ -96,6 +105,9 @@ restart:
 ${end-}
 ${if opts.tokenLine-}
 	l.tokenLine = l.line
+${end-}
+${if opts.tokenColumn-}
+	l.tokenColumn = l.offset-l.lineOffset
 ${end-}
 	l.tokenOffset = l.offset
 
@@ -144,7 +156,7 @@ ${end-}
 ${if opts.tokenLine-}
 			if l.ch == '\n' {
 				l.line++
-${if opts.tokenLineOffset-}
+${if opts.tokenLineOffset || opts.tokenColumn-}
 				l.lineOffset = l.offset
 ${end-}
 			}
@@ -252,6 +264,13 @@ func (l *Lexer) Line() int {
 }
 ${end}
 
+${template lexerColumn}
+// Column returns the column of the last token returned by Next() (in bytes).
+func (l *Lexer) Column() int {
+	return l.tokenColumn
+}
+${end}
+
 ${template lexerText}
 // Text returns the substring of the input corresponding to the last token.
 func (l *Lexer) Text() string {
@@ -279,7 +298,7 @@ ${if opts.tokenLine-}
 		}
 		l.line += "strings".Count(l.source[l.offset:offset], "\n")
 	}
-${if opts.tokenLineOffset-}
+${if opts.tokenLineOffset || opts.tokenColumn-}
 	l.lineOffset = 1 + "strings".LastIndexByte(l.source[:offset], '\n')
 ${end-}
 

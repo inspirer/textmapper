@@ -155,6 +155,9 @@ const (
 {{- if .Options.TokenLine}}
 {{template "lexerLine" .}}
 {{- end}}
+{{- if .Options.TokenColumn}}
+{{template "lexerColumn" .}}
+{{- end}}
 {{template "lexerText" .}}
 {{template "lexerValue" .}}
 {{template "lexerRewind" .}}
@@ -173,8 +176,11 @@ type Lexer struct {
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
 {{- end}}
-{{- if .Options.TokenLineOffset}}
+{{- if or .Options.TokenLineOffset .Options.TokenColumn}}
 	lineOffset  int  // current line offset
+{{- end}}
+{{- if .Options.TokenColumn}}
+	tokenColumn int  // last token column (in bytes)
 {{- end}}
 	scanOffset  int  // scanning offset
 	value       interface{}
@@ -199,8 +205,11 @@ func (l *Lexer) Init(source string) {
 	l.line = 1
 	l.tokenLine = 1
 {{- end}}
-{{- if .Options.TokenLineOffset}}
+{{- if or .Options.TokenLineOffset .Options.TokenColumn}}
 	l.lineOffset = 0
+{{- end}}
+{{- if .Options.TokenColumn}}
+	l.tokenColumn = 0
 {{- end}}
 	l.State = 0
 {{- block "initStateVars" .}}{{end}}
@@ -226,6 +235,9 @@ restart:
 {{- end}}
 {{- if .Options.TokenLine}}
 	l.tokenLine = l.line
+{{- end}}
+{{- if .Options.TokenColumn}}
+	l.tokenColumn = l.offset-l.lineOffset
 {{- end}}
 	l.tokenOffset = l.offset
 
@@ -273,7 +285,7 @@ restart:
 {{- if .Options.TokenLine}}
 			if l.ch == '\n' {
 				l.line++
-{{- if .Options.TokenLineOffset}}
+{{- if or .Options.TokenLineOffset .Options.TokenColumn}}
 				l.lineOffset = l.offset
 {{- end}}
 			}
@@ -388,6 +400,13 @@ func (l *Lexer) Line() int {
 }
 {{end -}}
 
+{{- define "lexerColumn" -}}
+// Column returns the column of the last token returned by Next() (in bytes).
+func (l *Lexer) Column() int {
+	return l.tokenColumn
+}
+{{end -}}
+
 {{- define "lexerText" -}}
 // Text returns the substring of the input corresponding to the last token.
 func (l *Lexer) Text() string {
@@ -415,7 +434,7 @@ func (l *Lexer) rewind(offset int) {
 		}
 		l.line += "strings".Count(l.source[l.offset:offset], "\n")
 	}
-{{- if .Options.TokenLineOffset}}
+{{- if or .Options.TokenLineOffset .Options.TokenColumn}}
 	l.lineOffset = 1 + "strings".LastIndexByte(l.source[:offset], '\n')
 {{- end}}
 {{end}}

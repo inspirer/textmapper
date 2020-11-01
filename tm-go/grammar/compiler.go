@@ -1348,6 +1348,8 @@ func (c *compiler) parseOptions() {
 			opts.TokenLine = c.parseExpr(opt.Value(), opts.TokenLine).(bool)
 		case "tokenLineOffset":
 			opts.TokenLineOffset = c.parseExpr(opt.Value(), opts.TokenLineOffset).(bool)
+		case "tokenColumn":
+			opts.TokenColumn = c.parseExpr(opt.Value(), opts.TokenColumn).(bool)
 		case "nonBacktracking":
 			opts.NonBacktracking = c.parseExpr(opt.Value(), opts.NonBacktracking).(bool)
 		case "cancellable":

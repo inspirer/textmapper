@@ -106,6 +106,7 @@ type Options struct {
 	// Parser features.
 	TokenLine           bool // true by default
 	TokenLineOffset     bool
+	TokenColumn         bool
 	NonBacktracking     bool
 	Cancellable         bool
 	RecursiveLookaheads bool

@@ -26,6 +26,7 @@ type Lexer struct {
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
 	lineOffset  int  // current line offset
+	tokenColumn int  // last token column (in bytes)
 	scanOffset  int  // scanning offset
 	value       interface{}
 
@@ -48,6 +49,7 @@ func (l *Lexer) Init(source string) {
 	l.line = 1
 	l.tokenLine = 1
 	l.lineOffset = 0
+	l.tokenColumn = 0
 	l.State = 0
 	l.inStatesSelector = false
 	l.prev = UNAVAILABLE
@@ -66,6 +68,7 @@ func (l *Lexer) Init(source string) {
 func (l *Lexer) Next() Token {
 restart:
 	l.tokenLine = l.line
+	l.tokenColumn = l.offset - l.lineOffset
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
@@ -373,6 +376,11 @@ func (l *Lexer) Pos() (start, end int) {
 // Line returns the line number of the last token returned by Next().
 func (l *Lexer) Line() int {
 	return l.tokenLine
+}
+
+// Column returns the column of the last token returned by Next() (in bytes).
+func (l *Lexer) Column() int {
+	return l.tokenColumn
 }
 
 // Text returns the substring of the input corresponding to the last token.
