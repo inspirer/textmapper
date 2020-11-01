@@ -145,3 +145,6 @@ c2<foo> : [foo == «"\x"»] c2 ;
 
 c3<foo> : [foo == «123»] c3  ;
 # err: string is expected
+
+c4<«bar»> : ;
+# err: lookahead parameters cannot be declared 'bar'

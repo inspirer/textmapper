@@ -41,6 +41,22 @@ func (m *Model) Ref(sym int, args []Arg) string {
 	return fmt.Sprintf("%v<%v>", nt.Name, strings.Join(list, ","))
 }
 
+// ForEach visits all expressions of a given kind in the model.
+func (m *Model) ForEach(kind ExprKind, consumer func(container *Nonterm, expr *Expr)) {
+	var visit func(nt *Nonterm, e *Expr)
+	visit = func(nt *Nonterm, e *Expr) {
+		if e.Kind == kind {
+			consumer(nt, e)
+		}
+		for _, sub := range e.Sub {
+			visit(nt, sub)
+		}
+	}
+	for _, nt := range m.Nonterms {
+		visit(nt, nt.Value)
+	}
+}
+
 // Input introduces a start nonterminal.
 type Input struct {
 	Nonterm int // Index in model.Nonterms
@@ -255,6 +271,14 @@ type TokenSet struct {
 	Origin status.SourceNode
 }
 
+// ForEach visits all token set expressions in the tree.
+func (ts *TokenSet) ForEach(consumer func(ts *TokenSet)) {
+	consumer(ts)
+	for _, sub := range ts.Sub {
+		sub.ForEach(consumer)
+	}
+}
+
 func (ts *TokenSet) String(m *Model) string {
 	switch ts.Kind {
 	case Any:
@@ -323,6 +347,14 @@ type Predicate struct {
 	Param  int
 	Value  string
 	Origin status.SourceNode
+}
+
+// ForEach visits all predicate expressions in the tree.
+func (p *Predicate) ForEach(consumer func(*Predicate)) {
+	consumer(p)
+	for _, sub := range p.Sub {
+		sub.ForEach(consumer)
+	}
 }
 
 func (p *Predicate) String(m *Model) string {

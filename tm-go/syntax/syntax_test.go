@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/dump"
 	"github.com/inspirer/textmapper/tm-parsers/tm"
@@ -198,9 +199,35 @@ func TestParser(t *testing.T) {
 			t.Errorf("parse(%v) failed with %v", tc.input, err)
 			continue
 		}
+		stripOrigin(got)
 		if diff := dump.Diff(tc.want, got); diff != "" {
 			t.Errorf("parse(%v) produced diff (-want +got):\n%s", tc.input, diff)
 		}
+	}
+}
+
+func stripOrigin(m *syntax.Model) {
+	m.ForEach(syntax.Reference, func(_ *syntax.Nonterm, expr *syntax.Expr) {
+		for i := range expr.Args {
+			expr.Args[i].Origin = nil
+		}
+		expr.Origin = nil
+	})
+	m.ForEach(syntax.Conditional, func(_ *syntax.Nonterm, expr *syntax.Expr) {
+		expr.Predicate.ForEach(func(p *syntax.Predicate) {
+			p.Origin = nil
+		})
+		expr.Origin = nil
+	})
+	for _, set := range m.Sets {
+		set.ForEach(func(ts *syntax.TokenSet) {
+			for i := range ts.Args {
+				ts.Args[i].Origin = nil
+			}
+		})
+	}
+	for _, nt := range m.Nonterms {
+		nt.Origin = nil
 	}
 }
 
@@ -240,12 +267,33 @@ func initSymbols(input string, out *syntax.Model) error {
 					return fmt.Errorf("redeclaration of " + l.Text())
 				}
 				seen[l.Text()] = true
-				out.Nonterms = append(out.Nonterms, &syntax.Nonterm{Name: l.Text()})
+				out.Nonterms = append(out.Nonterms, &syntax.Nonterm{Name: l.Text(), Origin: tokenOrigin(&l)})
 			}
 		}
 		prev = tok
 	}
 	return nil
+}
+
+type node struct {
+	offset, endoffset int
+	line, col         int
+}
+
+// SourceRange implements status.SourceNode
+func (n node) SourceRange() status.SourceRange {
+	return status.SourceRange{
+		Filename:  "input",
+		Line:      n.line,
+		Column:    n.col,
+		Offset:    n.offset,
+		EndOffset: n.endoffset,
+	}
+}
+
+func tokenOrigin(l *tm.Lexer) node {
+	start, end := l.Pos()
+	return node{line: l.Line(), col: l.Column(), offset: start, endoffset: end}
 }
 
 type parser struct {
@@ -512,14 +560,15 @@ func (p *parser) parseSymref() *syntax.Expr {
 }
 
 func (p *parser) parseArg() syntax.Arg {
+	origin := tokenOrigin(&p.lexer)
 	param := p.parseParamRef()
 	p.consume(tm.ASSIGN)
 	val := p.lexer.Text()
 	if val == "true" || val == "false" {
 		p.next()
-		return syntax.Arg{Param: param, Value: val}
+		return syntax.Arg{Param: param, Value: val, Origin: origin}
 	}
-	return syntax.Arg{Param: param, TakeFrom: p.parseParamRef()}
+	return syntax.Arg{Param: param, TakeFrom: p.parseParamRef(), Origin: origin}
 }
 
 func (p *parser) parsePrimary() *syntax.Expr {
@@ -600,11 +649,12 @@ func (p *parser) parsePredicateAnd() *syntax.Predicate {
 }
 
 func (p *parser) parsePredicatePrimary() *syntax.Predicate {
+	origin := tokenOrigin(&p.lexer)
 	if p.consumeIf(tm.EXCL) {
 		return &syntax.Predicate{Op: syntax.Not, Sub: []*syntax.Predicate{
-			{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true"}}}
+			{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true", Origin: origin}}}
 	}
-	ret := &syntax.Predicate{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true"}
+	ret := &syntax.Predicate{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true", Origin: origin}
 	switch p.curr {
 	case tm.ASSIGNASSIGN:
 		p.next()

@@ -670,7 +670,11 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 					}
 					seen[name] = true
 					if i, ok := c.params[name]; ok {
-						nt.Params = append(nt.Params, i)
+						if !c.source.Params[i].Lookahead {
+							nt.Params = append(nt.Params, i)
+						} else {
+							c.errorf(param, "lookahead parameters cannot be declared '%v'", name)
+						}
 						continue
 					}
 					c.errorf(param, "unresolved parameter reference '%v'", name)
@@ -1065,10 +1069,6 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 	var uninitialized []string
 	for _, p := range required.Slice(nil) {
 		param := c.source.Params[p]
-		if param.Lookahead {
-			// These get propagated automatically.
-			continue
-		}
 		if nonterm != nil {
 			var found bool
 			for _, from := range nonterm.Params {
