@@ -26,15 +26,15 @@ var propagateTests = []struct {
 	},
 	{
 		`%lookahead flag V; Z: A<V=true>; A: B; B: C? c; C: [V] d;`,
-		`ERR: input:1:39: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
+		`ERR: input:1:40: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
 	},
 	{
 		`%lookahead flag V; Z: A<V=true>; A: B; B: (C | c)?; C: [V] d;`,
-		`ERR: input:1:39: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
+		`ERR: input:1:40: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
 	},
 	{
 		`%lookahead flag V; Z: A<V=true>; A: B; B: (C | c)*; C: [V] d;`,
-		`ERR: input:1:39: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
+		`ERR: input:1:40: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
 	},
 	{
 		`%lookahead flag V; Z: A<V=true>; A: B; B: (C | c)+; C: [V] d;`,
@@ -46,19 +46,19 @@ var propagateTests = []struct {
 	},
 	{
 		`%lookahead flag V; Z: A<V=true>; A: B; B: (C | c?); C: [V] d;`,
-		`ERR: input:1:39: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
+		`ERR: input:1:40: cannot propagate lookahead flag V through nonterminal B; avoid nullable alternatives and optional clauses`,
 	},
 	{
 		`%lookahead flag V; Z: A<V=true>; A: B; B: C; C: d;`,
-		`ERR: input:1:24: V is not used in A`,
+		`ERR: input:1:25: V is not used in A`,
 	},
 	{
 		`%lookahead flag V; Z: A<V=true>; A: B<V=true>; B: C; C: [V] d;`,
-		`ERR: input:1:24: V is not used in A`,
+		`ERR: input:1:25: V is not used in A`,
 	},
 	{
 		`%lookahead flag V;Z2:[V] A; A: B<V=true>; B: C; C: [V] d;`,
-		`ERR: input:1:22: lookahead flag V is never provided`,
+		`ERR: input:1:23: lookahead flag V is never provided`,
 	},
 	// Lookahead flag arguments in token sets.
 	{

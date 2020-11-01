@@ -619,7 +619,7 @@ func (l *Lexer) Pos() (start, end int) {
 	return
 }
 
-// Line returns the line number of the last token returned by Next().
+// Line returns the line number of the last token returned by Next() (1-based).
 func (l *Lexer) Line() int {
 	return l.tokenLine
 }

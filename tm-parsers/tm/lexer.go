@@ -49,7 +49,7 @@ func (l *Lexer) Init(source string) {
 	l.line = 1
 	l.tokenLine = 1
 	l.lineOffset = 0
-	l.tokenColumn = 0
+	l.tokenColumn = 1
 	l.State = 0
 	l.inStatesSelector = false
 	l.prev = UNAVAILABLE
@@ -68,7 +68,7 @@ func (l *Lexer) Init(source string) {
 func (l *Lexer) Next() Token {
 restart:
 	l.tokenLine = l.line
-	l.tokenColumn = l.offset - l.lineOffset
+	l.tokenColumn = l.offset - l.lineOffset + 1
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
@@ -373,12 +373,12 @@ func (l *Lexer) Pos() (start, end int) {
 	return
 }
 
-// Line returns the line number of the last token returned by Next().
+// Line returns the line number of the last token returned by Next() (1-based).
 func (l *Lexer) Line() int {
 	return l.tokenLine
 }
 
-// Column returns the column of the last token returned by Next() (in bytes).
+// Column returns the column of the last token returned by Next() (in bytes, 1-based).
 func (l *Lexer) Column() int {
 	return l.tokenColumn
 }
