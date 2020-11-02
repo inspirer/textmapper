@@ -1,7 +1,7 @@
-0.9.29
+0.9.30
 ------
 
-...
+[+] New lexer parameter 'tokenColumn' generates a Lexer.Column method. 
 
 0.9.28
 ------
