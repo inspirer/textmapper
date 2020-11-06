@@ -16,11 +16,15 @@ Identifier: /[a-zA-Z_]+/    (class)
 ')': /\)/
 '[': /\[/
 ']': /\]/
+'+': /\+/
 '.': /\./
 ',': /,/
 ':': /:/
 '-': /-/
 '->': /->/
+'!': /!/
+
+UNO:
 
 :: parser
 
@@ -39,6 +43,7 @@ expr<Foo> -> Expr:
   | '(' expr<~Foo> ')' -> Bar
   | [Foo] '{' (Identifier separator ',')+ '}' -> Init
   | delayed<+Async>
+  | '->' delayed
 ;
 
 %flag Async = true;
@@ -46,22 +51,56 @@ expr<Foo> -> Expr:
 delayed<Foo, Async> -> Delayed:
       '.' '.' expr
     | [Async && !Foo || Foo] '(' expr<~Foo> ')' '->' expr
+    | '->' '(' PropagationWrap<+IfFirst> ')' delayed
+;
+
+%lookahead flag IfFirst;
+
+PropagationWrap :
+      Propagation
+    | '!' Propagation
+;
+
+%left '+' '-';
+%right UNO;
+
+Propagation :
+      '(' PropagationWrap ')'
+    | [IfFirst] (Propagation | 'b') 'c'
+    | Propagation '+' Propagation
+    | Propagation<~IfFirst> '-' Propagation
+    | '-' Propagation %prec UNO
 ;
 
 %%
 
 Simple :
-  'a' expr<Foo="true"> -> File ;
+  'a' expr<Foo: "true"> -> File ;
 
 expr<Foo> :
   Identifier -> Identifier -> Expr
-| '(' expr<Foo="false"> ')' -> Bar -> Expr
+| '(' expr<Foo: "false"> ')' -> Bar -> Expr
 | [Foo="true"] '{' (Identifier separator ',')+ '}' -> Init -> Expr
-| delayed<Async="true",Foo=Foo> -> Expr
+| delayed<Async: "true", Foo: Foo> -> Expr
+| '->' delayed<Foo: Foo, Async: "true"> -> Expr
 ;
 
 delayed<Foo, Async> :
-  '.' '.' expr<Foo=Foo> -> Delayed
-| [(Async="true" & !(Foo="true")) | Foo="true"] '(' expr<Foo="false"> ')' '->' expr<Foo=Foo> -> Delayed
+  '.' '.' expr<Foo: Foo> -> Delayed
+| [(Async="true" & !(Foo="true")) | Foo="true"] '(' expr<Foo: "false"> ')' '->' expr<Foo: Foo> -> Delayed
+| '->' '(' PropagationWrap<IfFirst: "true"> ')' delayed<Foo: Foo, Async: Async> -> Delayed
+;
+
+PropagationWrap<IfFirst> :
+  Propagation<IfFirst: IfFirst>
+| '!' Propagation
+;
+
+Propagation<IfFirst> :
+  '(' PropagationWrap ')'
+| [IfFirst="true"] (Propagation<IfFirst: IfFirst> | 'b') 'c'
+| Propagation<IfFirst: IfFirst> '+' Propagation
+| Propagation<IfFirst: "false"> '-' Propagation
+| '-' Propagation %prec UNO
 ;
 

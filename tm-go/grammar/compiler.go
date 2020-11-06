@@ -1284,7 +1284,9 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 		}
 		if pred, ok := rule.Predicate(); ok {
 			pred := c.convertPredicate(pred.PredicateExpression(), nonterm)
-			expr = &syntax.Expr{Kind: syntax.Conditional, Predicate: pred, Sub: []*syntax.Expr{expr}, Model: c.source}
+			if pred != nil {
+				expr = &syntax.Expr{Kind: syntax.Conditional, Predicate: pred, Sub: []*syntax.Expr{expr}, Model: c.source}
+			}
 		}
 
 		subs = append(subs, expr)
@@ -1321,6 +1323,7 @@ func (c *compiler) compileParser() {
 		expr := c.convertRules(nt.def.Rule0(), c.source.Nonterms[nt.nonterm], defaultReport, nt.def)
 		c.source.Nonterms[nt.nonterm].Value = expr
 	}
+	syntax.PropagateLookaheads(c.source)
 
 	// TODO instantiate templates
 

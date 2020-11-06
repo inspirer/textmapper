@@ -20,6 +20,7 @@ type Model struct {
 	Cats      []string    // categories
 }
 
+// Ref returns the string version of a symbol reference for debugging.
 func (m *Model) Ref(sym int, args []Arg) string {
 	if sym < len(m.Terminals) {
 		return m.Terminals[sym]
@@ -32,13 +33,13 @@ func (m *Model) Ref(sym int, args []Arg) string {
 	for _, arg := range args {
 		var val string
 		if arg.Value == "" {
-			val = fmt.Sprintf("%v=%v", m.Params[arg.Param].Name, m.Params[arg.TakeFrom].Name)
+			val = fmt.Sprintf("%v: %v", m.Params[arg.Param].Name, m.Params[arg.TakeFrom].Name)
 		} else {
-			val = fmt.Sprintf("%v=%q", m.Params[arg.Param].Name, arg.Value)
+			val = fmt.Sprintf("%v: %q", m.Params[arg.Param].Name, arg.Value)
 		}
 		list = append(list, val)
 	}
-	return fmt.Sprintf("%v<%v>", nt.Name, strings.Join(list, ","))
+	return fmt.Sprintf("%v<%v>", nt.Name, strings.Join(list, ", "))
 }
 
 // ForEach visits all expressions of a given kind in the model.
