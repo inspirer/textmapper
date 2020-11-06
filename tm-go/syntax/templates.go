@@ -1,9 +1,9 @@
 package syntax
 
 import (
-	"github.com/inspirer/textmapper/tm-go/status"
 	"log"
 
+	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
 	"github.com/inspirer/textmapper/tm-go/util/set"
 )
@@ -223,4 +223,11 @@ func visitArgs(m *Model, consumer func(nonterm int, arg Arg) bool) {
 			ts.Args = out
 		})
 	}
+}
+
+// Instantiate instantiates all the templates rewriting the list of available nonterminals,
+// and updating all the references to match.
+func Instantiate(m *Model) error {
+	// TODO implement
+	return nil
 }

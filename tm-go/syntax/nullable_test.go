@@ -1,9 +1,10 @@
 package syntax_test
 
 import (
+	"testing"
+
 	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/dump"
-	"testing"
 )
 
 var nullableTests = []struct {

@@ -1323,7 +1323,8 @@ func (c *compiler) compileParser() {
 		expr := c.convertRules(nt.def.Rule0(), c.source.Nonterms[nt.nonterm], defaultReport, nt.def)
 		c.source.Nonterms[nt.nonterm].Value = expr
 	}
-	syntax.PropagateLookaheads(c.source)
+	c.s.AddError(syntax.PropagateLookaheads(c.source))
+	c.s.AddError(syntax.Instantiate(c.source))
 
 	// TODO instantiate templates
 

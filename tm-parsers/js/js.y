@@ -509,8 +509,8 @@ ClassPrivateRef :
 ;
 
 IdentifierReference :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | YIELD
 | AWAIT
 | LET
@@ -550,8 +550,8 @@ IdentifierReference :
 ;
 
 IdentifierReference_Await :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | YIELD
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
@@ -590,8 +590,8 @@ IdentifierReference_Await :
 ;
 
 IdentifierReference_Await_NoAsync_NoLet :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | YIELD
 | AS
 | ASSERTS
@@ -628,8 +628,8 @@ IdentifierReference_Await_NoAsync_NoLet :
 ;
 
 IdentifierReference_Await_NoLet :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | YIELD
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
@@ -667,8 +667,8 @@ IdentifierReference_Await_NoLet :
 ;
 
 IdentifierReference_Await_NoLet_Yield :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
 | ASSERTS
@@ -705,8 +705,8 @@ IdentifierReference_Await_NoLet_Yield :
 ;
 
 IdentifierReference_Await_Yield :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
@@ -744,8 +744,8 @@ IdentifierReference_Await_Yield :
 ;
 
 IdentifierReference_NoAsync_NoLet :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | YIELD
 | AWAIT
 | AS
@@ -783,8 +783,8 @@ IdentifierReference_NoAsync_NoLet :
 ;
 
 IdentifierReference_NoAsync_NoLet_Yield :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | AWAIT
 | AS
 | ASSERTS
@@ -821,8 +821,8 @@ IdentifierReference_NoAsync_NoLet_Yield :
 ;
 
 IdentifierReference_NoLet :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | YIELD
 | AWAIT
 | ASYNC lookahead_notStartOfArrowFunction
@@ -861,8 +861,8 @@ IdentifierReference_NoLet :
 ;
 
 IdentifierReference_NoLet_Yield :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | AWAIT
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
@@ -900,8 +900,8 @@ IdentifierReference_NoLet_Yield :
 ;
 
 IdentifierReference_WithoutPredefinedTypes :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | YIELD
 | AWAIT
 | LET
@@ -931,8 +931,8 @@ IdentifierReference_WithoutPredefinedTypes :
 ;
 
 IdentifierReference_Yield :
-  REM IDENTIFIER
-| IDENTIFIER
+  IDENTIFIER
+| REM IDENTIFIER
 | AWAIT
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
@@ -4927,7 +4927,8 @@ IfStatement_Yield :
 IterationStatement :
   DO Statement WHILE LPAREN Expression_In RPAREN SEMICOLON /*.doWhile*/
 | WHILE LPAREN Expression_In RPAREN Statement
-| FOR LPAREN Expressionopt_NoLet SEMICOLON /*.forSC*/ ForCondition SEMICOLON /*.forSC*/ ForFinalExpression RPAREN Statement
+| FOR LPAREN Expression_NoLet SEMICOLON /*.forSC*/ ForCondition SEMICOLON /*.forSC*/ ForFinalExpression RPAREN Statement
+| FOR LPAREN SEMICOLON /*.forSC*/ ForCondition SEMICOLON /*.forSC*/ ForFinalExpression RPAREN Statement
 | FOR LPAREN Expression_NoAs_StartWithLet SEMICOLON /*.forSC*/ ForCondition SEMICOLON /*.forSC*/ ForFinalExpression RPAREN Statement
 | FOR LPAREN VAR VariableDeclarationList SEMICOLON /*.forSC*/ ForCondition SEMICOLON /*.forSC*/ ForFinalExpression RPAREN Statement
 | FOR LPAREN LetOrConst BindingList SEMICOLON /*.forSC*/ ForCondition SEMICOLON /*.forSC*/ ForFinalExpression RPAREN Statement
@@ -4944,7 +4945,8 @@ IterationStatement :
 IterationStatement_Await :
   DO Statement_Await WHILE LPAREN Expression_Await_In RPAREN SEMICOLON /*.doWhile*/
 | WHILE LPAREN Expression_Await_In RPAREN Statement_Await
-| FOR LPAREN Expressionopt_Await_NoLet SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
+| FOR LPAREN Expression_Await_NoLet SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
+| FOR LPAREN SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
 | FOR LPAREN Expression_Await_NoAs_StartWithLet SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
 | FOR LPAREN VAR VariableDeclarationList_Await SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
 | FOR LPAREN LetOrConst BindingList_Await SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
@@ -4961,7 +4963,8 @@ IterationStatement_Await :
 IterationStatement_Yield :
   DO Statement_Yield WHILE LPAREN Expression_In_Yield RPAREN SEMICOLON /*.doWhile*/
 | WHILE LPAREN Expression_In_Yield RPAREN Statement_Yield
-| FOR LPAREN Expressionopt_NoLet_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
+| FOR LPAREN Expression_NoLet_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
+| FOR LPAREN SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
 | FOR LPAREN Expression_NoAs_StartWithLet_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
 | FOR LPAREN VAR VariableDeclarationList_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
 | FOR LPAREN LetOrConst BindingList_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
@@ -6917,11 +6920,6 @@ Expressionopt_Await_In :
 | Expression_Await_In
 ;
 
-Expressionopt_Await_NoLet :
-  %empty
-| Expression_Await_NoLet
-;
-
 Expressionopt_In :
   %empty
 | Expression_In
@@ -6930,16 +6928,6 @@ Expressionopt_In :
 Expressionopt_In_Yield :
   %empty
 | Expression_In_Yield
-;
-
-Expressionopt_NoLet :
-  %empty
-| Expression_NoLet
-;
-
-Expressionopt_NoLet_Yield :
-  %empty
-| Expression_NoLet_Yield
 ;
 
 CaseClausesopt :

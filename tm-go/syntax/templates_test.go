@@ -2,10 +2,11 @@ package syntax_test
 
 import (
 	"fmt"
-	"github.com/inspirer/textmapper/tm-go/syntax"
-	"github.com/inspirer/textmapper/tm-go/util/dump"
 	"strings"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-go/syntax"
+	"github.com/inspirer/textmapper/tm-go/util/dump"
 )
 
 var propagateTests = []struct {

@@ -393,7 +393,8 @@ ClassPrivateRef -> ReferenceIdent:
 IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> ReferenceIdent :
 # V8 runtime functions start with a percent sign.
 # See http://stackoverflow.com/questions/11202824/what-is-in-javascript
-    '%'? Identifier
+    Identifier
+  | '%' Identifier
   | [!Yield] 'yield'
   | [!Await] 'await'
   | [!NoLet] 'let'
@@ -905,7 +906,7 @@ IfStatement<Yield, Await> -> IfStmt :
 IterationStatement<Yield, Await> -> IterationStmt /* interface */:
     'do' Statement 'while' '(' Expression<+In> ')' ';' .doWhile       -> DoWhileStmt
   | 'while' '(' Expression<+In> ')' Statement                         -> WhileStmt
-  | 'for' '(' var=Expressionopt<~In,+NoLet> ';' .forSC ForCondition
+  | 'for' '(' var=Expression<~In,+NoLet>? ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStmt
   | 'for' '(' var=Expression<~In,+StartWithLet, +NoAs> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStmt

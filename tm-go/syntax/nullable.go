@@ -1,8 +1,9 @@
 package syntax
 
 import (
-	"github.com/inspirer/textmapper/tm-go/util/container"
 	"log"
+
+	"github.com/inspirer/textmapper/tm-go/util/container"
 )
 
 // Nullable computes and returns the set of nullable symbols in a given model.
