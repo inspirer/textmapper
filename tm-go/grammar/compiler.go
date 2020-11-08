@@ -57,6 +57,7 @@ type compiler struct {
 	params    map[string]int // -> index in source.Params
 	nonterms  map[string]int // -> index in source.Nonterms
 	cats      map[string]int // -> index in source.Cats
+	paramPerm []int          // for parameter permutations
 }
 
 func newCompiler(file ast.File, compat bool) *compiler {
@@ -808,6 +809,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 	}
 }
 
+// TODO remove the second parameter and disallow templating sets
 func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) *syntax.TokenSet {
 	switch expr := expr.(type) {
 	case *ast.SetAnd:
@@ -961,6 +963,9 @@ func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 		nt.Type = c.source.Nonterms[nonterm].Type
 		nt.Params = c.source.Nonterms[nonterm].Params
 		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: c.out.NumTokens + nonterm, Origin: origin, Model: c.source}
+		for _, param := range nt.Params {
+			ref.Args = append(ref.Args, syntax.Arg{Param: param, TakeFrom: param})
+		}
 	} else {
 		// Unresolved.
 		return 0, false
@@ -1098,7 +1103,29 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 	if len(uninitialized) > 0 {
 		c.errorf(ref.Name(), "uninitialized parameters: %v", strings.Join(uninitialized, ", "))
 	}
+	c.sortArgs(target.Params, args)
 	return index, args
+}
+
+func (c *compiler) sortArgs(params []int, args []syntax.Arg) {
+	if len(args) < 2 {
+		return
+	}
+	pos := c.paramPerm
+	for i := range pos {
+		pos[i] = -1
+	}
+	for i, param := range params {
+		pos[param] = i
+	}
+	e := len(params)
+	for i, index := range pos {
+		if index == -1 {
+			pos[i] = e
+			e++
+		}
+	}
+	sort.Slice(args, func(i, j int) bool { return pos[args[i].Param] < pos[args[j].Param] })
 }
 
 // convertReportClause returns between 0 and 2 nodes.
@@ -1315,6 +1342,8 @@ func (c *compiler) compileParser() {
 	}
 	c.collectParams(p)
 	nonterms := c.collectNonterms(p)
+	c.paramPerm = make([]int, len(c.source.Params))
+
 	c.collectInputs(p)
 	c.collectDirectives(p)
 	for _, nt := range nonterms {
@@ -1323,8 +1352,21 @@ func (c *compiler) compileParser() {
 		expr := c.convertRules(nt.def.Rule0(), c.source.Nonterms[nt.nonterm], defaultReport, nt.def)
 		c.source.Nonterms[nt.nonterm].Value = expr
 	}
-	c.s.AddError(syntax.PropagateLookaheads(c.source))
-	c.s.AddError(syntax.Instantiate(c.source))
+
+	if c.s.Err() != nil {
+		// Parsing errors cause inconsistencies inside c.source. Aborting.
+		return
+	}
+
+	if err := syntax.PropagateLookaheads(c.source); err != nil {
+		c.s.AddError(err)
+		return
+	}
+
+	if err := syntax.Instantiate(c.source); err != nil {
+		c.s.AddError(err)
+		return
+	}
 
 	// TODO instantiate templates
 

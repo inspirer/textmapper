@@ -433,3 +433,86 @@ func Simplify(e *Expr) *Expr {
 	}
 	return e
 }
+
+func checkOrDie(m *Model, stage string) {
+	if err := Check(m); err != nil {
+		log.Fatalf("%v, internal failure: %v", stage, err)
+	}
+}
+
+// Check verifies the internal consistency of the model.
+func Check(m *Model) error {
+	for _, inp := range m.Inputs {
+		if nt := m.Nonterms[inp.Nonterm]; len(nt.Params) > 0 {
+			return status.Errorf(nt.Origin, "input nonterminals cannot be parametrized")
+		}
+	}
+	for _, nt := range m.Nonterms {
+		if err := checkExpr(m, nt.Value); err != nil {
+			return err
+		}
+	}
+	for _, set := range m.Sets {
+		if err := checkSet(m, set); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func checkArgs(m *Model, sym int, args []Arg, origin status.SourceNode) error {
+	if sym < len(m.Terminals) {
+		if len(args) > 0 {
+			return status.Errorf(origin, "terminals cannot have arguments")
+		}
+		return nil
+	}
+	nt := m.Nonterms[sym-len(m.Terminals)]
+	var argIndex int
+	for _, arg := range args {
+		if m.Params[arg.Param].Lookahead {
+			continue
+		}
+		if argIndex >= len(nt.Params) {
+			return status.Errorf(origin, "too many arguments")
+		}
+		if p := nt.Params[argIndex]; p != arg.Param {
+			return status.Errorf(origin, "invalid argument order, found %v instead of %v (%v vs %v)", m.Params[arg.Param].Name, m.Params[p].Name, args, nt.Params)
+		}
+		argIndex++
+	}
+	if argIndex < len(nt.Params) {
+		return status.Errorf(origin, "too few arguments were provided")
+	}
+	return nil
+}
+
+func checkExpr(m *Model, expr *Expr) error {
+	switch expr.Kind {
+	case Reference:
+		if err := checkArgs(m, expr.Symbol, expr.Args, expr.Origin); err != nil {
+			return err
+		}
+	}
+	for _, sub := range expr.Sub {
+		if err := checkExpr(m, sub); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func checkSet(m *Model, set *TokenSet) error {
+	switch set.Kind {
+	case Any, First, Last, Precede, Follow:
+		if err := checkArgs(m, set.Symbol, set.Args, set.Origin); err != nil {
+			return err
+		}
+	}
+	for _, sub := range set.Sub {
+		if err := checkSet(m, sub); err != nil {
+			return err
+		}
+	}
+	return nil
+}

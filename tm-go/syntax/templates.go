@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"log"
+	"sort"
 
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
@@ -11,12 +12,15 @@ import (
 // PropagateLookaheads figures out which nonterminals need to be templated because of lookahead
 // flags and then updates the model in-place.
 func PropagateLookaheads(m *Model) error {
+	checkOrDie(m, "input model")
+
 	type nontermExt struct {
 		compat        bool    // true if supports lookahead flags
 		refs          []*Expr // sub-expressions for flag propagation
 		requiredFlags []int
 		pending       *set.FutureSet // LA flags this nonterminal can accept
 		flags         container.BitSet
+		numLA         int
 	}
 	var state []nontermExt
 
@@ -52,7 +56,7 @@ func PropagateLookaheads(m *Model) error {
 			}
 		})
 	}
-	closure.Compute()
+	_ = closure.Compute()
 	for i := range m.Nonterms {
 		state[i].flags = state[i].pending.BitSet(len(m.Params))
 	}
@@ -71,15 +75,19 @@ func PropagateLookaheads(m *Model) error {
 			queue = append(queue, t)
 		}
 	}
-	visitArgs(m, func(nonterm int, arg Arg) bool {
-		if m.Params[arg.Param].Lookahead {
-			if !state[nonterm].flags.Get(arg.Param) {
-				s.Errorf(arg.Origin, "%v is not used in %v", m.Params[arg.Param].Name, m.Nonterms[nonterm].Name)
-				return false // delete
+	rewriteArgs(m, func(nonterm int, args []Arg) []Arg {
+		ret := args[:0]
+		for _, arg := range args {
+			if m.Params[arg.Param].Lookahead {
+				if !state[nonterm].flags.Get(arg.Param) {
+					s.Errorf(arg.Origin, "%v is not used in %v", m.Params[arg.Param].Name, m.Nonterms[nonterm].Name)
+					continue
+				}
+				enqueue(task{nonterm, arg.Param})
 			}
-			enqueue(task{nonterm, arg.Param})
+			ret = append(ret, arg)
 		}
-		return true // keep
+		return ret
 	})
 	for len(queue) > 0 {
 		it := queue[len(queue)-1]
@@ -92,14 +100,13 @@ func PropagateLookaheads(m *Model) error {
 		}
 
 		nt.Params = append(nt.Params, it.param)
+		state[it.nonterm].numLA++
 		for _, ref := range state[it.nonterm].refs {
-			if containsArg(ref, it.param) {
+			target := ref.Symbol - len(m.Terminals)
+			if !state[target].flags.Get(it.param) || containsArg(ref.Args, it.param) {
 				continue
 			}
-			target := ref.Symbol - len(m.Terminals)
-			if state[target].flags.Get(it.param) {
-				enqueue(task{target, it.param})
-			}
+			enqueue(task{target, it.param})
 			ref.Args = append(ref.Args, Arg{Param: it.param, TakeFrom: it.param})
 		}
 	}
@@ -122,15 +129,44 @@ func PropagateLookaheads(m *Model) error {
 		}
 	}
 
-	// 4. Remove the lookahead bit.
+	// 4. Fix the argument order (add missing and sort lookahead arguments).
+	for i, nt := range m.Nonterms {
+		numLA := state[i].numLA
+		if numLA >= 2 {
+			sort.Ints(nt.Params[len(nt.Params)-numLA:])
+		}
+	}
+	rewriteArgs(m, func(nonterm int, args []Arg) []Arg {
+		params := m.Nonterms[nonterm].Params
+		if len(args) < len(params) {
+			for _, param := range params {
+				if m.Params[param].Lookahead && !containsArg(args, param) {
+					args = append(args, Arg{Param: param, Value: "false"})
+				}
+			}
+		}
+		if numLA := state[nonterm].numLA; numLA >= 2 {
+			tail := args[len(args)-numLA:]
+			sort.Slice(tail, func(i, j int) bool {
+				return tail[i].Param < tail[j].Param
+			})
+		}
+		return args
+	})
+
+	// 5. Remove the lookahead bit.
 	for i := range m.Params {
 		m.Params[i].Lookahead = false
+	}
+
+	if s.Err() == nil {
+		checkOrDie(m, "after propagating lookaheads")
 	}
 	return s.Err()
 }
 
-func containsArg(ref *Expr, param int) bool {
-	for _, arg := range ref.Args {
+func containsArg(args []Arg, param int) bool {
+	for _, arg := range args {
 		if arg.Param == param {
 			return true
 		}
@@ -201,26 +237,17 @@ func usedLA(m *Model, expr *Expr, consumer func(param int, origin status.SourceN
 	}
 }
 
-// visitArgs visits all templated nonterminal references and allows
-func visitArgs(m *Model, consumer func(nonterm int, arg Arg) bool) {
+func rewriteArgs(m *Model, transform func(nonterm int, args []Arg) []Arg) {
 	m.ForEach(Reference, func(_ *Nonterm, expr *Expr) {
-		out := expr.Args[:0]
-		for _, arg := range expr.Args {
-			if consumer(expr.Symbol-len(m.Terminals), arg) {
-				out = append(out, arg)
-			}
+		if nonterm := expr.Symbol - len(m.Terminals); nonterm >= 0 {
+			expr.Args = transform(nonterm, expr.Args)
 		}
-		expr.Args = out
 	})
 	for _, set := range m.Sets {
 		set.ForEach(func(ts *TokenSet) {
-			out := ts.Args[:0]
-			for _, arg := range ts.Args {
-				if consumer(ts.Symbol-len(m.Terminals), arg) {
-					out = append(out, arg)
-				}
+			if nonterm := ts.Symbol - len(m.Terminals); nonterm >= 0 {
+				ts.Args = transform(nonterm, ts.Args)
 			}
-			ts.Args = out
 		})
 	}
 }

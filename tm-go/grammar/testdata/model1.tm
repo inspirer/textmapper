@@ -81,7 +81,7 @@ expr<Foo> :
   Identifier -> Identifier -> Expr
 | '(' expr<Foo: "false"> ')' -> Bar -> Expr
 | [Foo="true"] '{' (Identifier separator ',')+ '}' -> Init -> Expr
-| delayed<Async: "true", Foo: Foo> -> Expr
+| delayed<Foo: Foo, Async: "true"> -> Expr
 | '->' delayed<Foo: Foo, Async: "true"> -> Expr
 ;
 
@@ -93,14 +93,14 @@ delayed<Foo, Async> :
 
 PropagationWrap<IfFirst> :
   Propagation<IfFirst: IfFirst>
-| '!' Propagation
+| '!' Propagation<IfFirst: "false">
 ;
 
 Propagation<IfFirst> :
-  '(' PropagationWrap ')'
+  '(' PropagationWrap<IfFirst: "false"> ')'
 | [IfFirst="true"] (Propagation<IfFirst: IfFirst> | 'b') 'c'
-| Propagation<IfFirst: IfFirst> '+' Propagation
-| Propagation<IfFirst: "false"> '-' Propagation
-| '-' Propagation %prec UNO
+| Propagation<IfFirst: IfFirst> '+' Propagation<IfFirst: "false">
+| Propagation<IfFirst: "false"> '-' Propagation<IfFirst: "false">
+| '-' Propagation<IfFirst: "false"> %prec UNO
 ;
 
