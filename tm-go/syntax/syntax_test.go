@@ -206,6 +206,21 @@ func TestParser(t *testing.T) {
 	}
 }
 
+func stripSelfRef(m *syntax.Model) {
+	var visit func(nt *syntax.Nonterm, e *syntax.Expr)
+	visit = func(nt *syntax.Nonterm, e *syntax.Expr) {
+		if e.Model != nil {
+			e.Model = nil
+		}
+		for _, sub := range e.Sub {
+			visit(nt, sub)
+		}
+	}
+	for _, nt := range m.Nonterms {
+		visit(nt, nt.Value)
+	}
+}
+
 func stripOrigin(m *syntax.Model) {
 	m.ForEach(syntax.Reference, func(_ *syntax.Nonterm, expr *syntax.Expr) {
 		for i := range expr.Args {
@@ -350,7 +365,18 @@ func (p *parser) parseDecl() {
 		case "flag", "lookahead":
 			p.parseFlag()
 			return
-		case "input", "generate", "interface":
+		case "input":
+			p.next()
+			if i, val := p.parseNontermRef(); val != nil {
+				inp := syntax.Input{
+					Nonterm: i - len(p.out.Terminals),
+					NoEoi:   p.consumeIf(tm.NOMINUSEOI),
+				}
+				p.out.Inputs = append(p.out.Inputs, inp)
+			}
+			p.consume(tm.SEMICOLON)
+			return
+		case "generate", "interface":
 			p.errorf("TODO parse %v", p.lexer.Text())
 		}
 	}

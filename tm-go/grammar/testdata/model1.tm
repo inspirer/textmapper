@@ -75,32 +75,57 @@ Propagation :
 %%
 
 Simple :
-  'a' expr<Foo: "true"> -> File ;
+  'a' expr_Foo -> File ;
 
-expr<Foo> :
+expr :
   Identifier -> Identifier -> Expr
-| '(' expr<Foo: "false"> ')' -> Bar -> Expr
-| [Foo="true"] '{' (Identifier separator ',')+ '}' -> Init -> Expr
-| delayed<Foo: Foo, Async: "true"> -> Expr
-| '->' delayed<Foo: Foo, Async: "true"> -> Expr
+| '(' expr ')' -> Bar -> Expr
+| delayed_Async -> Expr
+| '->' delayed_Async -> Expr
 ;
 
-delayed<Foo, Async> :
-  '.' '.' expr<Foo: Foo> -> Delayed
-| [(Async="true" & !(Foo="true")) | Foo="true"] '(' expr<Foo: "false"> ')' '->' expr<Foo: Foo> -> Delayed
-| '->' '(' PropagationWrap<IfFirst: "true"> ')' delayed<Foo: Foo, Async: Async> -> Delayed
+expr_Foo :
+  Identifier -> Identifier -> Expr
+| '(' expr ')' -> Bar -> Expr
+| '{' (Identifier separator ',')+ '}' -> Init -> Expr
+| delayed_Foo_Async -> Expr
+| '->' delayed_Foo_Async -> Expr
 ;
 
-PropagationWrap<IfFirst> :
-  Propagation<IfFirst: IfFirst>
-| '!' Propagation<IfFirst: "false">
+delayed_Async :
+  '.' '.' expr -> Delayed
+| '(' expr ')' '->' expr -> Delayed
+| '->' '(' PropagationWrap_IfFirst ')' delayed_Async -> Delayed
 ;
 
-Propagation<IfFirst> :
-  '(' PropagationWrap<IfFirst: "false"> ')'
-| [IfFirst="true"] (Propagation<IfFirst: IfFirst> | 'b') 'c'
-| Propagation<IfFirst: IfFirst> '+' Propagation<IfFirst: "false">
-| Propagation<IfFirst: "false"> '-' Propagation<IfFirst: "false">
-| '-' Propagation<IfFirst: "false"> %prec UNO
+delayed_Foo_Async :
+  '.' '.' expr_Foo -> Delayed
+| '(' expr ')' '->' expr_Foo -> Delayed
+| '->' '(' PropagationWrap_IfFirst ')' delayed_Foo_Async -> Delayed
+;
+
+PropagationWrap :
+  Propagation
+| '!' Propagation
+;
+
+PropagationWrap_IfFirst :
+  Propagation_IfFirst
+| '!' Propagation
+;
+
+Propagation :
+  '(' PropagationWrap ')'
+| Propagation '+' Propagation
+| Propagation '-' Propagation
+| '-' Propagation %prec UNO
+;
+
+Propagation_IfFirst :
+  '(' PropagationWrap ')'
+| (Propagation_IfFirst | 'b') 'c'
+| Propagation_IfFirst '+' Propagation
+| Propagation '-' Propagation
+| '-' Propagation %prec UNO
 ;
 

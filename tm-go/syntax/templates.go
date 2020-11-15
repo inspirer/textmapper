@@ -3,6 +3,7 @@ package syntax
 import (
 	"log"
 	"sort"
+	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
@@ -252,9 +253,253 @@ func rewriteArgs(m *Model, transform func(nonterm int, args []Arg) []Arg) {
 	}
 }
 
+type boundParam struct {
+	param int
+	value string
+}
+
+type instance struct {
+	index   int
+	nonterm int
+	args    []boundParam
+	suffix  string
+	val     *Expr
+}
+
+func (i *instance) resolve(arg Arg) boundParam {
+	if arg.Value != "" {
+		return boundParam{param: arg.Param, value: arg.Value}
+	}
+	for _, a := range i.args {
+		if a.param == arg.TakeFrom {
+			return boundParam{param: arg.Param, value: a.value}
+		}
+	}
+	log.Fatal("grammar inconsistency on TakeFrom")
+	return boundParam{}
+}
+
+type instantiator struct {
+	m           *Model
+	out         *Model
+	bound       []boundParam
+	boundMap    map[boundParam]int
+	instances   []*instance
+	instanceMap *container.IntSliceMap // [nonterm, boundParam #1, ...] ->
+}
+
+func (i *instantiator) resolveInstance(context *instance, nonterm int, args []Arg) *instance {
+	var signature []int
+	signature = append(signature, nonterm)
+	for _, arg := range args {
+		bp := context.resolve(arg)
+		index, ok := i.boundMap[bp]
+		if !ok {
+			index = len(i.bound)
+			i.bound = append(i.bound, bp)
+			i.boundMap[bp] = index
+		}
+		signature = append(signature, index)
+	}
+	return i.instanceMap.Get(signature).(*instance)
+}
+
+func (i *instantiator) allocate(key []int) interface{} {
+	ret := &instance{
+		nonterm: key[0],
+	}
+	for _, index := range key[1:] {
+		ret.args = append(ret.args, i.bound[index])
+	}
+	ret.index = len(i.instances)
+	i.instances = append(i.instances, ret)
+	return ret
+}
+
+func (i *instantiator) doSet(set *TokenSet) *TokenSet {
+	switch set.Kind {
+	case Any, First, Last, Precede, Follow:
+		if nt := set.Symbol - len(i.m.Terminals); nt >= 0 {
+			return &TokenSet{
+				Kind:   set.Kind,
+				Symbol: len(i.m.Terminals) + i.resolveInstance(nil, nt, set.Args).index,
+				Origin: set.Origin,
+			}
+		}
+		return set
+	}
+	ret := *set
+	ret.Sub = make([]*TokenSet, 0, len(set.Sub))
+	for _, sub := range set.Sub {
+		ret.Sub = append(ret.Sub, i.doSet(sub))
+	}
+	return &ret
+}
+
+func (i *instantiator) check(context *instance, p *Predicate) bool {
+	switch p.Op {
+	case Equals:
+		return context.resolve(Arg{TakeFrom: p.Param}).value == p.Value
+	case Or:
+		for _, sub := range p.Sub {
+			if i.check(context, sub) {
+				return true
+			}
+		}
+		return false
+	case And:
+		for _, sub := range p.Sub {
+			if !i.check(context, sub) {
+				return false
+			}
+		}
+		return true
+	case Not:
+		return !i.check(context, p.Sub[0])
+	default:
+		log.Fatal("grammar inconsistency on predicate op")
+		return false
+	}
+}
+
+func (i *instantiator) doExpr(context *instance, expr *Expr) *Expr {
+	switch expr.Kind {
+	case Reference:
+		if nt := expr.Symbol - len(i.m.Terminals); nt >= 0 {
+			return &Expr{
+				Kind:   expr.Kind,
+				Symbol: len(i.m.Terminals) + i.resolveInstance(context, nt, expr.Args).index,
+				Origin: expr.Origin,
+				Model:  i.out,
+			}
+		}
+	case Conditional:
+		if !i.check(context, expr.Predicate) {
+			return &Expr{
+				Kind:   Empty,
+				Origin: expr.Origin,
+			}
+		}
+		return i.doExpr(context, expr.Sub[0])
+	}
+
+	ret := *expr
+	ret.Model = i.out
+	if len(ret.Sub) == 0 {
+		return &ret
+	}
+	ret.Sub = make([]*Expr, 0, len(expr.Sub))
+	for _, sub := range expr.Sub {
+		if expr.Kind == Choice && sub.Kind == Conditional {
+			if !i.check(context, sub.Predicate) {
+				continue
+			}
+			sub = sub.Sub[0]
+		}
+		ret.Sub = append(ret.Sub, i.doExpr(context, sub))
+	}
+	if expr.Kind == Choice && len(ret.Sub) < 2 {
+		// Simplify choice expressions on the fly.
+		if len(ret.Sub) == 0 {
+			ret.Kind = Empty
+		} else {
+			return ret.Sub[0]
+		}
+	}
+	return &ret
+}
+
+func (i *instantiator) suffix(args []boundParam) string {
+	if len(args) == 0 {
+		return ""
+	}
+	var sb strings.Builder
+	for _, arg := range args {
+		switch arg.value {
+		case "true":
+			sb.WriteByte('_')
+			sb.WriteString(i.m.Params[arg.param].Name)
+		case "false":
+			// ok
+		default:
+			log.Fatal("broken invariant")
+		}
+	}
+	return sb.String()
+}
+
+func newInstantiator(m, out *Model) *instantiator {
+	ret := &instantiator{m: m, out: out, boundMap: make(map[boundParam]int)}
+	ret.instanceMap = container.NewIntSliceMap(ret.allocate)
+	return ret
+}
+
 // Instantiate instantiates all the templates rewriting the list of available nonterminals,
 // and updating all the references to match.
 func Instantiate(m *Model) error {
-	// TODO implement
+	if len(m.Params) == 0 {
+		return nil
+	}
+
+	out := &Model{Terminals: m.Terminals, Cats: m.Cats}
+	inst := newInstantiator(m, out)
+
+	// Instantiate all the grammar entry points.
+	for _, input := range m.Inputs {
+		out.Inputs = append(out.Inputs, Input{
+			Nonterm: inst.resolveInstance(nil, input.Nonterm, nil).index,
+			NoEoi:   input.NoEoi,
+		})
+	}
+	for _, set := range m.Sets {
+		out.Sets = append(out.Sets, inst.doSet(set))
+	}
+
+	// Keep instantiating the production rules until we've instantiated all the required nonterminals.
+	for i := 0; i < len(inst.instances); i++ {
+		curr := inst.instances[i]
+		curr.val = inst.doExpr(curr, m.Nonterms[curr.nonterm].Value)
+		curr.suffix = inst.suffix(curr.args)
+	}
+
+	// Sort the instances and move them over into the grammar.
+	list := inst.instances
+	sort.Slice(list, func(i, j int) bool {
+		if list[i].nonterm != list[j].nonterm {
+			return list[i].nonterm < list[j].nonterm
+		}
+		return list[i].suffix < list[j].suffix
+	})
+	perm := make([]int, len(inst.instances))
+	for i, instance := range list {
+		nt := m.Nonterms[instance.nonterm]
+		out.Nonterms = append(out.Nonterms, &Nonterm{
+			Name:   nt.Name + instance.suffix,
+			Type:   nt.Type,
+			Value:  instance.val,
+			Origin: nt.Origin,
+		})
+		perm[instance.index] = i
+	}
+
+	// Update all the references.
+	out.ForEach(Reference, func(container *Nonterm, expr *Expr) {
+		if nt := expr.Symbol - len(out.Terminals); nt >= 0 {
+			expr.Symbol = len(out.Terminals) + perm[nt]
+		}
+	})
+	for _, set := range out.Sets {
+		set.ForEach(func(ts *TokenSet) {
+			if nt := set.Symbol - len(out.Terminals); nt >= 0 {
+				set.Symbol = len(out.Terminals) + perm[nt]
+			}
+		})
+	}
+	for i, input := range out.Inputs {
+		out.Inputs[i].Nonterm = perm[input.Nonterm]
+	}
+
+	*m = *out
+	checkOrDie(m, "after instantiating nonterminals")
 	return nil
 }
