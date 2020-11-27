@@ -71,6 +71,7 @@ Declaration :
       }
 | TEST LBRACE setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
+| TEST INTEGERCONSTANT
 ;
 
 setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen :

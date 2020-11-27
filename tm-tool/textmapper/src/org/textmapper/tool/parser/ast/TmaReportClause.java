@@ -15,18 +15,19 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaReportClause extends TmaNode {
 
 	private final TmaIdentifier action;
-	private final TmaIdentifier kind;
+	private final List<TmaIdentifier> flags;
 	private final TmaReportAs reportAs;
 
-	public TmaReportClause(TmaIdentifier action, TmaIdentifier kind, TmaReportAs reportAs, TextSource source, int line, int offset, int endoffset) {
+	public TmaReportClause(TmaIdentifier action, List<TmaIdentifier> flags, TmaReportAs reportAs, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.action = action;
-		this.kind = kind;
+		this.flags = flags;
 		this.reportAs = reportAs;
 	}
 
@@ -34,8 +35,8 @@ public class TmaReportClause extends TmaNode {
 		return action;
 	}
 
-	public TmaIdentifier getKind() {
-		return kind;
+	public List<TmaIdentifier> getFlags() {
+		return flags;
 	}
 
 	public TmaReportAs getReportAs() {
@@ -50,8 +51,10 @@ public class TmaReportClause extends TmaNode {
 		if (action != null) {
 			action.accept(v);
 		}
-		if (kind != null) {
-			kind.accept(v);
+		if (flags != null) {
+			for (TmaIdentifier it : flags) {
+				it.accept(v);
+			}
 		}
 		if (reportAs != null) {
 			reportAs.accept(v);

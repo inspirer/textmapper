@@ -1130,8 +1130,8 @@ func (c *compiler) sortArgs(params []int, args []syntax.Arg) {
 
 // convertReportClause returns between 0 and 2 nodes.
 func (c *compiler) convertReportClause(n ast.ReportClause) []string {
-	if id, ok := n.Kind(); ok {
-		c.errorf(id, "unsupported syntax")
+	if ids := n.Flags(); len(ids) > 0 {
+		// TODO support this syntax
 	}
 	action := n.Action().Text()
 	if len(action) == 0 {

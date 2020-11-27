@@ -66,6 +66,12 @@ var parseTests = []struct {
 		`«test { decl1 }»`,
 		`«test { decl2 decl1 }»`,
 	}},
+	{test.TestIntClause | test.InTest | test.InFoo, []string{
+		`{ «test 1» }`,
+	}},
+	{test.Icon | test.InTest, []string{
+		`{ test «1» }`,
+	}},
 
 	{test.MultiLineComment, []string{
 		` decl2 «/* ****/» decl1(a)`,
@@ -89,7 +95,7 @@ func TestParser(t *testing.T) {
 	seen := map[test.NodeType]bool{}
 	ctx := context.Background()
 	for _, tc := range parseTests {
-		seen[tc.nt] = true
+		seen[tc.nt&^(test.InTest|test.InFoo)] = true
 		for _, input := range tc.inputs {
 			pt := parsertest.New(t, tc.nt.String(), input)
 			l.Init(pt.Source())

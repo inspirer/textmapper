@@ -20,6 +20,8 @@ func ToTestNode(n Node) TestNode {
 		return &Decl2{n}
 	case test.Empty1:
 		return &Empty1{n}
+	case test.Icon:
+		return &Icon{n}
 	case test.Int:
 		return &Int{n}
 	case test.LastInt:
@@ -30,6 +32,8 @@ func ToTestNode(n Node) TestNode {
 		return &Test{n}
 	case test.TestClause:
 		return &TestClause{n}
+	case test.TestIntClause:
+		return &TestIntClause{n}
 	case test.Int7:
 		return &Int7{n}
 	case test.Int9:

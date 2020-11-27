@@ -126,6 +126,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 				if ("rangeType".equals(methodName)) {
 					return range.getType().getName();
 				}
+				if ("flags".equals(methodName)) {
+					return range.getType().getFlags() != null ?
+							range.getType().getFlags() : Collections.emptyList();
+				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					int index = methodName.charAt(0) == 'l' ? range.getEnd() : range.getStart();
 
@@ -187,6 +191,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return rangeType != null && rangeType.getName() != null
 							&& !"__ignoreContent".equals(rangeType.getName())
 							? rangeType.getName() : "";
+				}
+				if ("flags".equals(methodName)) {
+					RangeType rangeType = TMDataUtil.getRangeType(rule);
+					return rangeType != null && rangeType.getFlags() != null ?
+							rangeType.getFlags() : Collections.emptyList();
 				}
 				if ("customRanges".equals(methodName)) {
 					Collection<CustomRange> customRanges = TMDataUtil.getCustomRanges(rule);

@@ -14,11 +14,13 @@ var (
 	Decl1             = func(t test.NodeType) bool { return t == test.Decl1 }
 	Decl2             = func(t test.NodeType) bool { return t == test.Decl2 }
 	Empty1            = func(t test.NodeType) bool { return t == test.Empty1 }
+	Icon              = func(t test.NodeType) bool { return t == test.Icon }
 	Int               = func(t test.NodeType) bool { return t == test.Int }
 	LastInt           = func(t test.NodeType) bool { return t == test.LastInt }
 	Negation          = func(t test.NodeType) bool { return t == test.Negation }
 	Test              = func(t test.NodeType) bool { return t == test.Test }
 	TestClause        = func(t test.NodeType) bool { return t == test.TestClause }
+	TestIntClause     = func(t test.NodeType) bool { return t == test.TestIntClause }
 	MultiLineComment  = func(t test.NodeType) bool { return t == test.MultiLineComment }
 	SingleLineComment = func(t test.NodeType) bool { return t == test.SingleLineComment }
 	InvalidToken      = func(t test.NodeType) bool { return t == test.InvalidToken }

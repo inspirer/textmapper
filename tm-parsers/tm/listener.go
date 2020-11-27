@@ -60,7 +60,7 @@ const (
 	Predicate // PredicateExpression
 	Name
 	RhsSuffix    // Name Symref
-	ReportClause // action=Identifier kind=Identifier? ReportAs?
+	ReportClause // action=Identifier flags=(Identifier)* ReportAs?
 	ReportAs     // Identifier
 	RhsLookahead // predicates=(LookaheadPredicate)+
 	Not

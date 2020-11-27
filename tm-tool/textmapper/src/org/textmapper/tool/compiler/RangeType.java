@@ -15,15 +15,17 @@
  */
 package org.textmapper.tool.compiler;
 
+import java.util.List;
+
 public class RangeType {
 
 	private String name;
-	private String kind;
+	private List<String> flags;
 	private String iface;
 
-	public RangeType(String name, String kind, String iface) {
+	public RangeType(String name, List<String> flags, String iface) {
 		this.name = name;
-		this.kind = kind;
+		this.flags = flags;
 		this.iface = iface;
 	}
 
@@ -31,8 +33,8 @@ public class RangeType {
 		return name;
 	}
 
-	public String getKind() {
-		return kind;
+	public List<String> getFlags() {
+		return flags;
 	}
 
 	public String getIface() {

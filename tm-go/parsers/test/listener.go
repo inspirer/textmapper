@@ -19,7 +19,9 @@ const (
 	Int
 	TestClause
 	Empty1
-	Decl1 // (Identifier)+
+	Icon
+	TestIntClause // Icon
+	Decl1         // (Identifier)+
 	Decl2
 	Int7
 	Int9
@@ -39,6 +41,8 @@ var nodeTypeStr = [...]string{
 	"Int",
 	"TestClause",
 	"Empty1",
+	"Icon",
+	"TestIntClause",
 	"Decl1",
 	"Decl2",
 	"Int7",
@@ -64,6 +68,7 @@ var Declaration = []NodeType{
 	Int,
 	LastInt,
 	TestClause,
+	TestIntClause,
 }
 
 var TokenSet = []NodeType{

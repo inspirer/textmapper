@@ -112,8 +112,7 @@ X2<param T3 = true> : ;
 %interface A, «A»;
 # err: duplicate interface declaration of 'A'
 
-G -> G/«G1» as A : (G separator «G»)+ ;
-# err: unsupported syntax
+G -> G/G1,G2 as A : (G separator «G»)+ ;
 # err: separators must be terminals
 
 G2 -> A «as A» : G %prec «G» ;

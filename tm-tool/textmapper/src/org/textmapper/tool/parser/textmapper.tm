@@ -339,7 +339,7 @@ rhsSuffix :
 ;
 
 reportClause :
-    '->' action=identifier ('/' kind=identifier)? reportAs? ;
+    '->' action=identifier ('/' flags=(identifier separator ',')+)? reportAs? ;
 
 reportAs:
     'as' identifier ;

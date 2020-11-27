@@ -796,7 +796,7 @@ ${util.formatEx(parser.left, '\t', 79)-}
 ${if self->eventBased()}
 var tmRuleType = [...]${self->go_listener.nodeTypeRef()}{
 ${foreach rule in syntax.rules-}
-	${v = rule.rangeType(), v == '' || self->isFileNode(v) ? 0 : v->go_listener.nodeTypeValueRef()}, // ${rule}
+	${v = rule.rangeType(), v == '' || self->isFileNode(v) ? 0 : v->go_listener.nodeTypeValueRef()}${rule.flags()->go_listener.nodeFlags()}, // ${rule}
 ${end-}
 }
 ${end-}
@@ -824,7 +824,7 @@ ${cached query hasRecovering() = syntax.error && syntax.sets.exists(it|it.name.c
 ${template parserAction($)-}
 ${if customRanges()-}
 ${foreach range in customRanges()-}
-		p.listener(${range.rangeType()->go_listener.nodeTypeValueRef()}, ${range.first().offset}, ${range.last().endoffset})
+		p.listener(${range.rangeType()->go_listener.nodeTypeValueRef()}${range.flags()->go_listener.nodeFlags()}, ${range.first().offset}, ${range.last().endoffset})
 ${end-}
 ${end-}
 ${if codeTemplate()-}

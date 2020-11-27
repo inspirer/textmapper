@@ -472,12 +472,12 @@ rhsSuffix  : RhsSuffix ::=
 
 class ReportClause {
 	Identifier action;
-	Identifier kind;
+	list<Identifier> flags;
 	ReportAs reportAs;
 }
 
 reportClause  : ReportClause ::=
-	'->' action=identifier ('/' kind=identifier)? {reportAs}?
+	'->' action=identifier ('/' flags=identifier_list_Comma_separated)? {reportAs}?
 ;
 
 class ReportAs {

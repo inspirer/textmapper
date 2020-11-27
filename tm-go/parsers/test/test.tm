@@ -125,6 +125,7 @@ Declaration -> Declaration :
       }                                                  -> Int
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
   | 'test' '(' (empty1 -> Empty1) ')'
+  | 'test' (IntegerConstant -> Icon/InTest) -> TestIntClause/InTest,InFoo
 ;
 
 empty1 : ;

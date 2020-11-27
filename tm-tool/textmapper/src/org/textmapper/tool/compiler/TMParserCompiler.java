@@ -28,6 +28,7 @@ import org.textmapper.tool.parser.ast.TmaRhsQuantifier.TmaQuantifierKind;
 import org.textmapper.tool.parser.ast.TmaSetBinary.TmaKindKind;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * evgeny, 1/29/13
@@ -524,7 +525,9 @@ public class TMParserCompiler {
 			overrideInterface = parentType != null ? parentType.getIface() : null;
 		}
 
-		String kind = clause.getKind() != null ? clause.getKind().getText() : null;
+		List<String> flags = clause.getFlags() != null ?
+				clause.getFlags().stream().map(TmaNode::getText).collect(Collectors.toList()) :
+				null;
 		TmaReportAs as = clause.getReportAs();
 		if (as != null) {
 			if (overrideInterface != null) {
@@ -543,13 +546,13 @@ public class TMParserCompiler {
 				return;
 			}
 
-			TMDataUtil.putRangeType(seqOrNonterm, new RangeType(name, kind, iface));
+			TMDataUtil.putRangeType(seqOrNonterm, new RangeType(name, flags, iface));
 			return;
 		}
 
 		if (interfaces.contains(name)) {
-			if (kind != null) {
-				error(clause.getKind(), "interface types cannot have a subtype clause");
+			if (flags != null) {
+				error(clause.getFlags().get(0), "interface types cannot have a subtype clause");
 				return;
 			}
 			if (overrideInterface != null) {
@@ -561,7 +564,7 @@ public class TMParserCompiler {
 			return;
 		}
 
-		TMDataUtil.putRangeType(seqOrNonterm, new RangeType(name, kind, overrideInterface));
+		TMDataUtil.putRangeType(seqOrNonterm, new RangeType(name, flags, overrideInterface));
 	}
 
 	private RhsSet convertSet(ITmaSetExpression expr, Nonterminal context) {

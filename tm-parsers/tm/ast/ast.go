@@ -947,9 +947,13 @@ func (n ReportClause) Action() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
 
-func (n ReportClause) Kind() (Identifier, bool) {
-	field := Identifier{n.Child(selector.Identifier).Next(selector.Identifier)}
-	return field, field.IsValid()
+func (n ReportClause) Flags() []Identifier {
+	nodes := n.Child(selector.Identifier).NextAll(selector.Identifier)
+	var ret = make([]Identifier, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, Identifier{node})
+	}
+	return ret
 }
 
 func (n ReportClause) ReportAs() (ReportAs, bool) {
