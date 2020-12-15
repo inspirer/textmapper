@@ -59,6 +59,7 @@ var lexerTests = []struct {
 	{test.SHARPATID, []string{
 		" Zfoo «Zfoob» «Zfo\\u1111ob» ",
 	}},
+	{test.DQUOTE, []string{"«\"»"}},
 	{test.ZFOO, []string{
 		" «Zfoo» Zfoob ",
 	}},

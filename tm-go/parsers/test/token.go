@@ -33,6 +33,7 @@ const (
 	COLON   // :
 	MINUS   // -
 	MINUSGT // ->
+	DQUOTE  // "
 	SHARPATID
 	ZFOO // Zfoo
 	BACKTRACKINGTOKEN
@@ -64,6 +65,7 @@ var tokenStr = [...]string{
 	":",
 	"-",
 	"->",
+	"\"",
 	"SHARPATID",
 	"Zfoo",
 	"BACKTRACKINGTOKEN",

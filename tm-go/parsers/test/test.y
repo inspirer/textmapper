@@ -24,6 +24,7 @@
 %token COLON
 %token MINUS
 %token MINUSGT
+%token DQUOTE
 %token SHARPATID
 %token ZFOO
 %token BACKTRACKINGTOKEN
@@ -93,6 +94,7 @@ setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceApos
 | COLON
 | MINUS
 | MINUSGT
+| DQUOTE
 | SHARPATID
 | ZFOO
 | BACKTRACKINGTOKEN

@@ -43,6 +43,8 @@ lastInt: /[0-9]+(\n|{eoi})/
 '-': /-/
 '->': /->/
 
+dquote: /"/
+
 # No backtracking required.
 hex = /[0-9a-fA-F]/
 esc = /u{hex}{4}/
