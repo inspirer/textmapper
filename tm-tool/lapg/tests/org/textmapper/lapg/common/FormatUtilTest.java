@@ -37,7 +37,7 @@ public class FormatUtilTest {
 
 	@Test
 	public void testEscape() throws Exception {
-		assertEquals("\\\'", FormatUtil.escape("'"));
+		assertEquals("'", FormatUtil.escape("'"));
 		assertEquals("\\\"", FormatUtil.escape("\""));
 		assertEquals("\\\\", FormatUtil.escape("\\"));
 		assertEquals("\\uffff", FormatUtil.escape("\uFFFF"));

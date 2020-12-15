@@ -44,6 +44,7 @@ lastInt: /[0-9]+(\n|{eoi})/
 '->': /->/
 
 dquote: /"/
+squote: /'/
 
 # No backtracking required.
 hex = /[0-9a-fA-F]/

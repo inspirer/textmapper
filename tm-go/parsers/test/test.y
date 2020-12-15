@@ -25,6 +25,7 @@
 %token MINUS
 %token MINUSGT
 %token DQUOTE
+%token SQUOTE
 %token SHARPATID
 %token ZFOO
 %token BACKTRACKINGTOKEN
@@ -95,6 +96,7 @@ setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceApos
 | MINUS
 | MINUSGT
 | DQUOTE
+| SQUOTE
 | SHARPATID
 | ZFOO
 | BACKTRACKINGTOKEN

@@ -34,6 +34,7 @@ const (
 	MINUS   // -
 	MINUSGT // ->
 	DQUOTE  // "
+	SQUOTE  // '
 	SHARPATID
 	ZFOO // Zfoo
 	BACKTRACKINGTOKEN
@@ -66,6 +67,7 @@ var tokenStr = [...]string{
 	"-",
 	"->",
 	"\"",
+	"'",
 	"SHARPATID",
 	"Zfoo",
 	"BACKTRACKINGTOKEN",

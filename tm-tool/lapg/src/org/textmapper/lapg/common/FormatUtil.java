@@ -199,7 +199,6 @@ public class FormatUtil {
 			char c = s.charAt(i);
 			switch (c) {
 				case '"':
-				case '\'':
 				case '\\':
 					sb.append('\\');
 					sb.append(c);
