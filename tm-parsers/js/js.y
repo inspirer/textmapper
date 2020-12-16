@@ -10,6 +10,8 @@
 %start StartOfMappedType // no-eoi
 %start StartOfTupleElementName // no-eoi
 %start Module
+%start TypeSnippet
+%start ExpressionSnippet
 
 %left RESOLVESHIFT
 %left OROR
@@ -143,6 +145,14 @@
 %token JSXTEXT
 
 %%
+
+TypeSnippet :
+  Type
+;
+
+ExpressionSnippet :
+  Expression_In
+;
 
 SyntaxError :
   ERROR

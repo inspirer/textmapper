@@ -14,7 +14,7 @@ func Parse(ctx context.Context, path, content string, eh js.ErrorHandler) (*Tree
 	var p js.Parser
 	b := newBuilder(path, content)
 	p.Init(eh, b.addNode)
-	err := p.Parse(ctx, &l)
+	err := p.ParseModule(ctx, &l)
 	if err != nil {
 		return nil, err
 	}

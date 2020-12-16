@@ -317,7 +317,13 @@ resolveShift:
 
 :: parser
 
-%input Module;
+%input Module, TypeSnippet, ExpressionSnippet;
+
+TypeSnippet :
+    Type ;
+
+ExpressionSnippet :
+    Expression<+In, ~Yield, ~Await> ;
 
 %assert empty set(follow error & ~('}' | ')' | ',' | ';' | ']'));
 
@@ -1891,9 +1897,9 @@ func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(i
 	return p.parse(${call contextArg}${inp.index}, ${parser.finalStates[inp.index]}, lexer)
 }
 
+${end-}
 ${if self->needExplicitLookahead()-}
 ${call lookahead}
-${end-}
 ${end-}
 ${call lalr}
 ${call gotoState}

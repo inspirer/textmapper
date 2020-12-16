@@ -3,6 +3,7 @@ package js_test
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
@@ -106,6 +107,9 @@ var parseTests = []struct {
 		`«059.5»`,
 		`«09.9»`,
 		`«011»`,
+
+		// parse as expr
+		` «1»+«"a"» /*asexpr*/ `,
 	}},
 	{js.Javascript, js.ArrayLiteral, []string{
 		`c = «[4]».concat(«[1, 2, 3]»);`,
@@ -183,6 +187,9 @@ var parseTests = []struct {
 		`«s.a()[10]»();`,
 		`««s.a()[10]»[10]»();`,
 		`««s?.a()[10]»[10]»();`,
+
+		// parse as expr
+		` «a[10]» /*asexpr*/ `,
 	}},
 	{js.Javascript, js.OptionalIndexAccess, []string{
 		`«foo?.[10]»();`,
@@ -211,6 +218,10 @@ var parseTests = []struct {
 		`«new A()»;`,
 		`«new A.b[10]()».a();`,
 		`«new A.b[10]()»[10];`,
+
+		// parse as expr
+		` «new A» /*asexpr*/ `,
+		` «new A()» /*asexpr*/ `,
 	}},
 	{js.Javascript, js.NewTarget, []string{
 		`«new.target»;`,
@@ -1043,6 +1054,9 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.ArrayType, []string{
 		`let list: «number[]» = [1, 2, 3];`,
+
+		// parse as type
+		` «number[]» /*astype*/ `,
 	}},
 	{js.Typescript, js.TupleType, []string{
 		`let x: «[string, number]»;`,
@@ -1153,10 +1167,16 @@ var parseTests = []struct {
 		`function foo<T>() : «(abc,def)=>number» {}`,
 		`function foo<T>() : «(abc:any)=>number» {}`,
 		`function foo<T>() : «(abc?:"abc")=>«()=>any»» {}`,
+
+		// parse as type
+		` «(abc?:"abc")=>«()=>any»» /*astype*/ `,
 	}},
 	{js.Typescript, js.TypeQuery, []string{
 		`function foo(a) : «typeof a.b.c» {}`,
 		`function foo(a) : «typeof is» {}`,
+
+		// parse as type
+		` «typeof is» /*astype*/ `,
 	}},
 	{js.Typescript, js.ImportType, []string{
 		`function adopt(p: «import("./module").Pet») {}`,
@@ -1562,7 +1582,15 @@ func TestParser(t *testing.T) {
 				}
 			}
 			p.Init(errHandler, f)
-			err := p.Parse(ctx, l)
+			var err error
+			switch {
+			case strings.Contains(input, "/*astype*/"):
+				err = p.ParseTypeSnippet(ctx, l)
+			case strings.Contains(input, "/*asexpr*/"):
+				err = p.ParseExpressionSnippet(ctx, l)
+			default:
+				err = p.ParseModule(ctx, l)
+			}
 			if err == nil {
 				f(js.Module, 0, len(test.Source()))
 			}
@@ -1588,7 +1616,7 @@ func BenchmarkParser(b *testing.B) {
 	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
 	for i := 0; i < b.N; i++ {
 		l.Init(jsBenchmarkCode)
-		p.Parse(ctx, l)
+		p.ParseModule(ctx, l)
 	}
 	b.SetBytes(int64(len(jsBenchmarkCode)))
 }
@@ -1611,7 +1639,7 @@ func BenchmarkLookahead(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		l.Init(expr)
-		p.Parse(ctx, l)
+		p.ParseModule(ctx, l)
 	}
 	b.SetBytes(int64(len(expr)))
 }

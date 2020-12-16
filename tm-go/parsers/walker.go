@@ -42,7 +42,7 @@ func parseJS(ctx context.Context, f file, dialect js.Dialect) string {
 	result := "ok"
 	errHandler := func(se js.SyntaxError) bool { return false }
 	p.Init(errHandler, func(nt js.NodeType, offset, endoffset int) {})
-	if err := p.Parse(ctx, l); err != nil {
+	if err := p.ParseModule(ctx, l); err != nil {
 		result = "parse_err"
 		var suffix string
 		if err, ok := err.(js.SyntaxError); ok {

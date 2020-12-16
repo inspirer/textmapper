@@ -258,7 +258,7 @@ func Parse(${call go_parser.contextParam}path, content string${if self->go_parse
 	var p "${self->go.package()}".Parser
 	b := newBuilder(path, content)
 	p.Init(${if self->go_parser.hasRecovering()}eh, ${end}b.addNode)
-	err := p.Parse(${call go_parser.contextArg}&l)
+	err := p.Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(syntax.input.select(it|it.requested).first().target.id)}(${call go_parser.contextArg}&l)
 	if err != nil {
 		return nil, err
 	}
