@@ -203,7 +203,7 @@ option -> Option:
     key=identifier '=' value=expression ;
 
 symref<flag Args> -> Symref:
-    [Args]  name=identifier args=symref_args?
+    [Args]  name=identifier args=args?
   | [!Args] name=identifier
 ;
 
@@ -459,7 +459,7 @@ nonterm_param -> NontermParam:
 param_ref -> ParamRef:
     identifier ;
 
-symref_args -> SymrefArgs:
+args -> SymrefArgs:
     '<' arg_list=(argument separator ',')* '>' ;
 
 %interface Argument;
