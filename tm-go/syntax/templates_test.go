@@ -88,6 +88,14 @@ var modelTests = []struct {
        F<A,B>: [A && B] n a b | [A] a | [B] b | [!A && !B] n;`,
 		`%input Z; Z: F_A_B | F_A | F_B | F; F: n; F_A: a; F_A_B: n a b | a | b; F_B: b;`,
 	},
+	{"Instantiate", syntax.Instantiate,
+		`%input Z; %flag T; Z: F<T=false> F<T=true>; F<T>: a ([T] b | a) a;`,
+		`%input Z; Z: F F_T; F: a (a) a; F_T: a (b | a) a;`,
+	},
+	{"Instantiate", syntax.Instantiate,
+		`%input Z; %flag T; Z: F<T=false> F<T=true>; F<T>: a ([T] b) a;`,
+		`%input Z; Z: F F_T; F: a a; F_T: a (b) a;`,
+	},
 }
 
 func TestModelTransforms(t *testing.T) {
@@ -121,7 +129,6 @@ func TestModelTransforms(t *testing.T) {
 		stripOrigin(want)
 		if diff := dump.Diff(want, model); diff != "" {
 			t.Errorf("%v(%v) produced diff (-want +got):\n%s", tc.fnName, tc.input, diff)
-
 		}
 	}
 }

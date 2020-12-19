@@ -396,7 +396,11 @@ func (i *instantiator) doExpr(context *instance, expr *Expr) *Expr {
 			}
 			sub = sub.Sub[0]
 		}
-		ret.Sub = append(ret.Sub, i.doExpr(context, sub))
+		converted := i.doExpr(context, sub)
+		if expr.Kind == Sequence && converted.Kind == Empty {
+			continue
+		}
+		ret.Sub = append(ret.Sub, converted)
 	}
 	if expr.Kind == Choice && len(ret.Sub) < 2 {
 		// Simplify choice expressions on the fly.
