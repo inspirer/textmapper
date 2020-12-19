@@ -75,57 +75,57 @@ Propagation :
 %%
 
 Simple :
-  'a' expr_Foo -> File ;
+  CHAR_A expr_Foo -> File ;
 
 expr :
-  Identifier -> Identifier -> Expr
-| '(' expr ')' -> Bar -> Expr
+  IDENTIFIER -> Identifier -> Expr
+| LPAREN expr RPAREN -> Bar -> Expr
 | delayed_Async -> Expr
-| '->' delayed_Async -> Expr
+| MINUSGT delayed_Async -> Expr
 ;
 
 expr_Foo :
-  Identifier -> Identifier -> Expr
-| '(' expr ')' -> Bar -> Expr
-| '{' (Identifier separator ',')+ '}' -> Init -> Expr
+  IDENTIFIER -> Identifier -> Expr
+| LPAREN expr RPAREN -> Bar -> Expr
+| LBRACE (IDENTIFIER separator COMMA)+ RBRACE -> Init -> Expr
 | delayed_Foo_Async -> Expr
-| '->' delayed_Foo_Async -> Expr
+| MINUSGT delayed_Foo_Async -> Expr
 ;
 
 delayed_Async :
-  '.' '.' expr -> Delayed
-| '(' expr ')' '->' expr -> Delayed
-| '->' '(' PropagationWrap_IfFirst ')' delayed_Async -> Delayed
+  DOT DOT expr -> Delayed
+| LPAREN expr RPAREN MINUSGT expr -> Delayed
+| MINUSGT LPAREN PropagationWrap_IfFirst RPAREN delayed_Async -> Delayed
 ;
 
 delayed_Foo_Async :
-  '.' '.' expr_Foo -> Delayed
-| '(' expr ')' '->' expr_Foo -> Delayed
-| '->' '(' PropagationWrap_IfFirst ')' delayed_Foo_Async -> Delayed
+  DOT DOT expr_Foo -> Delayed
+| LPAREN expr RPAREN MINUSGT expr_Foo -> Delayed
+| MINUSGT LPAREN PropagationWrap_IfFirst RPAREN delayed_Foo_Async -> Delayed
 ;
 
 PropagationWrap :
   Propagation
-| '!' Propagation
+| EXCL Propagation
 ;
 
 PropagationWrap_IfFirst :
   Propagation_IfFirst
-| '!' Propagation
+| EXCL Propagation
 ;
 
 Propagation :
-  '(' PropagationWrap ')'
-| Propagation '+' Propagation
-| Propagation '-' Propagation
-| '-' Propagation %prec UNO
+  LPAREN PropagationWrap RPAREN
+| Propagation PLUS Propagation
+| Propagation MINUS Propagation
+| MINUS Propagation %prec UNO
 ;
 
 Propagation_IfFirst :
-  '(' PropagationWrap ')'
-| (Propagation_IfFirst | 'b') 'c'
-| Propagation_IfFirst '+' Propagation
-| Propagation '-' Propagation
-| '-' Propagation %prec UNO
+  LPAREN PropagationWrap RPAREN
+| (Propagation_IfFirst | CHAR_B) CHAR_C
+| Propagation_IfFirst PLUS Propagation
+| Propagation MINUS Propagation
+| MINUS Propagation %prec UNO
 ;
 

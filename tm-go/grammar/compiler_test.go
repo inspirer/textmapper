@@ -21,6 +21,7 @@ var testFiles = []string{
 	"opts.tmerr",
 	"opts_ok.tmerr",
 	"parser.tmerr",
+	"parser_confl.tmerr",
 	"noinput.tmerr",
 	"badinput.tmerr",
 	"backtrack.tmerr",
@@ -36,7 +37,7 @@ func TestErrors(t *testing.T) {
 
 		for _, compat := range []bool{true, false} {
 			inp := string(content)
-			pt := parsertest.New(t, fmt.Sprintf("error,compat=%v", compat), inp)
+			pt := parsertest.New(t, fmt.Sprintf("%v (compat=%v)", file, compat), inp)
 			tree, err := ast.Parse(file, pt.Source(), tm.StopOnFirstError)
 			if err != nil {
 				t.Errorf("parsing failed with %v\n%v", err, inp)

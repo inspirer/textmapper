@@ -24,9 +24,6 @@ c «returns b» : /*empty*/ ;
 
 d {Foo} -> Foo : /*empty*/ ;
 
-«d_» : /*empty*/ ;
-# err: d_ and d get the same ID in generated code
-
 «@Foo» e : d ;
 # err: unsupported syntax
 

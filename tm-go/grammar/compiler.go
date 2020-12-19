@@ -290,7 +290,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 	}
 
 	sym := Symbol{
-		Index:  len(c.syms),
+		Index:  len(c.out.Syms),
 		ID:     id,
 		Name:   name,
 		Type:   rawType,
@@ -301,6 +301,30 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 	c.ids[id] = name
 	c.out.Syms = append(c.out.Syms, sym)
 	return sym.Index
+}
+
+func (c *compiler) addNonterms(nonterms []*syntax.Nonterm) {
+	for _, nt := range nonterms {
+		name := nt.Name
+		if _, ok := c.syms[name]; ok {
+			// TODO come up with a better error message
+			c.errorf(nt.Origin, "duplicate name %v", name)
+		}
+		id := SymbolID(name, CamelCase)
+		if prev, exists := c.ids[id]; exists {
+			c.errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
+		}
+		sym := Symbol{
+			Index:  len(c.out.Syms),
+			ID:     id,
+			Name:   name,
+			Type:   nt.Type,
+			Origin: nt.Origin,
+		}
+		c.syms[name] = sym.Index
+		c.ids[id] = name
+		c.out.Syms = append(c.out.Syms, sym)
+	}
 }
 
 func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
@@ -698,7 +722,6 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 					c.source.Params = append(c.source.Params, p)
 				}
 			}
-			c.ids[id] = name
 			c.nonterms[name] = len(c.source.Nonterms)
 			ret = append(ret, nontermImpl{len(c.source.Nonterms), *nonterm})
 			c.source.Nonterms = append(c.source.Nonterms, nt)
@@ -1368,7 +1391,18 @@ func (c *compiler) compileParser() {
 		return
 	}
 
-	// TODO instantiate templates
+	if err := syntax.Expand(c.source); err != nil {
+		c.s.AddError(err)
+		return
+	}
+
+	// TODO compile the grammar model
+
+	// Prepare the model for code generation.
+	for i := range c.source.Terminals {
+		c.source.Terminals[i] = c.out.Syms[i].ID
+	}
+	c.addNonterms(c.source.Nonterms)
 
 	out := c.out.Parser
 	out.Inputs = c.source.Inputs
