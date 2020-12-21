@@ -29,7 +29,7 @@ var simplifyTests = []struct {
 
 func TestSimplify(t *testing.T) {
 	for _, tc := range simplifyTests {
-		got := syntax.Simplify(tc.input)
+		got := syntax.Simplify(tc.input, true /*deep*/)
 		if diff := dump.Diff(tc.want, got); diff != "" {
 			t.Errorf("Simplify(%v) produced diff (-want +got):\n%s", tc.input, diff)
 		}
@@ -433,7 +433,7 @@ func (p *parser) parseNonterm() {
 	for p.consumeIf(tm.OR) {
 		ret.Value.Sub = append(ret.Value.Sub, p.parseRule())
 	}
-	ret.Value = syntax.Simplify(ret.Value)
+	ret.Value = syntax.Simplify(ret.Value, true /*deep*/)
 	p.consume(tm.SEMICOLON)
 }
 

@@ -134,6 +134,9 @@ func (d *dumper) serialize(val reflect.Value, storedAs reflect.Type, depth int) 
 				d.seenPtrs = make(map[uintptr]bool)
 			}
 			d.seenPtrs[addr] = true
+			defer func() {
+				delete(d.seenPtrs, addr)
+			}()
 		}
 		d.WriteString("{")
 		t := val.Type()

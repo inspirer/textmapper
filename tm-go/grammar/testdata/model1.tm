@@ -75,7 +75,8 @@ Propagation :
 %%
 
 Simple :
-  CHAR_A expr_Foo -> File ;
+  CHAR_A expr_Foo -> File
+;
 
 expr :
   IDENTIFIER -> Identifier -> Expr
@@ -123,7 +124,8 @@ Propagation :
 
 Propagation_IfFirst :
   LPAREN PropagationWrap RPAREN
-| (Propagation_IfFirst | CHAR_B) CHAR_C
+| Propagation_IfFirst CHAR_C
+| CHAR_B CHAR_C
 | Propagation_IfFirst PLUS Propagation
 | Propagation MINUS Propagation
 | MINUS Propagation %prec UNO

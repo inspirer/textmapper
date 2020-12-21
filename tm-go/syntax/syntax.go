@@ -400,9 +400,11 @@ const (
 )
 
 // Simplify flattens lists and removes redundant nodes from a syntax expression (in-place).
-func Simplify(e *Expr) *Expr {
-	for i, sub := range e.Sub {
-		e.Sub[i] = Simplify(sub)
+func Simplify(e *Expr, deep bool) *Expr {
+	if deep {
+		for i, sub := range e.Sub {
+			e.Sub[i] = Simplify(sub, deep)
+		}
 	}
 	if e.Kind != Choice && e.Kind != Sequence {
 		return e

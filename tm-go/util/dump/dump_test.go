@@ -37,7 +37,7 @@ var selfRef = func() interface{} {
 	return ret
 }()
 
-var selfRef2 = func() *str2 {
+var objReuse = func() *str2 {
 	ret := &str2{A: &str2{}}
 	ret.B = ret.A
 	return ret
@@ -107,8 +107,8 @@ var tests = []struct {
 
 	// Reference cycles.
 	{selfRef, "dump_test.str2{\n  A: &{\n    A: &{\n      A: &{... cycle},\n    },\n  },\n}"},
-	{selfRef2, "&dump_test.str2{\n  A: &{},\n  B: &dump_test.str2{... cycle},\n}"},
-	{*selfRef2, "dump_test.str2{\n  A: &{},\n  B: &dump_test.str2{... cycle},\n}"},
+	{objReuse, "&dump_test.str2{\n  A: &{},\n  B: &dump_test.str2{},\n}"},
+	{*objReuse, "dump_test.str2{\n  A: &{},\n  B: &dump_test.str2{},\n}"},
 
 	// Depth check
 	{rec{}, `dump_test.rec{}`},
@@ -170,16 +170,14 @@ var diffTests = []struct {
  }
 `,
 	},
-	{selfRef2, str2{}, `@@ -1,6 +1,1 @@
+	{objReuse, str2{}, `@@ -1,4 +1,1 @@
 -&dump_test.str2{
 -  A: &{},
--  B: &dump_test.str2{... cycle},
+-  B: &dump_test.str2{},
 -}
--
--The first object cannot be properly serialized into a string.
 +dump_test.str2{}
 `},
-	{selfRef, selfRef2, `@@ -1,9 +1,6 @@
+	{selfRef, objReuse, `@@ -1,9 +1,4 @@
 -dump_test.str2{
 -  A: &{
 -    A: &{
@@ -188,11 +186,10 @@ var diffTests = []struct {
 -  },
 +&dump_test.str2{
 +  A: &{},
-+  B: &dump_test.str2{... cycle},
++  B: &dump_test.str2{},
  }
- 
+-
 -The first object cannot be properly serialized into a string.
-+The second object cannot be properly serialized into a string.
 `,
 	},
 }
