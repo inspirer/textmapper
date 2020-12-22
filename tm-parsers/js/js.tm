@@ -1096,10 +1096,10 @@ GeneratorExpression -> GeneratorExpr :
 GeneratorBody :
     FunctionBody<+Yield, ~Await> ;
 
-YieldExpression<In, Await> -> Yield :
+YieldExpression<In> -> Yield :
     'yield'
-  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield>
-  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield>
+  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield, ~Await>
+  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield, ~Await>
 ;
 
 AsyncMethod<Yield, Await> -> AsyncMethod :
@@ -1114,8 +1114,8 @@ AsyncFunctionExpression -> AsyncFuncExpr :
 AsyncFunctionBody :
     FunctionBody<~Yield, +Await> ;
 
-AwaitExpression<Yield> -> AwaitExpr :
-    'await' UnaryExpression<+Await> ;
+AwaitExpression -> AwaitExpr :
+    'await' UnaryExpression<~Yield, +Await> ;
 
 ClassDeclaration<Yield, Await> -> Decl /* interface */:
     Modifiers? 'class' BindingIdentifier<+WithoutImplements>? TypeParametersopt ClassTail   -> Class
