@@ -30,7 +30,7 @@ ${nterm->symbolName()} :
 ;
 ${end}
 
-${query nontermRules() = syntax.rules[nterm].sort(it|it.getRight().length == 0 ? 0 : 1)}
+${query nontermRules() = syntax.rules[nterm]}
 
 ${template rhs(rule)-}
 ${if rule.getRight().length == 0}%empty${else-}

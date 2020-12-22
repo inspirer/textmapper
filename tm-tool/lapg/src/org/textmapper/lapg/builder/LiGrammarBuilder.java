@@ -107,7 +107,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (defaultValue != null) {
 			check(type, defaultValue);
 		}
-		LiTemplateParameter param = new LiTemplateParameter(
+		LiTemplateParameter param = new LiTemplateParameter(paramScope.size(),
 				type, name, defaultValue, m, origin);
 		if (!paramScope.insert(param, null /* anchor */)) {
 			throw new IllegalStateException("name `" + name + "' is already used");

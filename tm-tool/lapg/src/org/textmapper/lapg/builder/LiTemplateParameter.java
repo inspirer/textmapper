@@ -25,9 +25,11 @@ public class LiTemplateParameter extends LiNamedElement
 	private final Object defaultValue;
 	private final SourceElement origin;
 	private final Modifier m;
+	private final int index;
 
-	public LiTemplateParameter(Type type, Name name, Object defaultValue,
+	public LiTemplateParameter(int index, Type type, Name name, Object defaultValue,
 							   TemplateParameter.Modifier m, SourceElement origin) {
+		this.index = index;
 		this.type = type;
 		this.name = name;
 		this.defaultValue = defaultValue;
@@ -66,6 +68,11 @@ public class LiTemplateParameter extends LiNamedElement
 			sb.append("_");
 			sb.append(((Symbol) value).getNameText());
 		}
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
 	}
 
 	@Override

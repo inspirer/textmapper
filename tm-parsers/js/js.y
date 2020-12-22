@@ -676,125 +676,10 @@ IdentifierReference_Await_NoLet :
 | INFER
 ;
 
-IdentifierReference_Await_NoLet_Yield :
-  IDENTIFIER
-| REM IDENTIFIER
-| ASYNC lookahead_notStartOfArrowFunction
-| AS
-| ASSERTS
-| FROM
-| GET
-| OF
-| SET
-| STATIC
-| TARGET
-| IMPLEMENTS
-| INTERFACE
-| PRIVATE
-| PROTECTED
-| PUBLIC
-| ANY
-| UNKNOWN
-| BOOLEAN
-| NUMBER
-| STRING
-| SYMBOL
-| ABSTRACT
-| CONSTRUCTOR
-| DECLARE
-| IS
-| MODULE
-| NAMESPACE
-| REQUIRE
-| TYPE
-| GLOBAL
-| KEYOF
-| UNIQUE
-| READONLY
-| INFER
-;
-
-IdentifierReference_Await_Yield :
-  IDENTIFIER
-| REM IDENTIFIER
-| LET
-| ASYNC lookahead_notStartOfArrowFunction
-| AS
-| ASSERTS
-| FROM
-| GET
-| OF
-| SET
-| STATIC
-| TARGET
-| IMPLEMENTS
-| INTERFACE
-| PRIVATE
-| PROTECTED
-| PUBLIC
-| ANY
-| UNKNOWN
-| BOOLEAN
-| NUMBER
-| STRING
-| SYMBOL
-| ABSTRACT
-| CONSTRUCTOR
-| DECLARE
-| IS
-| MODULE
-| NAMESPACE
-| REQUIRE
-| TYPE
-| GLOBAL
-| KEYOF
-| UNIQUE
-| READONLY
-| INFER
-;
-
 IdentifierReference_NoAsync_NoLet :
   IDENTIFIER
 | REM IDENTIFIER
 | YIELD
-| AWAIT
-| AS
-| ASSERTS
-| FROM
-| GET
-| OF
-| SET
-| STATIC
-| TARGET
-| IMPLEMENTS
-| INTERFACE
-| PRIVATE
-| PROTECTED
-| PUBLIC
-| ANY
-| UNKNOWN
-| BOOLEAN
-| NUMBER
-| STRING
-| SYMBOL
-| ABSTRACT
-| CONSTRUCTOR
-| DECLARE
-| IS
-| MODULE
-| NAMESPACE
-| REQUIRE
-| TYPE
-| GLOBAL
-| KEYOF
-| UNIQUE
-| READONLY
-| INFER
-;
-
-IdentifierReference_NoAsync_NoLet_Yield :
-  IDENTIFIER
-| REM IDENTIFIER
 | AWAIT
 | AS
 | ASSERTS
@@ -870,45 +755,6 @@ IdentifierReference_NoLet :
 | INFER
 ;
 
-IdentifierReference_NoLet_Yield :
-  IDENTIFIER
-| REM IDENTIFIER
-| AWAIT
-| ASYNC lookahead_notStartOfArrowFunction
-| AS
-| ASSERTS
-| FROM
-| GET
-| OF
-| SET
-| STATIC
-| TARGET
-| IMPLEMENTS
-| INTERFACE
-| PRIVATE
-| PROTECTED
-| PUBLIC
-| ANY
-| UNKNOWN
-| BOOLEAN
-| NUMBER
-| STRING
-| SYMBOL
-| ABSTRACT
-| CONSTRUCTOR
-| DECLARE
-| IS
-| MODULE
-| NAMESPACE
-| REQUIRE
-| TYPE
-| GLOBAL
-| KEYOF
-| UNIQUE
-| READONLY
-| INFER
-;
-
 IdentifierReference_WithoutPredefinedTypes :
   IDENTIFIER
 | REM IDENTIFIER
@@ -945,6 +791,160 @@ IdentifierReference_Yield :
 | REM IDENTIFIER
 | AWAIT
 | LET
+| ASYNC lookahead_notStartOfArrowFunction
+| AS
+| ASSERTS
+| FROM
+| GET
+| OF
+| SET
+| STATIC
+| TARGET
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| REQUIRE
+| TYPE
+| GLOBAL
+| KEYOF
+| UNIQUE
+| READONLY
+| INFER
+;
+
+IdentifierReference_Yield_Await :
+  IDENTIFIER
+| REM IDENTIFIER
+| LET
+| ASYNC lookahead_notStartOfArrowFunction
+| AS
+| ASSERTS
+| FROM
+| GET
+| OF
+| SET
+| STATIC
+| TARGET
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| REQUIRE
+| TYPE
+| GLOBAL
+| KEYOF
+| UNIQUE
+| READONLY
+| INFER
+;
+
+IdentifierReference_Yield_Await_NoLet :
+  IDENTIFIER
+| REM IDENTIFIER
+| ASYNC lookahead_notStartOfArrowFunction
+| AS
+| ASSERTS
+| FROM
+| GET
+| OF
+| SET
+| STATIC
+| TARGET
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| REQUIRE
+| TYPE
+| GLOBAL
+| KEYOF
+| UNIQUE
+| READONLY
+| INFER
+;
+
+IdentifierReference_Yield_NoAsync_NoLet :
+  IDENTIFIER
+| REM IDENTIFIER
+| AWAIT
+| AS
+| ASSERTS
+| FROM
+| GET
+| OF
+| SET
+| STATIC
+| TARGET
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| REQUIRE
+| TYPE
+| GLOBAL
+| KEYOF
+| UNIQUE
+| READONLY
+| INFER
+;
+
+IdentifierReference_Yield_NoLet :
+  IDENTIFIER
+| REM IDENTIFIER
+| AWAIT
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
 | ASSERTS
@@ -1152,28 +1152,6 @@ PrimaryExpression_Await_NoAsync_NoLet :
 | lookahead_notStartOfArrowFunction JSXElement_Await
 ;
 
-PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral :
-  THIS
-| IdentifierReference_Await_NoLet
-| Literal
-| ArrayLiteral_Await
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Await
-| lookahead_notStartOfArrowFunction Parenthesized_Await
-| lookahead_notStartOfArrowFunction JSXElement_Await
-;
-
-PrimaryExpression_Await_NoFuncClass_NoObjLiteral :
-  THIS
-| IdentifierReference_Await
-| Literal
-| ArrayLiteral_Await
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Await
-| lookahead_notStartOfArrowFunction Parenthesized_Await
-| lookahead_notStartOfArrowFunction JSXElement_Await
-;
-
 PrimaryExpression_Await_NoLet :
   THIS
 | IdentifierReference_Await_NoLet
@@ -1205,20 +1183,15 @@ PrimaryExpression_Await_NoLet_NoObjLiteral :
 | lookahead_notStartOfArrowFunction JSXElement_Await
 ;
 
-PrimaryExpression_Await_NoLet_Yield :
+PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass :
   THIS
-| IdentifierReference_Await_NoLet_Yield
+| IdentifierReference_Await_NoLet
 | Literal
-| ArrayLiteral_Await_Yield
-| ObjectLiteral_Await_Yield
-| FunctionExpression
-| ClassExpression_Await_Yield
-| GeneratorExpression
-| AsyncFunctionExpression
+| ArrayLiteral_Await
 | REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Await_Yield
-| lookahead_notStartOfArrowFunction Parenthesized_Await_Yield
-| lookahead_notStartOfArrowFunction JSXElement_Await_Yield
+| TemplateLiteral_Await
+| lookahead_notStartOfArrowFunction Parenthesized_Await
+| lookahead_notStartOfArrowFunction JSXElement_Await
 ;
 
 PrimaryExpression_Await_NoObjLiteral :
@@ -1236,20 +1209,15 @@ PrimaryExpression_Await_NoObjLiteral :
 | lookahead_notStartOfArrowFunction JSXElement_Await
 ;
 
-PrimaryExpression_Await_Yield :
+PrimaryExpression_Await_NoObjLiteral_NoFuncClass :
   THIS
-| IdentifierReference_Await_Yield
+| IdentifierReference_Await
 | Literal
-| ArrayLiteral_Await_Yield
-| ObjectLiteral_Await_Yield
-| FunctionExpression
-| ClassExpression_Await_Yield
-| GeneratorExpression
-| AsyncFunctionExpression
+| ArrayLiteral_Await
 | REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Await_Yield
-| lookahead_notStartOfArrowFunction Parenthesized_Await_Yield
-| lookahead_notStartOfArrowFunction JSXElement_Await_Yield
+| TemplateLiteral_Await
+| lookahead_notStartOfArrowFunction Parenthesized_Await
+| lookahead_notStartOfArrowFunction JSXElement_Await
 ;
 
 PrimaryExpression_NoAsync_NoLet :
@@ -1268,22 +1236,6 @@ PrimaryExpression_NoAsync_NoLet :
 | lookahead_notStartOfArrowFunction JSXElement
 ;
 
-PrimaryExpression_NoAsync_NoLet_Yield :
-  THIS
-| IdentifierReference_NoAsync_NoLet_Yield
-| Literal
-| ArrayLiteral_Yield
-| ObjectLiteral_Yield
-| FunctionExpression
-| ClassExpression_Yield
-| GeneratorExpression
-| AsyncFunctionExpression
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Yield
-| lookahead_notStartOfArrowFunction Parenthesized_Yield
-| lookahead_notStartOfArrowFunction JSXElement_Yield
-;
-
 PrimaryExpression_NoFuncClass :
   THIS
 | IdentifierReference
@@ -1296,62 +1248,6 @@ PrimaryExpression_NoFuncClass :
 | lookahead_notStartOfArrowFunction JSXElement
 ;
 
-PrimaryExpression_NoFuncClass_NoLet :
-  THIS
-| IdentifierReference_NoLet
-| Literal
-| ArrayLiteral
-| ObjectLiteral
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral
-| lookahead_notStartOfArrowFunction Parenthesized
-| lookahead_notStartOfArrowFunction JSXElement
-;
-
-PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral :
-  THIS
-| IdentifierReference_NoLet
-| Literal
-| ArrayLiteral
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral
-| lookahead_notStartOfArrowFunction Parenthesized
-| lookahead_notStartOfArrowFunction JSXElement
-;
-
-PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield :
-  THIS
-| IdentifierReference_NoLet_Yield
-| Literal
-| ArrayLiteral_Yield
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Yield
-| lookahead_notStartOfArrowFunction Parenthesized_Yield
-| lookahead_notStartOfArrowFunction JSXElement_Yield
-;
-
-PrimaryExpression_NoFuncClass_NoObjLiteral :
-  THIS
-| IdentifierReference
-| Literal
-| ArrayLiteral
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral
-| lookahead_notStartOfArrowFunction Parenthesized
-| lookahead_notStartOfArrowFunction JSXElement
-;
-
-PrimaryExpression_NoFuncClass_NoObjLiteral_Yield :
-  THIS
-| IdentifierReference_Yield
-| Literal
-| ArrayLiteral_Yield
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Yield
-| lookahead_notStartOfArrowFunction Parenthesized_Yield
-| lookahead_notStartOfArrowFunction JSXElement_Yield
-;
-
 PrimaryExpression_NoLet :
   THIS
 | IdentifierReference_NoLet
@@ -1362,6 +1258,18 @@ PrimaryExpression_NoLet :
 | ClassExpression
 | GeneratorExpression
 | AsyncFunctionExpression
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral
+| lookahead_notStartOfArrowFunction Parenthesized
+| lookahead_notStartOfArrowFunction JSXElement
+;
+
+PrimaryExpression_NoLet_NoFuncClass :
+  THIS
+| IdentifierReference_NoLet
+| Literal
+| ArrayLiteral
+| ObjectLiteral
 | REGULAREXPRESSIONLITERAL
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
@@ -1383,20 +1291,15 @@ PrimaryExpression_NoLet_NoObjLiteral :
 | lookahead_notStartOfArrowFunction JSXElement
 ;
 
-PrimaryExpression_NoLet_Yield :
+PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass :
   THIS
-| IdentifierReference_NoLet_Yield
+| IdentifierReference_NoLet
 | Literal
-| ArrayLiteral_Yield
-| ObjectLiteral_Yield
-| FunctionExpression
-| ClassExpression_Yield
-| GeneratorExpression
-| AsyncFunctionExpression
+| ArrayLiteral
 | REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Yield
-| lookahead_notStartOfArrowFunction Parenthesized_Yield
-| lookahead_notStartOfArrowFunction JSXElement_Yield
+| TemplateLiteral
+| lookahead_notStartOfArrowFunction Parenthesized
+| lookahead_notStartOfArrowFunction JSXElement
 ;
 
 PrimaryExpression_NoObjLiteral :
@@ -1408,6 +1311,17 @@ PrimaryExpression_NoObjLiteral :
 | ClassExpression
 | GeneratorExpression
 | AsyncFunctionExpression
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral
+| lookahead_notStartOfArrowFunction Parenthesized
+| lookahead_notStartOfArrowFunction JSXElement
+;
+
+PrimaryExpression_NoObjLiteral_NoFuncClass :
+  THIS
+| IdentifierReference
+| Literal
+| ArrayLiteral
 | REGULAREXPRESSIONLITERAL
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
@@ -1430,23 +1344,109 @@ PrimaryExpression_Yield :
 | lookahead_notStartOfArrowFunction JSXElement_Yield
 ;
 
+PrimaryExpression_Yield_Await :
+  THIS
+| IdentifierReference_Yield_Await
+| Literal
+| ArrayLiteral_Yield_Await
+| ObjectLiteral_Yield_Await
+| FunctionExpression
+| ClassExpression_Yield_Await
+| GeneratorExpression
+| AsyncFunctionExpression
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral_Yield_Await
+| lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
+| lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+;
+
+PrimaryExpression_Yield_Await_NoLet :
+  THIS
+| IdentifierReference_Yield_Await_NoLet
+| Literal
+| ArrayLiteral_Yield_Await
+| ObjectLiteral_Yield_Await
+| FunctionExpression
+| ClassExpression_Yield_Await
+| GeneratorExpression
+| AsyncFunctionExpression
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral_Yield_Await
+| lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
+| lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+;
+
+PrimaryExpression_Yield_NoAsync_NoLet :
+  THIS
+| IdentifierReference_Yield_NoAsync_NoLet
+| Literal
+| ArrayLiteral_Yield
+| ObjectLiteral_Yield
+| FunctionExpression
+| ClassExpression_Yield
+| GeneratorExpression
+| AsyncFunctionExpression
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral_Yield
+| lookahead_notStartOfArrowFunction Parenthesized_Yield
+| lookahead_notStartOfArrowFunction JSXElement_Yield
+;
+
+PrimaryExpression_Yield_NoLet :
+  THIS
+| IdentifierReference_Yield_NoLet
+| Literal
+| ArrayLiteral_Yield
+| ObjectLiteral_Yield
+| FunctionExpression
+| ClassExpression_Yield
+| GeneratorExpression
+| AsyncFunctionExpression
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral_Yield
+| lookahead_notStartOfArrowFunction Parenthesized_Yield
+| lookahead_notStartOfArrowFunction JSXElement_Yield
+;
+
+PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass :
+  THIS
+| IdentifierReference_Yield_NoLet
+| Literal
+| ArrayLiteral_Yield
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral_Yield
+| lookahead_notStartOfArrowFunction Parenthesized_Yield
+| lookahead_notStartOfArrowFunction JSXElement_Yield
+;
+
+PrimaryExpression_Yield_NoObjLiteral_NoFuncClass :
+  THIS
+| IdentifierReference_Yield
+| Literal
+| ArrayLiteral_Yield
+| REGULAREXPRESSIONLITERAL
+| TemplateLiteral_Yield
+| lookahead_notStartOfArrowFunction Parenthesized_Yield
+| lookahead_notStartOfArrowFunction JSXElement_Yield
+;
+
 Parenthesized :
   LPAREN Expression_In RPAREN
 | LPAREN SyntaxError RPAREN
 ;
 
 Parenthesized_Await :
-  LPAREN Expression_Await_In RPAREN
-| LPAREN SyntaxError RPAREN
-;
-
-Parenthesized_Await_Yield :
-  LPAREN Expression_Await_In_Yield RPAREN
+  LPAREN Expression_In_Await RPAREN
 | LPAREN SyntaxError RPAREN
 ;
 
 Parenthesized_Yield :
   LPAREN Expression_In_Yield RPAREN
+| LPAREN SyntaxError RPAREN
+;
+
+Parenthesized_Yield_Await :
+  LPAREN Expression_In_Yield_Await RPAREN
 | LPAREN SyntaxError RPAREN
 ;
 
@@ -1470,16 +1470,16 @@ ArrayLiteral_Await :
 | LBRACK ElementList_Await COMMA Elisionopt RBRACK
 ;
 
-ArrayLiteral_Await_Yield :
-  LBRACK Elisionopt RBRACK
-| LBRACK ElementList_Await_Yield RBRACK
-| LBRACK ElementList_Await_Yield COMMA Elisionopt RBRACK
-;
-
 ArrayLiteral_Yield :
   LBRACK Elisionopt RBRACK
 | LBRACK ElementList_Yield RBRACK
 | LBRACK ElementList_Yield COMMA Elisionopt RBRACK
+;
+
+ArrayLiteral_Yield_Await :
+  LBRACK Elisionopt RBRACK
+| LBRACK ElementList_Yield_Await RBRACK
+| LBRACK ElementList_Yield_Await COMMA Elisionopt RBRACK
 ;
 
 ElementList :
@@ -1490,17 +1490,10 @@ ElementList :
 ;
 
 ElementList_Await :
-  Elisionopt AssignmentExpression_Await_In
+  Elisionopt AssignmentExpression_In_Await
 | Elisionopt SpreadElement_Await
-| ElementList_Await COMMA Elisionopt AssignmentExpression_Await_In
+| ElementList_Await COMMA Elisionopt AssignmentExpression_In_Await
 | ElementList_Await COMMA Elisionopt SpreadElement_Await
-;
-
-ElementList_Await_Yield :
-  Elisionopt AssignmentExpression_Await_In_Yield
-| Elisionopt SpreadElement_Await_Yield
-| ElementList_Await_Yield COMMA Elisionopt AssignmentExpression_Await_In_Yield
-| ElementList_Await_Yield COMMA Elisionopt SpreadElement_Await_Yield
 ;
 
 ElementList_Yield :
@@ -1508,6 +1501,13 @@ ElementList_Yield :
 | Elisionopt SpreadElement_Yield
 | ElementList_Yield COMMA Elisionopt AssignmentExpression_In_Yield
 | ElementList_Yield COMMA Elisionopt SpreadElement_Yield
+;
+
+ElementList_Yield_Await :
+  Elisionopt AssignmentExpression_In_Yield_Await
+| Elisionopt SpreadElement_Yield_Await
+| ElementList_Yield_Await COMMA Elisionopt AssignmentExpression_In_Yield_Await
+| ElementList_Yield_Await COMMA Elisionopt SpreadElement_Yield_Await
 ;
 
 Elision :
@@ -1520,15 +1520,15 @@ SpreadElement :
 ;
 
 SpreadElement_Await :
-  DOTDOTDOT AssignmentExpression_Await_In
-;
-
-SpreadElement_Await_Yield :
-  DOTDOTDOT AssignmentExpression_Await_In_Yield
+  DOTDOTDOT AssignmentExpression_In_Await
 ;
 
 SpreadElement_Yield :
   DOTDOTDOT AssignmentExpression_In_Yield
+;
+
+SpreadElement_Yield_Await :
+  DOTDOTDOT AssignmentExpression_In_Yield_Await
 ;
 
 ObjectLiteral :
@@ -1543,16 +1543,16 @@ ObjectLiteral_Await :
 | LBRACE /*.recoveryScope*/ PropertyDefinitionList_Await COMMA RBRACE
 ;
 
-ObjectLiteral_Await_Yield :
-  LBRACE RBRACE
-| LBRACE /*.recoveryScope*/ PropertyDefinitionList_Await_Yield RBRACE
-| LBRACE /*.recoveryScope*/ PropertyDefinitionList_Await_Yield COMMA RBRACE
-;
-
 ObjectLiteral_Yield :
   LBRACE RBRACE
 | LBRACE /*.recoveryScope*/ PropertyDefinitionList_Yield RBRACE
 | LBRACE /*.recoveryScope*/ PropertyDefinitionList_Yield COMMA RBRACE
+;
+
+ObjectLiteral_Yield_Await :
+  LBRACE RBRACE
+| LBRACE /*.recoveryScope*/ PropertyDefinitionList_Yield_Await RBRACE
+| LBRACE /*.recoveryScope*/ PropertyDefinitionList_Yield_Await COMMA RBRACE
 ;
 
 PropertyDefinitionList :
@@ -1565,14 +1565,14 @@ PropertyDefinitionList_Await :
 | PropertyDefinitionList_Await COMMA PropertyDefinition_Await
 ;
 
-PropertyDefinitionList_Await_Yield :
-  PropertyDefinition_Await_Yield
-| PropertyDefinitionList_Await_Yield COMMA PropertyDefinition_Await_Yield
-;
-
 PropertyDefinitionList_Yield :
   PropertyDefinition_Yield
 | PropertyDefinitionList_Yield COMMA PropertyDefinition_Yield
+;
+
+PropertyDefinitionList_Yield_Await :
+  PropertyDefinition_Yield_Await
+| PropertyDefinitionList_Yield_Await COMMA PropertyDefinition_Yield_Await
 ;
 
 PropertyDefinition :
@@ -1588,24 +1588,13 @@ PropertyDefinition :
 
 PropertyDefinition_Await :
   IdentifierReference_Await
-| Modifiers PropertyName_Await COLON AssignmentExpression_Await_In
-| PropertyName_Await COLON AssignmentExpression_Await_In
+| Modifiers PropertyName_Await COLON AssignmentExpression_In_Await
+| PropertyName_Await COLON AssignmentExpression_In_Await
 | Modifiers MethodDefinition_Await
 | MethodDefinition_Await
 | CoverInitializedName_Await
 | SyntaxError
-| DOTDOTDOT AssignmentExpression_Await_In
-;
-
-PropertyDefinition_Await_Yield :
-  IdentifierReference_Await_Yield
-| Modifiers PropertyName_Await_Yield COLON AssignmentExpression_Await_In_Yield
-| PropertyName_Await_Yield COLON AssignmentExpression_Await_In_Yield
-| Modifiers MethodDefinition_Await_Yield
-| MethodDefinition_Await_Yield
-| CoverInitializedName_Await_Yield
-| SyntaxError
-| DOTDOTDOT AssignmentExpression_Await_In_Yield
+| DOTDOTDOT AssignmentExpression_In_Await
 ;
 
 PropertyDefinition_Yield :
@@ -1619,6 +1608,17 @@ PropertyDefinition_Yield :
 | DOTDOTDOT AssignmentExpression_In_Yield
 ;
 
+PropertyDefinition_Yield_Await :
+  IdentifierReference_Yield_Await
+| Modifiers PropertyName_Yield_Await COLON AssignmentExpression_In_Yield_Await
+| PropertyName_Yield_Await COLON AssignmentExpression_In_Yield_Await
+| Modifiers MethodDefinition_Yield_Await
+| MethodDefinition_Yield_Await
+| CoverInitializedName_Yield_Await
+| SyntaxError
+| DOTDOTDOT AssignmentExpression_In_Yield_Await
+;
+
 PropertyName :
   LiteralPropertyName
 | ComputedPropertyName
@@ -1629,11 +1629,6 @@ PropertyName_Await :
 | ComputedPropertyName_Await
 ;
 
-PropertyName_Await_Yield :
-  LiteralPropertyName
-| ComputedPropertyName_Await_Yield
-;
-
 PropertyName_WithoutNew :
   LiteralPropertyName_WithoutNew
 | ComputedPropertyName
@@ -1642,6 +1637,11 @@ PropertyName_WithoutNew :
 PropertyName_Yield :
   LiteralPropertyName
 | ComputedPropertyName_Yield
+;
+
+PropertyName_Yield_Await :
+  LiteralPropertyName
+| ComputedPropertyName_Yield_Await
 ;
 
 LiteralPropertyName :
@@ -1663,15 +1663,15 @@ ComputedPropertyName :
 ;
 
 ComputedPropertyName_Await :
-  LBRACK AssignmentExpression_Await_In RBRACK
-;
-
-ComputedPropertyName_Await_Yield :
-  LBRACK AssignmentExpression_Await_In_Yield RBRACK
+  LBRACK AssignmentExpression_In_Await RBRACK
 ;
 
 ComputedPropertyName_Yield :
   LBRACK AssignmentExpression_In_Yield RBRACK
+;
+
+ComputedPropertyName_Yield_Await :
+  LBRACK AssignmentExpression_In_Yield_Await RBRACK
 ;
 
 CoverInitializedName :
@@ -1679,15 +1679,15 @@ CoverInitializedName :
 ;
 
 CoverInitializedName_Await :
-  IdentifierReference_Await Initializer_Await_In
-;
-
-CoverInitializedName_Await_Yield :
-  IdentifierReference_Await_Yield Initializer_Await_In_Yield
+  IdentifierReference_Await Initializer_In_Await
 ;
 
 CoverInitializedName_Yield :
   IdentifierReference_Yield Initializer_In_Yield
+;
+
+CoverInitializedName_Yield_Await :
+  IdentifierReference_Yield_Await Initializer_In_Yield_Await
 ;
 
 Initializer :
@@ -1698,20 +1698,20 @@ Initializer_Await :
   ASSIGN AssignmentExpression_Await
 ;
 
-Initializer_Await_In :
-  ASSIGN AssignmentExpression_Await_In
-;
-
-Initializer_Await_In_Yield :
-  ASSIGN AssignmentExpression_Await_In_Yield
-;
-
 Initializer_In :
   ASSIGN AssignmentExpression_In
 ;
 
+Initializer_In_Await :
+  ASSIGN AssignmentExpression_In_Await
+;
+
 Initializer_In_Yield :
   ASSIGN AssignmentExpression_In_Yield
+;
+
+Initializer_In_Yield_Await :
+  ASSIGN AssignmentExpression_In_Yield_Await
 ;
 
 Initializer_Yield :
@@ -1725,17 +1725,17 @@ TemplateLiteral :
 
 TemplateLiteral_Await :
   NOSUBSTITUTIONTEMPLATE
-| TEMPLATEHEAD Expression_Await_In TemplateSpans_Await
-;
-
-TemplateLiteral_Await_Yield :
-  NOSUBSTITUTIONTEMPLATE
-| TEMPLATEHEAD Expression_Await_In_Yield TemplateSpans_Await_Yield
+| TEMPLATEHEAD Expression_In_Await TemplateSpans_Await
 ;
 
 TemplateLiteral_Yield :
   NOSUBSTITUTIONTEMPLATE
 | TEMPLATEHEAD Expression_In_Yield TemplateSpans_Yield
+;
+
+TemplateLiteral_Yield_Await :
+  NOSUBSTITUTIONTEMPLATE
+| TEMPLATEHEAD Expression_In_Yield_Await TemplateSpans_Yield_Await
 ;
 
 TemplateSpans :
@@ -1748,14 +1748,14 @@ TemplateSpans_Await :
 | TemplateMiddleList_Await TEMPLATETAIL
 ;
 
-TemplateSpans_Await_Yield :
-  TEMPLATETAIL
-| TemplateMiddleList_Await_Yield TEMPLATETAIL
-;
-
 TemplateSpans_Yield :
   TEMPLATETAIL
 | TemplateMiddleList_Yield TEMPLATETAIL
+;
+
+TemplateSpans_Yield_Await :
+  TEMPLATETAIL
+| TemplateMiddleList_Yield_Await TEMPLATETAIL
 ;
 
 TemplateMiddleList :
@@ -1764,18 +1764,18 @@ TemplateMiddleList :
 ;
 
 TemplateMiddleList_Await :
-  TEMPLATEMIDDLE Expression_Await_In
-| TemplateMiddleList_Await TEMPLATEMIDDLE Expression_Await_In
-;
-
-TemplateMiddleList_Await_Yield :
-  TEMPLATEMIDDLE Expression_Await_In_Yield
-| TemplateMiddleList_Await_Yield TEMPLATEMIDDLE Expression_Await_In_Yield
+  TEMPLATEMIDDLE Expression_In_Await
+| TemplateMiddleList_Await TEMPLATEMIDDLE Expression_In_Await
 ;
 
 TemplateMiddleList_Yield :
   TEMPLATEMIDDLE Expression_In_Yield
 | TemplateMiddleList_Yield TEMPLATEMIDDLE Expression_In_Yield
+;
+
+TemplateMiddleList_Yield_Await :
+  TEMPLATEMIDDLE Expression_In_Yield_Await
+| TemplateMiddleList_Yield_Await TEMPLATEMIDDLE Expression_In_Yield_Await
 ;
 
 MemberExpression :
@@ -1792,7 +1792,7 @@ MemberExpression :
 
 MemberExpression_Await :
   PrimaryExpression_Await
-| MemberExpression_Await LBRACK Expression_Await_In RBRACK
+| MemberExpression_Await LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await DOT IdentifierNameRef
 | MemberExpression_Await DOT ClassPrivateRef
 | MemberExpression_Await TemplateLiteral_Await
@@ -1804,7 +1804,7 @@ MemberExpression_Await :
 
 MemberExpression_Await_NoAsync_NoLet :
   PrimaryExpression_Await_NoAsync_NoLet
-| MemberExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
+| MemberExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await_NoLet DOT IdentifierNameRef
 | MemberExpression_Await_NoLet DOT ClassPrivateRef
 | MemberExpression_Await_NoLet TemplateLiteral_Await
@@ -1814,21 +1814,21 @@ MemberExpression_Await_NoAsync_NoLet :
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  PrimaryExpression_Await_NoFuncClass_NoObjLiteral
-| MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
+MemberExpression_Await_NoLet :
+  PrimaryExpression_Await_NoLet
+| MemberExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
+| MemberExpression_Await_NoLet DOT IdentifierNameRef
+| MemberExpression_Await_NoLet DOT ClassPrivateRef
+| MemberExpression_Await_NoLet TemplateLiteral_Await
+| MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Await
 | MetaProperty
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLet :
+MemberExpression_Await_NoLet_NoLetOnly :
   PrimaryExpression_Await_NoLet
-| MemberExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
+| MemberExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await_NoLet DOT IdentifierNameRef
 | MemberExpression_Await_NoLet DOT ClassPrivateRef
 | MemberExpression_Await_NoLet TemplateLiteral_Await
@@ -1840,7 +1840,7 @@ MemberExpression_Await_NoLet :
 
 MemberExpression_Await_NoLetOnly :
   PrimaryExpression_Await_NoLet
-| MemberExpression_Await LBRACK Expression_Await_In RBRACK
+| MemberExpression_Await LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await DOT IdentifierNameRef
 | MemberExpression_Await DOT ClassPrivateRef
 | MemberExpression_Await TemplateLiteral_Await
@@ -1850,33 +1850,33 @@ MemberExpression_Await_NoLetOnly :
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral :
-  PrimaryExpression_Await_NoFuncClass_NoLet_NoObjLiteral
-| MemberExpression_Await_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
-| MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
+MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  PrimaryExpression_Await_NoObjLiteral_NoFuncClass
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In_Await RBRACK
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | SuperProperty_Await
 | MetaProperty
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLetOnly_NoLet :
-  PrimaryExpression_Await_NoLet
-| MemberExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
-| MemberExpression_Await_NoLet DOT IdentifierNameRef
-| MemberExpression_Await_NoLet DOT ClassPrivateRef
-| MemberExpression_Await_NoLet TemplateLiteral_Await
-| MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
+MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
+  PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In_Await RBRACK
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
+| MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | SuperProperty_Await
 | MetaProperty
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLetOnly_NoObjLiteral :
-  PrimaryExpression_Await_NoLet_NoObjLiteral
-| MemberExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
+MemberExpression_Await_NoObjLiteral :
+  PrimaryExpression_Await_NoObjLiteral
+| MemberExpression_Await_NoObjLiteral LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await_NoObjLiteral DOT IdentifierNameRef
 | MemberExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
@@ -1886,29 +1886,9 @@ MemberExpression_Await_NoLetOnly_NoObjLiteral :
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLetOnly_StartWithLet :
-  MemberExpression_Await_NoLetOnly_StartWithLet LBRACK Expression_Await_In RBRACK
-| MemberExpression_Await_StartWithLet DOT IdentifierNameRef
-| MemberExpression_Await_StartWithLet DOT ClassPrivateRef
-| MemberExpression_Await_StartWithLet TemplateLiteral_Await
-| MemberExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
-;
-
-MemberExpression_Await_NoLetOnly_Yield :
-  PrimaryExpression_Await_NoLet_Yield
-| MemberExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
-| MemberExpression_Await_Yield DOT IdentifierNameRef
-| MemberExpression_Await_Yield DOT ClassPrivateRef
-| MemberExpression_Await_Yield TemplateLiteral_Await_Yield
-| MemberExpression_Await_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Await_Yield
-| MetaProperty
-| NEW MemberExpression_Await_Yield Arguments_Await_Yield
-;
-
-MemberExpression_Await_NoObjLiteral :
-  PrimaryExpression_Await_NoObjLiteral
-| MemberExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
+MemberExpression_Await_NoObjLiteral_NoLetOnly :
+  PrimaryExpression_Await_NoLet_NoObjLiteral
+| MemberExpression_Await_NoObjLiteral LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await_NoObjLiteral DOT IdentifierNameRef
 | MemberExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
@@ -1920,23 +1900,19 @@ MemberExpression_Await_NoObjLiteral :
 
 MemberExpression_Await_StartWithLet :
   LET
-| MemberExpression_Await_NoLetOnly_StartWithLet LBRACK Expression_Await_In RBRACK
+| MemberExpression_Await_StartWithLet_NoLetOnly LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await_StartWithLet DOT IdentifierNameRef
 | MemberExpression_Await_StartWithLet DOT ClassPrivateRef
 | MemberExpression_Await_StartWithLet TemplateLiteral_Await
 | MemberExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 ;
 
-MemberExpression_Await_Yield :
-  PrimaryExpression_Await_Yield
-| MemberExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
-| MemberExpression_Await_Yield DOT IdentifierNameRef
-| MemberExpression_Await_Yield DOT ClassPrivateRef
-| MemberExpression_Await_Yield TemplateLiteral_Await_Yield
-| MemberExpression_Await_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Await_Yield
-| MetaProperty
-| NEW MemberExpression_Await_Yield Arguments_Await_Yield
+MemberExpression_Await_StartWithLet_NoLetOnly :
+  MemberExpression_Await_StartWithLet_NoLetOnly LBRACK Expression_In_Await RBRACK
+| MemberExpression_Await_StartWithLet DOT IdentifierNameRef
+| MemberExpression_Await_StartWithLet DOT ClassPrivateRef
+| MemberExpression_Await_StartWithLet TemplateLiteral_Await
+| MemberExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 ;
 
 MemberExpression_NoAsync_NoLet :
@@ -1951,18 +1927,6 @@ MemberExpression_NoAsync_NoLet :
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoAsync_NoLet_Yield :
-  PrimaryExpression_NoAsync_NoLet_Yield
-| MemberExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_NoLet_Yield DOT IdentifierNameRef
-| MemberExpression_NoLet_Yield DOT ClassPrivateRef
-| MemberExpression_NoLet_Yield TemplateLiteral_Yield
-| MemberExpression_NoLet_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
-;
-
 MemberExpression_NoFuncClass :
   PrimaryExpression_NoFuncClass
 | MemberExpression_NoFuncClass LBRACK Expression_In RBRACK
@@ -1975,28 +1939,16 @@ MemberExpression_NoFuncClass :
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  PrimaryExpression_NoFuncClass_NoObjLiteral
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
+MemberExpression_NoFuncClass_NoLetOnly :
+  PrimaryExpression_NoLet_NoFuncClass
+| MemberExpression_NoFuncClass LBRACK Expression_In RBRACK
+| MemberExpression_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_NoFuncClass DOT ClassPrivateRef
+| MemberExpression_NoFuncClass TemplateLiteral
+| MemberExpression_NoFuncClass /*.noLineBreak*/ EXCL
 | SuperProperty
 | MetaProperty
 | NEW MemberExpression Arguments
-;
-
-MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  PrimaryExpression_NoFuncClass_NoObjLiteral_Yield
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
 ;
 
 MemberExpression_NoLet :
@@ -2011,16 +1963,16 @@ MemberExpression_NoLet :
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoLet_Yield :
-  PrimaryExpression_NoLet_Yield
-| MemberExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_NoLet_Yield DOT IdentifierNameRef
-| MemberExpression_NoLet_Yield DOT ClassPrivateRef
-| MemberExpression_NoLet_Yield TemplateLiteral_Yield
-| MemberExpression_NoLet_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
+MemberExpression_NoLet_NoLetOnly :
+  PrimaryExpression_NoLet
+| MemberExpression_NoLet LBRACK Expression_In RBRACK
+| MemberExpression_NoLet DOT IdentifierNameRef
+| MemberExpression_NoLet DOT ClassPrivateRef
+| MemberExpression_NoLet TemplateLiteral
+| MemberExpression_NoLet /*.noLineBreak*/ EXCL
+| SuperProperty
 | MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
+| NEW MemberExpression Arguments
 ;
 
 MemberExpression_NoLetOnly :
@@ -2035,104 +1987,28 @@ MemberExpression_NoLetOnly :
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoLetOnly_NoFuncClass :
-  PrimaryExpression_NoFuncClass_NoLet
-| MemberExpression_NoFuncClass LBRACK Expression_In RBRACK
-| MemberExpression_NoFuncClass DOT IdentifierNameRef
-| MemberExpression_NoFuncClass DOT ClassPrivateRef
-| MemberExpression_NoFuncClass TemplateLiteral
-| MemberExpression_NoFuncClass /*.noLineBreak*/ EXCL
+MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  PrimaryExpression_NoObjLiteral_NoFuncClass
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In RBRACK
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | SuperProperty
 | MetaProperty
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral :
-  PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
+MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
+  PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In RBRACK
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
+| MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | SuperProperty
 | MetaProperty
 | NEW MemberExpression Arguments
-;
-
-MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  PrimaryExpression_NoFuncClass_NoLet_NoObjLiteral_Yield
-| MemberExpression_NoLetOnly_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
-| MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
-;
-
-MemberExpression_NoLetOnly_NoLet :
-  PrimaryExpression_NoLet
-| MemberExpression_NoLet LBRACK Expression_In RBRACK
-| MemberExpression_NoLet DOT IdentifierNameRef
-| MemberExpression_NoLet DOT ClassPrivateRef
-| MemberExpression_NoLet TemplateLiteral
-| MemberExpression_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty
-| MetaProperty
-| NEW MemberExpression Arguments
-;
-
-MemberExpression_NoLetOnly_NoLet_Yield :
-  PrimaryExpression_NoLet_Yield
-| MemberExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_NoLet_Yield DOT IdentifierNameRef
-| MemberExpression_NoLet_Yield DOT ClassPrivateRef
-| MemberExpression_NoLet_Yield TemplateLiteral_Yield
-| MemberExpression_NoLet_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
-;
-
-MemberExpression_NoLetOnly_NoObjLiteral :
-  PrimaryExpression_NoLet_NoObjLiteral
-| MemberExpression_NoObjLiteral LBRACK Expression_In RBRACK
-| MemberExpression_NoObjLiteral DOT IdentifierNameRef
-| MemberExpression_NoObjLiteral DOT ClassPrivateRef
-| MemberExpression_NoObjLiteral TemplateLiteral
-| MemberExpression_NoObjLiteral /*.noLineBreak*/ EXCL
-| SuperProperty
-| MetaProperty
-| NEW MemberExpression Arguments
-;
-
-MemberExpression_NoLetOnly_StartWithLet :
-  MemberExpression_NoLetOnly_StartWithLet LBRACK Expression_In RBRACK
-| MemberExpression_StartWithLet DOT IdentifierNameRef
-| MemberExpression_StartWithLet DOT ClassPrivateRef
-| MemberExpression_StartWithLet TemplateLiteral
-| MemberExpression_StartWithLet /*.noLineBreak*/ EXCL
-;
-
-MemberExpression_NoLetOnly_StartWithLet_Yield :
-  MemberExpression_NoLetOnly_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_StartWithLet_Yield DOT IdentifierNameRef
-| MemberExpression_StartWithLet_Yield DOT ClassPrivateRef
-| MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
-| MemberExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
-;
-
-MemberExpression_NoLetOnly_Yield :
-  PrimaryExpression_NoLet_Yield
-| MemberExpression_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_Yield DOT IdentifierNameRef
-| MemberExpression_Yield DOT ClassPrivateRef
-| MemberExpression_Yield TemplateLiteral_Yield
-| MemberExpression_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
 ;
 
 MemberExpression_NoObjLiteral :
@@ -2147,22 +2023,33 @@ MemberExpression_NoObjLiteral :
 | NEW MemberExpression Arguments
 ;
 
+MemberExpression_NoObjLiteral_NoLetOnly :
+  PrimaryExpression_NoLet_NoObjLiteral
+| MemberExpression_NoObjLiteral LBRACK Expression_In RBRACK
+| MemberExpression_NoObjLiteral DOT IdentifierNameRef
+| MemberExpression_NoObjLiteral DOT ClassPrivateRef
+| MemberExpression_NoObjLiteral TemplateLiteral
+| MemberExpression_NoObjLiteral /*.noLineBreak*/ EXCL
+| SuperProperty
+| MetaProperty
+| NEW MemberExpression Arguments
+;
+
 MemberExpression_StartWithLet :
   LET
-| MemberExpression_NoLetOnly_StartWithLet LBRACK Expression_In RBRACK
+| MemberExpression_StartWithLet_NoLetOnly LBRACK Expression_In RBRACK
 | MemberExpression_StartWithLet DOT IdentifierNameRef
 | MemberExpression_StartWithLet DOT ClassPrivateRef
 | MemberExpression_StartWithLet TemplateLiteral
 | MemberExpression_StartWithLet /*.noLineBreak*/ EXCL
 ;
 
-MemberExpression_StartWithLet_Yield :
-  LET
-| MemberExpression_NoLetOnly_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_StartWithLet_Yield DOT IdentifierNameRef
-| MemberExpression_StartWithLet_Yield DOT ClassPrivateRef
-| MemberExpression_StartWithLet_Yield TemplateLiteral_Yield
-| MemberExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
+MemberExpression_StartWithLet_NoLetOnly :
+  MemberExpression_StartWithLet_NoLetOnly LBRACK Expression_In RBRACK
+| MemberExpression_StartWithLet DOT IdentifierNameRef
+| MemberExpression_StartWithLet DOT ClassPrivateRef
+| MemberExpression_StartWithLet TemplateLiteral
+| MemberExpression_StartWithLet /*.noLineBreak*/ EXCL
 ;
 
 MemberExpression_Yield :
@@ -2177,6 +2064,119 @@ MemberExpression_Yield :
 | NEW MemberExpression_Yield Arguments_Yield
 ;
 
+MemberExpression_Yield_Await :
+  PrimaryExpression_Yield_Await
+| MemberExpression_Yield_Await LBRACK Expression_In_Yield_Await RBRACK
+| MemberExpression_Yield_Await DOT IdentifierNameRef
+| MemberExpression_Yield_Await DOT ClassPrivateRef
+| MemberExpression_Yield_Await TemplateLiteral_Yield_Await
+| MemberExpression_Yield_Await /*.noLineBreak*/ EXCL
+| SuperProperty_Yield_Await
+| MetaProperty
+| NEW MemberExpression_Yield_Await Arguments_Yield_Await
+;
+
+MemberExpression_Yield_Await_NoLetOnly :
+  PrimaryExpression_Yield_Await_NoLet
+| MemberExpression_Yield_Await LBRACK Expression_In_Yield_Await RBRACK
+| MemberExpression_Yield_Await DOT IdentifierNameRef
+| MemberExpression_Yield_Await DOT ClassPrivateRef
+| MemberExpression_Yield_Await TemplateLiteral_Yield_Await
+| MemberExpression_Yield_Await /*.noLineBreak*/ EXCL
+| SuperProperty_Yield_Await
+| MetaProperty
+| NEW MemberExpression_Yield_Await Arguments_Yield_Await
+;
+
+MemberExpression_Yield_NoAsync_NoLet :
+  PrimaryExpression_Yield_NoAsync_NoLet
+| MemberExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_NoLet DOT IdentifierNameRef
+| MemberExpression_Yield_NoLet DOT ClassPrivateRef
+| MemberExpression_Yield_NoLet TemplateLiteral_Yield
+| MemberExpression_Yield_NoLet /*.noLineBreak*/ EXCL
+| SuperProperty_Yield
+| MetaProperty
+| NEW MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield_NoLet :
+  PrimaryExpression_Yield_NoLet
+| MemberExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_NoLet DOT IdentifierNameRef
+| MemberExpression_Yield_NoLet DOT ClassPrivateRef
+| MemberExpression_Yield_NoLet TemplateLiteral_Yield
+| MemberExpression_Yield_NoLet /*.noLineBreak*/ EXCL
+| SuperProperty_Yield
+| MetaProperty
+| NEW MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield_NoLet_NoLetOnly :
+  PrimaryExpression_Yield_NoLet
+| MemberExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_NoLet DOT IdentifierNameRef
+| MemberExpression_Yield_NoLet DOT ClassPrivateRef
+| MemberExpression_Yield_NoLet TemplateLiteral_Yield
+| MemberExpression_Yield_NoLet /*.noLineBreak*/ EXCL
+| SuperProperty_Yield
+| MetaProperty
+| NEW MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield_NoLetOnly :
+  PrimaryExpression_Yield_NoLet
+| MemberExpression_Yield LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield DOT IdentifierNameRef
+| MemberExpression_Yield DOT ClassPrivateRef
+| MemberExpression_Yield TemplateLiteral_Yield
+| MemberExpression_Yield /*.noLineBreak*/ EXCL
+| SuperProperty_Yield
+| MetaProperty
+| NEW MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  PrimaryExpression_Yield_NoObjLiteral_NoFuncClass
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| SuperProperty_Yield
+| MetaProperty
+| NEW MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
+  PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+| MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| SuperProperty_Yield
+| MetaProperty
+| NEW MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield_StartWithLet :
+  LET
+| MemberExpression_Yield_StartWithLet_NoLetOnly LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_StartWithLet DOT IdentifierNameRef
+| MemberExpression_Yield_StartWithLet DOT ClassPrivateRef
+| MemberExpression_Yield_StartWithLet TemplateLiteral_Yield
+| MemberExpression_Yield_StartWithLet /*.noLineBreak*/ EXCL
+;
+
+MemberExpression_Yield_StartWithLet_NoLetOnly :
+  MemberExpression_Yield_StartWithLet_NoLetOnly LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_StartWithLet DOT IdentifierNameRef
+| MemberExpression_Yield_StartWithLet DOT ClassPrivateRef
+| MemberExpression_Yield_StartWithLet TemplateLiteral_Yield
+| MemberExpression_Yield_StartWithLet /*.noLineBreak*/ EXCL
+;
+
 SuperExpression :
   SUPER
 ;
@@ -2187,17 +2187,17 @@ SuperProperty :
 ;
 
 SuperProperty_Await :
-  SuperExpression LBRACK Expression_Await_In RBRACK
-| SuperExpression DOT IdentifierNameRef
-;
-
-SuperProperty_Await_Yield :
-  SuperExpression LBRACK Expression_Await_In_Yield RBRACK
+  SuperExpression LBRACK Expression_In_Await RBRACK
 | SuperExpression DOT IdentifierNameRef
 ;
 
 SuperProperty_Yield :
   SuperExpression LBRACK Expression_In_Yield RBRACK
+| SuperExpression DOT IdentifierNameRef
+;
+
+SuperProperty_Yield_Await :
+  SuperExpression LBRACK Expression_In_Yield_Await RBRACK
 | SuperExpression DOT IdentifierNameRef
 ;
 
@@ -2229,13 +2229,13 @@ NewExpression_Await_NoAsync_NoLet :
 | NEW NewExpression_Await
 ;
 
-NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
+NewExpression_Await_NoLet :
+  MemberExpression_Await_NoLet lookahead_notStartOfParametrizedCall
 | NEW NewExpression_Await
 ;
 
-NewExpression_Await_NoLet :
-  MemberExpression_Await_NoLet lookahead_notStartOfParametrizedCall
+NewExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
 | NEW NewExpression_Await
 ;
 
@@ -2248,19 +2248,9 @@ NewExpression_Await_StartWithLet :
   MemberExpression_Await_StartWithLet lookahead_notStartOfParametrizedCall
 ;
 
-NewExpression_Await_Yield :
-  MemberExpression_Await_Yield lookahead_notStartOfParametrizedCall
-| NEW NewExpression_Await_Yield
-;
-
 NewExpression_NoAsync_NoLet :
   MemberExpression_NoAsync_NoLet lookahead_notStartOfParametrizedCall
 | NEW NewExpression
-;
-
-NewExpression_NoAsync_NoLet_Yield :
-  MemberExpression_NoAsync_NoLet_Yield lookahead_notStartOfParametrizedCall
-| NEW NewExpression_Yield
 ;
 
 NewExpression_NoFuncClass :
@@ -2268,24 +2258,14 @@ NewExpression_NoFuncClass :
 | NEW NewExpression
 ;
 
-NewExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
-| NEW NewExpression
-;
-
-NewExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield lookahead_notStartOfParametrizedCall
-| NEW NewExpression_Yield
-;
-
 NewExpression_NoLet :
   MemberExpression_NoLet lookahead_notStartOfParametrizedCall
 | NEW NewExpression
 ;
 
-NewExpression_NoLet_Yield :
-  MemberExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
-| NEW NewExpression_Yield
+NewExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+| NEW NewExpression
 ;
 
 NewExpression_NoObjLiteral :
@@ -2297,13 +2277,33 @@ NewExpression_StartWithLet :
   MemberExpression_StartWithLet lookahead_notStartOfParametrizedCall
 ;
 
-NewExpression_StartWithLet_Yield :
-  MemberExpression_StartWithLet_Yield lookahead_notStartOfParametrizedCall
-;
-
 NewExpression_Yield :
   MemberExpression_Yield lookahead_notStartOfParametrizedCall
 | NEW NewExpression_Yield
+;
+
+NewExpression_Yield_Await :
+  MemberExpression_Yield_Await lookahead_notStartOfParametrizedCall
+| NEW NewExpression_Yield_Await
+;
+
+NewExpression_Yield_NoAsync_NoLet :
+  MemberExpression_Yield_NoAsync_NoLet lookahead_notStartOfParametrizedCall
+| NEW NewExpression_Yield
+;
+
+NewExpression_Yield_NoLet :
+  MemberExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+| NEW NewExpression_Yield
+;
+
+NewExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+| NEW NewExpression_Yield
+;
+
+NewExpression_Yield_StartWithLet :
+  MemberExpression_Yield_StartWithLet lookahead_notStartOfParametrizedCall
 ;
 
 CallExpression :
@@ -2323,23 +2323,11 @@ CallExpression_Await :
 | SuperCall_Await
 | IMPORT Arguments_Await
 | CallExpression_Await Arguments_Await
-| CallExpression_Await LBRACK Expression_Await_In RBRACK
+| CallExpression_Await LBRACK Expression_In_Await RBRACK
 | CallExpression_Await DOT IdentifierNameRef
 | CallExpression_Await DOT ClassPrivateRef
 | CallExpression_Await /*.noLineBreak*/ EXCL
 | CallExpression_Await TemplateLiteral_Await
-;
-
-CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
-| SuperCall_Await
-| IMPORT Arguments_Await
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
 ;
 
 CallExpression_Await_NoLet :
@@ -2347,11 +2335,23 @@ CallExpression_Await_NoLet :
 | SuperCall_Await
 | IMPORT Arguments_Await
 | CallExpression_Await_NoLet Arguments_Await
-| CallExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
+| CallExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
 | CallExpression_Await_NoLet DOT IdentifierNameRef
 | CallExpression_Await_NoLet DOT ClassPrivateRef
 | CallExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | CallExpression_Await_NoLet TemplateLiteral_Await
+;
+
+CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Await
+| SuperCall_Await
+| IMPORT Arguments_Await
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Await
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In_Await RBRACK
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
 ;
 
 CallExpression_Await_NoObjLiteral :
@@ -2359,7 +2359,7 @@ CallExpression_Await_NoObjLiteral :
 | SuperCall_Await
 | IMPORT Arguments_Await
 | CallExpression_Await_NoObjLiteral Arguments_Await
-| CallExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
+| CallExpression_Await_NoObjLiteral LBRACK Expression_In_Await RBRACK
 | CallExpression_Await_NoObjLiteral DOT IdentifierNameRef
 | CallExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | CallExpression_Await_NoObjLiteral /*.noLineBreak*/ EXCL
@@ -2369,23 +2369,11 @@ CallExpression_Await_NoObjLiteral :
 CallExpression_Await_StartWithLet :
   MemberExpression_Await_StartWithLet Arguments_Await
 | CallExpression_Await_StartWithLet Arguments_Await
-| CallExpression_Await_StartWithLet LBRACK Expression_Await_In RBRACK
+| CallExpression_Await_StartWithLet LBRACK Expression_In_Await RBRACK
 | CallExpression_Await_StartWithLet DOT IdentifierNameRef
 | CallExpression_Await_StartWithLet DOT ClassPrivateRef
 | CallExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 | CallExpression_Await_StartWithLet TemplateLiteral_Await
-;
-
-CallExpression_Await_Yield :
-  MemberExpression_Await_Yield Arguments_Await_Yield
-| SuperCall_Await_Yield
-| IMPORT Arguments_Await_Yield
-| CallExpression_Await_Yield Arguments_Await_Yield
-| CallExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
-| CallExpression_Await_Yield DOT IdentifierNameRef
-| CallExpression_Await_Yield DOT ClassPrivateRef
-| CallExpression_Await_Yield /*.noLineBreak*/ EXCL
-| CallExpression_Await_Yield TemplateLiteral_Await_Yield
 ;
 
 CallExpression_NoFuncClass :
@@ -2400,30 +2388,6 @@ CallExpression_NoFuncClass :
 | CallExpression_NoFuncClass TemplateLiteral
 ;
 
-CallExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
-| SuperCall
-| IMPORT Arguments
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
-;
-
-CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
-| SuperCall_Yield
-| IMPORT Arguments_Yield
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
-;
-
 CallExpression_NoLet :
   MemberExpression_NoLet Arguments
 | SuperCall
@@ -2436,16 +2400,16 @@ CallExpression_NoLet :
 | CallExpression_NoLet TemplateLiteral
 ;
 
-CallExpression_NoLet_Yield :
-  MemberExpression_NoLet_Yield Arguments_Yield
-| SuperCall_Yield
-| IMPORT Arguments_Yield
-| CallExpression_NoLet_Yield Arguments_Yield
-| CallExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
-| CallExpression_NoLet_Yield DOT IdentifierNameRef
-| CallExpression_NoLet_Yield DOT ClassPrivateRef
-| CallExpression_NoLet_Yield /*.noLineBreak*/ EXCL
-| CallExpression_NoLet_Yield TemplateLiteral_Yield
+CallExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass Arguments
+| SuperCall
+| IMPORT Arguments
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass Arguments
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In RBRACK
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
 ;
 
 CallExpression_NoObjLiteral :
@@ -2470,16 +2434,6 @@ CallExpression_StartWithLet :
 | CallExpression_StartWithLet TemplateLiteral
 ;
 
-CallExpression_StartWithLet_Yield :
-  MemberExpression_StartWithLet_Yield Arguments_Yield
-| CallExpression_StartWithLet_Yield Arguments_Yield
-| CallExpression_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
-| CallExpression_StartWithLet_Yield DOT IdentifierNameRef
-| CallExpression_StartWithLet_Yield DOT ClassPrivateRef
-| CallExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
-| CallExpression_StartWithLet_Yield TemplateLiteral_Yield
-;
-
 CallExpression_Yield :
   MemberExpression_Yield Arguments_Yield
 | SuperCall_Yield
@@ -2492,6 +2446,52 @@ CallExpression_Yield :
 | CallExpression_Yield TemplateLiteral_Yield
 ;
 
+CallExpression_Yield_Await :
+  MemberExpression_Yield_Await Arguments_Yield_Await
+| SuperCall_Yield_Await
+| IMPORT Arguments_Yield_Await
+| CallExpression_Yield_Await Arguments_Yield_Await
+| CallExpression_Yield_Await LBRACK Expression_In_Yield_Await RBRACK
+| CallExpression_Yield_Await DOT IdentifierNameRef
+| CallExpression_Yield_Await DOT ClassPrivateRef
+| CallExpression_Yield_Await /*.noLineBreak*/ EXCL
+| CallExpression_Yield_Await TemplateLiteral_Yield_Await
+;
+
+CallExpression_Yield_NoLet :
+  MemberExpression_Yield_NoLet Arguments_Yield
+| SuperCall_Yield
+| IMPORT Arguments_Yield
+| CallExpression_Yield_NoLet Arguments_Yield
+| CallExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
+| CallExpression_Yield_NoLet DOT IdentifierNameRef
+| CallExpression_Yield_NoLet DOT ClassPrivateRef
+| CallExpression_Yield_NoLet /*.noLineBreak*/ EXCL
+| CallExpression_Yield_NoLet TemplateLiteral_Yield
+;
+
+CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield
+| SuperCall_Yield
+| IMPORT Arguments_Yield
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In_Yield RBRACK
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+;
+
+CallExpression_Yield_StartWithLet :
+  MemberExpression_Yield_StartWithLet Arguments_Yield
+| CallExpression_Yield_StartWithLet Arguments_Yield
+| CallExpression_Yield_StartWithLet LBRACK Expression_In_Yield RBRACK
+| CallExpression_Yield_StartWithLet DOT IdentifierNameRef
+| CallExpression_Yield_StartWithLet DOT ClassPrivateRef
+| CallExpression_Yield_StartWithLet /*.noLineBreak*/ EXCL
+| CallExpression_Yield_StartWithLet TemplateLiteral_Yield
+;
+
 SuperCall :
   SuperExpression Arguments
 ;
@@ -2500,12 +2500,12 @@ SuperCall_Await :
   SuperExpression Arguments_Await
 ;
 
-SuperCall_Await_Yield :
-  SuperExpression Arguments_Await_Yield
-;
-
 SuperCall_Yield :
   SuperExpression Arguments_Yield
+;
+
+SuperCall_Yield_Await :
+  SuperExpression Arguments_Yield_Await
 ;
 
 Arguments :
@@ -2526,21 +2526,21 @@ Arguments_Await :
 | LPAREN RPAREN
 ;
 
-Arguments_Await_Yield :
-  lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Await_Yield COMMA RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Await_Yield RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN RPAREN
-| LPAREN ArgumentList_Await_Yield COMMA RPAREN
-| LPAREN ArgumentList_Await_Yield RPAREN
-| LPAREN RPAREN
-;
-
 Arguments_Yield :
   lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield COMMA RPAREN
 | lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield RPAREN
 | lookahead_StartOfParametrizedCall TypeArguments LPAREN RPAREN
 | LPAREN ArgumentList_Yield COMMA RPAREN
 | LPAREN ArgumentList_Yield RPAREN
+| LPAREN RPAREN
+;
+
+Arguments_Yield_Await :
+  lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield_Await COMMA RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield_Await RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments LPAREN RPAREN
+| LPAREN ArgumentList_Yield_Await COMMA RPAREN
+| LPAREN ArgumentList_Yield_Await RPAREN
 | LPAREN RPAREN
 ;
 
@@ -2561,17 +2561,10 @@ ArgumentList :
 ;
 
 ArgumentList_Await :
-  AssignmentExpression_Await_In
+  AssignmentExpression_In_Await
 | SpreadElement_Await
-| ArgumentList_Await COMMA AssignmentExpression_Await_In
+| ArgumentList_Await COMMA AssignmentExpression_In_Await
 | ArgumentList_Await COMMA SpreadElement_Await
-;
-
-ArgumentList_Await_Yield :
-  AssignmentExpression_Await_In_Yield
-| SpreadElement_Await_Yield
-| ArgumentList_Await_Yield COMMA AssignmentExpression_Await_In_Yield
-| ArgumentList_Await_Yield COMMA SpreadElement_Await_Yield
 ;
 
 ArgumentList_Yield :
@@ -2579,6 +2572,13 @@ ArgumentList_Yield :
 | SpreadElement_Yield
 | ArgumentList_Yield COMMA AssignmentExpression_In_Yield
 | ArgumentList_Yield COMMA SpreadElement_Yield
+;
+
+ArgumentList_Yield_Await :
+  AssignmentExpression_In_Yield_Await
+| SpreadElement_Yield_Await
+| ArgumentList_Yield_Await COMMA AssignmentExpression_In_Yield_Await
+| ArgumentList_Yield_Await COMMA SpreadElement_Yield_Await
 ;
 
 OptionalLHS :
@@ -2593,16 +2593,16 @@ OptionalLHS_Await :
 | OptionalExpression_Await
 ;
 
-OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  MemberExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-;
-
 OptionalLHS_Await_NoLet :
   MemberExpression_Await_NoLet
 | CallExpression_Await_NoLet
 | OptionalExpression_Await_NoLet
+;
+
+OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
 ;
 
 OptionalLHS_Await_NoObjLiteral :
@@ -2617,28 +2617,10 @@ OptionalLHS_Await_StartWithLet :
 | OptionalExpression_Await_StartWithLet
 ;
 
-OptionalLHS_Await_Yield :
-  MemberExpression_Await_Yield
-| CallExpression_Await_Yield
-| OptionalExpression_Await_Yield
-;
-
 OptionalLHS_NoFuncClass :
   MemberExpression_NoFuncClass
 | CallExpression_NoFuncClass
 | OptionalExpression_NoFuncClass
-;
-
-OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral :
-  MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral
-;
-
-OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  MemberExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
 ;
 
 OptionalLHS_NoLet :
@@ -2647,10 +2629,10 @@ OptionalLHS_NoLet :
 | OptionalExpression_NoLet
 ;
 
-OptionalLHS_NoLet_Yield :
-  MemberExpression_NoLet_Yield
-| CallExpression_NoLet_Yield
-| OptionalExpression_NoLet_Yield
+OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass
 ;
 
 OptionalLHS_NoObjLiteral :
@@ -2665,16 +2647,34 @@ OptionalLHS_StartWithLet :
 | OptionalExpression_StartWithLet
 ;
 
-OptionalLHS_StartWithLet_Yield :
-  MemberExpression_StartWithLet_Yield
-| CallExpression_StartWithLet_Yield
-| OptionalExpression_StartWithLet_Yield
-;
-
 OptionalLHS_Yield :
   MemberExpression_Yield
 | CallExpression_Yield
 | OptionalExpression_Yield
+;
+
+OptionalLHS_Yield_Await :
+  MemberExpression_Yield_Await
+| CallExpression_Yield_Await
+| OptionalExpression_Yield_Await
+;
+
+OptionalLHS_Yield_NoLet :
+  MemberExpression_Yield_NoLet
+| CallExpression_Yield_NoLet
+| OptionalExpression_Yield_NoLet
+;
+
+OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+;
+
+OptionalLHS_Yield_StartWithLet :
+  MemberExpression_Yield_StartWithLet
+| CallExpression_Yield_StartWithLet
+| OptionalExpression_Yield_StartWithLet
 ;
 
 OptionalExpression :
@@ -2692,12 +2692,12 @@ OptionalExpression :
 ;
 
 OptionalExpression_Await :
-  OptionalLHS_Await QUESTDOT LBRACK Expression_Await_In RBRACK
+  OptionalLHS_Await QUESTDOT LBRACK Expression_In_Await RBRACK
 | OptionalLHS_Await QUESTDOT IdentifierNameRef
 | OptionalLHS_Await QUESTDOT ClassPrivateRef
 | OptionalLHS_Await QUESTDOT Arguments_Await
 | OptionalLHS_Await QUESTDOT TemplateLiteral_Await
-| OptionalExpression_Await LBRACK Expression_Await_In RBRACK
+| OptionalExpression_Await LBRACK Expression_In_Await RBRACK
 | OptionalExpression_Await DOT IdentifierNameRef
 | OptionalExpression_Await DOT ClassPrivateRef
 | OptionalExpression_Await Arguments_Await
@@ -2705,27 +2705,13 @@ OptionalExpression_Await :
 | OptionalExpression_Await TemplateLiteral_Await
 ;
 
-OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT LBRACK Expression_Await_In RBRACK
-| OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT IdentifierNameRef
-| OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT ClassPrivateRef
-| OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT Arguments_Await
-| OptionalLHS_Await_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT TemplateLiteral_Await
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_Await_In RBRACK
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral Arguments_Await
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral_Await
-;
-
 OptionalExpression_Await_NoLet :
-  OptionalLHS_Await_NoLet QUESTDOT LBRACK Expression_Await_In RBRACK
+  OptionalLHS_Await_NoLet QUESTDOT LBRACK Expression_In_Await RBRACK
 | OptionalLHS_Await_NoLet QUESTDOT IdentifierNameRef
 | OptionalLHS_Await_NoLet QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_NoLet QUESTDOT Arguments_Await
 | OptionalLHS_Await_NoLet QUESTDOT TemplateLiteral_Await
-| OptionalExpression_Await_NoLet LBRACK Expression_Await_In RBRACK
+| OptionalExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
 | OptionalExpression_Await_NoLet DOT IdentifierNameRef
 | OptionalExpression_Await_NoLet DOT ClassPrivateRef
 | OptionalExpression_Await_NoLet Arguments_Await
@@ -2733,13 +2719,27 @@ OptionalExpression_Await_NoLet :
 | OptionalExpression_Await_NoLet TemplateLiteral_Await
 ;
 
+OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT LBRACK Expression_In_Await RBRACK
+| OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT IdentifierNameRef
+| OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT ClassPrivateRef
+| OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT Arguments_Await
+| OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT TemplateLiteral_Await
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In_Await RBRACK
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Await
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
+;
+
 OptionalExpression_Await_NoObjLiteral :
-  OptionalLHS_Await_NoObjLiteral QUESTDOT LBRACK Expression_Await_In RBRACK
+  OptionalLHS_Await_NoObjLiteral QUESTDOT LBRACK Expression_In_Await RBRACK
 | OptionalLHS_Await_NoObjLiteral QUESTDOT IdentifierNameRef
 | OptionalLHS_Await_NoObjLiteral QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_NoObjLiteral QUESTDOT Arguments_Await
 | OptionalLHS_Await_NoObjLiteral QUESTDOT TemplateLiteral_Await
-| OptionalExpression_Await_NoObjLiteral LBRACK Expression_Await_In RBRACK
+| OptionalExpression_Await_NoObjLiteral LBRACK Expression_In_Await RBRACK
 | OptionalExpression_Await_NoObjLiteral DOT IdentifierNameRef
 | OptionalExpression_Await_NoObjLiteral DOT ClassPrivateRef
 | OptionalExpression_Await_NoObjLiteral Arguments_Await
@@ -2748,31 +2748,17 @@ OptionalExpression_Await_NoObjLiteral :
 ;
 
 OptionalExpression_Await_StartWithLet :
-  OptionalLHS_Await_StartWithLet QUESTDOT LBRACK Expression_Await_In RBRACK
+  OptionalLHS_Await_StartWithLet QUESTDOT LBRACK Expression_In_Await RBRACK
 | OptionalLHS_Await_StartWithLet QUESTDOT IdentifierNameRef
 | OptionalLHS_Await_StartWithLet QUESTDOT ClassPrivateRef
 | OptionalLHS_Await_StartWithLet QUESTDOT Arguments_Await
 | OptionalLHS_Await_StartWithLet QUESTDOT TemplateLiteral_Await
-| OptionalExpression_Await_StartWithLet LBRACK Expression_Await_In RBRACK
+| OptionalExpression_Await_StartWithLet LBRACK Expression_In_Await RBRACK
 | OptionalExpression_Await_StartWithLet DOT IdentifierNameRef
 | OptionalExpression_Await_StartWithLet DOT ClassPrivateRef
 | OptionalExpression_Await_StartWithLet Arguments_Await
 | OptionalExpression_Await_StartWithLet /*.noLineBreak*/ EXCL
 | OptionalExpression_Await_StartWithLet TemplateLiteral_Await
-;
-
-OptionalExpression_Await_Yield :
-  OptionalLHS_Await_Yield QUESTDOT LBRACK Expression_Await_In_Yield RBRACK
-| OptionalLHS_Await_Yield QUESTDOT IdentifierNameRef
-| OptionalLHS_Await_Yield QUESTDOT ClassPrivateRef
-| OptionalLHS_Await_Yield QUESTDOT Arguments_Await_Yield
-| OptionalLHS_Await_Yield QUESTDOT TemplateLiteral_Await_Yield
-| OptionalExpression_Await_Yield LBRACK Expression_Await_In_Yield RBRACK
-| OptionalExpression_Await_Yield DOT IdentifierNameRef
-| OptionalExpression_Await_Yield DOT ClassPrivateRef
-| OptionalExpression_Await_Yield Arguments_Await_Yield
-| OptionalExpression_Await_Yield /*.noLineBreak*/ EXCL
-| OptionalExpression_Await_Yield TemplateLiteral_Await_Yield
 ;
 
 OptionalExpression_NoFuncClass :
@@ -2789,34 +2775,6 @@ OptionalExpression_NoFuncClass :
 | OptionalExpression_NoFuncClass TemplateLiteral
 ;
 
-OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT LBRACK Expression_In RBRACK
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT IdentifierNameRef
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT ClassPrivateRef
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT Arguments
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral QUESTDOT TemplateLiteral
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral LBRACK Expression_In RBRACK
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT IdentifierNameRef
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral DOT ClassPrivateRef
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral Arguments
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ EXCL
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral TemplateLiteral
-;
-
-OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT IdentifierNameRef
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT ClassPrivateRef
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT Arguments_Yield
-| OptionalLHS_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTDOT TemplateLiteral_Yield
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield LBRACK Expression_In_Yield RBRACK
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT IdentifierNameRef
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DOT ClassPrivateRef
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield Arguments_Yield
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ EXCL
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield TemplateLiteral_Yield
-;
-
 OptionalExpression_NoLet :
   OptionalLHS_NoLet QUESTDOT LBRACK Expression_In RBRACK
 | OptionalLHS_NoLet QUESTDOT IdentifierNameRef
@@ -2831,18 +2789,18 @@ OptionalExpression_NoLet :
 | OptionalExpression_NoLet TemplateLiteral
 ;
 
-OptionalExpression_NoLet_Yield :
-  OptionalLHS_NoLet_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
-| OptionalLHS_NoLet_Yield QUESTDOT IdentifierNameRef
-| OptionalLHS_NoLet_Yield QUESTDOT ClassPrivateRef
-| OptionalLHS_NoLet_Yield QUESTDOT Arguments_Yield
-| OptionalLHS_NoLet_Yield QUESTDOT TemplateLiteral_Yield
-| OptionalExpression_NoLet_Yield LBRACK Expression_In_Yield RBRACK
-| OptionalExpression_NoLet_Yield DOT IdentifierNameRef
-| OptionalExpression_NoLet_Yield DOT ClassPrivateRef
-| OptionalExpression_NoLet_Yield Arguments_Yield
-| OptionalExpression_NoLet_Yield /*.noLineBreak*/ EXCL
-| OptionalExpression_NoLet_Yield TemplateLiteral_Yield
+OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT LBRACK Expression_In RBRACK
+| OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT IdentifierNameRef
+| OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT ClassPrivateRef
+| OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT Arguments
+| OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT TemplateLiteral
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In RBRACK
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass Arguments
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
 ;
 
 OptionalExpression_NoObjLiteral :
@@ -2873,20 +2831,6 @@ OptionalExpression_StartWithLet :
 | OptionalExpression_StartWithLet TemplateLiteral
 ;
 
-OptionalExpression_StartWithLet_Yield :
-  OptionalLHS_StartWithLet_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
-| OptionalLHS_StartWithLet_Yield QUESTDOT IdentifierNameRef
-| OptionalLHS_StartWithLet_Yield QUESTDOT ClassPrivateRef
-| OptionalLHS_StartWithLet_Yield QUESTDOT Arguments_Yield
-| OptionalLHS_StartWithLet_Yield QUESTDOT TemplateLiteral_Yield
-| OptionalExpression_StartWithLet_Yield LBRACK Expression_In_Yield RBRACK
-| OptionalExpression_StartWithLet_Yield DOT IdentifierNameRef
-| OptionalExpression_StartWithLet_Yield DOT ClassPrivateRef
-| OptionalExpression_StartWithLet_Yield Arguments_Yield
-| OptionalExpression_StartWithLet_Yield /*.noLineBreak*/ EXCL
-| OptionalExpression_StartWithLet_Yield TemplateLiteral_Yield
-;
-
 OptionalExpression_Yield :
   OptionalLHS_Yield QUESTDOT LBRACK Expression_In_Yield RBRACK
 | OptionalLHS_Yield QUESTDOT IdentifierNameRef
@@ -2899,6 +2843,62 @@ OptionalExpression_Yield :
 | OptionalExpression_Yield Arguments_Yield
 | OptionalExpression_Yield /*.noLineBreak*/ EXCL
 | OptionalExpression_Yield TemplateLiteral_Yield
+;
+
+OptionalExpression_Yield_Await :
+  OptionalLHS_Yield_Await QUESTDOT LBRACK Expression_In_Yield_Await RBRACK
+| OptionalLHS_Yield_Await QUESTDOT IdentifierNameRef
+| OptionalLHS_Yield_Await QUESTDOT ClassPrivateRef
+| OptionalLHS_Yield_Await QUESTDOT Arguments_Yield_Await
+| OptionalLHS_Yield_Await QUESTDOT TemplateLiteral_Yield_Await
+| OptionalExpression_Yield_Await LBRACK Expression_In_Yield_Await RBRACK
+| OptionalExpression_Yield_Await DOT IdentifierNameRef
+| OptionalExpression_Yield_Await DOT ClassPrivateRef
+| OptionalExpression_Yield_Await Arguments_Yield_Await
+| OptionalExpression_Yield_Await /*.noLineBreak*/ EXCL
+| OptionalExpression_Yield_Await TemplateLiteral_Yield_Await
+;
+
+OptionalExpression_Yield_NoLet :
+  OptionalLHS_Yield_NoLet QUESTDOT LBRACK Expression_In_Yield RBRACK
+| OptionalLHS_Yield_NoLet QUESTDOT IdentifierNameRef
+| OptionalLHS_Yield_NoLet QUESTDOT ClassPrivateRef
+| OptionalLHS_Yield_NoLet QUESTDOT Arguments_Yield
+| OptionalLHS_Yield_NoLet QUESTDOT TemplateLiteral_Yield
+| OptionalExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
+| OptionalExpression_Yield_NoLet DOT IdentifierNameRef
+| OptionalExpression_Yield_NoLet DOT ClassPrivateRef
+| OptionalExpression_Yield_NoLet Arguments_Yield
+| OptionalExpression_Yield_NoLet /*.noLineBreak*/ EXCL
+| OptionalExpression_Yield_NoLet TemplateLiteral_Yield
+;
+
+OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT LBRACK Expression_In_Yield RBRACK
+| OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT IdentifierNameRef
+| OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT ClassPrivateRef
+| OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT Arguments_Yield
+| OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass QUESTDOT TemplateLiteral_Yield
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In_Yield RBRACK
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+;
+
+OptionalExpression_Yield_StartWithLet :
+  OptionalLHS_Yield_StartWithLet QUESTDOT LBRACK Expression_In_Yield RBRACK
+| OptionalLHS_Yield_StartWithLet QUESTDOT IdentifierNameRef
+| OptionalLHS_Yield_StartWithLet QUESTDOT ClassPrivateRef
+| OptionalLHS_Yield_StartWithLet QUESTDOT Arguments_Yield
+| OptionalLHS_Yield_StartWithLet QUESTDOT TemplateLiteral_Yield
+| OptionalExpression_Yield_StartWithLet LBRACK Expression_In_Yield RBRACK
+| OptionalExpression_Yield_StartWithLet DOT IdentifierNameRef
+| OptionalExpression_Yield_StartWithLet DOT ClassPrivateRef
+| OptionalExpression_Yield_StartWithLet Arguments_Yield
+| OptionalExpression_Yield_StartWithLet /*.noLineBreak*/ EXCL
+| OptionalExpression_Yield_StartWithLet TemplateLiteral_Yield
 ;
 
 LeftHandSideExpression :
@@ -2919,16 +2919,16 @@ LeftHandSideExpression_Await_NoAsync_NoLet :
 | OptionalExpression_Await_NoLet lookahead_notStartOfParametrizedCall
 ;
 
-LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  NewExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-| CallExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
-| OptionalExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
-;
-
 LeftHandSideExpression_Await_NoLet :
   NewExpression_Await_NoLet
 | CallExpression_Await_NoLet lookahead_notStartOfParametrizedCall
 | OptionalExpression_Await_NoLet lookahead_notStartOfParametrizedCall
+;
+
+LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  NewExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+| OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
 ;
 
 LeftHandSideExpression_Await_NoObjLiteral :
@@ -2943,22 +2943,10 @@ LeftHandSideExpression_Await_StartWithLet :
 | OptionalExpression_Await_StartWithLet lookahead_notStartOfParametrizedCall
 ;
 
-LeftHandSideExpression_Await_Yield :
-  NewExpression_Await_Yield
-| CallExpression_Await_Yield lookahead_notStartOfParametrizedCall
-| OptionalExpression_Await_Yield lookahead_notStartOfParametrizedCall
-;
-
 LeftHandSideExpression_NoAsync_NoLet :
   NewExpression_NoAsync_NoLet
 | CallExpression_NoLet lookahead_notStartOfParametrizedCall
 | OptionalExpression_NoLet lookahead_notStartOfParametrizedCall
-;
-
-LeftHandSideExpression_NoAsync_NoLet_Yield :
-  NewExpression_NoAsync_NoLet_Yield
-| CallExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
-| OptionalExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
 ;
 
 LeftHandSideExpression_NoFuncClass :
@@ -2967,28 +2955,16 @@ LeftHandSideExpression_NoFuncClass :
 | OptionalExpression_NoFuncClass lookahead_notStartOfParametrizedCall
 ;
 
-LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  NewExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral lookahead_notStartOfParametrizedCall
-;
-
-LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  NewExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| CallExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield lookahead_notStartOfParametrizedCall
-| OptionalExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield lookahead_notStartOfParametrizedCall
-;
-
 LeftHandSideExpression_NoLet :
   NewExpression_NoLet
 | CallExpression_NoLet lookahead_notStartOfParametrizedCall
 | OptionalExpression_NoLet lookahead_notStartOfParametrizedCall
 ;
 
-LeftHandSideExpression_NoLet_Yield :
-  NewExpression_NoLet_Yield
-| CallExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
-| OptionalExpression_NoLet_Yield lookahead_notStartOfParametrizedCall
+LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  NewExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| CallExpression_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+| OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
 ;
 
 LeftHandSideExpression_NoObjLiteral :
@@ -3003,16 +2979,40 @@ LeftHandSideExpression_StartWithLet :
 | OptionalExpression_StartWithLet lookahead_notStartOfParametrizedCall
 ;
 
-LeftHandSideExpression_StartWithLet_Yield :
-  NewExpression_StartWithLet_Yield
-| CallExpression_StartWithLet_Yield lookahead_notStartOfParametrizedCall
-| OptionalExpression_StartWithLet_Yield lookahead_notStartOfParametrizedCall
-;
-
 LeftHandSideExpression_Yield :
   NewExpression_Yield
 | CallExpression_Yield lookahead_notStartOfParametrizedCall
 | OptionalExpression_Yield lookahead_notStartOfParametrizedCall
+;
+
+LeftHandSideExpression_Yield_Await :
+  NewExpression_Yield_Await
+| CallExpression_Yield_Await lookahead_notStartOfParametrizedCall
+| OptionalExpression_Yield_Await lookahead_notStartOfParametrizedCall
+;
+
+LeftHandSideExpression_Yield_NoAsync_NoLet :
+  NewExpression_Yield_NoAsync_NoLet
+| CallExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+| OptionalExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+;
+
+LeftHandSideExpression_Yield_NoLet :
+  NewExpression_Yield_NoLet
+| CallExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+| OptionalExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+;
+
+LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  NewExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+| OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+;
+
+LeftHandSideExpression_Yield_StartWithLet :
+  NewExpression_Yield_StartWithLet
+| CallExpression_Yield_StartWithLet lookahead_notStartOfParametrizedCall
+| OptionalExpression_Yield_StartWithLet lookahead_notStartOfParametrizedCall
 ;
 
 UpdateExpression :
@@ -3031,18 +3031,18 @@ UpdateExpression_Await :
 | MINUSMINUS UnaryExpression_Await
 ;
 
-UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-| LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ PLUSPLUS
-| LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ MINUSMINUS
-| PLUSPLUS UnaryExpression_Await
-| MINUSMINUS UnaryExpression_Await
-;
-
 UpdateExpression_Await_NoLet :
   LeftHandSideExpression_Await_NoLet
 | LeftHandSideExpression_Await_NoLet /*.noLineBreak*/ PLUSPLUS
 | LeftHandSideExpression_Await_NoLet /*.noLineBreak*/ MINUSMINUS
+| PLUSPLUS UnaryExpression_Await
+| MINUSMINUS UnaryExpression_Await
+;
+
+UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ PLUSPLUS
+| LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ MINUSMINUS
 | PLUSPLUS UnaryExpression_Await
 | MINUSMINUS UnaryExpression_Await
 ;
@@ -3061,36 +3061,12 @@ UpdateExpression_Await_StartWithLet :
 | LeftHandSideExpression_Await_StartWithLet /*.noLineBreak*/ MINUSMINUS
 ;
 
-UpdateExpression_Await_Yield :
-  LeftHandSideExpression_Await_Yield
-| LeftHandSideExpression_Await_Yield /*.noLineBreak*/ PLUSPLUS
-| LeftHandSideExpression_Await_Yield /*.noLineBreak*/ MINUSMINUS
-| PLUSPLUS UnaryExpression_Await_Yield
-| MINUSMINUS UnaryExpression_Await_Yield
-;
-
 UpdateExpression_NoFuncClass :
   LeftHandSideExpression_NoFuncClass
 | LeftHandSideExpression_NoFuncClass /*.noLineBreak*/ PLUSPLUS
 | LeftHandSideExpression_NoFuncClass /*.noLineBreak*/ MINUSMINUS
 | PLUSPLUS UnaryExpression
 | MINUSMINUS UnaryExpression
-;
-
-UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ PLUSPLUS
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral /*.noLineBreak*/ MINUSMINUS
-| PLUSPLUS UnaryExpression
-| MINUSMINUS UnaryExpression
-;
-
-UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ PLUSPLUS
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield /*.noLineBreak*/ MINUSMINUS
-| PLUSPLUS UnaryExpression_Yield
-| MINUSMINUS UnaryExpression_Yield
 ;
 
 UpdateExpression_NoLet :
@@ -3101,12 +3077,12 @@ UpdateExpression_NoLet :
 | MINUSMINUS UnaryExpression
 ;
 
-UpdateExpression_NoLet_Yield :
-  LeftHandSideExpression_NoLet_Yield
-| LeftHandSideExpression_NoLet_Yield /*.noLineBreak*/ PLUSPLUS
-| LeftHandSideExpression_NoLet_Yield /*.noLineBreak*/ MINUSMINUS
-| PLUSPLUS UnaryExpression_Yield
-| MINUSMINUS UnaryExpression_Yield
+UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ PLUSPLUS
+| LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ MINUSMINUS
+| PLUSPLUS UnaryExpression
+| MINUSMINUS UnaryExpression
 ;
 
 UpdateExpression_NoObjLiteral :
@@ -3123,18 +3099,42 @@ UpdateExpression_StartWithLet :
 | LeftHandSideExpression_StartWithLet /*.noLineBreak*/ MINUSMINUS
 ;
 
-UpdateExpression_StartWithLet_Yield :
-  LeftHandSideExpression_StartWithLet_Yield
-| LeftHandSideExpression_StartWithLet_Yield /*.noLineBreak*/ PLUSPLUS
-| LeftHandSideExpression_StartWithLet_Yield /*.noLineBreak*/ MINUSMINUS
-;
-
 UpdateExpression_Yield :
   LeftHandSideExpression_Yield
 | LeftHandSideExpression_Yield /*.noLineBreak*/ PLUSPLUS
 | LeftHandSideExpression_Yield /*.noLineBreak*/ MINUSMINUS
 | PLUSPLUS UnaryExpression_Yield
 | MINUSMINUS UnaryExpression_Yield
+;
+
+UpdateExpression_Yield_Await :
+  LeftHandSideExpression_Yield_Await
+| LeftHandSideExpression_Yield_Await /*.noLineBreak*/ PLUSPLUS
+| LeftHandSideExpression_Yield_Await /*.noLineBreak*/ MINUSMINUS
+| PLUSPLUS UnaryExpression_Yield_Await
+| MINUSMINUS UnaryExpression_Yield_Await
+;
+
+UpdateExpression_Yield_NoLet :
+  LeftHandSideExpression_Yield_NoLet
+| LeftHandSideExpression_Yield_NoLet /*.noLineBreak*/ PLUSPLUS
+| LeftHandSideExpression_Yield_NoLet /*.noLineBreak*/ MINUSMINUS
+| PLUSPLUS UnaryExpression_Yield
+| MINUSMINUS UnaryExpression_Yield
+;
+
+UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ PLUSPLUS
+| LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ MINUSMINUS
+| PLUSPLUS UnaryExpression_Yield
+| MINUSMINUS UnaryExpression_Yield
+;
+
+UpdateExpression_Yield_StartWithLet :
+  LeftHandSideExpression_Yield_StartWithLet
+| LeftHandSideExpression_Yield_StartWithLet /*.noLineBreak*/ PLUSPLUS
+| LeftHandSideExpression_Yield_StartWithLet /*.noLineBreak*/ MINUSMINUS
 ;
 
 UnaryExpression :
@@ -3162,8 +3162,8 @@ UnaryExpression_Await :
 | lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Await
 ;
 
-UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
+UnaryExpression_Await_NoLet :
+  UpdateExpression_Await_NoLet
 | DELETE UnaryExpression_Await
 | VOID UnaryExpression_Await
 | TYPEOF UnaryExpression_Await
@@ -3175,8 +3175,8 @@ UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
 | lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Await
 ;
 
-UnaryExpression_Await_NoLet :
-  UpdateExpression_Await_NoLet
+UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
 | DELETE UnaryExpression_Await
 | VOID UnaryExpression_Await
 | TYPEOF UnaryExpression_Await
@@ -3205,19 +3205,6 @@ UnaryExpression_Await_StartWithLet :
   UpdateExpression_Await_StartWithLet
 ;
 
-UnaryExpression_Await_Yield :
-  UpdateExpression_Await_Yield
-| DELETE UnaryExpression_Await_Yield
-| VOID UnaryExpression_Await_Yield
-| TYPEOF UnaryExpression_Await_Yield
-| PLUS UnaryExpression_Await_Yield
-| MINUS UnaryExpression_Await_Yield
-| TILDE UnaryExpression_Await_Yield
-| EXCL UnaryExpression_Await_Yield
-| AwaitExpression_Yield
-| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Await_Yield
-;
-
 UnaryExpression_NoFuncClass :
   UpdateExpression_NoFuncClass
 | DELETE UnaryExpression
@@ -3228,30 +3215,6 @@ UnaryExpression_NoFuncClass :
 | TILDE UnaryExpression
 | EXCL UnaryExpression
 | lookahead_notStartOfArrowFunction LT Type GT UnaryExpression
-;
-
-UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| DELETE UnaryExpression
-| VOID UnaryExpression
-| TYPEOF UnaryExpression
-| PLUS UnaryExpression
-| MINUS UnaryExpression
-| TILDE UnaryExpression
-| EXCL UnaryExpression
-| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression
-;
-
-UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| DELETE UnaryExpression_Yield
-| VOID UnaryExpression_Yield
-| TYPEOF UnaryExpression_Yield
-| PLUS UnaryExpression_Yield
-| MINUS UnaryExpression_Yield
-| TILDE UnaryExpression_Yield
-| EXCL UnaryExpression_Yield
-| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Yield
 ;
 
 UnaryExpression_NoLet :
@@ -3266,16 +3229,16 @@ UnaryExpression_NoLet :
 | lookahead_notStartOfArrowFunction LT Type GT UnaryExpression
 ;
 
-UnaryExpression_NoLet_Yield :
-  UpdateExpression_NoLet_Yield
-| DELETE UnaryExpression_Yield
-| VOID UnaryExpression_Yield
-| TYPEOF UnaryExpression_Yield
-| PLUS UnaryExpression_Yield
-| MINUS UnaryExpression_Yield
-| TILDE UnaryExpression_Yield
-| EXCL UnaryExpression_Yield
-| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Yield
+UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| DELETE UnaryExpression
+| VOID UnaryExpression
+| TYPEOF UnaryExpression
+| PLUS UnaryExpression
+| MINUS UnaryExpression
+| TILDE UnaryExpression
+| EXCL UnaryExpression
+| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression
 ;
 
 UnaryExpression_NoObjLiteral :
@@ -3294,10 +3257,6 @@ UnaryExpression_StartWithLet :
   UpdateExpression_StartWithLet
 ;
 
-UnaryExpression_StartWithLet_Yield :
-  UpdateExpression_StartWithLet_Yield
-;
-
 UnaryExpression_Yield :
   UpdateExpression_Yield
 | DELETE UnaryExpression_Yield
@@ -3308,6 +3267,47 @@ UnaryExpression_Yield :
 | TILDE UnaryExpression_Yield
 | EXCL UnaryExpression_Yield
 | lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Yield
+;
+
+UnaryExpression_Yield_Await :
+  UpdateExpression_Yield_Await
+| DELETE UnaryExpression_Yield_Await
+| VOID UnaryExpression_Yield_Await
+| TYPEOF UnaryExpression_Yield_Await
+| PLUS UnaryExpression_Yield_Await
+| MINUS UnaryExpression_Yield_Await
+| TILDE UnaryExpression_Yield_Await
+| EXCL UnaryExpression_Yield_Await
+| AwaitExpression_Yield
+| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Yield_Await
+;
+
+UnaryExpression_Yield_NoLet :
+  UpdateExpression_Yield_NoLet
+| DELETE UnaryExpression_Yield
+| VOID UnaryExpression_Yield
+| TYPEOF UnaryExpression_Yield
+| PLUS UnaryExpression_Yield
+| MINUS UnaryExpression_Yield
+| TILDE UnaryExpression_Yield
+| EXCL UnaryExpression_Yield
+| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Yield
+;
+
+UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| DELETE UnaryExpression_Yield
+| VOID UnaryExpression_Yield
+| TYPEOF UnaryExpression_Yield
+| PLUS UnaryExpression_Yield
+| MINUS UnaryExpression_Yield
+| TILDE UnaryExpression_Yield
+| EXCL UnaryExpression_Yield
+| lookahead_notStartOfArrowFunction LT Type GT UnaryExpression_Yield
+;
+
+UnaryExpression_Yield_StartWithLet :
+  UpdateExpression_Yield_StartWithLet
 ;
 
 ArithmeticExpression :
@@ -3336,19 +3336,6 @@ ArithmeticExpression_Await :
 | UpdateExpression_Await MULTMULT ArithmeticExpression_Await
 ;
 
-ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral :
-  UnaryExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral PLUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral MINUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral LTLT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral GTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral GTGTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral MULT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral DIV ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral REM ArithmeticExpression_Await
-| UpdateExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral MULTMULT ArithmeticExpression_Await
-;
-
 ArithmeticExpression_Await_NoLet :
   UnaryExpression_Await_NoLet
 | ArithmeticExpression_Await_NoLet PLUS ArithmeticExpression_Await
@@ -3360,6 +3347,19 @@ ArithmeticExpression_Await_NoLet :
 | ArithmeticExpression_Await_NoLet DIV ArithmeticExpression_Await
 | ArithmeticExpression_Await_NoLet REM ArithmeticExpression_Await
 | UpdateExpression_Await_NoLet MULTMULT ArithmeticExpression_Await
+;
+
+ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
+  UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass PLUS ArithmeticExpression_Await
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass MINUS ArithmeticExpression_Await
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass LTLT ArithmeticExpression_Await
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass GTGT ArithmeticExpression_Await
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass GTGTGT ArithmeticExpression_Await
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass MULT ArithmeticExpression_Await
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DIV ArithmeticExpression_Await
+| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass REM ArithmeticExpression_Await
+| UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT ArithmeticExpression_Await
 ;
 
 ArithmeticExpression_Await_NoObjLiteral :
@@ -3388,19 +3388,6 @@ ArithmeticExpression_Await_StartWithLet :
 | UpdateExpression_Await_StartWithLet MULTMULT ArithmeticExpression_Await
 ;
 
-ArithmeticExpression_Await_Yield :
-  UnaryExpression_Await_Yield
-| ArithmeticExpression_Await_Yield PLUS ArithmeticExpression_Await_Yield
-| ArithmeticExpression_Await_Yield MINUS ArithmeticExpression_Await_Yield
-| ArithmeticExpression_Await_Yield LTLT ArithmeticExpression_Await_Yield
-| ArithmeticExpression_Await_Yield GTGT ArithmeticExpression_Await_Yield
-| ArithmeticExpression_Await_Yield GTGTGT ArithmeticExpression_Await_Yield
-| ArithmeticExpression_Await_Yield MULT ArithmeticExpression_Await_Yield
-| ArithmeticExpression_Await_Yield DIV ArithmeticExpression_Await_Yield
-| ArithmeticExpression_Await_Yield REM ArithmeticExpression_Await_Yield
-| UpdateExpression_Await_Yield MULTMULT ArithmeticExpression_Await_Yield
-;
-
 ArithmeticExpression_NoFuncClass :
   UnaryExpression_NoFuncClass
 | ArithmeticExpression_NoFuncClass PLUS ArithmeticExpression
@@ -3412,32 +3399,6 @@ ArithmeticExpression_NoFuncClass :
 | ArithmeticExpression_NoFuncClass DIV ArithmeticExpression
 | ArithmeticExpression_NoFuncClass REM ArithmeticExpression
 | UpdateExpression_NoFuncClass MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral :
-  UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral PLUS ArithmeticExpression
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral MINUS ArithmeticExpression
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral LTLT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral GTGT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral GTGTGT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral MULT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral DIV ArithmeticExpression
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral REM ArithmeticExpression
-| UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  UnaryExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield PLUS ArithmeticExpression_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield MINUS ArithmeticExpression_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield LTLT ArithmeticExpression_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield GTGT ArithmeticExpression_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield GTGTGT ArithmeticExpression_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield MULT ArithmeticExpression_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield DIV ArithmeticExpression_Yield
-| ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield REM ArithmeticExpression_Yield
-| UpdateExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield MULTMULT ArithmeticExpression_Yield
 ;
 
 ArithmeticExpression_NoLet :
@@ -3453,17 +3414,17 @@ ArithmeticExpression_NoLet :
 | UpdateExpression_NoLet MULTMULT ArithmeticExpression
 ;
 
-ArithmeticExpression_NoLet_Yield :
-  UnaryExpression_NoLet_Yield
-| ArithmeticExpression_NoLet_Yield PLUS ArithmeticExpression_Yield
-| ArithmeticExpression_NoLet_Yield MINUS ArithmeticExpression_Yield
-| ArithmeticExpression_NoLet_Yield LTLT ArithmeticExpression_Yield
-| ArithmeticExpression_NoLet_Yield GTGT ArithmeticExpression_Yield
-| ArithmeticExpression_NoLet_Yield GTGTGT ArithmeticExpression_Yield
-| ArithmeticExpression_NoLet_Yield MULT ArithmeticExpression_Yield
-| ArithmeticExpression_NoLet_Yield DIV ArithmeticExpression_Yield
-| ArithmeticExpression_NoLet_Yield REM ArithmeticExpression_Yield
-| UpdateExpression_NoLet_Yield MULTMULT ArithmeticExpression_Yield
+ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass :
+  UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass PLUS ArithmeticExpression
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass MINUS ArithmeticExpression
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass LTLT ArithmeticExpression
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass GTGT ArithmeticExpression
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass GTGTGT ArithmeticExpression
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass MULT ArithmeticExpression
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass DIV ArithmeticExpression
+| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass REM ArithmeticExpression
+| UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT ArithmeticExpression
 ;
 
 ArithmeticExpression_NoObjLiteral :
@@ -3492,19 +3453,6 @@ ArithmeticExpression_StartWithLet :
 | UpdateExpression_StartWithLet MULTMULT ArithmeticExpression
 ;
 
-ArithmeticExpression_StartWithLet_Yield :
-  UnaryExpression_StartWithLet_Yield
-| ArithmeticExpression_StartWithLet_Yield PLUS ArithmeticExpression_Yield
-| ArithmeticExpression_StartWithLet_Yield MINUS ArithmeticExpression_Yield
-| ArithmeticExpression_StartWithLet_Yield LTLT ArithmeticExpression_Yield
-| ArithmeticExpression_StartWithLet_Yield GTGT ArithmeticExpression_Yield
-| ArithmeticExpression_StartWithLet_Yield GTGTGT ArithmeticExpression_Yield
-| ArithmeticExpression_StartWithLet_Yield MULT ArithmeticExpression_Yield
-| ArithmeticExpression_StartWithLet_Yield DIV ArithmeticExpression_Yield
-| ArithmeticExpression_StartWithLet_Yield REM ArithmeticExpression_Yield
-| UpdateExpression_StartWithLet_Yield MULTMULT ArithmeticExpression_Yield
-;
-
 ArithmeticExpression_Yield :
   UnaryExpression_Yield
 | ArithmeticExpression_Yield PLUS ArithmeticExpression_Yield
@@ -3516,6 +3464,58 @@ ArithmeticExpression_Yield :
 | ArithmeticExpression_Yield DIV ArithmeticExpression_Yield
 | ArithmeticExpression_Yield REM ArithmeticExpression_Yield
 | UpdateExpression_Yield MULTMULT ArithmeticExpression_Yield
+;
+
+ArithmeticExpression_Yield_Await :
+  UnaryExpression_Yield_Await
+| ArithmeticExpression_Yield_Await PLUS ArithmeticExpression_Yield_Await
+| ArithmeticExpression_Yield_Await MINUS ArithmeticExpression_Yield_Await
+| ArithmeticExpression_Yield_Await LTLT ArithmeticExpression_Yield_Await
+| ArithmeticExpression_Yield_Await GTGT ArithmeticExpression_Yield_Await
+| ArithmeticExpression_Yield_Await GTGTGT ArithmeticExpression_Yield_Await
+| ArithmeticExpression_Yield_Await MULT ArithmeticExpression_Yield_Await
+| ArithmeticExpression_Yield_Await DIV ArithmeticExpression_Yield_Await
+| ArithmeticExpression_Yield_Await REM ArithmeticExpression_Yield_Await
+| UpdateExpression_Yield_Await MULTMULT ArithmeticExpression_Yield_Await
+;
+
+ArithmeticExpression_Yield_NoLet :
+  UnaryExpression_Yield_NoLet
+| ArithmeticExpression_Yield_NoLet PLUS ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLet MINUS ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLet LTLT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLet GTGT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLet GTGTGT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLet MULT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLet DIV ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLet REM ArithmeticExpression_Yield
+| UpdateExpression_Yield_NoLet MULTMULT ArithmeticExpression_Yield
+;
+
+ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
+  UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass PLUS ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass MINUS ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass LTLT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass GTGT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass GTGTGT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass MULT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DIV ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass REM ArithmeticExpression_Yield
+| UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT ArithmeticExpression_Yield
+;
+
+ArithmeticExpression_Yield_StartWithLet :
+  UnaryExpression_Yield_StartWithLet
+| ArithmeticExpression_Yield_StartWithLet PLUS ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_StartWithLet MINUS ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_StartWithLet LTLT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_StartWithLet GTGT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_StartWithLet GTGTGT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_StartWithLet MULT ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_StartWithLet DIV ArithmeticExpression_Yield
+| ArithmeticExpression_Yield_StartWithLet REM ArithmeticExpression_Yield
+| UpdateExpression_Yield_StartWithLet MULTMULT ArithmeticExpression_Yield
 ;
 
 BinaryExpression :
@@ -3558,92 +3558,6 @@ BinaryExpression_Await :
 | BinaryExpression_Await ANDAND BinaryExpression_Await
 | BinaryExpression_Await OROR BinaryExpression_Await
 | BinaryExpression_Await QUESTQUEST BinaryExpression_Await
-;
-
-BinaryExpression_Await_In :
-  ArithmeticExpression_Await
-| BinaryExpression_Await_In LT BinaryExpression_Await_In
-| BinaryExpression_Await_In GT BinaryExpression_Await_In
-| BinaryExpression_Await_In LTASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In GTASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In INSTANCEOF BinaryExpression_Await_In
-| BinaryExpression_Await_In IN BinaryExpression_Await_In
-| BinaryExpression_Await_In /*.noLineBreak*/ AS Type1
-| BinaryExpression_Await_In /*.noLineBreak*/ AS CONST
-| BinaryExpression_Await_In ASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In EXCLASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In ASSIGNASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In EXCLASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In AND BinaryExpression_Await_In
-| BinaryExpression_Await_In XOR BinaryExpression_Await_In
-| BinaryExpression_Await_In OR BinaryExpression_Await_In
-| BinaryExpression_Await_In ANDAND BinaryExpression_Await_In
-| BinaryExpression_Await_In OROR BinaryExpression_Await_In
-| BinaryExpression_Await_In QUESTQUEST BinaryExpression_Await_In
-;
-
-BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  ArithmeticExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral LT BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral GT BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral LTASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral GTASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral INSTANCEOF BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral IN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral EXCLASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral EXCLASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral AND BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral XOR BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral OR BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ANDAND BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral OROR BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral QUESTQUEST BinaryExpression_Await_In
-;
-
-BinaryExpression_Await_In_NoObjLiteral :
-  ArithmeticExpression_Await_NoObjLiteral
-| BinaryExpression_Await_In_NoObjLiteral LT BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral GT BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral LTASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral GTASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral INSTANCEOF BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral IN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral /*.noLineBreak*/ AS Type1
-| BinaryExpression_Await_In_NoObjLiteral /*.noLineBreak*/ AS CONST
-| BinaryExpression_Await_In_NoObjLiteral ASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral EXCLASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral EXCLASSIGNASSIGN BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral AND BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral XOR BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral OR BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral ANDAND BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral OROR BinaryExpression_Await_In
-| BinaryExpression_Await_In_NoObjLiteral QUESTQUEST BinaryExpression_Await_In
-;
-
-BinaryExpression_Await_In_Yield :
-  ArithmeticExpression_Await_Yield
-| BinaryExpression_Await_In_Yield LT BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield GT BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield LTASSIGN BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield GTASSIGN BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield INSTANCEOF BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield IN BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield /*.noLineBreak*/ AS Type1
-| BinaryExpression_Await_In_Yield /*.noLineBreak*/ AS CONST
-| BinaryExpression_Await_In_Yield ASSIGNASSIGN BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield EXCLASSIGN BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield ASSIGNASSIGNASSIGN BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield EXCLASSIGNASSIGN BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield AND BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield XOR BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield OR BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield ANDAND BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield OROR BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield QUESTQUEST BinaryExpression_Await_In_Yield
 ;
 
 BinaryExpression_Await_NoAs_StartWithLet :
@@ -3707,27 +3621,6 @@ BinaryExpression_Await_NoObjLiteral :
 | BinaryExpression_Await_NoObjLiteral QUESTQUEST BinaryExpression_Await
 ;
 
-BinaryExpression_Await_Yield :
-  ArithmeticExpression_Await_Yield
-| BinaryExpression_Await_Yield LT BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield GT BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield LTASSIGN BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield GTASSIGN BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield INSTANCEOF BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield /*.noLineBreak*/ AS Type1
-| BinaryExpression_Await_Yield /*.noLineBreak*/ AS CONST
-| BinaryExpression_Await_Yield ASSIGNASSIGN BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield EXCLASSIGN BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield ASSIGNASSIGNASSIGN BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield EXCLASSIGNASSIGN BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield AND BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield XOR BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield OR BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield ANDAND BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield OROR BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield QUESTQUEST BinaryExpression_Await_Yield
-;
-
 BinaryExpression_In :
   ArithmeticExpression
 | BinaryExpression_In LT BinaryExpression_In
@@ -3750,44 +3643,68 @@ BinaryExpression_In :
 | BinaryExpression_In QUESTQUEST BinaryExpression_In
 ;
 
-BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral LT BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral GT BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral LTASSIGN BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral GTASSIGN BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral INSTANCEOF BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral IN BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ASSIGNASSIGN BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral EXCLASSIGN BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral EXCLASSIGNASSIGN BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral AND BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral XOR BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral OR BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral ANDAND BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral OROR BinaryExpression_In
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral QUESTQUEST BinaryExpression_In
+BinaryExpression_In_Await :
+  ArithmeticExpression_Await
+| BinaryExpression_In_Await LT BinaryExpression_In_Await
+| BinaryExpression_In_Await GT BinaryExpression_In_Await
+| BinaryExpression_In_Await LTASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await GTASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await INSTANCEOF BinaryExpression_In_Await
+| BinaryExpression_In_Await IN BinaryExpression_In_Await
+| BinaryExpression_In_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Await /*.noLineBreak*/ AS CONST
+| BinaryExpression_In_Await ASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await EXCLASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await ASSIGNASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await EXCLASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await AND BinaryExpression_In_Await
+| BinaryExpression_In_Await XOR BinaryExpression_In_Await
+| BinaryExpression_In_Await OR BinaryExpression_In_Await
+| BinaryExpression_In_Await ANDAND BinaryExpression_In_Await
+| BinaryExpression_In_Await OROR BinaryExpression_In_Await
+| BinaryExpression_In_Await QUESTQUEST BinaryExpression_In_Await
 ;
 
-BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  ArithmeticExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield LT BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield GT BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield LTASSIGN BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield GTASSIGN BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield INSTANCEOF BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield IN BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield ASSIGNASSIGN BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield EXCLASSIGN BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield ASSIGNASSIGNASSIGN BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield EXCLASSIGNASSIGN BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield AND BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield XOR BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield OR BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield ANDAND BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield OROR BinaryExpression_In_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUESTQUEST BinaryExpression_In_Yield
+BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs INSTANCEOF BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs IN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs EXCLASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ASSIGNASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs EXCLASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs AND BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs XOR BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs OR BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ANDAND BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs OROR BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs QUESTQUEST BinaryExpression_In_Await
+;
+
+BinaryExpression_In_Await_NoObjLiteral :
+  ArithmeticExpression_Await_NoObjLiteral
+| BinaryExpression_In_Await_NoObjLiteral LT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral GT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral LTASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral GTASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral INSTANCEOF BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral IN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Await_NoObjLiteral /*.noLineBreak*/ AS CONST
+| BinaryExpression_In_Await_NoObjLiteral ASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral EXCLASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral ASSIGNASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral EXCLASSIGNASSIGN BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral AND BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral XOR BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral OR BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral ANDAND BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral OROR BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral QUESTQUEST BinaryExpression_In_Await
 ;
 
 BinaryExpression_In_NoFuncClass :
@@ -3810,6 +3727,26 @@ BinaryExpression_In_NoFuncClass :
 | BinaryExpression_In_NoFuncClass ANDAND BinaryExpression_In
 | BinaryExpression_In_NoFuncClass OROR BinaryExpression_In
 | BinaryExpression_In_NoFuncClass QUESTQUEST BinaryExpression_In
+;
+
+BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LT BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GT BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTASSIGN BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTASSIGN BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs INSTANCEOF BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs IN BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ASSIGNASSIGN BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs EXCLASSIGN BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ASSIGNASSIGNASSIGN BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs EXCLASSIGNASSIGN BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs AND BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs XOR BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs OR BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ANDAND BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs OROR BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs QUESTQUEST BinaryExpression_In
 ;
 
 BinaryExpression_In_NoObjLiteral :
@@ -3856,6 +3793,48 @@ BinaryExpression_In_Yield :
 | BinaryExpression_In_Yield QUESTQUEST BinaryExpression_In_Yield
 ;
 
+BinaryExpression_In_Yield_Await :
+  ArithmeticExpression_Yield_Await
+| BinaryExpression_In_Yield_Await LT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await GT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await LTASSIGN BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await GTASSIGN BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await INSTANCEOF BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await IN BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Yield_Await /*.noLineBreak*/ AS CONST
+| BinaryExpression_In_Yield_Await ASSIGNASSIGN BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await EXCLASSIGN BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await ASSIGNASSIGNASSIGN BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await EXCLASSIGNASSIGN BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await AND BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await XOR BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await OR BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await ANDAND BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await OROR BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await QUESTQUEST BinaryExpression_In_Yield_Await
+;
+
+BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTASSIGN BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTASSIGN BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs INSTANCEOF BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs IN BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ASSIGNASSIGN BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs EXCLASSIGN BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ASSIGNASSIGNASSIGN BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs EXCLASSIGNASSIGN BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs AND BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs XOR BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs OR BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs ANDAND BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs OROR BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs QUESTQUEST BinaryExpression_In_Yield
+;
+
 BinaryExpression_NoAs_StartWithLet :
   ArithmeticExpression_StartWithLet
 | BinaryExpression_NoAs_StartWithLet LT BinaryExpression
@@ -3873,25 +3852,6 @@ BinaryExpression_NoAs_StartWithLet :
 | BinaryExpression_NoAs_StartWithLet ANDAND BinaryExpression
 | BinaryExpression_NoAs_StartWithLet OROR BinaryExpression
 | BinaryExpression_NoAs_StartWithLet QUESTQUEST BinaryExpression
-;
-
-BinaryExpression_NoAs_StartWithLet_Yield :
-  ArithmeticExpression_StartWithLet_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield LT BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield GT BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield LTASSIGN BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield GTASSIGN BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield INSTANCEOF BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield ASSIGNASSIGN BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield EXCLASSIGN BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield ASSIGNASSIGNASSIGN BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield EXCLASSIGNASSIGN BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield AND BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield XOR BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield OR BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield ANDAND BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield OROR BinaryExpression_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield QUESTQUEST BinaryExpression_Yield
 ;
 
 BinaryExpression_NoLet :
@@ -3913,27 +3873,6 @@ BinaryExpression_NoLet :
 | BinaryExpression_NoLet ANDAND BinaryExpression
 | BinaryExpression_NoLet OROR BinaryExpression
 | BinaryExpression_NoLet QUESTQUEST BinaryExpression
-;
-
-BinaryExpression_NoLet_Yield :
-  ArithmeticExpression_NoLet_Yield
-| BinaryExpression_NoLet_Yield LT BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield GT BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield LTASSIGN BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield GTASSIGN BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield INSTANCEOF BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield /*.noLineBreak*/ AS Type1
-| BinaryExpression_NoLet_Yield /*.noLineBreak*/ AS CONST
-| BinaryExpression_NoLet_Yield ASSIGNASSIGN BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield EXCLASSIGN BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield ASSIGNASSIGNASSIGN BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield EXCLASSIGNASSIGN BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield AND BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield XOR BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield OR BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield ANDAND BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield OROR BinaryExpression_Yield
-| BinaryExpression_NoLet_Yield QUESTQUEST BinaryExpression_Yield
 ;
 
 BinaryExpression_NoObjLiteral :
@@ -3978,6 +3917,67 @@ BinaryExpression_Yield :
 | BinaryExpression_Yield QUESTQUEST BinaryExpression_Yield
 ;
 
+BinaryExpression_Yield_Await :
+  ArithmeticExpression_Yield_Await
+| BinaryExpression_Yield_Await LT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await GT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await LTASSIGN BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await GTASSIGN BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await INSTANCEOF BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_Yield_Await /*.noLineBreak*/ AS CONST
+| BinaryExpression_Yield_Await ASSIGNASSIGN BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await EXCLASSIGN BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await ASSIGNASSIGNASSIGN BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await EXCLASSIGNASSIGN BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await AND BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await XOR BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await OR BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await ANDAND BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await OROR BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await QUESTQUEST BinaryExpression_Yield_Await
+;
+
+BinaryExpression_Yield_NoAs_StartWithLet :
+  ArithmeticExpression_Yield_StartWithLet
+| BinaryExpression_Yield_NoAs_StartWithLet LT BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet GT BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet LTASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet GTASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet INSTANCEOF BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet ASSIGNASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet EXCLASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet ASSIGNASSIGNASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet EXCLASSIGNASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet AND BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet XOR BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet OR BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet ANDAND BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet OROR BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet QUESTQUEST BinaryExpression_Yield
+;
+
+BinaryExpression_Yield_NoLet :
+  ArithmeticExpression_Yield_NoLet
+| BinaryExpression_Yield_NoLet LT BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet GT BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet LTASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet GTASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet INSTANCEOF BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet /*.noLineBreak*/ AS Type1
+| BinaryExpression_Yield_NoLet /*.noLineBreak*/ AS CONST
+| BinaryExpression_Yield_NoLet ASSIGNASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet EXCLASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet ASSIGNASSIGNASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet EXCLASSIGNASSIGN BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet AND BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet XOR BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet OR BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet ANDAND BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet OROR BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet QUESTQUEST BinaryExpression_Yield
+;
+
 ConditionalExpression :
   BinaryExpression
 | BinaryExpression QUEST AssignmentExpression_In COLON AssignmentExpression
@@ -3985,47 +3985,22 @@ ConditionalExpression :
 
 ConditionalExpression_Await :
   BinaryExpression_Await
-| BinaryExpression_Await QUEST AssignmentExpression_Await_In COLON AssignmentExpression_Await
-;
-
-ConditionalExpression_Await_In :
-  BinaryExpression_Await_In
-| BinaryExpression_Await_In QUEST AssignmentExpression_Await_In COLON AssignmentExpression_Await_In
-;
-
-ConditionalExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
-| BinaryExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral QUEST AssignmentExpression_Await_In COLON AssignmentExpression_Await_In
-;
-
-ConditionalExpression_Await_In_NoObjLiteral :
-  BinaryExpression_Await_In_NoObjLiteral
-| BinaryExpression_Await_In_NoObjLiteral QUEST AssignmentExpression_Await_In COLON AssignmentExpression_Await_In
-;
-
-ConditionalExpression_Await_In_Yield :
-  BinaryExpression_Await_In_Yield
-| BinaryExpression_Await_In_Yield QUEST AssignmentExpression_Await_In_Yield COLON AssignmentExpression_Await_In_Yield
+| BinaryExpression_Await QUEST AssignmentExpression_In_Await COLON AssignmentExpression_Await
 ;
 
 ConditionalExpression_Await_NoAs_StartWithLet :
   BinaryExpression_Await_NoAs_StartWithLet
-| BinaryExpression_Await_NoAs_StartWithLet QUEST AssignmentExpression_Await_In COLON AssignmentExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet QUEST AssignmentExpression_In_Await COLON AssignmentExpression_Await
 ;
 
 ConditionalExpression_Await_NoLet :
   BinaryExpression_Await_NoLet
-| BinaryExpression_Await_NoLet QUEST AssignmentExpression_Await_In COLON AssignmentExpression_Await
+| BinaryExpression_Await_NoLet QUEST AssignmentExpression_In_Await COLON AssignmentExpression_Await
 ;
 
 ConditionalExpression_Await_NoObjLiteral :
   BinaryExpression_Await_NoObjLiteral
-| BinaryExpression_Await_NoObjLiteral QUEST AssignmentExpression_Await_In COLON AssignmentExpression_Await
-;
-
-ConditionalExpression_Await_Yield :
-  BinaryExpression_Await_Yield
-| BinaryExpression_Await_Yield QUEST AssignmentExpression_Await_In_Yield COLON AssignmentExpression_Await_Yield
+| BinaryExpression_Await_NoObjLiteral QUEST AssignmentExpression_In_Await COLON AssignmentExpression_Await
 ;
 
 ConditionalExpression_In :
@@ -4033,19 +4008,29 @@ ConditionalExpression_In :
 | BinaryExpression_In QUEST AssignmentExpression_In COLON AssignmentExpression_In
 ;
 
-ConditionalExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral QUEST AssignmentExpression_In COLON AssignmentExpression_In
+ConditionalExpression_In_Await :
+  BinaryExpression_In_Await
+| BinaryExpression_In_Await QUEST AssignmentExpression_In_Await COLON AssignmentExpression_In_Await
 ;
 
-ConditionalExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| BinaryExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_In_Yield
+ConditionalExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs QUEST AssignmentExpression_In_Await COLON AssignmentExpression_In_Await
+;
+
+ConditionalExpression_In_Await_NoObjLiteral :
+  BinaryExpression_In_Await_NoObjLiteral
+| BinaryExpression_In_Await_NoObjLiteral QUEST AssignmentExpression_In_Await COLON AssignmentExpression_In_Await
 ;
 
 ConditionalExpression_In_NoFuncClass :
   BinaryExpression_In_NoFuncClass
 | BinaryExpression_In_NoFuncClass QUEST AssignmentExpression_In COLON AssignmentExpression_In
+;
+
+ConditionalExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs QUEST AssignmentExpression_In COLON AssignmentExpression_In
 ;
 
 ConditionalExpression_In_NoObjLiteral :
@@ -4058,24 +4043,24 @@ ConditionalExpression_In_Yield :
 | BinaryExpression_In_Yield QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_In_Yield
 ;
 
+ConditionalExpression_In_Yield_Await :
+  BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await QUEST AssignmentExpression_In_Yield_Await COLON AssignmentExpression_In_Yield_Await
+;
+
+ConditionalExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_In_Yield
+;
+
 ConditionalExpression_NoAs_StartWithLet :
   BinaryExpression_NoAs_StartWithLet
 | BinaryExpression_NoAs_StartWithLet QUEST AssignmentExpression_In COLON AssignmentExpression
 ;
 
-ConditionalExpression_NoAs_StartWithLet_Yield :
-  BinaryExpression_NoAs_StartWithLet_Yield
-| BinaryExpression_NoAs_StartWithLet_Yield QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_Yield
-;
-
 ConditionalExpression_NoLet :
   BinaryExpression_NoLet
 | BinaryExpression_NoLet QUEST AssignmentExpression_In COLON AssignmentExpression
-;
-
-ConditionalExpression_NoLet_Yield :
-  BinaryExpression_NoLet_Yield
-| BinaryExpression_NoLet_Yield QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_Yield
 ;
 
 ConditionalExpression_NoObjLiteral :
@@ -4086,6 +4071,21 @@ ConditionalExpression_NoObjLiteral :
 ConditionalExpression_Yield :
   BinaryExpression_Yield
 | BinaryExpression_Yield QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_Yield
+;
+
+ConditionalExpression_Yield_Await :
+  BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await QUEST AssignmentExpression_In_Yield_Await COLON AssignmentExpression_Yield_Await
+;
+
+ConditionalExpression_Yield_NoAs_StartWithLet :
+  BinaryExpression_Yield_NoAs_StartWithLet
+| BinaryExpression_Yield_NoAs_StartWithLet QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_Yield
+;
+
+ConditionalExpression_Yield_NoLet :
+  BinaryExpression_Yield_NoLet
+| BinaryExpression_Yield_NoLet QUEST AssignmentExpression_In_Yield COLON AssignmentExpression_Yield
 ;
 
 AssignmentExpression :
@@ -4102,39 +4102,6 @@ AssignmentExpression_Await :
 | AsyncArrowFunction
 | LeftHandSideExpression_Await ASSIGN AssignmentExpression_Await
 | LeftHandSideExpression_Await AssignmentOperator AssignmentExpression_Await
-;
-
-AssignmentExpression_Await_In :
-  ConditionalExpression_Await_In
-| ArrowFunction_In
-| AsyncArrowFunction_In
-| LeftHandSideExpression_Await ASSIGN AssignmentExpression_Await_In
-| LeftHandSideExpression_Await AssignmentOperator AssignmentExpression_Await_In
-;
-
-AssignmentExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  ConditionalExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
-| ArrowFunction_In
-| AsyncArrowFunction_In
-| LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral ASSIGN AssignmentExpression_Await_In
-| LeftHandSideExpression_Await_NoFuncClass_NoLetSq_NoObjLiteral AssignmentOperator AssignmentExpression_Await_In
-;
-
-AssignmentExpression_Await_In_NoObjLiteral :
-  ConditionalExpression_Await_In_NoObjLiteral
-| ArrowFunction_In
-| AsyncArrowFunction_In
-| LeftHandSideExpression_Await_NoObjLiteral ASSIGN AssignmentExpression_Await_In
-| LeftHandSideExpression_Await_NoObjLiteral AssignmentOperator AssignmentExpression_Await_In
-;
-
-AssignmentExpression_Await_In_Yield :
-  ConditionalExpression_Await_In_Yield
-| YieldExpression_Await_In
-| ArrowFunction_In
-| AsyncArrowFunction_In
-| LeftHandSideExpression_Await_Yield ASSIGN AssignmentExpression_Await_In_Yield
-| LeftHandSideExpression_Await_Yield AssignmentOperator AssignmentExpression_Await_In_Yield
 ;
 
 AssignmentExpression_Await_NoAs_StartWithLet :
@@ -4159,15 +4126,6 @@ AssignmentExpression_Await_NoObjLiteral :
 | LeftHandSideExpression_Await_NoObjLiteral AssignmentOperator AssignmentExpression_Await
 ;
 
-AssignmentExpression_Await_Yield :
-  ConditionalExpression_Await_Yield
-| YieldExpression_Await
-| ArrowFunction
-| AsyncArrowFunction
-| LeftHandSideExpression_Await_Yield ASSIGN AssignmentExpression_Await_Yield
-| LeftHandSideExpression_Await_Yield AssignmentOperator AssignmentExpression_Await_Yield
-;
-
 AssignmentExpression_In :
   ConditionalExpression_In
 | ArrowFunction_In
@@ -4176,21 +4134,28 @@ AssignmentExpression_In :
 | LeftHandSideExpression AssignmentOperator AssignmentExpression_In
 ;
 
-AssignmentExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  ConditionalExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
+AssignmentExpression_In_Await :
+  ConditionalExpression_In_Await
 | ArrowFunction_In
 | AsyncArrowFunction_In
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral ASSIGN AssignmentExpression_In
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral AssignmentOperator AssignmentExpression_In
+| LeftHandSideExpression_Await ASSIGN AssignmentExpression_In_Await
+| LeftHandSideExpression_Await AssignmentOperator AssignmentExpression_In_Await
 ;
 
-AssignmentExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  ConditionalExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| YieldExpression_In
+AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  ConditionalExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
 | ArrowFunction_In
 | AsyncArrowFunction_In
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield ASSIGN AssignmentExpression_In_Yield
-| LeftHandSideExpression_NoFuncClass_NoLetSq_NoObjLiteral_Yield AssignmentOperator AssignmentExpression_In_Yield
+| LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass ASSIGN AssignmentExpression_In_Await
+| LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass AssignmentOperator AssignmentExpression_In_Await
+;
+
+AssignmentExpression_In_Await_NoObjLiteral :
+  ConditionalExpression_In_Await_NoObjLiteral
+| ArrowFunction_In
+| AsyncArrowFunction_In
+| LeftHandSideExpression_Await_NoObjLiteral ASSIGN AssignmentExpression_In_Await
+| LeftHandSideExpression_Await_NoObjLiteral AssignmentOperator AssignmentExpression_In_Await
 ;
 
 AssignmentExpression_In_NoFuncClass :
@@ -4199,6 +4164,14 @@ AssignmentExpression_In_NoFuncClass :
 | AsyncArrowFunction_In
 | LeftHandSideExpression_NoFuncClass ASSIGN AssignmentExpression_In
 | LeftHandSideExpression_NoFuncClass AssignmentOperator AssignmentExpression_In
+;
+
+AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  ConditionalExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| ArrowFunction_In
+| AsyncArrowFunction_In
+| LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass ASSIGN AssignmentExpression_In
+| LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass AssignmentOperator AssignmentExpression_In
 ;
 
 AssignmentExpression_In_NoObjLiteral :
@@ -4218,16 +4191,28 @@ AssignmentExpression_In_Yield :
 | LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_In_Yield
 ;
 
+AssignmentExpression_In_Yield_Await :
+  ConditionalExpression_In_Yield_Await
+| YieldExpression_In_Await
+| ArrowFunction_In
+| AsyncArrowFunction_In
+| LeftHandSideExpression_Yield_Await ASSIGN AssignmentExpression_In_Yield_Await
+| LeftHandSideExpression_Yield_Await AssignmentOperator AssignmentExpression_In_Yield_Await
+;
+
+AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  ConditionalExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| YieldExpression_In
+| ArrowFunction_In
+| AsyncArrowFunction_In
+| LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass ASSIGN AssignmentExpression_In_Yield
+| LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass AssignmentOperator AssignmentExpression_In_Yield
+;
+
 AssignmentExpression_NoAs_StartWithLet :
   ConditionalExpression_NoAs_StartWithLet
 | LeftHandSideExpression_StartWithLet ASSIGN AssignmentExpression
 | LeftHandSideExpression_StartWithLet AssignmentOperator AssignmentExpression
-;
-
-AssignmentExpression_NoAs_StartWithLet_Yield :
-  ConditionalExpression_NoAs_StartWithLet_Yield
-| LeftHandSideExpression_StartWithLet_Yield ASSIGN AssignmentExpression_Yield
-| LeftHandSideExpression_StartWithLet_Yield AssignmentOperator AssignmentExpression_Yield
 ;
 
 AssignmentExpression_NoLet :
@@ -4236,15 +4221,6 @@ AssignmentExpression_NoLet :
 | AsyncArrowFunction
 | LeftHandSideExpression_NoLet ASSIGN AssignmentExpression
 | LeftHandSideExpression_NoLet AssignmentOperator AssignmentExpression
-;
-
-AssignmentExpression_NoLet_Yield :
-  ConditionalExpression_NoLet_Yield
-| YieldExpression
-| ArrowFunction
-| AsyncArrowFunction
-| LeftHandSideExpression_NoLet_Yield ASSIGN AssignmentExpression_Yield
-| LeftHandSideExpression_NoLet_Yield AssignmentOperator AssignmentExpression_Yield
 ;
 
 AssignmentExpression_NoObjLiteral :
@@ -4262,6 +4238,30 @@ AssignmentExpression_Yield :
 | AsyncArrowFunction
 | LeftHandSideExpression_Yield ASSIGN AssignmentExpression_Yield
 | LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_Yield
+;
+
+AssignmentExpression_Yield_Await :
+  ConditionalExpression_Yield_Await
+| YieldExpression_Await
+| ArrowFunction
+| AsyncArrowFunction
+| LeftHandSideExpression_Yield_Await ASSIGN AssignmentExpression_Yield_Await
+| LeftHandSideExpression_Yield_Await AssignmentOperator AssignmentExpression_Yield_Await
+;
+
+AssignmentExpression_Yield_NoAs_StartWithLet :
+  ConditionalExpression_Yield_NoAs_StartWithLet
+| LeftHandSideExpression_Yield_StartWithLet ASSIGN AssignmentExpression_Yield
+| LeftHandSideExpression_Yield_StartWithLet AssignmentOperator AssignmentExpression_Yield
+;
+
+AssignmentExpression_Yield_NoLet :
+  ConditionalExpression_Yield_NoLet
+| YieldExpression
+| ArrowFunction
+| AsyncArrowFunction
+| LeftHandSideExpression_Yield_NoLet ASSIGN AssignmentExpression_Yield
+| LeftHandSideExpression_Yield_NoLet AssignmentOperator AssignmentExpression_Yield
 ;
 
 AssignmentOperator :
@@ -4282,18 +4282,6 @@ AssignmentOperator :
 | ANDANDASSIGN
 ;
 
-CommaExpression_Await_In :
-  Expression_Await_In COMMA AssignmentExpression_Await_In
-;
-
-CommaExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  Expression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral COMMA AssignmentExpression_Await_In
-;
-
-CommaExpression_Await_In_Yield :
-  Expression_Await_In_Yield COMMA AssignmentExpression_Await_In_Yield
-;
-
 CommaExpression_Await_NoAs_StartWithLet :
   Expression_Await_NoAs_StartWithLet COMMA AssignmentExpression_Await
 ;
@@ -4306,47 +4294,44 @@ CommaExpression_In :
   Expression_In COMMA AssignmentExpression_In
 ;
 
-CommaExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral COMMA AssignmentExpression_In
+CommaExpression_In_Await :
+  Expression_In_Await COMMA AssignmentExpression_In_Await
 ;
 
-CommaExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield COMMA AssignmentExpression_In_Yield
+CommaExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  Expression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs COMMA AssignmentExpression_In_Await
+;
+
+CommaExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  Expression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs COMMA AssignmentExpression_In
 ;
 
 CommaExpression_In_Yield :
   Expression_In_Yield COMMA AssignmentExpression_In_Yield
 ;
 
-CommaExpression_NoAs_StartWithLet :
-  Expression_NoAs_StartWithLet COMMA AssignmentExpression
+CommaExpression_In_Yield_Await :
+  Expression_In_Yield_Await COMMA AssignmentExpression_In_Yield_Await
 ;
 
-CommaExpression_NoAs_StartWithLet_Yield :
-  Expression_NoAs_StartWithLet_Yield COMMA AssignmentExpression_Yield
+CommaExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  Expression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs COMMA AssignmentExpression_In_Yield
+;
+
+CommaExpression_NoAs_StartWithLet :
+  Expression_NoAs_StartWithLet COMMA AssignmentExpression
 ;
 
 CommaExpression_NoLet :
   Expression_NoLet COMMA AssignmentExpression
 ;
 
-CommaExpression_NoLet_Yield :
-  Expression_NoLet_Yield COMMA AssignmentExpression_Yield
+CommaExpression_Yield_NoAs_StartWithLet :
+  Expression_Yield_NoAs_StartWithLet COMMA AssignmentExpression_Yield
 ;
 
-Expression_Await_In :
-  AssignmentExpression_Await_In
-| CommaExpression_Await_In
-;
-
-Expression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  AssignmentExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
-| CommaExpression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
-;
-
-Expression_Await_In_Yield :
-  AssignmentExpression_Await_In_Yield
-| CommaExpression_Await_In_Yield
+CommaExpression_Yield_NoLet :
+  Expression_Yield_NoLet COMMA AssignmentExpression_Yield
 ;
 
 Expression_Await_NoAs_StartWithLet :
@@ -4364,14 +4349,19 @@ Expression_In :
 | CommaExpression_In
 ;
 
-Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral :
-  AssignmentExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
-| CommaExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral
+Expression_In_Await :
+  AssignmentExpression_In_Await
+| CommaExpression_In_Await
 ;
 
-Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield :
-  AssignmentExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield
-| CommaExpression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield
+Expression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| CommaExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+;
+
+Expression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| CommaExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
 ;
 
 Expression_In_Yield :
@@ -4379,14 +4369,19 @@ Expression_In_Yield :
 | CommaExpression_In_Yield
 ;
 
+Expression_In_Yield_Await :
+  AssignmentExpression_In_Yield_Await
+| CommaExpression_In_Yield_Await
+;
+
+Expression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
+  AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+| CommaExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs
+;
+
 Expression_NoAs_StartWithLet :
   AssignmentExpression_NoAs_StartWithLet
 | CommaExpression_NoAs_StartWithLet
-;
-
-Expression_NoAs_StartWithLet_Yield :
-  AssignmentExpression_NoAs_StartWithLet_Yield
-| CommaExpression_NoAs_StartWithLet_Yield
 ;
 
 Expression_NoLet :
@@ -4394,9 +4389,14 @@ Expression_NoLet :
 | CommaExpression_NoLet
 ;
 
-Expression_NoLet_Yield :
-  AssignmentExpression_NoLet_Yield
-| CommaExpression_NoLet_Yield
+Expression_Yield_NoAs_StartWithLet :
+  AssignmentExpression_Yield_NoAs_StartWithLet
+| CommaExpression_Yield_NoAs_StartWithLet
+;
+
+Expression_Yield_NoLet :
+  AssignmentExpression_Yield_NoLet
+| CommaExpression_Yield_NoLet
 ;
 
 Statement :
@@ -4465,7 +4465,7 @@ Declaration :
 Declaration_Await :
   HoistableDeclaration_Await
 | ClassDeclaration_Await
-| LexicalDeclaration_Await_In
+| LexicalDeclaration_In_Await
 | TypeAliasDeclaration
 | NamespaceDeclaration
 | InterfaceDeclaration
@@ -4573,12 +4573,12 @@ StatementListItem_Yield :
 | ERROR SEMICOLON
 ;
 
-LexicalDeclaration_Await_In :
-  LetOrConst BindingList_Await_In SEMICOLON
-;
-
 LexicalDeclaration_In :
   LetOrConst BindingList_In SEMICOLON
+;
+
+LexicalDeclaration_In_Await :
+  LetOrConst BindingList_In_Await SEMICOLON
 ;
 
 LexicalDeclaration_In_Yield :
@@ -4600,14 +4600,14 @@ BindingList_Await :
 | BindingList_Await COMMA LexicalBinding_Await
 ;
 
-BindingList_Await_In :
-  LexicalBinding_Await_In
-| BindingList_Await_In COMMA LexicalBinding_Await_In
-;
-
 BindingList_In :
   LexicalBinding_In
 | BindingList_In COMMA LexicalBinding_In
+;
+
+BindingList_In_Await :
+  LexicalBinding_In_Await
+| BindingList_In_Await COMMA LexicalBinding_In_Await
 ;
 
 BindingList_In_Yield :
@@ -4638,18 +4638,18 @@ LexicalBinding_Await :
 | BindingPattern_Await TypeAnnotationopt Initializer_Await
 ;
 
-LexicalBinding_Await_In :
-  BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await_In
-| BindingIdentifier TypeAnnotationopt Initializeropt_Await_In
-| BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await_In
-| BindingPattern_Await TypeAnnotationopt Initializer_Await_In
-;
-
 LexicalBinding_In :
   BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In
 | BindingIdentifier TypeAnnotationopt Initializeropt_In
 | BindingPattern ExclToken TypeAnnotationopt Initializer_In
 | BindingPattern TypeAnnotationopt Initializer_In
+;
+
+LexicalBinding_In_Await :
+  BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Await
+| BindingIdentifier TypeAnnotationopt Initializeropt_In_Await
+| BindingPattern_Await ExclToken TypeAnnotationopt Initializer_In_Await
+| BindingPattern_Await TypeAnnotationopt Initializer_In_Await
 ;
 
 LexicalBinding_In_Yield :
@@ -4671,7 +4671,7 @@ VariableStatement :
 ;
 
 VariableStatement_Await :
-  VAR VariableDeclarationList_Await_In SEMICOLON
+  VAR VariableDeclarationList_In_Await SEMICOLON
 ;
 
 VariableStatement_Yield :
@@ -4688,14 +4688,14 @@ VariableDeclarationList_Await :
 | VariableDeclarationList_Await COMMA VariableDeclaration_Await
 ;
 
-VariableDeclarationList_Await_In :
-  VariableDeclaration_Await_In
-| VariableDeclarationList_Await_In COMMA VariableDeclaration_Await_In
-;
-
 VariableDeclarationList_In :
   VariableDeclaration_In
 | VariableDeclarationList_In COMMA VariableDeclaration_In
+;
+
+VariableDeclarationList_In_Await :
+  VariableDeclaration_In_Await
+| VariableDeclarationList_In_Await COMMA VariableDeclaration_In_Await
 ;
 
 VariableDeclarationList_In_Yield :
@@ -4722,18 +4722,18 @@ VariableDeclaration_Await :
 | BindingPattern_Await TypeAnnotationopt Initializer_Await
 ;
 
-VariableDeclaration_Await_In :
-  BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await_In
-| BindingIdentifier TypeAnnotationopt Initializeropt_Await_In
-| BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await_In
-| BindingPattern_Await TypeAnnotationopt Initializer_Await_In
-;
-
 VariableDeclaration_In :
   BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In
 | BindingIdentifier TypeAnnotationopt Initializeropt_In
 | BindingPattern ExclToken TypeAnnotationopt Initializer_In
 | BindingPattern TypeAnnotationopt Initializer_In
+;
+
+VariableDeclaration_In_Await :
+  BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Await
+| BindingIdentifier TypeAnnotationopt Initializeropt_In_Await
+| BindingPattern_Await ExclToken TypeAnnotationopt Initializer_In_Await
+| BindingPattern_Await TypeAnnotationopt Initializer_In_Await
 ;
 
 VariableDeclaration_In_Yield :
@@ -4877,7 +4877,7 @@ ElementPattern :
 
 ElementPattern_Await :
   SingleNameBinding_Await
-| BindingPattern_Await Initializeropt_Await_In
+| BindingPattern_Await Initializeropt_In_Await
 | SyntaxError
 ;
 
@@ -4892,7 +4892,7 @@ SingleNameBinding :
 ;
 
 SingleNameBinding_Await :
-  BindingIdentifier Initializeropt_Await_In
+  BindingIdentifier Initializeropt_In_Await
 ;
 
 SingleNameBinding_Yield :
@@ -4908,15 +4908,15 @@ EmptyStatement :
 ;
 
 ExpressionStatement :
-  Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral SEMICOLON
+  Expression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs SEMICOLON
 ;
 
 ExpressionStatement_Await :
-  Expression_Await_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral SEMICOLON
+  Expression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs SEMICOLON
 ;
 
 ExpressionStatement_Yield :
-  Expression_In_NoAs_NoFuncClass_NoLetSq_NoObjLiteral_Yield SEMICOLON
+  Expression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs SEMICOLON
 ;
 
 IfStatement :
@@ -4925,8 +4925,8 @@ IfStatement :
 ;
 
 IfStatement_Await :
-  IF LPAREN Expression_Await_In RPAREN Statement_Await ELSE Statement_Await
-| IF LPAREN Expression_Await_In RPAREN Statement_Await %prec ELSE
+  IF LPAREN Expression_In_Await RPAREN Statement_Await ELSE Statement_Await
+| IF LPAREN Expression_In_Await RPAREN Statement_Await %prec ELSE
 ;
 
 IfStatement_Yield :
@@ -4953,36 +4953,36 @@ IterationStatement :
 ;
 
 IterationStatement_Await :
-  DO Statement_Await WHILE LPAREN Expression_Await_In RPAREN SEMICOLON /*.doWhile*/
-| WHILE LPAREN Expression_Await_In RPAREN Statement_Await
+  DO Statement_Await WHILE LPAREN Expression_In_Await RPAREN SEMICOLON /*.doWhile*/
+| WHILE LPAREN Expression_In_Await RPAREN Statement_Await
 | FOR LPAREN Expression_Await_NoLet SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
 | FOR LPAREN SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
 | FOR LPAREN Expression_Await_NoAs_StartWithLet SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
 | FOR LPAREN VAR VariableDeclarationList_Await SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
 | FOR LPAREN LetOrConst BindingList_Await SEMICOLON /*.forSC*/ ForCondition_Await SEMICOLON /*.forSC*/ ForFinalExpression_Await RPAREN Statement_Await
-| FOR LPAREN LeftHandSideExpression_Await_NoLet IN Expression_Await_In RPAREN Statement_Await
-| FOR LPAREN LeftHandSideExpression_Await_StartWithLet IN Expression_Await_In RPAREN Statement_Await
-| FOR LPAREN VAR ForBinding_Await IN Expression_Await_In RPAREN Statement_Await
-| FOR LPAREN ForDeclaration_Await IN Expression_Await_In RPAREN Statement_Await
-| FOR LPAREN LeftHandSideExpression_Await_NoAsync_NoLet OF AssignmentExpression_Await_In RPAREN Statement_Await
-| FOR LPAREN ASYNC lookahead_notStartOfArrowFunction OF AssignmentExpression_Await_In RPAREN Statement_Await
-| FOR LPAREN VAR ForBinding_Await OF AssignmentExpression_Await_In RPAREN Statement_Await
-| FOR LPAREN ForDeclaration_Await OF AssignmentExpression_Await_In RPAREN Statement_Await
+| FOR LPAREN LeftHandSideExpression_Await_NoLet IN Expression_In_Await RPAREN Statement_Await
+| FOR LPAREN LeftHandSideExpression_Await_StartWithLet IN Expression_In_Await RPAREN Statement_Await
+| FOR LPAREN VAR ForBinding_Await IN Expression_In_Await RPAREN Statement_Await
+| FOR LPAREN ForDeclaration_Await IN Expression_In_Await RPAREN Statement_Await
+| FOR LPAREN LeftHandSideExpression_Await_NoAsync_NoLet OF AssignmentExpression_In_Await RPAREN Statement_Await
+| FOR LPAREN ASYNC lookahead_notStartOfArrowFunction OF AssignmentExpression_In_Await RPAREN Statement_Await
+| FOR LPAREN VAR ForBinding_Await OF AssignmentExpression_In_Await RPAREN Statement_Await
+| FOR LPAREN ForDeclaration_Await OF AssignmentExpression_In_Await RPAREN Statement_Await
 ;
 
 IterationStatement_Yield :
   DO Statement_Yield WHILE LPAREN Expression_In_Yield RPAREN SEMICOLON /*.doWhile*/
 | WHILE LPAREN Expression_In_Yield RPAREN Statement_Yield
-| FOR LPAREN Expression_NoLet_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
+| FOR LPAREN Expression_Yield_NoLet SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
 | FOR LPAREN SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
-| FOR LPAREN Expression_NoAs_StartWithLet_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
+| FOR LPAREN Expression_Yield_NoAs_StartWithLet SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
 | FOR LPAREN VAR VariableDeclarationList_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
 | FOR LPAREN LetOrConst BindingList_Yield SEMICOLON /*.forSC*/ ForCondition_Yield SEMICOLON /*.forSC*/ ForFinalExpression_Yield RPAREN Statement_Yield
-| FOR LPAREN LeftHandSideExpression_NoLet_Yield IN Expression_In_Yield RPAREN Statement_Yield
-| FOR LPAREN LeftHandSideExpression_StartWithLet_Yield IN Expression_In_Yield RPAREN Statement_Yield
+| FOR LPAREN LeftHandSideExpression_Yield_NoLet IN Expression_In_Yield RPAREN Statement_Yield
+| FOR LPAREN LeftHandSideExpression_Yield_StartWithLet IN Expression_In_Yield RPAREN Statement_Yield
 | FOR LPAREN VAR ForBinding_Yield IN Expression_In_Yield RPAREN Statement_Yield
 | FOR LPAREN ForDeclaration_Yield IN Expression_In_Yield RPAREN Statement_Yield
-| FOR LPAREN LeftHandSideExpression_NoAsync_NoLet_Yield OF AssignmentExpression_In_Yield RPAREN Statement_Yield
+| FOR LPAREN LeftHandSideExpression_Yield_NoAsync_NoLet OF AssignmentExpression_In_Yield RPAREN Statement_Yield
 | FOR LPAREN ASYNC lookahead_notStartOfArrowFunction OF AssignmentExpression_In_Yield RPAREN Statement_Yield
 | FOR LPAREN VAR ForBinding_Yield OF AssignmentExpression_In_Yield RPAREN Statement_Yield
 | FOR LPAREN ForDeclaration_Yield OF AssignmentExpression_In_Yield RPAREN Statement_Yield
@@ -5020,7 +5020,7 @@ ForCondition :
 ;
 
 ForCondition_Await :
-  Expressionopt_Await_In
+  Expressionopt_In_Await
 ;
 
 ForCondition_Yield :
@@ -5032,7 +5032,7 @@ ForFinalExpression :
 ;
 
 ForFinalExpression_Await :
-  Expressionopt_Await_In
+  Expressionopt_In_Await
 ;
 
 ForFinalExpression_Yield :
@@ -5056,7 +5056,7 @@ ReturnStatement :
 
 ReturnStatement_Await :
   RETURN SEMICOLON
-| RETURN /*.noLineBreak*/ Expression_Await_In SEMICOLON
+| RETURN /*.noLineBreak*/ Expression_In_Await SEMICOLON
 ;
 
 ReturnStatement_Yield :
@@ -5069,7 +5069,7 @@ WithStatement :
 ;
 
 WithStatement_Await :
-  WITH LPAREN Expression_Await_In RPAREN Statement_Await
+  WITH LPAREN Expression_In_Await RPAREN Statement_Await
 ;
 
 WithStatement_Yield :
@@ -5081,7 +5081,7 @@ SwitchStatement :
 ;
 
 SwitchStatement_Await :
-  SWITCH LPAREN Expression_Await_In RPAREN CaseBlock_Await
+  SWITCH LPAREN Expression_In_Await RPAREN CaseBlock_Await
 ;
 
 SwitchStatement_Yield :
@@ -5123,8 +5123,8 @@ CaseClause :
 ;
 
 CaseClause_Await :
-  CASE Expression_Await_In COLON StatementList_Await
-| CASE Expression_Await_In COLON
+  CASE Expression_In_Await COLON StatementList_Await
+| CASE Expression_In_Await COLON
 | DEFAULT COLON StatementList_Await
 | DEFAULT COLON
 ;
@@ -5168,7 +5168,7 @@ ThrowStatement :
 ;
 
 ThrowStatement_Await :
-  THROW /*.noLineBreak*/ Expression_Await_In SEMICOLON
+  THROW /*.noLineBreak*/ Expression_In_Await SEMICOLON
 ;
 
 ThrowStatement_Yield :
@@ -5337,7 +5337,7 @@ AsyncConciseBody :
 ;
 
 AsyncConciseBody_In :
-  AssignmentExpression_Await_In_NoObjLiteral
+  AssignmentExpression_In_Await_NoObjLiteral
 | AsyncFunctionBody
 ;
 
@@ -5359,15 +5359,6 @@ MethodDefinition_Await :
 | SET PropertyName_Await LPAREN PropertySetParameterList RPAREN FunctionBody
 ;
 
-MethodDefinition_Await_Yield :
-  PropertyName_Await_Yield QUEST UniqueFormalParameters FunctionBody
-| PropertyName_Await_Yield UniqueFormalParameters FunctionBody
-| GeneratorMethod_Await_Yield
-| AsyncMethod_Await_Yield
-| GET PropertyName_Await_Yield LPAREN RPAREN TypeAnnotationopt FunctionBody
-| SET PropertyName_Await_Yield LPAREN PropertySetParameterList RPAREN FunctionBody
-;
-
 MethodDefinition_Yield :
   PropertyName_Yield QUEST UniqueFormalParameters FunctionBody
 | PropertyName_Yield UniqueFormalParameters FunctionBody
@@ -5375,6 +5366,15 @@ MethodDefinition_Yield :
 | AsyncMethod_Yield
 | GET PropertyName_Yield LPAREN RPAREN TypeAnnotationopt FunctionBody
 | SET PropertyName_Yield LPAREN PropertySetParameterList RPAREN FunctionBody
+;
+
+MethodDefinition_Yield_Await :
+  PropertyName_Yield_Await QUEST UniqueFormalParameters FunctionBody
+| PropertyName_Yield_Await UniqueFormalParameters FunctionBody
+| GeneratorMethod_Yield_Await
+| AsyncMethod_Yield_Await
+| GET PropertyName_Yield_Await LPAREN RPAREN TypeAnnotationopt FunctionBody
+| SET PropertyName_Yield_Await LPAREN PropertySetParameterList RPAREN FunctionBody
 ;
 
 PropertySetParameterList :
@@ -5389,12 +5389,12 @@ GeneratorMethod_Await :
   MULT PropertyName_Await UniqueFormalParameters_Yield GeneratorBody
 ;
 
-GeneratorMethod_Await_Yield :
-  MULT PropertyName_Await_Yield UniqueFormalParameters_Yield GeneratorBody
-;
-
 GeneratorMethod_Yield :
   MULT PropertyName_Yield UniqueFormalParameters_Yield GeneratorBody
+;
+
+GeneratorMethod_Yield_Await :
+  MULT PropertyName_Yield_Await UniqueFormalParameters_Yield GeneratorBody
 ;
 
 GeneratorDeclaration :
@@ -5419,20 +5419,20 @@ YieldExpression :
 
 YieldExpression_Await :
   YIELD
-| YIELD /*.afterYield*/ /*.noLineBreak*/ AssignmentExpression_Await_Yield
-| YIELD /*.afterYield*/ /*.noLineBreak*/ MULT AssignmentExpression_Await_Yield
-;
-
-YieldExpression_Await_In :
-  YIELD
-| YIELD /*.afterYield*/ /*.noLineBreak*/ AssignmentExpression_Await_In_Yield
-| YIELD /*.afterYield*/ /*.noLineBreak*/ MULT AssignmentExpression_Await_In_Yield
+| YIELD /*.afterYield*/ /*.noLineBreak*/ AssignmentExpression_Yield_Await
+| YIELD /*.afterYield*/ /*.noLineBreak*/ MULT AssignmentExpression_Yield_Await
 ;
 
 YieldExpression_In :
   YIELD
 | YIELD /*.afterYield*/ /*.noLineBreak*/ AssignmentExpression_In_Yield
 | YIELD /*.afterYield*/ /*.noLineBreak*/ MULT AssignmentExpression_In_Yield
+;
+
+YieldExpression_In_Await :
+  YIELD
+| YIELD /*.afterYield*/ /*.noLineBreak*/ AssignmentExpression_In_Yield_Await
+| YIELD /*.afterYield*/ /*.noLineBreak*/ MULT AssignmentExpression_In_Yield_Await
 ;
 
 AsyncMethod :
@@ -5443,12 +5443,12 @@ AsyncMethod_Await :
   ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Await UniqueFormalParameters_Await AsyncFunctionBody
 ;
 
-AsyncMethod_Await_Yield :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Await_Yield UniqueFormalParameters_Await AsyncFunctionBody
-;
-
 AsyncMethod_Yield :
   ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield UniqueFormalParameters_Await AsyncFunctionBody
+;
+
+AsyncMethod_Yield_Await :
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield_Await UniqueFormalParameters_Await AsyncFunctionBody
 ;
 
 AsyncFunctionDeclaration :
@@ -5475,7 +5475,7 @@ AwaitExpression :
 ;
 
 AwaitExpression_Yield :
-  AWAIT UnaryExpression_Await_Yield
+  AWAIT UnaryExpression_Yield_Await
 ;
 
 ClassDeclaration :
@@ -5521,17 +5521,6 @@ ClassExpression_Await :
 | CLASS ClassTail_Await
 ;
 
-ClassExpression_Await_Yield :
-  Modifiers CLASS BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await_Yield
-| Modifiers CLASS BindingIdentifier_WithoutImplements ClassTail_Await_Yield
-| Modifiers CLASS TypeParameters ClassTail_Await_Yield
-| Modifiers CLASS ClassTail_Await_Yield
-| CLASS BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await_Yield
-| CLASS BindingIdentifier_WithoutImplements ClassTail_Await_Yield
-| CLASS TypeParameters ClassTail_Await_Yield
-| CLASS ClassTail_Await_Yield
-;
-
 ClassExpression_Yield :
   Modifiers CLASS BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield
 | Modifiers CLASS BindingIdentifier_WithoutImplements ClassTail_Yield
@@ -5543,6 +5532,17 @@ ClassExpression_Yield :
 | CLASS ClassTail_Yield
 ;
 
+ClassExpression_Yield_Await :
+  Modifiers CLASS BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield_Await
+| Modifiers CLASS BindingIdentifier_WithoutImplements ClassTail_Yield_Await
+| Modifiers CLASS TypeParameters ClassTail_Yield_Await
+| Modifiers CLASS ClassTail_Yield_Await
+| CLASS BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield_Await
+| CLASS BindingIdentifier_WithoutImplements ClassTail_Yield_Await
+| CLASS TypeParameters ClassTail_Yield_Await
+| CLASS ClassTail_Yield_Await
+;
+
 ClassTail :
   ClassHeritage ClassBody
 ;
@@ -5551,40 +5551,40 @@ ClassTail_Await :
   ClassHeritage_Await ClassBody_Await
 ;
 
-ClassTail_Await_Yield :
-  ClassHeritage_Await_Yield ClassBody_Await_Yield
-;
-
 ClassTail_Yield :
   ClassHeritage_Yield ClassBody_Yield
 ;
 
+ClassTail_Yield_Await :
+  ClassHeritage_Yield_Await ClassBody_Yield_Await
+;
+
 ClassHeritage :
-  %empty
-| ClassExtendsClause ImplementsClause
+  ClassExtendsClause ImplementsClause
 | ClassExtendsClause
 | ImplementsClause
+| %empty
 ;
 
 ClassHeritage_Await :
-  %empty
-| ClassExtendsClause_Await ImplementsClause
+  ClassExtendsClause_Await ImplementsClause
 | ClassExtendsClause_Await
 | ImplementsClause
-;
-
-ClassHeritage_Await_Yield :
-  %empty
-| ClassExtendsClause_Await_Yield ImplementsClause
-| ClassExtendsClause_Await_Yield
-| ImplementsClause
+| %empty
 ;
 
 ClassHeritage_Yield :
-  %empty
-| ClassExtendsClause_Yield ImplementsClause
+  ClassExtendsClause_Yield ImplementsClause
 | ClassExtendsClause_Yield
 | ImplementsClause
+| %empty
+;
+
+ClassHeritage_Yield_Await :
+  ClassExtendsClause_Yield_Await ImplementsClause
+| ClassExtendsClause_Yield_Await
+| ImplementsClause
+| %empty
 ;
 
 StartOfExtendsTypeRef :
@@ -5602,14 +5602,14 @@ ClassExtendsClause_Await :
 | EXTENDS lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Await
 ;
 
-ClassExtendsClause_Await_Yield :
-  EXTENDS lookahead_StartOfExtendsTypeRef TypeReference
-| EXTENDS lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Await_Yield
-;
-
 ClassExtendsClause_Yield :
   EXTENDS lookahead_StartOfExtendsTypeRef TypeReference
 | EXTENDS lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Yield
+;
+
+ClassExtendsClause_Yield_Await :
+  EXTENDS lookahead_StartOfExtendsTypeRef TypeReference
+| EXTENDS lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Yield_Await
 ;
 
 // lookahead: !StartOfExtendsTypeRef
@@ -5641,13 +5641,13 @@ ClassBody_Await :
 | LBRACE /*.recoveryScope*/ RBRACE
 ;
 
-ClassBody_Await_Yield :
-  LBRACE /*.recoveryScope*/ ClassElementList_Await_Yield RBRACE
+ClassBody_Yield :
+  LBRACE /*.recoveryScope*/ ClassElementList_Yield RBRACE
 | LBRACE /*.recoveryScope*/ RBRACE
 ;
 
-ClassBody_Yield :
-  LBRACE /*.recoveryScope*/ ClassElementList_Yield RBRACE
+ClassBody_Yield_Await :
+  LBRACE /*.recoveryScope*/ ClassElementList_Yield_Await RBRACE
 | LBRACE /*.recoveryScope*/ RBRACE
 ;
 
@@ -5661,14 +5661,14 @@ ClassElementList_Await :
 | ClassElementList_Await ClassElement_Await
 ;
 
-ClassElementList_Await_Yield :
-  ClassElement_Await_Yield
-| ClassElementList_Await_Yield ClassElement_Await_Yield
-;
-
 ClassElementList_Yield :
   ClassElement_Yield
 | ClassElementList_Yield ClassElement_Yield
+;
+
+ClassElementList_Yield_Await :
+  ClassElement_Yield_Await
+| ClassElementList_Yield_Await ClassElement_Yield_Await
 ;
 
 Modifier :
@@ -5714,25 +5714,12 @@ ClassElement :
 ClassElement_Await :
   Modifiers_WithDeclare MethodDefinition_Await
 | MethodDefinition_Await
-| Modifiers_WithDeclare PropertyName_Await QUEST TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| Modifiers_WithDeclare PropertyName_Await EXCL TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| Modifiers_WithDeclare PropertyName_Await TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| PropertyName_Await QUEST TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| PropertyName_Await EXCL TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| PropertyName_Await TypeAnnotationopt Initializeropt_Await_In SEMICOLON
-| IndexSignature_WithDeclare SEMICOLON
-| SEMICOLON
-;
-
-ClassElement_Await_Yield :
-  Modifiers_WithDeclare MethodDefinition_Await_Yield
-| MethodDefinition_Await_Yield
-| Modifiers_WithDeclare PropertyName_Await_Yield QUEST TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| Modifiers_WithDeclare PropertyName_Await_Yield EXCL TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| Modifiers_WithDeclare PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| PropertyName_Await_Yield QUEST TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| PropertyName_Await_Yield EXCL TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
-| PropertyName_Await_Yield TypeAnnotationopt Initializeropt_Await_In_Yield SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await QUEST TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await EXCL TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| Modifiers_WithDeclare PropertyName_Await TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| PropertyName_Await QUEST TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| PropertyName_Await EXCL TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| PropertyName_Await TypeAnnotationopt Initializeropt_In_Await SEMICOLON
 | IndexSignature_WithDeclare SEMICOLON
 | SEMICOLON
 ;
@@ -5746,6 +5733,19 @@ ClassElement_Yield :
 | PropertyName_Yield QUEST TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
 | PropertyName_Yield EXCL TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
 | PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+| IndexSignature_WithDeclare SEMICOLON
+| SEMICOLON
+;
+
+ClassElement_Yield_Await :
+  Modifiers_WithDeclare MethodDefinition_Yield_Await
+| MethodDefinition_Yield_Await
+| Modifiers_WithDeclare PropertyName_Yield_Await QUEST TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
+| Modifiers_WithDeclare PropertyName_Yield_Await EXCL TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
+| Modifiers_WithDeclare PropertyName_Yield_Await TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
+| PropertyName_Yield_Await QUEST TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
+| PropertyName_Yield_Await EXCL TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
+| PropertyName_Yield_Await TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
 | IndexSignature_WithDeclare SEMICOLON
 | SEMICOLON
 ;
@@ -5894,23 +5894,23 @@ DecoratorCallExpression :
 ;
 
 JSXChild_Await_optlist :
-  %empty
-| JSXChild_Await_optlist JSXChild_Await
-;
-
-JSXChild_Await_Yield_optlist :
-  %empty
-| JSXChild_Await_Yield_optlist JSXChild_Await_Yield
+  JSXChild_Await_optlist JSXChild_Await
+| %empty
 ;
 
 JSXChild_optlist :
-  %empty
-| JSXChild_optlist JSXChild
+  JSXChild_optlist JSXChild
+| %empty
+;
+
+JSXChild_Yield_Await_optlist :
+  JSXChild_Yield_Await_optlist JSXChild_Yield_Await
+| %empty
 ;
 
 JSXChild_Yield_optlist :
-  %empty
-| JSXChild_Yield_optlist JSXChild_Yield
+  JSXChild_Yield_optlist JSXChild_Yield
+| %empty
 ;
 
 JSXElement :
@@ -5923,34 +5923,34 @@ JSXElement_Await :
 | JSXOpeningElement_Await JSXChild_Await_optlist JSXClosingElement
 ;
 
-JSXElement_Await_Yield :
-  JSXSelfClosingElement_Await_Yield
-| JSXOpeningElement_Await_Yield JSXChild_Await_Yield_optlist JSXClosingElement
-;
-
 JSXElement_Yield :
   JSXSelfClosingElement_Yield
 | JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
 ;
 
-JSXAttribute_Await_optlist :
-  %empty
-| JSXAttribute_Await_optlist JSXAttribute_Await
+JSXElement_Yield_Await :
+  JSXSelfClosingElement_Yield_Await
+| JSXOpeningElement_Yield_Await JSXChild_Yield_Await_optlist JSXClosingElement
 ;
 
-JSXAttribute_Await_Yield_optlist :
-  %empty
-| JSXAttribute_Await_Yield_optlist JSXAttribute_Await_Yield
+JSXAttribute_Await_optlist :
+  JSXAttribute_Await_optlist JSXAttribute_Await
+| %empty
 ;
 
 JSXAttribute_optlist :
-  %empty
-| JSXAttribute_optlist JSXAttribute
+  JSXAttribute_optlist JSXAttribute
+| %empty
+;
+
+JSXAttribute_Yield_Await_optlist :
+  JSXAttribute_Yield_Await_optlist JSXAttribute_Yield_Await
+| %empty
 ;
 
 JSXAttribute_Yield_optlist :
-  %empty
-| JSXAttribute_Yield_optlist JSXAttribute_Yield
+  JSXAttribute_Yield_optlist JSXAttribute_Yield
+| %empty
 ;
 
 JSXSelfClosingElement :
@@ -5963,14 +5963,14 @@ JSXSelfClosingElement_Await :
 | LT JSXElementName JSXAttribute_Await_optlist DIV GT
 ;
 
-JSXSelfClosingElement_Await_Yield :
-  LT JSXElementName TypeArguments JSXAttribute_Await_Yield_optlist DIV GT
-| LT JSXElementName JSXAttribute_Await_Yield_optlist DIV GT
-;
-
 JSXSelfClosingElement_Yield :
   LT JSXElementName TypeArguments JSXAttribute_Yield_optlist DIV GT
 | LT JSXElementName JSXAttribute_Yield_optlist DIV GT
+;
+
+JSXSelfClosingElement_Yield_Await :
+  LT JSXElementName TypeArguments JSXAttribute_Yield_Await_optlist DIV GT
+| LT JSXElementName JSXAttribute_Yield_Await_optlist DIV GT
 ;
 
 JSXOpeningElement :
@@ -5983,14 +5983,14 @@ JSXOpeningElement_Await :
 | LT JSXElementName JSXAttribute_Await_optlist GT
 ;
 
-JSXOpeningElement_Await_Yield :
-  LT JSXElementName TypeArguments JSXAttribute_Await_Yield_optlist GT
-| LT JSXElementName JSXAttribute_Await_Yield_optlist GT
-;
-
 JSXOpeningElement_Yield :
   LT JSXElementName TypeArguments JSXAttribute_Yield_optlist GT
 | LT JSXElementName JSXAttribute_Yield_optlist GT
+;
+
+JSXOpeningElement_Yield_Await :
+  LT JSXElementName TypeArguments JSXAttribute_Yield_Await_optlist GT
+| LT JSXElementName JSXAttribute_Yield_Await_optlist GT
 ;
 
 JSXClosingElement :
@@ -6017,19 +6017,19 @@ JSXAttribute :
 JSXAttribute_Await :
   JSXAttributeName ASSIGN JSXAttributeValue_Await
 | JSXAttributeName
-| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpression_Await_In RBRACE
-;
-
-JSXAttribute_Await_Yield :
-  JSXAttributeName ASSIGN JSXAttributeValue_Await_Yield
-| JSXAttributeName
-| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpression_Await_In_Yield RBRACE
+| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpression_In_Await RBRACE
 ;
 
 JSXAttribute_Yield :
   JSXAttributeName ASSIGN JSXAttributeValue_Yield
 | JSXAttributeName
 | LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpression_In_Yield RBRACE
+;
+
+JSXAttribute_Yield_Await :
+  JSXAttributeName ASSIGN JSXAttributeValue_Yield_Await
+| JSXAttributeName
+| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpression_In_Yield_Await RBRACE
 ;
 
 JSXAttributeName :
@@ -6045,20 +6045,20 @@ JSXAttributeValue :
 
 JSXAttributeValue_Await :
   JSXSTRINGLITERAL
-| LBRACE /*.recoveryScope*/ AssignmentExpression_Await_In RBRACE
+| LBRACE /*.recoveryScope*/ AssignmentExpression_In_Await RBRACE
 | JSXElement_Await
-;
-
-JSXAttributeValue_Await_Yield :
-  JSXSTRINGLITERAL
-| LBRACE /*.recoveryScope*/ AssignmentExpression_Await_In_Yield RBRACE
-| JSXElement_Await_Yield
 ;
 
 JSXAttributeValue_Yield :
   JSXSTRINGLITERAL
 | LBRACE /*.recoveryScope*/ AssignmentExpression_In_Yield RBRACE
 | JSXElement_Yield
+;
+
+JSXAttributeValue_Yield_Await :
+  JSXSTRINGLITERAL
+| LBRACE /*.recoveryScope*/ AssignmentExpression_In_Yield_Await RBRACE
+| JSXElement_Yield_Await
 ;
 
 JSXChild :
@@ -6071,15 +6071,8 @@ JSXChild :
 JSXChild_Await :
   JSXTEXT
 | JSXElement_Await
-| LBRACE /*.recoveryScope*/ AssignmentExpressionopt_Await_In RBRACE
-| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_Await_In RBRACE
-;
-
-JSXChild_Await_Yield :
-  JSXTEXT
-| JSXElement_Await_Yield
-| LBRACE /*.recoveryScope*/ AssignmentExpressionopt_Await_In_Yield RBRACE
-| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_Await_In_Yield RBRACE
+| LBRACE /*.recoveryScope*/ AssignmentExpressionopt_In_Await RBRACE
+| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_In_Await RBRACE
 ;
 
 JSXChild_Yield :
@@ -6087,6 +6080,13 @@ JSXChild_Yield :
 | JSXElement_Yield
 | LBRACE /*.recoveryScope*/ AssignmentExpressionopt_In_Yield RBRACE
 | LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_In_Yield RBRACE
+;
+
+JSXChild_Yield_Await :
+  JSXTEXT
+| JSXElement_Yield_Await
+| LBRACE /*.recoveryScope*/ AssignmentExpressionopt_In_Yield_Await RBRACE
+| LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_In_Yield_Await RBRACE
 ;
 
 Type :
@@ -6630,14 +6630,14 @@ Parameter_Await :
 | BindingPattern_Await QUEST
 | BindingPattern_Await TypeAnnotation
 | BindingPattern_Await
-| Modifiers BindingIdentifier TypeAnnotation Initializer_Await_In
-| Modifiers BindingIdentifier Initializer_Await_In
-| BindingIdentifier TypeAnnotation Initializer_Await_In
-| BindingIdentifier Initializer_Await_In
-| Modifiers BindingPattern_Await TypeAnnotation Initializer_Await_In
-| Modifiers BindingPattern_Await Initializer_Await_In
-| BindingPattern_Await TypeAnnotation Initializer_Await_In
-| BindingPattern_Await Initializer_Await_In
+| Modifiers BindingIdentifier TypeAnnotation Initializer_In_Await
+| Modifiers BindingIdentifier Initializer_In_Await
+| BindingIdentifier TypeAnnotation Initializer_In_Await
+| BindingIdentifier Initializer_In_Await
+| Modifiers BindingPattern_Await TypeAnnotation Initializer_In_Await
+| Modifiers BindingPattern_Await Initializer_In_Await
+| BindingPattern_Await TypeAnnotation Initializer_In_Await
+| BindingPattern_Await Initializer_In_Await
 | DOTDOTDOT BindingIdentifier TypeAnnotation
 | DOTDOTDOT BindingIdentifier
 | THIS TypeAnnotation
@@ -6871,118 +6871,118 @@ AmbientNamespaceElement :
 ;
 
 Elisionopt :
-  %empty
-| Elision
+  Elision
+| %empty
 ;
 
 TypeAnnotationopt :
-  %empty
-| TypeAnnotation
+  TypeAnnotation
+| %empty
 ;
 
 Initializeropt :
-  %empty
-| Initializer
+  Initializer
+| %empty
 ;
 
 Initializeropt_Await :
-  %empty
-| Initializer_Await
-;
-
-Initializeropt_Await_In :
-  %empty
-| Initializer_Await_In
-;
-
-Initializeropt_Await_In_Yield :
-  %empty
-| Initializer_Await_In_Yield
+  Initializer_Await
+| %empty
 ;
 
 Initializeropt_In :
-  %empty
-| Initializer_In
+  Initializer_In
+| %empty
+;
+
+Initializeropt_In_Await :
+  Initializer_In_Await
+| %empty
 ;
 
 Initializeropt_In_Yield :
-  %empty
-| Initializer_In_Yield
+  Initializer_In_Yield
+| %empty
+;
+
+Initializeropt_In_Yield_Await :
+  Initializer_In_Yield_Await
+| %empty
 ;
 
 Initializeropt_Yield :
-  %empty
-| Initializer_Yield
+  Initializer_Yield
+| %empty
 ;
 
 BindingRestElementopt :
-  %empty
-| BindingRestElement
+  BindingRestElement
+| %empty
 ;
 
 ElementElisionopt :
-  %empty
-| ElementElision
-;
-
-Expressionopt_Await_In :
-  %empty
-| Expression_Await_In
+  ElementElision
+| %empty
 ;
 
 Expressionopt_In :
-  %empty
-| Expression_In
+  Expression_In
+| %empty
+;
+
+Expressionopt_In_Await :
+  Expression_In_Await
+| %empty
 ;
 
 Expressionopt_In_Yield :
-  %empty
-| Expression_In_Yield
+  Expression_In_Yield
+| %empty
 ;
 
 CaseClausesopt :
-  %empty
-| CaseClauses
+  CaseClauses
+| %empty
 ;
 
 CaseClausesopt_Await :
-  %empty
-| CaseClauses_Await
+  CaseClauses_Await
+| %empty
 ;
 
 CaseClausesopt_Yield :
-  %empty
-| CaseClauses_Yield
+  CaseClauses_Yield
+| %empty
 ;
 
 TypeParametersopt :
-  %empty
-| TypeParameters
+  TypeParameters
+| %empty
 ;
 
 ModuleBodyopt :
-  %empty
-| ModuleBody
-;
-
-AssignmentExpressionopt_Await_In :
-  %empty
-| AssignmentExpression_Await_In
-;
-
-AssignmentExpressionopt_Await_In_Yield :
-  %empty
-| AssignmentExpression_Await_In_Yield
+  ModuleBody
+| %empty
 ;
 
 AssignmentExpressionopt_In :
-  %empty
-| AssignmentExpression_In
+  AssignmentExpression_In
+| %empty
+;
+
+AssignmentExpressionopt_In_Await :
+  AssignmentExpression_In_Await
+| %empty
 ;
 
 AssignmentExpressionopt_In_Yield :
-  %empty
-| AssignmentExpression_In_Yield
+  AssignmentExpression_In_Yield
+| %empty
+;
+
+AssignmentExpressionopt_In_Yield_Await :
+  AssignmentExpression_In_Yield_Await
+| %empty
 ;
 
 %%

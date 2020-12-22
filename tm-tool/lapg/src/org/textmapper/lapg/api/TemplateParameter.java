@@ -38,4 +38,6 @@ public interface TemplateParameter extends NamedElement, SourceElement, UserData
 	Object getDefaultValue();
 
 	void appendSuffix(StringBuilder sb, Object value);
+
+	int getIndex();
 }

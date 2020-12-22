@@ -274,43 +274,43 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(NameIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 1241: // LiteralPropertyName_WithoutNew : PrivateIdentifier
 		p.listener(NameIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1387: // MemberExpression_Await_StartWithLet : 'let'
+	case 1373: // MemberExpression_Await_StartWithLet : 'let'
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1556: // MemberExpression_StartWithLet : 'let'
+	case 1474: // MemberExpression_StartWithLet : 'let'
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1562: // MemberExpression_StartWithLet_Yield : 'let'
+	case 1566: // MemberExpression_Yield_StartWithLet : 'let'
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 2455: // BinaryExpression : BinaryExpression .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 2473: // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2492: // BinaryExpression_Await_In : BinaryExpression_Await_In .noLineBreak 'as' 'const'
+	case 2507: // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2528: // BinaryExpression_Await_In_NoObjLiteral : BinaryExpression_Await_In_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2525: // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2547: // BinaryExpression_Await_In_Yield : BinaryExpression_Await_In_Yield .noLineBreak 'as' 'const'
+	case 2544: // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2581: // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' 'const'
+	case 2563: // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2599: // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2599: // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2617: // BinaryExpression_Await_Yield : BinaryExpression_Await_Yield .noLineBreak 'as' 'const'
+	case 2618: // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2636: // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' 'const'
+	case 2654: // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2689: // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' 'const'
+	case 2673: // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2708: // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2692: // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2727: // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' 'const'
+	case 2743: // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2777: // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' 'const'
+	case 2761: // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2795: // BinaryExpression_NoLet_Yield : BinaryExpression_NoLet_Yield .noLineBreak 'as' 'const'
+	case 2779: // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2813: // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2797: // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2831: // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' 'const'
+	case 2831: // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3257: // ElementElision : ','
 		p.listener(NoElement, rhs[0].sym.offset, rhs[0].sym.endoffset)
@@ -327,12 +327,12 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3332: // IterationStatement_Await : 'for' '(' 'var' VariableDeclarationList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3336: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'in' Expression_Await_In ')' Statement_Await
+	case 3336: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'in' Expression_In_Await ')' Statement_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3339: // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_Await_In ')' Statement_Await
+	case 3339: // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3340: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_Await_In ')' Statement_Await
+	case 3340: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3347: // IterationStatement_Yield : 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
