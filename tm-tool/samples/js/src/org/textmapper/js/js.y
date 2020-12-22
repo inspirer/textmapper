@@ -169,10 +169,10 @@ ArrayLiteral :
 ;
 
 AssignmentExpression_list_Comma_separated :
-  %empty
-| AssignmentExpression_list_Comma_separated Comma AssignmentExpression
+  AssignmentExpression_list_Comma_separated Comma AssignmentExpression
 | AssignmentExpression_list_Comma_separated Comma
 | AssignmentExpression
+| %empty
 ;
 
 ObjectLiteral :
@@ -251,8 +251,8 @@ AssignmentExpression_list_Comma_separated1 :
 ;
 
 AssignmentExpression_list_Comma_separated_opt :
-  %empty
-| AssignmentExpression_list_Comma_separated1
+  AssignmentExpression_list_Comma_separated1
+| %empty
 ;
 
 LeftHandSideExpression :
@@ -554,8 +554,8 @@ Block :
 ;
 
 Statement_optlist :
-  %empty
-| Statement_optlist Statement
+  Statement_optlist Statement
+| %empty
 ;
 
 VariableStatement :
@@ -638,8 +638,8 @@ CaseBlock :
 ;
 
 CaseClause_optlist :
-  %empty
-| CaseClause_optlist CaseClause
+  CaseClause_optlist CaseClause
+| %empty
 ;
 
 CaseClause :
@@ -695,8 +695,8 @@ FunctionBody :
 ;
 
 SourceElement_optlist :
-  %empty
-| SourceElement_optlist SourceElement
+  SourceElement_optlist SourceElement
+| %empty
 ;
 
 Program :
@@ -709,28 +709,28 @@ SourceElement :
 ;
 
 Initialiseropt :
-  %empty
-| Initialiser
+  Initialiser
+| %empty
 ;
 
 Initialiseropt_NoIn :
-  %empty
-| Initialiser_NoIn
+  Initialiser_NoIn
+| %empty
 ;
 
 Expressionopt :
-  %empty
-| Expression
+  Expression
+| %empty
 ;
 
 Expressionopt_NoIn :
-  %empty
-| Expression_NoIn
+  Expression_NoIn
+| %empty
 ;
 
 FormalParameterListopt :
-  %empty
-| FormalParameterList
+  FormalParameterList
+| %empty
 ;
 
 %%

@@ -21,10 +21,10 @@
 %%
 
 input :
-  list_Of_assignment epilogue_AllowObject_T_a1 epilogue_T_a2
+  list_Of_assignment epilogue_T_a1_AllowObject epilogue_T_a2
 ;
 
-epilogue_AllowObject_T_a1 :
+epilogue_T_a1_AllowObject :
   a1 Lparen list_AllowObject_Of_expression Rparen
 ;
 
@@ -112,8 +112,8 @@ expression_AllowObject :
 ;
 
 sconopt :
-  %empty
-| scon
+  scon
+| %empty
 ;
 
 %%
