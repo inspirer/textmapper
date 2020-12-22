@@ -705,7 +705,7 @@ BinaryExpression<In, Yield, Await> -> Expr /* interface */:
   | left=BinaryExpression '>=' right=BinaryExpression               -> RelationalExpr
   | left=BinaryExpression 'instanceof' right=BinaryExpression       -> InstanceOfExpr
   | [In] left=BinaryExpression 'in' right=BinaryExpression          -> InExpr
-  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<~AllowQuest>    -> TsAsExpr
+  | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<+NoQuest>  -> TsAsExpr
   | [!NoAs] left=BinaryExpression .noLineBreak 'as' ('const' -> TsConst) -> TsAsConstExpr   # TS 3.4
   | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpr
   | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpr
@@ -1346,24 +1346,24 @@ JSXChild<Yield, Await> -> JSXChild /* interface */:
 
 %interface TsType, TypeMember;
 
-%flag AllowQuest = true;
+%flag NoQuest = false;
 
-Type<AllowQuest> -> TsType /* interface */:
+Type<NoQuest> -> TsType /* interface */:
     UnionOrIntersectionOrPrimaryType %prec resolveShift
-  | [AllowQuest] check=UnionOrIntersectionOrPrimaryType 'extends' ext=Type<~AllowQuest> '?' truet=Type ':' falset=Type  -> TsConditional
+  | [!NoQuest] check=UnionOrIntersectionOrPrimaryType 'extends' ext=Type<+NoQuest> '?' truet=Type ':' falset=Type  -> TsConditional
   | FunctionType
   | ConstructorType
-  | [AllowQuest] AssertsType
+  | [!NoQuest] AssertsType
   | TypePredicate
 ;
 
-TypePredicate<AllowQuest> -> TypePredicate:
+TypePredicate<NoQuest> -> TypePredicate:
     paramref=IdentifierNameRef<+WithoutAsserts> 'is' Type -> TypePredicate
-  | paramref=('asserts' -> ReferenceIdent) (?= StartOfIs) 'is' Type<~AllowQuest> -> TypePredicate
+  | paramref=('asserts' -> ReferenceIdent) (?= StartOfIs) 'is' Type<+NoQuest> -> TypePredicate
 ;
 
 # 3.7
-AssertsType<AllowQuest> -> AssertsType:
+AssertsType<NoQuest> -> AssertsType:
     'asserts' .noLineBreak (?= !StartOfIs) ('this' -> This | IdentifierName<+WithoutKeywords> -> ReferenceIdent) ('is' Type)? ;
 
 StartOfIs:
@@ -1381,17 +1381,17 @@ Constraint -> TypeConstraint :
 TypeArguments -> TypeArguments :
     '<' (Type separator ',')+ '>' ;
 
-UnionOrIntersectionOrPrimaryType<AllowQuest> -> TsType /* interface */:
+UnionOrIntersectionOrPrimaryType<NoQuest> -> TsType /* interface */:
     inner+=UnionOrIntersectionOrPrimaryType? '|' inner+=IntersectionOrPrimaryType -> UnionType
   | IntersectionOrPrimaryType %prec resolveShift
 ;
 
-IntersectionOrPrimaryType<AllowQuest> -> TsType /* interface */:
+IntersectionOrPrimaryType<NoQuest> -> TsType /* interface */:
     inner+=IntersectionOrPrimaryType? '&' inner+=TypeOperator -> IntersectionType
   | TypeOperator
 ;
 
-TypeOperator<AllowQuest> -> TsType /* interface */:
+TypeOperator<NoQuest> -> TsType /* interface */:
     PrimaryType
   | 'keyof' TypeOperator      -> KeyOfType
   | 'unique' TypeOperator     -> UniqueType
@@ -1399,7 +1399,7 @@ TypeOperator<AllowQuest> -> TsType /* interface */:
   | 'infer' (IdentifierName -> ReferenceIdent) -> TypeVar
 ;
 
-PrimaryType<AllowQuest> -> TsType /* interface */:
+PrimaryType<NoQuest> -> TsType /* interface */:
     ParenthesizedType
   | PredefinedType
   | TypeReference
@@ -1413,7 +1413,7 @@ PrimaryType<AllowQuest> -> TsType /* interface */:
   | ImportType
   | 'this'                                        -> ThisType
   | PrimaryType .noLineBreak '!'                  -> NonNullableType
-  | [AllowQuest] PrimaryType .noLineBreak '?'     -> NullableType
+  | [!NoQuest] PrimaryType .noLineBreak '?'     -> NullableType
 ;
 
 ParenthesizedType -> ParenthesizedType :
@@ -1475,11 +1475,11 @@ TypeMember -> TypeMember /* interface */:
   | IndexSignature
 ;
 
-ArrayType<AllowQuest> -> ArrayType :
+ArrayType<NoQuest> -> ArrayType :
     PrimaryType .noLineBreak '[' ']' ;
 
 # 2.1
-IndexedAccessType<AllowQuest> -> IndexedAccessType :
+IndexedAccessType<NoQuest> -> IndexedAccessType :
     left=PrimaryType .noLineBreak '[' index=Type ']' ;
 
 # 2.1
@@ -1520,13 +1520,13 @@ StartOfFunctionType :
   | ')'
 ;
 
-FunctionType<AllowQuest> -> FuncType :
+FunctionType<NoQuest> -> FuncType :
     TypeParameters? FunctionTypeParameterList '=>' Type ;
 
 FunctionTypeParameterList -> Parameters :
     '(' (?= StartOfFunctionType) (Parameter<~Yield, ~Await> separator ',')+? ','? ')' ;
 
-ConstructorType<AllowQuest> -> ConstructorType :
+ConstructorType<NoQuest> -> ConstructorType :
     'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
 %left 'keyof' 'typeof' 'unique' 'readonly' 'infer';

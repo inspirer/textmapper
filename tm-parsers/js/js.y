@@ -3525,7 +3525,7 @@ BinaryExpression :
 | BinaryExpression LTASSIGN BinaryExpression
 | BinaryExpression GTASSIGN BinaryExpression
 | BinaryExpression INSTANCEOF BinaryExpression
-| BinaryExpression /*.noLineBreak*/ AS Type1
+| BinaryExpression /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression /*.noLineBreak*/ AS CONST
 | BinaryExpression ASSIGNASSIGN BinaryExpression
 | BinaryExpression EXCLASSIGN BinaryExpression
@@ -3546,7 +3546,7 @@ BinaryExpression_Await :
 | BinaryExpression_Await LTASSIGN BinaryExpression_Await
 | BinaryExpression_Await GTASSIGN BinaryExpression_Await
 | BinaryExpression_Await INSTANCEOF BinaryExpression_Await
-| BinaryExpression_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_Await /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await ASSIGNASSIGN BinaryExpression_Await
 | BinaryExpression_Await EXCLASSIGN BinaryExpression_Await
@@ -3586,7 +3586,7 @@ BinaryExpression_Await_NoLet :
 | BinaryExpression_Await_NoLet LTASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoLet GTASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoLet INSTANCEOF BinaryExpression_Await
-| BinaryExpression_Await_NoLet /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_NoLet /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_Await_NoLet /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_NoLet ASSIGNASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoLet EXCLASSIGN BinaryExpression_Await
@@ -3607,7 +3607,7 @@ BinaryExpression_Await_NoObjLiteral :
 | BinaryExpression_Await_NoObjLiteral LTASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral GTASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral INSTANCEOF BinaryExpression_Await
-| BinaryExpression_Await_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_Await_NoObjLiteral /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_Await_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_Await_NoObjLiteral ASSIGNASSIGN BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral EXCLASSIGN BinaryExpression_Await
@@ -3629,7 +3629,7 @@ BinaryExpression_In :
 | BinaryExpression_In GTASSIGN BinaryExpression_In
 | BinaryExpression_In INSTANCEOF BinaryExpression_In
 | BinaryExpression_In IN BinaryExpression_In
-| BinaryExpression_In /*.noLineBreak*/ AS Type1
+| BinaryExpression_In /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_In /*.noLineBreak*/ AS CONST
 | BinaryExpression_In ASSIGNASSIGN BinaryExpression_In
 | BinaryExpression_In EXCLASSIGN BinaryExpression_In
@@ -3651,7 +3651,7 @@ BinaryExpression_In_Await :
 | BinaryExpression_In_Await GTASSIGN BinaryExpression_In_Await
 | BinaryExpression_In_Await INSTANCEOF BinaryExpression_In_Await
 | BinaryExpression_In_Await IN BinaryExpression_In_Await
-| BinaryExpression_In_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Await /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_In_Await /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_Await ASSIGNASSIGN BinaryExpression_In_Await
 | BinaryExpression_In_Await EXCLASSIGN BinaryExpression_In_Await
@@ -3693,7 +3693,7 @@ BinaryExpression_In_Await_NoObjLiteral :
 | BinaryExpression_In_Await_NoObjLiteral GTASSIGN BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoObjLiteral INSTANCEOF BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoObjLiteral IN BinaryExpression_In_Await
-| BinaryExpression_In_Await_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Await_NoObjLiteral /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_In_Await_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_Await_NoObjLiteral ASSIGNASSIGN BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoObjLiteral EXCLASSIGN BinaryExpression_In_Await
@@ -3715,7 +3715,7 @@ BinaryExpression_In_NoFuncClass :
 | BinaryExpression_In_NoFuncClass GTASSIGN BinaryExpression_In
 | BinaryExpression_In_NoFuncClass INSTANCEOF BinaryExpression_In
 | BinaryExpression_In_NoFuncClass IN BinaryExpression_In
-| BinaryExpression_In_NoFuncClass /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_NoFuncClass /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_In_NoFuncClass /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_NoFuncClass ASSIGNASSIGN BinaryExpression_In
 | BinaryExpression_In_NoFuncClass EXCLASSIGN BinaryExpression_In
@@ -3757,7 +3757,7 @@ BinaryExpression_In_NoObjLiteral :
 | BinaryExpression_In_NoObjLiteral GTASSIGN BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral INSTANCEOF BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral IN BinaryExpression_In
-| BinaryExpression_In_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_NoObjLiteral /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_In_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_NoObjLiteral ASSIGNASSIGN BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral EXCLASSIGN BinaryExpression_In
@@ -3779,7 +3779,7 @@ BinaryExpression_In_Yield :
 | BinaryExpression_In_Yield GTASSIGN BinaryExpression_In_Yield
 | BinaryExpression_In_Yield INSTANCEOF BinaryExpression_In_Yield
 | BinaryExpression_In_Yield IN BinaryExpression_In_Yield
-| BinaryExpression_In_Yield /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Yield /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_In_Yield /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_Yield ASSIGNASSIGN BinaryExpression_In_Yield
 | BinaryExpression_In_Yield EXCLASSIGN BinaryExpression_In_Yield
@@ -3801,7 +3801,7 @@ BinaryExpression_In_Yield_Await :
 | BinaryExpression_In_Yield_Await GTASSIGN BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await INSTANCEOF BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await IN BinaryExpression_In_Yield_Await
-| BinaryExpression_In_Yield_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_In_Yield_Await /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_In_Yield_Await /*.noLineBreak*/ AS CONST
 | BinaryExpression_In_Yield_Await ASSIGNASSIGN BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await EXCLASSIGN BinaryExpression_In_Yield_Await
@@ -3861,7 +3861,7 @@ BinaryExpression_NoLet :
 | BinaryExpression_NoLet LTASSIGN BinaryExpression
 | BinaryExpression_NoLet GTASSIGN BinaryExpression
 | BinaryExpression_NoLet INSTANCEOF BinaryExpression
-| BinaryExpression_NoLet /*.noLineBreak*/ AS Type1
+| BinaryExpression_NoLet /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_NoLet /*.noLineBreak*/ AS CONST
 | BinaryExpression_NoLet ASSIGNASSIGN BinaryExpression
 | BinaryExpression_NoLet EXCLASSIGN BinaryExpression
@@ -3882,7 +3882,7 @@ BinaryExpression_NoObjLiteral :
 | BinaryExpression_NoObjLiteral LTASSIGN BinaryExpression
 | BinaryExpression_NoObjLiteral GTASSIGN BinaryExpression
 | BinaryExpression_NoObjLiteral INSTANCEOF BinaryExpression
-| BinaryExpression_NoObjLiteral /*.noLineBreak*/ AS Type1
+| BinaryExpression_NoObjLiteral /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_NoObjLiteral /*.noLineBreak*/ AS CONST
 | BinaryExpression_NoObjLiteral ASSIGNASSIGN BinaryExpression
 | BinaryExpression_NoObjLiteral EXCLASSIGN BinaryExpression
@@ -3903,7 +3903,7 @@ BinaryExpression_Yield :
 | BinaryExpression_Yield LTASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield GTASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield INSTANCEOF BinaryExpression_Yield
-| BinaryExpression_Yield /*.noLineBreak*/ AS Type1
+| BinaryExpression_Yield /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_Yield /*.noLineBreak*/ AS CONST
 | BinaryExpression_Yield ASSIGNASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield EXCLASSIGN BinaryExpression_Yield
@@ -3924,7 +3924,7 @@ BinaryExpression_Yield_Await :
 | BinaryExpression_Yield_Await LTASSIGN BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await GTASSIGN BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await INSTANCEOF BinaryExpression_Yield_Await
-| BinaryExpression_Yield_Await /*.noLineBreak*/ AS Type1
+| BinaryExpression_Yield_Await /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_Yield_Await /*.noLineBreak*/ AS CONST
 | BinaryExpression_Yield_Await ASSIGNASSIGN BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await EXCLASSIGN BinaryExpression_Yield_Await
@@ -3964,7 +3964,7 @@ BinaryExpression_Yield_NoLet :
 | BinaryExpression_Yield_NoLet LTASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield_NoLet GTASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield_NoLet INSTANCEOF BinaryExpression_Yield
-| BinaryExpression_Yield_NoLet /*.noLineBreak*/ AS Type1
+| BinaryExpression_Yield_NoLet /*.noLineBreak*/ AS Type_NoQuest
 | BinaryExpression_Yield_NoLet /*.noLineBreak*/ AS CONST
 | BinaryExpression_Yield_NoLet ASSIGNASSIGN BinaryExpression_Yield
 | BinaryExpression_Yield_NoLet EXCLASSIGN BinaryExpression_Yield
@@ -6091,18 +6091,18 @@ JSXChild_Yield_Await :
 
 Type :
   UnionOrIntersectionOrPrimaryType %prec RESOLVESHIFT
-| UnionOrIntersectionOrPrimaryType EXTENDS Type1 QUEST Type COLON Type
+| UnionOrIntersectionOrPrimaryType EXTENDS Type_NoQuest QUEST Type COLON Type
 | FunctionType
 | ConstructorType
 | AssertsType
 | TypePredicate
 ;
 
-Type1 :
-  UnionOrIntersectionOrPrimaryType1 %prec RESOLVESHIFT
-| FunctionType1
-| ConstructorType1
-| TypePredicate1
+Type_NoQuest :
+  UnionOrIntersectionOrPrimaryType_NoQuest %prec RESOLVESHIFT
+| FunctionType_NoQuest
+| ConstructorType_NoQuest
+| TypePredicate_NoQuest
 ;
 
 // lookahead: StartOfIs
@@ -6112,12 +6112,12 @@ lookahead_StartOfIs :
 
 TypePredicate :
   IdentifierNameRef_WithoutAsserts IS Type
-| ASSERTS lookahead_StartOfIs IS Type1
+| ASSERTS lookahead_StartOfIs IS Type_NoQuest
 ;
 
-TypePredicate1 :
-  IdentifierNameRef_WithoutAsserts IS Type1
-| ASSERTS lookahead_StartOfIs IS Type1
+TypePredicate_NoQuest :
+  IdentifierNameRef_WithoutAsserts IS Type_NoQuest
+| ASSERTS lookahead_StartOfIs IS Type_NoQuest
 ;
 
 AssertsType :
@@ -6127,10 +6127,10 @@ AssertsType :
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords
 ;
 
-AssertsType1 :
-  ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type1
+AssertsType_NoQuest :
+  ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type_NoQuest
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords IS Type1
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords IS Type_NoQuest
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords
 ;
 
@@ -6178,10 +6178,10 @@ UnionOrIntersectionOrPrimaryType :
 | IntersectionOrPrimaryType %prec RESOLVESHIFT
 ;
 
-UnionOrIntersectionOrPrimaryType1 :
-  UnionOrIntersectionOrPrimaryType1 OR IntersectionOrPrimaryType1
-| OR IntersectionOrPrimaryType1
-| IntersectionOrPrimaryType1 %prec RESOLVESHIFT
+UnionOrIntersectionOrPrimaryType_NoQuest :
+  UnionOrIntersectionOrPrimaryType_NoQuest OR IntersectionOrPrimaryType_NoQuest
+| OR IntersectionOrPrimaryType_NoQuest
+| IntersectionOrPrimaryType_NoQuest %prec RESOLVESHIFT
 ;
 
 IntersectionOrPrimaryType :
@@ -6190,10 +6190,10 @@ IntersectionOrPrimaryType :
 | TypeOperator
 ;
 
-IntersectionOrPrimaryType1 :
-  IntersectionOrPrimaryType1 AND TypeOperator1
-| AND TypeOperator1
-| TypeOperator1
+IntersectionOrPrimaryType_NoQuest :
+  IntersectionOrPrimaryType_NoQuest AND TypeOperator_NoQuest
+| AND TypeOperator_NoQuest
+| TypeOperator_NoQuest
 ;
 
 TypeOperator :
@@ -6204,11 +6204,11 @@ TypeOperator :
 | INFER IdentifierName
 ;
 
-TypeOperator1 :
-  PrimaryType1
-| KEYOF TypeOperator1
-| UNIQUE TypeOperator1
-| READONLY TypeOperator1
+TypeOperator_NoQuest :
+  PrimaryType_NoQuest
+| KEYOF TypeOperator_NoQuest
+| UNIQUE TypeOperator_NoQuest
+| READONLY TypeOperator_NoQuest
 | INFER IdentifierName
 ;
 
@@ -6229,20 +6229,20 @@ PrimaryType :
 | PrimaryType /*.noLineBreak*/ QUEST
 ;
 
-PrimaryType1 :
+PrimaryType_NoQuest :
   ParenthesizedType
 | PredefinedType
 | TypeReference
 | ObjectType
 | MappedType
-| ArrayType1
-| IndexedAccessType1
+| ArrayType_NoQuest
+| IndexedAccessType_NoQuest
 | LiteralType
 | TupleType
 | TypeQuery
 | ImportType
 | THIS
-| PrimaryType1 /*.noLineBreak*/ EXCL
+| PrimaryType_NoQuest /*.noLineBreak*/ EXCL
 ;
 
 // lookahead: !StartOfFunctionType
@@ -6322,16 +6322,16 @@ ArrayType :
   PrimaryType /*.noLineBreak*/ LBRACK RBRACK
 ;
 
-ArrayType1 :
-  PrimaryType1 /*.noLineBreak*/ LBRACK RBRACK
+ArrayType_NoQuest :
+  PrimaryType_NoQuest /*.noLineBreak*/ LBRACK RBRACK
 ;
 
 IndexedAccessType :
   PrimaryType /*.noLineBreak*/ LBRACK Type RBRACK
 ;
 
-IndexedAccessType1 :
-  PrimaryType1 /*.noLineBreak*/ LBRACK Type1 RBRACK
+IndexedAccessType_NoQuest :
+  PrimaryType_NoQuest /*.noLineBreak*/ LBRACK Type_NoQuest RBRACK
 ;
 
 StartOfMappedType :
@@ -6446,9 +6446,9 @@ FunctionType :
 | FunctionTypeParameterList ASSIGNGT Type
 ;
 
-FunctionType1 :
-  TypeParameters FunctionTypeParameterList ASSIGNGT Type1
-| FunctionTypeParameterList ASSIGNGT Type1
+FunctionType_NoQuest :
+  TypeParameters FunctionTypeParameterList ASSIGNGT Type_NoQuest
+| FunctionTypeParameterList ASSIGNGT Type_NoQuest
 ;
 
 FunctionTypeParameterList :
@@ -6473,9 +6473,9 @@ ConstructorType :
 | NEW ParameterList ASSIGNGT Type
 ;
 
-ConstructorType1 :
-  NEW TypeParameters ParameterList ASSIGNGT Type1
-| NEW ParameterList ASSIGNGT Type1
+ConstructorType_NoQuest :
+  NEW TypeParameters ParameterList ASSIGNGT Type_NoQuest
+| NEW ParameterList ASSIGNGT Type_NoQuest
 ;
 
 TypeQuery :

@@ -1283,12 +1283,12 @@ var tmNonterminals = [...]string{
 	"JSXChild_Yield",
 	"JSXChild_Yield_Await",
 	"Type",
-	"Type1",
+	"Type_NoQuest",
 	"lookahead_StartOfIs",
 	"TypePredicate",
-	"TypePredicate1",
+	"TypePredicate_NoQuest",
 	"AssertsType",
-	"AssertsType1",
+	"AssertsType_NoQuest",
 	"lookahead_notStartOfIs",
 	"StartOfIs",
 	"TypeParameter_list_Comma_separated",
@@ -1298,13 +1298,13 @@ var tmNonterminals = [...]string{
 	"Type_list_Comma_separated",
 	"TypeArguments",
 	"UnionOrIntersectionOrPrimaryType",
-	"UnionOrIntersectionOrPrimaryType1",
+	"UnionOrIntersectionOrPrimaryType_NoQuest",
 	"IntersectionOrPrimaryType",
-	"IntersectionOrPrimaryType1",
+	"IntersectionOrPrimaryType_NoQuest",
 	"TypeOperator",
-	"TypeOperator1",
+	"TypeOperator_NoQuest",
 	"PrimaryType",
-	"PrimaryType1",
+	"PrimaryType_NoQuest",
 	"lookahead_notStartOfFunctionType",
 	"ParenthesizedType",
 	"LiteralType",
@@ -1318,9 +1318,9 @@ var tmNonterminals = [...]string{
 	"TypeMemberList",
 	"TypeMember",
 	"ArrayType",
-	"ArrayType1",
+	"ArrayType_NoQuest",
 	"IndexedAccessType",
-	"IndexedAccessType1",
+	"IndexedAccessType_NoQuest",
 	"StartOfMappedType",
 	"lookahead_StartOfMappedType",
 	"MappedType",
@@ -1332,12 +1332,12 @@ var tmNonterminals = [...]string{
 	"StartOfTupleElementName",
 	"StartOfFunctionType",
 	"FunctionType",
-	"FunctionType1",
+	"FunctionType_NoQuest",
 	"FunctionTypeParameterList",
 	"lookahead_StartOfFunctionType",
 	"Parameter_list_Comma_separated",
 	"ConstructorType",
-	"ConstructorType1",
+	"ConstructorType_NoQuest",
 	"TypeQuery",
 	"ImportType",
 	"list_of_'.'_and_1_elements",
@@ -42021,7 +42021,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression : BinaryExpression '<=' BinaryExpression
 	RelationalExpr,         // BinaryExpression : BinaryExpression '>=' BinaryExpression
 	InstanceOfExpr,         // BinaryExpression : BinaryExpression 'instanceof' BinaryExpression
-	TsAsExpr,               // BinaryExpression : BinaryExpression .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression : BinaryExpression .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression : BinaryExpression .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression : BinaryExpression '==' BinaryExpression
 	EqualityExpr,           // BinaryExpression : BinaryExpression '!=' BinaryExpression
@@ -42039,7 +42039,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_Await : BinaryExpression_Await '<=' BinaryExpression_Await
 	RelationalExpr,         // BinaryExpression_Await : BinaryExpression_Await '>=' BinaryExpression_Await
 	InstanceOfExpr,         // BinaryExpression_Await : BinaryExpression_Await 'instanceof' BinaryExpression_Await
-	TsAsExpr,               // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_Await : BinaryExpression_Await '==' BinaryExpression_Await
 	EqualityExpr,           // BinaryExpression_Await : BinaryExpression_Await '!=' BinaryExpression_Await
@@ -42073,7 +42073,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '<=' BinaryExpression_Await
 	RelationalExpr,         // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>=' BinaryExpression_Await
 	InstanceOfExpr,         // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet 'instanceof' BinaryExpression_Await
-	TsAsExpr,               // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '==' BinaryExpression_Await
 	EqualityExpr,           // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '!=' BinaryExpression_Await
@@ -42091,7 +42091,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '<=' BinaryExpression_Await
 	RelationalExpr,         // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>=' BinaryExpression_Await
 	InstanceOfExpr,         // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral 'instanceof' BinaryExpression_Await
-	TsAsExpr,               // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '==' BinaryExpression_Await
 	EqualityExpr,           // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '!=' BinaryExpression_Await
@@ -42110,7 +42110,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_In : BinaryExpression_In '>=' BinaryExpression_In
 	InstanceOfExpr,         // BinaryExpression_In : BinaryExpression_In 'instanceof' BinaryExpression_In
 	InExpr,                 // BinaryExpression_In : BinaryExpression_In 'in' BinaryExpression_In
-	TsAsExpr,               // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_In : BinaryExpression_In '==' BinaryExpression_In
 	EqualityExpr,           // BinaryExpression_In : BinaryExpression_In '!=' BinaryExpression_In
@@ -42129,7 +42129,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_In_Await : BinaryExpression_In_Await '>=' BinaryExpression_In_Await
 	InstanceOfExpr,         // BinaryExpression_In_Await : BinaryExpression_In_Await 'instanceof' BinaryExpression_In_Await
 	InExpr,                 // BinaryExpression_In_Await : BinaryExpression_In_Await 'in' BinaryExpression_In_Await
-	TsAsExpr,               // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_In_Await : BinaryExpression_In_Await '==' BinaryExpression_In_Await
 	EqualityExpr,           // BinaryExpression_In_Await : BinaryExpression_In_Await '!=' BinaryExpression_In_Await
@@ -42165,7 +42165,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '>=' BinaryExpression_In_Await
 	InstanceOfExpr,         // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral 'instanceof' BinaryExpression_In_Await
 	InExpr,                 // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral 'in' BinaryExpression_In_Await
-	TsAsExpr,               // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '==' BinaryExpression_In_Await
 	EqualityExpr,           // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '!=' BinaryExpression_In_Await
@@ -42184,7 +42184,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '>=' BinaryExpression_In
 	InstanceOfExpr,         // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass 'instanceof' BinaryExpression_In
 	InExpr,                 // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass 'in' BinaryExpression_In
-	TsAsExpr,               // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '==' BinaryExpression_In
 	EqualityExpr,           // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '!=' BinaryExpression_In
@@ -42220,7 +42220,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '>=' BinaryExpression_In
 	InstanceOfExpr,         // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral 'instanceof' BinaryExpression_In
 	InExpr,                 // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral 'in' BinaryExpression_In
-	TsAsExpr,               // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '==' BinaryExpression_In
 	EqualityExpr,           // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '!=' BinaryExpression_In
@@ -42239,7 +42239,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_In_Yield : BinaryExpression_In_Yield '>=' BinaryExpression_In_Yield
 	InstanceOfExpr,         // BinaryExpression_In_Yield : BinaryExpression_In_Yield 'instanceof' BinaryExpression_In_Yield
 	InExpr,                 // BinaryExpression_In_Yield : BinaryExpression_In_Yield 'in' BinaryExpression_In_Yield
-	TsAsExpr,               // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_In_Yield : BinaryExpression_In_Yield '==' BinaryExpression_In_Yield
 	EqualityExpr,           // BinaryExpression_In_Yield : BinaryExpression_In_Yield '!=' BinaryExpression_In_Yield
@@ -42258,7 +42258,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '>=' BinaryExpression_In_Yield_Await
 	InstanceOfExpr,         // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await 'instanceof' BinaryExpression_In_Yield_Await
 	InExpr,                 // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await 'in' BinaryExpression_In_Yield_Await
-	TsAsExpr,               // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '==' BinaryExpression_In_Yield_Await
 	EqualityExpr,           // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '!=' BinaryExpression_In_Yield_Await
@@ -42309,7 +42309,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_NoLet : BinaryExpression_NoLet '<=' BinaryExpression
 	RelationalExpr,         // BinaryExpression_NoLet : BinaryExpression_NoLet '>=' BinaryExpression
 	InstanceOfExpr,         // BinaryExpression_NoLet : BinaryExpression_NoLet 'instanceof' BinaryExpression
-	TsAsExpr,               // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_NoLet : BinaryExpression_NoLet '==' BinaryExpression
 	EqualityExpr,           // BinaryExpression_NoLet : BinaryExpression_NoLet '!=' BinaryExpression
@@ -42327,7 +42327,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '<=' BinaryExpression
 	RelationalExpr,         // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '>=' BinaryExpression
 	InstanceOfExpr,         // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral 'instanceof' BinaryExpression
-	TsAsExpr,               // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '==' BinaryExpression
 	EqualityExpr,           // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '!=' BinaryExpression
@@ -42345,7 +42345,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_Yield : BinaryExpression_Yield '<=' BinaryExpression_Yield
 	RelationalExpr,         // BinaryExpression_Yield : BinaryExpression_Yield '>=' BinaryExpression_Yield
 	InstanceOfExpr,         // BinaryExpression_Yield : BinaryExpression_Yield 'instanceof' BinaryExpression_Yield
-	TsAsExpr,               // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_Yield : BinaryExpression_Yield '==' BinaryExpression_Yield
 	EqualityExpr,           // BinaryExpression_Yield : BinaryExpression_Yield '!=' BinaryExpression_Yield
@@ -42363,7 +42363,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '<=' BinaryExpression_Yield_Await
 	RelationalExpr,         // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '>=' BinaryExpression_Yield_Await
 	InstanceOfExpr,         // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await 'instanceof' BinaryExpression_Yield_Await
-	TsAsExpr,               // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '==' BinaryExpression_Yield_Await
 	EqualityExpr,           // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '!=' BinaryExpression_Yield_Await
@@ -42397,7 +42397,7 @@ var tmRuleType = [...]NodeType{
 	RelationalExpr,         // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '<=' BinaryExpression_Yield
 	RelationalExpr,         // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '>=' BinaryExpression_Yield
 	InstanceOfExpr,         // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet 'instanceof' BinaryExpression_Yield
-	TsAsExpr,               // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' Type1
+	TsAsExpr,               // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' Type_NoQuest
 	TsAsConstExpr,          // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' 'const'
 	EqualityExpr,           // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '==' BinaryExpression_Yield
 	EqualityExpr,           // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '!=' BinaryExpression_Yield
@@ -43421,28 +43421,28 @@ var tmRuleType = [...]NodeType{
 	JSXExpr,                // JSXChild_Yield_Await : '{' .recoveryScope AssignmentExpressionopt_In_Yield_Await '}'
 	JSXSpreadExpr,          // JSXChild_Yield_Await : '{' .recoveryScope '...' AssignmentExpressionopt_In_Yield_Await '}'
 	0,                      // Type : UnionOrIntersectionOrPrimaryType %prec resolveShift
-	TsConditional,          // Type : UnionOrIntersectionOrPrimaryType 'extends' Type1 '?' Type ':' Type
+	TsConditional,          // Type : UnionOrIntersectionOrPrimaryType 'extends' Type_NoQuest '?' Type ':' Type
 	0,                      // Type : FunctionType
 	0,                      // Type : ConstructorType
 	0,                      // Type : AssertsType
 	0,                      // Type : TypePredicate
-	0,                      // Type1 : UnionOrIntersectionOrPrimaryType1 %prec resolveShift
-	0,                      // Type1 : FunctionType1
-	0,                      // Type1 : ConstructorType1
-	0,                      // Type1 : TypePredicate1
+	0,                      // Type_NoQuest : UnionOrIntersectionOrPrimaryType_NoQuest %prec resolveShift
+	0,                      // Type_NoQuest : FunctionType_NoQuest
+	0,                      // Type_NoQuest : ConstructorType_NoQuest
+	0,                      // Type_NoQuest : TypePredicate_NoQuest
 	0,                      // lookahead_StartOfIs :
 	TypePredicate,          // TypePredicate : IdentifierNameRef_WithoutAsserts 'is' Type
-	TypePredicate,          // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type1
-	TypePredicate,          // TypePredicate1 : IdentifierNameRef_WithoutAsserts 'is' Type1
-	TypePredicate,          // TypePredicate1 : 'asserts' lookahead_StartOfIs 'is' Type1
+	TypePredicate,          // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
+	TypePredicate,          // TypePredicate_NoQuest : IdentifierNameRef_WithoutAsserts 'is' Type_NoQuest
+	TypePredicate,          // TypePredicate_NoQuest : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
 	AssertsType,            // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
 	AssertsType,            // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
 	AssertsType,            // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type
 	AssertsType,            // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
-	AssertsType,            // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type1
-	AssertsType,            // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
-	AssertsType,            // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type1
-	AssertsType,            // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
+	AssertsType,            // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type_NoQuest
+	AssertsType,            // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+	AssertsType,            // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type_NoQuest
+	AssertsType,            // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
 	0,                      // lookahead_notStartOfIs :
 	0,                      // StartOfIs : 'is'
 	0,                      // TypeParameter_list_Comma_separated : TypeParameter_list_Comma_separated ',' TypeParameter
@@ -43459,25 +43459,25 @@ var tmRuleType = [...]NodeType{
 	UnionType,              // UnionOrIntersectionOrPrimaryType : UnionOrIntersectionOrPrimaryType '|' IntersectionOrPrimaryType
 	UnionType,              // UnionOrIntersectionOrPrimaryType : '|' IntersectionOrPrimaryType
 	0,                      // UnionOrIntersectionOrPrimaryType : IntersectionOrPrimaryType %prec resolveShift
-	UnionType,              // UnionOrIntersectionOrPrimaryType1 : UnionOrIntersectionOrPrimaryType1 '|' IntersectionOrPrimaryType1
-	UnionType,              // UnionOrIntersectionOrPrimaryType1 : '|' IntersectionOrPrimaryType1
-	0,                      // UnionOrIntersectionOrPrimaryType1 : IntersectionOrPrimaryType1 %prec resolveShift
+	UnionType,              // UnionOrIntersectionOrPrimaryType_NoQuest : UnionOrIntersectionOrPrimaryType_NoQuest '|' IntersectionOrPrimaryType_NoQuest
+	UnionType,              // UnionOrIntersectionOrPrimaryType_NoQuest : '|' IntersectionOrPrimaryType_NoQuest
+	0,                      // UnionOrIntersectionOrPrimaryType_NoQuest : IntersectionOrPrimaryType_NoQuest %prec resolveShift
 	IntersectionType,       // IntersectionOrPrimaryType : IntersectionOrPrimaryType '&' TypeOperator
 	IntersectionType,       // IntersectionOrPrimaryType : '&' TypeOperator
 	0,                      // IntersectionOrPrimaryType : TypeOperator
-	IntersectionType,       // IntersectionOrPrimaryType1 : IntersectionOrPrimaryType1 '&' TypeOperator1
-	IntersectionType,       // IntersectionOrPrimaryType1 : '&' TypeOperator1
-	0,                      // IntersectionOrPrimaryType1 : TypeOperator1
+	IntersectionType,       // IntersectionOrPrimaryType_NoQuest : IntersectionOrPrimaryType_NoQuest '&' TypeOperator_NoQuest
+	IntersectionType,       // IntersectionOrPrimaryType_NoQuest : '&' TypeOperator_NoQuest
+	0,                      // IntersectionOrPrimaryType_NoQuest : TypeOperator_NoQuest
 	0,                      // TypeOperator : PrimaryType
 	KeyOfType,              // TypeOperator : 'keyof' TypeOperator
 	UniqueType,             // TypeOperator : 'unique' TypeOperator
 	ReadonlyType,           // TypeOperator : 'readonly' TypeOperator
 	TypeVar,                // TypeOperator : 'infer' IdentifierName
-	0,                      // TypeOperator1 : PrimaryType1
-	KeyOfType,              // TypeOperator1 : 'keyof' TypeOperator1
-	UniqueType,             // TypeOperator1 : 'unique' TypeOperator1
-	ReadonlyType,           // TypeOperator1 : 'readonly' TypeOperator1
-	TypeVar,                // TypeOperator1 : 'infer' IdentifierName
+	0,                      // TypeOperator_NoQuest : PrimaryType_NoQuest
+	KeyOfType,              // TypeOperator_NoQuest : 'keyof' TypeOperator_NoQuest
+	UniqueType,             // TypeOperator_NoQuest : 'unique' TypeOperator_NoQuest
+	ReadonlyType,           // TypeOperator_NoQuest : 'readonly' TypeOperator_NoQuest
+	TypeVar,                // TypeOperator_NoQuest : 'infer' IdentifierName
 	0,                      // PrimaryType : ParenthesizedType
 	0,                      // PrimaryType : PredefinedType
 	0,                      // PrimaryType : TypeReference
@@ -43492,19 +43492,19 @@ var tmRuleType = [...]NodeType{
 	ThisType,               // PrimaryType : 'this'
 	NonNullableType,        // PrimaryType : PrimaryType .noLineBreak '!'
 	NullableType,           // PrimaryType : PrimaryType .noLineBreak '?'
-	0,                      // PrimaryType1 : ParenthesizedType
-	0,                      // PrimaryType1 : PredefinedType
-	0,                      // PrimaryType1 : TypeReference
-	0,                      // PrimaryType1 : ObjectType
-	0,                      // PrimaryType1 : MappedType
-	0,                      // PrimaryType1 : ArrayType1
-	0,                      // PrimaryType1 : IndexedAccessType1
-	0,                      // PrimaryType1 : LiteralType
-	0,                      // PrimaryType1 : TupleType
-	0,                      // PrimaryType1 : TypeQuery
-	0,                      // PrimaryType1 : ImportType
-	ThisType,               // PrimaryType1 : 'this'
-	NonNullableType,        // PrimaryType1 : PrimaryType1 .noLineBreak '!'
+	0,                      // PrimaryType_NoQuest : ParenthesizedType
+	0,                      // PrimaryType_NoQuest : PredefinedType
+	0,                      // PrimaryType_NoQuest : TypeReference
+	0,                      // PrimaryType_NoQuest : ObjectType
+	0,                      // PrimaryType_NoQuest : MappedType
+	0,                      // PrimaryType_NoQuest : ArrayType_NoQuest
+	0,                      // PrimaryType_NoQuest : IndexedAccessType_NoQuest
+	0,                      // PrimaryType_NoQuest : LiteralType
+	0,                      // PrimaryType_NoQuest : TupleType
+	0,                      // PrimaryType_NoQuest : TypeQuery
+	0,                      // PrimaryType_NoQuest : ImportType
+	ThisType,               // PrimaryType_NoQuest : 'this'
+	NonNullableType,        // PrimaryType_NoQuest : PrimaryType_NoQuest .noLineBreak '!'
 	0,                      // lookahead_notStartOfFunctionType :
 	ParenthesizedType,      // ParenthesizedType : '(' lookahead_notStartOfFunctionType Type ')'
 	LiteralType,            // LiteralType : StringLiteral
@@ -43541,9 +43541,9 @@ var tmRuleType = [...]NodeType{
 	0,                      // TypeMember : ConstructSignature
 	0,                      // TypeMember : IndexSignature
 	ArrayType,              // ArrayType : PrimaryType .noLineBreak '[' ']'
-	ArrayType,              // ArrayType1 : PrimaryType1 .noLineBreak '[' ']'
+	ArrayType,              // ArrayType_NoQuest : PrimaryType_NoQuest .noLineBreak '[' ']'
 	IndexedAccessType,      // IndexedAccessType : PrimaryType .noLineBreak '[' Type ']'
-	IndexedAccessType,      // IndexedAccessType1 : PrimaryType1 .noLineBreak '[' Type1 ']'
+	IndexedAccessType,      // IndexedAccessType_NoQuest : PrimaryType_NoQuest .noLineBreak '[' Type_NoQuest ']'
 	0,                      // StartOfMappedType : '+' 'readonly'
 	0,                      // StartOfMappedType : '-' 'readonly'
 	0,                      // StartOfMappedType : 'readonly' '[' IdentifierName 'in'
@@ -43620,8 +43620,8 @@ var tmRuleType = [...]NodeType{
 	0,                      // StartOfFunctionType : ')'
 	FuncType,               // FunctionType : TypeParameters FunctionTypeParameterList '=>' Type
 	FuncType,               // FunctionType : FunctionTypeParameterList '=>' Type
-	FuncType,               // FunctionType1 : TypeParameters FunctionTypeParameterList '=>' Type1
-	FuncType,               // FunctionType1 : FunctionTypeParameterList '=>' Type1
+	FuncType,               // FunctionType_NoQuest : TypeParameters FunctionTypeParameterList '=>' Type_NoQuest
+	FuncType,               // FunctionType_NoQuest : FunctionTypeParameterList '=>' Type_NoQuest
 	Parameters,             // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ',' ')'
 	Parameters,             // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ')'
 	Parameters,             // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType ',' ')'
@@ -43631,8 +43631,8 @@ var tmRuleType = [...]NodeType{
 	0,                      // Parameter_list_Comma_separated : Parameter
 	ConstructorType,        // ConstructorType : 'new' TypeParameters ParameterList '=>' Type
 	ConstructorType,        // ConstructorType : 'new' ParameterList '=>' Type
-	ConstructorType,        // ConstructorType1 : 'new' TypeParameters ParameterList '=>' Type1
-	ConstructorType,        // ConstructorType1 : 'new' ParameterList '=>' Type1
+	ConstructorType,        // ConstructorType_NoQuest : 'new' TypeParameters ParameterList '=>' Type_NoQuest
+	ConstructorType,        // ConstructorType_NoQuest : 'new' ParameterList '=>' Type_NoQuest
 	TypeQuery,              // TypeQuery : 'typeof' TypeQueryExpression
 	ImportType,             // ImportType : 'typeof' 'import' '(' Type ')' list_of_'.'_and_1_elements .noLineBreak TypeArguments %prec resolveShift
 	ImportType,             // ImportType : 'typeof' 'import' '(' Type ')' list_of_'.'_and_1_elements .noLineBreak %prec resolveShift

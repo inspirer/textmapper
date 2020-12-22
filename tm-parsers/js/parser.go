@@ -357,9 +357,9 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 3763: // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3865: // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type1
+	case 3865: // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 3867: // TypePredicate1 : 'asserts' lookahead_StartOfIs 'is' Type1
+	case 3867: // TypePredicate_NoQuest : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 3868: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
 		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
@@ -369,17 +369,17 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3871: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3872: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type1
+	case 3872: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type_NoQuest
 		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3873: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+	case 3873: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
 		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3874: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type1
+	case 3874: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords 'is' Type_NoQuest
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3875: // AssertsType1 : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
+	case 3875: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 3905: // TypeOperator : 'infer' IdentifierName
 		p.listener(ReferenceIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 3910: // TypeOperator1 : 'infer' IdentifierName
+	case 3910: // TypeOperator_NoQuest : 'infer' IdentifierName
 		p.listener(ReferenceIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 4024: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName '?' ':' Type
 		p.listener(RestType, rhs[5].sym.offset, rhs[5].sym.endoffset)
