@@ -106,6 +106,51 @@ type Expr struct {
 	Model     *Model // Kept for some kinds for debugging.
 }
 
+// Equal returns true for equivalent grammar clauses.
+func (e *Expr) Equal(oth *Expr) bool {
+	if e.Kind != oth.Kind {
+		return false
+	}
+	switch e.Kind {
+	case Empty:
+		return true
+	case Reference:
+		if len(e.Args) != len(oth.Args) {
+			return false
+		}
+		for i, arg := range e.Args {
+			if !arg.equal(oth.Args[i]) {
+				return false
+			}
+		}
+		return e.Symbol == oth.Symbol
+	case Optional, LookaheadNot:
+		return e.Sub[0].Equal(oth.Sub[0])
+	case Choice, Sequence, Lookahead, List:
+		if len(e.Sub) != len(oth.Sub) || e.ListFlags != oth.ListFlags {
+			return false
+		}
+		for i, val := range e.Sub {
+			if !val.Equal(oth.Sub[i]) {
+				return false
+			}
+		}
+		return true
+	case Assign, Append, Arrow:
+		return e.Name == oth.Name && e.Sub[0].Equal(oth.Sub[0])
+	case Prec:
+		return e.Symbol == oth.Symbol && e.Sub[0].Equal(oth.Sub[0])
+	case StateMarker, Command:
+		return e.Name == oth.Name
+	case Set:
+		return e.Pos == oth.Pos
+	case Conditional:
+		return e.Predicate.equal(oth.Predicate) && e.Sub[0].Equal(oth.Sub[0])
+	default:
+		return false
+	}
+}
+
 func (e *Expr) String() string {
 	switch e.Kind {
 	case Empty:
@@ -227,14 +272,12 @@ const (
 	Command               // stored in {Name}
 	Lookahead             // (?= {Sub0} & {Sub1} ...)
 	LookaheadNot          // !{Sub0}   inside (?= ...)
+	List                  // of {Sub0}, separator={Sub1} (if present), also {ListFlags}
 
 	// The following kinds can appear as children of a top-level Choice expression only (or be nested
 	// in one another).
 	Conditional // [{Predicate}] {Sub0}
 	Prec        // {Sub0} %prec {Symbol}
-
-	// Top-level expressions.
-	List // of {Sub0}, separator={Sub1} (if present), also {ListFlags}
 )
 
 var kindStr = map[ExprKind]string{
@@ -341,6 +384,10 @@ type Arg struct {
 	Origin   status.SourceNode
 }
 
+func (a Arg) equal(oth Arg) bool {
+	return a.Param == oth.Param && a.Value == oth.Value && a.TakeFrom == oth.TakeFrom
+}
+
 // Predicate is an expression which, given a template environment, evaluates to true or false.
 type Predicate struct {
 	Op     PredicateOp
@@ -386,6 +433,21 @@ func (p *Predicate) String(m *Model) string {
 		log.Fatalf("cannot stringify Op=%v", p.Op)
 		return ""
 	}
+}
+
+func (p *Predicate) equal(oth *Predicate) bool {
+	if p.Op != oth.Op || len(p.Sub) != len(oth.Sub) {
+		return false
+	}
+	if p.Op == Equals {
+		return p.Param == oth.Param && p.Value == oth.Value
+	}
+	for i, val := range p.Sub {
+		if !val.equal(oth.Sub[i]) {
+			return false
+		}
+	}
+	return true
 }
 
 // PredicateOp is a predicate operator.

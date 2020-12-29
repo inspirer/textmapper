@@ -36,6 +36,72 @@ func TestSimplify(t *testing.T) {
 	}
 }
 
+var equalTests = []struct {
+	a, b *syntax.Expr
+	want bool
+}{
+	{
+		a:    &syntax.Expr{Kind: syntax.StateMarker, Name: "foo"},
+		b:    &syntax.Expr{Kind: syntax.Command, Name: "foo"},
+		want: false,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Command, Name: "foo"},
+		b:    &syntax.Expr{Kind: syntax.Command, Name: "foo"},
+		want: true,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Command, Name: "foo"},
+		b:    &syntax.Expr{Kind: syntax.Command, Name: "foo2"},
+		want: false,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Set, Pos: 1},
+		b:    &syntax.Expr{Kind: syntax.Set, Pos: 2},
+		want: false,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Reference, Symbol: 1},
+		b:    &syntax.Expr{Kind: syntax.Reference, Symbol: 1},
+		want: true,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Reference, Symbol: 1},
+		b:    &syntax.Expr{Kind: syntax.Reference, Symbol: 1, Args: []syntax.Arg{{Param: 1}}},
+		want: false,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Reference, Symbol: 1, Args: []syntax.Arg{{Param: 2}}},
+		b:    &syntax.Expr{Kind: syntax.Reference, Symbol: 1, Args: []syntax.Arg{{Param: 1}}},
+		want: false,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{{Kind: syntax.Empty}}},
+		b:    &syntax.Expr{Kind: syntax.Sequence},
+		want: false,
+	},
+	{
+		a:    &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{{Kind: syntax.Empty}}},
+		b:    &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{{Kind: syntax.Reference}}},
+		want: false,
+	},
+}
+
+func TestEqual(t *testing.T) {
+	for _, tc := range equalTests {
+		if got := tc.a.Equal(tc.b); got != tc.want {
+			t.Errorf("Equal(%v,%v) = %v, want %v", tc.a, tc.b, got, tc.want)
+		}
+	}
+	for _, tc := range parserTests {
+		for _, nt := range tc.want.Nonterms {
+			if got := nt.Value.Equal(nt.Value); !got {
+				t.Errorf("Equal(%v,%v) = %v, want true", nt.Value, nt.Value, got)
+			}
+		}
+	}
+}
+
 // parse parses a simplified Textmapper grammar into syntax.Model ensuring structural
 // but not semantic validity. Single-letter identifiers are reserved for terminals.
 func parse(input string) (*syntax.Model, error) {
