@@ -5,6 +5,7 @@ package syntax
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/status"
@@ -164,7 +165,13 @@ func (e *Expr) String() string {
 	case Arrow:
 		return fmt.Sprintf("%v -> %v", parenthesize(e.Kind, e.Sub[0]), e.Name)
 	case Prec:
-		return fmt.Sprintf("%v %%prec %v", parenthesize(e.Kind, e.Sub[0]), e.Model.Terminals[e.Symbol])
+		var sym string
+		if e.Model != nil {
+			sym = e.Model.Terminals[e.Symbol]
+		} else {
+			sym = strconv.Itoa(e.Symbol)
+		}
+		return fmt.Sprintf("%v %%prec %v", parenthesize(e.Kind, e.Sub[0]), sym)
 	case Conditional:
 		return fmt.Sprintf("[%v] %v", e.Predicate.String(e.Model), e.Sub[0])
 	case List:
@@ -199,9 +206,18 @@ func (e *Expr) String() string {
 		}
 		return buf.String()
 	case Reference:
-		return e.Model.Ref(e.Symbol, e.Args)
+		if e.Model != nil {
+			return e.Model.Ref(e.Symbol, e.Args)
+		}
+		if len(e.Args) == 0 {
+			return strconv.Itoa(e.Symbol)
+		}
+		return fmt.Sprintf("%v<%v>", e.Symbol, e.Args)
 	case Set:
-		return fmt.Sprintf("set(%v)", e.Model.Sets[e.Pos].String(e.Model))
+		if e.Model != nil {
+			return fmt.Sprintf("set(%v)", e.Model.Sets[e.Pos].String(e.Model))
+		}
+		return fmt.Sprintf("set(%v)", e.Pos)
 	case StateMarker:
 		return "." + e.Name
 	case Command:
@@ -388,6 +404,13 @@ func (a Arg) equal(oth Arg) bool {
 	return a.Param == oth.Param && a.Value == oth.Value && a.TakeFrom == oth.TakeFrom
 }
 
+func (a Arg) String() string {
+	if a.Value == "" {
+		return fmt.Sprintf("%v=%v", a.Param, a.TakeFrom)
+	}
+	return fmt.Sprintf("%v=%q", a.Param, a.Value)
+}
+
 // Predicate is an expression which, given a template environment, evaluates to true or false.
 type Predicate struct {
 	Op     PredicateOp
@@ -428,7 +451,13 @@ func (p *Predicate) String(m *Model) string {
 	case Not:
 		return fmt.Sprintf("!(%v)", p.Sub[0].String(m))
 	case Equals:
-		return fmt.Sprintf("%v=%q", m.Params[p.Param].Name, p.Value)
+		var param string
+		if m != nil {
+			param = m.Params[p.Param].Name
+		} else {
+			param = fmt.Sprintf("[%v]", p.Param)
+		}
+		return fmt.Sprintf("%v=%q", param, p.Value)
 	default:
 		log.Fatalf("cannot stringify Op=%v", p.Op)
 		return ""

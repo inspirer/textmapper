@@ -96,7 +96,7 @@ func TestEqual(t *testing.T) {
 	for _, tc := range parserTests {
 		for _, nt := range tc.want.Nonterms {
 			if got := nt.Value.Equal(nt.Value); !got {
-				t.Errorf("Equal(%v,%v) = %v, want true", nt.Value, nt.Value, got)
+				t.Errorf("selfEqual(%v) = %v, want true", nt.Value, got)
 			}
 		}
 	}
