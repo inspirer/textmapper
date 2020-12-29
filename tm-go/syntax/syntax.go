@@ -59,6 +59,33 @@ func (m *Model) ForEach(kind ExprKind, consumer func(container *Nonterm, expr *E
 	}
 }
 
+// Rearrange reorders nonterminals using a given permutation.
+func (m *Model) Rearrange(perm []int) {
+	out := make([]*Nonterm, len(m.Nonterms))
+	for i, nt := range m.Nonterms {
+		out[perm[i]] = nt
+	}
+	m.Nonterms = out
+
+	// Update symbol references.
+	terms := len(m.Terminals)
+	m.ForEach(Reference, func(container *Nonterm, expr *Expr) {
+		if nt := expr.Symbol - terms; nt >= 0 {
+			expr.Symbol = terms + perm[nt]
+		}
+	})
+	for _, set := range m.Sets {
+		set.ForEach(func(ts *TokenSet) {
+			if nt := set.Symbol - terms; nt >= 0 {
+				set.Symbol = terms + perm[nt]
+			}
+		})
+	}
+	for i, input := range m.Inputs {
+		m.Inputs[i].Nonterm = perm[input.Nonterm]
+	}
+}
+
 // Input introduces a start nonterminal.
 type Input struct {
 	Nonterm int // Index in model.Nonterms

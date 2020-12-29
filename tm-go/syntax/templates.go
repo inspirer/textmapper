@@ -468,6 +468,15 @@ func Instantiate(m *Model) error {
 
 	// Sort the instances and move them over into the grammar.
 	list := inst.instances
+	for _, instance := range list {
+		nt := m.Nonterms[instance.nonterm]
+		out.Nonterms = append(out.Nonterms, &Nonterm{
+			Name:   nt.Name + instance.suffix,
+			Type:   nt.Type,
+			Value:  instance.val,
+			Origin: nt.Origin,
+		})
+	}
 	sort.Slice(list, func(i, j int) bool {
 		if list[i].nonterm != list[j].nonterm {
 			return list[i].nonterm < list[j].nonterm
@@ -476,32 +485,9 @@ func Instantiate(m *Model) error {
 	})
 	perm := make([]int, len(inst.instances))
 	for i, instance := range list {
-		nt := m.Nonterms[instance.nonterm]
-		out.Nonterms = append(out.Nonterms, &Nonterm{
-			Name:   nt.Name + instance.suffix,
-			Type:   nt.Type,
-			Value:  instance.val,
-			Origin: nt.Origin,
-		})
 		perm[instance.index] = i
 	}
-
-	// Update all the references.
-	out.ForEach(Reference, func(container *Nonterm, expr *Expr) {
-		if nt := expr.Symbol - len(out.Terminals); nt >= 0 {
-			expr.Symbol = len(out.Terminals) + perm[nt]
-		}
-	})
-	for _, set := range out.Sets {
-		set.ForEach(func(ts *TokenSet) {
-			if nt := set.Symbol - len(out.Terminals); nt >= 0 {
-				set.Symbol = len(out.Terminals) + perm[nt]
-			}
-		})
-	}
-	for i, input := range out.Inputs {
-		out.Inputs[i].Nonterm = perm[input.Nonterm]
-	}
+	out.Rearrange(perm)
 
 	*m = *out
 	checkOrDie(m, "after instantiating nonterminals")
