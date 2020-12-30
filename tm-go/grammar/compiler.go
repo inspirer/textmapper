@@ -1361,7 +1361,7 @@ func (c *compiler) compileParser() {
 	}
 	c.source = new(syntax.Model)
 	for _, sym := range c.out.Syms {
-		c.source.Terminals = append(c.source.Terminals, sym.Name)
+		c.source.Terminals = append(c.source.Terminals, sym.ID)
 	}
 	c.collectParams(p)
 	nonterms := c.collectNonterms(p)
@@ -1399,9 +1399,6 @@ func (c *compiler) compileParser() {
 	// TODO compile the grammar model
 
 	// Prepare the model for code generation.
-	for i := range c.source.Terminals {
-		c.source.Terminals[i] = c.out.Syms[i].ID
-	}
 	c.addNonterms(c.source.Nonterms)
 
 	out := c.out.Parser

@@ -370,7 +370,7 @@ func (i *instantiator) doExpr(context *instance, expr *Expr) *Expr {
 				Kind:   expr.Kind,
 				Symbol: len(i.m.Terminals) + i.resolveInstance(context, nt, expr.Args).index,
 				Origin: expr.Origin,
-				Model:  i.out,
+				Model:  i.m,
 			}
 		}
 	case Conditional:
@@ -384,7 +384,7 @@ func (i *instantiator) doExpr(context *instance, expr *Expr) *Expr {
 	}
 
 	ret := *expr
-	ret.Model = i.out
+	ret.Model = i.m
 	if len(ret.Sub) == 0 {
 		return &ret
 	}

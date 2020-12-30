@@ -45,8 +45,13 @@ func (m *Model) Ref(sym int, args []Arg) string {
 
 // ForEach visits all expressions of a given kind in the model.
 func (m *Model) ForEach(kind ExprKind, consumer func(container *Nonterm, expr *Expr)) {
+	seen := make(map[*Expr]bool)
 	var visit func(nt *Nonterm, e *Expr)
 	visit = func(nt *Nonterm, e *Expr) {
+		if seen[e] {
+			return
+		}
+		seen[e] = true
 		if e.Kind == kind {
 			consumer(nt, e)
 		}
@@ -63,21 +68,24 @@ func (m *Model) ForEach(kind ExprKind, consumer func(container *Nonterm, expr *E
 func (m *Model) Rearrange(perm []int) {
 	out := make([]*Nonterm, len(m.Nonterms))
 	for i, nt := range m.Nonterms {
+		if out[perm[i]] != nil {
+			log.Fatal("invariant failure")
+		}
 		out[perm[i]] = nt
 	}
 	m.Nonterms = out
 
 	// Update symbol references.
 	terms := len(m.Terminals)
-	m.ForEach(Reference, func(container *Nonterm, expr *Expr) {
+	m.ForEach(Reference, func(_ *Nonterm, expr *Expr) {
 		if nt := expr.Symbol - terms; nt >= 0 {
 			expr.Symbol = terms + perm[nt]
 		}
 	})
 	for _, set := range m.Sets {
 		set.ForEach(func(ts *TokenSet) {
-			if nt := set.Symbol - terms; nt >= 0 {
-				set.Symbol = terms + perm[nt]
+			if nt := ts.Symbol - terms; nt >= 0 {
+				ts.Symbol = terms + perm[nt]
 			}
 		})
 	}
@@ -131,7 +139,7 @@ type Expr struct {
 	ListFlags ListFlags
 	Pos       int // Positional index of a reference in the original rule.
 	Origin    status.SourceNode
-	Model     *Model // Kept for some kinds for debugging.
+	Model     *Model // Kept for some kinds for debugging. TODO error-prone, get rid of
 }
 
 // Equal returns true for equivalent grammar clauses.
