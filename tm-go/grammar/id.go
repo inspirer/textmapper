@@ -94,12 +94,12 @@ func SymbolID(name string, style nameStyle) string {
 	}
 	var cont bool
 	for i, r := range name {
-		if r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' && cont {
+		if r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' {
 			// We want to split FOOBar into foo and bar.
 			if unicode.IsUpper(r) && (i > 0 && !unicode.IsUpper(rune(name[i-1])) || i+1 < len(name) && !unicode.IsUpper(rune(name[i+1]))) {
 				cont = false
 			}
-			if !cont && buf.Len() > 0 && style == UpperUnderscores {
+			if !cont && buf.Len() > 0 && style == UpperUnderscores || buf.Len() == 0 && r >= '0' && r <= '9' {
 				buf.WriteByte('_')
 			}
 			camel := style == CamelCase || style == CamelLower
@@ -113,6 +113,9 @@ func SymbolID(name string, style nameStyle) string {
 		}
 		cont = false
 		if !inQuotes {
+			if r == '$' {
+				buf.WriteByte('_')
+			}
 			continue
 		}
 		word := charName[r]

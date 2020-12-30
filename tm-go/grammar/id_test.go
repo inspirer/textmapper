@@ -25,6 +25,17 @@ var idTests = []struct {
 	{"abc-def", CamelCase, "AbcDef"},
 	{"abc_def38", CamelCase, "AbcDef38"},
 
+	{"a-1", CamelCase, "A1"},
+	{"a-1", CamelLower, "a1"},
+	{"a-1", UpperCase, "A1"},
+	{"a-1", UpperUnderscores, "A_1"},
+	{"a_1", CamelCase, "A1"},
+
+	{"A$1", CamelCase, "A_1"},
+	{"abc_def$12", CamelCase, "AbcDef_12"},
+	{"abc-def$12", CamelCase, "AbcDef_12"},
+	{"ABCDef$2", CamelCase, "AbcDef_2"},
+
 	{"'}'", UpperCase, "RBRACE"},
 	{"'}'", CamelCase, "Rbrace"},
 	{"'}'", CamelLower, "rbrace"},
@@ -58,10 +69,12 @@ var idTests = []struct {
 	{"'s'", CamelLower, "charS"},
 	{"'s'", UpperCase, "CHAR_S"},
 	{"'s'", UpperUnderscores, "CHAR_S"},
-	{"'0'", UpperCase, "CHAR_X30"},
-	{"'00'", UpperCase, "X30X30"},
-	{"'0'", UpperUnderscores, "CHAR_X30"},
-	{"'00'", UpperUnderscores, "X30_X30"},
+	{"'s0'", UpperCase, "S0"},
+	{"'s0'", UpperUnderscores, "S0"},
+	{"'0'", UpperCase, "CHAR_0"},
+	{"'00'", UpperCase, "_00"},
+	{"'0'", UpperUnderscores, "CHAR_0"},
+	{"'00'", UpperUnderscores, "_00"},
 }
 
 func TestSymbolID(t *testing.T) {
