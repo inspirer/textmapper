@@ -33,8 +33,7 @@ UNO:
 
 
 Simple -> File:
-    'a' expr<+Foo>
-;
+    ('-' | '+')+ 'a' expr<+Foo> '(' (('-' | '+') separator ',' ',')* ')' ;
 
 %interface Expr;
 
@@ -75,7 +74,26 @@ Propagation :
 %%
 
 Simple :
-  CHAR_A expr_Foo -> File
+  Simple$1 CHAR_A expr_Foo LPAREN Simple$2opt RPAREN -> File
+;
+
+Simple$1 :
+  Simple$1 MINUS
+| Simple$1 PLUS
+| MINUS
+| PLUS
+;
+
+Simple$2 :
+  Simple$2 COMMA COMMA MINUS
+| Simple$2 COMMA COMMA PLUS
+| MINUS
+| PLUS
+;
+
+Simple$2opt :
+  Simple$2
+| %empty
 ;
 
 expr :
@@ -88,9 +106,14 @@ expr :
 expr_Foo :
   IDENTIFIER -> Identifier -> Expr
 | LPAREN expr RPAREN -> Bar -> Expr
-| LBRACE (IDENTIFIER separator COMMA)+ RBRACE -> Init -> Expr
+| LBRACE IDENTIFIER_list_COMMA_separated RBRACE -> Init -> Expr
 | delayed_Foo_Async -> Expr
 | MINUSGT delayed_Foo_Async -> Expr
+;
+
+IDENTIFIER_list_COMMA_separated :
+  IDENTIFIER_list_COMMA_separated COMMA IDENTIFIER
+| IDENTIFIER
 ;
 
 delayed_Async :

@@ -1,6 +1,9 @@
 package syntax
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 // Expand rewrites the grammar substituting extended notation clauses with equivalent
 // context-free production forms. Every nonterminal becomes a choice of sequences (production
@@ -17,19 +20,23 @@ import "log"
 // contain references only. Arrow can contain a sub-sequence if it reports more than one
 // symbol reference.
 func Expand(m *Model) error {
-	for _, nt := range m.Nonterms {
+	e := &expander{
+		Model: m,
+		m:     make(map[string]int),
+		perm:  make([]int, len(m.Nonterms)),
+	}
+	for i, nt := range m.Nonterms {
+		e.curr = i
+		e.perm[i] = i + e.extra
 		switch nt.Value.Kind {
-		case List:
-			// TODO expand lists
-			log.Fatal("not implemented for lists")
 		case Choice:
 			var out []*Expr
 			for _, rule := range nt.Value.Sub {
-				out = append(out, expandRule(rule)...)
+				out = append(out, e.expandRule(rule)...)
 			}
 			nt.Value.Sub = collapseEmpty(out)
 		default:
-			rules := expandRule(nt.Value)
+			rules := e.expandRule(nt.Value)
 			nt.Value = &Expr{
 				Kind:   Choice,
 				Sub:    collapseEmpty(rules),
@@ -37,12 +44,108 @@ func Expand(m *Model) error {
 			}
 		}
 	}
+
+	// Move extracted nonterminals right after their first usage.
+	m.Rearrange(e.perm)
+
+	// Expand top expressions of all extracted nonterminals.
+	for self, nt := range m.Nonterms {
+		switch nt.Value.Kind {
+		case Set:
+			// TODO implement
+		case Optional:
+			// Note: this case facilitates 0..* lists extraction.
+			nt.Value = &Expr{
+				Kind: Choice,
+				Sub: []*Expr{
+					nt.Value.Sub[0],
+					{Kind: Empty},
+				},
+				Origin: nt.Value.Origin,
+			}
+		case List:
+			// Note: at this point all lists have at least one element.
+			rr := nt.Value.ListFlags&RightRecursive != 0
+			elem := nt.Value.Sub[0]
+			rec := &Expr{Kind: Sequence, Origin: nt.Value.Origin}
+			rec.Sub = append(rec.Sub, &Expr{Kind: Reference, Symbol: len(m.Terminals) + self, Model: m})
+			if len(nt.Value.Sub) > 1 {
+				if rr {
+					rec = concat(nt.Value.Sub[1], rec)
+				} else {
+					rec = concat(rec, nt.Value.Sub[1])
+				}
+			}
+			nt.Value = &Expr{
+				Kind:   Choice,
+				Origin: nt.Value.Origin,
+			}
+			if elem.Kind == Choice {
+				if rr {
+					nt.Value.Sub = append(nt.Value.Sub, multiConcat(elem.Sub, []*Expr{rec})...)
+				} else {
+					nt.Value.Sub = append(nt.Value.Sub, multiConcat([]*Expr{rec}, elem.Sub)...)
+				}
+				nt.Value.Sub = append(nt.Value.Sub, elem.Sub...)
+			} else {
+				if rr {
+					nt.Value.Sub = append(nt.Value.Sub, concat(elem, rec))
+				} else {
+					nt.Value.Sub = append(nt.Value.Sub, concat(rec, elem))
+				}
+				nt.Value.Sub = append(nt.Value.Sub, elem)
+			}
+		}
+	}
 	return nil
 }
 
-func expandRule(rule *Expr) []*Expr {
+type expander struct {
+	*Model
+	curr  int
+	extra int
+	perm  []int
+	m     map[string]int // name -> index in Model.Nonterms
+}
+
+func (e *expander) extractNonterm(expr *Expr) *Expr {
+	name := ProvisionalName(expr, e.Model)
+	if existing, ok := e.m[name]; ok && expr.Equal(e.Nonterms[existing].Value) {
+		sym := len(e.Terminals) + existing
+		return &Expr{Kind: Reference, Symbol: sym, Model: e.Model}
+	}
+
+	if _, ok := e.m[name]; name == "" || ok {
+		index := 1
+		base := name
+		if name == "" {
+			base = e.Nonterms[e.curr].Name + "$"
+		}
+		for {
+			name = fmt.Sprintf("%v%v", base, index)
+			if _, ok := e.m[name]; !ok {
+				break
+			}
+			index++
+		}
+	}
+
+	sym := len(e.Terminals) + len(e.Nonterms)
+	e.m[name] = len(e.Nonterms)
+	nt := &Nonterm{
+		Name:   name,
+		Value:  expr,
+		Origin: expr.Origin,
+	}
+	e.Nonterms = append(e.Nonterms, nt)
+	e.extra++
+	e.perm = append(e.perm, e.curr+e.extra)
+	return &Expr{Kind: Reference, Symbol: sym, Model: e.Model}
+}
+
+func (e *expander) expandRule(rule *Expr) []*Expr {
 	if rule.Kind == Prec {
-		ret := expandExpr(rule.Sub[0])
+		ret := e.expandExpr(rule.Sub[0])
 		for i, val := range ret {
 			ret[i] = &Expr{
 				Kind:   Prec,
@@ -55,29 +158,29 @@ func expandRule(rule *Expr) []*Expr {
 		return ret
 	}
 
-	return expandExpr(rule)
+	return e.expandExpr(rule)
 }
 
-func expandExpr(expr *Expr) []*Expr {
+func (e *expander) expandExpr(expr *Expr) []*Expr {
 	switch expr.Kind {
 	case Empty:
 		return []*Expr{expr}
 	case Optional:
-		return append(expandExpr(expr.Sub[0]), &Expr{Kind: Empty})
+		return append(e.expandExpr(expr.Sub[0]), &Expr{Kind: Empty})
 	case Sequence:
 		ret := []*Expr{{Kind: Empty}}
-		for _, e := range expr.Sub {
-			ret = multiConcat(ret, expandExpr(e))
+		for _, sub := range expr.Sub {
+			ret = multiConcat(ret, e.expandExpr(sub))
 		}
 		return ret
 	case Choice:
 		var ret []*Expr
-		for _, e := range expr.Sub {
-			ret = append(ret, expandExpr(e)...)
+		for _, sub := range expr.Sub {
+			ret = append(ret, e.expandExpr(sub)...)
 		}
 		return ret
 	case Arrow, Assign, Append:
-		ret := expandExpr(expr.Sub[0])
+		ret := e.expandExpr(expr.Sub[0])
 		for i, val := range ret {
 			ret[i] = &Expr{
 				Kind:   expr.Kind,
@@ -87,6 +190,27 @@ func expandExpr(expr *Expr) []*Expr {
 			}
 		}
 		return ret
+	case Set:
+		return []*Expr{e.extractNonterm(expr)}
+	case List:
+		out := &Expr{Kind: List, Origin: expr.Origin, ListFlags: expr.ListFlags | OneOrMore}
+		out.Sub = e.expandExpr(expr.Sub[0])
+		if len(out.Sub) > 1 {
+			// We support a choice of elements
+			out.Sub = []*Expr{{Kind: Choice, Sub: out.Sub, Origin: expr.Origin}}
+		}
+		if len(expr.Sub) > 1 {
+			sep := e.expandExpr(expr.Sub[1])
+			if len(sep) > 1 {
+				log.Fatal("inconsistent state, only simple separators are supported at this stage")
+			}
+			out.Sub = append(out.Sub, sep[0])
+		}
+		ret := e.extractNonterm(out)
+		if expr.ListFlags&OneOrMore == 0 {
+			ret = e.extractNonterm(&Expr{Kind: Optional, Sub: []*Expr{ret}})
+		}
+		return []*Expr{ret}
 	}
 	return []*Expr{expr}
 }
@@ -143,16 +267,41 @@ func collapseEmpty(list []*Expr) []*Expr {
 	return out
 }
 
-// symbolBehind searches for a single reference behind expr and returns its symbol.
-func symbolBehind(expr *Expr, m *Model) string {
+// ProvisionalName produces a name for a grammar expression.
+func ProvisionalName(expr *Expr, m *Model) string {
 	switch expr.Kind {
 	case Reference:
 		if expr.Symbol < len(m.Terminals) {
 			return m.Terminals[expr.Symbol]
 		}
 		return m.Nonterms[expr.Symbol-len(m.Terminals)].Name
-	case Optional, Assign, Append, Arrow:
-		return symbolBehind(expr.Sub[0], m)
+	case Optional:
+		ret := ProvisionalName(expr.Sub[0], m)
+		if ret != "" {
+			ret += "opt"
+		}
+		return ret
+	case Assign, Append, Arrow:
+		return ProvisionalName(expr.Sub[0], m)
+	case List:
+		ret := ProvisionalName(expr.Sub[0], m)
+		if ret == "" {
+			return ""
+		}
+		if nonempty := expr.ListFlags&OneOrMore != 0; nonempty {
+			ret += "_list"
+		} else {
+			ret += "_optlist"
+		}
+		if len(expr.Sub) > 1 {
+			sep := ProvisionalName(expr.Sub[1], m)
+			if sep != "" {
+				ret = fmt.Sprintf("%v_%v_separated", ret, sep)
+			} else {
+				ret += "_withsep"
+			}
+		}
+		return ret
 	case Choice, Sequence:
 		var cand *Expr
 		for _, sub := range expr.Sub {
@@ -166,14 +315,11 @@ func symbolBehind(expr *Expr, m *Model) string {
 			cand = sub
 		}
 		if cand != nil {
-			return symbolBehind(cand, m)
+			return ProvisionalName(cand, m)
 		}
+	case Set:
+		// TODO
+		return "setof_"
 	}
-	return ""
-}
-
-func listName(expr *Expr, m *Model) string {
-	//nonempty := expr.ListFlags&OneOrMore != 0
-	// TODO implement
 	return ""
 }

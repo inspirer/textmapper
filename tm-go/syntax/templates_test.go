@@ -130,6 +130,22 @@ var modelTests = []struct {
 		`Z: a? {Foo} -> A ;`,
 		`Z: a {Foo} -> A | {Foo} -> A ;`,
 	},
+	{"Expand", syntax.Expand,
+		`Z: q | a+ ;`,
+		`Z: q | a_list ; a_list: a_list a | a;`,
+	},
+	{"Expand", syntax.Expand,
+		`Z: q | a* ;`,
+		`Z: q | a_listopt ; a_list: a_list a | a; a_listopt: a_list | ;`,
+	},
+	{"Expand", syntax.Expand,
+		`Z: b | (a separator b)+ ;`,
+		`Z: b | a_list_b_separated ; a_list_b_separated: a_list_b_separated b a | a;`,
+	},
+	{"Expand", syntax.Expand,
+		`Z: b | (a separator b)* ;`,
+		`Z: b | a_list_b_separatedopt ; a_list_b_separated: a_list_b_separated b a | a; a_list_b_separatedopt: a_list_b_separated | ;`,
+	},
 }
 
 func TestModelTransforms(t *testing.T) {
