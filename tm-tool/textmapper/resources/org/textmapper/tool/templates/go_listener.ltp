@@ -26,9 +26,12 @@ ${query typedescr(rangeType) =
 
 
 ${template nodeTypeImpl-}
-type ${self->nodeTypeRef()->go.declarationName()} int
+type ${self->nodeType()} ${self->go_listener.hasFlags() ? 'uint16' : 'int'}
+${if self->go_listener.hasFlags()}
+type ${self->nodeFlagsRef()->go.declarationName()} uint16
+${end-}
 
-type Listener func(t ${self->nodeTypeRef()}, offset, endoffset int)
+type Listener func(t ${self->nodeTypeRef()}, ${if self->go_listener.hasFlags()}flags ${self->nodeFlagsRef()}, ${end}offset, endoffset int)
 
 const (
 	NoType ${self->nodeTypeRef()} = iota
@@ -88,8 +91,19 @@ ${query localNodeType() = self->go.package()->go.element(self->nodeType()) == se
 ${query stripArrows() = ind = self.indexOf('->'), (ind >= 0 ? self.substring(0, ind) : self).trim()};
 ${query nodeType() = self->nodeTypeRef()->go.declarationName()}
 ${query nodeTypeRef() = self->go.package()->go.element('NodeType')}
+${query nodeFlagsRef() = self->go.package()->go.element('NodeFlags')}
 ${query nodeTypeValueRef() = self->go.package()->go.element(self->asRangeTypeName())}
-${query nodeFlags() = self.collect(it|'|'+it)->util.join('')}
+${query hasFlags() = false}
+${query nodeFlags() = self.length == 0 ? self->noFlags() : self->util.join('|')}
+${query spaceTokenFlags() = self->noFlags()}
+${query skippedDuringRecoveryFlags() = self->noFlags()}
+${query noFlags() = '0'}
+${query packFlags(t,flags) =
+    cast = self->hasFlags() ? 'uint32('+t+')' : t,
+    flags == self->noFlags() ? cast : cast + ' + uint32('+flags+')<<16'}
+${query unpackFlags(nt) =
+    self->nodeTypeRef() + '(' + nt + '&0xffff), ' + self->nodeFlagsRef() + '(' + nt + '>>16)'}
+
 ${query interfaceEnumValueRef() = self->go.package()->go.element(self->asRangeTypeName())}
 ${query nodeTypeValueString() = self->asRangeTypeName()}
 ${query listenerTypeRef() = self->go.package()->go.element('Listener')}

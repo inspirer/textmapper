@@ -6,9 +6,11 @@ import (
 	"fmt"
 )
 
-type NodeType int
+type NodeType uint16
 
-type Listener func(t NodeType, offset, endoffset int)
+type NodeFlags uint16
+
+type Listener func(t NodeType, flags NodeFlags, offset, endoffset int)
 
 const (
 	NoType NodeType = iota

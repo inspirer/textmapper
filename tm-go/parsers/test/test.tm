@@ -121,9 +121,9 @@ Declaration -> Declaration :
       {
         switch $IntegerConstant {
         case 7:
-          p.listener(Int7, ${first().offset}, ${last().endoffset})
+          p.listener(Int7, 0, ${first().offset}, ${last().endoffset})
         case 9:
-          p.listener(Int9, ${first().offset}, ${last().endoffset})
+          p.listener(Int9, 0, ${first().offset}, ${last().endoffset})
         }
       }                                                  -> Int
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
@@ -175,3 +175,5 @@ ${end}
 ${template go_lexer.onBeforeNext-}
 	var commentOffset, commentDepth int
 ${end}
+
+${query go_listener.hasFlags() = true}

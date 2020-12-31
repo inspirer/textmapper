@@ -10,13 +10,14 @@ import (
 
 var parseTests = []struct {
 	nt     test.NodeType
+	flags  test.NodeFlags
 	inputs []string
 }{
 
-	{test.Test, []string{
+	{test.Test, 0, []string{
 		` «decl2 decl1(a)»`,
 	}},
-	{test.Block, []string{
+	{test.Block, 0, []string{
 		`«{decl2}»`,
 		`«{-decl2}»`,
 		`«{--decl2}»`,
@@ -24,66 +25,66 @@ var parseTests = []struct {
 		`«{-}»`,
 		`«{}»`,
 	}},
-	{test.Negation, []string{
+	{test.Negation, 0, []string{
 		`{«-»decl2}`,
 		`{«--»decl2}`,
 		`{«--»}`,
 		`{«-»}`,
 		`{«-»{«-»decl2}}`,
 	}},
-	{test.Decl1, []string{
+	{test.Decl1, 0, []string{
 		`{«decl1(a.b.c.d123)»}`,
 	}},
-	{test.Decl2, []string{
+	{test.Decl2, 0, []string{
 		`«decl2»`,
 	}},
-	{test.Int, []string{
+	{test.Int, 0, []string{
 		`«42» «7» «9» `,
 		`{«42»}`,
 		`{«42[]»}`,
 	}},
-	{test.Int7, []string{
+	{test.Int7, 0, []string{
 		`«7» 42 `,
 		`{«7»}`,
 		`{«7[]»}`,
 	}},
-	{test.Int9, []string{
+	{test.Int9, 0, []string{
 		`9
           «9»    `,
 		`{3 «9» 11 «9»}`,
 		`{-- 5 «9[]» 3}`,
 	}},
-	{test.LastInt, []string{
+	{test.LastInt, 0, []string{
 		"«9»",
 		"«9\n»\n9 ",
 		"«9\n»\n«9»",
 	}},
-	{test.Empty1, []string{
+	{test.Empty1, 0, []string{
 		` test (   «»)  `,
 	}},
-	{test.TestClause, []string{
+	{test.TestClause, 0, []string{
 		`«test {}»`,
 		`«test { decl1 }»`,
 		`«test { decl2 decl1 }»`,
 	}},
-	{test.TestIntClause | test.InTest | test.InFoo, []string{
+	{test.TestIntClause, test.InTest | test.InFoo, []string{
 		`{ «test 1» }`,
 	}},
-	{test.Icon | test.InTest, []string{
+	{test.Icon, test.InTest, []string{
 		`{ test «1» }`,
 	}},
 
-	{test.MultiLineComment, []string{
+	{test.MultiLineComment, 0, []string{
 		` decl2 «/* ****/» decl1(a)`,
 	}},
-	{test.SingleLineComment, []string{
+	{test.SingleLineComment, 0, []string{
 		` decl2 «// abc»
 		 decl1(a)`,
 	}},
-	{test.InvalidToken, []string{
+	{test.InvalidToken, 0, []string{
 		` decl2 «%» `,
 	}},
-	{test.Identifier, []string{
+	{test.Identifier, 0, []string{
 		` decl1(«abc».«def1») `,
 	}},
 }
@@ -95,11 +96,11 @@ func TestParser(t *testing.T) {
 	seen := map[test.NodeType]bool{}
 	ctx := context.Background()
 	for _, tc := range parseTests {
-		seen[tc.nt&^(test.InTest|test.InFoo)] = true
+		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			pt := parsertest.New(t, tc.nt.String(), input)
 			l.Init(pt.Source())
-			p.Init(func(tn test.NodeType, offset, endoffset int) {
+			p.Init(func(tn test.NodeType, flags test.NodeFlags, offset, endoffset int) {
 				if tn == tc.nt {
 					pt.Consume(t, offset, endoffset)
 				}

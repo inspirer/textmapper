@@ -137,7 +137,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 			if state != -1 && p.next.symbol != eoiToken {
 				switch Token(p.next.symbol) {
 				case IDENTIFIER:
-					p.listener(Identifier, p.next.offset, p.next.endoffset)
+					p.listener(Identifier, 0, p.next.offset, p.next.endoffset)
 				}
 				p.next.symbol = noToken
 			}
@@ -220,21 +220,21 @@ restart:
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
 	case 5: // Declaration : '{' '-' '-' Declaration_list '}'
-		p.listener(Negation, rhs[1].sym.offset, rhs[2].sym.endoffset)
+		p.listener(Negation, 0, rhs[1].sym.offset, rhs[2].sym.endoffset)
 	case 6: // Declaration : '{' '-' '-' '}'
-		p.listener(Negation, rhs[1].sym.offset, rhs[2].sym.endoffset)
+		p.listener(Negation, 0, rhs[1].sym.offset, rhs[2].sym.endoffset)
 	case 7: // Declaration : '{' '-' Declaration_list '}'
-		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.listener(Negation, 0, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 8: // Declaration : '{' '-' '}'
-		p.listener(Negation, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.listener(Negation, 0, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 12: // Declaration : IntegerConstant '[' ']'
 		nn0, _ := rhs[0].value.(int)
 		{
 			switch nn0 {
 			case 7:
-				p.listener(Int7, rhs[0].sym.offset, rhs[2].sym.endoffset)
+				p.listener(Int7, 0, rhs[0].sym.offset, rhs[2].sym.endoffset)
 			case 9:
-				p.listener(Int9, rhs[0].sym.offset, rhs[2].sym.endoffset)
+				p.listener(Int9, 0, rhs[0].sym.offset, rhs[2].sym.endoffset)
 			}
 		}
 	case 13: // Declaration : IntegerConstant
@@ -242,18 +242,18 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		{
 			switch nn0 {
 			case 7:
-				p.listener(Int7, rhs[0].sym.offset, rhs[0].sym.endoffset)
+				p.listener(Int7, 0, rhs[0].sym.offset, rhs[0].sym.endoffset)
 			case 9:
-				p.listener(Int9, rhs[0].sym.offset, rhs[0].sym.endoffset)
+				p.listener(Int9, 0, rhs[0].sym.offset, rhs[0].sym.endoffset)
 			}
 		}
 	case 15: // Declaration : 'test' '(' empty1 ')'
-		p.listener(Empty1, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.listener(Empty1, 0, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 16: // Declaration : 'test' IntegerConstant
-		p.listener(Icon|InTest, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.listener(Icon, InTest, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {
-		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
+		p.listener(NodeType(nt&0xffff), NodeFlags(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return
 }
@@ -273,5 +273,5 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 	if debugSyntax {
 		fmt.Printf("ignored: %v as %v\n", Token(tok.symbol), t)
 	}
-	p.listener(t, tok.offset, tok.endoffset)
+	p.listener(t, 0, tok.offset, tok.endoffset)
 }

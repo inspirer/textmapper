@@ -548,7 +548,7 @@ ${end-}
 	if debugSyntax {
 		"fmt".Printf("ignored: %v as %v\n", ${self->go_token.tokenTypeRef()}(tok.symbol), t)
 	}
-	p.listener(t, tok.offset, tok.endoffset)
+	p.listener(t, ${if self->go_listener.hasFlags()}${self->go_listener.spaceTokenFlags()}, ${end}tok.offset, tok.endoffset)
 }
 ${end}
 
@@ -557,7 +557,7 @@ ${if self->nonignoredReportTokens()-}
 			switch ${self->go_token.tokenTypeRef()}(p.next.symbol) {
 ${foreach tok in self->nonignoredReportTokens()-}
 			case ${tok->go_token.tokenRef()}:
-				p.listener(${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}, p.next.offset, p.next.endoffset)
+				p.listener(${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}, ${if self->go_listener.hasFlags()}${self->go_listener.skippedDuringRecoveryFlags()}, ${end}p.next.offset, p.next.endoffset)
 ${end-}
 			}
 ${end-}
@@ -729,7 +729,11 @@ ${call caseLookaheadRules(false)-}
 ${end-}
 ${if self->eventBased()-}
 	if nt := tmRuleType[rule]; nt != 0 {
+${if self->go_listener.hasFlags()-}
+		p.listener(${self->go_listener.unpackFlags('nt')}, lhs.sym.offset, lhs.sym.endoffset)
+${else-}
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
+${end-}
 	}
 ${end-}
 	return
@@ -794,11 +798,7 @@ var tmRuleSymbol = []int32{
 ${util.formatEx(parser.left, '\t', 79)-}
 }
 ${if self->eventBased()}
-var tmRuleType = [...]${self->go_listener.nodeTypeRef()}{
-${foreach rule in syntax.rules-}
-	${v = rule.rangeType(), v == '' || self->isFileNode(v) ? 0 : v->go_listener.nodeTypeValueRef()}${rule.flags()->go_listener.nodeFlags()}, // ${rule}
-${end-}
-}
+${call tmRuleType-}
 ${end-}
 ${foreach set in syntax.sets-}
 
@@ -809,6 +809,14 @@ ${util.formatEx(set.elements, '\t', 79)-}
 ${end-}
 }
 ${end-}
+${end}
+
+${template tmRuleType-}
+var tmRuleType = [...]${self->go_listener.hasFlags() ? 'uint32' : self->go_listener.nodeTypeRef()}{
+${foreach rule in syntax.rules-}
+	${v = rule.rangeType(), v == '' || self->isFileNode(v) ? 0 : self->go_listener.packFlags(v->go_listener.nodeTypeValueRef(), rule.flags()->go_listener.nodeFlags())}, // ${rule}
+${end-}
+}
 ${end}
 
 ${cached query isFileNode(v) = v == context.opts.fileNode }
@@ -824,7 +832,7 @@ ${cached query hasRecovering() = syntax.error && syntax.sets.exists(it|it.name.c
 ${template parserAction($)-}
 ${if customRanges()-}
 ${foreach range in customRanges()-}
-		p.listener(${range.rangeType()->go_listener.nodeTypeValueRef()}${range.flags()->go_listener.nodeFlags()}, ${range.first().offset}, ${range.last().endoffset})
+		p.listener(${range.rangeType()->go_listener.nodeTypeValueRef()}, ${if self->go_listener.hasFlags()}${range.flags()->go_listener.nodeFlags()}, ${end}${range.first().offset}, ${range.last().endoffset})
 ${end-}
 ${end-}
 ${if codeTemplate()-}
