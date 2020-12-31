@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"fmt"
+	"github.com/inspirer/textmapper/tm-go/util/ident"
 	"log"
 )
 
@@ -272,7 +273,7 @@ func ProvisionalName(expr *Expr, m *Model) string {
 	switch expr.Kind {
 	case Reference:
 		if expr.Symbol < len(m.Terminals) {
-			return m.Terminals[expr.Symbol]
+			return ident.Produce(m.Terminals[expr.Symbol], ident.CamelCase)
 		}
 		return m.Nonterms[expr.Symbol-len(m.Terminals)].Name
 	case Optional:

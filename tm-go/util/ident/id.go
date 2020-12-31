@@ -1,4 +1,4 @@
-package grammar
+package ident
 
 import (
 	"fmt"
@@ -7,14 +7,14 @@ import (
 	"unicode/utf8"
 )
 
-// nameStyle enumerates all supported identifier styles.
-type nameStyle int
+// Style enumerates all supported identifier styles.
+type Style int
 
 const (
-	CamelCase        nameStyle = iota // FooBar
-	CamelLower                        // fooBar
-	UpperCase                         // FOOBAR
-	UpperUnderscores                  // FOO_BAR
+	CamelCase        Style = iota // FooBar
+	CamelLower                    // fooBar
+	UpperCase                     // FOOBAR
+	UpperUnderscores              // FOO_BAR
 )
 
 // charName contains the default names of non-letter ascii symbols.
@@ -56,8 +56,8 @@ var charName = map[rune]string{
 	'~':  "tilde",
 }
 
-// SymbolID produces a valid identifier for a symbol name.
-func SymbolID(name string, style nameStyle) string {
+// Produce produces a valid identifier for a symbol name.
+func Produce(name string, style Style) string {
 	var inQuotes bool
 	if ln := len(name); ln > 2 && name[0] == '\'' && name[ln-1] == '\'' {
 		name = name[1 : ln-1]

@@ -12,6 +12,7 @@ import (
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/container"
+	"github.com/inspirer/textmapper/tm-go/util/ident"
 	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 	"github.com/inspirer/textmapper/tm-parsers/tm/selector"
 )
@@ -283,7 +284,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 		return sym.Index
 	}
 	if id == "" {
-		id = SymbolID(name, UpperCase)
+		id = ident.Produce(name, ident.UpperCase)
 	}
 	if prev, exists := c.ids[id]; exists {
 		c.errorf(n, "%v and %v get the same ID in generated code", name, prev)
@@ -310,7 +311,7 @@ func (c *compiler) addNonterms(nonterms []*syntax.Nonterm) {
 			// TODO come up with a better error message
 			c.errorf(nt.Origin, "duplicate name %v", name)
 		}
-		id := SymbolID(name, CamelCase)
+		id := ident.Produce(name, ident.CamelCase)
 		if prev, exists := c.ids[id]; exists {
 			c.errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
 		}
@@ -660,7 +661,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 				c.errorf(nonterm.Name(), "redeclaration of a template parameter '%v'", name)
 				continue
 			}
-			id := SymbolID(name, CamelCase)
+			id := ident.Produce(name, ident.CamelCase)
 			if prev, exists := c.ids[id]; exists {
 				c.errorf(nonterm.Name(), "%v and %v get the same ID in generated code", name, prev)
 			}

@@ -1,4 +1,4 @@
-package grammar
+package ident
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 
 var idTests = []struct {
 	input string
-	style nameStyle
+	style Style
 	want  string
 }{
 	{"abc", CamelCase, "Abc"},
@@ -79,8 +79,8 @@ var idTests = []struct {
 
 func TestSymbolID(t *testing.T) {
 	for _, tc := range idTests {
-		if got := SymbolID(tc.input, tc.style); got != tc.want {
-			t.Errorf("SymbolID(%v,%v) = %v, want: %v", tc.input, tc.style, got, tc.want)
+		if got := Produce(tc.input, tc.style); got != tc.want {
+			t.Errorf("Produce(%v,%v) = %v, want: %v", tc.input, tc.style, got, tc.want)
 		}
 	}
 }

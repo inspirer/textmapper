@@ -9,16 +9,16 @@ var nameTests = []struct {
 	input string
 	want  string
 }{
-	{`%input Z; Z: a+;`, "a_list"},
-	{`%input Z; Z: a*;`, "a_optlist"},
-	{`%input Z; Z: a* -> Foo;`, "a_optlist"},
-	{`%input Z; Z: QQ=a+;`, "a_list"},
-	{`%input Z; Z: (a separator b)+;`, "a_list_b_separated"},
-	{`%input Z; Z: .foo (a separator b)* .bar;`, "a_optlist_b_separated"},
-	{`%input Z; Z: .foo (a separator b c)* .bar;`, "a_optlist_withsep"},
-	{`%input Z; Z: a?;`, "aopt"},
+	{`%input Z; Z: a+;`, "A_list"},
+	{`%input Z; Z: a*;`, "A_optlist"},
+	{`%input Z; Z: a* -> Foo;`, "A_optlist"},
+	{`%input Z; Z: QQ=a+;`, "A_list"},
+	{`%input Z; Z: (a separator b)+;`, "A_list_B_separated"},
+	{`%input Z; Z: .foo (a separator b)* .bar;`, "A_optlist_B_separated"},
+	{`%input Z; Z: .foo (a separator b c)* .bar;`, "A_optlist_withsep"},
+	{`%input Z; Z: a?;`, "Aopt"},
 	{`%input Z; Z: B?; B:;`, "Bopt"},
-	{`%input Z; Z: (a separator b c)+?;`, "a_list_withsepopt"},
+	{`%input Z; Z: (a separator b c)+?;`, "A_list_withsepopt"},
 }
 
 func TestProvisionalName(t *testing.T) {
