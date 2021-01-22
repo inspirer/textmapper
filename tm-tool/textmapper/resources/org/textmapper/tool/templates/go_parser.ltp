@@ -522,7 +522,7 @@ ${if self->ignoredReportTokens()-}
 		goto restart
 ${end-}
 ${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
-	case ${self->go_token.invalidTokenName()}:
+	case ${self->go_token.invalidTokenRef()}:
 		goto restart
 ${end-}
 	}
@@ -573,7 +573,7 @@ ${if self->ignoredReportTokens()-}
 		goto restart
 ${end-}
 ${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
-	case ${self->go_token.invalidTokenName()}:
+	case ${self->go_token.invalidTokenRef()}:
 		goto restart
 ${end-}
 	}
