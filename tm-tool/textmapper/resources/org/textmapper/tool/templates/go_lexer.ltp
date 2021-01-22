@@ -214,7 +214,7 @@ ${end-}
 ${end-}
 ${if self->canInlineLexerRules()-}
 	switch ${self->go_token.tokenVar()} {
-	case ${self->go_token.invalidTokenName()}:
+	case ${self->go_token.invalidTokenRef()}:
 ${call handleInvalidToken-}
 ${if list = syntax.lexerRules.select(r|r->isSpace()).collectUnique(r|r.symbol.index), list.size() > 0-}
 	case ${list->util.join(', ')}:
@@ -336,7 +336,7 @@ ${end-}
 			l.rewind(l.scanOffset)
 		}
 ${if self->canInlineLexerRules()-}
-		if ${self->go_token.tokenVar()} != ${self->go_token.invalidTokenName()} {
+		if ${self->go_token.tokenVar()} != ${self->go_token.invalidTokenRef()} {
 ${else-}
 		if rule != 0 {
 ${end-}

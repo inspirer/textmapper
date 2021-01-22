@@ -46,6 +46,7 @@ ${query numTokensRef() = self->package()->go.element('NumTokens')}
 ${query eoiRef() = self->package()->go.element('EOI')}
 ${query unavailableRef() = self->package()->go.element('UNAVAILABLE')}
 ${query tokenRef() = self->package()->go.element(self->tokenName())}
+${query invalidTokenRef() = self->package()->go.element(self->invalidTokenName())}
 
 ${cached query tokenName() = self.id->go.escapeGoReserved()}
 
