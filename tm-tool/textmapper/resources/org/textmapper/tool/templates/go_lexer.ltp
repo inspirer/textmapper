@@ -191,7 +191,7 @@ ${if self->classRules().exists(it|it->classHasInstances())-}
 	switch ${self->canInlineLexerRules() ? self->go_token.tokenVar() : 'rule'} {
 ${foreach classRule in self->classRules().select(it|it->classHasInstances())-}
 ${if self->canInlineLexerRules()-}
-	case ${classRule.symbol->go_token.tokenName()}:
+	case ${classRule.symbol->go_token.tokenRef()}:
 ${else-}
 	case ${classRule.index+2}:
 ${end-}
@@ -352,7 +352,7 @@ ${end}
 ${template instanceToRuleIf(val,instanceRule)-}
 			if hash == 0x${util.hashHex(val)} && "${util.escape(val)}" == l.source[l.tokenOffset:l.offset] {
 ${if self->canInlineLexerRules()-}
-				${self->go_token.tokenVar()} = ${instanceRule.symbol->go_token.tokenName()}
+				${self->go_token.tokenVar()} = ${instanceRule.symbol->go_token.tokenRef()}
 ${else-}
 				rule = ${instanceRule.index+2}
 ${end-}
