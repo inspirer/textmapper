@@ -1,3 +1,3 @@
 module github.com/inspirer/textmapper
 
-go 1.14
+go 1.16
