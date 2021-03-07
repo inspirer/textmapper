@@ -1077,7 +1077,7 @@ AsyncConciseBody<In> :
 ;
 
 MethodDefinition<Yield, Await> -> MethodDefinition /* interface */:
-    PropertyName '?'? UniqueFormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> -> Method
+    PropertyName ('?'|'!')? UniqueFormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> -> Method
   | GeneratorMethod
   | AsyncMethod
   | AsyncGeneratorMethod
@@ -1089,7 +1089,7 @@ PropertySetParameterList :
     Parameter<~Yield, ~Await> ;
 
 GeneratorMethod<Yield, Await> -> GeneratorMethod :
-    '*' PropertyName UniqueFormalParameters<+Yield, ~Await> GeneratorBody ;
+    '*' PropertyName ('?'|'!')? UniqueFormalParameters<+Yield, ~Await> GeneratorBody ;
 
 GeneratorDeclaration -> Generator :
     'function' '*' BindingIdentifier? FormalParameters<+Yield, ~Await> GeneratorBody ;
@@ -1107,7 +1107,7 @@ YieldExpression<In, Await> -> Yield :
 ;
 
 AsyncMethod<Yield, Await> -> AsyncMethod :
-    'async' .afterAsync .noLineBreak PropertyName UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
+    'async' .afterAsync .noLineBreak PropertyName ('?'|'!')? UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
 AsyncFunctionDeclaration -> AsyncFunc :
     'async' .afterAsync .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield, +Await> AsyncFunctionBody ;
@@ -1119,7 +1119,7 @@ AsyncFunctionBody :
     FunctionBody<~Yield, +Await> ;
 
 AsyncGeneratorMethod<Yield, Await> -> AsyncGeneratorMethod :
-    'async' .afterAsync .noLineBreak '*' PropertyName UniqueFormalParameters<+Yield, +Await> AsyncGeneratorBody ;
+    'async' .afterAsync .noLineBreak '*' PropertyName ('?'|'!')? UniqueFormalParameters<+Yield, +Await> AsyncGeneratorBody ;
 
 AsyncGeneratorDeclaration -> AsyncGeneratorDeclaration :
     'async' .afterAsync .noLineBreak 'function' '*' BindingIdentifier? FormalParameters<+Yield, +Await> AsyncGeneratorBody ;

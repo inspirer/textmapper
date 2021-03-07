@@ -6147,6 +6147,7 @@ AsyncConciseBody_In :
 
 MethodDefinition :
   PropertyName QUEST UniqueFormalParameters FunctionBody
+| PropertyName EXCL UniqueFormalParameters FunctionBody
 | PropertyName UniqueFormalParameters FunctionBody
 | GeneratorMethod
 | AsyncMethod
@@ -6157,6 +6158,7 @@ MethodDefinition :
 
 MethodDefinition_Await :
   PropertyName_Await QUEST UniqueFormalParameters FunctionBody
+| PropertyName_Await EXCL UniqueFormalParameters FunctionBody
 | PropertyName_Await UniqueFormalParameters FunctionBody
 | GeneratorMethod_Await
 | AsyncMethod_Await
@@ -6167,6 +6169,7 @@ MethodDefinition_Await :
 
 MethodDefinition_Yield :
   PropertyName_Yield QUEST UniqueFormalParameters FunctionBody
+| PropertyName_Yield EXCL UniqueFormalParameters FunctionBody
 | PropertyName_Yield UniqueFormalParameters FunctionBody
 | GeneratorMethod_Yield
 | AsyncMethod_Yield
@@ -6177,6 +6180,7 @@ MethodDefinition_Yield :
 
 MethodDefinition_Yield_Await :
   PropertyName_Yield_Await QUEST UniqueFormalParameters FunctionBody
+| PropertyName_Yield_Await EXCL UniqueFormalParameters FunctionBody
 | PropertyName_Yield_Await UniqueFormalParameters FunctionBody
 | GeneratorMethod_Yield_Await
 | AsyncMethod_Yield_Await
@@ -6190,19 +6194,27 @@ PropertySetParameterList :
 ;
 
 GeneratorMethod :
-  MULT PropertyName UniqueFormalParameters_Yield GeneratorBody
+  MULT PropertyName QUEST UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName EXCL UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName UniqueFormalParameters_Yield GeneratorBody
 ;
 
 GeneratorMethod_Await :
-  MULT PropertyName_Await UniqueFormalParameters_Yield GeneratorBody
+  MULT PropertyName_Await QUEST UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName_Await EXCL UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName_Await UniqueFormalParameters_Yield GeneratorBody
 ;
 
 GeneratorMethod_Yield :
-  MULT PropertyName_Yield UniqueFormalParameters_Yield GeneratorBody
+  MULT PropertyName_Yield QUEST UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName_Yield EXCL UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName_Yield UniqueFormalParameters_Yield GeneratorBody
 ;
 
 GeneratorMethod_Yield_Await :
-  MULT PropertyName_Yield_Await UniqueFormalParameters_Yield GeneratorBody
+  MULT PropertyName_Yield_Await QUEST UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName_Yield_Await EXCL UniqueFormalParameters_Yield GeneratorBody
+| MULT PropertyName_Yield_Await UniqueFormalParameters_Yield GeneratorBody
 ;
 
 GeneratorDeclaration :
@@ -6244,19 +6256,27 @@ YieldExpression_In_Await :
 ;
 
 AsyncMethod :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName UniqueFormalParameters_Await AsyncFunctionBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName QUEST UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName EXCL UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName UniqueFormalParameters_Await AsyncFunctionBody
 ;
 
 AsyncMethod_Await :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Await UniqueFormalParameters_Await AsyncFunctionBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Await QUEST UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Await EXCL UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Await UniqueFormalParameters_Await AsyncFunctionBody
 ;
 
 AsyncMethod_Yield :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield UniqueFormalParameters_Await AsyncFunctionBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield QUEST UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield EXCL UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield UniqueFormalParameters_Await AsyncFunctionBody
 ;
 
 AsyncMethod_Yield_Await :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield_Await UniqueFormalParameters_Await AsyncFunctionBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield_Await QUEST UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield_Await EXCL UniqueFormalParameters_Await AsyncFunctionBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ PropertyName_Yield_Await UniqueFormalParameters_Await AsyncFunctionBody
 ;
 
 AsyncFunctionDeclaration :
@@ -6274,19 +6294,27 @@ AsyncFunctionBody :
 ;
 
 AsyncGeneratorMethod :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName QUEST UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName EXCL UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName UniqueFormalParameters_Yield_Await AsyncGeneratorBody
 ;
 
 AsyncGeneratorMethod_Await :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Await UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Await QUEST UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Await EXCL UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Await UniqueFormalParameters_Yield_Await AsyncGeneratorBody
 ;
 
 AsyncGeneratorMethod_Yield :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield QUEST UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield EXCL UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield UniqueFormalParameters_Yield_Await AsyncGeneratorBody
 ;
 
 AsyncGeneratorMethod_Yield_Await :
-  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield_Await UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+  ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield_Await QUEST UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield_Await EXCL UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+| ASYNC /*.afterAsync*/ /*.noLineBreak*/ MULT PropertyName_Yield_Await UniqueFormalParameters_Yield_Await AsyncGeneratorBody
 ;
 
 AsyncGeneratorDeclaration :

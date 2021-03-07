@@ -708,6 +708,8 @@ var parseTests = []struct {
 		  «async a() {}»
 		  «async yield() {}»
 		  «async await() {}»
+		  «async foo?() {}»
+		  «async bar!() {}»
 		}`,
 		`/*no expectations*/ class A {
 		  async
@@ -761,6 +763,7 @@ var parseTests = []struct {
 		     }
 		   }»
 		 };`,
+		`class A { «async *foo?()» }`,
 	}},
 	{js.Javascript, js.AsyncGeneratorDeclaration, []string{
 		`«async function* readLines(path) {
