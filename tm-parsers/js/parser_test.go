@@ -494,12 +494,17 @@ var parseTests = []struct {
 		`«for (var a in b);»`,
 		`«for (var [a] in b);»`,
 	}},
+	{js.Javascript, js.Await, []string{
+		`async function f() { for «await» (a of b); }`,
+	}},
 	{js.Javascript, js.ForOfStmt, []string{
 		`«for (a of b);»`,
+		`async function f() { «for await (a of b);» }`,
 	}},
 	{js.Javascript, js.ForOfStmtWithVar, []string{
 		`«for (var {name:[name]} of b);»`,
 		`«for (const [[name]] of b);»`,
+		`async function f() { «for await (const [[name]] of b);» }`,
 	}},
 	{js.Javascript, js.ForBinding, []string{
 		`for (var «a» in b);`,
@@ -747,11 +752,39 @@ var parseTests = []struct {
 		`/*no expectations*/ var a = async
 		 function(x) {}`,
 	}},
+	{js.Javascript, js.AsyncGeneratorMethod, []string{
+		`let range = {
+		   «async *[Symbol.asyncIterator]() {
+		     for(let value = this.from; value <= this.to; value++) {
+		       await new Promise(resolve => setTimeout(resolve, 1000));
+		       yield value;
+		     }
+		   }»
+		 };`,
+	}},
+	{js.Javascript, js.AsyncGeneratorDeclaration, []string{
+		`«async function* readLines(path) {
+		   let file = await fileOpen(path);
+		   try {
+		     while (!file.EOF) {
+		       yield await file.readLine();
+		     }
+		   } finally {
+		     await file.close();
+		   }
+		 }»`,
+	}},
+	{js.Javascript, js.AsyncGeneratorExpression, []string{
+		`var a = «async function*(x) {
+		    yield await bar(1);
+		    yield await bar(2);
+		 }»`,
+	}},
 	{js.Javascript, js.AwaitExpr, []string{
 		`async function gogo() {
-       var b = «await func1(10)»;
-       return b + 1;
-     }`,
+		   var b = «await func1(10)»;
+		   return b + 1;
+		 }`,
 		`var f = async v => «await go()»
 		 await + 1`,
 	}},

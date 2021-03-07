@@ -97,46 +97,50 @@ const (
 	ForStmtWithVar   // LetOrConst? Var? (LexicalBinding)* (VarDecl)* ForCondition ForFinalExpr Stmt
 	ForInStmt        // var=Expr object=Expr Stmt
 	ForInStmtWithVar // LetOrConst? Var? ForBinding object=Expr Stmt
-	ForOfStmt        // var=Expr iterable=Expr Stmt
-	ForOfStmtWithVar // LetOrConst? Var? ForBinding iterable=Expr Stmt
-	ForBinding       // BindingPattern? NameIdent?
-	ForCondition     // Expr?
-	ForFinalExpr     // Expr?
-	ContinueStmt     // LabelIdent?
-	BreakStmt        // LabelIdent?
-	ReturnStmt       // Expr?
-	WithStmt         // Expr Stmt
-	SwitchStmt       // Expr Block
-	Case             // Expr (StmtListItem)*
-	Default          // (StmtListItem)*
-	LabelledStmt     // LabelIdent Func? Stmt?
-	ThrowStmt        // Expr
-	TryStmt          // Block Catch? Finally?
-	Catch            // BindingPattern? NameIdent? TypeAnnotation? Block
-	Finally          // Block
+	ForOfStmt        // Await? var=Expr iterable=Expr Stmt
+	ForOfStmtWithVar // Await? LetOrConst? Var? ForBinding iterable=Expr Stmt
+	Await
+	ForBinding   // BindingPattern? NameIdent?
+	ForCondition // Expr?
+	ForFinalExpr // Expr?
+	ContinueStmt // LabelIdent?
+	BreakStmt    // LabelIdent?
+	ReturnStmt   // Expr?
+	WithStmt     // Expr Stmt
+	SwitchStmt   // Expr Block
+	Case         // Expr (StmtListItem)*
+	Default      // (StmtListItem)*
+	LabelledStmt // LabelIdent Func? Stmt?
+	ThrowStmt    // Expr
+	TryStmt      // Block Catch? Finally?
+	Catch        // BindingPattern? NameIdent? TypeAnnotation? Block
+	Finally      // Block
 	DebuggerStmt
-	Func               // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	FuncExpr           // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	Body               // (StmtListItem)*
-	ArrowFunc          // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
-	ConciseBody        // Expr
-	AsyncArrowFunc     // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
-	Method             // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Getter             // PropertyName TypeAnnotation? Body
-	Setter             // PropertyName Parameter Body
-	GeneratorMethod    // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Generator          // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	GeneratorExpr      // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	Yield              // Expr?
-	AsyncMethod        // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFunc          // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFuncExpr      // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	AwaitExpr          // Expr
-	Class              // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
-	ClassExpr          // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
-	Extends            // Expr? TypeReference?
-	TsImplementsClause // (TypeReference)+
-	ClassBody          // (ClassElement)*
+	Func                      // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	FuncExpr                  // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	Body                      // (StmtListItem)*
+	ArrowFunc                 // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
+	ConciseBody               // Expr
+	AsyncArrowFunc            // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
+	Method                    // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Getter                    // PropertyName TypeAnnotation? Body
+	Setter                    // PropertyName Parameter Body
+	GeneratorMethod           // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Generator                 // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	GeneratorExpr             // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	Yield                     // Expr?
+	AsyncMethod               // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	AsyncFunc                 // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncFuncExpr             // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncGeneratorMethod      // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	AsyncGeneratorDeclaration // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncGeneratorExpression  // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AwaitExpr                 // Expr
+	Class                     // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
+	ClassExpr                 // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
+	Extends                   // Expr? TypeReference?
+	TsImplementsClause        // (TypeReference)+
+	ClassBody                 // (ClassElement)*
 	Static
 	Abstract
 	Readonly
@@ -338,6 +342,7 @@ var nodeTypeStr = [...]string{
 	"ForInStmtWithVar",
 	"ForOfStmt",
 	"ForOfStmtWithVar",
+	"Await",
 	"ForBinding",
 	"ForCondition",
 	"ForFinalExpr",
@@ -370,6 +375,9 @@ var nodeTypeStr = [...]string{
 	"AsyncMethod",
 	"AsyncFunc",
 	"AsyncFuncExpr",
+	"AsyncGeneratorMethod",
+	"AsyncGeneratorDeclaration",
+	"AsyncGeneratorExpression",
 	"AwaitExpr",
 	"Class",
 	"ClassExpr",
@@ -513,6 +521,7 @@ var ClassElement = []NodeType{
 
 var Decl = []NodeType{
 	AsyncFunc,
+	AsyncGeneratorDeclaration,
 	Class,
 	Func,
 	Generator,
@@ -559,6 +568,7 @@ var Expr = []NodeType{
 	AssignmentExpr,
 	AsyncArrowFunc,
 	AsyncFuncExpr,
+	AsyncGeneratorExpression,
 	AwaitExpr,
 	BitwiseAND,
 	BitwiseOR,
@@ -642,6 +652,7 @@ var JSXChild = []NodeType{
 }
 
 var MethodDefinition = []NodeType{
+	AsyncGeneratorMethod,
 	AsyncMethod,
 	GeneratorMethod,
 	Getter,
@@ -661,6 +672,7 @@ var Modifier = []NodeType{
 
 var ModuleItem = []NodeType{
 	AsyncFunc,
+	AsyncGeneratorDeclaration,
 	Block,
 	BreakStmt,
 	Class,
@@ -770,6 +782,7 @@ var Stmt = []NodeType{
 
 var StmtListItem = []NodeType{
 	AsyncFunc,
+	AsyncGeneratorDeclaration,
 	Block,
 	BreakStmt,
 	Class,

@@ -37,8 +37,16 @@ func ToJsNode(n *Node) JsNode {
 		return &AsyncFunc{n}
 	case js.AsyncFuncExpr:
 		return &AsyncFuncExpr{n}
+	case js.AsyncGeneratorDeclaration:
+		return &AsyncGeneratorDeclaration{n}
+	case js.AsyncGeneratorExpression:
+		return &AsyncGeneratorExpression{n}
+	case js.AsyncGeneratorMethod:
+		return &AsyncGeneratorMethod{n}
 	case js.AsyncMethod:
 		return &AsyncMethod{n}
+	case js.Await:
+		return &Await{n}
 	case js.AwaitExpr:
 		return &AwaitExpr{n}
 	case js.BindingRestElement:

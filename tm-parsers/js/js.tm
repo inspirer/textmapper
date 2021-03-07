@@ -460,6 +460,7 @@ PrimaryExpression<Yield, Await, NoAsync> -> Expr /* interface */:
   | [!NoFuncClass] ClassExpression
   | [!NoFuncClass] GeneratorExpression
   | [!NoFuncClass] AsyncFunctionExpression
+  | [!NoFuncClass] AsyncGeneratorExpression
   | RegularExpressionLiteral                               -> Regexp
   | TemplateLiteral
   | (?= !StartOfArrowFunction) Parenthesized
@@ -781,10 +782,11 @@ Declaration<Yield, Await> -> Decl /* interface */:
   | AmbientDeclaration
 ;
 
-HoistableDeclaration<Await> -> Decl /* interface */:
+HoistableDeclaration -> Decl /* interface */:
     FunctionDeclaration
   | GeneratorDeclaration
   | AsyncFunctionDeclaration
+  | AsyncGeneratorDeclaration
 ;
 
 BreakableStatement<Yield, Await> -> Stmt /* interface */:
@@ -929,13 +931,13 @@ IterationStatement<Yield, Await> -> IterationStmt /* interface */:
           'in' object=Expression<+In> ')' Statement                   -> ForInStmtWithVar
   | 'for' '(' ForDeclaration
           'in' object=Expression<+In> ')' Statement                   -> ForInStmtWithVar
-  | 'for' '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
+  | 'for' ([Await] 'await' -> Await)? '(' var=LeftHandSideExpression<+NoLet, +NoAsync>
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
-  | 'for' '(' var=((('async' -> ReferenceIdent) -> IdentExpr) -> Expr /* interface */) (?= !StartOfArrowFunction)
+  | 'for' ([Await] 'await' -> Await)? '(' var=((('async' -> ReferenceIdent) -> IdentExpr) -> Expr /* interface */) (?= !StartOfArrowFunction)
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmt
-  | 'for' '(' ('var' -> Var) ForBinding
+  | 'for' ([Await] 'await' -> Await)? '(' ('var' -> Var) ForBinding
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmtWithVar
-  | 'for' '(' ForDeclaration
+  | 'for' ([Await] 'await' -> Await)?  '(' ForDeclaration
           'of' iterable=AssignmentExpression<+In> ')' Statement       -> ForOfStmtWithVar
 ;
 
@@ -1078,6 +1080,7 @@ MethodDefinition<Yield, Await> -> MethodDefinition /* interface */:
     PropertyName '?'? UniqueFormalParameters<~Yield, ~Await> FunctionBody<~Yield, ~Await> -> Method
   | GeneratorMethod
   | AsyncMethod
+  | AsyncGeneratorMethod
   | 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>             -> Getter
   | 'set' PropertyName '(' PropertySetParameterList ')'  FunctionBody<~Yield, ~Await>     -> Setter
 ;
@@ -1097,23 +1100,35 @@ GeneratorExpression -> GeneratorExpr :
 GeneratorBody :
     FunctionBody<+Yield, ~Await> ;
 
-YieldExpression<In> -> Yield :
+YieldExpression<In, Await> -> Yield :
     'yield'
-  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield, ~Await>
-  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield, ~Await>
+  | 'yield' .afterYield .noLineBreak AssignmentExpression<+Yield>
+  | 'yield' .afterYield .noLineBreak '*' AssignmentExpression<+Yield>
 ;
 
 AsyncMethod<Yield, Await> -> AsyncMethod :
     'async' .afterAsync .noLineBreak PropertyName UniqueFormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
-AsyncFunctionDeclaration<Await> -> AsyncFunc :
-    'async' .afterAsync .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield> AsyncFunctionBody ;
+AsyncFunctionDeclaration -> AsyncFunc :
+    'async' .afterAsync .noLineBreak 'function' BindingIdentifier? FormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
 AsyncFunctionExpression -> AsyncFuncExpr :
     'async' .afterAsync .noLineBreak 'function' BindingIdentifier/* no await*/? FormalParameters<~Yield, +Await> AsyncFunctionBody ;
 
 AsyncFunctionBody :
     FunctionBody<~Yield, +Await> ;
+
+AsyncGeneratorMethod<Yield, Await> -> AsyncGeneratorMethod :
+    'async' .afterAsync .noLineBreak '*' PropertyName UniqueFormalParameters<+Yield, +Await> AsyncGeneratorBody ;
+
+AsyncGeneratorDeclaration -> AsyncGeneratorDeclaration :
+    'async' .afterAsync .noLineBreak 'function' '*' BindingIdentifier? FormalParameters<+Yield, +Await> AsyncGeneratorBody ;
+
+AsyncGeneratorExpression -> AsyncGeneratorExpression :
+    'async' .afterAsync .noLineBreak 'function' '*' BindingIdentifier? FormalParameters<+Yield, +Await> AsyncGeneratorBody ;
+
+AsyncGeneratorBody :
+    FunctionBody<+Yield, +Await> ;
 
 AwaitExpression -> AwaitExpr :
     'await' UnaryExpression<~Yield, +Await> ;
@@ -1248,10 +1263,10 @@ ExportDeclaration -> ModuleItem /* interface */:
     'export' ('type' -> TsTypeOnly)? '*' ('as' ImportedBinding)? FromClause ';' -> ExportDecl
   | 'export' ('type' -> TsTypeOnly)? ExportClause FromClause ';'                -> ExportDecl
   | 'export' ('type' -> TsTypeOnly)? ExportClause ';'                           -> ExportDecl
-  | 'export' VariableStatement<~Yield, ~Await>        -> ExportDecl
-  | Modifiers? 'export' Declaration<~Yield, ~Await>              -> ExportDecl
-  | 'export' 'default' HoistableDeclaration<~Await>                                -> ExportDefault
-  | Modifiers? 'export' 'default' ClassDeclaration<~Yield, ~Await>                            -> ExportDefault
+  | 'export' VariableStatement<~Yield, ~Await>                                  -> ExportDecl
+  | Modifiers? 'export' Declaration<~Yield, ~Await>                             -> ExportDecl
+  | 'export' 'default' HoistableDeclaration                                        -> ExportDefault
+  | Modifiers? 'export' 'default' ClassDeclaration<~Yield, ~Await>                 -> ExportDefault
   | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
   | 'export' '=' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';'     -> TsExportAssignment
   | 'export' 'as' 'namespace' BindingIdentifier ';'   -> TsNamespaceExportDecl
