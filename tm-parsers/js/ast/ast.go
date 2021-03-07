@@ -1443,6 +1443,11 @@ type ConstructorType struct {
 	*Node
 }
 
+func (n ConstructorType) Abstract() (Abstract, bool) {
+	field := Abstract{n.Child(selector.Abstract)}
+	return field, field.IsValid()
+}
+
 func (n ConstructorType) TypeParameters() (TypeParameters, bool) {
 	field := TypeParameters{n.Child(selector.TypeParameters)}
 	return field, field.IsValid()
@@ -2491,6 +2496,11 @@ type LiteralType struct {
 	*Node
 }
 
+func (n LiteralType) TemplateLiteral() (TemplateLiteral, bool) {
+	field := TemplateLiteral{n.Child(selector.TemplateLiteral)}
+	return field, field.IsValid()
+}
+
 type LogicalAND struct {
 	*Node
 }
@@ -2523,8 +2533,13 @@ func (n MappedType) NameIdent() NameIdent {
 	return NameIdent{n.Child(selector.NameIdent)}
 }
 
-func (n MappedType) TsType() TsType {
+func (n MappedType) InType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+func (n MappedType) AsType() (TsType, bool) {
+	field := ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
+	return field, field.JsNode() != nil
 }
 
 func (n MappedType) TypeAnnotation() TypeAnnotation {

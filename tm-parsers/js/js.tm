@@ -341,6 +341,7 @@ ExpressionSnippet :
 %flag WithoutPredefinedTypes = false;
 %flag WithoutImplements = false;
 %flag WithoutFrom = false;
+%flag WithoutAs = false;
 
 %lookahead flag NoLet = false;
 %lookahead flag NoLetSq = false;
@@ -352,7 +353,7 @@ ExpressionSnippet :
 SyntaxError -> SyntaxProblem :
     error ;
 
-IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom> :
+IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, WithoutAs> :
     Identifier
 
 # Keywords
@@ -376,7 +377,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom> :
     | 'null' | 'true' | 'false')
 
   # Soft keywords
-  | 'as' | [!WithoutFrom] 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+  | [!WithoutAs] 'as' | [!WithoutFrom] 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
@@ -1364,7 +1365,7 @@ TypePredicate<NoQuest> -> TypePredicate:
 
 # 3.7
 AssertsType<NoQuest> -> AssertsType:
-    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> This | IdentifierName<+WithoutKeywords> -> ReferenceIdent) ('is' Type)? ;
+    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> This | IdentifierName<+WithoutKeywords, +WithoutAs> -> ReferenceIdent) ('is' Type)? ;
 
 StartOfIs:
       'is' ;
@@ -1426,6 +1427,7 @@ LiteralType -> LiteralType :
   | 'null'
   | 'true'
   | 'false'
+  | TemplateLiteral<~Yield, ~Await>
 ;
 
 PredefinedType -> PredefinedType :
@@ -1490,7 +1492,9 @@ StartOfMappedType :
 
 # 2.1
 MappedType -> MappedType :
-    '{' .recoveryScope (?= StartOfMappedType) (('+'|'-')? 'readonly')? '[' BindingIdentifier 'in' Type ']' (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
+    '{' .recoveryScope (?= StartOfMappedType) (('+'|'-')? 'readonly')?
+          '[' BindingIdentifier 'in' inType=Type ('as' asType=Type)? ']'
+          (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
 
 TupleType -> TupleType :
     '[' (TupleElementType separator ',')+? ']' ;
@@ -1527,7 +1531,7 @@ FunctionTypeParameterList -> Parameters :
     '(' (?= StartOfFunctionType) (Parameter<~Yield, ~Await> separator ',')+? ','? ')' ;
 
 ConstructorType<NoQuest> -> ConstructorType :
-    'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
+    ('abstract' -> Abstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
 %left 'keyof' 'typeof' 'unique' 'readonly' 'infer';
 %nonassoc 'is';

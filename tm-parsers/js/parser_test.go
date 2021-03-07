@@ -1122,9 +1122,10 @@ var parseTests = []struct {
 		`var x: {«fun<R, TS extends any[] = []>(fn: (foo: Foo, ...args: TS) => R, ...args: TS): R»;}`,
 	}},
 	{js.Typescript, js.ConstructorType, []string{
-		`var x: {a: «new() => never»};`,
-		`var x: {a: «new(private x : number) => never»};`,
-		`var x: {a: «new<Y extends C>(private x : number) => never»};`,
+		`let x: {a: «new() => never»};`,
+		`let x: {a: «new(private x : number) => never»};`,
+		`let x: {a: «new<Y extends C>(private x : number) => never»};`,
+		`let x: «abstract new () => HasArea» = Shape;`,
 	}},
 	{js.Typescript, js.TypeParameters, []string{
 		`function identity«<T>»(arg: T): T {}`,
@@ -1192,6 +1193,7 @@ var parseTests = []struct {
 		`const TRUE: «true» = true;`,
 		`let zeroOrOne: «0» | «1»;`,
 		`let plusMinusOne: «-1» | «1»;`,
+		"declare function setAlignment(value: «`${VerticalAlignment}-${HorizontalAlignment}`»): void;",
 	}},
 	{js.Typescript, js.AccessibilityModifier, []string{
 		`function a(«public» kind?:number) {}`,
@@ -1235,6 +1237,12 @@ var parseTests = []struct {
 		`type Readonly<T> = «{ /* */ readonly [P in keyof T]: T[P]; }»`,
 		`type MutableRequired<T> = «{ -readonly [P in keyof T]-?: T[P] }»;  // Remove readonly and ?`,
 		`type ReadonlyPartial<T> = «{ +readonly [P in keyof T]+?: T[P] }»;  // Add readonly and ?`,
+		`type Options = «{
+		    [K in "noImplicitAny" | "strictNullChecks" | "strictFunctionTypes"]?: boolean;
+		 }»;`,
+		`type MappedTypeWithNewKeys<T> = «{
+		    [K in keyof T as NewKeyType]: T[K]
+		 }»;`,
 	}},
 	{js.Typescript, js.TsImplementsClause, []string{
 		`class A «implements B» {}
@@ -1273,6 +1281,7 @@ var parseTests = []struct {
 		   «abstract» get value();
 		   «abstract» set value(v: number);
 		 }`,
+		`let x: «abstract» new () => HasArea = Shape;`,
 	}},
 	{js.Typescript, js.Readonly, []string{
 		`class Foo {

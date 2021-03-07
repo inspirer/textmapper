@@ -191,20 +191,20 @@ const (
 	NonNullableType   // TsType
 	NullableType      // TsType
 	ParenthesizedType // TsType
-	LiteralType
+	LiteralType       // TemplateLiteral?
 	PredefinedType
 	TypeReference     // TypeName TypeArguments?
 	TypeName          // ref=(ReferenceIdent)+
 	ObjectType        // (TypeMember)*
 	ArrayType         // TsType
 	IndexedAccessType // left=TsType index=TsType
-	MappedType        // NameIdent TsType TypeAnnotation
+	MappedType        // NameIdent inType=TsType asType=TsType? TypeAnnotation
 	TupleType         // (TupleMember)*
 	NamedTupleMember  // TsType
 	RestType          // TsType
 	FuncType          // TypeParameters? Parameters TsType
 	Parameters        // (Parameter)*
-	ConstructorType   // TypeParameters? Parameters TsType
+	ConstructorType   // Abstract? TypeParameters? Parameters TsType
 	TypeQuery         // (ReferenceIdent)+
 	ImportType        // TsType (ReferenceIdent)* TypeArguments?
 	PropertySignature // (Modifier)* PropertyName TypeAnnotation?

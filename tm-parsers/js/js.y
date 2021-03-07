@@ -384,11 +384,10 @@ IdentifierName_WithoutFrom :
 | INFER
 ;
 
-IdentifierName_WithoutKeywords :
+IdentifierName_WithoutKeywords_WithoutAs :
   IDENTIFIER
 | NEW
 | ASSERTS
-| AS
 | FROM
 | GET
 | LET
@@ -5605,15 +5604,15 @@ TypePredicate_NoQuest :
 AssertsType :
   ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords IS Type
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs IS Type
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs
 ;
 
 AssertsType_NoQuest :
   ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type_NoQuest
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords IS Type_NoQuest
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs IS Type_NoQuest
+| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs
 ;
 
 // lookahead: !StartOfIs
@@ -5743,6 +5742,7 @@ LiteralType :
 | NULL
 | TRUE
 | FALSE
+| TemplateLiteral
 ;
 
 PredefinedType :
@@ -5829,7 +5829,15 @@ lookahead_StartOfMappedType :
 ;
 
 MappedType :
-  LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+  LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation RBRACE
@@ -5837,6 +5845,14 @@ MappedType :
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType PLUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
@@ -5845,6 +5861,14 @@ MappedType :
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType MINUS READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
@@ -5853,6 +5877,14 @@ MappedType :
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK QUEST TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType READONLY LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK PLUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK MINUS QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK QUEST TypeAnnotation RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation SEMICOLON RBRACE
+| LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type AS Type RBRACK TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation SEMICOLON RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK PLUS QUEST TypeAnnotation RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK MINUS QUEST TypeAnnotation SEMICOLON RBRACE
@@ -5951,12 +5983,16 @@ Parameter_list_Comma_separated :
 ;
 
 ConstructorType :
-  NEW TypeParameters ParameterList ASSIGNGT Type
+  ABSTRACT NEW TypeParameters ParameterList ASSIGNGT Type
+| ABSTRACT NEW ParameterList ASSIGNGT Type
+| NEW TypeParameters ParameterList ASSIGNGT Type
 | NEW ParameterList ASSIGNGT Type
 ;
 
 ConstructorType_NoQuest :
-  NEW TypeParameters ParameterList ASSIGNGT Type_NoQuest
+  ABSTRACT NEW TypeParameters ParameterList ASSIGNGT Type_NoQuest
+| ABSTRACT NEW ParameterList ASSIGNGT Type_NoQuest
+| NEW TypeParameters ParameterList ASSIGNGT Type_NoQuest
 | NEW ParameterList ASSIGNGT Type_NoQuest
 ;
 
