@@ -258,11 +258,9 @@ public class Builder extends Lalr1 {
 					status.report(conflict);
 					switch (conflict.getKind()) {
 						case ParserConflict.REDUCE_REDUCE:
-						case ParserConflict.REDUCE_REDUCE_SOFT:
 							rr++;
 							break;
 						case ParserConflict.SHIFT_REDUCE:
-						case ParserConflict.SHIFT_REDUCE_SOFT:
 							sr++;
 							break;
 					}

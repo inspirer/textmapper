@@ -92,7 +92,6 @@ public class ConflictBuilder {
 
 		private final Terminal termSym;
 		private final boolean canShift;
-		private boolean isSoft;
 		private final List<Rule> rules = new ArrayList<>();
 		private int status = NONE;
 
@@ -101,15 +100,10 @@ public class ConflictBuilder {
 		public ConflictData(Terminal termSym, boolean canShift) {
 			this.termSym = termSym;
 			this.canShift = canShift;
-			this.isSoft = false;
 		}
 
 		public int getConflictingTerm() {
 			return termSym.getIndex();
-		}
-
-		public void setSoft() {
-			isSoft = true;
 		}
 
 		public Rule[] getRules() {
@@ -132,13 +126,7 @@ public class ConflictBuilder {
 
 		public int getKind() {
 			if (status == CONFLICT) {
-				if (isSoft) {
-					return canShift
-							? ParserConflict.SHIFT_REDUCE_SOFT
-							: ParserConflict.REDUCE_REDUCE_SOFT;
-				} else {
-					return canShift ? ParserConflict.SHIFT_REDUCE : ParserConflict.REDUCE_REDUCE;
-				}
+				return canShift ? ParserConflict.SHIFT_REDUCE : ParserConflict.REDUCE_REDUCE;
 			}
 			return ParserConflict.FIXED;
 		}
@@ -152,11 +140,7 @@ public class ConflictBuilder {
 				case SYNTAXERR:
 					return "resolved as syntax error";
 				case CONFLICT:
-					if (isSoft) {
-						return canShift ? "soft shift/reduce" : "soft reduce/reduce";
-					} else {
-						return canShift ? "shift/reduce" : "reduce/reduce";
-					}
+					return canShift ? "shift/reduce" : "reduce/reduce";
 			}
 			return "<no conflict>";
 		}
@@ -189,7 +173,6 @@ public class ConflictBuilder {
 				final int prime = 31;
 				int result = 1;
 				result = prime * result + (canShift ? 1231 : 1237);
-				result = prime * result + (isSoft ? 1231 : 1237);
 				result = prime * result + rules.hashCode();
 				result = prime * result + status;
 				return result;
@@ -205,7 +188,6 @@ public class ConflictBuilder {
 				}
 				ConflictData other = ((RulesAndKindKey) obj).getConflictData();
 				return canShift == other.canShift &&
-						isSoft == other.isSoft &&
 						status == other.status &&
 						rules.equals(other.rules);
 			}
