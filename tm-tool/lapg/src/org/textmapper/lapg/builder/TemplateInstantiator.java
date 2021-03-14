@@ -267,8 +267,6 @@ class TemplateInstantiator {
 	private TemplateEnvironment applyArguments(TemplateEnvironment sourceEnv,
 											   Nonterminal target, RhsArgument[] args,
 											   boolean fwdAll, boolean leftmost) {
-		if (params.length == 0) return sourceEnv;
-
 		final BitSet acceptedParameters = paramUsage.get(target);
 
 		// Remove non-global & unused parameters.
@@ -440,6 +438,8 @@ class TemplateInstantiator {
 	}
 
 	public void updateSets(Collection<NamedSet> elements) {
+		if (params.length == 0) return;
+
 		elements.forEach(e -> updateSet(e.getSet()));
 	}
 
