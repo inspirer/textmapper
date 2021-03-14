@@ -267,6 +267,8 @@ class TemplateInstantiator {
 	private TemplateEnvironment applyArguments(TemplateEnvironment sourceEnv,
 											   Nonterminal target, RhsArgument[] args,
 											   boolean fwdAll, boolean leftmost) {
+		if (params.length == 0) return sourceEnv;
+
 		final BitSet acceptedParameters = paramUsage.get(target);
 
 		// Remove non-global & unused parameters.
