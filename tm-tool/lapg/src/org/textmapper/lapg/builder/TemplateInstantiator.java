@@ -436,4 +436,39 @@ class TemplateInstantiator {
 		instances.values().forEach(TemplateInstance::allocate);
 		instances.values().forEach(TemplateInstance::updateNameHint);
 	}
+
+	public void updateSets(Collection<NamedSet> elements) {
+		elements.forEach(e -> updateSet(e.getSet()));
+	}
+
+	public void updateSet(RhsSet set) {
+		switch (set.getOperation()) {
+			case Any:
+			case First:
+			case Last:
+			case Precede:
+			case Follow:
+				if (set.getSymbol().isTerm()) {
+					break;
+				}
+				Nonterminal nonterm = (Nonterminal) set.getSymbol();
+				TemplateEnvironment env = applyArguments(
+						builder.getRootEnvironment(), nonterm, set.getArgs(), false /*fwdAll*/, false /*leftmost*/);
+				InstanceKey key = new InstanceKey(nonterm, env);
+				TemplateInstance instance = instances.get(key);
+				if (instance == null) {
+					problems.add(new LiProblem(set, "Symbol is not used in the grammar with given arguments."));
+					break;
+				}
+				((LiRhsSet)set).setResolvedSymbol(instance.getOrCreateNonterminal());
+				break;
+			case Complement:
+			case Intersection:
+			case Union:
+				for (RhsSet child : set.getSets()) {
+					updateSet(child);
+				}
+				break;
+		}
+	}
 }

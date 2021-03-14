@@ -667,6 +667,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		TemplateInstantiator instantiator = new TemplateInstantiator(
 				this, paramsArr, symbolArr, terminals, problems);
 		instantiator.instantiate(inputs);
+		instantiator.updateSets(setScope.elements());
 	}
 
 	private void computeSets(ExpansionContext expansionContext, NamedSet[] setsArr) {

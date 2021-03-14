@@ -61,6 +61,7 @@ class LiSetIndex {
 	}
 
 	int index(RhsSet.Operation op, Symbol s) {
+		assert symbols[s.getIndex()] == s;
 		switch (op) {
 			case Any:
 				return all((Nonterminal) s);
