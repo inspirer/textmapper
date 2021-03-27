@@ -19,6 +19,17 @@ var nameTests = []struct {
 	{`%input Z; Z: a?;`, "Aopt"},
 	{`%input Z; Z: B?; B:;`, "Bopt"},
 	{`%input Z; Z: (a separator b c)+?;`, "A_list_withsepopt"},
+
+	// sets
+	{`%input Z; Z: set(a);`, "setof_a"},
+	{`%input Z; Z: set(a | b);`, "setof_a_or_b"},
+	{`%input Z; Z: set(a | b)+;`, "setof_a_or_b_list"},
+	{`%input Z; Z: set(a | b)+?;`, "setof_a_or_b_listopt"},
+	{`%input Z; Z: set(a | b)*;`, "setof_a_or_b_optlist"},
+	{`%input Z; Z: set(Q); Q: c;`, "setof_Q"},
+	{`%input Z; Z: set(precede Q); Q: c;`, "setof_precede_Q"},
+	{`%input Z; Z: set(~Q | follow b); Q: c;`, "setof_not_Q_or_follow_b"},
+	{`%input Z; Z: set(first A | last B)?; A: a; B: b;`, "setof_first_A_or_last_Bopt"},
 }
 
 func TestProvisionalName(t *testing.T) {

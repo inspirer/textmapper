@@ -2,8 +2,10 @@ package syntax
 
 import (
 	"fmt"
-	"github.com/inspirer/textmapper/tm-go/util/ident"
 	"log"
+	"strings"
+
+	"github.com/inspirer/textmapper/tm-go/util/ident"
 )
 
 // Expand rewrites the grammar substituting extended notation clauses with equivalent
@@ -320,8 +322,45 @@ func ProvisionalName(expr *Expr, m *Model) string {
 			return ProvisionalName(cand, m)
 		}
 	case Set:
-		// TODO
-		return "setof_"
+		var sb strings.Builder
+		sb.WriteString("setof_")
+		appendSetName(m.Sets[expr.Pos], m, &sb)
+		return sb.String()
 	}
 	return ""
+}
+
+func appendSetName(ts *TokenSet, m *Model, out *strings.Builder) {
+	switch ts.Kind {
+	case Any:
+		out.WriteString(m.Ref(ts.Symbol, nil /*args*/))
+	case First:
+		out.WriteString("first_")
+		out.WriteString(m.Ref(ts.Symbol, nil /*args*/))
+	case Last:
+		out.WriteString("last_")
+		out.WriteString(m.Ref(ts.Symbol, nil /*args*/))
+	case Follow:
+		out.WriteString("follow_")
+		out.WriteString(m.Ref(ts.Symbol, nil /*args*/))
+	case Precede:
+		out.WriteString("precede_")
+		out.WriteString(m.Ref(ts.Symbol, nil /*args*/))
+	case Complement:
+		out.WriteString("not_")
+		appendSetName(ts.Sub[0], m, out)
+	case Union, Intersection:
+		for i, sub := range ts.Sub {
+			if i > 0 {
+				if ts.Kind == Union {
+					out.WriteString("_or_")
+				} else {
+					out.WriteString("_")
+				}
+			}
+			appendSetName(sub, m, out)
+		}
+	default:
+		log.Fatalf("cannot compute name for TokenSet Kind=%v", ts.Kind)
+	}
 }

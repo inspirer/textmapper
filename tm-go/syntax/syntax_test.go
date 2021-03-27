@@ -696,7 +696,7 @@ func (p *parser) parsePrimary() *syntax.Expr {
 		p.next()
 		pos := len(p.out.Sets)
 		p.out.Sets = append(p.out.Sets, p.parseSet())
-		return &syntax.Expr{Kind: syntax.Set, Pos: pos}
+		ret = &syntax.Expr{Kind: syntax.Set, Pos: pos}
 	default:
 		return nil
 	}
