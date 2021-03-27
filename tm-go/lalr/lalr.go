@@ -16,6 +16,11 @@ func (s Sym) IsStateMarker() bool {
 	return s < 0
 }
 
+// Marker returns a new state marker symbol.
+func Marker(index int) Sym {
+	return Sym(-1 - index)
+}
+
 // Input describes a start nonterminal in a grammar.
 type Input struct {
 	Nonterminal Sym
@@ -73,17 +78,19 @@ type Grammar struct {
 	Symbols    []string
 	Precedence []Precedence // later declarations have higher precedence
 	Lookaheads []Lookahead  // Note: each lookahead nonterminal should have an empty rule in Rules
+	Markers    []string
+	Origin     status.SourceNode
 }
 
 // Tables holds generated parser tables.
 type Tables struct {
-	Action      []int32
-	Lalr        []int32
-	Goto        []int32 // sym -> index in FromTo
-	FromTo      []int32 // array of state pairs (from, to)
-	RuleLen     []int32
-	FinalStates []int32
-	RuleSymbol  []Sym
+	Action      []int
+	Lalr        []int
+	Goto        []int // sym -> index in FromTo
+	FromTo      []int // array of state pairs (from, to)
+	RuleLen     []int
+	FinalStates []int
+	RuleSymbol  []int
 	Markers     []StateMarker
 	Lookaheads  []LookaheadRule
 }

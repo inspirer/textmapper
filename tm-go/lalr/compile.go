@@ -196,7 +196,7 @@ func (c *compiler) computeStates() {
 	}
 
 	// Add final states (if needed).
-	finalStates := make([]int32, len(c.grammar.Inputs))
+	finalStates := make([]int, len(c.grammar.Inputs))
 	for i, inp := range c.grammar.Inputs {
 		var last *state
 		for _, target := range c.states[i].shifts {
@@ -213,13 +213,13 @@ func (c *compiler) computeStates() {
 
 		if !inp.Eoi {
 			// no-eoi inputs are accepted as soon as they are reduced without the last transition on EOI.
-			finalStates[i] = int32(last.symbol)
+			finalStates[i] = int(last.symbol)
 			continue
 		}
 		afterEoi := &state{index: len(c.states), symbol: EOI, sourceState: last.index, lr0: true}
 		c.states = append(c.states, afterEoi)
 		c.addShift(last, afterEoi)
-		finalStates[i] = int32(afterEoi.symbol)
+		finalStates[i] = int(afterEoi.symbol)
 	}
 	c.out.FinalStates = finalStates
 }
@@ -315,23 +315,23 @@ func (c *compiler) initLalr() {
 			n++
 		}
 	}
-	c.out.Goto = make([]int32, syms+1)
-	c.out.FromTo = make([]int32, 2*n)
+	c.out.Goto = make([]int, syms+1)
+	c.out.FromTo = make([]int, 2*n)
 	n = 0
 	for i := range c.grammar.Symbols {
-		c.out.Goto[i] = int32(n)
+		c.out.Goto[i] = n
 		n += count[i] * 2
 		count[i] = n
 	}
-	c.out.Goto[syms] = int32(n)
+	c.out.Goto[syms] = n
 	for i := len(c.states) - 1; i >= 0; i-- {
 		state := c.states[i]
 		for _, target := range state.shifts {
 			sym := c.states[target].symbol
 			i := count[sym] - 2
 			count[sym] = i
-			c.out.FromTo[i] = int32(state.index)
-			c.out.FromTo[i+1] = int32(target)
+			c.out.FromTo[i] = state.index
+			c.out.FromTo[i+1] = target
 		}
 	}
 }
@@ -349,7 +349,7 @@ func (c *compiler) buildFollow() {
 
 		if from.index < len(c.grammar.Inputs) {
 			inp := c.grammar.Inputs[from.index]
-			if !inp.Eoi && c.out.FinalStates[from.index] == int32(to.index) {
+			if !inp.Eoi && c.out.FinalStates[from.index] == to.index {
 				follow.SetAll(c.grammar.Terminals)
 			}
 		}
@@ -358,7 +358,7 @@ func (c *compiler) buildFollow() {
 			if int(sym) < c.grammar.Terminals {
 				follow.Set(int(sym))
 			} else if c.empty.Get(int(sym)) {
-				empties[gt] = append(empties[gt], c.selectGoto(int32(to.index), int32(sym)))
+				empties[gt] = append(empties[gt], c.selectGoto(to.index, sym))
 			}
 		}
 	}
@@ -371,7 +371,7 @@ func (c *compiler) buildFollow() {
 		rules[nt] = append(rules[nt], i)
 	}
 
-	states := make([]int32, 32)
+	states := make([]int, 32)
 	g := empties
 	for i := range g {
 		g[i] = g[i][:0]
@@ -385,7 +385,7 @@ func (c *compiler) buildFollow() {
 		for _, rule := range rules[int(sym)-c.grammar.Terminals] {
 			i := c.index[rule]
 			states = states[:0]
-			curr := int32(state.index)
+			curr := state.index
 
 			for ; c.right[i] >= 0; i++ {
 				states = append(states, curr)
@@ -404,7 +404,7 @@ func (c *compiler) buildFollow() {
 					break
 				}
 				// Inner rule's goto inherits outer follow set.
-				g[gt] = append(g[gt], c.selectGoto(curr, int32(sym)))
+				g[gt] = append(g[gt], c.selectGoto(curr, Sym(sym)))
 				if !c.empty.Get(sym) {
 					break
 				}
@@ -430,7 +430,7 @@ func (c *compiler) updateFollow(g [][]int) {
 	})
 }
 
-func (c *compiler) addLookback(state int32, rule, gt int) {
+func (c *compiler) addLookback(state int, rule, gt int) {
 	s := c.states[state]
 	for i, rr := range s.reduce {
 		if rr == rule {
@@ -441,10 +441,10 @@ func (c *compiler) addLookback(state int32, rule, gt int) {
 	log.Fatal("internal error")
 }
 
-func (c *compiler) gotoState(state int32, sym Sym) int32 {
+func (c *compiler) gotoState(state int, sym Sym) int {
 	for _, target := range c.states[state].shifts {
 		if c.states[target].symbol == sym {
-			return int32(target)
+			return target
 		}
 	}
 
@@ -452,7 +452,7 @@ func (c *compiler) gotoState(state int32, sym Sym) int32 {
 	return -1
 }
 
-func (c *compiler) selectGoto(state, sym int32) int {
+func (c *compiler) selectGoto(state int, sym Sym) int {
 	min := c.out.Goto[sym]
 	max := c.out.Goto[sym+1]
 
@@ -464,7 +464,7 @@ func (c *compiler) selectGoto(state, sym int32) int {
 		}
 	} else {
 		for min < max {
-			e := (min + max) >> 1 &^ int32(1)
+			e := (min + max) >> 1 &^ 1
 			i := c.out.FromTo[e]
 			if i == state {
 				return int(e / 2)
