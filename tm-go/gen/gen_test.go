@@ -1,12 +1,13 @@
 package gen_test
 
 import (
-	"github.com/inspirer/textmapper/tm-go/gen"
-	"github.com/inspirer/textmapper/tm-go/util/diff"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-go/gen"
+	"github.com/inspirer/textmapper/tm-go/util/diff"
 )
 
 var grammars = []string{
@@ -36,7 +37,7 @@ func TestGenerate(t *testing.T) {
 			}
 
 			for genfile, content := range w {
-				if strings.HasSuffix(genfile, ".y") {
+				if strings.HasSuffix(genfile, ".y") || genfile == "parser_tables.go" {
 					// TODO compare final grammars
 					continue
 				}

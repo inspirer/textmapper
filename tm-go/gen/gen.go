@@ -3,12 +3,13 @@ package gen
 
 import (
 	"fmt"
-	"github.com/inspirer/textmapper/tm-go/grammar"
-	"github.com/inspirer/textmapper/tm-parsers/tm"
-	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 	"io/ioutil"
 	"strings"
 	"text/template"
+
+	"github.com/inspirer/textmapper/tm-go/grammar"
+	"github.com/inspirer/textmapper/tm-parsers/tm"
+	"github.com/inspirer/textmapper/tm-parsers/tm/ast"
 )
 
 // Writer provides a way to save generated files to disk.
@@ -20,6 +21,9 @@ type Writer interface {
 func Generate(g *grammar.Grammar, w Writer) error {
 	var templates []file
 	templates = append(templates, lexerFiles...)
+	if g.Parser.Tables != nil {
+		templates = append(templates, parserFiles...)
+	}
 	if g.Options.WriteBison {
 		templates = append(templates, file{name: g.Name + ".y", template: bisonTpl})
 	}
