@@ -171,7 +171,7 @@ class RegexMatcherImpl implements RegexMatcher {
 			return states;
 		}
 
-		private State yield(RegexPart simplepart) {
+		private State commit(RegexPart simplepart) {
 			State s = new State();
 			s.index = states.size();
 			if (simplepart != null) {
@@ -189,19 +189,19 @@ class RegexMatcherImpl implements RegexMatcher {
 
 		@Override
 		public Void caseAny(RegexAny c) {
-			yield(c);
+			commit(c);
 			return null;
 		}
 
 		@Override
 		public Void caseChar(RegexChar c) {
-			yield(c);
+			commit(c);
 			return null;
 		}
 
 		@Override
 		public Void caseSet(RegexSet c) {
-			yield(c);
+			commit(c);
 			return null;
 		}
 
@@ -231,19 +231,19 @@ class RegexMatcherImpl implements RegexMatcher {
 		public Void caseOr(RegexOr c) {
 			List<Integer> orlocations = new LinkedList<>();
 			int startIndex = index();
-			yield(null);    /* ( */
+			commit(null);    /* ( */
 			boolean first = true;
 			for (RegexPart element : c.getVariants()) {
 				if (!first) {
 					orlocations.add(index());
 					states.get(startIndex).addJump(index() + 1);
-					yield(null);    /* | */
+					commit(null);    /* | */
 				} else {
 					first = false;
 				}
 				element.accept(this);
 			}
-			yield(null);    /* ) */
+			commit(null);    /* ) */
 			for (int i : orlocations) {
 				states.get(i).addJump(index());
 			}
@@ -251,14 +251,14 @@ class RegexMatcherImpl implements RegexMatcher {
 		}
 
 		@Override
-		public void yield(RegexPart part, boolean optional, boolean multiple, RegexPart origin) {
+		public void commit(RegexPart part, boolean optional, boolean multiple, RegexPart origin) {
 			int startIndex = index();
 			part.accept(this);
 			if (optional) {
 				states.get(startIndex).addJump(index());
 			}
 			if (multiple) {
-				yield(null);    /* splitter */
+				commit(null);    /* splitter */
 				states.get(index() - 1).addJump(startIndex);
 			}
 		}

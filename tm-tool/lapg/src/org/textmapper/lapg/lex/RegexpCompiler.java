@@ -51,7 +51,7 @@ public class RegexpCompiler {
 			throw new RegexParseException(ex.getMessage(), 0);
 		}
 
-		builder.yield(RegexInstructionKind.Done, number, null);
+		builder.commit(RegexInstructionKind.Done, number, null);
 		RegexInstruction[] res = result.toArray(new RegexInstruction[result.size()]);
 		result.clear();
 		return res;
@@ -70,21 +70,21 @@ public class RegexpCompiler {
 			return result.size();
 		}
 
-		private void yield(RegexInstructionKind kind, int value, RegexPart origin) {
+		private void commit(RegexInstructionKind kind, int value, RegexPart origin) {
 			result.add(new RegexInstruction(kind, value, origin));
 		}
 
 		@Override
 		public Void caseAny(RegexAny c) {
 			inputSymbols.addCharacter('\n');
-			yield(RegexInstructionKind.Any, 0, c);
+			commit(RegexInstructionKind.Any, 0, c);
 			return null;
 		}
 
 		@Override
 		public Void caseChar(RegexChar c) {
 			inputSymbols.addCharacter(c.getChar());
-			yield(RegexInstructionKind.Symbol, c.getChar(), c);
+			commit(RegexInstructionKind.Symbol, c.getChar(), c);
 			return null;
 		}
 
@@ -110,38 +110,38 @@ public class RegexpCompiler {
 		@Override
 		public Void caseOr(RegexOr c) {
 			int start = getLength();
-			yield(RegexInstructionKind.LeftParen, 0, c);
+			commit(RegexInstructionKind.LeftParen, 0, c);
 			boolean first = true;
 			for (RegexPart element : c.getVariants()) {
 				if (!first) {
-					yield(RegexInstructionKind.Or, 0, c);
+					commit(RegexInstructionKind.Or, 0, c);
 				} else {
 					first = false;
 				}
 				element.accept(this);
 			}
 			result.set(start, new RegexInstruction(RegexInstructionKind.LeftParen, getLength(), c));
-			yield(RegexInstructionKind.RightParen, 0, c);
+			commit(RegexInstructionKind.RightParen, 0, c);
 			return null;
 		}
 
 		@Override
-		public void yield(RegexPart part, boolean optional, boolean multiple, RegexPart origin) {
+		public void commit(RegexPart part, boolean optional, boolean multiple, RegexPart origin) {
 			int start = getLength();
-			yield(RegexInstructionKind.LeftParen, 0, origin);
+			commit(RegexInstructionKind.LeftParen, 0, origin);
 			part.accept(this);
 			result.set(start, new RegexInstruction(RegexInstructionKind.LeftParen, getLength(), origin));
-			yield(RegexInstructionKind.RightParen, 0, origin);
+			commit(RegexInstructionKind.RightParen, 0, origin);
 			if (optional) {
-				yield(multiple ? RegexInstructionKind.ZeroOrMore : RegexInstructionKind.Optional, 0, origin);
+				commit(multiple ? RegexInstructionKind.ZeroOrMore : RegexInstructionKind.Optional, 0, origin);
 			} else if (multiple) {
-				yield(RegexInstructionKind.OneOrMore, 0, origin);
+				commit(RegexInstructionKind.OneOrMore, 0, origin);
 			}
 		}
 
 		@Override
 		public Void caseSet(RegexSet c) {
-			yield(RegexInstructionKind.Set, inputSymbols.addSet(c.getSet()), c);
+			commit(RegexInstructionKind.Set, inputSymbols.addSet(c.getSet()), c);
 			return null;
 		}
 	}
