@@ -256,6 +256,34 @@ var parserTests = []struct {
 			},
 		}},
 	}},
+	{`A: (?= A) a;`, &syntax.Model{
+		Terminals: []string{"EOI", "a"},
+		Nonterms: []*syntax.Nonterm{
+			{Name: "A", Value: &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{
+				{Kind: syntax.Lookahead, Sub: []*syntax.Expr{
+					{Kind: syntax.Reference, Symbol: 2},
+				}},
+				{Kind: syntax.Reference, Symbol: 1},
+			}}},
+		},
+	}},
+	{`A: (?= P & !Q) a b; P: a; Q: b;`, &syntax.Model{
+		Terminals: []string{"EOI", "a", "b"},
+		Nonterms: []*syntax.Nonterm{
+			{Name: "A", Value: &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{
+				{Kind: syntax.Lookahead, Sub: []*syntax.Expr{
+					{Kind: syntax.Reference, Symbol: 4},
+					{Kind: syntax.LookaheadNot, Sub: []*syntax.Expr{
+						{Kind: syntax.Reference, Symbol: 5},
+					}},
+				}},
+				{Kind: syntax.Reference, Symbol: 1},
+				{Kind: syntax.Reference, Symbol: 2},
+			}}},
+			{Name: "P", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 1}},
+			{Name: "Q", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 2}},
+		},
+	}},
 }
 
 func TestParser(t *testing.T) {
@@ -613,9 +641,23 @@ func (p *parser) parsePart() *syntax.Expr {
 		code := p.lexer.Text()
 		p.next()
 		return &syntax.Expr{Kind: syntax.Command, Name: code}
-	case tm.LOOKAHEAD:
+	case tm.LPARENQUESTASSIGN:
 		p.next()
-		p.errorf("TODO parse lookaheads")
+		ret := &syntax.Expr{Kind: syntax.Lookahead}
+		for {
+			not := p.consumeIf(tm.EXCL)
+			sym, _ := p.parseNontermRef()
+			expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym}
+			if not {
+				expr = &syntax.Expr{Kind: syntax.LookaheadNot, Sub: []*syntax.Expr{expr}}
+			}
+			ret.Sub = append(ret.Sub, expr)
+			if !p.consumeIf(tm.AND) {
+				break
+			}
+		}
+		p.consume(tm.RPAREN)
+		return ret
 	}
 	return p.parseOpt()
 }

@@ -146,6 +146,22 @@ var modelTests = []struct {
 		`Z: b | (a separator b)* ;`,
 		`Z: b | A_list_B_separatedopt ; A_list_B_separated: A_list_B_separated b a | a; A_list_B_separatedopt: A_list_B_separated | ;`,
 	},
+	{"Expand", syntax.Expand,
+		`Z: set(a | ~b);`,
+		`Z: set(a | ~b);`, // top level sets are not expanded
+	},
+	{"Expand", syntax.Expand,
+		`Z: a b set(a | ~b) | c ;`,
+		`Z: a b setof_a_or_not_b | c ; setof_a_or_not_b: set(a | ~b) ;`,
+	},
+	{"Expand", syntax.Expand,
+		`Z: (?= A); A:a|b;`,
+		`Z: (?= A); A:a|b;`, // top level lookaheads are not expanded
+	},
+	{"Expand", syntax.Expand,
+		`Z: a (?= A & !B) b | c; A: a|b; B: a|b;`,
+		`Z: a lookahead_A_notB b | c; lookahead_A_notB: (?= A & !B); A: a|b; B: a|b;`,
+	},
 }
 
 func TestModelTransforms(t *testing.T) {

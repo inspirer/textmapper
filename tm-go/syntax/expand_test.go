@@ -30,6 +30,9 @@ var nameTests = []struct {
 	{`%input Z; Z: set(precede Q); Q: c;`, "setof_precede_Q"},
 	{`%input Z; Z: set(~Q | follow b); Q: c;`, "setof_not_Q_or_follow_b"},
 	{`%input Z; Z: set(first A | last B)?; A: a; B: b;`, "setof_first_A_or_last_Bopt"},
+
+	// lookaheads
+	{`%input Z; Z: (?= A & !B); A:; B:;`, "lookahead_A_notB"},
 }
 
 func TestProvisionalName(t *testing.T) {

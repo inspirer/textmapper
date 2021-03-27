@@ -38,6 +38,8 @@ func Expand(m *Model) error {
 				out = append(out, e.expandRule(rule)...)
 			}
 			nt.Value.Sub = collapseEmpty(out)
+		case Set, Lookahead:
+			// Do not introduce new nonterminals for top-level sets and lookaheads.
 		default:
 			rules := e.expandRule(nt.Value)
 			nt.Value = &Expr{
@@ -194,7 +196,7 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 			}
 		}
 		return ret
-	case Set:
+	case Set, Lookahead:
 		return []*Expr{e.extractNonterm(expr)}
 	case List:
 		out := &Expr{Kind: List, Origin: expr.Origin, ListFlags: expr.ListFlags | OneOrMore}
@@ -325,6 +327,18 @@ func ProvisionalName(expr *Expr, m *Model) string {
 		var sb strings.Builder
 		sb.WriteString("setof_")
 		appendSetName(m.Sets[expr.Pos], m, &sb)
+		return sb.String()
+	case Lookahead:
+		var sb strings.Builder
+		sb.WriteString("lookahead")
+		for _, sub := range expr.Sub {
+			sb.WriteByte('_')
+			if sub.Kind == LookaheadNot {
+				sb.WriteString("not")
+				sub = sub.Sub[0]
+			}
+			sb.WriteString(m.Ref(sub.Symbol, nil /*args*/))
+		}
 		return sb.String()
 	}
 	return ""
