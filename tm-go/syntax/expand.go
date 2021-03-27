@@ -98,6 +98,7 @@ func Expand(m *Model) error {
 			}
 		}
 	}
+	checkOrDie(m, "after expanding syntax sugar")
 	return nil
 }
 
