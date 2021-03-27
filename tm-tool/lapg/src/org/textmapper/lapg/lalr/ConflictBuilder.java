@@ -62,8 +62,7 @@ public class ConflictBuilder {
 		nextconfl[termSym].addReduce(status, rule);
 	}
 
-	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input,
-												 int[] next) {
+	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input) {
 		if (conflicts.isEmpty()) {
 			return Collections.emptyList();
 		}

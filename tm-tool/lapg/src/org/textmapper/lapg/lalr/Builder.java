@@ -253,7 +253,7 @@ public class Builder extends Lalr1 {
 
 				// merge conflicts
 				List<LalrConflict> mergedConflicts = conflicts.getMergedConflicts(t.number,
-						getInput(t.number), next);
+						getInput(t.number));
 				for (ParserConflict conflict : mergedConflicts) {
 					status.report(conflict);
 					switch (conflict.getKind()) {
