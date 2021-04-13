@@ -1512,7 +1512,7 @@ MappedType -> MappedType :
           (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
 
 TupleType -> TupleType :
-    '[' (TupleElementType separator ',')+? ']' ;
+    '[' (TupleElementType separator ',')+? ','? ']' ;
 
 %interface TupleMember;
 

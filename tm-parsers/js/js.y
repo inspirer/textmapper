@@ -7284,7 +7284,9 @@ TupleElementType_list_Comma_separated :
 ;
 
 TupleType :
-  LBRACK TupleElementType_list_Comma_separated RBRACK
+  LBRACK TupleElementType_list_Comma_separated COMMA RBRACK
+| LBRACK TupleElementType_list_Comma_separated RBRACK
+| LBRACK COMMA RBRACK
 | LBRACK RBRACK
 ;
 

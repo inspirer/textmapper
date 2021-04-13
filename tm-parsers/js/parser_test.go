@@ -1116,6 +1116,10 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.NamedTupleMember, []string{
 		`type Foo = [«first: number», «second?: string», «...rest: any[]»];`,
+		`type Foo = [ // one per line
+           «first: number»,
+           «second?: string», «...rest: any[]»,
+         ];`,
 	}},
 	{js.Typescript, js.NullableType, []string{
 		`let t: [number, «string?», «boolean?»];`,
