@@ -333,6 +333,7 @@ func stripOrigin(m *syntax.Model) {
 			for i := range ts.Args {
 				ts.Args[i].Origin = nil
 			}
+			ts.Origin = nil
 		})
 	}
 	for _, nt := range m.Nonterms {
@@ -837,10 +838,15 @@ func (p *parser) parseSetAnd() *syntax.TokenSet {
 }
 
 func (p *parser) parseSetPrimary() *syntax.TokenSet {
-	if p.curr == tm.LPAREN {
-		return p.parseSet()
-	}
+	tilde := tokenOrigin(&p.lexer)
 	compl := p.consumeIf(tm.TILDE)
+	if p.curr == tm.LPAREN {
+		ret := p.parseSet()
+		if compl {
+			ret = &syntax.TokenSet{Kind: syntax.Complement, Sub: []*syntax.TokenSet{ret}, Origin: tilde}
+		}
+		return ret
+	}
 	var op string
 	if p.lookahead() == tm.ID {
 		op = p.lexer.Text()
@@ -864,7 +870,7 @@ func (p *parser) parseSetPrimary() *syntax.TokenSet {
 	expr := p.parseSymref()
 	ret.Symbol, ret.Args = expr.Symbol, expr.Args
 	if compl {
-		ret = &syntax.TokenSet{Kind: syntax.Complement, Sub: []*syntax.TokenSet{ret}}
+		ret = &syntax.TokenSet{Kind: syntax.Complement, Sub: []*syntax.TokenSet{ret}, Origin: tilde}
 	}
 	return ret
 }

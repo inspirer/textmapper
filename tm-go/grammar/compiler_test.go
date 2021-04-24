@@ -25,6 +25,7 @@ var testFiles = []string{
 	"noinput.tmerr",
 	"badinput.tmerr",
 	"backtrack.tmerr",
+	"set.tmerr",
 }
 
 func TestErrors(t *testing.T) {

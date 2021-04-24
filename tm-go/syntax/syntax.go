@@ -17,7 +17,7 @@ type Model struct {
 	Params    []Param
 	Nonterms  []*Nonterm // all params and nonterms must have distinct names
 	Inputs    []Input
-	Sets      []*TokenSet // extra token sets to compute
+	Sets      []*TokenSet // token sets to compute
 	Cats      []string    // categories
 }
 
@@ -120,6 +120,10 @@ type Nonterm struct {
 	// evaluated at runtime to determine which one should actually be reduced.
 	LA     []LAPredicate
 	Origin status.SourceNode
+}
+
+func (nt *Nonterm) String() string {
+	return nt.Name + ": " + nt.Value.String()
 }
 
 // LAPredicate is a restriction on the remaining input stream of tokens.

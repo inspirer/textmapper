@@ -1397,6 +1397,11 @@ func (c *compiler) compileParser() {
 		return
 	}
 
+	if err := syntax.ResolveSets(c.source); err != nil {
+		c.s.AddError(err)
+		return
+	}
+
 	// TODO compile the grammar model
 
 	// Prepare the model for code generation.

@@ -10,12 +10,12 @@ import (
 
 // Expand rewrites the grammar substituting extended notation clauses with equivalent
 // context-free production forms. Every nonterminal becomes a choice of sequences (production
-// rules), where each sequence can contain only StateMarker, Command, Reference, or Lookahead
-// expressions. Production rules can be wrapped into Prec to communicate precedence. Empty
-// sequences are replaced with an Empty expression.
+// rules), where each sequence can contain only StateMarker, Command, or Reference expressions.
+// Production rules can be wrapped into Prec to communicate precedence. Empty sequences are
+// replaced with an Empty expression.
 //
 // Specifically, this function:
-// - instantiates nonterminals for lists and sets
+// - instantiates nonterminals for lists, sets, and lookaheads
 // - expands nested Choice expressions, replacing its rule with one rule per alternative
 // - duplicates rules containing Optional, with and without the optional part
 //
@@ -53,11 +53,9 @@ func Expand(m *Model) error {
 	// Move extracted nonterminals right after their first usage.
 	m.Rearrange(e.perm)
 
-	// Expand top expressions of all extracted nonterminals.
+	// Expand top expressions of all extracted nonterminals (except sets).
 	for self, nt := range m.Nonterms {
 		switch nt.Value.Kind {
-		case Set:
-			// TODO implement
 		case Optional:
 			// Note: this case facilitates 0..* lists extraction.
 			nt.Value = &Expr{

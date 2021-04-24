@@ -1,0 +1,17 @@
+language parser(go);
+
+:: lexer
+
+a: /a/
+b: /b/
+
+:: parser
+
+input : d e;
+
+d : a set(«~d») b ;
+# err: set complement cannot transitively depend on itself
+
+e : set(f) ;
+f : set(«~e») ;
+# err: set complement cannot transitively depend on itself
