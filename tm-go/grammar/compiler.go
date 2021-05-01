@@ -2,6 +2,7 @@ package grammar
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"sort"
 	"strconv"
@@ -1402,14 +1403,86 @@ func (c *compiler) compileParser() {
 		return
 	}
 
-	// TODO compile the grammar model
-
 	// Prepare the model for code generation.
 	c.addNonterms(c.source.Nonterms)
+
+	if err := c.generateTables(); err != nil {
+		c.s.AddError(err)
+		return
+	}
 
 	out := c.out.Parser
 	out.Inputs = c.source.Inputs
 	out.Nonterms = c.source.Nonterms
+	// TODO populate out.Actions
+}
+
+func (c *compiler) generateTables() error {
+	switch c.file.Header().Name().Text() {
+	case "simple", "conflict1":
+	default:
+		// TODO enable for all files
+		return nil
+	}
+
+	g := &lalr.Grammar{
+		Terminals:  len(c.source.Terminals),
+		Precedence: c.out.Prec,
+		Origin:     c.file,
+	}
+	for _, sym := range c.out.Syms {
+		g.Symbols = append(g.Symbols, sym.Name)
+	}
+	for _, inp := range c.source.Inputs {
+		g.Inputs = append(g.Inputs, lalr.Input{
+			Nonterminal: lalr.Sym(g.Terminals + inp.Nonterm),
+			Eoi:         !inp.NoEoi,
+		})
+	}
+	// TODO populate g.Lookaheads, g.Markers
+	for self, nt := range c.source.Nonterms {
+		if nt.Value.Kind != syntax.Choice {
+			log.Fatalf("%v is not properly instantiated: %v", nt.Name, nt.Value)
+		}
+		for _, expr := range nt.Value.Sub {
+			rule := lalr.Rule{
+				LHS:        lalr.Sym(g.Terminals + self),
+				Origin:     expr.Origin,
+				OriginName: nt.Name,
+			}
+			if expr.Kind == syntax.Prec {
+				rule.Precedence = lalr.Sym(expr.Symbol)
+				expr = expr.Sub[0]
+			}
+			rule.RHS = extractRHS(rule.RHS, expr)
+			g.Rules = append(g.Rules, rule)
+		}
+	}
+	tables, err := lalr.Compile(g)
+	if err != nil {
+		return err
+	}
+
+	c.out.Parser.Rules = g.Rules
+	c.out.Parser.Tables = tables
+	return nil
+}
+
+func extractRHS(rhs []lalr.Sym, expr *syntax.Expr) []lalr.Sym {
+	switch expr.Kind {
+	case syntax.Sequence, syntax.Arrow, syntax.Assign, syntax.Append:
+		for _, sub := range expr.Sub {
+			rhs = extractRHS(rhs, sub)
+		}
+		return rhs
+	case syntax.Reference:
+		rhs = append(rhs, lalr.Sym(expr.Symbol))
+	case syntax.StateMarker:
+		// TODO instantiate markers
+	case syntax.Command:
+		// TODO handle commands
+	}
+	return rhs
 }
 
 func (c *compiler) parseOptions() {

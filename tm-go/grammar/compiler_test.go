@@ -26,6 +26,7 @@ var testFiles = []string{
 	"badinput.tmerr",
 	"backtrack.tmerr",
 	"set.tmerr",
+	"conflict1.tmerr",
 }
 
 func TestErrors(t *testing.T) {
@@ -48,8 +49,11 @@ func TestErrors(t *testing.T) {
 			var want []string
 			for _, line := range strings.Split(inp, "\n") {
 				const prefix = "# err: "
-				if strings.HasPrefix(line, prefix) {
+				switch {
+				case strings.HasPrefix(line, prefix):
 					want = append(want, line[len(prefix):])
+				case line == "# err:":
+					want = append(want, "")
 				}
 			}
 

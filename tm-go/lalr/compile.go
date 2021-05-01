@@ -25,6 +25,11 @@ func Compile(grammar *Grammar) (*Tables, error) {
 	c.initLalr()
 	c.buildFollow()
 	c.buildLA()
+	c.populateTables()
+
+	if (c.sr + c.rr) > 0 {
+		c.s.Errorf(grammar.Origin, "conflicts: %v shift/reduce and %v reduce/reduce", c.sr, c.rr)
+	}
 	return c.out, c.s.Err()
 }
 
@@ -43,6 +48,9 @@ type compiler struct {
 	states []*state
 
 	follow []container.BitSet // goto -> set of accepted terminals
+
+	precGroup map[Sym]int // terminal -> index in grammar.Precedence
+	sr, rr    int         // conflicts
 }
 
 type state struct {
@@ -486,4 +494,145 @@ func (c *compiler) buildLA() {
 			}
 		}
 	}
+}
+
+func (c *compiler) populateTables() {
+	c.precGroup = make(map[Sym]int)
+	for group, prec := range c.grammar.Precedence {
+		for _, term := range prec.Terminals {
+			c.precGroup[term] = group
+		}
+	}
+
+	reuse := make([]int, c.grammar.Terminals)
+	actionset := make([]int, c.grammar.Terminals)
+	next := make([]int, c.grammar.Terminals)
+
+	c.out.Action = make([]int, len(c.states))
+	for _, state := range c.states {
+		if state.lr0 {
+			switch {
+			case len(state.reduce) > 0:
+				c.out.Action[state.index] = state.reduce[0]
+			case len(state.shifts) > 0:
+				c.out.Action[state.index] = -1 // shift
+			default:
+				c.out.Action[state.index] = -2 // error
+			}
+			continue
+		}
+
+		var conflicts conflictBuilder
+		actionset = actionset[:0]
+		for i := range next {
+			next[i] = -2
+		}
+		for _, target := range state.shifts {
+			term := int(c.states[target].symbol)
+			if term >= c.grammar.Terminals {
+				break
+			}
+			next[term] = -1
+			actionset = append(actionset, term)
+		}
+		for i, rule := range state.reduce {
+			for _, term := range state.la[i].Slice(reuse) {
+				if next[term] == -2 {
+					next[term] = rule
+					actionset = append(actionset, term)
+				} else {
+					next[term] = c.ruleAction(next[term], Sym(term), rule, &conflicts)
+				}
+			}
+		}
+
+		for _, conflict := range conflicts.merge(c.grammar, state.index, c.states) {
+			if conflict.Resolved {
+				continue
+			}
+			for _, rule := range conflict.Rules {
+				c.s.Errorf(c.grammar.Rules[rule].Origin, "%s", conflict)
+			}
+			if conflict.CanShift {
+				c.sr++
+			} else {
+				c.rr++
+			}
+		}
+
+		for i, val := range next {
+			if val == -3 {
+				next[i] = -2 // non-assoc errors are normal syntax errors
+			}
+		}
+		c.out.Action[state.index] = -3 - len(c.out.Lalr)
+		for _, term := range actionset {
+			c.out.Lalr = append(c.out.Lalr, term, next[term])
+		}
+		c.out.Lalr = append(c.out.Lalr, -1, -2)
+	}
+
+	for _, rule := range c.grammar.Rules {
+		c.out.RuleLen = append(c.out.RuleLen, len(rule.RHS))
+		c.out.RuleSymbol = append(c.out.RuleSymbol, int(rule.LHS))
+	}
+}
+
+func (c *compiler) resolvePrec(rule int, term Sym) resolution {
+	rulePrec := c.grammar.Rules[rule].Precedence
+	if rulePrec == 0 {
+		rhs := c.grammar.Rules[rule].RHS
+		for i := len(rhs) - 1; i >= 0; i-- {
+			if sym := rhs[i]; sym > 0 && sym < Sym(c.grammar.Terminals) {
+				rulePrec = sym
+				break
+			}
+		}
+	}
+	if rulePrec == 0 || term == 0 {
+		return conflict
+	}
+	reduce, ok1 := c.precGroup[rulePrec]
+	shift, ok2 := c.precGroup[term]
+	switch {
+	case !ok1 || !ok2:
+		return conflict
+	case reduce > shift:
+		return doReduce
+	case reduce < shift:
+		return doShift
+	}
+	switch c.grammar.Precedence[shift].Associativity {
+	case Left:
+		return doReduce
+	case Right:
+		return doShift
+	case NonAssoc:
+		return doError
+	}
+	return conflict
+}
+
+func (c *compiler) ruleAction(action int, term Sym, rule int, b *conflictBuilder) int {
+	if b.hasConflict(term) || action == -3 {
+		// This is already an unresolved conflict. Add "rule" to the upcoming error message.
+		b.addRule(term, conflict, rule, true)
+		return action
+	}
+	if action == -1 { // shift
+		res := c.resolvePrec(rule, term)
+		b.addRule(term, res, rule, true)
+		switch res {
+		case doReduce:
+			return rule
+		case doError:
+			return -3
+		}
+		return -1 // shift
+	}
+	// reduce/reduce conflict
+	// TODO support lookahead rules
+	b.addRule(term, conflict, rule, false /*canShift*/)
+	b.addRule(term, conflict, action, false /*canShift*/)
+	return action
 }

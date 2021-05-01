@@ -93,7 +93,8 @@ type Lexer struct {
 type Parser struct {
 	Inputs   []syntax.Input
 	Nonterms []*syntax.Nonterm
-	Prec     []lalr.Precedence
+	Prec     []lalr.Precedence // TODO remove
+	Rules    []lalr.Rule
 	Tables   *lalr.Tables
 	Actions  []SemanticAction
 }

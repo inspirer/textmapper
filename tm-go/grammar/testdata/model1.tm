@@ -1,4 +1,6 @@
-language test(go);
+language model1(go);
+
+lang = "model1"
 
 :: lexer
 
@@ -67,8 +69,14 @@ Propagation :
       '(' PropagationWrap ')'
     | [IfFirst] (Propagation | 'b') 'c'
     | Propagation '+' Propagation
-    | Propagation<~IfFirst> '-' Propagation
+    | Propagation '-' Propagation
+    | Mod<~IfFirst>
     | '-' Propagation %prec UNO
+;
+
+Mod :
+      'b' 'b'
+    | [IfFirst] 'a' 'a'
 ;
 
 %%
@@ -142,6 +150,7 @@ Propagation :
   LPAREN PropagationWrap RPAREN
 | Propagation PLUS Propagation
 | Propagation MINUS Propagation
+| Mod
 | MINUS Propagation %prec UNO
 ;
 
@@ -150,7 +159,12 @@ Propagation_IfFirst :
 | Propagation_IfFirst CHAR_C
 | CHAR_B CHAR_C
 | Propagation_IfFirst PLUS Propagation
-| Propagation MINUS Propagation
+| Propagation_IfFirst MINUS Propagation
+| Mod
 | MINUS Propagation %prec UNO
+;
+
+Mod :
+  CHAR_B CHAR_B
 ;
 
