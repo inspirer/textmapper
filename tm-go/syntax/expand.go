@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/ident"
 )
 
@@ -62,7 +63,7 @@ func Expand(m *Model) error {
 				Kind: Choice,
 				Sub: []*Expr{
 					nt.Value.Sub[0],
-					{Kind: Empty},
+					{Kind: Empty, Origin: nt.Value.Origin},
 				},
 				Origin: nt.Value.Origin,
 			}
@@ -70,31 +71,32 @@ func Expand(m *Model) error {
 			// Note: at this point all lists have at least one element.
 			rr := nt.Value.ListFlags&RightRecursive != 0
 			elem := nt.Value.Sub[0]
-			rec := &Expr{Kind: Sequence, Origin: nt.Value.Origin}
-			rec.Sub = append(rec.Sub, &Expr{Kind: Reference, Symbol: len(m.Terminals) + self, Model: m})
+			origin := nt.Value.Origin
+			rec := &Expr{Kind: Sequence, Origin: origin}
+			rec.Sub = append(rec.Sub, &Expr{Kind: Reference, Symbol: len(m.Terminals) + self, Model: m, Origin: origin})
 			if len(nt.Value.Sub) > 1 {
 				if rr {
-					rec = concat(nt.Value.Sub[1], rec)
+					rec = concat(origin, nt.Value.Sub[1], rec)
 				} else {
-					rec = concat(rec, nt.Value.Sub[1])
+					rec = concat(origin, rec, nt.Value.Sub[1])
 				}
 			}
 			nt.Value = &Expr{
 				Kind:   Choice,
-				Origin: nt.Value.Origin,
+				Origin: origin,
 			}
 			if elem.Kind == Choice {
 				if rr {
-					nt.Value.Sub = append(nt.Value.Sub, multiConcat(elem.Sub, []*Expr{rec})...)
+					nt.Value.Sub = append(nt.Value.Sub, multiConcat(origin, elem.Sub, []*Expr{rec})...)
 				} else {
-					nt.Value.Sub = append(nt.Value.Sub, multiConcat([]*Expr{rec}, elem.Sub)...)
+					nt.Value.Sub = append(nt.Value.Sub, multiConcat(origin, []*Expr{rec}, elem.Sub)...)
 				}
 				nt.Value.Sub = append(nt.Value.Sub, elem.Sub...)
 			} else {
 				if rr {
-					nt.Value.Sub = append(nt.Value.Sub, concat(elem, rec))
+					nt.Value.Sub = append(nt.Value.Sub, concat(origin, elem, rec))
 				} else {
-					nt.Value.Sub = append(nt.Value.Sub, concat(rec, elem))
+					nt.Value.Sub = append(nt.Value.Sub, concat(origin, rec, elem))
 				}
 				nt.Value.Sub = append(nt.Value.Sub, elem)
 			}
@@ -116,7 +118,7 @@ func (e *expander) extractNonterm(expr *Expr) *Expr {
 	name := ProvisionalName(expr, e.Model)
 	if existing, ok := e.m[name]; ok && expr.Equal(e.Nonterms[existing].Value) {
 		sym := len(e.Terminals) + existing
-		return &Expr{Kind: Reference, Symbol: sym, Model: e.Model}
+		return &Expr{Kind: Reference, Symbol: sym, Model: e.Model, Origin: expr.Origin}
 	}
 
 	if _, ok := e.m[name]; name == "" || ok {
@@ -144,7 +146,7 @@ func (e *expander) extractNonterm(expr *Expr) *Expr {
 	e.Nonterms = append(e.Nonterms, nt)
 	e.extra++
 	e.perm = append(e.perm, e.curr+e.extra)
-	return &Expr{Kind: Reference, Symbol: sym, Model: e.Model}
+	return &Expr{Kind: Reference, Symbol: sym, Model: e.Model, Origin: expr.Origin}
 }
 
 func (e *expander) expandRule(rule *Expr) []*Expr {
@@ -170,11 +172,11 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 	case Empty:
 		return []*Expr{expr}
 	case Optional:
-		return append(e.expandExpr(expr.Sub[0]), &Expr{Kind: Empty})
+		return append(e.expandExpr(expr.Sub[0]), &Expr{Kind: Empty, Origin: expr.Origin})
 	case Sequence:
-		ret := []*Expr{{Kind: Empty}}
+		ret := []*Expr{{Kind: Empty, Origin: expr.Origin}}
 		for _, sub := range expr.Sub {
-			ret = multiConcat(ret, e.expandExpr(sub))
+			ret = multiConcat(expr.Origin, ret, e.expandExpr(sub))
 		}
 		return ret
 	case Choice:
@@ -219,8 +221,8 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 	return []*Expr{expr}
 }
 
-func concat(list ...*Expr) *Expr {
-	ret := &Expr{Kind: Sequence}
+func concat(origin status.SourceNode, list ...*Expr) *Expr {
+	ret := &Expr{Kind: Sequence, Origin: origin}
 	for _, el := range list {
 		if el.Kind == Sequence {
 			ret.Sub = append(ret.Sub, el.Sub...)
@@ -230,18 +232,18 @@ func concat(list ...*Expr) *Expr {
 	}
 	switch len(ret.Sub) {
 	case 0:
-		return &Expr{Kind: Empty}
+		return &Expr{Kind: Empty, Origin: origin}
 	case 1:
 		return ret.Sub[0]
 	}
 	return ret
 }
 
-func multiConcat(a, b []*Expr) []*Expr {
+func multiConcat(origin status.SourceNode, a, b []*Expr) []*Expr {
 	var ret []*Expr
 	for _, a := range a {
 		for _, b := range b {
-			ret = append(ret, concat(a, b))
+			ret = append(ret, concat(origin, a, b))
 		}
 	}
 	return ret

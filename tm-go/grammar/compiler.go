@@ -1188,7 +1188,7 @@ func (c *compiler) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 	}
 	switch len(subs) {
 	case 0:
-		return &syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty, Origin: sep}
 	case 1:
 		return subs[0]
 	}
@@ -1227,7 +1227,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 			subs = append(subs, expr)
 		}
 		if len(subs) == 0 {
-			return &syntax.Expr{Kind: syntax.Empty}
+			return &syntax.Expr{Kind: syntax.Empty, Origin: p}
 		}
 		return &syntax.Expr{Kind: syntax.Lookahead, Sub: subs, Origin: p}
 	case *ast.RhsNested:
@@ -1267,10 +1267,10 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 		return &syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
 	case *ast.SyntaxProblem:
 		c.errorf(p, "syntax error")
-		return &syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty, Origin: p}
 	}
 	c.errorf(p.TmNode(), "unsupported syntax (%T)", p)
-	return &syntax.Expr{Kind: syntax.Empty}
+	return &syntax.Expr{Kind: syntax.Empty, Origin: p.TmNode()}
 }
 
 func (c *compiler) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, origin status.SourceNode) *syntax.Expr {
@@ -1280,7 +1280,7 @@ func (c *compiler) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm,
 	}
 	switch len(subs) {
 	case 0:
-		return &syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty, Origin: origin}
 	case 1:
 		return subs[0]
 	}
@@ -1318,14 +1318,14 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 			}
 		}
 		for _, node := range report {
-			expr = &syntax.Expr{Kind: syntax.Arrow, Name: node, Sub: []*syntax.Expr{expr}}
+			expr = &syntax.Expr{Kind: syntax.Arrow, Name: node, Sub: []*syntax.Expr{expr}, Origin: clause}
 		}
 		if suffix, ok := rule.RhsSuffix(); ok {
 			switch suffix.Name().Text() {
 			case "prec":
 				sym, _ := c.resolveRef(suffix.Symref(), nonterm)
 				if sym < c.out.NumTokens {
-					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.source}
+					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.source, Origin: suffix}
 				} else {
 					c.errorf(suffix.Symref(), "terminal is expected")
 				}
@@ -1334,9 +1334,9 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 			}
 		}
 		if pred, ok := rule.Predicate(); ok {
-			pred := c.convertPredicate(pred.PredicateExpression(), nonterm)
-			if pred != nil {
-				expr = &syntax.Expr{Kind: syntax.Conditional, Predicate: pred, Sub: []*syntax.Expr{expr}, Model: c.source}
+			p := c.convertPredicate(pred.PredicateExpression(), nonterm)
+			if p != nil {
+				expr = &syntax.Expr{Kind: syntax.Conditional, Predicate: p, Sub: []*syntax.Expr{expr}, Model: c.source, Origin: pred}
 			}
 		}
 
@@ -1344,7 +1344,7 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 	}
 	switch len(subs) {
 	case 0:
-		return &syntax.Expr{Kind: syntax.Empty}
+		return &syntax.Expr{Kind: syntax.Empty, Origin: origin}
 	case 1:
 		return subs[0]
 	}
