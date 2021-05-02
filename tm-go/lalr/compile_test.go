@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/container"
 	"github.com/inspirer/textmapper/tm-go/util/diff"
 )
@@ -23,7 +24,11 @@ var emptyTests = []struct {
 
 func TestEmpty(t *testing.T) {
 	for _, tc := range emptyTests {
-		g := parseGrammar(t, tc.input)
+		g, err := parseGrammar(tc.input)
+		if err != nil {
+			t.Errorf("parseGrammar(%v) failed with %v", tc.input, err)
+			continue
+		}
 		c := &compiler{
 			grammar: g,
 			empty:   container.NewBitSet(len(g.Symbols)),
@@ -46,63 +51,73 @@ var stateTests = []struct {
 	want  []string
 }{
 	{`S ->; S -> a`, []string{
-		`0 (from 0, EOI, LA): a -> 1; S -> 2; reduce S [EOI];`, // resolved S/R
-		`1 (from 0, a): S : a _;`,
+		`0 (from 0, EOI, LA): a -> 1; S -> 2; reduce S [EOI]; resolved: a->shift EOI->{S:};`,
+		`1 (from 0, a): S: a _;`,
 		`2 (from 0, S): EOI -> 3;`,
 		`3 (from 2, EOI):`,
 	}},
 	{`S -> A; A -> aa`, []string{
 		`0 (from 0, EOI): a -> 1; S -> 4; A -> 2;`,
-		`1 (from 0, a): A : a _ a; a -> 3;`,
-		`2 (from 0, A): S : A _;`,
-		`3 (from 1, a): A : a a _;`,
+		`1 (from 0, a): A: a _ a; a -> 3;`,
+		`2 (from 0, A): S: A _;`,
+		`3 (from 1, a): A: a a _;`,
 		`4 (from 0, S): EOI -> 5;`,
 		`5 (from 4, EOI):`,
 	}},
 	{`S -> Sa; S -> a`, []string{
 		`0 (from 0, EOI): a -> 1; S -> 2;`,
-		`1 (from 0, a): S : a _;`,
-		`2 (from 0, S): S : S _ a; EOI -> 4; a -> 3;`, // shift-shift is still LR0
-		`3 (from 2, a): S : S a _;`,
+		`1 (from 0, a): S: a _;`,
+		`2 (from 0, S): S: S _ a; EOI -> 4; a -> 3;`, // shift-shift is still LR0
+		`3 (from 2, a): S: S a _;`,
 		`4 (from 2, EOI):`,
 	}},
 	{`S -> A; S -> B; A -> ab; B -> ac`, []string{
 		`0 (from 0, EOI): a -> 1; S -> 6; A -> 2; B -> 3;`,
-		`1 (from 0, a): A : a _ b; B : a _ c; b -> 4; c -> 5;`,
-		`2 (from 0, A): S : A _;`,
-		`3 (from 0, B): S : B _;`,
-		`4 (from 1, b): A : a b _;`,
-		`5 (from 1, c): B : a c _;`,
+		`1 (from 0, a): A: a _ b; B: a _ c; b -> 4; c -> 5;`,
+		`2 (from 0, A): S: A _;`,
+		`3 (from 0, B): S: B _;`,
+		`4 (from 1, b): A: a b _;`,
+		`5 (from 1, c): B: a c _;`,
 		`6 (from 0, S): EOI -> 7;`,
 		`7 (from 6, EOI):`,
 	}},
 	{`S -> SA; S -> A; A -> a; A -> b`, []string{
 		`0 (from 0, EOI): a -> 1; b -> 2; S -> 3; A -> 4;`,
-		`1 (from 0, a): A : a _;`,
-		`2 (from 0, b): A : b _;`,
-		`3 (from 0, S): S : S _ A; EOI -> 6; a -> 1; b -> 2; A -> 5;`,
-		`4 (from 0, A): S : A _;`,
-		`5 (from 3, A): S : S A _;`,
+		`1 (from 0, a): A: a _;`,
+		`2 (from 0, b): A: b _;`,
+		`3 (from 0, S): S: S _ A; EOI -> 6; a -> 1; b -> 2; A -> 5;`,
+		`4 (from 0, A): S: A _;`,
+		`5 (from 3, A): S: S A _;`,
 		`6 (from 3, EOI):`,
 	}},
 	{`S -> SA; S -> ; A -> B; B -> Ca; B -> CAp; C -> c; C ->`, []string{
 		`0 (from 0, EOI): S -> 1; reduce S;`,
-		`1 (from 0, S, LA): S : S _ A; EOI -> 9; c -> 2; A -> 3; B -> 4; C -> 5; reduce C [a,c];`,
-		`2 (from 1, c): C : c _;`,
-		`3 (from 1, A): S : S A _;`,
-		`4 (from 1, B): A : B _;`,
-		`5 (from 1, C, LA): B : C _ a; B : C _ A p; a -> 6; c -> 2; A -> 7; B -> 4; C -> 5; reduce C [a,c];`, // shift-reduce conflict
-		`6 (from 5, a): B : C a _;`,
-		`7 (from 5, A): B : C A _ p; p -> 8;`,
-		`8 (from 7, p): B : C A p _;`,
+		`1 (from 0, S, LA): S: S _ A; EOI -> 9; c -> 2; A -> 3; B -> 4; C -> 5; reduce C [a,c]; resolved: EOI->shift c->shift a->{C:};`,
+		`2 (from 1, c): C: c _;`,
+		`3 (from 1, A): S: S A _;`,
+		`4 (from 1, B): A: B _;`,
+		`5 (from 1, C, LA): B: C _ a; B: C _ A p; a -> 6; c -> 2; A -> 7; B -> 4; C -> 5; reduce C [a,c]; resolved: a->shift c->shift;`,
+		`6 (from 5, a): B: C a _;`,
+		`7 (from 5, A): B: C A _ p; p -> 8;`,
+		`8 (from 7, p): B: C A p _;`,
 		`9 (from 1, EOI):`,
+
+		// Both conflicts are resolved as shifts (see above).
+		`2 shift/reduce and 0 reduce/reduce conflicts:`,
+		`input:6:0: input: S`,
+		`shift/reduce conflict (next: c)`,
+		`    C :`,
+		``,
+		`input:6:0: input: S C`,
+		`shift/reduce conflict (next: a, c)`,
+		`    C :`,
 	}},
 	{`S -> A; A -> Bb; B -> Aa; B ->`, []string{
 		`0 (from 0, EOI): S -> 5; A -> 1; B -> 2; reduce B;`,
-		`1 (from 0, A, LA): S : A _; B : A _ a; a -> 3; reduce S [EOI];`,
-		`2 (from 0, B): A : B _ b; b -> 4;`,
-		`3 (from 1, a): B : A a _;`,
-		`4 (from 2, b): A : B b _;`,
+		`1 (from 0, A, LA): S: A _; B: A _ a; a -> 3; reduce S [EOI]; resolved: a->shift EOI->{S: A};`,
+		`2 (from 0, B): A: B _ b; b -> 4;`,
+		`3 (from 1, a): B: A a _;`,
+		`4 (from 2, b): A: B b _;`,
 		`5 (from 0, S): EOI -> 6;`,
 		`6 (from 5, EOI):`,
 	}},
@@ -111,12 +126,12 @@ var stateTests = []struct {
 	{`S -> N; N -> xNy; N -> a; N -> b`, []string{
 		`0 (from 0, EOI): x -> 2; a -> 3; b -> 4; S -> 8; N -> 5;`,
 		`1 (from 0, EOI): x -> 2; a -> 3; b -> 4; N -> 10;`,
-		`2 (from 0, x): N : x _ N y; x -> 2; a -> 3; b -> 4; N -> 6;`,
-		`3 (from 0, a): N : a _;`,
-		`4 (from 0, b): N : b _;`,
-		`5 (from 0, N): S : N _;`,
-		`6 (from 2, N): N : x N _ y; y -> 7;`,
-		`7 (from 6, y): N : x N y _;`,
+		`2 (from 0, x): N: x _ N y; x -> 2; a -> 3; b -> 4; N -> 6;`,
+		`3 (from 0, a): N: a _;`,
+		`4 (from 0, b): N: b _;`,
+		`5 (from 0, N): S: N _;`,
+		`6 (from 2, N): N: x N _ y; y -> 7;`,
+		`7 (from 6, y): N: x N y _;`,
 		`8 (from 0, S): EOI -> 9;`,
 		`9 (from 8, EOI):`,
 		`10 (from 1, N):`,
@@ -125,19 +140,90 @@ var stateTests = []struct {
 	// Simple lookahead.
 	{`S -> Ca; S -> Bb; C -> a; B -> a`, []string{
 		`0 (from 0, EOI): a -> 1; S -> 6; C -> 2; B -> 3;`,
-		`1 (from 0, a, LA): C : a _; B : a _; reduce C [a]; reduce B [b];`,
-		`2 (from 0, C): S : C _ a; a -> 4;`,
-		`3 (from 0, B): S : B _ b; b -> 5;`,
-		`4 (from 2, a): S : C a _;`,
-		`5 (from 3, b): S : B b _;`,
+		`1 (from 0, a, LA): C: a _; B: a _; reduce C [a]; reduce B [b]; resolved: a->{C: a} b->{B: a};`,
+		`2 (from 0, C): S: C _ a; a -> 4;`,
+		`3 (from 0, B): S: B _ b; b -> 5;`,
+		`4 (from 2, a): S: C a _;`,
+		`5 (from 3, b): S: B b _;`,
 		`6 (from 0, S): EOI -> 7;`,
 		`7 (from 6, EOI):`,
+	}},
+
+	// Associativity.
+	{`S -> E; E -> c; E -> EaE; E -> EbE`, []string{
+		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`1 (from 0, c): E: c _;`,
+		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
+		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
+		`4 (from 2, b): E: E b _ E; c -> 1; E -> 6;`,
+		`5 (from 3, E, LA): E: E _ a E; E: E a E _; E: E _ b E; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->shift b->shift EOI->{E: E a E};`,
+		`6 (from 4, E, LA): E: E _ a E; E: E _ b E; E: E b E _; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->shift b->shift EOI->{E: E b E};`,
+		`7 (from 0, S): EOI -> 8;`,
+		`8 (from 7, EOI):`,
+
+		// Errors resolved as shifts.
+		`2 shift/reduce and 0 reduce/reduce conflicts:`,
+		`input:2:0: input: E a E`,
+		`shift/reduce conflict (next: a, b)`,
+		`    E : E a E`,
+		``,
+		`input:3:0: input: E b E`,
+		`shift/reduce conflict (next: a, b)`,
+		`    E : E b E`,
+	}},
+	{`%L ab; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
+		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`1 (from 0, c): E: c _;`,
+		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
+		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
+		`4 (from 2, b): E: E b _ E; c -> 1; E -> 6;`,
+		`5 (from 3, E, LA): E: E _ a E; E: E a E _; E: E _ b E; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->{E: E a E} b->{E: E a E} EOI->{E: E a E};`,
+		`6 (from 4, E, LA): E: E _ a E; E: E _ b E; E: E b E _; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->{E: E b E} b->{E: E b E} EOI->{E: E b E};`,
+		`7 (from 0, S): EOI -> 8;`,
+		`8 (from 7, EOI):`,
+	}},
+	{`%NA ab; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
+		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`1 (from 0, c): E: c _;`,
+		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
+		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
+		`4 (from 2, b): E: E b _ E; c -> 1; E -> 6;`,
+		`5 (from 3, E, LA): E: E _ a E; E: E a E _; E: E _ b E; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->err b->err EOI->{E: E a E};`,
+		`6 (from 4, E, LA): E: E _ a E; E: E _ b E; E: E b E _; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->err b->err EOI->{E: E b E};`,
+		`7 (from 0, S): EOI -> 8;`,
+		`8 (from 7, EOI):`,
+	}},
+	{`%L a; %L b; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
+		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`1 (from 0, c): E: c _;`,
+		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
+		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
+		`4 (from 2, b): E: E b _ E; c -> 1; E -> 6;`,
+		`5 (from 3, E, LA): E: E _ a E; E: E a E _; E: E _ b E; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->{E: E a E} b->shift EOI->{E: E a E};`,
+		`6 (from 4, E, LA): E: E _ a E; E: E _ b E; E: E b E _; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->{E: E b E} b->{E: E b E} EOI->{E: E b E};`,
+		`7 (from 0, S): EOI -> 8;`,
+		`8 (from 7, EOI):`,
+	}},
+	{`%L a; %R b; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
+		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`1 (from 0, c): E: c _;`,
+		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
+		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
+		`4 (from 2, b): E: E b _ E; c -> 1; E -> 6;`,
+		`5 (from 3, E, LA): E: E _ a E; E: E a E _; E: E _ b E; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->{E: E a E} b->shift EOI->{E: E a E};`,
+		`6 (from 4, E, LA): E: E _ a E; E: E _ b E; E: E b E _; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->{E: E b E} b->shift EOI->{E: E b E};`,
+		`7 (from 0, S): EOI -> 8;`,
+		`8 (from 7, EOI):`,
 	}},
 }
 
 func TestStates(t *testing.T) {
 	for _, tc := range stateTests {
-		g := parseGrammar(t, tc.input)
+		g, err := parseGrammar(tc.input)
+		if err != nil {
+			t.Errorf("parseGrammar(%v) failed with %v", tc.input, err)
+			continue
+		}
 		c := &compiler{
 			grammar: g,
 			out:     &Tables{},
@@ -151,6 +237,7 @@ func TestStates(t *testing.T) {
 		c.initLalr()
 		c.buildFollow()
 		c.buildLA()
+		c.populateTables()
 
 		var buf strings.Builder
 		for i, state := range c.states {
@@ -187,7 +274,40 @@ func TestStates(t *testing.T) {
 					buf.WriteByte(';')
 				}
 			}
+			if !state.lr0 {
+				action := c.out.Action[state.index]
+				if action > -3 {
+					t.Errorf("non-LR0 state %v requires disambiguation (in %q)", state.index, tc.input)
+				}
+				buf.WriteString(" resolved:")
+				for i := -3 - action; c.out.Lalr[i] >= 0; i += 2 {
+					buf.WriteString(" ")
+					buf.WriteString(g.Symbols[c.out.Lalr[i]])
+					buf.WriteString("->")
+					switch action := c.out.Lalr[i+1]; {
+					case action == -1:
+						buf.WriteString("shift")
+					case action == -2:
+						buf.WriteString("err")
+					case action >= 0:
+						buf.WriteString("{")
+						c.writeRule(action, &buf)
+						buf.WriteString("}")
+					default:
+						// Internal error.
+						buf.WriteString("FAILURE")
+					}
+				}
+				buf.WriteString(";")
+			}
 			buf.WriteByte('\n')
+		}
+		if len(c.s) > 0 {
+			fmt.Fprintf(&buf, "%v shift/reduce and %v reduce/reduce conflicts:\n", c.sr, c.rr)
+		}
+		for _, e := range c.s {
+			buf.WriteString(e.Error())
+			buf.WriteString("\n")
 		}
 		got := strings.TrimRight(buf.String(), "\n")
 		if diff := diff.LineDiff(strings.Join(tc.want, "\n"), got); diff != "" {
@@ -197,8 +317,15 @@ func TestStates(t *testing.T) {
 }
 
 var ruleRE = regexp.MustCompile(`^([A-Z])\s+->(?:\s+([a-zA-Z]*))?$`)
+var precRE = regexp.MustCompile(`^%(L|R|NA)\s+([a-z]+)$`)
 
-func parseGrammar(t *testing.T, input string) *Grammar {
+type node int
+
+func (n node) SourceRange() status.SourceRange {
+	return status.SourceRange{Filename: "input", Line: int(n)}
+}
+
+func parseGrammar(input string) (*Grammar, error) {
 	index := make(map[rune]Sym)
 	var symbols []string
 	index[0] = EOI
@@ -228,6 +355,7 @@ func parseGrammar(t *testing.T, input string) *Grammar {
 			rule := Rule{
 				LHS:        sym(rune(match[1][0])),
 				Action:     action,
+				Origin:     node(action),
 				OriginName: match[1],
 			}
 			action++
@@ -237,11 +365,28 @@ func parseGrammar(t *testing.T, input string) *Grammar {
 			ret.Rules = append(ret.Rules, rule)
 			continue
 		}
-		t.Fatalf("cannot parse `%v`", line)
+		if match := precRE.FindStringSubmatch(line); match != nil {
+			var term []Sym
+			for _, r := range match[2] {
+				term = append(term, sym(r))
+			}
+			switch match[1] {
+			case "NA":
+				ret.Precedence = append(ret.Precedence, Precedence{Associativity: NonAssoc, Terminals: term})
+				continue
+			case "L":
+				ret.Precedence = append(ret.Precedence, Precedence{Associativity: Left, Terminals: term})
+				continue
+			case "R":
+				ret.Precedence = append(ret.Precedence, Precedence{Associativity: Right, Terminals: term})
+				continue
+			}
+		}
+		return nil, fmt.Errorf("cannot parse `%v`", line)
 	}
 	if sym, ok := index['N']; ok {
 		ret.Inputs = append(ret.Inputs, Input{Nonterminal: sym, Eoi: false})
 	}
 	ret.Symbols = symbols
-	return ret
+	return ret, nil
 }

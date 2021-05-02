@@ -266,6 +266,16 @@ func (c *compiler) stateClosure(state *state, out container.BitSet) {
 	}
 }
 
+func (c *compiler) writeRule(r int, out *strings.Builder) {
+	rule := c.grammar.Rules[r]
+	out.WriteString(c.grammar.Symbols[rule.LHS])
+	out.WriteString(":")
+	for _, sym := range rule.RHS {
+		out.WriteString(" ")
+		out.WriteString(c.grammar.Symbols[sym])
+	}
+}
+
 func (c *compiler) writeItem(item int, out *strings.Builder) {
 	i := item
 	for c.right[i] >= 0 {
@@ -274,20 +284,16 @@ func (c *compiler) writeItem(item int, out *strings.Builder) {
 	rule := c.grammar.Rules[-1-c.right[i]]
 	pos := len(rule.RHS) - (i - item)
 	out.WriteString(c.grammar.Symbols[rule.LHS])
-	out.WriteString(" : ")
+	out.WriteString(":")
 	for i, sym := range rule.RHS {
-		if i > 0 {
-			out.WriteString(" ")
-		}
+		out.WriteString(" ")
 		if i == pos {
 			out.WriteString("_ ")
 		}
 		out.WriteString(c.grammar.Symbols[sym])
 	}
 	if pos == len(rule.RHS) {
-		if pos > 0 {
-			out.WriteString(" ")
-		}
+		out.WriteString(" ")
 		out.WriteString("_")
 	}
 }
