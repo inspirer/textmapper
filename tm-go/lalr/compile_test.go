@@ -149,6 +149,38 @@ var stateTests = []struct {
 		`7 (from 6, EOI):`,
 	}},
 
+	// Several conflicting rules: we pick the first one.
+	{`S -> A; S -> B; S -> C; A -> a; B -> a; C -> a %P b`, []string{
+		`0 (from 0, EOI): a -> 1; S -> 5; A -> 2; B -> 3; C -> 4;`,
+		`1 (from 0, a, LA): A: a _; B: a _; C: a _; reduce A [EOI]; reduce B [EOI]; reduce C [EOI]; resolved: EOI->{A: a};`,
+		`2 (from 0, A): S: A _;`,
+		`3 (from 0, B): S: B _;`,
+		`4 (from 0, C): S: C _;`,
+		`5 (from 0, S): EOI -> 6;`,
+		`6 (from 5, EOI):`,
+
+		// Errors resolved as reduce first.
+		// Note: all rules are reported as having problems.
+		`0 shift/reduce and 1 reduce/reduce conflicts:`,
+		`input:4:0: input: a`,
+		`reduce/reduce conflict (next: EOI)`,
+		`    B : a`,
+		`    A : a`,
+		`    C : a %prec b`,
+		``,
+		`input:3:0: input: a`,
+		`reduce/reduce conflict (next: EOI)`,
+		`    B : a`,
+		`    A : a`,
+		`    C : a %prec b`,
+		``,
+		`input:5:0: input: a`,
+		`reduce/reduce conflict (next: EOI)`,
+		`    B : a`,
+		`    A : a`,
+		`    C : a %prec b`,
+	}},
+
 	// Associativity.
 	{`S -> E; E -> c; E -> EaE; E -> EbE`, []string{
 		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
@@ -214,6 +246,22 @@ var stateTests = []struct {
 		`6 (from 4, E, LA): E: E _ a E; E: E _ b E; E: E b E _; a -> 3; b -> 4; reduce E [EOI,a,b]; resolved: a->{E: E b E} b->shift EOI->{E: E b E};`,
 		`7 (from 0, S): EOI -> 8;`,
 		`8 (from 7, EOI):`,
+	}},
+	// Simulating unary minus via precedence.
+	{`%L ab; %L c; %NA p; S -> E; E -> f; E -> EaE; E -> EbE; E -> EcE; E -> bE %P p`, []string{
+		`0 (from 0, EOI): b -> 1; f -> 2; S -> 11; E -> 3;`,
+		`1 (from 0, b): E: b _ E; b -> 1; f -> 2; E -> 4;`,
+		`2 (from 0, f): E: f _;`,
+		`3 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; E: E _ c E; a -> 5; b -> 6; c -> 7; reduce S [EOI]; resolved: a->shift b->shift c->shift EOI->{S: E};`,
+		`4 (from 1, E, LA): E: E _ a E; E: E _ b E; E: E _ c E; E: b E _; a -> 5; b -> 6; c -> 7; reduce E [EOI,a,b,c]; resolved: a->{E: b E} b->{E: b E} c->{E: b E} EOI->{E: b E};`, // reduce E: bE on [a,b,c]
+		`5 (from 3, a): E: E a _ E; b -> 1; f -> 2; E -> 8;`,
+		`6 (from 3, b): E: E b _ E; b -> 1; f -> 2; E -> 9;`,
+		`7 (from 3, c): E: E c _ E; b -> 1; f -> 2; E -> 10;`,
+		`8 (from 5, E, LA): E: E _ a E; E: E a E _; E: E _ b E; E: E _ c E; a -> 5; b -> 6; c -> 7; reduce E [EOI,a,b,c]; resolved: a->{E: E a E} b->{E: E a E} c->shift EOI->{E: E a E};`,
+		`9 (from 6, E, LA): E: E _ a E; E: E _ b E; E: E b E _; E: E _ c E; a -> 5; b -> 6; c -> 7; reduce E [EOI,a,b,c]; resolved: a->{E: E b E} b->{E: E b E} c->shift EOI->{E: E b E};`,
+		`10 (from 7, E, LA): E: E _ a E; E: E _ b E; E: E _ c E; E: E c E _; a -> 5; b -> 6; c -> 7; reduce E [EOI,a,b,c]; resolved: a->{E: E c E} b->{E: E c E} c->{E: E c E} EOI->{E: E c E};`,
+		`11 (from 0, S): EOI -> 12;`,
+		`12 (from 11, EOI):`,
 	}},
 }
 
@@ -316,7 +364,7 @@ func TestStates(t *testing.T) {
 	}
 }
 
-var ruleRE = regexp.MustCompile(`^([A-Z])\s+->(?:\s+([a-zA-Z]*))?$`)
+var ruleRE = regexp.MustCompile(`^([A-Z])\s+->(?:\s+([a-zA-Z]*))?(?:\s+%P\s+([a-z]))?$`)
 var precRE = regexp.MustCompile(`^%(L|R|NA)\s+([a-z]+)$`)
 
 type node int
@@ -361,6 +409,9 @@ func parseGrammar(input string) (*Grammar, error) {
 			action++
 			for _, r := range match[2] {
 				rule.RHS = append(rule.RHS, sym(r))
+			}
+			for _, r := range match[3] {
+				rule.Precedence = sym(r)
 			}
 			ret.Rules = append(ret.Rules, rule)
 			continue
