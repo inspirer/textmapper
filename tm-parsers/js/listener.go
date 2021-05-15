@@ -34,7 +34,7 @@ const (
 	Initializer          // Expr
 	TemplateLiteral      // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expr)*
 	IndexAccess          // expr=Expr index=Expr
-	PropertyAccess       // expr=Expr selector=ReferenceIdent
+	PropertyAccess       // expr=Expr? selector=ReferenceIdent
 	TaggedTemplate       // tag=Expr literal=TemplateLiteral
 	TsNonNull            // expr=Expr
 	NewExpr              // expr=Expr Arguments?
@@ -143,6 +143,7 @@ const (
 	ClassBody                 // (ClassElement)*
 	Static
 	Abstract
+	Override
 	Readonly
 	Declare
 	MemberMethod      // (Modifier)* MethodDefinition
@@ -386,6 +387,7 @@ var nodeTypeStr = [...]string{
 	"ClassBody",
 	"Static",
 	"Abstract",
+	"Override",
 	"Readonly",
 	"Declare",
 	"MemberMethod",
@@ -666,6 +668,7 @@ var Modifier = []NodeType{
 	Declare,
 	DecoratorCall,
 	DecoratorExpr,
+	Override,
 	Readonly,
 	Static,
 }

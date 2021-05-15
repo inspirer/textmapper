@@ -71,6 +71,7 @@ var parseTests = []struct {
 		   [«a»:string] : int;
 		   [«key»:number] : string;
 		 }`,
+		`class «A» { get «#someValue»() { return 1; } }`,
 
 		// IdentifierName rules
 		`const «a» = {«cc»: 5}.cc;`,
@@ -204,6 +205,7 @@ var parseTests = []struct {
 		`«super.me»();`,
 		`«foo?.foo.bar»();`,
 		`«foo?.foo.#bar»();`,
+		`««import.meta».bar»();`,
 	}},
 	{js.Javascript, js.OptionalPropertyAccess, []string{
 		`«foo?.foo»();`,
@@ -1145,6 +1147,7 @@ var parseTests = []struct {
 		`var x: {«[a:string] : ()=>string»};`,
 		`var x: {«[a:string] : <T>(a: T)=>string»};`,
 		`var x: {«[a:string] : (a)=>string»};`,
+		`class Foo { «static [n: string]: string | number | undefined»; }`,
 	}},
 	{js.Typescript, js.PropertySignature, []string{
 		`var x: {«a:string»;};`,
@@ -1322,6 +1325,11 @@ var parseTests = []struct {
 		   «abstract» set value(v: number);
 		 }`,
 		`let x: «abstract» new () => HasArea = Shape;`,
+	}},
+	{js.Typescript, js.Override, []string{
+		`class Base {
+		   «override» get value() { return 1; }
+		 }`,
 	}},
 	{js.Typescript, js.Readonly, []string{
 		`class Foo {

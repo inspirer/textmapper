@@ -197,6 +197,7 @@ var lexerTests = []struct {
 	{js.MODULE, []string{`«module»`}},
 	{js.GLOBAL, []string{`«global»`}},
 	{js.NAMESPACE, []string{`«namespace»`}},
+	{js.OVERRIDE, []string{`«override»`}},
 	{js.REQUIRE, []string{`«require»`}},
 	{js.TYPE, []string{`«type»`}},
 	{js.READONLY, []string{`«readonly»`}},

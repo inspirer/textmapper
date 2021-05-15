@@ -147,6 +147,7 @@ var (
 	OptionalIndexAccess       = func(t js.NodeType) bool { return t == js.OptionalIndexAccess }
 	OptionalPropertyAccess    = func(t js.NodeType) bool { return t == js.OptionalPropertyAccess }
 	OptionalTaggedTemplate    = func(t js.NodeType) bool { return t == js.OptionalTaggedTemplate }
+	Override                  = func(t js.NodeType) bool { return t == js.Override }
 	Parameters                = func(t js.NodeType) bool { return t == js.Parameters }
 	Parenthesized             = func(t js.NodeType) bool { return t == js.Parenthesized }
 	ParenthesizedType         = func(t js.NodeType) bool { return t == js.ParenthesizedType }

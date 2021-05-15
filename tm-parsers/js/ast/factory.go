@@ -283,6 +283,8 @@ func ToJsNode(n *Node) JsNode {
 		return &OptionalPropertyAccess{n}
 	case js.OptionalTaggedTemplate:
 		return &OptionalTaggedTemplate{n}
+	case js.Override:
+		return &Override{n}
 	case js.Parameters:
 		return &Parameters{n}
 	case js.Parenthesized:

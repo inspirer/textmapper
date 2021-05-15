@@ -96,6 +96,7 @@
 %token GLOBAL
 %token MODULE
 %token NAMESPACE
+%token OVERRIDE
 %token REQUIRE
 %token TYPE
 %token LBRACE
@@ -225,6 +226,7 @@ IdentifierName :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -300,6 +302,7 @@ IdentifierName_WithoutAsserts :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -375,6 +378,7 @@ IdentifierName_WithoutFrom :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -413,6 +417,7 @@ IdentifierName_WithoutKeywords_WithoutAs :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -488,6 +493,7 @@ IdentifierName_WithoutNew :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -549,6 +555,7 @@ IdentifierReference :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -589,6 +596,7 @@ IdentifierReference_Await :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -627,6 +635,7 @@ IdentifierReference_Await_NoAsync_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -666,6 +675,7 @@ IdentifierReference_Await_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -705,6 +715,7 @@ IdentifierReference_NoAsync_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -745,6 +756,7 @@ IdentifierReference_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -780,6 +792,7 @@ IdentifierReference_WithoutPredefinedTypes :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -816,6 +829,7 @@ IdentifierReference_Yield :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -855,6 +869,7 @@ IdentifierReference_Yield_Await :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -892,6 +907,7 @@ IdentifierReference_Yield_Await_NoAsync_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -930,6 +946,7 @@ IdentifierReference_Yield_Await_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -968,6 +985,7 @@ IdentifierReference_Yield_NoAsync_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -1007,6 +1025,7 @@ IdentifierReference_Yield_NoLet :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -1052,6 +1071,7 @@ BindingIdentifier :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -1091,6 +1111,7 @@ BindingIdentifier_WithoutImplements :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -1131,6 +1152,7 @@ LabelIdentifier :
 | IS
 | MODULE
 | NAMESPACE
+| OVERRIDE
 | REQUIRE
 | TYPE
 | GLOBAL
@@ -2504,6 +2526,8 @@ CallExpression :
 | CallExpression LBRACK Expression_In RBRACK
 | CallExpression DOT IdentifierNameRef
 | CallExpression DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression /*.noLineBreak*/ EXCL
 | CallExpression TemplateLiteral
 ;
@@ -2516,6 +2540,8 @@ CallExpression_Await :
 | CallExpression_Await LBRACK Expression_In_Await RBRACK
 | CallExpression_Await DOT IdentifierNameRef
 | CallExpression_Await DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Await /*.noLineBreak*/ EXCL
 | CallExpression_Await TemplateLiteral_Await
 ;
@@ -2528,6 +2554,8 @@ CallExpression_Await_NoLet :
 | CallExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
 | CallExpression_Await_NoLet DOT IdentifierNameRef
 | CallExpression_Await_NoLet DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | CallExpression_Await_NoLet TemplateLiteral_Await
 ;
@@ -2540,6 +2568,8 @@ CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
 | CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In_Await RBRACK
 | CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
 | CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
 ;
@@ -2552,6 +2582,8 @@ CallExpression_Await_NoObjLiteral :
 | CallExpression_Await_NoObjLiteral LBRACK Expression_In_Await RBRACK
 | CallExpression_Await_NoObjLiteral DOT IdentifierNameRef
 | CallExpression_Await_NoObjLiteral DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Await_NoObjLiteral /*.noLineBreak*/ EXCL
 | CallExpression_Await_NoObjLiteral TemplateLiteral_Await
 ;
@@ -2574,6 +2606,8 @@ CallExpression_NoFuncClass :
 | CallExpression_NoFuncClass LBRACK Expression_In RBRACK
 | CallExpression_NoFuncClass DOT IdentifierNameRef
 | CallExpression_NoFuncClass DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_NoFuncClass /*.noLineBreak*/ EXCL
 | CallExpression_NoFuncClass TemplateLiteral
 ;
@@ -2586,6 +2620,8 @@ CallExpression_NoLet :
 | CallExpression_NoLet LBRACK Expression_In RBRACK
 | CallExpression_NoLet DOT IdentifierNameRef
 | CallExpression_NoLet DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_NoLet /*.noLineBreak*/ EXCL
 | CallExpression_NoLet TemplateLiteral
 ;
@@ -2598,6 +2634,8 @@ CallExpression_NoLetSq_NoObjLiteral_NoFuncClass :
 | CallExpression_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In RBRACK
 | CallExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
 | CallExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | CallExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
 ;
@@ -2610,6 +2648,8 @@ CallExpression_NoObjLiteral :
 | CallExpression_NoObjLiteral LBRACK Expression_In RBRACK
 | CallExpression_NoObjLiteral DOT IdentifierNameRef
 | CallExpression_NoObjLiteral DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_NoObjLiteral /*.noLineBreak*/ EXCL
 | CallExpression_NoObjLiteral TemplateLiteral
 ;
@@ -2632,6 +2672,8 @@ CallExpression_Yield :
 | CallExpression_Yield LBRACK Expression_In_Yield RBRACK
 | CallExpression_Yield DOT IdentifierNameRef
 | CallExpression_Yield DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Yield /*.noLineBreak*/ EXCL
 | CallExpression_Yield TemplateLiteral_Yield
 ;
@@ -2644,6 +2686,8 @@ CallExpression_Yield_Await :
 | CallExpression_Yield_Await LBRACK Expression_In_Yield_Await RBRACK
 | CallExpression_Yield_Await DOT IdentifierNameRef
 | CallExpression_Yield_Await DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Yield_Await /*.noLineBreak*/ EXCL
 | CallExpression_Yield_Await TemplateLiteral_Yield_Await
 ;
@@ -2656,6 +2700,8 @@ CallExpression_Yield_Await_NoLet :
 | CallExpression_Yield_Await_NoLet LBRACK Expression_In_Yield_Await RBRACK
 | CallExpression_Yield_Await_NoLet DOT IdentifierNameRef
 | CallExpression_Yield_Await_NoLet DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Yield_Await_NoLet /*.noLineBreak*/ EXCL
 | CallExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
 ;
@@ -2668,6 +2714,8 @@ CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass :
 | CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In_Yield_Await RBRACK
 | CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
 | CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield_Await
 ;
@@ -2690,6 +2738,8 @@ CallExpression_Yield_NoLet :
 | CallExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
 | CallExpression_Yield_NoLet DOT IdentifierNameRef
 | CallExpression_Yield_NoLet DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Yield_NoLet /*.noLineBreak*/ EXCL
 | CallExpression_Yield_NoLet TemplateLiteral_Yield
 ;
@@ -2702,6 +2752,8 @@ CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
 | CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass LBRACK Expression_In_Yield RBRACK
 | CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT IdentifierNameRef
 | CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
+| IMPORT DOT IdentifierNameRef
+| IMPORT DOT ClassPrivateRef
 | CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
 | CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
 ;
@@ -6540,6 +6592,7 @@ Modifier :
 | Decorator
 | STATIC
 | ABSTRACT
+| OVERRIDE
 | READONLY
 ;
 
@@ -6548,6 +6601,7 @@ Modifier_WithDeclare :
 | Decorator
 | STATIC
 | ABSTRACT
+| OVERRIDE
 | READONLY
 | DECLARE
 ;

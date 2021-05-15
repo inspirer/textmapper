@@ -159,6 +159,7 @@ func (n OptionalCallExpr) JsNode() *Node          { return n.Node }
 func (n OptionalIndexAccess) JsNode() *Node       { return n.Node }
 func (n OptionalPropertyAccess) JsNode() *Node    { return n.Node }
 func (n OptionalTaggedTemplate) JsNode() *Node    { return n.Node }
+func (n Override) JsNode() *Node                  { return n.Node }
 func (n Parameters) JsNode() *Node                { return n.Node }
 func (n Parenthesized) JsNode() *Node             { return n.Node }
 func (n ParenthesizedType) JsNode() *Node         { return n.Node }
@@ -518,6 +519,7 @@ func (AccessibilityModifier) modifierNode() {}
 func (Declare) modifierNode()               {}
 func (DecoratorCall) modifierNode()         {}
 func (DecoratorExpr) modifierNode()         {}
+func (Override) modifierNode()              {}
 func (Readonly) modifierNode()              {}
 func (Static) modifierNode()                {}
 func (NilNode) modifierNode()               {}
@@ -2958,6 +2960,10 @@ func (n OptionalTaggedTemplate) Literal() TemplateLiteral {
 	return TemplateLiteral{n.Child(selector.Expr).Next(selector.TemplateLiteral)}
 }
 
+type Override struct {
+	*Node
+}
+
 type Parameters struct {
 	*Node
 }
@@ -3054,8 +3060,9 @@ type PropertyAccess struct {
 	*Node
 }
 
-func (n PropertyAccess) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+func (n PropertyAccess) Expr() (Expr, bool) {
+	field := ToJsNode(n.Child(selector.Expr)).(Expr)
+	return field, field.JsNode() != nil
 }
 
 func (n PropertyAccess) Selector() ReferenceIdent {

@@ -86,6 +86,7 @@ const (
 	IS                 // is
 	MODULE             // module
 	NAMESPACE          // namespace
+	OVERRIDE           // override
 	REQUIRE            // require
 	TYPE               // type
 	READONLY           // readonly
@@ -240,6 +241,7 @@ var tokenStr = [...]string{
 	"is",
 	"module",
 	"namespace",
+	"override",
 	"require",
 	"type",
 	"readonly",

@@ -150,6 +150,7 @@ invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'is':          /is/
 'module':      /module/
 'namespace':   /namespace/
+'override':    /override/
 'require':     /require/
 'type':        /type/
 
@@ -382,7 +383,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, Without
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
@@ -413,7 +414,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> ReferenceI
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | [!WithoutPredefinedTypes] ('any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol')
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
   | [!WithoutPredefinedTypes] ('keyof' | 'unique' | 'readonly' | 'infer')
 ;
 
@@ -430,7 +431,7 @@ BindingIdentifier<WithoutImplements> -> NameIdent :
   | [!WithoutImplements] 'implements'
   | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
@@ -446,7 +447,7 @@ LabelIdentifier -> LabelIdent :
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
   | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'require' | 'type' | 'global'
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
   | 'readonly' | 'keyof' | 'unique' | 'infer'
 ;
 
@@ -604,6 +605,8 @@ CallExpression<Yield, Await> -> Expr /* interface */:
   | expr=CallExpression '[' index=Expression<+In> ']'           -> IndexAccess
   | expr=CallExpression '.' selector=IdentifierNameRef          -> PropertyAccess
   | expr=CallExpression '.' selector=ClassPrivateRef            -> PropertyAccess
+  | [!StartWithLet] 'import' '.' selector=IdentifierNameRef     -> PropertyAccess
+  | [!StartWithLet] 'import' '.' selector=ClassPrivateRef       -> PropertyAccess
   | expr=CallExpression .noLineBreak '!'                        -> TsNonNull
   | tag=CallExpression literal=TemplateLiteral                  -> TaggedTemplate
 ;
@@ -1175,6 +1178,7 @@ Modifier<WithDeclare> -> Modifier /* interface */:
   | Decorator<~Await, ~Yield>
   | 'static'                 -> Static
   | 'abstract'               -> Abstract
+  | 'override'               -> Override
   | 'readonly'               -> Readonly
   | [WithDeclare] 'declare'  -> Declare
 ;
