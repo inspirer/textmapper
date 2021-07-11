@@ -1942,18 +1942,6 @@ MemberExpression_Await_NoLet :
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLet_NoLetOnly :
-  PrimaryExpression_Await_NoLet
-| MemberExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
-| MemberExpression_Await_NoLet DOT IdentifierNameRef
-| MemberExpression_Await_NoLet DOT ClassPrivateRef
-| MemberExpression_Await_NoLet TemplateLiteral_Await
-| MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty_Await
-| MetaProperty
-| NEW MemberExpression_Await Arguments_Await
-;
-
 MemberExpression_Await_NoLetOnly :
   PrimaryExpression_Await_NoLet
 | MemberExpression_Await LBRACK Expression_In_Await RBRACK
@@ -1985,6 +1973,18 @@ MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
 | MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| SuperProperty_Await
+| MetaProperty
+| NEW MemberExpression_Await Arguments_Await
+;
+
+MemberExpression_Await_NoLet_NoLetOnly :
+  PrimaryExpression_Await_NoLet
+| MemberExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
+| MemberExpression_Await_NoLet DOT IdentifierNameRef
+| MemberExpression_Await_NoLet DOT ClassPrivateRef
+| MemberExpression_Await_NoLet TemplateLiteral_Await
+| MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Await
 | MetaProperty
 | NEW MemberExpression_Await Arguments_Await
@@ -2079,18 +2079,6 @@ MemberExpression_NoLet :
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoLet_NoLetOnly :
-  PrimaryExpression_NoLet
-| MemberExpression_NoLet LBRACK Expression_In RBRACK
-| MemberExpression_NoLet DOT IdentifierNameRef
-| MemberExpression_NoLet DOT ClassPrivateRef
-| MemberExpression_NoLet TemplateLiteral
-| MemberExpression_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty
-| MetaProperty
-| NEW MemberExpression Arguments
-;
-
 MemberExpression_NoLetOnly :
   PrimaryExpression_NoLet
 | MemberExpression LBRACK Expression_In RBRACK
@@ -2122,6 +2110,18 @@ MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
 | MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| SuperProperty
+| MetaProperty
+| NEW MemberExpression Arguments
+;
+
+MemberExpression_NoLet_NoLetOnly :
+  PrimaryExpression_NoLet
+| MemberExpression_NoLet LBRACK Expression_In RBRACK
+| MemberExpression_NoLet DOT IdentifierNameRef
+| MemberExpression_NoLet DOT ClassPrivateRef
+| MemberExpression_NoLet TemplateLiteral
+| MemberExpression_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty
 | MetaProperty
 | NEW MemberExpression Arguments
@@ -2216,18 +2216,6 @@ MemberExpression_Yield_Await_NoLet :
 | NEW MemberExpression_Yield_Await Arguments_Yield_Await
 ;
 
-MemberExpression_Yield_Await_NoLet_NoLetOnly :
-  PrimaryExpression_Yield_Await_NoLet
-| MemberExpression_Yield_Await_NoLet LBRACK Expression_In_Yield_Await RBRACK
-| MemberExpression_Yield_Await_NoLet DOT IdentifierNameRef
-| MemberExpression_Yield_Await_NoLet DOT ClassPrivateRef
-| MemberExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
-| MemberExpression_Yield_Await_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty_Yield_Await
-| MetaProperty
-| NEW MemberExpression_Yield_Await Arguments_Yield_Await
-;
-
 MemberExpression_Yield_Await_NoLetOnly :
   PrimaryExpression_Yield_Await_NoLet
 | MemberExpression_Yield_Await LBRACK Expression_In_Yield_Await RBRACK
@@ -2259,6 +2247,18 @@ MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield_Await
 | MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| SuperProperty_Yield_Await
+| MetaProperty
+| NEW MemberExpression_Yield_Await Arguments_Yield_Await
+;
+
+MemberExpression_Yield_Await_NoLet_NoLetOnly :
+  PrimaryExpression_Yield_Await_NoLet
+| MemberExpression_Yield_Await_NoLet LBRACK Expression_In_Yield_Await RBRACK
+| MemberExpression_Yield_Await_NoLet DOT IdentifierNameRef
+| MemberExpression_Yield_Await_NoLet DOT ClassPrivateRef
+| MemberExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
+| MemberExpression_Yield_Await_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Yield_Await
 | MetaProperty
 | NEW MemberExpression_Yield_Await Arguments_Yield_Await
@@ -2305,18 +2305,6 @@ MemberExpression_Yield_NoLet :
 | NEW MemberExpression_Yield Arguments_Yield
 ;
 
-MemberExpression_Yield_NoLet_NoLetOnly :
-  PrimaryExpression_Yield_NoLet
-| MemberExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
-| MemberExpression_Yield_NoLet DOT IdentifierNameRef
-| MemberExpression_Yield_NoLet DOT ClassPrivateRef
-| MemberExpression_Yield_NoLet TemplateLiteral_Yield
-| MemberExpression_Yield_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
-;
-
 MemberExpression_Yield_NoLetOnly :
   PrimaryExpression_Yield_NoLet
 | MemberExpression_Yield LBRACK Expression_In_Yield RBRACK
@@ -2348,6 +2336,18 @@ MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
 | MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
+| SuperProperty_Yield
+| MetaProperty
+| NEW MemberExpression_Yield Arguments_Yield
+;
+
+MemberExpression_Yield_NoLet_NoLetOnly :
+  PrimaryExpression_Yield_NoLet
+| MemberExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
+| MemberExpression_Yield_NoLet DOT IdentifierNameRef
+| MemberExpression_Yield_NoLet DOT ClassPrivateRef
+| MemberExpression_Yield_NoLet TemplateLiteral_Yield
+| MemberExpression_Yield_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
 | MetaProperty
 | NEW MemberExpression_Yield Arguments_Yield
@@ -2400,11 +2400,6 @@ MetaProperty :
 
 NewTarget :
   NEW DOT TARGET
-;
-
-// lookahead: !StartOfParametrizedCall
-lookahead_notStartOfParametrizedCall :
-  %empty
 ;
 
 NewExpression :
@@ -2516,6 +2511,11 @@ NewExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
 
 NewExpression_Yield_StartWithLet :
   MemberExpression_Yield_StartWithLet lookahead_notStartOfParametrizedCall
+;
+
+// lookahead: !StartOfParametrizedCall
+lookahead_notStartOfParametrizedCall :
+  %empty
 ;
 
 CallExpression :
@@ -5481,11 +5481,6 @@ PropertyPattern_Await_list_Comma_separated :
 | PropertyPattern_Await
 ;
 
-PropertyPattern_list_Comma_separated :
-  PropertyPattern_list_Comma_separated COMMA PropertyPattern
-| PropertyPattern
-;
-
 PropertyPattern_Yield_Await_list_Comma_separated :
   PropertyPattern_Yield_Await_list_Comma_separated COMMA PropertyPattern_Yield_Await
 | PropertyPattern_Yield_Await
@@ -5494,6 +5489,11 @@ PropertyPattern_Yield_Await_list_Comma_separated :
 PropertyPattern_Yield_list_Comma_separated :
   PropertyPattern_Yield_list_Comma_separated COMMA PropertyPattern_Yield
 | PropertyPattern_Yield
+;
+
+PropertyPattern_list_Comma_separated :
+  PropertyPattern_list_Comma_separated COMMA PropertyPattern
+| PropertyPattern
 ;
 
 ElementElision :
@@ -6528,13 +6528,13 @@ ClassExtendsClause_Yield_Await :
 | EXTENDS lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Yield_Await
 ;
 
-// lookahead: !StartOfExtendsTypeRef
-lookahead_notStartOfExtendsTypeRef :
+// lookahead: StartOfExtendsTypeRef
+lookahead_StartOfExtendsTypeRef :
   %empty
 ;
 
-// lookahead: StartOfExtendsTypeRef
-lookahead_StartOfExtendsTypeRef :
+// lookahead: !StartOfExtendsTypeRef
+lookahead_notStartOfExtendsTypeRef :
   %empty
 ;
 
@@ -6694,13 +6694,13 @@ ImportDeclaration :
 | IMPORT ModuleSpecifier SEMICOLON
 ;
 
-// lookahead: !StartOfTypeImport
-lookahead_notStartOfTypeImport :
+// lookahead: StartOfTypeImport
+lookahead_StartOfTypeImport :
   %empty
 ;
 
-// lookahead: StartOfTypeImport
-lookahead_StartOfTypeImport :
+// lookahead: !StartOfTypeImport
+lookahead_notStartOfTypeImport :
   %empty
 ;
 
@@ -6816,11 +6816,6 @@ JSXChild_Await_optlist :
 | %empty
 ;
 
-JSXChild_optlist :
-  JSXChild_optlist JSXChild
-| %empty
-;
-
 JSXChild_Yield_Await_optlist :
   JSXChild_Yield_Await_optlist JSXChild_Yield_Await
 | %empty
@@ -6828,6 +6823,11 @@ JSXChild_Yield_Await_optlist :
 
 JSXChild_Yield_optlist :
   JSXChild_Yield_optlist JSXChild_Yield
+| %empty
+;
+
+JSXChild_optlist :
+  JSXChild_optlist JSXChild
 | %empty
 ;
 
@@ -6856,11 +6856,6 @@ JSXAttribute_Await_optlist :
 | %empty
 ;
 
-JSXAttribute_optlist :
-  JSXAttribute_optlist JSXAttribute
-| %empty
-;
-
 JSXAttribute_Yield_Await_optlist :
   JSXAttribute_Yield_Await_optlist JSXAttribute_Yield_Await
 | %empty
@@ -6868,6 +6863,11 @@ JSXAttribute_Yield_Await_optlist :
 
 JSXAttribute_Yield_optlist :
   JSXAttribute_Yield_optlist JSXAttribute_Yield
+| %empty
+;
+
+JSXAttribute_optlist :
+  JSXAttribute_optlist JSXAttribute
 | %empty
 ;
 
@@ -7023,11 +7023,6 @@ Type_NoQuest :
 | TypePredicate_NoQuest
 ;
 
-// lookahead: StartOfIs
-lookahead_StartOfIs :
-  %empty
-;
-
 TypePredicate :
   IdentifierNameRef_WithoutAsserts IS Type
 | ASSERTS lookahead_StartOfIs IS Type_NoQuest
@@ -7036,6 +7031,11 @@ TypePredicate :
 TypePredicate_NoQuest :
   IdentifierNameRef_WithoutAsserts IS Type_NoQuest
 | ASSERTS lookahead_StartOfIs IS Type_NoQuest
+;
+
+// lookahead: StartOfIs
+lookahead_StartOfIs :
+  %empty
 ;
 
 AssertsType :
@@ -7081,13 +7081,13 @@ Constraint :
   EXTENDS Type
 ;
 
+TypeArguments :
+  LT Type_list_Comma_separated GT
+;
+
 Type_list_Comma_separated :
   Type_list_Comma_separated COMMA Type
 | Type
-;
-
-TypeArguments :
-  LT Type_list_Comma_separated GT
 ;
 
 UnionOrIntersectionOrPrimaryType :
@@ -7163,13 +7163,13 @@ PrimaryType_NoQuest :
 | PrimaryType_NoQuest /*.noLineBreak*/ EXCL
 ;
 
+ParenthesizedType :
+  LPAREN lookahead_notStartOfFunctionType Type RPAREN
+;
+
 // lookahead: !StartOfFunctionType
 lookahead_notStartOfFunctionType :
   %empty
-;
-
-ParenthesizedType :
-  LPAREN lookahead_notStartOfFunctionType Type RPAREN
 ;
 
 LiteralType :
@@ -7207,14 +7207,14 @@ NamespaceName :
 | NamespaceName DOT IdentifierReference
 ;
 
-// lookahead: !StartOfMappedType
-lookahead_notStartOfMappedType :
-  %empty
-;
-
 ObjectType :
   LBRACE /*.recoveryScope*/ lookahead_notStartOfMappedType TypeBody RBRACE
 | LBRACE /*.recoveryScope*/ lookahead_notStartOfMappedType RBRACE
+;
+
+// lookahead: !StartOfMappedType
+lookahead_notStartOfMappedType :
+  %empty
 ;
 
 TypeBody :
@@ -7258,11 +7258,6 @@ StartOfMappedType :
 | MINUS READONLY
 | READONLY LBRACK IdentifierName IN
 | LBRACK IdentifierName IN
-;
-
-// lookahead: StartOfMappedType
-lookahead_StartOfMappedType :
-  %empty
 ;
 
 MappedType :
@@ -7332,6 +7327,11 @@ MappedType :
 | LBRACE /*.recoveryScope*/ lookahead_StartOfMappedType LBRACK BindingIdentifier IN Type RBRACK TypeAnnotation RBRACE
 ;
 
+// lookahead: StartOfMappedType
+lookahead_StartOfMappedType :
+  %empty
+;
+
 TupleElementType_list_Comma_separated :
   TupleElementType_list_Comma_separated COMMA TupleElementType
 | TupleElementType
@@ -7344,16 +7344,6 @@ TupleType :
 | LBRACK RBRACK
 ;
 
-// lookahead: !StartOfTupleElementName
-lookahead_notStartOfTupleElementName :
-  %empty
-;
-
-// lookahead: StartOfTupleElementName
-lookahead_StartOfTupleElementName :
-  %empty
-;
-
 TupleElementType :
   lookahead_notStartOfTupleElementName Type
 | lookahead_StartOfTupleElementName IdentifierName QUEST COLON Type
@@ -7361,6 +7351,16 @@ TupleElementType :
 | DOTDOTDOT lookahead_notStartOfTupleElementName Type
 | DOTDOTDOT lookahead_StartOfTupleElementName IdentifierName QUEST COLON Type
 | DOTDOTDOT lookahead_StartOfTupleElementName IdentifierName COLON Type
+;
+
+// lookahead: StartOfTupleElementName
+lookahead_StartOfTupleElementName :
+  %empty
+;
+
+// lookahead: !StartOfTupleElementName
+lookahead_notStartOfTupleElementName :
+  %empty
 ;
 
 StartOfTupleElementName :
@@ -7411,14 +7411,14 @@ FunctionTypeParameterList :
 | LPAREN lookahead_StartOfFunctionType RPAREN
 ;
 
-// lookahead: StartOfFunctionType
-lookahead_StartOfFunctionType :
-  %empty
-;
-
 Parameter_list_Comma_separated :
   Parameter_list_Comma_separated COMMA Parameter
 | Parameter
+;
+
+// lookahead: StartOfFunctionType
+lookahead_StartOfFunctionType :
+  %empty
 ;
 
 ConstructorType :
@@ -7510,26 +7510,6 @@ CallSignature :
 | ParameterList
 ;
 
-Parameter_Await_list_Comma_separated :
-  Parameter_Await_list_Comma_separated COMMA Parameter_Await
-| Parameter_Await
-;
-
-Parameter_list_Comma_separated1 :
-  Parameter_list_Comma_separated1 COMMA Parameter
-| Parameter
-;
-
-Parameter_Yield_Await_list_Comma_separated :
-  Parameter_Yield_Await_list_Comma_separated COMMA Parameter_Yield_Await
-| Parameter_Yield_Await
-;
-
-Parameter_Yield_list_Comma_separated :
-  Parameter_Yield_list_Comma_separated COMMA Parameter_Yield
-| Parameter_Yield
-;
-
 ParameterList :
   LPAREN Parameter_list_Comma_separated1 COMMA RPAREN
 | LPAREN Parameter_list_Comma_separated1 RPAREN
@@ -7556,6 +7536,26 @@ ParameterList_Yield_Await :
 | LPAREN Parameter_Yield_Await_list_Comma_separated RPAREN
 | LPAREN COMMA RPAREN
 | LPAREN RPAREN
+;
+
+Parameter_Await_list_Comma_separated :
+  Parameter_Await_list_Comma_separated COMMA Parameter_Await
+| Parameter_Await
+;
+
+Parameter_Yield_Await_list_Comma_separated :
+  Parameter_Yield_Await_list_Comma_separated COMMA Parameter_Yield_Await
+| Parameter_Yield_Await
+;
+
+Parameter_Yield_list_Comma_separated :
+  Parameter_Yield_list_Comma_separated COMMA Parameter_Yield
+| Parameter_Yield
+;
+
+Parameter_list_Comma_separated1 :
+  Parameter_list_Comma_separated1 COMMA Parameter
+| Parameter
 ;
 
 Parameter :

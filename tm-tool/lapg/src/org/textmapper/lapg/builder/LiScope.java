@@ -80,7 +80,7 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 	public void sort() {
 		Comparator<T> cmp = Comparator.<T>comparingInt(elementIndex::get)
 				.thenComparing(NamedElement::getNameText,
-						Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
+						Comparator.nullsFirst(String::compareTo));
 		allElements.sort(cmp);
 	}
 

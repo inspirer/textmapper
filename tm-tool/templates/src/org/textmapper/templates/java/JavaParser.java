@@ -94,7 +94,7 @@ public class JavaParser {
 		"\uffff\uffff\uffff\uffff\uffff\377\0\u01ed\0\u0105\0\uffff\uffff\u0185\0\ueb31\uffff" +
 		"\u0186\0\ueb25\uffff\ueb19\uffff\uffff\uffff\ueb0f\uffff\ueb01\uffff\u017e\0\uffff" +
 		"\uffff\237\0\uffff\uffff\235\0\uffff\uffff\22\0\uffff\uffff\uffff\uffff\147\0\42" +
-		"\0\ueaf5\uffff\uffff\uffff\uffff\uffff\66\0\uffff\uffff\u01e0\0\uffff\uffff\u01dc" +
+		"\0\ueaf5\uffff\uffff\uffff\uffff\uffff\66\0\uffff\uffff\u01de\0\uffff\uffff\u01e0" +
 		"\0\uffff\uffff\uffff\uffff\u01d2\0\u01d1\0\uffff\uffff\uffff\uffff\uffff\uffff\62" +
 		"\0\uffff\uffff\uffff\uffff\ueabb\uffff\uffff\uffff\uffff\uffff\34\0\uffff\uffff\u0169" +
 		"\0\152\0\uffff\uffff\uffff\uffff\u016b\0\uffff\uffff\uffff\uffff\44\0\uffff\uffff" +
@@ -107,8 +107,8 @@ public class JavaParser {
 		"\uffff\ue82b\uffff\343\0\376\0\u0100\0\uffff\uffff\u0101\0\uffff\uffff\ue7b9\uffff" +
 		"\u0108\0\355\0\uffff\uffff\uffff\uffff\uffff\uffff\u017c\0\uffff\uffff\uffff\uffff" +
 		"\uffff\uffff\u016f\0\230\0\20\0\uffff\uffff\70\0\uffff\uffff\71\0\u01c7\0\u01ce\0" +
-		"\260\0\u01cd\0\u01cc\0\u01c8\0\uffff\uffff\uffff\uffff\uffff\uffff\u01d7\0\u01df" +
-		"\0\u01de\0\uffff\uffff\uffff\uffff\u01d3\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\260\0\u01cd\0\u01cc\0\u01c8\0\uffff\uffff\uffff\uffff\uffff\uffff\u01d7\0\u01dd" +
+		"\0\u01dc\0\uffff\uffff\uffff\uffff\u01d3\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
 		"\uffff\56\0\uffff\uffff\36\0\37\0\150\0\151\0\uffff\uffff\uffff\uffff\45\0\ue78b" +
 		"\uffff\u0167\0\152\0\u0165\0\152\0\ue74f\uffff\ue72f\uffff\uffff\uffff\51\0\245\0" +
 		"\257\0\253\0\255\0\254\0\256\0\252\0\uffff\uffff\246\0\250\0\uffff\uffff\uffff\uffff" +
@@ -119,7 +119,7 @@ public class JavaParser {
 		"\uffff\uffff\ue657\uffff\ue64d\uffff\uffff\uffff\uffff\uffff\ue61d\uffff\u0100\0" +
 		"\uffff\uffff\uffff\uffff\uffff\uffff\ue5a7\uffff\uffff\uffff\ue59d\uffff\uffff\uffff" +
 		"\uffff\uffff\ue593\uffff\ue587\uffff\ue57b\uffff\uffff\uffff\uffff\uffff\41\0\uffff" +
-		"\uffff\uffff\uffff\uffff\uffff\64\0\65\0\u01dd\0\u01db\0\uffff\uffff\60\0\61\0\uffff" +
+		"\uffff\uffff\uffff\uffff\uffff\64\0\65\0\u01db\0\u01df\0\uffff\uffff\60\0\61\0\uffff" +
 		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\32\0\33\0\u0168\0\ue571\uffff\ue535\uffff" +
 		"\u0163\0\152\0\u016a\0\ue4f9\uffff\u016d\0\43\0\251\0\uffff\uffff\47\0\212\0\ue4c1" +
 		"\uffff\227\0\226\0\214\0\ue4b9\uffff\u0194\0\uffff\uffff\u0197\0\uffff\uffff\uffff" +
@@ -892,7 +892,7 @@ public class JavaParser {
 		"\u3ab6\0\u3b02\0\u3b04\0\u3b0c\0\u3b0e\0\u3b12\0\u3b4c\0\u3b60\0\u3b84\0\u3b8a\0" +
 		"\u3bae\0\u3bd2\0\u3be4\0\u3be6\0\u3bea\0\u3bee\0\u3bf0\0\u3bf4\0\u3c7c\0\u3d04\0" +
 		"\u3d8c\0\u3e14\0\u3e9c\0\u3f08\0\u3f74\0\u3fdc\0\u4044\0\u40a2\0\u40a6\0\u40c6\0" +
-		"\u40c8\0\u40ca\0\u40ce\0\u4124\0\u4126\0\u4128\0\u412c\0\u4136\0\u4138\0\u4142\0" +
+		"\u40c8\0\u40ca\0\u40ce\0\u4124\0\u4126\0\u4128\0\u412c\0\u4136\0\u4140\0\u4142\0" +
 		"\u4182\0\u419a\0\u41a2\0\u41a4\0\u41a8\0\u41ac\0\u41b2\0\u41c2\0\u41c6\0");
 
 	private static final int[] tmFromTo = JavaLexer.unpack_int(16838,
@@ -2277,8 +2277,8 @@ public class JavaParser {
 		"\u02a2\0\40\0\u02bf\0\u01d8\0\u02cf\0\40\0\u02d4\0\40\0\u032a\0\40\0\u032b\0\40\0" +
 		"\u0357\0\40\0\u0376\0\40\0\u038e\0\40\0\u039b\0\40\0\u03b6\0\40\0\u03c3\0\u01d8\0" +
 		"\u013d\0\u01d9\0\u013d\0\u01da\0\u013d\0\u01db\0\u0253\0\u02c1\0\u013d\0\u01dc\0" +
-		"\u01d5\0\u0251\0\u024e\0\u02bc\0\u02bf\0\u031f\0\u03c3\0\u03c7\0\u01d5\0\u0252\0" +
-		"\u013d\0\u01dd\0\u01d5\0\u01dd\0\u024e\0\u01dd\0\u02bf\0\u01dd\0\u03c3\0\u01dd\0" +
+		"\u01d5\0\u0251\0\u024e\0\u02bc\0\u02bf\0\u031f\0\u03c3\0\u03c7\0\u013d\0\u01dd\0" +
+		"\u01d5\0\u01dd\0\u024e\0\u01dd\0\u02bf\0\u01dd\0\u03c3\0\u01dd\0\u01d5\0\u0252\0" +
 		"\0\0\41\0\2\0\52\0\3\0\70\0\25\0\41\0\26\0\41\0\27\0\41\0\252\0\41\0\255\0\41\0\256" +
 		"\0\41\0\265\0\41\0\u0123\0\u01bc\0\u013e\0\41\0\u0152\0\u01f6\0\u01e6\0\u0266\0\u01fa" +
 		"\0\u01f6\0\u01fd\0\u01f6\0\u022f\0\u01bc\0\u024a\0\u02b9\0\u025c\0\70\0\u026a\0\u02e2" +
@@ -2317,7 +2317,7 @@ public class JavaParser {
 		"\2\0\2\0\1\0\1\0\2\0\2\0\1\0\1\0\3\0\3\0\3\0\3\0\3\0\3\0\3\0\3\0\1\0\1\0\1\0\3\0" +
 		"\3\0\3\0\3\0\3\0\3\0\3\0\3\0\1\0\1\0\1\0\3\0\3\0\3\0\3\0\3\0\1\0\1\0\1\0\5\0\1\0" +
 		"\1\0\3\0\2\0\0\0\12\0\11\0\1\0\1\0\1\0\2\0\2\0\5\0\5\0\3\0\1\0\1\0\0\0\3\0\1\0\1" +
-		"\0\1\0\3\0\1\0\4\0\3\0\3\0\2\0\1\0\0\0\1\0\0\0\1\0\0\0\1\0\0\0\1\0\0\0\1\0\0\0\1" +
+		"\0\1\0\4\0\3\0\3\0\2\0\3\0\1\0\1\0\0\0\1\0\0\0\1\0\0\0\1\0\0\0\1\0\0\0\1\0\0\0\1" +
 		"\0\0\0\1\0\0\0\1\0\0\0");
 
 	private static final int[] tmRuleSymbol = JavaLexer.unpack_int(499,
@@ -2357,7 +2357,7 @@ public class JavaParser {
 		"\0\u0100\0\u0100\0\u0100\0\u0100\0\u0101\0\u0101\0\u0102\0\u0102\0\u0103\0\u0103" +
 		"\0\u0104\0\u0105\0\u0105\0\u0106\0\u0106\0\u0106\0\u0106\0\u0106\0\u0107\0\u0108" +
 		"\0\u0108\0\u0108\0\u0109\0\u0109\0\u010a\0\u010a\0\u010b\0\u010c\0\u010c\0\u010c" +
-		"\0\u010d\0\u010d\0\u010e\0\u010e\0\u010e\0\u010e\0\u010f\0\u010f\0\u0110\0\u0110" +
+		"\0\u010d\0\u010d\0\u010d\0\u010d\0\u010e\0\u010e\0\u010f\0\u010f\0\u0110\0\u0110" +
 		"\0\u0111\0\u0111\0\u0112\0\u0112\0\u0113\0\u0113\0\u0114\0\u0114\0\u0115\0\u0115" +
 		"\0\u0116\0\u0116\0\u0117\0\u0117\0");
 
@@ -2631,8 +2631,8 @@ public class JavaParser {
 		"MemberValuePair_list_Comma_separated_opt",
 		"MemberValuePair",
 		"MemberValue",
-		"MemberValue_list_Comma_separated",
 		"MemberValueArrayInitializer",
+		"MemberValue_list_Comma_separated",
 		"Modifiersopt",
 		"Dimsopt",
 		"MethodHeaderThrowsClauseopt",
@@ -2806,8 +2806,8 @@ public class JavaParser {
 		int MemberValuePair_list_Comma_separated_opt = 266;
 		int MemberValuePair = 267;
 		int MemberValue = 268;
-		int MemberValue_list_Comma_separated = 269;
-		int MemberValueArrayInitializer = 270;
+		int MemberValueArrayInitializer = 269;
+		int MemberValue_list_Comma_separated = 270;
 		int Modifiersopt = 271;
 		int Dimsopt = 272;
 		int MethodHeaderThrowsClauseopt = 273;
