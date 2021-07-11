@@ -15,6 +15,9 @@ const (
 	EOI
 	INVALID_TOKEN
 	SIMPLE // simple
+	CHAR_A // a
+	CHAR_B // b
+	CHAR_C // c
 
 	NumTokens
 )
@@ -23,6 +26,9 @@ var tokenStr = [...]string{
 	"EOI",
 	"INVALID_TOKEN",
 	"simple",
+	"a",
+	"b",
+	"c",
 }
 
 func (tok Token) String() string {

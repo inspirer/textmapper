@@ -8,6 +8,13 @@ eventBased = true
 
 'simple' : /simple/
 
+'a': /a/
+'b': /b/
+'c': /c/
+
 ::parser
 
-input : 'simple' ;
+input : 'simple' | Xyz+ | Foo+ | Bar+ ;
+Foo : 'b' ;
+Bar : 'a' ;
+Xyz : 'c';

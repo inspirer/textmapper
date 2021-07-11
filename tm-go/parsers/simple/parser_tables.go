@@ -7,7 +7,13 @@ import (
 )
 
 var tmNonterminals = [...]string{
+	"Bar_list",
+	"Foo_list",
+	"Xyz_list",
 	"input",
+	"Foo",
+	"Bar",
+	"Xyz",
 }
 
 func symbolName(sym int32) string {
@@ -21,25 +27,42 @@ func symbolName(sym int32) string {
 }
 
 var tmAction = []int32{
-	-1, 0, -1, -2,
+	-1, 6, 11, 10, 12, -3, -9, -15, 3, 1, 5, 0, 2, 4, -1, -2,
+}
+
+var tmLalr = []int32{
+	3, -1, 0, 9, -1, -2, 4, -1, 0, 8, -1, -2, 5, -1, 0, 7, -1, -2,
 }
 
 var tmGoto = []int32{
-	0, 2, 2, 4, 6,
+	0, 2, 2, 4, 8, 12, 16, 18, 20, 22, 24, 28, 32, 36,
 }
 
 var tmFromTo = []int8{
-	2, 3, 0, 1, 0, 2,
+	14, 15, 0, 1, 0, 2, 5, 2, 0, 3, 6, 3, 0, 4, 7, 4, 0, 5, 0, 6, 0, 7, 0, 14, 0,
+	8, 6, 12, 0, 9, 5, 11, 0, 10, 7, 13,
 }
 
 var tmRuleLen = []int8{
-	1,
+	2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1,
 }
 
 var tmRuleSymbol = []int32{
-	3,
+	6, 6, 7, 7, 8, 8, 9, 9, 9, 9, 10, 11, 12,
 }
 
 var tmRuleType = [...]NodeType{
+	0, // Bar_list : Bar_list Bar
+	0, // Bar_list : Bar
+	0, // Foo_list : Foo_list Foo
+	0, // Foo_list : Foo
+	0, // Xyz_list : Xyz_list Xyz
+	0, // Xyz_list : Xyz
 	0, // input : 'simple'
+	0, // input : Xyz_list
+	0, // input : Foo_list
+	0, // input : Bar_list
+	0, // Foo : 'b'
+	0, // Bar : 'a'
+	0, // Xyz : 'c'
 }

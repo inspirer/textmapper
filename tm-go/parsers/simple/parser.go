@@ -46,7 +46,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 3, lexer)
+	return p.parse(0, 15, lexer)
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) error {
@@ -58,6 +58,13 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 
 	for state != end {
 		action := tmAction[state]
+		if action < -2 {
+			// Lookahead is needed.
+			if p.next.symbol == noToken {
+				p.fetchNext(lexer, stack)
+			}
+			action = lalr(action, p.next.symbol)
+		}
 
 		if action >= 0 {
 			// Reduce.
@@ -123,6 +130,16 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 	}
 
 	return nil
+}
+
+func lalr(action, next int32) int32 {
+	a := -action - 3
+	for ; tmLalr[a] >= 0; a += 2 {
+		if tmLalr[a] == next {
+			break
+		}
+	}
+	return tmLalr[a+1]
 }
 
 func gotoState(state int8, symbol int32) int8 {
