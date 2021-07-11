@@ -111,17 +111,17 @@ expr :
 | MINUSGT delayed_Async -> Expr
 ;
 
+Identifier_list_Comma_separated :
+  Identifier_list_Comma_separated COMMA IDENTIFIER
+| IDENTIFIER
+;
+
 expr_Foo :
   IDENTIFIER -> Identifier -> Expr
 | LPAREN expr RPAREN -> Bar -> Expr
 | LBRACE Identifier_list_Comma_separated RBRACE -> Init -> Expr
 | delayed_Foo_Async -> Expr
 | MINUSGT delayed_Foo_Async -> Expr
-;
-
-Identifier_list_Comma_separated :
-  Identifier_list_Comma_separated COMMA IDENTIFIER
-| IDENTIFIER
 ;
 
 delayed_Async :

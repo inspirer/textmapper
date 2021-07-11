@@ -69,7 +69,7 @@ func (m *Model) Rearrange(perm []int) {
 	out := make([]*Nonterm, len(m.Nonterms))
 	for i, nt := range m.Nonterms {
 		if out[perm[i]] != nil {
-			log.Fatal("invariant failure")
+			log.Fatal("permutation: invariant failure")
 		}
 		out[perm[i]] = nt
 	}

@@ -542,6 +542,12 @@ func symbolName(sym int32) string {
 var tmAction = []int32{
 {{- int_array .Parser.Tables.Action "\t" 79 -}}
 }
+{{- if .Parser.Tables.Lalr}}
+
+var tmLalr = []int32{
+{{- int_array .Parser.Tables.Lalr "\t" 79 -}}
+}
+{{- end}}
 
 var tmGoto = []int32{
 {{- int_array .Parser.Tables.Goto "\t" 79 -}}

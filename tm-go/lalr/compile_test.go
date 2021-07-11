@@ -148,6 +148,16 @@ var stateTests = []struct {
 		`6 (from 0, S): EOI -> 7;`,
 		`7 (from 6, EOI):`,
 	}},
+	{`S -> A; S -> B; A -> a; A -> Aa; B -> ab`, []string{
+		`0 (from 0, EOI): a -> 1; S -> 6; A -> 2; B -> 3;`,
+		`1 (from 0, a, LA): A: a _; B: a _ b; b -> 4; reduce A [EOI,a]; resolved: b->shift EOI->{A: a} a->{A: a};`,
+		`2 (from 0, A, LA): S: A _; A: A _ a; a -> 5; reduce S [EOI]; resolved: a->shift EOI->{S: A};`,
+		`3 (from 0, B): S: B _;`,
+		`4 (from 1, b): B: a b _;`,
+		`5 (from 2, a): A: A a _;`,
+		`6 (from 0, S): EOI -> 7;`,
+		`7 (from 6, EOI):`,
+	}},
 
 	// Several conflicting rules: we pick the first one.
 	{`S -> A; S -> B; S -> C; A -> a; B -> a; C -> a %P b`, []string{

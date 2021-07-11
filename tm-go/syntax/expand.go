@@ -3,6 +3,7 @@ package syntax
 import (
 	"fmt"
 	"log"
+	"sort"
 	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/status"
@@ -29,9 +30,11 @@ func Expand(m *Model) error {
 		m:     make(map[string]int),
 		perm:  make([]int, len(m.Nonterms)),
 	}
+	local := make([]int, 0, 16)
 	for i, nt := range m.Nonterms {
 		e.curr = i
-		e.perm[i] = i + e.extra
+		base := e.extra
+		e.perm[i] = i + base
 		switch nt.Value.Kind {
 		case Choice:
 			var out []*Expr
@@ -49,9 +52,25 @@ func Expand(m *Model) error {
 				Origin: nt.Value.Origin,
 			}
 		}
+
+		// Sort the inserted nonterminals inside the permutation.
+		size := e.extra - base
+		if size == 0 {
+			continue
+		}
+		local = append(local[:0], i)
+		for k := len(e.Nonterms) - size; k < len(e.Nonterms); k++ {
+			local = append(local, k)
+		}
+		sort.Slice(local, func(i, j int) bool {
+			return e.Nonterms[local[i]].Name < e.Nonterms[local[j]].Name
+		})
+		for k, nt := range local {
+			e.perm[nt] = i + base + k
+		}
 	}
 
-	// Move extracted nonterminals right after their first usage.
+	// Move the extracted nonterminals next to their first usage.
 	m.Rearrange(e.perm)
 
 	// Expand top expressions of all extracted nonterminals (except sets).
