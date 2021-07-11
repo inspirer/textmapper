@@ -37,7 +37,7 @@ func TestGenerate(t *testing.T) {
 			}
 
 			for genfile, content := range w {
-				if strings.HasSuffix(genfile, ".y") || genfile == "parser_tables.go" {
+				if strings.HasSuffix(genfile, ".y") {
 					// TODO compare final grammars
 					continue
 				}

@@ -562,7 +562,7 @@ var tmRuleSymbol = []int32{
 
 var tmRuleType = [...]{{ref "NodeType"}}{
 {{- range .Parser.Rules}}
-	{{.Action}}, // TODO
+	{{.Action}}, // {{$.RuleString .}}
 {{- end}}
 }
 `

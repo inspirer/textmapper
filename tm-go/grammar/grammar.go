@@ -1,7 +1,9 @@
 package grammar
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/lalr"
 	"github.com/inspirer/textmapper/tm-go/lex"
@@ -62,6 +64,21 @@ func (g *Grammar) SpaceActions() []int {
 	}
 	sort.Ints(ret)
 	return ret
+}
+
+// RuleString returns a user-friendly rendering of a given rule.
+func (g *Grammar) RuleString(r *lalr.Rule) string {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%v :", g.Syms[r.LHS].Name)
+	for _, sym := range r.RHS {
+		if sym.IsStateMarker() {
+			// TODO write a state marker
+			continue
+		}
+		sb.WriteByte(' ')
+		sb.WriteString(g.Syms[sym].Name)
+	}
+	return sb.String()
 }
 
 // SemanticAction is a piece of code that will be executed upon some event.
