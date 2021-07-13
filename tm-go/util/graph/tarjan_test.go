@@ -1,8 +1,9 @@
 package graph
 
 import (
-	"github.com/inspirer/textmapper/tm-go/util/container"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-go/util/container"
 )
 
 var tarjanTests = [][][]int{

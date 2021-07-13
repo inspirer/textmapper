@@ -4,6 +4,7 @@ package ast
 
 import (
 	"fmt"
+
 	"github.com/inspirer/textmapper/tm-parsers/js"
 )
 

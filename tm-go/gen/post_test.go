@@ -1,8 +1,9 @@
 package gen_test
 
 import (
-	"github.com/inspirer/textmapper/tm-go/gen"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-go/gen"
 )
 
 func TestFormat(t *testing.T) {

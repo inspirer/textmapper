@@ -1,8 +1,9 @@
 package syntax_test
 
 import (
-	"github.com/inspirer/textmapper/tm-go/syntax"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-go/syntax"
 )
 
 var nameTests = []struct {
