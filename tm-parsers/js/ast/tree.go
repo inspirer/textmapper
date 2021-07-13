@@ -3,10 +3,11 @@
 package ast
 
 import (
-	"github.com/inspirer/textmapper/tm-parsers/js"
-	"github.com/inspirer/textmapper/tm-parsers/js/selector"
 	"sort"
 	"strings"
+
+	"github.com/inspirer/textmapper/tm-parsers/js"
+	"github.com/inspirer/textmapper/tm-parsers/js/selector"
 )
 
 // Tree is a parse tree for some content.

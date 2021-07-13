@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"context"
+
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
