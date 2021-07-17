@@ -21,6 +21,7 @@ package = "github.com/inspirer/textmapper/tm-parsers/tm"
 eventBased = true
 eventFields = true
 eventAST = true
+writeBison = true
 tokenColumn = true
 fileNode = "File"
 reportTokens = [invalid_token, multilineComment, comment, templates]
