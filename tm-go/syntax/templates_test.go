@@ -136,7 +136,7 @@ var modelTests = []struct {
 	},
 	{"Expand", syntax.Expand,
 		`Z: a* | q ;`,
-		`A_list: A_list a | a; A_listopt: A_list | ; Z: A_listopt | q ;`,
+		`A_optlist: A_optlist a | ; Z: A_optlist | q ;`,
 	},
 	{"Expand", syntax.Expand,
 		`Z: b | (a separator b)+ ;`,

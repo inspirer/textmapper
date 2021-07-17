@@ -87,8 +87,9 @@ func Expand(m *Model) error {
 				Origin: nt.Value.Origin,
 			}
 		case List:
-			// Note: at this point all lists have at least one element.
+			// Note: at this point all lists either have at least one element or have no separators.
 			rr := nt.Value.ListFlags&RightRecursive != 0
+			nonEmpty := nt.Value.ListFlags&OneOrMore != 0
 			elem := nt.Value.Sub[0]
 			origin := nt.Value.Origin
 			rec := &Expr{Kind: Sequence, Origin: origin}
@@ -110,14 +111,22 @@ func Expand(m *Model) error {
 				} else {
 					nt.Value.Sub = append(nt.Value.Sub, multiConcat(origin, []*Expr{rec}, elem.Sub)...)
 				}
-				nt.Value.Sub = append(nt.Value.Sub, elem.Sub...)
+				if nonEmpty {
+					nt.Value.Sub = append(nt.Value.Sub, elem.Sub...)
+				} else {
+					nt.Value.Sub = append(nt.Value.Sub, &Expr{Kind: Empty, Origin: origin})
+				}
 			} else {
 				if rr {
 					nt.Value.Sub = append(nt.Value.Sub, concat(origin, elem, rec))
 				} else {
 					nt.Value.Sub = append(nt.Value.Sub, concat(origin, rec, elem))
 				}
-				nt.Value.Sub = append(nt.Value.Sub, elem)
+				if nonEmpty {
+					nt.Value.Sub = append(nt.Value.Sub, elem)
+				} else {
+					nt.Value.Sub = append(nt.Value.Sub, &Expr{Kind: Empty, Origin: origin})
+				}
 			}
 		}
 	}
@@ -218,7 +227,7 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 	case Set, Lookahead:
 		return []*Expr{e.extractNonterm(expr)}
 	case List:
-		out := &Expr{Kind: List, Origin: expr.Origin, ListFlags: expr.ListFlags | OneOrMore}
+		out := &Expr{Kind: List, Origin: expr.Origin, ListFlags: expr.ListFlags}
 		out.Sub = e.expandExpr(expr.Sub[0])
 		if len(out.Sub) > 1 {
 			// We support a choice of elements
@@ -230,9 +239,10 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 				log.Fatal("inconsistent state, only simple separators are supported at this stage")
 			}
 			out.Sub = append(out.Sub, sep[0])
+			out.ListFlags |= OneOrMore
 		}
 		ret := e.extractNonterm(out)
-		if expr.ListFlags&OneOrMore == 0 {
+		if expr.ListFlags&OneOrMore == 0 && out.ListFlags&OneOrMore != 0 {
 			ret = e.extractNonterm(&Expr{Kind: Optional, Sub: []*Expr{ret}})
 		}
 		return []*Expr{ret}
