@@ -192,7 +192,7 @@ list_of_identifier_and_2_elements_Comma_separated  : list<ListOfIdentifierAnd2El
 	(this+=new.ListOfIdentifierAnd2ElementsCommaSeparatedItem({identifier} mapSeparator=map_separator {expression})
 		separator ',')+ ;
 
-list_of_identifier_and_2_elements_Comma_separated_opt  : list<ListOfIdentifierAnd2ElementsCommaSeparatedItem> ::=
+list_of_identifier_and_2_elements_Comma_separatedopt  : list<ListOfIdentifierAnd2ElementsCommaSeparatedItem> ::=
 	this=list_of_identifier_and_2_elements_Comma_separated?
 ;
 
@@ -203,7 +203,7 @@ class StructuralExpression : Expression {
 }
 
 structural_expression  : StructuralExpression ::=
-	{name} '(' mapEntries=list_of_identifier_and_2_elements_Comma_separated_opt ')'
+	{name} '(' mapEntries=list_of_identifier_and_2_elements_Comma_separatedopt ')'
   | '[' expressionList=expression_listopt ']'
 ;
 

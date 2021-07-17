@@ -188,7 +188,7 @@ public class TypesParser {
 		"expression",
 		"literal_expression",
 		"list_of_identifier_and_2_elements_Comma_separated",
-		"list_of_identifier_and_2_elements_Comma_separated_opt",
+		"list_of_identifier_and_2_elements_Comma_separatedopt",
 		"structural_expression",
 		"expression_list",
 		"map_separator",
@@ -226,7 +226,7 @@ public class TypesParser {
 		int expression = 47;
 		int literal_expression = 48;
 		int list_of_identifier_and_2_elements_Comma_separated = 49;
-		int list_of_identifier_and_2_elements_Comma_separated_opt = 50;
+		int list_of_identifier_and_2_elements_Comma_separatedopt = 50;
 		int structural_expression = 51;
 		int expression_list = 52;
 		int map_separator = 53;
@@ -592,7 +592,7 @@ public class TypesParser {
 						((IAstExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
-			case 48:  // structural_expression : name '(' list_of_identifier_and_2_elements_Comma_separated_opt ')'
+			case 48:  // structural_expression : name '(' list_of_identifier_and_2_elements_Comma_separatedopt ')'
 				tmLeft.value = new AstStructuralExpression(
 						((List<String>)tmStack[tmHead - 3].value) /* name */,
 						((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmStack[tmHead - 1].value) /* mapEntries */,

@@ -2508,7 +2508,7 @@ public class JavaParser {
 		"MethodDeclaration",
 		"AbstractMethodDeclaration",
 		"FormalParameter_list_Comma_separated",
-		"FormalParameter_list_Comma_separated_opt",
+		"FormalParameter_list_Comma_separatedopt",
 		"MethodHeader",
 		"ClassType_list_Comma_separated",
 		"MethodHeaderThrowsClause",
@@ -2521,7 +2521,7 @@ public class JavaParser {
 		"ConstructorDeclaration",
 		"ExplicitConstructorInvocation",
 		"Expression_list_Comma_separated",
-		"Expression_list_Comma_separated_opt",
+		"Expression_list_Comma_separatedopt",
 		"ExplicitConstructorId",
 		"ThisOrSuper",
 		"InterfaceBody",
@@ -2552,7 +2552,7 @@ public class JavaParser {
 		"DoStatement",
 		"ForStatement",
 		"StatementExpression_list_Comma_separated",
-		"StatementExpression_list_Comma_separated_opt",
+		"StatementExpression_list_Comma_separatedopt",
 		"EnhancedForStatement",
 		"ForInit",
 		"AssertStatement",
@@ -2628,7 +2628,7 @@ public class JavaParser {
 		"DefaultValue",
 		"Annotation",
 		"MemberValuePair_list_Comma_separated",
-		"MemberValuePair_list_Comma_separated_opt",
+		"MemberValuePair_list_Comma_separatedopt",
 		"MemberValuePair",
 		"MemberValue",
 		"MemberValueArrayInitializer",
@@ -2683,7 +2683,7 @@ public class JavaParser {
 		int MethodDeclaration = 143;
 		int AbstractMethodDeclaration = 144;
 		int FormalParameter_list_Comma_separated = 145;
-		int FormalParameter_list_Comma_separated_opt = 146;
+		int FormalParameter_list_Comma_separatedopt = 146;
 		int MethodHeader = 147;
 		int ClassType_list_Comma_separated = 148;
 		int MethodHeaderThrowsClause = 149;
@@ -2696,7 +2696,7 @@ public class JavaParser {
 		int ConstructorDeclaration = 156;
 		int ExplicitConstructorInvocation = 157;
 		int Expression_list_Comma_separated = 158;
-		int Expression_list_Comma_separated_opt = 159;
+		int Expression_list_Comma_separatedopt = 159;
 		int ExplicitConstructorId = 160;
 		int ThisOrSuper = 161;
 		int InterfaceBody = 162;
@@ -2727,7 +2727,7 @@ public class JavaParser {
 		int DoStatement = 187;
 		int ForStatement = 188;
 		int StatementExpression_list_Comma_separated = 189;
-		int StatementExpression_list_Comma_separated_opt = 190;
+		int StatementExpression_list_Comma_separatedopt = 190;
 		int EnhancedForStatement = 191;
 		int ForInit = 192;
 		int AssertStatement = 193;
@@ -2803,7 +2803,7 @@ public class JavaParser {
 		int DefaultValue = 263;
 		int Annotation = 264;
 		int MemberValuePair_list_Comma_separated = 265;
-		int MemberValuePair_list_Comma_separated_opt = 266;
+		int MemberValuePair_list_Comma_separatedopt = 266;
 		int MemberValuePair = 267;
 		int MemberValue = 268;
 		int MemberValueArrayInitializer = 269;

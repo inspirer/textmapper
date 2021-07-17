@@ -242,7 +242,7 @@ CallExpression_ExprStart :
 ;
 
 Arguments :
-  Lparen AssignmentExpression_list_Comma_separated_opt Rparen
+  Lparen AssignmentExpression_list_Comma_separatedopt Rparen
 ;
 
 AssignmentExpression_list_Comma_separated1 :
@@ -250,7 +250,7 @@ AssignmentExpression_list_Comma_separated1 :
 | AssignmentExpression
 ;
 
-AssignmentExpression_list_Comma_separated_opt :
+AssignmentExpression_list_Comma_separatedopt :
   AssignmentExpression_list_Comma_separated1
 | %empty
 ;

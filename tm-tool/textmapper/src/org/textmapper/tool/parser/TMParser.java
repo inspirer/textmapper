@@ -1327,7 +1327,7 @@ public class TMParser {
 		"nonterm_param",
 		"param_ref",
 		"argument_list_Comma_separated",
-		"argument_list_Comma_separated_opt",
+		"argument_list_Comma_separatedopt",
 		"symref_args",
 		"argument",
 		"param_type",
@@ -1336,7 +1336,7 @@ public class TMParser {
 		"predicate_expression",
 		"expression",
 		"expression_list_Comma_separated",
-		"expression_list_Comma_separated_opt",
+		"expression_list_Comma_separatedopt",
 		"rawTypeopt",
 		"iconopt",
 		"lexeme_attrsopt",
@@ -1422,7 +1422,7 @@ public class TMParser {
 		int nonterm_param = 151;
 		int param_ref = 152;
 		int argument_list_Comma_separated = 153;
-		int argument_list_Comma_separated_opt = 154;
+		int argument_list_Comma_separatedopt = 154;
 		int symref_args = 155;
 		int argument = 156;
 		int param_type = 157;
@@ -1431,7 +1431,7 @@ public class TMParser {
 		int predicate_expression = 160;
 		int expression = 161;
 		int expression_list_Comma_separated = 162;
-		int expression_list_Comma_separated_opt = 163;
+		int expression_list_Comma_separatedopt = 163;
 		int rawTypeopt = 164;
 		int iconopt = 165;
 		int lexeme_attrsopt = 166;
@@ -1475,7 +1475,7 @@ public class TMParser {
 		int predicate_primary_comparePredicate2 = 231;  // predicate_primary : param_ref '!=' literal
 		int predicate_expression_predicateBinary = 233;  // predicate_expression : predicate_expression '&&' predicate_expression
 		int predicate_expression_predicateBinary2 = 234;  // predicate_expression : predicate_expression '||' predicate_expression
-		int expression_array = 237;  // expression : '[' expression_list_Comma_separated_opt ']'
+		int expression_array = 237;  // expression : '[' expression_list_Comma_separatedopt ']'
 	}
 
 	// set(follow error)
@@ -2728,7 +2728,7 @@ public class TMParser {
 				tmLeft.value = new ArrayList();
 				((List<TmaArgument>)tmLeft.value).add(((TmaArgument)tmStack[tmHead].value));
 				break;
-			case 219:  // symref_args : '<' argument_list_Comma_separated_opt '>'
+			case 219:  // symref_args : '<' argument_list_Comma_separatedopt '>'
 				tmLeft.value = new TmaSymrefArgs(
 						((List<TmaArgument>)tmStack[tmHead - 1].value) /* argList */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
@@ -2807,7 +2807,7 @@ public class TMParser {
 						((ITmaPredicateExpression)tmStack[tmHead].value) /* right */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 237:  // expression : '[' expression_list_Comma_separated_opt ']'
+			case 237:  // expression : '[' expression_list_Comma_separatedopt ']'
 				tmLeft.value = new TmaArray(
 						((List<ITmaExpression>)tmStack[tmHead - 1].value) /* content */,
 						source, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);

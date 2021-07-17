@@ -767,7 +767,7 @@ public class TMParserCompiler {
 		if (separator != null && !nonEmpty) {
 			// (a separator ',')*  => alistopt : alist | ; alist : a | alist ',' a ;
 			result = builder.addShared(builder.optional(builder.symbolFwdAll(result, origin),
-					origin), outer, listName + "_opt");
+					origin), outer, listName + "opt");
 			copyParameters(outer, result);
 		}
 		return builder.symbolFwdAll(result, origin);

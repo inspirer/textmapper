@@ -1732,7 +1732,7 @@ public class JsParser {
 		"CallExpression_ExprStart",
 		"Arguments",
 		"AssignmentExpression_list_Comma_separated1",
-		"AssignmentExpression_list_Comma_separated_opt",
+		"AssignmentExpression_list_Comma_separatedopt",
 		"LeftHandSideExpression",
 		"LeftHandSideExpression_ExprStart",
 		"PostfixExpression",
@@ -1840,7 +1840,7 @@ public class JsParser {
 		int CallExpression_ExprStart = 109;
 		int Arguments = 110;
 		int AssignmentExpression_list_Comma_separated1 = 111;
-		int AssignmentExpression_list_Comma_separated_opt = 112;
+		int AssignmentExpression_list_Comma_separatedopt = 112;
 		int LeftHandSideExpression = 113;
 		int LeftHandSideExpression_ExprStart = 114;
 		int PostfixExpression = 115;

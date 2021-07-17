@@ -96,7 +96,7 @@ var tmNonterminals = [...]string{
 	"param_ref",
 	"args",
 	"argument_list_Comma_separated",
-	"argument_list_Comma_separated_opt",
+	"argument_list_Comma_separatedopt",
 	"argument",
 	"param_type",
 	"param_value",
@@ -104,7 +104,7 @@ var tmNonterminals = [...]string{
 	"predicate_expression",
 	"expression",
 	"expression_list_Comma_separated",
-	"expression_list_Comma_separated_opt",
+	"expression_list_Comma_separatedopt",
 	"rawTypeopt",
 }
 
@@ -1264,11 +1264,11 @@ var tmRuleType = [...]NodeType{
 	InlineParameter,      // nonterm_param : identifier identifier '=' param_value
 	InlineParameter,      // nonterm_param : identifier identifier
 	ParamRef,             // param_ref : identifier
-	SymrefArgs,           // args : '<' argument_list_Comma_separated_opt '>'
+	SymrefArgs,           // args : '<' argument_list_Comma_separatedopt '>'
 	0,                    // argument_list_Comma_separated : argument_list_Comma_separated ',' argument
 	0,                    // argument_list_Comma_separated : argument
-	0,                    // argument_list_Comma_separated_opt : argument_list_Comma_separated
-	0,                    // argument_list_Comma_separated_opt :
+	0,                    // argument_list_Comma_separatedopt : argument_list_Comma_separated
+	0,                    // argument_list_Comma_separatedopt :
 	ArgumentVal,          // argument : param_ref ':' param_value
 	ArgumentVal,          // argument : param_ref
 	ArgumentTrue,         // argument : '+' param_ref
@@ -1286,12 +1286,12 @@ var tmRuleType = [...]NodeType{
 	PredicateOr,          // predicate_expression : predicate_expression '||' predicate_expression
 	0,                    // expression : literal
 	0,                    // expression : symref_Args
-	Array,                // expression : '[' expression_list_Comma_separated_opt ']'
+	Array,                // expression : '[' expression_list_Comma_separatedopt ']'
 	0,                    // expression : syntax_problem
 	0,                    // expression_list_Comma_separated : expression_list_Comma_separated ',' expression
 	0,                    // expression_list_Comma_separated : expression
-	0,                    // expression_list_Comma_separated_opt : expression_list_Comma_separated
-	0,                    // expression_list_Comma_separated_opt :
+	0,                    // expression_list_Comma_separatedopt : expression_list_Comma_separated
+	0,                    // expression_list_Comma_separatedopt :
 	0,                    // rawTypeopt : rawType
 	0,                    // rawTypeopt :
 }
