@@ -507,10 +507,10 @@ const bisonTpl = `%{
 {{.Name}} :
 {{- if eq .Value.Kind 2 }}
 {{- range $i, $rule := .Value.Sub}}
-{{ if eq $i 0}}  {{else}}| {{end}}{{$rule}}
+{{ if eq $i 0}}  {{else}}| {{end}}{{$.ExprString $rule}}
 {{- end}}
 {{- else }}
-  {{ .Value}}
+  {{$.ExprString .Value}}
 {{- end }}
 ;
 {{- end}}

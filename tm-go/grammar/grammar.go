@@ -2,6 +2,7 @@ package grammar
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"strings"
 
@@ -65,6 +66,46 @@ func (g *Grammar) SpaceActions() []int {
 	}
 	sort.Ints(ret)
 	return ret
+}
+
+// RuleString returns a user-friendly rendering of a given rule.
+func (g *Grammar) ExprString(e *syntax.Expr) string {
+	switch e.Kind {
+	case syntax.Empty:
+		return "%empty"
+	case syntax.Prec:
+		return g.ExprString(e.Sub[0]) + " %prec " + g.Syms[e.Symbol].ID
+	case syntax.Assign, syntax.Append, syntax.Arrow:
+		return g.ExprString(e.Sub[0])
+	case syntax.Sequence:
+		var buf strings.Builder
+		for _, sub := range e.Sub {
+			inner := g.ExprString(sub)
+			if inner == "" || inner == "%empty" {
+				continue
+			}
+			if buf.Len() > 0 {
+				buf.WriteByte(' ')
+			}
+			buf.WriteString(inner)
+		}
+		if buf.Len() == 0 {
+			return "%empty"
+		}
+		return buf.String()
+	case syntax.Reference:
+		return e.String()
+	case syntax.StateMarker:
+		return "/*." + e.Name + "*/"
+	case syntax.Command:
+		return ""
+	case syntax.Lookahead:
+		// TODO process lookaheads before this method gets called
+		return "(?= ...)"
+	default:
+		log.Fatalf("cannot stringify kind=%v", e.Kind)
+		return ""
+	}
 }
 
 // RuleString returns a user-friendly rendering of a given rule.
