@@ -1,0 +1,15 @@
+language parser(go);
+
+:: lexer
+
+a: /a/
+b: /b/
+
+:: parser
+
+%generate «afterErr» = set(follow input);
+# err: 'afterErr' is reserved for built-in error recovery
+
+input : d;
+
+d : a b ;

@@ -14,7 +14,9 @@ eventBased = true
 
 ::parser
 
-input : 'simple' | Xyz+ | Foo+ | Bar+ ;
+%generate afterSimple = set(follow 'simple');
+
+input : 'simple' (Xyz | .atB 'b') | Xyz+ .afterList | Foo+ .afterList | Bar+ ;
 Foo : 'b' ;
 Bar : 'a' ;
 Xyz : 'c';

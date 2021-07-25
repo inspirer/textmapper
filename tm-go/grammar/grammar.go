@@ -42,6 +42,7 @@ type Grammar struct {
 	Name       string // lowercase
 	TargetLang string
 	Syms       []Symbol
+	Sets       []*NamedSet
 	NumTokens  int
 	*Lexer
 	*Parser
@@ -71,11 +72,12 @@ func (g *Grammar) RuleString(r *lalr.Rule) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%v :", g.Syms[r.LHS].Name)
 	for _, sym := range r.RHS {
+		sb.WriteByte(' ')
 		if sym.IsStateMarker() {
-			// TODO write a state marker
+			sb.WriteByte('.')
+			sb.WriteString(g.Parser.Tables.Markers[sym.AsMarker()].Name)
 			continue
 		}
-		sb.WriteByte(' ')
 		sb.WriteString(g.Syms[sym].Name)
 	}
 	return sb.String()
@@ -94,6 +96,22 @@ type SemanticAction struct {
 type ClassAction struct {
 	Action int
 	Custom map[string]int // maps constant terminals back into actions
+}
+
+// NamedSet is a named terminal set fully resolved for the grammar.
+type NamedSet struct {
+	Name      string
+	Terminals []int
+	Expr      string // original expression
+}
+
+// ValueString returns a comma-separated list of terminal IDs.
+func (s *NamedSet) ValueString(g *Grammar) string {
+	var ret []string
+	for _, t := range s.Terminals {
+		ret = append(ret, g.Syms[t].ID)
+	}
+	return strings.Join(ret, ", ")
 }
 
 // Lexer is a model of a generated lexer.

@@ -822,6 +822,10 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			}
 		case *ast.DirectiveSet:
 			name := part.Name()
+			if name.Text() == "afterErr" {
+				c.errorf(name, "'afterErr' is reserved for built-in error recovery")
+				continue
+			}
 			if _, ok := c.namedSets[name.Text()]; ok {
 				c.errorf(name, "redeclaration of token set '%v'", name.Text())
 				continue
@@ -829,6 +833,10 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 
 			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
 			c.namedSets[name.Text()] = len(c.source.Sets)
+			c.out.Sets = append(c.out.Sets, &NamedSet{
+				Name: name.Text(),
+				Expr: part.RhsSet().Text(),
+			})
 			c.source.Sets = append(c.source.Sets, set)
 		}
 	}
@@ -1371,6 +1379,21 @@ func (c *compiler) compileParser() {
 
 	c.collectInputs(p)
 	c.collectDirectives(p)
+
+	if errSym, ok := c.syms["error"]; ok {
+		// %generate afterErr = set(follow error);
+		const name = "afterErr"
+		c.namedSets[name] = len(c.source.Sets)
+		c.out.Sets = append(c.out.Sets, &NamedSet{
+			Name: name,
+			Expr: "set(follow error)",
+		})
+		c.source.Sets = append(c.source.Sets, &syntax.TokenSet{
+			Kind:   syntax.Follow,
+			Symbol: errSym,
+		})
+	}
+
 	for _, nt := range nonterms {
 		clause, _ := nt.def.ReportClause()
 		defaultReport := c.convertReportClause(clause)
@@ -1401,6 +1424,15 @@ func (c *compiler) compileParser() {
 	if err := syntax.ResolveSets(c.source); err != nil {
 		c.s.AddError(err)
 		return
+	}
+
+	// Export computed named sets for code generation.
+	for _, set := range c.out.Sets {
+		index := c.namedSets[set.Name]
+		in := c.source.Sets[index]
+		for _, term := range in.Sub {
+			set.Terminals = append(set.Terminals, term.Symbol)
+		}
 	}
 
 	// Prepare the model for code generation.
@@ -1439,7 +1471,9 @@ func (c *compiler) generateTables() error {
 			Eoi:         !inp.NoEoi,
 		})
 	}
-	// TODO populate g.Lookaheads, g.Markers
+	markers := make(map[string]int)
+
+	// TODO populate g.Lookaheads
 	for self, nt := range c.source.Nonterms {
 		if nt.Value.Kind != syntax.Choice {
 			log.Fatalf("%v is not properly instantiated: %v", nt.Name, nt.Value)
@@ -1454,7 +1488,29 @@ func (c *compiler) generateTables() error {
 				rule.Precedence = lalr.Sym(expr.Symbol)
 				expr = expr.Sub[0]
 			}
-			rule.RHS = extractRHS(rule.RHS, expr)
+			var traverse func(expr *syntax.Expr)
+			traverse = func(expr *syntax.Expr) {
+				switch expr.Kind {
+				case syntax.Sequence, syntax.Arrow, syntax.Assign, syntax.Append:
+					for _, sub := range expr.Sub {
+						traverse(sub)
+					}
+				case syntax.Reference:
+					rule.RHS = append(rule.RHS, lalr.Sym(expr.Symbol))
+				case syntax.StateMarker:
+					if i, ok := markers[expr.Name]; ok {
+						rule.RHS = append(rule.RHS, lalr.Marker(i))
+						return
+					}
+					i := len(g.Markers)
+					markers[expr.Name] = i
+					g.Markers = append(g.Markers, expr.Name)
+					rule.RHS = append(rule.RHS, lalr.Marker(i))
+				case syntax.Command:
+					// TODO handle commands
+				}
+			}
+			traverse(expr)
 			g.Rules = append(g.Rules, rule)
 		}
 	}
@@ -1466,23 +1522,6 @@ func (c *compiler) generateTables() error {
 	c.out.Parser.Rules = g.Rules
 	c.out.Parser.Tables = tables
 	return nil
-}
-
-func extractRHS(rhs []lalr.Sym, expr *syntax.Expr) []lalr.Sym {
-	switch expr.Kind {
-	case syntax.Sequence, syntax.Arrow, syntax.Assign, syntax.Append:
-		for _, sub := range expr.Sub {
-			rhs = extractRHS(rhs, sub)
-		}
-		return rhs
-	case syntax.Reference:
-		rhs = append(rhs, lalr.Sym(expr.Symbol))
-	case syntax.StateMarker:
-		// TODO instantiate markers
-	case syntax.Command:
-		// TODO handle commands
-	}
-	return rhs
 }
 
 func (c *compiler) parseOptions() {

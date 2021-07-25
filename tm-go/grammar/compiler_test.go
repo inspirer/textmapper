@@ -26,6 +26,7 @@ var testFiles = []string{
 	"badinput.tmerr",
 	"backtrack.tmerr",
 	"set.tmerr",
+	"set2.tmerr",
 	"conflict1.tmerr",
 }
 

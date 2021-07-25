@@ -523,6 +523,18 @@ const parserTablesTpl = `
 {{- template "header" . -}}
 package {{.Name}}
 
+{{- range .Parser.Tables.Markers}}
+{{if eq (len .States) 1}}
+const {{.Name}}State = {{index .States 0}}
+{{- else}}
+var {{.Name}}States = map[int]bool{
+{{- range .States}}
+	{{.}}: true,
+{{- end}}
+}
+{{- end}}
+{{- end}}
+
 var tmNonterminals = [...]string{
 {{- range .Parser.Nonterms}}
 	"{{.Name}}",
@@ -571,4 +583,14 @@ var tmRuleType = [...]{{ref "NodeType"}}{
 	{{.Action}}, // {{$.RuleString .}}
 {{- end}}
 }
+
+{{- range .Sets}}
+
+// {{.Expr}} = {{.ValueString $}}
+var {{.Name}} = []int32{
+{{- if gt (len .Terminals) 0}}
+{{- int_array .Terminals "\t" 79 -}}
+{{- end}}
+}
+{{- end}}
 `

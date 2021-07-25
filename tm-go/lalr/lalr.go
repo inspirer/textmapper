@@ -16,6 +16,11 @@ func (s Sym) IsStateMarker() bool {
 	return s < 0
 }
 
+// AsMarker returns the index of a state marker
+func (s Sym) AsMarker() int {
+	return -1 - int(s)
+}
+
 // Marker returns a new state marker symbol.
 func Marker(index int) Sym {
 	return Sym(-1 - index)
@@ -95,9 +100,17 @@ type Tables struct {
 	Lookaheads  []LookaheadRule
 }
 
+func (t *Tables) mark(state, marker int) {
+	states := t.Markers[marker].States
+	if len(states) > 0 && states[len(states)-1] == state {
+		return // ignore duplicates
+	}
+	t.Markers[marker].States = append(states, state)
+}
+
 // StateMarker contains the list of actual states behind a given marker.
 type StateMarker struct {
-	Index  Sym
+	Name   string
 	States []int
 }
 

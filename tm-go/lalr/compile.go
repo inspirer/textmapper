@@ -38,9 +38,10 @@ type compiler struct {
 	out     *Tables
 	s       status.Status
 
-	index []int // the rule start in "right"
-	right []int // all rules flattened into one slice, each position in this slice is an LR(0) item
-	empty container.BitSet
+	index   []int // the rule start in "right"
+	right   []int // all rules flattened into one slice, each position in this slice is an LR(0) item
+	empty   container.BitSet
+	markers map[int][]int
 
 	rules  []container.BitSet // nonterminal -> LR(0) items
 	shifts [][]int            // symbol -> [<the number of symbol occurrences in "right">]int
@@ -68,12 +69,18 @@ type state struct {
 }
 
 func (c *compiler) init() {
+	// Initialize markers.
+	c.markers = make(map[int][]int)
+	for _, name := range c.grammar.Markers {
+		c.out.Markers = append(c.out.Markers, StateMarker{Name: name})
+	}
+
 	right := make([]int, 0, len(c.grammar.Rules)*8)
 	for i, r := range c.grammar.Rules {
 		c.index = append(c.index, len(right))
 		for _, sym := range r.RHS {
 			if sym.IsStateMarker() {
-				// TODO support state markers
+				c.markers[len(right)] = append(c.markers[len(right)], sym.AsMarker())
 				continue
 			}
 			right = append(right, int(sym))
@@ -184,6 +191,9 @@ func (c *compiler) computeStates() {
 				c.shifts[r] = append(c.shifts[r], item+1)
 			} else {
 				curr.reduce = append(curr.reduce, -1-r)
+			}
+			for _, marker := range c.markers[item] {
+				c.out.mark(i, marker)
 			}
 		}
 		for sym, core := range c.shifts {
@@ -579,7 +589,13 @@ func (c *compiler) populateTables() {
 	}
 
 	for _, rule := range c.grammar.Rules {
-		c.out.RuleLen = append(c.out.RuleLen, len(rule.RHS))
+		var len int
+		for _, sym := range rule.RHS {
+			if !sym.IsStateMarker() {
+				len++
+			}
+		}
+		c.out.RuleLen = append(c.out.RuleLen, len)
 		c.out.RuleSymbol = append(c.out.RuleSymbol, int(rule.LHS))
 	}
 }
