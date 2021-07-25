@@ -328,7 +328,6 @@ ExpressionSnippet :
 
 %assert empty set(follow error & ~('}' | ')' | ',' | ';' | ']'));
 
-%generate afterErr = set(follow error);
 %generate beforeSemi = set(precede ';');
 
 %flag In;
