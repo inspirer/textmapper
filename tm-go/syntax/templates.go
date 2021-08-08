@@ -402,7 +402,7 @@ func (i *instantiator) doExpr(context *instance, expr *Expr) *Expr {
 		}
 		ret.Sub = append(ret.Sub, converted)
 	}
-	if expr.Kind == Choice && len(ret.Sub) < 2 {
+	if expr.Kind == Choice && len(ret.Sub) < 2 || expr.Kind == Optional && ret.Sub[0].Kind == Empty {
 		// Simplify choice expressions on the fly.
 		if len(ret.Sub) == 0 {
 			ret.Kind = Empty
