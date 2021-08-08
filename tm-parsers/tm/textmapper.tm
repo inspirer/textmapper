@@ -142,7 +142,7 @@ regexp: /\/{reFirst}{reChar}*\//
 
 # Basic nonterminals.
 
-identifier<flag KW = false> -> Identifier:
+identifier<flag Keywords = false> -> Identifier:
     ID
 
   # Soft keywords
@@ -153,8 +153,8 @@ identifier<flag KW = false> -> Identifier:
   | 'class'    | 'interface'  | 'void'    | 'space'
   | 'layout'   | 'language' | 'lalr'       | 'lexer'   | 'parser'
 
-  # KW
-  | [KW] ('true' | 'false' | 'separator' | 'as' | 'import' | 'set')
+  # Keywords
+  | [Keywords] ('true' | 'false' | 'separator' | 'as' | 'import' | 'set')
 ;
 
 integer_literal -> IntegerLiteral:
@@ -189,7 +189,7 @@ file -> File:
     header imports=import_* options=option* syntax_problem? lexer=lexer_section? parser=parser_section? ;
 
 header -> Header:
-    'language' name=identifier<+KW> ('(' target=identifier<+KW> ')')? ';' ;
+    'language' name=identifier<+Keywords> ('(' target=identifier<+Keywords> ')')? ';' ;
 
 lexer_section -> LexerSection:
     '::' .recoveryScope 'lexer' lexer_parts ;

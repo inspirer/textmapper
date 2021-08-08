@@ -567,13 +567,13 @@ MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expr /* inter
   | [StartWithLet && !NoLetOnly] ('let' -> ReferenceIdent) -> IdentExpr
   | [StartWithLet] expr=MemberExpression<+NoLetOnly, ~NoAsync> '[' index=Expression<+In> ']'            -> IndexAccess
   | [!StartWithLet] expr=MemberExpression<NoLetOnly: NoLetSq, ~NoAsync> '[' index=Expression<+In> ']'   -> IndexAccess
-  | expr=MemberExpression<~NoAsync> '.' selector=IdentifierNameRef        -> PropertyAccess
-  | expr=MemberExpression<~NoAsync> '.' selector=ClassPrivateRef          -> PropertyAccess
-  | tag=MemberExpression<~NoAsync> literal=TemplateLiteral                -> TaggedTemplate
-  | expr=MemberExpression<~NoAsync> .noLineBreak '!'                      -> TsNonNull
+  | expr=MemberExpression<~NoAsync, ~NoLetOnly> '.' selector=IdentifierNameRef        -> PropertyAccess
+  | expr=MemberExpression<~NoAsync, ~NoLetOnly> '.' selector=ClassPrivateRef          -> PropertyAccess
+  | tag=MemberExpression<~NoAsync, ~NoLetOnly> literal=TemplateLiteral                -> TaggedTemplate
+  | expr=MemberExpression<~NoAsync, ~NoLetOnly> .noLineBreak '!'                      -> TsNonNull
   | [!StartWithLet] SuperProperty
   | [!StartWithLet] MetaProperty
-  | [!StartWithLet] 'new' expr=MemberExpression<~NoAsync> Arguments       -> NewExpr
+  | [!StartWithLet] 'new' expr=MemberExpression<~NoAsync, ~NoLetOnly> Arguments       -> NewExpr
 ;
 
 SuperExpression -> Expr /* interface */:

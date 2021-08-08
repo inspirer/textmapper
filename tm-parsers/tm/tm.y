@@ -120,7 +120,7 @@ identifier :
 | PARSER
 ;
 
-identifier_Kw :
+identifier_Keywords :
   ID
 | BRACKETS
 | INLINE
@@ -213,8 +213,8 @@ option_optlist :
 ;
 
 header :
-  LANGUAGE identifier_Kw LPAREN identifier_Kw RPAREN SEMICOLON
-| LANGUAGE identifier_Kw SEMICOLON
+  LANGUAGE identifier_Keywords LPAREN identifier_Keywords RPAREN SEMICOLON
+| LANGUAGE identifier_Keywords SEMICOLON
 ;
 
 lexer_section :

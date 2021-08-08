@@ -17,7 +17,7 @@ var recoveryScopeStates = map[int]bool{
 
 var tmNonterminals = [...]string{
 	"identifier",
-	"identifier_Kw",
+	"identifier_Keywords",
 	"integer_literal",
 	"string_literal",
 	"boolean_literal",
@@ -1006,43 +1006,43 @@ var tmRuleType = [...]NodeType{
 	Identifier,           // identifier : 'lalr'
 	Identifier,           // identifier : 'lexer'
 	Identifier,           // identifier : 'parser'
-	Identifier,           // identifier_Kw : ID
-	Identifier,           // identifier_Kw : 'brackets'
-	Identifier,           // identifier_Kw : 'inline'
-	Identifier,           // identifier_Kw : 'prec'
-	Identifier,           // identifier_Kw : 'shift'
-	Identifier,           // identifier_Kw : 'returns'
-	Identifier,           // identifier_Kw : 'input'
-	Identifier,           // identifier_Kw : 'left'
-	Identifier,           // identifier_Kw : 'right'
-	Identifier,           // identifier_Kw : 'nonassoc'
-	Identifier,           // identifier_Kw : 'generate'
-	Identifier,           // identifier_Kw : 'assert'
-	Identifier,           // identifier_Kw : 'empty'
-	Identifier,           // identifier_Kw : 'nonempty'
-	Identifier,           // identifier_Kw : 'global'
-	Identifier,           // identifier_Kw : 'explicit'
-	Identifier,           // identifier_Kw : 'lookahead'
-	Identifier,           // identifier_Kw : 'param'
-	Identifier,           // identifier_Kw : 'flag'
-	Identifier,           // identifier_Kw : 'no-eoi'
-	Identifier,           // identifier_Kw : 's'
-	Identifier,           // identifier_Kw : 'x'
-	Identifier,           // identifier_Kw : 'class'
-	Identifier,           // identifier_Kw : 'interface'
-	Identifier,           // identifier_Kw : 'void'
-	Identifier,           // identifier_Kw : 'space'
-	Identifier,           // identifier_Kw : 'layout'
-	Identifier,           // identifier_Kw : 'language'
-	Identifier,           // identifier_Kw : 'lalr'
-	Identifier,           // identifier_Kw : 'lexer'
-	Identifier,           // identifier_Kw : 'parser'
-	Identifier,           // identifier_Kw : 'true'
-	Identifier,           // identifier_Kw : 'false'
-	Identifier,           // identifier_Kw : 'separator'
-	Identifier,           // identifier_Kw : 'as'
-	Identifier,           // identifier_Kw : 'import'
-	Identifier,           // identifier_Kw : 'set'
+	Identifier,           // identifier_Keywords : ID
+	Identifier,           // identifier_Keywords : 'brackets'
+	Identifier,           // identifier_Keywords : 'inline'
+	Identifier,           // identifier_Keywords : 'prec'
+	Identifier,           // identifier_Keywords : 'shift'
+	Identifier,           // identifier_Keywords : 'returns'
+	Identifier,           // identifier_Keywords : 'input'
+	Identifier,           // identifier_Keywords : 'left'
+	Identifier,           // identifier_Keywords : 'right'
+	Identifier,           // identifier_Keywords : 'nonassoc'
+	Identifier,           // identifier_Keywords : 'generate'
+	Identifier,           // identifier_Keywords : 'assert'
+	Identifier,           // identifier_Keywords : 'empty'
+	Identifier,           // identifier_Keywords : 'nonempty'
+	Identifier,           // identifier_Keywords : 'global'
+	Identifier,           // identifier_Keywords : 'explicit'
+	Identifier,           // identifier_Keywords : 'lookahead'
+	Identifier,           // identifier_Keywords : 'param'
+	Identifier,           // identifier_Keywords : 'flag'
+	Identifier,           // identifier_Keywords : 'no-eoi'
+	Identifier,           // identifier_Keywords : 's'
+	Identifier,           // identifier_Keywords : 'x'
+	Identifier,           // identifier_Keywords : 'class'
+	Identifier,           // identifier_Keywords : 'interface'
+	Identifier,           // identifier_Keywords : 'void'
+	Identifier,           // identifier_Keywords : 'space'
+	Identifier,           // identifier_Keywords : 'layout'
+	Identifier,           // identifier_Keywords : 'language'
+	Identifier,           // identifier_Keywords : 'lalr'
+	Identifier,           // identifier_Keywords : 'lexer'
+	Identifier,           // identifier_Keywords : 'parser'
+	Identifier,           // identifier_Keywords : 'true'
+	Identifier,           // identifier_Keywords : 'false'
+	Identifier,           // identifier_Keywords : 'separator'
+	Identifier,           // identifier_Keywords : 'as'
+	Identifier,           // identifier_Keywords : 'import'
+	Identifier,           // identifier_Keywords : 'set'
 	IntegerLiteral,       // integer_literal : icon
 	StringLiteral,        // string_literal : scon
 	BooleanLiteral,       // boolean_literal : 'true'
@@ -1065,8 +1065,8 @@ var tmRuleType = [...]NodeType{
 	0,                    // import__optlist :
 	0,                    // option_optlist : option_optlist option
 	0,                    // option_optlist :
-	Header,               // header : 'language' identifier_Kw '(' identifier_Kw ')' ';'
-	Header,               // header : 'language' identifier_Kw ';'
+	Header,               // header : 'language' identifier_Keywords '(' identifier_Keywords ')' ';'
+	Header,               // header : 'language' identifier_Keywords ';'
 	LexerSection,         // lexer_section : '::' .recoveryScope 'lexer' lexer_parts
 	ParserSection,        // parser_section : '::' .recoveryScope 'parser' grammar_parts
 	Import,               // import_ : 'import' identifier string_literal ';'
