@@ -80,6 +80,29 @@ class LR0 extends ContextFree {
 		for (Entry<String, Set<Integer>> e : markerStates.entrySet()) {
 			markers[i++] = new MarkerImpl(e.getKey(), e.getValue());
 		}
+
+		Set<Integer> lr0 = markerStates.get("lr0");
+		if (lr0 != null) {
+			Integer[] list = lr0.toArray(new Integer[lr0.size()]);
+			Arrays.sort(list);
+			Set<Integer> seenRules = new HashSet<>();
+			for (Integer s : list) {
+				State state = this.state[s];
+				if (state.LR0) continue;
+
+				for (int elem : state.elems) {
+					Set<String> markers = itemMarkers.get(elem);
+					if (markers == null || !markers.contains("lr0")) continue;
+
+					int rule = ruleIndex(elem);
+					if (seenRules.add(rule)) {
+						status.report(ProcessingStatus.KIND_ERROR,
+								"Found an lr0 marker inside a non-LR0 state (" + s + ").", wrules[rule]);
+					}
+				}
+			}
+		}
+
 		freeLR0();
 		return true;
 	}
