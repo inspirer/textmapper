@@ -6,8 +6,6 @@ import (
 	"fmt"
 )
 
-const greedyState = 84
-
 var tmNonterminals = [...]string{
 	"Declaration_list",
 	"Test",

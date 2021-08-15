@@ -744,7 +744,7 @@ ${end}
 ${template parserTables-}
 package ${self->go.package()}
 
-${foreach marker in parser.markers}
+${foreach marker in parser.markers.select(it|it.name != 'lr0' && it.name != 'greedy')}
 ${if marker.states.length == 1-}
 const ${marker.name}State = ${marker.states[0]}
 ${else-}
