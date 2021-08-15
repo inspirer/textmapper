@@ -48,12 +48,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 0, 67, lexer)
+	_, err := p.parse(ctx, 0, 89, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 1, 68, lexer)
+	v, err := p.parse(ctx, 1, 90, lexer)
 	val, _ := v.(int)
 	return val, err
 }

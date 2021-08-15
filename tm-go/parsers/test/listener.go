@@ -23,8 +23,13 @@ const (
 	Empty1
 	Icon
 	TestIntClause // Icon
+	EvalFoo       // Expr
+	EvalFoo2      // a=Expr b=Expr
 	Decl1         // (Identifier)+
 	Decl2
+	PlusExpr // left=Expr right=Expr
+	AsExpr   // left=Expr right=Expr
+	IntExpr
 	Int7
 	Int9
 	MultiLineComment
@@ -45,8 +50,13 @@ var nodeTypeStr = [...]string{
 	"Empty1",
 	"Icon",
 	"TestIntClause",
+	"EvalFoo",
+	"EvalFoo2",
 	"Decl1",
 	"Decl2",
+	"PlusExpr",
+	"AsExpr",
+	"IntExpr",
 	"Int7",
 	"Int9",
 	"MultiLineComment",
@@ -63,14 +73,25 @@ func (t NodeType) String() string {
 }
 
 var Declaration = []NodeType{
+	AsExpr,
 	Block,
 	Decl1,
 	Decl2,
 	Empty1,
+	EvalFoo,
+	EvalFoo2,
 	Int,
+	IntExpr,
 	LastInt,
+	PlusExpr,
 	TestClause,
 	TestIntClause,
+}
+
+var Expr = []NodeType{
+	AsExpr,
+	IntExpr,
+	PlusExpr,
 }
 
 var TokenSet = []NodeType{

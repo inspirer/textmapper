@@ -27,8 +27,10 @@ lastInt: /[0-9]+(\n|{eoi})/
 
 # Keywords.
 'test':      /test/
-'decl1':      /decl1/
-'decl2':      /decl2/
+'decl1':     /decl1/
+'decl2':     /decl2/
+'eval':      /eval/
+'as':        /as/
 
 # Punctuation
 '{': /\{/
@@ -42,6 +44,7 @@ lastInt: /[0-9]+(\n|{eoi})/
 ':': /:/
 '-': /-/
 '->': /->/
+'+': /\+/
 
 dquote: /"/
 squote: /'/
@@ -129,9 +132,15 @@ Declaration -> Declaration :
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
   | 'test' '(' (empty1 -> Empty1) ')'
   | 'test' (IntegerConstant -> Icon/InTest) -> TestIntClause/InTest,InFoo
+  | 'eval' '(' expr ')'
+  | 'eval' '(' foo ')' -> EvalFoo
+  | 'eval' '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
 ;
 
 empty1 : ;
+
+foo :
+      IntegerConstant '.' expr ;
 
 # Test: a list of an exported terminal.
 
@@ -145,6 +154,23 @@ Decl1 {int} -> Decl1 :
 
 Decl2 :
     'decl2' -> Decl2 ;
+
+%nonassoc 'as';
+%left '+';
+
+%interface Expr;
+
+expr -> Expr:
+    left=expr '+' right=primaryExpr   -> PlusExpr
+  | primaryExpr
+;
+
+# AsExpr consumes the whole suffix greedily.
+# Note: applying .greedy after 'as' does not work since the conflict happens later.
+primaryExpr<flag WithoutAs = false> -> Expr:
+    [!WithoutAs] left=primaryExpr<+WithoutAs> 'as' right=expr  -> AsExpr
+  | IntegerConstant                                            -> IntExpr
+;
 
 %%
 

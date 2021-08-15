@@ -13,6 +13,8 @@ func ToTestNode(n Node) TestNode {
 		return nil
 	}
 	switch n.Type() {
+	case test.AsExpr:
+		return &AsExpr{n}
 	case test.Block:
 		return &Block{n}
 	case test.Decl1:
@@ -21,14 +23,22 @@ func ToTestNode(n Node) TestNode {
 		return &Decl2{n}
 	case test.Empty1:
 		return &Empty1{n}
+	case test.EvalFoo:
+		return &EvalFoo{n}
+	case test.EvalFoo2:
+		return &EvalFoo2{n}
 	case test.Icon:
 		return &Icon{n}
 	case test.Int:
 		return &Int{n}
+	case test.IntExpr:
+		return &IntExpr{n}
 	case test.LastInt:
 		return &LastInt{n}
 	case test.Negation:
 		return &Negation{n}
+	case test.PlusExpr:
+		return &PlusExpr{n}
 	case test.Test:
 		return &Test{n}
 	case test.TestClause:

@@ -37,14 +37,19 @@ type NilNode struct{}
 var nilInstance = &NilNode{}
 
 // All types implement TestNode.
+func (n AsExpr) TestNode() Node        { return n.Node }
 func (n Block) TestNode() Node         { return n.Node }
 func (n Decl1) TestNode() Node         { return n.Node }
 func (n Decl2) TestNode() Node         { return n.Node }
 func (n Empty1) TestNode() Node        { return n.Node }
+func (n EvalFoo) TestNode() Node       { return n.Node }
+func (n EvalFoo2) TestNode() Node      { return n.Node }
 func (n Icon) TestNode() Node          { return n.Node }
 func (n Int) TestNode() Node           { return n.Node }
+func (n IntExpr) TestNode() Node       { return n.Node }
 func (n LastInt) TestNode() Node       { return n.Node }
 func (n Negation) TestNode() Node      { return n.Node }
+func (n PlusExpr) TestNode() Node      { return n.Node }
 func (n Test) TestNode() Node          { return n.Node }
 func (n TestClause) TestNode() Node    { return n.Node }
 func (n TestIntClause) TestNode() Node { return n.Node }
@@ -61,17 +66,47 @@ type Declaration interface {
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
 //
+func (AsExpr) declarationNode()        {}
 func (Block) declarationNode()         {}
 func (Decl1) declarationNode()         {}
 func (Decl2) declarationNode()         {}
 func (Empty1) declarationNode()        {}
+func (EvalFoo) declarationNode()       {}
+func (EvalFoo2) declarationNode()      {}
 func (Int) declarationNode()           {}
+func (IntExpr) declarationNode()       {}
 func (LastInt) declarationNode()       {}
+func (PlusExpr) declarationNode()      {}
 func (TestClause) declarationNode()    {}
 func (TestIntClause) declarationNode() {}
 func (NilNode) declarationNode()       {}
 
+type Expr interface {
+	TestNode
+	exprNode()
+}
+
+// exprNode() ensures that only the following types can be
+// assigned to Expr.
+//
+func (AsExpr) exprNode()   {}
+func (IntExpr) exprNode()  {}
+func (PlusExpr) exprNode() {}
+func (NilNode) exprNode()  {}
+
 // Types.
+
+type AsExpr struct {
+	Node
+}
+
+func (n AsExpr) Left() Expr {
+	return ToTestNode(n.Child(selector.Expr)).(Expr)
+}
+
+func (n AsExpr) Right() Expr {
+	return ToTestNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+}
 
 type Block struct {
 	Node
@@ -112,11 +147,35 @@ type Empty1 struct {
 	Node
 }
 
+type EvalFoo struct {
+	Node
+}
+
+func (n EvalFoo) Expr() Expr {
+	return ToTestNode(n.Child(selector.Expr)).(Expr)
+}
+
+type EvalFoo2 struct {
+	Node
+}
+
+func (n EvalFoo2) A() Expr {
+	return ToTestNode(n.Child(selector.Expr)).(Expr)
+}
+
+func (n EvalFoo2) B() Expr {
+	return ToTestNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+}
+
 type Icon struct {
 	Node
 }
 
 type Int struct {
+	Node
+}
+
+type IntExpr struct {
 	Node
 }
 
@@ -126,6 +185,18 @@ type LastInt struct {
 
 type Negation struct {
 	Node
+}
+
+type PlusExpr struct {
+	Node
+}
+
+func (n PlusExpr) Left() Expr {
+	return ToTestNode(n.Child(selector.Expr)).(Expr)
+}
+
+func (n PlusExpr) Right() Expr {
+	return ToTestNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
 }
 
 type Test struct {

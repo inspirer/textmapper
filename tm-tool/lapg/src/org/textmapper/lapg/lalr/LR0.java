@@ -288,6 +288,29 @@ class LR0 extends ContextFree {
 		int size = symbasesize[symbol];
 		int i, hash;
 
+		boolean hasGreedy = false;
+		for (i = 0; i < size; i++) {
+			Set<String> markers = itemMarkers.get(new_core[i]);
+			if (markers == null) continue;
+
+			if (markers.contains("greedy")) {
+				hasGreedy = true;
+			}
+		}
+		if (hasGreedy) {
+			int new_size = 0;
+			for (i = 0; i < size; i++) {
+				int val = new_core[i];
+				Set<String> markers = itemMarkers.get(val);
+				if (markers == null || !markers.contains("greedy")) {
+					// Keep "greedy" rules only.
+					continue;
+				}
+				new_core[new_size++] = val;
+			}
+			size = new_size;
+		}
+
 		for (hash = i = 0; i < size; i++) {
 			hash = 31 * hash + new_core[i];
 		}

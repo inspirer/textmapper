@@ -88,6 +88,24 @@ var parseTests = []struct {
 	{test.Identifier, 0, []string{
 		` decl1(«abc».«def1») `,
 	}},
+	{test.PlusExpr, 0, []string{
+		` eval(««1 + 2» + 3») `,
+		` eval(1 as «2 + 3») `,
+	}},
+	{test.AsExpr, 0, []string{
+		` eval(«1 as 2 + 3») `,
+		` eval(«1 as 2 + «3 as 5+6+7»») `,
+	}},
+	{test.IntExpr, 0, []string{
+		` eval(«1» as «2» + «3») `,
+	}},
+	{test.EvalFoo, 0, []string{
+		` «eval(4.1 as 2 + 3)» `,
+		` «eval(4.1 as 2)» `,
+	}},
+	{test.EvalFoo2, 0, []string{
+		` «eval(4.1+2)» `,
+	}},
 }
 
 func TestParser(t *testing.T) {

@@ -271,8 +271,8 @@ class Lalr1 extends LR0 {
 			}
 		}
 
-		// data consistency problem, shouldn't happen
-		throw new RuntimeException("state N" + sourceState + " is broken, cannot shift " + sym[symbol].getNameText());
+		// Note: this happens if we pruned some rules from the state.
+		return -1;
 	}
 
 	// builds 1) lookback 2) cross-rule follow graph & updates follow set
@@ -284,6 +284,7 @@ class Lalr1 extends LR0 {
 			int fstate = term_from[ntgotos + i];
 			int symbol = state[term_to[ntgotos + i]].symbol;
 
+			rules:
 			for (int rule : derives[symbol - nterms]) {
 				currstate = states[0] = fstate;
 				length = 1;
@@ -291,6 +292,10 @@ class Lalr1 extends LR0 {
 				// iterate through rule's states
 				for (rpart = rindex[rule]; rright[rpart] >= 0; rpart++) {
 					currstate = state_by_symbol(currstate, rright[rpart]);
+					if (currstate == -1) {
+						// This rule was pruned from the inner chain of transitions.
+						continue rules;
+					}
 					states[length++] = currstate;
 				}
 

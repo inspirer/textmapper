@@ -22,6 +22,8 @@ const (
 	TEST    // test
 	DECL1   // decl1
 	DECL2   // decl2
+	EVAL    // eval
+	AS      // as
 	LBRACE  // {
 	RBRACE  // }
 	LPAREN  // (
@@ -33,6 +35,7 @@ const (
 	COLON   // :
 	MINUS   // -
 	MINUSGT // ->
+	PLUS    // +
 	DQUOTE  // "
 	SQUOTE  // '
 	SHARPATID
@@ -55,6 +58,8 @@ var tokenStr = [...]string{
 	"test",
 	"decl1",
 	"decl2",
+	"eval",
+	"as",
 	"{",
 	"}",
 	"(",
@@ -66,6 +71,7 @@ var tokenStr = [...]string{
 	":",
 	"-",
 	"->",
+	"+",
 	"\"",
 	"'",
 	"SHARPATID",

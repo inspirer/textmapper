@@ -4,6 +4,8 @@
 %start Test
 %start Decl1
 
+%nonassoc AS
+%left PLUS
 %token INVALID_TOKEN
 %token WHITESPACE
 %token SINGLELINECOMMENT
@@ -13,6 +15,7 @@
 %token TEST
 %token DECL1
 %token DECL2
+%token EVAL
 %token LBRACE
 %token RBRACE
 %token LPAREN
@@ -74,6 +77,9 @@ Declaration :
 | TEST LBRACE setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
 | TEST INTEGERCONSTANT
+| EVAL LPAREN expr RPAREN
+| EVAL LPAREN foo RPAREN
+| EVAL LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
 ;
 
 setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen :
@@ -86,6 +92,8 @@ setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceApos
 | TEST
 | DECL1
 | DECL2
+| EVAL
+| AS
 | LBRACE
 | LPAREN
 | RPAREN
@@ -95,6 +103,7 @@ setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceApos
 | COLON
 | MINUS
 | MINUSGT
+| PLUS
 | DQUOTE
 | SQUOTE
 | SHARPATID
@@ -113,6 +122,10 @@ empty1 :
   %empty
 ;
 
+foo :
+  INTEGERCONSTANT DOT expr
+;
+
 QualifiedName :
   IDENTIFIER
 | QualifiedName DOT IDENTIFIER
@@ -124,6 +137,20 @@ Decl1 :
 
 Decl2 :
   DECL2
+;
+
+expr :
+  expr PLUS primaryExpr
+| primaryExpr
+;
+
+primaryExpr :
+  primaryExpr_WithoutAs AS expr
+| INTEGERCONSTANT
+;
+
+primaryExpr_WithoutAs :
+  INTEGERCONSTANT
 ;
 
 %%

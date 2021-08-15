@@ -10,14 +10,19 @@ type Selector func(nt test.NodeType) bool
 
 var (
 	Any               = func(t test.NodeType) bool { return true }
+	AsExpr            = func(t test.NodeType) bool { return t == test.AsExpr }
 	Block             = func(t test.NodeType) bool { return t == test.Block }
 	Decl1             = func(t test.NodeType) bool { return t == test.Decl1 }
 	Decl2             = func(t test.NodeType) bool { return t == test.Decl2 }
 	Empty1            = func(t test.NodeType) bool { return t == test.Empty1 }
+	EvalFoo           = func(t test.NodeType) bool { return t == test.EvalFoo }
+	EvalFoo2          = func(t test.NodeType) bool { return t == test.EvalFoo2 }
 	Icon              = func(t test.NodeType) bool { return t == test.Icon }
 	Int               = func(t test.NodeType) bool { return t == test.Int }
+	IntExpr           = func(t test.NodeType) bool { return t == test.IntExpr }
 	LastInt           = func(t test.NodeType) bool { return t == test.LastInt }
 	Negation          = func(t test.NodeType) bool { return t == test.Negation }
+	PlusExpr          = func(t test.NodeType) bool { return t == test.PlusExpr }
 	Test              = func(t test.NodeType) bool { return t == test.Test }
 	TestClause        = func(t test.NodeType) bool { return t == test.TestClause }
 	TestIntClause     = func(t test.NodeType) bool { return t == test.TestIntClause }
@@ -26,6 +31,7 @@ var (
 	InvalidToken      = func(t test.NodeType) bool { return t == test.InvalidToken }
 	Identifier        = func(t test.NodeType) bool { return t == test.Identifier }
 	Declaration       = OneOf(test.Declaration...)
+	Expr              = OneOf(test.Expr...)
 	TokenSet          = OneOf(test.TokenSet...)
 )
 
