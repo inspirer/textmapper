@@ -81,9 +81,12 @@ public final class TMGenerator {
 				genOptions.put(entry.getKey(), entry.getValue());
 			}
 
+			boolean genParser = Boolean.TRUE.equals(genOptions.get("genParser")) &&
+					s.getGrammar().getRules() != null;
+
 			// Language-specific processing.
 			AstModel astModel = null;
-			if (s.getGrammar().getRules() != null) {
+			if (genParser) {
 				boolean genast = Boolean.TRUE.equals(genOptions.get("genast"));
 				boolean eventBased = Boolean.TRUE.equals(genOptions.get("eventBased"));
 
@@ -106,7 +109,7 @@ public final class TMGenerator {
 
 			TemplatesFacade ruleEnv = new TemplatesFacade(
 					new GrammarIxFactory(s, getTemplatePackage(s), context), registry);
-			if (s.getGrammar().getRules() != null) {
+			if (genParser) {
 				for (Rule rule : s.getGrammar().getRules()) {
 					String action = ruleEnv.executeTemplate(getTemplatePackage(s) + ".parserAction",
 							context, new Object[]{rule}, null);
@@ -125,7 +128,7 @@ public final class TMGenerator {
 			// Generate tables
 			start = System.currentTimeMillis();
 			ParserData r = null;
-			if (s.getGrammar().getRules() != null) {
+			if (genParser) {
 				r = LapgCore.generateParser(s.getGrammar(), status);
 				if (r == null) {
 					return false;
