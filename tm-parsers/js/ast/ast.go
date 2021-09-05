@@ -842,9 +842,11 @@ type TypeMember interface {
 //
 func (CallSignature) typeMemberNode()      {}
 func (ConstructSignature) typeMemberNode() {}
+func (Getter) typeMemberNode()             {}
 func (IndexSignature) typeMemberNode()     {}
 func (MethodSignature) typeMemberNode()    {}
 func (PropertySignature) typeMemberNode()  {}
+func (Setter) typeMemberNode()             {}
 func (NilNode) typeMemberNode()            {}
 
 // Types.
@@ -2174,6 +2176,15 @@ type Getter struct {
 	*Node
 }
 
+func (n Getter) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var ret = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ToJsNode(node).(Modifier))
+	}
+	return ret
+}
+
 func (n Getter) PropertyName() PropertyName {
 	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
 }
@@ -2316,8 +2327,8 @@ func (n IndexSignature) NameIdent() NameIdent {
 	return NameIdent{n.Child(selector.NameIdent)}
 }
 
-func (n IndexSignature) PredefinedType() PredefinedType {
-	return PredefinedType{n.Child(selector.PredefinedType)}
+func (n IndexSignature) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
 }
 
 func (n IndexSignature) TypeAnnotation() TypeAnnotation {
@@ -3167,6 +3178,15 @@ func (n ReturnStmt) Expr() (Expr, bool) {
 
 type Setter struct {
 	*Node
+}
+
+func (n Setter) Modifier() []Modifier {
+	nodes := n.Children(selector.Modifier)
+	var ret = make([]Modifier, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ToJsNode(node).(Modifier))
+	}
+	return ret
 }
 
 func (n Setter) PropertyName() PropertyName {

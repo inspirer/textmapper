@@ -3722,255 +3722,17 @@ UnaryExpression_Yield_StartWithLet :
   UpdateExpression_Yield_StartWithLet
 ;
 
-ArithmeticExpression :
-  UnaryExpression
-| ArithmeticExpression PLUS ArithmeticExpression
-| ArithmeticExpression MINUS ArithmeticExpression
-| ArithmeticExpression LTLT ArithmeticExpression
-| ArithmeticExpression GTGT ArithmeticExpression
-| ArithmeticExpression GTGTGT ArithmeticExpression
-| ArithmeticExpression MULT ArithmeticExpression
-| ArithmeticExpression DIV ArithmeticExpression
-| ArithmeticExpression REM ArithmeticExpression
-| UpdateExpression MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_Await :
-  UnaryExpression_Await
-| ArithmeticExpression_Await PLUS ArithmeticExpression_Await
-| ArithmeticExpression_Await MINUS ArithmeticExpression_Await
-| ArithmeticExpression_Await LTLT ArithmeticExpression_Await
-| ArithmeticExpression_Await GTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await GTGTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await MULT ArithmeticExpression_Await
-| ArithmeticExpression_Await DIV ArithmeticExpression_Await
-| ArithmeticExpression_Await REM ArithmeticExpression_Await
-| UpdateExpression_Await MULTMULT ArithmeticExpression_Await
-;
-
-ArithmeticExpression_Await_NoLet :
-  UnaryExpression_Await_NoLet
-| ArithmeticExpression_Await_NoLet PLUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLet MINUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLet LTLT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLet GTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLet GTGTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLet MULT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLet DIV ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLet REM ArithmeticExpression_Await
-| UpdateExpression_Await_NoLet MULTMULT ArithmeticExpression_Await
-;
-
-ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
-  UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass PLUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass MINUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass LTLT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass GTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass GTGTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass MULT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass DIV ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass REM ArithmeticExpression_Await
-| UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT ArithmeticExpression_Await
-;
-
-ArithmeticExpression_Await_NoObjLiteral :
-  UnaryExpression_Await_NoObjLiteral
-| ArithmeticExpression_Await_NoObjLiteral PLUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoObjLiteral MINUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoObjLiteral LTLT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoObjLiteral GTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoObjLiteral GTGTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoObjLiteral MULT ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoObjLiteral DIV ArithmeticExpression_Await
-| ArithmeticExpression_Await_NoObjLiteral REM ArithmeticExpression_Await
-| UpdateExpression_Await_NoObjLiteral MULTMULT ArithmeticExpression_Await
-;
-
-ArithmeticExpression_Await_StartWithLet :
-  UnaryExpression_Await_StartWithLet
-| ArithmeticExpression_Await_StartWithLet PLUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_StartWithLet MINUS ArithmeticExpression_Await
-| ArithmeticExpression_Await_StartWithLet LTLT ArithmeticExpression_Await
-| ArithmeticExpression_Await_StartWithLet GTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_StartWithLet GTGTGT ArithmeticExpression_Await
-| ArithmeticExpression_Await_StartWithLet MULT ArithmeticExpression_Await
-| ArithmeticExpression_Await_StartWithLet DIV ArithmeticExpression_Await
-| ArithmeticExpression_Await_StartWithLet REM ArithmeticExpression_Await
-| UpdateExpression_Await_StartWithLet MULTMULT ArithmeticExpression_Await
-;
-
-ArithmeticExpression_NoFuncClass :
-  UnaryExpression_NoFuncClass
-| ArithmeticExpression_NoFuncClass PLUS ArithmeticExpression
-| ArithmeticExpression_NoFuncClass MINUS ArithmeticExpression
-| ArithmeticExpression_NoFuncClass LTLT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass GTGT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass GTGTGT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass MULT ArithmeticExpression
-| ArithmeticExpression_NoFuncClass DIV ArithmeticExpression
-| ArithmeticExpression_NoFuncClass REM ArithmeticExpression
-| UpdateExpression_NoFuncClass MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_NoLet :
-  UnaryExpression_NoLet
-| ArithmeticExpression_NoLet PLUS ArithmeticExpression
-| ArithmeticExpression_NoLet MINUS ArithmeticExpression
-| ArithmeticExpression_NoLet LTLT ArithmeticExpression
-| ArithmeticExpression_NoLet GTGT ArithmeticExpression
-| ArithmeticExpression_NoLet GTGTGT ArithmeticExpression
-| ArithmeticExpression_NoLet MULT ArithmeticExpression
-| ArithmeticExpression_NoLet DIV ArithmeticExpression
-| ArithmeticExpression_NoLet REM ArithmeticExpression
-| UpdateExpression_NoLet MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass :
-  UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass PLUS ArithmeticExpression
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass MINUS ArithmeticExpression
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass LTLT ArithmeticExpression
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass GTGT ArithmeticExpression
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass GTGTGT ArithmeticExpression
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass MULT ArithmeticExpression
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass DIV ArithmeticExpression
-| ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass REM ArithmeticExpression
-| UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_NoObjLiteral :
-  UnaryExpression_NoObjLiteral
-| ArithmeticExpression_NoObjLiteral PLUS ArithmeticExpression
-| ArithmeticExpression_NoObjLiteral MINUS ArithmeticExpression
-| ArithmeticExpression_NoObjLiteral LTLT ArithmeticExpression
-| ArithmeticExpression_NoObjLiteral GTGT ArithmeticExpression
-| ArithmeticExpression_NoObjLiteral GTGTGT ArithmeticExpression
-| ArithmeticExpression_NoObjLiteral MULT ArithmeticExpression
-| ArithmeticExpression_NoObjLiteral DIV ArithmeticExpression
-| ArithmeticExpression_NoObjLiteral REM ArithmeticExpression
-| UpdateExpression_NoObjLiteral MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_StartWithLet :
-  UnaryExpression_StartWithLet
-| ArithmeticExpression_StartWithLet PLUS ArithmeticExpression
-| ArithmeticExpression_StartWithLet MINUS ArithmeticExpression
-| ArithmeticExpression_StartWithLet LTLT ArithmeticExpression
-| ArithmeticExpression_StartWithLet GTGT ArithmeticExpression
-| ArithmeticExpression_StartWithLet GTGTGT ArithmeticExpression
-| ArithmeticExpression_StartWithLet MULT ArithmeticExpression
-| ArithmeticExpression_StartWithLet DIV ArithmeticExpression
-| ArithmeticExpression_StartWithLet REM ArithmeticExpression
-| UpdateExpression_StartWithLet MULTMULT ArithmeticExpression
-;
-
-ArithmeticExpression_Yield :
-  UnaryExpression_Yield
-| ArithmeticExpression_Yield PLUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield MINUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield LTLT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield GTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield GTGTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield MULT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield DIV ArithmeticExpression_Yield
-| ArithmeticExpression_Yield REM ArithmeticExpression_Yield
-| UpdateExpression_Yield MULTMULT ArithmeticExpression_Yield
-;
-
-ArithmeticExpression_Yield_Await :
-  UnaryExpression_Yield_Await
-| ArithmeticExpression_Yield_Await PLUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await MINUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await LTLT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await GTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await GTGTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await MULT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await DIV ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await REM ArithmeticExpression_Yield_Await
-| UpdateExpression_Yield_Await MULTMULT ArithmeticExpression_Yield_Await
-;
-
-ArithmeticExpression_Yield_Await_NoLet :
-  UnaryExpression_Yield_Await_NoLet
-| ArithmeticExpression_Yield_Await_NoLet PLUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLet MINUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLet LTLT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLet GTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLet GTGTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLet MULT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLet DIV ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLet REM ArithmeticExpression_Yield_Await
-| UpdateExpression_Yield_Await_NoLet MULTMULT ArithmeticExpression_Yield_Await
-;
-
-ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass :
-  UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass PLUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass MINUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass LTLT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass GTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass GTGTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass MULT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass DIV ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass REM ArithmeticExpression_Yield_Await
-| UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT ArithmeticExpression_Yield_Await
-;
-
-ArithmeticExpression_Yield_Await_StartWithLet :
-  UnaryExpression_Yield_Await_StartWithLet
-| ArithmeticExpression_Yield_Await_StartWithLet PLUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_StartWithLet MINUS ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_StartWithLet LTLT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_StartWithLet GTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_StartWithLet GTGTGT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_StartWithLet MULT ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_StartWithLet DIV ArithmeticExpression_Yield_Await
-| ArithmeticExpression_Yield_Await_StartWithLet REM ArithmeticExpression_Yield_Await
-| UpdateExpression_Yield_Await_StartWithLet MULTMULT ArithmeticExpression_Yield_Await
-;
-
-ArithmeticExpression_Yield_NoLet :
-  UnaryExpression_Yield_NoLet
-| ArithmeticExpression_Yield_NoLet PLUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLet MINUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLet LTLT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLet GTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLet GTGTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLet MULT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLet DIV ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLet REM ArithmeticExpression_Yield
-| UpdateExpression_Yield_NoLet MULTMULT ArithmeticExpression_Yield
-;
-
-ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
-  UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass PLUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass MINUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass LTLT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass GTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass GTGTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass MULT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DIV ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass REM ArithmeticExpression_Yield
-| UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT ArithmeticExpression_Yield
-;
-
-ArithmeticExpression_Yield_StartWithLet :
-  UnaryExpression_Yield_StartWithLet
-| ArithmeticExpression_Yield_StartWithLet PLUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_StartWithLet MINUS ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_StartWithLet LTLT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_StartWithLet GTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_StartWithLet GTGTGT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_StartWithLet MULT ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_StartWithLet DIV ArithmeticExpression_Yield
-| ArithmeticExpression_Yield_StartWithLet REM ArithmeticExpression_Yield
-| UpdateExpression_Yield_StartWithLet MULTMULT ArithmeticExpression_Yield
-;
-
 BinaryExpression :
-  ArithmeticExpression
+  UnaryExpression
+| BinaryExpression PLUS BinaryExpression
+| BinaryExpression MINUS BinaryExpression
+| BinaryExpression LTLT BinaryExpression
+| BinaryExpression GTGT BinaryExpression
+| BinaryExpression GTGTGT BinaryExpression
+| BinaryExpression MULT BinaryExpression
+| BinaryExpression DIV BinaryExpression
+| BinaryExpression REM BinaryExpression
+| UpdateExpression MULTMULT BinaryExpression
 | BinaryExpression LT BinaryExpression
 | BinaryExpression GT BinaryExpression
 | BinaryExpression LTASSIGN BinaryExpression
@@ -3991,7 +3753,16 @@ BinaryExpression :
 ;
 
 BinaryExpression_Await :
-  ArithmeticExpression_Await
+  UnaryExpression_Await
+| BinaryExpression_Await PLUS BinaryExpression_Await
+| BinaryExpression_Await MINUS BinaryExpression_Await
+| BinaryExpression_Await LTLT BinaryExpression_Await
+| BinaryExpression_Await GTGT BinaryExpression_Await
+| BinaryExpression_Await GTGTGT BinaryExpression_Await
+| BinaryExpression_Await MULT BinaryExpression_Await
+| BinaryExpression_Await DIV BinaryExpression_Await
+| BinaryExpression_Await REM BinaryExpression_Await
+| UpdateExpression_Await MULTMULT BinaryExpression_Await
 | BinaryExpression_Await LT BinaryExpression_Await
 | BinaryExpression_Await GT BinaryExpression_Await
 | BinaryExpression_Await LTASSIGN BinaryExpression_Await
@@ -4012,7 +3783,16 @@ BinaryExpression_Await :
 ;
 
 BinaryExpression_Await_NoAs_StartWithLet :
-  ArithmeticExpression_Await_StartWithLet
+  UnaryExpression_Await_StartWithLet
+| BinaryExpression_Await_NoAs_StartWithLet PLUS BinaryExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet MINUS BinaryExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet LTLT BinaryExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet GTGT BinaryExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet GTGTGT BinaryExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet MULT BinaryExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet DIV BinaryExpression_Await
+| BinaryExpression_Await_NoAs_StartWithLet REM BinaryExpression_Await
+| UpdateExpression_Await_StartWithLet MULTMULT BinaryExpression_Await
 | BinaryExpression_Await_NoAs_StartWithLet LT BinaryExpression_Await
 | BinaryExpression_Await_NoAs_StartWithLet GT BinaryExpression_Await
 | BinaryExpression_Await_NoAs_StartWithLet LTASSIGN BinaryExpression_Await
@@ -4031,7 +3811,16 @@ BinaryExpression_Await_NoAs_StartWithLet :
 ;
 
 BinaryExpression_Await_NoLet :
-  ArithmeticExpression_Await_NoLet
+  UnaryExpression_Await_NoLet
+| BinaryExpression_Await_NoLet PLUS BinaryExpression_Await
+| BinaryExpression_Await_NoLet MINUS BinaryExpression_Await
+| BinaryExpression_Await_NoLet LTLT BinaryExpression_Await
+| BinaryExpression_Await_NoLet GTGT BinaryExpression_Await
+| BinaryExpression_Await_NoLet GTGTGT BinaryExpression_Await
+| BinaryExpression_Await_NoLet MULT BinaryExpression_Await
+| BinaryExpression_Await_NoLet DIV BinaryExpression_Await
+| BinaryExpression_Await_NoLet REM BinaryExpression_Await
+| UpdateExpression_Await_NoLet MULTMULT BinaryExpression_Await
 | BinaryExpression_Await_NoLet LT BinaryExpression_Await
 | BinaryExpression_Await_NoLet GT BinaryExpression_Await
 | BinaryExpression_Await_NoLet LTASSIGN BinaryExpression_Await
@@ -4052,7 +3841,16 @@ BinaryExpression_Await_NoLet :
 ;
 
 BinaryExpression_Await_NoObjLiteral :
-  ArithmeticExpression_Await_NoObjLiteral
+  UnaryExpression_Await_NoObjLiteral
+| BinaryExpression_Await_NoObjLiteral PLUS BinaryExpression_Await
+| BinaryExpression_Await_NoObjLiteral MINUS BinaryExpression_Await
+| BinaryExpression_Await_NoObjLiteral LTLT BinaryExpression_Await
+| BinaryExpression_Await_NoObjLiteral GTGT BinaryExpression_Await
+| BinaryExpression_Await_NoObjLiteral GTGTGT BinaryExpression_Await
+| BinaryExpression_Await_NoObjLiteral MULT BinaryExpression_Await
+| BinaryExpression_Await_NoObjLiteral DIV BinaryExpression_Await
+| BinaryExpression_Await_NoObjLiteral REM BinaryExpression_Await
+| UpdateExpression_Await_NoObjLiteral MULTMULT BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral LT BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral GT BinaryExpression_Await
 | BinaryExpression_Await_NoObjLiteral LTASSIGN BinaryExpression_Await
@@ -4073,7 +3871,16 @@ BinaryExpression_Await_NoObjLiteral :
 ;
 
 BinaryExpression_In :
-  ArithmeticExpression
+  UnaryExpression
+| BinaryExpression_In PLUS BinaryExpression_In
+| BinaryExpression_In MINUS BinaryExpression_In
+| BinaryExpression_In LTLT BinaryExpression_In
+| BinaryExpression_In GTGT BinaryExpression_In
+| BinaryExpression_In GTGTGT BinaryExpression_In
+| BinaryExpression_In MULT BinaryExpression_In
+| BinaryExpression_In DIV BinaryExpression_In
+| BinaryExpression_In REM BinaryExpression_In
+| UpdateExpression MULTMULT BinaryExpression_In
 | BinaryExpression_In LT BinaryExpression_In
 | BinaryExpression_In GT BinaryExpression_In
 | BinaryExpression_In LTASSIGN BinaryExpression_In
@@ -4095,7 +3902,16 @@ BinaryExpression_In :
 ;
 
 BinaryExpression_In_Await :
-  ArithmeticExpression_Await
+  UnaryExpression_Await
+| BinaryExpression_In_Await PLUS BinaryExpression_In_Await
+| BinaryExpression_In_Await MINUS BinaryExpression_In_Await
+| BinaryExpression_In_Await LTLT BinaryExpression_In_Await
+| BinaryExpression_In_Await GTGT BinaryExpression_In_Await
+| BinaryExpression_In_Await GTGTGT BinaryExpression_In_Await
+| BinaryExpression_In_Await MULT BinaryExpression_In_Await
+| BinaryExpression_In_Await DIV BinaryExpression_In_Await
+| BinaryExpression_In_Await REM BinaryExpression_In_Await
+| UpdateExpression_Await MULTMULT BinaryExpression_In_Await
 | BinaryExpression_In_Await LT BinaryExpression_In_Await
 | BinaryExpression_In_Await GT BinaryExpression_In_Await
 | BinaryExpression_In_Await LTASSIGN BinaryExpression_In_Await
@@ -4117,7 +3933,16 @@ BinaryExpression_In_Await :
 ;
 
 BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
-  ArithmeticExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+  UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs PLUS BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MINUS BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTLT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGTGT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MULT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs DIV BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs REM BinaryExpression_In_Await
+| UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LT BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GT BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTASSIGN BinaryExpression_In_Await
@@ -4137,7 +3962,16 @@ BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
 ;
 
 BinaryExpression_In_Await_NoObjLiteral :
-  ArithmeticExpression_Await_NoObjLiteral
+  UnaryExpression_Await_NoObjLiteral
+| BinaryExpression_In_Await_NoObjLiteral PLUS BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral MINUS BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral LTLT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral GTGT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral GTGTGT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral MULT BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral DIV BinaryExpression_In_Await
+| BinaryExpression_In_Await_NoObjLiteral REM BinaryExpression_In_Await
+| UpdateExpression_Await_NoObjLiteral MULTMULT BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoObjLiteral LT BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoObjLiteral GT BinaryExpression_In_Await
 | BinaryExpression_In_Await_NoObjLiteral LTASSIGN BinaryExpression_In_Await
@@ -4159,7 +3993,16 @@ BinaryExpression_In_Await_NoObjLiteral :
 ;
 
 BinaryExpression_In_NoFuncClass :
-  ArithmeticExpression_NoFuncClass
+  UnaryExpression_NoFuncClass
+| BinaryExpression_In_NoFuncClass PLUS BinaryExpression_In
+| BinaryExpression_In_NoFuncClass MINUS BinaryExpression_In
+| BinaryExpression_In_NoFuncClass LTLT BinaryExpression_In
+| BinaryExpression_In_NoFuncClass GTGT BinaryExpression_In
+| BinaryExpression_In_NoFuncClass GTGTGT BinaryExpression_In
+| BinaryExpression_In_NoFuncClass MULT BinaryExpression_In
+| BinaryExpression_In_NoFuncClass DIV BinaryExpression_In
+| BinaryExpression_In_NoFuncClass REM BinaryExpression_In
+| UpdateExpression_NoFuncClass MULTMULT BinaryExpression_In
 | BinaryExpression_In_NoFuncClass LT BinaryExpression_In
 | BinaryExpression_In_NoFuncClass GT BinaryExpression_In
 | BinaryExpression_In_NoFuncClass LTASSIGN BinaryExpression_In
@@ -4181,7 +4024,16 @@ BinaryExpression_In_NoFuncClass :
 ;
 
 BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
-  ArithmeticExpression_NoLetSq_NoObjLiteral_NoFuncClass
+  UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs PLUS BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MINUS BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTLT BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGT BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGTGT BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MULT BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs DIV BinaryExpression_In
+| BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs REM BinaryExpression_In
+| UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT BinaryExpression_In
 | BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LT BinaryExpression_In
 | BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GT BinaryExpression_In
 | BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTASSIGN BinaryExpression_In
@@ -4201,7 +4053,16 @@ BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
 ;
 
 BinaryExpression_In_NoObjLiteral :
-  ArithmeticExpression_NoObjLiteral
+  UnaryExpression_NoObjLiteral
+| BinaryExpression_In_NoObjLiteral PLUS BinaryExpression_In
+| BinaryExpression_In_NoObjLiteral MINUS BinaryExpression_In
+| BinaryExpression_In_NoObjLiteral LTLT BinaryExpression_In
+| BinaryExpression_In_NoObjLiteral GTGT BinaryExpression_In
+| BinaryExpression_In_NoObjLiteral GTGTGT BinaryExpression_In
+| BinaryExpression_In_NoObjLiteral MULT BinaryExpression_In
+| BinaryExpression_In_NoObjLiteral DIV BinaryExpression_In
+| BinaryExpression_In_NoObjLiteral REM BinaryExpression_In
+| UpdateExpression_NoObjLiteral MULTMULT BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral LT BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral GT BinaryExpression_In
 | BinaryExpression_In_NoObjLiteral LTASSIGN BinaryExpression_In
@@ -4223,7 +4084,16 @@ BinaryExpression_In_NoObjLiteral :
 ;
 
 BinaryExpression_In_Yield :
-  ArithmeticExpression_Yield
+  UnaryExpression_Yield
+| BinaryExpression_In_Yield PLUS BinaryExpression_In_Yield
+| BinaryExpression_In_Yield MINUS BinaryExpression_In_Yield
+| BinaryExpression_In_Yield LTLT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield GTGT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield GTGTGT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield MULT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield DIV BinaryExpression_In_Yield
+| BinaryExpression_In_Yield REM BinaryExpression_In_Yield
+| UpdateExpression_Yield MULTMULT BinaryExpression_In_Yield
 | BinaryExpression_In_Yield LT BinaryExpression_In_Yield
 | BinaryExpression_In_Yield GT BinaryExpression_In_Yield
 | BinaryExpression_In_Yield LTASSIGN BinaryExpression_In_Yield
@@ -4245,7 +4115,16 @@ BinaryExpression_In_Yield :
 ;
 
 BinaryExpression_In_Yield_Await :
-  ArithmeticExpression_Yield_Await
+  UnaryExpression_Yield_Await
+| BinaryExpression_In_Yield_Await PLUS BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await MINUS BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await LTLT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await GTGT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await GTGTGT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await MULT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await DIV BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await REM BinaryExpression_In_Yield_Await
+| UpdateExpression_Yield_Await MULTMULT BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await LT BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await GT BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await LTASSIGN BinaryExpression_In_Yield_Await
@@ -4267,7 +4146,16 @@ BinaryExpression_In_Yield_Await :
 ;
 
 BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
-  ArithmeticExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+  UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs PLUS BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MINUS BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTLT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGTGT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MULT BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs DIV BinaryExpression_In_Yield_Await
+| BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs REM BinaryExpression_In_Yield_Await
+| UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LT BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GT BinaryExpression_In_Yield_Await
 | BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTASSIGN BinaryExpression_In_Yield_Await
@@ -4287,7 +4175,16 @@ BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
 ;
 
 BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
-  ArithmeticExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+  UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs PLUS BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MINUS BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTLT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GTGTGT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs MULT BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs DIV BinaryExpression_In_Yield
+| BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs REM BinaryExpression_In_Yield
+| UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass MULTMULT BinaryExpression_In_Yield
 | BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LT BinaryExpression_In_Yield
 | BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs GT BinaryExpression_In_Yield
 | BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs LTASSIGN BinaryExpression_In_Yield
@@ -4307,7 +4204,16 @@ BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs :
 ;
 
 BinaryExpression_NoAs_StartWithLet :
-  ArithmeticExpression_StartWithLet
+  UnaryExpression_StartWithLet
+| BinaryExpression_NoAs_StartWithLet PLUS BinaryExpression
+| BinaryExpression_NoAs_StartWithLet MINUS BinaryExpression
+| BinaryExpression_NoAs_StartWithLet LTLT BinaryExpression
+| BinaryExpression_NoAs_StartWithLet GTGT BinaryExpression
+| BinaryExpression_NoAs_StartWithLet GTGTGT BinaryExpression
+| BinaryExpression_NoAs_StartWithLet MULT BinaryExpression
+| BinaryExpression_NoAs_StartWithLet DIV BinaryExpression
+| BinaryExpression_NoAs_StartWithLet REM BinaryExpression
+| UpdateExpression_StartWithLet MULTMULT BinaryExpression
 | BinaryExpression_NoAs_StartWithLet LT BinaryExpression
 | BinaryExpression_NoAs_StartWithLet GT BinaryExpression
 | BinaryExpression_NoAs_StartWithLet LTASSIGN BinaryExpression
@@ -4326,7 +4232,16 @@ BinaryExpression_NoAs_StartWithLet :
 ;
 
 BinaryExpression_NoLet :
-  ArithmeticExpression_NoLet
+  UnaryExpression_NoLet
+| BinaryExpression_NoLet PLUS BinaryExpression
+| BinaryExpression_NoLet MINUS BinaryExpression
+| BinaryExpression_NoLet LTLT BinaryExpression
+| BinaryExpression_NoLet GTGT BinaryExpression
+| BinaryExpression_NoLet GTGTGT BinaryExpression
+| BinaryExpression_NoLet MULT BinaryExpression
+| BinaryExpression_NoLet DIV BinaryExpression
+| BinaryExpression_NoLet REM BinaryExpression
+| UpdateExpression_NoLet MULTMULT BinaryExpression
 | BinaryExpression_NoLet LT BinaryExpression
 | BinaryExpression_NoLet GT BinaryExpression
 | BinaryExpression_NoLet LTASSIGN BinaryExpression
@@ -4347,7 +4262,16 @@ BinaryExpression_NoLet :
 ;
 
 BinaryExpression_NoObjLiteral :
-  ArithmeticExpression_NoObjLiteral
+  UnaryExpression_NoObjLiteral
+| BinaryExpression_NoObjLiteral PLUS BinaryExpression
+| BinaryExpression_NoObjLiteral MINUS BinaryExpression
+| BinaryExpression_NoObjLiteral LTLT BinaryExpression
+| BinaryExpression_NoObjLiteral GTGT BinaryExpression
+| BinaryExpression_NoObjLiteral GTGTGT BinaryExpression
+| BinaryExpression_NoObjLiteral MULT BinaryExpression
+| BinaryExpression_NoObjLiteral DIV BinaryExpression
+| BinaryExpression_NoObjLiteral REM BinaryExpression
+| UpdateExpression_NoObjLiteral MULTMULT BinaryExpression
 | BinaryExpression_NoObjLiteral LT BinaryExpression
 | BinaryExpression_NoObjLiteral GT BinaryExpression
 | BinaryExpression_NoObjLiteral LTASSIGN BinaryExpression
@@ -4368,7 +4292,16 @@ BinaryExpression_NoObjLiteral :
 ;
 
 BinaryExpression_Yield :
-  ArithmeticExpression_Yield
+  UnaryExpression_Yield
+| BinaryExpression_Yield PLUS BinaryExpression_Yield
+| BinaryExpression_Yield MINUS BinaryExpression_Yield
+| BinaryExpression_Yield LTLT BinaryExpression_Yield
+| BinaryExpression_Yield GTGT BinaryExpression_Yield
+| BinaryExpression_Yield GTGTGT BinaryExpression_Yield
+| BinaryExpression_Yield MULT BinaryExpression_Yield
+| BinaryExpression_Yield DIV BinaryExpression_Yield
+| BinaryExpression_Yield REM BinaryExpression_Yield
+| UpdateExpression_Yield MULTMULT BinaryExpression_Yield
 | BinaryExpression_Yield LT BinaryExpression_Yield
 | BinaryExpression_Yield GT BinaryExpression_Yield
 | BinaryExpression_Yield LTASSIGN BinaryExpression_Yield
@@ -4389,7 +4322,16 @@ BinaryExpression_Yield :
 ;
 
 BinaryExpression_Yield_Await :
-  ArithmeticExpression_Yield_Await
+  UnaryExpression_Yield_Await
+| BinaryExpression_Yield_Await PLUS BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await MINUS BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await LTLT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await GTGT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await GTGTGT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await MULT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await DIV BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await REM BinaryExpression_Yield_Await
+| UpdateExpression_Yield_Await MULTMULT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await LT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await GT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await LTASSIGN BinaryExpression_Yield_Await
@@ -4410,7 +4352,16 @@ BinaryExpression_Yield_Await :
 ;
 
 BinaryExpression_Yield_Await_NoAs_StartWithLet :
-  ArithmeticExpression_Yield_Await_StartWithLet
+  UnaryExpression_Yield_Await_StartWithLet
+| BinaryExpression_Yield_Await_NoAs_StartWithLet PLUS BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoAs_StartWithLet MINUS BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoAs_StartWithLet LTLT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoAs_StartWithLet GTGT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoAs_StartWithLet GTGTGT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoAs_StartWithLet MULT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoAs_StartWithLet DIV BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoAs_StartWithLet REM BinaryExpression_Yield_Await
+| UpdateExpression_Yield_Await_StartWithLet MULTMULT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await_NoAs_StartWithLet LT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await_NoAs_StartWithLet GT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await_NoAs_StartWithLet LTASSIGN BinaryExpression_Yield_Await
@@ -4429,7 +4380,16 @@ BinaryExpression_Yield_Await_NoAs_StartWithLet :
 ;
 
 BinaryExpression_Yield_Await_NoLet :
-  ArithmeticExpression_Yield_Await_NoLet
+  UnaryExpression_Yield_Await_NoLet
+| BinaryExpression_Yield_Await_NoLet PLUS BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoLet MINUS BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoLet LTLT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoLet GTGT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoLet GTGTGT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoLet MULT BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoLet DIV BinaryExpression_Yield_Await
+| BinaryExpression_Yield_Await_NoLet REM BinaryExpression_Yield_Await
+| UpdateExpression_Yield_Await_NoLet MULTMULT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await_NoLet LT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await_NoLet GT BinaryExpression_Yield_Await
 | BinaryExpression_Yield_Await_NoLet LTASSIGN BinaryExpression_Yield_Await
@@ -4450,7 +4410,16 @@ BinaryExpression_Yield_Await_NoLet :
 ;
 
 BinaryExpression_Yield_NoAs_StartWithLet :
-  ArithmeticExpression_Yield_StartWithLet
+  UnaryExpression_Yield_StartWithLet
+| BinaryExpression_Yield_NoAs_StartWithLet PLUS BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet MINUS BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet LTLT BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet GTGT BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet GTGTGT BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet MULT BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet DIV BinaryExpression_Yield
+| BinaryExpression_Yield_NoAs_StartWithLet REM BinaryExpression_Yield
+| UpdateExpression_Yield_StartWithLet MULTMULT BinaryExpression_Yield
 | BinaryExpression_Yield_NoAs_StartWithLet LT BinaryExpression_Yield
 | BinaryExpression_Yield_NoAs_StartWithLet GT BinaryExpression_Yield
 | BinaryExpression_Yield_NoAs_StartWithLet LTASSIGN BinaryExpression_Yield
@@ -4469,7 +4438,16 @@ BinaryExpression_Yield_NoAs_StartWithLet :
 ;
 
 BinaryExpression_Yield_NoLet :
-  ArithmeticExpression_Yield_NoLet
+  UnaryExpression_Yield_NoLet
+| BinaryExpression_Yield_NoLet PLUS BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet MINUS BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet LTLT BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet GTGT BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet GTGTGT BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet MULT BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet DIV BinaryExpression_Yield
+| BinaryExpression_Yield_NoLet REM BinaryExpression_Yield
+| UpdateExpression_Yield_NoLet MULTMULT BinaryExpression_Yield
 | BinaryExpression_Yield_NoLet LT BinaryExpression_Yield
 | BinaryExpression_Yield_NoLet GT BinaryExpression_Yield
 | BinaryExpression_Yield_NoLet LTASSIGN BinaryExpression_Yield
@@ -7235,6 +7213,7 @@ TypeMember :
 | CallSignature
 | ConstructSignature
 | IndexSignature
+| AccessorSignature
 ;
 
 ArrayType :
@@ -7700,17 +7679,13 @@ ConstructSignature :
 ;
 
 IndexSignature :
-  Modifiers LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
-| LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
-| Modifiers LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
-| LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
+  Modifiers LBRACK IdentifierName COLON Type RBRACK TypeAnnotation
+| LBRACK IdentifierName COLON Type RBRACK TypeAnnotation
 ;
 
 IndexSignature_WithDeclare :
-  Modifiers_WithDeclare LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
-| LBRACK IdentifierName COLON STRING RBRACK TypeAnnotation
-| Modifiers_WithDeclare LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
-| LBRACK IdentifierName COLON NUMBER RBRACK TypeAnnotation
+  Modifiers_WithDeclare LBRACK IdentifierName COLON Type RBRACK TypeAnnotation
+| LBRACK IdentifierName COLON Type RBRACK TypeAnnotation
 ;
 
 MethodSignature :
@@ -7718,6 +7693,13 @@ MethodSignature :
 | Modifiers PropertyName_WithoutNew FormalParameters
 | PropertyName_WithoutNew QUEST FormalParameters
 | PropertyName_WithoutNew FormalParameters
+;
+
+AccessorSignature :
+  Modifiers GET PropertyName LPAREN RPAREN TypeAnnotationopt FunctionBody
+| GET PropertyName LPAREN RPAREN TypeAnnotationopt FunctionBody
+| Modifiers SET PropertyName LPAREN PropertySetParameterList RPAREN FunctionBody
+| SET PropertyName LPAREN PropertySetParameterList RPAREN FunctionBody
 ;
 
 TypeAliasDeclaration :

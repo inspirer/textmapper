@@ -1,3 +1,4 @@
+//go:build gofuzz
 // +build gofuzz
 
 // go-fuzz-build github.com/inspirer/textmapper/tm-go/lex

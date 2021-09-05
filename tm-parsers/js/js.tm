@@ -688,21 +688,17 @@ UnaryExpression<Yield, Await> -> Expr /* interface */:
 %left '*' '/' '%';
 %right '**';
 
-ArithmeticExpression<Yield, Await> -> Expr /* interface */:
-    UnaryExpression
-  | left=ArithmeticExpression '+' right=ArithmeticExpression        -> AdditiveExpr
-  | left=ArithmeticExpression '-' right=ArithmeticExpression        -> AdditiveExpr
-  | left=ArithmeticExpression '<<' right=ArithmeticExpression       -> ShiftExpr
-  | left=ArithmeticExpression '>>' right=ArithmeticExpression       -> ShiftExpr
-  | left=ArithmeticExpression '>>>' right=ArithmeticExpression      -> ShiftExpr
-  | left=ArithmeticExpression '*' right=ArithmeticExpression        -> MultiplicativeExpr
-  | left=ArithmeticExpression '/' right=ArithmeticExpression        -> MultiplicativeExpr
-  | left=ArithmeticExpression '%' right=ArithmeticExpression        -> MultiplicativeExpr
-  | left=UpdateExpression '**' right=ArithmeticExpression           -> ExponentiationExpr
-;
-
 BinaryExpression<In, Yield, Await> -> Expr /* interface */:
-    ArithmeticExpression
+    UnaryExpression
+  | left=BinaryExpression '+' right=BinaryExpression                -> AdditiveExpr
+  | left=BinaryExpression '-' right=BinaryExpression                -> AdditiveExpr
+  | left=BinaryExpression '<<' right=BinaryExpression               -> ShiftExpr
+  | left=BinaryExpression '>>' right=BinaryExpression               -> ShiftExpr
+  | left=BinaryExpression '>>>' right=BinaryExpression              -> ShiftExpr
+  | left=BinaryExpression '*' right=BinaryExpression                -> MultiplicativeExpr
+  | left=BinaryExpression '/' right=BinaryExpression                -> MultiplicativeExpr
+  | left=BinaryExpression '%' right=BinaryExpression                -> MultiplicativeExpr
+  | left=UpdateExpression '**' right=BinaryExpression               -> ExponentiationExpr
   | left=BinaryExpression '<' right=BinaryExpression                -> RelationalExpr
   | left=BinaryExpression '>' right=BinaryExpression                -> RelationalExpr
   | left=BinaryExpression '<=' right=BinaryExpression               -> RelationalExpr
@@ -1083,8 +1079,8 @@ MethodDefinition<Yield, Await> -> MethodDefinition /* interface */:
   | GeneratorMethod
   | AsyncMethod
   | AsyncGeneratorMethod
-  | 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>             -> Getter
-  | 'set' PropertyName '(' PropertySetParameterList ')'  FunctionBody<~Yield, ~Await>     -> Setter
+  | 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>            -> Getter
+  | 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody<~Yield, ~Await>     -> Setter
 ;
 
 PropertySetParameterList :
@@ -1493,6 +1489,7 @@ TypeMember -> TypeMember /* interface */:
   | CallSignature
   | ConstructSignature
   | IndexSignature
+  | AccessorSignature
 ;
 
 ArrayType<NoQuest> -> ArrayType :
@@ -1610,12 +1607,15 @@ ConstructSignature -> ConstructSignature :
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.
 IndexSignature<WithDeclare> -> IndexSignature :
-    Modifiers? '[' (IdentifierName -> NameIdent) ':' ('string' -> PredefinedType) ']' TypeAnnotation
-  | Modifiers? '[' (IdentifierName -> NameIdent) ':' ('number' -> PredefinedType) ']' TypeAnnotation
-;
+    Modifiers? '[' (IdentifierName -> NameIdent) ':' Type ']' TypeAnnotation ;
 
 MethodSignature -> MethodSignature :
     Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await> ;
+
+AccessorSignature -> TypeMember:
+    Modifiers? 'get' PropertyName<~Yield, ~Await> '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>          -> Getter
+  | Modifiers? 'set' PropertyName<~Yield, ~Await> '(' PropertySetParameterList ')' FunctionBody<~Yield, ~Await>   -> Setter
+;
 
 TypeAliasDeclaration -> TypeAliasDecl :
     'type' BindingIdentifier TypeParameters? '=' Type ';' ;

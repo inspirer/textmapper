@@ -123,8 +123,8 @@ const (
 	ConciseBody               // Expr
 	AsyncArrowFunc            // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
 	Method                    // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Getter                    // PropertyName TypeAnnotation? Body
-	Setter                    // PropertyName Parameter Body
+	Getter                    // (Modifier)* PropertyName TypeAnnotation? Body
+	Setter                    // (Modifier)* PropertyName Parameter Body
 	GeneratorMethod           // PropertyName TypeParameters? Parameters TypeAnnotation? Body
 	Generator                 // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
 	GeneratorExpr             // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
@@ -220,7 +220,7 @@ const (
 	TsThisParameter   // TypeAnnotation
 	AccessibilityModifier
 	ConstructSignature   // (Modifier)* TypeParameters? Parameters TypeAnnotation?
-	IndexSignature       // (Modifier)* NameIdent PredefinedType TypeAnnotation
+	IndexSignature       // (Modifier)* NameIdent TsType TypeAnnotation
 	MethodSignature      // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
 	TypeAliasDecl        // NameIdent TypeParameters? TsType
 	TsInterface          // NameIdent TypeParameters? TsInterfaceExtends? ObjectType
@@ -914,7 +914,9 @@ var TupleMember = []NodeType{
 var TypeMember = []NodeType{
 	CallSignature,
 	ConstructSignature,
+	Getter,
 	IndexSignature,
 	MethodSignature,
 	PropertySignature,
+	Setter,
 }

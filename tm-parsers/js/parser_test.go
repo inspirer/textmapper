@@ -633,6 +633,8 @@ var parseTests = []struct {
 		`declare namespace foo {
 		   export class Foo { «get string(): CancellationToken;» }
 		 }`,
+		`interface I { «get length(): number» }`,
+		`interface I { «get length(): number;» }`,
 	}},
 	{js.Javascript, js.Setter, []string{
 		`class A { get x() { return this.x; } «set x(val) { this.x = val; }»}`,
@@ -1062,6 +1064,18 @@ var parseTests = []struct {
 	}},
 
 	// Typescript
+	{js.Typescript, js.MultiplicativeExpr, []string{
+		`var a = Math.floor(«length/2» as foo);`,
+		`var a = Math.floor(««length/2» as (foo) / factor»);`,
+	}},
+	{js.Typescript, js.TsAsExpr, []string{
+		`var a = Math.floor(«length/2 as foo»);`,
+		`var a = Math.floor(«length/2 as (foo)» / factor);`,
+	}},
+	{js.Typescript, js.VarDecl, []string{
+		`	var «x = foo»  // <- inserted semicolon
+	    as (Bar)     // <- this is a function call`,
+	}},
 	{js.Typescript, js.ImportDecl, []string{
 		`«import type * as Proto from '../protocol';»`,
 		`«import type {Foo} from '../protocol';»`,
@@ -1137,6 +1151,9 @@ var parseTests = []struct {
 		`var x: «asserts»;`,
 		`function f(foo: «bar») {}`,
 		`function f(foo: «bar»): «asserts» {}`,
+		`interface I<T> {
+	     [foo: «Bar»]: «T»;
+	   }`,
 	}},
 	{js.Typescript, js.ObjectType, []string{
 		`var x: «{a: string}»;`,
