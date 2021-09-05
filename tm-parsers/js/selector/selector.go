@@ -175,6 +175,7 @@ var (
 	SpreadElement             = func(t js.NodeType) bool { return t == js.SpreadElement }
 	SpreadProperty            = func(t js.NodeType) bool { return t == js.SpreadProperty }
 	Static                    = func(t js.NodeType) bool { return t == js.Static }
+	StaticBlock               = func(t js.NodeType) bool { return t == js.StaticBlock }
 	SuperExpr                 = func(t js.NodeType) bool { return t == js.SuperExpr }
 	SwitchStmt                = func(t js.NodeType) bool { return t == js.SwitchStmt }
 	SyntaxProblem             = func(t js.NodeType) bool { return t == js.SyntaxProblem }

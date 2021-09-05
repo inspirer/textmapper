@@ -150,8 +150,9 @@ const (
 	MemberVar         // (Modifier)* PropertyName TypeAnnotation? Initializer?
 	TsIndexMemberDecl // IndexSignature
 	EmptyDecl
-	Module     // (ModuleItem)*
-	ImportDecl // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec
+	StaticBlock // Body
+	Module      // (ModuleItem)*
+	ImportDecl  // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec
 	TsTypeOnly
 	TsExport
 	TsImportRequireDecl // TsExport? NameIdent
@@ -394,6 +395,7 @@ var nodeTypeStr = [...]string{
 	"MemberVar",
 	"TsIndexMemberDecl",
 	"EmptyDecl",
+	"StaticBlock",
 	"Module",
 	"ImportDecl",
 	"TsTypeOnly",
@@ -518,6 +520,7 @@ var ClassElement = []NodeType{
 	EmptyDecl,
 	MemberMethod,
 	MemberVar,
+	StaticBlock,
 	TsIndexMemberDecl,
 }
 

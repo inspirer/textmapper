@@ -187,6 +187,7 @@ func (n SingleNameBinding) JsNode() *Node         { return n.Node }
 func (n SpreadElement) JsNode() *Node             { return n.Node }
 func (n SpreadProperty) JsNode() *Node            { return n.Node }
 func (n Static) JsNode() *Node                    { return n.Node }
+func (n StaticBlock) JsNode() *Node               { return n.Node }
 func (n SuperExpr) JsNode() *Node                 { return n.Node }
 func (n SwitchStmt) JsNode() *Node                { return n.Node }
 func (n SyntaxProblem) JsNode() *Node             { return n.Node }
@@ -292,6 +293,7 @@ type ClassElement interface {
 func (EmptyDecl) classElementNode()         {}
 func (MemberMethod) classElementNode()      {}
 func (MemberVar) classElementNode()         {}
+func (StaticBlock) classElementNode()       {}
 func (TsIndexMemberDecl) classElementNode() {}
 func (NilNode) classElementNode()           {}
 
@@ -3260,6 +3262,14 @@ func (n SpreadProperty) Expr() Expr {
 
 type Static struct {
 	*Node
+}
+
+type StaticBlock struct {
+	*Node
+}
+
+func (n StaticBlock) Body() Body {
+	return Body{n.Child(selector.Body)}
 }
 
 type SuperExpr struct {

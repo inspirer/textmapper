@@ -340,6 +340,8 @@ func ToJsNode(n *Node) JsNode {
 		return &SpreadProperty{n}
 	case js.Static:
 		return &Static{n}
+	case js.StaticBlock:
+		return &StaticBlock{n}
 	case js.SuperExpr:
 		return &SuperExpr{n}
 	case js.SwitchStmt:

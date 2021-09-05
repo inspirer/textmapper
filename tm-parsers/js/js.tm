@@ -1185,10 +1185,20 @@ Modifiers<WithDeclare>:
 
 ClassElement<Yield, Await> -> ClassElement /* interface */:
     Modifiers<+WithDeclare>? MethodDefinition   -> MemberMethod
-  | Modifiers<+WithDeclare>? PropertyName ('?'|'!')? TypeAnnotationopt Initializeropt<+In> ';' -> MemberVar
+  | Modifiers<+WithDeclare>? FieldDefinition    -> MemberVar
   | IndexSignature<+WithDeclare> ';'            -> TsIndexMemberDecl
+  | ClassStaticBlock
   | ';'                                         -> EmptyDecl
 ;
+
+FieldDefinition<Yield, Await>:
+    PropertyName ('?'|'!')? TypeAnnotationopt Initializeropt<+In> ';' ;
+
+ClassStaticBlock -> StaticBlock:
+    'static' ClassStaticBlockBody ;
+
+ClassStaticBlockBody -> Body:
+    '{' .recoveryScope StatementList<~Yield, +Await>? '}' ;
 
 # A.5 Scripts and Modules
 

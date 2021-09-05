@@ -663,6 +663,7 @@ var parseTests = []struct {
 		`class A { noop(input) «{}»}`,
 		`function a() «{if (false) a();}»`,
 		`var a = function() «{if (false) a();}»;`,
+		`class a { static «{ foo(); }» }`,
 
 		// in arrow functions
 		`((a,b) => «{ return a*b; }»)(1);`,
@@ -840,6 +841,10 @@ var parseTests = []struct {
 		   «set x(val) { this.x = val}»
 		   «isFoo(): this is T extends Bar ? Foo<Bar> : never»
 		 }`,
+	}},
+	{js.Javascript, js.StaticBlock, []string{
+		`class C { f() {}; «static {}» ; static #local; }`,
+		`class C { «static { await go(); yield = 5; }» }`,
 	}},
 	{js.Javascript, js.Static, []string{
 		`class A {

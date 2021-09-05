@@ -6597,53 +6597,74 @@ Modifiers_WithDeclare :
 ClassElement :
   Modifiers_WithDeclare MethodDefinition
 | MethodDefinition
-| Modifiers_WithDeclare PropertyName QUEST TypeAnnotationopt Initializeropt_In SEMICOLON
-| Modifiers_WithDeclare PropertyName EXCL TypeAnnotationopt Initializeropt_In SEMICOLON
-| Modifiers_WithDeclare PropertyName TypeAnnotationopt Initializeropt_In SEMICOLON
-| PropertyName QUEST TypeAnnotationopt Initializeropt_In SEMICOLON
-| PropertyName EXCL TypeAnnotationopt Initializeropt_In SEMICOLON
-| PropertyName TypeAnnotationopt Initializeropt_In SEMICOLON
+| Modifiers_WithDeclare FieldDefinition
+| FieldDefinition
 | IndexSignature_WithDeclare SEMICOLON
+| ClassStaticBlock
 | SEMICOLON
 ;
 
 ClassElement_Await :
   Modifiers_WithDeclare MethodDefinition_Await
 | MethodDefinition_Await
-| Modifiers_WithDeclare PropertyName_Await QUEST TypeAnnotationopt Initializeropt_In_Await SEMICOLON
-| Modifiers_WithDeclare PropertyName_Await EXCL TypeAnnotationopt Initializeropt_In_Await SEMICOLON
-| Modifiers_WithDeclare PropertyName_Await TypeAnnotationopt Initializeropt_In_Await SEMICOLON
-| PropertyName_Await QUEST TypeAnnotationopt Initializeropt_In_Await SEMICOLON
-| PropertyName_Await EXCL TypeAnnotationopt Initializeropt_In_Await SEMICOLON
-| PropertyName_Await TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| Modifiers_WithDeclare FieldDefinition_Await
+| FieldDefinition_Await
 | IndexSignature_WithDeclare SEMICOLON
+| ClassStaticBlock
 | SEMICOLON
 ;
 
 ClassElement_Yield :
   Modifiers_WithDeclare MethodDefinition_Yield
 | MethodDefinition_Yield
-| Modifiers_WithDeclare PropertyName_Yield QUEST TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| Modifiers_WithDeclare PropertyName_Yield EXCL TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| Modifiers_WithDeclare PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| PropertyName_Yield QUEST TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| PropertyName_Yield EXCL TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
-| PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+| Modifiers_WithDeclare FieldDefinition_Yield
+| FieldDefinition_Yield
 | IndexSignature_WithDeclare SEMICOLON
+| ClassStaticBlock
 | SEMICOLON
 ;
 
 ClassElement_Yield_Await :
   Modifiers_WithDeclare MethodDefinition_Yield_Await
 | MethodDefinition_Yield_Await
-| Modifiers_WithDeclare PropertyName_Yield_Await QUEST TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
-| Modifiers_WithDeclare PropertyName_Yield_Await EXCL TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
-| Modifiers_WithDeclare PropertyName_Yield_Await TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
-| PropertyName_Yield_Await QUEST TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
+| Modifiers_WithDeclare FieldDefinition_Yield_Await
+| FieldDefinition_Yield_Await
+| IndexSignature_WithDeclare SEMICOLON
+| ClassStaticBlock
+| SEMICOLON
+;
+
+FieldDefinition :
+  PropertyName QUEST TypeAnnotationopt Initializeropt_In SEMICOLON
+| PropertyName EXCL TypeAnnotationopt Initializeropt_In SEMICOLON
+| PropertyName TypeAnnotationopt Initializeropt_In SEMICOLON
+;
+
+FieldDefinition_Await :
+  PropertyName_Await QUEST TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| PropertyName_Await EXCL TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+| PropertyName_Await TypeAnnotationopt Initializeropt_In_Await SEMICOLON
+;
+
+FieldDefinition_Yield :
+  PropertyName_Yield QUEST TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+| PropertyName_Yield EXCL TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+| PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield SEMICOLON
+;
+
+FieldDefinition_Yield_Await :
+  PropertyName_Yield_Await QUEST TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
 | PropertyName_Yield_Await EXCL TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
 | PropertyName_Yield_Await TypeAnnotationopt Initializeropt_In_Yield_Await SEMICOLON
-| IndexSignature_WithDeclare SEMICOLON
-| SEMICOLON
+;
+
+ClassStaticBlock :
+  STATIC ClassStaticBlockBody
+;
+
+ClassStaticBlockBody :
+  LBRACE /*.recoveryScope*/ StatementList_Await RBRACE
+| LBRACE /*.recoveryScope*/ RBRACE
 ;
 
 Module :
