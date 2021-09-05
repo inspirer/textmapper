@@ -123,8 +123,8 @@ const (
 	ConciseBody               // Expr
 	AsyncArrowFunc            // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
 	Method                    // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Getter                    // (Modifier)* PropertyName TypeAnnotation? Body
-	Setter                    // (Modifier)* PropertyName Parameter Body
+	Getter                    // (Modifier)* PropertyName TypeAnnotation? Body?
+	Setter                    // (Modifier)* PropertyName Parameter Body?
 	GeneratorMethod           // PropertyName TypeParameters? Parameters TypeAnnotation? Body
 	Generator                 // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
 	GeneratorExpr             // NameIdent? TypeParameters? Parameters TypeAnnotation? Body

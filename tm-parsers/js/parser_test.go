@@ -634,7 +634,7 @@ var parseTests = []struct {
 		   export class Foo { «get string(): CancellationToken;» }
 		 }`,
 		`interface I { «get length(): number» }`,
-		`interface I { «get length(): number;» }`,
+		`interface I { «get length(): number»; }`,
 	}},
 	{js.Javascript, js.Setter, []string{
 		`class A { get x() { return this.x; } «set x(val) { this.x = val; }»}`,
@@ -1180,6 +1180,10 @@ var parseTests = []struct {
 		`var x: {«bar(foo) : number»,};`,
 		`var x: {«bar<T>(foo)»};`,
 		`var x: {«fun<R, TS extends any[] = []>(fn: (foo: Foo, ...args: TS) => R, ...args: TS): R»;}`,
+		`interface A {
+       get a(): string;
+       «method1(a: A): IDisposable»;
+     }`,
 	}},
 	{js.Typescript, js.ConstructorType, []string{
 		`let x: {a: «new() => never»};`,

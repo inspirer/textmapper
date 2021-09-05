@@ -2194,8 +2194,9 @@ func (n Getter) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n Getter) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n Getter) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type IdentExpr struct {
@@ -3197,8 +3198,9 @@ func (n Setter) Parameter() Parameter {
 	return ToJsNode(n.Child(selector.Parameter)).(Parameter)
 }
 
-func (n Setter) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n Setter) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type ShiftExpr struct {

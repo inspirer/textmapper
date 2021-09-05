@@ -1613,8 +1613,8 @@ MethodSignature -> MethodSignature :
     Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await> ;
 
 AccessorSignature -> TypeMember:
-    Modifiers? 'get' PropertyName<~Yield, ~Await> '(' ')' TypeAnnotationopt FunctionBody<~Yield, ~Await>          -> Getter
-  | Modifiers? 'set' PropertyName<~Yield, ~Await> '(' PropertySetParameterList ')' FunctionBody<~Yield, ~Await>   -> Setter
+    Modifiers? 'get' PropertyName<~Yield, ~Await> '(' ')' TypeAnnotationopt          -> Getter
+  | Modifiers? 'set' PropertyName<~Yield, ~Await> '(' PropertySetParameterList ')'   -> Setter
 ;
 
 TypeAliasDeclaration -> TypeAliasDecl :

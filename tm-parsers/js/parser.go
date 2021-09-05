@@ -26,22 +26,22 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) ParseModule(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 8, 8635, lexer)
+	return p.parse(ctx, 8, 8631, lexer)
 }
 
 func (p *Parser) ParseTypeSnippet(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 9, 8636, lexer)
+	return p.parse(ctx, 9, 8632, lexer)
 }
 
 func (p *Parser) ParseExpressionSnippet(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 10, 8637, lexer)
+	return p.parse(ctx, 10, 8633, lexer)
 }
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
 	case 5072:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 8624, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 0, 8620, s); ok {
 			sym = 789 /* lookahead_StartOfArrowFunction */
 		} else {
 			sym = 176 /* lookahead_notStartOfArrowFunction */
@@ -49,7 +49,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5073:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 3, 8627, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 3, 8623, s); ok {
 			sym = 875 /* lookahead_StartOfTypeImport */
 		} else {
 			sym = 876 /* lookahead_notStartOfTypeImport */
@@ -57,7 +57,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5074:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 1, 8625, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 1, 8621, s); ok {
 			sym = 371 /* lookahead_StartOfParametrizedCall */
 		} else {
 			sym = 343 /* lookahead_notStartOfParametrizedCall */
@@ -65,7 +65,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5075:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 4, 8628, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 4, 8624, s); ok {
 			sym = 935 /* lookahead_StartOfIs */
 		} else {
 			sym = 938 /* lookahead_notStartOfIs */
@@ -73,7 +73,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5076:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 6, 8630, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 6, 8626, s); ok {
 			sym = 972 /* lookahead_StartOfMappedType */
 		} else {
 			sym = 962 /* lookahead_notStartOfMappedType */
@@ -81,7 +81,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5077:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 5, 8629, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 5, 8625, s); ok {
 			sym = 984 /* lookahead_StartOfFunctionType */
 		} else {
 			sym = 955 /* lookahead_notStartOfFunctionType */
@@ -89,7 +89,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5078:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 7, 8631, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 7, 8627, s); ok {
 			sym = 976 /* lookahead_StartOfTupleElementName */
 		} else {
 			sym = 977 /* lookahead_notStartOfTupleElementName */
@@ -97,7 +97,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5079:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 2, 8626, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 2, 8622, s); ok {
 			sym = 850 /* lookahead_StartOfExtendsTypeRef */
 		} else {
 			sym = 851 /* lookahead_notStartOfExtendsTypeRef */
@@ -108,35 +108,35 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtStartOfArrowFunction(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 0, 8624, s)
+	return lookahead(ctx, lexer, next, 0, 8620, s)
 }
 
 func AtStartOfParametrizedCall(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 1, 8625, s)
+	return lookahead(ctx, lexer, next, 1, 8621, s)
 }
 
 func AtStartOfExtendsTypeRef(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 2, 8626, s)
+	return lookahead(ctx, lexer, next, 2, 8622, s)
 }
 
 func AtStartOfTypeImport(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 3, 8627, s)
+	return lookahead(ctx, lexer, next, 3, 8623, s)
 }
 
 func AtStartOfIs(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 4, 8628, s)
+	return lookahead(ctx, lexer, next, 4, 8624, s)
 }
 
 func AtStartOfFunctionType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 5, 8629, s)
+	return lookahead(ctx, lexer, next, 5, 8625, s)
 }
 
 func AtStartOfMappedType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 6, 8630, s)
+	return lookahead(ctx, lexer, next, 6, 8626, s)
 }
 
 func AtStartOfTupleElementName(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 7, 8631, s)
+	return lookahead(ctx, lexer, next, 7, 8627, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {

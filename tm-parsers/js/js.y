@@ -7696,10 +7696,10 @@ MethodSignature :
 ;
 
 AccessorSignature :
-  Modifiers GET PropertyName LPAREN RPAREN TypeAnnotationopt FunctionBody
-| GET PropertyName LPAREN RPAREN TypeAnnotationopt FunctionBody
-| Modifiers SET PropertyName LPAREN PropertySetParameterList RPAREN FunctionBody
-| SET PropertyName LPAREN PropertySetParameterList RPAREN FunctionBody
+  Modifiers GET PropertyName LPAREN RPAREN TypeAnnotationopt
+| GET PropertyName LPAREN RPAREN TypeAnnotationopt
+| Modifiers SET PropertyName LPAREN PropertySetParameterList RPAREN
+| SET PropertyName LPAREN PropertySetParameterList RPAREN
 ;
 
 TypeAliasDeclaration :
