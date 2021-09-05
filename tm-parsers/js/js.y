@@ -7564,6 +7564,8 @@ Parameter :
 | BindingPattern Initializer_In
 | DOTDOTDOT BindingIdentifier TypeAnnotation
 | DOTDOTDOT BindingIdentifier
+| DOTDOTDOT BindingPattern TypeAnnotation
+| DOTDOTDOT BindingPattern
 | THIS TypeAnnotation
 | SyntaxError
 ;
@@ -7595,6 +7597,8 @@ Parameter_Await :
 | BindingPattern_Await Initializer_In_Await
 | DOTDOTDOT BindingIdentifier TypeAnnotation
 | DOTDOTDOT BindingIdentifier
+| DOTDOTDOT BindingPattern_Await TypeAnnotation
+| DOTDOTDOT BindingPattern_Await
 | THIS TypeAnnotation
 | SyntaxError
 ;
@@ -7626,6 +7630,8 @@ Parameter_Yield :
 | BindingPattern_Yield Initializer_In_Yield
 | DOTDOTDOT BindingIdentifier TypeAnnotation
 | DOTDOTDOT BindingIdentifier
+| DOTDOTDOT BindingPattern_Yield TypeAnnotation
+| DOTDOTDOT BindingPattern_Yield
 | THIS TypeAnnotation
 | SyntaxError
 ;
@@ -7657,6 +7663,8 @@ Parameter_Yield_Await :
 | BindingPattern_Yield_Await Initializer_In_Yield_Await
 | DOTDOTDOT BindingIdentifier TypeAnnotation
 | DOTDOTDOT BindingIdentifier
+| DOTDOTDOT BindingPattern_Yield_Await TypeAnnotation
+| DOTDOTDOT BindingPattern_Yield_Await
 | THIS TypeAnnotation
 | SyntaxError
 ;

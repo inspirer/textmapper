@@ -216,7 +216,7 @@ const (
 	TypeAnnotation    // TsType
 	CallSignature     // TypeParameters? Parameters TypeAnnotation?
 	DefaultParameter  // (Modifier)* BindingPattern? NameIdent? TypeAnnotation? Initializer?
-	RestParameter     // NameIdent TypeAnnotation?
+	RestParameter     // BindingPattern? NameIdent? TypeAnnotation?
 	TsThisParameter   // TypeAnnotation
 	AccessibilityModifier
 	ConstructSignature   // (Modifier)* TypeParameters? Parameters TypeAnnotation?

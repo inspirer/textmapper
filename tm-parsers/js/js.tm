@@ -1585,7 +1585,7 @@ Parameter<Yield, Await> -> Parameter :
   | Modifiers? BindingPattern '?'? TypeAnnotation?                 -> DefaultParameter
   | Modifiers? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
   | Modifiers? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
-  | '...' BindingIdentifier TypeAnnotation?                        -> RestParameter
+  | '...' (BindingIdentifier | BindingPattern) TypeAnnotation?     -> RestParameter
   | 'this' TypeAnnotation                                          -> TsThisParameter
   | SyntaxError
 ;

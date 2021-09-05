@@ -3151,8 +3151,14 @@ type RestParameter struct {
 	*Node
 }
 
-func (n RestParameter) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+func (n RestParameter) BindingPattern() (BindingPattern, bool) {
+	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+	return field, field.JsNode() != nil
+}
+
+func (n RestParameter) NameIdent() (NameIdent, bool) {
+	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
 }
 
 func (n RestParameter) TypeAnnotation() (TypeAnnotation, bool) {

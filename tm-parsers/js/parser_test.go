@@ -587,6 +587,7 @@ var parseTests = []struct {
 		`«function id() { yield = 1; }»`,
 		`export default «function() { yield = 1; }»`,
 		`«function sum(a,b) { return a + b; }»`,
+		`«function run(...[a, b]: [Foo, ts.Bar] | [Bar, ts.Foo]): void {}»`,
 	}},
 	{js.Javascript, js.FuncExpr, []string{
 		`(«function() { yield = 1; }»)();`,
@@ -1520,6 +1521,7 @@ var parseTests = []struct {
 		 var b = c
 		 as (T1)  // <- new line`,
 		`for (let as = «A as B»; as < 10; as++) {}`,
+		// TODO allow as `«foo(abc).result as item[]»;`,
 	}},
 	{js.Typescript, js.TsAsConstExpr, []string{
 		`const a = foo ? «[a, b] as const» : undefined;`,
