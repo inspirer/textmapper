@@ -22,6 +22,9 @@ var tmNonterminals = [...]string{
 }
 
 func symbolName(sym int32) string {
+	if sym == noToken {
+		return "<no-token>"
+	}
 	if sym < int32(NumTokens) {
 		return Token(sym).String()
 	}

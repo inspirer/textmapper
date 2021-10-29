@@ -187,6 +187,9 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 	var recoverSyms [1 + NumTokens/8]uint8
 	var recoverPos []int
 
+	if debugSyntax {
+		fmt.Printf("broke at %v\n", symbolName(p.next.symbol))
+	}
 	for size := len(stack); size > 0; size-- {
 		if gotoState(stack[size-1].state, errSymbol) == -1 {
 			continue
@@ -217,6 +220,9 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		}
 
 		var matchingPos int
+		if debugSyntax {
+			fmt.Printf("trying to recover on %v\n", symbolName(p.next.symbol))
+		}
 		for _, pos := range recoverPos {
 			errState := gotoState(stack[pos-1].state, errSymbol)
 			if p.willShift(pos, gotoState(stack[pos-1].state, errSymbol), p.next.symbol, stack) {
@@ -241,13 +247,18 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		if matchingPos < len(stack) {
 			s = stack[matchingPos].sym.offset
 		}
+		if debugSyntax {
+			for i := len(stack) - 1; i >= matchingPos; i-- {
+				fmt.Printf("dropped from stack: %v\n", symbolName(stack[i].sym.symbol))
+			}
+			fmt.Println("recovered")
+		}
 		stack = append(stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
 			state: gotoState(stack[matchingPos-1].state, errSymbol),
 		})
 		return stack
 	}
-	return nil
 }
 
 func lookaheadNext(lexer *Lexer, endState int16, stack []stackEntry) int32 {
