@@ -1161,27 +1161,38 @@ func (c *compiler) sortArgs(params []int, args []syntax.Arg) {
 	sort.Slice(args, func(i, j int) bool { return pos[args[i].Param] < pos[args[j].Param] })
 }
 
-// convertReportClause returns between 0 and 2 nodes.
-func (c *compiler) convertReportClause(n ast.ReportClause) []string {
-	if ids := n.Flags(); len(ids) > 0 {
-		// TODO support this syntax
-	}
+func (c *compiler) convertReportClause(n ast.ReportClause) report {
 	action := n.Action().Text()
 	if len(action) == 0 {
-		return nil
+		return report{}
+	}
+	var flags []string
+	for _, id := range n.Flags() {
+		flags = append(flags, id.Text())
+	}
+	if len(flags) > 0 && c.isSelector(action) {
+		c.errorf(n.Action(), "selector clauses cannot be used together with flags")
+		flags = nil
+	}
+	ret := report{
+		node: &syntax.Expr{Kind: syntax.Arrow, Name: action, ArrowFlags: flags, Origin: n},
+	}
+	if c.isSelector(action) {
+		ret.selector = ret.node
+		ret.node = nil
 	}
 	if as, ok := n.ReportAs(); ok {
-		if _, exists := c.cats[action]; exists {
-			c.errorf(as, "reporting a selector node 'as' some other node is not supported")
-			return []string{action}
+		if ret.selector != nil {
+			c.errorf(as, "reporting a selector 'as' some other node is not supported")
+			return ret
 		}
-		if _, exists := c.cats[as.Identifier().Text()]; !exists {
-			c.errorf(as, "'as' expects a selector node")
-			return []string{action}
+		if !c.isSelector(as.Identifier().Text()) {
+			c.errorf(as, "'as' expects a selector")
+			return ret
 		}
-		return []string{action, as.Identifier().Text()}
+		ret.selector = &syntax.Expr{Kind: syntax.Arrow, Name: as.Identifier().Text(), Origin: as}
 	}
-	return []string{action}
+	return ret
 }
 
 func (c *compiler) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
@@ -1240,7 +1251,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 		}
 		return &syntax.Expr{Kind: syntax.Lookahead, Sub: subs, Origin: p}
 	case *ast.RhsNested:
-		return c.convertRules(p.Rule0(), nonterm, nil /*defaultReport*/, p)
+		return c.convertRules(p.Rule0(), nonterm, report{} /*defaultReport*/, p)
 	case *ast.RhsOptional:
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
 		return &syntax.Expr{Kind: syntax.Optional, Sub: subs, Origin: p}
@@ -1300,12 +1311,41 @@ func (c *compiler) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm,
 	}
 }
 
+type report struct {
+	node     *syntax.Expr
+	selector *syntax.Expr
+}
+
+func (r report) withDefault(def report) report {
+	if r.node == nil && r.selector == nil {
+		return def
+	}
+	if r.selector == nil && def.selector != nil {
+		return report{r.node, def.selector}
+	}
+	return r
+}
+
+func (r report) apply(expr *syntax.Expr) *syntax.Expr {
+	if r.node != nil {
+		e := *r.node
+		e.Sub = []*syntax.Expr{expr}
+		expr = &e
+	}
+	if r.selector != nil {
+		e := *r.selector
+		e.Sub = []*syntax.Expr{expr}
+		expr = &e
+	}
+	return expr
+}
+
 func (c *compiler) isSelector(name string) bool {
 	_, ok := c.cats[name]
 	return ok
 }
 
-func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport []string, origin status.SourceNode) *syntax.Expr {
+func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport report, origin status.SourceNode) *syntax.Expr {
 	var subs []*syntax.Expr
 	for _, rule0 := range rules {
 		rule, ok := rule0.(*ast.Rule)
@@ -1316,19 +1356,7 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 
 		expr := c.convertSequence(rule.RhsPart(), nonterm, rule)
 		clause, _ := rule.ReportClause()
-		report := c.convertReportClause(clause)
-		switch {
-		case len(report) == 0:
-			report = defaultReport
-		case len(defaultReport) > 0 && c.isSelector(defaultReport[len(defaultReport)-1]):
-			last := defaultReport[len(defaultReport)-1]
-			if last != report[len(report)-1] {
-				report = append(report, last)
-			}
-		}
-		for _, node := range report {
-			expr = &syntax.Expr{Kind: syntax.Arrow, Name: node, Sub: []*syntax.Expr{expr}, Origin: clause}
-		}
+		expr = c.convertReportClause(clause).withDefault(defaultReport).apply(expr)
 		if suffix, ok := rule.RhsSuffix(); ok {
 			switch suffix.Name().Text() {
 			case "prec":

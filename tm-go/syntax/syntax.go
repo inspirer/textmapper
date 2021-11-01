@@ -134,16 +134,17 @@ type LAPredicate struct {
 
 // Expr represents the right-hand side of a production rule (or its part).
 type Expr struct {
-	Kind      ExprKind
-	Name      string
-	Sub       []*Expr
-	Symbol    int
-	Args      []Arg
-	Predicate *Predicate
-	ListFlags ListFlags
-	Pos       int // Positional index of a reference in the original rule.
-	Origin    status.SourceNode
-	Model     *Model // Kept for some kinds for debugging. TODO error-prone, get rid of
+	Kind       ExprKind
+	Name       string
+	Sub        []*Expr
+	Symbol     int
+	Args       []Arg
+	Predicate  *Predicate
+	ListFlags  ListFlags
+	ArrowFlags []string
+	Pos        int // Positional index of a reference in the original rule.
+	Origin     status.SourceNode
+	Model      *Model // Kept for some kinds for debugging. TODO error-prone, get rid of
 }
 
 // Equal returns true for equivalent grammar clauses.
@@ -321,7 +322,7 @@ const (
 	Reference             // {Symbol}<{Args}>
 	Assign                // {Name}={Sub0}
 	Append                // {Name}+={Sub0}
-	Arrow                 // {Sub0} -> {Name}
+	Arrow                 // {Sub0} -> {Name}/{ArrowFlags}
 	Set                   // set({Pos = index in Model.Sets})
 	StateMarker           // .{Name}
 	Command               // stored in {Name}

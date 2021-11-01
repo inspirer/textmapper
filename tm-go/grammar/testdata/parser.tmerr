@@ -113,16 +113,19 @@ G -> G/G1,G2 as A : (G separator «G»)+ ;
 # err: separators must be terminals
 
 G2 -> A «as A» : G %prec «G» ;
-# err: reporting a selector node 'as' some other node is not supported
+# err: reporting a selector 'as' some other node is not supported
 # err: terminal is expected
 
 G3 -> BB «as BB» : «$(G)»  «%shift G» ;
-# err: 'as' expects a selector node
+# err: 'as' expects a selector
 # err: unsupported syntax (*ast.RhsIgnored)
 # err: unsupported syntax
 
 G4 : a (?= G2 & «a») b ;
 # err: lookahead expressions do not support terminals
+
+G5 -> «A»/Foo: ;
+# err: selector clauses cannot be used together with flags
 
 # opt terminals and nonterminals are ok
 nontermopt : ;
