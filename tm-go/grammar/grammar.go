@@ -53,6 +53,7 @@ type Grammar struct {
 
 // Tokens returns all lexical tokens defined in the grammar.
 func (g *Grammar) Tokens() []Symbol {
+	// TODO exclude tokens with precedence
 	return g.Syms[:g.NumTokens]
 }
 
@@ -124,9 +125,18 @@ func (g *Grammar) RuleString(r *lalr.Rule) string {
 	return sb.String()
 }
 
+// Range marks the portion of a rule that needs to be reported.
+type Range struct {
+	Start int
+	End   int // exclusive
+	Type  int // index in Parser.Nodes
+	Flags []string
+}
+
 // SemanticAction is a piece of code that will be executed upon some event.
 type SemanticAction struct {
 	Action   int
+	Report   []Range // left to right, inner first
 	Code     string
 	Space    bool // this is a space token
 	Comments []string
@@ -167,12 +177,19 @@ type Lexer struct {
 
 // Parser is a model of a generated parser.
 type Parser struct {
-	Inputs   []syntax.Input
-	Nonterms []*syntax.Nonterm
-	Prec     []lalr.Precedence // TODO remove
-	Rules    []lalr.Rule
-	Tables   *lalr.Tables
-	Actions  []SemanticAction
+	Inputs     []syntax.Input
+	Nonterms   []*syntax.Nonterm
+	Prec       []lalr.Precedence // TODO remove since this is a lalr input
+	Rules      []lalr.Rule
+	Tables     *lalr.Tables
+	Actions    []SemanticAction
+	Nodes      []string
+	Categories []Category
+}
+
+type Category struct {
+	Name  string
+	Types []int
 }
 
 // Options carries grammar generation parameters.

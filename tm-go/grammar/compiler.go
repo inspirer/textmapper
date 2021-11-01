@@ -1500,6 +1500,10 @@ func (c *compiler) generateTables() error {
 		})
 	}
 	markers := make(map[string]int)
+	types := make(map[string]int)
+
+	// The very first action is a no-op.
+	c.out.Parser.Actions = append(c.out.Parser.Actions, SemanticAction{})
 
 	// TODO populate g.Lookaheads
 	for self, nt := range c.source.Nonterms {
@@ -1509,6 +1513,7 @@ func (c *compiler) generateTables() error {
 		for _, expr := range nt.Value.Sub {
 			rule := lalr.Rule{
 				LHS:        lalr.Sym(g.Terminals + self),
+				Type:       -1,
 				Origin:     expr.Origin,
 				OriginName: nt.Name,
 			}
@@ -1516,10 +1521,34 @@ func (c *compiler) generateTables() error {
 				rule.Precedence = lalr.Sym(expr.Symbol)
 				expr = expr.Sub[0]
 			}
+			var report []Range
+			var command string
+			origin := expr.Origin
+
 			var traverse func(expr *syntax.Expr)
 			traverse = func(expr *syntax.Expr) {
 				switch expr.Kind {
-				case syntax.Sequence, syntax.Arrow, syntax.Assign, syntax.Append:
+				case syntax.Arrow:
+					start := len(rule.RHS)
+					for _, sub := range expr.Sub {
+						traverse(sub)
+					}
+					if c.isSelector(expr.Name) {
+						// Categories are used during the grammar analysis only and don't need
+						// to be reported.
+						break
+					}
+					t, ok := types[expr.Name]
+					if !ok {
+						t = len(c.out.Parser.Nodes)
+						types[expr.Name] = t
+						c.out.Parser.Nodes = append(c.out.Parser.Nodes, expr.Name)
+					}
+					end := len(rule.RHS)
+					if start < end {
+						report = append(report, Range{start, end, t, expr.ArrowFlags})
+					}
+				case syntax.Sequence, syntax.Assign, syntax.Append:
 					for _, sub := range expr.Sub {
 						traverse(sub)
 					}
@@ -1535,10 +1564,29 @@ func (c *compiler) generateTables() error {
 					g.Markers = append(g.Markers, expr.Name)
 					rule.RHS = append(rule.RHS, lalr.Marker(i))
 				case syntax.Command:
-					// TODO handle commands
+					// Note: those are end-of-rule commands and typically there is at most one.
+					command += expr.Name
+					origin = expr.Origin
 				}
 			}
 			traverse(expr)
+
+			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == len(rule.RHS) {
+				// Promote to the rule default.
+				rule.Type = report[last].Type
+				rule.Flags = report[last].Flags
+				report = report[:last]
+			}
+			if len(report) > 0 || command != "" {
+				// TODO reuse existing actions
+				act := SemanticAction{
+					Report: report,
+					Code:   command,
+					Origin: origin,
+				}
+				rule.Action = len(c.out.Parser.Actions)
+				c.out.Parser.Actions = append(c.out.Parser.Actions, act)
+			}
 			g.Rules = append(g.Rules, rule)
 		}
 	}
