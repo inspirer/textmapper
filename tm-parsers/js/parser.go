@@ -538,7 +538,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 			p.listener(TemplateTail, p.next.offset, p.next.endoffset)
 		}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack, nil)
+		p.fetchNext(lexer, stack)
 	}
 	return e
 }

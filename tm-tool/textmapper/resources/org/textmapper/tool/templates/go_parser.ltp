@@ -57,6 +57,11 @@ ${end-}
 ${if self->hasRecovering()-}
 	endState  ${self->stateType()}
 ${end-}
+
+${if self->ignoredReportTokens()}
+	// Tokens to be reported with the next shift.
+	pending   []symbol
+${end-}
 ${call stateVars-}
 }
 
@@ -81,6 +86,9 @@ ${if self->hasRecovering()-}
 ${end-}
 ${if self->eventBased()-}
 	p.listener = l
+${end-}
+${if self->ignoredReportTokens()-}
+	p.pending = make([]symbol, 0, startTokenBufferSize)
 ${end-}
 ${call initStateVars-}
 }
@@ -158,7 +166,7 @@ ${end}
 ${template parseFunc-}
 func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(${self->valueType()}, error)${end} {
 ${if self->ignoredReportTokens()-}
-	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
+	p.pending = p.pending[:0]
 ${end-}
 ${if self->needSession()-}
 	var s session
@@ -179,11 +187,7 @@ ${end-}
 ${if self->hasRecovering()-}
 	p.endState = end
 ${end-}
-${if self->ignoredReportTokens()-}
-	ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
-${else-}
 	p.fetchNext(lexer, stack)
-${end-}
 
 	for state != end {
 		action := tmAction[state]
@@ -191,11 +195,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-${if self->ignoredReportTokens()-}
-				ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
-${else-}
 				p.fetchNext(lexer, stack)
-${end-}
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -212,11 +212,7 @@ ${end-}
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-${if self->ignoredReportTokens()-}
-					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
-${else-}
 					p.fetchNext(lexer, stack)
-${end-}
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -239,7 +235,7 @@ ${call checkForCancellation(self->hasAssocValuesForInput() ? self->valueTypeDefa
 ${end-}
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack${if self->ignoredReportTokens()}, nil${end})
+				p.fetchNext(lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			stack = append(stack, stackEntry{
@@ -253,11 +249,11 @@ ${end-}
 				"fmt".Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
 ${if self->ignoredReportTokens()-}
-			if len(ignoredTokens) > 0 {
-				for _, tok := range ignoredTokens {
+			if len(p.pending) > 0 {
+				for _, tok := range p.pending {
 					p.reportIgnoredToken(tok)
 				}
-				ignoredTokens = ignoredTokens[:0]
+				p.pending = p.pending[:0]
 			}
 ${end-}
 ${call onAfterShift-}
@@ -276,11 +272,7 @@ ${end-}
 ${if self->hasRecovering()-}
 			if recovering == 0 {
 				if p.next.symbol == noToken {
-${if self->ignoredReportTokens()-}
-					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
-${else-}
 					p.fetchNext(lexer, stack)
-${end-}
 				}
 				lastErr = SyntaxError{
 ${if opts.tokenLine-}
@@ -294,11 +286,11 @@ ${end-}
 				}
 			}
 ${if self->ignoredReportTokens()-}
-			if len(ignoredTokens) > 0 {
-				for _, tok := range ignoredTokens {
+			if len(p.pending) > 0 {
+				for _, tok := range p.pending {
 					p.reportIgnoredToken(tok)
 				}
-				ignoredTokens = ignoredTokens[:0]
+				p.pending = p.pending[:0]
 			}
 ${end-}
 			if stack = p.recoverFromError(lexer, stack); stack == nil {
@@ -315,11 +307,7 @@ ${end-}
 ${if !self->hasRecovering()-}
 	if state != end {
 		if p.next.symbol == noToken {
-${if self->ignoredReportTokens()-}
-			ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
-${else-}
 			p.fetchNext(lexer, stack)
-${end-}
 		}
 		err := SyntaxError{
 ${if opts.tokenLine-}
@@ -390,7 +378,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 		}
 ${call reportConsumedNext-}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack${if self->ignoredReportTokens()}, nil${end})
+		p.fetchNext(lexer, stack)
 	}
 	return e
 }
@@ -432,7 +420,7 @@ ${end-}
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack${if self->ignoredReportTokens()}, nil${end})
+		p.fetchNext(lexer, stack)
 	}
 	s := p.next.offset
 	e := s
@@ -518,7 +506,7 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 ${end}
 
 ${template fetchNext-}
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry${if self->ignoredReportTokens()}, ignoredTokens []symbol) []symbol${else})${end} {
+func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
@@ -526,11 +514,7 @@ ${if self->ignoredReportTokens()-}
 	case ${self->ignoredReportTokens().collect(it| it->go_token.tokenRef())->util.join(', ')}:
 		s, e := lexer.Pos()
 		tok := symbol{int32(tok), s, e}
-		if ignoredTokens == nil {
-			p.reportIgnoredToken(tok)
-		} else {
-			ignoredTokens = append(ignoredTokens, tok)
-		}
+		p.pending = append(p.pending, tok)
 		goto restart
 ${end-}
 ${if !self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
@@ -540,9 +524,6 @@ ${end-}
 	}
 	p.next.symbol = int32(tok)
 	p.next.offset, p.next.endoffset = lexer.Pos()
-${if self->ignoredReportTokens()-}
-	return ignoredTokens
-${end-}
 }
 ${end}
 
