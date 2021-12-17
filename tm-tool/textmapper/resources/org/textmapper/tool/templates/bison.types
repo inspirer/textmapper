@@ -4,6 +4,8 @@ class Global {
 
 class Options extends common.Options {
 	string module[notempty; identifier];
+
+	bool genParser = true;
 }
 
 class AnnotateReference {
