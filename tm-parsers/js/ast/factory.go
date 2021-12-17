@@ -26,6 +26,12 @@ func ToJsNode(n *Node) JsNode {
 		return &ArrayType{n}
 	case js.ArrowFunc:
 		return &ArrowFunc{n}
+	case js.AssertClause:
+		return &AssertClause{n}
+	case js.AssertEntry:
+		return &AssertEntry{n}
+	case js.AssertionKey:
+		return &AssertionKey{n}
 	case js.AssertsType:
 		return &AssertsType{n}
 	case js.AssignmentExpr:

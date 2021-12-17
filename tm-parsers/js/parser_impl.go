@@ -404,11 +404,11 @@ restart:
 	}
 
 	// We might need to insert a semicolon.
-	// See 11.9.1 Rules of Automatic Semicolon Insertion
+	// See 12.9.1 Rules of Automatic Semicolon Insertion
 	if newLine {
 		// All but one of the restricted productions can be detected by looking
 		// at the last and current tokens.
-		restricted := (token == ASSIGNGT)
+		restricted := token == ASSIGNGT
 		switch lastToken {
 		case CONTINUE, BREAK, RETURN, THROW:
 			restricted = true
@@ -420,6 +420,9 @@ restart:
 			// No reduce actions are expected, so we can take a shortcut and check
 			// the current state.
 			restricted = afterAsyncStates[int(stack[len(stack)-1].state)]
+		case STRINGLITERAL:
+			// Assert clauses should appear on the same line.
+			restricted = token == ASSERT && noLineBreakStates[int(stack[len(stack)-1].state)]
 		}
 
 		if restricted {

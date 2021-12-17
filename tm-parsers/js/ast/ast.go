@@ -30,6 +30,9 @@ func (n ArrayLiteral) JsNode() *Node              { return n.Node }
 func (n ArrayPattern) JsNode() *Node              { return n.Node }
 func (n ArrayType) JsNode() *Node                 { return n.Node }
 func (n ArrowFunc) JsNode() *Node                 { return n.Node }
+func (n AssertClause) JsNode() *Node              { return n.Node }
+func (n AssertEntry) JsNode() *Node               { return n.Node }
+func (n AssertionKey) JsNode() *Node              { return n.Node }
 func (n AssertsType) JsNode() *Node               { return n.Node }
 func (n AssignmentExpr) JsNode() *Node            { return n.Node }
 func (n AssignmentOperator) JsNode() *Node        { return n.Node }
@@ -964,6 +967,31 @@ func (n ArrowFunc) ConciseBody() (ConciseBody, bool) {
 	return field, field.IsValid()
 }
 
+type AssertClause struct {
+	*Node
+}
+
+func (n AssertClause) AssertEntry() []AssertEntry {
+	nodes := n.Children(selector.AssertEntry)
+	var ret = make([]AssertEntry, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, AssertEntry{node})
+	}
+	return ret
+}
+
+type AssertEntry struct {
+	*Node
+}
+
+func (n AssertEntry) AssertionKey() AssertionKey {
+	return AssertionKey{n.Child(selector.AssertionKey)}
+}
+
+type AssertionKey struct {
+	*Node
+}
+
 type AssertsType struct {
 	*Node
 }
@@ -1766,6 +1794,11 @@ func (n ExportDecl) ModuleSpec() (ModuleSpec, bool) {
 	return field, field.IsValid()
 }
 
+func (n ExportDecl) AssertClause() (AssertClause, bool) {
+	field := AssertClause{n.Child(selector.AssertClause)}
+	return field, field.IsValid()
+}
+
 type ExportDefault struct {
 	*Node
 }
@@ -2252,6 +2285,11 @@ func (n ImportDecl) NamedImports() (NamedImports, bool) {
 
 func (n ImportDecl) ModuleSpec() ModuleSpec {
 	return ModuleSpec{n.Child(selector.ModuleSpec)}
+}
+
+func (n ImportDecl) AssertClause() (AssertClause, bool) {
+	field := AssertClause{n.Child(selector.AssertClause)}
+	return field, field.IsValid()
 }
 
 type ImportSpec struct {

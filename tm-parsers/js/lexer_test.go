@@ -168,6 +168,7 @@ var lexerTests = []struct {
 
 	// Soft (contextual) keywords.
 	{js.AS, []string{`«as»`}},
+	{js.ASSERT, []string{`«assert»`}},
 	{js.ASSERTS, []string{`«asserts»`}},
 	{js.ASYNC, []string{`«async»`}},
 	{js.FROM, []string{`«from»`}},

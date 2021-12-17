@@ -59,6 +59,7 @@ const (
 	TRUE               // true
 	FALSE              // false
 	AS                 // as
+	ASSERT             // assert
 	ASSERTS            // asserts
 	ASYNC              // async
 	FROM               // from
@@ -214,6 +215,7 @@ var tokenStr = [...]string{
 	"true",
 	"false",
 	"as",
+	"assert",
 	"asserts",
 	"async",
 	"from",

@@ -70,6 +70,7 @@
 %token NULL
 %token TRUE
 %token FALSE
+%token ASSERT
 %token ASSERTS
 %token ASYNC
 %token FROM
@@ -209,6 +210,7 @@ IdentifierName :
 | STATIC
 | TARGET
 | ASYNC
+| ASSERT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -285,6 +287,7 @@ IdentifierName_WithoutAsserts :
 | STATIC
 | TARGET
 | ASYNC
+| ASSERT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -361,6 +364,7 @@ IdentifierName_WithoutFrom :
 | STATIC
 | TARGET
 | ASYNC
+| ASSERT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -400,6 +404,7 @@ IdentifierName_WithoutKeywords_WithoutAs :
 | STATIC
 | TARGET
 | ASYNC
+| ASSERT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -476,6 +481,7 @@ IdentifierName_WithoutNew :
 | STATIC
 | TARGET
 | ASYNC
+| ASSERT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -531,6 +537,7 @@ IdentifierReference :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -572,6 +579,7 @@ IdentifierReference_Await :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -611,6 +619,7 @@ IdentifierReference_Await_NoAsync_NoLet :
 | REM IDENTIFIER
 | YIELD
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -651,6 +660,7 @@ IdentifierReference_Await_NoLet :
 | YIELD
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -691,6 +701,7 @@ IdentifierReference_NoAsync_NoLet :
 | YIELD
 | AWAIT
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -732,6 +743,7 @@ IdentifierReference_NoLet :
 | AWAIT
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -774,6 +786,7 @@ IdentifierReference_WithoutPredefinedTypes :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -805,6 +818,7 @@ IdentifierReference_Yield :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -845,6 +859,7 @@ IdentifierReference_Yield_Await :
 | LET
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -883,6 +898,7 @@ IdentifierReference_Yield_Await_NoAsync_NoLet :
   IDENTIFIER
 | REM IDENTIFIER
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -922,6 +938,7 @@ IdentifierReference_Yield_Await_NoLet :
 | REM IDENTIFIER
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -961,6 +978,7 @@ IdentifierReference_Yield_NoAsync_NoLet :
 | REM IDENTIFIER
 | AWAIT
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -1001,6 +1019,7 @@ IdentifierReference_Yield_NoLet :
 | AWAIT
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -1045,6 +1064,7 @@ BindingIdentifier :
 | YIELD
 | AWAIT
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -1086,6 +1106,7 @@ BindingIdentifier_WithoutImplements :
 | YIELD
 | AWAIT
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -1126,6 +1147,7 @@ LabelIdentifier :
 | YIELD
 | AWAIT
 | AS
+| ASSERT
 | ASSERTS
 | FROM
 | GET
@@ -6688,8 +6710,11 @@ ModuleItem :
 ;
 
 ImportDeclaration :
-  IMPORT lookahead_notStartOfTypeImport ImportClause FromClause SEMICOLON
+  IMPORT lookahead_notStartOfTypeImport ImportClause FromClause /*.noLineBreak*/ AssertClause SEMICOLON
+| IMPORT lookahead_notStartOfTypeImport ImportClause FromClause SEMICOLON
+| IMPORT lookahead_StartOfTypeImport TYPE ImportClause FromClause /*.noLineBreak*/ AssertClause SEMICOLON
 | IMPORT lookahead_StartOfTypeImport TYPE ImportClause FromClause SEMICOLON
+| IMPORT ModuleSpecifier /*.noLineBreak*/ AssertClause SEMICOLON
 | IMPORT ModuleSpecifier SEMICOLON
 ;
 
@@ -6701,6 +6726,26 @@ lookahead_StartOfTypeImport :
 // lookahead: !StartOfTypeImport
 lookahead_notStartOfTypeImport :
   %empty
+;
+
+AssertClause :
+  ASSERT LBRACE AssertEntry_list_Comma_separated COMMA RBRACE
+| ASSERT LBRACE AssertEntry_list_Comma_separated RBRACE
+| ASSERT LBRACE RBRACE
+;
+
+AssertEntry_list_Comma_separated :
+  AssertEntry_list_Comma_separated COMMA AssertEntry
+| AssertEntry
+;
+
+AssertEntry :
+  AssertionKey COLON STRINGLITERAL
+;
+
+AssertionKey :
+  IdentifierName
+| STRINGLITERAL
 ;
 
 StartOfTypeImport :
@@ -6760,11 +6805,17 @@ ImportedBinding :
 ;
 
 ExportDeclaration :
-  EXPORT TYPE MULT AS ImportedBinding FromClause SEMICOLON
+  EXPORT TYPE MULT AS ImportedBinding FromClause /*.noLineBreak*/ AssertClause SEMICOLON
+| EXPORT TYPE MULT AS ImportedBinding FromClause SEMICOLON
+| EXPORT TYPE MULT FromClause /*.noLineBreak*/ AssertClause SEMICOLON
 | EXPORT TYPE MULT FromClause SEMICOLON
+| EXPORT MULT AS ImportedBinding FromClause /*.noLineBreak*/ AssertClause SEMICOLON
 | EXPORT MULT AS ImportedBinding FromClause SEMICOLON
+| EXPORT MULT FromClause /*.noLineBreak*/ AssertClause SEMICOLON
 | EXPORT MULT FromClause SEMICOLON
+| EXPORT TYPE ExportClause FromClause /*.noLineBreak*/ AssertClause SEMICOLON
 | EXPORT TYPE ExportClause FromClause SEMICOLON
+| EXPORT ExportClause FromClause /*.noLineBreak*/ AssertClause SEMICOLON
 | EXPORT ExportClause FromClause SEMICOLON
 | EXPORT TYPE ExportClause SEMICOLON
 | EXPORT ExportClause SEMICOLON

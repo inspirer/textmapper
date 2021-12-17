@@ -152,15 +152,18 @@ const (
 	EmptyDecl
 	StaticBlock // Body
 	Module      // (ModuleItem)*
-	ImportDecl  // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec
+	ImportDecl  // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec AssertClause?
 	TsTypeOnly
+	AssertClause // (AssertEntry)*
+	AssertEntry  // AssertionKey
+	AssertionKey
 	TsExport
 	TsImportRequireDecl // TsExport? NameIdent
 	NameSpaceImport     // NameIdent
 	NamedImports        // (NamedImport)*
 	ImportSpec          // ReferenceIdent? NameIdent
 	ModuleSpec
-	ExportDecl            // (Modifier)* TsTypeOnly? VarStmt? Decl? ExportClause? NameIdent? ModuleSpec?
+	ExportDecl            // (Modifier)* TsTypeOnly? VarStmt? Decl? ExportClause? NameIdent? ModuleSpec? AssertClause?
 	ExportDefault         // Expr? (Modifier)* Decl?
 	TsExportAssignment    // Expr
 	TsNamespaceExportDecl // NameIdent
@@ -399,6 +402,9 @@ var nodeTypeStr = [...]string{
 	"Module",
 	"ImportDecl",
 	"TsTypeOnly",
+	"AssertClause",
+	"AssertEntry",
+	"AssertionKey",
 	"TsExport",
 	"TsImportRequireDecl",
 	"NameSpaceImport",

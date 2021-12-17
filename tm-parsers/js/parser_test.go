@@ -881,6 +881,20 @@ var parseTests = []struct {
 		`import «'./aaa'»`,
 		`import * as aaa from «'./aaa'»`,
 	}},
+	{js.Javascript, js.AssertClause, []string{
+		`import json from "./foo.json" «assert { type: "json" }»;`,
+		`export { val } from './foo.js' «assert { type: "javascript" }»;`,
+		`/*no expectations*/
+         let assert = 0;
+         export { val } from './foo.js'   // missing semicolon
+         assert = 5;`,
+	}},
+	{js.Javascript, js.AssertEntry, []string{
+		`import json from "./foo.json" assert { «type: "json"», };`,
+	}},
+	{js.Javascript, js.AssertionKey, []string{
+		`import json from "./foo.json" assert { «type»: "json", «"foo"»: "" };`,
+	}},
 	{js.Javascript, js.ExportDecl, []string{
 		`«export * from "aa/bb"»`,
 		`«export * as ns from "foo";»`,      // TS

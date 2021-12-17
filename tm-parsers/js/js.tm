@@ -109,6 +109,7 @@ invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 
 # Soft (contextual) keywords.
 'as':      /as/
+'assert':  /assert/
 'asserts': /asserts/
 'async':   /async/
 'from':    /from/
@@ -377,7 +378,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, Without
     | 'null' | 'true' | 'false')
 
   # Soft keywords
-  | [!WithoutAs] 'as' | [!WithoutFrom] 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+  | [!WithoutAs] 'as' | [!WithoutFrom] 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async' | 'assert'
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
@@ -408,7 +409,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> ReferenceI
   | [!NoAsync] 'async' (?= !StartOfArrowFunction)
 
   # Soft keywords
-  | 'as' | 'asserts' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
+  | 'as' | 'assert' | 'asserts' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
@@ -424,7 +425,7 @@ BindingIdentifier<WithoutImplements> -> NameIdent :
   | 'yield' | 'await'
 
   # Soft keywords
-  | 'as' | 'asserts' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+  | 'as' | 'assert' | 'asserts' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
 
   # Typescript.
   | [!WithoutImplements] 'implements'
@@ -441,7 +442,7 @@ LabelIdentifier -> LabelIdent :
   | 'yield' | 'await'
 
   # Soft keywords
-  | 'as' | 'asserts' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
+  | 'as' | 'assert' | 'asserts' | 'from' | 'get' | 'let' | 'of' | 'set' | 'static' | 'target' | 'async'
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
@@ -1223,9 +1224,21 @@ ModuleItem -> ModuleItem /* interface */:
 ;
 
 ImportDeclaration -> ImportDecl :
-    'import' (?= !StartOfTypeImport) ImportClause FromClause ';'
-  | 'import' (?= StartOfTypeImport) ('type' -> TsTypeOnly)  ImportClause FromClause ';'
-  | 'import' ModuleSpecifier ';'
+    'import' (?= !StartOfTypeImport) ImportClause FromClause (.noLineBreak AssertClause)? ';'
+  | 'import' (?= StartOfTypeImport) ('type' -> TsTypeOnly)  ImportClause FromClause (.noLineBreak AssertClause)? ';'
+  | 'import' ModuleSpecifier (.noLineBreak AssertClause)? ';'
+;
+
+AssertClause -> AssertClause:
+    'assert' '{' ((AssertEntry separator ',')+ ','?)? '}'
+;
+
+AssertEntry -> AssertEntry:
+    AssertionKey ':' StringLiteral ;
+
+AssertionKey -> AssertionKey:
+    IdentifierName
+  | StringLiteral
 ;
 
 StartOfTypeImport:
@@ -1269,8 +1282,8 @@ ImportedBinding :
     BindingIdentifier ;
 
 ExportDeclaration -> ModuleItem /* interface */:
-    'export' ('type' -> TsTypeOnly)? '*' ('as' ImportedBinding)? FromClause ';' -> ExportDecl
-  | 'export' ('type' -> TsTypeOnly)? ExportClause FromClause ';'                -> ExportDecl
+    'export' ('type' -> TsTypeOnly)? '*' ('as' ImportedBinding)? FromClause (.noLineBreak AssertClause)? ';' -> ExportDecl
+  | 'export' ('type' -> TsTypeOnly)? ExportClause FromClause (.noLineBreak AssertClause)? ';'                -> ExportDecl
   | 'export' ('type' -> TsTypeOnly)? ExportClause ';'                           -> ExportDecl
   | 'export' VariableStatement<~Yield, ~Await>                                  -> ExportDecl
   | Modifiers? 'export' Declaration<~Yield, ~Await>                             -> ExportDecl

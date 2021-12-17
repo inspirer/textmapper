@@ -18,6 +18,9 @@ var (
 	ArrayPattern              = func(t js.NodeType) bool { return t == js.ArrayPattern }
 	ArrayType                 = func(t js.NodeType) bool { return t == js.ArrayType }
 	ArrowFunc                 = func(t js.NodeType) bool { return t == js.ArrowFunc }
+	AssertClause              = func(t js.NodeType) bool { return t == js.AssertClause }
+	AssertEntry               = func(t js.NodeType) bool { return t == js.AssertEntry }
+	AssertionKey              = func(t js.NodeType) bool { return t == js.AssertionKey }
 	AssertsType               = func(t js.NodeType) bool { return t == js.AssertsType }
 	AssignmentExpr            = func(t js.NodeType) bool { return t == js.AssignmentExpr }
 	AssignmentOperator        = func(t js.NodeType) bool { return t == js.AssignmentOperator }
