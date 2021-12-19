@@ -1540,9 +1540,9 @@ func (c *compiler) generateTables() error {
 					}
 					t, ok := types[expr.Name]
 					if !ok {
-						t = len(c.out.Parser.Nodes)
+						t = len(c.out.Parser.RangeTypes)
 						types[expr.Name] = t
-						c.out.Parser.Nodes = append(c.out.Parser.Nodes, expr.Name)
+						c.out.Parser.RangeTypes = append(c.out.Parser.RangeTypes, expr.Name)
 					}
 					end := len(rule.RHS)
 					if start < end {

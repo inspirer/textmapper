@@ -40,7 +40,7 @@ type Rule struct {
 	RHS        []Sym
 	Precedence Sym
 	Action     int
-	Type       int // index in Types; default node for the rule; -1 when unset
+	Type       int // index in Parser.RangeTypes; default node for the rule; -1 when unset
 	Flags      []string
 	Origin     status.SourceNode
 	OriginName string

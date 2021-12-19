@@ -584,7 +584,7 @@ var tmRuleSymbol = []int32{
 var tmRuleType = [...]{{ref "NodeType"}}{
 {{- range .Parser.Rules}}
 {{- if ne .Type -1 }}
-{{- $val := index $.Parser.Nodes .Type }}
+{{- $val := index $.Parser.RangeTypes .Type }}
 	{{if ne $val $.Options.FileNode}}{{$val}}{{else}}0{{end}}, // {{$.RuleString .}}
 {{- else }}
 	0, // {{$.RuleString .}}

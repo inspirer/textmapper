@@ -129,7 +129,7 @@ func (g *Grammar) RuleString(r *lalr.Rule) string {
 type Range struct {
 	Start int
 	End   int // exclusive
-	Type  int // index in Parser.Nodes
+	Type  int // index in Parser.RangeTypes
 	Flags []string
 }
 
@@ -183,7 +183,7 @@ type Parser struct {
 	Rules      []lalr.Rule
 	Tables     *lalr.Tables
 	Actions    []SemanticAction
-	Nodes      []string
+	RangeTypes []string
 	Categories []Category
 }
 
