@@ -96,8 +96,9 @@ func (m *Model) Rearrange(perm []int) {
 
 // Input introduces a start nonterminal.
 type Input struct {
-	Nonterm int // Index in model.Nonterms
-	NoEoi   bool
+	Nonterm   int // Index in model.Nonterms
+	NoEoi     bool
+	Synthetic bool
 }
 
 // Param is a grammar-wide template parameter.

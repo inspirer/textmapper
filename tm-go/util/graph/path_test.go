@@ -24,7 +24,7 @@ var pathTests = []struct {
 			{1},
 			{0}, // cycle
 		},
-		want: "[0 1]",
+		want: "[]",
 	},
 	{
 		g: [][]int{

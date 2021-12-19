@@ -451,8 +451,9 @@ func Instantiate(m *Model) error {
 	// Instantiate all the grammar entry points.
 	for _, input := range m.Inputs {
 		out.Inputs = append(out.Inputs, Input{
-			Nonterm: inst.resolveInstance(nil, input.Nonterm, nil).index,
-			NoEoi:   input.NoEoi,
+			Nonterm:   inst.resolveInstance(nil, input.Nonterm, nil).index,
+			NoEoi:     input.NoEoi,
+			Synthetic: input.Synthetic,
 		})
 	}
 	for _, set := range m.Sets {
