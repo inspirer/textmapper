@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/gen"
+	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/util/diff"
 )
 
@@ -32,7 +33,11 @@ func TestGenerate(t *testing.T) {
 			w := make(mapWriter)
 			err := gen.GenerateFile(filename, w, true /*compat*/)
 			if err != nil {
-				t.Errorf("failed with %v", err)
+				s := status.FromError(err)
+				s.Sort()
+				for _, err := range s {
+					t.Errorf("GenerateFile() failed with %v", err)
+				}
 				return
 			}
 
