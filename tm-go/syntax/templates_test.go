@@ -199,8 +199,8 @@ func TestModelTransforms(t *testing.T) {
 		}
 
 		stripSelfRef(model)
-		stripOrigin(model)
-		stripOrigin(want)
+		stripModelAndOrigin(model)
+		stripModelAndOrigin(want)
 		if diff := dump.Diff(want, model); diff != "" {
 			t.Errorf("%v(%v) produced diff (-want +got):\n%s", tc.fnName, tc.input, diff)
 		}

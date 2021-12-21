@@ -284,6 +284,16 @@ var parserTests = []struct {
 			{Name: "Q", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 2}},
 		},
 	}},
+	{`%interface Q, P; A: a;`, &syntax.Model{
+		Terminals: []string{"EOI", "a"},
+		Nonterms: []*syntax.Nonterm{
+			{Name: "A", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 1}},
+		},
+		Cats: []string{
+			"Q",
+			"P",
+		},
+	}},
 }
 
 func TestParser(t *testing.T) {
@@ -293,7 +303,7 @@ func TestParser(t *testing.T) {
 			t.Errorf("parse(%v) failed with %v", tc.input, err)
 			continue
 		}
-		stripOrigin(got)
+		stripModelAndOrigin(got)
 		if diff := dump.Diff(tc.want, got); diff != "" {
 			t.Errorf("parse(%v) produced diff (-want +got):\n%s", tc.input, diff)
 		}
@@ -315,18 +325,20 @@ func stripSelfRef(m *syntax.Model) {
 	}
 }
 
-func stripOrigin(m *syntax.Model) {
+func stripModelAndOrigin(m *syntax.Model) {
+	m.ForEach(-1, func(_ *syntax.Nonterm, expr *syntax.Expr) {
+		expr.Origin = nil
+		expr.Model = nil
+	})
 	m.ForEach(syntax.Reference, func(_ *syntax.Nonterm, expr *syntax.Expr) {
 		for i := range expr.Args {
 			expr.Args[i].Origin = nil
 		}
-		expr.Origin = nil
 	})
 	m.ForEach(syntax.Conditional, func(_ *syntax.Nonterm, expr *syntax.Expr) {
 		expr.Predicate.ForEach(func(p *syntax.Predicate) {
 			p.Origin = nil
 		})
-		expr.Origin = nil
 	})
 	for _, set := range m.Sets {
 		set.ForEach(func(ts *syntax.TokenSet) {
@@ -471,7 +483,19 @@ func (p *parser) parseDecl() {
 			}
 			p.consume(tm.SEMICOLON)
 			return
-		case "generate", "interface":
+		case "interface":
+			p.next()
+			name := p.lexer.Text()
+			p.consume(tm.ID)
+			p.out.Cats = append(p.out.Cats, name)
+			for p.consumeIf(tm.COMMA) {
+				name := p.lexer.Text()
+				p.consume(tm.ID)
+				p.out.Cats = append(p.out.Cats, name)
+			}
+			p.consume(tm.SEMICOLON)
+			return
+		case "generate":
 			p.errorf("TODO parse %v", p.lexer.Text())
 		}
 	}
@@ -523,7 +547,7 @@ func (p *parser) parseNonterm() {
 		p.next()
 	}
 	p.consume(tm.COLON)
-	ret.Value = &syntax.Expr{Kind: syntax.Choice}
+	ret.Value = &syntax.Expr{Kind: syntax.Choice, Origin: tokenOrigin(&p.lexer)}
 	ret.Value.Sub = append(ret.Value.Sub, p.parseRule())
 	for p.consumeIf(tm.OR) {
 		ret.Value.Sub = append(ret.Value.Sub, p.parseRule())
@@ -582,12 +606,12 @@ func (p *parser) parseRule() *syntax.Expr {
 		switch p.lexer.Text() {
 		case "prec":
 			p.next()
-			chain = append(chain, &syntax.Expr{Kind: syntax.Prec, Symbol: p.parseTermRef()})
+			chain = append(chain, &syntax.Expr{Kind: syntax.Prec, Symbol: p.parseTermRef(), Model: p.out})
 		default:
 			p.errorf("%%%s is not supported", p.lexer.Text())
 		}
 	}
-	if p.consumeIf(tm.MINUSGT) {
+	for p.consumeIf(tm.MINUSGT) {
 		name := p.lexer.Text()
 		p.consume(tm.ID)
 		ret = &syntax.Expr{Kind: syntax.Arrow, Name: name, Sub: []*syntax.Expr{ret}}
@@ -609,7 +633,7 @@ func (p *parser) parseParts() *syntax.Expr {
 		}
 		ret = append(ret, next)
 	}
-	return &syntax.Expr{Kind: syntax.Sequence, Sub: ret}
+	return &syntax.Expr{Kind: syntax.Sequence, Sub: ret, Origin: tokenOrigin(&p.lexer)}
 }
 
 func (p *parser) parsePart() *syntax.Expr {
@@ -630,9 +654,10 @@ func (p *parser) parsePart() *syntax.Expr {
 			p.errorf("wrong assignment")
 			return nil
 		}
+		origin := tokenOrigin(&p.lexer)
 		p.next()
 		inner := p.parseOpt()
-		return &syntax.Expr{Kind: kind, Name: name, Sub: []*syntax.Expr{inner}}
+		return &syntax.Expr{Kind: kind, Name: name, Sub: []*syntax.Expr{inner}, Origin: origin}
 	case tm.DOT:
 		p.next()
 		name := p.lexer.Text()
@@ -679,8 +704,9 @@ func (p *parser) parseOpt() *syntax.Expr {
 }
 
 func (p *parser) parseSymref() *syntax.Expr {
+	origin := tokenOrigin(&p.lexer)
 	if isTerm(p.lexer.Text()) {
-		return &syntax.Expr{Kind: syntax.Reference, Symbol: p.parseTermRef()}
+		return &syntax.Expr{Kind: syntax.Reference, Symbol: p.parseTermRef(), Origin: origin, Model: p.out}
 	}
 	sym, _ := p.parseNontermRef()
 	var args []syntax.Arg
@@ -691,7 +717,7 @@ func (p *parser) parseSymref() *syntax.Expr {
 		}
 		p.consume(tm.GT)
 	}
-	return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args}
+	return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: origin, Model: p.out}
 }
 
 func (p *parser) parseArg() syntax.Arg {
@@ -713,11 +739,11 @@ func (p *parser) parsePrimary() *syntax.Expr {
 	case tm.ID:
 		ret = p.parseSymref()
 	case tm.LPAREN:
+		ret = &syntax.Expr{Kind: syntax.Choice, Origin: tokenOrigin(&p.lexer)}
 		p.next()
-		ret = &syntax.Expr{Kind: syntax.Choice}
 		ret.Sub = append(ret.Sub, p.parseRule())
 		if p.consumeIf(tm.SEPARATOR) {
-			sep = &syntax.Expr{Kind: syntax.Sequence}
+			sep = &syntax.Expr{Kind: syntax.Sequence, Origin: tokenOrigin(&p.lexer)}
 			for {
 				sym := &syntax.Expr{Kind: syntax.Reference, Symbol: p.parseTermRef()}
 				sep.Sub = append(sep.Sub, sym)

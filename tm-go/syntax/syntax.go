@@ -52,7 +52,7 @@ func (m *Model) ForEach(kind ExprKind, consumer func(container *Nonterm, expr *E
 			return
 		}
 		seen[e] = true
-		if e.Kind == kind {
+		if e.Kind == kind || kind == -1 {
 			consumer(nt, e)
 		}
 		for _, sub := range e.Sub {
