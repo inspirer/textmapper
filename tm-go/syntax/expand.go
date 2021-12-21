@@ -216,6 +216,9 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 	case Arrow, Assign, Append:
 		ret := e.expandExpr(expr.Sub[0])
 		for i, val := range ret {
+			if val.Kind == Empty && expr.Kind != Arrow {
+				continue
+			}
 			ret[i] = &Expr{
 				Kind:   expr.Kind,
 				Sub:    []*Expr{val},
