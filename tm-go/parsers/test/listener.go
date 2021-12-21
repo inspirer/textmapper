@@ -14,22 +14,22 @@ type Listener func(t NodeType, flags NodeFlags, offset, endoffset int)
 
 const (
 	NoType NodeType = iota
-	Test            // (Declaration)+
-	Negation
-	Block // Negation? (Declaration)*
-	LastInt
-	Int
-	TestClause
-	Empty1
-	Icon
-	TestIntClause // Icon
-	EvalFoo       // Expr
-	EvalFoo2      // a=Expr b=Expr
-	Decl1         // (Identifier)+
+	AsExpr          // left=Expr right=Expr
+	Block           // Negation? (Declaration)*
+	Decl1           // (Identifier)+
 	Decl2
-	PlusExpr // left=Expr right=Expr
-	AsExpr   // left=Expr right=Expr
+	Empty1
+	EvalFoo  // Expr
+	EvalFoo2 // a=Expr b=Expr
+	Icon
+	Int
 	IntExpr
+	LastInt
+	Negation
+	PlusExpr // left=Expr right=Expr
+	Test     // (Declaration)+
+	TestClause
+	TestIntClause // Icon
 	Int7
 	Int9
 	MultiLineComment
@@ -41,22 +41,22 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
-	"Test",
-	"Negation",
+	"AsExpr",
 	"Block",
-	"LastInt",
-	"Int",
-	"TestClause",
-	"Empty1",
-	"Icon",
-	"TestIntClause",
-	"EvalFoo",
-	"EvalFoo2",
 	"Decl1",
 	"Decl2",
-	"PlusExpr",
-	"AsExpr",
+	"Empty1",
+	"EvalFoo",
+	"EvalFoo2",
+	"Icon",
+	"Int",
 	"IntExpr",
+	"LastInt",
+	"Negation",
+	"PlusExpr",
+	"Test",
+	"TestClause",
+	"TestIntClause",
 	"Int7",
 	"Int9",
 	"MultiLineComment",

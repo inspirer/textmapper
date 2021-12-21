@@ -111,6 +111,7 @@ public class TMEventMapper {
 			});
 		}
 
+		Collections.sort(allTypes);
 		TMDataUtil.putTypes(grammar, allTypes);
 	}
 

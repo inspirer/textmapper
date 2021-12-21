@@ -11,242 +11,242 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	NoType        NodeType = iota
-	SyntaxProblem          // ReferenceIdent? Initializer?
-	NameIdent
-	ReferenceIdent
-	LabelIdent
-	This
-	IdentExpr // ReferenceIdent
-	Regexp
-	Parenthesized // Expr? SyntaxProblem?
-	Literal
-	ArrayLiteral // list=(Expr)*
-	NoElement
-	SpreadElement        // Expr
-	ObjectLiteral        // (PropertyDefinition)*
-	ShorthandProperty    // ReferenceIdent
-	Property             // (Modifier)* PropertyName value=Expr
-	ObjectMethod         // (Modifier)* MethodDefinition
-	SpreadProperty       // Expr
-	LiteralPropertyName  // NameIdent?
-	ComputedPropertyName // Expr
-	Initializer          // Expr
-	TemplateLiteral      // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expr)*
-	IndexAccess          // expr=Expr index=Expr
-	PropertyAccess       // expr=Expr? selector=ReferenceIdent
-	TaggedTemplate       // tag=Expr literal=TemplateLiteral
-	TsNonNull            // expr=Expr
-	NewExpr              // expr=Expr Arguments?
-	SuperExpr
-	NewTarget
-	CallExpr               // expr=Expr Arguments
-	TsDynamicImport        // Arguments
-	Arguments              // TypeArguments? list=(Expr)*
-	OptionalIndexAccess    // expr=Expr index=Expr
-	OptionalPropertyAccess // expr=Expr selector=ReferenceIdent
-	OptionalCallExpr       // expr=Expr Arguments
-	OptionalTaggedTemplate // tag=Expr literal=TemplateLiteral
-	PostInc                // Expr
-	PostDec                // Expr
-	PreInc                 // Expr
-	PreDec                 // Expr
-	UnaryExpr              // Expr
-	TsCastExpr             // TsType Expr
-	AdditiveExpr           // left=Expr right=Expr
-	ShiftExpr              // left=Expr right=Expr
-	MultiplicativeExpr     // left=Expr right=Expr
-	ExponentiationExpr     // left=Expr right=Expr
-	RelationalExpr         // left=Expr right=Expr
-	InstanceOfExpr         // left=Expr right=Expr
-	TsAsExpr               // left=Expr TsType
-	TsConst
-	TsAsConstExpr   // left=Expr TsConst
-	EqualityExpr    // left=Expr right=Expr
-	BitwiseAND      // left=Expr right=Expr
-	BitwiseXOR      // left=Expr right=Expr
-	BitwiseOR       // left=Expr right=Expr
-	LogicalAND      // left=Expr right=Expr
-	LogicalOR       // left=Expr right=Expr
-	CoalesceExpr    // left=Expr right=Expr
-	InExpr          // left=Expr right=Expr
-	ConditionalExpr // cond=Expr then=Expr else=Expr
-	AssignmentExpr  // left=Expr AssignmentOperator? right=Expr
-	AssignmentOperator
-	CommaExpr   // left=Expr right=Expr
-	Block       // (CaseClause)* (StmtListItem)*
-	LexicalDecl // LetOrConst (LexicalBinding)+
-	LetOrConst
-	TsExclToken
-	LexicalBinding     // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
-	VarStmt            // (VarDecl)+
-	VarDecl            // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
-	ObjectPattern      // (PropertyPattern)* BindingRestElement?
-	ArrayPattern       // list=(ElementPattern | Expr)* BindingRestElement?
-	PropertyBinding    // PropertyName ElementPattern
-	ElementBinding     // BindingPattern Initializer?
-	SingleNameBinding  // NameIdent Initializer?
-	BindingRestElement // NameIdent
-	EmptyStmt
-	ExprStmt    // Expr
-	IfStmt      // Expr then=Stmt else=Stmt?
-	DoWhileStmt // Stmt Expr
-	WhileStmt   // Expr Stmt
-	ForStmt     // var=Expr? ForCondition ForFinalExpr Stmt
-	Var
-	ForStmtWithVar   // LetOrConst? Var? (LexicalBinding)* (VarDecl)* ForCondition ForFinalExpr Stmt
-	ForInStmt        // var=Expr object=Expr Stmt
-	ForInStmtWithVar // LetOrConst? Var? ForBinding object=Expr Stmt
-	ForOfStmt        // Await? var=Expr iterable=Expr Stmt
-	ForOfStmtWithVar // Await? LetOrConst? Var? ForBinding iterable=Expr Stmt
-	Await
-	ForBinding   // BindingPattern? NameIdent?
-	ForCondition // Expr?
-	ForFinalExpr // Expr?
-	ContinueStmt // LabelIdent?
-	BreakStmt    // LabelIdent?
-	ReturnStmt   // Expr?
-	WithStmt     // Expr Stmt
-	SwitchStmt   // Expr Block
-	Case         // Expr (StmtListItem)*
-	Default      // (StmtListItem)*
-	LabelledStmt // LabelIdent Func? Stmt?
-	ThrowStmt    // Expr
-	TryStmt      // Block Catch? Finally?
-	Catch        // BindingPattern? NameIdent? TypeAnnotation? Block
-	Finally      // Block
-	DebuggerStmt
-	Func                      // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	FuncExpr                  // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	Body                      // (StmtListItem)*
-	ArrowFunc                 // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
-	ConciseBody               // Expr
-	AsyncArrowFunc            // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
-	Method                    // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Getter                    // (Modifier)* PropertyName TypeAnnotation? Body?
-	Setter                    // (Modifier)* PropertyName Parameter Body?
-	GeneratorMethod           // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	Generator                 // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	GeneratorExpr             // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	Yield                     // Expr?
-	AsyncMethod               // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFunc                 // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	AsyncFuncExpr             // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	AsyncGeneratorMethod      // PropertyName TypeParameters? Parameters TypeAnnotation? Body
-	AsyncGeneratorDeclaration // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	AsyncGeneratorExpression  // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
-	AwaitExpr                 // Expr
-	Class                     // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
-	ClassExpr                 // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
-	Extends                   // Expr? TypeReference?
-	TsImplementsClause        // (TypeReference)+
-	ClassBody                 // (ClassElement)*
-	Static
+	NoType NodeType = iota
 	Abstract
-	Override
-	Readonly
-	Declare
-	MemberMethod      // (Modifier)* MethodDefinition
-	MemberVar         // (Modifier)* PropertyName TypeAnnotation? Initializer?
-	TsIndexMemberDecl // IndexSignature
-	EmptyDecl
-	StaticBlock // Body
-	Module      // (ModuleItem)*
-	ImportDecl  // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec AssertClause?
-	TsTypeOnly
+	AccessibilityModifier
+	AdditiveExpr // left=Expr right=Expr
+	Arguments    // TypeArguments? list=(Expr)*
+	ArrayLiteral // list=(Expr)*
+	ArrayPattern // list=(ElementPattern | Expr)* BindingRestElement?
+	ArrayType    // TsType
+	ArrowFunc    // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
 	AssertClause // (AssertEntry)*
 	AssertEntry  // AssertionKey
 	AssertionKey
-	TsExport
-	TsImportRequireDecl // TsExport? NameIdent
-	NameSpaceImport     // NameIdent
-	NamedImports        // (NamedImport)*
-	ImportSpec          // ReferenceIdent? NameIdent
-	ModuleSpec
-	ExportDecl            // (Modifier)* TsTypeOnly? VarStmt? Decl? ExportClause? NameIdent? ModuleSpec? AssertClause?
-	ExportDefault         // Expr? (Modifier)* Decl?
-	TsExportAssignment    // Expr
-	TsNamespaceExportDecl // NameIdent
-	ExportClause          // (ExportElement)*
-	ExportSpec            // ReferenceIdent NameIdent?
-	DecoratorExpr         // (ReferenceIdent)+
-	DecoratorCall         // (ReferenceIdent)+ Arguments
-	JSXElement            // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
-	JSXSelfClosingElement // JSXElementName TypeArguments? (JSXAttribute)*
-	JSXOpeningElement     // JSXElementName TypeArguments? (JSXAttribute)*
-	JSXClosingElement     // JSXElementName
-	JSXElementName
-	JSXNormalAttribute // JSXAttributeName JSXAttributeValue?
-	JSXSpreadAttribute // Expr
-	JSXAttributeName
-	JSXLiteral
-	JSXExpr // Expr?
-	JSXText
-	JSXSpreadExpr    // Expr?
-	TsConditional    // check=TsType ext=TsType truet=TsType falset=TsType
-	TypePredicate    // paramref=ReferenceIdent TsType
-	AssertsType      // ReferenceIdent? This? TsType?
-	TypeParameters   // (TypeParameter)+
-	TypeParameter    // NameIdent TypeConstraint? TsType?
-	TypeConstraint   // TsType
-	TypeArguments    // (TsType)+
-	UnionType        // inner=(TsType)*
-	IntersectionType // inner=(TsType)*
-	KeyOfType        // TsType
-	UniqueType       // TsType
-	ReadonlyType     // TsType
-	TypeVar          // ReferenceIdent
-	ThisType
-	NonNullableType   // TsType
-	NullableType      // TsType
-	ParenthesizedType // TsType
-	LiteralType       // TemplateLiteral?
-	PredefinedType
-	TypeReference     // TypeName TypeArguments?
-	TypeName          // ref=(ReferenceIdent)+
-	ObjectType        // (TypeMember)*
-	ArrayType         // TsType
-	IndexedAccessType // left=TsType index=TsType
-	MappedType        // NameIdent inType=TsType asType=TsType? TypeAnnotation
-	TupleType         // (TupleMember)*
-	NamedTupleMember  // TsType
-	RestType          // TsType
-	FuncType          // TypeParameters? Parameters TsType
-	Parameters        // (Parameter)*
-	ConstructorType   // Abstract? TypeParameters? Parameters TsType
-	TypeQuery         // (ReferenceIdent)+
-	ImportType        // TsType (ReferenceIdent)* TypeArguments?
-	PropertySignature // (Modifier)* PropertyName TypeAnnotation?
-	TypeAnnotation    // TsType
-	CallSignature     // TypeParameters? Parameters TypeAnnotation?
-	DefaultParameter  // (Modifier)* BindingPattern? NameIdent? TypeAnnotation? Initializer?
-	RestParameter     // BindingPattern? NameIdent? TypeAnnotation?
-	TsThisParameter   // TypeAnnotation
-	AccessibilityModifier
+	AssertsType    // ReferenceIdent? This? TsType?
+	AssignmentExpr // left=Expr AssignmentOperator? right=Expr
+	AssignmentOperator
+	AsyncArrowFunc            // NameIdent? TypeParameters? Parameters? TypeAnnotation? Body? ConciseBody?
+	AsyncFunc                 // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncFuncExpr             // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncGeneratorDeclaration // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncGeneratorExpression  // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	AsyncGeneratorMethod      // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	AsyncMethod               // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Await
+	AwaitExpr            // Expr
+	BindingRestElement   // NameIdent
+	BitwiseAND           // left=Expr right=Expr
+	BitwiseOR            // left=Expr right=Expr
+	BitwiseXOR           // left=Expr right=Expr
+	Block                // (CaseClause)* (StmtListItem)*
+	Body                 // (StmtListItem)*
+	BreakStmt            // LabelIdent?
+	CallExpr             // expr=Expr Arguments
+	CallSignature        // TypeParameters? Parameters TypeAnnotation?
+	Case                 // Expr (StmtListItem)*
+	Catch                // BindingPattern? NameIdent? TypeAnnotation? Block
+	Class                // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
+	ClassBody            // (ClassElement)*
+	ClassExpr            // (Modifier)* NameIdent? TypeParameters? Extends? TsImplementsClause? ClassBody
+	CoalesceExpr         // left=Expr right=Expr
+	CommaExpr            // left=Expr right=Expr
+	ComputedPropertyName // Expr
+	ConciseBody          // Expr
+	ConditionalExpr      // cond=Expr then=Expr else=Expr
 	ConstructSignature   // (Modifier)* TypeParameters? Parameters TypeAnnotation?
-	IndexSignature       // (Modifier)* NameIdent TsType TypeAnnotation
-	MethodSignature      // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
-	TypeAliasDecl        // NameIdent TypeParameters? TsType
-	TsInterface          // NameIdent TypeParameters? TsInterfaceExtends? ObjectType
-	TsInterfaceExtends   // (TypeReference)+
-	TsEnum               // TsConst? NameIdent TsEnumBody
-	TsEnumBody           // (TsEnumMember)*
-	TsEnumMember         // PropertyName Expr?
-	TsNamespace          // (NameIdent)+ TsNamespaceBody
-	TsNamespaceBody      // (ModuleItem)*
-	TsImportAliasDecl    // NameIdent ref=(ReferenceIdent)+
-	TsAmbientVar         // LetOrConst? Var? (TsAmbientBinding)+
-	TsAmbientFunc        // NameIdent TypeParameters? Parameters TypeAnnotation?
-	TsAmbientClass       // (Modifier)* NameIdent TypeParameters? Extends? TsImplementsClause? ClassBody
-	TsAmbientInterface   // (Modifier)* NameIdent TypeParameters? TsInterfaceExtends? ObjectType
-	TsAmbientEnum        // TsConst? NameIdent TsEnumBody
-	TsAmbientNamespace   // (NameIdent)+ (TsAmbientElement)*
-	TsAmbientModule      // (NameIdent)* (ModuleItem)*
-	TsAmbientGlobal      // (ModuleItem)*
-	TsAmbientTypeAlias   // TypeAliasDecl
+	ConstructorType      // Abstract? TypeParameters? Parameters TsType
+	ContinueStmt         // LabelIdent?
+	DebuggerStmt
+	Declare
+	DecoratorCall    // (ReferenceIdent)+ Arguments
+	DecoratorExpr    // (ReferenceIdent)+
+	Default          // (StmtListItem)*
+	DefaultParameter // (Modifier)* BindingPattern? NameIdent? TypeAnnotation? Initializer?
+	DoWhileStmt      // Stmt Expr
+	ElementBinding   // BindingPattern Initializer?
+	EmptyDecl
+	EmptyStmt
+	EqualityExpr       // left=Expr right=Expr
+	ExponentiationExpr // left=Expr right=Expr
+	ExportClause       // (ExportElement)*
+	ExportDecl         // (Modifier)* TsTypeOnly? VarStmt? Decl? ExportClause? NameIdent? ModuleSpec? AssertClause?
+	ExportDefault      // Expr? (Modifier)* Decl?
+	ExportSpec         // ReferenceIdent NameIdent?
+	ExprStmt           // Expr
+	Extends            // Expr? TypeReference?
+	Finally            // Block
+	ForBinding         // BindingPattern? NameIdent?
+	ForCondition       // Expr?
+	ForFinalExpr       // Expr?
+	ForInStmt          // var=Expr object=Expr Stmt
+	ForInStmtWithVar   // LetOrConst? Var? ForBinding object=Expr Stmt
+	ForOfStmt          // Await? var=Expr iterable=Expr Stmt
+	ForOfStmtWithVar   // Await? LetOrConst? Var? ForBinding iterable=Expr Stmt
+	ForStmt            // var=Expr? ForCondition ForFinalExpr Stmt
+	ForStmtWithVar     // LetOrConst? Var? (LexicalBinding)* (VarDecl)* ForCondition ForFinalExpr Stmt
+	Func               // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	FuncExpr           // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	FuncType           // TypeParameters? Parameters TsType
+	Generator          // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	GeneratorExpr      // NameIdent? TypeParameters? Parameters TypeAnnotation? Body
+	GeneratorMethod    // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	Getter             // (Modifier)* PropertyName TypeAnnotation? Body?
+	IdentExpr          // ReferenceIdent
+	IfStmt             // Expr then=Stmt else=Stmt?
+	ImportDecl         // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec AssertClause?
+	ImportSpec         // ReferenceIdent? NameIdent
+	ImportType         // TsType (ReferenceIdent)* TypeArguments?
+	InExpr             // left=Expr right=Expr
+	IndexAccess        // expr=Expr index=Expr
+	IndexSignature     // (Modifier)* NameIdent TsType TypeAnnotation
+	IndexedAccessType  // left=TsType index=TsType
+	Initializer        // Expr
+	InstanceOfExpr     // left=Expr right=Expr
+	IntersectionType   // inner=(TsType)*
+	JSXAttributeName
+	JSXClosingElement // JSXElementName
+	JSXElement        // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
+	JSXElementName
+	JSXExpr // Expr?
+	JSXLiteral
+	JSXNormalAttribute    // JSXAttributeName JSXAttributeValue?
+	JSXOpeningElement     // JSXElementName TypeArguments? (JSXAttribute)*
+	JSXSelfClosingElement // JSXElementName TypeArguments? (JSXAttribute)*
+	JSXSpreadAttribute    // Expr
+	JSXSpreadExpr         // Expr?
+	JSXText
+	KeyOfType // TsType
+	LabelIdent
+	LabelledStmt // LabelIdent Func? Stmt?
+	LetOrConst
+	LexicalBinding // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
+	LexicalDecl    // LetOrConst (LexicalBinding)+
+	Literal
+	LiteralPropertyName // NameIdent?
+	LiteralType         // TemplateLiteral?
+	LogicalAND          // left=Expr right=Expr
+	LogicalOR           // left=Expr right=Expr
+	MappedType          // NameIdent inType=TsType asType=TsType? TypeAnnotation
+	MemberMethod        // (Modifier)* MethodDefinition
+	MemberVar           // (Modifier)* PropertyName TypeAnnotation? Initializer?
+	Method              // PropertyName TypeParameters? Parameters TypeAnnotation? Body
+	MethodSignature     // (Modifier)* PropertyName TypeParameters? Parameters TypeAnnotation?
+	Module              // (ModuleItem)*
+	ModuleSpec
+	MultiplicativeExpr // left=Expr right=Expr
+	NameIdent
+	NameSpaceImport  // NameIdent
+	NamedImports     // (NamedImport)*
+	NamedTupleMember // TsType
+	NewExpr          // expr=Expr Arguments?
+	NewTarget
+	NoElement
+	NonNullableType        // TsType
+	NullableType           // TsType
+	ObjectLiteral          // (PropertyDefinition)*
+	ObjectMethod           // (Modifier)* MethodDefinition
+	ObjectPattern          // (PropertyPattern)* BindingRestElement?
+	ObjectType             // (TypeMember)*
+	OptionalCallExpr       // expr=Expr Arguments
+	OptionalIndexAccess    // expr=Expr index=Expr
+	OptionalPropertyAccess // expr=Expr selector=ReferenceIdent
+	OptionalTaggedTemplate // tag=Expr literal=TemplateLiteral
+	Override
+	Parameters        // (Parameter)*
+	Parenthesized     // Expr? SyntaxProblem?
+	ParenthesizedType // TsType
+	PostDec           // Expr
+	PostInc           // Expr
+	PreDec            // Expr
+	PreInc            // Expr
+	PredefinedType
+	Property          // (Modifier)* PropertyName value=Expr
+	PropertyAccess    // expr=Expr? selector=ReferenceIdent
+	PropertyBinding   // PropertyName ElementPattern
+	PropertySignature // (Modifier)* PropertyName TypeAnnotation?
+	Readonly
+	ReadonlyType // TsType
+	ReferenceIdent
+	Regexp
+	RelationalExpr    // left=Expr right=Expr
+	RestParameter     // BindingPattern? NameIdent? TypeAnnotation?
+	RestType          // TsType
+	ReturnStmt        // Expr?
+	Setter            // (Modifier)* PropertyName Parameter Body?
+	ShiftExpr         // left=Expr right=Expr
+	ShorthandProperty // ReferenceIdent
+	SingleNameBinding // NameIdent Initializer?
+	SpreadElement     // Expr
+	SpreadProperty    // Expr
+	Static
+	StaticBlock // Body
+	SuperExpr
+	SwitchStmt      // Expr Block
+	SyntaxProblem   // ReferenceIdent? Initializer?
+	TaggedTemplate  // tag=Expr literal=TemplateLiteral
+	TemplateLiteral // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expr)*
+	This
+	ThisType
+	ThrowStmt            // Expr
+	TryStmt              // Block Catch? Finally?
 	TsAmbientBinding     // NameIdent TypeAnnotation? Initializer?
-	TsAmbientImportAlias // TsImportAliasDecl
+	TsAmbientClass       // (Modifier)* NameIdent TypeParameters? Extends? TsImplementsClause? ClassBody
+	TsAmbientEnum        // TsConst? NameIdent TsEnumBody
 	TsAmbientExportDecl  // ExportClause
+	TsAmbientFunc        // NameIdent TypeParameters? Parameters TypeAnnotation?
+	TsAmbientGlobal      // (ModuleItem)*
+	TsAmbientImportAlias // TsImportAliasDecl
+	TsAmbientInterface   // (Modifier)* NameIdent TypeParameters? TsInterfaceExtends? ObjectType
+	TsAmbientModule      // (NameIdent)* (ModuleItem)*
+	TsAmbientNamespace   // (NameIdent)+ (TsAmbientElement)*
+	TsAmbientTypeAlias   // TypeAliasDecl
+	TsAmbientVar         // LetOrConst? Var? (TsAmbientBinding)+
+	TsAsConstExpr        // left=Expr TsConst
+	TsAsExpr             // left=Expr TsType
+	TsCastExpr           // TsType Expr
+	TsConditional        // check=TsType ext=TsType truet=TsType falset=TsType
+	TsConst
+	TsDynamicImport // Arguments
+	TsEnum          // TsConst? NameIdent TsEnumBody
+	TsEnumBody      // (TsEnumMember)*
+	TsEnumMember    // PropertyName Expr?
+	TsExclToken
+	TsExport
+	TsExportAssignment    // Expr
+	TsImplementsClause    // (TypeReference)+
+	TsImportAliasDecl     // NameIdent ref=(ReferenceIdent)+
+	TsImportRequireDecl   // TsExport? NameIdent
+	TsIndexMemberDecl     // IndexSignature
+	TsInterface           // NameIdent TypeParameters? TsInterfaceExtends? ObjectType
+	TsInterfaceExtends    // (TypeReference)+
+	TsNamespace           // (NameIdent)+ TsNamespaceBody
+	TsNamespaceBody       // (ModuleItem)*
+	TsNamespaceExportDecl // NameIdent
+	TsNonNull             // expr=Expr
+	TsThisParameter       // TypeAnnotation
+	TsTypeOnly
+	TupleType      // (TupleMember)*
+	TypeAliasDecl  // NameIdent TypeParameters? TsType
+	TypeAnnotation // TsType
+	TypeArguments  // (TsType)+
+	TypeConstraint // TsType
+	TypeName       // ref=(ReferenceIdent)+
+	TypeParameter  // NameIdent TypeConstraint? TsType?
+	TypeParameters // (TypeParameter)+
+	TypePredicate  // paramref=ReferenceIdent TsType
+	TypeQuery      // (ReferenceIdent)+
+	TypeReference  // TypeName TypeArguments?
+	TypeVar        // ReferenceIdent
+	UnaryExpr      // Expr
+	UnionType      // inner=(TsType)*
+	UniqueType     // TsType
+	Var
+	VarDecl   // BindingPattern? NameIdent? TsExclToken? TypeAnnotation? Initializer?
+	VarStmt   // (VarDecl)+
+	WhileStmt // Expr Stmt
+	WithStmt  // Expr Stmt
+	Yield     // Expr?
 	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
@@ -260,241 +260,241 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
-	"SyntaxProblem",
-	"NameIdent",
-	"ReferenceIdent",
-	"LabelIdent",
-	"This",
-	"IdentExpr",
-	"Regexp",
-	"Parenthesized",
-	"Literal",
-	"ArrayLiteral",
-	"NoElement",
-	"SpreadElement",
-	"ObjectLiteral",
-	"ShorthandProperty",
-	"Property",
-	"ObjectMethod",
-	"SpreadProperty",
-	"LiteralPropertyName",
-	"ComputedPropertyName",
-	"Initializer",
-	"TemplateLiteral",
-	"IndexAccess",
-	"PropertyAccess",
-	"TaggedTemplate",
-	"TsNonNull",
-	"NewExpr",
-	"SuperExpr",
-	"NewTarget",
-	"CallExpr",
-	"TsDynamicImport",
-	"Arguments",
-	"OptionalIndexAccess",
-	"OptionalPropertyAccess",
-	"OptionalCallExpr",
-	"OptionalTaggedTemplate",
-	"PostInc",
-	"PostDec",
-	"PreInc",
-	"PreDec",
-	"UnaryExpr",
-	"TsCastExpr",
+	"Abstract",
+	"AccessibilityModifier",
 	"AdditiveExpr",
-	"ShiftExpr",
-	"MultiplicativeExpr",
-	"ExponentiationExpr",
-	"RelationalExpr",
-	"InstanceOfExpr",
-	"TsAsExpr",
-	"TsConst",
-	"TsAsConstExpr",
-	"EqualityExpr",
-	"BitwiseAND",
-	"BitwiseXOR",
-	"BitwiseOR",
-	"LogicalAND",
-	"LogicalOR",
-	"CoalesceExpr",
-	"InExpr",
-	"ConditionalExpr",
+	"Arguments",
+	"ArrayLiteral",
+	"ArrayPattern",
+	"ArrayType",
+	"ArrowFunc",
+	"AssertClause",
+	"AssertEntry",
+	"AssertionKey",
+	"AssertsType",
 	"AssignmentExpr",
 	"AssignmentOperator",
-	"CommaExpr",
-	"Block",
-	"LexicalDecl",
-	"LetOrConst",
-	"TsExclToken",
-	"LexicalBinding",
-	"VarStmt",
-	"VarDecl",
-	"ObjectPattern",
-	"ArrayPattern",
-	"PropertyBinding",
-	"ElementBinding",
-	"SingleNameBinding",
+	"AsyncArrowFunc",
+	"AsyncFunc",
+	"AsyncFuncExpr",
+	"AsyncGeneratorDeclaration",
+	"AsyncGeneratorExpression",
+	"AsyncGeneratorMethod",
+	"AsyncMethod",
+	"Await",
+	"AwaitExpr",
 	"BindingRestElement",
-	"EmptyStmt",
-	"ExprStmt",
-	"IfStmt",
+	"BitwiseAND",
+	"BitwiseOR",
+	"BitwiseXOR",
+	"Block",
+	"Body",
+	"BreakStmt",
+	"CallExpr",
+	"CallSignature",
+	"Case",
+	"Catch",
+	"Class",
+	"ClassBody",
+	"ClassExpr",
+	"CoalesceExpr",
+	"CommaExpr",
+	"ComputedPropertyName",
+	"ConciseBody",
+	"ConditionalExpr",
+	"ConstructSignature",
+	"ConstructorType",
+	"ContinueStmt",
+	"DebuggerStmt",
+	"Declare",
+	"DecoratorCall",
+	"DecoratorExpr",
+	"Default",
+	"DefaultParameter",
 	"DoWhileStmt",
-	"WhileStmt",
-	"ForStmt",
-	"Var",
-	"ForStmtWithVar",
+	"ElementBinding",
+	"EmptyDecl",
+	"EmptyStmt",
+	"EqualityExpr",
+	"ExponentiationExpr",
+	"ExportClause",
+	"ExportDecl",
+	"ExportDefault",
+	"ExportSpec",
+	"ExprStmt",
+	"Extends",
+	"Finally",
+	"ForBinding",
+	"ForCondition",
+	"ForFinalExpr",
 	"ForInStmt",
 	"ForInStmtWithVar",
 	"ForOfStmt",
 	"ForOfStmtWithVar",
-	"Await",
-	"ForBinding",
-	"ForCondition",
-	"ForFinalExpr",
-	"ContinueStmt",
-	"BreakStmt",
-	"ReturnStmt",
-	"WithStmt",
-	"SwitchStmt",
-	"Case",
-	"Default",
-	"LabelledStmt",
-	"ThrowStmt",
-	"TryStmt",
-	"Catch",
-	"Finally",
-	"DebuggerStmt",
+	"ForStmt",
+	"ForStmtWithVar",
 	"Func",
 	"FuncExpr",
-	"Body",
-	"ArrowFunc",
-	"ConciseBody",
-	"AsyncArrowFunc",
-	"Method",
-	"Getter",
-	"Setter",
-	"GeneratorMethod",
+	"FuncType",
 	"Generator",
 	"GeneratorExpr",
-	"Yield",
-	"AsyncMethod",
-	"AsyncFunc",
-	"AsyncFuncExpr",
-	"AsyncGeneratorMethod",
-	"AsyncGeneratorDeclaration",
-	"AsyncGeneratorExpression",
-	"AwaitExpr",
-	"Class",
-	"ClassExpr",
-	"Extends",
-	"TsImplementsClause",
-	"ClassBody",
-	"Static",
-	"Abstract",
-	"Override",
-	"Readonly",
-	"Declare",
+	"GeneratorMethod",
+	"Getter",
+	"IdentExpr",
+	"IfStmt",
+	"ImportDecl",
+	"ImportSpec",
+	"ImportType",
+	"InExpr",
+	"IndexAccess",
+	"IndexSignature",
+	"IndexedAccessType",
+	"Initializer",
+	"InstanceOfExpr",
+	"IntersectionType",
+	"JSXAttributeName",
+	"JSXClosingElement",
+	"JSXElement",
+	"JSXElementName",
+	"JSXExpr",
+	"JSXLiteral",
+	"JSXNormalAttribute",
+	"JSXOpeningElement",
+	"JSXSelfClosingElement",
+	"JSXSpreadAttribute",
+	"JSXSpreadExpr",
+	"JSXText",
+	"KeyOfType",
+	"LabelIdent",
+	"LabelledStmt",
+	"LetOrConst",
+	"LexicalBinding",
+	"LexicalDecl",
+	"Literal",
+	"LiteralPropertyName",
+	"LiteralType",
+	"LogicalAND",
+	"LogicalOR",
+	"MappedType",
 	"MemberMethod",
 	"MemberVar",
-	"TsIndexMemberDecl",
-	"EmptyDecl",
-	"StaticBlock",
+	"Method",
+	"MethodSignature",
 	"Module",
-	"ImportDecl",
-	"TsTypeOnly",
-	"AssertClause",
-	"AssertEntry",
-	"AssertionKey",
-	"TsExport",
-	"TsImportRequireDecl",
+	"ModuleSpec",
+	"MultiplicativeExpr",
+	"NameIdent",
 	"NameSpaceImport",
 	"NamedImports",
-	"ImportSpec",
-	"ModuleSpec",
-	"ExportDecl",
-	"ExportDefault",
-	"TsExportAssignment",
-	"TsNamespaceExportDecl",
-	"ExportClause",
-	"ExportSpec",
-	"DecoratorExpr",
-	"DecoratorCall",
-	"JSXElement",
-	"JSXSelfClosingElement",
-	"JSXOpeningElement",
-	"JSXClosingElement",
-	"JSXElementName",
-	"JSXNormalAttribute",
-	"JSXSpreadAttribute",
-	"JSXAttributeName",
-	"JSXLiteral",
-	"JSXExpr",
-	"JSXText",
-	"JSXSpreadExpr",
-	"TsConditional",
-	"TypePredicate",
-	"AssertsType",
-	"TypeParameters",
-	"TypeParameter",
-	"TypeConstraint",
-	"TypeArguments",
-	"UnionType",
-	"IntersectionType",
-	"KeyOfType",
-	"UniqueType",
-	"ReadonlyType",
-	"TypeVar",
-	"ThisType",
+	"NamedTupleMember",
+	"NewExpr",
+	"NewTarget",
+	"NoElement",
 	"NonNullableType",
 	"NullableType",
-	"ParenthesizedType",
-	"LiteralType",
-	"PredefinedType",
-	"TypeReference",
-	"TypeName",
+	"ObjectLiteral",
+	"ObjectMethod",
+	"ObjectPattern",
 	"ObjectType",
-	"ArrayType",
-	"IndexedAccessType",
-	"MappedType",
-	"TupleType",
-	"NamedTupleMember",
-	"RestType",
-	"FuncType",
+	"OptionalCallExpr",
+	"OptionalIndexAccess",
+	"OptionalPropertyAccess",
+	"OptionalTaggedTemplate",
+	"Override",
 	"Parameters",
-	"ConstructorType",
-	"TypeQuery",
-	"ImportType",
+	"Parenthesized",
+	"ParenthesizedType",
+	"PostDec",
+	"PostInc",
+	"PreDec",
+	"PreInc",
+	"PredefinedType",
+	"Property",
+	"PropertyAccess",
+	"PropertyBinding",
 	"PropertySignature",
-	"TypeAnnotation",
-	"CallSignature",
-	"DefaultParameter",
+	"Readonly",
+	"ReadonlyType",
+	"ReferenceIdent",
+	"Regexp",
+	"RelationalExpr",
 	"RestParameter",
-	"TsThisParameter",
-	"AccessibilityModifier",
-	"ConstructSignature",
-	"IndexSignature",
-	"MethodSignature",
-	"TypeAliasDecl",
-	"TsInterface",
-	"TsInterfaceExtends",
+	"RestType",
+	"ReturnStmt",
+	"Setter",
+	"ShiftExpr",
+	"ShorthandProperty",
+	"SingleNameBinding",
+	"SpreadElement",
+	"SpreadProperty",
+	"Static",
+	"StaticBlock",
+	"SuperExpr",
+	"SwitchStmt",
+	"SyntaxProblem",
+	"TaggedTemplate",
+	"TemplateLiteral",
+	"This",
+	"ThisType",
+	"ThrowStmt",
+	"TryStmt",
+	"TsAmbientBinding",
+	"TsAmbientClass",
+	"TsAmbientEnum",
+	"TsAmbientExportDecl",
+	"TsAmbientFunc",
+	"TsAmbientGlobal",
+	"TsAmbientImportAlias",
+	"TsAmbientInterface",
+	"TsAmbientModule",
+	"TsAmbientNamespace",
+	"TsAmbientTypeAlias",
+	"TsAmbientVar",
+	"TsAsConstExpr",
+	"TsAsExpr",
+	"TsCastExpr",
+	"TsConditional",
+	"TsConst",
+	"TsDynamicImport",
 	"TsEnum",
 	"TsEnumBody",
 	"TsEnumMember",
+	"TsExclToken",
+	"TsExport",
+	"TsExportAssignment",
+	"TsImplementsClause",
+	"TsImportAliasDecl",
+	"TsImportRequireDecl",
+	"TsIndexMemberDecl",
+	"TsInterface",
+	"TsInterfaceExtends",
 	"TsNamespace",
 	"TsNamespaceBody",
-	"TsImportAliasDecl",
-	"TsAmbientVar",
-	"TsAmbientFunc",
-	"TsAmbientClass",
-	"TsAmbientInterface",
-	"TsAmbientEnum",
-	"TsAmbientNamespace",
-	"TsAmbientModule",
-	"TsAmbientGlobal",
-	"TsAmbientTypeAlias",
-	"TsAmbientBinding",
-	"TsAmbientImportAlias",
-	"TsAmbientExportDecl",
+	"TsNamespaceExportDecl",
+	"TsNonNull",
+	"TsThisParameter",
+	"TsTypeOnly",
+	"TupleType",
+	"TypeAliasDecl",
+	"TypeAnnotation",
+	"TypeArguments",
+	"TypeConstraint",
+	"TypeName",
+	"TypeParameter",
+	"TypeParameters",
+	"TypePredicate",
+	"TypeQuery",
+	"TypeReference",
+	"TypeVar",
+	"UnaryExpr",
+	"UnionType",
+	"UniqueType",
+	"Var",
+	"VarDecl",
+	"VarStmt",
+	"WhileStmt",
+	"WithStmt",
+	"Yield",
 	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",

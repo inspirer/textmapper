@@ -11,97 +11,97 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	NoType NodeType = iota
-	Identifier
-	IntegerLiteral
-	StringLiteral
-	BooleanLiteral
-	Pattern
-	Command
-	SyntaxProblem
-	File          // Header imports=(Import)* options=(Option)* SyntaxProblem? lexer=LexerSection? parser=ParserSection?
-	Header        // name=Identifier target=Identifier?
-	LexerSection  // (LexerPart)+
-	ParserSection // (GrammarPart)+
-	Import        // alias=Identifier? path=StringLiteral
-	Option        // key=Identifier value=Expression
-	Symref        // name=Identifier args=SymrefArgs?
-	RawType
-	NamedPattern         // name=Identifier Pattern
-	StartConditionsScope // StartConditions (LexerPart)+
-	StartConditions      // (Stateref)*
-	Lexeme               // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
-	LexemeAttrs          // LexemeAttribute
-	LexemeAttribute
-	DirectiveBrackets   // opening=Symref closing=Symref
-	InclusiveStartConds // states=(LexerState)+
-	ExclusiveStartConds // states=(LexerState)+
-	Stateref            // name=Identifier
-	LexerState          // name=Identifier
-	Nonterm             // Annotations? name=Identifier params=NontermParams? NontermType? ReportClause? (Rule0)+
-	SubType             // reference=Symref
-	InterfaceType
-	ClassType // Implements?
-	VoidType
-	Implements // (Symref)+
+	NoType         NodeType = iota
+	AnnotationImpl          // name=Identifier Expression?
+	Annotations             // (Annotation)+
+	ArgumentFalse           // name=ParamRef
+	ArgumentTrue            // name=ParamRef
+	ArgumentVal             // name=ParamRef val=ParamValue?
+	Array                   // (Expression)*
 	Assoc
-	ParamModifier
-	TemplateParam      // modifier=ParamModifier? ParamType name=Identifier ParamValue?
-	DirectivePrio      // Assoc symbols=(Symref)+
+	BooleanLiteral
+	ClassType // Implements?
+	Command
+	DirectiveAssert    // Empty? NonEmpty? RhsSet
+	DirectiveBrackets  // opening=Symref closing=Symref
 	DirectiveInput     // inputRefs=(Inputref)+
 	DirectiveInterface // ids=(Identifier)+
+	DirectivePrio      // Assoc symbols=(Symref)+
+	DirectiveSet       // name=Identifier RhsSet
 	Empty
-	NonEmpty
-	DirectiveAssert // Empty? NonEmpty? RhsSet
-	DirectiveSet    // name=Identifier RhsSet
-	NoEoi
-	Inputref  // reference=Symref NoEoi?
-	Rule      // Predicate? (RhsPart)* RhsSuffix? ReportClause?
-	Predicate // PredicateExpression
-	Name
-	RhsSuffix    // Name Symref
-	ReportClause // action=Identifier flags=(Identifier)* ReportAs?
-	ReportAs     // Identifier
-	RhsLookahead // predicates=(LookaheadPredicate)+
-	Not
-	LookaheadPredicate // Not? Symref
-	StateMarker        // name=Identifier
-	RhsAnnotated       // Annotations inner=RhsPart
-	RhsAssignment      // id=Identifier inner=RhsPart
-	RhsPlusAssignment  // id=Identifier inner=RhsPart
-	RhsOptional        // inner=RhsPart
-	RhsCast            // inner=RhsPart target=Symref
-	RhsAsLiteral       // inner=RhsPart Literal
+	ExclusiveStartConds // states=(LexerState)+
+	File                // Header imports=(Import)* options=(Option)* SyntaxProblem? lexer=LexerSection? parser=ParserSection?
+	Header              // name=Identifier target=Identifier?
+	Identifier
+	Implements          // (Symref)+
+	Import              // alias=Identifier? path=StringLiteral
+	InclusiveStartConds // states=(LexerState)+
+	InlineParameter     // param_type=Identifier name=Identifier ParamValue?
+	Inputref            // reference=Symref NoEoi?
+	IntegerLiteral
+	InterfaceType
+	Lexeme // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
+	LexemeAttribute
+	LexemeAttrs        // LexemeAttribute
+	LexerSection       // (LexerPart)+
+	LexerState         // name=Identifier
 	ListSeparator      // separator_=(Symref)+
-	RhsSymbol          // reference=Symref
-	RhsNested          // (Rule0)+
-	RhsPlusList        // ruleParts=(RhsPart)+ ListSeparator
-	RhsStarList        // ruleParts=(RhsPart)+ ListSeparator
-	RhsPlusQuantifier  // inner=RhsPart
-	RhsStarQuantifier  // inner=RhsPart
-	RhsIgnored         // (Rule0)+
-	RhsSet             // expr=SetExpression
-	SetSymbol          // operator=Identifier? symbol=Symref
-	SetCompound        // inner=SetExpression
-	SetComplement      // inner=SetExpression
-	SetOr              // left=SetExpression right=SetExpression
-	SetAnd             // left=SetExpression right=SetExpression
-	Annotations        // (Annotation)+
-	AnnotationImpl     // name=Identifier Expression?
-	NontermParams      // list=(NontermParam)+
-	InlineParameter    // param_type=Identifier name=Identifier ParamValue?
-	ParamRef           // Identifier
-	SymrefArgs         // arg_list=(Argument)*
-	ArgumentVal        // name=ParamRef val=ParamValue?
-	ArgumentTrue       // name=ParamRef
-	ArgumentFalse      // name=ParamRef
+	LookaheadPredicate // Not? Symref
+	Name
+	NamedPattern // name=Identifier Pattern
+	NoEoi
+	NonEmpty
+	Nonterm       // Annotations? name=Identifier params=NontermParams? NontermType? ReportClause? (Rule0)+
+	NontermParams // list=(NontermParam)+
+	Not
+	Option // key=Identifier value=Expression
+	ParamModifier
+	ParamRef // Identifier
 	ParamType
-	PredicateNot   // ParamRef
-	PredicateEq    // ParamRef Literal
-	PredicateNotEq // ParamRef Literal
+	ParserSection // (GrammarPart)+
+	Pattern
+	Predicate      // PredicateExpression
 	PredicateAnd   // left=PredicateExpression right=PredicateExpression
+	PredicateEq    // ParamRef Literal
+	PredicateNot   // ParamRef
+	PredicateNotEq // ParamRef Literal
 	PredicateOr    // left=PredicateExpression right=PredicateExpression
-	Array          // (Expression)*
+	RawType
+	ReportAs             // Identifier
+	ReportClause         // action=Identifier flags=(Identifier)* ReportAs?
+	RhsAnnotated         // Annotations inner=RhsPart
+	RhsAsLiteral         // inner=RhsPart Literal
+	RhsAssignment        // id=Identifier inner=RhsPart
+	RhsCast              // inner=RhsPart target=Symref
+	RhsIgnored           // (Rule0)+
+	RhsLookahead         // predicates=(LookaheadPredicate)+
+	RhsNested            // (Rule0)+
+	RhsOptional          // inner=RhsPart
+	RhsPlusAssignment    // id=Identifier inner=RhsPart
+	RhsPlusList          // ruleParts=(RhsPart)+ ListSeparator
+	RhsPlusQuantifier    // inner=RhsPart
+	RhsSet               // expr=SetExpression
+	RhsStarList          // ruleParts=(RhsPart)+ ListSeparator
+	RhsStarQuantifier    // inner=RhsPart
+	RhsSuffix            // Name Symref
+	RhsSymbol            // reference=Symref
+	Rule                 // Predicate? (RhsPart)* RhsSuffix? ReportClause?
+	SetAnd               // left=SetExpression right=SetExpression
+	SetComplement        // inner=SetExpression
+	SetCompound          // inner=SetExpression
+	SetOr                // left=SetExpression right=SetExpression
+	SetSymbol            // operator=Identifier? symbol=Symref
+	StartConditions      // (Stateref)*
+	StartConditionsScope // StartConditions (LexerPart)+
+	StateMarker          // name=Identifier
+	Stateref             // name=Identifier
+	StringLiteral
+	SubType    // reference=Symref
+	Symref     // name=Identifier args=SymrefArgs?
+	SymrefArgs // arg_list=(Argument)*
+	SyntaxProblem
+	TemplateParam // modifier=ParamModifier? ParamType name=Identifier ParamValue?
+	VoidType
 	InvalidToken
 	MultilineComment
 	Comment
@@ -111,96 +111,96 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
-	"Identifier",
-	"IntegerLiteral",
-	"StringLiteral",
-	"BooleanLiteral",
-	"Pattern",
-	"Command",
-	"SyntaxProblem",
-	"File",
-	"Header",
-	"LexerSection",
-	"ParserSection",
-	"Import",
-	"Option",
-	"Symref",
-	"RawType",
-	"NamedPattern",
-	"StartConditionsScope",
-	"StartConditions",
-	"Lexeme",
-	"LexemeAttrs",
-	"LexemeAttribute",
-	"DirectiveBrackets",
-	"InclusiveStartConds",
-	"ExclusiveStartConds",
-	"Stateref",
-	"LexerState",
-	"Nonterm",
-	"SubType",
-	"InterfaceType",
-	"ClassType",
-	"VoidType",
-	"Implements",
+	"AnnotationImpl",
+	"Annotations",
+	"ArgumentFalse",
+	"ArgumentTrue",
+	"ArgumentVal",
+	"Array",
 	"Assoc",
-	"ParamModifier",
-	"TemplateParam",
-	"DirectivePrio",
+	"BooleanLiteral",
+	"ClassType",
+	"Command",
+	"DirectiveAssert",
+	"DirectiveBrackets",
 	"DirectiveInput",
 	"DirectiveInterface",
-	"Empty",
-	"NonEmpty",
-	"DirectiveAssert",
+	"DirectivePrio",
 	"DirectiveSet",
-	"NoEoi",
-	"Inputref",
-	"Rule",
-	"Predicate",
-	"Name",
-	"RhsSuffix",
-	"ReportClause",
-	"ReportAs",
-	"RhsLookahead",
-	"Not",
-	"LookaheadPredicate",
-	"StateMarker",
-	"RhsAnnotated",
-	"RhsAssignment",
-	"RhsPlusAssignment",
-	"RhsOptional",
-	"RhsCast",
-	"RhsAsLiteral",
-	"ListSeparator",
-	"RhsSymbol",
-	"RhsNested",
-	"RhsPlusList",
-	"RhsStarList",
-	"RhsPlusQuantifier",
-	"RhsStarQuantifier",
-	"RhsIgnored",
-	"RhsSet",
-	"SetSymbol",
-	"SetCompound",
-	"SetComplement",
-	"SetOr",
-	"SetAnd",
-	"Annotations",
-	"AnnotationImpl",
-	"NontermParams",
+	"Empty",
+	"ExclusiveStartConds",
+	"File",
+	"Header",
+	"Identifier",
+	"Implements",
+	"Import",
+	"InclusiveStartConds",
 	"InlineParameter",
+	"Inputref",
+	"IntegerLiteral",
+	"InterfaceType",
+	"Lexeme",
+	"LexemeAttribute",
+	"LexemeAttrs",
+	"LexerSection",
+	"LexerState",
+	"ListSeparator",
+	"LookaheadPredicate",
+	"Name",
+	"NamedPattern",
+	"NoEoi",
+	"NonEmpty",
+	"Nonterm",
+	"NontermParams",
+	"Not",
+	"Option",
+	"ParamModifier",
 	"ParamRef",
-	"SymrefArgs",
-	"ArgumentVal",
-	"ArgumentTrue",
-	"ArgumentFalse",
 	"ParamType",
-	"PredicateNot",
-	"PredicateEq",
-	"PredicateNotEq",
+	"ParserSection",
+	"Pattern",
+	"Predicate",
 	"PredicateAnd",
+	"PredicateEq",
+	"PredicateNot",
+	"PredicateNotEq",
 	"PredicateOr",
-	"Array",
+	"RawType",
+	"ReportAs",
+	"ReportClause",
+	"RhsAnnotated",
+	"RhsAsLiteral",
+	"RhsAssignment",
+	"RhsCast",
+	"RhsIgnored",
+	"RhsLookahead",
+	"RhsNested",
+	"RhsOptional",
+	"RhsPlusAssignment",
+	"RhsPlusList",
+	"RhsPlusQuantifier",
+	"RhsSet",
+	"RhsStarList",
+	"RhsStarQuantifier",
+	"RhsSuffix",
+	"RhsSymbol",
+	"Rule",
+	"SetAnd",
+	"SetComplement",
+	"SetCompound",
+	"SetOr",
+	"SetSymbol",
+	"StartConditions",
+	"StartConditionsScope",
+	"StateMarker",
+	"Stateref",
+	"StringLiteral",
+	"SubType",
+	"Symref",
+	"SymrefArgs",
+	"SyntaxProblem",
+	"TemplateParam",
+	"VoidType",
 	"InvalidToken",
 	"MultilineComment",
 	"Comment",

@@ -12,12 +12,12 @@ type Listener func(t NodeType, offset, endoffset int)
 
 const (
 	NoType NodeType = iota
+	EmptyObject
+	JSONArray
+	JSONMember
+	JSONObject
 	JSONText
 	JSONValue
-	EmptyObject
-	JSONObject
-	JSONMember
-	JSONArray
 	NonExistingType
 	MultiLineComment
 	InvalidToken
@@ -27,12 +27,12 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
+	"EmptyObject",
+	"JSONArray",
+	"JSONMember",
+	"JSONObject",
 	"JSONText",
 	"JSONValue",
-	"EmptyObject",
-	"JSONObject",
-	"JSONMember",
-	"JSONArray",
 	"NonExistingType",
 	"MultiLineComment",
 	"InvalidToken",
