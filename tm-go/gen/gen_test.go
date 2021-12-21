@@ -19,10 +19,14 @@ var grammars = []string{
 	"../../tm-parsers/js/js.tm",
 }
 
-type mapWriter map[string]string
+type mapWriter struct {
+	files   []string
+	content map[string]string
+}
 
-func (w mapWriter) Write(filename, content string) error {
-	w[filename] = content
+func (w *mapWriter) Write(filename, content string) error {
+	w.files = append(w.files, filename)
+	w.content[filename] = content
 	return nil
 }
 
@@ -30,7 +34,7 @@ func TestGenerate(t *testing.T) {
 	for _, filename := range grammars {
 		filename := filename
 		t.Run(filename, func(t *testing.T) {
-			w := make(mapWriter)
+			w := &mapWriter{content: make(map[string]string)}
 			err := gen.GenerateFile(filename, w, true /*compat*/)
 			if err != nil {
 				s := status.FromError(err)
@@ -41,7 +45,8 @@ func TestGenerate(t *testing.T) {
 				return
 			}
 
-			for genfile, content := range w {
+			for _, genfile := range w.files {
+				content := w.content[genfile]
 				if strings.HasSuffix(genfile, ".y") {
 					// TODO compare final grammars
 					continue
