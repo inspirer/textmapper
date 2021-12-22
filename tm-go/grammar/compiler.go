@@ -1444,6 +1444,16 @@ func (c *compiler) compileParser() {
 		return
 	}
 
+	// TODO enable for all files
+	if c.out.Options.EventBased && c.file.Header().Name().Text() == "tm" {
+		types, err := syntax.ExtractTypes(c.source)
+		if err != nil {
+			c.s.AddError(err)
+			return
+		}
+		c.out.Types = types
+	}
+
 	if err := syntax.Expand(c.source); err != nil {
 		c.s.AddError(err)
 		return
@@ -1474,12 +1484,11 @@ func (c *compiler) compileParser() {
 	out := c.out.Parser
 	out.Inputs = c.source.Inputs
 	out.Nonterms = c.source.Nonterms
-	// TODO populate out.Actions
 }
 
 func (c *compiler) generateTables() error {
 	switch c.file.Header().Name().Text() {
-	case "simple", "conflict1":
+	case "simple", "conflict1", "tm":
 	default:
 		// TODO enable for all files
 		return nil
@@ -1501,6 +1510,11 @@ func (c *compiler) generateTables() error {
 	}
 	markers := make(map[string]int)
 	types := make(map[string]int)
+	if c.out.Types != nil {
+		for i, t := range c.out.Types.RangeTypes {
+			types[t.Name] = i
+		}
+	}
 
 	// The very first action is a no-op.
 	c.out.Parser.Actions = append(c.out.Parser.Actions, SemanticAction{})
@@ -1538,14 +1552,8 @@ func (c *compiler) generateTables() error {
 						// to be reported.
 						break
 					}
-					t, ok := types[expr.Name]
-					if !ok {
-						t = len(c.out.Parser.RangeTypes)
-						types[expr.Name] = t
-						c.out.Parser.RangeTypes = append(c.out.Parser.RangeTypes, expr.Name)
-					}
-					end := len(rule.RHS)
-					if start < end {
+					if t, ok := types[expr.Name]; ok { // !ok for categories
+						end := len(rule.RHS)
 						report = append(report, Range{start, end, t, expr.ArrowFlags})
 					}
 				case syntax.Sequence, syntax.Assign, syntax.Append:

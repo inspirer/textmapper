@@ -67,7 +67,7 @@ type RangeField struct {
 // ExtractTypes analyzes all the arrows in the grammar and comes up with a
 // structure of the produced AST.
 //
-// Note: the function is expected to work on a grammar without templates, lists, and optionals.
+// Note: the function is expected to work on a grammar without templates.
 func ExtractTypes(m *Model) (*Types, error) {
 	c := newTypeCollector(m)
 	c.resolveTypes()
@@ -91,7 +91,7 @@ func newTypeCollector(m *Model) *typeCollector {
 			}
 		case Lookahead, LookaheadNot:
 			return
-		case List, Conditional, Optional:
+		case Conditional:
 			log.Fatalf("%v is not properly instantiated", expr)
 		}
 		for _, e := range expr.Sub {
@@ -260,6 +260,20 @@ func (c *typeCollector) exprPhrase(expr *Expr) phrase {
 		}
 	case Prec:
 		return c.exprPhrase(expr.Sub[0])
+	case Optional, List:
+		p := c.exprPhrase(expr.Sub[0])
+		var out []*field
+		for _, f := range p.fields {
+			clone := *f
+			if expr.Kind == Optional {
+				clone.nullable = true
+			} else {
+				clone.isList = true
+				clone.nullable = clone.nullable || expr.ListFlags&OneOrMore == 0
+			}
+			out = append(out, &clone)
+		}
+		return phrase{fields: out, ordered: p.ordered, origin: expr}
 	case Empty, Lookahead, LookaheadNot, Command, Set, StateMarker:
 		// These do not have fields.
 	default:
@@ -284,19 +298,24 @@ func (c *typeCollector) initTarjan() {
 }
 
 func (c *typeCollector) resolveTypes() {
-	var def [][]*Expr
-	c.types = make(map[string]int) // name -> index in def/c.out.RangeTypes
-
+	var types []string
 	for _, arrow := range c.arrows {
-		if c.isCat[arrow.Name] {
-			continue
+		if !c.isCat[arrow.Name] {
+			types = append(types, arrow.Name)
 		}
-		if index, ok := c.types[arrow.Name]; !ok {
-			index = len(def)
-			def = append(def, []*Expr{arrow.Sub[0]})
-			c.out.RangeTypes = append(c.out.RangeTypes, RangeType{Name: arrow.Name})
-			c.types[arrow.Name] = index
-		} else {
+	}
+	types = sortAndDedup(types)
+
+	c.types = make(map[string]int) // name -> index in def/c.out.RangeTypes
+	for index, t := range types {
+		c.types[t] = index
+		c.out.RangeTypes = append(c.out.RangeTypes, RangeType{Name: t})
+	}
+
+	def := make([][]*Expr, len(types))
+	for _, arrow := range c.arrows {
+		if !c.isCat[arrow.Name] {
+			index := c.types[arrow.Name]
 			def[index] = append(def[index], arrow.Sub[0])
 		}
 	}
@@ -439,6 +458,13 @@ func (c *typeCollector) resolveCategories() {
 			}
 		case Prec, Assign, Append:
 			return dfs(expr.Sub[0])
+		case Optional, List:
+			ret := dfs(expr.Sub[0])
+			if ret != nothing {
+				c.s.Errorf(expr.Origin, "'%v' cannot be used inside a category expression", expr.String())
+				return ambiguous
+			}
+			return ret
 		case Empty, Lookahead, LookaheadNot, Command, Set, StateMarker:
 			// These do not have fields.
 		default:

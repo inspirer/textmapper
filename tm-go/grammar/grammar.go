@@ -10,6 +10,7 @@ import (
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/syntax"
+	"github.com/inspirer/textmapper/tm-go/util/ident"
 )
 
 // Names of common terminals with predefined meaning.
@@ -55,6 +56,15 @@ type Grammar struct {
 func (g *Grammar) Tokens() []Symbol {
 	// TODO exclude tokens with precedence
 	return g.Syms[:g.NumTokens]
+}
+
+// ReportTokens returns node types that come directly from the tokens.
+func (g *Grammar) ReportTokens() []string {
+	var ret []string
+	for _, tok := range g.Options.ReportTokens {
+		ret = append(ret, ident.Produce(g.Syms[tok].Name, ident.CamelCase))
+	}
+	return ret
 }
 
 // SpaceActions returns a sorted list of space-only actions.
@@ -177,19 +187,13 @@ type Lexer struct {
 
 // Parser is a model of a generated parser.
 type Parser struct {
-	Inputs     []syntax.Input
-	Nonterms   []*syntax.Nonterm
-	Prec       []lalr.Precedence // TODO remove since this is a lalr input
-	Rules      []lalr.Rule
-	Tables     *lalr.Tables
-	Actions    []SemanticAction
-	RangeTypes []string
-	Categories []Category
-}
-
-type Category struct {
-	Name  string
-	Types []int
+	Inputs   []syntax.Input
+	Nonterms []*syntax.Nonterm
+	Prec     []lalr.Precedence // TODO remove since this is a lalr input
+	Rules    []lalr.Rule
+	Tables   *lalr.Tables
+	Actions  []SemanticAction
+	Types    *syntax.Types
 }
 
 // Options carries grammar generation parameters.

@@ -23,6 +23,9 @@ func Generate(g *grammar.Grammar, w Writer) error {
 	templates = append(templates, lexerFiles...)
 	if g.Parser.Tables != nil {
 		templates = append(templates, parserFiles...)
+		if g.Parser.Types != nil {
+			templates = append(templates, listenerFile)
+		}
 	}
 	if g.Options.WriteBison {
 		templates = append(templates, file{name: g.Name + ".y", template: bisonTpl})
