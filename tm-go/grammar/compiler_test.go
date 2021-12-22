@@ -28,6 +28,8 @@ var testFiles = []string{
 	"set.tmerr",
 	"set2.tmerr",
 	"conflict1.tmerr",
+	"lr0.tmerr",
+	"greedy.tmerr",
 }
 
 func TestErrors(t *testing.T) {

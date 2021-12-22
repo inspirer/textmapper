@@ -526,6 +526,7 @@ const parserTablesTpl = `
 package {{.Name}}
 
 {{- range .Parser.Tables.Markers}}
+{{- if and (ne .Name "lr0") (ne .Name "greedy")}}
 {{if eq (len .States) 1}}
 const {{.Name}}State = {{index .States 0}}
 {{- else}}
@@ -534,6 +535,7 @@ var {{.Name}}States = map[int]bool{
 	{{.}}: true,
 {{- end}}
 }
+{{- end}}
 {{- end}}
 {{- end}}
 

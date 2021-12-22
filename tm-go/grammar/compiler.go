@@ -1488,7 +1488,7 @@ func (c *compiler) compileParser() {
 
 func (c *compiler) generateTables() error {
 	switch c.file.Header().Name().Text() {
-	case "simple", "conflict1", "tm":
+	case "simple", "conflict1", "tm", "lr0", "greedy":
 	default:
 		// TODO enable for all files
 		return nil

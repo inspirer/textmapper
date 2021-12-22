@@ -1,0 +1,18 @@
+language lr0(go);
+
+:: lexer
+
+a: /a/
+b: /b/
+c: /c/
+
+:: parser
+
+input : N;
+
+N :
+      a .lr0 b  a
+    | «a .lr0 c .lr0»
+# err: Found an lr0 marker inside a non-LR0 state (4)
+    | a .lr0 c a
+;

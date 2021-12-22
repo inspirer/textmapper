@@ -21,6 +21,7 @@ func Compile(grammar *Grammar) (*Tables, error) {
 	c.computeEmpty()
 	c.computeSets()
 	c.computeStates()
+	c.checkLR0()
 
 	c.initLalr()
 	c.buildFollow()
@@ -41,7 +42,7 @@ type compiler struct {
 	index   []int // the rule start in "right"
 	right   []int // all rules flattened into one slice, each position in this slice is an LR(0) item
 	empty   container.BitSet
-	markers map[int][]int
+	markers map[int][]int // index in "right" -> markers
 
 	rules  []container.BitSet // nonterminal -> LR(0) items
 	shifts [][]int            // symbol -> [<the number of symbol occurrences in "right">]int
@@ -164,6 +165,19 @@ func (c *compiler) computeSets() {
 }
 
 func (c *compiler) computeStates() {
+	greedy := container.NewBitSet(len(c.right)) // of item
+	for i, m := range c.grammar.Markers {
+		if m != "greedy" {
+			continue
+		}
+		for item, v := range c.markers {
+			if contains(v, i) {
+				greedy.Set(item)
+			}
+		}
+		break
+	}
+
 	for i := range c.grammar.Inputs {
 		c.states = append(c.states, &state{index: i})
 	}
@@ -200,6 +214,22 @@ func (c *compiler) computeStates() {
 			if len(core) == 0 {
 				continue
 			}
+
+			var hasGreedy bool
+			for _, item := range core {
+				hasGreedy = hasGreedy || greedy.Get(item)
+			}
+			if hasGreedy {
+				// Keep ".greedy" rules only.
+				list := core
+				core = core[:0]
+				for _, item := range list {
+					if greedy.Get(item) {
+						core = append(core, item)
+					}
+				}
+			}
+
 			state := stateMap.Get(core).(*state)
 			if state.sourceState == -1 {
 				state.sourceState = curr.index
@@ -240,6 +270,50 @@ func (c *compiler) computeStates() {
 		finalStates[i] = int(afterEoi.symbol)
 	}
 	c.out.FinalStates = finalStates
+}
+
+func (c *compiler) checkLR0() {
+	var states []int
+	for _, m := range c.out.Markers {
+		if m.Name == "lr0" {
+			states = m.States
+			break
+		}
+	}
+	if len(states) == 0 {
+		return
+	}
+
+	lr0 := container.NewBitSet(len(c.right)) // of item
+	for i, m := range c.grammar.Markers {
+		if m != "lr0" {
+			continue
+		}
+		for item, v := range c.markers {
+			if contains(v, i) {
+				lr0.Set(item)
+			}
+		}
+		break
+	}
+
+	seen := make(map[int]bool) // rules
+	for _, state := range states {
+		if c.states[state].lr0 {
+			continue
+		}
+		for _, item := range c.states[state].core {
+			if !lr0.Get(item) {
+				continue
+			}
+			rule := c.rule(item)
+			if seen[rule] {
+				continue
+			}
+			seen[rule] = true
+			c.s.Errorf(c.grammar.Rules[rule].Origin, "Found an lr0 marker inside a non-LR0 state (%v)", state)
+		}
+	}
 }
 
 func (c *compiler) addShift(from, to *state) {
@@ -284,6 +358,14 @@ func (c *compiler) writeRule(r int, out *strings.Builder) {
 		out.WriteString(" ")
 		out.WriteString(c.grammar.Symbols[sym])
 	}
+}
+
+func (c *compiler) rule(item int) int {
+	i := item
+	for c.right[i] >= 0 {
+		i++
+	}
+	return -1 - c.right[i]
 }
 
 func (c *compiler) writeItem(item int, out *strings.Builder) {
@@ -406,6 +488,7 @@ func (c *compiler) buildFollow() {
 		if int(sym) < c.grammar.Terminals {
 			continue
 		}
+	rules:
 		for _, rule := range rules[int(sym)-c.grammar.Terminals] {
 			i := c.index[rule]
 			states = states[:0]
@@ -414,6 +497,10 @@ func (c *compiler) buildFollow() {
 			for ; c.right[i] >= 0; i++ {
 				states = append(states, curr)
 				curr = c.gotoState(curr, Sym(c.right[i]))
+				if curr == -1 {
+					// This rule was pruned from the inner chain of transitions.
+					continue rules
+				}
 			}
 
 			if !c.states[curr].lr0 {
@@ -472,7 +559,7 @@ func (c *compiler) gotoState(state int, sym Sym) int {
 		}
 	}
 
-	log.Fatal("internal error")
+	// Note: this happens if we pruned some rules from the state.
 	return -1
 }
 
@@ -657,4 +744,13 @@ func (c *compiler) ruleAction(action int, term Sym, rule int, b *conflictBuilder
 	b.addRule(term, conflict, rule, false /*canShift*/)
 	b.addRule(term, conflict, action, false /*canShift*/)
 	return action
+}
+
+func contains(slice []int, val int) bool {
+	for _, v := range slice {
+		if v == val {
+			return true
+		}
+	}
+	return false
 }
