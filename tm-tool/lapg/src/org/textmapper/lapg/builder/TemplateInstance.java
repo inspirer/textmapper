@@ -78,7 +78,7 @@ class TemplateInstance {
 
 		if (template.isTemplate()) {
 			String nameHint =
-					LiUtil.getSymbolName(template) + (template.getNumberOfInstances() > 1
+					LiUtil.getSymbolID(template) + (template.getNumberOfInstances() > 1
 							? environment.getNonterminalSuffix() : "");
 			instance = builder.addAnonymous(nameHint, template, template);
 		} else {

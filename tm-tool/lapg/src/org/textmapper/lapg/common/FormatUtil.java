@@ -66,6 +66,13 @@ public class FormatUtil {
 
 	public static String toIdentifier(String s) {
 		StringBuilder res = new StringBuilder();
+		if (s.startsWith("'") && s.endsWith("'") && s.length() > 2) {
+			s = s.substring(1, s.length() - 1);
+			if (s.length() == 1 && FormatUtil.isIdentifier(s)) {
+				return "char_" + s;
+			}
+		}
+
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			if (c >= 'a' && c <= 'z'

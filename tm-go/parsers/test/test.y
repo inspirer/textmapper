@@ -74,7 +74,7 @@ Declaration :
           p.listener(Int9, 0, rhs[0].sym.offset, rhs[0].sym.endoffset)
         }
       }
-| TEST LBRACE setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen_optlist RBRACE
+| TEST LBRACE setof_not_EOI_or_DOT_or_RBRACE_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
 | TEST INTEGERCONSTANT
 | EVAL LPAREN expr RPAREN
@@ -82,7 +82,7 @@ Declaration :
 | EVAL LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
 ;
 
-setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen :
+setof_not_EOI_or_DOT_or_RBRACE :
   INVALID_TOKEN
 | WHITESPACE
 | SINGLELINECOMMENT
@@ -113,8 +113,8 @@ setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceApos
 | MULTILINECOMMENT
 ;
 
-setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen_optlist :
-  setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen_optlist setof_not_LparenLpareneoiSpaceOrSpaceAposDotAposRparenSpaceOrSpaceAposRbraceAposRparen
+setof_not_EOI_or_DOT_or_RBRACE_optlist :
+  setof_not_EOI_or_DOT_or_RBRACE_optlist setof_not_EOI_or_DOT_or_RBRACE
 | %empty
 ;
 

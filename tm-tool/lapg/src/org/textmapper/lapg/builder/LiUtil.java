@@ -15,9 +15,12 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Name;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.common.FormatUtil;
 
 public class LiUtil {
 
@@ -33,6 +36,35 @@ public class LiUtil {
 	public static String getSymbolName(Symbol s) {
 		String name = s.getNameText();
 		if (name != null) return name;
+
+		// for anonymous nonterminals we can get an approximate name from nameHint user data.
+		return s.getNameHint();
+	}
+
+	public static String getSymbolID(RhsSymbol s) {
+		TemplateParameter templateTarget = s.getTemplateTarget();
+		if (templateTarget != null) {
+			return templateTarget.getNameText();
+		}
+
+		return getSymbolID(s.getTarget());
+	}
+
+	public static String getSymbolID(Symbol s) {
+		Name name = s.getName();
+		if (name != null) {
+			String text = name.text();
+			if (!FormatUtil.isIdentifier(text)) {
+				if (s.isTerm() && ((Terminal)s).isConstant()) {
+					text = ((Terminal) s).getConstantValue();
+				}
+				text = FormatUtil.toIdentifier(text);
+			}
+			if (s.isTerm()) {
+				text = text.toUpperCase();
+			}
+			return text;
+		}
 
 		// for anonymous nonterminals we can get an approximate name from nameHint user data.
 		return s.getNameHint();

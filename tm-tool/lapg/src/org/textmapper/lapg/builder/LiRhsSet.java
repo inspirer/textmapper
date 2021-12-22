@@ -174,18 +174,18 @@ public class LiRhsSet extends LiRhsPart implements RhsSet, TemplatedSymbolRef {
 		boolean first = true;
 		switch (operation) {
 			case Any:
-				sb.append(LiUtil.getSymbolName(symbol));
+				sb.append(LiUtil.getSymbolID(symbol));
 				break;
 			case First:
 			case Follow:
 			case Last:
 			case Precede:
-				sb.append(toString(operation)).append("_").append(LiUtil.getSymbolName(symbol));
+				sb.append(toString(operation)).append("_").append(LiUtil.getSymbolID(symbol));
 				break;
 			case Complement:
 				assert parts.length == 1;
 				sb.append("not_");
-				parts[0].toString(sb, 0);
+				parts[0].toProvisionalName(sb);
 				break;
 			case Intersection:
 			case Union:

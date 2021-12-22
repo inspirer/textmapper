@@ -10,8 +10,8 @@ var tmNonterminals = [...]string{
 	"Declaration_list",
 	"Test",
 	"Declaration",
-	"setof_not_((eoi | '.') | '}')",
-	"setof_not_((eoi | '.') | '}')_optlist",
+	"setof_not_EOI_or_DOT_or_RBRACE",
+	"setof_not_EOI_or_DOT_or_RBRACE_optlist",
 	"empty1",
 	"foo",
 	"QualifiedName",
@@ -104,42 +104,42 @@ var tmRuleType = [...]uint32{
 	uint32(LastInt),    // Declaration : lastInt
 	uint32(Int),        // Declaration : IntegerConstant '[' ']'
 	uint32(Int),        // Declaration : IntegerConstant
-	uint32(TestClause), // Declaration : 'test' '{' setof_not_((eoi | '.') | '}')_optlist '}'
+	uint32(TestClause), // Declaration : 'test' '{' setof_not_EOI_or_DOT_or_RBRACE_optlist '}'
 	0,                  // Declaration : 'test' '(' empty1 ')'
 	uint32(TestIntClause) + uint32(InTest|InFoo)<<16, // Declaration : 'test' IntegerConstant
 	0,                // Declaration : 'eval' '(' expr ')'
 	uint32(EvalFoo),  // Declaration : 'eval' '(' foo ')'
 	uint32(EvalFoo2), // Declaration : 'eval' '(' IntegerConstant '.' expr '+' .greedy expr ')'
-	0,                // setof_not_((eoi | '.') | '}') : invalid_token
-	0,                // setof_not_((eoi | '.') | '}') : WhiteSpace
-	0,                // setof_not_((eoi | '.') | '}') : SingleLineComment
-	0,                // setof_not_((eoi | '.') | '}') : Identifier
-	0,                // setof_not_((eoi | '.') | '}') : IntegerConstant
-	0,                // setof_not_((eoi | '.') | '}') : lastInt
-	0,                // setof_not_((eoi | '.') | '}') : 'test'
-	0,                // setof_not_((eoi | '.') | '}') : 'decl1'
-	0,                // setof_not_((eoi | '.') | '}') : 'decl2'
-	0,                // setof_not_((eoi | '.') | '}') : 'eval'
-	0,                // setof_not_((eoi | '.') | '}') : 'as'
-	0,                // setof_not_((eoi | '.') | '}') : '{'
-	0,                // setof_not_((eoi | '.') | '}') : '('
-	0,                // setof_not_((eoi | '.') | '}') : ')'
-	0,                // setof_not_((eoi | '.') | '}') : '['
-	0,                // setof_not_((eoi | '.') | '}') : ']'
-	0,                // setof_not_((eoi | '.') | '}') : ','
-	0,                // setof_not_((eoi | '.') | '}') : ':'
-	0,                // setof_not_((eoi | '.') | '}') : '-'
-	0,                // setof_not_((eoi | '.') | '}') : '->'
-	0,                // setof_not_((eoi | '.') | '}') : '+'
-	0,                // setof_not_((eoi | '.') | '}') : dquote
-	0,                // setof_not_((eoi | '.') | '}') : squote
-	0,                // setof_not_((eoi | '.') | '}') : SharpAtID
-	0,                // setof_not_((eoi | '.') | '}') : 'Zfoo'
-	0,                // setof_not_((eoi | '.') | '}') : backtrackingToken
-	0,                // setof_not_((eoi | '.') | '}') : error
-	0,                // setof_not_((eoi | '.') | '}') : MultiLineComment
-	0,                // setof_not_((eoi | '.') | '}')_optlist : setof_not_((eoi | '.') | '}')_optlist setof_not_((eoi | '.') | '}')
-	0,                // setof_not_((eoi | '.') | '}')_optlist :
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : invalid_token
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : WhiteSpace
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : SingleLineComment
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : Identifier
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : IntegerConstant
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : lastInt
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'test'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'decl1'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'decl2'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'eval'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'as'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : '{'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : '('
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : ')'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : '['
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : ']'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : ','
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : ':'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : '-'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : '->'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : '+'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : dquote
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : squote
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : SharpAtID
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'Zfoo'
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : backtrackingToken
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : error
+	0,                // setof_not_EOI_or_DOT_or_RBRACE : MultiLineComment
+	0,                // setof_not_EOI_or_DOT_or_RBRACE_optlist : setof_not_EOI_or_DOT_or_RBRACE_optlist setof_not_EOI_or_DOT_or_RBRACE
+	0,                // setof_not_EOI_or_DOT_or_RBRACE_optlist :
 	0,                // empty1 :
 	0,                // foo : IntegerConstant '.' expr
 	0,                // QualifiedName : Identifier
