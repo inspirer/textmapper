@@ -259,15 +259,18 @@ func (c *compiler) computeStates() {
 			c.addShift(c.states[i], last)
 		}
 
+		finalStates[i] = last.index
+	}
+	for i, inp := range c.grammar.Inputs {
 		if !inp.Eoi {
 			// no-eoi inputs are accepted as soon as they are reduced without the last transition on EOI.
-			finalStates[i] = int(last.symbol)
 			continue
 		}
-		afterEoi := &state{index: len(c.states), symbol: EOI, sourceState: last.index, lr0: true}
+		last := finalStates[i]
+		afterEoi := &state{index: len(c.states), symbol: EOI, sourceState: last, lr0: true}
 		c.states = append(c.states, afterEoi)
-		c.addShift(last, afterEoi)
-		finalStates[i] = int(afterEoi.symbol)
+		c.addShift(c.states[last], afterEoi)
+		finalStates[i] = afterEoi.index
 	}
 	c.out.FinalStates = finalStates
 }

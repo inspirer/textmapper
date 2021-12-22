@@ -122,19 +122,19 @@ var stateTests = []struct {
 		`6 (from 5, EOI):`,
 	}},
 
-	// No-eoi
+	// No-eoi (S - normal input; N - no-eoi)
 	{`S -> N; N -> xNy; N -> a; N -> b`, []string{
 		`0 (from 0, EOI): x -> 2; a -> 3; b -> 4; S -> 8; N -> 5;`,
-		`1 (from 0, EOI): x -> 2; a -> 3; b -> 4; N -> 10;`,
+		`1 (from 0, EOI): x -> 2; a -> 3; b -> 4; N -> 9;`,
 		`2 (from 0, x): N: x _ N y; x -> 2; a -> 3; b -> 4; N -> 6;`,
 		`3 (from 0, a): N: a _;`,
 		`4 (from 0, b): N: b _;`,
 		`5 (from 0, N): S: N _;`,
 		`6 (from 2, N): N: x N _ y; y -> 7;`,
 		`7 (from 6, y): N: x N y _;`,
-		`8 (from 0, S): EOI -> 9;`,
-		`9 (from 8, EOI):`,
-		`10 (from 1, N):`,
+		`8 (from 0, S): EOI -> 10;`,
+		`9 (from 1, N):`,    // final state for N
+		`10 (from 8, EOI):`, // final state for S
 	}},
 
 	// Simple lookahead.
