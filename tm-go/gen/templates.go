@@ -499,7 +499,7 @@ const bisonTpl = `%{
 {{range .Parser.Prec}}
 %{{.Associativity}}{{range .Terminals}} {{(index $.Syms .).ID}}{{end}}
 {{- end}}
-{{- range slice .Tokens 1}}
+{{- range slice .TokensWithoutPrec 1}}
 %token {{.ID}}
 {{- end}}
 

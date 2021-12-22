@@ -54,8 +54,25 @@ type Grammar struct {
 
 // Tokens returns all lexical tokens defined in the grammar.
 func (g *Grammar) Tokens() []Symbol {
-	// TODO exclude tokens with precedence
 	return g.Syms[:g.NumTokens]
+}
+
+// TokensWithoutPrec returns all lexical tokens defined in the grammar that don't participate in
+// precedence resolution. This method facilitates grammar conversion into Bison-like syntax.
+func (g *Grammar) TokensWithoutPrec() []Symbol {
+	var ret []Symbol
+	seen := make(map[int]bool)
+	for _, prec := range g.Prec {
+		for _, term := range prec.Terminals {
+			seen[int(term)] = true
+		}
+	}
+	for _, sym := range g.Syms[:g.NumTokens] {
+		if !seen[sym.Index] {
+			ret = append(ret, sym)
+		}
+	}
+	return ret
 }
 
 // ReportTokens returns node types that come directly from the tokens.
