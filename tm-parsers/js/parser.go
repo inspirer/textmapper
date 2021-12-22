@@ -39,68 +39,68 @@ func (p *Parser) ParseExpressionSnippet(ctx context.Context, lexer *Lexer) error
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 5121:
+	case 4983:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 0, 8666, s); ok {
-			sym = 790 /* lookahead_StartOfArrowFunction */
+			sym = 776 /* lookahead_StartOfArrowFunction */
 		} else {
 			sym = 177 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 5122:
+	case 4984:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 3, 8669, s); ok {
-			sym = 882 /* lookahead_StartOfTypeImport */
+			sym = 868 /* lookahead_StartOfTypeImport */
 		} else {
-			sym = 883 /* lookahead_notStartOfTypeImport */
+			sym = 869 /* lookahead_notStartOfTypeImport */
 		}
 		return
-	case 5123:
+	case 4985:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 1, 8667, s); ok {
-			sym = 372 /* lookahead_StartOfParametrizedCall */
+			sym = 358 /* lookahead_StartOfParametrizedCall */
 		} else {
-			sym = 344 /* lookahead_notStartOfParametrizedCall */
+			sym = 330 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 5124:
+	case 4986:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 4, 8670, s); ok {
-			sym = 946 /* lookahead_StartOfIs */
+			sym = 932 /* lookahead_StartOfIs */
 		} else {
-			sym = 949 /* lookahead_notStartOfIs */
+			sym = 934 /* lookahead_notStartOfIs */
 		}
 		return
-	case 5125:
+	case 4987:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 6, 8672, s); ok {
-			sym = 983 /* lookahead_StartOfMappedType */
+			sym = 968 /* lookahead_StartOfMappedType */
 		} else {
-			sym = 973 /* lookahead_notStartOfMappedType */
+			sym = 958 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 5126:
+	case 4988:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 5, 8671, s); ok {
-			sym = 995 /* lookahead_StartOfFunctionType */
+			sym = 980 /* lookahead_StartOfFunctionType */
 		} else {
-			sym = 966 /* lookahead_notStartOfFunctionType */
+			sym = 951 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 5127:
+	case 4989:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 7, 8673, s); ok {
-			sym = 987 /* lookahead_StartOfTupleElementName */
+			sym = 972 /* lookahead_StartOfTupleElementName */
 		} else {
-			sym = 988 /* lookahead_notStartOfTupleElementName */
+			sym = 973 /* lookahead_notStartOfTupleElementName */
 		}
 		return
-	case 5128:
+	case 4990:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 2, 8668, s); ok {
-			sym = 851 /* lookahead_StartOfExtendsTypeRef */
+			sym = 837 /* lookahead_StartOfExtendsTypeRef */
 		} else {
-			sym = 852 /* lookahead_notStartOfExtendsTypeRef */
+			sym = 838 /* lookahead_notStartOfExtendsTypeRef */
 		}
 		return
 	}
@@ -266,258 +266,250 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, s *session) (err error) {
 	switch rule {
-	case 1288: // Elision : ','
+	case 1253: // Elision : ','
 		p.listener(NoElement, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1289: // Elision : Elision ','
+	case 1254: // Elision : Elision ','
 		p.listener(NoElement, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 1357: // LiteralPropertyName : PrivateIdentifier
+	case 1322: // LiteralPropertyName : PrivateIdentifier
 		p.listener(NameIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1361: // LiteralPropertyName_WithoutNew : PrivateIdentifier
+	case 1326: // LiteralPropertyName_WithoutNew : PrivateIdentifier
 		p.listener(NameIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1494: // MemberExpression_Await_StartWithLet : 'let'
+	case 1432: // MemberExpression_Await_StartWithLet : 'let'
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1595: // MemberExpression_StartWithLet : 'let'
+	case 1497: // MemberExpression_StartWithLet : 'let'
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1678: // MemberExpression_Yield_Await_StartWithLet : 'let'
+	case 1562: // MemberExpression_Yield_Await_StartWithLet : 'let'
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 1743: // MemberExpression_Yield_StartWithLet : 'let'
+	case 1609: // MemberExpression_Yield_StartWithLet : 'let'
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 2631: // BinaryExpression : BinaryExpression .noLineBreak 'as' 'const'
+	case 2497: // BinaryExpression : BinaryExpression .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2658: // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' 'const'
+	case 2524: // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2710: // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' 'const'
+	case 2576: // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2737: // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2603: // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2765: // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' 'const'
+	case 2631: // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2793: // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' 'const'
+	case 2659: // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2847: // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2713: // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2875: // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' 'const'
+	case 2741: // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2929: // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2795: // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2957: // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' 'const'
+	case 2823: // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 2985: // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' 'const'
+	case 2851: // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3089: // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' 'const'
+	case 2955: // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3116: // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' 'const'
+	case 2982: // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3143: // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' 'const'
+	case 3009: // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3170: // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' 'const'
+	case 3036: // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3222: // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet .noLineBreak 'as' 'const'
+	case 3088: // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3274: // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' 'const'
+	case 3140: // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' 'const'
 		p.listener(TsConst, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3794: // ElementElision : ','
+	case 3660: // ElementElision : ','
 		p.listener(NoElement, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 3795: // ElementElision : Elision ','
+	case 3661: // ElementElision : Elision ','
 		p.listener(NoElement, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 3871: // IterationStatement : 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	case 3737: // IterationStatement : 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3875: // IterationStatement : 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement
+	case 3741: // IterationStatement : 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3878: // IterationStatement : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In ')' Statement
+	case 3744: // IterationStatement : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In ')' Statement
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3879: // IterationStatement : 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement
+	case 3745: // IterationStatement : 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3886: // IterationStatement_Await : 'for' '(' 'var' VariableDeclarationList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	case 3752: // IterationStatement_Await : 'for' '(' 'var' VariableDeclarationList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3890: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'in' Expression_In_Await ')' Statement_Await
+	case 3756: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'in' Expression_In_Await ')' Statement_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3892: // IterationStatement_Await : 'for' 'await' '(' LeftHandSideExpression_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Await ')' Statement_Await
+	case 3758: // IterationStatement_Await : 'for' 'await' '(' LeftHandSideExpression_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 3894: // IterationStatement_Await : 'for' 'await' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Await ')' Statement_Await
+	case 3760: // IterationStatement_Await : 'for' 'await' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
 		p.listener(ReferenceIdent, rhs[3].sym.offset, rhs[3].sym.endoffset)
 		p.listener(IdentExpr, rhs[3].sym.offset, rhs[3].sym.endoffset)
-	case 3895: // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Await ')' Statement_Await
+	case 3761: // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3896: // IterationStatement_Await : 'for' 'await' '(' 'var' ForBinding_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
+	case 3762: // IterationStatement_Await : 'for' 'await' '(' 'var' ForBinding_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
 		p.listener(Var, rhs[3].sym.offset, rhs[3].sym.endoffset)
-	case 3897: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
+	case 3763: // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3898: // IterationStatement_Await : 'for' 'await' '(' ForDeclaration_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
+	case 3764: // IterationStatement_Await : 'for' 'await' '(' ForDeclaration_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 3905: // IterationStatement_Yield : 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	case 3771: // IterationStatement_Yield : 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3909: // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Yield
+	case 3775: // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Yield
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3912: // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	case 3778: // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3913: // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	case 3779: // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Yield
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3920: // IterationStatement_Yield_Await : 'for' '(' 'var' VariableDeclarationList_Yield_Await ';' .forSC ForCondition_Yield_Await ';' .forSC ForFinalExpression_Yield_Await ')' Statement_Yield_Await
+	case 3786: // IterationStatement_Yield_Await : 'for' '(' 'var' VariableDeclarationList_Yield_Await ';' .forSC ForCondition_Yield_Await ';' .forSC ForFinalExpression_Yield_Await ')' Statement_Yield_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3924: // IterationStatement_Yield_Await : 'for' '(' 'var' ForBinding_Yield_Await 'in' Expression_In_Yield_Await ')' Statement_Yield_Await
+	case 3790: // IterationStatement_Yield_Await : 'for' '(' 'var' ForBinding_Yield_Await 'in' Expression_In_Yield_Await ')' Statement_Yield_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3926: // IterationStatement_Yield_Await : 'for' 'await' '(' LeftHandSideExpression_Yield_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	case 3792: // IterationStatement_Yield_Await : 'for' 'await' '(' LeftHandSideExpression_Yield_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 3928: // IterationStatement_Yield_Await : 'for' 'await' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	case 3794: // IterationStatement_Yield_Await : 'for' 'await' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
 		p.listener(ReferenceIdent, rhs[3].sym.offset, rhs[3].sym.endoffset)
 		p.listener(IdentExpr, rhs[3].sym.offset, rhs[3].sym.endoffset)
-	case 3929: // IterationStatement_Yield_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	case 3795: // IterationStatement_Yield_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
 		p.listener(IdentExpr, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3930: // IterationStatement_Yield_Await : 'for' 'await' '(' 'var' ForBinding_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	case 3796: // IterationStatement_Yield_Await : 'for' 'await' '(' 'var' ForBinding_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
 		p.listener(Var, rhs[3].sym.offset, rhs[3].sym.endoffset)
-	case 3931: // IterationStatement_Yield_Await : 'for' '(' 'var' ForBinding_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	case 3797: // IterationStatement_Yield_Await : 'for' '(' 'var' ForBinding_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
 		p.listener(Var, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 3932: // IterationStatement_Yield_Await : 'for' 'await' '(' ForDeclaration_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	case 3798: // IterationStatement_Yield_Await : 'for' 'await' '(' ForDeclaration_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
 		p.listener(Await, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4367: // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause .noLineBreak AssertClause ';'
+	case 4233: // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause .noLineBreak AssertClause ';'
 		p.listener(TsTypeOnly, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4368: // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause ';'
+	case 4234: // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause ';'
 		p.listener(TsTypeOnly, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4384: // ImportRequireDeclaration : 'export' 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
+	case 4250: // ImportRequireDeclaration : 'export' 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' 'require' '(' StringLiteral ')' ';'
 		p.listener(TsExport, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4404: // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause .noLineBreak AssertClause ';'
+	case 4270: // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause .noLineBreak AssertClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4405: // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause ';'
+	case 4271: // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4406: // ExportDeclaration : 'export' 'type' '*' FromClause .noLineBreak AssertClause ';'
+	case 4272: // ExportDeclaration : 'export' 'type' '*' FromClause .noLineBreak AssertClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4407: // ExportDeclaration : 'export' 'type' '*' FromClause ';'
+	case 4273: // ExportDeclaration : 'export' 'type' '*' FromClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4412: // ExportDeclaration : 'export' 'type' ExportClause FromClause .noLineBreak AssertClause ';'
+	case 4278: // ExportDeclaration : 'export' 'type' ExportClause FromClause .noLineBreak AssertClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4413: // ExportDeclaration : 'export' 'type' ExportClause FromClause ';'
+	case 4279: // ExportDeclaration : 'export' 'type' ExportClause FromClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4416: // ExportDeclaration : 'export' 'type' ExportClause ';'
+	case 4282: // ExportDeclaration : 'export' 'type' ExportClause ';'
 		p.listener(TsTypeOnly, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4438: // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
+	case 4304: // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4539: // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
+	case 4405: // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4541: // TypePredicate_NoQuest : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
+	case 4407: // TypePredicate_NoQuest : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
 		p.listener(ReferenceIdent, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4543: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
+	case 4409: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
 		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4544: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+	case 4410: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
 		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4545: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs 'is' Type
+	case 4411: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs 'is' Type
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4546: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs
+	case 4412: // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4547: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type_NoQuest
-		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4548: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
-		p.listener(This, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4549: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs 'is' Type_NoQuest
-		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4550: // AssertsType_NoQuest : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs
-		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4580: // TypeOperator : 'infer' IdentifierName
+	case 4442: // TypeOperator : 'infer' IdentifierName
 		p.listener(ReferenceIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4585: // TypeOperator_NoQuest : 'infer' IdentifierName
+	case 4447: // TypeOperator_NoQuest : 'infer' IdentifierName
 		p.listener(ReferenceIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4733: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName '?' ':' Type
+	case 4595: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName '?' ':' Type
 		p.listener(RestType, rhs[5].sym.offset, rhs[5].sym.endoffset)
-	case 4734: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName ':' Type
+	case 4596: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName ':' Type
 		p.listener(RestType, rhs[4].sym.offset, rhs[4].sym.endoffset)
-	case 4773: // ConstructorType : 'abstract' 'new' TypeParameters ParameterList '=>' Type
+	case 4635: // ConstructorType : 'abstract' 'new' TypeParameters ParameterList '=>' Type
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4774: // ConstructorType : 'abstract' 'new' ParameterList '=>' Type
+	case 4636: // ConstructorType : 'abstract' 'new' ParameterList '=>' Type
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4777: // ConstructorType_NoQuest : 'abstract' 'new' TypeParameters ParameterList '=>' Type_NoQuest
+	case 4639: // ConstructorType_NoQuest : 'abstract' 'new' TypeParameters ParameterList '=>' Type_NoQuest
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4778: // ConstructorType_NoQuest : 'abstract' 'new' ParameterList '=>' Type_NoQuest
+	case 4640: // ConstructorType_NoQuest : 'abstract' 'new' ParameterList '=>' Type_NoQuest
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4793: // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
+	case 4655: // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
 		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4978: // IndexSignature : Modifiers '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4840: // IndexSignature : Modifiers '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4979: // IndexSignature : '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4841: // IndexSignature : '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4980: // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4842: // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4981: // IndexSignature_WithDeclare : '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4843: // IndexSignature_WithDeclare : '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4995: // EnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	case 4857: // EnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
 		p.listener(TsConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 5021: // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
+	case 4883: // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
 		p.listener(Var, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 5022: // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
+	case 4884: // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
 		p.listener(LetOrConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 5023: // AmbientVariableDeclaration : 'const' AmbientBindingList ';'
+	case 4885: // AmbientVariableDeclaration : 'const' AmbientBindingList ';'
 		p.listener(LetOrConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 5037: // AmbientEnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	case 4899: // AmbientEnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
 		p.listener(TsConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 5121:
+	case 4983:
 		var ok bool
 		if ok, err = AtStartOfArrowFunction(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 790 /* lookahead_StartOfArrowFunction */
+			lhs.sym.symbol = 776 /* lookahead_StartOfArrowFunction */
 		} else {
 			lhs.sym.symbol = 177 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 5122:
+	case 4984:
 		var ok bool
 		if ok, err = AtStartOfTypeImport(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 882 /* lookahead_StartOfTypeImport */
+			lhs.sym.symbol = 868 /* lookahead_StartOfTypeImport */
 		} else {
-			lhs.sym.symbol = 883 /* lookahead_notStartOfTypeImport */
+			lhs.sym.symbol = 869 /* lookahead_notStartOfTypeImport */
 		}
 		return
-	case 5123:
+	case 4985:
 		var ok bool
 		if ok, err = AtStartOfParametrizedCall(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 372 /* lookahead_StartOfParametrizedCall */
+			lhs.sym.symbol = 358 /* lookahead_StartOfParametrizedCall */
 		} else {
-			lhs.sym.symbol = 344 /* lookahead_notStartOfParametrizedCall */
+			lhs.sym.symbol = 330 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 5124:
+	case 4986:
 		var ok bool
 		if ok, err = AtStartOfIs(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 946 /* lookahead_StartOfIs */
+			lhs.sym.symbol = 932 /* lookahead_StartOfIs */
 		} else {
-			lhs.sym.symbol = 949 /* lookahead_notStartOfIs */
+			lhs.sym.symbol = 934 /* lookahead_notStartOfIs */
 		}
 		return
-	case 5125:
+	case 4987:
 		var ok bool
 		if ok, err = AtStartOfMappedType(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 983 /* lookahead_StartOfMappedType */
+			lhs.sym.symbol = 968 /* lookahead_StartOfMappedType */
 		} else {
-			lhs.sym.symbol = 973 /* lookahead_notStartOfMappedType */
+			lhs.sym.symbol = 958 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 5126:
+	case 4988:
 		var ok bool
 		if ok, err = AtStartOfFunctionType(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 995 /* lookahead_StartOfFunctionType */
+			lhs.sym.symbol = 980 /* lookahead_StartOfFunctionType */
 		} else {
-			lhs.sym.symbol = 966 /* lookahead_notStartOfFunctionType */
+			lhs.sym.symbol = 951 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 5127:
+	case 4989:
 		var ok bool
 		if ok, err = AtStartOfTupleElementName(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 987 /* lookahead_StartOfTupleElementName */
+			lhs.sym.symbol = 972 /* lookahead_StartOfTupleElementName */
 		} else {
-			lhs.sym.symbol = 988 /* lookahead_notStartOfTupleElementName */
+			lhs.sym.symbol = 973 /* lookahead_notStartOfTupleElementName */
 		}
 		return
-	case 5128:
+	case 4990:
 		var ok bool
 		if ok, err = AtStartOfExtendsTypeRef(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 851 /* lookahead_StartOfExtendsTypeRef */
+			lhs.sym.symbol = 837 /* lookahead_StartOfExtendsTypeRef */
 		} else {
-			lhs.sym.symbol = 852 /* lookahead_notStartOfExtendsTypeRef */
+			lhs.sym.symbol = 838 /* lookahead_notStartOfExtendsTypeRef */
 		}
 		return
 	}

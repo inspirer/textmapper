@@ -358,6 +358,11 @@ class TemplateInstantiator {
 			}
 		} else if (p instanceof RhsConditional) {
 			context.getTemplate().setTemplate();
+			boolean result = ((RhsConditional) p).getPredicate().apply(context.getEnvironment());
+
+			// Avoid instantiating more nonterminals than strictly needed.
+			if (!result) return;
+
 		} else if (leftmost && p instanceof RhsList && context.getEnvironment().hasLookahead()) {
 			if (((RhsList) p).isRightRecursive()) {
 				problems.add(new LiProblem(p, "Cannot instantiate right recursive lists with " +

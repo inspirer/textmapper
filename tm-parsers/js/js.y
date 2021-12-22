@@ -1252,22 +1252,6 @@ PrimaryExpression_Await_NoLet :
 | lookahead_notStartOfArrowFunction JSXElement_Await
 ;
 
-PrimaryExpression_Await_NoLet_NoObjLiteral :
-  THIS
-| IdentifierReference_Await_NoLet
-| Literal
-| ArrayLiteral_Await
-| FunctionExpression
-| ClassExpression_Await
-| GeneratorExpression
-| AsyncFunctionExpression
-| AsyncGeneratorExpression
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral_Await
-| lookahead_notStartOfArrowFunction Parenthesized_Await
-| lookahead_notStartOfArrowFunction JSXElement_Await
-;
-
 PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass :
   THIS
 | IdentifierReference_Await_NoLet
@@ -1341,34 +1325,6 @@ PrimaryExpression_NoLet :
 | Literal
 | ArrayLiteral
 | ObjectLiteral
-| FunctionExpression
-| ClassExpression
-| GeneratorExpression
-| AsyncFunctionExpression
-| AsyncGeneratorExpression
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral
-| lookahead_notStartOfArrowFunction Parenthesized
-| lookahead_notStartOfArrowFunction JSXElement
-;
-
-PrimaryExpression_NoLet_NoFuncClass :
-  THIS
-| IdentifierReference_NoLet
-| Literal
-| ArrayLiteral
-| ObjectLiteral
-| REGULAREXPRESSIONLITERAL
-| TemplateLiteral
-| lookahead_notStartOfArrowFunction Parenthesized
-| lookahead_notStartOfArrowFunction JSXElement
-;
-
-PrimaryExpression_NoLet_NoObjLiteral :
-  THIS
-| IdentifierReference_NoLet
-| Literal
-| ArrayLiteral
 | FunctionExpression
 | ClassExpression
 | GeneratorExpression
@@ -1964,18 +1920,6 @@ MemberExpression_Await_NoLet :
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLetOnly :
-  PrimaryExpression_Await_NoLet
-| MemberExpression_Await LBRACK Expression_In_Await RBRACK
-| MemberExpression_Await DOT IdentifierNameRef
-| MemberExpression_Await DOT ClassPrivateRef
-| MemberExpression_Await TemplateLiteral_Await
-| MemberExpression_Await /*.noLineBreak*/ EXCL
-| SuperProperty_Await
-| MetaProperty
-| NEW MemberExpression_Await Arguments_Await
-;
-
 MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass :
   PrimaryExpression_Await_NoObjLiteral_NoFuncClass
 | MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In_Await RBRACK
@@ -2000,32 +1944,8 @@ MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | NEW MemberExpression_Await Arguments_Await
 ;
 
-MemberExpression_Await_NoLet_NoLetOnly :
-  PrimaryExpression_Await_NoLet
-| MemberExpression_Await_NoLet LBRACK Expression_In_Await RBRACK
-| MemberExpression_Await_NoLet DOT IdentifierNameRef
-| MemberExpression_Await_NoLet DOT ClassPrivateRef
-| MemberExpression_Await_NoLet TemplateLiteral_Await
-| MemberExpression_Await_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty_Await
-| MetaProperty
-| NEW MemberExpression_Await Arguments_Await
-;
-
 MemberExpression_Await_NoObjLiteral :
   PrimaryExpression_Await_NoObjLiteral
-| MemberExpression_Await_NoObjLiteral LBRACK Expression_In_Await RBRACK
-| MemberExpression_Await_NoObjLiteral DOT IdentifierNameRef
-| MemberExpression_Await_NoObjLiteral DOT ClassPrivateRef
-| MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
-| MemberExpression_Await_NoObjLiteral /*.noLineBreak*/ EXCL
-| SuperProperty_Await
-| MetaProperty
-| NEW MemberExpression_Await Arguments_Await
-;
-
-MemberExpression_Await_NoObjLiteral_NoLetOnly :
-  PrimaryExpression_Await_NoLet_NoObjLiteral
 | MemberExpression_Await_NoObjLiteral LBRACK Expression_In_Await RBRACK
 | MemberExpression_Await_NoObjLiteral DOT IdentifierNameRef
 | MemberExpression_Await_NoObjLiteral DOT ClassPrivateRef
@@ -2077,18 +1997,6 @@ MemberExpression_NoFuncClass :
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoFuncClass_NoLetOnly :
-  PrimaryExpression_NoLet_NoFuncClass
-| MemberExpression_NoFuncClass LBRACK Expression_In RBRACK
-| MemberExpression_NoFuncClass DOT IdentifierNameRef
-| MemberExpression_NoFuncClass DOT ClassPrivateRef
-| MemberExpression_NoFuncClass TemplateLiteral
-| MemberExpression_NoFuncClass /*.noLineBreak*/ EXCL
-| SuperProperty
-| MetaProperty
-| NEW MemberExpression Arguments
-;
-
 MemberExpression_NoLet :
   PrimaryExpression_NoLet
 | MemberExpression_NoLet LBRACK Expression_In RBRACK
@@ -2096,18 +2004,6 @@ MemberExpression_NoLet :
 | MemberExpression_NoLet DOT ClassPrivateRef
 | MemberExpression_NoLet TemplateLiteral
 | MemberExpression_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty
-| MetaProperty
-| NEW MemberExpression Arguments
-;
-
-MemberExpression_NoLetOnly :
-  PrimaryExpression_NoLet
-| MemberExpression LBRACK Expression_In RBRACK
-| MemberExpression DOT IdentifierNameRef
-| MemberExpression DOT ClassPrivateRef
-| MemberExpression TemplateLiteral
-| MemberExpression /*.noLineBreak*/ EXCL
 | SuperProperty
 | MetaProperty
 | NEW MemberExpression Arguments
@@ -2137,32 +2033,8 @@ MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | NEW MemberExpression Arguments
 ;
 
-MemberExpression_NoLet_NoLetOnly :
-  PrimaryExpression_NoLet
-| MemberExpression_NoLet LBRACK Expression_In RBRACK
-| MemberExpression_NoLet DOT IdentifierNameRef
-| MemberExpression_NoLet DOT ClassPrivateRef
-| MemberExpression_NoLet TemplateLiteral
-| MemberExpression_NoLet /*.noLineBreak*/ EXCL
-| SuperProperty
-| MetaProperty
-| NEW MemberExpression Arguments
-;
-
 MemberExpression_NoObjLiteral :
   PrimaryExpression_NoObjLiteral
-| MemberExpression_NoObjLiteral LBRACK Expression_In RBRACK
-| MemberExpression_NoObjLiteral DOT IdentifierNameRef
-| MemberExpression_NoObjLiteral DOT ClassPrivateRef
-| MemberExpression_NoObjLiteral TemplateLiteral
-| MemberExpression_NoObjLiteral /*.noLineBreak*/ EXCL
-| SuperProperty
-| MetaProperty
-| NEW MemberExpression Arguments
-;
-
-MemberExpression_NoObjLiteral_NoLetOnly :
-  PrimaryExpression_NoLet_NoObjLiteral
 | MemberExpression_NoObjLiteral LBRACK Expression_In RBRACK
 | MemberExpression_NoObjLiteral DOT IdentifierNameRef
 | MemberExpression_NoObjLiteral DOT ClassPrivateRef
@@ -2238,18 +2110,6 @@ MemberExpression_Yield_Await_NoLet :
 | NEW MemberExpression_Yield_Await Arguments_Yield_Await
 ;
 
-MemberExpression_Yield_Await_NoLetOnly :
-  PrimaryExpression_Yield_Await_NoLet
-| MemberExpression_Yield_Await LBRACK Expression_In_Yield_Await RBRACK
-| MemberExpression_Yield_Await DOT IdentifierNameRef
-| MemberExpression_Yield_Await DOT ClassPrivateRef
-| MemberExpression_Yield_Await TemplateLiteral_Yield_Await
-| MemberExpression_Yield_Await /*.noLineBreak*/ EXCL
-| SuperProperty_Yield_Await
-| MetaProperty
-| NEW MemberExpression_Yield_Await Arguments_Yield_Await
-;
-
 MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass :
   PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass
 | MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In_Yield_Await RBRACK
@@ -2269,18 +2129,6 @@ MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield_Await
 | MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
-| SuperProperty_Yield_Await
-| MetaProperty
-| NEW MemberExpression_Yield_Await Arguments_Yield_Await
-;
-
-MemberExpression_Yield_Await_NoLet_NoLetOnly :
-  PrimaryExpression_Yield_Await_NoLet
-| MemberExpression_Yield_Await_NoLet LBRACK Expression_In_Yield_Await RBRACK
-| MemberExpression_Yield_Await_NoLet DOT IdentifierNameRef
-| MemberExpression_Yield_Await_NoLet DOT ClassPrivateRef
-| MemberExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
-| MemberExpression_Yield_Await_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Yield_Await
 | MetaProperty
 | NEW MemberExpression_Yield_Await Arguments_Yield_Await
@@ -2327,18 +2175,6 @@ MemberExpression_Yield_NoLet :
 | NEW MemberExpression_Yield Arguments_Yield
 ;
 
-MemberExpression_Yield_NoLetOnly :
-  PrimaryExpression_Yield_NoLet
-| MemberExpression_Yield LBRACK Expression_In_Yield RBRACK
-| MemberExpression_Yield DOT IdentifierNameRef
-| MemberExpression_Yield DOT ClassPrivateRef
-| MemberExpression_Yield TemplateLiteral_Yield
-| MemberExpression_Yield /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
-;
-
 MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass :
   PrimaryExpression_Yield_NoObjLiteral_NoFuncClass
 | MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly LBRACK Expression_In_Yield RBRACK
@@ -2358,18 +2194,6 @@ MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly :
 | MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass DOT ClassPrivateRef
 | MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
 | MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass /*.noLineBreak*/ EXCL
-| SuperProperty_Yield
-| MetaProperty
-| NEW MemberExpression_Yield Arguments_Yield
-;
-
-MemberExpression_Yield_NoLet_NoLetOnly :
-  PrimaryExpression_Yield_NoLet
-| MemberExpression_Yield_NoLet LBRACK Expression_In_Yield RBRACK
-| MemberExpression_Yield_NoLet DOT IdentifierNameRef
-| MemberExpression_Yield_NoLet DOT ClassPrivateRef
-| MemberExpression_Yield_NoLet TemplateLiteral_Yield
-| MemberExpression_Yield_NoLet /*.noLineBreak*/ EXCL
 | SuperProperty_Yield
 | MetaProperty
 | NEW MemberExpression_Yield Arguments_Yield
@@ -7092,13 +6916,6 @@ AssertsType :
   ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs IS Type
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs
-;
-
-AssertsType_NoQuest :
-  ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS IS Type_NoQuest
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs THIS
-| ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs IS Type_NoQuest
 | ASSERTS /*.noLineBreak*/ lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs
 ;
 
