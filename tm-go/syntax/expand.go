@@ -29,12 +29,12 @@ func Expand(m *Model) error {
 		Model: m,
 		m:     make(map[string]int),
 		perm:  make([]int, len(m.Nonterms)),
+		reuse: make([]int, 0, 16),
 	}
-	local := make([]int, 0, 16)
+	max := len(m.Nonterms)
 	for i, nt := range m.Nonterms {
 		e.curr = i
-		base := e.extra
-		e.perm[i] = i + base
+		e.perm[i] = i + e.extra
 		switch nt.Value.Kind {
 		case Choice:
 			var out []*Expr
@@ -54,20 +54,11 @@ func Expand(m *Model) error {
 		}
 
 		// Sort the inserted nonterminals inside the permutation.
-		size := e.extra - base
-		if size == 0 {
+		if nt.group > 0 && i+1 < max && nt.group == m.Nonterms[i+1].group {
+			// Delay sorting until we are past all the instantiations of one template.
 			continue
 		}
-		local = append(local[:0], i)
-		for k := len(e.Nonterms) - size; k < len(e.Nonterms); k++ {
-			local = append(local, k)
-		}
-		sort.Slice(local, func(i, j int) bool {
-			return e.Nonterms[local[i]].Name < e.Nonterms[local[j]].Name
-		})
-		for k, nt := range local {
-			e.perm[nt] = i + base + k
-		}
+		e.sortTail()
 	}
 
 	// Move the extracted nonterminals next to their first usage.
@@ -140,6 +131,36 @@ type expander struct {
 	extra int
 	perm  []int
 	m     map[string]int // name -> index in Model.Nonterms
+
+	start int // nonterminal, for sorting
+	base  int
+	reuse []int
+}
+
+func (e *expander) sortTail() {
+	start := e.start
+	base := e.base
+	e.base = e.extra
+	e.start = e.curr + 1
+
+	size := e.extra - base
+	if size == 0 {
+		return
+	}
+	local := e.reuse[:0]
+	for i := start; i <= e.curr; i++ {
+		local = append(local, i)
+	}
+	for k := len(e.Nonterms) - size; k < len(e.Nonterms); k++ {
+		local = append(local, k)
+	}
+	sort.Slice(local, func(i, j int) bool {
+		return e.Nonterms[local[i]].Name < e.Nonterms[local[j]].Name
+	})
+	for k, nt := range local {
+		e.perm[nt] = start + base + k
+	}
+	e.reuse = local // return for reuse
 }
 
 func (e *expander) extractNonterm(expr *Expr) *Expr {

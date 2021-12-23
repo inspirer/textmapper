@@ -303,7 +303,8 @@ func TestParser(t *testing.T) {
 			t.Errorf("parse(%v) failed with %v", tc.input, err)
 			continue
 		}
-		stripModelAndOrigin(got)
+		stripSelfRef(got)
+		stripOrigin(got)
 		if diff := dump.Diff(tc.want, got); diff != "" {
 			t.Errorf("parse(%v) produced diff (-want +got):\n%s", tc.input, diff)
 		}
@@ -311,24 +312,14 @@ func TestParser(t *testing.T) {
 }
 
 func stripSelfRef(m *syntax.Model) {
-	var visit func(nt *syntax.Nonterm, e *syntax.Expr)
-	visit = func(nt *syntax.Nonterm, e *syntax.Expr) {
-		if e.Model != nil {
-			e.Model = nil
-		}
-		for _, sub := range e.Sub {
-			visit(nt, sub)
-		}
-	}
-	for _, nt := range m.Nonterms {
-		visit(nt, nt.Value)
-	}
+	m.ForEach(-1, func(_ *syntax.Nonterm, expr *syntax.Expr) {
+		expr.Model = nil
+	})
 }
 
-func stripModelAndOrigin(m *syntax.Model) {
+func stripOrigin(m *syntax.Model) {
 	m.ForEach(-1, func(_ *syntax.Nonterm, expr *syntax.Expr) {
 		expr.Origin = nil
-		expr.Model = nil
 	})
 	m.ForEach(syntax.Reference, func(_ *syntax.Nonterm, expr *syntax.Expr) {
 		for i := range expr.Args {
@@ -350,6 +341,7 @@ func stripModelAndOrigin(m *syntax.Model) {
 	}
 	for _, nt := range m.Nonterms {
 		nt.Origin = nil
+		nt.ClearGroup()
 	}
 }
 

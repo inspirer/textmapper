@@ -261,7 +261,7 @@ type boundParam struct {
 type instance struct {
 	index   int
 	nonterm int
-	args    []boundParam
+	args    []boundParam // sorted by "param"
 	suffix  string
 	val     *Expr
 }
@@ -311,6 +311,10 @@ func (i *instantiator) allocate(key []int) interface{} {
 	for _, index := range key[1:] {
 		ret.args = append(ret.args, i.bound[index])
 	}
+	// Sort for stable suffix generation.
+	sort.Slice(ret.args, func(i, j int) bool {
+		return ret.args[i].param < ret.args[j].param
+	})
 	ret.index = len(i.instances)
 	i.instances = append(i.instances, ret)
 	return ret
@@ -476,6 +480,7 @@ func Instantiate(m *Model) error {
 			Type:   nt.Type,
 			Value:  instance.val,
 			Origin: nt.Origin,
+			group:  instance.nonterm + 1,
 		})
 	}
 	sort.Slice(list, func(i, j int) bool {

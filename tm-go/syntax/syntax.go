@@ -121,6 +121,13 @@ type Nonterm struct {
 	// evaluated at runtime to determine which one should actually be reduced.
 	LA     []LAPredicate
 	Origin status.SourceNode
+
+	// For use in syntax sugar expansions. Non-zero for instantiated nonterminals.
+	group int
+}
+
+func (nt *Nonterm) ClearGroup() {
+	nt.group = 0
 }
 
 func (nt *Nonterm) String() string {

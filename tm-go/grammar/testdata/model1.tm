@@ -104,16 +104,16 @@ Simple$2opt :
 | %empty
 ;
 
+Identifier_list_Comma_separated :
+  Identifier_list_Comma_separated COMMA IDENTIFIER
+| IDENTIFIER
+;
+
 expr :
   IDENTIFIER -> Identifier -> Expr
 | LPAREN expr RPAREN -> Bar -> Expr
 | delayed_Async -> Expr
 | MINUSGT delayed_Async -> Expr
-;
-
-Identifier_list_Comma_separated :
-  Identifier_list_Comma_separated COMMA IDENTIFIER
-| IDENTIFIER
 ;
 
 expr_Foo :
