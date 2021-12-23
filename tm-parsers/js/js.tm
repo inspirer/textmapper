@@ -1579,11 +1579,11 @@ TypeQuery -> TypeQuery :
 
 # 2.9
 ImportType -> ImportType :
-    'typeof'? 'import' '(' Type ')' ('.' IdentifierReference<~Yield, ~Await> )+? .noLineBreak TypeArguments? %prec resolveShift ;
+    'typeof'? 'import' '(' Type ')' ('.' TypeQueryExpression)? .noLineBreak TypeArguments? %prec resolveShift ;
 
 TypeQueryExpression :
-    IdentifierReference<~Yield, ~Await>
-  | TypeQueryExpression '.' (IdentifierName -> ReferenceIdent)
+    IdentifierNameRef
+  | TypeQueryExpression '.' IdentifierNameRef
 ;
 
 PropertySignature -> PropertySignature :

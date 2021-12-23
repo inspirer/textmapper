@@ -1265,6 +1265,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.ImportType, []string{
 		`function adopt(p: «import("./module").Pet») {}`,
+		`function adopt(p: «typeof import("./module").const.let.typeof») {}`,
 		`export declare const hash: «import("crypto").Hash»;`,
 		`export declare const hash: «import("crypto").Hash<foo, Bar>»;`,
 		`export declare const hash: «import("crypto")<X>»;`,

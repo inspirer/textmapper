@@ -26,78 +26,78 @@ func (e SyntaxError) Error() string {
 }
 
 func (p *Parser) ParseModule(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 8, 8677, lexer)
+	return p.parse(ctx, 8, 8675, lexer)
 }
 
 func (p *Parser) ParseTypeSnippet(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 9, 8678, lexer)
+	return p.parse(ctx, 9, 8676, lexer)
 }
 
 func (p *Parser) ParseExpressionSnippet(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 10, 8679, lexer)
+	return p.parse(ctx, 10, 8677, lexer)
 }
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 4983:
+	case 4981:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 8666, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 0, 8664, s); ok {
 			sym = 776 /* lookahead_StartOfArrowFunction */
 		} else {
 			sym = 177 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 4984:
+	case 4982:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 3, 8669, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 3, 8667, s); ok {
 			sym = 868 /* lookahead_StartOfTypeImport */
 		} else {
 			sym = 869 /* lookahead_notStartOfTypeImport */
 		}
 		return
-	case 4985:
+	case 4983:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 1, 8667, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 1, 8665, s); ok {
 			sym = 358 /* lookahead_StartOfParametrizedCall */
 		} else {
 			sym = 330 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 4986:
+	case 4984:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 4, 8670, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 4, 8668, s); ok {
 			sym = 932 /* lookahead_StartOfIs */
 		} else {
 			sym = 934 /* lookahead_notStartOfIs */
 		}
 		return
-	case 4987:
+	case 4985:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 6, 8672, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 6, 8670, s); ok {
 			sym = 968 /* lookahead_StartOfMappedType */
 		} else {
 			sym = 958 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 4988:
+	case 4986:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 5, 8671, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 5, 8669, s); ok {
 			sym = 980 /* lookahead_StartOfFunctionType */
 		} else {
 			sym = 951 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 4989:
+	case 4987:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 7, 8673, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 7, 8671, s); ok {
 			sym = 972 /* lookahead_StartOfTupleElementName */
 		} else {
 			sym = 973 /* lookahead_notStartOfTupleElementName */
 		}
 		return
-	case 4990:
+	case 4988:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 2, 8668, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 2, 8666, s); ok {
 			sym = 837 /* lookahead_StartOfExtendsTypeRef */
 		} else {
 			sym = 838 /* lookahead_notStartOfExtendsTypeRef */
@@ -108,35 +108,35 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtStartOfArrowFunction(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 0, 8666, s)
+	return lookahead(ctx, lexer, next, 0, 8664, s)
 }
 
 func AtStartOfParametrizedCall(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 1, 8667, s)
+	return lookahead(ctx, lexer, next, 1, 8665, s)
 }
 
 func AtStartOfExtendsTypeRef(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 2, 8668, s)
+	return lookahead(ctx, lexer, next, 2, 8666, s)
 }
 
 func AtStartOfTypeImport(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 3, 8669, s)
+	return lookahead(ctx, lexer, next, 3, 8667, s)
 }
 
 func AtStartOfIs(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 4, 8670, s)
+	return lookahead(ctx, lexer, next, 4, 8668, s)
 }
 
 func AtStartOfFunctionType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 5, 8671, s)
+	return lookahead(ctx, lexer, next, 5, 8669, s)
 }
 
 func AtStartOfMappedType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 6, 8672, s)
+	return lookahead(ctx, lexer, next, 6, 8670, s)
 }
 
 func AtStartOfTupleElementName(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 7, 8673, s)
+	return lookahead(ctx, lexer, next, 7, 8671, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
@@ -428,27 +428,25 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4640: // ConstructorType_NoQuest : 'abstract' 'new' ParameterList '=>' Type_NoQuest
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4655: // TypeQueryExpression : TypeQueryExpression '.' IdentifierName
-		p.listener(ReferenceIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4840: // IndexSignature : Modifiers '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4838: // IndexSignature : Modifiers '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4841: // IndexSignature : '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4839: // IndexSignature : '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4842: // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4840: // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 4843: // IndexSignature_WithDeclare : '[' IdentifierName ':' Type ']' TypeAnnotation
+	case 4841: // IndexSignature_WithDeclare : '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 4857: // EnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	case 4855: // EnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
 		p.listener(TsConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4883: // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
+	case 4881: // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
 		p.listener(Var, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4884: // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
+	case 4882: // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
 		p.listener(LetOrConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4885: // AmbientVariableDeclaration : 'const' AmbientBindingList ';'
+	case 4883: // AmbientVariableDeclaration : 'const' AmbientBindingList ';'
 		p.listener(LetOrConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4899: // AmbientEnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	case 4897: // AmbientEnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
 		p.listener(TsConst, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4983:
+	case 4981:
 		var ok bool
 		if ok, err = AtStartOfArrowFunction(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 776 /* lookahead_StartOfArrowFunction */
@@ -456,7 +454,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 177 /* lookahead_notStartOfArrowFunction */
 		}
 		return
-	case 4984:
+	case 4982:
 		var ok bool
 		if ok, err = AtStartOfTypeImport(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 868 /* lookahead_StartOfTypeImport */
@@ -464,7 +462,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 869 /* lookahead_notStartOfTypeImport */
 		}
 		return
-	case 4985:
+	case 4983:
 		var ok bool
 		if ok, err = AtStartOfParametrizedCall(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 358 /* lookahead_StartOfParametrizedCall */
@@ -472,7 +470,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 330 /* lookahead_notStartOfParametrizedCall */
 		}
 		return
-	case 4986:
+	case 4984:
 		var ok bool
 		if ok, err = AtStartOfIs(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 932 /* lookahead_StartOfIs */
@@ -480,7 +478,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 934 /* lookahead_notStartOfIs */
 		}
 		return
-	case 4987:
+	case 4985:
 		var ok bool
 		if ok, err = AtStartOfMappedType(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 968 /* lookahead_StartOfMappedType */
@@ -488,7 +486,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 958 /* lookahead_notStartOfMappedType */
 		}
 		return
-	case 4988:
+	case 4986:
 		var ok bool
 		if ok, err = AtStartOfFunctionType(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 980 /* lookahead_StartOfFunctionType */
@@ -496,7 +494,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 951 /* lookahead_notStartOfFunctionType */
 		}
 		return
-	case 4989:
+	case 4987:
 		var ok bool
 		if ok, err = AtStartOfTupleElementName(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 972 /* lookahead_StartOfTupleElementName */
@@ -504,7 +502,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			lhs.sym.symbol = 973 /* lookahead_notStartOfTupleElementName */
 		}
 		return
-	case 4990:
+	case 4988:
 		var ok bool
 		if ok, err = AtStartOfExtendsTypeRef(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 837 /* lookahead_StartOfExtendsTypeRef */

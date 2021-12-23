@@ -7308,24 +7308,19 @@ TypeQuery :
 ;
 
 ImportType :
-  TYPEOF IMPORT LPAREN Type RPAREN list_of_DOT_and_1_elements /*.noLineBreak*/ TypeArguments %prec RESOLVESHIFT
-| TYPEOF IMPORT LPAREN Type RPAREN list_of_DOT_and_1_elements /*.noLineBreak*/ %prec RESOLVESHIFT
+  TYPEOF IMPORT LPAREN Type RPAREN DOT TypeQueryExpression /*.noLineBreak*/ TypeArguments %prec RESOLVESHIFT
+| TYPEOF IMPORT LPAREN Type RPAREN DOT TypeQueryExpression /*.noLineBreak*/ %prec RESOLVESHIFT
 | TYPEOF IMPORT LPAREN Type RPAREN /*.noLineBreak*/ TypeArguments %prec RESOLVESHIFT
 | TYPEOF IMPORT LPAREN Type RPAREN /*.noLineBreak*/ %prec RESOLVESHIFT
-| IMPORT LPAREN Type RPAREN list_of_DOT_and_1_elements /*.noLineBreak*/ TypeArguments %prec RESOLVESHIFT
-| IMPORT LPAREN Type RPAREN list_of_DOT_and_1_elements /*.noLineBreak*/ %prec RESOLVESHIFT
+| IMPORT LPAREN Type RPAREN DOT TypeQueryExpression /*.noLineBreak*/ TypeArguments %prec RESOLVESHIFT
+| IMPORT LPAREN Type RPAREN DOT TypeQueryExpression /*.noLineBreak*/ %prec RESOLVESHIFT
 | IMPORT LPAREN Type RPAREN /*.noLineBreak*/ TypeArguments %prec RESOLVESHIFT
 | IMPORT LPAREN Type RPAREN /*.noLineBreak*/ %prec RESOLVESHIFT
 ;
 
-list_of_DOT_and_1_elements :
-  list_of_DOT_and_1_elements DOT IdentifierReference
-| DOT IdentifierReference
-;
-
 TypeQueryExpression :
-  IdentifierReference
-| TypeQueryExpression DOT IdentifierName
+  IdentifierNameRef
+| TypeQueryExpression DOT IdentifierNameRef
 ;
 
 PropertySignature :
