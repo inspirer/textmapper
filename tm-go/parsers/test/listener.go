@@ -30,12 +30,12 @@ const (
 	Test     // (Declaration)+
 	TestClause
 	TestIntClause // Icon
-	Int7
-	Int9
 	MultiLineComment
 	SingleLineComment
 	InvalidToken
 	Identifier
+	Int7
+	Int9
 	NodeTypeMax
 )
 
@@ -57,12 +57,12 @@ var nodeTypeStr = [...]string{
 	"Test",
 	"TestClause",
 	"TestIntClause",
-	"Int7",
-	"Int9",
 	"MultiLineComment",
 	"SingleLineComment",
 	"InvalidToken",
 	"Identifier",
+	"Int7",
+	"Int9",
 }
 
 func (t NodeType) String() string {

@@ -18,10 +18,10 @@ const (
 	JSONObject
 	JSONText
 	JSONValue
-	NonExistingType
 	MultiLineComment
 	InvalidToken
 	JsonString
+	NonExistingType
 	NodeTypeMax
 )
 
@@ -33,10 +33,10 @@ var nodeTypeStr = [...]string{
 	"JSONObject",
 	"JSONText",
 	"JSONValue",
-	"NonExistingType",
 	"MultiLineComment",
 	"InvalidToken",
 	"JsonString",
+	"NonExistingType",
 }
 
 func (t NodeType) String() string {

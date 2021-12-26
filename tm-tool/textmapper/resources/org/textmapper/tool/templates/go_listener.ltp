@@ -38,11 +38,11 @@ const (
 ${foreach rangeType in syntax.rangeTypes-}
 	${rangeType->nodeTypeValueRef()->go.declarationName()}${call typedescr(rangeType)}
 ${end-}
-${foreach extraType in opts.extraTypes-}
-	${extraType->stripArrows()->nodeTypeValueRef()->go.declarationName()}
-${end-}
 ${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
 	${name->nodeTypeValueRef()->go.declarationName()}
+${end-}
+${foreach extraType in opts.extraTypes-}
+	${extraType->stripArrows()->nodeTypeValueRef()->go.declarationName()}
 ${end-}
 	${self->nodeType()}Max
 )
@@ -52,11 +52,11 @@ var nodeTypeStr = [...]string{
 ${foreach rangeType in syntax.rangeTypes-}
 	"${rangeType->nodeTypeValueString()}",
 ${end-}
-${foreach extraType in opts.extraTypes-}
-	"${extraType->stripArrows()->nodeTypeValueString()}",
-${end-}
 ${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
 	"${name->nodeTypeValueString()}",
+${end-}
+${foreach extraType in opts.extraTypes-}
+	"${extraType->stripArrows()->nodeTypeValueString()}",
 ${end-}
 }
 

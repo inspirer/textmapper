@@ -247,7 +247,6 @@ const (
 	WhileStmt // Expr Stmt
 	WithStmt  // Expr Stmt
 	Yield     // Expr?
-	InsertedSemicolon
 	MultiLineComment
 	SingleLineComment
 	InvalidToken
@@ -255,6 +254,7 @@ const (
 	TemplateHead
 	TemplateMiddle
 	TemplateTail
+	InsertedSemicolon
 	NodeTypeMax
 )
 
@@ -495,7 +495,6 @@ var nodeTypeStr = [...]string{
 	"WhileStmt",
 	"WithStmt",
 	"Yield",
-	"InsertedSemicolon",
 	"MultiLineComment",
 	"SingleLineComment",
 	"InvalidToken",
@@ -503,6 +502,7 @@ var nodeTypeStr = [...]string{
 	"TemplateHead",
 	"TemplateMiddle",
 	"TemplateTail",
+	"InsertedSemicolon",
 }
 
 func (t NodeType) String() string {
