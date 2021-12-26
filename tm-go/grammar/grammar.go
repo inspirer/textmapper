@@ -204,13 +204,14 @@ type Lexer struct {
 
 // Parser is a model of a generated parser.
 type Parser struct {
-	Inputs   []syntax.Input
-	Nonterms []*syntax.Nonterm
-	Prec     []lalr.Precedence // TODO remove since this is a lalr input
-	Rules    []lalr.Rule
-	Tables   *lalr.Tables
-	Actions  []SemanticAction
-	Types    *syntax.Types
+	Inputs    []syntax.Input
+	Nonterms  []*syntax.Nonterm
+	Prec      []lalr.Precedence // TODO remove since this is a lalr input
+	Rules     []lalr.Rule
+	Tables    *lalr.Tables
+	Actions   []SemanticAction
+	UsesFlags bool
+	Types     *syntax.Types
 }
 
 // Options carries grammar generation parameters.

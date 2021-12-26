@@ -585,6 +585,20 @@ var tmRuleSymbol = []int32{
 {{- int_array .Parser.Tables.RuleSymbol "\t" 79 -}}
 }
 
+{{- if .Parser.UsesFlags}}
+
+var tmRuleType = [...]uint32{
+{{- range .Parser.Rules}}
+{{- if ne .Type -1 }}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+	{{if ne $val.Name $.Options.FileNode}}uint32({{$val.Name}}){{if .Flags}} + uint32({{join .Flags " | "}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+{{- else }}
+	0, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
+}
+{{- else }}
+
 var tmRuleType = [...]{{ref "NodeType"}}{
 {{- range .Parser.Rules}}
 {{- if ne .Type -1 }}
@@ -595,6 +609,7 @@ var tmRuleType = [...]{{ref "NodeType"}}{
 {{- end}}
 {{- end}}
 }
+{{- end }}
 
 {{- range .Sets}}
 
@@ -610,10 +625,17 @@ var {{.Name}} = []int32{
 const parserListenerTpl = `
 {{- template "header" . -}}
 package {{.Name}}
+{{if .Parser.UsesFlags}}
+type NodeType uint16
 
+type NodeFlags uint16
+
+type Listener func(t NodeType, flags NodeFlags, offset, endoffset int)
+{{- else}}
 type NodeType int
 
 type Listener func(t NodeType, offset, endoffset int)
+{{- end}}
 
 const (
 	NoType NodeType = iota

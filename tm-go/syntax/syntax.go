@@ -185,8 +185,10 @@ func (e *Expr) Equal(oth *Expr) bool {
 			}
 		}
 		return true
-	case Assign, Append, Arrow:
+	case Assign, Append:
 		return e.Name == oth.Name && e.Sub[0].Equal(oth.Sub[0])
+	case Arrow:
+		return e.Name == oth.Name && sliceEqual(e.ArrowFlags, oth.ArrowFlags) && e.Sub[0].Equal(oth.Sub[0])
 	case Prec:
 		return e.Symbol == oth.Symbol && e.Sub[0].Equal(oth.Sub[0])
 	case StateMarker, Command:
@@ -656,4 +658,16 @@ func checkSet(m *Model, set *TokenSet) error {
 		}
 	}
 	return nil
+}
+
+func sliceEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, ai := range a {
+		if ai != b[i] {
+			return false
+		}
+	}
+	return true
 }

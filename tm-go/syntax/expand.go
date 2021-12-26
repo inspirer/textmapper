@@ -241,10 +241,11 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 				continue
 			}
 			ret[i] = &Expr{
-				Kind:   expr.Kind,
-				Sub:    []*Expr{val},
-				Name:   expr.Name,
-				Origin: expr.Origin,
+				Kind:       expr.Kind,
+				Sub:        []*Expr{val},
+				Name:       expr.Name,
+				ArrowFlags: expr.ArrowFlags,
+				Origin:     expr.Origin,
 			}
 		}
 		return ret

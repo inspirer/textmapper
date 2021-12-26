@@ -1555,6 +1555,9 @@ func (c *compiler) generateTables() error {
 					if t, ok := types[expr.Name]; ok { // !ok for categories
 						end := len(rule.RHS)
 						report = append(report, Range{start, end, t, expr.ArrowFlags})
+						if len(expr.ArrowFlags) != 0 {
+							c.out.Parser.UsesFlags = true
+						}
 					}
 				case syntax.Sequence, syntax.Assign, syntax.Append:
 					for _, sub := range expr.Sub {
