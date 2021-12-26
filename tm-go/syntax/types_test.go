@@ -213,7 +213,7 @@ func TestTypes(t *testing.T) {
 		}
 
 		var got []string
-		types, err := syntax.ExtractTypes(model)
+		types, err := syntax.ExtractTypes(model, nil /*tokens*/)
 		if err != nil {
 			s := status.FromError(err)
 			s.Sort()

@@ -10,7 +10,6 @@ import (
 	"github.com/inspirer/textmapper/tm-go/lex"
 	"github.com/inspirer/textmapper/tm-go/status"
 	"github.com/inspirer/textmapper/tm-go/syntax"
-	"github.com/inspirer/textmapper/tm-go/util/ident"
 )
 
 // Names of common terminals with predefined meaning.
@@ -75,15 +74,6 @@ func (g *Grammar) TokensWithoutPrec() []Symbol {
 	return ret
 }
 
-// ReportTokens returns node types that come directly from the tokens.
-func (g *Grammar) ReportTokens() []string {
-	var ret []string
-	for _, tok := range g.Options.ReportTokens {
-		ret = append(ret, ident.Produce(g.Syms[tok].Name, ident.CamelCase))
-	}
-	return ret
-}
-
 // SpaceActions returns a sorted list of space-only actions.
 func (g *Grammar) SpaceActions() []int {
 	var ret []int
@@ -96,7 +86,7 @@ func (g *Grammar) SpaceActions() []int {
 	return ret
 }
 
-// RuleString returns a user-friendly rendering of a given rule.
+// ExprString returns a user-friendly rendering of a given rule.
 func (g *Grammar) ExprString(e *syntax.Expr) string {
 	switch e.Kind {
 	case syntax.Empty:

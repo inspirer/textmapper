@@ -645,9 +645,6 @@ const (
 {{- range .Options.ExtraTypes }}
 	{{.}}
 {{- end}}
-{{- range .ReportTokens }}
-	{{.}}
-{{- end}}
 	NodeTypeMax
 )
 
@@ -657,9 +654,6 @@ var nodeTypeStr = [...]string{
 	"{{.Name}}",
 {{- end}}
 {{- range .Options.ExtraTypes }}
-	"{{.}}",
-{{- end}}
-{{- range .ReportTokens }}
 	"{{.}}",
 {{- end}}
 }

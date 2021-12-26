@@ -23,9 +23,9 @@ func Compile(file ast.File, compat bool) (*Grammar, error) {
 	c := newCompiler(file, compat)
 	c.parseOptions()
 	c.compileLexer()
-	c.compileParser()
 
 	c.resolveOptions()
+	c.compileParser()
 
 	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
 	c.out.CustomTemplates = parseInGrammarTemplates(tpl)
@@ -1445,8 +1445,14 @@ func (c *compiler) compileParser() {
 	}
 
 	// TODO enable for all files
-	if c.out.Options.EventBased && c.file.Header().Name().Text() == "tm" {
-		types, err := syntax.ExtractTypes(c.source)
+	if c.out.Options.EventBased && (c.file.Header().Name().Text() == "tm" || c.file.Header().Name().Text() == "test") {
+		var tokens []syntax.RangeToken
+		for _, t := range c.out.Options.ReportTokens {
+			name := ident.Produce(c.out.Syms[t].Name, ident.CamelCase)
+			tokens = append(tokens, syntax.RangeToken{Token: t, Name: name})
+		}
+
+		types, err := syntax.ExtractTypes(c.source, tokens)
 		if err != nil {
 			c.s.AddError(err)
 			return
@@ -1488,7 +1494,7 @@ func (c *compiler) compileParser() {
 
 func (c *compiler) generateTables() error {
 	switch c.file.Header().Name().Text() {
-	case "simple", "conflict1", "tm", "lr0", "greedy":
+	case "simple", "conflict1", "tm", "lr0", "greedy", "test":
 	default:
 		// TODO enable for all files
 		return nil

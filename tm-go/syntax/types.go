@@ -17,6 +17,12 @@ type Types struct {
 	Categories []Category // sorted by name
 }
 
+// RangeToken maps a terminal to an AST node.
+type RangeToken struct {
+	Token int
+	Name  string
+}
+
 // Category describes a class of AST nodes that can be treated uniformly.
 // E.g. statements or expressions.
 type Category struct {
@@ -68,15 +74,15 @@ type RangeField struct {
 // structure of the produced AST.
 //
 // Note: the function is expected to work on a grammar without templates.
-func ExtractTypes(m *Model) (*Types, error) {
-	c := newTypeCollector(m)
+func ExtractTypes(m *Model, tokens []RangeToken) (*Types, error) {
+	c := newTypeCollector(m, tokens)
 	c.resolveTypes()
 	c.resolveCategories()
 	c.fixConflictingFields()
 	return c.out, c.s.Err()
 }
 
-func newTypeCollector(m *Model) *typeCollector {
+func newTypeCollector(m *Model, tokens []RangeToken) *typeCollector {
 	seen := make(map[int]bool) // nonterminals
 	var nonterms []int
 
@@ -108,6 +114,12 @@ func newTypeCollector(m *Model) *typeCollector {
 	}
 	sort.Ints(nonterms)
 
+	reportTokens := container.NewBitSet(len(m.Terminals))
+	for _, tok := range tokens {
+		reportTokens.Set(tok.Token)
+	}
+	tokenSet := container.NewBitSet(len(m.Terminals))
+
 	var arrows []*Expr
 	dfs = func(expr *Expr) {
 		switch expr.Kind {
@@ -115,6 +127,10 @@ func newTypeCollector(m *Model) *typeCollector {
 			arrows = append(arrows, expr)
 		case Lookahead, LookaheadNot:
 			return
+		case Reference:
+			if expr.Symbol < len(m.Terminals) && reportTokens.Get(expr.Symbol) {
+				tokenSet.Set(expr.Symbol)
+			}
 		}
 		for _, e := range expr.Sub {
 			dfs(e)
@@ -130,21 +146,29 @@ func newTypeCollector(m *Model) *typeCollector {
 	}
 
 	return &typeCollector{
-		m:        m,
-		nonterms: nonterms,
-		arrows:   arrows,
-		isCat:    isCat,
-		out:      &Types{},
+		m:            m,
+		nonterms:     nonterms,
+		arrows:       arrows,
+		isCat:        isCat,
+		tokens:       tokens,
+		reportTokens: reportTokens,
+		tokenSet:     tokenSet.Slice(nil),
+		out:          &Types{},
 	}
 }
 
 type typeCollector struct {
-	m        *Model
-	nonterms []int
-	arrows   []*Expr
-	isCat    map[string]bool
-	types    map[string]int // name -> index in out.RangeTypes
-	cats     map[string][]int
+	m            *Model
+	nonterms     []int
+	arrows       []*Expr
+	isCat        map[string]bool
+	tokens       []RangeToken
+	reportTokens container.BitSet
+	tokenSet     []int // actually used "tokens", sorted
+
+	types      map[string]int // name -> index in out.RangeTypes
+	tokenTypes map[int]int
+	cats       map[string][]int
 
 	// Tarjan state for detecting AST cycles on nonterminals
 	stack    []int
@@ -258,6 +282,11 @@ func (c *typeCollector) exprPhrase(expr *Expr) phrase {
 		if nonterm := expr.Symbol - len(c.m.Terminals); nonterm >= 0 {
 			return c.nontermPhrase(nonterm)
 		}
+		// Some terminals get injected into the AST directly.
+		if c.reportTokens.Get(expr.Symbol) {
+			rt := c.tokenTypes[expr.Symbol]
+			return newTermPhrase(c.out.RangeTypes[rt].Name, expr)
+		}
 	case Prec:
 		return c.exprPhrase(expr.Sub[0])
 	case Optional, List:
@@ -310,6 +339,16 @@ func (c *typeCollector) resolveTypes() {
 	for index, t := range types {
 		c.types[t] = index
 		c.out.RangeTypes = append(c.out.RangeTypes, RangeType{Name: t})
+	}
+	c.tokenTypes = make(map[int]int)
+	for _, tok := range c.tokens {
+		index, ok := c.types[tok.Name]
+		if !ok {
+			index = len(c.out.RangeTypes)
+			c.types[tok.Name] = index
+			c.out.RangeTypes = append(c.out.RangeTypes, RangeType{Name: tok.Name})
+		}
+		c.tokenTypes[tok.Token] = index
 	}
 
 	def := make([][]*Expr, len(types))
@@ -375,6 +414,16 @@ func (c *typeCollector) resolveCategories() {
 			byName[arrow.Name] = index
 		}
 		def[index] = append(def[index], arrow.Sub[0])
+	}
+
+	if _, ok := byName["TokenSet"]; !ok && len(c.tokenSet) > 0 {
+		// Instantiate a synthetic category: TokenSet (unless the name is already taken).
+		types := container.NewBitSet(len(c.out.RangeTypes))
+		for _, t := range c.tokenSet {
+			types.Set(c.tokenTypes[t])
+		}
+		cats = append(cats, closure.Add(types.Slice(nil)))
+		c.out.Categories = append(c.out.Categories, Category{Name: "TokenSet"})
 	}
 
 	var target *set.FutureSet
@@ -455,6 +504,9 @@ func (c *typeCollector) resolveCategories() {
 				card[nonterm] = ret
 				// Note: if ret says "ambiguous", we've reported this already.
 				return ret
+			}
+			if c.reportTokens.Get(expr.Symbol) {
+				target.Include(closure.Add([]int{c.tokenTypes[expr.Symbol]}))
 			}
 		case Prec, Assign, Append:
 			return dfs(expr.Sub[0])
@@ -657,6 +709,19 @@ func newPhrase(arrow *Expr) phrase {
 	return phrase{
 		fields:  []*field{f},
 		origin:  arrow,
+		ordered: true,
+	}
+}
+
+func newTermPhrase(name string, ref *Expr) phrase {
+	f := &field{
+		types:  []string{name},
+		origin: ref.Origin,
+	}
+	f.updateIdentity()
+	return phrase{
+		fields:  []*field{f},
+		origin:  ref,
 		ordered: true,
 	}
 }
