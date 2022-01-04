@@ -34,9 +34,11 @@ type stackEntry struct {
 func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	p.eh = eh
 	p.listener = l
-	p.pending = make([]symbol, 0, startTokenBufferSize)
+	if cap(p.pending) < startTokenBufferSize {
+		p.pending = make([]symbol, 0, startTokenBufferSize)
+	}
 	p.lastToken = UNAVAILABLE
-	p.afterNext.symbol = -1
+	p.afterNext.symbol = noToken
 }
 
 const (
@@ -53,6 +55,7 @@ type session struct {
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
+	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 	var s session
 	s.cache = make(map[uint64]bool)
@@ -128,13 +131,21 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(tok)
+			if p.next.symbol == eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
 				}
-				p.pending = p.pending[:0]
 			}
 			if state != -1 && p.next.symbol != eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				switch Token(p.next.symbol) {
 				case NOSUBSTITUTIONTEMPLATE:
 					p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
@@ -158,6 +169,12 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				lastErr = SyntaxError{
 					Line:      lexer.Line(),
 					Offset:    p.next.offset,
@@ -168,12 +185,6 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				}
 			}
 			stack = p.recoverFromError(lexer, stack)
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(tok)
-				}
-				p.pending = p.pending[:0]
-			}
 			if stack == nil {
 				return lastErr
 			}
@@ -233,7 +244,13 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 				break
 			}
 			// Semicolon insertion is not reliable on broken input, try to look behind the semicolon.
-			if p.afterNext.symbol != -1 && p.willShift(pos, errState, p.afterNext.symbol, stack) {
+			if p.afterNext.symbol != noToken && p.willShift(pos, errState, p.afterNext.symbol, stack) {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				p.fetchNext(lexer, stack)
 				matchingPos = pos
 				break
@@ -354,9 +371,9 @@ func (p *Parser) insertSC(state int16, offset int) {
 // This function also takes care of semicolons by implementing the "Automatic
 // Semicolon Insertion" rules.
 func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
-	if p.afterNext.symbol != -1 {
+	if p.afterNext.symbol != noToken {
 		p.next = p.afterNext
-		p.afterNext.symbol = -1
+		p.afterNext.symbol = noToken
 		return
 	}
 

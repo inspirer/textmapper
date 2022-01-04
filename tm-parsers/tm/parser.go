@@ -50,7 +50,9 @@ type stackEntry struct {
 func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	p.eh = eh
 	p.listener = l
-	p.pending = make([]symbol, 0, startTokenBufferSize)
+	if cap(p.pending) < startTokenBufferSize {
+		p.pending = make([]symbol, 0, startTokenBufferSize)
+	}
 }
 
 const (
@@ -66,6 +68,7 @@ func (p *Parser) Parse(lexer *Lexer) error {
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
+	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 	state := start
 	var lastErr SyntaxError
@@ -127,13 +130,21 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(tok)
+			if p.next.symbol == eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
 				}
-				p.pending = p.pending[:0]
 			}
 			if state != -1 && p.next.symbol != eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				p.next.symbol = noToken
 			}
 			if recovering > 0 {
@@ -146,6 +157,12 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				lastErr = SyntaxError{
 					Line:      lexer.Line(),
 					Offset:    p.next.offset,
@@ -155,12 +172,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 					return lastErr
 				}
 			}
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(tok)
-				}
-				p.pending = p.pending[:0]
-			}
+
 			if stack = p.recoverFromError(lexer, stack); stack == nil {
 				return lastErr
 			}
@@ -210,6 +222,12 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 		if debugSyntax {
 			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 		}
+		if len(p.pending) > 0 {
+			for _, tok := range p.pending {
+				p.reportIgnoredToken(tok)
+			}
+			p.pending = p.pending[:0]
+		}
 		e = p.next.endoffset
 		p.fetchNext(lexer, stack)
 	}
@@ -244,12 +262,6 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 	}
 	if p.next.symbol == noToken {
 		p.fetchNext(lexer, stack)
-		if len(p.pending) > 0 {
-			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
-			}
-			p.pending = p.pending[:0]
-		}
 	}
 	s := p.next.offset
 	e := s

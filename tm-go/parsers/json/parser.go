@@ -40,7 +40,9 @@ type stackEntry struct {
 
 func (p *Parser) Init(l Listener) {
 	p.listener = l
-	p.pending = make([]symbol, 0, startTokenBufferSize)
+	if cap(p.pending) < startTokenBufferSize {
+		p.pending = make([]symbol, 0, startTokenBufferSize)
+	}
 }
 
 const (
@@ -56,6 +58,7 @@ func (p *Parser) Parse(lexer *Lexer) error {
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) error {
+	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 	state := start
 
@@ -115,13 +118,21 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(tok)
+			if p.next.symbol == eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
 				}
-				p.pending = p.pending[:0]
 			}
 			if state != -1 && p.next.symbol != eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				switch Token(p.next.symbol) {
 				case JSONSTRING:
 					p.listener(JsonString, p.next.offset, p.next.endoffset)

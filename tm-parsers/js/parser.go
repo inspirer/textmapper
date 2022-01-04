@@ -527,6 +527,12 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 		if debugSyntax {
 			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 		}
+		if len(p.pending) > 0 {
+			for _, tok := range p.pending {
+				p.reportIgnoredToken(tok)
+			}
+			p.pending = p.pending[:0]
+		}
 		switch Token(p.next.symbol) {
 		case NOSUBSTITUTIONTEMPLATE:
 			p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
