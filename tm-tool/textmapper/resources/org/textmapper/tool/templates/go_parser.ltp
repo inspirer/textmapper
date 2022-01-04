@@ -88,8 +88,8 @@ ${if self->eventBased()-}
 	p.listener = l
 ${end-}
 ${if self->ignoredReportTokens()-}
-    if cap(p.pending) < startTokenBufferSize {
-	    p.pending = make([]symbol, 0, startTokenBufferSize)
+	if cap(p.pending) < startTokenBufferSize {
+		p.pending = make([]symbol, 0, startTokenBufferSize)
 	}
 ${end-}
 ${call initStateVars-}
@@ -168,7 +168,7 @@ ${end}
 ${template parseFunc-}
 func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(${self->valueType()}, error)${end} {
 ${if self->ignoredReportTokens()-}
-    // Invariant: p.pending is only non-empty when p.next.symbol != noToken.
+	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 ${end-}
 ${if self->needSession()-}
@@ -177,7 +177,7 @@ ${if context.opts.recursiveLookaheads-}
 	s.cache = make(map[uint64]bool)
 ${end-}
 ${else if opts.cancellable-}
-  var shiftCounter int
+	var shiftCounter int
 ${end-}
 	state := start
 ${if self->hasRecovering()-}
@@ -223,7 +223,7 @@ ${end-}
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
 			if err := p.applyRule(${call contextArg}rule, &entry, rhs, lexer${self->needSession() ? ', &s' : ''}); err != nil {
-			  return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}err
+				return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}err
 			}
 			if debugSyntax {
 				"fmt".Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
@@ -252,9 +252,9 @@ ${end-}
 				"fmt".Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
 ${call onAfterShift-}
-            if p.next.symbol == eoiToken {
+			if p.next.symbol == eoiToken {
 ${call flushPending-}
-            }
+			}
 			if state != -1 && p.next.symbol != eoiToken {
 ${call flushPending-}
 ${call reportConsumedNext-}
@@ -694,10 +694,10 @@ ${end-}
 ${end}
 
 ${query callLaMethod(recurse) =
-  recurse
-    ? 'lookahead('+self->contextArg()+'lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] +
-        (self->needSession() ? ', s)' : ')')
-    : self->laMethodName() + '('+self->contextArg()+'lexer, p.next.symbol' + (self->needSession() ? ', s)' : ')') }
+	recurse
+		? 'lookahead('+self->contextArg()+'lexer, next, ' + self.index + ', ' + context.parser.finalStates[self.index] +
+				(self->needSession() ? ', s)' : ')')
+		: self->laMethodName() + '('+self->contextArg()+'lexer, p.next.symbol' + (self->needSession() ? ', s)' : ')') }
 
 ${template caseLookaheadRules(recurse)-}
 ${foreach rule in parser.lookaheadRules-}
