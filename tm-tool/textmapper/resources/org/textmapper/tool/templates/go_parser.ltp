@@ -59,7 +59,7 @@ ${if self->hasRecovering()-}
 ${end-}
 
 ${if self->ignoredReportTokens()}
-	// Tokens to be reported with the next shift.
+	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
 	pending   []symbol
 ${end-}
 ${call stateVars-}
@@ -168,7 +168,6 @@ ${end}
 ${template parseFunc-}
 func (p *Parser) parse(${call contextParam}start, end ${self->stateType()}, lexer *Lexer) ${if !self->hasAssocValuesForInput()}error${else}(${self->valueType()}, error)${end} {
 ${if self->ignoredReportTokens()-}
-	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 ${end-}
 ${if self->needSession()-}

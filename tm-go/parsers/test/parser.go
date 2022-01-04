@@ -13,7 +13,7 @@ type Parser struct {
 
 	next symbol
 
-	// Tokens to be reported with the next shift.
+	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
 	pending []symbol
 }
 
@@ -65,7 +65,6 @@ func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (interface{}, error) {
-	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 	var shiftCounter int
 	state := start

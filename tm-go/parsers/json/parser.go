@@ -12,7 +12,7 @@ type Parser struct {
 
 	next symbol
 
-	// Tokens to be reported with the next shift.
+	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
 	pending []symbol
 }
 
@@ -58,7 +58,6 @@ func (p *Parser) Parse(lexer *Lexer) error {
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) error {
-	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 	state := start
 

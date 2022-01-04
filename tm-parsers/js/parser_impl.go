@@ -55,7 +55,6 @@ type session struct {
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
-	// Invariant: p.pending is only non-empty when p.next.symbol != noToken.
 	p.pending = p.pending[:0]
 	var s session
 	s.cache = make(map[uint64]bool)
