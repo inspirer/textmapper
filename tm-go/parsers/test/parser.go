@@ -12,6 +12,9 @@ type Parser struct {
 	listener Listener
 
 	next symbol
+
+	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
+	pending []symbol
 }
 
 type SyntaxError struct {
@@ -37,6 +40,9 @@ type stackEntry struct {
 
 func (p *Parser) Init(l Listener) {
 	p.listener = l
+	if cap(p.pending) < startTokenBufferSize {
+		p.pending = make([]symbol, 0, startTokenBufferSize)
+	}
 }
 
 const (
@@ -59,20 +65,20 @@ func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (interface{}, error) {
-	ignoredTokens := make([]symbol, 0, startTokenBufferSize) // to be reported with the next shift
+	p.pending = p.pending[:0]
 	var shiftCounter int
 	state := start
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
-	ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+	p.fetchNext(lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+				p.fetchNext(lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -88,7 +94,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+					p.fetchNext(lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -117,7 +123,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack, nil)
+				p.fetchNext(lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			stack = append(stack, stackEntry{
@@ -128,13 +134,21 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
-			if len(ignoredTokens) > 0 {
-				for _, tok := range ignoredTokens {
-					p.reportIgnoredToken(tok)
+			if p.next.symbol == eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
 				}
-				ignoredTokens = ignoredTokens[:0]
 			}
 			if state != -1 && p.next.symbol != eoiToken {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				switch Token(p.next.symbol) {
 				case IDENTIFIER:
 					p.listener(Identifier, 0, p.next.offset, p.next.endoffset)
@@ -150,7 +164,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 
 	if state != end {
 		if p.next.symbol == noToken {
-			ignoredTokens = p.fetchNext(lexer, stack, ignoredTokens)
+			p.fetchNext(lexer, stack)
 		}
 		err := SyntaxError{
 			Offset:    p.next.offset,
@@ -198,23 +212,18 @@ func gotoState(state int8, symbol int32) int8 {
 	return -1
 }
 
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry, ignoredTokens []symbol) []symbol {
+func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
 	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
 		s, e := lexer.Pos()
 		tok := symbol{int32(tok), s, e}
-		if ignoredTokens == nil {
-			p.reportIgnoredToken(tok)
-		} else {
-			ignoredTokens = append(ignoredTokens, tok)
-		}
+		p.pending = append(p.pending, tok)
 		goto restart
 	}
 	p.next.symbol = int32(tok)
 	p.next.offset, p.next.endoffset = lexer.Pos()
-	return ignoredTokens
 }
 
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
