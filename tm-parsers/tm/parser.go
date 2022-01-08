@@ -122,32 +122,26 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				p.fetchNext(lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
-			stack = append(stack, stackEntry{
-				sym:   p.next,
-				state: state,
-			})
-			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
-			}
-			if p.next.symbol == eoiToken {
+			if state >= 0 {
+				stack = append(stack, stackEntry{
+					sym:   p.next,
+					state: state,
+				})
+				if debugSyntax {
+					fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+				}
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
 						p.reportIgnoredToken(tok)
 					}
 					p.pending = p.pending[:0]
 				}
-			}
-			if state != -1 && p.next.symbol != eoiToken {
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
-					}
-					p.pending = p.pending[:0]
+				if p.next.symbol != eoiToken {
+					p.next.symbol = noToken
 				}
-				p.next.symbol = noToken
-			}
-			if recovering > 0 {
-				recovering--
+				if recovering > 0 {
+					recovering--
+				}
 			}
 		}
 
@@ -262,6 +256,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 	if p.next.symbol == noToken {
 		p.fetchNext(lexer, stack)
 	}
+	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
 	e := s
 	for {
@@ -288,7 +283,18 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		}
 
 		if matchingPos < len(stack) {
+			if s == e {
+				// Avoid producing syntax problems covering trailing whitespace.
+				e = stack[len(stack)-1].sym.endoffset
+			}
 			s = stack[matchingPos].sym.offset
+		} else if s == e {
+			if len(p.pending) > 0 {
+				for _, tok := range p.pending {
+					p.reportIgnoredToken(tok)
+				}
+				p.pending = p.pending[:0]
+			}
 		}
 		if debugSyntax {
 			for i := len(stack) - 1; i >= matchingPos; i-- {

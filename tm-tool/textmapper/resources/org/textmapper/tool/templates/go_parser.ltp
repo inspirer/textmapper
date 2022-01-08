@@ -240,30 +240,29 @@ ${end-}
 				p.fetchNext(lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
-			stack = append(stack, stackEntry{
-				sym:   p.next,
-				state: state,
+			if state >= 0 {
+				stack = append(stack, stackEntry{
+					sym:   p.next,
+					state: state,
 ${if self->hasAssocValues()-}
-				value: lexer.Value(),
+					value: lexer.Value(),
 ${end-}
-			})
-			if debugSyntax {
-				"fmt".Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
-			}
+				})
+				if debugSyntax {
+					"fmt".Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+				}
 ${call onAfterShift-}
-			if p.next.symbol == eoiToken {
 ${call flushPending-}
-			}
-			if state != -1 && p.next.symbol != eoiToken {
-${call flushPending-}
+				if p.next.symbol != eoiToken {
 ${call reportConsumedNext-}
-				p.next.symbol = noToken
-			}
+					p.next.symbol = noToken
+				}
 ${if self->hasRecovering()-}
-			if recovering > 0 {
-				recovering--
-			}
+				if recovering > 0 {
+					recovering--
+				}
 ${end-}
+			}
 		}
 
 		if action == -2 || state == -1 {
@@ -415,6 +414,7 @@ ${end-}
 	if p.next.symbol == noToken {
 		p.fetchNext(lexer, stack)
 	}
+	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
 	e := s
 	for {
@@ -441,7 +441,13 @@ ${end-}
 		}
 
 		if matchingPos < len(stack) {
+			if s == e {
+				// Avoid producing syntax problems covering trailing whitespace.
+				e = stack[len(stack)-1].sym.endoffset
+			}
 			s = stack[matchingPos].sym.offset
+		} else if s == e {
+${call flushPending-}
 		}
 		if debugSyntax {
 			for i := len(stack)-1; i >= matchingPos; i-- {

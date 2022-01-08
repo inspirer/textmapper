@@ -1643,7 +1643,7 @@ var parseTests = []struct {
 		`{a=b;} ({«a = b»});`,
 		`function a(i) {
 		   let a = {«b = 5»};
-		   let b = {q: 1, «c: »§};
+		   let b = {q: 1, «c:» §};
 		 }`,
 		"«a.§`` b;» foo()",
 		"«a. §. `` b;» foo()",

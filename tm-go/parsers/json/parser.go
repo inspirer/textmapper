@@ -109,34 +109,28 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 				p.fetchNext(lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
-			stack = append(stack, stackEntry{
-				sym:   p.next,
-				state: state,
-				value: lexer.Value(),
-			})
-			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
-			}
-			if p.next.symbol == eoiToken {
+			if state >= 0 {
+				stack = append(stack, stackEntry{
+					sym:   p.next,
+					state: state,
+					value: lexer.Value(),
+				})
+				if debugSyntax {
+					fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+				}
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
 						p.reportIgnoredToken(tok)
 					}
 					p.pending = p.pending[:0]
 				}
-			}
-			if state != -1 && p.next.symbol != eoiToken {
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
+				if p.next.symbol != eoiToken {
+					switch Token(p.next.symbol) {
+					case JSONSTRING:
+						p.listener(JsonString, p.next.offset, p.next.endoffset)
 					}
-					p.pending = p.pending[:0]
+					p.next.symbol = noToken
 				}
-				switch Token(p.next.symbol) {
-				case JSONSTRING:
-					p.listener(JsonString, p.next.offset, p.next.endoffset)
-				}
-				p.next.symbol = noToken
 			}
 		}
 

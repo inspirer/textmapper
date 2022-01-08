@@ -100,17 +100,17 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 				p.fetchNext(lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
-			stack = append(stack, stackEntry{
-				sym:   p.next,
-				state: state,
-			})
-			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
-			}
-			if p.next.symbol == eoiToken {
-			}
-			if state != -1 && p.next.symbol != eoiToken {
-				p.next.symbol = noToken
+			if state >= 0 {
+				stack = append(stack, stackEntry{
+					sym:   p.next,
+					state: state,
+				})
+				if debugSyntax {
+					fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+				}
+				if p.next.symbol != eoiToken {
+					p.next.symbol = noToken
+				}
 			}
 		}
 
