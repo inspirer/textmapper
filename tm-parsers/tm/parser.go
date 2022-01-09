@@ -150,23 +150,29 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
-					}
-					p.pending = p.pending[:0]
-				}
 				lastErr = SyntaxError{
 					Line:      lexer.Line(),
 					Offset:    p.next.offset,
 					Endoffset: p.next.endoffset,
 				}
 				if !p.eh(lastErr) {
+					if len(p.pending) > 0 {
+						for _, tok := range p.pending {
+							p.reportIgnoredToken(tok)
+						}
+						p.pending = p.pending[:0]
+					}
 					return lastErr
 				}
 			}
 
 			if stack = p.recoverFromError(lexer, stack); stack == nil {
+				if len(p.pending) > 0 {
+					for _, tok := range p.pending {
+						p.reportIgnoredToken(tok)
+					}
+					p.pending = p.pending[:0]
+				}
 				return lastErr
 			}
 			state = stack[len(stack)-1].state
@@ -259,6 +265,15 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
 	e := s
+	for _, tok := range p.pending {
+		// Try to cover all nearby invalid tokens.
+		if Token(tok.symbol) == INVALID_TOKEN {
+			if s > tok.offset {
+				s = tok.offset
+			}
+			e = tok.endoffset
+		}
+	}
 	for {
 		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
 			e = endoffset
@@ -288,13 +303,31 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 				e = stack[len(stack)-1].sym.endoffset
 			}
 			s = stack[matchingPos].sym.offset
-		} else if s == e {
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(tok)
-				}
-				p.pending = p.pending[:0]
+		} else if s == e && len(p.pending) > 0 {
+			// This means pending tokens don't contain InvalidTokens.
+			for _, tok := range p.pending {
+				p.reportIgnoredToken(tok)
 			}
+			p.pending = p.pending[:0]
+		}
+		if s != e {
+			// Consume trailing invalid tokens.
+			for _, tok := range p.pending {
+				if Token(tok.symbol) == INVALID_TOKEN && tok.endoffset > e {
+					e = tok.endoffset
+				}
+			}
+			var consumed int
+			for i, tok := range p.pending {
+				if tok.offset >= e {
+					consumed = i
+					break
+				}
+				p.reportIgnoredToken(tok)
+			}
+			newSize := len(p.pending) - consumed
+			copy(p.pending[:newSize], p.pending[consumed:])
+			p.pending = p.pending[:newSize]
 		}
 		if debugSyntax {
 			for i := len(stack) - 1; i >= matchingPos; i-- {

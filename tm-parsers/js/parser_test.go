@@ -1628,6 +1628,9 @@ var parseTests = []struct {
 		`function a(i) {
 		   let {b: [e,«...»§]} = i;
 		   let {c: [«...»§]} = i;
+		   let {c: [«... 0x» §]} = i;
+		   // Invalid tokens are included into syntax problems.
+		   let {c: [«... 0x /*foo*/ 0x» /*foo*/ §]} = i;
 		 }`,
 		`function a(i) {
 		   let {a: [ §«888»,b,c], c:{q} } = i;
@@ -1636,7 +1639,11 @@ var parseTests = []struct {
 		   let {a: [q, §«888+2»,b,c], c:{p} } = i;
 		 }`,
 		`function a(i) {
-		   let { c:{«8»§}, e:{8:«»§}, d:{8:§«function»} } = i;
+		   let { c:{«8»§}, e:{8: /*foo*/ «»§}, d:{8:§«function»} } = i;
+		   // Invalid tokens are included into syntax problems.
+		   let { e:{8: «0x» /*foo*/ §}, d:{8: /*foo*/ «0x /*foo*/ 0x» §} } = i;
+		   let { e:{8: §«% 0x» /*foo*/ }} = i;
+		   let { e:{8: §«% 0x /*foo*/ 0x» }} = i;
 		 }`,
 
 		// ObjectLiteral

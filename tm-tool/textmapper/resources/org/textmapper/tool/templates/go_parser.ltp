@@ -271,7 +271,6 @@ ${if self->hasRecovering()-}
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
-${call flushPending-}
 				lastErr = SyntaxError{
 ${if opts.tokenLine-}
 					Line: ${call tokenLine},
@@ -280,11 +279,13 @@ ${end-}
 					Endoffset: p.next.endoffset,
 				}
 				if !p.eh(lastErr) {
+${call flushPending-}
 					return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 				}
 			}
 
 			if stack = p.recoverFromError(lexer, stack); stack == nil {
+${call flushPending-}
 				return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 			}
 			state = stack[len(stack)-1].state
@@ -417,6 +418,17 @@ ${end-}
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
 	e := s
+${if self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
+	for _, tok := range p.pending {
+		// Try to cover all nearby invalid tokens.
+		if Token(tok.symbol) == ${self->go_token.invalidTokenRef()} {
+			if s > tok.offset {
+				s = tok.offset
+			}
+			e = tok.endoffset
+		}
+	}
+${end-}
 	for {
 		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
 			e = endoffset
@@ -446,9 +458,36 @@ ${end-}
 				e = stack[len(stack)-1].sym.endoffset
 			}
 			s = stack[matchingPos].sym.offset
-		} else if s == e {
-${call flushPending-}
+${if self->ignoredReportTokens()-}
+		} else if s == e && len(p.pending) > 0 {
+			// This means pending tokens don't contain InvalidTokens.
+			for _, tok := range p.pending {
+				p.reportIgnoredToken(tok)
+			}
+			p.pending = p.pending[:0]
+${end-}
 		}
+${if self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
+		if s != e {
+			// Consume trailing invalid tokens.
+			for _, tok := range p.pending {
+				if Token(tok.symbol) == ${self->go_token.invalidTokenRef()} && tok.endoffset > e {
+					e = tok.endoffset
+				}
+			}
+			var consumed int
+			for i, tok := range p.pending {
+				if tok.offset >= e {
+					consumed = i
+					break
+				}
+				p.reportIgnoredToken(tok)
+			}
+			newSize := len(p.pending) - consumed
+			copy(p.pending[:newSize], p.pending[consumed:])
+			p.pending = p.pending[:newSize]
+		}
+${end-}
 		if debugSyntax {
 			for i := len(stack)-1; i >= matchingPos; i-- {
 				"fmt".Printf("dropped from stack: %v\n", symbolName(stack[i].sym.symbol))
