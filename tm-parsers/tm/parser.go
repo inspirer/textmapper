@@ -318,9 +318,9 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 				}
 			}
 			var consumed int
-			for i, tok := range p.pending {
+			for ; consumed < len(p.pending); consumed++ {
+				tok := p.pending[consumed]
 				if tok.offset >= e {
-					consumed = i
 					break
 				}
 				p.reportIgnoredToken(tok)

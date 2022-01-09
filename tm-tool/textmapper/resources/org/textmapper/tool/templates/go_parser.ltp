@@ -421,7 +421,7 @@ ${end-}
 ${if self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 	for _, tok := range p.pending {
 		// Try to cover all nearby invalid tokens.
-		if Token(tok.symbol) == ${self->go_token.invalidTokenRef()} {
+		if ${self->go_token.tokenTypeRef()}(tok.symbol) == ${self->go_token.invalidTokenRef()} {
 			if s > tok.offset {
 				s = tok.offset
 			}
@@ -471,14 +471,14 @@ ${if self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 		if s != e {
 			// Consume trailing invalid tokens.
 			for _, tok := range p.pending {
-				if Token(tok.symbol) == ${self->go_token.invalidTokenRef()} && tok.endoffset > e {
+				if ${self->go_token.tokenTypeRef()}(tok.symbol) == ${self->go_token.invalidTokenRef()} && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}
 			var consumed int
-			for i, tok := range p.pending {
+			for ; consumed < len(p.pending); consumed++ {
+				tok := p.pending[consumed]
 				if tok.offset >= e {
-					consumed = i
 					break
 				}
 				p.reportIgnoredToken(tok)
