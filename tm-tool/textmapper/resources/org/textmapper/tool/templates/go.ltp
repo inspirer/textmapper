@@ -38,13 +38,16 @@ ${query escapeGoReserved() =
     ].contains(self) ? '_' + self : self }
 
 ${query symText(property) = self.leftOffset == -1
-    ? (property == 'value' ? 'nil' : '-1')
-    : (self.isLeft ? 'lhs' : 'rhs[' + self.leftOffset + ']') + '.' + (property == 'value' ? property : 'sym.' + property) }
+    ? (property == 'value' || property == 'sym' ? 'nil' : '-1')
+    : (property == 'sym' ? '(&' : '')
+        + (self.isLeft ? 'lhs' : 'rhs[' + self.leftOffset + ']')
+        + '.'
+        + (property == 'value' ? property : property == 'sym' ?  'sym)' : 'sym.' + property) }
 
 ${query varName() = 'nn' + (self.leftOffset == -1 ? '' : self.leftOffset)}
 
 ${template symAccess(property)-}
-${assert ['value', 'offset', 'endoffset'].contains(property)-}
+${assert ['value', 'sym', 'offset', 'endoffset'].contains(property)-}
 ${if property == 'value' && symbol->type()-}
  {{${self->varName()}, _ := ${self->symText(property)-}.(${symbol->type()-})}}${self->varName()}${else-}
 ${self->symText(property)-}
