@@ -34,6 +34,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private Scope<LexerState> statesScope = new LiScope<>();
 	private Scope<TemplateParameter> paramScope = new LiScope<>();
 
+	private int expectSR;
+	private int expectRR;
+
 	private final List<LiLexerRule> lexerRules = new ArrayList<>();
 	private final Set<RhsPredicate> predicateSet = new HashSet<>();
 	private final List<LiRule> rules = new ArrayList<>();
@@ -233,6 +236,16 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		checkInner(rhs, Kind.Choice);
 		LiNonterminal liLeft = (LiNonterminal) left;
 		liLeft.addRule((LiRhsPart) rhs);
+	}
+
+	@Override
+	public void expectSR(int value) {
+		this.expectSR = value;
+	}
+
+	@Override
+	public void expectRR(int value) {
+		this.expectRR = value;
 	}
 
 	@Override
@@ -648,6 +661,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr,
 				patternsArr, setsArr,
 				statesArr, inputArr, eoi, error, invalidToken,
+				expectSR, expectRR,
 				terminals, grammarSymbols, problemsArr);
 	}
 

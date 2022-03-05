@@ -192,6 +192,7 @@ public class Builder extends Lalr1 {
 		int[] actionset = new int[nterms];
 		int[] next = new int[nterms];
 		ConflictBuilder conflicts = new ConflictBuilder(nterms);
+		List<ParserConflict> pending = new ArrayList<>();
 
 		action_index = new int[nstates];
 		action_table = null;
@@ -255,13 +256,13 @@ public class Builder extends Lalr1 {
 				List<LalrConflict> mergedConflicts = conflicts.getMergedConflicts(t.number,
 						getInput(t.number));
 				for (ParserConflict conflict : mergedConflicts) {
-					status.report(conflict);
+					pending.add(conflict);
 					switch (conflict.getKind()) {
 						case ParserConflict.REDUCE_REDUCE:
-							rr++;
+							rr += conflict.getSymbols().length;
 							break;
 						case ParserConflict.SHIFT_REDUCE:
-							sr++;
+							sr += conflict.getSymbols().length;
 							break;
 					}
 				}
@@ -287,7 +288,10 @@ public class Builder extends Lalr1 {
 				nactions += stateActions.length;
 			}
 		}
-		if ((sr + rr) > 0) {
+		if (sr != expectSR || rr != expectRR) {
+			for (ParserConflict c : pending) {
+				status.report(c);
+			}
 			status.report(ProcessingStatus.KIND_ERROR, "conflicts: " + sr + " shift/reduce and "
 					+ rr + " reduce/reduce");
 		}

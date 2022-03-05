@@ -103,7 +103,6 @@ var stateTests = []struct {
 		`9 (from 1, EOI):`,
 
 		// Both conflicts are resolved as shifts (see above).
-		`2 shift/reduce and 0 reduce/reduce conflicts:`,
 		`input:6:0: input: S`,
 		`shift/reduce conflict (next: c)`,
 		`    C :`,
@@ -111,6 +110,8 @@ var stateTests = []struct {
 		`input:6:0: input: S C`,
 		`shift/reduce conflict (next: a, c)`,
 		`    C :`,
+		``,
+		`input:0:0: conflicts: 3 shift/reduce and 0 reduce/reduce`,
 	}},
 	{`S -> A; A -> Bb; B -> Aa; B ->`, []string{
 		`0 (from 0, EOI): S -> 5; A -> 1; B -> 2; reduce B;`,
@@ -171,7 +172,6 @@ var stateTests = []struct {
 
 		// Errors resolved as reduce first.
 		// Note: all rules are reported as having problems.
-		`0 shift/reduce and 1 reduce/reduce conflicts:`,
 		`input:4:0: input: a`,
 		`reduce/reduce conflict (next: EOI)`,
 		`    B : a`,
@@ -189,6 +189,8 @@ var stateTests = []struct {
 		`    B : a`,
 		`    A : a`,
 		`    C : a %prec b`,
+		``,
+		`input:0:0: conflicts: 0 shift/reduce and 1 reduce/reduce`,
 	}},
 
 	// Associativity.
@@ -204,7 +206,6 @@ var stateTests = []struct {
 		`8 (from 7, EOI):`,
 
 		// Errors resolved as shifts.
-		`2 shift/reduce and 0 reduce/reduce conflicts:`,
 		`input:2:0: input: E a E`,
 		`shift/reduce conflict (next: a, b)`,
 		`    E : E a E`,
@@ -212,6 +213,8 @@ var stateTests = []struct {
 		`input:3:0: input: E b E`,
 		`shift/reduce conflict (next: a, b)`,
 		`    E : E b E`,
+		``,
+		`input:0:0: conflicts: 4 shift/reduce and 0 reduce/reduce`,
 	}},
 	{`%L ab; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
 		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
@@ -296,6 +299,7 @@ func TestStates(t *testing.T) {
 		c.buildFollow()
 		c.buildLA()
 		c.populateTables()
+		c.reportConflicts()
 
 		var buf strings.Builder
 		for i, state := range c.states {
@@ -360,9 +364,6 @@ func TestStates(t *testing.T) {
 			}
 			buf.WriteByte('\n')
 		}
-		if len(c.s) > 0 {
-			fmt.Fprintf(&buf, "%v shift/reduce and %v reduce/reduce conflicts:\n", c.sr, c.rr)
-		}
 		for _, e := range c.s {
 			buf.WriteString(e.Error())
 			buf.WriteString("\n")
@@ -405,6 +406,7 @@ func parseGrammar(input string) (*Grammar, error) {
 	ret := &Grammar{
 		Terminals: len(index),
 		Inputs:    []Input{{Nonterminal: sym('S'), Eoi: true}},
+		Origin:    node(0),
 	}
 	var action int
 	for scanner.Scan() {

@@ -29,6 +29,8 @@ func ToTestNode(n Node) TestNode {
 		return &EvalFoo2{n}
 	case test.Icon:
 		return &Icon{n}
+	case test.If:
+		return &If{n}
 	case test.Int:
 		return &Int{n}
 	case test.IntExpr:

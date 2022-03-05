@@ -147,3 +147,12 @@ c3<foo> : [foo == «123»] c3  ;
 
 c4<«bar»> : ;
 # err: lookahead parameters cannot be declared 'bar'
+
+%expect 0;
+%expect-rr 10;
+
+«%expect 1;»
+# err: duplicate %expect directive
+
+«%expect-rr 10;»
+# err: duplicate %expect-rr directive

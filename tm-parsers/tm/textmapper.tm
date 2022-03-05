@@ -316,8 +316,8 @@ directive -> GrammarPart:
   | '%' 'interface' ids=(identifier separator ',')+ ';'              -> DirectiveInterface
   | '%' 'assert' ('empty' -> Empty | 'nonempty' -> NonEmpty) rhsSet ';' -> DirectiveAssert
   | '%' 'generate' name=identifier '=' rhsSet ';'                    -> DirectiveSet
-  | '%' 'expect' icon ';'                                            -> DirectiveExpect
-  | '%' 'expect-rr' icon ';'                                         -> DirectiveExpectRR
+  | '%' 'expect' integer_literal ';'                                 -> DirectiveExpect
+  | '%' 'expect-rr' integer_literal ';'                              -> DirectiveExpectRR
 ;
 
 inputref -> Inputref:

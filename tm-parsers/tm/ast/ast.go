@@ -444,8 +444,16 @@ type DirectiveExpect struct {
 	*Node
 }
 
+func (n DirectiveExpect) IntegerLiteral() IntegerLiteral {
+	return IntegerLiteral{n.Child(selector.IntegerLiteral)}
+}
+
 type DirectiveExpectRR struct {
 	*Node
+}
+
+func (n DirectiveExpectRR) IntegerLiteral() IntegerLiteral {
+	return IntegerLiteral{n.Child(selector.IntegerLiteral)}
 }
 
 type DirectiveInput struct {

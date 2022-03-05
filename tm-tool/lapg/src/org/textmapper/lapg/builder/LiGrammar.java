@@ -32,6 +32,9 @@ class LiGrammar extends LiUserDataHolder implements Grammar {
 	private final Symbol error;
 	private final Symbol invalidToken;
 
+	private final int expectSR;
+	private final int expectRR;
+
 	private final int terminals;
 	private final int grammarSymbols;
 	private final Problem[] problems;
@@ -40,7 +43,9 @@ class LiGrammar extends LiUserDataHolder implements Grammar {
 					 NamedPattern[] patterns, NamedSet[] sets,
 					 LexerState[] lexerStates,
 					 InputRef[] inputs, Symbol eoi,
-					 Symbol error, Symbol invalidToken, int terminals, int grammarSymbols,
+					 Symbol error, Symbol invalidToken,
+					 int expectSR, int expectRR,
+					 int terminals, int grammarSymbols,
 					 Problem[] problems) {
 		this.symbols = symbols;
 		this.rules = rules;
@@ -53,6 +58,8 @@ class LiGrammar extends LiUserDataHolder implements Grammar {
 		this.eoi = eoi;
 		this.error = error;
 		this.invalidToken = invalidToken;
+		this.expectSR = expectSR;
+		this.expectRR = expectRR;
 		this.terminals = terminals;
 		this.grammarSymbols = grammarSymbols;
 		this.problems = problems;
@@ -60,7 +67,7 @@ class LiGrammar extends LiUserDataHolder implements Grammar {
 
 	public LiGrammar(Problem[] problems) {
 		this(new Symbol[0], new Rule[0], new Prio[0], new LexerRule[0], new NamedPattern[0], new NamedSet[0],
-				new LexerState[0], new InputRef[0], null, null, null, 0, 0, problems);
+				new LexerState[0], new InputRef[0], null, null, null, 0, 0, 0, 0, problems);
 	}
 
 	@Override
@@ -121,6 +128,16 @@ class LiGrammar extends LiUserDataHolder implements Grammar {
 	@Override
 	public Problem[] getProblems() {
 		return problems;
+	}
+
+	@Override
+	public int expectSR() {
+		return expectSR;
+	}
+
+	@Override
+	public int expectRR() {
+		return expectRR;
 	}
 
 	@Override

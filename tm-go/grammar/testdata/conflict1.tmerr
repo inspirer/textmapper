@@ -1,5 +1,5 @@
 «language conflict1(go);
-# err: conflicts: 4 shift/reduce and 1 reduce/reduce
+# err: conflicts: 7 shift/reduce and 1 reduce/reduce
 
 lang = "conflict1"
 

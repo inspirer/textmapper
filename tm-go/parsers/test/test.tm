@@ -32,6 +32,9 @@ lastInt: /[0-9]+(\n|{eoi})/
 'eval':      /eval/
 'as':        /as/
 
+'if': /if/
+'else': /else/
+
 # Punctuation
 '{': /\{/
 '}': /\}/
@@ -152,8 +155,19 @@ QualifiedName :
 Decl1 {int} -> Decl1 :
     'decl1' '(' QualifiedName ')' ;
 
-Decl2 :
-    'decl2' -> Decl2 ;
+%interface Decl2Interface;
+
+Decl2 -> Decl2Interface :
+    'decl2' -> Decl2
+  | If
+;
+
+%expect 1;
+
+If -> If:
+    'if' '(' ')' then=Decl2
+  | 'if' '(' ')' then=Decl2 'else' else=Decl2
+;
 
 %nonassoc 'as';
 %left '+';

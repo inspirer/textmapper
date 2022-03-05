@@ -39,6 +39,7 @@ abstract class ContextFree {
 	final int[] priorul;
 	final int[] rleft, rindex, rright, rprio;
 	final boolean[] sym_empty;
+	final int expectSR, expectRR;
 
 	final Map<Integer, Set<String>> itemMarkers = new HashMap<>();
 
@@ -73,6 +74,9 @@ abstract class ContextFree {
 		this.rindex = new int[rules];
 		this.rright = new int[items];
 		this.sym_empty = new boolean[nsyms];
+
+		this.expectSR = g.expectSR();
+		this.expectRR = g.expectRR();
 
 		int curr_rindex = 0;
 		for (int i = 0; i < wrules.length; i++) {

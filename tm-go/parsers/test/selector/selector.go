@@ -18,6 +18,7 @@ var (
 	EvalFoo           = func(t test.NodeType) bool { return t == test.EvalFoo }
 	EvalFoo2          = func(t test.NodeType) bool { return t == test.EvalFoo2 }
 	Icon              = func(t test.NodeType) bool { return t == test.Icon }
+	If                = func(t test.NodeType) bool { return t == test.If }
 	Int               = func(t test.NodeType) bool { return t == test.Int }
 	IntExpr           = func(t test.NodeType) bool { return t == test.IntExpr }
 	LastInt           = func(t test.NodeType) bool { return t == test.LastInt }
@@ -30,6 +31,7 @@ var (
 	SingleLineComment = func(t test.NodeType) bool { return t == test.SingleLineComment }
 	InvalidToken      = func(t test.NodeType) bool { return t == test.InvalidToken }
 	Identifier        = func(t test.NodeType) bool { return t == test.Identifier }
+	Decl2Interface    = OneOf(test.Decl2Interface...)
 	Declaration       = OneOf(test.Declaration...)
 	Expr              = OneOf(test.Expr...)
 	TokenSet          = OneOf(test.TokenSet...)

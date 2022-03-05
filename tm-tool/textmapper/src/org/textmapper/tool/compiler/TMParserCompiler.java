@@ -192,6 +192,8 @@ public class TMParserCompiler {
 	}
 
 	private void collectDirectives(Set<String> seenSets) {
+		boolean seenSR = false, seenRR = false;
+
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaDirectivePrio) {
 				TmaDirectivePrio directive = (TmaDirectivePrio) clause;
@@ -230,6 +232,22 @@ public class TMParserCompiler {
 						error(inputRef, "input must be a nonterminal");
 					}
 				}
+			} else if (clause instanceof TmaDirectiveExpect) {
+				if (seenSR) {
+					error(clause, "duplicate %expect directive");
+					continue;
+				}
+				seenSR = true;
+				builder.expectSR(((TmaDirectiveExpect) clause).getIcon());
+
+			} else if (clause instanceof TmaDirectiveExpectRR) {
+				if (seenRR) {
+					error(clause, "duplicate %expect-rr directive");
+					continue;
+				}
+				seenRR = true;
+				builder.expectRR(((TmaDirectiveExpectRR) clause).getIcon());
+
 			} else if (clause instanceof TmaDirectiveAssert) {
 				// TODO implement
 

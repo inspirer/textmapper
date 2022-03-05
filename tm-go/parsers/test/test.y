@@ -16,6 +16,8 @@
 %token DECL1
 %token DECL2
 %token EVAL
+%token IF
+%token ELSE
 %token LBRACE
 %token RBRACE
 %token LPAREN
@@ -94,6 +96,8 @@ setof_not_EOI_or_DOT_or_RBRACE :
 | DECL2
 | EVAL
 | AS
+| IF
+| ELSE
 | LBRACE
 | LPAREN
 | RPAREN
@@ -137,6 +141,12 @@ Decl1 :
 
 Decl2 :
   DECL2
+| If
+;
+
+If :
+  IF LPAREN RPAREN Decl2
+| IF LPAREN RPAREN Decl2 ELSE Decl2
 ;
 
 expr :

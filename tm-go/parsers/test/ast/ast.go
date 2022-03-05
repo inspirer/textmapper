@@ -45,6 +45,7 @@ func (n Empty1) TestNode() Node        { return n.Node }
 func (n EvalFoo) TestNode() Node       { return n.Node }
 func (n EvalFoo2) TestNode() Node      { return n.Node }
 func (n Icon) TestNode() Node          { return n.Node }
+func (n If) TestNode() Node            { return n.Node }
 func (n Int) TestNode() Node           { return n.Node }
 func (n IntExpr) TestNode() Node       { return n.Node }
 func (n LastInt) TestNode() Node       { return n.Node }
@@ -57,6 +58,18 @@ func (n Int7) TestNode() Node          { return n.Node }
 func (n Int9) TestNode() Node          { return n.Node }
 func (n Token) TestNode() Node         { return n.Node }
 func (NilNode) TestNode() Node         { return nil }
+
+type Decl2Interface interface {
+	TestNode
+	decl2InterfaceNode()
+}
+
+// decl2InterfaceNode() ensures that only the following types can be
+// assigned to Decl2Interface.
+//
+func (Decl2) decl2InterfaceNode()   {}
+func (If) decl2InterfaceNode()      {}
+func (NilNode) decl2InterfaceNode() {}
 
 type Declaration interface {
 	TestNode
@@ -73,6 +86,7 @@ func (Decl2) declarationNode()         {}
 func (Empty1) declarationNode()        {}
 func (EvalFoo) declarationNode()       {}
 func (EvalFoo2) declarationNode()      {}
+func (If) declarationNode()            {}
 func (Int) declarationNode()           {}
 func (IntExpr) declarationNode()       {}
 func (LastInt) declarationNode()       {}
@@ -169,6 +183,19 @@ func (n EvalFoo2) B() Expr {
 
 type Icon struct {
 	Node
+}
+
+type If struct {
+	Node
+}
+
+func (n If) Then() Decl2Interface {
+	return ToTestNode(n.Child(selector.Decl2Interface)).(Decl2Interface)
+}
+
+func (n If) Else() (Decl2Interface, bool) {
+	field := ToTestNode(n.Child(selector.Decl2Interface).Next(selector.Decl2Interface)).(Decl2Interface)
+	return field, field.TestNode() != nil
 }
 
 type Int struct {

@@ -27,10 +27,8 @@ func Compile(grammar *Grammar) (*Tables, error) {
 	c.buildFollow()
 	c.buildLA()
 	c.populateTables()
+	c.reportConflicts()
 
-	if (c.sr + c.rr) > 0 {
-		c.s.Errorf(grammar.Origin, "conflicts: %v shift/reduce and %v reduce/reduce", c.sr, c.rr)
-	}
 	return c.out, c.s.Err()
 }
 
@@ -38,6 +36,7 @@ type compiler struct {
 	grammar *Grammar
 	out     *Tables
 	s       status.Status
+	pending []*Conflict // to be reported if the number of conflicts does not match the expectations
 
 	index   []int // the rule start in "right"
 	right   []int // all rules flattened into one slice, each position in this slice is an LR(0) item
@@ -656,13 +655,11 @@ func (c *compiler) populateTables() {
 			if conflict.Resolved {
 				continue
 			}
-			for _, rule := range conflict.Rules {
-				c.s.Errorf(c.grammar.Rules[rule].Origin, "%s", conflict)
-			}
+			c.pending = append(c.pending, conflict)
 			if conflict.CanShift {
-				c.sr++
+				c.sr += len(conflict.Next)
 			} else {
-				c.rr++
+				c.rr += len(conflict.Next)
 			}
 		}
 
@@ -688,6 +685,19 @@ func (c *compiler) populateTables() {
 		c.out.RuleLen = append(c.out.RuleLen, len)
 		c.out.RuleSymbol = append(c.out.RuleSymbol, int(rule.LHS))
 	}
+}
+
+func (c *compiler) reportConflicts() {
+	if c.sr == c.grammar.ExpectSR && c.rr == c.grammar.ExpectRR {
+		return
+	}
+
+	for _, conflict := range c.pending {
+		for _, rule := range conflict.Rules {
+			c.s.Errorf(c.grammar.Rules[rule].Origin, "%s", conflict)
+		}
+	}
+	c.s.Errorf(c.grammar.Origin, "conflicts: %v shift/reduce and %v reduce/reduce", c.sr, c.rr)
 }
 
 func (c *compiler) resolvePrec(rule int, term Sym) resolution {

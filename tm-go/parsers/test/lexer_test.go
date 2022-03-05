@@ -38,6 +38,8 @@ var lexerTests = []struct {
 	{test.TEST, []string{"«test»", "«test»-----"}},
 	{test.DECL1, []string{"«decl1»"}},
 	{test.DECL2, []string{"«decl2»"}},
+	{test.IF, []string{"«if»"}},
+	{test.ELSE, []string{"«else»"}},
 	{test.EVAL, []string{"«eval»"}},
 	{test.AS, []string{"«as»"}},
 	{test.INTEGERCONSTANT, []string{"«123»  34\n «0» ", "«123» 0"}},

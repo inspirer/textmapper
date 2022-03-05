@@ -22,10 +22,10 @@ const (
 	BooleanLiteral
 	ClassType // Implements?
 	Command
-	DirectiveAssert   // Empty? NonEmpty? RhsSet
-	DirectiveBrackets // opening=Symref closing=Symref
-	DirectiveExpect
-	DirectiveExpectRR
+	DirectiveAssert    // Empty? NonEmpty? RhsSet
+	DirectiveBrackets  // opening=Symref closing=Symref
+	DirectiveExpect    // IntegerLiteral
+	DirectiveExpectRR  // IntegerLiteral
 	DirectiveInput     // inputRefs=(Inputref)+
 	DirectiveInterface // ids=(Identifier)+
 	DirectivePrio      // Assoc symbols=(Symref)+

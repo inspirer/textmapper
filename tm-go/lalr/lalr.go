@@ -86,6 +86,8 @@ type Grammar struct {
 	Precedence []Precedence // later declarations have higher precedence
 	Lookaheads []Lookahead  // Note: each lookahead nonterminal should have an empty rule in Rules
 	Markers    []string
+	ExpectSR   int
+	ExpectRR   int
 	Origin     status.SourceNode
 }
 

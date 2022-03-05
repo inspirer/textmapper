@@ -103,6 +103,9 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	void addRule(Nonterminal left, RhsRule rhs);
 
+	void expectSR(int value);
+	void expectRR(int value);
+
 
 	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);
 

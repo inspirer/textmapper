@@ -60,6 +60,8 @@ type compiler struct {
 	nonterms  map[string]int // -> index in source.Nonterms
 	cats      map[string]int // -> index in source.Cats
 	paramPerm []int          // for parameter permutations
+	expectSR  int
+	expectRR  int
 }
 
 func newCompiler(file ast.File, compat bool) *compiler {
@@ -769,6 +771,7 @@ func (c *compiler) collectInputs(p ast.ParserSection) {
 
 func (c *compiler) collectDirectives(p ast.ParserSection) {
 	precTerms := container.NewBitSet(c.out.NumTokens)
+	var seenSR, seenRR bool
 
 	for _, part := range p.GrammarPart() {
 		switch part := part.(type) {
@@ -820,6 +823,20 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			if len(prec.Terminals) > 0 {
 				c.out.Prec = append(c.out.Prec, prec)
 			}
+		case *ast.DirectiveExpect:
+			if seenSR {
+				c.errorf(part, "duplicate %%expect directive")
+				continue
+			}
+			seenSR = true
+			c.expectSR, _ = strconv.Atoi(part.Child(selector.IntegerLiteral).Text())
+		case *ast.DirectiveExpectRR:
+			if seenRR {
+				c.errorf(part, "duplicate %%expect-rr directive")
+				continue
+			}
+			seenRR = true
+			c.expectRR, _ = strconv.Atoi(part.Child(selector.IntegerLiteral).Text())
 		case *ast.DirectiveSet:
 			name := part.Name()
 			if name.Text() == "afterErr" {
@@ -1503,6 +1520,8 @@ func (c *compiler) generateTables() error {
 	g := &lalr.Grammar{
 		Terminals:  len(c.source.Terminals),
 		Precedence: c.out.Prec,
+		ExpectSR:   c.expectSR,
+		ExpectRR:   c.expectRR,
 		Origin:     c.file,
 	}
 	for _, sym := range c.out.Syms {

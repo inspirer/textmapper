@@ -22,6 +22,7 @@ const (
 	EvalFoo  // Expr
 	EvalFoo2 // a=Expr b=Expr
 	Icon
+	If // then=Decl2Interface else=Decl2Interface?
 	Int
 	IntExpr
 	LastInt
@@ -49,6 +50,7 @@ var nodeTypeStr = [...]string{
 	"EvalFoo",
 	"EvalFoo2",
 	"Icon",
+	"If",
 	"Int",
 	"IntExpr",
 	"LastInt",
@@ -72,6 +74,11 @@ func (t NodeType) String() string {
 	return fmt.Sprintf("node(%d)", t)
 }
 
+var Decl2Interface = []NodeType{
+	Decl2,
+	If,
+}
+
 var Declaration = []NodeType{
 	AsExpr,
 	Block,
@@ -80,6 +87,7 @@ var Declaration = []NodeType{
 	Empty1,
 	EvalFoo,
 	EvalFoo2,
+	If,
 	Int,
 	IntExpr,
 	LastInt,

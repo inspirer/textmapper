@@ -39,6 +39,13 @@ var parseTests = []struct {
 	{test.Decl2, 0, []string{
 		`«decl2»`,
 	}},
+	{test.If, 0, []string{
+		`«if() decl2»`,
+		`«if() decl2 else decl2»`,
+		`«if() decl2 else «if() decl2 else decl2»»`,
+		`«if() «if() decl2 else decl2»»`,
+		`«if() «if() decl2 else decl2» else decl2»`,
+	}},
 	{test.Int, 0, []string{
 		`«42» «7» «9» `,
 		`{«42»}`,
