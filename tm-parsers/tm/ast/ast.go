@@ -33,6 +33,8 @@ func (n ClassType) TmNode() *Node            { return n.Node }
 func (n Command) TmNode() *Node              { return n.Node }
 func (n DirectiveAssert) TmNode() *Node      { return n.Node }
 func (n DirectiveBrackets) TmNode() *Node    { return n.Node }
+func (n DirectiveExpect) TmNode() *Node      { return n.Node }
+func (n DirectiveExpectRR) TmNode() *Node    { return n.Node }
 func (n DirectiveInput) TmNode() *Node       { return n.Node }
 func (n DirectiveInterface) TmNode() *Node   { return n.Node }
 func (n DirectivePrio) TmNode() *Node        { return n.Node }
@@ -164,6 +166,8 @@ type GrammarPart interface {
 // assigned to GrammarPart.
 //
 func (DirectiveAssert) grammarPartNode()    {}
+func (DirectiveExpect) grammarPartNode()    {}
+func (DirectiveExpectRR) grammarPartNode()  {}
 func (DirectiveInput) grammarPartNode()     {}
 func (DirectiveInterface) grammarPartNode() {}
 func (DirectivePrio) grammarPartNode()      {}
@@ -434,6 +438,14 @@ func (n DirectiveBrackets) Opening() Symref {
 
 func (n DirectiveBrackets) Closing() Symref {
 	return Symref{n.Child(selector.Symref).Next(selector.Symref)}
+}
+
+type DirectiveExpect struct {
+	*Node
+}
+
+type DirectiveExpectRR struct {
+	*Node
 }
 
 type DirectiveInput struct {

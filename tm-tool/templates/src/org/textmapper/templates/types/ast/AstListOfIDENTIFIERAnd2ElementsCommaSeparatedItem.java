@@ -17,13 +17,13 @@ package org.textmapper.templates.types.ast;
 
 import org.textmapper.templates.types.TypesTree.TextSource;
 
-public class AstListOfIdentifierAnd2ElementsCommaSeparatedItem extends AstNode {
+public class AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem extends AstNode {
 
 	private final String identifier;
 	private final AstMapSeparator mapSeparator;
 	private final IAstExpression expression;
 
-	public AstListOfIdentifierAnd2ElementsCommaSeparatedItem(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource source, int line, int offset, int endoffset) {
+	public AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.identifier = identifier;
 		this.mapSeparator = mapSeparator;

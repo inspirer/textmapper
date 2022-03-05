@@ -61,6 +61,12 @@ var parseTests = []struct {
 	{tm.Rule, []string{
 		parserPre + " a : /* empty */ «»| «abc» | «abc -> def» ; ",
 	}},
+	{tm.DirectiveExpect, []string{
+		parserPre + " «%expect 0;» ",
+	}},
+	{tm.DirectiveExpectRR, []string{
+		parserPre + " «%expect-rr 8;» ",
+	}},
 	{tm.SyntaxProblem, []string{
 		parserPre + " a : (§«:: a /*aaa*/ b» ) ; ",
 		parserPre + " a : §«+ a» ; ",

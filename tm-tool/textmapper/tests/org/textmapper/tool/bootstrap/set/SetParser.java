@@ -70,7 +70,7 @@ public class SetParser {
 		"abcdef_list",
 		"input",
 		"abcdef",
-		"setof_'h'",
+		"setof_H",
 		"setof_first_pair",
 		"setof_pair",
 		"pair",
@@ -89,7 +89,7 @@ public class SetParser {
 		int abcdef_list = 14;
 		int input = 15;
 		int abcdef = 16;
-		int setof_AposhApos = 17;
+		int setof_H = 17;
 		int setof_first_pair = 18;
 		int setof_pair = 19;
 		int pair = 20;

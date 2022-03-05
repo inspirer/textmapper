@@ -95,6 +95,8 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'brackets':  /brackets/
 'class':     /class/
 'empty':     /empty/
+'expect':    /expect/
+'expect-rr': /expect-rr/
 'explicit':  /explicit/
 'flag':      /flag/
 'generate':  /generate/
@@ -145,13 +147,13 @@ regexp: /\/{reFirst}{reChar}*\//
 identifier<flag Keywords = false> -> Identifier:
     ID
 
-  # Soft keywords
-  | 'brackets' | 'inline'   | 'prec'     | 'shift'     | 'returns' | 'input'
-  | 'left'     | 'right'    | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
-  | 'nonempty' | 'global'   | 'explicit' | 'lookahead' | 'param'   | 'flag'
-  | 'no-eoi'   | 's'        | 'x'
-  | 'class'    | 'interface'  | 'void'    | 'space'
-  | 'layout'   | 'language' | 'lalr'       | 'lexer'   | 'parser'
+# Soft keywords
+  | 'brackets' | 'inline'    | 'prec'     | 'shift'     | 'returns' | 'input'
+  | 'left'     | 'right'     | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
+  | 'nonempty' | 'global'    | 'explicit' | 'lookahead' | 'param'   | 'flag'
+  | 'no-eoi'   | 's'         | 'x'        | 'expect'    | 'expect-rr'
+  | 'class'    | 'interface' | 'void'     | 'space'
+  | 'layout'   | 'language'  | 'lalr'     | 'lexer'      | 'parser'
 
   # Keywords
   | [Keywords] ('true' | 'false' | 'separator' | 'as' | 'import' | 'set')
@@ -314,6 +316,8 @@ directive -> GrammarPart:
   | '%' 'interface' ids=(identifier separator ',')+ ';'              -> DirectiveInterface
   | '%' 'assert' ('empty' -> Empty | 'nonempty' -> NonEmpty) rhsSet ';' -> DirectiveAssert
   | '%' 'generate' name=identifier '=' rhsSet ';'                    -> DirectiveSet
+  | '%' 'expect' icon ';'                                            -> DirectiveExpect
+  | '%' 'expect-rr' icon ';'                                         -> DirectiveExpectRR
 ;
 
 inputref -> Inputref:

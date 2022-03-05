@@ -52,45 +52,47 @@ const (
 	ATSIGN            // @
 	ERROR
 	ID
-	AS         // as
-	FALSE      // false
-	IMPLEMENTS // implements
-	IMPORT     // import
-	SEPARATOR  // separator
-	SET        // set
-	TRUE       // true
-	ASSERT     // assert
-	BRACKETS   // brackets
-	CLASS      // class
-	EMPTY      // empty
-	EXPLICIT   // explicit
-	FLAG       // flag
-	GENERATE   // generate
-	GLOBAL     // global
-	INLINE     // inline
-	INPUT      // input
-	INTERFACE  // interface
-	LALR       // lalr
-	LANGUAGE   // language
-	LAYOUT     // layout
-	LEFT       // left
-	LEXER      // lexer
-	LOOKAHEAD  // lookahead
-	NOMINUSEOI // no-eoi
-	NONASSOC   // nonassoc
-	NONEMPTY   // nonempty
-	PARAM      // param
-	PARSER     // parser
-	PREC       // prec
-	RETURNS    // returns
-	RIGHT      // right
-	CHAR_S     // s
-	SHIFT      // shift
-	SPACE      // space
-	VOID       // void
-	CHAR_X     // x
-	CODE       // {
-	LBRACE     // {
+	AS            // as
+	FALSE         // false
+	IMPLEMENTS    // implements
+	IMPORT        // import
+	SEPARATOR     // separator
+	SET           // set
+	TRUE          // true
+	ASSERT        // assert
+	BRACKETS      // brackets
+	CLASS         // class
+	EMPTY         // empty
+	EXPECT        // expect
+	EXPECTMINUSRR // expect-rr
+	EXPLICIT      // explicit
+	FLAG          // flag
+	GENERATE      // generate
+	GLOBAL        // global
+	INLINE        // inline
+	INPUT         // input
+	INTERFACE     // interface
+	LALR          // lalr
+	LANGUAGE      // language
+	LAYOUT        // layout
+	LEFT          // left
+	LEXER         // lexer
+	LOOKAHEAD     // lookahead
+	NOMINUSEOI    // no-eoi
+	NONASSOC      // nonassoc
+	NONEMPTY      // nonempty
+	PARAM         // param
+	PARSER        // parser
+	PREC          // prec
+	RETURNS       // returns
+	RIGHT         // right
+	CHAR_S        // s
+	SHIFT         // shift
+	SPACE         // space
+	VOID          // void
+	CHAR_X        // x
+	CODE          // {
+	LBRACE        // {
 	REGEXP
 	DIV // /
 
@@ -149,6 +151,8 @@ var tokenStr = [...]string{
 	"brackets",
 	"class",
 	"empty",
+	"expect",
+	"expect-rr",
 	"explicit",
 	"flag",
 	"generate",

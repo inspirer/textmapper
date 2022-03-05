@@ -2577,7 +2577,7 @@ public class JavaParser {
 		"ArrayCreationWithArrayInitializer",
 		"DimWithOrWithOutExpr",
 		"Dims",
-		"list_of_'['_and_1_elements",
+		"list_of_LBRACK_and_1_elements",
 		"FieldAccess",
 		"MethodInvocation",
 		"ArrayAccess",
@@ -2752,7 +2752,7 @@ public class JavaParser {
 		int ArrayCreationWithArrayInitializer = 212;
 		int DimWithOrWithOutExpr = 213;
 		int Dims = 214;
-		int list_of_AposLbrackApos_and_1_elements = 215;
+		int list_of_LBRACK_and_1_elements = 215;
 		int FieldAccess = 216;
 		int MethodInvocation = 217;
 		int ArrayAccess = 218;

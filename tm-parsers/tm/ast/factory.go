@@ -34,6 +34,10 @@ func ToTmNode(n *Node) TmNode {
 		return &DirectiveAssert{n}
 	case tm.DirectiveBrackets:
 		return &DirectiveBrackets{n}
+	case tm.DirectiveExpect:
+		return &DirectiveExpect{n}
+	case tm.DirectiveExpectRR:
+		return &DirectiveExpectRR{n}
 	case tm.DirectiveInput:
 		return &DirectiveInput{n}
 	case tm.DirectiveInterface:

@@ -53,6 +53,8 @@
 %token BRACKETS
 %token CLASS
 %token EMPTY
+%token EXPECT
+%token EXPECTMINUSRR
 %token EXPLICIT
 %token FLAG
 %token GENERATE
@@ -109,6 +111,8 @@ identifier :
 | NOMINUSEOI
 | CHAR_S
 | CHAR_X
+| EXPECT
+| EXPECTMINUSRR
 | CLASS
 | INTERFACE
 | VOID
@@ -143,6 +147,8 @@ identifier_Keywords :
 | NOMINUSEOI
 | CHAR_S
 | CHAR_X
+| EXPECT
+| EXPECTMINUSRR
 | CLASS
 | INTERFACE
 | VOID
@@ -411,6 +417,8 @@ directive :
 | REM ASSERT EMPTY rhsSet SEMICOLON
 | REM ASSERT NONEMPTY rhsSet SEMICOLON
 | REM GENERATE identifier ASSIGN rhsSet SEMICOLON
+| REM EXPECT ICON SEMICOLON
+| REM EXPECTMINUSRR ICON SEMICOLON
 ;
 
 identifier_list_Comma_separated :

@@ -60,16 +60,16 @@ public class EoiParser {
 		"_retfromB",
 		"input",
 		"expr",
-		"list_of_id_and_2_elements_Comma_separated",
-		"list_of_id_and_2_elements_Comma_separatedopt",
+		"list_of_ID_and_2_elements_Comma_separated",
+		"list_of_ID_and_2_elements_Comma_separatedopt",
 	};
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
 		int input = 12;
 		int expr = 13;
-		int list_of_id_and_2_elements_Comma_separated = 14;
-		int list_of_id_and_2_elements_Comma_separatedopt = 15;
+		int list_of_ID_and_2_elements_Comma_separated = 14;
+		int list_of_ID_and_2_elements_Comma_separatedopt = 15;
 	}
 
 	/**

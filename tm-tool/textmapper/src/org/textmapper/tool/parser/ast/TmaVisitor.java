@@ -209,6 +209,14 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaDirectiveExpect n) {
+		return true;
+	}
+
+	protected boolean visit(TmaDirectiveExpectRR n) {
+		return true;
+	}
+
 	protected boolean visit(TmaRhsAnnotated n) {
 		return true;
 	}

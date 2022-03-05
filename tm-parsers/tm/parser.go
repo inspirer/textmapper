@@ -64,7 +64,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 492, lexer)
+	return p.parse(0, 502, lexer)
 }
 
 func (p *Parser) parse(start, end int16, lexer *Lexer) error {
@@ -395,17 +395,17 @@ restart:
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
-	case 192: // directive : '%' 'assert' 'empty' rhsSet ';'
+	case 196: // directive : '%' 'assert' 'empty' rhsSet ';'
 		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 193: // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	case 197: // directive : '%' 'assert' 'nonempty' rhsSet ';'
 		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 199: // inputref : symref 'no-eoi'
+	case 205: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 225: // rhsSuffix : '%' 'prec' symref
+	case 231: // rhsSuffix : '%' 'prec' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 226: // rhsSuffix : '%' 'shift' symref
+	case 232: // rhsSuffix : '%' 'shift' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 246: // lookahead_predicate : '!' symref
+	case 252: // lookahead_predicate : '!' symref
 		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {

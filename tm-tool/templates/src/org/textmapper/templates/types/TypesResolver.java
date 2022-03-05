@@ -277,7 +277,7 @@ class TypesResolver {
 				expr.getExpressionList().forEach(this::scanRequiredClasses);
 			}
 			if (expr.getMapEntries() != null) {
-				for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem item
+				for (AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem item
 						: expr.getMapEntries()) {
 					scanRequiredClasses(item.getExpression());
 				}
@@ -453,7 +453,7 @@ class TypesResolver {
 						Map<String, IAstExpression> props = null;
 						if (expr.getMapEntries() != null) {
 							props = new HashMap<>();
-							for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem i
+							for (AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem i
 									: expr.getMapEntries()) {
 								props.put(i.getIdentifier(), i.getExpression());
 							}

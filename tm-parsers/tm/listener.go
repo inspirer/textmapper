@@ -22,8 +22,10 @@ const (
 	BooleanLiteral
 	ClassType // Implements?
 	Command
-	DirectiveAssert    // Empty? NonEmpty? RhsSet
-	DirectiveBrackets  // opening=Symref closing=Symref
+	DirectiveAssert   // Empty? NonEmpty? RhsSet
+	DirectiveBrackets // opening=Symref closing=Symref
+	DirectiveExpect
+	DirectiveExpectRR
 	DirectiveInput     // inputRefs=(Inputref)+
 	DirectiveInterface // ids=(Identifier)+
 	DirectivePrio      // Assoc symbols=(Symref)+
@@ -123,6 +125,8 @@ var nodeTypeStr = [...]string{
 	"Command",
 	"DirectiveAssert",
 	"DirectiveBrackets",
+	"DirectiveExpect",
+	"DirectiveExpectRR",
 	"DirectiveInput",
 	"DirectiveInterface",
 	"DirectivePrio",
@@ -236,6 +240,8 @@ var Expression = []NodeType{
 
 var GrammarPart = []NodeType{
 	DirectiveAssert,
+	DirectiveExpect,
+	DirectiveExpectRR,
 	DirectiveInput,
 	DirectiveInterface,
 	DirectivePrio,

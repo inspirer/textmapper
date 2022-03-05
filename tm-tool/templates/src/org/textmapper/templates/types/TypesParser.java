@@ -25,7 +25,7 @@ import org.textmapper.templates.types.TypesLexer.Tokens;
 import org.textmapper.templates.types.ast.AstConstraint;
 import org.textmapper.templates.types.ast.AstFeatureDeclaration;
 import org.textmapper.templates.types.ast.AstInput;
-import org.textmapper.templates.types.ast.AstListOfIdentifierAnd2ElementsCommaSeparatedItem;
+import org.textmapper.templates.types.ast.AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem;
 import org.textmapper.templates.types.ast.AstLiteralExpression;
 import org.textmapper.templates.types.ast.AstMapSeparator;
 import org.textmapper.templates.types.ast.AstMethodDeclaration;
@@ -187,8 +187,8 @@ public class TypesParser {
 		"type",
 		"expression",
 		"literal_expression",
-		"list_of_identifier_and_2_elements_Comma_separated",
-		"list_of_identifier_and_2_elements_Comma_separatedopt",
+		"list_of_IDENTIFIER_and_2_elements_Comma_separated",
+		"list_of_IDENTIFIER_and_2_elements_Comma_separatedopt",
 		"structural_expression",
 		"expression_list",
 		"map_separator",
@@ -225,8 +225,8 @@ public class TypesParser {
 		int type = 46;
 		int expression = 47;
 		int literal_expression = 48;
-		int list_of_identifier_and_2_elements_Comma_separated = 49;
-		int list_of_identifier_and_2_elements_Comma_separatedopt = 50;
+		int list_of_IDENTIFIER_and_2_elements_Comma_separated = 49;
+		int list_of_IDENTIFIER_and_2_elements_Comma_separatedopt = 50;
 		int structural_expression = 51;
 		int expression_list = 52;
 		int map_separator = 53;
@@ -577,25 +577,25 @@ public class TypesParser {
 						((Boolean)tmStack[tmHead].value) /* bcon */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 44:  // list_of_identifier_and_2_elements_Comma_separated : list_of_identifier_and_2_elements_Comma_separated ',' identifier map_separator expression
-				((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new AstListOfIdentifierAnd2ElementsCommaSeparatedItem(
+			case 44:  // list_of_IDENTIFIER_and_2_elements_Comma_separated : list_of_IDENTIFIER_and_2_elements_Comma_separated ',' identifier map_separator expression
+				((List<AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem(
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						((AstMapSeparator)tmStack[tmHead - 1].value) /* mapSeparator */,
 						((IAstExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset));
 				break;
-			case 45:  // list_of_identifier_and_2_elements_Comma_separated : identifier map_separator expression
+			case 45:  // list_of_IDENTIFIER_and_2_elements_Comma_separated : identifier map_separator expression
 				tmLeft.value = new ArrayList();
-				((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new AstListOfIdentifierAnd2ElementsCommaSeparatedItem(
+				((List<AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem(
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						((AstMapSeparator)tmStack[tmHead - 1].value) /* mapSeparator */,
 						((IAstExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
-			case 48:  // structural_expression : name '(' list_of_identifier_and_2_elements_Comma_separatedopt ')'
+			case 48:  // structural_expression : name '(' list_of_IDENTIFIER_and_2_elements_Comma_separatedopt ')'
 				tmLeft.value = new AstStructuralExpression(
 						((List<String>)tmStack[tmHead - 3].value) /* name */,
-						((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmStack[tmHead - 1].value) /* mapEntries */,
+						((List<AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem>)tmStack[tmHead - 1].value) /* mapEntries */,
 						null /* expressionList */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;

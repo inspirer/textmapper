@@ -127,16 +127,16 @@ recovered:
 		switch hh {
 		case 2:
 			if hash == 0x43733a82 && "lookahead" == l.source[l.tokenOffset:l.offset] {
-				rule = 62
+				rule = 64
 				break
 			}
 			if hash == 0x6856c82 && "shift" == l.source[l.tokenOffset:l.offset] {
-				rule = 72
+				rule = 74
 				break
 			}
 		case 3:
 			if hash == 0x41796943 && "returns" == l.source[l.tokenOffset:l.offset] {
-				rule = 69
+				rule = 71
 				break
 			}
 		case 6:
@@ -145,17 +145,17 @@ recovered:
 				break
 			}
 			if hash == 0x688f106 && "space" == l.source[l.tokenOffset:l.offset] {
-				rule = 73
+				rule = 75
 				break
 			}
 		case 7:
 			if hash == 0x32a007 && "left" == l.source[l.tokenOffset:l.offset] {
-				rule = 60
+				rule = 62
 				break
 			}
 		case 10:
 			if hash == 0x5fb57ca && "input" == l.source[l.tokenOffset:l.offset] {
-				rule = 55
+				rule = 57
 				break
 			}
 		case 11:
@@ -165,7 +165,7 @@ recovered:
 			}
 		case 12:
 			if hash == 0x621a30c && "lexer" == l.source[l.tokenOffset:l.offset] {
-				rule = 61
+				rule = 63
 				break
 			}
 		case 13:
@@ -174,7 +174,7 @@ recovered:
 				break
 			}
 			if hash == 0x658188d && "param" == l.source[l.tokenOffset:l.offset] {
-				rule = 66
+				rule = 68
 				break
 			}
 		case 14:
@@ -184,36 +184,40 @@ recovered:
 			}
 		case 20:
 			if hash == 0x375194 && "void" == l.source[l.tokenOffset:l.offset] {
-				rule = 74
+				rule = 76
 				break
 			}
 		case 24:
 			if hash == 0x9fd29358 && "language" == l.source[l.tokenOffset:l.offset] {
-				rule = 58
+				rule = 60
 				break
 			}
 		case 25:
+			if hash == 0xb328ec59 && "expect" == l.source[l.tokenOffset:l.offset] {
+				rule = 50
+				break
+			}
 			if hash == 0xb96da299 && "inline" == l.source[l.tokenOffset:l.offset] {
-				rule = 54
+				rule = 56
 				break
 			}
 		case 28:
 			if hash == 0x677c21c && "right" == l.source[l.tokenOffset:l.offset] {
-				rule = 70
+				rule = 72
 				break
 			}
 		case 31:
 			if hash == 0xc4ab3c1f && "parser" == l.source[l.tokenOffset:l.offset] {
-				rule = 67
+				rule = 69
 				break
 			}
 		case 32:
 			if hash == 0x540c92a0 && "nonempty" == l.source[l.tokenOffset:l.offset] {
-				rule = 65
+				rule = 67
 				break
 			}
 			if hash == 0x34a220 && "prec" == l.source[l.tokenOffset:l.offset] {
-				rule = 68
+				rule = 70
 				break
 			}
 		case 34:
@@ -227,7 +231,7 @@ recovered:
 				break
 			}
 			if hash == 0xb5e903a3 && "global" == l.source[l.tokenOffset:l.offset] {
-				rule = 53
+				rule = 55
 				break
 			}
 		case 37:
@@ -241,17 +245,17 @@ recovered:
 			}
 		case 40:
 			if hash == 0x53d6f968 && "nonassoc" == l.source[l.tokenOffset:l.offset] {
-				rule = 64
+				rule = 66
 				break
 			}
 		case 42:
 			if hash == 0xbddafb2a && "layout" == l.source[l.tokenOffset:l.offset] {
-				rule = 59
+				rule = 61
 				break
 			}
 		case 44:
 			if hash == 0x2fff6c && "flag" == l.source[l.tokenOffset:l.offset] {
-				rule = 51
+				rule = 53
 				break
 			}
 		case 48:
@@ -266,21 +270,25 @@ recovered:
 			}
 		case 51:
 			if hash == 0xc1e742f3 && "no-eoi" == l.source[l.tokenOffset:l.offset] {
-				rule = 63
+				rule = 65
 				break
 			}
 			if hash == 0x73 && "s" == l.source[l.tokenOffset:l.offset] {
-				rule = 71
+				rule = 73
 				break
 			}
 		case 52:
+			if hash == 0x748c034 && "expect-rr" == l.source[l.tokenOffset:l.offset] {
+				rule = 51
+				break
+			}
 			if hash == 0x8d046634 && "explicit" == l.source[l.tokenOffset:l.offset] {
-				rule = 50
+				rule = 52
 				break
 			}
 		case 53:
 			if hash == 0x6be81575 && "generate" == l.source[l.tokenOffset:l.offset] {
-				rule = 52
+				rule = 54
 				break
 			}
 		case 56:
@@ -289,17 +297,17 @@ recovered:
 				break
 			}
 			if hash == 0x78 && "x" == l.source[l.tokenOffset:l.offset] {
-				rule = 75
+				rule = 77
 				break
 			}
 		case 57:
 			if hash == 0x1df56d39 && "interface" == l.source[l.tokenOffset:l.offset] {
-				rule = 56
+				rule = 58
 				break
 			}
 		case 59:
 			if hash == 0x3291bb && "lalr" == l.source[l.tokenOffset:l.offset] {
-				rule = 57
+				rule = 59
 				break
 			}
 		}

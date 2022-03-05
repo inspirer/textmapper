@@ -92,36 +92,38 @@ public class TMLexer {
 		int brackets = 46;
 		int _class = 47;
 		int empty = 48;
-		int explicit = 49;
-		int flag = 50;
-		int generate = 51;
-		int global = 52;
-		int inline = 53;
-		int input = 54;
-		int _interface = 55;
-		int lalr = 56;
-		int language = 57;
-		int layout = 58;
-		int left = 59;
-		int lexer = 60;
-		int lookahead = 61;
-		int noMinuseoi = 62;
-		int nonassoc = 63;
-		int nonempty = 64;
-		int param = 65;
-		int parser = 66;
-		int prec = 67;
-		int returns = 68;
-		int right = 69;
-		int char_s = 70;
-		int shift = 71;
-		int space = 72;
-		int _void = 73;
-		int char_x = 74;
-		int code = 75;
-		int Lbrace = 76;
-		int regexp = 77;
-		int Div = 78;
+		int expect = 49;
+		int expectMinusrr = 50;
+		int explicit = 51;
+		int flag = 52;
+		int generate = 53;
+		int global = 54;
+		int inline = 55;
+		int input = 56;
+		int _interface = 57;
+		int lalr = 58;
+		int language = 59;
+		int layout = 60;
+		int left = 61;
+		int lexer = 62;
+		int lookahead = 63;
+		int noMinuseoi = 64;
+		int nonassoc = 65;
+		int nonempty = 66;
+		int param = 67;
+		int parser = 68;
+		int prec = 69;
+		int returns = 70;
+		int right = 71;
+		int char_s = 72;
+		int shift = 73;
+		int space = 74;
+		int _void = 75;
+		int char_x = 76;
+		int code = 77;
+		int Lbrace = 78;
+		int regexp = 79;
+		int Div = 80;
 	}
 
 	public interface ErrorReporter {
@@ -297,29 +299,29 @@ public class TMLexer {
 	};
 
 	private static final short tmBacktracking[] = {
-		38, 9, 79, 21, 21, 33
+		38, 9, 81, 21, 21, 33
 	};
 
 	private static final int tmFirstRule = -4;
 
-	private static final int[] tmRuleSymbol = unpack_int(80,
+	private static final int[] tmRuleSymbol = unpack_int(82,
 		"\uffff\uffff\0\0\1\0\2\0\0\0\3\0\4\0\5\0\6\0\7\0\10\0\11\0\12\0\13\0\14\0\15\0\16" +
 		"\0\17\0\20\0\21\0\22\0\23\0\24\0\25\0\26\0\27\0\30\0\31\0\32\0\33\0\34\0\35\0\36" +
 		"\0\37\0\40\0\41\0\42\0\43\0\45\0\46\0\47\0\50\0\51\0\52\0\53\0\54\0\55\0\56\0\57" +
 		"\0\60\0\61\0\62\0\63\0\64\0\65\0\66\0\67\0\70\0\71\0\72\0\73\0\74\0\75\0\76\0\77" +
 		"\0\100\0\101\0\102\0\103\0\104\0\105\0\106\0\107\0\110\0\111\0\112\0\113\0\114\0" +
-		"\115\0\116\0");
+		"\115\0\116\0\117\0\120\0");
 
 	private static final int tmClassesCount = 36;
 
 	private static final short[] tmGoto = unpack_vc_short(2304,
 		"\1\ufffb\1\ufffc\3\63\1\61\1\56\1\54\1\53\1\50\1\46\1\43\1\40\1\37\1\36\1\34\1\33" +
 		"\1\31\1\30\1\24\1\23\1\21\1\20\1\17\1\15\1\14\1\13\1\12\1\10\1\7\1\ufffc\1\6\1\5" +
-		"\1\3\1\2\1\1\44\uffdb\44\uffe3\41\ufff2\1\4\2\ufff2\44\ufff1\44\uffb0\44\uffe8\44" +
+		"\1\3\1\2\1\1\44\uffdb\44\uffe3\41\ufff2\1\4\2\ufff2\44\ufff1\44\uffae\44\uffe8\44" +
 		"\uffe9\21\uffd6\1\uffff\2\uffd6\1\10\7\uffd6\1\10\7\uffd6\21\ufffc\1\11\2\ufffc\1" +
 		"\10\7\ufffc\1\10\7\ufffc\44\uffd7\44\uffdd\44\uffe1\30\ufff0\1\16\13\ufff0\44\uffef" +
-		"\44\uffe2\44\uffed\25\uffea\1\22\16\uffea\44\ufff3\24\ufff9\1\23\17\ufff9\16\uffad" +
-		"\1\ufffe\25\uffad\1\ufffc\15\25\1\26\25\25\1\ufffc\15\25\1\26\4\25\1\27\20\25\44" +
+		"\44\uffe2\44\uffed\25\uffea\1\22\16\uffea\44\ufff3\24\ufff9\1\23\17\ufff9\16\uffab" +
+		"\1\ufffe\25\uffab\1\ufffc\15\25\1\26\25\25\1\ufffc\15\25\1\26\4\25\1\27\20\25\44" +
 		"\ufff5\44\uffec\24\ufffc\1\23\4\ufffc\1\32\12\ufffc\44\uffe5\44\uffeb\30\uffdf\1" +
 		"\35\13\uffdf\44\uffde\44\uffe0\44\uffe4\32\uffe7\1\ufffd\11\uffe7\30\ufffc\1\42\13" +
 		"\ufffc\44\uffe6\1\ufffc\2\43\1\ufffc\7\43\1\45\22\43\1\44\5\43\1\ufffc\2\43\1\ufffc" +
@@ -332,9 +334,9 @@ public class TMLexer {
 		"\1\ufffc\11\71\1\67\1\66\5\71\1\ufffc\2\71\1\ufffc\40\71\1\ufffc\2\67\2\ufffc\31" +
 		"\67\1\70\1\71\4\67\1\ufffc\2\67\1\ufffc\40\67\1\ufffc\2\71\2\ufffc\16\71\1\75\11" +
 		"\71\1\73\1\72\5\71\1\ufffc\2\71\1\ufffc\40\71\1\ufffc\2\73\2\ufffc\31\73\1\74\1\71" +
-		"\4\73\1\ufffc\2\73\1\ufffc\40\73\44\uffae\2\ufffc\3\63\1\61\1\56\1\54\1\53\1\50\1" +
+		"\4\73\1\ufffc\2\73\1\ufffc\40\73\44\uffac\2\ufffc\3\63\1\61\1\56\1\54\1\53\1\50\1" +
 		"\46\1\43\1\40\1\37\1\36\1\34\1\33\1\31\1\30\1\24\1\23\1\21\1\20\1\17\1\15\1\14\1" +
-		"\13\1\12\1\10\1\7\1\ufffc\1\6\1\77\1\3\1\2\1\1\44\uffaf");
+		"\13\1\12\1\10\1\7\1\ufffc\1\6\1\77\1\3\1\2\1\1\44\uffad");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -504,10 +506,10 @@ public class TMLexer {
 				break;
 			case 38:
 				return createIDToken(token, ruleIndex);
-			case 76: // code: /\{/
+			case 78: // code: /\{/
 				{ skipAction(); token.endoffset = getOffset(); }
 				break;
-			case 78: // regexp: /\/{reFirst}{reChar}*\//
+			case 80: // regexp: /\/{reFirst}{reChar}*\//
 				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
 		}
@@ -527,32 +529,34 @@ public class TMLexer {
 		subTokensOfID.put("brackets", 47);
 		subTokensOfID.put("class", 48);
 		subTokensOfID.put("empty", 49);
-		subTokensOfID.put("explicit", 50);
-		subTokensOfID.put("flag", 51);
-		subTokensOfID.put("generate", 52);
-		subTokensOfID.put("global", 53);
-		subTokensOfID.put("inline", 54);
-		subTokensOfID.put("input", 55);
-		subTokensOfID.put("interface", 56);
-		subTokensOfID.put("lalr", 57);
-		subTokensOfID.put("language", 58);
-		subTokensOfID.put("layout", 59);
-		subTokensOfID.put("left", 60);
-		subTokensOfID.put("lexer", 61);
-		subTokensOfID.put("lookahead", 62);
-		subTokensOfID.put("no-eoi", 63);
-		subTokensOfID.put("nonassoc", 64);
-		subTokensOfID.put("nonempty", 65);
-		subTokensOfID.put("param", 66);
-		subTokensOfID.put("parser", 67);
-		subTokensOfID.put("prec", 68);
-		subTokensOfID.put("returns", 69);
-		subTokensOfID.put("right", 70);
-		subTokensOfID.put("s", 71);
-		subTokensOfID.put("shift", 72);
-		subTokensOfID.put("space", 73);
-		subTokensOfID.put("void", 74);
-		subTokensOfID.put("x", 75);
+		subTokensOfID.put("expect", 50);
+		subTokensOfID.put("expect-rr", 51);
+		subTokensOfID.put("explicit", 52);
+		subTokensOfID.put("flag", 53);
+		subTokensOfID.put("generate", 54);
+		subTokensOfID.put("global", 55);
+		subTokensOfID.put("inline", 56);
+		subTokensOfID.put("input", 57);
+		subTokensOfID.put("interface", 58);
+		subTokensOfID.put("lalr", 59);
+		subTokensOfID.put("language", 60);
+		subTokensOfID.put("layout", 61);
+		subTokensOfID.put("left", 62);
+		subTokensOfID.put("lexer", 63);
+		subTokensOfID.put("lookahead", 64);
+		subTokensOfID.put("no-eoi", 65);
+		subTokensOfID.put("nonassoc", 66);
+		subTokensOfID.put("nonempty", 67);
+		subTokensOfID.put("param", 68);
+		subTokensOfID.put("parser", 69);
+		subTokensOfID.put("prec", 70);
+		subTokensOfID.put("returns", 71);
+		subTokensOfID.put("right", 72);
+		subTokensOfID.put("s", 73);
+		subTokensOfID.put("shift", 74);
+		subTokensOfID.put("space", 75);
+		subTokensOfID.put("void", 76);
+		subTokensOfID.put("x", 77);
 	}
 
 	protected boolean createIDToken(Span token, int ruleIndex) {

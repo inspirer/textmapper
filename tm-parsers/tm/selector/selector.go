@@ -22,6 +22,8 @@ var (
 	Command              = func(t tm.NodeType) bool { return t == tm.Command }
 	DirectiveAssert      = func(t tm.NodeType) bool { return t == tm.DirectiveAssert }
 	DirectiveBrackets    = func(t tm.NodeType) bool { return t == tm.DirectiveBrackets }
+	DirectiveExpect      = func(t tm.NodeType) bool { return t == tm.DirectiveExpect }
+	DirectiveExpectRR    = func(t tm.NodeType) bool { return t == tm.DirectiveExpectRR }
 	DirectiveInput       = func(t tm.NodeType) bool { return t == tm.DirectiveInput }
 	DirectiveInterface   = func(t tm.NodeType) bool { return t == tm.DirectiveInterface }
 	DirectivePrio        = func(t tm.NodeType) bool { return t == tm.DirectivePrio }

@@ -182,28 +182,28 @@ literal_expression  : LiteralExpression ::=
   | {bcon}
 ;
 
-class ListOfIdentifierAnd2ElementsCommaSeparatedItem {
+class ListOfIDENTIFIERAnd2ElementsCommaSeparatedItem {
 	String identifier;
 	MapSeparator mapSeparator;
 	Expression expression;
 }
 
-list_of_identifier_and_2_elements_Comma_separated  : list<ListOfIdentifierAnd2ElementsCommaSeparatedItem>
-	(this+=new.ListOfIdentifierAnd2ElementsCommaSeparatedItem({identifier} mapSeparator=map_separator {expression})
+list_of_IDENTIFIER_and_2_elements_Comma_separated  : list<ListOfIDENTIFIERAnd2ElementsCommaSeparatedItem>
+	(this+=new.ListOfIDENTIFIERAnd2ElementsCommaSeparatedItem({identifier} mapSeparator=map_separator {expression})
 		separator ',')+ ;
 
-list_of_identifier_and_2_elements_Comma_separatedopt  : list<ListOfIdentifierAnd2ElementsCommaSeparatedItem> ::=
-	this=list_of_identifier_and_2_elements_Comma_separated?
+list_of_IDENTIFIER_and_2_elements_Comma_separatedopt  : list<ListOfIDENTIFIERAnd2ElementsCommaSeparatedItem> ::=
+	this=list_of_IDENTIFIER_and_2_elements_Comma_separated?
 ;
 
 class StructuralExpression : Expression {
 	list<String> name;
-	list<ListOfIdentifierAnd2ElementsCommaSeparatedItem> mapEntries;
+	list<ListOfIDENTIFIERAnd2ElementsCommaSeparatedItem> mapEntries;
 	list<Expression> expressionList;
 }
 
 structural_expression  : StructuralExpression ::=
-	{name} '(' mapEntries=list_of_identifier_and_2_elements_Comma_separatedopt ')'
+	{name} '(' mapEntries=list_of_IDENTIFIER_and_2_elements_Comma_separatedopt ')'
   | '[' expressionList=expression_listopt ']'
 ;
 

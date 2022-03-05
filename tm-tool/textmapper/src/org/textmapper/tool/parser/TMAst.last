@@ -27,6 +27,8 @@ identifier  : Identifier ::=
   | 'no-eoi'
   | 's'
   | 'x'
+  | 'expect'
+  | 'expect-rr'
   | 'class'
   | 'interface'
   | 'void'
@@ -396,12 +398,22 @@ class DirectiveSet : GrammarPart {
 	RhsSet rhsSet;
 }
 
+class DirectiveExpect : GrammarPart {
+	Integer icon;
+}
+
+class DirectiveExpectRR : GrammarPart {
+	Integer icon;
+}
+
 directive  : GrammarPart ::=
 	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
   | this=new.DirectiveInput: '%' 'input' inputRefs=inputref_list_Comma_separated ';'
   | this=new.DirectiveInterface: '%' 'interface' ids=identifier_list_Comma_separated ';'
   | this=new.DirectiveAssert: '%' 'assert' (kind='empty' as KindKind.EMPTY | kind='nonempty' as KindKind.NONEMPTY) {rhsSet} ';'
   | this=new.DirectiveSet: '%' 'generate' name=identifier '=' {rhsSet} ';'
+  | this=new.DirectiveExpect: '%' 'expect' {icon} ';'
+  | this=new.DirectiveExpectRR: '%' 'expect-rr' {icon} ';'
 ;
 
 identifier_list_Comma_separated  : list<Identifier>

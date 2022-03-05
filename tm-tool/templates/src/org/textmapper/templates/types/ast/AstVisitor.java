@@ -65,7 +65,7 @@ public abstract class AstVisitor {
 		return true;
 	}
 
-	protected boolean visit(AstListOfIdentifierAnd2ElementsCommaSeparatedItem n) {
+	protected boolean visit(AstListOfIDENTIFIERAnd2ElementsCommaSeparatedItem n) {
 		return true;
 	}
 }

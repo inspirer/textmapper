@@ -120,6 +120,8 @@ var lexerTests = []struct {
 	{tm.BRACKETS, []string{`«brackets»`}},
 	{tm.CLASS, []string{`«class»`}},
 	{tm.EMPTY, []string{`«empty»`}},
+	{tm.EXPECT, []string{`«expect»`}},
+	{tm.EXPECTMINUSRR, []string{`«expect-rr»`}},
 	{tm.EXPLICIT, []string{`«explicit»`}},
 	{tm.FLAG, []string{`«flag»`}},
 	{tm.GENERATE, []string{`«generate»`}},
