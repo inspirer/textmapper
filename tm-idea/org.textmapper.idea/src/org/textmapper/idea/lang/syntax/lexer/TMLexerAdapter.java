@@ -259,6 +259,10 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return KW_EMPTY;
 			case Tokens.nonempty:
 				return KW_NONEMPTY;
+			case Tokens.expect:
+				return KW_EXPECT;
+			case Tokens.expectMinusrr:
+				return KW_EXPECT_RR;
 
 			case Tokens.explicit:
 				return KW_EXPLICIT;
