@@ -158,7 +158,7 @@ public class InputTest extends LapgTestCase {
 						"    input1 : Licon\n" +
 						"    list_item : Licon\n" +
 						"\n" +
-						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
+						"conflicts: 0 shift/reduce and 3 reduce/reduce\n");
 		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
 				g.getGrammar().getPatterns(), true /*allowBacktracking*/, ts);
 		Builder.compile(g.getGrammar(), ts);

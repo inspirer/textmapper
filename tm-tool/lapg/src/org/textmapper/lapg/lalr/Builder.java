@@ -256,7 +256,11 @@ public class Builder extends Lalr1 {
 				List<LalrConflict> mergedConflicts = conflicts.getMergedConflicts(t.number,
 						getInput(t.number));
 				for (ParserConflict conflict : mergedConflicts) {
-					pending.add(conflict);
+					if (conflict.getKind() == ParserConflict.FIXED) {
+						status.report(conflict);
+					} else {
+						pending.add(conflict);
+					}
 					switch (conflict.getKind()) {
 						case ParserConflict.REDUCE_REDUCE:
 							rr += conflict.getSymbols().length;
