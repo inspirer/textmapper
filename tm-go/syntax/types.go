@@ -793,6 +793,7 @@ func mergePhrases(phrases []phrase, origin *Expr) phrase {
 
 	// There is no clear order between the fields.
 	ret.ordered = false
+	topoSort(list, g)
 	for _, fields := range list {
 		f := mergeFields(fields...)
 		if len(fields) < len(phrases) {
@@ -801,6 +802,61 @@ func mergePhrases(phrases []phrase, origin *Expr) phrase {
 		ret.fields = append(ret.fields, f)
 	}
 	return ret
+}
+
+func topoSort(list [][]*field, g [][]int) {
+	height := make([]int, len(list))
+	done := container.NewBitSet(len(list))
+	var fn func(i int) int
+	fn = func(i int) int {
+		if done.Get(i) {
+			return height[i]
+		}
+		done.Set(i)
+		ret := 0
+		for _, e := range g[i] {
+			if val := fn(e) + 1; val > ret {
+				ret = val
+			}
+		}
+		height[i] = ret
+		return ret
+	}
+	var max int
+	for i := range list {
+		if val := fn(i); val > max {
+			max = val
+		}
+	}
+
+	// Bucket sort.
+	cnt := make([]int, max+1)
+	for _, h := range height {
+		cnt[h]++
+	}
+	var target int
+	for i, val := range cnt {
+		cnt[i] = target
+		target += val
+	}
+	out := make([][]*field, len(list))
+	for i, h := range height {
+		e := cnt[h]
+		cnt[h]++
+		out[e] = list[i]
+	}
+
+	// Sort fields within a bucket.
+	target = 0
+	for _, max := range cnt {
+		slice := out[target:max]
+		target = max
+		sort.Slice(slice, func(i, j int) bool {
+			return slice[i][0].identity < slice[j][0].identity
+		})
+	}
+
+	copy(list, out) // copy it back
 }
 
 func sortAndDedup(list []string) []string {

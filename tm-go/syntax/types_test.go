@@ -82,7 +82,7 @@ var typesTests = []struct {
 		"D: ",
 	}},
 	{`%input A; A: C -> A; C: B | (c -> C); D: B | d=(d -> D); B: C | D;`, []string{
-		"A: d=(D)* (C)*",
+		"A: (C)* d=(D)*",
 		"C: ",
 		"D: ",
 	}},
@@ -196,8 +196,8 @@ var typesTests = []struct {
 	}},
 	{`%input A; %interface X,Y; A: x=B y=D -> A | y=D x=B -> A; B: b->B-> X | c->C->X ; D: d -> B;`, []string{
 		// Unordered clauses are not allowed.
-		"err: fields x and y contain overlapping sets of node types",
-		"A: x=X y=B",
+		"err: fields y and x contain overlapping sets of node types",
+		"A: y=B x=X",
 		"B: ",
 		"C: ",
 		"X: B C",

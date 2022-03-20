@@ -1461,20 +1461,21 @@ func (c *compiler) compileParser() {
 		return
 	}
 
-	// TODO enable for all files
-	if c.out.Options.EventBased && (c.file.Header().Name().Text() == "tm" || c.file.Header().Name().Text() == "test") {
+	if c.out.Options.EventBased {
 		var tokens []syntax.RangeToken
 		for _, t := range c.out.Options.ReportTokens {
 			name := ident.Produce(c.out.Syms[t].Name, ident.CamelCase)
 			tokens = append(tokens, syntax.RangeToken{Token: t, Name: name})
 		}
 
-		types, err := syntax.ExtractTypes(c.source, tokens)
-		if err != nil {
-			c.s.AddError(err)
-			return
+		if c.out.Options.EventFields {
+			types, err := syntax.ExtractTypes(c.source, tokens)
+			if err != nil {
+				c.s.AddError(err)
+				return
+			}
+			c.out.Types = types
 		}
-		c.out.Types = types
 	}
 
 	if err := syntax.Expand(c.source); err != nil {
