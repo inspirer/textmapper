@@ -74,11 +74,17 @@ type RangeField struct {
 // structure of the produced AST.
 //
 // Note: the function is expected to work on a grammar without templates.
-func ExtractTypes(m *Model, tokens []RangeToken) (*Types, error) {
+func ExtractTypes(m *Model, tokens []RangeToken, eventFields, genSelector bool) (*Types, error) {
 	c := newTypeCollector(m, tokens)
 	c.resolveTypes()
-	c.resolveCategories()
-	c.fixConflictingFields()
+	switch {
+	case eventFields:
+		c.resolveFields()
+		c.resolveCategories()
+		c.fixConflictingFields()
+	case genSelector:
+		c.resolveCategories()
+	}
 	return c.out, c.s.Err()
 }
 
@@ -336,8 +342,8 @@ func (c *typeCollector) resolveTypes() {
 	types = sortAndDedup(types)
 
 	c.types = make(map[string]int) // name -> index in def/c.out.RangeTypes
-	for index, t := range types {
-		c.types[t] = index
+	for _, t := range types {
+		c.types[t] = len(c.out.RangeTypes)
 		c.out.RangeTypes = append(c.out.RangeTypes, RangeType{Name: t})
 	}
 	c.tokenTypes = make(map[int]int)
@@ -350,8 +356,10 @@ func (c *typeCollector) resolveTypes() {
 		}
 		c.tokenTypes[tok.Token] = index
 	}
+}
 
-	def := make([][]*Expr, len(types))
+func (c *typeCollector) resolveFields() {
+	def := make([][]*Expr, len(c.out.RangeTypes))
 	for _, arrow := range c.arrows {
 		if !c.isCat[arrow.Name] {
 			index := c.types[arrow.Name]
@@ -360,6 +368,10 @@ func (c *typeCollector) resolveTypes() {
 	}
 	c.initTarjan()
 	for index, exprs := range def {
+		if len(exprs) == 0 {
+			// This is a reported token.
+			continue
+		}
 		var phrases []phrase
 		for _, e := range exprs {
 			phrases = append(phrases, c.exprPhrase(e))

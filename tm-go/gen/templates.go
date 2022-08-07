@@ -12,6 +12,7 @@ var lexerFiles = []file{
 }
 
 var parserFiles = []file{
+	{"parser.go", parserTpl},
 	{"parser_tables.go", parserTablesTpl},
 }
 
@@ -519,6 +520,621 @@ const bisonTpl = `%{
 
 %%
 
+`
+
+const parserTpl = `
+{{- define "flushPending"}}
+{{- if .ReportTokens true }}
+	if len(p.pending) > 0 {
+		for _, tok := range p.pending {
+			p.reportIgnoredToken(tok)
+		}
+		p.pending = p.pending[:0]
+	}
+{{- end}}
+{{- end}}
+
+{{- define "reportConsumedNext" -}}
+{{- if .ReportTokens false }}
+			switch Token(p.next.symbol) {
+{{- range .Parser.MappedTokens}}
+{{- $sym := index $.Syms .Token}}
+{{- if not (or $sym.Space (eq $sym.Name "invalid_token")) }}
+	case {{$sym.ID}}:
+		p.listener({{.Name}}, 0, p.next.offset, p.next.endoffset)
+{{- end}}
+{{- end}}
+			}
+{{- end}}
+{{- end}}
+
+
+{{- template "header" . -}}
+package {{.Name}}
+
+{{- if .Parser.IsRecovering }}
+{{- block "errorHandler" .}}
+
+// ErrorHandler is called every time a parser is unable to process some part of the input.
+// This handler can return false to abort the parser.
+type ErrorHandler func(err SyntaxError) bool
+
+// StopOnFirstError is an error handler that forces the parser to stop on and return the first
+// error.
+func StopOnFirstError(_ SyntaxError) bool { return false }
+{{- end }}
+{{- end }}
+
+// Parser is a table-driven LALR parser for {{.Name}}.
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+type Parser struct {
+{{- if .Parser.IsRecovering }}
+	eh ErrorHandler
+{{- end}}
+{{- if .Parser.Types }}
+	listener Listener
+{{- end}}
+
+	next symbol
+{{- if .Parser.IsRecovering }}
+	endState  int{{$stateType}}
+{{- end}}
+
+{{- if .ReportTokens true }}
+
+	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
+	pending []symbol
+{{- end }}
+{{- block "parserVars" .}}{{end}}
+}
+
+{{ block "syntaxError" . -}}
+type SyntaxError struct {
+{{- if .Options.TokenLine }}
+	Line      int
+{{- end }}
+	Offset    int
+	Endoffset int
+}
+
+func (e SyntaxError) Error() string {
+{{- if .Options.TokenLine }}
+	return "fmt".Sprintf("syntax error at line %v", e.Line)
+{{- else}}
+	return "syntax error"
+{{- end }}
+}
+
+{{ end -}}
+
+type symbol struct {
+	symbol    int32
+	offset    int
+	endoffset int
+}
+
+type stackEntry struct {
+	sym   symbol
+	state int{{$stateType}}
+{{- if .Parser.HasAssocValues }}
+	value interface{}
+{{- end}}
+}
+
+func (p *Parser) Init({{if .Parser.IsRecovering }}eh ErrorHandler{{end}}{{if .Parser.Types }}{{if .Parser.IsRecovering }}, {{end}}l Listener{{end}}) {
+{{- if .Parser.IsRecovering }}
+	p.eh = eh
+{{- end}}
+{{- if .Parser.Types }}
+	p.listener = l
+{{- end}}
+{{- if .ReportTokens true }}
+	if cap(p.pending) < startTokenBufferSize {
+		p.pending = make([]symbol, 0, startTokenBufferSize)
+	}
+{{- end}}
+{{- block "initParserVars" .}}{{end}}
+}
+
+const (
+	startStackSize = 256
+{{- if .ReportTokens true }}
+	startTokenBufferSize = 16
+{{- end}}
+	noToken        = int32(UNAVAILABLE)
+	eoiToken       = int32(EOI)
+	debugSyntax    = {{ .Options.DebugParser }}
+)
+
+{{- range $index, $inp := .Parser.Inputs}}
+{{- if $inp.Synthetic }}{{continue}}{{end}}
+{{- $nt := index $.Parser.Nonterms $inp.Nonterm}}
+
+func (p *Parser) Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer) {{if eq $nt.Type ""}}error{{else}}({{$nt.Type}}, error){{end}} {
+{{- if $.Parser.HasInputAssocValues}}
+	{{if ne $nt.Type ""}}v{{else}}_{{end}}, err := p.parse({{if $.Options.Cancellable}}ctx, {{end}}{{$index}}, {{index $.Parser.Tables.FinalStates $index}}, lexer)
+{{- if ne $nt.Type ""}}
+	val, _ := v.({{$nt.Type}})
+	return val, err
+{{- else}}
+	return err
+{{- end}}
+{{- else}}
+	return p.parse({{if $.Options.Cancellable}}ctx, {{end}}{{$index}}, {{index $.Parser.Tables.FinalStates $index}}, lexer)
+{{- end}}
+}
+{{- end}}
+{{ block "parseFunc" . -}}
+{{ $stateType := bits_per_element .Parser.Tables.FromTo}}
+func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}}start, end int{{$stateType}}, lexer *Lexer) {{if .Parser.HasInputAssocValues}}(interface{}, error){{else}}error{{end}} { 
+{{- if .ReportTokens true }}
+	p.pending = p.pending[:0]
+{{- end}}
+{{- if .NeedsSession}}
+	var s session
+{{- if .Options.RecursiveLookaheads }}
+	s.cache = make(map[uint64]bool)
+{{- end}}
+{{- else if .Options.Cancellable }}
+	var shiftCounter int
+{{- end}}
+	state := start
+{{- if .Parser.IsRecovering }}
+	var lastErr SyntaxError
+	recovering := 0
+{{- end}}
+
+	var alloc [startStackSize]stackEntry
+	stack := append(alloc[:0], stackEntry{state: state})
+{{- if .Parser.IsRecovering }}
+	p.endState = end
+{{- end}}
+	p.fetchNext(lexer, stack)
+
+	for state != end {
+		action := tmAction[state]
+{{- if .Parser.Tables.Lalr}}
+		if action < -2 {
+			// Lookahead is needed.
+			if p.next.symbol == noToken {
+				p.fetchNext(lexer, stack)
+			}
+			action = lalr(action, p.next.symbol)
+		}
+{{- end}}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+
+			var entry stackEntry
+			entry.sym.symbol = tmRuleSymbol[rule]
+			rhs := stack[len(stack)-ln:]
+			stack = stack[:len(stack)-ln]
+			if ln == 0 {
+				if p.next.symbol == noToken {
+					p.fetchNext(lexer, stack)
+				}
+				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
+			} else {
+				entry.sym.offset = rhs[0].sym.offset
+				entry.sym.endoffset = rhs[ln-1].sym.endoffset
+			}
+			if err := p.applyRule({{if .Options.Cancellable}}ctx, {{end}}rule, &entry, rhs, lexer{{if .NeedsSession}}, &s{{end}}); err != nil {
+				return {{if .Parser.HasInputAssocValues}}nil, {{end}}err
+			}
+			if debugSyntax {
+				"fmt".Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
+			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			entry.state = state
+			stack = append(stack, entry)
+
+		} else if action == -1 {
+{{- if .Options.Cancellable }}
+			if {{if .NeedsSession}}s.{{end}}shiftCounter++; {{if .NeedsSession}}s.{{end}}shiftCounter&0x1ff == 0 {
+				// Note: checking for context cancellation is expensive so we do it from time to time.
+				select {
+				case <-ctx.Done():
+					return {{if .Parser.HasInputAssocValues}}nil, {{end}}ctx.Err()
+				default:
+				}
+			}
+{{end}}
+			// Shift.
+			if p.next.symbol == noToken {
+				p.fetchNext(lexer, stack)
+			}
+			state = gotoState(state, p.next.symbol)
+			if state >= 0 {
+				stack = append(stack, stackEntry{
+					sym:   p.next,
+					state: state,
+{{- if .Parser.HasAssocValues }}
+					value: lexer.Value(),
+{{- end}}
+				})
+				if debugSyntax {
+					"fmt".Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+				}
+{{- block "onAfterShift" .}}{{end}}
+{{- template "flushPending" .}}
+				if p.next.symbol != eoiToken {
+{{- template "reportConsumedNext" .}}
+					p.next.symbol = noToken
+				}
+{{- if .Parser.IsRecovering }}
+				if recovering > 0 {
+					recovering--
+				}
+{{- end}}
+			}
+		}
+
+		if action == -2 || state == -1 {
+{{- if .Parser.IsRecovering }}
+			if recovering == 0 {
+				if p.next.symbol == noToken {
+					p.fetchNext(lexer, stack)
+				}
+				lastErr = SyntaxError{
+{{- if .Options.TokenLine}}
+					Line:      lexer.Line(),
+{{- end}}
+					Offset:    p.next.offset,
+					Endoffset: p.next.endoffset,
+				}
+				if !p.eh(lastErr) {
+{{- template "flushPending" .}}
+					return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
+				}
+			}
+
+			if stack = p.recoverFromError(lexer, stack); stack == nil {
+{{- template "flushPending" .}}
+				return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
+			}
+			state = stack[len(stack)-1].state
+			recovering = 4
+{{- else}}
+			break
+{{- end}}
+		}
+	}
+
+{{- if not .Parser.IsRecovering }}
+
+	if state != end {
+		if p.next.symbol == noToken {
+			p.fetchNext(lexer, stack)
+		}
+		err := SyntaxError{
+{{- if .Options.TokenLine}}
+			Line:      lexer.Line(),
+{{- end}}
+			Offset:    p.next.offset,
+			Endoffset: p.next.endoffset,
+		}
+		return {{if .Parser.HasInputAssocValues}}nil, {{end}}err
+	}
+{{- end}}
+
+	return {{if .Parser.HasInputAssocValues}}stack[len(stack)-2].value, {{end}}nil
+}
+
+{{ end -}}
+
+{{ if .Parser.IsRecovering -}}
+const errSymbol = {{ .Parser.ErrorSymbol }}
+
+{{ block "willShift" . -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+// willShift checks if "symbol" is going to be shifted in the given state.
+// This function does not support empty productions and returns false if they occur before "symbol".
+func (p *Parser) willShift(stackPos int, state int{{$stateType}}, symbol int32, stack []stackEntry) bool {
+	if state == -1 {
+		return false
+	}
+
+	for state != p.endState {
+		action := tmAction[state]
+{{- if .Parser.Tables.Lalr}}
+		if action < -2 {
+			action = lalr(action, symbol)
+		}
+{{- end}}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+			if ln == 0 {
+				// we do not support empty productions
+				return false
+			}
+			stackPos -= ln - 1
+			state = gotoState(stack[stackPos-1].state, tmRuleSymbol[rule])
+		} else {
+			return action == -1 && gotoState(state, symbol) >= 0
+		}
+	}
+	return symbol == eoiToken
+}
+{{ end }}
+{{ block "skipBrokenCode" . -}}
+func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func (symbol int32) bool) int {
+	var e int
+	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
+		if debugSyntax {
+			"fmt".Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+		}
+{{- template "flushPending" .}}
+{{- template "reportConsumedNext" .}}
+		e = p.next.endoffset
+		p.fetchNext(lexer, stack)
+	}
+	return e
+}
+{{ end }}
+{{ block "recoverFromError" . -}}
+func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
+	var recoverSyms [1 + {{ref "NumTokens"}}/8]uint8
+	var recoverPos []int
+
+	if debugSyntax {
+		"fmt".Printf("broke at %v\n", symbolName(p.next.symbol))
+	}
+	for size := len(stack); size > 0; size-- {
+		if gotoState(stack[size-1].state, errSymbol) == -1 {
+			continue
+		}
+		recoverPos = append(recoverPos, size)
+{{- range .Parser.Tables.Markers}}
+{{- if eq (lower .Name) "recoveryscope" }}
+{{- if eq (len .States) 1}}
+		if {{.Name}}State == stack[size-1].state {
+			break
+		}
+{{- else}}
+		if {{.Name}}States[int(stack[size-1].state)] {
+			break
+		}
+{{- end}}
+{{- end}}
+{{- end}}
+	}
+	if len(recoverPos) == 0 {
+		return nil
+	}
+
+	for _, v := range afterErr {
+		recoverSyms[v/8] |= 1 << uint32(v%8)
+	}
+	canRecover := func (symbol int32) bool {
+		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
+	}
+	if p.next.symbol == noToken {
+		p.fetchNext(lexer, stack)
+	}
+	// By default, insert 'error' in front of the next token.
+	s := p.next.offset
+	e := s
+{{- if .ReportsInvalidToken}}
+	for _, tok := range p.pending {
+		// Try to cover all nearby invalid tokens.
+		if {{ref "Token"}}(tok.symbol) == {{(index .Syms .Lexer.InvalidToken).ID}} {
+			if s > tok.offset {
+				s = tok.offset
+			}
+			e = tok.endoffset
+		}
+	}
+{{- end}}
+	for {
+		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
+			e = endoffset
+		}
+
+		var matchingPos int
+		if debugSyntax {
+			"fmt".Printf("trying to recover on %v\n", symbolName(p.next.symbol))
+		}
+		for _, pos := range recoverPos {
+			if p.willShift(pos, gotoState(stack[pos-1].state, errSymbol), p.next.symbol, stack) {
+				matchingPos = pos
+				break
+			}
+		}
+		if matchingPos == 0 {
+			if p.next.symbol == eoiToken {
+				return nil
+			}
+			recoverSyms[p.next.symbol/8] &^= 1 << uint32(p.next.symbol%8)
+			continue
+		}
+
+		if matchingPos < len(stack) {
+			if s == e {
+				// Avoid producing syntax problems covering trailing whitespace.
+				e = stack[len(stack)-1].sym.endoffset
+			}
+			s = stack[matchingPos].sym.offset
+{{- if .ReportTokens true }}
+		} else if s == e && len(p.pending) > 0 {
+			// This means pending tokens don't contain InvalidTokens.
+			for _, tok := range p.pending {
+				p.reportIgnoredToken(tok)
+			}
+			p.pending = p.pending[:0]
+{{- end}}
+		}
+{{- if .ReportsInvalidToken}}
+		if s != e {
+			// Consume trailing invalid tokens.
+			for _, tok := range p.pending {
+				if {{ref "Token"}}(tok.symbol) == {{(index .Syms .Lexer.InvalidToken).ID}} && tok.endoffset > e {
+					e = tok.endoffset
+				}
+			}
+			var consumed int
+			for ; consumed < len(p.pending); consumed++ {
+				tok := p.pending[consumed]
+				if tok.offset >= e {
+					break
+				}
+				p.reportIgnoredToken(tok)
+			}
+			newSize := len(p.pending) - consumed
+			copy(p.pending[:newSize], p.pending[consumed:])
+			p.pending = p.pending[:newSize]
+		}
+{{- end}}
+		if debugSyntax {
+			for i := len(stack)-1; i >= matchingPos; i-- {
+				"fmt".Printf("dropped from stack: %v\n", symbolName(stack[i].sym.symbol))
+			}
+			"fmt".Println("recovered")
+		}
+		stack = append(stack[:matchingPos], stackEntry{
+			sym:   symbol{errSymbol, s, e},
+			state: gotoState(stack[matchingPos-1].state, errSymbol),
+		})
+		return stack
+	}
+}
+{{ end }}
+{{ end -}}
+
+{{ block "lalr" . -}}
+{{ if .Parser.Tables.Lalr -}}
+func lalr(action, next int32) int32 {
+	a := -action - 3
+	for ; tmLalr[a] >= 0; a += 2 {
+		if tmLalr[a] == next {
+			break
+		}
+	}
+	return tmLalr[a+1]
+}
+
+{{end -}}
+{{end -}}
+
+{{ block "gotoState" . -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+func gotoState(state int{{$stateType}}, symbol int32) int{{$stateType}} {
+	min := tmGoto[symbol]
+	max := tmGoto[symbol+1]
+
+	if max-min < 32 {
+		for i := min; i < max; i += 2 {
+			if tmFromTo[i] == state {
+				return tmFromTo[i+1]
+			}
+		}
+	} else {
+		for min < max {
+			e := (min + max) >> 1 &^ int32(1)
+			i := tmFromTo[e]
+			if i == state {
+				return tmFromTo[e+1]
+			} else if i < state {
+				min = e + 2
+			} else {
+				max = e
+			}
+		}
+	}
+	return -1
+}
+
+{{ end -}}
+
+{{ block "fetchNext" . -}}
+func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+restart:
+	tok := lexer.Next()
+	switch tok {
+{{- if .ReportTokens true }}
+	case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{.ID}}{{end}}:
+		s, e := lexer.Pos()
+		tok := symbol{int32(tok), s, e}
+		p.pending = append(p.pending, tok)
+		goto restart
+{{- end}}
+{{- if not .ReportsInvalidToken}}
+	case {{(index .Syms .Lexer.InvalidToken).ID}}:
+		goto restart
+{{- end}}
+	}
+	p.next.symbol = int32(tok)
+	p.next.offset, p.next.endoffset = lexer.Pos()
+}
+
+{{ end -}}
+
+{{ block "applyRule" . -}}
+func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer{{if .NeedsSession}}, s *session{{end}}) (err error) {
+{{- if .Parser.HasActions }}
+	switch rule {
+{{- range $index, $rule := .Parser.Rules}}
+{{- if ne $rule.Action 0 }}
+{{- $act := index $.Parser.Actions $rule.Action }}
+{{- if or (ne $act.Code "") $act.Report }}
+	case {{$index}}: // {{$.RuleString $rule}}
+{{- range $act.Report}}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+{{- if $.Parser.UsesFlags}}
+		p.listener({{$val.Name}}, {{if .Flags}}{{join .Flags "|"}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
+{{- else}}
+		p.listener({{$val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
+{{- end}}
+{{- end}}
+{{- if $act.Code }}
+   /* {{$act.Code}} */
+{{- end}}
+{{- end}}
+{{- end}}
+{{- end}}
+	}
+{{- end}}
+{{- if .Parser.Types }}
+	if nt := tmRuleType[rule]; nt != 0 {
+{{- if .Parser.UsesFlags}}
+		p.listener({{ref "NodeType"}}(nt&0xffff), {{ref "NodeFlags"}}(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
+{{- else}}
+		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
+{{- end}}
+	}
+{{- end}}
+	return
+}
+
+{{ end -}}
+
+{{ if .ReportTokens true -}}
+{{ block "reportIgnoredToken" . -}}
+func (p *Parser) reportIgnoredToken(tok symbol) {
+	var t {{ref "NodeType"}}
+	switch {{ref "Token"}}(tok.symbol) {
+{{- range .Parser.MappedTokens}}
+{{- $sym := index $.Syms .Token}}
+{{- if or $sym.Space (eq $sym.Name "invalid_token") }}
+	case {{$sym.ID}}:
+		t = {{.Name}}
+{{- end}}
+{{- end}}
+	default:
+		return
+	}
+	if debugSyntax {
+		"fmt".Printf("ignored: %v as %v\n", {{ref "Token"}}(tok.symbol), t)
+	}
+	p.listener(t, {{if .Parser.UsesFlags}}0, {{end}}tok.offset, tok.endoffset)
+}
+{{ end -}}
+{{ end -}}
 `
 
 const parserTablesTpl = `

@@ -266,7 +266,7 @@ func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttribute, n status.SourceNode) int {
 	var rawType string
 	if t.IsValid() {
-		rawType = t.Text()
+		rawType = strings.TrimSuffix(strings.TrimPrefix(t.Text(), "{"), "}")
 	}
 	if i, exists := c.syms[name]; exists {
 		sym := c.out.Syms[i]
@@ -678,7 +678,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 			}
 			if t, ok := nonterm.NontermType(); ok {
 				if rt, _ := t.(*ast.RawType); rt != nil {
-					nt.Type = rt.Text()
+					nt.Type = strings.TrimSuffix(strings.TrimPrefix(rt.Text(), "{"), "}")
 				} else {
 					c.errorf(t.TmNode(), "unsupported syntax")
 				}
@@ -1468,14 +1468,13 @@ func (c *compiler) compileParser() {
 			tokens = append(tokens, syntax.RangeToken{Token: t, Name: name})
 		}
 
-		if c.out.Options.EventFields {
-			types, err := syntax.ExtractTypes(c.source, tokens)
-			if err != nil {
-				c.s.AddError(err)
-				return
-			}
-			c.out.Types = types
+		types, err := syntax.ExtractTypes(c.source, tokens, c.out.Options.EventFields, c.out.Options.GenSelector)
+		if err != nil {
+			c.s.AddError(err)
+			return
 		}
+		c.out.Types = types
+		c.out.MappedTokens = tokens
 	}
 
 	if err := syntax.Expand(c.source); err != nil {
@@ -1486,6 +1485,14 @@ func (c *compiler) compileParser() {
 	if err := syntax.ResolveSets(c.source); err != nil {
 		c.s.AddError(err)
 		return
+	}
+
+	if errSym, ok := c.syms["error"]; ok {
+		if index, ok := c.namedSets["afterErr"]; ok {
+			// Non-empty "afterErr" set turns on error recovery.
+			c.out.Parser.IsRecovering = len(c.source.Sets[index].Sub) > 0
+			c.out.Parser.ErrorSymbol = errSym
+		}
 	}
 
 	// Export computed named sets for code generation.

@@ -15,12 +15,14 @@ var funcMap = template.FuncMap{
 	"int_array":        intArray,
 	"str_literal":      strconv.Quote,
 	"title":            strings.Title,
+	"lower":            strings.ToLower,
 	"sum":              sum,
 	"string_switch":    asStringSwitch,
 	"quote":            strconv.Quote,
 	"join":             strings.Join,
 	"lexer_action":     lexerAction,
 	"ref":              ref,
+	"minus1":           minus1,
 }
 
 func sum(a, b int) int {
@@ -150,4 +152,8 @@ func lexerAction(s string) string {
 
 func ref(name string) string {
 	return name
+}
+
+func minus1(a int) int {
+	return a - 1
 }

@@ -74,6 +74,27 @@ func (g *Grammar) TokensWithoutPrec() []Symbol {
 	return ret
 }
 
+// ReportTokens returns a list of tokens that need to be injected into the AST.
+func (g *Grammar) ReportTokens(space bool) []Symbol {
+	var ret []Symbol
+	for _, t := range g.Options.ReportTokens {
+		isSpace := g.Syms[t].Space || g.Syms[t].Name == "invalid_token"
+		if isSpace == space {
+			ret = append(ret, g.Syms[t])
+		}
+	}
+	return ret
+}
+
+func (g *Grammar) ReportsInvalidToken() bool {
+	for _, t := range g.Options.ReportTokens {
+		if g.Syms[t].Name == "invalid_token" {
+			return true
+		}
+	}
+	return false
+}
+
 // SpaceActions returns a sorted list of space-only actions.
 func (g *Grammar) SpaceActions() []int {
 	var ret []int
@@ -142,6 +163,14 @@ func (g *Grammar) RuleString(r *lalr.Rule) string {
 	return sb.String()
 }
 
+func (g *Grammar) NontermID(nonterm int) string {
+	return g.Syms[g.NumTokens+nonterm].ID
+}
+
+func (g *Grammar) NeedsSession() bool {
+	return len(g.Parser.Tables.Lookaheads) > 0 && (g.Options.RecursiveLookaheads || g.Options.Cancellable)
+}
+
 // Range marks the portion of a rule that needs to be reported.
 type Range struct {
 	Start int
@@ -194,14 +223,58 @@ type Lexer struct {
 
 // Parser is a model of a generated parser.
 type Parser struct {
-	Inputs    []syntax.Input
-	Nonterms  []*syntax.Nonterm
-	Prec      []lalr.Precedence // TODO remove since this is a lalr input
-	Rules     []lalr.Rule
-	Tables    *lalr.Tables
-	Actions   []SemanticAction
-	UsesFlags bool
-	Types     *syntax.Types
+	Inputs       []syntax.Input
+	Nonterms     []*syntax.Nonterm
+	Prec         []lalr.Precedence // TODO remove since this is a lalr input
+	Rules        []lalr.Rule
+	Tables       *lalr.Tables
+	Actions      []SemanticAction
+	UsesFlags    bool
+	Types        *syntax.Types
+	MappedTokens []syntax.RangeToken
+	IsRecovering bool
+	ErrorSymbol  int
+}
+
+func (p *Parser) HasAssocValues() bool {
+	for _, nt := range p.Nonterms {
+		if nt.Type != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Parser) HasInputAssocValues() bool {
+	for _, inp := range p.Inputs {
+		if p.Nonterms[inp.Nonterm].Type != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Parser) HasMultipleUserInputs() bool {
+	var count int
+	for _, inp := range p.Inputs {
+		if inp.Synthetic {
+			continue
+		}
+		count++
+	}
+	return count > 1
+}
+
+func (p *Parser) HasActions() bool {
+	for _, r := range p.Rules {
+		if r.Action > 0 {
+			act := p.Actions[r.Action]
+			if len(act.Report) > 0 || act.Code != "" {
+				return true
+			}
+		}
+	}
+	return len(p.Tables.Lookaheads) > 0
 }
 
 // Options carries grammar generation parameters.
