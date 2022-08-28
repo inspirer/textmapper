@@ -66,7 +66,6 @@ type Decl2Interface interface {
 
 // decl2InterfaceNode() ensures that only the following types can be
 // assigned to Decl2Interface.
-//
 func (Decl2) decl2InterfaceNode()   {}
 func (If) decl2InterfaceNode()      {}
 func (NilNode) decl2InterfaceNode() {}
@@ -78,7 +77,6 @@ type Declaration interface {
 
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
-//
 func (AsExpr) declarationNode()        {}
 func (Block) declarationNode()         {}
 func (Decl1) declarationNode()         {}
@@ -102,7 +100,6 @@ type Expr interface {
 
 // exprNode() ensures that only the following types can be
 // assigned to Expr.
-//
 func (AsExpr) exprNode()   {}
 func (IntExpr) exprNode()  {}
 func (PlusExpr) exprNode() {}

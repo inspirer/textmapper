@@ -268,7 +268,6 @@ type BindingPattern interface {
 
 // bindingPatternNode() ensures that only the following types can be
 // assigned to BindingPattern.
-//
 func (ArrayPattern) bindingPatternNode()  {}
 func (ObjectPattern) bindingPatternNode() {}
 func (NilNode) bindingPatternNode()       {}
@@ -280,7 +279,6 @@ type CaseClause interface {
 
 // caseClauseNode() ensures that only the following types can be
 // assigned to CaseClause.
-//
 func (Case) caseClauseNode()    {}
 func (Default) caseClauseNode() {}
 func (NilNode) caseClauseNode() {}
@@ -292,7 +290,6 @@ type ClassElement interface {
 
 // classElementNode() ensures that only the following types can be
 // assigned to ClassElement.
-//
 func (EmptyDecl) classElementNode()         {}
 func (MemberMethod) classElementNode()      {}
 func (MemberVar) classElementNode()         {}
@@ -307,7 +304,6 @@ type Decl interface {
 
 // declNode() ensures that only the following types can be
 // assigned to Decl.
-//
 func (AsyncFunc) declNode()                 {}
 func (AsyncGeneratorDeclaration) declNode() {}
 func (Class) declNode()                     {}
@@ -339,7 +335,6 @@ type Decorator interface {
 
 // decoratorNode() ensures that only the following types can be
 // assigned to Decorator.
-//
 func (DecoratorCall) decoratorNode() {}
 func (DecoratorExpr) decoratorNode() {}
 func (NilNode) decoratorNode()       {}
@@ -351,7 +346,6 @@ type ElementPattern interface {
 
 // elementPatternNode() ensures that only the following types can be
 // assigned to ElementPattern.
-//
 func (ElementBinding) elementPatternNode()    {}
 func (NoElement) elementPatternNode()         {}
 func (SingleNameBinding) elementPatternNode() {}
@@ -365,7 +359,6 @@ type ExportElement interface {
 
 // exportElementNode() ensures that only the following types can be
 // assigned to ExportElement.
-//
 func (ExportSpec) exportElementNode()    {}
 func (SyntaxProblem) exportElementNode() {}
 func (NilNode) exportElementNode()       {}
@@ -377,7 +370,6 @@ type Expr interface {
 
 // exprNode() ensures that only the following types can be
 // assigned to Expr.
-//
 func (AdditiveExpr) exprNode()             {}
 func (ArrayLiteral) exprNode()             {}
 func (ArrowFunc) exprNode()                {}
@@ -445,7 +437,6 @@ type IterationStmt interface {
 
 // iterationStmtNode() ensures that only the following types can be
 // assigned to IterationStmt.
-//
 func (DoWhileStmt) iterationStmtNode()      {}
 func (ForInStmt) iterationStmtNode()        {}
 func (ForInStmtWithVar) iterationStmtNode() {}
@@ -463,7 +454,6 @@ type JSXAttribute interface {
 
 // jSXAttributeNode() ensures that only the following types can be
 // assigned to JSXAttribute.
-//
 func (JSXNormalAttribute) jSXAttributeNode() {}
 func (JSXSpreadAttribute) jSXAttributeNode() {}
 func (NilNode) jSXAttributeNode()            {}
@@ -475,7 +465,6 @@ type JSXAttributeValue interface {
 
 // jSXAttributeValueNode() ensures that only the following types can be
 // assigned to JSXAttributeValue.
-//
 func (JSXElement) jSXAttributeValueNode() {}
 func (JSXExpr) jSXAttributeValueNode()    {}
 func (JSXLiteral) jSXAttributeValueNode() {}
@@ -488,7 +477,6 @@ type JSXChild interface {
 
 // jSXChildNode() ensures that only the following types can be
 // assigned to JSXChild.
-//
 func (JSXElement) jSXChildNode()    {}
 func (JSXExpr) jSXChildNode()       {}
 func (JSXSpreadExpr) jSXChildNode() {}
@@ -502,7 +490,6 @@ type MethodDefinition interface {
 
 // methodDefinitionNode() ensures that only the following types can be
 // assigned to MethodDefinition.
-//
 func (AsyncGeneratorMethod) methodDefinitionNode() {}
 func (AsyncMethod) methodDefinitionNode()          {}
 func (GeneratorMethod) methodDefinitionNode()      {}
@@ -518,7 +505,6 @@ type Modifier interface {
 
 // modifierNode() ensures that only the following types can be
 // assigned to Modifier.
-//
 func (Abstract) modifierNode()              {}
 func (AccessibilityModifier) modifierNode() {}
 func (Declare) modifierNode()               {}
@@ -536,7 +522,6 @@ type ModuleItem interface {
 
 // moduleItemNode() ensures that only the following types can be
 // assigned to ModuleItem.
-//
 func (AsyncFunc) moduleItemNode()                 {}
 func (AsyncGeneratorDeclaration) moduleItemNode() {}
 func (Block) moduleItemNode()                     {}
@@ -597,7 +582,6 @@ type NamedImport interface {
 
 // namedImportNode() ensures that only the following types can be
 // assigned to NamedImport.
-//
 func (ImportSpec) namedImportNode()    {}
 func (SyntaxProblem) namedImportNode() {}
 func (NilNode) namedImportNode()       {}
@@ -609,7 +593,6 @@ type Parameter interface {
 
 // parameterNode() ensures that only the following types can be
 // assigned to Parameter.
-//
 func (DefaultParameter) parameterNode() {}
 func (RestParameter) parameterNode()    {}
 func (SyntaxProblem) parameterNode()    {}
@@ -623,7 +606,6 @@ type PropertyDefinition interface {
 
 // propertyDefinitionNode() ensures that only the following types can be
 // assigned to PropertyDefinition.
-//
 func (ObjectMethod) propertyDefinitionNode()      {}
 func (Property) propertyDefinitionNode()          {}
 func (ShorthandProperty) propertyDefinitionNode() {}
@@ -638,7 +620,6 @@ type PropertyName interface {
 
 // propertyNameNode() ensures that only the following types can be
 // assigned to PropertyName.
-//
 func (ComputedPropertyName) propertyNameNode() {}
 func (LiteralPropertyName) propertyNameNode()  {}
 func (NilNode) propertyNameNode()              {}
@@ -650,7 +631,6 @@ type PropertyPattern interface {
 
 // propertyPatternNode() ensures that only the following types can be
 // assigned to PropertyPattern.
-//
 func (PropertyBinding) propertyPatternNode()   {}
 func (SingleNameBinding) propertyPatternNode() {}
 func (SyntaxProblem) propertyPatternNode()     {}
@@ -663,7 +643,6 @@ type Stmt interface {
 
 // stmtNode() ensures that only the following types can be
 // assigned to Stmt.
-//
 func (Block) stmtNode()            {}
 func (BreakStmt) stmtNode()        {}
 func (ContinueStmt) stmtNode()     {}
@@ -695,7 +674,6 @@ type StmtListItem interface {
 
 // stmtListItemNode() ensures that only the following types can be
 // assigned to StmtListItem.
-//
 func (AsyncFunc) stmtListItemNode()                 {}
 func (AsyncGeneratorDeclaration) stmtListItemNode() {}
 func (Block) stmtListItemNode()                     {}
@@ -750,7 +728,6 @@ type TsAmbientElement interface {
 
 // tsAmbientElementNode() ensures that only the following types can be
 // assigned to TsAmbientElement.
-//
 func (TsAmbientClass) tsAmbientElementNode()       {}
 func (TsAmbientEnum) tsAmbientElementNode()        {}
 func (TsAmbientExportDecl) tsAmbientElementNode()  {}
@@ -771,7 +748,6 @@ type TsType interface {
 
 // tsTypeNode() ensures that only the following types can be
 // assigned to TsType.
-//
 func (ArrayType) tsTypeNode()         {}
 func (AssertsType) tsTypeNode()       {}
 func (ConstructorType) tsTypeNode()   {}
@@ -807,7 +783,6 @@ type TupleMember interface {
 
 // tupleMemberNode() ensures that only the following types can be
 // assigned to TupleMember.
-//
 func (ArrayType) tupleMemberNode()         {}
 func (AssertsType) tupleMemberNode()       {}
 func (ConstructorType) tupleMemberNode()   {}
@@ -844,7 +819,6 @@ type TypeMember interface {
 
 // typeMemberNode() ensures that only the following types can be
 // assigned to TypeMember.
-//
 func (CallSignature) typeMemberNode()      {}
 func (ConstructSignature) typeMemberNode() {}
 func (Getter) typeMemberNode()             {}

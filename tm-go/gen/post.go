@@ -36,9 +36,10 @@ var packageRE = regexp.MustCompile(`(?m)^package\s*\w+`)
 // Extract imports rewrites the content of a generated Go file, deriving imports from "special"
 // qualified names that can appear anywhere in src, where one can reference a symbol from another
 // package. The format:
-//   "fmt".Stringer
-//   "unicode/utf8".ValidString         (multi-segment package)
-//   "encoding/json as enc".Marshal     (with an optional "as" clause for explicit aliases)
+//
+//	"fmt".Stringer
+//	"unicode/utf8".ValidString         (multi-segment package)
+//	"encoding/json as enc".Marshal     (with an optional "as" clause for explicit aliases)
 func ExtractImports(src string) string {
 	var buf strings.Builder
 	type imp struct {

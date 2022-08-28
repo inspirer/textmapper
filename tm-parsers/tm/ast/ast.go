@@ -123,7 +123,6 @@ type Annotation interface {
 
 // annotationNode() ensures that only the following types can be
 // assigned to Annotation.
-//
 func (AnnotationImpl) annotationNode() {}
 func (SyntaxProblem) annotationNode()  {}
 func (NilNode) annotationNode()        {}
@@ -135,7 +134,6 @@ type Argument interface {
 
 // argumentNode() ensures that only the following types can be
 // assigned to Argument.
-//
 func (ArgumentFalse) argumentNode() {}
 func (ArgumentTrue) argumentNode()  {}
 func (ArgumentVal) argumentNode()   {}
@@ -148,7 +146,6 @@ type Expression interface {
 
 // expressionNode() ensures that only the following types can be
 // assigned to Expression.
-//
 func (Array) expressionNode()          {}
 func (BooleanLiteral) expressionNode() {}
 func (IntegerLiteral) expressionNode() {}
@@ -164,7 +161,6 @@ type GrammarPart interface {
 
 // grammarPartNode() ensures that only the following types can be
 // assigned to GrammarPart.
-//
 func (DirectiveAssert) grammarPartNode()    {}
 func (DirectiveExpect) grammarPartNode()    {}
 func (DirectiveExpectRR) grammarPartNode()  {}
@@ -184,7 +180,6 @@ type LexerPart interface {
 
 // lexerPartNode() ensures that only the following types can be
 // assigned to LexerPart.
-//
 func (DirectiveBrackets) lexerPartNode()    {}
 func (ExclusiveStartConds) lexerPartNode()  {}
 func (InclusiveStartConds) lexerPartNode()  {}
@@ -201,7 +196,6 @@ type Literal interface {
 
 // literalNode() ensures that only the following types can be
 // assigned to Literal.
-//
 func (BooleanLiteral) literalNode() {}
 func (IntegerLiteral) literalNode() {}
 func (StringLiteral) literalNode()  {}
@@ -214,7 +208,6 @@ type NontermParam interface {
 
 // nontermParamNode() ensures that only the following types can be
 // assigned to NontermParam.
-//
 func (InlineParameter) nontermParamNode() {}
 func (ParamRef) nontermParamNode()        {}
 func (NilNode) nontermParamNode()         {}
@@ -226,7 +219,6 @@ type NontermType interface {
 
 // nontermTypeNode() ensures that only the following types can be
 // assigned to NontermType.
-//
 func (ClassType) nontermTypeNode()     {}
 func (InterfaceType) nontermTypeNode() {}
 func (RawType) nontermTypeNode()       {}
@@ -241,7 +233,6 @@ type ParamValue interface {
 
 // paramValueNode() ensures that only the following types can be
 // assigned to ParamValue.
-//
 func (BooleanLiteral) paramValueNode() {}
 func (IntegerLiteral) paramValueNode() {}
 func (ParamRef) paramValueNode()       {}
@@ -255,7 +246,6 @@ type PredicateExpression interface {
 
 // predicateExpressionNode() ensures that only the following types can be
 // assigned to PredicateExpression.
-//
 func (ParamRef) predicateExpressionNode()       {}
 func (PredicateAnd) predicateExpressionNode()   {}
 func (PredicateEq) predicateExpressionNode()    {}
@@ -271,7 +261,6 @@ type RhsPart interface {
 
 // rhsPartNode() ensures that only the following types can be
 // assigned to RhsPart.
-//
 func (Command) rhsPartNode()           {}
 func (RhsAnnotated) rhsPartNode()      {}
 func (RhsAsLiteral) rhsPartNode()      {}
@@ -299,7 +288,6 @@ type Rule0 interface {
 
 // rule0Node() ensures that only the following types can be
 // assigned to Rule0.
-//
 func (Rule) rule0Node()          {}
 func (SyntaxProblem) rule0Node() {}
 func (NilNode) rule0Node()       {}
@@ -311,7 +299,6 @@ type SetExpression interface {
 
 // setExpressionNode() ensures that only the following types can be
 // assigned to SetExpression.
-//
 func (SetAnd) setExpressionNode()        {}
 func (SetComplement) setExpressionNode() {}
 func (SetCompound) setExpressionNode()   {}
