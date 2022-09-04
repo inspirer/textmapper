@@ -25,10 +25,12 @@
 %token LBRACK
 %token RBRACK
 %token DOT
+%token DOTDOTDOT
 %token COMMA
 %token COLON
 %token MINUS
 %token MINUSGT
+%token MULTILINE
 %token DQUOTE
 %token SQUOTE
 %token SHARPATID
@@ -103,11 +105,13 @@ setof_not_EOI_or_DOT_or_RBRACE :
 | RPAREN
 | LBRACK
 | RBRACK
+| DOTDOTDOT
 | COMMA
 | COLON
 | MINUS
 | MINUSGT
 | PLUS
+| MULTILINE
 | DQUOTE
 | SQUOTE
 | SHARPATID

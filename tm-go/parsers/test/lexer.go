@@ -67,6 +67,13 @@ restart:
 			ch = int(tmRuneClass[l.ch])
 		} else if l.ch < 0 {
 			state = int(tmLexerAction[state*tmNumClasses])
+			if state > tmFirstRule && state < 0 {
+				state = (-1 - state) * 2
+				backupRule = tmBacktracking[state]
+				backupOffset = l.offset
+				backupHash = hash
+				state = tmBacktracking[state+1]
+			}
 			continue
 		} else {
 			ch = mapRune(l.ch)
@@ -140,12 +147,12 @@ recovered:
 				break
 			}
 		}
-	case 28:
+	case 30:
 		hh := hash & 7
 		switch hh {
 		case 4:
 			if hash == 0x2a762c && "Zfoo" == l.source[l.tokenOffset:l.offset] {
-				rule = 30
+				rule = 32
 				break
 			}
 		}
@@ -171,24 +178,24 @@ recovered:
 		{
 			l.value = mustParseInt(l.Text())
 		}
-	case 32: // MultiLineComment: /\/\*/
+	case 34: // MultiLineComment: /\/\*/
 		{
 			l.State = StateInMultiLine
 			commentOffset = l.tokenOffset
 			commentDepth = 0
 			space = true
 		}
-	case 33: // invalid_token: /{eoi}/
+	case 35: // invalid_token: /{eoi}/
 		{
 			l.tokenOffset = commentOffset
 			l.State = StateInitial
 		}
-	case 34: // MultiLineComment: /\/\*/
+	case 36: // MultiLineComment: /\/\*/
 		{
 			commentDepth++
 			space = true
 		}
-	case 35: // MultiLineComment: /\*\//
+	case 37: // MultiLineComment: /\*\//
 		{
 			if commentDepth == 0 {
 				space = false
@@ -199,7 +206,7 @@ recovered:
 			space = true
 			commentDepth--
 		}
-	case 36: // WhiteSpace: /[^\/*]+|[*\/]/
+	case 38: // WhiteSpace: /[^\/*]+|[*\/]/
 		space = true
 		{
 			space = true

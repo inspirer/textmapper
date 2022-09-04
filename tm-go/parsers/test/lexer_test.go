@@ -51,7 +51,16 @@ var lexerTests = []struct {
 	{test.RPAREN, []string{"«)»"}},
 	{test.LBRACK, []string{"«[»"}},
 	{test.RBRACK, []string{"«]»"}},
-	{test.DOT, []string{"«.»"}},
+	{test.DOT, []string{
+		"«.»",
+		"«.»«.»",
+	}},
+	{test.MULTILINE, []string{
+		"% \n «%q\n% q»\n%f",
+		"«%q\n%q» !",
+		"«%q\n%   q»",
+	}},
+	{test.DOTDOTDOT, []string{"«...»"}},
 	{test.COMMA, []string{"«,»"}},
 	{test.COLON, []string{"«:»"}},
 	{test.PLUS, []string{"«+»"}},

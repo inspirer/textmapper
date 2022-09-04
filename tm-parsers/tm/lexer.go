@@ -82,6 +82,13 @@ restart:
 			ch = int(tmRuneClass[l.ch])
 		} else if l.ch < 0 {
 			state = int(tmLexerAction[state*tmNumClasses])
+			if state > tmFirstRule && state < 0 {
+				state = (-1 - state) * 2
+				backupRule = tmBacktracking[state]
+				backupOffset = l.offset
+				backupHash = hash
+				state = tmBacktracking[state+1]
+			}
 			continue
 		} else {
 			ch = 1

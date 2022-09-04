@@ -128,6 +128,17 @@ ${end-}
 			ch = int(tmRuneClass[l.ch])
 		} else if l.ch < 0 {
 			state = int(tmLexerAction[state*tmNumClasses])
+${if lex.backtracking.length > 0-}
+			if state > tmFirstRule && state < 0 {
+				state = (-1 - state) * 2
+				${self->backupVar()} = tmBacktracking[state]
+				backupOffset = l.offset
+${if self->useCustomMap()-}
+				backupHash = hash
+${end-}
+				state = tmBacktracking[state+1]
+			}
+${end-}
 			continue
 		} else {
 ${if lex.char2no.length >= 2048-}

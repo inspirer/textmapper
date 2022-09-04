@@ -90,7 +90,7 @@ var parseTests = []struct {
 		 decl1(a)`,
 	}},
 	{test.InvalidToken, 0, []string{
-		` decl2 «%» `,
+		` decl2 «%»`,
 	}},
 	{test.Identifier, 0, []string{
 		` decl1(«abc».«def1») `,

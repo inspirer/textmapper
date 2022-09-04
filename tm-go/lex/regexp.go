@@ -534,7 +534,7 @@ func (p *parser) parseEscape(fold bool) charset {
 	case 's', 'S':
 		negated := p.ch == 'S'
 		p.next()
-		ret := charset(append(p.set[:0], '\t', '\t', '\n', '\n', '\f', '\f', '\r', '\r', ' ', ' '))
+		ret := charset(append(p.set[:0], '\t', '\t', '\n', '\n', '\v', '\v', '\f', '\f', '\r', '\r', ' ', ' '))
 		if negated {
 			ret.invert()
 		}

@@ -19,27 +19,29 @@ const (
 	IDENTIFIER
 	INTEGERCONSTANT
 	LASTINT
-	TEST    // test
-	DECL1   // decl1
-	DECL2   // decl2
-	EVAL    // eval
-	AS      // as
-	IF      // if
-	ELSE    // else
-	LBRACE  // {
-	RBRACE  // }
-	LPAREN  // (
-	RPAREN  // )
-	LBRACK  // [
-	RBRACK  // ]
-	DOT     // .
-	COMMA   // ,
-	COLON   // :
-	MINUS   // -
-	MINUSGT // ->
-	PLUS    // +
-	DQUOTE  // "
-	SQUOTE  // '
+	TEST      // test
+	DECL1     // decl1
+	DECL2     // decl2
+	EVAL      // eval
+	AS        // as
+	IF        // if
+	ELSE      // else
+	LBRACE    // {
+	RBRACE    // }
+	LPAREN    // (
+	RPAREN    // )
+	LBRACK    // [
+	RBRACK    // ]
+	DOT       // .
+	DOTDOTDOT // ...
+	COMMA     // ,
+	COLON     // :
+	MINUS     // -
+	MINUSGT   // ->
+	PLUS      // +
+	MULTILINE
+	DQUOTE // "
+	SQUOTE // '
 	SHARPATID
 	ZFOO // Zfoo
 	BACKTRACKINGTOKEN
@@ -71,11 +73,13 @@ var tokenStr = [...]string{
 	"[",
 	"]",
 	".",
+	"...",
 	",",
 	":",
 	"-",
 	"->",
 	"+",
+	"MULTILINE",
 	"\"",
 	"'",
 	"SHARPATID",

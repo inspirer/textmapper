@@ -74,10 +74,10 @@ var parseTests = []struct {
 	{`\w`, `cc{0-9A-Z_a-z}`},
 	{`[^\W]`, `cc{0-9A-Z_a-z}`},
 	{`[\W]`, "cc{\\x00-\\/\\:-\\@\\[-\\^\\`\\{-\\U0010ffff}"},
-	{`[\s]`, `cc{\t-\n\x0c-\r }`},
-	{`[^\s]`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
-	{`\S`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
-	{`[\S]`, `cc{\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff}`},
+	{`[\s]`, `cc{\t-\r }`},
+	{`[^\s]`, `cc{\x00-\x08\x0e-\x1f\!-\U0010ffff}`},
+	{`\S`, `cc{\x00-\x08\x0e-\x1f\!-\U0010ffff}`},
+	{`[\S]`, `cc{\x00-\x08\x0e-\x1f\!-\U0010ffff}`},
 	{`+\+`, `cat{str{+}cc{\+}}`},
 
 	// Unicode.
@@ -192,7 +192,7 @@ var stringTests = []struct {
 	// Escapes.
 	{`\d\D`, `[0-9][\x00-\/\:-\U0010ffff]`},
 	{`\w+`, `[0-9A-Z_a-z]+`},
-	{`\S`, `[\x00-\x08\x0b\x0e-\x1f\!-\U0010ffff]`},
+	{`\S`, `[\x00-\x08\x0e-\x1f\!-\U0010ffff]`},
 
 	// Parentheses.
 	{`a+|(b|cd|)`, `a+|(b|cd|)`},

@@ -265,6 +265,17 @@ restart:
 			ch = int(tmRuneClass[l.ch])
 		} else if l.ch < 0 {
 			state = int(tmLexerAction[state*tmNumClasses])
+{{- if .Lexer.Tables.Backtrack}}
+			if state > tmFirstRule && state < 0 {
+				state = (-1 - state) * 2
+				backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} = tmBacktracking[state]
+				backupOffset = l.offset
+{{- if .Lexer.ClassActions}}
+				backupHash = hash
+{{- end}}
+				state = tmBacktracking[state+1]
+			}
+{{- end}}
 			continue
 		} else {
 {{- if gt .Lexer.Tables.LastMapEntry.Start 2048}}
