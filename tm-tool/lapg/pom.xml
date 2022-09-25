@@ -20,12 +20,12 @@
 	<artifactId>lapg</artifactId>
 	<packaging>jar</packaging>
 	<name>Lapg</name>
-	<version>0.9.30-SNAPSHOT</version>
+	<version>0.10.0</version>
 	<url>http://textmapper.org</url>
 	<parent>
 		<groupId>org.textmapper</groupId>
 		<artifactId>tm-master</artifactId>
-		<version>0.9.30-SNAPSHOT</version>
+		<version>0.10.0</version>
 	</parent>
 
 	<dependencies>
