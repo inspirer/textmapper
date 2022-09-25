@@ -1,3 +1,10 @@
+0.10.0
+------
+
+[+] Support %expect and %expect-rr directives.
+[!] Fix lexer backtracking at EOI.
+[!] Improve offsets of AST nodes during error recovery.
+
 0.9.30
 ------
 
