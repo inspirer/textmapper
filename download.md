@@ -7,10 +7,18 @@ kind: download
 Download
 ========
 
-The latest development builds (beta), 0.9.24, May 30, 2019:
+The latest development build (beta), 0.10.0, Sep 25, 2022:
 
-* [Lapg](https://github.com/inspirer/textmapper/releases/tag/0.9.24) (command-line utility)
+* [Textmapper](https://github.com/inspirer/textmapper/releases/tag/0.10.0) (command-line utility)
 * [IntelliJ IDEA plug-in](https://plugins.jetbrains.com/plugin/7291-textmapper)
 
-You need Java 8 to run it.
+Textmapper is currently build with Java, though it is being rewritten in Go.
 
+Building from Sources
+==================
+
+You will need Java 8+, Ant or Maven.
+
+    $ cd tm-tool
+    $ ant clean test deploy      (OR mvn clean install)
+    $ ./libs/textmapper.sh --help

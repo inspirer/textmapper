@@ -810,4 +810,61 @@ Note: eventFields will enable more checks on the shape of the produced AST:
 
 ## Grammar templates
 
-... to be continued
+In Textmapper, nonterminals can be parameterized, and their parameters can be
+used to conditionally enable or disable individual productions, adjusting the
+parsed language to the outer context. This happens statically, at compile time,
+via a grammar instantiation process that lazily duplicates and rewrites
+nonterminals.
+
+    %flag withComma;
+
+    list<withComma> :  # here we enumerate the required parameters
+        elem
+      | [withComma] list ',' elem
+      | [!withComma] list elem
+    ;
+
+    file :
+        list<withComma: true>
+      | '[' list<withComma: false> ']'
+    ;
+
+There is also a shorter form of specifying boolean arguments via `+` and `~`.
+
+    file :
+        list<+withComma>          # withComma: true
+      | '[' list<~withComma> ']'  # withComma: false
+    ;
+
+Most parameter are declared at the grammar level to make use of implicit
+propagation of parameters available in the context into referenced nonterminals
+(in the above example both references to `list` inherit the value of
+`withComma` from the context). It is also possible to introduce a local flag
+inside a nonterminal header.
+
+    # Each nonterminal can introduce their own parameter.
+    a<flag foo> :
+        ... ;
+
+    b<flag foo> :
+        a<foo: foo> ;  # then we have to explicitly propagate one into another 
+
+Parameters without a default value have to be provided every time a nonterminal
+that requires them is referenced and they cannot be taken from the context.
+
+    %flag a;
+    %flag b = true;
+
+    nt<a, b> :
+        '(' nt ')' | .... ;  # both "a" and "b" will be taken from the context.
+
+    file:
+        nt<+a> ;   # we can omit specifying "b" since it has a default value (true)
+
+Predicates are full boolean expressions that can use parameter values,
+negation, and logical `&&` and `||` operators. 
+
+    nt<a, b, c>:
+         '(' ')'
+       | [a && b || c] '(' nt<a: b> ')' 
+    ;
