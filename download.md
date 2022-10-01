@@ -17,7 +17,7 @@ Textmapper is currently build with Java, though it is being rewritten in Go.
 Building from Sources
 ==================
 
-You will need Java 8+, Ant or Maven.
+You will need Java 8+, and also Ant or Maven.
 
     $ cd tm-tool
     $ ant clean test deploy      (OR mvn clean install)

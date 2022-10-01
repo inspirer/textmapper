@@ -811,7 +811,7 @@ Note: eventFields will enable more checks on the shape of the produced AST:
 ## Grammar templates
 
 In Textmapper, nonterminals can be parameterized, and their parameters can be
-used to conditionally enable or disable individual productions, adjusting the
+used to conditionally enable or disable individual productions, adjusting
 parsed language to the outer context. This happens statically, at compile time,
 via a grammar instantiation process that lazily duplicates and rewrites
 nonterminals.
@@ -829,7 +829,7 @@ nonterminals.
       | '[' list<withComma: false> ']'
     ;
 
-There is also a shorter form of specifying boolean arguments via `+` and `~`.
+There is also a shorter form of specifying boolean arguments using `+` and `~`.
 
     file :
         list<+withComma>          # withComma: true
@@ -862,9 +862,35 @@ that requires them is referenced and they cannot be taken from the context.
         nt<+a> ;   # we can omit specifying "b" since it has a default value (true)
 
 Predicates are full boolean expressions that can use parameter values,
-negation, and logical `&&` and `||` operators. 
+negation, and operators of boolean logic (`&&` and `||`). 
 
     nt<a, b, c>:
          '(' ')'
        | [a && b || c] '(' nt<a: b> ')' 
     ;
+
+The normal parameters we've discussed so far get auto-propagated into all
+nonterminals that require them in the right-hand side of a rule but they have
+to be mentioned explicitly in all nonterminals on the way between the argument
+and the predicate.
+
+Textmapper has a second flavor of parameters - lookahead flags. Lookahead flags
+don't need to be mentioned in any of the nonterminals, and they propagate into
+the left-most nonterminal in every rule only, making it very easy to exclude or
+rewrite productions in certain contexts. See the following example from
+EcmaScript. 
+
+    %lookahead flag NoFuncClass = false;
+
+    PrimaryExpression:
+        ....
+      | [!NoFuncClass] ClassExpression
+    ;
+
+    # Class expressions are not allowed in statement contexts.  
+    ExpressionStatement<Yield, Await> -> ExprStmt :
+        Expression<+NoFuncClass> ';' ;
+
+Note: if a lookahead flag argument is not used in some predicate inside the
+nonterminal it was applied to, Textmapper will fail the grammar compilation
+with an error.
