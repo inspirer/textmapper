@@ -54,12 +54,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 0, 100, lexer)
+	_, err := p.parse(ctx, 0, 105, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 1, 101, lexer)
+	v, err := p.parse(ctx, 1, 106, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -254,11 +254,30 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Empty1, 0, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 16: // Declaration : 'test' IntegerConstant
 		p.listener(Icon, InTest, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 17: // Declaration : 'eval' '(' expr ')' empty1
+		fixTrailingWS(lhs, rhs)
+	case 20: // Declaration : 'decl2' ':' QualifiedNameopt
+		fixTrailingWS(lhs, rhs)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(NodeType(nt&0xffff), NodeFlags(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return
+}
+
+func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
+	last := len(rhs) - 1
+	if last < 0 {
+		return
+	}
+	for last >= 0 && rhs[last].sym.offset == rhs[last].sym.endoffset {
+		last--
+	}
+	if last >= 0 {
+		lhs.sym.endoffset = rhs[last].sym.endoffset
+	} else {
+		lhs.sym.endoffset = lhs.sym.offset
+	}
 }
 
 func (p *Parser) reportIgnoredToken(tok symbol) {

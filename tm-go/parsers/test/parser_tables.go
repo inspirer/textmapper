@@ -21,6 +21,7 @@ var tmNonterminals = [...]string{
 	"expr",
 	"primaryExpr",
 	"primaryExpr_WithoutAs",
+	"QualifiedNameopt",
 }
 
 func symbolName(sym int32) string {
@@ -37,63 +38,68 @@ func symbolName(sym int32) string {
 }
 
 var tmAction = []int32{
-	-1, -1, -3, 11, -1, -1, 59, -1, -1, -1, -27, 1, 3, 4, 60, -1, 16, 53, 54, -1,
-	-1, -1, 10, -1, -1, 0, 12, -1, -1, 56, -1, -47, -1, -1, 64, -1, -1, 8, -1,
-	-1, 9, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 14, 34, 35,
-	36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 15, 58,
-	-1, -1, 18, 17, -1, -1, -57, 6, -1, 7, 57, -81, -89, 63, -95, -1, 5, -1, 62,
-	-1, 19, -1, -1, -2, -2,
+	-1, -1, -3, 11, -1, -1, -27, -1, -1, -1, -51, 1, 3, 4, 61, -1, 16, 54, 55,
+	-1, -71, -1, -1, 10, -1, -1, 0, 12, -1, -1, 57, -1, -95, 20, -119, -1, -1,
+	65, -1, -1, 8, -1, -1, 9, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+	34, 14, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
+	52, 53, 15, 59, -1, -1, 18, 55, -1, -1, 60, -129, 6, -1, 7, 58, -153, -161,
+	17, 64, -167, -1, 5, -1, 63, -1, 19, -1, -1, -2, -2,
 }
 
 var tmLalr = []int32{
 	18, -1, 0, 13, 5, 13, 6, 13, 7, 13, 8, 13, 9, 13, 10, 13, 12, 13, 14, 13, 15,
-	13, -1, -2, 5, -1, 6, -1, 7, -1, 8, -1, 9, -1, 10, -1, 12, -1, 14, -1, 0, 2,
-	-1, -2, 20, -1, 17, 66, 26, 66, 11, 67, -1, -2, 13, -1, 0, 61, 5, 61, 6, 61,
-	7, 61, 8, 61, 9, 61, 10, 61, 12, 61, 14, 61, 15, 61, -1, -2, 17, 66, 26, 66,
-	11, 67, -1, -2, 26, -1, 17, 55, -1, -2, 26, -1, 17, 65, -1, -2,
+	13, -1, -2, 23, -1, 0, 60, 5, 60, 6, 60, 7, 60, 8, 60, 9, 60, 10, 60, 12, 60,
+	14, 60, 15, 60, -1, -2, 5, -1, 6, -1, 7, -1, 8, -1, 9, -1, 10, -1, 12, -1,
+	14, -1, 0, 2, -1, -2, 4, -1, 0, 70, 5, 70, 6, 70, 7, 70, 8, 70, 9, 70, 10,
+	70, 12, 70, 14, 70, 15, 70, -1, -2, 20, -1, 0, 69, 5, 69, 6, 69, 7, 69, 8,
+	69, 9, 69, 10, 69, 12, 69, 14, 69, 15, 69, -1, -2, 20, -1, 17, 67, 26, 67,
+	11, 68, -1, -2, 13, -1, 0, 62, 5, 62, 6, 62, 7, 62, 8, 62, 9, 62, 10, 62, 12,
+	62, 14, 62, 15, 62, -1, -2, 17, 67, 26, 67, 11, 68, -1, -2, 26, -1, 17, 56,
+	-1, -2, 26, -1, 17, 66, -1, -2,
 }
 
 var tmGoto = []int32{
-	0, 4, 6, 8, 10, 16, 46, 64, 82, 102, 124, 142, 146, 168, 172, 192, 206, 216,
-	230, 234, 238, 242, 244, 246, 248, 254, 256, 266, 268, 270, 272, 274, 276,
-	278, 280, 282, 290, 292, 308, 310, 312, 314, 316, 318, 336, 356, 376, 384,
-	394, 404,
+	0, 4, 6, 8, 10, 18, 48, 66, 84, 104, 126, 144, 148, 170, 174, 194, 208, 218,
+	232, 236, 240, 246, 248, 250, 254, 260, 262, 272, 274, 276, 278, 280, 282,
+	284, 286, 288, 296, 298, 314, 316, 318, 322, 324, 328, 346, 366, 386, 394,
+	404, 414, 416,
 }
 
 var tmFromTo = []int8{
-	98, 100, 99, 101, 27, 41, 27, 42, 27, 43, 19, 29, 27, 44, 77, 87, 0, 2, 4,
-	16, 9, 2, 10, 2, 20, 31, 23, 2, 24, 2, 27, 45, 38, 2, 39, 2, 78, 88, 81, 88,
-	82, 88, 85, 2, 94, 88, 0, 3, 9, 3, 10, 3, 23, 3, 24, 3, 27, 46, 38, 3, 39, 3,
-	85, 3, 0, 4, 9, 4, 10, 4, 23, 4, 24, 4, 27, 47, 38, 4, 39, 4, 85, 4, 0, 5, 1,
-	5, 9, 5, 10, 5, 23, 5, 24, 5, 27, 48, 38, 5, 39, 5, 85, 5, 0, 6, 9, 6, 10, 6,
-	23, 6, 24, 6, 27, 49, 36, 6, 38, 6, 39, 6, 85, 6, 92, 6, 0, 7, 9, 7, 10, 7,
-	23, 7, 24, 7, 27, 50, 38, 7, 39, 7, 85, 7, 27, 51, 35, 82, 0, 8, 9, 8, 10, 8,
-	23, 8, 24, 8, 27, 52, 36, 8, 38, 8, 39, 8, 85, 8, 92, 8, 27, 53, 83, 92, 0,
-	9, 4, 17, 9, 9, 10, 9, 23, 9, 24, 9, 27, 54, 38, 9, 39, 9, 85, 9, 9, 22, 23,
-	37, 24, 40, 27, 55, 38, 84, 39, 86, 85, 93, 4, 18, 5, 19, 7, 20, 8, 21, 27,
-	56, 21, 36, 27, 57, 28, 75, 30, 76, 32, 79, 33, 80, 96, 97, 2, 15, 27, 58,
-	15, 26, 27, 59, 30, 77, 31, 78, 27, 60, 27, 61, 27, 62, 9, 23, 23, 38, 27,
-	63, 27, 64, 27, 65, 33, 81, 89, 94, 91, 81, 96, 81, 27, 66, 27, 67, 27, 68,
-	27, 69, 27, 70, 27, 71, 27, 72, 27, 73, 0, 10, 9, 24, 23, 39, 38, 85, 0, 98,
-	0, 11, 9, 11, 10, 25, 23, 11, 24, 25, 38, 11, 39, 25, 85, 25, 27, 74, 17, 27,
-	18, 28, 20, 32, 19, 30, 0, 12, 1, 99, 9, 12, 10, 12, 23, 12, 24, 12, 38, 12,
-	39, 12, 85, 12, 0, 13, 9, 13, 10, 13, 23, 13, 24, 13, 36, 83, 38, 13, 39, 13,
-	85, 13, 92, 95, 0, 14, 9, 14, 10, 14, 23, 14, 24, 14, 36, 14, 38, 14, 39, 14,
-	85, 14, 92, 14, 20, 33, 78, 89, 82, 91, 94, 96, 20, 34, 78, 34, 81, 90, 82,
-	34, 94, 34, 20, 35, 78, 35, 81, 35, 82, 35, 94, 35,
+	103, 105, 104, 106, 28, 44, 28, 45, 28, 46, 19, 30, 20, 30, 28, 47, 80, 91,
+	0, 2, 4, 16, 9, 2, 10, 2, 21, 34, 24, 2, 25, 2, 28, 48, 41, 2, 42, 2, 81, 92,
+	84, 92, 85, 92, 89, 2, 99, 92, 0, 3, 9, 3, 10, 3, 24, 3, 25, 3, 28, 49, 41,
+	3, 42, 3, 89, 3, 0, 4, 9, 4, 10, 4, 24, 4, 25, 4, 28, 50, 41, 4, 42, 4, 89,
+	4, 0, 5, 1, 5, 9, 5, 10, 5, 24, 5, 25, 5, 28, 51, 41, 5, 42, 5, 89, 5, 0, 6,
+	9, 6, 10, 6, 24, 6, 25, 6, 28, 52, 39, 86, 41, 6, 42, 6, 89, 6, 97, 86, 0, 7,
+	9, 7, 10, 7, 24, 7, 25, 7, 28, 53, 41, 7, 42, 7, 89, 7, 28, 54, 38, 85, 0, 8,
+	9, 8, 10, 8, 24, 8, 25, 8, 28, 55, 39, 8, 41, 8, 42, 8, 89, 8, 97, 8, 28, 56,
+	87, 97, 0, 9, 4, 17, 9, 9, 10, 9, 24, 9, 25, 9, 28, 57, 41, 9, 42, 9, 89, 9,
+	9, 23, 24, 40, 25, 43, 28, 58, 41, 88, 42, 90, 89, 98, 4, 18, 5, 19, 7, 21,
+	8, 22, 28, 59, 22, 39, 28, 60, 29, 78, 31, 79, 35, 82, 36, 83, 101, 102, 2,
+	15, 28, 61, 15, 27, 28, 62, 31, 80, 32, 80, 34, 81, 28, 63, 28, 64, 6, 20,
+	28, 65, 9, 24, 24, 41, 28, 66, 28, 67, 28, 68, 36, 84, 93, 99, 96, 84, 101,
+	84, 28, 69, 28, 70, 28, 71, 28, 72, 28, 73, 28, 74, 28, 75, 28, 76, 0, 10, 9,
+	25, 24, 42, 41, 89, 0, 103, 0, 11, 9, 11, 10, 26, 24, 11, 25, 26, 41, 11, 42,
+	26, 89, 26, 28, 77, 17, 28, 18, 29, 83, 94, 21, 35, 19, 31, 20, 32, 0, 12, 1,
+	104, 9, 12, 10, 12, 24, 12, 25, 12, 41, 12, 42, 12, 89, 12, 0, 13, 9, 13, 10,
+	13, 24, 13, 25, 13, 39, 87, 41, 13, 42, 13, 89, 13, 97, 100, 0, 14, 9, 14,
+	10, 14, 24, 14, 25, 14, 39, 14, 41, 14, 42, 14, 89, 14, 97, 14, 21, 36, 81,
+	93, 85, 96, 99, 101, 21, 37, 81, 37, 84, 95, 85, 37, 99, 37, 21, 38, 81, 38,
+	84, 38, 85, 38, 99, 38, 20, 33,
 }
 
 var tmRuleLen = []int8{
-	2, 1, 1, 1, 1, 5, 4, 4, 3, 3, 2, 1, 3, 1, 4, 4, 2, 4, 4, 8, 1, 1, 1, 1, 1, 1,
+	2, 1, 1, 1, 1, 5, 4, 4, 3, 3, 2, 1, 3, 1, 4, 4, 2, 5, 4, 8, 3, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	2, 0, 0, 3, 1, 3, 4, 1, 1, 4, 6, 3, 1, 3, 1, 1,
+	1, 2, 0, 0, 3, 1, 3, 4, 1, 1, 4, 6, 3, 1, 3, 1, 1, 1, 0,
 }
 
 var tmRuleSymbol = []int32{
 	35, 35, 36, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
-	37, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
-	38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39, 40, 41, 42,
-	42, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48,
+	37, 37, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
+	38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39, 40, 41,
+	42, 42, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 49, 49,
 }
 
 var tmRuleType = [...]uint32{
@@ -114,57 +120,60 @@ var tmRuleType = [...]uint32{
 	uint32(TestClause), // Declaration : 'test' '{' setof_not_EOI_or_DOT_or_RBRACE_optlist '}'
 	0,                  // Declaration : 'test' '(' empty1 ')'
 	uint32(TestIntClause) + uint32(InTest|InFoo)<<16, // Declaration : 'test' IntegerConstant
-	0,                // Declaration : 'eval' '(' expr ')'
-	uint32(EvalFoo),  // Declaration : 'eval' '(' foo ')'
-	uint32(EvalFoo2), // Declaration : 'eval' '(' IntegerConstant '.' expr '+' .greedy expr ')'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : invalid_token
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : WhiteSpace
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : SingleLineComment
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : Identifier
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : IntegerConstant
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : lastInt
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'test'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'decl1'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'decl2'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'eval'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'as'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'if'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'else'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : '{'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : '('
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : ')'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : '['
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : ']'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : '...'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : ','
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : ':'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : '-'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : '->'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : '+'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : multiline
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : dquote
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : squote
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : SharpAtID
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : 'Zfoo'
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : backtrackingToken
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : error
-	0,                // setof_not_EOI_or_DOT_or_RBRACE : MultiLineComment
-	0,                // setof_not_EOI_or_DOT_or_RBRACE_optlist : setof_not_EOI_or_DOT_or_RBRACE_optlist setof_not_EOI_or_DOT_or_RBRACE
-	0,                // setof_not_EOI_or_DOT_or_RBRACE_optlist :
-	0,                // empty1 :
-	0,                // foo : IntegerConstant '.' expr
-	0,                // QualifiedName : Identifier
-	0,                // QualifiedName : QualifiedName '.' Identifier
-	uint32(Decl1),    // Decl1 : 'decl1' '(' QualifiedName ')'
-	uint32(Decl2),    // Decl2 : 'decl2'
-	0,                // Decl2 : If
-	uint32(If),       // If : 'if' '(' ')' Decl2
-	uint32(If),       // If : 'if' '(' ')' Decl2 'else' Decl2
-	uint32(PlusExpr), // expr : expr '+' primaryExpr
-	0,                // expr : primaryExpr
-	uint32(AsExpr),   // primaryExpr : primaryExpr_WithoutAs 'as' expr
-	uint32(IntExpr),  // primaryExpr : IntegerConstant
-	uint32(IntExpr),  // primaryExpr_WithoutAs : IntegerConstant
+	uint32(EvalEmpty1),  // Declaration : 'eval' '(' expr ')' empty1
+	uint32(EvalFoo),     // Declaration : 'eval' '(' foo ')'
+	uint32(EvalFoo2),    // Declaration : 'eval' '(' IntegerConstant '.' expr '+' .greedy expr ')'
+	uint32(DeclOptQual), // Declaration : 'decl2' ':' QualifiedNameopt
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : invalid_token
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : WhiteSpace
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : SingleLineComment
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : Identifier
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : IntegerConstant
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : lastInt
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'test'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'decl1'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'decl2'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'eval'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'as'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'if'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'else'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '{'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '('
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : ')'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '['
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : ']'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '...'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : ','
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : ':'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '-'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '->'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '+'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : multiline
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : dquote
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : squote
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : SharpAtID
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'Zfoo'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : backtrackingToken
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : error
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : MultiLineComment
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE_optlist : setof_not_EOI_or_DOT_or_RBRACE_optlist setof_not_EOI_or_DOT_or_RBRACE
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE_optlist :
+	0,                   // empty1 :
+	0,                   // foo : IntegerConstant '.' expr
+	0,                   // QualifiedName : Identifier
+	0,                   // QualifiedName : QualifiedName '.' Identifier
+	uint32(Decl1),       // Decl1 : 'decl1' '(' QualifiedName ')'
+	uint32(Decl2),       // Decl2 : 'decl2'
+	0,                   // Decl2 : If
+	uint32(If),          // If : 'if' '(' ')' Decl2
+	uint32(If),          // If : 'if' '(' ')' Decl2 'else' Decl2
+	uint32(PlusExpr),    // expr : expr '+' primaryExpr
+	0,                   // expr : primaryExpr
+	uint32(AsExpr),      // primaryExpr : primaryExpr_WithoutAs 'as' expr
+	uint32(IntExpr),     // primaryExpr : IntegerConstant
+	uint32(IntExpr),     // primaryExpr_WithoutAs : IntegerConstant
+	0,                   // QualifiedNameopt : QualifiedName
+	0,                   // QualifiedNameopt :
 }
 
 // set(follow error) =

@@ -18,9 +18,11 @@ const (
 	Block           // Negation? (Declaration)*
 	Decl1           // (Identifier)+
 	Decl2
+	DeclOptQual // (Identifier)*
 	Empty1
-	EvalFoo  // Expr
-	EvalFoo2 // a=Expr b=Expr
+	EvalEmpty1 // Expr
+	EvalFoo    // Expr
+	EvalFoo2   // a=Expr b=Expr
 	Icon
 	If // then=Decl2Interface else=Decl2Interface?
 	Int
@@ -46,7 +48,9 @@ var nodeTypeStr = [...]string{
 	"Block",
 	"Decl1",
 	"Decl2",
+	"DeclOptQual",
 	"Empty1",
+	"EvalEmpty1",
 	"EvalFoo",
 	"EvalFoo2",
 	"Icon",
@@ -80,18 +84,17 @@ var Decl2Interface = []NodeType{
 }
 
 var Declaration = []NodeType{
-	AsExpr,
 	Block,
 	Decl1,
 	Decl2,
+	DeclOptQual,
 	Empty1,
+	EvalEmpty1,
 	EvalFoo,
 	EvalFoo2,
 	If,
 	Int,
-	IntExpr,
 	LastInt,
-	PlusExpr,
 	TestClause,
 	TestIntClause,
 }

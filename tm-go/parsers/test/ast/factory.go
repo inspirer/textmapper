@@ -21,8 +21,12 @@ func ToTestNode(n Node) TestNode {
 		return &Decl1{n}
 	case test.Decl2:
 		return &Decl2{n}
+	case test.DeclOptQual:
+		return &DeclOptQual{n}
 	case test.Empty1:
 		return &Empty1{n}
+	case test.EvalEmpty1:
+		return &EvalEmpty1{n}
 	case test.EvalFoo:
 		return &EvalFoo{n}
 	case test.EvalFoo2:

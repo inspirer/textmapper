@@ -14,7 +14,9 @@ var (
 	Block             = func(t test.NodeType) bool { return t == test.Block }
 	Decl1             = func(t test.NodeType) bool { return t == test.Decl1 }
 	Decl2             = func(t test.NodeType) bool { return t == test.Decl2 }
+	DeclOptQual       = func(t test.NodeType) bool { return t == test.DeclOptQual }
 	Empty1            = func(t test.NodeType) bool { return t == test.Empty1 }
+	EvalEmpty1        = func(t test.NodeType) bool { return t == test.EvalEmpty1 }
 	EvalFoo           = func(t test.NodeType) bool { return t == test.EvalFoo }
 	EvalFoo2          = func(t test.NodeType) bool { return t == test.EvalFoo2 }
 	Icon              = func(t test.NodeType) bool { return t == test.Icon }

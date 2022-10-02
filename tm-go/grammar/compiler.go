@@ -1677,6 +1677,8 @@ func (c *compiler) parseOptions() {
 			opts.EventBased = c.parseExpr(opt.Value(), opts.EventBased).(bool)
 		case "genSelector":
 			opts.GenSelector = c.parseExpr(opt.Value(), opts.GenSelector).(bool)
+		case "fixWhitespace":
+			opts.FixWhitespace = c.parseExpr(opt.Value(), opts.FixWhitespace).(bool)
 		case "debugParser":
 			opts.DebugParser = c.parseExpr(opt.Value(), opts.DebugParser).(bool)
 		case "eventFields":

@@ -81,9 +81,10 @@ Declaration :
 | TEST LBRACE setof_not_EOI_or_DOT_or_RBRACE_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
 | TEST INTEGERCONSTANT
-| EVAL LPAREN expr RPAREN
+| EVAL LPAREN expr RPAREN empty1
 | EVAL LPAREN foo RPAREN
 | EVAL LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
+| DECL2 COLON QualifiedNameopt
 ;
 
 setof_not_EOI_or_DOT_or_RBRACE :
@@ -165,6 +166,11 @@ primaryExpr :
 
 primaryExpr_WithoutAs :
   INTEGERCONSTANT
+;
+
+QualifiedNameopt :
+  QualifiedName
+| %empty
 ;
 
 %%

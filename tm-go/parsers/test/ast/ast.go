@@ -41,7 +41,9 @@ func (n AsExpr) TestNode() Node        { return n.Node }
 func (n Block) TestNode() Node         { return n.Node }
 func (n Decl1) TestNode() Node         { return n.Node }
 func (n Decl2) TestNode() Node         { return n.Node }
+func (n DeclOptQual) TestNode() Node   { return n.Node }
 func (n Empty1) TestNode() Node        { return n.Node }
+func (n EvalEmpty1) TestNode() Node    { return n.Node }
 func (n EvalFoo) TestNode() Node       { return n.Node }
 func (n EvalFoo2) TestNode() Node      { return n.Node }
 func (n Icon) TestNode() Node          { return n.Node }
@@ -77,18 +79,17 @@ type Declaration interface {
 
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
-func (AsExpr) declarationNode()        {}
 func (Block) declarationNode()         {}
 func (Decl1) declarationNode()         {}
 func (Decl2) declarationNode()         {}
+func (DeclOptQual) declarationNode()   {}
 func (Empty1) declarationNode()        {}
+func (EvalEmpty1) declarationNode()    {}
 func (EvalFoo) declarationNode()       {}
 func (EvalFoo2) declarationNode()      {}
 func (If) declarationNode()            {}
 func (Int) declarationNode()           {}
-func (IntExpr) declarationNode()       {}
 func (LastInt) declarationNode()       {}
-func (PlusExpr) declarationNode()      {}
 func (TestClause) declarationNode()    {}
 func (TestIntClause) declarationNode() {}
 func (NilNode) declarationNode()       {}
@@ -154,8 +155,29 @@ type Decl2 struct {
 	Node
 }
 
+type DeclOptQual struct {
+	Node
+}
+
+func (n DeclOptQual) Identifier() []Token {
+	nodes := n.Children(selector.Identifier)
+	var ret = make([]Token, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, Token{node})
+	}
+	return ret
+}
+
 type Empty1 struct {
 	Node
+}
+
+type EvalEmpty1 struct {
+	Node
+}
+
+func (n EvalEmpty1) Expr() Expr {
+	return ToTestNode(n.Child(selector.Expr)).(Expr)
 }
 
 type EvalFoo struct {

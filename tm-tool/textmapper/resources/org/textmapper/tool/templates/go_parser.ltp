@@ -141,6 +141,9 @@ ${if self->needExplicitLookahead()-}
 ${call lookahead}
 ${end-}
 ${call applyRule-}
+${if opts.fixWhitespace}
+${call fixTrailingWS-}
+${end-}
 ${if self->ignoredReportTokens()}
 ${call reportIgnoredToken-}
 ${end-}
@@ -762,9 +765,14 @@ ${template applyRule-}
 func (p *Parser) applyRule(${call contextParam}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer${self->needSession() ? ', s *session' : ''}) (err error) {
 ${if syntax.rules.exists(r|r.code()) || self->needExplicitLookahead()-}
 	switch rule {
-${foreach rule in syntax.rules.select(r|r.code())-}
+${foreach rule in syntax.rules.select(r|r.code() || opts.fixWhitespace && r.hasTrailingNulls())-}
 	case ${rule.getIndex()}: // ${rule}
+${if opts.fixWhitespace && rule.hasTrailingNulls()-}
+    fixTrailingWS(lhs, rhs)
+${end-}
+${if rule.code()-}
 		${rule.code()-}
+${end-}
 ${end-}
 ${call caseLookaheadRules(false)-}
 	}
@@ -782,6 +790,22 @@ ${end-}
 }
 ${end}
 
+${template fixTrailingWS-}
+func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
+	last := len(rhs)-1
+	if last < 0 {
+		return
+	}
+	for last >= 0 && rhs[last].sym.offset == rhs[last].sym.endoffset {
+		last--
+	}
+	if last >= 0 {
+		lhs.sym.endoffset = rhs[last].sym.endoffset
+	} else {
+		lhs.sym.endoffset = lhs.sym.offset
+	}
+}
+${end}
 
 ${template parserTables-}
 package ${self->go.package()}

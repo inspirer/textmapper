@@ -106,12 +106,19 @@ var parseTests = []struct {
 	{test.IntExpr, 0, []string{
 		` eval(«1» as «2» + «3») `,
 	}},
+	{test.EvalEmpty1, 0, []string{
+		` «eval(1+1)» decl2`,
+	}},
 	{test.EvalFoo, 0, []string{
 		` «eval(4.1 as 2 + 3)» `,
 		` «eval(4.1 as 2)» `,
 	}},
 	{test.EvalFoo2, 0, []string{
 		` «eval(4.1+2)» `,
+	}},
+	{test.DeclOptQual, 0, []string{
+		` «decl2:  a.b.c»  decl2`,
+		` «decl2 :»  decl2`,
 	}},
 }
 

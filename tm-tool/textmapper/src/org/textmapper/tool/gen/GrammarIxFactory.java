@@ -171,6 +171,16 @@ public class GrammarIxFactory extends JavaIxFactory {
 				if ("codeTemplate".equals(methodName)) {
 					return TMDataUtil.getCodeTemplate(rule);
 				}
+				if ("hasTrailingNulls".equals(methodName)) {
+					RhsCFPart[] right = rule.getRight();
+					for (int i = right.length-1; i >= 0; i--) {
+						RhsCFPart p = right[i];
+						if (!(p instanceof RhsSymbol)) continue;
+						Symbol target = p.getTarget();
+						return target instanceof Nonterminal && ((Nonterminal) target).isNullable();
+					}
+					return false;
+				}
 				if ("code".equals(methodName)) {
 					return TMDataUtil.getCode(rule);
 				}

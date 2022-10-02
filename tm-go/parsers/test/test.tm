@@ -9,6 +9,7 @@ eventFields = true
 writeBison = true
 debugParser = false
 tokenLine = false
+fixWhitespace = true
 cancellable = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
 extraTypes = ["Int7", "Int9"]
@@ -138,9 +139,10 @@ Declaration -> Declaration :
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
   | 'test' '(' (empty1 -> Empty1) ')'
   | 'test' (IntegerConstant -> Icon/InTest) -> TestIntClause/InTest,InFoo
-  | 'eval' '(' expr ')'
+  | 'eval' '(' expr ')' empty1   -> EvalEmpty1
   | 'eval' '(' foo ')' -> EvalFoo
   | 'eval' '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
+  | 'decl2' ':' QualifiedNameopt -> DeclOptQual
 ;
 
 empty1 : ;
