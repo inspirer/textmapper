@@ -1,6 +1,6 @@
 #  syntax: lexer only
 
-#  Copyright 2002-2020 Evgeny Gryaznov
+#  Copyright 2002-2022 Evgeny Gryaznov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
