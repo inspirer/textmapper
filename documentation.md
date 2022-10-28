@@ -8,27 +8,125 @@ kind: documentation
 
 ## Introduction
 
-The textmapper input file contains definitions of the lexer and parser as well as various options affecting the generation output. Either the parser or lexer section can be omitted to get only the lexer class or the parser with a prepared stub for a handwritten lexer.
+The textmapper input file starts with a header of options affecting the generation output, and contains the definitions of the lexer and parser. Either the parser or lexer section can be omitted to get only the lexer code or the parser code with a prepared stub for a handwritten lexer.
 
-The source text is a sequence of Unicode characters. By default, it is stored in a file with the extension .tm which is represented in the UTF-8 encoding.
+The source text is a sequence of Unicode characters. By default, it is stored in a file with the extension .tm which is represented in the UTF-8 encoding. The basename of the file is usually the name of the language.
 
-Whitespaces (including line breaks) have no special meaning, and are used only as token separators. Single-line comments start with a hash character (`#`). Larger pieces of text can be commented out with traditional block comments (`/* .. */`). Identifiers consist of case-sensitive sequences of alphanumeric or underscore characters and cannot start with a digit. As an exception, they are also allowed to have dashes in the middle, as is common in many reference grammars. Another possible form of an identifier is a sequence of characters in single quotes ('), which is useful for naming keywords and punctuation tokens.
+Whitespaces (including line breaks) have no special meaning, and are used only as token separators. Single-line comments start with a hash character (`#`). Larger pieces of text can be commented out with traditional block comments (`/* .. */`).
 
-## Options
+There are 2 forms of identifiers:
 
-Textmapper files must start with a header specifying a name for the grammar and a target language for the generated code. Semantic actions and value types associated with symbols are considered to be in that language. The header is followed by zero or more generation options, which can be used to tweak the Textmapper output.
+-   case-sensitive sequences of alphanumeric or underscore characters which cannot start with a digit. They are allowed to have dashes in the middle, as is common in many reference grammars. 
+-   sequence of characters in single quotes ('), which is useful for naming keywords and punctuation tokens.
+
+Some grammars use the latter form for lexer identifiers and the former form for parser identifiers, this helps with distinguishing if an identifier denotes a lexer or a parser identifier.
+
+## Header and Generation Options
+
+Textmapper files must start with a header specifying a name for the grammar and a target language for the generated code. Semantic actions and value types associated with symbols are explained later in this document: they are considered to be in the target language. The header is followed by zero or more generation options, which can be used to tweak the Textmapper output. Example grammar:
 
 	language js(go);     # A Javascript parser in Go.
+	lang = "js";
+	package = "languages/parser/js"  # import path of the generated Go parser package
 
 	eventBased = true                          # generate an event-based parser
-	reportTokens = [Comment, invalid_token]    # report these tokens as parser events
+	reportTokens = [comment, Invalid_token]    # always report these tokens as parser events
 
+    :: lexer 
 	# ... lexer specification
+
+	:: parser
 	# ... parser
 
-Option values are checked against the expected types declared in the target language templates, and can contain integers, booleans, strings, grammar symbol references, and arrays of the above.
+	%%
 
-The list of available options for each output language can be found in the language section below.
+
+language
+:   Example: `language js(go);`. Required. 
+
+    This sets the generation of a parser in Go for the Calc language. The token before the 
+    parentheses is currently unused. The name of the language is actually set with lang, see below.
+
+lang
+:   string lang. Required
+
+    This becomes the prefix of the AST node names in the generated parser. 
+
+package
+:   string package. Required.
+
+    This is the generated go package. This is the string needed by users in their import statement will import to access the API
+
+cancellable
+:   bool cancellable = false
+
+    When enabled, the generated parser function will accept a context argument and, when parsing, it will frequently check it for cancellations, when a fixed number of tokens have been extracted. The parser will return a “context canceled” error as a result. Supporting cancellations saves resources which improves interactivity. For example, you can trigger more often completion or diagnostics when the next typed character
+	triggers cancellations.
+
+debugParser
+:   bool debugParser = false
+
+    Q. Which user method emits those? ParseFile?
+    Q. Do they get emitted on stderr? In the logs?
+
+eventBased
+:   bool eventBased = false
+
+    Enable eventBased to be able to use the arrow notation to declare an AST directly in 
+    the grammar. The arrow based notation is more succinct than using semantic actions to build the AST.
+    See Arrow notation and event-based parsing and Abstract syntax tree for more information.
+
+eventFields
+:   bool eventFields = false
+
+    eventFields enables more checks on the shape of the produced AST:
+    All lists should have a single node type or an interface for their content.
+    All nodes that appear multiple times in their parent should have roles in the AST: expr -> Expr : left=expr '+' right=expr ;
+    See Arrow notation and event-based parsing and Abstract syntax tree for more information.
+
+extraTypes
+:   []string extraTypes = []
+
+    Types can be declared via this list when they are needed but dont fit either the other declarations mechanism available. Types are usually declared via the arrow based notations or via semantic actions. More on this below.
+
+fixWhitespace
+:   bool fixWhitespace = false
+
+    The matched range can sometimes include a trailing space, especially when the last token is optional. This option is a mitigation of this behavior: the trailing is removed from the matched range. 
+
+genSelector
+:   bool genSelector = false
+
+    Selectors are generated predicates on the type of an AST node. They are introduced by the use of the %interface directive in the grammar. Disabling this option simplifies the generated code.
+
+genParser
+:   bool genParser = true
+
+    If you plan to only use the lexer, and use a manually written parser, for example, then the generated parser is unneeded and this option disables its generation. 
+
+nonBacktracking
+:   bool nonBacktracking = false
+
+    If backtracking is not required, disable it: this simplifies the generated parser, it makes it more performant.
+
+recursiveLookaheads
+:   bool recursiveLookaheads = false
+
+    Enable if a parser using look ahead contains rules that themselves require lookahead.
+    This option also adds memoization for decisions made by inner parsers, guarding against exponential complexity in lookaheads. Instead, the complexity is worst-case quadratic.
+
+    Consider the following input for the above rules: ((((((1)))))).
+
+    Lookahead sub-parsers never execute semantic actions or produce AST nodes. 
+
+reportTokens
+:   []rule reportTokens[0..*] = []
+
+    Only nonterminals are reported as events with the arrow notation, but simple terminals are also turned into events by adding them to the reportTokens list.  The user can select a flavor when parsing so the tokenizer is more or less comprehensive in the events it emits for the tokens classes it finds. This option lists the nonterminals that should be emitted whichever flavor is selected. The flavors are listed by the AST playground for example: there are declarative, edit, search and outline. For example, edit produces AST nodes for all tokens, so that the AST can eventually be reformatted into a modified source file, but keeping whitespace and comments intact.
+
+    Typically, the rules for comments and rules for invalid tokens are commonly listed.
+    See Arrow notation and event-based parsing for more information. 
+
 
 ## Lexer
 
