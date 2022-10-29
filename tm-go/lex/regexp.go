@@ -517,19 +517,19 @@ func (p *parser) parseEscape(fold bool) charset {
 
 	case 'd':
 		p.next()
-		return charset(append(p.set[:0], '0', '9'))
+		return append(p.set[:0], '0', '9')
 
 	case 'D':
 		p.next()
-		return charset(append(p.set[:0], 0, '0'-1, '9'+1, unicode.MaxRune))
+		return append(p.set[:0], 0, '0'-1, '9'+1, unicode.MaxRune)
 
 	case 'w':
 		p.next()
-		return charset(append(p.set[:0], '0', '9', 'A', 'Z', '_', '_', 'a', 'z'))
+		return append(p.set[:0], '0', '9', 'A', 'Z', '_', '_', 'a', 'z')
 
 	case 'W':
 		p.next()
-		return charset(append(p.set[:0], 0, '0'-1, '9'+1, 'A'-1, 'Z'+1, '_'-1, '_'+1, 'a'-1, 'z'+1, unicode.MaxRune))
+		return append(p.set[:0], 0, '0'-1, '9'+1, 'A'-1, 'Z'+1, '_'-1, '_'+1, 'a'-1, 'z'+1, unicode.MaxRune)
 
 	case 's', 'S':
 		negated := p.ch == 'S'

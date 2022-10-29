@@ -572,7 +572,7 @@ func (c *compiler) selectGoto(state int, sym Sym) int {
 	if max-min < 32 {
 		for e := min; e < max; e += 2 {
 			if c.out.FromTo[e] == state {
-				return int(e / 2)
+				return e / 2
 			}
 		}
 	} else {
@@ -580,7 +580,7 @@ func (c *compiler) selectGoto(state int, sym Sym) int {
 			e := (min + max) >> 1 &^ 1
 			i := c.out.FromTo[e]
 			if i == state {
-				return int(e / 2)
+				return e / 2
 			} else if i < state {
 				min = e + 2
 			} else {

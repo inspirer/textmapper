@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -86,7 +85,7 @@ type writer struct{}
 func (w writer) Write(genfile, content string) error {
 	path := filepath.Join(*outputDir, genfile)
 	if *diffFlag {
-		ondisk, err := ioutil.ReadFile(path)
+		ondisk, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}
@@ -96,5 +95,5 @@ func (w writer) Write(genfile, content string) error {
 		return nil
 	}
 
-	return ioutil.WriteFile(path, []byte(content), 0644)
+	return os.WriteFile(path, []byte(content), 0644)
 }

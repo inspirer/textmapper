@@ -675,7 +675,7 @@ func mergeFields(fields ...*field) *field {
 	return &ret
 }
 
-func (f field) String() string {
+func (f *field) String() string {
 	needsName := f.name != "" && (len(f.types) != 1 || f.types[0] != f.name)
 	var sb strings.Builder
 	if needsName {

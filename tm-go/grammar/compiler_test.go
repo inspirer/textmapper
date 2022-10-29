@@ -2,7 +2,7 @@ package grammar
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -34,7 +34,7 @@ var testFiles = []string{
 
 func TestErrors(t *testing.T) {
 	for _, file := range testFiles {
-		content, err := ioutil.ReadFile(filepath.Join("testdata", file))
+		content, err := os.ReadFile(filepath.Join("testdata", file))
 		if err != nil {
 			t.Errorf("cannot read %v: %v", file, err)
 			continue
@@ -85,7 +85,7 @@ var modelFiles = []string{
 
 func TestSourceModel(t *testing.T) {
 	for _, file := range modelFiles {
-		content, err := ioutil.ReadFile(filepath.Join("testdata", file))
+		content, err := os.ReadFile(filepath.Join("testdata", file))
 		if err != nil {
 			t.Errorf("cannot read %v: %v", file, err)
 			continue

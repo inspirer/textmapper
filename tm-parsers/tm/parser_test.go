@@ -1,7 +1,6 @@
 package tm_test
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -131,7 +130,7 @@ func TestExistingFiles(t *testing.T) {
 	}
 
 	for _, path := range sources {
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
 			t.Errorf("cannot read %v: %v", path, err)
 			continue

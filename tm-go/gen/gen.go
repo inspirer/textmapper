@@ -3,7 +3,7 @@ package gen
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"text/template"
 
@@ -62,7 +62,7 @@ func Generate(g *grammar.Grammar, w Writer) error {
 
 // GenerateFile reads, compiles, and generates code for a grammar stored in a file.
 func GenerateFile(path string, w Writer, compat bool) error {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}

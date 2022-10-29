@@ -1,7 +1,7 @@
 package gen_test
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -53,7 +53,7 @@ func TestGenerate(t *testing.T) {
 				}
 
 				p := filepath.Join(filepath.Dir(filename), genfile)
-				ondisk, err := ioutil.ReadFile(p)
+				ondisk, err := os.ReadFile(p)
 				if err != nil {
 					t.Errorf("ReadFile(%v) failed with %v", genfile, err)
 					continue

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Diff returns a human-readable unified diff of two multiline strings.
+// LineDiff returns a human-readable unified diff of two multiline strings.
 // This function is supposed to be used in tests, so it does not pretend or needs to be
 // a high quality diffing function.
 func LineDiff(left, right string) string {

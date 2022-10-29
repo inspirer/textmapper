@@ -45,14 +45,14 @@ func testLexer(input string, t *testing.T) {
 	spacesRE := regexp.MustCompile(`^\s+$`)
 
 	next := l.Next()
-	offset := 0
+	var offset int
 	for next != json.EOI {
 		s, e := l.Pos()
 		if s > offset && !spacesRE.MatchString(input[offset:s]) {
 			t.Errorf("Spaces expected: %s", input[offset:s])
 		}
 		offset = e
-		token := string(input[s:e])
+		token := input[s:e]
 		switch next {
 		case json.LBRACE, json.RBRACE, json.LBRACK, json.RBRACK,
 			json.COLON, json.COMMA, json.NULL, json.TRUE, json.FALSE:

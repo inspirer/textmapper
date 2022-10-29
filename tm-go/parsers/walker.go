@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -108,7 +107,7 @@ func preloadAll(root string) ([]file, error) {
 		if ext := strings.TrimPrefix(filepath.Ext(path), "."); !supportedExts[ext] {
 			return nil
 		}
-		data, err := ioutil.ReadFile(path)
+		data, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}

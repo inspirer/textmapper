@@ -375,7 +375,7 @@ func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, suc
 			state = gotoState(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
-			success = (action == -1 && gotoState(state, next) >= 0)
+			success = action == -1 && gotoState(state, next) >= 0
 			return
 		}
 	}
