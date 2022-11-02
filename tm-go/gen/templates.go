@@ -1090,10 +1090,14 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- if .Parser.HasActions }}
 	switch rule {
 {{- range $index, $rule := .Parser.Rules}}
-{{- if ne $rule.Action 0 }}
+{{- $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) }}
+{{- if or (ne $rule.Action 0) $fixWS }}
 {{- $act := index $.Parser.Actions $rule.Action }}
-{{- if or (ne $act.Code "") $act.Report }}
+{{- if or (ne $act.Code "") $act.Report $fixWS}}
 	case {{$index}}: // {{$.RuleString $rule}}
+{{- if $fixWS }}
+		fixTrailingWS(lhs, rhs)
+{{- end}}
 {{- range $act.Report}}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
 {{- if $.Parser.UsesFlags}}
@@ -1122,6 +1126,26 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 	return
 }
 
+{{ end -}}
+
+{{ if .Options.FixWhitespace -}}
+{{ block "fixTrailingWS" . -}}
+func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
+	last := len(rhs)-1
+	if last < 0 {
+		return
+	}
+	for last >= 0 && rhs[last].sym.offset == rhs[last].sym.endoffset {
+		last--
+	}
+	if last >= 0 {
+		lhs.sym.endoffset = rhs[last].sym.endoffset
+	} else {
+		lhs.sym.endoffset = lhs.sym.offset
+	}
+}
+
+{{ end -}}
 {{ end -}}
 
 {{ if .ReportTokens true -}}

@@ -21,13 +21,14 @@ const (
 
 // Symbol is a grammar symbol.
 type Symbol struct {
-	Index   int
-	ID      string // unique identifier to be used in generated code
-	Name    string
-	Comment string
-	Type    string
-	Space   bool // tokens that should be ignored by the parser.
-	Origin  status.SourceNode
+	Index     int
+	ID        string // unique identifier to be used in generated code
+	Name      string
+	Comment   string
+	Type      string
+	Space     bool // tokens that should be ignored by the parser.
+	CanBeNull bool // the 'error' token and nullable nonterminals can match an empty string
+	Origin    status.SourceNode
 }
 
 // PrettyType returns a user-friendly representation of the symbol type.
@@ -169,6 +170,17 @@ func (g *Grammar) NontermID(nonterm int) string {
 
 func (g *Grammar) NeedsSession() bool {
 	return len(g.Parser.Tables.Lookaheads) > 0 && (g.Options.RecursiveLookaheads || g.Options.Cancellable)
+}
+
+func (g *Grammar) HasTrailingNulls(r lalr.Rule) bool {
+	for i := len(r.RHS) - 1; i >= 0; i-- {
+		sym := r.RHS[i]
+		if sym.IsStateMarker() {
+			continue
+		}
+		return g.Syms[sym].CanBeNull
+	}
+	return false
 }
 
 // Range marks the portion of a rule that needs to be reported.

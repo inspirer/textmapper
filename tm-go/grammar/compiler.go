@@ -307,7 +307,11 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 	return sym.Index
 }
 
-func (c *compiler) addNonterms(nonterms []*syntax.Nonterm) {
+func (c *compiler) addNonterms(m *syntax.Model) {
+	// TODO error is also nullable - make it so!
+	nullable := syntax.Nullable(m)
+	nonterms := m.Nonterms
+
 	for _, nt := range nonterms {
 		name := nt.Name
 		if _, ok := c.syms[name]; ok {
@@ -318,12 +322,14 @@ func (c *compiler) addNonterms(nonterms []*syntax.Nonterm) {
 		if prev, exists := c.ids[id]; exists {
 			c.errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
 		}
+		index := len(c.out.Syms)
 		sym := Symbol{
-			Index:  len(c.out.Syms),
-			ID:     id,
-			Name:   name,
-			Type:   nt.Type,
-			Origin: nt.Origin,
+			Index:     index,
+			ID:        id,
+			Name:      name,
+			Type:      nt.Type,
+			CanBeNull: nullable.Get(index),
+			Origin:    nt.Origin,
 		}
 		c.syms[name] = sym.Index
 		c.ids[id] = name
@@ -1505,7 +1511,7 @@ func (c *compiler) compileParser() {
 	}
 
 	// Prepare the model for code generation.
-	c.addNonterms(c.source.Nonterms)
+	c.addNonterms(c.source)
 
 	if err := c.generateTables(); err != nil {
 		c.s.AddError(err)
