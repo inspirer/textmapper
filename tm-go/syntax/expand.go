@@ -380,7 +380,7 @@ func ProvisionalName(expr *Expr, m *Model) string {
 	case Set:
 		var sb strings.Builder
 		sb.WriteString("setof_")
-		appendSetName(m.Sets[expr.Pos], m, &sb)
+		appendSetName(m.Sets[expr.SetIndex], m, &sb)
 		return sb.String()
 	case Lookahead:
 		var sb strings.Builder

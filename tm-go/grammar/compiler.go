@@ -1302,7 +1302,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 		set := c.convertSet(p.Expr(), nonterm)
 		index := len(c.source.Sets)
 		c.source.Sets = append(c.source.Sets, set)
-		return &syntax.Expr{Kind: syntax.Set, Pos: index, Origin: p, Model: c.source}
+		return &syntax.Expr{Kind: syntax.Set, SetIndex: index, Origin: p, Model: c.source}
 	case *ast.RhsSymbol:
 		sym, args := c.resolveRef(p.Reference(), nonterm)
 		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: p, Model: c.source}

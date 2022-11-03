@@ -150,7 +150,7 @@ type Expr struct {
 	Predicate  *Predicate
 	ListFlags  ListFlags
 	ArrowFlags []string
-	Pos        int // Positional index of a reference in the original rule.
+	SetIndex   int // Positional index of a reference in the original rule.
 	Origin     status.SourceNode
 	Model      *Model // Kept for some kinds for debugging. TODO error-prone, get rid of
 }
@@ -194,7 +194,7 @@ func (e *Expr) Equal(oth *Expr) bool {
 	case StateMarker, Command:
 		return e.Name == oth.Name
 	case Set:
-		return e.Pos == oth.Pos
+		return e.SetIndex == oth.SetIndex
 	case Conditional:
 		return e.Predicate.equal(oth.Predicate) && e.Sub[0].Equal(oth.Sub[0])
 	default:
@@ -265,9 +265,9 @@ func (e *Expr) String() string {
 		return fmt.Sprintf("%v<%v>", e.Symbol, e.Args)
 	case Set:
 		if e.Model != nil {
-			return fmt.Sprintf("set(%v)", e.Model.Sets[e.Pos].String(e.Model))
+			return fmt.Sprintf("set(%v)", e.Model.Sets[e.SetIndex].String(e.Model))
 		}
-		return fmt.Sprintf("set(%v)", e.Pos)
+		return fmt.Sprintf("set(%v)", e.SetIndex)
 	case StateMarker:
 		return "." + e.Name
 	case Command:
@@ -333,7 +333,7 @@ const (
 	Assign                // {Name}={Sub0}
 	Append                // {Name}+={Sub0}
 	Arrow                 // {Sub0} -> {Name}/{ArrowFlags}
-	Set                   // set({Pos = index in Model.Sets})
+	Set                   // set({SetIndex = index in Model.Sets})
 	StateMarker           // .{Name}
 	Command               // stored in {Name}
 	Lookahead             // (?= {Sub0} & {Sub1} ...)

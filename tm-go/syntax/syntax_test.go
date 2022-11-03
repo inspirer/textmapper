@@ -56,8 +56,8 @@ var equalTests = []struct {
 		want: false,
 	},
 	{
-		a:    &syntax.Expr{Kind: syntax.Set, Pos: 1},
-		b:    &syntax.Expr{Kind: syntax.Set, Pos: 2},
+		a:    &syntax.Expr{Kind: syntax.Set, SetIndex: 1},
+		b:    &syntax.Expr{Kind: syntax.Set, SetIndex: 2},
 		want: false,
 	},
 	{
@@ -229,7 +229,7 @@ var parserTests = []struct {
 	{`A: set(a & B | c | ~first B & precede B & last P & follow P & ~Q); B: z; P:; Q:;`, &syntax.Model{
 		Terminals: []string{"EOI", "a", "c", "z"},
 		Nonterms: []*syntax.Nonterm{
-			{Name: "A", Value: &syntax.Expr{Kind: syntax.Set, Pos: 0}},
+			{Name: "A", Value: &syntax.Expr{Kind: syntax.Set, SetIndex: 0}},
 			{Name: "B", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 3}},
 			{Name: "P", Value: &syntax.Expr{Kind: syntax.Empty}},
 			{Name: "Q", Value: &syntax.Expr{Kind: syntax.Empty}},
@@ -757,7 +757,7 @@ func (p *parser) parsePrimary() *syntax.Expr {
 		p.next()
 		pos := len(p.out.Sets)
 		p.out.Sets = append(p.out.Sets, p.parseSet())
-		ret = &syntax.Expr{Kind: syntax.Set, Pos: pos}
+		ret = &syntax.Expr{Kind: syntax.Set, SetIndex: pos}
 	default:
 		return nil
 	}
