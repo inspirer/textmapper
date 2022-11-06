@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/inspirer/textmapper/tm-go/lalr"
@@ -194,11 +195,63 @@ type Range struct {
 // SemanticAction is a piece of code that will be executed upon some event.
 type SemanticAction struct {
 	Action   int
-	Report   []Range // left to right, inner first
 	Code     string
 	Space    bool // this is a space token
 	Comments []string
+	Report   []Range // left to right, inner first
+	Vars     *ActionVars
 	Origin   status.SourceNode
+}
+
+// ActionVars captures enough information about a production rule to interpret its semantic action.
+type ActionVars struct {
+	syntax.CmdArgs
+
+	// Types of the references of the rule.
+	Types   []string
+	LHSType string
+
+	// Not every symbol reference is present in the desugared rule.
+	Remap map[int]int
+}
+
+// Resolve resolves "val" to an RHS index for the current rule.
+func (a ActionVars) Resolve(val string) (int, bool) {
+	pos, ok := a.CmdArgs.Names[val]
+	if !ok {
+		var err error
+		pos, err = strconv.Atoi(val)
+		if err != nil {
+			return 0, false
+		}
+		pos++ // "val" is 0-based, while positions are 1-based.
+		if pos < 1 || pos >= a.CmdArgs.MaxPos {
+			// Index out of range.
+			return 0, false
+		}
+	}
+	ret, ok := a.Remap[pos]
+	if !ok {
+		ret = -1
+	}
+	return ret, true
+}
+
+// String is used in test failure messages.
+func (a ActionVars) String() string {
+	var ret []string
+	for k, pos := range a.CmdArgs.Names {
+		v, ok := a.Remap[pos]
+		if !ok {
+			v = -1
+		}
+		ret = append(ret, fmt.Sprintf("%v:%v", k, v))
+	}
+	for k, v := range a.Remap {
+		ret = append(ret, fmt.Sprintf("%v:%v", k, v))
+	}
+	sort.Strings(ret)
+	return fmt.Sprintf("{#%v %v %#v->%v}", a.MaxPos-1, ret, a.Types, a.LHSType)
 }
 
 // ClassAction resolves class terminals into more specific tokens (such as keywords).

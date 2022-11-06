@@ -1,11 +1,16 @@
 package gen
 
 import (
+	"errors"
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
 	"strings"
 	"text/template"
+
+	"github.com/inspirer/textmapper/tm-go/grammar"
+	"github.com/inspirer/textmapper/tm-go/status"
 )
 
 var funcMap = template.FuncMap{
@@ -23,6 +28,7 @@ var funcMap = template.FuncMap{
 	"lexer_action":     lexerAction,
 	"ref":              ref,
 	"minus1":           minus1,
+	"go_parser_action": goParserAction,
 }
 
 func sum(a, b int) int {
@@ -156,4 +162,126 @@ func ref(name string) string {
 
 func minus1(a int) int {
 	return a - 1
+}
+
+func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
+	var decls strings.Builder
+	var sb strings.Builder
+	for len(s) > 0 {
+		d := strings.IndexByte(s, '$')
+		if d == -1 {
+			sb.WriteString(s)
+			break
+		}
+		sb.WriteString(s[:d])
+		s = s[d+1:]
+		if len(s) == 0 {
+			return "", status.Errorf(origin, "found $ at the end of the stream")
+		}
+
+		size, id, prop, err := parseMeta(s)
+		s = s[size:]
+		if err != nil {
+			return "", status.Errorf(origin, err.Error())
+		}
+
+		var index int
+		switch id {
+		case "left()", "leftRaw()":
+			index = -2
+		case "first()":
+			if len(args.Types) == 0 {
+				index = -1
+			}
+		case "last()":
+			if len(args.Types) == 0 {
+				index = -1
+			} else {
+				index = len(args.Types) - 1
+			}
+		default:
+			var ok bool
+			index, ok = args.Resolve(id)
+			if !ok {
+				return "", status.Errorf(origin, "invalid reference %q", id)
+			}
+		}
+
+		if index == -1 {
+			if prop == "value" || prop == "sym" {
+				sb.WriteString("nil")
+			} else {
+				sb.WriteString("-1")
+			}
+			continue
+		}
+		var v string
+		if index == -2 {
+			v = "lhs"
+		} else {
+			v = fmt.Sprintf("rhs[%v]", index)
+		}
+		switch {
+		case prop == "sym":
+			fmt.Fprintf(&sb, "(&%v.sym)", v)
+		case prop == "value":
+			v += ".value"
+			switch {
+			case index >= 0 && args.Types[index] != "":
+				varName := fmt.Sprintf("nn%v", index)
+				fmt.Fprintf(&decls, "%v, _ := %v.(%v)\n", varName, v, args.Types[index])
+				v = varName
+			case index == -2 && args.LHSType != "" && id != "leftRaw()":
+				fmt.Fprintf(&decls, "nn, _ := %v.(%v)\n", v, args.LHSType)
+				v = "nn"
+			}
+			sb.WriteString(v)
+		default:
+			sb.WriteString(v)
+			sb.WriteString(".sym.")
+			sb.WriteString(prop)
+		}
+	}
+	return decls.String() + sb.String(), nil
+}
+
+// parseMeta parses a meta expression after the dollar sign and returns its length.
+// The "prop" value is validated upon successful return.
+func parseMeta(s string) (d int, id, prop string, err error) {
+	switch {
+	case s[0] >= '0' && s[0] <= '9':
+		d = 1
+		for d < len(s) && '0' <= s[d] && s[d] <= '9' {
+			d++
+		}
+		return d, s[:d], "value", nil
+	case s[0] >= 'a' && s[0] <= 'z' || s[0] >= 'A' && s[0] <= 'Z' || s[0] == '_':
+		d = 1
+		for d < len(s) && ('0' <= s[d] && s[d] <= '9' || s[d] >= 'a' && s[d] <= 'z' || s[d] >= 'A' && s[d] <= 'Z' || s[d] == '_' || s[d] == '-') {
+			d++
+		}
+		for s[d-1] == '-' {
+			d--
+		}
+		return d, s[:d], "value", nil
+	case s[0] == '{':
+		d = strings.IndexByte(s, '}') + 1
+		if d == 0 {
+			return 0, "", "", errors.New("cannot find the matching }")
+		}
+		var ok bool
+		id, prop, ok = strings.Cut(s[1:d-1], ".")
+		if !ok {
+			prop = "value"
+		}
+		switch prop {
+		case "value", "sym", "offset", "endoffset":
+		default:
+			return 0, "", "", fmt.Errorf("unrecognized property %q", prop)
+		}
+		return d, id, prop, nil
+	case s[0] == '$':
+		return 1, "leftRaw()", "value", nil
+	}
+	return 0, "", "", errors.New("unrecognized sequence after $")
 }

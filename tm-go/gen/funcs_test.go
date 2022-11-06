@@ -2,9 +2,16 @@ package gen
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
+	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-go/grammar"
+	"github.com/inspirer/textmapper/tm-go/status"
+	"github.com/inspirer/textmapper/tm-go/syntax"
+	"github.com/inspirer/textmapper/tm-go/util/diff"
 )
 
 func TestHashing(t *testing.T) {
@@ -114,4 +121,82 @@ func BenchmarkIntArray(b *testing.B) {
 		intArray(data[:], "  ", 80)
 	}
 	b.SetBytes(int64(len(str)))
+}
+
+func TestParserAction(t *testing.T) {
+	tests := []struct {
+		input string
+		args  *grammar.ActionVars
+		want  string
+	}{
+		{"abc", vars(), "abc"},
+		{"($$)", vars(), "(lhs.value)"},
+		{"$$ = ${left()}", vars("%abc"), "nn, _ := lhs.value.(abc)\nlhs.value = nn"},
+
+		{"abc $foo ", vars("foo"), "abc nil "},
+		{"abc $foo-a ", vars("foo-a:0"), "abc rhs[0].value "},
+		{"abc $foo-b ", vars("foo-b:0:bar"), "nn0, _ := rhs[0].value.(bar)\nabc nn0 "},
+		{"abc ${foo} ", vars("foo"), "abc nil "},
+		{"abc ${foo} ", vars("foo:0"), "abc rhs[0].value "},
+		{"abc ${foo} ", vars("foo:0:bar"), "nn0, _ := rhs[0].value.(bar)\nabc nn0 "},
+
+		{"$a + ${last()}", vars("a:0", "b", "c:1", "d"), "rhs[0].value + rhs[1].value"},
+		{"${first()} + ${left()}", vars("a:0", "b", "c:1", "d"), "rhs[0].value + lhs.value"},
+		{"${first()} + ${left()}", vars("a:1:bar", "b", "c", "d"), "nn0, _ := rhs[0].value.(bar)\nnn0 + lhs.value"},
+
+		{"${left().sym}", vars("a:0", "b", "c:1", "d:2"), "(&lhs.sym)"},
+		{"${left().offset}", vars("a:0", "b", "c:1", "d:2"), "lhs.sym.offset"},
+		{"${left().endoffset}", vars("a:0", "b", "c:1", "d:2"), "lhs.sym.endoffset"},
+		{"${last().sym}", vars("a:0", "b", "c:1", "d:2"), "(&rhs[2].sym)"},
+		{"${last().offset}", vars("a:0", "b", "c:1", "d:2"), "rhs[2].sym.offset"},
+		{"${last().endoffset}", vars("a:0", "b", "c:1", "d:2"), "rhs[2].sym.endoffset"},
+	}
+
+	for _, tc := range tests {
+		got, err := goParserAction(tc.input, tc.args, node(tc.input))
+		if err != nil {
+			t.Errorf("parserAction(%v, %v) failed with %v", tc.input, tc.args, err)
+			continue
+		}
+		if diff := diff.LineDiff(tc.want, got); diff != "" {
+			t.Errorf("parserAction(%v, %v) failed with diff:\n--- want\n+++ got\n%v", tc.input, tc.args, diff)
+		}
+	}
+}
+
+func vars(list ...string) *grammar.ActionVars {
+	ret := &grammar.ActionVars{
+		CmdArgs: syntax.CmdArgs{
+			MaxPos: 1 + len(list),
+			Names:  make(map[string]int),
+		},
+		Remap: make(map[int]int),
+	}
+	for i, descr := range list {
+		if strings.HasPrefix(descr, "%") {
+			ret.LHSType = descr[1:]
+			continue
+		}
+		name, num, mapped := strings.Cut(descr, ":")
+		if name != "" {
+			ret.Names[name] = i
+		}
+		if !mapped {
+			continue
+		}
+		num, tp, _ := strings.Cut(num, ":")
+		target, err := strconv.Atoi(num)
+		if err != nil {
+			log.Fatalf("cannot parse %q as a number in %q", num, descr)
+		}
+		ret.Types = append(ret.Types, tp)
+		ret.Remap[i] = target
+	}
+	return ret
+}
+
+type node string
+
+func (n node) SourceRange() status.SourceRange {
+	return status.SourceRange{Filename: string(n)}
 }

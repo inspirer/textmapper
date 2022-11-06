@@ -372,6 +372,12 @@ func (k ExprKind) GoString() string {
 	return fmt.Sprintf("unknown(%v)", k)
 }
 
+// CmdArgs defines which RHS symbols are available inside a semantic action.
+type CmdArgs struct {
+	Names  map[string]int
+	MaxPos int // exclusive, 1-based
+}
+
 // TokenSet is a grammar expression that resolves to a set of tokens.
 type TokenSet struct {
 	Kind   SetOp
