@@ -147,10 +147,12 @@ type Expr struct {
 	Sub        []*Expr
 	Symbol     int
 	Args       []Arg
+	Pos        int // Positional index of a reference, set, or list in the original rule.
 	Predicate  *Predicate
 	ListFlags  ListFlags
 	ArrowFlags []string
-	SetIndex   int // Positional index of a reference in the original rule.
+	SetIndex   int
+	CmdArgs    *CmdArgs
 	Origin     status.SourceNode
 	Model      *Model // Kept for some kinds for debugging. TODO error-prone, get rid of
 }

@@ -62,6 +62,8 @@ type compiler struct {
 	paramPerm []int          // for parameter permutations
 	expectSR  int
 	expectRR  int
+	rhsPos    int // Counter for positional index of a reference in the current rule.
+	rhsNames  map[string]int
 }
 
 func newCompiler(file ast.File, compat bool) *compiler {
@@ -1242,14 +1244,63 @@ func (c *compiler) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 	}
 }
 
+func (c *compiler) allocatePos() int {
+	ret := c.rhsPos
+	c.rhsPos++
+	return ret
+}
+
+func (c *compiler) pushName(name string, pos int) {
+	if c.rhsNames == nil {
+		c.rhsNames = make(map[string]int)
+	}
+	var index int
+	if _, ok := c.rhsNames[name+"#0"]; ok {
+		for {
+			index++
+			if _, ok := c.rhsNames[fmt.Sprintf("%v#%v", name, index)]; !ok {
+				break
+			}
+		}
+	} else if val, ok := c.rhsNames[name]; ok {
+		c.rhsNames[name+"#0"] = val
+		delete(c.rhsNames, name)
+		index = 1
+	}
+	if index > 0 {
+		name = fmt.Sprintf("%v#%v", name, index)
+	}
+	c.rhsNames[name] = pos
+}
+
 func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.Expr {
 	switch p := p.(type) {
 	case *ast.Command:
+		args := &syntax.CmdArgs{MaxPos: c.rhsPos}
+		if len(c.rhsNames) > 0 {
+			// Only names and references preceding the command are available to its code.
+			// Note: the list below can include entities from a different alternative but
+			// they'll be automatically filtered later on.
+			args.Names = make(map[string]int)
+			for k, v := range c.rhsNames {
+				args.Names[k] = v
+			}
+		}
 		text := p.Text()
-		return &syntax.Expr{Kind: syntax.Command, Name: text, Origin: p}
+		return &syntax.Expr{Kind: syntax.Command, Name: text, CmdArgs: args, Origin: p}
 	case *ast.RhsAssignment:
-		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return &syntax.Expr{Kind: syntax.Assign, Name: p.Id().Text(), Sub: subs, Origin: p}
+		// Ignore any names within the assigned expression.
+		old := c.rhsNames
+		c.rhsNames = nil
+		inner := c.convertPart(p.Inner(), nonterm)
+		c.rhsNames = old
+
+		name := p.Id().Text()
+		if inner.Pos > 0 {
+			c.pushName(name, inner.Pos)
+		}
+		subs := []*syntax.Expr{inner}
+		return &syntax.Expr{Kind: syntax.Assign, Name: name, Sub: subs, Origin: p}
 	case *ast.RhsPlusAssignment:
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
 		return &syntax.Expr{Kind: syntax.Append, Name: p.Id().Text(), Sub: subs, Origin: p}
@@ -1274,7 +1325,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 		}
 		return &syntax.Expr{Kind: syntax.Lookahead, Sub: subs, Origin: p}
 	case *ast.RhsNested:
-		return c.convertRules(p.Rule0(), nonterm, report{} /*defaultReport*/, p)
+		return c.convertRules(p.Rule0(), nonterm, report{} /*defaultReport*/, false /*topLevel*/, p)
 	case *ast.RhsOptional:
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
 		return &syntax.Expr{Kind: syntax.Optional, Sub: subs, Origin: p}
@@ -1284,28 +1335,29 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
 			subs = []*syntax.Expr{seq, sep}
 		}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Pos: c.allocatePos(), Origin: p}
 	case *ast.RhsStarList:
 		seq := c.convertSequence(p.RuleParts(), nonterm, p)
 		subs := []*syntax.Expr{seq}
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
 			subs = []*syntax.Expr{seq, sep}
 		}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(), Origin: p}
 	case *ast.RhsPlusQuantifier:
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Pos: c.allocatePos(), Origin: p}
 	case *ast.RhsStarQuantifier:
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(), Origin: p}
 	case *ast.RhsSet:
 		set := c.convertSet(p.Expr(), nonterm)
 		index := len(c.source.Sets)
 		c.source.Sets = append(c.source.Sets, set)
-		return &syntax.Expr{Kind: syntax.Set, SetIndex: index, Origin: p, Model: c.source}
+		return &syntax.Expr{Kind: syntax.Set, Pos: c.allocatePos(), SetIndex: index, Origin: p, Model: c.source}
 	case *ast.RhsSymbol:
 		sym, args := c.resolveRef(p.Reference(), nonterm)
-		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: p, Model: c.source}
+		c.pushName(p.Reference().Name().Text(), c.rhsPos)
+		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Pos: c.allocatePos(), Origin: p, Model: c.source}
 	case *ast.StateMarker:
 		return &syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
 	case *ast.SyntaxProblem:
@@ -1368,7 +1420,7 @@ func (c *compiler) isSelector(name string) bool {
 	return ok
 }
 
-func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport report, origin status.SourceNode) *syntax.Expr {
+func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport report, topLevel bool, origin status.SourceNode) *syntax.Expr {
 	var subs []*syntax.Expr
 	for _, rule0 := range rules {
 		rule, ok := rule0.(*ast.Rule)
@@ -1377,6 +1429,11 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 			continue
 		}
 
+		if topLevel {
+			// Counting of RHS symbols does not restart for inline alternatives.
+			c.rhsPos = 1
+			c.rhsNames = nil
+		}
 		expr := c.convertSequence(rule.RhsPart(), nonterm, rule)
 		clause, _ := rule.ReportClause()
 		expr = c.convertReportClause(clause).withDefault(defaultReport).apply(expr)
@@ -1448,7 +1505,7 @@ func (c *compiler) compileParser() {
 	for _, nt := range nonterms {
 		clause, _ := nt.def.ReportClause()
 		defaultReport := c.convertReportClause(clause)
-		expr := c.convertRules(nt.def.Rule0(), c.source.Nonterms[nt.nonterm], defaultReport, nt.def)
+		expr := c.convertRules(nt.def.Rule0(), c.source.Nonterms[nt.nonterm], defaultReport, true /*topLevel*/, nt.def)
 		c.source.Nonterms[nt.nonterm].Value = expr
 	}
 
@@ -1512,9 +1569,7 @@ func (c *compiler) compileParser() {
 
 	// Prepare the model for code generation.
 	c.addNonterms(c.source)
-
-	if err := c.generateTables(); err != nil {
-		c.s.AddError(err)
+	if !c.generateTables() {
 		return
 	}
 
@@ -1523,12 +1578,12 @@ func (c *compiler) compileParser() {
 	out.Nonterms = c.source.Nonterms
 }
 
-func (c *compiler) generateTables() error {
+func (c *compiler) generateTables() bool {
 	switch c.file.Header().Name().Text() {
 	case "simple", "conflict1", "tm", "lr0", "greedy", "test":
 	default:
 		// TODO enable for all files
-		return nil
+		return false
 	}
 
 	g := &lalr.Grammar{
@@ -1576,6 +1631,8 @@ func (c *compiler) generateTables() error {
 			}
 			var report []Range
 			var command string
+			var args *syntax.CmdArgs
+			actualPos := make(map[int]int)
 			origin := expr.Origin
 
 			var traverse func(expr *syntax.Expr)
@@ -1603,6 +1660,13 @@ func (c *compiler) generateTables() error {
 						traverse(sub)
 					}
 				case syntax.Reference:
+					if command != "" {
+						// TODO This command needs to be extracted into a dedicated nonterminal.
+						c.s.Errorf(origin, "commands must be placed at the end of a rule")
+					}
+					if expr.Pos > 0 {
+						actualPos[expr.Pos] = len(rule.RHS)
+					}
 					rule.RHS = append(rule.RHS, lalr.Sym(expr.Symbol))
 				case syntax.StateMarker:
 					if i, ok := markers[expr.Name]; ok {
@@ -1616,6 +1680,7 @@ func (c *compiler) generateTables() error {
 				case syntax.Command:
 					// Note: those are end-of-rule commands and typically there is at most one.
 					command += expr.Name
+					args = expr.CmdArgs // It is okay to override the args - the new ones are more permissive.
 					origin = expr.Origin
 				}
 			}
@@ -1634,20 +1699,35 @@ func (c *compiler) generateTables() error {
 					Code:   command,
 					Origin: origin,
 				}
+				if args != nil {
+					act.Vars = &ActionVars{CmdArgs: *args, Remap: actualPos}
+					for _, r := range rule.RHS {
+						if r.IsStateMarker() {
+							continue
+						}
+						act.Vars.Types = append(act.Vars.Types, c.out.Syms[r].Type)
+					}
+				}
 				rule.Action = len(c.out.Parser.Actions)
 				c.out.Parser.Actions = append(c.out.Parser.Actions, act)
 			}
 			g.Rules = append(g.Rules, rule)
 		}
 	}
+	if c.s.Err() != nil {
+		// Parsing errors cause inconsistencies inside c.source. Aborting.
+		return false
+	}
+
 	tables, err := lalr.Compile(g)
 	if err != nil {
-		return err
+		c.s.AddError(err)
+		return false
 	}
 
 	c.out.Parser.Rules = g.Rules
 	c.out.Parser.Tables = tables
-	return nil
+	return true
 }
 
 func (c *compiler) parseOptions() {

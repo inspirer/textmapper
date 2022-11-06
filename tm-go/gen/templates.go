@@ -1107,7 +1107,7 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- end}}
 {{- end}}
 {{- if $act.Code }}
-   /* {{$act.Code}} */
+{{go_parser_action $act.Code $act.Vars $act.Origin}}
 {{- end}}
 {{- end}}
 {{- end}}

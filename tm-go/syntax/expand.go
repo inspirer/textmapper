@@ -250,7 +250,9 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 		}
 		return ret
 	case Set, Lookahead:
-		return []*Expr{e.extractNonterm(expr)}
+		ret := e.extractNonterm(expr)
+		ret.Pos = expr.Pos
+		return []*Expr{ret}
 	case List:
 		out := &Expr{Kind: List, Origin: expr.Origin, ListFlags: expr.ListFlags}
 		out.Sub = e.expandExpr(expr.Sub[0])
@@ -270,6 +272,7 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 		if expr.ListFlags&OneOrMore == 0 && out.ListFlags&OneOrMore != 0 {
 			ret = e.extractNonterm(&Expr{Kind: Optional, Sub: []*Expr{ret}})
 		}
+		ret.Pos = expr.Pos
 		return []*Expr{ret}
 	}
 	return []*Expr{expr}

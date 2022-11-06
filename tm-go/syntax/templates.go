@@ -373,6 +373,7 @@ func (i *instantiator) doExpr(context *instance, expr *Expr) *Expr {
 			return &Expr{
 				Kind:   expr.Kind,
 				Symbol: len(i.m.Terminals) + i.resolveInstance(context, nt, expr.Args).index,
+				Pos:    expr.Pos,
 				Origin: expr.Origin,
 				Model:  i.m,
 			}

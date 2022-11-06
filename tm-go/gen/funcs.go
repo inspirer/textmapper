@@ -167,6 +167,7 @@ func minus1(a int) int {
 func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
 	var decls strings.Builder
 	var sb strings.Builder
+	seen := make(map[int]bool)
 	for len(s) > 0 {
 		d := strings.IndexByte(s, '$')
 		if d == -1 {
@@ -229,10 +230,16 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 			switch {
 			case index >= 0 && args.Types[index] != "":
 				varName := fmt.Sprintf("nn%v", index)
-				fmt.Fprintf(&decls, "%v, _ := %v.(%v)\n", varName, v, args.Types[index])
+				if !seen[index] {
+					fmt.Fprintf(&decls, "%v, _ := %v.(%v)\n", varName, v, args.Types[index])
+					seen[index] = true
+				}
 				v = varName
 			case index == -2 && args.LHSType != "" && id != "leftRaw()":
-				fmt.Fprintf(&decls, "nn, _ := %v.(%v)\n", v, args.LHSType)
+				if !seen[index] {
+					fmt.Fprintf(&decls, "nn, _ := %v.(%v)\n", v, args.LHSType)
+					seen[index] = true
+				}
 				v = "nn"
 			}
 			sb.WriteString(v)

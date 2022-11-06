@@ -136,6 +136,7 @@ func TestParserAction(t *testing.T) {
 		{"abc $foo ", vars("foo"), "abc nil "},
 		{"abc $foo-a ", vars("foo-a:0"), "abc rhs[0].value "},
 		{"abc $foo-b ", vars("foo-b:0:bar"), "nn0, _ := rhs[0].value.(bar)\nabc nn0 "},
+		{"$foo $foo", vars("foo:0:bar"), "nn0, _ := rhs[0].value.(bar)\nnn0 nn0"},
 		{"abc ${foo} ", vars("foo"), "abc nil "},
 		{"abc ${foo} ", vars("foo:0"), "abc rhs[0].value "},
 		{"abc ${foo} ", vars("foo:0:bar"), "nn0, _ := rhs[0].value.(bar)\nabc nn0 "},
