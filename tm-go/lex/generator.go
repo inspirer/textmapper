@@ -25,7 +25,7 @@ type state struct {
 type generator struct {
 	ins        []inst
 	states     []*state
-	powerset   *container.IntSliceMap
+	powerset   *container.IntSliceMap[*state]
 	s          status.Status
 	numSymbols int
 	closure    container.BitSet
@@ -47,7 +47,7 @@ func newGenerator(ins []inst, numSymbols int) *generator {
 	return g
 }
 
-func (g *generator) allocateState(key []int) interface{} {
+func (g *generator) allocateState(key []int) *state {
 	s := &state{
 		index: len(g.states),
 		set:   key,
@@ -68,7 +68,7 @@ func (g *generator) addState(set []int, after *state) *state {
 	}
 
 	set = g.closure.Slice(g.arena)
-	state := g.powerset.Get(set).(*state)
+	state := g.powerset.Get(set)
 	if state.next == nil && state != g.last {
 		// This is a newly added state. Insert it after "after".
 		if g.first == nil {

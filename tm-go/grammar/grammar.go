@@ -162,6 +162,10 @@ func (g *Grammar) RuleString(r *lalr.Rule) string {
 		}
 		sb.WriteString(g.Syms[sym].Name)
 	}
+	if r.Precedence > 0 {
+		sb.WriteString(" %prec ")
+		sb.WriteString(g.Syms[r.Precedence].Name)
+	}
 	return sb.String()
 }
 

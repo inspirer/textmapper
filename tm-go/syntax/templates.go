@@ -285,7 +285,7 @@ type instantiator struct {
 	bound       []boundParam
 	boundMap    map[boundParam]int
 	instances   []*instance
-	instanceMap *container.IntSliceMap // [nonterm, boundParam #1, ...] ->
+	instanceMap *container.IntSliceMap[*instance] // [nonterm, boundParam #1, ...] ->
 }
 
 func (i *instantiator) resolveInstance(context *instance, nonterm int, args []Arg) *instance {
@@ -301,10 +301,10 @@ func (i *instantiator) resolveInstance(context *instance, nonterm int, args []Ar
 		}
 		signature = append(signature, index)
 	}
-	return i.instanceMap.Get(signature).(*instance)
+	return i.instanceMap.Get(signature)
 }
 
-func (i *instantiator) allocate(key []int) interface{} {
+func (i *instantiator) allocate(key []int) *instance {
 	ret := &instance{
 		nonterm: key[0],
 	}

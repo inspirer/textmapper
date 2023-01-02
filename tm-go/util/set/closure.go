@@ -12,7 +12,7 @@ import (
 // include each other, be complements or intersections of other sets.
 type Closure struct {
 	buf      []int // for reuse
-	interner *container.IntSliceMap
+	interner *container.IntSliceMap[[]int]
 	nodes    []*FutureSet
 	err      ClosureError
 }
@@ -21,7 +21,7 @@ type Closure struct {
 func NewClosure(bufSize int) *Closure {
 	return &Closure{
 		buf:      make([]int, bufSize),
-		interner: container.NewIntSliceMap(func(key []int) interface{} { return key }),
+		interner: container.NewIntSliceMap(func(key []int) []int { return key }),
 	}
 }
 
@@ -73,7 +73,7 @@ func (c ClosureError) err() error {
 
 // Add registers a new (possibly empty) set.
 func (c *Closure) Add(set []int) *FutureSet {
-	set = c.interner.Get(set).([]int) // R/O and unique copy
+	set = c.interner.Get(set) // R/O and unique copy
 	ret := &FutureSet{index: len(c.nodes), IntSet: container.IntSet{Set: set}}
 	c.nodes = append(c.nodes, ret)
 	return ret
@@ -190,6 +190,6 @@ func (c *Closure) slowClosure(component []int, onStack container.BitSet) {
 }
 
 func (c *Closure) intern(set container.IntSet) container.IntSet {
-	s := c.interner.Get(set.Set).([]int)
+	s := c.interner.Get(set.Set)
 	return container.IntSet{Set: s, Inverse: set.Inverse}
 }
