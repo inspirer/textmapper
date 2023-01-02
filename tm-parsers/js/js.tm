@@ -1563,10 +1563,10 @@ StartOfFunctionType :
 ;
 
 FunctionType<NoQuest> -> FuncType :
-    TypeParameters? FunctionTypeParameterList '=>' Type ;
+    TypeParameters? FunctionTypeParameterList<~Yield, ~Await> '=>' Type ;
 
-FunctionTypeParameterList -> Parameters :
-    '(' (?= StartOfFunctionType) (Parameter<~Yield, ~Await> separator ',')+? ','? ')' ;
+FunctionTypeParameterList<Yield, Await> -> Parameters :
+    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
 
 ConstructorType<NoQuest> -> ConstructorType :
     ('abstract' -> Abstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
