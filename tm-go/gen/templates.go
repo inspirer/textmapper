@@ -518,11 +518,16 @@ const bisonTpl = `%{
 %%
 {{- range .Parser.Nonterms}}
 
+{{ if eq .Value.Kind 11 -}}
+// lookahead: {{ range $i, $it := .Value.Sub }}{{if gt $i 0}} & {{end}}{{$it}}{{end}}
+{{ end -}}
 {{.Name}} :
 {{- if eq .Value.Kind 2 }}
 {{- range $i, $rule := .Value.Sub}}
 {{ if eq $i 0}}  {{else}}| {{end}}{{$.ExprString $rule}}
 {{- end}}
+{{- else if eq .Value.Kind 11 }}
+  %empty
 {{- else }}
   {{$.ExprString .Value}}
 {{- end }}

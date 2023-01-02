@@ -140,9 +140,6 @@ func (g *Grammar) ExprString(e *syntax.Expr) string {
 		return "/*." + e.Name + "*/"
 	case syntax.Command:
 		return ""
-	case syntax.Lookahead:
-		// TODO process lookaheads before this method gets called
-		return "(?= ...)"
 	default:
 		log.Fatalf("cannot stringify kind=%v", e.Kind)
 		return ""
