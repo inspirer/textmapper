@@ -82,7 +82,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 	case 4984:
 		var ok bool
 		if ok, err = lookahead(ctx, lexer, next, 5, 8667, s); ok {
-			sym = 983 /* lookahead_StartOfFunctionType */
+			sym = 999 /* lookahead_StartOfFunctionType */
 		} else {
 			sym = 951 /* lookahead_notStartOfFunctionType */
 		}
@@ -420,13 +420,13 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(RestType, rhs[5].sym.offset, rhs[5].sym.endoffset)
 	case 4596: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName ':' Type
 		p.listener(RestType, rhs[4].sym.offset, rhs[4].sym.endoffset)
-	case 4641: // ConstructorType : 'abstract' 'new' TypeParameters ParameterList '=>' Type
+	case 4628: // ConstructorType : 'abstract' 'new' TypeParameters ParameterList '=>' Type
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4642: // ConstructorType : 'abstract' 'new' ParameterList '=>' Type
+	case 4629: // ConstructorType : 'abstract' 'new' ParameterList '=>' Type
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4645: // ConstructorType_NoQuest : 'abstract' 'new' TypeParameters ParameterList '=>' Type_NoQuest
+	case 4632: // ConstructorType_NoQuest : 'abstract' 'new' TypeParameters ParameterList '=>' Type_NoQuest
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 4646: // ConstructorType_NoQuest : 'abstract' 'new' ParameterList '=>' Type_NoQuest
+	case 4633: // ConstructorType_NoQuest : 'abstract' 'new' ParameterList '=>' Type_NoQuest
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4836: // IndexSignature : Modifiers '[' IdentifierName ':' Type ']' TypeAnnotation
 		p.listener(NameIdent, rhs[2].sym.offset, rhs[2].sym.endoffset)
@@ -489,7 +489,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 	case 4984:
 		var ok bool
 		if ok, err = AtStartOfFunctionType(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 983 /* lookahead_StartOfFunctionType */
+			lhs.sym.symbol = 999 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 951 /* lookahead_notStartOfFunctionType */
 		}

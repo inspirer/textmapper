@@ -1565,9 +1565,6 @@ StartOfFunctionType :
 FunctionType<NoQuest> -> FuncType :
     TypeParameters? FunctionTypeParameterList<~Yield, ~Await> '=>' Type ;
 
-FunctionTypeParameterList<Yield, Await> -> Parameters :
-    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
-
 ConstructorType<NoQuest> -> ConstructorType :
     ('abstract' -> Abstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
@@ -1600,6 +1597,9 @@ CallSignature -> CallSignature :
 
 ParameterList<Yield, Await> -> Parameters :
     '(' (Parameter separator ',')+? ','? ')' ;
+
+FunctionTypeParameterList<Yield, Await> -> Parameters :
+    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
 
 %interface Parameter;
 

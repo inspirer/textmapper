@@ -7272,38 +7272,6 @@ FunctionType_NoQuest :
 | FunctionTypeParameterList ASSIGNGT Type_NoQuest
 ;
 
-FunctionTypeParameterList :
-  LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated COMMA RPAREN
-| LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated RPAREN
-| LPAREN lookahead_StartOfFunctionType COMMA RPAREN
-| LPAREN lookahead_StartOfFunctionType RPAREN
-;
-
-Parameter_Await_list_Comma_separated :
-  Parameter_Await_list_Comma_separated COMMA Parameter_Await
-| Parameter_Await
-;
-
-Parameter_Yield_Await_list_Comma_separated :
-  Parameter_Yield_Await_list_Comma_separated COMMA Parameter_Yield_Await
-| Parameter_Yield_Await
-;
-
-Parameter_Yield_list_Comma_separated :
-  Parameter_Yield_list_Comma_separated COMMA Parameter_Yield
-| Parameter_Yield
-;
-
-Parameter_list_Comma_separated :
-  Parameter_list_Comma_separated COMMA Parameter
-| Parameter
-;
-
-// lookahead: StartOfFunctionType
-lookahead_StartOfFunctionType :
-  %empty
-;
-
 ConstructorType :
   ABSTRACT NEW TypeParameters ParameterList ASSIGNGT Type
 | ABSTRACT NEW ParameterList ASSIGNGT Type
@@ -7414,6 +7382,38 @@ ParameterList_Yield_Await :
 | LPAREN Parameter_Yield_Await_list_Comma_separated RPAREN
 | LPAREN COMMA RPAREN
 | LPAREN RPAREN
+;
+
+Parameter_Await_list_Comma_separated :
+  Parameter_Await_list_Comma_separated COMMA Parameter_Await
+| Parameter_Await
+;
+
+Parameter_Yield_Await_list_Comma_separated :
+  Parameter_Yield_Await_list_Comma_separated COMMA Parameter_Yield_Await
+| Parameter_Yield_Await
+;
+
+Parameter_Yield_list_Comma_separated :
+  Parameter_Yield_list_Comma_separated COMMA Parameter_Yield
+| Parameter_Yield
+;
+
+Parameter_list_Comma_separated :
+  Parameter_list_Comma_separated COMMA Parameter
+| Parameter
+;
+
+FunctionTypeParameterList :
+  LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated COMMA RPAREN
+| LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated RPAREN
+| LPAREN lookahead_StartOfFunctionType COMMA RPAREN
+| LPAREN lookahead_StartOfFunctionType RPAREN
+;
+
+// lookahead: StartOfFunctionType
+lookahead_StartOfFunctionType :
+  %empty
 ;
 
 Parameter :
