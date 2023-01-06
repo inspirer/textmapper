@@ -103,6 +103,7 @@ type Tables struct {
 	RuleSymbol  []int
 	Markers     []StateMarker
 	Lookaheads  []LookaheadRule
+	NumStates   int
 }
 
 func (t *Tables) mark(state, marker int) {

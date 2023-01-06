@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
+	"runtime/pprof"
 	"strings"
+	"time"
 
 	"github.com/inspirer/textmapper/tm-go/gen"
 	"github.com/inspirer/textmapper/tm-go/status"
@@ -27,6 +30,7 @@ var (
 	debug       = genCmd.Flags.Bool("d", false, "output extra debug info")
 	diffFlag    = genCmd.Flags.Bool("diff", false, "compare generated content against files on disk")
 	compatFlag  = genCmd.Flags.Bool("compat", false, "disable optimizations and attempt to produce the same output as the Java version")
+	cpuprofile  = genCmd.Flags.String("cpuprofile", "", "write a CPU profile into a given file")
 )
 
 func init() {
@@ -72,9 +76,32 @@ func generate(files []string) error {
 	}
 
 	var s status.Status
+	start := time.Now()
 	for _, path := range files {
-		if err := gen.GenerateFile(path, writer{}, *compatFlag); err != nil {
+		stats, err := gen.GenerateFile(path, writer{}, *compatFlag)
+		if msg := stats.String(); msg != "" {
+			fmt.Printf("%v (%v)\n", msg, path)
+		}
+		if err != nil {
 			s.AddError(err)
+		}
+	}
+
+	if *cpuprofile != "" {
+		elapsed := time.Since(start)
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+
+		n := int((30*time.Second)/elapsed) + 1
+		fmt.Printf("First run completed in %v. Running it %v times.\n", elapsed, n)
+		for i := 0; i < n; i++ {
+			for _, path := range files {
+				gen.GenerateFile(path, writer{}, *compatFlag)
+			}
 		}
 	}
 	return s.Err()

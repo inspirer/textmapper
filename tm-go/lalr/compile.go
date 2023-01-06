@@ -277,6 +277,7 @@ func (c *compiler) computeStates() {
 		finalStates[i] = afterEoi.index
 	}
 	c.out.FinalStates = finalStates
+	c.out.NumStates = len(c.states)
 }
 
 func (c *compiler) checkLR0() {
