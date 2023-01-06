@@ -6,12 +6,12 @@ import (
 	"fmt"
 )
 
-const atBState = 1
-
 var afterListStates = map[int]bool{
 	6: true,
 	7: true,
 }
+
+const atBState = 1
 
 var tmNonterminals = [...]string{
 	"Bar_list",

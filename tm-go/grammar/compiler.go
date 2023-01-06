@@ -1719,6 +1719,22 @@ func (c *compiler) generateTables() bool {
 		return false
 	}
 
+	if c.compat {
+		// Sort g.Markers.
+		perm := make([]int, len(g.Markers))
+		sort.Strings(g.Markers)
+		for i, val := range g.Markers {
+			perm[markers[val]] = i
+		}
+		for _, rule := range g.Rules {
+			for i, val := range rule.RHS {
+				if val.IsStateMarker() {
+					rule.RHS[i] = lalr.Marker(perm[val.AsMarker()])
+				}
+			}
+		}
+	}
+
 	tables, err := lalr.Compile(g)
 	if err != nil {
 		c.s.AddError(err)
