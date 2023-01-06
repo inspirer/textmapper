@@ -339,6 +339,42 @@ func (c *compiler) addNonterms(m *syntax.Model) {
 	}
 }
 
+func addSyntheticInputs(m *syntax.Model, compat bool) {
+	seen := make(map[lalr.Sym]bool)
+	size := len(m.Inputs)
+	for _, inp := range m.Inputs {
+		if inp.NoEoi {
+			seen[lalr.Sym(inp.Nonterm+len(m.Terminals))] = true
+		}
+	}
+	for _, nt := range m.Nonterms {
+		if nt.Value.Kind != syntax.Lookahead {
+			continue
+		}
+		for _, sub := range nt.Value.Sub {
+			if sub.Kind == syntax.LookaheadNot {
+				sub = sub.Sub[0]
+			}
+			if sub.Kind != syntax.Reference || sub.Symbol < len(m.Terminals) {
+				log.Fatalf("%v is not properly instantiated: %v", nt.Name, sub)
+			}
+			key := lalr.Sym(sub.Symbol)
+			if !seen[key] {
+				m.Inputs = append(m.Inputs, syntax.Input{
+					Nonterm:   sub.Symbol - len(m.Terminals),
+					NoEoi:     true,
+					Synthetic: true,
+				})
+				seen[key] = true
+			}
+		}
+	}
+	if compat {
+		// Textmapper Java puts synthetic inputs before user ones.
+		m.Inputs = append(m.Inputs[size:], m.Inputs[:size]...)
+	}
+}
+
 func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
 	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() && !c.compat {
 		if sym == int(lex.EOI) {
@@ -1567,6 +1603,9 @@ func (c *compiler) compileParser() {
 		}
 	}
 
+	// Introduce synthetic inputs for runtime lookaheads.
+	addSyntheticInputs(c.source, c.compat)
+
 	// Prepare the model for code generation.
 	c.addNonterms(c.source)
 	if !c.generateTables() {
@@ -1579,13 +1618,6 @@ func (c *compiler) compileParser() {
 }
 
 func (c *compiler) generateTables() bool {
-	switch c.file.Header().Name().Text() {
-	case "simple", "conflict1", "tm", "lr0", "greedy", "test":
-	default:
-		// TODO enable for all files
-		return false
-	}
-
 	g := &lalr.Grammar{
 		Terminals:  len(c.source.Terminals),
 		Precedence: c.out.Prec,
@@ -1596,11 +1628,14 @@ func (c *compiler) generateTables() bool {
 	for _, sym := range c.out.Syms {
 		g.Symbols = append(g.Symbols, sym.Name)
 	}
+	inputs := make(map[lalr.Input]int32)
 	for _, inp := range c.source.Inputs {
-		g.Inputs = append(g.Inputs, lalr.Input{
+		out := lalr.Input{
 			Nonterminal: lalr.Sym(g.Terminals + inp.Nonterm),
 			Eoi:         !inp.NoEoi,
-		})
+		}
+		inputs[out] = int32(len(g.Inputs))
+		g.Inputs = append(g.Inputs, out)
 	}
 	markers := make(map[string]int)
 	types := make(map[string]int)
@@ -1613,8 +1648,39 @@ func (c *compiler) generateTables() bool {
 	// The very first action is a no-op.
 	c.out.Parser.Actions = append(c.out.Parser.Actions, SemanticAction{})
 
-	// TODO populate g.Lookaheads
 	for self, nt := range c.source.Nonterms {
+		if nt.Value.Kind == syntax.Lookahead {
+			la := lalr.Lookahead{
+				Nonterminal: lalr.Sym(g.Terminals + self),
+				Origin:      nt.Origin,
+			}
+			for _, sub := range nt.Value.Sub {
+				negated := sub.Kind == syntax.LookaheadNot
+				if negated {
+					sub = sub.Sub[0]
+				}
+				inp, ok := inputs[lalr.Input{Nonterminal: lalr.Sym(sub.Symbol)}]
+				if !ok {
+					log.Fatalf("%v is not properly instantiated: %v", nt.Name, sub)
+				}
+				pred := lalr.Predicate{
+					Negated: negated,
+					Input:   inp,
+				}
+				la.Predicates = append(la.Predicates, pred)
+			}
+
+			rule := lalr.Rule{
+				LHS:        lalr.Sym(g.Terminals + self),
+				Type:       -1,
+				Origin:     nt.Origin,
+				OriginName: nt.Name,
+			}
+			g.Lookaheads = append(g.Lookaheads, la)
+			g.Rules = append(g.Rules, rule)
+			continue
+		}
+
 		if nt.Value.Kind != syntax.Choice {
 			log.Fatalf("%v is not properly instantiated: %v", nt.Name, nt.Value)
 		}

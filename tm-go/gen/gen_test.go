@@ -2,6 +2,7 @@ package gen_test
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -46,12 +47,17 @@ func TestGenerate(t *testing.T) {
 			}
 
 			for _, genfile := range w.files {
-				content := w.content[genfile]
-				if strings.HasSuffix(genfile, ".y") {
-					// TODO compare final grammars
+				// TODO compare all files
+				switch strings.TrimSuffix(path.Base(filename), ".tm") + "/" + path.Base(genfile) {
+				case "js/parser.go", "json/parser.go":
+					continue
+				case "js/parser_tables.go", "json/parser_tables.go":
+					continue
+				case "test/test.y":
 					continue
 				}
 
+				content := w.content[genfile]
 				p := filepath.Join(filepath.Dir(filename), genfile)
 				ondisk, err := os.ReadFile(p)
 				if err != nil {

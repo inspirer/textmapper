@@ -52,6 +52,8 @@ type compiler struct {
 
 	precGroup map[Sym]int // terminal -> index in grammar.Precedence
 	sr, rr    int         // conflicts
+
+	planner lookaheadPlanner
 }
 
 type state struct {
@@ -102,6 +104,9 @@ func (c *compiler) init() {
 		c.shifts[i] = buf[:0:ln] // override the cap
 		buf = buf[ln:]
 	}
+
+	// Initialize runtime lookahead planner.
+	c.planner.init(c.grammar)
 }
 
 // computeEmpty computes the set of nullable nonterminals.
@@ -685,6 +690,24 @@ func (c *compiler) populateTables() {
 		c.out.RuleLen = append(c.out.RuleLen, len)
 		c.out.RuleSymbol = append(c.out.RuleSymbol, int(rule.LHS))
 	}
+
+	// Integrating runtime lookahead rules into the tables.
+	var mapping []int
+	var err error
+	c.out.Lookaheads, mapping, err = c.planner.compile()
+	if err != nil {
+		c.s.AddError(err)
+	}
+	base := len(c.grammar.Rules)
+	for i, val := range c.out.Lalr {
+		if i%2 == 1 && val >= base {
+			c.out.Lalr[i] = mapping[val-base]
+		}
+	}
+	for _, rule := range c.out.Lookaheads {
+		c.out.RuleLen = append(c.out.RuleLen, 0)
+		c.out.RuleSymbol = append(c.out.RuleSymbol, int(rule.DefaultTarget))
+	}
 }
 
 func (c *compiler) reportConflicts() {
@@ -752,10 +775,29 @@ func (c *compiler) ruleAction(action int, term Sym, rule int, b *conflictBuilder
 		}
 		return -1 // shift
 	}
+	otherRule := action
+
 	// reduce/reduce conflict
-	// TODO support lookahead rules
+	switch {
+	case otherRule >= c.planner.ruleBase:
+		if c.planner.index[rule] != -1 {
+			// Updating the resolution rule to include a new lookahead.
+			return c.planner.addRule(otherRule, rule)
+		}
+
+		// We have a partially resolved conflict.
+		// Note: Resolution rules are not part of the grammar, report one of the
+		// original lookahead rules.
+		otherRule = c.planner.rules[otherRule-c.planner.ruleBase].refRule
+	case c.planner.index[rule] != -1 && c.planner.index[otherRule] != -1:
+		// New resolution rule.
+		return c.planner.addRule(otherRule, rule)
+	}
+
+	// TODO hint the user about missing lookaheads.
+
 	b.addRule(term, conflict, rule, false /*canShift*/)
-	b.addRule(term, conflict, action, false /*canShift*/)
+	b.addRule(term, conflict, otherRule, false /*canShift*/)
 	return action
 }
 

@@ -75,6 +75,7 @@ type Precedence struct {
 type Lookahead struct {
 	Nonterminal Sym
 	Predicates  []Predicate
+	Origin      status.SourceNode
 }
 
 // Grammar is an input to the parser generator.
