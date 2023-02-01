@@ -356,6 +356,7 @@ class TemplateInstantiator {
 					}
 					break;
 			}
+			return;
 		} else if (p instanceof RhsConditional) {
 			context.getTemplate().setTemplate();
 			boolean result = ((RhsConditional) p).getPredicate().apply(context.getEnvironment());
