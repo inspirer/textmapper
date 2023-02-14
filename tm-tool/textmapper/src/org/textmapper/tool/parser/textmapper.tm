@@ -235,7 +235,7 @@ start_conditions :
 
 lexeme :
     start_conditions? name=identifier rawTypeopt ':'
-        (pattern priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
+        (pattern priority=iconopt attrs=lexeme_attrsopt commandopt | attrs=lexeme_attrs)? ;
 
 lexeme_attrs :
     '(' kind=lexeme_attribute ')' ;
