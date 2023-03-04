@@ -37,6 +37,102 @@ func (p *Parser) ParseExpressionSnippet(ctx context.Context, lexer *Lexer) error
 	return p.parse(ctx, 10, 8675, lexer)
 }
 
+const errSymbol = 2
+
+// willShift checks if "symbol" is going to be shifted in the given state.
+// This function does not support empty productions and returns false if they occur before "symbol".
+func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
+	if state == -1 {
+		return false
+	}
+
+	for state != p.endState {
+		action := tmAction[state]
+		if action < -2 {
+			action = lalr(action, symbol)
+		}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+			if ln == 0 {
+				// we do not support empty productions
+				return false
+			}
+			stackPos -= ln - 1
+			state = gotoState(stack[stackPos-1].state, tmRuleSymbol[rule])
+		} else {
+			return action == -1 && gotoState(state, symbol) >= 0
+		}
+	}
+	return symbol == eoiToken
+}
+
+func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
+	var e int
+	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
+		if debugSyntax {
+			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+		}
+		if len(p.pending) > 0 {
+			for _, tok := range p.pending {
+				p.reportIgnoredToken(tok)
+			}
+			p.pending = p.pending[:0]
+		}
+		switch Token(p.next.symbol) {
+		case NOSUBSTITUTIONTEMPLATE:
+			p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
+		case TEMPLATEHEAD:
+			p.listener(TemplateHead, p.next.offset, p.next.endoffset)
+		case TEMPLATEMIDDLE:
+			p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
+		case TEMPLATETAIL:
+			p.listener(TemplateTail, p.next.offset, p.next.endoffset)
+		}
+		e = p.next.endoffset
+		p.fetchNext(lexer, stack)
+	}
+	return e
+}
+
+func lalr(action, next int32) int32 {
+	a := -action - 3
+	for ; tmLalr[a] >= 0; a += 2 {
+		if tmLalr[a] == next {
+			break
+		}
+	}
+	return tmLalr[a+1]
+}
+
+func gotoState(state int16, symbol int32) int16 {
+	min := tmGoto[symbol]
+	max := tmGoto[symbol+1]
+
+	if max-min < 32 {
+		for i := min; i < max; i += 2 {
+			if tmFromTo[i] == state {
+				return tmFromTo[i+1]
+			}
+		}
+	} else {
+		for min < max {
+			e := (min + max) >> 1 &^ int32(1)
+			i := tmFromTo[e]
+			if i == state {
+				return tmFromTo[e+1]
+			} else if i < state {
+				min = e + 2
+			} else {
+				max = e
+			}
+		}
+	}
+	return -1
+}
+
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
 	case 4979:
@@ -226,42 +322,6 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 
 	s.cache[key] = state == end
 	return state == end, nil
-}
-
-func lalr(action, next int32) int32 {
-	a := -action - 3
-	for ; tmLalr[a] >= 0; a += 2 {
-		if tmLalr[a] == next {
-			break
-		}
-	}
-	return tmLalr[a+1]
-}
-
-func gotoState(state int16, symbol int32) int16 {
-	min := tmGoto[symbol]
-	max := tmGoto[symbol+1]
-
-	if max-min < 32 {
-		for i := min; i < max; i += 2 {
-			if tmFromTo[i] == state {
-				return tmFromTo[i+1]
-			}
-		}
-	} else {
-		for min < max {
-			e := (min + max) >> 1 &^ int32(1)
-			i := tmFromTo[e]
-			if i == state {
-				return tmFromTo[e+1]
-			} else if i < state {
-				min = e + 2
-			} else {
-				max = e
-			}
-		}
-	}
-	return -1
 }
 
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, s *session) (err error) {
@@ -515,66 +575,6 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return
-}
-
-const errSymbol = 2
-
-func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
-	var e int
-	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
-		if debugSyntax {
-			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
-		}
-		if len(p.pending) > 0 {
-			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
-			}
-			p.pending = p.pending[:0]
-		}
-		switch Token(p.next.symbol) {
-		case NOSUBSTITUTIONTEMPLATE:
-			p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
-		case TEMPLATEHEAD:
-			p.listener(TemplateHead, p.next.offset, p.next.endoffset)
-		case TEMPLATEMIDDLE:
-			p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
-		case TEMPLATETAIL:
-			p.listener(TemplateTail, p.next.offset, p.next.endoffset)
-		}
-		e = p.next.endoffset
-		p.fetchNext(lexer, stack)
-	}
-	return e
-}
-
-// willShift checks if "symbol" is going to be shifted in the given state.
-// This function does not support empty productions and returns false if they occur before "symbol".
-func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
-	if state == -1 {
-		return false
-	}
-
-	for state != p.endState {
-		action := tmAction[state]
-		if action < -2 {
-			action = lalr(action, symbol)
-		}
-
-		if action >= 0 {
-			// Reduce.
-			rule := action
-			ln := int(tmRuleLen[rule])
-			if ln == 0 {
-				// we do not support empty productions
-				return false
-			}
-			stackPos -= ln - 1
-			state = gotoState(stack[stackPos-1].state, tmRuleSymbol[rule])
-		} else {
-			return action == -1 && gotoState(state, symbol) >= 0
-		}
-	}
-	return symbol == eoiToken
 }
 
 func (p *Parser) reportIgnoredToken(tok symbol) {

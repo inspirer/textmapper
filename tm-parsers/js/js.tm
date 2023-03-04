@@ -1943,18 +1943,18 @@ func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(i
 }
 
 ${end-}
-${if self->needExplicitLookahead()-}
-${call lookahead}
-${end-}
-${call lalr}
-${call gotoState}
-${call applyRule}
 ${if self->go_parser.hasRecovering()-}
 const errSymbol = ${syntax.error.index}
 
-${call skipBrokenCode}
 ${call willShift}
+${call skipBrokenCode}
 ${end-}
+${call lalr}
+${call gotoState}
+${if self->needExplicitLookahead()-}
+${call lookahead}
+${end-}
+${call applyRule}
 ${if self->ignoredReportTokens()-}
 ${call reportIgnoredToken}
 ${end-}
