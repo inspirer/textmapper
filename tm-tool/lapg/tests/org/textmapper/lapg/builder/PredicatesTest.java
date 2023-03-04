@@ -144,7 +144,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addTerminal(LapgCore.name("p1"), null, null);
+		builder.addTerminal(LapgCore.name("p1"), null, false, null);
 		builder.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE, Modifier.Global, null);
 	}
 
@@ -155,7 +155,7 @@ public class PredicatesTest {
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		builder.addParameter(Type.Flag, LapgCore.name("p1"), Boolean.TRUE, Modifier.Global, null);
-		builder.addTerminal(LapgCore.name("p1"), null, null);
+		builder.addTerminal(LapgCore.name("p1"), null, false, null);
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class PredicatesTest {
 
 		GrammarBuilder builder1 = GrammarFacade.createBuilder();
 		GrammarBuilder builder2 = GrammarFacade.createBuilder();
-		builder1.addParameter(Type.Symbol, LapgCore.name("int"), builder2.addTerminal(LapgCore.name("bb"), null, null), Modifier.Global, null);
+		builder1.addParameter(Type.Symbol, LapgCore.name("int"), builder2.addTerminal(LapgCore.name("bb"), null, false, null), Modifier.Global, null);
 	}
 
 	@Test

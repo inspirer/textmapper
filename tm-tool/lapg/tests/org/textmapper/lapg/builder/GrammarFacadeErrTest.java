@@ -30,14 +30,14 @@ public class GrammarFacadeErrTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testErrorNullName() {
-		GrammarFacade.createBuilder().addTerminal(null, null, null);
+		GrammarFacade.createBuilder().addTerminal(null, null, false, null);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testErrorDuplicateName() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addTerminal(LapgCore.name("sym"), null, null);
-		builder.addTerminal(LapgCore.name("sym"), null, null);
+		builder.addTerminal(LapgCore.name("sym"), null, false, null);
+		builder.addTerminal(LapgCore.name("sym"), null, false, null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -49,7 +49,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testWrongState() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal symbol = builder.addTerminal(LapgCore.name("sym"), null, null);
+		Terminal symbol = builder.addTerminal(LapgCore.name("sym"), null, false, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, symbol, LapgCore.parse("id", "a"),
 				Collections.singletonList(GrammarFacade.createBuilder().addState(LapgCore.name("initial"), null)), 0, 0, null, null);
 	}
@@ -57,7 +57,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testNoStates() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal symbol = builder.addTerminal(LapgCore.name("sym"), null, null);
+		Terminal symbol = builder.addTerminal(LapgCore.name("sym"), null, false, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, symbol, LapgCore.parse("id", "a"),
 				Collections.<LexerState>emptyList(), 0, 0, null, null);
 	}
@@ -77,7 +77,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorCrossBuilderSymbols() throws Exception {
 		Terminal symbolFromAnotherBuilder = GrammarFacade.createBuilder().addTerminal(
-				LapgCore.name("sym"), null, null);
+				LapgCore.name("sym"), null, false, null);
 		GrammarFacade.createBuilder().addLexerRule(
 				LexerRule.KIND_NONE, symbolFromAnotherBuilder, LapgCore.parse("id", "a"), null, 0, 0, null, null);
 	}
@@ -85,7 +85,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = NullPointerException.class)
 	public void testErrorNoRegexp() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal term = builder.addTerminal(LapgCore.name("sym"), null, null);
+		Terminal term = builder.addTerminal(LapgCore.name("sym"), null, false, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, term, null, Collections.<LexerState>emptyList(), 0, 0, null, null);
 	}
 

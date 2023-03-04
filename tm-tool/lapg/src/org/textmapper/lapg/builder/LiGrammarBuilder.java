@@ -53,15 +53,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	LiGrammarBuilder() {
 		super(null);
-		eoi = addTerminal(Symbol.EOI, null, null);
+		eoi = addTerminal(Symbol.EOI, null, true, null);
 	}
 
 	@Override
-	public Terminal addTerminal(Name name, AstType type, SourceElement origin) {
+	public Terminal addTerminal(Name name, AstType type, boolean isSpace, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
-		return addSymbol(new LiTerminal(name, type, origin), null /* anchor */);
+		return addSymbol(new LiTerminal(name, type, isSpace, origin), null /* anchor */);
 	}
 
 	@Override

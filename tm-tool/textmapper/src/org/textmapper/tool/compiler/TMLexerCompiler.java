@@ -95,22 +95,6 @@ public class TMLexerCompiler {
 		return result;
 	}
 
-	public int getLexerRuleKind(TmaLexemeAttrs attr) {
-		if (attr == null) {
-			return LexerRule.KIND_NONE;
-		}
-		switch (attr.getKind()) {
-			case CLASS:
-				return LexerRule.KIND_CLASS;
-			case LAYOUT:
-				return LexerRule.KIND_LAYOUT;
-			case SPACE:
-				return LexerRule.KIND_SPACE;
-		}
-
-		return LexerRule.KIND_NONE;
-	}
-
 	private void collectAttributes(List<LexerState> states, ITmaLexerPart part) {
 		if (part instanceof TmaLexeme) {
 			TmaStartConditions conditions = ((TmaLexeme) part).getStartConditions();
@@ -188,7 +172,7 @@ public class TMLexerCompiler {
 		for (TmaLexeme lexeme : resolver.getLexerParts(TmaLexeme.class)) {
 			order++;
 			TmaLexemeAttrs attrs = lexeme.getAttrs();
-			int kind = getLexerRuleKind(attrs);
+			int kind = TMResolver.getLexerRuleKind(attrs);
 			if (kind == LexerRule.KIND_CLASS) {
 				continue;
 			}

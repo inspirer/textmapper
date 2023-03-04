@@ -29,10 +29,12 @@ import java.util.List;
 public class LiTerminal extends LiSymbol implements Terminal {
 
 	private List<LexerRule> rules = new ArrayList<>();
+	private boolean isSpace;
 
-	public LiTerminal(Name name, AstType type, SourceElement origin) {
+	public LiTerminal(Name name, AstType type, boolean isSpace, SourceElement origin) {
 		super(name, null /* nameHint */, origin);
 		setType(type);
+		this.isSpace = isSpace;
 	}
 
 	@Override
@@ -71,6 +73,11 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	@Override
 	public boolean isConstant() {
 		return getConstantValue() != null;
+	}
+
+	@Override
+	public boolean isSpace() {
+		return isSpace;
 	}
 }
 

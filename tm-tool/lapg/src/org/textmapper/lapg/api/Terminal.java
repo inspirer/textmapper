@@ -24,6 +24,8 @@ public interface Terminal extends Symbol {
 
 	boolean isConstant();
 
+	boolean isSpace();
+
 	String getConstantValue();
 
 	Collection<LexerRule> getRules();

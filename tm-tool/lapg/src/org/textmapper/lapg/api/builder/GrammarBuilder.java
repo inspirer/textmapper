@@ -25,7 +25,7 @@ import java.util.Collection;
 
 public interface GrammarBuilder extends GrammarMapper {
 
-	Terminal addTerminal(Name name, AstType type, SourceElement origin);
+	Terminal addTerminal(Name name, AstType type, boolean isSpace, SourceElement origin);
 
 	Nonterminal addNonterminal(Name name, SourceElement origin);
 

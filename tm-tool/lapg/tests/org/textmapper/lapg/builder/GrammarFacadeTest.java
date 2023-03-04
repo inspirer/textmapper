@@ -42,7 +42,7 @@ public class GrammarFacadeTest {
 
 		LexerState initial = builder.addState(LapgCore.name("initial"), null);
 
-		Terminal id = builder.addTerminal(LapgCore.name("id"), null, null);
+		Terminal id = builder.addTerminal(LapgCore.name("id"), null, false, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, 0, null, null);
 
 
@@ -107,12 +107,12 @@ public class GrammarFacadeTest {
 
 		LexerState initial = builder.addState(LapgCore.name("initial"), null);
 
-		Terminal id = builder.addTerminal(LapgCore.name("id"), raw("string"), null);
+		Terminal id = builder.addTerminal(LapgCore.name("id"), raw("string"), false, null);
 		LexerRule idLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, id, LapgCore.parse("id", "[a-z]+"), Collections.singleton(initial), 0, 0, null, null);
 
-		Terminal kw = builder.addTerminal(LapgCore.name("kw"), null, null);
+		Terminal kw = builder.addTerminal(LapgCore.name("kw"), null, false, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, kw, LapgCore.parse("kw", "keyword"), Collections.singleton(initial), 0, 0, idLexerRule, null);
-		Terminal spc = builder.addTerminal(LapgCore.name("spc"), null, null);
+		Terminal spc = builder.addTerminal(LapgCore.name("spc"), null, false, null);
 		builder.addLexerRule(LexerRule.KIND_SPACE, spc, LapgCore.parse("spc", "[\t ]+"), Collections.singleton(initial), 0, 0, null, null);
 		Grammar grammar = builder.create();
 
@@ -198,7 +198,7 @@ public class GrammarFacadeTest {
 
 		LexerState initial = builder.addState(LapgCore.name("initial"), null);
 
-		Terminal id = builder.addTerminal(LapgCore.name("id"), null, null);
+		Terminal id = builder.addTerminal(LapgCore.name("id"), null, false, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, 0, null, null);
 
 		Nonterminal input = builder.addNonterminal(LapgCore.name("input"), null);
@@ -231,7 +231,7 @@ public class GrammarFacadeTest {
 		LexerState initial = builder.addState(LapgCore.name("initial"), null);
 
 		builder.addPattern(LapgCore.name("pattern"), LapgCore.parse("pattern", "[a-z]+"), null);
-		Terminal id = builder.addTerminal(LapgCore.name("id"), raw("string"), null);
+		Terminal id = builder.addTerminal(LapgCore.name("id"), raw("string"), false, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, id, LapgCore.parse("id", "{pattern}"), Collections.singleton(initial), 0, 0, null, null);
 		Grammar grammar = builder.create();
 

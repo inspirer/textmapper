@@ -99,7 +99,7 @@ public class TMResolver {
 	public void collectSymbols() {
 		namespace.insert(builder.getEoi());
 		if ("go".equals(targetLanguage())) {
-			Terminal invalidToken = builder.addTerminal(Symbol.INVALID_TOKEN, null, null);
+			Terminal invalidToken = builder.addTerminal(Symbol.INVALID_TOKEN, null, true, null);
 			namespace.insert(invalidToken);
 		}
 
@@ -220,7 +220,8 @@ public class TMResolver {
 			}
 		}
 		for (TmaLexeme lexeme : getLexerParts(TmaLexeme.class)) {
-			create(lexeme.getName(), convertRawType(lexeme.getRawType(), lexeme), true);
+			boolean isSpace = getLexerRuleKind(lexeme.getAttrs()) == LexerRule.KIND_SPACE;
+			create(lexeme.getName(), convertRawType(lexeme.getRawType(), lexeme), true, isSpace);
 		}
 	}
 
@@ -236,7 +237,7 @@ public class TMResolver {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false);
+				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false, false);
 			}
 		}
 	}
@@ -362,9 +363,17 @@ public class TMResolver {
 	}
 
 
-	private Symbol create(TmaIdentifier id, AstType type, boolean isTerm) {
+	private Symbol create(TmaIdentifier id, AstType type, boolean isTerm, boolean isSpaceTerm) {
 		Name name = name(id.getText(), id);
 		if (name == null) return null;
+
+		String nameText = id.getText();
+		if (isTerm && (nameText.equals(Symbol.INVALID_TOKEN.text()) || nameText.equals(Symbol.EOI.text()))) {
+			if (isSpaceTerm) {
+				error(id, nameText + " is a space terminal by default");
+			}
+			isSpaceTerm = true;
+		}
 
 		NamedElement existing = namespace.canInsert(name);
 		if (existing != null && !(existing instanceof Symbol)) {
@@ -377,6 +386,8 @@ public class TMResolver {
 			if (sym.isTerm() != isTerm) {
 				String symKind = sym.isTerm() ? "terminal" : "non-terminal";
 				error(id, "redeclaration of " + symKind + ": " + name);
+			} else if (isTerm && ((Terminal)sym).isSpace() != isSpaceTerm) {
+				error(id, "terminal " + name + " is declared as space and non-space");
 			} else if (!(ObjectUtil.safeEquals(sym.getType(), type))) {
 				String newType = type == null ? "<empty>" : type.toString();
 				String existingType = sym.getType() == null ? "<empty>" : sym.getType().toString();
@@ -384,7 +395,7 @@ public class TMResolver {
 			}
 		} else {
 			sym = isTerm
-					? builder.addTerminal(name, type, id)
+					? builder.addTerminal(name, type, isSpaceTerm, id)
 					: builder.addNonterminal(name, id);
 			if (type != null && !isTerm) {
 				builder.map((Nonterminal) sym, type);
@@ -556,7 +567,7 @@ public class TMResolver {
 				if (sym != null) {
 					TmaIdentifier tmaId = new TmaIdentifier(id.getSource(),
 							id.getLine(), id.getName().getOffset(), id.getName().getEndoffset());
-					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false);
+					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false, false);
 					if (symopt == null) return null;
 					builder.addRule(symopt,
 							builder.asSequence(
@@ -602,5 +613,21 @@ public class TMResolver {
 		public String getSource() {
 			return RESOLVER_SOURCE;
 		}
+	}
+
+	public static int getLexerRuleKind(TmaLexemeAttrs attr) {
+		if (attr == null) {
+			return LexerRule.KIND_NONE;
+		}
+		switch (attr.getKind()) {
+			case CLASS:
+				return LexerRule.KIND_CLASS;
+			case LAYOUT:
+				return LexerRule.KIND_LAYOUT;
+			case SPACE:
+				return LexerRule.KIND_SPACE;
+		}
+
+		return LexerRule.KIND_NONE;
 	}
 }

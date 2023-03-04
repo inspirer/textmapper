@@ -360,6 +360,11 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
+				public boolean isSpace() {
+					return false;
+				}
+
+				@Override
 				public String getConstantValue() {
 					return null;
 				}
