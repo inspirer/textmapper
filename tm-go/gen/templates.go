@@ -1271,9 +1271,9 @@ var tmRuleType = [...]{{ref "NodeType"}}{
 
 // {{.Expr}} = {{.ValueString $}}
 var {{.Name}} = []int32{
-{{- if gt (len .Terminals) 0}}
+{{- if gt (len .Terminals) 0 -}}
 {{- int_array .Terminals "\t" 79 -}}
-{{- end}}
+{{- end -}}
 }
 {{- end}}
 `

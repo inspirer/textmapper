@@ -19,7 +19,7 @@ type Writer interface {
 }
 
 // Generate generates code for a grammar.
-func Generate(g *grammar.Grammar, w Writer) error {
+func Generate(g *grammar.Grammar, w Writer, compat bool) error {
 	var templates []file
 	templates = append(templates, lexerFiles...)
 	if g.Parser.Tables != nil {
@@ -53,7 +53,7 @@ func Generate(g *grammar.Grammar, w Writer) error {
 		if err != nil {
 			return err
 		}
-		src := Format(f.name, ExtractImports(buf.String()))
+		src := Format(f.name, ExtractImports(buf.String()), compat)
 		if err := w.Write(f.name, src); err != nil {
 			return err
 		}
@@ -110,7 +110,7 @@ func GenerateFile(path string, w Writer, compat bool) (Stats, error) {
 	}
 
 	start = time.Now()
-	err = Generate(g, w)
+	err = Generate(g, w, compat)
 	ret.Gen = time.Since(start)
 	return ret, err
 }

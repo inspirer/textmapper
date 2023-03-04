@@ -12,8 +12,8 @@ import (
 )
 
 // Format formats the content of a generated file. Formats Go files only.
-func Format(filename, content string) string {
-	if !strings.HasSuffix(filename, ".go") || len(content) > 1e6 {
+func Format(filename, content string, compat bool) string {
+	if !strings.HasSuffix(filename, ".go") || len(content) > 1e6 && !compat {
 		// Note: formatting is quite slow on large files, leave them unformatted.
 		return content
 	}

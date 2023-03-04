@@ -51,8 +51,6 @@ func TestGenerate(t *testing.T) {
 				switch strings.TrimSuffix(path.Base(filename), ".tm") + "/" + path.Base(genfile) {
 				case "js/parser.go", "json/parser.go":
 					continue
-				case "js/parser_tables.go":
-					continue
 				case "test/test.y":
 					continue
 				}

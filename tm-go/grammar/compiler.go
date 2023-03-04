@@ -1715,6 +1715,7 @@ func (c *compiler) generateTables() bool {
 			actualPos := make(map[int]int)
 			origin := expr.Origin
 
+			var innerReports int
 			var traverse func(expr *syntax.Expr)
 			traverse = func(expr *syntax.Expr) {
 				switch expr.Kind {
@@ -1739,6 +1740,7 @@ func (c *compiler) generateTables() bool {
 					for _, sub := range expr.Sub {
 						traverse(sub)
 					}
+					innerReports = len(report)
 				case syntax.Reference:
 					if command != "" {
 						// TODO This command needs to be extracted into a dedicated nonterminal.
@@ -1766,7 +1768,10 @@ func (c *compiler) generateTables() bool {
 			}
 			traverse(expr)
 
-			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == len(rule.RHS) {
+			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == len(rule.RHS) &&
+				// Note: in compatibility note we don't promote -> from inside parentheses.
+				(!c.compat || len(report) > innerReports) {
+
 				// Promote to the rule default.
 				rule.Type = report[last].Type
 				rule.Flags = report[last].Flags
