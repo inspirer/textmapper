@@ -17,6 +17,7 @@ recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
                 NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]
+customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "symbol", "stackEntry", "session"]
 
 :: lexer
 
@@ -1930,34 +1931,6 @@ func (l *Lexer) popState() {
 		l.State = StateDiv
 	}
 }
-${end}
-
-${template go_parser.parser-}
-package ${self->go.package()}
-
-${call errorHandler}
-${call SyntaxError}
-${foreach inp in syntax.input.select(it|it.requested)-}
-func (p *Parser) Parse${self->util.onlyOneUserInput() ? '' : util.toFirstUpper(inp.target.id)}(${call contextParam}lexer *Lexer) error {
-	return p.parse(${call contextArg}${inp.index}, ${parser.finalStates[inp.index]}, lexer)
-}
-
-${end-}
-${if self->go_parser.hasRecovering()-}
-const errSymbol = ${syntax.error.index}
-
-${call willShift}
-${call skipBrokenCode}
-${end-}
-${call lalr}
-${call gotoState}
-${if self->needExplicitLookahead()-}
-${call lookahead}
-${end-}
-${call applyRule}
-${if self->ignoredReportTokens()-}
-${call reportIgnoredToken}
-${end-}
 ${end}
 
 ${template go_parser.lookaheadNext}${end}

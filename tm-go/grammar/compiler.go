@@ -1880,6 +1880,8 @@ func (c *compiler) parseOptions() {
 			}
 		case "extraTypes":
 			opts.ExtraTypes = c.parseExpr(opt.Value(), opts.ExtraTypes).([]string)
+		case "customImpl":
+			opts.CustomImpl = c.parseExpr(opt.Value(), opts.CustomImpl).([]string)
 		case "fileNode":
 			opts.FileNode = c.parseExpr(opt.Value(), opts.FileNode).(string)
 		case "lang":

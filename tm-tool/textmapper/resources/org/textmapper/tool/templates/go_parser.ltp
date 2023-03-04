@@ -20,6 +20,30 @@ type ErrorHandler func(err SyntaxError) bool
 func StopOnFirstError(_ SyntaxError) bool { return false }
 ${end}
 
+${template parserType-}
+// Parser is a table-driven LALR parser for ${opts.lang}.
+type Parser struct {
+${if self->hasRecovering()-}
+	eh ErrorHandler
+${end-}
+${if self->eventBased()-}
+	listener ${self->go_listener.listenerTypeRef()}
+${end-}
+
+	next      symbol
+${if self->hasRecovering()-}
+	endState  ${self->stateType()}
+${end-}
+
+${if self->ignoredReportTokens()}
+	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
+	pending   []symbol
+${end-}
+${call stateVars-}
+}
+
+${end}
+
 ${template SyntaxError-}
 type SyntaxError struct {
 ${if opts.tokenLine-}
@@ -44,34 +68,17 @@ package ${self->go.package()}
 ${if self->hasRecovering()-}
 ${call errorHandler}
 ${end-}
-// Parser is a table-driven LALR parser for ${opts.lang}.
-type Parser struct {
-${if self->hasRecovering()-}
-	eh ErrorHandler
-${end-}
-${if self->eventBased()-}
-	listener ${self->go_listener.listenerTypeRef()}
-${end-}
-
-	next      symbol
-${if self->hasRecovering()-}
-	endState  ${self->stateType()}
-${end-}
-
-${if self->ignoredReportTokens()}
-	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
-	pending   []symbol
-${end-}
-${call stateVars-}
-}
-
+${if !skip.Parser}${call parserType}${end-}
 ${call SyntaxError}
+${if !skip.symbol-}
 type symbol struct {
 	symbol    int32
 	offset    int
 	endoffset int
 }
 
+${end-}
+${if !skip.stackEntry-}
 type stackEntry struct {
 	sym   symbol
 	state ${self->stateType()}
@@ -80,6 +87,8 @@ ${if self->hasAssocValues()-}
 ${end-}
 }
 
+${end-}
+${if !skip.ParserInit-}
 func (p *Parser) Init(${if self->hasRecovering()}eh ErrorHandler${end}${if self->eventBased()}${if self->hasRecovering()}, ${end}l ${self->go_listener.listenerTypeRef()}${end}) {
 ${if self->hasRecovering()-}
 	p.eh = eh
@@ -95,6 +104,7 @@ ${end-}
 ${call initStateVars-}
 }
 
+${end-}
 const (
 	startStackSize = 256
 ${if self->ignoredReportTokens()-}
@@ -121,22 +131,20 @@ ${end-}
 }
 
 ${end-}
-${if self->needSession()-}
-${call session}
-${end-}
-${call parseFunc}
+${if self->needSession() && !skip.session}${call session}${end-}
+${if !skip.parse}${call parseFunc}${end-}
 ${if self->hasRecovering()-}
 const errSymbol = ${syntax.error.index}
 
-${call willShift}
-${call skipBrokenCode}
-${call recoverFromError}
+${if !skip.willShift}${call willShift}${end-}
+${if !skip.skipBrokenCode}${call skipBrokenCode}${end-}
+${if !skip.recoverFromError}${call recoverFromError}${end-}
 ${end-}
 ${if self->needActionsTable()-}
 ${call lalr}
 ${end-}
 ${call gotoState}
-${call fetchNext}
+${if !skip.fetchNext}${call fetchNext}${end-}
 ${if self->needExplicitLookahead()-}
 ${call lookahead}
 ${end-}
@@ -166,6 +174,7 @@ ${if context.opts.recursiveLookaheads-}
 	cache map[uint64]bool
 ${end-}
 }
+
 ${end}
 
 ${template parseFunc-}
@@ -317,6 +326,7 @@ ${end-}
 ${end-}
 	return ${if self->hasAssocValuesForInput()}stack[len(stack)-2].value, ${end}nil
 }
+
 ${end}
 
 ${template checkForCancellation(returnPrefix)-}
@@ -362,6 +372,7 @@ ${end-}
 	}
 	return symbol == eoiToken
 }
+
 ${end}
 
 ${template skipBrokenCode-}
@@ -378,6 +389,7 @@ ${call reportConsumedNext-}
 	}
 	return e
 }
+
 ${end}
 
 ${template recoverFromError-}
@@ -504,6 +516,7 @@ ${end-}
 		return stack
 	}
 }
+
 ${end}
 
 ${template lalr-}
@@ -566,6 +579,7 @@ ${end-}
 	p.next.symbol = int32(tok)
 	p.next.offset, p.next.endoffset = lexer.Pos()
 }
+
 ${end}
 
 ${template reportIgnoredToken-}

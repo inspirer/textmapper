@@ -25,6 +25,14 @@ func (e SyntaxError) Error() string {
 	return fmt.Sprintf("syntax error at line %v", e.Line)
 }
 
+const (
+	startStackSize       = 256
+	startTokenBufferSize = 16
+	noToken              = int32(UNAVAILABLE)
+	eoiToken             = int32(EOI)
+	debugSyntax          = false
+)
+
 func (p *Parser) ParseModule(ctx context.Context, lexer *Lexer) error {
 	return p.parse(ctx, 8, 8673, lexer)
 }

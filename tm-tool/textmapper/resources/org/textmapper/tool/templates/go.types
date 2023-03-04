@@ -23,6 +23,7 @@ class Options extends common.Options {
 	bool recursiveLookaheads = false;
 	common.Symbol* reportTokens[0..*] = [];
 	string extraTypes[0..*] = [];
+	string customImpl[0..*] = [];
 	bool fixWhitespace = false;
 
 	bool tokenLine = true;

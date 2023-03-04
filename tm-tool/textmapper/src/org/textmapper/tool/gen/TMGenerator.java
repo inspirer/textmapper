@@ -44,10 +44,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 public final class TMGenerator {
@@ -242,12 +239,19 @@ public final class TMGenerator {
 			map.put("opts", genOptions);
 		}
 
+		Map<String, Boolean> skip = new HashMap<>();
+		if (genOptions.get("customImpl") instanceof Collection<?>) {
+			((Collection<?>) genOptions.get("customImpl")).forEach(o -> {
+				skip.put((String) o, true);
+			});
+		}
 
 		TiInstance context = new TiInstance(types.getClass("common.Context", null), map);
 		EvaluationContext evaluationContext = new EvaluationContext(context);
 		evaluationContext.setVariable("util", new TemplateStaticMethods());
 		evaluationContext.setVariable("context", context);
 		evaluationContext.setVariable("$", "tmLeft.value");
+		evaluationContext.setVariable("skip", skip);
 		return evaluationContext;
 	}
 

@@ -41,14 +41,6 @@ func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	p.afterNext.symbol = noToken
 }
 
-const (
-	startStackSize       = 256
-	startTokenBufferSize = 16
-	noToken              = int32(UNAVAILABLE)
-	eoiToken             = int32(EOI)
-	debugSyntax          = false
-)
-
 type session struct {
 	shiftCounter int32
 	cache        map[uint64]bool
