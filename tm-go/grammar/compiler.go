@@ -896,7 +896,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			c.namedSets[name.Text()] = len(c.source.Sets)
 			c.out.Sets = append(c.out.Sets, &NamedSet{
 				Name: name.Text(),
-				Expr: part.RhsSet().Text(),
+				Expr: part.RhsSet().Text(), // Note: this gets replaced later with instantiated names
 			})
 			c.source.Sets = append(c.source.Sets, set)
 		}
@@ -1581,6 +1581,21 @@ func (c *compiler) compileParser() {
 		return
 	}
 
+	// Use instantiated nonterminal names to describe sets in generated code.
+	old := c.source.Terminals
+	if c.compat {
+		// Note: prefer original terminal names over IDs.
+		c.source.Terminals = nil
+		for _, sym := range c.out.Syms {
+			c.source.Terminals = append(c.source.Terminals, sym.Name)
+		}
+	}
+	for _, set := range c.out.Sets {
+		in := c.source.Sets[c.namedSets[set.Name]]
+		set.Expr = "set(" + in.String(c.source) + ")"
+	}
+	c.source.Terminals = old
+
 	if err := syntax.ResolveSets(c.source); err != nil {
 		c.s.AddError(err)
 		return
@@ -1596,8 +1611,7 @@ func (c *compiler) compileParser() {
 
 	// Export computed named sets for code generation.
 	for _, set := range c.out.Sets {
-		index := c.namedSets[set.Name]
-		in := c.source.Sets[index]
+		in := c.source.Sets[c.namedSets[set.Name]]
 		for _, term := range in.Sub {
 			set.Terminals = append(set.Terminals, term.Symbol)
 		}
