@@ -300,6 +300,7 @@ lexeme :
 | start_conditions identifier rawTypeopt COLON pattern lexeme_attrs
 | start_conditions identifier rawTypeopt COLON pattern command
 | start_conditions identifier rawTypeopt COLON pattern
+| start_conditions identifier rawTypeopt COLON lexeme_attrs
 | start_conditions identifier rawTypeopt COLON
 | identifier rawTypeopt COLON pattern integer_literal lexeme_attrs command
 | identifier rawTypeopt COLON pattern integer_literal lexeme_attrs
@@ -309,6 +310,7 @@ lexeme :
 | identifier rawTypeopt COLON pattern lexeme_attrs
 | identifier rawTypeopt COLON pattern command
 | identifier rawTypeopt COLON pattern
+| identifier rawTypeopt COLON lexeme_attrs
 | identifier rawTypeopt COLON
 ;
 
@@ -664,18 +666,16 @@ predicate_expression :
 expression :
   literal
 | symref_Args
-| LBRACK expression_list_Comma_separatedopt RBRACK
+| LBRACK expression_list_Comma_separated COMMA RBRACK
+| LBRACK expression_list_Comma_separated RBRACK
+| LBRACK COMMA RBRACK
+| LBRACK RBRACK
 | syntax_problem
 ;
 
 expression_list_Comma_separated :
   expression_list_Comma_separated COMMA expression
 | expression
-;
-
-expression_list_Comma_separatedopt :
-  expression_list_Comma_separated
-| %empty
 ;
 
 rawTypeopt :

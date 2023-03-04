@@ -476,7 +476,7 @@ predicate_expression interface :
 expression :
     literal
   | symref
-  | '[' content=(expression separator ',')* ','? ']'                 -> array
+  | '[' content=(expression separator ',')+? ','? ']'                 -> array
   | syntax_problem
 ;
 

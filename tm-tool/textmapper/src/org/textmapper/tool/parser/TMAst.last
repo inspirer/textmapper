@@ -218,7 +218,7 @@ class Lexeme : LexerPart {
 }
 
 lexeme  : Lexeme ::=
-	startConditions=start_conditions? name=identifier rawType=rawTypeopt ':' ({pattern} priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
+	startConditions=start_conditions? name=identifier rawType=rawTypeopt ':' ({pattern} priority=iconopt attrs=lexeme_attrsopt command=commandopt | attrs=lexeme_attrs)?
 ;
 
 class LexemeAttrs {
@@ -821,17 +821,13 @@ class Array : Expression {
 expression  : Expression ::=
 	this=literal
   | this=symref
-  | this=new.Array: '[' content=expression_list_Comma_separatedopt ']'
+  | this=new.Array: '[' content=expression_list_Comma_separated? ','? ']'
   | this=syntax_problem
 ;
 
 expression_list_Comma_separated  : list<Expression>
 	(this+=expression
 		separator ',')+ ;
-
-expression_list_Comma_separatedopt  : list<Expression> ::=
-	this=expression_list_Comma_separated?
-;
 
 rawTypeopt  : RawType ::=
 	this=rawType?

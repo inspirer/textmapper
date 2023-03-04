@@ -241,7 +241,7 @@ start_conditions -> StartConditions:
 
 lexeme -> Lexeme:
     start_conditions? name=identifier rawTypeopt ':'
-          (pattern priority=integer_literal? attrs=lexeme_attrs? command?)? ;
+        (pattern priority=integer_literal? attrs=lexeme_attrs? command? | attrs=lexeme_attrs)? ;
 
 lexeme_attrs -> LexemeAttrs:
     '(' lexeme_attribute ')' ;
@@ -510,7 +510,7 @@ predicate_expression -> PredicateExpression:
 expression -> Expression:
     literal
   | symref<+Args>
-  | '[' (expression separator ',')* ']'                              -> Array
+  | '[' (expression separator ',')+? ','? ']'                         -> Array
   | syntax_problem
 ;
 
