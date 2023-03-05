@@ -54,19 +54,25 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 0, 105, lexer)
+	_, err := p.parse(ctx, 1, 116, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 1, 106, lexer)
+	v, err := p.parse(ctx, 2, 117, lexer)
 	val, _ := v.(int)
 	return val, err
 }
 
+type session struct {
+	shiftCounter int32
+	cache        map[uint64]bool
+}
+
 func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (interface{}, error) {
 	p.pending = p.pending[:0]
-	var shiftCounter int
+	var s session
+	s.cache = make(map[uint64]bool)
 	state := start
 
 	var alloc [startStackSize]stackEntry
@@ -101,7 +107,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule(ctx, rule, &entry, rhs, lexer); err != nil {
+			if err := p.applyRule(ctx, rule, &entry, rhs, lexer, &s); err != nil {
 				return nil, err
 			}
 			if debugSyntax {
@@ -112,7 +118,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 			stack = append(stack, entry)
 
 		} else if action == -1 {
-			if shiftCounter++; shiftCounter&0x1ff == 0 {
+			if s.shiftCounter++; s.shiftCounter&0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
 				case <-ctx.Done():
@@ -220,7 +226,113 @@ restart:
 	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 
-func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
+func lookaheadNext(lexer *Lexer) int32 {
+restart:
+	tok := lexer.Next()
+	switch tok {
+	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
+		goto restart
+	}
+	return int32(tok)
+}
+
+func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
+	switch rule {
+	case 74:
+		var ok bool
+		if ok, err = lookahead(ctx, lexer, next, 0, 113, s); ok {
+			sym = 38 /* lookahead_FooLookahead */
+		} else {
+			sym = 39 /* lookahead_notFooLookahead */
+		}
+		return
+	}
+	return 0, nil
+}
+
+func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	return lookahead(ctx, lexer, next, 0, 113, s)
+}
+
+func lookahead(ctx context.Context, l *Lexer, next int32, start, end int8, s *session) (bool, error) {
+	var lexer Lexer = *l
+
+	// Use memoization for recursive lookaheads.
+	if next == noToken {
+		next = lookaheadNext(&lexer)
+	}
+	key := uint64(l.tokenOffset) + uint64(end)<<40
+	if ret, ok := s.cache[key]; ok {
+		return ret, nil
+	}
+
+	var allocated [64]stackEntry
+	state := start
+	stack := append(allocated[:0], stackEntry{state: state})
+
+	for state != end {
+		action := tmAction[state]
+		if action < -2 {
+			// Lookahead is needed.
+			if next == noToken {
+				next = lookaheadNext(&lexer)
+			}
+			action = lalr(action, next)
+		}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+
+			var entry stackEntry
+			entry.sym.symbol = tmRuleSymbol[rule]
+			stack = stack[:len(stack)-ln]
+			sym, err := lookaheadRule(ctx, &lexer, next, rule, s)
+			if err != nil {
+				return false, err
+			}
+			if sym != 0 {
+				entry.sym.symbol = sym
+			}
+			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			entry.state = state
+			stack = append(stack, entry)
+
+		} else if action == -1 {
+			if s.shiftCounter++; s.shiftCounter&0x1ff == 0 {
+				// Note: checking for context cancellation is expensive so we do it from time to time.
+				select {
+				case <-ctx.Done():
+					return false, ctx.Err()
+				default:
+				}
+			}
+
+			// Shift.
+			if next == noToken {
+				next = lookaheadNext(&lexer)
+			}
+			state = gotoState(state, next)
+			stack = append(stack, stackEntry{
+				sym:   symbol{symbol: next},
+				state: state,
+			})
+			if state != -1 && next != eoiToken {
+				next = noToken
+			}
+		}
+
+		if action == -2 || state == -1 {
+			break
+		}
+	}
+
+	s.cache[key] = state == end
+	return state == end, nil
+}
+
+func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, s *session) (err error) {
 	switch rule {
 	case 5: // Declaration : '{' '-' '-' Declaration_list '}'
 		p.listener(Negation, 0, rhs[1].sym.offset, rhs[2].sym.endoffset)
@@ -254,10 +366,18 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Empty1, 0, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 16: // Declaration : 'test' IntegerConstant
 		p.listener(Icon, InTest, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 17: // Declaration : 'eval' '(' expr ')' empty1
+	case 17: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
 		fixTrailingWS(lhs, rhs)
 	case 20: // Declaration : 'decl2' ':' QualifiedNameopt
 		fixTrailingWS(lhs, rhs)
+	case 74:
+		var ok bool
+		if ok, err = AtFooLookahead(ctx, lexer, p.next.symbol, s); ok {
+			lhs.sym.symbol = 38 /* lookahead_FooLookahead */
+		} else {
+			lhs.sym.symbol = 39 /* lookahead_notFooLookahead */
+		}
+		return
 	}
 	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(NodeType(nt&0xffff), NodeFlags(nt>>16), lhs.sym.offset, lhs.sym.endoffset)

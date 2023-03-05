@@ -670,10 +670,9 @@ const (
 	debugSyntax    = {{ .Options.DebugParser }}
 )
 
-{{- range $index, $inp := .Parser.Inputs}}
-{{- if $inp.Synthetic }}{{continue}}{{end}}
-{{- $nt := index $.Parser.Nonterms $inp.Nonterm}}
-
+{{ range $index, $inp := .Parser.Inputs -}}
+{{ if $inp.Synthetic }}{{continue}}{{end -}}
+{{ $nt := index $.Parser.Nonterms $inp.Nonterm -}}
 func (p *Parser) Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer) {{if eq $nt.Type ""}}error{{else}}({{$nt.Type}}, error){{end}} {
 {{- if $.Parser.HasInputAssocValues}}
 	{{if ne $nt.Type ""}}v{{else}}_{{end}}, err := p.parse({{if $.Options.Cancellable}}ctx, {{end}}{{$index}}, {{index $.Parser.Tables.FinalStates $index}}, lexer)
@@ -687,9 +686,23 @@ func (p *Parser) Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.No
 	return p.parse({{if $.Options.Cancellable}}ctx, {{end}}{{$index}}, {{index $.Parser.Tables.FinalStates $index}}, lexer)
 {{- end}}
 }
+
+{{end -}}
+{{ block "session" . -}}
+{{ if and .NeedsSession (.Options.IsEnabled "session") -}}
+type session struct {
+{{- if $.Options.Cancellable}}
+	shiftCounter int32
+{{- end }}
+{{- if .Options.RecursiveLookaheads }}
+	cache map[uint64]bool
+{{- end }}
+}
+
+{{- end}}
 {{- end}}
 {{ block "parseFunc" . -}}
-{{ $stateType := bits_per_element .Parser.Tables.FromTo}}
+{{ $stateType := bits_per_element .Parser.Tables.FromTo -}}
 {{ if .Options.IsEnabled "parse" -}}
 func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}}start, end int{{$stateType}}, lexer *Lexer) {{if .Parser.HasInputAssocValues}}(interface{}, error){{else}}error{{end}} { 
 {{- if .ReportTokens true }}

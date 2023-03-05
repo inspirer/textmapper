@@ -11,6 +11,7 @@ debugParser = false
 tokenLine = false
 fixWhitespace = true
 cancellable = true
+recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
 extraTypes = ["Int7", "Int9"]
 
@@ -139,11 +140,14 @@ Declaration -> Declaration :
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
   | 'test' '(' (empty1 -> Empty1) ')'
   | 'test' (IntegerConstant -> Icon/InTest) -> TestIntClause/InTest,InFoo
-  | 'eval' '(' expr ')' empty1   -> EvalEmpty1
-  | 'eval' '(' foo ')' -> EvalFoo
-  | 'eval' '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
+  | 'eval' (?= !FooLookahead) '(' expr ')' empty1   -> EvalEmpty1
+  | 'eval' (?= FooLookahead) '(' foo ')' -> EvalFoo
+  | 'eval' (?= FooLookahead) '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
   | 'decl2' ':' QualifiedNameopt -> DeclOptQual
 ;
+
+FooLookahead:
+  '(' foo ')' ;
 
 empty1 : ;
 

@@ -1,6 +1,7 @@
 %{
 %}
 
+%start FooLookahead // no-eoi
 %start Test
 %start Decl1
 
@@ -81,10 +82,20 @@ Declaration :
 | TEST LBRACE setof_not_EOI_or_DOT_or_RBRACE_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
 | TEST INTEGERCONSTANT
-| EVAL LPAREN expr RPAREN empty1
-| EVAL LPAREN foo RPAREN
-| EVAL LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
+| EVAL lookahead_notFooLookahead LPAREN expr RPAREN empty1
+| EVAL lookahead_FooLookahead LPAREN foo RPAREN
+| EVAL lookahead_FooLookahead LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
 | DECL2 COLON QualifiedNameopt
+;
+
+// lookahead: FooLookahead
+lookahead_FooLookahead :
+  %empty
+;
+
+// lookahead: !FooLookahead
+lookahead_notFooLookahead :
+  %empty
 ;
 
 setof_not_EOI_or_DOT_or_RBRACE :
@@ -125,6 +136,10 @@ setof_not_EOI_or_DOT_or_RBRACE :
 setof_not_EOI_or_DOT_or_RBRACE_optlist :
   setof_not_EOI_or_DOT_or_RBRACE_optlist setof_not_EOI_or_DOT_or_RBRACE
 | %empty
+;
+
+FooLookahead :
+  LPAREN foo RPAREN
 ;
 
 empty1 :
