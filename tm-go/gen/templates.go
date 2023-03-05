@@ -557,7 +557,7 @@ const parserTpl = `
 {{- $sym := index $.Syms .Token}}
 {{- if not (or $sym.Space (eq $sym.Name "invalid_token")) }}
 	case {{$sym.ID}}:
-		p.listener({{.Name}}, 0, p.next.offset, p.next.endoffset)
+		p.listener({{.Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
 {{- end}}
 {{- end}}
 			}
@@ -581,8 +581,9 @@ func StopOnFirstError(_ SyntaxError) bool { return false }
 {{- end }}
 {{- end }}
 
-// Parser is a table-driven LALR parser for {{.Name}}.
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ if .Options.IsEnabled "Parser" -}}
+// Parser is a table-driven LALR parser for {{.Name}}.
 type Parser struct {
 {{- if .Parser.IsRecovering }}
 	eh ErrorHandler
@@ -604,6 +605,7 @@ type Parser struct {
 {{- block "parserVars" .}}{{end}}
 }
 
+{{ end -}}
 {{ block "syntaxError" . -}}
 type SyntaxError struct {
 {{- if .Options.TokenLine }}
@@ -623,12 +625,15 @@ func (e SyntaxError) Error() string {
 
 {{ end -}}
 
+{{ if .Options.IsEnabled "symbol" -}}
 type symbol struct {
 	symbol    int32
 	offset    int
 	endoffset int
 }
 
+{{ end -}}
+{{ if .Options.IsEnabled "stackEntry" -}}
 type stackEntry struct {
 	sym   symbol
 	state int{{$stateType}}
@@ -637,6 +642,8 @@ type stackEntry struct {
 {{- end}}
 }
 
+{{ end -}}
+{{ if .Options.IsEnabled "ParserInit" -}}
 func (p *Parser) Init({{if .Parser.IsRecovering }}eh ErrorHandler{{end}}{{if .Parser.Types }}{{if .Parser.IsRecovering }}, {{end}}l Listener{{end}}) {
 {{- if .Parser.IsRecovering }}
 	p.eh = eh
@@ -652,6 +659,7 @@ func (p *Parser) Init({{if .Parser.IsRecovering }}eh ErrorHandler{{end}}{{if .Pa
 {{- block "initParserVars" .}}{{end}}
 }
 
+{{ end -}}
 const (
 	startStackSize = 256
 {{- if .ReportTokens true }}
@@ -682,6 +690,7 @@ func (p *Parser) Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.No
 {{- end}}
 {{ block "parseFunc" . -}}
 {{ $stateType := bits_per_element .Parser.Tables.FromTo}}
+{{ if .Options.IsEnabled "parse" -}}
 func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}}start, end int{{$stateType}}, lexer *Lexer) {{if .Parser.HasInputAssocValues}}(interface{}, error){{else}}error{{end}} { 
 {{- if .ReportTokens true }}
 	p.pending = p.pending[:0]
@@ -840,6 +849,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 }
 
 {{ end -}}
+{{ end -}}
 
 {{ if .Parser.IsRecovering -}}
 const errSymbol = {{ .Parser.ErrorSymbol }}
@@ -894,6 +904,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 }
 {{ end }}
 {{ block "recoverFromError" . -}}
+{{ if .Options.IsEnabled "recoverFromError" -}}
 func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
 	var recoverSyms [1 + {{ref "NumTokens"}}/8]uint8
 	var recoverPos []int
@@ -1019,7 +1030,9 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		return stack
 	}
 }
-{{ end }}
+
+{{ end -}}
+{{ end -}}
 {{ end -}}
 
 {{ block "lalr" . -}}
@@ -1068,6 +1081,7 @@ func gotoState(state int{{$stateType}}, symbol int32) int{{$stateType}} {
 {{ end -}}
 
 {{ block "fetchNext" . -}}
+{{ if .Options.IsEnabled "fetchNext" -}}
 func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
@@ -1089,10 +1103,168 @@ restart:
 }
 
 {{ end -}}
+{{ end -}}
+
+{{ block "lookahead" . -}}
+{{ if and .Parser.Tables.Lookaheads (.Options.IsEnabled "lookaheadNext") -}}
+func lookaheadNext(lexer *Lexer) int32 {
+restart:
+	tok := lexer.Next()
+	switch tok {
+{{- if .ReportTokens true }}
+	case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{.ID}}{{end}}:
+		goto restart
+{{- end}}
+{{- if not .ReportsInvalidToken}}
+	case {{(index .Syms .Lexer.InvalidToken).ID}}:
+		goto restart
+{{- end}}
+	}
+	return int32(tok)
+}
+
+{{ end -}}
+{{ end -}}
+
+{{ block "lookaheadRule" . -}}
+{{ if and .Parser.Tables.Lookaheads .Options.RecursiveLookaheads -}}
+func lookaheadRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, next, rule int32, s *session) (sym int32{{if $.Options.Cancellable}}, err error{{end}}) {
+	switch rule {
+{{- range $index, $rule := .Parser.Tables.Lookaheads }}
+	case {{sum $index (len $.Parser.Rules)}}:
+{{- if $.Options.Cancellable}}
+		var ok bool
+{{- end}}
+		{{ range $rule.Cases }}
+		{{- $sym := index $.Syms (sum $.NumTokens (index $.Parser.Inputs .Predicate.Input).Nonterm) -}}
+		if {{if $.Options.Cancellable}}ok, err = {{else}}{{if .Predicate.Negated}}!{{end}}{{end -}}
+		   lookahead({{if $.Options.Cancellable}}ctx, {{end}}lexer, next, {{.Predicate.Input}}, {{index $.Parser.Tables.FinalStates .Predicate.Input}}{{if $.NeedsSession}}, s{{end}})
+		{{- if $.Options.Cancellable}}; {{if .Predicate.Negated}}!{{end}}ok{{end}} {
+			sym = {{.Target}} /* {{(index $.Syms .Target).Name}} */
+		} else {{end}}{
+			sym = {{.DefaultTarget}} /* {{(index $.Syms .DefaultTarget).Name}} */
+		}
+		return
+{{- end}}
+	}
+	return 0{{if $.Options.Cancellable}}, nil{{end}}
+}
+
+{{ end -}}
+{{ end -}}
+
+{{ block "lookaheadMethods" . -}}
+{{ range $ind, $inp := .Parser.Inputs -}}
+{{ if and .Synthetic .NoEoi -}}
+{{ $sym := index $.Syms (sum $.NumTokens .Nonterm) -}}
+func At{{$sym.Name}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, next int32{{if $.NeedsSession}}, s *session{{end}}) {{if $.Options.Cancellable}}(bool, error){{else}}bool{{end}} {
+	return lookahead({{if $.Options.Cancellable}}ctx, {{end}}lexer, next, {{$ind}}, {{index $.Parser.Tables.FinalStates $ind}}{{if $.NeedsSession}}, s{{end}});
+}
+
+{{ end -}}
+{{ end -}}
+{{ end -}}
+
+{{- define "callLookaheadNext"}}{{/*(memoization)*/}}lookaheadNext(&lexer){{end -}}
+
+{{ block "lookaheadFunc" . -}}
+{{ if .Parser.Tables.Lookaheads -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexer, next int32, start, end int{{$stateType}}{{if $.NeedsSession}}, s *session{{end}}) {{if $.Options.Cancellable}}(bool, error){{else}}bool{{end}} {
+{{- block "setupLookaheadLexer" .}}
+	var lexer Lexer = *l
+{{end}}
+{{- if .Options.RecursiveLookaheads }}
+	// Use memoization for recursive lookaheads.
+	if next == noToken {
+		next = {{template "callLookaheadNext" true}}
+	}
+	key := uint64(l.tokenOffset) + uint64(end)<<40
+	if ret, ok := s.cache[key]; ok {
+		return ret{{if $.Options.Cancellable}}, nil{{end}}
+	}
+{{end}}
+	var allocated [64]stackEntry
+	state := start
+	stack := append(allocated[:0], stackEntry{state: state})
+
+	for state != end {
+		action := tmAction[state]
+{{- if .Parser.Tables.Lalr}}
+		if action < -2 {
+			// Lookahead is needed.
+			if next == noToken {
+				next = {{template "callLookaheadNext" false}}
+			}
+			action = lalr(action, next)
+		}
+{{- end}}
+
+		if action >= 0 {
+			// Reduce.
+			rule := action
+			ln := int(tmRuleLen[rule])
+
+			var entry stackEntry
+			entry.sym.symbol = tmRuleSymbol[rule]
+			stack = stack[:len(stack)-ln]
+{{- if .Options.RecursiveLookaheads }}
+			sym{{if $.Options.Cancellable}}, err{{end}} := lookaheadRule({{if $.Options.Cancellable}}ctx, {{end}}&lexer, next, rule, s)
+{{- if $.Options.Cancellable}}
+			if err != nil {
+				return false, err
+			}
+{{- end}}
+			if sym != 0 {
+				entry.sym.symbol = sym
+			}
+{{- end}}
+			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			entry.state = state
+			stack = append(stack, entry)
+
+		} else if action == -1 {
+{{- if .Options.Cancellable }}
+			if {{if .NeedsSession}}s.{{end}}shiftCounter++; {{if .NeedsSession}}s.{{end}}shiftCounter&0x1ff == 0 {
+				// Note: checking for context cancellation is expensive so we do it from time to time.
+				select {
+				case <-ctx.Done():
+					return false, ctx.Err()
+				default:
+				}
+			}
+{{end}}
+			// Shift.
+			if next == noToken {
+				next = {{template "callLookaheadNext" false}}
+			}
+			state = gotoState(state, next)
+			stack = append(stack, stackEntry{
+				sym:   symbol{symbol: next},
+				state: state,
+			})
+			if state != -1 && next != eoiToken {
+				next = noToken
+			}
+		}
+
+		if action == -2 || state == -1 {
+			break
+		}
+	}
+
+{{ if .Options.RecursiveLookaheads -}}
+	s.cache[key] = state == end
+{{ end -}}
+	return state == end{{if $.Options.Cancellable}}, nil{{end}}
+}
+
+{{ end -}}
+{{ end -}}
 
 {{ block "applyRule" . -}}
 func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer{{if .NeedsSession}}, s *session{{end}}) (err error) {
-{{- if .Parser.HasActions }}
+{{- if or .Parser.HasActions .Parser.Tables.Lookaheads }}
 	switch rule {
 {{- range $index, $rule := .Parser.Rules}}
 {{- $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) }}
@@ -1116,6 +1288,23 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- end}}
 {{- end}}
 {{- end}}
+{{- end}}
+
+{{- range $index, $rule := .Parser.Tables.Lookaheads }}
+	case {{sum $index (len $.Parser.Rules)}}:
+{{- if $.Options.Cancellable}}
+		var ok bool
+{{- end}}
+		{{ range $rule.Cases }}
+		{{- $sym := index $.Syms (sum $.NumTokens (index $.Parser.Inputs .Predicate.Input).Nonterm) -}}
+		if {{if $.Options.Cancellable}}ok, err = {{else}}{{if .Predicate.Negated}}!{{end}}{{end -}}
+			At{{$sym.Name}}({{if $.Options.Cancellable}}ctx, {{end}}lexer, p.next.symbol{{if $.NeedsSession}}, s{{end}})
+		{{- if $.Options.Cancellable}}; {{if .Predicate.Negated}}!{{end}}ok{{end}} {
+			lhs.sym.symbol = {{.Target}} /* {{(index $.Syms .Target).Name}} */
+		} else {{end}}{
+			lhs.sym.symbol = {{.DefaultTarget}} /* {{(index $.Syms .DefaultTarget).Name}} */
+		}
+		return
 {{- end}}
 	}
 {{- end}}

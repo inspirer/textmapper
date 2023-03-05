@@ -369,3 +369,12 @@ type Options struct {
 	CustomImpl    []string
 	FileNode      string // The top-level node gets the byte range of the whole input.
 }
+
+func (o *Options) IsEnabled(name string) bool {
+	for _, v := range o.CustomImpl {
+		if v == name {
+			return false
+		}
+	}
+	return true
+}

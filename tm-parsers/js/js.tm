@@ -17,7 +17,7 @@ recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
                 NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]
-customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "symbol", "stackEntry", "session"]
+customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "symbol", "stackEntry", "session", "lookaheadNext"]
 
 :: lexer
 
@@ -1933,7 +1933,6 @@ func (l *Lexer) popState() {
 }
 ${end}
 
-${template go_parser.lookaheadNext}${end}
 ${template go_parser.callLookaheadNext(memoization)}lookaheadNext(&lexer, end, ${memoization?'nil /*empty stack*/':'stack'})${end}
 
 ${template newTemplates-}
@@ -1962,4 +1961,24 @@ func (l *Lexer) popState() {
 	}
 }
 {{end}}
+
+{{define "setupLookaheadLexer"}}
+	var lexer Lexer
+	lexer.source = l.source
+	lexer.ch= l.ch
+	lexer.offset= l.offset
+	lexer.tokenOffset = l.tokenOffset
+	lexer.line = l.line
+	lexer.tokenLine = l.tokenLine
+	lexer.scanOffset = l.scanOffset
+	lexer.State = l.State
+	lexer.Dialect = l.Dialect
+	lexer.token = l.token
+	// Note: Stack is intentionally omitted.
+{{end}}
+
+{{define "callLookaheadNext" -}}
+lookaheadNext(&lexer, end, {{if eq . true}}nil /*empty stack*/{{else}}stack{{end}})
+{{- end}}
+
 ${end}

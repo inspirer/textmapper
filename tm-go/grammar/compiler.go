@@ -1712,7 +1712,8 @@ func (c *compiler) generateTables() bool {
 			var report []Range
 			var command string
 			var args *syntax.CmdArgs
-			actualPos := make(map[int]int)
+			var numRefs int
+			actualPos := make(map[int]int) // $i inside a semantic action -> index in rule.RHS
 			origin := expr.Origin
 
 			var innerReports int
@@ -1720,7 +1721,7 @@ func (c *compiler) generateTables() bool {
 			traverse = func(expr *syntax.Expr) {
 				switch expr.Kind {
 				case syntax.Arrow:
-					start := len(rule.RHS)
+					start := numRefs
 					for _, sub := range expr.Sub {
 						traverse(sub)
 					}
@@ -1730,7 +1731,7 @@ func (c *compiler) generateTables() bool {
 						break
 					}
 					if t, ok := types[expr.Name]; ok { // !ok for categories
-						end := len(rule.RHS)
+						end := numRefs
 						report = append(report, Range{start, end, t, expr.ArrowFlags})
 						if len(expr.ArrowFlags) != 0 {
 							c.out.Parser.UsesFlags = true
@@ -1747,9 +1748,10 @@ func (c *compiler) generateTables() bool {
 						c.s.Errorf(origin, "commands must be placed at the end of a rule")
 					}
 					if expr.Pos > 0 {
-						actualPos[expr.Pos] = len(rule.RHS)
+						actualPos[expr.Pos] = numRefs
 					}
 					rule.RHS = append(rule.RHS, lalr.Sym(expr.Symbol))
+					numRefs++
 				case syntax.StateMarker:
 					if i, ok := markers[expr.Name]; ok {
 						rule.RHS = append(rule.RHS, lalr.Marker(i))
@@ -1768,7 +1770,7 @@ func (c *compiler) generateTables() bool {
 			}
 			traverse(expr)
 
-			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == len(rule.RHS) &&
+			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == numRefs &&
 				// Note: in compatibility note we don't promote -> from inside parentheses.
 				(!c.compat || len(report) > innerReports) {
 

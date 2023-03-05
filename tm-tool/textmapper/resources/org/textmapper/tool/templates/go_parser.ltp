@@ -668,7 +668,7 @@ ${end}
 ${template callLookaheadNext(memoization)}lookaheadNext(&lexer)${end}
 
 ${template lookahead-}
-${call lookaheadNext-}
+${if !skip.lookaheadNext}${call lookaheadNext}${end-}
 ${if opts.recursiveLookaheads-}
 ${call lookaheadRule-}
 ${end-}

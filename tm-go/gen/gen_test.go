@@ -49,8 +49,6 @@ func TestGenerate(t *testing.T) {
 			for _, genfile := range w.files {
 				// TODO compare all files
 				switch strings.TrimSuffix(path.Base(filename), ".tm") + "/" + path.Base(genfile) {
-				case "js/parser.go", "json/parser.go":
-					continue
 				case "test/test.y":
 					continue
 				}
