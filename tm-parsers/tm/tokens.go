@@ -1,9 +1,13 @@
 package tm
 
-func IsSoftKeyword(t Token) bool {
-	return t >= ASSERT && t <= CHAR_X
+import (
+	"github.com/inspirer/textmapper/tm-parsers/tm/token"
+)
+
+func IsSoftKeyword(t token.Token) bool {
+	return t >= token.ASSERT && t <= token.CHAR_X
 }
 
-func IsKeyword(t Token) bool {
-	return t >= AS && t <= TRUE
+func IsKeyword(t token.Token) bool {
+	return t >= token.AS && t <= token.TRUE
 }

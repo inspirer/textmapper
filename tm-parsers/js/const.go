@@ -1,9 +1,13 @@
 package js
 
-const (
-	keywordStart = PRIVATEIDENTIFIER + 1
-	keywordEnd   = LBRACE
+import (
+	"github.com/inspirer/textmapper/tm-parsers/js/token"
+)
 
-	punctuationStart = LBRACE
-	punctuationEnd   = NUMERICLITERAL
+const (
+	keywordStart = token.PRIVATEIDENTIFIER + 1
+	keywordEnd   = token.LBRACE
+
+	punctuationStart = token.LBRACE
+	punctuationEnd   = token.NUMERICLITERAL
 )

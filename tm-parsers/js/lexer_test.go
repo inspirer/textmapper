@@ -5,25 +5,26 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-parsers/js"
+	"github.com/inspirer/textmapper/tm-parsers/js/token"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
 
 var lexerTests = []struct {
-	tok    js.Token
+	tok    token.Token
 	inputs []string
 }{
 
-	{js.IDENTIFIER, []string{
+	{token.IDENTIFIER, []string{
 		`«abc» «brea» break`,
 		`«abc123»`,
 		`«_abc_»`,
 	}},
-	{js.PRIVATEIDENTIFIER, []string{
+	{token.PRIVATEIDENTIFIER, []string{
 		`«#abc» `,
 		`«#abc123»`,
 		`«#_abc_»`,
 	}},
-	{js.SINGLELINECOMMENT, []string{
+	{token.SINGLELINECOMMENT, []string{
 		`«#!/usr/bin/env node»
 		 abc`,
 		` «// abc»
@@ -35,14 +36,14 @@ var lexerTests = []struct {
 		`,
 		`«// abc»`,
 	}},
-	{js.MULTILINECOMMENT, []string{
+	{token.MULTILINECOMMENT, []string{
 		`1 / «/* comment */» /aa/.lastIndex`,
 		`«/**
 		   * comment
 		   */»
 		 function a() {}`,
 	}},
-	{js.NUMERICLITERAL, []string{
+	{token.NUMERICLITERAL, []string{
 		`«1e+9» «1.1e-9» «0xabcdefabcedef123» «123123121»  «0» -«1» `,
 		`«0000»`,
 		`«0055»`,
@@ -57,14 +58,14 @@ var lexerTests = []struct {
 		`«000e+01__1»`,
 		`«008_9»`,
 	}},
-	{js.STRINGLITERAL, []string{
+	{token.STRINGLITERAL, []string{
 		`«'abc'» + «'Elly\'s'» `,
 		`«"abc"» `,
 		`«"ab ' and \"  c"» `,
 	}},
 
 	// Regular expressions vs division.
-	{js.REGULAREXPRESSIONLITERAL, []string{
+	{token.REGULAREXPRESSIONLITERAL, []string{
 		`var c = «/abc/» // comment
 		`,
 		`1 / /* comment */ «/aa/».lastIndex`,
@@ -87,7 +88,7 @@ var lexerTests = []struct {
 
 		// TODO if (a) /aaa/.compile()
 	}},
-	{js.DIV, []string{
+	{token.DIV, []string{
 		`1 «/» /* comment */ /aa/.lastIndex`,
 		`1«/»2;`,
 		`var c = 1«/»2;`,
@@ -98,188 +99,188 @@ var lexerTests = []struct {
 		"`aa ${ /aaa/.lastIndex «/» 1 }q`",
 		`const a = 1 «/» a.b! «/» 2; /*ts*/`,
 	}},
-	{js.DIVASSIGN, []string{
+	{token.DIVASSIGN, []string{
 		`b «/=» --/aaa/.lastIndex`,
 	}},
 
 	// Templates.
-	{js.NOSUBSTITUTIONTEMPLATE, []string{
+	{token.NOSUBSTITUTIONTEMPLATE, []string{
 		"«`a`»",
 		"«`a + \"B\"`»",
 		"  «`aa q`»  ",
 	}},
-	{js.TEMPLATEHEAD, []string{
+	{token.TEMPLATEHEAD, []string{
 		"«`${»a}` /",
 		"«`aa ${» 'aa' }q${ /aaa/ } `",
 		"print«`aa ${» 'aa' }q${ /aaa/ } `",
 	}},
-	{js.TEMPLATEMIDDLE, []string{
+	{token.TEMPLATEMIDDLE, []string{
 		"`aa ${ 'aa' «}q${» /aaa/ } `",
 	}},
-	{js.TEMPLATETAIL, []string{
+	{token.TEMPLATETAIL, []string{
 		"`${a«}`» /",
 		"`aa ${ 'aa' }q${ /aaa/ «} `»",
 		"`Method call: \"${foo({name,text})«}\"`»",
 	}},
 
 	// Keywords.
-	{js.AWAIT, []string{`«await»`}},
-	{js.BREAK, []string{`«break» break2 brea hmm b`}},
-	{js.CASE, []string{`«case»`}},
-	{js.CATCH, []string{`«catch»`}},
-	{js.CLASS, []string{`«class»`}},
-	{js.CONST, []string{`«const»`}},
-	{js.CONTINUE, []string{`«continue»`}},
-	{js.DEBUGGER, []string{`«debugger»`}},
-	{js.DEFAULT, []string{`«default»`}},
-	{js.DELETE, []string{`«delete»`}},
-	{js.DO, []string{`«do»`}},
-	{js.ELSE, []string{`«else»`}},
-	{js.EXPORT, []string{`«export»`}},
-	{js.EXTENDS, []string{`«extends»`}},
-	{js.FINALLY, []string{`«finally»`}},
-	{js.FOR, []string{`«for»`}},
-	{js.FUNCTION, []string{`«function»`}},
-	{js.IF, []string{`«if»`}},
-	{js.IMPORT, []string{`«import»`}},
-	{js.IN, []string{`«in»`}},
-	{js.INSTANCEOF, []string{`«instanceof»`}},
-	{js.NEW, []string{`«new»`}},
-	{js.RETURN, []string{`«return»`}},
-	{js.SUPER, []string{`«super»`}},
-	{js.SWITCH, []string{`«switch»`}},
-	{js.THIS, []string{`«this»`}},
-	{js.THROW, []string{`«throw»`}},
-	{js.TRY, []string{`«try»`}},
-	{js.TYPEOF, []string{`«typeof»`}},
-	{js.VAR, []string{`«var»`}},
-	{js.VOID, []string{`«void»`}},
-	{js.WHILE, []string{`«while»`}},
-	{js.WITH, []string{`«with»`}},
-	{js.YIELD, []string{`«yield»`}},
+	{token.AWAIT, []string{`«await»`}},
+	{token.BREAK, []string{`«break» break2 brea hmm b`}},
+	{token.CASE, []string{`«case»`}},
+	{token.CATCH, []string{`«catch»`}},
+	{token.CLASS, []string{`«class»`}},
+	{token.CONST, []string{`«const»`}},
+	{token.CONTINUE, []string{`«continue»`}},
+	{token.DEBUGGER, []string{`«debugger»`}},
+	{token.DEFAULT, []string{`«default»`}},
+	{token.DELETE, []string{`«delete»`}},
+	{token.DO, []string{`«do»`}},
+	{token.ELSE, []string{`«else»`}},
+	{token.EXPORT, []string{`«export»`}},
+	{token.EXTENDS, []string{`«extends»`}},
+	{token.FINALLY, []string{`«finally»`}},
+	{token.FOR, []string{`«for»`}},
+	{token.FUNCTION, []string{`«function»`}},
+	{token.IF, []string{`«if»`}},
+	{token.IMPORT, []string{`«import»`}},
+	{token.IN, []string{`«in»`}},
+	{token.INSTANCEOF, []string{`«instanceof»`}},
+	{token.NEW, []string{`«new»`}},
+	{token.RETURN, []string{`«return»`}},
+	{token.SUPER, []string{`«super»`}},
+	{token.SWITCH, []string{`«switch»`}},
+	{token.THIS, []string{`«this»`}},
+	{token.THROW, []string{`«throw»`}},
+	{token.TRY, []string{`«try»`}},
+	{token.TYPEOF, []string{`«typeof»`}},
+	{token.VAR, []string{`«var»`}},
+	{token.VOID, []string{`«void»`}},
+	{token.WHILE, []string{`«while»`}},
+	{token.WITH, []string{`«with»`}},
+	{token.YIELD, []string{`«yield»`}},
 
 	// Reserved keywords.
-	{js.ENUM, []string{`«enum»`}},
+	{token.ENUM, []string{`«enum»`}},
 
 	// Literals.
-	{js.NULL, []string{`«null»`}},
-	{js.TRUE, []string{`«true»`}},
-	{js.FALSE, []string{`«false»`}},
+	{token.NULL, []string{`«null»`}},
+	{token.TRUE, []string{`«true»`}},
+	{token.FALSE, []string{`«false»`}},
 
 	// Soft (contextual) keywords.
-	{js.AS, []string{`«as»`}},
-	{js.ASSERT, []string{`«assert»`}},
-	{js.ASSERTS, []string{`«asserts»`}},
-	{js.ASYNC, []string{`«async»`}},
-	{js.FROM, []string{`«from»`}},
-	{js.GET, []string{`«get»`}},
-	{js.LET, []string{`«let»`}},
-	{js.OF, []string{`«of»`}},
-	{js.SET, []string{`«set»`}},
-	{js.STATIC, []string{`«static»`}},
-	{js.TARGET, []string{`«target»`}},
+	{token.AS, []string{`«as»`}},
+	{token.ASSERT, []string{`«assert»`}},
+	{token.ASSERTS, []string{`«asserts»`}},
+	{token.ASYNC, []string{`«async»`}},
+	{token.FROM, []string{`«from»`}},
+	{token.GET, []string{`«get»`}},
+	{token.LET, []string{`«let»`}},
+	{token.OF, []string{`«of»`}},
+	{token.SET, []string{`«set»`}},
+	{token.STATIC, []string{`«static»`}},
+	{token.TARGET, []string{`«target»`}},
 
 	// Typescript keywords.
-	{js.IMPLEMENTS, []string{`«implements»`}},
-	{js.INTERFACE, []string{`«interface»`}},
-	{js.PRIVATE, []string{`«private»`}},
-	{js.PROTECTED, []string{`«protected»`}},
-	{js.PUBLIC, []string{`«public»`}},
-	{js.ANY, []string{`«any»`}},
-	{js.UNKNOWN, []string{`«unknown»`}},
-	{js.BOOLEAN, []string{`«boolean»`}},
-	{js.NUMBER, []string{`«number»`}},
-	{js.STRING, []string{`«string»`}},
-	{js.SYMBOL, []string{`«symbol»`}},
-	{js.ABSTRACT, []string{`«abstract»`}},
-	{js.CONSTRUCTOR, []string{`«constructor»`}},
-	{js.DECLARE, []string{`«declare»`}},
-	{js.IS, []string{`«is»`}},
-	{js.MODULE, []string{`«module»`}},
-	{js.GLOBAL, []string{`«global»`}},
-	{js.NAMESPACE, []string{`«namespace»`}},
-	{js.OVERRIDE, []string{`«override»`}},
-	{js.REQUIRE, []string{`«require»`}},
-	{js.TYPE, []string{`«type»`}},
-	{js.READONLY, []string{`«readonly»`}},
-	{js.KEYOF, []string{`«keyof»`}},
-	{js.UNIQUE, []string{`«unique»`}},
-	{js.INFER, []string{`«infer»`}},
+	{token.IMPLEMENTS, []string{`«implements»`}},
+	{token.INTERFACE, []string{`«interface»`}},
+	{token.PRIVATE, []string{`«private»`}},
+	{token.PROTECTED, []string{`«protected»`}},
+	{token.PUBLIC, []string{`«public»`}},
+	{token.ANY, []string{`«any»`}},
+	{token.UNKNOWN, []string{`«unknown»`}},
+	{token.BOOLEAN, []string{`«boolean»`}},
+	{token.NUMBER, []string{`«number»`}},
+	{token.STRING, []string{`«string»`}},
+	{token.SYMBOL, []string{`«symbol»`}},
+	{token.ABSTRACT, []string{`«abstract»`}},
+	{token.CONSTRUCTOR, []string{`«constructor»`}},
+	{token.DECLARE, []string{`«declare»`}},
+	{token.IS, []string{`«is»`}},
+	{token.MODULE, []string{`«module»`}},
+	{token.GLOBAL, []string{`«global»`}},
+	{token.NAMESPACE, []string{`«namespace»`}},
+	{token.OVERRIDE, []string{`«override»`}},
+	{token.REQUIRE, []string{`«require»`}},
+	{token.TYPE, []string{`«type»`}},
+	{token.READONLY, []string{`«readonly»`}},
+	{token.KEYOF, []string{`«keyof»`}},
+	{token.UNIQUE, []string{`«unique»`}},
+	{token.INFER, []string{`«infer»`}},
 
 	// Operators.
-	{js.LBRACE, []string{`«{»`}},
-	{js.RBRACE, []string{`«}»`}},
-	{js.LPAREN, []string{`«(»`}},
-	{js.RPAREN, []string{`«)»`}},
-	{js.LBRACK, []string{`«[»`}},
-	{js.RBRACK, []string{`«]»`}},
-	{js.DOT, []string{`«.»`}},
-	{js.DOTDOTDOT, []string{`«...»`}},
-	{js.SEMICOLON, []string{`«;»`}},
-	{js.COMMA, []string{`«,»`}},
-	{js.LT, []string{`«<»`}},
-	{js.GT, []string{`«>»`}},
-	{js.LTASSIGN, []string{`«<=»`}},
-	{js.GTASSIGN, []string{`«>=»`}},
-	{js.ASSIGNASSIGN, []string{`«==»`}},
-	{js.EXCLASSIGN, []string{`«!=»`}},
-	{js.ASSIGNASSIGNASSIGN, []string{`«===»`}},
-	{js.EXCLASSIGNASSIGN, []string{`«!==»`}},
-	{js.ATSIGN, []string{`«@»`}},
-	{js.PLUS, []string{`«+»`}},
-	{js.MINUS, []string{`«-»`}},
-	{js.MULT, []string{`«*»`}},
-	{js.REM, []string{`«%»`}},
-	{js.PLUSPLUS, []string{`«++»`}},
-	{js.MINUSMINUS, []string{`«--»`}},
-	{js.LTLT, []string{`«<<»`}},
-	{js.GTGT, []string{`«>>»`}},
-	{js.GTGTGT, []string{`«>>>»`}},
-	{js.AND, []string{`«&»`}},
-	{js.OR, []string{`«|»`}},
-	{js.XOR, []string{`«^»`}},
-	{js.EXCL, []string{`«!»`}},
-	{js.TILDE, []string{`«~»`}},
-	{js.ANDAND, []string{`«&&» «&&»&`}},
-	{js.OROR, []string{`«||» «||»|`}},
-	{js.QUEST, []string{`«?» «?»`, `«?».0`, `«?».9`}},
-	{js.QUESTQUEST, []string{`«??» ? ?`}},
-	{js.QUESTDOT, []string{`«?.»abc`}},
-	{js.COLON, []string{`«:»`}},
-	{js.ASSIGN, []string{`«=»`}},
-	{js.PLUSASSIGN, []string{`«+=»`}},
-	{js.MINUSASSIGN, []string{`«-=»`}},
-	{js.MULTASSIGN, []string{`«*=»`}},
-	{js.REMASSIGN, []string{`«%=»`}},
-	{js.LTLTASSIGN, []string{`«<<=»`}},
-	{js.GTGTASSIGN, []string{`«>>=»`}},
-	{js.GTGTGTASSIGN, []string{`«>>>=»`}},
-	{js.ANDASSIGN, []string{`«&=»`}},
-	{js.ORASSIGN, []string{`«|=»`}},
-	{js.XORASSIGN, []string{`«^=»`}},
-	{js.ASSIGNGT, []string{`«=>»`}},
-	{js.MULTMULT, []string{`«**»`}},
-	{js.MULTMULTASSIGN, []string{`«**=»`}},
-	{js.QUESTQUESTASSIGN, []string{`«??=»`}},
-	{js.ORORASSIGN, []string{`«||=» |=`}},
-	{js.ANDANDASSIGN, []string{`«&&=»`}},
+	{token.LBRACE, []string{`«{»`}},
+	{token.RBRACE, []string{`«}»`}},
+	{token.LPAREN, []string{`«(»`}},
+	{token.RPAREN, []string{`«)»`}},
+	{token.LBRACK, []string{`«[»`}},
+	{token.RBRACK, []string{`«]»`}},
+	{token.DOT, []string{`«.»`}},
+	{token.DOTDOTDOT, []string{`«...»`}},
+	{token.SEMICOLON, []string{`«;»`}},
+	{token.COMMA, []string{`«,»`}},
+	{token.LT, []string{`«<»`}},
+	{token.GT, []string{`«>»`}},
+	{token.LTASSIGN, []string{`«<=»`}},
+	{token.GTASSIGN, []string{`«>=»`}},
+	{token.ASSIGNASSIGN, []string{`«==»`}},
+	{token.EXCLASSIGN, []string{`«!=»`}},
+	{token.ASSIGNASSIGNASSIGN, []string{`«===»`}},
+	{token.EXCLASSIGNASSIGN, []string{`«!==»`}},
+	{token.ATSIGN, []string{`«@»`}},
+	{token.PLUS, []string{`«+»`}},
+	{token.MINUS, []string{`«-»`}},
+	{token.MULT, []string{`«*»`}},
+	{token.REM, []string{`«%»`}},
+	{token.PLUSPLUS, []string{`«++»`}},
+	{token.MINUSMINUS, []string{`«--»`}},
+	{token.LTLT, []string{`«<<»`}},
+	{token.GTGT, []string{`«>>»`}},
+	{token.GTGTGT, []string{`«>>>»`}},
+	{token.AND, []string{`«&»`}},
+	{token.OR, []string{`«|»`}},
+	{token.XOR, []string{`«^»`}},
+	{token.EXCL, []string{`«!»`}},
+	{token.TILDE, []string{`«~»`}},
+	{token.ANDAND, []string{`«&&» «&&»&`}},
+	{token.OROR, []string{`«||» «||»|`}},
+	{token.QUEST, []string{`«?» «?»`, `«?».0`, `«?».9`}},
+	{token.QUESTQUEST, []string{`«??» ? ?`}},
+	{token.QUESTDOT, []string{`«?.»abc`}},
+	{token.COLON, []string{`«:»`}},
+	{token.ASSIGN, []string{`«=»`}},
+	{token.PLUSASSIGN, []string{`«+=»`}},
+	{token.MINUSASSIGN, []string{`«-=»`}},
+	{token.MULTASSIGN, []string{`«*=»`}},
+	{token.REMASSIGN, []string{`«%=»`}},
+	{token.LTLTASSIGN, []string{`«<<=»`}},
+	{token.GTGTASSIGN, []string{`«>>=»`}},
+	{token.GTGTGTASSIGN, []string{`«>>>=»`}},
+	{token.ANDASSIGN, []string{`«&=»`}},
+	{token.ORASSIGN, []string{`«|=»`}},
+	{token.XORASSIGN, []string{`«^=»`}},
+	{token.ASSIGNGT, []string{`«=>»`}},
+	{token.MULTMULT, []string{`«**»`}},
+	{token.MULTMULTASSIGN, []string{`«**=»`}},
+	{token.QUESTQUESTASSIGN, []string{`«??=»`}},
+	{token.ORORASSIGN, []string{`«||=» |=`}},
+	{token.ANDANDASSIGN, []string{`«&&=»`}},
 
-	{js.JSXSTRINGLITERAL, []string{`
+	{token.JSXSTRINGLITERAL, []string{`
 	<A f=«"123"»>{
 	   <B ref=«"456"» an={"789"} text=«"4 &quot; 56"»></B>
 	}</A>
 
 	`}},
-	{js.JSXIDENTIFIER, []string{`	<«A» «f»="123">{
+	{token.JSXIDENTIFIER, []string{`	<«A» «f»="123">{
 	   <«B» «an»={a+"789"}></«B»>
 	}</«A»>`}},
-	{js.JSXTEXT, []string{`	<A>« »{
+	{token.JSXTEXT, []string{`	<A>« »{
 	   <B   >«abc
 
 	   »</B>
 	}« »</A>`}},
 
-	{js.INVALID_TOKEN, []string{
+	{token.INVALID_TOKEN, []string{
 		` «..» `,
 		` «0x»`,
 		` «0X» `,
@@ -304,10 +305,10 @@ var lexerTests = []struct {
 
 func TestLexer(t *testing.T) {
 	l := new(js.Lexer)
-	seen := map[js.Token]bool{}
-	seen[js.WHITESPACE] = true
-	seen[js.ERROR] = true
-	seen[js.RESOLVESHIFT] = true
+	seen := map[token.Token]bool{}
+	seen[token.WHITESPACE] = true
+	seen[token.ERROR] = true
+	seen[token.RESOLVESHIFT] = true
 	for _, tc := range lexerTests {
 		seen[tc.tok] = true
 		for _, input := range tc.inputs {
@@ -317,7 +318,7 @@ func TestLexer(t *testing.T) {
 				l.Dialect = js.Typescript
 			}
 			tok := l.Next()
-			for tok != js.EOI {
+			for tok != token.EOI {
 				if tok == tc.tok {
 					s, e := l.Pos()
 					test.Consume(t, s, e)
@@ -327,7 +328,7 @@ func TestLexer(t *testing.T) {
 			test.Done(t, nil)
 		}
 	}
-	for tok := js.EOI + 1; tok < js.NumTokens; tok++ {
+	for tok := token.EOI + 1; tok < token.NumTokens; tok++ {
 		if !seen[tok] {
 			t.Errorf("%v is not tested", tok)
 		}
@@ -355,7 +356,7 @@ func BenchmarkLexer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		l.Init(jsBenchmarkCode)
 		next := l.Next()
-		for next != js.EOI {
+		for next != token.EOI {
 			next = l.Next()
 		}
 	}

@@ -4,6 +4,8 @@ package tm
 
 import (
 	"fmt"
+
+	"github.com/inspirer/textmapper/tm-parsers/tm/token"
 )
 
 // ErrorHandler is called every time a parser is unable to process some part of the input.
@@ -58,8 +60,8 @@ func (p *Parser) Init(eh ErrorHandler, l Listener) {
 const (
 	startStackSize       = 256
 	startTokenBufferSize = 16
-	noToken              = int32(UNAVAILABLE)
-	eoiToken             = int32(EOI)
+	noToken              = int32(token.UNAVAILABLE)
+	eoiToken             = int32(token.EOI)
 	debugSyntax          = false
 )
 
@@ -234,7 +236,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 }
 
 func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
-	var recoverSyms [1 + NumTokens/8]uint8
+	var recoverSyms [1 + token.NumTokens/8]uint8
 	var recoverPos []int
 
 	if debugSyntax {
@@ -267,7 +269,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 	e := s
 	for _, tok := range p.pending {
 		// Try to cover all nearby invalid tokens.
-		if Token(tok.symbol) == INVALID_TOKEN {
+		if token.Token(tok.symbol) == token.INVALID_TOKEN {
 			if s > tok.offset {
 				s = tok.offset
 			}
@@ -313,7 +315,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		if s != e {
 			// Consume trailing invalid tokens.
 			for _, tok := range p.pending {
-				if Token(tok.symbol) == INVALID_TOKEN && tok.endoffset > e {
+				if token.Token(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}
@@ -383,7 +385,7 @@ func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case INVALID_TOKEN, MULTILINECOMMENT, COMMENT, TEMPLATES:
+	case token.INVALID_TOKEN, token.MULTILINECOMMENT, token.COMMENT, token.TEMPLATES:
 		s, e := lexer.Pos()
 		tok := symbol{int32(tok), s, e}
 		p.pending = append(p.pending, tok)
@@ -416,20 +418,20 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 
 func (p *Parser) reportIgnoredToken(tok symbol) {
 	var t NodeType
-	switch Token(tok.symbol) {
-	case INVALID_TOKEN:
+	switch token.Token(tok.symbol) {
+	case token.INVALID_TOKEN:
 		t = InvalidToken
-	case MULTILINECOMMENT:
+	case token.MULTILINECOMMENT:
 		t = MultilineComment
-	case COMMENT:
+	case token.COMMENT:
 		t = Comment
-	case TEMPLATES:
+	case token.TEMPLATES:
 		t = Templates
 	default:
 		return
 	}
 	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", Token(tok.symbol), t)
+		fmt.Printf("ignored: %v as %v\n", token.Token(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }

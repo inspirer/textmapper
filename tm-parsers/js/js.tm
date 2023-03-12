@@ -204,7 +204,7 @@ invalid_token: /\.\./
 '||': /\|\|/
 '?': /\?/
 '??': /\?\?/
-invalid_token: /\?\.[0-9]/   { l.rewind(l.tokenOffset+1); token = QUEST }
+invalid_token: /\?\.[0-9]/   { l.rewind(l.tokenOffset+1); tok = token.QUEST }
 '?.': /\?\./
 ':': /:/
 '=': /=/
@@ -1766,13 +1766,13 @@ ${end}
 
 ${template go_lexer.stateVars-}
 	Dialect Dialect
-	token   Token // last token
+	token   token.Token // last token
 	Stack   []int // stack of JSX states, non-empty for StateJsx*
 ${end}
 
 ${template go_lexer.initStateVars-}
 	l.Dialect = Javascript
-	l.token = UNAVAILABLE
+	l.token = token.UNAVAILABLE
 	l.Stack = nil
 ${end}
 
@@ -1812,20 +1812,22 @@ ${template go_lexer.onAfterNext-}
 		// slash if it happens to be the next character.
 		//   unset: start of a regular expression literal
 		//   set:   start of a division operator (/ or /=)
-		switch token {
-		case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
+		switch tok {
+		case token.NEW, token.DELETE, token.VOID, token.TYPEOF, token.INSTANCEOF,
+      token.IN, token.DO, token.RETURN, token.CASE, token.THROW, token.ELSE:
+
 			l.State &^= 1
-		case TEMPLATEHEAD:
+		case token.TEMPLATEHEAD:
 			l.State |= 1
 			l.pushState(StateTemplate)
-		case TEMPLATEMIDDLE:
+		case token.TEMPLATEMIDDLE:
 			l.State = StateTemplate
-		case TEMPLATETAIL:
+		case token.TEMPLATETAIL:
 			l.popState()
-		case RPAREN, RBRACK:
+		case token.RPAREN, token.RBRACK:
 			// TODO support if (...) /aaaa/;
 			l.State |= 1
-		case PLUSPLUS, MINUSMINUS:
+		case token.PLUSPLUS, token.MINUSMINUS:
 			if prevLine != l.tokenLine {
 				// This is a pre-increment/decrement, so we expect a regular expression.
 				l.State &^= 1
@@ -1833,7 +1835,7 @@ ${template go_lexer.onAfterNext-}
 			// Otherwise: if we were expecting a regular expression literal before this
 			// token, this is a pre-increment/decrement, otherwise, this is a post. We
 			// can just propagate the previous value of the lowest bit of the state.
-		case LT:
+		case token.LT:
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
 				if l.Dialect != Typescript {
@@ -1843,25 +1845,32 @@ ${template go_lexer.onAfterNext-}
 			} else {
 				l.State &^= 1
 			}
-		case LBRACE:
+		case token.LBRACE:
 			l.State &^= 1
 			if l.State >= StateTemplate {
 				l.pushState(StateTemplateExpr)
 			}
-		case RBRACE:
+		case token.RBRACE:
 			l.State &^= 1
 			if l.State >= StateTemplate {
 				l.popState()
 			}
-		case SINGLELINECOMMENT, MULTILINECOMMENT:
+		case token.SINGLELINECOMMENT, token.MULTILINECOMMENT:
 			break
-		case EXCL:
+		case token.EXCL:
 			if l.Dialect != Javascript {
 				switch l.token {
-				case RPAREN, RBRACK, RBRACE, PRIVATEIDENTIFIER, IDENTIFIER, NOSUBSTITUTIONTEMPLATE, THIS, NULL, TRUE, FALSE, STRINGLITERAL, NUMERICLITERAL:
+				case token.RPAREN, token.RBRACK, token.RBRACE, token.PRIVATEIDENTIFIER,
+          token.IDENTIFIER, token.NOSUBSTITUTIONTEMPLATE, token.THIS,
+          token.NULL, token.TRUE, token.FALSE, token.STRINGLITERAL,
+          token.NUMERICLITERAL:
+
 					// TS non-null assertion.
 					l.State |= 1
-				case NEW, DELETE, VOID, TYPEOF, INSTANCEOF, IN, DO, RETURN, CASE, THROW, ELSE:
+				case token.NEW, token.DELETE, token.VOID, token.TYPEOF,
+          token.INSTANCEOF, token.IN, token.DO, token.RETURN, token.CASE,
+          token.THROW, token.ELSE:
+
 					l.State &^= 1
 				default:
 					if l.token >= keywordStart && l.token < keywordEnd {
@@ -1876,7 +1885,7 @@ ${template go_lexer.onAfterNext-}
 				l.State &^= 1
 			}
 		default:
-			if token >= punctuationStart && token < punctuationEnd {
+			if tok >= punctuationStart && tok < punctuationEnd {
 				l.State &^= 1
 			} else {
 				l.State |= 1
@@ -1884,26 +1893,26 @@ ${template go_lexer.onAfterNext-}
 		}
 	} else {
 		// Handling JSX states.
-		switch token {
-		case DIV:
-			if l.State == StateJsxTag && l.token == LT {
+		switch tok {
+		case token.DIV:
+			if l.State == StateJsxTag && l.token == token.LT {
 				l.State = StateJsxClosingTag
 				if len(l.Stack) > 0 {
 					l.Stack = l.Stack[:len(l.Stack)-1]
 				}
 			}
-		case GT:
-			if l.State == StateJsxTypeArgs || l.State == StateJsxClosingTag || l.token == DIV {
+		case token.GT:
+			if l.State == StateJsxTypeArgs || l.State == StateJsxClosingTag || l.token == token.DIV {
 				l.popState()
 			} else {
 				l.State = StateJsxText
 			}
-		case LBRACE:
+		case token.LBRACE:
 			if l.State != StateJsxTypeArgs {
 				l.pushState(StateTemplateExpr)
 			}
-		case LT:
-			if l.Dialect == TypescriptJsx && l.State != StateJsxText && l.token != ASSIGN {
+		case token.LT:
+			if l.Dialect == TypescriptJsx && l.State != StateJsxText && l.token != token.ASSIGN {
 				// Type arguments.
 				l.pushState(StateJsxTypeArgs)
 			} else {
@@ -1912,7 +1921,7 @@ ${template go_lexer.onAfterNext-}
 			}
 		}
 	}
-	l.token = token
+	l.token = tok
 ${end}
 
 ${template go_lexer.lexer-}

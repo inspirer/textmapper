@@ -5,6 +5,8 @@ package json
 import (
 	"strings"
 	"unicode/utf8"
+
+	"github.com/inspirer/textmapper/tm-go/parsers/json/token"
 )
 
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -48,7 +50,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() Token {
+func (l *Lexer) Next() token.Token {
 restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
@@ -107,55 +109,55 @@ restart:
 		}
 	}
 
-	token := Token(tmFirstRule - state)
+	tok := token.Token(tmFirstRule - state)
 recovered:
-	switch token {
-	case ID:
+	switch tok {
+	case token.ID:
 		hh := hash & 7
 		switch hh {
 		case 1:
 			if hash == 0x41 && "A" == l.source[l.tokenOffset:l.offset] {
-				token = CHAR_A
+				tok = token.CHAR_A
 				break
 			}
 		case 2:
 			if hash == 0x42 && "B" == l.source[l.tokenOffset:l.offset] {
-				token = CHAR_B
+				tok = token.CHAR_B
 				break
 			}
 		case 3:
 			if hash == 0x5cb1923 && "false" == l.source[l.tokenOffset:l.offset] {
-				token = FALSE
+				tok = token.FALSE
 				break
 			}
 		case 6:
 			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
-				token = TRUE
+				tok = token.TRUE
 				break
 			}
 		case 7:
 			if hash == 0x33c587 && "null" == l.source[l.tokenOffset:l.offset] {
-				token = NULL
+				tok = token.NULL
 				break
 			}
 		}
 	}
-	switch token {
-	case INVALID_TOKEN:
+	switch tok {
+	case token.INVALID_TOKEN:
 		if backupToken >= 0 {
-			token = Token(backupToken)
+			tok = token.Token(backupToken)
 			hash = backupHash
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
 			l.rewind(l.scanOffset)
 		}
-		if token != INVALID_TOKEN {
+		if tok != token.INVALID_TOKEN {
 			goto recovered
 		}
 	case 8:
 		goto restart
 	}
-	return token
+	return tok
 }
 
 // Pos returns the start and end positions of the last token returned by Next().

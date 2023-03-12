@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/json"
+	"github.com/inspirer/textmapper/tm-go/parsers/json/token"
 )
 
 const jsonExample = `
@@ -46,22 +47,21 @@ func testLexer(input string, t *testing.T) {
 
 	next := l.Next()
 	var offset int
-	for next != json.EOI {
+	for next != token.EOI {
 		s, e := l.Pos()
 		if s > offset && !spacesRE.MatchString(input[offset:s]) {
 			t.Errorf("Spaces expected: %s", input[offset:s])
 		}
 		offset = e
-		token := input[s:e]
+		tok := input[s:e]
 		switch next {
-		case json.LBRACE, json.RBRACE, json.LBRACK, json.RBRACK,
-			json.COLON, json.COMMA, json.NULL, json.TRUE, json.FALSE:
-			if token != next.String() {
-				t.Errorf("Bad token %v: %s", next, token)
+		case token.LBRACE, token.RBRACE, token.LBRACK, token.RBRACK, token.COLON, token.COMMA, token.NULL, token.TRUE, token.FALSE:
+			if tok != next.String() {
+				t.Errorf("Bad token %v: %s", next, tok)
 			}
-		case json.JSONSTRING:
-			if !strings.HasPrefix(token, `"`) || !strings.HasSuffix(token, `"`) {
-				t.Errorf("Bad string literal: %s", token)
+		case token.JSONSTRING:
+			if !strings.HasPrefix(tok, `"`) || !strings.HasSuffix(tok, `"`) {
+				t.Errorf("Bad string literal: %s", tok)
 			}
 		}
 		next = l.Next()
@@ -77,7 +77,7 @@ func BenchmarkLexer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		l.Init(jsonExample)
 		next := l.Next()
-		for next != json.EOI {
+		for next != token.EOI {
 			next = l.Next()
 		}
 	}

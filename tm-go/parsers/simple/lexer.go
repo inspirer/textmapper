@@ -5,6 +5,8 @@ package simple
 import (
 	"strings"
 	"unicode/utf8"
+
+	"github.com/inspirer/textmapper/tm-go/parsers/simple/token"
 )
 
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -48,7 +50,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() Token {
+func (l *Lexer) Next() token.Token {
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
 
@@ -86,14 +88,14 @@ func (l *Lexer) Next() Token {
 		}
 	}
 
-	token := Token(tmFirstRule - state)
-	switch token {
-	case INVALID_TOKEN:
+	tok := token.Token(tmFirstRule - state)
+	switch tok {
+	case token.INVALID_TOKEN:
 		if l.offset == l.tokenOffset {
 			l.rewind(l.scanOffset)
 		}
 	}
-	return token
+	return tok
 }
 
 // Pos returns the start and end positions of the last token returned by Next().

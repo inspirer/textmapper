@@ -3,12 +3,14 @@ package js
 import (
 	"regexp"
 	"testing"
+
+	"github.com/inspirer/textmapper/tm-parsers/js/token"
 )
 
 func TestTokenRanges(t *testing.T) {
 	keywordRE := regexp.MustCompile("^[a-z]+$")
 	punctRE := regexp.MustCompile("^[^a-zA-Z\x00-\x1f]+$")
-	for tok := EOI; tok < NumTokens; tok++ {
+	for tok := token.EOI; tok < token.NumTokens; tok++ {
 		val := tok.String()
 		if keywordRE.MatchString(val) != (tok >= keywordStart && tok < keywordEnd) {
 			t.Errorf("All keywords must be in the range [keywordStart, keywordEnd): %d, %s", tok, val)

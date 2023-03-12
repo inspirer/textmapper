@@ -5,6 +5,8 @@ package test
 import (
 	"context"
 	"fmt"
+
+	"github.com/inspirer/textmapper/tm-go/parsers/test/token"
 )
 
 // Parser is a table-driven LALR parser for test.
@@ -48,8 +50,8 @@ func (p *Parser) Init(l Listener) {
 const (
 	startStackSize       = 256
 	startTokenBufferSize = 16
-	noToken              = int32(UNAVAILABLE)
-	eoiToken             = int32(EOI)
+	noToken              = int32(token.UNAVAILABLE)
+	eoiToken             = int32(token.EOI)
 	debugSyntax          = false
 )
 
@@ -148,8 +150,8 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 					p.pending = p.pending[:0]
 				}
 				if p.next.symbol != eoiToken {
-					switch Token(p.next.symbol) {
-					case IDENTIFIER:
+					switch token.Token(p.next.symbol) {
+					case token.IDENTIFIER:
 						p.listener(Identifier, 0, p.next.offset, p.next.endoffset)
 					}
 					p.next.symbol = noToken
@@ -216,7 +218,7 @@ func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
+	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
 		s, e := lexer.Pos()
 		tok := symbol{int32(tok), s, e}
 		p.pending = append(p.pending, tok)
@@ -230,7 +232,7 @@ func lookaheadNext(lexer *Lexer) int32 {
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
+	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
 		goto restart
 	}
 	return int32(tok)
@@ -402,18 +404,18 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 
 func (p *Parser) reportIgnoredToken(tok symbol) {
 	var t NodeType
-	switch Token(tok.symbol) {
-	case MULTILINECOMMENT:
+	switch token.Token(tok.symbol) {
+	case token.MULTILINECOMMENT:
 		t = MultiLineComment
-	case SINGLELINECOMMENT:
+	case token.SINGLELINECOMMENT:
 		t = SingleLineComment
-	case INVALID_TOKEN:
+	case token.INVALID_TOKEN:
 		t = InvalidToken
 	default:
 		return
 	}
 	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", Token(tok.symbol), t)
+		fmt.Printf("ignored: %v as %v\n", token.Token(tok.symbol), t)
 	}
 	p.listener(t, 0, tok.offset, tok.endoffset)
 }

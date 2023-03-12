@@ -31,7 +31,7 @@ func Format(filename, content string, compat bool) string {
 	return buf.String()
 }
 
-var qualifierRE = regexp.MustCompile(`("((?:[\w-]+/)*([\w-]+))(?:\s*as\s*(\w+))?")\.\w+`)
+var qualifierRE = regexp.MustCompile(`("((?:[\w-\.]+/)*([\w-]+))(?:\s*as\s*(\w+))?")\.\w+`)
 var packageRE = regexp.MustCompile(`(?m)^package\s*\w+`)
 
 // ExtractImports rewrites the content of a generated Go file, deriving imports from "special"
@@ -79,7 +79,12 @@ func ExtractImports(src string) string {
 	for _, v := range toInsert {
 		list = append(list, v)
 	}
-	sort.Slice(list, func(i, j int) bool { return list[i].path < list[j].path })
+	sort.Slice(list, func(i, j int) bool {
+		if si, sj := isStdPackage(list[i].path), isStdPackage(list[j].path); si != sj {
+			return si
+		}
+		return list[i].path < list[j].path
+	})
 	src = buf.String()
 
 	var insertOffset int
@@ -92,7 +97,15 @@ func ExtractImports(src string) string {
 		buf.WriteString("\n\n")
 	}
 	buf.WriteString("import (\n")
+	var lastStd bool
 	for _, imp := range list {
+		// Separate standard packages from application packages.
+		std := isStdPackage(imp.path)
+		if !std && lastStd {
+			buf.WriteByte('\n')
+		}
+		lastStd = std
+
 		buf.WriteByte('\t')
 		if imp.path != imp.alias && !strings.HasSuffix(strings.TrimSuffix(imp.path, imp.alias), "/") {
 			buf.WriteString(imp.alias)
@@ -107,4 +120,8 @@ func ExtractImports(src string) string {
 	imports := buf.String()
 
 	return src[:insertOffset] + imports + src[insertOffset:]
+}
+
+func isStdPackage(path string) bool {
+	return !strings.ContainsRune(path, '.')
 }

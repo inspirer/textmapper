@@ -37,10 +37,10 @@ func (tok Token) String() string {
 }
 ${end}
 
-${query tokenFilename() = 'token.go'}
-${query package() = self->go.package()}
+${query tokenFilename() = 'token/token.go'}
+${query package() = self->go.package() + '/token'}
 
-${query tokenVar() = 'token'}
+${query tokenVar() = 'tok'}
 ${query tokenTypeRef() = self->package()->go.element('Token')}
 ${query numTokensRef() = self->package()->go.element('NumTokens')}
 ${query eoiRef() = self->package()->go.element('EOI')}

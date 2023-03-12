@@ -4,6 +4,8 @@ package simple
 
 import (
 	"fmt"
+
+	"github.com/inspirer/textmapper/tm-go/parsers/simple/token"
 )
 
 // Parser is a table-driven LALR parser for simple.
@@ -40,8 +42,8 @@ func (p *Parser) Init(l Listener) {
 
 const (
 	startStackSize = 256
-	noToken        = int32(UNAVAILABLE)
-	eoiToken       = int32(EOI)
+	noToken        = int32(token.UNAVAILABLE)
+	eoiToken       = int32(token.EOI)
 	debugSyntax    = false
 )
 
@@ -174,7 +176,7 @@ func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case INVALID_TOKEN:
+	case token.INVALID_TOKEN:
 		goto restart
 	}
 	p.next.symbol = int32(tok)

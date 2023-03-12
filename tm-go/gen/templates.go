@@ -6,7 +6,7 @@ type file struct {
 }
 
 var lexerFiles = []file{
-	{"token.go", tokenTpl},
+	{"token/token.go", tokenTpl},
 	{"lexer_tables.go", lexerTablesTpl},
 	{"lexer.go", lexerTpl},
 }
@@ -28,7 +28,7 @@ const sharedDefs = `
 
 const tokenTpl = `
 {{- template "header" . -}}
-package {{.Name}}
+package token
 
 // Token is an enum of all terminal symbols of the {{.Name}} language.
 type Token int
@@ -58,6 +58,7 @@ func (tok Token) String() string {
 `
 
 const lexerTablesTpl = `
+{{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
 {{- template "header" . -}}
 package {{.Name}}
 
@@ -122,7 +123,7 @@ var tmStateMap = []int{
 }
 
 {{if .Lexer.RuleToken -}}
-var tmToken = []Token{
+var tmToken = []{{template "tokenType" .}}{
 {{- int_array .Lexer.RuleToken "\t" 79 -}}
 }
 
@@ -169,6 +170,9 @@ const (
 {{template "lexerValue" .}}
 {{template "lexerRewind" .}}
 {{- block "onAfterLexer" .}}{{end}}
+
+{{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
+{{- define "tokenPkg"}}"{{.Options.Package}}/token".{{end -}}
 
 {{- define "lexerType" -}}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
@@ -234,7 +238,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() Token {
+func (l *Lexer) Next() {{template "tokenType" .}} {
 {{- block "onBeforeNext" .}}{{end}}
 {{- $spaceRules := .SpaceActions}}
 {{- if or $spaceRules .Lexer.RuleToken }}
@@ -327,18 +331,18 @@ restart:
 {{if .Lexer.RuleToken}}
 	rule := tmFirstRule - state
 {{- else}}
-	token := Token(tmFirstRule - state)
+	tok := {{template "tokenType" .}}(tmFirstRule - state)
 {{- end}}
 {{- if .Lexer.Tables.Backtrack}}
 recovered:
 {{- end}}
 {{- if .Lexer.ClassActions}}
-	switch {{if .Lexer.RuleToken}}rule{{else}}token{{end}} {
+	switch {{if .Lexer.RuleToken}}rule{{else}}tok{{end}} {
 {{- range .Lexer.ClassActions}}
 {{- if $.Lexer.RuleToken}}
 	case {{sum .Action 2}}:
 {{- else}}
-	case {{(index $.Syms .Action).ID}}:
+	case {{template "tokenPkg" $}}{{(index $.Syms .Action).ID}}:
 {{- end}}
 {{- with string_switch .Custom }}
 		hh := hash & {{.Mask}}
@@ -350,7 +354,7 @@ recovered:
 {{- if $.Lexer.RuleToken}}
 				rule = {{sum .Action 2}}
 {{- else}}
-				token = {{(index $.Syms .Action).ID}}
+				tok = {{template "tokenPkg" $}}{{(index $.Syms .Action).ID}}
 {{- end}}
 				break
 			}
@@ -363,7 +367,7 @@ recovered:
 {{- end}}
 {{- if .Lexer.RuleToken}}
 
-	token := tmToken[rule]
+	tok := tmToken[rule]
 	var space bool
 {{- if .Lexer.Actions}}
 	switch rule {
@@ -388,8 +392,8 @@ recovered:
 		goto restart
 	}
 {{- else}}
-	switch token {
-	case {{(index $.Syms .Lexer.InvalidToken).ID}}:
+	switch tok {
+	case {{template "tokenPkg" .}}{{(index $.Syms .Lexer.InvalidToken).ID}}:
 {{- template "handleInvalidToken" .}}
 {{- if $spaceRules}}
 	case {{range $i, $val := $spaceRules}}{{if gt $i 0}}, {{end}}{{$val}}{{end}}:
@@ -398,7 +402,7 @@ recovered:
 	}
 {{- end}}
 {{- block "onAfterNext" .}}{{end}}
-	return token
+	return tok
 }
 {{end -}}
 
@@ -479,7 +483,7 @@ func (l *Lexer) rewind(offset int) {
 {{- if .Lexer.RuleToken}}
 			rule = backupRule
 {{- else}}
-			token = Token(backupToken)
+			tok = {{template "tokenType" .}}(backupToken)
 {{- end}}
 {{- if .Lexer.ClassActions}}
 			hash = backupHash
@@ -491,7 +495,7 @@ func (l *Lexer) rewind(offset int) {
 {{- if .Lexer.RuleToken}}
 		if rule != 0 {
 {{- else}}
-		if token != {{(index $.Syms .Lexer.InvalidToken).ID}} {
+		if tok != {{template "tokenPkg" .}}{{(index $.Syms .Lexer.InvalidToken).ID}} {
 {{- end}}
 			goto recovered
 		}
@@ -550,13 +554,16 @@ const parserTpl = `
 {{- end}}
 {{- end}}
 
+{{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
+{{- define "tokenPkg"}}"{{.Options.Package}}/token".{{end -}}
+
 {{- define "reportConsumedNext" -}}
 {{- if .ReportTokens false }}
-			switch Token(p.next.symbol) {
+			switch {{template "tokenType" .}}(p.next.symbol) {
 {{- range .Parser.MappedTokens}}
 {{- $sym := index $.Syms .Token}}
 {{- if not (or $sym.Space (eq $sym.Name "invalid_token")) }}
-	case {{$sym.ID}}:
+	case {{template "tokenPkg" $}}{{$sym.ID}}:
 		p.listener({{.Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
 {{- end}}
 {{- end}}
@@ -665,8 +672,8 @@ const (
 {{- if .ReportTokens true }}
 	startTokenBufferSize = 16
 {{- end}}
-	noToken        = int32(UNAVAILABLE)
-	eoiToken       = int32(EOI)
+	noToken        = int32({{template "tokenPkg" .}}UNAVAILABLE)
+	eoiToken       = int32({{template "tokenPkg" .}}EOI)
 	debugSyntax    = {{ .Options.DebugParser }}
 )
 
@@ -919,7 +926,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 {{ block "recoverFromError" . -}}
 {{ if .Options.IsEnabled "recoverFromError" -}}
 func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
-	var recoverSyms [1 + {{ref "NumTokens"}}/8]uint8
+	var recoverSyms [1 + {{template "tokenPkg" .}}NumTokens/8]uint8
 	var recoverPos []int
 
 	if debugSyntax {
@@ -963,7 +970,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 {{- if .ReportsInvalidToken}}
 	for _, tok := range p.pending {
 		// Try to cover all nearby invalid tokens.
-		if {{ref "Token"}}(tok.symbol) == {{(index .Syms .Lexer.InvalidToken).ID}} {
+		if {{template "tokenType" .}}(tok.symbol) == {{template "tokenPkg" .}}{{(index .Syms .Lexer.InvalidToken).ID}} {
 			if s > tok.offset {
 				s = tok.offset
 			}
@@ -1013,7 +1020,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		if s != e {
 			// Consume trailing invalid tokens.
 			for _, tok := range p.pending {
-				if {{ref "Token"}}(tok.symbol) == {{(index .Syms .Lexer.InvalidToken).ID}} && tok.endoffset > e {
+				if {{template "tokenType" .}}(tok.symbol) == {{template "tokenPkg" .}}{{(index .Syms .Lexer.InvalidToken).ID}} && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}
@@ -1100,14 +1107,14 @@ restart:
 	tok := lexer.Next()
 	switch tok {
 {{- if .ReportTokens true }}
-	case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{.ID}}{{end}}:
+	case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{template "tokenPkg" $}}{{.ID}}{{end}}:
 		s, e := lexer.Pos()
 		tok := symbol{int32(tok), s, e}
 		p.pending = append(p.pending, tok)
 		goto restart
 {{- end}}
 {{- if not .ReportsInvalidToken}}
-	case {{(index .Syms .Lexer.InvalidToken).ID}}:
+	case {{template "tokenPkg" .}}{{(index .Syms .Lexer.InvalidToken).ID}}:
 		goto restart
 {{- end}}
 	}
@@ -1125,11 +1132,11 @@ restart:
 	tok := lexer.Next()
 	switch tok {
 {{- if .ReportTokens true }}
-	case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{.ID}}{{end}}:
+	case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{template "tokenPkg" $}}{{.ID}}{{end}}:
 		goto restart
 {{- end}}
 {{- if not .ReportsInvalidToken}}
-	case {{(index .Syms .Lexer.InvalidToken).ID}}:
+	case {{template "tokenPkg" .}}{{(index .Syms .Lexer.InvalidToken).ID}}:
 		goto restart
 {{- end}}
 	}
@@ -1359,11 +1366,11 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 {{ block "reportIgnoredToken" . -}}
 func (p *Parser) reportIgnoredToken(tok symbol) {
 	var t {{ref "NodeType"}}
-	switch {{ref "Token"}}(tok.symbol) {
+	switch {{template "tokenType" .}}(tok.symbol) {
 {{- range .Parser.MappedTokens}}
 {{- $sym := index $.Syms .Token}}
 {{- if or $sym.Space (eq $sym.Name "invalid_token") }}
-	case {{$sym.ID}}:
+	case {{template "tokenPkg" $}}{{$sym.ID}}:
 		t = {{.Name}}
 {{- end}}
 {{- end}}
@@ -1371,7 +1378,7 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 		return
 	}
 	if debugSyntax {
-		"fmt".Printf("ignored: %v as %v\n", {{ref "Token"}}(tok.symbol), t)
+		"fmt".Printf("ignored: %v as %v\n", {{template "tokenType" .}}(tok.symbol), t)
 	}
 	p.listener(t, {{if .Parser.UsesFlags}}0, {{end}}tok.offset, tok.endoffset)
 }
@@ -1380,6 +1387,9 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 `
 
 const parserTablesTpl = `
+{{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
+{{- define "tokenPkg"}}"{{.Options.Package}}/token".{{end -}}
+
 {{- template "header" . -}}
 package {{.Name}}
 
@@ -1407,10 +1417,10 @@ func symbolName(sym int32) string {
 	if sym == noToken {
 		return "<no-token>"
 	}
-	if sym < int32({{ref "NumTokens"}}) {
-		return {{ref "Token"}}(sym).String()
+	if sym < int32({{template "tokenPkg" .}}NumTokens) {
+		return {{template "tokenType" .}}(sym).String()
 	}
-	if i := int(sym) - int({{ref "NumTokens"}}); i < len(tmNonterminals) {
+	if i := int(sym) - int({{template "tokenPkg" .}}NumTokens); i < len(tmNonterminals) {
 		return tmNonterminals[i]
 	}
 	return "fmt".Sprintf("nonterminal(%d)", sym)

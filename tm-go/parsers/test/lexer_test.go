@@ -4,15 +4,16 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/tm-go/parsers/test"
+	"github.com/inspirer/textmapper/tm-go/parsers/test/token"
 	"github.com/inspirer/textmapper/tm-parsers/parsertest"
 )
 
 var lexerTests = []struct {
-	tok    test.Token
+	tok    token.Token
 	inputs []string
 }{
 
-	{test.IDENTIFIER, []string{
+	{token.IDENTIFIER, []string{
 		`«abc» «brea» «abc-def»`,
 		`«a-b-c-d»----  `,
 		` «a»-`,
@@ -21,64 +22,64 @@ var lexerTests = []struct {
 		`«testfoo»----- testfoo----->`,
 	}},
 
-	{test.MINUS, []string{
+	{token.MINUS, []string{
 		` «-» ->  a------b«-»  «-»«-»`,
 	}},
-	{test.MINUSGT, []string{
+	{token.MINUSGT, []string{
 		`«->»`,
 		`abcdef«->»`,
 		`abcdef«->»   `,
 		`testfoo1----«->»`,
 	}},
 
-	{test.BACKTRACKINGTOKEN, []string{
+	{token.BACKTRACKINGTOKEN, []string{
 		`«test----->» «test->»  «testfoo->» testf->`,
 	}},
 
-	{test.TEST, []string{"«test»", "«test»-----"}},
-	{test.DECL1, []string{"«decl1»"}},
-	{test.DECL2, []string{"«decl2»"}},
-	{test.IF, []string{"«if»"}},
-	{test.ELSE, []string{"«else»"}},
-	{test.EVAL, []string{"«eval»"}},
-	{test.AS, []string{"«as»"}},
-	{test.INTEGERCONSTANT, []string{"«123»  34\n «0» ", "«123» 0"}},
-	{test.LASTINT, []string{"123 «0\n»45 «0»"}},
+	{token.TEST, []string{"«test»", "«test»-----"}},
+	{token.DECL1, []string{"«decl1»"}},
+	{token.DECL2, []string{"«decl2»"}},
+	{token.IF, []string{"«if»"}},
+	{token.ELSE, []string{"«else»"}},
+	{token.EVAL, []string{"«eval»"}},
+	{token.AS, []string{"«as»"}},
+	{token.INTEGERCONSTANT, []string{"«123»  34\n «0» ", "«123» 0"}},
+	{token.LASTINT, []string{"123 «0\n»45 «0»"}},
 
-	{test.LBRACE, []string{"«{»"}},
-	{test.RBRACE, []string{"«}»"}},
-	{test.LPAREN, []string{"«(»"}},
-	{test.RPAREN, []string{"«)»"}},
-	{test.LBRACK, []string{"«[»"}},
-	{test.RBRACK, []string{"«]»"}},
-	{test.DOT, []string{
+	{token.LBRACE, []string{"«{»"}},
+	{token.RBRACE, []string{"«}»"}},
+	{token.LPAREN, []string{"«(»"}},
+	{token.RPAREN, []string{"«)»"}},
+	{token.LBRACK, []string{"«[»"}},
+	{token.RBRACK, []string{"«]»"}},
+	{token.DOT, []string{
 		"«.»",
 		"«.»«.»",
 	}},
-	{test.MULTILINE, []string{
+	{token.MULTILINE, []string{
 		"% \n «%q\n% q»\n%f",
 		"«%q\n%q» !",
 		"«%q\n%   q»",
 	}},
-	{test.DOTDOTDOT, []string{"«...»"}},
-	{test.COMMA, []string{"«,»"}},
-	{test.COLON, []string{"«:»"}},
-	{test.PLUS, []string{"«+»"}},
+	{token.DOTDOTDOT, []string{"«...»"}},
+	{token.COMMA, []string{"«,»"}},
+	{token.COLON, []string{"«:»"}},
+	{token.PLUS, []string{"«+»"}},
 
-	{test.SINGLELINECOMMENT, []string{" «//abc»\r\n "}},
-	{test.MULTILINECOMMENT, []string{
+	{token.SINGLELINECOMMENT, []string{" «//abc»\r\n "}},
+	{token.MULTILINECOMMENT, []string{
 		" «/**/» «/***/» «/*\r\n*/» ",
 		" «/* /* ****/  */»  nested",
 	}},
-	{test.SHARPATID, []string{
+	{token.SHARPATID, []string{
 		" Zfoo «Zfoob» «Zfo\\u1111ob» ",
 	}},
-	{test.DQUOTE, []string{"«\"»"}},
-	{test.SQUOTE, []string{"«'»"}},
-	{test.ZFOO, []string{
+	{token.DQUOTE, []string{"«\"»"}},
+	{token.SQUOTE, []string{"«'»"}},
+	{token.ZFOO, []string{
 		" «Zfoo» Zfoob ",
 	}},
-	{test.INVALID_TOKEN, []string{
+	{token.INVALID_TOKEN, []string{
 		" «#» ",
 		" /**/ «/* /* ****/  *  nested»", // unfinished comment
 		" «Zff\\» ",
@@ -87,16 +88,16 @@ var lexerTests = []struct {
 
 func TestLexer(t *testing.T) {
 	l := new(test.Lexer)
-	seen := map[test.Token]bool{}
-	seen[test.WHITESPACE] = true
-	seen[test.ERROR] = true
+	seen := map[token.Token]bool{}
+	seen[token.WHITESPACE] = true
+	seen[token.ERROR] = true
 	for _, tc := range lexerTests {
 		seen[tc.tok] = true
 		for _, input := range tc.inputs {
 			ptest := parsertest.New(t, tc.tok.String(), input)
 			l.Init(ptest.Source())
 			tok := l.Next()
-			for tok != test.EOI {
+			for tok != token.EOI {
 				if tok == tc.tok {
 					s, e := l.Pos()
 					ptest.Consume(t, s, e)
@@ -106,7 +107,7 @@ func TestLexer(t *testing.T) {
 			ptest.Done(t, nil)
 		}
 	}
-	for tok := test.EOI + 1; tok < test.NumTokens; tok++ {
+	for tok := token.EOI + 1; tok < token.NumTokens; tok++ {
 		if !seen[tok] {
 			t.Errorf("%v is not tested", tok)
 		}

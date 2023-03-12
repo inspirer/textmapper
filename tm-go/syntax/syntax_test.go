@@ -8,6 +8,7 @@ import (
 	"github.com/inspirer/textmapper/tm-go/syntax"
 	"github.com/inspirer/textmapper/tm-go/util/dump"
 	"github.com/inspirer/textmapper/tm-parsers/tm"
+	"github.com/inspirer/textmapper/tm-parsers/tm/token"
 )
 
 var simplifyTests = []struct {
@@ -115,7 +116,7 @@ func parse(input string) (*syntax.Model, error) {
 	p := parser{out: ret}
 	p.lexer.Init(input)
 	p.next()
-	for p.curr != tm.EOI {
+	for p.curr != token.EOI {
 		p.parseDecl()
 		if p.err != nil {
 			break
@@ -355,17 +356,17 @@ func initSymbols(input string, out *syntax.Model) error {
 	seen := make(map[string]bool)
 	out.Terminals = []string{"EOI"}
 	out.Nonterms = nil
-	var prev tm.Token
-	for tok := l.Next(); tok != tm.EOI; tok = l.Next() {
-		if tok == tm.INVALID_TOKEN {
+	var prev token.Token
+	for tok := l.Next(); tok != token.EOI; tok = l.Next() {
+		if tok == token.INVALID_TOKEN {
 			return fmt.Errorf("%v: invalid token: %s", l.Line(), l.Text())
 		}
-		if tok != tm.ID && !tm.IsSoftKeyword(tok) {
+		if tok != token.ID && !tm.IsSoftKeyword(tok) {
 			prev = tok
 			continue
 		}
 		copy := l
-		if la := copy.Next(); la == tm.ASSIGN || la == tm.PLUSASSIGN {
+		if la := copy.Next(); la == token.ASSIGN || la == token.PLUSASSIGN {
 			prev = tok
 			continue
 		}
@@ -376,7 +377,7 @@ func initSymbols(input string, out *syntax.Model) error {
 			}
 			seen[l.Text()] = true
 		} else {
-			if prev == tm.EOI || prev == tm.SEMICOLON {
+			if prev == token.EOI || prev == token.SEMICOLON {
 				if seen[l.Text()] {
 					return fmt.Errorf("redeclaration of " + l.Text())
 				}
@@ -412,7 +413,7 @@ func tokenOrigin(l *tm.Lexer) node {
 
 type parser struct {
 	lexer tm.Lexer
-	curr  tm.Token
+	curr  token.Token
 	err   error
 	out   *syntax.Model
 }
@@ -420,16 +421,16 @@ type parser struct {
 func (p *parser) next() {
 	p.curr = p.lexer.Next()
 	if tm.IsSoftKeyword(p.curr) {
-		p.curr = tm.ID
+		p.curr = token.ID
 	}
 }
 
-func (p *parser) lookahead() tm.Token {
+func (p *parser) lookahead() token.Token {
 	l := p.lexer
 	return l.Next()
 }
 
-func (p *parser) consumeIf(tok tm.Token) bool {
+func (p *parser) consumeIf(tok token.Token) bool {
 	if p.curr == tok {
 		p.next()
 		return true
@@ -437,7 +438,7 @@ func (p *parser) consumeIf(tok tm.Token) bool {
 	return false
 }
 
-func (p *parser) consume(tok tm.Token) {
+func (p *parser) consume(tok token.Token) {
 	if p.curr != tok {
 		p.errorf("found %v, while %v is expected", p.curr, tok)
 	}
@@ -455,10 +456,10 @@ func (p *parser) errorf(format string, a ...interface{}) {
 
 func (p *parser) parseDecl() {
 	switch p.curr {
-	case tm.ID:
+	case token.ID:
 		p.parseNonterm()
 		return
-	case tm.REM:
+	case token.REM:
 		p.next()
 		switch p.lexer.Text() {
 		case "flag", "lookahead":
@@ -469,23 +470,23 @@ func (p *parser) parseDecl() {
 			if i, val := p.parseNontermRef(); val != nil {
 				inp := syntax.Input{
 					Nonterm: i - len(p.out.Terminals),
-					NoEoi:   p.consumeIf(tm.NOMINUSEOI),
+					NoEoi:   p.consumeIf(token.NOMINUSEOI),
 				}
 				p.out.Inputs = append(p.out.Inputs, inp)
 			}
-			p.consume(tm.SEMICOLON)
+			p.consume(token.SEMICOLON)
 			return
 		case "interface":
 			p.next()
 			name := p.lexer.Text()
-			p.consume(tm.ID)
+			p.consume(token.ID)
 			p.out.Cats = append(p.out.Cats, name)
-			for p.consumeIf(tm.COMMA) {
+			for p.consumeIf(token.COMMA) {
 				name := p.lexer.Text()
-				p.consume(tm.ID)
+				p.consume(token.ID)
 				p.out.Cats = append(p.out.Cats, name)
 			}
-			p.consume(tm.SEMICOLON)
+			p.consume(token.SEMICOLON)
 			return
 		case "generate":
 			p.errorf("TODO parse %v", p.lexer.Text())
@@ -505,9 +506,9 @@ func (p *parser) parseFlag() {
 	}
 	p.next()
 	name := p.lexer.Text()
-	p.consume(tm.ID)
+	p.consume(token.ID)
 	var defaultVal string
-	if p.consumeIf(tm.ASSIGN) {
+	if p.consumeIf(token.ASSIGN) {
 		defaultVal = p.lexer.Text()
 		if defaultVal != "true" && defaultVal != "false" {
 			p.errorf("true or false expected")
@@ -519,7 +520,7 @@ func (p *parser) parseFlag() {
 		DefaultValue: defaultVal,
 		Lookahead:    la,
 	})
-	p.consume(tm.SEMICOLON)
+	p.consume(token.SEMICOLON)
 }
 
 func (p *parser) parseNonterm() {
@@ -527,30 +528,30 @@ func (p *parser) parseNonterm() {
 	if ret == nil {
 		return
 	}
-	if p.consumeIf(tm.LT) {
+	if p.consumeIf(token.LT) {
 		ret.Params = append(ret.Params, p.parseParamRef())
-		for p.consumeIf(tm.COMMA) {
+		for p.consumeIf(token.COMMA) {
 			ret.Params = append(ret.Params, p.parseParamRef())
 		}
-		p.consume(tm.GT)
+		p.consume(token.GT)
 	}
-	if p.curr == tm.CODE {
+	if p.curr == token.CODE {
 		ret.Type = p.lexer.Text()
 		p.next()
 	}
-	p.consume(tm.COLON)
+	p.consume(token.COLON)
 	ret.Value = &syntax.Expr{Kind: syntax.Choice, Origin: tokenOrigin(&p.lexer)}
 	ret.Value.Sub = append(ret.Value.Sub, p.parseRule())
-	for p.consumeIf(tm.OR) {
+	for p.consumeIf(token.OR) {
 		ret.Value.Sub = append(ret.Value.Sub, p.parseRule())
 	}
 	ret.Value = syntax.Simplify(ret.Value, true /*deep*/)
-	p.consume(tm.SEMICOLON)
+	p.consume(token.SEMICOLON)
 }
 
 func (p *parser) parseNontermRef() (int, *syntax.Nonterm) {
 	name := p.lexer.Text()
-	p.consume(tm.ID)
+	p.consume(token.ID)
 	for i, val := range p.out.Nonterms {
 		if val.Name == name {
 			return i + len(p.out.Terminals), val
@@ -562,7 +563,7 @@ func (p *parser) parseNontermRef() (int, *syntax.Nonterm) {
 
 func (p *parser) parseTermRef() int {
 	name := p.lexer.Text()
-	p.consume(tm.ID)
+	p.consume(token.ID)
 	if !isTerm(name) {
 		p.errorf("terminal reference is expected (found %q)", name)
 	}
@@ -577,7 +578,7 @@ func (p *parser) parseTermRef() int {
 
 func (p *parser) parseParamRef() int {
 	name := p.lexer.Text()
-	p.consume(tm.ID)
+	p.consume(token.ID)
 	for i, val := range p.out.Params {
 		if val.Name == name {
 			return i
@@ -589,12 +590,12 @@ func (p *parser) parseParamRef() int {
 
 func (p *parser) parseRule() *syntax.Expr {
 	var chain []*syntax.Expr
-	if p.curr == tm.LBRACK {
+	if p.curr == token.LBRACK {
 		chain = append(chain, &syntax.Expr{Kind: syntax.Conditional, Predicate: p.parsePredicate()})
 	}
 
 	ret := p.parseParts()
-	if p.consumeIf(tm.REM) {
+	if p.consumeIf(token.REM) {
 		switch p.lexer.Text() {
 		case "prec":
 			p.next()
@@ -603,9 +604,9 @@ func (p *parser) parseRule() *syntax.Expr {
 			p.errorf("%%%s is not supported", p.lexer.Text())
 		}
 	}
-	for p.consumeIf(tm.MINUSGT) {
+	for p.consumeIf(token.MINUSGT) {
 		name := p.lexer.Text()
-		p.consume(tm.ID)
+		p.consume(token.ID)
 		ret = &syntax.Expr{Kind: syntax.Arrow, Name: name, Sub: []*syntax.Expr{ret}}
 	}
 
@@ -630,17 +631,17 @@ func (p *parser) parseParts() *syntax.Expr {
 
 func (p *parser) parsePart() *syntax.Expr {
 	switch p.curr {
-	case tm.ID:
-		if la := p.lookahead(); la != tm.PLUSASSIGN && la != tm.ASSIGN {
+	case token.ID:
+		if la := p.lookahead(); la != token.PLUSASSIGN && la != token.ASSIGN {
 			break
 		}
 		name := p.lexer.Text()
 		p.next()
 		var kind syntax.ExprKind
 		switch p.curr {
-		case tm.PLUSASSIGN:
+		case token.PLUSASSIGN:
 			kind = syntax.Append
-		case tm.ASSIGN:
+		case token.ASSIGN:
 			kind = syntax.Assign
 		default:
 			p.errorf("wrong assignment")
@@ -650,31 +651,31 @@ func (p *parser) parsePart() *syntax.Expr {
 		p.next()
 		inner := p.parseOpt()
 		return &syntax.Expr{Kind: kind, Name: name, Sub: []*syntax.Expr{inner}, Origin: origin}
-	case tm.DOT:
+	case token.DOT:
 		p.next()
 		name := p.lexer.Text()
-		p.consume(tm.ID)
+		p.consume(token.ID)
 		return &syntax.Expr{Kind: syntax.StateMarker, Name: name}
-	case tm.CODE:
+	case token.CODE:
 		code := p.lexer.Text()
 		p.next()
 		return &syntax.Expr{Kind: syntax.Command, Name: code}
-	case tm.LPARENQUESTASSIGN:
+	case token.LPARENQUESTASSIGN:
 		p.next()
 		ret := &syntax.Expr{Kind: syntax.Lookahead}
 		for {
-			not := p.consumeIf(tm.EXCL)
+			not := p.consumeIf(token.EXCL)
 			sym, _ := p.parseNontermRef()
 			expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym}
 			if not {
 				expr = &syntax.Expr{Kind: syntax.LookaheadNot, Sub: []*syntax.Expr{expr}}
 			}
 			ret.Sub = append(ret.Sub, expr)
-			if !p.consumeIf(tm.AND) {
+			if !p.consumeIf(token.AND) {
 				break
 			}
 		}
-		p.consume(tm.RPAREN)
+		p.consume(token.RPAREN)
 		return ret
 	}
 	return p.parseOpt()
@@ -685,10 +686,10 @@ func (p *parser) parseOpt() *syntax.Expr {
 	if inner == nil {
 		return nil
 	}
-	if p.curr == tm.AS {
+	if p.curr == token.AS {
 		p.errorf("'as' clauses are not supported")
 	}
-	if p.curr == tm.QUEST {
+	if p.curr == token.QUEST {
 		p.next()
 		inner = &syntax.Expr{Kind: syntax.Optional, Sub: []*syntax.Expr{inner}}
 	}
@@ -702,12 +703,12 @@ func (p *parser) parseSymref() *syntax.Expr {
 	}
 	sym, _ := p.parseNontermRef()
 	var args []syntax.Arg
-	if p.consumeIf(tm.LT) {
+	if p.consumeIf(token.LT) {
 		args = append(args, p.parseArg())
-		for p.consumeIf(tm.COMMA) {
+		for p.consumeIf(token.COMMA) {
 			args = append(args, p.parseArg())
 		}
-		p.consume(tm.GT)
+		p.consume(token.GT)
 	}
 	return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: origin, Model: p.out}
 }
@@ -715,7 +716,7 @@ func (p *parser) parseSymref() *syntax.Expr {
 func (p *parser) parseArg() syntax.Arg {
 	origin := tokenOrigin(&p.lexer)
 	param := p.parseParamRef()
-	p.consume(tm.ASSIGN)
+	p.consume(token.ASSIGN)
 	val := p.lexer.Text()
 	if val == "true" || val == "false" {
 		p.next()
@@ -728,32 +729,32 @@ func (p *parser) parsePrimary() *syntax.Expr {
 	var ret *syntax.Expr
 	var sep *syntax.Expr
 	switch p.curr {
-	case tm.ID:
+	case token.ID:
 		ret = p.parseSymref()
-	case tm.LPAREN:
+	case token.LPAREN:
 		ret = &syntax.Expr{Kind: syntax.Choice, Origin: tokenOrigin(&p.lexer)}
 		p.next()
 		ret.Sub = append(ret.Sub, p.parseRule())
-		if p.consumeIf(tm.SEPARATOR) {
+		if p.consumeIf(token.SEPARATOR) {
 			sep = &syntax.Expr{Kind: syntax.Sequence, Origin: tokenOrigin(&p.lexer)}
 			for {
 				sym := &syntax.Expr{Kind: syntax.Reference, Symbol: p.parseTermRef()}
 				sep.Sub = append(sep.Sub, sym)
-				if p.curr != tm.ID {
+				if p.curr != token.ID {
 					break
 				}
 			}
-			p.consume(tm.RPAREN)
-			if p.curr != tm.PLUS && p.curr != tm.MULT {
+			p.consume(token.RPAREN)
+			if p.curr != token.PLUS && p.curr != token.MULT {
 				p.errorf("qualifier is expected")
 			}
 			break
 		}
-		for p.consumeIf(tm.OR) {
+		for p.consumeIf(token.OR) {
 			ret.Sub = append(ret.Sub, p.parseRule())
 		}
-		p.consume(tm.RPAREN)
-	case tm.SET:
+		p.consume(token.RPAREN)
+	case token.SET:
 		p.next()
 		pos := len(p.out.Sets)
 		p.out.Sets = append(p.out.Sets, p.parseSet())
@@ -761,9 +762,9 @@ func (p *parser) parsePrimary() *syntax.Expr {
 	default:
 		return nil
 	}
-	for p.curr == tm.PLUS || p.curr == tm.MULT {
+	for p.curr == token.PLUS || p.curr == token.MULT {
 		var flags syntax.ListFlags
-		if p.curr == tm.PLUS {
+		if p.curr == token.PLUS {
 			flags = syntax.OneOrMore
 		}
 		p.next()
@@ -778,21 +779,21 @@ func (p *parser) parsePrimary() *syntax.Expr {
 }
 
 func (p *parser) parsePredicate() *syntax.Predicate {
-	p.consume(tm.LBRACK)
+	p.consume(token.LBRACK)
 	ret := p.parsePredicateAnd()
-	for p.consumeIf(tm.OROR) {
+	for p.consumeIf(token.OROR) {
 		if ret.Op != syntax.Or {
 			ret = &syntax.Predicate{Op: syntax.Or, Sub: []*syntax.Predicate{ret}}
 		}
 		ret.Sub = append(ret.Sub, p.parsePredicateAnd())
 	}
-	p.consume(tm.RBRACK)
+	p.consume(token.RBRACK)
 	return ret
 }
 
 func (p *parser) parsePredicateAnd() *syntax.Predicate {
 	ret := p.parsePredicatePrimary()
-	for p.consumeIf(tm.ANDAND) {
+	for p.consumeIf(token.ANDAND) {
 		if ret.Op != syntax.And {
 			ret = &syntax.Predicate{Op: syntax.And, Sub: []*syntax.Predicate{ret}}
 		}
@@ -803,16 +804,16 @@ func (p *parser) parsePredicateAnd() *syntax.Predicate {
 
 func (p *parser) parsePredicatePrimary() *syntax.Predicate {
 	origin := tokenOrigin(&p.lexer)
-	if p.consumeIf(tm.EXCL) {
+	if p.consumeIf(token.EXCL) {
 		return &syntax.Predicate{Op: syntax.Not, Sub: []*syntax.Predicate{
 			{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true", Origin: origin}}}
 	}
 	ret := &syntax.Predicate{Op: syntax.Equals, Param: p.parseParamRef(), Value: "true", Origin: origin}
 	switch p.curr {
-	case tm.ASSIGNASSIGN:
+	case token.ASSIGNASSIGN:
 		p.next()
 		ret.Value = p.literal()
-	case tm.EXCLASSIGN:
+	case token.EXCLASSIGN:
 		p.next()
 		ret.Value = p.literal()
 		ret = &syntax.Predicate{Op: syntax.Not, Sub: []*syntax.Predicate{ret}}
@@ -822,7 +823,7 @@ func (p *parser) parsePredicatePrimary() *syntax.Predicate {
 
 func (p *parser) literal() string {
 	switch p.curr {
-	case tm.TRUE, tm.FALSE, tm.ICON:
+	case token.TRUE, token.FALSE, token.ICON:
 		val := p.lexer.Text()
 		p.next()
 		return val
@@ -832,21 +833,21 @@ func (p *parser) literal() string {
 }
 
 func (p *parser) parseSet() *syntax.TokenSet {
-	p.consume(tm.LPAREN)
+	p.consume(token.LPAREN)
 	ret := p.parseSetAnd()
-	for p.consumeIf(tm.OR) {
+	for p.consumeIf(token.OR) {
 		if ret.Kind != syntax.Union {
 			ret = &syntax.TokenSet{Kind: syntax.Union, Sub: []*syntax.TokenSet{ret}}
 		}
 		ret.Sub = append(ret.Sub, p.parseSetAnd())
 	}
-	p.consume(tm.RPAREN)
+	p.consume(token.RPAREN)
 	return ret
 }
 
 func (p *parser) parseSetAnd() *syntax.TokenSet {
 	ret := p.parseSetPrimary()
-	for p.consumeIf(tm.AND) {
+	for p.consumeIf(token.AND) {
 		if ret.Kind != syntax.Intersection {
 			ret = &syntax.TokenSet{Kind: syntax.Intersection, Sub: []*syntax.TokenSet{ret}}
 		}
@@ -857,8 +858,8 @@ func (p *parser) parseSetAnd() *syntax.TokenSet {
 
 func (p *parser) parseSetPrimary() *syntax.TokenSet {
 	tilde := tokenOrigin(&p.lexer)
-	compl := p.consumeIf(tm.TILDE)
-	if p.curr == tm.LPAREN {
+	compl := p.consumeIf(token.TILDE)
+	if p.curr == token.LPAREN {
 		ret := p.parseSet()
 		if compl {
 			ret = &syntax.TokenSet{Kind: syntax.Complement, Sub: []*syntax.TokenSet{ret}, Origin: tilde}
@@ -866,7 +867,7 @@ func (p *parser) parseSetPrimary() *syntax.TokenSet {
 		return ret
 	}
 	var op string
-	if p.lookahead() == tm.ID {
+	if p.lookahead() == token.ID {
 		op = p.lexer.Text()
 		p.next()
 	}

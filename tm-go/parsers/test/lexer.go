@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/inspirer/textmapper/tm-go/parsers/test/token"
 )
 
 // Lexer states.
@@ -51,7 +53,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() Token {
+func (l *Lexer) Next() token.Token {
 	var commentOffset, commentDepth int
 restart:
 	l.tokenOffset = l.offset
@@ -158,7 +160,7 @@ recovered:
 		}
 	}
 
-	token := tmToken[rule]
+	tok := tmToken[rule]
 	var space bool
 	switch rule {
 	case 0:
@@ -215,7 +217,7 @@ recovered:
 	if space {
 		goto restart
 	}
-	return token
+	return tok
 }
 
 // Pos returns the start and end positions of the last token returned by Next().

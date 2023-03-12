@@ -4,6 +4,8 @@ package tm
 
 import (
 	"fmt"
+
+	"github.com/inspirer/textmapper/tm-parsers/tm/token"
 )
 
 var recoveryScopeStates = map[int]bool{
@@ -111,10 +113,10 @@ func symbolName(sym int32) string {
 	if sym == noToken {
 		return "<no-token>"
 	}
-	if sym < int32(NumTokens) {
-		return Token(sym).String()
+	if sym < int32(token.NumTokens) {
+		return token.Token(sym).String()
 	}
-	if i := int(sym) - int(NumTokens); i < len(tmNonterminals) {
+	if i := int(sym) - int(token.NumTokens); i < len(tmNonterminals) {
 		return tmNonterminals[i]
 	}
 	return fmt.Sprintf("nonterminal(%d)", sym)

@@ -5,6 +5,8 @@ package js
 import (
 	"context"
 	"fmt"
+
+	"github.com/inspirer/textmapper/tm-parsers/js/token"
 )
 
 // ErrorHandler is called every time a parser is unable to process some part of the input.
@@ -28,8 +30,8 @@ func (e SyntaxError) Error() string {
 const (
 	startStackSize       = 256
 	startTokenBufferSize = 16
-	noToken              = int32(UNAVAILABLE)
-	eoiToken             = int32(EOI)
+	noToken              = int32(token.UNAVAILABLE)
+	eoiToken             = int32(token.EOI)
 	debugSyntax          = false
 )
 
@@ -89,14 +91,14 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 			}
 			p.pending = p.pending[:0]
 		}
-		switch Token(p.next.symbol) {
-		case NOSUBSTITUTIONTEMPLATE:
+		switch token.Token(p.next.symbol) {
+		case token.NOSUBSTITUTIONTEMPLATE:
 			p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
-		case TEMPLATEHEAD:
+		case token.TEMPLATEHEAD:
 			p.listener(TemplateHead, p.next.offset, p.next.endoffset)
-		case TEMPLATEMIDDLE:
+		case token.TEMPLATEMIDDLE:
 			p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
-		case TEMPLATETAIL:
+		case token.TEMPLATETAIL:
 			p.listener(TemplateTail, p.next.offset, p.next.endoffset)
 		}
 		e = p.next.endoffset
@@ -587,18 +589,18 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 
 func (p *Parser) reportIgnoredToken(tok symbol) {
 	var t NodeType
-	switch Token(tok.symbol) {
-	case MULTILINECOMMENT:
+	switch token.Token(tok.symbol) {
+	case token.MULTILINECOMMENT:
 		t = MultiLineComment
-	case SINGLELINECOMMENT:
+	case token.SINGLELINECOMMENT:
 		t = SingleLineComment
-	case INVALID_TOKEN:
+	case token.INVALID_TOKEN:
 		t = InvalidToken
 	default:
 		return
 	}
 	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", Token(tok.symbol), t)
+		fmt.Printf("ignored: %v as %v\n", token.Token(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }

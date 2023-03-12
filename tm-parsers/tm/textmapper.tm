@@ -517,51 +517,52 @@ expression -> Expression:
 %%
 
 ${template go_lexer.stateVars-}
-
 	inStatesSelector bool
-	prev             Token
+	prev             token.Token
 ${end}
 
 ${template go_lexer.initStateVars-}
 	l.inStatesSelector = false
-	l.prev = UNAVAILABLE
+	l.prev = token.UNAVAILABLE
 ${end}
 
 ${template go_lexer.onAfterNext-}
-	switch token {
-	case LT:
+	switch tok {
+	case token.LT:
 		l.inStatesSelector = l.State == StateInitial || l.State == StateAfterColonOrEq
 		l.State = StateInitial
-	case GT:
+	case token.GT:
 		if l.inStatesSelector {
 			l.State = StateAfterGT
 			l.inStatesSelector = false
 		} else {
 			l.State = StateInitial
 		}
-	case ID, LEFT, RIGHT, NONASSOC, GENERATE, ASSERT, EMPTY,
-		BRACKETS, INLINE, PREC, SHIFT, RETURNS, INPUT,
-		NONEMPTY, GLOBAL, EXPLICIT, LOOKAHEAD, PARAM, FLAG,
-		CHAR_S, CHAR_X, CLASS, INTERFACE, VOID, SPACE,
-		LAYOUT, LANGUAGE, LALR:
+	case token.ID, token.LEFT, token.RIGHT, token.NONASSOC, token.GENERATE,
+    token.ASSERT, token.EMPTY, token.BRACKETS, token.INLINE, token.PREC,
+    token.SHIFT, token.RETURNS, token.INPUT, token.NONEMPTY, token.GLOBAL,
+    token.EXPLICIT, token.LOOKAHEAD, token.PARAM, token.FLAG, token.CHAR_S,
+    token.CHAR_X, token.CLASS, token.INTERFACE, token.VOID, token.SPACE,
+		token.LAYOUT, token.LANGUAGE, token.LALR:
+
 		l.State = StateAfterID
-	case LEXER, PARSER:
-		if l.prev == COLONCOLON {
+	case token.LEXER, token.PARSER:
+		if l.prev == token.COLONCOLON {
 			l.State = StateInitial
 		} else {
 			l.State = StateAfterID
 		}
-	case ASSIGN, COLON:
+	case token.ASSIGN, token.COLON:
 		l.State = StateAfterColonOrEq
-	case CODE:
+	case token.CODE:
 		if !l.skipAction() {
-			token = INVALID_TOKEN
+			tok = token.INVALID_TOKEN
 		}
 		fallthrough
 	default:
 		l.State = StateInitial
 	}
-	l.prev = token
+	l.prev = tok
 ${end}
 
 ${template go_types.wrappedTypeExt-}

@@ -37,13 +37,14 @@ var importTests = []struct {
 	{`// foo is great!
 package foo
 
-var a = make(map[string]"def/abc".Imp
+var a = make(map[string]"github.com/de-f/abc".Imp
 func f(q []"abc/def as foo".Temp) {}`, `// foo is great!
 package foo
 
 import (
 	foo "abc/def"
-	"def/abc"
+
+	"github.com/de-f/abc"
 )
 
 var a = make(map[string]abc.Imp

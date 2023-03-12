@@ -3,6 +3,8 @@ package js
 import (
 	"context"
 	"fmt"
+
+	"github.com/inspirer/textmapper/tm-parsers/js/token"
 )
 
 // Parser is a table-driven LALR parser for Javascript.
@@ -15,7 +17,7 @@ type Parser struct {
 	pending   []symbol
 	healthy   bool
 
-	lastToken Token
+	lastToken token.Token
 	lastLine  int
 	endState  int16
 }
@@ -37,7 +39,7 @@ func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	if cap(p.pending) < startTokenBufferSize {
 		p.pending = make([]symbol, 0, startTokenBufferSize)
 	}
-	p.lastToken = UNAVAILABLE
+	p.lastToken = token.UNAVAILABLE
 	p.afterNext.symbol = noToken
 }
 
@@ -130,14 +132,14 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 					p.pending = p.pending[:0]
 				}
 				if p.next.symbol != eoiToken {
-					switch Token(p.next.symbol) {
-					case NOSUBSTITUTIONTEMPLATE:
+					switch token.Token(p.next.symbol) {
+					case token.NOSUBSTITUTIONTEMPLATE:
 						p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
-					case TEMPLATEHEAD:
+					case token.TEMPLATEHEAD:
 						p.listener(TemplateHead, p.next.offset, p.next.endoffset)
-					case TEMPLATEMIDDLE:
+					case token.TEMPLATEMIDDLE:
 						p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
-					case TEMPLATETAIL:
+					case token.TEMPLATETAIL:
 						p.listener(TemplateTail, p.next.offset, p.next.endoffset)
 					}
 					p.next.symbol = noToken
@@ -189,7 +191,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 }
 
 func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
-	var recoverSyms [1 + NumTokens/8]uint8
+	var recoverSyms [1 + token.NumTokens/8]uint8
 	var recoverPos []int
 
 	if debugSyntax {
@@ -222,7 +224,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 	e := s
 	for _, tok := range p.pending {
 		// Try to cover all nearby invalid tokens.
-		if Token(tok.symbol) == INVALID_TOKEN {
+		if token.Token(tok.symbol) == token.INVALID_TOKEN {
 			if s > tok.offset {
 				s = tok.offset
 			}
@@ -277,7 +279,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		if s != e {
 			// Consume trailing invalid tokens.
 			for _, tok := range p.pending {
-				if Token(tok.symbol) == INVALID_TOKEN && tok.endoffset > e {
+				if token.Token(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}
@@ -311,11 +313,11 @@ func lookaheadNext(lexer *Lexer, endState int16, stack []stackEntry) int32 {
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
+	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
 		goto restart
-	case GTGT, GTGTGT:
+	case token.GTGT, token.GTGTGT:
 		if _, success := reduceAll(int32(tok), endState, stack); !success {
-			tok = GT
+			tok = token.GT
 			lexer.offset = lexer.tokenOffset + 1
 			lexer.scanOffset = lexer.offset + 1
 			lexer.ch = '>'
@@ -379,7 +381,7 @@ func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, suc
 // forbidding insertion in this particular location.
 func (p *Parser) insertSC(state int16, offset int) {
 	if p.healthy {
-		stateAfterSC := gotoState(state, int32(SEMICOLON))
+		stateAfterSC := gotoState(state, int32(token.SEMICOLON))
 		if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
 			// ".. a semicolon is never inserted automatically if the semicolon would
 			// then be parsed as an empty statement or if that semicolon would become
@@ -389,7 +391,7 @@ func (p *Parser) insertSC(state int16, offset int) {
 	}
 
 	p.afterNext = p.next
-	p.next = symbol{int32(SEMICOLON), offset, offset}
+	p.next = symbol{int32(token.SEMICOLON), offset, offset}
 	p.listener(InsertedSemicolon, offset, offset)
 }
 
@@ -406,31 +408,31 @@ func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
 	lastToken := p.lastToken
 	lastEnd := p.next.endoffset
 restart:
-	token := lexer.Next()
-	switch token {
-	case MULTILINECOMMENT, SINGLELINECOMMENT, INVALID_TOKEN:
+	tok := lexer.Next()
+	switch tok {
+	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
 		s, e := lexer.Pos()
-		tok := symbol{int32(token), s, e}
+		tok := symbol{int32(tok), s, e}
 		p.pending = append(p.pending, tok)
 		goto restart
-	case GTGT, GTGTGT:
-		if _, success := reduceAll(int32(token), p.endState, stack); !success {
-			token = GT
+	case token.GTGT, token.GTGTGT:
+		if _, success := reduceAll(int32(tok), p.endState, stack); !success {
+			tok = token.GT
 			lexer.offset = lexer.tokenOffset + 1
 			lexer.scanOffset = lexer.offset + 1
 			lexer.ch = '>'
-			lexer.token = token
+			lexer.token = tok
 		}
 	}
-	p.lastToken = token
-	p.next.symbol = int32(token)
+	p.lastToken = tok
+	p.next.symbol = int32(tok)
 	p.next.offset, p.next.endoffset = lexer.Pos()
 	line := lexer.Line()
 
 	newLine := line != p.lastLine
 	p.lastLine = line
 
-	if !(newLine || token == RBRACE || token == EOI || lastToken == RPAREN) || lastToken == SEMICOLON {
+	if !(newLine || tok == token.RBRACE || tok == token.EOI || lastToken == token.RPAREN) || lastToken == token.SEMICOLON {
 		return
 	}
 
@@ -439,7 +441,7 @@ restart:
 		// of the stack and assume that the next token won't be accepted by the
 		// parser, so in general we insert more semicolons than needed. This is
 		// exactly what we want.
-		if newLine || token == RBRACE || token == EOI {
+		if newLine || tok == token.RBRACE || tok == token.EOI {
 			p.insertSC(-1 /* no state */, lastEnd)
 		}
 		return
@@ -450,21 +452,21 @@ restart:
 	if newLine {
 		// All but one of the restricted productions can be detected by looking
 		// at the last and current tokens.
-		restricted := token == ASSIGNGT
+		restricted := tok == token.ASSIGNGT
 		switch lastToken {
-		case CONTINUE, BREAK, RETURN, THROW:
+		case token.CONTINUE, token.BREAK, token.RETURN, token.THROW:
 			restricted = true
-		case YIELD:
+		case token.YIELD:
 			// No reduce actions are expected, so we can take a shortcut and check
 			// the current state.
 			restricted = afterYieldStates[int(stack[len(stack)-1].state)]
-		case ASYNC:
+		case token.ASYNC:
 			// No reduce actions are expected, so we can take a shortcut and check
 			// the current state.
 			restricted = afterAsyncStates[int(stack[len(stack)-1].state)]
-		case STRINGLITERAL:
+		case token.STRINGLITERAL:
 			// Assert clauses should appear on the same line.
-			restricted = token == ASSERT && noLineBreakStates[int(stack[len(stack)-1].state)]
+			restricted = tok == token.ASSERT && noLineBreakStates[int(stack[len(stack)-1].state)]
 		}
 
 		if restricted {
@@ -477,7 +479,7 @@ restart:
 	// will be accepted by the parser.
 	state, success := reduceAll(p.next.symbol, p.endState, stack)
 
-	if newLine && success && (token == PLUSPLUS || token == MINUSMINUS || token == AS || token == EXCL) {
+	if newLine && success && (tok == token.PLUSPLUS || tok == token.MINUSMINUS || tok == token.AS || tok == token.EXCL) {
 		if noLineBreakStates[int(state)] {
 			p.insertSC(state, lastEnd)
 			return
@@ -488,20 +490,20 @@ restart:
 		return
 	}
 
-	if token == RBRACE {
+	if tok == token.RBRACE {
 		// Not all closing braces require a semicolon. Double checking.
-		if _, success = reduceAll(int32(SEMICOLON), p.endState, stack); success {
+		if _, success = reduceAll(int32(token.SEMICOLON), p.endState, stack); success {
 			p.insertSC(state, lastEnd)
 		}
 		return
 	}
 
-	if newLine || token == EOI {
+	if newLine || tok == token.EOI {
 		p.insertSC(state, lastEnd)
 		return
 	}
 
-	if lastToken == RPAREN && doWhileStates[int(gotoState(state, int32(SEMICOLON)))] {
+	if lastToken == token.RPAREN && doWhileStates[int(gotoState(state, int32(token.SEMICOLON)))] {
 		p.insertSC(state, lastEnd)
 		return
 	}
