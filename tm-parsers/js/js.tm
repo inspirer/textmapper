@@ -120,6 +120,7 @@ invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'set':     /set/
 'static':  /static/
 'target':  /target/
+'satisfies': /satisfies/
 
 # Strict mode keywords:
 #   implements interface package private protected public
@@ -142,6 +143,10 @@ invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'number':  /number/
 'string':  /string/
 'symbol':  /symbol/
+'bigint': /bigint/
+'undefined': /undefined/
+'never': /never/
+'object': /object/
 
 # The following keywords have special meaning in certain contexts, but are
 # valid identifiers:
@@ -155,6 +160,7 @@ invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'override':    /override/
 'require':     /require/
 'type':        /type/
+'accessor':    /accessor/
 
 # Typescript 2.0+
 'readonly': /readonly/
@@ -320,7 +326,7 @@ resolveShift:
 
 :: parser
 
-%input Module, TypeSnippet, ExpressionSnippet;
+%input Module, TypeSnippet, ExpressionSnippet, NamespaceNameSnippet;
 
 TypeSnippet :
     Type ;
@@ -328,13 +334,18 @@ TypeSnippet :
 ExpressionSnippet :
     Expression<+In, ~Yield, ~Await> ;
 
+NamespaceNameSnippet -> TsNamespaceName :
+  NamespaceName ;
+
 %assert empty set(follow error & ~('}' | ')' | ',' | ';' | ']'));
 
 %generate beforeSemi = set(precede ';');
+%generate beforeMemberExpr = set(precede MemberExpression<+Await, +Yield>);
 
 %flag In;
 %flag Yield;
 %flag Await;
+%flag Default = true;
 %flag NoAsync = false;
 
 %flag WithoutNew = false;
@@ -344,18 +355,20 @@ ExpressionSnippet :
 %flag WithoutImplements = false;
 %flag WithoutFrom = false;
 %flag WithoutAs = false;
+%flag WithoutSatisfies = false;
 
 %lookahead flag NoLet = false;
 %lookahead flag NoLetSq = false;
 %lookahead flag NoObjLiteral = false;
 %lookahead flag NoFuncClass = false;
 %lookahead flag NoAs = false;
+%lookahead flag NoSatisfies = false;
 %lookahead flag StartWithLet = false;
 
 SyntaxError -> SyntaxProblem :
     error ;
 
-IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, WithoutAs> :
+IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, WithoutAs, WithoutSatisfies> :
     Identifier
 
 # Keywords
@@ -383,9 +396,11 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, Without
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
-  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
-  | 'readonly' | 'keyof' | 'unique' | 'infer'
+  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol' | 'bigint'
+  | 'undefined' | 'never' | 'object' | 'abstract' | 'constructor' | 'declare'
+  | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
+  | 'readonly' | 'keyof' | 'unique' | 'infer' | 'accessor'
+  | [!WithoutSatisfies] 'satisfies'
 ;
 
 IdentifierNameDecl<WithoutNew> -> NameIdent:
@@ -399,7 +414,7 @@ ClassPrivateRef -> ReferenceIdent:
 
 # A.2 Expressions
 
-IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> ReferenceIdent :
+IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes, Default> -> ReferenceIdent :
 # V8 runtime functions start with a percent sign.
 # See http://stackoverflow.com/questions/11202824/what-is-in-javascript
     Identifier
@@ -407,15 +422,18 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes> -> ReferenceI
   | [!Yield] 'yield'
   | [!Await] 'await'
   | [!NoLet] 'let'
+  | [!Default] 'default'
   | [!NoAsync] 'async' (?= !StartOfArrowFunction)
 
   # Soft keywords
   | 'as' | 'assert' | 'asserts' | 'from' | 'get' | 'of' | 'set' | 'static' | 'target'
 
   # Typescript.
-  | 'implements' | 'interface' | 'private' | 'protected' | 'public'
-  | [!WithoutPredefinedTypes] ('any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol')
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
+  | 'implements' | 'interface' | 'private' | 'protected' | 'public' | 'satisfies'
+  | [!WithoutPredefinedTypes] ('any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
+    | 'bigint' | 'undefined' | 'never' | 'object')
+  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override'
+  | 'require' | 'type' | 'global' | 'accessor'
   | [!WithoutPredefinedTypes] ('keyof' | 'unique' | 'readonly' | 'infer')
 ;
 
@@ -431,9 +449,10 @@ BindingIdentifier<WithoutImplements> -> NameIdent :
   # Typescript.
   | [!WithoutImplements] 'implements'
   | 'interface' | 'private' | 'protected' | 'public'
-  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
-  | 'readonly' | 'keyof' | 'unique' | 'infer'
+  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol' | 'bigint'
+  | 'undefined' | 'never' | 'object' | 'abstract' | 'constructor' | 'declare'
+  | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
+  | 'readonly' | 'keyof' | 'unique' | 'infer' | 'satisfies' | 'accessor'
 ;
 
 LabelIdentifier -> LabelIdent :
@@ -447,13 +466,13 @@ LabelIdentifier -> LabelIdent :
 
   # Typescript.
   | 'implements' | 'interface' | 'private' | 'protected' | 'public'
-  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol'
-  | 'abstract' | 'constructor' | 'declare' | 'is' | 'module' | 'namespace' | 'override' | 'require' | 'type' | 'global'
-  | 'readonly' | 'keyof' | 'unique' | 'infer'
+  | 'any' | 'unknown' | 'boolean' | 'number' | 'string' | 'symbol' | 'bigint'
+  | 'undefined' | 'never' | 'object' | 'declare' | 'is' | 'module' | 'namespace' | 'override'
+  | 'require' | 'type' | 'global' | 'readonly' | 'keyof' | 'unique' | 'infer' | 'satisfies' | 'accessor'
 ;
 
 PrimaryExpression<Yield, Await, NoAsync> -> Expr /* interface */:
-    'this'                                                 -> This
+    ('this' -> This)                                       -> ThisExpr
   | IdentifierReference                                    -> IdentExpr
   | Literal
   | ArrayLiteral
@@ -471,7 +490,7 @@ PrimaryExpression<Yield, Await, NoAsync> -> Expr /* interface */:
 
 Parenthesized<Yield, Await> -> Parenthesized:
     '(' Expression<+In> ')'
-  | '(' SyntaxError ')'
+  | '(' BrokenExpr ')'
 ;
 
 Literal -> Literal :
@@ -518,7 +537,7 @@ PropertyDefinitionList<Yield, Await> :
 %interface PropertyName, PropertyDefinition;
 
 PropertyDefinition<Yield, Await> -> PropertyDefinition /* interface */:
-    IdentifierReference                                   -> ShorthandProperty
+    (IdentifierReference -> NameIdent)                    -> ShorthandProperty
   | Modifiers? PropertyName ':' value=AssignmentExpression<+In>      -> Property
   | Modifiers? MethodDefinition                           -> ObjectMethod
   | CoverInitializedName                                  -> SyntaxProblem
@@ -534,8 +553,8 @@ PropertyName<Yield, Await, WithoutNew> -> PropertyName /* interface */:
 LiteralPropertyName<WithoutNew> -> LiteralPropertyName :
     IdentifierNameDecl
   | (PrivateIdentifier -> NameIdent)
-  | StringLiteral
-  | NumericLiteral
+  | (StringLiteral -> Literal)
+  | (NumericLiteral -> Literal)
 ;
 
 ComputedPropertyName<Yield, Await> -> ComputedPropertyName :
@@ -545,7 +564,7 @@ CoverInitializedName<Yield, Await> :
     IdentifierReference Initializer<+In> ;
 
 Initializer<In, Yield, Await> -> Initializer :
-    '=' AssignmentExpression
+    '=' (AssignmentExpression | BrokenExpr)
 ;
 
 TemplateLiteral<Yield, Await> -> TemplateLiteral :
@@ -561,6 +580,21 @@ TemplateSpans<Yield, Await> :
 TemplateMiddleList<Yield, Await> :
     template+=TemplateMiddle substitution+=Expression<+In>
   | TemplateMiddleList template+=TemplateMiddle substitution+=Expression<+In>
+;
+
+TemplateLiteralType -> TemplateLiteralType :
+    template+=NoSubstitutionTemplate
+  | template+=TemplateHead substitution+=Type TemplateSpansType
+;
+
+TemplateSpansType :
+    template+=TemplateTail
+  | TemplateMiddleListType template+=TemplateTail
+;
+
+TemplateMiddleListType :
+    template+=TemplateMiddle substitution+=Type
+  | TemplateMiddleListType template+=TemplateMiddle substitution+=Type
 ;
 
 MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expr /* interface */:
@@ -579,7 +613,7 @@ MemberExpression<Yield, Await, NoAsync, flag NoLetOnly = false> -> Expr /* inter
 ;
 
 SuperExpression -> Expr /* interface */:
-    'super' -> SuperExpr
+    ('super' -> ReferenceIdent) -> SuperExpr
 ;
 
 SuperProperty<Yield, Await> -> Expr /* interface */:
@@ -618,18 +652,29 @@ SuperCall<Yield, Await> :
 
 Arguments<Yield, Await> -> Arguments :
     (?= StartOfParametrizedCall) TypeArguments '(' (list=ArgumentList ','?)? ')'
+  | (?= StartOfParametrizedCallNoArgList) TypeArguments
   | '(' (list=ArgumentList ','?)? ')'
 ;
 
 StartOfParametrizedCall:
     TypeArguments '(' ;
 
+
+# TODO(dasnenad): Handle conflicts around arguments with no argument lists.
+StartOfParametrizedCallNoArgList:
+    TypeArguments (',' | ')' | ';' ) ;
+
 ArgumentList<Yield, Await> :
     AssignmentExpression<+In>
   | SpreadElement
+  | BrokenExpr
   | ArgumentList ',' AssignmentExpression<+In>
   | ArgumentList ',' SpreadElement
+  | ArgumentList ',' BrokenExpr
 ;
+
+BrokenExpr -> SyntaxProblem as Expr:
+    error ;
 
 OptionalLHS<Yield, Await> :
     MemberExpression  | CallExpression | OptionalExpression ;
@@ -670,7 +715,7 @@ UnaryExpression<Yield, Await> -> Expr /* interface */:
   | [!StartWithLet] '+' UnaryExpression               -> UnaryExpr
   | [!StartWithLet] '-' UnaryExpression               -> UnaryExpr
   | [!StartWithLet] '~' UnaryExpression               -> UnaryExpr
-  | [!StartWithLet] '!' UnaryExpression               -> UnaryExpr
+  | [!StartWithLet] '!' UnaryExpression               -> NotExpr
   | [!StartWithLet && Await] AwaitExpression
   | [!StartWithLet] (?= !StartOfArrowFunction) '<' Type '>' UnaryExpression -> TsCastExpr
 ;
@@ -684,7 +729,7 @@ UnaryExpression<Yield, Await> -> Expr /* interface */:
 %left '^';
 %left '&';
 %left '==' '!=' '===' '!==';
-%left '<' '>' '<=' '>=' 'instanceof' 'in' 'as';
+%left '<' '>' '<=' '>=' 'instanceof' 'in' 'as' 'satisfies';
 %left '<<' '>>' '>>>';
 %left '-' '+';
 %left '*' '/' '%';
@@ -709,6 +754,7 @@ BinaryExpression<In, Yield, Await> -> Expr /* interface */:
   | [In] left=BinaryExpression 'in' right=BinaryExpression          -> InExpr
   | [!NoAs] left=BinaryExpression .noLineBreak 'as' Type<+NoQuest>  -> TsAsExpr
   | [!NoAs] left=BinaryExpression .noLineBreak 'as' ('const' -> TsConst) -> TsAsConstExpr   # TS 3.4
+  | [!NoSatisfies] left=BinaryExpression 'satisfies' Type<+NoQuest> -> TsSatisfiesExpr
   | left=BinaryExpression '==' right=BinaryExpression               -> EqualityExpr
   | left=BinaryExpression '!=' right=BinaryExpression               -> EqualityExpr
   | left=BinaryExpression '===' right=BinaryExpression              -> EqualityExpr
@@ -798,7 +844,7 @@ BlockStatement<Yield, Await> :
     Block ;
 
 Block<Yield, Await> -> Block :
-    '{' .recoveryScope StatementList? '}' ;
+    '{' .recoveryScope list=StatementList? list+=(SyntaxError -> StmtListItem)? '}' ;
 
 StatementList<Yield, Await> :
     StatementListItem
@@ -890,7 +936,7 @@ ElementPattern<Yield, Await> -> ElementPattern /* interface */:
 ;
 
 SingleNameBinding<Yield, Await> -> SingleNameBinding :
-    BindingIdentifier Initializeropt<+In>
+    (IdentifierReference -> NameIdent) Initializeropt<+In>
 ;
 
 BindingRestElement -> BindingRestElement :
@@ -901,7 +947,7 @@ EmptyStatement -> EmptyStmt :
     ';' .emptyStatement ;
 
 ExpressionStatement<Yield, Await> -> ExprStmt :
-    Expression<+In, +NoFuncClass, +NoAs, +NoObjLiteral, +NoLetSq> ';' ;
+    Expression<+In, +NoFuncClass, +NoAs, +NoSatisfies, +NoObjLiteral, +NoLetSq> ';' ;
 
 %right 'else';
 
@@ -917,7 +963,7 @@ IterationStatement<Yield, Await> -> IterationStmt /* interface */:
   | 'while' '(' Expression<+In> ')' Statement                         -> WhileStmt
   | 'for' '(' var=Expression<~In,+NoLet>? ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStmt
-  | 'for' '(' var=Expression<~In,+StartWithLet, +NoAs> ';' .forSC ForCondition
+  | 'for' '(' var=Expression<~In,+StartWithLet, +NoAs, +NoSatisfies> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStmt
   | 'for' '(' ('var' -> Var) VariableDeclarationList<~In> ';' .forSC ForCondition
           ';' .forSC ForFinalExpression ')' Statement                 -> ForStmtWithVar
@@ -989,8 +1035,8 @@ CaseClauses<Yield, Await> :
 ;
 
 CaseClause<Yield, Await> -> CaseClause /* interface */:
-    'case' Expression<+In> ':' StatementList?         -> Case
-  | 'default' ':' StatementList?                      -> Default
+    'case' (Expression<+In> -> Cond) ':' StatementList?     -> Case
+  | 'default' ':' StatementList?                            -> Default
 ;
 
 LabelledStatement<Yield, Await> -> LabelledStmt :
@@ -1040,8 +1086,8 @@ FunctionExpression -> FuncExpr :
 UniqueFormalParameters<Yield, Await> :
     FormalParameters ;
 
-FunctionBody<Yield, Await> -> Body :
-    '{' .recoveryScope StatementList? '}'
+FunctionBody<Yield, Await>:
+    '{' .recoveryScope list=StatementList? list+=(SyntaxError -> StmtListItem)? '}' -> Body
   | ';'
 ;
 
@@ -1058,6 +1104,7 @@ ArrowParameters:
 ConciseBody<In> :
     AssignmentExpression<~Yield, ~Await, +NoObjLiteral>           -> ConciseBody
   | FunctionBody<~Yield, ~Await>
+  | SyntaxError
 ;
 
 StartOfArrowFunction:
@@ -1177,6 +1224,7 @@ Modifier<WithDeclare> -> Modifier /* interface */:
   | 'abstract'               -> Abstract
   | 'override'               -> Override
   | 'readonly'               -> Readonly
+  | 'accessor'               -> Accessor
   | [WithDeclare] 'declare'  -> Declare
 ;
 
@@ -1191,6 +1239,7 @@ ClassElement<Yield, Await> -> ClassElement /* interface */:
   | IndexSignature<+WithDeclare> ';'            -> TsIndexMemberDecl
   | ClassStaticBlock
   | ';'                                         -> EmptyDecl
+  | SyntaxError ';'
 ;
 
 FieldDefinition<Yield, Await>:
@@ -1200,13 +1249,13 @@ ClassStaticBlock -> StaticBlock:
     'static' ClassStaticBlockBody ;
 
 ClassStaticBlockBody -> Body:
-    '{' .recoveryScope StatementList<~Yield, +Await>? '}' ;
+    '{' .recoveryScope list=StatementList<~Yield, +Await>? list+=(SyntaxError -> StmtListItem)? '}' ;
 
 # A.5 Scripts and Modules
 
 %interface ModuleItem, NamedImport, ExportElement;
 
-Module -> Module :
+Module -> Module:
     ModuleBodyopt ;
 
 ModuleBody :
@@ -1246,7 +1295,7 @@ StartOfTypeImport:
       'type' ('*' | '{' | IdentifierName<+WithoutFrom>) ;
 
 ImportRequireDeclaration -> TsImportRequireDecl:
-    ('export' -> TsExport)? 'import' (?= !StartOfTypeImport) BindingIdentifier '=' 'require' '(' StringLiteral ')' ';' ;
+    ('export' -> TsExport)? 'import' (?= !StartOfTypeImport) BindingIdentifier '=' 'require' '(' ModuleSpecifier ')' ';' ;
 
 ImportClause :
     ImportedDefaultBinding
@@ -1271,7 +1320,7 @@ NamedImports -> NamedImports :
 ;
 
 NamedImport -> NamedImport /* interface */:
-    ImportedBinding                                   -> ImportSpec
+    (IdentifierNameRef -> NameIdent)                  -> ImportSpec
   | IdentifierNameRef 'as' ImportedBinding            -> ImportSpec
   | error                                             -> SyntaxProblem
 ;
@@ -1301,7 +1350,7 @@ ExportClause -> ExportClause :
 ;
 
 ExportElement -> ExportElement /* interface */:
-    IdentifierNameRef                                 -> ExportSpec
+    (IdentifierNameRef -> NameIdent)                  -> ExportSpec
   | IdentifierNameRef 'as' IdentifierNameDecl         -> ExportSpec
   | error                                             -> SyntaxProblem
 ;
@@ -1403,13 +1452,13 @@ TypePredicate<NoQuest> -> TypePredicate:
 
 # 3.7
 AssertsType<NoQuest> -> AssertsType:
-    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> This | IdentifierName<+WithoutKeywords, +WithoutAs> -> ReferenceIdent) ('is' Type)? ;
+    'asserts' .noLineBreak (?= !StartOfIs) ('this' -> This | IdentifierName<+WithoutKeywords, +WithoutAs, +WithoutSatisfies> -> ReferenceIdent) ('is' Type)? ;
 
 StartOfIs:
       'is' ;
 
 TypeParameters -> TypeParameters :
-    '<' (TypeParameter separator ',')+ '>' ;
+    '<' (TypeParameter separator ',')+ ','? '>' ;
 
 TypeParameter -> TypeParameter :
     BindingIdentifier Constraint? ('=' Type)?;
@@ -1435,7 +1484,7 @@ TypeOperator<NoQuest> -> TsType /* interface */:
   | 'keyof' TypeOperator      -> KeyOfType
   | 'unique' TypeOperator     -> UniqueType
   | 'readonly' TypeOperator   -> ReadonlyType
-  | 'infer' (IdentifierName -> ReferenceIdent) -> TypeVar
+  | 'infer' (IdentifierName -> NameIdent) -> TypeVar
 ;
 
 PrimaryType<NoQuest> -> TsType /* interface */:
@@ -1465,7 +1514,7 @@ LiteralType -> LiteralType :
   | 'null'
   | 'true'
   | 'false'
-  | TemplateLiteral<~Yield, ~Await>
+  | TemplateLiteralType
 ;
 
 PredefinedType -> PredefinedType :
@@ -1476,7 +1525,10 @@ PredefinedType -> PredefinedType :
   | 'string'
   | 'symbol'
   | 'void'
-  # TODO add bigint, undefined, never, object
+  | 'bigint'
+  | 'undefined'
+  | 'never'
+  | 'object'
 ;
 
 TypeReference -> TypeReference :
@@ -1484,10 +1536,10 @@ TypeReference -> TypeReference :
 
 TypeName -> TypeName :
     ref+=IdentifierReference<+WithoutPredefinedTypes, ~Yield, ~Await>
-  | NamespaceName '.' ref+=IdentifierReference<~Yield, ~Await>
+  | (NamespaceName -> TsNamespaceName) '.' ref+=IdentifierReference<~Yield, ~Await, ~Default>
 ;
 
-NamespaceName :
+NamespaceName:
     ref+=IdentifierReference<~Yield, ~Await>
   | NamespaceName '.' ref+=IdentifierReference<~Yield, ~Await>
 ;
@@ -1514,6 +1566,7 @@ TypeMember -> TypeMember /* interface */:
   | ConstructSignature
   | IndexSignature
   | AccessorSignature
+  | SyntaxError
 ;
 
 ArrayType<NoQuest> -> ArrayType :
@@ -1564,7 +1617,10 @@ StartOfFunctionType :
 ;
 
 FunctionType<NoQuest> -> FuncType :
-    TypeParameters? FunctionTypeParameterList<~Yield, ~Await> '=>' Type ;
+    TypeParameters? FunctionTypeParameterList '=>' Type ;
+
+FunctionTypeParameterList -> Parameters :
+    '(' (?= StartOfFunctionType) (Parameter<~Yield, ~Await> separator ',')+? ','? ')' ;
 
 ConstructorType<NoQuest> -> ConstructorType :
     ('abstract' -> Abstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
@@ -1576,8 +1632,13 @@ TypeQuery -> TypeQuery :
     'typeof' TypeQueryExpression ;
 
 # 2.9
-ImportType -> ImportType :
-    'typeof'? 'import' '(' Type ')' ('.' TypeQueryExpression)? .noLineBreak TypeArguments? %prec resolveShift ;
+ImportType -> ImportType:
+     ImportTypeStart .noLineBreak TypeArguments? %prec resolveShift ;
+
+ImportTypeStart -> TsImportTypeStart :
+    ('typeof' -> TsTypeOf)? 'import' '(' Type ')'
+  | ImportTypeStart '.' IdentifierNameRef -> TsImportTypeStart
+;
 
 TypeQueryExpression :
     IdentifierNameRef
@@ -1599,18 +1660,15 @@ CallSignature -> CallSignature :
 ParameterList<Yield, Await> -> Parameters :
     '(' (Parameter separator ',')+? ','? ')' ;
 
-FunctionTypeParameterList<Yield, Await> -> Parameters :
-    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
-
 %interface Parameter;
 
 Parameter<Yield, Await> -> Parameter :
-    Modifiers? BindingIdentifier '?'? TypeAnnotation?              -> DefaultParameter
-  | Modifiers? BindingPattern '?'? TypeAnnotation?                 -> DefaultParameter
-  | Modifiers? BindingIdentifier TypeAnnotation? Initializer<+In>  -> DefaultParameter
-  | Modifiers? BindingPattern TypeAnnotation? Initializer<+In>     -> DefaultParameter
-  | '...' (BindingIdentifier | BindingPattern) TypeAnnotation?     -> RestParameter
-  | 'this' TypeAnnotation                                          -> TsThisParameter
+    Modifiers? BindingIdentifier ('?'->TsOptional)? TypeAnnotation? -> DefaultParameter
+  | Modifiers? BindingPattern ('?'->TsOptional)? TypeAnnotation?    -> DefaultParameter
+  | Modifiers? BindingIdentifier TypeAnnotation? Initializer<+In>   -> DefaultParameter
+  | Modifiers? BindingPattern TypeAnnotation? Initializer<+In>      -> DefaultParameter
+  | '...' (BindingIdentifier | BindingPattern) TypeAnnotation?      -> RestParameter
+  | 'this' TypeAnnotation                                           -> TsThisParameter
   | SyntaxError
 ;
 
@@ -1634,7 +1692,9 @@ IndexSignature<WithDeclare> -> IndexSignature :
     Modifiers? '[' (IdentifierName -> NameIdent) ':' Type ']' TypeAnnotation ;
 
 MethodSignature -> MethodSignature :
-    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await> ;
+    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await>
+  | Modifiers? ((('new'-> NameIdent)->LiteralPropertyName)->PropertyName) '?' FormalParameters<~Yield, ~Await>
+  ;
 
 AccessorSignature -> TypeMember:
     Modifiers? 'get' PropertyName<~Yield, ~Await> '(' ')' TypeAnnotationopt          -> Getter
@@ -1662,7 +1722,7 @@ EnumBody -> TsEnumBody:
 
 EnumMember -> TsEnumMember:
     PropertyName<~Yield, ~Await>
-  | PropertyName<~Yield, ~Await> '=' AssignmentExpression<+In, ~Yield, ~Await>
+  | PropertyName<~Yield, ~Await> '=' (AssignmentExpression<+In, ~Yield, ~Await> | BrokenExpr)
 ;
 
 # A.8 Namespaces
@@ -1729,9 +1789,6 @@ AmbientEnumDeclaration:
 AmbientNamespaceDeclaration:
     'namespace' IdentifierPath AmbientNamespaceBody ;
 
-AmbientModuleDeclaration:
-    'module' (StringLiteral | IdentifierPath) ('{' .recoveryScope ModuleBodyopt '}' | ';') ;
-
 AmbientGlobalDeclaration:
     'global' ('{' .recoveryScope ModuleBodyopt '}' | ';') ;
 
@@ -1749,6 +1806,28 @@ AmbientNamespaceElement -> TsAmbientElement /* interface */:
   | 'export'? ImportAliasDeclaration        -> TsAmbientImportAlias
   | 'export'? TypeAliasDeclaration          -> TsAmbientTypeAlias
   | 'export' ExportClause ';'               -> TsAmbientExportDecl
+;
+
+AmbientModuleDeclaration:
+    'module' (StringLiteral -> Literal | IdentifierPath) (AmbientModuleBody | ';') ;
+
+AmbientModuleBody:
+    '{' .recoveryScope AmbientModuleElement+? '}' ;
+
+AmbientModuleElement -> TsAmbientElement /* interface */:
+  ImportDeclaration
+  | 'export'? AmbientVariableDeclaration                                           -> TsAmbientVar
+  | 'export'? AmbientFunctionDeclaration                                           -> TsAmbientFunc
+  | 'export'? AmbientClassDeclaration                                              -> TsAmbientClass
+  | 'export'? AmbientInterfaceDeclaration                                          -> TsAmbientInterface
+  | 'export'? AmbientEnumDeclaration                                               -> TsAmbientEnum
+  | 'export'? AmbientNamespaceDeclaration                                          -> TsAmbientNamespace
+  | 'export'? AmbientModuleDeclaration                                             -> TsAmbientModule
+  | 'export'? ImportAliasDeclaration                                               -> TsAmbientImportAlias
+  | 'export'? TypeAliasDeclaration                                                 -> TsAmbientTypeAlias
+  | 'export' ExportClause ';'                                                      -> TsAmbientExportDecl
+  | 'export' 'default' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';' -> ExportDefault
+  | 'export' '=' AssignmentExpression<+In, ~Yield, ~Await, +NoFuncClass> ';'       -> TsExportAssignment
 ;
 
 %%

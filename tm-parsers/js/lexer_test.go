@@ -179,6 +179,7 @@ var lexerTests = []struct {
 	{token.SET, []string{`«set»`}},
 	{token.STATIC, []string{`«static»`}},
 	{token.TARGET, []string{`«target»`}},
+	{token.ACCESSOR, []string{`«accessor»`}},
 
 	// Typescript keywords.
 	{token.IMPLEMENTS, []string{`«implements»`}},
@@ -188,6 +189,16 @@ var lexerTests = []struct {
 	{token.PUBLIC, []string{`«public»`}},
 	{token.ANY, []string{`«any»`}},
 	{token.UNKNOWN, []string{`«unknown»`}},
+	{token.NUMBER, []string{`«number»`}},
+	{token.STRING, []string{`«string»`}},
+	{token.SYMBOL, []string{`«symbol»`}},
+	{token.BIGINT, []string{`«bigint»`}},
+	{token.UNDEFINED, []string{`«undefined»`}},
+	{token.NEVER, []string{`«never»`}},
+	{token.OBJECT, []string{`«object»`}},
+	{token.ABSTRACT, []string{`«abstract»`}},
+	{token.CONSTRUCTOR, []string{`«constructor»`}},
+	{token.DECLARE, []string{`«declare»`}},
 	{token.BOOLEAN, []string{`«boolean»`}},
 	{token.NUMBER, []string{`«number»`}},
 	{token.STRING, []string{`«string»`}},
@@ -204,8 +215,10 @@ var lexerTests = []struct {
 	{token.TYPE, []string{`«type»`}},
 	{token.READONLY, []string{`«readonly»`}},
 	{token.KEYOF, []string{`«keyof»`}},
+	{token.KEYOF, []string{`«keyof»`}},
 	{token.UNIQUE, []string{`«unique»`}},
 	{token.INFER, []string{`«infer»`}},
+	{token.SATISFIES, []string{`«satisfies»`}},
 
 	// Operators.
 	{token.LBRACE, []string{`«{»`}},

@@ -12,6 +12,7 @@ var (
 	Any                       = func(t js.NodeType) bool { return true }
 	Abstract                  = func(t js.NodeType) bool { return t == js.Abstract }
 	AccessibilityModifier     = func(t js.NodeType) bool { return t == js.AccessibilityModifier }
+	Accessor                  = func(t js.NodeType) bool { return t == js.Accessor }
 	AdditiveExpr              = func(t js.NodeType) bool { return t == js.AdditiveExpr }
 	Arguments                 = func(t js.NodeType) bool { return t == js.Arguments }
 	ArrayLiteral              = func(t js.NodeType) bool { return t == js.ArrayLiteral }
@@ -51,6 +52,7 @@ var (
 	CommaExpr                 = func(t js.NodeType) bool { return t == js.CommaExpr }
 	ComputedPropertyName      = func(t js.NodeType) bool { return t == js.ComputedPropertyName }
 	ConciseBody               = func(t js.NodeType) bool { return t == js.ConciseBody }
+	Cond                      = func(t js.NodeType) bool { return t == js.Cond }
 	ConditionalExpr           = func(t js.NodeType) bool { return t == js.ConditionalExpr }
 	ConstructSignature        = func(t js.NodeType) bool { return t == js.ConstructSignature }
 	ConstructorType           = func(t js.NodeType) bool { return t == js.ConstructorType }
@@ -141,6 +143,7 @@ var (
 	NewTarget                 = func(t js.NodeType) bool { return t == js.NewTarget }
 	NoElement                 = func(t js.NodeType) bool { return t == js.NoElement }
 	NonNullableType           = func(t js.NodeType) bool { return t == js.NonNullableType }
+	NotExpr                   = func(t js.NodeType) bool { return t == js.NotExpr }
 	NullableType              = func(t js.NodeType) bool { return t == js.NullableType }
 	ObjectLiteral             = func(t js.NodeType) bool { return t == js.ObjectLiteral }
 	ObjectMethod              = func(t js.NodeType) bool { return t == js.ObjectMethod }
@@ -184,7 +187,9 @@ var (
 	SyntaxProblem             = func(t js.NodeType) bool { return t == js.SyntaxProblem }
 	TaggedTemplate            = func(t js.NodeType) bool { return t == js.TaggedTemplate }
 	TemplateLiteral           = func(t js.NodeType) bool { return t == js.TemplateLiteral }
+	TemplateLiteralType       = func(t js.NodeType) bool { return t == js.TemplateLiteralType }
 	This                      = func(t js.NodeType) bool { return t == js.This }
+	ThisExpr                  = func(t js.NodeType) bool { return t == js.ThisExpr }
 	ThisType                  = func(t js.NodeType) bool { return t == js.ThisType }
 	ThrowStmt                 = func(t js.NodeType) bool { return t == js.ThrowStmt }
 	TryStmt                   = func(t js.NodeType) bool { return t == js.TryStmt }
@@ -215,14 +220,19 @@ var (
 	TsImplementsClause        = func(t js.NodeType) bool { return t == js.TsImplementsClause }
 	TsImportAliasDecl         = func(t js.NodeType) bool { return t == js.TsImportAliasDecl }
 	TsImportRequireDecl       = func(t js.NodeType) bool { return t == js.TsImportRequireDecl }
+	TsImportTypeStart         = func(t js.NodeType) bool { return t == js.TsImportTypeStart }
 	TsIndexMemberDecl         = func(t js.NodeType) bool { return t == js.TsIndexMemberDecl }
 	TsInterface               = func(t js.NodeType) bool { return t == js.TsInterface }
 	TsInterfaceExtends        = func(t js.NodeType) bool { return t == js.TsInterfaceExtends }
 	TsNamespace               = func(t js.NodeType) bool { return t == js.TsNamespace }
 	TsNamespaceBody           = func(t js.NodeType) bool { return t == js.TsNamespaceBody }
 	TsNamespaceExportDecl     = func(t js.NodeType) bool { return t == js.TsNamespaceExportDecl }
+	TsNamespaceName           = func(t js.NodeType) bool { return t == js.TsNamespaceName }
 	TsNonNull                 = func(t js.NodeType) bool { return t == js.TsNonNull }
+	TsOptional                = func(t js.NodeType) bool { return t == js.TsOptional }
+	TsSatisfiesExpr           = func(t js.NodeType) bool { return t == js.TsSatisfiesExpr }
 	TsThisParameter           = func(t js.NodeType) bool { return t == js.TsThisParameter }
+	TsTypeOf                  = func(t js.NodeType) bool { return t == js.TsTypeOf }
 	TsTypeOnly                = func(t js.NodeType) bool { return t == js.TsTypeOnly }
 	TupleType                 = func(t js.NodeType) bool { return t == js.TupleType }
 	TypeAliasDecl             = func(t js.NodeType) bool { return t == js.TypeAliasDecl }

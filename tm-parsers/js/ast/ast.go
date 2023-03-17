@@ -24,6 +24,7 @@ var nilInstance = &NilNode{}
 // All types implement JsNode.
 func (n Abstract) JsNode() *Node                  { return n.Node }
 func (n AccessibilityModifier) JsNode() *Node     { return n.Node }
+func (n Accessor) JsNode() *Node                  { return n.Node }
 func (n AdditiveExpr) JsNode() *Node              { return n.Node }
 func (n Arguments) JsNode() *Node                 { return n.Node }
 func (n ArrayLiteral) JsNode() *Node              { return n.Node }
@@ -63,6 +64,7 @@ func (n CoalesceExpr) JsNode() *Node              { return n.Node }
 func (n CommaExpr) JsNode() *Node                 { return n.Node }
 func (n ComputedPropertyName) JsNode() *Node      { return n.Node }
 func (n ConciseBody) JsNode() *Node               { return n.Node }
+func (n Cond) JsNode() *Node                      { return n.Node }
 func (n ConditionalExpr) JsNode() *Node           { return n.Node }
 func (n ConstructSignature) JsNode() *Node        { return n.Node }
 func (n ConstructorType) JsNode() *Node           { return n.Node }
@@ -153,6 +155,7 @@ func (n NewExpr) JsNode() *Node                   { return n.Node }
 func (n NewTarget) JsNode() *Node                 { return n.Node }
 func (n NoElement) JsNode() *Node                 { return n.Node }
 func (n NonNullableType) JsNode() *Node           { return n.Node }
+func (n NotExpr) JsNode() *Node                   { return n.Node }
 func (n NullableType) JsNode() *Node              { return n.Node }
 func (n ObjectLiteral) JsNode() *Node             { return n.Node }
 func (n ObjectMethod) JsNode() *Node              { return n.Node }
@@ -196,7 +199,9 @@ func (n SwitchStmt) JsNode() *Node                { return n.Node }
 func (n SyntaxProblem) JsNode() *Node             { return n.Node }
 func (n TaggedTemplate) JsNode() *Node            { return n.Node }
 func (n TemplateLiteral) JsNode() *Node           { return n.Node }
+func (n TemplateLiteralType) JsNode() *Node       { return n.Node }
 func (n This) JsNode() *Node                      { return n.Node }
+func (n ThisExpr) JsNode() *Node                  { return n.Node }
 func (n ThisType) JsNode() *Node                  { return n.Node }
 func (n ThrowStmt) JsNode() *Node                 { return n.Node }
 func (n TryStmt) JsNode() *Node                   { return n.Node }
@@ -227,14 +232,19 @@ func (n TsExportAssignment) JsNode() *Node        { return n.Node }
 func (n TsImplementsClause) JsNode() *Node        { return n.Node }
 func (n TsImportAliasDecl) JsNode() *Node         { return n.Node }
 func (n TsImportRequireDecl) JsNode() *Node       { return n.Node }
+func (n TsImportTypeStart) JsNode() *Node         { return n.Node }
 func (n TsIndexMemberDecl) JsNode() *Node         { return n.Node }
 func (n TsInterface) JsNode() *Node               { return n.Node }
 func (n TsInterfaceExtends) JsNode() *Node        { return n.Node }
 func (n TsNamespace) JsNode() *Node               { return n.Node }
 func (n TsNamespaceBody) JsNode() *Node           { return n.Node }
 func (n TsNamespaceExportDecl) JsNode() *Node     { return n.Node }
+func (n TsNamespaceName) JsNode() *Node           { return n.Node }
 func (n TsNonNull) JsNode() *Node                 { return n.Node }
+func (n TsOptional) JsNode() *Node                { return n.Node }
+func (n TsSatisfiesExpr) JsNode() *Node           { return n.Node }
 func (n TsThisParameter) JsNode() *Node           { return n.Node }
+func (n TsTypeOf) JsNode() *Node                  { return n.Node }
 func (n TsTypeOnly) JsNode() *Node                { return n.Node }
 func (n TupleType) JsNode() *Node                 { return n.Node }
 func (n TypeAliasDecl) JsNode() *Node             { return n.Node }
@@ -294,6 +304,7 @@ func (EmptyDecl) classElementNode()         {}
 func (MemberMethod) classElementNode()      {}
 func (MemberVar) classElementNode()         {}
 func (StaticBlock) classElementNode()       {}
+func (SyntaxProblem) classElementNode()     {}
 func (TsIndexMemberDecl) classElementNode() {}
 func (NilNode) classElementNode()           {}
 
@@ -307,8 +318,10 @@ type Decl interface {
 func (AsyncFunc) declNode()                 {}
 func (AsyncGeneratorDeclaration) declNode() {}
 func (Class) declNode()                     {}
+func (ExportDefault) declNode()             {}
 func (Func) declNode()                      {}
 func (Generator) declNode()                 {}
+func (ImportDecl) declNode()                {}
 func (LexicalDecl) declNode()               {}
 func (TsAmbientClass) declNode()            {}
 func (TsAmbientEnum) declNode()             {}
@@ -322,6 +335,7 @@ func (TsAmbientNamespace) declNode()        {}
 func (TsAmbientTypeAlias) declNode()        {}
 func (TsAmbientVar) declNode()              {}
 func (TsEnum) declNode()                    {}
+func (TsExportAssignment) declNode()        {}
 func (TsImportAliasDecl) declNode()         {}
 func (TsInterface) declNode()               {}
 func (TsNamespace) declNode()               {}
@@ -402,6 +416,7 @@ func (MultiplicativeExpr) exprNode()       {}
 func (NewExpr) exprNode()                  {}
 func (NewTarget) exprNode()                {}
 func (NoElement) exprNode()                {}
+func (NotExpr) exprNode()                  {}
 func (ObjectLiteral) exprNode()            {}
 func (OptionalCallExpr) exprNode()         {}
 func (OptionalIndexAccess) exprNode()      {}
@@ -418,14 +433,16 @@ func (RelationalExpr) exprNode()           {}
 func (ShiftExpr) exprNode()                {}
 func (SpreadElement) exprNode()            {}
 func (SuperExpr) exprNode()                {}
+func (SyntaxProblem) exprNode()            {}
 func (TaggedTemplate) exprNode()           {}
 func (TemplateLiteral) exprNode()          {}
-func (This) exprNode()                     {}
+func (ThisExpr) exprNode()                 {}
 func (TsAsConstExpr) exprNode()            {}
 func (TsAsExpr) exprNode()                 {}
 func (TsCastExpr) exprNode()               {}
 func (TsDynamicImport) exprNode()          {}
 func (TsNonNull) exprNode()                {}
+func (TsSatisfiesExpr) exprNode()          {}
 func (UnaryExpr) exprNode()                {}
 func (Yield) exprNode()                    {}
 func (NilNode) exprNode()                  {}
@@ -507,6 +524,7 @@ type Modifier interface {
 // assigned to Modifier.
 func (Abstract) modifierNode()              {}
 func (AccessibilityModifier) modifierNode() {}
+func (Accessor) modifierNode()              {}
 func (Declare) modifierNode()               {}
 func (DecoratorCall) modifierNode()         {}
 func (DecoratorExpr) modifierNode()         {}
@@ -683,6 +701,7 @@ func (ContinueStmt) stmtListItemNode()              {}
 func (DebuggerStmt) stmtListItemNode()              {}
 func (DoWhileStmt) stmtListItemNode()               {}
 func (EmptyStmt) stmtListItemNode()                 {}
+func (ExportDefault) stmtListItemNode()             {}
 func (ExprStmt) stmtListItemNode()                  {}
 func (ForInStmt) stmtListItemNode()                 {}
 func (ForInStmtWithVar) stmtListItemNode()          {}
@@ -693,6 +712,7 @@ func (ForStmtWithVar) stmtListItemNode()            {}
 func (Func) stmtListItemNode()                      {}
 func (Generator) stmtListItemNode()                 {}
 func (IfStmt) stmtListItemNode()                    {}
+func (ImportDecl) stmtListItemNode()                {}
 func (LabelledStmt) stmtListItemNode()              {}
 func (LexicalDecl) stmtListItemNode()               {}
 func (ReturnStmt) stmtListItemNode()                {}
@@ -712,6 +732,7 @@ func (TsAmbientNamespace) stmtListItemNode()        {}
 func (TsAmbientTypeAlias) stmtListItemNode()        {}
 func (TsAmbientVar) stmtListItemNode()              {}
 func (TsEnum) stmtListItemNode()                    {}
+func (TsExportAssignment) stmtListItemNode()        {}
 func (TsImportAliasDecl) stmtListItemNode()         {}
 func (TsInterface) stmtListItemNode()               {}
 func (TsNamespace) stmtListItemNode()               {}
@@ -728,6 +749,8 @@ type TsAmbientElement interface {
 
 // tsAmbientElementNode() ensures that only the following types can be
 // assigned to TsAmbientElement.
+func (ExportDefault) tsAmbientElementNode()        {}
+func (ImportDecl) tsAmbientElementNode()           {}
 func (TsAmbientClass) tsAmbientElementNode()       {}
 func (TsAmbientEnum) tsAmbientElementNode()        {}
 func (TsAmbientExportDecl) tsAmbientElementNode()  {}
@@ -739,6 +762,7 @@ func (TsAmbientModule) tsAmbientElementNode()      {}
 func (TsAmbientNamespace) tsAmbientElementNode()   {}
 func (TsAmbientTypeAlias) tsAmbientElementNode()   {}
 func (TsAmbientVar) tsAmbientElementNode()         {}
+func (TsExportAssignment) tsAmbientElementNode()   {}
 func (NilNode) tsAmbientElementNode()              {}
 
 type TsType interface {
@@ -826,6 +850,7 @@ func (IndexSignature) typeMemberNode()     {}
 func (MethodSignature) typeMemberNode()    {}
 func (PropertySignature) typeMemberNode()  {}
 func (Setter) typeMemberNode()             {}
+func (SyntaxProblem) typeMemberNode()      {}
 func (NilNode) typeMemberNode()            {}
 
 // Types.
@@ -835,6 +860,10 @@ type Abstract struct {
 }
 
 type AccessibilityModifier struct {
+	*Node
+}
+
+type Accessor struct {
 	*Node
 }
 
@@ -886,7 +915,7 @@ type ArrayPattern struct {
 }
 
 func (n ArrayPattern) List() []JsNode {
-	nodes := n.Children(selector.OneOf(js.AdditiveExpr, js.ArrayLiteral, js.ArrowFunc, js.AssignmentExpr, js.AsyncArrowFunc, js.AsyncFuncExpr, js.AsyncGeneratorExpression, js.AwaitExpr, js.BitwiseAND, js.BitwiseOR, js.BitwiseXOR, js.CallExpr, js.ClassExpr, js.CoalesceExpr, js.CommaExpr, js.ConditionalExpr, js.ElementBinding, js.EqualityExpr, js.ExponentiationExpr, js.FuncExpr, js.GeneratorExpr, js.IdentExpr, js.InExpr, js.IndexAccess, js.InstanceOfExpr, js.JSXElement, js.Literal, js.LogicalAND, js.LogicalOR, js.MultiplicativeExpr, js.NewExpr, js.NewTarget, js.NoElement, js.ObjectLiteral, js.OptionalCallExpr, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpr, js.ShiftExpr, js.SingleNameBinding, js.SpreadElement, js.SuperExpr, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.This, js.TsAsConstExpr, js.TsAsExpr, js.TsCastExpr, js.TsDynamicImport, js.TsNonNull, js.UnaryExpr, js.Yield))
+	nodes := n.Children(selector.OneOf(js.AdditiveExpr, js.ArrayLiteral, js.ArrowFunc, js.AssignmentExpr, js.AsyncArrowFunc, js.AsyncFuncExpr, js.AsyncGeneratorExpression, js.AwaitExpr, js.BitwiseAND, js.BitwiseOR, js.BitwiseXOR, js.CallExpr, js.ClassExpr, js.CoalesceExpr, js.CommaExpr, js.ConditionalExpr, js.ElementBinding, js.EqualityExpr, js.ExponentiationExpr, js.FuncExpr, js.GeneratorExpr, js.IdentExpr, js.InExpr, js.IndexAccess, js.InstanceOfExpr, js.JSXElement, js.Literal, js.LogicalAND, js.LogicalOR, js.MultiplicativeExpr, js.NewExpr, js.NewTarget, js.NoElement, js.NotExpr, js.ObjectLiteral, js.OptionalCallExpr, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpr, js.ShiftExpr, js.SingleNameBinding, js.SpreadElement, js.SuperExpr, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.ThisExpr, js.TsAsConstExpr, js.TsAsExpr, js.TsCastExpr, js.TsDynamicImport, js.TsNonNull, js.TsSatisfiesExpr, js.UnaryExpr, js.Yield))
 	var ret = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
 		ret = append(ret, ToJsNode(node).(JsNode))
@@ -938,6 +967,11 @@ func (n ArrowFunc) Body() (Body, bool) {
 
 func (n ArrowFunc) ConciseBody() (ConciseBody, bool) {
 	field := ConciseBody{n.Child(selector.ConciseBody)}
+	return field, field.IsValid()
+}
+
+func (n ArrowFunc) SyntaxProblem() (SyntaxProblem, bool) {
+	field := SyntaxProblem{n.Child(selector.SyntaxProblem)}
 	return field, field.IsValid()
 }
 
@@ -1063,8 +1097,9 @@ func (n AsyncFunc) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n AsyncFunc) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n AsyncFunc) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type AsyncFuncExpr struct {
@@ -1090,8 +1125,9 @@ func (n AsyncFuncExpr) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n AsyncFuncExpr) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n AsyncFuncExpr) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type AsyncGeneratorDeclaration struct {
@@ -1117,8 +1153,9 @@ func (n AsyncGeneratorDeclaration) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n AsyncGeneratorDeclaration) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n AsyncGeneratorDeclaration) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type AsyncGeneratorExpression struct {
@@ -1144,8 +1181,9 @@ func (n AsyncGeneratorExpression) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n AsyncGeneratorExpression) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n AsyncGeneratorExpression) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type AsyncGeneratorMethod struct {
@@ -1170,8 +1208,9 @@ func (n AsyncGeneratorMethod) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n AsyncGeneratorMethod) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n AsyncGeneratorMethod) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type AsyncMethod struct {
@@ -1196,8 +1235,9 @@ func (n AsyncMethod) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n AsyncMethod) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n AsyncMethod) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type Await struct {
@@ -1269,7 +1309,7 @@ func (n Block) CaseClause() []CaseClause {
 	return ret
 }
 
-func (n Block) StmtListItem() []StmtListItem {
+func (n Block) List() []StmtListItem {
 	nodes := n.Children(selector.StmtListItem)
 	var ret = make([]StmtListItem, 0, len(nodes))
 	for _, node := range nodes {
@@ -1282,7 +1322,7 @@ type Body struct {
 	*Node
 }
 
-func (n Body) StmtListItem() []StmtListItem {
+func (n Body) List() []StmtListItem {
 	nodes := n.Children(selector.StmtListItem)
 	var ret = make([]StmtListItem, 0, len(nodes))
 	for _, node := range nodes {
@@ -1334,8 +1374,8 @@ type Case struct {
 	*Node
 }
 
-func (n Case) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+func (n Case) Cond() Cond {
+	return Cond{n.Child(selector.Cond)}
 }
 
 func (n Case) StmtListItem() []StmtListItem {
@@ -1497,6 +1537,14 @@ func (n ConciseBody) Expr() Expr {
 	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
+type Cond struct {
+	*Node
+}
+
+func (n Cond) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
+}
+
 type ConditionalExpr struct {
 	*Node
 }
@@ -1642,6 +1690,11 @@ func (n DefaultParameter) BindingPattern() (BindingPattern, bool) {
 
 func (n DefaultParameter) NameIdent() (NameIdent, bool) {
 	field := NameIdent{n.Child(selector.NameIdent)}
+	return field, field.IsValid()
+}
+
+func (n DefaultParameter) TsOptional() (TsOptional, bool) {
+	field := TsOptional{n.Child(selector.TsOptional)}
 	return field, field.IsValid()
 }
 
@@ -1800,13 +1853,13 @@ type ExportSpec struct {
 	*Node
 }
 
-func (n ExportSpec) ReferenceIdent() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+func (n ExportSpec) ReferenceIdent() (ReferenceIdent, bool) {
+	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	return field, field.IsValid()
 }
 
-func (n ExportSpec) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+func (n ExportSpec) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 type ExprStmt struct {
@@ -2053,8 +2106,9 @@ func (n Func) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n Func) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n Func) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type FuncExpr struct {
@@ -2080,8 +2134,9 @@ func (n FuncExpr) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n FuncExpr) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n FuncExpr) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type FuncType struct {
@@ -2124,8 +2179,9 @@ func (n Generator) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n Generator) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n Generator) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type GeneratorExpr struct {
@@ -2151,8 +2207,9 @@ func (n GeneratorExpr) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n GeneratorExpr) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n GeneratorExpr) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type GeneratorMethod struct {
@@ -2177,8 +2234,9 @@ func (n GeneratorMethod) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n GeneratorMethod) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n GeneratorMethod) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type Getter struct {
@@ -2283,17 +2341,8 @@ type ImportType struct {
 	*Node
 }
 
-func (n ImportType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
-}
-
-func (n ImportType) ReferenceIdent() []ReferenceIdent {
-	nodes := n.Children(selector.ReferenceIdent)
-	var ret = make([]ReferenceIdent, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, ReferenceIdent{node})
-	}
-	return ret
+func (n ImportType) TsImportTypeStart() TsImportTypeStart {
+	return TsImportTypeStart{n.Child(selector.TsImportTypeStart)}
 }
 
 func (n ImportType) TypeArguments() (TypeArguments, bool) {
@@ -2618,6 +2667,11 @@ type LiteralPropertyName struct {
 	*Node
 }
 
+func (n LiteralPropertyName) Literal() (Literal, bool) {
+	field := Literal{n.Child(selector.Literal)}
+	return field, field.IsValid()
+}
+
 func (n LiteralPropertyName) NameIdent() (NameIdent, bool) {
 	field := NameIdent{n.Child(selector.NameIdent)}
 	return field, field.IsValid()
@@ -2627,8 +2681,8 @@ type LiteralType struct {
 	*Node
 }
 
-func (n LiteralType) TemplateLiteral() (TemplateLiteral, bool) {
-	field := TemplateLiteral{n.Child(selector.TemplateLiteral)}
+func (n LiteralType) TemplateLiteralType() (TemplateLiteralType, bool) {
+	field := TemplateLiteralType{n.Child(selector.TemplateLiteralType)}
 	return field, field.IsValid()
 }
 
@@ -2743,8 +2797,9 @@ func (n Method) TypeAnnotation() (TypeAnnotation, bool) {
 	return field, field.IsValid()
 }
 
-func (n Method) Body() Body {
-	return Body{n.Child(selector.Body)}
+func (n Method) Body() (Body, bool) {
+	field := Body{n.Child(selector.Body)}
+	return field, field.IsValid()
 }
 
 type MethodSignature struct {
@@ -2811,6 +2866,11 @@ type NameIdent struct {
 	*Node
 }
 
+func (n NameIdent) ReferenceIdent() (ReferenceIdent, bool) {
+	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	return field, field.IsValid()
+}
+
 type NameSpaceImport struct {
 	*Node
 }
@@ -2867,6 +2927,14 @@ type NonNullableType struct {
 
 func (n NonNullableType) TsType() TsType {
 	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
+type NotExpr struct {
+	*Node
+}
+
+func (n NotExpr) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type NullableType struct {
@@ -3007,14 +3075,8 @@ type Parenthesized struct {
 	*Node
 }
 
-func (n Parenthesized) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
-}
-
-func (n Parenthesized) SyntaxProblem() (SyntaxProblem, bool) {
-	field := SyntaxProblem{n.Child(selector.SyntaxProblem)}
-	return field, field.IsValid()
+func (n Parenthesized) Expr() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
 type ParenthesizedType struct {
@@ -3239,8 +3301,8 @@ type ShorthandProperty struct {
 	*Node
 }
 
-func (n ShorthandProperty) ReferenceIdent() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+func (n ShorthandProperty) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 type SingleNameBinding struct {
@@ -3286,6 +3348,10 @@ func (n StaticBlock) Body() Body {
 
 type SuperExpr struct {
 	*Node
+}
+
+func (n SuperExpr) ReferenceIdent() ReferenceIdent {
+	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
 }
 
 type SwitchStmt struct {
@@ -3348,8 +3414,38 @@ func (n TemplateLiteral) Substitution() []Expr {
 	return ret
 }
 
+type TemplateLiteralType struct {
+	*Node
+}
+
+func (n TemplateLiteralType) Template() []Token {
+	nodes := n.Children(selector.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail))
+	var ret = make([]Token, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ToJsNode(node).(Token))
+	}
+	return ret
+}
+
+func (n TemplateLiteralType) Substitution() []TsType {
+	nodes := n.Children(selector.TsType)
+	var ret = make([]TsType, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ToJsNode(node).(TsType))
+	}
+	return ret
+}
+
 type This struct {
 	*Node
+}
+
+type ThisExpr struct {
+	*Node
+}
+
+func (n ThisExpr) This() This {
+	return This{n.Child(selector.This)}
 }
 
 type ThisType struct {
@@ -3539,6 +3635,11 @@ type TsAmbientModule struct {
 	*Node
 }
 
+func (n TsAmbientModule) Literal() (Literal, bool) {
+	field := Literal{n.Child(selector.Literal)}
+	return field, field.IsValid()
+}
+
 func (n TsAmbientModule) NameIdent() []NameIdent {
 	nodes := n.Children(selector.NameIdent)
 	var ret = make([]NameIdent, 0, len(nodes))
@@ -3548,11 +3649,11 @@ func (n TsAmbientModule) NameIdent() []NameIdent {
 	return ret
 }
 
-func (n TsAmbientModule) ModuleItem() []ModuleItem {
-	nodes := n.Children(selector.ModuleItem)
-	var ret = make([]ModuleItem, 0, len(nodes))
+func (n TsAmbientModule) TsAmbientElement() []TsAmbientElement {
+	nodes := n.Children(selector.TsAmbientElement)
+	var ret = make([]TsAmbientElement, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(ModuleItem))
+		ret = append(ret, ToJsNode(node).(TsAmbientElement))
 	}
 	return ret
 }
@@ -3780,6 +3881,34 @@ func (n TsImportRequireDecl) NameIdent() NameIdent {
 	return NameIdent{n.Child(selector.NameIdent)}
 }
 
+func (n TsImportRequireDecl) ModuleSpec() ModuleSpec {
+	return ModuleSpec{n.Child(selector.ModuleSpec)}
+}
+
+type TsImportTypeStart struct {
+	*Node
+}
+
+func (n TsImportTypeStart) TsImportTypeStart() (TsImportTypeStart, bool) {
+	field := TsImportTypeStart{n.Child(selector.TsImportTypeStart)}
+	return field, field.IsValid()
+}
+
+func (n TsImportTypeStart) TsTypeOf() (TsTypeOf, bool) {
+	field := TsTypeOf{n.Child(selector.TsTypeOf)}
+	return field, field.IsValid()
+}
+
+func (n TsImportTypeStart) ReferenceIdent() (ReferenceIdent, bool) {
+	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	return field, field.IsValid()
+}
+
+func (n TsImportTypeStart) TsType() (TsType, bool) {
+	field := ToJsNode(n.Child(selector.TsType)).(TsType)
+	return field, field.JsNode() != nil
+}
+
 type TsIndexMemberDecl struct {
 	*Node
 }
@@ -3861,6 +3990,19 @@ func (n TsNamespaceExportDecl) NameIdent() NameIdent {
 	return NameIdent{n.Child(selector.NameIdent)}
 }
 
+type TsNamespaceName struct {
+	*Node
+}
+
+func (n TsNamespaceName) Ref() []ReferenceIdent {
+	nodes := n.Children(selector.ReferenceIdent)
+	var ret = make([]ReferenceIdent, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ReferenceIdent{node})
+	}
+	return ret
+}
+
 type TsNonNull struct {
 	*Node
 }
@@ -3869,12 +4011,32 @@ func (n TsNonNull) Expr() Expr {
 	return ToJsNode(n.Child(selector.Expr)).(Expr)
 }
 
+type TsOptional struct {
+	*Node
+}
+
+type TsSatisfiesExpr struct {
+	*Node
+}
+
+func (n TsSatisfiesExpr) Left() Expr {
+	return ToJsNode(n.Child(selector.Expr)).(Expr)
+}
+
+func (n TsSatisfiesExpr) TsType() TsType {
+	return ToJsNode(n.Child(selector.TsType)).(TsType)
+}
+
 type TsThisParameter struct {
 	*Node
 }
 
 func (n TsThisParameter) TypeAnnotation() TypeAnnotation {
 	return TypeAnnotation{n.Child(selector.TypeAnnotation)}
+}
+
+type TsTypeOf struct {
+	*Node
 }
 
 type TsTypeOnly struct {
@@ -3942,6 +4104,11 @@ func (n TypeConstraint) TsType() TsType {
 
 type TypeName struct {
 	*Node
+}
+
+func (n TypeName) TsNamespaceName() (TsNamespaceName, bool) {
+	field := TsNamespaceName{n.Child(selector.TsNamespaceName)}
+	return field, field.IsValid()
 }
 
 func (n TypeName) Ref() []ReferenceIdent {
@@ -4026,8 +4193,8 @@ type TypeVar struct {
 	*Node
 }
 
-func (n TypeVar) ReferenceIdent() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+func (n TypeVar) NameIdent() NameIdent {
+	return NameIdent{n.Child(selector.NameIdent)}
 }
 
 type UnaryExpr struct {

@@ -14,6 +14,8 @@ func ToJsNode(n *Node) JsNode {
 		return &Abstract{n}
 	case js.AccessibilityModifier:
 		return &AccessibilityModifier{n}
+	case js.Accessor:
+		return &Accessor{n}
 	case js.AdditiveExpr:
 		return &AdditiveExpr{n}
 	case js.Arguments:
@@ -92,6 +94,8 @@ func ToJsNode(n *Node) JsNode {
 		return &ComputedPropertyName{n}
 	case js.ConciseBody:
 		return &ConciseBody{n}
+	case js.Cond:
+		return &Cond{n}
 	case js.ConditionalExpr:
 		return &ConditionalExpr{n}
 	case js.ConstructSignature:
@@ -272,6 +276,8 @@ func ToJsNode(n *Node) JsNode {
 		return &NoElement{n}
 	case js.NonNullableType:
 		return &NonNullableType{n}
+	case js.NotExpr:
+		return &NotExpr{n}
 	case js.NullableType:
 		return &NullableType{n}
 	case js.ObjectLiteral:
@@ -358,8 +364,12 @@ func ToJsNode(n *Node) JsNode {
 		return &TaggedTemplate{n}
 	case js.TemplateLiteral:
 		return &TemplateLiteral{n}
+	case js.TemplateLiteralType:
+		return &TemplateLiteralType{n}
 	case js.This:
 		return &This{n}
+	case js.ThisExpr:
+		return &ThisExpr{n}
 	case js.ThisType:
 		return &ThisType{n}
 	case js.ThrowStmt:
@@ -420,6 +430,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsImportAliasDecl{n}
 	case js.TsImportRequireDecl:
 		return &TsImportRequireDecl{n}
+	case js.TsImportTypeStart:
+		return &TsImportTypeStart{n}
 	case js.TsIndexMemberDecl:
 		return &TsIndexMemberDecl{n}
 	case js.TsInterface:
@@ -432,10 +444,18 @@ func ToJsNode(n *Node) JsNode {
 		return &TsNamespaceBody{n}
 	case js.TsNamespaceExportDecl:
 		return &TsNamespaceExportDecl{n}
+	case js.TsNamespaceName:
+		return &TsNamespaceName{n}
 	case js.TsNonNull:
 		return &TsNonNull{n}
+	case js.TsOptional:
+		return &TsOptional{n}
+	case js.TsSatisfiesExpr:
+		return &TsSatisfiesExpr{n}
 	case js.TsThisParameter:
 		return &TsThisParameter{n}
+	case js.TsTypeOf:
+		return &TsTypeOf{n}
 	case js.TsTypeOnly:
 		return &TsTypeOnly{n}
 	case js.TupleType:

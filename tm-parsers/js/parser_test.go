@@ -31,6 +31,23 @@ var parseTests = []struct {
 		`«a».foo = «a»[5];`,
 		`«let» = 5;`,
 		`for («async» of «foo») {}`,
+
+		// soft keywords
+		`let x = «private»;`,
+		`let x = «interface»;`,
+		`let x = «private»;`,
+		`let x = «protected»;`,
+		`let x = «public»;`,
+		`let x = «satisfies»;`,
+		`let x = «as»;`,
+		`let x = «assert»;`,
+		`let x = «asserts»;`,
+		`let x = «from»;`,
+		`let x = «get»;`,
+		`let x = «set»;`,
+		`let x = «static»;`,
+		`let x = «target»;`,
+		`let x = «accessor»`,
 	}},
 	{js.Javascript, js.ReferenceIdent, []string{
 		`/*no expectations*/ const a = 15;`,
@@ -46,6 +63,7 @@ var parseTests = []struct {
 		// IdentifierName rules
 		`const a = {cc: 5}.«cc»;`,
 		`import {«a» as b} from './Test1';`,
+		`import {«a»} from './Test1';`,
 		`export {«a», «b» as c} from "aa/bb"`,
 
 		// async, yield, of
@@ -75,7 +93,7 @@ var parseTests = []struct {
 
 		// IdentifierName rules
 		`const «a» = {«cc»: 5}.cc;`,
-		`export {a, b as «c»} from "aa/bb"`,
+		`export {«a», b as «c»} from "aa/bb"`,
 
 		// Catch parameter
 		`try {} catch («e») {
@@ -90,6 +108,10 @@ var parseTests = []struct {
 		`const c = «this».e;`,
 		"`ab${ «this» }${ «this» }c`",
 		`function assert(actual: any): asserts «this» is number {}`,
+	}},
+	{js.Javascript, js.ThisExpr, []string{
+		`const c = «this».e;`,
+		"`ab${ «this» }${ «this» }c`",
 	}},
 	{js.Javascript, js.Regexp, []string{
 		`«/abc/i».test('aaa')`,
@@ -230,6 +252,10 @@ var parseTests = []struct {
 	}},
 	{js.Javascript, js.CallExpr, []string{
 		`«a()»;`,
+		`«a<number>()»;`,
+		`«call(«a<number>», x)»;`,
+		`«call(«a<number>»)»;`,
+		`const c = «A<boolean>»;`,
 		`«let()»;`,
 		`«super(123)»;`,
 		`«aa[123]()»;`,
@@ -268,7 +294,10 @@ var parseTests = []struct {
 		 a = b
 		 ++c;
 		 «+1» + «-2» & «~0»
-		 if («!(«typeof s» === "string")») {}`,
+		 if (!(«typeof s» === "string")) {}`,
+	}},
+	{js.Javascript, js.NotExpr, []string{
+		`if («!(typeof s === "string")») {}`,
 	}},
 	{js.Javascript, js.ExponentiationExpr, []string{
 		`/*no expectations*/ 1;`,
@@ -383,6 +412,7 @@ var parseTests = []struct {
 		`«{  «{1+2}»  ({a:b}) }»`,
 		`switch(a) «{}»`,
 		`switch(a) «{case 1: case 2: default: case 3:}»`,
+		`function a() { while (true) «{ let a = a. §}» }`, // error recovery
 	}},
 	{js.Javascript, js.LexicalDecl, []string{
 		`«let a;»`,
@@ -541,6 +571,10 @@ var parseTests = []struct {
 		`switch(a) {«case 1: a();»}`,
 		`switch(a) {«case 1:» «case 2:» default: «case 3:»}`,
 	}},
+	{js.Javascript, js.Cond, []string{
+		`switch(a) {case «1»: a();}`,
+		`switch(a) {case «1»: case «2»: default: case «3»:}`,
+	}},
 	{js.Javascript, js.Default, []string{
 		`switch(a) {case 1: case 2: «default:» case 3:}`,
 		`function a() { switch(a) {«default: return;» case 3:} }`,
@@ -664,6 +698,7 @@ var parseTests = []struct {
 		`function a() «{if (false) a();}»`,
 		`var a = function() «{if (false) a();}»;`,
 		`class a { static «{ foo(); }» }`,
+		`function a() «{ let a = a. §}»`, // error recovery
 
 		// in arrow functions
 		`((a,b) => «{ return a*b; }»)(1);`,
@@ -851,6 +886,11 @@ var parseTests = []struct {
 		   «static» b() { return 1}
 		 }`,
 	}},
+	{js.Javascript, js.Accessor, []string{
+		`class A {
+		   «accessor» b: number
+		 }`,
+	}},
 	{js.Javascript, js.Module, []string{
 		`«»`,
 		`«
@@ -880,6 +920,8 @@ var parseTests = []struct {
 	{js.Javascript, js.ModuleSpec, []string{
 		`import «'./aaa'»`,
 		`import * as aaa from «'./aaa'»`,
+		`import aaa = require(«'aaa'»)`,
+		`export import aaa = require(«"aaa"»);`,
 	}},
 	{js.Javascript, js.AssertClause, []string{
 		`import json from "./foo.json" «assert { type: "json" }»;`,
@@ -1092,6 +1134,14 @@ var parseTests = []struct {
 		`var a = Math.floor(«length/2 as foo»);`,
 		`var a = Math.floor(«length/2 as (foo)» / factor);`,
 	}},
+	{js.Typescript, js.TsSatisfiesExpr, []string{
+		`var a = Math.floor(«length/2 satisfies foo»);`,
+		`const palette = «{
+			red: [255, 0, 0],
+			green: "#00ff00",
+			bleu: [0, 0, 255]
+	} satisfies Record<Colors, string | RGB>»;`,
+	}},
 	{js.Typescript, js.VarDecl, []string{
 		`	var «x = foo»  // <- inserted semicolon
 	    as (Bar)     // <- this is a function call`,
@@ -1174,11 +1224,16 @@ var parseTests = []struct {
 		`interface I<T> {
 	     [foo: «Bar»]: «T»;
 	   }`,
+		"var x: `ab${ «t» }${ «t2» }c`",
 	}},
 	{js.Typescript, js.ObjectType, []string{
 		`var x: «{a: string}»;`,
 		`var x: «{a: string;}»;`,
 		`var x: «{a: string; [a:string] : never}»;`,
+	}},
+	{js.Typescript, js.TemplateLiteralType, []string{
+		"var x: «`abc`»",
+		"var x: «`ab${ t }${ t2 }c`»",
 	}},
 	{js.Typescript, js.IndexSignature, []string{
 		`var x: {«[a:string] : ()=>string»};`,
@@ -1198,6 +1253,7 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.MethodSignature, []string{
 		`var x: {«bar(foo) : number»,};`,
+		`var x: {«new?(foo) : number»,};`,
 		`var x: {«bar<T>(foo)»};`,
 		`var x: {«fun<R, TS extends any[] = []>(fn: (foo: Foo, ...args: TS) => R, ...args: TS): R»;}`,
 		`interface A {
@@ -1215,6 +1271,8 @@ var parseTests = []struct {
 		`function identity«<T>»(arg: T): T {}`,
 		`var a : «<X, Y extends B>» (abc) => int = 5;`,
 		`var x: {[a:string] : «<T>»(a: T)=>string};`,
+		`interface I«<T,K>»{}`,
+		`interface I«<T,K,>»{}`, // trailing comma is allowed here
 	}},
 	{js.Typescript, js.TypeArguments, []string{
 		`function loggingIdentity<T>(arg: Array«<T>»): Array«<T>» {}`,
@@ -1245,6 +1303,10 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TypeName, []string{
 		`function foo<T>() : «T» {}`,
+		`var x: «Foo.default»`,
+	}},
+	{js.Typescript, js.TsNamespaceName, []string{
+		`function foo<T>() : «M.N».T {}`,
 	}},
 	{js.Typescript, js.FuncType, []string{
 		`function foo<T>() : «()=>number» {}`,
@@ -1270,6 +1332,18 @@ var parseTests = []struct {
 		`export declare const hash: «import("crypto").Hash<foo, Bar>»;`,
 		`export declare const hash: «import("crypto")<X>»;`,
 	}},
+	{js.Typescript, js.TsImportTypeStart, []string{
+		`function adopt(p: ««import("./module")».Pet») {}`,
+		`export declare const hash: ««import("crypto")».Hash»;`,
+		`export declare const hash: ««import("crypto")».Hash»<foo, Bar>;`,
+		`export declare const hash: «import("crypto")»<X>;`,
+	}},
+	{js.Typescript, js.TsTypeOf, []string{
+		`function adopt(p: «typeof» import("./module").Pet) {}`,
+		`export declare const hash: «typeof» import("crypto").Hash;`,
+		`export declare const hash: «typeof» import("crypto").Hash<foo, Bar>;`,
+		`export declare const hash: «typeof» import("crypto")<X>;`,
+	}},
 	{js.Typescript, js.TypeAnnotation, []string{
 		`var a «: T» = function (kind?«:A») «: B» {}`,
 	}},
@@ -1285,6 +1359,8 @@ var parseTests = []struct {
 	}},
 	{js.Typescript, js.TypeAliasDecl, []string{
 		`«type Foo = bar;»`,
+		`«type Foo = "bar";»`,
+		"«type Foo = `bar`;»",
 		`«type Foo<T> = T»`,
 		`«type K1 = keyof Person;»`,
 		`«type K3 = keyof { [x: string]: Person };»  // string`,
@@ -1309,6 +1385,7 @@ var parseTests = []struct {
        T extends («infer U»)[] ? U :
        T extends (...args: any[]) => «infer U» ? U :
        T extends Promise<«infer U»> ? U : T;`,
+		"type A<T> = T extends `${«infer U»}` ? string : number;",
 	}},
 	{js.Typescript, js.IndexedAccessType, []string{
 		`type P1 = «Person["name"]»;  // string
@@ -1565,6 +1642,9 @@ var parseTests = []struct {
 	{js.Typescript, js.TsThisParameter, []string{
 		`function f(«this: void») {} /* 2.0 Specifying the type of this for functions */`,
 	}},
+	{js.Typescript, js.TsOptional, []string{
+		`function f(a«?»: number) {}`,
+	}},
 	{js.Typescript, js.Catch, []string{
 		`try {} «catch { throw e }» /* 2.5 Optional catch clause variables */`,
 		`try {} «catch (a: unknown) {}» /* 4.0 catch parameter types */`,
@@ -1608,13 +1688,19 @@ var parseTests = []struct {
 		`{1} «(1+2) §3»`,
 		`function a() { §«*l;» }`, /* not needed */
 		`function a() { §«*l» }`,  /* required for recovery */
+		`function a() { while (true) { «let a = a.§»} }`,
+		`function a() { a = 5; «let a = a.§»}`,
+		`enum E{A = 42, B = «C.§»}`,
+		`var a: {«x: a.§»}`,
+		`interface I{«x: N.§»}`,
+		`type T = {«x: N.§»}`,
 
 		// Statements
 		`function a() {
-		   «var a = 1+»§ /* inserted semicolon */
-		   «var b = 2+§;»
-		   «var c = 2+
-		   a §= b;»
+			var a = «1+»§ /* inserted semicolon */
+			var b = «2+§»;
+			var c = «2+
+			a §= b»;
 		   b = a;
 		 }`,
 		`var b = (function() {
@@ -1642,8 +1728,8 @@ var parseTests = []struct {
 		   let { c:{«8»§}, e:{8: /*foo*/ «»§}, d:{8:§«function»} } = i;
 		   // Invalid tokens are included into syntax problems.
 		   let { e:{8: «0x» /*foo*/ §}, d:{8: /*foo*/ «0x /*foo*/ 0x» §} } = i;
-		   let { e:{8: §«% 0x» /*foo*/ }} = i;
-		   let { e:{8: §«% 0x /*foo*/ 0x» }} = i;
+		   let { e:{8: §«>> 0x» /*foo*/ }} = i;
+		   let { e:{8: §«>> 0x /*foo*/ 0x» }} = i;
 		 }`,
 
 		// ObjectLiteral

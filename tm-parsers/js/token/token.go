@@ -69,6 +69,7 @@ const (
 	SET                // set
 	STATIC             // static
 	TARGET             // target
+	SATISFIES          // satisfies
 	IMPLEMENTS         // implements
 	INTERFACE          // interface
 	PRIVATE            // private
@@ -80,6 +81,10 @@ const (
 	NUMBER             // number
 	STRING             // string
 	SYMBOL             // symbol
+	BIGINT             // bigint
+	UNDEFINED          // undefined
+	NEVER              // never
+	OBJECT             // object
 	ABSTRACT           // abstract
 	CONSTRUCTOR        // constructor
 	DECLARE            // declare
@@ -90,6 +95,7 @@ const (
 	OVERRIDE           // override
 	REQUIRE            // require
 	TYPE               // type
+	ACCESSOR           // accessor
 	READONLY           // readonly
 	KEYOF              // keyof
 	UNIQUE             // unique
@@ -225,6 +231,7 @@ var tokenStr = [...]string{
 	"set",
 	"static",
 	"target",
+	"satisfies",
 	"implements",
 	"interface",
 	"private",
@@ -236,6 +243,10 @@ var tokenStr = [...]string{
 	"number",
 	"string",
 	"symbol",
+	"bigint",
+	"undefined",
+	"never",
+	"object",
 	"abstract",
 	"constructor",
 	"declare",
@@ -246,6 +257,7 @@ var tokenStr = [...]string{
 	"override",
 	"require",
 	"type",
+	"accessor",
 	"readonly",
 	"keyof",
 	"unique",
