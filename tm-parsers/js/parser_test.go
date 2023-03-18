@@ -73,8 +73,8 @@ var parseTests = []struct {
 		    «a».«then»(of/*binding*/=>«console».«log»(«of»)); 0;
 		 }`,
 		`/*no expectations*/ for(async of=>5;;) {}`,
-		`@«a».«b» class a{}`,
-		`function assert(actual: any): asserts «actual» is «foo» {}`,
+		`@«a».«default» class a{}`,
+		`function assert(actual: «f».«default», a: any): asserts «actual» is «foo» {}`,
 		`function foo(a) : typeof «a».«b».«c» {}`,
 		`class A { isFoo(): «this» is «T» }`,
 	}},

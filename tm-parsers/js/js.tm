@@ -345,8 +345,8 @@ NamespaceNameSnippet -> TsNamespaceName :
 %flag In;
 %flag Yield;
 %flag Await;
-%flag Default = true;
 %flag NoAsync = false;
+%flag WithDefault = false;
 
 %flag WithoutNew = false;
 %flag WithoutAsserts = false;
@@ -414,7 +414,7 @@ ClassPrivateRef -> ReferenceIdent:
 
 # A.2 Expressions
 
-IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes, Default> -> ReferenceIdent :
+IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes, WithDefault> -> ReferenceIdent :
 # V8 runtime functions start with a percent sign.
 # See http://stackoverflow.com/questions/11202824/what-is-in-javascript
     Identifier
@@ -422,7 +422,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes, Default> -> R
   | [!Yield] 'yield'
   | [!Await] 'await'
   | [!NoLet] 'let'
-  | [!Default] 'default'
+  | [WithDefault] 'default'
   | [!NoAsync] 'async' (?= !StartOfArrowFunction)
 
   # Soft keywords
@@ -651,18 +651,17 @@ SuperCall<Yield, Await> :
 ;
 
 Arguments<Yield, Await> -> Arguments :
-    (?= StartOfParametrizedCall) TypeArguments '(' (list=ArgumentList ','?)? ')'
-  | (?= StartOfParametrizedCallNoArgList) TypeArguments
+    (?= StartOfParametrizedCall) TypeArguments (?= StartLParen) '(' (list=ArgumentList ','?)? ')'
+  | (?= StartOfParametrizedCall) TypeArguments (?= !StartLParen)
   | '(' (list=ArgumentList ','?)? ')'
 ;
 
+StartLParen:
+    '(' ;
+
 StartOfParametrizedCall:
-    TypeArguments '(' ;
+    TypeArguments (',' | ')' | ';' | '(') ;
 
-
-# TODO(dasnenad): Handle conflicts around arguments with no argument lists.
-StartOfParametrizedCallNoArgList:
-    TypeArguments (',' | ')' | ';' ) ;
 
 ArgumentList<Yield, Await> :
     AssignmentExpression<+In>
@@ -1536,12 +1535,12 @@ TypeReference -> TypeReference :
 
 TypeName -> TypeName :
     ref+=IdentifierReference<+WithoutPredefinedTypes, ~Yield, ~Await>
-  | (NamespaceName -> TsNamespaceName) '.' ref+=IdentifierReference<~Yield, ~Await, ~Default>
+  | (NamespaceName -> TsNamespaceName) '.' ref+=IdentifierReference<~Yield, ~Await, +WithDefault>
 ;
 
 NamespaceName:
     ref+=IdentifierReference<~Yield, ~Await>
-  | NamespaceName '.' ref+=IdentifierReference<~Yield, ~Await>
+  | NamespaceName '.' ref+=IdentifierReference<~Yield, ~Await, +WithDefault>
 ;
 
 ObjectType -> ObjectType :
@@ -1617,10 +1616,7 @@ StartOfFunctionType :
 ;
 
 FunctionType<NoQuest> -> FuncType :
-    TypeParameters? FunctionTypeParameterList '=>' Type ;
-
-FunctionTypeParameterList -> Parameters :
-    '(' (?= StartOfFunctionType) (Parameter<~Yield, ~Await> separator ',')+? ','? ')' ;
+    TypeParameters? FunctionTypeParameterList<~Yield, ~Await> '=>' Type ;
 
 ConstructorType<NoQuest> -> ConstructorType :
     ('abstract' -> Abstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
@@ -1659,6 +1655,9 @@ CallSignature -> CallSignature :
 
 ParameterList<Yield, Await> -> Parameters :
     '(' (Parameter separator ',')+? ','? ')' ;
+
+FunctionTypeParameterList<Yield, Await> -> Parameters :
+    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
 
 %interface Parameter;
 

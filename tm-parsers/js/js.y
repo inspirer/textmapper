@@ -3,7 +3,7 @@
 
 %start StartOfArrowFunction // no-eoi
 %start StartOfParametrizedCall // no-eoi
-%start StartOfParametrizedCallNoArgList // no-eoi
+%start StartLParen // no-eoi
 %start StartOfExtendsTypeRef // no-eoi
 %start StartOfTypeImport // no-eoi
 %start StartOfIs // no-eoi
@@ -618,56 +618,6 @@ IdentifierReference :
 | INFER
 ;
 
-IdentifierReference1 :
-  IDENTIFIER
-| REM IDENTIFIER
-| YIELD
-| AWAIT
-| LET
-| DEFAULT
-| ASYNC lookahead_notStartOfArrowFunction
-| AS
-| ASSERT
-| ASSERTS
-| FROM
-| GET
-| OF
-| SET
-| STATIC
-| TARGET
-| IMPLEMENTS
-| INTERFACE
-| PRIVATE
-| PROTECTED
-| PUBLIC
-| SATISFIES
-| ANY
-| UNKNOWN
-| BOOLEAN
-| NUMBER
-| STRING
-| SYMBOL
-| BIGINT
-| UNDEFINED
-| NEVER
-| OBJECT
-| ABSTRACT
-| CONSTRUCTOR
-| DECLARE
-| IS
-| MODULE
-| NAMESPACE
-| OVERRIDE
-| REQUIRE
-| TYPE
-| GLOBAL
-| ACCESSOR
-| KEYOF
-| UNIQUE
-| READONLY
-| INFER
-;
-
 IdentifierReference_Await :
   IDENTIFIER
 | REM IDENTIFIER
@@ -861,6 +811,56 @@ IdentifierReference_NoLet :
 | REM IDENTIFIER
 | YIELD
 | AWAIT
+| ASYNC lookahead_notStartOfArrowFunction
+| AS
+| ASSERT
+| ASSERTS
+| FROM
+| GET
+| OF
+| SET
+| STATIC
+| TARGET
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| SATISFIES
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| BIGINT
+| UNDEFINED
+| NEVER
+| OBJECT
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| OVERRIDE
+| REQUIRE
+| TYPE
+| GLOBAL
+| ACCESSOR
+| KEYOF
+| UNIQUE
+| READONLY
+| INFER
+;
+
+IdentifierReference_WithDefault :
+  IDENTIFIER
+| REM IDENTIFIER
+| YIELD
+| AWAIT
+| LET
+| DEFAULT
 | ASYNC lookahead_notStartOfArrowFunction
 | AS
 | ASSERT
@@ -2834,43 +2834,48 @@ SuperCall_Yield_Await :
 ;
 
 Arguments :
-  lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList COMMA RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN RPAREN
-| lookahead_StartOfParametrizedCallNoArgList TypeArguments
+  lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList COMMA RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
 | LPAREN ArgumentList COMMA RPAREN
 | LPAREN ArgumentList RPAREN
 | LPAREN RPAREN
 ;
 
 Arguments_Await :
-  lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Await COMMA RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Await RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN RPAREN
-| lookahead_StartOfParametrizedCallNoArgList TypeArguments
+  lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList_Await COMMA RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList_Await RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
 | LPAREN ArgumentList_Await COMMA RPAREN
 | LPAREN ArgumentList_Await RPAREN
 | LPAREN RPAREN
 ;
 
 Arguments_Yield :
-  lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield COMMA RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN RPAREN
-| lookahead_StartOfParametrizedCallNoArgList TypeArguments
+  lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList_Yield COMMA RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList_Yield RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
 | LPAREN ArgumentList_Yield COMMA RPAREN
 | LPAREN ArgumentList_Yield RPAREN
 | LPAREN RPAREN
 ;
 
 Arguments_Yield_Await :
-  lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield_Await COMMA RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN ArgumentList_Yield_Await RPAREN
-| lookahead_StartOfParametrizedCall TypeArguments LPAREN RPAREN
-| lookahead_StartOfParametrizedCallNoArgList TypeArguments
+  lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList_Yield_Await COMMA RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN ArgumentList_Yield_Await RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen LPAREN RPAREN
+| lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
 | LPAREN ArgumentList_Yield_Await COMMA RPAREN
 | LPAREN ArgumentList_Yield_Await RPAREN
 | LPAREN RPAREN
+;
+
+// lookahead: StartLParen
+lookahead_StartLParen :
+  %empty
 ;
 
 // lookahead: StartOfParametrizedCall
@@ -2878,19 +2883,20 @@ lookahead_StartOfParametrizedCall :
   %empty
 ;
 
-// lookahead: StartOfParametrizedCallNoArgList
-lookahead_StartOfParametrizedCallNoArgList :
+// lookahead: !StartLParen
+lookahead_notStartLParen :
   %empty
 ;
 
-StartOfParametrizedCall :
-  TypeArguments LPAREN
+StartLParen :
+  LPAREN
 ;
 
-StartOfParametrizedCallNoArgList :
+StartOfParametrizedCall :
   TypeArguments COMMA
 | TypeArguments RPAREN
 | TypeArguments SEMICOLON
+| TypeArguments LPAREN
 ;
 
 ArgumentList :
@@ -7344,12 +7350,12 @@ TypeReference :
 
 TypeName :
   IdentifierReference_WithoutPredefinedTypes
-| NamespaceName DOT IdentifierReference1
+| NamespaceName DOT IdentifierReference_WithDefault
 ;
 
 NamespaceName :
   IdentifierReference
-| NamespaceName DOT IdentifierReference
+| NamespaceName DOT IdentifierReference_WithDefault
 ;
 
 ObjectType :
@@ -7551,23 +7557,6 @@ FunctionType_NoQuest :
 | FunctionTypeParameterList ASSIGNGT Type_NoQuest
 ;
 
-FunctionTypeParameterList :
-  LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated COMMA RPAREN
-| LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated RPAREN
-| LPAREN lookahead_StartOfFunctionType COMMA RPAREN
-| LPAREN lookahead_StartOfFunctionType RPAREN
-;
-
-Parameter_list_Comma_separated :
-  Parameter_list_Comma_separated COMMA Parameter
-| Parameter
-;
-
-// lookahead: StartOfFunctionType
-lookahead_StartOfFunctionType :
-  %empty
-;
-
 ConstructorType :
   ABSTRACT NEW TypeParameters ParameterList ASSIGNGT Type
 | ABSTRACT NEW ParameterList ASSIGNGT Type
@@ -7653,8 +7642,8 @@ CallSignature :
 ;
 
 ParameterList :
-  LPAREN Parameter_list_Comma_separated1 COMMA RPAREN
-| LPAREN Parameter_list_Comma_separated1 RPAREN
+  LPAREN Parameter_list_Comma_separated COMMA RPAREN
+| LPAREN Parameter_list_Comma_separated RPAREN
 | LPAREN COMMA RPAREN
 | LPAREN RPAREN
 ;
@@ -7695,9 +7684,21 @@ Parameter_Yield_list_Comma_separated :
 | Parameter_Yield
 ;
 
-Parameter_list_Comma_separated1 :
-  Parameter_list_Comma_separated1 COMMA Parameter
+Parameter_list_Comma_separated :
+  Parameter_list_Comma_separated COMMA Parameter
 | Parameter
+;
+
+FunctionTypeParameterList :
+  LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated COMMA RPAREN
+| LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated RPAREN
+| LPAREN lookahead_StartOfFunctionType COMMA RPAREN
+| LPAREN lookahead_StartOfFunctionType RPAREN
+;
+
+// lookahead: StartOfFunctionType
+lookahead_StartOfFunctionType :
+  %empty
 ;
 
 Parameter :
