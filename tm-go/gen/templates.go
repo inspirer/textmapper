@@ -197,7 +197,7 @@ type Lexer struct {
 	value       interface{}
 
 	State int // lexer state, modifiable
-{{- block "stateVars" .}}{{end}}
+{{ block "stateVars" .}}{{end -}}
 }
 {{end -}}
 
@@ -223,8 +223,7 @@ func (l *Lexer) Init(source string) {
 	l.tokenColumn = 1
 {{- end}}
 	l.State = 0
-{{- block "initStateVars" .}}{{end}}
-
+{{ block "initStateVars" .}}{{end}}
 	if "strings".HasPrefix(source, bomSeq) {
 		l.offset += len(bomSeq)
 	}
@@ -239,17 +238,15 @@ func (l *Lexer) Init(source string) {
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() {{template "tokenType" .}} {
-{{- block "onBeforeNext" .}}{{end}}
-{{- $spaceRules := .SpaceActions}}
-{{- if or $spaceRules .Lexer.RuleToken }}
+{{ block "onBeforeNext" .}}{{end -}}
+{{ $spaceRules := .SpaceActions -}}
+{{ if or $spaceRules .Lexer.RuleToken -}}
 restart:
-{{- end}}
-{{- if .Options.TokenLine}}
-	l.tokenLine = l.line
-{{- end}}
-{{- if .Options.TokenColumn}}
-	l.tokenColumn = l.offset-l.lineOffset+1
-{{- end}}
+{{ end -}}
+{{ if .Options.TokenLine}}	l.tokenLine = l.line
+{{ end -}}
+{{ if .Options.TokenColumn}}	l.tokenColumn = l.offset-l.lineOffset+1
+{{ end -}}
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
@@ -401,8 +398,8 @@ recovered:
 {{- end}}
 	}
 {{- end}}
-{{- block "onAfterNext" .}}{{end}}
-	return tok
+{{ block "onAfterNext" .}}{{end -}}
+{{/**/}}	return tok
 }
 {{end -}}
 
@@ -609,7 +606,7 @@ type Parser struct {
 	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
 	pending []symbol
 {{- end }}
-{{- block "parserVars" .}}{{end}}
+{{ block "parserVars" .}}{{end -}}
 }
 
 {{ end -}}
@@ -663,7 +660,7 @@ func (p *Parser) Init({{if .Parser.IsRecovering }}eh ErrorHandler{{end}}{{if .Pa
 		p.pending = make([]symbol, 0, startTokenBufferSize)
 	}
 {{- end}}
-{{- block "initParserVars" .}}{{end}}
+{{ block "initParserVars" .}}{{end -}}
 }
 
 {{ end -}}
@@ -1191,10 +1188,10 @@ func At{{$sym.Name}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l
 {{ if .Parser.Tables.Lookaheads -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexer, next int32, start, end int{{$stateType}}{{if $.NeedsSession}}, s *session{{end}}) {{if $.Options.Cancellable}}(bool, error){{else}}bool{{end}} {
-{{- block "setupLookaheadLexer" .}}
-	var lexer Lexer = *l
-{{end}}
-{{- if .Options.RecursiveLookaheads }}
+{{ block "setupLookaheadLexer" . -}}
+{{/**/}}	var lexer Lexer = *l
+{{end -}}
+{{ if .Options.RecursiveLookaheads }}
 	// Use memoization for recursive lookaheads.
 	if next == noToken {
 		next = {{template "callLookaheadNext" true}}

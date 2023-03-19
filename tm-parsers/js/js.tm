@@ -2049,21 +2049,6 @@ func (l *Lexer) popState() {
 }
 {{end}}
 
-{{define "setupLookaheadLexer"}}
-	var lexer Lexer
-	lexer.source = l.source
-	lexer.ch= l.ch
-	lexer.offset= l.offset
-	lexer.tokenOffset = l.tokenOffset
-	lexer.line = l.line
-	lexer.tokenLine = l.tokenLine
-	lexer.scanOffset = l.scanOffset
-	lexer.State = l.State
-	lexer.Dialect = l.Dialect
-	lexer.token = l.token
-	// Note: Stack is intentionally omitted.
-{{end}}
-
 {{define "callLookaheadNext" -}}
 lookaheadNext(&lexer, end, {{if eq . true}}nil /*empty stack*/{{else}}stack{{end}})
 {{- end}}

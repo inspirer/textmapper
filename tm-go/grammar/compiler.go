@@ -1963,10 +1963,13 @@ func parsePattern(name string, p ast.Pattern) (*lex.Pattern, error) {
 }
 
 var tplMap = map[string]string{
-	"go_lexer.stateVars":     "stateVars",
-	"go_lexer.initStateVars": "initStateVars",
-	"go_lexer.onAfterNext":   "onAfterNext",
-	"go_lexer.onBeforeNext":  "onBeforeNext",
+	"go_lexer.stateVars":            "stateVars",
+	"go_lexer.initStateVars":        "initStateVars",
+	"go_lexer.onAfterNext":          "onAfterNext",
+	"go_lexer.onBeforeNext":         "onBeforeNext",
+	"go_parser.stateVars":           "parserVars",
+	"go_parser.initStateVars":       "initParserVars",
+	"go_parser.setupLookaheadLexer": "setupLookaheadLexer",
 }
 
 var tplRE = regexp.MustCompile(`(?s)\${template ([\w.]+)(-?)}(.*?)\${end}`)
@@ -1989,8 +1992,19 @@ func parseInGrammarTemplates(templates string) string {
 	for _, match := range tplRE.FindAllStringSubmatch(templates, -1) {
 		name, content := match[1], match[3]
 		if name, ok := tplMap[name]; ok {
-			fmt.Fprintf(&buf, `{{define "%v"}}%v{{- end}}`, name, content)
+			if match[2] == "-" {
+				content = trimLeadingNL(content)
+			}
+			const callBase = `${call base-}`
+			if i := strings.Index(content, callBase); i >= 0 {
+				content = content[:i] + trimLeadingNL(content[i+len(callBase):])
+			}
+			fmt.Fprintf(&buf, `{{define "%v"}}%v{{end}}`, name, content)
 		}
 	}
 	return buf.String()
+}
+
+func trimLeadingNL(s string) string {
+	return strings.TrimPrefix(strings.TrimPrefix(s, "\r"), "\n")
 }

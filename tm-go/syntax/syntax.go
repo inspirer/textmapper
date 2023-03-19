@@ -415,7 +415,7 @@ func (ts *TokenSet) String(m *Model) string {
 		var buf strings.Builder
 		for i, sub := range ts.Sub {
 			if i > 0 {
-				if ts.Kind == Union {
+				if ts.Kind == Intersection {
 					buf.WriteString(" & ")
 				} else {
 					buf.WriteString(" | ")
