@@ -145,7 +145,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 				}
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
+						p.reportIgnoredToken(ctx, tok)
 					}
 					p.pending = p.pending[:0]
 				}
@@ -402,7 +402,7 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 	}
 }
 
-func (p *Parser) reportIgnoredToken(tok symbol) {
+func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	var t NodeType
 	switch token.Token(tok.symbol) {
 	case token.MULTILINECOMMENT:

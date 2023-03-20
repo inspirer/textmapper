@@ -296,7 +296,7 @@ ${call flushPending-}
 				}
 			}
 
-			if stack = p.recoverFromError(lexer, stack); stack == nil {
+			if stack = p.recoverFromError(${call contextArg}lexer, stack); stack == nil {
 ${call flushPending-}
 				return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 			}
@@ -376,7 +376,7 @@ ${end-}
 ${end}
 
 ${template skipBrokenCode-}
-func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func (symbol int32) bool) int {
+func (p *Parser) skipBrokenCode(${call contextParam}lexer *Lexer, stack []stackEntry, canRecover func (symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
@@ -393,7 +393,7 @@ ${call reportConsumedNext-}
 ${end}
 
 ${template recoverFromError-}
-func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
+func (p *Parser) recoverFromError(${call contextParam}lexer *Lexer, stack []stackEntry) []stackEntry {
 	var recoverSyms [1 + ${self->go_token.numTokensRef()}/8]uint8
 	var recoverPos []int
 
@@ -445,7 +445,7 @@ ${if self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 	}
 ${end-}
 	for {
-		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
+		if endoffset := p.skipBrokenCode(${call contextArg}lexer, stack, canRecover); endoffset > e {
 			e = endoffset
 		}
 
@@ -477,7 +477,7 @@ ${if self->ignoredReportTokens()-}
 		} else if s == e && len(p.pending) > 0 {
 			// This means pending tokens don't contain InvalidTokens.
 			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(${call contextArg}tok)
 			}
 			p.pending = p.pending[:0]
 ${end-}
@@ -496,7 +496,7 @@ ${if self->ignoredReportTokens().exists(t|t.nameText == 'invalid_token')-}
 				if tok.offset >= e {
 					break
 				}
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(${call contextArg}tok)
 			}
 			newSize := len(p.pending) - consumed
 			copy(p.pending[:newSize], p.pending[consumed:])
@@ -582,8 +582,11 @@ ${end-}
 
 ${end}
 
+${template onBeforeIgnore}${end}
+
 ${template reportIgnoredToken-}
-func (p *Parser) reportIgnoredToken(tok symbol) {
+func (p *Parser) reportIgnoredToken(${call contextParam}tok symbol) {
+	${call onBeforeIgnore-}
 	var t ${self->go_listener.nodeTypeRef()}
 	switch ${self->go_token.tokenTypeRef()}(tok.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}
@@ -604,7 +607,7 @@ ${template flushPending-}
 ${if self->ignoredReportTokens()-}
 	if len(p.pending) > 0 {
 		for _, tok := range p.pending {
-			p.reportIgnoredToken(tok)
+			p.reportIgnoredToken(${call contextArg}tok)
 		}
 		p.pending = p.pending[:0]
 	}

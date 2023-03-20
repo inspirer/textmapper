@@ -83,7 +83,7 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stac
 	return symbol == eoiToken
 }
 
-func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
+func (p *Parser) skipBrokenCode(ctx context.Context, lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
@@ -91,7 +91,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 		}
 		if len(p.pending) > 0 {
 			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(ctx, tok)
 			}
 			p.pending = p.pending[:0]
 		}
@@ -781,7 +781,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 	return
 }
 
-func (p *Parser) reportIgnoredToken(tok symbol) {
+func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	var t NodeType
 	switch token.Token(tok.symbol) {
 	case token.MULTILINECOMMENT:

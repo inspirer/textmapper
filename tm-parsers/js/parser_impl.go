@@ -127,7 +127,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				}
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
+						p.reportIgnoredToken(ctx, tok)
 					}
 					p.pending = p.pending[:0]
 				}
@@ -164,18 +164,18 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				if !p.eh(lastErr) {
 					if len(p.pending) > 0 {
 						for _, tok := range p.pending {
-							p.reportIgnoredToken(tok)
+							p.reportIgnoredToken(ctx, tok)
 						}
 						p.pending = p.pending[:0]
 					}
 					return lastErr
 				}
 			}
-			stack = p.recoverFromError(lexer, stack)
+			stack = p.recoverFromError(ctx, lexer, stack)
 			if stack == nil {
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
+						p.reportIgnoredToken(ctx, tok)
 					}
 					p.pending = p.pending[:0]
 				}
@@ -190,7 +190,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 	return nil
 }
 
-func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
+func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []stackEntry) []stackEntry {
 	var recoverSyms [1 + token.NumTokens/8]uint8
 	var recoverPos []int
 
@@ -232,7 +232,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		}
 	}
 	for {
-		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
+		if endoffset := p.skipBrokenCode(ctx, lexer, stack, canRecover); endoffset > e {
 			e = endoffset
 		}
 
@@ -272,7 +272,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		} else if s == e && len(p.pending) > 0 {
 			// This means pending tokens don't contain InvalidTokens.
 			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(ctx, tok)
 			}
 			p.pending = p.pending[:0]
 		}
@@ -289,7 +289,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 				if tok.offset >= e {
 					break
 				}
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(ctx, tok)
 			}
 			newSize := len(p.pending) - consumed
 			copy(p.pending[:newSize], p.pending[consumed:])

@@ -544,7 +544,7 @@ const parserTpl = `
 {{- if .ReportTokens true }}
 	if len(p.pending) > 0 {
 		for _, tok := range p.pending {
-			p.reportIgnoredToken(tok)
+			p.reportIgnoredToken({{if $.Options.Cancellable}}ctx, {{end}}tok)
 		}
 		p.pending = p.pending[:0]
 	}
@@ -833,7 +833,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				}
 			}
 
-			if stack = p.recoverFromError(lexer, stack); stack == nil {
+			if stack = p.recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack); stack == nil {
 {{- template "flushPending" .}}
 				return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
 			}
@@ -906,7 +906,7 @@ func (p *Parser) willShift(stackPos int, state int{{$stateType}}, symbol int32, 
 }
 {{ end }}
 {{ block "skipBrokenCode" . -}}
-func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func (symbol int32) bool) int {
+func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, stack []stackEntry, canRecover func (symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
@@ -922,7 +922,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 {{ end }}
 {{ block "recoverFromError" . -}}
 {{ if .Options.IsEnabled "recoverFromError" -}}
-func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
+func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, stack []stackEntry) []stackEntry {
 	var recoverSyms [1 + {{template "tokenPkg" .}}NumTokens/8]uint8
 	var recoverPos []int
 
@@ -976,7 +976,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 	}
 {{- end}}
 	for {
-		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
+		if endoffset := p.skipBrokenCode({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack, canRecover); endoffset > e {
 			e = endoffset
 		}
 
@@ -1008,7 +1008,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		} else if s == e && len(p.pending) > 0 {
 			// This means pending tokens don't contain InvalidTokens.
 			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken({{if $.Options.Cancellable}}ctx, {{end}}tok)
 			}
 			p.pending = p.pending[:0]
 {{- end}}
@@ -1027,7 +1027,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 				if tok.offset >= e {
 					break
 				}
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken({{if $.Options.Cancellable}}ctx, {{end}}tok)
 			}
 			newSize := len(p.pending) - consumed
 			copy(p.pending[:newSize], p.pending[consumed:])
@@ -1361,7 +1361,8 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 
 {{ if .ReportTokens true -}}
 {{ block "reportIgnoredToken" . -}}
-func (p *Parser) reportIgnoredToken(tok symbol) {
+func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
+	{{ block "onBeforeIgnore" .}}{{end -}}
 	var t {{ref "NodeType"}}
 	switch {{template "tokenType" .}}(tok.symbol) {
 {{- range .Parser.MappedTokens}}
