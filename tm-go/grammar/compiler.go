@@ -1970,6 +1970,7 @@ var tplMap = map[string]string{
 	"go_parser.stateVars":           "parserVars",
 	"go_parser.initStateVars":       "initParserVars",
 	"go_parser.setupLookaheadLexer": "setupLookaheadLexer",
+	"go_parser.onBeforeIgnore":      "onBeforeIgnore",
 }
 
 var tplRE = regexp.MustCompile(`(?s)\${template ([\w.]+)(-?)}(.*?)\${end}`)

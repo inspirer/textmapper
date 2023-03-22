@@ -586,7 +586,7 @@ ${template onBeforeIgnore}${end}
 
 ${template reportIgnoredToken-}
 func (p *Parser) reportIgnoredToken(${call contextParam}tok symbol) {
-	${call onBeforeIgnore-}
+${call onBeforeIgnore-}
 	var t ${self->go_listener.nodeTypeRef()}
 	switch ${self->go_token.tokenTypeRef()}(tok.symbol) {
 ${foreach tok in self->ignoredReportTokens()-}

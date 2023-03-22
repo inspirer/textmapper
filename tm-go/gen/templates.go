@@ -1362,8 +1362,8 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 {{ if .ReportTokens true -}}
 {{ block "reportIgnoredToken" . -}}
 func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
-	{{ block "onBeforeIgnore" .}}{{end -}}
-	var t {{ref "NodeType"}}
+{{ block "onBeforeIgnore" .}}{{end -}}
+{{/**/}}	var t {{ref "NodeType"}}
 	switch {{template "tokenType" .}}(tok.symbol) {
 {{- range .Parser.MappedTokens}}
 {{- $sym := index $.Syms .Token}}
