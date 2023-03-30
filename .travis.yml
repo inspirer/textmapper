@@ -6,6 +6,5 @@ matrix:
         - oraclejdk11
       sudo: required
     - language: go
-      before_script: cd tm-go
       go:
         - 1.x
