@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: java
-      before_script: cd tm-tool
+      before_script: cd java/tm-tool
       jdk:
         - oraclejdk11
       sudo: required
