@@ -1,6 +1,6 @@
 # TextMapper
 
-[![Build Status](https://secure.travis-ci.org/inspirer/textmapper.png)](http://travis-ci.org/inspirer/textmapper)
+[![Build Status](https://app.travis-ci.com/inspirer/textmapper.svg?branch=main)](https://app.travis-ci.com/inspirer/textmapper)
 
 ## Introduction
 
