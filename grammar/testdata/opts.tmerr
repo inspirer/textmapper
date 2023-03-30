@@ -1,0 +1,44 @@
+language lexer(go);
+
+
+# err: unknown option 'a'
+«a» = true
+
+# err: string is expected
+package = «true»
+
+# err: bool is expected
+eventBased = «"foo"»
+
+# err: string is expected
+extraTypes = ["abc", «eoi»]
+
+# err: reinitialization of 'extraTypes', previously declared on line 14
+# err: []string is expected
+«extraTypes» = «bool»
+
+# err: symbol reference is expected
+# err: symbol reference is expected
+reportTokens = [«123», «124»]
+
+# err: reinitialization of 'reportTokens', previously declared on line 22
+# err: list of symbols is expected
+«reportTokens» = «""»
+
+# err: reinitialization of 'reportTokens', previously declared on line 26
+# err: unresolved reference 'eoi2'
+«reportTokens» = [eoi, «eoi2»]
+
+# err: reinitialization of 'extraTypes', previously declared on line 18
+# err: cannot parse string literal: invalid syntax
+«extraTypes» = [«"\x"»]
+
+# err: cannot parse string literal: invalid syntax
+fileNode = «"\xTT"»
+
+lang = "go"
+debugParser = true
+
+:: lexer
+
+eoi:

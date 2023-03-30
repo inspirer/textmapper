@@ -1,0 +1,45 @@
+language backtrack(go);
+
+nonBacktracking = true
+
+:: lexer
+
+commentChars = /([^*]|\*+[^*\/])*\**/
+MultiLineComment:  /\/\*{commentChars}\*\//     (space)
+
+# err: Needs backtracking since the following state(s) are prefixes of valid tokens but are not valid tokens themselves:
+# err: 	MultiLineComment: /\/\*<STATE>{commentChars}\*\// -> /(<STATE>[^*]|\*+[^*\/])*\**/
+# err: 	MultiLineComment: /\/\*<STATE>{commentChars}\*\// -> /([^*]|<STATE>\*+[^*\/])*\**/
+# err: 	MultiLineComment: /\/\*<STATE>{commentChars}\*\// -> /([^*]|\*+[^*\/])*<STATE>\**/
+# err: 	MultiLineComment: /\/\*{commentChars}<STATE>\*\//
+# err: Consider removing 'nonBacktracking = true' or reporting these states as 'invalid_token' via separate lexer rules.
+«'/': /\//»
+
+
+# err: Needs backtracking since the following state(s) are prefixes of valid tokens but are not valid tokens themselves:
+# err: 	'...': /\.\.<STATE>\./
+# err: Consider removing 'nonBacktracking = true' or reporting these states as 'invalid_token' via separate lexer rules.
+«'.': /\./»
+'...': /\.\.\./
+
+
+# err: Needs backtracking since the following state(s) are prefixes of valid tokens but are not valid tokens themselves:
+# err: 	backtrackingToken: /test(f<STATE>oo)?-+>/
+# err: Consider removing 'nonBacktracking = true' or reporting these states as 'invalid_token' via separate lexer rules.
+# err: Needs backtracking since the following state(s) are prefixes of valid tokens but are not valid tokens themselves:
+# err: 	backtrackingToken: /test(foo)?<STATE>-+>/
+# err: 	backtrackingToken: /test(foo)?-+<STATE>>/
+# err: Consider removing 'nonBacktracking = true' or reporting these states as 'invalid_token' via separate lexer rules.
+««'test':      /test/»»
+backtrackingToken: /test(foo)?-+>/
+
+# The following resolution with an invalid token is OK.
+
+hex = /[0-9a-fA-F]/
+esc = /u{hex}{4}/
+idChar = /[a-zA-Z]|\\{esc}/
+
+Identifier: /#@_{idChar}+/    (class)
+invalid_token: /#@_{idChar}*\\(u{hex}{0,3})?/
+
+sharpFoo: /#@_foo/

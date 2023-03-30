@@ -1,0 +1,64 @@
+«language conflict1(go);
+# err: conflicts: 7 shift/reduce and 1 reduce/reduce
+
+lang = "conflict1"
+
+:: lexer
+
+Identifier: /[a-zA-Z_]+/    (class)
+
+# Keywords.
+'a':      /a/
+'b':      /b/
+'c':      /c/
+
+'+':      /\+/
+'-':      /\-/
+
+:: parser
+
+input:
+      'a'
+    | 'b' (f | p)
+    | 'a' e e
+;
+
+e :
+      «'c'+»
+# err: input: 'a' ChaRC_list
+# err: shift/reduce conflict (next: 'c')
+# err:     e : ChaRC_list
+# err:
+;
+
+f :
+      Identifier
+    | «««f '+' f»»»
+# err: input: 'b' f '+' f
+# err: reduce/reduce conflict (next: eoi)
+# err:     p : f '+' f
+# err:     f : f '+' f
+# err:
+# err: input: 'b' f '+' f
+# err: shift/reduce conflict (next: '+', '-')
+# err:     f : f '+' f
+# err:
+# err: input: 'b' f '+' f '+' f
+# err: shift/reduce conflict (next: '+', '-')
+# err:     f : f '+' f
+# err:
+    | «f '-' f»
+# err: input: 'b' f '-' f
+# err: shift/reduce conflict (next: '+', '-')
+# err:     f : f '-' f
+# err:
+;
+
+p :
+      «f '+' f»
+# err: input: 'b' f '+' f
+# err: reduce/reduce conflict (next: eoi)
+# err:     p : f '+' f
+# err:     f : f '+' f
+# err:
+;»

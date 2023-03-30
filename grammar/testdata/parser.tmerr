@@ -1,0 +1,158 @@
+language parser(go);
+
+:: lexer
+
+a: /a/
+b: /b/
+
+:: parser
+
+%«global» flag foo = «5»;
+# err: unsupported syntax
+# err: unsupported default value
+
+%flag «foo»;
+# err: redeclaration of 'foo'
+
+%lookahead flag bar = true;
+
+«a» : a;
+# err: redeclaration of 'a'
+
+c «returns b» : /*empty*/ ;
+# err: unsupported syntax
+
+d {Foo} -> Foo : /*empty*/ ;
+
+«@Foo» e : d ;
+# err: unsupported syntax
+
+«d» {Foo} -> Foo : e ;
+# err: redeclaration of 'd'
+
+%input «eee»;
+# err: unresolved nonterminal 'eee'
+
+X <«Foo», foo, «foo»> : /*empty*/ ;
+# err: unresolved parameter reference 'Foo'
+# err: duplicate parameter reference 'foo'
+
+%input «X»;
+# err: input nonterminals cannot be parametrized
+
+%input e;
+
+Y1<param «foo»> : /*empty*/ ;
+# err: redeclaration of 'foo'
+
+Y2<param Foo = «123»> : /*empty*/ ;
+# err: unsupported default value
+
+%flag «a»;
+# err: template parameters cannot be named after terminals 'a'
+
+«foo»: /*empty*/ ;
+# err: redeclaration of a template parameter 'foo'
+
+%left «unresolved»;
+# err: unresolved reference 'unresolved'
+
+%left «X»;
+# err: unresolved reference 'X'
+
+%left a «a»;
+# err: second precedence rule for 'a'
+
+%nonassoc b;
+
+%right «b»;
+# err: second precedence rule for 'b'
+
+%generate a = set(b);
+
+%generate «a» = set(b);
+# err: redeclaration of token set 'a'
+
+%generate b = set(«foo» b);
+# err: operator must be one of: first, last, precede or follow
+
+%generate c = set(first «b222»);
+# err: unresolved reference 'b222'
+
+%generate c1 = set(first «foo»); # foo is a "flag"
+# err: unresolved reference 'foo'
+
+%generate d = set(follow b«<Foo>»);
+# err: terminals cannot be parametrized
+
+X1<param T1, param T2> : ;
+X2<param T3 = true> : ;
+
+%generate e = set(last «X1» & precede X2);
+# err: uninitialized parameters: T1, T2
+
+%generate f = set(first «X1»<T1: true, T2: «"\xGGGG"», +«FooBar», T2: «FooBar2», +«T1»>);
+# err: uninitialized parameters: T2
+# err: unsupported value
+# err: unresolved parameter reference 'FooBar' (in X1)
+# err: unresolved parameter reference 'FooBar2'
+# err: second argument for 'T1'
+
+%generate g = set(first «X1»<«T1», ~T2> | ~(eoi));
+# err: uninitialized parameters: T1
+# err: missing value
+
+%assert empty set(first «X1»<«T1», ~T2> | ~(eoi));
+# err: uninitialized parameters: T1
+# err: missing value
+
+%interface A, «A»;
+# err: duplicate interface declaration of 'A'
+
+G -> G/G1,G2 as A : (G separator «G»)+ ;
+# err: separators must be terminals
+
+G2 -> A «as A» : G %prec «G» ;
+# err: reporting a selector 'as' some other node is not supported
+# err: terminal is expected
+
+G3 -> BB «as BB» : «$(G)»  «%shift G» ;
+# err: 'as' expects a selector
+# err: unsupported syntax (*ast.RhsIgnored)
+# err: unsupported syntax
+
+G4 : a (?= G2 & «a») b ;
+# err: lookahead expressions do not support terminals
+
+G5 -> «A»/Foo: ;
+# err: selector clauses cannot be used together with flags
+
+# opt terminals and nonterminals are ok
+nontermopt : ;
+
+# referencing a non-existent opt is not OK
+optcheck : aopt bopt Gopt «NonExistentopt» ;
+# err: unresolved reference 'NonExistentopt'
+
+# opt works with template args
+%generate goptcheck = set(first «X1opt»<«T1», ~T2> | ~(eoi));
+# err: uninitialized parameters: T1
+# err: missing value
+
+c2<foo> : [foo == «"\x"»] c2 ;
+# err: cannot parse string literal: invalid syntax
+
+c3<foo> : [foo == «123»] c3  ;
+# err: string is expected
+
+c4<«bar»> : ;
+# err: lookahead parameters cannot be declared 'bar'
+
+%expect 0;
+%expect-rr 10;
+
+«%expect 1;»
+# err: duplicate %expect directive
+
+«%expect-rr 10;»
+# err: duplicate %expect-rr directive

@@ -1,0 +1,38 @@
+«language greedy(go);
+# err: conflicts: 0 shift/reduce and 1 reduce/reduce
+
+:: lexer
+
+a: /a/
+b: /b/
+c: /c/
+
+'+': /+/
+
+:: parser
+
+input : N c M;
+
+N :
+      a
+    | a '+' N
+    | a '+' .greedy a '+' N    # all ok
+;
+
+# M is identical to N but without the .greedy marker.
+
+M :
+      a
+    | «a '+' M»
+# err: input: N c a '+' a '+' M
+# err: reduce/reduce conflict (next: eoi)
+# err:     M : a '+' a '+' M
+# err:     M : a '+' M
+# err:
+    | «a '+' a '+' M»
+# err: input: N c a '+' a '+' M
+# err: reduce/reduce conflict (next: eoi)
+# err:     M : a '+' a '+' M
+# err:     M : a '+' M
+# err:
+;»
