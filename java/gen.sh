@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ant clean deploy go
+(cd tm-tool ; ant clean deploy go)
 
 go fmt ../tm-go/... ../tm-parsers/...
 find ../tm-go -type f -name '*.go' | xargs -I '{}' goimports -w -local github.com '{}'
