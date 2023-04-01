@@ -1,5 +1,5 @@
 {{- template "header" . -}}
-package {{.Name}}
+package {{short_pkg .Options.Package}}
 
 const tmNumClasses = {{.Lexer.Tables.NumSymbols}}
 

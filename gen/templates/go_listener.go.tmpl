@@ -1,5 +1,5 @@
 {{- template "header" . -}}
-package {{.Name}}
+package {{short_pkg .Options.Package}}
 {{if .Parser.UsesFlags}}
 type NodeType uint16
 

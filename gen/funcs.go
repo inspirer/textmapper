@@ -29,6 +29,7 @@ var funcMap = template.FuncMap{
 	"ref":              ref,
 	"minus1":           minus1,
 	"go_parser_action": goParserAction,
+	"short_pkg":        shortPkg,
 }
 
 func sum(a, b int) int {
@@ -291,4 +292,11 @@ func parseMeta(s string) (d int, id, prop string, err error) {
 		return 1, "leftRaw()", "value", nil
 	}
 	return 0, "", "", errors.New("unrecognized sequence after $")
+}
+
+func shortPkg(packageName string) string {
+	if i := strings.LastIndexByte(packageName, '/'); i != -1 {
+		return packageName[i+1:]
+	}
+	return packageName
 }

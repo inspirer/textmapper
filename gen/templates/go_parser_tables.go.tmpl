@@ -1,5 +1,5 @@
 {{- template "header" . -}}
-package {{.Name}}
+package {{short_pkg .Options.Package}}
 
 {{- range .Parser.Tables.Markers}}
 {{- if and (ne .Name "lr0") (ne .Name "greedy")}}
