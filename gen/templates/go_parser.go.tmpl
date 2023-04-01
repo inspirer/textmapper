@@ -9,9 +9,6 @@
 {{- end}}
 {{- end}}
 
-{{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
-{{- define "tokenPkg"}}"{{.Options.Package}}/token".{{end -}}
-
 {{- define "reportConsumedNext" -}}
 {{- if .ReportTokens false }}
 			switch {{template "tokenType" .}}(p.next.symbol) {

@@ -26,9 +26,6 @@ const (
 {{template "lexerRewind" .}}
 {{- block "onAfterLexer" .}}{{end}}
 
-{{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
-{{- define "tokenPkg"}}"{{.Options.Package}}/token".{{end -}}
-
 {{- define "lexerType" -}}
 // Lexer uses a generated DFA to scan through a utf-8 encoded input string. If
 // the string starts with a BOM character, it gets skipped.
