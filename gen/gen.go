@@ -18,20 +18,18 @@ type Writer interface {
 	Write(filename, content string) error
 }
 
+var languages = map[string]*language{
+	"go": golang,
+}
+
 // Generate generates code for a grammar.
 func Generate(g *grammar.Grammar, w Writer, compat bool) error {
-	var templates []file
-	templates = append(templates, lexerFiles...)
-	if g.Parser.Tables != nil {
-		templates = append(templates, parserFiles...)
-	}
-	if g.Parser.Types != nil {
-		templates = append(templates, listenerFile)
-	}
-	if g.Options.WriteBison {
-		templates = append(templates, file{name: g.Name + ".y", template: bisonTpl})
+	lang, ok := languages[g.TargetLang]
+	if !ok {
+		return fmt.Errorf("unsupported language: %s", g.TargetLang)
 	}
 
+	templates := lang.templates(g)
 	base, err := template.New("main").Funcs(funcMap).Parse(sharedDefs)
 	if err != nil {
 		return err
