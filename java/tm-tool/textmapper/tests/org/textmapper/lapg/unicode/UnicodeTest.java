@@ -47,14 +47,14 @@ public class UnicodeTest {
 
 	@Test
 	public void testFilesUpToDate() throws IOException {
-//		if (!TEST_DATA_FILES) return;
-		testContent("data/UnicodeData.txt", "http://www.unicode.org/Public/13.0.0/ucd/UnicodeData.txt");
-		testContent("data/Blocks.txt", "http://www.unicode.org/Public/13.0.0/ucd/Blocks.txt");
-		testContent("data/Scripts.txt", "http://www.unicode.org/Public/13.0.0/ucd/Scripts.txt");
-		testContent("data/PropList.txt", "http://www.unicode.org/Public/13.0.0/ucd/PropList.txt");
-		testContent("data/DerivedCoreProperties.txt", "http://www.unicode.org/Public/13.0.0/ucd/DerivedCoreProperties.txt");
-		testContent("data/PropertyAliases.txt", "http://www.unicode.org/Public/13.0.0/ucd/PropertyAliases.txt");
-		testContent("data/PropertyValueAliases.txt", "http://www.unicode.org/Public/13.0.0/ucd/PropertyValueAliases.txt");
+		if (!TEST_DATA_FILES) return;
+		testContent("data/UnicodeData.txt", "http://www.unicode.org/Public/15.0.0/ucd/UnicodeData.txt");
+		testContent("data/Blocks.txt", "http://www.unicode.org/Public/15.0.0/ucd/Blocks.txt");
+		testContent("data/Scripts.txt", "http://www.unicode.org/Public/15.0.0/ucd/Scripts.txt");
+		testContent("data/PropList.txt", "http://www.unicode.org/Public/15.0.0/ucd/PropList.txt");
+		testContent("data/DerivedCoreProperties.txt", "http://www.unicode.org/Public/15.0.0/ucd/DerivedCoreProperties.txt");
+		testContent("data/PropertyAliases.txt", "http://www.unicode.org/Public/15.0.0/ucd/PropertyAliases.txt");
+		testContent("data/PropertyValueAliases.txt", "http://www.unicode.org/Public/15.0.0/ucd/PropertyValueAliases.txt");
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class UnicodeTest {
 			@Override
 			protected EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
 				HashMap<String, Object> res = new HashMap<>();
-				res.put("version", "11.0.0");
+				res.put("version", "15.0.0");
 				res.put("properties", properties);
 				res.put("aliases", aliases);
 				res.put("composites", compositeProperties);
