@@ -1,0 +1,28 @@
+{{- template "header" . -}}
+package token
+
+// Token is an enum of all terminal symbols of the {{.Name}} language.
+type Token int
+
+// Token values.
+const (
+	UNAVAILABLE Token = iota - 1
+{{- range .Tokens}}
+	{{.ID}}{{if .Comment}}  // {{.Comment}}{{end}}
+{{- end}}
+
+	NumTokens
+)
+
+var tokenStr = [...]string{
+{{- range .Tokens}}
+	{{if .Comment}}{{str_literal .Comment}}{{else}}{{str_literal .ID}}{{end}},
+{{- end}}
+}
+
+func (tok Token) String() string {
+	if tok >= 0 && int(tok) < len(tokenStr) {
+		return tokenStr[tok]
+	}
+	return "fmt".Sprintf("token(%d)", tok)
+}

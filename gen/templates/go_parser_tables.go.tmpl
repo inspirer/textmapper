@@ -1,0 +1,101 @@
+{{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
+{{- define "tokenPkg"}}"{{.Options.Package}}/token".{{end -}}
+
+{{- template "header" . -}}
+package {{.Name}}
+
+{{- range .Parser.Tables.Markers}}
+{{- if and (ne .Name "lr0") (ne .Name "greedy")}}
+{{if eq (len .States) 1}}
+const {{.Name}}State = {{index .States 0}}
+{{- else}}
+var {{.Name}}States = map[int]bool{
+{{- range .States}}
+	{{.}}: true,
+{{- end}}
+}
+{{- end}}
+{{- end}}
+{{- end}}
+
+var tmNonterminals = [...]string{
+{{- range .Parser.Nonterms}}
+	"{{.Name}}",
+{{- end}}
+}
+
+func symbolName(sym int32) string {
+	if sym == noToken {
+		return "<no-token>"
+	}
+	if sym < int32({{template "tokenPkg" .}}NumTokens) {
+		return {{template "tokenType" .}}(sym).String()
+	}
+	if i := int(sym) - int({{template "tokenPkg" .}}NumTokens); i < len(tmNonterminals) {
+		return tmNonterminals[i]
+	}
+	return "fmt".Sprintf("nonterminal(%d)", sym)
+}
+
+var tmAction = []int32{
+{{- int_array .Parser.Tables.Action "\t" 79 -}}
+}
+{{- if .Parser.Tables.Lalr}}
+
+var tmLalr = []int32{
+{{- int_array .Parser.Tables.Lalr "\t" 79 -}}
+}
+{{- end}}
+
+var tmGoto = []int32{
+{{- int_array .Parser.Tables.Goto "\t" 79 -}}
+}
+
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+var tmFromTo = []int{{$stateType}}{
+{{- int_array .Parser.Tables.FromTo "\t" 79 -}}
+}
+
+var tmRuleLen = []int{{bits_per_element .Parser.Tables.RuleLen}}{
+{{- int_array .Parser.Tables.RuleLen "\t" 79 -}}
+}
+
+var tmRuleSymbol = []int32{
+{{- int_array .Parser.Tables.RuleSymbol "\t" 79 -}}
+}
+
+{{- if .Parser.UsesFlags}}
+
+var tmRuleType = [...]uint32{
+{{- range .Parser.Rules}}
+{{- if ne .Type -1 }}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+	{{if ne $val.Name $.Options.FileNode}}uint32({{$val.Name}}){{if .Flags}} + uint32({{join .Flags " | "}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+{{- else }}
+	0, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
+}
+{{- else }}
+
+var tmRuleType = [...]{{ref "NodeType"}}{
+{{- range .Parser.Rules}}
+{{- if ne .Type -1 }}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+	{{if ne $val.Name $.Options.FileNode}}{{$val.Name}}{{else}}0{{end}}, // {{$.RuleString .}}
+{{- else }}
+	0, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
+}
+{{- end }}
+
+{{- range .Sets}}
+
+// {{.Expr}} = {{.ValueString $}}
+var {{.Name}} = []int32{
+{{- if gt (len .Terminals) 0 -}}
+{{- int_array .Terminals "\t" 79 -}}
+{{- end -}}
+}
+{{- end}}
