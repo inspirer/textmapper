@@ -185,34 +185,27 @@ func newLookaheadRule(lookaheads []Lookahead) (LookaheadRule, error) {
 		return LookaheadRule{}, fmt.Errorf("ambiguous order")
 	}
 
+	// Note: the algorithm below is O(n^4), but n is small (<= 4 in all practical grammars).
 	var ret LookaheadRule
-	var shuffling int
+outer:
 	for len(lookaheads) > 1 {
-		next := order[0]
-		order = order[1:]
-
-		k, negated, ok := pickLookahead(next, lookaheads)
-		if !ok {
-			if shuffling == len(order) {
-				return LookaheadRule{}, fmt.Errorf("cannot decide on the next lookahead")
-			}
-			shuffling++
-			order = append(order, next)
-			continue
-		}
-		shuffling = 0
-
-		ret.Cases = append(ret.Cases, LookaheadCase{
-			Predicate: Predicate{Input: next, Negated: negated},
-			Target:    lookaheads[k].Nonterminal,
-		})
-		for i, la := range lookaheads {
-			if la.Predicates[0].Input == next {
-				lookaheads[i].Predicates = la.Predicates[1:]
+		// Lookaheads should be enumerated in the order of increasing costs, so
+		// trying the list from the beginning every time.
+		for i, next := range order {
+			k, negated, ok := pickLookahead(next, lookaheads)
+			if ok {
+				ret.Cases = append(ret.Cases, LookaheadCase{
+					Predicate: Predicate{Input: next, Negated: negated},
+					Target:    lookaheads[k].Nonterminal,
+				})
+				lookaheads[k] = lookaheads[len(lookaheads)-1]
+				lookaheads = lookaheads[:len(lookaheads)-1]
+				order[i] = order[len(order)-1]
+				order = order[:len(order)-1]
+				continue outer
 			}
 		}
-		lookaheads[k] = lookaheads[len(lookaheads)-1]
-		lookaheads = lookaheads[:len(lookaheads)-1]
+		return LookaheadRule{}, fmt.Errorf("cannot decide on the next lookahead")
 	}
 	ret.DefaultTarget = lookaheads[0].Nonterminal
 	return ret, nil
