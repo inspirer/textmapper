@@ -1,6 +1,8 @@
 package lalr
 
 import (
+	"math"
+
 	"github.com/inspirer/textmapper/status"
 )
 
@@ -114,6 +116,30 @@ type Tables struct {
 	Markers     []StateMarker
 	Lookaheads  []LookaheadRule
 	NumStates   int
+}
+
+func bytesPerElement(arr []int) int {
+	ret := 1
+	for _, i := range arr {
+		if i < math.MinInt8 || i > math.MaxInt8 {
+			if i < math.MinInt16 || i > math.MaxInt16 {
+				return 4
+			}
+			ret = 2
+		}
+	}
+	return ret
+}
+
+func (t *Tables) SizeBytes() int {
+	var ret int
+	ret += len(t.Action) * 4
+	ret += len(t.Lalr) * 4
+	ret += len(t.Goto) * 4
+	ret += len(t.FromTo) * bytesPerElement(t.FromTo)
+	ret += len(t.RuleLen) * bytesPerElement(t.RuleLen)
+	ret += len(t.RuleSymbol) * 4
+	return ret
 }
 
 func (t *Tables) mark(state, marker int) {

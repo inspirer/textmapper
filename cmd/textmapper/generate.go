@@ -78,7 +78,7 @@ func generate(files []string) error {
 	var s status.Status
 	start := time.Now()
 	for _, path := range files {
-		stats, err := gen.GenerateFile(path, writer{}, *compatFlag)
+		stats, err := gen.GenerateFile(path, writer{OutDir: *outputDir}, *compatFlag)
 		if msg := stats.String(); msg != "" {
 			fmt.Printf("%v (%v)\n", msg, path)
 		}
@@ -100,17 +100,19 @@ func generate(files []string) error {
 		fmt.Printf("First run completed in %v. Running it %v times.\n", elapsed, n)
 		for i := 0; i < n; i++ {
 			for _, path := range files {
-				gen.GenerateFile(path, writer{}, *compatFlag)
+				gen.GenerateFile(path, writer{OutDir: *outputDir}, *compatFlag)
 			}
 		}
 	}
 	return s.Err()
 }
 
-type writer struct{}
+type writer struct {
+	OutDir string
+}
 
 func (w writer) Write(genfile, content string) error {
-	path := filepath.Join(*outputDir, genfile)
+	path := filepath.Join(w.OutDir, genfile)
 	if *diffFlag {
 		ondisk, err := os.ReadFile(path)
 		if err != nil {

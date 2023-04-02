@@ -60,9 +60,10 @@ func Generate(g *grammar.Grammar, w Writer, compat bool) error {
 }
 
 type Stats struct {
-	Compiling time.Duration
-	Gen       time.Duration
-	States    int
+	Compiling  time.Duration
+	Gen        time.Duration
+	States     int
+	ParserSize int
 }
 
 func (s Stats) String() string {
@@ -75,6 +76,9 @@ func (s Stats) String() string {
 	}
 	if s.States > 0 {
 		ret = append(ret, fmt.Sprintf("parser: %v states", s.States))
+	}
+	if s.ParserSize > 0 {
+		ret = append(ret, fmt.Sprintf("%v KB", s.ParserSize/1024))
 	}
 	return strings.Join(ret, ", ")
 }
@@ -101,6 +105,7 @@ func GenerateFile(path string, w Writer, compat bool) (Stats, error) {
 
 	if g.Parser != nil && g.Parser.Tables != nil {
 		ret.States = g.Parser.Tables.NumStates
+		ret.ParserSize = g.Parser.Tables.SizeBytes()
 	}
 	if g.TargetLang == "" {
 		// A source-only grammar.
