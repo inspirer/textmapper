@@ -4,6 +4,8 @@ package gen
 import (
 	"fmt"
 	"os"
+	"path"
+	"path/filepath"
 	"strings"
 	"text/template"
 	"time"
@@ -22,8 +24,35 @@ var languages = map[string]*language{
 	"go": golang,
 }
 
+type Options struct {
+	Compat      bool
+	IncludeDirs []string
+	NoBuiltins  bool
+}
+
+func loadOverlay(name string, tmpl *template.Template, opts Options) (*template.Template, error) {
+	name, _, _ = strings.Cut(path.Base(name), ".")
+	name += ".go.tmpl"
+
+	for _, dir := range opts.IncludeDirs {
+		overlayPath := filepath.Join(dir, name)
+		fi, err := os.Stat(overlayPath)
+		if err == nil && !fi.IsDir() {
+			content, err := os.ReadFile(overlayPath)
+			if err != nil {
+				return tmpl, err
+			}
+			tmpl, err = tmpl.Parse(string(content))
+			if err != nil {
+				return tmpl, fmt.Errorf("failed to parse %s: %v", overlayPath, err)
+			}
+		}
+	}
+	return tmpl, nil
+}
+
 // Generate generates code for a grammar.
-func Generate(g *grammar.Grammar, w Writer, compat bool) error {
+func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 	lang, ok := languages[g.TargetLang]
 	if !ok {
 		return fmt.Errorf("unsupported language: %s", g.TargetLang)
@@ -34,8 +63,21 @@ func Generate(g *grammar.Grammar, w Writer, compat bool) error {
 	if err != nil {
 		return err
 	}
+	base, err = loadOverlay(g.TargetLang+"_shared", base, opts)
+	if err != nil {
+		return err
+	}
+
 	for _, f := range templates {
-		tmpl, err := template.Must(base.Clone()).Parse(f.template)
+		tmpl := template.Must(base.Clone())
+		if !opts.NoBuiltins {
+			tmpl, err = tmpl.Parse(f.template)
+			if err != nil {
+				return err
+			}
+		}
+
+		tmpl, err = loadOverlay(g.TargetLang+"_"+f.name, tmpl, opts)
 		if err != nil {
 			return err
 		}
@@ -51,7 +93,7 @@ func Generate(g *grammar.Grammar, w Writer, compat bool) error {
 		if err != nil {
 			return err
 		}
-		src := Format(f.name, ExtractImports(buf.String()), compat)
+		src := Format(f.name, ExtractImports(buf.String()), opts.Compat)
 		if err := w.Write(f.name, src); err != nil {
 			return err
 		}
@@ -84,7 +126,7 @@ func (s Stats) String() string {
 }
 
 // GenerateFile reads, compiles, and generates code for a grammar stored in a file.
-func GenerateFile(path string, w Writer, compat bool) (Stats, error) {
+func GenerateFile(path string, w Writer, opts Options) (Stats, error) {
 	var ret Stats
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -97,7 +139,7 @@ func GenerateFile(path string, w Writer, compat bool) (Stats, error) {
 	}
 
 	start := time.Now()
-	g, err := grammar.Compile(ast.File{Node: tree.Root()}, compat)
+	g, err := grammar.Compile(ast.File{Node: tree.Root()}, opts.Compat)
 	ret.Compiling = time.Since(start)
 	if err != nil {
 		return ret, err
@@ -113,7 +155,7 @@ func GenerateFile(path string, w Writer, compat bool) (Stats, error) {
 	}
 
 	start = time.Now()
-	err = Generate(g, w, compat)
+	err = Generate(g, w, opts)
 	ret.Gen = time.Since(start)
 	return ret, err
 }

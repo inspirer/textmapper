@@ -783,7 +783,7 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- if .Parser.Types }}
 	if nt := tmRuleType[rule]; nt != 0 {
 {{- if .Parser.UsesFlags}}
-		p.listener({{ref "NodeType"}}(nt&0xffff), {{ref "NodeFlags"}}(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
+		p.listener({{template "nodeTypeRef" $}}(nt&0xffff), {{template "nodeFlagsRef" $}}(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
 {{- else}}
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 {{- end}}
@@ -818,7 +818,7 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 {{ block "reportIgnoredToken" . -}}
 func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
 {{ block "onBeforeIgnore" .}}{{end -}}
-{{/**/}}	var t {{ref "NodeType"}}
+{{/**/}}	var t {{template "nodeTypeRef" $}}
 	switch {{template "tokenType" .}}(tok.symbol) {
 {{- range .Parser.MappedTokens}}
 {{- $sym := index $.Syms .Token}}

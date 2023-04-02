@@ -77,8 +77,14 @@ func generate(files []string) error {
 
 	var s status.Status
 	start := time.Now()
+	opts := gen.Options{
+		Compat:      *compatFlag,
+		IncludeDirs: includes,
+		NoBuiltins:  *noBuiltins,
+	}
+
 	for _, path := range files {
-		stats, err := gen.GenerateFile(path, writer{OutDir: *outputDir}, *compatFlag)
+		stats, err := gen.GenerateFile(path, writer{OutDir: *outputDir}, opts)
 		if msg := stats.String(); msg != "" {
 			fmt.Printf("%v (%v)\n", msg, path)
 		}
@@ -100,7 +106,7 @@ func generate(files []string) error {
 		fmt.Printf("First run completed in %v. Running it %v times.\n", elapsed, n)
 		for i := 0; i < n; i++ {
 			for _, path := range files {
-				gen.GenerateFile(path, writer{OutDir: *outputDir}, *compatFlag)
+				gen.GenerateFile(path, writer{OutDir: *outputDir}, opts)
 			}
 		}
 	}

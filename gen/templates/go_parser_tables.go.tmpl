@@ -75,7 +75,7 @@ var tmRuleType = [...]uint32{
 }
 {{- else }}
 
-var tmRuleType = [...]{{ref "NodeType"}}{
+var tmRuleType = [...]{{template "nodeTypeRef" $}}{
 {{- range .Parser.Rules}}
 {{- if ne .Type -1 }}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
