@@ -78,6 +78,16 @@ type Lookahead struct {
 	Origin      status.SourceNode
 }
 
+// Accepts checks if the lookahead accepts a given input.
+func (l Lookahead) Accepts(input int32) (negated, ok bool) {
+	for _, p := range l.Predicates {
+		if p.Input == input {
+			return p.Negated, true
+		}
+	}
+	return false, false
+}
+
 // Grammar is an input to the parser generator.
 type Grammar struct {
 	Inputs     []Input

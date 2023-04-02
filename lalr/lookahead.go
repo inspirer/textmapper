@@ -1,6 +1,7 @@
 package lalr
 
 import (
+	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -77,11 +78,11 @@ func (b *lookaheadPlanner) compile() (ret []LookaheadRule, mapping []int, err er
 		for _, k := range key {
 			input = append(input, b.lookaheads[k])
 		}
-		rule, ok := newLookaheadRule(input)
-		if !ok {
+		rule, err := newLookaheadRule(input)
+		if err != nil {
 			var sb strings.Builder
 			sb.WriteString("Lookaheads must use mutually exclusive conditions and enumerate disambiguating\n")
-			sb.WriteString("nonterminals in the same order, found:\n")
+			fmt.Fprintf(&sb, "nonterminals in the same order, failed with %v:\n", err)
 			for _, la := range input {
 				sb.WriteString("\t(?= ")
 				for i, pred := range la.Predicates {
@@ -125,7 +126,7 @@ func (b *lookaheadPlanner) compile() (ret []LookaheadRule, mapping []int, err er
 	return ret, mapping, s.Err()
 }
 
-func newLookaheadRule(lookaheads []Lookahead) (LookaheadRule, bool) {
+func newLookaheadRule(lookaheads []Lookahead) (LookaheadRule, error) {
 	type node struct {
 		input int32
 		prev  []*node
@@ -178,23 +179,29 @@ func newLookaheadRule(lookaheads []Lookahead) (LookaheadRule, bool) {
 	dfs(&top)
 	ok := !cycle && top.depth == len(nodes)+1
 	if !ok {
-		return LookaheadRule{}, false
+		if cycle {
+			return LookaheadRule{}, fmt.Errorf("inconsistent order")
+		}
+		return LookaheadRule{}, fmt.Errorf("ambiguous order")
 	}
 
 	var ret LookaheadRule
+	var shuffling int
 	for len(lookaheads) > 1 {
 		next := order[0]
 		order = order[1:]
 
-		var negated bool
-		k := pickLookahead(next, lookaheads, false)
-		if k == -1 {
-			k = pickLookahead(next, lookaheads, true)
-			negated = true
+		k, negated, ok := pickLookahead(next, lookaheads)
+		if !ok {
+			if shuffling == len(order) {
+				return LookaheadRule{}, fmt.Errorf("cannot decide on the next lookahead")
+			}
+			shuffling++
+			order = append(order, next)
+			continue
 		}
-		if k == -1 {
-			return LookaheadRule{}, false
-		}
+		shuffling = 0
+
 		ret.Cases = append(ret.Cases, LookaheadCase{
 			Predicate: Predicate{Input: next, Negated: negated},
 			Target:    lookaheads[k].Nonterminal,
@@ -208,19 +215,30 @@ func newLookaheadRule(lookaheads []Lookahead) (LookaheadRule, bool) {
 		lookaheads = lookaheads[:len(lookaheads)-1]
 	}
 	ret.DefaultTarget = lookaheads[0].Nonterminal
-	return ret, true
+	return ret, nil
 }
 
-func pickLookahead(input int32, lookaheads []Lookahead, negated bool) int {
-	ret := -1
+func pickLookahead(input int32, lookaheads []Lookahead) (index int, negated, ok bool) {
+	pos, neg := -1, -1
 	for i, la := range lookaheads {
-		if len(la.Predicates) == 1 && la.Predicates[0].Input == input && la.Predicates[0].Negated == negated {
-			if ret >= 0 {
-				// Two conflicting lookaheads. Give up.
-				return -1
-			}
-			ret = i
+		negated, ok := la.Accepts(input)
+		if !ok {
+			// This lookahead is not dependent on "input". Give up.
+			return -1, false, false
+		}
+		switch {
+		case !negated && pos == -1:
+			pos = i
+		case negated && neg == -1:
+			neg = i
+		case negated:
+			neg = -2 // ambiguous
+		default:
+			pos = -2 // ambiguous
 		}
 	}
-	return ret
+	if pos >= 0 {
+		return pos, false, true
+	}
+	return neg, true, neg >= 0
 }
