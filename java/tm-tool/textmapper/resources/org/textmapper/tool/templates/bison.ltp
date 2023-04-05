@@ -22,7 +22,7 @@ ${end}
 
 ${template nonterm(nterm)-}
 ${if nterm is LiLookahead-}
-// lookahead: ${foreach p in nterm.lookaheadPredicates separator ' && '-}
+// lookahead: ${foreach p in nterm.lookaheadPredicates separator ' & '-}
 ${p.isNegated() ? '!' : ''}${p.input.target->symbolName()}${if p.input.hasEoi()}(with eoi)${end}${end}
 ${end-}
 ${nterm->symbolName()} :
