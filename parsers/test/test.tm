@@ -13,7 +13,7 @@ fixWhitespace = true
 cancellable = true
 recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
-extraTypes = ["Int7", "Int9"]
+extraTypes = ["Int7", "Int9 -> Expr"]
 
 :: lexer
 

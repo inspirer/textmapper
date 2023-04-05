@@ -130,3 +130,14 @@ func Produce(name string, style Style) string {
 	}
 	return buf.String()
 }
+
+// IsValid returns true if a given string is a valid identifier across all supported
+// target languages.
+func IsValid(id string) bool {
+	for i, c := range id {
+		if !unicode.IsLetter(c) && c != '_' && (i == 0 || !unicode.IsDigit(c)) {
+			return false
+		}
+	}
+	return id != ""
+}

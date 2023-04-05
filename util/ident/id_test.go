@@ -79,8 +79,34 @@ var idTests = []struct {
 
 func TestSymbolID(t *testing.T) {
 	for _, tc := range idTests {
-		if got := Produce(tc.input, tc.style); got != tc.want {
+		got := Produce(tc.input, tc.style)
+		if got != tc.want {
 			t.Errorf("Produce(%v,%v) = %v, want: %v", tc.input, tc.style, got, tc.want)
+		}
+		if !IsValid(got) {
+			t.Errorf("Produce(%v,%v) = %v (invalid identifier)", tc.input, tc.style, got)
+		}
+	}
+}
+
+var isValidTests = []struct {
+	input string
+	want  bool
+}{
+	{"", false},
+	{"1", false},
+	{"a", true},
+	{"abc123", true},
+	{"ABC", true},
+	{"alpha", true},
+	{"alpha ", false},
+	{"\nalpha", false},
+}
+
+func TestIsValid(t *testing.T) {
+	for _, tc := range isValidTests {
+		if got := IsValid(tc.input); got != tc.want {
+			t.Errorf("IsValid(%q) = %v, want: %v", tc.input, got, tc.want)
 		}
 	}
 }

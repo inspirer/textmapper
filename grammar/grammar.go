@@ -365,7 +365,7 @@ type Options struct {
 	FixWhitespace bool
 	WriteBison    bool  // Output the expanded grammar in a Bison-like format.
 	ReportTokens  []int // Tokens that should appear in the AST.
-	ExtraTypes    []string
+	ExtraTypes    []syntax.ExtraType
 	CustomImpl    []string
 	FileNode      string // The top-level node gets the byte range of the whole input.
 }
