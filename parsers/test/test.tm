@@ -127,7 +127,7 @@ Declaration -> Declaration :
     Decl1
   | Decl2
   | '{' ('-' '-'? -> Negation)? Declaration+? '}'        -> Block
-  | lastInt  -> LastInt
+  | lastInt  { println("it works") } -> LastInt
   | IntegerConstant ('[' ']')?
       {
         switch $IntegerConstant {

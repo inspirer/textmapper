@@ -61,22 +61,23 @@ Declaration :
 | LBRACE Declaration_list RBRACE
 | LBRACE RBRACE
 | LASTINT
+			{ println("it works") }
 | INTEGERCONSTANT LBRACK RBRACK
 			{
-        switch  {{nn0, _ := rhs[0].value.(int)}}nn0 {
+        switch (/*int*/$0) {
         case 7:
-          p.listener(Int7, 0, rhs[0].sym.offset, rhs[2].sym.endoffset)
+          p.listener(Int7, 0, @0.offset, @2.endoffset)
         case 9:
-          p.listener(Int9, 0, rhs[0].sym.offset, rhs[2].sym.endoffset)
+          p.listener(Int9, 0, @0.offset, @2.endoffset)
         }
       }
 | INTEGERCONSTANT
 			{
-        switch  {{nn0, _ := rhs[0].value.(int)}}nn0 {
+        switch (/*int*/$0) {
         case 7:
-          p.listener(Int7, 0, rhs[0].sym.offset, rhs[0].sym.endoffset)
+          p.listener(Int7, 0, @0.offset, @0.endoffset)
         case 9:
-          p.listener(Int9, 0, rhs[0].sym.offset, rhs[0].sym.endoffset)
+          p.listener(Int9, 0, @0.offset, @0.endoffset)
         }
       }
 | TEST LBRACE setof_not_EOI_or_DOT_or_RBRACE_optlist RBRACE

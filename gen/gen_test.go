@@ -2,9 +2,7 @@ package gen_test
 
 import (
 	"os"
-	"path"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/inspirer/textmapper/gen"
@@ -47,12 +45,6 @@ func TestGenerate(t *testing.T) {
 			}
 
 			for _, genfile := range w.files {
-				// TODO compare all files
-				switch strings.TrimSuffix(path.Base(filename), ".tm") + "/" + path.Base(genfile) {
-				case "test/test.y":
-					continue
-				}
-
 				content := w.content[genfile]
 				p := filepath.Join(filepath.Dir(filename), genfile)
 				ondisk, err := os.ReadFile(p)

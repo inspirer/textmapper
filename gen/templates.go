@@ -44,21 +44,20 @@ const bisonTpl = `%{
 {{- end}}
 
 %%
-{{- range .Parser.Nonterms}}
 
-{{ if eq .Value.Kind 11 -}}
-// lookahead: {{ range $i, $it := .Value.Sub }}{{if gt $i 0}} & {{end}}{{$it}}{{end}}
+{{- range .Parser.RulesByNonterm}}
+
+{{ if eq .Nonterm.Value.Kind 11 -}}
+// lookahead: {{ range $i, $it := .Nonterm.Value.Sub }}{{if gt $i 0}} & {{end}}{{$it}}{{end}}
 {{ end -}}
-{{.Name}} :
-{{- if eq .Value.Kind 2 }}
-{{- range $i, $rule := .Value.Sub}}
-{{ if eq $i 0}}  {{else}}| {{end}}{{$.ExprString $rule}}
+{{ .Nonterm.Name}} :
+{{- range $i, $rule := .Rules}}
+{{ if eq $i 0}}  {{else}}| {{end}}{{if eq $rule.Value.Kind 11}}%empty{{else}}{{$.ExprString $rule.Value}}{{end}}
+{{- $act := index $.Parser.Actions $rule.Action }}
+{{- if $act.Code }}
+			{{bison_parser_action $act.Code $act.Vars $act.Origin}}
 {{- end}}
-{{- else if eq .Value.Kind 11 }}
-  %empty
-{{- else }}
-  {{$.ExprString .Value}}
-{{- end }}
+{{- end}}
 ;
 {{- end}}
 

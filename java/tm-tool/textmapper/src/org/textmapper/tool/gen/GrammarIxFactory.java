@@ -64,7 +64,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return new LexerRuleIxObject((LexerRule) o);
 		}
 		if (o instanceof Rule) {
-			return new RuleIxObject((Rule) o);
+			return new RuleIxObject((Rule) o, templatePackage);
 		}
 		if (o instanceof CustomRange) {
 			return new CustomRangeIxObject((CustomRange) o);
@@ -158,16 +158,21 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		private final Rule rule;
 		private RhsSymbol[] sourceSymbols;
+		private String templatePackage;
 
-		private RuleIxObject(Rule rule) {
+		private RuleIxObject(Rule rule, String templatePackage) {
 			super(rule);
 			this.rule = rule;
+			this.templatePackage = templatePackage;
 		}
 
 		@Override
 		public Object callMethod(SourceElement caller, String methodName, Object... args)
 				throws EvaluationException {
 			if (args == null || args.length == 0) {
+				if ("asBisonRule".equals(methodName)) {
+					return new RuleIxObject(rule, "bison");
+				}
 				if ("codeTemplate".equals(methodName)) {
 					return TMDataUtil.getCodeTemplate(rule);
 				}

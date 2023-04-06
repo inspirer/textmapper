@@ -1671,6 +1671,7 @@ func (c *compiler) compileParser() {
 	out := c.out.Parser
 	out.Inputs = c.source.Inputs
 	out.Nonterms = c.source.Nonterms
+	out.NumTerminals = len(c.source.Terminals)
 }
 
 func (c *compiler) generateTables() bool {
@@ -1704,6 +1705,7 @@ func (c *compiler) generateTables() bool {
 	// The very first action is a no-op.
 	c.out.Parser.Actions = append(c.out.Parser.Actions, SemanticAction{})
 
+	var rules []*Rule
 	for self, nt := range c.source.Nonterms {
 		if nt.Value.Kind == syntax.Lookahead {
 			la := lalr.Lookahead{
@@ -1734,6 +1736,7 @@ func (c *compiler) generateTables() bool {
 			}
 			g.Lookaheads = append(g.Lookaheads, la)
 			g.Rules = append(g.Rules, rule)
+			rules = append(rules, &Rule{Rule: rule, Value: nt.Value})
 			continue
 		}
 
@@ -1747,6 +1750,7 @@ func (c *compiler) generateTables() bool {
 				Origin:     expr.Origin,
 				OriginName: nt.Name,
 			}
+			exprWithPrec := expr
 			if expr.Kind == syntax.Prec {
 				rule.Precedence = lalr.Sym(expr.Symbol)
 				expr = expr.Sub[0]
@@ -1841,6 +1845,7 @@ func (c *compiler) generateTables() bool {
 				c.out.Parser.Actions = append(c.out.Parser.Actions, act)
 			}
 			g.Rules = append(g.Rules, rule)
+			rules = append(rules, &Rule{Rule: rule, Value: exprWithPrec})
 		}
 	}
 	if c.s.Err() != nil {
@@ -1870,7 +1875,7 @@ func (c *compiler) generateTables() bool {
 		return false
 	}
 
-	c.out.Parser.Rules = g.Rules
+	c.out.Parser.Rules = rules
 	c.out.Parser.Tables = tables
 	return true
 }

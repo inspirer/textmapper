@@ -344,6 +344,10 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Negation, 0, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 8: // Declaration : '{' '-' '}'
 		p.listener(Negation, 0, rhs[1].sym.offset, rhs[1].sym.endoffset)
+	case 11: // Declaration : lastInt
+		{
+			println("it works")
+		}
 	case 12: // Declaration : IntegerConstant '[' ']'
 		nn0, _ := rhs[0].value.(int)
 		{
