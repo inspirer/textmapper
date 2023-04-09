@@ -129,6 +129,9 @@ func (w writer) Write(genfile, content string) error {
 		}
 		return nil
 	}
-
+	err := os.MkdirAll(filepath.Dir(path), 0755)
+	if err != nil {
+		return fmt.Errorf("Error creating directory: %w", err)
+	}
 	return os.WriteFile(path, []byte(content), 0644)
 }
