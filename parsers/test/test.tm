@@ -13,7 +13,7 @@ fixWhitespace = true
 cancellable = true
 recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
-extraTypes = ["Int7", "Int9"]
+extraTypes = ["Int7", "Int9 -> Expr"]
 
 :: lexer
 
@@ -127,7 +127,7 @@ Declaration -> Declaration :
     Decl1
   | Decl2
   | '{' ('-' '-'? -> Negation)? Declaration+? '}'        -> Block
-  | lastInt  -> LastInt
+  | lastInt  { println("it works") } -> LastInt
   | IntegerConstant ('[' ']')?
       {
         switch $IntegerConstant {

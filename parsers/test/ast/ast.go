@@ -102,6 +102,7 @@ type Expr interface {
 // exprNode() ensures that only the following types can be
 // assigned to Expr.
 func (AsExpr) exprNode()   {}
+func (Int9) exprNode()     {}
 func (IntExpr) exprNode()  {}
 func (PlusExpr) exprNode() {}
 func (NilNode) exprNode()  {}

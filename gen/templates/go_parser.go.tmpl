@@ -328,6 +328,7 @@ const errSymbol = {{ .Parser.ErrorSymbol }}
 
 {{ block "willShift" . -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ if .Options.IsEnabled "willShift" -}}
 // willShift checks if "symbol" is going to be shifted in the given state.
 // This function does not support empty productions and returns false if they occur before "symbol".
 func (p *Parser) willShift(stackPos int, state int{{$stateType}}, symbol int32, stack []stackEntry) bool {
@@ -359,8 +360,11 @@ func (p *Parser) willShift(stackPos int, state int{{$stateType}}, symbol int32, 
 	}
 	return symbol == eoiToken
 }
-{{ end }}
+
+{{ end -}}
+{{ end -}}
 {{ block "skipBrokenCode" . -}}
+{{ if .Options.IsEnabled "skipBrokenCode" -}}
 func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, stack []stackEntry, canRecover func (symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
@@ -374,7 +378,9 @@ func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Contex
 	}
 	return e
 }
-{{ end }}
+
+{{ end -}}
+{{ end -}}
 {{ block "recoverFromError" . -}}
 {{ if .Options.IsEnabled "recoverFromError" -}}
 func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, stack []stackEntry) []stackEntry {

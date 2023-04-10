@@ -172,7 +172,7 @@ var typesTests = []struct {
 	}},
 	{`%input A; %interface X,Y; A: x=B y=D -> A; B: b->B-> X | c->C->X | B B; D: d -> B;`, []string{
 		// Lists are not allowed.
-		"err: fields x and y contain overlapping sets of node types",
+		"err: fields x and y of A contain overlapping sets of node types",
 		"A: x=(X)* y=B",
 		"B: ",
 		"C: ",
@@ -180,7 +180,7 @@ var typesTests = []struct {
 	}},
 	{`%input A; %interface X,Y; A: x=B y=D -> A | y=D -> A; B: b->B-> X | c->C->X ; D: d -> B;`, []string{
 		// Nullable clauses are not allowed.
-		"err: fields x and y contain overlapping sets of node types",
+		"err: fields x and y of A contain overlapping sets of node types",
 		"A: x=X? y=B",
 		"B: ",
 		"C: ",
@@ -188,7 +188,7 @@ var typesTests = []struct {
 	}},
 	{`%input A; %interface X,Y; A: x=B y=D -> A; B: b->B-> X | c->C->X | B B; D: d -> B;`, []string{
 		// Lists are not allowed.
-		"err: fields x and y contain overlapping sets of node types",
+		"err: fields x and y of A contain overlapping sets of node types",
 		"A: x=(X)* y=B",
 		"B: ",
 		"C: ",
@@ -196,7 +196,7 @@ var typesTests = []struct {
 	}},
 	{`%input A; %interface X,Y; A: x=B y=D -> A | y=D x=B -> A; B: b->B-> X | c->C->X ; D: d -> B;`, []string{
 		// Unordered clauses are not allowed.
-		"err: fields y and x contain overlapping sets of node types",
+		"err: fields y and x of A contain overlapping sets of node types",
 		"A: y=B x=X",
 		"B: ",
 		"C: ",
@@ -213,7 +213,7 @@ func TestTypes(t *testing.T) {
 		}
 
 		var got []string
-		types, err := syntax.ExtractTypes(model, nil /*tokens*/, true /*eventFields*/, false /*genSelector*/)
+		types, err := syntax.ExtractTypes(model, nil /*tokens*/, syntax.TypeOptions{EventFields: true})
 		if err != nil {
 			s := status.FromError(err)
 			s.Sort()

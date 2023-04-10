@@ -101,6 +101,7 @@ var Declaration = []NodeType{
 
 var Expr = []NodeType{
 	AsExpr,
+	Int9,
 	IntExpr,
 	PlusExpr,
 }

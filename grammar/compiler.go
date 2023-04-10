@@ -610,22 +610,57 @@ func (c *compiler) parseTokenList(e ast.Expression) []ast.Identifier {
 	return nil
 }
 
-func (c *compiler) parseExpr(e ast.Expression, defaultVal interface{}) interface{} {
+func (c *compiler) parseExpr(e ast.Expression, defaultVal any) any {
 	switch e := e.(type) {
 	case *ast.Array:
 		if _, ok := defaultVal.([]string); ok {
 			var ret []string
 			for _, el := range e.Expression() {
-				if lit, ok := el.(*ast.StringLiteral); ok {
-					s, err := strconv.Unquote(lit.Text())
-					if err != nil {
-						c.errorf(el.TmNode(), "cannot parse string literal: %v", err)
-						continue
-					}
-					ret = append(ret, s)
+				lit, ok := el.(*ast.StringLiteral)
+				if !ok {
+					c.errorf(el.TmNode(), "string is expected")
 					continue
 				}
-				c.errorf(el.TmNode(), "string is expected")
+				s, err := strconv.Unquote(lit.Text())
+				if err != nil {
+					c.errorf(el.TmNode(), "cannot parse string literal: %v", err)
+					continue
+				}
+				ret = append(ret, s)
+			}
+			return ret
+		}
+		if _, ok := defaultVal.([]syntax.ExtraType); ok {
+			var ret []syntax.ExtraType
+			for _, el := range e.Expression() {
+				lit, ok := el.(*ast.StringLiteral)
+				if !ok {
+					c.errorf(el.TmNode(), "string is expected")
+					continue
+				}
+				s, err := strconv.Unquote(lit.Text())
+				if err != nil {
+					c.errorf(el.TmNode(), "cannot parse string literal: %v", err)
+					continue
+				}
+				ids := strings.Split(s, "->")
+				for i, id := range ids {
+					id := strings.TrimSpace(id)
+					if !ident.IsValid(id) {
+						c.errorf(el.TmNode(), "%v is not a valid identifier", id)
+						ids = nil
+						break
+					}
+					ids[i] = id
+				}
+				if len(ids) > 0 {
+					out := syntax.ExtraType{
+						Name:       ids[0],
+						Implements: ids[1:],
+						Origin:     el.TmNode(),
+					}
+					ret = append(ret, out)
+				}
 			}
 			return ret
 		}
@@ -646,6 +681,8 @@ func (c *compiler) parseExpr(e ast.Expression, defaultVal interface{}) interface
 	switch defaultVal.(type) {
 	case []int:
 		c.errorf(e.TmNode(), "list of symbols is expected")
+	case []syntax.ExtraType:
+		c.errorf(e.TmNode(), `list of strings with names is expected. E.g. ["Foo", "Bar -> Expr"]`)
 	default:
 		c.errorf(e.TmNode(), "%T is expected", defaultVal)
 	}
@@ -1567,7 +1604,12 @@ func (c *compiler) compileParser() {
 			tokens = append(tokens, syntax.RangeToken{Token: t, Name: name})
 		}
 
-		types, err := syntax.ExtractTypes(c.source, tokens, c.out.Options.EventFields, c.out.Options.GenSelector)
+		opts := syntax.TypeOptions{
+			EventFields: c.out.Options.EventFields,
+			GenSelector: c.out.Options.GenSelector,
+			ExtraTypes:  c.out.Options.ExtraTypes,
+		}
+		types, err := syntax.ExtractTypes(c.source, tokens, opts)
 		if err != nil {
 			c.s.AddError(err)
 			return
@@ -1629,6 +1671,7 @@ func (c *compiler) compileParser() {
 	out := c.out.Parser
 	out.Inputs = c.source.Inputs
 	out.Nonterms = c.source.Nonterms
+	out.NumTerminals = len(c.source.Terminals)
 }
 
 func (c *compiler) generateTables() bool {
@@ -1662,6 +1705,7 @@ func (c *compiler) generateTables() bool {
 	// The very first action is a no-op.
 	c.out.Parser.Actions = append(c.out.Parser.Actions, SemanticAction{})
 
+	var rules []*Rule
 	for self, nt := range c.source.Nonterms {
 		if nt.Value.Kind == syntax.Lookahead {
 			la := lalr.Lookahead{
@@ -1692,6 +1736,7 @@ func (c *compiler) generateTables() bool {
 			}
 			g.Lookaheads = append(g.Lookaheads, la)
 			g.Rules = append(g.Rules, rule)
+			rules = append(rules, &Rule{Rule: rule, Value: nt.Value})
 			continue
 		}
 
@@ -1705,6 +1750,7 @@ func (c *compiler) generateTables() bool {
 				Origin:     expr.Origin,
 				OriginName: nt.Name,
 			}
+			exprWithPrec := expr
 			if expr.Kind == syntax.Prec {
 				rule.Precedence = lalr.Sym(expr.Symbol)
 				expr = expr.Sub[0]
@@ -1799,6 +1845,7 @@ func (c *compiler) generateTables() bool {
 				c.out.Parser.Actions = append(c.out.Parser.Actions, act)
 			}
 			g.Rules = append(g.Rules, rule)
+			rules = append(rules, &Rule{Rule: rule, Value: exprWithPrec})
 		}
 	}
 	if c.s.Err() != nil {
@@ -1828,7 +1875,7 @@ func (c *compiler) generateTables() bool {
 		return false
 	}
 
-	c.out.Parser.Rules = g.Rules
+	c.out.Parser.Rules = rules
 	c.out.Parser.Tables = tables
 	return true
 }
@@ -1881,7 +1928,7 @@ func (c *compiler) parseOptions() {
 				c.reportTokens[id.Text()] = true
 			}
 		case "extraTypes":
-			opts.ExtraTypes = c.parseExpr(opt.Value(), opts.ExtraTypes).([]string)
+			opts.ExtraTypes = c.parseExpr(opt.Value(), opts.ExtraTypes).([]syntax.ExtraType)
 		case "customImpl":
 			opts.CustomImpl = c.parseExpr(opt.Value(), opts.CustomImpl).([]string)
 		case "fileNode":

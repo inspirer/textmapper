@@ -14,22 +14,23 @@ import (
 )
 
 var funcMap = template.FuncMap{
-	"hex":              hex,
-	"bits":             bits,
-	"bits_per_element": bitsPerElement,
-	"int_array":        intArray,
-	"str_literal":      strconv.Quote,
-	"title":            strings.Title,
-	"lower":            strings.ToLower,
-	"sum":              sum,
-	"string_switch":    asStringSwitch,
-	"quote":            strconv.Quote,
-	"join":             strings.Join,
-	"lexer_action":     lexerAction,
-	"ref":              ref,
-	"minus1":           minus1,
-	"go_parser_action": goParserAction,
-	"short_pkg":        shortPkg,
+	"hex":                 hex,
+	"bits":                bits,
+	"bits_per_element":    bitsPerElement,
+	"int_array":           intArray,
+	"str_literal":         strconv.Quote,
+	"title":               strings.Title,
+	"lower":               strings.ToLower,
+	"sum":                 sum,
+	"string_switch":       asStringSwitch,
+	"quote":               strconv.Quote,
+	"join":                strings.Join,
+	"lexer_action":        lexerAction,
+	"ref":                 ref,
+	"minus1":              minus1,
+	"go_parser_action":    goParserAction,
+	"bison_parser_action": bisonParserAction,
+	"short_pkg":           shortPkg,
 }
 
 func sum(a, b int) int {
@@ -251,6 +252,86 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		}
 	}
 	return decls.String() + sb.String(), nil
+}
+
+func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
+	var sb strings.Builder
+	for len(s) > 0 {
+		d := strings.IndexByte(s, '$')
+		if d == -1 {
+			sb.WriteString(s)
+			break
+		}
+		sb.WriteString(s[:d])
+		s = s[d+1:]
+		if len(s) == 0 {
+			return "", status.Errorf(origin, "found $ at the end of the stream")
+		}
+
+		size, id, prop, err := parseMeta(s)
+		s = s[size:]
+		if err != nil {
+			return "", status.Errorf(origin, err.Error())
+		}
+
+		var index int
+		switch id {
+		case "left()", "leftRaw()":
+			index = -2
+		case "first()":
+			if len(args.Types) == 0 {
+				index = -1
+			}
+		case "last()":
+			if len(args.Types) == 0 {
+				index = -1
+			} else {
+				index = len(args.Types) - 1
+			}
+		default:
+			var ok bool
+			index, ok = args.Resolve(id)
+			if !ok {
+				return "", status.Errorf(origin, "invalid reference %q", id)
+			}
+		}
+
+		if index == -1 {
+			if prop == "value" || prop == "sym" {
+				sb.WriteString("NULL")
+			} else {
+				sb.WriteString("-1")
+			}
+			continue
+		}
+		var needsParen bool
+		if prop == "value" {
+			switch {
+			case index < 0 && args.LHSType != "" && id != "leftRaw()":
+				needsParen = true
+				fmt.Fprintf(&sb, "(/*%v*/", args.LHSType)
+			case index >= 0 && args.Types[index] != "":
+				needsParen = true
+				fmt.Fprintf(&sb, "(/*%v*/", args.Types[index])
+			}
+			sb.WriteByte('$')
+		} else {
+			sb.WriteByte('@')
+		}
+		if index == -2 {
+			sb.WriteByte('$')
+		} else {
+			sb.WriteString(strconv.Itoa(index))
+		}
+		if prop != "value" {
+			sb.WriteByte('.')
+			sb.WriteString(prop)
+		}
+		if needsParen {
+			sb.WriteByte(')')
+		}
+	}
+	return sb.String(), nil
 }
 
 // parseMeta parses a meta expression after the dollar sign and returns its length.

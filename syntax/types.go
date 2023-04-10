@@ -70,25 +70,39 @@ type RangeField struct {
 	Origin     status.SourceNode
 }
 
+// ExtraType gets injected into the grammar without any analysis.
+type ExtraType struct {
+	Name       string
+	Implements []string
+	Origin     status.SourceNode
+}
+
+// TypeOptions parameterizes the AST mapping logic.
+type TypeOptions struct {
+	EventFields bool
+	GenSelector bool
+	ExtraTypes  []ExtraType
+}
+
 // ExtractTypes analyzes all the arrows in the grammar and comes up with a
 // structure of the produced AST.
 //
 // Note: the function is expected to work on a grammar without templates.
-func ExtractTypes(m *Model, tokens []RangeToken, eventFields, genSelector bool) (*Types, error) {
-	c := newTypeCollector(m, tokens)
+func ExtractTypes(m *Model, tokens []RangeToken, opts TypeOptions) (*Types, error) {
+	c := newTypeCollector(m, tokens, opts)
 	c.resolveTypes()
 	switch {
-	case eventFields:
+	case opts.EventFields:
 		c.resolveFields()
 		c.resolveCategories()
 		c.fixConflictingFields()
-	case genSelector:
+	case opts.GenSelector:
 		c.resolveCategories()
 	}
 	return c.out, c.s.Err()
 }
 
-func newTypeCollector(m *Model, tokens []RangeToken) *typeCollector {
+func newTypeCollector(m *Model, tokens []RangeToken, opts TypeOptions) *typeCollector {
 	seen := make(map[int]bool) // nonterminals
 	var nonterms []int
 
@@ -153,6 +167,7 @@ func newTypeCollector(m *Model, tokens []RangeToken) *typeCollector {
 
 	return &typeCollector{
 		m:            m,
+		opts:         opts,
 		nonterms:     nonterms,
 		arrows:       arrows,
 		isCat:        isCat,
@@ -165,6 +180,7 @@ func newTypeCollector(m *Model, tokens []RangeToken) *typeCollector {
 
 type typeCollector struct {
 	m            *Model
+	opts         TypeOptions
 	nonterms     []int
 	arrows       []*Expr
 	isCat        map[string]bool
@@ -552,7 +568,23 @@ func (c *typeCollector) resolveCategories() {
 		for _, t := range set.Set {
 			c.out.Categories[i].Types = append(c.out.Categories[i].Types, c.out.RangeTypes[t].Name)
 		}
-		sort.Strings(c.out.Categories[i].Types)
+	}
+
+	// Append extra types at the very end.
+	for _, t := range c.opts.ExtraTypes {
+		for _, cat := range t.Implements {
+			i, ok := byName[cat]
+			if !ok {
+				c.s.Errorf(t.Origin, "'%v' is not a valid category reference", cat)
+				continue
+			}
+			c.out.Categories[i].Types = append(c.out.Categories[i].Types, t.Name)
+		}
+	}
+
+	// Sort the result for deterministic output.
+	for _, cat := range c.out.Categories {
+		sort.Strings(cat.Types)
 	}
 	sort.Slice(c.out.Categories, func(i, j int) bool {
 		return c.out.Categories[i].Name < c.out.Categories[j].Name
@@ -595,6 +627,7 @@ func (c *typeCollector) fixConflictingFields() {
 		if len(t.Fields) <= 1 {
 			continue
 		}
+		// TODO ignore things in __ignoreContent
 
 		resolved = resolved[:0]
 		ordered := t.Fields[1].FetchAfter == 0
@@ -623,7 +656,8 @@ func (c *typeCollector) fixConflictingFields() {
 			if resolution.incomingDep != 0 {
 				other := t.Fields[resolution.incomingDep]
 				if !suppress && (field.IsList || !field.IsRequired || !ordered) {
-					c.s.Errorf(field.Origin, "fields %v and %v contain overlapping sets of node types", field.Name, other.Name)
+					// TODO fix the error origin
+					c.s.Errorf(field.Origin, "fields %v and %v of %v contain overlapping sets of node types", field.Name, other.Name, t.Name)
 					suppress = true
 				}
 				prev = i

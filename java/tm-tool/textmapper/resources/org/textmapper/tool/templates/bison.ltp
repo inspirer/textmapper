@@ -22,7 +22,7 @@ ${end}
 
 ${template nonterm(nterm)-}
 ${if nterm is LiLookahead-}
-// lookahead: ${foreach p in nterm.lookaheadPredicates separator ' && '-}
+// lookahead: ${foreach p in nterm.lookaheadPredicates separator ' & '-}
 ${p.isNegated() ? '!' : ''}${p.input.target->symbolName()}${if p.input.hasEoi()}(with eoi)${end}${end}
 ${end-}
 ${nterm->symbolName()} :
@@ -37,7 +37,7 @@ ${if rule.getRight().length == 0}%empty${else-}
 ${foreach sym in rule.getRight() separator ' '}${sym.target ? sym.target->symbolName() : '/*.' + sym.name + '*/'}${end-}${end-}
 ${if rule.precedence()} %prec ${rule.precedence()->symbolName()}${end-}
 ${if rule.codeTemplate()}
-			${call bisonAction for rule-}${end-}
+			${call bisonAction for rule.asBisonRule()-}${end-}
 ${end}
 
 ${template lexerAction(rule)-}
@@ -46,7 +46,7 @@ ${end}
 
 ${template parserAction(rule)-}
 ${if rule.codeTemplate()-}
-${call bisonAction for rule-}
+${call bisonAction for rule.asBisonRule()-}
 ${end-}
 ${end}
 
@@ -64,7 +64,7 @@ ${query symText(property) =
 
 ${template symAccess(property)-}
 ${if property == 'value'-}
-${symbol->type() ? '((' + symbol->type() + ')' + self->symText(property) + ')' : self->symText(property) -}
+${symbol->type() ? '(/*' + symbol->type() + '*/' + self->symText(property) + ')' : self->symText(property) -}
 ${else-}
 ${self->symText(property)-}
 ${end-}

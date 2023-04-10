@@ -147,7 +147,7 @@ func (g *Grammar) ExprString(e *syntax.Expr) string {
 }
 
 // RuleString returns a user-friendly rendering of a given rule.
-func (g *Grammar) RuleString(r *lalr.Rule) string {
+func (g *Grammar) RuleString(r Rule) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "%v :", g.Syms[r.LHS].Name)
 	for _, sym := range r.RHS {
@@ -174,7 +174,7 @@ func (g *Grammar) NeedsSession() bool {
 	return len(g.Parser.Tables.Lookaheads) > 0 && (g.Options.RecursiveLookaheads || g.Options.Cancellable)
 }
 
-func (g *Grammar) HasTrailingNulls(r lalr.Rule) bool {
+func (g *Grammar) HasTrailingNulls(r Rule) bool {
 	for i := len(r.RHS) - 1; i >= 0; i-- {
 		sym := r.RHS[i]
 		if sym.IsStateMarker() {
@@ -287,12 +287,18 @@ type Lexer struct {
 	RuleToken       []int // maps actions into tokens; empty if the mapping is 1:1
 }
 
+// Rule is a parser rule with a semantic action.
+type Rule struct {
+	lalr.Rule
+	Value *syntax.Expr // non-nil
+}
+
 // Parser is a model of a generated parser.
 type Parser struct {
 	Inputs       []syntax.Input
 	Nonterms     []*syntax.Nonterm
 	Prec         []lalr.Precedence // TODO remove since this is a lalr input
-	Rules        []lalr.Rule
+	Rules        []*Rule
 	Tables       *lalr.Tables
 	Actions      []SemanticAction
 	UsesFlags    bool
@@ -300,6 +306,7 @@ type Parser struct {
 	MappedTokens []syntax.RangeToken
 	IsRecovering bool
 	ErrorSymbol  int
+	NumTerminals int
 }
 
 func (p *Parser) HasAssocValues() bool {
@@ -343,6 +350,27 @@ func (p *Parser) HasActions() bool {
 	return len(p.Tables.Lookaheads) > 0
 }
 
+// NontermRules is a pair of a nonterminal and its rules.
+type NontermRules struct {
+	Nonterm *syntax.Nonterm
+	Rules   []*Rule
+}
+
+func (p *Parser) RulesByNonterm() []NontermRules {
+	var ret []NontermRules
+	m := make(map[lalr.Sym]int)
+	for _, rule := range p.Rules {
+		i, ok := m[rule.LHS]
+		if !ok {
+			i = len(ret)
+			ret = append(ret, NontermRules{Nonterm: p.Nonterms[int(rule.LHS)-p.NumTerminals]})
+			m[rule.LHS] = i
+		}
+		ret[i].Rules = append(ret[i].Rules, rule)
+	}
+	return ret
+}
+
 // Options carries grammar generation parameters.
 type Options struct {
 	Package   string
@@ -365,7 +393,7 @@ type Options struct {
 	FixWhitespace bool
 	WriteBison    bool  // Output the expanded grammar in a Bison-like format.
 	ReportTokens  []int // Tokens that should appear in the AST.
-	ExtraTypes    []string
+	ExtraTypes    []syntax.ExtraType
 	CustomImpl    []string
 	FileNode      string // The top-level node gets the byte range of the whole input.
 }

@@ -18,7 +18,7 @@ const (
 	{{.Name}}    {{- if gt (len .Fields) 0}}  // {{.Descriptor}}{{end}}
 {{- end}}
 {{- range .Options.ExtraTypes }}
-	{{.}}
+	{{.Name}}
 {{- end}}
 	NodeTypeMax
 )
@@ -29,7 +29,7 @@ var nodeTypeStr = [...]string{
 	"{{.Name}}",
 {{- end}}
 {{- range .Options.ExtraTypes }}
-	"{{.}}",
+	"{{.Name}}",
 {{- end}}
 }
 
