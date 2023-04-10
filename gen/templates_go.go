@@ -18,6 +18,10 @@ var golang = &language{
 	Selector: []file{
 		{"selector/selector.go", selectorTpl},
 	},
+	AST: []file{
+		{"ast/tree.go", treeTpl},
+		{"ast/parse.go", astParseTpl},
+	},
 }
 
 //go:embed templates/go_shared.go.tmpl
@@ -43,3 +47,9 @@ var parserListenerTpl string
 
 //go:embed templates/go_selector.go.tmpl
 var selectorTpl string
+
+//go:embed templates/go_tree.go.tmpl
+var treeTpl string
+
+//go:embed templates/go_ast_parse.go.tmpl
+var astParseTpl string

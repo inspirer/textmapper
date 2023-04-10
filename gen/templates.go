@@ -14,6 +14,7 @@ type language struct {
 	Parser   []file
 	Types    []file
 	Selector []file
+	AST      []file
 	Bison    []file
 }
 
@@ -27,6 +28,9 @@ func (l *language) templates(g *grammar.Grammar) []file {
 		ret = append(ret, l.Types...)
 		if g.Options.GenSelector || g.Options.EventFields {
 			ret = append(ret, l.Selector...)
+		}
+		if g.Options.EventFields && g.Options.EventAST {
+			ret = append(ret, l.AST...)
 		}
 	}
 	if g.Options.WriteBison {

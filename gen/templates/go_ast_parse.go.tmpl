@@ -1,0 +1,92 @@
+{{ define "nodeTypeRef"}}"{{.Options.Package}}".NodeType{{end -}}
+{{ define "nodeTypePkg"}}"{{.Options.Package}}".{{end -}}
+{{ define "parserPkg"}}"{{.Options.Package}}".{{end -}}
+
+{{ template "header" . -}}
+package ast
+
+// Parse parses a given utf-8 content into an AST.
+func Parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}}path, content string{{if .Parser.IsRecovering }}, eh {{template "parserPkg" $}}ErrorHandler{{end}}) (*Tree, error) {
+	var l {{template "parserPkg" $}}Lexer
+	l.Init(content)
+	var p {{template "parserPkg" $}}Parser
+	b := newBuilder(path, content)
+	p.Init({{if .Parser.IsRecovering }}eh, {{end}}b.addNode)
+{{- range $index, $inp := .Parser.Inputs }}
+{{- if $inp.Synthetic }}{{continue}}{{end}}
+	err := p.Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}({{if $.Options.Cancellable}}ctx, {{end}}&l)
+{{- break }}
+{{- end }}
+	if err != nil {
+		return nil, err
+	}
+	return b.build()
+}
+
+type builder struct {
+	tree  *Tree
+	stack []*Node
+	err   error
+}
+
+func newBuilder(path, content string) *builder {
+	return &builder{
+		tree:  newTree(path, content),
+		stack: make([]*Node, 0, 512),
+	}
+}
+
+func (b *builder) addNode(t {{template "nodeTypeRef" $}}, offset, endoffset int) {
+	start := len(b.stack)
+	end := start
+	for start > 0 && b.stack[start-1].offset >= offset {
+		start--
+		if b.stack[start].offset >= endoffset {
+			end--
+		}
+	}
+	out := &Node{
+		tree:      b.tree,
+		t:         t,
+		offset:    offset,
+		endoffset: endoffset,
+	}
+	if start < end {
+		out.firstChild = b.stack[start]
+		var prev *Node
+		for i := end - 1; i >= start; i-- {
+			n := b.stack[i]
+			n.parent = out
+			n.next = prev
+			prev = n
+		}
+	}
+	if end == len(b.stack) {
+		b.stack = append(b.stack[:start], out)
+	} else if start < end {
+		b.stack[start] = out
+		l := copy(b.stack[start+1:], b.stack[end:])
+		b.stack = b.stack[:start+1+l]
+	} else {
+		b.stack = append(b.stack, nil)
+		copy(b.stack[start+1:], b.stack[start:])
+		b.stack[start] = out
+	}
+}
+{{ if not .Options.FileNode }}
+var errNumRoots = "errors".New("exactly one root node is expected")
+{{ end }}
+func (b *builder) build() (*Tree, error) {
+	if b.err != nil {
+		return nil, b.err
+	}
+{{- if .Options.FileNode }}
+	b.addNode({{template "nodeTypePkg" $}}{{.Options.FileNode}}, 0, len(b.tree.content))
+{{- else }}
+	if len(b.stack) != 1 {
+		return nil, errNumRoots
+	}
+{{- end }}
+	b.tree.root = b.stack[0]
+	return b.tree, nil
+}

@@ -10,7 +10,7 @@ ${if opts.eventAST-}
 ${file self->treeFilename()-}
 ${call tree-}
 ${end-}
-${file self->parserFilename()-}
+${file self->parseFilename()-}
 ${call parser-}
 ${end-}
 ${end-}
@@ -472,7 +472,7 @@ ${end}
 ${query astFilename() = 'ast/ast.go'}
 ${query factoryFilename() = 'ast/factory.go'}
 ${query treeFilename() = 'ast/tree.go'}
-${query parserFilename() = 'ast/parser.go'}
+${query parseFilename() = 'ast/parse.go'}
 ${query package() = self->go.package() + '/ast'}
 
 ${query localWrappedType() = self->package()->go.element(self->wrappedTypeRef()->go.declarationName()) == self->wrappedTypeRef()}
