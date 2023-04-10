@@ -10,10 +10,11 @@ type file struct {
 }
 
 type language struct {
-	Lexer  []file
-	Parser []file
-	Types  []file
-	Bison  []file
+	Lexer    []file
+	Parser   []file
+	Types    []file
+	Selector []file
+	Bison    []file
 }
 
 func (l *language) templates(g *grammar.Grammar) []file {
@@ -24,6 +25,9 @@ func (l *language) templates(g *grammar.Grammar) []file {
 	}
 	if g.Parser.Types != nil {
 		ret = append(ret, l.Types...)
+		if g.Options.GenSelector || g.Options.EventFields {
+			ret = append(ret, l.Selector...)
+		}
 	}
 	if g.Options.WriteBison {
 		ret = append(ret, file{name: g.Name + ".y", template: bisonTpl})

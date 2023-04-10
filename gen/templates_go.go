@@ -15,6 +15,9 @@ var golang = &language{
 	Types: []file{
 		{"listener.go", parserListenerTpl},
 	},
+	Selector: []file{
+		{"selector/selector.go", selectorTpl},
+	},
 }
 
 //go:embed templates/go_shared.go.tmpl
@@ -37,3 +40,6 @@ var parserTablesTpl string
 
 //go:embed templates/go_listener.go.tmpl
 var parserListenerTpl string
+
+//go:embed templates/go_selector.go.tmpl
+var selectorTpl string
