@@ -30,9 +30,10 @@ ${if self->eventBased()-}
 	listener ${self->go_listener.listenerTypeRef()}
 ${end-}
 
-	next      symbol
+	next       symbol
 ${if self->hasRecovering()-}
-	endState  ${self->stateType()}
+	endState   ${self->stateType()}
+	recovering int
 ${end-}
 
 ${if self->ignoredReportTokens()}
@@ -193,7 +194,7 @@ ${end-}
 	state := start
 ${if self->hasRecovering()-}
 	var lastErr SyntaxError
-	recovering := 0
+	p.recovering = 0
 ${end-}
 
 	var alloc [startStackSize]stackEntry
@@ -270,8 +271,8 @@ ${call reportConsumedNext-}
 					p.next.symbol = noToken
 				}
 ${if self->hasRecovering()-}
-				if recovering > 0 {
-					recovering--
+				if p.recovering > 0 {
+					p.recovering--
 				}
 ${end-}
 			}
@@ -279,7 +280,7 @@ ${end-}
 
 		if action == -2 || state == -1 {
 ${if self->hasRecovering()-}
-			if recovering == 0 {
+			if p.recovering == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
@@ -296,12 +297,12 @@ ${call flushPending-}
 				}
 			}
 
+			p.recovering = 4
 			if stack = p.recoverFromError(${call contextArg}lexer, stack); stack == nil {
 ${call flushPending-}
 				return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 			}
 			state = stack[len(stack)-1].state
-			recovering = 4
 ${else-}
 			break
 ${end-}

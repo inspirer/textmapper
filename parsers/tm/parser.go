@@ -21,8 +21,9 @@ type Parser struct {
 	eh       ErrorHandler
 	listener Listener
 
-	next     symbol
-	endState int16
+	next       symbol
+	endState   int16
+	recovering int
 
 	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
 	pending []symbol
@@ -73,7 +74,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 	p.pending = p.pending[:0]
 	state := start
 	var lastErr SyntaxError
-	recovering := 0
+	p.recovering = 0
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
@@ -141,14 +142,14 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				if p.next.symbol != eoiToken {
 					p.next.symbol = noToken
 				}
-				if recovering > 0 {
-					recovering--
+				if p.recovering > 0 {
+					p.recovering--
 				}
 			}
 		}
 
 		if action == -2 || state == -1 {
-			if recovering == 0 {
+			if p.recovering == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
@@ -168,6 +169,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				}
 			}
 
+			p.recovering = 4
 			if stack = p.recoverFromError(lexer, stack); stack == nil {
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
@@ -178,7 +180,6 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				return lastErr
 			}
 			state = stack[len(stack)-1].state
-			recovering = 4
 		}
 	}
 

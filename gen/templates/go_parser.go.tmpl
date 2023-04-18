@@ -51,9 +51,10 @@ type Parser struct {
 	listener Listener
 {{- end}}
 
-	next symbol
+	next       symbol
 {{- if .Parser.IsRecovering }}
-	endState  int{{$stateType}}
+	endState   int{{$stateType}}
+	recovering int
 {{- end}}
 
 {{- if .ReportTokens true }}
@@ -178,7 +179,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 	state := start
 {{- if .Parser.IsRecovering }}
 	var lastErr SyntaxError
-	recovering := 0
+	p.recovering = 0
 {{- end}}
 
 	var alloc [startStackSize]stackEntry
@@ -262,8 +263,8 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 					p.next.symbol = noToken
 				}
 {{- if .Parser.IsRecovering }}
-				if recovering > 0 {
-					recovering--
+				if p.recovering > 0 {
+					p.recovering--
 				}
 {{- end}}
 			}
@@ -271,7 +272,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 
 		if action == -2 || state == -1 {
 {{- if .Parser.IsRecovering }}
-			if recovering == 0 {
+			if p.recovering == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
@@ -288,12 +289,12 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				}
 			}
 
+			p.recovering = 4
 			if stack = p.recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack); stack == nil {
 {{- template "flushPending" .}}
 				return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
 			}
 			state = stack[len(stack)-1].state
-			recovering = 4
 {{- else}}
 			break
 {{- end}}
