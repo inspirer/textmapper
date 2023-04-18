@@ -197,9 +197,7 @@ primaryExpr<flag WithoutAs = false> -> Expr:
 
 %%
 
-${template go_lexer.lexer-}
-${call base-}
-
+${template go_lexer.onAfterLexer}
 func mustParseInt(s string) int {
 	i, err := "strconv".Atoi(s)
 	if err != nil {
@@ -207,18 +205,6 @@ func mustParseInt(s string) int {
 	}
 	return i
 }
-${end}
-
-${template newTemplates-}
-{{define "onAfterLexer"}}
-func mustParseInt(s string) int {
-	i, err := "strconv".Atoi(s)
-	if err != nil {
-		panic(`lexer internal error: ` + err.Error())
-	}
-	return i
-}
-{{end}}
 ${end}
 
 ${template go_lexer.onBeforeNext-}
@@ -226,3 +212,7 @@ ${template go_lexer.onBeforeNext-}
 ${end}
 
 ${query go_listener.hasFlags() = true}
+
+${template go_parser.onAfterParser}
+func parserEnd() {}
+${end}

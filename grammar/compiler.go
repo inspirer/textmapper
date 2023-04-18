@@ -2014,10 +2014,13 @@ var tplMap = map[string]string{
 	"go_lexer.initStateVars":        "initStateVars",
 	"go_lexer.onAfterNext":          "onAfterNext",
 	"go_lexer.onBeforeNext":         "onBeforeNext",
+	"go_lexer.onAfterLexer":         "onAfterLexer",
+	"go_lexer.onBeforeLexer":        "onBeforeLexer",
 	"go_parser.stateVars":           "parserVars",
 	"go_parser.initStateVars":       "initParserVars",
 	"go_parser.setupLookaheadLexer": "setupLookaheadLexer",
 	"go_parser.onBeforeIgnore":      "onBeforeIgnore",
+	"go_parser.onAfterParser":       "onAfterParser",
 }
 
 var tplRE = regexp.MustCompile(`(?s)\${template ([\w.]+)(-?)}(.*?)\${end}`)

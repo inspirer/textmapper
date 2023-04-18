@@ -1831,7 +1831,7 @@ AmbientModuleElement -> TsAmbientElement /* interface */:
 
 %%
 
-${template go_lexer.lexerType}
+${template go_lexer.onBeforeLexer}
 type Dialect int
 
 const (
@@ -1839,7 +1839,6 @@ const (
 	Typescript
 	TypescriptJsx
 )
-${call base-}
 ${end}
 
 ${template go_lexer.stateVars-}
@@ -2002,9 +2001,7 @@ ${template go_lexer.onAfterNext-}
 	l.token = tok
 ${end}
 
-${template go_lexer.lexer-}
-${call base-}
-
+${template go_lexer.onAfterLexer}
 func (l *Lexer) pushState(newState int) {
 	l.Stack = append(l.Stack, l.State)
 	l.State = newState
@@ -2023,31 +2020,6 @@ ${end}
 ${template go_parser.callLookaheadNext(memoization)}lookaheadNext(&lexer, end, ${memoization?'nil /*empty stack*/':'stack'})${end}
 
 ${template newTemplates-}
-{{define "onBeforeLexer"}}
-type Dialect int
-
-const (
-	Javascript Dialect = iota
-	Typescript
-	TypescriptJsx
-)
-{{end}}
-
-{{define "onAfterLexer"}}
-func (l *Lexer) pushState(newState int) {
-	l.Stack = append(l.Stack, l.State)
-	l.State = newState
-}
-
-func (l *Lexer) popState() {
-	if ln := len(l.Stack); ln > 0 {
-		l.State = l.Stack[ln-1]
-		l.Stack = l.Stack[:ln-1]
-	} else {
-		l.State = StateDiv
-	}
-}
-{{end}}
 
 {{define "callLookaheadNext" -}}
 lookaheadNext(&lexer, end, {{if eq . true}}nil /*empty stack*/{{else}}stack{{end}})

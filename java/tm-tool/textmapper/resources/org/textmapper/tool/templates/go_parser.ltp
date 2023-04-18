@@ -156,6 +156,7 @@ ${end-}
 ${if self->ignoredReportTokens()}
 ${call reportIgnoredToken-}
 ${end-}
+${call onAfterParser-}
 ${end}
 
 ${template contextParam-}
@@ -933,6 +934,7 @@ ${end}
 ${template onAfterShift}${end}
 ${template stateVars}${end}
 ${template initStateVars}${end}
+${template onAfterParser}${end}
 
 ${cached query eventBased() = opts.eventBased && !opts.genast}
 

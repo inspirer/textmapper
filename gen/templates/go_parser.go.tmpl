@@ -844,3 +844,4 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 }
 {{ end -}}
 {{ end -}}
+{{ block "onAfterParser" .}}{{end -}}

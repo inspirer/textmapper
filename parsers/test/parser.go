@@ -423,3 +423,5 @@ func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	}
 	p.listener(t, 0, tok.offset, tok.endoffset)
 }
+
+func parserEnd() {}

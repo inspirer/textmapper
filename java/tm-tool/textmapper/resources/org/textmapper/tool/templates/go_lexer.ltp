@@ -19,6 +19,7 @@ ${foreach state in syntax.lexerStates-}
 ${end-}
 )
 ${end-}
+${call onBeforeLexer-}
 ${call lexerType-}
 ${call lexerInit-}
 ${call lexerNext-}
@@ -32,6 +33,7 @@ ${end-}
 ${call lexerText-}
 ${call lexerValue-}
 ${call lexerRewind-}
+${call onAfterLexer-}
 ${end}
 
 ${template lexerType}
@@ -489,8 +491,11 @@ ${cached query stateId() = 'State' + util.uniqueId(util.toCamelCase(self.nameTex
 
 ${cached query canInlineLexerRules() = syntax.canInlineLexerRules}
 
-${template onAfterNext}${end}
 ${template onBeforeNext}${end}
+${template onAfterNext}${end}
+
+${template onBeforeLexer}${end}
+${template onAfterLexer}${end}
 
 ${template stateVars}${end}
 ${template initStateVars}${end}
