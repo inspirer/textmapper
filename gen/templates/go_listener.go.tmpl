@@ -52,7 +52,7 @@ func (t NodeType) String() string {
 {{ range .Parser.Types.Categories -}}
 var {{.Name}} = []{{template "nodeTypeRef" $}}{
 {{- range .Types }}
-    {{node_id .}},
+	{{template "nodeTypePkg" $}}{{node_id .}},
 {{- end}}
 }
 

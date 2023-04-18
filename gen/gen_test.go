@@ -39,7 +39,7 @@ func TestGenerate(t *testing.T) {
 				s := status.FromError(err)
 				s.Sort()
 				for _, err := range s {
-					t.Errorf("GenerateFile() failed with %v", err)
+					t.Errorf("GenerateFile() failure: %v", err)
 				}
 				return
 			}
@@ -49,7 +49,7 @@ func TestGenerate(t *testing.T) {
 				p := filepath.Join(filepath.Dir(filename), genfile)
 				ondisk, err := os.ReadFile(p)
 				if err != nil {
-					t.Errorf("ReadFile(%v) failed with %v", genfile, err)
+					t.Errorf("ReadFile(%v) failure: %v", genfile, err)
 					continue
 				}
 				t.Logf("comparing %v", p)

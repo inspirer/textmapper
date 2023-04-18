@@ -172,6 +172,7 @@ func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
 	case "go":
 		ret["pkg"] = c.goPackage
 		ret["node_id"] = c.nodeID
+		ret["is_file_node"] = c.isFileNode
 	}
 	return ret
 }
@@ -203,4 +204,8 @@ func (c *context) goPackage(targetPkg string) string {
 
 func (c *context) nodeID(name string) string {
 	return name
+}
+
+func (c *context) isFileNode(name string) bool {
+	return name == c.Options.FileNode
 }
