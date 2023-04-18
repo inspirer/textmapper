@@ -6,5 +6,8 @@
 {{- define "tokenType"}}"{{.Options.Package}}/token".Token{{end -}}
 {{- define "tokenPkg"}}"{{.Options.Package}}/token".{{end -}}
 
-{{- define "nodeTypeRef"}}NodeType{{end -}}
-{{- define "nodeFlagsRef"}}NodeFlags{{end -}}
+{{ define "nodeTypeRef"}}{{pkg "main"}}NodeType{{end -}}
+{{ define "nodeFlagsRef"}}{{pkg "main"}}NodeFlags{{end -}}
+{{ define "nodeTypePkg"}}{{pkg "main"}}{{end -}}
+{{ define "nodeTypeSel"}}{{pkg "selector"}}Selector{{end -}}
+{{ define "nodeOneOf"}}{{pkg "selector"}}OneOf{{end -}}

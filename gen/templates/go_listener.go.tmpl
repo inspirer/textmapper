@@ -1,19 +1,24 @@
 {{- template "header" . -}}
 package {{short_pkg .Options.Package}}
-{{if .Parser.UsesFlags}}
+
+{{ block "NodeDecl" . -}}
+{{if .Parser.UsesFlags -}}
 type NodeType uint16
 
 type NodeFlags uint16
 
 type Listener func(t NodeType, flags NodeFlags, offset, endoffset int)
-{{- else}}
+
+{{ else -}}
 type NodeType int
 
 type Listener func(t NodeType, offset, endoffset int)
-{{- end}}
 
+{{ end -}}
+{{ end -}}
+{{ block "NodeEnum" . -}}
 const (
-	NoType NodeType = iota
+	NoType {{template "nodeTypeRef" $}} = iota
 {{- range .Parser.Types.RangeTypes }}
 	{{.Name}}    {{- if gt (len .Fields) 0}}  // {{.Descriptor}}{{end}}
 {{- end}}
@@ -23,6 +28,8 @@ const (
 	NodeTypeMax
 )
 
+{{ end -}}
+{{ block "NodeString" . -}}
 var nodeTypeStr = [...]string{
 	"NONE",
 {{- range .Parser.Types.RangeTypes }}
@@ -40,10 +47,14 @@ func (t NodeType) String() string {
 	return "fmt".Sprintf("node(%d)", t)
 }
 
-{{- range .Parser.Types.Categories }}
-var {{.Name}} = []NodeType{
+{{ end -}}
+{{ block "NodeCategories" . -}}
+{{ range .Parser.Types.Categories -}}
+var {{.Name}} = []{{template "nodeTypeRef" $}}{
 {{- range .Types }}
-    {{.}},
+    {{node_id .}},
 {{- end}}
 }
-{{end}}
+
+{{end -}}
+{{end -}}

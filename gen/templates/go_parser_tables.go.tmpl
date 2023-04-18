@@ -67,7 +67,7 @@ var tmRuleType = [...]uint32{
 {{- range .Parser.Rules}}
 {{- if ne .Type -1 }}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
-	{{if ne $val.Name $.Options.FileNode}}uint32({{$val.Name}}){{if .Flags}} + uint32({{join .Flags " | "}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+	{{if ne $val.Name $.Options.FileNode}}uint32({{node_id $val.Name}}){{if .Flags}} + uint32({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{end}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
 {{- else }}
 	0, // {{$.RuleString .}}
 {{- end}}
@@ -79,7 +79,7 @@ var tmRuleType = [...]{{template "nodeTypeRef" $}}{
 {{- range .Parser.Rules}}
 {{- if ne .Type -1 }}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
-	{{if ne $val.Name $.Options.FileNode}}{{$val.Name}}{{else}}0{{end}}, // {{$.RuleString .}}
+	{{if ne $val.Name $.Options.FileNode}}{{node_id $val.Name}}{{else}}0{{end}}, // {{$.RuleString .}}
 {{- else }}
 	0, // {{$.RuleString .}}
 {{- end}}

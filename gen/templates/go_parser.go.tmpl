@@ -16,7 +16,7 @@
 {{- $sym := index $.Syms .Token}}
 {{- if not (or $sym.Space (eq $sym.Name "invalid_token")) }}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
-		p.listener({{.Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
+		p.listener({{node_id .Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
 {{- end}}
 {{- end}}
 			}
@@ -756,9 +756,9 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- range $act.Report}}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
 {{- if $.Parser.UsesFlags}}
-		p.listener({{$val.Name}}, {{if .Flags}}{{join .Flags "|"}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
+		p.listener({{node_id $val.Name}}, {{if .Flags}}{{join .Flags "|"}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
 {{- else}}
-		p.listener({{$val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
+		p.listener({{node_id $val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
 {{- end}}
 {{- end}}
 {{- if $act.Code }}
@@ -830,7 +830,7 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 {{- $sym := index $.Syms .Token}}
 {{- if or $sym.Space (eq $sym.Name "invalid_token") }}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
-		t = {{.Name}}
+		t = {{node_id .Name}}
 {{- end}}
 {{- end}}
 	default:
