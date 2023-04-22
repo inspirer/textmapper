@@ -21,10 +21,15 @@ import (
 // Compile validates and compiles grammar files.
 func Compile(file ast.File, compat bool) (*Grammar, error) {
 	c := newCompiler(file, compat)
-	c.parseOptions()
+
+	err := c.options.parseFrom(file)
+	c.s.AddError(err)
+
 	c.compileLexer()
 
-	c.resolveOptions()
+	err = c.options.resolve(c.syms)
+	c.s.AddError(err)
+
 	c.compileParser()
 
 	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
@@ -41,16 +46,17 @@ type compiler struct {
 	syms map[string]int
 	ids  map[string]string // ID -> name
 
+	// Grammar options
+	options optionsParser
+
 	// Lexer
-	conds        map[string]int
-	inclusiveSC  []int
-	patterns     []*patterns // to keep track of unused patterns
-	classRules   []*lex.Rule
-	rules        []*lex.Rule
-	codeRule     map[symRule]int   // -> index in c.out.Lexer.RuleToken
-	codeAction   map[symAction]int // -> index in c.out.Lexer.Actions
-	reportTokens map[string]bool
-	reportList   []ast.Identifier
+	conds       map[string]int
+	inclusiveSC []int
+	patterns    []*patterns // to keep track of unused patterns
+	classRules  []*lex.Rule
+	rules       []*lex.Rule
+	codeRule    map[symRule]int   // -> index in c.out.Lexer.RuleToken
+	codeAction  map[symAction]int // -> index in c.out.Lexer.Actions
 
 	// Parser
 	source    *syntax.Model
@@ -68,6 +74,9 @@ type compiler struct {
 
 func newCompiler(file ast.File, compat bool) *compiler {
 	targetLang, _ := file.Header().Target()
+	opts := &Options{
+		TokenLine: true,
+	}
 	return &compiler{
 		file: file,
 		out: &Grammar{
@@ -75,9 +84,10 @@ func newCompiler(file ast.File, compat bool) *compiler {
 			TargetLang: targetLang.Text(),
 			Lexer:      &Lexer{},
 			Parser:     &Parser{},
-			Options: &Options{
-				TokenLine: true,
-			},
+			Options:    opts,
+		},
+		options: optionsParser{
+			out: opts,
 		},
 		compat:     compat,
 		syms:       make(map[string]int),
@@ -466,7 +476,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 			}
 
 			cmd, _ := p.Command()
-			if c.reportTokens[name] && space.IsValid() {
+			if c.options.reportTokens[name] && space.IsValid() {
 				// This token needs to be reported from the lexer to appear in the AST. It will be ignored
 				// in the parser.
 				space = noSpace
@@ -588,105 +598,6 @@ func (c *compiler) resolveClasses() {
 
 func (c *compiler) errorf(n status.SourceNode, format string, a ...interface{}) {
 	c.s.Errorf(n, format, a...)
-}
-
-func (c *compiler) parseTokenList(e ast.Expression) []ast.Identifier {
-	if arr, ok := e.(*ast.Array); ok {
-		var ret []ast.Identifier
-		for _, el := range arr.Expression() {
-			if ref, ok := el.(*ast.Symref); ok {
-				if args, ok := ref.Args(); ok {
-					c.errorf(args, "terminals cannot be templated")
-					continue
-				}
-				ret = append(ret, ref.Name())
-				continue
-			}
-			c.errorf(el.TmNode(), "symbol reference is expected")
-		}
-		return ret
-	}
-	c.errorf(e.TmNode(), "list of symbols is expected")
-	return nil
-}
-
-func (c *compiler) parseExpr(e ast.Expression, defaultVal any) any {
-	switch e := e.(type) {
-	case *ast.Array:
-		if _, ok := defaultVal.([]string); ok {
-			var ret []string
-			for _, el := range e.Expression() {
-				lit, ok := el.(*ast.StringLiteral)
-				if !ok {
-					c.errorf(el.TmNode(), "string is expected")
-					continue
-				}
-				s, err := strconv.Unquote(lit.Text())
-				if err != nil {
-					c.errorf(el.TmNode(), "cannot parse string literal: %v", err)
-					continue
-				}
-				ret = append(ret, s)
-			}
-			return ret
-		}
-		if _, ok := defaultVal.([]syntax.ExtraType); ok {
-			var ret []syntax.ExtraType
-			for _, el := range e.Expression() {
-				lit, ok := el.(*ast.StringLiteral)
-				if !ok {
-					c.errorf(el.TmNode(), "string is expected")
-					continue
-				}
-				s, err := strconv.Unquote(lit.Text())
-				if err != nil {
-					c.errorf(el.TmNode(), "cannot parse string literal: %v", err)
-					continue
-				}
-				ids := strings.Split(s, "->")
-				for i, id := range ids {
-					id := strings.TrimSpace(id)
-					if !ident.IsValid(id) {
-						c.errorf(el.TmNode(), "%v is not a valid identifier", id)
-						ids = nil
-						break
-					}
-					ids[i] = id
-				}
-				if len(ids) > 0 {
-					out := syntax.ExtraType{
-						Name:       ids[0],
-						Implements: ids[1:],
-						Origin:     el.TmNode(),
-					}
-					ret = append(ret, out)
-				}
-			}
-			return ret
-		}
-	case *ast.BooleanLiteral:
-		if _, ok := defaultVal.(bool); ok {
-			return e.Text() == "true"
-		}
-	case *ast.StringLiteral:
-		if _, ok := defaultVal.(string); ok {
-			s, err := strconv.Unquote(e.Text())
-			if err != nil {
-				c.errorf(e, "cannot parse string literal: %v", err)
-				return defaultVal
-			}
-			return s
-		}
-	}
-	switch defaultVal.(type) {
-	case []int:
-		c.errorf(e.TmNode(), "list of symbols is expected")
-	case []syntax.ExtraType:
-		c.errorf(e.TmNode(), `list of strings with names is expected. E.g. ["Foo", "Bar -> Expr"]`)
-	default:
-		c.errorf(e.TmNode(), "%T is expected", defaultVal)
-	}
-	return defaultVal
 }
 
 func (c *compiler) collectParams(p ast.ParserSection) {
@@ -1878,81 +1789,6 @@ func (c *compiler) generateTables() bool {
 	c.out.Parser.Rules = rules
 	c.out.Parser.Tables = tables
 	return true
-}
-
-func (c *compiler) parseOptions() {
-	opts := c.out.Options
-	seen := make(map[string]int)
-	for _, opt := range c.file.Options() {
-		name := opt.Key().Text()
-		if line, ok := seen[name]; ok {
-			c.errorf(opt.Key(), "reinitialization of '%v', previously declared on line %v", name, line)
-		}
-		line, _ := opt.Key().LineColumn()
-		seen[name] = line
-		switch name {
-		case "package":
-			opts.Package = c.parseExpr(opt.Value(), opts.Package).(string)
-		case "genCopyright":
-			opts.Copyright = c.parseExpr(opt.Value(), opts.Copyright).(bool)
-		case "tokenLine":
-			opts.TokenLine = c.parseExpr(opt.Value(), opts.TokenLine).(bool)
-		case "tokenLineOffset":
-			opts.TokenLineOffset = c.parseExpr(opt.Value(), opts.TokenLineOffset).(bool)
-		case "tokenColumn":
-			opts.TokenColumn = c.parseExpr(opt.Value(), opts.TokenColumn).(bool)
-		case "nonBacktracking":
-			opts.NonBacktracking = c.parseExpr(opt.Value(), opts.NonBacktracking).(bool)
-		case "cancellable":
-			opts.Cancellable = c.parseExpr(opt.Value(), opts.Cancellable).(bool)
-		case "writeBison":
-			opts.WriteBison = c.parseExpr(opt.Value(), opts.WriteBison).(bool)
-		case "recursiveLookaheads":
-			opts.RecursiveLookaheads = c.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
-		case "eventBased":
-			opts.EventBased = c.parseExpr(opt.Value(), opts.EventBased).(bool)
-		case "genSelector":
-			opts.GenSelector = c.parseExpr(opt.Value(), opts.GenSelector).(bool)
-		case "fixWhitespace":
-			opts.FixWhitespace = c.parseExpr(opt.Value(), opts.FixWhitespace).(bool)
-		case "debugParser":
-			opts.DebugParser = c.parseExpr(opt.Value(), opts.DebugParser).(bool)
-		case "eventFields":
-			opts.EventFields = c.parseExpr(opt.Value(), opts.EventFields).(bool)
-		case "eventAST":
-			opts.EventAST = c.parseExpr(opt.Value(), opts.EventAST).(bool)
-		case "reportTokens":
-			c.reportList = c.parseTokenList(opt.Value())
-			c.reportTokens = make(map[string]bool)
-			for _, id := range c.reportList {
-				c.reportTokens[id.Text()] = true
-			}
-		case "extraTypes":
-			opts.ExtraTypes = c.parseExpr(opt.Value(), opts.ExtraTypes).([]syntax.ExtraType)
-		case "customImpl":
-			opts.CustomImpl = c.parseExpr(opt.Value(), opts.CustomImpl).([]string)
-		case "fileNode":
-			opts.FileNode = c.parseExpr(opt.Value(), opts.FileNode).(string)
-		case "lang":
-			// This option often occurs in existing grammars. Ignore it.
-			c.parseExpr(opt.Value(), "")
-		default:
-			c.errorf(opt.Key(), "unknown option '%v'", name)
-		}
-	}
-}
-
-func (c *compiler) resolveOptions() {
-	opts := c.out.Options
-	opts.ReportTokens = make([]int, 0, len(c.reportList))
-	for _, id := range c.reportList {
-		sym, ok := c.syms[id.Text()]
-		if !ok {
-			c.errorf(id, "unresolved reference '%v'", id.Text())
-			continue
-		}
-		opts.ReportTokens = append(opts.ReportTokens, sym)
-	}
 }
 
 type patterns struct {
