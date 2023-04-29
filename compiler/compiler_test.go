@@ -100,8 +100,8 @@ func TestSourceModel(t *testing.T) {
 		c := newCompiler(ast.File{Node: tree.Root()}, false /*compat*/)
 		c.compileLexer()
 		c.compileParser()
-		if c.s.Err() != nil {
-			t.Errorf("compilation failure %v", c.s.Err())
+		if c.Err() != nil {
+			t.Errorf("compilation failure %v", c.Err())
 			continue
 		}
 

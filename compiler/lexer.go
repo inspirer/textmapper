@@ -40,7 +40,7 @@ func (c *compiler) compileLexer() {
 	var err error
 	allowBacktracking := !c.out.Options.NonBacktracking
 	out.Tables, err = lex.Compile(c.rules, allowBacktracking)
-	c.s.AddError(err)
+	c.AddError(err)
 
 	if inline {
 		// There is at most one action per token, so it is possible to use tokens IDs as actions.
@@ -241,7 +241,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 
 			pattern, err := parsePattern(name, pat)
 			if err != nil {
-				c.s.AddError(err)
+				c.AddError(err)
 				continue
 			}
 			rule := &lex.Rule{
@@ -272,7 +272,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				c.rules = append(c.rules, rule)
 			}
 		case *ast.NamedPattern:
-			c.s.AddError(ps.add(p))
+			c.AddError(ps.add(p))
 		case *ast.StartConditionsScope:
 			newDefaults := c.resolveSC(p.StartConditions())
 			c.traverseLexer(p.LexerPart(), newDefaults, ps)

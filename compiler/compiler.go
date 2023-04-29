@@ -24,7 +24,7 @@ import (
 func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
 	c := newCompiler(file, compat)
 
-	c.options = optionsParser{out: c.out.Options, Status: &c.s}
+	c.options = optionsParser{out: c.out.Options, Status: c.Status}
 	c.options.parseFrom(file)
 
 	c.compileLexer()
@@ -35,14 +35,15 @@ func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
 
 	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
 	c.out.CustomTemplates = parseInGrammarTemplates(tpl)
-	return c.out, c.s.Err()
+	return c.out, c.Status.Err()
 }
 
 type compiler struct {
 	file   ast.File
 	out    *grammar.Grammar
-	s      status.Status
 	compat bool
+
+	*status.Status
 
 	syms map[string]int
 	ids  map[string]string // ID -> name
@@ -87,6 +88,7 @@ func newCompiler(file ast.File, compat bool) *compiler {
 			},
 		},
 		compat:     compat,
+		Status:     new(status.Status),
 		syms:       make(map[string]int),
 		ids:        make(map[string]string),
 		codeRule:   make(map[symRule]int),
@@ -223,10 +225,6 @@ func addSyntheticInputs(m *syntax.Model, compat bool) {
 		// Textmapper Java puts synthetic inputs before user ones.
 		m.Inputs = append(m.Inputs[size:], m.Inputs[:size]...)
 	}
-}
-
-func (c *compiler) Errorf(n status.SourceNode, format string, a ...interface{}) {
-	c.s.Errorf(n, format, a...)
 }
 
 func (c *compiler) collectParams(p ast.ParserSection) {
@@ -1122,18 +1120,18 @@ func (c *compiler) compileParser() {
 		c.source.Nonterms[nt.nonterm].Value = expr
 	}
 
-	if c.s.Err() != nil {
+	if c.Err() != nil {
 		// Parsing errors cause inconsistencies inside c.source. Aborting.
 		return
 	}
 
 	if err := syntax.PropagateLookaheads(c.source); err != nil {
-		c.s.AddError(err)
+		c.AddError(err)
 		return
 	}
 
 	if err := syntax.Instantiate(c.source); err != nil {
-		c.s.AddError(err)
+		c.AddError(err)
 		return
 	}
 
@@ -1151,7 +1149,7 @@ func (c *compiler) compileParser() {
 		}
 		types, err := syntax.ExtractTypes(c.source, tokens, opts)
 		if err != nil {
-			c.s.AddError(err)
+			c.AddError(err)
 			return
 		}
 		c.out.Types = types
@@ -1159,7 +1157,7 @@ func (c *compiler) compileParser() {
 	}
 
 	if err := syntax.Expand(c.source); err != nil {
-		c.s.AddError(err)
+		c.AddError(err)
 		return
 	}
 
@@ -1179,7 +1177,7 @@ func (c *compiler) compileParser() {
 	c.source.Terminals = old
 
 	if err := syntax.ResolveSets(c.source); err != nil {
-		c.s.AddError(err)
+		c.AddError(err)
 		return
 	}
 
@@ -1336,7 +1334,7 @@ func (c *compiler) generateTables() bool {
 				case syntax.Reference:
 					if command != "" {
 						// TODO This command needs to be extracted into a dedicated nonterminal.
-						c.s.Errorf(origin, "commands must be placed at the end of a rule")
+						c.Errorf(origin, "commands must be placed at the end of a rule")
 					}
 					if expr.Pos > 0 {
 						actualPos[expr.Pos] = numRefs
@@ -1393,7 +1391,7 @@ func (c *compiler) generateTables() bool {
 			rules = append(rules, &grammar.Rule{Rule: rule, Value: exprWithPrec})
 		}
 	}
-	if c.s.Err() != nil {
+	if c.Err() != nil {
 		// Parsing errors cause inconsistencies inside c.source. Aborting.
 		return false
 	}
@@ -1416,7 +1414,7 @@ func (c *compiler) generateTables() bool {
 
 	tables, err := lalr.Compile(g)
 	if err != nil {
-		c.s.AddError(err)
+		c.AddError(err)
 		return false
 	}
 
