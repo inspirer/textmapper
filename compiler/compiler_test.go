@@ -98,7 +98,16 @@ func TestSourceModel(t *testing.T) {
 		}
 
 		c := newCompiler(ast.File{Node: tree.Root()}, false /*compat*/)
-		c.compileLexer()
+
+		opts := optionsParser{out: c.out.Options, Status: c.Status}
+		opts.parseFrom(c.file)
+
+		lexer := newLexerCompiler(c.out, c.Status, &opts, c.compat)
+		lexer.addToken = c.addToken
+		lexer.compile(c.file)
+
+		opts.resolve(c.syms)
+
 		c.compileParser()
 		if c.Err() != nil {
 			t.Errorf("compilation failure %v", c.Err())

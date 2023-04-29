@@ -24,12 +24,14 @@ import (
 func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
 	c := newCompiler(file, compat)
 
-	c.options = optionsParser{out: c.out.Options, Status: c.Status}
-	c.options.parseFrom(file)
+	opts := optionsParser{out: c.out.Options, Status: c.Status}
+	opts.parseFrom(file)
 
-	c.compileLexer()
+	lexer := newLexerCompiler(c.out, c.Status, &opts, c.compat)
+	lexer.addToken = c.addToken
+	lexer.compile(file)
 
-	c.options.resolve(c.syms)
+	opts.resolve(c.syms)
 
 	c.compileParser()
 
@@ -47,18 +49,6 @@ type compiler struct {
 
 	syms map[string]int
 	ids  map[string]string // ID -> name
-
-	// Grammar options
-	options optionsParser
-
-	// Lexer
-	conds       map[string]int
-	inclusiveSC []int
-	patterns    []*patterns // to keep track of unused patterns
-	classRules  []*lex.Rule
-	rules       []*lex.Rule
-	codeRule    map[symRule]int   // -> index in c.out.Lexer.RuleToken
-	codeAction  map[symAction]int // -> index in c.out.Lexer.Actions
 
 	// Parser
 	source    *syntax.Model
@@ -87,16 +77,14 @@ func newCompiler(file ast.File, compat bool) *compiler {
 				TokenLine: true,
 			},
 		},
-		compat:     compat,
-		Status:     new(status.Status),
-		syms:       make(map[string]int),
-		ids:        make(map[string]string),
-		codeRule:   make(map[symRule]int),
-		codeAction: make(map[symAction]int),
-		namedSets:  make(map[string]int),
-		params:     make(map[string]int),
-		nonterms:   make(map[string]int),
-		cats:       make(map[string]int),
+		compat:    compat,
+		Status:    new(status.Status),
+		syms:      make(map[string]int),
+		ids:       make(map[string]string),
+		namedSets: make(map[string]int),
+		params:    make(map[string]int),
+		nonterms:  make(map[string]int),
+		cats:      make(map[string]int),
 	}
 }
 

@@ -14,14 +14,43 @@ import (
 
 var noSpace = ast.LexemeAttribute{}
 
-func (c *compiler) compileLexer() {
+type lexerCompiler struct {
+	*status.Status
+	out     *grammar.Grammar
+	compat  bool
+	options *optionsParser
+
+	// TODO abstract this into a shared name resolver type
+	addToken func(name, id string, t ast.RawType, space ast.LexemeAttribute, n status.SourceNode) int
+
+	conds       map[string]int
+	inclusiveSC []int
+	patterns    []*patterns // to keep track of unused patterns
+	classRules  []*lex.Rule
+	rules       []*lex.Rule
+	codeRule    map[symRule]int   // -> index in c.out.Lexer.RuleToken
+	codeAction  map[symAction]int // -> index in c.out.Lexer.Actions
+}
+
+func newLexerCompiler(out *grammar.Grammar, s *status.Status, options *optionsParser, compat bool) *lexerCompiler {
+	return &lexerCompiler{
+		out:        out,
+		Status:     s,
+		compat:     compat,
+		options:    options,
+		codeRule:   make(map[symRule]int),
+		codeAction: make(map[symAction]int),
+	}
+}
+
+func (c *lexerCompiler) compile(file ast.File) {
 	out := c.out.Lexer
 
 	eoi := c.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
 	out.InvalidToken = c.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
 
-	c.collectStartConds()
-	lexer, _ := c.file.Lexer()
+	c.collectStartConds(file)
+	lexer, _ := file.Lexer()
 	c.traverseLexer(lexer.LexerPart(), c.inclusiveSC, nil /*parent patterns*/)
 	c.resolveTokenComments()
 	c.resolveClasses()
@@ -86,10 +115,10 @@ func (c *compiler) compileLexer() {
 }
 
 // canInlineRules decides whether we can replace rule ids directly with token ids.
-func (c *compiler) canInlineRules() bool {
+func (c *lexerCompiler) canInlineRules() bool {
 	// Note: the first two actions are reserved for InvalidToken and EOI respectively.
 	seen := container.NewBitSet(c.out.NumTokens)
-	for _, e := range c.out.RuleToken {
+	for _, e := range c.out.Lexer.RuleToken {
 		if e < 2 || seen.Get(e) {
 			return false
 		}
@@ -104,7 +133,7 @@ func (c *compiler) canInlineRules() bool {
 	return true
 }
 
-func (c *compiler) collectStartConds() {
+func (c *lexerCompiler) collectStartConds(file ast.File) {
 	conds := make(map[string]bool)
 	var names []string
 
@@ -117,7 +146,7 @@ func (c *compiler) collectStartConds() {
 		conds[name] = excl
 		names = append(names, name)
 	}
-	lexer, _ := c.file.Lexer()
+	lexer, _ := file.Lexer()
 	for _, p := range lexer.LexerPart() {
 		switch p := p.(type) {
 		case *ast.ExclusiveStartConds:
@@ -137,7 +166,7 @@ func (c *compiler) collectStartConds() {
 		names[0] = lex.Initial
 	}
 
-	c.out.StartConditions = names
+	c.out.Lexer.StartConditions = names
 	c.conds = make(map[string]int)
 	for i, name := range names {
 		c.conds[name] = i
@@ -147,12 +176,12 @@ func (c *compiler) collectStartConds() {
 	}
 }
 
-func (c *compiler) resolveSC(sc ast.StartConditions) []int {
+func (c *lexerCompiler) resolveSC(sc ast.StartConditions) []int {
 	var ret []int
 	refs := sc.Stateref()
 	if len(refs) == 0 {
 		// <*>
-		for i := range c.out.StartConditions {
+		for i := range c.out.Lexer.StartConditions {
 			ret = append(ret, i)
 		}
 		return ret
@@ -169,11 +198,11 @@ func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 	return ret
 }
 
-func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
+func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
 	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() && !c.compat {
 		if sym == int(lex.EOI) {
 			return -1
-		} else if sym == c.out.InvalidToken {
+		} else if sym == c.out.Lexer.InvalidToken {
 			return -2
 		}
 	}
@@ -207,7 +236,7 @@ func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttrib
 	return a
 }
 
-func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *patterns) {
+func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *patterns) {
 	inClause := p != nil
 	ps := &patterns{
 		parent: p,
@@ -287,13 +316,13 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 	}
 }
 
-func (c *compiler) resolveTokenComments() {
+func (c *lexerCompiler) resolveTokenComments() {
 	comments := make(map[int]string)
 	for _, r := range c.rules {
 		if r.Action < 0 {
 			continue
 		}
-		tok := c.out.RuleToken[r.Action]
+		tok := c.out.Lexer.RuleToken[r.Action]
 		val, _ := r.Pattern.RE.Constant()
 		if old, ok := comments[tok]; ok && val != old {
 			comments[tok] = ""
@@ -306,7 +335,7 @@ func (c *compiler) resolveTokenComments() {
 	}
 }
 
-func (c *compiler) resolveClasses() {
+func (c *lexerCompiler) resolveClasses() {
 	if len(c.classRules) == 0 {
 		return
 	}
@@ -330,7 +359,7 @@ func (c *compiler) resolveClasses() {
 			Action: r.Action,
 			Custom: make(map[string]int),
 		}
-		c.out.ClassActions = append(c.out.ClassActions, ca)
+		c.out.Lexer.ClassActions = append(c.out.Lexer.ClassActions, ca)
 	}
 
 	out := c.rules[:0]
