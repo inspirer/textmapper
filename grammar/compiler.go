@@ -22,13 +22,12 @@ import (
 func Compile(file ast.File, compat bool) (*Grammar, error) {
 	c := newCompiler(file, compat)
 
-	err := c.options.parseFrom(file)
-	c.s.AddError(err)
+	c.options = optionsParser{out: c.out.Options, Status: &c.s}
+	c.options.parseFrom(file)
 
 	c.compileLexer()
 
-	err = c.options.resolve(c.syms)
-	c.s.AddError(err)
+	c.options.resolve(c.syms)
 
 	c.compileParser()
 
@@ -74,9 +73,6 @@ type compiler struct {
 
 func newCompiler(file ast.File, compat bool) *compiler {
 	targetLang, _ := file.Header().Target()
-	opts := &Options{
-		TokenLine: true,
-	}
 	return &compiler{
 		file: file,
 		out: &Grammar{
@@ -84,10 +80,9 @@ func newCompiler(file ast.File, compat bool) *compiler {
 			TargetLang: targetLang.Text(),
 			Lexer:      &Lexer{},
 			Parser:     &Parser{},
-			Options:    opts,
-		},
-		options: optionsParser{
-			out: opts,
+			Options: &Options{
+				TokenLine: true,
+			},
 		},
 		compat:     compat,
 		syms:       make(map[string]int),
