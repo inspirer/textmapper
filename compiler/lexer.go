@@ -80,7 +80,7 @@ func (c *compiler) compileLexer() {
 
 	for _, p := range c.patterns {
 		for name, unused := range p.unused {
-			c.errorf(unused, "unused pattern '%v'", name)
+			c.Errorf(unused, "unused pattern '%v'", name)
 		}
 	}
 }
@@ -111,7 +111,7 @@ func (c *compiler) collectStartConds() {
 	insert := func(n *ast.Node, excl bool) {
 		name := n.Text()
 		if _, exists := conds[name]; exists {
-			c.errorf(n, "redeclaration of '%v'", name)
+			c.Errorf(n, "redeclaration of '%v'", name)
 			return
 		}
 		conds[name] = excl
@@ -163,7 +163,7 @@ func (c *compiler) resolveSC(sc ast.StartConditions) []int {
 			ret = append(ret, val)
 			continue
 		}
-		c.errorf(ref.Name(), "unresolved reference %v", name)
+		c.Errorf(ref.Name(), "unresolved reference %v", name)
 	}
 	sort.Ints(ret)
 	return ret
@@ -228,7 +228,7 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 				case "space":
 					space = attrs.LexemeAttribute()
 				default:
-					c.errorf(attrs.LexemeAttribute(), "unsupported attribute")
+					c.Errorf(attrs.LexemeAttribute(), "unsupported attribute")
 				}
 			}
 
@@ -277,11 +277,11 @@ func (c *compiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *pat
 			newDefaults := c.resolveSC(p.StartConditions())
 			c.traverseLexer(p.LexerPart(), newDefaults, ps)
 		case *ast.SyntaxProblem, *ast.DirectiveBrackets:
-			c.errorf(p.TmNode(), "syntax error")
+			c.Errorf(p.TmNode(), "syntax error")
 		case *ast.ExclusiveStartConds, *ast.InclusiveStartConds:
 			if inClause {
 				// %s and %x are not allowed inside start condition clauses.
-				c.errorf(p.TmNode(), "syntax error")
+				c.Errorf(p.TmNode(), "syntax error")
 			}
 		}
 	}
@@ -360,7 +360,7 @@ func (c *compiler) resolveClasses() {
 		class := c.classRules[classRule]
 
 		if !container.SliceEqual(class.StartConditions, r.StartConditions) {
-			c.errorf(r.Origin, "%v must be applicable in the same set of start conditions as %v", r.Pattern.Name, class.Pattern.Name)
+			c.Errorf(r.Origin, "%v must be applicable in the same set of start conditions as %v", r.Pattern.Name, class.Pattern.Name)
 
 			// Fixing the problem for now and keep going.
 			r.StartConditions = class.StartConditions
@@ -372,7 +372,7 @@ func (c *compiler) resolveClasses() {
 
 	for i, r := range c.classRules {
 		if len(c.out.ClassActions[i].Custom) == 0 {
-			c.errorf(r.Origin, "class rule without specializations '%v'", r.Pattern.Name)
+			c.Errorf(r.Origin, "class rule without specializations '%v'", r.Pattern.Name)
 		}
 	}
 

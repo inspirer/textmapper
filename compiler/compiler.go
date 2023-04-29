@@ -127,14 +127,14 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 			if t.IsValid() {
 				anchor = t
 			}
-			c.errorf(anchor, "terminal type redeclaration for %v, was %v", name, sym.PrettyType())
+			c.Errorf(anchor, "terminal type redeclaration for %v, was %v", name, sym.PrettyType())
 		}
 		if sym.Space != space.IsValid() {
 			anchor := n
 			if space.IsValid() {
 				anchor = space
 			}
-			c.errorf(anchor, "%v is declared as both a space and non-space terminal", name)
+			c.Errorf(anchor, "%v is declared as both a space and non-space terminal", name)
 		}
 		return sym.Index
 	}
@@ -142,7 +142,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 		id = ident.Produce(name, ident.UpperCase)
 	}
 	if prev, exists := c.ids[id]; exists {
-		c.errorf(n, "%v and %v get the same ID in generated code", name, prev)
+		c.Errorf(n, "%v and %v get the same ID in generated code", name, prev)
 	}
 
 	sym := grammar.Symbol{
@@ -168,11 +168,11 @@ func (c *compiler) addNonterms(m *syntax.Model) {
 		name := nt.Name
 		if _, ok := c.syms[name]; ok {
 			// TODO come up with a better error message
-			c.errorf(nt.Origin, "duplicate name %v", name)
+			c.Errorf(nt.Origin, "duplicate name %v", name)
 		}
 		id := ident.Produce(name, ident.CamelCase)
 		if prev, exists := c.ids[id]; exists {
-			c.errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
+			c.Errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
 		}
 		index := len(c.out.Syms)
 		sym := grammar.Symbol{
@@ -225,7 +225,7 @@ func addSyntheticInputs(m *syntax.Model, compat bool) {
 	}
 }
 
-func (c *compiler) errorf(n status.SourceNode, format string, a ...interface{}) {
+func (c *compiler) Errorf(n status.SourceNode, format string, a ...interface{}) {
 	c.s.Errorf(n, format, a...)
 }
 
@@ -234,11 +234,11 @@ func (c *compiler) collectParams(p ast.ParserSection) {
 		if param, ok := part.(*ast.TemplateParam); ok {
 			name := param.Name().Text()
 			if _, exists := c.params[name]; exists {
-				c.errorf(param.Name(), "redeclaration of '%v'", name)
+				c.Errorf(param.Name(), "redeclaration of '%v'", name)
 				continue
 			}
 			if _, exists := c.syms[name]; exists {
-				c.errorf(param.Name(), "template parameters cannot be named after terminals '%v'", name)
+				c.Errorf(param.Name(), "template parameters cannot be named after terminals '%v'", name)
 				continue
 			}
 			p := syntax.Param{Name: name, Origin: param.Name()}
@@ -247,14 +247,14 @@ func (c *compiler) collectParams(p ast.ParserSection) {
 				case *ast.BooleanLiteral:
 					p.DefaultValue = val.Text()
 				default:
-					c.errorf(val.TmNode(), "unsupported default value")
+					c.Errorf(val.TmNode(), "unsupported default value")
 				}
 			}
 			if mod, ok := param.Modifier(); ok {
 				if mod.Text() == "lookahead" {
 					p.Lookahead = true
 				} else {
-					c.errorf(mod, "unsupported syntax")
+					c.Errorf(mod, "unsupported syntax")
 				}
 			}
 			c.params[name] = len(c.source.Params)
@@ -274,23 +274,23 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 		if nonterm, ok := part.(*ast.Nonterm); ok {
 			name := nonterm.Name().Text()
 			if _, exists := c.syms[name]; exists {
-				c.errorf(nonterm.Name(), "redeclaration of '%v'", name)
+				c.Errorf(nonterm.Name(), "redeclaration of '%v'", name)
 				continue
 			}
 			if _, exists := c.nonterms[name]; exists {
-				c.errorf(nonterm.Name(), "redeclaration of '%v'", name)
+				c.Errorf(nonterm.Name(), "redeclaration of '%v'", name)
 				continue
 			}
 			if _, exists := c.params[name]; exists {
-				c.errorf(nonterm.Name(), "redeclaration of a template parameter '%v'", name)
+				c.Errorf(nonterm.Name(), "redeclaration of a template parameter '%v'", name)
 				continue
 			}
 			id := ident.Produce(name, ident.CamelCase)
 			if prev, exists := c.ids[id]; exists {
-				c.errorf(nonterm.Name(), "%v and %v get the same ID in generated code", name, prev)
+				c.Errorf(nonterm.Name(), "%v and %v get the same ID in generated code", name, prev)
 			}
 			if ann, ok := nonterm.Annotations(); ok {
-				c.errorf(ann.TmNode(), "unsupported syntax")
+				c.Errorf(ann.TmNode(), "unsupported syntax")
 			}
 
 			nt := &syntax.Nonterm{
@@ -301,7 +301,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 				if rt, _ := t.(*ast.RawType); rt != nil {
 					nt.Type = strings.TrimSuffix(strings.TrimPrefix(rt.Text(), "{"), "}")
 				} else {
-					c.errorf(t.TmNode(), "unsupported syntax")
+					c.Errorf(t.TmNode(), "unsupported syntax")
 				}
 			}
 
@@ -315,7 +315,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 				case *ast.ParamRef:
 					name := param.Identifier().Text()
 					if seen[name] {
-						c.errorf(param, "duplicate parameter reference '%v'", name)
+						c.Errorf(param, "duplicate parameter reference '%v'", name)
 						continue
 					}
 					seen[name] = true
@@ -323,15 +323,15 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 						if !c.source.Params[i].Lookahead {
 							nt.Params = append(nt.Params, i)
 						} else {
-							c.errorf(param, "lookahead parameters cannot be declared '%v'", name)
+							c.Errorf(param, "lookahead parameters cannot be declared '%v'", name)
 						}
 						continue
 					}
-					c.errorf(param, "unresolved parameter reference '%v'", name)
+					c.Errorf(param, "unresolved parameter reference '%v'", name)
 				case *ast.InlineParameter:
 					name := param.Name().Text()
 					if _, exists := c.params[name]; exists {
-						c.errorf(param.Name().TmNode(), "redeclaration of '%v'", name)
+						c.Errorf(param.Name().TmNode(), "redeclaration of '%v'", name)
 						continue
 					}
 					p := syntax.Param{Name: name, Origin: param.Name().TmNode()}
@@ -340,7 +340,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 						case *ast.BooleanLiteral:
 							p.DefaultValue = val.Text()
 						default:
-							c.errorf(val.TmNode(), "unsupported default value")
+							c.Errorf(val.TmNode(), "unsupported default value")
 						}
 					}
 					nt.Params = append(nt.Params, len(c.source.Params))
@@ -362,11 +362,11 @@ func (c *compiler) collectInputs(p ast.ParserSection) {
 				name := ref.Reference().Name()
 				nonterm, found := c.nonterms[name.Text()]
 				if !found {
-					c.errorf(name, "unresolved nonterminal '%v'", name.Text())
+					c.Errorf(name, "unresolved nonterminal '%v'", name.Text())
 					continue
 				}
 				if len(c.source.Nonterms[nonterm].Params) > 0 {
-					c.errorf(name, "input nonterminals cannot be parametrized")
+					c.Errorf(name, "input nonterminals cannot be parametrized")
 				}
 				_, noeoi := ref.NoEoi()
 				c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: nonterm, NoEoi: noeoi})
@@ -380,11 +380,11 @@ func (c *compiler) collectInputs(p ast.ParserSection) {
 
 	input, found := c.nonterms["input"]
 	if found && len(c.source.Nonterms[input].Params) > 0 {
-		c.errorf(c.source.Nonterms[input].Origin, "the 'input' nonterminal cannot be parametrized")
+		c.Errorf(c.source.Nonterms[input].Origin, "the 'input' nonterminal cannot be parametrized")
 		found = false
 	}
 	if !found {
-		c.errorf(c.file.Header(), "the grammar does not specify an input nonterminal, use '%%input' to declare one")
+		c.Errorf(c.file.Header(), "the grammar does not specify an input nonterminal, use '%%input' to declare one")
 		return
 	}
 	c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: input})
@@ -406,7 +406,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			for _, id := range part.Ids() {
 				text := id.Text()
 				if _, exists := c.cats[text]; exists {
-					c.errorf(id, "duplicate interface declaration of '%v'", text)
+					c.Errorf(id, "duplicate interface declaration of '%v'", text)
 					continue
 				}
 				index := len(c.source.Cats)
@@ -423,7 +423,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			case "nonassoc":
 				assoc = lalr.NonAssoc
 			default:
-				c.errorf(part, "unsupported associativity")
+				c.Errorf(part, "unsupported associativity")
 				continue
 			}
 			prec := lalr.Precedence{Associativity: assoc}
@@ -431,11 +431,11 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 				name := ref.Name()
 				sym, ok := c.syms[name.Text()]
 				if !ok || sym >= c.out.NumTokens {
-					c.errorf(name, "unresolved reference '%v'", name.Text())
+					c.Errorf(name, "unresolved reference '%v'", name.Text())
 					continue
 				}
 				if precTerms.Get(sym) {
-					c.errorf(name, "second precedence rule for '%v'", name.Text())
+					c.Errorf(name, "second precedence rule for '%v'", name.Text())
 					continue
 				}
 				precTerms.Set(sym)
@@ -446,14 +446,14 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			}
 		case *ast.DirectiveExpect:
 			if seenSR {
-				c.errorf(part, "duplicate %%expect directive")
+				c.Errorf(part, "duplicate %%expect directive")
 				continue
 			}
 			seenSR = true
 			c.expectSR, _ = strconv.Atoi(part.Child(selector.IntegerLiteral).Text())
 		case *ast.DirectiveExpectRR:
 			if seenRR {
-				c.errorf(part, "duplicate %%expect-rr directive")
+				c.Errorf(part, "duplicate %%expect-rr directive")
 				continue
 			}
 			seenRR = true
@@ -461,11 +461,11 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 		case *ast.DirectiveSet:
 			name := part.Name()
 			if name.Text() == "afterErr" {
-				c.errorf(name, "'afterErr' is reserved for built-in error recovery")
+				c.Errorf(name, "'afterErr' is reserved for built-in error recovery")
 				continue
 			}
 			if _, ok := c.namedSets[name.Text()]; ok {
-				c.errorf(name, "redeclaration of token set '%v'", name.Text())
+				c.Errorf(name, "redeclaration of token set '%v'", name.Text())
 				continue
 			}
 
@@ -516,13 +516,13 @@ func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) *
 			case "follow":
 				ret.Kind = syntax.Follow
 			default:
-				c.errorf(op, "operator must be one of: first, last, precede or follow")
+				c.Errorf(op, "operator must be one of: first, last, precede or follow")
 			}
 		}
 		ret.Symbol, ret.Args = c.resolveRef(expr.Symbol(), nonterm)
 		return ret
 	default:
-		c.errorf(expr.TmNode(), "syntax error")
+		c.Errorf(expr.TmNode(), "syntax error")
 		return &syntax.TokenSet{} // == eoi
 	}
 }
@@ -554,12 +554,12 @@ func (c *compiler) predNot(pred *syntax.Predicate, origin ast.PredicateExpressio
 func (c *compiler) predLiteral(ref ast.ParamRef, nonterm *syntax.Nonterm, literal ast.Literal, origin ast.PredicateExpression) *syntax.Predicate {
 	lit, ok := literal.(*ast.StringLiteral)
 	if !ok {
-		c.errorf(literal.TmNode(), "string is expected")
+		c.Errorf(literal.TmNode(), "string is expected")
 		return nil
 	}
 	val, err := strconv.Unquote(lit.Text())
 	if err != nil {
-		c.errorf(lit, "cannot parse string literal: %v", err)
+		c.Errorf(lit, "cannot parse string literal: %v", err)
 		return nil
 	}
 	return c.pred(ref, nonterm, syntax.Equals, val, origin)
@@ -597,7 +597,7 @@ func (c *compiler) convertPredicate(expr ast.PredicateExpression, nonterm *synta
 	case *ast.PredicateNotEq:
 		return c.predNot(c.predLiteral(expr.ParamRef(), nonterm, expr.Literal(), expr), expr)
 	default:
-		c.errorf(expr.TmNode(), "syntax error")
+		c.Errorf(expr.TmNode(), "syntax error")
 		return nil
 	}
 }
@@ -615,7 +615,7 @@ func (c *compiler) resolveParam(ref ast.ParamRef, nonterm *syntax.Nonterm) (int,
 		return p, true
 	}
 
-	c.errorf(ref.Identifier(), "unresolved parameter reference '%v' (in %v)", name, nonterm.Name)
+	c.Errorf(ref.Identifier(), "unresolved parameter reference '%v' (in %v)", name, nonterm.Name)
 	return 0, false
 }
 
@@ -663,13 +663,13 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 		index, ok = c.instantiateOpt(text, ref)
 	}
 	if !ok {
-		c.errorf(name, "unresolved reference '%v'", text)
+		c.Errorf(name, "unresolved reference '%v'", text)
 		return 0, nil // == eoi
 	}
 
 	if index < c.out.NumTokens {
 		if args, ok := ref.Args(); ok {
-			c.errorf(args, "terminals cannot be parametrized")
+			c.Errorf(args, "terminals cannot be parametrized")
 		}
 		return index, nil
 	}
@@ -700,7 +700,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 						out.Value = val.Text()
 					case *ast.ParamRef:
 						if nonterm == nil {
-							c.errorf(val.Identifier(), "unresolved parameter reference '%v'", val.Identifier().Text())
+							c.Errorf(val.Identifier(), "unresolved parameter reference '%v'", val.Identifier().Text())
 							continue
 						}
 						out.TakeFrom, ok = c.resolveParam(*val, nonterm)
@@ -708,13 +708,13 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 							continue
 						}
 					default:
-						c.errorf(val.TmNode(), "unsupported value")
+						c.Errorf(val.TmNode(), "unsupported value")
 						continue
 					}
 					break
 				}
 				if nonterm == nil {
-					c.errorf(ref, "missing value")
+					c.Errorf(ref, "missing value")
 					continue
 				}
 				// Note: matching by name enables value propagation between inline parameters.
@@ -723,7 +723,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 					continue
 				}
 			default:
-				c.errorf(arg.TmNode(), "syntax error")
+				c.Errorf(arg.TmNode(), "syntax error")
 				continue
 			}
 			param, ok := c.resolveParam(ref, target)
@@ -731,7 +731,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 				continue
 			}
 			if populated.Get(param) {
-				c.errorf(ref, "second argument for '%v'", c.source.Params[param].Name)
+				c.Errorf(ref, "second argument for '%v'", c.source.Params[param].Name)
 				continue
 			}
 			populated.Set(param)
@@ -772,7 +772,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 		uninitialized = append(uninitialized, param.Name)
 	}
 	if len(uninitialized) > 0 {
-		c.errorf(ref.Name(), "uninitialized parameters: %v", strings.Join(uninitialized, ", "))
+		c.Errorf(ref.Name(), "uninitialized parameters: %v", strings.Join(uninitialized, ", "))
 	}
 	c.sortArgs(target.Params, args)
 	return index, args
@@ -809,7 +809,7 @@ func (c *compiler) convertReportClause(n ast.ReportClause) report {
 		flags = append(flags, id.Text())
 	}
 	if len(flags) > 0 && c.isSelector(action) {
-		c.errorf(n.Action(), "selector clauses cannot be used together with flags")
+		c.Errorf(n.Action(), "selector clauses cannot be used together with flags")
 		flags = nil
 	}
 	ret := report{
@@ -821,11 +821,11 @@ func (c *compiler) convertReportClause(n ast.ReportClause) report {
 	}
 	if as, ok := n.ReportAs(); ok {
 		if ret.selector != nil {
-			c.errorf(as, "reporting a selector 'as' some other node is not supported")
+			c.Errorf(as, "reporting a selector 'as' some other node is not supported")
 			return ret
 		}
 		if !c.isSelector(as.Identifier().Text()) {
-			c.errorf(as, "'as' expects a selector")
+			c.Errorf(as, "'as' expects a selector")
 			return ret
 		}
 		ret.selector = &syntax.Expr{Kind: syntax.Arrow, Name: as.Identifier().Text(), Origin: as}
@@ -838,7 +838,7 @@ func (c *compiler) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 	for _, ref := range sep.Separator() {
 		sym, _ := c.resolveRef(ref, nil /*nonterm*/)
 		if sym >= c.out.NumTokens {
-			c.errorf(ref, "separators must be terminals")
+			c.Errorf(ref, "separators must be terminals")
 			continue
 		}
 		expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref, Model: c.source}
@@ -924,7 +924,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 		for _, pred := range p.Predicates() {
 			sym, args := c.resolveRef(pred.Symref(), nonterm)
 			if sym < c.out.NumTokens {
-				c.errorf(pred.Symref(), "lookahead expressions do not support terminals")
+				c.Errorf(pred.Symref(), "lookahead expressions do not support terminals")
 				continue
 			}
 			expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref(), Model: c.source}
@@ -974,10 +974,10 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 	case *ast.StateMarker:
 		return &syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
 	case *ast.SyntaxProblem:
-		c.errorf(p, "syntax error")
+		c.Errorf(p, "syntax error")
 		return &syntax.Expr{Kind: syntax.Empty, Origin: p}
 	}
-	c.errorf(p.TmNode(), "unsupported syntax (%T)", p)
+	c.Errorf(p.TmNode(), "unsupported syntax (%T)", p)
 	return &syntax.Expr{Kind: syntax.Empty, Origin: p.TmNode()}
 }
 
@@ -1038,7 +1038,7 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 	for _, rule0 := range rules {
 		rule, ok := rule0.(*ast.Rule)
 		if !ok {
-			c.errorf(rule0.TmNode(), "syntax error")
+			c.Errorf(rule0.TmNode(), "syntax error")
 			continue
 		}
 
@@ -1057,10 +1057,10 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 				if sym < c.out.NumTokens {
 					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.source, Origin: suffix}
 				} else {
-					c.errorf(suffix.Symref(), "terminal is expected")
+					c.Errorf(suffix.Symref(), "terminal is expected")
 				}
 			default:
-				c.errorf(suffix, "unsupported syntax")
+				c.Errorf(suffix, "unsupported syntax")
 			}
 		}
 		if pred, ok := rule.Predicate(); ok {
