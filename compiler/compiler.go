@@ -1,4 +1,5 @@
-package grammar
+// Package compiler compiles TextMapper grammars.
+package compiler
 
 import (
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/lalr"
 	"github.com/inspirer/textmapper/lex"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
@@ -19,7 +21,7 @@ import (
 )
 
 // Compile validates and compiles grammar files.
-func Compile(file ast.File, compat bool) (*Grammar, error) {
+func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
 	c := newCompiler(file, compat)
 
 	c.options = optionsParser{out: c.out.Options, Status: &c.s}
@@ -38,7 +40,7 @@ func Compile(file ast.File, compat bool) (*Grammar, error) {
 
 type compiler struct {
 	file   ast.File
-	out    *Grammar
+	out    *grammar.Grammar
 	s      status.Status
 	compat bool
 
@@ -75,12 +77,12 @@ func newCompiler(file ast.File, compat bool) *compiler {
 	targetLang, _ := file.Header().Target()
 	return &compiler{
 		file: file,
-		out: &Grammar{
+		out: &grammar.Grammar{
 			Name:       file.Header().Name().Text(),
 			TargetLang: targetLang.Text(),
-			Lexer:      &Lexer{},
-			Parser:     &Parser{},
-			Options: &Options{
+			Lexer:      &grammar.Lexer{},
+			Parser:     &grammar.Parser{},
+			Options: &grammar.Options{
 				TokenLine: true,
 			},
 		},
@@ -118,8 +120,8 @@ var noSpace = ast.LexemeAttribute{}
 func (c *compiler) compileLexer() {
 	out := c.out.Lexer
 
-	eoi := c.addToken(Eoi, "EOI", ast.RawType{}, noSpace, nil)
-	out.InvalidToken = c.addToken(InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
+	eoi := c.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
+	out.InvalidToken = c.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
 
 	c.collectStartConds()
 	lexer, _ := c.file.Lexer()
@@ -300,7 +302,7 @@ func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 		c.errorf(n, "%v and %v get the same ID in generated code", name, prev)
 	}
 
-	sym := Symbol{
+	sym := grammar.Symbol{
 		Index:  len(c.out.Syms),
 		ID:     id,
 		Name:   name,
@@ -330,7 +332,7 @@ func (c *compiler) addNonterms(m *syntax.Model) {
 			c.errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
 		}
 		index := len(c.out.Syms)
-		sym := Symbol{
+		sym := grammar.Symbol{
 			Index:     index,
 			ID:        id,
 			Name:      name,
@@ -404,7 +406,7 @@ func (c *compiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttrib
 	if !cmd.IsValid() && !space.IsValid() {
 		return a
 	}
-	act := SemanticAction{Action: a, Code: key.code, Space: space.IsValid()}
+	act := grammar.SemanticAction{Action: a, Code: key.code, Space: space.IsValid()}
 	if comment != "" {
 		act.Comments = append(act.Comments, comment)
 	}
@@ -537,7 +539,7 @@ func (c *compiler) resolveClasses() {
 
 	// Pre-create class actions.
 	for _, r := range c.classRules {
-		ca := ClassAction{
+		ca := grammar.ClassAction{
 			Action: r.Action,
 			Custom: make(map[string]int),
 		}
@@ -837,7 +839,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 
 			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
 			c.namedSets[name.Text()] = len(c.source.Sets)
-			c.out.Sets = append(c.out.Sets, &NamedSet{
+			c.out.Sets = append(c.out.Sets, &grammar.NamedSet{
 				Name: name.Text(),
 				Expr: part.RhsSet().Text(), // Note: this gets replaced later with instantiated names
 			})
@@ -1471,7 +1473,7 @@ func (c *compiler) compileParser() {
 		// %generate afterErr = set(follow error);
 		const name = "afterErr"
 		c.namedSets[name] = len(c.source.Sets)
-		c.out.Sets = append(c.out.Sets, &NamedSet{
+		c.out.Sets = append(c.out.Sets, &grammar.NamedSet{
 			Name: name,
 			Expr: "set(follow error)",
 		})
@@ -1609,9 +1611,9 @@ func (c *compiler) generateTables() bool {
 	}
 
 	// The very first action is a no-op.
-	c.out.Parser.Actions = append(c.out.Parser.Actions, SemanticAction{})
+	c.out.Parser.Actions = append(c.out.Parser.Actions, grammar.SemanticAction{})
 
-	var rules []*Rule
+	var rules []*grammar.Rule
 	for self, nt := range c.source.Nonterms {
 		if nt.Value.Kind == syntax.Lookahead {
 			la := lalr.Lookahead{
@@ -1642,7 +1644,7 @@ func (c *compiler) generateTables() bool {
 			}
 			g.Lookaheads = append(g.Lookaheads, la)
 			g.Rules = append(g.Rules, rule)
-			rules = append(rules, &Rule{Rule: rule, Value: nt.Value})
+			rules = append(rules, &grammar.Rule{Rule: rule, Value: nt.Value})
 			continue
 		}
 
@@ -1661,7 +1663,7 @@ func (c *compiler) generateTables() bool {
 				rule.Precedence = lalr.Sym(expr.Symbol)
 				expr = expr.Sub[0]
 			}
-			var report []Range
+			var report []grammar.Range
 			var command string
 			var args *syntax.CmdArgs
 			var numRefs int
@@ -1684,7 +1686,12 @@ func (c *compiler) generateTables() bool {
 					}
 					if t, ok := types[expr.Name]; ok { // !ok for categories
 						end := numRefs
-						report = append(report, Range{start, end, t, expr.ArrowFlags})
+						report = append(report, grammar.Range{
+							Start: start,
+							End:   end,
+							Type:  t,
+							Flags: expr.ArrowFlags,
+						})
 						if len(expr.ArrowFlags) != 0 {
 							c.out.Parser.UsesFlags = true
 						}
@@ -1733,13 +1740,13 @@ func (c *compiler) generateTables() bool {
 			}
 			if len(report) > 0 || command != "" {
 				// TODO reuse existing actions
-				act := SemanticAction{
+				act := grammar.SemanticAction{
 					Report: report,
 					Code:   command,
 					Origin: origin,
 				}
 				if args != nil {
-					act.Vars = &ActionVars{CmdArgs: *args, Remap: actualPos}
+					act.Vars = &grammar.ActionVars{CmdArgs: *args, Remap: actualPos}
 					for _, r := range rule.RHS {
 						if r.IsStateMarker() {
 							continue
@@ -1751,7 +1758,7 @@ func (c *compiler) generateTables() bool {
 				c.out.Parser.Actions = append(c.out.Parser.Actions, act)
 			}
 			g.Rules = append(g.Rules, rule)
-			rules = append(rules, &Rule{Rule: rule, Value: exprWithPrec})
+			rules = append(rules, &grammar.Rule{Rule: rule, Value: exprWithPrec})
 		}
 	}
 	if c.s.Err() != nil {

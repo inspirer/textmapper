@@ -1,9 +1,10 @@
-package grammar
+package compiler
 
 import (
 	"strconv"
 	"strings"
 
+	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
 	"github.com/inspirer/textmapper/status"
 	"github.com/inspirer/textmapper/syntax"
@@ -15,7 +16,7 @@ type optionsParser struct {
 	reportTokens map[string]bool
 	reportList   []ast.Identifier
 
-	out *Options
+	out *grammar.Options
 	*status.Status
 }
 

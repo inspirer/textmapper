@@ -10,6 +10,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/inspirer/textmapper/compiler"
 	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/parsers/tm"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
@@ -144,7 +145,7 @@ func GenerateFile(path string, w Writer, opts Options) (Stats, error) {
 	}
 
 	start := time.Now()
-	g, err := grammar.Compile(ast.File{Node: tree.Root()}, opts.Compat)
+	g, err := compiler.Compile(ast.File{Node: tree.Root()}, opts.Compat)
 	ret.Compiling = time.Since(start)
 	if err != nil {
 		return ret, err
