@@ -132,7 +132,7 @@ func (c *compiler) compileParser(file ast.File) {
 		return
 	}
 	c.out.Sets = loader.sets
-	c.out.Prec = loader.prec
+	c.out.Parser.Prec = loader.prec
 
 	source := loader.out
 	if err := syntax.PropagateLookaheads(source); err != nil {
@@ -162,8 +162,8 @@ func (c *compiler) compileParser(file ast.File) {
 			c.AddError(err)
 			return
 		}
-		c.out.Types = types
-		c.out.MappedTokens = tokens
+		c.out.Parser.Types = types
+		c.out.Parser.MappedTokens = tokens
 	}
 
 	if err := syntax.Expand(source); err != nil {
@@ -226,7 +226,7 @@ func (c *compiler) compileParser(file ast.File) {
 func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, origin ast.File) bool {
 	g := &lalr.Grammar{
 		Terminals:  len(source.Terminals),
-		Precedence: c.out.Prec,
+		Precedence: c.out.Parser.Prec,
 		ExpectSR:   loader.expectSR,
 		ExpectRR:   loader.expectRR,
 		Origin:     origin,
@@ -245,8 +245,8 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 	}
 	markers := make(map[string]int)
 	types := make(map[string]int)
-	if c.out.Types != nil {
-		for i, t := range c.out.Types.RangeTypes {
+	if c.out.Parser.Types != nil {
+		for i, t := range c.out.Parser.Types.RangeTypes {
 			types[t.Name] = i
 		}
 	}

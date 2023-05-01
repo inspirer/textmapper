@@ -102,7 +102,7 @@ func (g *Grammar) Tokens() []Symbol {
 func (g *Grammar) TokensWithoutPrec() []Symbol {
 	var ret []Symbol
 	seen := make(map[int]bool)
-	for _, prec := range g.Prec {
+	for _, prec := range g.Parser.Prec {
 		for _, term := range prec.Terminals {
 			seen[int(term)] = true
 		}

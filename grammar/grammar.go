@@ -46,9 +46,11 @@ type Grammar struct {
 	Syms       []Symbol
 	Sets       []*NamedSet
 	NumTokens  int
-	*Options
-	*Lexer
-	*Parser
+
+	Options *Options
+	Lexer   *Lexer
+	Parser  *Parser
+
 	CustomTemplates string
 }
 
