@@ -113,7 +113,7 @@ func TestSourceModel(t *testing.T) {
 		opts.resolve(resolver)
 
 		c := newCompiler(file, opts.out, lexer.out, resolver, compat, &s)
-		c.compileParser()
+		c.compileParser(file)
 
 		if s.Err() != nil {
 			t.Errorf("compilation failure %v", s.Err())
