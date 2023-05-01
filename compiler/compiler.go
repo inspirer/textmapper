@@ -45,19 +45,6 @@ type compiler struct {
 	resolver *resolver
 	compat   bool
 	*status.Status
-
-	// Parser
-	source    *syntax.Model
-	namedSets map[string]int // -> index in source.Sets
-	asserts   []assert
-	params    map[string]int // -> index in source.Params
-	nonterms  map[string]int // -> index in source.Nonterms
-	cats      map[string]int // -> index in source.Cats
-	paramPerm []int          // for parameter permutations
-	expectSR  int
-	expectRR  int
-	rhsPos    int // Counter for positional index of a reference in the current rule.
-	rhsNames  map[string]int
 }
 
 func newCompiler(file ast.File, opts *grammar.Options, lexer *grammar.Lexer, resolver *resolver, compat bool, s *status.Status) *compiler {
@@ -75,11 +62,6 @@ func newCompiler(file ast.File, opts *grammar.Options, lexer *grammar.Lexer, res
 		resolver: resolver,
 		compat:   compat,
 		Status:   s,
-
-		namedSets: make(map[string]int),
-		params:    make(map[string]int),
-		nonterms:  make(map[string]int),
-		cats:      make(map[string]int),
 	}
 }
 
@@ -143,18 +125,22 @@ func (c *compiler) compileParser(file ast.File) {
 		return
 	}
 
-	c.loadSyntax(p, file.Header())
+	loader := newSyntaxLoader(c.resolver, c.Status)
+	loader.loadSyntax(p, file.Header())
 	if c.Err() != nil {
 		// Parsing errors cause inconsistencies inside c.source. Aborting.
 		return
 	}
+	c.out.Sets = loader.sets
+	c.out.Prec = loader.prec
 
-	if err := syntax.PropagateLookaheads(c.source); err != nil {
+	source := loader.source
+	if err := syntax.PropagateLookaheads(source); err != nil {
 		c.AddError(err)
 		return
 	}
 
-	if err := syntax.Instantiate(c.source); err != nil {
+	if err := syntax.Instantiate(source); err != nil {
 		c.AddError(err)
 		return
 	}
@@ -171,7 +157,7 @@ func (c *compiler) compileParser(file ast.File) {
 			GenSelector: c.out.Options.GenSelector,
 			ExtraTypes:  c.out.Options.ExtraTypes,
 		}
-		types, err := syntax.ExtractTypes(c.source, tokens, opts)
+		types, err := syntax.ExtractTypes(source, tokens, opts)
 		if err != nil {
 			c.AddError(err)
 			return
@@ -180,76 +166,76 @@ func (c *compiler) compileParser(file ast.File) {
 		c.out.MappedTokens = tokens
 	}
 
-	if err := syntax.Expand(c.source); err != nil {
+	if err := syntax.Expand(source); err != nil {
 		c.AddError(err)
 		return
 	}
 
 	// Use instantiated nonterminal names to describe sets in generated code.
-	old := c.source.Terminals
+	old := source.Terminals
 	if c.compat {
 		// Note: prefer original terminal names over IDs.
-		c.source.Terminals = nil
+		source.Terminals = nil
 		for _, sym := range c.out.Syms {
-			c.source.Terminals = append(c.source.Terminals, sym.Name)
+			source.Terminals = append(source.Terminals, sym.Name)
 		}
 	}
 	for _, set := range c.out.Sets {
-		in := c.source.Sets[c.namedSets[set.Name]]
-		set.Expr = "set(" + in.String(c.source) + ")"
+		in := source.Sets[loader.namedSets[set.Name]]
+		set.Expr = "set(" + in.String(source) + ")"
 	}
-	c.source.Terminals = old
+	source.Terminals = old
 
-	if err := syntax.ResolveSets(c.source); err != nil {
+	if err := syntax.ResolveSets(source); err != nil {
 		c.AddError(err)
 		return
 	}
 
 	if errSym, ok := c.resolver.syms["error"]; ok {
-		if index, ok := c.namedSets["afterErr"]; ok {
+		if index, ok := loader.namedSets["afterErr"]; ok {
 			// Non-empty "afterErr" set turns on error recovery.
-			c.out.Parser.IsRecovering = len(c.source.Sets[index].Sub) > 0
+			c.out.Parser.IsRecovering = len(source.Sets[index].Sub) > 0
 			c.out.Parser.ErrorSymbol = errSym
 		}
 	}
 
 	// Export computed named sets for code generation.
 	for _, set := range c.out.Sets {
-		in := c.source.Sets[c.namedSets[set.Name]]
+		in := source.Sets[loader.namedSets[set.Name]]
 		for _, term := range in.Sub {
 			set.Terminals = append(set.Terminals, term.Symbol)
 		}
 	}
 
 	// Introduce synthetic inputs for runtime lookaheads.
-	addSyntheticInputs(c.source, c.compat)
+	addSyntheticInputs(source, c.compat)
 
 	// Prepare the model for code generation.
-	c.resolver.addNonterms(c.source)
+	c.resolver.addNonterms(source)
 	c.out.Syms = c.resolver.Syms
-	if !c.generateTables(file) {
+	if !c.generateTables(source, loader, file) {
 		return
 	}
 
 	out := c.out.Parser
-	out.Inputs = c.source.Inputs
-	out.Nonterms = c.source.Nonterms
-	out.NumTerminals = len(c.source.Terminals)
+	out.Inputs = source.Inputs
+	out.Nonterms = source.Nonterms
+	out.NumTerminals = len(source.Terminals)
 }
 
-func (c *compiler) generateTables(origin ast.File) bool {
+func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, origin ast.File) bool {
 	g := &lalr.Grammar{
-		Terminals:  len(c.source.Terminals),
+		Terminals:  len(source.Terminals),
 		Precedence: c.out.Prec,
-		ExpectSR:   c.expectSR,
-		ExpectRR:   c.expectRR,
+		ExpectSR:   loader.expectSR,
+		ExpectRR:   loader.expectRR,
 		Origin:     origin,
 	}
 	for _, sym := range c.out.Syms {
 		g.Symbols = append(g.Symbols, sym.Name)
 	}
 	inputs := make(map[lalr.Input]int32)
-	for _, inp := range c.source.Inputs {
+	for _, inp := range source.Inputs {
 		out := lalr.Input{
 			Nonterminal: lalr.Sym(g.Terminals + inp.Nonterm),
 			Eoi:         !inp.NoEoi,
@@ -269,7 +255,7 @@ func (c *compiler) generateTables(origin ast.File) bool {
 	c.out.Parser.Actions = append(c.out.Parser.Actions, grammar.SemanticAction{})
 
 	var rules []*grammar.Rule
-	for self, nt := range c.source.Nonterms {
+	for self, nt := range source.Nonterms {
 		if nt.Value.Kind == syntax.Lookahead {
 			la := lalr.Lookahead{
 				Nonterminal: lalr.Sym(g.Terminals + self),
@@ -334,7 +320,7 @@ func (c *compiler) generateTables(origin ast.File) bool {
 					for _, sub := range expr.Sub {
 						traverse(sub)
 					}
-					if c.isSelector(expr.Name) {
+					if loader.isSelector(expr.Name) {
 						// Categories are used during the grammar analysis only and don't need
 						// to be reported.
 						break

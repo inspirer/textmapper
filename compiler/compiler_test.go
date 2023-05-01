@@ -123,8 +123,8 @@ func TestSourceModel(t *testing.T) {
 		want := strings.TrimPrefix(tree.Root().Child(selector.Templates).Text(), "%%")
 		var b strings.Builder
 		b.WriteString("\n\n")
-		for _, nt := range c.source.Nonterms {
-			writeNonterm(nt, c.source, &b)
+		for _, nt := range c.out.Parser.Nonterms {
+			writeNonterm(nt, &b)
 		}
 		got := b.String()
 
@@ -134,17 +134,10 @@ func TestSourceModel(t *testing.T) {
 	}
 }
 
-func writeNonterm(nt *syntax.Nonterm, m *syntax.Model, b *strings.Builder) {
+func writeNonterm(nt *syntax.Nonterm, b *strings.Builder) {
 	b.WriteString(nt.Name)
 	if len(nt.Params) > 0 {
-		b.WriteByte('<')
-		for i, p := range nt.Params {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			b.WriteString(m.Params[p].Name)
-		}
-		b.WriteByte('>')
+		fmt.Fprintf(b, "<%v unsubstituted parameters>", len(nt.Params))
 	}
 	b.WriteString(" :\n")
 	if nt.Value.Kind == syntax.Choice {

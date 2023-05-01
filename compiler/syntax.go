@@ -16,7 +16,38 @@ import (
 	"github.com/inspirer/textmapper/util/ident"
 )
 
-func (c *compiler) collectParams(p ast.ParserSection) {
+type syntaxLoader struct {
+	resolver *resolver
+	*status.Status
+	source *syntax.Model // TODO rename into "out"
+	sets   []*grammar.NamedSet
+	prec   []lalr.Precedence
+
+	namedSets map[string]int // -> index in source.Sets
+	asserts   []assert
+	params    map[string]int // -> index in source.Params
+	nonterms  map[string]int // -> index in source.Nonterms
+	cats      map[string]int // -> index in source.Cats
+	paramPerm []int          // for parameter permutations
+	expectSR  int
+	expectRR  int
+	rhsPos    int // Counter for positional index of a reference in the current rule.
+	rhsNames  map[string]int
+}
+
+func newSyntaxLoader(resolver *resolver, s *status.Status) *syntaxLoader {
+	return &syntaxLoader{
+		resolver: resolver,
+		Status:   s,
+
+		namedSets: make(map[string]int),
+		params:    make(map[string]int),
+		nonterms:  make(map[string]int),
+		cats:      make(map[string]int),
+	}
+}
+
+func (c *syntaxLoader) collectParams(p ast.ParserSection) {
 	for _, part := range p.GrammarPart() {
 		if param, ok := part.(*ast.TemplateParam); ok {
 			name := param.Name().Text()
@@ -55,7 +86,7 @@ type nontermImpl struct {
 	def     ast.Nonterm
 }
 
-func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
+func (c *syntaxLoader) collectNonterms(p ast.ParserSection) []nontermImpl {
 	var ret []nontermImpl
 	for _, part := range p.GrammarPart() {
 		if nonterm, ok := part.(*ast.Nonterm); ok {
@@ -142,7 +173,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 	return ret
 }
 
-func (c *compiler) collectInputs(p ast.ParserSection, header status.SourceNode) {
+func (c *syntaxLoader) collectInputs(p ast.ParserSection, header status.SourceNode) {
 	for _, part := range p.GrammarPart() {
 		if input, ok := part.(*ast.DirectiveInput); ok {
 			for _, ref := range input.InputRefs() {
@@ -177,8 +208,8 @@ func (c *compiler) collectInputs(p ast.ParserSection, header status.SourceNode) 
 	c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: input})
 }
 
-func (c *compiler) collectDirectives(p ast.ParserSection) {
-	precTerms := container.NewBitSet(c.out.NumTokens)
+func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
+	precTerms := container.NewBitSet(c.resolver.NumTokens)
 	var seenSR, seenRR bool
 
 	for _, part := range p.GrammarPart() {
@@ -217,7 +248,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			for _, ref := range part.Symbols() {
 				name := ref.Name()
 				sym, ok := c.resolver.syms[name.Text()]
-				if !ok || sym >= c.out.NumTokens {
+				if !ok || sym >= c.resolver.NumTokens {
 					c.Errorf(name, "unresolved reference '%v'", name.Text())
 					continue
 				}
@@ -229,7 +260,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 				prec.Terminals = append(prec.Terminals, lalr.Sym(sym))
 			}
 			if len(prec.Terminals) > 0 {
-				c.out.Prec = append(c.out.Prec, prec)
+				c.prec = append(c.prec, prec)
 			}
 		case *ast.DirectiveExpect:
 			if seenSR {
@@ -258,7 +289,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 
 			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
 			c.namedSets[name.Text()] = len(c.source.Sets)
-			c.out.Sets = append(c.out.Sets, &grammar.NamedSet{
+			c.sets = append(c.sets, &grammar.NamedSet{
 				Name: name.Text(),
 				Expr: part.RhsSet().Text(), // Note: this gets replaced later with instantiated names
 			})
@@ -268,7 +299,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 }
 
 // TODO remove the second parameter and disallow templating sets
-func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) *syntax.TokenSet {
+func (c *syntaxLoader) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) *syntax.TokenSet {
 	switch expr := expr.(type) {
 	case *ast.SetAnd:
 		return &syntax.TokenSet{
@@ -314,7 +345,7 @@ func (c *compiler) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) *
 	}
 }
 
-func (c *compiler) pred(ref ast.ParamRef, nonterm *syntax.Nonterm, op syntax.PredicateOp, val string, origin ast.PredicateExpression) *syntax.Predicate {
+func (c *syntaxLoader) pred(ref ast.ParamRef, nonterm *syntax.Nonterm, op syntax.PredicateOp, val string, origin ast.PredicateExpression) *syntax.Predicate {
 	param, ok := c.resolveParam(ref, nonterm)
 	if !ok {
 		return nil
@@ -327,7 +358,7 @@ func (c *compiler) pred(ref ast.ParamRef, nonterm *syntax.Nonterm, op syntax.Pre
 	}
 }
 
-func (c *compiler) predNot(pred *syntax.Predicate, origin ast.PredicateExpression) *syntax.Predicate {
+func (c *syntaxLoader) predNot(pred *syntax.Predicate, origin ast.PredicateExpression) *syntax.Predicate {
 	if pred == nil {
 		return nil
 	}
@@ -338,7 +369,7 @@ func (c *compiler) predNot(pred *syntax.Predicate, origin ast.PredicateExpressio
 	}
 }
 
-func (c *compiler) predLiteral(ref ast.ParamRef, nonterm *syntax.Nonterm, literal ast.Literal, origin ast.PredicateExpression) *syntax.Predicate {
+func (c *syntaxLoader) predLiteral(ref ast.ParamRef, nonterm *syntax.Nonterm, literal ast.Literal, origin ast.PredicateExpression) *syntax.Predicate {
 	lit, ok := literal.(*ast.StringLiteral)
 	if !ok {
 		c.Errorf(literal.TmNode(), "string is expected")
@@ -352,7 +383,7 @@ func (c *compiler) predLiteral(ref ast.ParamRef, nonterm *syntax.Nonterm, litera
 	return c.pred(ref, nonterm, syntax.Equals, val, origin)
 }
 
-func (c *compiler) predList(op syntax.PredicateOp, list []ast.PredicateExpression, nonterm *syntax.Nonterm, origin ast.PredicateExpression) *syntax.Predicate {
+func (c *syntaxLoader) predList(op syntax.PredicateOp, list []ast.PredicateExpression, nonterm *syntax.Nonterm, origin ast.PredicateExpression) *syntax.Predicate {
 	var out []*syntax.Predicate
 	for _, expr := range list {
 		if p := c.convertPredicate(expr, nonterm); p != nil {
@@ -369,7 +400,7 @@ func (c *compiler) predList(op syntax.PredicateOp, list []ast.PredicateExpressio
 	}
 }
 
-func (c *compiler) convertPredicate(expr ast.PredicateExpression, nonterm *syntax.Nonterm) *syntax.Predicate {
+func (c *syntaxLoader) convertPredicate(expr ast.PredicateExpression, nonterm *syntax.Nonterm) *syntax.Predicate {
 	switch expr := expr.(type) {
 	case *ast.PredicateOr:
 		return c.predList(syntax.Or, []ast.PredicateExpression{expr.Left(), expr.Right()}, nonterm, expr)
@@ -389,7 +420,7 @@ func (c *compiler) convertPredicate(expr ast.PredicateExpression, nonterm *synta
 	}
 }
 
-func (c *compiler) resolveParam(ref ast.ParamRef, nonterm *syntax.Nonterm) (int, bool) {
+func (c *syntaxLoader) resolveParam(ref ast.ParamRef, nonterm *syntax.Nonterm) (int, bool) {
 	name := ref.Identifier().Text()
 	for _, p := range nonterm.Params {
 		if name == c.source.Params[p].Name {
@@ -406,7 +437,7 @@ func (c *compiler) resolveParam(ref ast.ParamRef, nonterm *syntax.Nonterm) (int,
 	return 0, false
 }
 
-func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
+func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 	nt := &syntax.Nonterm{
 		Name:   name,
 		Origin: origin,
@@ -415,12 +446,12 @@ func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 	var ref *syntax.Expr
 	target := name[:len(name)-3]
 	if index, ok := c.resolver.syms[target]; ok {
-		nt.Type = c.out.Syms[index].Type
+		nt.Type = c.resolver.Syms[index].Type
 		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.source}
 	} else if nonterm, ok := c.nonterms[target]; ok {
 		nt.Type = c.source.Nonterms[nonterm].Type
 		nt.Params = c.source.Nonterms[nonterm].Params
-		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: c.out.NumTokens + nonterm, Origin: origin, Model: c.source}
+		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: c.resolver.NumTokens + nonterm, Origin: origin, Model: c.source}
 		for _, param := range nt.Params {
 			ref.Args = append(ref.Args, syntax.Arg{Param: param, TakeFrom: param})
 		}
@@ -431,19 +462,19 @@ func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 	nt.Value = &syntax.Expr{Kind: syntax.Optional, Sub: []*syntax.Expr{ref}, Origin: origin}
 
 	c.nonterms[name] = len(c.source.Nonterms)
-	index := c.out.NumTokens + len(c.source.Nonterms)
+	index := c.resolver.NumTokens + len(c.source.Nonterms)
 	c.source.Nonterms = append(c.source.Nonterms, nt)
 	return index, true
 }
 
-func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []syntax.Arg) {
+func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []syntax.Arg) {
 	name := ref.Name()
 	text := name.Text()
 	index, ok := c.resolver.syms[text]
 	if !ok {
 		index, ok = c.nonterms[text]
 		if ok {
-			index += c.out.NumTokens
+			index += c.resolver.NumTokens
 		}
 	}
 	if !ok && len(text) > 3 && strings.HasSuffix(text, "opt") {
@@ -454,14 +485,14 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 		return 0, nil // == eoi
 	}
 
-	if index < c.out.NumTokens {
+	if index < c.resolver.NumTokens {
 		if args, ok := ref.Args(); ok {
 			c.Errorf(args, "terminals cannot be parametrized")
 		}
 		return index, nil
 	}
 
-	target := c.source.Nonterms[index-c.out.NumTokens]
+	target := c.source.Nonterms[index-c.resolver.NumTokens]
 	required := container.NewBitSet(len(c.source.Params))
 	populated := container.NewBitSet(len(c.source.Params))
 	for _, p := range target.Params {
@@ -565,7 +596,7 @@ func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []s
 	return index, args
 }
 
-func (c *compiler) sortArgs(params []int, args []syntax.Arg) {
+func (c *syntaxLoader) sortArgs(params []int, args []syntax.Arg) {
 	if len(args) < 2 {
 		return
 	}
@@ -586,7 +617,7 @@ func (c *compiler) sortArgs(params []int, args []syntax.Arg) {
 	sort.Slice(args, func(i, j int) bool { return pos[args[i].Param] < pos[args[j].Param] })
 }
 
-func (c *compiler) convertReportClause(n ast.ReportClause) report {
+func (c *syntaxLoader) convertReportClause(n ast.ReportClause) report {
 	action := n.Action().Text()
 	if len(action) == 0 {
 		return report{}
@@ -620,11 +651,11 @@ func (c *compiler) convertReportClause(n ast.ReportClause) report {
 	return ret
 }
 
-func (c *compiler) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
+func (c *syntaxLoader) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 	var subs []*syntax.Expr
 	for _, ref := range sep.Separator() {
 		sym, _ := c.resolveRef(ref, nil /*nonterm*/)
-		if sym >= c.out.NumTokens {
+		if sym >= c.resolver.NumTokens {
 			c.Errorf(ref, "separators must be terminals")
 			continue
 		}
@@ -644,13 +675,13 @@ func (c *compiler) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 	}
 }
 
-func (c *compiler) allocatePos() int {
+func (c *syntaxLoader) allocatePos() int {
 	ret := c.rhsPos
 	c.rhsPos++
 	return ret
 }
 
-func (c *compiler) pushName(name string, pos int) {
+func (c *syntaxLoader) pushName(name string, pos int) {
 	if c.rhsNames == nil {
 		c.rhsNames = make(map[string]int)
 	}
@@ -673,7 +704,7 @@ func (c *compiler) pushName(name string, pos int) {
 	c.rhsNames[name] = pos
 }
 
-func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.Expr {
+func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.Expr {
 	switch p := p.(type) {
 	case *ast.Command:
 		args := &syntax.CmdArgs{MaxPos: c.rhsPos}
@@ -710,7 +741,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 		var subs []*syntax.Expr
 		for _, pred := range p.Predicates() {
 			sym, args := c.resolveRef(pred.Symref(), nonterm)
-			if sym < c.out.NumTokens {
+			if sym < c.resolver.NumTokens {
 				c.Errorf(pred.Symref(), "lookahead expressions do not support terminals")
 				continue
 			}
@@ -768,7 +799,7 @@ func (c *compiler) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.E
 	return &syntax.Expr{Kind: syntax.Empty, Origin: p.TmNode()}
 }
 
-func (c *compiler) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, origin status.SourceNode) *syntax.Expr {
+func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, origin status.SourceNode) *syntax.Expr {
 	var subs []*syntax.Expr
 	for _, p := range parts {
 		subs = append(subs, c.convertPart(p, nonterm))
@@ -815,12 +846,12 @@ func (r report) apply(expr *syntax.Expr) *syntax.Expr {
 	return expr
 }
 
-func (c *compiler) isSelector(name string) bool {
+func (c *syntaxLoader) isSelector(name string) bool {
 	_, ok := c.cats[name]
 	return ok
 }
 
-func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport report, topLevel bool, origin status.SourceNode) *syntax.Expr {
+func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport report, topLevel bool, origin status.SourceNode) *syntax.Expr {
 	var subs []*syntax.Expr
 	for _, rule0 := range rules {
 		rule, ok := rule0.(*ast.Rule)
@@ -841,7 +872,7 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 			switch suffix.Name().Text() {
 			case "prec":
 				sym, _ := c.resolveRef(suffix.Symref(), nonterm)
-				if sym < c.out.NumTokens {
+				if sym < c.resolver.NumTokens {
 					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.source, Origin: suffix}
 				} else {
 					c.Errorf(suffix.Symref(), "terminal is expected")
@@ -872,9 +903,9 @@ func (c *compiler) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defa
 	}
 }
 
-func (c *compiler) loadSyntax(p ast.ParserSection, header status.SourceNode) {
+func (c *syntaxLoader) loadSyntax(p ast.ParserSection, header status.SourceNode) {
 	c.source = new(syntax.Model)
-	for _, sym := range c.out.Syms {
+	for _, sym := range c.resolver.Syms {
 		c.source.Terminals = append(c.source.Terminals, sym.ID)
 	}
 	c.collectParams(p)
@@ -888,7 +919,7 @@ func (c *compiler) loadSyntax(p ast.ParserSection, header status.SourceNode) {
 		// %generate afterErr = set(follow error);
 		const name = "afterErr"
 		c.namedSets[name] = len(c.source.Sets)
-		c.out.Sets = append(c.out.Sets, &grammar.NamedSet{
+		c.sets = append(c.sets, &grammar.NamedSet{
 			Name: name,
 			Expr: "set(follow error)",
 		})
