@@ -189,8 +189,12 @@ If -> If:
 
 expr -> Expr:
     left=expr '+' right=primaryExpr   -> PlusExpr
+  | customPlus -> __ignoreContent
   | primaryExpr
 ;
+
+customPlus -> __ignoreContent:
+  '\\' primaryExpr '+' expr { p.listener(PlusExpr, 0, ${first().offset}, ${last().endoffset}) } ;
 
 # AsExpr consumes the whole suffix greedily.
 # Note: applying .greedy after 'as' does not work since the conflict happens later.

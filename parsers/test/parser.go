@@ -56,12 +56,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 1, 120, lexer)
+	_, err := p.parse(ctx, 1, 125, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 2, 121, lexer)
+	v, err := p.parse(ctx, 2, 126, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -240,9 +240,9 @@ restart:
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 78:
+	case 80:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 117, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 0, 122, s); ok {
 			sym = 42 /* lookahead_FooLookahead */
 		} else {
 			sym = 43 /* lookahead_notFooLookahead */
@@ -253,7 +253,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 0, 117, s)
+	return lookahead(ctx, lexer, next, 0, 122, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int8, s *session) (bool, error) {
@@ -376,7 +376,11 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		fixTrailingWS(lhs, rhs)
 	case 20: // Declaration : 'decl2' ':' QualifiedNameopt
 		fixTrailingWS(lhs, rhs)
-	case 78:
+	case 74: // customPlus : '\\' primaryExpr '+' expr
+		{
+			p.listener(PlusExpr, 0, rhs[0].sym.offset, rhs[3].sym.endoffset)
+		}
+	case 80:
 		var ok bool
 		if ok, err = AtFooLookahead(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 42 /* lookahead_FooLookahead */

@@ -180,7 +180,13 @@ If :
 
 expr :
   expr PLUS primaryExpr
+| customPlus
 | primaryExpr
+;
+
+customPlus :
+  ESC primaryExpr PLUS expr
+			{ p.listener(PlusExpr, 0, @0.offset, @3.endoffset) }
 ;
 
 primaryExpr :

@@ -948,7 +948,7 @@ ${query valueType() = 'interface{}' }
 
 ${query valueTypeDefaultVal() = 'nil' }
 
-${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCount < 65535 ? 'int16' : 'int32' }
+${cached query stateType() = parser.statesCount <= 128 ? 'int8' : parser.statesCount <= 65536 ? 'int16' : 'int32' }
 
 ${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_token.isSpace(tok))}
 
