@@ -407,3 +407,57 @@ func (c *lexerCompiler) resolveClasses() {
 	c.rules = append(out, c.classRules...)
 	c.classRules = nil
 }
+
+type patterns struct {
+	parent *patterns
+	set    map[string]*lex.Pattern
+	unused map[string]status.SourceNode
+}
+
+func (p *patterns) Resolve(name string) *lex.Pattern {
+	if v, ok := p.set[name]; ok {
+		delete(p.unused, name)
+		return v
+	}
+	if p.parent != nil {
+		return p.parent.Resolve(name)
+	}
+	return nil
+}
+
+var emptyRE = lex.MustParse("")
+
+func (p *patterns) add(np *ast.NamedPattern) error {
+	name := np.Name().Text()
+	if _, exists := p.set[name]; exists {
+		return status.Errorf(np.Name(), "redeclaration of '%v'", name)
+	}
+
+	pattern, err := parsePattern(name, np.Pattern())
+	p.set[name] = pattern
+	p.unused[name] = np.Name()
+	return err
+}
+
+func parsePattern(name string, p ast.Pattern) (*lex.Pattern, error) {
+	text := p.Text()
+	text = text[1 : len(text)-1]
+	ret := &lex.Pattern{Name: name, Text: text, RE: emptyRE, Origin: p}
+	re, err := lex.ParseRegexp(text)
+	if err != nil {
+		rng := p.SourceRange()
+		err := err.(lex.ParseError)
+		if err.Offset <= err.EndOffset && err.EndOffset <= len(text) && err.Offset < len(text) {
+			if err.Offset < err.EndOffset {
+				rng.EndOffset = rng.Offset + err.EndOffset + 1
+			} else {
+				rng.EndOffset--
+			}
+			rng.Offset += err.Offset + 1
+			rng.Column += err.Offset + 1
+		}
+		return ret, &status.Error{Origin: rng, Msg: err.Error()}
+	}
+	ret.RE = re
+	return ret, nil
+}
