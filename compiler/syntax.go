@@ -19,19 +19,21 @@ import (
 type syntaxLoader struct {
 	resolver *resolver
 	*status.Status
-	source *syntax.Model // TODO rename into "out"
-	sets   []*grammar.NamedSet
-	prec   []lalr.Precedence
+
+	out      *syntax.Model
+	sets     []*grammar.NamedSet
+	prec     []lalr.Precedence
+	expectSR int
+	expectRR int
 
 	namedSets map[string]int // -> index in source.Sets
 	asserts   []assert
+
 	params    map[string]int // -> index in source.Params
 	nonterms  map[string]int // -> index in source.Nonterms
 	cats      map[string]int // -> index in source.Cats
 	paramPerm []int          // for parameter permutations
-	expectSR  int
-	expectRR  int
-	rhsPos    int // Counter for positional index of a reference in the current rule.
+	rhsPos    int            // Counter for positional index of a reference in the current rule.
 	rhsNames  map[string]int
 }
 
@@ -75,8 +77,8 @@ func (c *syntaxLoader) collectParams(p ast.ParserSection) {
 					c.Errorf(mod, "unsupported syntax")
 				}
 			}
-			c.params[name] = len(c.source.Params)
-			c.source.Params = append(c.source.Params, p)
+			c.params[name] = len(c.out.Params)
+			c.out.Params = append(c.out.Params, p)
 		}
 	}
 }
@@ -138,7 +140,7 @@ func (c *syntaxLoader) collectNonterms(p ast.ParserSection) []nontermImpl {
 					}
 					seen[name] = true
 					if i, ok := c.params[name]; ok {
-						if !c.source.Params[i].Lookahead {
+						if !c.out.Params[i].Lookahead {
 							nt.Params = append(nt.Params, i)
 						} else {
 							c.Errorf(param, "lookahead parameters cannot be declared '%v'", name)
@@ -161,13 +163,13 @@ func (c *syntaxLoader) collectNonterms(p ast.ParserSection) []nontermImpl {
 							c.Errorf(val.TmNode(), "unsupported default value")
 						}
 					}
-					nt.Params = append(nt.Params, len(c.source.Params))
-					c.source.Params = append(c.source.Params, p)
+					nt.Params = append(nt.Params, len(c.out.Params))
+					c.out.Params = append(c.out.Params, p)
 				}
 			}
-			c.nonterms[name] = len(c.source.Nonterms)
-			ret = append(ret, nontermImpl{len(c.source.Nonterms), *nonterm})
-			c.source.Nonterms = append(c.source.Nonterms, nt)
+			c.nonterms[name] = len(c.out.Nonterms)
+			ret = append(ret, nontermImpl{len(c.out.Nonterms), *nonterm})
+			c.out.Nonterms = append(c.out.Nonterms, nt)
 		}
 	}
 	return ret
@@ -183,29 +185,29 @@ func (c *syntaxLoader) collectInputs(p ast.ParserSection, header status.SourceNo
 					c.Errorf(name, "unresolved nonterminal '%v'", name.Text())
 					continue
 				}
-				if len(c.source.Nonterms[nonterm].Params) > 0 {
+				if len(c.out.Nonterms[nonterm].Params) > 0 {
 					c.Errorf(name, "input nonterminals cannot be parametrized")
 				}
 				_, noeoi := ref.NoEoi()
-				c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: nonterm, NoEoi: noeoi})
+				c.out.Inputs = append(c.out.Inputs, syntax.Input{Nonterm: nonterm, NoEoi: noeoi})
 			}
 		}
 	}
 
-	if len(c.source.Inputs) > 0 {
+	if len(c.out.Inputs) > 0 {
 		return
 	}
 
 	input, found := c.nonterms["input"]
-	if found && len(c.source.Nonterms[input].Params) > 0 {
-		c.Errorf(c.source.Nonterms[input].Origin, "the 'input' nonterminal cannot be parametrized")
+	if found && len(c.out.Nonterms[input].Params) > 0 {
+		c.Errorf(c.out.Nonterms[input].Origin, "the 'input' nonterminal cannot be parametrized")
 		found = false
 	}
 	if !found {
 		c.Errorf(header, "the grammar does not specify an input nonterminal, use '%%input' to declare one")
 		return
 	}
-	c.source.Inputs = append(c.source.Inputs, syntax.Input{Nonterm: input})
+	c.out.Inputs = append(c.out.Inputs, syntax.Input{Nonterm: input})
 }
 
 func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
@@ -216,8 +218,8 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 		switch part := part.(type) {
 		case *ast.DirectiveAssert:
 			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
-			index := len(c.source.Sets)
-			c.source.Sets = append(c.source.Sets, set)
+			index := len(c.out.Sets)
+			c.out.Sets = append(c.out.Sets, set)
 			_, empty := part.Empty()
 			c.asserts = append(c.asserts, assert{index: index, empty: empty})
 		case *ast.DirectiveInterface:
@@ -227,8 +229,8 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 					c.Errorf(id, "duplicate interface declaration of '%v'", text)
 					continue
 				}
-				index := len(c.source.Cats)
-				c.source.Cats = append(c.source.Cats, text)
+				index := len(c.out.Cats)
+				c.out.Cats = append(c.out.Cats, text)
 				c.cats[text] = index
 			}
 		case *ast.DirectivePrio:
@@ -288,12 +290,12 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 			}
 
 			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
-			c.namedSets[name.Text()] = len(c.source.Sets)
+			c.namedSets[name.Text()] = len(c.out.Sets)
 			c.sets = append(c.sets, &grammar.NamedSet{
 				Name: name.Text(),
 				Expr: part.RhsSet().Text(), // Note: this gets replaced later with instantiated names
 			})
-			c.source.Sets = append(c.source.Sets, set)
+			c.out.Sets = append(c.out.Sets, set)
 		}
 	}
 }
@@ -423,12 +425,12 @@ func (c *syntaxLoader) convertPredicate(expr ast.PredicateExpression, nonterm *s
 func (c *syntaxLoader) resolveParam(ref ast.ParamRef, nonterm *syntax.Nonterm) (int, bool) {
 	name := ref.Identifier().Text()
 	for _, p := range nonterm.Params {
-		if name == c.source.Params[p].Name {
+		if name == c.out.Params[p].Name {
 			return p, true
 		}
 	}
 
-	if p, ok := c.params[name]; ok && c.source.Params[p].Lookahead {
+	if p, ok := c.params[name]; ok && c.out.Params[p].Lookahead {
 		// Lookahead parameters don't have to be declared.
 		return p, true
 	}
@@ -447,11 +449,11 @@ func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool
 	target := name[:len(name)-3]
 	if index, ok := c.resolver.syms[target]; ok {
 		nt.Type = c.resolver.Syms[index].Type
-		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.source}
+		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.out}
 	} else if nonterm, ok := c.nonterms[target]; ok {
-		nt.Type = c.source.Nonterms[nonterm].Type
-		nt.Params = c.source.Nonterms[nonterm].Params
-		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: c.resolver.NumTokens + nonterm, Origin: origin, Model: c.source}
+		nt.Type = c.out.Nonterms[nonterm].Type
+		nt.Params = c.out.Nonterms[nonterm].Params
+		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: c.resolver.NumTokens + nonterm, Origin: origin, Model: c.out}
 		for _, param := range nt.Params {
 			ref.Args = append(ref.Args, syntax.Arg{Param: param, TakeFrom: param})
 		}
@@ -461,9 +463,9 @@ func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool
 	}
 	nt.Value = &syntax.Expr{Kind: syntax.Optional, Sub: []*syntax.Expr{ref}, Origin: origin}
 
-	c.nonterms[name] = len(c.source.Nonterms)
-	index := c.resolver.NumTokens + len(c.source.Nonterms)
-	c.source.Nonterms = append(c.source.Nonterms, nt)
+	c.nonterms[name] = len(c.out.Nonterms)
+	index := c.resolver.NumTokens + len(c.out.Nonterms)
+	c.out.Nonterms = append(c.out.Nonterms, nt)
 	return index, true
 }
 
@@ -492,9 +494,9 @@ func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int,
 		return index, nil
 	}
 
-	target := c.source.Nonterms[index-c.resolver.NumTokens]
-	required := container.NewBitSet(len(c.source.Params))
-	populated := container.NewBitSet(len(c.source.Params))
+	target := c.out.Nonterms[index-c.resolver.NumTokens]
+	required := container.NewBitSet(len(c.out.Params))
+	populated := container.NewBitSet(len(c.out.Params))
 	for _, p := range target.Params {
 		required.Set(p)
 	}
@@ -549,7 +551,7 @@ func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int,
 				continue
 			}
 			if populated.Get(param) {
-				c.Errorf(ref, "second argument for '%v'", c.source.Params[param].Name)
+				c.Errorf(ref, "second argument for '%v'", c.out.Params[param].Name)
 				continue
 			}
 			populated.Set(param)
@@ -562,12 +564,12 @@ func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int,
 
 	var uninitialized []string
 	for _, p := range required.Slice(nil) {
-		param := c.source.Params[p]
+		param := c.out.Params[p]
 		if nonterm != nil {
 			var found bool
 			for _, from := range nonterm.Params {
 				// Note: matching by name enables value propagation between inline parameters.
-				if param.Name == c.source.Params[from].Name {
+				if param.Name == c.out.Params[from].Name {
 					args = append(args, syntax.Arg{
 						Param:    p,
 						TakeFrom: from,
@@ -659,7 +661,7 @@ func (c *syntaxLoader) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 			c.Errorf(ref, "separators must be terminals")
 			continue
 		}
-		expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref, Model: c.source}
+		expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: ref, Model: c.out}
 		subs = append(subs, expr)
 	}
 	switch len(subs) {
@@ -745,7 +747,7 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 				c.Errorf(pred.Symref(), "lookahead expressions do not support terminals")
 				continue
 			}
-			expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref(), Model: c.source}
+			expr := &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Origin: pred.Symref(), Model: c.out}
 			if _, not := pred.Not(); not {
 				expr = &syntax.Expr{Kind: syntax.LookaheadNot, Sub: []*syntax.Expr{expr}, Origin: pred}
 			}
@@ -782,13 +784,13 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(), Origin: p}
 	case *ast.RhsSet:
 		set := c.convertSet(p.Expr(), nonterm)
-		index := len(c.source.Sets)
-		c.source.Sets = append(c.source.Sets, set)
-		return &syntax.Expr{Kind: syntax.Set, Pos: c.allocatePos(), SetIndex: index, Origin: p, Model: c.source}
+		index := len(c.out.Sets)
+		c.out.Sets = append(c.out.Sets, set)
+		return &syntax.Expr{Kind: syntax.Set, Pos: c.allocatePos(), SetIndex: index, Origin: p, Model: c.out}
 	case *ast.RhsSymbol:
 		sym, args := c.resolveRef(p.Reference(), nonterm)
 		c.pushName(p.Reference().Name().Text(), c.rhsPos)
-		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Pos: c.allocatePos(), Origin: p, Model: c.source}
+		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Pos: c.allocatePos(), Origin: p, Model: c.out}
 	case *ast.StateMarker:
 		return &syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
 	case *ast.SyntaxProblem:
@@ -873,7 +875,7 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 			case "prec":
 				sym, _ := c.resolveRef(suffix.Symref(), nonterm)
 				if sym < c.resolver.NumTokens {
-					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.source, Origin: suffix}
+					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.out, Origin: suffix}
 				} else {
 					c.Errorf(suffix.Symref(), "terminal is expected")
 				}
@@ -884,7 +886,7 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 		if pred, ok := rule.Predicate(); ok {
 			p := c.convertPredicate(pred.PredicateExpression(), nonterm)
 			if p != nil {
-				expr = &syntax.Expr{Kind: syntax.Conditional, Predicate: p, Sub: []*syntax.Expr{expr}, Model: c.source, Origin: pred}
+				expr = &syntax.Expr{Kind: syntax.Conditional, Predicate: p, Sub: []*syntax.Expr{expr}, Model: c.out, Origin: pred}
 			}
 		}
 
@@ -903,14 +905,14 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 	}
 }
 
-func (c *syntaxLoader) loadSyntax(p ast.ParserSection, header status.SourceNode) {
-	c.source = new(syntax.Model)
+func (c *syntaxLoader) load(p ast.ParserSection, header status.SourceNode) {
+	c.out = new(syntax.Model)
 	for _, sym := range c.resolver.Syms {
-		c.source.Terminals = append(c.source.Terminals, sym.ID)
+		c.out.Terminals = append(c.out.Terminals, sym.ID)
 	}
 	c.collectParams(p)
 	nonterms := c.collectNonterms(p)
-	c.paramPerm = make([]int, len(c.source.Params))
+	c.paramPerm = make([]int, len(c.out.Params))
 
 	c.collectInputs(p, header)
 	c.collectDirectives(p)
@@ -918,12 +920,12 @@ func (c *syntaxLoader) loadSyntax(p ast.ParserSection, header status.SourceNode)
 	if errSym, ok := c.resolver.syms["error"]; ok {
 		// %generate afterErr = set(follow error);
 		const name = "afterErr"
-		c.namedSets[name] = len(c.source.Sets)
+		c.namedSets[name] = len(c.out.Sets)
 		c.sets = append(c.sets, &grammar.NamedSet{
 			Name: name,
 			Expr: "set(follow error)",
 		})
-		c.source.Sets = append(c.source.Sets, &syntax.TokenSet{
+		c.out.Sets = append(c.out.Sets, &syntax.TokenSet{
 			Kind:   syntax.Follow,
 			Symbol: errSym,
 		})
@@ -932,7 +934,7 @@ func (c *syntaxLoader) loadSyntax(p ast.ParserSection, header status.SourceNode)
 	for _, nt := range nonterms {
 		clause, _ := nt.def.ReportClause()
 		defaultReport := c.convertReportClause(clause)
-		expr := c.convertRules(nt.def.Rule0(), c.source.Nonterms[nt.nonterm], defaultReport, true /*topLevel*/, nt.def)
-		c.source.Nonterms[nt.nonterm].Value = expr
+		expr := c.convertRules(nt.def.Rule0(), c.out.Nonterms[nt.nonterm], defaultReport, true /*topLevel*/, nt.def)
+		c.out.Nonterms[nt.nonterm].Value = expr
 	}
 }

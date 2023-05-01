@@ -126,7 +126,7 @@ func (c *compiler) compileParser(file ast.File) {
 	}
 
 	loader := newSyntaxLoader(c.resolver, c.Status)
-	loader.loadSyntax(p, file.Header())
+	loader.load(p, file.Header())
 	if c.Err() != nil {
 		// Parsing errors cause inconsistencies inside c.source. Aborting.
 		return
@@ -134,7 +134,7 @@ func (c *compiler) compileParser(file ast.File) {
 	c.out.Sets = loader.sets
 	c.out.Prec = loader.prec
 
-	source := loader.source
+	source := loader.out
 	if err := syntax.PropagateLookaheads(source); err != nil {
 		c.AddError(err)
 		return
