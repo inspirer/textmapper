@@ -39,6 +39,10 @@ const (
 	MINUS     // -
 	MINUSGT   // ->
 	PLUS      // +
+	ESC       // \
+	CHAR__    // _
+	FOO_      // foo_
+	F_A       // f_a
 	MULTILINE
 	DQUOTE // "
 	SQUOTE // '
@@ -79,6 +83,10 @@ var tokenStr = [...]string{
 	"-",
 	"->",
 	"+",
+	"\\",
+	"_",
+	"foo_",
+	"f_a",
 	"MULTILINE",
 	"\"",
 	"'",

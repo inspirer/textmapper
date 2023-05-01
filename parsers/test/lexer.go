@@ -112,18 +112,8 @@ restart:
 recovered:
 	switch rule {
 	case 4:
-		hh := hash & 7
+		hh := hash & 15
 		switch hh {
-		case 0:
-			if hash == 0x5b098c8 && "decl2" == l.source[l.tokenOffset:l.offset] {
-				rule = 9
-				break
-			}
-		case 1:
-			if hash == 0x2f8d39 && "else" == l.source[l.tokenOffset:l.offset] {
-				rule = 13
-				break
-			}
 		case 2:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
 				rule = 11
@@ -133,28 +123,46 @@ recovered:
 				rule = 7
 				break
 			}
-		case 4:
-			if hash == 0x2fb09c && "eval" == l.source[l.tokenOffset:l.offset] {
-				rule = 10
-				break
-			}
-		case 5:
-			if hash == 0xd1d && "if" == l.source[l.tokenOffset:l.offset] {
-				rule = 12
-				break
-			}
 		case 7:
 			if hash == 0x5b098c7 && "decl1" == l.source[l.tokenOffset:l.offset] {
 				rule = 8
 				break
 			}
+		case 8:
+			if hash == 0x5b098c8 && "decl2" == l.source[l.tokenOffset:l.offset] {
+				rule = 9
+				break
+			}
+			if hash == 0x18ac8 && "f_a" == l.source[l.tokenOffset:l.offset] {
+				rule = 30
+				break
+			}
+		case 9:
+			if hash == 0x2f8d39 && "else" == l.source[l.tokenOffset:l.offset] {
+				rule = 13
+				break
+			}
+			if hash == 0x300c59 && "foo_" == l.source[l.tokenOffset:l.offset] {
+				rule = 29
+				break
+			}
+		case 12:
+			if hash == 0x2fb09c && "eval" == l.source[l.tokenOffset:l.offset] {
+				rule = 10
+				break
+			}
+		case 13:
+			if hash == 0xd1d && "if" == l.source[l.tokenOffset:l.offset] {
+				rule = 12
+				break
+			}
 		}
-	case 30:
+	case 34:
 		hh := hash & 7
 		switch hh {
 		case 4:
 			if hash == 0x2a762c && "Zfoo" == l.source[l.tokenOffset:l.offset] {
-				rule = 32
+				rule = 36
 				break
 			}
 		}
@@ -180,24 +188,24 @@ recovered:
 		{
 			l.value = mustParseInt(l.Text())
 		}
-	case 34: // MultiLineComment: /\/\*/
+	case 38: // MultiLineComment: /\/\*/
 		{
 			l.State = StateInMultiLine
 			commentOffset = l.tokenOffset
 			commentDepth = 0
 			space = true
 		}
-	case 35: // invalid_token: /{eoi}/
+	case 39: // invalid_token: /{eoi}/
 		{
 			l.tokenOffset = commentOffset
 			l.State = StateInitial
 		}
-	case 36: // MultiLineComment: /\/\*/
+	case 40: // MultiLineComment: /\/\*/
 		{
 			commentDepth++
 			space = true
 		}
-	case 37: // MultiLineComment: /\*\//
+	case 41: // MultiLineComment: /\*\//
 		{
 			if commentDepth == 0 {
 				space = false
@@ -208,7 +216,7 @@ recovered:
 			space = true
 			commentDepth--
 		}
-	case 38: // WhiteSpace: /[^\/*]+|[*\/]/
+	case 42: // WhiteSpace: /[^\/*]+|[*\/]/
 		space = true
 		{
 			space = true

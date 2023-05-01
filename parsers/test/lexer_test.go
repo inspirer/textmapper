@@ -65,6 +65,10 @@ var lexerTests = []struct {
 	{token.COMMA, []string{"«,»"}},
 	{token.COLON, []string{"«:»"}},
 	{token.PLUS, []string{"«+»"}},
+	{token.ESC, []string{`«\»`}},
+	{token.CHAR__, []string{`«_»`}},
+	{token.FOO_, []string{`«foo_»`}},
+	{token.F_A, []string{`«f_a»`}},
 
 	{token.SINGLELINECOMMENT, []string{" «//abc»\r\n "}},
 	{token.MULTILINECOMMENT, []string{

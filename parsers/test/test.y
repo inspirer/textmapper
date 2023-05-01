@@ -31,6 +31,10 @@
 %token COLON
 %token MINUS
 %token MINUSGT
+%token ESC
+%token CHAR__
+%token FOO_
+%token F_A
 %token MULTILINE
 %token DQUOTE
 %token SQUOTE
@@ -124,6 +128,10 @@ setof_not_EOI_or_DOT_or_RBRACE :
 | MINUS
 | MINUSGT
 | PLUS
+| ESC
+| CHAR__
+| FOO_
+| F_A
 | MULTILINE
 | DQUOTE
 | SQUOTE
