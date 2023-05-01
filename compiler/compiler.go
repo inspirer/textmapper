@@ -28,10 +28,10 @@ func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
 	opts.parseFrom(file)
 
 	lexer := newLexerCompiler(c.out, c.Status, &opts, c.compat)
-	lexer.addToken = c.addToken
+	lexer.addToken = c.resolver.addToken
 	lexer.compile(file)
 
-	opts.resolve(c.syms)
+	opts.resolve(c.resolver.syms)
 
 	c.compileParser()
 
@@ -46,9 +46,7 @@ type compiler struct {
 	compat bool
 
 	*status.Status
-
-	syms map[string]int
-	ids  map[string]string // ID -> name
+	resolver resolver
 
 	// Parser
 	source    *syntax.Model
@@ -66,21 +64,27 @@ type compiler struct {
 
 func newCompiler(file ast.File, compat bool) *compiler {
 	targetLang, _ := file.Header().Target()
-	return &compiler{
-		file: file,
-		out: &grammar.Grammar{
-			Name:       file.Header().Name().Text(),
-			TargetLang: targetLang.Text(),
-			Lexer:      &grammar.Lexer{},
-			Parser:     &grammar.Parser{},
-			Options: &grammar.Options{
-				TokenLine: true,
-			},
+	out := &grammar.Grammar{
+		Name:       file.Header().Name().Text(),
+		TargetLang: targetLang.Text(),
+		Lexer:      &grammar.Lexer{},
+		Parser:     &grammar.Parser{},
+		Options: &grammar.Options{
+			TokenLine: true,
 		},
-		compat:    compat,
-		Status:    new(status.Status),
-		syms:      make(map[string]int),
-		ids:       make(map[string]string),
+	}
+	s := new(status.Status)
+	return &compiler{
+		file:   file,
+		out:    out,
+		compat: compat,
+		Status: s,
+		resolver: resolver{
+			out:    out,
+			Status: s,
+			syms:   make(map[string]int),
+			ids:    make(map[string]string),
+		},
 		namedSets: make(map[string]int),
 		params:    make(map[string]int),
 		nonterms:  make(map[string]int),
@@ -103,80 +107,6 @@ type symRule struct {
 	space bool
 	class bool
 	sym   int
-}
-
-func (c *compiler) addToken(name, id string, t ast.RawType, space ast.LexemeAttribute, n status.SourceNode) int {
-	var rawType string
-	if t.IsValid() {
-		rawType = strings.TrimSuffix(strings.TrimPrefix(t.Text(), "{"), "}")
-	}
-	if i, exists := c.syms[name]; exists {
-		sym := c.out.Syms[i]
-		if sym.Type != rawType {
-			anchor := n
-			if t.IsValid() {
-				anchor = t
-			}
-			c.Errorf(anchor, "terminal type redeclaration for %v, was %v", name, sym.PrettyType())
-		}
-		if sym.Space != space.IsValid() {
-			anchor := n
-			if space.IsValid() {
-				anchor = space
-			}
-			c.Errorf(anchor, "%v is declared as both a space and non-space terminal", name)
-		}
-		return sym.Index
-	}
-	if id == "" {
-		id = ident.Produce(name, ident.UpperCase)
-	}
-	if prev, exists := c.ids[id]; exists {
-		c.Errorf(n, "%v and %v get the same ID in generated code", name, prev)
-	}
-
-	sym := grammar.Symbol{
-		Index:  len(c.out.Syms),
-		ID:     id,
-		Name:   name,
-		Type:   rawType,
-		Space:  space.IsValid(),
-		Origin: n,
-	}
-	c.syms[name] = sym.Index
-	c.ids[id] = name
-	c.out.Syms = append(c.out.Syms, sym)
-	return sym.Index
-}
-
-func (c *compiler) addNonterms(m *syntax.Model) {
-	// TODO error is also nullable - make it so!
-	nullable := syntax.Nullable(m)
-	nonterms := m.Nonterms
-
-	for _, nt := range nonterms {
-		name := nt.Name
-		if _, ok := c.syms[name]; ok {
-			// TODO come up with a better error message
-			c.Errorf(nt.Origin, "duplicate name %v", name)
-		}
-		id := ident.Produce(name, ident.CamelCase)
-		if prev, exists := c.ids[id]; exists {
-			c.Errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
-		}
-		index := len(c.out.Syms)
-		sym := grammar.Symbol{
-			Index:     index,
-			ID:        id,
-			Name:      name,
-			Type:      nt.Type,
-			CanBeNull: nullable.Get(index),
-			Origin:    nt.Origin,
-		}
-		c.syms[name] = sym.Index
-		c.ids[id] = name
-		c.out.Syms = append(c.out.Syms, sym)
-	}
 }
 
 func addSyntheticInputs(m *syntax.Model, compat bool) {
@@ -223,7 +153,7 @@ func (c *compiler) collectParams(p ast.ParserSection) {
 				c.Errorf(param.Name(), "redeclaration of '%v'", name)
 				continue
 			}
-			if _, exists := c.syms[name]; exists {
+			if _, exists := c.resolver.syms[name]; exists {
 				c.Errorf(param.Name(), "template parameters cannot be named after terminals '%v'", name)
 				continue
 			}
@@ -259,7 +189,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 	for _, part := range p.GrammarPart() {
 		if nonterm, ok := part.(*ast.Nonterm); ok {
 			name := nonterm.Name().Text()
-			if _, exists := c.syms[name]; exists {
+			if _, exists := c.resolver.syms[name]; exists {
 				c.Errorf(nonterm.Name(), "redeclaration of '%v'", name)
 				continue
 			}
@@ -272,7 +202,7 @@ func (c *compiler) collectNonterms(p ast.ParserSection) []nontermImpl {
 				continue
 			}
 			id := ident.Produce(name, ident.CamelCase)
-			if prev, exists := c.ids[id]; exists {
+			if prev, exists := c.resolver.ids[id]; exists {
 				c.Errorf(nonterm.Name(), "%v and %v get the same ID in generated code", name, prev)
 			}
 			if ann, ok := nonterm.Annotations(); ok {
@@ -415,7 +345,7 @@ func (c *compiler) collectDirectives(p ast.ParserSection) {
 			prec := lalr.Precedence{Associativity: assoc}
 			for _, ref := range part.Symbols() {
 				name := ref.Name()
-				sym, ok := c.syms[name.Text()]
+				sym, ok := c.resolver.syms[name.Text()]
 				if !ok || sym >= c.out.NumTokens {
 					c.Errorf(name, "unresolved reference '%v'", name.Text())
 					continue
@@ -613,7 +543,7 @@ func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 
 	var ref *syntax.Expr
 	target := name[:len(name)-3]
-	if index, ok := c.syms[target]; ok {
+	if index, ok := c.resolver.syms[target]; ok {
 		nt.Type = c.out.Syms[index].Type
 		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.source}
 	} else if nonterm, ok := c.nonterms[target]; ok {
@@ -638,7 +568,7 @@ func (c *compiler) instantiateOpt(name string, origin ast.Symref) (int, bool) {
 func (c *compiler) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []syntax.Arg) {
 	name := ref.Name()
 	text := name.Text()
-	index, ok := c.syms[text]
+	index, ok := c.resolver.syms[text]
 	if !ok {
 		index, ok = c.nonterms[text]
 		if ok {
@@ -1087,7 +1017,7 @@ func (c *compiler) compileParser() {
 	c.collectInputs(p)
 	c.collectDirectives(p)
 
-	if errSym, ok := c.syms["error"]; ok {
+	if errSym, ok := c.resolver.syms["error"]; ok {
 		// %generate afterErr = set(follow error);
 		const name = "afterErr"
 		c.namedSets[name] = len(c.source.Sets)
@@ -1169,7 +1099,7 @@ func (c *compiler) compileParser() {
 		return
 	}
 
-	if errSym, ok := c.syms["error"]; ok {
+	if errSym, ok := c.resolver.syms["error"]; ok {
 		if index, ok := c.namedSets["afterErr"]; ok {
 			// Non-empty "afterErr" set turns on error recovery.
 			c.out.Parser.IsRecovering = len(c.source.Sets[index].Sub) > 0
@@ -1189,7 +1119,7 @@ func (c *compiler) compileParser() {
 	addSyntheticInputs(c.source, c.compat)
 
 	// Prepare the model for code generation.
-	c.addNonterms(c.source)
+	c.resolver.addNonterms(c.source)
 	if !c.generateTables() {
 		return
 	}

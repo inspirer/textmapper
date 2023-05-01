@@ -103,10 +103,10 @@ func TestSourceModel(t *testing.T) {
 		opts.parseFrom(c.file)
 
 		lexer := newLexerCompiler(c.out, c.Status, &opts, c.compat)
-		lexer.addToken = c.addToken
+		lexer.addToken = c.resolver.addToken
 		lexer.compile(c.file)
 
-		opts.resolve(c.syms)
+		opts.resolve(c.resolver.syms)
 
 		c.compileParser()
 		if c.Err() != nil {
