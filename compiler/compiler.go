@@ -22,31 +22,33 @@ import (
 
 // Compile validates and compiles grammar files.
 func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
-	c := newCompiler(file, compat)
+	var s status.Status
 
-	opts := optionsParser{out: c.out.Options, Status: c.Status}
+	opts := newOptionsParser(&s)
 	opts.parseFrom(file)
 
-	lexer := newLexerCompiler(c.out, c.Status, &opts, c.compat)
-	lexer.addToken = c.resolver.addToken
+	resolver := newResolver(&s)
+
+	lexer := newLexerCompiler(opts, resolver, compat, &s)
 	lexer.compile(file)
 
-	opts.resolve(c.resolver.syms)
+	// Resolve terminal references.
+	opts.resolve(resolver)
 
+	c := newCompiler(file, opts.out, lexer.out, resolver, compat, &s)
 	c.compileParser()
 
 	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
 	c.out.CustomTemplates = parseInGrammarTemplates(tpl)
-	return c.out, c.Status.Err()
+	return c.out, s.Err()
 }
 
 type compiler struct {
-	file   ast.File
-	out    *grammar.Grammar
-	compat bool
-
+	file     ast.File
+	out      *grammar.Grammar
+	resolver *resolver
+	compat   bool
 	*status.Status
-	resolver resolver
 
 	// Parser
 	source    *syntax.Model
@@ -62,29 +64,23 @@ type compiler struct {
 	rhsNames  map[string]int
 }
 
-func newCompiler(file ast.File, compat bool) *compiler {
+func newCompiler(file ast.File, opts *grammar.Options, lexer *grammar.Lexer, resolver *resolver, compat bool, s *status.Status) *compiler {
 	targetLang, _ := file.Header().Target()
-	out := &grammar.Grammar{
-		Name:       file.Header().Name().Text(),
-		TargetLang: targetLang.Text(),
-		Lexer:      &grammar.Lexer{},
-		Parser:     &grammar.Parser{},
-		Options: &grammar.Options{
-			TokenLine: true,
-		},
-	}
-	s := new(status.Status)
 	return &compiler{
-		file:   file,
-		out:    out,
-		compat: compat,
-		Status: s,
-		resolver: resolver{
-			out:    out,
-			Status: s,
-			syms:   make(map[string]int),
-			ids:    make(map[string]string),
+		file: file,
+		out: &grammar.Grammar{
+			Name:       file.Header().Name().Text(),
+			TargetLang: targetLang.Text(),
+			Lexer:      lexer,
+			Parser:     &grammar.Parser{},
+			Options:    opts,
+			Syms:       resolver.Syms,
+			NumTokens:  resolver.NumTokens,
 		},
+		resolver: resolver,
+		compat:   compat,
+		Status:   s,
+
 		namedSets: make(map[string]int),
 		params:    make(map[string]int),
 		nonterms:  make(map[string]int),
@@ -1120,6 +1116,7 @@ func (c *compiler) compileParser() {
 
 	// Prepare the model for code generation.
 	c.resolver.addNonterms(c.source)
+	c.out.Syms = c.resolver.Syms
 	if !c.generateTables() {
 		return
 	}

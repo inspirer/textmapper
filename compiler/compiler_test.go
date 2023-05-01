@@ -96,21 +96,27 @@ func TestSourceModel(t *testing.T) {
 			t.Errorf("%v: parsing failed with %v", file, err)
 			continue
 		}
+		file := ast.File{Node: tree.Root()}
+		const compat = false
 
-		c := newCompiler(ast.File{Node: tree.Root()}, false /*compat*/)
+		var s status.Status
 
-		opts := optionsParser{out: c.out.Options, Status: c.Status}
-		opts.parseFrom(c.file)
+		opts := newOptionsParser(&s)
+		opts.parseFrom(file)
 
-		lexer := newLexerCompiler(c.out, c.Status, &opts, c.compat)
-		lexer.addToken = c.resolver.addToken
-		lexer.compile(c.file)
+		resolver := newResolver(&s)
 
-		opts.resolve(c.resolver.syms)
+		lexer := newLexerCompiler(opts, resolver, compat, &s)
+		lexer.compile(file)
 
+		// Resolve terminal references.
+		opts.resolve(resolver)
+
+		c := newCompiler(file, opts.out, lexer.out, resolver, compat, &s)
 		c.compileParser()
-		if c.Err() != nil {
-			t.Errorf("compilation failure %v", c.Err())
+
+		if s.Err() != nil {
+			t.Errorf("compilation failure %v", s.Err())
 			continue
 		}
 

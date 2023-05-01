@@ -20,6 +20,15 @@ type optionsParser struct {
 	*status.Status
 }
 
+func newOptionsParser(s *status.Status) *optionsParser {
+	return &optionsParser{
+		out: &grammar.Options{
+			TokenLine: true,
+		},
+		Status: s,
+	}
+}
+
 func (p *optionsParser) parseFrom(file ast.File) {
 	opts := p.out
 	seen := make(map[string]int)
@@ -182,11 +191,11 @@ func (p *optionsParser) parseTokenList(e ast.Expression) []ast.Identifier {
 	return nil
 }
 
-func (p *optionsParser) resolve(syms map[string]int) {
+func (p *optionsParser) resolve(resolver *resolver) {
 	opts := p.out
 	opts.ReportTokens = make([]int, 0, len(p.reportList))
 	for _, id := range p.reportList {
-		sym, ok := syms[id.Text()]
+		sym, ok := resolver.syms[id.Text()]
 		if !ok {
 			p.Errorf(id, "unresolved reference '%v'", id.Text())
 			continue

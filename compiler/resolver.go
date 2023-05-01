@@ -12,10 +12,19 @@ import (
 
 type resolver struct {
 	*status.Status
-	out *grammar.Grammar
+	Syms      []grammar.Symbol
+	NumTokens int
 
 	syms map[string]int
 	ids  map[string]string // ID -> name
+}
+
+func newResolver(s *status.Status) *resolver {
+	return &resolver{
+		Status: s,
+		syms:   make(map[string]int),
+		ids:    make(map[string]string),
+	}
 }
 
 func (c *resolver) addToken(name, id string, t ast.RawType, space ast.LexemeAttribute, n status.SourceNode) int {
@@ -24,7 +33,7 @@ func (c *resolver) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 		rawType = strings.TrimSuffix(strings.TrimPrefix(t.Text(), "{"), "}")
 	}
 	if i, exists := c.syms[name]; exists {
-		sym := c.out.Syms[i]
+		sym := c.Syms[i]
 		if sym.Type != rawType {
 			anchor := n
 			if t.IsValid() {
@@ -49,7 +58,7 @@ func (c *resolver) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 	}
 
 	sym := grammar.Symbol{
-		Index:  len(c.out.Syms),
+		Index:  len(c.Syms),
 		ID:     id,
 		Name:   name,
 		Type:   rawType,
@@ -58,7 +67,8 @@ func (c *resolver) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 	}
 	c.syms[name] = sym.Index
 	c.ids[id] = name
-	c.out.Syms = append(c.out.Syms, sym)
+	c.Syms = append(c.Syms, sym)
+	c.NumTokens++
 	return sym.Index
 }
 
@@ -77,7 +87,7 @@ func (c *resolver) addNonterms(m *syntax.Model) {
 		if prev, exists := c.ids[id]; exists {
 			c.Errorf(nt.Origin, "%v and %v get the same ID in generated code", name, prev)
 		}
-		index := len(c.out.Syms)
+		index := len(c.Syms)
 		sym := grammar.Symbol{
 			Index:     index,
 			ID:        id,
@@ -88,6 +98,6 @@ func (c *resolver) addNonterms(m *syntax.Model) {
 		}
 		c.syms[name] = sym.Index
 		c.ids[id] = name
-		c.out.Syms = append(c.out.Syms, sym)
+		c.Syms = append(c.Syms, sym)
 	}
 }
