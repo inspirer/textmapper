@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <ostream>
 
-#include "third_party/absl/strings/string_view.h"
+#include "absl/strings/string_view.h"
 
 namespace json {
 inline constexpr absl::string_view bomSeq = "\xef\xbb\xbf";

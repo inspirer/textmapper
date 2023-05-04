@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "testing/base/public/gmock.h"
-#include "testing/base/public/gunit.h"
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
 namespace json {
 namespace {

@@ -2,8 +2,8 @@
 
 #include "lexer.h"
 
-#include "third_party/absl/log/log.h"
-#include "third_party/absl/strings/match.h"
+#include "absl/log/log.h"
+#include "absl/strings/match.h"
 
 namespace json {
 
@@ -192,7 +192,7 @@ recovered:
     default:
       break;
   }
-  VLOG(2) << "Lexer::Next returning next token " << tok << " now " << *this;
+  //VLOG(2) << "Lexer::Next returning next token " << tok << " now " << *this;
   return tok;
 }
 
