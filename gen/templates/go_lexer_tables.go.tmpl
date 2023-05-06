@@ -30,7 +30,7 @@ func mapRune(c rune) int {
 			return int(r.defaultVal)
 		}
 	}
-	return 1
+	return {{.Lexer.Tables.LastMapEntry.Target}}
 }
 
 // Latin-1 characters.

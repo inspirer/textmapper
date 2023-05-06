@@ -182,7 +182,7 @@ recovered:
 		if rule != 0 {
 			goto recovered
 		}
-	case 2: // WhiteSpace: /[ \t\r\n]/
+	case 2: // WhiteSpace: /[ \t\r\n\x00]/
 		space = true
 	case 5: // IntegerConstant: /[0-9]+/
 		{

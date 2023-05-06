@@ -149,7 +149,7 @@ public class SampleBLexer {
 		1, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9,
 		9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 9,
 		1, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9,
-		9, 9, 9, 9, 9, 9, 9, 9, 10, 9, 9, 11, 1, 12
+		9, 9, 9, 9, 9, 9, 9, 9, 10, 9, 9, 11, 1, 12, 1
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(16,
@@ -182,7 +182,7 @@ public class SampleBLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 126) return tmCharClass[chr];
+		if (chr >= 0 && chr < 127) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

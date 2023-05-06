@@ -248,9 +248,10 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 
 	public static List<MapRange> packAsMapRanges(int[] arr, Integer rangeOffset) {
 		List<MapRange> result = new ArrayList<>();
+		int any = arr[arr.length-1];
 		int i = 0;
 		while (i < arr.length) {
-			while (i < arr.length && arr[i] == 1) i++;
+			while (i < arr.length && arr[i] == any) i++;
 			if (i == arr.length) break;
 
 			MapRange r = new MapRange();
@@ -258,17 +259,17 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			r.hi = i;
 			int lastChar = -1;
 			int numOthers = 0;
-			int numOnes = 0;
+			int numAny = 0;
 
 			for (; i < arr.length; i++) {
-				if (arr[i] == 1) {
-					numOnes++;
-				} else if (arr[i] == lastChar && numOnes == 0) {
+				if (arr[i] == any) {
+					numAny++;
+				} else if (arr[i] == lastChar && numAny == 0) {
 					numOthers++;
-				} else if (numOnes + numOthers > 8) {
+				} else if (numAny + numOthers > 8) {
 					break;
 				} else {
-					numOnes = 0;
+					numAny = 0;
 					numOthers = 1;
 					lastChar = arr[i];
 					r.hi = i;
@@ -278,7 +279,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			if (r.lo < r.hi) {
 				r.val = Arrays.copyOfRange(arr, r.lo, r.hi);
 			}
-			r.hi = i - numOnes + rangeOffset;
+			r.hi = i - numAny + rangeOffset;
 			r.lo += rangeOffset;
 			result.add(r);
 		}

@@ -29,22 +29,23 @@ public class LexerInputSymbolsTest {
 		LexerInputSymbols is = new LexerInputSymbols();
 		assertEquals(0, is.getSetToSymbolsMap().length);
 
-		int[] expected = new int[] {};
+		int[] expected = new int[] {1}; // keep the "any" symbol
 		assertArrayEquals(expected, is.getCharacterMap());
 
 		assertEquals(2, is.getSymbolCount());
 	}
 
 	@Test
-	public void testOneCharacter() throws Exception {
+	public void testTwoCharacters() throws Exception {
 		LexerInputSymbols is = new LexerInputSymbols();
 		is.addCharacter(1);
+		is.addCharacter(0);
 		assertEquals(0, is.getSetToSymbolsMap().length);
 
-		int[] expected = new int[] {1, 2};
+		int[] expected = new int[] {1, 2, 3};  // \x00, \x01, any
 		assertArrayEquals(expected, is.getCharacterMap());
 
-		assertEquals(3, is.getSymbolCount());
+		assertEquals(4, is.getSymbolCount());
 	}
 
 	@Test

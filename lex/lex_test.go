@@ -286,6 +286,8 @@ func TestCompressedMap(t *testing.T) {
 			0, "[[0,10]=[7 7 7 7 7],default=3 [220,240]=[],default=2]"},
 		{[]RangeEntry{{0, 7}, {5, 3}, {200, 1}, {220, 2}, {240, 1}},
 			200, "[[220,240]=[],default=2]"},
+		{[]RangeEntry{{0, 1}, {1, 2}, {1000, 3}, {1001, 2}},
+			200, "[[1000,1001]=[],default=3]"},
 	}
 	for _, tc := range tests {
 		tables := Tables{SymbolMap: tc.input}

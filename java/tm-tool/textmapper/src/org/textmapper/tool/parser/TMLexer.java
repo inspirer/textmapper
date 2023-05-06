@@ -291,7 +291,7 @@ public class TMLexer {
 		27, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
 		28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 29, 30, 31, 1, 28,
 		1, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
-		28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 32, 33, 34, 35
+		28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 32, 33, 34, 35, 1
 	};
 
 	private static final short tmStateMap[] = {
@@ -357,7 +357,7 @@ public class TMLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 127) return tmCharClass[chr];
+		if (chr >= 0 && chr < 128) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

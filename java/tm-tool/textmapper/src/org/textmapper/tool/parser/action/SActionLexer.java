@@ -126,7 +126,7 @@ public abstract class SActionLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 1, 7
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 1, 7, 1
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(7,
@@ -158,7 +158,7 @@ public abstract class SActionLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 126) return tmCharClass[chr];
+		if (chr >= 0 && chr < 127) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

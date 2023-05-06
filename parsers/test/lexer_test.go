@@ -87,6 +87,7 @@ var lexerTests = []struct {
 		" «#» ",
 		" /**/ «/* /* ****/  *  nested»", // unfinished comment
 		" «Zff\\» ",
+		" \x00 «\U0001fffe»«#» ", // \x00 is valid whitespace
 	}},
 }
 

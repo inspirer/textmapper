@@ -134,7 +134,7 @@ restart:
 {{- if gt .Lexer.Tables.LastMapEntry.Start 2048}}
 			ch = mapRune(l.ch)
 {{- else}}
-			ch = 1
+			ch = {{.Lexer.Tables.LastMapEntry.Target}}
 {{- end}}
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])

@@ -17,7 +17,7 @@ extraTypes = ["Int7", "Int9 -> Expr"]
 
 :: lexer
 
-WhiteSpace: /[ \t\r\n]/ (space)
+WhiteSpace: /[ \t\r\n\x00]/ (space)
 
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
 
