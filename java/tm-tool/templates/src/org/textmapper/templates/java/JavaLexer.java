@@ -220,7 +220,7 @@ public class JavaLexer {
 		return charOffset - tokenOffset;
 	}
 
-	private static final char[] tmCharClass = unpack_vc_char(205745,
+	private static final char[] tmCharClass = unpack_vc_char(205744,
 		"\11\1\1\2\1\3\1\1\1\2\1\4\14\1\1\5\5\1\1\2\1\6\1\7\1\1\1\10\1\11\1\12\1\13\1\14\1" +
 		"\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\2\26\4\27\2\30\1\31\1\32\1\33\1\34\1" +
 		"\35\1\36\1\37\1\40\1\41\1\40\1\42\1\43\1\42\5\10\1\44\3\10\1\45\7\10\1\46\2\10\1" +
@@ -316,7 +316,7 @@ public class JavaLexer {
 		"\1\10\1\1\1\10\1\1\2\10\1\1\1\10\2\1\4\10\1\1\7\10\1\1\4\10\1\1\4\10\1\1\1\10\1\1" +
 		"\12\10\1\1\21\10\5\1\3\10\1\1\5\10\1\1\21\10\u0d34\1\12\64\u0406\1\ua6e0\10\40\1" +
 		"\u103a\10\6\1\336\10\2\1\u1682\10\16\1\u1d31\10\u0c1f\1\u021e\10\u05e2\1\u134b\10" +
-		"\5\1\u1060\10\1\1");
+		"\5\1\u1060\10");
 
 	private static char[] unpack_vc_char(int size, String... st) {
 		char[] res = new char[size];
@@ -434,7 +434,7 @@ public class JavaLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 205745) return tmCharClass[chr];
+		if (chr >= 0 && chr < 205744) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

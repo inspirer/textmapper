@@ -235,7 +235,7 @@ public class TemplatesLexer {
 		1, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 27,
 		27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 28, 29, 30, 1, 27,
 		1, 31, 31, 26, 26, 26, 31, 27, 27, 27, 27, 27, 27, 27, 32, 27,
-		27, 27, 32, 27, 32, 27, 32, 27, 33, 27, 27, 34, 35, 36, 1
+		27, 27, 32, 27, 32, 27, 32, 27, 33, 27, 27, 34, 35, 36
 	};
 
 	private static final short tmStateMap[] = {
@@ -294,7 +294,7 @@ public class TemplatesLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 127) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

@@ -148,7 +148,7 @@ public class XmlLexer {
 		1, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
 		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 1, 1, 1, 1, 14,
 		1, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
-		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 1
+		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14
 	};
 
 	private static final short tmStateMap[] = {
@@ -193,7 +193,7 @@ public class XmlLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 124) return tmCharClass[chr];
+		if (chr >= 0 && chr < 123) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

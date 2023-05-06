@@ -189,7 +189,7 @@ public class TypesLexer {
 		1, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18,
 		18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 20, 21, 1, 18,
 		1, 22, 18, 18, 18, 23, 24, 18, 18, 18, 18, 18, 25, 18, 18, 18,
-		18, 18, 26, 27, 28, 29, 18, 18, 18, 18, 18, 30, 1, 31, 1
+		18, 18, 26, 27, 28, 29, 18, 18, 18, 18, 18, 30, 1, 31
 	};
 
 	private static final int[] tmRuleSymbol = unpack_int(29,
@@ -232,7 +232,7 @@ public class TypesLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 127) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

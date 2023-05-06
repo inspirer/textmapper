@@ -176,7 +176,7 @@ public class RegexDefLexer {
 		1, 16, 16, 16, 17, 16, 16, 18, 18, 18, 18, 18, 18, 18, 18, 18,
 		19, 18, 18, 20, 18, 21, 18, 20, 19, 18, 18, 22, 23, 24, 25, 18,
 		1, 26, 27, 16, 17, 16, 28, 18, 18, 29, 18, 18, 18, 18, 30, 18,
-		31, 18, 32, 33, 34, 35, 36, 20, 37, 18, 18, 38, 39, 40, 1
+		31, 18, 32, 33, 34, 35, 36, 20, 37, 18, 18, 38, 39, 40
 	};
 
 	private static final short tmStateMap[] = {
@@ -242,7 +242,7 @@ public class RegexDefLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 127) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

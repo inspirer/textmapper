@@ -148,8 +148,8 @@ ${end}
 
 ${template mapCharacter}
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < ${lex.char2no.length}) return tmCharClass[chr];
-		return chr == -1 ? 0 : 1;
+		if (chr >= 0 && chr < ${lex.char2no.length-1}) return tmCharClass[chr];
+		return chr == -1 ? 0 : ${lex.char2no[lex.char2no.length-1]};
 	}
 ${end}
 
@@ -378,12 +378,12 @@ ${end}
 
 ${template lexerTables}
 ${if lex.char2no.size() > 128-}
-	private static final char[] tmCharClass = ${lex.char2no->java_pack.packCountValue(true)};
+	private static final char[] tmCharClass = ${util.head(lex.char2no, lex.char2no.length-1)->java_pack.packCountValue(true)};
 
 ${call java_pack.unpackCountValue(true)-}
 ${else-}
 	private static final short tmCharClass[] = {
-		${util.format(lex.char2no, 16, 2)}
+		${util.format(util.head(lex.char2no, lex.char2no.length-1), 16, 2)}
 	};
 ${end-}
 

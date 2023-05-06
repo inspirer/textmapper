@@ -225,7 +225,7 @@ public class BisonLexer {
 		1, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10,
 		10, 10, 10, 10, 10, 21, 10, 10, 22, 10, 10, 23, 24, 25, 1, 10,
 		1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 10, 35, 36, 37, 38, 39,
-		40, 41, 42, 43, 44, 45, 46, 10, 47, 48, 10, 49, 50, 51, 1
+		40, 41, 42, 43, 44, 45, 46, 10, 47, 48, 10, 49, 50, 51
 	};
 
 	private static final short tmStateMap[] = {
@@ -393,7 +393,7 @@ public class BisonLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 127) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 

@@ -158,7 +158,7 @@ public class JsonLexer {
 		1, 12, 12, 12, 12, 13, 12, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 16, 1, 1,
 		1, 17, 18, 12, 12, 19, 20, 1, 1, 1, 1, 1, 21, 1, 22, 1,
-		1, 1, 23, 24, 25, 26, 1, 1, 1, 1, 1, 27, 1, 28, 1
+		1, 1, 23, 24, 25, 26, 1, 1, 1, 1, 1, 27, 1, 28
 	};
 
 	private static final short tmBacktracking[] = {
@@ -206,7 +206,7 @@ public class JsonLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 127) return tmCharClass[chr];
+		if (chr >= 0 && chr < 126) return tmCharClass[chr];
 		return chr == -1 ? 0 : 1;
 	}
 
