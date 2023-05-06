@@ -203,6 +203,13 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				index = len(args.Types) - 1
 			}
 		default:
+			if strings.HasPrefix(id, "self[") && strings.HasSuffix(id, "]") {
+				id = id[5 : len(id)-1]
+				if _, err := strconv.ParseUint(id, 10, 32); err != nil {
+					return "", status.Errorf(origin, "invalid self reference %q", id)
+				}
+			}
+
 			var ok bool
 			index, ok = args.Resolve(id)
 			if !ok {
@@ -289,6 +296,13 @@ func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceN
 				index = len(args.Types) - 1
 			}
 		default:
+			if strings.HasPrefix(id, "self[") && strings.HasSuffix(id, "]") {
+				id = id[5 : len(id)-1]
+				if _, err := strconv.ParseUint(id, 10, 32); err != nil {
+					return "", status.Errorf(origin, "invalid self reference %q", id)
+				}
+			}
+
 			var ok bool
 			index, ok = args.Resolve(id)
 			if !ok {

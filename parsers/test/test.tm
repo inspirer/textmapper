@@ -136,7 +136,7 @@ Declaration -> Declaration :
       {
         switch $IntegerConstant {
         case 7:
-          p.listener(Int7, 0, ${first().offset}, ${last().endoffset})
+          p.listener(Int7, 0, ${self[0].offset}, ${last().endoffset})
         case 9:
           p.listener(Int9, 0, ${first().offset}, ${last().endoffset})
         }
