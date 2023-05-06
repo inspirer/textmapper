@@ -192,7 +192,6 @@ recovered:
     default:
       break;
   }
-  //VLOG(2) << "Lexer::Next returning next token " << tok << " now " << *this;
   return tok;
 }
 
