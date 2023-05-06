@@ -189,7 +189,8 @@ func ResolveSets(m *Model) error {
 		if nonterm.Value.Kind == Set {
 			terminals := m.Sets[nonterm.Value.SetIndex].Sub
 			if len(terminals) == 0 {
-				nonterm.Value = &Expr{Kind: Empty, Origin: nonterm.Value.Origin}
+				nonterm.Value = &Expr{Kind: Choice, Origin: nonterm.Value.Origin}
+				nonterm.Value.Sub = append(nonterm.Value.Sub, &Expr{Kind: Empty, Origin: nonterm.Value.Origin})
 				continue
 			}
 			nonterm.Value = &Expr{Kind: Choice, Origin: nonterm.Value.Origin}
@@ -254,11 +255,20 @@ func rules(m *Model) []oneRule {
 		switch val.Kind {
 		case Lookahead:
 			ret = append(ret, oneRule{lhs: lalr.Sym(nt + len(m.Terminals)), set: -1})
+
+			// Note: some nonterminals can be reachable via lookaheads. Pull in their rules.
+			for _, sub := range val.Sub {
+				if sub.Kind == LookaheadNot {
+					sub = sub.Sub[0]
+				}
+				if sub.Symbol >= len(m.Terminals) {
+					enqueue(sub.Symbol - len(m.Terminals))
+				}
+			}
 		case Set:
 			ret = append(ret, oneRule{lhs: lalr.Sym(nt + len(m.Terminals)), set: val.SetIndex})
 
-			// Note: some nonterminals can be reachable via set expressions only. Pull in their
-			// rules too.
+			// Note: some nonterminals can be reachable via set expressions. Pull in their rules.
 			m.Sets[val.SetIndex].ForEach(func(ts *TokenSet) {
 				if ts.Symbol >= len(m.Terminals) {
 					enqueue(ts.Symbol - len(m.Terminals))

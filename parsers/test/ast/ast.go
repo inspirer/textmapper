@@ -79,6 +79,7 @@ type Declaration interface {
 
 // declarationNode() ensures that only the following types can be
 // assigned to Declaration.
+func (AsExpr) declarationNode()        {}
 func (Block) declarationNode()         {}
 func (Decl1) declarationNode()         {}
 func (Decl2) declarationNode()         {}
@@ -89,7 +90,9 @@ func (EvalFoo) declarationNode()       {}
 func (EvalFoo2) declarationNode()      {}
 func (If) declarationNode()            {}
 func (Int) declarationNode()           {}
+func (IntExpr) declarationNode()       {}
 func (LastInt) declarationNode()       {}
+func (PlusExpr) declarationNode()      {}
 func (TestClause) declarationNode()    {}
 func (TestIntClause) declarationNode() {}
 func (NilNode) declarationNode()       {}

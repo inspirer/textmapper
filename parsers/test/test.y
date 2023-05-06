@@ -86,9 +86,10 @@ Declaration :
       }
 | TEST LBRACE setof_not_EOI_or_DOT_or_RBRACE_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
+| TEST LPAREN foo_nonterm RPAREN
 | TEST INTEGERCONSTANT
 | EVAL lookahead_notFooLookahead LPAREN expr RPAREN empty1
-| EVAL lookahead_FooLookahead LPAREN foo RPAREN
+| EVAL lookahead_FooLookahead LPAREN foo_nonterm_A RPAREN
 | EVAL lookahead_FooLookahead LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
 | DECL2 COLON QualifiedNameopt
 ;
@@ -148,15 +149,39 @@ setof_not_EOI_or_DOT_or_RBRACE_optlist :
 ;
 
 FooLookahead :
-  LPAREN foo RPAREN
+  LPAREN INTEGERCONSTANT DOT setof_foo_la_list RPAREN
+;
+
+setof_foo_la :
+  INTEGERCONSTANT
+| AS
+| DOT
+| PLUS
+| ESC
+| FOO_
+;
+
+setof_foo_la_list :
+  setof_foo_la_list setof_foo_la
+| setof_foo_la
 ;
 
 empty1 :
   %empty
 ;
 
-foo :
+foo_la :
   INTEGERCONSTANT DOT expr
+| INTEGERCONSTANT FOO_ expr
+;
+
+foo_nonterm :
+  INTEGERCONSTANT DOT expr
+;
+
+foo_nonterm_A :
+  INTEGERCONSTANT DOT expr
+| INTEGERCONSTANT FOO_ expr
 ;
 
 QualifiedName :

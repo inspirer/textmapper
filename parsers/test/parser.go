@@ -36,7 +36,7 @@ type symbol struct {
 
 type stackEntry struct {
 	sym   symbol
-	state int8
+	state int16
 	value interface{}
 }
 
@@ -56,12 +56,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 1, 125, lexer)
+	_, err := p.parse(ctx, 1, 139, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 2, 126, lexer)
+	v, err := p.parse(ctx, 2, 140, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -71,7 +71,7 @@ type session struct {
 	cache        map[uint64]bool
 }
 
-func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (interface{}, error) {
+func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (interface{}, error) {
 	p.pending = p.pending[:0]
 	var s session
 	s.cache = make(map[uint64]bool)
@@ -188,7 +188,7 @@ func lalr(action, next int32) int32 {
 	return tmLalr[a+1]
 }
 
-func gotoState(state int8, symbol int32) int8 {
+func gotoState(state int16, symbol int32) int16 {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1]
 
@@ -240,9 +240,9 @@ restart:
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 80:
+	case 93:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 122, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 0, 136, s); ok {
 			sym = 42 /* lookahead_FooLookahead */
 		} else {
 			sym = 43 /* lookahead_notFooLookahead */
@@ -253,10 +253,10 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 0, 122, s)
+	return lookahead(ctx, lexer, next, 0, 136, s)
 }
 
-func lookahead(ctx context.Context, l *Lexer, next int32, start, end int8, s *session) (bool, error) {
+func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
 	var lexer Lexer = *l
 
 	// Use memoization for recursive lookaheads.
@@ -370,17 +370,17 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		}
 	case 15: // Declaration : 'test' '(' empty1 ')'
 		p.listener(Empty1, 0, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 16: // Declaration : 'test' IntegerConstant
+	case 17: // Declaration : 'test' IntegerConstant
 		p.listener(Icon, InTest, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 17: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
+	case 18: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
 		fixTrailingWS(lhs, rhs)
-	case 20: // Declaration : 'decl2' ':' QualifiedNameopt
+	case 21: // Declaration : 'decl2' ':' QualifiedNameopt
 		fixTrailingWS(lhs, rhs)
-	case 74: // customPlus : '\\' primaryExpr '+' expr
+	case 87: // customPlus : '\\' primaryExpr '+' expr
 		{
 			p.listener(PlusExpr, 0, rhs[0].sym.offset, rhs[3].sym.endoffset)
 		}
-	case 80:
+	case 93:
 		var ok bool
 		if ok, err = AtFooLookahead(ctx, lexer, p.next.symbol, s); ok {
 			lhs.sym.symbol = 42 /* lookahead_FooLookahead */

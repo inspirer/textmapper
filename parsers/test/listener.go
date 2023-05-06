@@ -84,6 +84,7 @@ var Decl2Interface = []NodeType{
 }
 
 var Declaration = []NodeType{
+	AsExpr,
 	Block,
 	Decl1,
 	Decl2,
@@ -94,7 +95,9 @@ var Declaration = []NodeType{
 	EvalFoo2,
 	If,
 	Int,
+	IntExpr,
 	LastInt,
+	PlusExpr,
 	TestClause,
 	TestIntClause,
 }

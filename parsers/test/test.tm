@@ -143,20 +143,30 @@ Declaration -> Declaration :
       }                                                  -> Int
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
   | 'test' '(' (empty1 -> Empty1) ')'
+  | 'test' '(' foo_nonterm<~A> ')'
   | 'test' (IntegerConstant -> Icon/InTest) -> TestIntClause/InTest,InFoo
   | 'eval' (?= !FooLookahead) '(' expr ')' empty1   -> EvalEmpty1
-  | 'eval' (?= FooLookahead) '(' foo ')' -> EvalFoo
+  | 'eval' (?= FooLookahead) '(' foo_nonterm<+A> ')' -> EvalFoo
   | 'eval' (?= FooLookahead) '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
   | 'decl2' ':' QualifiedNameopt -> DeclOptQual
 ;
 
 FooLookahead:
-  '(' foo ')' ;
+  '(' IntegerConstant '.' set(foo_la)+ ')' ;
 
 empty1 : ;
 
-foo :
-      IntegerConstant '.' expr ;
+%flag A;
+
+foo_la:
+      IntegerConstant '.' expr
+    | IntegerConstant 'foo_' expr
+;
+
+foo_nonterm<A> :
+      IntegerConstant '.' expr 
+    | [A] IntegerConstant 'foo_' expr
+;
 
 # Test: a list of an exported terminal.
 
