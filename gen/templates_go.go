@@ -3,53 +3,24 @@ package gen
 import _ "embed"
 
 var golang = &language{
+	SharedDefs: builtin(`go_shared`),
 	Lexer: []file{
-		{"token/token.go", tokenTpl},
-		{"lexer_tables.go", lexerTablesTpl},
-		{"lexer.go", lexerTpl},
+		{"token/token.go", builtin(`go_token`)},
+		{"lexer_tables.go", builtin(`go_lexer_tables`)},
+		{"lexer.go", builtin(`go_lexer`)},
 	},
 	Parser: []file{
-		{"parser.go", parserTpl},
-		{"parser_tables.go", parserTablesTpl},
+		{"parser.go", builtin(`go_parser`)},
+		{"parser_tables.go", builtin(`go_parser_tables`)},
 	},
 	Types: []file{
-		{"listener.go", parserListenerTpl},
+		{"listener.go", builtin(`go_listener`)},
 	},
 	Selector: []file{
-		{"selector/selector.go", selectorTpl},
+		{"selector/selector.go", builtin(`go_selector`)},
 	},
 	AST: []file{
-		{"ast/tree.go", treeTpl},
-		{"ast/parse.go", astParseTpl},
+		{"ast/tree.go", builtin(`go_tree`)},
+		{"ast/parse.go", builtin(`go_ast_parse`)},
 	},
 }
-
-//go:embed templates/go_shared.go.tmpl
-var sharedDefs string
-
-//go:embed templates/go_token.go.tmpl
-var tokenTpl string
-
-//go:embed templates/go_lexer_tables.go.tmpl
-var lexerTablesTpl string
-
-//go:embed templates/go_lexer.go.tmpl
-var lexerTpl string
-
-//go:embed templates/go_parser.go.tmpl
-var parserTpl string
-
-//go:embed templates/go_parser_tables.go.tmpl
-var parserTablesTpl string
-
-//go:embed templates/go_listener.go.tmpl
-var parserListenerTpl string
-
-//go:embed templates/go_selector.go.tmpl
-var selectorTpl string
-
-//go:embed templates/go_tree.go.tmpl
-var treeTpl string
-
-//go:embed templates/go_ast_parse.go.tmpl
-var astParseTpl string

@@ -21,10 +21,6 @@ type Writer interface {
 	Write(filename, content string) error
 }
 
-var languages = map[string]*language{
-	"go": golang,
-}
-
 type Options struct {
 	Compat      bool
 	IncludeDirs []string
@@ -66,7 +62,7 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		// Load shared templates.
 		var err error
 		if !opts.NoBuiltins {
-			tmpl, err = tmpl.Parse(sharedDefs)
+			tmpl, err = tmpl.Parse(lang.SharedDefs)
 			if err != nil {
 				return fmt.Errorf("error in built-in shared_defs: %v", err)
 			}
