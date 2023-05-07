@@ -1,6 +1,6 @@
 {{ template "header" . -}}
-#ifndef {{/*TODO*/}}LEXER_H_
-#define {{/*TODO*/}}LEXER_H_
+#ifndef {{.Options.IncludeGuardPrefix}}LEXER_H_
+#define {{.Options.IncludeGuardPrefix}}LEXER_H_
 
 #include <array>
 #include <cstdint>
@@ -8,7 +8,7 @@
 
 #include "absl/strings/string_view.h"
 
-namespace {{.Name}}{{/*TODO*/}} {
+namespace {{.Options.Namespace}} {
 inline constexpr absl::string_view bomSeq = "\xef\xbb\xbf";
 
 // Token is an enum of all terminal symbols of the {{.Name}} language.
@@ -90,6 +90,6 @@ inline std::ostream& operator<<(std::ostream& os, const Lexer& lexer) {
             << lexer.Text() << "\"";
 }
 
-}  // namespace {{.Name}}{{/*TODO*/}}
+}  // namespace {{.Options.Namespace}}
 
-#endif  // {{/*TODO*/}}LEXER_H_
+#endif  // {{.Options.IncludeGuardPrefix}}LEXER_H_

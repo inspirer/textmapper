@@ -1,5 +1,8 @@
 language json(cc);
 
+namespace = "json"
+includeGuardPrefix = "EXAMPLES_JSON_"
+
 :: lexer
 
 '{': /\{/

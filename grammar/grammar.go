@@ -171,27 +171,35 @@ type Parser struct {
 
 // Options carries grammar generation parameters.
 type Options struct {
-	Package   string
-	Copyright bool
+	Copyright  bool
+	CustomImpl []string
+
+	// Lexer features.
+	TokenLine       bool // true by default
+	TokenLineOffset bool
+	TokenColumn     bool
+	NonBacktracking bool
 
 	// Parser features.
-	TokenLine           bool // true by default
-	TokenLineOffset     bool
-	TokenColumn         bool
-	NonBacktracking     bool
-	Cancellable         bool
+	Cancellable         bool // Go-specific.
 	RecursiveLookaheads bool
 	DebugParser         bool
+	WriteBison          bool // Output the expanded grammar in a Bison-like format.
 
-	// AST generation.
+	// AST generation. Go-specific for now.
 	EventBased    bool
 	GenSelector   bool
 	EventFields   bool
 	EventAST      bool
 	FixWhitespace bool
-	WriteBison    bool  // Output the expanded grammar in a Bison-like format.
 	ReportTokens  []int // Tokens that should appear in the AST.
 	ExtraTypes    []syntax.ExtraType
-	CustomImpl    []string
 	FileNode      string // The top-level node gets the byte range of the whole input.
+
+	// Go.
+	Package string
+
+	// C++
+	Namespace          string
+	IncludeGuardPrefix string
 }

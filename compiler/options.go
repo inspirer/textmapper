@@ -16,7 +16,8 @@ type optionsParser struct {
 	reportTokens map[string]bool
 	reportList   []ast.Identifier
 
-	out *grammar.Options
+	target string // target language
+	out    *grammar.Options
 	*status.Status
 }
 
@@ -30,6 +31,9 @@ func newOptionsParser(s *status.Status) *optionsParser {
 }
 
 func (p *optionsParser) parseFrom(file ast.File) {
+	target, _ := file.Header().Target()
+	p.target = target.Text()
+
 	opts := p.out
 	seen := make(map[string]int)
 	for _, opt := range file.Options() {
@@ -42,6 +46,7 @@ func (p *optionsParser) parseFrom(file ast.File) {
 
 		switch name {
 		case "package":
+			p.validLangs(opt.Key(), "go")
 			opts.Package = p.parseExpr(opt.Value(), opts.Package).(string)
 		case "genCopyright":
 			opts.Copyright = p.parseExpr(opt.Value(), opts.Copyright).(bool)
@@ -54,42 +59,66 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "nonBacktracking":
 			opts.NonBacktracking = p.parseExpr(opt.Value(), opts.NonBacktracking).(bool)
 		case "cancellable":
+			p.validLangs(opt.Key(), "go")
 			opts.Cancellable = p.parseExpr(opt.Value(), opts.Cancellable).(bool)
 		case "writeBison":
 			opts.WriteBison = p.parseExpr(opt.Value(), opts.WriteBison).(bool)
 		case "recursiveLookaheads":
 			opts.RecursiveLookaheads = p.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
 		case "eventBased":
+			p.validLangs(opt.Key(), "go")
 			opts.EventBased = p.parseExpr(opt.Value(), opts.EventBased).(bool)
 		case "genSelector":
+			p.validLangs(opt.Key(), "go")
 			opts.GenSelector = p.parseExpr(opt.Value(), opts.GenSelector).(bool)
 		case "fixWhitespace":
+			p.validLangs(opt.Key(), "go")
 			opts.FixWhitespace = p.parseExpr(opt.Value(), opts.FixWhitespace).(bool)
 		case "debugParser":
 			opts.DebugParser = p.parseExpr(opt.Value(), opts.DebugParser).(bool)
 		case "eventFields":
+			p.validLangs(opt.Key(), "go")
 			opts.EventFields = p.parseExpr(opt.Value(), opts.EventFields).(bool)
 		case "eventAST":
+			p.validLangs(opt.Key(), "go")
 			opts.EventAST = p.parseExpr(opt.Value(), opts.EventAST).(bool)
 		case "reportTokens":
+			p.validLangs(opt.Key(), "go")
 			p.reportList = p.parseTokenList(opt.Value())
 			p.reportTokens = make(map[string]bool)
 			for _, id := range p.reportList {
 				p.reportTokens[id.Text()] = true
 			}
 		case "extraTypes":
+			p.validLangs(opt.Key(), "go")
 			opts.ExtraTypes = p.parseExpr(opt.Value(), opts.ExtraTypes).([]syntax.ExtraType)
 		case "customImpl":
 			opts.CustomImpl = p.parseExpr(opt.Value(), opts.CustomImpl).([]string)
 		case "fileNode":
+			p.validLangs(opt.Key(), "go")
 			opts.FileNode = p.parseExpr(opt.Value(), opts.FileNode).(string)
 		case "lang":
 			// This option often occurs in existing grammars. Ignore it.
 			p.parseExpr(opt.Value(), "")
+		case "namespace":
+			p.validLangs(opt.Key(), "cc")
+			opts.Namespace = p.parseExpr(opt.Value(), opts.Namespace).(string)
+		case "includeGuardPrefix":
+			p.validLangs(opt.Key(), "cc")
+			opts.IncludeGuardPrefix = p.parseExpr(opt.Value(), opts.IncludeGuardPrefix).(string)
 		default:
 			p.Errorf(opt.Key(), "unknown option '%v'", name)
 		}
 	}
+}
+
+func (p *optionsParser) validLangs(id ast.Identifier, langs ...string) {
+	for _, l := range langs {
+		if p.target == l {
+			return
+		}
+	}
+	p.Errorf(id, "option %v cannot be used when generating into %v", id.Text(), p.target)
 }
 
 func (p *optionsParser) parseExpr(e ast.Expression, defaultVal any) any {
