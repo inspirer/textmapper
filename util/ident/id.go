@@ -117,7 +117,8 @@ func Produce(name string, style Style) string {
 		}
 		cont = false
 		if !inQuotes {
-			if r == '$' {
+			if r == '$' || r == '_' && style == UpperCase {
+				// Preserving underscores in UpperCase.
 				buf.WriteByte('_')
 			}
 			continue

@@ -29,7 +29,7 @@ JSONNumber: /-?(0|[1-9][0-9]*){fraction}?{exp}?/
 
 id: /[a-zA-Z][a-zA-Z0-9]*/ (class)
 
-'null': /null/
+kw_null: /null/
 'true': /true/
 'false': /false/
 

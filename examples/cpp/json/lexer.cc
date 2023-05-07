@@ -165,7 +165,7 @@ recovered:
           break;
         case 7:
           if (hash == 0x33c587 && "null" == Text()) {
-            tok = Token::JSON_NULL;
+            tok = Token::KW_NULL;
           }
           break;
       }

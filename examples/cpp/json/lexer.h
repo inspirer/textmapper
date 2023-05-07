@@ -28,11 +28,11 @@ enum class Token {
   JSONSTRING,
   JSONNUMBER,
   ID,
-  NULL,    // null
-  TRUE,    // true
-  FALSE,   // false
-  CHAR_A,  // A
-  CHAR_B,  // B
+  KW_NULL,  // null
+  TRUE,     // true
+  FALSE,    // false
+  CHAR_A,   // A
+  CHAR_B,   // B
   ERROR,
   NumTokens
 };

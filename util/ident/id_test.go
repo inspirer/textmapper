@@ -22,6 +22,8 @@ var idTests = []struct {
 	{"ABcDEF", CamelLower, "aBcDef"},
 	{"ABCDEF", UpperUnderscores, "ABCDEF"},
 	{"ABCDEF", UpperCase, "ABCDEF"},
+	{"abc_def", UpperCase, "ABC_DEF"},
+	{"abc_def", UpperUnderscores, "ABC_DEF"},
 	{"abc-def", CamelCase, "AbcDef"},
 	{"abc_def38", CamelCase, "AbcDef38"},
 

@@ -62,5 +62,5 @@ broken_regex: «/(asd/»
 «noSpecializations: /567/ (class)»
 
 rrr-ppp: /\$rrrppp/
-# err: rrr_ppp and rrr-ppp get the same ID in generated code
-«rrr_ppp»: /\$rrrppp2/
+# err: rrr--ppp and rrr-ppp get the same ID in generated code
+«rrr--ppp»: /\$rrrppp2/
