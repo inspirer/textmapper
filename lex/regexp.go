@@ -401,6 +401,7 @@ func (p *parser) parseClass(fold bool) charset {
 		negated = true
 		p.next()
 	}
+	var subs []charset
 	var alloc [16]rune
 	r := alloc[:0]
 	if p.ch == ']' {
@@ -415,6 +416,25 @@ func (p *parser) parseClass(fold bool) charset {
 			r = append(r, 0, '\n'-1, '\n'+1, unicode.MaxRune)
 			p.next()
 			continue
+		case '-':
+			p.next()
+			switch p.ch {
+			case '[':
+				subs = append(subs, p.parseClass(false))
+				continue
+			case '\\':
+				cs := p.parseEscape(false)
+				if !cs.oneRune() {
+					// Note: parseEscape uses p.set as a temporary buffer. Make a copy.
+					subs = append(subs, append(charset(nil), cs...))
+					continue
+				}
+				lo = cs[0]
+				r = append(r, '-', '-')
+			default:
+				r = append(r, '-', '-')
+				continue
+			}
 		case -1:
 			p.error("missing closing bracket", start, p.offset)
 			return nil
@@ -446,16 +466,20 @@ func (p *parser) parseClass(fold bool) charset {
 			hi = cs[0]
 		} else {
 			hi = p.ch
+			p.next()
 		}
 
 		if hi < lo {
-			p.error("invalid character class range", loStart, p.scanOffset)
+			p.error("invalid character class range", loStart, p.offset)
 			return nil
 		}
 		r = appendRange(r, lo, hi)
 	}
 
 	cs := newCharset(r)
+	for _, sub := range subs {
+		cs.subtract(sub)
+	}
 	if fold {
 		cs.fold()
 	}

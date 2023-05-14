@@ -45,6 +45,16 @@ var parseTests = []struct {
 	{`[-a-zA-Z-]`, `cc{\-A-Za-z}`},
 	{`0o7(_*7)*_+`, `cat{str{0o7}cat{str{_}*str{7}}*str{_}+}`},
 
+	// Set manipulations.
+	{`[-[a-z]]`, `cc{}`}, // empty, not negated
+	{`[--[a-z]]`, `cc{\-}`},
+	{`[A-Z-[D-F]]`, `cc{A-CG-Z}`},
+	{`[A-Z-[D]-[EF]]`, `cc{A-CG-Z}`},
+	{`[\p{Lu}\xc0-\U0010ffff]`, `cc{A-Z\u00c0-\U0010ffff}`},
+	{`[\p{Lu}-[\u0100-\U0010ffff]]`, `cc{A-Z\u00c0-\u00d6\u00d8-\u00de}`},
+	{`[\p{L}-\p{Lu}-[\u0100-\U0010ffff]]`, `cc{a-z\u00aa\u00b5\u00ba\u00df-\u00f6\u00f8-\u00ff}`},
+	{`[\p{L}-[\u0100-\U0010ffff]-\p{Lu}]`, `cc{a-z\u00aa\u00b5\u00ba\u00df-\u00f6\u00f8-\u00ff}`},
+
 	// Case folding.
 	{`(?i)abC`, `cat{cc{Aa}cc{Bb}cc{Cc}}`},
 	{`(?i)[a-en-q]`, `cc{A-EN-Qa-en-q}`},

@@ -15,8 +15,8 @@ WhiteSpace: /[\n\r\x20\t]+/ (space)
 'c': /c/
 
 # See https://www.unicode.org/reports/tr31/tr31-37.html#Default_Identifier_Syntax
-IDStart = /[_\p{L}\p{Nl}\p{Other_ID_Start}]/ # TODO -\p{Pattern_Syntax}-\p{Pattern_White_Space}
-IDFollow = /{IDStart}|[\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Other_ID_Continue}]/  # TODO -\p{Pattern_Syntax}-\p{Pattern_White_Space}
+IDStart = /[_\p{L}\p{Nl}\p{Other_ID_Start}-\p{Pattern_Syntax}-\p{Pattern_White_Space}]/
+IDFollow = /{IDStart}|[\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Other_ID_Continue}-\p{Pattern_Syntax}-\p{Pattern_White_Space}]/
 
 id: /\\{IDStart}{IDFollow}*/
 
