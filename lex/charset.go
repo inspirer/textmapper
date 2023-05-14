@@ -242,6 +242,10 @@ func appendNamedSet(r []rune, name string, fold bool) ([]rune, error) {
 		r = appendTable(r, unicode.FoldScript[name])
 		return r, nil
 	}
+	if t := unicode.Properties[name]; t != nil {
+		r = appendTable(r, t)
+		return r, nil
+	}
 	return nil, errUnknownUnicodeClass
 }
 

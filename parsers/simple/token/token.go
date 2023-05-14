@@ -14,10 +14,12 @@ const (
 	UNAVAILABLE Token = iota - 1
 	EOI
 	INVALID_TOKEN
+	WHITESPACE
 	SIMPLE // simple
 	CHAR_A // a
 	CHAR_B // b
 	CHAR_C // c
+	ID
 
 	NumTokens
 )
@@ -25,10 +27,12 @@ const (
 var tokenStr = [...]string{
 	"EOI",
 	"INVALID_TOKEN",
+	"WHITESPACE",
 	"simple",
 	"a",
 	"b",
 	"c",
+	"ID",
 }
 
 func (tok Token) String() string {
