@@ -115,7 +115,7 @@ public class Tool {
 			return;
 		}
 
-		ConsoleStatus status = createStatus(options.getDebug());
+		ConsoleStatus status = new ConsoleStatus(outputDir, options.getDebug());
 		boolean success;
 		try {
 			TextSource input = new TextSource(options.getInput(), contents, 1);
@@ -133,12 +133,6 @@ public class Tool {
 		}
 	}
 
-	private static ConsoleStatus createStatus(int debuglev) {
-		new File(ConsoleStatus.OUT_ERRORS).delete();
-		new File(ConsoleStatus.OUT_TABLES).delete();
-		return new ConsoleStatus(debuglev);
-	}
-
 	private static class ConsoleStatus extends AbstractProcessingStatus {
 
 		static final String OUT_ERRORS = "errors";
@@ -146,9 +140,13 @@ public class Tool {
 
 		private PrintStream debug, warn;
 		private boolean hasErrors = false;
+		private final File outputDir;
 
-		public ConsoleStatus(int debuglev) {
+		public ConsoleStatus(File outputDir, int debuglev) {
 			super(debuglev >= TMOptions.DEBUG_TABLES, debuglev >= TMOptions.DEBUG_AMBIG);
+			this.outputDir = outputDir;
+			new File(outputDir, ConsoleStatus.OUT_ERRORS).delete();
+			new File(outputDir, ConsoleStatus.OUT_TABLES).delete();
 			debug = null;
 			warn = null;
 		}
@@ -159,7 +157,7 @@ public class Tool {
 
 		private PrintStream openFile(String name) {
 			try {
-				return new PrintStream(new FileOutputStream(name));
+				return new PrintStream(new FileOutputStream(new File(outputDir, name)));
 			} catch (FileNotFoundException ex) {
 				handle(KIND_ERROR, "textmapper: IO error: " + ex.getMessage());
 				return System.err;
