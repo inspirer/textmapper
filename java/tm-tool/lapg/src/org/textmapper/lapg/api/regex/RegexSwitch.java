@@ -55,4 +55,8 @@ public class RegexSwitch<T> {
 	public T caseSet(RegexSet c) {
 		return null;
 	}
+
+	public T caseSub(RegexSub c) {
+		return null;
+	}
 }

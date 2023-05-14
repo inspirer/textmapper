@@ -283,11 +283,21 @@ public class RegexpParseTest {
 		}
 
 		try {
-			rp.compile(9, parseRegexp("aaa\\00"));
+			rp.compile(10, parseRegexp("aaa\\00"));
 			fail("no exception");
 		} catch (RegexParseException ex) {
 			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
+		} catch (Exception ex) {
+			fail("wrong exception");
+		}
+
+		try {
+			rp.compile(11, parseRegexp("[a-z-[d-g]")); // unfinished character class
+			fail("no exception");
+		} catch (RegexParseException ex) {
+			assertEquals("unfinished regexp", ex.getMessage());
+			assertEquals(10, ex.getErrorOffset());
 		} catch (Exception ex) {
 			fail("wrong exception");
 		}
