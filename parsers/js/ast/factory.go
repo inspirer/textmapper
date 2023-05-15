@@ -208,6 +208,8 @@ func ToJsNode(n *Node) JsNode {
 		return &JSXElementName{n}
 	case js.JSXExpr:
 		return &JSXExpr{n}
+	case js.JSXFragment:
+		return &JSXFragment{n}
 	case js.JSXLiteral:
 		return &JSXLiteral{n}
 	case js.JSXNormalAttribute:

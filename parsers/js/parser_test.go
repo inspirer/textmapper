@@ -1077,6 +1077,12 @@ var parseTests = []struct {
 		`var a = «<X comp=«<Y text=«<h1>Title</h1>» />» />»;`,
 		"var a = «<input value={`test ${index/4|0}`} disabled={foo%10 ? null : true} />»",
 	}},
+	{js.Javascript, js.JSXFragment, []string{
+		`var a = «<>ABC</>»;`,
+		`var a = <div attr=«<>foo</>»/>;`,
+		`var a = <div attr="">«<></>»</div>;`,
+		`var a = <div attr="">«<><span a=«<></>»/></>»</div>;`,
+	}},
 	{js.Javascript, js.JSXSelfClosingElement, []string{
 		`var a = «<div / >»;`,
 		`if (alt) return «<div boolean-attr />»;`,

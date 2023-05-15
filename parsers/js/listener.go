@@ -110,7 +110,8 @@ const (
 	JSXClosingElement // JSXElementName
 	JSXElement        // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
 	JSXElementName
-	JSXExpr // Expr?
+	JSXExpr     // Expr?
+	JSXFragment // (JSXChild)*
 	JSXLiteral
 	JSXNormalAttribute    // JSXAttributeName JSXAttributeValue?
 	JSXOpeningElement     // JSXElementName TypeArguments? (JSXAttribute)*
@@ -369,6 +370,7 @@ var nodeTypeStr = [...]string{
 	"JSXElement",
 	"JSXElementName",
 	"JSXExpr",
+	"JSXFragment",
 	"JSXLiteral",
 	"JSXNormalAttribute",
 	"JSXOpeningElement",
@@ -622,6 +624,7 @@ var Expr = []NodeType{
 	IndexAccess,
 	InstanceOfExpr,
 	JSXElement,
+	JSXFragment,
 	Literal,
 	LogicalAND,
 	LogicalOR,
@@ -679,12 +682,14 @@ var JSXAttribute = []NodeType{
 var JSXAttributeValue = []NodeType{
 	JSXElement,
 	JSXExpr,
+	JSXFragment,
 	JSXLiteral,
 }
 
 var JSXChild = []NodeType{
 	JSXElement,
 	JSXExpr,
+	JSXFragment,
 	JSXSpreadExpr,
 	JSXText,
 }

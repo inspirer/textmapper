@@ -109,6 +109,7 @@ var (
 	JSXElement                = func(t js.NodeType) bool { return t == js.JSXElement }
 	JSXElementName            = func(t js.NodeType) bool { return t == js.JSXElementName }
 	JSXExpr                   = func(t js.NodeType) bool { return t == js.JSXExpr }
+	JSXFragment               = func(t js.NodeType) bool { return t == js.JSXFragment }
 	JSXLiteral                = func(t js.NodeType) bool { return t == js.JSXLiteral }
 	JSXNormalAttribute        = func(t js.NodeType) bool { return t == js.JSXNormalAttribute }
 	JSXOpeningElement         = func(t js.NodeType) bool { return t == js.JSXOpeningElement }

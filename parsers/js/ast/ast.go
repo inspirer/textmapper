@@ -121,6 +121,7 @@ func (n JSXClosingElement) JsNode() *Node         { return n.Node }
 func (n JSXElement) JsNode() *Node                { return n.Node }
 func (n JSXElementName) JsNode() *Node            { return n.Node }
 func (n JSXExpr) JsNode() *Node                   { return n.Node }
+func (n JSXFragment) JsNode() *Node               { return n.Node }
 func (n JSXLiteral) JsNode() *Node                { return n.Node }
 func (n JSXNormalAttribute) JsNode() *Node        { return n.Node }
 func (n JSXOpeningElement) JsNode() *Node         { return n.Node }
@@ -409,6 +410,7 @@ func (InExpr) exprNode()                   {}
 func (IndexAccess) exprNode()              {}
 func (InstanceOfExpr) exprNode()           {}
 func (JSXElement) exprNode()               {}
+func (JSXFragment) exprNode()              {}
 func (Literal) exprNode()                  {}
 func (LogicalAND) exprNode()               {}
 func (LogicalOR) exprNode()                {}
@@ -482,10 +484,11 @@ type JSXAttributeValue interface {
 
 // jSXAttributeValueNode() ensures that only the following types can be
 // assigned to JSXAttributeValue.
-func (JSXElement) jSXAttributeValueNode() {}
-func (JSXExpr) jSXAttributeValueNode()    {}
-func (JSXLiteral) jSXAttributeValueNode() {}
-func (NilNode) jSXAttributeValueNode()    {}
+func (JSXElement) jSXAttributeValueNode()  {}
+func (JSXExpr) jSXAttributeValueNode()     {}
+func (JSXFragment) jSXAttributeValueNode() {}
+func (JSXLiteral) jSXAttributeValueNode()  {}
+func (NilNode) jSXAttributeValueNode()     {}
 
 type JSXChild interface {
 	JsNode
@@ -496,6 +499,7 @@ type JSXChild interface {
 // assigned to JSXChild.
 func (JSXElement) jSXChildNode()    {}
 func (JSXExpr) jSXChildNode()       {}
+func (JSXFragment) jSXChildNode()   {}
 func (JSXSpreadExpr) jSXChildNode() {}
 func (JSXText) jSXChildNode()       {}
 func (NilNode) jSXChildNode()       {}
@@ -915,7 +919,7 @@ type ArrayPattern struct {
 }
 
 func (n ArrayPattern) List() []JsNode {
-	nodes := n.Children(selector.OneOf(js.AdditiveExpr, js.ArrayLiteral, js.ArrowFunc, js.AssignmentExpr, js.AsyncArrowFunc, js.AsyncFuncExpr, js.AsyncGeneratorExpression, js.AwaitExpr, js.BitwiseAND, js.BitwiseOR, js.BitwiseXOR, js.CallExpr, js.ClassExpr, js.CoalesceExpr, js.CommaExpr, js.ConditionalExpr, js.ElementBinding, js.EqualityExpr, js.ExponentiationExpr, js.FuncExpr, js.GeneratorExpr, js.IdentExpr, js.InExpr, js.IndexAccess, js.InstanceOfExpr, js.JSXElement, js.Literal, js.LogicalAND, js.LogicalOR, js.MultiplicativeExpr, js.NewExpr, js.NewTarget, js.NoElement, js.NotExpr, js.ObjectLiteral, js.OptionalCallExpr, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpr, js.ShiftExpr, js.SingleNameBinding, js.SpreadElement, js.SuperExpr, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.ThisExpr, js.TsAsConstExpr, js.TsAsExpr, js.TsCastExpr, js.TsDynamicImport, js.TsNonNull, js.TsSatisfiesExpr, js.UnaryExpr, js.Yield))
+	nodes := n.Children(selector.OneOf(js.AdditiveExpr, js.ArrayLiteral, js.ArrowFunc, js.AssignmentExpr, js.AsyncArrowFunc, js.AsyncFuncExpr, js.AsyncGeneratorExpression, js.AwaitExpr, js.BitwiseAND, js.BitwiseOR, js.BitwiseXOR, js.CallExpr, js.ClassExpr, js.CoalesceExpr, js.CommaExpr, js.ConditionalExpr, js.ElementBinding, js.EqualityExpr, js.ExponentiationExpr, js.FuncExpr, js.GeneratorExpr, js.IdentExpr, js.InExpr, js.IndexAccess, js.InstanceOfExpr, js.JSXElement, js.JSXFragment, js.Literal, js.LogicalAND, js.LogicalOR, js.MultiplicativeExpr, js.NewExpr, js.NewTarget, js.NoElement, js.NotExpr, js.ObjectLiteral, js.OptionalCallExpr, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpr, js.ShiftExpr, js.SingleNameBinding, js.SpreadElement, js.SuperExpr, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.ThisExpr, js.TsAsConstExpr, js.TsAsExpr, js.TsCastExpr, js.TsDynamicImport, js.TsNonNull, js.TsSatisfiesExpr, js.UnaryExpr, js.Yield))
 	var ret = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
 		ret = append(ret, ToJsNode(node).(JsNode))
@@ -2495,6 +2499,19 @@ type JSXExpr struct {
 func (n JSXExpr) Expr() (Expr, bool) {
 	field := ToJsNode(n.Child(selector.Expr)).(Expr)
 	return field, field.JsNode() != nil
+}
+
+type JSXFragment struct {
+	*Node
+}
+
+func (n JSXFragment) JSXChild() []JSXChild {
+	nodes := n.Children(selector.JSXChild)
+	var ret = make([]JSXChild, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ToJsNode(node).(JSXChild))
+	}
+	return ret
 }
 
 type JSXLiteral struct {

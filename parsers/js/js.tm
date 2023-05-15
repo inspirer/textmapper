@@ -486,6 +486,7 @@ PrimaryExpression<Yield, Await, NoAsync> -> Expr /* interface */:
   | TemplateLiteral
   | (?= !StartOfArrowFunction) Parenthesized
   | (?= !StartOfArrowFunction) JSXElement
+  | (?= !StartOfArrowFunction) JSXFragment
 ;
 
 Parenthesized<Yield, Await> -> Parenthesized:
@@ -1391,6 +1392,9 @@ JSXOpeningElement<Yield, Await> -> JSXOpeningElement :
 JSXClosingElement -> JSXClosingElement :
     '<' '/' JSXElementName '>' ;
 
+JSXFragment<Yield, Await> -> JSXFragment :
+    '<' '>' JSXChild* '<' '/' '>' ;
+
 JSXElementName -> JSXElementName :
     jsxIdentifier
   | jsxIdentifier ':' jsxIdentifier
@@ -1416,11 +1420,13 @@ JSXAttributeValue<Yield, Await> -> JSXAttributeValue /* interface */:
     jsxStringLiteral                                  -> JSXLiteral
   | '{' .recoveryScope AssignmentExpression<+In> '}'  -> JSXExpr
   | JSXElement
+  | JSXFragment
 ;
 
 JSXChild<Yield, Await> -> JSXChild /* interface */:
     jsxText                                           -> JSXText
   | JSXElement
+  | JSXFragment
   | '{' .recoveryScope AssignmentExpressionopt<+In> '}'              -> JSXExpr
   | '{' .recoveryScope '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpr
 ;
