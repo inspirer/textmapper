@@ -637,6 +637,9 @@ func lookaheadRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lex
 {{ if and .Synthetic .NoEoi -}}
 {{ $sym := index $.Syms (sum $.NumTokens .Nonterm) -}}
 func At{{$sym.Name}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, next int32{{if $.NeedsSession}}, s *session{{end}}) {{if $.Options.Cancellable}}(bool, error){{else}}bool{{end}} {
+	if debugSyntax {
+		"fmt".Printf("lookahead {{$sym.Name}}, next: %v\n", symbolName(next))
+	}
 	return lookahead({{if $.Options.Cancellable}}ctx, {{end}}lexer, next, {{$ind}}, {{index $.Parser.Tables.FinalStates $ind}}{{if $.NeedsSession}}, s{{end}});
 }
 
@@ -698,6 +701,9 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexe
 				entry.sym.symbol = sym
 			}
 {{- end}}
+			if debugSyntax {
+				"fmt".Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -722,6 +728,9 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexe
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				"fmt".Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -735,6 +744,9 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexe
 {{ if .Options.RecursiveLookaheads -}}
 	s.cache[key] = state == end
 {{ end -}}
+{{/**/}}	if debugSyntax {
+		"fmt".Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end{{if $.Options.Cancellable}}, nil{{end}}
 }
 

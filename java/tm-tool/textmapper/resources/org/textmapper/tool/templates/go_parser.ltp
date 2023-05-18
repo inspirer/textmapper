@@ -661,6 +661,9 @@ ${cached query laMethodName() = 'At' + self.target.name}
 ${template lookaheadMethods-}
 ${foreach inp in syntax.input.select(it|!it.hasEoi())-}
 func ${inp->laMethodName()}(${call contextParam}lexer *Lexer, next int32${self->needSession() ? ', s *session' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
+	if debugSyntax {
+		"fmt".Printf("lookahead ${inp.target.name}, next: %v\n", symbolName(next))
+	}
 	return lookahead(${call contextArg}lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${self->needSession() ? ', s' : ''});
 }
 
@@ -725,6 +728,9 @@ ${end-}
 				entry.sym.symbol = sym
 			}
 ${end-}
+			if debugSyntax {
+				"fmt".Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -742,6 +748,9 @@ ${end-}
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				"fmt".Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -755,6 +764,9 @@ ${end-}
 ${if opts.recursiveLookaheads-}
 	s.cache[key] = state == end
 ${end-}
+	if debugSyntax {
+		"fmt".Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end${if opts.cancellable}, nil${end}
 }
 ${end}

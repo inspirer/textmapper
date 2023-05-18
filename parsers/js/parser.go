@@ -226,38 +226,65 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtStartOfArrowFunction(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfArrowFunction, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 0, 9165, s)
 }
 
 func AtStartOfParametrizedCall(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfParametrizedCall, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 1, 9166, s)
 }
 
 func AtStartLParen(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartLParen, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 2, 9167, s)
 }
 
 func AtStartOfExtendsTypeRef(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfExtendsTypeRef, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 3, 9168, s)
 }
 
 func AtStartOfTypeImport(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfTypeImport, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 4, 9169, s)
 }
 
 func AtStartOfIs(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfIs, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 5, 9170, s)
 }
 
 func AtStartOfFunctionType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfFunctionType, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 6, 9171, s)
 }
 
 func AtStartOfMappedType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfMappedType, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 7, 9172, s)
 }
 
 func AtStartOfTupleElementName(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead StartOfTupleElementName, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 8, 9173, s)
 }
 
@@ -313,6 +340,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			if sym != 0 {
 				entry.sym.symbol = sym
 			}
+			if debugSyntax {
+				fmt.Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -336,6 +366,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -347,6 +380,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 	}
 
 	s.cache[key] = state == end
+	if debugSyntax {
+		fmt.Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end, nil
 }
 

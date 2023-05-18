@@ -253,6 +253,9 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+	if debugSyntax {
+		fmt.Printf("lookahead FooLookahead, next: %v\n", symbolName(next))
+	}
 	return lookahead(ctx, lexer, next, 0, 136, s)
 }
 
@@ -297,6 +300,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			if sym != 0 {
 				entry.sym.symbol = sym
 			}
+			if debugSyntax {
+				fmt.Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -320,6 +326,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -331,6 +340,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 	}
 
 	s.cache[key] = state == end
+	if debugSyntax {
+		fmt.Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end, nil
 }
 

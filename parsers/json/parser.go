@@ -217,6 +217,9 @@ restart:
 }
 
 func AtEmptyObject(lexer *Lexer, next int32) bool {
+	if debugSyntax {
+		fmt.Printf("lookahead EmptyObject, next: %v\n", symbolName(next))
+	}
 	return lookahead(lexer, next, 0, 42)
 }
 
@@ -245,6 +248,9 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
+			if debugSyntax {
+				fmt.Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -259,6 +265,9 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -269,6 +278,9 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 		}
 	}
 
+	if debugSyntax {
+		fmt.Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end
 }
 
