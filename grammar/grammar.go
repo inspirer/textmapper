@@ -197,7 +197,8 @@ type Options struct {
 	FileNode      string // The top-level node gets the byte range of the whole input.
 
 	// Go.
-	Package string
+	Package          string
+	CancellableFetch bool // only in Cancellable parsers
 
 	// C++
 	Namespace          string

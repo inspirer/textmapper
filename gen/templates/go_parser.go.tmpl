@@ -187,7 +187,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{- if .Parser.IsRecovering }}
 	p.endState = end
 {{- end}}
-	p.fetchNext(lexer, stack)
+	p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
@@ -195,7 +195,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -212,7 +212,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -242,7 +242,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{end}}
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			if state >= 0 {
@@ -274,7 +274,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{- if .Parser.IsRecovering }}
 			if p.recovering == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 				}
 				lastErr = SyntaxError{
 {{- if .Options.TokenLine}}
@@ -305,7 +305,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 
 	if state != end {
 		if p.next.symbol == noToken {
-			p.fetchNext(lexer, stack)
+			p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 		}
 		err := SyntaxError{
 {{- if .Options.TokenLine}}
@@ -375,7 +375,7 @@ func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Contex
 {{- template "flushPending" .}}
 {{- template "reportConsumedNext" .}}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack)
+		p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 	}
 	return e
 }
@@ -421,7 +421,7 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack)
+		p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 	}
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
@@ -561,7 +561,7 @@ func gotoState(state int{{$stateType}}, symbol int32) int{{$stateType}} {
 
 {{ block "fetchNext" . -}}
 {{ if .Options.IsEnabled "fetchNext" -}}
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+func (p *Parser) fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx "context".Context, {{end}}lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {

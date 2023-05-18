@@ -203,7 +203,7 @@ ${end-}
 ${if self->hasRecovering()-}
 	p.endState = end
 ${end-}
-	p.fetchNext(lexer, stack)
+	p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
@@ -211,7 +211,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -228,7 +228,7 @@ ${end-}
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -251,7 +251,7 @@ ${call checkForCancellation(self->hasAssocValuesForInput() ? self->valueTypeDefa
 ${end-}
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			if state >= 0 {
@@ -283,7 +283,7 @@ ${end-}
 ${if self->hasRecovering()-}
 			if p.recovering == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 				}
 				lastErr = SyntaxError{
 ${if opts.tokenLine-}
@@ -313,7 +313,7 @@ ${end-}
 ${if !self->hasRecovering()-}
 	if state != end {
 		if p.next.symbol == noToken {
-			p.fetchNext(lexer, stack)
+			p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 		}
 		err := SyntaxError{
 ${if opts.tokenLine-}
@@ -387,7 +387,7 @@ func (p *Parser) skipBrokenCode(${call contextParam}lexer *Lexer, stack []stackE
 ${call flushPending-}
 ${call reportConsumedNext-}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack)
+		p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 	}
 	return e
 }
@@ -430,7 +430,7 @@ ${end-}
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack)
+		p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 	}
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
@@ -562,7 +562,7 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 ${end}
 
 ${template fetchNext-}
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+func (p *Parser) fetchNext(${if context.opts.cancellableFetch}${call contextParam}${end}lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {

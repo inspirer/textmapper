@@ -79,14 +79,14 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
-	p.fetchNext(lexer, stack)
+	p.fetchNext(ctx, lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(ctx, lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -102,7 +102,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext(ctx, lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -131,7 +131,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(ctx, lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			if state >= 0 {
@@ -166,7 +166,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 
 	if state != end {
 		if p.next.symbol == noToken {
-			p.fetchNext(lexer, stack)
+			p.fetchNext(ctx, lexer, stack)
 		}
 		err := SyntaxError{
 			Offset:    p.next.offset,
@@ -214,7 +214,7 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+func (p *Parser) fetchNext(ctx context.Context, lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {

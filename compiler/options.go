@@ -61,6 +61,9 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "cancellable":
 			p.validLangs(opt.Key(), "go")
 			opts.Cancellable = p.parseExpr(opt.Value(), opts.Cancellable).(bool)
+		case "cancellableFetch":
+			p.validLangs(opt.Key(), "go")
+			opts.CancellableFetch = p.parseExpr(opt.Value(), opts.CancellableFetch).(bool)
 		case "writeBison":
 			opts.WriteBison = p.parseExpr(opt.Value(), opts.WriteBison).(bool)
 		case "recursiveLookaheads":

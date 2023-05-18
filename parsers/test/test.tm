@@ -11,6 +11,7 @@ debugParser = false
 tokenLine = false
 fixWhitespace = true
 cancellable = true
+cancellableFetch = true
 recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
 extraTypes = ["Int7", "Int9 -> Expr"]
