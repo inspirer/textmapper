@@ -15,7 +15,6 @@ var parseTests = []struct {
 	nt      js.NodeType
 	inputs  []string
 }{
-
 	{js.Javascript, js.SingleLineComment, []string{
 		` «// abc»
 		  «// abc2»
@@ -649,9 +648,10 @@ var parseTests = []struct {
 		`function q(«a», «b») {}`,
 		`function q(«[id]», «{name: name}») {}`,
 	}},
-	{js.Javascript, js.ArrowFunc, []string{
+	{js.Typescript, js.ArrowFunc, []string{
 		`(«a => a + 1»)(1);`,
 		`(«(a,b) => { return a*b; }»)(1);`,
+		`const a = «<T extends object = {}>(opts: Foo<T>) => {}»;`,
 		`(«(a:A<B<C<D>>>,b) => { return a*b; }»)((a<b>c>>d));`,
 		`
 		 var a = async
@@ -1681,6 +1681,9 @@ var parseTests = []struct {
 	}},
 	{js.TypescriptJsx, js.TypeArguments, []string{
 		`const x = <GenericComponent«<Props>» a={10} b="hi"/>;`, // TS 2.9
+	}},
+	{js.TypescriptJsx, js.ArrowFunc, []string{
+		`const a = «<T extends object = {}>(opts: Foo<T>) => {}»;`,
 	}},
 
 	// Error Recovery
