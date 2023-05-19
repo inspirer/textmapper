@@ -21,6 +21,10 @@ var lexerTests = []struct {
 		`«a»->«b»`,
 		`«testfoo»----- testfoo----->`,
 	}},
+	{token.IDENTIFIER2, []string{
+		`«^a» «^b»`,
+		"«^\n» «^\x00»",
+	}},
 
 	{token.MINUS, []string{
 		` «-» ->  a------b«-»  «-»«-»`,

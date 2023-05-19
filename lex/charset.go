@@ -230,6 +230,10 @@ func appendNamedSet(r []rune, name string, fold bool) ([]rune, error) {
 		r = append(r[:0], 0, unicode.MaxRune)
 		return r, nil
 	}
+	if name == "Ascii" {
+		r = append(r[:0], 0, 0x7f)
+		return r, nil
+	}
 	if t := unicode.Categories[name]; t != nil {
 		r = appendTable(r, t)
 		if fold {

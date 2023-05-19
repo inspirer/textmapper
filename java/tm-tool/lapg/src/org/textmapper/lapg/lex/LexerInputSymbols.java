@@ -149,7 +149,13 @@ public class LexerInputSymbols {
 			}
 		}
 		if (perm[1] == -1) {
-			perm[1] = curr++;
+			if (character2symbol.length <= MAX_UCHAR) {
+				perm[1] = curr;
+			} else {
+				// The full 0..MAX_UCHAR range is covered. There is no "any" symbol.
+				perm[1] = perm[character2symbol[MAX_UCHAR]];
+				symbolCount--;
+			}
 		}
 		for (int i = 0; i < character2symbol.length; i++) {
 			character2symbol[i] = perm[character2symbol[i]];

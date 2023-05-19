@@ -116,53 +116,53 @@ recovered:
 		switch hh {
 		case 2:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
-				rule = 11
+				rule = 12
 				break
 			}
 			if hash == 0x364492 && "test" == l.source[l.tokenOffset:l.offset] {
-				rule = 7
+				rule = 8
 				break
 			}
 		case 7:
 			if hash == 0x5b098c7 && "decl1" == l.source[l.tokenOffset:l.offset] {
-				rule = 8
+				rule = 9
 				break
 			}
 		case 8:
 			if hash == 0x5b098c8 && "decl2" == l.source[l.tokenOffset:l.offset] {
-				rule = 9
+				rule = 10
 				break
 			}
 			if hash == 0x18ac8 && "f_a" == l.source[l.tokenOffset:l.offset] {
-				rule = 30
+				rule = 31
 				break
 			}
 		case 9:
 			if hash == 0x2f8d39 && "else" == l.source[l.tokenOffset:l.offset] {
-				rule = 13
+				rule = 14
 				break
 			}
 			if hash == 0x300c59 && "foo_" == l.source[l.tokenOffset:l.offset] {
-				rule = 29
+				rule = 30
 				break
 			}
 		case 12:
 			if hash == 0x2fb09c && "eval" == l.source[l.tokenOffset:l.offset] {
-				rule = 10
+				rule = 11
 				break
 			}
 		case 13:
 			if hash == 0xd1d && "if" == l.source[l.tokenOffset:l.offset] {
-				rule = 12
+				rule = 13
 				break
 			}
 		}
-	case 34:
+	case 35:
 		hh := hash & 7
 		switch hh {
 		case 4:
 			if hash == 0x2a762c && "Zfoo" == l.source[l.tokenOffset:l.offset] {
-				rule = 36
+				rule = 37
 				break
 			}
 		}
@@ -184,28 +184,28 @@ recovered:
 		}
 	case 2: // WhiteSpace: /[ \t\r\n\x00]/
 		space = true
-	case 5: // IntegerConstant: /[0-9]+/
+	case 6: // IntegerConstant: /[0-9]+/
 		{
 			l.value = mustParseInt(l.Text())
 		}
-	case 38: // MultiLineComment: /\/\*/
+	case 39: // MultiLineComment: /\/\*/
 		{
 			l.State = StateInMultiLine
 			commentOffset = l.tokenOffset
 			commentDepth = 0
 			space = true
 		}
-	case 39: // invalid_token: /{eoi}/
+	case 40: // invalid_token: /{eoi}/
 		{
 			l.tokenOffset = commentOffset
 			l.State = StateInitial
 		}
-	case 40: // MultiLineComment: /\/\*/
+	case 41: // MultiLineComment: /\/\*/
 		{
 			commentDepth++
 			space = true
 		}
-	case 41: // MultiLineComment: /\*\//
+	case 42: // MultiLineComment: /\*\//
 		{
 			if commentDepth == 0 {
 				space = false
@@ -216,7 +216,7 @@ recovered:
 			space = true
 			commentDepth--
 		}
-	case 42: // WhiteSpace: /[^\/*]+|[*\/]/
+	case 43: // WhiteSpace: /[^\/*]+|[*\/]/
 		space = true
 		{
 			space = true

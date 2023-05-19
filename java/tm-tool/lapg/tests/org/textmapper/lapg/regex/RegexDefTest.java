@@ -96,6 +96,7 @@ public class RegexDefTest {
 		checkRegex("[a\\-{]", "[a\\-{]");
 		checkRegex("[a-z-[d-f]]", "[a-z-[d-f]]");
 		checkRegex("[a-zA-Z-\\p{Lu}]", "[a-zA-Z-\\p{Lu}]");
+		checkRegex("[\\p{Any}-[\\x00\\x01\\x02]]", "[\\p{Any}-[\\x00\\x01\\x02]]");
 
 		checkErrors("[a-{]", "invalid range in character class (after dash): `\\{', escape `-'");
 		checkErrors("[\\.-z]", "invalid range in character class (before dash): `\\.', escape `-'");
@@ -136,6 +137,19 @@ public class RegexDefTest {
 		assertTrue(set.contains('d'));
 		assertTrue(set.contains('f'));
 		assertFalse(set.contains('g'));
+
+		r = checkRegex("[\\p{Any}-\\p{Ll}-[\\x80-\\U0010ffff]]");
+		assertTrue(r instanceof RegexSet);
+
+		set = ((RegexSet) r).getSet();
+		int counter = 0;
+		for (int i = 0; i < 1000; i++) {
+			if (set.contains(i)) counter++;
+		}
+		assertEquals(128-26, counter);
+		assertTrue(set.contains('U'));
+		assertFalse(set.contains('u'));
+		assertFalse(set.contains('\u0100'));
 	}
 
 	@Test

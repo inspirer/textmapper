@@ -23,6 +23,7 @@ WhiteSpace: /[ \t\r\n\x00]/ (space)
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
 
 Identifier: /[a-zA-Y](-*[a-zA-Z_0-9])*/    (class)
+Identifier2: /^[\p{Any}-[\x80-\U0010ffff]-\p{Lu}]/
 
 IntegerConstant {int}: /[0-9]+/ { $$ = mustParseInt(l.Text()) }
 
