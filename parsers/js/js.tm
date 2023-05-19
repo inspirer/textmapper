@@ -1939,7 +1939,10 @@ ${template go_lexer.onAfterNext-}
 							l.State |= 1
 							l.pushState(StateJsxTag)
 						}
-					}
+					} else {
+					  l.State |= 1
+					  l.pushState(StateJsxTag)
+          }
 				case Typescript:
 					// JSX is not allowed in pure TypeScript.
 				default:

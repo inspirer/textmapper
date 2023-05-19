@@ -1685,6 +1685,12 @@ var parseTests = []struct {
 	{js.TypescriptJsx, js.ArrowFunc, []string{
 		`const a = «<T extends object = {}>(opts: Foo<T>) => {}»;`,
 	}},
+	{js.TypescriptJsx, js.JSXFragment, []string{
+		`var a = «<>ABC</>»;`,
+		`var a = <div attr=«<>foo</>»/>;`,
+		`var a = <div attr="">«<></>»</div>;`,
+		`var a = <div attr="">«<><span a=«<></>»/></>»</div>;`,
+	}},
 
 	// Error Recovery
 	{js.Javascript, js.SyntaxProblem, []string{
