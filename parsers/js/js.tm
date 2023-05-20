@@ -30,19 +30,19 @@ customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", 
 invalid_token:
 error:
 
-<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTag, jsxClosingTag> {
-WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTag, jsxTypeArgs, jsxClosingTag> {
+  WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+
+  # LineTerminatorSequence
+  WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
+
+  commentChars = /([^*]|\*+[^*\/])*\**/
+  MultiLineComment:  /\/\*{commentChars}\*\//     (space)
+  # Note: the following rule disables backtracking for incomplete multiline comments, which
+  # would otherwise be reported as '/', '*', etc.
+  invalid_token: /\/\*{commentChars}/
+  SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/   (space)
 }
-
-# LineTerminatorSequence
-WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
-
-commentChars = /([^*]|\*+[^*\/])*\**/
-MultiLineComment:  /\/\*{commentChars}\*\//     (space)
-# Note: the following rule disables backtracking for incomplete multiline comments, which
-# would otherwise be reported as '/', '*', etc.
-invalid_token: /\/\*{commentChars}/
-SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/   (space)
 
 # Shebang.
 SingleLineComment: /#![^\n\r\u2028\u2029]*/   (space)
