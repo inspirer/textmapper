@@ -99,7 +99,7 @@ restart:
 {{ end -}}
 {{ if .Options.TokenColumn}}	l.tokenColumn = l.offset-l.lineOffset+1
 {{ end -}}
-	l.tokenOffset = l.offset
+{{/**/}}	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
 {{- if .Lexer.ClassActions}}

@@ -35,6 +35,7 @@ var languages = map[string]*language{
 		SharedDefs: builtin(`cc_shared`),
 		Lexer: []file{
 			{"lexer.h", builtin(`cc_lexer_h`)},
+			{"lexer.cc", builtin(`cc_lexer_cc`)},
 		},
 	},
 }

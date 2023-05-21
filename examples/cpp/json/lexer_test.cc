@@ -3,9 +3,9 @@
 #include <sstream>
 #include <vector>
 
-#include "markup/markup.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "markup/markup.h"
 
 namespace json {
 namespace {
@@ -97,5 +97,5 @@ INSTANTIATE_TEST_SUITE_P(Vals, LexerTest, testing::ValuesIn(tests),
                            return info.param.name;
                          });
 
-} // namespace
-} // namespace json
+}  // namespace
+}  // namespace json
