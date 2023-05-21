@@ -54,3 +54,10 @@ http_archive(
 load("@hedron_compile_commands//:workspace_setup.bzl", "hedron_compile_commands_setup")
 hedron_compile_commands_setup()
 
+# Google Benchmark library, used in micro-benchmarks.
+http_archive(
+    name = "benchmark",
+    sha256 = "1ba14374fddcd9623f126b1a60945e4deac4cdc4fb25a5f25e7f779e36f2db52",
+    strip_prefix = "benchmark-d2a8a4ee41b923876c034afb939c4fc03598e622",
+    urls = ["https://github.com/google/benchmark/archive/d2a8a4ee41b923876c034afb939c4fc03598e622.zip"],
+)
