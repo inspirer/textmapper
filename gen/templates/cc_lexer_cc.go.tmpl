@@ -8,6 +8,7 @@
 namespace {{.Options.Namespace}} {
 {{block "onBeforeLexer" .}}{{end -}}
 {{template "lexerTables" .}}
+{{template "decodeRune" .}}
 {{template "lexerCtor" .}}
 {{template "lexerNext" .}}
 {{template "lexerRewind" .}}
@@ -98,6 +99,45 @@ constexpr int tmBacktracking[] = {
 };
 {{- end}}
 }  // namespace
+{{end -}}
+
+{{- define "decodeRune" -}}
+constexpr uint32_t runeErr = 0xfffd;
+
+inline uint32_t decodeRune(std::string_view input, int64_t& offset) {
+  uint8_t b0 = input[offset++];
+  if (b0 < 0x80) {
+    return b0;  // ASCII
+  }
+  uint8_t head = (b0 >> 3) & 0xf;
+  int sz =
+      (0x3a550000 >> (head * 2)) & 3;  // 0b10xx -> 1, 0b110x -> 2, 0b1110 -> 3
+  if (sz == 0 || offset + sz > input.size()) {
+    return runeErr;
+  }
+  uint8_t b1 = input[offset++];
+  if (b1 < 0x80 || b1 >= 0xc0) {
+    return runeErr;
+  }
+  if (sz == 1) {
+    return (static_cast<uint32_t>(b0) & 0x1F) << 6 | (b1 & 0x3F);
+  }
+  uint8_t b2 = input[offset++];
+  if (b2 < 0x80 || b2 >= 0xc0) {
+    return runeErr;
+  }
+  if (sz == 2) {
+    return (static_cast<uint32_t>(b0) & 0xF) << 12 |
+           (static_cast<uint32_t>(b1) & 0x3F) << 6 | (b2 & 0x3F);
+  }
+  uint8_t b3 = input[offset++];
+  if (b3 < 0x80 || b3 >= 0xc0) {
+    return runeErr;
+  }
+  return (static_cast<uint32_t>(b0) & 0x7) << 18 |
+         (static_cast<uint32_t>(b1) & 0x3F) << 12 |
+         (static_cast<uint32_t>(b2) & 0x3F) << 6 | (b3 & 0x3F);
+}
 {{end -}}
 
 {{- define "lexerCtor" -}}
@@ -194,8 +234,7 @@ restart:
       // Scan the next character.
       offset_ = scan_offset_;
       if (offset_ < source_.size()) {
-        // TODO: support UTF-8.
-        input_rune_ = static_cast<uint8_t>(source_[scan_offset_++]);
+        input_rune_ = decodeRune(source_, scan_offset_);
       } else {
         input_rune_ = -1;
       }
@@ -315,8 +354,7 @@ void Lexer::Rewind(int64_t rewind_offset) {
   scan_offset_ = rewind_offset;
   offset_ = rewind_offset;
   if (offset_ < source_.size()) {
-    // TODO: support UTF-8
-    input_rune_ = source_[scan_offset_++];
+    input_rune_ = decodeRune(source_, scan_offset_);
   } else {
     input_rune_ = -1;  // Invalid rune for end of input
   }

@@ -74,7 +74,7 @@ class Lexer {
 
   absl::string_view source_;
 
-  int input_rune_ = 0;        // current character, -1 means end of input
+  int32_t input_rune_ = 0;    // current character, -1 means end of input
   int64_t offset_ = 0;        // byte offset
   int64_t token_offset_ = 0;  // last token byte offset
   int64_t line_ = 1;          // current line number (1-based)
