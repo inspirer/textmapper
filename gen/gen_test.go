@@ -1,6 +1,7 @@
 package gen_test
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -30,11 +31,12 @@ func (w *mapWriter) Write(filename, content string) error {
 }
 
 func TestGenerate(t *testing.T) {
+	ctx := context.Background()
 	for _, filename := range grammars {
 		filename := filename
 		t.Run(filename, func(t *testing.T) {
 			w := &mapWriter{content: make(map[string]string)}
-			_, err := gen.GenerateFile(filename, w, gen.Options{Compat: true})
+			_, err := gen.GenerateFile(ctx, filename, w, gen.Options{Compat: true})
 			if err != nil {
 				s := status.FromError(err)
 				s.Sort()

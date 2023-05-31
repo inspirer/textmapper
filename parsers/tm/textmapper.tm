@@ -20,6 +20,7 @@ lang = "tm"
 package = "github.com/inspirer/textmapper/parsers/tm"
 eventBased = true
 eventFields = true
+cancellable = true
 eventAST = true
 writeBison = true
 tokenColumn = true
@@ -138,7 +139,7 @@ regexp: /\/{reFirst}{reChar}*\//
 
 :: parser
 
-%input file;
+%input file, nonterm;
 
 %flag OrSyntaxError = false;
 

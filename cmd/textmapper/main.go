@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -37,6 +38,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
+	ctx := context.Background()
 	args := flag.Args()
 	if len(args) == 0 {
 		flag.Usage()
@@ -56,7 +58,7 @@ func main() {
 	}
 	cmd.Flags.Parse(args[1:])
 	args = cmd.Flags.Args()
-	err := cmd.Run(args)
+	err := cmd.Run(ctx, args)
 	if err != nil {
 		status.Print(os.Stderr, err)
 		os.Exit(2)
@@ -77,7 +79,7 @@ var versionCmd = &command{
 	Name:  "version",
 	Title: "print the Textmapper version",
 	Help:  `This command prints the Textmapper version.`,
-	Run: func(args []string) error {
+	Run: func(ctx context.Context, args []string) error {
 		fmt.Fprintf(os.Stderr, "textmapper ver %v\n", version)
 		return nil
 	},
@@ -94,7 +96,7 @@ func init() {
 	helpCmd.Run = help
 }
 
-func help(args []string) error {
+func help(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		flag.Usage()
 		return nil
@@ -114,7 +116,7 @@ type command struct {
 	Title string
 	Usage string
 	Help  string
-	Run   func(args []string) error
+	Run   func(ctx context.Context, args []string) error
 	Flags flag.FlagSet
 }
 

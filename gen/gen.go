@@ -2,6 +2,7 @@
 package gen
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -128,14 +129,14 @@ func (s Stats) String() string {
 }
 
 // GenerateFile reads, compiles, and generates code for a grammar stored in a file.
-func GenerateFile(path string, w Writer, opts Options) (Stats, error) {
+func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Stats, error) {
 	var ret Stats
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return ret, err
 	}
 
-	tree, err := ast.Parse(path, string(content), tm.StopOnFirstError)
+	tree, err := ast.Parse(ctx, path, string(content), tm.StopOnFirstError)
 	if err != nil {
 		return ret, err
 	}
@@ -163,7 +164,7 @@ func GenerateFile(path string, w Writer, opts Options) (Stats, error) {
 }
 
 func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
-	c := &context{filename: filename, Grammar: g}
+	c := &fileContext{filename: filename, Grammar: g}
 	ret := template.FuncMap{}
 	switch g.TargetLang {
 	case "go":
@@ -174,13 +175,12 @@ func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
 	return ret
 }
 
-// context provides
-type context struct {
+type fileContext struct {
 	filename string
 	*grammar.Grammar
 }
 
-func (c *context) goPackage(targetPkg string) string {
+func (c *fileContext) goPackage(targetPkg string) string {
 	if targetPkg == "main" {
 		targetPkg = ""
 	}
@@ -199,10 +199,10 @@ func (c *context) goPackage(targetPkg string) string {
 	return `"` + ret + `".`
 }
 
-func (c *context) nodeID(name string) string {
+func (c *fileContext) nodeID(name string) string {
 	return name
 }
 
-func (c *context) isFileNode(name string) bool {
+func (c *fileContext) isFileNode(name string) bool {
 	return name == c.Options.FileNode
 }

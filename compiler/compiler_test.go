@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -33,6 +34,7 @@ var testFiles = []string{
 }
 
 func TestErrors(t *testing.T) {
+	ctx := context.Background()
 	for _, file := range testFiles {
 		content, err := os.ReadFile(filepath.Join("testdata", file))
 		if err != nil {
@@ -43,7 +45,7 @@ func TestErrors(t *testing.T) {
 		for _, compat := range []bool{true, false} {
 			inp := string(content)
 			pt := parsertest.New(t, fmt.Sprintf("%v (compat=%v)", file, compat), inp)
-			tree, err := ast.Parse(file, pt.Source(), tm.StopOnFirstError)
+			tree, err := ast.Parse(ctx, file, pt.Source(), tm.StopOnFirstError)
 			if err != nil {
 				t.Errorf("parsing failed with %v\n%v", err, inp)
 				continue
@@ -84,6 +86,7 @@ var modelFiles = []string{
 }
 
 func TestSourceModel(t *testing.T) {
+	ctx := context.Background()
 	for _, file := range modelFiles {
 		content, err := os.ReadFile(filepath.Join("testdata", file))
 		if err != nil {
@@ -91,7 +94,7 @@ func TestSourceModel(t *testing.T) {
 			continue
 		}
 
-		tree, err := ast.Parse(file, string(content), tm.StopOnFirstError)
+		tree, err := ast.Parse(ctx, file, string(content), tm.StopOnFirstError)
 		if err != nil {
 			t.Errorf("%v: parsing failed with %v", file, err)
 			continue

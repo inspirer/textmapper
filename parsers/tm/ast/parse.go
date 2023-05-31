@@ -3,17 +3,19 @@
 package ast
 
 import (
+	"context"
+
 	"github.com/inspirer/textmapper/parsers/tm"
 )
 
 // Parse parses a given utf-8 content into an AST.
-func Parse(path, content string, eh tm.ErrorHandler) (*Tree, error) {
+func Parse(ctx context.Context, path, content string, eh tm.ErrorHandler) (*Tree, error) {
 	var l tm.Lexer
 	l.Init(content)
 	var p tm.Parser
 	b := newBuilder(path, content)
 	p.Init(eh, b.addNode)
-	err := p.Parse(&l)
+	err := p.ParseFile(ctx, &l)
 	if err != nil {
 		return nil, err
 	}

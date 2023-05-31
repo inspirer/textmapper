@@ -1,6 +1,7 @@
 package tm_test
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -79,6 +80,7 @@ func TestParser(t *testing.T) {
 	var l tm.Lexer
 	var p tm.Parser
 
+	ctx := context.Background()
 	seen := make(map[tm.NodeType]bool)
 	seen[tm.File] = true
 	for _, tc := range parseTests {
@@ -95,7 +97,7 @@ func TestParser(t *testing.T) {
 					test.Consume(t, offset, endoffset)
 				}
 			})
-			test.Done(t, p.Parse(&l))
+			test.Done(t, p.ParseFile(ctx, &l))
 		}
 	}
 	for n := tm.NodeType(1); n < tm.NodeTypeMax; n++ {
@@ -112,6 +114,7 @@ const parserPre = "language l(a); :: lexer a = /abc/ :: parser "
 const wantTextmapperFiles = 32
 
 func TestExistingFiles(t *testing.T) {
+	ctx := context.Background()
 	var sources []string
 	err := filepath.Walk("../..", func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() && info.Name() == "build" {
@@ -140,7 +143,7 @@ func TestExistingFiles(t *testing.T) {
 		l.Init(string(content))
 		p := new(tm.Parser)
 		p.Init(tm.StopOnFirstError, func(nt tm.NodeType, offset, endoffset int) { /* noop */ })
-		err = p.Parse(l)
+		err = p.ParseFile(ctx, l)
 		if err != nil {
 			t.Errorf("%v: parser failed with %v", path, err)
 		}
