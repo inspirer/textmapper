@@ -548,10 +548,9 @@ The success state is reached at the end of file and when the parsing stack has b
 
 ## Grammar ambiguities
 
-LR generates deterministic parsers and this means there is a single parse tree for each input. To guarantee this property, Textmapper stops on all ambiguities, or *conflicts* during the compilation of the grammar. Most of these conflicts can be fixed by changing the derivation rules and expliciting precedence rules. Two types can be encountered:
+LR generates deterministic parsers and this means there is a single parse tree for each input. To guarantee this property, Textmapper stops on all ambiguities, or *conflicts* during the compilation of the grammar. Most of these conflicts can be fixed by changing the derivation rules and expliciting precedence rules. Two types of conflicts can be encountered:
 
-- **Shift/Reduce** means that a state offers two transitions: shifting the next token
-  or reducing the stack. 
+- **Shift/Reduce** means that a state offers two transitions: shifting the next token or reducing the stack. 
 
 - **Reduce/Reduce** means there exist a state for which two rules match to reduce the stack.
 
@@ -559,19 +558,19 @@ The classic example for a shift/reduce conflict is the [Dangling Else](http://en
 
 ```
 expr: 
-  num | id | pred | ifexpr ; # 1
+  num | id | pred | ifexpr ;
 
 pred: 
-  id '==' num; # 2
+  id '==' num;
 
 ifexpr:
-    'if' pred expr # 3
-  | 'if' pred expr 'else' expr ; # 4
+    'if' pred expr               # 1
+  | 'if' pred expr 'else' expr ; # 2
 ```
 
-The definitions of the terminals `num`, `id`, `'if'`, `'else'` and `'=='` are ommitted. 
+The definitions of the terminals `num`, `id`, `'if'`, `'else'` and `'=='` are omitted for clarity. 
 
-When compiling the rules above, an shift-reduce error message describing the conflict is raised. Conflict error messages include an example of the content of the parsing stack, the lookahead token that can be shifted, the type of conflict and the rule that can be reduced. For example:
+When compiling the rules above, a shift-reduce error message describing the conflict is raised. Conflict error messages include an example of the content of the parsing stack, the lookahead token that can be shifted, the type of conflict and the rule that can be reduced. For example:
 
 ```
 input: 'if' pred expr                 # ← example parsing stack leading to the conflict
@@ -677,28 +676,21 @@ Another example, the unary minus requires a separate operator terminal as it has
 
 Without the *unaryMinus* precedence, `-1-1` can be parsed in two ways: either as `-(1-1)`, or as `(-1)-1`.
 
-
-```
-input: 'if' pred expr                 # ← example parsing stack leading to the conflict
-shift/reduce conflict (next: 'else')  # ← type of conflict and lookahead terminal that can shift 
-    ifexpr : 'if' pred expr           # ← rule whose the last elements match the parsing stack.
-```
-
-Finally, let's resolve the *Dangling Else* problems from the previous section. When the parsing stack is `'if'` `pred` `expr` and the next token is `else`, the statement must be interpreted as an if/else statement and not prematurely reduced as a short `if` statement. The next token `else` must have a higher priority than the rule `ifexpr: 'if' pred expr`.
+Finally, let's resolve the *Dangling Else* problems from the previous section. When the parsing stack is `'if'`, `pred` and `expr` and the next token is `else`, the statement must be interpreted as an if/else statement and not prematurely reduced as a short `if` statement. The next token `else` must have a higher priority than the rule `ifexpr: 'if' pred expr`.
 
 ```
 %left 'if'
 %left 'else'
 
 expr: 
-  num | id | pred | ifexpr ; # 1
+  num | id | pred | ifexpr ;
 
 pred: 
-  id '==' num; # 2
+  id '==' num;
 
 ifexpr:
-    'if' pred expr # 3
-  | 'if' pred expr 'else' expr ; # 4
+    'if' pred expr               # 1
+  | 'if' pred expr 'else' expr ; # 2
 ```
 
 ## Parser-powered lookaheads
