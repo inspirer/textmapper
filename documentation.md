@@ -579,8 +579,8 @@ shift/reduce conflict (next: 'else')  # ← type of conflict and lookahead termi
 ```
 
 Let's use a concrete source: `if a==1 3 else 4`, when the parsing stack has: `'if'`, `a==1`,  `3`, and the next token is `else`, the can:
-- *reduce* the stack `'if'` `pred` `expr` to the non-terminal `ifexpr`, via rule #3.
-- *shift* the terminal `else` into the parsing stack according to rule #4
+- *reduce* the stack `'if'` `pred` `expr` to the non-terminal `ifexpr`, via rule #1.
+- *shift* the terminal `else` into the parsing stack according to rule #2
 
 Any two rules sharing the same prefix are a shift/reduce conflict for when the lookahead is the first token after the prefix. In this case, the grammar is said to be not left-factored.
 
@@ -592,20 +592,20 @@ In C and Java, the *else clause* refers to the *inner if*. In other words, the *
 
 ## Associativity and precedence of operators
 
-An operator is similar to a function in the sense that both can have arguments and return a value: `2 + 3` is similar to`add(2, 3)`. Expressions using operators are usually more compact, for instance, the name is usually one or two characters. More relevant to our concern, the parentheses expliciting the arguments are removed and the operator is generally infix, between the arguments. These two differences leads to shift reduce conflicts when using operators instead of functions:
+An operator is similar to a function in the sense that both can have arguments and return a value: `2 + 3` is similar to`add(2, 3)`. Operators are usually more compact: typically the name is one or two characters. More relevant to our concern, many pairs of parentheses can be omitted for infix operaor, placed between the arguments. These two differences leads to shift reduce conflicts when using operators instead of functions:
 
 First example, `1-2-3` can interpreted as:
 - `substract(1, substract(2,3)) → substract(1, -1) → 0` ❌ or
 - `substract(substract(1, 2),3) → substract(-1,3) → -4` ✔️
 
 Second example, `2**2**3`:
-- `power(power(2, 2),3)` ❌ or
-- `power(2, power(2, 3))` ✔️
+- `power(power(2, 2),3)` → 64 ❌ or
+- `power(2, power(2, 3))`→ 256 ✔️
 
-Note that the correct interpretation depends on the operator. Whether correct interpretation requires to evaluate first the left-most symbol or the right-most symbol depends on the operator and it is called the **associativity** of the operator. 
+Whether correct interpretation requires to evaluate first from the left-most symbol or from  the right-most symbol depends on the operator is the **associativity** of the operator. 
 - left associative like substraction,
-- right associative like power
-- associative like addition: left or right does not matter
+- right associative like power,
+- associative like addition: left or right does not matter,
 - non-associative can't be chained. For example: a range operator, as in `1..100`, is non-associative.
 
 Another type of ambiguity is possible when it is not explicit which arguments belong to which operator. For example, `3*2+1` can be interpreted:
