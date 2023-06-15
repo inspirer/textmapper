@@ -16,7 +16,7 @@
 {{- $sym := index $.Syms .Token}}
 {{- if not (or $sym.Space (eq $sym.Name "invalid_token")) }}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
-		p.listener({{.Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
+		p.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
 {{- end}}
 {{- end}}
 			}
@@ -51,9 +51,10 @@ type Parser struct {
 	listener Listener
 {{- end}}
 
-	next symbol
+	next       symbol
 {{- if .Parser.IsRecovering }}
-	endState  int{{$stateType}}
+	endState   int{{$stateType}}
+	recovering int
 {{- end}}
 
 {{- if .ReportTokens true }}
@@ -178,7 +179,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 	state := start
 {{- if .Parser.IsRecovering }}
 	var lastErr SyntaxError
-	recovering := 0
+	p.recovering = 0
 {{- end}}
 
 	var alloc [startStackSize]stackEntry
@@ -186,7 +187,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{- if .Parser.IsRecovering }}
 	p.endState = end
 {{- end}}
-	p.fetchNext(lexer, stack)
+	p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
@@ -194,7 +195,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -211,7 +212,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -241,7 +242,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{end}}
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			if state >= 0 {
@@ -262,8 +263,8 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 					p.next.symbol = noToken
 				}
 {{- if .Parser.IsRecovering }}
-				if recovering > 0 {
-					recovering--
+				if p.recovering > 0 {
+					p.recovering--
 				}
 {{- end}}
 			}
@@ -271,9 +272,9 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 
 		if action == -2 || state == -1 {
 {{- if .Parser.IsRecovering }}
-			if recovering == 0 {
+			if p.recovering == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 				}
 				lastErr = SyntaxError{
 {{- if .Options.TokenLine}}
@@ -288,12 +289,12 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				}
 			}
 
+			p.recovering = 4
 			if stack = p.recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack); stack == nil {
 {{- template "flushPending" .}}
 				return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
 			}
 			state = stack[len(stack)-1].state
-			recovering = 4
 {{- else}}
 			break
 {{- end}}
@@ -304,7 +305,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 
 	if state != end {
 		if p.next.symbol == noToken {
-			p.fetchNext(lexer, stack)
+			p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 		}
 		err := SyntaxError{
 {{- if .Options.TokenLine}}
@@ -374,7 +375,7 @@ func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Contex
 {{- template "flushPending" .}}
 {{- template "reportConsumedNext" .}}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack)
+		p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 	}
 	return e
 }
@@ -420,7 +421,7 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack)
+		p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 	}
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
@@ -560,7 +561,7 @@ func gotoState(state int{{$stateType}}, symbol int32) int{{$stateType}} {
 
 {{ block "fetchNext" . -}}
 {{ if .Options.IsEnabled "fetchNext" -}}
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+func (p *Parser) fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx "context".Context, {{end}}lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
@@ -636,6 +637,9 @@ func lookaheadRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lex
 {{ if and .Synthetic .NoEoi -}}
 {{ $sym := index $.Syms (sum $.NumTokens .Nonterm) -}}
 func At{{$sym.Name}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}lexer *Lexer, next int32{{if $.NeedsSession}}, s *session{{end}}) {{if $.Options.Cancellable}}(bool, error){{else}}bool{{end}} {
+	if debugSyntax {
+		"fmt".Printf("lookahead {{$sym.Name}}, next: %v\n", symbolName(next))
+	}
 	return lookahead({{if $.Options.Cancellable}}ctx, {{end}}lexer, next, {{$ind}}, {{index $.Parser.Tables.FinalStates $ind}}{{if $.NeedsSession}}, s{{end}});
 }
 
@@ -697,6 +701,9 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexe
 				entry.sym.symbol = sym
 			}
 {{- end}}
+			if debugSyntax {
+				"fmt".Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -721,6 +728,9 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexe
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				"fmt".Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -734,6 +744,9 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexe
 {{ if .Options.RecursiveLookaheads -}}
 	s.cache[key] = state == end
 {{ end -}}
+{{/**/}}	if debugSyntax {
+		"fmt".Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end{{if $.Options.Cancellable}}, nil{{end}}
 }
 
@@ -756,9 +769,9 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- range $act.Report}}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
 {{- if $.Parser.UsesFlags}}
-		p.listener({{$val.Name}}, {{if .Flags}}{{join .Flags "|"}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
+		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
 {{- else}}
-		p.listener({{$val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
+		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
 {{- end}}
 {{- end}}
 {{- if $act.Code }}
@@ -830,7 +843,7 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 {{- $sym := index $.Syms .Token}}
 {{- if or $sym.Space (eq $sym.Name "invalid_token") }}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
-		t = {{.Name}}
+		t = {{template "nodeTypePkg" $}}{{node_id .Name}}
 {{- end}}
 {{- end}}
 	default:
@@ -843,3 +856,4 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 }
 {{ end -}}
 {{ end -}}
+{{ block "onAfterParser" .}}{{end -}}

@@ -65,7 +65,8 @@ class RegexUtil {
 				: new RegexAstEmpty(source, offset);
 	}
 
-	static RegexAstPart createOr(RegexAstPart left, RegexAstPart right, TextSource source, int offset) {
+	static RegexAstPart createOr(RegexAstPart left, RegexAstPart right, TextSource source,
+								 int offset) {
 		if (!(left instanceof RegexAstOr)) {
 			left = new RegexAstOr(left);
 		}
@@ -73,7 +74,8 @@ class RegexUtil {
 		return left;
 	}
 
-	static void addSetSymbol(List<RegexAstPart> charset, RegexAstPart right, ErrorReporter reporter) {
+	static void addSetSymbol(List<RegexAstPart> charset, RegexAstPart right,
+							 ErrorReporter reporter) {
 		if (right instanceof RegexAstOr) {
 			for (RegexPart regexPart : ((RegexAstOr) right).getVariants()) {
 				addSetSymbol(charset, (RegexAstPart) regexPart, reporter);
@@ -83,7 +85,8 @@ class RegexUtil {
 		}
 	}
 
-	static void applyRange(List<RegexAstPart> charset, RegexAstChar right, ErrorReporter reporter) {
+	static void applyRange(List<RegexAstPart> charset, RegexAstChar right,
+						   ErrorReporter reporter) {
 		RegexAstPart last = charset.get(charset.size() - 1);
 
 		if (last instanceof RegexAstChar && isRangeChar(((RegexAstChar) last).getChar())) {
@@ -101,12 +104,25 @@ class RegexUtil {
 					last.getOffset(), right.getEndOffset());
 		}
 
-		charset.add(new RegexAstChar('-', right.getInput(), right.getOffset() - 1, right.getOffset()));
+		charset.add(new RegexAstChar('-', right.getInput(), right.getOffset() - 1,
+				right.getOffset()));
 		charset.add(right);
 	}
 
-	static RegexAstSet toSet(List<RegexAstPart> charset, ErrorReporter reporter, Builder builder, boolean inverted, int offset, int endoffset) {
+	static void subtract(List<RegexAstPart> out, RegexAstSet rhs, ErrorReporter reporter) {
+		if (rhs.getSet().isInverted()) {
+			reporter.error("cannot subtract an inverted set: `" + rhs + "'", rhs.getOffset(),
+					rhs.getEndOffset());
+			return;
+		}
+
+		out.add(new RegexAstSub(rhs, rhs.getInput(), rhs.getOffset(), rhs.getEndOffset()));
+	}
+
+	static RegexAstSet toSet(List<RegexAstPart> charset, ErrorReporter reporter, Builder builder,
+							 boolean inverted, int offset, int endoffset) {
 		builder.clear();
+		boolean hasSub = false;
 		for (RegexAstPart part : charset) {
 			if (part instanceof RegexAstChar) {
 				int c = ((RegexAstChar) part).getChar();
@@ -118,11 +134,29 @@ class RegexUtil {
 				for (int[] range : ((RegexAstCharClass) part).getSet()) {
 					builder.addRange(range[0], range[1]);
 				}
+			} else if (part instanceof RegexAstSub) {
+				hasSub = true;
 			} else {
 				throw new IllegalStateException("unknown part: " + part.getClass());
 			}
 		}
-		return new RegexAstSet(builder.create(inverted), charset, charset.get(0).getInput(), offset, endoffset);
+		CharacterSet res;
+		if (hasSub) {
+			res = builder.create(false /*inverted*/);
+			for (RegexAstPart part : charset) {
+				if (part instanceof RegexAstSub) {
+					res = builder.subtract(res, ((RegexAstSub) part).getInner().getSet());
+				}
+			}
+			if (inverted) {
+				int[] arr = res.toArray();
+				res = new CharacterSetImpl(arr, arr.length, true);
+			}
+		} else {
+			res = builder.create(inverted);
+		}
+
+		return new RegexAstSet(res, charset, charset.get(0).getInput(), offset, endoffset);
 	}
 
 	private static boolean isRangeChar(int c) {
@@ -249,7 +283,8 @@ class RegexUtil {
 		sb.append(sym);
 	}
 
-	static RegexAstPart createQuantifier(RegexAstPart sym, TextSource source, int quantifierStart, int quantifierEnd, ErrorReporter reporter) {
+	static RegexAstPart createQuantifier(RegexAstPart sym, TextSource source, int quantifierStart,
+										 int quantifierEnd, ErrorReporter reporter) {
 		String innerText = source.getText(quantifierStart + 1, quantifierEnd - 1);
 		Matcher matcher = QUANTIFIER.matcher(innerText);
 		if (matcher.matches()) {
@@ -259,7 +294,8 @@ class RegexUtil {
 				String second = matcher.group(3);
 				max = second != null ? Integer.parseInt(second) : -1;
 			}
-			return new RegexAstQuantifier(sym, min, max, sym.getInput(), sym.getOffset(), quantifierEnd);
+			return new RegexAstQuantifier(sym, min, max, sym.getInput(), sym.getOffset(),
+					quantifierEnd);
 		}
 
 		reporter.error("quantifier range is expected instead of `" + innerText + "'",
@@ -268,14 +304,16 @@ class RegexUtil {
 	}
 
 	static void checkExpand(RegexAstExpand expand, ErrorReporter reporter) {
-		String innerText = expand.getInput().getText(expand.getOffset() + 1, expand.getEndOffset() - 1);
+		String innerText = expand.getInput().getText(expand.getOffset() + 1,
+				expand.getEndOffset() - 1);
 		if (!IDENTIFIER.matcher(innerText).matches()) {
 			reporter.error("an expansion identifier is expected instead of `" + innerText + "'",
 					expand.getOffset(), expand.getEndOffset());
 		}
 	}
 
-	static CharacterSet getClassSet(String cl, Builder builder, ErrorReporter reporter, int offset, int endoffset) {
+	static CharacterSet getClassSet(String cl, Builder builder, ErrorReporter reporter, int offset
+			, int endoffset) {
 		builder.clear();
 		if (cl.length() == 1) {
 			char c = cl.charAt(0);

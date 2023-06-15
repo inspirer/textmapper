@@ -98,6 +98,7 @@ var parseTests = []struct {
 	{test.PlusExpr, 0, []string{
 		` eval(««1 + 2» + 3») `,
 		` eval(1 as «2 + 3») `,
+		` eval(1 as «\ 2 + 3») `, // via semantic action
 	}},
 	{test.AsExpr, 0, []string{
 		` eval(«1 as 2 + 3») `,

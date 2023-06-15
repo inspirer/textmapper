@@ -17,6 +17,7 @@ const (
 	WHITESPACE
 	SINGLELINECOMMENT
 	IDENTIFIER
+	IDENTIFIER2
 	INTEGERCONSTANT
 	LASTINT
 	TEST      // test
@@ -39,6 +40,10 @@ const (
 	MINUS     // -
 	MINUSGT   // ->
 	PLUS      // +
+	ESC       // \
+	CHAR__    // _
+	FOO_      // foo_
+	F_A       // f_a
 	MULTILINE
 	DQUOTE // "
 	SQUOTE // '
@@ -57,6 +62,7 @@ var tokenStr = [...]string{
 	"WHITESPACE",
 	"SINGLELINECOMMENT",
 	"IDENTIFIER",
+	"IDENTIFIER2",
 	"INTEGERCONSTANT",
 	"LASTINT",
 	"test",
@@ -79,6 +85,10 @@ var tokenStr = [...]string{
 	"-",
 	"->",
 	"+",
+	"\\",
+	"_",
+	"foo_",
+	"f_a",
 	"MULTILINE",
 	"\"",
 	"'",

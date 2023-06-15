@@ -22,6 +22,8 @@ var idTests = []struct {
 	{"ABcDEF", CamelLower, "aBcDef"},
 	{"ABCDEF", UpperUnderscores, "ABCDEF"},
 	{"ABCDEF", UpperCase, "ABCDEF"},
+	{"abc_def", UpperCase, "ABC_DEF"},
+	{"abc_def", UpperUnderscores, "ABC_DEF"},
 	{"abc-def", CamelCase, "AbcDef"},
 	{"abc_def38", CamelCase, "AbcDef38"},
 
@@ -75,6 +77,19 @@ var idTests = []struct {
 	{"'00'", UpperCase, "_00"},
 	{"'0'", UpperUnderscores, "CHAR_0"},
 	{"'00'", UpperUnderscores, "_00"},
+
+	{"'_'", UpperCase, "CHAR__"},
+	{"'__'", UpperCase, "__"},
+	{"'f_a'", UpperCase, "F_A"},
+	{"'foo_'", UpperCase, "FOO_"},
+	{"'_'", UpperUnderscores, "CHAR__"},
+	{"'__'", UpperUnderscores, "__"},
+	{"'f_a'", UpperUnderscores, "F_A"},
+	{"'foo_'", UpperUnderscores, "FOO_"},
+
+	// Special cases (compatibility with legacy Textmapper).
+	{`'\'`, UpperCase, "ESC"},
+	{`'\\'`, UpperCase, "ESC"},
 }
 
 func TestSymbolID(t *testing.T) {

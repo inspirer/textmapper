@@ -11,6 +11,7 @@
 %token WHITESPACE
 %token SINGLELINECOMMENT
 %token IDENTIFIER
+%token IDENTIFIER2
 %token INTEGERCONSTANT
 %token LASTINT
 %token TEST
@@ -31,6 +32,10 @@
 %token COLON
 %token MINUS
 %token MINUSGT
+%token ESC
+%token CHAR__
+%token FOO_
+%token F_A
 %token MULTILINE
 %token DQUOTE
 %token SQUOTE
@@ -82,9 +87,10 @@ Declaration :
       }
 | TEST LBRACE setof_not_EOI_or_DOT_or_RBRACE_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
+| TEST LPAREN foo_nonterm RPAREN
 | TEST INTEGERCONSTANT
 | EVAL lookahead_notFooLookahead LPAREN expr RPAREN empty1
-| EVAL lookahead_FooLookahead LPAREN foo RPAREN
+| EVAL lookahead_FooLookahead LPAREN foo_nonterm_A RPAREN
 | EVAL lookahead_FooLookahead LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
 | DECL2 COLON QualifiedNameopt
 ;
@@ -104,6 +110,7 @@ setof_not_EOI_or_DOT_or_RBRACE :
 | WHITESPACE
 | SINGLELINECOMMENT
 | IDENTIFIER
+| IDENTIFIER2
 | INTEGERCONSTANT
 | LASTINT
 | TEST
@@ -124,6 +131,10 @@ setof_not_EOI_or_DOT_or_RBRACE :
 | MINUS
 | MINUSGT
 | PLUS
+| ESC
+| CHAR__
+| FOO_
+| F_A
 | MULTILINE
 | DQUOTE
 | SQUOTE
@@ -140,15 +151,39 @@ setof_not_EOI_or_DOT_or_RBRACE_optlist :
 ;
 
 FooLookahead :
-  LPAREN foo RPAREN
+  LPAREN INTEGERCONSTANT DOT setof_foo_la_list RPAREN
+;
+
+setof_foo_la :
+  INTEGERCONSTANT
+| AS
+| DOT
+| PLUS
+| ESC
+| FOO_
+;
+
+setof_foo_la_list :
+  setof_foo_la_list setof_foo_la
+| setof_foo_la
 ;
 
 empty1 :
   %empty
 ;
 
-foo :
+foo_la :
   INTEGERCONSTANT DOT expr
+| INTEGERCONSTANT FOO_ expr
+;
+
+foo_nonterm :
+  INTEGERCONSTANT DOT expr
+;
+
+foo_nonterm_A :
+  INTEGERCONSTANT DOT expr
+| INTEGERCONSTANT FOO_ expr
 ;
 
 QualifiedName :
@@ -172,7 +207,13 @@ If :
 
 expr :
   expr PLUS primaryExpr
+| customPlus
 | primaryExpr
+;
+
+customPlus :
+  ESC primaryExpr PLUS expr
+			{ p.listener(PlusExpr, 0, @0.offset, @3.endoffset) }
 ;
 
 primaryExpr :

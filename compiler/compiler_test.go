@@ -1,6 +1,7 @@
-package grammar
+package compiler
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -33,6 +34,7 @@ var testFiles = []string{
 }
 
 func TestErrors(t *testing.T) {
+	ctx := context.Background()
 	for _, file := range testFiles {
 		content, err := os.ReadFile(filepath.Join("testdata", file))
 		if err != nil {
@@ -43,7 +45,7 @@ func TestErrors(t *testing.T) {
 		for _, compat := range []bool{true, false} {
 			inp := string(content)
 			pt := parsertest.New(t, fmt.Sprintf("%v (compat=%v)", file, compat), inp)
-			tree, err := ast.Parse(file, pt.Source(), tm.StopOnFirstError)
+			tree, err := ast.Parse(ctx, file, pt.Source(), tm.StopOnFirstError)
 			if err != nil {
 				t.Errorf("parsing failed with %v\n%v", err, inp)
 				continue
@@ -84,6 +86,7 @@ var modelFiles = []string{
 }
 
 func TestSourceModel(t *testing.T) {
+	ctx := context.Background()
 	for _, file := range modelFiles {
 		content, err := os.ReadFile(filepath.Join("testdata", file))
 		if err != nil {
@@ -91,25 +94,40 @@ func TestSourceModel(t *testing.T) {
 			continue
 		}
 
-		tree, err := ast.Parse(file, string(content), tm.StopOnFirstError)
+		tree, err := ast.Parse(ctx, file, string(content), tm.StopOnFirstError)
 		if err != nil {
 			t.Errorf("%v: parsing failed with %v", file, err)
 			continue
 		}
+		file := ast.File{Node: tree.Root()}
+		const compat = false
 
-		c := newCompiler(ast.File{Node: tree.Root()}, false /*compat*/)
-		c.compileLexer()
-		c.compileParser()
-		if c.s.Err() != nil {
-			t.Errorf("compilation failure %v", c.s.Err())
+		var s status.Status
+
+		opts := newOptionsParser(&s)
+		opts.parseFrom(file)
+
+		resolver := newResolver(&s)
+
+		lexer := newLexerCompiler(opts, resolver, compat, &s)
+		lexer.compile(file)
+
+		// Resolve terminal references.
+		opts.resolve(resolver)
+
+		c := newCompiler(file, opts.out, lexer.out, resolver, compat, &s)
+		c.compileParser(file)
+
+		if s.Err() != nil {
+			t.Errorf("compilation failure %v", s.Err())
 			continue
 		}
 
 		want := strings.TrimPrefix(tree.Root().Child(selector.Templates).Text(), "%%")
 		var b strings.Builder
 		b.WriteString("\n\n")
-		for _, nt := range c.source.Nonterms {
-			writeNonterm(nt, c.source, &b)
+		for _, nt := range c.out.Parser.Nonterms {
+			writeNonterm(nt, &b)
 		}
 		got := b.String()
 
@@ -119,17 +137,10 @@ func TestSourceModel(t *testing.T) {
 	}
 }
 
-func writeNonterm(nt *syntax.Nonterm, m *syntax.Model, b *strings.Builder) {
+func writeNonterm(nt *syntax.Nonterm, b *strings.Builder) {
 	b.WriteString(nt.Name)
 	if len(nt.Params) > 0 {
-		b.WriteByte('<')
-		for i, p := range nt.Params {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			b.WriteString(m.Params[p].Name)
-		}
-		b.WriteByte('>')
+		fmt.Fprintf(b, "<%v unsubstituted parameters>", len(nt.Params))
 	}
 	b.WriteString(" :\n")
 	if nt.Value.Kind == syntax.Choice {

@@ -65,6 +65,8 @@ charclass {String}: /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize()
 
 <initial, inSet> char {Integer}: /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
+
+
 <initial, afterChar> {
 	'(':  /\(/										{ state = 0; }
 	'|':  /\|/										{ state = 0; }
@@ -72,8 +74,8 @@ charclass {String}: /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize()
 
 	'(?':	/\(\?[is-]+:/							{ state = 0; }
 
-	'[':	/\[/                                    { state = States.inSet; }
-	'[^':	/\[^/                                   { state = States.inSet; }
+	'[':	/\[/                      { state = States.inSet; deep = 1; }
+	'[^':	/\[^/                     { state = States.inSet; deep = 1; }
 	char {Integer}:  /-/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
 	identifier = /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?/
@@ -83,8 +85,10 @@ charclass {String}: /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize()
 }
 
 <inSet> {
+	'[':	/\[/                      { deep++; }
+	'[^':	/\[^/                     { deep++; }
 
-	']':  /\]/										{ state = 0; quantifierReady(); }
+	']':  /\]/										{ if (--deep == 0) { state = 0; quantifierReady(); } }
 	'-':  /-/
 	char {Integer}:  /[\(\|\)]/						{ $$ = tokenText().codePointAt(0); }
 }
@@ -110,13 +114,11 @@ part {RegexAstPart} :
 primitive_part {RegexAstPart} :
 	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
-	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
 	| '.'										{ $$ = new RegexAstAny(source, ${left().offset}, ${left().endoffset}); }
 	| '(' pattern ')'							{ $$ = RegexUtil.wrap($pattern, ${left().offset}, ${left().endoffset}); }
-	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false, ${left().offset}, ${left().endoffset}); }
-	| '[^' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true, ${left().offset}, ${left().endoffset}); }
 	| expand									{ $$ = new RegexAstExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexAstExpand) $$, reporter); }
 	| kw_eoi                     { $$ = new RegexAstChar(-1, source, ${left().offset}, ${left().endoffset}); }
+	| set_primary
 ;
 
 setsymbol {RegexAstPart} :
@@ -125,7 +127,7 @@ setsymbol {RegexAstPart} :
 	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
 ;
 
-%right char escaped;
+%right char escaped charclass;
 
 charset {java.util.@List<RegexAstPart>} :
 	  sym='-'									{ $$ = new java.util.@ArrayList<RegexAstPart>(); ${left()}.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
@@ -135,6 +137,13 @@ charset {java.util.@List<RegexAstPart>} :
 			%prec char
 	| charset '-' char							{ RegexUtil.applyRange($charset, new RegexAstChar($char, source, ${char.offset}, ${char.endoffset}), reporter); }
 	| charset '-' escaped						{ RegexUtil.applyRange($charset, new RegexAstChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
+	| charset '-' set_primary       { RegexUtil.subtract($charset, $set_primary, reporter); }
+;
+
+set_primary {RegexAstSet}:
+	  charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
+	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false, ${left().offset}, ${left().endoffset}); }
+	| '[^' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true, ${left().offset}, ${left().endoffset}); }
 ;
 
 parts {RegexAstPart} :
@@ -152,6 +161,8 @@ org.textmapper.lapg.common.@CharacterSetImpl.Builder setbuilder = new org.textma
 ${end}
 
 ${template java_lexer.lexercode}
+private int deep = 0;
+
 private void quantifierReady() {
 	if (chr == -1) {
 		if (state == 1) state = 0;

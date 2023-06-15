@@ -85,6 +85,11 @@ var setTests = []struct {
 	{`%input A; Z: set(A); A: a set(~A) b;`, []string{
 		"ERR: input:1:31: set complement cannot transitively depend on itself",
 	}},
+
+	// via lookaheads
+	{`%input A; Z: set(B); A: (?= B) a | (?= !B) c; B: b;`, []string{
+		"b",
+	}},
 }
 
 func TestSets(t *testing.T) {

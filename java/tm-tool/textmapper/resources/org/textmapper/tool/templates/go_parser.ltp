@@ -30,9 +30,10 @@ ${if self->eventBased()-}
 	listener ${self->go_listener.listenerTypeRef()}
 ${end-}
 
-	next      symbol
+	next       symbol
 ${if self->hasRecovering()-}
-	endState  ${self->stateType()}
+	endState   ${self->stateType()}
+	recovering int
 ${end-}
 
 ${if self->ignoredReportTokens()}
@@ -155,6 +156,7 @@ ${end-}
 ${if self->ignoredReportTokens()}
 ${call reportIgnoredToken-}
 ${end-}
+${call onAfterParser-}
 ${end}
 
 ${template contextParam-}
@@ -193,7 +195,7 @@ ${end-}
 	state := start
 ${if self->hasRecovering()-}
 	var lastErr SyntaxError
-	recovering := 0
+	p.recovering = 0
 ${end-}
 
 	var alloc [startStackSize]stackEntry
@@ -201,7 +203,7 @@ ${end-}
 ${if self->hasRecovering()-}
 	p.endState = end
 ${end-}
-	p.fetchNext(lexer, stack)
+	p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
@@ -209,7 +211,7 @@ ${if self->needActionsTable()-}
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -226,7 +228,7 @@ ${end-}
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -249,7 +251,7 @@ ${call checkForCancellation(self->hasAssocValuesForInput() ? self->valueTypeDefa
 ${end-}
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			if state >= 0 {
@@ -270,8 +272,8 @@ ${call reportConsumedNext-}
 					p.next.symbol = noToken
 				}
 ${if self->hasRecovering()-}
-				if recovering > 0 {
-					recovering--
+				if p.recovering > 0 {
+					p.recovering--
 				}
 ${end-}
 			}
@@ -279,9 +281,9 @@ ${end-}
 
 		if action == -2 || state == -1 {
 ${if self->hasRecovering()-}
-			if recovering == 0 {
+			if p.recovering == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 				}
 				lastErr = SyntaxError{
 ${if opts.tokenLine-}
@@ -296,12 +298,12 @@ ${call flushPending-}
 				}
 			}
 
+			p.recovering = 4
 			if stack = p.recoverFromError(${call contextArg}lexer, stack); stack == nil {
 ${call flushPending-}
 				return ${if self->hasAssocValuesForInput()}${self->valueTypeDefaultVal()}, ${end}lastErr
 			}
 			state = stack[len(stack)-1].state
-			recovering = 4
 ${else-}
 			break
 ${end-}
@@ -311,7 +313,7 @@ ${end-}
 ${if !self->hasRecovering()-}
 	if state != end {
 		if p.next.symbol == noToken {
-			p.fetchNext(lexer, stack)
+			p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 		}
 		err := SyntaxError{
 ${if opts.tokenLine-}
@@ -385,7 +387,7 @@ func (p *Parser) skipBrokenCode(${call contextParam}lexer *Lexer, stack []stackE
 ${call flushPending-}
 ${call reportConsumedNext-}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack)
+		p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 	}
 	return e
 }
@@ -428,7 +430,7 @@ ${end-}
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack)
+		p.fetchNext(${if context.opts.cancellableFetch}${call contextArg}${end}lexer, stack)
 	}
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
@@ -560,7 +562,7 @@ func gotoState(state ${self->stateType()}, symbol int32) ${self->stateType()} {
 ${end}
 
 ${template fetchNext-}
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+func (p *Parser) fetchNext(${if context.opts.cancellableFetch}${call contextParam}${end}lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
@@ -659,6 +661,9 @@ ${cached query laMethodName() = 'At' + self.target.name}
 ${template lookaheadMethods-}
 ${foreach inp in syntax.input.select(it|!it.hasEoi())-}
 func ${inp->laMethodName()}(${call contextParam}lexer *Lexer, next int32${self->needSession() ? ', s *session' : ''}) ${if opts.cancellable}(bool, error)${else}bool${end} {
+	if debugSyntax {
+		"fmt".Printf("lookahead ${inp.target.name}, next: %v\n", symbolName(next))
+	}
 	return lookahead(${call contextArg}lexer, next, ${inp.index}, ${parser.finalStates[inp.index]}${self->needSession() ? ', s' : ''});
 }
 
@@ -723,6 +728,9 @@ ${end-}
 				entry.sym.symbol = sym
 			}
 ${end-}
+			if debugSyntax {
+				"fmt".Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -740,6 +748,9 @@ ${end-}
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				"fmt".Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -753,6 +764,9 @@ ${end-}
 ${if opts.recursiveLookaheads-}
 	s.cache[key] = state == end
 ${end-}
+	if debugSyntax {
+		"fmt".Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end${if opts.cancellable}, nil${end}
 }
 ${end}
@@ -932,6 +946,7 @@ ${end}
 ${template onAfterShift}${end}
 ${template stateVars}${end}
 ${template initStateVars}${end}
+${template onAfterParser}${end}
 
 ${cached query eventBased() = opts.eventBased && !opts.genast}
 
@@ -945,7 +960,7 @@ ${query valueType() = 'interface{}' }
 
 ${query valueTypeDefaultVal() = 'nil' }
 
-${cached query stateType() = parser.statesCount < 127 ? 'int8' : parser.statesCount < 65535 ? 'int16' : 'int32' }
+${cached query stateType() = parser.statesCount <= 128 ? 'int8' : parser.statesCount <= 65536 ? 'int16' : 'int32' }
 
 ${cached query ignoredReportTokens() = opts.reportTokens.select(tok|self->go_token.isSpace(tok))}
 

@@ -30,19 +30,19 @@ customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", 
 invalid_token:
 error:
 
-<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTag, jsxClosingTag> {
-WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+<initial, div, template, templateDiv, templateExpr, templateExprDiv, jsxTag, jsxTypeArgs, jsxClosingTag> {
+  WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
+
+  # LineTerminatorSequence
+  WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
+
+  commentChars = /([^*]|\*+[^*\/])*\**/
+  MultiLineComment:  /\/\*{commentChars}\*\//     (space)
+  # Note: the following rule disables backtracking for incomplete multiline comments, which
+  # would otherwise be reported as '/', '*', etc.
+  invalid_token: /\/\*{commentChars}/
+  SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/   (space)
 }
-
-# LineTerminatorSequence
-WhiteSpace: /[\n\r\u2028\u2029]|\r\n/ (space)
-
-commentChars = /([^*]|\*+[^*\/])*\**/
-MultiLineComment:  /\/\*{commentChars}\*\//     (space)
-# Note: the following rule disables backtracking for incomplete multiline comments, which
-# would otherwise be reported as '/', '*', etc.
-invalid_token: /\/\*{commentChars}/
-SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/   (space)
 
 # Shebang.
 SingleLineComment: /#![^\n\r\u2028\u2029]*/   (space)
@@ -486,6 +486,7 @@ PrimaryExpression<Yield, Await, NoAsync> -> Expr /* interface */:
   | TemplateLiteral
   | (?= !StartOfArrowFunction) Parenthesized
   | (?= !StartOfArrowFunction) JSXElement
+  | (?= !StartOfArrowFunction) JSXFragment
 ;
 
 Parenthesized<Yield, Await> -> Parenthesized:
@@ -1391,6 +1392,9 @@ JSXOpeningElement<Yield, Await> -> JSXOpeningElement :
 JSXClosingElement -> JSXClosingElement :
     '<' '/' JSXElementName '>' ;
 
+JSXFragment<Yield, Await> -> JSXFragment :
+    '<' '>' JSXChild* '<' '/' '>' ;
+
 JSXElementName -> JSXElementName :
     jsxIdentifier
   | jsxIdentifier ':' jsxIdentifier
@@ -1416,11 +1420,13 @@ JSXAttributeValue<Yield, Await> -> JSXAttributeValue /* interface */:
     jsxStringLiteral                                  -> JSXLiteral
   | '{' .recoveryScope AssignmentExpression<+In> '}'  -> JSXExpr
   | JSXElement
+  | JSXFragment
 ;
 
 JSXChild<Yield, Await> -> JSXChild /* interface */:
     jsxText                                           -> JSXText
   | JSXElement
+  | JSXFragment
   | '{' .recoveryScope AssignmentExpressionopt<+In> '}'              -> JSXExpr
   | '{' .recoveryScope '...' AssignmentExpressionopt<+In> '}'        -> JSXSpreadExpr
 ;
@@ -1831,7 +1837,7 @@ AmbientModuleElement -> TsAmbientElement /* interface */:
 
 %%
 
-${template go_lexer.lexerType}
+${template go_lexer.onBeforeLexer}
 type Dialect int
 
 const (
@@ -1839,7 +1845,6 @@ const (
 	Typescript
 	TypescriptJsx
 )
-${call base-}
 ${end}
 
 ${template go_lexer.stateVars-}
@@ -1916,7 +1921,31 @@ ${template go_lexer.onAfterNext-}
 		case token.LT:
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
-				if l.Dialect != Typescript {
+				switch l.Dialect {
+				case TypescriptJsx:
+					copy := *l
+					copy.Stack = nil
+					copy.Dialect = Typescript
+					if copy.Next() == token.IDENTIFIER {
+						var isArrowFunc bool
+						switch copy.Next() {
+						case token.EXTENDS:
+							fourth := copy.Next()
+							isArrowFunc = fourth != token.ASSIGN && fourth != token.GT
+						case token.COMMA, token.ASSIGN:
+							isArrowFunc = true
+						}
+						if !isArrowFunc {
+							l.State |= 1
+							l.pushState(StateJsxTag)
+						}
+					} else {
+					  l.State |= 1
+					  l.pushState(StateJsxTag)
+          }
+				case Typescript:
+					// JSX is not allowed in pure TypeScript.
+				default:
 					l.State |= 1
 					l.pushState(StateJsxTag)
 				}
@@ -2002,9 +2031,7 @@ ${template go_lexer.onAfterNext-}
 	l.token = tok
 ${end}
 
-${template go_lexer.lexer-}
-${call base-}
-
+${template go_lexer.onAfterLexer}
 func (l *Lexer) pushState(newState int) {
 	l.Stack = append(l.Stack, l.State)
 	l.State = newState
@@ -2023,31 +2050,6 @@ ${end}
 ${template go_parser.callLookaheadNext(memoization)}lookaheadNext(&lexer, end, ${memoization?'nil /*empty stack*/':'stack'})${end}
 
 ${template newTemplates-}
-{{define "onBeforeLexer"}}
-type Dialect int
-
-const (
-	Javascript Dialect = iota
-	Typescript
-	TypescriptJsx
-)
-{{end}}
-
-{{define "onAfterLexer"}}
-func (l *Lexer) pushState(newState int) {
-	l.Stack = append(l.Stack, l.State)
-	l.State = newState
-}
-
-func (l *Lexer) popState() {
-	if ln := len(l.Stack); ln > 0 {
-		l.State = l.Stack[ln-1]
-		l.Stack = l.Stack[:ln-1]
-	} else {
-		l.State = StateDiv
-	}
-}
-{{end}}
 
 {{define "callLookaheadNext" -}}
 lookaheadNext(&lexer, end, {{if eq . true}}nil /*empty stack*/{{else}}stack{{end}})

@@ -21,6 +21,10 @@ var lexerTests = []struct {
 		`«a»->«b»`,
 		`«testfoo»----- testfoo----->`,
 	}},
+	{token.IDENTIFIER2, []string{
+		`«^a» «^b»`,
+		"«^\n» «^\x00»",
+	}},
 
 	{token.MINUS, []string{
 		` «-» ->  a------b«-»  «-»«-»`,
@@ -65,6 +69,10 @@ var lexerTests = []struct {
 	{token.COMMA, []string{"«,»"}},
 	{token.COLON, []string{"«:»"}},
 	{token.PLUS, []string{"«+»"}},
+	{token.ESC, []string{`«\»`}},
+	{token.CHAR__, []string{`«_»`}},
+	{token.FOO_, []string{`«foo_»`}},
+	{token.F_A, []string{`«f_a»`}},
 
 	{token.SINGLELINECOMMENT, []string{" «//abc»\r\n "}},
 	{token.MULTILINECOMMENT, []string{
@@ -83,6 +91,7 @@ var lexerTests = []struct {
 		" «#» ",
 		" /**/ «/* /* ****/  *  nested»", // unfinished comment
 		" «Zff\\» ",
+		" \x00 «\U0001fffe»«#» ", // \x00 is valid whitespace
 	}},
 }
 

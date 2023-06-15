@@ -266,6 +266,10 @@ func (c *typeCollector) nontermPhrase(nonterm int) phrase {
 func (c *typeCollector) exprPhrase(expr *Expr) phrase {
 	switch expr.Kind {
 	case Arrow:
+		if expr.Name == ignoreContent {
+			// Empty phrase.
+			break
+		}
 		return newPhrase(expr)
 	case Sequence, Choice:
 		var list []phrase
@@ -348,10 +352,12 @@ func (c *typeCollector) initTarjan() {
 	c.cache = make(map[int]phrase)
 }
 
+const ignoreContent = "__ignoreContent"
+
 func (c *typeCollector) resolveTypes() {
 	var types []string
 	for _, arrow := range c.arrows {
-		if !c.isCat[arrow.Name] {
+		if !c.isCat[arrow.Name] && arrow.Name != ignoreContent {
 			types = append(types, arrow.Name)
 		}
 	}
@@ -377,7 +383,7 @@ func (c *typeCollector) resolveTypes() {
 func (c *typeCollector) resolveFields() {
 	def := make([][]*Expr, len(c.out.RangeTypes))
 	for _, arrow := range c.arrows {
-		if !c.isCat[arrow.Name] {
+		if !c.isCat[arrow.Name] && arrow.Name != ignoreContent {
 			index := c.types[arrow.Name]
 			def[index] = append(def[index], arrow.Sub[0])
 		}
@@ -430,7 +436,7 @@ func (c *typeCollector) resolveCategories() {
 	closure := set.NewClosure(len(c.out.RangeTypes))
 
 	for _, arrow := range c.arrows {
-		if !c.isCat[arrow.Name] {
+		if !c.isCat[arrow.Name] || arrow.Name == ignoreContent {
 			continue
 		}
 		index, ok := byName[arrow.Name]
@@ -463,9 +469,12 @@ func (c *typeCollector) resolveCategories() {
 	dfs = func(expr *Expr) cardinality {
 		switch expr.Kind {
 		case Arrow:
-			if c.isCat[expr.Name] {
+			switch {
+			case expr.Name == ignoreContent:
+				return nothing
+			case c.isCat[expr.Name]:
 				target.Include(cats[byName[expr.Name]])
-			} else {
+			default:
 				target.Include(closure.Add([]int{c.types[expr.Name]}))
 			}
 			return oneNode
@@ -555,9 +564,13 @@ func (c *typeCollector) resolveCategories() {
 	for index, exprs := range def {
 		target = cats[index]
 		for _, e := range exprs {
-			if dfs(e) == nothing {
-				c.s.Errorf(e.Origin, "'%v' must produce exactly one node", e.String())
+			if dfs(e) != nothing {
+				continue
 			}
+			if e.Kind == Arrow && e.Name == ignoreContent {
+				continue
+			}
+			c.s.Errorf(e.Origin, "'%v' must produce exactly one node", e.String())
 		}
 	}
 
@@ -627,8 +640,6 @@ func (c *typeCollector) fixConflictingFields() {
 		if len(t.Fields) <= 1 {
 			continue
 		}
-		// TODO ignore things in __ignoreContent
-
 		resolved = resolved[:0]
 		ordered := t.Fields[1].FetchAfter == 0
 		for i, field := range t.Fields {

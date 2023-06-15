@@ -574,7 +574,31 @@ restart:
 		case token.LT:
 			if l.State&1 == 0 {
 				// Start a new JSX tag.
-				if l.Dialect != Typescript {
+				switch l.Dialect {
+				case TypescriptJsx:
+					copy := *l
+					copy.Stack = nil
+					copy.Dialect = Typescript
+					if copy.Next() == token.IDENTIFIER {
+						var isArrowFunc bool
+						switch copy.Next() {
+						case token.EXTENDS:
+							fourth := copy.Next()
+							isArrowFunc = fourth != token.ASSIGN && fourth != token.GT
+						case token.COMMA, token.ASSIGN:
+							isArrowFunc = true
+						}
+						if !isArrowFunc {
+							l.State |= 1
+							l.pushState(StateJsxTag)
+						}
+					} else {
+						l.State |= 1
+						l.pushState(StateJsxTag)
+					}
+				case Typescript:
+					// JSX is not allowed in pure TypeScript.
+				default:
 					l.State |= 1
 					l.pushState(StateJsxTag)
 				}

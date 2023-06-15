@@ -52,13 +52,13 @@ func parseJS(ctx context.Context, f file, dialect js.Dialect) string {
 	return result
 }
 
-func parseTM(f file) string {
+func parseTM(ctx context.Context, f file) string {
 	l := new(tm.Lexer)
 	p := new(tm.Parser)
 	l.Init(f.content)
 	result := "ok"
 	p.Init(tm.StopOnFirstError, func(nt tm.NodeType, offset, endoffset int) {})
-	if err := p.Parse(l); err != nil {
+	if err := p.ParseFile(ctx, l); err != nil {
 		result = "parse_err"
 		var suffix string
 		if err, ok := err.(tm.SyntaxError); ok {
@@ -84,7 +84,7 @@ func (f file) tryParse(ctx context.Context) string {
 	case "tsx":
 		return parseJS(ctx, f, js.TypescriptJsx)
 	case "tm":
-		return parseTM(f)
+		return parseTM(ctx, f)
 	}
 
 	return "no_parser"

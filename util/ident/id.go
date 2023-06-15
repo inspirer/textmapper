@@ -62,6 +62,10 @@ func Produce(name string, style Style) string {
 	if ln := len(name); ln > 2 && name[0] == '\'' && name[ln-1] == '\'' {
 		name = name[1 : ln-1]
 		inQuotes = true
+		if name == `\\` && style == UpperCase {
+			// Compatibility with legacy Textmapper.
+			return "ESC"
+		}
 	}
 	var buf strings.Builder
 	write := func(word string) {
@@ -86,7 +90,7 @@ func Produce(name string, style Style) string {
 		r, _ := utf8.DecodeRuneInString(name)
 		if _, ok := charName[r]; !ok {
 			write("char")
-			if style == UpperCase {
+			if style == UpperCase || style == UpperUnderscores && r == '_' {
 				// Insert an underscore anyway, as with UpperUnderscores.
 				buf.WriteByte('_')
 			}
@@ -113,9 +117,15 @@ func Produce(name string, style Style) string {
 		}
 		cont = false
 		if !inQuotes {
-			if r == '$' {
+			if r == '$' || r == '_' && style == UpperCase {
+				// Preserving underscores in UpperCase.
 				buf.WriteByte('_')
 			}
+			continue
+		}
+		if r == '_' {
+			buf.WriteRune('_')
+			cont = true
 			continue
 		}
 		word := charName[r]

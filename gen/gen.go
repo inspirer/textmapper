@@ -2,6 +2,7 @@
 package gen
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -10,6 +11,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/inspirer/textmapper/compiler"
 	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/parsers/tm"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
@@ -18,10 +20,6 @@ import (
 // Writer provides a way to save generated files to disk.
 type Writer interface {
 	Write(filename, content string) error
-}
-
-var languages = map[string]*language{
-	"go": golang,
 }
 
 type Options struct {
@@ -40,7 +38,7 @@ func loadOverlay(name string, tmpl *template.Template, opts Options) (*template.
 		if err == nil && !fi.IsDir() {
 			content, err := os.ReadFile(overlayPath)
 			if err != nil {
-				return tmpl, err
+				return tmpl, fmt.Errorf("failed to read %s: %v", overlayPath, err)
 			}
 			tmpl, err = tmpl.Parse(string(content))
 			if err != nil {
@@ -59,24 +57,29 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 	}
 
 	templates := lang.templates(g)
-	base, err := template.New("main").Funcs(funcMap).Parse(sharedDefs)
-	if err != nil {
-		return err
-	}
-	base, err = loadOverlay(g.TargetLang+"_shared", base, opts)
-	if err != nil {
-		return err
-	}
-
 	for _, f := range templates {
-		tmpl := template.Must(base.Clone())
+		tmpl := template.New("main").Funcs(funcMap).Funcs(extraFuncs(f.name, g))
+
+		// Load shared templates.
+		var err error
+		if !opts.NoBuiltins {
+			tmpl, err = tmpl.Parse(lang.SharedDefs)
+			if err != nil {
+				return fmt.Errorf("error in built-in shared_defs: %v", err)
+			}
+		}
+		tmpl, err = loadOverlay(g.TargetLang+"_shared", tmpl, opts)
+		if err != nil {
+			return err
+		}
+
+		// Load templates for the current file.
 		if !opts.NoBuiltins {
 			tmpl, err = tmpl.Parse(f.template)
 			if err != nil {
-				return err
+				return fmt.Errorf("error in built-in %v: %v", f.name, err)
 			}
 		}
-
 		tmpl, err = loadOverlay(g.TargetLang+"_"+f.name, tmpl, opts)
 		if err != nil {
 			return err
@@ -85,13 +88,13 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		// TODO come up with a way to parse this once
 		_, err = tmpl.Parse(g.CustomTemplates)
 		if err != nil {
-			return err
+			return fmt.Errorf("error in inline template: %v", err)
 		}
 
 		var buf strings.Builder
 		err = tmpl.Execute(&buf, g)
 		if err != nil {
-			return err
+			return fmt.Errorf("error generating %v: %w", f.name, err)
 		}
 		src := Format(f.name, ExtractImports(buf.String()), opts.Compat)
 		if err := w.Write(f.name, src); err != nil {
@@ -126,20 +129,20 @@ func (s Stats) String() string {
 }
 
 // GenerateFile reads, compiles, and generates code for a grammar stored in a file.
-func GenerateFile(path string, w Writer, opts Options) (Stats, error) {
+func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Stats, error) {
 	var ret Stats
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return ret, err
 	}
 
-	tree, err := ast.Parse(path, string(content), tm.StopOnFirstError)
+	tree, err := ast.Parse(ctx, path, string(content), tm.StopOnFirstError)
 	if err != nil {
 		return ret, err
 	}
 
 	start := time.Now()
-	g, err := grammar.Compile(ast.File{Node: tree.Root()}, opts.Compat)
+	g, err := compiler.Compile(ast.File{Node: tree.Root()}, opts.Compat)
 	ret.Compiling = time.Since(start)
 	if err != nil {
 		return ret, err
@@ -158,4 +161,48 @@ func GenerateFile(path string, w Writer, opts Options) (Stats, error) {
 	err = Generate(g, w, opts)
 	ret.Gen = time.Since(start)
 	return ret, err
+}
+
+func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
+	c := &fileContext{filename: filename, Grammar: g}
+	ret := template.FuncMap{}
+	switch g.TargetLang {
+	case "go":
+		ret["pkg"] = c.goPackage
+		ret["node_id"] = c.nodeID
+		ret["is_file_node"] = c.isFileNode
+	}
+	return ret
+}
+
+type fileContext struct {
+	filename string
+	*grammar.Grammar
+}
+
+func (c *fileContext) goPackage(targetPkg string) string {
+	if targetPkg == "main" {
+		targetPkg = ""
+	}
+	var currPkg string
+	if i := strings.IndexByte(c.filename, '/'); i >= 0 {
+		currPkg = c.filename[:i]
+	}
+	if currPkg == targetPkg {
+		// Same package, no need to import.
+		return ""
+	}
+	ret := c.Options.Package
+	if targetPkg != "" {
+		ret = path.Join(ret, targetPkg)
+	}
+	return `"` + ret + `".`
+}
+
+func (c *fileContext) nodeID(name string) string {
+	return name
+}
+
+func (c *fileContext) isFileNode(name string) bool {
+	return name == c.Options.FileNode
 }

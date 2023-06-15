@@ -51,6 +51,7 @@ func (l *Lexer) Init(source string) {
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() token.Token {
+restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
 
@@ -63,7 +64,7 @@ func (l *Lexer) Next() token.Token {
 			state = int(tmLexerAction[state*tmNumClasses])
 			continue
 		} else {
-			ch = 1
+			ch = mapRune(l.ch)
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state > tmFirstRule {
@@ -94,6 +95,8 @@ func (l *Lexer) Next() token.Token {
 		if l.offset == l.tokenOffset {
 			l.rewind(l.scanOffset)
 		}
+	case 2:
+		goto restart
 	}
 	return tok
 }

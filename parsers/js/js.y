@@ -1379,6 +1379,7 @@ PrimaryExpression :
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
 | lookahead_notStartOfArrowFunction JSXElement
+| lookahead_notStartOfArrowFunction JSXFragment
 ;
 
 PrimaryExpression_Await :
@@ -1396,6 +1397,7 @@ PrimaryExpression_Await :
 | TemplateLiteral_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Await
 | lookahead_notStartOfArrowFunction JSXElement_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Await
 ;
 
 PrimaryExpression_Await_NoAsync_NoLet :
@@ -1413,6 +1415,7 @@ PrimaryExpression_Await_NoAsync_NoLet :
 | TemplateLiteral_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Await
 | lookahead_notStartOfArrowFunction JSXElement_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Await
 ;
 
 PrimaryExpression_Await_NoLet :
@@ -1430,6 +1433,7 @@ PrimaryExpression_Await_NoLet :
 | TemplateLiteral_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Await
 | lookahead_notStartOfArrowFunction JSXElement_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Await
 ;
 
 PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass :
@@ -1441,6 +1445,7 @@ PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass :
 | TemplateLiteral_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Await
 | lookahead_notStartOfArrowFunction JSXElement_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Await
 ;
 
 PrimaryExpression_Await_NoObjLiteral :
@@ -1457,6 +1462,7 @@ PrimaryExpression_Await_NoObjLiteral :
 | TemplateLiteral_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Await
 | lookahead_notStartOfArrowFunction JSXElement_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Await
 ;
 
 PrimaryExpression_Await_NoObjLiteral_NoFuncClass :
@@ -1468,6 +1474,7 @@ PrimaryExpression_Await_NoObjLiteral_NoFuncClass :
 | TemplateLiteral_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Await
 | lookahead_notStartOfArrowFunction JSXElement_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Await
 ;
 
 PrimaryExpression_NoAsync_NoLet :
@@ -1485,6 +1492,7 @@ PrimaryExpression_NoAsync_NoLet :
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
 | lookahead_notStartOfArrowFunction JSXElement
+| lookahead_notStartOfArrowFunction JSXFragment
 ;
 
 PrimaryExpression_NoFuncClass :
@@ -1497,6 +1505,7 @@ PrimaryExpression_NoFuncClass :
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
 | lookahead_notStartOfArrowFunction JSXElement
+| lookahead_notStartOfArrowFunction JSXFragment
 ;
 
 PrimaryExpression_NoLet :
@@ -1514,6 +1523,7 @@ PrimaryExpression_NoLet :
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
 | lookahead_notStartOfArrowFunction JSXElement
+| lookahead_notStartOfArrowFunction JSXFragment
 ;
 
 PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass :
@@ -1525,6 +1535,7 @@ PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass :
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
 | lookahead_notStartOfArrowFunction JSXElement
+| lookahead_notStartOfArrowFunction JSXFragment
 ;
 
 PrimaryExpression_NoObjLiteral :
@@ -1541,6 +1552,7 @@ PrimaryExpression_NoObjLiteral :
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
 | lookahead_notStartOfArrowFunction JSXElement
+| lookahead_notStartOfArrowFunction JSXFragment
 ;
 
 PrimaryExpression_NoObjLiteral_NoFuncClass :
@@ -1552,6 +1564,7 @@ PrimaryExpression_NoObjLiteral_NoFuncClass :
 | TemplateLiteral
 | lookahead_notStartOfArrowFunction Parenthesized
 | lookahead_notStartOfArrowFunction JSXElement
+| lookahead_notStartOfArrowFunction JSXFragment
 ;
 
 PrimaryExpression_Yield :
@@ -1569,6 +1582,7 @@ PrimaryExpression_Yield :
 | TemplateLiteral_Yield
 | lookahead_notStartOfArrowFunction Parenthesized_Yield
 | lookahead_notStartOfArrowFunction JSXElement_Yield
+| lookahead_notStartOfArrowFunction JSXFragment_Yield
 ;
 
 PrimaryExpression_Yield_Await :
@@ -1586,6 +1600,7 @@ PrimaryExpression_Yield_Await :
 | TemplateLiteral_Yield_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
 | lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
 ;
 
 PrimaryExpression_Yield_Await_NoAsync_NoLet :
@@ -1603,6 +1618,7 @@ PrimaryExpression_Yield_Await_NoAsync_NoLet :
 | TemplateLiteral_Yield_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
 | lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
 ;
 
 PrimaryExpression_Yield_Await_NoLet :
@@ -1620,6 +1636,7 @@ PrimaryExpression_Yield_Await_NoLet :
 | TemplateLiteral_Yield_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
 | lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
 ;
 
 PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass :
@@ -1631,6 +1648,7 @@ PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass :
 | TemplateLiteral_Yield_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
 | lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
 ;
 
 PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass :
@@ -1642,6 +1660,7 @@ PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass :
 | TemplateLiteral_Yield_Await
 | lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
 | lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+| lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
 ;
 
 PrimaryExpression_Yield_NoAsync_NoLet :
@@ -1659,6 +1678,7 @@ PrimaryExpression_Yield_NoAsync_NoLet :
 | TemplateLiteral_Yield
 | lookahead_notStartOfArrowFunction Parenthesized_Yield
 | lookahead_notStartOfArrowFunction JSXElement_Yield
+| lookahead_notStartOfArrowFunction JSXFragment_Yield
 ;
 
 PrimaryExpression_Yield_NoLet :
@@ -1676,6 +1696,7 @@ PrimaryExpression_Yield_NoLet :
 | TemplateLiteral_Yield
 | lookahead_notStartOfArrowFunction Parenthesized_Yield
 | lookahead_notStartOfArrowFunction JSXElement_Yield
+| lookahead_notStartOfArrowFunction JSXFragment_Yield
 ;
 
 PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass :
@@ -1687,6 +1708,7 @@ PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass :
 | TemplateLiteral_Yield
 | lookahead_notStartOfArrowFunction Parenthesized_Yield
 | lookahead_notStartOfArrowFunction JSXElement_Yield
+| lookahead_notStartOfArrowFunction JSXFragment_Yield
 ;
 
 PrimaryExpression_Yield_NoObjLiteral_NoFuncClass :
@@ -1698,6 +1720,7 @@ PrimaryExpression_Yield_NoObjLiteral_NoFuncClass :
 | TemplateLiteral_Yield
 | lookahead_notStartOfArrowFunction Parenthesized_Yield
 | lookahead_notStartOfArrowFunction JSXElement_Yield
+| lookahead_notStartOfArrowFunction JSXFragment_Yield
 ;
 
 Parenthesized :
@@ -7068,6 +7091,22 @@ JSXClosingElement :
   LT DIV JSXElementName GT
 ;
 
+JSXFragment :
+  LT GT JSXChild_optlist LT DIV GT
+;
+
+JSXFragment_Await :
+  LT GT JSXChild_Await_optlist LT DIV GT
+;
+
+JSXFragment_Yield :
+  LT GT JSXChild_Yield_optlist LT DIV GT
+;
+
+JSXFragment_Yield_Await :
+  LT GT JSXChild_Yield_Await_optlist LT DIV GT
+;
+
 JSXElementName :
   JSXIDENTIFIER
 | JSXIDENTIFIER COLON JSXIDENTIFIER
@@ -7112,29 +7151,34 @@ JSXAttributeValue :
   JSXSTRINGLITERAL
 | LBRACE /*.recoveryScope*/ AssignmentExpression_In RBRACE
 | JSXElement
+| JSXFragment
 ;
 
 JSXAttributeValue_Await :
   JSXSTRINGLITERAL
 | LBRACE /*.recoveryScope*/ AssignmentExpression_In_Await RBRACE
 | JSXElement_Await
+| JSXFragment_Await
 ;
 
 JSXAttributeValue_Yield :
   JSXSTRINGLITERAL
 | LBRACE /*.recoveryScope*/ AssignmentExpression_In_Yield RBRACE
 | JSXElement_Yield
+| JSXFragment_Yield
 ;
 
 JSXAttributeValue_Yield_Await :
   JSXSTRINGLITERAL
 | LBRACE /*.recoveryScope*/ AssignmentExpression_In_Yield_Await RBRACE
 | JSXElement_Yield_Await
+| JSXFragment_Yield_Await
 ;
 
 JSXChild :
   JSXTEXT
 | JSXElement
+| JSXFragment
 | LBRACE /*.recoveryScope*/ AssignmentExpressionopt_In RBRACE
 | LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_In RBRACE
 ;
@@ -7142,6 +7186,7 @@ JSXChild :
 JSXChild_Await :
   JSXTEXT
 | JSXElement_Await
+| JSXFragment_Await
 | LBRACE /*.recoveryScope*/ AssignmentExpressionopt_In_Await RBRACE
 | LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_In_Await RBRACE
 ;
@@ -7149,6 +7194,7 @@ JSXChild_Await :
 JSXChild_Yield :
   JSXTEXT
 | JSXElement_Yield
+| JSXFragment_Yield
 | LBRACE /*.recoveryScope*/ AssignmentExpressionopt_In_Yield RBRACE
 | LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_In_Yield RBRACE
 ;
@@ -7156,6 +7202,7 @@ JSXChild_Yield :
 JSXChild_Yield_Await :
   JSXTEXT
 | JSXElement_Yield_Await
+| JSXFragment_Yield_Await
 | LBRACE /*.recoveryScope*/ AssignmentExpressionopt_In_Yield_Await RBRACE
 | LBRACE /*.recoveryScope*/ DOTDOTDOT AssignmentExpressionopt_In_Yield_Await RBRACE
 ;

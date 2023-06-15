@@ -11,17 +11,19 @@ debugParser = false
 tokenLine = false
 fixWhitespace = true
 cancellable = true
+cancellableFetch = true
 recursiveLookaheads = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token, Identifier]
 extraTypes = ["Int7", "Int9 -> Expr"]
 
 :: lexer
 
-WhiteSpace: /[ \t\r\n]/ (space)
+WhiteSpace: /[ \t\r\n\x00]/ (space)
 
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
 
 Identifier: /[a-zA-Y](-*[a-zA-Z_0-9])*/    (class)
+Identifier2: /^[\p{Any}-[\x80-\U0010ffff]-\p{Lu}]/
 
 IntegerConstant {int}: /[0-9]+/ { $$ = mustParseInt(l.Text()) }
 
@@ -51,6 +53,10 @@ lastInt: /[0-9]+(\n|{eoi})/
 '-': /-/
 '->': /->/
 '+': /\+/
+'\\': /\\/
+'_': /_/
+'foo_': /foo_/
+'f_a': /f_a/
 
 multiline: /%\s*q((\n|{eoi})%\s*q)+/
 
@@ -132,27 +138,37 @@ Declaration -> Declaration :
       {
         switch $IntegerConstant {
         case 7:
-          p.listener(Int7, 0, ${first().offset}, ${last().endoffset})
+          p.listener(Int7, 0, ${self[0].offset}, ${last().endoffset})
         case 9:
           p.listener(Int9, 0, ${first().offset}, ${last().endoffset})
         }
       }                                                  -> Int
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
   | 'test' '(' (empty1 -> Empty1) ')'
+  | 'test' '(' foo_nonterm<~A> ')'
   | 'test' (IntegerConstant -> Icon/InTest) -> TestIntClause/InTest,InFoo
   | 'eval' (?= !FooLookahead) '(' expr ')' empty1   -> EvalEmpty1
-  | 'eval' (?= FooLookahead) '(' foo ')' -> EvalFoo
+  | 'eval' (?= FooLookahead) '(' foo_nonterm<+A> ')' -> EvalFoo
   | 'eval' (?= FooLookahead) '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
   | 'decl2' ':' QualifiedNameopt -> DeclOptQual
 ;
 
 FooLookahead:
-  '(' foo ')' ;
+  '(' IntegerConstant '.' set(foo_la)+ ')' ;
 
 empty1 : ;
 
-foo :
-      IntegerConstant '.' expr ;
+%flag A;
+
+foo_la:
+      IntegerConstant '.' expr
+    | IntegerConstant 'foo_' expr
+;
+
+foo_nonterm<A> :
+      IntegerConstant '.' expr 
+    | [A] IntegerConstant 'foo_' expr
+;
 
 # Test: a list of an exported terminal.
 
@@ -185,8 +201,12 @@ If -> If:
 
 expr -> Expr:
     left=expr '+' right=primaryExpr   -> PlusExpr
+  | customPlus -> __ignoreContent
   | primaryExpr
 ;
+
+customPlus -> __ignoreContent:
+  '\\' primaryExpr '+' expr { p.listener(PlusExpr, 0, ${first().offset}, ${last().endoffset}) } ;
 
 # AsExpr consumes the whole suffix greedily.
 # Note: applying .greedy after 'as' does not work since the conflict happens later.
@@ -197,9 +217,7 @@ primaryExpr<flag WithoutAs = false> -> Expr:
 
 %%
 
-${template go_lexer.lexer-}
-${call base-}
-
+${template go_lexer.onAfterLexer}
 func mustParseInt(s string) int {
 	i, err := "strconv".Atoi(s)
 	if err != nil {
@@ -207,18 +225,6 @@ func mustParseInt(s string) int {
 	}
 	return i
 }
-${end}
-
-${template newTemplates-}
-{{define "onAfterLexer"}}
-func mustParseInt(s string) int {
-	i, err := "strconv".Atoi(s)
-	if err != nil {
-		panic(`lexer internal error: ` + err.Error())
-	}
-	return i
-}
-{{end}}
 ${end}
 
 ${template go_lexer.onBeforeNext-}
@@ -226,3 +232,7 @@ ${template go_lexer.onBeforeNext-}
 ${end}
 
 ${query go_listener.hasFlags() = true}
+
+${template go_parser.onAfterParser}
+func parserEnd() {}
+${end}

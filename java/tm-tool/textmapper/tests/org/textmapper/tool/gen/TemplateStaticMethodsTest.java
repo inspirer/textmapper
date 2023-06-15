@@ -198,7 +198,7 @@ public class TemplateStaticMethodsTest {
 	private void testRanges(int[] arr) {
 		List<MapRange> res = packAsMapRanges(arr, 0);
 		int[] restored = new int[arr.length];
-		Arrays.fill(restored, 1);
+		Arrays.fill(restored, arr[arr.length-1]);
 		int start = 0;
 		for (MapRange r : res) {
 			assertTrue(start <= r.lo);
@@ -220,6 +220,7 @@ public class TemplateStaticMethodsTest {
 		testRanges(new int[]{1, 2, 3, 3, 3, 4, 1, 1, 1, 1, 1});
 		testRanges(new int[]{1, 1, 1, 1, 1, 1, 22, 1, 1, 1, 1, 1});
 		testRanges(new int[]{0});
+		testRanges(new int[]{1, 2, 3, 3, 2});
 		testRanges(new int[]{0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 				1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 22});
 		testRanges(new int[]{0, 1, 1, 1, 0, 1, 1, 1, 1, 1});

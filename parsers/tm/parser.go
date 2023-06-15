@@ -3,6 +3,7 @@
 package tm
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/inspirer/textmapper/parsers/tm/token"
@@ -21,8 +22,9 @@ type Parser struct {
 	eh       ErrorHandler
 	listener Listener
 
-	next     symbol
-	endState int16
+	next       symbol
+	endState   int16
+	recovering int
 
 	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
 	pending []symbol
@@ -65,15 +67,20 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 507, lexer)
+func (p *Parser) ParseFile(ctx context.Context, lexer *Lexer) error {
+	return p.parse(ctx, 0, 509, lexer)
 }
 
-func (p *Parser) parse(start, end int16, lexer *Lexer) error {
+func (p *Parser) ParseNonterm(ctx context.Context, lexer *Lexer) error {
+	return p.parse(ctx, 1, 510, lexer)
+}
+
+func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
 	p.pending = p.pending[:0]
+	var shiftCounter int
 	state := start
 	var lastErr SyntaxError
-	recovering := 0
+	p.recovering = 0
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
@@ -108,7 +115,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule(rule, &entry, rhs, lexer); err != nil {
+			if err := p.applyRule(ctx, rule, &entry, rhs, lexer); err != nil {
 				return err
 			}
 			if debugSyntax {
@@ -119,6 +126,15 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 			stack = append(stack, entry)
 
 		} else if action == -1 {
+			if shiftCounter++; shiftCounter&0x1ff == 0 {
+				// Note: checking for context cancellation is expensive so we do it from time to time.
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				default:
+				}
+			}
+
 			// Shift.
 			if p.next.symbol == noToken {
 				p.fetchNext(lexer, stack)
@@ -134,21 +150,21 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				}
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
+						p.reportIgnoredToken(ctx, tok)
 					}
 					p.pending = p.pending[:0]
 				}
 				if p.next.symbol != eoiToken {
 					p.next.symbol = noToken
 				}
-				if recovering > 0 {
-					recovering--
+				if p.recovering > 0 {
+					p.recovering--
 				}
 			}
 		}
 
 		if action == -2 || state == -1 {
-			if recovering == 0 {
+			if p.recovering == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
@@ -160,7 +176,7 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				if !p.eh(lastErr) {
 					if len(p.pending) > 0 {
 						for _, tok := range p.pending {
-							p.reportIgnoredToken(tok)
+							p.reportIgnoredToken(ctx, tok)
 						}
 						p.pending = p.pending[:0]
 					}
@@ -168,17 +184,17 @@ func (p *Parser) parse(start, end int16, lexer *Lexer) error {
 				}
 			}
 
-			if stack = p.recoverFromError(lexer, stack); stack == nil {
+			p.recovering = 4
+			if stack = p.recoverFromError(ctx, lexer, stack); stack == nil {
 				if len(p.pending) > 0 {
 					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
+						p.reportIgnoredToken(ctx, tok)
 					}
 					p.pending = p.pending[:0]
 				}
 				return lastErr
 			}
 			state = stack[len(stack)-1].state
-			recovering = 4
 		}
 	}
 
@@ -217,7 +233,7 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stac
 	return symbol == eoiToken
 }
 
-func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
+func (p *Parser) skipBrokenCode(ctx context.Context, lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
@@ -225,7 +241,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 		}
 		if len(p.pending) > 0 {
 			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(ctx, tok)
 			}
 			p.pending = p.pending[:0]
 		}
@@ -235,7 +251,7 @@ func (p *Parser) skipBrokenCode(lexer *Lexer, stack []stackEntry, canRecover fun
 	return e
 }
 
-func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry {
+func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []stackEntry) []stackEntry {
 	var recoverSyms [1 + token.NumTokens/8]uint8
 	var recoverPos []int
 
@@ -277,7 +293,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		}
 	}
 	for {
-		if endoffset := p.skipBrokenCode(lexer, stack, canRecover); endoffset > e {
+		if endoffset := p.skipBrokenCode(ctx, lexer, stack, canRecover); endoffset > e {
 			e = endoffset
 		}
 
@@ -308,7 +324,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 		} else if s == e && len(p.pending) > 0 {
 			// This means pending tokens don't contain InvalidTokens.
 			for _, tok := range p.pending {
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(ctx, tok)
 			}
 			p.pending = p.pending[:0]
 		}
@@ -325,7 +341,7 @@ func (p *Parser) recoverFromError(lexer *Lexer, stack []stackEntry) []stackEntry
 				if tok.offset >= e {
 					break
 				}
-				p.reportIgnoredToken(tok)
+				p.reportIgnoredToken(ctx, tok)
 			}
 			newSize := len(p.pending) - consumed
 			copy(p.pending[:newSize], p.pending[consumed:])
@@ -395,7 +411,7 @@ restart:
 	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
+func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
 	case 198: // directive : '%' 'assert' 'empty' rhsSet ';'
 		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
@@ -416,7 +432,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 	return
 }
 
-func (p *Parser) reportIgnoredToken(tok symbol) {
+func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	var t NodeType
 	switch token.Token(tok.symbol) {
 	case token.INVALID_TOKEN:

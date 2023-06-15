@@ -36,7 +36,7 @@ type symbol struct {
 
 type stackEntry struct {
 	sym   symbol
-	state int8
+	state int16
 	value interface{}
 }
 
@@ -56,12 +56,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 1, 116, lexer)
+	_, err := p.parse(ctx, 1, 140, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 2, 117, lexer)
+	v, err := p.parse(ctx, 2, 141, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -71,7 +71,7 @@ type session struct {
 	cache        map[uint64]bool
 }
 
-func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (interface{}, error) {
+func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (interface{}, error) {
 	p.pending = p.pending[:0]
 	var s session
 	s.cache = make(map[uint64]bool)
@@ -79,14 +79,14 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
-	p.fetchNext(lexer, stack)
+	p.fetchNext(ctx, lexer, stack)
 
 	for state != end {
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(ctx, lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
 		}
@@ -102,7 +102,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.fetchNext(ctx, lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
@@ -131,7 +131,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 
 			// Shift.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.fetchNext(ctx, lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
 			if state >= 0 {
@@ -166,7 +166,7 @@ func (p *Parser) parse(ctx context.Context, start, end int8, lexer *Lexer) (inte
 
 	if state != end {
 		if p.next.symbol == noToken {
-			p.fetchNext(lexer, stack)
+			p.fetchNext(ctx, lexer, stack)
 		}
 		err := SyntaxError{
 			Offset:    p.next.offset,
@@ -188,7 +188,7 @@ func lalr(action, next int32) int32 {
 	return tmLalr[a+1]
 }
 
-func gotoState(state int8, symbol int32) int8 {
+func gotoState(state int16, symbol int32) int16 {
 	min := tmGoto[symbol]
 	max := tmGoto[symbol+1]
 
@@ -214,7 +214,7 @@ func gotoState(state int8, symbol int32) int8 {
 	return -1
 }
 
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
+func (p *Parser) fetchNext(ctx context.Context, lexer *Lexer, stack []stackEntry) {
 restart:
 	tok := lexer.Next()
 	switch tok {
@@ -240,12 +240,12 @@ restart:
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 74:
+	case 94:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 113, s); ok {
-			sym = 38 /* lookahead_FooLookahead */
+		if ok, err = lookahead(ctx, lexer, next, 0, 137, s); ok {
+			sym = 43 /* lookahead_FooLookahead */
 		} else {
-			sym = 39 /* lookahead_notFooLookahead */
+			sym = 44 /* lookahead_notFooLookahead */
 		}
 		return
 	}
@@ -253,10 +253,13 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 }
 
 func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
-	return lookahead(ctx, lexer, next, 0, 113, s)
+	if debugSyntax {
+		fmt.Printf("lookahead FooLookahead, next: %v\n", symbolName(next))
+	}
+	return lookahead(ctx, lexer, next, 0, 137, s)
 }
 
-func lookahead(ctx context.Context, l *Lexer, next int32, start, end int8, s *session) (bool, error) {
+func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
 	var lexer Lexer = *l
 
 	// Use memoization for recursive lookaheads.
@@ -297,6 +300,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int8, s *se
 			if sym != 0 {
 				entry.sym.symbol = sym
 			}
+			if debugSyntax {
+				fmt.Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
+			}
 			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
@@ -320,6 +326,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int8, s *se
 				sym:   symbol{symbol: next},
 				state: state,
 			})
+			if debugSyntax {
+				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+			}
 			if state != -1 && next != eoiToken {
 				next = noToken
 			}
@@ -331,6 +340,9 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int8, s *se
 	}
 
 	s.cache[key] = state == end
+	if debugSyntax {
+		fmt.Printf("lookahead done: %v\n", state == end)
+	}
 	return state == end, nil
 }
 
@@ -370,18 +382,22 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		}
 	case 15: // Declaration : 'test' '(' empty1 ')'
 		p.listener(Empty1, 0, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 16: // Declaration : 'test' IntegerConstant
+	case 17: // Declaration : 'test' IntegerConstant
 		p.listener(Icon, InTest, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 17: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
+	case 18: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
 		fixTrailingWS(lhs, rhs)
-	case 20: // Declaration : 'decl2' ':' QualifiedNameopt
+	case 21: // Declaration : 'decl2' ':' QualifiedNameopt
 		fixTrailingWS(lhs, rhs)
-	case 74:
+	case 88: // customPlus : '\\' primaryExpr '+' expr
+		{
+			p.listener(PlusExpr, 0, rhs[0].sym.offset, rhs[3].sym.endoffset)
+		}
+	case 94:
 		var ok bool
 		if ok, err = AtFooLookahead(ctx, lexer, p.next.symbol, s); ok {
-			lhs.sym.symbol = 38 /* lookahead_FooLookahead */
+			lhs.sym.symbol = 43 /* lookahead_FooLookahead */
 		} else {
-			lhs.sym.symbol = 39 /* lookahead_notFooLookahead */
+			lhs.sym.symbol = 44 /* lookahead_notFooLookahead */
 		}
 		return
 	}
@@ -423,3 +439,5 @@ func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	}
 	p.listener(t, 0, tok.offset, tok.endoffset)
 }
+
+func parserEnd() {}

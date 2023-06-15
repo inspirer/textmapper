@@ -84,6 +84,8 @@ public class RegexDefLexer {
 	private int currLine;
 	private int currOffset;
 
+	private int deep = 0;
+
 	private void quantifierReady() {
 		if (chr == -1) {
 			if (state == 1) state = 0;
@@ -189,14 +191,14 @@ public class RegexDefLexer {
 
 	private static final int tmFirstRule = -7;
 
-	private static final int[] tmRuleSymbol = unpack_int(38,
+	private static final int[] tmRuleSymbol = unpack_int(40,
 		"\uffff\uffff\0\0\1\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\2\0\3\0\3\0\4\0" +
 		"\5\0\6\0\7\0\10\0\11\0\12\0\13\0\1\0\14\0\15\0\16\0\17\0\20\0\21\0\1\0\22\0\23\0" +
-		"\24\0\25\0\1\0");
+		"\20\0\21\0\24\0\25\0\1\0");
 
 	private static final int tmClassesCount = 41;
 
-	private static final short[] tmGoto = unpack_vc_short(2870,
+	private static final short[] tmGoto = unpack_vc_short(2952,
 		"\1\ufff8\3\62\1\56\1\55\2\54\1\62\1\53\1\52\1\ufff9\3\62\1\54\6\62\1\50\1\6\1\ufff9" +
 		"\15\62\1\2\1\1\1\62\51\uffde\20\ufff7\6\uffff\4\ufff7\14\uffff\3\ufff7\11\ufff9\1" +
 		"\5\2\ufff9\2\3\2\ufff9\6\3\4\ufff9\14\3\2\ufff9\1\4\51\uffd8\11\ufff9\1\5\2\ufff9" +
@@ -220,8 +222,9 @@ public class RegexDefLexer {
 		"\3\ufff7\1\ufffc\1\ufff7\1\ufffb\2\ufff7\2\ufffa\2\ufff7\6\uffff\4\ufff7\14\uffff" +
 		"\3\ufff7\10\ufff9\1\67\3\ufff9\2\65\32\ufff9\1\66\51\uffe4\14\ufff9\2\67\32\ufff9" +
 		"\1\66\50\ufff9\1\71\51\uffe3\50\ufff9\1\73\51\uffe2\3\ufff9\1\75\115\ufff9\1\76\51" +
-		"\uffe1\51\uffe5\51\uffe6\51\uffe7\1\ufff9\3\62\2\105\2\54\1\62\1\104\1\52\1\ufff9" +
-		"\3\62\1\54\6\62\1\ufff9\1\6\1\103\16\62\1\105\1\62\51\uffd6\51\uffd5\51\uffd4");
+		"\uffe1\51\uffe5\51\uffe6\51\uffe7\1\ufff9\3\62\2\107\2\54\1\62\1\106\1\52\1\ufff9" +
+		"\3\62\1\54\6\62\1\104\1\6\1\103\16\62\1\107\1\62\51\uffd4\31\uffd6\1\105\17\uffd6" +
+		"\51\uffd5\51\uffd3\51\uffd2");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -399,20 +402,26 @@ public class RegexDefLexer {
 				{ state = 0; }
 				break;
 			case 30: // '[': /\[/
-				{ state = States.inSet; }
+				{ state = States.inSet; deep = 1; }
 				break;
 			case 31: // '[^': /\[\^/
-				{ state = States.inSet; }
+				{ state = States.inSet; deep = 1; }
 				break;
 			case 32: // char: /\-/
 				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
 				break;
 			case 33:
 				return createExpandToken(token, ruleIndex);
-			case 35: // ']': /\]/
-				{ state = 0; quantifierReady(); }
+			case 35: // '[': /\[/
+				{ deep++; }
 				break;
-			case 37: // char: /[(|)]/
+			case 36: // '[^': /\[\^/
+				{ deep++; }
+				break;
+			case 37: // ']': /\]/
+				{ if (--deep == 0) { state = 0; quantifierReady(); } }
+				break;
+			case 39: // char: /[(|)]/
 				{ token.value = tokenText().codePointAt(0); }
 				break;
 		}

@@ -47,7 +47,7 @@ lexer1.Lexer.prototype = {
     1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
     6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 1, 1, 1, 6,
     1, 6, 6, 6, 7, 8, 6, 6, 9, 6, 6, 6, 6, 10, 6, 11,
-    6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6
+    6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 1
   ],
   tmStateMap: [
     0, 6
@@ -71,7 +71,7 @@ lexer1.Lexer.prototype = {
   ],
 
   mapCharacter: function(chr) {
-    if (chr >= 0 && chr < 123) {
+    if (chr >= 0 && chr < 124) {
       return this.tmCharClass[chr];
     }
     return chr === -1 ? 0 : 1;

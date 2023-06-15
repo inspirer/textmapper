@@ -9,6 +9,10 @@ dictionaries
 /java/tm-idea/availables.xml
 /java/tm-idea/caches
 /java/tm-eclipse/plugins/org.textmapper/textmapper*
+/examples/cpp/bazel-*
+/examples/cpp/external
+/examples/cpp/compile_commands.json
+/examples/cpp/.cache/
 .vscode
 target
 bin

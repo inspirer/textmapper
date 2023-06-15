@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/parsers/js"
+	"github.com/inspirer/textmapper/parsers/js/token"
 	"github.com/inspirer/textmapper/parsers/parsertest"
 )
 
@@ -15,7 +16,6 @@ var parseTests = []struct {
 	nt      js.NodeType
 	inputs  []string
 }{
-
 	{js.Javascript, js.SingleLineComment, []string{
 		` «// abc»
 		  «// abc2»
@@ -649,9 +649,10 @@ var parseTests = []struct {
 		`function q(«a», «b») {}`,
 		`function q(«[id]», «{name: name}») {}`,
 	}},
-	{js.Javascript, js.ArrowFunc, []string{
+	{js.Typescript, js.ArrowFunc, []string{
 		`(«a => a + 1»)(1);`,
 		`(«(a,b) => { return a*b; }»)(1);`,
+		`const a = «<T extends object = {}>(opts: Foo<T>) => {}»;`,
 		`(«(a:A<B<C<D>>>,b) => { return a*b; }»)((a<b>c>>d));`,
 		`
 		 var a = async
@@ -1067,15 +1068,23 @@ var parseTests = []struct {
 
 	// JSX
 	{js.Javascript, js.JSXElement, []string{
-		`var a = «<div>ABC</div>»;`,
+		`var a = «<div
+		       >ABC</div>»;`,
 		`var a = «<div/>»;`,
 		`var a = «<Q>«<P/>»</Q>»;`,
 		`var a = «<div>< / div>»;`,
 		`var a = «<div / >»;`,
 		`var a = «<q>{ «<a href={ {a: {b: 1}}.a.b }/>» }</q>»;`,
 		`var a = «<q>{ [1,2,3].map(a => («<a href={a}/>»)) }</q>»;`,
-		`var a = «<X comp=«<Y text=«<h1>Title</h1>» />» />»;`,
+		`var a = «<X comp=«<Y
+		         text=«<h1>Title</h1>» />» />»;`,
 		"var a = «<input value={`test ${index/4|0}`} disabled={foo%10 ? null : true} />»",
+	}},
+	{js.Javascript, js.JSXFragment, []string{
+		`var a = «<>ABC</>»;`,
+		`var a = <div attr=«<>foo</>»/>;`,
+		`var a = <div attr="">«<></>»</div>;`,
+		`var a = <div attr="">«<><span a=«<></>»/></>»</div>;`,
 	}},
 	{js.Javascript, js.JSXSelfClosingElement, []string{
 		`var a = «<div / >»;`,
@@ -1665,16 +1674,39 @@ var parseTests = []struct {
 		`var a = «<div/>»;`,
 		`var a = «<Q>«<P/>»</Q>»;`,
 		`var a = «<div>< / div>»;`,
-		`var a = «<div / >»;`,
+		`var a = «<div
+		           abc=""/ >»;`,
 		`var a = «<q>{ «<a href={ {a: {b: 1}}.a.b }/>» }</q>»;`,
 		`var a = «<q>{ [1,2,3].map(a => («<a href={a}/>»)) }</q>»;`,
-		`var a = «<X comp=«<Y text=«<h1>Title</h1>» />» />»;`,
+		`var a = «<X comp=«<Y text=«<
+		                             h1
+								    >Title</h1>» />» />»;`,
 		"var a = «<input value={`test ${index/4|0}`} disabled={foo%10 ? null : true} />»",
 		// Type arguments.
 		`const x = «<GenericComponent<Props> a={10} b="hi"/>»;`, // TS 2.9
 	}},
 	{js.TypescriptJsx, js.TypeArguments, []string{
-		`const x = <GenericComponent«<Props>» a={10} b="hi"/>;`, // TS 2.9
+		`const x = <GenericComponent«<Props, Foo>» a={10} b="hi"/>;`, // TS 2.9
+	}},
+	{js.TypescriptJsx, js.ArrowFunc, []string{
+		`const a = «<T extends object = {}>(opts: Foo<T>) => {}»;`,
+	}},
+	{js.TypescriptJsx, js.JSXFragment, []string{
+		`var a = «<>ABC</>»;`,
+		`var a = <div attr=«<>foo</>»/>;`,
+		`var a = <div attr="">«<></>»</div>;`,
+		`var a = <div attr="">«<><span a=«<></>»/></>»</div>;`,
+	}},
+	{js.TypescriptJsx, js.SingleLineComment, []string{
+		`var a = <  «//aa»
+		    >ABC</>;`,
+		`const x = <GenericComponent<Props,  «//aa»
+		   Foo> a={10} b="hi"/>;`,
+	}},
+	{js.TypescriptJsx, js.MultiLineComment, []string{
+		`var a = <«/*empty tag*/»>ABC</>;`,
+		`const x = <GenericComponent<Props,  «/*aa
+		   b*/»Foo> a={10} b="hi"/>;`,
 	}},
 
 	// Error Recovery
@@ -1788,6 +1820,16 @@ func TestParser(t *testing.T) {
 				f(js.Module, 0, len(test.Source()))
 			}
 			test.Done(t, err)
+
+			// Check that no invalid tokens were reported.
+			l.Init(test.Source())
+			l.Dialect = tc.dialect
+			for tok := l.Next(); tok != token.EOI; tok = l.Next() {
+				if tok == token.INVALID_TOKEN && tc.nt != js.InvalidToken && !strings.Contains(input, "Invalid tokens are included") {
+					s, e := l.Pos()
+					t.Errorf("invalid token in %q: %q", test.Source(), test.Source()[s:e])
+				}
+			}
 		}
 	}
 	for n := js.NodeType(1); n < js.NodeTypeMax; n++ {

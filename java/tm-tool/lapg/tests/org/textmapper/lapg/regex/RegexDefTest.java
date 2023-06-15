@@ -94,9 +94,14 @@ public class RegexDefTest {
 		checkRegex("[a-z-]", "[a-z\\-]");
 		checkRegex("[-a-z]", "[\\-a-z]");
 		checkRegex("[a\\-{]", "[a\\-{]");
+		checkRegex("[a-z-[d-f]]", "[a-z-[d-f]]");
+		checkRegex("[a-zA-Z-\\p{Lu}]", "[a-zA-Z-\\p{Lu}]");
+		checkRegex("[\\p{Any}-[\\x00\\x01\\x02]]", "[\\p{Any}-[\\x00\\x01\\x02]]");
 
 		checkErrors("[a-{]", "invalid range in character class (after dash): `\\{', escape `-'");
 		checkErrors("[\\.-z]", "invalid range in character class (before dash): `\\.', escape `-'");
+		checkErrors("[a-z-[^d-f]]", "cannot subtract an inverted set: `[^d-f]'");
+		checkErrors("[a-z-[^\\p{Lu}]]", "cannot subtract an inverted set: `[^\\p{Lu}]'");
 	}
 
 	@Test
@@ -109,6 +114,42 @@ public class RegexDefTest {
 		assertTrue(set.contains('_'));
 		assertTrue(set.contains('\u0458'));
 		assertTrue(!set.contains('\u0408'));
+
+		r = checkRegex("[\\p{Ll}-[d-f\\p{Greek}]]");
+		assertTrue(r instanceof RegexSet);
+
+		set = ((RegexSet) r).getSet();
+		assertFalse(set.contains('\u03B1')); // alpha (greek)
+		assertTrue(set.contains('\u10E7')); // qar (georgian)
+		assertTrue(set.contains('c'));
+		assertFalse(set.contains('d'));
+		assertFalse(set.contains('f'));
+		assertTrue(set.contains('g'));
+
+		// The same as above but negated. Also, negation is applied separately.
+		r = checkRegex("[^\\p{Ll}-[d-f]-\\p{Greek}]");
+		assertTrue(r instanceof RegexSet);
+
+		set = ((RegexSet) r).getSet();
+		assertTrue(set.contains('\u03B1')); // alpha (greek)
+		assertFalse(set.contains('\u10E7')); // qar (georgian)
+		assertFalse(set.contains('c'));
+		assertTrue(set.contains('d'));
+		assertTrue(set.contains('f'));
+		assertFalse(set.contains('g'));
+
+		r = checkRegex("[\\p{Any}-\\p{Ll}-[\\x80-\\U0010ffff]]");
+		assertTrue(r instanceof RegexSet);
+
+		set = ((RegexSet) r).getSet();
+		int counter = 0;
+		for (int i = 0; i < 1000; i++) {
+			if (set.contains(i)) counter++;
+		}
+		assertEquals(128-26, counter);
+		assertTrue(set.contains('U'));
+		assertFalse(set.contains('u'));
+		assertFalse(set.contains('\u0100'));
 	}
 
 	@Test

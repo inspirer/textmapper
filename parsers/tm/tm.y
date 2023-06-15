@@ -2,6 +2,7 @@
 %}
 
 %start file
+%start nonterm
 
 %left OR
 %left AND

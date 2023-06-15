@@ -43,11 +43,11 @@ var tmAction = []int32{
 }
 
 var tmLalr = []int32{
-	3, -1, 0, 10, -1, -2, 4, -1, 0, 9, -1, -2, 5, -1, 0, 8, -1, -2,
+	4, -1, 0, 10, -1, -2, 5, -1, 0, 9, -1, -2, 6, -1, 0, 8, -1, -2,
 }
 
 var tmGoto = []int32{
-	0, 2, 2, 4, 8, 14, 20, 22, 24, 26, 28, 32, 36, 42,
+	0, 2, 2, 2, 4, 8, 14, 20, 20, 22, 24, 26, 28, 32, 36, 42,
 }
 
 var tmFromTo = []int8{
@@ -60,7 +60,7 @@ var tmRuleLen = []int8{
 }
 
 var tmRuleSymbol = []int32{
-	6, 6, 7, 7, 8, 8, 9, 9, 9, 9, 9, 10, 11, 12,
+	8, 8, 9, 9, 10, 10, 11, 11, 11, 11, 11, 12, 13, 14,
 }
 
 var tmRuleType = [...]NodeType{
@@ -82,5 +82,5 @@ var tmRuleType = [...]NodeType{
 
 // set(follow 'simple') = CHAR_B, CHAR_C
 var afterSimple = []int32{
-	4, 5,
+	5, 6,
 }

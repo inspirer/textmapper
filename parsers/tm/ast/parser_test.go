@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -90,7 +91,8 @@ a : 'q'+ ;
 `
 
 func TestParser(t *testing.T) {
-	tree, err := Parse("file1", testInput, tm.StopOnFirstError)
+	ctx := context.Background()
+	tree, err := Parse(ctx, "file1", testInput, tm.StopOnFirstError)
 	if err != nil {
 		t.Errorf("cannot parse %q: %v", testInput, err)
 	}

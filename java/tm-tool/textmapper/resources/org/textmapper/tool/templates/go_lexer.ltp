@@ -19,6 +19,7 @@ ${foreach state in syntax.lexerStates-}
 ${end-}
 )
 ${end-}
+${call onBeforeLexer-}
 ${call lexerType-}
 ${call lexerInit-}
 ${call lexerNext-}
@@ -32,6 +33,7 @@ ${end-}
 ${call lexerText-}
 ${call lexerValue-}
 ${call lexerRewind-}
+${call onAfterLexer-}
 ${end}
 
 ${template lexerType}
@@ -144,7 +146,7 @@ ${end-}
 ${if lex.char2no.length >= 2048-}
 			ch = mapRune(l.ch)
 ${else-}
-			ch = 1
+			ch = ${lex.char2no[lex.char2no.length-1]}
 ${end-}
 		}
 		state = int(tmLexerAction[state*tmNumClasses+ch])
@@ -402,7 +404,7 @@ func mapRune(c rune) int {
 			return int(r.defaultVal)
 		}
 	}
-	return 1
+	return ${lex.char2no[lex.char2no.length-1]}
 }
 
 // Latin-1 characters.
@@ -422,10 +424,10 @@ ${end-}
 }
 ${else-}
 var tmRuneClass = []${self->runeClassType()}{
-${util.formatEx(lex.char2no, '\t', 79)-}
+${util.formatEx(util.head(lex.char2no, lex.char2no.length-1), '\t', 79)-}
 }
 
-const tmRuneClassLen = ${lex.char2no.length}
+const tmRuneClassLen = ${lex.char2no.length-1}
 const tmFirstRule = ${-1 - (lex.backtracking.length / 2)}
 ${end-}
 
@@ -489,8 +491,11 @@ ${cached query stateId() = 'State' + util.uniqueId(util.toCamelCase(self.nameTex
 
 ${cached query canInlineLexerRules() = syntax.canInlineLexerRules}
 
-${template onAfterNext}${end}
 ${template onBeforeNext}${end}
+${template onAfterNext}${end}
+
+${template onBeforeLexer}${end}
+${template onAfterLexer}${end}
 
 ${template stateVars}${end}
 ${template initStateVars}${end}

@@ -142,11 +142,19 @@ public class LexerInputSymbols {
 		int[] perm = new int[symbolCount];
 		Arrays.fill(perm, -1);
 		perm[0] = 0;
-		perm[1] = 1;
-		int curr = 2;
+		int curr = 1;
 		for (int sym : character2symbol) {
 			if (perm[sym] == -1) {
 				perm[sym] = curr++;
+			}
+		}
+		if (perm[1] == -1) {
+			if (character2symbol.length <= MAX_UCHAR) {
+				perm[1] = curr;
+			} else {
+				// The full 0..MAX_UCHAR range is covered. There is no "any" symbol.
+				perm[1] = perm[character2symbol[MAX_UCHAR]];
+				symbolCount--;
 			}
 		}
 		for (int i = 0; i < character2symbol.length; i++) {
@@ -178,12 +186,13 @@ public class LexerInputSymbols {
 		builder = null;
 
 		int newLength = character2symbol.length;
-		while (newLength > 0 && character2symbol[newLength - 1] == 1) {
+		while (newLength > 0 && character2symbol[newLength - 1] == perm[1]) {
 			newLength--;
 		}
-		if (newLength < character2symbol.length) {
-			character2symbol = Arrays.copyOf(character2symbol, newLength);
-		}
+
+		// Make sure character2symbol ends with the "any" set.
+		character2symbol = Arrays.copyOf(character2symbol, newLength+1);
+		character2symbol[newLength] = perm[1];
 	}
 
 	private static int[] toSortedArray(Collection<Integer> collection) {
