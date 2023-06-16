@@ -49,6 +49,7 @@ type Lexer struct {
 	value       interface{}
 
 	State int // lexer state, modifiable
+{{ block "sharedStateVars" .}}{{end -}}
 {{ block "stateVars" .}}{{end -}}
 }
 {{end -}}
@@ -75,6 +76,7 @@ func (l *Lexer) Init(source string) {
 	l.tokenColumn = 1
 {{- end}}
 	l.State = 0
+{{ block "sharedInitStateVars" .}}{{end -}}
 {{ block "initStateVars" .}}{{end}}
 	if "strings".HasPrefix(source, bomSeq) {
 		l.offset += len(bomSeq)

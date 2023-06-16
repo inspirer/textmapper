@@ -33,6 +33,7 @@ var funcMap = template.FuncMap{
 	"bison_parser_action": bisonParserAction,
 	"short_pkg":           shortPkg,
 	"list":                func(vals ...string) []string { return vals },
+	"set":                 set,
 	"additionalTypes":     additionalTypes,
 }
 
@@ -397,6 +398,16 @@ func shortPkg(packageName string) string {
 		return packageName[i+1:]
 	}
 	return packageName
+}
+
+func set(vals ...string) map[string]bool {
+	ret := make(map[string]bool)
+	for _, val := range vals {
+		for _, s := range strings.Fields(val) {
+			ret[s] = true
+		}
+	}
+	return ret
 }
 
 // additionalTypes takes a list of additional node types, such as whitespace, punctuation, etc, and returns
