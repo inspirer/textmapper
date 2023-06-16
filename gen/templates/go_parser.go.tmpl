@@ -67,6 +67,7 @@ type Parser struct {
 	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
 	pending []symbol
 {{- end }}
+{{ block "sharedParserVars" .}}{{end -}}
 {{ block "parserVars" .}}{{end -}}
 }
 
@@ -121,6 +122,7 @@ func (p *Parser) Init({{if .Parser.IsRecovering }}eh ErrorHandler{{end}}{{if .Pa
 		p.pending = make([]symbol, 0, startTokenBufferSize)
 	}
 {{- end}}
+{{ block "initSharedParserVars" .}}{{end -}}
 {{ block "initParserVars" .}}{{end -}}
 }
 
