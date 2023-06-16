@@ -21,6 +21,9 @@ ${end-}
 ${foreach name in opts.reportTokens.collect(it|it->go_token.tokenNodeName())-}
 	${name->nodeTypeFilterRef()->go.declarationName()} = func(t ${self->go_listener.nodeTypeRef()}) bool { return t == ${name->go_listener.nodeTypeValueRef()} }
 ${end-}
+${foreach extraType in opts.extraTypes-}
+	${extraType->go_listener.stripArrows()->nodeTypeFilterRef()->go.declarationName()} = func(t ${self->go_listener.nodeTypeRef()}) bool { return t == ${extraType->go_listener.stripArrows()->go_listener.nodeTypeValueRef()} }
+${end-}
 ${foreach cat in syntax.categories.sort(it|it).select(it|it != 'TokenSet' || syntax.categoryTypes(it).length > 0)-}
 	${cat->nodeTypeFilterRef()->go.declarationName()} = ${self->oneOfRef()}(${cat->go_listener.interfaceEnumValueRef()}...)
 ${end-}

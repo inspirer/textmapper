@@ -263,6 +263,7 @@ var (
 	TemplateHead              = func(t js.NodeType) bool { return t == js.TemplateHead }
 	TemplateMiddle            = func(t js.NodeType) bool { return t == js.TemplateMiddle }
 	TemplateTail              = func(t js.NodeType) bool { return t == js.TemplateTail }
+	InsertedSemicolon         = func(t js.NodeType) bool { return t == js.InsertedSemicolon }
 	BindingPattern            = OneOf(js.BindingPattern...)
 	CaseClause                = OneOf(js.CaseClause...)
 	ClassElement              = OneOf(js.ClassElement...)

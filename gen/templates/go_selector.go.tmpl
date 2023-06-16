@@ -12,9 +12,14 @@ var (
 {{- range .Parser.Types.RangeTypes}}
 	{{.Name}} = func(t {{template "nodeTypeRef" $}}) bool { return t == {{template "nodeTypePkg" $}}{{node_id .Name}} }
 {{- end}}
+{{- range .Options.ExtraTypes }}
+	{{.Name}} = func(t {{template "nodeTypeRef" $}}) bool { return t == {{template "nodeTypePkg" $}}{{node_id .Name}} }
+{{- end }}
 {{- range .Parser.Types.Categories}}
 	{{.Name}} = {{template "nodeOneOf" $}}({{pkg "main"}}{{.Name}}...)
 {{- end}}
+{{ block "additionalSelectors" . -}}
+{{end -}}
 )
 
 {{ block "OneOf" . -}}

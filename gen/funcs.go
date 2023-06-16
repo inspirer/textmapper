@@ -11,6 +11,7 @@ import (
 
 	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/status"
+	"github.com/inspirer/textmapper/syntax"
 )
 
 var funcMap = template.FuncMap{
@@ -31,6 +32,8 @@ var funcMap = template.FuncMap{
 	"go_parser_action":    goParserAction,
 	"bison_parser_action": bisonParserAction,
 	"short_pkg":           shortPkg,
+	"list":                func(vals ...string) []string { return vals },
+	"additionalTypes":     additionalTypes,
 }
 
 func sum(a, b int) int {
@@ -394,4 +397,23 @@ func shortPkg(packageName string) string {
 		return packageName[i+1:]
 	}
 	return packageName
+}
+
+// additionalTypes takes a list of additional node types, such as whitespace, punctuation, etc, and returns
+// those of them that have not been deduced from the AST.
+func additionalTypes(t *syntax.Types, names []string) []string {
+	m := make(map[string]bool)
+	for _, cat := range t.Categories {
+		m[cat.Name] = true
+	}
+	for _, t := range t.RangeTypes {
+		m[t.Name] = true
+	}
+	var ret []string
+	for _, name := range names {
+		if !m[name] {
+			ret = append(ret, name)
+		}
+	}
+	return ret
 }

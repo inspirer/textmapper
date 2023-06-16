@@ -33,6 +33,8 @@ var (
 	SingleLineComment = func(t test.NodeType) bool { return t == test.SingleLineComment }
 	InvalidToken      = func(t test.NodeType) bool { return t == test.InvalidToken }
 	Identifier        = func(t test.NodeType) bool { return t == test.Identifier }
+	Int7              = func(t test.NodeType) bool { return t == test.Int7 }
+	Int9              = func(t test.NodeType) bool { return t == test.Int9 }
 	Decl2Interface    = OneOf(test.Decl2Interface...)
 	Declaration       = OneOf(test.Declaration...)
 	Expr              = OneOf(test.Expr...)
