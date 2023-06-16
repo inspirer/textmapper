@@ -236,3 +236,8 @@ ${query go_listener.hasFlags() = true}
 ${template go_parser.onAfterParser}
 func parserEnd() {}
 ${end}
+
+${template go_parser.customReportNext-}
+default:
+   break
+${end}

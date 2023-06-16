@@ -9,19 +9,24 @@
 {{- end}}
 {{- end}}
 
+{{- define "customReportNext"}}{{end}}
+
 {{- define "reportConsumedNext" -}}
-{{- if .ReportTokens false }}
-			switch {{template "tokenType" .}}(p.next.symbol) {
-{{- range .Parser.MappedTokens}}
-{{- $sym := index $.Syms .Token}}
-{{- if not (or $sym.Space (eq $sym.Name "invalid_token")) }}
-	case {{template "tokenPkg" $}}{{$sym.ID}}:
+{{ if .ReportTokens false -}}
+{{/**/}}			switch {{template "tokenType" .}}(p.next.symbol) {
+{{ range .Parser.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
+{{/**/}}	case {{template "tokenPkg" $}}{{$sym.ID}}:
 		p.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
-{{- end}}
-{{- end}}
-			}
-{{- end}}
-{{- end}}
+{{end -}}
+{{end -}}
+{{template "customReportNext" . -}}
+{{/**/}}			}
+{{else -}}
+{{template "customReportNext" . -}}
+{{end -}}
+{{end}}
 
 
 {{- template "header" . -}}
@@ -259,8 +264,8 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{- block "onAfterShift" .}}{{end}}
 {{- template "flushPending" .}}
 				if p.next.symbol != eoiToken {
-{{- template "reportConsumedNext" .}}
-					p.next.symbol = noToken
+{{template "reportConsumedNext" . -}}
+{{/**/}}					p.next.symbol = noToken
 				}
 {{- if .Parser.IsRecovering }}
 				if p.recovering > 0 {
@@ -373,8 +378,8 @@ func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Contex
 			"fmt".Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 		}
 {{- template "flushPending" .}}
-{{- template "reportConsumedNext" .}}
-		e = p.next.endoffset
+{{ template "reportConsumedNext" . -}}
+{{/**/}}		e = p.next.endoffset
 		p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 	}
 	return e

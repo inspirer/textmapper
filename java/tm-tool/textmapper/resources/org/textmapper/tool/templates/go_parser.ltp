@@ -623,8 +623,14 @@ ${foreach tok in self->nonignoredReportTokens()-}
 			case ${tok->go_token.tokenRef()}:
 				p.listener(${tok->go_token.tokenNodeName()->go_listener.nodeTypeValueRef()}, ${if self->go_listener.hasFlags()}${self->go_listener.skippedDuringRecoveryFlags()}, ${end}p.next.offset, p.next.endoffset)
 ${end-}
+${call customReportNext-}
 			}
+${else-}
+${call customReportNext-}
 ${end-}
+${end}
+
+${template customReportNext-}
 ${end}
 
 ${template lookaheadNext-}

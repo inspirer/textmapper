@@ -446,6 +446,7 @@ var tplMap = map[string]string{
 	"go_parser.setupLookaheadLexer": "setupLookaheadLexer",
 	"go_parser.onBeforeIgnore":      "onBeforeIgnore",
 	"go_parser.onAfterParser":       "onAfterParser",
+	"go_parser.customReportNext":    "customReportNext",
 }
 
 var tplRE = regexp.MustCompile(`(?s)\${template ([\w.]+)(-?)}(.*?)\${end}`)

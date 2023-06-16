@@ -153,6 +153,8 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 					switch token.Token(p.next.symbol) {
 					case token.IDENTIFIER:
 						p.listener(Identifier, 0, p.next.offset, p.next.endoffset)
+					default:
+						break
 					}
 					p.next.symbol = noToken
 				}
