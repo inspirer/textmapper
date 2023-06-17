@@ -9,6 +9,7 @@ import (
 	"github.com/inspirer/textmapper/lex"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
 	"github.com/inspirer/textmapper/status"
+	"github.com/inspirer/textmapper/syntax"
 	"github.com/inspirer/textmapper/util/container"
 )
 
@@ -28,6 +29,7 @@ type lexerCompiler struct {
 	rules       []*lex.Rule
 	codeRule    map[symRule]int   // -> index in c.out.Lexer.RuleToken
 	codeAction  map[symAction]int // -> index in c.out.Lexer.Actions
+	mapping     map[int]syntax.RangeToken
 }
 
 func newLexerCompiler(options *optionsParser, resolver *resolver, compat bool, s *status.Status) *lexerCompiler {
@@ -40,6 +42,7 @@ func newLexerCompiler(options *optionsParser, resolver *resolver, compat bool, s
 
 		codeRule:   make(map[symRule]int),
 		codeAction: make(map[symAction]int),
+		mapping:    make(map[int]syntax.RangeToken),
 	}
 }
 
@@ -262,6 +265,22 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 
 			name := p.Name().Text()
 			tok := c.resolver.addToken(name, "" /*id*/, rawType, space, p.Name())
+
+			// Handle token mappings.
+			rt := c.resolveMapping(tok, p)
+			prev, prevOK := c.mapping[tok]
+			switch {
+			case prevOK:
+				if rt.Name != prev.Name || !eq(rt.Flags, prev.Flags) {
+					c.Errorf(p.Name(), "inconsistent token mapping for %v: was %v", name, prev)
+				}
+			case rt.Name != "":
+				c.out.MappedTokens = append(c.out.MappedTokens, rt)
+				fallthrough
+			default:
+				c.mapping[tok] = rt
+			}
+
 			pat, ok := p.Pattern()
 			if !ok {
 				break
@@ -313,6 +332,26 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 			}
 		}
 	}
+}
+
+func (c *lexerCompiler) resolveMapping(tok int, lexeme *ast.Lexeme) syntax.RangeToken {
+	n, ok := lexeme.ReportClause()
+	if !ok {
+		return syntax.RangeToken{Token: tok}
+	}
+
+	name := n.Action().Text()
+	if len(name) == 0 {
+		return syntax.RangeToken{Token: tok}
+	}
+	var flags []string
+	for _, id := range n.Flags() {
+		flags = append(flags, id.Text())
+	}
+	if as, ok := n.ReportAs(); ok {
+		c.Errorf(as, "reporting terminals 'as' some category is not supported")
+	}
+	return syntax.RangeToken{Token: tok, Name: name, Flags: flags}
 }
 
 func (c *lexerCompiler) resolveTokenComments() {
@@ -460,4 +499,17 @@ func parsePattern(name string, p ast.Pattern) (*lex.Pattern, error) {
 	}
 	ret.RE = re
 	return ret, nil
+}
+
+func eq(a, b []string) bool {
+	// TODO replace with slices.Equal
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }

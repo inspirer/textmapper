@@ -22,16 +22,18 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 	private final TmaStartConditions startConditions;
 	private final TmaIdentifier name;
 	private final TmaRawType rawType;
+	private final TmaReportClause reportClause;
 	private final TmaPattern pattern;
 	private final Integer priority;
 	private final TmaLexemeAttrs attrs;
 	private final TmaCommand command;
 
-	public TmaLexeme(TmaStartConditions startConditions, TmaIdentifier name, TmaRawType rawType, TmaPattern pattern, Integer priority, TmaLexemeAttrs attrs, TmaCommand command, TextSource source, int line, int offset, int endoffset) {
+	public TmaLexeme(TmaStartConditions startConditions, TmaIdentifier name, TmaRawType rawType, TmaReportClause reportClause, TmaPattern pattern, Integer priority, TmaLexemeAttrs attrs, TmaCommand command, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.startConditions = startConditions;
 		this.name = name;
 		this.rawType = rawType;
+		this.reportClause = reportClause;
 		this.pattern = pattern;
 		this.priority = priority;
 		this.attrs = attrs;
@@ -48,6 +50,10 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 
 	public TmaRawType getRawType() {
 		return rawType;
+	}
+
+	public TmaReportClause getReportClause() {
+		return reportClause;
 	}
 
 	public TmaPattern getPattern() {
@@ -79,6 +85,9 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 		}
 		if (rawType != null) {
 			rawType.accept(v);
+		}
+		if (reportClause != null) {
+			reportClause.accept(v);
 		}
 		if (pattern != null) {
 			pattern.accept(v);

@@ -14,7 +14,7 @@
 {{- define "reportConsumedNext" -}}
 {{ if .ReportTokens false -}}
 {{/**/}}			switch {{template "tokenType" .}}(p.next.symbol) {
-{{ range .Parser.MappedTokens -}}
+{{ range .Lexer.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
 {{/**/}}	case {{template "tokenPkg" $}}{{$sym.ID}}:
@@ -845,12 +845,18 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
 {{ block "onBeforeIgnore" .}}{{end -}}
 {{/**/}}	var t {{template "nodeTypeRef" $}}
+{{- if .Lexer.UsesFlags}}
+	var flags {{template "nodeFlagsRef" $}}
+{{- end}}
 	switch {{template "tokenType" .}}(tok.symbol) {
-{{- range .Parser.MappedTokens}}
+{{- range .Lexer.MappedTokens}}
 {{- $sym := index $.Syms .Token}}
 {{- if or $sym.Space (eq $sym.Name "invalid_token") }}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
 		t = {{template "nodeTypePkg" $}}{{node_id .Name}}
+{{- if .Flags }}
+		flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{end}}
+{{- end}}
 {{- end}}
 {{- end}}
 	default:
@@ -859,7 +865,7 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 	if debugSyntax {
 		"fmt".Printf("ignored: %v as %v\n", {{template "tokenType" .}}(tok.symbol), t)
 	}
-	p.listener(t, {{if .Parser.UsesFlags}}0, {{end}}tok.offset, tok.endoffset)
+	p.listener(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset)
 }
 {{ end -}}
 {{ end -}}

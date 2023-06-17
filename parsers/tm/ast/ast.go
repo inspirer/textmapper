@@ -668,6 +668,11 @@ func (n Lexeme) RawType() (RawType, bool) {
 	return field, field.IsValid()
 }
 
+func (n Lexeme) ReportClause() (ReportClause, bool) {
+	field := ReportClause{n.Child(selector.ReportClause)}
+	return field, field.IsValid()
+}
+
 func (n Lexeme) Pattern() (Pattern, bool) {
 	field := Pattern{n.Child(selector.Pattern)}
 	return field, field.IsValid()

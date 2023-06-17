@@ -293,7 +293,17 @@ stateref_list_Comma_separated :
 ;
 
 lexeme :
-  start_conditions identifier rawTypeopt COLON pattern integer_literal lexeme_attrs command
+  start_conditions identifier rawTypeopt reportClause COLON pattern integer_literal lexeme_attrs command
+| start_conditions identifier rawTypeopt reportClause COLON pattern integer_literal lexeme_attrs
+| start_conditions identifier rawTypeopt reportClause COLON pattern integer_literal command
+| start_conditions identifier rawTypeopt reportClause COLON pattern integer_literal
+| start_conditions identifier rawTypeopt reportClause COLON pattern lexeme_attrs command
+| start_conditions identifier rawTypeopt reportClause COLON pattern lexeme_attrs
+| start_conditions identifier rawTypeopt reportClause COLON pattern command
+| start_conditions identifier rawTypeopt reportClause COLON pattern
+| start_conditions identifier rawTypeopt reportClause COLON lexeme_attrs
+| start_conditions identifier rawTypeopt reportClause COLON
+| start_conditions identifier rawTypeopt COLON pattern integer_literal lexeme_attrs command
 | start_conditions identifier rawTypeopt COLON pattern integer_literal lexeme_attrs
 | start_conditions identifier rawTypeopt COLON pattern integer_literal command
 | start_conditions identifier rawTypeopt COLON pattern integer_literal
@@ -303,6 +313,16 @@ lexeme :
 | start_conditions identifier rawTypeopt COLON pattern
 | start_conditions identifier rawTypeopt COLON lexeme_attrs
 | start_conditions identifier rawTypeopt COLON
+| identifier rawTypeopt reportClause COLON pattern integer_literal lexeme_attrs command
+| identifier rawTypeopt reportClause COLON pattern integer_literal lexeme_attrs
+| identifier rawTypeopt reportClause COLON pattern integer_literal command
+| identifier rawTypeopt reportClause COLON pattern integer_literal
+| identifier rawTypeopt reportClause COLON pattern lexeme_attrs command
+| identifier rawTypeopt reportClause COLON pattern lexeme_attrs
+| identifier rawTypeopt reportClause COLON pattern command
+| identifier rawTypeopt reportClause COLON pattern
+| identifier rawTypeopt reportClause COLON lexeme_attrs
+| identifier rawTypeopt reportClause COLON
 | identifier rawTypeopt COLON pattern integer_literal lexeme_attrs command
 | identifier rawTypeopt COLON pattern integer_literal lexeme_attrs
 | identifier rawTypeopt COLON pattern integer_literal command

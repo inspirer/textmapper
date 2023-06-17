@@ -42,7 +42,7 @@ const (
 	Inputref            // reference=Symref NoEoi?
 	IntegerLiteral
 	InterfaceType
-	Lexeme // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
+	Lexeme // StartConditions? name=Identifier RawType? ReportClause? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
 	LexemeAttribute
 	LexemeAttrs        // LexemeAttribute
 	LexerSection       // (LexerPart)+

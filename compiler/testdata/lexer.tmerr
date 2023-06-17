@@ -64,3 +64,16 @@ broken_regex: «/(asd/»
 rrr-ppp: /\$rrrppp/
 # err: rrr--ppp and rrr-ppp get the same ID in generated code
 «rrr--ppp»: /\$rrrppp2/
+
+# Token mapping tests.
+
+aaaaa -> Foo/Bar: /\$aaaaa/
+
+# err: inconsistent token mapping for aaaaa: was Foo/Bar
+«aaaaa» -> Foo/Bar,Baz: /\$aaaaa2/
+
+# err: inconsistent token mapping for rrr-ppp: was <unmapped>
+«rrr-ppp» -> Map: /\$rrrppp3/
+
+# err: inconsistent token mapping for aaaaa: was Foo/Bar
+«aaaaa»: /\$aaaaa3/

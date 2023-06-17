@@ -211,6 +211,7 @@ class Lexeme : LexerPart {
 	StartConditions startConditions;
 	Identifier name;
 	RawType rawType;
+	ReportClause reportClause;
 	Pattern pattern;
 	Integer priority;
 	LexemeAttrs attrs;
@@ -218,7 +219,7 @@ class Lexeme : LexerPart {
 }
 
 lexeme  : Lexeme ::=
-	startConditions=start_conditions? name=identifier rawType=rawTypeopt ':' ({pattern} priority=iconopt attrs=lexeme_attrsopt command=commandopt | attrs=lexeme_attrs)?
+	startConditions=start_conditions? name=identifier rawType=rawTypeopt {reportClause}? ':' ({pattern} priority=iconopt attrs=lexeme_attrsopt command=commandopt | attrs=lexeme_attrs)?
 ;
 
 class LexemeAttrs {

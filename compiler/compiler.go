@@ -146,12 +146,30 @@ func (c *compiler) compileParser(file ast.File) {
 	}
 
 	if c.out.Options.EventBased {
-		var tokens []syntax.RangeToken
-		for _, t := range c.out.Options.ReportTokens {
-			name := ident.Produce(c.out.Syms[t].Name, ident.CamelCase)
-			tokens = append(tokens, syntax.RangeToken{Token: t, Name: name})
+		tokens := c.out.Lexer.MappedTokens
+		switch {
+		case len(tokens) > 0 && len(c.out.Options.ReportTokens) > 0:
+			m := make(map[int]int)
+			for _, t := range c.out.Options.ReportTokens {
+				m[t] = 1
+			}
+			for _, t := range tokens {
+				if m[t.Token] == 0 {
+					c.Errorf(c.out.Syms[t.Token].Origin, "token %v is reported as %v but is not mentioned in the reportTokens clause", c.out.Syms[t.Token].Name, t)
+				}
+				m[t.Token] = 2
+			}
+			for _, t := range c.out.Options.ReportTokens {
+				if m[t] != 2 {
+					c.Errorf(file.Header(), "token %v is found in reportTokens but not in the lexer", c.out.Syms[t].Name)
+				}
+			}
+		case len(tokens) == 0:
+			for _, t := range c.out.Options.ReportTokens {
+				name := ident.Produce(c.out.Syms[t].Name, ident.CamelCase)
+				tokens = append(tokens, syntax.RangeToken{Token: t, Name: name})
+			}
 		}
-
 		opts := syntax.TypeOptions{
 			EventFields: c.out.Options.EventFields,
 			GenSelector: c.out.Options.GenSelector,
@@ -163,7 +181,12 @@ func (c *compiler) compileParser(file ast.File) {
 			return
 		}
 		c.out.Parser.Types = types
-		c.out.Parser.MappedTokens = tokens
+		c.out.Lexer.MappedTokens = tokens
+		for _, t := range tokens {
+			if len(t.Flags) > 0 {
+				c.out.Lexer.UsesFlags = true
+			}
+		}
 	}
 
 	if err := syntax.Expand(source); err != nil {

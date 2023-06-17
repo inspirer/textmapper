@@ -21,6 +21,17 @@ type Types struct {
 type RangeToken struct {
 	Token int
 	Name  string
+	Flags []string
+}
+
+func (t RangeToken) String() string {
+	if t.Name == "" {
+		return "<unmapped>"
+	}
+	if len(t.Flags) == 0 {
+		return t.Name
+	}
+	return t.Name + "/" + strings.Join(t.Flags, ",")
 }
 
 // Category describes a class of AST nodes that can be treated uniformly.

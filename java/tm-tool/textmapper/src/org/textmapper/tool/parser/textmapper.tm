@@ -234,7 +234,7 @@ start_conditions :
 ;
 
 lexeme :
-    start_conditions? name=identifier rawTypeopt ':'
+    start_conditions? name=identifier rawTypeopt reportClause? ':'
         (pattern priority=iconopt attrs=lexeme_attrsopt commandopt | attrs=lexeme_attrs)? ;
 
 lexeme_attrs :
