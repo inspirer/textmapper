@@ -393,6 +393,9 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 	}
 	for size := len(stack); size > 0; size-- {
 		if gotoState(stack[size-1].state, errSymbol) == -1 {
+			if debugSyntax {
+				"fmt".Printf("no error recovery on %s\n", symbolName(stack[size-1].sym.symbol))
+			}
 			continue
 		}
 		recoverPos = append(recoverPos, size)
@@ -400,6 +403,9 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 {{- if eq (lower .Name) "recoveryscope" }}
 {{- if eq (len .States) 1}}
 		if {{.Name}}State == stack[size-1].state {
+			if debugSyntax {
+				"fmt".Printf("found a .{{.Name}} marker, confine error to %s\n", symbolName(stack[size-1].sym.symbol))
+			}
 			break
 		}
 {{- else}}
@@ -409,6 +415,13 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 {{- end}}
 {{- end}}
 {{- end}}
+	}
+	if debugSyntax {
+		"fmt".Print("possible recovery positions:")
+		for stackIndex := range recoverPos {
+			"fmt".Printf(" %s", symbolName(stack[stackIndex].sym.symbol))
+		}
+		"fmt".Print("\n")
 	}
 	if len(recoverPos) == 0 {
 		return nil
