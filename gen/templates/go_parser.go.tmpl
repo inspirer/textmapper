@@ -421,8 +421,8 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 	}
 	if debugSyntax {
 		"fmt".Print("possible recovery positions:")
-		for stackIndex := range recoverPos {
-			"fmt".Printf(" %s", symbolName(stack[stackIndex].sym.symbol))
+		for _, stackIndex := range recoverPos {
+			"fmt".Printf(" %s", symbolName(stack[stackIndex-1].sym.symbol))
 		}
 		"fmt".Print("\n")
 	}
