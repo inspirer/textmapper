@@ -398,6 +398,9 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 			}
 			continue
 		}
+		if debugSyntax {
+			"fmt".Printf("error recovery possible on %s\n", symbolName(stack[size-1].sym.symbol))
+		}
 		recoverPos = append(recoverPos, size)
 {{- range .Parser.Tables.Markers}}
 {{- if eq (lower .Name) "recoveryscope" }}
