@@ -33,10 +33,10 @@ const (
 	Test     // (Declaration)+
 	TestClause
 	TestIntClause // Icon
-	MultiLineComment
 	SingleLineComment
-	InvalidToken
 	Identifier
+	InvalidToken
+	MultiLineComment
 	Int7
 	Int9
 	NodeTypeMax
@@ -63,10 +63,10 @@ var nodeTypeStr = [...]string{
 	"Test",
 	"TestClause",
 	"TestIntClause",
-	"MultiLineComment",
 	"SingleLineComment",
-	"InvalidToken",
 	"Identifier",
+	"InvalidToken",
+	"MultiLineComment",
 	"Int7",
 	"Int9",
 }

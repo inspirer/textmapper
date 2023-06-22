@@ -220,7 +220,7 @@ func (p *Parser) fetchNext(ctx context.Context, lexer *Lexer, stack []stackEntry
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
+	case token.SINGLELINECOMMENT, token.INVALID_TOKEN, token.MULTILINECOMMENT:
 		s, e := lexer.Pos()
 		tok := symbol{int32(tok), s, e}
 		p.pending = append(p.pending, tok)
@@ -234,7 +234,7 @@ func lookaheadNext(lexer *Lexer) int32 {
 restart:
 	tok := lexer.Next()
 	switch tok {
-	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
+	case token.SINGLELINECOMMENT, token.INVALID_TOKEN, token.MULTILINECOMMENT:
 		goto restart
 	}
 	return int32(tok)
@@ -427,12 +427,12 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	var t NodeType
 	switch token.Token(tok.symbol) {
-	case token.MULTILINECOMMENT:
-		t = MultiLineComment
 	case token.SINGLELINECOMMENT:
 		t = SingleLineComment
 	case token.INVALID_TOKEN:
 		t = InvalidToken
+	case token.MULTILINECOMMENT:
+		t = MultiLineComment
 	default:
 		return
 	}

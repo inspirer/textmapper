@@ -55,7 +55,7 @@ func ToTestNode(n Node) TestNode {
 		return &Int7{n}
 	case test.Int9:
 		return &Int9{n}
-	case test.MultiLineComment, test.SingleLineComment, test.InvalidToken, test.Identifier:
+	case test.SingleLineComment, test.Identifier, test.InvalidToken, test.MultiLineComment:
 		return &Token{n}
 	case test.NoType:
 		return nilInstance

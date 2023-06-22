@@ -18,7 +18,7 @@
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
 {{/**/}}	case {{template "tokenPkg" $}}{{$sym.ID}}:
-		p.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsesFlags}}0, {{end}}p.next.offset, p.next.endoffset)
+		p.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}p.next.offset, p.next.endoffset)
 {{end -}}
 {{end -}}
 {{template "customReportNext" . -}}
