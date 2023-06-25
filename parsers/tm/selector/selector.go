@@ -18,7 +18,6 @@ var (
 	Array                = func(t tm.NodeType) bool { return t == tm.Array }
 	Assoc                = func(t tm.NodeType) bool { return t == tm.Assoc }
 	BooleanLiteral       = func(t tm.NodeType) bool { return t == tm.BooleanLiteral }
-	ClassType            = func(t tm.NodeType) bool { return t == tm.ClassType }
 	Command              = func(t tm.NodeType) bool { return t == tm.Command }
 	DirectiveAssert      = func(t tm.NodeType) bool { return t == tm.DirectiveAssert }
 	DirectiveBrackets    = func(t tm.NodeType) bool { return t == tm.DirectiveBrackets }
@@ -30,16 +29,15 @@ var (
 	DirectiveSet         = func(t tm.NodeType) bool { return t == tm.DirectiveSet }
 	Empty                = func(t tm.NodeType) bool { return t == tm.Empty }
 	ExclusiveStartConds  = func(t tm.NodeType) bool { return t == tm.ExclusiveStartConds }
+	Extend               = func(t tm.NodeType) bool { return t == tm.Extend }
 	File                 = func(t tm.NodeType) bool { return t == tm.File }
 	Header               = func(t tm.NodeType) bool { return t == tm.Header }
 	Identifier           = func(t tm.NodeType) bool { return t == tm.Identifier }
-	Implements           = func(t tm.NodeType) bool { return t == tm.Implements }
 	Import               = func(t tm.NodeType) bool { return t == tm.Import }
 	InclusiveStartConds  = func(t tm.NodeType) bool { return t == tm.InclusiveStartConds }
 	InlineParameter      = func(t tm.NodeType) bool { return t == tm.InlineParameter }
 	Inputref             = func(t tm.NodeType) bool { return t == tm.Inputref }
 	IntegerLiteral       = func(t tm.NodeType) bool { return t == tm.IntegerLiteral }
-	InterfaceType        = func(t tm.NodeType) bool { return t == tm.InterfaceType }
 	Lexeme               = func(t tm.NodeType) bool { return t == tm.Lexeme }
 	LexemeAttribute      = func(t tm.NodeType) bool { return t == tm.LexemeAttribute }
 	LexemeAttrs          = func(t tm.NodeType) bool { return t == tm.LexemeAttrs }
@@ -96,12 +94,10 @@ var (
 	StateMarker          = func(t tm.NodeType) bool { return t == tm.StateMarker }
 	Stateref             = func(t tm.NodeType) bool { return t == tm.Stateref }
 	StringLiteral        = func(t tm.NodeType) bool { return t == tm.StringLiteral }
-	SubType              = func(t tm.NodeType) bool { return t == tm.SubType }
 	Symref               = func(t tm.NodeType) bool { return t == tm.Symref }
 	SymrefArgs           = func(t tm.NodeType) bool { return t == tm.SymrefArgs }
 	SyntaxProblem        = func(t tm.NodeType) bool { return t == tm.SyntaxProblem }
 	TemplateParam        = func(t tm.NodeType) bool { return t == tm.TemplateParam }
-	VoidType             = func(t tm.NodeType) bool { return t == tm.VoidType }
 	InvalidToken         = func(t tm.NodeType) bool { return t == tm.InvalidToken }
 	MultilineComment     = func(t tm.NodeType) bool { return t == tm.MultilineComment }
 	Comment              = func(t tm.NodeType) bool { return t == tm.Comment }
@@ -113,7 +109,6 @@ var (
 	LexerPart            = OneOf(tm.LexerPart...)
 	Literal              = OneOf(tm.Literal...)
 	NontermParam         = OneOf(tm.NontermParam...)
-	NontermType          = OneOf(tm.NontermType...)
 	ParamValue           = OneOf(tm.ParamValue...)
 	PredicateExpression  = OneOf(tm.PredicateExpression...)
 	RhsPart              = OneOf(tm.RhsPart...)

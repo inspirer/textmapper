@@ -112,7 +112,6 @@ var lexerTests = []struct {
 	// Keywords.
 	{token.AS, []string{`«as»`}},
 	{token.FALSE, []string{`«false»`}},
-	{token.IMPLEMENTS, []string{`«implements»`}},
 	{token.IMPORT, []string{`«import»`}},
 	{token.SEPARATOR, []string{`«separator»`}},
 	{token.SET, []string{`«set»`}},
@@ -124,6 +123,7 @@ var lexerTests = []struct {
 	{token.EXPECT, []string{`«expect»`}},
 	{token.EXPECTMINUSRR, []string{`«expect-rr»`}},
 	{token.EXPLICIT, []string{`«explicit»`}},
+	{token.EXTEND, []string{`«extend»`}},
 	{token.FLAG, []string{`«flag»`}},
 	{token.GENERATE, []string{`«generate»`}},
 	{token.GLOBAL, []string{`«global»`}},
@@ -142,12 +142,10 @@ var lexerTests = []struct {
 	{token.PARAM, []string{`«param»`}},
 	{token.PARSER, []string{`«parser»`}},
 	{token.PREC, []string{`«prec»`}},
-	{token.RETURNS, []string{`«returns»`}},
 	{token.RIGHT, []string{`«right»`}},
 	{token.CHAR_S, []string{`«s»`}},
 	{token.SHIFT, []string{`«shift»`}},
 	{token.SPACE, []string{`«space»`}},
-	{token.VOID, []string{`«void»`}},
 	{token.CHAR_X, []string{`«x»`}},
 
 	{token.INVALID_TOKEN, []string{

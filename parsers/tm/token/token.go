@@ -54,7 +54,6 @@ const (
 	ID
 	AS            // as
 	FALSE         // false
-	IMPLEMENTS    // implements
 	IMPORT        // import
 	SEPARATOR     // separator
 	SET           // set
@@ -66,6 +65,7 @@ const (
 	EXPECT        // expect
 	EXPECTMINUSRR // expect-rr
 	EXPLICIT      // explicit
+	EXTEND        // extend
 	FLAG          // flag
 	GENERATE      // generate
 	GLOBAL        // global
@@ -84,12 +84,10 @@ const (
 	PARAM         // param
 	PARSER        // parser
 	PREC          // prec
-	RETURNS       // returns
 	RIGHT         // right
 	CHAR_S        // s
 	SHIFT         // shift
 	SPACE         // space
-	VOID          // void
 	CHAR_X        // x
 	CODE          // {
 	LBRACE        // {
@@ -142,7 +140,6 @@ var tokenStr = [...]string{
 	"ID",
 	"as",
 	"false",
-	"implements",
 	"import",
 	"separator",
 	"set",
@@ -154,6 +151,7 @@ var tokenStr = [...]string{
 	"expect",
 	"expect-rr",
 	"explicit",
+	"extend",
 	"flag",
 	"generate",
 	"global",
@@ -172,12 +170,10 @@ var tokenStr = [...]string{
 	"param",
 	"parser",
 	"prec",
-	"returns",
 	"right",
 	"s",
 	"shift",
 	"space",
-	"void",
 	"x",
 	"{",
 	"{",

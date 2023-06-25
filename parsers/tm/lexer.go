@@ -139,21 +139,16 @@ recovered:
 				break
 			}
 			if hash == 0x6856c82 && "shift" == l.source[l.tokenOffset:l.offset] {
-				rule = 74
-				break
-			}
-		case 3:
-			if hash == 0x41796943 && "returns" == l.source[l.tokenOffset:l.offset] {
-				rule = 71
+				rule = 73
 				break
 			}
 		case 6:
 			if hash == 0xac107346 && "assert" == l.source[l.tokenOffset:l.offset] {
-				rule = 46
+				rule = 45
 				break
 			}
 			if hash == 0x688f106 && "space" == l.source[l.tokenOffset:l.offset] {
-				rule = 75
+				rule = 74
 				break
 			}
 		case 7:
@@ -168,7 +163,7 @@ recovered:
 			}
 		case 11:
 			if hash == 0xfde4e8cb && "brackets" == l.source[l.tokenOffset:l.offset] {
-				rule = 47
+				rule = 46
 				break
 			}
 		case 12:
@@ -178,7 +173,7 @@ recovered:
 			}
 		case 13:
 			if hash == 0x5c2854d && "empty" == l.source[l.tokenOffset:l.offset] {
-				rule = 49
+				rule = 48
 				break
 			}
 			if hash == 0x658188d && "param" == l.source[l.tokenOffset:l.offset] {
@@ -187,12 +182,7 @@ recovered:
 			}
 		case 14:
 			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
-				rule = 45
-				break
-			}
-		case 20:
-			if hash == 0x375194 && "void" == l.source[l.tokenOffset:l.offset] {
-				rule = 76
+				rule = 44
 				break
 			}
 		case 24:
@@ -202,16 +192,21 @@ recovered:
 			}
 		case 25:
 			if hash == 0xb328ec59 && "expect" == l.source[l.tokenOffset:l.offset] {
-				rule = 50
+				rule = 49
 				break
 			}
 			if hash == 0xb96da299 && "inline" == l.source[l.tokenOffset:l.offset] {
 				rule = 56
 				break
 			}
+		case 26:
+			if hash == 0xb32abf1a && "extend" == l.source[l.tokenOffset:l.offset] {
+				rule = 52
+				break
+			}
 		case 28:
 			if hash == 0x677c21c && "right" == l.source[l.tokenOffset:l.offset] {
-				rule = 72
+				rule = 71
 				break
 			}
 		case 31:
@@ -230,7 +225,7 @@ recovered:
 			}
 		case 34:
 			if hash == 0x1bc62 && "set" == l.source[l.tokenOffset:l.offset] {
-				rule = 44
+				rule = 43
 				break
 			}
 		case 35:
@@ -244,11 +239,11 @@ recovered:
 			}
 		case 37:
 			if hash == 0xb96173a5 && "import" == l.source[l.tokenOffset:l.offset] {
-				rule = 42
+				rule = 41
 				break
 			}
 			if hash == 0x6748e2e5 && "separator" == l.source[l.tokenOffset:l.offset] {
-				rule = 43
+				rule = 42
 				break
 			}
 		case 40:
@@ -266,11 +261,6 @@ recovered:
 				rule = 53
 				break
 			}
-		case 48:
-			if hash == 0xc97057b0 && "implements" == l.source[l.tokenOffset:l.offset] {
-				rule = 41
-				break
-			}
 		case 50:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
 				rule = 39
@@ -282,16 +272,16 @@ recovered:
 				break
 			}
 			if hash == 0x73 && "s" == l.source[l.tokenOffset:l.offset] {
-				rule = 73
+				rule = 72
 				break
 			}
 		case 52:
 			if hash == 0x748c034 && "expect-rr" == l.source[l.tokenOffset:l.offset] {
-				rule = 51
+				rule = 50
 				break
 			}
 			if hash == 0x8d046634 && "explicit" == l.source[l.tokenOffset:l.offset] {
-				rule = 52
+				rule = 51
 				break
 			}
 		case 53:
@@ -301,11 +291,11 @@ recovered:
 			}
 		case 56:
 			if hash == 0x5a5a978 && "class" == l.source[l.tokenOffset:l.offset] {
-				rule = 48
+				rule = 47
 				break
 			}
 			if hash == 0x78 && "x" == l.source[l.tokenOffset:l.offset] {
-				rule = 77
+				rule = 75
 				break
 			}
 		case 57:
@@ -358,10 +348,10 @@ recovered:
 		}
 	case token.ID, token.LEFT, token.RIGHT, token.NONASSOC, token.GENERATE,
 		token.ASSERT, token.EMPTY, token.BRACKETS, token.INLINE, token.PREC,
-		token.SHIFT, token.RETURNS, token.INPUT, token.NONEMPTY, token.GLOBAL,
+		token.SHIFT, token.INPUT, token.NONEMPTY, token.GLOBAL,
 		token.EXPLICIT, token.LOOKAHEAD, token.PARAM, token.FLAG, token.CHAR_S,
-		token.CHAR_X, token.CLASS, token.INTERFACE, token.VOID, token.SPACE,
-		token.LAYOUT, token.LANGUAGE, token.LALR:
+		token.CHAR_X, token.CLASS, token.INTERFACE, token.SPACE,
+		token.LAYOUT, token.LANGUAGE, token.LALR, token.EXTEND:
 
 		l.State = StateAfterID
 	case token.LEXER, token.PARSER:

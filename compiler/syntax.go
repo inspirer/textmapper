@@ -93,6 +93,17 @@ func (c *syntaxLoader) collectNonterms(p ast.ParserSection) []nontermImpl {
 	for _, part := range p.GrammarPart() {
 		if nonterm, ok := part.(*ast.Nonterm); ok {
 			name := nonterm.Name().Text()
+			if _, ok := nonterm.Extend(); ok {
+				// Nonterminal extensions have to reference an existing one.
+				if index, exists := c.nonterms[name]; exists {
+					ret = append(ret, nontermImpl{index, *nonterm})
+					continue
+				}
+				c.Errorf(nonterm.Name(), "unresolved nonterminal '%v' to extend", name)
+
+				// Note: we keep going here to avoid cascading errors.
+			}
+
 			if _, exists := c.resolver.syms[name]; exists {
 				c.Errorf(nonterm.Name(), "redeclaration of '%v'", name)
 				continue
@@ -117,12 +128,8 @@ func (c *syntaxLoader) collectNonterms(p ast.ParserSection) []nontermImpl {
 				Name:   name,
 				Origin: nonterm.Name(),
 			}
-			if t, ok := nonterm.NontermType(); ok {
-				if rt, _ := t.(*ast.RawType); rt != nil {
-					nt.Type = strings.TrimSuffix(strings.TrimPrefix(rt.Text(), "{"), "}")
-				} else {
-					c.Errorf(t.TmNode(), "unsupported syntax")
-				}
+			if rt, ok := nonterm.RawType(); ok {
+				nt.Type = strings.TrimSuffix(strings.TrimPrefix(rt.Text(), "{"), "}")
 			}
 
 			var seen map[string]bool
@@ -935,6 +942,25 @@ func (c *syntaxLoader) load(p ast.ParserSection, header status.SourceNode) {
 		clause, _ := nt.def.ReportClause()
 		defaultReport := c.convertReportClause(clause)
 		expr := c.convertRules(nt.def.Rule0(), c.out.Nonterms[nt.nonterm], defaultReport, true /*topLevel*/, nt.def)
-		c.out.Nonterms[nt.nonterm].Value = expr
+		c.out.Nonterms[nt.nonterm].Value = or(c.out.Nonterms[nt.nonterm].Value, expr)
 	}
+}
+
+func or(a, b *syntax.Expr) *syntax.Expr {
+	switch {
+	case a == nil:
+		return b
+	case b == nil:
+		return a
+	case a.Kind == syntax.Choice && b.Kind == syntax.Choice:
+		a.Sub = append(a.Sub, b.Sub...)
+		return a
+	case a.Kind == syntax.Choice:
+		a.Sub = append(a.Sub, b)
+		return a
+	case b.Kind == syntax.Choice:
+		b.Sub = append([]*syntax.Expr{a}, b.Sub...)
+		return b
+	}
+	return &syntax.Expr{Kind: syntax.Choice, Sub: []*syntax.Expr{a, b}, Origin: b.Origin}
 }

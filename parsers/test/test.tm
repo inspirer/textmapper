@@ -212,8 +212,10 @@ customPlus -> __ignoreContent:
 # Note: applying .greedy after 'as' does not work since the conflict happens later.
 primaryExpr<flag WithoutAs = false> -> Expr:
     [!WithoutAs] left=primaryExpr<+WithoutAs> 'as' right=expr  -> AsExpr
-  | IntegerConstant                                            -> IntExpr
 ;
+
+extend primaryExpr -> Expr:
+  IntegerConstant -> IntExpr ;
 
 %%
 

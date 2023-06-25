@@ -29,7 +29,6 @@ func (n ArgumentVal) TmNode() *Node          { return n.Node }
 func (n Array) TmNode() *Node                { return n.Node }
 func (n Assoc) TmNode() *Node                { return n.Node }
 func (n BooleanLiteral) TmNode() *Node       { return n.Node }
-func (n ClassType) TmNode() *Node            { return n.Node }
 func (n Command) TmNode() *Node              { return n.Node }
 func (n DirectiveAssert) TmNode() *Node      { return n.Node }
 func (n DirectiveBrackets) TmNode() *Node    { return n.Node }
@@ -41,16 +40,15 @@ func (n DirectivePrio) TmNode() *Node        { return n.Node }
 func (n DirectiveSet) TmNode() *Node         { return n.Node }
 func (n Empty) TmNode() *Node                { return n.Node }
 func (n ExclusiveStartConds) TmNode() *Node  { return n.Node }
+func (n Extend) TmNode() *Node               { return n.Node }
 func (n File) TmNode() *Node                 { return n.Node }
 func (n Header) TmNode() *Node               { return n.Node }
 func (n Identifier) TmNode() *Node           { return n.Node }
-func (n Implements) TmNode() *Node           { return n.Node }
 func (n Import) TmNode() *Node               { return n.Node }
 func (n InclusiveStartConds) TmNode() *Node  { return n.Node }
 func (n InlineParameter) TmNode() *Node      { return n.Node }
 func (n Inputref) TmNode() *Node             { return n.Node }
 func (n IntegerLiteral) TmNode() *Node       { return n.Node }
-func (n InterfaceType) TmNode() *Node        { return n.Node }
 func (n Lexeme) TmNode() *Node               { return n.Node }
 func (n LexemeAttribute) TmNode() *Node      { return n.Node }
 func (n LexemeAttrs) TmNode() *Node          { return n.Node }
@@ -107,12 +105,10 @@ func (n StartConditionsScope) TmNode() *Node { return n.Node }
 func (n StateMarker) TmNode() *Node          { return n.Node }
 func (n Stateref) TmNode() *Node             { return n.Node }
 func (n StringLiteral) TmNode() *Node        { return n.Node }
-func (n SubType) TmNode() *Node              { return n.Node }
 func (n Symref) TmNode() *Node               { return n.Node }
 func (n SymrefArgs) TmNode() *Node           { return n.Node }
 func (n SyntaxProblem) TmNode() *Node        { return n.Node }
 func (n TemplateParam) TmNode() *Node        { return n.Node }
-func (n VoidType) TmNode() *Node             { return n.Node }
 func (n Token) TmNode() *Node                { return n.Node }
 func (NilNode) TmNode() *Node                { return nil }
 
@@ -211,20 +207,6 @@ type NontermParam interface {
 func (InlineParameter) nontermParamNode() {}
 func (ParamRef) nontermParamNode()        {}
 func (NilNode) nontermParamNode()         {}
-
-type NontermType interface {
-	TmNode
-	nontermTypeNode()
-}
-
-// nontermTypeNode() ensures that only the following types can be
-// assigned to NontermType.
-func (ClassType) nontermTypeNode()     {}
-func (InterfaceType) nontermTypeNode() {}
-func (RawType) nontermTypeNode()       {}
-func (SubType) nontermTypeNode()       {}
-func (VoidType) nontermTypeNode()      {}
-func (NilNode) nontermTypeNode()       {}
 
 type ParamValue interface {
 	TmNode
@@ -384,15 +366,6 @@ type BooleanLiteral struct {
 	*Node
 }
 
-type ClassType struct {
-	*Node
-}
-
-func (n ClassType) Implements() (Implements, bool) {
-	field := Implements{n.Child(selector.Implements)}
-	return field, field.IsValid()
-}
-
 type Command struct {
 	*Node
 }
@@ -515,6 +488,10 @@ func (n ExclusiveStartConds) States() []LexerState {
 	return ret
 }
 
+type Extend struct {
+	*Node
+}
+
 type File struct {
 	*Node
 }
@@ -571,19 +548,6 @@ func (n Header) Target() (Identifier, bool) {
 
 type Identifier struct {
 	*Node
-}
-
-type Implements struct {
-	*Node
-}
-
-func (n Implements) Symref() []Symref {
-	nodes := n.Children(selector.Symref)
-	var ret = make([]Symref, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, Symref{node})
-	}
-	return ret
 }
 
 type Import struct {
@@ -643,10 +607,6 @@ func (n Inputref) NoEoi() (NoEoi, bool) {
 }
 
 type IntegerLiteral struct {
-	*Node
-}
-
-type InterfaceType struct {
 	*Node
 }
 
@@ -785,6 +745,11 @@ func (n Nonterm) Annotations() (Annotations, bool) {
 	return field, field.IsValid()
 }
 
+func (n Nonterm) Extend() (Extend, bool) {
+	field := Extend{n.Child(selector.Extend)}
+	return field, field.IsValid()
+}
+
 func (n Nonterm) Name() Identifier {
 	return Identifier{n.Child(selector.Identifier)}
 }
@@ -794,9 +759,9 @@ func (n Nonterm) Params() (NontermParams, bool) {
 	return field, field.IsValid()
 }
 
-func (n Nonterm) NontermType() (NontermType, bool) {
-	field := ToTmNode(n.Child(selector.NontermType)).(NontermType)
-	return field, field.TmNode() != nil
+func (n Nonterm) RawType() (RawType, bool) {
+	field := RawType{n.Child(selector.RawType)}
+	return field, field.IsValid()
 }
 
 func (n Nonterm) ReportClause() (ReportClause, bool) {
@@ -1289,14 +1254,6 @@ type StringLiteral struct {
 	*Node
 }
 
-type SubType struct {
-	*Node
-}
-
-func (n SubType) Reference() Symref {
-	return Symref{n.Child(selector.Symref)}
-}
-
 type Symref struct {
 	*Node
 }
@@ -1347,8 +1304,4 @@ func (n TemplateParam) Name() Identifier {
 func (n TemplateParam) ParamValue() (ParamValue, bool) {
 	field := ToTmNode(n.Child(selector.ParamValue)).(ParamValue)
 	return field, field.TmNode() != nil
-}
-
-type VoidType struct {
-	*Node
 }

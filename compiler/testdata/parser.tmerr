@@ -19,9 +19,6 @@ b: /b/
 «a» : a;
 # err: redeclaration of 'a'
 
-c «returns b» : /*empty*/ ;
-# err: unsupported syntax
-
 d {Foo} -> Foo : /*empty*/ ;
 
 «@Foo» e : d ;

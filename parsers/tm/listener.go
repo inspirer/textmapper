@@ -20,7 +20,6 @@ const (
 	Array                   // (Expression)*
 	Assoc
 	BooleanLiteral
-	ClassType // Implements?
 	Command
 	DirectiveAssert    // Empty? NonEmpty? RhsSet
 	DirectiveBrackets  // opening=Symref closing=Symref
@@ -32,16 +31,15 @@ const (
 	DirectiveSet       // name=Identifier RhsSet
 	Empty
 	ExclusiveStartConds // states=(LexerState)+
-	File                // Header imports=(Import)* options=(Option)* SyntaxProblem? lexer=LexerSection? parser=ParserSection?
-	Header              // name=Identifier target=Identifier?
+	Extend
+	File   // Header imports=(Import)* options=(Option)* SyntaxProblem? lexer=LexerSection? parser=ParserSection?
+	Header // name=Identifier target=Identifier?
 	Identifier
-	Implements          // (Symref)+
 	Import              // alias=Identifier? path=StringLiteral
 	InclusiveStartConds // states=(LexerState)+
 	InlineParameter     // param_type=Identifier name=Identifier ParamValue?
 	Inputref            // reference=Symref NoEoi?
 	IntegerLiteral
-	InterfaceType
 	Lexeme // StartConditions? name=Identifier RawType? ReportClause? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
 	LexemeAttribute
 	LexemeAttrs        // LexemeAttribute
@@ -53,7 +51,7 @@ const (
 	NamedPattern // name=Identifier Pattern
 	NoEoi
 	NonEmpty
-	Nonterm       // Annotations? name=Identifier params=NontermParams? NontermType? ReportClause? (Rule0)+
+	Nonterm       // Annotations? Extend? name=Identifier params=NontermParams? RawType? ReportClause? (Rule0)+
 	NontermParams // list=(NontermParam)+
 	Not
 	Option // key=Identifier value=Expression
@@ -98,12 +96,10 @@ const (
 	StateMarker          // name=Identifier
 	Stateref             // name=Identifier
 	StringLiteral
-	SubType    // reference=Symref
 	Symref     // name=Identifier args=SymrefArgs?
 	SymrefArgs // arg_list=(Argument)*
 	SyntaxProblem
 	TemplateParam // modifier=ParamModifier? ParamType name=Identifier ParamValue?
-	VoidType
 	InvalidToken
 	MultilineComment
 	Comment
@@ -121,7 +117,6 @@ var nodeTypeStr = [...]string{
 	"Array",
 	"Assoc",
 	"BooleanLiteral",
-	"ClassType",
 	"Command",
 	"DirectiveAssert",
 	"DirectiveBrackets",
@@ -133,16 +128,15 @@ var nodeTypeStr = [...]string{
 	"DirectiveSet",
 	"Empty",
 	"ExclusiveStartConds",
+	"Extend",
 	"File",
 	"Header",
 	"Identifier",
-	"Implements",
 	"Import",
 	"InclusiveStartConds",
 	"InlineParameter",
 	"Inputref",
 	"IntegerLiteral",
-	"InterfaceType",
 	"Lexeme",
 	"LexemeAttribute",
 	"LexemeAttrs",
@@ -199,12 +193,10 @@ var nodeTypeStr = [...]string{
 	"StateMarker",
 	"Stateref",
 	"StringLiteral",
-	"SubType",
 	"Symref",
 	"SymrefArgs",
 	"SyntaxProblem",
 	"TemplateParam",
-	"VoidType",
 	"InvalidToken",
 	"MultilineComment",
 	"Comment",
@@ -270,14 +262,6 @@ var Literal = []NodeType{
 var NontermParam = []NodeType{
 	InlineParameter,
 	ParamRef,
-}
-
-var NontermType = []NodeType{
-	ClassType,
-	InterfaceType,
-	RawType,
-	SubType,
-	VoidType,
 }
 
 var ParamValue = []NodeType{

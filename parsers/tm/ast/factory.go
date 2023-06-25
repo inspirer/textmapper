@@ -26,8 +26,6 @@ func ToTmNode(n *Node) TmNode {
 		return &Assoc{n}
 	case tm.BooleanLiteral:
 		return &BooleanLiteral{n}
-	case tm.ClassType:
-		return &ClassType{n}
 	case tm.Command:
 		return &Command{n}
 	case tm.DirectiveAssert:
@@ -50,14 +48,14 @@ func ToTmNode(n *Node) TmNode {
 		return &Empty{n}
 	case tm.ExclusiveStartConds:
 		return &ExclusiveStartConds{n}
+	case tm.Extend:
+		return &Extend{n}
 	case tm.File:
 		return &File{n}
 	case tm.Header:
 		return &Header{n}
 	case tm.Identifier:
 		return &Identifier{n}
-	case tm.Implements:
-		return &Implements{n}
 	case tm.Import:
 		return &Import{n}
 	case tm.InclusiveStartConds:
@@ -68,8 +66,6 @@ func ToTmNode(n *Node) TmNode {
 		return &Inputref{n}
 	case tm.IntegerLiteral:
 		return &IntegerLiteral{n}
-	case tm.InterfaceType:
-		return &InterfaceType{n}
 	case tm.Lexeme:
 		return &Lexeme{n}
 	case tm.LexemeAttribute:
@@ -182,8 +178,6 @@ func ToTmNode(n *Node) TmNode {
 		return &Stateref{n}
 	case tm.StringLiteral:
 		return &StringLiteral{n}
-	case tm.SubType:
-		return &SubType{n}
 	case tm.Symref:
 		return &Symref{n}
 	case tm.SymrefArgs:
@@ -192,8 +186,6 @@ func ToTmNode(n *Node) TmNode {
 		return &SyntaxProblem{n}
 	case tm.TemplateParam:
 		return &TemplateParam{n}
-	case tm.VoidType:
-		return &VoidType{n}
 	case tm.InvalidToken, tm.MultilineComment, tm.Comment, tm.Templates:
 		return &Token{n}
 	case tm.NoType:
