@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "lexer.h"
+
+#include "absl/base/attributes.h"
 #include "absl/functional/function_ref.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
-#include "util/task/status_macros.h"
+#include "absl/strings/str_format.h"
 
 namespace json {
 
@@ -209,7 +211,10 @@ class Parser {
           entry.sym.offset = rhs.front().sym.offset;
           entry.sym.endoffset = rhs.back().sym.endoffset;
         }
-        RETURN_IF_ERROR(applyRule(rule, entry, rhs, lexer));
+        absl::Status ret = applyRule(rule, entry, rhs, lexer);
+        if (!ret.ok()) {
+          return ret;
+        }
         stack.resize(stack.size() - ln);
         if (debugSyntax) {
           LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)

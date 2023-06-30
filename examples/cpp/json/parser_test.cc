@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "markup/markup.h"
-#include "testing/base/public/gmock.h"
-#include "testing/base/public/gunit.h"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "absl/strings/string_view.h"
 
 namespace json {
@@ -28,7 +28,7 @@ TEST(ParserTest, ParseWithLexer) {
   };
   Parser parser(listener);
   Lexer lexer("1.0");
-  EXPECT_OK(parser.Parse(lexer));
+  EXPECT_TRUE(parser.Parse(lexer).ok());
   EXPECT_THAT(output,
               testing::ElementsAre(TupleType{NodeType::JSONValue, 0, 3},
                                    TupleType{NodeType::JSONText, 0, 3}));
@@ -102,7 +102,7 @@ TEST(ParserTest, NodeTypes) {
         }
       };
       Parser parser(listener);
-      EXPECT_OK(parser.Parse(l));
+      EXPECT_TRUE(parser.Parse(l).ok());
       EXPECT_THAT(got, testing::UnorderedElementsAreArray(want))
           << "Node type test failed for " << test_case.nt << " on input:\n"
           << input;

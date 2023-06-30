@@ -31,7 +31,7 @@ const std::string input = R"({
 }
 )";
 
-static void BM_SomeFunction(benchmark::State& state) {
+static void BM_Lexer(benchmark::State& state) {
   for (auto _ : state) {
     json::Lexer l(input);
     json::Token next;
@@ -41,6 +41,6 @@ static void BM_SomeFunction(benchmark::State& state) {
   state.SetBytesProcessed(
       static_cast<int64_t>(state.iterations())*input.size());
 }
-BENCHMARK(BM_SomeFunction);
+BENCHMARK(BM_Lexer);
 
 BENCHMARK_MAIN();

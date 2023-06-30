@@ -27,7 +27,7 @@ cc_library(
     hdrs = ["parser.h"],
     deps = [
         ":lexer",
-        "@com_google_absl//absl/functional",
+        "@com_google_absl//absl/functional:function_ref",
         "@com_google_absl//absl/log",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",

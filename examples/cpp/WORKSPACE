@@ -2,8 +2,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
   name = "com_google_absl",
-  urls = ["https://github.com/abseil/abseil-cpp/archive/f39f340c589354db8ab2f07894894f23c9ea3ae6.zip"],
-  strip_prefix = "abseil-cpp-f39f340c589354db8ab2f07894894f23c9ea3ae6",
+  urls = ["https://github.com/abseil/abseil-cpp/archive/a3020c763c12bd16bbf00804abe853afa5778174.zip"],
+  strip_prefix = "abseil-cpp-a3020c763c12bd16bbf00804abe853afa5778174",
+  sha256 = "0b0cd6cacd754b88cfc098e8a87a6e00f1ea5833ebf0c34738dfb9357345b13c",
 )
 
 http_archive(
@@ -30,9 +31,10 @@ http_archive(
 
 http_archive(
     name = "com_google_googletest",
-    strip_prefix = "googletest-a3580180d16923d6d5f488e20b3814608a892f17",
+    strip_prefix = "googletest-1f531be3a19055d1402ec6476c5cab80492d3c68",
+    sha256 = "e8ff0b00bf663e5dbfc98be498ae759e00940fadc5a348c99e87c42ff20b8211",
     urls = [
-        "https://github.com/google/googletest/archive/a3580180d16923d6d5f488e20b3814608a892f17.tar.gz"
+        "https://github.com/google/googletest/archive/1f531be3a19055d1402ec6476c5cab80492d3c68.tar.gz"
     ],
 )
 
@@ -49,7 +51,6 @@ http_archive(
     # Even better, set up Renovate and let it do the work for you (see "Suggestion: Updates" in the README).
     url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/3dddf205a1f5cde20faf2444c1757abe0564ff4c.tar.gz",
     strip_prefix = "bazel-compile-commands-extractor-3dddf205a1f5cde20faf2444c1757abe0564ff4c",
-    # When you first run this tool, it'll recommend a sha256 hash to put here with a message like: "DEBUG: Rule 'hedron_compile_commands' indicated that a canonical reproducible form can be obtained by modifying arguments sha256 = ..."
 )
 load("@hedron_compile_commands//:workspace_setup.bzl", "hedron_compile_commands_setup")
 hedron_compile_commands_setup()
@@ -57,7 +58,7 @@ hedron_compile_commands_setup()
 # Google Benchmark library, used in micro-benchmarks.
 http_archive(
     name = "benchmark",
-    sha256 = "1ba14374fddcd9623f126b1a60945e4deac4cdc4fb25a5f25e7f779e36f2db52",
-    strip_prefix = "benchmark-d2a8a4ee41b923876c034afb939c4fc03598e622",
-    urls = ["https://github.com/google/benchmark/archive/d2a8a4ee41b923876c034afb939c4fc03598e622.zip"],
+    strip_prefix = "benchmark-aacf2b1af967b083565be8c7181626b4609318ac",
+    urls = ["https://github.com/google/benchmark/archive/aacf2b1af967b083565be8c7181626b4609318ac.zip"],
+    sha256 = "080ba323c11535b53f5a5edaf089a21012af4865ea9a0b5782f91a0bb74213e5",
 )
