@@ -38,3 +38,48 @@ kw_null: /null/
 
 error:
 invalid_token:
+
+:: parser
+
+%input JSONText;
+
+%generate Literals = set(first JSONValue<+A>);
+
+%flag A;
+
+JSONText -> JSONText :
+    JSONValue<+A> ;
+
+JSONValue<A> {Value} -> JSONValue :
+    kw_null
+  | 'true'
+  | 'false'
+  | [A] 'A'
+  | [!A] 'B'
+  | JSONObject
+  | EmptyObject
+  | JSONArray
+  | JSONString
+  | JSONNumber
+;
+
+EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' ;
+
+JSONObject -> JSONObject :
+    (?= !EmptyObject) '{' JSONMemberList? '}' ;
+
+JSONMember {*Field} -> JSONMember :
+    JSONString ':' JSONValue<~A> ;
+
+JSONMemberList :
+    JSONMember
+  | JSONMemberList ',' JSONMember
+;
+
+JSONArray -> JSONArray :
+    '[' JSONElementListopt ']' ;
+
+JSONElementList :
+    JSONValue<+A>
+  | JSONElementList ',' JSONValue<+A>
+;

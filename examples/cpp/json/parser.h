@@ -10,13 +10,12 @@
 #include <utility>
 #include <vector>
 
-#include "lexer.h"
-
 #include "absl/base/attributes.h"
 #include "absl/functional/function_ref.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_format.h"
+#include "lexer.h"
 
 namespace json {
 
