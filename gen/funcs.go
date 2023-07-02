@@ -30,6 +30,7 @@ var funcMap = template.FuncMap{
 	"ref":                 ref,
 	"minus1":              minus1,
 	"go_parser_action":    goParserAction,
+	"cc_parser_action":    ccParserAction,
 	"bison_parser_action": bisonParserAction,
 	"short_pkg":           shortPkg,
 	"list":                func(vals ...string) []string { return vals },
@@ -171,6 +172,102 @@ func minus1(a int) int {
 }
 
 func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
+	var decls strings.Builder
+	var sb strings.Builder
+	seen := make(map[int]bool)
+	for len(s) > 0 {
+		d := strings.IndexByte(s, '$')
+		if d == -1 {
+			sb.WriteString(s)
+			break
+		}
+		sb.WriteString(s[:d])
+		s = s[d+1:]
+		if len(s) == 0 {
+			return "", status.Errorf(origin, "found $ at the end of the stream")
+		}
+
+		size, id, prop, err := parseMeta(s)
+		s = s[size:]
+		if err != nil {
+			return "", status.Errorf(origin, err.Error())
+		}
+
+		var index int
+		switch id {
+		case "left()", "leftRaw()":
+			index = -2
+		case "first()":
+			if len(args.Types) == 0 {
+				index = -1
+			}
+		case "last()":
+			if len(args.Types) == 0 {
+				index = -1
+			} else {
+				index = len(args.Types) - 1
+			}
+		default:
+			if strings.HasPrefix(id, "self[") && strings.HasSuffix(id, "]") {
+				id = id[5 : len(id)-1]
+				if _, err := strconv.ParseUint(id, 10, 32); err != nil {
+					return "", status.Errorf(origin, "invalid self reference %q", id)
+				}
+			}
+
+			var ok bool
+			index, ok = args.Resolve(id)
+			if !ok {
+				return "", status.Errorf(origin, "invalid reference %q", id)
+			}
+		}
+
+		if index == -1 {
+			if prop == "value" || prop == "sym" {
+				sb.WriteString("nil")
+			} else {
+				sb.WriteString("-1")
+			}
+			continue
+		}
+		var v string
+		if index == -2 {
+			v = "lhs"
+		} else {
+			v = fmt.Sprintf("rhs[%v]", index)
+		}
+		switch {
+		case prop == "sym":
+			fmt.Fprintf(&sb, "(&%v.sym)", v)
+		case prop == "value":
+			v += ".value"
+			switch {
+			case index >= 0 && args.Types[index] != "":
+				varName := fmt.Sprintf("nn%v", index)
+				if !seen[index] {
+					fmt.Fprintf(&decls, "%v, _ := %v.(%v)\n", varName, v, args.Types[index])
+					seen[index] = true
+				}
+				v = varName
+			case index == -2 && args.LHSType != "" && id != "leftRaw()":
+				if !seen[index] {
+					fmt.Fprintf(&decls, "nn, _ := %v.(%v)\n", v, args.LHSType)
+					seen[index] = true
+				}
+				v = "nn"
+			}
+			sb.WriteString(v)
+		default:
+			sb.WriteString(v)
+			sb.WriteString(".sym.")
+			sb.WriteString(prop)
+		}
+	}
+	return decls.String() + sb.String(), nil
+}
+
+func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
+	// TODO implement
 	var decls strings.Builder
 	var sb strings.Builder
 	seen := make(map[int]bool)

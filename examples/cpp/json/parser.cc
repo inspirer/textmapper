@@ -179,6 +179,7 @@ restart:
 ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
                                     int8_t start, int8_t end) {
   Lexer lexer = lexer_to_copy;
+
   std::vector<stackEntry> stack;
   stack.reserve(64);
 
@@ -203,6 +204,9 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       stackEntry entry;
       entry.sym.symbol = tmRuleSymbol[rule];
       stack.resize(stack.size() - ln);
+      if (debugSyntax) {
+        LOG(INFO) << "lookahead reduced to: " << symbolName(entry.sym.symbol);
+      }
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
       stack.push_back(std::move(entry));
@@ -233,7 +237,6 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
   if (debugSyntax) {
     LOG(INFO) << "lookahead done: " << ((state == end) ? "true" : "false");
   }
-
   return state == end;
 }
 
@@ -282,14 +285,13 @@ restart:
   next_symbol_.endoffset = lexer.TokenEndLocation();
 }
 
-absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
-                        [[maybe_unused]] absl::Span<const stackEntry> rhs,
-                        Lexer& lexer) {
+absl::Status Parser::applyRule(
+    int32_t rule, stackEntry& lhs,
+    [[maybe_unused]] absl::Span<const stackEntry> rhs, Lexer& lexer) {
   switch (rule) {
     case 32:
       if (AtEmptyObject(lexer, next_symbol_.symbol)) {
         lhs.sym.symbol = 23; /* lookahead_EmptyObject */
-
       } else {
         lhs.sym.symbol = 25; /* lookahead_notEmptyObject */
       }
@@ -297,7 +299,6 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
     default:
       break;
   }
-
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
     listener_(nt, lhs.sym.offset, lhs.sym.endoffset);
   }
@@ -307,10 +308,12 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
   pending_symbols_.clear();
   int8_t state = start;
+
   std::vector<stackEntry> stack;
   stack.reserve(startStackSize);
   stack.push_back(stackEntry{.state = state});
   fetchNext(lexer, stack);
+
   while (state != end) {
     int32_t action = tmAction[state];
     if (action < -2) {
@@ -320,6 +323,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       }
       action = lalr(action, next_symbol_.symbol);
     }
+
     if (action >= 0) {
       // Reduce.
       int32_t rule = action;
@@ -395,10 +399,10 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
     if (next_symbol_.symbol == noToken) {
       fetchNext(lexer, stack);
     }
+    // TODO return a syntax error
     return absl::InvalidArgumentError(absl::StrFormat(
         "Syntax error: line %d: %s", lexer.Line(), lexer.Text()));
   }
-
   return absl::OkStatus();
 }
 

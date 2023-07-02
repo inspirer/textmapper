@@ -13,7 +13,14 @@ namespace {{.Options.Namespace}} {
 {{template "parserTables" . -}}
 {{template "lalr" . -}}
 {{template "gotoState" . -}}
+{{template "lookaheadNext" . -}}
+{{template "lookahead" . -}}
+{{template "lookaheadMethods" . -}}
 {{template "reportIgnoredToken" . -}}
+{{template "fetchNext" . -}}
+{{template "applyRule" . -}}
+{{template "Parse" . -}}
+
 {{- block "onAfterParser" .}}{{end}}
 }  // namespace {{.Options.Namespace}}
 {{/**/}}
@@ -183,4 +190,386 @@ int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
   return -1;
 }
 
+{{ end -}}
+
+{{ define "lookaheadNext" -}}
+{{ if and .Parser.Tables.Lookaheads (.Options.IsEnabled "lookaheadNext") -}}
+ABSL_MUST_USE_RESULT int32_t lookaheadNext(Lexer& lexer) {
+  Token tok;
+restart:
+  tok = lexer.Next();
+  switch (tok) {
+{{- if or (.ReportTokens true) (not .ReportsInvalidToken) }}
+{{- range $ind, $tok := .ReportTokens true }}
+  case Token::{{.ID}}:
+{{- end}}
+{{- if not .ReportsInvalidToken}}
+	case Token::{{(index .Syms .Lexer.InvalidToken).ID}}:
+{{- end}}
+    goto restart;
+{{- end}}
+    default:
+      break;
+  }
+  return static_cast<int32_t>(tok);
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "callLookaheadNext"}}{{/*(memoization)*/}}lookaheadNext(lexer){{end -}}
+
+{{ define "lookahead" -}}
+ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
+                                    int8_t start, int8_t end) {
+{{ block "setupLookaheadLexer" . -}}
+{{/**/}}  Lexer lexer = lexer_to_copy;
+{{end -}}
+{{ if .Options.RecursiveLookaheads }}
+	// Use memoization for recursive lookaheads.
+  if (next == noToken) {
+    next = {{template "callLookaheadNext" true}};
+  }
+  // TODO needs translation
+	key := uint64(l.tokenOffset) + uint64(end)<<40
+	if ret, ok := s.cache[key]; ok {
+		return ret;
+	}
+{{end}}
+  std::vector<stackEntry> stack;
+  stack.reserve(64);
+
+  int8_t state = start;
+  stack.push_back(stackEntry{.state = state});
+
+  while (state != end) {
+    int32_t action = tmAction[state];
+{{- if .Parser.Tables.Lalr}}
+    if (action < -2) {
+      // Lookahead is needed.
+      if (next == noToken) {
+        next = lookaheadNext(lexer);
+      }
+      action = lalr(action, next);
+    }
+{{- end}}
+
+    if (action >= 0) {
+      // Reduce.
+      int32_t rule = action;
+      auto ln = static_cast<int32_t>(tmRuleLen[rule]);
+
+      stackEntry entry;
+      entry.sym.symbol = tmRuleSymbol[rule];
+      stack.resize(stack.size() - ln);
+{{- if .Options.RecursiveLookaheads }}
+      // TODO needs translation
+			sym := lookaheadRule(lexer, next, rule, s)
+			if (sym != 0) {
+				entry.sym.symbol = sym;
+			}
+{{- end}}
+      if (debugSyntax) {
+        LOG(INFO) << "lookahead reduced to: " << symbolName(entry.sym.symbol);
+      }
+      state = gotoState(stack.back().state, entry.sym.symbol);
+      entry.state = state;
+      stack.push_back(std::move(entry));
+    } else if (action == -1) {
+      // Shift.
+      if (next == noToken) {
+        next = {{template "callLookaheadNext" false}};
+      }
+      state = gotoState(state, next);
+      stack.push_back(stackEntry{
+          .sym = symbol{.symbol = next},
+          .state = state,
+      });
+      if (debugSyntax) {
+        LOG(INFO) << "lookahead shift: " << symbolName(next) << " ("
+                  << lexer.Text() << ")";
+      }
+      if (state != -1 && next != eoiToken) {
+        next = noToken;
+      }
+    }
+
+    if (action == -2 || state == -1) {
+      break;
+    }
+  }
+
+{{ if .Options.RecursiveLookaheads -}}
+  // TODO needs translation
+	s.cache[key] = state == end
+{{ end -}}
+{{/**/}}  if (debugSyntax) {
+    LOG(INFO) << "lookahead done: " << ((state == end) ? "true" : "false");
+  }
+  return state == end;
+}
+
+{{ end -}}
+
+{{ define "lookaheadMethods" -}}
+{{ range $ind, $inp := .Parser.Inputs -}}
+{{ if and .Synthetic .NoEoi -}}
+{{ $sym := index $.Syms (sum $.NumTokens .Nonterm) -}}
+ABSL_MUST_USE_RESULT bool At{{$sym.Name}}(Lexer& lexer, int32_t next{{if $.NeedsSession}}, session* s{{end}}) {
+  if (debugSyntax) {
+    LOG(INFO) << "lookahead {{$sym.Name}}; next: " << symbolName(next);
+  }
+  return lookahead(lexer, next, {{$ind}}, {{index $.Parser.Tables.FinalStates $ind}}{{if $.NeedsSession}}, s{{end}});
+}
+
+{{ end -}}
+{{ end -}}
+{{ end -}}
+
+
+{{ define "fetchNext" -}}
+{{ if .Options.IsEnabled "fetchNext" -}}
+void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
+  Token tok;
+restart:
+  tok = lexer.Next();
+  switch (tok) {
+{{- if .ReportTokens true }}
+{{- range $ind, $tok := .ReportTokens true }}
+	case Token::{{.ID}}:
+{{- end}}
+    pending_symbols_.push_back(symbol{static_cast<int32_t>(tok),
+                                      lexer.TokenStartLocation(),
+                                      lexer.TokenEndLocation()});
+		goto restart;
+{{- end}}
+{{- if not .ReportsInvalidToken}}
+	case Token::{{(index .Syms .Lexer.InvalidToken).ID}}:
+		goto restart;
+{{- end}}
+  default:
+    break;
+  }
+
+  next_symbol_.symbol = static_cast<int32_t>(tok);
+  next_symbol_.offset = lexer.TokenStartLocation();
+  next_symbol_.endoffset = lexer.TokenEndLocation();
+}
+
+{{ end -}}
+{{ end -}}
+
+{{ define "applyRule" -}}
+absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
+                        [[maybe_unused]] absl::Span<const stackEntry> rhs,
+                        Lexer& lexer) {
+{{- if or .Parser.HasActions .Parser.Tables.Lookaheads }}
+  switch (rule) {
+{{- range $index, $rule := .Parser.Rules}}
+{{- $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) }}
+{{- if or (ne $rule.Action 0) $fixWS }}
+{{- $act := index $.Parser.Actions $rule.Action }}
+{{- if or (ne $act.Code "") $act.Report $fixWS}}
+	case {{$index}}: // {{$.RuleString $rule}}
+{{- if $fixWS }}
+		fixTrailingWS(lhs, rhs)
+{{- end}}
+{{- range $act.Report}}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+{{- if $.Parser.UsesFlags}}
+		listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
+{{- else}}
+    listener_(NodeType::{{$val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
+{{- end}}
+{{- end}}
+{{- if $act.Code }}
+{{cc_parser_action $act.Code $act.Vars $act.Origin}}
+{{- end}}
+{{- end}}
+{{- end}}
+{{- end}}
+
+{{- range $index, $rule := .Parser.Tables.Lookaheads }}
+	case {{sum $index (len $.Parser.Rules)}}:
+		{{ range $rule.Cases }}
+		{{- $sym := index $.Syms (sum $.NumTokens (index $.Parser.Inputs .Predicate.Input).Nonterm) -}}
+		if ({{if .Predicate.Negated}}!{{end}}At{{$sym.Name}}(lexer, next_symbol_.symbol{{if $.NeedsSession}}, s{{end}})) {
+			lhs.sym.symbol = {{.Target}}; /* {{(index $.Syms .Target).Name}} */
+		} else {{end}}{
+			lhs.sym.symbol = {{.DefaultTarget}}; /* {{(index $.Syms .DefaultTarget).Name}} */
+		}
+		return absl::OkStatus();
+{{- end}}
+    default:
+      break;
+  }
+{{- end}}
+
+{{- if .Parser.Types }}
+  if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
+{{- if .Parser.UsesFlags}}
+		listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
+{{- else}}
+    listener_(nt, lhs.sym.offset, lhs.sym.endoffset);
+{{- end}}
+	}
+{{- end}}
+  return absl::OkStatus();
+}
+
+{{ end -}}
+
+{{ define "Parse" -}}
+absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
+{{- if .ReportTokens true }}
+  pending_symbols_.clear();
+{{- end}}
+{{- if .NeedsSession}}
+  // TODO needs translation
+	session s;
+{{- if .Options.RecursiveLookaheads }}
+	s.cache = make(map[uint64]bool)
+{{- end}}
+{{- end}}
+  int8_t state = start;
+{{- if .Parser.IsRecovering }}
+	absl::Status lastErr;
+	recovering_ = 0;
+{{- end}}
+
+  std::vector<stackEntry> stack;
+  stack.reserve(startStackSize);
+  stack.push_back(stackEntry{.state = state});
+{{- if .Parser.IsRecovering }}
+	end_state_ = end;
+{{- end}}
+  fetchNext(lexer, stack);
+
+  while (state != end) {
+    int32_t action = tmAction[state];
+{{- if .Parser.Tables.Lalr}}
+    if (action < -2) {
+      // Lookahead is needed.
+      if (next_symbol_.symbol == noToken) {
+        fetchNext(lexer, stack);
+      }
+      action = lalr(action, next_symbol_.symbol);
+    }
+{{- end}}
+
+    if (action >= 0) {
+      // Reduce.
+      int32_t rule = action;
+      int32_t ln = tmRuleLen[rule];
+      stackEntry entry;
+      entry.sym.symbol = tmRuleSymbol[rule];
+      absl::Span<const stackEntry> rhs;
+
+      if (ln == 0) {
+        if (next_symbol_.symbol == noToken) {
+          fetchNext(lexer, stack);
+        }
+        entry.sym.offset = next_symbol_.offset;
+        entry.sym.endoffset = next_symbol_.endoffset;
+      } else {
+        rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
+        entry.sym.offset = rhs.front().sym.offset;
+        entry.sym.endoffset = rhs.back().sym.endoffset;
+      }
+      absl::Status ret = applyRule(rule, entry, rhs, lexer{{if .NeedsSession}}, &s{{end}});
+      if (!ret.ok()) {
+        return ret;
+      }
+      stack.resize(stack.size() - ln);
+      if (debugSyntax) {
+        LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
+                  << " consuming " << ln << " symbols, range "
+                  << entry.sym.offset << " to " << entry.sym.endoffset;
+      }
+      state = gotoState(stack.back().state, entry.sym.symbol);
+      entry.state = state;
+      stack.push_back(std::move(entry));
+    } else if (action == -1) {
+      // Shift.
+      if (next_symbol_.symbol == noToken) {
+        fetchNext(lexer, stack);
+      }
+      state = gotoState(state, next_symbol_.symbol);
+      if (state >= 0) {
+        stack.push_back(stackEntry{
+            .sym = next_symbol_,
+            .state = state,
+{{- if .Parser.HasAssocValues }}
+					  .value = lexer.Value(),
+{{- end}}
+        });
+        if (debugSyntax) {
+          LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
+                    << lexer.Text() << ")";
+        }
+{{- block "onAfterShift" .}}{{end}}
+        if (!pending_symbols_.empty()) {
+          for (const auto& tok : pending_symbols_) {
+            reportIgnoredToken(tok);
+          }
+          pending_symbols_.clear();
+        }
+        if (next_symbol_.symbol != eoiToken) {
+          switch (Token(next_symbol_.symbol)) {
+            case Token::JSONSTRING:
+              listener_(NodeType::JsonString, next_symbol_.offset,
+                        next_symbol_.endoffset);
+              break;
+            default:
+              break;
+          }
+          next_symbol_.symbol = noToken;
+        }
+      }
+    }
+    if (action == -2 || state == -1) {
+{{- if .Parser.IsRecovering }}
+      // TODO needs translation
+			if recovering_ == 0 {
+				if (next_symbol_.symbol == noToken) {
+					fetchNext(lexer, stack);
+				}
+				lastErr = SyntaxError{
+{{- if .Options.TokenLine}}
+					Line:      lexer.Line(),
+{{- end}}
+					Offset:    next_symbol_.offset,
+					Endoffset: next_symbol_.endoffset,
+				}
+				if !eh(lastErr) {
+{{- template "flushPending" .}}
+					return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
+				}
+			}
+
+			recovering_ = 4;
+			if stack = recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack); stack == nil {
+{{- template "flushPending" .}}
+				return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
+			}
+			state = stack[len(stack)-1].state
+{{- else}}
+			break;
+{{- end}}
+    }
+  }
+
+{{- if not .Parser.IsRecovering }}
+
+	if (state != end) {
+    if (next_symbol_.symbol == noToken) {
+      fetchNext(lexer, stack);
+    }
+    // TODO return a syntax error
+    return absl::InvalidArgumentError(absl::StrFormat(
+        "Syntax error: line %d: %s", lexer.Line(), lexer.Text()));
+	}
+{{- end}}
+  return absl::OkStatus();
+}
 {{ end -}}

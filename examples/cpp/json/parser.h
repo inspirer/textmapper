@@ -75,9 +75,7 @@ class Parser {
     pending_symbols_.reserve(startTokenBufferSize);
   }
 
-  absl::Status Parse(Lexer& lexer) {
-    return Parse(1, 44, lexer);
-  }
+  absl::Status Parse(Lexer& lexer) { return Parse(1, 44, lexer); }
 
  private:
   void reportIgnoredToken(symbol sym);
