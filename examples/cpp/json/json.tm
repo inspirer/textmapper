@@ -2,6 +2,10 @@ language json(cc);
 
 namespace = "json"
 includeGuardPrefix = "EXAMPLES_JSON_"
+eventBased = true
+reportTokens = [MultiLineComment, invalid_token, JSONString]
+extraTypes = ["NonExistingType"]
+
 
 :: lexer
 

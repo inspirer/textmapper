@@ -10,7 +10,10 @@
 {{end}}
 namespace {{.Options.Namespace}} {
 {{block "onBeforeParser" .}}{{end -}}
-{{template "parserTables" .}}
+{{template "parserTables" . -}}
+{{template "lalr" . -}}
+{{template "gotoState" . -}}
+{{template "reportIgnoredToken" . -}}
 {{- block "onAfterParser" .}}{{end}}
 }  // namespace {{.Options.Namespace}}
 {{/**/}}
@@ -66,41 +69,31 @@ constexpr int32_t tmRuleSymbol[] = {
 {{- int_array .Parser.Tables.RuleSymbol "\t" 79 -}}
 };
 
+{{- if .Parser.UsesFlags}}
+
+constexpr uint32_t tmRuleType[] = {
+{{- range .Parser.Rules}}
+{{- if ne .Type -1 }}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+	{{if not (is_file_node $val.Name)}}uint32(NodeType::{{$val.Name}}){{if .Flags}} + uint32({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+{{- else }}
+	0, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
+}
+{{- else }}
+
 constexpr NodeType tmRuleType[] = {
-    NodeType::JSONText,     // JSONText : JSONValue_A
-    NodeType::JSONValue,    // JSONValue : 'null'
-    NodeType::JSONValue,    // JSONValue : 'true'
-    NodeType::JSONValue,    // JSONValue : 'false'
-    NodeType::JSONValue,    // JSONValue : 'B'
-    NodeType::JSONValue,    // JSONValue : JSONObject
-    NodeType::JSONValue,    // JSONValue : EmptyObject
-    NodeType::JSONValue,    // JSONValue : JSONArray
-    NodeType::JSONValue,    // JSONValue : JSONString
-    NodeType::JSONValue,    // JSONValue : JSONNumber
-    NodeType::JSONValue,    // JSONValue_A : 'null'
-    NodeType::JSONValue,    // JSONValue_A : 'true'
-    NodeType::JSONValue,    // JSONValue_A : 'false'
-    NodeType::JSONValue,    // JSONValue_A : 'A'
-    NodeType::JSONValue,    // JSONValue_A : JSONObject
-    NodeType::JSONValue,    // JSONValue_A : EmptyObject
-    NodeType::JSONValue,    // JSONValue_A : JSONArray
-    NodeType::JSONValue,    // JSONValue_A : JSONString
-    NodeType::JSONValue,    // JSONValue_A : JSONNumber
-    NodeType::EmptyObject,  // EmptyObject : lookahead_EmptyObject '{' '}'
-    NodeType::NoType,       // lookahead_EmptyObject :
-    NodeType::JSONObject,   // JSONObject : lookahead_notEmptyObject '{'
-                            // JSONMemberList '}'
-    NodeType::JSONObject,   // JSONObject : lookahead_notEmptyObject '{' '}'
-    NodeType::NoType,       // lookahead_notEmptyObject :
-    NodeType::JSONMember,   // JSONMember : JSONString ':' JSONValue
-    NodeType::NoType,       // JSONMemberList : JSONMember
-    NodeType::NoType,       // JSONMemberList : JSONMemberList ',' JSONMember
-    NodeType::JSONArray,    // JSONArray : '[' JSONElementListopt ']'
-    NodeType::NoType,       // JSONElementList : JSONValue_A
-    NodeType::NoType,       // JSONElementList : JSONElementList ',' JSONValue_A
-    NodeType::NoType,       // JSONElementListopt : JSONElementList
-    NodeType::NoType,       // JSONElementListopt :
+{{- range .Parser.Rules}}
+{{- if ne .Type -1 }}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+	NodeType::{{if not (is_file_node $val.Name)}}{{$val.Name}}{{else}}NoType{{end}}, // {{$.RuleString .}}
+{{- else }}
+	NodeType::NoType, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
 };
+{{- end }}
 
 {{- range .Sets}}
 
@@ -112,6 +105,43 @@ constexpr NodeType tmRuleType[] = {
 };
 {{- end}}
 
+{{end}}
+
+
+{{- define "reportIgnoredToken" -}}
+{{ if .ReportTokens true -}}
+void Parser::reportIgnoredToken(symbol sym) {
+{{ block "onBeforeIgnore" .}}{{end -}}
+{{/**/}}  NodeType t;
+{{- if .Lexer.UsesFlags}}
+	var flags NodeFlags
+{{- end}}
+  switch (Token(sym.symbol)) {
+{{- range .Lexer.MappedTokens}}
+{{- $sym := index $.Syms .Token}}
+{{- if or $sym.Space (eq $sym.Name "invalid_token") }}
+	case Token::{{$sym.ID}}:
+		t = NodeType::{{.Name}};
+{{- if .Flags }}
+		flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}}
+{{- end}}
+    break;
+{{- end}}
+{{- end}}
+	default:
+		return;
+  }
+  if (debugSyntax) {
+    LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
+  }
+  listener_(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}sym.offset, sym.endoffset);
+}
+
+{{ end -}}
+{{ end -}}
+
+{{ define "lalr" -}}
+{{ if .Parser.Tables.Lalr -}}
 int32_t lalr(int32_t action, int32_t next) {
   int32_t a = -action - 3;
   for (; tmLalr[a] >= 0; a += 2) {
@@ -122,7 +152,12 @@ int32_t lalr(int32_t action, int32_t next) {
   return tmLalr[a + 1];
 }
 
-int8_t gotoState(int8_t state, int32_t symbol) {
+{{end -}}
+{{end -}}
+
+{{ define "gotoState" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
   int32_t min = tmGoto[symbol];
   int32_t max = tmGoto[symbol + 1];
 
@@ -148,21 +183,4 @@ int8_t gotoState(int8_t state, int32_t symbol) {
   return -1;
 }
 
-void Parser::reportIgnoredToken(symbol sym) {
-  NodeType t;
-  switch (Token(sym.symbol)) {
-    case Token::MULTILINECOMMENT:
-      t = NodeType::MultiLineComment;
-      break;
-    case Token::INVALID_TOKEN:
-      t = NodeType::InvalidToken;
-      break;
-    default:
-      return;
-  }
-  if (debugSyntax) {
-    LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
-  }
-  listener_(t, sym.offset, sym.endoffset);
-}
-{{end}}
+{{ end -}}

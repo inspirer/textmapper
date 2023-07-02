@@ -72,7 +72,7 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "recursiveLookaheads":
 			opts.RecursiveLookaheads = p.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
 		case "eventBased":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "cc")
 			opts.EventBased = p.parseExpr(opt.Value(), opts.EventBased).(bool)
 		case "genSelector":
 			p.validLangs(opt.Key(), "go")
@@ -89,19 +89,19 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			p.validLangs(opt.Key(), "go")
 			opts.EventAST = p.parseExpr(opt.Value(), opts.EventAST).(bool)
 		case "reportTokens":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "cc")
 			p.reportList = p.parseTokenList(opt.Value())
 			p.reportTokens = make(map[string]bool)
 			for _, id := range p.reportList {
 				p.reportTokens[id.Text()] = true
 			}
 		case "extraTypes":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "cc")
 			opts.ExtraTypes = p.parseExpr(opt.Value(), opts.ExtraTypes).([]syntax.ExtraType)
 		case "customImpl":
 			opts.CustomImpl = p.parseExpr(opt.Value(), opts.CustomImpl).([]string)
 		case "fileNode":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "cc")
 			opts.FileNode = p.parseExpr(opt.Value(), opts.FileNode).(string)
 		case "lang":
 			// This option often occurs in existing grammars. Ignore it.

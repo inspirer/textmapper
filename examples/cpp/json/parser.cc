@@ -83,7 +83,7 @@ constexpr int32_t tmRuleSymbol[] = {
 
 constexpr NodeType tmRuleType[] = {
     NodeType::JSONText,     // JSONText : JSONValue_A
-    NodeType::JSONValue,    // JSONValue : 'null'
+    NodeType::JSONValue,    // JSONValue : kw_null
     NodeType::JSONValue,    // JSONValue : 'true'
     NodeType::JSONValue,    // JSONValue : 'false'
     NodeType::JSONValue,    // JSONValue : 'B'
@@ -92,7 +92,7 @@ constexpr NodeType tmRuleType[] = {
     NodeType::JSONValue,    // JSONValue : JSONArray
     NodeType::JSONValue,    // JSONValue : JSONString
     NodeType::JSONValue,    // JSONValue : JSONNumber
-    NodeType::JSONValue,    // JSONValue_A : 'null'
+    NodeType::JSONValue,    // JSONValue_A : kw_null
     NodeType::JSONValue,    // JSONValue_A : 'true'
     NodeType::JSONValue,    // JSONValue_A : 'false'
     NodeType::JSONValue,    // JSONValue_A : 'A'
