@@ -508,22 +508,10 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
                     << lexer.Text() << ")";
         }
 {{- block "onAfterShift" .}}{{end}}
-        if (!pending_symbols_.empty()) {
-          for (const auto& tok : pending_symbols_) {
-            reportIgnoredToken(tok);
-          }
-          pending_symbols_.clear();
-        }
+{{ template "flushPending" . -}}
         if (next_symbol_.symbol != eoiToken) {
-          switch (Token(next_symbol_.symbol)) {
-            case Token::JSONSTRING:
-              listener_(NodeType::JsonString, next_symbol_.offset,
-                        next_symbol_.endoffset);
-              break;
-            default:
-              break;
-          }
-          next_symbol_.symbol = noToken;
+{{template "reportConsumedNext" . -}}
+{{/**/}}          next_symbol_.symbol = noToken;
         }
       }
     }
@@ -542,7 +530,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
 					Endoffset: next_symbol_.endoffset,
 				}
 				if !eh(lastErr) {
-{{- template "flushPending" .}}
+{{ template "flushPending" . -}}
 					return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
 				}
 			}
@@ -572,4 +560,37 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
 {{- end}}
   return absl::OkStatus();
 }
+{{ end -}}
+
+{{ define "flushPending" -}}
+{{ if .ReportTokens true -}}
+{{/**/}}  if (!pending_symbols_.empty()) {
+    for (const auto& tok : pending_symbols_) {
+      reportIgnoredToken(tok);
+    }
+    pending_symbols_.clear();
+  }
+{{ end -}}
+{{end}}
+
+{{ define "customReportNext"}}{{end -}}
+
+{{ define "reportConsumedNext" -}}
+{{ if .ReportTokens false -}}
+{{/**/}}  switch (Token(next_symbol_.symbol)) {
+{{ range .Lexer.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
+{{/**/}}	case Token::{{$sym.ID}}:
+    listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.offset, next_symbol_.endoffset);
+    break;
+{{end -}}
+{{end -}}
+{{template "customReportNext" . -}}
+{{/**/}}    default:
+      break;
+  }
+{{else -}}
+{{template "customReportNext" . -}}
+{{end -}}
 {{ end -}}

@@ -1,13 +1,13 @@
-{{- define "flushPending"}}
-{{- if .ReportTokens true }}
-	if len(p.pending) > 0 {
+{{- define "flushPending" -}}
+{{ if .ReportTokens true -}}
+{{/**/}}	if len(p.pending) > 0 {
 		for _, tok := range p.pending {
 			p.reportIgnoredToken({{if $.Options.Cancellable}}ctx, {{end}}tok)
 		}
 		p.pending = p.pending[:0]
 	}
-{{- end}}
-{{- end}}
+{{ end -}}
+{{end}}
 
 {{- define "customReportNext"}}{{end}}
 
@@ -263,8 +263,8 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				if debugSyntax {
 					"fmt".Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 				}
-{{- block "onAfterShift" .}}{{end}}
-{{- template "flushPending" .}}
+{{ block "onAfterShift" .}}{{end -}}
+{{ template "flushPending" . -}}
 				if p.next.symbol != eoiToken {
 {{template "reportConsumedNext" . -}}
 {{/**/}}					p.next.symbol = noToken
@@ -291,14 +291,14 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 					Endoffset: p.next.endoffset,
 				}
 				if !p.eh(lastErr) {
-{{- template "flushPending" .}}
+{{ template "flushPending" . -}}
 					return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
 				}
 			}
 
 			p.recovering = 4
 			if stack = p.recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack); stack == nil {
-{{- template "flushPending" .}}
+{{ template "flushPending" . -}}
 				return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
 			}
 			state = stack[len(stack)-1].state
@@ -379,7 +379,7 @@ func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Contex
 		if debugSyntax {
 			"fmt".Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 		}
-{{- template "flushPending" .}}
+{{ template "flushPending" . -}}
 {{ template "reportConsumedNext" . -}}
 {{/**/}}		e = p.next.endoffset
 		p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
