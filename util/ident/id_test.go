@@ -89,6 +89,8 @@ var idTests = []struct {
 
 	// Special cases (compatibility with legacy Textmapper).
 	{`'\'`, UpperCase, "ESC"},
+	{`'\''`, UpperCase, "APOS"},
+	{`'\''`, CamelLower, "apos"},
 	{`'\\'`, UpperCase, "ESC"},
 }
 

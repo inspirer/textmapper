@@ -38,7 +38,7 @@
 %token F_A
 %token MULTILINE
 %token DQUOTE
-%token SQUOTE
+%token APOS
 %token SHARPATID
 %token ZFOO
 %token BACKTRACKINGTOKEN
@@ -137,7 +137,7 @@ setof_not_EOI_or_DOT_or_RBRACE :
 | F_A
 | MULTILINE
 | DQUOTE
-| SQUOTE
+| APOS
 | SHARPATID
 | ZFOO
 | BACKTRACKINGTOKEN

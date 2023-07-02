@@ -183,7 +183,7 @@ var tmRuleType = [...]uint32{
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'f_a'
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : multiline
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : dquote
-	0,                   // setof_not_EOI_or_DOT_or_RBRACE : squote
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '\''
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : SharpAtID
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'Zfoo'
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : backtrackingToken

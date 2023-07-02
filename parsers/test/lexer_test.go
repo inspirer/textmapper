@@ -83,7 +83,7 @@ var lexerTests = []struct {
 		" Zfoo «Zfoob» «Zfo\\u1111ob» ",
 	}},
 	{token.DQUOTE, []string{"«\"»"}},
-	{token.SQUOTE, []string{"«'»"}},
+	{token.APOS, []string{"«'»"}},
 	{token.ZFOO, []string{
 		" «Zfoo» Zfoob ",
 	}},

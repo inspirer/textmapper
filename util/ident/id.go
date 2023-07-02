@@ -66,6 +66,10 @@ func Produce(name string, style Style) string {
 			// Compatibility with legacy Textmapper.
 			return "ESC"
 		}
+		if len(name) == 2 && name[0] == '\\' && charName[rune(name[1])] != "" {
+			// Compatibility with legacy Textmapper. Remove the ESC prefix.
+			name = name[1:]
+		}
 	}
 	var buf strings.Builder
 	write := func(word string) {
