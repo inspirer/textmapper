@@ -182,6 +182,7 @@ type Options struct {
 	NonBacktracking bool
 
 	// Parser features.
+	GenParser           bool // true by default
 	Cancellable         bool // Go-specific.
 	RecursiveLookaheads bool
 	DebugParser         bool

@@ -25,6 +25,7 @@ func newOptionsParser(s *status.Status) *optionsParser {
 	return &optionsParser{
 		out: &grammar.Options{
 			TokenLine: true,
+			GenParser: true,
 		},
 		Status: s,
 	}
@@ -58,6 +59,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.TokenColumn = p.parseExpr(opt.Value(), opts.TokenColumn).(bool)
 		case "nonBacktracking":
 			opts.NonBacktracking = p.parseExpr(opt.Value(), opts.NonBacktracking).(bool)
+		case "genParser":
+			opts.GenParser = p.parseExpr(opt.Value(), opts.GenParser).(bool)
 		case "cancellable":
 			p.validLangs(opt.Key(), "go")
 			opts.Cancellable = p.parseExpr(opt.Value(), opts.Cancellable).(bool)

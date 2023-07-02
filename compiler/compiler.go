@@ -120,7 +120,7 @@ func addSyntheticInputs(m *syntax.Model, compat bool) {
 
 func (c *compiler) compileParser(file ast.File) {
 	p, ok := file.Parser()
-	if !ok {
+	if !ok || !c.out.Options.GenParser {
 		// Lexer-only grammar.
 		return
 	}
