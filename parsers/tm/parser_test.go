@@ -59,10 +59,13 @@ var parseTests = []struct {
 		parserPre + " a : /* empty */ «»| «abc» | «abc -> def» ; ",
 	}},
 	{tm.DirectiveExpect, []string{
-		parserPre + " «%expect 0;» ",
+		parserPre + ` «%expect 0;» `,
 	}},
 	{tm.DirectiveExpectRR, []string{
-		parserPre + " «%expect-rr 8;» ",
+		parserPre + ` «%expect-rr 8;» `,
+	}},
+	{tm.DirectiveInject, []string{
+		parserPre + ` «%inject comment -> Comment/a,b;» `,
 	}},
 	{tm.SyntaxProblem, []string{
 		parserPre + " a : (§«:: a /*aaa*/ b» ) ; ",

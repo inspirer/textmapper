@@ -23,6 +23,7 @@ type syntaxLoader struct {
 	out      *syntax.Model
 	sets     []*grammar.NamedSet
 	prec     []lalr.Precedence
+	mapping  []syntax.RangeToken
 	expectSR int
 	expectRR int
 
@@ -219,6 +220,7 @@ func (c *syntaxLoader) collectInputs(p ast.ParserSection, header status.SourceNo
 
 func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 	precTerms := container.NewBitSet(c.resolver.NumTokens)
+	injected := container.NewBitSet(c.resolver.NumTokens)
 	var seenSR, seenRR bool
 
 	for _, part := range p.GrammarPart() {
@@ -285,6 +287,33 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 			}
 			seenRR = true
 			c.expectRR, _ = strconv.Atoi(part.Child(selector.IntegerLiteral).Text())
+		case *ast.DirectiveInject:
+			name := part.Symref().Name()
+			sym, ok := c.resolver.syms[name.Text()]
+			if !ok || sym >= c.resolver.NumTokens {
+				c.Errorf(name, "unresolved reference '%v'", name.Text())
+				break
+			}
+			if injected.Get(sym) {
+				c.Errorf(name, "second %%inject directive for '%v'", name.Text())
+				break
+			}
+			injected.Set(sym)
+			if as, ok := part.ReportClause().ReportAs(); ok {
+				c.Errorf(as, "reporting terminals 'as' some category is not supported")
+			}
+
+			var flags []string
+			for _, id := range part.ReportClause().Flags() {
+				flags = append(flags, id.Text())
+			}
+			c.mapping = append(c.mapping, syntax.RangeToken{
+				Token:  sym,
+				Name:   part.ReportClause().Action().Text(),
+				Flags:  flags,
+				Origin: part,
+			})
+
 		case *ast.DirectiveSet:
 			name := part.Name()
 			if name.Text() == "afterErr" {
@@ -303,6 +332,11 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 				Expr: part.RhsSet().Text(), // Note: this gets replaced later with instantiated names
 			})
 			c.out.Sets = append(c.out.Sets, set)
+		}
+	}
+	for _, mapping := range c.mapping {
+		if _, ok := c.cats[mapping.Name]; ok {
+			c.Errorf(mapping.Origin, "selector clauses (%v) cannot be used with injected terminals", mapping.Name)
 		}
 	}
 }

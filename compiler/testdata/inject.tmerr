@@ -1,0 +1,26 @@
+language parser(go);
+
+:: lexer
+
+a: /a/
+b: /b/
+
+:: parser
+
+input : d;
+
+d {Foo} -> Foo : /*empty*/ ;
+
+# err: selector clauses (Aaa) cannot be used with injected terminals
+«%inject a -> Aaa/Foo;»
+
+# err: second %inject directive for 'a'
+%inject «a» -> Bar;
+
+# err: reporting terminals 'as' some category is not supported
+%inject b -> Bar «as Foo»;
+
+# err: unresolved reference 'c'
+%inject «c» -> Caa;
+
+%interface Aaa;

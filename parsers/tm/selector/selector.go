@@ -23,6 +23,7 @@ var (
 	DirectiveBrackets    = func(t tm.NodeType) bool { return t == tm.DirectiveBrackets }
 	DirectiveExpect      = func(t tm.NodeType) bool { return t == tm.DirectiveExpect }
 	DirectiveExpectRR    = func(t tm.NodeType) bool { return t == tm.DirectiveExpectRR }
+	DirectiveInject      = func(t tm.NodeType) bool { return t == tm.DirectiveInject }
 	DirectiveInput       = func(t tm.NodeType) bool { return t == tm.DirectiveInput }
 	DirectiveInterface   = func(t tm.NodeType) bool { return t == tm.DirectiveInterface }
 	DirectivePrio        = func(t tm.NodeType) bool { return t == tm.DirectivePrio }

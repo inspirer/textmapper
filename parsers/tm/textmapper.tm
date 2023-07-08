@@ -102,6 +102,7 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 'flag':      /flag/
 'generate':  /generate/
 'global':    /global/
+'inject':    /inject/
 'inline':    /inline/
 'input':     /input/
 'interface': /interface/
@@ -151,7 +152,7 @@ identifier<flag Keywords = false> -> Identifier:
   | 'left'     | 'right'     | 'nonassoc' | 'generate'  | 'assert'  | 'empty'
   | 'nonempty' | 'global'    | 'explicit' | 'lookahead' | 'param'   | 'flag'
   | 'no-eoi'   | 's'         | 'x'        | 'expect'    | 'expect-rr'
-  | 'class'    | 'interface' | 'space'    | 'extend'
+  | 'class'    | 'interface' | 'space'    | 'extend'    | 'inject'
   | 'layout'   | 'language'  | 'lalr'     | 'lexer'     | 'parser'
 
   # Keywords
@@ -306,6 +307,7 @@ directive -> GrammarPart:
   | '%' 'generate' name=identifier '=' rhsSet ';'                    -> DirectiveSet
   | '%' 'expect' integer_literal ';'                                 -> DirectiveExpect
   | '%' 'expect-rr' integer_literal ';'                              -> DirectiveExpectRR
+  | '%' 'inject' symref<~Args> reportClause ';'                      -> DirectiveInject
 ;
 
 inputref -> Inputref:

@@ -34,6 +34,7 @@ func (n DirectiveAssert) TmNode() *Node      { return n.Node }
 func (n DirectiveBrackets) TmNode() *Node    { return n.Node }
 func (n DirectiveExpect) TmNode() *Node      { return n.Node }
 func (n DirectiveExpectRR) TmNode() *Node    { return n.Node }
+func (n DirectiveInject) TmNode() *Node      { return n.Node }
 func (n DirectiveInput) TmNode() *Node       { return n.Node }
 func (n DirectiveInterface) TmNode() *Node   { return n.Node }
 func (n DirectivePrio) TmNode() *Node        { return n.Node }
@@ -160,6 +161,7 @@ type GrammarPart interface {
 func (DirectiveAssert) grammarPartNode()    {}
 func (DirectiveExpect) grammarPartNode()    {}
 func (DirectiveExpectRR) grammarPartNode()  {}
+func (DirectiveInject) grammarPartNode()    {}
 func (DirectiveInput) grammarPartNode()     {}
 func (DirectiveInterface) grammarPartNode() {}
 func (DirectivePrio) grammarPartNode()      {}
@@ -414,6 +416,18 @@ type DirectiveExpectRR struct {
 
 func (n DirectiveExpectRR) IntegerLiteral() IntegerLiteral {
 	return IntegerLiteral{n.Child(selector.IntegerLiteral)}
+}
+
+type DirectiveInject struct {
+	*Node
+}
+
+func (n DirectiveInject) Symref() Symref {
+	return Symref{n.Child(selector.Symref)}
+}
+
+func (n DirectiveInject) ReportClause() ReportClause {
+	return ReportClause{n.Child(selector.ReportClause)}
 }
 
 type DirectiveInput struct {

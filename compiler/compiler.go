@@ -36,7 +36,11 @@ func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
 	c.compileParser(file)
 
 	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
-	c.out.CustomTemplates = parseInGrammarTemplates(tpl)
+	if compat {
+		c.out.CustomTemplates = parseInGrammarTemplates(tpl)
+	} else {
+		c.out.CustomTemplates = tpl
+	}
 	return c.out, s.Err()
 }
 
@@ -148,6 +152,16 @@ func (c *compiler) compileParser(file ast.File) {
 	if c.out.Options.EventBased {
 		tokens := c.out.Lexer.MappedTokens
 		switch {
+		case len(loader.mapping) > 0:
+			// Prefer the injection mapping from the grammar.
+			if len(tokens) > 0 {
+				c.Errorf(file.Header(), "reportTokens are ignored in the presence of %%inject directives")
+			}
+			if len(c.out.Options.ReportTokens) > 0 {
+				c.Errorf(file.Header(), "reporting nodes via lexer rules is ignored in the presence of %%inject directives")
+			}
+			tokens = loader.mapping
+
 		case len(tokens) > 0 && len(c.out.Options.ReportTokens) > 0:
 			m := make(map[int]int)
 			for _, t := range c.out.Options.ReportTokens {
@@ -246,7 +260,7 @@ func (c *compiler) compileParser(file ast.File) {
 	out.NumTerminals = len(source.Terminals)
 }
 
-func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, origin ast.File) bool {
+func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, origin status.SourceNode) bool {
 	g := &lalr.Grammar{
 		Terminals:  len(source.Terminals),
 		Precedence: c.out.Parser.Prec,

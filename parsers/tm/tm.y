@@ -60,6 +60,7 @@
 %token FLAG
 %token GENERATE
 %token GLOBAL
+%token INJECT
 %token INLINE
 %token INPUT
 %token INTERFACE
@@ -115,6 +116,7 @@ identifier :
 | INTERFACE
 | SPACE
 | EXTEND
+| INJECT
 | LAYOUT
 | LANGUAGE
 | LALR
@@ -150,6 +152,7 @@ identifier_Keywords :
 | INTERFACE
 | SPACE
 | EXTEND
+| INJECT
 | LAYOUT
 | LANGUAGE
 | LALR
@@ -427,6 +430,7 @@ directive :
 | REM GENERATE identifier ASSIGN rhsSet SEMICOLON
 | REM EXPECT integer_literal SEMICOLON
 | REM EXPECTMINUSRR integer_literal SEMICOLON
+| REM INJECT symref reportClause SEMICOLON
 ;
 
 identifier_list_Comma_separated :

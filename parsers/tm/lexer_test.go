@@ -127,6 +127,7 @@ var lexerTests = []struct {
 	{token.FLAG, []string{`«flag»`}},
 	{token.GENERATE, []string{`«generate»`}},
 	{token.GLOBAL, []string{`«global»`}},
+	{token.INJECT, []string{`«inject»`}},
 	{token.INLINE, []string{`«inline»`}},
 	{token.INPUT, []string{`«input»`}},
 	{token.INTERFACE, []string{`«interface»`}},

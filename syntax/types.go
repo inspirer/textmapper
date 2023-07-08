@@ -19,9 +19,10 @@ type Types struct {
 
 // RangeToken maps a terminal to an AST node.
 type RangeToken struct {
-	Token int
-	Name  string
-	Flags []string
+	Token  int
+	Name   string
+	Flags  []string
+	Origin status.SourceNode
 }
 
 func (t RangeToken) String() string {

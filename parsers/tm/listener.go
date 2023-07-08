@@ -25,6 +25,7 @@ const (
 	DirectiveBrackets  // opening=Symref closing=Symref
 	DirectiveExpect    // IntegerLiteral
 	DirectiveExpectRR  // IntegerLiteral
+	DirectiveInject    // Symref ReportClause
 	DirectiveInput     // inputRefs=(Inputref)+
 	DirectiveInterface // ids=(Identifier)+
 	DirectivePrio      // Assoc symbols=(Symref)+
@@ -122,6 +123,7 @@ var nodeTypeStr = [...]string{
 	"DirectiveBrackets",
 	"DirectiveExpect",
 	"DirectiveExpectRR",
+	"DirectiveInject",
 	"DirectiveInput",
 	"DirectiveInterface",
 	"DirectivePrio",
@@ -234,6 +236,7 @@ var GrammarPart = []NodeType{
 	DirectiveAssert,
 	DirectiveExpect,
 	DirectiveExpectRR,
+	DirectiveInject,
 	DirectiveInput,
 	DirectiveInterface,
 	DirectivePrio,

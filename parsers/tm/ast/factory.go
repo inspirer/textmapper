@@ -36,6 +36,8 @@ func ToTmNode(n *Node) TmNode {
 		return &DirectiveExpect{n}
 	case tm.DirectiveExpectRR:
 		return &DirectiveExpectRR{n}
+	case tm.DirectiveInject:
+		return &DirectiveInject{n}
 	case tm.DirectiveInput:
 		return &DirectiveInput{n}
 	case tm.DirectiveInterface:

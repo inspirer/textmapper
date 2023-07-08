@@ -69,6 +69,7 @@ const (
 	FLAG          // flag
 	GENERATE      // generate
 	GLOBAL        // global
+	INJECT        // inject
 	INLINE        // inline
 	INPUT         // input
 	INTERFACE     // interface
@@ -155,6 +156,7 @@ var tokenStr = [...]string{
 	"flag",
 	"generate",
 	"global",
+	"inject",
 	"inline",
 	"input",
 	"interface",

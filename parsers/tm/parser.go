@@ -68,11 +68,11 @@ const (
 )
 
 func (p *Parser) ParseFile(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 0, 526, lexer)
+	return p.parse(ctx, 0, 532, lexer)
 }
 
 func (p *Parser) ParseNonterm(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 1, 527, lexer)
+	return p.parse(ctx, 1, 533, lexer)
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
@@ -413,21 +413,21 @@ restart:
 
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
-	case 196: // nonterm : 'extend' identifier reportClause ':' rules ';'
+	case 198: // nonterm : 'extend' identifier reportClause ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 197: // nonterm : 'extend' identifier ':' rules ';'
+	case 199: // nonterm : 'extend' identifier ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 211: // directive : '%' 'assert' 'empty' rhsSet ';'
+	case 213: // directive : '%' 'assert' 'empty' rhsSet ';'
 		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 212: // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	case 214: // directive : '%' 'assert' 'nonempty' rhsSet ';'
 		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 220: // inputref : symref 'no-eoi'
+	case 223: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 244: // rhsSuffix : '%' 'prec' symref
+	case 247: // rhsSuffix : '%' 'prec' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 245: // rhsSuffix : '%' 'shift' symref
+	case 248: // rhsSuffix : '%' 'shift' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 265: // lookahead_predicate : '!' symref
+	case 268: // lookahead_predicate : '!' symref
 		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {
