@@ -633,9 +633,9 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 	case 4777: // TypeName : NamespaceName '.' IdentifierReference_WithDefault
 		p.listener(TsNamespaceName, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4879: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName '?' ':' Type
-		p.listener(RestType, rhs[5].sym.offset, rhs[5].sym.endoffset)
+		p.listener(TsRestType, rhs[5].sym.offset, rhs[5].sym.endoffset)
 	case 4880: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName ':' Type
-		p.listener(RestType, rhs[4].sym.offset, rhs[4].sym.endoffset)
+		p.listener(TsRestType, rhs[4].sym.offset, rhs[4].sym.endoffset)
 	case 4912: // ConstructorType : 'abstract' 'new' TypeParameters ParameterList '=>' Type
 		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4913: // ConstructorType : 'abstract' 'new' ParameterList '=>' Type

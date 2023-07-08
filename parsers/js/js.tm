@@ -583,7 +583,7 @@ TemplateMiddleList<Yield, Await> :
   | TemplateMiddleList template+=TemplateMiddle substitution+=Expression<+In>
 ;
 
-TemplateLiteralType -> TemplateLiteralType :
+TemplateLiteralType -> TsTemplateLiteralType :
     template+=NoSubstitutionTemplate
   | template+=TemplateHead substitution+=Type TemplateSpansType
 ;
@@ -1437,7 +1437,7 @@ JSXChild<Yield, Await> -> JSXChild /* interface */:
 
 # A.1 Types
 
-%interface TsType, TypeMember;
+%interface TsType, TsTypeMember;
 
 %flag NoQuest = false;
 
@@ -1450,46 +1450,46 @@ Type<NoQuest> -> TsType /* interface */:
   | TypePredicate
 ;
 
-TypePredicate<NoQuest> -> TypePredicate:
-    paramref=IdentifierNameRef<+WithoutAsserts> 'is' Type -> TypePredicate
-  | paramref=('asserts' -> ReferenceIdent) (?= StartOfIs) 'is' Type<+NoQuest> -> TypePredicate
+TypePredicate<NoQuest> -> TsTypePredicate:
+    paramref=IdentifierNameRef<+WithoutAsserts> 'is' Type -> TsTypePredicate
+  | paramref=('asserts' -> ReferenceIdent) (?= StartOfIs) 'is' Type<+NoQuest> -> TsTypePredicate
 ;
 
 # 3.7
-AssertsType<NoQuest> -> AssertsType:
+AssertsType<NoQuest> -> TsAssertsType:
     'asserts' .noLineBreak (?= !StartOfIs) ('this' -> This | IdentifierName<+WithoutKeywords, +WithoutAs, +WithoutSatisfies> -> ReferenceIdent) ('is' Type)? ;
 
 StartOfIs:
       'is' ;
 
-TypeParameters -> TypeParameters :
+TypeParameters -> TsTypeParameters :
     '<' (TypeParameter separator ',')+ ','? '>' ;
 
-TypeParameter -> TypeParameter :
+TypeParameter -> TsTypeParameter :
     BindingIdentifier Constraint? ('=' Type)?;
 
-Constraint -> TypeConstraint :
+Constraint -> TsTypeConstraint :
     'extends' Type ;
 
-TypeArguments -> TypeArguments :
+TypeArguments -> TsTypeArguments :
     '<' (Type separator ',')+ '>' ;
 
 UnionOrIntersectionOrPrimaryType<NoQuest> -> TsType /* interface */:
-    inner+=UnionOrIntersectionOrPrimaryType? '|' inner+=IntersectionOrPrimaryType -> UnionType
+    inner+=UnionOrIntersectionOrPrimaryType? '|' inner+=IntersectionOrPrimaryType -> TsUnionType
   | IntersectionOrPrimaryType %prec resolveShift
 ;
 
 IntersectionOrPrimaryType<NoQuest> -> TsType /* interface */:
-    inner+=IntersectionOrPrimaryType? '&' inner+=TypeOperator -> IntersectionType
+    inner+=IntersectionOrPrimaryType? '&' inner+=TypeOperator -> TsIntersectionType
   | TypeOperator
 ;
 
 TypeOperator<NoQuest> -> TsType /* interface */:
     PrimaryType
-  | 'keyof' TypeOperator      -> KeyOfType
-  | 'unique' TypeOperator     -> UniqueType
-  | 'readonly' TypeOperator   -> ReadonlyType
-  | 'infer' (IdentifierName -> NameIdent) -> TypeVar
+  | 'keyof' TypeOperator      -> TsKeyOfType
+  | 'unique' TypeOperator     -> TsUniqueType
+  | 'readonly' TypeOperator   -> TsReadonlyType
+  | 'infer' (IdentifierName -> NameIdent) -> TsTypeVar
 ;
 
 PrimaryType<NoQuest> -> TsType /* interface */:
@@ -1504,16 +1504,16 @@ PrimaryType<NoQuest> -> TsType /* interface */:
   | TupleType
   | TypeQuery
   | ImportType
-  | 'this'                                        -> ThisType
-  | PrimaryType .noLineBreak '!'                  -> NonNullableType
-  | [!NoQuest] PrimaryType .noLineBreak '?'     -> NullableType
+  | 'this'                                        -> TsThisType
+  | PrimaryType .noLineBreak '!'                  -> TsNonNullableType
+  | [!NoQuest] PrimaryType .noLineBreak '?'     -> TsNullableType
 ;
 
-ParenthesizedType -> ParenthesizedType :
+ParenthesizedType -> TsParenthesizedType :
     '(' (?= !StartOfFunctionType) Type ')' ;
 
 # 2.0
-LiteralType -> LiteralType :
+LiteralType -> TsLiteralType :
     StringLiteral
   | '-'? NumericLiteral
   | 'null'
@@ -1522,7 +1522,7 @@ LiteralType -> LiteralType :
   | TemplateLiteralType
 ;
 
-PredefinedType -> PredefinedType :
+PredefinedType -> TsPredefinedType :
     'any'
   | 'unknown'
   | 'number'
@@ -1536,10 +1536,10 @@ PredefinedType -> PredefinedType :
   | 'object'
 ;
 
-TypeReference -> TypeReference :
+TypeReference -> TsTypeReference :
     TypeName .noLineBreak TypeArguments? %prec resolveShift ;
 
-TypeName -> TypeName :
+TypeName -> TsTypeName :
     ref+=IdentifierReference<+WithoutPredefinedTypes, ~Yield, ~Await>
   | (NamespaceName -> TsNamespaceName) '.' ref+=IdentifierReference<~Yield, ~Await, +WithDefault>
 ;
@@ -1549,7 +1549,7 @@ NamespaceName:
   | NamespaceName '.' ref+=IdentifierReference<~Yield, ~Await, +WithDefault>
 ;
 
-ObjectType -> ObjectType :
+ObjectType -> TsObjectType :
     '{' .recoveryScope (?= !StartOfMappedType) TypeBody? '}' ;
 
 TypeBody :
@@ -1564,7 +1564,7 @@ TypeMemberList :
   | TypeMemberList ',' TypeMember
 ;
 
-TypeMember -> TypeMember /* interface */:
+TypeMember -> TsTypeMember /* interface */:
     PropertySignature
   | MethodSignature
   | CallSignature
@@ -1574,11 +1574,11 @@ TypeMember -> TypeMember /* interface */:
   | SyntaxError
 ;
 
-ArrayType<NoQuest> -> ArrayType :
+ArrayType<NoQuest> -> TsArrayType :
     PrimaryType .noLineBreak '[' ']' ;
 
 # 2.1
-IndexedAccessType<NoQuest> -> IndexedAccessType :
+IndexedAccessType<NoQuest> -> TsIndexedAccessType :
     left=PrimaryType .noLineBreak '[' index=Type ']' ;
 
 # 2.1
@@ -1588,12 +1588,12 @@ StartOfMappedType :
 ;
 
 # 2.1
-MappedType -> MappedType :
+MappedType -> TsMappedType :
     '{' .recoveryScope (?= StartOfMappedType) (('+'|'-')? 'readonly')?
           '[' BindingIdentifier 'in' inType=Type ('as' asType=Type)? ']'
           (('+'|'-')? '?')? TypeAnnotation ';'? '}' ;
 
-TupleType -> TupleType :
+TupleType -> TsTupleType :
     '[' (TupleElementType separator ',')+? ','? ']' ;
 
 %interface TupleMember;
@@ -1601,8 +1601,8 @@ TupleType -> TupleType :
 TupleElementType -> TupleMember:
     (?= !StartOfTupleElementName) Type
   | (?= StartOfTupleElementName) IdentifierName '?'? ':' Type -> NamedTupleMember
-  | '...' (?= !StartOfTupleElementName) Type  -> RestType
-  | '...' (?= StartOfTupleElementName) IdentifierName '?'? ':' (Type -> RestType as TsType) -> NamedTupleMember
+  | '...' (?= !StartOfTupleElementName) Type  -> TsRestType
+  | '...' (?= StartOfTupleElementName) IdentifierName '?'? ':' (Type -> TsRestType as TsType) -> NamedTupleMember
 ;
 
 StartOfTupleElementName:
@@ -1621,20 +1621,20 @@ StartOfFunctionType :
   | ')'
 ;
 
-FunctionType<NoQuest> -> FuncType :
+FunctionType<NoQuest> -> TsFuncType :
     TypeParameters? FunctionTypeParameterList<~Yield, ~Await> '=>' Type ;
 
-ConstructorType<NoQuest> -> ConstructorType :
+ConstructorType<NoQuest> -> TsConstructorType :
     ('abstract' -> Abstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
 %left 'keyof' 'typeof' 'unique' 'readonly' 'infer';
 %nonassoc 'is';
 
-TypeQuery -> TypeQuery :
+TypeQuery -> TsTypeQuery :
     'typeof' TypeQueryExpression ;
 
 # 2.9
-ImportType -> ImportType:
+ImportType -> TsImportType:
      ImportTypeStart .noLineBreak TypeArguments? %prec resolveShift ;
 
 ImportTypeStart -> TsImportTypeStart :
@@ -1647,16 +1647,16 @@ TypeQueryExpression :
   | TypeQueryExpression '.' IdentifierNameRef
 ;
 
-PropertySignature -> PropertySignature :
+PropertySignature -> TsPropertySignature :
     Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? TypeAnnotation? ;
 
-TypeAnnotation -> TypeAnnotation :
+TypeAnnotation -> TsTypeAnnotation :
     ':' Type ;
 
 FormalParameters<Yield, Await> :
     TypeParameters? ParameterList TypeAnnotation? ;
 
-CallSignature -> CallSignature :
+CallSignature -> TsCallSignature :
     TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? ;
 
 ParameterList<Yield, Await> -> Parameters :
@@ -1688,25 +1688,25 @@ BindingIdentifierOrPattern<Yield, Await> :
   | BindingPattern
 ;
 
-ConstructSignature -> ConstructSignature :
+ConstructSignature -> TsConstructSignature :
     Modifiers? 'new' TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? ;
 
 # Note: using IdentifierName instead of BindingIdentifier to avoid r/r
 # conflicts with ComputedPropertyName.
-IndexSignature<WithDeclare> -> IndexSignature :
+IndexSignature<WithDeclare> -> TsIndexSignature :
     Modifiers? '[' (IdentifierName -> NameIdent) ':' Type ']' TypeAnnotation ;
 
-MethodSignature -> MethodSignature :
+MethodSignature -> TsMethodSignature :
     Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? FormalParameters<~Yield, ~Await>
   | Modifiers? ((('new'-> NameIdent)->LiteralPropertyName)->PropertyName) '?' FormalParameters<~Yield, ~Await>
   ;
 
-AccessorSignature -> TypeMember:
+AccessorSignature -> TsTypeMember:
     Modifiers? 'get' PropertyName<~Yield, ~Await> '(' ')' TypeAnnotationopt          -> Getter
   | Modifiers? 'set' PropertyName<~Yield, ~Await> '(' PropertySetParameterList ')'   -> Setter
 ;
 
-TypeAliasDeclaration -> TypeAliasDecl :
+TypeAliasDeclaration -> TsTypeAliasDecl :
     'type' BindingIdentifier TypeParameters? '=' Type ';' ;
 
 # A.5 Interfaces

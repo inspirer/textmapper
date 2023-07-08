@@ -17,12 +17,10 @@ var (
 	Arguments                 = func(t js.NodeType) bool { return t == js.Arguments }
 	ArrayLiteral              = func(t js.NodeType) bool { return t == js.ArrayLiteral }
 	ArrayPattern              = func(t js.NodeType) bool { return t == js.ArrayPattern }
-	ArrayType                 = func(t js.NodeType) bool { return t == js.ArrayType }
 	ArrowFunc                 = func(t js.NodeType) bool { return t == js.ArrowFunc }
 	AssertClause              = func(t js.NodeType) bool { return t == js.AssertClause }
 	AssertEntry               = func(t js.NodeType) bool { return t == js.AssertEntry }
 	AssertionKey              = func(t js.NodeType) bool { return t == js.AssertionKey }
-	AssertsType               = func(t js.NodeType) bool { return t == js.AssertsType }
 	AssignmentExpr            = func(t js.NodeType) bool { return t == js.AssignmentExpr }
 	AssignmentOperator        = func(t js.NodeType) bool { return t == js.AssignmentOperator }
 	AsyncArrowFunc            = func(t js.NodeType) bool { return t == js.AsyncArrowFunc }
@@ -42,7 +40,6 @@ var (
 	Body                      = func(t js.NodeType) bool { return t == js.Body }
 	BreakStmt                 = func(t js.NodeType) bool { return t == js.BreakStmt }
 	CallExpr                  = func(t js.NodeType) bool { return t == js.CallExpr }
-	CallSignature             = func(t js.NodeType) bool { return t == js.CallSignature }
 	Case                      = func(t js.NodeType) bool { return t == js.Case }
 	Catch                     = func(t js.NodeType) bool { return t == js.Catch }
 	Class                     = func(t js.NodeType) bool { return t == js.Class }
@@ -54,8 +51,6 @@ var (
 	ConciseBody               = func(t js.NodeType) bool { return t == js.ConciseBody }
 	Cond                      = func(t js.NodeType) bool { return t == js.Cond }
 	ConditionalExpr           = func(t js.NodeType) bool { return t == js.ConditionalExpr }
-	ConstructSignature        = func(t js.NodeType) bool { return t == js.ConstructSignature }
-	ConstructorType           = func(t js.NodeType) bool { return t == js.ConstructorType }
 	ContinueStmt              = func(t js.NodeType) bool { return t == js.ContinueStmt }
 	DebuggerStmt              = func(t js.NodeType) bool { return t == js.DebuggerStmt }
 	Declare                   = func(t js.NodeType) bool { return t == js.Declare }
@@ -87,7 +82,6 @@ var (
 	ForStmtWithVar            = func(t js.NodeType) bool { return t == js.ForStmtWithVar }
 	Func                      = func(t js.NodeType) bool { return t == js.Func }
 	FuncExpr                  = func(t js.NodeType) bool { return t == js.FuncExpr }
-	FuncType                  = func(t js.NodeType) bool { return t == js.FuncType }
 	Generator                 = func(t js.NodeType) bool { return t == js.Generator }
 	GeneratorExpr             = func(t js.NodeType) bool { return t == js.GeneratorExpr }
 	GeneratorMethod           = func(t js.NodeType) bool { return t == js.GeneratorMethod }
@@ -96,14 +90,10 @@ var (
 	IfStmt                    = func(t js.NodeType) bool { return t == js.IfStmt }
 	ImportDecl                = func(t js.NodeType) bool { return t == js.ImportDecl }
 	ImportSpec                = func(t js.NodeType) bool { return t == js.ImportSpec }
-	ImportType                = func(t js.NodeType) bool { return t == js.ImportType }
 	InExpr                    = func(t js.NodeType) bool { return t == js.InExpr }
 	IndexAccess               = func(t js.NodeType) bool { return t == js.IndexAccess }
-	IndexSignature            = func(t js.NodeType) bool { return t == js.IndexSignature }
-	IndexedAccessType         = func(t js.NodeType) bool { return t == js.IndexedAccessType }
 	Initializer               = func(t js.NodeType) bool { return t == js.Initializer }
 	InstanceOfExpr            = func(t js.NodeType) bool { return t == js.InstanceOfExpr }
-	IntersectionType          = func(t js.NodeType) bool { return t == js.IntersectionType }
 	JSXAttributeName          = func(t js.NodeType) bool { return t == js.JSXAttributeName }
 	JSXClosingElement         = func(t js.NodeType) bool { return t == js.JSXClosingElement }
 	JSXElement                = func(t js.NodeType) bool { return t == js.JSXElement }
@@ -117,7 +107,6 @@ var (
 	JSXSpreadAttribute        = func(t js.NodeType) bool { return t == js.JSXSpreadAttribute }
 	JSXSpreadExpr             = func(t js.NodeType) bool { return t == js.JSXSpreadExpr }
 	JSXText                   = func(t js.NodeType) bool { return t == js.JSXText }
-	KeyOfType                 = func(t js.NodeType) bool { return t == js.KeyOfType }
 	LabelIdent                = func(t js.NodeType) bool { return t == js.LabelIdent }
 	LabelledStmt              = func(t js.NodeType) bool { return t == js.LabelledStmt }
 	LetOrConst                = func(t js.NodeType) bool { return t == js.LetOrConst }
@@ -125,14 +114,11 @@ var (
 	LexicalDecl               = func(t js.NodeType) bool { return t == js.LexicalDecl }
 	Literal                   = func(t js.NodeType) bool { return t == js.Literal }
 	LiteralPropertyName       = func(t js.NodeType) bool { return t == js.LiteralPropertyName }
-	LiteralType               = func(t js.NodeType) bool { return t == js.LiteralType }
 	LogicalAND                = func(t js.NodeType) bool { return t == js.LogicalAND }
 	LogicalOR                 = func(t js.NodeType) bool { return t == js.LogicalOR }
-	MappedType                = func(t js.NodeType) bool { return t == js.MappedType }
 	MemberMethod              = func(t js.NodeType) bool { return t == js.MemberMethod }
 	MemberVar                 = func(t js.NodeType) bool { return t == js.MemberVar }
 	Method                    = func(t js.NodeType) bool { return t == js.Method }
-	MethodSignature           = func(t js.NodeType) bool { return t == js.MethodSignature }
 	Module                    = func(t js.NodeType) bool { return t == js.Module }
 	ModuleSpec                = func(t js.NodeType) bool { return t == js.ModuleSpec }
 	MultiplicativeExpr        = func(t js.NodeType) bool { return t == js.MultiplicativeExpr }
@@ -143,13 +129,10 @@ var (
 	NewExpr                   = func(t js.NodeType) bool { return t == js.NewExpr }
 	NewTarget                 = func(t js.NodeType) bool { return t == js.NewTarget }
 	NoElement                 = func(t js.NodeType) bool { return t == js.NoElement }
-	NonNullableType           = func(t js.NodeType) bool { return t == js.NonNullableType }
 	NotExpr                   = func(t js.NodeType) bool { return t == js.NotExpr }
-	NullableType              = func(t js.NodeType) bool { return t == js.NullableType }
 	ObjectLiteral             = func(t js.NodeType) bool { return t == js.ObjectLiteral }
 	ObjectMethod              = func(t js.NodeType) bool { return t == js.ObjectMethod }
 	ObjectPattern             = func(t js.NodeType) bool { return t == js.ObjectPattern }
-	ObjectType                = func(t js.NodeType) bool { return t == js.ObjectType }
 	OptionalCallExpr          = func(t js.NodeType) bool { return t == js.OptionalCallExpr }
 	OptionalIndexAccess       = func(t js.NodeType) bool { return t == js.OptionalIndexAccess }
 	OptionalPropertyAccess    = func(t js.NodeType) bool { return t == js.OptionalPropertyAccess }
@@ -157,23 +140,18 @@ var (
 	Override                  = func(t js.NodeType) bool { return t == js.Override }
 	Parameters                = func(t js.NodeType) bool { return t == js.Parameters }
 	Parenthesized             = func(t js.NodeType) bool { return t == js.Parenthesized }
-	ParenthesizedType         = func(t js.NodeType) bool { return t == js.ParenthesizedType }
 	PostDec                   = func(t js.NodeType) bool { return t == js.PostDec }
 	PostInc                   = func(t js.NodeType) bool { return t == js.PostInc }
 	PreDec                    = func(t js.NodeType) bool { return t == js.PreDec }
 	PreInc                    = func(t js.NodeType) bool { return t == js.PreInc }
-	PredefinedType            = func(t js.NodeType) bool { return t == js.PredefinedType }
 	Property                  = func(t js.NodeType) bool { return t == js.Property }
 	PropertyAccess            = func(t js.NodeType) bool { return t == js.PropertyAccess }
 	PropertyBinding           = func(t js.NodeType) bool { return t == js.PropertyBinding }
-	PropertySignature         = func(t js.NodeType) bool { return t == js.PropertySignature }
 	Readonly                  = func(t js.NodeType) bool { return t == js.Readonly }
-	ReadonlyType              = func(t js.NodeType) bool { return t == js.ReadonlyType }
 	ReferenceIdent            = func(t js.NodeType) bool { return t == js.ReferenceIdent }
 	Regexp                    = func(t js.NodeType) bool { return t == js.Regexp }
 	RelationalExpr            = func(t js.NodeType) bool { return t == js.RelationalExpr }
 	RestParameter             = func(t js.NodeType) bool { return t == js.RestParameter }
-	RestType                  = func(t js.NodeType) bool { return t == js.RestType }
 	ReturnStmt                = func(t js.NodeType) bool { return t == js.ReturnStmt }
 	Setter                    = func(t js.NodeType) bool { return t == js.Setter }
 	ShiftExpr                 = func(t js.NodeType) bool { return t == js.ShiftExpr }
@@ -188,10 +166,8 @@ var (
 	SyntaxProblem             = func(t js.NodeType) bool { return t == js.SyntaxProblem }
 	TaggedTemplate            = func(t js.NodeType) bool { return t == js.TaggedTemplate }
 	TemplateLiteral           = func(t js.NodeType) bool { return t == js.TemplateLiteral }
-	TemplateLiteralType       = func(t js.NodeType) bool { return t == js.TemplateLiteralType }
 	This                      = func(t js.NodeType) bool { return t == js.This }
 	ThisExpr                  = func(t js.NodeType) bool { return t == js.ThisExpr }
-	ThisType                  = func(t js.NodeType) bool { return t == js.ThisType }
 	ThrowStmt                 = func(t js.NodeType) bool { return t == js.ThrowStmt }
 	TryStmt                   = func(t js.NodeType) bool { return t == js.TryStmt }
 	TsAmbientBinding          = func(t js.NodeType) bool { return t == js.TsAmbientBinding }
@@ -206,11 +182,16 @@ var (
 	TsAmbientNamespace        = func(t js.NodeType) bool { return t == js.TsAmbientNamespace }
 	TsAmbientTypeAlias        = func(t js.NodeType) bool { return t == js.TsAmbientTypeAlias }
 	TsAmbientVar              = func(t js.NodeType) bool { return t == js.TsAmbientVar }
+	TsArrayType               = func(t js.NodeType) bool { return t == js.TsArrayType }
 	TsAsConstExpr             = func(t js.NodeType) bool { return t == js.TsAsConstExpr }
 	TsAsExpr                  = func(t js.NodeType) bool { return t == js.TsAsExpr }
+	TsAssertsType             = func(t js.NodeType) bool { return t == js.TsAssertsType }
+	TsCallSignature           = func(t js.NodeType) bool { return t == js.TsCallSignature }
 	TsCastExpr                = func(t js.NodeType) bool { return t == js.TsCastExpr }
 	TsConditional             = func(t js.NodeType) bool { return t == js.TsConditional }
 	TsConst                   = func(t js.NodeType) bool { return t == js.TsConst }
+	TsConstructSignature      = func(t js.NodeType) bool { return t == js.TsConstructSignature }
+	TsConstructorType         = func(t js.NodeType) bool { return t == js.TsConstructorType }
 	TsDynamicImport           = func(t js.NodeType) bool { return t == js.TsDynamicImport }
 	TsEnum                    = func(t js.NodeType) bool { return t == js.TsEnum }
 	TsEnumBody                = func(t js.NodeType) bool { return t == js.TsEnumBody }
@@ -218,38 +199,57 @@ var (
 	TsExclToken               = func(t js.NodeType) bool { return t == js.TsExclToken }
 	TsExport                  = func(t js.NodeType) bool { return t == js.TsExport }
 	TsExportAssignment        = func(t js.NodeType) bool { return t == js.TsExportAssignment }
+	TsFuncType                = func(t js.NodeType) bool { return t == js.TsFuncType }
 	TsImplementsClause        = func(t js.NodeType) bool { return t == js.TsImplementsClause }
 	TsImportAliasDecl         = func(t js.NodeType) bool { return t == js.TsImportAliasDecl }
 	TsImportRequireDecl       = func(t js.NodeType) bool { return t == js.TsImportRequireDecl }
+	TsImportType              = func(t js.NodeType) bool { return t == js.TsImportType }
 	TsImportTypeStart         = func(t js.NodeType) bool { return t == js.TsImportTypeStart }
 	TsIndexMemberDecl         = func(t js.NodeType) bool { return t == js.TsIndexMemberDecl }
+	TsIndexSignature          = func(t js.NodeType) bool { return t == js.TsIndexSignature }
+	TsIndexedAccessType       = func(t js.NodeType) bool { return t == js.TsIndexedAccessType }
 	TsInterface               = func(t js.NodeType) bool { return t == js.TsInterface }
 	TsInterfaceExtends        = func(t js.NodeType) bool { return t == js.TsInterfaceExtends }
+	TsIntersectionType        = func(t js.NodeType) bool { return t == js.TsIntersectionType }
+	TsKeyOfType               = func(t js.NodeType) bool { return t == js.TsKeyOfType }
+	TsLiteralType             = func(t js.NodeType) bool { return t == js.TsLiteralType }
+	TsMappedType              = func(t js.NodeType) bool { return t == js.TsMappedType }
+	TsMethodSignature         = func(t js.NodeType) bool { return t == js.TsMethodSignature }
 	TsNamespace               = func(t js.NodeType) bool { return t == js.TsNamespace }
 	TsNamespaceBody           = func(t js.NodeType) bool { return t == js.TsNamespaceBody }
 	TsNamespaceExportDecl     = func(t js.NodeType) bool { return t == js.TsNamespaceExportDecl }
 	TsNamespaceName           = func(t js.NodeType) bool { return t == js.TsNamespaceName }
 	TsNonNull                 = func(t js.NodeType) bool { return t == js.TsNonNull }
+	TsNonNullableType         = func(t js.NodeType) bool { return t == js.TsNonNullableType }
+	TsNullableType            = func(t js.NodeType) bool { return t == js.TsNullableType }
+	TsObjectType              = func(t js.NodeType) bool { return t == js.TsObjectType }
 	TsOptional                = func(t js.NodeType) bool { return t == js.TsOptional }
+	TsParenthesizedType       = func(t js.NodeType) bool { return t == js.TsParenthesizedType }
+	TsPredefinedType          = func(t js.NodeType) bool { return t == js.TsPredefinedType }
+	TsPropertySignature       = func(t js.NodeType) bool { return t == js.TsPropertySignature }
+	TsReadonlyType            = func(t js.NodeType) bool { return t == js.TsReadonlyType }
+	TsRestType                = func(t js.NodeType) bool { return t == js.TsRestType }
 	TsSatisfiesExpr           = func(t js.NodeType) bool { return t == js.TsSatisfiesExpr }
+	TsTemplateLiteralType     = func(t js.NodeType) bool { return t == js.TsTemplateLiteralType }
 	TsThisParameter           = func(t js.NodeType) bool { return t == js.TsThisParameter }
+	TsThisType                = func(t js.NodeType) bool { return t == js.TsThisType }
+	TsTupleType               = func(t js.NodeType) bool { return t == js.TsTupleType }
+	TsTypeAliasDecl           = func(t js.NodeType) bool { return t == js.TsTypeAliasDecl }
+	TsTypeAnnotation          = func(t js.NodeType) bool { return t == js.TsTypeAnnotation }
+	TsTypeArguments           = func(t js.NodeType) bool { return t == js.TsTypeArguments }
+	TsTypeConstraint          = func(t js.NodeType) bool { return t == js.TsTypeConstraint }
+	TsTypeName                = func(t js.NodeType) bool { return t == js.TsTypeName }
 	TsTypeOf                  = func(t js.NodeType) bool { return t == js.TsTypeOf }
 	TsTypeOnly                = func(t js.NodeType) bool { return t == js.TsTypeOnly }
-	TupleType                 = func(t js.NodeType) bool { return t == js.TupleType }
-	TypeAliasDecl             = func(t js.NodeType) bool { return t == js.TypeAliasDecl }
-	TypeAnnotation            = func(t js.NodeType) bool { return t == js.TypeAnnotation }
-	TypeArguments             = func(t js.NodeType) bool { return t == js.TypeArguments }
-	TypeConstraint            = func(t js.NodeType) bool { return t == js.TypeConstraint }
-	TypeName                  = func(t js.NodeType) bool { return t == js.TypeName }
-	TypeParameter             = func(t js.NodeType) bool { return t == js.TypeParameter }
-	TypeParameters            = func(t js.NodeType) bool { return t == js.TypeParameters }
-	TypePredicate             = func(t js.NodeType) bool { return t == js.TypePredicate }
-	TypeQuery                 = func(t js.NodeType) bool { return t == js.TypeQuery }
-	TypeReference             = func(t js.NodeType) bool { return t == js.TypeReference }
-	TypeVar                   = func(t js.NodeType) bool { return t == js.TypeVar }
+	TsTypeParameter           = func(t js.NodeType) bool { return t == js.TsTypeParameter }
+	TsTypeParameters          = func(t js.NodeType) bool { return t == js.TsTypeParameters }
+	TsTypePredicate           = func(t js.NodeType) bool { return t == js.TsTypePredicate }
+	TsTypeQuery               = func(t js.NodeType) bool { return t == js.TsTypeQuery }
+	TsTypeReference           = func(t js.NodeType) bool { return t == js.TsTypeReference }
+	TsTypeVar                 = func(t js.NodeType) bool { return t == js.TsTypeVar }
+	TsUnionType               = func(t js.NodeType) bool { return t == js.TsUnionType }
+	TsUniqueType              = func(t js.NodeType) bool { return t == js.TsUniqueType }
 	UnaryExpr                 = func(t js.NodeType) bool { return t == js.UnaryExpr }
-	UnionType                 = func(t js.NodeType) bool { return t == js.UnionType }
-	UniqueType                = func(t js.NodeType) bool { return t == js.UniqueType }
 	Var                       = func(t js.NodeType) bool { return t == js.Var }
 	VarDecl                   = func(t js.NodeType) bool { return t == js.VarDecl }
 	VarStmt                   = func(t js.NodeType) bool { return t == js.VarStmt }
@@ -289,8 +289,8 @@ var (
 	TokenSet                  = OneOf(js.TokenSet...)
 	TsAmbientElement          = OneOf(js.TsAmbientElement...)
 	TsType                    = OneOf(js.TsType...)
+	TsTypeMember              = OneOf(js.TsTypeMember...)
 	TupleMember               = OneOf(js.TupleMember...)
-	TypeMember                = OneOf(js.TypeMember...)
 )
 
 func OneOf(types ...js.NodeType) Selector {

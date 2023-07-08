@@ -1173,7 +1173,7 @@ var parseTests = []struct {
 		`var a = «<T<B>>b.run()»;`,
 		`var a = «<T<B<C>>>b.run()»;`,
 	}},
-	{js.Typescript, js.PredefinedType, []string{
+	{js.Typescript, js.TsPredefinedType, []string{
 		`let isDone: «boolean» = false;`,
 		`let color: «string» = "blue";`,
 		`let list: «number»[] = [1, 2, 3];`,
@@ -1183,13 +1183,13 @@ var parseTests = []struct {
 		   [key:«number»] : «string»;
 		 }`,
 	}},
-	{js.Typescript, js.ArrayType, []string{
+	{js.Typescript, js.TsArrayType, []string{
 		`let list: «number[]» = [1, 2, 3];`,
 
 		// parse as type
 		` «number[]» /*astype*/ `,
 	}},
-	{js.Typescript, js.TupleType, []string{
+	{js.Typescript, js.TsTupleType, []string{
 		`let x: «[string, number]»;`,
 		`type x = «[...Strings, ...Numbers]»;`,
 		`type Unbounded = «[...Strings, ...Numbers, boolean]»;`,
@@ -1202,7 +1202,7 @@ var parseTests = []struct {
 		`type Range = «[label1: number, label2: number]»;`,
 		`type Foo = «[first: number, second?: string, ...rest: any[]]»;`,
 	}},
-	{js.Typescript, js.RestType, []string{
+	{js.Typescript, js.TsRestType, []string{
 		`type Bar = [foo, «...(string | number)[]»];`,
 		`type Bar = [...b: «(string | number)[]»];`,
 		`function partialCall<T extends Arr, U extends Arr, R>(f: (...args: [«...T», «...U»]) => R, ...headArgs: T) {
@@ -1216,16 +1216,16 @@ var parseTests = []struct {
            «second?: string», «...rest: any[]»,
          ];`,
 	}},
-	{js.Typescript, js.NullableType, []string{
+	{js.Typescript, js.TsNullableType, []string{
 		`let t: [number, «string?», «boolean?»];`,
 	}},
-	{js.Typescript, js.NonNullableType, []string{
+	{js.Typescript, js.TsNonNullableType, []string{
 		`let t: «a!»;`, // Note: this is valid in JSDocs only
 	}},
-	{js.Typescript, js.ParenthesizedType, []string{
+	{js.Typescript, js.TsParenthesizedType, []string{
 		`var x: «([string, number])»;`,
 	}},
-	{js.Typescript, js.TypeReference, []string{
+	{js.Typescript, js.TsTypeReference, []string{
 		`var x: «abc»;`,
 		`var x: «asserts»;`,
 		`function f(foo: «bar») {}`,
@@ -1235,32 +1235,32 @@ var parseTests = []struct {
 	   }`,
 		"var x: `ab${ «t» }${ «t2» }c`",
 	}},
-	{js.Typescript, js.ObjectType, []string{
+	{js.Typescript, js.TsObjectType, []string{
 		`var x: «{a: string}»;`,
 		`var x: «{a: string;}»;`,
 		`var x: «{a: string; [a:string] : never}»;`,
 	}},
-	{js.Typescript, js.TemplateLiteralType, []string{
+	{js.Typescript, js.TsTemplateLiteralType, []string{
 		"var x: «`abc`»",
 		"var x: «`ab${ t }${ t2 }c`»",
 	}},
-	{js.Typescript, js.IndexSignature, []string{
+	{js.Typescript, js.TsIndexSignature, []string{
 		`var x: {«[a:string] : ()=>string»};`,
 		`var x: {«[a:string] : <T>(a: T)=>string»};`,
 		`var x: {«[a:string] : (a)=>string»};`,
 		`class Foo { «static [n: string]: string | number | undefined»; }`,
 	}},
-	{js.Typescript, js.PropertySignature, []string{
+	{js.Typescript, js.TsPropertySignature, []string{
 		`var x: {«a:string»;};`,
 	}},
-	{js.Typescript, js.CallSignature, []string{
+	{js.Typescript, js.TsCallSignature, []string{
 		`var x: {«(foo) : number»,};`,
 		`var x: {«<T>(foo)»,};`,
 	}},
-	{js.Typescript, js.ConstructSignature, []string{
+	{js.Typescript, js.TsConstructSignature, []string{
 		`var x: {«new(foo) : number»,};`,
 	}},
-	{js.Typescript, js.MethodSignature, []string{
+	{js.Typescript, js.TsMethodSignature, []string{
 		`var x: {«bar(foo) : number»,};`,
 		`var x: {«new?(foo) : number»,};`,
 		`var x: {«bar<T>(foo)»};`,
@@ -1270,20 +1270,20 @@ var parseTests = []struct {
        «method1(a: A): IDisposable»;
      }`,
 	}},
-	{js.Typescript, js.ConstructorType, []string{
+	{js.Typescript, js.TsConstructorType, []string{
 		`let x: {a: «new() => never»};`,
 		`let x: {a: «new(private x : number) => never»};`,
 		`let x: {a: «new<Y extends C>(private x : number) => never»};`,
 		`let x: «abstract new () => HasArea» = Shape;`,
 	}},
-	{js.Typescript, js.TypeParameters, []string{
+	{js.Typescript, js.TsTypeParameters, []string{
 		`function identity«<T>»(arg: T): T {}`,
 		`var a : «<X, Y extends B>» (abc) => int = 5;`,
 		`var x: {[a:string] : «<T>»(a: T)=>string};`,
 		`interface I«<T,K>»{}`,
 		`interface I«<T,K,>»{}`, // trailing comma is allowed here
 	}},
-	{js.Typescript, js.TypeArguments, []string{
+	{js.Typescript, js.TsTypeArguments, []string{
 		`function loggingIdentity<T>(arg: Array«<T>»): Array«<T>» {}`,
 		`var a = loggingIdentity«<(A«<5>»)>»([1,2,3])`,
 		`var a = loggingIdentity«<A«<5>»>»([1,2,3])`,
@@ -1292,32 +1292,32 @@ var parseTests = []struct {
 		`var a = loggingIdentity«<()=>()=>(number)>» (num)`,
 		`var a = loggingIdentity«< <T>(abc: number) => number>» (num)`,
 	}},
-	{js.Typescript, js.TypeParameter, []string{
+	{js.Typescript, js.TsTypeParameter, []string{
 		`function foo<«T», «Q extends T»>() {}`,
 		`declare function create<«T extends Foo = Bar»>() : Baz<T>;`,
 	}},
-	{js.Typescript, js.TypeConstraint, []string{
+	{js.Typescript, js.TsTypeConstraint, []string{
 		`function foo<T, Q «extends T&Foo»>() {}`,
 	}},
-	{js.Typescript, js.UnionType, []string{
+	{js.Typescript, js.TsUnionType, []string{
 		`function foo<Q extends «T | Foo»>() {}`,
 	}},
-	{js.Typescript, js.IntersectionType, []string{
+	{js.Typescript, js.TsIntersectionType, []string{
 		`function foo<Q extends «T & Foo»>() {}`,
 	}},
-	{js.Typescript, js.ThisType, []string{
+	{js.Typescript, js.TsThisType, []string{
 		`class Foo {
 		   add(operand: number): «this» {}
 		 }`,
 	}},
-	{js.Typescript, js.TypeName, []string{
+	{js.Typescript, js.TsTypeName, []string{
 		`function foo<T>() : «T» {}`,
 		`var x: «Foo.default»`,
 	}},
 	{js.Typescript, js.TsNamespaceName, []string{
 		`function foo<T>() : «M.N».T {}`,
 	}},
-	{js.Typescript, js.FuncType, []string{
+	{js.Typescript, js.TsFuncType, []string{
 		`function foo<T>() : «()=>number» {}`,
 		`function foo<T>() : «(abc)=>number» {}`,
 		`function foo<T>() : «(abc,def)=>number» {}`,
@@ -1327,14 +1327,14 @@ var parseTests = []struct {
 		// parse as type
 		` «(abc?:"abc")=>«()=>any»» /*astype*/ `,
 	}},
-	{js.Typescript, js.TypeQuery, []string{
+	{js.Typescript, js.TsTypeQuery, []string{
 		`function foo(a) : «typeof a.b.c» {}`,
 		`function foo(a) : «typeof is» {}`,
 
 		// parse as type
 		` «typeof is» /*astype*/ `,
 	}},
-	{js.Typescript, js.ImportType, []string{
+	{js.Typescript, js.TsImportType, []string{
 		`function adopt(p: «import("./module").Pet») {}`,
 		`function adopt(p: «typeof import("./module").const.let.typeof») {}`,
 		`export declare const hash: «import("crypto").Hash»;`,
@@ -1353,10 +1353,10 @@ var parseTests = []struct {
 		`export declare const hash: «typeof» import("crypto").Hash<foo, Bar>;`,
 		`export declare const hash: «typeof» import("crypto")<X>;`,
 	}},
-	{js.Typescript, js.TypeAnnotation, []string{
+	{js.Typescript, js.TsTypeAnnotation, []string{
 		`var a «: T» = function (kind?«:A») «: B» {}`,
 	}},
-	{js.Typescript, js.LiteralType, []string{
+	{js.Typescript, js.TsLiteralType, []string{
 		`function a(kind?:«"read"») {}`,
 		`const TRUE: «true» = true;`,
 		`let zeroOrOne: «0» | «1»;`,
@@ -1366,7 +1366,7 @@ var parseTests = []struct {
 	{js.Typescript, js.AccessibilityModifier, []string{
 		`function a(«public» kind?:number) {}`,
 	}},
-	{js.Typescript, js.TypeAliasDecl, []string{
+	{js.Typescript, js.TsTypeAliasDecl, []string{
 		`«type Foo = bar;»`,
 		`«type Foo = "bar";»`,
 		"«type Foo = `bar`;»",
@@ -1377,18 +1377,18 @@ var parseTests = []struct {
        [P in keyof T]?: T[P];
      };»`,
 	}},
-	{js.Typescript, js.KeyOfType, []string{
+	{js.Typescript, js.TsKeyOfType, []string{
 		`type K3 = «keyof { [x: string]: Person }»;  // string`,
 		`function getProperty<T, K extends «keyof T»>(obj: T, key: K) {}`,
 	}},
-	{js.Typescript, js.UniqueType, []string{
+	{js.Typescript, js.TsUniqueType, []string{
 		`let Bar: «unique symbol» = Symbol();`,
 	}},
-	{js.Typescript, js.ReadonlyType, []string{
+	{js.Typescript, js.TsReadonlyType, []string{
 		`function foo(arr: «readonly string[]») {}`,
 		`function foo(pair: «readonly [string, string]») {}`,
 	}},
-	{js.Typescript, js.TypeVar, []string{
+	{js.Typescript, js.TsTypeVar, []string{
 		`type ReturnType<T> = T extends (...args: any[]) => «infer R» ? R : any;`,
 		`type Unpacked<T> =
        T extends («infer U»)[] ? U :
@@ -1396,14 +1396,14 @@ var parseTests = []struct {
        T extends Promise<«infer U»> ? U : T;`,
 		"type A<T> = T extends `${«infer U»}` ? string : number;",
 	}},
-	{js.Typescript, js.IndexedAccessType, []string{
+	{js.Typescript, js.TsIndexedAccessType, []string{
 		`type P1 = «Person["name"]»;  // string
      type P2 = «Person["name" | "age"]»;  // string | number
      type P3 = «string["charAt"]»;  // (pos: number) => string
      type P4 = «string[]["push"]»;  // (...items: string[]) => number
      type P5 = «string[0]»[];  // string`,
 	}},
-	{js.Typescript, js.MappedType, []string{
+	{js.Typescript, js.TsMappedType, []string{
 		`type Partial<T> = «{ [P in keyof T]?: T[P] }»`,
 		`type Readonly<T> = «{ /* */ readonly [P in keyof T]: T[P]; }»`,
 		`type MutableRequired<T> = «{ -readonly [P in keyof T]-?: T[P] }»;  // Remove readonly and ?`,
@@ -1635,14 +1635,14 @@ var parseTests = []struct {
 		   export const commentPragmas = «{} as const»;
 		 }`,
 	}},
-	{js.Typescript, js.TypePredicate, []string{
+	{js.Typescript, js.TsTypePredicate, []string{
 		`function isFish(pet: Fish | Bird): «pet is Fish» {}`,
 		`function isFish(asserts: Fish | Bird): «asserts is Foo» {}`,
 		`declare class Foo<T> {
       filter<U extends T>(predicate: (x: T) => «x is U»): Foo<U>;
      }`,
 	}},
-	{js.Typescript, js.AssertsType, []string{
+	{js.Typescript, js.TsAssertsType, []string{
 		`declare function assert(value: unknown): «asserts value»;
 		 declare function assert(value: unknown): «asserts this»;
 		 declare function assertIsArrayOfStrings(obj: unknown): «asserts obj is string[]»;
@@ -1685,7 +1685,7 @@ var parseTests = []struct {
 		// Type arguments.
 		`const x = «<GenericComponent<Props> a={10} b="hi"/>»;`, // TS 2.9
 	}},
-	{js.TypescriptJsx, js.TypeArguments, []string{
+	{js.TypescriptJsx, js.TsTypeArguments, []string{
 		`const x = <GenericComponent«<Props, Foo>» a={10} b="hi"/>;`, // TS 2.9
 	}},
 	{js.TypescriptJsx, js.ArrowFunc, []string{
