@@ -4,11 +4,21 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_set>
 
 #include "absl/strings/str_format.h"
 #include "lexer.h"
 
 namespace json {
+std::unordered_set<int8_t> barStates = {
+    1,
+    3,
+    21,
+    28,
+};
+
+[[maybe_unused]] constexpr int8_t fooState = 26;
+
 constexpr inline absl::string_view tmNonterminals[] = {
     "JSONText",
     "JSONValue",
@@ -109,12 +119,12 @@ constexpr NodeType tmRuleType[] = {
     NodeType::NoType,       // lookahead_notEmptyObject :
     NodeType::JSONMember,   // JSONMember : JSONString ':' JSONValue
     NodeType::NoType,       // JSONMemberList : JSONMember
-    NodeType::NoType,       // JSONMemberList : JSONMemberList ',' JSONMember
-    NodeType::JSONArray,    // JSONArray : '[' JSONElementListopt ']'
-    NodeType::NoType,       // JSONElementList : JSONValue_A
-    NodeType::NoType,       // JSONElementList : JSONElementList ',' JSONValue_A
-    NodeType::NoType,       // JSONElementListopt : JSONElementList
-    NodeType::NoType,       // JSONElementListopt :
+    NodeType::NoType,     // JSONMemberList : JSONMemberList .foo ',' JSONMember
+    NodeType::JSONArray,  // JSONArray : .bar '[' JSONElementListopt ']'
+    NodeType::NoType,     // JSONElementList : JSONValue_A
+    NodeType::NoType,     // JSONElementList : JSONElementList ',' JSONValue_A
+    NodeType::NoType,     // JSONElementListopt : JSONElementList
+    NodeType::NoType,     // JSONElementListopt :
 };
 
 // set(first JSONValue_A) = LBRACE, LBRACK, JSONSTRING, JSONNUMBER, KW_NULL,

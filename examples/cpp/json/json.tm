@@ -77,11 +77,11 @@ JSONMember -> JSONMember :
 
 JSONMemberList :
     JSONMember
-  | JSONMemberList ',' JSONMember
+  | JSONMemberList .foo ',' JSONMember
 ;
 
 JSONArray -> JSONArray :
-    '[' JSONElementListopt ']' ;
+    .bar '[' JSONElementListopt ']' ;
 
 JSONElementList :
     JSONValue<+A>

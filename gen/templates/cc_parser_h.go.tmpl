@@ -1,4 +1,5 @@
 {{ template "header" . -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 #ifndef {{.Options.IncludeGuardPrefix}}PARSER_H_
 #define {{.Options.IncludeGuardPrefix}}PARSER_H_
 
@@ -72,10 +73,16 @@ ABSL_MUST_USE_RESULT std::string symbolName(int32_t sym);
 
 class Parser {
  public:
+{{- if .Parser.Types }}
   template <typename Listener>
   explicit Parser(Listener&& listener)
       : listener_(std::forward<Listener>(listener)) {
+{{- else }}
+  Parser() = default;
+{{- end}}
+{{- if .ReportTokens true }}
     pending_symbols_.reserve(startTokenBufferSize);
+{{- end}}
   }
 
 {{- range $index, $inp := .Parser.Inputs}}
@@ -88,7 +95,9 @@ class Parser {
 {{- end}}
 
  private:
+{{ if .ReportTokens true -}}
   void reportIgnoredToken(symbol sym);
+{{ end -}}
   void fetchNext(Lexer& lexer, std::vector<stackEntry>& stack);
   absl::Status applyRule(int32_t rule, stackEntry& lhs,
                          [[maybe_unused]] absl::Span<const stackEntry> rhs,
@@ -96,10 +105,14 @@ class Parser {
   absl::Status Parse(int8_t start, int8_t end, Lexer& lexer);
 
   symbol next_symbol_;
+{{- if .ReportTokens true }}
   // Tokens to be reported with the next shift. Only non-empty when next.symbol
   // != noToken.
   std::vector<symbol> pending_symbols_;
+{{- end}}
+{{- if .Parser.Types }}
   absl::FunctionRef<void(NodeType, int64_t, int64_t)> listener_;
+{{- end}}
 
   friend std::ostream& operator<<(std::ostream& os, const Parser& parser) {
     return os << "JSONParser next " << symbolName(parser.next_symbol_.symbol)

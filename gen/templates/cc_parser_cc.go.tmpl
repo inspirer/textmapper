@@ -4,6 +4,10 @@
 
 #include <cstdint>
 #include <string>
+{{- range .Parser.Tables.Markers }}
+{{- if and (ne .Name "lr0") (ne .Name "greedy") (gt (len .States) 1) }}
+#include <unordered_set>
+{{- break}}{{ end }}{{ end }}
 
 #include "lexer.h"
 #include "absl/strings/str_format.h"
@@ -26,6 +30,19 @@ namespace {{.Options.Namespace}} {
 {{/**/}}
 
 {{- define "parserTables" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ range .Parser.Tables.Markers -}}
+{{ if and (ne .Name "lr0") (ne .Name "greedy") -}}
+{{ if eq (len .States) 1 -}}
+[[maybe_unused]] constexpr int{{$stateType}}_t {{.Name}}State = {{index .States 0}};
+{{ else -}}
+std::unordered_set<int{{$stateType}}_t> {{.Name}}States = {
+{{- int_array .States "\t" 79 -}}
+};
+{{ end }}
+{{ end -}}
+{{ end -}}
+
 constexpr inline absl::string_view tmNonterminals[] = {
 {{- range .Parser.Nonterms}}
 	"{{.Name}}",
@@ -63,7 +80,6 @@ constexpr int32_t tmGoto[] = {
 {{- int_array .Parser.Tables.Goto "\t" 79 -}}
 };
 
-{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 constexpr int{{$stateType}}_t tmFromTo[] = {
 {{- int_array .Parser.Tables.FromTo "\t" 79 -}}
 };
