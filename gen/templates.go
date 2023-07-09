@@ -38,6 +38,7 @@ var languages = map[string]*language{
 			{"lexer.cc", builtin(`cc_lexer_cc`)},
 		},
 		Parser: []file{
+			{"parser.h", builtin(`cc_parser_h`)},
 			{"parser.cc", builtin(`cc_parser_cc`)},
 		},
 	},
