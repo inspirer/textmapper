@@ -118,18 +118,18 @@ func (g *Grammar) TokensWithoutPrec() []Symbol {
 // ReportTokens returns a list of tokens that need to be injected into the AST.
 func (g *Grammar) ReportTokens(space bool) []Symbol {
 	var ret []Symbol
-	for _, t := range g.Options.ReportTokens {
-		isSpace := g.Syms[t].Space || g.Syms[t].Name == "invalid_token"
+	for _, t := range g.Lexer.MappedTokens {
+		isSpace := g.Syms[t.Token].Space || g.Syms[t.Token].Name == "invalid_token"
 		if isSpace == space {
-			ret = append(ret, g.Syms[t])
+			ret = append(ret, g.Syms[t.Token])
 		}
 	}
 	return ret
 }
 
 func (g *Grammar) ReportsInvalidToken() bool {
-	for _, t := range g.Options.ReportTokens {
-		if g.Syms[t].Name == "invalid_token" {
+	for _, t := range g.Lexer.MappedTokens {
+		if g.Syms[t.Token].Name == "invalid_token" {
 			return true
 		}
 	}

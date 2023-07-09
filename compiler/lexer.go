@@ -30,6 +30,7 @@ type lexerCompiler struct {
 	codeRule    map[symRule]int   // -> index in c.out.Lexer.RuleToken
 	codeAction  map[symAction]int // -> index in c.out.Lexer.Actions
 	mapping     map[int]syntax.RangeToken
+	injected    map[string]bool
 }
 
 func newLexerCompiler(options *optionsParser, resolver *resolver, compat bool, s *status.Status) *lexerCompiler {
@@ -43,6 +44,7 @@ func newLexerCompiler(options *optionsParser, resolver *resolver, compat bool, s
 		codeRule:   make(map[symRule]int),
 		codeAction: make(map[symAction]int),
 		mapping:    make(map[int]syntax.RangeToken),
+		injected:   make(map[string]bool),
 	}
 }
 
@@ -51,6 +53,23 @@ func (c *lexerCompiler) compile(file ast.File) {
 
 	eoi := c.resolver.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
 	out.InvalidToken = c.resolver.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
+
+	if p, ok := file.Parser(); ok {
+		// Some (space) tokens may be injected into the AST by the parser. We should
+		// return them from the lexer despite their space attribute.
+		for _, part := range p.GrammarPart() {
+			if part, ok := part.(*ast.DirectiveInject); ok {
+				if name := part.Symref().Name().Text(); name != "" {
+					c.injected[name] = true
+				}
+			}
+		}
+
+		// TODO remove this
+		for _, reported := range c.options.reportList {
+			c.injected[reported.Text()] = true
+		}
+	}
 
 	c.collectStartConds(file)
 	lexer, _ := file.Lexer()
@@ -307,7 +326,7 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 			}
 
 			cmd, _ := p.Command()
-			if c.options.reportTokens[name] && space.IsValid() {
+			if c.injected[name] && space.IsValid() {
 				// This token needs to be reported from the lexer to appear in the AST. It will be ignored
 				// in the parser.
 				space = noSpace

@@ -13,8 +13,7 @@ import (
 
 type optionsParser struct {
 	// intermediate data that needs to be resolved
-	reportTokens map[string]bool
-	reportList   []ast.Identifier
+	reportList []ast.Identifier
 
 	target string // target language
 	out    *grammar.Options
@@ -89,10 +88,6 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.EventAST = p.parseExpr(opt.Value(), opts.EventAST).(bool)
 		case "reportTokens":
 			p.reportList = p.parseTokenList(opt.Value())
-			p.reportTokens = make(map[string]bool)
-			for _, id := range p.reportList {
-				p.reportTokens[id.Text()] = true
-			}
 		case "extraTypes":
 			opts.ExtraTypes = p.parseExpr(opt.Value(), opts.ExtraTypes).([]syntax.ExtraType)
 		case "customImpl":

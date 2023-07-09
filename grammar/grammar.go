@@ -144,9 +144,9 @@ type Lexer struct {
 	ClassActions    []ClassAction
 	Actions         []SemanticAction
 	InvalidToken    int
-	RuleToken       []int // maps actions into tokens; empty if the mapping is 1:1
-	MappedTokens    []syntax.RangeToken
-	UsesFlags       bool // true if mapped tokens have flags
+	RuleToken       []int               // maps actions into tokens; empty if the mapping is 1:1
+	MappedTokens    []syntax.RangeToken // TODO move into Parser
+	UsesFlags       bool                // true if mapped tokens have flags
 }
 
 // Rule is a parser rule with a semantic action.
