@@ -1221,9 +1221,9 @@ Modifier<WithDeclare> -> Modifier /* interface */:
     AccessibilityModifier
   | Decorator<~Await, ~Yield>
   | 'static'                 -> Static
-  | 'abstract'               -> Abstract
-  | 'override'               -> Override
-  | 'readonly'               -> Readonly
+  | 'abstract'               -> TsAbstract
+  | 'override'               -> TsOverride
+  | 'readonly'               -> TsReadonly
   | 'accessor'               -> Accessor
   | [WithDeclare] 'declare'  -> Declare
 ;
@@ -1625,7 +1625,7 @@ FunctionType<NoQuest> -> TsFuncType :
     TypeParameters? FunctionTypeParameterList<~Yield, ~Await> '=>' Type ;
 
 ConstructorType<NoQuest> -> TsConstructorType :
-    ('abstract' -> Abstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
+    ('abstract' -> TsAbstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
 
 %left 'keyof' 'typeof' 'unique' 'readonly' 'infer';
 %nonassoc 'is';
@@ -1677,7 +1677,7 @@ Parameter<Yield, Await> -> Parameter :
   | SyntaxError
 ;
 
-AccessibilityModifier -> AccessibilityModifier :
+AccessibilityModifier -> TsAccessibilityModifier :
     'public'
   | 'private'
   | 'protected'

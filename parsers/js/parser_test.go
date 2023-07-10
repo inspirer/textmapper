@@ -1363,7 +1363,7 @@ var parseTests = []struct {
 		`let plusMinusOne: «-1» | «1»;`,
 		"declare function setAlignment(value: «`${VerticalAlignment}-${HorizontalAlignment}`»): void;",
 	}},
-	{js.Typescript, js.AccessibilityModifier, []string{
+	{js.Typescript, js.TsAccessibilityModifier, []string{
 		`function a(«public» kind?:number) {}`,
 	}},
 	{js.Typescript, js.TsTypeAliasDecl, []string{
@@ -1446,7 +1446,7 @@ var parseTests = []struct {
 		   «static» displayName?:string;
 		 }`,
 	}},
-	{js.Typescript, js.Abstract, []string{
+	{js.Typescript, js.TsAbstract, []string{
 		`«abstract» class Base {
 		   «abstract» name: string;
 		   «abstract» get value();
@@ -1454,12 +1454,12 @@ var parseTests = []struct {
 		 }`,
 		`let x: «abstract» new () => HasArea = Shape;`,
 	}},
-	{js.Typescript, js.Override, []string{
+	{js.Typescript, js.TsOverride, []string{
 		`class Base {
 		   «override» get value() { return 1; }
 		 }`,
 	}},
-	{js.Typescript, js.Readonly, []string{
+	{js.Typescript, js.TsReadonly, []string{
 		`class Foo {
 		   «readonly» a = 1;
 		   «readonly» b: string;

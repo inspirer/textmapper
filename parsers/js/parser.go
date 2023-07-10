@@ -637,13 +637,13 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 	case 4880: // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName ':' Type
 		p.listener(TsRestType, rhs[4].sym.offset, rhs[4].sym.endoffset)
 	case 4912: // ConstructorType : 'abstract' 'new' TypeParameters ParameterList '=>' Type
-		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.listener(TsAbstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4913: // ConstructorType : 'abstract' 'new' ParameterList '=>' Type
-		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.listener(TsAbstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4916: // ConstructorType_NoQuest : 'abstract' 'new' TypeParameters ParameterList '=>' Type_NoQuest
-		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.listener(TsAbstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4917: // ConstructorType_NoQuest : 'abstract' 'new' ParameterList '=>' Type_NoQuest
-		p.listener(Abstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.listener(TsAbstract, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4923: // ImportTypeStart : 'typeof' 'import' '(' Type ')'
 		p.listener(TsTypeOf, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 4986: // Parameter : Modifiers BindingIdentifier '?' TypeAnnotation

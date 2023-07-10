@@ -12,8 +12,6 @@ type Listener func(t NodeType, offset, endoffset int)
 
 const (
 	NoType NodeType = iota
-	Abstract
-	AccessibilityModifier
 	Accessor
 	AdditiveExpr // left=Expr right=Expr
 	Arguments    // TsTypeArguments? list=(Expr)*
@@ -139,17 +137,15 @@ const (
 	OptionalIndexAccess    // expr=Expr index=Expr
 	OptionalPropertyAccess // expr=Expr selector=ReferenceIdent
 	OptionalTaggedTemplate // tag=Expr literal=TemplateLiteral
-	Override
-	Parameters      // (Parameter)*
-	Parenthesized   // Expr
-	PostDec         // Expr
-	PostInc         // Expr
-	PreDec          // Expr
-	PreInc          // Expr
-	Property        // (Modifier)* PropertyName value=Expr
-	PropertyAccess  // expr=Expr? selector=ReferenceIdent
-	PropertyBinding // PropertyName ElementPattern
-	Readonly
+	Parameters             // (Parameter)*
+	Parenthesized          // Expr
+	PostDec                // Expr
+	PostInc                // Expr
+	PreDec                 // Expr
+	PreInc                 // Expr
+	Property               // (Modifier)* PropertyName value=Expr
+	PropertyAccess         // expr=Expr? selector=ReferenceIdent
+	PropertyBinding        // PropertyName ElementPattern
 	ReferenceIdent
 	Regexp
 	RelationalExpr    // left=Expr right=Expr
@@ -169,9 +165,11 @@ const (
 	TaggedTemplate  // tag=Expr literal=TemplateLiteral
 	TemplateLiteral // template=(NoSubstitutionTemplate | TemplateHead | TemplateMiddle | TemplateTail)+ substitution=(Expr)*
 	This
-	ThisExpr             // This
-	ThrowStmt            // Expr
-	TryStmt              // Block Catch? Finally?
+	ThisExpr  // This
+	ThrowStmt // Expr
+	TryStmt   // Block Catch? Finally?
+	TsAbstract
+	TsAccessibilityModifier
 	TsAmbientBinding     // NameIdent TsTypeAnnotation? Initializer?
 	TsAmbientClass       // (Modifier)* NameIdent TsTypeParameters? Extends? TsImplementsClause? ClassBody
 	TsAmbientEnum        // TsConst? NameIdent TsEnumBody
@@ -193,7 +191,7 @@ const (
 	TsConditional        // check=TsType ext=TsType truet=TsType falset=TsType
 	TsConst
 	TsConstructSignature // (Modifier)* TsTypeParameters? Parameters TsTypeAnnotation?
-	TsConstructorType    // Abstract? TsTypeParameters? Parameters TsType
+	TsConstructorType    // TsAbstract? TsTypeParameters? Parameters TsType
 	TsDynamicImport      // Arguments
 	TsEnum               // TsConst? NameIdent TsEnumBody
 	TsEnumBody           // (TsEnumMember)*
@@ -226,9 +224,11 @@ const (
 	TsNullableType        // TsType
 	TsObjectType          // (TsTypeMember)*
 	TsOptional
+	TsOverride
 	TsParenthesizedType // TsType
 	TsPredefinedType
-	TsPropertySignature   // (Modifier)* PropertyName TsTypeAnnotation?
+	TsPropertySignature // (Modifier)* PropertyName TsTypeAnnotation?
+	TsReadonly
 	TsReadonlyType        // TsType
 	TsRestType            // TsType
 	TsSatisfiesExpr       // left=Expr TsType
@@ -271,8 +271,6 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
-	"Abstract",
-	"AccessibilityModifier",
 	"Accessor",
 	"AdditiveExpr",
 	"Arguments",
@@ -398,7 +396,6 @@ var nodeTypeStr = [...]string{
 	"OptionalIndexAccess",
 	"OptionalPropertyAccess",
 	"OptionalTaggedTemplate",
-	"Override",
 	"Parameters",
 	"Parenthesized",
 	"PostDec",
@@ -408,7 +405,6 @@ var nodeTypeStr = [...]string{
 	"Property",
 	"PropertyAccess",
 	"PropertyBinding",
-	"Readonly",
 	"ReferenceIdent",
 	"Regexp",
 	"RelationalExpr",
@@ -431,6 +427,8 @@ var nodeTypeStr = [...]string{
 	"ThisExpr",
 	"ThrowStmt",
 	"TryStmt",
+	"TsAbstract",
+	"TsAccessibilityModifier",
 	"TsAmbientBinding",
 	"TsAmbientClass",
 	"TsAmbientEnum",
@@ -485,9 +483,11 @@ var nodeTypeStr = [...]string{
 	"TsNullableType",
 	"TsObjectType",
 	"TsOptional",
+	"TsOverride",
 	"TsParenthesizedType",
 	"TsPredefinedType",
 	"TsPropertySignature",
+	"TsReadonly",
 	"TsReadonlyType",
 	"TsRestType",
 	"TsSatisfiesExpr",
@@ -704,15 +704,15 @@ var MethodDefinition = []NodeType{
 }
 
 var Modifier = []NodeType{
-	Abstract,
-	AccessibilityModifier,
 	Accessor,
 	Declare,
 	DecoratorCall,
 	DecoratorExpr,
-	Override,
-	Readonly,
 	Static,
+	TsAbstract,
+	TsAccessibilityModifier,
+	TsOverride,
+	TsReadonly,
 }
 
 var ModuleItem = []NodeType{

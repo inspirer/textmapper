@@ -10,10 +10,6 @@ import (
 
 func ToJsNode(n *Node) JsNode {
 	switch n.Type() {
-	case js.Abstract:
-		return &Abstract{n}
-	case js.AccessibilityModifier:
-		return &AccessibilityModifier{n}
 	case js.Accessor:
 		return &Accessor{n}
 	case js.AdditiveExpr:
@@ -264,8 +260,6 @@ func ToJsNode(n *Node) JsNode {
 		return &OptionalPropertyAccess{n}
 	case js.OptionalTaggedTemplate:
 		return &OptionalTaggedTemplate{n}
-	case js.Override:
-		return &Override{n}
 	case js.Parameters:
 		return &Parameters{n}
 	case js.Parenthesized:
@@ -284,8 +278,6 @@ func ToJsNode(n *Node) JsNode {
 		return &PropertyAccess{n}
 	case js.PropertyBinding:
 		return &PropertyBinding{n}
-	case js.Readonly:
-		return &Readonly{n}
 	case js.ReferenceIdent:
 		return &ReferenceIdent{n}
 	case js.Regexp:
@@ -330,6 +322,10 @@ func ToJsNode(n *Node) JsNode {
 		return &ThrowStmt{n}
 	case js.TryStmt:
 		return &TryStmt{n}
+	case js.TsAbstract:
+		return &TsAbstract{n}
+	case js.TsAccessibilityModifier:
+		return &TsAccessibilityModifier{n}
 	case js.TsAmbientBinding:
 		return &TsAmbientBinding{n}
 	case js.TsAmbientClass:
@@ -438,12 +434,16 @@ func ToJsNode(n *Node) JsNode {
 		return &TsObjectType{n}
 	case js.TsOptional:
 		return &TsOptional{n}
+	case js.TsOverride:
+		return &TsOverride{n}
 	case js.TsParenthesizedType:
 		return &TsParenthesizedType{n}
 	case js.TsPredefinedType:
 		return &TsPredefinedType{n}
 	case js.TsPropertySignature:
 		return &TsPropertySignature{n}
+	case js.TsReadonly:
+		return &TsReadonly{n}
 	case js.TsReadonlyType:
 		return &TsReadonlyType{n}
 	case js.TsRestType:

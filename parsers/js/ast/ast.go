@@ -22,8 +22,6 @@ type NilNode struct{}
 var nilInstance = &NilNode{}
 
 // All types implement JsNode.
-func (n Abstract) JsNode() *Node                  { return n.Node }
-func (n AccessibilityModifier) JsNode() *Node     { return n.Node }
 func (n Accessor) JsNode() *Node                  { return n.Node }
 func (n AdditiveExpr) JsNode() *Node              { return n.Node }
 func (n Arguments) JsNode() *Node                 { return n.Node }
@@ -149,7 +147,6 @@ func (n OptionalCallExpr) JsNode() *Node          { return n.Node }
 func (n OptionalIndexAccess) JsNode() *Node       { return n.Node }
 func (n OptionalPropertyAccess) JsNode() *Node    { return n.Node }
 func (n OptionalTaggedTemplate) JsNode() *Node    { return n.Node }
-func (n Override) JsNode() *Node                  { return n.Node }
 func (n Parameters) JsNode() *Node                { return n.Node }
 func (n Parenthesized) JsNode() *Node             { return n.Node }
 func (n PostDec) JsNode() *Node                   { return n.Node }
@@ -159,7 +156,6 @@ func (n PreInc) JsNode() *Node                    { return n.Node }
 func (n Property) JsNode() *Node                  { return n.Node }
 func (n PropertyAccess) JsNode() *Node            { return n.Node }
 func (n PropertyBinding) JsNode() *Node           { return n.Node }
-func (n Readonly) JsNode() *Node                  { return n.Node }
 func (n ReferenceIdent) JsNode() *Node            { return n.Node }
 func (n Regexp) JsNode() *Node                    { return n.Node }
 func (n RelationalExpr) JsNode() *Node            { return n.Node }
@@ -182,6 +178,8 @@ func (n This) JsNode() *Node                      { return n.Node }
 func (n ThisExpr) JsNode() *Node                  { return n.Node }
 func (n ThrowStmt) JsNode() *Node                 { return n.Node }
 func (n TryStmt) JsNode() *Node                   { return n.Node }
+func (n TsAbstract) JsNode() *Node                { return n.Node }
+func (n TsAccessibilityModifier) JsNode() *Node   { return n.Node }
 func (n TsAmbientBinding) JsNode() *Node          { return n.Node }
 func (n TsAmbientClass) JsNode() *Node            { return n.Node }
 func (n TsAmbientEnum) JsNode() *Node             { return n.Node }
@@ -236,9 +234,11 @@ func (n TsNonNullableType) JsNode() *Node         { return n.Node }
 func (n TsNullableType) JsNode() *Node            { return n.Node }
 func (n TsObjectType) JsNode() *Node              { return n.Node }
 func (n TsOptional) JsNode() *Node                { return n.Node }
+func (n TsOverride) JsNode() *Node                { return n.Node }
 func (n TsParenthesizedType) JsNode() *Node       { return n.Node }
 func (n TsPredefinedType) JsNode() *Node          { return n.Node }
 func (n TsPropertySignature) JsNode() *Node       { return n.Node }
+func (n TsReadonly) JsNode() *Node                { return n.Node }
 func (n TsReadonlyType) JsNode() *Node            { return n.Node }
 func (n TsRestType) JsNode() *Node                { return n.Node }
 func (n TsSatisfiesExpr) JsNode() *Node           { return n.Node }
@@ -526,16 +526,16 @@ type Modifier interface {
 
 // modifierNode() ensures that only the following types can be
 // assigned to Modifier.
-func (Abstract) modifierNode()              {}
-func (AccessibilityModifier) modifierNode() {}
-func (Accessor) modifierNode()              {}
-func (Declare) modifierNode()               {}
-func (DecoratorCall) modifierNode()         {}
-func (DecoratorExpr) modifierNode()         {}
-func (Override) modifierNode()              {}
-func (Readonly) modifierNode()              {}
-func (Static) modifierNode()                {}
-func (NilNode) modifierNode()               {}
+func (Accessor) modifierNode()                {}
+func (Declare) modifierNode()                 {}
+func (DecoratorCall) modifierNode()           {}
+func (DecoratorExpr) modifierNode()           {}
+func (Static) modifierNode()                  {}
+func (TsAbstract) modifierNode()              {}
+func (TsAccessibilityModifier) modifierNode() {}
+func (TsOverride) modifierNode()              {}
+func (TsReadonly) modifierNode()              {}
+func (NilNode) modifierNode()                 {}
 
 type ModuleItem interface {
 	JsNode
@@ -858,14 +858,6 @@ func (TsUniqueType) tupleMemberNode()        {}
 func (NilNode) tupleMemberNode()             {}
 
 // Types.
-
-type Abstract struct {
-	*Node
-}
-
-type AccessibilityModifier struct {
-	*Node
-}
 
 type Accessor struct {
 	*Node
@@ -2799,10 +2791,6 @@ func (n OptionalTaggedTemplate) Literal() TemplateLiteral {
 	return TemplateLiteral{n.Child(selector.Expr).Next(selector.TemplateLiteral)}
 }
 
-type Override struct {
-	*Node
-}
-
 type Parameters struct {
 	*Node
 }
@@ -2900,10 +2888,6 @@ func (n PropertyBinding) PropertyName() PropertyName {
 
 func (n PropertyBinding) ElementPattern() ElementPattern {
 	return ToJsNode(n.Child(selector.ElementPattern)).(ElementPattern)
-}
-
-type Readonly struct {
-	*Node
 }
 
 type ReferenceIdent struct {
@@ -3145,6 +3129,14 @@ func (n TryStmt) Catch() (Catch, bool) {
 func (n TryStmt) Finally() (Finally, bool) {
 	field := Finally{n.Child(selector.Finally)}
 	return field, field.IsValid()
+}
+
+type TsAbstract struct {
+	*Node
+}
+
+type TsAccessibilityModifier struct {
+	*Node
 }
 
 type TsAmbientBinding struct {
@@ -3516,8 +3508,8 @@ type TsConstructorType struct {
 	*Node
 }
 
-func (n TsConstructorType) Abstract() (Abstract, bool) {
-	field := Abstract{n.Child(selector.Abstract)}
+func (n TsConstructorType) TsAbstract() (TsAbstract, bool) {
+	field := TsAbstract{n.Child(selector.TsAbstract)}
 	return field, field.IsValid()
 }
 
@@ -3956,6 +3948,10 @@ type TsOptional struct {
 	*Node
 }
 
+type TsOverride struct {
+	*Node
+}
+
 type TsParenthesizedType struct {
 	*Node
 }
@@ -3988,6 +3984,10 @@ func (n TsPropertySignature) PropertyName() PropertyName {
 func (n TsPropertySignature) TsTypeAnnotation() (TsTypeAnnotation, bool) {
 	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
 	return field, field.IsValid()
+}
+
+type TsReadonly struct {
+	*Node
 }
 
 type TsReadonlyType struct {

@@ -10,8 +10,6 @@ type Selector func(nt js.NodeType) bool
 
 var (
 	Any                       = func(t js.NodeType) bool { return true }
-	Abstract                  = func(t js.NodeType) bool { return t == js.Abstract }
-	AccessibilityModifier     = func(t js.NodeType) bool { return t == js.AccessibilityModifier }
 	Accessor                  = func(t js.NodeType) bool { return t == js.Accessor }
 	AdditiveExpr              = func(t js.NodeType) bool { return t == js.AdditiveExpr }
 	Arguments                 = func(t js.NodeType) bool { return t == js.Arguments }
@@ -137,7 +135,6 @@ var (
 	OptionalIndexAccess       = func(t js.NodeType) bool { return t == js.OptionalIndexAccess }
 	OptionalPropertyAccess    = func(t js.NodeType) bool { return t == js.OptionalPropertyAccess }
 	OptionalTaggedTemplate    = func(t js.NodeType) bool { return t == js.OptionalTaggedTemplate }
-	Override                  = func(t js.NodeType) bool { return t == js.Override }
 	Parameters                = func(t js.NodeType) bool { return t == js.Parameters }
 	Parenthesized             = func(t js.NodeType) bool { return t == js.Parenthesized }
 	PostDec                   = func(t js.NodeType) bool { return t == js.PostDec }
@@ -147,7 +144,6 @@ var (
 	Property                  = func(t js.NodeType) bool { return t == js.Property }
 	PropertyAccess            = func(t js.NodeType) bool { return t == js.PropertyAccess }
 	PropertyBinding           = func(t js.NodeType) bool { return t == js.PropertyBinding }
-	Readonly                  = func(t js.NodeType) bool { return t == js.Readonly }
 	ReferenceIdent            = func(t js.NodeType) bool { return t == js.ReferenceIdent }
 	Regexp                    = func(t js.NodeType) bool { return t == js.Regexp }
 	RelationalExpr            = func(t js.NodeType) bool { return t == js.RelationalExpr }
@@ -170,6 +166,8 @@ var (
 	ThisExpr                  = func(t js.NodeType) bool { return t == js.ThisExpr }
 	ThrowStmt                 = func(t js.NodeType) bool { return t == js.ThrowStmt }
 	TryStmt                   = func(t js.NodeType) bool { return t == js.TryStmt }
+	TsAbstract                = func(t js.NodeType) bool { return t == js.TsAbstract }
+	TsAccessibilityModifier   = func(t js.NodeType) bool { return t == js.TsAccessibilityModifier }
 	TsAmbientBinding          = func(t js.NodeType) bool { return t == js.TsAmbientBinding }
 	TsAmbientClass            = func(t js.NodeType) bool { return t == js.TsAmbientClass }
 	TsAmbientEnum             = func(t js.NodeType) bool { return t == js.TsAmbientEnum }
@@ -224,9 +222,11 @@ var (
 	TsNullableType            = func(t js.NodeType) bool { return t == js.TsNullableType }
 	TsObjectType              = func(t js.NodeType) bool { return t == js.TsObjectType }
 	TsOptional                = func(t js.NodeType) bool { return t == js.TsOptional }
+	TsOverride                = func(t js.NodeType) bool { return t == js.TsOverride }
 	TsParenthesizedType       = func(t js.NodeType) bool { return t == js.TsParenthesizedType }
 	TsPredefinedType          = func(t js.NodeType) bool { return t == js.TsPredefinedType }
 	TsPropertySignature       = func(t js.NodeType) bool { return t == js.TsPropertySignature }
+	TsReadonly                = func(t js.NodeType) bool { return t == js.TsReadonly }
 	TsReadonlyType            = func(t js.NodeType) bool { return t == js.TsReadonlyType }
 	TsRestType                = func(t js.NodeType) bool { return t == js.TsRestType }
 	TsSatisfiesExpr           = func(t js.NodeType) bool { return t == js.TsSatisfiesExpr }
