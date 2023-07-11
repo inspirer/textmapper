@@ -250,25 +250,35 @@ func (c *compiler) compileParser(file ast.File) {
 	// Prepare the model for code generation.
 	c.resolver.addNonterms(source)
 	c.out.Syms = c.resolver.Syms
-	if !c.generateTables(source, loader, file) {
-		return
-	}
 
-	out := c.out.Parser
-	out.Inputs = source.Inputs
-	out.Nonterms = source.Nonterms
-	out.NumTerminals = len(source.Terminals)
+	opts := genOptions{
+		compat:   c.compat,
+		expectSR: loader.expectSR,
+		expectRR: loader.expectRR,
+		syms:     c.out.Syms,
+	}
+	if err := generateTables(source, c.out.Parser, opts, file); err != nil {
+		c.AddError(err)
+	}
 }
 
-func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, origin status.SourceNode) bool {
+type genOptions struct {
+	compat   bool
+	expectRR int
+	expectSR int
+	syms     []grammar.Symbol
+}
+
+func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, origin status.SourceNode) error {
+	var s status.Status
 	g := &lalr.Grammar{
 		Terminals:  len(source.Terminals),
-		Precedence: c.out.Parser.Prec,
-		ExpectSR:   loader.expectSR,
-		ExpectRR:   loader.expectRR,
+		Precedence: out.Prec,
+		ExpectSR:   opts.expectSR,
+		ExpectRR:   opts.expectRR,
 		Origin:     origin,
 	}
-	for _, sym := range c.out.Syms {
+	for _, sym := range opts.syms {
 		g.Symbols = append(g.Symbols, sym.Name)
 	}
 	inputs := make(map[lalr.Input]int32)
@@ -282,14 +292,18 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 	}
 	markers := make(map[string]int)
 	types := make(map[string]int)
-	if c.out.Parser.Types != nil {
-		for i, t := range c.out.Parser.Types.RangeTypes {
+	cats := make(map[string]bool)
+	if out.Types != nil {
+		for i, t := range out.Types.RangeTypes {
 			types[t.Name] = i
+		}
+		for _, t := range out.Types.Categories {
+			cats[t.Name] = true
 		}
 	}
 
 	// The very first action is a no-op.
-	c.out.Parser.Actions = append(c.out.Parser.Actions, grammar.SemanticAction{})
+	out.Actions = append(out.Actions, grammar.SemanticAction{})
 
 	var rules []*grammar.Rule
 	for self, nt := range source.Nonterms {
@@ -357,7 +371,7 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 					for _, sub := range expr.Sub {
 						traverse(sub)
 					}
-					if loader.isSelector(expr.Name) {
+					if cats[expr.Name] {
 						// Categories are used during the grammar analysis only and don't need
 						// to be reported.
 						break
@@ -371,7 +385,7 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 							Flags: expr.ArrowFlags,
 						})
 						if len(expr.ArrowFlags) != 0 {
-							c.out.Parser.UsesFlags = true
+							out.UsesFlags = true
 						}
 					}
 				case syntax.Sequence, syntax.Assign, syntax.Append:
@@ -382,7 +396,7 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 				case syntax.Reference:
 					if command != "" {
 						// TODO This command needs to be extracted into a dedicated nonterminal.
-						c.Errorf(origin, "commands must be placed at the end of a rule")
+						s.Errorf(origin, "commands must be placed at the end of a rule")
 					}
 					if expr.Pos > 0 {
 						actualPos[expr.Pos] = numRefs
@@ -409,7 +423,7 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 
 			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == numRefs &&
 				// Note: in compatibility note we don't promote -> from inside parentheses.
-				(!c.compat || len(report) > innerReports) {
+				(!opts.compat || len(report) > innerReports) {
 
 				// Promote to the rule default.
 				rule.Type = report[last].Type
@@ -429,22 +443,22 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 						if r.IsStateMarker() {
 							continue
 						}
-						act.Vars.Types = append(act.Vars.Types, c.out.Syms[r].Type)
+						act.Vars.Types = append(act.Vars.Types, opts.syms[r].Type)
 					}
 				}
-				rule.Action = len(c.out.Parser.Actions)
-				c.out.Parser.Actions = append(c.out.Parser.Actions, act)
+				rule.Action = len(out.Actions)
+				out.Actions = append(out.Actions, act)
 			}
 			g.Rules = append(g.Rules, rule)
 			rules = append(rules, &grammar.Rule{Rule: rule, Value: exprWithPrec})
 		}
 	}
-	if c.Err() != nil {
+	if s.Err() != nil {
 		// Parsing errors cause inconsistencies inside c.source. Aborting.
-		return false
+		return s.Err()
 	}
 
-	if c.compat {
+	if opts.compat {
 		// Sort g.Markers.
 		perm := make([]int, len(g.Markers))
 		sort.Strings(g.Markers)
@@ -462,13 +476,15 @@ func (c *compiler) generateTables(source *syntax.Model, loader *syntaxLoader, or
 
 	tables, err := lalr.Compile(g)
 	if err != nil {
-		c.AddError(err)
-		return false
+		return err
 	}
 
-	c.out.Parser.Rules = rules
-	c.out.Parser.Tables = tables
-	return true
+	out.Rules = rules
+	out.Tables = tables
+	out.Inputs = source.Inputs
+	out.Nonterms = source.Nonterms
+	out.NumTerminals = len(source.Terminals)
+	return nil
 }
 
 var tplMap = map[string]string{
