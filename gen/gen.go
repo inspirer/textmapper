@@ -96,8 +96,9 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		if err != nil {
 			return fmt.Errorf("error generating %v: %w", f.name, err)
 		}
-		src := Format(f.name, ExtractImports(buf.String()), opts.Compat)
-		if err := w.Write(f.name, src); err != nil {
+		outName := g.Options.FilenamePrefix + f.name
+		src := Format(outName, ExtractImports(buf.String()), opts.Compat)
+		if err := w.Write(outName, src); err != nil {
 			return err
 		}
 	}

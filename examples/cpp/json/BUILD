@@ -2,8 +2,8 @@ package(default_visibility = ["//visibility:private"])
 
 cc_library(
     name = "lexer",
-    srcs = ["lexer.cc"],
-    hdrs = ["lexer.h"],
+    srcs = ["json_lexer.cc"],
+    hdrs = ["json_lexer.h"],
     deps = [
         "@com_google_absl//absl/log",
         "@com_google_absl//absl/strings",
@@ -23,8 +23,8 @@ cc_test(
 
 cc_library(
     name = "parser",
-    srcs = ["parser.cc"],
-    hdrs = ["parser.h"],
+    srcs = ["json_parser.cc"],
+    hdrs = ["json_parser.h"],
     deps = [
         ":lexer",
         "@com_google_absl//absl/functional:function_ref",

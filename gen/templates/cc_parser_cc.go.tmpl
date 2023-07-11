@@ -1,6 +1,6 @@
 {{ template "header" . -}}
 {{block "parserIncludes" . -}}
-#include "parser.h"
+#include "{{.Options.FilenamePrefix}}parser.h"
 
 #include <cstdint>
 #include <string>
@@ -9,7 +9,7 @@
 #include <unordered_set>
 {{- break}}{{ end }}{{ end }}
 
-#include "lexer.h"
+#include "{{.Options.FilenamePrefix}}lexer.h"
 #include "absl/strings/str_format.h"
 {{end}}
 namespace {{.Options.Namespace}} {

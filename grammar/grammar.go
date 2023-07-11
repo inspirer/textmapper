@@ -205,4 +205,5 @@ type Options struct {
 	// C++
 	Namespace          string
 	IncludeGuardPrefix string
+	FilenamePrefix     string
 }

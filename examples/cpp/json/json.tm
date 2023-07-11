@@ -2,6 +2,7 @@ language json(cc);
 
 namespace = "json"
 includeGuardPrefix = "EXAMPLES_JSON_"
+filenamePrefix = "json_"
 eventBased = true
 reportTokens = [MultiLineComment, invalid_token, JSONString]
 extraTypes = ["NonExistingType"]

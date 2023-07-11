@@ -1,6 +1,6 @@
 {{ template "header" . -}}
 {{block "lexerIncludes" . -}}
-#include "lexer.h"
+#include "{{.Options.FilenamePrefix}}lexer.h"
 
 #include "absl/log/log.h"
 #include "absl/strings/match.h"

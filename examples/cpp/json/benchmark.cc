@@ -4,7 +4,7 @@
 
 #include <benchmark/benchmark.h>
 
-#include "lexer.h"
+#include "json_lexer.h"
 
 const std::string input = R"({
     "some key": [{
