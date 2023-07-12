@@ -206,4 +206,5 @@ type Options struct {
 	Namespace          string
 	IncludeGuardPrefix string
 	FilenamePrefix     string
+	AbslIncludePrefix  string // "absl" by default
 }

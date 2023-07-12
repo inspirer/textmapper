@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <ostream>
 
-#include "absl/strings/string_view.h"
+#include "{{.Options.AbslIncludePrefix}}/strings/string_view.h"
 
 namespace {{.Options.Namespace}} {
 inline constexpr absl::string_view bomSeq = "\xef\xbb\xbf";

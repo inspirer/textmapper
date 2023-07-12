@@ -23,8 +23,9 @@ type optionsParser struct {
 func newOptionsParser(s *status.Status) *optionsParser {
 	return &optionsParser{
 		out: &grammar.Options{
-			TokenLine: true,
-			GenParser: true,
+			TokenLine:         true,
+			GenParser:         true,
+			AbslIncludePrefix: "absl",
 		},
 		Status: s,
 	}
@@ -106,6 +107,9 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "filenamePrefix":
 			p.validLangs(opt.Key(), "cc")
 			opts.FilenamePrefix = p.parseExpr(opt.Value(), opts.FilenamePrefix).(string)
+		case "abseilPrefix":
+			p.validLangs(opt.Key(), "cc")
+			opts.AbslIncludePrefix = p.parseExpr(opt.Value(), opts.AbslIncludePrefix).(string)
 		default:
 			p.Errorf(opt.Key(), "unknown option '%v'", name)
 		}

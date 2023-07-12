@@ -10,7 +10,7 @@
 {{- break}}{{ end }}{{ end }}
 
 #include "{{.Options.FilenamePrefix}}lexer.h"
-#include "absl/strings/str_format.h"
+#include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
 {{end}}
 namespace {{.Options.Namespace}} {
 {{block "onBeforeParser" .}}{{end -}}
@@ -193,7 +193,7 @@ int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
   } else {
     while (min < max) {
       int32_t e = ((min + max) / 2) & ~static_cast<int32_t>(1);
-      int8_t i = tmFromTo[e];
+      int{{$stateType}}_t i = tmFromTo[e];
       if (i == state) {
         return tmFromTo[e + 1];
       } else if (i < state) {
@@ -236,8 +236,10 @@ restart:
 {{- define "callLookaheadNext"}}{{/*(memoization)*/}}lookaheadNext(lexer){{end -}}
 
 {{ define "lookahead" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
-                                    int8_t start, int8_t end) {
+                                    int{{$stateType}}_t start, 
+                                    int{{$stateType}}_t end) {
 {{ block "setupLookaheadLexer" . -}}
 {{/**/}}  Lexer lexer = lexer_to_copy;
 {{end -}}
@@ -255,7 +257,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
   std::vector<stackEntry> stack;
   stack.reserve(64);
 
-  int8_t state = start;
+  int{{$stateType}}_t state = start;
   stack.push_back(stackEntry{.state = state});
 
   while (state != end) {
@@ -436,7 +438,9 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ end -}}
 
 {{ define "Parse" -}}
-absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end, 
+  Lexer& lexer) {
 {{- if .ReportTokens true }}
   pending_symbols_.clear();
 {{- end}}
@@ -447,7 +451,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
 	s.cache = make(map[uint64]bool)
 {{- end}}
 {{- end}}
-  int8_t state = start;
+  int{{$stateType}}_t state = start;
 {{- if .Parser.IsRecovering }}
 	absl::Status lastErr;
 	recovering_ = 0;

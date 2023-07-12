@@ -2,8 +2,8 @@
 {{block "lexerIncludes" . -}}
 #include "{{.Options.FilenamePrefix}}lexer.h"
 
-#include "absl/log/log.h"
-#include "absl/strings/match.h"
+#include "{{.Options.AbslIncludePrefix}}/log/log.h"
+#include "{{.Options.AbslIncludePrefix}}/strings/match.h"
 {{end}}
 namespace {{.Options.Namespace}} {
 {{block "onBeforeLexer" .}}{{end -}}

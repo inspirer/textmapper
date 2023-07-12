@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "absl/base/attributes.h"
-#include "absl/functional/function_ref.h"
-#include "absl/log/log.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_format.h"
+#include "{{.Options.AbslIncludePrefix}}/base/attributes.h"
+#include "{{.Options.AbslIncludePrefix}}/functional/function_ref.h"
+#include "{{.Options.AbslIncludePrefix}}/log/log.h"
+#include "{{.Options.AbslIncludePrefix}}/status/status.h"
+#include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
 #include "{{.Options.FilenamePrefix}}lexer.h"
 
 namespace {{.Options.Namespace}} {
@@ -27,7 +27,7 @@ struct symbol {
 
 struct stackEntry {
   symbol sym;
-  int8_t state = 0;
+  int{{$stateType}}_t state = 0;
 };
 
 enum class NodeType {
@@ -102,7 +102,8 @@ class Parser {
   absl::Status applyRule(int32_t rule, stackEntry& lhs,
                          [[maybe_unused]] absl::Span<const stackEntry> rhs,
                          Lexer& lexer);
-  absl::Status Parse(int8_t start, int8_t end, Lexer& lexer);
+  absl::Status Parse(int{{$stateType}}_t start, int{{$stateType}}_t end, 
+                     Lexer& lexer);
 
   symbol next_symbol_;
 {{- if .ReportTokens true }}

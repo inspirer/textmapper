@@ -445,6 +445,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 						}
 						act.Vars.Types = append(act.Vars.Types, opts.syms[r].Type)
 					}
+					act.Vars.LHSType = opts.syms[rule.LHS].Type
 				}
 				rule.Action = len(out.Actions)
 				out.Actions = append(out.Actions, act)
