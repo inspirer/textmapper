@@ -30,6 +30,8 @@ struct stackEntry {
   int{{$stateType}}_t state = 0;
 };
 
+{{- if .Parser.Types }}
+
 enum class NodeType {
   NoType,
 {{- range .Parser.Types.RangeTypes }}
@@ -60,6 +62,7 @@ inline std::ostream& operator<<(std::ostream& os, NodeType t) {
   }
   return os << "node(" << i << ")";
 }
+{{- end}}
 
 constexpr inline bool debugSyntax = {{ .Options.DebugParser }};
 constexpr inline int startStackSize = 256;
@@ -77,13 +80,13 @@ class Parser {
   template <typename Listener>
   explicit Parser(Listener&& listener)
       : listener_(std::forward<Listener>(listener)) {
-{{- else }}
-  Parser() = default;
-{{- end}}
 {{- if .ReportTokens true }}
     pending_symbols_.reserve(startTokenBufferSize);
 {{- end}}
   }
+{{- else }}
+  Parser() = default;
+{{- end}}
 
 {{- range $index, $inp := .Parser.Inputs}}
 {{- if $inp.Synthetic }}{{continue}}{{end}}
@@ -117,8 +120,10 @@ class Parser {
 
   friend std::ostream& operator<<(std::ostream& os, const Parser& parser) {
     return os << "JSONParser next " << symbolName(parser.next_symbol_.symbol)
+{{- if .ReportTokens true }}
               << " and pending " << parser.pending_symbols_.size()
               << " symbols";
+{{- else}};{{end}}
   }
 };
 

@@ -92,6 +92,7 @@ constexpr int32_t tmRuleSymbol[] = {
 {{- int_array .Parser.Tables.RuleSymbol "\t" 79 -}}
 };
 
+{{- if .Parser.Types }}
 {{- if .Parser.UsesFlags}}
 
 constexpr uint32_t tmRuleType[] = {
@@ -116,6 +117,7 @@ constexpr NodeType tmRuleType[] = {
 {{- end}}
 {{- end}}
 };
+{{- end }}
 {{- end }}
 
 {{- range .Sets}}
