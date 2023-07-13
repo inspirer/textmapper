@@ -17,9 +17,11 @@ namespace {{.Options.Namespace}} {
 {{template "parserTables" . -}}
 {{template "lalr" . -}}
 {{template "gotoState" . -}}
+{{if .Parser.Tables.Lookaheads -}}
 {{template "lookaheadNext" . -}}
 {{template "lookahead" . -}}
 {{template "lookaheadMethods" . -}}
+{{end -}}
 {{template "reportIgnoredToken" . -}}
 {{template "fetchNext" . -}}
 {{template "applyRule" . -}}
