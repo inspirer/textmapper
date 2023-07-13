@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/status"
@@ -36,6 +38,7 @@ var funcMap = template.FuncMap{
 	"list":                func(vals ...string) []string { return vals },
 	"set":                 set,
 	"additionalTypes":     additionalTypes,
+	"last_id":             lastID,
 }
 
 func sum(a, b int) int {
@@ -266,100 +269,87 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 	return decls.String() + sb.String(), nil
 }
 
-func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
-	// TODO implement
-	var decls strings.Builder
+func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (ret string, err error) {
+	defer func(s string) {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("crashed with %v in %q with %v", err, s, args)
+		}
+	}(s)
+
 	var sb strings.Builder
-	seen := make(map[int]bool)
 	for len(s) > 0 {
-		d := strings.IndexByte(s, '$')
-		if d == -1 {
+		next := strings.IndexAny(s, "@$")
+		if next == -1 {
 			sb.WriteString(s)
 			break
 		}
-		sb.WriteString(s[:d])
-		s = s[d+1:]
+
+		ch := s[next]
+		sb.WriteString(s[:next])
+		s = s[next+1:]
 		if len(s) == 0 {
-			return "", status.Errorf(origin, "found $ at the end of the stream")
+			return "", status.Errorf(origin, "found $ or @ at the end of the semantic action")
 		}
 
-		size, id, prop, err := parseMeta(s)
-		s = s[size:]
-		if err != nil {
-			return "", status.Errorf(origin, err.Error())
-		}
-
-		var index int
-		switch id {
-		case "left()", "leftRaw()":
-			index = -2
-		case "first()":
-			if len(args.Types) == 0 {
-				index = -1
-			}
-		case "last()":
-			if len(args.Types) == 0 {
-				index = -1
+		// Handle the rest of this '$' or '@'
+		var target, prop string
+		if s[0] == '$' {
+			// $$ --> lhs.value
+			target = "lhs"
+			if ch == '@' {
+				prop = "location"
 			} else {
-				index = len(args.Types) - 1
-			}
-		default:
-			if strings.HasPrefix(id, "self[") && strings.HasSuffix(id, "]") {
-				id = id[5 : len(id)-1]
-				if _, err := strconv.ParseUint(id, 10, 32); err != nil {
-					return "", status.Errorf(origin, "invalid self reference %q", id)
+				t := args.LHSType
+				if t == "" {
+					return "", status.Errorf(origin, "$$ cannot be used inside a nonterminal semantic action without a type")
 				}
+				prop = "value." + lastID(t)
 			}
-
-			var ok bool
-			index, ok = args.Resolve(id)
-			if !ok {
-				return "", status.Errorf(origin, "invalid reference %q", id)
-			}
-		}
-
-		if index == -1 {
-			if prop == "value" || prop == "sym" {
-				sb.WriteString("nil")
-			} else {
-				sb.WriteString("-1")
-			}
-			continue
-		}
-		var v string
-		if index == -2 {
-			v = "lhs"
+			s = s[1:]
 		} else {
-			v = fmt.Sprintf("rhs[%v]", index)
-		}
-		switch {
-		case prop == "sym":
-			fmt.Fprintf(&sb, "(&%v.sym)", v)
-		case prop == "value":
-			v += ".value"
-			switch {
-			case index >= 0 && args.Types[index] != "":
-				varName := fmt.Sprintf("nn%v", index)
-				if !seen[index] {
-					fmt.Fprintf(&decls, "%v, _ := %v.(%v)\n", varName, v, args.Types[index])
-					seen[index] = true
-				}
-				v = varName
-			case index == -2 && args.LHSType != "" && id != "leftRaw()":
-				if !seen[index] {
-					fmt.Fprintf(&decls, "nn, _ := %v.(%v)\n", v, args.LHSType)
-					seen[index] = true
-				}
-				v = "nn"
+			var d int
+			r, w := utf8.DecodeRuneInString(s)
+			for unicode.IsDigit(r) || unicode.IsLetter(r) || r == '_' {
+				d += w
+				r, w = utf8.DecodeRuneInString(s[d:])
 			}
-			sb.WriteString(v)
-		default:
-			sb.WriteString(v)
-			sb.WriteString(".sym.")
-			sb.WriteString(prop)
+			if d == 0 {
+				return "", status.Errorf(origin, "%c should be followed by a number or identifier", ch)
+			}
+			val := s[:d]
+			s = s[d:]
+			var index int
+			if pos, err := strconv.Atoi(val); err == nil {
+				if pos < 1 || pos >= args.CmdArgs.MaxPos {
+					// Index out of range.
+					return "", status.Errorf(origin, "out of bounds reference %c%v [max = %v]", ch, val, args.CmdArgs.MaxPos)
+				}
+				index = pos - 1
+			} else {
+				// Resolve by name
+				var ok bool
+				index, ok = args.Resolve(val)
+				if !ok {
+					return "", status.Errorf(origin, "invalid reference %c%q", ch, val)
+				}
+			}
+
+			target = fmt.Sprintf("rhs[%v]", index)
+			if ch == '@' {
+				prop = "location"
+			} else {
+				t := args.Types[index]
+				if t == "" {
+					return "", status.Errorf(origin, "%c%q does not have an associated type", ch, val)
+				}
+				prop = "value." + lastID(t)
+			}
 		}
+		sb.WriteString(target)
+		sb.WriteByte('.')
+		sb.WriteString(prop)
 	}
-	return decls.String() + sb.String(), nil
+	return sb.String(), nil
 }
 
 func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
@@ -524,4 +514,17 @@ func additionalTypes(t *syntax.Types, names []string) []string {
 		}
 	}
 	return ret
+}
+
+func lastID(s string) string {
+	s = strings.TrimSpace(s)
+	start := len(s)
+	for {
+		r, d := utf8.DecodeLastRuneInString(s[:start])
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_' {
+			break
+		}
+		start -= d
+	}
+	return s[start:]
 }

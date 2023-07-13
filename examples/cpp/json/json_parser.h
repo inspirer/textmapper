@@ -28,6 +28,10 @@ struct symbol {
 struct stackEntry {
   symbol sym;
   int8_t state = 0;
+  union {
+    bool b;
+    int a;
+  } value;
 };
 
 enum class NodeType {

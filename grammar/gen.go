@@ -60,6 +60,18 @@ func (p *Parser) HasAssocValues() bool {
 	return false
 }
 
+func (p *Parser) UnionFields() []string {
+	var ret []string
+	seen := make(map[string]bool)
+	for _, nt := range p.Nonterms {
+		if nt.Type != "" && !seen[nt.Type] {
+			ret = append(ret, nt.Type)
+			seen[nt.Type] = true
+		}
+	}
+	return ret
+}
+
 func (p *Parser) HasInputAssocValues() bool {
 	for _, inp := range p.Inputs {
 		if p.Nonterms[inp.Nonterm].Type != "" {

@@ -299,6 +299,18 @@ absl::Status Parser::applyRule(
     int32_t rule, stackEntry& lhs,
     [[maybe_unused]] absl::Span<const stackEntry> rhs, Lexer& lexer) {
   switch (rule) {
+    case 0:  // JSONText : JSONValue_A
+    {
+      lhs.value.b = rhs[0].value.a;
+    } break;
+    case 3:  // JSONValue : 'false'
+    {
+      lhs.value.a = 5;
+    } break;
+    case 12:  // JSONValue_A : 'false'
+    {
+      lhs.value.a = 5;
+    } break;
     case 32:
       if (AtEmptyObject(lexer, next_symbol_.symbol)) {
         lhs.sym.symbol = 23; /* lookahead_EmptyObject */
@@ -309,6 +321,7 @@ absl::Status Parser::applyRule(
     default:
       break;
   }
+
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
     listener_(nt, lhs.sym.offset, lhs.sym.endoffset);
   }
@@ -348,10 +361,12 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
         }
         entry.sym.offset = next_symbol_.offset;
         entry.sym.endoffset = next_symbol_.endoffset;
+        entry.value = stack.back().value;
       } else {
         rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
         entry.sym.offset = rhs.front().sym.offset;
         entry.sym.endoffset = rhs.back().sym.endoffset;
+        entry.value = rhs.front().value;
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer);
       if (!ret.ok()) {

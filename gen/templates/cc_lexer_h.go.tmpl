@@ -2,12 +2,13 @@
 #ifndef {{.Options.IncludeGuardPrefix}}LEXER_H_
 #define {{.Options.IncludeGuardPrefix}}LEXER_H_
 
+{{block "lexerHeaderIncludes" . -}}
 #include <array>
 #include <cstdint>
 #include <ostream>
 
 #include "{{.Options.AbslIncludePrefix}}/strings/string_view.h"
-
+{{end}}
 namespace {{.Options.Namespace}} {
 inline constexpr absl::string_view bomSeq = "\xef\xbb\xbf";
 

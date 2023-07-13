@@ -52,13 +52,13 @@ invalid_token:
 
 %flag A;
 
-JSONText -> JSONText :
-    JSONValue<+A> ;
+JSONText {bool b} -> JSONText :
+    JSONValue<+A> { $$ = $1; } ;
 
-JSONValue<A> -> JSONValue :
+JSONValue<A> {int a} -> JSONValue :
     kw_null
   | 'true'
-  | 'false'
+  | 'false'    { $$ = 5; }
   | [A] 'A'
   | [!A] 'B'
   | JSONObject
@@ -73,7 +73,7 @@ EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' ;
 JSONObject -> JSONObject :
     (?= !EmptyObject) '{' JSONMemberList? '}' ;
 
-JSONMember -> JSONMember :
+JSONMember {int a} -> JSONMember :
     JSONString ':' JSONValue<~A> ;
 
 JSONMemberList :

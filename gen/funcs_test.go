@@ -201,3 +201,19 @@ type node string
 func (n node) SourceRange() status.SourceRange {
 	return status.SourceRange{Filename: string(n)}
 }
+
+func TestLastID(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"a1 *B1", "B1"},
+		{"int* foo_bar  ", "foo_bar"},
+		{"foo_bar1  ", "foo_bar1"},
+	}
+	for _, tc := range tests {
+		if got := lastID(tc.input); got != tc.want {
+			t.Errorf("lastID(%v) = %v, want: %v", tc.input, got, tc.want)
+		}
+	}
+}

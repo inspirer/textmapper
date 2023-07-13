@@ -385,32 +385,33 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
                         Lexer& lexer) {
 {{- if or .Parser.HasActions .Parser.Tables.Lookaheads }}
   switch (rule) {
-{{- range $index, $rule := .Parser.Rules}}
-{{- $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) }}
-{{- if or (ne $rule.Action 0) $fixWS }}
-{{- $act := index $.Parser.Actions $rule.Action }}
-{{- if or (ne $act.Code "") $act.Report $fixWS}}
-	case {{$index}}: // {{$.RuleString $rule}}
-{{- if $fixWS }}
-		fixTrailingWS(lhs, rhs)
-{{- end}}
-{{- range $act.Report}}
-{{- $val := index $.Parser.Types.RangeTypes .Type }}
-{{- if $.Parser.UsesFlags}}
-		listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
-{{- else}}
-    listener_(NodeType::{{$val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
-{{- end}}
-{{- end}}
-{{- if $act.Code }}
-{{cc_parser_action $act.Code $act.Vars $act.Origin}}
-{{- end}}
-{{- end}}
-{{- end}}
-{{- end}}
+{{ range $index, $rule := .Parser.Rules -}}
+{{ $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) -}}
+{{ if or (ne $rule.Action 0) $fixWS -}}
+{{ $act := index $.Parser.Actions $rule.Action -}}
+{{ if or (ne $act.Code "") $act.Report $fixWS -}}
+{{/**/}}	case {{$index}}: // {{$.RuleString $rule}}
+{{ if $fixWS -}}
+{{/**/}}		fixTrailingWS(lhs, rhs)
+{{ end -}}
+{{ range $act.Report -}}
+{{ $val := index $.Parser.Types.RangeTypes .Type -}}
+{{ if $.Parser.UsesFlags -}}
+{{/**/}}		listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
+{{ else -}}
+{{/**/}}    listener_(NodeType::{{$val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
+{{ end -}}
+{{ end -}}
+{{ if $act.Code -}}
+{{ cc_parser_action $act.Code $act.Vars $act.Origin -}}
+{{ end -}}
+{{/**/}}    break;
+{{ end -}}
+{{ end -}}
+{{ end -}}
 
-{{- range $index, $rule := .Parser.Tables.Lookaheads }}
-	case {{sum $index (len $.Parser.Rules)}}:
+{{ range $index, $rule := .Parser.Tables.Lookaheads -}}
+{{/**/}}	case {{sum $index (len $.Parser.Rules)}}:
 		{{ range $rule.Cases }}
 		{{- $sym := index $.Syms (sum $.NumTokens (index $.Parser.Inputs .Predicate.Input).Nonterm) -}}
 		if ({{if .Predicate.Negated}}!{{end}}At{{$sym.Name}}(lexer, next_symbol_.symbol{{if $.NeedsSession}}, s{{end}})) {
@@ -419,11 +420,11 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 			lhs.sym.symbol = {{.DefaultTarget}}; /* {{(index $.Syms .DefaultTarget).Name}} */
 		}
 		return absl::OkStatus();
-{{- end}}
-    default:
+{{ end -}}
+{{/**/}}    default:
       break;
   }
-{{- end}}
+{{ end -}}
 
 {{- if .Parser.Types }}
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
@@ -493,10 +494,16 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
         }
         entry.sym.offset = next_symbol_.offset;
         entry.sym.endoffset = next_symbol_.endoffset;
+{{- if .Parser.HasAssocValues }}
+        entry.value = stack.back().value;
+{{- end}}
       } else {
         rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
         entry.sym.offset = rhs.front().sym.offset;
         entry.sym.endoffset = rhs.back().sym.endoffset;
+{{- if .Parser.HasAssocValues }}
+        entry.value = rhs.front().value;
+{{- end}}
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer{{if .NeedsSession}}, &s{{end}});
       if (!ret.ok()) {
@@ -521,9 +528,6 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
         stack.push_back(stackEntry{
             .sym = next_symbol_,
             .state = state,
-{{- if .Parser.HasAssocValues }}
-					  .value = lexer.Value(),
-{{- end}}
         });
         if (debugSyntax) {
           LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
