@@ -13,7 +13,7 @@
 #include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
 {{end}}
 namespace {{.Options.Namespace}} {
-{{block "onBeforeParser" .}}{{end -}}
+{{block "onBeforeParserImpl" .}}{{end -}}
 {{template "parserTables" . -}}
 {{template "lalr" . -}}
 {{template "gotoState" . -}}
@@ -268,7 +268,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
     if (action < -2) {
       // Lookahead is needed.
       if (next == noToken) {
-        next = lookaheadNext(lexer);
+        next = {{template "callLookaheadNext" false}};
       }
       action = lalr(action, next);
     }

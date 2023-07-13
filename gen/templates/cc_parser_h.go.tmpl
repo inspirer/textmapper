@@ -89,6 +89,8 @@ constexpr inline int32_t eoiToken = static_cast<int32_t>(Token::EOI);
 
 ABSL_MUST_USE_RESULT std::string symbolName(int32_t sym);
 
+{{block "onBeforeParser" .}}{{end -}}
+
 class Parser {
  public:
 {{- if .Parser.Types }}
@@ -111,6 +113,7 @@ class Parser {
     return Parse({{$index}}, {{index $.Parser.Tables.FinalStates $index}}, lexer);
   }
 {{- end}}
+{{block "parserPublicDecls" .}}{{end -}}
 
  private:
 {{ if .ReportTokens true -}}
@@ -132,7 +135,7 @@ class Parser {
 {{- if .Parser.Types }}
   absl::FunctionRef<void(NodeType, int64_t, int64_t)> listener_;
 {{- end}}
-
+{{block "parserPrivateDecls" .}}{{end}}
   friend std::ostream& operator<<(std::ostream& os, const Parser& parser) {
     return os << "JSONParser next " << symbolName(parser.next_symbol_.symbol)
 {{- if .ReportTokens true }}
