@@ -159,7 +159,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   if (debugSyntax) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
-  listener_(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}sym.offset, sym.endoffset);
+  listener_(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}sym.begin, sym.end);
 }
 
 {{ end -}}
@@ -372,8 +372,8 @@ restart:
   }
 
   next_symbol_.symbol = static_cast<int32_t>(tok);
-  next_symbol_.offset = lexer.TokenStartLocation();
-  next_symbol_.endoffset = lexer.TokenEndLocation();
+  next_symbol_.begin = lexer.TokenStartLocation();
+  next_symbol_.end = lexer.TokenEndLocation();
 }
 
 {{ end -}}
@@ -397,9 +397,9 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
 {{ if $.Parser.UsesFlags -}}
-{{/**/}}		listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
+{{/**/}}		listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.begin, rhs[{{minus1 .End}}].sym.end);
 {{ else -}}
-{{/**/}}    listener_(NodeType::{{$val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset);
+{{/**/}}    listener_(NodeType::{{$val.Name}}, rhs[{{.Start}}].sym.begin, rhs[{{minus1 .End}}].sym.end);
 {{ end -}}
 {{ end -}}
 {{ if $act.Code -}}
@@ -429,9 +429,9 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{- if .Parser.Types }}
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
 {{- if .Parser.UsesFlags}}
-		listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
+		listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.begin, lhs.sym.end)
 {{- else}}
-    listener_(nt, lhs.sym.offset, lhs.sym.endoffset);
+    listener_(nt, lhs.sym.begin, lhs.sym.end);
 {{- end}}
 	}
 {{- end}}
@@ -492,15 +492,15 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
-        entry.sym.offset = next_symbol_.offset;
-        entry.sym.endoffset = next_symbol_.endoffset;
+        entry.sym.begin = next_symbol_.begin;
+        entry.sym.end = next_symbol_.end;
 {{- if .Parser.HasAssocValues }}
         entry.value = stack.back().value;
 {{- end}}
       } else {
         rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
-        entry.sym.offset = rhs.front().sym.offset;
-        entry.sym.endoffset = rhs.back().sym.endoffset;
+        entry.sym.begin = rhs.front().sym.begin;
+        entry.sym.end = rhs.back().sym.end;
 {{- if .Parser.HasAssocValues }}
         entry.value = rhs.front().value;
 {{- end}}
@@ -513,7 +513,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
-                  << entry.sym.offset << " to " << entry.sym.endoffset;
+                  << entry.sym.begin << " to " << entry.sym.end;
       }
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
@@ -552,8 +552,8 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{- if .Options.TokenLine}}
 					Line:      lexer.Line(),
 {{- end}}
-					Offset:    next_symbol_.offset,
-					Endoffset: next_symbol_.endoffset,
+					Offset:    next_symbol_.begin,
+					Endoffset: next_symbol_.end,
 				}
 				if !eh(lastErr) {
 {{ template "flushPending" . -}}
@@ -608,7 +608,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
 {{/**/}}	case Token::{{$sym.ID}}:
-    listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.offset, next_symbol_.endoffset);
+    listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.begin, next_symbol_.end);
     break;
 {{end -}}
 {{end -}}

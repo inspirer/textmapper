@@ -21,8 +21,8 @@ namespace json {
 
 struct symbol {
   int32_t symbol = 0;
-  int64_t offset = 0;
-  int64_t endoffset = 0;
+  int64_t begin = 0;
+  int64_t end = 0;
 };
 
 struct stackEntry {

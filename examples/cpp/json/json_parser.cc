@@ -272,7 +272,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   if (debugSyntax) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
-  listener_(t, sym.offset, sym.endoffset);
+  listener_(t, sym.begin, sym.end);
 }
 
 void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
@@ -291,8 +291,8 @@ restart:
   }
 
   next_symbol_.symbol = static_cast<int32_t>(tok);
-  next_symbol_.offset = lexer.TokenStartLocation();
-  next_symbol_.endoffset = lexer.TokenEndLocation();
+  next_symbol_.begin = lexer.TokenStartLocation();
+  next_symbol_.end = lexer.TokenEndLocation();
 }
 
 absl::Status Parser::applyRule(
@@ -323,7 +323,7 @@ absl::Status Parser::applyRule(
   }
 
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
-    listener_(nt, lhs.sym.offset, lhs.sym.endoffset);
+    listener_(nt, lhs.sym.begin, lhs.sym.end);
   }
   return absl::OkStatus();
 }
@@ -359,13 +359,13 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
-        entry.sym.offset = next_symbol_.offset;
-        entry.sym.endoffset = next_symbol_.endoffset;
+        entry.sym.begin = next_symbol_.begin;
+        entry.sym.end = next_symbol_.end;
         entry.value = stack.back().value;
       } else {
         rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
-        entry.sym.offset = rhs.front().sym.offset;
-        entry.sym.endoffset = rhs.back().sym.endoffset;
+        entry.sym.begin = rhs.front().sym.begin;
+        entry.sym.end = rhs.back().sym.end;
         entry.value = rhs.front().value;
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer);
@@ -376,7 +376,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
-                  << entry.sym.offset << " to " << entry.sym.endoffset;
+                  << entry.sym.begin << " to " << entry.sym.end;
       }
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
@@ -405,8 +405,8 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
         if (next_symbol_.symbol != eoiToken) {
           switch (Token(next_symbol_.symbol)) {
             case Token::JSONSTRING:
-              listener_(NodeType::JsonString, next_symbol_.offset,
-                        next_symbol_.endoffset);
+              listener_(NodeType::JsonString, next_symbol_.begin,
+                        next_symbol_.end);
               break;
             default:
               break;
