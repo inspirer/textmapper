@@ -3,39 +3,14 @@
 #define {{.Options.IncludeGuardPrefix}}LEXER_H_
 
 {{block "lexerHeaderIncludes" . -}}
-#include <array>
 #include <cstdint>
 #include <ostream>
 
 #include "{{.Options.AbslIncludePrefix}}/strings/string_view.h"
+#include "{{.Options.FilenamePrefix}}token.h"
 {{end}}
 namespace {{.Options.Namespace}} {
 inline constexpr absl::string_view bomSeq = "\xef\xbb\xbf";
-
-// Token is an enum of all terminal symbols of the {{.Name}} language.
-enum class Token {
-  UNAVAILABLE = -1,
-{{- range $i, $tok := .Tokens}}
-	{{.ID}}{{if eq $i 0}} = 0{{end}},{{if .Comment}}  // {{.Comment}}{{end}}
-{{- end}}
-  NumTokens
-};
-
-constexpr inline std::array<absl::string_view,
-                            static_cast<size_t>(Token::NumTokens)>
-    tokenStr = {
-{{- range .Tokens}}
-	{{if .Comment}}{{str_literal .Comment}}{{else}}{{str_literal .ID}}{{end}},
-{{- end}}
-};
-
-inline std::ostream& operator<<(std::ostream& os, Token tok) {
-  int t = static_cast<int>(tok);
-  if (t >= 0 && t < tokenStr.size()) {
-    return os << tokenStr[t];
-  }
-  return os << "token(" << t << ")";
-}
 
 class Lexer {
  public:

@@ -3,7 +3,10 @@ package(default_visibility = ["//visibility:private"])
 cc_library(
     name = "lexer",
     srcs = ["json_lexer.cc"],
-    hdrs = ["json_lexer.h"],
+    hdrs = [
+        "json_lexer.h",
+        "json_token.h",
+    ],
     deps = [
         "@com_google_absl//absl/log",
         "@com_google_absl//absl/strings",

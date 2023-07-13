@@ -3,62 +3,14 @@
 #ifndef EXAMPLES_JSON_LEXER_H_
 #define EXAMPLES_JSON_LEXER_H_
 
-#include <array>
 #include <cstdint>
 #include <ostream>
 
 #include "absl/strings/string_view.h"
+#include "json_token.h"
 
 namespace json {
 inline constexpr absl::string_view bomSeq = "\xef\xbb\xbf";
-
-// Token is an enum of all terminal symbols of the json language.
-enum class Token {
-  UNAVAILABLE = -1,
-  EOI = 0,
-  INVALID_TOKEN,
-  LBRACE,  // {
-  RBRACE,  // }
-  LBRACK,  // [
-  RBRACK,  // ]
-  COLON,   // :
-  COMMA,   // ,
-  SPACE,
-  MULTILINECOMMENT,
-  JSONSTRING,
-  JSONNUMBER,
-  ID,
-  KW_NULL,  // null
-  TRUE,     // true
-  FALSE,    // false
-  CHAR_A,   // A
-  CHAR_B,   // B
-  ERROR,
-  NumTokens
-};
-
-constexpr inline std::array<absl::string_view,
-                            static_cast<size_t>(Token::NumTokens)>
-    tokenStr = {
-        "EOI",        "INVALID_TOKEN",
-        "{",          "}",
-        "[",          "]",
-        ":",          ",",
-        "SPACE",      "MULTILINECOMMENT",
-        "JSONSTRING", "JSONNUMBER",
-        "ID",         "null",
-        "true",       "false",
-        "A",          "B",
-        "ERROR",
-};
-
-inline std::ostream& operator<<(std::ostream& os, Token tok) {
-  int t = static_cast<int>(tok);
-  if (t >= 0 && t < tokenStr.size()) {
-    return os << tokenStr[t];
-  }
-  return os << "token(" << t << ")";
-}
 
 class Lexer {
  public:

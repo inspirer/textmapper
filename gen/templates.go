@@ -34,6 +34,7 @@ var languages = map[string]*language{
 	"cc": {
 		SharedDefs: builtin(`cc_shared`),
 		Lexer: []file{
+			{"token.h", builtin(`cc_token_h`)},
 			{"lexer.h", builtin(`cc_lexer_h`)},
 			{"lexer.cc", builtin(`cc_lexer_cc`)},
 		},
@@ -62,7 +63,12 @@ type language struct {
 
 func (l *language) templates(g *grammar.Grammar) []file {
 	var ret []file
-	ret = append(ret, l.Lexer...)
+	if g.Lexer.Tables != nil {
+		ret = append(ret, l.Lexer...)
+	} else {
+		// Take the token file only.
+		ret = append(ret, l.Lexer[0])
+	}
 	if g.Parser.Tables != nil {
 		ret = append(ret, l.Parser...)
 	}
