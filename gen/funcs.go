@@ -297,7 +297,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 			// $$ --> lhs.value
 			target = "lhs"
 			if ch == '@' {
-				prop = "location"
+				prop = "sym.location"
 			} else {
 				t := args.LHSType
 				if t == "" {
@@ -336,7 +336,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 
 			target = fmt.Sprintf("rhs[%v]", index)
 			if ch == '@' {
-				prop = "location"
+				prop = "sym.location"
 			} else {
 				t := args.Types[index]
 				if t == "" {

@@ -492,7 +492,8 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
-        entry.sym.location = next_symbol_.location;
+        entry.sym.location = Lexer::Location(stack.back().sym.location.end,
+                                             stack.back().sym.location.end);
 {{- if .Parser.HasAssocValues }}
         entry.value = stack.back().value;
 {{- end}}
@@ -512,7 +513,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
-                  << entry.sym.location.begin << " to " << entry.sym.location.end;
+                  << entry.sym.location;
       }
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;

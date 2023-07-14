@@ -68,10 +68,10 @@ JSONValue<A> {int a} -> JSONValue :
   | JSONNumber
 ;
 
-EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' ;
+EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' { @$.begin = @2.begin; } ;
 
 JSONObject -> JSONObject :
-    (?= !EmptyObject) '{' JSONMemberList? '}' ;
+    (?= !EmptyObject) '{' JSONMemberList? '}' { @$.begin = @2.begin; } ;
 
 JSONMember {int a} -> JSONMember :
     JSONString ':' JSONValue<~A> ;

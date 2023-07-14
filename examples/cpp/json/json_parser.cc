@@ -309,6 +309,18 @@ absl::Status Parser::applyRule(
     {
       lhs.value.a = 5;
     } break;
+    case 19:  // EmptyObject : lookahead_EmptyObject '{' '}'
+    {
+      lhs.sym.location.begin = rhs[1].sym.location.begin;
+    } break;
+    case 21:  // JSONObject : lookahead_notEmptyObject '{' JSONMemberList '}'
+    {
+      lhs.sym.location.begin = rhs[1].sym.location.begin;
+    } break;
+    case 22:  // JSONObject : lookahead_notEmptyObject '{' '}'
+    {
+      lhs.sym.location.begin = rhs[1].sym.location.begin;
+    } break;
     case 32:
       if (AtEmptyObject(lexer, next_symbol_.symbol)) {
         lhs.sym.symbol = 23; /* lookahead_EmptyObject */
@@ -357,7 +369,8 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
-        entry.sym.location = next_symbol_.location;
+        entry.sym.location = Lexer::Location(stack.back().sym.location.end,
+                                             stack.back().sym.location.end);
         entry.value = stack.back().value;
       } else {
         rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
@@ -373,8 +386,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
-                  << entry.sym.location.begin << " to "
-                  << entry.sym.location.end;
+                  << entry.sym.location;
       }
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
