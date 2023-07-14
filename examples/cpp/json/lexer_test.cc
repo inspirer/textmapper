@@ -81,8 +81,9 @@ TEST_P(LexerTest, Token) {
     Token next;
     while ((next = l.Next()) != Token::EOI) {
       if (next == param.tok) {
+        auto loc = l.LastTokenLocation();
         tokens.push_back(
-            markup::Range{l.TokenStartLocation(), l.TokenEndLocation()});
+            markup::Range{loc.begin, loc.end});
       }
     }
 

@@ -1,6 +1,6 @@
 {{ template "header" . -}}
 {{block "parserIncludes" . -}}
-#include "{{.Options.FilenamePrefix}}parser.h"
+#include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}parser.h"
 
 #include <cstdint>
 #include <string>
@@ -9,7 +9,7 @@
 #include <unordered_set>
 {{- break}}{{ end }}{{ end }}
 
-#include "{{.Options.FilenamePrefix}}lexer.h"
+#include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}lexer.h"
 #include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
 {{end}}
 namespace {{.Options.Namespace}} {
@@ -161,7 +161,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   if (debugSyntax) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
-  listener_(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}sym.begin, sym.end);
+  listener_(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}sym.location);
 }
 
 {{ end -}}
@@ -361,8 +361,7 @@ restart:
 	case Token::{{.ID}}:
 {{- end}}
     pending_symbols_.push_back(symbol{static_cast<int32_t>(tok),
-                                      lexer.TokenStartLocation(),
-                                      lexer.TokenEndLocation()});
+                                      lexer.LastTokenLocation()});
 		goto restart;
 {{- end}}
 {{- if not .ReportsInvalidToken}}
@@ -374,8 +373,7 @@ restart:
   }
 
   next_symbol_.symbol = static_cast<int32_t>(tok);
-  next_symbol_.begin = lexer.TokenStartLocation();
-  next_symbol_.end = lexer.TokenEndLocation();
+  next_symbol_.location = lexer.LastTokenLocation();
 }
 
 {{ end -}}
@@ -399,9 +397,9 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
 {{ if $.Parser.UsesFlags -}}
-{{/**/}}		listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.begin, rhs[{{minus1 .End}}].sym.end);
+{{/**/}}		listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
 {{ else -}}
-{{/**/}}    listener_(NodeType::{{$val.Name}}, rhs[{{.Start}}].sym.begin, rhs[{{minus1 .End}}].sym.end);
+{{/**/}}    listener_(NodeType::{{$val.Name}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
 {{ end -}}
 {{ end -}}
 {{ if $act.Code -}}
@@ -431,9 +429,9 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{- if .Parser.Types }}
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
 {{- if .Parser.UsesFlags}}
-		listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.begin, lhs.sym.end)
+		listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.location)
 {{- else}}
-    listener_(nt, lhs.sym.begin, lhs.sym.end);
+    listener_(nt, lhs.sym.location);
 {{- end}}
 	}
 {{- end}}
@@ -494,15 +492,14 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
-        entry.sym.begin = next_symbol_.begin;
-        entry.sym.end = next_symbol_.end;
+        entry.sym.location = next_symbol_.location;
 {{- if .Parser.HasAssocValues }}
         entry.value = stack.back().value;
 {{- end}}
       } else {
         rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
-        entry.sym.begin = rhs.front().sym.begin;
-        entry.sym.end = rhs.back().sym.end;
+        entry.sym.location = Lexer::Location(rhs.front().sym.location.begin,
+                                             rhs.back().sym.location.end);
 {{- if .Parser.HasAssocValues }}
         entry.value = rhs.front().value;
 {{- end}}
@@ -515,7 +512,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
-                  << entry.sym.begin << " to " << entry.sym.end;
+                  << entry.sym.location.begin << " to " << entry.sym.location.end;
       }
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
@@ -554,8 +551,8 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{- if .Options.TokenLine}}
 					Line:      lexer.Line(),
 {{- end}}
-					Offset:    next_symbol_.begin,
-					Endoffset: next_symbol_.end,
+					Offset:    next_symbol_.location.begin,
+					Endoffset: next_symbol_.location.end,
 				}
 				if !eh(lastErr) {
 {{ template "flushPending" . -}}
@@ -583,7 +580,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
     }
     // TODO return a syntax error
     return absl::InvalidArgumentError(absl::StrFormat(
-        "Syntax error: line %d: %s", lexer.Line(), lexer.Text()));
+        "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
 	}
 {{- end}}
   return absl::OkStatus();
@@ -610,7 +607,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
 {{/**/}}	case Token::{{$sym.ID}}:
-    listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.begin, next_symbol_.end);
+    listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.location);
     break;
 {{end -}}
 {{end -}}

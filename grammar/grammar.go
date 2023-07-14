@@ -207,4 +207,5 @@ type Options struct {
 	IncludeGuardPrefix string
 	FilenamePrefix     string
 	AbslIncludePrefix  string // "absl" by default
+	DirIncludePrefix   string // for generated headers
 }

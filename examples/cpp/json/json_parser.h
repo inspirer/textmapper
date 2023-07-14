@@ -21,8 +21,7 @@ namespace json {
 
 struct symbol {
   int32_t symbol = 0;
-  int64_t begin = 0;
-  int64_t end = 0;
+  Lexer::Location location = Lexer::Location();
 };
 
 struct stackEntry {
@@ -95,7 +94,7 @@ class Parser {
   // Tokens to be reported with the next shift. Only non-empty when next.symbol
   // != noToken.
   std::vector<symbol> pending_symbols_;
-  absl::FunctionRef<void(NodeType, int64_t, int64_t)> listener_;
+  absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
 
   friend std::ostream& operator<<(std::ostream& os, const Parser& parser) {
     return os << "JSONParser next " << symbolName(parser.next_symbol_.symbol)

@@ -272,7 +272,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   if (debugSyntax) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
-  listener_(t, sym.begin, sym.end);
+  listener_(t, sym.location);
 }
 
 void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
@@ -282,17 +282,15 @@ restart:
   switch (tok) {
     case Token::MULTILINECOMMENT:
     case Token::INVALID_TOKEN:
-      pending_symbols_.push_back(symbol{static_cast<int32_t>(tok),
-                                        lexer.TokenStartLocation(),
-                                        lexer.TokenEndLocation()});
+      pending_symbols_.push_back(
+          symbol{static_cast<int32_t>(tok), lexer.LastTokenLocation()});
       goto restart;
     default:
       break;
   }
 
   next_symbol_.symbol = static_cast<int32_t>(tok);
-  next_symbol_.begin = lexer.TokenStartLocation();
-  next_symbol_.end = lexer.TokenEndLocation();
+  next_symbol_.location = lexer.LastTokenLocation();
 }
 
 absl::Status Parser::applyRule(
@@ -323,7 +321,7 @@ absl::Status Parser::applyRule(
   }
 
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
-    listener_(nt, lhs.sym.begin, lhs.sym.end);
+    listener_(nt, lhs.sym.location);
   }
   return absl::OkStatus();
 }
@@ -359,13 +357,12 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
-        entry.sym.begin = next_symbol_.begin;
-        entry.sym.end = next_symbol_.end;
+        entry.sym.location = next_symbol_.location;
         entry.value = stack.back().value;
       } else {
         rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
-        entry.sym.begin = rhs.front().sym.begin;
-        entry.sym.end = rhs.back().sym.end;
+        entry.sym.location = Lexer::Location(rhs.front().sym.location.begin,
+                                             rhs.back().sym.location.end);
         entry.value = rhs.front().value;
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer);
@@ -376,7 +373,8 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
-                  << entry.sym.begin << " to " << entry.sym.end;
+                  << entry.sym.location.begin << " to "
+                  << entry.sym.location.end;
       }
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
@@ -405,8 +403,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
         if (next_symbol_.symbol != eoiToken) {
           switch (Token(next_symbol_.symbol)) {
             case Token::JSONSTRING:
-              listener_(NodeType::JsonString, next_symbol_.begin,
-                        next_symbol_.end);
+              listener_(NodeType::JsonString, next_symbol_.location);
               break;
             default:
               break;
@@ -426,7 +423,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
     }
     // TODO return a syntax error
     return absl::InvalidArgumentError(absl::StrFormat(
-        "Syntax error: line %d: %s", lexer.Line(), lexer.Text()));
+        "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
   }
   return absl::OkStatus();
 }

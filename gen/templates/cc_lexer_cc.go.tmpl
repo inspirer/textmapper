@@ -1,6 +1,6 @@
 {{ template "header" . -}}
 {{block "lexerIncludes" . -}}
-#include "{{.Options.FilenamePrefix}}lexer.h"
+#include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}lexer.h"
 
 #include "{{.Options.AbslIncludePrefix}}/log/log.h"
 #include "{{.Options.AbslIncludePrefix}}/strings/match.h"
