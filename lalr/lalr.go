@@ -106,16 +106,48 @@ type Grammar struct {
 
 // Tables holds generated parser tables.
 type Tables struct {
-	Action      []int
-	Lalr        []int
-	Goto        []int // sym -> index in FromTo
-	FromTo      []int // array of state pairs (from, to)
+	*DefaultEnc
+
 	RuleLen     []int
 	FinalStates []int
 	RuleSymbol  []int
 	Markers     []StateMarker
 	Lookaheads  []LookaheadRule
 	NumStates   int
+}
+
+// DefaultEnc is a compact representation of the parser tables.
+type DefaultEnc struct {
+	Action []int // -2: error, -1: shift, >= 0: rule to reduce, < -2: lookahead (-3-index in Lalr)
+	Lalr   []int // array of pairs: (LA terminal -> action), each sequence ends with LA=-1
+	Goto   []int // sym -> index in FromTo
+	FromTo []int // array of state pairs (from, to)
+}
+
+func (enc *DefaultEnc) gotoState(state, symbol int) int {
+	min := enc.Goto[symbol]
+	max := enc.Goto[symbol+1]
+
+	if max-min < 32 {
+		for i := min; i < max; i += 2 {
+			if enc.FromTo[i] == state {
+				return enc.FromTo[i+1]
+			}
+		}
+	} else {
+		for min < max {
+			e := (min + max) >> 1 &^ int(1)
+			i := enc.FromTo[e]
+			if i == state {
+				return enc.FromTo[e+1]
+			} else if i < state {
+				min = e + 2
+			} else {
+				max = e
+			}
+		}
+	}
+	return -1
 }
 
 func bytesPerElement(arr []int) int {

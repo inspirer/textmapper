@@ -13,8 +13,10 @@ import (
 func Compile(grammar *Grammar) (*Tables, error) {
 	c := &compiler{
 		grammar: grammar,
-		out:     &Tables{},
-		empty:   container.NewBitSet(len(grammar.Symbols)),
+		out: &Tables{
+			DefaultEnc: &DefaultEnc{},
+		},
+		empty: container.NewBitSet(len(grammar.Symbols)),
 	}
 
 	c.init()

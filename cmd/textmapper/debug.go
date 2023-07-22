@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/inspirer/textmapper/compiler"
+	"github.com/inspirer/textmapper/lalr"
 	"github.com/inspirer/textmapper/status"
 )
 
@@ -68,6 +69,12 @@ func debugFile(ctx context.Context, path string) error {
 	if *stats && g.Parser != nil && g.Parser.Tables != nil {
 		fmt.Println()
 		fmt.Print(g.Parser.TableStats())
+
+		start = time.Now()
+		newEnc := lalr.Optimize(g.Parser.Tables.DefaultEnc, g.NumTokens, len(g.Syms))
+		fmt.Printf("Optimized tables in %v\n", time.Since(start))
+
+		fmt.Print(newEnc.TableStats())
 	}
 
 	return nil

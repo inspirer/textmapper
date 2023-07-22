@@ -98,3 +98,10 @@ func (b BitSet) Or(other BitSet) {
 		b[i] |= oth
 	}
 }
+
+func (b *BitSet) Grow(size int) {
+	ln := (31 + size) / 32
+	if len(*b) < ln {
+		*b = append(*b, make([]uint32, ln-len(*b))...)
+	}
+}

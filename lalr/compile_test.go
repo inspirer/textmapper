@@ -287,8 +287,10 @@ func TestStates(t *testing.T) {
 		}
 		c := &compiler{
 			grammar: g,
-			out:     &Tables{},
-			empty:   container.NewBitSet(len(g.Symbols)),
+			out: &Tables{
+				DefaultEnc: &DefaultEnc{},
+			},
+			empty: container.NewBitSet(len(g.Symbols)),
 		}
 		c.init()
 		c.computeEmpty()
