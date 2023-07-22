@@ -2,6 +2,7 @@
 package compiler
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"regexp"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/lalr"
+	"github.com/inspirer/textmapper/parsers/tm"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
 	"github.com/inspirer/textmapper/parsers/tm/selector"
 	"github.com/inspirer/textmapper/status"
@@ -18,7 +20,13 @@ import (
 )
 
 // Compile validates and compiles grammar files.
-func Compile(file ast.File, compat bool) (*grammar.Grammar, error) {
+func Compile(ctx context.Context, path, content string, compat bool) (*grammar.Grammar, error) {
+	tree, err := ast.Parse(ctx, path, content, tm.StopOnFirstError)
+	if err != nil {
+		return nil, err
+	}
+	file := ast.File{Node: tree.Root()}
+
 	var s status.Status
 
 	opts := newOptionsParser(&s)

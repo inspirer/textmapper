@@ -30,6 +30,7 @@ Use "textmapper help [command]" for more information about a command.
 
 var commands = []*command{
 	genCmd,
+	debugCmd,
 	versionCmd,
 	helpCmd,
 }

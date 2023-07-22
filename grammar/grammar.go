@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/inspirer/textmapper/lalr"
 	"github.com/inspirer/textmapper/lex"
@@ -168,6 +169,42 @@ type Parser struct {
 	IsRecovering bool
 	ErrorSymbol  int
 	NumTerminals int
+}
+
+func (p *Parser) TableStats() string {
+	var b strings.Builder
+
+	t := p.Tables
+	if t == nil {
+		return "No tables\n"
+	}
+
+	fmt.Fprintf(&b, "LALR:\n\t%v terminals, %v nonterminals, %v rules, %v states, %v markers, %v lookaheads\n", p.NumTerminals, len(p.Nonterms), len(t.RuleLen), t.NumStates, len(t.Markers), len(t.Lookaheads))
+	fmt.Fprintf(&b, "Action Table:\n\t%d x %d, expanded size = %.1f KB\n", t.NumStates, p.NumTerminals, float64(t.NumStates*p.NumTerminals*4)/1024.)
+	var lr0, nonZero, total int
+	for _, val := range t.Action {
+		if val >= -2 {
+			lr0++
+			continue
+		}
+		total += p.NumTerminals
+		for a := -3 - val; t.Lalr[a] >= 0; a += 2 {
+			if t.Lalr[a+1] >= 0 {
+				nonZero++
+			}
+		}
+	}
+	fmt.Fprintf(&b, "\tLR0 states: %v (%.2v%%)\n", lr0, float64(lr0*100)/float64(t.NumStates))
+	fmt.Fprintf(&b, "\t%.2v%% of the LALR table is reductions (%.1f KB)\n", float64(nonZero*100)/float64(total), float64(nonZero*4)/1024.)
+
+	syms := p.NumTerminals + len(p.Nonterms)
+	fmt.Fprintf(&b, "Goto Table:\n\t%d x %d, expanded size = %.1f KB\n", t.NumStates, syms, float64(t.NumStates*syms*4)/float64(1024))
+
+	nonZero = len(t.FromTo) / 2
+	total = t.NumStates * syms
+	fmt.Fprintf(&b, "\t%.2v%% of the GOTO table is populated (%.1f KB)\n", float64(nonZero*100)/float64(total), float64(nonZero*4)/1024.)
+
+	return b.String()
 }
 
 // Options carries grammar generation parameters.

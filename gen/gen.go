@@ -13,8 +13,6 @@ import (
 
 	"github.com/inspirer/textmapper/compiler"
 	"github.com/inspirer/textmapper/grammar"
-	"github.com/inspirer/textmapper/parsers/tm"
-	"github.com/inspirer/textmapper/parsers/tm/ast"
 )
 
 // Writer provides a way to save generated files to disk.
@@ -137,13 +135,8 @@ func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Sta
 		return ret, err
 	}
 
-	tree, err := ast.Parse(ctx, path, string(content), tm.StopOnFirstError)
-	if err != nil {
-		return ret, err
-	}
-
 	start := time.Now()
-	g, err := compiler.Compile(ast.File{Node: tree.Root()}, opts.Compat)
+	g, err := compiler.Compile(ctx, path, string(content), opts.Compat)
 	ret.Compiling = time.Since(start)
 	if err != nil {
 		return ret, err

@@ -28,7 +28,6 @@ var (
 	outputDir   = genCmd.Flags.String("o", "", "output directory")
 	includeDirs = genCmd.Flags.String("i", "", "comma-separated list of directories with code generation templates")
 	noBuiltins  = genCmd.Flags.Bool("x", false, "do not use built-in templates for code generation")
-	debug       = genCmd.Flags.Bool("d", false, "output extra debug info")
 	diffFlag    = genCmd.Flags.Bool("diff", false, "compare generated content against files on disk")
 	compatFlag  = genCmd.Flags.Bool("compat", false, "disable optimizations and attempt to produce the same output as the Java version")
 	cpuprofile  = genCmd.Flags.String("cpuprofile", "", "write a CPU profile into a given file")
