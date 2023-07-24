@@ -224,6 +224,7 @@ type Options struct {
 	RecursiveLookaheads bool
 	DebugParser         bool
 	WriteBison          bool // Output the expanded grammar in a Bison-like format.
+	OptimizeTables      bool
 
 	// AST generation. Go-specific for now.
 	EventBased    bool

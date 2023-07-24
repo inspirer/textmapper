@@ -264,6 +264,7 @@ func (c *compiler) compileParser(file ast.File) {
 		expectSR: loader.expectSR,
 		expectRR: loader.expectRR,
 		syms:     c.out.Syms,
+		optimize: c.out.Options.OptimizeTables,
 	}
 	if err := generateTables(source, c.out.Parser, opts, file); err != nil {
 		c.AddError(err)
@@ -275,6 +276,7 @@ type genOptions struct {
 	expectRR int
 	expectSR int
 	syms     []grammar.Symbol
+	optimize bool
 }
 
 func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, origin status.SourceNode) error {
@@ -483,7 +485,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 		}
 	}
 
-	tables, err := lalr.Compile(g)
+	tables, err := lalr.Compile(g, opts.optimize)
 	if err != nil {
 		return err
 	}

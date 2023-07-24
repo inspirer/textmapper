@@ -108,6 +108,7 @@ type Stats struct {
 	Gen        time.Duration
 	States     int
 	ParserSize int
+	Optimized  bool
 }
 
 func (s Stats) String() string {
@@ -122,7 +123,11 @@ func (s Stats) String() string {
 		ret = append(ret, fmt.Sprintf("parser: %v states", s.States))
 	}
 	if s.ParserSize > 0 {
-		ret = append(ret, fmt.Sprintf("%v KB", s.ParserSize/1024))
+		var suffix string
+		if s.Optimized {
+			suffix = " (optimized)"
+		}
+		ret = append(ret, fmt.Sprintf("%v KB%v", s.ParserSize/1024, suffix))
 	}
 	return strings.Join(ret, ", ")
 }
@@ -145,6 +150,7 @@ func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Sta
 	if g.Parser != nil && g.Parser.Tables != nil {
 		ret.States = g.Parser.Tables.NumStates
 		ret.ParserSize = g.Parser.Tables.SizeBytes()
+		ret.Optimized = g.Parser.Tables.Optimized != nil
 	}
 	if g.TargetLang == "" {
 		// A source-only grammar.

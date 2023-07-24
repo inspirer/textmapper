@@ -107,6 +107,7 @@ type Grammar struct {
 // Tables holds generated parser tables.
 type Tables struct {
 	*DefaultEnc
+	Optimized *DisplacementEnc
 
 	RuleLen     []int
 	FinalStates []int
@@ -165,10 +166,20 @@ func bytesPerElement(arr []int) int {
 
 func (t *Tables) SizeBytes() int {
 	var ret int
-	ret += len(t.Action) * 4
-	ret += len(t.Lalr) * 4
-	ret += len(t.Goto) * 4
-	ret += len(t.FromTo) * bytesPerElement(t.FromTo)
+	if opt := t.Optimized; opt != nil {
+		ret += len(opt.Action) * 4
+		ret += len(opt.DefAct) * 4
+		ret += len(opt.Goto) * 4
+		ret += len(opt.DefGoto) * 4
+		ret += len(opt.Check) * bytesPerElement(opt.Check)
+		ret += len(opt.Table) * bytesPerElement(opt.Table)
+	} else {
+		ret += len(t.Action) * 4
+		ret += len(t.Lalr) * 4
+		ret += len(t.Goto) * 4
+		ret += len(t.FromTo) * bytesPerElement(t.FromTo)
+	}
+
 	ret += len(t.RuleLen) * bytesPerElement(t.RuleLen)
 	ret += len(t.RuleSymbol) * 4
 	return ret

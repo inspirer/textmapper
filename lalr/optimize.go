@@ -281,12 +281,6 @@ func (a *allocator) place(pairs []pair) (base int) {
 		}
 	}()
 
-	if len(pairs) > 32 {
-		// This is a large block, allocate it at the end of the table.
-		base = a.size - min
-		return
-	}
-
 	// Try to find a free block of the required shape.
 outer:
 	for i := 0; i < a.size; i++ {

@@ -10,7 +10,7 @@ import (
 )
 
 // Compile generates LALR tables for a given grammar.
-func Compile(grammar *Grammar) (*Tables, error) {
+func Compile(grammar *Grammar, opt bool) (*Tables, error) {
 	c := &compiler{
 		grammar: grammar,
 		out: &Tables{
@@ -31,6 +31,9 @@ func Compile(grammar *Grammar) (*Tables, error) {
 	c.populateTables()
 	c.reportConflicts()
 
+	if opt {
+		c.out.Optimized = Optimize(c.out.DefaultEnc, grammar.Terminals, len(c.grammar.Rules))
+	}
 	return c.out, c.s.Err()
 }
 

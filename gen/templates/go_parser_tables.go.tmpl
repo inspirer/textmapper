@@ -34,6 +34,36 @@ func symbolName(sym int32) string {
 	return "fmt".Sprintf("nonterminal(%d)", sym)
 }
 
+{{ if .Parser.Tables.Optimized -}}
+var tmDefGoto = []int32{
+{{- int_array .Parser.Tables.Optimized.DefGoto "\t" 79 -}}
+}
+
+var tmGoto = []int32{
+{{- int_array .Parser.Tables.Optimized.Goto "\t" 79 -}}
+}
+
+var tmDefAct = []int32{
+{{- int_array .Parser.Tables.Optimized.DefAct "\t" 79 -}}
+}
+
+const tmActionBase = {{.Parser.Tables.Optimized.Base}}
+
+var tmAction = []int32{
+{{- int_array .Parser.Tables.Optimized.Action "\t" 79 -}}
+}
+
+const tmTableLen = {{len .Parser.Tables.Optimized.Table}}
+
+var tmTable = []int{{bits_per_element .Parser.Tables.Optimized.Table}}{
+{{- int_array .Parser.Tables.Optimized.Table "\t" 79 -}}
+}
+
+var tmCheck = []int{{bits_per_element .Parser.Tables.Optimized.Check}}{
+{{- int_array .Parser.Tables.Optimized.Check "\t" 79 -}}
+}
+
+{{ else -}}
 var tmAction = []int32{
 {{- int_array .Parser.Tables.Action "\t" 79 -}}
 }
@@ -53,6 +83,7 @@ var tmFromTo = []int{{$stateType}}{
 {{- int_array .Parser.Tables.FromTo "\t" 79 -}}
 }
 
+{{ end -}}
 var tmRuleLen = []int{{bits_per_element .Parser.Tables.RuleLen}}{
 {{- int_array .Parser.Tables.RuleLen "\t" 79 -}}
 }
