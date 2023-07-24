@@ -71,7 +71,7 @@ func debugFile(ctx context.Context, path string) error {
 		fmt.Print(g.Parser.TableStats())
 
 		start = time.Now()
-		newEnc := lalr.Optimize(g.Parser.Tables.DefaultEnc, g.NumTokens, len(g.Syms))
+		newEnc := lalr.Optimize(g.Parser.Tables.DefaultEnc, g.NumTokens, len(g.Parser.Tables.RuleLen))
 		fmt.Printf("Optimized tables in %v\n", time.Since(start))
 
 		fmt.Print(newEnc.TableStats())

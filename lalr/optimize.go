@@ -44,15 +44,18 @@ func (e *DisplacementEnc) TableStats() string {
 }
 
 // Optimize converts parsing tables into a faster displacement encoding.
-func Optimize(t *DefaultEnc, terms, syms int) *DisplacementEnc {
+func Optimize(t *DefaultEnc, terms, rules int) *DisplacementEnc {
+	syms := len(t.Goto) - 1
+	states := len(t.Action)
 	ret := &DisplacementEnc{
 		DefGoto: make([]int, syms-terms),
 		Goto:    make([]int, syms-terms),
-		DefAct:  make([]int, len(t.Action)),
-		Action:  make([]int, len(t.Action)),
+		DefAct:  make([]int, states),
+		Action:  make([]int, states),
 		Base:    -terms,
 	}
 
+	reuse := make([]int, states+1+rules) // for pickDefault
 	next := make([]int, terms)
 	var lines []line
 	var target []int // of each line: >= for Action, -1-nonterm for Goto
@@ -98,7 +101,7 @@ func Optimize(t *DefaultEnc, terms, syms int) *DisplacementEnc {
 			}
 		}
 
-		def := pickDefault(next, -1) // error as the backup
+		def := pickDefault(next, reuse)
 		ret.DefAct[state] = def
 
 		var pairs []pair
@@ -127,7 +130,7 @@ func Optimize(t *DefaultEnc, terms, syms int) *DisplacementEnc {
 			toState[t.FromTo[i]] = t.FromTo[i+1]
 		}
 
-		def := pickDefault(toState, -1)
+		def := pickDefault(toState, reuse)
 		ret.DefGoto[nt] = def
 
 		var pairs []pair
@@ -176,16 +179,23 @@ func pack(input []line) (indices, table, check []int) {
 	indices = make([]int, len(input))
 
 	var total int
+	var delta int
 	for i, l := range input {
 		entries = append(entries, entry{index: i, pairs: l.pairs})
 		total += len(l.pairs)
+		if p := l.pairs[0].pos; p > delta {
+			delta = p
+		}
 	}
 	sort.SliceStable(entries, func(i, j int) bool {
 		return len(entries[i].pairs) > len(entries[j].pairs)
 	})
-	table = make([]int, total)
-	check = make([]int, total)
-	var allocator allocator
+	allocator := allocator{
+		delta: delta,
+		prev:  make(map[key]int),
+		table: make([]int, total),
+		check: make([]int, total),
+	}
 
 	// Iterate in the order of decreasing number of pairs.
 	for _, e := range entries {
@@ -193,45 +203,85 @@ func pack(input []line) (indices, table, check []int) {
 			log.Fatal("internal invariant violated: empty line")
 		}
 		base := allocator.place(e.pairs)
-		last := e.pairs[len(e.pairs)-1].pos
-		minSize := base + last + 1
-		if len(table) < minSize {
-			tmp := make([]int, minSize-len(table))
-			table = append(table, tmp...)
-			check = append(check, tmp...)
-		}
-		for _, p := range e.pairs {
-			table[base+p.pos] = p.val
-			check[base+p.pos] = p.pos + 1
-		}
 		indices[e.index] = base
 	}
+	table = allocator.table[:allocator.size]
+	check = allocator.check[:allocator.size]
 	for i, e := range check {
 		check[i] = e - 1 // -1 means "unused"
 	}
-	return indices, table[:allocator.size], check[:allocator.size]
+	return indices, table, check
 }
 
 type allocator struct {
-	size  int
-	taken container.BitSet
+	size     int
+	delta    int
+	taken    container.BitSet
+	usedBase container.BitSet
+	prev     map[key]int
+	table    []int
+	check    []int
+}
+
+type key struct {
+	hash int
+	len  int
+}
+
+func hash(pairs []pair) int {
+	var ret int
+	for _, p := range pairs {
+		ret = ret*31 + p.pos
+		ret = ret*31 + p.val
+	}
+	return ret
+}
+
+func (a *allocator) grow(size int) {
+	if len(a.table) < size {
+		tmp := make([]int, size-len(a.table))
+		a.table = append(a.table, tmp...)
+		a.check = append(a.check, tmp...)
+	}
 }
 
 func (a *allocator) place(pairs []pair) (base int) {
 	min, max := pairs[0].pos, pairs[len(pairs)-1].pos
 
+	// Attempt to dedupe lines.
+	hash := hash(pairs)
+	if base, ok := a.prev[key{hash, len(pairs)}]; ok {
+		ok := true
+		for _, p := range pairs {
+			if a.table[base+p.pos] != p.val || a.check[base+p.pos] != p.pos+1 {
+				ok = false
+			}
+		}
+		if ok {
+			return base
+		}
+	}
+
 	// Reserve enough bits to allocate these pairs at the very end of the table.
 	a.taken.Grow(a.size + max - min + 1)
+	a.usedBase.Grow(a.delta + a.size + max - min + 1)
 	defer func() {
 		for _, p := range pairs {
 			a.taken.Set(base + p.pos)
 		}
 		if max+base >= a.size {
 			a.size = max + base + 1
+			a.grow(a.size)
+		}
+		a.usedBase.Set(a.delta + base)
+		a.prev[key{hash, len(pairs)}] = base
+		for _, p := range pairs {
+			a.table[base+p.pos] = p.val
+			a.check[base+p.pos] = p.pos + 1
 		}
 	}()
 
-	if len(pairs) > 16 {
+	if len(pairs) > 32 {
 		// This is a large block, allocate it at the end of the table.
 		base = a.size - min
 		return
@@ -241,6 +291,9 @@ func (a *allocator) place(pairs []pair) (base int) {
 outer:
 	for i := 0; i < a.size; i++ {
 		base = i - min
+		if a.usedBase.Get(a.delta + base) {
+			continue
+		}
 		for _, p := range pairs {
 			if a.taken.Get(base + p.pos) {
 				continue outer
@@ -255,55 +308,30 @@ outer:
 	return
 }
 
-// pickDefault returns the "default" element for a given array.
-func pickDefault(arr []int, backup int) int {
-	// Try to find the majority element (if any).
-	// See https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm
-	var count int
-	var ret int
+// pickDefault returns the most common element in a given array.
+func pickDefault(arr []int, reuse []int) int {
+	min, max := arr[0], arr[0]
 	for _, val := range arr {
-		if count == 0 {
-			ret = val
-			count = 1
-		} else {
-			if val == ret {
-				count++
-			} else {
-				count--
-			}
+		if val < min {
+			min = val
+		} else if val > max {
+			max = val
 		}
 	}
-
-	count = 0
+	n := max - min
+	for i := 0; i <= n; i++ {
+		reuse[i] = 0
+	}
 	for _, val := range arr {
-		if val == ret {
-			count++
+		reuse[val-min]++
+	}
+	ret := min
+	cnt := reuse[0]
+	for i, count := range reuse[:n+1] {
+		if count > cnt {
+			ret = i + min
+			cnt = count
 		}
 	}
-	if count > len(arr)/2 {
-		// This is the majority element.
-		return ret
-	}
-
-	// No majority element, try the first, last and "backup" values.
-	first := arr[0]
-	last := arr[len(arr)-1]
-	var cf, cl, cb int
-	for _, val := range arr {
-		switch {
-		case val == first:
-			cf++
-		case val == last:
-			cl++
-		case val == backup:
-			cb++
-		}
-	}
-	switch {
-	case cf >= cl && cf >= cb:
-		return first
-	case cl >= cf && cl >= cb:
-		return last
-	}
-	return backup
+	return ret
 }
