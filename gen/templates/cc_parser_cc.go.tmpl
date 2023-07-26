@@ -240,13 +240,12 @@ int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
     }
   }
 {{ else -}}
-	constexpr int32_t numTokens = {{$.NumTokens}};
-	if (symbol >= numTokens) {
-		int32_t pos = tmGoto[symbol-numTokens] + state;
+	if (symbol >= static_cast<int32_t>(Token::NumTokens)) {
+		int32_t pos = tmGoto[symbol-static_cast<int32_t>(Token::NumTokens)] + state;
 		if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == state) {
 			return tmTable[pos];
 		}
-		return tmDefGoto[symbol-numTokens];
+		return tmDefGoto[symbol-static_cast<int32_t>(Token::NumTokens)];
 	}
 
 	// Shifting a token.

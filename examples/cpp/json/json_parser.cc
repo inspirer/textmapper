@@ -147,13 +147,13 @@ constexpr NodeType tmRuleType[] = {
 [[maybe_unused]] constexpr int32_t afterErr[] = {};
 
 int8_t gotoState(int8_t state, int32_t symbol) {
-  constexpr int32_t numTokens = 19;
-  if (symbol >= numTokens) {
-    int32_t pos = tmGoto[symbol - numTokens] + state;
+  if (symbol >= static_cast<int32_t>(Token::NumTokens)) {
+    int32_t pos =
+        tmGoto[symbol - static_cast<int32_t>(Token::NumTokens)] + state;
     if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == state) {
       return tmTable[pos];
     }
-    return tmDefGoto[symbol - numTokens];
+    return tmDefGoto[symbol - static_cast<int32_t>(Token::NumTokens)];
   }
 
   // Shifting a token.
