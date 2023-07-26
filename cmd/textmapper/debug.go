@@ -59,7 +59,7 @@ func debugFile(ctx context.Context, path string) error {
 	}
 
 	start := time.Now()
-	g, err := compiler.Compile(ctx, path, string(content), false /*compat*/)
+	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{})
 	if err != nil {
 		return err
 	}

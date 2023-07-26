@@ -59,7 +59,7 @@ func TestErrors(t *testing.T) {
 			}
 
 			var got []string
-			_, err = Compile(ctx, file, pt.Source(), compat)
+			_, err = Compile(ctx, file, pt.Source(), Params{Compat: compat})
 			if err != nil {
 				s := status.FromError(err)
 				s.Sort()
@@ -111,7 +111,7 @@ func TestSourceModel(t *testing.T) {
 		// Resolve terminal references.
 		opts.resolve(resolver)
 
-		c := newCompiler(file, opts.out, lexer.out, resolver, compat, &s)
+		c := newCompiler(file, opts.out, lexer.out, resolver, Params{Compat: compat}, &s)
 		c.compileParser(file)
 
 		if s.Err() != nil {

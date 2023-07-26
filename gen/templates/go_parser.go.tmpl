@@ -251,7 +251,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 			entry.state = state
 			stack = append(stack, entry)
 
-		} else if action == -1 {
+		} else if action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1 {
 {{- if .Options.Cancellable }}
 			if {{if .NeedsSession}}s.{{end}}shiftCounter++; {{if .NeedsSession}}s.{{end}}shiftCounter&0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
@@ -270,8 +270,8 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 			}
 			state = gotoState(state, p.next.symbol)
-{{- end}}
 			if state >= 0 {
+{{- end}}
 				stack = append(stack, stackEntry{
 					sym:   p.next,
 					state: state,
@@ -293,7 +293,9 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 					p.recovering--
 				}
 {{- end}}
+{{- if not .Parser.Tables.Optimized}}
 			}
+{{- end}}
 		}
 
 		if action == {{ if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state == -1 {

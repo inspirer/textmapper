@@ -19,8 +19,14 @@ import (
 	"github.com/inspirer/textmapper/util/ident"
 )
 
+// Params control the grammar compilation process.
+type Params struct {
+	Compat    bool
+	CheckOnly bool // set to true, if the caller is interested in compilation errors only
+}
+
 // Compile validates and compiles grammar files.
-func Compile(ctx context.Context, path, content string, compat bool) (*grammar.Grammar, error) {
+func Compile(ctx context.Context, path, content string, params Params) (*grammar.Grammar, error) {
 	tree, err := ast.Parse(ctx, path, content, tm.StopOnFirstError)
 	if err != nil {
 		return nil, err
@@ -34,17 +40,17 @@ func Compile(ctx context.Context, path, content string, compat bool) (*grammar.G
 
 	resolver := newResolver(&s)
 
-	lexer := newLexerCompiler(opts, resolver, compat, &s)
+	lexer := newLexerCompiler(opts, resolver, params.Compat, &s)
 	lexer.compile(file)
 
 	// Resolve terminal references.
 	opts.resolve(resolver)
 
-	c := newCompiler(file, opts.out, lexer.out, resolver, compat, &s)
+	c := newCompiler(file, opts.out, lexer.out, resolver, params, &s)
 	c.compileParser(file)
 
 	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
-	if compat {
+	if params.Compat {
 		c.out.CustomTemplates = parseInGrammarTemplates(tpl)
 	} else {
 		c.out.CustomTemplates = tpl
@@ -55,11 +61,11 @@ func Compile(ctx context.Context, path, content string, compat bool) (*grammar.G
 type compiler struct {
 	out      *grammar.Grammar
 	resolver *resolver
-	compat   bool
+	params   Params
 	*status.Status
 }
 
-func newCompiler(file ast.File, opts *grammar.Options, lexer *grammar.Lexer, resolver *resolver, compat bool, s *status.Status) *compiler {
+func newCompiler(file ast.File, opts *grammar.Options, lexer *grammar.Lexer, resolver *resolver, params Params, s *status.Status) *compiler {
 	targetLang, _ := file.Header().Target()
 	return &compiler{
 		out: &grammar.Grammar{
@@ -72,7 +78,7 @@ func newCompiler(file ast.File, opts *grammar.Options, lexer *grammar.Lexer, res
 			NumTokens:  resolver.NumTokens,
 		},
 		resolver: resolver,
-		compat:   compat,
+		params:   params,
 		Status:   s,
 	}
 }
@@ -218,7 +224,7 @@ func (c *compiler) compileParser(file ast.File) {
 
 	// Use instantiated nonterminal names to describe sets in generated code.
 	old := source.Terminals
-	if c.compat {
+	if c.params.Compat {
 		// Note: prefer original terminal names over IDs.
 		source.Terminals = nil
 		for _, sym := range c.out.Syms {
@@ -253,18 +259,18 @@ func (c *compiler) compileParser(file ast.File) {
 	}
 
 	// Introduce synthetic inputs for runtime lookaheads.
-	addSyntheticInputs(source, c.compat)
+	addSyntheticInputs(source, c.params.Compat)
 
 	// Prepare the model for code generation.
 	c.resolver.addNonterms(source)
 	c.out.Syms = c.resolver.Syms
 
 	opts := genOptions{
-		compat:   c.compat,
+		compat:   c.params.Compat,
 		expectSR: loader.expectSR,
 		expectRR: loader.expectRR,
 		syms:     c.out.Syms,
-		optimize: c.out.Options.OptimizeTables,
+		optimize: c.out.Options.OptimizeTables && !c.params.CheckOnly,
 	}
 	if err := generateTables(source, c.out.Parser, opts, file); err != nil {
 		c.AddError(err)

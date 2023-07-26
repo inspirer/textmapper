@@ -141,7 +141,7 @@ func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Sta
 	}
 
 	start := time.Now()
-	g, err := compiler.Compile(ctx, path, string(content), opts.Compat)
+	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{Compat: opts.Compat})
 	ret.Compiling = time.Since(start)
 	if err != nil {
 		return ret, err
