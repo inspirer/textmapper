@@ -598,7 +598,6 @@ func gotoState(state int{{$stateType}}, symbol int32) int{{$stateType}} {
 			}
 		}
 	}
-	return -1
 {{ else -}}
 {{$checkType := bits_per_element .Parser.Tables.Optimized.Check -}}
 	const numTokens = {{$.NumTokens}}
@@ -624,8 +623,8 @@ func gotoState(state int{{$stateType}}, symbol int32) int{{$stateType}} {
 	if action < -1 {
 		return int{{$stateType}}(-2-action)
 	}
-	return -1
 {{ end -}}
+	return -1
 }
 
 {{ end -}}

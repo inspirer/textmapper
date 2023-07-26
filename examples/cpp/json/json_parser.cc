@@ -51,34 +51,44 @@ std::string symbolName(int32_t sym) {
   return absl::StrFormat("nonterminal(%d)", sym);
 }
 
-constexpr int32_t tmAction[] = {
-    20, -3, -1,  -21, 17, 18, 10,  11, 12, 13, 0,  15, 14, -1,  16,
-    -1, 28, -41, -1,  -1, 19, -47, 27, 22, -1, 25, -1, 29, -65, 21,
-    -1, 8,  9,   1,   2,  3,  4,   24, 6,  5,  7,  26, -2, -1,  -2,
-};
-
-constexpr int32_t tmLalr[] = {
-    4,  -1, 10, -1, 11, -1, 13, -1, 14, -1, 15, -1, 16, -1, 2,  32,
-    -1, -2, 4,  -1, 10, -1, 11, -1, 13, -1, 14, -1, 15, -1, 16, -1,
-    2,  32, 5,  31, -1, -2, 7,  -1, 5,  30, -1, -2, 4,  -1, 10, -1,
-    11, -1, 13, -1, 14, -1, 15, -1, 16, -1, 2,  32, -1, -2, 4,  -1,
-    10, -1, 11, -1, 13, -1, 14, -1, 15, -1, 17, -1, 2,  32, -1, -2,
+constexpr int32_t tmDefGoto[] = {
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
 
 constexpr int32_t tmGoto[] = {
-    0,  2,  2,  6,  12, 20, 22, 24,  28,  28,  28,  40,  48,  48,  56,  64,
-    72, 78, 80, 80, 82, 84, 90, 100, 110, 118, 126, 130, 132, 140, 142, 144,
+    59, 31, 4, 19, 33, 34, 43, -9, 44, 47, 62, 63,
 };
 
-constexpr int8_t tmFromTo[] = {
-    43, 44, 2,  15, 13, 19, 15, 20, 19, 23, 26, 29, 1,  3,  3,  3,  21, 3,
-    28, 3,  18, 22, 24, 28, 17, 21, 26, 30, 1,  4,  3,  4,  19, 24, 21, 4,
-    28, 31, 30, 24, 1,  5,  3,  5,  21, 5,  28, 32, 1,  6,  3,  6,  21, 6,
-    28, 33, 1,  7,  3,  7,  21, 7,  28, 34, 1,  8,  3,  8,  21, 8,  28, 35,
-    1,  9,  3,  9,  21, 9,  28, 36, 1,  43, 28, 37, 1,  10, 3,  16, 21, 27,
-    0,  42, 1,  11, 3,  11, 21, 11, 28, 38, 0,  2,  1,  2,  3,  2,  21, 2,
-    28, 2,  1,  12, 3,  12, 21, 12, 28, 39, 1,  13, 3,  13, 21, 13, 28, 13,
-    19, 25, 30, 41, 19, 26, 1,  14, 3,  14, 21, 14, 28, 40, 3,  17, 3,  18,
+constexpr int32_t tmDefAct[] = {
+    20, -1, -1, -1, 17, 18, 10, 11, 12, 13, 0,  15, 14, -1, 16,
+    -1, 28, -1, -1, -1, 19, -1, 27, 22, -1, 25, -1, 29, -1, 21,
+    -1, 8,  9,  1,  2,  3,  4,  24, 6,  5,  7,  26, -1, -1, -1,
+};
+
+constexpr int32_t tmActionBase = -19;
+
+constexpr int32_t tmAction[] = {
+    -19, 13,  14,  -2,  -19, -19, -19, -19, -19, -19, -19, -19, -19, 16, -19,
+    48,  -19, -1,  -4,  46,  -19, 13,  -19, -19, 25,  -19, 50,  -19, 28, -19,
+    42,  -19, -19, -19, -19, -19, -19, -19, -19, -19, -19, -19, -19, 58, -19,
+};
+
+constexpr int32_t tmTableLen = 76;
+
+constexpr int8_t tmTable[] = {
+    32,  -24, -5,  31,  30,  10,  -23, 16, -6, -7, 25,  -8, -9,
+    -10, -11, 32,  -17, -5,  -21, 42,  11, 41, 11, -6,  -7, 27,
+    -8,  -9,  -10, -11, 32,  -30, -5,  2,  2,  12, 2,   12, -33,
+    -34, 11,  -35, -36, -37, 13,  -38, 13, 38, 14, -25, 14, -22,
+    -26, -31, 2,   12,  -26, -32, -46, 37, 43, 2,  39,  26, 13,
+    17,  18,  0,   14,  0,   0,   13,  0,  0,  0,  40,
+};
+
+constexpr int8_t tmCheck[] = {
+    2,  5,  4,  5,  5,  1,  7,  3,  10, 11, 19, 13, 14, 15, 16, 2,  2,  4,  2,
+    0,  1,  30, 3,  10, 11, 21, 13, 14, 15, 16, 2,  6,  4,  0,  1,  1,  3,  3,
+    10, 11, 21, 13, 14, 15, 1,  17, 3,  28, 1,  3,  3,  3,  10, 3,  21, 21, 10,
+    7,  0,  28, 1,  28, 28, 19, 21, 3,  3,  -1, 21, -1, -1, 28, -1, -1, -1, 28,
 };
 
 constexpr int8_t tmRuleLen[] = {
@@ -136,38 +146,29 @@ constexpr NodeType tmRuleType[] = {
 // set(follow error) =
 [[maybe_unused]] constexpr int32_t afterErr[] = {};
 
-int32_t lalr(int32_t action, int32_t next) {
-  int32_t a = -action - 3;
-  for (; tmLalr[a] >= 0; a += 2) {
-    if (tmLalr[a] == next) {
-      break;
-    }
-  }
-  return tmLalr[a + 1];
-}
-
 int8_t gotoState(int8_t state, int32_t symbol) {
-  int32_t min = tmGoto[symbol];
-  int32_t max = tmGoto[symbol + 1];
+  constexpr int32_t numTokens = 19;
+  if (symbol >= numTokens) {
+    int32_t pos = tmGoto[symbol - numTokens] + state;
+    if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == state) {
+      return tmTable[pos];
+    }
+    return tmDefGoto[symbol - numTokens];
+  }
 
-  if (max - min < 32) {
-    for (auto i = min; i < max; i += 2) {
-      if (tmFromTo[i] == state) {
-        return tmFromTo[i + 1];
-      }
-    }
+  // Shifting a token.
+  int32_t action = tmAction[state];
+  if (action == tmActionBase) {
+    return -1;
+  }
+  int32_t pos = action + symbol;
+  if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == symbol) {
+    action = tmTable[pos];
   } else {
-    while (min < max) {
-      int32_t e = ((min + max) / 2) & ~static_cast<int32_t>(1);
-      int8_t i = tmFromTo[e];
-      if (i == state) {
-        return tmFromTo[e + 1];
-      } else if (i < state) {
-        min = e + 2;
-      } else {
-        max = e;
-      }
-    }
+    action = tmDefAct[state];
+  }
+  if (action < -1) {
+    return -2 - action;
   }
   return -1;
 }
@@ -198,12 +199,19 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
 
   while (state != end) {
     int32_t action = tmAction[state];
-    if (action < -2) {
+    if (action > tmActionBase) {
       // Lookahead is needed.
       if (next == noToken) {
         next = lookaheadNext(lexer);
       }
-      action = lalr(action, next);
+      int32_t pos = action + next;
+      if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == next) {
+        action = tmTable[pos];
+      } else {
+        action = tmDefAct[state];
+      }
+    } else {
+      action = tmDefAct[state];
     }
 
     if (action >= 0) {
@@ -220,12 +228,9 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
       stack.push_back(std::move(entry));
-    } else if (action == -1) {
+    } else if (action < -1) {
       // Shift.
-      if (next == noToken) {
-        next = lookaheadNext(lexer);
-      }
-      state = gotoState(state, next);
+      state = -2 - action;
       stack.push_back(stackEntry{
           .sym = symbol{.symbol = next},
           .state = state,
@@ -239,7 +244,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       }
     }
 
-    if (action == -2 || state == -1) {
+    if (action == -1 || state == -1) {
       break;
     }
   }
@@ -349,12 +354,19 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
 
   while (state != end) {
     int32_t action = tmAction[state];
-    if (action < -2) {
+    if (action > tmActionBase) {
       // Lookahead is needed.
       if (next_symbol_.symbol == noToken) {
         fetchNext(lexer, stack);
       }
-      action = lalr(action, next_symbol_.symbol);
+      int32_t pos = action + next_symbol_.symbol;
+      if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == next_symbol_.symbol) {
+        action = tmTable[pos];
+      } else {
+        action = tmDefAct[state];
+      }
+    } else {
+      action = tmDefAct[state];
     }
 
     if (action >= 0) {
@@ -391,40 +403,35 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
       stack.push_back(std::move(entry));
-    } else if (action == -1) {
+    } else if (action < -1) {
       // Shift.
-      if (next_symbol_.symbol == noToken) {
-        fetchNext(lexer, stack);
+      state = -2 - action;
+      stack.push_back(stackEntry{
+          .sym = next_symbol_,
+          .state = state,
+      });
+      if (debugSyntax) {
+        LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
+                  << lexer.Text() << ")";
       }
-      state = gotoState(state, next_symbol_.symbol);
-      if (state >= 0) {
-        stack.push_back(stackEntry{
-            .sym = next_symbol_,
-            .state = state,
-        });
-        if (debugSyntax) {
-          LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
-                    << lexer.Text() << ")";
+      if (!pending_symbols_.empty()) {
+        for (const auto& tok : pending_symbols_) {
+          reportIgnoredToken(tok);
         }
-        if (!pending_symbols_.empty()) {
-          for (const auto& tok : pending_symbols_) {
-            reportIgnoredToken(tok);
-          }
-          pending_symbols_.clear();
+        pending_symbols_.clear();
+      }
+      if (next_symbol_.symbol != eoiToken) {
+        switch (Token(next_symbol_.symbol)) {
+          case Token::JSONSTRING:
+            listener_(NodeType::JsonString, next_symbol_.location);
+            break;
+          default:
+            break;
         }
-        if (next_symbol_.symbol != eoiToken) {
-          switch (Token(next_symbol_.symbol)) {
-            case Token::JSONSTRING:
-              listener_(NodeType::JsonString, next_symbol_.location);
-              break;
-            default:
-              break;
-          }
-          next_symbol_.symbol = noToken;
-        }
+        next_symbol_.symbol = noToken;
       }
     }
-    if (action == -2 || state == -1) {
+    if (action == -1 || state == -1) {
       break;
     }
   }

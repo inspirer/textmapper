@@ -68,6 +68,36 @@ std::string symbolName(int32_t sym) {
   return absl::StrFormat("nonterminal(%d)", sym);
 }
 
+{{ if .Parser.Tables.Optimized -}}
+constexpr int32_t tmDefGoto[] = {
+{{- int_array .Parser.Tables.Optimized.DefGoto "\t" 79 -}}
+};
+
+constexpr int32_t tmGoto[] = {
+{{- int_array .Parser.Tables.Optimized.Goto "\t" 79 -}}
+};
+
+constexpr int32_t tmDefAct[] = {
+{{- int_array .Parser.Tables.Optimized.DefAct "\t" 79 -}}
+};
+
+constexpr int32_t tmActionBase = {{.Parser.Tables.Optimized.Base}};
+
+constexpr int32_t tmAction[] = {
+{{- int_array .Parser.Tables.Optimized.Action "\t" 79 -}}
+};
+
+constexpr int32_t tmTableLen = {{len .Parser.Tables.Optimized.Table}};
+
+constexpr int{{bits_per_element .Parser.Tables.Optimized.Table}}_t tmTable[] = {
+{{- int_array .Parser.Tables.Optimized.Table "\t" 79 -}}
+};
+
+constexpr int{{bits_per_element .Parser.Tables.Optimized.Check}}_t tmCheck[] = {
+{{- int_array .Parser.Tables.Optimized.Check "\t" 79 -}}
+};
+
+{{ else -}}
 constexpr int32_t tmAction[] = {
 {{- int_array .Parser.Tables.Action "\t" 79 -}}
 };
@@ -86,6 +116,7 @@ constexpr int{{$stateType}}_t tmFromTo[] = {
 {{- int_array .Parser.Tables.FromTo "\t" 79 -}}
 };
 
+{{ end -}}
 constexpr int{{bits_per_element .Parser.Tables.RuleLen}}_t tmRuleLen[] = {
 {{- int_array .Parser.Tables.RuleLen "\t" 79 -}}
 };
@@ -168,7 +199,7 @@ void Parser::reportIgnoredToken(symbol sym) {
 {{ end -}}
 
 {{ define "lalr" -}}
-{{ if .Parser.Tables.Lalr -}}
+{{ if and .Parser.Tables.Lalr (not .Parser.Tables.Optimized) -}}
 int32_t lalr(int32_t action, int32_t next) {
   int32_t a = -action - 3;
   for (; tmLalr[a] >= 0; a += 2) {
@@ -185,6 +216,7 @@ int32_t lalr(int32_t action, int32_t next) {
 {{ define "gotoState" -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
+{{ if not .Parser.Tables.Optimized -}}
   int32_t min = tmGoto[symbol];
   int32_t max = tmGoto[symbol + 1];
 
@@ -207,6 +239,31 @@ int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
       }
     }
   }
+{{ else -}}
+	constexpr int32_t numTokens = {{$.NumTokens}};
+	if (symbol >= numTokens) {
+		int32_t pos = tmGoto[symbol-numTokens] + state;
+		if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == state) {
+			return tmTable[pos];
+		}
+		return tmDefGoto[symbol-numTokens];
+	}
+
+	// Shifting a token.
+	int32_t action = tmAction[state];
+	if (action == tmActionBase) {
+		return -1;
+	}
+	int32_t pos = action + symbol;
+	if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == symbol) {
+		action = tmTable[pos];
+	} else {
+		action = tmDefAct[state];
+	}
+	if (action < -1) {
+		return -2-action;
+	}
+{{ end -}}
   return -1;
 }
 
@@ -266,7 +323,22 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
 
   while (state != end) {
     int32_t action = tmAction[state];
-{{- if .Parser.Tables.Lalr}}
+{{- if .Parser.Tables.Optimized}}
+		if (action > tmActionBase) {
+      // Lookahead is needed.
+      if (next == noToken) {
+        next = {{template "callLookaheadNext" false}};
+      }
+			int32_t pos = action + next;
+			if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == next) {
+				action = tmTable[pos];
+			} else {
+				action = tmDefAct[state];
+			}
+		} else {
+			action = tmDefAct[state];
+		}
+{{- else if .Parser.Tables.Lalr}}
     if (action < -2) {
       // Lookahead is needed.
       if (next == noToken) {
@@ -297,12 +369,16 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
       stack.push_back(std::move(entry));
-    } else if (action == -1) {
+    } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
       // Shift.
+{{- if .Parser.Tables.Optimized}}
+			state = -2-action;
+{{- else}}
       if (next == noToken) {
         next = {{template "callLookaheadNext" false}};
       }
       state = gotoState(state, next);
+{{- end}}
       stack.push_back(stackEntry{
           .sym = symbol{.symbol = next},
           .state = state,
@@ -316,7 +392,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       }
     }
 
-    if (action == -2 || state == -1) {
+    if (action == {{if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state == -1) {
       break;
     }
   }
@@ -470,7 +546,22 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 
   while (state != end) {
     int32_t action = tmAction[state];
-{{- if .Parser.Tables.Lalr}}
+{{- if .Parser.Tables.Optimized}}
+		if (action > tmActionBase) {
+      // Lookahead is needed.
+      if (next_symbol_.symbol == noToken) {
+        fetchNext(lexer, stack);
+      }
+			int32_t pos = action + next_symbol_.symbol;
+			if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == next_symbol_.symbol) {
+				action = tmTable[pos];
+			} else {
+				action = tmDefAct[state];
+			}
+		} else {
+			action = tmDefAct[state];
+		}
+{{- else if .Parser.Tables.Lalr}}
     if (action < -2) {
       // Lookahead is needed.
       if (next_symbol_.symbol == noToken) {
@@ -518,13 +609,17 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       state = gotoState(stack.back().state, entry.sym.symbol);
       entry.state = state;
       stack.push_back(std::move(entry));
-    } else if (action == -1) {
+    } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
       // Shift.
+{{- if .Parser.Tables.Optimized}}
+			state = -2-action;
+{{- else}}
       if (next_symbol_.symbol == noToken) {
         fetchNext(lexer, stack);
       }
       state = gotoState(state, next_symbol_.symbol);
       if (state >= 0) {
+{{- end}}
         stack.push_back(stackEntry{
             .sym = next_symbol_,
             .state = state,
@@ -539,9 +634,11 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{template "reportConsumedNext" . -}}
 {{/**/}}          next_symbol_.symbol = noToken;
         }
+{{- if not .Parser.Tables.Optimized}}
       }
+{{- end}}
     }
-    if (action == -2 || state == -1) {
+    if (action == {{if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state == -1) {
 {{- if .Parser.IsRecovering }}
       // TODO needs translation
 			if recovering_ == 0 {
