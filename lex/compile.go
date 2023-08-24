@@ -67,7 +67,7 @@ func newCompiler() *reCompiler {
 	}
 }
 
-func (c *reCompiler) addPattern(p *Pattern, action int, rule *Rule) (int, error) {
+func (c *reCompiler) addPattern(p *Pattern, rule *Rule) (int, error) {
 	c.err = nil
 	ret := c.next()
 

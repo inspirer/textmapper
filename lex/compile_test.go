@@ -98,7 +98,7 @@ func TestCompile(t *testing.T) {
 		var index []int
 		c := newCompiler()
 		for i, r := range test.rules {
-			offset, err := c.addPattern(r.Pattern, r.Action, r)
+			offset, err := c.addPattern(r.Pattern, r)
 			if err != nil {
 				t.Fatalf("cannot compile regexp in test #%v", i)
 			}
@@ -158,7 +158,7 @@ func dumpInst(i int, inst inst, b *bytes.Buffer) {
 func TestErrors(t *testing.T) {
 	c := newCompiler()
 	r := rule("rule1", `((asdasd)?|[abc]?)`, 42)
-	_, err := c.addPattern(r.Pattern, r.Action, r)
+	_, err := c.addPattern(r.Pattern, r)
 	if err == nil || !strings.Contains(err.Error(), "`rule1` accepts empty text") {
 		t.Errorf("addRegexp() = %v, want: accepts empty text", err)
 	}

@@ -14,7 +14,7 @@ type Rule struct {
 	Resolver        Resolver
 	StartConditions []int
 	Precedence      int // Precedence disambiguates between rules that match the same prefix.
-	Action          int
+	Action          int // -1 return EOI, -2 fail and try backtrack, otherwise must be >= 0
 	Origin          status.SourceNode
 }
 
@@ -209,7 +209,7 @@ func Compile(rules []*Rule, allowBacktracking bool) (*Tables, error) {
 	var maxSC int
 	c := newCompiler()
 	for _, r := range rules {
-		i, err := c.addPattern(r.Pattern, r.Action, r)
+		i, err := c.addPattern(r.Pattern, r)
 		if err != nil {
 			s.Add(r.Origin.SourceRange(), err.Error())
 		}

@@ -141,6 +141,7 @@ func (c *lexerCompiler) canInlineRules() bool {
 	seen := container.NewBitSet(c.resolver.NumTokens)
 	for _, e := range c.out.RuleToken {
 		if e < 2 || seen.Get(e) {
+			// Explicit rules for InvalidToken or EOI cannot be inlined.
 			return false
 		}
 		seen.Set(e)
@@ -223,9 +224,10 @@ func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeA
 	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() && !c.compat {
 		if sym == int(lex.EOI) {
 			return -1
-		} else if sym == c.out.InvalidToken {
-			return -2
 		}
+		// Note: -2 is a dedicated action for implicitly discovered invalid tokens which
+		// triggers backtracking. Here we handle an explicitly declared invalid token, so
+		// we need a separate action.
 	}
 
 	out := c.out
