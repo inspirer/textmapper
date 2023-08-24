@@ -231,8 +231,8 @@ func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeA
 	}
 
 	out := c.out
-	key := symRule{code: cmd.Text(), space: space.IsValid(), class: class.IsValid(), sym: sym}
-	if a, ok := c.codeRule[key]; ok && !c.compat {
+	key := symRule{code: cmd.Text(), space: space.IsValid(), sym: sym}
+	if a, ok := c.codeRule[key]; ok && !class.IsValid() && !c.compat {
 		if ca, ok := c.codeAction[symAction{key.code, key.space}]; ok && comment != "" {
 			out.Actions[ca].Comments = append(out.Actions[ca].Comments, comment)
 		}
@@ -240,7 +240,10 @@ func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeA
 	}
 	a := len(out.RuleToken)
 	out.RuleToken = append(out.RuleToken, sym)
-	c.codeRule[key] = a
+	if !class.IsValid() {
+		// Never merge (class) rules, even if they seem identical.
+		c.codeRule[key] = a
+	}
 
 	if !cmd.IsValid() && !space.IsValid() {
 		return a
@@ -254,7 +257,10 @@ func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeA
 	} else {
 		act.Origin = space
 	}
-	c.codeAction[symAction{key.code, key.space}] = len(out.Actions)
+	if !class.IsValid() {
+		// Never merge (class) rules, even if they seem identical.
+		c.codeAction[symAction{key.code, key.space}] = len(out.Actions)
+	}
 	out.Actions = append(out.Actions, act)
 	return a
 }

@@ -96,7 +96,6 @@ type symAction struct {
 type symRule struct {
 	code  string
 	space bool
-	class bool
 	sym   int
 }
 
