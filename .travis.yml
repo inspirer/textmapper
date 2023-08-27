@@ -7,4 +7,4 @@ matrix:
       sudo: required
     - language: go
       go:
-        - tip
+        - 1.x
