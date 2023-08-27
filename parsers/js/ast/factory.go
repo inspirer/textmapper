@@ -502,10 +502,22 @@ func ToJsNode(n *Node) JsNode {
 		return &WithStmt{n}
 	case js.Yield:
 		return &Yield{n}
+	case js.MultiLineComment:
+		return &MultiLineComment{n}
+	case js.SingleLineComment:
+		return &SingleLineComment{n}
+	case js.InvalidToken:
+		return &InvalidToken{n}
+	case js.NoSubstitutionTemplate:
+		return &NoSubstitutionTemplate{n}
+	case js.TemplateHead:
+		return &TemplateHead{n}
+	case js.TemplateMiddle:
+		return &TemplateMiddle{n}
+	case js.TemplateTail:
+		return &TemplateTail{n}
 	case js.InsertedSemicolon:
 		return &InsertedSemicolon{n}
-	case js.MultiLineComment, js.SingleLineComment, js.InvalidToken, js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail:
-		return &Token{n}
 	case js.NoType:
 		return nilInstance
 	}

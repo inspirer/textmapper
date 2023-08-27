@@ -110,7 +110,10 @@ func (n Symref) TmNode() *Node               { return n.Node }
 func (n SymrefArgs) TmNode() *Node           { return n.Node }
 func (n SyntaxProblem) TmNode() *Node        { return n.Node }
 func (n TemplateParam) TmNode() *Node        { return n.Node }
-func (n Token) TmNode() *Node                { return n.Node }
+func (n InvalidToken) TmNode() *Node         { return n.Node }
+func (n MultilineComment) TmNode() *Node     { return n.Node }
+func (n Comment) TmNode() *Node              { return n.Node }
+func (n Templates) TmNode() *Node            { return n.Node }
 func (NilNode) TmNode() *Node                { return nil }
 
 type Annotation interface {
@@ -1392,4 +1395,20 @@ func (n TemplateParam) Name() Identifier {
 func (n TemplateParam) ParamValue() (ParamValue, bool) {
 	child := n.Child(selector.ParamValue)
 	return ToTmNode(child).(ParamValue), child.IsValid()
+}
+
+type InvalidToken struct {
+	*Node
+}
+
+type MultilineComment struct {
+	*Node
+}
+
+type Comment struct {
+	*Node
+}
+
+type Templates struct {
+	*Node
 }

@@ -188,8 +188,14 @@ func ToTmNode(n *Node) TmNode {
 		return &SyntaxProblem{n}
 	case tm.TemplateParam:
 		return &TemplateParam{n}
-	case tm.InvalidToken, tm.MultilineComment, tm.Comment, tm.Templates:
-		return &Token{n}
+	case tm.InvalidToken:
+		return &InvalidToken{n}
+	case tm.MultilineComment:
+		return &MultilineComment{n}
+	case tm.Comment:
+		return &Comment{n}
+	case tm.Templates:
+		return &Templates{n}
 	case tm.NoType:
 		return nilInstance
 	}

@@ -268,8 +268,14 @@ func (n VarStmt) JsNode() *Node                   { return n.Node }
 func (n WhileStmt) JsNode() *Node                 { return n.Node }
 func (n WithStmt) JsNode() *Node                  { return n.Node }
 func (n Yield) JsNode() *Node                     { return n.Node }
+func (n MultiLineComment) JsNode() *Node          { return n.Node }
+func (n SingleLineComment) JsNode() *Node         { return n.Node }
+func (n InvalidToken) JsNode() *Node              { return n.Node }
+func (n NoSubstitutionTemplate) JsNode() *Node    { return n.Node }
+func (n TemplateHead) JsNode() *Node              { return n.Node }
+func (n TemplateMiddle) JsNode() *Node            { return n.Node }
+func (n TemplateTail) JsNode() *Node              { return n.Node }
 func (n InsertedSemicolon) JsNode() *Node         { return n.Node }
-func (n Token) JsNode() *Node                     { return n.Node }
 func (NilNode) JsNode() *Node                     { return nil }
 
 type BindingPattern interface {
@@ -746,6 +752,18 @@ func (WhileStmt) stmtListItemNode()                 {}
 func (WithStmt) stmtListItemNode()                  {}
 func (NilNode) stmtListItemNode()                   {}
 
+type TokenSet interface {
+	JsNode
+	tokenSetNode()
+}
+
+// tokenSetNode() ensures that only the following types can be
+// assigned to TokenSet.
+func (NoSubstitutionTemplate) tokenSetNode() {}
+func (TemplateHead) tokenSetNode()           {}
+func (TemplateMiddle) tokenSetNode()         {}
+func (TemplateTail) tokenSetNode()           {}
+
 type TsAmbientElement interface {
 	JsNode
 	tsAmbientElementNode()
@@ -912,8 +930,10 @@ type ArrayPattern struct {
 	*Node
 }
 
+var selectorArrayPatternList = selector.OneOf(js.AdditiveExpr, js.ArrayLiteral, js.ArrowFunc, js.AssignmentExpr, js.AsyncArrowFunc, js.AsyncFuncExpr, js.AsyncGeneratorExpression, js.AwaitExpr, js.BitwiseAND, js.BitwiseOR, js.BitwiseXOR, js.CallExpr, js.ClassExpr, js.CoalesceExpr, js.CommaExpr, js.ConditionalExpr, js.ElementBinding, js.EqualityExpr, js.ExponentiationExpr, js.FuncExpr, js.GeneratorExpr, js.IdentExpr, js.InExpr, js.IndexAccess, js.InstanceOfExpr, js.JSXElement, js.JSXFragment, js.Literal, js.LogicalAND, js.LogicalOR, js.MultiplicativeExpr, js.NewExpr, js.NewTarget, js.NoElement, js.NotExpr, js.ObjectLiteral, js.OptionalCallExpr, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpr, js.ShiftExpr, js.SingleNameBinding, js.SpreadElement, js.SuperExpr, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.ThisExpr, js.TsAsConstExpr, js.TsAsExpr, js.TsCastExpr, js.TsDynamicImport, js.TsNonNull, js.TsSatisfiesExpr, js.UnaryExpr, js.Yield)
+
 func (n ArrayPattern) List() []JsNode {
-	nodes := n.Children(selector.OneOf(js.AdditiveExpr, js.ArrayLiteral, js.ArrowFunc, js.AssignmentExpr, js.AsyncArrowFunc, js.AsyncFuncExpr, js.AsyncGeneratorExpression, js.AwaitExpr, js.BitwiseAND, js.BitwiseOR, js.BitwiseXOR, js.CallExpr, js.ClassExpr, js.CoalesceExpr, js.CommaExpr, js.ConditionalExpr, js.ElementBinding, js.EqualityExpr, js.ExponentiationExpr, js.FuncExpr, js.GeneratorExpr, js.IdentExpr, js.InExpr, js.IndexAccess, js.InstanceOfExpr, js.JSXElement, js.JSXFragment, js.Literal, js.LogicalAND, js.LogicalOR, js.MultiplicativeExpr, js.NewExpr, js.NewTarget, js.NoElement, js.NotExpr, js.ObjectLiteral, js.OptionalCallExpr, js.OptionalIndexAccess, js.OptionalPropertyAccess, js.OptionalTaggedTemplate, js.Parenthesized, js.PostDec, js.PostInc, js.PreDec, js.PreInc, js.PropertyAccess, js.Regexp, js.RelationalExpr, js.ShiftExpr, js.SingleNameBinding, js.SpreadElement, js.SuperExpr, js.SyntaxProblem, js.TaggedTemplate, js.TemplateLiteral, js.ThisExpr, js.TsAsConstExpr, js.TsAsExpr, js.TsCastExpr, js.TsDynamicImport, js.TsNonNull, js.TsSatisfiesExpr, js.UnaryExpr, js.Yield))
+	nodes := n.Children(selectorArrayPatternList)
 	var ret = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
 		ret = append(ret, ToJsNode(node).(JsNode))
@@ -3216,11 +3236,13 @@ type TemplateLiteral struct {
 	*Node
 }
 
-func (n TemplateLiteral) Template() []Token {
-	nodes := n.Children(selector.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail))
-	var ret = make([]Token, 0, len(nodes))
+var selectorTemplateLiteralTemplate = selector.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail)
+
+func (n TemplateLiteral) Template() []JsNode {
+	nodes := n.Children(selectorTemplateLiteralTemplate)
+	var ret = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(Token))
+		ret = append(ret, ToJsNode(node).(JsNode))
 	}
 	return ret
 }
@@ -4229,11 +4251,13 @@ type TsTemplateLiteralType struct {
 	*Node
 }
 
-func (n TsTemplateLiteralType) Template() []Token {
-	nodes := n.Children(selector.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail))
-	var ret = make([]Token, 0, len(nodes))
+var selectorTsTemplateLiteralTypeTemplate = selector.OneOf(js.NoSubstitutionTemplate, js.TemplateHead, js.TemplateMiddle, js.TemplateTail)
+
+func (n TsTemplateLiteralType) Template() []JsNode {
+	nodes := n.Children(selectorTsTemplateLiteralTypeTemplate)
+	var ret = make([]JsNode, 0, len(nodes))
 	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(Token))
+		ret = append(ret, ToJsNode(node).(JsNode))
 	}
 	return ret
 }
@@ -4543,6 +4567,34 @@ type Yield struct {
 func (n Yield) Expr() (Expr, bool) {
 	child := n.Child(selector.Expr)
 	return ToJsNode(child).(Expr), child.IsValid()
+}
+
+type MultiLineComment struct {
+	*Node
+}
+
+type SingleLineComment struct {
+	*Node
+}
+
+type InvalidToken struct {
+	*Node
+}
+
+type NoSubstitutionTemplate struct {
+	*Node
+}
+
+type TemplateHead struct {
+	*Node
+}
+
+type TemplateMiddle struct {
+	*Node
+}
+
+type TemplateTail struct {
+	*Node
 }
 
 type InsertedSemicolon struct {

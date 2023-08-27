@@ -38,7 +38,7 @@ const (
 	Identifier
 	Import              // alias=Identifier? path=StringLiteral
 	InclusiveStartConds // states=(LexerState)+
-	InlineParameter     // param_type=Identifier name=Identifier ParamValue?
+	InlineParameter     // paramType=Identifier name=Identifier ParamValue?
 	Inputref            // reference=Symref NoEoi?
 	IntegerLiteral
 	Lexeme // StartConditions? name=Identifier RawType? ReportClause? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
@@ -46,7 +46,7 @@ const (
 	LexemeAttrs        // LexemeAttribute
 	LexerSection       // (LexerPart)+
 	LexerState         // name=Identifier
-	ListSeparator      // separator_=(Symref)+
+	ListSeparator      // separator=(Symref)+
 	LookaheadPredicate // Not? Symref
 	Name
 	NamedPattern // name=Identifier Pattern
@@ -98,7 +98,7 @@ const (
 	Stateref             // name=Identifier
 	StringLiteral
 	Symref     // name=Identifier args=SymrefArgs?
-	SymrefArgs // arg_list=(Argument)*
+	SymrefArgs // argList=(Argument)*
 	SyntaxProblem
 	TemplateParam // modifier=ParamModifier? ParamType name=Identifier ParamValue?
 	InvalidToken
