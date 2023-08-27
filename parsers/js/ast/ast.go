@@ -868,11 +868,13 @@ type AdditiveExpr struct {
 }
 
 func (n AdditiveExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n AdditiveExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Arguments struct {
@@ -880,8 +882,8 @@ type Arguments struct {
 }
 
 func (n Arguments) TsTypeArguments() (TsTypeArguments, bool) {
-	field := TsTypeArguments{n.Child(selector.TsTypeArguments)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeArguments)
+	return TsTypeArguments{child}, child.IsValid()
 }
 
 func (n Arguments) List() []Expr {
@@ -920,8 +922,8 @@ func (n ArrayPattern) List() []JsNode {
 }
 
 func (n ArrayPattern) BindingRestElement() (BindingRestElement, bool) {
-	field := BindingRestElement{n.Child(selector.BindingRestElement)}
-	return field, field.IsValid()
+	child := n.Child(selector.BindingRestElement)
+	return BindingRestElement{child}, child.IsValid()
 }
 
 type ArrowFunc struct {
@@ -929,38 +931,38 @@ type ArrowFunc struct {
 }
 
 func (n ArrowFunc) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n ArrowFunc) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n ArrowFunc) Parameters() (Parameters, bool) {
-	field := Parameters{n.Child(selector.Parameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.Parameters)
+	return Parameters{child}, child.IsValid()
 }
 
 func (n ArrowFunc) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n ArrowFunc) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 func (n ArrowFunc) ConciseBody() (ConciseBody, bool) {
-	field := ConciseBody{n.Child(selector.ConciseBody)}
-	return field, field.IsValid()
+	child := n.Child(selector.ConciseBody)
+	return ConciseBody{child}, child.IsValid()
 }
 
 func (n ArrowFunc) SyntaxProblem() (SyntaxProblem, bool) {
-	field := SyntaxProblem{n.Child(selector.SyntaxProblem)}
-	return field, field.IsValid()
+	child := n.Child(selector.SyntaxProblem)
+	return SyntaxProblem{child}, child.IsValid()
 }
 
 type AssertClause struct {
@@ -981,7 +983,8 @@ type AssertEntry struct {
 }
 
 func (n AssertEntry) AssertionKey() AssertionKey {
-	return AssertionKey{n.Child(selector.AssertionKey)}
+	child := n.Child(selector.AssertionKey)
+	return AssertionKey{child}
 }
 
 type AssertionKey struct {
@@ -993,16 +996,18 @@ type AssignmentExpr struct {
 }
 
 func (n AssignmentExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n AssignmentExpr) AssignmentOperator() (AssignmentOperator, bool) {
-	field := AssignmentOperator{n.Child(selector.AssignmentOperator)}
-	return field, field.IsValid()
+	child := n.Child(selector.AssignmentOperator)
+	return AssignmentOperator{child}, child.IsValid()
 }
 
 func (n AssignmentExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type AssignmentOperator struct {
@@ -1014,33 +1019,33 @@ type AsyncArrowFunc struct {
 }
 
 func (n AsyncArrowFunc) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n AsyncArrowFunc) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n AsyncArrowFunc) Parameters() (Parameters, bool) {
-	field := Parameters{n.Child(selector.Parameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.Parameters)
+	return Parameters{child}, child.IsValid()
 }
 
 func (n AsyncArrowFunc) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n AsyncArrowFunc) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 func (n AsyncArrowFunc) ConciseBody() (ConciseBody, bool) {
-	field := ConciseBody{n.Child(selector.ConciseBody)}
-	return field, field.IsValid()
+	child := n.Child(selector.ConciseBody)
+	return ConciseBody{child}, child.IsValid()
 }
 
 type AsyncFunc struct {
@@ -1048,27 +1053,28 @@ type AsyncFunc struct {
 }
 
 func (n AsyncFunc) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n AsyncFunc) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n AsyncFunc) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n AsyncFunc) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n AsyncFunc) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type AsyncFuncExpr struct {
@@ -1076,27 +1082,28 @@ type AsyncFuncExpr struct {
 }
 
 func (n AsyncFuncExpr) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n AsyncFuncExpr) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n AsyncFuncExpr) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n AsyncFuncExpr) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n AsyncFuncExpr) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type AsyncGeneratorDeclaration struct {
@@ -1104,27 +1111,28 @@ type AsyncGeneratorDeclaration struct {
 }
 
 func (n AsyncGeneratorDeclaration) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorDeclaration) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorDeclaration) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n AsyncGeneratorDeclaration) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorDeclaration) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type AsyncGeneratorExpression struct {
@@ -1132,27 +1140,28 @@ type AsyncGeneratorExpression struct {
 }
 
 func (n AsyncGeneratorExpression) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorExpression) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorExpression) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n AsyncGeneratorExpression) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorExpression) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type AsyncGeneratorMethod struct {
@@ -1160,26 +1169,28 @@ type AsyncGeneratorMethod struct {
 }
 
 func (n AsyncGeneratorMethod) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n AsyncGeneratorMethod) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorMethod) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n AsyncGeneratorMethod) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n AsyncGeneratorMethod) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type AsyncMethod struct {
@@ -1187,26 +1198,28 @@ type AsyncMethod struct {
 }
 
 func (n AsyncMethod) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n AsyncMethod) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n AsyncMethod) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n AsyncMethod) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n AsyncMethod) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type Await struct {
@@ -1218,7 +1231,8 @@ type AwaitExpr struct {
 }
 
 func (n AwaitExpr) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type BindingRestElement struct {
@@ -1226,7 +1240,8 @@ type BindingRestElement struct {
 }
 
 func (n BindingRestElement) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 type BitwiseAND struct {
@@ -1234,11 +1249,13 @@ type BitwiseAND struct {
 }
 
 func (n BitwiseAND) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n BitwiseAND) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type BitwiseOR struct {
@@ -1246,11 +1263,13 @@ type BitwiseOR struct {
 }
 
 func (n BitwiseOR) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n BitwiseOR) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type BitwiseXOR struct {
@@ -1258,11 +1277,13 @@ type BitwiseXOR struct {
 }
 
 func (n BitwiseXOR) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n BitwiseXOR) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Block struct {
@@ -1305,8 +1326,8 @@ type BreakStmt struct {
 }
 
 func (n BreakStmt) LabelIdent() (LabelIdent, bool) {
-	field := LabelIdent{n.Child(selector.LabelIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.LabelIdent)
+	return LabelIdent{child}, child.IsValid()
 }
 
 type CallExpr struct {
@@ -1314,11 +1335,13 @@ type CallExpr struct {
 }
 
 func (n CallExpr) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n CallExpr) Arguments() Arguments {
-	return Arguments{n.Child(selector.Arguments)}
+	child := n.Child(selector.Arguments)
+	return Arguments{child}
 }
 
 type Case struct {
@@ -1326,7 +1349,8 @@ type Case struct {
 }
 
 func (n Case) Cond() Cond {
-	return Cond{n.Child(selector.Cond)}
+	child := n.Child(selector.Cond)
+	return Cond{child}
 }
 
 func (n Case) StmtListItem() []StmtListItem {
@@ -1343,22 +1367,23 @@ type Catch struct {
 }
 
 func (n Catch) BindingPattern() (BindingPattern, bool) {
-	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.BindingPattern)
+	return ToJsNode(child).(BindingPattern), child.IsValid()
 }
 
 func (n Catch) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n Catch) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n Catch) Block() Block {
-	return Block{n.Child(selector.Block)}
+	child := n.Child(selector.Block)
+	return Block{child}
 }
 
 type Class struct {
@@ -1375,27 +1400,28 @@ func (n Class) Modifier() []Modifier {
 }
 
 func (n Class) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n Class) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n Class) Extends() (Extends, bool) {
-	field := Extends{n.Child(selector.Extends)}
-	return field, field.IsValid()
+	child := n.Child(selector.Extends)
+	return Extends{child}, child.IsValid()
 }
 
 func (n Class) TsImplementsClause() (TsImplementsClause, bool) {
-	field := TsImplementsClause{n.Child(selector.TsImplementsClause)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsImplementsClause)
+	return TsImplementsClause{child}, child.IsValid()
 }
 
 func (n Class) ClassBody() ClassBody {
-	return ClassBody{n.Child(selector.ClassBody)}
+	child := n.Child(selector.ClassBody)
+	return ClassBody{child}
 }
 
 type ClassBody struct {
@@ -1425,27 +1451,28 @@ func (n ClassExpr) Modifier() []Modifier {
 }
 
 func (n ClassExpr) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n ClassExpr) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n ClassExpr) Extends() (Extends, bool) {
-	field := Extends{n.Child(selector.Extends)}
-	return field, field.IsValid()
+	child := n.Child(selector.Extends)
+	return Extends{child}, child.IsValid()
 }
 
 func (n ClassExpr) TsImplementsClause() (TsImplementsClause, bool) {
-	field := TsImplementsClause{n.Child(selector.TsImplementsClause)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsImplementsClause)
+	return TsImplementsClause{child}, child.IsValid()
 }
 
 func (n ClassExpr) ClassBody() ClassBody {
-	return ClassBody{n.Child(selector.ClassBody)}
+	child := n.Child(selector.ClassBody)
+	return ClassBody{child}
 }
 
 type CoalesceExpr struct {
@@ -1453,11 +1480,13 @@ type CoalesceExpr struct {
 }
 
 func (n CoalesceExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n CoalesceExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type CommaExpr struct {
@@ -1465,11 +1494,13 @@ type CommaExpr struct {
 }
 
 func (n CommaExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n CommaExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ComputedPropertyName struct {
@@ -1477,7 +1508,8 @@ type ComputedPropertyName struct {
 }
 
 func (n ComputedPropertyName) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ConciseBody struct {
@@ -1485,7 +1517,8 @@ type ConciseBody struct {
 }
 
 func (n ConciseBody) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Cond struct {
@@ -1493,7 +1526,8 @@ type Cond struct {
 }
 
 func (n Cond) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ConditionalExpr struct {
@@ -1501,15 +1535,18 @@ type ConditionalExpr struct {
 }
 
 func (n ConditionalExpr) Cond() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ConditionalExpr) Then() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ConditionalExpr) Else() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ContinueStmt struct {
@@ -1517,8 +1554,8 @@ type ContinueStmt struct {
 }
 
 func (n ContinueStmt) LabelIdent() (LabelIdent, bool) {
-	field := LabelIdent{n.Child(selector.LabelIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.LabelIdent)
+	return LabelIdent{child}, child.IsValid()
 }
 
 type DebuggerStmt struct {
@@ -1543,7 +1580,8 @@ func (n DecoratorCall) ReferenceIdent() []ReferenceIdent {
 }
 
 func (n DecoratorCall) Arguments() Arguments {
-	return Arguments{n.Child(selector.Arguments)}
+	child := n.Child(selector.Arguments)
+	return Arguments{child}
 }
 
 type DecoratorExpr struct {
@@ -1586,28 +1624,28 @@ func (n DefaultParameter) Modifier() []Modifier {
 }
 
 func (n DefaultParameter) BindingPattern() (BindingPattern, bool) {
-	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.BindingPattern)
+	return ToJsNode(child).(BindingPattern), child.IsValid()
 }
 
 func (n DefaultParameter) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n DefaultParameter) TsOptional() (TsOptional, bool) {
-	field := TsOptional{n.Child(selector.TsOptional)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsOptional)
+	return TsOptional{child}, child.IsValid()
 }
 
 func (n DefaultParameter) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n DefaultParameter) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type DoWhileStmt struct {
@@ -1615,11 +1653,13 @@ type DoWhileStmt struct {
 }
 
 func (n DoWhileStmt) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 func (n DoWhileStmt) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ElementBinding struct {
@@ -1627,12 +1667,13 @@ type ElementBinding struct {
 }
 
 func (n ElementBinding) BindingPattern() BindingPattern {
-	return ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
+	child := n.Child(selector.BindingPattern)
+	return ToJsNode(child).(BindingPattern)
 }
 
 func (n ElementBinding) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type EmptyDecl struct {
@@ -1648,11 +1689,13 @@ type EqualityExpr struct {
 }
 
 func (n EqualityExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n EqualityExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ExponentiationExpr struct {
@@ -1660,11 +1703,13 @@ type ExponentiationExpr struct {
 }
 
 func (n ExponentiationExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ExponentiationExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ExportClause struct {
@@ -1694,38 +1739,38 @@ func (n ExportDecl) Modifier() []Modifier {
 }
 
 func (n ExportDecl) TsTypeOnly() (TsTypeOnly, bool) {
-	field := TsTypeOnly{n.Child(selector.TsTypeOnly)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeOnly)
+	return TsTypeOnly{child}, child.IsValid()
 }
 
 func (n ExportDecl) VarStmt() (VarStmt, bool) {
-	field := VarStmt{n.Child(selector.VarStmt)}
-	return field, field.IsValid()
+	child := n.Child(selector.VarStmt)
+	return VarStmt{child}, child.IsValid()
 }
 
 func (n ExportDecl) Decl() (Decl, bool) {
-	field := ToJsNode(n.Child(selector.Decl)).(Decl)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Decl)
+	return ToJsNode(child).(Decl), child.IsValid()
 }
 
 func (n ExportDecl) ExportClause() (ExportClause, bool) {
-	field := ExportClause{n.Child(selector.ExportClause)}
-	return field, field.IsValid()
+	child := n.Child(selector.ExportClause)
+	return ExportClause{child}, child.IsValid()
 }
 
 func (n ExportDecl) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n ExportDecl) ModuleSpec() (ModuleSpec, bool) {
-	field := ModuleSpec{n.Child(selector.ModuleSpec)}
-	return field, field.IsValid()
+	child := n.Child(selector.ModuleSpec)
+	return ModuleSpec{child}, child.IsValid()
 }
 
 func (n ExportDecl) AssertClause() (AssertClause, bool) {
-	field := AssertClause{n.Child(selector.AssertClause)}
-	return field, field.IsValid()
+	child := n.Child(selector.AssertClause)
+	return AssertClause{child}, child.IsValid()
 }
 
 type ExportDefault struct {
@@ -1733,8 +1778,8 @@ type ExportDefault struct {
 }
 
 func (n ExportDefault) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 func (n ExportDefault) Modifier() []Modifier {
@@ -1747,8 +1792,8 @@ func (n ExportDefault) Modifier() []Modifier {
 }
 
 func (n ExportDefault) Decl() (Decl, bool) {
-	field := ToJsNode(n.Child(selector.Decl)).(Decl)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Decl)
+	return ToJsNode(child).(Decl), child.IsValid()
 }
 
 type ExportSpec struct {
@@ -1756,12 +1801,13 @@ type ExportSpec struct {
 }
 
 func (n ExportSpec) ReferenceIdent() (ReferenceIdent, bool) {
-	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}, child.IsValid()
 }
 
 func (n ExportSpec) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 type ExprStmt struct {
@@ -1769,7 +1815,8 @@ type ExprStmt struct {
 }
 
 func (n ExprStmt) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Extends struct {
@@ -1777,13 +1824,13 @@ type Extends struct {
 }
 
 func (n Extends) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 func (n Extends) TsTypeReference() (TsTypeReference, bool) {
-	field := TsTypeReference{n.Child(selector.TsTypeReference)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeReference)
+	return TsTypeReference{child}, child.IsValid()
 }
 
 type Finally struct {
@@ -1791,7 +1838,8 @@ type Finally struct {
 }
 
 func (n Finally) Block() Block {
-	return Block{n.Child(selector.Block)}
+	child := n.Child(selector.Block)
+	return Block{child}
 }
 
 type ForBinding struct {
@@ -1799,13 +1847,13 @@ type ForBinding struct {
 }
 
 func (n ForBinding) BindingPattern() (BindingPattern, bool) {
-	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.BindingPattern)
+	return ToJsNode(child).(BindingPattern), child.IsValid()
 }
 
 func (n ForBinding) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 type ForCondition struct {
@@ -1813,8 +1861,8 @@ type ForCondition struct {
 }
 
 func (n ForCondition) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 type ForFinalExpr struct {
@@ -1822,8 +1870,8 @@ type ForFinalExpr struct {
 }
 
 func (n ForFinalExpr) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 type ForInStmt struct {
@@ -1831,15 +1879,18 @@ type ForInStmt struct {
 }
 
 func (n ForInStmt) Var() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ForInStmt) Object() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ForInStmt) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type ForInStmtWithVar struct {
@@ -1847,25 +1898,28 @@ type ForInStmtWithVar struct {
 }
 
 func (n ForInStmtWithVar) LetOrConst() (LetOrConst, bool) {
-	field := LetOrConst{n.Child(selector.LetOrConst)}
-	return field, field.IsValid()
+	child := n.Child(selector.LetOrConst)
+	return LetOrConst{child}, child.IsValid()
 }
 
 func (n ForInStmtWithVar) Var() (Var, bool) {
-	field := Var{n.Child(selector.Var)}
-	return field, field.IsValid()
+	child := n.Child(selector.Var)
+	return Var{child}, child.IsValid()
 }
 
 func (n ForInStmtWithVar) ForBinding() ForBinding {
-	return ForBinding{n.Child(selector.ForBinding)}
+	child := n.Child(selector.ForBinding)
+	return ForBinding{child}
 }
 
 func (n ForInStmtWithVar) Object() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ForInStmtWithVar) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type ForOfStmt struct {
@@ -1873,20 +1927,23 @@ type ForOfStmt struct {
 }
 
 func (n ForOfStmt) Await() (Await, bool) {
-	field := Await{n.Child(selector.Await)}
-	return field, field.IsValid()
+	child := n.Child(selector.Await)
+	return Await{child}, child.IsValid()
 }
 
 func (n ForOfStmt) Var() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ForOfStmt) Iterable() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ForOfStmt) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type ForOfStmtWithVar struct {
@@ -1894,30 +1951,33 @@ type ForOfStmtWithVar struct {
 }
 
 func (n ForOfStmtWithVar) Await() (Await, bool) {
-	field := Await{n.Child(selector.Await)}
-	return field, field.IsValid()
+	child := n.Child(selector.Await)
+	return Await{child}, child.IsValid()
 }
 
 func (n ForOfStmtWithVar) LetOrConst() (LetOrConst, bool) {
-	field := LetOrConst{n.Child(selector.LetOrConst)}
-	return field, field.IsValid()
+	child := n.Child(selector.LetOrConst)
+	return LetOrConst{child}, child.IsValid()
 }
 
 func (n ForOfStmtWithVar) Var() (Var, bool) {
-	field := Var{n.Child(selector.Var)}
-	return field, field.IsValid()
+	child := n.Child(selector.Var)
+	return Var{child}, child.IsValid()
 }
 
 func (n ForOfStmtWithVar) ForBinding() ForBinding {
-	return ForBinding{n.Child(selector.ForBinding)}
+	child := n.Child(selector.ForBinding)
+	return ForBinding{child}
 }
 
 func (n ForOfStmtWithVar) Iterable() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ForOfStmtWithVar) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type ForStmt struct {
@@ -1925,20 +1985,23 @@ type ForStmt struct {
 }
 
 func (n ForStmt) Var() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 func (n ForStmt) ForCondition() ForCondition {
-	return ForCondition{n.Child(selector.ForCondition)}
+	child := n.Child(selector.ForCondition)
+	return ForCondition{child}
 }
 
 func (n ForStmt) ForFinalExpr() ForFinalExpr {
-	return ForFinalExpr{n.Child(selector.ForFinalExpr)}
+	child := n.Child(selector.ForFinalExpr)
+	return ForFinalExpr{child}
 }
 
 func (n ForStmt) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type ForStmtWithVar struct {
@@ -1946,13 +2009,13 @@ type ForStmtWithVar struct {
 }
 
 func (n ForStmtWithVar) LetOrConst() (LetOrConst, bool) {
-	field := LetOrConst{n.Child(selector.LetOrConst)}
-	return field, field.IsValid()
+	child := n.Child(selector.LetOrConst)
+	return LetOrConst{child}, child.IsValid()
 }
 
 func (n ForStmtWithVar) Var() (Var, bool) {
-	field := Var{n.Child(selector.Var)}
-	return field, field.IsValid()
+	child := n.Child(selector.Var)
+	return Var{child}, child.IsValid()
 }
 
 func (n ForStmtWithVar) LexicalBinding() []LexicalBinding {
@@ -1974,15 +2037,18 @@ func (n ForStmtWithVar) VarDecl() []VarDecl {
 }
 
 func (n ForStmtWithVar) ForCondition() ForCondition {
-	return ForCondition{n.Child(selector.ForCondition)}
+	child := n.Child(selector.ForCondition)
+	return ForCondition{child}
 }
 
 func (n ForStmtWithVar) ForFinalExpr() ForFinalExpr {
-	return ForFinalExpr{n.Child(selector.ForFinalExpr)}
+	child := n.Child(selector.ForFinalExpr)
+	return ForFinalExpr{child}
 }
 
 func (n ForStmtWithVar) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type Func struct {
@@ -1990,27 +2056,28 @@ type Func struct {
 }
 
 func (n Func) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n Func) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n Func) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n Func) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n Func) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type FuncExpr struct {
@@ -2018,27 +2085,28 @@ type FuncExpr struct {
 }
 
 func (n FuncExpr) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n FuncExpr) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n FuncExpr) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n FuncExpr) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n FuncExpr) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type Generator struct {
@@ -2046,27 +2114,28 @@ type Generator struct {
 }
 
 func (n Generator) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n Generator) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n Generator) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n Generator) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n Generator) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type GeneratorExpr struct {
@@ -2074,27 +2143,28 @@ type GeneratorExpr struct {
 }
 
 func (n GeneratorExpr) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n GeneratorExpr) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n GeneratorExpr) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n GeneratorExpr) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n GeneratorExpr) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type GeneratorMethod struct {
@@ -2102,26 +2172,28 @@ type GeneratorMethod struct {
 }
 
 func (n GeneratorMethod) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n GeneratorMethod) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n GeneratorMethod) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n GeneratorMethod) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n GeneratorMethod) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type Getter struct {
@@ -2138,17 +2210,18 @@ func (n Getter) Modifier() []Modifier {
 }
 
 func (n Getter) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n Getter) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n Getter) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type IdentExpr struct {
@@ -2156,7 +2229,8 @@ type IdentExpr struct {
 }
 
 func (n IdentExpr) ReferenceIdent() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}
 }
 
 type IfStmt struct {
@@ -2164,16 +2238,18 @@ type IfStmt struct {
 }
 
 func (n IfStmt) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n IfStmt) Then() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 func (n IfStmt) Else() (Stmt, bool) {
-	field := ToJsNode(n.Child(selector.Stmt).Next(selector.Stmt)).(Stmt)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Stmt).Next(selector.Stmt)
+	return ToJsNode(child).(Stmt), child.IsValid()
 }
 
 type ImportDecl struct {
@@ -2181,32 +2257,33 @@ type ImportDecl struct {
 }
 
 func (n ImportDecl) TsTypeOnly() (TsTypeOnly, bool) {
-	field := TsTypeOnly{n.Child(selector.TsTypeOnly)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeOnly)
+	return TsTypeOnly{child}, child.IsValid()
 }
 
 func (n ImportDecl) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n ImportDecl) NameSpaceImport() (NameSpaceImport, bool) {
-	field := NameSpaceImport{n.Child(selector.NameSpaceImport)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameSpaceImport)
+	return NameSpaceImport{child}, child.IsValid()
 }
 
 func (n ImportDecl) NamedImports() (NamedImports, bool) {
-	field := NamedImports{n.Child(selector.NamedImports)}
-	return field, field.IsValid()
+	child := n.Child(selector.NamedImports)
+	return NamedImports{child}, child.IsValid()
 }
 
 func (n ImportDecl) ModuleSpec() ModuleSpec {
-	return ModuleSpec{n.Child(selector.ModuleSpec)}
+	child := n.Child(selector.ModuleSpec)
+	return ModuleSpec{child}
 }
 
 func (n ImportDecl) AssertClause() (AssertClause, bool) {
-	field := AssertClause{n.Child(selector.AssertClause)}
-	return field, field.IsValid()
+	child := n.Child(selector.AssertClause)
+	return AssertClause{child}, child.IsValid()
 }
 
 type ImportSpec struct {
@@ -2214,12 +2291,13 @@ type ImportSpec struct {
 }
 
 func (n ImportSpec) ReferenceIdent() (ReferenceIdent, bool) {
-	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}, child.IsValid()
 }
 
 func (n ImportSpec) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 type InExpr struct {
@@ -2227,11 +2305,13 @@ type InExpr struct {
 }
 
 func (n InExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n InExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type IndexAccess struct {
@@ -2239,11 +2319,13 @@ type IndexAccess struct {
 }
 
 func (n IndexAccess) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n IndexAccess) Index() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Initializer struct {
@@ -2251,7 +2333,8 @@ type Initializer struct {
 }
 
 func (n Initializer) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type InstanceOfExpr struct {
@@ -2259,11 +2342,13 @@ type InstanceOfExpr struct {
 }
 
 func (n InstanceOfExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n InstanceOfExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type JSXAttributeName struct {
@@ -2275,7 +2360,8 @@ type JSXClosingElement struct {
 }
 
 func (n JSXClosingElement) JSXElementName() JSXElementName {
-	return JSXElementName{n.Child(selector.JSXElementName)}
+	child := n.Child(selector.JSXElementName)
+	return JSXElementName{child}
 }
 
 type JSXElement struct {
@@ -2283,13 +2369,13 @@ type JSXElement struct {
 }
 
 func (n JSXElement) JSXOpeningElement() (JSXOpeningElement, bool) {
-	field := JSXOpeningElement{n.Child(selector.JSXOpeningElement)}
-	return field, field.IsValid()
+	child := n.Child(selector.JSXOpeningElement)
+	return JSXOpeningElement{child}, child.IsValid()
 }
 
 func (n JSXElement) JSXSelfClosingElement() (JSXSelfClosingElement, bool) {
-	field := JSXSelfClosingElement{n.Child(selector.JSXSelfClosingElement)}
-	return field, field.IsValid()
+	child := n.Child(selector.JSXSelfClosingElement)
+	return JSXSelfClosingElement{child}, child.IsValid()
 }
 
 func (n JSXElement) JSXChild() []JSXChild {
@@ -2302,8 +2388,8 @@ func (n JSXElement) JSXChild() []JSXChild {
 }
 
 func (n JSXElement) JSXClosingElement() (JSXClosingElement, bool) {
-	field := JSXClosingElement{n.Child(selector.JSXClosingElement)}
-	return field, field.IsValid()
+	child := n.Child(selector.JSXClosingElement)
+	return JSXClosingElement{child}, child.IsValid()
 }
 
 type JSXElementName struct {
@@ -2315,8 +2401,8 @@ type JSXExpr struct {
 }
 
 func (n JSXExpr) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 type JSXFragment struct {
@@ -2341,12 +2427,13 @@ type JSXNormalAttribute struct {
 }
 
 func (n JSXNormalAttribute) JSXAttributeName() JSXAttributeName {
-	return JSXAttributeName{n.Child(selector.JSXAttributeName)}
+	child := n.Child(selector.JSXAttributeName)
+	return JSXAttributeName{child}
 }
 
 func (n JSXNormalAttribute) JSXAttributeValue() (JSXAttributeValue, bool) {
-	field := ToJsNode(n.Child(selector.JSXAttributeValue)).(JSXAttributeValue)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.JSXAttributeValue)
+	return ToJsNode(child).(JSXAttributeValue), child.IsValid()
 }
 
 type JSXOpeningElement struct {
@@ -2354,12 +2441,13 @@ type JSXOpeningElement struct {
 }
 
 func (n JSXOpeningElement) JSXElementName() JSXElementName {
-	return JSXElementName{n.Child(selector.JSXElementName)}
+	child := n.Child(selector.JSXElementName)
+	return JSXElementName{child}
 }
 
 func (n JSXOpeningElement) TsTypeArguments() (TsTypeArguments, bool) {
-	field := TsTypeArguments{n.Child(selector.TsTypeArguments)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeArguments)
+	return TsTypeArguments{child}, child.IsValid()
 }
 
 func (n JSXOpeningElement) JSXAttribute() []JSXAttribute {
@@ -2376,12 +2464,13 @@ type JSXSelfClosingElement struct {
 }
 
 func (n JSXSelfClosingElement) JSXElementName() JSXElementName {
-	return JSXElementName{n.Child(selector.JSXElementName)}
+	child := n.Child(selector.JSXElementName)
+	return JSXElementName{child}
 }
 
 func (n JSXSelfClosingElement) TsTypeArguments() (TsTypeArguments, bool) {
-	field := TsTypeArguments{n.Child(selector.TsTypeArguments)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeArguments)
+	return TsTypeArguments{child}, child.IsValid()
 }
 
 func (n JSXSelfClosingElement) JSXAttribute() []JSXAttribute {
@@ -2398,7 +2487,8 @@ type JSXSpreadAttribute struct {
 }
 
 func (n JSXSpreadAttribute) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type JSXSpreadExpr struct {
@@ -2406,8 +2496,8 @@ type JSXSpreadExpr struct {
 }
 
 func (n JSXSpreadExpr) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 type JSXText struct {
@@ -2423,17 +2513,18 @@ type LabelledStmt struct {
 }
 
 func (n LabelledStmt) LabelIdent() LabelIdent {
-	return LabelIdent{n.Child(selector.LabelIdent)}
+	child := n.Child(selector.LabelIdent)
+	return LabelIdent{child}
 }
 
 func (n LabelledStmt) Func() (Func, bool) {
-	field := Func{n.Child(selector.Func)}
-	return field, field.IsValid()
+	child := n.Child(selector.Func)
+	return Func{child}, child.IsValid()
 }
 
 func (n LabelledStmt) Stmt() (Stmt, bool) {
-	field := ToJsNode(n.Child(selector.Stmt)).(Stmt)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt), child.IsValid()
 }
 
 type LetOrConst struct {
@@ -2445,28 +2536,28 @@ type LexicalBinding struct {
 }
 
 func (n LexicalBinding) BindingPattern() (BindingPattern, bool) {
-	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.BindingPattern)
+	return ToJsNode(child).(BindingPattern), child.IsValid()
 }
 
 func (n LexicalBinding) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n LexicalBinding) TsExclToken() (TsExclToken, bool) {
-	field := TsExclToken{n.Child(selector.TsExclToken)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsExclToken)
+	return TsExclToken{child}, child.IsValid()
 }
 
 func (n LexicalBinding) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n LexicalBinding) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type LexicalDecl struct {
@@ -2474,7 +2565,8 @@ type LexicalDecl struct {
 }
 
 func (n LexicalDecl) LetOrConst() LetOrConst {
-	return LetOrConst{n.Child(selector.LetOrConst)}
+	child := n.Child(selector.LetOrConst)
+	return LetOrConst{child}
 }
 
 func (n LexicalDecl) LexicalBinding() []LexicalBinding {
@@ -2495,13 +2587,13 @@ type LiteralPropertyName struct {
 }
 
 func (n LiteralPropertyName) Literal() (Literal, bool) {
-	field := Literal{n.Child(selector.Literal)}
-	return field, field.IsValid()
+	child := n.Child(selector.Literal)
+	return Literal{child}, child.IsValid()
 }
 
 func (n LiteralPropertyName) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 type LogicalAND struct {
@@ -2509,11 +2601,13 @@ type LogicalAND struct {
 }
 
 func (n LogicalAND) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n LogicalAND) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type LogicalOR struct {
@@ -2521,11 +2615,13 @@ type LogicalOR struct {
 }
 
 func (n LogicalOR) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n LogicalOR) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type MemberMethod struct {
@@ -2542,7 +2638,8 @@ func (n MemberMethod) Modifier() []Modifier {
 }
 
 func (n MemberMethod) MethodDefinition() MethodDefinition {
-	return ToJsNode(n.Child(selector.MethodDefinition)).(MethodDefinition)
+	child := n.Child(selector.MethodDefinition)
+	return ToJsNode(child).(MethodDefinition)
 }
 
 type MemberVar struct {
@@ -2559,17 +2656,18 @@ func (n MemberVar) Modifier() []Modifier {
 }
 
 func (n MemberVar) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n MemberVar) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n MemberVar) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type Method struct {
@@ -2577,26 +2675,28 @@ type Method struct {
 }
 
 func (n Method) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n Method) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n Method) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n Method) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n Method) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type Module struct {
@@ -2621,11 +2721,13 @@ type MultiplicativeExpr struct {
 }
 
 func (n MultiplicativeExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n MultiplicativeExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type NameIdent struct {
@@ -2633,8 +2735,8 @@ type NameIdent struct {
 }
 
 func (n NameIdent) ReferenceIdent() (ReferenceIdent, bool) {
-	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}, child.IsValid()
 }
 
 type NameSpaceImport struct {
@@ -2642,7 +2744,8 @@ type NameSpaceImport struct {
 }
 
 func (n NameSpaceImport) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 type NamedImports struct {
@@ -2663,7 +2766,8 @@ type NamedTupleMember struct {
 }
 
 func (n NamedTupleMember) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type NewExpr struct {
@@ -2671,12 +2775,13 @@ type NewExpr struct {
 }
 
 func (n NewExpr) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n NewExpr) Arguments() (Arguments, bool) {
-	field := Arguments{n.Child(selector.Arguments)}
-	return field, field.IsValid()
+	child := n.Child(selector.Arguments)
+	return Arguments{child}, child.IsValid()
 }
 
 type NewTarget struct {
@@ -2692,7 +2797,8 @@ type NotExpr struct {
 }
 
 func (n NotExpr) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ObjectLiteral struct {
@@ -2722,7 +2828,8 @@ func (n ObjectMethod) Modifier() []Modifier {
 }
 
 func (n ObjectMethod) MethodDefinition() MethodDefinition {
-	return ToJsNode(n.Child(selector.MethodDefinition)).(MethodDefinition)
+	child := n.Child(selector.MethodDefinition)
+	return ToJsNode(child).(MethodDefinition)
 }
 
 type ObjectPattern struct {
@@ -2739,8 +2846,8 @@ func (n ObjectPattern) PropertyPattern() []PropertyPattern {
 }
 
 func (n ObjectPattern) BindingRestElement() (BindingRestElement, bool) {
-	field := BindingRestElement{n.Child(selector.BindingRestElement)}
-	return field, field.IsValid()
+	child := n.Child(selector.BindingRestElement)
+	return BindingRestElement{child}, child.IsValid()
 }
 
 type OptionalCallExpr struct {
@@ -2748,11 +2855,13 @@ type OptionalCallExpr struct {
 }
 
 func (n OptionalCallExpr) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n OptionalCallExpr) Arguments() Arguments {
-	return Arguments{n.Child(selector.Arguments)}
+	child := n.Child(selector.Arguments)
+	return Arguments{child}
 }
 
 type OptionalIndexAccess struct {
@@ -2760,11 +2869,13 @@ type OptionalIndexAccess struct {
 }
 
 func (n OptionalIndexAccess) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n OptionalIndexAccess) Index() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type OptionalPropertyAccess struct {
@@ -2772,11 +2883,13 @@ type OptionalPropertyAccess struct {
 }
 
 func (n OptionalPropertyAccess) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n OptionalPropertyAccess) Selector() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}
 }
 
 type OptionalTaggedTemplate struct {
@@ -2784,11 +2897,13 @@ type OptionalTaggedTemplate struct {
 }
 
 func (n OptionalTaggedTemplate) Tag() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n OptionalTaggedTemplate) Literal() TemplateLiteral {
-	return TemplateLiteral{n.Child(selector.Expr).Next(selector.TemplateLiteral)}
+	child := n.Child(selector.Expr).Next(selector.TemplateLiteral)
+	return TemplateLiteral{child}
 }
 
 type Parameters struct {
@@ -2809,7 +2924,8 @@ type Parenthesized struct {
 }
 
 func (n Parenthesized) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type PostDec struct {
@@ -2817,7 +2933,8 @@ type PostDec struct {
 }
 
 func (n PostDec) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type PostInc struct {
@@ -2825,7 +2942,8 @@ type PostInc struct {
 }
 
 func (n PostInc) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type PreDec struct {
@@ -2833,7 +2951,8 @@ type PreDec struct {
 }
 
 func (n PreDec) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type PreInc struct {
@@ -2841,7 +2960,8 @@ type PreInc struct {
 }
 
 func (n PreInc) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Property struct {
@@ -2858,11 +2978,13 @@ func (n Property) Modifier() []Modifier {
 }
 
 func (n Property) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n Property) Value() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type PropertyAccess struct {
@@ -2870,12 +2992,13 @@ type PropertyAccess struct {
 }
 
 func (n PropertyAccess) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 func (n PropertyAccess) Selector() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}
 }
 
 type PropertyBinding struct {
@@ -2883,11 +3006,13 @@ type PropertyBinding struct {
 }
 
 func (n PropertyBinding) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n PropertyBinding) ElementPattern() ElementPattern {
-	return ToJsNode(n.Child(selector.ElementPattern)).(ElementPattern)
+	child := n.Child(selector.ElementPattern)
+	return ToJsNode(child).(ElementPattern)
 }
 
 type ReferenceIdent struct {
@@ -2903,11 +3028,13 @@ type RelationalExpr struct {
 }
 
 func (n RelationalExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n RelationalExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type RestParameter struct {
@@ -2915,18 +3042,18 @@ type RestParameter struct {
 }
 
 func (n RestParameter) BindingPattern() (BindingPattern, bool) {
-	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.BindingPattern)
+	return ToJsNode(child).(BindingPattern), child.IsValid()
 }
 
 func (n RestParameter) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n RestParameter) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 type ReturnStmt struct {
@@ -2934,8 +3061,8 @@ type ReturnStmt struct {
 }
 
 func (n ReturnStmt) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 type Setter struct {
@@ -2952,16 +3079,18 @@ func (n Setter) Modifier() []Modifier {
 }
 
 func (n Setter) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n Setter) Parameter() Parameter {
-	return ToJsNode(n.Child(selector.Parameter)).(Parameter)
+	child := n.Child(selector.Parameter)
+	return ToJsNode(child).(Parameter)
 }
 
 func (n Setter) Body() (Body, bool) {
-	field := Body{n.Child(selector.Body)}
-	return field, field.IsValid()
+	child := n.Child(selector.Body)
+	return Body{child}, child.IsValid()
 }
 
 type ShiftExpr struct {
@@ -2969,11 +3098,13 @@ type ShiftExpr struct {
 }
 
 func (n ShiftExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n ShiftExpr) Right() Expr {
-	return ToJsNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type ShorthandProperty struct {
@@ -2981,7 +3112,8 @@ type ShorthandProperty struct {
 }
 
 func (n ShorthandProperty) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 type SingleNameBinding struct {
@@ -2989,12 +3121,13 @@ type SingleNameBinding struct {
 }
 
 func (n SingleNameBinding) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n SingleNameBinding) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type SpreadElement struct {
@@ -3002,7 +3135,8 @@ type SpreadElement struct {
 }
 
 func (n SpreadElement) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type SpreadProperty struct {
@@ -3010,7 +3144,8 @@ type SpreadProperty struct {
 }
 
 func (n SpreadProperty) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Static struct {
@@ -3022,7 +3157,8 @@ type StaticBlock struct {
 }
 
 func (n StaticBlock) Body() Body {
-	return Body{n.Child(selector.Body)}
+	child := n.Child(selector.Body)
+	return Body{child}
 }
 
 type SuperExpr struct {
@@ -3030,7 +3166,8 @@ type SuperExpr struct {
 }
 
 func (n SuperExpr) ReferenceIdent() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}
 }
 
 type SwitchStmt struct {
@@ -3038,11 +3175,13 @@ type SwitchStmt struct {
 }
 
 func (n SwitchStmt) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n SwitchStmt) Block() Block {
-	return Block{n.Child(selector.Block)}
+	child := n.Child(selector.Block)
+	return Block{child}
 }
 
 type SyntaxProblem struct {
@@ -3050,13 +3189,13 @@ type SyntaxProblem struct {
 }
 
 func (n SyntaxProblem) ReferenceIdent() (ReferenceIdent, bool) {
-	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}, child.IsValid()
 }
 
 func (n SyntaxProblem) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type TaggedTemplate struct {
@@ -3064,11 +3203,13 @@ type TaggedTemplate struct {
 }
 
 func (n TaggedTemplate) Tag() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n TaggedTemplate) Literal() TemplateLiteral {
-	return TemplateLiteral{n.Child(selector.Expr).Next(selector.TemplateLiteral)}
+	child := n.Child(selector.Expr).Next(selector.TemplateLiteral)
+	return TemplateLiteral{child}
 }
 
 type TemplateLiteral struct {
@@ -3102,7 +3243,8 @@ type ThisExpr struct {
 }
 
 func (n ThisExpr) This() This {
-	return This{n.Child(selector.This)}
+	child := n.Child(selector.This)
+	return This{child}
 }
 
 type ThrowStmt struct {
@@ -3110,7 +3252,8 @@ type ThrowStmt struct {
 }
 
 func (n ThrowStmt) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type TryStmt struct {
@@ -3118,17 +3261,18 @@ type TryStmt struct {
 }
 
 func (n TryStmt) Block() Block {
-	return Block{n.Child(selector.Block)}
+	child := n.Child(selector.Block)
+	return Block{child}
 }
 
 func (n TryStmt) Catch() (Catch, bool) {
-	field := Catch{n.Child(selector.Catch)}
-	return field, field.IsValid()
+	child := n.Child(selector.Catch)
+	return Catch{child}, child.IsValid()
 }
 
 func (n TryStmt) Finally() (Finally, bool) {
-	field := Finally{n.Child(selector.Finally)}
-	return field, field.IsValid()
+	child := n.Child(selector.Finally)
+	return Finally{child}, child.IsValid()
 }
 
 type TsAbstract struct {
@@ -3144,17 +3288,18 @@ type TsAmbientBinding struct {
 }
 
 func (n TsAmbientBinding) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsAmbientBinding) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n TsAmbientBinding) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type TsAmbientClass struct {
@@ -3171,26 +3316,28 @@ func (n TsAmbientClass) Modifier() []Modifier {
 }
 
 func (n TsAmbientClass) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsAmbientClass) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsAmbientClass) Extends() (Extends, bool) {
-	field := Extends{n.Child(selector.Extends)}
-	return field, field.IsValid()
+	child := n.Child(selector.Extends)
+	return Extends{child}, child.IsValid()
 }
 
 func (n TsAmbientClass) TsImplementsClause() (TsImplementsClause, bool) {
-	field := TsImplementsClause{n.Child(selector.TsImplementsClause)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsImplementsClause)
+	return TsImplementsClause{child}, child.IsValid()
 }
 
 func (n TsAmbientClass) ClassBody() ClassBody {
-	return ClassBody{n.Child(selector.ClassBody)}
+	child := n.Child(selector.ClassBody)
+	return ClassBody{child}
 }
 
 type TsAmbientEnum struct {
@@ -3198,16 +3345,18 @@ type TsAmbientEnum struct {
 }
 
 func (n TsAmbientEnum) TsConst() (TsConst, bool) {
-	field := TsConst{n.Child(selector.TsConst)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsConst)
+	return TsConst{child}, child.IsValid()
 }
 
 func (n TsAmbientEnum) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsAmbientEnum) TsEnumBody() TsEnumBody {
-	return TsEnumBody{n.Child(selector.TsEnumBody)}
+	child := n.Child(selector.TsEnumBody)
+	return TsEnumBody{child}
 }
 
 type TsAmbientExportDecl struct {
@@ -3215,7 +3364,8 @@ type TsAmbientExportDecl struct {
 }
 
 func (n TsAmbientExportDecl) ExportClause() ExportClause {
-	return ExportClause{n.Child(selector.ExportClause)}
+	child := n.Child(selector.ExportClause)
+	return ExportClause{child}
 }
 
 type TsAmbientFunc struct {
@@ -3223,21 +3373,23 @@ type TsAmbientFunc struct {
 }
 
 func (n TsAmbientFunc) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsAmbientFunc) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsAmbientFunc) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n TsAmbientFunc) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 type TsAmbientGlobal struct {
@@ -3258,7 +3410,8 @@ type TsAmbientImportAlias struct {
 }
 
 func (n TsAmbientImportAlias) TsImportAliasDecl() TsImportAliasDecl {
-	return TsImportAliasDecl{n.Child(selector.TsImportAliasDecl)}
+	child := n.Child(selector.TsImportAliasDecl)
+	return TsImportAliasDecl{child}
 }
 
 type TsAmbientInterface struct {
@@ -3275,21 +3428,23 @@ func (n TsAmbientInterface) Modifier() []Modifier {
 }
 
 func (n TsAmbientInterface) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsAmbientInterface) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsAmbientInterface) TsInterfaceExtends() (TsInterfaceExtends, bool) {
-	field := TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsInterfaceExtends)
+	return TsInterfaceExtends{child}, child.IsValid()
 }
 
 func (n TsAmbientInterface) TsObjectType() TsObjectType {
-	return TsObjectType{n.Child(selector.TsObjectType)}
+	child := n.Child(selector.TsObjectType)
+	return TsObjectType{child}
 }
 
 type TsAmbientModule struct {
@@ -3297,8 +3452,8 @@ type TsAmbientModule struct {
 }
 
 func (n TsAmbientModule) Literal() (Literal, bool) {
-	field := Literal{n.Child(selector.Literal)}
-	return field, field.IsValid()
+	child := n.Child(selector.Literal)
+	return Literal{child}, child.IsValid()
 }
 
 func (n TsAmbientModule) NameIdent() []NameIdent {
@@ -3346,7 +3501,8 @@ type TsAmbientTypeAlias struct {
 }
 
 func (n TsAmbientTypeAlias) TsTypeAliasDecl() TsTypeAliasDecl {
-	return TsTypeAliasDecl{n.Child(selector.TsTypeAliasDecl)}
+	child := n.Child(selector.TsTypeAliasDecl)
+	return TsTypeAliasDecl{child}
 }
 
 type TsAmbientVar struct {
@@ -3354,13 +3510,13 @@ type TsAmbientVar struct {
 }
 
 func (n TsAmbientVar) LetOrConst() (LetOrConst, bool) {
-	field := LetOrConst{n.Child(selector.LetOrConst)}
-	return field, field.IsValid()
+	child := n.Child(selector.LetOrConst)
+	return LetOrConst{child}, child.IsValid()
 }
 
 func (n TsAmbientVar) Var() (Var, bool) {
-	field := Var{n.Child(selector.Var)}
-	return field, field.IsValid()
+	child := n.Child(selector.Var)
+	return Var{child}, child.IsValid()
 }
 
 func (n TsAmbientVar) TsAmbientBinding() []TsAmbientBinding {
@@ -3377,7 +3533,8 @@ type TsArrayType struct {
 }
 
 func (n TsArrayType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsAsConstExpr struct {
@@ -3385,11 +3542,13 @@ type TsAsConstExpr struct {
 }
 
 func (n TsAsConstExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n TsAsConstExpr) TsConst() TsConst {
-	return TsConst{n.Child(selector.TsConst)}
+	child := n.Child(selector.TsConst)
+	return TsConst{child}
 }
 
 type TsAsExpr struct {
@@ -3397,11 +3556,13 @@ type TsAsExpr struct {
 }
 
 func (n TsAsExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n TsAsExpr) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsAssertsType struct {
@@ -3409,18 +3570,18 @@ type TsAssertsType struct {
 }
 
 func (n TsAssertsType) ReferenceIdent() (ReferenceIdent, bool) {
-	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}, child.IsValid()
 }
 
 func (n TsAssertsType) This() (This, bool) {
-	field := This{n.Child(selector.This)}
-	return field, field.IsValid()
+	child := n.Child(selector.This)
+	return This{child}, child.IsValid()
 }
 
 func (n TsAssertsType) TsType() (TsType, bool) {
-	field := ToJsNode(n.Child(selector.TsType)).(TsType)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType), child.IsValid()
 }
 
 type TsCallSignature struct {
@@ -3428,17 +3589,18 @@ type TsCallSignature struct {
 }
 
 func (n TsCallSignature) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsCallSignature) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n TsCallSignature) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 type TsCastExpr struct {
@@ -3446,11 +3608,13 @@ type TsCastExpr struct {
 }
 
 func (n TsCastExpr) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 func (n TsCastExpr) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type TsConditional struct {
@@ -3458,19 +3622,23 @@ type TsConditional struct {
 }
 
 func (n TsConditional) Check() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 func (n TsConditional) Ext() TsType {
-	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType).Next(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 func (n TsConditional) Truet() TsType {
-	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType).Next(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType).Next(selector.TsType).Next(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 func (n TsConditional) Falset() TsType {
-	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType).Next(selector.TsType).Next(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType).Next(selector.TsType).Next(selector.TsType).Next(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsConst struct {
@@ -3491,17 +3659,18 @@ func (n TsConstructSignature) Modifier() []Modifier {
 }
 
 func (n TsConstructSignature) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsConstructSignature) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n TsConstructSignature) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 type TsConstructorType struct {
@@ -3509,21 +3678,23 @@ type TsConstructorType struct {
 }
 
 func (n TsConstructorType) TsAbstract() (TsAbstract, bool) {
-	field := TsAbstract{n.Child(selector.TsAbstract)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsAbstract)
+	return TsAbstract{child}, child.IsValid()
 }
 
 func (n TsConstructorType) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsConstructorType) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n TsConstructorType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsDynamicImport struct {
@@ -3531,7 +3702,8 @@ type TsDynamicImport struct {
 }
 
 func (n TsDynamicImport) Arguments() Arguments {
-	return Arguments{n.Child(selector.Arguments)}
+	child := n.Child(selector.Arguments)
+	return Arguments{child}
 }
 
 type TsEnum struct {
@@ -3539,16 +3711,18 @@ type TsEnum struct {
 }
 
 func (n TsEnum) TsConst() (TsConst, bool) {
-	field := TsConst{n.Child(selector.TsConst)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsConst)
+	return TsConst{child}, child.IsValid()
 }
 
 func (n TsEnum) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsEnum) TsEnumBody() TsEnumBody {
-	return TsEnumBody{n.Child(selector.TsEnumBody)}
+	child := n.Child(selector.TsEnumBody)
+	return TsEnumBody{child}
 }
 
 type TsEnumBody struct {
@@ -3569,12 +3743,13 @@ type TsEnumMember struct {
 }
 
 func (n TsEnumMember) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n TsEnumMember) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 type TsExclToken struct {
@@ -3590,7 +3765,8 @@ type TsExportAssignment struct {
 }
 
 func (n TsExportAssignment) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type TsFuncType struct {
@@ -3598,16 +3774,18 @@ type TsFuncType struct {
 }
 
 func (n TsFuncType) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsFuncType) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n TsFuncType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsImplementsClause struct {
@@ -3628,7 +3806,8 @@ type TsImportAliasDecl struct {
 }
 
 func (n TsImportAliasDecl) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsImportAliasDecl) Ref() []ReferenceIdent {
@@ -3645,16 +3824,18 @@ type TsImportRequireDecl struct {
 }
 
 func (n TsImportRequireDecl) TsExport() (TsExport, bool) {
-	field := TsExport{n.Child(selector.TsExport)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsExport)
+	return TsExport{child}, child.IsValid()
 }
 
 func (n TsImportRequireDecl) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsImportRequireDecl) ModuleSpec() ModuleSpec {
-	return ModuleSpec{n.Child(selector.ModuleSpec)}
+	child := n.Child(selector.ModuleSpec)
+	return ModuleSpec{child}
 }
 
 type TsImportType struct {
@@ -3662,12 +3843,13 @@ type TsImportType struct {
 }
 
 func (n TsImportType) TsImportTypeStart() TsImportTypeStart {
-	return TsImportTypeStart{n.Child(selector.TsImportTypeStart)}
+	child := n.Child(selector.TsImportTypeStart)
+	return TsImportTypeStart{child}
 }
 
 func (n TsImportType) TsTypeArguments() (TsTypeArguments, bool) {
-	field := TsTypeArguments{n.Child(selector.TsTypeArguments)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeArguments)
+	return TsTypeArguments{child}, child.IsValid()
 }
 
 type TsImportTypeStart struct {
@@ -3675,23 +3857,23 @@ type TsImportTypeStart struct {
 }
 
 func (n TsImportTypeStart) TsImportTypeStart() (TsImportTypeStart, bool) {
-	field := TsImportTypeStart{n.Child(selector.TsImportTypeStart)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsImportTypeStart)
+	return TsImportTypeStart{child}, child.IsValid()
 }
 
 func (n TsImportTypeStart) TsTypeOf() (TsTypeOf, bool) {
-	field := TsTypeOf{n.Child(selector.TsTypeOf)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeOf)
+	return TsTypeOf{child}, child.IsValid()
 }
 
 func (n TsImportTypeStart) ReferenceIdent() (ReferenceIdent, bool) {
-	field := ReferenceIdent{n.Child(selector.ReferenceIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}, child.IsValid()
 }
 
 func (n TsImportTypeStart) TsType() (TsType, bool) {
-	field := ToJsNode(n.Child(selector.TsType)).(TsType)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType), child.IsValid()
 }
 
 type TsIndexMemberDecl struct {
@@ -3699,7 +3881,8 @@ type TsIndexMemberDecl struct {
 }
 
 func (n TsIndexMemberDecl) TsIndexSignature() TsIndexSignature {
-	return TsIndexSignature{n.Child(selector.TsIndexSignature)}
+	child := n.Child(selector.TsIndexSignature)
+	return TsIndexSignature{child}
 }
 
 type TsIndexSignature struct {
@@ -3716,15 +3899,18 @@ func (n TsIndexSignature) Modifier() []Modifier {
 }
 
 func (n TsIndexSignature) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsIndexSignature) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 func (n TsIndexSignature) TsTypeAnnotation() TsTypeAnnotation {
-	return TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}
 }
 
 type TsIndexedAccessType struct {
@@ -3732,11 +3918,13 @@ type TsIndexedAccessType struct {
 }
 
 func (n TsIndexedAccessType) Left() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 func (n TsIndexedAccessType) Index() TsType {
-	return ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType).Next(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsInterface struct {
@@ -3744,21 +3932,23 @@ type TsInterface struct {
 }
 
 func (n TsInterface) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsInterface) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsInterface) TsInterfaceExtends() (TsInterfaceExtends, bool) {
-	field := TsInterfaceExtends{n.Child(selector.TsInterfaceExtends)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsInterfaceExtends)
+	return TsInterfaceExtends{child}, child.IsValid()
 }
 
 func (n TsInterface) TsObjectType() TsObjectType {
-	return TsObjectType{n.Child(selector.TsObjectType)}
+	child := n.Child(selector.TsObjectType)
+	return TsObjectType{child}
 }
 
 type TsInterfaceExtends struct {
@@ -3792,7 +3982,8 @@ type TsKeyOfType struct {
 }
 
 func (n TsKeyOfType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsLiteralType struct {
@@ -3800,8 +3991,8 @@ type TsLiteralType struct {
 }
 
 func (n TsLiteralType) TsTemplateLiteralType() (TsTemplateLiteralType, bool) {
-	field := TsTemplateLiteralType{n.Child(selector.TsTemplateLiteralType)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTemplateLiteralType)
+	return TsTemplateLiteralType{child}, child.IsValid()
 }
 
 type TsMappedType struct {
@@ -3809,20 +4000,23 @@ type TsMappedType struct {
 }
 
 func (n TsMappedType) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsMappedType) InType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 func (n TsMappedType) AsType() (TsType, bool) {
-	field := ToJsNode(n.Child(selector.TsType).Next(selector.TsType)).(TsType)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.TsType).Next(selector.TsType)
+	return ToJsNode(child).(TsType), child.IsValid()
 }
 
 func (n TsMappedType) TsTypeAnnotation() TsTypeAnnotation {
-	return TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}
 }
 
 type TsMethodSignature struct {
@@ -3839,21 +4033,23 @@ func (n TsMethodSignature) Modifier() []Modifier {
 }
 
 func (n TsMethodSignature) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n TsMethodSignature) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsMethodSignature) Parameters() Parameters {
-	return Parameters{n.Child(selector.Parameters)}
+	child := n.Child(selector.Parameters)
+	return Parameters{child}
 }
 
 func (n TsMethodSignature) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 type TsNamespace struct {
@@ -3870,7 +4066,8 @@ func (n TsNamespace) NameIdent() []NameIdent {
 }
 
 func (n TsNamespace) TsNamespaceBody() TsNamespaceBody {
-	return TsNamespaceBody{n.Child(selector.TsNamespaceBody)}
+	child := n.Child(selector.TsNamespaceBody)
+	return TsNamespaceBody{child}
 }
 
 type TsNamespaceBody struct {
@@ -3891,7 +4088,8 @@ type TsNamespaceExportDecl struct {
 }
 
 func (n TsNamespaceExportDecl) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 type TsNamespaceName struct {
@@ -3912,7 +4110,8 @@ type TsNonNull struct {
 }
 
 func (n TsNonNull) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type TsNonNullableType struct {
@@ -3920,7 +4119,8 @@ type TsNonNullableType struct {
 }
 
 func (n TsNonNullableType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsNullableType struct {
@@ -3928,7 +4128,8 @@ type TsNullableType struct {
 }
 
 func (n TsNullableType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsObjectType struct {
@@ -3957,7 +4158,8 @@ type TsParenthesizedType struct {
 }
 
 func (n TsParenthesizedType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsPredefinedType struct {
@@ -3978,12 +4180,13 @@ func (n TsPropertySignature) Modifier() []Modifier {
 }
 
 func (n TsPropertySignature) PropertyName() PropertyName {
-	return ToJsNode(n.Child(selector.PropertyName)).(PropertyName)
+	child := n.Child(selector.PropertyName)
+	return ToJsNode(child).(PropertyName)
 }
 
 func (n TsPropertySignature) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 type TsReadonly struct {
@@ -3995,7 +4198,8 @@ type TsReadonlyType struct {
 }
 
 func (n TsReadonlyType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsRestType struct {
@@ -4003,7 +4207,8 @@ type TsRestType struct {
 }
 
 func (n TsRestType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsSatisfiesExpr struct {
@@ -4011,11 +4216,13 @@ type TsSatisfiesExpr struct {
 }
 
 func (n TsSatisfiesExpr) Left() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n TsSatisfiesExpr) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsTemplateLiteralType struct {
@@ -4045,7 +4252,8 @@ type TsThisParameter struct {
 }
 
 func (n TsThisParameter) TsTypeAnnotation() TsTypeAnnotation {
-	return TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}
 }
 
 type TsThisType struct {
@@ -4070,16 +4278,18 @@ type TsTypeAliasDecl struct {
 }
 
 func (n TsTypeAliasDecl) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsTypeAliasDecl) TsTypeParameters() (TsTypeParameters, bool) {
-	field := TsTypeParameters{n.Child(selector.TsTypeParameters)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeParameters)
+	return TsTypeParameters{child}, child.IsValid()
 }
 
 func (n TsTypeAliasDecl) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsTypeAnnotation struct {
@@ -4087,7 +4297,8 @@ type TsTypeAnnotation struct {
 }
 
 func (n TsTypeAnnotation) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsTypeArguments struct {
@@ -4108,7 +4319,8 @@ type TsTypeConstraint struct {
 }
 
 func (n TsTypeConstraint) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsTypeName struct {
@@ -4116,8 +4328,8 @@ type TsTypeName struct {
 }
 
 func (n TsTypeName) TsNamespaceName() (TsNamespaceName, bool) {
-	field := TsNamespaceName{n.Child(selector.TsNamespaceName)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsNamespaceName)
+	return TsNamespaceName{child}, child.IsValid()
 }
 
 func (n TsTypeName) Ref() []ReferenceIdent {
@@ -4142,17 +4354,18 @@ type TsTypeParameter struct {
 }
 
 func (n TsTypeParameter) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 func (n TsTypeParameter) TsTypeConstraint() (TsTypeConstraint, bool) {
-	field := TsTypeConstraint{n.Child(selector.TsTypeConstraint)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeConstraint)
+	return TsTypeConstraint{child}, child.IsValid()
 }
 
 func (n TsTypeParameter) TsType() (TsType, bool) {
-	field := ToJsNode(n.Child(selector.TsType)).(TsType)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType), child.IsValid()
 }
 
 type TsTypeParameters struct {
@@ -4173,11 +4386,13 @@ type TsTypePredicate struct {
 }
 
 func (n TsTypePredicate) Paramref() ReferenceIdent {
-	return ReferenceIdent{n.Child(selector.ReferenceIdent)}
+	child := n.Child(selector.ReferenceIdent)
+	return ReferenceIdent{child}
 }
 
 func (n TsTypePredicate) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type TsTypeQuery struct {
@@ -4198,12 +4413,13 @@ type TsTypeReference struct {
 }
 
 func (n TsTypeReference) TsTypeName() TsTypeName {
-	return TsTypeName{n.Child(selector.TsTypeName)}
+	child := n.Child(selector.TsTypeName)
+	return TsTypeName{child}
 }
 
 func (n TsTypeReference) TsTypeArguments() (TsTypeArguments, bool) {
-	field := TsTypeArguments{n.Child(selector.TsTypeArguments)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeArguments)
+	return TsTypeArguments{child}, child.IsValid()
 }
 
 type TsTypeVar struct {
@@ -4211,7 +4427,8 @@ type TsTypeVar struct {
 }
 
 func (n TsTypeVar) NameIdent() NameIdent {
-	return NameIdent{n.Child(selector.NameIdent)}
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}
 }
 
 type TsUnionType struct {
@@ -4232,7 +4449,8 @@ type TsUniqueType struct {
 }
 
 func (n TsUniqueType) TsType() TsType {
-	return ToJsNode(n.Child(selector.TsType)).(TsType)
+	child := n.Child(selector.TsType)
+	return ToJsNode(child).(TsType)
 }
 
 type UnaryExpr struct {
@@ -4240,7 +4458,8 @@ type UnaryExpr struct {
 }
 
 func (n UnaryExpr) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 type Var struct {
@@ -4252,28 +4471,28 @@ type VarDecl struct {
 }
 
 func (n VarDecl) BindingPattern() (BindingPattern, bool) {
-	field := ToJsNode(n.Child(selector.BindingPattern)).(BindingPattern)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.BindingPattern)
+	return ToJsNode(child).(BindingPattern), child.IsValid()
 }
 
 func (n VarDecl) NameIdent() (NameIdent, bool) {
-	field := NameIdent{n.Child(selector.NameIdent)}
-	return field, field.IsValid()
+	child := n.Child(selector.NameIdent)
+	return NameIdent{child}, child.IsValid()
 }
 
 func (n VarDecl) TsExclToken() (TsExclToken, bool) {
-	field := TsExclToken{n.Child(selector.TsExclToken)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsExclToken)
+	return TsExclToken{child}, child.IsValid()
 }
 
 func (n VarDecl) TsTypeAnnotation() (TsTypeAnnotation, bool) {
-	field := TsTypeAnnotation{n.Child(selector.TsTypeAnnotation)}
-	return field, field.IsValid()
+	child := n.Child(selector.TsTypeAnnotation)
+	return TsTypeAnnotation{child}, child.IsValid()
 }
 
 func (n VarDecl) Initializer() (Initializer, bool) {
-	field := Initializer{n.Child(selector.Initializer)}
-	return field, field.IsValid()
+	child := n.Child(selector.Initializer)
+	return Initializer{child}, child.IsValid()
 }
 
 type VarStmt struct {
@@ -4294,11 +4513,13 @@ type WhileStmt struct {
 }
 
 func (n WhileStmt) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n WhileStmt) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type WithStmt struct {
@@ -4306,11 +4527,13 @@ type WithStmt struct {
 }
 
 func (n WithStmt) Expr() Expr {
-	return ToJsNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr)
 }
 
 func (n WithStmt) Stmt() Stmt {
-	return ToJsNode(n.Child(selector.Stmt)).(Stmt)
+	child := n.Child(selector.Stmt)
+	return ToJsNode(child).(Stmt)
 }
 
 type Yield struct {
@@ -4318,8 +4541,8 @@ type Yield struct {
 }
 
 func (n Yield) Expr() (Expr, bool) {
-	field := ToJsNode(n.Child(selector.Expr)).(Expr)
-	return field, field.JsNode() != nil
+	child := n.Child(selector.Expr)
+	return ToJsNode(child).(Expr), child.IsValid()
 }
 
 type InsertedSemicolon struct {

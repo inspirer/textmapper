@@ -117,11 +117,13 @@ type AsExpr struct {
 }
 
 func (n AsExpr) Left() Expr {
-	return ToTestNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 func (n AsExpr) Right() Expr {
-	return ToTestNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 type Block struct {
@@ -129,8 +131,8 @@ type Block struct {
 }
 
 func (n Block) Negation() (Negation, bool) {
-	field := Negation{n.Child(selector.Negation)}
-	return field, field.IsValid()
+	child := n.Child(selector.Negation)
+	return Negation{child}, child.IsValid()
 }
 
 func (n Block) Declaration() []Declaration {
@@ -181,7 +183,8 @@ type EvalEmpty1 struct {
 }
 
 func (n EvalEmpty1) Expr() Expr {
-	return ToTestNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 type EvalFoo struct {
@@ -189,7 +192,8 @@ type EvalFoo struct {
 }
 
 func (n EvalFoo) Expr() Expr {
-	return ToTestNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 type EvalFoo2 struct {
@@ -197,11 +201,13 @@ type EvalFoo2 struct {
 }
 
 func (n EvalFoo2) A() Expr {
-	return ToTestNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 func (n EvalFoo2) B() Expr {
-	return ToTestNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 type Icon struct {
@@ -213,12 +219,13 @@ type If struct {
 }
 
 func (n If) Then() Decl2Interface {
-	return ToTestNode(n.Child(selector.Decl2Interface)).(Decl2Interface)
+	child := n.Child(selector.Decl2Interface)
+	return ToTestNode(child).(Decl2Interface)
 }
 
 func (n If) Else() (Decl2Interface, bool) {
-	field := ToTestNode(n.Child(selector.Decl2Interface).Next(selector.Decl2Interface)).(Decl2Interface)
-	return field, field.TestNode() != nil
+	child := n.Child(selector.Decl2Interface).Next(selector.Decl2Interface)
+	return ToTestNode(child).(Decl2Interface), child.IsValid()
 }
 
 type Int struct {
@@ -242,11 +249,13 @@ type PlusExpr struct {
 }
 
 func (n PlusExpr) Left() Expr {
-	return ToTestNode(n.Child(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 func (n PlusExpr) Right() Expr {
-	return ToTestNode(n.Child(selector.Expr).Next(selector.Expr)).(Expr)
+	child := n.Child(selector.Expr).Next(selector.Expr)
+	return ToTestNode(child).(Expr)
 }
 
 type Test struct {
@@ -271,7 +280,8 @@ type TestIntClause struct {
 }
 
 func (n TestIntClause) Icon() Icon {
-	return Icon{n.Child(selector.Icon)}
+	child := n.Child(selector.Icon)
+	return Icon{child}
 }
 
 type Int7 struct {

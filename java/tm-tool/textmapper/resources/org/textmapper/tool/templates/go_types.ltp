@@ -456,18 +456,11 @@ ${if field.isList()-}
 		ret = append(ret, ${self->convertNode(field, 'node')})
 	}
 	return ret
-${else if self->isOpt(field)-}
-	field := ${self->convertNode(field, self->getFieldNode(field))}
-	return field, ${call getterIsValid-}
 ${else-}
-	return ${self->convertNode(field, self->getFieldNode(field))}
+	child := ${self->getFieldNode(field)}
+	return ${self->convertNode(field, 'child')}${if self->isOpt(field)}, child.IsValid()${end}
 ${end-}
 ${end}
-
-${template getterIsValid-}
-${if self->isOneType(field)}field.IsValid()${else}field.${self->underyingNodeMethod()}() != nil${end-}
-${end}
-
 
 ${query astFilename() = 'ast/ast.go'}
 ${query factoryFilename() = 'ast/factory.go'}
