@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 	"time"
@@ -164,8 +165,19 @@ func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Sta
 }
 
 func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
-	c := &fileContext{filename: filename, Grammar: g}
+	c := &fileContext{
+		filename: filename,
+		Grammar:  g,
+	}
 	ret := template.FuncMap{}
+	if g.Parser != nil && g.Parser.Types != nil {
+		c.cats = make(map[string]int)
+		for i, cat := range g.Parser.Types.Categories {
+			c.cats[cat.Name] = i
+		}
+		ret["is_cat"] = c.isCat
+		ret["expand_selector"] = c.expandSelector
+	}
 	switch g.TargetLang {
 	case "go":
 		ret["pkg"] = c.goPackage
@@ -180,6 +192,7 @@ func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
 type fileContext struct {
 	filename string
 	*grammar.Grammar
+	cats map[string]int
 }
 
 func (c *fileContext) goPackage(targetPkg string) string {
@@ -207,4 +220,32 @@ func (c *fileContext) nodeID(name string) string {
 
 func (c *fileContext) isFileNode(name string) bool {
 	return name == c.Options.FileNode
+}
+
+func (c *fileContext) isCat(name string) bool {
+	_, ok := c.cats[name]
+	return ok
+}
+
+func (c *fileContext) expandSelector(sel []string) []string {
+	var ret []string
+	seen := make(map[string]bool)
+	add := func(s string) {
+		if !seen[s] {
+			seen[s] = true
+			ret = append(ret, s)
+		}
+	}
+	for _, name := range sel {
+		i, isCat := c.cats[name]
+		if !isCat {
+			add(name)
+			continue
+		}
+		for _, name := range c.Parser.Types.Categories[i].Types {
+			add(name)
+		}
+	}
+	sort.Strings(ret)
+	return ret
 }

@@ -1,0 +1,91 @@
+{{ template "header" . -}}
+package ast
+
+// Interfaces.
+
+{{$baseNode := concat (title .Name) "Node" -}}
+type {{$baseNode}} interface {
+	{{$baseNode}}() *Node
+}
+
+{{if .Lexer.MappedTokens -}}
+type Token struct {
+	*Node
+}
+
+{{end -}}
+
+type NilNode struct {}
+
+var nilInstance = &NilNode{}
+
+// All types implement {{$baseNode}}.
+{{- range .Parser.Types.RangeTypes }}
+func (n {{.Name}}) {{$baseNode}}() *Node { return n.Node }
+{{- end}}
+{{- range .Options.ExtraTypes }}
+func (n {{.Name}}) {{$baseNode}}() *Node { return n.Node }
+{{- end}}
+func (NilNode) {{$baseNode}}() *Node { return nil }
+
+{{ range .Parser.Types.Categories -}}
+{{ $catMethod := concat .Name "Node" | first_lower}}
+type {{.Name}} interface {
+	{{$baseNode}}
+	{{$catMethod}}()
+}
+
+// {{$catMethod}}() ensures that only the following types can be
+// assigned to {{.Name}}.
+//
+{{- range .Types }}
+func ({{.}}) {{$catMethod}}() {}
+{{- end}}
+{{- if ne .Name "TokenSet" }}
+func (NilNode) {{$catMethod}}() {}
+{{- end}}
+
+{{end -}}
+
+// Types.
+
+{{ range .Parser.Types.RangeTypes -}}
+{{$name := .Name -}}
+{{$rt := . -}}
+type {{$name}} struct {
+	*Node
+}
+
+{{ range $i, $f := .Fields -}}
+{{if gt (len .Selector) 1 -}}
+var selector{{$name}}{{title .Name}} = {{pkg "selector"}}OneOf({{range $ind, $t := expand_selector .Selector}}{{if ne $ind 0}}, {{end}}{{pkg "main"}}{{$t}}{{end}})
+{{end -}}
+
+{{$innerType := unwrap_with_default .Selector $baseNode -}}
+func (n {{$name}}) {{title .Name | escape_reserved}}() {{if and (not .IsRequired) (not .IsList)}}({{end -}}
+{{if .IsList}}[]{{end -}}
+{{$innerType -}}
+{{if and (not .IsRequired) (not .IsList)}}, bool){{end -}}
+ {
+	{{if .IsList }}nodes{{else}}child{{end}} := n{{range $i, $step := $rt.DecodeField $i}}.
+{{- if gt $i 0}}{{if .IsList}}NextAll{{else}}Next{{end}}{{else}}{{if .IsList}}Children{{else}}Child{{end}}{{end -}}
+({{if gt (len .Selector) 1 -}}selector{{$name}}{{title .Name}}{{else}}{{pkg "selector"}}{{index .Selector 0}}{{end}}){{end}}
+{{if .IsList -}}
+	var ret = make([]{{$innerType}}, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, {{if and (eq (len .Selector) 1) (not (is_cat (index .Selector 0)))}}{{index .Selector 0}}{node}{{else}}To{{$baseNode}}(node).({{$innerType}}){{end}})
+	}
+	return ret
+{{ else -}}
+	return {{if and (eq (len .Selector) 1) (not (is_cat (index .Selector 0)))}}{{index .Selector 0}}{child}{{else}}To{{$baseNode}}(child).({{$innerType}}){{end}}{{if not .IsRequired -}}, child.IsValid(){{end}}
+{{ end -}}
+}
+
+{{ end -}}
+{{ end -}}
+{{ range .Options.ExtraTypes -}}
+type {{.Name}} struct {
+	*Node
+}
+
+{{ end}}

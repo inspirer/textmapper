@@ -1,0 +1,20 @@
+{{ template "header" . -}}
+package ast
+
+{{$baseNode := concat (title .Name) "Node" -}}
+func To{{$baseNode}}(n *Node) {{$baseNode}} {
+	switch n.Type() {
+{{- range .Parser.Types.RangeTypes }}
+	case {{pkg "main"}}{{.Name}}:
+		return &{{.Name}}{n}
+{{- end}}
+{{- range .Options.ExtraTypes }}
+	case {{pkg "main"}}{{.Name}}:
+		return &{{.Name}}{n}
+{{- end}}
+	case {{pkg "main"}}NoType:
+		return nilInstance
+	}
+	panic("fmt".Errorf("ast: unknown node type %v", n.Type()))
+	return nil
+}

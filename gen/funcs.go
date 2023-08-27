@@ -24,10 +24,12 @@ var funcMap = template.FuncMap{
 	"str_literal":         strconv.Quote,
 	"title":               strings.Title,
 	"lower":               strings.ToLower,
+	"first_lower":         firstLower,
 	"sum":                 sum,
 	"string_switch":       asStringSwitch,
 	"quote":               strconv.Quote,
 	"join":                strings.Join,
+	"concat":              concat,
 	"lexer_action":        lexerAction,
 	"ref":                 ref,
 	"minus1":              minus1,
@@ -39,10 +41,20 @@ var funcMap = template.FuncMap{
 	"set":                 set,
 	"additionalTypes":     additionalTypes,
 	"last_id":             lastID,
+	"escape_reserved":     escapeReserved,
+	"unwrap_with_default": unwrapWithDefault,
 }
 
 func sum(a, b int) int {
 	return a + b
+}
+
+func firstLower(s string) string {
+	r, w := utf8.DecodeRuneInString(s)
+	if r != utf8.RuneError {
+		return string(utf8.AppendRune(nil, unicode.ToLower(r))) + s[w:]
+	}
+	return s
 }
 
 func hex(val uint32) string {
@@ -160,6 +172,10 @@ func stringHash(s string) uint32 {
 		hash = hash*uint32(31) + uint32(r)
 	}
 	return hash
+}
+
+func concat(a, b string) string {
+	return a + b
 }
 
 func lexerAction(s string) string {
@@ -527,4 +543,43 @@ func lastID(s string) string {
 		start -= d
 	}
 	return s[start:]
+}
+
+var reserved = asSet(
+	// Go reserved keywords.
+	"break", "default", "func", "interface", "select",
+	"case", "defer", "go", "map", "struct",
+	"chan", "else", "goto", "package", "switch",
+	"const", "fallthrough", "if", "range", "type",
+	"continue", "for", "import", "return", "var",
+
+	// Go builtins.
+	"bool", "string", "byte", "int", "rune",
+	"iota", "nil", "true", "false",
+	"fmt", "strconv",
+
+	// Textmapper-reserved
+	"Token", "Nonterminal", "Pos", "Node", "Offset", "Endoffset", "Start", "End",
+)
+
+func asSet(list ...string) map[string]bool {
+	ret := make(map[string]bool)
+	for _, id := range list {
+		ret[id] = true
+	}
+	return ret
+}
+
+func escapeReserved(s string) string {
+	if reserved[s] {
+		return "_" + s
+	}
+	return s
+}
+
+func unwrapWithDefault(s []string, def string) string {
+	if len(s) == 1 {
+		return s[0]
+	}
+	return def
 }

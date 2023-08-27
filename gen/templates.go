@@ -26,8 +26,10 @@ var languages = map[string]*language{
 			{"selector/selector.go", builtin(`go_selector`)},
 		},
 		AST: []file{
-			{"ast/tree.go", builtin(`go_tree`)},
+			{"ast/tree.go", builtin(`go_ast_tree`)},
 			{"ast/parse.go", builtin(`go_ast_parse`)},
+			{"ast/ast.go", builtin(`go_ast`)},
+			{"ast/factory.go", builtin(`go_ast_factory`)},
 		},
 	},
 
