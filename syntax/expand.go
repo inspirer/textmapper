@@ -270,7 +270,7 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 		}
 		ret := e.extractNonterm(out)
 		if expr.ListFlags&OneOrMore == 0 && out.ListFlags&OneOrMore != 0 {
-			ret = e.extractNonterm(&Expr{Kind: Optional, Sub: []*Expr{ret}})
+			ret = e.extractNonterm(&Expr{Kind: Optional, Sub: []*Expr{ret}, Origin: expr.Origin})
 		}
 		ret.Pos = expr.Pos
 		return []*Expr{ret}

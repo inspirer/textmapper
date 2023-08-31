@@ -195,7 +195,7 @@ func ResolveSets(m *Model) error {
 			}
 			nonterm.Value = &Expr{Kind: Choice, Origin: nonterm.Value.Origin}
 			for _, t := range terminals {
-				nonterm.Value.Sub = append(nonterm.Value.Sub, &Expr{Kind: Reference, Symbol: t.Symbol, Model: m})
+				nonterm.Value.Sub = append(nonterm.Value.Sub, &Expr{Kind: Reference, Symbol: t.Symbol, Model: m, Origin: nonterm.Value.Origin})
 			}
 		}
 	}
