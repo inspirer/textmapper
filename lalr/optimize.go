@@ -44,7 +44,7 @@ func (e *DisplacementEnc) TableStats() string {
 }
 
 // Optimize converts parsing tables into a faster displacement encoding.
-func Optimize(t *DefaultEnc, terms, rules int) *DisplacementEnc {
+func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *DisplacementEnc {
 	syms := len(t.Goto) - 1
 	states := len(t.Action)
 	ret := &DisplacementEnc{
@@ -80,8 +80,15 @@ func Optimize(t *DefaultEnc, terms, rules int) *DisplacementEnc {
 			ret.Action[state] = ret.Base
 			continue
 		default:
+			undef := -1
+			if defaultReduce {
+				undef = -2 - states
+				for i := 0; i < rules; i++ {
+					reuse[i] = 0
+				}
+			}
 			for i := range next {
-				next[i] = -1
+				next[i] = undef
 			}
 			a := -act - 3
 			for ; t.Lalr[a] >= 0; a += 2 {
@@ -94,10 +101,34 @@ func Optimize(t *DefaultEnc, terms, rules int) *DisplacementEnc {
 						log.Fatal("internal invariant violated: shift action without goto")
 					}
 					act = -2 - state
-				case -2: // error
+				case -2: // error, which is caused by a non-assoc precedence
 					act = -1
+				default:
+					if act < 0 || act >= rules {
+						log.Fatal("internal invariant violated: rule index out of range")
+					}
+					reuse[act]++
 				}
 				next[term] = act
+			}
+			if defaultReduce {
+				// If requested, we replace all errors (except ones caused by non-assoc precedence)
+				// with the most common reduction. This reduces the output tables size at the
+				// expense or error message quality.
+
+				def := -1 // error, aka no default
+				var max int
+				for rule, v := range reuse[:rules] {
+					if v > max {
+						max = v
+						def = rule
+					}
+				}
+				for i, v := range next {
+					if v == undef {
+						next[i] = def
+					}
+				}
 			}
 		}
 

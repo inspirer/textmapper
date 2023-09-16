@@ -225,6 +225,7 @@ type Options struct {
 	DebugParser         bool
 	WriteBison          bool // Output the expanded grammar in a Bison-like format.
 	OptimizeTables      bool
+	DefaultReduce       bool // Prefer some common reduction to errors in non-LR0 states to compress tables even further.
 
 	// AST generation. Go-specific for now.
 	EventBased    bool

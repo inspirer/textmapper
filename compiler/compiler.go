@@ -265,11 +265,12 @@ func (c *compiler) compileParser(file ast.File) {
 	c.out.Syms = c.resolver.Syms
 
 	opts := genOptions{
-		compat:   c.params.Compat,
-		expectSR: loader.expectSR,
-		expectRR: loader.expectRR,
-		syms:     c.out.Syms,
-		optimize: c.out.Options.OptimizeTables && !c.params.CheckOnly,
+		compat:        c.params.Compat,
+		expectSR:      loader.expectSR,
+		expectRR:      loader.expectRR,
+		syms:          c.out.Syms,
+		optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
+		defaultReduce: c.out.Options.DefaultReduce,
 	}
 	if err := generateTables(source, c.out.Parser, opts, file); err != nil {
 		c.AddError(err)
@@ -281,7 +282,9 @@ type genOptions struct {
 	expectRR int
 	expectSR int
 	syms     []grammar.Symbol
-	optimize bool
+
+	optimize      bool
+	defaultReduce bool
 }
 
 func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, origin status.SourceNode) error {
@@ -490,7 +493,11 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 		}
 	}
 
-	tables, err := lalr.Compile(g, opts.optimize)
+	lopts := lalr.Options{
+		Optimize:      opts.optimize,
+		DefaultReduce: opts.defaultReduce,
+	}
+	tables, err := lalr.Compile(g, lopts)
 	if err != nil {
 		return err
 	}

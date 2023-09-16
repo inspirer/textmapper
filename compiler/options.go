@@ -83,6 +83,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.DebugParser = p.parseExpr(opt.Value(), opts.DebugParser).(bool)
 		case "optimizeTables":
 			opts.OptimizeTables = p.parseExpr(opt.Value(), opts.OptimizeTables).(bool)
+		case "defaultReduce":
+			opts.DefaultReduce = p.parseExpr(opt.Value(), opts.DefaultReduce).(bool)
 		case "eventFields":
 			p.validLangs(opt.Key(), "go")
 			opts.EventFields = p.parseExpr(opt.Value(), opts.EventFields).(bool)

@@ -9,8 +9,14 @@ import (
 	"github.com/inspirer/textmapper/util/graph"
 )
 
+// Options parameterizes the LALR table generation.
+type Options struct {
+	Optimize      bool // compress tables for faster lookups
+	DefaultReduce bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
+}
+
 // Compile generates LALR tables for a given grammar.
-func Compile(grammar *Grammar, opt bool) (*Tables, error) {
+func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c := &compiler{
 		grammar: grammar,
 		out: &Tables{
@@ -31,8 +37,8 @@ func Compile(grammar *Grammar, opt bool) (*Tables, error) {
 	c.populateTables()
 	c.reportConflicts()
 
-	if opt {
-		c.out.Optimized = Optimize(c.out.DefaultEnc, grammar.Terminals, len(c.grammar.Rules))
+	if opts.Optimize {
+		c.out.Optimized = Optimize(c.out.DefaultEnc, grammar.Terminals, len(c.grammar.Rules), opts.DefaultReduce)
 	}
 	return c.out, c.s.Err()
 }
@@ -683,6 +689,7 @@ func (c *compiler) populateTables() {
 		for _, term := range actionset {
 			c.out.Lalr = append(c.out.Lalr, term, next[term])
 		}
+		// Note: all other -2 in c.out.Lalr are caused by non-assoc errros.
 		c.out.Lalr = append(c.out.Lalr, -1, -2)
 	}
 
