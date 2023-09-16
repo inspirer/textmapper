@@ -38,7 +38,8 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c.reportConflicts()
 
 	if opts.Optimize {
-		c.out.Optimized = Optimize(c.out.DefaultEnc, grammar.Terminals, len(c.grammar.Rules), opts.DefaultReduce)
+		numRules := len(c.out.RuleLen) // takes into account runtime lookahead rules
+		c.out.Optimized = Optimize(c.out.DefaultEnc, grammar.Terminals, numRules, opts.DefaultReduce)
 	}
 	return c.out, c.s.Err()
 }
