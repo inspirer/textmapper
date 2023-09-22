@@ -236,6 +236,8 @@ type Options struct {
 	ReportTokens  []int // Tokens that should appear in the AST.
 	ExtraTypes    []syntax.ExtraType
 	FileNode      string // The top-level node gets the byte range of the whole input.
+	NodePrefix    string // Prefix for node types.
+	WithoutPrefix string // Comma-separated node types that should not be prefixed.
 
 	// Go.
 	Package          string

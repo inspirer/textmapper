@@ -168,8 +168,17 @@ func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
 	c := &fileContext{
 		filename: filename,
 		Grammar:  g,
+		noPrefix: make(map[string]bool),
 	}
 	ret := template.FuncMap{}
+	for _, opt := range strings.Split(g.Options.WithoutPrefix, ",") {
+		opt = strings.TrimSpace(opt)
+		if p, ok := strings.CutSuffix(opt, "*"); ok {
+			c.reservedPrefixes = append(c.reservedPrefixes, p)
+		} else {
+			c.noPrefix[opt] = true
+		}
+	}
 	if g.Parser != nil && g.Parser.Types != nil {
 		c.cats = make(map[string]int)
 		for i, cat := range g.Parser.Types.Categories {
@@ -193,6 +202,10 @@ type fileContext struct {
 	filename string
 	*grammar.Grammar
 	cats map[string]int
+
+	// Expanded content of the WithoutPrefix option.
+	noPrefix         map[string]bool
+	reservedPrefixes []string
 }
 
 func (c *fileContext) goPackage(targetPkg string) string {
@@ -215,7 +228,15 @@ func (c *fileContext) goPackage(targetPkg string) string {
 }
 
 func (c *fileContext) nodeID(name string) string {
-	return name
+	if c.Options.NodePrefix == "" || c.noPrefix[name] {
+		return name
+	}
+	for _, reserved := range c.reservedPrefixes {
+		if strings.HasPrefix(name, reserved) {
+			return name
+		}
+	}
+	return c.Options.NodePrefix + name
 }
 
 func (c *fileContext) isFileNode(name string) bool {
