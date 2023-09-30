@@ -23,7 +23,7 @@ type Lexer struct {
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
-	tokenOffset int  // last token offset
+	tokenOffset int  // last token byte offset
 	scanOffset  int  // scanning offset
 	value       interface{}
 

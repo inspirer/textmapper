@@ -64,6 +64,7 @@ uint32_t mapRune(int32_t c) {
   }
   return {{.Lexer.Tables.LastMapEntry.Target}};
 }
+
 {{ else -}}
 {{ $runeArr := .Lexer.Tables.SymbolArr 0 -}}
 constexpr uint{{$runeType}}_t tmRuneClass[] = {
@@ -72,8 +73,8 @@ constexpr uint{{$runeType}}_t tmRuneClass[] = {
 
 constexpr int tmRuneClassLen = {{len $runeArr}};
 constexpr int tmFirstRule = {{.Lexer.Tables.ActionStart}};
-{{ end -}}
 
+{{ end -}}
 {{ if gt (len .Lexer.StartConditions) 1 -}}
 constexpr int tmStateMap[] = {
 {{- int_array .Lexer.Tables.StateMap "\t" 79 -}}
@@ -156,9 +157,11 @@ Token Lexer::Next() {
 {{ if or $spaceRules .Lexer.RuleToken -}}
 restart:
 {{ end -}}
-{{ if .Options.TokenLine}}  token_line_ = line_;
+{{ if .Options.TokenLine -}}
+  token_line_ = line_;
 {{ end -}}
-{{ if .Options.TokenColumn}}  token_column_ = offset_ - line_offset_ + 1;
+{{ if .Options.TokenColumn -}}
+  token_column_ = offset_ - line_offset_ + 1;
 {{ end -}}
   token_offset_ = offset_;
 

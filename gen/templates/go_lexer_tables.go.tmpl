@@ -57,10 +57,12 @@ const tmRuneClassLen = {{len $runeArr}}
 const tmFirstRule = {{.Lexer.Tables.ActionStart}}
 
 {{end -}}
+{{ if gt (len .Lexer.StartConditions) 1 -}}
 var tmStateMap = []int{
 {{- int_array .Lexer.Tables.StateMap "\t" 79 -}}
 }
 
+{{end -}}
 {{if .Lexer.RuleToken -}}
 var tmToken = []{{template "tokenType" .}}{
 {{- int_array .Lexer.RuleToken "\t" 79 -}}

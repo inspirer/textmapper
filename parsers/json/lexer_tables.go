@@ -16,10 +16,6 @@ var tmRuneClass = []uint8{
 const tmRuneClassLen = 126
 const tmFirstRule = -3
 
-var tmStateMap = []int{
-	0,
-}
-
 var tmLexerAction = []int8{
 	-3, -4, 27, 20, -4, -4, 19, 18, -4, 14, 13, 7, 6, 5, 5, 5, 4, -4, 3, 5, 5, 5,
 	2, 1, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6,

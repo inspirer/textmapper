@@ -24,7 +24,7 @@ type Lexer struct {
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
-	tokenOffset int  // last token offset
+	tokenOffset int  // last token byte offset
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
 	lineOffset  int  // current line offset

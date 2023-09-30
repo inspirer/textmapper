@@ -34,7 +34,7 @@ type Lexer struct {
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
-	tokenOffset int  // last token offset
+	tokenOffset int  // last token byte offset
 {{ if .Options.TokenLine -}}
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
@@ -48,7 +48,9 @@ type Lexer struct {
 	scanOffset  int  // scanning offset
 	value       interface{}
 
+{{ if gt (len .Lexer.StartConditions) 1 -}}
 	State int // lexer state, modifiable
+{{ end -}}
 {{ block "sharedStateVars" .}}{{end -}}
 {{ block "stateVars" .}}{{end -}}
 }
@@ -75,7 +77,9 @@ func (l *Lexer) Init(source string) {
 {{ if .Options.TokenColumn -}}
 	l.tokenColumn = 1
 {{ end -}}
+{{ if gt (len .Lexer.StartConditions) 1 -}}
 	l.State = 0
+{{ end -}}
 {{ block "sharedInitStateVars" .}}{{end -}}
 {{ block "initStateVars" .}}{{end}}
 	if "strings".HasPrefix(source, bomSeq) {
@@ -97,13 +101,15 @@ func (l *Lexer) Next() {{template "tokenType" .}} {
 {{ if or $spaceRules .Lexer.RuleToken -}}
 restart:
 {{ end -}}
-{{ if .Options.TokenLine}}	l.tokenLine = l.line
+{{ if .Options.TokenLine -}}
+	l.tokenLine = l.line
 {{ end -}}
-{{ if .Options.TokenColumn}}	l.tokenColumn = l.offset-l.lineOffset+1
+{{ if .Options.TokenColumn -}}
+	l.tokenColumn = l.offset-l.lineOffset+1
 {{ end -}}
 	l.tokenOffset = l.offset
 
-	state := tmStateMap[l.State]
+	state := {{ if gt (len .Lexer.StartConditions) 1 }}tmStateMap[l.State]{{else}}{{index .Lexer.Tables.StateMap 0}}{{end}}
 {{ if .Lexer.ClassActions -}}
 	hash := uint32(0)
 {{ end -}}

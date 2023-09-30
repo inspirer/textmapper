@@ -10,6 +10,8 @@ echo 'Regenerating tm'
 (cd parsers/tm; textmapper generate --compat)
 echo 'Regenerating json'
 (cd parsers/json; textmapper generate --compat)
+echo 'Regenerating simple'
+(cd parsers/simple; textmapper generate --compat)
 
 go fmt ./...
 find . -type f -name '*.go' | xargs -I '{}' goimports -w -local github.com '{}'

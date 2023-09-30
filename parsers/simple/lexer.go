@@ -16,13 +16,11 @@ type Lexer struct {
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
-	tokenOffset int  // last token offset
+	tokenOffset int  // last token byte offset
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
 	scanOffset  int  // scanning offset
 	value       interface{}
-
-	State int // lexer state, modifiable
 }
 
 var bomSeq = "\xef\xbb\xbf"
@@ -37,7 +35,6 @@ func (l *Lexer) Init(source string) {
 	l.tokenOffset = 0
 	l.line = 1
 	l.tokenLine = 1
-	l.State = 0
 
 	if strings.HasPrefix(source, bomSeq) {
 		l.offset += len(bomSeq)
@@ -55,7 +52,7 @@ restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
 
-	state := tmStateMap[l.State]
+	state := 0
 	for state >= 0 {
 		var ch int
 		if uint(l.ch) < tmRuneClassLen {
