@@ -3,6 +3,9 @@ package gen
 import (
 	"embed"
 	"fmt"
+	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/inspirer/textmapper/grammar"
 )
@@ -100,5 +103,29 @@ func builtin(name string) string {
 	if err != nil {
 		panic(fmt.Sprintf("cannot read %v: %v", name, err))
 	}
-	return string(content)
+	return patchTemplates(string(content))
+}
+
+// patchTemplates changes the syntax of Go templates and makes ` -}}` consume
+// a single newline character only (instead of all the following whitespace).
+func patchTemplates(tmpl string) string {
+	const seq = " -}}\n"
+
+	strs := strings.SplitAfter(tmpl, seq)
+	if len(strs) == 1 {
+		// Fast path. Nothing to patch.
+		return tmpl
+	}
+
+	var ret strings.Builder
+	ret.WriteString(strs[0])
+
+	for _, s := range strs[1:] {
+		if r, _ := utf8.DecodeRuneInString(s); unicode.IsSpace(r) {
+			// Insert a stopper to keep the line numbers intact for error messages.
+			ret.WriteString("{{/**/}}")
+		}
+		ret.WriteString(s)
+	}
+	return ret.String()
 }

@@ -1,6 +1,6 @@
 {{- define "flushPending" -}}
 {{ if .ReportTokens true -}}
-{{/**/}}	if len(p.pending) > 0 {
+	if len(p.pending) > 0 {
 		for _, tok := range p.pending {
 			p.reportIgnoredToken({{if $.Options.Cancellable}}ctx, {{end}}tok)
 		}
@@ -13,16 +13,16 @@
 
 {{- define "reportConsumedNext" -}}
 {{ if .ReportTokens false -}}
-{{/**/}}			switch {{template "tokenType" .}}(p.next.symbol) {
+			switch {{template "tokenType" .}}(p.next.symbol) {
 {{ range .Lexer.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
-{{/**/}}	case {{template "tokenPkg" $}}{{$sym.ID}}:
+	case {{template "tokenPkg" $}}{{$sym.ID}}:
 		p.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}p.next.offset, p.next.endoffset)
 {{end -}}
 {{end -}}
 {{template "customReportNext" . -}}
-{{/**/}}			}
+			}
 {{else -}}
 {{template "customReportNext" . -}}
 {{end -}}
@@ -286,7 +286,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{ template "flushPending" . -}}
 				if p.next.symbol != eoiToken {
 {{template "reportConsumedNext" . -}}
-{{/**/}}					p.next.symbol = noToken
+					p.next.symbol = noToken
 				}
 {{- if .Parser.IsRecovering }}
 				if p.recovering > 0 {
@@ -417,7 +417,7 @@ func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Contex
 		}
 {{ template "flushPending" . -}}
 {{ template "reportConsumedNext" . -}}
-{{/**/}}		e = p.next.endoffset
+		e = p.next.endoffset
 		p.fetchNext({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}lexer, stack)
 	}
 	return e
@@ -724,7 +724,7 @@ func At{{$sym.Name}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexer, next int32, start, end int{{$stateType}}{{if $.NeedsSession}}, s *session{{end}}) {{if $.Options.Cancellable}}(bool, error){{else}}bool{{end}} {
 {{ block "setupLookaheadLexer" . -}}
-{{/**/}}	var lexer Lexer = *l
+	var lexer Lexer = *l
 {{end -}}
 {{ if .Options.RecursiveLookaheads }}
 	// Use memoization for recursive lookaheads.
@@ -833,7 +833,7 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexe
 {{ if .Options.RecursiveLookaheads -}}
 	s.cache[key] = state == end
 {{ end -}}
-{{/**/}}	if debugSyntax {
+	if debugSyntax {
 		"fmt".Printf("lookahead done: %v\n", state == end)
 	}
 	return state == end{{if $.Options.Cancellable}}, nil{{end}}
@@ -926,21 +926,21 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 {{ block "reportIgnoredToken" . -}}
 func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
 {{ block "onBeforeIgnore" .}}{{end -}}
-{{/**/}}	var t {{template "nodeTypeRef" $}}
-{{- if .Lexer.UsesFlags}}
+	var t {{template "nodeTypeRef" $}}
+{{ if .Lexer.UsesFlags -}}
 	var flags {{template "nodeFlagsRef" $}}
-{{- end}}
+{{ end -}}
 	switch {{template "tokenType" .}}(tok.symbol) {
-{{- range .Lexer.MappedTokens}}
-{{- $sym := index $.Syms .Token}}
-{{- if or $sym.Space (eq $sym.Name "invalid_token") }}
+{{ range .Lexer.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
 		t = {{template "nodeTypePkg" $}}{{node_id .Name}}
-{{- if .Flags }}
+{{ if .Flags -}}
 		flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{end}}
-{{- end}}
-{{- end}}
-{{- end}}
+{{ end -}}
+{{ end -}}
+{{ end -}}
 	default:
 		return
 	}

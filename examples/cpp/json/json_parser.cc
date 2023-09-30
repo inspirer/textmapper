@@ -326,6 +326,7 @@ absl::Status Parser::applyRule(
     {
       lhs.sym.location.begin = rhs[1].sym.location.begin;
     } break;
+
     case 32:
       if (AtEmptyObject(lexer, next_symbol_.symbol)) {
         lhs.sym.symbol = 23; /* lookahead_EmptyObject */
