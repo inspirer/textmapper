@@ -240,7 +240,7 @@ recovered:
 {{ if .Code -}}
 {{lexer_action .Code}}
 {{ end -}}
-{{ end -}}
+{{ end }}{{/* .Lexer.Actions */ -}}
 	}
 {{ else -}}
 	if rule == 0 {

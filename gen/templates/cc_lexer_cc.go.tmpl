@@ -303,7 +303,7 @@ recovered:
     space = true;
 {{ end -}}
 {{ if .Code -}}
-{{lexer_action .Code -}}
+{{lexer_action .Code}}
 {{ end -}}
     break;
 {{ end }}{{/* .Lexer.Actions */ -}}
@@ -318,11 +318,13 @@ recovered:
   }
 {{ else -}}
   switch (tok) {
-    case Token::{{(index $.Syms .Lexer.InvalidToken).ID}}:
+  case Token::{{(index $.Syms .Lexer.InvalidToken).ID}}:
 {{ template "handleInvalidToken" . -}}
-      break;
-    case Token(8):
-      goto restart;
+    break;
+{{ if $spaceRules -}}
+  case {{range $i, $val := $spaceRules}}{{if gt $i 0}}, {{end}}Token({{$val}}){{end}}:
+    goto restart;
+{{ end -}}
     default:
       break;
   }
@@ -396,4 +398,4 @@ void Lexer::Rewind(int64_t rewind_offset) {
         Rewind(scan_offset_);
       }
 {{ end -}}
-{{end}}
+{{ end }}
