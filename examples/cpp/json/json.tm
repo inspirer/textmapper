@@ -44,7 +44,7 @@ kw_null: /null/
 'A': /A/
 'B': /B/
 
-'A': /A2/ { /*some code */ }
+'A': /A!\p{L}+/ { /*some code */ }
 
 error:
 invalid_token:

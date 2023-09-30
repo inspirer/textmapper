@@ -23,50 +23,47 @@ constexpr int tmNumClasses = {{.Lexer.Tables.NumSymbols}};
 
 {{ $runeType := bits .Lexer.Tables.NumSymbols -}}
 {{ if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
-// NOT TRANSLATED
-type mapRange struct {
-  lo         rune
-  hi         rune
-  defaultVal uint{{$runeType}}
-  val        []uint{{$runeType}}
-}
+// Latin-1 characters.
+constexpr uint{{$runeType}}_t tmRuneClass[] = {
+{{- int_array (.Lexer.Tables.SymbolArr 256) "\t" 79 -}}
+};
 
-func mapRune(c rune) int {
-  lo := 0
-  hi := len(tmRuneRanges)
-  for lo < hi {
-    m := lo + (hi-lo)/2
-    r := tmRuneRanges[m]
-    if c < r.lo {
-      hi = m
-    } else if c >= r.hi {
-      lo = m + 1
+constexpr int tmRuneClassLen = 256;
+constexpr int tmFirstRule = {{.Lexer.Tables.ActionStart}};
+
+struct MapRange {
+  uint32_t lo;
+  uint32_t hi;
+  uint{{$runeType}}_t default_val;
+  std::vector<uint{{$runeType}}_t> val;
+};
+
+const std::vector<MapRange> tmRuneRanges = {
+{{ range .Lexer.Tables.CompressedMap 256}}  { {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}{
+{{- int_array .Vals "\t\t" 78}}  }{{else}}{}{{end -}} },
+{{ end -}}
+};
+
+uint32_t mapRune(int32_t c) {
+  uint32_t lo = 0;
+  uint32_t hi = tmRuneRanges.size();
+  while (lo < hi) {
+    uint32_t m = lo + (hi-lo)/2;
+    const MapRange& r = tmRuneRanges[m];
+    if (c < r.lo) {
+      hi = m;
+    } else if (c >= r.hi) {
+      lo = m + 1;
     } else {
-      i := int(c - r.lo)
-      if i < len(r.val) {
-        return int(r.val[i])
+      uint32_t i = c - r.lo;
+      if (i < r.val.size()) {
+        return static_cast<uint32_t>(r.val[i]);
       }
-      return int(r.defaultVal)
+      return static_cast<uint32_t>(r.default_val);
     }
   }
-  return {{.Lexer.Tables.LastMapEntry.Target}}
+  return {{.Lexer.Tables.LastMapEntry.Target}};
 }
-
-// Latin-1 characters.
-var tmRuneClass = []uint{{$runeType}}{
-{{- int_array (.Lexer.Tables.SymbolArr 256) "\t" 79 -}}
-}
-
-const tmRuneClassLen = 256
-const tmFirstRule = {{.Lexer.Tables.ActionStart}}
-
-var tmRuneRanges = []mapRange{
-{{ range .Lexer.Tables.CompressedMap 256}}  { {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
-{{- int_array .Vals "\t\t" 78}}  }{{else}}nil{{end -}} },
-{{ end -}}
-}
-
-// END OF NOT TRANSLATED
 {{ else -}}
 {{ $runeArr := .Lexer.Tables.SymbolArr 0 -}}
 constexpr uint{{$runeType}}_t tmRuneClass[] = {
@@ -75,8 +72,8 @@ constexpr uint{{$runeType}}_t tmRuneClass[] = {
 
 constexpr int tmRuneClassLen = {{len $runeArr}};
 constexpr int tmFirstRule = {{.Lexer.Tables.ActionStart}};
-
 {{ end -}}
+
 constexpr int tmStateMap[] = {
 {{- int_array .Lexer.Tables.StateMap "\t" 79 -}}
 };
@@ -202,7 +199,7 @@ restart:
       curr_class = tmRuneClass[input_rune_];
     } else {
 {{ if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
-      curr_class = mapRune(l.ch);
+      curr_class = mapRune(input_rune_);
 {{ else -}}
       curr_class = {{.Lexer.Tables.LastMapEntry.Target}};
 {{ end -}}
