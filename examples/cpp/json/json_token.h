@@ -14,50 +14,50 @@ namespace json {
 // Token is an enum of all terminal symbols of the json language.
 enum class Token {
   UNAVAILABLE = -1,
-	EOI = 0,
-	INVALID_TOKEN = 1,
-	LBRACE = 2,  // {
-	RBRACE = 3,  // }
-	LBRACK = 4,  // [
-	RBRACK = 5,  // ]
-	COLON = 6,  // :
-	COMMA = 7,  // ,
-	SPACE = 8,
-	MULTILINECOMMENT = 9,
-	JSONSTRING = 10,
-	JSONNUMBER = 11,
-	ID = 12,
-	KW_NULL = 13,  // null
-	TRUE = 14,  // true
-	FALSE = 15,  // false
-	CHAR_A = 16,  // A
-	CHAR_B = 17,  // B
-	ERROR = 18,
+  EOI = 0,
+  INVALID_TOKEN = 1,
+  LBRACE = 2,  // {
+  RBRACE = 3,  // }
+  LBRACK = 4,  // [
+  RBRACK = 5,  // ]
+  COLON = 6,  // :
+  COMMA = 7,  // ,
+  SPACE = 8,
+  MULTILINECOMMENT = 9,
+  JSONSTRING = 10,
+  JSONNUMBER = 11,
+  ID = 12,
+  KW_NULL = 13,  // null
+  TRUE = 14,  // true
+  FALSE = 15,  // false
+  CHAR_A = 16,  // A
+  CHAR_B = 17,  // B
+  ERROR = 18,
   NumTokens = 19
 };
 
 constexpr inline std::array<absl::string_view,
                             static_cast<size_t>(Token::NumTokens)>
     tokenStr = {
-	"EOI",
-	"INVALID_TOKEN",
-	"{",
-	"}",
-	"[",
-	"]",
-	":",
-	",",
-	"SPACE",
-	"MULTILINECOMMENT",
-	"JSONSTRING",
-	"JSONNUMBER",
-	"ID",
-	"null",
-	"true",
-	"false",
-	"A",
-	"B",
-	"ERROR",
+  "EOI",
+  "INVALID_TOKEN",
+  "{",
+  "}",
+  "[",
+  "]",
+  ":",
+  ",",
+  "SPACE",
+  "MULTILINECOMMENT",
+  "JSONSTRING",
+  "JSONNUMBER",
+  "ID",
+  "null",
+  "true",
+  "false",
+  "A",
+  "B",
+  "ERROR",
 };
 
 inline std::ostream& operator<<(std::ostream& os, Token tok) {

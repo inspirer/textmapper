@@ -59,12 +59,12 @@ enum class NodeType {
 constexpr inline std::array<absl::string_view,
                             static_cast<size_t>(NodeType::NodeTypeMax)>
     nodeTypeStr = {
-	"NONE",
+  "NONE",
 {{- range .Parser.Types.RangeTypes }}
-	"{{.Name}}",
+  "{{.Name}}",
 {{- end}}
 {{- range .Options.ExtraTypes }}
-	"{{.Name}}",
+  "{{.Name}}",
 {{- end}}
 };
 

@@ -24,31 +24,31 @@ constexpr int tmNumClasses = {{.Lexer.Tables.NumSymbols}};
 {{if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
 // NOT TRANSLATED
 type mapRange struct {
-	lo         rune
-	hi         rune
-	defaultVal uint{{$runeType}}
-	val        []uint{{$runeType}}
+  lo         rune
+  hi         rune
+  defaultVal uint{{$runeType}}
+  val        []uint{{$runeType}}
 }
 
 func mapRune(c rune) int {
-	lo := 0
-	hi := len(tmRuneRanges)
-	for lo < hi {
-		m := lo + (hi-lo)/2
-		r := tmRuneRanges[m]
-		if c < r.lo {
-			hi = m
-		} else if c >= r.hi {
-			lo = m + 1
-		} else {
-			i := int(c - r.lo)
-			if i < len(r.val) {
-				return int(r.val[i])
-			}
-			return int(r.defaultVal)
-		}
-	}
-	return {{.Lexer.Tables.LastMapEntry.Target}}
+  lo := 0
+  hi := len(tmRuneRanges)
+  for lo < hi {
+    m := lo + (hi-lo)/2
+    r := tmRuneRanges[m]
+    if c < r.lo {
+      hi = m
+    } else if c >= r.hi {
+      lo = m + 1
+    } else {
+      i := int(c - r.lo)
+      if i < len(r.val) {
+        return int(r.val[i])
+      }
+      return int(r.defaultVal)
+    }
+  }
+  return {{.Lexer.Tables.LastMapEntry.Target}}
 }
 
 // Latin-1 characters.
@@ -60,8 +60,8 @@ const tmRuneClassLen = 256
 const tmFirstRule = {{.Lexer.Tables.ActionStart}}
 
 var tmRuneRanges = []mapRange{
-{{range .Lexer.Tables.CompressedMap 256}}	{ {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
-{{- int_array .Vals "\t\t" 78}}	}{{else}}nil{{end -}} },
+{{range .Lexer.Tables.CompressedMap 256}}  { {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
+{{- int_array .Vals "\t\t" 78}}  }{{else}}nil{{end -}} },
 {{end -}}
 }
 
@@ -94,7 +94,7 @@ constexpr int{{bits_per_element .Lexer.Tables.Dfa}}_t tmLexerAction[] = {
 
 constexpr int tmBacktracking[] = {
 {{- range .Lexer.Tables.Backtrack}}
-	{{.Action}}, {{.NextState}},{{if .Details}} // {{.Details}}{{end}}
+  {{.Action}}, {{.NextState}},{{if .Details}} // {{.Details}}{{end}}
 {{- end}}
 };
 {{- end}}
@@ -253,9 +253,9 @@ recovered:
   switch ({{if .Lexer.RuleToken}}rule{{else}}tok{{end}}) {
 {{- range .Lexer.ClassActions}}
 {{- if $.Lexer.RuleToken}}
-	case {{sum .Action 2}}:
+  case {{sum .Action 2}}:
 {{- else}}
-	case Token::{{(index $.Syms .Action).ID}}: {
+  case Token::{{(index $.Syms .Action).ID}}: {
 {{- end}}
 {{- with string_switch .Custom }}
       uint32_t hh = hash & {{.Mask}};
@@ -286,30 +286,30 @@ recovered:
 {{- if .Lexer.RuleToken}}
 // TODO NOT TRANSLATED
 
-	tok := tmToken[rule]
-	var space bool
+  tok := tmToken[rule]
+  var space bool
 {{- if .Lexer.Actions}}
-	switch rule {
-	case 0:
+  switch rule {
+  case 0:
 {{- template "handleInvalidToken" .}}
 {{- range .Lexer.Actions}}
-	case {{sum .Action 2}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
+  case {{sum .Action 2}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
 {{- if .Space }}
-		space = true
+    space = true
 {{- end}}
 {{- if .Code }}
 {{lexer_action .Code}}
 {{- end}}
 {{- end}}
-	}
+  }
 {{- else}}
-	if rule == 0 {
+  if rule == 0 {
 {{- template "handleInvalidToken" .}}
-	}
+  }
 {{- end}}
-	if space {
-		goto restart
-	}
+  if space {
+    goto restart
+  }
 // END OF NOT TRANSLATED
 {{- else}}
   switch (tok) {
@@ -323,7 +323,7 @@ recovered:
   }
 {{- end}}
 {{ block "onAfterNext" .}}{{end -}}
-{{/**/}}	return tok;
+{{/**/}}  return tok;
 }
 {{end -}}
 
