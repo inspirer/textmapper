@@ -30,7 +30,7 @@ enum class Token {
   KW_NULL = 13,  // null
   TRUE = 14,  // true
   FALSE = 15,  // false
-  CHAR_A = 16,  // A
+  CHAR_A = 16,
   CHAR_B = 17,  // B
   ERROR = 18,
   NumTokens = 19
@@ -55,7 +55,7 @@ constexpr inline std::array<absl::string_view,
   "null",
   "true",
   "false",
-  "A",
+  "CHAR_A",
   "B",
   "ERROR",
 };

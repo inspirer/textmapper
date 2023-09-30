@@ -99,7 +99,6 @@ restart:
 		state = int(tmLexerAction[state*tmNumClasses+ch])
 		if state > tmFirstRule {
 			hash = hash*uint32(31) + uint32(l.ch)
-
 			if l.ch == '\n' {
 				l.line++
 			}

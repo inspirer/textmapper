@@ -1,18 +1,19 @@
 {{ template "header" . -}}
-{{block "lexerIncludes" . -}}
+{{ block "lexerIncludes" . -}}
 #include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}lexer.h"
 
 #include "{{.Options.AbslIncludePrefix}}/log/log.h"
 #include "{{.Options.AbslIncludePrefix}}/strings/match.h"
-{{end}}
+{{ end -}}
+
 namespace {{.Options.Namespace}} {
-{{block "onBeforeLexer" .}}{{end -}}
-{{template "lexerTables" .}}
-{{template "decodeRune" .}}
-{{template "lexerCtor" .}}
-{{template "lexerNext" .}}
-{{template "lexerRewind" .}}
-{{- block "onAfterLexer" .}}{{end}}
+{{ block "onBeforeLexer" .}}{{end -}}
+{{ template "lexerTables" .}}
+{{ template "decodeRune" .}}
+{{ template "lexerCtor" .}}
+{{ template "lexerNext" .}}
+{{ template "lexerRewind" .}}
+{{ block "onAfterLexer" .}}{{end -}}
 }  // namespace {{.Options.Namespace}}
 
 
@@ -20,8 +21,8 @@ namespace {{.Options.Namespace}} {
 namespace {
 constexpr int tmNumClasses = {{.Lexer.Tables.NumSymbols}};
 
-{{$runeType := bits .Lexer.Tables.NumSymbols -}}
-{{if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
+{{ $runeType := bits .Lexer.Tables.NumSymbols -}}
+{{ if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
 // NOT TRANSLATED
 type mapRange struct {
   lo         rune
@@ -60,13 +61,13 @@ const tmRuneClassLen = 256
 const tmFirstRule = {{.Lexer.Tables.ActionStart}}
 
 var tmRuneRanges = []mapRange{
-{{range .Lexer.Tables.CompressedMap 256}}  { {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
+{{ range .Lexer.Tables.CompressedMap 256}}  { {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
 {{- int_array .Vals "\t\t" 78}}  }{{else}}nil{{end -}} },
-{{end -}}
+{{ end -}}
 }
 
 // END OF NOT TRANSLATED
-{{else -}}
+{{ else -}}
 {{ $runeArr := .Lexer.Tables.SymbolArr 0 -}}
 constexpr uint{{$runeType}}_t tmRuneClass[] = {
 {{- int_array (.Lexer.Tables.SymbolArr 256) "\t" 79 -}}
@@ -75,31 +76,30 @@ constexpr uint{{$runeType}}_t tmRuneClass[] = {
 constexpr int tmRuneClassLen = {{len $runeArr}};
 constexpr int tmFirstRule = {{.Lexer.Tables.ActionStart}};
 
-{{end -}}
+{{ end -}}
 constexpr int tmStateMap[] = {
 {{- int_array .Lexer.Tables.StateMap "\t" 79 -}}
 };
 
-{{if .Lexer.RuleToken -}}
-constexpr Token tmToken[] = {
+{{ if .Lexer.RuleToken -}}
+constexpr int{{bits_per_element .Lexer.RuleToken}}_t tmToken[] = {
 {{- int_array .Lexer.RuleToken "\t" 79 -}}
 };
 
-{{end -}}
+{{ end -}}
 constexpr int{{bits_per_element .Lexer.Tables.Dfa}}_t tmLexerAction[] = {
 {{- int_array .Lexer.Tables.Dfa "\t" 79 -}}
 };
-
-{{- if .Lexer.Tables.Backtrack}}
+{{if .Lexer.Tables.Backtrack -}}
 
 constexpr int tmBacktracking[] = {
-{{- range .Lexer.Tables.Backtrack}}
+{{ range .Lexer.Tables.Backtrack -}}
   {{.Action}}, {{.NextState}},{{if .Details}} // {{.Details}}{{end}}
-{{- end}}
+{{ end -}}
 };
-{{- end}}
+{{ end -}}
 }  // namespace
-{{end -}}
+{{ end -}}
 
 {{- define "decodeRune" -}}
 constexpr uint32_t runeErr = 0xfffd;
@@ -164,73 +164,78 @@ restart:
   token_offset_ = offset_;
 
   int state = tmStateMap[start_state_];
-{{- if .Lexer.ClassActions}}
+{{ if .Lexer.ClassActions -}}
   uint32_t hash = 0;
-{{- end}}
-{{- if .Lexer.Tables.Backtrack}}
-{{- if .Lexer.RuleToken}}
+{{ end -}}
+{{ if .Lexer.Tables.Backtrack -}}
+{{ if .Lexer.RuleToken -}}
   int backupRule = -1;
-{{- else}}
+{{ else -}}
   Token backupToken = Token::EOI;
-{{- end}}
+{{ end -}}
   uint64_t backupOffset;
-{{- if .Lexer.ClassActions}}
+{{ if .Lexer.ClassActions -}}
   uint32_t backupHash = hash;
-{{- end}}
-{{- end}}
+{{ end -}}
+{{ end -}}
   while (state >= 0) {
     int curr_class;
     if (input_rune_ < 0) {
       state = tmLexerAction[state * tmNumClasses];
-{{- if .Lexer.Tables.Backtrack}}
+{{ if .Lexer.Tables.Backtrack -}}
       if (state > tmFirstRule && state < 0) {
         state = (-1 - state) * 2;
-{{- if .Lexer.RuleToken}}
+{{ if .Lexer.RuleToken -}}
         backupRule = tmBacktracking[state];
-{{- else}}
+{{ else -}}
         backupToken = Token(tmBacktracking[state]);
-{{- end}}
+{{ end -}}
         backupOffset = offset_;
-{{- if .Lexer.ClassActions}}
+{{ if .Lexer.ClassActions -}}
         backupHash = hash;
-{{- end}}
+{{ end -}}
         state = tmBacktracking[state + 1];
       }
-{{- end}}
+{{ end -}}
       continue;
     } else if (input_rune_ < tmRuneClassLen) {
       curr_class = tmRuneClass[input_rune_];
     } else {
-{{- if gt .Lexer.Tables.LastMapEntry.Start 2048}}
+{{ if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
       curr_class = mapRune(l.ch);
-{{- else}}
+{{ else -}}
       curr_class = {{.Lexer.Tables.LastMapEntry.Target}};
-{{- end}}
+{{ end -}}
     }
     state = tmLexerAction[state * tmNumClasses + curr_class];
     if (state > tmFirstRule) {
-{{- if .Lexer.Tables.Backtrack}}
+{{ if .Lexer.Tables.Backtrack -}}
       if (state < 0) {
         state = (-1 - state) * 2;
+{{ if .Lexer.RuleToken -}}
+        backupRule = tmBacktracking[state];
+{{ else -}}
         backupToken = Token(tmBacktracking[state]);
+{{ end -}}
         backupOffset = offset_;
-{{- if .Lexer.ClassActions}}
+{{ if .Lexer.ClassActions -}}
         backupHash = hash;
-{{- end}}
+{{ end -}}
         state = tmBacktracking[state + 1];
       }
-{{- end}}
-{{- if .Lexer.ClassActions}}
+{{ end -}}
+{{ if .Lexer.ClassActions -}}
       hash = hash * 31 + static_cast<uint32_t>(input_rune_);
-{{end}}
-{{- if .Options.TokenLine}}
+{{end -}}
+{{ if .Options.TokenLine -}}
       if (input_rune_ == '\n') {
         line_++;
-{{- if or .Options.TokenLineOffset .Options.TokenColumn}}
+{{ if or .Options.TokenLineOffset .Options.TokenColumn -}}
         line_offset_ = offset_;
-{{- end}}
+{{ end -}}
       }
-{{end}}
+{{ end -}}
+
       // Scan the next character.
       offset_ = scan_offset_;
       if (offset_ < source_.size()) {
@@ -241,87 +246,85 @@ restart:
     }
   }
 
-{{if .Lexer.RuleToken}}
+{{ if .Lexer.RuleToken -}}
   int rule = tmFirstRule - state;
-{{- else}}
+{{ else -}}
   Token tok = Token(tmFirstRule - state);
-{{- end}}
-{{- if .Lexer.Tables.Backtrack}}
+{{ end -}}
+{{ if .Lexer.Tables.Backtrack -}}
 recovered:
-{{- end}}
-{{- if .Lexer.ClassActions}}
+{{ end -}}
+{{ if .Lexer.ClassActions -}}
   switch ({{if .Lexer.RuleToken}}rule{{else}}tok{{end}}) {
-{{- range .Lexer.ClassActions}}
-{{- if $.Lexer.RuleToken}}
+{{ range .Lexer.ClassActions -}}
+{{ if $.Lexer.RuleToken -}}
   case {{sum .Action 2}}:
-{{- else}}
+{{ else -}}
   case Token::{{(index $.Syms .Action).ID}}: {
-{{- end}}
-{{- with string_switch .Custom }}
-      uint32_t hh = hash & {{.Mask}};
-      switch (hh) {
-{{- range .Cases}}
-      case {{.Value}}:
-{{- range .Subcases}}
-        if (hash == {{hex .Hash}} && {{quote .Str}} == Text()) {
-{{- if $.Lexer.RuleToken}}
-          rule = {{sum .Action 2}};
-{{- else}}
-          tok = Token::{{(index $.Syms .Action).ID}};
-{{- end}}
-          break;
-        }
-{{- end}}
+{{ end -}}
+{{ with string_switch .Custom -}}
+    switch (hash & {{.Mask}}) {
+{{ range .Cases -}}
+    case {{.Value}}:
+{{ range .Subcases -}}
+      if (hash == {{hex .Hash}} && {{quote .Str}} == Text()) {
+{{ if $.Lexer.RuleToken -}}
+        rule = {{sum .Action 2}};
+{{ else -}}
+        tok = Token::{{(index $.Syms .Action).ID}};
+{{ end -}}
         break;
-{{- end}}
       }
+{{ end -}}
       break;
-{{- end}}
-{{- end}}
+{{ end}}{{/* .Cases */ -}}
     }
-    default:
-      break;
+    break;
+{{ end -}}
+{{ end}}{{/* .Lexer.ClassActions */ -}}
+  default:
+    break;
   }
-{{- end}}
-{{- if .Lexer.RuleToken}}
-// TODO NOT TRANSLATED
+{{ end -}}
+{{ if .Lexer.RuleToken -}}
 
-  tok := tmToken[rule]
-  var space bool
-{{- if .Lexer.Actions}}
-  switch rule {
+  Token tok = Token(tmToken[rule]);
+  bool space = false;
+{{ if .Lexer.Actions -}}
+  switch (rule) {
   case 0:
-{{- template "handleInvalidToken" .}}
-{{- range .Lexer.Actions}}
+{{ template "handleInvalidToken" . -}}
+    break;
+{{ range .Lexer.Actions -}}
   case {{sum .Action 2}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
-{{- if .Space }}
-    space = true
-{{- end}}
-{{- if .Code }}
-{{lexer_action .Code}}
-{{- end}}
-{{- end}}
+{{ if .Space -}}
+    space = true;
+{{ end -}}
+{{ if .Code -}}
+{{lexer_action .Code -}}
+{{ end -}}
+    break;
+{{ end }}{{/* .Lexer.Actions */ -}}
   }
-{{- else}}
-  if rule == 0 {
-{{- template "handleInvalidToken" .}}
+{{ else -}}
+  if (rule == 0) {
+{{ template "handleInvalidToken" . -}}
   }
-{{- end}}
-  if space {
-    goto restart
+{{ end -}}
+  if (space) {
+    goto restart;
   }
-// END OF NOT TRANSLATED
-{{- else}}
+{{ else -}}
   switch (tok) {
     case Token::{{(index $.Syms .Lexer.InvalidToken).ID}}:
-{{- template "handleInvalidToken" .}}
+{{ template "handleInvalidToken" . -}}
       break;
     case Token(8):
       goto restart;
     default:
       break;
   }
-{{- end}}
+{{ end -}}
 {{ block "onAfterNext" .}}{{end -}}
   return tok;
 }
@@ -330,7 +333,7 @@ recovered:
 
 {{- define "lexerRewind" -}}
 void Lexer::Rewind(int64_t rewind_offset) {
-{{- if .Options.TokenLine}}
+{{ if .Options.TokenLine -}}
   if (rewind_offset < offset_) {
     for (int64_t i = rewind_offset; i < offset_; ++i) {
       if (source_[i] == '\n') {
@@ -347,11 +350,12 @@ void Lexer::Rewind(int64_t rewind_offset) {
       }
     }
   }
-{{- if or .Options.TokenLineOffset .Options.TokenColumn}}
+{{ if or .Options.TokenLineOffset .Options.TokenColumn -}}
   // Looking for \n before and not at offset_.
   line_offset_ = 1 + source_.find_last_of('\n', offset_ - 1);
-{{- end}}
-{{end}}
+{{ end -}}
+
+{{ end -}}
   // Scan the next character.
   scan_offset_ = rewind_offset;
   offset_ = rewind_offset;
@@ -364,30 +368,30 @@ void Lexer::Rewind(int64_t rewind_offset) {
 {{end -}}
 
 {{- define "handleInvalidToken" -}}
-{{if .Lexer.Tables.Backtrack}}
+{{ if .Lexer.Tables.Backtrack -}}
       if ({{if .Lexer.RuleToken}}backupRule{{else}}static_cast<int>(backupToken){{end}} >= 0) {
-{{- if .Lexer.RuleToken}}
+{{ if .Lexer.RuleToken -}}
         rule = backupRule;
-{{- else}}
+{{ else -}}
         tok = backupToken;
-{{- end}}
-{{- if .Lexer.ClassActions}}
+{{ end -}}
+{{ if .Lexer.ClassActions -}}
         hash = backupHash;
-{{- end}}
+{{ end -}}
         Rewind(backupOffset);
       } else if (offset_ == token_offset_) {
         Rewind(scan_offset_);
       }
-{{- if .Lexer.RuleToken}}
+{{ if .Lexer.RuleToken -}}
       if (rule != 0) {
-{{- else}}
+{{ else -}}
       if (tok != Token::{{(index $.Syms .Lexer.InvalidToken).ID}}) {
-{{- end}}
+{{ end -}}
         goto recovered;
       }
-{{- else}}
+{{ else -}}
       if (offset_ == token_offset_) {
         Rewind(scan_offset_);
       }
-{{- end -}}
+{{ end -}}
 {{end}}

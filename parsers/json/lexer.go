@@ -87,7 +87,6 @@ restart:
 				state = tmBacktracking[state+1]
 			}
 			hash = hash*uint32(31) + uint32(l.ch)
-
 			if l.ch == '\n' {
 				l.line++
 			}
