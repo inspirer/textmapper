@@ -29,7 +29,7 @@ namespace {{.Options.Namespace}} {
 
 {{- block "onAfterParser" .}}{{end}}
 }  // namespace {{.Options.Namespace}}
-{{/**/}}
+
 
 {{- define "parserTables" -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
@@ -170,7 +170,7 @@ constexpr NodeType tmRuleType[] = {
 {{ if .ReportTokens true -}}
 void Parser::reportIgnoredToken(symbol sym) {
 {{ block "onBeforeIgnore" .}}{{end -}}
-{{/**/}}  NodeType t;
+  NodeType t;
 {{- if .Lexer.UsesFlags}}
   var flags NodeFlags
 {{- end}}
@@ -301,7 +301,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
                                     int{{$stateType}}_t start, 
                                     int{{$stateType}}_t end) {
 {{ block "setupLookaheadLexer" . -}}
-{{/**/}}  Lexer lexer = lexer_to_copy;
+  Lexer lexer = lexer_to_copy;
 {{end -}}
 {{ if .Options.RecursiveLookaheads }}
   // Use memoization for recursive lookaheads.
@@ -400,7 +400,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
   // TODO needs translation
   s.cache[key] = state == end
 {{ end -}}
-{{/**/}}  if (debugSyntax) {
+  if (debugSyntax) {
     LOG(INFO) << "lookahead done: " << ((state == end) ? "true" : "false");
   }
   return state == end;
@@ -465,28 +465,28 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ if or (ne $rule.Action 0) $fixWS -}}
 {{ $act := index $.Parser.Actions $rule.Action -}}
 {{ if or (ne $act.Code "") $act.Report $fixWS -}}
-{{/**/}}  case {{$index}}: // {{$.RuleString $rule}}
+  case {{$index}}: // {{$.RuleString $rule}}
 {{ if $fixWS -}}
-{{/**/}}    fixTrailingWS(lhs, rhs)
+    fixTrailingWS(lhs, rhs)
 {{ end -}}
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
 {{ if $.Parser.UsesFlags -}}
-{{/**/}}    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
+    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
 {{ else -}}
-{{/**/}}    listener_(NodeType::{{$val.Name}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
+    listener_(NodeType::{{$val.Name}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
 {{ end -}}
 {{ end -}}
 {{ if $act.Code -}}
 {{ cc_parser_action $act.Code $act.Vars $act.Origin -}}
 {{ end -}}
-{{/**/}}    break;
+    break;
 {{ end -}}
 {{ end -}}
 {{ end -}}
 
 {{ range $index, $rule := .Parser.Tables.Lookaheads -}}
-{{/**/}}  case {{sum $index (len $.Parser.Rules)}}:
+  case {{sum $index (len $.Parser.Rules)}}:
     {{ range $rule.Cases }}
     {{- $sym := index $.Syms (sum $.NumTokens (index $.Parser.Inputs .Predicate.Input).Nonterm) -}}
     if ({{if .Predicate.Negated}}!{{end}}At{{$sym.Name}}(lexer, next_symbol_.symbol{{if $.NeedsSession}}, s{{end}})) {
@@ -496,7 +496,7 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
     }
     return absl::OkStatus();
 {{ end -}}
-{{/**/}}    default:
+    default:
       break;
   }
 {{ end -}}
@@ -631,7 +631,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ template "flushPending" . -}}
         if (next_symbol_.symbol != eoiToken) {
 {{template "reportConsumedNext" . -}}
-{{/**/}}          next_symbol_.symbol = noToken;
+          next_symbol_.symbol = noToken;
         }
 {{- if not .Parser.Tables.Optimized}}
       }
@@ -686,7 +686,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 
 {{ define "flushPending" -}}
 {{ if .ReportTokens true -}}
-{{/**/}}  if (!pending_symbols_.empty()) {
+  if (!pending_symbols_.empty()) {
     for (const auto& tok : pending_symbols_) {
       reportIgnoredToken(tok);
     }
@@ -699,17 +699,17 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 
 {{ define "reportConsumedNext" -}}
 {{ if .ReportTokens false -}}
-{{/**/}}  switch (Token(next_symbol_.symbol)) {
+  switch (Token(next_symbol_.symbol)) {
 {{ range .Lexer.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
-{{/**/}}  case Token::{{$sym.ID}}:
+  case Token::{{$sym.ID}}:
     listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.location);
     break;
 {{end -}}
 {{end -}}
 {{template "customReportNext" . -}}
-{{/**/}}    default:
+    default:
       break;
   }
 {{else -}}
