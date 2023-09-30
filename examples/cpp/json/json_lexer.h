@@ -37,10 +37,12 @@ class Lexer {
   ABSL_MUST_USE_RESULT Location LastTokenLocation() const {
     return Location(token_offset_, offset_);
   }
-
-  // Line returns the line number of the last token returned by Next()
+  // LastTokenLine returns the line number of the last token returned by Next()
   // (1-based).
   ABSL_MUST_USE_RESULT int64_t LastTokenLine() const { return token_line_; }
+  // LastTokenColumn returns the column of the last token returned by Next()
+  // (in bytes, 1-based).
+  ABSL_MUST_USE_RESULT int64_t LastTokenColumn() const { return token_column_; }
 
   // Text returns the substring of the input corresponding to the last token.
   ABSL_MUST_USE_RESULT absl::string_view Text() const
@@ -60,6 +62,8 @@ class Lexer {
   int64_t token_offset_ = 0;  // last token byte offset
   int64_t line_ = 1;          // current line number (1-based)
   int64_t token_line_ = 1;    // last token line
+  int64_t line_offset_ = 0;   // current line offset
+  int64_t token_column_ = 1;  // last token column (in bytes)
   int64_t scan_offset_ = 0;   // scanning byte offset
 
   int start_state_ = 0;  // lexer state, modifiable

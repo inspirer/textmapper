@@ -159,7 +159,7 @@ restart:
 {{ end -}}
 {{ if .Options.TokenLine}}  token_line_ = line_;
 {{ end -}}
-{{ if .Options.TokenColumn}}  token_col_ = offset_ - line_offset_ + 1;
+{{ if .Options.TokenColumn}}  token_column_ = offset_ - line_offset_ + 1;
 {{ end -}}
 {{/**/}}  token_offset_ = offset_;
 
@@ -327,6 +327,7 @@ recovered:
 }
 {{end -}}
 
+
 {{- define "lexerRewind" -}}
 void Lexer::Rewind(int64_t rewind_offset) {
 {{- if .Options.TokenLine}}
@@ -347,7 +348,8 @@ void Lexer::Rewind(int64_t rewind_offset) {
     }
   }
 {{- if or .Options.TokenLineOffset .Options.TokenColumn}}
-  line_offset_ = ;// TODO l.lineOffset = 1 + "strings".LastIndexByte(l.source[:offset], '\n')
+  // Looking for \n before and not at offset_.
+  line_offset_ = 1 + source_.find_last_of('\n', offset_ - 1);
 {{- end}}
 {{end}}
   // Scan the next character.

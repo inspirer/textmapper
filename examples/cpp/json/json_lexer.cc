@@ -128,6 +128,7 @@ Lexer::Lexer(absl::string_view input_source) {
 Token Lexer::Next() {
 restart:
   token_line_ = line_;
+  token_column_ = offset_ - line_offset_ + 1;
   token_offset_ = offset_;
 
   int state = tmStateMap[start_state_];
@@ -165,6 +166,7 @@ restart:
 
       if (input_rune_ == '\n') {
         line_++;
+        line_offset_ = offset_;
       }
 
       // Scan the next character.
@@ -257,6 +259,8 @@ void Lexer::Rewind(int64_t rewind_offset) {
       }
     }
   }
+  // Looking for \n before and not at offset_.
+  line_offset_ = 1 + source_.find_last_of('\n', offset_ - 1);
 
   // Scan the next character.
   scan_offset_ = rewind_offset;

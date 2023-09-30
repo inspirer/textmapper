@@ -95,8 +95,14 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		if err != nil {
 			return fmt.Errorf("error generating %v: %w", f.name, err)
 		}
+
+		// Post-process generated content and write it do disk.
 		outName := g.Options.FilenamePrefix + f.name
-		src := Format(outName, ExtractImports(buf.String()), opts.Compat)
+		src := buf.String()
+		switch g.TargetLang {
+		case "go":
+			src = FormatGo(outName, ExtractGoImports(src), opts.Compat)
+		}
 		if err := w.Write(outName, src); err != nil {
 			return err
 		}

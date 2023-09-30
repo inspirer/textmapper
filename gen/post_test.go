@@ -10,7 +10,7 @@ func TestFormat(t *testing.T) {
 	const file = "a.go"
 	const input = "package   foo\n  import \"fmt\"\n   // Aa returns a string.\nfunc Aa( ) string {   return fmt.Sprintf(\"%v\", 123) }"
 
-	got := gen.Format(file, input, true)
+	got := gen.FormatGo(file, input, true)
 	const want = "package foo\n\nimport \"fmt\"\n\n// Aa returns a string.\nfunc Aa() string { return fmt.Sprintf(\"%v\", 123) }\n"
 
 	if want != got {
@@ -18,7 +18,7 @@ func TestFormat(t *testing.T) {
 	}
 
 	const errInput = "package   foo\n     bar("
-	got = gen.Format(file, errInput, true)
+	got = gen.FormatGo(file, errInput, true)
 	const wantErr = "// go fmt failed with: a.go:2:6: expected declaration, found bar\n" + errInput
 	if got != wantErr {
 		t.Errorf("Format(%q) = %v, want: %v", errInput, got, wantErr)
@@ -53,7 +53,7 @@ func f(q []foo.Temp) {}`},
 
 func TestExtractImports(t *testing.T) {
 	for _, tc := range importTests {
-		if got := gen.ExtractImports(tc.input); got != tc.want {
+		if got := gen.ExtractGoImports(tc.input); got != tc.want {
 			t.Errorf("ExtractImports(%q) = %q, want: %q", tc.input, got, tc.want)
 		}
 	}
@@ -70,7 +70,7 @@ func TestExtractImports(t *"testing"".T) {
 	}
 }`
 	for i := 0; i < b.N; i++ {
-		gen.ExtractImports(input)
+		gen.ExtractGoImports(input)
 	}
 	b.SetBytes(int64(len(input))) // ~44 MB/s
 }

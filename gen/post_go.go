@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-// Format formats the content of a generated file. Formats Go files only.
-func Format(filename, content string, compat bool) string {
+// FormatGo formats the content of a generated file. Formats Go files only.
+func FormatGo(filename, content string, compat bool) string {
 	if !strings.HasSuffix(filename, ".go") || len(content) > 1e6 && !compat {
 		// Note: formatting is quite slow on large files, leave them unformatted.
 		return content
@@ -34,14 +34,14 @@ func Format(filename, content string, compat bool) string {
 var qualifierRE = regexp.MustCompile(`("((?:[\w-\.]+/)*([\w-]+))(?:\s*as\s*(\w+))?")\.\w+`)
 var packageRE = regexp.MustCompile(`(?m)^package\s*\w+`)
 
-// ExtractImports rewrites the content of a generated Go file, deriving imports from "special"
+// ExtractGoImports rewrites the content of a generated Go file, deriving imports from "special"
 // qualified names that can appear anywhere in src, where one can reference a symbol from another
 // package. The format:
 //
 //	"fmt".Stringer
 //	"unicode/utf8".ValidString         (multi-segment package)
 //	"encoding/json as enc".Marshal     (with an optional "as" clause for explicit aliases)
-func ExtractImports(src string) string {
+func ExtractGoImports(src string) string {
 	var buf strings.Builder
 	type imp struct {
 		alias string

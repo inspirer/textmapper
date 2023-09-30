@@ -2,6 +2,8 @@ language json(cc);
 
 namespace = "json"
 includeGuardPrefix = "EXAMPLES_JSON_"
+tokenLineOffset = true
+tokenColumn = true
 filenamePrefix = "json_"
 optimizeTables = true
 eventBased = true
