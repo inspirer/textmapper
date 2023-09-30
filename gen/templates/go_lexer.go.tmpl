@@ -1,4 +1,4 @@
-{{- template "header" . -}}
+{{ template "header" . -}}
 package {{short_pkg .Options.Package}}
 
 {{ if gt (len .Lexer.StartConditions) 1 -}}

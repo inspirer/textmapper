@@ -22,18 +22,19 @@ enum class Token {
   RBRACK = 5,  // ]
   COLON = 6,  // :
   COMMA = 7,  // ,
-  SPACE = 8,
-  MULTILINECOMMENT = 9,
-  JSONSTRING = 10,
-  JSONNUMBER = 11,
-  ID = 12,
-  KW_NULL = 13,  // null
-  TRUE = 14,  // true
-  FALSE = 15,  // false
-  CHAR_A = 16,
-  CHAR_B = 17,  // B
-  ERROR = 18,
-  NumTokens = 19
+  FOO = 8,  // #
+  SPACE = 9,
+  MULTILINECOMMENT = 10,
+  JSONSTRING = 11,
+  JSONNUMBER = 12,
+  ID = 13,
+  KW_NULL = 14,  // null
+  TRUE = 15,  // true
+  FALSE = 16,  // false
+  CHAR_A = 17,
+  CHAR_B = 18,  // B
+  ERROR = 19,
+  NumTokens = 20
 };
 
 constexpr inline std::array<absl::string_view,
@@ -47,6 +48,7 @@ constexpr inline std::array<absl::string_view,
   "]",
   ":",
   ",",
+  "#",
   "SPACE",
   "MULTILINECOMMENT",
   "JSONSTRING",

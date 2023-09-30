@@ -74,10 +74,12 @@ constexpr int tmRuneClassLen = {{len $runeArr}};
 constexpr int tmFirstRule = {{.Lexer.Tables.ActionStart}};
 {{ end -}}
 
+{{ if gt (len .Lexer.StartConditions) 1 -}}
 constexpr int tmStateMap[] = {
 {{- int_array .Lexer.Tables.StateMap "\t" 79 -}}
 };
 
+{{ end -}}
 {{ if .Lexer.RuleToken -}}
 constexpr int{{bits_per_element .Lexer.RuleToken}}_t tmToken[] = {
 {{- int_array .Lexer.RuleToken "\t" 79 -}}
@@ -160,7 +162,7 @@ restart:
 {{ end -}}
   token_offset_ = offset_;
 
-  int state = tmStateMap[start_state_];
+  int state = {{ if gt (len .Lexer.StartConditions) 1 }}tmStateMap[static_cast<uint32_t>(start_state_)]{{else}}{{index .Lexer.Tables.StateMap 0}}{{end}};
 {{ if .Lexer.ClassActions -}}
   uint32_t hash = 0;
 {{ end -}}

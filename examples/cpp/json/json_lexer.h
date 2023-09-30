@@ -14,6 +14,12 @@ inline constexpr absl::string_view bomSeq = "\xef\xbb\xbf";
 
 class Lexer {
  public:
+  // Lexer states.
+  enum class State : std::uint32_t {
+    Initial = 0,
+    Foo = 1,
+  };
+
   struct Location {
     Location(int64_t b = 0, int64_t e = 0) : begin(b), end(e) {}
     friend inline std::ostream& operator<<(std::ostream& os,
@@ -50,6 +56,9 @@ class Lexer {
     return source_.substr(token_offset_, offset_ - token_offset_);
   }
 
+  void set_state(State state) { start_state_ = state; }
+  ABSL_MUST_USE_RESULT State state() { return start_state_; }
+
  private:
   // Rewind can be used in lexer actions to accept a portion of a scanned token,
   // or to include more text into it.
@@ -58,7 +67,7 @@ class Lexer {
   absl::string_view source_;
 
   int32_t input_rune_ = 0;    // current character, -1 means end of input
-  int64_t offset_ = 0;        // byte offset
+  int64_t offset_ = 0;        // character offset
   int64_t token_offset_ = 0;  // last token byte offset
   int64_t line_ = 1;          // current line number (1-based)
   int64_t token_line_ = 1;    // last token line
@@ -66,7 +75,7 @@ class Lexer {
   int64_t token_column_ = 1;  // last token column (in bytes)
   int64_t scan_offset_ = 0;   // scanning byte offset
 
-  int start_state_ = 0;  // lexer state, modifiable
+  State start_state_ = State::Initial;  // lexer state, modifiable
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Lexer& lexer) {

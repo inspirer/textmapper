@@ -13,12 +13,16 @@ extraTypes = ["NonExistingType"]
 
 :: lexer
 
+%s initial, foo;
+
 '{': /\{/
 '}': /\}/
 '[': /\[/
 ']': /\]/
 ':': /:/
 ',': /,/
+
+<foo> Foo: /\#/
 
 space: /[\t\r\n ]+/ (space)
 
