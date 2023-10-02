@@ -204,11 +204,13 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 const errSymbol = 38
 
 // willShift checks if "symbol" is going to be shifted in the given state.
-// This function does not support empty productions and returns false if they occur before "symbol".
 func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
 	if state == -1 {
 		return false
 	}
+
+	var stack2alloc [4]int16
+	stack2 := append(stack2alloc[:0], state)
 
 	for state != p.endState {
 		action := tmAction[state]
@@ -220,12 +222,20 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stac
 			// Reduce.
 			rule := action
 			ln := int(tmRuleLen[rule])
-			if ln == 0 {
-				// we do not support empty productions
-				return false
+			symbol := tmRuleSymbol[rule]
+
+			if ln > 0 {
+				if ln < len(stack2) {
+					state = stack2[len(stack2)-ln-1]
+					stack2 = stack2[:len(stack2)-ln]
+				} else {
+					stackPos -= ln - len(stack2)
+					state = stack[stackPos-1].state
+					stack2 = stack2alloc[:0]
+				}
 			}
-			stackPos -= ln - 1
-			state = gotoState(stack[stackPos-1].state, tmRuleSymbol[rule])
+			state = gotoState(state, symbol)
+			stack2 = append(stack2, state)
 		} else {
 			return action == -1 && gotoState(state, symbol) >= 0
 		}
