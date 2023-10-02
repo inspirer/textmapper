@@ -203,15 +203,17 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 
 const errSymbol = 38
 
-// willShift checks if "symbol" is going to be shifted in the given state.
-func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
+// willShift checks if "symbol" is going to be shifted in the `stack+[state]` parsing stack.
+func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {
 	if state == -1 {
 		return false
 	}
 
 	var stack2alloc [4]int16
 	stack2 := append(stack2alloc[:0], state)
+	size := len(stack)
 
+	// parsing_stack = stack[:size] + stack2
 	for state != p.endState {
 		action := tmAction[state]
 		if action < -2 {
@@ -229,8 +231,8 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stac
 					state = stack2[len(stack2)-ln-1]
 					stack2 = stack2[:len(stack2)-ln]
 				} else {
-					stackPos -= ln - len(stack2)
-					state = stack[stackPos-1].state
+					size -= ln - len(stack2)
+					state = stack[size-1].state
 					stack2 = stack2alloc[:0]
 				}
 			}
@@ -312,7 +314,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 			fmt.Printf("trying to recover on %v\n", symbolName(p.next.symbol))
 		}
 		for _, pos := range recoverPos {
-			if p.willShift(pos, gotoState(stack[pos-1].state, errSymbol), p.next.symbol, stack) {
+			if p.willShift(p.next.symbol, stack[:pos], gotoState(stack[pos-1].state, errSymbol)) {
 				matchingPos = pos
 				break
 			}

@@ -242,12 +242,12 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		}
 		for _, pos := range recoverPos {
 			errState := gotoState(stack[pos-1].state, errSymbol)
-			if p.willShift(pos, gotoState(stack[pos-1].state, errSymbol), p.next.symbol, stack) {
+			if p.willShift(p.next.symbol, stack[:pos], gotoState(stack[pos-1].state, errSymbol)) {
 				matchingPos = pos
 				break
 			}
 			// Semicolon insertion is not reliable on broken input, try to look behind the semicolon.
-			if p.afterNext.symbol != noToken && p.willShift(pos, errState, p.afterNext.symbol, stack) {
+			if p.afterNext.symbol != noToken && p.willShift(p.afterNext.symbol, stack[:pos], errState) {
 				// Note: semicolons get inserted right after the previous
 				// token, so we don't need to flush pending tokens.
 				p.fetchNext(lexer, stack)
@@ -344,6 +344,7 @@ func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, suc
 	var stack2alloc [4]int16
 	stack2 := stack2alloc[:0]
 
+	// parsing_stack = stack[:size] + stack2
 	for state != endState {
 		action := tmAction[state]
 		if action < -2 {

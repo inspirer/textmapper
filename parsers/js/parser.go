@@ -53,15 +53,17 @@ func (p *Parser) ParseNamespaceNameSnippet(ctx context.Context, lexer *Lexer) er
 
 const errSymbol = 2
 
-// willShift checks if "symbol" is going to be shifted in the given state.
-func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stackEntry) bool {
+// willShift checks if "symbol" is going to be shifted in the `stack+[state]` parsing stack.
+func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {
 	if state == -1 {
 		return false
 	}
 
 	var stack2alloc [4]int16
 	stack2 := append(stack2alloc[:0], state)
+	size := len(stack)
 
+	// parsing_stack = stack[:size] + stack2
 	for state != p.endState {
 		action := tmAction[state]
 		if action < -2 {
@@ -79,8 +81,8 @@ func (p *Parser) willShift(stackPos int, state int16, symbol int32, stack []stac
 					state = stack2[len(stack2)-ln-1]
 					stack2 = stack2[:len(stack2)-ln]
 				} else {
-					stackPos -= ln - len(stack2)
-					state = stack[stackPos-1].state
+					size -= ln - len(stack2)
+					state = stack[size-1].state
 					stack2 = stack2alloc[:0]
 				}
 			}
