@@ -1,7 +1,11 @@
 #ifndef TEXTMAPPER_MARKUP_H_
 #define TEXTMAPPER_MARKUP_H_
 
+#include <cstdint>
 #include <ostream>
+#include <string>
+#include <tuple>
+#include <vector>
 
 #include "absl/strings/string_view.h"
 

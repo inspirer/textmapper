@@ -1,5 +1,9 @@
 #include "markup.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 

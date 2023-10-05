@@ -1,11 +1,15 @@
 #include "markup.h"
 
 #include <algorithm>
-#include <iostream>
+#include <cstdint>
 #include <stack>
+#include <string>
+#include <tuple>
+#include <vector>
 
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
+#include "absl/strings/string_view.h"
 
 namespace markup {
 
@@ -43,18 +47,19 @@ std::tuple<std::vector<Range>, std::string> Parse(absl::string_view text) {
 }
 
 std::string Create(absl::string_view text,
-                   const std::vector<markup::Range>& ranges) {
+                   const std::vector<markup::Range> &ranges) {
   struct Bracket {
     int64_t offset;
     std::string_view insert;
 
-    bool operator<(const Bracket& rhs) const {
-      return offset < rhs.offset || (offset == rhs.offset && insert == "»");
+    bool operator<(const Bracket &rhs) const {
+      return offset < rhs.offset ||
+             (offset == rhs.offset && insert == "»" && rhs.insert != insert);
     }
   };
 
   std::vector<Bracket> brackets;
-  for (const auto& r : ranges) {
+  for (const auto &r : ranges) {
     CHECK_LE(0, r.start);
     CHECK_LE(r.start, r.end);
     CHECK_LE(r.end, text.size());
@@ -65,7 +70,7 @@ std::string Create(absl::string_view text,
 
   int64_t i = 0;
   std::string out;
-  for (const auto& b : brackets) {
+  for (const auto &b : brackets) {
     if (i < b.offset) {
       out += text.substr(i, b.offset - i);
     }
