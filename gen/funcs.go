@@ -25,6 +25,7 @@ var funcMap = template.FuncMap{
 	"title":               strings.Title,
 	"lower":               strings.ToLower,
 	"first_lower":         firstLower,
+	"has_prefix":          strings.HasPrefix,
 	"sum":                 sum,
 	"string_switch":       asStringSwitch,
 	"quote":               strconv.Quote,

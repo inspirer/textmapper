@@ -165,7 +165,38 @@ func TestParserAction(t *testing.T) {
 	}
 }
 
+func TestCcParserAction(t *testing.T) {
+	tests := []struct {
+		input string
+		args  *grammar.ActionVars
+		want  string
+	}{
+		{"abc", varsOneBased(), "abc"},
+		{"$$ = $1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = rhs[0].value.expr"},
+		{"$$ = @$ @1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = lhs.sym.location rhs[0].sym.location"},
+	}
+
+	for _, tc := range tests {
+		got, err := ccParserAction(tc.input, tc.args, node(tc.input))
+		if err != nil {
+			t.Errorf("parserAction(%v, %v) failed with %v", tc.input, tc.args, err)
+			continue
+		}
+		if diff := diff.LineDiff(tc.want, got); diff != "" {
+			t.Errorf("parserAction(%v, %v) failed with diff:\n--- want\n+++ got\n%v", tc.input, tc.args, diff)
+		}
+	}
+}
+
+func varsOneBased(list ...string) *grammar.ActionVars {
+	return varsWithOffset(false, list...)
+}
+
 func vars(list ...string) *grammar.ActionVars {
+	return varsWithOffset(true, list...)
+}
+
+func varsWithOffset(zeroBased bool, list ...string) *grammar.ActionVars {
 	ret := &grammar.ActionVars{
 		CmdArgs: syntax.CmdArgs{
 			MaxPos: 1 + len(list),
@@ -191,7 +222,11 @@ func vars(list ...string) *grammar.ActionVars {
 			log.Fatalf("cannot parse %q as a number in %q", num, descr)
 		}
 		ret.Types = append(ret.Types, tp)
-		ret.Remap[i] = target
+		index := i
+		if !zeroBased {
+			index++
+		}
+		ret.Remap[index] = target
 	}
 	return ret
 }
