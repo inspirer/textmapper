@@ -121,6 +121,9 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "dirIncludePrefix":
 			p.validLangs(opt.Key(), "cc")
 			opts.DirIncludePrefix = p.parseExpr(opt.Value(), opts.DirIncludePrefix).(string)
+		case "parseParams":
+			p.validLangs(opt.Key(), "cc")
+			opts.ParseParams = p.parseExpr(opt.Value(), opts.ParseParams).([]string)
 		default:
 			p.Errorf(opt.Key(), "unknown option '%v'", name)
 		}

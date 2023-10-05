@@ -5,6 +5,7 @@
 {{block "lexerHeaderIncludes" . -}}
 #include <cstdint>
 #include <ostream>
+#include <tuple>
 
 #include "{{.Options.AbslIncludePrefix}}/strings/string_view.h"
 #include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}token.h"
@@ -98,7 +99,7 @@ class Lexer {
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Lexer& lexer) {
-  return os << "Lexer at line " << lexer.LastTokenLine() << " location "
+  return os << "{{.Options.Namespace}}::Lexer at line " << lexer.LastTokenLine() << " location "
             << lexer.LastTokenLocation() << " last token was \""
             << lexer.Text() << "\"";
 }

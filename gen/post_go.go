@@ -123,5 +123,6 @@ func ExtractGoImports(src string) string {
 }
 
 func isStdPackage(path string) bool {
-	return !strings.ContainsRune(path, '.')
+	first, _, _ := strings.Cut(path, "/")
+	return !strings.ContainsAny(first, ".-_0123456789")
 }

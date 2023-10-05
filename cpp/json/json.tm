@@ -9,7 +9,7 @@ optimizeTables = true
 eventBased = true
 reportTokens = [MultiLineComment, invalid_token, JSONString]
 extraTypes = ["NonExistingType"]
-
+parseParams = ["int a", "bool b"]
 
 :: lexer
 
@@ -82,11 +82,11 @@ EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' { @$.begin = @2.begin; } ;
 JSONObject -> JSONObject :
     (?= !EmptyObject) '{' JSONMemberList? '}' { @$.begin = @2.begin; } ;
 
-JSONMember {int a} -> JSONMember :
-    JSONString ':' JSONValue<~A> ;
+JSONMember {int c} -> JSONMember :
+    JSONString ':' JSONValue<~A> { $$ = a; } ;
 
-JSONMemberList :
-    JSONMember
+JSONMemberList {bool d}:
+    JSONMember  { $$ = b; }
   | JSONMemberList .foo ',' JSONMember
 ;
 

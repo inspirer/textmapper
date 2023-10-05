@@ -30,6 +30,8 @@ struct stackEntry {
   union {
     bool b;
     int a;
+    int c;
+    bool d;
   } value;
 };
 
@@ -72,11 +74,11 @@ constexpr inline int32_t eoiToken = static_cast<int32_t>(Token::EOI);
 
 ABSL_MUST_USE_RESULT std::string symbolName(int32_t sym);
 
-class Parser {
+class Parser final {
  public:
   template <typename Listener>
-  explicit Parser(Listener&& listener)
-      : listener_(std::forward<Listener>(listener)) {
+  explicit Parser(Listener&& listener, int a_arg, bool b_arg)
+      : listener_(std::forward<Listener>(listener)), a(a_arg), b(b_arg) {
     pending_symbols_.reserve(startTokenBufferSize);
   }
 
@@ -91,13 +93,15 @@ class Parser {
   absl::Status Parse(int8_t start, int8_t end, Lexer& lexer);
 
   symbol next_symbol_;
+  absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
+  int a;
+  bool b;
   // Tokens to be reported with the next shift. Only non-empty when next.symbol
   // != noToken.
   std::vector<symbol> pending_symbols_;
-  absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
 
   friend std::ostream& operator<<(std::ostream& os, const Parser& parser) {
-    return os << "JSONParser next " << symbolName(parser.next_symbol_.symbol)
+    return os << "json::Parser next " << symbolName(parser.next_symbol_.symbol)
               << " and pending " << parser.pending_symbols_.size()
               << " symbols";
   }

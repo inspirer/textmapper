@@ -326,6 +326,14 @@ absl::Status Parser::applyRule(
     {
       lhs.sym.location.begin = rhs[1].sym.location.begin;
     } break;
+    case 24:  // JSONMember : JSONString ':' JSONValue
+    {
+      lhs.value.c = a;
+    } break;
+    case 25:  // JSONMemberList : JSONMember
+    {
+      lhs.value.d = b;
+    } break;
 
     case 32:
       if (AtEmptyObject(lexer, next_symbol_.symbol)) {

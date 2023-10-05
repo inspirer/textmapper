@@ -90,28 +90,28 @@ ABSL_MUST_USE_RESULT std::string symbolName(int32_t sym);
 
 {{block "onBeforeParser" .}}{{end -}}
 
-class Parser {
+class Parser final {
  public:
-{{- if .Parser.Types }}
+{{ if .Parser.Types -}}
   template <typename Listener>
-  explicit Parser(Listener&& listener)
-      : listener_(std::forward<Listener>(listener)) {
-{{- if .ReportTokens true }}
+  explicit Parser(Listener&& listener{{ range .Options.ParseParams}}, {{.}}_arg{{end}})
+      : listener_(std::forward<Listener>(listener)){{ range .Options.ParseParams}}, {{$id := last_id .}}{{$id}}({{$id}}_arg){{end}} {
+{{ if .ReportTokens true -}}
     pending_symbols_.reserve(startTokenBufferSize);
-{{- end}}
+{{ end -}}
   }
-{{- else }}
-  Parser() = default;
-{{- end}}
+{{ else -}}
+  Parser({{ range $i, $p := .Options.ParseParams}}{{if ne $i 0}}, {{end}}{{$p}}_arg{{end}}){{if .Options.ParseParams}} : {{ range $i, $p := .Options.ParseParams}}{{if ne $i 0}}, {{end}}{{$id := last_id $p}}{{$id}}({{$id}}_arg){{end}}{{end}} {}
+{{ end -}}
 
-{{- range $index, $inp := .Parser.Inputs}}
-{{- if $inp.Synthetic }}{{continue}}{{end}}
-{{- $nt := index $.Parser.Nonterms $inp.Nonterm}}
-
+{{ range $index, $inp := .Parser.Inputs -}}
+{{ if $inp.Synthetic }}{{continue}}{{end -}}
+{{ $nt := index $.Parser.Nonterms $inp.Nonterm -}}
   absl::Status Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}(Lexer& lexer) {
     return Parse({{$index}}, {{index $.Parser.Tables.FinalStates $index}}, lexer);
   }
-{{- end}}
+
+{{ end -}}
 {{block "parserPublicDecls" .}}{{end -}}
 
  private:
@@ -122,25 +122,29 @@ class Parser {
   absl::Status applyRule(int32_t rule, stackEntry& lhs,
                          [[maybe_unused]] absl::Span<const stackEntry> rhs,
                          Lexer& lexer);
-  absl::Status Parse(int{{$stateType}}_t start, int{{$stateType}}_t end, 
-                     Lexer& lexer);
+  absl::Status Parse(
+    int{{$stateType}}_t start, int{{$stateType}}_t end, Lexer& lexer);
 
   symbol next_symbol_;
-{{- if .ReportTokens true }}
+{{ if .Parser.Types -}}
+  absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
+{{ end -}}
+{{ range .Options.ParseParams -}}
+  {{.}};
+{{ end -}}
+{{ if .ReportTokens true -}}
   // Tokens to be reported with the next shift. Only non-empty when next.symbol
   // != noToken.
   std::vector<symbol> pending_symbols_;
-{{- end}}
-{{- if .Parser.Types }}
-  absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
-{{- end}}
-{{block "parserPrivateDecls" .}}{{end}}
+{{ end -}}
+{{block "parserPrivateDecls" .}}{{end -}}
+
   friend std::ostream& operator<<(std::ostream& os, const Parser& parser) {
-    return os << "JSONParser next " << symbolName(parser.next_symbol_.symbol)
+    return os << "{{.Options.Namespace}}::Parser next " << symbolName(parser.next_symbol_.symbol)
 {{- if .ReportTokens true }}
               << " and pending " << parser.pending_symbols_.size()
-              << " symbols";
-{{- else}};{{end}}
+              << " symbols"
+{{- end}};
   }
 };
 

@@ -16,7 +16,7 @@ namespace {
 
 TEST(ParserTest, Instantiate) {
   auto listener = [](auto node, Lexer::Location loc) {};
-  Parser parser(listener);
+  Parser parser(listener, 0, false);
   LOG(INFO) << parser;
 }
 
@@ -26,7 +26,7 @@ TEST(ParserTest, ParseWithLexer) {
   auto listener = [&](auto node, Lexer::Location loc) {
     output.push_back(std::make_tuple(node, loc.begin, loc.end));
   };
-  Parser parser(listener);
+  Parser parser(listener, 8, false);
   Lexer lexer("1.0");
   EXPECT_TRUE(parser.Parse(lexer).ok());
   EXPECT_THAT(output,
@@ -101,7 +101,7 @@ TEST(ParserTest, NodeTypes) {
           got.push_back(markup::Range{loc.begin, loc.end});
         }
       };
-      Parser parser(listener);
+      Parser parser(listener, 9, true);
       EXPECT_TRUE(parser.Parse(l).ok());
       EXPECT_THAT(got, testing::UnorderedElementsAreArray(want))
           << "Node type test failed for " << test_case.nt << " on input:\n"

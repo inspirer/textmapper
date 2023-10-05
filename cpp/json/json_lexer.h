@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include <tuple>
 
 #include "absl/strings/string_view.h"
 #include "json_token.h"
@@ -79,7 +80,7 @@ class Lexer {
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Lexer& lexer) {
-  return os << "Lexer at line " << lexer.LastTokenLine() << " location "
+  return os << "json::Lexer at line " << lexer.LastTokenLine() << " location "
             << lexer.LastTokenLocation() << " last token was \"" << lexer.Text()
             << "\"";
 }
