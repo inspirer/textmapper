@@ -179,7 +179,8 @@ func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
 	ret := template.FuncMap{}
 	for _, opt := range strings.Split(g.Options.WithoutPrefix, ",") {
 		opt = strings.TrimSpace(opt)
-		if p, ok := strings.CutSuffix(opt, "*"); ok {
+		if strings.HasSuffix(opt, "*") {
+			p := strings.TrimSuffix(opt, "*")
 			c.reservedPrefixes = append(c.reservedPrefixes, p)
 		} else {
 			c.noPrefix[opt] = true
