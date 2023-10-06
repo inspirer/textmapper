@@ -13,8 +13,11 @@
 #include "absl/base/attributes.h"
 #include "absl/functional/function_ref.h"
 #include "absl/log/log.h"
+#include "absl/memory/memory.h"
 #include "absl/status/status.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_join.h"
 #include "json_lexer.h"
 
 namespace json {
@@ -87,9 +90,25 @@ class Parser final {
  private:
   void reportIgnoredToken(symbol sym);
   void fetchNext(Lexer& lexer, std::vector<stackEntry>& stack);
+  absl::Status action0([[maybe_unused]] stackEntry& lhs,
+                       [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action3([[maybe_unused]] stackEntry& lhs,
+                       [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action12([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action19([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action21([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action22([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action24([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action25([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+
   absl::Status applyRule(int32_t rule, stackEntry& lhs,
-                         [[maybe_unused]] absl::Span<const stackEntry> rhs,
-                         Lexer& lexer);
+                         [[maybe_unused]] const stackEntry* rhs, Lexer& lexer);
   absl::Status Parse(int8_t start, int8_t end, Lexer& lexer);
 
   symbol next_symbol_;

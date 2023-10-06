@@ -14,8 +14,11 @@
 #include "{{.Options.AbslIncludePrefix}}/base/attributes.h"
 #include "{{.Options.AbslIncludePrefix}}/functional/function_ref.h"
 #include "{{.Options.AbslIncludePrefix}}/log/log.h"
+#include "{{.Options.AbslIncludePrefix}}/memory/memory.h"
 #include "{{.Options.AbslIncludePrefix}}/status/status.h"
+#include "{{.Options.AbslIncludePrefix}}/strings/match.h"
 #include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
+#include "{{.Options.AbslIncludePrefix}}/strings/str_join.h"
 #include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}lexer.h"
 {{end}}
 namespace {{.Options.Namespace}} {
@@ -119,8 +122,16 @@ class Parser final {
   void reportIgnoredToken(symbol sym);
 {{ end -}}
   void fetchNext(Lexer& lexer, std::vector<stackEntry>& stack);
+{{ range $index, $rule := .Parser.Rules -}}
+{{ $act := index $.Parser.Actions $rule.Action -}}
+{{ if (ne $act.Code "") -}}
+  absl::Status action{{$index}}([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+{{ end -}}
+{{ end -}}
+
   absl::Status applyRule(int32_t rule, stackEntry& lhs,
-                         [[maybe_unused]] absl::Span<const stackEntry> rhs,
+                         [[maybe_unused]] const stackEntry* rhs,
                          Lexer& lexer);
   absl::Status Parse(
     int{{$stateType}}_t start, int{{$stateType}}_t end, Lexer& lexer);

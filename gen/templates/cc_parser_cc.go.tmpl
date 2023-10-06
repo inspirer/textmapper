@@ -428,22 +428,24 @@ ABSL_MUST_USE_RESULT bool At{{$sym.Name}}(Lexer& lexer, int32_t next{{if $.Needs
 {{ if .Options.IsEnabled "fetchNext" -}}
 void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
   Token tok;
-restart:
-  tok = lexer.Next();
-  switch (tok) {
-{{- if .ReportTokens true }}
-{{- range $ind, $tok := .ReportTokens true }}
-  case Token::{{.ID}}:
-{{- end}}
+  for (;;) {
+    tok = lexer.Next();
+    switch (tok) {
+{{ if .ReportTokens true -}}
+{{ range $ind, $tok := .ReportTokens true -}}
+    case Token::{{.ID}}:
+{{ end -}}
     pending_symbols_.push_back(symbol{static_cast<int32_t>(tok),
                                       lexer.LastTokenLocation()});
-    goto restart;
-{{- end}}
-{{- if not .ReportsInvalidToken}}
+    continue;
+{{ end -}}
+{{ if not .ReportsInvalidToken -}}
   case Token::{{(index .Syms .Lexer.InvalidToken).ID}}:
     goto restart;
-{{- end}}
-  default:
+{{ end -}}
+      default:
+        break;
+    }
     break;
   }
 
@@ -455,8 +457,20 @@ restart:
 {{ end -}}
 
 {{ define "applyRule" -}}
+
+{{ range $index, $rule := .Parser.Rules -}}
+{{ $act := index $.Parser.Actions $rule.Action -}}
+{{ if (ne $act.Code "") -}}
+absl::Status Parser::action{{$index}}([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs) {
+{{ cc_parser_action $act.Code $act.Vars $act.Origin -}}
+  return absl::OkStatus();
+}
+{{ end -}}
+{{ end -}}
+
 absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
-                        [[maybe_unused]] absl::Span<const stackEntry> rhs,
+                        [[maybe_unused]] const stackEntry* rhs,
                         Lexer& lexer) {
 {{- if or .Parser.HasActions .Parser.Tables.Lookaheads }}
   switch (rule) {
@@ -478,7 +492,12 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ end -}}
 {{ end -}}
 {{ if $act.Code -}}
-{{ cc_parser_action $act.Code $act.Vars $act.Origin -}}
+{
+  absl::Status action_result = action{{$index}}(lhs, rhs);
+  if (!action_result.ok()) {
+    return action_result;
+  }
+}
 {{ end -}}
     break;
 {{ end -}}
@@ -576,38 +595,35 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       int32_t ln = tmRuleLen[rule];
       stackEntry entry;
       entry.sym.symbol = tmRuleSymbol[rule];
-      absl::Span<const stackEntry> rhs;
+      const stackEntry* rhs = &stack[0] + stack.size() - ln;
 
       if (ln == 0) {
-        if (next_symbol_.symbol == noToken) {
-          fetchNext(lexer, stack);
-        }
         entry.sym.location = Lexer::Location(stack.back().sym.location.end,
                                              stack.back().sym.location.end);
 {{- if .Parser.HasAssocValues }}
         entry.value = stack.back().value;
 {{- end}}
       } else {
-        rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
-        entry.sym.location = Lexer::Location(rhs.front().sym.location.begin,
-                                             rhs.back().sym.location.end);
+        entry.sym.location = Lexer::Location(rhs[0].sym.location.begin,
+                                             rhs[ln-1].sym.location.end);
 {{- if .Parser.HasAssocValues }}
-        entry.value = rhs.front().value;
+        entry.value = rhs[0].value;
 {{- end}}
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer{{if .NeedsSession}}, &s{{end}});
       if (!ret.ok()) {
         return ret;
       }
-      stack.resize(stack.size() - ln);
+      // Avoid resizing twice, by keeping an extra token at the end.
+      stack.resize(stack.size() - ln + 1);
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
                   << entry.sym.location;
       }
-      state = gotoState(stack.back().state, entry.sym.symbol);
+      state = gotoState(stack[stack.size()-2].state, entry.sym.symbol);
       entry.state = state;
-      stack.push_back(std::move(entry));
+      stack.back() = std::move(entry);
     } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
       // Shift.
 {{- if .Parser.Tables.Optimized}}
@@ -619,14 +635,14 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       state = gotoState(state, next_symbol_.symbol);
       if (state >= 0) {
 {{- end}}
-        stack.push_back(stackEntry{
-            .sym = next_symbol_,
-            .state = state,
-        });
         if (debugSyntax) {
           LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
                     << lexer.Text() << ")";
         }
+        stack.emplace_back(stackEntry{
+            .sym = std::move(next_symbol_),
+            .state = state,
+        });
 {{- block "onAfterShift" .}}{{end}}
 {{ template "flushPending" . -}}
         if (next_symbol_.symbol != eoiToken) {
@@ -672,12 +688,13 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{- if not .Parser.IsRecovering }}
 
   if (state != end) {
+{{block "returnParserErr" . -}}
     if (next_symbol_.symbol == noToken) {
       fetchNext(lexer, stack);
     }
-    // TODO return a syntax error
     return absl::InvalidArgumentError(absl::StrFormat(
         "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
+{{end -}}
   }
 {{- end}}
   return absl::OkStatus();

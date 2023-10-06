@@ -282,57 +282,124 @@ void Parser::reportIgnoredToken(symbol sym) {
 
 void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
   Token tok;
-restart:
-  tok = lexer.Next();
-  switch (tok) {
-    case Token::MULTILINECOMMENT:
-    case Token::INVALID_TOKEN:
-      pending_symbols_.push_back(
-          symbol{static_cast<int32_t>(tok), lexer.LastTokenLocation()});
-      goto restart;
-    default:
-      break;
+  for (;;) {
+    tok = lexer.Next();
+    switch (tok) {
+      case Token::MULTILINECOMMENT:
+      case Token::INVALID_TOKEN:
+        pending_symbols_.push_back(
+            symbol{static_cast<int32_t>(tok), lexer.LastTokenLocation()});
+        continue;
+      default:
+        break;
+    }
+    break;
   }
 
   next_symbol_.symbol = static_cast<int32_t>(tok);
   next_symbol_.location = lexer.LastTokenLocation();
 }
 
-absl::Status Parser::applyRule(
-    int32_t rule, stackEntry& lhs,
-    [[maybe_unused]] absl::Span<const stackEntry> rhs, Lexer& lexer) {
+absl::Status Parser::action0([[maybe_unused]] stackEntry& lhs,
+                             [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.value.b = rhs[0].value.a; }
+  return absl::OkStatus();
+}
+absl::Status Parser::action3([[maybe_unused]] stackEntry& lhs,
+                             [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.value.a = 5; }
+  return absl::OkStatus();
+}
+absl::Status Parser::action12([[maybe_unused]] stackEntry& lhs,
+                              [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.value.a = 5; }
+  return absl::OkStatus();
+}
+absl::Status Parser::action19([[maybe_unused]] stackEntry& lhs,
+                              [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.sym.location.begin = rhs[1].sym.location.begin; }
+  return absl::OkStatus();
+}
+absl::Status Parser::action21([[maybe_unused]] stackEntry& lhs,
+                              [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.sym.location.begin = rhs[1].sym.location.begin; }
+  return absl::OkStatus();
+}
+absl::Status Parser::action22([[maybe_unused]] stackEntry& lhs,
+                              [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.sym.location.begin = rhs[1].sym.location.begin; }
+  return absl::OkStatus();
+}
+absl::Status Parser::action24([[maybe_unused]] stackEntry& lhs,
+                              [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.value.c = a; }
+  return absl::OkStatus();
+}
+absl::Status Parser::action25([[maybe_unused]] stackEntry& lhs,
+                              [[maybe_unused]] const stackEntry* rhs) {
+  { lhs.value.d = b; }
+  return absl::OkStatus();
+}
+
+absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
+                               [[maybe_unused]] const stackEntry* rhs,
+                               Lexer& lexer) {
   switch (rule) {
     case 0:  // JSONText : JSONValue_A
     {
-      lhs.value.b = rhs[0].value.a;
+      absl::Status action_result = action0(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
     case 3:  // JSONValue : 'false'
     {
-      lhs.value.a = 5;
+      absl::Status action_result = action3(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
     case 12:  // JSONValue_A : 'false'
     {
-      lhs.value.a = 5;
+      absl::Status action_result = action12(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
     case 19:  // EmptyObject : lookahead_EmptyObject '{' '}'
     {
-      lhs.sym.location.begin = rhs[1].sym.location.begin;
+      absl::Status action_result = action19(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
     case 21:  // JSONObject : lookahead_notEmptyObject '{' JSONMemberList '}'
     {
-      lhs.sym.location.begin = rhs[1].sym.location.begin;
+      absl::Status action_result = action21(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
     case 22:  // JSONObject : lookahead_notEmptyObject '{' '}'
     {
-      lhs.sym.location.begin = rhs[1].sym.location.begin;
+      absl::Status action_result = action22(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
     case 24:  // JSONMember : JSONString ':' JSONValue
     {
-      lhs.value.c = a;
+      absl::Status action_result = action24(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
     case 25:  // JSONMemberList : JSONMember
     {
-      lhs.value.d = b;
+      absl::Status action_result = action25(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
     } break;
 
     case 32:
@@ -384,45 +451,42 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       int32_t ln = tmRuleLen[rule];
       stackEntry entry;
       entry.sym.symbol = tmRuleSymbol[rule];
-      absl::Span<const stackEntry> rhs;
+      const stackEntry* rhs = &stack[0] + stack.size() - ln;
 
       if (ln == 0) {
-        if (next_symbol_.symbol == noToken) {
-          fetchNext(lexer, stack);
-        }
         entry.sym.location = Lexer::Location(stack.back().sym.location.end,
                                              stack.back().sym.location.end);
         entry.value = stack.back().value;
       } else {
-        rhs = absl::Span<const stackEntry>(&stack[0] + stack.size() - ln, ln);
-        entry.sym.location = Lexer::Location(rhs.front().sym.location.begin,
-                                             rhs.back().sym.location.end);
-        entry.value = rhs.front().value;
+        entry.sym.location = Lexer::Location(rhs[0].sym.location.begin,
+                                             rhs[ln - 1].sym.location.end);
+        entry.value = rhs[0].value;
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer);
       if (!ret.ok()) {
         return ret;
       }
-      stack.resize(stack.size() - ln);
+      // Avoid resizing twice, by keeping an extra token at the end.
+      stack.resize(stack.size() - ln + 1);
       if (debugSyntax) {
         LOG(INFO) << "reduced to: " << symbolName(entry.sym.symbol)
                   << " consuming " << ln << " symbols, range "
                   << entry.sym.location;
       }
-      state = gotoState(stack.back().state, entry.sym.symbol);
+      state = gotoState(stack[stack.size() - 2].state, entry.sym.symbol);
       entry.state = state;
-      stack.push_back(std::move(entry));
+      stack.back() = std::move(entry);
     } else if (action < -1) {
       // Shift.
       state = -2 - action;
-      stack.push_back(stackEntry{
-          .sym = next_symbol_,
-          .state = state,
-      });
       if (debugSyntax) {
         LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
                   << lexer.Text() << ")";
       }
+      stack.emplace_back(stackEntry{
+          .sym = std::move(next_symbol_),
+          .state = state,
+      });
       if (!pending_symbols_.empty()) {
         for (const auto& tok : pending_symbols_) {
           reportIgnoredToken(tok);
@@ -449,7 +513,6 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
     if (next_symbol_.symbol == noToken) {
       fetchNext(lexer, stack);
     }
-    // TODO return a syntax error
     return absl::InvalidArgumentError(absl::StrFormat(
         "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
   }
