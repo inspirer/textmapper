@@ -13,6 +13,7 @@ import (
 var languages = map[string]*language{
 	"go": {
 		SharedDefs: builtin(`go_shared`),
+		CachedDefs: builtin(`go_cached`),
 		Lexer: []file{
 			{"token/token.go", builtin(`go_token`)},
 			{"lexer_tables.go", builtin(`go_lexer_tables`)},
@@ -38,6 +39,7 @@ var languages = map[string]*language{
 
 	"cc": {
 		SharedDefs: builtin(`cc_shared`),
+		CachedDefs: builtin(`cc_cached`),
 		Lexer: []file{
 			{"token.h", builtin(`cc_token_h`)},
 			{"lexer.h", builtin(`cc_lexer_h`)},
@@ -64,6 +66,7 @@ type language struct {
 	Bison    []file
 
 	SharedDefs string
+	CachedDefs string
 }
 
 func (l *language) templates(g *grammar.Grammar) []file {

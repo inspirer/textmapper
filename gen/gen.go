@@ -48,6 +48,60 @@ func loadOverlay(name string, tmpl *template.Template, opts Options) (*template.
 	return tmpl, nil
 }
 
+func loadTemplate(name, builtin string, tmpl *template.Template, opts Options) (*template.Template, error) {
+	var err error
+	if !opts.NoBuiltins {
+		tmpl, err = tmpl.Parse(builtin)
+		if err != nil {
+			return nil, fmt.Errorf("error in built-in %v.go.tmpl: %v", name, err)
+		}
+	}
+	return loadOverlay(name, tmpl, opts)
+}
+
+type cache struct {
+	nodeIDs map[string]string // lazily filled up as needed
+	tmpl    *template.Template
+	g       *grammar.Grammar
+
+	err error
+}
+
+func (c *cache) nodeID(name string) string {
+	if id, ok := c.nodeIDs[name]; ok {
+		return id
+	}
+
+	type input struct {
+		Name    string
+		Options *grammar.Options
+	}
+
+	var buf strings.Builder
+	err := c.tmpl.ExecuteTemplate(&buf, "node_id", input{Name: name, Options: c.g.Options})
+	if err != nil && c.err == nil {
+		c.err = err
+	}
+	if err != nil {
+		fmt.Fprintf(&buf, "ERROR{%v}", err)
+	}
+	ret := buf.String()
+	c.nodeIDs[name] = ret
+	return ret
+}
+
+func loadCache(g *grammar.Grammar, opts Options) (*cache, error) {
+	tmpl, err := loadTemplate(g.TargetLang+"_cached", languages[g.TargetLang].CachedDefs, template.New("main").Funcs(funcMap), opts)
+	if err != nil {
+		return nil, err
+	}
+	return &cache{
+		nodeIDs: make(map[string]string),
+		tmpl:    tmpl,
+		g:       g,
+	}, nil
+}
+
 // Generate generates code for a grammar.
 func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 	lang, ok := languages[g.TargetLang]
@@ -55,31 +109,23 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		return fmt.Errorf("unsupported language: %s", g.TargetLang)
 	}
 
+	cache, err := loadCache(g, opts)
+	if err != nil {
+		return err
+	}
+
 	templates := lang.templates(g)
 	for _, f := range templates {
-		tmpl := template.New("main").Funcs(funcMap).Funcs(extraFuncs(f.name, g))
+		tmpl := template.New("main").Funcs(funcMap).Funcs(extraFuncs(f.name, g, cache))
 
 		// Load shared templates.
-		var err error
-		if !opts.NoBuiltins {
-			tmpl, err = tmpl.Parse(lang.SharedDefs)
-			if err != nil {
-				return fmt.Errorf("error in built-in shared_defs: %v", err)
-			}
-		}
-		tmpl, err = loadOverlay(g.TargetLang+"_shared", tmpl, opts)
+		tmpl, err = loadTemplate(g.TargetLang+"_shared", lang.SharedDefs, tmpl, opts)
 		if err != nil {
 			return err
 		}
 
 		// Load templates for the current file.
-		if !opts.NoBuiltins {
-			tmpl, err = tmpl.Parse(f.template)
-			if err != nil {
-				return fmt.Errorf("error in built-in %v: %v", f.name, err)
-			}
-		}
-		tmpl, err = loadOverlay(g.TargetLang+"_"+f.name, tmpl, opts)
+		tmpl, err = loadTemplate(g.TargetLang+"_"+f.name, f.template, tmpl, opts)
 		if err != nil {
 			return err
 		}
@@ -106,6 +152,9 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		if err := w.Write(outName, src); err != nil {
 			return err
 		}
+	}
+	if cache.err != nil {
+		return err
 	}
 	return nil
 }
@@ -170,22 +219,12 @@ func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Sta
 	return ret, err
 }
 
-func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
+func extraFuncs(filename string, g *grammar.Grammar, cache *cache) template.FuncMap {
 	c := &fileContext{
 		filename: filename,
 		Grammar:  g,
-		noPrefix: make(map[string]bool),
 	}
 	ret := template.FuncMap{}
-	for _, opt := range strings.Split(g.Options.WithoutPrefix, ",") {
-		opt = strings.TrimSpace(opt)
-		if strings.HasSuffix(opt, "*") {
-			p := strings.TrimSuffix(opt, "*")
-			c.reservedPrefixes = append(c.reservedPrefixes, p)
-		} else {
-			c.noPrefix[opt] = true
-		}
-	}
 	if g.Parser != nil && g.Parser.Types != nil {
 		c.cats = make(map[string]int)
 		for i, cat := range g.Parser.Types.Categories {
@@ -197,7 +236,7 @@ func extraFuncs(filename string, g *grammar.Grammar) template.FuncMap {
 	switch g.TargetLang {
 	case "go":
 		ret["pkg"] = c.goPackage
-		ret["node_id"] = c.nodeID
+		ret["node_id"] = cache.nodeID
 		ret["is_file_node"] = c.isFileNode
 	case "cc":
 		ret["is_file_node"] = c.isFileNode
@@ -209,10 +248,6 @@ type fileContext struct {
 	filename string
 	*grammar.Grammar
 	cats map[string]int
-
-	// Expanded content of the WithoutPrefix option.
-	noPrefix         map[string]bool
-	reservedPrefixes []string
 }
 
 func (c *fileContext) goPackage(targetPkg string) string {
@@ -232,18 +267,6 @@ func (c *fileContext) goPackage(targetPkg string) string {
 		ret = path.Join(ret, targetPkg)
 	}
 	return `"` + ret + `".`
-}
-
-func (c *fileContext) nodeID(name string) string {
-	if c.Options.NodePrefix == "" || c.noPrefix[name] {
-		return name
-	}
-	for _, reserved := range c.reservedPrefixes {
-		if strings.HasPrefix(name, reserved) {
-			return name
-		}
-	}
-	return c.Options.NodePrefix + name
 }
 
 func (c *fileContext) isFileNode(name string) bool {

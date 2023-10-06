@@ -101,8 +101,6 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.FileNode = p.parseExpr(opt.Value(), opts.FileNode).(string)
 		case "nodePrefix":
 			opts.NodePrefix = p.parseExpr(opt.Value(), opts.NodePrefix).(string)
-		case "withoutPrefix":
-			opts.WithoutPrefix = p.parseExpr(opt.Value(), opts.WithoutPrefix).(string)
 		case "lang":
 			// This option often occurs in existing grammars. Ignore it.
 			p.parseExpr(opt.Value(), "")
