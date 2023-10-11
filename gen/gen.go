@@ -125,7 +125,7 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		}
 
 		// Load templates for the current file.
-		tmpl, err = loadTemplate(g.TargetLang+"_"+f.name, f.template, tmpl, opts)
+		tmpl, err = loadTemplate(g.TargetLang+"_"+path.Base(f.name), f.template, tmpl, opts)
 		if err != nil {
 			return err
 		}
