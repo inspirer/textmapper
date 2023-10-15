@@ -518,5 +518,4 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
   }
   return absl::OkStatus();
 }
-
 }  // namespace json

@@ -36,13 +36,13 @@ struct symbol {
 struct stackEntry {
   symbol sym;
   int{{$stateType}}_t state = 0;
-{{- if .Parser.HasAssocValues }}
+{{ if .Parser.HasAssocValues -}}
   union {
-{{- range .Parser.UnionFields }}
+{{ range .Parser.UnionFields -}}
     {{.}};
-{{- end}}
+{{ end -}}
   } value;
-{{- end}}
+{{ end -}}
 };
 
 {{end -}}
@@ -50,12 +50,12 @@ struct stackEntry {
 {{ if .Parser.Types -}}
 enum class NodeType {
   NoType,
-{{- range .Parser.Types.RangeTypes }}
+{{ range .Parser.Types.RangeTypes -}}
   {{.Name}},    {{- if gt (len .Fields) 0}}  // {{.Descriptor}}{{end}}
-{{- end}}
-{{- range .Options.ExtraTypes }}
+{{ end -}}
+{{ range .Options.ExtraTypes -}}
   {{.Name}},
-{{- end}}
+{{ end -}}
   NodeTypeMax
 };
 
@@ -63,12 +63,12 @@ constexpr inline std::array<absl::string_view,
                             static_cast<size_t>(NodeType::NodeTypeMax)>
     nodeTypeStr = {
   "NONE",
-{{- range .Parser.Types.RangeTypes }}
+{{ range .Parser.Types.RangeTypes -}}
   "{{.Name}}",
-{{- end}}
-{{- range .Options.ExtraTypes }}
+{{ end -}}
+{{ range .Options.ExtraTypes -}}
   "{{.Name}}",
-{{- end}}
+{{ end -}}
 };
 
 inline std::ostream& operator<<(std::ostream& os, NodeType t) {
@@ -83,9 +83,9 @@ inline std::ostream& operator<<(std::ostream& os, NodeType t) {
 
 constexpr inline bool debugSyntax = {{ .Options.DebugParser }};
 constexpr inline int startStackSize = 256;
-{{- if .ReportTokens true }}
+{{ if .ReportTokens true -}}
 constexpr inline int startTokenBufferSize = 16;
-{{- end}}
+{{ end -}}
 constexpr inline int32_t noToken = static_cast<int32_t>(Token::UNAVAILABLE);
 constexpr inline int32_t eoiToken = static_cast<int32_t>(Token::EOI);
 

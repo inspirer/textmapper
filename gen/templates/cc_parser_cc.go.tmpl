@@ -1,38 +1,38 @@
 {{ template "header" . -}}
-{{block "parserIncludes" . -}}
+{{ block "parserIncludes" . -}}
 #include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}parser.h"
 
 #include <cstdint>
 #include <string>
-{{- range .Parser.Tables.Markers }}
-{{- if and (ne .Name "lr0") (ne .Name "greedy") (gt (len .States) 1) }}
+{{ range .Parser.Tables.Markers -}}
+{{ if and (ne .Name "lr0") (ne .Name "greedy") (gt (len .States) 1) -}}
 #include <unordered_set>
-{{- break}}{{ end }}{{ end }}
+{{ break}}{{ end }}{{ end -}}
 
 #include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}lexer.h"
 #include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
-{{end}}
+{{ end -}}
+
 namespace {{.Options.Namespace}} {
-{{block "onBeforeParserImpl" .}}{{end -}}
-{{template "parserTables" . -}}
-{{template "lalr" . -}}
-{{template "gotoState" . -}}
-{{if .Parser.Tables.Lookaheads -}}
-{{template "lookaheadNext" . -}}
-{{template "lookahead" . -}}
-{{template "lookaheadMethods" . -}}
-{{end -}}
-{{template "reportIgnoredToken" . -}}
-{{template "fetchNext" . -}}
-{{template "applyRule" . -}}
-{{template "Parse" . -}}
-
-{{- block "onAfterParser" .}}{{end}}
+{{ block "onBeforeParserImpl" .}}{{end -}}
+{{ template "parserTables" . -}}
+{{ template "lalr" . -}}
+{{ template "gotoState" . -}}
+{{ if .Parser.Tables.Lookaheads -}}
+{{ template "lookaheadNext" . -}}
+{{ template "lookahead" . -}}
+{{ template "lookaheadMethods" . -}}
+{{ end -}}
+{{ template "reportIgnoredToken" . -}}
+{{ template "fetchNext" . -}}
+{{ template "applyRule" . -}}
+{{ template "Parse" . -}}
+{{ block "onAfterParser" .}}{{end -}}
 }  // namespace {{.Options.Namespace}}
+{{/**/ -}}
 
-
-{{- define "parserTables" -}}
-{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ define "parserTables" -}}
+{{ $stateType := bits_per_element .Parser.Tables.FromTo -}}
 {{ range .Parser.Tables.Markers -}}
 {{ if and (ne .Name "lr0") (ne .Name "greedy") -}}
 {{ if eq (len .States) 1 -}}
@@ -46,9 +46,9 @@ std::unordered_set<int{{$stateType}}_t> {{.Name}}States = {
 {{ end -}}
 
 constexpr inline absl::string_view tmNonterminals[] = {
-{{- range .Parser.Nonterms}}
+{{ range .Parser.Nonterms -}}
   "{{.Name}}",
-{{- end}}
+{{ end -}}
 };
 constexpr size_t tmNonterminalsLen =
     sizeof(tmNonterminals) / sizeof(tmNonterminals[0]);
@@ -101,13 +101,13 @@ constexpr int{{bits_per_element .Parser.Tables.Optimized.Check}}_t tmCheck[] = {
 constexpr int32_t tmAction[] = {
 {{- int_array .Parser.Tables.Action "\t" 79 -}}
 };
-{{- if .Parser.Tables.Lalr}}
 
+{{ if .Parser.Tables.Lalr -}}
 constexpr int32_t tmLalr[] = {
 {{- int_array .Parser.Tables.Lalr "\t" 79 -}}
 };
-{{- end}}
 
+{{ end -}}
 constexpr int32_t tmGoto[] = {
 {{- int_array .Parser.Tables.Goto "\t" 79 -}}
 };
@@ -125,44 +125,41 @@ constexpr int32_t tmRuleSymbol[] = {
 {{- int_array .Parser.Tables.RuleSymbol "\t" 79 -}}
 };
 
-{{- if .Parser.Types }}
-{{- if .Parser.UsesFlags}}
-
+{{ if .Parser.Types -}}
+{{ if .Parser.UsesFlags -}}
 constexpr uint32_t tmRuleType[] = {
-{{- range .Parser.Rules}}
-{{- if ne .Type -1 }}
-{{- $val := index $.Parser.Types.RangeTypes .Type }}
+{{ range .Parser.Rules -}}
+{{ if ne .Type -1 -}}
+{{ $val := index $.Parser.Types.RangeTypes .Type -}}
   {{if not (is_file_node $val.Name)}}uint32(NodeType::{{$val.Name}}){{if .Flags}} + uint32({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
-{{- else }}
+{{ else -}}
   0, // {{$.RuleString .}}
-{{- end}}
-{{- end}}
-}
-{{- else }}
-
-constexpr NodeType tmRuleType[] = {
-{{- range .Parser.Rules}}
-{{- if ne .Type -1 }}
-{{- $val := index $.Parser.Types.RangeTypes .Type }}
-  NodeType::{{if not (is_file_node $val.Name)}}{{$val.Name}}{{else}}NoType{{end}}, // {{$.RuleString .}}
-{{- else }}
-  NodeType::NoType, // {{$.RuleString .}}
-{{- end}}
-{{- end}}
+{{ end -}}
+{{ end -}}
 };
-{{- end }}
-{{- end }}
+{{ else -}}
+constexpr NodeType tmRuleType[] = {
+{{ range .Parser.Rules -}}
+{{ if ne .Type -1 -}}
+{{ $val := index $.Parser.Types.RangeTypes .Type -}}
+  NodeType::{{if not (is_file_node $val.Name)}}{{$val.Name}}{{else}}NoType{{end}}, // {{$.RuleString .}}
+{{ else -}}
+  NodeType::NoType, // {{$.RuleString .}}
+{{ end -}}
+{{ end -}}
+};
+{{ end -}}
 
-{{- range .Sets}}
-
+{{ end -}}
+{{ range .Sets -}}
 // {{.Expr}} = {{.ValueString $}}
 [[maybe_unused]] constexpr int32_t {{.Name}}[] = {
 {{- if gt (len .Terminals) 0 -}}
 {{- int_array .Terminals "\t" 79 -}}
 {{- end -}}
 };
-{{- end}}
 
+{{ end -}}
 {{end}}
 
 
@@ -171,21 +168,21 @@ constexpr NodeType tmRuleType[] = {
 void Parser::reportIgnoredToken(symbol sym) {
 {{ block "onBeforeIgnore" .}}{{end -}}
   NodeType t;
-{{- if .Lexer.UsesFlags}}
+{{ if .Lexer.UsesFlags -}}
   var flags NodeFlags
-{{- end}}
+{{ end -}}
   switch (Token(sym.symbol)) {
-{{- range .Lexer.MappedTokens}}
-{{- $sym := index $.Syms .Token}}
-{{- if or $sym.Space (eq $sym.Name "invalid_token") }}
+{{ range .Lexer.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
   case Token::{{$sym.ID}}:
     t = NodeType::{{.Name}};
-{{- if .Flags }}
+{{ if .Flags -}}
     flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}}
-{{- end}}
+{{ end -}}
     break;
-{{- end}}
-{{- end}}
+{{ end -}}
+{{ end -}}
   default:
     return;
   }
@@ -275,17 +272,17 @@ ABSL_MUST_USE_RESULT int32_t lookaheadNext(Lexer& lexer) {
 restart:
   tok = lexer.Next();
   switch (tok) {
-{{- if or (.ReportTokens true) (not .ReportsInvalidToken) }}
-{{- range $ind, $tok := .ReportTokens true }}
+{{ if or (.ReportTokens true) (not .ReportsInvalidToken) -}}
+{{ range $ind, $tok := .ReportTokens true -}}
   case Token::{{.ID}}:
-{{- end}}
-{{- if not .ReportsInvalidToken}}
+{{ end -}}
+{{ if not .ReportsInvalidToken -}}
   case Token::{{(index .Syms .Lexer.InvalidToken).ID}}:
-{{- end}}
+{{ end -}}
     goto restart;
-{{- end}}
-    default:
-      break;
+{{ end -}}
+  default:
+    break;
   }
   return static_cast<int32_t>(tok);
 }
@@ -295,7 +292,7 @@ restart:
 
 {{- define "callLookaheadNext"}}{{/*(memoization)*/}}lookaheadNext(lexer){{end -}}
 
-{{ define "lookahead" -}}
+{{- define "lookahead" -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
                                     int{{$stateType}}_t start, 
@@ -322,7 +319,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
 
   while (state != end) {
     int32_t action = tmAction[state];
-{{- if .Parser.Tables.Optimized}}
+{{ if .Parser.Tables.Optimized -}}
     if (action > tmActionBase) {
       // Lookahead is needed.
       if (next == noToken) {
@@ -337,7 +334,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
     } else {
       action = tmDefAct[state];
     }
-{{- else if .Parser.Tables.Lalr}}
+{{ else if .Parser.Tables.Lalr -}}
     if (action < -2) {
       // Lookahead is needed.
       if (next == noToken) {
@@ -345,7 +342,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       }
       action = lalr(action, next);
     }
-{{- end}}
+{{ end -}}
 
     if (action >= 0) {
       // Reduce.
@@ -355,13 +352,13 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       stackEntry entry;
       entry.sym.symbol = tmRuleSymbol[rule];
       stack.resize(stack.size() - ln);
-{{- if .Options.RecursiveLookaheads }}
+{{ if .Options.RecursiveLookaheads -}}
       // TODO needs translation
       sym := lookaheadRule(lexer, next, rule, s)
       if (sym != 0) {
         entry.sym.symbol = sym;
       }
-{{- end}}
+{{ end -}}
       if (debugSyntax) {
         LOG(INFO) << "lookahead reduced to: " << symbolName(entry.sym.symbol);
       }
@@ -370,14 +367,14 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
       stack.push_back(std::move(entry));
     } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
       // Shift.
-{{- if .Parser.Tables.Optimized}}
+{{ if .Parser.Tables.Optimized -}}
       state = -2-action;
-{{- else}}
+{{ else -}}
       if (next == noToken) {
         next = {{template "callLookaheadNext" false}};
       }
       state = gotoState(state, next);
-{{- end}}
+{{ end -}}
       stack.push_back(stackEntry{
           .sym = symbol{.symbol = next},
           .state = state,
@@ -472,7 +469,7 @@ absl::Status Parser::action{{$index}}([[maybe_unused]] stackEntry& lhs,
 absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs,
                         Lexer& lexer) {
-{{- if or .Parser.HasActions .Parser.Tables.Lookaheads }}
+{{ if or .Parser.HasActions .Parser.Tables.Lookaheads -}}
   switch (rule) {
 {{ range $index, $rule := .Parser.Rules -}}
 {{ $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) -}}
@@ -515,56 +512,56 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
     }
     return absl::OkStatus();
 {{ end -}}
-    default:
-      break;
+  default:
+    break;
   }
 {{ end -}}
 
-{{- if .Parser.Types }}
+{{ if .Parser.Types -}}
   if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
-{{- if .Parser.UsesFlags}}
+{{ if .Parser.UsesFlags -}}
     listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.location)
-{{- else}}
+{{ else -}}
     listener_(nt, lhs.sym.location);
-{{- end}}
+{{ end -}}
   }
-{{- end}}
+{{ end -}}
   return absl::OkStatus();
 }
 
 {{ end -}}
 
-{{ define "Parse" -}}
-{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{- define "Parse" -}}
+{{ $stateType := bits_per_element .Parser.Tables.FromTo -}}
 absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end, 
   Lexer& lexer) {
-{{- if .ReportTokens true }}
+{{ if .ReportTokens true -}}
   pending_symbols_.clear();
-{{- end}}
-{{- if .NeedsSession}}
+{{ end -}}
+{{ if .NeedsSession -}}
   // TODO needs translation
   session s;
-{{- if .Options.RecursiveLookaheads }}
+{{ if .Options.RecursiveLookaheads -}}
   s.cache = make(map[uint64]bool)
-{{- end}}
-{{- end}}
+{{ end -}}
+{{ end -}}
   int{{$stateType}}_t state = start;
-{{- if .Parser.IsRecovering }}
+{{ if .Parser.IsRecovering -}}
   absl::Status lastErr;
   recovering_ = 0;
-{{- end}}
+{{ end -}}
 
   std::vector<stackEntry> stack;
   stack.reserve(startStackSize);
   stack.push_back(stackEntry{.state = state});
-{{- if .Parser.IsRecovering }}
+{{ if .Parser.IsRecovering -}}
   end_state_ = end;
-{{- end}}
+{{ end -}}
   fetchNext(lexer, stack);
 
   while (state != end) {
     int32_t action = tmAction[state];
-{{- if .Parser.Tables.Optimized}}
+{{ if .Parser.Tables.Optimized -}}
     if (action > tmActionBase) {
       // Lookahead is needed.
       if (next_symbol_.symbol == noToken) {
@@ -579,7 +576,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
     } else {
       action = tmDefAct[state];
     }
-{{- else if .Parser.Tables.Lalr}}
+{{ else if .Parser.Tables.Lalr -}}
     if (action < -2) {
       // Lookahead is needed.
       if (next_symbol_.symbol == noToken) {
@@ -587,7 +584,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       }
       action = lalr(action, next_symbol_.symbol);
     }
-{{- end}}
+{{ end -}}
 
     if (action >= 0) {
       // Reduce.
@@ -600,15 +597,15 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       if (ln == 0) {
         entry.sym.location = Lexer::Location(stack.back().sym.location.end,
                                              stack.back().sym.location.end);
-{{- if .Parser.HasAssocValues }}
+{{ if .Parser.HasAssocValues -}}
         entry.value = stack.back().value;
-{{- end}}
+{{ end -}}
       } else {
         entry.sym.location = Lexer::Location(rhs[0].sym.location.begin,
                                              rhs[ln-1].sym.location.end);
-{{- if .Parser.HasAssocValues }}
+{{ if .Parser.HasAssocValues -}}
         entry.value = rhs[0].value;
-{{- end}}
+{{ end -}}
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer{{if .NeedsSession}}, &s{{end}});
       if (!ret.ok()) {
@@ -626,15 +623,15 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       stack.back() = std::move(entry);
     } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
       // Shift.
-{{- if .Parser.Tables.Optimized}}
+{{ if .Parser.Tables.Optimized -}}
       state = -2-action;
-{{- else}}
+{{ else -}}
       if (next_symbol_.symbol == noToken) {
         fetchNext(lexer, stack);
       }
       state = gotoState(state, next_symbol_.symbol);
       if (state >= 0) {
-{{- end}}
+{{ end -}}
         if (debugSyntax) {
           LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
                     << lexer.Text() << ")";
@@ -643,27 +640,27 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
             .sym = std::move(next_symbol_),
             .state = state,
         });
-{{- block "onAfterShift" .}}{{end}}
+{{ block "onAfterShift" .}}{{end -}}
 {{ template "flushPending" . -}}
         if (next_symbol_.symbol != eoiToken) {
-{{template "reportConsumedNext" . -}}
+{{ template "reportConsumedNext" . -}}
           next_symbol_.symbol = noToken;
         }
-{{- if not .Parser.Tables.Optimized}}
+{{ if not .Parser.Tables.Optimized -}}
       }
-{{- end}}
+{{ end -}}
     }
     if (action == {{if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state == -1) {
-{{- if .Parser.IsRecovering }}
+{{ if .Parser.IsRecovering -}}
       // TODO needs translation
       if recovering_ == 0 {
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
         lastErr = SyntaxError{
-{{- if .Options.TokenLine}}
+{{ if .Options.TokenLine -}}
           Line:      lexer.Line(),
-{{- end}}
+{{ end -}}
           Offset:    next_symbol_.location.begin,
           Endoffset: next_symbol_.location.end,
         }
@@ -675,28 +672,27 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 
       recovering_ = 4;
       if stack = recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack); stack == nil {
-{{- template "flushPending" .}}
+{{ template "flushPending" . -}}
         return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
       }
       state = stack[len(stack)-1].state
-{{- else}}
+{{ else -}}
       break;
-{{- end}}
+{{ end -}}
     }
   }
 
-{{- if not .Parser.IsRecovering }}
-
+{{ if not .Parser.IsRecovering -}}
   if (state != end) {
-{{block "returnParserErr" . -}}
+{{ block "returnParserErr" . -}}
     if (next_symbol_.symbol == noToken) {
       fetchNext(lexer, stack);
     }
     return absl::InvalidArgumentError(absl::StrFormat(
         "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
-{{end -}}
+{{ end -}}
   }
-{{- end}}
+{{ end -}}
   return absl::OkStatus();
 }
 {{ end -}}
@@ -710,7 +706,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
     pending_symbols_.clear();
   }
 {{ end -}}
-{{end}}
+{{ end}}
 
 {{ define "customReportNext"}}{{end -}}
 
@@ -723,13 +719,13 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
   case Token::{{$sym.ID}}:
     listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.location);
     break;
-{{end -}}
-{{end -}}
-{{template "customReportNext" . -}}
+{{ end -}}
+{{ end -}}
+{{ template "customReportNext" . -}}
     default:
       break;
   }
-{{else -}}
-{{template "customReportNext" . -}}
-{{end -}}
+{{ else -}}
+{{ template "customReportNext" . -}}
+{{ end -}}
 {{ end -}}
