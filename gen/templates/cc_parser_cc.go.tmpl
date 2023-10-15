@@ -24,6 +24,11 @@ namespace {{.Options.Namespace}} {
 {{ template "lookaheadMethods" . -}}
 {{ end -}}
 {{ template "reportIgnoredToken" . -}}
+{{ if .Parser.IsRecovering -}}
+{{ template "willShift" . -}}
+{{ template "skipBrokenCode" . -}}
+{{ template "recoverFromError" . -}}
+{{ end -}}
 {{ template "fetchNext" . -}}
 {{ template "applyRule" . -}}
 {{ template "Parse" . -}}
@@ -420,6 +425,220 @@ ABSL_MUST_USE_RESULT bool At{{$sym.Name}}(Lexer& lexer, int32_t next{{if $.Needs
 {{ end -}}
 {{ end -}}
 
+{{ define "willShift" -}}
+{{ if .Options.IsEnabled "willShift" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+bool Parser::willShift(int32_t symbol, std::vector<stackEntry>& stack, int size, int{{$stateType}}_t state) {
+  if (state == -1) {
+    return false;
+  }
+  absl::InlinedVector<int{{$stateType}}_t, 4> stack2 = {state};
+
+  // parsing_stack = stack[:size] + stack2
+  while (state != end_state_) {
+    int32_t action = tmAction[state];
+{{ if .Parser.Tables.Optimized -}}
+    if (action > tmActionBase) {
+      int32_t pos = action + symbol;
+      if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == symbol) {
+        action = tmTable[pos];
+      } else {
+        action = tmDefAct[state];
+      }
+    } else {
+      action = tmDefAct[state];
+    }
+{{ else if .Parser.Tables.Lalr -}}
+    if (action < -2) {
+      action = lalr(action, symbol);
+    }
+{{ end -}}
+
+    if (action >= 0) {
+      // Reduce.
+      int32_t rule = action;
+      int32_t ln = tmRuleLen[rule];
+      int32_t symbol = tmRuleSymbol[rule];
+
+      if (ln > 0) {
+        if (ln < stack2.size()) {
+          state = stack2[stack2.size()-ln-1];
+          stack2.resize(stack2.size() - ln);
+        } else {
+          size -= ln - stack2.size();
+          state = stack[size-1].state;
+          stack2.clear();
+        }
+      }
+      state = gotoState(state, symbol);
+      stack2.push_back(state);
+    } else {
+{{ if .Parser.Tables.Optimized -}}
+      return action < -1;
+{{ else -}}
+      return action == -1 && gotoState(state, symbol) >= 0;
+{{ end -}}
+    }
+  }
+  return symbol == eoiToken;
+}
+
+{{ end -}}
+{{ end -}}
+
+{{ define "skipBrokenCode" -}}
+{{ if .Options.IsEnabled "skipBrokenCode" -}}
+int64_t Parser::skipBrokenCode(Lexer& lexer, std::vector<stackEntry>& stack, std::bitset<static_cast<size_t>(Token::NumTokens)>& recover_tokens) {
+  int64_t ret = 0;
+  while (next_symbol_.symbol != eoiToken && !recover_tokens[next_symbol_.symbol]) {
+    if (debugSyntax) {
+      LOG(INFO) << "skipped while recovering: " << symbolName(next_symbol_.symbol) << " ("
+            << lexer.Text() << ")";
+    }
+{{ template "flushPending" . -}}
+{{ template "reportConsumedNext" . -}}
+    ret = next_symbol_.location.end;
+    fetchNext(lexer, stack);
+  }
+  return ret;
+}
+
+{{ end -}}
+{{ end -}}
+
+
+{{ define "recoverFromError" -}}
+{{ if and (.Options.IsEnabled "recoverFromError") (.Parser.IsRecovering) -}}
+bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
+  std::bitset<static_cast<size_t>(Token::NumTokens)> recover_tokens;
+  std::vector<int> recover_pos;
+
+  if (debugSyntax) {
+    LOG(INFO) << "broke at " << symbolName(next_symbol_.symbol) << " ("
+            << lexer.Text() << ")";
+  }
+
+  for (size_t size = stack.size(); size > 0; size--) {
+    if (gotoState(stack[size-1].state, errSymbol) == -1) {
+      continue;
+    }
+    recover_pos.push_back(size);
+{{ range .Parser.Tables.Markers -}}
+{{ if eq (lower .Name) "recoveryscope" -}}
+{{ if eq (len .States) 1 -}}
+    if ({{.Name}}State == stack[size-1].state) {
+      break;
+    }
+{{ else -}}
+    if ({{.Name}}States.find(stack[size-1].state) != {{.Name}}States.end()) {
+      break;
+    }
+{{ end -}}
+{{ end -}}
+{{ end -}}
+  }
+  if (recover_pos.empty()) {
+    return false;
+  }
+
+  for (int32_t v : afterErr) {
+    recover_tokens[v] = true;
+  }
+  if (next_symbol_.symbol == noToken) {
+    fetchNext(lexer, stack);
+  }
+  // By default, insert 'error' in front of the next token.
+  int64_t begin = next_symbol_.location.begin;
+  int64_t end = begin;
+{{ if .ReportsInvalidToken -}}
+  for (const auto& tok : pending_symbols_) {
+    // Try to cover all nearby invalid tokens.
+    if (Token(tok.symbol) == Token::{{(index .Syms .Lexer.InvalidToken).ID}}) {
+      if (begin > tok.location.begin) {
+        begin = tok.location.begin;
+      }
+      end = tok.location.end;
+    }
+  }
+{{ end -}}
+  for (;;) {
+    int64_t skip_end = skipBrokenCode(lexer, stack, recover_tokens);
+    if (skip_end > end) {
+      end = skip_end;
+    }
+
+    int matching_pos = 0;
+    if (debugSyntax) {
+      LOG(INFO) << "trying to recover on " << symbolName(next_symbol_.symbol);
+    }
+    for (int pos : recover_pos) {
+      if (willShift(next_symbol_.symbol, stack, pos, gotoState(stack[pos-1].state, errSymbol))) {
+        matching_pos = pos;
+        break;
+      }
+    }
+    if (matching_pos == 0) {
+      if (next_symbol_.symbol == eoiToken) {
+        return false;
+      }
+      recover_tokens[next_symbol_.symbol] = false;
+      continue;
+    }
+
+    if (matching_pos < stack.size()) {
+      if (begin == end) {
+        // Avoid producing syntax problems covering trailing whitespace.
+        end = stack.back().sym.location.end;
+      }
+      begin = stack[matching_pos].sym.location.begin;
+{{ if .ReportTokens true -}}
+    } else if (begin == end && !pending_symbols_.empty()) {
+      // This means pending tokens don't contain InvalidTokens.
+      for (const auto& tok : pending_symbols_) {
+        reportIgnoredToken(tok);
+      }
+      pending_symbols_.clear();
+{{ end -}}
+    }
+{{ if .ReportsInvalidToken -}}
+    if (begin != end) {
+      // Consume trailing invalid tokens.
+      for (const auto& tok : pending_symbols_) {
+        if (Token(tok.symbol) == Token::{{(index .Syms .Lexer.InvalidToken).ID}} && tok.location.end > end) {
+          end = tok.location.end;
+        }
+      }
+      int consumed = 0;
+      for (; consumed < pending_symbols_.size(); consumed++) {
+        auto& tok = pending_symbols_[consumed];
+        if (tok.location.begin >= end) {
+          break;
+        }
+        reportIgnoredToken(tok);
+      }
+      pending_symbols_.erase(pending_symbols_.begin(), pending_symbols_.begin() + consumed);
+    }
+{{ end -}}
+    if (debugSyntax) {
+      for (int i = stack.size()-1; i >= matching_pos; i--) {
+        LOG(INFO) << "dropped from stack: " << symbolName(stack[i].sym.symbol);
+      }
+      LOG(INFO) << "recovered";
+    }
+    stack.resize(matching_pos);
+    stack.push_back(stackEntry{
+      .sym =  symbol{
+        .symbol = errSymbol,
+        .location = Lexer::Location(begin, end),
+      },
+      .state = gotoState(stack[matching_pos-1].state, errSymbol),
+    });
+    return true;
+  }
+}
+
+{{ end -}}
+{{ end -}}
 
 {{ define "fetchNext" -}}
 {{ if .Options.IsEnabled "fetchNext" -}}
@@ -547,16 +766,17 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ end -}}
   int{{$stateType}}_t state = start;
 {{ if .Parser.IsRecovering -}}
-  absl::Status lastErr;
-  recovering_ = 0;
+  absl::Status lastErr = absl::OkStatus();
+  Lexer::Location lastLoc;
+  int recovering = 0;
 {{ end -}}
 
   std::vector<stackEntry> stack;
   stack.reserve(startStackSize);
   stack.push_back(stackEntry{.state = state});
-{{ if .Parser.IsRecovering -}}
+{{- if .Parser.IsRecovering }}
   end_state_ = end;
-{{ end -}}
+{{- end}}
   fetchNext(lexer, stack);
 
   while (state != end) {
@@ -621,6 +841,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       state = gotoState(stack[stack.size()-2].state, entry.sym.symbol);
       entry.state = state;
       stack.back() = std::move(entry);
+
     } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
       // Shift.
 {{ if .Parser.Tables.Optimized -}}
@@ -646,36 +867,41 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ template "reportConsumedNext" . -}}
           next_symbol_.symbol = noToken;
         }
+{{- if .Parser.IsRecovering }}
+        if (recovering > 0) {
+          recovering--;
+        }
+{{- end}}
 {{ if not .Parser.Tables.Optimized -}}
       }
 {{ end -}}
     }
     if (action == {{if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state == -1) {
 {{ if .Parser.IsRecovering -}}
-      // TODO needs translation
-      if recovering_ == 0 {
+      if (recovering == 0) {
+{{ block "captureParserErr" . -}}
         if (next_symbol_.symbol == noToken) {
           fetchNext(lexer, stack);
         }
-        lastErr = SyntaxError{
 {{ if .Options.TokenLine -}}
-          Line:      lexer.Line(),
+        lastErr = absl::InvalidArgumentError(absl::StrFormat(
+            "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
+{{ else -}}
+        lastErr = absl::InvalidArgumentError("Syntax error");
 {{ end -}}
-          Offset:    next_symbol_.location.begin,
-          Endoffset: next_symbol_.location.end,
-        }
-        if !eh(lastErr) {
+{{ end -}}
+        if (!error_handler_(lastErr)) {
 {{ template "flushPending" . -}}
-          return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
+          return lastErr;
         }
       }
 
-      recovering_ = 4;
-      if stack = recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}lexer, stack); stack == nil {
+      recovering = 4;
+      if (!recoverFromError(lexer, stack)) {
 {{ template "flushPending" . -}}
-        return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
+        return lastErr;
       }
-      state = stack[len(stack)-1].state
+      state = stack[stack.size()-1].state;
 {{ else -}}
       break;
 {{ end -}}
@@ -688,8 +914,12 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
     if (next_symbol_.symbol == noToken) {
       fetchNext(lexer, stack);
     }
+{{ if .Options.TokenLine -}}
     return absl::InvalidArgumentError(absl::StrFormat(
         "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
+{{ else -}}
+    return absl::InvalidArgumentError("Syntax error");
+{{ end -}}
 {{ end -}}
   }
 {{ end -}}

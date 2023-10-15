@@ -88,6 +88,9 @@ constexpr inline int startTokenBufferSize = 16;
 {{ end -}}
 constexpr inline int32_t noToken = static_cast<int32_t>(Token::UNAVAILABLE);
 constexpr inline int32_t eoiToken = static_cast<int32_t>(Token::EOI);
+{{ if .Parser.IsRecovering -}}
+constexpr inline int32_t errSymbol = {{ .Parser.ErrorSymbol }};
+{{ end -}}
 
 ABSL_MUST_USE_RESULT std::string symbolName(int32_t sym);
 
@@ -97,12 +100,14 @@ class Parser final {
  public:
 {{ if .Parser.Types -}}
   template <typename Listener>
-  explicit Parser(Listener&& listener{{ range .Options.ParseParams}}, {{.}}_arg{{end}})
-      : listener_(std::forward<Listener>(listener)){{ range .Options.ParseParams}}, {{$id := last_id .}}{{$id}}({{$id}}_arg){{end}} {
+  explicit Parser(Listener&& listener{{if .Parser.IsRecovering}}, absl::FunctionRef<bool(absl::Status)> error_handler{{end}}{{ range .Options.ParseParams}}, {{.}}_arg{{end}})
+      : listener_(std::forward<Listener>(listener)){{if .Parser.IsRecovering}}, error_handler_(error_handler){{end}}{{ range .Options.ParseParams}}, {{$id := last_id .}}{{$id}}({{$id}}_arg){{end}} {
 {{ if .ReportTokens true -}}
     pending_symbols_.reserve(startTokenBufferSize);
 {{ end -}}
   }
+{{ else if  .Parser.IsRecovering -}}
+  Parser(absl::FunctionRef<bool(absl::Status)> error_handler{{ range $i, $p := .Options.ParseParams}}, {{$p}}_arg{{end}}){{if .Options.ParseParams}} : error_handler_(error_handler){{ range $i, $p := .Options.ParseParams}}, {{$id := last_id $p}}{{$id}}({{$id}}_arg){{end}}{{end}} {}
 {{ else -}}
   Parser({{ range $i, $p := .Options.ParseParams}}{{if ne $i 0}}, {{end}}{{$p}}_arg{{end}}){{if .Options.ParseParams}} : {{ range $i, $p := .Options.ParseParams}}{{if ne $i 0}}, {{end}}{{$id := last_id $p}}{{$id}}({{$id}}_arg){{end}}{{end}} {}
 {{ end -}}
@@ -120,6 +125,11 @@ class Parser final {
  private:
 {{ if .ReportTokens true -}}
   void reportIgnoredToken(symbol sym);
+{{ end -}}
+{{ if .Parser.IsRecovering -}}
+  bool willShift(int32_t symbol, std::vector<stackEntry>& stack, int size, int{{$stateType}}_t state);
+  int64_t skipBrokenCode(Lexer& lexer, std::vector<stackEntry>& stack, std::bitset<static_cast<size_t>(Token::NumTokens)>& recover_tokens);
+  bool recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack);
 {{ end -}}
   void fetchNext(Lexer& lexer, std::vector<stackEntry>& stack);
 {{ range $index, $rule := .Parser.Rules -}}
@@ -140,6 +150,9 @@ class Parser final {
 {{ if .Parser.Types -}}
   absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
 {{ end -}}
+{{ if .Parser.IsRecovering -}}
+  absl::FunctionRef<bool(absl::Status)> error_handler_; // returns true to attempt recovery
+{{ end -}}
 {{ range .Options.ParseParams -}}
   {{.}};
 {{ end -}}
@@ -148,6 +161,9 @@ class Parser final {
   // != noToken.
   std::vector<symbol> pending_symbols_;
 {{ end -}}
+{{- if .Parser.IsRecovering }}
+	int{{$stateType}}_t end_state_ = 0;
+{{- end}}
 {{block "parserPrivateDecls" .}}{{end -}}
 
   friend std::ostream& operator<<(std::ostream& os, const Parser& parser) {

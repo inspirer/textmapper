@@ -16,7 +16,8 @@ namespace {
 
 TEST(ParserTest, Instantiate) {
   auto listener = [](auto node, Lexer::Location loc) {};
-  Parser parser(listener, 0, false);
+  auto always_recover = [](absl::Status){ return true; };
+  Parser parser(listener, always_recover, 0, false);
   LOG(INFO) << parser;
 }
 
@@ -26,7 +27,8 @@ TEST(ParserTest, ParseWithLexer) {
   auto listener = [&](auto node, Lexer::Location loc) {
     output.push_back(std::make_tuple(node, loc.begin, loc.end));
   };
-  Parser parser(listener, 8, false);
+  auto always_recover = [](absl::Status){ return true; };
+  Parser parser(listener, always_recover, 8, false);
   Lexer lexer("1.0");
   EXPECT_TRUE(parser.Parse(lexer).ok());
   EXPECT_THAT(output,
@@ -87,6 +89,10 @@ TEST(ParserTest, NodeTypes) {
        {
            R"({ «"a"» : [«"b"»] })",
        }},
+      {NodeType::SyntaxProblem,
+       {
+           R"({ «"a" "b"» })",
+       }},
   };
   std::unordered_set<NodeType> seen;
   for (auto& test_case : tests) {
@@ -101,7 +107,8 @@ TEST(ParserTest, NodeTypes) {
           got.push_back(markup::Range{loc.begin, loc.end});
         }
       };
-      Parser parser(listener, 9, true);
+      auto always_recover = [](absl::Status){ return true; };
+      Parser parser(listener, always_recover, 9, true);
       EXPECT_TRUE(parser.Parse(l).ok());
       EXPECT_THAT(got, testing::UnorderedElementsAreArray(want))
           << "Node type test failed for " << test_case.nt << " on input:\n"

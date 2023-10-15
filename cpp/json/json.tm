@@ -10,6 +10,7 @@ eventBased = true
 reportTokens = [MultiLineComment, invalid_token, JSONString]
 extraTypes = ["NonExistingType"]
 parseParams = ["int a", "bool b"]
+debugParser = true
 
 :: lexer
 
@@ -83,7 +84,9 @@ JSONObject -> JSONObject :
     (?= !EmptyObject) '{' JSONMemberList? '}' { @$.begin = @2.begin; } ;
 
 JSONMember {int c} -> JSONMember :
-    JSONString ':' JSONValue<~A> { $$ = a; } ;
+    JSONString ':' JSONValue<~A> { $$ = a; }
+  | error -> SyntaxProblem
+;
 
 JSONMemberList {bool d}:
     JSONMember  { $$ = b; }

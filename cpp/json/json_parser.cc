@@ -14,10 +14,10 @@ std::unordered_set<int8_t> barStates = {
     1,
     3,
     21,
-    28,
+    29,
 };
 
-[[maybe_unused]] constexpr int8_t fooState = 26;
+[[maybe_unused]] constexpr int8_t fooState = 27;
 
 constexpr inline absl::string_view tmNonterminals[] = {
     "JSONText",
@@ -56,79 +56,82 @@ constexpr int32_t tmDefGoto[] = {
 };
 
 constexpr int32_t tmGoto[] = {
-    57, 31, 3, 19, 35, 36, 48, 24, 41, 49, 59, 62,
+    39, 31, 3, 35, 49, 18, 50, -11, 24, 54, 56, 58,
 };
 
 constexpr int32_t tmDefAct[] = {
-    20, -1, -1, -1, 17, 18, 10, 11, 12, 13, 0,  15, 14, -1, 16,
-    -1, 28, -1, -1, -1, 19, -1, 27, 22, -1, 25, -1, 29, -1, 21,
-    -1, 8,  9,  1,  2,  3,  4,  24, 6,  5,  7,  26, -1, -1, -1,
+    20, -1, -1, -1, 17, 18, 10, 11, 12, 13, 0,  15, 14, -1, 16, -1,
+    29, -1, -1, -1, 19, -1, 28, 22, -1, 25, 26, -1, 30, -1, 21, -1,
+    8,  9,  1,  2,  3,  4,  24, 6,  5,  7,  27, -1, -1, -1,
 };
 
 constexpr int32_t tmActionBase = -20;
 
 constexpr int32_t tmAction[] = {
-    -20, 14,  -1,  -2,  -20, -20, -20, -20, -20, -20, -20, -20, -20, 6,  -20,
-    8,   -20, 0,   12,  50,  -20, 14,  -20, -20, 15,  -20, 20,  -20, 30, -20,
-    22,  -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, 55, -20,
+    -20, 14,  -1,  -2,  -20, -20, -20, -20, -20, -20, -20, -20,
+    -20, 9,   -20, 19,  -20, 0,   12,  55,  -20, 14,  -20, -20,
+    27,  -20, -20, 20,  -20, 30,  -20, 43,  -20, -20, -20, -20,
+    -20, -20, -20, -20, -20, -20, -20, -20, 37,  -20,
 };
 
-constexpr int32_t tmTableLen = 78;
+constexpr int32_t tmTableLen = 84;
 
 constexpr int8_t tmTable[] = {
-    32,  -17, -5, 31, 10, 30,  16, -23, -21, -6,  -7,  -22, -8,  -9,  -10, -11,
-    32,  -24, -5, 42, 11, -30, 11, -31, 27,  -6,  -7,  -32, -8,  -9,  -10, -11,
-    32,  -26, -5, 2,  2,  12,  2,  12,  11,  -33, -34, 25,  -35, -36, -37, 38,
-    -38, 13,  14, 13, 14, -25, 41, -46, 2,   12,  43,  37,  26,  -26, 17,  2,
-    39,  18,  0,  0,  0,  13,  14, 0,   0,   0,   0,   0,   13,  40,
+    33,  -17, -5,  32,  10,  31,  16,  -23, 26,  -6,  -7,  -21, -8,  -9,
+    -10, -11, 33,  -24, -5,  12,  42,  12,  -22, -32, 28,  -6,  -7,  -33,
+    -8,  -9,  -10, -11, 33,  -31, -5,  43,  11,  -47, 11,  12,  44,  -34,
+    -35, 27,  -36, -37, -38, 40,  -39, 2,   2,   13,  2,   13,  -26, 14,
+    11,  14,  -25, 17,  38,  18,  -27, 0,   39,  0,   -26, 0,   0,   0,
+    2,   13,  0,   0,   -27, 14,  0,   0,   2,   13,  0,   0,   0,   41,
 };
 
 constexpr int8_t tmCheck[] = {
-    2,  2,  4,  5,  1,  5,  3,  7,  2,  11, 12, 3,  14, 15, 16, 17,
-    2,  5,  4,  0,  1,  6,  3,  3,  21, 11, 12, 7,  14, 15, 16, 17,
-    2,  11, 4,  0,  1,  1,  3,  3,  21, 11, 12, 19, 14, 15, 16, 28,
-    18, 1,  1,  3,  3,  3,  30, 0,  21, 21, 1,  28, 19, 11, 3,  28,
-    28, 3,  -1, -1, -1, 21, 21, -1, -1, -1, -1, -1, 28, 28,
+    2,  2,  4,  5,  1,  5,  3,  7,  19, 11, 12, 2,  14, 15, 16, 17, 2,
+    5,  4,  1,  31, 3,  3,  3,  21, 11, 12, 7,  14, 15, 16, 17, 2,  6,
+    4,  0,  1,  0,  3,  21, 1,  11, 12, 19, 14, 15, 16, 29, 18, 0,  1,
+    1,  3,  3,  11, 1,  21, 3,  3,  3,  29, 3,  19, -1, 29, -1, 11, -1,
+    -1, -1, 21, 21, -1, -1, 19, 21, -1, -1, 29, 29, -1, -1, -1, 29,
 };
 
 constexpr int8_t tmRuleLen[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 3, 0, 4, 3, 0, 3, 1, 3, 3, 1, 3, 1, 0, 0,
+    1, 1, 3, 0, 4, 3, 0, 3, 1, 1, 3, 3, 1, 3, 1, 0, 0,
 };
 
 constexpr int32_t tmRuleSymbol[] = {
     20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22,
-    22, 22, 23, 24, 25, 25, 26, 27, 28, 28, 29, 30, 30, 31, 31, 26,
+    22, 22, 23, 24, 25, 25, 26, 27, 27, 28, 28, 29, 30, 30, 31, 31, 26,
 };
 
 constexpr NodeType tmRuleType[] = {
-    NodeType::JSONText,     // JSONText : JSONValue_A
-    NodeType::JSONValue,    // JSONValue : kw_null
-    NodeType::JSONValue,    // JSONValue : 'true'
-    NodeType::JSONValue,    // JSONValue : 'false'
-    NodeType::JSONValue,    // JSONValue : 'B'
-    NodeType::JSONValue,    // JSONValue : JSONObject
-    NodeType::JSONValue,    // JSONValue : EmptyObject
-    NodeType::JSONValue,    // JSONValue : JSONArray
-    NodeType::JSONValue,    // JSONValue : JSONString
-    NodeType::JSONValue,    // JSONValue : JSONNumber
-    NodeType::JSONValue,    // JSONValue_A : kw_null
-    NodeType::JSONValue,    // JSONValue_A : 'true'
-    NodeType::JSONValue,    // JSONValue_A : 'false'
-    NodeType::JSONValue,    // JSONValue_A : 'A'
-    NodeType::JSONValue,    // JSONValue_A : JSONObject
-    NodeType::JSONValue,    // JSONValue_A : EmptyObject
-    NodeType::JSONValue,    // JSONValue_A : JSONArray
-    NodeType::JSONValue,    // JSONValue_A : JSONString
-    NodeType::JSONValue,    // JSONValue_A : JSONNumber
-    NodeType::EmptyObject,  // EmptyObject : lookahead_EmptyObject '{' '}'
-    NodeType::NoType,       // lookahead_EmptyObject :
-    NodeType::JSONObject,   // JSONObject : lookahead_notEmptyObject '{'
-                            // JSONMemberList '}'
-    NodeType::JSONObject,   // JSONObject : lookahead_notEmptyObject '{' '}'
-    NodeType::NoType,       // lookahead_notEmptyObject :
-    NodeType::JSONMember,   // JSONMember : JSONString ':' JSONValue
-    NodeType::NoType,       // JSONMemberList : JSONMember
+    NodeType::JSONText,       // JSONText : JSONValue_A
+    NodeType::JSONValue,      // JSONValue : kw_null
+    NodeType::JSONValue,      // JSONValue : 'true'
+    NodeType::JSONValue,      // JSONValue : 'false'
+    NodeType::JSONValue,      // JSONValue : 'B'
+    NodeType::JSONValue,      // JSONValue : JSONObject
+    NodeType::JSONValue,      // JSONValue : EmptyObject
+    NodeType::JSONValue,      // JSONValue : JSONArray
+    NodeType::JSONValue,      // JSONValue : JSONString
+    NodeType::JSONValue,      // JSONValue : JSONNumber
+    NodeType::JSONValue,      // JSONValue_A : kw_null
+    NodeType::JSONValue,      // JSONValue_A : 'true'
+    NodeType::JSONValue,      // JSONValue_A : 'false'
+    NodeType::JSONValue,      // JSONValue_A : 'A'
+    NodeType::JSONValue,      // JSONValue_A : JSONObject
+    NodeType::JSONValue,      // JSONValue_A : EmptyObject
+    NodeType::JSONValue,      // JSONValue_A : JSONArray
+    NodeType::JSONValue,      // JSONValue_A : JSONString
+    NodeType::JSONValue,      // JSONValue_A : JSONNumber
+    NodeType::EmptyObject,    // EmptyObject : lookahead_EmptyObject '{' '}'
+    NodeType::NoType,         // lookahead_EmptyObject :
+    NodeType::JSONObject,     // JSONObject : lookahead_notEmptyObject '{'
+                              // JSONMemberList '}'
+    NodeType::JSONObject,     // JSONObject : lookahead_notEmptyObject '{' '}'
+    NodeType::NoType,         // lookahead_notEmptyObject :
+    NodeType::JSONMember,     // JSONMember : JSONString ':' JSONValue
+    NodeType::SyntaxProblem,  // JSONMember : error
+    NodeType::NoType,         // JSONMemberList : JSONMember
     NodeType::NoType,     // JSONMemberList : JSONMemberList .foo ',' JSONMember
     NodeType::JSONArray,  // JSONArray : .bar '[' JSONElementListopt ']'
     NodeType::NoType,     // JSONElementList : JSONValue_A
@@ -143,8 +146,11 @@ constexpr NodeType tmRuleType[] = {
     2, 4, 11, 12, 14, 15, 16, 17,
 };
 
-// set(follow error) =
-[[maybe_unused]] constexpr int32_t afterErr[] = {};
+// set(follow error) = RBRACE, COMMA
+[[maybe_unused]] constexpr int32_t afterErr[] = {
+    3,
+    7,
+};
 
 int8_t gotoState(int8_t state, int32_t symbol) {
   if (symbol >= static_cast<int32_t>(Token::NumTokens)) {
@@ -259,7 +265,7 @@ ABSL_MUST_USE_RESULT bool AtEmptyObject(Lexer& lexer, int32_t next) {
   if (debugSyntax) {
     LOG(INFO) << "lookahead EmptyObject; next: " << symbolName(next);
   }
-  return lookahead(lexer, next, 0, 42);
+  return lookahead(lexer, next, 0, 43);
 }
 
 void Parser::reportIgnoredToken(symbol sym) {
@@ -278,6 +284,195 @@ void Parser::reportIgnoredToken(symbol sym) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
   listener_(t, sym.location);
+}
+
+bool Parser::willShift(int32_t symbol, std::vector<stackEntry>& stack, int size,
+                       int8_t state) {
+  if (state == -1) {
+    return false;
+  }
+  absl::InlinedVector<int8_t, 4> stack2 = {state};
+
+  // parsing_stack = stack[:size] + stack2
+  while (state != end_state_) {
+    int32_t action = tmAction[state];
+    if (action > tmActionBase) {
+      int32_t pos = action + symbol;
+      if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == symbol) {
+        action = tmTable[pos];
+      } else {
+        action = tmDefAct[state];
+      }
+    } else {
+      action = tmDefAct[state];
+    }
+
+    if (action >= 0) {
+      // Reduce.
+      int32_t rule = action;
+      int32_t ln = tmRuleLen[rule];
+      int32_t symbol = tmRuleSymbol[rule];
+
+      if (ln > 0) {
+        if (ln < stack2.size()) {
+          state = stack2[stack2.size() - ln - 1];
+          stack2.resize(stack2.size() - ln);
+        } else {
+          size -= ln - stack2.size();
+          state = stack[size - 1].state;
+          stack2.clear();
+        }
+      }
+      state = gotoState(state, symbol);
+      stack2.push_back(state);
+    } else {
+      return action < -1;
+    }
+  }
+  return symbol == eoiToken;
+}
+
+int64_t Parser::skipBrokenCode(
+    Lexer& lexer, std::vector<stackEntry>& stack,
+    std::bitset<static_cast<size_t>(Token::NumTokens)>& recover_tokens) {
+  int64_t ret = 0;
+  while (next_symbol_.symbol != eoiToken &&
+         !recover_tokens[next_symbol_.symbol]) {
+    if (debugSyntax) {
+      LOG(INFO) << "skipped while recovering: "
+                << symbolName(next_symbol_.symbol) << " (" << lexer.Text()
+                << ")";
+    }
+    if (!pending_symbols_.empty()) {
+      for (const auto& tok : pending_symbols_) {
+        reportIgnoredToken(tok);
+      }
+      pending_symbols_.clear();
+    }
+    switch (Token(next_symbol_.symbol)) {
+      case Token::JSONSTRING:
+        listener_(NodeType::JsonString, next_symbol_.location);
+        break;
+      default:
+        break;
+    }
+    ret = next_symbol_.location.end;
+    fetchNext(lexer, stack);
+  }
+  return ret;
+}
+
+bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
+  std::bitset<static_cast<size_t>(Token::NumTokens)> recover_tokens;
+  std::vector<int> recover_pos;
+
+  if (debugSyntax) {
+    LOG(INFO) << "broke at " << symbolName(next_symbol_.symbol) << " ("
+              << lexer.Text() << ")";
+  }
+
+  for (size_t size = stack.size(); size > 0; size--) {
+    if (gotoState(stack[size - 1].state, errSymbol) == -1) {
+      continue;
+    }
+    recover_pos.push_back(size);
+  }
+  if (recover_pos.empty()) {
+    return false;
+  }
+
+  for (int32_t v : afterErr) {
+    recover_tokens[v] = true;
+  }
+  if (next_symbol_.symbol == noToken) {
+    fetchNext(lexer, stack);
+  }
+  // By default, insert 'error' in front of the next token.
+  int64_t begin = next_symbol_.location.begin;
+  int64_t end = begin;
+  for (const auto& tok : pending_symbols_) {
+    // Try to cover all nearby invalid tokens.
+    if (Token(tok.symbol) == Token::INVALID_TOKEN) {
+      if (begin > tok.location.begin) {
+        begin = tok.location.begin;
+      }
+      end = tok.location.end;
+    }
+  }
+  for (;;) {
+    int64_t skip_end = skipBrokenCode(lexer, stack, recover_tokens);
+    if (skip_end > end) {
+      end = skip_end;
+    }
+
+    int matching_pos = 0;
+    if (debugSyntax) {
+      LOG(INFO) << "trying to recover on " << symbolName(next_symbol_.symbol);
+    }
+    for (int pos : recover_pos) {
+      if (willShift(next_symbol_.symbol, stack, pos,
+                    gotoState(stack[pos - 1].state, errSymbol))) {
+        matching_pos = pos;
+        break;
+      }
+    }
+    if (matching_pos == 0) {
+      if (next_symbol_.symbol == eoiToken) {
+        return false;
+      }
+      recover_tokens[next_symbol_.symbol] = false;
+      continue;
+    }
+
+    if (matching_pos < stack.size()) {
+      if (begin == end) {
+        // Avoid producing syntax problems covering trailing whitespace.
+        end = stack.back().sym.location.end;
+      }
+      begin = stack[matching_pos].sym.location.begin;
+    } else if (begin == end && !pending_symbols_.empty()) {
+      // This means pending tokens don't contain InvalidTokens.
+      for (const auto& tok : pending_symbols_) {
+        reportIgnoredToken(tok);
+      }
+      pending_symbols_.clear();
+    }
+    if (begin != end) {
+      // Consume trailing invalid tokens.
+      for (const auto& tok : pending_symbols_) {
+        if (Token(tok.symbol) == Token::INVALID_TOKEN &&
+            tok.location.end > end) {
+          end = tok.location.end;
+        }
+      }
+      int consumed = 0;
+      for (; consumed < pending_symbols_.size(); consumed++) {
+        auto& tok = pending_symbols_[consumed];
+        if (tok.location.begin >= end) {
+          break;
+        }
+        reportIgnoredToken(tok);
+      }
+      pending_symbols_.erase(pending_symbols_.begin(),
+                             pending_symbols_.begin() + consumed);
+    }
+    if (debugSyntax) {
+      for (int i = stack.size() - 1; i >= matching_pos; i--) {
+        LOG(INFO) << "dropped from stack: " << symbolName(stack[i].sym.symbol);
+      }
+      LOG(INFO) << "recovered";
+    }
+    stack.resize(matching_pos);
+    stack.push_back(stackEntry{
+        .sym =
+            symbol{
+                .symbol = errSymbol,
+                .location = Lexer::Location(begin, end),
+            },
+        .state = gotoState(stack[matching_pos - 1].state, errSymbol),
+    });
+    return true;
+  }
 }
 
 void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
@@ -335,7 +530,7 @@ absl::Status Parser::action24([[maybe_unused]] stackEntry& lhs,
   { lhs.value.c = a; }
   return absl::OkStatus();
 }
-absl::Status Parser::action25([[maybe_unused]] stackEntry& lhs,
+absl::Status Parser::action26([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
   { lhs.value.d = b; }
   return absl::OkStatus();
@@ -394,15 +589,15 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
         return action_result;
       }
     } break;
-    case 25:  // JSONMemberList : JSONMember
+    case 26:  // JSONMemberList : JSONMember
     {
-      absl::Status action_result = action25(lhs, rhs);
+      absl::Status action_result = action26(lhs, rhs);
       if (!action_result.ok()) {
         return action_result;
       }
     } break;
 
-    case 32:
+    case 33:
       if (AtEmptyObject(lexer, next_symbol_.symbol)) {
         lhs.sym.symbol = 24; /* lookahead_EmptyObject */
       } else {
@@ -422,10 +617,14 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
   pending_symbols_.clear();
   int8_t state = start;
+  absl::Status lastErr = absl::OkStatus();
+  Lexer::Location lastLoc;
+  int recovering = 0;
 
   std::vector<stackEntry> stack;
   stack.reserve(startStackSize);
   stack.push_back(stackEntry{.state = state});
+  end_state_ = end;
   fetchNext(lexer, stack);
 
   while (state != end) {
@@ -476,6 +675,7 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       state = gotoState(stack[stack.size() - 2].state, entry.sym.symbol);
       entry.state = state;
       stack.back() = std::move(entry);
+
     } else if (action < -1) {
       // Shift.
       state = -2 - action;
@@ -503,19 +703,42 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
         }
         next_symbol_.symbol = noToken;
       }
+      if (recovering > 0) {
+        recovering--;
+      }
     }
     if (action == -1 || state == -1) {
-      break;
+      if (recovering == 0) {
+        if (next_symbol_.symbol == noToken) {
+          fetchNext(lexer, stack);
+        }
+        lastErr = absl::InvalidArgumentError(absl::StrFormat(
+            "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
+        if (!error_handler_(lastErr)) {
+          if (!pending_symbols_.empty()) {
+            for (const auto& tok : pending_symbols_) {
+              reportIgnoredToken(tok);
+            }
+            pending_symbols_.clear();
+          }
+          return lastErr;
+        }
+      }
+
+      recovering = 4;
+      if (!recoverFromError(lexer, stack)) {
+        if (!pending_symbols_.empty()) {
+          for (const auto& tok : pending_symbols_) {
+            reportIgnoredToken(tok);
+          }
+          pending_symbols_.clear();
+        }
+        return lastErr;
+      }
+      state = stack[stack.size() - 1].state;
     }
   }
 
-  if (state != end) {
-    if (next_symbol_.symbol == noToken) {
-      fetchNext(lexer, stack);
-    }
-    return absl::InvalidArgumentError(absl::StrFormat(
-        "Syntax error: line %d: %s", lexer.LastTokenLine(), lexer.Text()));
-  }
   return absl::OkStatus();
 }
 }  // namespace json
