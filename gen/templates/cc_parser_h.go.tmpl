@@ -107,7 +107,7 @@ class Parser final {
 {{ end -}}
   }
 {{ else if  .Parser.IsRecovering -}}
-  Parser(absl::FunctionRef<bool(absl::Status)> error_handler{{ range $i, $p := .Options.ParseParams}}, {{$p}}_arg{{end}}){{if .Options.ParseParams}} : error_handler_(error_handler){{ range $i, $p := .Options.ParseParams}}, {{$id := last_id $p}}{{$id}}({{$id}}_arg){{end}}{{end}} {}
+  Parser(absl::FunctionRef<bool(absl::Status)> error_handler{{ range $i, $p := .Options.ParseParams}}, {{$p}}_arg{{end}}) : error_handler_(error_handler){{if .Options.ParseParams}}{{ range $i, $p := .Options.ParseParams}}, {{$id := last_id $p}}{{$id}}({{$id}}_arg){{end}}{{end}} {}
 {{ else -}}
   Parser({{ range $i, $p := .Options.ParseParams}}{{if ne $i 0}}, {{end}}{{$p}}_arg{{end}}){{if .Options.ParseParams}} : {{ range $i, $p := .Options.ParseParams}}{{if ne $i 0}}, {{end}}{{$id := last_id $p}}{{$id}}({{$id}}_arg){{end}}{{end}} {}
 {{ end -}}
