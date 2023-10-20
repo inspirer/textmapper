@@ -131,12 +131,12 @@ constexpr int32_t tmRuleSymbol[] = {
 };
 
 {{ if .Parser.Types -}}
-{{ if .Parser.UsesFlags -}}
+{{ if .Parser.UsedFlags -}}
 constexpr uint32_t tmRuleType[] = {
 {{ range .Parser.Rules -}}
 {{ if ne .Type -1 -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
-  {{if not (is_file_node $val.Name)}}uint32(NodeType::{{$val.Name}}){{if .Flags}} + uint32({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+  {{if not (is_file_node $val.Name)}}static_cast<uint32_t>(NodeType::{{$val.Name}}){{if .Flags}} + (static_cast<uint32_t>({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}})<<16){{end}}{{else}}0{{end}}, // {{$.RuleString .}}
 {{ else -}}
   0, // {{$.RuleString .}}
 {{ end -}}
@@ -173,7 +173,7 @@ constexpr NodeType tmRuleType[] = {
 void Parser::reportIgnoredToken(symbol sym) {
 {{ block "onBeforeIgnore" .}}{{end -}}
   NodeType t;
-{{ if .Lexer.UsesFlags -}}
+{{ if .Lexer.UsedFlags -}}
   var flags NodeFlags
 {{ end -}}
   switch (Token(sym.symbol)) {
@@ -194,7 +194,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   if (debugSyntax) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
-  listener_(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}sym.location);
+  listener_(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}NodeFlags::None{{end}}, {{end}}sym.location);
 }
 
 {{ end -}}
@@ -701,8 +701,8 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ end -}}
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
-{{ if $.Parser.UsesFlags -}}
-    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
+{{ if $.Parser.UsedFlags -}}
+    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}NodeFlags::None{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
 {{ else -}}
     listener_(NodeType::{{$val.Name}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
 {{ end -}}
@@ -737,13 +737,17 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ end -}}
 
 {{ if .Parser.Types -}}
-  if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
-{{ if .Parser.UsesFlags -}}
-    listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.location)
-{{ else -}}
-    listener_(nt, lhs.sym.location);
-{{ end -}}
+{{ if .Parser.UsedFlags -}}
+  uint32_t nt = tmRuleType[rule];
+  if (nt != 0) {
+    listener_(static_cast<NodeType>(nt&0xffff), static_cast<NodeFlags>(nt>>16), lhs.sym.location);
   }
+{{ else -}}
+  NodeType nt = tmRuleType[rule];
+  if (nt != NodeType::NoType) {
+    listener_(nt, lhs.sym.location);
+  }
+{{ end -}}
 {{ end -}}
   return absl::OkStatus();
 }
@@ -947,7 +951,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
   case Token::{{$sym.ID}}:
-    listener_(NodeType::{{.Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}0{{end}}, {{end}}next_symbol_.location);
+    listener_(NodeType::{{.Name}}, {{if $.Parser.UsedFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}NodeFlags::None{{end}}, {{end}}next_symbol_.location);
     break;
 {{ end -}}
 {{ end -}}

@@ -2,7 +2,7 @@
 package {{short_pkg .Options.Package}}
 
 {{ block "NodeDecl" . -}}
-{{if .Parser.UsesFlags -}}
+{{if .Parser.UsedFlags -}}
 type NodeType uint16
 
 type NodeFlags uint16

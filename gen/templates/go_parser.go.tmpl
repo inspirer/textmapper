@@ -18,7 +18,7 @@
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
-		p.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsesFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}p.next.offset, p.next.endoffset)
+		p.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsedFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}p.next.offset, p.next.endoffset)
 {{end -}}
 {{end -}}
 {{template "customReportNext" . -}}
@@ -869,7 +869,7 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- end}}
 {{- range $act.Report}}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
-{{- if $.Parser.UsesFlags}}
+{{- if $.Parser.UsedFlags}}
 		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
 {{- else}}
 		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
@@ -902,7 +902,7 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{- end}}
 {{- if .Parser.Types }}
 	if nt := tmRuleType[rule]; nt != 0 {
-{{- if .Parser.UsesFlags}}
+{{- if .Parser.UsedFlags}}
 		p.listener({{template "nodeTypeRef" $}}(nt&0xffff), {{template "nodeFlagsRef" $}}(nt>>16), lhs.sym.offset, lhs.sym.endoffset)
 {{- else}}
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
@@ -939,7 +939,7 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
 {{ block "onBeforeIgnore" .}}{{end -}}
 	var t {{template "nodeTypeRef" $}}
-{{ if .Lexer.UsesFlags -}}
+{{ if .Lexer.UsedFlags -}}
 	var flags {{template "nodeFlagsRef" $}}
 {{ end -}}
 	switch {{template "tokenType" .}}(tok.symbol) {
@@ -959,7 +959,7 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 	if debugSyntax {
 		"fmt".Printf("ignored: %v as %v\n", {{template "tokenType" .}}(tok.symbol), t)
 	}
-	p.listener(t, {{if .Parser.UsesFlags}}{{if .Lexer.UsesFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset)
+	p.listener(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset)
 }
 {{ end -}}
 {{ end -}}

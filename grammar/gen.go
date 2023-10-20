@@ -235,3 +235,11 @@ func (g *Grammar) HasTrailingNulls(r Rule) bool {
 	}
 	return false
 }
+
+func (g *Grammar) AllFlags() []string {
+	var ret []string
+	ret = append(ret, g.Lexer.UsedFlags...)
+	ret = append(ret, g.Parser.UsedFlags...)
+	sort.Strings(ret)
+	return ret
+}

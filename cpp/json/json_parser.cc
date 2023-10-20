@@ -103,41 +103,47 @@ constexpr int32_t tmRuleSymbol[] = {
     22, 22, 23, 24, 25, 25, 26, 27, 27, 28, 28, 29, 30, 30, 31, 31, 26,
 };
 
-constexpr NodeType tmRuleType[] = {
-    NodeType::JSONText,       // JSONText : JSONValue_A
-    NodeType::JSONValue,      // JSONValue : kw_null
-    NodeType::JSONValue,      // JSONValue : 'true'
-    NodeType::JSONValue,      // JSONValue : 'false'
-    NodeType::JSONValue,      // JSONValue : 'B'
-    NodeType::JSONValue,      // JSONValue : JSONObject
-    NodeType::JSONValue,      // JSONValue : EmptyObject
-    NodeType::JSONValue,      // JSONValue : JSONArray
-    NodeType::JSONValue,      // JSONValue : JSONString
-    NodeType::JSONValue,      // JSONValue : JSONNumber
-    NodeType::JSONValue,      // JSONValue_A : kw_null
-    NodeType::JSONValue,      // JSONValue_A : 'true'
-    NodeType::JSONValue,      // JSONValue_A : 'false'
-    NodeType::JSONValue,      // JSONValue_A : 'A'
-    NodeType::JSONValue,      // JSONValue_A : JSONObject
-    NodeType::JSONValue,      // JSONValue_A : EmptyObject
-    NodeType::JSONValue,      // JSONValue_A : JSONArray
-    NodeType::JSONValue,      // JSONValue_A : JSONString
-    NodeType::JSONValue,      // JSONValue_A : JSONNumber
-    NodeType::EmptyObject,    // EmptyObject : lookahead_EmptyObject '{' '}'
-    NodeType::NoType,         // lookahead_EmptyObject :
-    NodeType::JSONObject,     // JSONObject : lookahead_notEmptyObject '{'
-                              // JSONMemberList '}'
-    NodeType::JSONObject,     // JSONObject : lookahead_notEmptyObject '{' '}'
-    NodeType::NoType,         // lookahead_notEmptyObject :
-    NodeType::JSONMember,     // JSONMember : JSONString ':' JSONValue
-    NodeType::SyntaxProblem,  // JSONMember : error
-    NodeType::NoType,         // JSONMemberList : JSONMember
-    NodeType::NoType,     // JSONMemberList : JSONMemberList .foo ',' JSONMember
-    NodeType::JSONArray,  // JSONArray : .bar '[' JSONElementListopt ']'
-    NodeType::NoType,     // JSONElementList : JSONValue_A
-    NodeType::NoType,     // JSONElementList : JSONElementList ',' JSONValue_A
-    NodeType::NoType,     // JSONElementListopt : JSONElementList
-    NodeType::NoType,     // JSONElementListopt :
+constexpr uint32_t tmRuleType[] = {
+    static_cast<uint32_t>(NodeType::JSONText),   // JSONText : JSONValue_A
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : kw_null
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : 'true'
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : 'false'
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : 'B'
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : JSONObject
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : EmptyObject
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : JSONArray
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : JSONString
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue : JSONNumber
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : kw_null
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : 'true'
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : 'false'
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : 'A'
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : JSONObject
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : EmptyObject
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : JSONArray
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : JSONString
+    static_cast<uint32_t>(NodeType::JSONValue),  // JSONValue_A : JSONNumber
+    static_cast<uint32_t>(
+        NodeType::EmptyObject),  // EmptyObject : lookahead_EmptyObject '{' '}'
+    0,                           // lookahead_EmptyObject :
+    static_cast<uint32_t>(
+        NodeType::JSONObject),  // JSONObject : lookahead_notEmptyObject '{'
+                                // JSONMemberList '}'
+    static_cast<uint32_t>(
+        NodeType::JSONObject),  // JSONObject : lookahead_notEmptyObject '{' '}'
+    0,                          // lookahead_notEmptyObject :
+    static_cast<uint32_t>(
+        NodeType::JSONMember),  // JSONMember : JSONString ':' JSONValue
+    static_cast<uint32_t>(NodeType::SyntaxProblem),  // JSONMember : error
+    0,  // JSONMemberList : JSONMember
+    0,  // JSONMemberList : JSONMemberList .foo ',' JSONMember
+    static_cast<uint32_t>(NodeType::JSONArray) +
+        (static_cast<uint32_t>(NodeFlags::Foo)
+         << 16),  // JSONArray : .bar '[' JSONElementListopt ']'
+    0,            // JSONElementList : JSONValue_A
+    0,            // JSONElementList : JSONElementList ',' JSONValue_A
+    0,            // JSONElementListopt : JSONElementList
+    0,            // JSONElementListopt :
 };
 
 // set(first JSONValue_A) = LBRACE, LBRACK, JSONSTRING, JSONNUMBER, KW_NULL,
@@ -283,7 +289,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   if (debugSyntax) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
-  listener_(t, sym.location);
+  listener_(t, NodeFlags::None, sym.location);
 }
 
 bool Parser::willShift(int32_t symbol, std::vector<stackEntry>& stack, int size,
@@ -351,7 +357,7 @@ int64_t Parser::skipBrokenCode(
     }
     switch (Token(next_symbol_.symbol)) {
       case Token::JSONSTRING:
-        listener_(NodeType::JsonString, next_symbol_.location);
+        listener_(NodeType::JsonString, NodeFlags::None, next_symbol_.location);
         break;
       default:
         break;
@@ -608,8 +614,10 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
       break;
   }
 
-  if (NodeType nt = tmRuleType[rule]; nt != NodeType::NoType) {
-    listener_(nt, lhs.sym.location);
+  uint32_t nt = tmRuleType[rule];
+  if (nt != 0) {
+    listener_(static_cast<NodeType>(nt & 0xffff),
+              static_cast<NodeFlags>(nt >> 16), lhs.sym.location);
   }
   return absl::OkStatus();
 }
@@ -696,7 +704,8 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       if (next_symbol_.symbol != eoiToken) {
         switch (Token(next_symbol_.symbol)) {
           case Token::JSONSTRING:
-            listener_(NodeType::JsonString, next_symbol_.location);
+            listener_(NodeType::JsonString, NodeFlags::None,
+                      next_symbol_.location);
             break;
           default:
             break;

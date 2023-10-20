@@ -15,7 +15,7 @@ namespace json {
 namespace {
 
 TEST(ParserTest, Instantiate) {
-  auto listener = [](auto node, Lexer::Location loc) {};
+  auto listener = [](auto node, auto flags, Lexer::Location loc) {};
   auto always_recover = [](absl::Status){ return true; };
   Parser parser(listener, always_recover, 0, false);
   LOG(INFO) << parser;
@@ -24,7 +24,7 @@ TEST(ParserTest, Instantiate) {
 TEST(ParserTest, ParseWithLexer) {
   using TupleType = std::tuple<NodeType, int64_t, int64_t>;
   std::vector<TupleType> output;
-  auto listener = [&](auto node, Lexer::Location loc) {
+  auto listener = [&](auto node, auto flags, Lexer::Location loc) {
     output.push_back(std::make_tuple(node, loc.begin, loc.end));
   };
   auto always_recover = [](absl::Status){ return true; };
@@ -101,7 +101,7 @@ TEST(ParserTest, NodeTypes) {
       auto [want, text] = markup::Parse(input);
       Lexer l(text);
       std::vector<markup::Range> got;
-      auto listener = [&](auto node, Lexer::Location loc) {
+      auto listener = [&](auto node, auto flags, Lexer::Location loc) {
         if (node == test_case.nt) {
           seen.insert(node);
           got.push_back(markup::Range{loc.begin, loc.end});

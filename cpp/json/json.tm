@@ -93,7 +93,7 @@ JSONMemberList {bool d}:
   | JSONMemberList .foo ',' JSONMember
 ;
 
-JSONArray -> JSONArray :
+JSONArray -> JSONArray/Foo :
     .bar '[' JSONElementListopt ']' ;
 
 JSONElementList :

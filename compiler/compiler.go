@@ -209,11 +209,17 @@ func (c *compiler) compileParser(file ast.File) {
 		}
 		c.out.Parser.Types = types
 		c.out.Lexer.MappedTokens = tokens
+
+		seenFlags := make(map[string]bool)
 		for _, t := range tokens {
-			if len(t.Flags) > 0 {
-				c.out.Lexer.UsesFlags = true
+			for _, f := range t.Flags {
+				if !seenFlags[f] {
+					seenFlags[f] = true
+					c.out.Lexer.UsedFlags = append(c.out.Lexer.UsedFlags, f)
+				}
 			}
 		}
+		sort.Strings(c.out.Lexer.UsedFlags)
 	}
 
 	if err := syntax.Expand(source); err != nil {
@@ -358,6 +364,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 			continue
 		}
 
+		seenFlags := make(map[string]bool)
 		if nt.Value.Kind != syntax.Choice {
 			log.Fatalf("%v is not properly instantiated: %v", nt.Name, nt.Value)
 		}
@@ -402,8 +409,11 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 							Type:  t,
 							Flags: expr.ArrowFlags,
 						})
-						if len(expr.ArrowFlags) != 0 {
-							out.UsesFlags = true
+						for _, f := range expr.ArrowFlags {
+							if !seenFlags[f] {
+								seenFlags[f] = true
+								out.UsedFlags = append(out.UsedFlags, f)
+							}
 						}
 					}
 				case syntax.Sequence, syntax.Assign, syntax.Append:
@@ -438,6 +448,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 				}
 			}
 			traverse(expr)
+			sort.Strings(out.UsedFlags)
 
 			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == numRefs &&
 				// Note: in compatibility note we don't promote -> from inside parentheses.

@@ -92,7 +92,7 @@ var tmRuleSymbol = []int32{
 {{- int_array .Parser.Tables.RuleSymbol "\t" 79 -}}
 }
 
-{{- if .Parser.UsesFlags}}
+{{- if .Parser.UsedFlags}}
 
 var tmRuleType = [...]uint32{
 {{- range .Parser.Rules}}

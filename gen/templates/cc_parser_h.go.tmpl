@@ -59,6 +59,16 @@ enum class NodeType {
   NodeTypeMax
 };
 
+{{ $flags := .AllFlags -}}
+{{ if $flags -}}
+enum class NodeFlags : uint16_t {
+  None = 0,
+{{ range $i, $it := $flags -}}
+  {{$it}} = 1 << {{$i}},
+{{ end -}}
+};
+{{ end -}}
+
 constexpr inline std::array<absl::string_view,
                             static_cast<size_t>(NodeType::NodeTypeMax)>
     nodeTypeStr = {
@@ -148,7 +158,7 @@ class Parser final {
 
   symbol next_symbol_;
 {{ if .Parser.Types -}}
-  absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
+  absl::FunctionRef<void(NodeType, {{if or .Parser.UsedFlags .Lexer.UsedFlags}}NodeFlags, {{end}}Lexer::Location)> listener_;
 {{ end -}}
 {{ if .Parser.IsRecovering -}}
   absl::FunctionRef<bool(absl::Status)> error_handler_; // returns true to attempt recovery

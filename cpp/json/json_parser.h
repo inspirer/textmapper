@@ -54,6 +54,11 @@ enum class NodeType {
   NodeTypeMax
 };
 
+enum class NodeFlags : uint16_t {
+  None = 0,
+  Foo = 1 << 0,
+};
+
 constexpr inline std::array<absl::string_view,
                             static_cast<size_t>(NodeType::NodeTypeMax)>
     nodeTypeStr = {
@@ -126,7 +131,7 @@ class Parser final {
   absl::Status Parse(int8_t start, int8_t end, Lexer& lexer);
 
   symbol next_symbol_;
-  absl::FunctionRef<void(NodeType, Lexer::Location)> listener_;
+  absl::FunctionRef<void(NodeType, NodeFlags, Lexer::Location)> listener_;
   absl::FunctionRef<bool(absl::Status)>
       error_handler_;  // returns true to attempt recovery
   int a;
