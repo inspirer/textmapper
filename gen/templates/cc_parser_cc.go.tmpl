@@ -172,9 +172,9 @@ constexpr NodeType tmRuleType[] = {
 {{ if .ReportTokens true -}}
 void Parser::reportIgnoredToken(symbol sym) {
 {{ block "onBeforeIgnore" .}}{{end -}}
-  NodeType t;
+  NodeType t = NodeType::NoType;
 {{ if .Lexer.UsedFlags -}}
-  var flags NodeFlags
+  NodeFlags flags = NodeFlags::None;
 {{ end -}}
   switch (Token(sym.symbol)) {
 {{ range .Lexer.MappedTokens -}}
@@ -183,7 +183,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   case Token::{{$sym.ID}}:
     t = NodeType::{{.Name}};
 {{ if .Flags -}}
-    flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}}
+    flags = static_cast<NodeFlags>({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{end}});
 {{ end -}}
     break;
 {{ end -}}

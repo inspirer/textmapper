@@ -61,10 +61,10 @@ enum class NodeType {
 
 {{ $flags := .AllFlags -}}
 {{ if $flags -}}
-enum class NodeFlags : uint16_t {
+enum NodeFlags {
   None = 0,
 {{ range $i, $it := $flags -}}
-  {{$it}} = 1 << {{$i}},
+  {{$it}} = 1u << {{$i}},
 {{ end -}}
 };
 {{ end -}}

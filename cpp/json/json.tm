@@ -7,7 +7,6 @@ tokenColumn = true
 filenamePrefix = "json_"
 optimizeTables = true
 eventBased = true
-reportTokens = [MultiLineComment, invalid_token, JSONString]
 extraTypes = ["NonExistingType"]
 parseParams = ["int a", "bool b"]
 debugParser = true
@@ -58,6 +57,10 @@ invalid_token:
 
 %input JSONText;
 
+%inject MultiLineComment -> MultiLineComment/Bar,Foo;
+%inject invalid_token -> InvalidToken;
+%inject JSONString -> JsonString;
+
 %generate Literals = set(first JSONValue<+A>);
 
 %flag A;
@@ -80,10 +83,10 @@ JSONValue<A> {int a} -> JSONValue :
 
 EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' { @$.begin = @2.begin; } ;
 
-JSONObject -> JSONObject :
+JSONObject -> JSONObject/Foo :
     (?= !EmptyObject) '{' JSONMemberList? '}' { @$.begin = @2.begin; } ;
 
-JSONMember {int c} -> JSONMember :
+JSONMember {int c} -> JSONMember/Foo :
     JSONString ':' JSONValue<~A> { $$ = a; }
   | error -> SyntaxProblem
 ;

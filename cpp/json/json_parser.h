@@ -54,9 +54,10 @@ enum class NodeType {
   NodeTypeMax
 };
 
-enum class NodeFlags : uint16_t {
+enum NodeFlags {
   None = 0,
-  Foo = 1 << 0,
+  Bar = 1u << 0,
+  Foo = 1u << 1,
 };
 
 constexpr inline std::array<absl::string_view,

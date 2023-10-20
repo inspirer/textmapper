@@ -241,5 +241,17 @@ func (g *Grammar) AllFlags() []string {
 	ret = append(ret, g.Lexer.UsedFlags...)
 	ret = append(ret, g.Parser.UsedFlags...)
 	sort.Strings(ret)
+
+	// Remove duplicates.
+	var prev string
+	in := ret
+	ret = ret[:0]
+	for _, str := range in {
+		if str == prev {
+			continue
+		}
+		prev = str
+		ret = append(ret, str)
+	}
 	return ret
 }

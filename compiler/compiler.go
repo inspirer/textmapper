@@ -317,6 +317,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 	markers := make(map[string]int)
 	types := make(map[string]int)
 	cats := make(map[string]bool)
+	seenFlags := make(map[string]bool)
 	if out.Types != nil {
 		for i, t := range out.Types.RangeTypes {
 			types[t.Name] = i
@@ -364,7 +365,6 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 			continue
 		}
 
-		seenFlags := make(map[string]bool)
 		if nt.Value.Kind != syntax.Choice {
 			log.Fatalf("%v is not properly instantiated: %v", nt.Name, nt.Value)
 		}

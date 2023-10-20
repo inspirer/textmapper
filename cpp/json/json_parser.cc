@@ -126,14 +126,17 @@ constexpr uint32_t tmRuleType[] = {
     static_cast<uint32_t>(
         NodeType::EmptyObject),  // EmptyObject : lookahead_EmptyObject '{' '}'
     0,                           // lookahead_EmptyObject :
-    static_cast<uint32_t>(
-        NodeType::JSONObject),  // JSONObject : lookahead_notEmptyObject '{'
-                                // JSONMemberList '}'
-    static_cast<uint32_t>(
-        NodeType::JSONObject),  // JSONObject : lookahead_notEmptyObject '{' '}'
-    0,                          // lookahead_notEmptyObject :
-    static_cast<uint32_t>(
-        NodeType::JSONMember),  // JSONMember : JSONString ':' JSONValue
+    static_cast<uint32_t>(NodeType::JSONObject) +
+        (static_cast<uint32_t>(NodeFlags::Foo)
+         << 16),  // JSONObject : lookahead_notEmptyObject '{' JSONMemberList
+                  // '}'
+    static_cast<uint32_t>(NodeType::JSONObject) +
+        (static_cast<uint32_t>(NodeFlags::Foo)
+         << 16),  // JSONObject : lookahead_notEmptyObject '{' '}'
+    0,            // lookahead_notEmptyObject :
+    static_cast<uint32_t>(NodeType::JSONMember) +
+        (static_cast<uint32_t>(NodeFlags::Foo)
+         << 16),  // JSONMember : JSONString ':' JSONValue
     static_cast<uint32_t>(NodeType::SyntaxProblem),  // JSONMember : error
     0,  // JSONMemberList : JSONMember
     0,  // JSONMemberList : JSONMemberList .foo ',' JSONMember
@@ -275,10 +278,12 @@ ABSL_MUST_USE_RESULT bool AtEmptyObject(Lexer& lexer, int32_t next) {
 }
 
 void Parser::reportIgnoredToken(symbol sym) {
-  NodeType t;
+  NodeType t = NodeType::NoType;
+  NodeFlags flags = NodeFlags::None;
   switch (Token(sym.symbol)) {
     case Token::MULTILINECOMMENT:
       t = NodeType::MultiLineComment;
+      flags = static_cast<NodeFlags>(NodeFlags::Bar | NodeFlags::Foo);
       break;
     case Token::INVALID_TOKEN:
       t = NodeType::InvalidToken;
@@ -289,7 +294,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   if (debugSyntax) {
     LOG(INFO) << "ignored: " << Token(sym.symbol) << " as " << t;
   }
-  listener_(t, NodeFlags::None, sym.location);
+  listener_(t, flags, sym.location);
 }
 
 bool Parser::willShift(int32_t symbol, std::vector<stackEntry>& stack, int size,
