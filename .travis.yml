@@ -1,10 +1,5 @@
 matrix:
   include:
-    - language: java
-      before_script: cd java/tm-tool
-      jdk:
-        - oraclejdk11
-      sudo: required
     - language: go
       go:
         - 1.x
