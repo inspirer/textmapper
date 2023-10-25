@@ -1,9 +1,0 @@
-
-${template my1-}
-my1
-${end}
-
-${template my2-}
-my2
-${end}
-

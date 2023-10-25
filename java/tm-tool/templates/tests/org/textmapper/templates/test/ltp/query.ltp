@@ -1,5 +1,0 @@
-${query calculate(a,b,c) = 123}
-
-${template a}
-${self->calculate(1,2,3)}
-${end}

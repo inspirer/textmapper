@@ -1,6 +1,0 @@
-
-${template eval1-}
-${foreach i in ['w1','w2','t4']-}
-${eval '${i} is bad'}
-${end-}
-${end}

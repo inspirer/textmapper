@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="tm-java:jar">
-    <output-path>$PROJECT_DIR$/org.textmapper.idea/lib</output-path>
-    <root id="archive" name="tm-java.jar">
-      <element id="module-output" name="tm-java" />
-    </root>
-  </artifact>
-</component>

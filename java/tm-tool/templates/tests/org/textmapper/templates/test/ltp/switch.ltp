@@ -1,4 +1,0 @@
-${template check1-}
-${switch self.aa-}
-${case 11}Yo${case 'abcd'}Ye${else}No${end-}
-${end}
