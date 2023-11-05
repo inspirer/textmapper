@@ -43,36 +43,34 @@ func TestErrors(t *testing.T) {
 			continue
 		}
 
-		for _, compat := range []bool{true, false} {
-			inp := string(content)
-			pt := parsertest.New(t, fmt.Sprintf("%v (compat=%v)", file, compat), inp)
+		inp := string(content)
+		pt := parsertest.New(t, file, inp)
 
-			var want []string
-			for _, line := range strings.Split(inp, "\n") {
-				const prefix = "# err: "
-				switch {
-				case strings.HasPrefix(line, prefix):
-					want = append(want, line[len(prefix):])
-				case line == "# err:":
-					want = append(want, "")
-				}
+		var want []string
+		for _, line := range strings.Split(inp, "\n") {
+			const prefix = "# err: "
+			switch {
+			case strings.HasPrefix(line, prefix):
+				want = append(want, line[len(prefix):])
+			case line == "# err:":
+				want = append(want, "")
 			}
+		}
 
-			var got []string
-			_, err = Compile(ctx, file, pt.Source(), Params{Compat: compat})
-			if err != nil {
-				s := status.FromError(err)
-				s.Sort()
-				for _, e := range s {
-					pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
-					got = append(got, e.Msg)
-				}
+		var got []string
+		_, err = Compile(ctx, file, pt.Source(), Params{})
+		if err != nil {
+			s := status.FromError(err)
+			s.Sort()
+			for _, e := range s {
+				pt.Consume(t, e.Origin.Offset, e.Origin.EndOffset)
+				got = append(got, e.Msg)
 			}
-			pt.Done(t, nil)
-			if diff := diff.LineDiff(strings.Join(want, "\n"), strings.Join(got, "\n")); diff != "" {
-				t.Errorf("%v (compat=%v): errors diff\n--- want\n+++ got\n%v\n", file, compat, diff)
-				break
-			}
+		}
+		pt.Done(t, nil)
+		if diff := diff.LineDiff(strings.Join(want, "\n"), strings.Join(got, "\n")); diff != "" {
+			t.Errorf("%v: errors diff\n--- want\n+++ got\n%v\n", file, diff)
+			break
 		}
 	}
 }
@@ -96,7 +94,6 @@ func TestSourceModel(t *testing.T) {
 			continue
 		}
 		file := ast.File{Node: tree.Root()}
-		const compat = false
 
 		var s status.Status
 
@@ -105,13 +102,13 @@ func TestSourceModel(t *testing.T) {
 
 		resolver := newResolver(&s)
 
-		lexer := newLexerCompiler(opts, resolver, compat, &s)
+		lexer := newLexerCompiler(opts, resolver, &s)
 		lexer.compile(file)
 
 		// Resolve terminal references.
 		opts.resolve(resolver)
 
-		c := newCompiler(file, opts.out, lexer.out, resolver, Params{Compat: compat}, &s)
+		c := newCompiler(file, opts.out, lexer.out, resolver, Params{}, &s)
 		c.compileParser(file)
 
 		if s.Err() != nil {

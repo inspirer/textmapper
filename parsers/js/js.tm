@@ -1837,7 +1837,7 @@ AmbientModuleElement -> TsAmbientElement /* interface */:
 
 %%
 
-${template go_lexer.onBeforeLexer}
+{{define "onBeforeLexer"}}
 type Dialect int
 
 const (
@@ -1845,21 +1845,21 @@ const (
 	Typescript
 	TypescriptJsx
 )
-${end}
+{{end}}
 
-${template go_lexer.stateVars-}
+{{define "stateVars"}}
 	Dialect Dialect
 	token   token.Token // last token
 	Stack   []int // stack of JSX states, non-empty for StateJsx*
-${end}
+{{end}}
 
-${template go_lexer.initStateVars-}
+{{define "initStateVars"}}
 	l.Dialect = Javascript
 	l.token = token.UNAVAILABLE
 	l.Stack = nil
-${end}
+{{end}}
 
-${template go_parser.setupLookaheadLexer-}
+{{define "setupLookaheadLexer"}}
 	var lexer Lexer
 	lexer.source = l.source
 	lexer.ch= l.ch
@@ -1872,13 +1872,13 @@ ${template go_parser.setupLookaheadLexer-}
 	lexer.Dialect = l.Dialect
 	lexer.token = l.token
 	// Note: Stack is intentionally omitted.
-${end}
+{{end}}
 
-${template go_lexer.onBeforeNext-}
+{{define "onBeforeNext"}}
 	prevLine := l.tokenLine
-${end}
+{{end}}
 
-${template go_lexer.onAfterNext-}
+{{define "onAfterNext"}}
 
 	// There is an ambiguity in the language that a slash can either represent
 	// a division operator, or start a regular expression literal. This gets
@@ -2029,9 +2029,9 @@ ${template go_lexer.onAfterNext-}
 		}
 	}
 	l.token = tok
-${end}
+{{end}}
 
-${template go_lexer.onAfterLexer}
+{{define "onAfterLexer"}}
 func (l *Lexer) pushState(newState int) {
 	l.Stack = append(l.Stack, l.State)
 	l.State = newState
@@ -2045,14 +2045,8 @@ func (l *Lexer) popState() {
 		l.State = StateDiv
 	}
 }
-${end}
-
-${template go_parser.callLookaheadNext(memoization)}lookaheadNext(&lexer, end, ${memoization?'nil /*empty stack*/':'stack'})${end}
-
-${template newTemplates-}
+{{end}}
 
 {{define "callLookaheadNext" -}}
 lookaheadNext(&lexer, end, {{if eq . true}}nil /*empty stack*/{{else}}stack{{end}})
 {{- end}}
-
-${end}

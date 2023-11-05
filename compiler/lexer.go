@@ -18,7 +18,6 @@ var noSpace = ast.LexemeAttribute{}
 type lexerCompiler struct {
 	options  *optionsParser
 	resolver *resolver
-	compat   bool
 	out      *grammar.Lexer
 	*status.Status
 
@@ -33,11 +32,10 @@ type lexerCompiler struct {
 	injected    map[string]bool
 }
 
-func newLexerCompiler(options *optionsParser, resolver *resolver, compat bool, s *status.Status) *lexerCompiler {
+func newLexerCompiler(options *optionsParser, resolver *resolver, s *status.Status) *lexerCompiler {
 	return &lexerCompiler{
 		options:  options,
 		resolver: resolver,
-		compat:   compat,
 		out:      new(grammar.Lexer),
 		Status:   s,
 
@@ -221,7 +219,7 @@ func (c *lexerCompiler) resolveSC(sc ast.StartConditions) []int {
 }
 
 func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
-	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() && !c.compat {
+	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() {
 		if sym == int(lex.EOI) {
 			return -1
 		}
@@ -232,7 +230,7 @@ func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeA
 
 	out := c.out
 	key := symRule{code: cmd.Text(), space: space.IsValid(), sym: sym}
-	if a, ok := c.codeRule[key]; ok && !class.IsValid() && !c.compat {
+	if a, ok := c.codeRule[key]; ok && !class.IsValid() {
 		if ca, ok := c.codeAction[symAction{key.code, key.space}]; ok && comment != "" {
 			out.Actions[ca].Comments = append(out.Actions[ca].Comments, comment)
 		}

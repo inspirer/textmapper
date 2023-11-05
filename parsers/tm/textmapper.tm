@@ -487,17 +487,17 @@ expression -> Expression:
 
 %%
 
-${template go_lexer.stateVars-}
+{{define "stateVars"}}
 	inStatesSelector bool
 	prev             token.Token
-${end}
+{{end}}
 
-${template go_lexer.initStateVars-}
+{{define "initStateVars"}}
 	l.inStatesSelector = false
 	l.prev = token.UNAVAILABLE
-${end}
+{{end}}
 
-${template go_lexer.onAfterNext-}
+{{define "onAfterNext"}}
 	switch tok {
 	case token.LT:
 		l.inStatesSelector = l.State == StateInitial || l.State == StateAfterColonOrEq
@@ -534,8 +534,4 @@ ${template go_lexer.onAfterNext-}
 		l.State = StateInitial
 	}
 	l.prev = tok
-${end}
-
-${template go_types.wrappedTypeExt-}
-	SourceRange() "github.com/inspirer/textmapper/status".SourceRange
-${end}
+{{end}}

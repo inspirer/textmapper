@@ -1,6 +1,10 @@
 %{
 %}
 
+%start Module
+%start TypeSnippet
+%start ExpressionSnippet
+%start NamespaceNameSnippet
 %start StartOfArrowFunction // no-eoi
 %start StartOfParametrizedCall // no-eoi
 %start StartLParen // no-eoi
@@ -10,10 +14,6 @@
 %start StartOfFunctionType // no-eoi
 %start StartOfMappedType // no-eoi
 %start StartOfTupleElementName // no-eoi
-%start Module
-%start TypeSnippet
-%start ExpressionSnippet
-%start NamespaceNameSnippet
 
 %left RESOLVESHIFT
 %left OROR

@@ -8,12 +8,12 @@ import (
 	"github.com/inspirer/textmapper/parsers/simple/token"
 )
 
+const atBState = 1
+
 var afterListStates = map[int]bool{
 	6: true,
 	7: true,
 }
-
-const atBState = 1
 
 var tmNonterminals = [...]string{
 	"Bar_list",
@@ -80,7 +80,7 @@ var tmRuleType = [...]NodeType{
 	0, // Xyz : 'c'
 }
 
-// set(follow 'simple') = CHAR_B, CHAR_C
+// set(follow SIMPLE) = CHAR_B, CHAR_C
 var afterSimple = []int32{
 	5, 6,
 }

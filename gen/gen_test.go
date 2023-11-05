@@ -36,7 +36,7 @@ func TestGenerate(t *testing.T) {
 		filename := filename
 		t.Run(filename, func(t *testing.T) {
 			w := &mapWriter{content: make(map[string]string)}
-			_, err := gen.GenerateFile(ctx, filename, w, gen.Options{Compat: true})
+			_, err := gen.GenerateFile(ctx, filename, w, gen.Options{})
 			if err != nil {
 				s := status.FromError(err)
 				s.Sort()

@@ -3,9 +3,7 @@ package compiler
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -21,7 +19,6 @@ import (
 
 // Params control the grammar compilation process.
 type Params struct {
-	Compat    bool
 	CheckOnly bool // set to true, if the caller is interested in compilation errors only
 }
 
@@ -40,7 +37,7 @@ func Compile(ctx context.Context, path, content string, params Params) (*grammar
 
 	resolver := newResolver(&s)
 
-	lexer := newLexerCompiler(opts, resolver, params.Compat, &s)
+	lexer := newLexerCompiler(opts, resolver, &s)
 	lexer.compile(file)
 
 	// Resolve terminal references.
@@ -49,12 +46,7 @@ func Compile(ctx context.Context, path, content string, params Params) (*grammar
 	c := newCompiler(file, opts.out, lexer.out, resolver, params, &s)
 	c.compileParser(file)
 
-	tpl := strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
-	if params.Compat {
-		c.out.CustomTemplates = parseInGrammarTemplates(tpl)
-	} else {
-		c.out.CustomTemplates = tpl
-	}
+	c.out.CustomTemplates = strings.TrimPrefix(file.Child(selector.Templates).Text(), "%%")
 	return c.out, s.Err()
 }
 
@@ -99,9 +91,8 @@ type symRule struct {
 	sym   int
 }
 
-func addSyntheticInputs(m *syntax.Model, compat bool) {
+func addSyntheticInputs(m *syntax.Model) {
 	seen := make(map[lalr.Sym]bool)
-	size := len(m.Inputs)
 	for _, inp := range m.Inputs {
 		if inp.NoEoi {
 			seen[lalr.Sym(inp.Nonterm+len(m.Terminals))] = true
@@ -128,10 +119,6 @@ func addSyntheticInputs(m *syntax.Model, compat bool) {
 				seen[key] = true
 			}
 		}
-	}
-	if compat {
-		// Textmapper Java puts synthetic inputs before user ones.
-		m.Inputs = append(m.Inputs[size:], m.Inputs[:size]...)
 	}
 }
 
@@ -229,13 +216,6 @@ func (c *compiler) compileParser(file ast.File) {
 
 	// Use instantiated nonterminal names to describe sets in generated code.
 	old := source.Terminals
-	if c.params.Compat {
-		// Note: prefer original terminal names over IDs.
-		source.Terminals = nil
-		for _, sym := range c.out.Syms {
-			source.Terminals = append(source.Terminals, sym.Name)
-		}
-	}
 	for _, set := range c.out.Sets {
 		in := source.Sets[loader.namedSets[set.Name]]
 		set.Expr = "set(" + in.String(source) + ")"
@@ -264,14 +244,13 @@ func (c *compiler) compileParser(file ast.File) {
 	}
 
 	// Introduce synthetic inputs for runtime lookaheads.
-	addSyntheticInputs(source, c.params.Compat)
+	addSyntheticInputs(source)
 
 	// Prepare the model for code generation.
 	c.resolver.addNonterms(source)
 	c.out.Syms = c.resolver.Syms
 
 	opts := genOptions{
-		compat:        c.params.Compat,
 		expectSR:      loader.expectSR,
 		expectRR:      loader.expectRR,
 		syms:          c.out.Syms,
@@ -284,7 +263,6 @@ func (c *compiler) compileParser(file ast.File) {
 }
 
 type genOptions struct {
-	compat   bool
 	expectRR int
 	expectSR int
 	syms     []grammar.Symbol
@@ -387,7 +365,6 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 			actualPos := make(map[int]int) // $i inside a semantic action -> index in rule.RHS
 			origin := expr.Origin
 
-			var innerReports int
 			var traverse func(expr *syntax.Expr)
 			traverse = func(expr *syntax.Expr) {
 				switch expr.Kind {
@@ -420,7 +397,6 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 					for _, sub := range expr.Sub {
 						traverse(sub)
 					}
-					innerReports = len(report)
 				case syntax.Reference:
 					if command != "" {
 						// TODO This command needs to be extracted into a dedicated nonterminal.
@@ -450,9 +426,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 			traverse(expr)
 			sort.Strings(out.UsedFlags)
 
-			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == numRefs &&
-				// Note: in compatibility note we don't promote -> from inside parentheses.
-				(!opts.compat || len(report) > innerReports) {
+			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == numRefs {
 
 				// Promote to the rule default.
 				rule.Type = report[last].Type
@@ -488,22 +462,6 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 		return s.Err()
 	}
 
-	if opts.compat {
-		// Sort g.Markers.
-		perm := make([]int, len(g.Markers))
-		sort.Strings(g.Markers)
-		for i, val := range g.Markers {
-			perm[markers[val]] = i
-		}
-		for _, rule := range g.Rules {
-			for i, val := range rule.RHS {
-				if val.IsStateMarker() {
-					rule.RHS[i] = lalr.Marker(perm[val.AsMarker()])
-				}
-			}
-		}
-	}
-
 	lopts := lalr.Options{
 		Optimize:      opts.optimize,
 		DefaultReduce: opts.defaultReduce,
@@ -519,56 +477,4 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 	out.Nonterms = source.Nonterms
 	out.NumTerminals = len(source.Terminals)
 	return nil
-}
-
-var tplMap = map[string]string{
-	"go_lexer.stateVars":            "stateVars",
-	"go_lexer.initStateVars":        "initStateVars",
-	"go_lexer.onAfterNext":          "onAfterNext",
-	"go_lexer.onBeforeNext":         "onBeforeNext",
-	"go_lexer.onAfterLexer":         "onAfterLexer",
-	"go_lexer.onBeforeLexer":        "onBeforeLexer",
-	"go_parser.stateVars":           "parserVars",
-	"go_parser.initStateVars":       "initParserVars",
-	"go_parser.setupLookaheadLexer": "setupLookaheadLexer",
-	"go_parser.onBeforeIgnore":      "onBeforeIgnore",
-	"go_parser.onAfterParser":       "onAfterParser",
-	"go_parser.customReportNext":    "customReportNext",
-}
-
-var tplRE = regexp.MustCompile(`(?s)\${template ([\w.]+)(-?)}(.*?)\${end}`)
-
-// parseInGrammarTemplates converts old Textmapper templates into Go ones.
-// TODO get rid of this function after deleting the Java implementation
-func parseInGrammarTemplates(templates string) string {
-	const start = "${template newTemplates-}"
-	const end = "${end}"
-
-	var buf strings.Builder
-	if i := strings.Index(templates, start); i >= 0 {
-		templates := templates[i+len(start):]
-		i = strings.Index(templates, end)
-		if i >= 0 {
-			buf.WriteString(templates[:i])
-		}
-	}
-
-	for _, match := range tplRE.FindAllStringSubmatch(templates, -1) {
-		name, content := match[1], match[3]
-		if name, ok := tplMap[name]; ok {
-			if match[2] == "-" {
-				content = trimLeadingNL(content)
-			}
-			const callBase = `${call base-}`
-			if i := strings.Index(content, callBase); i >= 0 {
-				content = content[:i] + trimLeadingNL(content[i+len(callBase):])
-			}
-			fmt.Fprintf(&buf, `{{define "%v"}}%v{{end}}`, name, content)
-		}
-	}
-	return buf.String()
-}
-
-func trimLeadingNL(s string) string {
-	return strings.TrimPrefix(strings.TrimPrefix(s, "\r"), "\n")
 }

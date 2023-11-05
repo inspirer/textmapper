@@ -56,7 +56,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(1, 44, lexer)
+	return p.parse(0, 44, lexer)
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) error {
@@ -220,7 +220,7 @@ func AtEmptyObject(lexer *Lexer, next int32) bool {
 	if debugSyntax {
 		fmt.Printf("lookahead EmptyObject, next: %v\n", symbolName(next))
 	}
-	return lookahead(lexer, next, 0, 42)
+	return lookahead(lexer, next, 1, 43)
 }
 
 func lookahead(l *Lexer, next int32, start, end int8) bool {

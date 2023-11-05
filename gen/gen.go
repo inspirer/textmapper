@@ -22,7 +22,6 @@ type Writer interface {
 }
 
 type Options struct {
-	Compat      bool
 	IncludeDirs []string
 	NoBuiltins  bool
 }
@@ -147,7 +146,7 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		src := buf.String()
 		switch g.TargetLang {
 		case "go":
-			src = FormatGo(outName, ExtractGoImports(src), opts.Compat)
+			src = FormatGo(outName, ExtractGoImports(src))
 		}
 		if err := w.Write(outName, src); err != nil {
 			return err
@@ -197,7 +196,7 @@ func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Sta
 	}
 
 	start := time.Now()
-	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{Compat: opts.Compat})
+	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{})
 	ret.Compiling = time.Since(start)
 	if err != nil {
 		return ret, err

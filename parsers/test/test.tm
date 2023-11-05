@@ -122,7 +122,7 @@ MultiLineComment -> MultiLineComment:  /\/\*/ (space)
 
 %input Test, Decl1;
 
-Test -> Test :
+Test -> Test:
     Declaration+ ;
 
 # Test: an interface with a type rule.
@@ -219,7 +219,7 @@ extend primaryExpr -> Expr:
 
 %%
 
-${template go_lexer.onAfterLexer}
+{{define "onAfterLexer"}}
 func mustParseInt(s string) int {
 	i, err := "strconv".Atoi(s)
 	if err != nil {
@@ -227,19 +227,17 @@ func mustParseInt(s string) int {
 	}
 	return i
 }
-${end}
+{{end}}
 
-${template go_lexer.onBeforeNext-}
+{{define "onBeforeNext"}}
 	var commentOffset, commentDepth int
-${end}
+{{end}}
 
-${query go_listener.hasFlags() = true}
-
-${template go_parser.onAfterParser}
+{{define "onAfterParser"}}
 func parserEnd() {}
-${end}
+{{end}}
 
-${template go_parser.customReportNext-}
+{{define "customReportNext"}}
 default:
    break
-${end}
+{{end}}

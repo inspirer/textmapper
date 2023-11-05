@@ -32,7 +32,8 @@ type Lexer struct {
 	scanOffset  int  // scanning offset
 	value       interface{}
 
-	State            int // lexer state, modifiable
+	State int // lexer state, modifiable
+
 	inStatesSelector bool
 	prev             token.Token
 }
@@ -52,6 +53,7 @@ func (l *Lexer) Init(source string) {
 	l.lineOffset = 0
 	l.tokenColumn = 1
 	l.State = 0
+
 	l.inStatesSelector = false
 	l.prev = token.UNAVAILABLE
 
@@ -339,6 +341,7 @@ recovered:
 	if space {
 		goto restart
 	}
+
 	switch tok {
 	case token.LT:
 		l.inStatesSelector = l.State == StateInitial || l.State == StateAfterColonOrEq

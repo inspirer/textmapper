@@ -56,12 +56,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 1, 140, lexer)
+	_, err := p.parse(ctx, 0, 140, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 2, 141, lexer)
+	v, err := p.parse(ctx, 1, 141, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -153,6 +153,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 					switch token.Token(p.next.symbol) {
 					case token.IDENTIFIER:
 						p.listener(Identifier, 0, p.next.offset, p.next.endoffset)
+
 					default:
 						break
 					}
@@ -244,7 +245,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 	switch rule {
 	case 94:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 0, 137, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 2, 139, s); ok {
 			sym = 43 /* lookahead_FooLookahead */
 		} else {
 			sym = 44 /* lookahead_notFooLookahead */
@@ -258,7 +259,7 @@ func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (
 	if debugSyntax {
 		fmt.Printf("lookahead FooLookahead, next: %v\n", symbolName(next))
 	}
-	return lookahead(ctx, lexer, next, 0, 137, s)
+	return lookahead(ctx, lexer, next, 2, 139, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {

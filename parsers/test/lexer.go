@@ -54,6 +54,7 @@ func (l *Lexer) Init(source string) {
 //
 // The token text can be retrieved later by calling the Text() method.
 func (l *Lexer) Next() token.Token {
+
 	var commentOffset, commentDepth int
 restart:
 	l.tokenOffset = l.offset

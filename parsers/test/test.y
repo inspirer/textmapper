@@ -1,9 +1,9 @@
 %{
 %}
 
-%start FooLookahead // no-eoi
 %start Test
 %start Decl1
+%start FooLookahead // no-eoi
 
 %nonassoc AS
 %left PLUS
