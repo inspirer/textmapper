@@ -50,6 +50,8 @@ const (
 	ANDAND            // &&
 	DOLLAR            // $
 	ATSIGN            // @
+	DIV               // /
+	LBRACE            // {
 	ERROR
 	ID
 	AS            // as
@@ -91,9 +93,7 @@ const (
 	SPACE         // space
 	CHAR_X        // x
 	CODE          // {
-	LBRACE        // {
 	REGEXP
-	DIV // /
 
 	NumTokens
 )
@@ -137,6 +137,8 @@ var tokenStr = [...]string{
 	"&&",
 	"$",
 	"@",
+	"/",
+	"{",
 	"ERROR",
 	"ID",
 	"as",
@@ -178,9 +180,7 @@ var tokenStr = [...]string{
 	"space",
 	"x",
 	"{",
-	"{",
 	"REGEXP",
-	"/",
 }
 
 func (tok Token) String() string {
