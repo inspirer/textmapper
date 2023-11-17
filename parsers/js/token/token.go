@@ -7,7 +7,7 @@ import (
 )
 
 // Token is an enum of all terminal symbols of the js language.
-type Token int
+type Token int32
 
 // Token values.
 const (

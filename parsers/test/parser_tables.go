@@ -225,4 +225,4 @@ var tmRuleType = [...]uint32{
 }
 
 // set(follow ERROR) =
-var afterErr = []int32{}
+var afterErr = []token.Token{}

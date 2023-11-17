@@ -110,9 +110,9 @@ var tmRuleType = [...]NodeType{
 }
 
 // set(first JSONValue_A) = LBRACE, LBRACK, JSONSTRING, JSONNUMBER, NULL, TRUE, FALSE, CHAR_A
-var Literals = []int32{
+var Literals = []token.Token{
 	2, 4, 10, 11, 13, 14, 15, 16,
 }
 
 // set(follow ERROR) =
-var afterErr = []int32{}
+var afterErr = []token.Token{}
