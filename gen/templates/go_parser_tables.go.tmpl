@@ -121,7 +121,7 @@ var tmRuleType = [...]{{template "nodeTypeRef" $}}{
 {{- range .Sets}}
 
 // {{.Expr}} = {{.ValueString $}}
-var {{.Name}} = []int32{
+var {{.Name}} = []{{template "tokenType" .}}{
 {{- if gt (len .Terminals) 0 -}}
 {{- int_array .Terminals "\t" 79 -}}
 {{- end -}}

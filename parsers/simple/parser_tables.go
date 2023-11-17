@@ -81,6 +81,6 @@ var tmRuleType = [...]NodeType{
 }
 
 // set(follow 'simple') = CHAR_B, CHAR_C
-var afterSimple = []int32{
+var afterSimple = []token.Token{
 	5, 6,
 }
