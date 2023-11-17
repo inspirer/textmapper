@@ -201,7 +201,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 	return nil
 }
 
-const errSymbol = 38
+const errSymbol = 40
 
 // willShift checks if "symbol" is going to be shifted in the `stack+[state]` parsing stack.
 func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {

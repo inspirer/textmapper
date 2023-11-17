@@ -62,6 +62,10 @@ multilineComment: /\/\*{commentChars}\*\//   (space)
 '&&':   /&&/
 '$':    /$/
 '@':    /@/
+<initial, afterID, afterGT>
+'/':    /\//
+<afterGT>
+'{':  /\{/
 
 error:
 invalid_token:
@@ -113,14 +117,8 @@ ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 <initial, afterID, afterColonOrEq>
 code:   /\{/    /* We skip the rest in a post-processing action. */
 
-<afterGT>
-'{':  /\{/
-
 <afterColonOrEq>
 regexp: /\/{reFirst}{reChar}*\//
-
-<initial, afterID, afterGT>
-'/':    /\//
 
 :: parser
 

@@ -41,6 +41,8 @@
 %token TILDE
 %token DOLLAR
 %token ATSIGN
+%token DIV
+%token LBRACE
 %token ERROR
 %token ID
 %token AS
@@ -82,9 +84,7 @@
 %token SPACE
 %token CHAR_X
 %token CODE
-%token LBRACE
 %token REGEXP
-%token DIV
 
 %%
 
