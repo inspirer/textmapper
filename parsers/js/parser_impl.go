@@ -17,7 +17,7 @@ type Parser struct {
 	pending   []symbol
 	healthy   bool
 
-	lastToken token.Token
+	lastToken token.Type
 	lastLine  int
 	endState  int16
 }
@@ -132,7 +132,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 					p.pending = p.pending[:0]
 				}
 				if p.next.symbol != eoiToken {
-					switch token.Token(p.next.symbol) {
+					switch token.Type(p.next.symbol) {
 					case token.NOSUBSTITUTIONTEMPLATE:
 						p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
 					case token.TEMPLATEHEAD:
@@ -224,7 +224,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 	e := s
 	for _, tok := range p.pending {
 		// Try to cover all nearby invalid tokens.
-		if token.Token(tok.symbol) == token.INVALID_TOKEN {
+		if token.Type(tok.symbol) == token.INVALID_TOKEN {
 			if s > tok.offset {
 				s = tok.offset
 			}
@@ -279,7 +279,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		if s != e {
 			// Consume trailing invalid tokens.
 			for _, tok := range p.pending {
-				if token.Token(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
+				if token.Type(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}

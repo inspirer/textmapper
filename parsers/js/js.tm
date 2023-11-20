@@ -1849,7 +1849,7 @@ const (
 
 {{define "stateVars"}}
 	Dialect Dialect
-	token   token.Token // last token
+	token   token.Type // last token
 	Stack   []int // stack of JSX states, non-empty for StateJsx*
 {{end}}
 

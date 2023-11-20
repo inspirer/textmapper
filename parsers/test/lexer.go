@@ -53,7 +53,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() token.Token {
+func (l *Lexer) Next() token.Type {
 
 	var commentOffset, commentDepth int
 restart:

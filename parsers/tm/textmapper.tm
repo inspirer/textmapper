@@ -263,7 +263,7 @@ grammar_part<OrSyntaxError> -> GrammarPart:
 ;
 
 nonterm -> Nonterm:
-    annotations? name=identifier params=nonterm_params? rawType? reportClause? ':' rules ';' 
+    annotations? name=identifier params=nonterm_params? rawType? reportClause? ':' rules ';'
   | ('extend' -> Extend) name=identifier reportClause? ':' rules ';'
 ;
 
@@ -487,7 +487,7 @@ expression -> Expression:
 
 {{define "stateVars"}}
 	inStatesSelector bool
-	prev             token.Token
+	prev             token.Type
 {{end}}
 
 {{define "initStateVars"}}

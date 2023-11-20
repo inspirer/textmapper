@@ -47,8 +47,8 @@ type Lexer struct {
 	State int // lexer state, modifiable
 
 	Dialect Dialect
-	token   token.Token // last token
-	Stack   []int       // stack of JSX states, non-empty for StateJsx*
+	token   token.Type // last token
+	Stack   []int      // stack of JSX states, non-empty for StateJsx*
 }
 
 var bomSeq = "\xef\xbb\xbf"
@@ -80,7 +80,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() token.Token {
+func (l *Lexer) Next() token.Type {
 
 	prevLine := l.tokenLine
 restart:

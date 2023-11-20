@@ -297,7 +297,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 	e := s
 	for _, tok := range p.pending {
 		// Try to cover all nearby invalid tokens.
-		if token.Token(tok.symbol) == token.INVALID_TOKEN {
+		if token.Type(tok.symbol) == token.INVALID_TOKEN {
 			if s > tok.offset {
 				s = tok.offset
 			}
@@ -343,7 +343,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		if s != e {
 			// Consume trailing invalid tokens.
 			for _, tok := range p.pending {
-				if token.Token(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
+				if token.Type(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}
@@ -450,7 +450,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 
 func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	var t NodeType
-	switch token.Token(tok.symbol) {
+	switch token.Type(tok.symbol) {
 	case token.INVALID_TOKEN:
 		t = InvalidToken
 	case token.MULTILINECOMMENT:
@@ -463,7 +463,7 @@ func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 		return
 	}
 	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", token.Token(tok.symbol), t)
+		fmt.Printf("ignored: %v as %v\n", token.Type(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }
