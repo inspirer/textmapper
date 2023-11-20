@@ -150,7 +150,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 					p.pending = p.pending[:0]
 				}
 				if p.next.symbol != eoiToken {
-					switch token.Token(p.next.symbol) {
+					switch token.Type(p.next.symbol) {
 					case token.IDENTIFIER:
 						p.listener(Identifier, 0, p.next.offset, p.next.endoffset)
 
@@ -427,7 +427,7 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 
 func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 	var t NodeType
-	switch token.Token(tok.symbol) {
+	switch token.Type(tok.symbol) {
 	case token.SINGLELINECOMMENT:
 		t = SingleLineComment
 	case token.INVALID_TOKEN:
@@ -438,7 +438,7 @@ func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 		return
 	}
 	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", token.Token(tok.symbol), t)
+		fmt.Printf("ignored: %v as %v\n", token.Type(tok.symbol), t)
 	}
 	p.listener(t, 0, tok.offset, tok.endoffset)
 }

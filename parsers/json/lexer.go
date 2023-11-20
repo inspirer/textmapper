@@ -47,7 +47,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() token.Token {
+func (l *Lexer) Next() token.Type {
 restart:
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
@@ -105,7 +105,7 @@ restart:
 		}
 	}
 
-	tok := token.Token(tmFirstRule - state)
+	tok := token.Type(tmFirstRule - state)
 recovered:
 	switch tok {
 	case token.ID:
@@ -141,7 +141,7 @@ recovered:
 	switch tok {
 	case token.INVALID_TOKEN:
 		if backupToken >= 0 {
-			tok = token.Token(backupToken)
+			tok = token.Type(backupToken)
 			hash = backupHash
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {

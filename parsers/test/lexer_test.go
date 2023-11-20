@@ -9,7 +9,7 @@ import (
 )
 
 var lexerTests = []struct {
-	tok    token.Token
+	tok    token.Type
 	inputs []string
 }{
 
@@ -97,7 +97,7 @@ var lexerTests = []struct {
 
 func TestLexer(t *testing.T) {
 	l := new(test.Lexer)
-	seen := map[token.Token]bool{}
+	seen := map[token.Type]bool{}
 	seen[token.WHITESPACE] = true
 	seen[token.ERROR] = true
 	for _, tc := range lexerTests {

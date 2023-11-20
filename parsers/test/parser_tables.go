@@ -39,7 +39,7 @@ func symbolName(sym int32) string {
 		return "<no-token>"
 	}
 	if sym < int32(token.NumTokens) {
-		return token.Token(sym).String()
+		return token.Type(sym).String()
 	}
 	if i := int(sym) - int(token.NumTokens); i < len(tmNonterminals) {
 		return tmNonterminals[i]
@@ -225,4 +225,4 @@ var tmRuleType = [...]uint32{
 }
 
 // set(follow ERROR) =
-var afterErr = []token.Token{}
+var afterErr = []token.Type{}

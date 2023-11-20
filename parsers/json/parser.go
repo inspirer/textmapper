@@ -127,7 +127,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 					p.pending = p.pending[:0]
 				}
 				if p.next.symbol != eoiToken {
-					switch token.Token(p.next.symbol) {
+					switch token.Type(p.next.symbol) {
 					case token.JSONSTRING:
 						p.listener(JsonString, p.next.offset, p.next.endoffset)
 					}
@@ -302,7 +302,7 @@ func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer 
 
 func (p *Parser) reportIgnoredToken(tok symbol) {
 	var t NodeType
-	switch token.Token(tok.symbol) {
+	switch token.Type(tok.symbol) {
 	case token.MULTILINECOMMENT:
 		t = MultiLineComment
 	case token.INVALID_TOKEN:
@@ -311,7 +311,7 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 		return
 	}
 	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", token.Token(tok.symbol), t)
+		fmt.Printf("ignored: %v as %v\n", token.Type(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
 }

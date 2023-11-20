@@ -10,7 +10,7 @@ import (
 )
 
 var lexerTests = []struct {
-	tok    token.Token
+	tok    token.Type
 	inputs []string
 }{
 
@@ -311,7 +311,7 @@ var lexerTests = []struct {
 
 func TestLexer(t *testing.T) {
 	l := new(js.Lexer)
-	seen := map[token.Token]bool{}
+	seen := map[token.Type]bool{}
 	seen[token.WHITESPACE] = true
 	seen[token.ERROR] = true
 	seen[token.RESOLVESHIFT] = true

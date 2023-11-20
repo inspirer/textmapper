@@ -6,12 +6,12 @@ import (
 	"fmt"
 )
 
-// Token is an enum of all terminal symbols of the json language.
-type Token int32
+// Type is an enum of all terminal symbols of the json language.
+type Type int32
 
 // Token values.
 const (
-	UNAVAILABLE Token = iota - 1
+	UNAVAILABLE Type = iota - 1
 	EOI
 	INVALID_TOKEN
 	LBRACE // {
@@ -57,7 +57,7 @@ var tokenStr = [...]string{
 	"ERROR",
 }
 
-func (tok Token) String() string {
+func (tok Type) String() string {
 	if tok >= 0 && int(tok) < len(tokenStr) {
 		return tokenStr[tok]
 	}

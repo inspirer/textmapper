@@ -30,7 +30,7 @@ func symbolName(sym int32) string {
 		return "<no-token>"
 	}
 	if sym < int32(token.NumTokens) {
-		return token.Token(sym).String()
+		return token.Type(sym).String()
 	}
 	if i := int(sym) - int(token.NumTokens); i < len(tmNonterminals) {
 		return tmNonterminals[i]
@@ -81,6 +81,6 @@ var tmRuleType = [...]NodeType{
 }
 
 // set(follow SIMPLE) = CHAR_B, CHAR_C
-var afterSimple = []token.Token{
+var afterSimple = []token.Type{
 	5, 6,
 }

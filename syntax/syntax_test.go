@@ -356,7 +356,7 @@ func initSymbols(input string, out *syntax.Model) error {
 	seen := make(map[string]bool)
 	out.Terminals = []string{"EOI"}
 	out.Nonterms = nil
-	var prev token.Token
+	var prev token.Type
 	for tok := l.Next(); tok != token.EOI; tok = l.Next() {
 		if tok == token.INVALID_TOKEN {
 			return fmt.Errorf("%v: invalid token: %s", l.Line(), l.Text())
@@ -413,7 +413,7 @@ func tokenOrigin(l *tm.Lexer) node {
 
 type parser struct {
 	lexer tm.Lexer
-	curr  token.Token
+	curr  token.Type
 	err   error
 	out   *syntax.Model
 }
@@ -425,12 +425,12 @@ func (p *parser) next() {
 	}
 }
 
-func (p *parser) lookahead() token.Token {
+func (p *parser) lookahead() token.Type {
 	l := p.lexer
 	return l.Next()
 }
 
-func (p *parser) consumeIf(tok token.Token) bool {
+func (p *parser) consumeIf(tok token.Type) bool {
 	if p.curr == tok {
 		p.next()
 		return true
@@ -438,7 +438,7 @@ func (p *parser) consumeIf(tok token.Token) bool {
 	return false
 }
 
-func (p *parser) consume(tok token.Token) {
+func (p *parser) consume(tok token.Type) {
 	if p.curr != tok {
 		p.errorf("found %v, while %v is expected", p.curr, tok)
 	}

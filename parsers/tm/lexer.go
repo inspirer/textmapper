@@ -35,7 +35,7 @@ type Lexer struct {
 	State int // lexer state, modifiable
 
 	inStatesSelector bool
-	prev             token.Token
+	prev             token.Type
 }
 
 var bomSeq = "\xef\xbb\xbf"
@@ -68,7 +68,7 @@ func (l *Lexer) Init(source string) {
 // indicated by Token.EOI.
 //
 // The token text can be retrieved later by calling the Text() method.
-func (l *Lexer) Next() token.Token {
+func (l *Lexer) Next() token.Type {
 restart:
 	l.tokenLine = l.line
 	l.tokenColumn = l.offset - l.lineOffset + 1

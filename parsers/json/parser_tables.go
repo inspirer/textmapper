@@ -28,7 +28,7 @@ func symbolName(sym int32) string {
 		return "<no-token>"
 	}
 	if sym < int32(token.NumTokens) {
-		return token.Token(sym).String()
+		return token.Type(sym).String()
 	}
 	if i := int(sym) - int(token.NumTokens); i < len(tmNonterminals) {
 		return tmNonterminals[i]
@@ -110,9 +110,9 @@ var tmRuleType = [...]NodeType{
 }
 
 // set(first JSONValue_A) = LBRACE, LBRACK, JSONSTRING, JSONNUMBER, NULL, TRUE, FALSE, CHAR_A
-var Literals = []token.Token{
+var Literals = []token.Type{
 	2, 4, 10, 11, 13, 14, 15, 16,
 }
 
 // set(follow ERROR) =
-var afterErr = []token.Token{}
+var afterErr = []token.Type{}
