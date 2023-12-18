@@ -98,7 +98,7 @@ var tmRuleType = [...]uint32{
 {{- range .Parser.Rules}}
 {{- if ne .Type -1 }}
 {{- $val := index $.Parser.Types.RangeTypes .Type }}
-	{{if not (is_file_node $val.Name)}}uint32({{template "nodeTypePkg" $}}{{node_id $val.Name}}){{if .Flags}} + uint32({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeTypePkg" $}}{{$flag}}{{end}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+	{{if not (is_file_node $val.Name)}}uint32({{template "nodeTypePkg" $}}{{node_id $val.Name}}){{if .Flags}} + uint32({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{end}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
 {{- else }}
 	0, // {{$.RuleString .}}
 {{- end}}
