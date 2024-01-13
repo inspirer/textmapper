@@ -10,6 +10,7 @@ cancellable = true
 eventAST = true
 writeBison = true
 tokenColumn = true
+optimizeTables = true
 fileNode = "File"
 reportTokens = [invalid_token, multilineComment, comment, templates]
 

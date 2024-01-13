@@ -14,6 +14,7 @@ writeBison = true
 fileNode = "Module"
 cancellable = true
 recursiveLookaheads = true
+optimizeTables = true
 reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
                 NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]

@@ -66,8 +66,15 @@ func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {
 	// parsing_stack = stack[:size] + stack2
 	for state != p.endState {
 		action := tmAction[state]
-		if action < -2 {
-			action = lalr(action, symbol)
+		if action > tmActionBase {
+			pos := action + symbol
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == symbol {
+				action = int32(tmTable[pos])
+			} else {
+				action = tmDefAct[state]
+			}
+		} else {
+			action = tmDefAct[state]
 		}
 
 		if action >= 0 {
@@ -89,7 +96,7 @@ func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {
 			state = gotoState(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
-			return action == -1 && gotoState(state, symbol) >= 0
+			return action < -1
 		}
 	}
 	return symbol == eoiToken
@@ -123,38 +130,29 @@ func (p *Parser) skipBrokenCode(ctx context.Context, lexer *Lexer, stack []stack
 	return e
 }
 
-func lalr(action, next int32) int32 {
-	a := -action - 3
-	for ; tmLalr[a] >= 0; a += 2 {
-		if tmLalr[a] == next {
-			break
-		}
-	}
-	return tmLalr[a+1]
-}
-
 func gotoState(state int16, symbol int32) int16 {
-	min := tmGoto[symbol]
-	max := tmGoto[symbol+1]
+	const numTokens = 157
+	if symbol >= numTokens {
+		pos := tmGoto[symbol-numTokens] + int32(state)
+		if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int16(state) {
+			return int16(tmTable[pos])
+		}
+		return int16(tmDefGoto[symbol-numTokens])
+	}
 
-	if max-min < 32 {
-		for i := min; i < max; i += 2 {
-			if tmFromTo[i] == state {
-				return tmFromTo[i+1]
-			}
-		}
+	// Shifting a token.
+	action := tmAction[state]
+	if action == tmActionBase {
+		return -1
+	}
+	pos := action + symbol
+	if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int16(symbol) {
+		action = int32(tmTable[pos])
 	} else {
-		for min < max {
-			e := (min + max) >> 1 &^ int32(1)
-			i := tmFromTo[e]
-			if i == state {
-				return tmFromTo[e+1]
-			} else if i < state {
-				min = e + 2
-			} else {
-				max = e
-			}
-		}
+		action = tmDefAct[state]
+	}
+	if action < -1 {
+		return int16(-2 - action)
 	}
 	return -1
 }
@@ -330,12 +328,19 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 
 	for state != end {
 		action := tmAction[state]
-		if action < -2 {
+		if action > tmActionBase {
 			// Lookahead is needed.
 			if next == noToken {
 				next = lookaheadNext(&lexer, end, stack)
 			}
-			action = lalr(action, next)
+			pos := action + next
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next {
+				action = int32(tmTable[pos])
+			} else {
+				action = tmDefAct[state]
+			}
+		} else {
+			action = tmDefAct[state]
 		}
 
 		if action >= 0 {
@@ -360,7 +365,7 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			entry.state = state
 			stack = append(stack, entry)
 
-		} else if action == -1 {
+		} else if action < -1 {
 			if s.shiftCounter++; s.shiftCounter&0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
@@ -371,10 +376,7 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			}
 
 			// Shift.
-			if next == noToken {
-				next = lookaheadNext(&lexer, end, stack)
-			}
-			state = gotoState(state, next)
+			state = int16(-2 - action)
 			stack = append(stack, stackEntry{
 				sym:   symbol{symbol: next},
 				state: state,
@@ -387,7 +389,7 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			}
 		}
 
-		if action == -2 || state == -1 {
+		if action == -1 || state == -1 {
 			break
 		}
 	}

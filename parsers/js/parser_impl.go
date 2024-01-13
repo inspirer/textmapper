@@ -65,12 +65,19 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 
 	for state != end {
 		action := tmAction[state]
-		if action < -2 {
+		if action > tmActionBase {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
 				p.fetchNext(lexer, stack)
 			}
-			action = lalr(action, p.next.symbol)
+			pos := action + p.next.symbol
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == p.next.symbol {
+				action = int32(tmTable[pos])
+			} else {
+				action = tmDefAct[state]
+			}
+		} else {
+			action = tmDefAct[state]
 		}
 
 		if action >= 0 {
@@ -102,7 +109,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 			entry.state = state
 			stack = append(stack, entry)
 
-		} else if action == -1 {
+		} else if action < -1 {
 			if s.shiftCounter++; s.shiftCounter&0x1ff == 0 {
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
@@ -113,44 +120,39 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 			}
 
 			// Shift.
-			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+			state = int16(-2 - action)
+			stack = append(stack, stackEntry{
+				sym:   p.next,
+				state: state,
+			})
+			if debugSyntax {
+				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
-			state = gotoState(state, p.next.symbol)
-			if state >= 0 {
-				stack = append(stack, stackEntry{
-					sym:   p.next,
-					state: state,
-				})
-				if debugSyntax {
-					fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+			if len(p.pending) > 0 {
+				for _, tok := range p.pending {
+					p.reportIgnoredToken(ctx, tok)
 				}
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(ctx, tok)
-					}
-					p.pending = p.pending[:0]
+				p.pending = p.pending[:0]
+			}
+			if p.next.symbol != eoiToken {
+				switch token.Type(p.next.symbol) {
+				case token.NOSUBSTITUTIONTEMPLATE:
+					p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
+				case token.TEMPLATEHEAD:
+					p.listener(TemplateHead, p.next.offset, p.next.endoffset)
+				case token.TEMPLATEMIDDLE:
+					p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
+				case token.TEMPLATETAIL:
+					p.listener(TemplateTail, p.next.offset, p.next.endoffset)
 				}
-				if p.next.symbol != eoiToken {
-					switch token.Type(p.next.symbol) {
-					case token.NOSUBSTITUTIONTEMPLATE:
-						p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
-					case token.TEMPLATEHEAD:
-						p.listener(TemplateHead, p.next.offset, p.next.endoffset)
-					case token.TEMPLATEMIDDLE:
-						p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
-					case token.TEMPLATETAIL:
-						p.listener(TemplateTail, p.next.offset, p.next.endoffset)
-					}
-					p.next.symbol = noToken
-				}
-				if recovering > 0 {
-					recovering--
-				}
+				p.next.symbol = noToken
+			}
+			if recovering > 0 {
+				recovering--
 			}
 		}
 
-		if action == -2 || state == -1 {
+		if action == -1 || state == -1 {
 			p.healthy = false
 			if recovering == 0 {
 				if p.next.symbol == noToken {
@@ -347,8 +349,15 @@ func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, suc
 	// parsing_stack = stack[:size] + stack2
 	for state != endState {
 		action := tmAction[state]
-		if action < -2 {
-			action = lalr(action, next)
+		if action > tmActionBase {
+			pos := action + next
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next {
+				action = int32(tmTable[pos])
+			} else {
+				action = tmDefAct[state]
+			}
+		} else {
+			action = tmDefAct[state]
 		}
 
 		if action >= 0 {
@@ -370,7 +379,7 @@ func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, suc
 			state = gotoState(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
-			success = action == -1 && gotoState(state, next) >= 0
+			success = action < -1
 			return
 		}
 	}
