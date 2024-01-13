@@ -321,7 +321,6 @@ lexeme_attrs :
 lexeme_attribute :
   CLASS
 | SPACE
-| LAYOUT
 ;
 
 lexer_directive :
@@ -381,9 +380,7 @@ assoc :
 ;
 
 param_modifier :
-  EXPLICIT
-| GLOBAL
-| LOOKAHEAD
+  LOOKAHEAD
 ;
 
 template_param :

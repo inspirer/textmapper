@@ -238,7 +238,6 @@ lexeme_attrs -> LexemeAttrs:
 lexeme_attribute -> LexemeAttribute:
     'class'
   | 'space'
-  | 'layout'
 ;
 
 lexer_directive -> LexerPart:
@@ -279,10 +278,7 @@ assoc -> Assoc:
 ;
 
 param_modifier -> ParamModifier:
-    'explicit'
-  | 'global'
-  | 'lookahead'
-;
+    'lookahead' ;
 
 template_param -> GrammarPart:
     '%' modifier=param_modifier? param_type name=identifier ('=' param_value)? ';' -> TemplateParam

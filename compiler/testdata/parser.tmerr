@@ -7,8 +7,7 @@ b: /b/
 
 :: parser
 
-%«global» flag foo = «5»;
-# err: unsupported syntax
+%flag foo = «5»;
 # err: unsupported default value
 
 %flag «foo»;
