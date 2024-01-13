@@ -77,3 +77,59 @@ func BenchmarkBitSetSlice(b *testing.B) {
 		s.Slice(val)
 	}
 }
+
+func TestNext(t *testing.T) {
+	var tests = [][]int{
+		{0, 5},
+		{0, 1, 2, 3},
+		{15},
+		{0, 30, 31},
+		{32},
+		{32, 33},
+		{30, 33},
+		{688},
+	}
+	for _, tc := range tests {
+		s := container.NewBitSet(tc[len(tc)-1] + 1)
+		for _, bit := range tc {
+			s.Set(bit)
+		}
+		for i := 0; i < len(s)*32; i++ {
+			want := i
+			for want < len(s)*32 && s.Get(want) {
+				want++
+			}
+			got := s.NextZero(i)
+			if got != want {
+				t.Errorf("NextZero(%v, %v) = %v, want: %v", tc, i, got, want)
+			}
+		}
+	}
+}
+
+func BenchmarkNext(b *testing.B) {
+	const (
+		size     = 1024
+		zeroBits = 100
+	)
+	s := container.NewBitSet(size)
+	s.Complement(size)
+	r := rand.New(rand.NewSource(99))
+	for i := 0; i < zeroBits; i++ {
+		s.Clear(r.Intn(size))
+	}
+
+	b.Run("NextZero", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			n := i % size
+			s.NextZero(n)
+		}
+	})
+
+	b.Run("NextBruteForce", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			for n := i % size; n < size && s.Get(n); n++ {
+			}
+		}
+	})
+}
