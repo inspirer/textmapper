@@ -318,12 +318,12 @@ func (a *allocator) place(pairs []pair) (base int) {
 
 	// Try to find a free block of the required shape.
 outer:
-	for i := 0; i < a.size; i++ {
+	for i := a.taken.NextZero(0); i < a.size; i = a.taken.NextZero(i + 1) {
 		base = i - min
-		if a.usedBase.Get(a.delta + base) {
+		if a.usedBase.Get(a.delta+base) || a.taken.Get(base+max) {
 			continue
 		}
-		for _, p := range pairs {
+		for _, p := range pairs[1:] {
 			if a.taken.Get(base + p.pos) {
 				continue outer
 			}
