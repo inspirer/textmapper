@@ -3,6 +3,7 @@ language json(go);
 lang = "json"
 package = "github.com/inspirer/textmapper/parsers/json"
 eventBased = true
+optimizeTables = true
 reportTokens = [MultiLineComment, invalid_token, JSONString]
 extraTypes = ["NonExistingType"]
 

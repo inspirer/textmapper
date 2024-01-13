@@ -69,12 +69,19 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 
 	for state != end {
 		action := tmAction[state]
-		if action < -2 {
+		if action > tmActionBase {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
 				p.fetchNext(lexer, stack)
 			}
-			action = lalr(action, p.next.symbol)
+			pos := action + p.next.symbol
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == p.next.symbol {
+				action = int32(tmTable[pos])
+			} else {
+				action = tmDefAct[state]
+			}
+		} else {
+			action = tmDefAct[state]
 		}
 
 		if action >= 0 {
@@ -105,38 +112,33 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			entry.state = state
 			stack = append(stack, entry)
 
-		} else if action == -1 {
+		} else if action < -1 {
 			// Shift.
-			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+			state = int8(-2 - action)
+			stack = append(stack, stackEntry{
+				sym:   p.next,
+				state: state,
+				value: lexer.Value(),
+			})
+			if debugSyntax {
+				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
-			state = gotoState(state, p.next.symbol)
-			if state >= 0 {
-				stack = append(stack, stackEntry{
-					sym:   p.next,
-					state: state,
-					value: lexer.Value(),
-				})
-				if debugSyntax {
-					fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+			if len(p.pending) > 0 {
+				for _, tok := range p.pending {
+					p.reportIgnoredToken(tok)
 				}
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(tok)
-					}
-					p.pending = p.pending[:0]
+				p.pending = p.pending[:0]
+			}
+			if p.next.symbol != eoiToken {
+				switch token.Type(p.next.symbol) {
+				case token.JSONSTRING:
+					p.listener(JsonString, p.next.offset, p.next.endoffset)
 				}
-				if p.next.symbol != eoiToken {
-					switch token.Type(p.next.symbol) {
-					case token.JSONSTRING:
-						p.listener(JsonString, p.next.offset, p.next.endoffset)
-					}
-					p.next.symbol = noToken
-				}
+				p.next.symbol = noToken
 			}
 		}
 
-		if action == -2 || state == -1 {
+		if action == -1 || state == -1 {
 			break
 		}
 	}
@@ -156,38 +158,29 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 	return nil
 }
 
-func lalr(action, next int32) int32 {
-	a := -action - 3
-	for ; tmLalr[a] >= 0; a += 2 {
-		if tmLalr[a] == next {
-			break
-		}
-	}
-	return tmLalr[a+1]
-}
-
 func gotoState(state int8, symbol int32) int8 {
-	min := tmGoto[symbol]
-	max := tmGoto[symbol+1]
+	const numTokens = 19
+	if symbol >= numTokens {
+		pos := tmGoto[symbol-numTokens] + int32(state)
+		if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int8(state) {
+			return int8(tmTable[pos])
+		}
+		return int8(tmDefGoto[symbol-numTokens])
+	}
 
-	if max-min < 32 {
-		for i := min; i < max; i += 2 {
-			if tmFromTo[i] == state {
-				return tmFromTo[i+1]
-			}
-		}
+	// Shifting a token.
+	action := tmAction[state]
+	if action == tmActionBase {
+		return -1
+	}
+	pos := action + symbol
+	if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int8(symbol) {
+		action = int32(tmTable[pos])
 	} else {
-		for min < max {
-			e := (min + max) >> 1 &^ int32(1)
-			i := tmFromTo[e]
-			if i == state {
-				return tmFromTo[e+1]
-			} else if i < state {
-				min = e + 2
-			} else {
-				max = e
-			}
-		}
+		action = tmDefAct[state]
+	}
+	if action < -1 {
+		return int8(-2 - action)
 	}
 	return -1
 }
@@ -232,12 +225,19 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 
 	for state != end {
 		action := tmAction[state]
-		if action < -2 {
+		if action > tmActionBase {
 			// Lookahead is needed.
 			if next == noToken {
 				next = lookaheadNext(&lexer)
 			}
-			action = lalr(action, next)
+			pos := action + next
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next {
+				action = int32(tmTable[pos])
+			} else {
+				action = tmDefAct[state]
+			}
+		} else {
+			action = tmDefAct[state]
 		}
 
 		if action >= 0 {
@@ -255,12 +255,9 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 			entry.state = state
 			stack = append(stack, entry)
 
-		} else if action == -1 {
+		} else if action < -1 {
 			// Shift.
-			if next == noToken {
-				next = lookaheadNext(&lexer)
-			}
-			state = gotoState(state, next)
+			state = int8(-2 - action)
 			stack = append(stack, stackEntry{
 				sym:   symbol{symbol: next},
 				state: state,
@@ -273,7 +270,7 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 			}
 		}
 
-		if action == -2 || state == -1 {
+		if action == -1 || state == -1 {
 			break
 		}
 	}
