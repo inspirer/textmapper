@@ -12,7 +12,6 @@ writeBison = true
 tokenColumn = true
 optimizeTables = true
 fileNode = "File"
-reportTokens = [invalid_token, multilineComment, comment, templates]
 
 :: lexer
 
@@ -124,6 +123,11 @@ regexp: /\/{reFirst}{reChar}*\//
 :: parser
 
 %input file, nonterm;
+
+%inject invalid_token -> InvalidToken;
+%inject multilineComment -> MultilineComment;
+%inject comment -> Comment;
+%inject templates -> Templates;
 
 %flag OrSyntaxError = false;
 

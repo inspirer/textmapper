@@ -20,7 +20,7 @@ const (
 	JSONValue
 	MultiLineComment
 	InvalidToken
-	JsonString
+	JSONString
 	NonExistingType
 	NodeTypeMax
 )
@@ -35,7 +35,7 @@ var nodeTypeStr = [...]string{
 	"JSONValue",
 	"MultiLineComment",
 	"InvalidToken",
-	"JsonString",
+	"JSONString",
 	"NonExistingType",
 }
 

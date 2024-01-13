@@ -4,7 +4,6 @@ lang = "json"
 package = "github.com/inspirer/textmapper/parsers/json"
 eventBased = true
 optimizeTables = true
-reportTokens = [MultiLineComment, invalid_token, JSONString]
 extraTypes = ["NonExistingType"]
 
 :: lexer
@@ -46,6 +45,10 @@ invalid_token:
 :: parser
 
 %input JSONText;
+
+%inject MultiLineComment -> MultiLineComment;
+%inject invalid_token -> InvalidToken;
+%inject JSONString -> JSONString;
 
 %generate Literals = set(first JSONValue<+A>);
 

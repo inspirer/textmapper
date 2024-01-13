@@ -13,16 +13,15 @@ fixWhitespace = true
 cancellable = true
 cancellableFetch = true
 recursiveLookaheads = true
-reportTokens = [SingleLineComment, Identifier, invalid_token, MultiLineComment]
 extraTypes = ["Int7", "Int9 -> Expr"]
 
 :: lexer
 
 WhiteSpace: /[ \t\r\n\x00]/ (space)
 
-SingleLineComment -> SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
+SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/  (space)
 
-Identifier -> Identifier: /[a-zA-Y](-*[a-zA-Z_0-9])*/    (class)
+Identifier: /[a-zA-Y](-*[a-zA-Z_0-9])*/    (class)
 Identifier2: /^[\p{Any}-[\x80-\U0010ffff]-\p{Lu}]/
 
 IntegerConstant {int}: /[0-9]+/ { $$ = mustParseInt(l.Text()) }
@@ -69,20 +68,20 @@ esc = /u{hex}{4}/
 idChar = /[a-zA-Z]|\\{esc}/
 
 SharpAtID: /Z{idChar}+/    (class)
-invalid_token -> InvalidToken: /Z{idChar}*\\(u{hex}{0,3})?/
+invalid_token: /Z{idChar}*\\(u{hex}{0,3})?/
 'Zfoo': /Zfoo/
 
 # Backtracing required.
 backtrackingToken: /test(foo)?-+>/
 
 error:
-invalid_token -> InvalidToken:
+invalid_token:
 eoi:
 
 %x inMultiLine;
 
 # This is an example of how one can support nested block comments.
-MultiLineComment -> MultiLineComment:  /\/\*/ (space)
+MultiLineComment:  /\/\*/ (space)
   {
     l.State = StateInMultiLine
     commentOffset = l.tokenOffset
@@ -91,17 +90,17 @@ MultiLineComment -> MultiLineComment:  /\/\*/ (space)
   }
 
 <inMultiLine> {
-  invalid_token -> InvalidToken: /{eoi}/
+  invalid_token: /{eoi}/
     {
       l.tokenOffset = commentOffset
       l.State = StateInitial
     }
-  MultiLineComment -> MultiLineComment: /\/\*/ (space)
+  MultiLineComment: /\/\*/ (space)
     {
       commentDepth++
       space = true
     }
-  MultiLineComment -> MultiLineComment: /\*\// (space)
+  MultiLineComment: /\*\// (space)
     {
       if commentDepth == 0 {
         space = false
@@ -121,6 +120,11 @@ MultiLineComment -> MultiLineComment:  /\/\*/ (space)
 :: parser
 
 %input Test, Decl1;
+
+%inject SingleLineComment -> SingleLineComment;
+%inject Identifier -> Identifier;
+%inject invalid_token -> InvalidToken;
+%inject MultiLineComment -> MultiLineComment;
 
 Test -> Test:
     Declaration+ ;

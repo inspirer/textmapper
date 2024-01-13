@@ -17,7 +17,6 @@ eventBased = true
 eventFields = true
 eventAST = true
 fileNode = "File"
-reportTokens = [foo, eoi]
 extraTypes = ["a", "b"]
 
 :: lexer

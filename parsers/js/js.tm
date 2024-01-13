@@ -15,8 +15,6 @@ fileNode = "Module"
 cancellable = true
 recursiveLookaheads = true
 optimizeTables = true
-reportTokens = [MultiLineComment, SingleLineComment, invalid_token,
-                NoSubstitutionTemplate, TemplateHead, TemplateMiddle, TemplateTail]
 extraTypes = ["InsertedSemicolon"]
 customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "symbol", "stackEntry", "session", "lookaheadNext"]
 
@@ -328,6 +326,14 @@ resolveShift:
 :: parser
 
 %input Module, TypeSnippet, ExpressionSnippet, NamespaceNameSnippet;
+
+%inject MultiLineComment -> MultiLineComment;
+%inject SingleLineComment -> SingleLineComment;
+%inject invalid_token -> InvalidToken;
+%inject NoSubstitutionTemplate -> NoSubstitutionTemplate;
+%inject TemplateHead -> TemplateHead;
+%inject TemplateMiddle -> TemplateMiddle;
+%inject TemplateTail -> TemplateTail;
 
 TypeSnippet :
     Type ;

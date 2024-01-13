@@ -46,7 +46,7 @@ var jsParseTests = []struct {
 	{json.MultiLineComment, []string{
 		`{ "a"«/* abc */» : [] }`,
 	}},
-	{json.JsonString, []string{
+	{json.JSONString, []string{
 		`{ «"a"» : [«"b"»] }`,
 	}},
 }
