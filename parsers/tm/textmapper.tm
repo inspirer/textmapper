@@ -268,7 +268,7 @@ grammar_part<OrSyntaxError> -> GrammarPart:
 ;
 
 nonterm -> Nonterm:
-    annotations? name=identifier params=nonterm_params? rawType? reportClause? ':' rules ';'
+    name=identifier params=nonterm_params? rawType? reportClause? ':' rules ';'
   | ('extend' -> Extend) name=identifier reportClause? ':' rules ';'
 ;
 
@@ -341,7 +341,7 @@ rhsParts:
 %interface RhsPart;
 
 rhsPart<OrSyntaxError> -> RhsPart:
-    rhsAnnotated
+    rhsAssignment
   | command
   | rhsStateMarker
   | rhsLookahead
@@ -356,11 +356,6 @@ lookahead_predicate -> LookaheadPredicate:
 
 rhsStateMarker -> StateMarker:
     '.' name=identifier ;
-
-rhsAnnotated -> RhsPart:
-    rhsAssignment
-  | annotations inner=rhsAssignment  -> RhsAnnotated
-;
 
 rhsAssignment -> RhsPart:
     rhsOptional
@@ -411,16 +406,6 @@ setExpression -> SetExpression:
     setPrimary
   | left=setExpression '|' right=setExpression   -> SetOr
   | left=setExpression '&' right=setExpression   -> SetAnd
-;
-
-annotations -> Annotations:
-    annotation+ ;
-
-%interface Annotation;
-
-annotation -> Annotation:
-    '@' name=identifier ('=' expression)?    -> AnnotationImpl
-  | '@' syntax_problem
 ;
 
 /* Nonterminal parameters */

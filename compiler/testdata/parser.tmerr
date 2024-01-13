@@ -21,8 +21,7 @@ b: /b/
 
 d {Foo} -> Foo : /*empty*/ ;
 
-«@Foo» e : d ;
-# err: unsupported syntax
+e : d ;
 
 «d» {Foo} -> Foo : e ;
 # err: redeclaration of 'd'

@@ -10,8 +10,6 @@ type Selector func(nt tm.NodeType) bool
 
 var (
 	Any                  = func(t tm.NodeType) bool { return true }
-	AnnotationImpl       = func(t tm.NodeType) bool { return t == tm.AnnotationImpl }
-	Annotations          = func(t tm.NodeType) bool { return t == tm.Annotations }
 	ArgumentFalse        = func(t tm.NodeType) bool { return t == tm.ArgumentFalse }
 	ArgumentTrue         = func(t tm.NodeType) bool { return t == tm.ArgumentTrue }
 	ArgumentVal          = func(t tm.NodeType) bool { return t == tm.ArgumentVal }
@@ -68,7 +66,6 @@ var (
 	RawType              = func(t tm.NodeType) bool { return t == tm.RawType }
 	ReportAs             = func(t tm.NodeType) bool { return t == tm.ReportAs }
 	ReportClause         = func(t tm.NodeType) bool { return t == tm.ReportClause }
-	RhsAnnotated         = func(t tm.NodeType) bool { return t == tm.RhsAnnotated }
 	RhsAsLiteral         = func(t tm.NodeType) bool { return t == tm.RhsAsLiteral }
 	RhsAssignment        = func(t tm.NodeType) bool { return t == tm.RhsAssignment }
 	RhsCast              = func(t tm.NodeType) bool { return t == tm.RhsCast }
@@ -103,7 +100,6 @@ var (
 	MultilineComment     = func(t tm.NodeType) bool { return t == tm.MultilineComment }
 	Comment              = func(t tm.NodeType) bool { return t == tm.Comment }
 	Templates            = func(t tm.NodeType) bool { return t == tm.Templates }
-	Annotation           = OneOf(tm.Annotation...)
 	Argument             = OneOf(tm.Argument...)
 	Expression           = OneOf(tm.Expression...)
 	GrammarPart          = OneOf(tm.GrammarPart...)

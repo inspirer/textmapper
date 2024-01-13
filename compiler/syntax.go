@@ -121,9 +121,6 @@ func (c *syntaxLoader) collectNonterms(p ast.ParserSection) []nontermImpl {
 			if prev, exists := c.resolver.ids[id]; exists {
 				c.Errorf(nonterm.Name(), "%v and %v get the same ID in generated code", name, prev)
 			}
-			if ann, ok := nonterm.Annotations(); ok {
-				c.Errorf(ann.TmNode(), "unsupported syntax")
-			}
 
 			nt := &syntax.Nonterm{
 				Name:   name,

@@ -10,10 +10,6 @@ import (
 
 func ToTmNode(n *Node) TmNode {
 	switch n.Type() {
-	case tm.AnnotationImpl:
-		return &AnnotationImpl{n}
-	case tm.Annotations:
-		return &Annotations{n}
 	case tm.ArgumentFalse:
 		return &ArgumentFalse{n}
 	case tm.ArgumentTrue:
@@ -126,8 +122,6 @@ func ToTmNode(n *Node) TmNode {
 		return &ReportAs{n}
 	case tm.ReportClause:
 		return &ReportClause{n}
-	case tm.RhsAnnotated:
-		return &RhsAnnotated{n}
 	case tm.RhsAsLiteral:
 		return &RhsAsLiteral{n}
 	case tm.RhsAssignment:

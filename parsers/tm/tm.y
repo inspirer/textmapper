@@ -362,15 +362,7 @@ grammar_part_OrSyntaxError :
 ;
 
 nonterm :
-  annotations identifier nonterm_params rawType reportClause COLON rules SEMICOLON
-| annotations identifier nonterm_params rawType COLON rules SEMICOLON
-| annotations identifier nonterm_params reportClause COLON rules SEMICOLON
-| annotations identifier nonterm_params COLON rules SEMICOLON
-| annotations identifier rawType reportClause COLON rules SEMICOLON
-| annotations identifier rawType COLON rules SEMICOLON
-| annotations identifier reportClause COLON rules SEMICOLON
-| annotations identifier COLON rules SEMICOLON
-| identifier nonterm_params rawType reportClause COLON rules SEMICOLON
+  identifier nonterm_params rawType reportClause COLON rules SEMICOLON
 | identifier nonterm_params rawType COLON rules SEMICOLON
 | identifier nonterm_params reportClause COLON rules SEMICOLON
 | identifier nonterm_params COLON rules SEMICOLON
@@ -484,14 +476,14 @@ rhsParts :
 ;
 
 rhsPart :
-  rhsAnnotated
+  rhsAssignment
 | command
 | rhsStateMarker
 | rhsLookahead
 ;
 
 rhsPart_OrSyntaxError :
-  rhsAnnotated
+  rhsAssignment
 | command
 | rhsStateMarker
 | rhsLookahead
@@ -514,11 +506,6 @@ lookahead_predicate :
 
 rhsStateMarker :
   DOT identifier
-;
-
-rhsAnnotated :
-  rhsAssignment
-| annotations rhsAssignment
 ;
 
 rhsAssignment :
@@ -568,21 +555,6 @@ setExpression :
   setPrimary
 | setExpression OR setExpression
 | setExpression AND setExpression
-;
-
-annotation_list :
-  annotation_list annotation
-| annotation
-;
-
-annotations :
-  annotation_list
-;
-
-annotation :
-  ATSIGN identifier ASSIGN expression
-| ATSIGN identifier
-| ATSIGN syntax_problem
 ;
 
 nonterm_param_list_Comma_separated :

@@ -21,8 +21,6 @@ type NilNode struct{}
 var nilInstance = &NilNode{}
 
 // All types implement TmNode.
-func (n AnnotationImpl) TmNode() *Node       { return n.Node }
-func (n Annotations) TmNode() *Node          { return n.Node }
 func (n ArgumentFalse) TmNode() *Node        { return n.Node }
 func (n ArgumentTrue) TmNode() *Node         { return n.Node }
 func (n ArgumentVal) TmNode() *Node          { return n.Node }
@@ -79,7 +77,6 @@ func (n PredicateOr) TmNode() *Node          { return n.Node }
 func (n RawType) TmNode() *Node              { return n.Node }
 func (n ReportAs) TmNode() *Node             { return n.Node }
 func (n ReportClause) TmNode() *Node         { return n.Node }
-func (n RhsAnnotated) TmNode() *Node         { return n.Node }
 func (n RhsAsLiteral) TmNode() *Node         { return n.Node }
 func (n RhsAssignment) TmNode() *Node        { return n.Node }
 func (n RhsCast) TmNode() *Node              { return n.Node }
@@ -115,17 +112,6 @@ func (n MultilineComment) TmNode() *Node     { return n.Node }
 func (n Comment) TmNode() *Node              { return n.Node }
 func (n Templates) TmNode() *Node            { return n.Node }
 func (NilNode) TmNode() *Node                { return nil }
-
-type Annotation interface {
-	TmNode
-	annotationNode()
-}
-
-// annotationNode() ensures that only the following types can be
-// assigned to Annotation.
-func (AnnotationImpl) annotationNode() {}
-func (SyntaxProblem) annotationNode()  {}
-func (NilNode) annotationNode()        {}
 
 type Argument interface {
 	TmNode
@@ -249,7 +235,6 @@ type RhsPart interface {
 // rhsPartNode() ensures that only the following types can be
 // assigned to RhsPart.
 func (Command) rhsPartNode()           {}
-func (RhsAnnotated) rhsPartNode()      {}
 func (RhsAsLiteral) rhsPartNode()      {}
 func (RhsAssignment) rhsPartNode()     {}
 func (RhsCast) rhsPartNode()           {}
@@ -294,33 +279,6 @@ func (SetSymbol) setExpressionNode()     {}
 func (NilNode) setExpressionNode()       {}
 
 // Types.
-
-type AnnotationImpl struct {
-	*Node
-}
-
-func (n AnnotationImpl) Name() Identifier {
-	child := n.Child(selector.Identifier)
-	return Identifier{child}
-}
-
-func (n AnnotationImpl) Expression() (Expression, bool) {
-	child := n.Child(selector.Expression)
-	return ToTmNode(child).(Expression), child.IsValid()
-}
-
-type Annotations struct {
-	*Node
-}
-
-func (n Annotations) Annotation() []Annotation {
-	nodes := n.Children(selector.Annotation)
-	var ret = make([]Annotation, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, ToTmNode(node).(Annotation))
-	}
-	return ret
-}
 
 type ArgumentFalse struct {
 	*Node
@@ -778,11 +736,6 @@ type Nonterm struct {
 	*Node
 }
 
-func (n Nonterm) Annotations() (Annotations, bool) {
-	child := n.Child(selector.Annotations)
-	return Annotations{child}, child.IsValid()
-}
-
 func (n Nonterm) Extend() (Extend, bool) {
 	child := n.Child(selector.Extend)
 	return Extend{child}, child.IsValid()
@@ -990,20 +943,6 @@ func (n ReportClause) Flags() []Identifier {
 func (n ReportClause) ReportAs() (ReportAs, bool) {
 	child := n.Child(selector.ReportAs)
 	return ReportAs{child}, child.IsValid()
-}
-
-type RhsAnnotated struct {
-	*Node
-}
-
-func (n RhsAnnotated) Annotations() Annotations {
-	child := n.Child(selector.Annotations)
-	return Annotations{child}
-}
-
-func (n RhsAnnotated) Inner() RhsPart {
-	child := n.Child(selector.RhsPart)
-	return ToTmNode(child).(RhsPart)
 }
 
 type RhsAsLiteral struct {

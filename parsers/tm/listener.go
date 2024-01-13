@@ -11,13 +11,11 @@ type NodeType int
 type Listener func(t NodeType, offset, endoffset int)
 
 const (
-	NoType         NodeType = iota
-	AnnotationImpl          // name=Identifier Expression?
-	Annotations             // (Annotation)+
-	ArgumentFalse           // name=ParamRef
-	ArgumentTrue            // name=ParamRef
-	ArgumentVal             // name=ParamRef val=ParamValue?
-	Array                   // (Expression)*
+	NoType        NodeType = iota
+	ArgumentFalse          // name=ParamRef
+	ArgumentTrue           // name=ParamRef
+	ArgumentVal            // name=ParamRef val=ParamValue?
+	Array                  // (Expression)*
 	Assoc
 	BooleanLiteral
 	Command
@@ -52,7 +50,7 @@ const (
 	NamedPattern // name=Identifier Pattern
 	NoEoi
 	NonEmpty
-	Nonterm       // Annotations? Extend? name=Identifier params=NontermParams? RawType? ReportClause? (Rule0)+
+	Nonterm       // Extend? name=Identifier params=NontermParams? RawType? ReportClause? (Rule0)+
 	NontermParams // list=(NontermParam)+
 	Not
 	Option // key=Identifier value=Expression
@@ -70,7 +68,6 @@ const (
 	RawType
 	ReportAs             // Identifier
 	ReportClause         // action=Identifier flags=(Identifier)* ReportAs?
-	RhsAnnotated         // Annotations inner=RhsPart
 	RhsAsLiteral         // inner=RhsPart Literal
 	RhsAssignment        // id=Identifier inner=RhsPart
 	RhsCast              // inner=RhsPart target=Symref
@@ -110,8 +107,6 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
-	"AnnotationImpl",
-	"Annotations",
 	"ArgumentFalse",
 	"ArgumentTrue",
 	"ArgumentVal",
@@ -168,7 +163,6 @@ var nodeTypeStr = [...]string{
 	"RawType",
 	"ReportAs",
 	"ReportClause",
-	"RhsAnnotated",
 	"RhsAsLiteral",
 	"RhsAssignment",
 	"RhsCast",
@@ -210,11 +204,6 @@ func (t NodeType) String() string {
 		return nodeTypeStr[t]
 	}
 	return fmt.Sprintf("node(%d)", t)
-}
-
-var Annotation = []NodeType{
-	AnnotationImpl,
-	SyntaxProblem,
 }
 
 var Argument = []NodeType{
@@ -285,7 +274,6 @@ var PredicateExpression = []NodeType{
 
 var RhsPart = []NodeType{
 	Command,
-	RhsAnnotated,
 	RhsAsLiteral,
 	RhsAssignment,
 	RhsCast,
