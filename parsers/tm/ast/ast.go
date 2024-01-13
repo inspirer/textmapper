@@ -666,11 +666,6 @@ func (n Lexeme) RawType() (RawType, bool) {
 	return RawType{child}, child.IsValid()
 }
 
-func (n Lexeme) ReportClause() (ReportClause, bool) {
-	child := n.Child(selector.ReportClause)
-	return ReportClause{child}, child.IsValid()
-}
-
 func (n Lexeme) Pattern() (Pattern, bool) {
 	child := n.Child(selector.Pattern)
 	return Pattern{child}, child.IsValid()

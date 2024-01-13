@@ -14,7 +14,6 @@ import (
 	"github.com/inspirer/textmapper/parsers/tm/selector"
 	"github.com/inspirer/textmapper/status"
 	"github.com/inspirer/textmapper/syntax"
-	"github.com/inspirer/textmapper/util/ident"
 )
 
 // Params control the grammar compilation process.
@@ -39,9 +38,6 @@ func Compile(ctx context.Context, path, content string, params Params) (*grammar
 
 	lexer := newLexerCompiler(opts, resolver, &s)
 	lexer.compile(file)
-
-	// Resolve terminal references.
-	opts.resolve(resolver)
 
 	c := newCompiler(file, opts.out, lexer.out, resolver, params, &s)
 	c.compileParser(file)
@@ -150,40 +146,7 @@ func (c *compiler) compileParser(file ast.File) {
 	}
 
 	if c.out.Options.EventBased {
-		tokens := c.out.Lexer.MappedTokens
-		switch {
-		case len(loader.mapping) > 0:
-			// Prefer the injection mapping from the grammar.
-			if len(tokens) > 0 {
-				c.Errorf(file.Header(), "reportTokens are ignored in the presence of %%inject directives")
-			}
-			if len(c.out.Options.ReportTokens) > 0 {
-				c.Errorf(file.Header(), "reporting nodes via lexer rules is ignored in the presence of %%inject directives")
-			}
-			tokens = loader.mapping
-
-		case len(tokens) > 0 && len(c.out.Options.ReportTokens) > 0:
-			m := make(map[int]int)
-			for _, t := range c.out.Options.ReportTokens {
-				m[t] = 1
-			}
-			for _, t := range tokens {
-				if m[t.Token] == 0 {
-					c.Errorf(c.out.Syms[t.Token].Origin, "token %v is reported as %v but is not mentioned in the reportTokens clause", c.out.Syms[t.Token].Name, t)
-				}
-				m[t.Token] = 2
-			}
-			for _, t := range c.out.Options.ReportTokens {
-				if m[t] != 2 {
-					c.Errorf(file.Header(), "token %v is found in reportTokens but not in the lexer", c.out.Syms[t].Name)
-				}
-			}
-		case len(tokens) == 0:
-			for _, t := range c.out.Options.ReportTokens {
-				name := ident.Produce(c.out.Syms[t].Name, ident.CamelCase)
-				tokens = append(tokens, syntax.RangeToken{Token: t, Name: name})
-			}
-		}
+		tokens := loader.mapping
 		opts := syntax.TypeOptions{
 			EventFields: c.out.Options.EventFields,
 			GenSelector: c.out.Options.GenSelector,
@@ -195,7 +158,7 @@ func (c *compiler) compileParser(file ast.File) {
 			return
 		}
 		c.out.Parser.Types = types
-		c.out.Lexer.MappedTokens = tokens
+		c.out.Parser.MappedTokens = tokens
 
 		seenFlags := make(map[string]bool)
 		for _, t := range tokens {

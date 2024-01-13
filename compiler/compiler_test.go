@@ -105,9 +105,6 @@ func TestSourceModel(t *testing.T) {
 		lexer := newLexerCompiler(opts, resolver, &s)
 		lexer.compile(file)
 
-		// Resolve terminal references.
-		opts.resolve(resolver)
-
 		c := newCompiler(file, opts.out, lexer.out, resolver, Params{}, &s)
 		c.compileParser(file)
 

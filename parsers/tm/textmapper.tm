@@ -229,7 +229,7 @@ start_conditions -> StartConditions:
 ;
 
 lexeme -> Lexeme:
-    start_conditions? name=identifier rawTypeopt reportClause? ':'
+    start_conditions? name=identifier rawTypeopt ':'
         (pattern priority=integer_literal? attrs=lexeme_attrs? command? | attrs=lexeme_attrs)? ;
 
 lexeme_attrs -> LexemeAttrs:

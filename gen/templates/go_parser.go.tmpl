@@ -14,7 +14,7 @@
 {{- define "reportConsumedNext" -}}
 {{ if .ReportTokens false -}}
 			switch {{template "tokenType" .}}(p.next.symbol) {
-{{ range .Lexer.MappedTokens -}}
+{{ range .Parser.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:
@@ -943,7 +943,7 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 	var flags {{template "nodeFlagsRef" $}}
 {{ end -}}
 	switch {{template "tokenType" .}}(tok.symbol) {
-{{ range .Lexer.MappedTokens -}}
+{{ range .Parser.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
 	case {{template "tokenPkg" $}}{{$sym.ID}}:

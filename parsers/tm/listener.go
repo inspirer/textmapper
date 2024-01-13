@@ -41,7 +41,7 @@ const (
 	InlineParameter     // paramType=Identifier name=Identifier ParamValue?
 	Inputref            // reference=Symref NoEoi?
 	IntegerLiteral
-	Lexeme // StartConditions? name=Identifier RawType? ReportClause? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
+	Lexeme // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
 	LexemeAttribute
 	LexemeAttrs        // LexemeAttribute
 	LexerSection       // (LexerPart)+

@@ -12,9 +12,6 @@ import (
 )
 
 type optionsParser struct {
-	// intermediate data that needs to be resolved
-	reportList []ast.Identifier
-
 	target string // target language
 	out    *grammar.Options
 	*status.Status
@@ -91,8 +88,6 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "eventAST":
 			p.validLangs(opt.Key(), "go")
 			opts.EventAST = p.parseExpr(opt.Value(), opts.EventAST).(bool)
-		case "reportTokens":
-			p.reportList = p.parseTokenList(opt.Value())
 		case "extraTypes":
 			opts.ExtraTypes = p.parseExpr(opt.Value(), opts.ExtraTypes).([]syntax.ExtraType)
 		case "customImpl":
@@ -214,37 +209,4 @@ func (p *optionsParser) parseExpr(e ast.Expression, defaultVal any) any {
 		p.Errorf(e.TmNode(), "%T is expected", defaultVal)
 	}
 	return defaultVal
-}
-
-func (p *optionsParser) parseTokenList(e ast.Expression) []ast.Identifier {
-	if arr, ok := e.(*ast.Array); ok {
-		var ret []ast.Identifier
-		for _, el := range arr.Expression() {
-			if ref, ok := el.(*ast.Symref); ok {
-				if args, ok := ref.Args(); ok {
-					p.Errorf(args, "terminals cannot be templated")
-					continue
-				}
-				ret = append(ret, ref.Name())
-				continue
-			}
-			p.Errorf(el.TmNode(), "symbol reference is expected")
-		}
-		return ret
-	}
-	p.Errorf(e.TmNode(), "list of symbols is expected")
-	return nil
-}
-
-func (p *optionsParser) resolve(resolver *resolver) {
-	opts := p.out
-	opts.ReportTokens = make([]int, 0, len(p.reportList))
-	for _, id := range p.reportList {
-		sym, ok := resolver.syms[id.Text()]
-		if !ok {
-			p.Errorf(id, "unresolved reference '%v'", id.Text())
-			continue
-		}
-		opts.ReportTokens = append(opts.ReportTokens, sym)
-	}
 }

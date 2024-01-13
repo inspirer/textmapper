@@ -19,18 +19,6 @@ extraTypes = ["abc", «eoi», «" 123 -> _tty -> % "», «" a123 -> _tty -> % "�
 # err: list of strings with names is expected. E.g. ["Foo", "Bar -> Expr"]
 «extraTypes» = «bool»
 
-# err: symbol reference is expected
-# err: symbol reference is expected
-reportTokens = [«123», «124»]
-
-# err: reinitialization of 'reportTokens', previously declared on line 24
-# err: list of symbols is expected
-«reportTokens» = «""»
-
-# err: reinitialization of 'reportTokens', previously declared on line 28
-# err: unresolved reference 'eoi2'
-«reportTokens» = [eoi, «eoi2»]
-
 # err: reinitialization of 'extraTypes', previously declared on line 20
 # err: cannot parse string literal: invalid syntax
 «extraTypes» = [«"\x"»]

@@ -177,7 +177,7 @@ void Parser::reportIgnoredToken(symbol sym) {
   NodeFlags flags = NodeFlags::None;
 {{ end -}}
   switch (Token(sym.symbol)) {
-{{ range .Lexer.MappedTokens -}}
+{{ range .Parser.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
   case Token::{{$sym.ID}}:
@@ -947,7 +947,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ define "reportConsumedNext" -}}
 {{ if .ReportTokens false -}}
   switch (Token(next_symbol_.symbol)) {
-{{ range .Lexer.MappedTokens -}}
+{{ range .Parser.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
   case Token::{{$sym.ID}}:

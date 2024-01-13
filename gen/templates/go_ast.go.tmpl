@@ -8,7 +8,7 @@ type {{$baseNode}} interface {
 	{{$baseNode}}() *Node
 }
 
-{{if .Lexer.MappedTokens -}}
+{{if .Parser.MappedTokens -}}
 type Token struct {
 	*Node
 }

@@ -145,9 +145,8 @@ type Lexer struct {
 	ClassActions    []ClassAction
 	Actions         []SemanticAction
 	InvalidToken    int
-	RuleToken       []int               // maps actions into tokens; empty if the mapping is 1:1
-	MappedTokens    []syntax.RangeToken // TODO move into Parser
-	UsedFlags       []string            // list of used flags inside mapped tokens
+	RuleToken       []int    // maps actions into tokens; empty if the mapping is 1:1
+	UsedFlags       []string // list of used flags inside mapped tokens
 }
 
 // Rule is a parser rule with a semantic action.
@@ -161,6 +160,7 @@ type Parser struct {
 	Inputs       []syntax.Input
 	Nonterms     []*syntax.Nonterm
 	Prec         []lalr.Precedence // TODO remove since this is a lalr input
+	MappedTokens []syntax.RangeToken
 	Rules        []*Rule
 	Tables       *lalr.Tables
 	Actions      []SemanticAction
@@ -233,7 +233,6 @@ type Options struct {
 	EventFields   bool
 	EventAST      bool
 	FixWhitespace bool
-	ReportTokens  []int // Tokens that should appear in the AST.
 	ExtraTypes    []syntax.ExtraType
 	FileNode      string // The top-level node gets the byte range of the whole input.
 	NodePrefix    string // Prefix for node types.
