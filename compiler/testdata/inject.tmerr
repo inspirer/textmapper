@@ -7,7 +7,11 @@ b: /b/
 
 :: parser
 
+%input input, «foo»;
+# err: input nonterminals cannot have an 'inline' property
+
 input : d;
+inline foo : a;
 
 d {Foo} -> Foo : /*empty*/ ;
 

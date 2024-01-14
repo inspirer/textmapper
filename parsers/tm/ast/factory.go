@@ -58,6 +58,8 @@ func ToTmNode(n *Node) TmNode {
 		return &Import{n}
 	case tm.InclusiveStartConds:
 		return &InclusiveStartConds{n}
+	case tm.Inline:
+		return &Inline{n}
 	case tm.InlineParameter:
 		return &InlineParameter{n}
 	case tm.Inputref:

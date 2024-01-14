@@ -68,11 +68,11 @@ const (
 )
 
 func (p *Parser) ParseFile(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 0, 463, lexer)
+	return p.parse(ctx, 0, 480, lexer)
 }
 
 func (p *Parser) ParseNonterm(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 1, 464, lexer)
+	return p.parse(ctx, 1, 481, lexer)
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
@@ -429,17 +429,25 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	case 170: // nonterm : 'extend' identifier ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 182: // directive : '%' 'assert' 'empty' rhsSet ';'
+	case 171: // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
+		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 172: // nonterm : 'inline' identifier nonterm_params ':' rules ';'
+		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 173: // nonterm : 'inline' identifier reportClause ':' rules ';'
+		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 174: // nonterm : 'inline' identifier ':' rules ';'
+		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+	case 186: // directive : '%' 'assert' 'empty' rhsSet ';'
 		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 183: // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	case 187: // directive : '%' 'assert' 'nonempty' rhsSet ';'
 		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 192: // inputref : symref 'no-eoi'
+	case 196: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 216: // rhsSuffix : '%' 'prec' symref
+	case 220: // rhsSuffix : '%' 'prec' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 217: // rhsSuffix : '%' 'shift' symref
+	case 221: // rhsSuffix : '%' 'shift' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 237: // lookahead_predicate : '!' symref
+	case 241: // lookahead_predicate : '!' symref
 		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {

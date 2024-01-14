@@ -116,6 +116,9 @@ type Nonterm struct {
 	Params []int
 	Value  *Expr // non-nil
 
+	// TODO: support nonterminal inlining
+	Inline bool // true for to-be-inlined nonterminals
+
 	// When non-empty, this is a Lookahead nonterminal (implies Value is Empty). When two or more
 	// lookahead nonterminals can be reduced in the same state, their lookahead predicates are
 	// evaluated at runtime to determine which one should actually be reduced.

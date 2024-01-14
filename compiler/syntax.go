@@ -122,9 +122,11 @@ func (c *syntaxLoader) collectNonterms(p ast.ParserSection) []nontermImpl {
 				c.Errorf(nonterm.Name(), "%v and %v get the same ID in generated code", name, prev)
 			}
 
+			_, inline := nonterm.Inline()
 			nt := &syntax.Nonterm{
 				Name:   name,
 				Origin: nonterm.Name(),
+				Inline: inline,
 			}
 			if rt, ok := nonterm.RawType(); ok {
 				nt.Type = strings.TrimSuffix(strings.TrimPrefix(rt.Text(), "{"), "}")
@@ -193,6 +195,9 @@ func (c *syntaxLoader) collectInputs(p ast.ParserSection, header status.SourceNo
 				if len(c.out.Nonterms[nonterm].Params) > 0 {
 					c.Errorf(name, "input nonterminals cannot be parametrized")
 				}
+				if c.out.Nonterms[nonterm].Inline {
+					c.Errorf(name, "input nonterminals cannot have an 'inline' property")
+				}
 				_, noeoi := ref.NoEoi()
 				c.out.Inputs = append(c.out.Inputs, syntax.Input{Nonterm: nonterm, NoEoi: noeoi})
 			}
@@ -204,8 +209,12 @@ func (c *syntaxLoader) collectInputs(p ast.ParserSection, header status.SourceNo
 	}
 
 	input, found := c.nonterms["input"]
-	if found && len(c.out.Nonterms[input].Params) > 0 {
+	switch {
+	case found && len(c.out.Nonterms[input].Params) > 0:
 		c.Errorf(c.out.Nonterms[input].Origin, "the 'input' nonterminal cannot be parametrized")
+		found = false
+	case found && c.out.Nonterms[input].Inline:
+		c.Errorf(c.out.Nonterms[input].Origin, "the 'input' nonterminal cannot have an 'inline' property")
 		found = false
 	}
 	if !found {

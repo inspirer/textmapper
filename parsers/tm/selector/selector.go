@@ -34,6 +34,7 @@ var (
 	Identifier           = func(t tm.NodeType) bool { return t == tm.Identifier }
 	Import               = func(t tm.NodeType) bool { return t == tm.Import }
 	InclusiveStartConds  = func(t tm.NodeType) bool { return t == tm.InclusiveStartConds }
+	Inline               = func(t tm.NodeType) bool { return t == tm.Inline }
 	InlineParameter      = func(t tm.NodeType) bool { return t == tm.InlineParameter }
 	Inputref             = func(t tm.NodeType) bool { return t == tm.Inputref }
 	IntegerLiteral       = func(t tm.NodeType) bool { return t == tm.IntegerLiteral }

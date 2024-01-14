@@ -269,6 +269,7 @@ grammar_part<OrSyntaxError> -> GrammarPart:
 nonterm -> Nonterm:
     name=identifier params=nonterm_params? rawType? reportClause? ':' rules ';'
   | ('extend' -> Extend) name=identifier reportClause? ':' rules ';'
+  | ('inline' -> Inline) name=identifier params=nonterm_params? reportClause? ':' rules ';'
 ;
 
 assoc -> Assoc:

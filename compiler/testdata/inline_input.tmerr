@@ -1,0 +1,11 @@
+«language parser(go);»
+# err: the grammar does not specify an input nonterminal, use '%input' to declare one
+
+:: lexer
+
+a: /a/
+
+:: parser
+
+inline «input»: a;
+# err: the 'input' nonterminal cannot have an 'inline' property

@@ -24,6 +24,8 @@ var testFiles = []string{
 	"parser.tmerr",
 	"parser_confl.tmerr",
 	"noinput.tmerr",
+	"inline_input.tmerr",
+	"templ_input.tmerr",
 	"badinput.tmerr",
 	"backtrack.tmerr",
 	"set.tmerr",

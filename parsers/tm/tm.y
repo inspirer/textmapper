@@ -371,6 +371,10 @@ nonterm :
 | identifier COLON rules SEMICOLON
 | EXTEND identifier reportClause COLON rules SEMICOLON
 | EXTEND identifier COLON rules SEMICOLON
+| INLINE identifier nonterm_params reportClause COLON rules SEMICOLON
+| INLINE identifier nonterm_params COLON rules SEMICOLON
+| INLINE identifier reportClause COLON rules SEMICOLON
+| INLINE identifier COLON rules SEMICOLON
 ;
 
 assoc :

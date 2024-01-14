@@ -45,6 +45,7 @@ func (n Header) TmNode() *Node               { return n.Node }
 func (n Identifier) TmNode() *Node           { return n.Node }
 func (n Import) TmNode() *Node               { return n.Node }
 func (n InclusiveStartConds) TmNode() *Node  { return n.Node }
+func (n Inline) TmNode() *Node               { return n.Node }
 func (n InlineParameter) TmNode() *Node      { return n.Node }
 func (n Inputref) TmNode() *Node             { return n.Node }
 func (n IntegerLiteral) TmNode() *Node       { return n.Node }
@@ -568,6 +569,10 @@ func (n InclusiveStartConds) States() []LexerState {
 	return ret
 }
 
+type Inline struct {
+	*Node
+}
+
 type InlineParameter struct {
 	*Node
 }
@@ -739,6 +744,11 @@ type Nonterm struct {
 func (n Nonterm) Extend() (Extend, bool) {
 	child := n.Child(selector.Extend)
 	return Extend{child}, child.IsValid()
+}
+
+func (n Nonterm) Inline() (Inline, bool) {
+	child := n.Child(selector.Inline)
+	return Inline{child}, child.IsValid()
 }
 
 func (n Nonterm) Name() Identifier {

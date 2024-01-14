@@ -1,0 +1,14 @@
+«language parser(go);»
+# err: the grammar does not specify an input nonterminal, use '%input' to declare one
+
+:: lexer
+
+a: /a/
+b: /b/
+
+:: parser
+
+«input»<flag F> : d;
+# err: the 'input' nonterminal cannot be parametrized
+
+d {Foo} -> Foo : /*empty*/ ;

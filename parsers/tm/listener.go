@@ -36,8 +36,9 @@ const (
 	Identifier
 	Import              // alias=Identifier? path=StringLiteral
 	InclusiveStartConds // states=(LexerState)+
-	InlineParameter     // paramType=Identifier name=Identifier ParamValue?
-	Inputref            // reference=Symref NoEoi?
+	Inline
+	InlineParameter // paramType=Identifier name=Identifier ParamValue?
+	Inputref        // reference=Symref NoEoi?
 	IntegerLiteral
 	Lexeme // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
 	LexemeAttribute
@@ -50,7 +51,7 @@ const (
 	NamedPattern // name=Identifier Pattern
 	NoEoi
 	NonEmpty
-	Nonterm       // Extend? name=Identifier params=NontermParams? RawType? ReportClause? (Rule0)+
+	Nonterm       // Extend? Inline? name=Identifier params=NontermParams? RawType? ReportClause? (Rule0)+
 	NontermParams // list=(NontermParam)+
 	Not
 	Option // key=Identifier value=Expression
@@ -131,6 +132,7 @@ var nodeTypeStr = [...]string{
 	"Identifier",
 	"Import",
 	"InclusiveStartConds",
+	"Inline",
 	"InlineParameter",
 	"Inputref",
 	"IntegerLiteral",
