@@ -168,10 +168,16 @@ func pattern(name, text string) *Pattern {
 	return &Pattern{Name: name, Text: text, RE: MustParse(text)}
 }
 
-func rule(name, re string, action int) *Rule {
+func rule(name, re string, action int, prec ...int) *Rule {
+	var precVal int
+	if len(prec) == 1 {
+		precVal = prec[0]
+	}
 	return &Rule{
-		Pattern:  pattern(name, re),
-		Action:   action,
-		Resolver: testPatterns,
+		Pattern:         pattern(name, re),
+		Action:          action,
+		Resolver:        testPatterns,
+		StartConditions: []int{0},
+		Precedence:      precVal,
 	}
 }
