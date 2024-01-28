@@ -30,15 +30,15 @@ func (r Rule) String() string {
 	return fmt.Sprintf("/%v/ => %v%v", r.Pattern, r.Token, prec)
 }
 
-// DFA is a fast shift-based automaton for ASCII input with up to 11 states and 32 tokens.
-type DFA struct {
+// Scanner is a fast shift-based automaton for ASCII input with up to 11 states and 32 tokens.
+type Scanner struct {
 	table [256]uint64
 	onEoi [11]uint8
 }
 
 // Scan returns the number of bytes consumed and the found token ID.
 // Zero token ID means that the parsed token is invalid.
-func (d *DFA) Scan(input string) (size int, token uint8) {
+func (d *Scanner) Scan(input string) (size int, token uint8) {
 	var state uint64
 	var i int
 	for ; i < len(input) && (state&1) == 0; i++ {
@@ -52,7 +52,7 @@ func (d *DFA) Scan(input string) (size int, token uint8) {
 }
 
 // Pack attempts to pack lexer tables into a fast shift-based automaton.
-func Pack(t *lex.Tables) (*DFA, error) {
+func Pack(t *lex.Tables) (*Scanner, error) {
 	states := len(t.Dfa) / t.NumSymbols
 	if states > 10 { // TODO: update to 11 states
 		return nil, errors.New("too many states")
@@ -78,7 +78,7 @@ func Pack(t *lex.Tables) (*DFA, error) {
 	}
 	uniSym := t.SymbolMap[len(t.SymbolMap)-1].Target
 
-	ret := new(DFA)
+	ret := new(Scanner)
 	for state := 0; state < states; state++ {
 		offset := state * t.NumSymbols
 		for sym := 0; sym < t.NumSymbols; sym++ {
@@ -131,7 +131,7 @@ type Options struct {
 }
 
 // Compile instantiates a shift DFA from a set of rules.
-func Compile(rules []Rule, opts Options) (*DFA, error) {
+func Compile(rules []Rule, opts Options) (*Scanner, error) {
 	var resolver resolver
 	for name, pattern := range opts.Patterns {
 		re, err := lex.ParseRegexp(pattern)
@@ -184,7 +184,7 @@ func Compile(rules []Rule, opts Options) (*DFA, error) {
 
 // MustCompile is like Compile but panics if the automaton cannot be created.
 // It simplifies safe initialization of global variables holding compiled DFAs.
-func MustCompile(rules []Rule, opts Options) *DFA {
+func MustCompile(rules []Rule, opts Options) *Scanner {
 	dfa, err := Compile(rules, opts)
 	if err != nil {
 		panic(err)
