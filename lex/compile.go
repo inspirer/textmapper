@@ -89,8 +89,8 @@ func (c *reCompiler) addPattern(p *Pattern, rule *Rule) (int, error) {
 	return ret, c.err
 }
 
-func (c *reCompiler) compile() (ins []inst, inputMap []RangeEntry) {
-	symlists, inputMap := compressCharsets(c.sets)
+func (c *reCompiler) compile(scanBytes bool) (ins []inst, inputMap []RangeEntry) {
+	symlists, inputMap := compressCharsets(c.sets, CharsetOptions{ScanBytes: scanBytes})
 	for i, id := range c.consume {
 		if id >= 0 {
 			c.out[i].consume = symlists[id]
@@ -116,6 +116,12 @@ func (c *reCompiler) serialize(re *Regexp, resolver Resolver, t trace) {
 	switch re.op {
 	case opLiteral:
 		for i, r := range re.text {
+			t.offset = re.offset + i
+			c.emit(charset{r, r}, t)
+		}
+	case opBytesLiteral:
+		for i := 0; i < len(re.text); i++ {
+			r := rune(re.text[i]) // reinterpreting text as a sequence of bytes in utf-8 encoding
 			t.offset = re.offset + i
 			c.emit(charset{r, r}, t)
 		}

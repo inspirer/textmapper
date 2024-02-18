@@ -2,6 +2,7 @@ package lex
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -28,16 +29,25 @@ var compressTests = []struct {
 	{`[^\p{Any}]`, `[[]]`, `[\x00=>1]`},
 	{`[\x21-\U0010ffff][a-z]`, `[[2 3] [3]]`, `[\x00=>1 \!=>2 a=>3 \{=>2]`},
 	{`[\x21-\U0010fff0]`, `[[2]]`, `[\x00=>1 \!=>2 \U0010fff1=>1]`},
+
+	// Bytes modes.
+	{`{#bytes}[\x00\t]`, `[[1]]`, `[\x00=>1 \x01=>2 \t=>1 \n=>2]`},
+	{`{#bytes}[\x00-\xff]`, `[[1]]`, `[\x00=>1]`}, // no second class compared to the full Unicode mode
+	{`[\x00-\xff]`, `[[1]]`, `[\x00=>1 \u0100=>2]`},
+	{`{#bytes}[\x00-\xfe]`, `[[1]]`, `[\x00=>1 \u00ff=>2]`},
 }
 
 func TestCompressCharsets(t *testing.T) {
 	for _, test := range compressTests {
-		sets, err := parseCharsets(test.input)
+		input := test.input
+		var opts CharsetOptions
+		input, opts.ScanBytes = strings.CutPrefix(input, "{#bytes}")
+		sets, err := parseCharsets(input, opts)
 		if err != nil {
 			t.Errorf("parseCharsets(%q) failed with %v", test.input, err)
 		}
 
-		out, inputMap := compressCharsets(sets)
+		out, inputMap := compressCharsets(sets, opts)
 		if outstr := fmt.Sprintf("%v", out); outstr != test.wantOut {
 			t.Errorf("compressCharsets(%q).out = %v; want: %v", test.input, outstr, test.wantOut)
 		}
@@ -47,13 +57,13 @@ func TestCompressCharsets(t *testing.T) {
 	}
 }
 
-func parseCharsets(input string) ([]charset, error) {
+func parseCharsets(input string, opts CharsetOptions) ([]charset, error) {
 	var ret []charset
 	var p parser
 	p.source = input
 	p.next()
 	for p.ch == '[' {
-		cs := p.parseClass(false)
+		cs := p.parseClass(opts)
 		ret = append(ret, cs)
 	}
 	if p.ch != -1 {

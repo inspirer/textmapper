@@ -63,7 +63,7 @@ func Pack(t *lex.Tables) (*Scanner, error) {
 	if len(t.StateMap) != 1 || t.StateMap[0] != 0 {
 		return nil, errors.New("multiple start states are not supported")
 	}
-	if t.SymbolMap[len(t.SymbolMap)-1].Start > 0x80 {
+	if t.SymbolMap[len(t.SymbolMap)-1].Start > 0xff {
 		return nil, errors.New("only ASCII automatons are supported")
 	}
 
@@ -134,7 +134,7 @@ type Options struct {
 func Compile(rules []Rule, opts Options) (*Scanner, error) {
 	var resolver resolver
 	for name, pattern := range opts.Patterns {
-		re, err := lex.ParseRegexp(pattern)
+		re, err := lex.ParseRegexp(pattern, lex.CharsetOptions{ScanBytes: true})
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse /%v/: %v", pattern, err)
 		}
@@ -151,7 +151,7 @@ func Compile(rules []Rule, opts Options) (*Scanner, error) {
 
 	var in []*lex.Rule
 	for i, r := range rules {
-		re, err := lex.ParseRegexp(r.Pattern)
+		re, err := lex.ParseRegexp(r.Pattern, lex.CharsetOptions{ScanBytes: true})
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse /%v/: %v", r.Pattern, err)
 		}
@@ -170,7 +170,7 @@ func Compile(rules []Rule, opts Options) (*Scanner, error) {
 		})
 	}
 
-	tables, err := lex.Compile(in, false /*allowBacktracking*/)
+	tables, err := lex.Compile(in, true /*scanBytes*/, false /*allowBacktracking*/)
 	if err != nil {
 		return nil, fmt.Errorf("cannot compile rules: %v", err)
 	}

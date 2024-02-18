@@ -13,6 +13,31 @@ var (
 	errUnknownUnicodeClass = errors.New("unknown unicode character class")
 )
 
+// CharsetOptions parameterize character set processing inside regular expressions.
+type CharsetOptions struct {
+	Fold      bool // ignore case
+	ScanBytes bool // scan bytes instead of runes
+}
+
+func (opts CharsetOptions) maxRune() rune {
+	if opts.ScanBytes {
+		return 255
+	}
+	return unicode.MaxRune
+}
+
+func (opts CharsetOptions) String() string {
+	switch {
+	case opts.Fold && opts.ScanBytes:
+		return "{#fold}{#bytes}"
+	case opts.Fold:
+		return "{#fold}"
+	case opts.ScanBytes:
+		return "{#bytes}"
+	}
+	return "{#none}"
+}
+
 // charset is a sorted list of non-overlapping ranges stored as flattened pairs of runes.
 type charset []rune
 
@@ -41,7 +66,7 @@ func newCharset(r []rune) charset {
 }
 
 // invert inverts a character set
-func (c *charset) invert() {
+func (c *charset) invert(opts CharsetOptions) {
 	r := *c
 	out := r[:0]
 	var next rune
@@ -52,8 +77,8 @@ func (c *charset) invert() {
 		}
 		next = hi + 1
 	}
-	if next <= unicode.MaxRune {
-		out = append(out, next, unicode.MaxRune)
+	if max := opts.maxRune(); next <= max {
+		out = append(out, next, max)
 	}
 	*c = out
 }
@@ -93,13 +118,17 @@ mainLoop:
 	*c = out
 }
 
-func (c *charset) fold() {
+func (c *charset) fold(ascii bool) {
 	r := *c
 	out := r
 	for i := 0; i < len(r); i += 2 {
 		lo, hi := r[i], r[i+1]
 		for c := lo; c <= hi; c++ {
 			for f := unicode.SimpleFold(c); f != c; f = unicode.SimpleFold(f) {
+				if ascii && f >= 0x80 {
+					// Ignore non-ASCII symbols.
+					continue
+				}
 				out = appendRange(out, f, f)
 			}
 		}
@@ -225,18 +254,22 @@ func appendTable(r []rune, x *unicode.RangeTable) []rune {
 	return r
 }
 
-func appendNamedSet(r []rune, name string, fold bool) ([]rune, error) {
+func appendNamedSet(r []rune, name string, opts CharsetOptions) ([]rune, error) {
 	if name == "Any" {
-		r = append(r[:0], 0, unicode.MaxRune)
+		r = append(r[:0], 0, opts.maxRune())
 		return r, nil
 	}
 	if name == "Ascii" {
 		r = append(r[:0], 0, 0x7f)
 		return r, nil
 	}
+	if opts.ScanBytes {
+		// The following sets declared by the Unicode standard are not supported in bytes mode.
+		return nil, errUnknownUnicodeClass
+	}
 	if t := unicode.Categories[name]; t != nil {
 		r = appendTable(r, t)
-		if fold {
+		if opts.Fold {
 			r = appendTable(r, unicode.FoldCategory[name])
 		}
 		return r, nil

@@ -21,11 +21,14 @@ var parseTests = []struct {
 	{`|+`, `alt{cat{},str{+}}`},
 	{`a|+`, `alt{str{a},str{+}}`},
 	{`.+`, `cc{\x00-\t\x0b-\U0010ffff}+`},
+	{`{#bytes}.+`, `cc{\x00-\t\x0b-\u00ff}+`}, // just one byte in "scan bytes" mode
 	{`([.a-z])+`, `cc{\x00-\t\x0b-\U0010ffff}+`},
 	{`a.b`, `cat{str{a}cc{\x00-\t\x0b-\U0010ffff}str{b}}`},
 	{`ab+`, `cat{str{a}str{b}+}`},
 	{`ab?`, `cat{str{a}str{b}?}`},
 	{`ab*`, `cat{str{a}str{b}*}`},
+	{`{#bytes}ab*`, `cat{bytes{a}bytes{b}*}`},
+	{`{#bytes}αβ+`, `cat{bytes{α}bytes{β}+}`}, // uncode parsed as utf-8 code units
 	{`{abc}`, `ext{abc}`},
 	{`{abc}{5}`, `ext{abc}{5,5}`},
 	{`{abc}{5,}`, `ext{abc}{5,-1}`},
@@ -74,6 +77,8 @@ var parseTests = []struct {
 	{`a(?i:a)a`, `cat{str{a}cc{Aa}str{a}}`},
 	{`(?i)a(?-i:a)a`, `cat{cc{Aa}str{a}cc{Aa}}`},
 	{`(?i)a(?i-:a(?i)b)a`, `cat{cc{Aa}cat{str{a}cc{Bb}}cc{Aa}}`},
+	{`(?i)a(?i-)a(?i)ba`, `cat{cc{Aa}str{a}cc{Bb}cc{Aa}}`},
+	{`{#fold}a(?i-)a(?i)ba`, `cat{cc{Aa}str{a}cc{Bb}cc{Aa}}`},
 
 	// Escapes.
 	{`\(\)`, `cat{cc{\(}cc{\)}}`},
@@ -120,6 +125,7 @@ var parseTests = []struct {
 	{`(a))`, `err{unexpected closing parenthesis}: (a)«)»`},
 	{`\p{`, `err{invalid \p{} range}: «\p{»`},
 	{`\p{}`, `err{invalid \p{} range}: «\p{}»`},
+	{`{#bytes}\p{Lu}`, `err{unknown unicode character class}: «\p{Lu}»`}, // No Lu in bytes mode.
 	{`\p{z}`, `err{unknown unicode character class}: «\p{z}»`},
 	{`{1,3}`, `err{unexpected quantifier}: «{»1,3}`},
 	{`{abc}{543,123}`, `err{invalid quantifier}: {abc}«{543,123}»`},
@@ -134,16 +140,32 @@ var parseTests = []struct {
 	{`[qa-\p{L}]`, `err{invalid character class range}: [q«a-\p{L}»]`},
 	{`[z-a]`, `err{invalid character class range}: [«z-a»]`},
 	{`\00`, `err{invalid escape sequence}: «\00»`},
+	{`\00a`, `err{invalid escape sequence}: «\00a»`},
+	{`\400`, `err{invalid escape sequence (max = \377)}: «\400»`},
 	{`\u123`, `err{invalid escape sequence}: «\u123»`},
 	{`\u{ }`, `err{invalid escape sequence}: \u{« »}`},
+	{`\U0010ffff`, `cc{\U0010ffff}`},
+	{`\U00110000`, `err{invalid escape sequence (exceeds unicode.MaxRune)}: «\U00110000»`},
+	{`{#bytes}\u0abc`, `err{invalid escape sequence (exceeds \uff)}: «\u0abc»`},
+	{`{#bytes}\u00ff`, `cc{\u00ff}`},
+	{`{#bytes}\u0100`, `err{invalid escape sequence (exceeds \uff)}: «\u0100»`},
 	{`abc(?`, `err{unknown perl flags}: abc(?«»`},
 	{`abc(?ie`, `err{unknown perl flags}: abc(?i«e»`},
+	{`[\u03b1-\u03b3]`, `cc{\u03b1-\u03b3}`}, // ok
+	{`{#bytes}[\u03b1-\u03b3]`, `err{invalid escape sequence (exceeds \uff)}: [«\u03b1»-\u03b3]`},
+	{`{#bytes}[α-\u03b3]`, `err{invalid character \u3b1 (exceeds \uff)}: [«α»-\u03b3]`},
+	{`{#bytes}[0-\u03b3]`, `err{invalid escape sequence (exceeds \uff)}: [0-«\u03b3»]`},
+	{`{#bytes}[α-γ]`, `err{invalid character \u3b1 (exceeds \uff)}: [«α»-γ]`},
+	{`{#bytes}[0-γ]`, `err{invalid character \u3b3 (exceeds \uff)}: [0-«γ»]`},
 }
 
 func TestParse(t *testing.T) {
 	for _, test := range parseTests {
 		input := test.input
-		re, err := ParseRegexp(input)
+		var opts CharsetOptions
+		input, opts.Fold = strings.CutPrefix(input, "{#fold}")
+		input, opts.ScanBytes = strings.CutPrefix(input, "{#bytes}")
+		re, err := ParseRegexp(input, opts)
 		var got string
 		if err != nil {
 			err := err.(ParseError)
@@ -202,6 +224,8 @@ var stringTests = []struct {
 	// Case folding.
 	{`(?i)abC`, `[Aa][Bb][Cc]`},
 	{`(?i)[a-en-q]`, `[A-EN-Qa-en-q]`},
+	{`{#fold}[a-en-q]`, `[A-EN-Qa-en-q]`},
+	{`{#fold}(?-i)[a-en-q]`, `[a-en-q]`},
 
 	// Escapes.
 	{`\d\D`, `[0-9][\x00-\/\:-\U0010ffff]`},
@@ -215,7 +239,9 @@ var stringTests = []struct {
 func TestString(t *testing.T) {
 	for _, test := range stringTests {
 		input := test.input
-		re, err := ParseRegexp(input)
+		var opts CharsetOptions
+		input, opts.Fold = strings.CutPrefix(input, "{#fold}")
+		re, err := ParseRegexp(input, opts)
 		if err != nil {
 			t.Errorf("ParseRegexp(%v) failed with %v", input, err)
 			continue
@@ -239,12 +265,18 @@ var constTests = []struct {
 	{`+`, `+`},
 	{`++`, ``},
 	{`\+\+`, `++`},
+	{`{#bytes}\+\+`, `++`},
+	{`{#fold}\+\+`, `++`},
+	{`{#fold}aa`, ``},
 }
 
 func TestConstants(t *testing.T) {
 	for _, test := range constTests {
 		input := test.input
-		re, err := ParseRegexp(input)
+		var opts CharsetOptions
+		input, opts.Fold = strings.CutPrefix(input, "{#fold}")
+		input, opts.ScanBytes = strings.CutPrefix(input, "{#bytes}")
+		re, err := ParseRegexp(input, opts)
 		if err != nil {
 			t.Errorf("ParseRegexp(%v) failed with %v", input, err)
 			continue
@@ -271,13 +303,16 @@ var offsetTests = []string{
 	"_abc_\\p{L}_\\w_.",
 	"_[^abc]{1,2}",
 	"_\\012_5555",
+	"{#bytes}_A_B+",
 }
 
 func TestOffsets(t *testing.T) {
-	for _, tc := range offsetTests {
-		want := tc
-		input := strings.ReplaceAll(tc, "_", "")
-		re, err := ParseRegexp(input)
+	for _, input := range offsetTests {
+		var opts CharsetOptions
+		input, opts.ScanBytes = strings.CutPrefix(input, "{#bytes}")
+		want := input
+		input = strings.ReplaceAll(input, "_", "")
+		re, err := ParseRegexp(input, opts)
 		if err != nil {
 			t.Errorf("ParseRegexp(%v) failed with %v", input, err)
 			continue
@@ -286,7 +321,7 @@ func TestOffsets(t *testing.T) {
 		var flush int
 		traverse(re, func(re *Regexp) {
 			switch re.op {
-			case opExternal, opLiteral, opCharClass:
+			case opExternal, opLiteral, opBytesLiteral, opCharClass:
 				sb.WriteString(input[flush:re.offset])
 				flush = re.offset
 				sb.WriteByte('_')
@@ -316,6 +351,8 @@ func dumpRegexp(re *Regexp, b *strings.Builder) {
 	switch re.op {
 	case opLiteral:
 		fmt.Fprintf(b, `str{%s}`, re.text)
+	case opBytesLiteral:
+		fmt.Fprintf(b, `bytes{%s}`, re.text)
 	case opCharClass:
 		fmt.Fprintf(b, "cc{%s}", re.charset)
 	case opRepeat:

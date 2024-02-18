@@ -42,25 +42,37 @@ var charsetTests = []struct {
 	{`^\x20-\U0010ffff`, `\x00-\x1f`},
 	{`^\x00-\U0010ffff`, ``},
 
+	// Inverted bytes.
+	{`{#bytes}^`, `\x00-\u00ff`},
+	{`{#bytes}^\n`, `\x00-\t\x0b-\u00ff`},
+	{`{#bytes}^\x01-\uffff`, `\x00`},
+
 	// Invalid ranges.
 	{`\MaxRune+1`, `\ufffd`},
 	{`^\MaxRune+1`, `\x00-\U0010ffff`},
+
+	// Folding
+	{`(?i)K`, `Kk\u212a`},
+	{`{#bytes}(?i)K`, `Kk`}, // no non-ascii folding in bytes mode
 }
 
 func TestNewCharset(t *testing.T) {
 	for _, test := range charsetTests {
-		s := test.in
-		inv := strings.HasPrefix(s, "^")
-		if inv {
-			s = s[1:]
-		}
-		in, err := parseRanges(s)
+		var opts CharsetOptions
+		input := test.in
+		input, opts.ScanBytes = strings.CutPrefix(input, "{#bytes}")
+		input, inv := strings.CutPrefix(input, "^")
+		input, fold := strings.CutPrefix(input, "(?i)")
+		in, err := parseRanges(input)
 		if err != nil {
 			t.Errorf("parseRanges() failed with %v", err)
 		}
 		out := newCharset(in)
+		if fold {
+			out.fold(opts.ScanBytes)
+		}
 		if inv {
-			out.invert()
+			out.invert(opts)
 		}
 		if got := out.String(); got != test.want {
 			t.Errorf("newCharset(%#q) = %#q, want: %#q", test.in, got, test.want)
@@ -144,25 +156,32 @@ func TestSubtract(t *testing.T) {
 	}
 }
 
+const doFold = true
+const doBytes = true
+
 var unicodeTests = []struct {
 	name      string
 	fold      bool
+	scanBytes bool
 	intersect charset
 	want      string
 }{
-	{"Ll", true, charset{0, 0x7f}, `A-Za-z`},
-	{"Ll", false, charset{0, 0x7f}, `a-z`},
-	{"N", false, charset{0, 0x7f}, `0-9`},
-	{"Pc", true, charset{0, 0x7f}, `_`},
-	{"", false, nil, `err: unknown unicode character class`},
-	{"Lower", true, nil, `err: unknown unicode character class`},
-	{"Any", true, charset{0, unicode.MaxRune}, `\x00-\U0010ffff`},
-	{"Greek", false, charset{0x370, 0x380}, `\u0370-\u0373\u0375-\u0377\u037a-\u037d\u037f`},
+	{"Ll", doFold, false, charset{0, 0x7f}, `A-Za-z`},
+	{"Ll", false, false, charset{0, 0x7f}, `a-z`},
+	{"N", false, false, charset{0, 0x7f}, `0-9`},
+	{"Pc", doFold, false, charset{0, 0x7f}, `_`},
+	{"Pc", doFold, doBytes, nil, `err: unknown unicode character class`}, // Pc is not supported in bytes mode.
+	{"", false, false, nil, `err: unknown unicode character class`},
+	{"Lower", doFold, false, nil, `err: unknown unicode character class`},
+	{"Any", doFold, false, charset{0, unicode.MaxRune}, `\x00-\U0010ffff`},
+	{"Any", doFold, doBytes, charset{0, 0xff}, `\x00-\u00ff`},
+	{"Greek", false, false, charset{0x370, 0x380}, `\u0370-\u0373\u0375-\u0377\u037a-\u037d\u037f`},
 }
 
 func TestUnicode(t *testing.T) {
 	for _, test := range unicodeTests {
-		r, err := appendNamedSet(nil, test.name, test.fold)
+		opts := CharsetOptions{ScanBytes: test.scanBytes, Fold: test.fold}
+		r, err := appendNamedSet(nil, test.name, opts)
 		var got string
 		if err != nil {
 			got = "err: " + err.Error()

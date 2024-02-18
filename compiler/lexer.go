@@ -15,7 +15,7 @@ import (
 var noSpace = ast.LexemeAttribute{}
 
 type lexerCompiler struct {
-	options  *optionsParser
+	opts     *grammar.Options
 	resolver *resolver
 	out      *grammar.Lexer
 	*status.Status
@@ -30,9 +30,9 @@ type lexerCompiler struct {
 	injected    map[string]bool
 }
 
-func newLexerCompiler(options *optionsParser, resolver *resolver, s *status.Status) *lexerCompiler {
+func newLexerCompiler(opts *grammar.Options, resolver *resolver, s *status.Status) *lexerCompiler {
 	return &lexerCompiler{
-		options:  options,
+		opts:     opts,
 		resolver: resolver,
 		out:      new(grammar.Lexer),
 		Status:   s,
@@ -78,8 +78,8 @@ func (c *lexerCompiler) compile(file ast.File) {
 	}
 
 	var err error
-	allowBacktracking := !c.options.out.NonBacktracking
-	out.Tables, err = lex.Compile(c.rules, allowBacktracking)
+	allowBacktracking := !c.opts.NonBacktracking
+	out.Tables, err = lex.Compile(c.rules, c.opts.ScanBytes, allowBacktracking)
 	c.AddError(err)
 
 	if inline {
@@ -264,6 +264,7 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 	}
 	c.patterns = append(c.patterns, ps)
 
+	reOpts := lex.CharsetOptions{ScanBytes: c.opts.ScanBytes, Fold: c.opts.CaseInsensitive}
 	for _, p := range parts {
 		switch p := p.(type) {
 		case *ast.Lexeme:
@@ -288,7 +289,7 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 				break
 			}
 
-			pattern, err := parsePattern(name, pat)
+			pattern, err := parsePattern(name, pat, reOpts)
 			if err != nil {
 				c.AddError(err)
 				continue
@@ -321,7 +322,7 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 				c.rules = append(c.rules, rule)
 			}
 		case *ast.NamedPattern:
-			c.AddError(ps.add(p))
+			c.AddError(ps.add(p, reOpts))
 		case *ast.StartConditionsScope:
 			newDefaults := c.resolveSC(p.StartConditions())
 			c.traverseLexer(p.LexerPart(), newDefaults, ps)
@@ -367,7 +368,7 @@ func (c *lexerCompiler) resolveClasses() {
 		fork.Action = index
 		rewritten = append(rewritten, fork)
 	}
-	tables, err := lex.Compile(rewritten, true /*allowBacktracking*/)
+	tables, err := lex.Compile(rewritten, c.opts.ScanBytes, true /*allowBacktracking*/)
 	if err != nil {
 		// Pretend that these class rules do not exist in the grammar and keep going.
 		return
@@ -446,25 +447,25 @@ func (p *patterns) Resolve(name string) *lex.Pattern {
 	return nil
 }
 
-var emptyRE = lex.MustParse("")
+var emptyRE = lex.MustParse("", lex.CharsetOptions{})
 
-func (p *patterns) add(np *ast.NamedPattern) error {
+func (p *patterns) add(np *ast.NamedPattern, opts lex.CharsetOptions) error {
 	name := np.Name().Text()
 	if _, exists := p.set[name]; exists {
 		return status.Errorf(np.Name(), "redeclaration of '%v'", name)
 	}
 
-	pattern, err := parsePattern(name, np.Pattern())
+	pattern, err := parsePattern(name, np.Pattern(), opts)
 	p.set[name] = pattern
 	p.unused[name] = np.Name()
 	return err
 }
 
-func parsePattern(name string, p ast.Pattern) (*lex.Pattern, error) {
+func parsePattern(name string, p ast.Pattern, opts lex.CharsetOptions) (*lex.Pattern, error) {
 	text := p.Text()
 	text = text[1 : len(text)-1]
 	ret := &lex.Pattern{Name: name, Text: text, RE: emptyRE, Origin: p}
-	re, err := lex.ParseRegexp(text)
+	re, err := lex.ParseRegexp(text, opts)
 	if err != nil {
 		rng := p.SourceRange()
 		err := err.(lex.ParseError)
@@ -481,17 +482,4 @@ func parsePattern(name string, p ast.Pattern) (*lex.Pattern, error) {
 	}
 	ret.RE = re
 	return ret, nil
-}
-
-func eq(a, b []string) bool {
-	// TODO replace with slices.Equal
-	if len(a) != len(b) {
-		return false
-	}
-	for i, v := range a {
-		if v != b[i] {
-			return false
-		}
-	}
-	return true
 }

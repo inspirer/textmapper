@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 )
 
@@ -18,10 +17,10 @@ type Regexp struct {
 	op       op         // operator
 	sub      []*Regexp  // subexpressions, if any
 	sub0     [1]*Regexp // storage for short sub
-	charset  charset    // for opCharClass
+	charset  charset    // for opCharClass, never goes past 0xff in bytes mode
 	charset0 [2]rune    // storage for short character sets
 	min, max int        // min, max for opRepeat
-	text     string     // matched text for opLiteral, or a reference for opExternal
+	text     string     // matched text for opLiteral and opBytesLiteral, or a reference for opExternal
 	offset   int        // for opLiteral, opCharClass, and opExternal
 }
 
@@ -29,12 +28,13 @@ type Regexp struct {
 type op uint8
 
 const (
-	opLiteral   op = iota // matches text as a literal
-	opCharClass           // matches any rune from a given character set
-	opRepeat              // matches sub[0] at least min times, at most max (-1 means no limit)
-	opConcat              // matches concatenation of subs
-	opAlternate           // matches alternation of subs
-	opExternal            // uses an external matcher, which name is specified in text
+	opLiteral      op = iota // matches text as a literal
+	opBytesLiteral           // matches text as utf-8 bytes
+	opCharClass              // matches any rune from a given character set
+	opRepeat                 // matches sub[0] at least min times, at most max (-1 means no limit)
+	opConcat                 // matches concatenation of subs
+	opAlternate              // matches alternation of subs
+	opExternal               // uses an external matcher, which name is specified in text
 
 	// Temporary operator for parsing.
 	opParen
@@ -55,7 +55,7 @@ func (re *Regexp) empty() bool {
 	switch re.op {
 	case opConcat, opAlternate:
 		return len(re.sub) == 0
-	case opLiteral:
+	case opLiteral, opBytesLiteral:
 		return len(re.text) == 0
 	case opRepeat:
 		return re.max == 0
@@ -72,7 +72,7 @@ func (re *Regexp) Constant() (string, bool) {
 			return string(re.charset[0]), true
 		}
 		return "", false
-	case opLiteral:
+	case opLiteral, opBytesLiteral:
 		return re.text, true
 	case opConcat:
 		var text []string
@@ -89,8 +89,8 @@ func (re *Regexp) Constant() (string, bool) {
 }
 
 // MustParse is a panic-on-error version of ParseRegexp.
-func MustParse(input string) *Regexp {
-	re, err := ParseRegexp(input)
+func MustParse(input string, opts CharsetOptions) *Regexp {
+	re, err := ParseRegexp(input, opts)
 	if err != nil {
 		panic(fmt.Sprintf("%q: %v", input, err))
 	}
@@ -98,13 +98,13 @@ func MustParse(input string) *Regexp {
 }
 
 // ParseRegexp parses a regular expression from a string.
-func ParseRegexp(input string) (*Regexp, error) {
+func ParseRegexp(input string, opts CharsetOptions) (*Regexp, error) {
 	var buf [16]rune
 	var p parser
 	p.source = input
 	p.set = buf[:0]
 	p.next()
-	re := p.parse()
+	re := p.parse(opts)
 	if p.err.Msg != "" {
 		return nil, p.err
 	}
@@ -138,8 +138,8 @@ func (p *parser) next() {
 	}
 }
 
-func (p *parser) parse() *Regexp {
-	var fold bool
+func (p *parser) parse(opts CharsetOptions) *Regexp {
+	fold := opts.Fold
 	var alloc [8]*Regexp
 	stack := append(alloc[:0], &Regexp{op: opParen})
 	var start int
@@ -148,7 +148,7 @@ func (p *parser) parse() *Regexp {
 	for p.ch != -1 {
 		switch p.ch {
 		case '.':
-			re := &Regexp{op: opCharClass, charset: []rune{0, '\n' - 1, '\n' + 1, unicode.MaxRune}, offset: p.offset}
+			re := &Regexp{op: opCharClass, charset: []rune{0, '\n' - 1, '\n' + 1, opts.maxRune()}, offset: p.offset}
 			stack = append(stack, re)
 		case '(':
 			p.next()
@@ -166,7 +166,9 @@ func (p *parser) parse() *Regexp {
 					}
 				}
 				if p.ch == ')' {
-					fold = true
+					if setFold {
+						fold = !neg
+					}
 					break
 				} else {
 					p.next()
@@ -206,7 +208,7 @@ func (p *parser) parse() *Regexp {
 					p.scanOffset = start + i + 2
 				}
 				p.next()
-				stack = append(stack, &Regexp{op: opLiteral, text: lit, offset: start})
+				stack = append(stack, &Regexp{op: literalOp(opts.ScanBytes), text: lit, offset: start})
 				for lit != "" {
 					r, size := utf8.DecodeRuneInString(lit)
 					if r == utf8.RuneError && size == 1 {
@@ -222,9 +224,9 @@ func (p *parser) parse() *Regexp {
 			var cs charset
 			re := &Regexp{op: opCharClass, offset: p.offset}
 			if p.ch == '\\' {
-				cs = p.parseEscape(fold)
+				cs = p.parseEscape(CharsetOptions{Fold: fold, ScanBytes: opts.ScanBytes})
 			} else {
-				cs = p.parseClass(fold)
+				cs = p.parseClass(CharsetOptions{Fold: fold, ScanBytes: opts.ScanBytes})
 			}
 			re.charset = append(re.charset0[:0], cs...)
 			stack = append(stack, re)
@@ -275,13 +277,13 @@ func (p *parser) parse() *Regexp {
 			if fold && foldable(p.ch) {
 				re := &Regexp{op: opCharClass, offset: p.offset}
 				re.charset = append(re.charset0[:0], p.ch, p.ch)
-				re.charset.fold()
+				re.charset.fold(opts.ScanBytes)
 				stack = append(stack, re)
-			} else if last.op == opLiteral && last.text == p.source[start:p.offset] && p.canAppend() {
+			} else if last.op == literalOp(opts.ScanBytes) && last.text == p.source[start:p.offset] && p.canAppend() {
 				last.text = p.source[start:p.scanOffset]
 			} else {
 				start = p.offset
-				stack = append(stack, &Regexp{op: opLiteral, text: p.source[start:p.scanOffset], offset: start})
+				stack = append(stack, &Regexp{op: literalOp(opts.ScanBytes), text: p.source[start:p.scanOffset], offset: start})
 			}
 		}
 		p.next()
@@ -297,6 +299,13 @@ func (p *parser) parse() *Regexp {
 	}
 	stack[0].op = opAlternate
 	return stack[0]
+}
+
+func literalOp(scanBytes bool) op {
+	if scanBytes {
+		return opBytesLiteral
+	}
+	return opLiteral
 }
 
 func (p *parser) parseQuantifier() (min, max int) {
@@ -384,16 +393,17 @@ func (p *parser) error(msg string, offset, endOffset int) {
 	}
 }
 
-func (p *parser) rune(r rune, fold bool) charset {
+func (p *parser) rune(r rune, opts CharsetOptions) charset {
 	p.set = append(p.set[:0], r, r)
 	cs := charset(p.set)
-	if fold {
-		cs.fold()
+	if opts.Fold {
+		cs.fold(opts.ScanBytes)
 	}
 	return cs
 }
 
-func (p *parser) parseClass(fold bool) charset {
+// Note: in "bytes mode", the returned charset never contains runes above 0xff.
+func (p *parser) parseClass(opts CharsetOptions) charset {
 	start := p.offset
 	p.next() // skip [
 	var negated bool
@@ -408,22 +418,24 @@ func (p *parser) parseClass(fold bool) charset {
 		r = append(r, p.ch, p.ch)
 		p.next()
 	}
+	fold := opts.Fold
+	opts.Fold = false // perform folding once at the end of the outer class
 	for p.ch != ']' {
 		var lo rune
 		loStart := p.offset
 		switch p.ch {
 		case '.':
-			r = append(r, 0, '\n'-1, '\n'+1, unicode.MaxRune)
+			r = append(r, 0, '\n'-1, '\n'+1, opts.maxRune())
 			p.next()
 			continue
 		case '-':
 			p.next()
 			switch p.ch {
 			case '[':
-				subs = append(subs, p.parseClass(false))
+				subs = append(subs, p.parseClass(opts))
 				continue
 			case '\\':
-				cs := p.parseEscape(false)
+				cs := p.parseEscape(opts)
 				if !cs.oneRune() {
 					// Note: parseEscape uses p.set as a temporary buffer. Make a copy.
 					subs = append(subs, append(charset(nil), cs...))
@@ -439,13 +451,17 @@ func (p *parser) parseClass(fold bool) charset {
 			p.error("missing closing bracket", start, p.offset)
 			return nil
 		case '\\':
-			cs := p.parseEscape(false)
+			cs := p.parseEscape(opts)
 			if !cs.oneRune() {
 				r = append(r, cs...)
 				continue
 			}
 			lo = cs[0]
 		default:
+			if p.ch > opts.maxRune() {
+				p.error(fmt.Sprintf("invalid character \\u%x (exceeds \\u%x)", p.ch, opts.maxRune()), p.offset, p.scanOffset)
+				return nil
+			}
 			lo = p.ch
 			p.next()
 		}
@@ -458,13 +474,17 @@ func (p *parser) parseClass(fold bool) charset {
 		p.next()
 		var hi rune
 		if p.ch == '\\' {
-			cs := p.parseEscape(false)
+			cs := p.parseEscape(opts)
 			if !cs.oneRune() {
 				p.error("invalid character class range", loStart, p.offset)
 				return nil
 			}
 			hi = cs[0]
 		} else {
+			if p.ch > opts.maxRune() {
+				p.error(fmt.Sprintf("invalid character \\u%x (exceeds \\u%x)", p.ch, opts.maxRune()), p.offset, p.scanOffset)
+				return nil
+			}
 			hi = p.ch
 			p.next()
 		}
@@ -481,16 +501,17 @@ func (p *parser) parseClass(fold bool) charset {
 		cs.subtract(sub)
 	}
 	if fold {
-		cs.fold()
+		cs.fold(opts.ScanBytes)
 	}
 	if negated {
-		cs.invert()
+		cs.invert(opts)
 	}
 	p.next()
 	return cs
 }
 
-func (p *parser) parseEscape(fold bool) charset {
+// Note: in "bytes mode", the returned charset never contains runes above 0xff.
+func (p *parser) parseEscape(opts CharsetOptions) charset {
 	start := p.offset
 	p.next() // skip \
 	var r rune
@@ -505,7 +526,11 @@ func (p *parser) parseEscape(fold bool) charset {
 			r = r<<3 + d
 			p.next()
 		}
-		return p.rune(r, fold)
+		if r > 0xff {
+			p.error("invalid escape sequence (max = \\377)", start, p.offset)
+			return nil
+		}
+		return p.rune(r, opts)
 	case 'p', 'P':
 		negated := p.ch == 'P'
 		p.next()
@@ -529,13 +554,13 @@ func (p *parser) parseEscape(fold bool) charset {
 		}
 		p.next()
 		var err error
-		p.set, err = appendNamedSet(p.set[:0], name, fold)
+		p.set, err = appendNamedSet(p.set[:0], name, opts)
 		if err != nil {
 			p.error(err.Error(), start, p.offset)
 		}
 		ret := newCharset(p.set)
 		if negated {
-			ret.invert()
+			ret.invert(opts)
 		}
 		return ret
 
@@ -545,7 +570,7 @@ func (p *parser) parseEscape(fold bool) charset {
 
 	case 'D':
 		p.next()
-		return append(p.set[:0], 0, '0'-1, '9'+1, unicode.MaxRune)
+		return append(p.set[:0], 0, '0'-1, '9'+1, opts.maxRune())
 
 	case 'w':
 		p.next()
@@ -553,14 +578,14 @@ func (p *parser) parseEscape(fold bool) charset {
 
 	case 'W':
 		p.next()
-		return append(p.set[:0], 0, '0'-1, '9'+1, 'A'-1, 'Z'+1, '_'-1, '_'+1, 'a'-1, 'z'+1, unicode.MaxRune)
+		return append(p.set[:0], 0, '0'-1, '9'+1, 'A'-1, 'Z'+1, '_'-1, '_'+1, 'a'-1, 'z'+1, opts.maxRune())
 
 	case 's', 'S':
 		negated := p.ch == 'S'
 		p.next()
 		ret := charset(append(p.set[:0], '\t', '\t', '\n', '\n', '\v', '\v', '\f', '\f', '\r', '\r', ' ', ' '))
 		if negated {
-			ret.invert()
+			ret.invert(opts)
 		}
 		return ret
 
@@ -599,7 +624,15 @@ func (p *parser) parseEscape(fold bool) charset {
 				p.next()
 			}
 		}
-		return p.rune(r, fold)
+		if r > opts.maxRune() {
+			if opts.ScanBytes {
+				p.error("invalid escape sequence (exceeds \\uff)", start, p.offset)
+			} else {
+				p.error("invalid escape sequence (exceeds unicode.MaxRune)", start, p.offset)
+			}
+			return nil
+		}
+		return p.rune(r, opts)
 	case 'a':
 		r = '\a'
 	case 'f':
@@ -623,7 +656,7 @@ func (p *parser) parseEscape(fold bool) charset {
 		r = p.ch
 	}
 	p.next()
-	return p.rune(r, fold)
+	return p.rune(r, opts)
 }
 
 func hexval(r rune) rune {
@@ -658,8 +691,8 @@ func regexpString(re *Regexp, b *bytes.Buffer, paren bool) {
 		defer b.WriteString(")")
 	}
 	switch re.op {
-	case opLiteral:
-		fmt.Fprintf(b, `%s`, re.text)
+	case opLiteral, opBytesLiteral:
+		b.WriteString(re.text)
 	case opCharClass:
 		if re.charset.oneRune() {
 			b.WriteString(re.charset.String())
@@ -669,7 +702,7 @@ func regexpString(re *Regexp, b *bytes.Buffer, paren bool) {
 	case opRepeat:
 		var addParens bool
 		switch re.sub[0].op {
-		case opLiteral:
+		case opLiteral, opBytesLiteral:
 			addParens = len(re.text) > 1
 		case opAlternate, opConcat:
 			addParens = true

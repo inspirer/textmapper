@@ -15,9 +15,10 @@ type input struct {
 }
 
 var lexTests = []struct {
-	rules  []*Rule
-	want   []string
-	testOn []input
+	rules     []*Rule
+	scanBytes bool // if true, regexes must use {#bytes} as a prefix
+	want      []string
+	testOn    []input
 }{
 	{
 		rules: []*Rule{
@@ -158,12 +159,55 @@ var lexTests = []struct {
 			{`«abccc»- `, 1},
 		},
 	},
+
+	// Scanning Unicode as bytes (including backtracking).
+	{
+		scanBytes: true,
+		rules: []*Rule{
+			rule("alpha-beta", "{#bytes}αβγ?", 1),
+		},
+		want: []string{
+			`0: EOI accept; [\u00ce] -> 1;`,
+			`1: [\u00b1] -> 2;`,
+			`2: [\u00ce] -> 3;`,
+			`3: [\u00b2] -> 4;`,
+			`4: EOI exec 1; other exec 1; [\u00b1-\u00b3] exec 1; [\u00ce] bt(exec 1) -> 5;`,
+			`5: [\u00b3] -> 6;`,
+			`6: EOI exec 1; other exec 1; [\u00b1-\u00b3\u00ce] exec 1;`,
+		},
+		testOn: []input{
+			{`«αβ»- `, 1},
+			{`«αβ»`, 1},
+			{`«αβγ»`, 1},
+			{"«\u03B1\u03B2»", 1},
+			{"«\u03B1\u03B2\u03B3»!", 1},
+		},
+	},
+	{
+		scanBytes: true,
+		rules: []*Rule{
+			rule("alpha-beta", "{#bytes}\u03B1\u03B2\u03B3?", 1), // αβγ
+		},
+		want: []string{
+			`0: EOI accept; [\u00ce] -> 1;`,
+			`1: [\u00b1] -> 2;`,
+			`2: [\u00ce] -> 3;`,
+			`3: [\u00b2] -> 4;`,
+			`4: EOI exec 1; other exec 1; [\u00b1-\u00b3] exec 1; [\u00ce] bt(exec 1) -> 5;`,
+			`5: [\u00b3] -> 6;`,
+			`6: EOI exec 1; other exec 1; [\u00b1-\u00b3\u00ce] exec 1;`,
+		},
+		testOn: []input{
+			{`«αβ»`, 1},
+			{`«αβγ»`, 1},
+		},
+	},
 }
 
 func TestLex(t *testing.T) {
 	repl := strings.NewReplacer("«", "", "»", "")
 	for _, tc := range lexTests {
-		tables, err := Compile(tc.rules, true /*allowBacktracking*/)
+		tables, err := Compile(tc.rules, tc.scanBytes, true /*allowBacktracking*/)
 		if err != nil {
 			t.Errorf("Compile(%v) failed with %v", tc.rules, err)
 		}

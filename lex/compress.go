@@ -2,8 +2,8 @@ package lex
 
 import (
 	"encoding/binary"
+	"log"
 	"sort"
-	"unicode"
 )
 
 // symlist is a sorted list of DFA input symbols.
@@ -26,7 +26,7 @@ func (l symlist) contains(s Sym) bool {
 // compressCharsets combines unicode runes into equivalence classes that become input symbols for
 // the generated DFA. All characters mapped into one symbol are either a subset or do not belong
 // to any of the given charsets.
-func compressCharsets(sets []charset) (out []symlist, inputMap []RangeEntry) {
+func compressCharsets(sets []charset, opts CharsetOptions) (out []symlist, inputMap []RangeEntry) {
 	type rng struct {
 		index      int
 		start, end rune // inclusive
@@ -42,6 +42,9 @@ func compressCharsets(sets []charset) (out []symlist, inputMap []RangeEntry) {
 				end:   cs[i+1],
 				delta: 1,
 			})
+			if cs[i+1] > 0xff && opts.ScanBytes {
+				log.Fatalf("invariant failure: charset %v is not compatible with scanBytes", cs)
+			}
 		}
 	}
 
@@ -66,12 +69,13 @@ func compressCharsets(sets []charset) (out []symlist, inputMap []RangeEntry) {
 	m := make(map[string]Sym)
 	dd := make(map[[2]int]bool)
 	l := len(ranges)
-	for start <= unicode.MaxRune {
+	maxRune := opts.maxRune()
+	for start <= maxRune {
 		for first < l && ranges[first].end < start {
 			first += ranges[first].delta
 		}
 		chunk = chunk[:0]
-		end := unicode.MaxRune
+		end := maxRune
 		if first < l {
 			i := first
 			prev := &first

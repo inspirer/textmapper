@@ -213,6 +213,8 @@ type Options struct {
 	CustomImpl []string
 
 	// Lexer features.
+	ScanBytes       bool // generate a 8-bit scanner that consumes bytes instead of runes
+	CaseInsensitive bool // generate a case-insensitive scanner
 	TokenLine       bool // true by default
 	TokenLineOffset bool
 	TokenColumn     bool

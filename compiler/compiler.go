@@ -36,7 +36,7 @@ func Compile(ctx context.Context, path, content string, params Params) (*grammar
 
 	resolver := newResolver(&s)
 
-	lexer := newLexerCompiler(opts, resolver, &s)
+	lexer := newLexerCompiler(opts.out, resolver, &s)
 	lexer.compile(file)
 
 	c := newCompiler(file, opts.out, lexer.out, resolver, params, &s)

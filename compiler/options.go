@@ -48,6 +48,10 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.Package = p.parseExpr(opt.Value(), opts.Package).(string)
 		case "genCopyright":
 			opts.Copyright = p.parseExpr(opt.Value(), opts.Copyright).(bool)
+		case "scanBytes":
+			opts.ScanBytes = p.parseExpr(opt.Value(), opts.ScanBytes).(bool)
+		case "caseInsensitive":
+			opts.CaseInsensitive = p.parseExpr(opt.Value(), opts.CaseInsensitive).(bool)
 		case "tokenLine":
 			opts.TokenLine = p.parseExpr(opt.Value(), opts.TokenLine).(bool)
 		case "tokenLineOffset":
