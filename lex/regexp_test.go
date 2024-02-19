@@ -112,6 +112,8 @@ var parseTests = []struct {
 	{`\U00012345`, `cc{\U00012345}`},
 	{"\u0370", "str{\u0370}"},
 	{"\u0370\u0371+", "cat{str{\u0370}str{\u0371}+}"},
+	{`(?i)γ`, `cc{\u0393\u03b3}`},
+	{`{#bytes}(?i)γ`, `bytes{γ}`}, // No case folding for non-ASCII in bytes mode.
 
 	// Errors.
 	{"\xfe\xfe", "err{invalid rune}: «\xfe»\xfe"},

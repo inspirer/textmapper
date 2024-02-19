@@ -139,7 +139,6 @@ func (p *parser) next() {
 }
 
 func (p *parser) parse(opts CharsetOptions) *Regexp {
-	fold := opts.Fold
 	var alloc [8]*Regexp
 	stack := append(alloc[:0], &Regexp{op: opParen})
 	var start int
@@ -167,16 +166,16 @@ func (p *parser) parse(opts CharsetOptions) *Regexp {
 				}
 				if p.ch == ')' {
 					if setFold {
-						fold = !neg
+						opts.Fold = !neg
 					}
 					break
 				} else {
 					p.next()
 				}
 			}
-			foldStack = append(foldStack, fold)
+			foldStack = append(foldStack, opts.Fold)
 			if setFold {
-				fold = !neg
+				opts.Fold = !neg
 			}
 			stack = append(stack, &Regexp{op: opParen})
 			continue
@@ -188,7 +187,7 @@ func (p *parser) parse(opts CharsetOptions) *Regexp {
 				p.error("unexpected closing parenthesis", p.offset, p.scanOffset)
 				return nil
 			}
-			fold = foldStack[len(foldStack)-1]
+			opts.Fold = foldStack[len(foldStack)-1]
 			foldStack = foldStack[:len(foldStack)-1]
 			last := len(stack) - 1
 			stack[last].op = opAlternate
@@ -224,9 +223,9 @@ func (p *parser) parse(opts CharsetOptions) *Regexp {
 			var cs charset
 			re := &Regexp{op: opCharClass, offset: p.offset}
 			if p.ch == '\\' {
-				cs = p.parseEscape(CharsetOptions{Fold: fold, ScanBytes: opts.ScanBytes})
+				cs = p.parseEscape(opts)
 			} else {
-				cs = p.parseClass(CharsetOptions{Fold: fold, ScanBytes: opts.ScanBytes})
+				cs = p.parseClass(opts)
 			}
 			re.charset = append(re.charset0[:0], cs...)
 			stack = append(stack, re)
@@ -274,7 +273,7 @@ func (p *parser) parse(opts CharsetOptions) *Regexp {
 			fallthrough
 		default:
 			last := stack[len(stack)-1]
-			if fold && foldable(p.ch) {
+			if opts.Fold && foldable(p.ch, opts) {
 				re := &Regexp{op: opCharClass, offset: p.offset}
 				re.charset = append(re.charset0[:0], p.ch, p.ch)
 				re.charset.fold(opts.ScanBytes)

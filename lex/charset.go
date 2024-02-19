@@ -205,8 +205,8 @@ func intersect(a, b charset) charset {
 	return out
 }
 
-func foldable(r rune) bool {
-	return r != unicode.SimpleFold(r)
+func foldable(r rune, opts CharsetOptions) bool {
+	return r != unicode.SimpleFold(r) && (!opts.ScanBytes || r < 0x80)
 }
 
 func appendRange(r []rune, lo, hi rune) []rune {
