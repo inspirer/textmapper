@@ -9,7 +9,9 @@
 namespace {{.Options.Namespace}} {
 {{ block "onBeforeLexer" .}}{{end -}}
 {{ template "lexerTables" .}}
+{{ if not .Options.ScanBytes -}}
 {{ template "decodeRune" .}}
+{{ end -}}
 {{ template "lexerCtor" .}}
 {{ template "lexerNext" .}}
 {{ template "lexerRewind" .}}
@@ -241,7 +243,11 @@ restart:
       // Scan the next character.
       offset_ = scan_offset_;
       if (offset_ < source_.size()) {
+{{ if .Options.ScanBytes -}}
+        input_rune_ = source_[scan_offset_++];
+{{ else -}}
         input_rune_ = decodeRune(source_, scan_offset_);
+{{ end -}}
       } else {
         input_rune_ = -1;
       }
@@ -364,7 +370,11 @@ void Lexer::Rewind(int64_t rewind_offset) {
   scan_offset_ = rewind_offset;
   offset_ = rewind_offset;
   if (offset_ < source_.size()) {
+{{ if .Options.ScanBytes -}}
+    input_rune_ = source_[scan_offset_++];
+{{ else -}}
     input_rune_ = decodeRune(source_, scan_offset_);
+{{ end -}}
   } else {
     input_rune_ = -1;  // Invalid rune for end of input
   }
