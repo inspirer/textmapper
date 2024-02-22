@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -223,7 +224,7 @@ func (p *parser) parse(opts CharsetOptions) *Regexp {
 			var cs charset
 			re := &Regexp{op: opCharClass, offset: p.offset}
 			if p.ch == '\\' {
-				cs = p.parseEscape(opts)
+				cs = p.parseEscape(opts, true /*standalone*/)
 			} else {
 				cs = p.parseClass(opts)
 			}
@@ -434,7 +435,7 @@ func (p *parser) parseClass(opts CharsetOptions) charset {
 				subs = append(subs, p.parseClass(opts))
 				continue
 			case '\\':
-				cs := p.parseEscape(opts)
+				cs := p.parseEscape(opts, false /*standalone*/)
 				if !cs.oneRune() {
 					// Note: parseEscape uses p.set as a temporary buffer. Make a copy.
 					subs = append(subs, append(charset(nil), cs...))
@@ -450,7 +451,7 @@ func (p *parser) parseClass(opts CharsetOptions) charset {
 			p.error("missing closing bracket", start, p.offset)
 			return nil
 		case '\\':
-			cs := p.parseEscape(opts)
+			cs := p.parseEscape(opts, false /*standalone*/)
 			if !cs.oneRune() {
 				r = append(r, cs...)
 				continue
@@ -473,7 +474,7 @@ func (p *parser) parseClass(opts CharsetOptions) charset {
 		p.next()
 		var hi rune
 		if p.ch == '\\' {
-			cs := p.parseEscape(opts)
+			cs := p.parseEscape(opts, false /*standalone*/)
 			if !cs.oneRune() {
 				p.error("invalid character class range", loStart, p.offset)
 				return nil
@@ -509,8 +510,12 @@ func (p *parser) parseClass(opts CharsetOptions) charset {
 	return cs
 }
 
-// Note: in "bytes mode", the returned charset never contains runes above 0xff.
-func (p *parser) parseEscape(opts CharsetOptions) charset {
+// parseEscape returns either a character set or a single rune.
+//
+// In "bytes mode":
+//   - only single runes can exceed 0xff (in standalone mode only, not in character classes).
+//   - non-trivial character sets never contains runes above 0xff.
+func (p *parser) parseEscape(opts CharsetOptions, standalone bool) charset {
 	start := p.offset
 	p.next() // skip \
 	var r rune
@@ -623,7 +628,7 @@ func (p *parser) parseEscape(opts CharsetOptions) charset {
 				p.next()
 			}
 		}
-		if r > opts.maxRune() {
+		if r > opts.maxRune() && !standalone || r > unicode.MaxRune {
 			if opts.ScanBytes {
 				p.error("invalid escape sequence (exceeds \\uff)", start, p.offset)
 			} else {

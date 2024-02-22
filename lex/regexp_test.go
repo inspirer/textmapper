@@ -148,9 +148,11 @@ var parseTests = []struct {
 	{`\u{ }`, `err{invalid escape sequence}: \u{« »}`},
 	{`\U0010ffff`, `cc{\U0010ffff}`},
 	{`\U00110000`, `err{invalid escape sequence (exceeds unicode.MaxRune)}: «\U00110000»`},
-	{`{#bytes}\u0abc`, `err{invalid escape sequence (exceeds \uff)}: «\u0abc»`},
+	{`{#bytes}\u0abc`, `cc{\u0abc}`},
+	{`{#bytes}[\u0abc]`, `err{invalid escape sequence (exceeds \uff)}: [«\u0abc»]`},
 	{`{#bytes}\u00ff`, `cc{\u00ff}`},
-	{`{#bytes}\u0100`, `err{invalid escape sequence (exceeds \uff)}: «\u0100»`},
+	{`{#bytes}\u0100`, `cc{\u0100}`},
+	{`{#bytes}[\u0100]`, `err{invalid escape sequence (exceeds \uff)}: [«\u0100»]`},
 	{`abc(?`, `err{unknown perl flags}: abc(?«»`},
 	{`abc(?ie`, `err{unknown perl flags}: abc(?i«e»`},
 	{`[\u03b1-\u03b3]`, `cc{\u03b1-\u03b3}`}, // ok
