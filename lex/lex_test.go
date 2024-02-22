@@ -186,7 +186,7 @@ var lexTests = []struct {
 	{
 		scanBytes: true,
 		rules: []*Rule{
-			rule("alpha-beta", "{#bytes}\u03B1\u03B2\u03B3?", 1), // αβγ
+			rule("alpha-beta", "{#bytes}\u03B1\\u03B2\u03B3?", 1), // αβγ
 		},
 		want: []string{
 			`0: EOI accept; [\u00ce] -> 1;`,

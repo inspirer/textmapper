@@ -225,6 +225,14 @@ func (p *parser) parse(opts CharsetOptions) *Regexp {
 			re := &Regexp{op: opCharClass, offset: p.offset}
 			if p.ch == '\\' {
 				cs = p.parseEscape(opts, true /*standalone*/)
+
+				// Handle unicode characters in bytes mode.
+				if opts.ScanBytes && cs.oneRune() && cs[0] > 0xff {
+					re.op = opBytesLiteral
+					re.text = string(cs[0])
+					stack = append(stack, re)
+					continue
+				}
 			} else {
 				cs = p.parseClass(opts)
 			}
