@@ -66,8 +66,12 @@ func debugFile(ctx context.Context, path string) error {
 
 	fmt.Printf("Compiled %v in %v\n", path, time.Since(start))
 
-	if *stats && g.Parser != nil && g.Parser.Tables != nil {
+	if *stats && g.Lexer != nil {
 		fmt.Println()
+		fmt.Print(g.Lexer.TableStats())
+	}
+
+	if *stats && g.Parser != nil && g.Parser.Tables != nil {
 		fmt.Print(g.Parser.TableStats())
 
 		start = time.Now()
