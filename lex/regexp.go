@@ -227,7 +227,7 @@ func (p *parser) parse(opts CharsetOptions) *Regexp {
 				cs = p.parseEscape(opts, true /*standalone*/)
 
 				// Handle unicode characters in bytes mode.
-				if opts.ScanBytes && cs.oneRune() && cs[0] > 0xff {
+				if opts.ScanBytes && cs.oneRune() && cs[0] > 0x7f {
 					re.op = opBytesLiteral
 					re.text = string(cs[0])
 					stack = append(stack, re)
