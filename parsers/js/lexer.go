@@ -517,8 +517,11 @@ restart:
 	tok := tmToken[rule]
 	var space bool
 	switch rule {
-	case 0:
+	case 0: // no match
 		if l.offset == l.tokenOffset {
+			if l.ch == -1 {
+				tok = token.EOI
+			}
 			l.rewind(l.scanOffset)
 		}
 	case 2: // WhiteSpace: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/, WhiteSpace: /[\n\r\u2028\u2029]|\r\n/

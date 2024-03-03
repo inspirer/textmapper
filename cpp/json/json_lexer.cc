@@ -1608,7 +1608,7 @@ constexpr int8_t tmToken[] = {
 };
 
 constexpr int8_t tmLexerAction[] = {
-    -5,  -4,  30,  -4,  23,  -4,  -4,  -4,  22,  21,  -4,  17,  16,  10,  9,
+    -4,  -4,  30,  -4,  23,  -4,  -4,  -4,  22,  21,  -4,  17,  16,  10,  9,
     6,   5,   5,   5,   4,   -4,  3,   5,   5,   5,   2,   1,   -4,  -7,  -7,
     -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,
     -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -7,  -6,  -6,  -6,  -6,
@@ -1827,6 +1827,9 @@ recovered:
         hash = backupHash;
         Rewind(backupOffset);
       } else if (offset_ == token_offset_) {
+        if (input_rune_ == -1) {
+          tok = Token::EOI;
+        }
         Rewind(scan_offset_);
       }
       if (rule != 0) {

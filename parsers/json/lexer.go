@@ -145,6 +145,9 @@ recovered:
 			hash = backupHash
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
+			if l.ch == -1 {
+				tok = token.EOI
+			}
 			l.rewind(l.scanOffset)
 		}
 		if tok != token.INVALID_TOKEN {

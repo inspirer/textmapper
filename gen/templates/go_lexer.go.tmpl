@@ -204,7 +204,7 @@ recovered:
 	switch {{if .Lexer.RuleToken}}rule{{else}}tok{{end}} {
 {{ range .Lexer.ClassActions -}}
 {{ if $.Lexer.RuleToken -}}
-	case {{sum .Action 2}}:
+	case {{.Action}}:
 {{ else -}}
 	case {{template "tokenPkg" $}}{{(index $.Syms .Action).ID}}:
 {{ end -}}
@@ -216,7 +216,7 @@ recovered:
 {{ range .Subcases -}}
 			if hash == {{hex .Hash}} && {{quote .Str}} == l.source[l.tokenOffset:l.offset] {
 {{ if $.Lexer.RuleToken -}}
-				rule = {{sum .Action 2}}
+				rule = {{.Action}}
 {{ else -}}
 				tok = {{template "tokenPkg" $}}{{(index $.Syms .Action).ID}}
 {{ end -}}
@@ -235,10 +235,10 @@ recovered:
 	var space bool
 {{ if .Lexer.Actions -}}
 	switch rule {
-	case 0:
+	case 0: // no match
 {{ template "handleInvalidToken" . -}}
 {{ range .Lexer.Actions -}}
-	case {{sum .Action 2}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
+	case {{.Action}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
 {{ if .Space -}}
 		space = true
 {{ end -}}
@@ -360,6 +360,9 @@ func (l *Lexer) rewind(offset int) {
 {{ end -}}
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
+			if l.ch == -1 {
+				tok = {{template "tokenPkg" .}}{{(index $.Syms 0).ID}}
+			}
 			l.rewind(l.scanOffset)
 		}
 {{ if .Lexer.RuleToken -}}
@@ -371,6 +374,9 @@ func (l *Lexer) rewind(offset int) {
 		}
 {{ else -}}
 		if l.offset == l.tokenOffset {
+			if l.ch == -1 {
+				tok = {{template "tokenPkg" .}}{{(index $.Syms 0).ID}}
+			}
 			l.rewind(l.scanOffset)
 		}
 {{ end -}}

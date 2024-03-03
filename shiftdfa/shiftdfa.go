@@ -85,16 +85,6 @@ func Pack(t *lex.Tables) (*Scanner, error) {
 			target := t.Dfa[offset+sym]
 			if target < 0 {
 				action := -1 - target
-				switch {
-				case action == 1:
-					// Reporting empty tokens as invalid.
-					if sym != 0 && state != 0 {
-						return nil, fmt.Errorf("EOI actions are supported (%v, %v)", state, sym)
-					}
-					action = 0
-				case action > 1:
-					action -= 2
-				}
 				if action >= 32 {
 					return nil, errors.New("too many actions")
 				}

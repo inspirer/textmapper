@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 
@@ -49,6 +50,9 @@ func (c *lexerCompiler) compile(file ast.File) {
 	eoi := c.resolver.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
 	out.InvalidToken = c.resolver.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
 
+	c.addDefaultAction(out.InvalidToken)
+	c.addDefaultAction(eoi)
+
 	if p, ok := file.Parser(); ok {
 		// Some (space) tokens may be injected into the AST by the parser. We should
 		// return them from the lexer despite their space attribute.
@@ -68,14 +72,6 @@ func (c *lexerCompiler) compile(file ast.File) {
 	c.resolveClasses()
 
 	inline := c.canInlineRules()
-	if !inline {
-		// Prepend EOI and InvalidToken to the rule token array to simplify handling of -1 and -2
-		// actions.
-		out.RuleToken = append(out.RuleToken, 0, 0)
-		copy(out.RuleToken[2:], out.RuleToken)
-		out.RuleToken[0] = out.InvalidToken
-		out.RuleToken[1] = eoi
-	}
 
 	var err error
 	allowBacktracking := !c.opts.NonBacktracking
@@ -84,27 +80,15 @@ func (c *lexerCompiler) compile(file ast.File) {
 
 	if inline {
 		// There is at most one action per token, so it is possible to use tokens IDs as actions.
-		// We need to swap EOI and InvalidToken actions.
 		// TODO simplify
 		start := out.Tables.ActionStart()
 		for i, val := range out.Tables.Dfa {
-			if val == start {
-				out.Tables.Dfa[i] = start - 1
-			} else if val == start-1 {
-				out.Tables.Dfa[i] = start
-			} else if val < start {
-				out.Tables.Dfa[i] = start - out.RuleToken[start-val-2]
+			if val <= start {
+				out.Tables.Dfa[i] = start - out.RuleToken[start-val]
 			}
 		}
 		for i, val := range out.Tables.Backtrack {
-			switch val.Action {
-			case 0:
-				out.Tables.Backtrack[i].Action = out.InvalidToken
-			case 1:
-				out.Tables.Backtrack[i].Action = eoi
-			default:
-				out.Tables.Backtrack[i].Action = out.RuleToken[val.Action-2]
-			}
+			out.Tables.Backtrack[i].Action = out.RuleToken[val.Action]
 		}
 		for i, val := range out.ClassActions {
 			out.ClassActions[i].Action = out.RuleToken[val.Action]
@@ -129,7 +113,7 @@ func (c *lexerCompiler) compile(file ast.File) {
 func (c *lexerCompiler) canInlineRules() bool {
 	// Note: the first two actions are reserved for InvalidToken and EOI respectively.
 	seen := container.NewBitSet(c.resolver.NumTokens)
-	for _, e := range c.out.RuleToken {
+	for _, e := range c.out.RuleToken[2:] {
 		if e < 2 || seen.Get(e) {
 			// Explicit rules for InvalidToken or EOI cannot be inlined.
 			return false
@@ -210,35 +194,39 @@ func (c *lexerCompiler) resolveSC(sc ast.StartConditions) []int {
 	return ret
 }
 
-func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
-	if !cmd.IsValid() && !space.IsValid() && !class.IsValid() {
-		if sym == int(lex.EOI) {
-			return -1
-		}
-		// Note: -2 is a dedicated action for implicitly discovered invalid tokens which
-		// triggers backtracking. Here we handle an explicitly declared invalid token, so
-		// we need a separate action.
+func (c *lexerCompiler) addDefaultAction(sym int) {
+	key := symRule{sym: sym}
+	if _, ok := c.codeRule[key]; ok {
+		log.Fatal("internal error")
 	}
+	a := len(c.out.RuleToken)
+	c.out.RuleToken = append(c.out.RuleToken, sym)
+	// TODO remove this condition (will better merge invalid token rules)
+	if sym == 0 {
+		c.codeRule[key] = a
+	}
+}
 
+func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeAttribute, sym int, comment string) int {
 	out := c.out
 	key := symRule{code: cmd.Text(), space: space.IsValid(), sym: sym}
-	if a, ok := c.codeRule[key]; ok && !class.IsValid() {
+	if ret, ok := c.codeRule[key]; ok && !class.IsValid() {
 		if ca, ok := c.codeAction[symAction{key.code, key.space}]; ok && comment != "" {
 			out.Actions[ca].Comments = append(out.Actions[ca].Comments, comment)
 		}
-		return a
+		return ret
 	}
-	a := len(out.RuleToken)
+	ret := len(out.RuleToken)
 	out.RuleToken = append(out.RuleToken, sym)
 	if !class.IsValid() {
 		// Never merge (class) rules, even if they seem identical.
-		c.codeRule[key] = a
+		c.codeRule[key] = ret
 	}
 
 	if !cmd.IsValid() && !space.IsValid() {
-		return a
+		return ret
 	}
-	act := grammar.SemanticAction{Action: a, Code: key.code, Space: space.IsValid()}
+	act := grammar.SemanticAction{Action: ret, Code: key.code, Space: space.IsValid()}
 	if comment != "" {
 		act.Comments = append(act.Comments, comment)
 	}
@@ -252,7 +240,7 @@ func (c *lexerCompiler) addLexerAction(cmd ast.Command, space, class ast.LexemeA
 		c.codeAction[symAction{key.code, key.space}] = len(out.Actions)
 	}
 	out.Actions = append(out.Actions, act)
-	return a
+	return ret
 }
 
 func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p *patterns) {
@@ -340,9 +328,6 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 func (c *lexerCompiler) resolveTokenComments() {
 	comments := make(map[int]string)
 	for _, r := range c.rules {
-		if r.Action < 0 {
-			continue
-		}
 		tok := c.out.RuleToken[r.Action]
 		val, _ := r.Pattern.RE.Constant()
 		if old, ok := comments[tok]; ok && val != old {
@@ -365,7 +350,7 @@ func (c *lexerCompiler) resolveClasses() {
 	for index, r := range c.classRules {
 		fork := new(lex.Rule)
 		*fork = *r
-		fork.Action = index
+		fork.Action = index + 1 // 0 is reserved for InvalidToken
 		rewritten = append(rewritten, fork)
 	}
 	tables, err := lex.Compile(rewritten, c.opts.ScanBytes, true /*allowBacktracking*/)
@@ -398,8 +383,8 @@ func (c *lexerCompiler) resolveClasses() {
 				continue
 			}
 			size, result := tables.Scan(start, val)
-			if size == len(val) && result >= 0 {
-				classRule = result
+			if size == len(val) && result > 0 {
+				classRule = result - 1
 				break
 			}
 		}

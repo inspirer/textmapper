@@ -320,12 +320,15 @@ recovered:
 	tok := tmToken[rule]
 	var space bool
 	switch rule {
-	case 0:
+	case 0: // no match
 		if backupRule >= 0 {
 			rule = backupRule
 			hash = backupHash
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
+			if l.ch == -1 {
+				tok = token.EOI
+			}
 			l.rewind(l.scanOffset)
 		}
 		if rule != 0 {

@@ -15,7 +15,7 @@ type Rule struct {
 	Resolver        Resolver
 	StartConditions []int
 	Precedence      int // Precedence disambiguates between rules that match the same prefix.
-	Action          int // -1 return EOI, -2 fail and try backtrack, otherwise must be >= 0
+	Action          int // non-negative; 0 fail and try backtrack, 1 return eoi
 	Origin          status.SourceNode
 }
 
@@ -194,7 +194,7 @@ func (t *Tables) Scan(start int, text string) (size, action int) {
 			if state > actionStart {
 				bt := t.Backtrack[-1-state]
 				// Checkpoint.
-				action, state = bt.Action-2, bt.NextState
+				action, state = bt.Action, bt.NextState
 				size = start
 				continue
 			}
@@ -202,7 +202,7 @@ func (t *Tables) Scan(start int, text string) (size, action int) {
 				// Backtrack.
 				return
 			}
-			return start, actionStart - state - 2
+			return start, actionStart - state
 		}
 	}
 	state = t.Dfa[state*t.NumSymbols] // end-of-input transition
@@ -210,7 +210,7 @@ func (t *Tables) Scan(start int, text string) (size, action int) {
 		// Backtrack.
 		return
 	}
-	return len(text), actionStart - state - 2
+	return len(text), actionStart - state
 }
 
 // Resolver retrieves named regular expressions.

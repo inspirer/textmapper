@@ -266,7 +266,7 @@ recovered:
   switch ({{if .Lexer.RuleToken}}rule{{else}}tok{{end}}) {
 {{ range .Lexer.ClassActions -}}
 {{ if $.Lexer.RuleToken -}}
-  case {{sum .Action 2}}:
+  case {{.Action}}:
 {{ else -}}
   case Token::{{(index $.Syms .Action).ID}}: {
 {{ end -}}
@@ -277,7 +277,7 @@ recovered:
 {{ range .Subcases -}}
       if (hash == {{hex .Hash}} && {{quote .Str}} == Text()) {
 {{ if $.Lexer.RuleToken -}}
-        rule = {{sum .Action 2}};
+        rule = {{.Action}};
 {{ else -}}
         tok = Token::{{(index $.Syms .Action).ID}};
 {{ end -}}
@@ -304,7 +304,7 @@ recovered:
 {{ template "handleInvalidToken" . -}}
     break;
 {{ range .Lexer.Actions -}}
-  case {{sum .Action 2}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
+  case {{.Action}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
 {{ if .Space -}}
     space = true;
 {{ end -}}
@@ -394,6 +394,9 @@ void Lexer::Rewind(int64_t rewind_offset) {
 {{ end -}}
         Rewind(backupOffset);
       } else if (offset_ == token_offset_) {
+        if (input_rune_ == -1) {
+          tok = Token::{{(index $.Syms 0).ID}};
+        }
         Rewind(scan_offset_);
       }
 {{ if .Lexer.RuleToken -}}
@@ -405,6 +408,9 @@ void Lexer::Rewind(int64_t rewind_offset) {
       }
 {{ else -}}
       if (offset_ == token_offset_) {
+        if (input_rune_ == -1) {
+          tok = Token::{{(index $.Syms 0).ID}};
+        }
         Rewind(scan_offset_);
       }
 {{ end -}}

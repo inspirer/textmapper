@@ -25,14 +25,14 @@ var lexTests = []struct {
 			rule("a", `a`, 1),
 		},
 		want: []string{
-			`0: EOI accept; [a] -> 1;`,
+			`0: [a] -> 1;`,
 			`1: EOI exec 1; other exec 1; [a] exec 1;`,
 		},
 		testOn: []input{
 			{`«a»aaa`, 1},
 			{`«a»`, 1},
-			{`«»`, -1 /*EOI*/},
-			{`«»bb`, -2 /*Invalid token*/},
+			{`«»`, 0 /*EOI as invalid token*/},
+			{`«»bb`, 0 /*Invalid token*/},
 		},
 	},
 	{
@@ -40,7 +40,7 @@ var lexTests = []struct {
 			rule("a", `[a-z]+`, 1),
 		},
 		want: []string{
-			`0: EOI accept; [a-z] -> 1;`,
+			`0: [a-z] -> 1;`,
 			`1: EOI exec 1; other exec 1; [a-z] -> 1;`,
 		},
 		testOn: []input{
@@ -54,9 +54,9 @@ var lexTests = []struct {
 			rule("b", `[a-zA-Z_][a-zA-Z_0-9]*`, 2),
 		},
 		want: []string{
-			`0: EOI accept; [A-Z_a-z] -> 1; [\t ] -> 2;`,
+			`0: [A-Z_a-z] -> 1; [\t ] -> 2;`,
 			`1: EOI exec 2; other exec 2; [\t ] exec 2; [0-9A-Z_a-z] -> 1;`,
-			`2: EOI exec 0; other exec 0; [0-9A-Z_a-z] exec 0; [\t ] -> 2;`,
+			`2: [\t ] -> 2;`,
 		},
 		testOn: []input{
 			{`«axe9_» `, 2},
@@ -69,7 +69,7 @@ var lexTests = []struct {
 			rule("b", `ab`, 2),
 		},
 		want: []string{
-			`0: EOI accept; [a] -> 1;`,
+			`0: [a] -> 1;`,
 			`1: [b] -> 2;`,
 			`2: EOI exec 2; other exec 2; [a-bd] exec 2; [c] -> 3;`,
 			`3: EOI exec 1; other exec 1; [a-c] exec 1; [d] -> 4;`,
@@ -88,7 +88,7 @@ var lexTests = []struct {
 			rule("b", `a`, 2),
 		},
 		want: []string{
-			`0: EOI accept; [a] -> 1;`,
+			`0: [a] -> 1;`,
 			`1: EOI exec 2; other exec 2; [a] bt(exec 2) -> 2;`,
 			`2: [a] -> 3;`,
 			`3: [a] -> 4;`,
@@ -125,7 +125,7 @@ var lexTests = []struct {
 			{`«-100» `, 1},
 			{`«-0»1 `, 1},
 			{`«-0» `, 1},
-			{`«-»-0 `, -2 /*Invalid token*/},
+			{`«-»-0 `, 0 /*Invalid token*/},
 		},
 	},
 	{
@@ -148,7 +148,7 @@ var lexTests = []struct {
 			rule("a", `ab|a(bc+)?`, 1),
 		},
 		want: []string{
-			`0: EOI accept; [a] -> 1;`,
+			`0: [a] -> 1;`,
 			`1: EOI exec 1; other exec 1; [ac] exec 1; [b] -> 2;`,
 			`2: EOI exec 1; other exec 1; [a-b] exec 1; [c] -> 2;`,
 		},
@@ -167,7 +167,7 @@ var lexTests = []struct {
 			rule("alpha-beta", "{#bytes}αβγ?", 1),
 		},
 		want: []string{
-			`0: EOI accept; [\u00ce] -> 1;`,
+			`0: [\u00ce] -> 1;`,
 			`1: [\u00b1] -> 2;`,
 			`2: [\u00ce] -> 3;`,
 			`3: [\u00b2] -> 4;`,
@@ -187,15 +187,17 @@ var lexTests = []struct {
 		scanBytes: true,
 		rules: []*Rule{
 			rule("alpha-beta", "{#bytes}\u03B1\\u03B2\u03B3?", 1), // αβγ
+			rule("eoi", "{eoi}", 8),
 		},
 		want: []string{
-			`0: EOI accept; [\u00ce] -> 1;`,
+			`0: EOI -> 7; [\u00ce] -> 1;`,
 			`1: [\u00b1] -> 2;`,
 			`2: [\u00ce] -> 3;`,
 			`3: [\u00b2] -> 4;`,
 			`4: EOI exec 1; other exec 1; [\u00b1-\u00b3] exec 1; [\u00ce] bt(exec 1) -> 5;`,
 			`5: [\u00b3] -> 6;`,
 			`6: EOI exec 1; other exec 1; [\u00b1-\u00b3\u00ce] exec 1;`,
+			`7: EOI exec 8; other exec 8; [\u00b1-\u00b3\u00ce] exec 8;`,
 		},
 		testOn: []input{
 			{`«αβ»`, 1},
@@ -250,13 +252,11 @@ func dumpTables(tables *Tables) string {
 			return fmt.Sprintf("-> %v", i)
 		case i > actionStart:
 			bt := tables.Backtrack[-1-i]
-			return fmt.Sprintf("bt(exec %v) -> %v", bt.Action-2, bt.NextState)
+			return fmt.Sprintf("bt(exec %v) -> %v", bt.Action, bt.NextState)
 		case i == actionStart:
 			return "error"
-		case i == actionStart-1:
-			return "accept"
 		default:
-			return fmt.Sprintf("exec %v", actionStart-i-2)
+			return fmt.Sprintf("exec %v", actionStart-i)
 		}
 	}
 

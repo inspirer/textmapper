@@ -90,6 +90,9 @@ restart:
 	switch tok {
 	case token.INVALID_TOKEN:
 		if l.offset == l.tokenOffset {
+			if l.ch == -1 {
+				tok = token.EOI
+			}
 			l.rewind(l.scanOffset)
 		}
 	case 2:

@@ -114,9 +114,9 @@ func (g *generator) generate(allowBacktracking bool) (dfa []int, backtrack []Che
 		// Record all transitions.
 		state.action = make([]int, g.numSymbols)
 		state.accept = acceptRule
-		defAction := -1
+		defAction := -1 // invalid token
 		if acceptRule != nil {
-			defAction = -3 - acceptRule.Action
+			defAction = -1 - acceptRule.Action
 		}
 		for sym := 0; sym < g.numSymbols; sym++ {
 			if !g.shift.Get(sym) {
@@ -131,11 +131,6 @@ func (g *generator) generate(allowBacktracking bool) (dfa []int, backtrack []Che
 			}
 			state.action[sym] = g.addState(next, state).index
 		}
-	}
-
-	// First group (only) succeeds on EOI, unless there is an explicit EOI rule.
-	if g.first.action[0] == -1 {
-		g.first.action[0] = -2
 	}
 
 	// Adding backtracking states.
@@ -181,9 +176,8 @@ func (g *generator) generate(allowBacktracking bool) (dfa []int, backtrack []Che
 				g.s.Add(state.accept.Origin.SourceRange(), sb.String())
 			}
 
-			// Note: adding 2 to make room for accept EOI and accept InvalidToken actions.
 			backtrack = append(backtrack, Checkpoint{
-				Action:    key.accept + 2, // TODO get rid of +2 and align the ranges with dfa
+				Action:    key.accept,
 				NextState: key.targetState,
 				Details:   fmt.Sprintf("in %v", state.accept.Pattern.Name), // TODO print position in regexp
 			})
