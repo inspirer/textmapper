@@ -1,4 +1,4 @@
-``````````````````---
+---
 layout: default
 title: Textmapper &middot; Documentation
 kind: documentation
@@ -678,7 +678,7 @@ Another example, the unary minus requires a separate operator terminal as it has
 
 Without the *unaryMinus* precedence, `-1-1` can be parsed in two ways: either as `-(1-1)`, or as `(-1)-1`.
 
-Finally, let's resolve the *Dangling Else* problem from the previous section. When the parsing stack is `'if'`, `pred` and `expr` and the next token is `else`, the statement must be interpreted as an if/else statement and not prematurely reduced as a short `if` statement. The next token `else` must have a higher priority than the rule `'if' pred expr 'else' expr`. To do this, we set the precedence of the rule with `%prec` and assign it the lowest precedence via a virtual token cconventionally named `resolveShift`.
+Finally, let's resolve the *Dangling Else* problem from the previous section. When the parsing stack is `'if'`, `pred` and `expr` and the next token is `else`, the statement must be interpreted as an if/else statement and not prematurely reduced as a short `if` statement. The next token `else` must have a higher priority than the rule `'if' pred expr 'else' expr`. To do this, we set the precedence of the rule with `%prec` and assign it the lowest precedence via a virtual token conventionally named `resolveShift`.
 
 ```
 %left resolveShift
