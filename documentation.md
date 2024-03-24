@@ -1,4 +1,4 @@
----
+``````````````````---
 layout: default
 title: Textmapper &middot; Documentation
 kind: documentation
@@ -514,7 +514,7 @@ is only valid if the augmented parsing stack is a prefix of one of the productio
 
 **Reduce** takes a rule index as an argument and expects that the top N symbols of the stack form the right-hand side of the rule. These N symbols are then replaced with the rule's left-hand nonterminal. The reduction process also includes computing the associated attributes for this nonterminal (e.g. executing semantic actions).
 
-At any step, either a shift or a single reduce is possible, any ambiguities are caught during compilation, see below.
+At any step, either a shift or a single reduce is possible, any ambiguities are caught during compilation.
 
 The following example shows the parsing steps for the variable declaration construct, which is common to many languages.
 
@@ -557,6 +557,8 @@ LR generates deterministic parsers and this means there is a single parse tree f
 The classic example for a shift/reduce conflict is the [Dangling Else](http://en.wikipedia.org/wiki/Dangling_else) problem.  The parsing rules for the grammar are as follow:
 
 ```
+:: parser
+
 expr: 
   num | id | pred | ifexpr ;
 
@@ -568,31 +570,31 @@ ifexpr:
   | 'if' pred expr 'else' expr ; # 2
 ```
 
-The definitions of the terminals `num`, `id`, `'if'`, `'else'` and `'=='` are omitted for clarity. 
+`num`, `id`, `'if'`, `'else'` and `'=='` are terminals.
 
 When compiling the rules above, a shift-reduce error message describing the conflict is raised. Conflict error messages include an example of the content of the parsing stack, the lookahead token that can be shifted, the type of conflict and the rule that can be reduced. For example:
 
 ```
-input: 'if' pred expr                 # ← example parsing stack leading to the conflict
-shift/reduce conflict (next: 'else')  # ← type of conflict and lookahead terminal that can shift 
-    ifexpr : 'if' pred expr           # ← rule whose the last elements match the parsing stack.
+input: 'if' pred expr                 # example parsing stack leading to the conflict
+shift/reduce conflict (next: 'else')  # type of conflict and lookahead terminal that can shift 
+    ifexpr : 'if' pred expr           # rule whose the last elements match the parsing stack.
 ```
 
 Let's use a concrete source: `if a==1 3 else 4`, when the parsing stack has: `'if'`, `a==1`,  `3`, and the next token is `else`, the can:
-- *reduce* the stack `'if'` `pred` `expr` to the non-terminal `ifexpr`, via rule #1.
 - *shift* the terminal `else` into the parsing stack according to rule #2
+- *reduce* the stack `'if'` `pred` `expr` to the non-terminal `ifexpr`, via rule #1.
 
-Any two rules sharing the same prefix are a shift/reduce conflict for when the lookahead is the first token after the prefix. In this case, the grammar is said to be not left-factored.
+Any two rules sharing the same prefix are a shift/reduce conflict. In this case, the grammar is said to be not left-factored.
 
 In practice, there is only a single way to parse the expression `if a==1 3 else 4`, so this example provide little help to get to understand the conflict. The ambiguity is clearer with another expression allowed by this grammar: `if a==1 if b==2 3 else 4`. This is either:
 1. `if a==1 (if b==2 3) else 4`: *else clause* refers to the *outer if*,
 2. `if a==1 (if b==2 3 else 4)`: *else clause* refers to the *inner if*.
 
-In C and Java, the *else clause* refers to the *inner if*. In other words, the *inner if* should not be reduced until the else clause is fully shifted. We need to augment the grammar to express this policy. *Precedence rules*, described in the next section, is a mechanism to resolve shift/reduce conflicts.
+In C and Java, the *else clause* refers to the *inner if*. In other words, the *inner if* should not be reduced until the else clause is shifted. We need to augment the grammar to express this policy. *Operator precedence*, described in the next section, is a mechanism to resolve shift/reduce conflicts.
 
 ## Associativity and precedence of operators
 
-An operator is similar to a function in the sense that both can have arguments and return a value: `2 + 3` is similar to`add(2, 3)`. Operators are usually more compact: typically the name is one or two characters. More relevant to our concern, many pairs of parentheses can be omitted for infix operaor, placed between the arguments. These two differences leads to shift reduce conflicts when using operators instead of functions:
+An operator is similar to a function in the sense that both can have arguments and return a value: `2 + 3` is comparable to`add(2, 3)`. Operators are usually more compact: typically the name is one or two characters. More relevant to our concern, parentheses can be omitted for infix operator. This omissionleads to shift reduce conflicts when using operators instead of functions:
 
 First example, `1-2-3` can interpreted as:
 - `substract(1, substract(2,3)) → substract(1, -1) → 0` ❌ or
@@ -602,13 +604,13 @@ Second example, `2**2**3`:
 - `power(power(2, 2),3)` → 64 ❌ or
 - `power(2, power(2, 3))`→ 256 ✔️
 
-Whether correct interpretation requires to evaluate first from the left-most symbol or from  the right-most symbol depends on the operator is the **associativity** of the operator. 
-- left associative like substraction,
-- right associative like power,
-- associative like addition: left or right does not matter,
-- non-associative can't be chained. For example: a range operator, as in `1..100`, is non-associative.
+Whether correct interpretation requires to evaluate first from the left-most symbol or from the right-most symbol depends on the operator, it depends on the conventions of arithmetic, for these examples. This is named the **associativity** of the operator, and this is one of: 
+- *left associative* like substraction,
+- *right associative* like power,
+- *associative* like addition: left or right does not matter,
+- *Non-associative* which means that operators can't be chained. For example: a range operator, as in `1..100`, is non-associative.
 
-Another type of ambiguity is possible when it is not explicit which arguments belong to which operator. For example, `3*2+1` can be interpreted:
+When operator are composed, another type of ambiguity arises: which arguments belong to which operator. For example, `3*2+1` can be interpreted:
 - `product(3, add(2, 1))` → `product(3, 3) → 9	` ❌
 - `add(product(3, 2), 1)` → `add(6, 1) → 7` ✔️
 
@@ -616,7 +618,7 @@ In arithmetic, multiplication is done before addition, that is, multiplication b
 
 Note that we don't have to build a parser that uses the same precedence rules than what evaluation requires, but it makes sense. When the AST reflects the chosen operator precedence, operators with higher precedence are reduced first, and remain closer to the leaves in the AST. This allows us to evaluate an expression using a simple recursive tree traversal: the order of reduces matches the sequence of evaluations.
 
-Let's see how Textmapper can encode associativity and precedence in a grammar. The following grammar snippet produces the **Shift/Reduce** conflicts described above. 
+Let's see how Textmapper encodes associativity and precedence in a grammar. The following grammar snippet produces the **Shift/Reduce** conflicts described above. 
 
 	expr :
 	     IntegerConstant
@@ -640,7 +642,7 @@ It is heavy, verbose, and requires many excess reductions (every single constant
 	%left '+' '-';
 	%left '*' '/' '%';
 
-Operators on the first line have the lowest precedence. Each subsequent line introduces a new, higher precedence level. On the same level, operators are interchangeable and have the same associativity (left, right, or nonassoc). The precedence rules must be located in the parser section of a grammar and can be interspersed with non-terminals definitions.
+Operators that appears first in the file have the lowest precedence. Each subsequent preecedence directive introduces a new, higher precedence level. On the same level, operators are interchangeable and have the same associativity (left, right, or nonassoc). The precedence rules must be located in the parser section of a grammar and can be interspersed with non-terminals definitions.
 
 To resolve shift/reduce conflicts, Textmapper, first, assigns a precedence to a rule. By default, it takes the precedence of the last terminal on the right-hand side of the rule. This can be overridden using a `%prec <terminal>` rule modifier. The rule modifier must be at the end of the rule, after a semantic action and before an arrow declaring an AST node. 
 
@@ -676,10 +678,10 @@ Another example, the unary minus requires a separate operator terminal as it has
 
 Without the *unaryMinus* precedence, `-1-1` can be parsed in two ways: either as `-(1-1)`, or as `(-1)-1`.
 
-Finally, let's resolve the *Dangling Else* problems from the previous section. When the parsing stack is `'if'`, `pred` and `expr` and the next token is `else`, the statement must be interpreted as an if/else statement and not prematurely reduced as a short `if` statement. The next token `else` must have a higher priority than the rule `ifexpr: 'if' pred expr`.
+Finally, let's resolve the *Dangling Else* problem from the previous section. When the parsing stack is `'if'`, `pred` and `expr` and the next token is `else`, the statement must be interpreted as an if/else statement and not prematurely reduced as a short `if` statement. The next token `else` must have a higher priority than the rule `'if' pred expr 'else' expr`. To do this, we set the precedence of the rule with `%prec` and assign it the lowest precedence via a virtual token cconventionally named `resolveShift`.
 
 ```
-%left 'if'
+%left resolveShift
 %left 'else'
 
 expr: 
@@ -689,8 +691,9 @@ pred:
   id '==' num;
 
 ifexpr:
-    'if' pred expr               # 1
-  | 'if' pred expr 'else' expr ; # 2
+    'if' pred expr                                # 1
+  | 'if' pred expr 'else' expr %prec resolveShift # 2
+;
 ```
 
 ## Parser-powered lookaheads
