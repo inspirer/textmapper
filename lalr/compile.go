@@ -885,12 +885,25 @@ func (c *compiler) exportDebugInfo() {
 			fmt.Fprintf(&b, " (%v)", strings.Join(attrs, ", "))
 		}
 		b.WriteByte('\n')
+		var reduce int
 		for _, item := range closure {
 			b.WriteString("\t")
 			c.writeItem(item, &b)
 			if r := c.right[item]; r < 0 {
 				rule := c.grammar.Rules[-1-r]
-				fmt.Fprintf(&b, " { reduce to %v }", c.grammar.Symbols[rule.LHS])
+				fmt.Fprintf(&b, " { reduce to %v", c.grammar.Symbols[rule.LHS])
+				if !s.lr0 {
+					b.WriteString(" lookahead [")
+					for i, term := range s.la[reduce].Slice(nil) {
+						if i > 0 {
+							b.WriteByte(' ')
+						}
+						b.WriteString(c.grammar.Symbols[term])
+					}
+					b.WriteByte(']')
+				}
+				reduce++
+				b.WriteString(" }")
 			}
 			b.WriteString("\n")
 		}
@@ -904,7 +917,6 @@ func (c *compiler) exportDebugInfo() {
 				b.WriteString("\n")
 			}
 		}
-
 		c.out.DebugInfo = append(c.out.DebugInfo, b.String())
 	}
 }

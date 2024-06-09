@@ -240,7 +240,7 @@ state 26 (from 12 on '(')
 	Simple$2: _ '-'
 	Simple$2: _ '+'
 	Simple$2opt: _ Simple$2
-	Simple$2opt: _ { reduce to Simple$2opt }
+	Simple$2opt: _ { reduce to Simple$2opt lookahead [')'] }
 
 state 27 (from 15 on '}', lr0 -> reduce)
 	expr_Foo: '{' Identifier_list_Comma_separated '}' _ { reduce to expr_Foo }
@@ -292,7 +292,7 @@ state 33 (from 19 on delayed_Async, lr0 -> reduce)
 	expr: '->' delayed_Async _ { reduce to expr }
 
 state 34 (from 20 on ')')
-	expr_Foo: '(' expr ')' _ { reduce to expr_Foo }
+	expr_Foo: '(' expr ')' _ { reduce to expr_Foo lookahead ['('] }
 	delayed_Foo_Async: '(' expr ')' _ '->' expr_Foo
 
 state 35 (from 22 on expr_Foo, lr0 -> reduce)
@@ -355,7 +355,7 @@ state 41 (from 23 on PropagationWrap_IfFirst, lr0 -> shift)
 	delayed_Foo_Async: '->' '(' PropagationWrap_IfFirst _ ')' delayed_Foo_Async
 
 state 42 (from 23 on Propagation_IfFirst)
-	PropagationWrap_IfFirst: Propagation_IfFirst _ { reduce to PropagationWrap_IfFirst }
+	PropagationWrap_IfFirst: Propagation_IfFirst _ { reduce to PropagationWrap_IfFirst lookahead [')'] }
 	Propagation_IfFirst: Propagation_IfFirst _ 'c'
 	Propagation_IfFirst: Propagation_IfFirst _ '+' Propagation
 	Propagation_IfFirst: Propagation_IfFirst _ '-' Propagation
@@ -390,7 +390,7 @@ state 47 (from 26 on '-', lr0 -> reduce)
 state 48 (from 26 on Simple$2)
 	Simple$2: Simple$2 _ ',' ',' '-'
 	Simple$2: Simple$2 _ ',' ',' '+'
-	Simple$2opt: Simple$2 _ { reduce to Simple$2opt }
+	Simple$2opt: Simple$2 _ { reduce to Simple$2opt lookahead [')'] }
 
 state 49 (from 26 on Simple$2opt, lr0 -> shift)
 	Simple: Simple$1 'a' expr_Foo '(' Simple$2opt _ ')'
@@ -399,7 +399,7 @@ state 50 (from 28 on Identifier, lr0 -> reduce)
 	Identifier_list_Comma_separated: Identifier_list_Comma_separated ',' Identifier _ { reduce to Identifier_list_Comma_separated }
 
 state 51 (from 29 on ')')
-	expr: '(' expr ')' _ { reduce to expr }
+	expr: '(' expr ')' _ { reduce to expr lookahead [')'] }
 	delayed_Async: '(' expr ')' _ '->' expr
 
 state 52 (from 30 on expr, lr0 -> reduce)
@@ -452,7 +452,7 @@ state 59 (from 36 on Mod, lr0 -> reduce)
 
 state 60 (from 36 on Greedy$1)
 	Mod: _ 'b' 'b'
-	Greedy: 'b' Greedy$1 _ { reduce to Greedy }
+	Greedy: 'b' Greedy$1 _ { reduce to Greedy lookahead [')'] }
 	Greedy$1: Greedy$1 _ Mod
 	Greedy$1: Greedy$1 _ 'b' .greedy
 
@@ -509,7 +509,7 @@ state 65 (from 37 on PropagationWrap, lr0 -> shift)
 	Propagation_IfFirst: '(' PropagationWrap _ ')'
 
 state 66 (from 37 on Propagation)
-	PropagationWrap: Propagation _ { reduce to PropagationWrap }
+	PropagationWrap: Propagation _ { reduce to PropagationWrap lookahead [')'] }
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
 
@@ -538,10 +538,10 @@ state 70 (from 38 on '(', lr0 -> shift)
 state 71 (from 38 on Propagation)
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
-	Propagation_IfFirst: '-' Propagation _ { reduce to Propagation_IfFirst }
+	Propagation_IfFirst: '-' Propagation _ { reduce to Propagation_IfFirst lookahead ['c' ')' '+' '-'] }
 
 state 72 (from 39 on Propagation)
-	PropagationWrap_IfFirst: '!' Propagation _ { reduce to PropagationWrap_IfFirst }
+	PropagationWrap_IfFirst: '!' Propagation _ { reduce to PropagationWrap_IfFirst lookahead [')'] }
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
 
@@ -632,10 +632,10 @@ state 87 (from 62 on PropagationWrap, lr0 -> shift)
 state 88 (from 63 on Propagation)
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
-	Propagation: '-' Propagation _ { reduce to Propagation }
+	Propagation: '-' Propagation _ { reduce to Propagation lookahead ['c' ')' '+' '-'] }
 
 state 89 (from 64 on Propagation)
-	PropagationWrap: '!' Propagation _ { reduce to PropagationWrap }
+	PropagationWrap: '!' Propagation _ { reduce to PropagationWrap lookahead [')'] }
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
 
@@ -679,12 +679,12 @@ state 95 (from 74 on delayed_Foo_Async, lr0 -> reduce)
 state 96 (from 76 on Propagation)
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
-	Propagation_IfFirst: Propagation_IfFirst '+' Propagation _ { reduce to Propagation_IfFirst }
+	Propagation_IfFirst: Propagation_IfFirst '+' Propagation _ { reduce to Propagation_IfFirst lookahead ['c' ')' '+' '-'] }
 
 state 97 (from 77 on Propagation)
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
-	Propagation_IfFirst: Propagation_IfFirst '-' Propagation _ { reduce to Propagation_IfFirst }
+	Propagation_IfFirst: Propagation_IfFirst '-' Propagation _ { reduce to Propagation_IfFirst lookahead ['c' ')' '+' '-'] }
 
 state 98 (from 79 on ',', lr0 -> shift)
 	Simple$2: Simple$2 ',' ',' _ '-'
@@ -711,13 +711,13 @@ state 102 (from 87 on ')', lr0 -> reduce)
 
 state 103 (from 91 on Propagation)
 	Propagation: Propagation _ '+' Propagation
-	Propagation: Propagation '+' Propagation _ { reduce to Propagation }
+	Propagation: Propagation '+' Propagation _ { reduce to Propagation lookahead ['c' ')' '+' '-'] }
 	Propagation: Propagation _ '-' Propagation
 
 state 104 (from 92 on Propagation)
 	Propagation: Propagation _ '+' Propagation
 	Propagation: Propagation _ '-' Propagation
-	Propagation: Propagation '-' Propagation _ { reduce to Propagation }
+	Propagation: Propagation '-' Propagation _ { reduce to Propagation lookahead ['c' ')' '+' '-'] }
 
 state 105 (from 98 on '+', lr0 -> reduce)
 	Simple$2: Simple$2 ',' ',' '+' _ { reduce to Simple$2 }
