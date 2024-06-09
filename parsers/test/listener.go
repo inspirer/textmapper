@@ -19,12 +19,13 @@ const (
 	Decl1           // (Identifier)+
 	Decl2
 	DeclOptQual // (Identifier)*
+	Elem
 	Empty1
 	EvalEmpty1 // Expr
 	EvalFoo    // Expr
 	EvalFoo2   // a=Expr b=Expr
 	Icon
-	If // then=Decl2Interface else=Decl2Interface?
+	If // (Elem)+ then=Decl2Interface else=Decl2Interface?
 	Int
 	IntExpr
 	LastInt
@@ -49,6 +50,7 @@ var nodeTypeStr = [...]string{
 	"Decl1",
 	"Decl2",
 	"DeclOptQual",
+	"Elem",
 	"Empty1",
 	"EvalEmpty1",
 	"EvalFoo",

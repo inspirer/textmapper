@@ -18,7 +18,9 @@ import (
 
 // Params control the grammar compilation process.
 type Params struct {
-	CheckOnly bool // set to true, if the caller is interested in compilation errors only
+	CheckOnly   bool // set to true, if the caller is interested in compilation errors only
+	Verbose     bool // set to true for more verbose errors
+	DebugTables bool // set to true to get generated tables with embedded debug info
 }
 
 // Compile validates and compiles grammar files.
@@ -214,11 +216,14 @@ func (c *compiler) compileParser(file ast.File) {
 	c.out.Syms = c.resolver.Syms
 
 	opts := genOptions{
-		expectSR:      loader.expectSR,
-		expectRR:      loader.expectRR,
-		syms:          c.out.Syms,
-		optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
-		defaultReduce: c.out.Options.DefaultReduce,
+		expectSR: loader.expectSR,
+		expectRR: loader.expectRR,
+		syms:     c.out.Syms,
+		lalrOpts: lalr.Options{
+			Optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
+			DefaultReduce: c.out.Options.DefaultReduce,
+			Debug:         c.params.DebugTables,
+		},
 	}
 	if err := generateTables(source, c.out.Parser, opts, file); err != nil {
 		c.AddError(err)
@@ -230,8 +235,7 @@ type genOptions struct {
 	expectSR int
 	syms     []grammar.Symbol
 
-	optimize      bool
-	defaultReduce bool
+	lalrOpts lalr.Options
 }
 
 func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, origin status.SourceNode) error {
@@ -425,11 +429,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 		return s.Err()
 	}
 
-	lopts := lalr.Options{
-		Optimize:      opts.optimize,
-		DefaultReduce: opts.defaultReduce,
-	}
-	tables, err := lalr.Compile(g, lopts)
+	tables, err := lalr.Compile(g, opts.lalrOpts)
 	if err != nil {
 		return err
 	}

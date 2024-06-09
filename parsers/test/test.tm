@@ -194,8 +194,8 @@ Decl2 -> Decl2Interface :
 %expect 1;
 
 If -> If:
-    'if' '(' ')' then=Decl2
-  | 'if' '(' ')' then=Decl2 'else' else=Decl2
+    'if' '(' O ')' then=Decl2
+  | 'if' '(' O ')' then=Decl2 'else' else=Decl2
 ;
 
 %nonassoc 'as';
@@ -208,6 +208,13 @@ expr -> Expr:
   | customPlus -> __ignoreContent
   | primaryExpr
 ;
+
+O :
+      elem+ ;
+
+elem -> Elem:
+      'f_a' .greedy | 'f_a' 'as' | 'as' ;  # prefer reduce over shift
+
 
 customPlus -> __ignoreContent:
   '\\' primaryExpr '+' expr { p.listener(PlusExpr, 0, ${first().offset}, ${last().endoffset}) } ;

@@ -115,6 +115,7 @@ type Tables struct {
 	Markers     []StateMarker
 	Lookaheads  []LookaheadRule
 	NumStates   int
+	DebugInfo   []string // per state
 }
 
 // DefaultEnc is a compact representation of the parser tables.

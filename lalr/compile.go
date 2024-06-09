@@ -1,6 +1,7 @@
 package lalr
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -13,6 +14,7 @@ import (
 type Options struct {
 	Optimize      bool // compress tables for faster lookups
 	DefaultReduce bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
+	Debug         bool // embed debug information into the tables
 }
 
 // Compile generates LALR tables for a given grammar.
@@ -36,6 +38,10 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c.buildLA()
 	c.populateTables()
 	c.reportConflicts()
+
+	if opts.Debug {
+		c.exportDebugInfo()
+	}
 
 	if opts.Optimize {
 		numRules := len(c.out.RuleLen) // takes into account runtime lookahead rules
@@ -76,6 +82,7 @@ type state struct {
 	shifts      []int // slice of target state indices sorted by state.symbol
 	reduce      []int // slice of rule indices (sorted)
 	lr0         bool
+	dropped     []int // items dropped from core by .greedy (sorted)
 
 	// for non-lr0 states
 	la       []container.BitSet // set of accepted terminals after each reduction in "reduce"
@@ -195,7 +202,7 @@ func (c *compiler) computeStates() {
 	}
 
 	for i := range c.grammar.Inputs {
-		c.states = append(c.states, &state{index: i})
+		c.states = append(c.states, &state{index: i, sourceState: -1})
 	}
 	stateMap := container.NewIntSliceMap(func(core []int) interface{} {
 		s := &state{
@@ -232,6 +239,7 @@ func (c *compiler) computeStates() {
 			}
 
 			var hasGreedy bool
+			var dropped []int
 			for _, item := range core {
 				hasGreedy = hasGreedy || greedy.Get(item)
 			}
@@ -242,6 +250,8 @@ func (c *compiler) computeStates() {
 				for _, item := range list {
 					if greedy.Get(item) {
 						core = append(core, item)
+					} else {
+						dropped = append(dropped, item)
 					}
 				}
 			}
@@ -250,6 +260,7 @@ func (c *compiler) computeStates() {
 			if state.sourceState == -1 {
 				state.sourceState = curr.index
 			}
+			state.dropped = union(state.dropped, dropped)
 			curr.shifts = append(curr.shifts, state.index)
 			c.shifts[sym] = core[:0]
 		}
@@ -395,16 +406,29 @@ func (c *compiler) writeItem(item int, out *strings.Builder) {
 	}
 	rule := c.grammar.Rules[-1-c.right[i]]
 	pos := len(rule.RHS) - (i - item)
+	for _, sym := range rule.RHS {
+		if sym.IsStateMarker() {
+			pos--
+		}
+	}
+
 	out.WriteString(c.grammar.Symbols[rule.LHS])
 	out.WriteString(":")
-	for i, sym := range rule.RHS {
+	var index int
+	for _, sym := range rule.RHS {
 		out.WriteString(" ")
-		if i == pos {
+		if sym.IsStateMarker() {
+			out.WriteByte('.')
+			out.WriteString(c.out.Markers[sym.AsMarker()].Name)
+			continue
+		}
+		if index == pos {
 			out.WriteString("_ ")
 		}
 		out.WriteString(c.grammar.Symbols[sym])
+		index++
 	}
-	if pos == len(rule.RHS) {
+	if pos == index {
 		out.WriteString(" ")
 		out.WriteString("_")
 	}
@@ -815,6 +839,76 @@ func (c *compiler) ruleAction(action int, term Sym, rule int, b *conflictBuilder
 	return action
 }
 
+func (c *compiler) exportDebugInfo() {
+	final := make(map[int][]int)
+	for i, state := range c.out.FinalStates {
+		final[state] = append(final[state], i)
+	}
+
+	input := func(index int) string {
+		inp := c.grammar.Inputs[index]
+		ret := c.grammar.Symbols[inp.Nonterminal]
+		if !inp.Eoi {
+			ret += " no-eoi"
+		}
+		return ret
+	}
+
+	set := container.NewBitSet(len(c.right))
+	reuse := make([]int, len(c.right))
+	for _, s := range c.states {
+		c.stateClosure(s, set)
+		closure := set.Slice(reuse)
+
+		var b strings.Builder
+		fmt.Fprintf(&b, "state %v", s.index)
+
+		var attrs []string
+		if s.index < len(c.grammar.Inputs) {
+			attrs = append(attrs, fmt.Sprintf("input %v", input(s.index)))
+		}
+		for _, inp := range final[s.index] {
+			attrs = append(attrs, fmt.Sprintf("final %v", input(inp)))
+		}
+		if s.sourceState >= 0 {
+			attrs = append(attrs, fmt.Sprintf("from %v on %v", s.sourceState, c.grammar.Symbols[s.symbol]))
+		}
+		if s.lr0 {
+			if len(s.reduce) == 1 {
+				attrs = append(attrs, "lr0 -> reduce")
+			} else {
+				attrs = append(attrs, "lr0 -> shift")
+			}
+
+		}
+		if len(attrs) > 0 {
+			fmt.Fprintf(&b, " (%v)", strings.Join(attrs, ", "))
+		}
+		b.WriteByte('\n')
+		for _, item := range closure {
+			b.WriteString("\t")
+			c.writeItem(item, &b)
+			if r := c.right[item]; r < 0 {
+				rule := c.grammar.Rules[-1-r]
+				fmt.Fprintf(&b, " { reduce to %v }", c.grammar.Symbols[rule.LHS])
+			}
+			b.WriteString("\n")
+		}
+
+		if len(s.dropped) > 0 {
+			b.WriteString("\n\tDropped by .greedy:\n")
+
+			for _, item := range s.dropped {
+				b.WriteString("\t  ")
+				c.writeItem(item, &b)
+				b.WriteString("\n")
+			}
+		}
+
+		c.out.DebugInfo = append(c.out.DebugInfo, b.String())
+	}
+}
+
 func contains(slice []int, val int) bool {
 	for _, v := range slice {
 		if v == val {
@@ -822,4 +916,33 @@ func contains(slice []int, val int) bool {
 		}
 	}
 	return false
+}
+
+// union computes the union of two sets represented as sorted slices.
+func union(a, b []int) []int {
+	switch {
+	case len(b) == 0:
+		return a
+	case len(a) == 0:
+		return b
+	}
+
+	var ret []int
+	var i, j int
+
+	for i < len(a) && j < len(b) {
+		if a[i] < b[j] {
+			ret = append(ret, a[i])
+			i++
+			continue
+		}
+		ret = append(ret, b[j])
+		if a[i] == b[j] {
+			i++
+		}
+		j++
+	}
+	ret = append(ret, a[i:]...)
+	ret = append(ret, b[j:]...)
+	return ret
 }

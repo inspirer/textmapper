@@ -148,3 +148,44 @@ func writeNonterm(nt *syntax.Nonterm, b *strings.Builder) {
 		fmt.Fprintf(b, "  %v ;\n\n", nt.Value)
 	}
 }
+
+var debugFiles = []string{
+	"debug.tm",
+}
+
+func TestDebugInfo(t *testing.T) {
+	ctx := context.Background()
+	for _, file := range debugFiles {
+		content, err := os.ReadFile(filepath.Join("testdata", file))
+		if err != nil {
+			t.Errorf("cannot read %v: %v", file, err)
+			continue
+		}
+
+		tree, err := ast.Parse(ctx, file, string(content), tm.StopOnFirstError)
+		if err != nil {
+			t.Errorf("%v: parsing failed with %v", file, err)
+			continue
+		}
+
+		g, err := Compile(ctx, file, string(content), Params{DebugTables: true})
+		if err != nil {
+			t.Errorf("%v: compilation failed with %v", file, err)
+			continue
+		}
+
+		want := strings.TrimPrefix(tree.Root().Child(selector.Templates).Text(), "%%")
+		var b strings.Builder
+		b.WriteString("\n\n")
+		for _, info := range g.Parser.Tables.DebugInfo {
+			b.WriteString(info)
+			b.WriteByte('\n')
+		}
+		got := b.String()
+
+		if diff := diff.LineDiff(want, got); diff != "" {
+			t.Errorf("The in-file debug info does not match the produced one.\n--- %v\n+++ %v (produced)\n%v", file, file, diff)
+			t.Logf("Run (cd compiler/testdata; go run ../../cmd/textmapper/*.go debug --tables %v >> %v) to regenerate.", file, file)
+		}
+	}
+}

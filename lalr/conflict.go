@@ -148,7 +148,7 @@ func (b *conflictBuilder) merge(g *Grammar, state int, states []*state) []*Confl
 	}
 	if len(ret) > 0 {
 		var input []Sym
-		for s := state; s > 0; s = states[s].sourceState {
+		for s := state; s >= 0 && states[s].sourceState >= 0; s = states[s].sourceState {
 			input = append(input, states[s].symbol)
 		}
 		for i := len(input)/2 - 1; i >= 0; i-- {

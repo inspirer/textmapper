@@ -22,7 +22,8 @@ Flags:`,
 }
 
 var (
-	stats = debugCmd.Flags.Bool("stats", false, "output generated table statistics")
+	stats  = debugCmd.Flags.Bool("stats", false, "output generated table statistics")
+	tables = debugCmd.Flags.Bool("tables", false, "dump generated tables in a human-readable format")
 )
 
 func init() {
@@ -59,7 +60,7 @@ func debugFile(ctx context.Context, path string) error {
 	}
 
 	start := time.Now()
-	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{})
+	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{DebugTables: *tables})
 	if err != nil {
 		return err
 	}
@@ -79,6 +80,12 @@ func debugFile(ctx context.Context, path string) error {
 		fmt.Printf("Optimized tables in %v\n", time.Since(start))
 
 		fmt.Print(newEnc.TableStats())
+	}
+
+	if *tables && g.Parser != nil && g.Parser.Tables != nil {
+		for _, info := range g.Parser.Tables.DebugInfo {
+			fmt.Println(info)
+		}
 	}
 
 	return nil

@@ -51,13 +51,13 @@ var stateTests = []struct {
 	want  []string
 }{
 	{`S ->; S -> a`, []string{
-		`0 (from 0, EOI, LA): a -> 1; S -> 2; reduce S [EOI]; resolved: a->shift EOI->{S:};`,
+		`0 (LA): a -> 1; S -> 2; reduce S [EOI]; resolved: a->shift EOI->{S:};`,
 		`1 (from 0, a): S: a _;`,
 		`2 (from 0, S): EOI -> 3;`,
 		`3 (from 2, EOI):`,
 	}},
 	{`S -> A; A -> aa`, []string{
-		`0 (from 0, EOI): a -> 1; S -> 4; A -> 2;`,
+		`0: a -> 1; S -> 4; A -> 2;`,
 		`1 (from 0, a): A: a _ a; a -> 3;`,
 		`2 (from 0, A): S: A _;`,
 		`3 (from 1, a): A: a a _;`,
@@ -65,14 +65,14 @@ var stateTests = []struct {
 		`5 (from 4, EOI):`,
 	}},
 	{`S -> Sa; S -> a`, []string{
-		`0 (from 0, EOI): a -> 1; S -> 2;`,
+		`0: a -> 1; S -> 2;`,
 		`1 (from 0, a): S: a _;`,
 		`2 (from 0, S): S: S _ a; EOI -> 4; a -> 3;`, // shift-shift is still LR0
 		`3 (from 2, a): S: S a _;`,
 		`4 (from 2, EOI):`,
 	}},
 	{`S -> A; S -> B; A -> ab; B -> ac`, []string{
-		`0 (from 0, EOI): a -> 1; S -> 6; A -> 2; B -> 3;`,
+		`0: a -> 1; S -> 6; A -> 2; B -> 3;`,
 		`1 (from 0, a): A: a _ b; B: a _ c; b -> 4; c -> 5;`,
 		`2 (from 0, A): S: A _;`,
 		`3 (from 0, B): S: B _;`,
@@ -82,7 +82,7 @@ var stateTests = []struct {
 		`7 (from 6, EOI):`,
 	}},
 	{`S -> SA; S -> A; A -> a; A -> b`, []string{
-		`0 (from 0, EOI): a -> 1; b -> 2; S -> 3; A -> 4;`,
+		`0: a -> 1; b -> 2; S -> 3; A -> 4;`,
 		`1 (from 0, a): A: a _;`,
 		`2 (from 0, b): A: b _;`,
 		`3 (from 0, S): S: S _ A; EOI -> 6; a -> 1; b -> 2; A -> 5;`,
@@ -91,7 +91,7 @@ var stateTests = []struct {
 		`6 (from 3, EOI):`,
 	}},
 	{`S -> SA; S -> ; A -> B; B -> Ca; B -> CAp; C -> c; C ->`, []string{
-		`0 (from 0, EOI): S -> 1; reduce S;`,
+		`0: S -> 1; reduce S;`,
 		`1 (from 0, S, LA): S: S _ A; EOI -> 9; c -> 2; A -> 3; B -> 4; C -> 5; reduce C [a,c]; resolved: EOI->shift c->shift a->{C:};`,
 		`2 (from 1, c): C: c _;`,
 		`3 (from 1, A): S: S A _;`,
@@ -114,7 +114,7 @@ var stateTests = []struct {
 		`input:0:0: conflicts: 3 shift/reduce and 0 reduce/reduce`,
 	}},
 	{`S -> A; A -> Bb; B -> Aa; B ->`, []string{
-		`0 (from 0, EOI): S -> 5; A -> 1; B -> 2; reduce B;`,
+		`0: S -> 5; A -> 1; B -> 2; reduce B;`,
 		`1 (from 0, A, LA): S: A _; B: A _ a; a -> 3; reduce S [EOI]; resolved: a->shift EOI->{S: A};`,
 		`2 (from 0, B): A: B _ b; b -> 4;`,
 		`3 (from 1, a): B: A a _;`,
@@ -125,8 +125,8 @@ var stateTests = []struct {
 
 	// No-eoi (S - normal input; N - no-eoi)
 	{`S -> N; N -> xNy; N -> a; N -> b`, []string{
-		`0 (from 0, EOI): x -> 2; a -> 3; b -> 4; S -> 8; N -> 5;`,
-		`1 (from 0, EOI): x -> 2; a -> 3; b -> 4; N -> 9;`,
+		`0: x -> 2; a -> 3; b -> 4; S -> 8; N -> 5;`,
+		`1: x -> 2; a -> 3; b -> 4; N -> 9;`,
 		`2 (from 0, x): N: x _ N y; x -> 2; a -> 3; b -> 4; N -> 6;`,
 		`3 (from 0, a): N: a _;`,
 		`4 (from 0, b): N: b _;`,
@@ -140,7 +140,7 @@ var stateTests = []struct {
 
 	// Simple lookahead.
 	{`S -> Ca; S -> Bb; C -> a; B -> a`, []string{
-		`0 (from 0, EOI): a -> 1; S -> 6; C -> 2; B -> 3;`,
+		`0: a -> 1; S -> 6; C -> 2; B -> 3;`,
 		`1 (from 0, a, LA): C: a _; B: a _; reduce C [a]; reduce B [b]; resolved: a->{C: a} b->{B: a};`,
 		`2 (from 0, C): S: C _ a; a -> 4;`,
 		`3 (from 0, B): S: B _ b; b -> 5;`,
@@ -150,7 +150,7 @@ var stateTests = []struct {
 		`7 (from 6, EOI):`,
 	}},
 	{`S -> A; S -> B; A -> a; A -> Aa; B -> ab`, []string{
-		`0 (from 0, EOI): a -> 1; S -> 6; A -> 2; B -> 3;`,
+		`0: a -> 1; S -> 6; A -> 2; B -> 3;`,
 		`1 (from 0, a, LA): A: a _; B: a _ b; b -> 4; reduce A [EOI,a]; resolved: b->shift EOI->{A: a} a->{A: a};`,
 		`2 (from 0, A, LA): S: A _; A: A _ a; a -> 5; reduce S [EOI]; resolved: a->shift EOI->{S: A};`,
 		`3 (from 0, B): S: B _;`,
@@ -162,7 +162,7 @@ var stateTests = []struct {
 
 	// Several conflicting rules: we pick the first one.
 	{`S -> A; S -> B; S -> C; A -> a; B -> a; C -> a %P b`, []string{
-		`0 (from 0, EOI): a -> 1; S -> 5; A -> 2; B -> 3; C -> 4;`,
+		`0: a -> 1; S -> 5; A -> 2; B -> 3; C -> 4;`,
 		`1 (from 0, a, LA): A: a _; B: a _; C: a _; reduce A [EOI]; reduce B [EOI]; reduce C [EOI]; resolved: EOI->{A: a};`,
 		`2 (from 0, A): S: A _;`,
 		`3 (from 0, B): S: B _;`,
@@ -195,7 +195,7 @@ var stateTests = []struct {
 
 	// Associativity.
 	{`S -> E; E -> c; E -> EaE; E -> EbE`, []string{
-		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`0: c -> 1; S -> 7; E -> 2;`,
 		`1 (from 0, c): E: c _;`,
 		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
 		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
@@ -217,7 +217,7 @@ var stateTests = []struct {
 		`input:0:0: conflicts: 4 shift/reduce and 0 reduce/reduce`,
 	}},
 	{`%L ab; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
-		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`0: c -> 1; S -> 7; E -> 2;`,
 		`1 (from 0, c): E: c _;`,
 		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
 		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
@@ -228,7 +228,7 @@ var stateTests = []struct {
 		`8 (from 7, EOI):`,
 	}},
 	{`%NA ab; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
-		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`0: c -> 1; S -> 7; E -> 2;`,
 		`1 (from 0, c): E: c _;`,
 		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
 		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
@@ -239,7 +239,7 @@ var stateTests = []struct {
 		`8 (from 7, EOI):`,
 	}},
 	{`%L a; %L b; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
-		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`0: c -> 1; S -> 7; E -> 2;`,
 		`1 (from 0, c): E: c _;`,
 		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
 		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
@@ -250,7 +250,7 @@ var stateTests = []struct {
 		`8 (from 7, EOI):`,
 	}},
 	{`%L a; %R b; S -> E; E -> c; E -> EaE; E -> EbE`, []string{
-		`0 (from 0, EOI): c -> 1; S -> 7; E -> 2;`,
+		`0: c -> 1; S -> 7; E -> 2;`,
 		`1 (from 0, c): E: c _;`,
 		`2 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; a -> 3; b -> 4; reduce S [EOI]; resolved: a->shift b->shift EOI->{S: E};`,
 		`3 (from 2, a): E: E a _ E; c -> 1; E -> 5;`,
@@ -262,7 +262,7 @@ var stateTests = []struct {
 	}},
 	// Simulating unary minus via precedence.
 	{`%L ab; %L c; %NA p; S -> E; E -> f; E -> EaE; E -> EbE; E -> EcE; E -> bE %P p`, []string{
-		`0 (from 0, EOI): b -> 1; f -> 2; S -> 11; E -> 3;`,
+		`0: b -> 1; f -> 2; S -> 11; E -> 3;`,
 		`1 (from 0, b): E: b _ E; b -> 1; f -> 2; E -> 4;`,
 		`2 (from 0, f): E: f _;`,
 		`3 (from 0, E, LA): S: E _; E: E _ a E; E: E _ b E; E: E _ c E; a -> 5; b -> 6; c -> 7; reduce S [EOI]; resolved: a->shift b->shift c->shift EOI->{S: E};`,
@@ -305,11 +305,17 @@ func TestStates(t *testing.T) {
 
 		var buf strings.Builder
 		for i, state := range c.states {
-			var suffix string
-			if !state.lr0 {
-				suffix = ", LA"
+			if state.sourceState >= 0 {
+				var suffix string
+				if !state.lr0 {
+					suffix = ", LA"
+				}
+				fmt.Fprintf(&buf, "%v (from %v, %v%v):", state.index, state.sourceState, g.Symbols[state.symbol], suffix)
+			} else if !state.lr0 {
+				fmt.Fprintf(&buf, "%v (LA):", state.index)
+			} else {
+				fmt.Fprintf(&buf, "%v:", state.index)
 			}
-			fmt.Fprintf(&buf, "%v (from %v, %v%v):", state.index, state.sourceState, g.Symbols[state.symbol], suffix)
 			for _, item := range state.core {
 				buf.WriteByte(' ')
 				c.writeItem(item, &buf)

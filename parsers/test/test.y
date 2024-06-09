@@ -201,14 +201,29 @@ Decl2 :
 ;
 
 If :
-  IF LPAREN RPAREN Decl2
-| IF LPAREN RPAREN Decl2 ELSE Decl2
+  IF LPAREN O RPAREN Decl2
+| IF LPAREN O RPAREN Decl2 ELSE Decl2
 ;
 
 expr :
   expr PLUS primaryExpr
 | customPlus
 | primaryExpr
+;
+
+O :
+  elem_list
+;
+
+elem_list :
+  elem_list elem
+| elem
+;
+
+elem :
+  F_A /*.greedy*/
+| F_A AS
+| AS
 ;
 
 customPlus :

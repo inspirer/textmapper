@@ -11,7 +11,7 @@ c: /c/
 
 :: parser
 
-input : N c M;
+input : N c M c O ;
 
 N :
       a
@@ -25,14 +25,21 @@ M :
       a
     | «a '+' M»
 # err: input: N c a '+' a '+' M
-# err: reduce/reduce conflict (next: eoi)
+# err: reduce/reduce conflict (next: c)
 # err:     M : a '+' a '+' M
 # err:     M : a '+' M
 # err:
     | «a '+' a '+' M»
 # err: input: N c a '+' a '+' M
-# err: reduce/reduce conflict (next: eoi)
+# err: reduce/reduce conflict (next: c)
 # err:     M : a '+' a '+' M
 # err:     M : a '+' M
 # err:
-;»
+;
+
+O :
+      elem+ ;
+
+elem:
+      a | a .greedy b | b ;  # prefer shift over reduce
+»

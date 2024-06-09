@@ -15,6 +15,7 @@ var (
 	Decl1             = func(t test.NodeType) bool { return t == test.Decl1 }
 	Decl2             = func(t test.NodeType) bool { return t == test.Decl2 }
 	DeclOptQual       = func(t test.NodeType) bool { return t == test.DeclOptQual }
+	Elem              = func(t test.NodeType) bool { return t == test.Elem }
 	Empty1            = func(t test.NodeType) bool { return t == test.Empty1 }
 	EvalEmpty1        = func(t test.NodeType) bool { return t == test.EvalEmpty1 }
 	EvalFoo           = func(t test.NodeType) bool { return t == test.EvalFoo }
