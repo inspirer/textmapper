@@ -382,11 +382,24 @@ func (c *compiler) stateClosure(state *state, out container.BitSet) {
 }
 
 func (c *compiler) writeRule(r int, out *strings.Builder) {
+	if r >= len(c.grammar.Rules) {
+		// This is a runtime lookahead rule.
+		nt := c.out.RuleSymbol[r]
+		out.WriteString(c.grammar.Symbols[nt])
+		out.WriteByte(':')
+		return
+	}
+
 	rule := c.grammar.Rules[r]
 	out.WriteString(c.grammar.Symbols[rule.LHS])
 	out.WriteString(":")
 	for _, sym := range rule.RHS {
 		out.WriteString(" ")
+		if sym.IsStateMarker() {
+			out.WriteByte('.')
+			out.WriteString(c.out.Markers[sym.AsMarker()].Name)
+			continue
+		}
 		out.WriteString(c.grammar.Symbols[sym])
 	}
 }
@@ -804,7 +817,7 @@ func (c *compiler) ruleAction(action int, term Sym, rule int, b *conflictBuilder
 	}
 	if action == -1 { // shift
 		res := c.resolvePrec(rule, term)
-		b.addRule(term, res, rule, true)
+		b.addRule(term, res, rule, true /*canShift*/)
 		switch res {
 		case doReduce:
 			return rule
@@ -853,6 +866,9 @@ func (c *compiler) exportDebugInfo() {
 		}
 		return ret
 	}
+
+	type conflict uint8
+	conflicts := make([]conflict, c.grammar.Terminals)
 
 	set := container.NewBitSet(len(c.right))
 	reuse := make([]int, len(c.right))
@@ -907,6 +923,9 @@ func (c *compiler) exportDebugInfo() {
 			}
 			b.WriteString("\n")
 		}
+		if len(closure) == 0 {
+			b.WriteString("\t<empty>\n")
+		}
 
 		if len(s.dropped) > 0 {
 			b.WriteString("\n\tDropped by .greedy:\n")
@@ -915,6 +934,68 @@ func (c *compiler) exportDebugInfo() {
 				b.WriteString("\t  ")
 				c.writeItem(item, &b)
 				b.WriteString("\n")
+			}
+		}
+
+		if !s.lr0 || c.out.DefaultEnc.Action[s.index] == -1 /*shift*/ {
+			for i := range conflicts {
+				conflicts[i] = 0
+			}
+			for _, target := range s.shifts {
+				sym := c.states[target].symbol
+				if int(sym) < c.grammar.Terminals {
+					conflicts[sym] = 1 // shift
+				}
+			}
+			for i := range s.reduce {
+				for _, term := range s.la[i].Slice(nil) {
+					if conflicts[term] == 0 {
+						conflicts[term] = 2 // reduce
+					} else {
+						conflicts[term] |= 4 // conflict
+					}
+				}
+			}
+
+			b.WriteString("\n\tAction: ")
+			action := c.out.DefaultEnc.Action[s.index]
+			switch {
+			case action >= 0:
+				b.WriteString("reduce `")
+				c.writeRule(action, &b)
+				b.WriteString("`\n")
+			case action == -2:
+				b.WriteString("error\n")
+			case action == -1:
+				b.WriteString("shift\n")
+				for _, target := range s.shifts {
+					t := c.states[target]
+					fmt.Fprintf(&b, "\t\t%v => go to state %v\n", c.grammar.Symbols[t.symbol], target)
+				}
+			default:
+				b.WriteString("lookahead\n")
+				a := -action - 3
+				for ; c.out.Lalr[a] >= 0; a += 2 {
+					term := c.out.Lalr[a]
+					fmt.Fprintf(&b, "\t\t%v => ", c.grammar.Symbols[term])
+					switch action := c.out.Lalr[a+1]; {
+					case action >= 0:
+						b.WriteString("reduce `")
+						c.writeRule(action, &b)
+						b.WriteByte('`')
+					case action == -1:
+						fmt.Fprintf(&b, "shift, go to state %v", c.out.gotoState(s.index, term))
+					case action == -2:
+						b.WriteString("error")
+					}
+					switch conflicts[term] {
+					case 5: // shift/reduce
+						b.WriteString(" (resolved shift/reduce conflict)")
+					case 6: // reduce/reduce
+						b.WriteString(" (resolved reduce/reduce conflict)")
+					}
+					b.WriteByte('\n')
+				}
 			}
 		}
 		c.out.DebugInfo = append(c.out.DebugInfo, b.String())
