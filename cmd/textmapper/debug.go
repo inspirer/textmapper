@@ -61,11 +61,17 @@ func debugFile(ctx context.Context, path string) error {
 
 	start := time.Now()
 	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{DebugTables: *tables})
-	if err != nil {
+	if g == nil {
 		return err
 	}
+	if err != nil {
+		status.Print(os.Stderr, err)
+		fmt.Fprintln(os.Stderr)
+	}
 
-	fmt.Printf("Compiled %v in %v\n", path, time.Since(start))
+	if *stats {
+		fmt.Printf("Compiled %v in %v\n", path, time.Since(start))
+	}
 
 	if *stats && g.Lexer != nil {
 		fmt.Println()

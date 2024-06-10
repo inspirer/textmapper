@@ -429,15 +429,12 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 		return s.Err()
 	}
 
-	tables, err := lalr.Compile(g, opts.lalrOpts)
-	if err != nil {
-		return err
-	}
-
 	out.Rules = rules
-	out.Tables = tables
 	out.Inputs = source.Inputs
 	out.Nonterms = source.Nonterms
 	out.NumTerminals = len(source.Terminals)
-	return nil
+
+	tables, err := lalr.Compile(g, opts.lalrOpts)
+	out.Tables = tables
+	return err
 }
