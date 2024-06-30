@@ -202,6 +202,7 @@ Decl2 :
 
 If :
   IF LPAREN O RPAREN Decl2
+			{ /* 4: $4 */ }
 | IF LPAREN O RPAREN Decl2 ELSE Decl2
 ;
 

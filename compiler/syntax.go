@@ -769,26 +769,23 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 		text := p.Text()
 		return &syntax.Expr{Kind: syntax.Command, Name: text, CmdArgs: args, Origin: p}
 	case *ast.RhsAssignment:
-		// Ignore any names within the assigned expression.
-		old := c.rhsNames
-		c.rhsNames = nil
 		inner := c.convertPart(p.Inner(), nonterm)
-		c.rhsNames = old
-
 		name := p.Id().Text()
-		if inner.Pos > 0 {
-			c.pushName(name, inner.Pos)
-		}
 		subs := []*syntax.Expr{inner}
 		return &syntax.Expr{Kind: syntax.Assign, Name: name, Sub: subs, Origin: p}
 	case *ast.RhsPlusAssignment:
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
 		return &syntax.Expr{Kind: syntax.Append, Name: p.Id().Text(), Sub: subs, Origin: p}
+	case *ast.RhsAlias:
+		ret := c.convertPart(p.Inner(), nonterm)
+
+		name := p.Name().Text()
+		if ret.Pos > 0 {
+			c.pushName(name, ret.Pos)
+		}
+		return ret
 	case *ast.RhsCast:
 		// TODO implement
-	case *ast.RhsAlias:
-		c.Errorf(p.Name(), "unsupported alias syntax")
-		return &syntax.Expr{Kind: syntax.Empty, Origin: p.TmNode()}
 	case *ast.RhsLookahead:
 		var subs []*syntax.Expr
 		for _, pred := range p.Predicates() {

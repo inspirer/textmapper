@@ -66,7 +66,7 @@ invalid_token:
 %flag A;
 
 JSONText {bool b} -> JSONText :
-    JSONValue<+A> { $$ = $1; } ;
+    JSONValue<+A>[val] { $$ = $val; } ;
 
 JSONValue<A> {int a} -> JSONValue :
     kw_null

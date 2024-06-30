@@ -391,6 +391,9 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		fixTrailingWS(lhs, rhs)
 	case 21: // Declaration : 'decl2' ':' QualifiedNameopt
 		fixTrailingWS(lhs, rhs)
+	case 83: // If : 'if' '(' O ')' Decl2
+		{ /* 4: rhs[4].value */
+		}
 	case 94: // customPlus : '\\' primaryExpr '+' expr
 		{
 			p.listener(PlusExpr, 0, rhs[0].sym.offset, rhs[3].sym.endoffset)

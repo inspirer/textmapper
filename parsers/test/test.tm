@@ -194,7 +194,7 @@ Decl2 -> Decl2Interface :
 %expect 1;
 
 If -> If:
-    'if' '(' O ')' then=Decl2
+    'if' '(' O ')' then=Decl2[then]   { /* 4: $then */ }
   | 'if' '(' O ')' then=Decl2 'else' else=Decl2
 ;
 

@@ -146,9 +146,6 @@ c4<«bar»> : ;
 c5«[foo]» : ;
 # err: nonterminal aliases are not yet supported
 
-c6 : c5[«bar»] ;
-# err: unsupported alias syntax
-
 %expect 0;
 %expect-rr 10;
 
