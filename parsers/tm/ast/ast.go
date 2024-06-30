@@ -61,6 +61,7 @@ func (n NamedPattern) TmNode() *Node         { return n.Node }
 func (n NoEoi) TmNode() *Node                { return n.Node }
 func (n NonEmpty) TmNode() *Node             { return n.Node }
 func (n Nonterm) TmNode() *Node              { return n.Node }
+func (n NontermAlias) TmNode() *Node         { return n.Node }
 func (n NontermParams) TmNode() *Node        { return n.Node }
 func (n Not) TmNode() *Node                  { return n.Node }
 func (n Option) TmNode() *Node               { return n.Node }
@@ -78,7 +79,7 @@ func (n PredicateOr) TmNode() *Node          { return n.Node }
 func (n RawType) TmNode() *Node              { return n.Node }
 func (n ReportAs) TmNode() *Node             { return n.Node }
 func (n ReportClause) TmNode() *Node         { return n.Node }
-func (n RhsAsLiteral) TmNode() *Node         { return n.Node }
+func (n RhsAlias) TmNode() *Node             { return n.Node }
 func (n RhsAssignment) TmNode() *Node        { return n.Node }
 func (n RhsCast) TmNode() *Node              { return n.Node }
 func (n RhsIgnored) TmNode() *Node           { return n.Node }
@@ -236,7 +237,7 @@ type RhsPart interface {
 // rhsPartNode() ensures that only the following types can be
 // assigned to RhsPart.
 func (Command) rhsPartNode()           {}
-func (RhsAsLiteral) rhsPartNode()      {}
+func (RhsAlias) rhsPartNode()          {}
 func (RhsAssignment) rhsPartNode()     {}
 func (RhsCast) rhsPartNode()           {}
 func (RhsIgnored) rhsPartNode()        {}
@@ -761,6 +762,11 @@ func (n Nonterm) Params() (NontermParams, bool) {
 	return NontermParams{child}, child.IsValid()
 }
 
+func (n Nonterm) Alias() (NontermAlias, bool) {
+	child := n.Child(selector.NontermAlias)
+	return NontermAlias{child}, child.IsValid()
+}
+
 func (n Nonterm) RawType() (RawType, bool) {
 	child := n.Child(selector.RawType)
 	return RawType{child}, child.IsValid()
@@ -778,6 +784,15 @@ func (n Nonterm) Rule0() []Rule0 {
 		ret = append(ret, ToTmNode(node).(Rule0))
 	}
 	return ret
+}
+
+type NontermAlias struct {
+	*Node
+}
+
+func (n NontermAlias) Name() Identifier {
+	child := n.Child(selector.Identifier)
+	return Identifier{child}
 }
 
 type NontermParams struct {
@@ -955,18 +970,18 @@ func (n ReportClause) ReportAs() (ReportAs, bool) {
 	return ReportAs{child}, child.IsValid()
 }
 
-type RhsAsLiteral struct {
+type RhsAlias struct {
 	*Node
 }
 
-func (n RhsAsLiteral) Inner() RhsPart {
+func (n RhsAlias) Inner() RhsPart {
 	child := n.Child(selector.RhsPart)
 	return ToTmNode(child).(RhsPart)
 }
 
-func (n RhsAsLiteral) Literal() Literal {
-	child := n.Child(selector.Literal)
-	return ToTmNode(child).(Literal)
+func (n RhsAlias) Name() Identifier {
+	child := n.Child(selector.Identifier)
+	return Identifier{child}
 }
 
 type RhsAssignment struct {

@@ -90,6 +90,8 @@ func ToTmNode(n *Node) TmNode {
 		return &NonEmpty{n}
 	case tm.Nonterm:
 		return &Nonterm{n}
+	case tm.NontermAlias:
+		return &NontermAlias{n}
 	case tm.NontermParams:
 		return &NontermParams{n}
 	case tm.Not:
@@ -124,8 +126,8 @@ func ToTmNode(n *Node) TmNode {
 		return &ReportAs{n}
 	case tm.ReportClause:
 		return &ReportClause{n}
-	case tm.RhsAsLiteral:
-		return &RhsAsLiteral{n}
+	case tm.RhsAlias:
+		return &RhsAlias{n}
 	case tm.RhsAssignment:
 		return &RhsAssignment{n}
 	case tm.RhsCast:

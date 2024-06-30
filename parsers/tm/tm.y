@@ -361,20 +361,38 @@ grammar_part_OrSyntaxError :
 ;
 
 nonterm :
-  identifier nonterm_params rawType reportClause COLON rules SEMICOLON
+  identifier nonterm_params nonterm_alias rawType reportClause COLON rules SEMICOLON
+| identifier nonterm_params nonterm_alias rawType COLON rules SEMICOLON
+| identifier nonterm_params nonterm_alias reportClause COLON rules SEMICOLON
+| identifier nonterm_params nonterm_alias COLON rules SEMICOLON
+| identifier nonterm_params rawType reportClause COLON rules SEMICOLON
 | identifier nonterm_params rawType COLON rules SEMICOLON
 | identifier nonterm_params reportClause COLON rules SEMICOLON
 | identifier nonterm_params COLON rules SEMICOLON
+| identifier nonterm_alias rawType reportClause COLON rules SEMICOLON
+| identifier nonterm_alias rawType COLON rules SEMICOLON
+| identifier nonterm_alias reportClause COLON rules SEMICOLON
+| identifier nonterm_alias COLON rules SEMICOLON
 | identifier rawType reportClause COLON rules SEMICOLON
 | identifier rawType COLON rules SEMICOLON
 | identifier reportClause COLON rules SEMICOLON
 | identifier COLON rules SEMICOLON
+| EXTEND identifier nonterm_alias reportClause COLON rules SEMICOLON
+| EXTEND identifier nonterm_alias COLON rules SEMICOLON
 | EXTEND identifier reportClause COLON rules SEMICOLON
 | EXTEND identifier COLON rules SEMICOLON
+| INLINE identifier nonterm_params nonterm_alias reportClause COLON rules SEMICOLON
+| INLINE identifier nonterm_params nonterm_alias COLON rules SEMICOLON
 | INLINE identifier nonterm_params reportClause COLON rules SEMICOLON
 | INLINE identifier nonterm_params COLON rules SEMICOLON
+| INLINE identifier nonterm_alias reportClause COLON rules SEMICOLON
+| INLINE identifier nonterm_alias COLON rules SEMICOLON
 | INLINE identifier reportClause COLON rules SEMICOLON
 | INLINE identifier COLON rules SEMICOLON
+;
+
+nonterm_alias :
+  LBRACK identifier_Keywords RBRACK
 ;
 
 assoc :
@@ -521,9 +539,13 @@ rhsOptional :
 ;
 
 rhsCast :
+  rhsAlias
+| rhsAlias AS symref_Args
+;
+
+rhsAlias :
   rhsPrimary
-| rhsPrimary AS symref_Args
-| rhsPrimary AS literal
+| rhsPrimary LBRACK identifier_Keywords RBRACK
 ;
 
 listSeparator :

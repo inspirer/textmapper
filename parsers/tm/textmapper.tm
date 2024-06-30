@@ -267,10 +267,13 @@ grammar_part<OrSyntaxError> -> GrammarPart:
 ;
 
 nonterm -> Nonterm:
-    name=identifier params=nonterm_params? rawType? reportClause? ':' rules ';'
-  | ('extend' -> Extend) name=identifier reportClause? ':' rules ';'
-  | ('inline' -> Inline) name=identifier params=nonterm_params? reportClause? ':' rules ';'
+    name=identifier params=nonterm_params? alias=nonterm_alias? rawType? reportClause? ':' rules ';'
+  | ('extend' -> Extend) name=identifier alias=nonterm_alias? reportClause? ':' rules ';'
+  | ('inline' -> Inline) name=identifier params=nonterm_params? alias=nonterm_alias? reportClause? ':' rules ';'
 ;
+
+nonterm_alias -> NontermAlias:
+    '[' name=identifier<+Keywords> ']' ;
 
 assoc -> Assoc:
     'left'
@@ -366,9 +369,13 @@ rhsOptional -> RhsPart:
 ;
 
 rhsCast -> RhsPart:
+    rhsAlias
+  | inner=rhsAlias 'as' target=symref<+Args> -> RhsCast
+;
+
+rhsAlias -> RhsPart:
     rhsPrimary
-  | inner=rhsPrimary 'as' target=symref<+Args> -> RhsCast
-  | inner=rhsPrimary 'as' literal              -> RhsAsLiteral   /* TODO remove */
+  | inner=rhsPrimary '[' name=identifier<+Keywords> ']'       -> RhsAlias
 ;
 
 listSeparator -> ListSeparator:

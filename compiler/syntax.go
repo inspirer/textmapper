@@ -786,6 +786,9 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 		return &syntax.Expr{Kind: syntax.Append, Name: p.Id().Text(), Sub: subs, Origin: p}
 	case *ast.RhsCast:
 		// TODO implement
+	case *ast.RhsAlias:
+		c.Errorf(p.Name(), "unsupported alias syntax")
+		return &syntax.Expr{Kind: syntax.Empty, Origin: p.TmNode()}
 	case *ast.RhsLookahead:
 		var subs []*syntax.Expr
 		for _, pred := range p.Predicates() {
@@ -980,6 +983,9 @@ func (c *syntaxLoader) load(p ast.ParserSection, header status.SourceNode) {
 
 	for _, nt := range nonterms {
 		clause, _ := nt.def.ReportClause()
+		if alias, ok := nt.def.Alias(); ok {
+			c.Errorf(alias, "nonterminal aliases are not yet supported")
+		}
 		defaultReport := c.convertReportClause(clause)
 		expr := c.convertRules(nt.def.Rule0(), c.out.Nonterms[nt.nonterm], defaultReport, true /*topLevel*/, nt.def)
 		c.out.Nonterms[nt.nonterm].Value = or(c.out.Nonterms[nt.nonterm].Value, expr)

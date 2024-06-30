@@ -50,6 +50,7 @@ var (
 	NoEoi                = func(t tm.NodeType) bool { return t == tm.NoEoi }
 	NonEmpty             = func(t tm.NodeType) bool { return t == tm.NonEmpty }
 	Nonterm              = func(t tm.NodeType) bool { return t == tm.Nonterm }
+	NontermAlias         = func(t tm.NodeType) bool { return t == tm.NontermAlias }
 	NontermParams        = func(t tm.NodeType) bool { return t == tm.NontermParams }
 	Not                  = func(t tm.NodeType) bool { return t == tm.Not }
 	Option               = func(t tm.NodeType) bool { return t == tm.Option }
@@ -67,7 +68,7 @@ var (
 	RawType              = func(t tm.NodeType) bool { return t == tm.RawType }
 	ReportAs             = func(t tm.NodeType) bool { return t == tm.ReportAs }
 	ReportClause         = func(t tm.NodeType) bool { return t == tm.ReportClause }
-	RhsAsLiteral         = func(t tm.NodeType) bool { return t == tm.RhsAsLiteral }
+	RhsAlias             = func(t tm.NodeType) bool { return t == tm.RhsAlias }
 	RhsAssignment        = func(t tm.NodeType) bool { return t == tm.RhsAssignment }
 	RhsCast              = func(t tm.NodeType) bool { return t == tm.RhsCast }
 	RhsIgnored           = func(t tm.NodeType) bool { return t == tm.RhsIgnored }

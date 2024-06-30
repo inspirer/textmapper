@@ -51,7 +51,8 @@ const (
 	NamedPattern // name=Identifier Pattern
 	NoEoi
 	NonEmpty
-	Nonterm       // Extend? Inline? name=Identifier params=NontermParams? RawType? ReportClause? (Rule0)+
+	Nonterm       // Extend? Inline? name=Identifier params=NontermParams? alias=NontermAlias? RawType? ReportClause? (Rule0)+
+	NontermAlias  // name=Identifier
 	NontermParams // list=(NontermParam)+
 	Not
 	Option // key=Identifier value=Expression
@@ -69,7 +70,7 @@ const (
 	RawType
 	ReportAs             // Identifier
 	ReportClause         // action=Identifier flags=(Identifier)* ReportAs?
-	RhsAsLiteral         // inner=RhsPart Literal
+	RhsAlias             // inner=RhsPart name=Identifier
 	RhsAssignment        // id=Identifier inner=RhsPart
 	RhsCast              // inner=RhsPart target=Symref
 	RhsIgnored           // (Rule0)+
@@ -148,6 +149,7 @@ var nodeTypeStr = [...]string{
 	"NoEoi",
 	"NonEmpty",
 	"Nonterm",
+	"NontermAlias",
 	"NontermParams",
 	"Not",
 	"Option",
@@ -165,7 +167,7 @@ var nodeTypeStr = [...]string{
 	"RawType",
 	"ReportAs",
 	"ReportClause",
-	"RhsAsLiteral",
+	"RhsAlias",
 	"RhsAssignment",
 	"RhsCast",
 	"RhsIgnored",
@@ -276,7 +278,7 @@ var PredicateExpression = []NodeType{
 
 var RhsPart = []NodeType{
 	Command,
-	RhsAsLiteral,
+	RhsAlias,
 	RhsAssignment,
 	RhsCast,
 	RhsIgnored,
