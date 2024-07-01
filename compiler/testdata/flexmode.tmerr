@@ -1,0 +1,45 @@
+language parser(cc);
+
+flexMode = true
+
+:: lexer
+
+foo {foo}:
+comment:  (space)
+
+',': /,/
+
+«foo»:
+# err: redeclaration of 'foo'
+
+abc: «/[a-z]+/»  («class»)
+# err: only individual ASCII characters are allowed as patterns in flex mode
+# err: unsupported attribute (flex mode)
+
+# \n is a control character, so it is not allowed in flex mode
+
+'\n': «/\n/»
+# err: only individual ASCII characters are allowed as patterns in flex mode
+
+'n': /n/ «-1»
+# err: priorities are not supported in flex mode
+
+'m': /m/ «{ abc }»
+# err: commands are not supported in flex mode
+
+«%x a;»
+# err: start conditions are not supported in flex mode
+
+«<a>» f: /f/
+# err: start conditions are not supported in flex mode
+
+«<a> {
+  bar: /b/
+}»
+# err: start conditions are not supported in flex mode
+
+:: parser
+
+%input a;
+
+a: ',';

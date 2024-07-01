@@ -46,6 +46,11 @@ func newLexerCompiler(opts *grammar.Options, resolver *resolver, s *status.Statu
 
 func (c *lexerCompiler) compile(file ast.File) {
 	out := c.out
+	lexer, _ := file.Lexer()
+	if c.opts.FlexMode {
+		c.parseFlexDeclarations(lexer)
+		return
+	}
 
 	eoi := c.resolver.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
 	out.InvalidToken = c.resolver.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
@@ -66,7 +71,6 @@ func (c *lexerCompiler) compile(file ast.File) {
 	}
 
 	c.collectStartConds(file)
-	lexer, _ := file.Lexer()
 	c.traverseLexer(lexer.LexerPart(), c.inclusiveSC, nil /*parent patterns*/)
 	c.resolveTokenComments()
 	c.resolveClasses()
@@ -467,4 +471,82 @@ func parsePattern(name string, p ast.Pattern, opts lex.CharsetOptions) (*lex.Pat
 	}
 	ret.RE = re
 	return ret, nil
+}
+
+func (c *lexerCompiler) parseFlexDeclarations(lexer ast.LexerSection) {
+	c.resolver.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
+	error := c.resolver.addToken(grammar.Error, "YYerror", ast.RawType{}, noSpace, nil)
+	invalid := c.resolver.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
+
+	c.resolver.Syms[error].FlexID = 256
+	c.resolver.Syms[invalid].FlexID = 257
+	next := 258
+
+	reOpts := lex.CharsetOptions{ScanBytes: c.opts.ScanBytes, Fold: c.opts.CaseInsensitive}
+	for _, p := range lexer.LexerPart() {
+		switch p := p.(type) {
+		case *ast.Lexeme:
+			rawType, _ := p.RawType()
+			var space ast.LexemeAttribute
+			if attrs, ok := p.Attrs(); ok {
+				switch name := attrs.LexemeAttribute().Text(); name {
+				case "space":
+					space = attrs.LexemeAttribute()
+				default:
+					c.Errorf(attrs.LexemeAttribute(), "unsupported attribute (flex mode)")
+				}
+			}
+			if prio, ok := p.Priority(); ok {
+				c.Errorf(prio, "priorities are not supported in flex mode")
+			}
+			if sc, ok := p.StartConditions(); ok {
+				c.Errorf(sc, "start conditions are not supported in flex mode")
+			}
+			if cmd, ok := p.Command(); ok {
+				c.Errorf(cmd, "commands are not supported in flex mode")
+			}
+
+			name := p.Name().Text()
+			if _, exists := c.resolver.syms[name]; exists {
+				c.Errorf(p.Name(), "redeclaration of '%v'", name)
+				continue
+			}
+			tok := c.resolver.addToken(name, "" /*id*/, rawType, space, p.Name())
+
+			// Flex mode allows only ASCII characters as patterns. All other tokens should be
+			// simply declared (without patterns).
+
+			var ch byte
+			if pat, ok := p.Pattern(); ok {
+				pattern, err := parsePattern(name, pat, reOpts)
+				if err != nil {
+					c.AddError(err)
+					continue
+				}
+
+				val, ok := pattern.RE.Constant()
+				if !ok || len(val) != 1 || val[0] < ' ' || val[0] > '~' {
+					c.Errorf(pattern.Origin, "only individual ASCII characters are allowed as patterns in flex mode")
+					continue
+				}
+				ch = val[0]
+			}
+
+			var flexID int
+			if ch != 0 {
+				flexID = int(ch)
+			} else {
+				flexID = next
+				next++
+			}
+			c.resolver.Syms[tok].FlexID = flexID
+
+		case *ast.NamedPattern:
+			c.Errorf(p, "named patterns are not supported in flex mode")
+		case *ast.ExclusiveStartConds, *ast.InclusiveStartConds, *ast.StartConditionsScope:
+			c.Errorf(p.TmNode(), "start conditions are not supported in flex mode")
+		case *ast.SyntaxProblem, *ast.DirectiveBrackets:
+			c.Errorf(p.TmNode(), "syntax error")
+		}
+	}
 }

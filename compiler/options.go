@@ -60,6 +60,9 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.TokenColumn = p.parseExpr(opt.Value(), opts.TokenColumn).(bool)
 		case "nonBacktracking":
 			opts.NonBacktracking = p.parseExpr(opt.Value(), opts.NonBacktracking).(bool)
+		case "flexMode":
+			p.validLangs(opt.Key(), "cc")
+			opts.FlexMode = p.parseExpr(opt.Value(), opts.FlexMode).(bool)
 		case "genParser":
 			opts.GenParser = p.parseExpr(opt.Value(), opts.GenParser).(bool)
 		case "cancellable":

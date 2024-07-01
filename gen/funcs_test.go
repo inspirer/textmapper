@@ -73,6 +73,28 @@ func TestIntArray(t *testing.T) {
 	}
 }
 
+func TestIntArrayColumns(t *testing.T) {
+	tests := []struct {
+		input []int
+		width int
+		want  string
+	}{
+		{[]int{0}, 0, "\n       0,\n"},
+		{[]int{0}, 5, "\n       0,\n"},
+		{[]int{-128, 12}, 12, "\n    -128,    12,\n"},
+		{[]int{-128, 128}, 1, "\n    -128,\n     128,\n"},
+		{[]int{-128, 128}, 2, "\n    -128,   128,\n"},
+		{[]int{1, 2, 3, 42, 5, 6, 77, 888, 9, 10, 11}, 5, "\n       1,     2,     3,    42,     5,\n       6,    77,   888,     9,    10,\n      11,\n"},
+		{[]int{1, 2, 3, 42, 5, 6, 77, 1234567, 9, 10}, 5, "\n       1,     2,     3,    42,     5,\n       6,    77, 1234567,     9,    10,\n"},
+	}
+
+	for _, tc := range tests {
+		if got := intArrayColumns(tc.input, "  ", tc.width); got != tc.want {
+			t.Errorf("intArrayColumns(%v) = %q, want: %q", tc.input, got, tc.want)
+		}
+	}
+}
+
 func TestStringSwitch(t *testing.T) {
 	swtch := asStringSwitch(map[string]int{
 		"abc":  1,

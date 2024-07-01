@@ -21,6 +21,7 @@ var funcMap = template.FuncMap{
 	"bits":                bits,
 	"bits_per_element":    bitsPerElement,
 	"int_array":           intArray,
+	"int_array_columns":   intArrayColumns,
 	"str_literal":         strconv.Quote,
 	"title":               strings.Title,
 	"lower":               strings.ToLower,
@@ -105,6 +106,32 @@ func intArray(arr []int, padding string, maxWidth int) string {
 			col = len(padding) + len(str)
 		}
 		b.Write(str)
+	}
+	if len(arr) > 0 {
+		b.WriteByte('\n')
+	}
+	return b.String()
+}
+
+func intArrayColumns(arr []int, padding string, cols int) string {
+	var buf [21]byte
+	var b strings.Builder
+	b.Grow(len(arr) * 9)
+	col := cols
+	for _, val := range arr {
+		str := strconv.AppendInt(buf[:0], int64(val), 10)
+		str = append(str, ',')
+		if col >= cols {
+			b.WriteString("\n")
+			b.WriteString(padding)
+			col = 0
+		}
+		b.WriteByte(' ')
+		if len(str) < 6 {
+			b.WriteString("      "[len(str):])
+		}
+		b.Write(str)
+		col++
 	}
 	if len(arr) > 0 {
 		b.WriteByte('\n')

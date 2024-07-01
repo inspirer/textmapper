@@ -28,6 +28,7 @@ type Symbol struct {
 	Type      string
 	Space     bool // tokens that should be ignored by the parser.
 	CanBeNull bool // the 'error' token and nullable nonterminals can match an empty string
+	FlexID    int  // Flex token ID (in flex-mode only)
 	Origin    status.SourceNode
 }
 
@@ -182,6 +183,7 @@ type Options struct {
 	TokenLineOffset bool
 	TokenColumn     bool
 	NonBacktracking bool
+	FlexMode        bool // assume that the lexer is implemented using Flex (C/C++ only)
 
 	// Parser features.
 	GenParser           bool // true by default

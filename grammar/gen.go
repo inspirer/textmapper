@@ -255,3 +255,23 @@ func (g *Grammar) AllFlags() []string {
 	}
 	return ret
 }
+
+// FlexTranslate returns a translation table from token IDs returned by Flex to
+// Textmapper token indices.
+func (g *Grammar) FlexTranslate() []int {
+	var maxFlexID int
+	for _, sym := range g.Syms[:g.NumTokens] {
+		maxFlexID = max(maxFlexID, sym.FlexID)
+	}
+
+	const invalidToken = 2
+	ret := make([]int, maxFlexID+1)
+	for i := range ret {
+		ret[i] = invalidToken
+	}
+	ret[0] = 0 // EOI
+	for i, sym := range g.Syms[:g.NumTokens] {
+		ret[sym.FlexID] = i
+	}
+	return ret
+}

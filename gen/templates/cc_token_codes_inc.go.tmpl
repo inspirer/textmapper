@@ -1,0 +1,9 @@
+    YYEMPTY = -2,
+    YYEOF = 0,
+    YYerror = 256,                 // error
+    YYUNDEF = 257,                 // "invalid token"
+{{range $i, $tok := .Tokens -}}
+{{if ge .FlexID 258 -}}
+    {{printf "%v = %v," .ID .FlexID | printf "%-30s"}} // {{if .Comment}}{{.Comment}}{{else}}{{.ID}}{{end}}
+{{end -}}
+{{end -}}

@@ -76,6 +76,9 @@ func (l *language) templates(g *grammar.Grammar) []file {
 	} else {
 		// Take the token file only.
 		ret = append(ret, l.Lexer[0])
+		if g.Options.FlexMode {
+			ret = append(ret, file{name: "token_codes.inc", template: tokenCodesTpl})
+		}
 	}
 	if g.Parser.Tables != nil {
 		ret = append(ret, l.Parser...)
@@ -96,6 +99,7 @@ func (l *language) templates(g *grammar.Grammar) []file {
 }
 
 var bisonTpl = builtin(`bison`)
+var tokenCodesTpl = builtin(`cc_token_codes_inc`)
 
 //go:embed templates/*
 var fs embed.FS

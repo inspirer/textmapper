@@ -15,6 +15,9 @@
 
 namespace {{.Options.Namespace}} {
 {{ block "onBeforeParserImpl" .}}{{end -}}
+{{ if .Options.FlexMode -}}
+{{ template "flexTranslate" . -}}
+{{ end -}}
 {{ template "parserTables" . -}}
 {{ template "lalr" . -}}
 {{ template "gotoState" . -}}
@@ -36,6 +39,24 @@ namespace {{.Options.Namespace}} {
 }  // namespace {{.Options.Namespace}}
 {{/**/ -}}
 
+{{ define "flexTranslate" -}}
+constexpr inline int16_t tmTranslate[] = {
+{{- int_array_columns .FlexTranslate "  " 10 -}}
+};
+constexpr size_t tmTranslateLen =
+    sizeof(tmTranslate) / sizeof(tmTranslate[0]);
+
+// In the Flex and Yacc token encoding, the first 256 values are reserved for
+// single-byte tokens (usually punctuation). This function maps Flex produced
+// numbers to the corresponding token ID in the Textmapper token space.
+Token CreateTokenFromFlex(int32_t t) {
+  if (t >= 0 && t < tmTranslateLen) {
+    return Token(tmTranslate[t]);
+  }
+  return Token::INVALID_TOKEN;
+}
+
+{{ end -}}
 {{ define "parserTables" -}}
 {{ $stateType := bits_per_element .Parser.Tables.FromTo -}}
 {{ range .Parser.Tables.Markers -}}

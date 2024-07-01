@@ -103,6 +103,9 @@ constexpr inline int32_t errSymbol = {{ .Parser.ErrorSymbol }};
 {{ end -}}
 
 ABSL_MUST_USE_RESULT std::string symbolName(int32_t sym);
+{{ if .Options.FlexMode -}}
+ABSL_MUST_USE_RESULT Token CreateTokenFromFlex(int32_t t);
+{{ end -}}
 
 {{block "onBeforeParser" .}}{{end -}}
 

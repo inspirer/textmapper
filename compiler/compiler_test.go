@@ -34,6 +34,7 @@ var testFiles = []string{
 	"lr0.tmerr",
 	"greedy.tmerr",
 	"inject.tmerr",
+	"flexmode.tmerr",
 }
 
 func TestErrors(t *testing.T) {
