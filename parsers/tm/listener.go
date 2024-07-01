@@ -221,7 +221,6 @@ var Expression = []NodeType{
 	BooleanLiteral,
 	IntegerLiteral,
 	StringLiteral,
-	Symref,
 	SyntaxProblem,
 }
 

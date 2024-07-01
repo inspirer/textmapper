@@ -70,7 +70,8 @@ multilineComment: /\/\*{commentChars}\*\//   (space)
 error:
 invalid_token:
 
-ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
+ID: /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?/  (class)
+quoted_id:   /'([^\n\\']|\\.)*'/
 
 'as':        /as/
 'false':     /false/
@@ -133,8 +134,10 @@ regexp: /\/{reFirst}{reChar}*\//
 
 # Basic nonterminals.
 
-identifier<flag Keywords = false> -> Identifier:
+identifier<flag Keywords = false, flag Str = false> -> Identifier:
     ID
+  | [Str] quoted_id
+  | [Str] scon
 
 # Soft keywords
   | 'brackets' | 'inline'    | 'prec'     | 'shift'     | 'input'
@@ -195,8 +198,8 @@ option -> Option:
     key=identifier '=' value=expression ;
 
 symref<flag Args> -> Symref:
-    [Args]  name=identifier args=args?
-  | [!Args] name=identifier
+    [Args]  name=identifier<+Str> args=args?
+  | [!Args] name=identifier<+Str>
 ;
 
 rawType -> RawType:
@@ -229,7 +232,7 @@ start_conditions -> StartConditions:
 ;
 
 lexeme -> Lexeme:
-    start_conditions? name=identifier rawTypeopt ':'
+    start_conditions? name=identifier<+Str> rawTypeopt ':'
         (pattern priority=integer_literal? attrs=lexeme_attrs? command? | attrs=lexeme_attrs)? ;
 
 lexeme_attrs -> LexemeAttrs:
@@ -359,8 +362,8 @@ rhsStateMarker -> StateMarker:
 
 rhsAssignment -> RhsPart:
     rhsOptional
-  | id=identifier '=' inner=rhsOptional      -> RhsAssignment
-  | id=identifier '+=' inner=rhsOptional     -> RhsPlusAssignment
+  | id=identifier<+Str> '=' inner=rhsOptional      -> RhsAssignment
+  | id=identifier<+Str> '+=' inner=rhsOptional     -> RhsPlusAssignment
 ;
 
 rhsOptional -> RhsPart:
@@ -472,7 +475,6 @@ predicate_expression -> PredicateExpression:
 
 expression -> Expression:
     literal
-  | symref<+Args>
   | '[' (expression separator ',')+? ','? ']'                         -> Array
   | syntax_problem
 ;

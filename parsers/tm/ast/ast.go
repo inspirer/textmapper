@@ -138,7 +138,6 @@ func (Array) expressionNode()          {}
 func (BooleanLiteral) expressionNode() {}
 func (IntegerLiteral) expressionNode() {}
 func (StringLiteral) expressionNode()  {}
-func (Symref) expressionNode()         {}
 func (SyntaxProblem) expressionNode()  {}
 func (NilNode) expressionNode()        {}
 

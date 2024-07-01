@@ -36,7 +36,7 @@ lastInt: /[0-9]+(\n|{eoi})/
 'as':        /as/
 
 'if': /if/
-'else': /else/
+"else": /else/
 
 # Punctuation
 '{': /\{/
@@ -195,7 +195,7 @@ Decl2 -> Decl2Interface :
 
 If -> If:
     'if' '(' O ')' then=Decl2[then]   { /* 4: $then */ }
-  | 'if' '(' O ')' then=Decl2 'else' else=Decl2
+  | 'if' '(' O ')' then=Decl2 "else" else=Decl2
 ;
 
 %nonassoc 'as';

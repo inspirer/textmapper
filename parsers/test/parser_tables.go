@@ -170,7 +170,7 @@ var tmRuleType = [...]uint32{
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'eval'
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'as'
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'if'
-	0,                   // setof_not_EOI_or_DOT_or_RBRACE : 'else'
+	0,                   // setof_not_EOI_or_DOT_or_RBRACE : "else"
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '{'
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : '('
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : ')'
@@ -217,7 +217,7 @@ var tmRuleType = [...]uint32{
 	uint32(Decl2),       // Decl2 : 'decl2'
 	0,                   // Decl2 : If
 	uint32(If),          // If : 'if' '(' O ')' Decl2
-	uint32(If),          // If : 'if' '(' O ')' Decl2 'else' Decl2
+	uint32(If),          // If : 'if' '(' O ')' Decl2 "else" Decl2
 	uint32(PlusExpr),    // expr : expr '+' primaryExpr
 	0,                   // expr : customPlus
 	0,                   // expr : primaryExpr

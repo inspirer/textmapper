@@ -18,6 +18,9 @@ var lexerTests = []struct {
 		`«abc123»`,
 		`«_abc_»`,
 	}},
+	{token.QUOTED_ID, []string{
+		`«'a'» «'\n'»`,
+	}},
 	{token.COMMENT, []string{
 		` «// foo»
 		  «# bar»

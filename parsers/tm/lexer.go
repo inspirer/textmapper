@@ -136,182 +136,182 @@ recovered:
 		switch hh {
 		case 2:
 			if hash == 0x43733a82 && "lookahead" == l.source[l.tokenOffset:l.offset] {
-				rule = 67
+				rule = 68
 				break
 			}
 			if hash == 0x6856c82 && "shift" == l.source[l.tokenOffset:l.offset] {
-				rule = 76
+				rule = 77
 				break
 			}
 		case 6:
 			if hash == 0xac107346 && "assert" == l.source[l.tokenOffset:l.offset] {
-				rule = 47
+				rule = 48
 				break
 			}
 			if hash == 0x688f106 && "space" == l.source[l.tokenOffset:l.offset] {
-				rule = 77
+				rule = 78
 				break
 			}
 		case 7:
 			if hash == 0x32a007 && "left" == l.source[l.tokenOffset:l.offset] {
-				rule = 65
+				rule = 66
 				break
 			}
 		case 10:
 			if hash == 0x5fb57ca && "input" == l.source[l.tokenOffset:l.offset] {
-				rule = 60
+				rule = 61
 				break
 			}
 		case 11:
 			if hash == 0xfde4e8cb && "brackets" == l.source[l.tokenOffset:l.offset] {
-				rule = 48
+				rule = 49
 				break
 			}
 		case 12:
 			if hash == 0x621a30c && "lexer" == l.source[l.tokenOffset:l.offset] {
-				rule = 66
+				rule = 67
 				break
 			}
 		case 13:
 			if hash == 0x5c2854d && "empty" == l.source[l.tokenOffset:l.offset] {
-				rule = 50
+				rule = 51
 				break
 			}
 			if hash == 0x658188d && "param" == l.source[l.tokenOffset:l.offset] {
-				rule = 71
+				rule = 72
 				break
 			}
 		case 14:
 			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
-				rule = 46
+				rule = 47
 				break
 			}
 		case 17:
 			if hash == 0xb96ca991 && "inject" == l.source[l.tokenOffset:l.offset] {
-				rule = 58
+				rule = 59
 				break
 			}
 		case 24:
 			if hash == 0x9fd29358 && "language" == l.source[l.tokenOffset:l.offset] {
-				rule = 63
+				rule = 64
 				break
 			}
 		case 25:
 			if hash == 0xb328ec59 && "expect" == l.source[l.tokenOffset:l.offset] {
-				rule = 51
+				rule = 52
 				break
 			}
 			if hash == 0xb96da299 && "inline" == l.source[l.tokenOffset:l.offset] {
-				rule = 59
+				rule = 60
 				break
 			}
 		case 26:
 			if hash == 0xb32abf1a && "extend" == l.source[l.tokenOffset:l.offset] {
-				rule = 54
+				rule = 55
 				break
 			}
 		case 28:
 			if hash == 0x677c21c && "right" == l.source[l.tokenOffset:l.offset] {
-				rule = 74
+				rule = 75
 				break
 			}
 		case 31:
 			if hash == 0xc4ab3c1f && "parser" == l.source[l.tokenOffset:l.offset] {
-				rule = 72
+				rule = 73
 				break
 			}
 		case 32:
 			if hash == 0x540c92a0 && "nonempty" == l.source[l.tokenOffset:l.offset] {
-				rule = 70
+				rule = 71
 				break
 			}
 			if hash == 0x34a220 && "prec" == l.source[l.tokenOffset:l.offset] {
-				rule = 73
+				rule = 74
 				break
 			}
 		case 34:
 			if hash == 0x1bc62 && "set" == l.source[l.tokenOffset:l.offset] {
-				rule = 45
+				rule = 46
 				break
 			}
 		case 35:
 			if hash == 0x5cb1923 && "false" == l.source[l.tokenOffset:l.offset] {
-				rule = 42
+				rule = 43
 				break
 			}
 			if hash == 0xb5e903a3 && "global" == l.source[l.tokenOffset:l.offset] {
-				rule = 57
+				rule = 58
 				break
 			}
 		case 37:
 			if hash == 0xb96173a5 && "import" == l.source[l.tokenOffset:l.offset] {
-				rule = 43
+				rule = 44
 				break
 			}
 			if hash == 0x6748e2e5 && "separator" == l.source[l.tokenOffset:l.offset] {
-				rule = 44
+				rule = 45
 				break
 			}
 		case 40:
 			if hash == 0x53d6f968 && "nonassoc" == l.source[l.tokenOffset:l.offset] {
-				rule = 69
+				rule = 70
 				break
 			}
 		case 42:
 			if hash == 0xbddafb2a && "layout" == l.source[l.tokenOffset:l.offset] {
-				rule = 64
+				rule = 65
 				break
 			}
 		case 44:
 			if hash == 0x2fff6c && "flag" == l.source[l.tokenOffset:l.offset] {
-				rule = 55
+				rule = 56
 				break
 			}
 		case 50:
 			if hash == 0xc32 && "as" == l.source[l.tokenOffset:l.offset] {
-				rule = 41
+				rule = 42
 				break
 			}
 		case 51:
 			if hash == 0xc1e742f3 && "no-eoi" == l.source[l.tokenOffset:l.offset] {
-				rule = 68
+				rule = 69
 				break
 			}
 			if hash == 0x73 && "s" == l.source[l.tokenOffset:l.offset] {
-				rule = 75
+				rule = 76
 				break
 			}
 		case 52:
 			if hash == 0x748c034 && "expect-rr" == l.source[l.tokenOffset:l.offset] {
-				rule = 52
+				rule = 53
 				break
 			}
 			if hash == 0x8d046634 && "explicit" == l.source[l.tokenOffset:l.offset] {
-				rule = 53
+				rule = 54
 				break
 			}
 		case 53:
 			if hash == 0x6be81575 && "generate" == l.source[l.tokenOffset:l.offset] {
-				rule = 56
+				rule = 57
 				break
 			}
 		case 56:
 			if hash == 0x5a5a978 && "class" == l.source[l.tokenOffset:l.offset] {
-				rule = 49
+				rule = 50
 				break
 			}
 			if hash == 0x78 && "x" == l.source[l.tokenOffset:l.offset] {
-				rule = 78
+				rule = 79
 				break
 			}
 		case 57:
 			if hash == 0x1df56d39 && "interface" == l.source[l.tokenOffset:l.offset] {
-				rule = 61
+				rule = 62
 				break
 			}
 		case 59:
 			if hash == 0x3291bb && "lalr" == l.source[l.tokenOffset:l.offset] {
-				rule = 62
+				rule = 63
 				break
 			}
 		}

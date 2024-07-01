@@ -10,16 +10,15 @@ package = «true»
 # err: bool is expected
 eventBased = «"foo"»
 
-# err: string is expected
 # err: 123 is not a valid identifier
 # err: % is not a valid identifier
-extraTypes = ["abc", «eoi», «" 123 -> _tty -> % "», «" a123 -> _tty -> % "»]
+extraTypes = ["abc", "eoi", «" 123 -> _tty -> % "», «" a123 -> _tty -> % "»]
 
-# err: reinitialization of 'extraTypes', previously declared on line 16
+# err: reinitialization of 'extraTypes', previously declared on line 15
 # err: list of strings with names is expected. E.g. ["Foo", "Bar -> Expr"]
-«extraTypes» = «bool»
+«extraTypes» = «123»
 
-# err: reinitialization of 'extraTypes', previously declared on line 20
+# err: reinitialization of 'extraTypes', previously declared on line 19
 # err: cannot parse string literal: invalid syntax
 «extraTypes» = [«"\x"»]
 

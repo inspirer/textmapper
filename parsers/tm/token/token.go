@@ -54,6 +54,7 @@ const (
 	LBRACE            // {
 	ERROR
 	ID
+	QUOTED_ID
 	AS            // as
 	FALSE         // false
 	IMPORT        // import
@@ -141,6 +142,7 @@ var tokenStr = [...]string{
 	"{",
 	"ERROR",
 	"ID",
+	"QUOTED_ID",
 	"as",
 	"false",
 	"import",

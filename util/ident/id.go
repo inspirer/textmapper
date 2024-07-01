@@ -59,7 +59,7 @@ var charName = map[rune]string{
 // Produce produces a valid identifier for a symbol name.
 func Produce(name string, style Style) string {
 	var inQuotes bool
-	if ln := len(name); ln > 2 && name[0] == '\'' && name[ln-1] == '\'' {
+	if ln := len(name); ln > 2 && (name[0] == '\'' && name[ln-1] == '\'' || name[0] == '"' && name[ln-1] == '"') {
 		name = name[1 : ln-1]
 		inQuotes = true
 		if name == `\\` && style == UpperCase {

@@ -45,6 +45,7 @@
 %token LBRACE
 %token ERROR
 %token ID
+%token QUOTED_ID
 %token AS
 %token FALSE
 %token IMPORT
@@ -166,6 +167,44 @@ identifier_Keywords :
 | SET
 ;
 
+identifier_Str :
+  ID
+| QUOTED_ID
+| SCON
+| BRACKETS
+| INLINE
+| PREC
+| SHIFT
+| INPUT
+| LEFT
+| RIGHT
+| NONASSOC
+| GENERATE
+| ASSERT
+| EMPTY
+| NONEMPTY
+| GLOBAL
+| EXPLICIT
+| LOOKAHEAD
+| PARAM
+| FLAG
+| NOMINUSEOI
+| CHAR_S
+| CHAR_X
+| EXPECT
+| EXPECTMINUSRR
+| CLASS
+| INTERFACE
+| SPACE
+| EXTEND
+| INJECT
+| LAYOUT
+| LANGUAGE
+| LALR
+| LEXER
+| PARSER
+;
+
 integer_literal :
   ICON
 ;
@@ -241,12 +280,12 @@ option :
 ;
 
 symref :
-  identifier
+  identifier_Str
 ;
 
 symref_Args :
-  identifier args
-| identifier
+  identifier_Str args
+| identifier_Str
 ;
 
 rawType :
@@ -292,26 +331,26 @@ stateref_list_Comma_separated :
 ;
 
 lexeme :
-  start_conditions identifier rawTypeopt COLON pattern integer_literal lexeme_attrs command
-| start_conditions identifier rawTypeopt COLON pattern integer_literal lexeme_attrs
-| start_conditions identifier rawTypeopt COLON pattern integer_literal command
-| start_conditions identifier rawTypeopt COLON pattern integer_literal
-| start_conditions identifier rawTypeopt COLON pattern lexeme_attrs command
-| start_conditions identifier rawTypeopt COLON pattern lexeme_attrs
-| start_conditions identifier rawTypeopt COLON pattern command
-| start_conditions identifier rawTypeopt COLON pattern
-| start_conditions identifier rawTypeopt COLON lexeme_attrs
-| start_conditions identifier rawTypeopt COLON
-| identifier rawTypeopt COLON pattern integer_literal lexeme_attrs command
-| identifier rawTypeopt COLON pattern integer_literal lexeme_attrs
-| identifier rawTypeopt COLON pattern integer_literal command
-| identifier rawTypeopt COLON pattern integer_literal
-| identifier rawTypeopt COLON pattern lexeme_attrs command
-| identifier rawTypeopt COLON pattern lexeme_attrs
-| identifier rawTypeopt COLON pattern command
-| identifier rawTypeopt COLON pattern
-| identifier rawTypeopt COLON lexeme_attrs
-| identifier rawTypeopt COLON
+  start_conditions identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs command
+| start_conditions identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs
+| start_conditions identifier_Str rawTypeopt COLON pattern integer_literal command
+| start_conditions identifier_Str rawTypeopt COLON pattern integer_literal
+| start_conditions identifier_Str rawTypeopt COLON pattern lexeme_attrs command
+| start_conditions identifier_Str rawTypeopt COLON pattern lexeme_attrs
+| start_conditions identifier_Str rawTypeopt COLON pattern command
+| start_conditions identifier_Str rawTypeopt COLON pattern
+| start_conditions identifier_Str rawTypeopt COLON lexeme_attrs
+| start_conditions identifier_Str rawTypeopt COLON
+| identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs command
+| identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs
+| identifier_Str rawTypeopt COLON pattern integer_literal command
+| identifier_Str rawTypeopt COLON pattern integer_literal
+| identifier_Str rawTypeopt COLON pattern lexeme_attrs command
+| identifier_Str rawTypeopt COLON pattern lexeme_attrs
+| identifier_Str rawTypeopt COLON pattern command
+| identifier_Str rawTypeopt COLON pattern
+| identifier_Str rawTypeopt COLON lexeme_attrs
+| identifier_Str rawTypeopt COLON
 ;
 
 lexeme_attrs :
@@ -529,8 +568,8 @@ rhsStateMarker :
 
 rhsAssignment :
   rhsOptional
-| identifier ASSIGN rhsOptional
-| identifier PLUSASSIGN rhsOptional
+| identifier_Str ASSIGN rhsOptional
+| identifier_Str PLUSASSIGN rhsOptional
 ;
 
 rhsOptional :
@@ -645,7 +684,6 @@ predicate_expression :
 
 expression :
   literal
-| symref_Args
 | LBRACK expression_list_Comma_separated COMMA RBRACK
 | LBRACK expression_list_Comma_separated RBRACK
 | LBRACK COMMA RBRACK

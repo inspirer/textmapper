@@ -87,6 +87,9 @@ var idTests = []struct {
 	{"'f_a'", UpperUnderscores, "F_A"},
 	{"'foo_'", UpperUnderscores, "FOO_"},
 
+	{`"__"`, UpperUnderscores, "__"},
+	{`"f_a"`, UpperUnderscores, "F_A"},
+
 	// Special cases (compatibility with legacy Textmapper).
 	{`'\'`, UpperCase, "ESC"},
 	{`'\''`, UpperCase, "APOS"},

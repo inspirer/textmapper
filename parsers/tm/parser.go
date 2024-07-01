@@ -68,11 +68,11 @@ const (
 )
 
 func (p *Parser) ParseFile(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 0, 542, lexer)
+	return p.parse(ctx, 0, 610, lexer)
 }
 
 func (p *Parser) ParseNonterm(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 1, 543, lexer)
+	return p.parse(ctx, 1, 611, lexer)
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
@@ -383,7 +383,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 }
 
 func gotoState(state int16, symbol int32) int16 {
-	const numTokens = 82
+	const numTokens = 83
 	if symbol >= numTokens {
 		pos := tmGoto[symbol-numTokens] + int32(state)
 		if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int16(state) {
@@ -425,41 +425,41 @@ restart:
 
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
-	case 177: // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
+	case 212: // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 178: // nonterm : 'extend' identifier nonterm_alias ':' rules ';'
+	case 213: // nonterm : 'extend' identifier nonterm_alias ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 179: // nonterm : 'extend' identifier reportClause ':' rules ';'
+	case 214: // nonterm : 'extend' identifier reportClause ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 180: // nonterm : 'extend' identifier ':' rules ';'
+	case 215: // nonterm : 'extend' identifier ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 181: // nonterm : 'inline' identifier nonterm_params nonterm_alias reportClause ':' rules ';'
+	case 216: // nonterm : 'inline' identifier nonterm_params nonterm_alias reportClause ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 182: // nonterm : 'inline' identifier nonterm_params nonterm_alias ':' rules ';'
+	case 217: // nonterm : 'inline' identifier nonterm_params nonterm_alias ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 183: // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
+	case 218: // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 184: // nonterm : 'inline' identifier nonterm_params ':' rules ';'
+	case 219: // nonterm : 'inline' identifier nonterm_params ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 185: // nonterm : 'inline' identifier nonterm_alias reportClause ':' rules ';'
+	case 220: // nonterm : 'inline' identifier nonterm_alias reportClause ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 186: // nonterm : 'inline' identifier nonterm_alias ':' rules ';'
+	case 221: // nonterm : 'inline' identifier nonterm_alias ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 187: // nonterm : 'inline' identifier reportClause ':' rules ';'
+	case 222: // nonterm : 'inline' identifier reportClause ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 188: // nonterm : 'inline' identifier ':' rules ';'
+	case 223: // nonterm : 'inline' identifier ':' rules ';'
 		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
-	case 201: // directive : '%' 'assert' 'empty' rhsSet ';'
+	case 236: // directive : '%' 'assert' 'empty' rhsSet ';'
 		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 202: // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	case 237: // directive : '%' 'assert' 'nonempty' rhsSet ';'
 		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
-	case 211: // inputref : symref 'no-eoi'
+	case 246: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 235: // rhsSuffix : '%' 'prec' symref
+	case 270: // rhsSuffix : '%' 'prec' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 236: // rhsSuffix : '%' 'shift' symref
+	case 271: // rhsSuffix : '%' 'shift' symref
 		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 256: // lookahead_predicate : '!' symref
+	case 291: // lookahead_predicate : '!' symref
 		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {
