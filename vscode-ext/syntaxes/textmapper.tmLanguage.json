@@ -96,6 +96,28 @@
 				}
 			]
 		},
+		"sq_tokenref": {
+			"name": "entity.name.function",
+			"begin": "'",
+			"end": "'",
+			"patterns": [
+				{
+					"name": "constant.character.escape.textmapper",
+					"match": "\\\\."
+				}
+			]
+		},
+		"dq_tokenref": {
+			"name": "entity.name.function",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.textmapper",
+					"match": "\\\\."
+				}
+			]
+		},
 		"lexer.start": {
 			"begin": "^:: lexer",
 			"beginCaptures": {
@@ -120,10 +142,13 @@
 					"include": "#templates"
 				},
 				{
-					"include": "#reference"
+					"include": "#directive"
 				},
 				{
-					"include": "#directive"
+					"include": "#sq_tokenref"
+				},
+				{
+					"include": "#dq_tokenref"
 				}
 			]
 		},
@@ -177,7 +202,10 @@
 					"include": "#keywords"
 				},
 				{
-					"include": "#reference"
+					"include": "#sq_tokenref"
+				},
+				{
+					"include": "#dq_tokenref"
 				}
 			]
 		},
@@ -216,6 +244,9 @@
 					"include": "#keywords"
 				},
 				{
+					"include": "#strings"
+				},
+				{
 					"name": "entity.other.inherited-class.textmapper",
 					"match": "\\b(\\w+)\\b"
 				}
@@ -252,7 +283,14 @@
 					"include": "#rule.code"
 				},
 				{
-					"include": "#reference"
+					"include": "#sq_tokenref"
+				},
+				{
+					"include": "#dq_tokenref"
+				},
+				{
+					"name": "entity.other.inherited-class.textmapper",
+					"match": "%empty\\b"
 				}
 			]
 		},
@@ -297,14 +335,6 @@
 							"include": "#regexp"
 						}
 					]
-				}
-			]
-		},
-		"reference": {
-			"patterns": [
-				{
-					"name": "constant.other.terminal.textmapper",
-					"match": "'([^\\n\\\\']|\\\\.)*'"
 				}
 			]
 		},
