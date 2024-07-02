@@ -46,12 +46,31 @@ a: ',';
 
 
 empty: «»;
-# err: empty rule without an %empty marker
+# err: empty alternative without an %empty marker
+
+empty2: ( «»| a);
+# err: empty alternative without an %empty marker
 
 good_rule: %empty;
 
 hidden_empty:
    «»| abc
-# err: empty rule without an %empty marker
+# err: empty alternative without an %empty marker
    | f
 ;
+
+double_empty:
+    %empty «%empty» ;
+# err: duplicate %empty marker
+
+inner_double_empty:
+    (%empty «%empty») ;
+# err: duplicate %empty marker
+
+double_prec:
+    %prec 'n' «%prec 'm'» a ;
+# err: duplicate %prec marker
+
+inner_prec: ( ««%prec 'm'»»| a);
+# err: empty alternative without an %empty marker
+# err: precedence markers are only allowed in the top level rules

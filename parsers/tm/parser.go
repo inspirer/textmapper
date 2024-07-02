@@ -68,11 +68,11 @@ const (
 )
 
 func (p *Parser) ParseFile(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 0, 647, lexer)
+	return p.parse(ctx, 0, 632, lexer)
 }
 
 func (p *Parser) ParseNonterm(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 1, 648, lexer)
+	return p.parse(ctx, 1, 633, lexer)
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
@@ -455,11 +455,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
 	case 267: // inputref : symref 'no-eoi'
 		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 299: // rhsSuffix : '%' 'prec' symref
-		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 300: // rhsSuffix : '%' 'shift' symref
-		p.listener(Name, rhs[1].sym.offset, rhs[1].sym.endoffset)
-	case 321: // lookahead_predicate : '!' symref
+	case 306: // lookahead_predicate : '!' symref
 		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
 	}
 	if nt := tmRuleType[rule]; nt != 0 {

@@ -46,7 +46,6 @@ var (
 	LexerState           = func(t tm.NodeType) bool { return t == tm.LexerState }
 	ListSeparator        = func(t tm.NodeType) bool { return t == tm.ListSeparator }
 	LookaheadPredicate   = func(t tm.NodeType) bool { return t == tm.LookaheadPredicate }
-	Name                 = func(t tm.NodeType) bool { return t == tm.Name }
 	NamedPattern         = func(t tm.NodeType) bool { return t == tm.NamedPattern }
 	NoEoi                = func(t tm.NodeType) bool { return t == tm.NoEoi }
 	NonEmpty             = func(t tm.NodeType) bool { return t == tm.NonEmpty }
@@ -80,10 +79,10 @@ var (
 	RhsPlusAssignment    = func(t tm.NodeType) bool { return t == tm.RhsPlusAssignment }
 	RhsPlusList          = func(t tm.NodeType) bool { return t == tm.RhsPlusList }
 	RhsPlusQuantifier    = func(t tm.NodeType) bool { return t == tm.RhsPlusQuantifier }
+	RhsPrec              = func(t tm.NodeType) bool { return t == tm.RhsPrec }
 	RhsSet               = func(t tm.NodeType) bool { return t == tm.RhsSet }
 	RhsStarList          = func(t tm.NodeType) bool { return t == tm.RhsStarList }
 	RhsStarQuantifier    = func(t tm.NodeType) bool { return t == tm.RhsStarQuantifier }
-	RhsSuffix            = func(t tm.NodeType) bool { return t == tm.RhsSuffix }
 	RhsSymbol            = func(t tm.NodeType) bool { return t == tm.RhsSymbol }
 	Rule                 = func(t tm.NodeType) bool { return t == tm.Rule }
 	SetAnd               = func(t tm.NodeType) bool { return t == tm.SetAnd }

@@ -513,28 +513,12 @@ rules :
 ;
 
 rule0 :
-  predicate rhsParts rhsSuffix reportClause
-| predicate rhsParts rhsSuffix
-| predicate rhsParts reportClause
+  predicate rhsParts reportClause
 | predicate rhsParts
-| predicate rhsEmpty rhsSuffix reportClause
-| predicate rhsEmpty rhsSuffix
-| predicate rhsEmpty reportClause
-| predicate rhsEmpty
-| predicate rhsSuffix reportClause
-| predicate rhsSuffix
 | predicate reportClause
 | predicate
-| rhsParts rhsSuffix reportClause
-| rhsParts rhsSuffix
 | rhsParts reportClause
 | rhsParts
-| rhsEmpty rhsSuffix reportClause
-| rhsEmpty rhsSuffix
-| rhsEmpty reportClause
-| rhsEmpty
-| rhsSuffix reportClause
-| rhsSuffix
 | reportClause
 | %empty
 | syntax_problem
@@ -542,11 +526,6 @@ rule0 :
 
 predicate :
   LBRACK predicate_expression RBRACK
-;
-
-rhsSuffix :
-  REM PREC symref
-| REM SHIFT symref
 ;
 
 reportClause :
@@ -560,10 +539,6 @@ reportAs :
   AS identifier
 ;
 
-rhsEmpty :
-  REM EMPTY
-;
-
 rhsParts :
   rhsPart
 | rhsParts rhsPart_OrSyntaxError
@@ -574,6 +549,8 @@ rhsPart :
 | command
 | rhsStateMarker
 | rhsLookahead
+| REM EMPTY
+| REM PREC symref
 ;
 
 rhsPart_OrSyntaxError :
@@ -581,6 +558,8 @@ rhsPart_OrSyntaxError :
 | command
 | rhsStateMarker
 | rhsLookahead
+| REM EMPTY
+| REM PREC symref
 | syntax_problem
 ;
 

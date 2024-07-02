@@ -321,26 +321,18 @@ rules:
 %interface Rule0;
 
 rule0 -> Rule0:
-    predicate? (rhsParts | rhsEmpty)? rhsSuffix? reportClause?       -> Rule
+    predicate? rhsParts? reportClause?       -> Rule
   | syntax_problem
 ;
 
 predicate -> Predicate:
     '[' predicate_expression ']' ;
 
-rhsSuffix -> RhsSuffix:
-    '%' ('prec' -> Name) symref<~Args>
-  | '%' ('shift' -> Name) symref<~Args>
-;
-
 reportClause -> ReportClause:
     '->' action=identifier ('/' flags=(identifier separator ',')+)? reportAs? ;
 
 reportAs -> ReportAs:
     'as' identifier ;
-
-rhsEmpty -> RhsEmpty:
-    '%' 'empty' ;
 
 rhsParts:
     rhsPart
@@ -354,6 +346,8 @@ rhsPart<OrSyntaxError> -> RhsPart:
   | command
   | rhsStateMarker
   | rhsLookahead
+  | '%' 'empty'                 -> RhsEmpty
+  | '%' 'prec' symref<~Args>    -> RhsPrec
   | [OrSyntaxError] syntax_problem
 ;
 
@@ -391,13 +385,13 @@ listSeparator -> ListSeparator:
     'separator' separator_=references ;
 
 rhsPrimary -> RhsPart:
-    reference=symref<+Args>                           -> RhsSymbol
-  | '(' .recoveryScope rules ')'                                     -> RhsNested
-  | '(' .recoveryScope ruleParts=rhsParts listSeparator ')' '+'      -> RhsPlusList
-  | '(' .recoveryScope ruleParts=rhsParts listSeparator ')' '*'      -> RhsStarList
-  | inner=rhsPrimary '+'                              -> RhsPlusQuantifier
-  | inner=rhsPrimary '*'                              -> RhsStarQuantifier
-  | '$' '(' .recoveryScope rules ')'                                 -> RhsIgnored
+    reference=symref<+Args>                                      -> RhsSymbol
+  | '(' .recoveryScope rules ')'                                 -> RhsNested
+  | '(' .recoveryScope ruleParts=rhsParts listSeparator ')' '+'  -> RhsPlusList
+  | '(' .recoveryScope ruleParts=rhsParts listSeparator ')' '*'  -> RhsStarList
+  | inner=rhsPrimary '+'                                         -> RhsPlusQuantifier
+  | inner=rhsPrimary '*'                                         -> RhsStarQuantifier
+  | '$' '(' .recoveryScope rules ')'                             -> RhsIgnored
   | rhsSet
 ;
 

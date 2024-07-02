@@ -48,8 +48,7 @@ const (
 	LexerState         // name=Identifier
 	ListSeparator      // separator=(Symref)+
 	LookaheadPredicate // Not? Symref
-	Name
-	NamedPattern // name=Identifier Pattern
+	NamedPattern       // name=Identifier Pattern
 	NoEoi
 	NonEmpty
 	Nonterm       // Extend? Inline? name=Identifier params=NontermParams? alias=NontermAlias? RawType? ReportClause? (Rule0)+
@@ -82,12 +81,12 @@ const (
 	RhsPlusAssignment    // id=Identifier inner=RhsPart
 	RhsPlusList          // ruleParts=(RhsPart)+ ListSeparator
 	RhsPlusQuantifier    // inner=RhsPart
+	RhsPrec              // Symref
 	RhsSet               // expr=SetExpression
 	RhsStarList          // ruleParts=(RhsPart)+ ListSeparator
 	RhsStarQuantifier    // inner=RhsPart
-	RhsSuffix            // Name Symref
 	RhsSymbol            // reference=Symref
-	Rule                 // Predicate? RhsEmpty? (RhsPart)* RhsSuffix? ReportClause?
+	Rule                 // Predicate? (RhsPart)* ReportClause?
 	SetAnd               // left=SetExpression right=SetExpression
 	SetComplement        // inner=SetExpression
 	SetCompound          // inner=SetExpression
@@ -147,7 +146,6 @@ var nodeTypeStr = [...]string{
 	"LexerState",
 	"ListSeparator",
 	"LookaheadPredicate",
-	"Name",
 	"NamedPattern",
 	"NoEoi",
 	"NonEmpty",
@@ -181,10 +179,10 @@ var nodeTypeStr = [...]string{
 	"RhsPlusAssignment",
 	"RhsPlusList",
 	"RhsPlusQuantifier",
+	"RhsPrec",
 	"RhsSet",
 	"RhsStarList",
 	"RhsStarQuantifier",
-	"RhsSuffix",
 	"RhsSymbol",
 	"Rule",
 	"SetAnd",
@@ -284,6 +282,7 @@ var RhsPart = []NodeType{
 	RhsAlias,
 	RhsAssignment,
 	RhsCast,
+	RhsEmpty,
 	RhsIgnored,
 	RhsLookahead,
 	RhsNested,
@@ -291,6 +290,7 @@ var RhsPart = []NodeType{
 	RhsPlusAssignment,
 	RhsPlusList,
 	RhsPlusQuantifier,
+	RhsPrec,
 	RhsSet,
 	RhsStarList,
 	RhsStarQuantifier,

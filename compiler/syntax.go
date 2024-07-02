@@ -812,14 +812,14 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
 		return &syntax.Expr{Kind: syntax.Optional, Sub: subs, Origin: p}
 	case *ast.RhsPlusList:
-		seq := c.convertSequence(p.RuleParts(), nonterm, p)
+		seq := c.convertSequence(p.RuleParts(), nonterm, false /*topLevel*/, p)
 		subs := []*syntax.Expr{seq}
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
 			subs = []*syntax.Expr{seq, sep}
 		}
 		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Pos: c.allocatePos(), Origin: p}
 	case *ast.RhsStarList:
-		seq := c.convertSequence(p.RuleParts(), nonterm, p)
+		seq := c.convertSequence(p.RuleParts(), nonterm, false /*topLevel*/, p)
 		subs := []*syntax.Expr{seq}
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
 			subs = []*syntax.Expr{seq, sep}
@@ -850,10 +850,36 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 	return &syntax.Expr{Kind: syntax.Empty, Origin: p.TmNode()}
 }
 
-func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, origin status.SourceNode) *syntax.Expr {
+func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, topLevel bool, origin status.SourceNode) *syntax.Expr {
 	var subs []*syntax.Expr
+	var empty *ast.RhsEmpty
+	var nonEmpty bool
 	for _, p := range parts {
-		subs = append(subs, c.convertPart(p, nonterm))
+		switch p := p.(type) {
+		case *ast.RhsEmpty:
+			if empty != nil {
+				c.Errorf(p, "duplicate %%empty marker")
+			}
+			empty = p
+			continue
+		case *ast.RhsPrec:
+			if !topLevel {
+				c.Errorf(p, "precedence markers are only allowed in the top level rules")
+			}
+			continue
+		case *ast.Command, *ast.StateMarker:
+			// ok
+		default:
+			nonEmpty = true
+		}
+
+		out := c.convertPart(p, nonterm)
+		if out.Kind != syntax.Empty {
+			subs = append(subs, out)
+		}
+	}
+	if c.noEmptyRules && !nonEmpty && empty == nil {
+		c.Errorf(origin, "empty alternative without an %%empty marker")
 	}
 	switch len(subs) {
 	case 0:
@@ -916,23 +942,27 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 			c.rhsPos = 1
 			c.rhsNames = nil
 		}
-		expr := c.convertSequence(rule.RhsPart(), nonterm, rule)
-		if _, hasMarker := rule.RhsEmpty(); expr.Kind == syntax.Empty && c.noEmptyRules && !hasMarker {
-			c.Errorf(rule, "empty rule without an %%empty marker")
+		var prec *ast.RhsPrec
+		for _, p := range rule.RhsPart() {
+			switch p := p.(type) {
+			case *ast.RhsPrec:
+				if prec != nil {
+					c.Errorf(p, "duplicate %%prec marker")
+					break
+				}
+				prec = p
+			}
 		}
+
+		expr := c.convertSequence(rule.RhsPart(), nonterm, topLevel, rule)
 		clause, _ := rule.ReportClause()
 		expr = c.convertReportClause(clause).withDefault(defaultReport).apply(expr)
-		if suffix, ok := rule.RhsSuffix(); ok {
-			switch suffix.Name().Text() {
-			case "prec":
-				sym, _ := c.resolveRef(suffix.Symref(), nonterm)
-				if sym < c.resolver.NumTokens {
-					expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.out, Origin: suffix}
-				} else {
-					c.Errorf(suffix.Symref(), "terminal is expected")
-				}
-			default:
-				c.Errorf(suffix, "unsupported syntax")
+		if prec != nil && topLevel {
+			sym, _ := c.resolveRef(prec.Symref(), nonterm)
+			if sym < c.resolver.NumTokens {
+				expr = &syntax.Expr{Kind: syntax.Prec, Symbol: sym, Sub: []*syntax.Expr{expr}, Model: c.out, Origin: prec}
+			} else {
+				c.Errorf(prec.Symref(), "terminal is expected")
 			}
 		}
 		if pred, ok := rule.Predicate(); ok {

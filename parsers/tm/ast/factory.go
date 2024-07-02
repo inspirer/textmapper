@@ -82,8 +82,6 @@ func ToTmNode(n *Node) TmNode {
 		return &ListSeparator{n}
 	case tm.LookaheadPredicate:
 		return &LookaheadPredicate{n}
-	case tm.Name:
-		return &Name{n}
 	case tm.NamedPattern:
 		return &NamedPattern{n}
 	case tm.NoEoi:
@@ -150,14 +148,14 @@ func ToTmNode(n *Node) TmNode {
 		return &RhsPlusList{n}
 	case tm.RhsPlusQuantifier:
 		return &RhsPlusQuantifier{n}
+	case tm.RhsPrec:
+		return &RhsPrec{n}
 	case tm.RhsSet:
 		return &RhsSet{n}
 	case tm.RhsStarList:
 		return &RhsStarList{n}
 	case tm.RhsStarQuantifier:
 		return &RhsStarQuantifier{n}
-	case tm.RhsSuffix:
-		return &RhsSuffix{n}
 	case tm.RhsSymbol:
 		return &RhsSymbol{n}
 	case tm.Rule:

@@ -111,10 +111,8 @@ G2 -> A «as A» : G %prec «G» ;
 # err: reporting a selector 'as' some other node is not supported
 # err: terminal is expected
 
-G3 -> BB «as BB» : «$(G)»  «%shift G» ;
+G3 -> BB «as BB» : ;
 # err: 'as' expects a selector
-# err: unsupported syntax (*ast.RhsIgnored)
-# err: unsupported syntax
 
 G4 : a (?= G2 & «a») b ;
 # err: lookahead expressions do not support terminals
