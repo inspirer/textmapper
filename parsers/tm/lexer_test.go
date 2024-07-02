@@ -67,6 +67,17 @@ var lexerTests = []struct {
 
 		`«{ skip("{{{", '}', '\''); }» `,
 		`«{ skip("\"}\\"); }» `,
+		`«{ skip(  // }
+		       }» `,
+		`«{ skip(  /* }
+               " and ' are ok
+		     */  }» `,
+		`«{ skip(  /* }
+               " and ' are ok
+		     */}» `,
+		`«{ skip(  /* <-not closed }» `,
+		`«{ skip(  // <-not closed }» `,
+		`«{ skip(  a/b }» `,
 		"language l(a); :: lexer\n<*> { error: /abc/ «{}» }",
 	}},
 	{token.LBRACE, []string{

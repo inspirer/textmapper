@@ -1,6 +1,9 @@
 package tm
 
-import "unicode/utf8"
+import (
+	"strings"
+	"unicode/utf8"
+)
 
 func (l *Lexer) skipAction() bool {
 	open := 1
@@ -26,6 +29,26 @@ func (l *Lexer) skipAction() bool {
 			}
 		case '\\':
 			skipNext = openQuote != 0
+		case '/':
+			if openQuote != 0 || l.scanOffset >= len(l.source) {
+				break
+			}
+			switch l.source[l.scanOffset] {
+			case '*':
+				end := strings.Index(l.source[l.scanOffset+1:], "*/")
+				if end >= 0 {
+					end += l.scanOffset + 3
+					l.rewind(end)
+					continue
+				}
+			case '/':
+				end := strings.Index(l.source[l.scanOffset+1:], "\n")
+				if end >= 0 {
+					end += l.scanOffset + 2
+					l.rewind(end)
+					continue
+				}
+			}
 		case '\n':
 			l.line++
 		}
