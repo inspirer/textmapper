@@ -40,9 +40,10 @@ const (
 	InlineParameter // paramType=Identifier name=Identifier ParamValue?
 	Inputref        // reference=Symref NoEoi?
 	IntegerLiteral
-	Lexeme // StartConditions? name=Identifier RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
+	Lexeme // StartConditions? name=Identifier LexemeId? RawType? Pattern? priority=IntegerLiteral? attrs=LexemeAttrs? Command?
 	LexemeAttribute
 	LexemeAttrs        // LexemeAttribute
+	LexemeId           // Identifier
 	LexerSection       // (LexerPart)+
 	LexerState         // name=Identifier
 	ListSeparator      // separator=(Symref)+
@@ -68,11 +69,12 @@ const (
 	PredicateNotEq // ParamRef Literal
 	PredicateOr    // left=PredicateExpression right=PredicateExpression
 	RawType
-	ReportAs             // Identifier
-	ReportClause         // action=Identifier flags=(Identifier)* ReportAs?
-	RhsAlias             // inner=RhsPart name=Identifier
-	RhsAssignment        // id=Identifier inner=RhsPart
-	RhsCast              // inner=RhsPart target=Symref
+	ReportAs      // Identifier
+	ReportClause  // action=Identifier flags=(Identifier)* ReportAs?
+	RhsAlias      // inner=RhsPart name=Identifier
+	RhsAssignment // id=Identifier inner=RhsPart
+	RhsCast       // inner=RhsPart target=Symref
+	RhsEmpty
 	RhsIgnored           // (Rule0)+
 	RhsLookahead         // predicates=(LookaheadPredicate)+
 	RhsNested            // (Rule0)+
@@ -85,7 +87,7 @@ const (
 	RhsStarQuantifier    // inner=RhsPart
 	RhsSuffix            // Name Symref
 	RhsSymbol            // reference=Symref
-	Rule                 // Predicate? (RhsPart)* RhsSuffix? ReportClause?
+	Rule                 // Predicate? RhsEmpty? (RhsPart)* RhsSuffix? ReportClause?
 	SetAnd               // left=SetExpression right=SetExpression
 	SetComplement        // inner=SetExpression
 	SetCompound          // inner=SetExpression
@@ -140,6 +142,7 @@ var nodeTypeStr = [...]string{
 	"Lexeme",
 	"LexemeAttribute",
 	"LexemeAttrs",
+	"LexemeId",
 	"LexerSection",
 	"LexerState",
 	"ListSeparator",
@@ -170,6 +173,7 @@ var nodeTypeStr = [...]string{
 	"RhsAlias",
 	"RhsAssignment",
 	"RhsCast",
+	"RhsEmpty",
 	"RhsIgnored",
 	"RhsLookahead",
 	"RhsNested",

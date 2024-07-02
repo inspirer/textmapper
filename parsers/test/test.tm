@@ -60,7 +60,7 @@ lastInt: /[0-9]+(\n|{eoi})/
 multiline: /%\s*q((\n|{eoi})%\s*q)+/
 
 dquote: /"/
-'\'': /'/
+'\'' (squote): /'/
 
 # No backtracking required.
 hex = /[0-9a-fA-F]/

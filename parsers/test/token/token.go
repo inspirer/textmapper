@@ -46,7 +46,7 @@ const (
 	F_A       // f_a
 	MULTILINE
 	DQUOTE // "
-	APOS   // '
+	SQUOTE // '
 	SHARPATID
 	ZFOO // Zfoo
 	BACKTRACKINGTOKEN

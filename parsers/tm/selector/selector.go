@@ -41,6 +41,7 @@ var (
 	Lexeme               = func(t tm.NodeType) bool { return t == tm.Lexeme }
 	LexemeAttribute      = func(t tm.NodeType) bool { return t == tm.LexemeAttribute }
 	LexemeAttrs          = func(t tm.NodeType) bool { return t == tm.LexemeAttrs }
+	LexemeId             = func(t tm.NodeType) bool { return t == tm.LexemeId }
 	LexerSection         = func(t tm.NodeType) bool { return t == tm.LexerSection }
 	LexerState           = func(t tm.NodeType) bool { return t == tm.LexerState }
 	ListSeparator        = func(t tm.NodeType) bool { return t == tm.ListSeparator }
@@ -71,6 +72,7 @@ var (
 	RhsAlias             = func(t tm.NodeType) bool { return t == tm.RhsAlias }
 	RhsAssignment        = func(t tm.NodeType) bool { return t == tm.RhsAssignment }
 	RhsCast              = func(t tm.NodeType) bool { return t == tm.RhsCast }
+	RhsEmpty             = func(t tm.NodeType) bool { return t == tm.RhsEmpty }
 	RhsIgnored           = func(t tm.NodeType) bool { return t == tm.RhsIgnored }
 	RhsLookahead         = func(t tm.NodeType) bool { return t == tm.RhsLookahead }
 	RhsNested            = func(t tm.NodeType) bool { return t == tm.RhsNested }

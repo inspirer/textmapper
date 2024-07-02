@@ -61,7 +61,7 @@ multilineComment: /\/\*{commentChars}\*\//   (space)
 '&':    /&/
 '&&':   /&&/
 '$':    /$/
-'@':    /@/
+'@' (at):    /@/
 <initial, afterID, afterGT>
 '/':    /\//
 <afterGT>
@@ -232,8 +232,11 @@ start_conditions -> StartConditions:
 ;
 
 lexeme -> Lexeme:
-    start_conditions? name=identifier<+Str> rawTypeopt ':'
+    start_conditions? name=identifier<+Str> lexeme_id? rawTypeopt ':'
         (pattern priority=integer_literal? attrs=lexeme_attrs? command? | attrs=lexeme_attrs)? ;
+
+lexeme_id -> LexemeId:
+    '(' identifier<+Keywords> ')' ;
 
 lexeme_attrs -> LexemeAttrs:
     '(' lexeme_attribute ')' ;
@@ -318,7 +321,7 @@ rules:
 %interface Rule0;
 
 rule0 -> Rule0:
-    predicate? rhsParts? rhsSuffix? reportClause?       -> Rule
+    predicate? (rhsParts | rhsEmpty)? rhsSuffix? reportClause?       -> Rule
   | syntax_problem
 ;
 
@@ -335,6 +338,9 @@ reportClause -> ReportClause:
 
 reportAs -> ReportAs:
     'as' identifier ;
+
+rhsEmpty -> RhsEmpty:
+    '%' 'empty' ;
 
 rhsParts:
     rhsPart

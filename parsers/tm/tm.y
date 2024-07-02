@@ -40,7 +40,7 @@
 %token EXCL
 %token TILDE
 %token DOLLAR
-%token ATSIGN
+%token AT
 %token DIV
 %token LBRACE
 %token ERROR
@@ -331,7 +331,17 @@ stateref_list_Comma_separated :
 ;
 
 lexeme :
-  start_conditions identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs command
+  start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal lexeme_attrs command
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal lexeme_attrs
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal command
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern lexeme_attrs command
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern lexeme_attrs
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern command
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON pattern
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON lexeme_attrs
+| start_conditions identifier_Str lexeme_id rawTypeopt COLON
+| start_conditions identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs command
 | start_conditions identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs
 | start_conditions identifier_Str rawTypeopt COLON pattern integer_literal command
 | start_conditions identifier_Str rawTypeopt COLON pattern integer_literal
@@ -341,6 +351,16 @@ lexeme :
 | start_conditions identifier_Str rawTypeopt COLON pattern
 | start_conditions identifier_Str rawTypeopt COLON lexeme_attrs
 | start_conditions identifier_Str rawTypeopt COLON
+| identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal lexeme_attrs command
+| identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal lexeme_attrs
+| identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal command
+| identifier_Str lexeme_id rawTypeopt COLON pattern integer_literal
+| identifier_Str lexeme_id rawTypeopt COLON pattern lexeme_attrs command
+| identifier_Str lexeme_id rawTypeopt COLON pattern lexeme_attrs
+| identifier_Str lexeme_id rawTypeopt COLON pattern command
+| identifier_Str lexeme_id rawTypeopt COLON pattern
+| identifier_Str lexeme_id rawTypeopt COLON lexeme_attrs
+| identifier_Str lexeme_id rawTypeopt COLON
 | identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs command
 | identifier_Str rawTypeopt COLON pattern integer_literal lexeme_attrs
 | identifier_Str rawTypeopt COLON pattern integer_literal command
@@ -351,6 +371,10 @@ lexeme :
 | identifier_Str rawTypeopt COLON pattern
 | identifier_Str rawTypeopt COLON lexeme_attrs
 | identifier_Str rawTypeopt COLON
+;
+
+lexeme_id :
+  LPAREN identifier_Keywords RPAREN
 ;
 
 lexeme_attrs :
@@ -493,6 +517,10 @@ rule0 :
 | predicate rhsParts rhsSuffix
 | predicate rhsParts reportClause
 | predicate rhsParts
+| predicate rhsEmpty rhsSuffix reportClause
+| predicate rhsEmpty rhsSuffix
+| predicate rhsEmpty reportClause
+| predicate rhsEmpty
 | predicate rhsSuffix reportClause
 | predicate rhsSuffix
 | predicate reportClause
@@ -501,6 +529,10 @@ rule0 :
 | rhsParts rhsSuffix
 | rhsParts reportClause
 | rhsParts
+| rhsEmpty rhsSuffix reportClause
+| rhsEmpty rhsSuffix
+| rhsEmpty reportClause
+| rhsEmpty
 | rhsSuffix reportClause
 | rhsSuffix
 | reportClause
@@ -526,6 +558,10 @@ reportClause :
 
 reportAs :
   AS identifier
+;
+
+rhsEmpty :
+  REM EMPTY
 ;
 
 rhsParts :

@@ -31,8 +31,11 @@ func newOptionsParser(s *status.Status) *optionsParser {
 func (p *optionsParser) parseFrom(file ast.File) {
 	target, _ := file.Header().Target()
 	p.target = target.Text()
-
 	opts := p.out
+	if p.target == "cc" {
+		opts.NoEmptyRules = true
+	}
+
 	seen := make(map[string]int)
 	for _, opt := range file.Options() {
 		name := opt.Key().Text()
@@ -89,6 +92,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.OptimizeTables = p.parseExpr(opt.Value(), opts.OptimizeTables).(bool)
 		case "defaultReduce":
 			opts.DefaultReduce = p.parseExpr(opt.Value(), opts.DefaultReduce).(bool)
+		case "noEmptyRules":
+			opts.NoEmptyRules = p.parseExpr(opt.Value(), opts.NoEmptyRules).(bool)
 		case "eventFields":
 			p.validLangs(opt.Key(), "go")
 			opts.EventFields = p.parseExpr(opt.Value(), opts.EventFields).(bool)

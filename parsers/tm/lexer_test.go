@@ -110,7 +110,7 @@ var lexerTests = []struct {
 	{token.AND, []string{`«&»`}},
 	{token.ANDAND, []string{`«&&»`}},
 	{token.DOLLAR, []string{`«$»`}},
-	{token.ATSIGN, []string{`«@»`}},
+	{token.AT, []string{`«@»`}},
 
 	// Keywords.
 	{token.AS, []string{`«as»`}},

@@ -72,6 +72,8 @@ func ToTmNode(n *Node) TmNode {
 		return &LexemeAttribute{n}
 	case tm.LexemeAttrs:
 		return &LexemeAttrs{n}
+	case tm.LexemeId:
+		return &LexemeId{n}
 	case tm.LexerSection:
 		return &LexerSection{n}
 	case tm.LexerState:
@@ -132,6 +134,8 @@ func ToTmNode(n *Node) TmNode {
 		return &RhsAssignment{n}
 	case tm.RhsCast:
 		return &RhsCast{n}
+	case tm.RhsEmpty:
+		return &RhsEmpty{n}
 	case tm.RhsIgnored:
 		return &RhsIgnored{n}
 	case tm.RhsLookahead:

@@ -15,8 +15,9 @@ type resolver struct {
 	Syms      []grammar.Symbol
 	NumTokens int
 
-	syms map[string]int
-	ids  map[string]string // ID -> name
+	syms  map[string]int
+	ids   map[string]string // ID -> name
+	tokID map[string]string // ensures unique token IDs consistency
 }
 
 func newResolver(s *status.Status) *resolver {
@@ -24,6 +25,7 @@ func newResolver(s *status.Status) *resolver {
 		Status: s,
 		syms:   make(map[string]int),
 		ids:    make(map[string]string),
+		tokID:  make(map[string]string),
 	}
 }
 
@@ -48,8 +50,12 @@ func (c *resolver) addToken(name, id string, t ast.RawType, space ast.LexemeAttr
 			}
 			c.Errorf(anchor, "%v is declared as both a space and non-space terminal", name)
 		}
+		if prev := c.tokID[name]; prev != id {
+			c.Errorf(n, "%v is redeclared with a different ID (%q vs %q)", name, prev, id)
+		}
 		return sym.Index
 	}
+	c.tokID[name] = id
 	if id == "" {
 		id = ident.Produce(name, ident.UpperCase)
 	}

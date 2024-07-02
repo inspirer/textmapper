@@ -49,7 +49,7 @@ const (
 	AND               // &
 	ANDAND            // &&
 	DOLLAR            // $
-	ATSIGN            // @
+	AT                // @
 	DIV               // /
 	LBRACE            // {
 	ERROR

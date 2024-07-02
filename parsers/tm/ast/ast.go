@@ -52,6 +52,7 @@ func (n IntegerLiteral) TmNode() *Node       { return n.Node }
 func (n Lexeme) TmNode() *Node               { return n.Node }
 func (n LexemeAttribute) TmNode() *Node      { return n.Node }
 func (n LexemeAttrs) TmNode() *Node          { return n.Node }
+func (n LexemeId) TmNode() *Node             { return n.Node }
 func (n LexerSection) TmNode() *Node         { return n.Node }
 func (n LexerState) TmNode() *Node           { return n.Node }
 func (n ListSeparator) TmNode() *Node        { return n.Node }
@@ -82,6 +83,7 @@ func (n ReportClause) TmNode() *Node         { return n.Node }
 func (n RhsAlias) TmNode() *Node             { return n.Node }
 func (n RhsAssignment) TmNode() *Node        { return n.Node }
 func (n RhsCast) TmNode() *Node              { return n.Node }
+func (n RhsEmpty) TmNode() *Node             { return n.Node }
 func (n RhsIgnored) TmNode() *Node           { return n.Node }
 func (n RhsLookahead) TmNode() *Node         { return n.Node }
 func (n RhsNested) TmNode() *Node            { return n.Node }
@@ -624,6 +626,11 @@ func (n Lexeme) Name() Identifier {
 	return Identifier{child}
 }
 
+func (n Lexeme) LexemeId() (LexemeId, bool) {
+	child := n.Child(selector.LexemeId)
+	return LexemeId{child}, child.IsValid()
+}
+
 func (n Lexeme) RawType() (RawType, bool) {
 	child := n.Child(selector.RawType)
 	return RawType{child}, child.IsValid()
@@ -660,6 +667,15 @@ type LexemeAttrs struct {
 func (n LexemeAttrs) LexemeAttribute() LexemeAttribute {
 	child := n.Child(selector.LexemeAttribute)
 	return LexemeAttribute{child}
+}
+
+type LexemeId struct {
+	*Node
+}
+
+func (n LexemeId) Identifier() Identifier {
+	child := n.Child(selector.Identifier)
+	return Identifier{child}
 }
 
 type LexerSection struct {
@@ -1011,6 +1027,10 @@ func (n RhsCast) Target() Symref {
 	return Symref{child}
 }
 
+type RhsEmpty struct {
+	*Node
+}
+
 type RhsIgnored struct {
 	*Node
 }
@@ -1166,6 +1186,11 @@ type Rule struct {
 func (n Rule) Predicate() (Predicate, bool) {
 	child := n.Child(selector.Predicate)
 	return Predicate{child}, child.IsValid()
+}
+
+func (n Rule) RhsEmpty() (RhsEmpty, bool) {
+	child := n.Child(selector.RhsEmpty)
+	return RhsEmpty{child}, child.IsValid()
 }
 
 func (n Rule) RhsPart() []RhsPart {

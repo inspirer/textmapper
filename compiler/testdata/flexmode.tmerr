@@ -43,3 +43,15 @@ abc: «/[a-z]+/»  («class»)
 %input a;
 
 a: ',';
+
+
+empty: «»;
+# err: empty rule without an %empty marker
+
+good_rule: %empty;
+
+hidden_empty:
+   «»| abc
+# err: empty rule without an %empty marker
+   | f
+;

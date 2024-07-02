@@ -17,7 +17,8 @@ import (
 )
 
 type syntaxLoader struct {
-	resolver *resolver
+	resolver     *resolver
+	noEmptyRules bool
 	*status.Status
 
 	out      *syntax.Model
@@ -38,10 +39,11 @@ type syntaxLoader struct {
 	rhsNames  map[string]int
 }
 
-func newSyntaxLoader(resolver *resolver, s *status.Status) *syntaxLoader {
+func newSyntaxLoader(resolver *resolver, noEmptyRules bool, s *status.Status) *syntaxLoader {
 	return &syntaxLoader{
-		resolver: resolver,
-		Status:   s,
+		resolver:     resolver,
+		noEmptyRules: noEmptyRules,
+		Status:       s,
 
 		namedSets: make(map[string]int),
 		params:    make(map[string]int),
@@ -915,6 +917,9 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 			c.rhsNames = nil
 		}
 		expr := c.convertSequence(rule.RhsPart(), nonterm, rule)
+		if _, hasMarker := rule.RhsEmpty(); expr.Kind == syntax.Empty && c.noEmptyRules && !hasMarker {
+			c.Errorf(rule, "empty rule without an %%empty marker")
+		}
 		clause, _ := rule.ReportClause()
 		expr = c.convertReportClause(clause).withDefault(defaultReport).apply(expr)
 		if suffix, ok := rule.RhsSuffix(); ok {

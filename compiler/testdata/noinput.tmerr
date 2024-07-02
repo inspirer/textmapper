@@ -5,6 +5,10 @@
 
 a: /a/
 
+f (foo): /foo/
+«f»: /f/
+# err: f is redeclared with a different ID ("FOO" vs "")
+
 :: parser
 
 «A»: a;

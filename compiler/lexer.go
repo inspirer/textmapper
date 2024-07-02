@@ -5,12 +5,15 @@ import (
 	"log"
 	"sort"
 	"strconv"
+	"strings"
+	"unicode"
 
 	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/lex"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
 	"github.com/inspirer/textmapper/status"
 	"github.com/inspirer/textmapper/util/container"
+	"github.com/inspirer/textmapper/util/ident"
 )
 
 var noSpace = ast.LexemeAttribute{}
@@ -52,8 +55,8 @@ func (c *lexerCompiler) compile(file ast.File) {
 		return
 	}
 
-	eoi := c.resolver.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
-	out.InvalidToken = c.resolver.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
+	eoi := c.resolver.addToken(grammar.Eoi, "" /*id*/, ast.RawType{}, noSpace, nil)
+	out.InvalidToken = c.resolver.addToken(grammar.InvalidToken, "" /*id*/, ast.RawType{}, noSpace, nil)
 
 	c.addDefaultAction(out.InvalidToken)
 	c.addDefaultAction(eoi)
@@ -274,7 +277,14 @@ func (c *lexerCompiler) traverseLexer(parts []ast.LexerPart, defaultSCs []int, p
 			}
 
 			name := p.Name().Text()
-			tok := c.resolver.addToken(name, "" /*id*/, rawType, space, p.Name())
+			var id string
+			if lid, ok := p.LexemeId(); ok {
+				id = lid.Identifier().Text()
+				if strings.ContainsFunc(id, unicode.IsLower) {
+					id = ident.Produce(id, ident.UpperCase)
+				}
+			}
+			tok := c.resolver.addToken(name, id, rawType, space, p.Name())
 
 			pat, ok := p.Pattern()
 			if !ok {
@@ -474,9 +484,9 @@ func parsePattern(name string, p ast.Pattern, opts lex.CharsetOptions) (*lex.Pat
 }
 
 func (c *lexerCompiler) parseFlexDeclarations(lexer ast.LexerSection) {
-	c.resolver.addToken(grammar.Eoi, "EOI", ast.RawType{}, noSpace, nil)
+	c.resolver.addToken(grammar.Eoi, "" /*id*/, ast.RawType{}, noSpace, nil)
 	error := c.resolver.addToken(grammar.Error, "YYerror", ast.RawType{}, noSpace, nil)
-	invalid := c.resolver.addToken(grammar.InvalidToken, "INVALID_TOKEN", ast.RawType{}, noSpace, nil)
+	invalid := c.resolver.addToken(grammar.InvalidToken, "" /*id*/, ast.RawType{}, noSpace, nil)
 
 	c.resolver.Syms[error].FlexID = 256
 	c.resolver.Syms[invalid].FlexID = 257
@@ -511,7 +521,14 @@ func (c *lexerCompiler) parseFlexDeclarations(lexer ast.LexerSection) {
 				c.Errorf(p.Name(), "redeclaration of '%v'", name)
 				continue
 			}
-			tok := c.resolver.addToken(name, "" /*id*/, rawType, space, p.Name())
+			var id string
+			if lid, ok := p.LexemeId(); ok {
+				id = lid.Identifier().Text()
+				if strings.ContainsFunc(id, unicode.IsLower) {
+					id = ident.Produce(id, ident.UpperCase)
+				}
+			}
+			tok := c.resolver.addToken(name, id, rawType, space, p.Name())
 
 			// Flex mode allows only ASCII characters as patterns. All other tokens should be
 			// simply declared (without patterns).

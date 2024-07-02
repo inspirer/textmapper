@@ -193,6 +193,7 @@ type Options struct {
 	WriteBison          bool // Output the expanded grammar in a Bison-like format.
 	OptimizeTables      bool
 	DefaultReduce       bool // Prefer some common reduction to errors in non-LR0 states to compress tables even further.
+	NoEmptyRules        bool // Report empty rules without an %empty marker. True by default for C++.
 
 	// AST generation. Go-specific for now.
 	EventBased    bool
