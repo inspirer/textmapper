@@ -49,7 +49,7 @@
 					}
 				},
 				{
-					"begin": "(^[ \\t]+)?(#)",
+					"begin": "(^[ \\t]+)?(#|//)",
 					"beginCaptures": {
 						"1": {
 							"name": "punctuation.whitespace.comment.leading.textmapper"
