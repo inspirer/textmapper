@@ -18,9 +18,10 @@ b: /b/
 «a» : a;
 # err: redeclaration of 'a'
 
-d {Foo} -> Foo : /*empty*/ ;
+d {Foo} -> Foo : /*empty*/ .foo %empty { /* cmd */}  ; # it is ok to use %empty with markers/commands
 
-e : d ;
+e : d «%empty» ;
+# err: %empty marker found inside a non-empty alternative
 
 «d» {Foo} -> Foo : e ;
 # err: redeclaration of 'd'

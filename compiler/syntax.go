@@ -878,8 +878,11 @@ func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nont
 			subs = append(subs, out)
 		}
 	}
-	if c.noEmptyRules && !nonEmpty && empty == nil {
+	switch {
+	case c.noEmptyRules && !nonEmpty && empty == nil:
 		c.Errorf(origin, "empty alternative without an %%empty marker")
+	case nonEmpty && empty != nil:
+		c.Errorf(empty, "%%empty marker found inside a non-empty alternative")
 	}
 	switch len(subs) {
 	case 0:
