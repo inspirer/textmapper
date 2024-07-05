@@ -53,10 +53,16 @@ func (p *Parser) ParseNamespaceNameSnippet(ctx context.Context, lexer *Lexer) er
 
 const errSymbol = 2
 
-// willShift checks if "symbol" is going to be shifted in the `stack+[state]` parsing stack.
-func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {
-	if state == -1 {
-		return false
+// reduceAll simulates all pending reductions and returns true if the parser
+// can consume the next token in the `stack+[state]` parsing stack. This
+// function also returns the state of the parser after the reductions have been
+// applied (but before symbol is shifted).
+func reduceAll(stack []stackEntry, state int16, symbol int32, endState int16) (int16, bool) {
+	if symbol == noToken {
+		panic("a valid next token is expected")
+	}
+	if state < 0 {
+		return 0, false
 	}
 
 	var stack2alloc [4]int16
@@ -64,7 +70,7 @@ func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {
 	size := len(stack)
 
 	// parsing_stack = stack[:size] + stack2
-	for state != p.endState {
+	for state != endState {
 		action := tmAction[state]
 		if action > tmActionBase {
 			pos := action + symbol
@@ -96,10 +102,10 @@ func (p *Parser) willShift(symbol int32, stack []stackEntry, state int16) bool {
 			state = gotoState(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
-			return action < -1
+			return state, action < -1
 		}
 	}
-	return symbol == eoiToken
+	return state, symbol == eoiToken
 }
 
 func (p *Parser) skipBrokenCode(ctx context.Context, lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {

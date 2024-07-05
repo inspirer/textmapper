@@ -244,17 +244,19 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		}
 		for _, pos := range recoverPos {
 			errState := gotoState(stack[pos-1].state, errSymbol)
-			if p.willShift(p.next.symbol, stack[:pos], gotoState(stack[pos-1].state, errSymbol)) {
+			if _, ok := reduceAll(stack[:pos], gotoState(stack[pos-1].state, errSymbol), p.next.symbol, p.endState); ok {
 				matchingPos = pos
 				break
 			}
 			// Semicolon insertion is not reliable on broken input, try to look behind the semicolon.
-			if p.afterNext.symbol != noToken && p.willShift(p.afterNext.symbol, stack[:pos], errState) {
-				// Note: semicolons get inserted right after the previous
-				// token, so we don't need to flush pending tokens.
-				p.fetchNext(lexer, stack)
-				matchingPos = pos
-				break
+			if p.afterNext.symbol != noToken {
+				if _, ok := reduceAll(stack[:pos], errState, p.afterNext.symbol, p.endState); ok {
+					// Note: semicolons get inserted right after the previous
+					// token, so we don't need to flush pending tokens.
+					p.fetchNext(lexer, stack)
+					matchingPos = pos
+					break
+				}
 			}
 		}
 		if matchingPos == 0 {
@@ -318,7 +320,7 @@ restart:
 	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
 		goto restart
 	case token.GTGT, token.GTGTGT:
-		if _, success := reduceAll(int32(tok), endState, stack); !success {
+		if _, success := reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(tok), endState); !success {
 			tok = token.GT
 			lexer.offset = lexer.tokenOffset + 1
 			lexer.scanOffset = lexer.offset + 1
@@ -327,64 +329,6 @@ restart:
 		}
 	}
 	return int32(tok)
-}
-
-// reduceAll simulates all pending reductions and return true if the parser
-// can consume the next token. This function also returns the state of the
-// parser after the reductions have been applied.
-func reduceAll(next int32, endState int16, stack []stackEntry) (state int16, success bool) {
-	if next == noToken {
-		panic("a valid next token is expected")
-	}
-
-	size := len(stack)
-	state = stack[size-1].state
-	if state < 0 {
-		return 0, false
-	}
-
-	var stack2alloc [4]int16
-	stack2 := stack2alloc[:0]
-
-	// parsing_stack = stack[:size] + stack2
-	for state != endState {
-		action := tmAction[state]
-		if action > tmActionBase {
-			pos := action + next
-			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next {
-				action = int32(tmTable[pos])
-			} else {
-				action = tmDefAct[state]
-			}
-		} else {
-			action = tmDefAct[state]
-		}
-
-		if action >= 0 {
-			// Reduce.
-			rule := action
-			ln := int(tmRuleLen[rule])
-			symbol := tmRuleSymbol[rule]
-
-			if ln > 0 {
-				if ln < len(stack2) {
-					state = stack2[len(stack2)-ln-1]
-					stack2 = stack2[:len(stack2)-ln]
-				} else {
-					size -= ln - len(stack2)
-					state = stack[size-1].state
-					stack2 = stack2alloc[:0]
-				}
-			}
-			state = gotoState(state, symbol)
-			stack2 = append(stack2, state)
-		} else {
-			success = action < -1
-			return
-		}
-	}
-	success = true
-	return
 }
 
 // insertSC inserts and reports a semicolon, unless there is a overriding rule
@@ -426,7 +370,7 @@ restart:
 		p.pending = append(p.pending, tok)
 		goto restart
 	case token.GTGT, token.GTGTGT:
-		if _, success := reduceAll(int32(tok), p.endState, stack); !success {
+		if _, success := reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(tok), p.endState); !success {
 			tok = token.GT
 			lexer.offset = lexer.tokenOffset + 1
 			lexer.scanOffset = lexer.offset + 1
@@ -487,7 +431,7 @@ restart:
 
 	// Simulate all pending reductions and check if the current next token
 	// will be accepted by the parser.
-	state, success := reduceAll(p.next.symbol, p.endState, stack)
+	state, success := reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, p.next.symbol, p.endState)
 
 	if newLine && success && (tok == token.PLUSPLUS || tok == token.MINUSMINUS || tok == token.AS || tok == token.EXCL) {
 		if noLineBreakStates[int(state)] {
@@ -502,7 +446,7 @@ restart:
 
 	if tok == token.RBRACE {
 		// Not all closing braces require a semicolon. Double checking.
-		if _, success = reduceAll(int32(token.SEMICOLON), p.endState, stack); success {
+		if _, success = reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(token.SEMICOLON), p.endState); success {
 			p.insertSC(state, lastEnd)
 		}
 		return

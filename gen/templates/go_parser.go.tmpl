@@ -355,23 +355,29 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{ if .Parser.IsRecovering -}}
 const errSymbol = {{ .Parser.ErrorSymbol }}
 
-{{ block "willShift" . -}}
+{{ block "reduceAll" . -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
-{{ if .Options.IsEnabled "willShift" -}}
-// willShift checks if "symbol" is going to be shifted in the `stack+[state]` parsing stack.
-func (p *Parser) willShift(symbol int32, stack []stackEntry, state int{{$stateType}}) bool {
-	if state == -1 {
-		return false
+{{ if .Options.IsEnabled "reduceAll" -}}
+// reduceAll simulates all pending reductions and returns true if the parser
+// can consume the next token in the `stack+[state]` parsing stack. This
+// function also returns the state of the parser after the reductions have been
+// applied (but before symbol is shifted).
+func reduceAll(stack []stackEntry, state int{{$stateType}}, symbol int32, endState int{{$stateType}}) (int{{$stateType}}, bool) {
+	if symbol == noToken {
+		panic("a valid next token is expected")
+	}
+	if state < 0 {
+		return 0, false
 	}
 
-	var stack2alloc [4]int{{$stateType}}
+	var stack2alloc [4]int16
 	stack2 := append(stack2alloc[:0], state)
 	size := len(stack)
 
 	// parsing_stack = stack[:size] + stack2
-	for state != p.endState {
+	for state != endState {
 		action := tmAction[state]
-{{- if .Parser.Tables.Optimized}}
+{{ if .Parser.Tables.Optimized -}}
 		if action > tmActionBase {
 			pos := action + symbol
 			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == symbol {
@@ -382,11 +388,11 @@ func (p *Parser) willShift(symbol int32, stack []stackEntry, state int{{$stateTy
 		} else {
 			action = tmDefAct[state]
 		}
-{{- else if .Parser.Tables.Lalr}}
+{{ else if .Parser.Tables.Lalr -}}
 		if action < -2 {
 			action = lalr(action, symbol)
 		}
-{{- end}}
+{{ end -}}
 
 		if action >= 0 {
 			// Reduce.
@@ -408,13 +414,13 @@ func (p *Parser) willShift(symbol int32, stack []stackEntry, state int{{$stateTy
 			stack2 = append(stack2, state)
 		} else {
 {{- if .Parser.Tables.Optimized}}
-			return action < -1
+			return state, action < -1
 {{- else}}
-			return action == -1 && gotoState(state, symbol) >= 0
+			return state, action == -1 && gotoState(state, symbol) >= 0
 {{- end}}
 		}
 	}
-	return symbol == eoiToken
+	return state, symbol == eoiToken
 }
 
 {{ end -}}
@@ -502,7 +508,7 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 			"fmt".Printf("trying to recover on %v\n", symbolName(p.next.symbol))
 		}
 		for _, pos := range recoverPos {
-			if p.willShift(p.next.symbol, stack[:pos], gotoState(stack[pos-1].state, errSymbol)) {
+			if _, ok := reduceAll(stack[:pos], gotoState(stack[pos-1].state, errSymbol), p.next.symbol, p.endState); ok {
 				matchingPos = pos
 				break
 			}
