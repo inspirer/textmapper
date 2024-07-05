@@ -263,7 +263,7 @@ func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
-	var lexer Lexer = *l
+	lexer := l.Copy()
 
 	// Use memoization for recursive lookaheads.
 	if next == noToken {

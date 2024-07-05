@@ -305,19 +305,7 @@ func AtStartOfTupleElementName(ctx context.Context, lexer *Lexer, next int32, s 
 }
 
 func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
-
-	var lexer Lexer
-	lexer.source = l.source
-	lexer.ch = l.ch
-	lexer.offset = l.offset
-	lexer.tokenOffset = l.tokenOffset
-	lexer.line = l.line
-	lexer.tokenLine = l.tokenLine
-	lexer.scanOffset = l.scanOffset
-	lexer.State = l.State
-	lexer.Dialect = l.Dialect
-	lexer.token = l.token
-	// Note: Stack is intentionally omitted.
+	lexer := l.Copy()
 
 	// Use memoization for recursive lookaheads.
 	if next == noToken {

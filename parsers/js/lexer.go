@@ -579,8 +579,7 @@ restart:
 				// Start a new JSX tag.
 				switch l.Dialect {
 				case TypescriptJsx:
-					copy := *l
-					copy.Stack = nil
+					copy := l.Copy()
 					copy.Dialect = Typescript
 					if copy.Next() == token.IDENTIFIER {
 						var isArrowFunc bool

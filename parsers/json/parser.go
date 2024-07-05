@@ -217,7 +217,7 @@ func AtEmptyObject(lexer *Lexer, next int32) bool {
 }
 
 func lookahead(l *Lexer, next int32, start, end int8) bool {
-	var lexer Lexer = *l
+	lexer := l.Copy()
 
 	var allocated [64]stackEntry
 	state := start

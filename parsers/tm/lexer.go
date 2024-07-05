@@ -411,6 +411,12 @@ func (l *Lexer) Value() interface{} {
 	return l.value
 }
 
+// Copy forks the lexer in its current state.
+func (l *Lexer) Copy() Lexer {
+	ret := *l
+	return ret
+}
+
 // rewind can be used in lexer actions to accept a portion of a scanned token, or to include
 // more text into it.
 func (l *Lexer) rewind(offset int) {

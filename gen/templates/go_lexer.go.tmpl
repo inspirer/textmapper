@@ -23,6 +23,7 @@ const (
 {{ end -}}
 {{ template "lexerText" .}}
 {{ template "lexerValue" .}}
+{{ template "lexerCopy" . -}}
 {{ template "lexerRewind" .}}
 {{ block "onAfterLexer" .}}{{end -}}
 
@@ -305,6 +306,17 @@ func (l *Lexer) Text() string {
 func (l *Lexer) Value() interface{} {
 	return l.value
 }
+{{end -}}
+
+{{- define "lexerCopy" -}}
+{{ if .Options.IsEnabled "lexerCopy" -}}
+// Copy forks the lexer in its current state.
+func (l *Lexer) Copy() Lexer {
+	ret := *l
+	return ret
+}
+
+{{end -}}
 {{end -}}
 
 {{- define "lexerRewind" -}}

@@ -741,9 +741,7 @@ func At{{$sym.Name}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l
 {{ if .Parser.Tables.Lookaheads -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}l *Lexer, next int32, start, end int{{$stateType}}{{if $.NeedsSession}}, s *session{{end}}) {{if $.Options.Cancellable}}(bool, error){{else}}bool{{end}} {
-{{ block "setupLookaheadLexer" . -}}
-	var lexer Lexer = *l
-{{end -}}
+	lexer := l.Copy()
 {{ if .Options.RecursiveLookaheads }}
 	// Use memoization for recursive lookaheads.
 	if next == noToken {

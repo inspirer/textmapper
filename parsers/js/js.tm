@@ -16,7 +16,7 @@ cancellable = true
 recursiveLookaheads = true
 optimizeTables = true
 extraTypes = ["InsertedSemicolon"]
-customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "symbol", "stackEntry", "session", "lookaheadNext"]
+customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "symbol", "stackEntry", "session", "lookaheadNext", "lexerCopy"]
 
 :: lexer
 
@@ -1866,21 +1866,6 @@ const (
 	l.Stack = nil
 {{end}}
 
-{{define "setupLookaheadLexer"}}
-	var lexer Lexer
-	lexer.source = l.source
-	lexer.ch= l.ch
-	lexer.offset= l.offset
-	lexer.tokenOffset = l.tokenOffset
-	lexer.line = l.line
-	lexer.tokenLine = l.tokenLine
-	lexer.scanOffset = l.scanOffset
-	lexer.State = l.State
-	lexer.Dialect = l.Dialect
-	lexer.token = l.token
-	// Note: Stack is intentionally omitted.
-{{end}}
-
 {{define "onBeforeNext"}}
 	prevLine := l.tokenLine
 {{end}}
@@ -1930,8 +1915,7 @@ const (
 				// Start a new JSX tag.
 				switch l.Dialect {
 				case TypescriptJsx:
-					copy := *l
-					copy.Stack = nil
+					copy := l.Copy()
 					copy.Dialect = Typescript
 					if copy.Next() == token.IDENTIFIER {
 						var isArrowFunc bool
