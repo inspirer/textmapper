@@ -11,36 +11,12 @@ import (
 type Parser struct {
 	eh       ErrorHandler
 	listener Listener
-
-	next      symbol
-	afterNext symbol
-	pending   []symbol
-	healthy   bool
-
-	lastToken token.Type
-	lastLine  int
-	endState  int16
-}
-
-type symbol struct {
-	symbol    int32
-	offset    int
-	endoffset int
-}
-
-type stackEntry struct {
-	sym   symbol
-	state int16
+	next     symbol
 }
 
 func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	p.eh = eh
 	p.listener = l
-	if cap(p.pending) < startTokenBufferSize {
-		p.pending = make([]symbol, 0, startTokenBufferSize)
-	}
-	p.lastToken = token.UNAVAILABLE
-	p.afterNext.symbol = noToken
 }
 
 type session struct {
@@ -48,27 +24,24 @@ type session struct {
 	cache        map[uint64]bool
 }
 
-func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
-	p.pending = p.pending[:0]
+func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStream) error {
 	var s session
 	s.cache = make(map[uint64]bool)
 
 	state := start
-	p.endState = end
 	var lastErr SyntaxError
 	recovering := 0
-	p.healthy = true
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
-	p.fetchNext(lexer, stack)
+	p.next = stream.next(stack, end)
 
 	for state != end {
 		action := tmAction[state]
 		if action > tmActionBase {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.next = stream.next(stack, end)
 			}
 			pos := action + p.next.symbol
 			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == p.next.symbol {
@@ -94,14 +67,14 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 			}
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.next = stream.next(stack, end)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			p.applyRule(ctx, rule, &entry, rhs, lexer, &s)
+			p.applyRule(ctx, rule, &entry, rhs, stream, &s)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
@@ -126,14 +99,9 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				state: state,
 			})
 			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), stream.text(p.next))
 			}
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(ctx, tok)
-				}
-				p.pending = p.pending[:0]
-			}
+			stream.flush(ctx, p.next)
 			if p.next.symbol != eoiToken {
 				switch token.Type(p.next.symbol) {
 				case token.NOSUBSTITUTIONTEMPLATE:
@@ -153,37 +121,27 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 		}
 
 		if action == -1 || state == -1 {
-			p.healthy = false
+			stream.recoveryMode = true
 			if recovering == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.next = stream.next(stack, end)
 				}
 				lastErr = SyntaxError{
-					Line:      lexer.Line(),
+					Line:      stream.line(),
 					Offset:    p.next.offset,
 					Endoffset: p.next.endoffset,
 				}
 				if !p.eh(lastErr) {
-					if len(p.pending) > 0 {
-						for _, tok := range p.pending {
-							p.reportIgnoredToken(ctx, tok)
-						}
-						p.pending = p.pending[:0]
-					}
+					stream.flush(ctx, p.next)
 					return lastErr
 				}
 			}
-			stack = p.recoverFromError(ctx, lexer, stack)
+			stack = p.recoverFromError(ctx, stream, stack, end)
 			if stack == nil {
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(ctx, tok)
-					}
-					p.pending = p.pending[:0]
-				}
+				stream.flush(ctx, p.next)
 				return lastErr
 			}
-			p.healthy = true
+			stream.recoveryMode = false
 			state = stack[len(stack)-1].state
 			recovering = 4
 		}
@@ -192,7 +150,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 	return nil
 }
 
-func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []stackEntry) []stackEntry {
+func (p *Parser) recoverFromError(ctx context.Context, stream *TokenStream, stack []stackEntry, endState int16) []stackEntry {
 	var recoverSyms [1 + token.NumTokens/8]uint8
 	var recoverPos []int
 
@@ -219,12 +177,12 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack)
+		p.next = stream.next(stack, endState)
 	}
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
 	e := s
-	for _, tok := range p.pending {
+	for _, tok := range stream.pending {
 		// Try to cover all nearby invalid tokens.
 		if token.Type(tok.symbol) == token.INVALID_TOKEN {
 			if s > tok.offset {
@@ -234,7 +192,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		}
 	}
 	for {
-		if endoffset := p.skipBrokenCode(ctx, lexer, stack, canRecover); endoffset > e {
+		if endoffset := p.skipBrokenCode(ctx, stream, canRecover); endoffset > e {
 			e = endoffset
 		}
 
@@ -244,16 +202,16 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		}
 		for _, pos := range recoverPos {
 			errState := gotoState(stack[pos-1].state, errSymbol)
-			if _, ok := reduceAll(stack[:pos], gotoState(stack[pos-1].state, errSymbol), p.next.symbol, p.endState); ok {
+			if _, ok := reduceAll(stack[:pos], gotoState(stack[pos-1].state, errSymbol), p.next.symbol, endState); ok {
 				matchingPos = pos
 				break
 			}
 			// Semicolon insertion is not reliable on broken input, try to look behind the semicolon.
-			if p.afterNext.symbol != noToken {
-				if _, ok := reduceAll(stack[:pos], errState, p.afterNext.symbol, p.endState); ok {
+			if stream.delayed.symbol != noToken {
+				if _, ok := reduceAll(stack[:pos], errState, stream.delayed.symbol, endState); ok {
 					// Note: semicolons get inserted right after the previous
 					// token, so we don't need to flush pending tokens.
-					p.fetchNext(lexer, stack)
+					p.next = stream.next(stack, endState)
 					matchingPos = pos
 					break
 				}
@@ -273,31 +231,14 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 				e = stack[len(stack)-1].sym.endoffset
 			}
 			s = stack[matchingPos].sym.offset
-		} else if s == e && len(p.pending) > 0 {
-			// This means pending tokens don't contain InvalidTokens.
-			for _, tok := range p.pending {
-				p.reportIgnoredToken(ctx, tok)
-			}
-			p.pending = p.pending[:0]
 		}
 		if s != e {
-			// Consume trailing invalid tokens.
-			for _, tok := range p.pending {
+			// Try to cover all trailing invalid tokens.
+			for _, tok := range stream.pending {
 				if token.Type(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}
-			var consumed int
-			for ; consumed < len(p.pending); consumed++ {
-				tok := p.pending[consumed]
-				if tok.offset >= e {
-					break
-				}
-				p.reportIgnoredToken(ctx, tok)
-			}
-			newSize := len(p.pending) - consumed
-			copy(p.pending[:newSize], p.pending[consumed:])
-			p.pending = p.pending[:newSize]
 		}
 		if debugSyntax {
 			for i := len(stack) - 1; i >= matchingPos; i-- {
@@ -305,170 +246,11 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 			}
 			fmt.Println("recovered")
 		}
+		stream.flush(ctx, symbol{errSymbol, s, e})
 		stack = append(stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
 			state: gotoState(stack[matchingPos-1].state, errSymbol),
 		})
 		return stack
 	}
-}
-
-func lookaheadNext(lexer *Lexer, endState int16, stack []stackEntry) int32 {
-restart:
-	tok := lexer.Next()
-	switch tok {
-	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
-		goto restart
-	case token.GTGT, token.GTGTGT:
-		if _, success := reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(tok), endState); !success {
-			tok = token.GT
-			lexer.offset = lexer.tokenOffset + 1
-			lexer.scanOffset = lexer.offset + 1
-			lexer.ch = '>'
-			lexer.token = tok
-		}
-	}
-	return int32(tok)
-}
-
-// insertSC inserts and reports a semicolon, unless there is a overriding rule
-// forbidding insertion in this particular location.
-func (p *Parser) insertSC(state int16, offset int) {
-	if p.healthy {
-		stateAfterSC := gotoState(state, int32(token.SEMICOLON))
-		if stateAfterSC == emptyStatementState || forSCStates[int(stateAfterSC)] {
-			// ".. a semicolon is never inserted automatically if the semicolon would
-			// then be parsed as an empty statement or if that semicolon would become
-			// one of the two semicolons in the header of a for statement."
-			return
-		}
-	}
-
-	p.afterNext = p.next
-	p.next = symbol{int32(token.SEMICOLON), offset, offset}
-	p.listener(InsertedSemicolon, offset, offset)
-}
-
-// fetchNext fetches the next token from the lexer and puts it into "p.next".
-// This function also takes care of semicolons by implementing the "Automatic
-// Semicolon Insertion" rules.
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
-	if p.afterNext.symbol != noToken {
-		p.next = p.afterNext
-		p.afterNext.symbol = noToken
-		return
-	}
-
-	lastToken := p.lastToken
-	lastEnd := p.next.endoffset
-restart:
-	tok := lexer.Next()
-	switch tok {
-	case token.MULTILINECOMMENT, token.SINGLELINECOMMENT, token.INVALID_TOKEN:
-		s, e := lexer.Pos()
-		tok := symbol{int32(tok), s, e}
-		p.pending = append(p.pending, tok)
-		goto restart
-	case token.GTGT, token.GTGTGT:
-		if _, success := reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(tok), p.endState); !success {
-			tok = token.GT
-			lexer.offset = lexer.tokenOffset + 1
-			lexer.scanOffset = lexer.offset + 1
-			lexer.ch = '>'
-			lexer.token = tok
-		}
-	}
-	p.lastToken = tok
-	p.next.symbol = int32(tok)
-	p.next.offset, p.next.endoffset = lexer.Pos()
-	line := lexer.Line()
-
-	newLine := line != p.lastLine
-	p.lastLine = line
-
-	if !(newLine || tok == token.RBRACE || tok == token.EOI || lastToken == token.RPAREN) || lastToken == token.SEMICOLON {
-		return
-	}
-
-	if !p.healthy {
-		// When recovering from a syntax error, we cannot rely on the current state
-		// of the stack and assume that the next token won't be accepted by the
-		// parser, so in general we insert more semicolons than needed. This is
-		// exactly what we want.
-		if newLine || tok == token.RBRACE || tok == token.EOI {
-			p.insertSC(-1 /* no state */, lastEnd)
-		}
-		return
-	}
-
-	// We might need to insert a semicolon.
-	// See 12.9.1 Rules of Automatic Semicolon Insertion
-	if newLine {
-		// All but one of the restricted productions can be detected by looking
-		// at the last and current tokens.
-		restricted := tok == token.ASSIGNGT
-		switch lastToken {
-		case token.CONTINUE, token.BREAK, token.RETURN, token.THROW:
-			restricted = true
-		case token.YIELD:
-			// No reduce actions are expected, so we can take a shortcut and check
-			// the current state.
-			restricted = afterYieldStates[int(stack[len(stack)-1].state)]
-		case token.ASYNC:
-			// No reduce actions are expected, so we can take a shortcut and check
-			// the current state.
-			restricted = afterAsyncStates[int(stack[len(stack)-1].state)]
-		case token.STRINGLITERAL:
-			// Assert clauses should appear on the same line.
-			restricted = tok == token.ASSERT && noLineBreakStates[int(stack[len(stack)-1].state)]
-		}
-
-		if restricted {
-			p.insertSC(stack[len(stack)-1].state, lastEnd)
-			return
-		}
-	}
-
-	// Simulate all pending reductions and check if the current next token
-	// will be accepted by the parser.
-	state, success := reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, p.next.symbol, p.endState)
-
-	if newLine && success && (tok == token.PLUSPLUS || tok == token.MINUSMINUS || tok == token.AS || tok == token.EXCL) {
-		if noLineBreakStates[int(state)] {
-			p.insertSC(state, lastEnd)
-			return
-		}
-	}
-
-	if success {
-		return
-	}
-
-	if tok == token.RBRACE {
-		// Not all closing braces require a semicolon. Double checking.
-		if _, success = reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(token.SEMICOLON), p.endState); success {
-			p.insertSC(state, lastEnd)
-		}
-		return
-	}
-
-	if newLine || tok == token.EOI {
-		p.insertSC(state, lastEnd)
-		return
-	}
-
-	if lastToken == token.RPAREN && doWhileStates[int(gotoState(state, int32(token.SEMICOLON)))] {
-		p.insertSC(state, lastEnd)
-		return
-	}
-	return
-}
-
-// Copy forks the lexer in its current state.
-func (l *Lexer) Copy() Lexer {
-	ret := *l
-	// Note: empty stack is okay for lookahead purposes, since the stack is
-	// used for JSX tags and not within TS/JS code.
-	ret.Stack = nil
-	return ret
 }

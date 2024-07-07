@@ -23,6 +23,9 @@ var languages = map[string]*language{
 			{"parser.go", builtin(`go_parser`)},
 			{"parser_tables.go", builtin(`go_parser_tables`)},
 		},
+		Stream: []file{
+			{"stream.go", builtin(`go_stream`)},
+		},
 		Types: []file{
 			{"listener.go", builtin(`go_listener`)},
 		},
@@ -60,6 +63,7 @@ type file struct {
 type language struct {
 	Lexer    []file
 	Parser   []file
+	Stream   []file
 	Types    []file
 	Selector []file
 	AST      []file
@@ -82,6 +86,9 @@ func (l *language) templates(g *grammar.Grammar) []file {
 	}
 	if g.Parser.Tables != nil {
 		ret = append(ret, l.Parser...)
+		if g.Options.TokenStream {
+			ret = append(ret, l.Stream...)
+		}
 	}
 	if g.Parser.Types != nil {
 		ret = append(ret, l.Types...)

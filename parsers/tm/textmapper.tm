@@ -12,6 +12,8 @@ writeBison = true
 tokenColumn = true
 optimizeTables = true
 fileNode = "File"
+tokenStream = true
+fixWhitespace = true
 
 :: lexer
 

@@ -34,14 +34,15 @@ func (f file) ext() string {
 }
 
 func parseJS(ctx context.Context, f file, dialect js.Dialect) string {
-	l := new(js.Lexer)
+	listener := func(nt js.NodeType, offset, endoffset int) {}
+	s := new(js.TokenStream)
 	p := new(js.Parser)
-	l.Init(f.content)
-	l.Dialect = dialect
+	s.Init(f.content, listener)
+	s.SetDialect(dialect)
 	result := "ok"
 	errHandler := func(se js.SyntaxError) bool { return false }
-	p.Init(errHandler, func(nt js.NodeType, offset, endoffset int) {})
-	if err := p.ParseModule(ctx, l); err != nil {
+	p.Init(errHandler, listener)
+	if err := p.ParseModule(ctx, s); err != nil {
 		result = "parse_err"
 		var suffix string
 		if err, ok := err.(js.SyntaxError); ok {
@@ -53,12 +54,13 @@ func parseJS(ctx context.Context, f file, dialect js.Dialect) string {
 }
 
 func parseTM(ctx context.Context, f file) string {
-	l := new(tm.Lexer)
+	listener := func(nt tm.NodeType, offset, endoffset int) {}
+	s := new(tm.TokenStream)
 	p := new(tm.Parser)
-	l.Init(f.content)
+	s.Init(f.content, listener)
 	result := "ok"
-	p.Init(tm.StopOnFirstError, func(nt tm.NodeType, offset, endoffset int) {})
-	if err := p.ParseFile(ctx, l); err != nil {
+	p.Init(tm.StopOnFirstError, listener)
+	if err := p.ParseFile(ctx, s); err != nil {
 		result = "parse_err"
 		var suffix string
 		if err, ok := err.(tm.SyntaxError); ok {

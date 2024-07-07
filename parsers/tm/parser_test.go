@@ -77,7 +77,7 @@ var parseTests = []struct {
 }
 
 func TestParser(t *testing.T) {
-	var l tm.Lexer
+	var s tm.TokenStream
 	var p tm.Parser
 
 	ctx := context.Background()
@@ -87,17 +87,18 @@ func TestParser(t *testing.T) {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			test := parsertest.New(t, tc.nt.String(), input)
-			l.Init(test.Source())
+			listener := func(nt tm.NodeType, offset, endoffset int) {
+				if nt == tc.nt {
+					test.Consume(t, offset, endoffset)
+				}
+			}
 			errHandler := func(se tm.SyntaxError) bool {
 				test.ConsumeError(t, se.Offset, se.Endoffset)
 				return true
 			}
-			p.Init(errHandler, func(nt tm.NodeType, offset, endoffset int) {
-				if nt == tc.nt {
-					test.Consume(t, offset, endoffset)
-				}
-			})
-			test.Done(t, p.ParseFile(ctx, &l))
+			s.Init(test.Source(), listener)
+			p.Init(errHandler, listener)
+			test.Done(t, p.ParseFile(ctx, &s))
 		}
 	}
 	for n := tm.NodeType(1); n < tm.NodeTypeMax; n++ {

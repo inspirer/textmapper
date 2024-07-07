@@ -78,6 +78,9 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.WriteBison = p.parseExpr(opt.Value(), opts.WriteBison).(bool)
 		case "recursiveLookaheads":
 			opts.RecursiveLookaheads = p.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
+		case "tokenStream":
+			p.validLangs(opt.Key(), "go")
+			opts.TokenStream = p.parseExpr(opt.Value(), opts.TokenStream).(bool)
 		case "eventBased":
 			opts.EventBased = p.parseExpr(opt.Value(), opts.EventBased).(bool)
 		case "genSelector":

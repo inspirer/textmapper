@@ -196,6 +196,7 @@ type Options struct {
 	NoEmptyRules        bool // Report empty rules without an %empty marker. True by default for C++.
 
 	// AST generation. Go-specific for now.
+	TokenStream   bool
 	EventBased    bool
 	GenSelector   bool
 	EventFields   bool

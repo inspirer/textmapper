@@ -23,11 +23,7 @@ type Parser struct {
 	listener Listener
 
 	next       symbol
-	endState   int16
 	recovering int
-
-	// Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
-	pending []symbol
 }
 
 type SyntaxError struct {
@@ -40,12 +36,6 @@ func (e SyntaxError) Error() string {
 	return fmt.Sprintf("syntax error at line %v", e.Line)
 }
 
-type symbol struct {
-	symbol    int32
-	offset    int
-	endoffset int
-}
-
 type stackEntry struct {
 	sym   symbol
 	state int16
@@ -54,9 +44,6 @@ type stackEntry struct {
 func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	p.eh = eh
 	p.listener = l
-	if cap(p.pending) < startTokenBufferSize {
-		p.pending = make([]symbol, 0, startTokenBufferSize)
-	}
 }
 
 const (
@@ -67,32 +54,31 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) ParseFile(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 0, 632, lexer)
+func (p *Parser) ParseFile(ctx context.Context, stream *TokenStream) error {
+	return p.parse(ctx, 0, 632, stream)
 }
 
-func (p *Parser) ParseNonterm(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 1, 633, lexer)
+func (p *Parser) ParseNonterm(ctx context.Context, stream *TokenStream) error {
+	return p.parse(ctx, 1, 633, stream)
 }
 
-func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) error {
-	p.pending = p.pending[:0]
+func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStream) error {
 	var shiftCounter int
+
 	state := start
 	var lastErr SyntaxError
 	p.recovering = 0
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
-	p.endState = end
-	p.fetchNext(lexer, stack)
+	p.next = stream.next(stack, end)
 
 	for state != end {
 		action := tmAction[state]
 		if action > tmActionBase {
 			// Lookahead is needed.
 			if p.next.symbol == noToken {
-				p.fetchNext(lexer, stack)
+				p.next = stream.next(stack, end)
 			}
 			pos := action + p.next.symbol
 			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == p.next.symbol {
@@ -113,16 +99,19 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
 			stack = stack[:len(stack)-ln]
+			for ln > 0 && rhs[ln-1].sym.offset == rhs[ln-1].sym.endoffset {
+				ln--
+			}
 			if ln == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.next = stream.next(stack, end)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule(ctx, rule, &entry, rhs, lexer); err != nil {
+			if err := p.applyRule(ctx, rule, &entry, rhs, stream); err != nil {
 				return err
 			}
 			if debugSyntax {
@@ -149,14 +138,9 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 				state: state,
 			})
 			if debugSyntax {
-				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), stream.text(p.next))
 			}
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(ctx, tok)
-				}
-				p.pending = p.pending[:0]
-			}
+			stream.flush(ctx, p.next)
 			if p.next.symbol != eoiToken {
 				p.next.symbol = noToken
 			}
@@ -168,35 +152,26 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) erro
 		if action == -1 || state == -1 {
 			if p.recovering == 0 {
 				if p.next.symbol == noToken {
-					p.fetchNext(lexer, stack)
+					p.next = stream.next(stack, end)
 				}
 				lastErr = SyntaxError{
-					Line:      lexer.Line(),
+					Line:      stream.line(),
 					Offset:    p.next.offset,
 					Endoffset: p.next.endoffset,
 				}
 				if !p.eh(lastErr) {
-					if len(p.pending) > 0 {
-						for _, tok := range p.pending {
-							p.reportIgnoredToken(ctx, tok)
-						}
-						p.pending = p.pending[:0]
-					}
+					stream.flush(ctx, p.next)
 					return lastErr
 				}
 			}
 
-			p.recovering = 4
-			if stack = p.recoverFromError(ctx, lexer, stack); stack == nil {
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(ctx, tok)
-					}
-					p.pending = p.pending[:0]
-				}
+			stack = p.recoverFromError(ctx, stream, stack, end)
+			if stack == nil {
+				stream.flush(ctx, p.next)
 				return lastErr
 			}
 			state = stack[len(stack)-1].state
+			p.recovering = 4
 		}
 	}
 
@@ -260,25 +235,20 @@ func reduceAll(stack []stackEntry, state int16, symbol int32, endState int16) (i
 	return state, symbol == eoiToken
 }
 
-func (p *Parser) skipBrokenCode(ctx context.Context, lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
+func (p *Parser) skipBrokenCode(ctx context.Context, stream *TokenStream, canRecover func(symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
-			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), stream.text(p.next))
 		}
-		if len(p.pending) > 0 {
-			for _, tok := range p.pending {
-				p.reportIgnoredToken(ctx, tok)
-			}
-			p.pending = p.pending[:0]
-		}
+		stream.flush(ctx, p.next)
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack)
+		p.next = stream.next(nil, -1)
 	}
 	return e
 }
 
-func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []stackEntry) []stackEntry {
+func (p *Parser) recoverFromError(ctx context.Context, stream *TokenStream, stack []stackEntry, endState int16) []stackEntry {
 	var recoverSyms [1 + token.NumTokens/8]uint8
 	var recoverPos []int
 
@@ -305,12 +275,12 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		return recoverSyms[symbol/8]&(1<<uint32(symbol%8)) != 0
 	}
 	if p.next.symbol == noToken {
-		p.fetchNext(lexer, stack)
+		p.next = stream.next(stack, endState)
 	}
 	// By default, insert 'error' in front of the next token.
 	s := p.next.offset
 	e := s
-	for _, tok := range p.pending {
+	for _, tok := range stream.pending {
 		// Try to cover all nearby invalid tokens.
 		if token.Type(tok.symbol) == token.INVALID_TOKEN {
 			if s > tok.offset {
@@ -320,7 +290,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 		}
 	}
 	for {
-		if endoffset := p.skipBrokenCode(ctx, lexer, stack, canRecover); endoffset > e {
+		if endoffset := p.skipBrokenCode(ctx, stream, canRecover); endoffset > e {
 			e = endoffset
 		}
 
@@ -329,7 +299,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 			fmt.Printf("trying to recover on %v\n", symbolName(p.next.symbol))
 		}
 		for _, pos := range recoverPos {
-			if _, ok := reduceAll(stack[:pos], gotoState(stack[pos-1].state, errSymbol), p.next.symbol, p.endState); ok {
+			if _, ok := reduceAll(stack[:pos], gotoState(stack[pos-1].state, errSymbol), p.next.symbol, endState); ok {
 				matchingPos = pos
 				break
 			}
@@ -348,31 +318,14 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 				e = stack[len(stack)-1].sym.endoffset
 			}
 			s = stack[matchingPos].sym.offset
-		} else if s == e && len(p.pending) > 0 {
-			// This means pending tokens don't contain InvalidTokens.
-			for _, tok := range p.pending {
-				p.reportIgnoredToken(ctx, tok)
-			}
-			p.pending = p.pending[:0]
 		}
 		if s != e {
-			// Consume trailing invalid tokens.
-			for _, tok := range p.pending {
+			// Try to cover all trailing invalid tokens.
+			for _, tok := range stream.pending {
 				if token.Type(tok.symbol) == token.INVALID_TOKEN && tok.endoffset > e {
 					e = tok.endoffset
 				}
 			}
-			var consumed int
-			for ; consumed < len(p.pending); consumed++ {
-				tok := p.pending[consumed]
-				if tok.offset >= e {
-					break
-				}
-				p.reportIgnoredToken(ctx, tok)
-			}
-			newSize := len(p.pending) - consumed
-			copy(p.pending[:newSize], p.pending[consumed:])
-			p.pending = p.pending[:newSize]
 		}
 		if debugSyntax {
 			for i := len(stack) - 1; i >= matchingPos; i-- {
@@ -380,6 +333,7 @@ func (p *Parser) recoverFromError(ctx context.Context, lexer *Lexer, stack []sta
 			}
 			fmt.Println("recovered")
 		}
+		stream.flush(ctx, symbol{errSymbol, s, e})
 		stack = append(stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
 			state: gotoState(stack[matchingPos-1].state, errSymbol),
@@ -415,21 +369,7 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func (p *Parser) fetchNext(lexer *Lexer, stack []stackEntry) {
-restart:
-	tok := lexer.Next()
-	switch tok {
-	case token.INVALID_TOKEN, token.MULTILINECOMMENT, token.COMMENT, token.TEMPLATES:
-		s, e := lexer.Pos()
-		tok := symbol{int32(tok), s, e}
-		p.pending = append(p.pending, tok)
-		goto restart
-	}
-	p.next.symbol = int32(tok)
-	p.next.offset, p.next.endoffset = lexer.Pos()
-}
-
-func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
+func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, stream *TokenStream) (err error) {
 	switch rule {
 	case 233: // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
 		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
@@ -468,24 +408,4 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return
-}
-
-func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
-	var t NodeType
-	switch token.Type(tok.symbol) {
-	case token.INVALID_TOKEN:
-		t = InvalidToken
-	case token.MULTILINECOMMENT:
-		t = MultilineComment
-	case token.COMMENT:
-		t = Comment
-	case token.TEMPLATES:
-		t = Templates
-	default:
-		return
-	}
-	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", token.Type(tok.symbol), t)
-	}
-	p.listener(t, tok.offset, tok.endoffset)
 }

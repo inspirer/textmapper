@@ -10,12 +10,12 @@ import (
 
 // Parse parses a given utf-8 content into an AST.
 func Parse(ctx context.Context, path, content string, eh js.ErrorHandler) (*Tree, error) {
-	var l js.Lexer
-	l.Init(content)
-	var p js.Parser
 	b := newBuilder(path, content)
+	var s js.TokenStream
+	s.Init(content, b.addNode)
+	var p js.Parser
 	p.Init(eh, b.addNode)
-	err := p.ParseModule(ctx, &l)
+	err := p.ParseModule(ctx, &s)
 	if err != nil {
 		return nil, err
 	}

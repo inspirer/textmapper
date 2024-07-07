@@ -27,6 +27,11 @@ func (e SyntaxError) Error() string {
 	return fmt.Sprintf("syntax error at line %v", e.Line)
 }
 
+type stackEntry struct {
+	sym   symbol
+	state int16
+}
+
 const (
 	startStackSize       = 256
 	startTokenBufferSize = 16
@@ -35,20 +40,20 @@ const (
 	debugSyntax          = false
 )
 
-func (p *Parser) ParseModule(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 0, 9178, lexer)
+func (p *Parser) ParseModule(ctx context.Context, stream *TokenStream) error {
+	return p.parse(ctx, 0, 9178, stream)
 }
 
-func (p *Parser) ParseTypeSnippet(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 1, 9179, lexer)
+func (p *Parser) ParseTypeSnippet(ctx context.Context, stream *TokenStream) error {
+	return p.parse(ctx, 1, 9179, stream)
 }
 
-func (p *Parser) ParseExpressionSnippet(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 2, 9180, lexer)
+func (p *Parser) ParseExpressionSnippet(ctx context.Context, stream *TokenStream) error {
+	return p.parse(ctx, 2, 9180, stream)
 }
 
-func (p *Parser) ParseNamespaceNameSnippet(ctx context.Context, lexer *Lexer) error {
-	return p.parse(ctx, 3, 9181, lexer)
+func (p *Parser) ParseNamespaceNameSnippet(ctx context.Context, stream *TokenStream) error {
+	return p.parse(ctx, 3, 9181, stream)
 }
 
 const errSymbol = 2
@@ -108,18 +113,13 @@ func reduceAll(stack []stackEntry, state int16, symbol int32, endState int16) (i
 	return state, symbol == eoiToken
 }
 
-func (p *Parser) skipBrokenCode(ctx context.Context, lexer *Lexer, stack []stackEntry, canRecover func(symbol int32) bool) int {
+func (p *Parser) skipBrokenCode(ctx context.Context, stream *TokenStream, canRecover func(symbol int32) bool) int {
 	var e int
 	for p.next.symbol != eoiToken && !canRecover(p.next.symbol) {
 		if debugSyntax {
-			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
+			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), stream.text(p.next))
 		}
-		if len(p.pending) > 0 {
-			for _, tok := range p.pending {
-				p.reportIgnoredToken(ctx, tok)
-			}
-			p.pending = p.pending[:0]
-		}
+		stream.flush(ctx, p.next)
 		switch token.Type(p.next.symbol) {
 		case token.NOSUBSTITUTIONTEMPLATE:
 			p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
@@ -131,7 +131,7 @@ func (p *Parser) skipBrokenCode(ctx context.Context, lexer *Lexer, stack []stack
 			p.listener(TemplateTail, p.next.offset, p.next.endoffset)
 		}
 		e = p.next.endoffset
-		p.fetchNext(lexer, stack)
+		p.next = stream.next(nil, -1)
 	}
 	return e
 }
@@ -163,11 +163,11 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
+func lookaheadRule(ctx context.Context, stream *TokenStream, next symbol, rule int32, s *session) (sym int32, err error) {
 	switch rule {
 	case 5289:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 4, 9169, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 4, 9169, s); ok {
 			sym = 791 /* lookahead_StartOfArrowFunction */
 		} else {
 			sym = 185 /* lookahead_notStartOfArrowFunction */
@@ -175,7 +175,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5290:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 8, 9173, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 8, 9173, s); ok {
 			sym = 883 /* lookahead_StartOfTypeImport */
 		} else {
 			sym = 884 /* lookahead_notStartOfTypeImport */
@@ -183,7 +183,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5291:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 5, 9170, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 5, 9170, s); ok {
 			sym = 370 /* lookahead_StartOfParametrizedCall */
 		} else {
 			sym = 341 /* lookahead_notStartOfParametrizedCall */
@@ -191,7 +191,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5292:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 9, 9174, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 9, 9174, s); ok {
 			sym = 951 /* lookahead_StartOfIs */
 		} else {
 			sym = 953 /* lookahead_notStartOfIs */
@@ -199,7 +199,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5293:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 11, 9176, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 11, 9176, s); ok {
 			sym = 987 /* lookahead_StartOfMappedType */
 		} else {
 			sym = 977 /* lookahead_notStartOfMappedType */
@@ -207,7 +207,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5294:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 10, 9175, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 10, 9175, s); ok {
 			sym = 1019 /* lookahead_StartOfFunctionType */
 		} else {
 			sym = 970 /* lookahead_notStartOfFunctionType */
@@ -215,7 +215,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5295:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 12, 9177, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 12, 9177, s); ok {
 			sym = 991 /* lookahead_StartOfTupleElementName */
 		} else {
 			sym = 992 /* lookahead_notStartOfTupleElementName */
@@ -223,7 +223,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5296:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 7, 9172, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 7, 9172, s); ok {
 			sym = 852 /* lookahead_StartOfExtendsTypeRef */
 		} else {
 			sym = 853 /* lookahead_notStartOfExtendsTypeRef */
@@ -231,7 +231,7 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 		return
 	case 5297:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 6, 9171, s); ok {
+		if ok, err = lookahead(ctx, stream, next, 6, 9171, s); ok {
 			sym = 369 /* lookahead_StartLParen */
 		} else {
 			sym = 371 /* lookahead_notStartLParen */
@@ -241,77 +241,76 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 	return 0, nil
 }
 
-func AtStartOfArrowFunction(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfArrowFunction(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfArrowFunction, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfArrowFunction, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 4, 9169, s)
+	return lookahead(ctx, stream, next, 4, 9169, s)
 }
 
-func AtStartOfParametrizedCall(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfParametrizedCall(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfParametrizedCall, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfParametrizedCall, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 5, 9170, s)
+	return lookahead(ctx, stream, next, 5, 9170, s)
 }
 
-func AtStartLParen(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartLParen(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartLParen, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartLParen, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 6, 9171, s)
+	return lookahead(ctx, stream, next, 6, 9171, s)
 }
 
-func AtStartOfExtendsTypeRef(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfExtendsTypeRef(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfExtendsTypeRef, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfExtendsTypeRef, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 7, 9172, s)
+	return lookahead(ctx, stream, next, 7, 9172, s)
 }
 
-func AtStartOfTypeImport(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfTypeImport(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfTypeImport, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfTypeImport, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 8, 9173, s)
+	return lookahead(ctx, stream, next, 8, 9173, s)
 }
 
-func AtStartOfIs(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfIs(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfIs, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfIs, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 9, 9174, s)
+	return lookahead(ctx, stream, next, 9, 9174, s)
 }
 
-func AtStartOfFunctionType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfFunctionType(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfFunctionType, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfFunctionType, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 10, 9175, s)
+	return lookahead(ctx, stream, next, 10, 9175, s)
 }
 
-func AtStartOfMappedType(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfMappedType(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfMappedType, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfMappedType, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 11, 9176, s)
+	return lookahead(ctx, stream, next, 11, 9176, s)
 }
 
-func AtStartOfTupleElementName(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtStartOfTupleElementName(ctx context.Context, stream *TokenStream, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead StartOfTupleElementName, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead StartOfTupleElementName, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 12, 9177, s)
+	return lookahead(ctx, stream, next, 12, 9177, s)
 }
 
-func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
-	lexer := l.Copy()
-
+func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int16, s *session) (bool, error) {
+	stream := ts.Copy()
 	// Use memoization for recursive lookaheads.
-	if next == noToken {
-		next = lookaheadNext(&lexer, end, nil /*empty stack*/)
+	if next.symbol == noToken {
+		next = stream.next(nil /*stack*/, end)
 	}
-	key := uint64(l.tokenOffset) + uint64(end)<<40
+	key := uint64(next.offset) + uint64(end)<<40
 	if ret, ok := s.cache[key]; ok {
 		return ret, nil
 	}
@@ -324,11 +323,11 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 		action := tmAction[state]
 		if action > tmActionBase {
 			// Lookahead is needed.
-			if next == noToken {
-				next = lookaheadNext(&lexer, end, stack)
+			if next.symbol == noToken {
+				next = stream.next(stack, end)
 			}
-			pos := action + next
-			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next {
+			pos := action + next.symbol
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next.symbol {
 				action = int32(tmTable[pos])
 			} else {
 				action = tmDefAct[state]
@@ -345,7 +344,7 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			stack = stack[:len(stack)-ln]
-			sym, err := lookaheadRule(ctx, &lexer, next, rule, s)
+			sym, err := lookaheadRule(ctx, &stream, next, rule, s)
 			if err != nil {
 				return false, err
 			}
@@ -372,14 +371,14 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			// Shift.
 			state = int16(-2 - action)
 			stack = append(stack, stackEntry{
-				sym:   symbol{symbol: next},
+				sym:   next,
 				state: state,
 			})
 			if debugSyntax {
-				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next.symbol), stream.text(next))
 			}
-			if state != -1 && next != eoiToken {
-				next = noToken
+			if state != -1 && next.symbol != eoiToken {
+				next.symbol = noToken
 			}
 		}
 
@@ -395,7 +394,7 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 	return state == end, nil
 }
 
-func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, s *session) (err error) {
+func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, stream *TokenStream, s *session) (err error) {
 	switch rule {
 	case 1112: // PrimaryExpression : 'this'
 		p.listener(This, rhs[0].sym.offset, rhs[0].sym.endoffset)
@@ -745,7 +744,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(Literal, rhs[1].sym.offset, rhs[1].sym.endoffset)
 	case 5289:
 		var ok bool
-		if ok, err = AtStartOfArrowFunction(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfArrowFunction(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 791 /* lookahead_StartOfArrowFunction */
 		} else {
 			lhs.sym.symbol = 185 /* lookahead_notStartOfArrowFunction */
@@ -753,7 +752,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5290:
 		var ok bool
-		if ok, err = AtStartOfTypeImport(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfTypeImport(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 883 /* lookahead_StartOfTypeImport */
 		} else {
 			lhs.sym.symbol = 884 /* lookahead_notStartOfTypeImport */
@@ -761,7 +760,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5291:
 		var ok bool
-		if ok, err = AtStartOfParametrizedCall(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfParametrizedCall(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 370 /* lookahead_StartOfParametrizedCall */
 		} else {
 			lhs.sym.symbol = 341 /* lookahead_notStartOfParametrizedCall */
@@ -769,7 +768,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5292:
 		var ok bool
-		if ok, err = AtStartOfIs(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfIs(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 951 /* lookahead_StartOfIs */
 		} else {
 			lhs.sym.symbol = 953 /* lookahead_notStartOfIs */
@@ -777,7 +776,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5293:
 		var ok bool
-		if ok, err = AtStartOfMappedType(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfMappedType(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 987 /* lookahead_StartOfMappedType */
 		} else {
 			lhs.sym.symbol = 977 /* lookahead_notStartOfMappedType */
@@ -785,7 +784,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5294:
 		var ok bool
-		if ok, err = AtStartOfFunctionType(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfFunctionType(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 1019 /* lookahead_StartOfFunctionType */
 		} else {
 			lhs.sym.symbol = 970 /* lookahead_notStartOfFunctionType */
@@ -793,7 +792,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5295:
 		var ok bool
-		if ok, err = AtStartOfTupleElementName(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfTupleElementName(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 991 /* lookahead_StartOfTupleElementName */
 		} else {
 			lhs.sym.symbol = 992 /* lookahead_notStartOfTupleElementName */
@@ -801,7 +800,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5296:
 		var ok bool
-		if ok, err = AtStartOfExtendsTypeRef(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartOfExtendsTypeRef(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 852 /* lookahead_StartOfExtendsTypeRef */
 		} else {
 			lhs.sym.symbol = 853 /* lookahead_notStartOfExtendsTypeRef */
@@ -809,7 +808,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		return
 	case 5297:
 		var ok bool
-		if ok, err = AtStartLParen(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtStartLParen(ctx, stream, p.next, s); ok {
 			lhs.sym.symbol = 369 /* lookahead_StartLParen */
 		} else {
 			lhs.sym.symbol = 371 /* lookahead_notStartLParen */
@@ -820,22 +819,4 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return
-}
-
-func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
-	var t NodeType
-	switch token.Type(tok.symbol) {
-	case token.MULTILINECOMMENT:
-		t = MultiLineComment
-	case token.SINGLELINECOMMENT:
-		t = SingleLineComment
-	case token.INVALID_TOKEN:
-		t = InvalidToken
-	default:
-		return
-	}
-	if debugSyntax {
-		fmt.Printf("ignored: %v as %v\n", token.Type(tok.symbol), t)
-	}
-	p.listener(t, tok.offset, tok.endoffset)
 }

@@ -1,0 +1,176 @@
+{{ template "header" . -}}
+package {{short_pkg .Options.Package}}
+
+{{ block "onBeforeStream" .}}{{end}}
+{{ template "streamType" . -}}
+{{ template "symbol" . -}}
+{{ template "streamInit" . -}}
+{{ template "streamCopy" . -}}
+{{ template "streamReportIgnored" . -}}
+{{ template "streamFlush" . -}}
+{{ template "streamText" . -}}
+{{ template "streamLine" . -}}
+{{ template "streamNext" . -}}
+{{ block "onAfterStream" .}}{{end -}}
+
+{{- define "streamType" -}}
+// TokenStream post-processes lexer output for consumption by the parser.
+type TokenStream struct {
+	lexer    Lexer
+{{ if .Parser.Types -}}
+	listener Listener // for ingesting tokens into the AST, nil during lookaheads
+{{ end -}}
+{{ if .ReportTokens true -}}
+	pending  []symbol
+{{ end -}}
+{{ block "streamStateVars" .}}{{end -}}
+}
+
+{{ end -}}
+
+{{- define "symbol" -}}
+{{ if .Options.IsEnabled "symbol" -}}
+type symbol struct {
+	symbol    int32
+	offset    int
+	endoffset int
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamInit" -}}
+{{ if .Options.IsEnabled "streamInit" -}}
+func (s *TokenStream) Init(content string, l Listener) {
+	s.lexer.Init(content)
+{{ if .Parser.Types -}}
+	s.listener = l
+{{ end -}}
+
+{{ if .ReportTokens true -}}
+	if cap(s.pending) < startTokenBufferSize {
+		s.pending = make([]symbol, 0, startTokenBufferSize)
+	}
+	s.pending = s.pending[:0]
+{{ end -}}
+{{ block "initStreamStateVars" .}}{{end -}}
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamCopy" -}}
+{{ if .Options.IsEnabled "streamCopy" -}}
+func (s *TokenStream) Copy() TokenStream {
+	ret := *s
+	ret.lexer = s.lexer.Copy()
+{{ if .Parser.Types -}}
+	ret.listener = nil
+{{ end -}}
+	ret.pending = nil
+{{ if .ReportTokens true -}}
+	return ret
+{{ end -}}
+}
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "streamReportIgnored" -}}
+{{ if .Options.IsEnabled "streamReportIgnored" -}}
+func (s *TokenStream) reportIgnored({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
+{{ block "onBeforeIgnore" .}}{{end -}}
+	var t {{template "nodeTypeRef" $}}
+{{ if .Lexer.UsedFlags -}}
+	var flags {{template "nodeFlagsRef" $}}
+{{ end -}}
+	switch {{template "tokenType" .}}(tok.symbol) {
+{{ range .Parser.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
+	case {{template "tokenPkg" $}}{{$sym.ID}}:
+		t = {{template "nodeTypePkg" $}}{{node_id .Name}}
+{{ if .Flags -}}
+		flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{end}}
+{{ end -}}
+{{ end -}}
+{{ end -}}
+	default:
+		return
+	}
+	if debugSyntax {
+		"fmt".Printf("ignored: %v as %v\n", {{template "tokenType" .}}(tok.symbol), t)
+	}
+	s.listener(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset)
+}
+{{ end -}}
+{{ end -}}
+
+
+{{- define "streamFlush" -}}
+{{ if .Options.IsEnabled "streamFlush" -}}
+// flush reports all pending tokens up to a given symbol.
+func (s *TokenStream) flush({{if $.Options.Cancellable}}ctx "context".Context, {{end}}sym symbol) {
+	if len(s.pending) > 0 && s.listener != nil {
+		for i, tok := range s.pending {
+			if tok.endoffset > sym.endoffset {
+				// Note: this copying should not happen during normal operation, only
+				// during error recovery.
+				s.pending = append(s.pending[:0], s.pending[i:]...)
+				return
+			}
+			s.reportIgnored({{if $.Options.Cancellable}}ctx, {{end}}tok)
+		}
+		s.pending = s.pending[:0]
+	}
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamText" -}}
+{{ if .Options.IsEnabled "streamText" -}}
+func (s *TokenStream) text(sym symbol) string {
+	return s.lexer.source[sym.offset:sym.endoffset]
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamLine" -}}
+{{ if .Options.IsEnabled "streamLine" -}}
+func (s *TokenStream) line() int {
+	return s.lexer.tokenLine
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamNext" -}}
+{{ if .Options.IsEnabled "streamNext" -}}
+// next transforms the lexer stream into a stream of symbols for the parser.
+//
+// Note: "stack" and "endState" are nil and -1 respectively during lookaheads
+// and error recovery.
+func (s *TokenStream) next({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx "context".Context, {{end}}stack []stackEntry, endState int16) symbol {
+restart:
+	tok := s.lexer.Next()
+	switch tok {
+{{- if .ReportTokens true }}
+	case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{template "tokenPkg" $}}{{.ID}}{{end}}:
+		start, end := s.lexer.Pos()
+		s.pending = append(s.pending, symbol{int32(tok), start, end})
+		goto restart
+{{- end}}
+{{- if not .ReportsInvalidToken}}
+	case {{template "tokenPkg" .}}{{(index .Syms .Lexer.InvalidToken).ID}}:
+		goto restart
+{{- end}}
+	}
+	start, end := s.lexer.Pos()
+	return symbol{int32(tok), start, end}
+}
+
+{{ end -}}
+{{ end -}}

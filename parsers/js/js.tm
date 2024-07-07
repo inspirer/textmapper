@@ -16,7 +16,8 @@ cancellable = true
 recursiveLookaheads = true
 optimizeTables = true
 extraTypes = ["InsertedSemicolon"]
-customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "symbol", "stackEntry", "session", "lookaheadNext", "lexerCopy"]
+customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "session", "lexerCopy", "streamNext"]
+tokenStream = true
 
 :: lexer
 
@@ -2038,6 +2039,23 @@ func (l *Lexer) popState() {
 }
 {{end}}
 
-{{define "callLookaheadNext" -}}
-lookaheadNext(&lexer, end, {{if eq . true}}nil /*empty stack*/{{else}}stack{{end}})
-{{- end}}
+{{define "streamStateVars" -}}
+	delayed      symbol // by semicolon insertion
+	recoveryMode bool   // forces use of simplified semicolon insertion rules during error recovery
+
+	lastToken token.Type
+	lastEnd   int
+	lastLine  int
+{{end}}
+
+{{define "initStreamStateVars" -}}
+	s.delayed.symbol = noToken
+	s.recoveryMode = false
+	s.lastToken = token.UNAVAILABLE
+{{end}}
+
+{{define "onAfterStream" -}}
+func (s *TokenStream) SetDialect(d Dialect) {
+	s.lexer.Dialect = d
+}
+{{end}}

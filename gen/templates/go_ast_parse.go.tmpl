@@ -3,14 +3,19 @@ package ast
 
 // Parse parses a given utf-8 content into an AST.
 func Parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}}path, content string{{if .Parser.IsRecovering }}, eh {{pkg "main"}}ErrorHandler{{end}}) (*Tree, error) {
+	b := newBuilder(path, content)
+{{ if $.Options.TokenStream -}}
+	var s {{pkg "main"}}TokenStream
+	s.Init(content, b.addNode)
+{{ else -}}
 	var l {{pkg "main"}}Lexer
 	l.Init(content)
+{{ end -}}
 	var p {{pkg "main"}}Parser
-	b := newBuilder(path, content)
 	p.Init({{if .Parser.IsRecovering }}eh, {{end}}b.addNode)
 {{- range $index, $inp := .Parser.Inputs }}
 {{- if $inp.Synthetic }}{{continue}}{{end}}
-	err := p.Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}({{if $.Options.Cancellable}}ctx, {{end}}&l)
+	err := p.Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}({{if $.Options.Cancellable}}ctx, {{end}}&{{if $.Options.TokenStream}}s{{else}}l{{end}})
 {{- break }}
 {{- end }}
 	if err != nil {

@@ -143,12 +143,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 				if debugSyntax {
 					fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 				}
-				if len(p.pending) > 0 {
-					for _, tok := range p.pending {
-						p.reportIgnoredToken(ctx, tok)
-					}
-					p.pending = p.pending[:0]
-				}
+				p.flush(ctx, p.next)
 				if p.next.symbol != eoiToken {
 					switch token.Type(p.next.symbol) {
 					case token.IDENTIFIER:
@@ -231,17 +226,18 @@ restart:
 	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 
-func lookaheadNext(lexer *Lexer) int32 {
+func lookaheadNext(lexer *Lexer) symbol {
 restart:
 	tok := lexer.Next()
 	switch tok {
 	case token.SINGLELINECOMMENT, token.INVALID_TOKEN, token.MULTILINECOMMENT:
 		goto restart
 	}
-	return int32(tok)
+	s, e := lexer.Pos()
+	return symbol{int32(tok), s, e}
 }
 
-func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *session) (sym int32, err error) {
+func lookaheadRule(ctx context.Context, lexer *Lexer, next symbol, rule int32, s *session) (sym int32, err error) {
 	switch rule {
 	case 100:
 		var ok bool
@@ -255,21 +251,20 @@ func lookaheadRule(ctx context.Context, lexer *Lexer, next, rule int32, s *sessi
 	return 0, nil
 }
 
-func AtFooLookahead(ctx context.Context, lexer *Lexer, next int32, s *session) (bool, error) {
+func AtFooLookahead(ctx context.Context, lexer *Lexer, next symbol, s *session) (bool, error) {
 	if debugSyntax {
-		fmt.Printf("lookahead FooLookahead, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead FooLookahead, next: %v\n", symbolName(next.symbol))
 	}
 	return lookahead(ctx, lexer, next, 2, 145, s)
 }
 
-func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *session) (bool, error) {
+func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *session) (bool, error) {
 	lexer := l.Copy()
-
 	// Use memoization for recursive lookaheads.
-	if next == noToken {
+	if next.symbol == noToken {
 		next = lookaheadNext(&lexer)
 	}
-	key := uint64(l.tokenOffset) + uint64(end)<<40
+	key := uint64(next.offset) + uint64(end)<<40
 	if ret, ok := s.cache[key]; ok {
 		return ret, nil
 	}
@@ -282,10 +277,10 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 		action := tmAction[state]
 		if action < -2 {
 			// Lookahead is needed.
-			if next == noToken {
+			if next.symbol == noToken {
 				next = lookaheadNext(&lexer)
 			}
-			action = lalr(action, next)
+			action = lalr(action, next.symbol)
 		}
 
 		if action >= 0 {
@@ -321,19 +316,19 @@ func lookahead(ctx context.Context, l *Lexer, next int32, start, end int16, s *s
 			}
 
 			// Shift.
-			if next == noToken {
+			if next.symbol == noToken {
 				next = lookaheadNext(&lexer)
 			}
-			state = gotoState(state, next)
+			state = gotoState(state, next.symbol)
 			stack = append(stack, stackEntry{
-				sym:   symbol{symbol: next},
+				sym:   next,
 				state: state,
 			})
 			if debugSyntax {
-				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next.symbol), lexer.Text())
 			}
-			if state != -1 && next != eoiToken {
-				next = noToken
+			if state != -1 && next.symbol != eoiToken {
+				next.symbol = noToken
 			}
 		}
 
@@ -400,7 +395,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		}
 	case 100:
 		var ok bool
-		if ok, err = AtFooLookahead(ctx, lexer, p.next.symbol, s); ok {
+		if ok, err = AtFooLookahead(ctx, lexer, p.next, s); ok {
 			lhs.sym.symbol = 43 /* lookahead_FooLookahead */
 		} else {
 			lhs.sym.symbol = 44 /* lookahead_notFooLookahead */
@@ -444,6 +439,22 @@ func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {
 		fmt.Printf("ignored: %v as %v\n", token.Type(tok.symbol), t)
 	}
 	p.listener(t, 0, tok.offset, tok.endoffset)
+}
+
+// flush reports all pending tokens up to a given symbol.
+func (p *Parser) flush(ctx context.Context, sym symbol) {
+	if len(p.pending) > 0 && p.listener != nil {
+		for i, tok := range p.pending {
+			if tok.endoffset > sym.endoffset {
+				// Note: this copying should not happen during normal operation, only
+				// during error recovery.
+				p.pending = append(p.pending[:0], p.pending[i:]...)
+				return
+			}
+			p.reportIgnoredToken(ctx, tok)
+		}
+		p.pending = p.pending[:0]
+	}
 }
 
 func parserEnd() {}

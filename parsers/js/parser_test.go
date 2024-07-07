@@ -1786,8 +1786,8 @@ var parseTests = []struct {
 }
 
 func TestParser(t *testing.T) {
-	l := new(js.Lexer)
-	p := new(js.Parser)
+	var s js.TokenStream
+	var p js.Parser
 
 	seen := map[js.NodeType]bool{}
 	ctx := context.Background()
@@ -1795,33 +1795,34 @@ func TestParser(t *testing.T) {
 		seen[tc.nt] = true
 		for _, input := range tc.inputs {
 			test := parsertest.New(t, tc.nt.String(), input)
-			l.Init(test.Source())
-			l.Dialect = tc.dialect
 			errHandler := func(se js.SyntaxError) bool {
 				test.ConsumeError(t, se.Offset, se.Endoffset)
 				return true
 			}
-			f := func(nt js.NodeType, offset, endoffset int) {
+			listener := func(nt js.NodeType, offset, endoffset int) {
 				if nt == tc.nt {
 					test.Consume(t, offset, endoffset)
 				}
 			}
-			p.Init(errHandler, f)
+			s.Init(test.Source(), listener)
+			s.SetDialect(tc.dialect)
+			p.Init(errHandler, listener)
 			var err error
 			switch {
 			case strings.Contains(input, "/*astype*/"):
-				err = p.ParseTypeSnippet(ctx, l)
+				err = p.ParseTypeSnippet(ctx, &s)
 			case strings.Contains(input, "/*asexpr*/"):
-				err = p.ParseExpressionSnippet(ctx, l)
+				err = p.ParseExpressionSnippet(ctx, &s)
 			default:
-				err = p.ParseModule(ctx, l)
+				err = p.ParseModule(ctx, &s)
 			}
 			if err == nil {
-				f(js.Module, 0, len(test.Source()))
+				listener(js.Module, 0, len(test.Source()))
 			}
 			test.Done(t, err)
 
 			// Check that no invalid tokens were reported.
+			var l js.Lexer
 			l.Init(test.Source())
 			l.Dialect = tc.dialect
 			for tok := l.Next(); tok != token.EOI; tok = l.Next() {
@@ -1840,25 +1841,25 @@ func TestParser(t *testing.T) {
 }
 
 func BenchmarkParser(b *testing.B) {
-	l := new(js.Lexer)
-	p := new(js.Parser)
+	var s js.TokenStream
+	var p js.Parser
 	onError := func(se js.SyntaxError) bool {
 		b.Errorf("unexpected: %v", se)
 		return false
 	}
 
 	ctx := context.Background()
-	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
+	p.Init(onError, noListener)
 	for i := 0; i < b.N; i++ {
-		l.Init(jsBenchmarkCode)
-		p.ParseModule(ctx, l)
+		s.Init(jsBenchmarkCode, noListener)
+		p.ParseModule(ctx, &s)
 	}
 	b.SetBytes(int64(len(jsBenchmarkCode)))
 }
 
 func BenchmarkLookahead(b *testing.B) {
-	l := new(js.Lexer)
-	p := new(js.Parser)
+	var s js.TokenStream
+	var p js.Parser
 	onError := func(se js.SyntaxError) bool {
 		b.Errorf("unexpected: %v", se)
 		return false
@@ -1870,11 +1871,13 @@ func BenchmarkLookahead(b *testing.B) {
 	}
 
 	ctx := context.Background()
-	p.Init(onError, func(t js.NodeType, offset, endoffset int) {})
+	p.Init(onError, noListener)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		l.Init(expr)
-		p.ParseModule(ctx, l)
+		s.Init(expr, noListener)
+		p.ParseModule(ctx, &s)
 	}
 	b.SetBytes(int64(len(expr)))
 }
+
+func noListener(t js.NodeType, offset, endoffset int) {}

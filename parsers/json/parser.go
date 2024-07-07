@@ -123,12 +123,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			if debugSyntax {
 				fmt.Printf("shift: %v (%s)\n", symbolName(p.next.symbol), lexer.Text())
 			}
-			if len(p.pending) > 0 {
-				for _, tok := range p.pending {
-					p.reportIgnoredToken(tok)
-				}
-				p.pending = p.pending[:0]
-			}
+			p.flush(p.next)
 			if p.next.symbol != eoiToken {
 				switch token.Type(p.next.symbol) {
 				case token.JSONSTRING:
@@ -199,26 +194,26 @@ restart:
 	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 
-func lookaheadNext(lexer *Lexer) int32 {
+func lookaheadNext(lexer *Lexer) symbol {
 restart:
 	tok := lexer.Next()
 	switch tok {
 	case token.MULTILINECOMMENT, token.INVALID_TOKEN:
 		goto restart
 	}
-	return int32(tok)
+	s, e := lexer.Pos()
+	return symbol{int32(tok), s, e}
 }
 
-func AtEmptyObject(lexer *Lexer, next int32) bool {
+func AtEmptyObject(lexer *Lexer, next symbol) bool {
 	if debugSyntax {
-		fmt.Printf("lookahead EmptyObject, next: %v\n", symbolName(next))
+		fmt.Printf("lookahead EmptyObject, next: %v\n", symbolName(next.symbol))
 	}
 	return lookahead(lexer, next, 1, 43)
 }
 
-func lookahead(l *Lexer, next int32, start, end int8) bool {
+func lookahead(l *Lexer, next symbol, start, end int8) bool {
 	lexer := l.Copy()
-
 	var allocated [64]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
@@ -227,11 +222,11 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 		action := tmAction[state]
 		if action > tmActionBase {
 			// Lookahead is needed.
-			if next == noToken {
+			if next.symbol == noToken {
 				next = lookaheadNext(&lexer)
 			}
-			pos := action + next
-			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next {
+			pos := action + next.symbol
+			if pos >= 0 && pos < tmTableLen && int32(tmCheck[pos]) == next.symbol {
 				action = int32(tmTable[pos])
 			} else {
 				action = tmDefAct[state]
@@ -259,14 +254,14 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 			// Shift.
 			state = int8(-2 - action)
 			stack = append(stack, stackEntry{
-				sym:   symbol{symbol: next},
+				sym:   next,
 				state: state,
 			})
 			if debugSyntax {
-				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next), lexer.Text())
+				fmt.Printf("lookahead shift: %v (%s)\n", symbolName(next.symbol), lexer.Text())
 			}
-			if state != -1 && next != eoiToken {
-				next = noToken
+			if state != -1 && next.symbol != eoiToken {
+				next.symbol = noToken
 			}
 		}
 
@@ -284,7 +279,7 @@ func lookahead(l *Lexer, next int32, start, end int8) bool {
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
 	case 32:
-		if AtEmptyObject(lexer, p.next.symbol) {
+		if AtEmptyObject(lexer, p.next) {
 			lhs.sym.symbol = 23 /* lookahead_EmptyObject */
 		} else {
 			lhs.sym.symbol = 25 /* lookahead_notEmptyObject */
@@ -311,4 +306,20 @@ func (p *Parser) reportIgnoredToken(tok symbol) {
 		fmt.Printf("ignored: %v as %v\n", token.Type(tok.symbol), t)
 	}
 	p.listener(t, tok.offset, tok.endoffset)
+}
+
+// flush reports all pending tokens up to a given symbol.
+func (p *Parser) flush(sym symbol) {
+	if len(p.pending) > 0 && p.listener != nil {
+		for i, tok := range p.pending {
+			if tok.endoffset > sym.endoffset {
+				// Note: this copying should not happen during normal operation, only
+				// during error recovery.
+				p.pending = append(p.pending[:0], p.pending[i:]...)
+				return
+			}
+			p.reportIgnoredToken(tok)
+		}
+		p.pending = p.pending[:0]
+	}
 }
