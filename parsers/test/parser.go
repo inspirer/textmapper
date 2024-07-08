@@ -347,13 +347,13 @@ func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, s *session) (err error) {
 	switch rule {
 	case 5: // Declaration : '{' '-' '-' Declaration_list '}'
-		p.listener(Negation, 0, rhs[1].sym.offset, rhs[2].sym.endoffset)
+		p.reportRange(Negation, 0, rhs[1:3])
 	case 6: // Declaration : '{' '-' '-' '}'
-		p.listener(Negation, 0, rhs[1].sym.offset, rhs[2].sym.endoffset)
+		p.reportRange(Negation, 0, rhs[1:3])
 	case 7: // Declaration : '{' '-' Declaration_list '}'
-		p.listener(Negation, 0, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.reportRange(Negation, 0, rhs[1:2])
 	case 8: // Declaration : '{' '-' '}'
-		p.listener(Negation, 0, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.reportRange(Negation, 0, rhs[1:2])
 	case 11: // Declaration : lastInt
 		{
 			println("it works")
@@ -379,9 +379,9 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 			}
 		}
 	case 15: // Declaration : 'test' '(' empty1 ')'
-		p.listener(Empty1, 0, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.reportRange(Empty1, 0, rhs[2:3])
 	case 17: // Declaration : 'test' IntegerConstant
-		p.listener(Icon, InTest, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.reportRange(Icon, InTest, rhs[1:2])
 	case 18: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
 		fixTrailingWS(lhs, rhs)
 	case 21: // Declaration : 'decl2' ':' QualifiedNameopt
@@ -421,6 +421,13 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 	} else {
 		lhs.sym.endoffset = lhs.sym.offset
 	}
+}
+
+func (p *Parser) reportRange(t NodeType, flags NodeFlags, rhs []stackEntry) {
+	for len(rhs) > 1 && rhs[len(rhs)-1].sym.offset == rhs[len(rhs)-1].sym.endoffset {
+		rhs = rhs[:len(rhs)-1]
+	}
+	p.listener(t, flags, rhs[0].sym.offset, rhs[len(rhs)-1].sym.endoffset)
 }
 
 func (p *Parser) reportIgnoredToken(ctx context.Context, tok symbol) {

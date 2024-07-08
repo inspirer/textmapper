@@ -104,6 +104,18 @@ func (p *Parser) HasActions() bool {
 	return len(p.Tables.Lookaheads) > 0
 }
 
+func (p *Parser) HasActionsWithReport() bool {
+	for _, r := range p.Rules {
+		if r.Action > 0 {
+			act := p.Actions[r.Action]
+			if len(act.Report) > 0 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // Tokens returns all lexical tokens defined in the grammar.
 func (g *Grammar) Tokens() []Symbol {
 	return g.Syms[:g.NumTokens]

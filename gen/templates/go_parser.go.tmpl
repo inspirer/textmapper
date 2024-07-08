@@ -28,6 +28,7 @@ package {{short_pkg .Options.Package}}
 {{ if and .Options.FixWhitespace (not .Options.TokenStream) -}}
 {{ template "fixTrailingWS" . -}}
 {{ end -}}
+{{ template "reportRange" . -}}
 {{ if and (.ReportTokens true) (not .Options.TokenStream) -}}
 {{ template "reportIgnoredToken" . -}}
 {{ template "parserFlush" . -}}
@@ -969,11 +970,9 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{ end -}}
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
-{{ if $.Parser.UsedFlags -}}
-		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{else}}0{{end}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
-{{ else -}}
-		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset)
-{{ end -}}
+		p.{{if $.Options.FixWhitespace}}reportRange{{else}}listener{{end}}({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{ if $.Parser.UsedFlags }}
+		       {{- range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}
+			   {{- if $.Options.FixWhitespace}}rhs[{{.Start}}:{{.End}}]{{else}}rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset{{end}})
 {{ end -}}
 {{ if $act.Code -}}
 {{go_parser_action $act.Code $act.Vars $act.Origin}}
@@ -1031,6 +1030,18 @@ func fixTrailingWS(lhs *stackEntry, rhs []stackEntry) {
 
 {{ end -}}
 
+{{- define "reportRange" -}}
+{{ if and .Options.FixWhitespace (.Options.IsEnabled "reportRange") .Parser.HasActionsWithReport -}}
+func (p *Parser) reportRange(t {{template "nodeTypeRef" .}}, {{if .Parser.UsedFlags}}flags {{template "nodeFlagsRef" .}}, {{end}}rhs []stackEntry) {
+	for len(rhs) > 1 && rhs[len(rhs)-1].sym.offset == rhs[len(rhs)-1].sym.endoffset {
+		rhs = rhs[:len(rhs)-1]
+	}
+	p.listener(t, {{if .Parser.UsedFlags}}flags, {{end}}rhs[0].sym.offset, rhs[len(rhs)-1].sym.endoffset)
+}
+
+{{ end -}}
+{{ end -}}
+
 {{- define "reportIgnoredToken" -}}
 func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Context, {{end}}tok symbol) {
 {{ block "onBeforeIgnore" .}}{{end -}}
@@ -1058,7 +1069,6 @@ func (p *Parser) reportIgnoredToken({{if $.Options.Cancellable}}ctx "context".Co
 	p.listener(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset)
 }
 {{ end -}}
-
 
 {{- define "parserFlush" -}}
 {{ if .Options.IsEnabled "streamFlush" -}}

@@ -372,40 +372,47 @@ func gotoState(state int16, symbol int32) int16 {
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, stream *TokenStream) (err error) {
 	switch rule {
 	case 233: // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
-		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Extend, rhs[0:1])
 	case 234: // nonterm : 'extend' identifier nonterm_alias ':' rules ';'
-		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Extend, rhs[0:1])
 	case 235: // nonterm : 'extend' identifier reportClause ':' rules ';'
-		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Extend, rhs[0:1])
 	case 236: // nonterm : 'extend' identifier ':' rules ';'
-		p.listener(Extend, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Extend, rhs[0:1])
 	case 237: // nonterm : 'inline' identifier nonterm_params nonterm_alias reportClause ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 238: // nonterm : 'inline' identifier nonterm_params nonterm_alias ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 239: // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 240: // nonterm : 'inline' identifier nonterm_params ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 241: // nonterm : 'inline' identifier nonterm_alias reportClause ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 242: // nonterm : 'inline' identifier nonterm_alias ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 243: // nonterm : 'inline' identifier reportClause ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 244: // nonterm : 'inline' identifier ':' rules ';'
-		p.listener(Inline, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Inline, rhs[0:1])
 	case 257: // directive : '%' 'assert' 'empty' rhsSet ';'
-		p.listener(Empty, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.reportRange(Empty, rhs[2:3])
 	case 258: // directive : '%' 'assert' 'nonempty' rhsSet ';'
-		p.listener(NonEmpty, rhs[2].sym.offset, rhs[2].sym.endoffset)
+		p.reportRange(NonEmpty, rhs[2:3])
 	case 267: // inputref : symref 'no-eoi'
-		p.listener(NoEoi, rhs[1].sym.offset, rhs[1].sym.endoffset)
+		p.reportRange(NoEoi, rhs[1:2])
 	case 306: // lookahead_predicate : '!' symref
-		p.listener(Not, rhs[0].sym.offset, rhs[0].sym.endoffset)
+		p.reportRange(Not, rhs[0:1])
 	}
 	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}
 	return
+}
+
+func (p *Parser) reportRange(t NodeType, rhs []stackEntry) {
+	for len(rhs) > 1 && rhs[len(rhs)-1].sym.offset == rhs[len(rhs)-1].sym.endoffset {
+		rhs = rhs[:len(rhs)-1]
+	}
+	p.listener(t, rhs[0].sym.offset, rhs[len(rhs)-1].sym.endoffset)
 }
