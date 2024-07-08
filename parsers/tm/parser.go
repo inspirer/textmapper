@@ -165,13 +165,13 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 				}
 			}
 
+			p.recovering = 4
 			stack = p.recoverFromError(ctx, stream, stack, end)
 			if stack == nil {
 				stream.flush(ctx, p.next)
 				return lastErr
 			}
 			state = stack[len(stack)-1].state
-			p.recovering = 4
 		}
 	}
 

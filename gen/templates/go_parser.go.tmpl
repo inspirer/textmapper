@@ -84,6 +84,9 @@ type Parser struct {
 
 	next       symbol
 {{ if .Parser.IsRecovering -}}
+{{ if not .Options.TokenStream -}}
+	endState   int{{$stateType}}
+{{ end -}}
 	recovering int
 {{ end -}}
 {{ if and (.ReportTokens true) (not .Options.TokenStream) -}}
@@ -239,7 +242,8 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 
 	var alloc [startStackSize]stackEntry
 	stack := append(alloc[:0], stackEntry{state: state})
-{{ if .Parser.IsRecovering -}}
+{{ if and .Parser.IsRecovering (not .Options.TokenStream) -}}
+	p.endState = end
 {{ end -}}
 {{ if .Options.TokenStream -}}
 	p.next = stream.next({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}stack, end)
@@ -398,6 +402,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				}
 			}
 
+			p.recovering = 4
 			stack = p.recoverFromError({{if $.Options.Cancellable}}ctx, {{end}}{{template "lexerArg" .}}, stack, end)
 			if stack == nil {
 {{ if .ReportTokens true -}}
@@ -406,7 +411,6 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				return {{if .Parser.HasInputAssocValues}}nil, {{end}}lastErr
 			}
 			state = stack[len(stack)-1].state
-			p.recovering = 4
 {{ else -}}
 			break
 {{ end -}}
@@ -524,7 +528,7 @@ func (p *Parser) skipBrokenCode({{if $.Options.Cancellable}}ctx "context".Contex
 			"fmt".Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), {{if .Options.TokenStream}}stream.text(p.next){{else}}lexer.Text(){{end}})
 		}
 {{ if .ReportTokens true -}}
-		{{if .Options.TokenStream}}stream{{else}}p{{end}}.flush(ctx, p.next)
+		{{if .Options.TokenStream}}stream{{else}}p{{end}}.flush({{if $.Options.Cancellable}}ctx, {{end}}p.next)
 {{ end -}}
 {{ template "reportConsumedNext" . -}}
 		e = p.next.endoffset
@@ -647,7 +651,7 @@ func (p *Parser) recoverFromError({{if $.Options.Cancellable}}ctx "context".Cont
 			"fmt".Println("recovered")
 		}
 {{ if .ReportTokens true -}}
-		{{if .Options.TokenStream}}stream{{else}}p{{end}}.flush(ctx, symbol{errSymbol, s, e})
+		{{if .Options.TokenStream}}stream{{else}}p{{end}}.flush({{if $.Options.Cancellable}}ctx, {{end}}symbol{errSymbol, s, e})
 {{ end -}}
 		stack = append(stack[:matchingPos], stackEntry{
 			sym:   symbol{errSymbol, s, e},
