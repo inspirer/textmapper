@@ -98,7 +98,6 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
-			stack = stack[:len(stack)-ln]
 			for ln > 0 && rhs[ln-1].sym.offset == rhs[ln-1].sym.endoffset {
 				ln--
 			}
@@ -111,9 +110,10 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule(ctx, rule, &entry, rhs, stream); err != nil {
+			if err := p.applyRule(ctx, rule, &entry, stack, stream); err != nil {
 				return err
 			}
+			stack = stack[:len(stack)-len(rhs)]
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
@@ -369,40 +369,40 @@ func gotoState(state int16, symbol int32) int16 {
 	return -1
 }
 
-func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, stream *TokenStream) (err error) {
+func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, stack []stackEntry, stream *TokenStream) (err error) {
 	switch rule {
 	case 233: // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
-		p.reportRange(Extend, rhs[0:1])
+		p.reportRange(Extend, stack[len(stack)-7:len(stack)-6])
 	case 234: // nonterm : 'extend' identifier nonterm_alias ':' rules ';'
-		p.reportRange(Extend, rhs[0:1])
+		p.reportRange(Extend, stack[len(stack)-6:len(stack)-5])
 	case 235: // nonterm : 'extend' identifier reportClause ':' rules ';'
-		p.reportRange(Extend, rhs[0:1])
+		p.reportRange(Extend, stack[len(stack)-6:len(stack)-5])
 	case 236: // nonterm : 'extend' identifier ':' rules ';'
-		p.reportRange(Extend, rhs[0:1])
+		p.reportRange(Extend, stack[len(stack)-5:len(stack)-4])
 	case 237: // nonterm : 'inline' identifier nonterm_params nonterm_alias reportClause ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-8:len(stack)-7])
 	case 238: // nonterm : 'inline' identifier nonterm_params nonterm_alias ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-7:len(stack)-6])
 	case 239: // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-7:len(stack)-6])
 	case 240: // nonterm : 'inline' identifier nonterm_params ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-6:len(stack)-5])
 	case 241: // nonterm : 'inline' identifier nonterm_alias reportClause ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-7:len(stack)-6])
 	case 242: // nonterm : 'inline' identifier nonterm_alias ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-6:len(stack)-5])
 	case 243: // nonterm : 'inline' identifier reportClause ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-6:len(stack)-5])
 	case 244: // nonterm : 'inline' identifier ':' rules ';'
-		p.reportRange(Inline, rhs[0:1])
+		p.reportRange(Inline, stack[len(stack)-5:len(stack)-4])
 	case 257: // directive : '%' 'assert' 'empty' rhsSet ';'
-		p.reportRange(Empty, rhs[2:3])
+		p.reportRange(Empty, stack[len(stack)-3:len(stack)-2])
 	case 258: // directive : '%' 'assert' 'nonempty' rhsSet ';'
-		p.reportRange(NonEmpty, rhs[2:3])
+		p.reportRange(NonEmpty, stack[len(stack)-3:len(stack)-2])
 	case 267: // inputref : symref 'no-eoi'
-		p.reportRange(NoEoi, rhs[1:2])
+		p.reportRange(NoEoi, stack[len(stack)-1:len(stack)-0])
 	case 306: // lookahead_predicate : '!' symref
-		p.reportRange(Not, rhs[0:1])
+		p.reportRange(Not, stack[len(stack)-2:len(stack)-1])
 	}
 	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)

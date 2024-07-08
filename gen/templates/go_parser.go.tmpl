@@ -295,7 +295,6 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
-			stack = stack[:len(stack)-ln]
 {{ if and .Options.FixWhitespace .Options.TokenStream -}}
 			for ln > 0 && rhs[ln-1].sym.offset == rhs[ln-1].sym.endoffset {
 				ln--
@@ -314,9 +313,10 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule({{if .Options.Cancellable}}ctx, {{end}}rule, &entry, rhs, {{template "lexerArg" .}}{{if .NeedsSession}}, &s{{end}}); err != nil {
+			if err := p.applyRule({{if .Options.Cancellable}}ctx, {{end}}rule, &entry, stack, {{template "lexerArg" .}}{{if .NeedsSession}}, &s{{end}}); err != nil {
 				return {{if .Parser.HasInputAssocValues}}nil, {{end}}err
 			}
+			stack = stack[:len(stack)-len(rhs)]
 			if debugSyntax {
 				"fmt".Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
@@ -956,28 +956,29 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}{{ if .
 {{ end -}}
 
 {{- define "applyRule" -}}
-func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}rule int32, lhs *stackEntry, rhs []stackEntry, {{template "lexerParam" .}}{{if .NeedsSession}}, s *session{{end}}) (err error) {
+func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}rule int32, lhs *stackEntry, stack []stackEntry, {{template "lexerParam" .}}{{if .NeedsSession}}, s *session{{end}}) (err error) {
 {{ if or .Parser.HasActions .Parser.Tables.Lookaheads -}}
 	switch rule {
 {{ range $index, $rule := .Parser.Rules -}}
+{{ $rulelen := index $.Parser.Tables.RuleLen $index -}}
 {{ $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) (not $.Options.TokenStream) -}}
 {{ if or (ne $rule.Action 0) $fixWS -}}
 {{ $act := index $.Parser.Actions $rule.Action -}}
 {{ if or (ne $act.Code "") $act.Report $fixWS -}}
 	case {{$index}}: // {{$.RuleString $rule}}
 {{ if $fixWS -}}
-		fixTrailingWS(lhs, rhs)
+		fixTrailingWS(lhs, stack[len(stack)-{{$rulelen}}:])
 {{ end -}}
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
 {{ if eq .Start .End -}}
 		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{ if $.Parser.UsedFlags }}
 		       {{- range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}
-			   rhs[{{.End}}].sym.offset, rhs[{{.End}}].sym.offset)
+			   stack[len(stack)-{{sub $rulelen .End}}].sym.offset, stack[len(stack)-{{sub $rulelen .End}}].sym.offset)
 {{ else -}}
 		p.{{if $.Options.FixWhitespace}}reportRange{{else}}listener{{end}}({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{ if $.Parser.UsedFlags }}
 		       {{- range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}
-			   {{- if $.Options.FixWhitespace}}rhs[{{.Start}}:{{.End}}]{{else}}rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset{{end}})
+			   {{- if $.Options.FixWhitespace}}stack[len(stack)-{{sub $rulelen .Start}}:len(stack)-{{sub $rulelen .End}}]{{else}}stack[len(stack)-{{sub $rulelen .Start}}].sym.offset, stack[len(stack)-{{sub $rulelen (minus1 .End)}}].sym.endoffset{{end}})
 {{ end -}}
 {{ end -}}
 {{ if $act.Code -}}

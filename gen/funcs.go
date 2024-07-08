@@ -35,6 +35,7 @@ var funcMap = template.FuncMap{
 	"lexer_action":        lexerAction,
 	"ref":                 ref,
 	"minus1":              minus1,
+	"sub":                 sub,
 	"go_parser_action":    goParserAction,
 	"cc_parser_action":    ccParserAction,
 	"bison_parser_action": bisonParserAction,
@@ -218,6 +219,10 @@ func minus1(a int) int {
 	return a - 1
 }
 
+func sub(a, b int) int {
+	return a - b
+}
+
 func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
 	var decls strings.Builder
 	var sb strings.Builder
@@ -281,7 +286,7 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		if index == -2 {
 			v = "lhs"
 		} else {
-			v = fmt.Sprintf("rhs[%v]", index)
+			v = fmt.Sprintf("stack[len(stack)-%v]", len(args.Types)-index)
 		}
 		switch {
 		case prop == "sym":

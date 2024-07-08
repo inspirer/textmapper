@@ -156,23 +156,23 @@ func TestParserAction(t *testing.T) {
 		{"$$ = ${left()}", vars("%abc"), "nn, _ := lhs.value.(abc)\nlhs.value = nn"},
 
 		{"abc $foo ", vars("foo"), "abc nil "},
-		{"abc $foo-a ", vars("foo-a:0"), "abc rhs[0].value "},
-		{"abc $foo-b ", vars("foo-b:0:bar"), "nn0, _ := rhs[0].value.(bar)\nabc nn0 "},
-		{"$foo $foo", vars("foo:0:bar"), "nn0, _ := rhs[0].value.(bar)\nnn0 nn0"},
+		{"abc $foo-a ", vars("foo-a:0"), "abc stack[len(stack)-1].value "},
+		{"abc $foo-b ", vars("foo-b:0:bar"), "nn0, _ := stack[len(stack)-1].value.(bar)\nabc nn0 "},
+		{"$foo $foo", vars("foo:0:bar"), "nn0, _ := stack[len(stack)-1].value.(bar)\nnn0 nn0"},
 		{"abc ${foo} ", vars("foo"), "abc nil "},
-		{"abc ${foo} ", vars("foo:0"), "abc rhs[0].value "},
-		{"abc ${foo} ", vars("foo:0:bar"), "nn0, _ := rhs[0].value.(bar)\nabc nn0 "},
+		{"abc ${foo} ", vars("foo:0"), "abc stack[len(stack)-1].value "},
+		{"abc ${foo} ", vars("foo:0:bar"), "nn0, _ := stack[len(stack)-1].value.(bar)\nabc nn0 "},
 
-		{"$a + ${last()}", vars("a:0", "b", "c:1", "d"), "rhs[0].value + rhs[1].value"},
-		{"${first()} + ${left()}", vars("a:0", "b", "c:1", "d"), "rhs[0].value + lhs.value"},
-		{"${first()} + ${left()}", vars("a:1:bar", "b", "c", "d"), "nn0, _ := rhs[0].value.(bar)\nnn0 + lhs.value"},
+		{"$a + ${last()}", vars("a:0", "b", "c:1", "d"), "stack[len(stack)-2].value + stack[len(stack)-1].value"},
+		{"${first()} + ${left()}", vars("a:0", "b", "c:1", "d"), "stack[len(stack)-2].value + lhs.value"},
+		{"${first()} + ${left()}", vars("a:1:bar", "b", "c", "d"), "nn0, _ := stack[len(stack)-1].value.(bar)\nnn0 + lhs.value"},
 
 		{"${left().sym}", vars("a:0", "b", "c:1", "d:2"), "(&lhs.sym)"},
 		{"${left().offset}", vars("a:0", "b", "c:1", "d:2"), "lhs.sym.offset"},
 		{"${left().endoffset}", vars("a:0", "b", "c:1", "d:2"), "lhs.sym.endoffset"},
-		{"${last().sym}", vars("a:0", "b", "c:1", "d:2"), "(&rhs[2].sym)"},
-		{"${last().offset}", vars("a:0", "b", "c:1", "d:2"), "rhs[2].sym.offset"},
-		{"${last().endoffset}", vars("a:0", "b", "c:1", "d:2"), "rhs[2].sym.endoffset"},
+		{"${last().sym}", vars("a:0", "b", "c:1", "d:2"), "(&stack[len(stack)-1].sym)"},
+		{"${last().offset}", vars("a:0", "b", "c:1", "d:2"), "stack[len(stack)-1].sym.offset"},
+		{"${last().endoffset}", vars("a:0", "b", "c:1", "d:2"), "stack[len(stack)-1].sym.endoffset"},
 	}
 
 	for _, tc := range tests {

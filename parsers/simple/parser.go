@@ -76,7 +76,6 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
-			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
@@ -86,9 +85,10 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule(rule, &entry, rhs, lexer); err != nil {
+			if err := p.applyRule(rule, &entry, stack, lexer); err != nil {
 				return err
 			}
+			stack = stack[:len(stack)-len(rhs)]
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
@@ -183,7 +183,7 @@ restart:
 	p.next.offset, p.next.endoffset = lexer.Pos()
 }
 
-func (p *Parser) applyRule(rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer) (err error) {
+func (p *Parser) applyRule(rule int32, lhs *stackEntry, stack []stackEntry, lexer *Lexer) (err error) {
 	if nt := tmRuleType[rule]; nt != 0 {
 		p.listener(nt, lhs.sym.offset, lhs.sym.endoffset)
 	}

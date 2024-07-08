@@ -99,7 +99,6 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
-			stack = stack[:len(stack)-ln]
 			if ln == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(ctx, lexer, stack)
@@ -109,9 +108,10 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 				entry.sym.offset = rhs[0].sym.offset
 				entry.sym.endoffset = rhs[ln-1].sym.endoffset
 			}
-			if err := p.applyRule(ctx, rule, &entry, rhs, lexer, &s); err != nil {
+			if err := p.applyRule(ctx, rule, &entry, stack, lexer, &s); err != nil {
 				return nil, err
 			}
+			stack = stack[:len(stack)-len(rhs)]
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
@@ -344,61 +344,61 @@ func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *
 	return state == end, nil
 }
 
-func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs []stackEntry, lexer *Lexer, s *session) (err error) {
+func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, stack []stackEntry, lexer *Lexer, s *session) (err error) {
 	switch rule {
 	case 5: // Declaration : '{' '-' '-' Declaration_list '}'
-		p.reportRange(Negation, 0, rhs[1:3])
+		p.reportRange(Negation, 0, stack[len(stack)-4:len(stack)-2])
 	case 6: // Declaration : '{' '-' '-' '}'
-		p.reportRange(Negation, 0, rhs[1:3])
+		p.reportRange(Negation, 0, stack[len(stack)-3:len(stack)-1])
 	case 7: // Declaration : '{' '-' Declaration_list '}'
-		p.reportRange(Negation, 0, rhs[1:2])
+		p.reportRange(Negation, 0, stack[len(stack)-3:len(stack)-2])
 	case 8: // Declaration : '{' '-' '}'
-		p.reportRange(Negation, 0, rhs[1:2])
+		p.reportRange(Negation, 0, stack[len(stack)-2:len(stack)-1])
 	case 11: // Declaration : lastInt
 		{
 			println("it works")
 		}
 	case 12: // Declaration : IntegerConstant '[' ']'
-		nn0, _ := rhs[0].value.(int)
+		nn0, _ := stack[len(stack)-3].value.(int)
 		{
 			switch nn0 {
 			case 7:
-				p.listener(Int7, 0, rhs[0].sym.offset, rhs[2].sym.endoffset)
+				p.listener(Int7, 0, stack[len(stack)-3].sym.offset, stack[len(stack)-1].sym.endoffset)
 			case 9:
-				p.listener(Int9, 0, rhs[0].sym.offset, rhs[2].sym.endoffset)
+				p.listener(Int9, 0, stack[len(stack)-3].sym.offset, stack[len(stack)-1].sym.endoffset)
 			}
 		}
 	case 13: // Declaration : IntegerConstant
-		nn0, _ := rhs[0].value.(int)
+		nn0, _ := stack[len(stack)-1].value.(int)
 		{
 			switch nn0 {
 			case 7:
-				p.listener(Int7, 0, rhs[0].sym.offset, rhs[0].sym.endoffset)
+				p.listener(Int7, 0, stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.endoffset)
 			case 9:
-				p.listener(Int9, 0, rhs[0].sym.offset, rhs[0].sym.endoffset)
+				p.listener(Int9, 0, stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.endoffset)
 			}
 		}
 	case 15: // Declaration : 'test' '(' empty1 ')'
-		p.reportRange(Empty1, 0, rhs[2:3])
+		p.reportRange(Empty1, 0, stack[len(stack)-2:len(stack)-1])
 	case 17: // Declaration : 'test' IntegerConstant
-		p.reportRange(Icon, InTest, rhs[1:2])
+		p.reportRange(Icon, InTest, stack[len(stack)-1:len(stack)-0])
 	case 18: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
-		fixTrailingWS(lhs, rhs)
+		fixTrailingWS(lhs, stack[len(stack)-6:])
 	case 21: // Declaration : 'decl2' ':' QualifiedNameopt
-		fixTrailingWS(lhs, rhs)
+		fixTrailingWS(lhs, stack[len(stack)-3:])
 	case 83: // If : 'if' '(' O ')' Decl2
-		{ /* 4: rhs[4].value */
+		{ /* 4: stack[len(stack)-1].value */
 		}
 	case 94: // customPlus : '\\' primaryExpr '+' expr
 		{
-			p.listener(PlusExpr, 0, rhs[0].sym.offset, rhs[3].sym.endoffset)
+			p.listener(PlusExpr, 0, stack[len(stack)-4].sym.offset, stack[len(stack)-1].sym.endoffset)
 		}
 	case 96: // primaryExpr : IntegerConstant
 		p.listener(Bar, 0,
-			rhs[0].sym.offset, rhs[0].sym.offset)
+			stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.offset)
 	case 97: // primaryExpr_WithoutAs : IntegerConstant
 		p.listener(Bar, 0,
-			rhs[0].sym.offset, rhs[0].sym.offset)
+			stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.offset)
 	case 100:
 		var ok bool
 		if ok, err = AtFooLookahead(ctx, lexer, p.next, s); ok {
