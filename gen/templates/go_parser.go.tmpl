@@ -464,7 +464,7 @@ func reduceAll(stack []stackEntry, state int{{$stateType}}, symbol int32, endSta
 		return 0, false
 	}
 
-	var stack2alloc [4]int16
+	var stack2alloc [4]int{{$stateType}}
 	stack2 := append(stack2alloc[:0], state)
 	size := len(stack)
 
