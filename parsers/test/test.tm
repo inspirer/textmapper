@@ -226,7 +226,7 @@ primaryExpr<flag WithoutAs = false> -> Expr:
 ;
 
 extend primaryExpr -> Expr:
-  IntegerConstant -> IntExpr ;
+  (/*empty*/ -> Bar) IntegerConstant -> IntExpr ;
 
 %%
 

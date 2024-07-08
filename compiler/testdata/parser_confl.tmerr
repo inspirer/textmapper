@@ -1,5 +1,7 @@
 language parser(go);
 
+eventBased = true
+
 :: lexer
 
 a: /a/
@@ -7,9 +9,12 @@ b: /b/
 
 :: parser
 
-input : d;
+input : d | q;
 
 d {Foo} -> Foo : /*empty*/ ;
 
 «d_» : /*empty*/ ;
 # err: d_ and d get the same ID in generated code
+
+q : «a (/*empty*/ -> Abc)» ;
+# err: reporting empty ranges at the end of a rule is not allowed

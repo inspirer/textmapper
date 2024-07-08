@@ -11,6 +11,7 @@ type Selector func(nt test.NodeType) bool
 var (
 	Any               = func(t test.NodeType) bool { return true }
 	AsExpr            = func(t test.NodeType) bool { return t == test.AsExpr }
+	Bar               = func(t test.NodeType) bool { return t == test.Bar }
 	Block             = func(t test.NodeType) bool { return t == test.Block }
 	Decl1             = func(t test.NodeType) bool { return t == test.Decl1 }
 	Decl2             = func(t test.NodeType) bool { return t == test.Decl2 }

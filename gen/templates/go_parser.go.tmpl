@@ -970,9 +970,15 @@ func (p *Parser) applyRule({{if $.Options.Cancellable}}ctx "context".Context, {{
 {{ end -}}
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
+{{ if eq .Start .End -}}
+		p.listener({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{ if $.Parser.UsedFlags }}
+		       {{- range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}
+			   rhs[{{.End}}].sym.offset, rhs[{{.End}}].sym.offset)
+{{ else -}}
 		p.{{if $.Options.FixWhitespace}}reportRange{{else}}listener{{end}}({{template "nodeTypePkg" $}}{{node_id $val.Name}}, {{ if $.Parser.UsedFlags }}
 		       {{- range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}
 			   {{- if $.Options.FixWhitespace}}rhs[{{.Start}}:{{.End}}]{{else}}rhs[{{.Start}}].sym.offset, rhs[{{minus1 .End}}].sym.endoffset{{end}})
+{{ end -}}
 {{ end -}}
 {{ if $act.Code -}}
 {{go_parser_action $act.Code $act.Vars $act.Origin}}

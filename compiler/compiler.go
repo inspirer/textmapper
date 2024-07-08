@@ -394,11 +394,15 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 			sort.Strings(out.UsedFlags)
 
 			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == numRefs {
-
 				// Promote to the rule default.
 				rule.Type = report[last].Type
 				rule.Flags = report[last].Flags
 				report = report[:last]
+			}
+			for _, r := range report {
+				if r.Start == r.End && r.Start == numRefs {
+					s.Errorf(expr.Origin, "reporting empty ranges at the end of a rule is not allowed")
+				}
 			}
 			if len(report) > 0 || command != "" {
 				// TODO reuse existing actions

@@ -15,8 +15,9 @@ type Listener func(t NodeType, flags NodeFlags, offset, endoffset int)
 const (
 	NoType NodeType = iota
 	AsExpr          // left=Expr right=Expr
-	Block           // Negation? (Declaration)*
-	Decl1           // (Identifier)+
+	Bar
+	Block // Negation? (Declaration)*
+	Decl1 // (Identifier)+
 	Decl2
 	DeclOptQual // (Identifier)*
 	Elem
@@ -27,7 +28,7 @@ const (
 	Icon
 	If // (Elem)+ then=Decl2Interface else=Decl2Interface?
 	Int
-	IntExpr
+	IntExpr // Bar
 	LastInt
 	Negation
 	PlusExpr // left=Expr right=Expr
@@ -46,6 +47,7 @@ const (
 var nodeTypeStr = [...]string{
 	"NONE",
 	"AsExpr",
+	"Bar",
 	"Block",
 	"Decl1",
 	"Decl2",

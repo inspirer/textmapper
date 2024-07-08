@@ -393,6 +393,12 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, rhs
 		{
 			p.listener(PlusExpr, 0, rhs[0].sym.offset, rhs[3].sym.endoffset)
 		}
+	case 96: // primaryExpr : IntegerConstant
+		p.listener(Bar, 0,
+			rhs[0].sym.offset, rhs[0].sym.offset)
+	case 97: // primaryExpr_WithoutAs : IntegerConstant
+		p.listener(Bar, 0,
+			rhs[0].sym.offset, rhs[0].sym.offset)
 	case 100:
 		var ok bool
 		if ok, err = AtFooLookahead(ctx, lexer, p.next, s); ok {

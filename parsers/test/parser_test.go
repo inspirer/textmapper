@@ -126,6 +126,9 @@ var parseTests = []struct {
 		` «decl2:  a.b.c»  decl2`,
 		` «decl2 :»  decl2`,
 	}},
+	{test.Bar, 0, []string{
+		` eval(4.«»1 as «»2 + «»3) `,
+	}},
 }
 
 func TestParser(t *testing.T) {
