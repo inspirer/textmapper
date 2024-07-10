@@ -70,10 +70,10 @@ JSONValue<A> {Value} -> JSONValue :
   | JSONNumber
 ;
 
-EmptyObject -> EmptyObject : (?= EmptyObject) '{' '}' ;
+EmptyObject -> EmptyObject : (?= EmptyObject) '{'[lparen] { /*$lparen*/ } '}' { /*$lparen*/} ;
 
 JSONObject -> JSONObject :
-    (?= !EmptyObject) '{' JSONMemberList? '}' ;
+    (?= !EmptyObject) '{'[F] JSONMemberList? { /*mid-rule ${F.offset}*/ } '}' { /*starts ${F.offset}*/ } ;
 
 JSONMember {*Field} -> JSONMember :
     JSONString ':' JSONValue<~A> ;

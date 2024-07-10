@@ -87,7 +87,7 @@ JSONObject -> JSONObject/Foo :
     (?= !EmptyObject) '{' JSONMemberList? '}' { @$.begin = @2.begin; } ;
 
 JSONMember {int c} -> JSONMember/Foo :
-    JSONString ':' JSONValue<~A> { $$ = a; }
+    JSONString ':'[b] { LOG(INFO) << @b.begin; } JSONValue<~A> { $$ = a; }
   | error -> SyntaxProblem
 ;
 

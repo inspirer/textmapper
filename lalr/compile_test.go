@@ -421,10 +421,9 @@ func parseGrammar(input string) (*Grammar, error) {
 		line := strings.TrimSpace(scanner.Text())
 		if match := ruleRE.FindStringSubmatch(line); match != nil {
 			rule := Rule{
-				LHS:        sym(rune(match[1][0])),
-				Action:     action,
-				Origin:     node(action),
-				OriginName: match[1],
+				LHS:    sym(rune(match[1][0])),
+				Action: action,
+				Origin: node(action),
 			}
 			action++
 			for _, r := range match[2] {

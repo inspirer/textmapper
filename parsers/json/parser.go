@@ -56,7 +56,7 @@ const (
 )
 
 func (p *Parser) Parse(lexer *Lexer) error {
-	return p.parse(0, 44, lexer)
+	return p.parse(0, 47, lexer)
 }
 
 func (p *Parser) parse(start, end int8, lexer *Lexer) error {
@@ -209,7 +209,7 @@ func AtEmptyObject(lexer *Lexer, next symbol) bool {
 	if debugSyntax {
 		fmt.Printf("lookahead EmptyObject, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(lexer, next, 1, 43)
+	return lookahead(lexer, next, 1, 46)
 }
 
 func lookahead(l *Lexer, next symbol, start, end int8) bool {
@@ -278,7 +278,25 @@ func lookahead(l *Lexer, next symbol, start, end int8) bool {
 
 func (p *Parser) applyRule(rule int32, lhs *stackEntry, stack []stackEntry, lexer *Lexer) (err error) {
 	switch rule {
-	case 32:
+	case 19: // EmptyObject : lookahead_EmptyObject '{' EmptyObject$1 '}'
+		{ /*stack[len(stack)-3].value*/
+		}
+	case 21: // JSONObject : lookahead_notEmptyObject '{' JSONMemberList JSONObject$1 '}'
+		{ /*starts stack[len(stack)-4].sym.offset*/
+		}
+	case 22: // JSONObject : lookahead_notEmptyObject '{' JSONObject$2 '}'
+		{ /*starts stack[len(stack)-3].sym.offset*/
+		}
+	case 32: // EmptyObject$1 :
+		{ /*stack[len(stack)-1].value*/
+		}
+	case 33: // JSONObject$1 :
+		{ /*mid-rule stack[len(stack)-2].sym.offset*/
+		}
+	case 34: // JSONObject$2 :
+		{ /*mid-rule stack[len(stack)-1].sym.offset*/
+		}
+	case 35:
 		if AtEmptyObject(lexer, p.next) {
 			lhs.sym.symbol = 23 /* lookahead_EmptyObject */
 		} else {

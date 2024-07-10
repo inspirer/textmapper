@@ -381,6 +381,7 @@ func (k ExprKind) GoString() string {
 type CmdArgs struct {
 	Names  map[string]int
 	MaxPos int // exclusive, 1-based
+	Delta  int // Added to the final position to adjust for extracted middle rule actions.
 }
 
 // TokenSet is a grammar expression that resolves to a set of tokens.

@@ -3,6 +3,7 @@ package compiler
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -14,6 +15,7 @@ import (
 	"github.com/inspirer/textmapper/parsers/tm/selector"
 	"github.com/inspirer/textmapper/status"
 	"github.com/inspirer/textmapper/syntax"
+	"github.com/inspirer/textmapper/util/ident"
 )
 
 // Params control the grammar compilation process.
@@ -218,14 +220,13 @@ func (c *compiler) compileParser(file ast.File) {
 	opts := genOptions{
 		expectSR: loader.expectSR,
 		expectRR: loader.expectRR,
-		syms:     c.out.Syms,
 		lalrOpts: lalr.Options{
 			Optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
 			DefaultReduce: c.out.Options.DefaultReduce,
 			Debug:         c.params.DebugTables,
 		},
 	}
-	if err := generateTables(source, c.out.Parser, opts, file); err != nil {
+	if err := generateTables(source, c.out, opts, file); err != nil {
 		c.AddError(err)
 	}
 }
@@ -233,21 +234,21 @@ func (c *compiler) compileParser(file ast.File) {
 type genOptions struct {
 	expectRR int
 	expectSR int
-	syms     []grammar.Symbol
 
 	lalrOpts lalr.Options
 }
 
-func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, origin status.SourceNode) error {
+func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions, origin status.SourceNode) error {
 	var s status.Status
+	parser := out.Parser
 	g := &lalr.Grammar{
 		Terminals:  len(source.Terminals),
-		Precedence: out.Prec,
+		Precedence: parser.Prec,
 		ExpectSR:   opts.expectSR,
 		ExpectRR:   opts.expectRR,
 		Origin:     origin,
 	}
-	for _, sym := range opts.syms {
+	for _, sym := range out.Syms {
 		g.Symbols = append(g.Symbols, sym.Name)
 	}
 	inputs := make(map[lalr.Input]int32)
@@ -263,19 +264,19 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 	types := make(map[string]int)
 	cats := make(map[string]bool)
 	seenFlags := make(map[string]bool)
-	if out.Types != nil {
-		for i, t := range out.Types.RangeTypes {
+	if parser.Types != nil {
+		for i, t := range parser.Types.RangeTypes {
 			types[t.Name] = i
 		}
-		for _, t := range out.Types.Categories {
+		for _, t := range parser.Types.Categories {
 			cats[t.Name] = true
 		}
 	}
 
 	// The very first action is a no-op.
-	out.Actions = append(out.Actions, grammar.SemanticAction{})
-
+	parser.Actions = append(parser.Actions, grammar.SemanticAction{})
 	var rules []*grammar.Rule
+	midrule := newCommandExtractor(source, len(out.Syms))
 	for self, nt := range source.Nonterms {
 		if nt.Value.Kind == syntax.Lookahead {
 			la := lalr.Lookahead{
@@ -299,10 +300,9 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 			}
 
 			rule := lalr.Rule{
-				LHS:        lalr.Sym(g.Terminals + self),
-				Type:       -1,
-				Origin:     nt.Origin,
-				OriginName: nt.Name,
+				LHS:    lalr.Sym(g.Terminals + self),
+				Type:   -1,
+				Origin: nt.Origin,
 			}
 			g.Lookaheads = append(g.Lookaheads, la)
 			g.Rules = append(g.Rules, rule)
@@ -315,10 +315,9 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 		}
 		for _, expr := range nt.Value.Sub {
 			rule := lalr.Rule{
-				LHS:        lalr.Sym(g.Terminals + self),
-				Type:       -1,
-				Origin:     expr.Origin,
-				OriginName: nt.Name,
+				LHS:    lalr.Sym(g.Terminals + self),
+				Type:   -1,
+				Origin: expr.Origin,
 			}
 			exprWithPrec := expr
 			if expr.Kind == syntax.Prec {
@@ -330,7 +329,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 			var args *syntax.CmdArgs
 			var numRefs int
 			actualPos := make(map[int]int) // $i inside a semantic action -> index in rule.RHS
-			origin := expr.Origin
+			cmdOrigin := expr.Origin
 
 			var traverse func(expr *syntax.Expr)
 			traverse = func(expr *syntax.Expr) {
@@ -356,7 +355,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 						for _, f := range expr.ArrowFlags {
 							if !seenFlags[f] {
 								seenFlags[f] = true
-								out.UsedFlags = append(out.UsedFlags, f)
+								parser.UsedFlags = append(parser.UsedFlags, f)
 							}
 						}
 					}
@@ -366,8 +365,28 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 					}
 				case syntax.Reference:
 					if command != "" {
-						// TODO This command needs to be extracted into a dedicated nonterminal.
-						s.Errorf(origin, "commands must be placed at the end of a rule")
+						// We have a pending mid-rule command. Extract it into an nullable nonterminal.
+						var vars *grammar.ActionVars
+						if args != nil {
+							vars = &grammar.ActionVars{CmdArgs: *args, Remap: actualPos}
+							for _, r := range rule.RHS {
+								if r.IsStateMarker() {
+									s.Errorf(origin, "mixing mid-rule actions with state markers is not supported")
+									continue
+								}
+								if int(r) < len(out.Syms) {
+									vars.Types = append(vars.Types, out.Syms[r].Type)
+								} else {
+									// No types for extracted commands.
+									vars.Types = append(vars.Types, "")
+								}
+							}
+						}
+						cmdNT := midrule.extract(nt, command, vars, cmdOrigin)
+						rule.RHS = append(rule.RHS, cmdNT)
+
+						// Reset the command.
+						command = ""
 					}
 					if expr.Pos > 0 {
 						actualPos[expr.Pos] = numRefs
@@ -387,11 +406,11 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 					// Note: those are end-of-rule commands and typically there is at most one.
 					command += expr.Name
 					args = expr.CmdArgs // It is okay to override the args - the new ones are more permissive.
-					origin = expr.Origin
+					cmdOrigin = expr.Origin
 				}
 			}
 			traverse(expr)
-			sort.Strings(out.UsedFlags)
+			sort.Strings(parser.UsedFlags)
 
 			if last := len(report) - 1; last >= 0 && report[last].Start == 0 && report[last].End == numRefs {
 				// Promote to the rule default.
@@ -409,7 +428,7 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 				act := grammar.SemanticAction{
 					Report: report,
 					Code:   command,
-					Origin: origin,
+					Origin: cmdOrigin,
 				}
 				if args != nil {
 					act.Vars = &grammar.ActionVars{CmdArgs: *args, Remap: actualPos}
@@ -417,12 +436,17 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 						if r.IsStateMarker() {
 							continue
 						}
-						act.Vars.Types = append(act.Vars.Types, opts.syms[r].Type)
+						if int(r) < len(out.Syms) {
+							act.Vars.Types = append(act.Vars.Types, out.Syms[r].Type)
+						} else {
+							// No types for extracted commands.
+							act.Vars.Types = append(act.Vars.Types, "")
+						}
 					}
-					act.Vars.LHSType = opts.syms[rule.LHS].Type
+					act.Vars.LHSType = out.Syms[rule.LHS].Type
 				}
-				rule.Action = len(out.Actions)
-				out.Actions = append(out.Actions, act)
+				rule.Action = len(parser.Actions)
+				parser.Actions = append(parser.Actions, act)
 			}
 			g.Rules = append(g.Rules, rule)
 			rules = append(rules, &grammar.Rule{Rule: rule, Value: exprWithPrec})
@@ -433,12 +457,137 @@ func generateTables(source *syntax.Model, out *grammar.Parser, opts genOptions, 
 		return s.Err()
 	}
 
-	out.Rules = rules
-	out.Inputs = source.Inputs
-	out.Nonterms = source.Nonterms
-	out.NumTerminals = len(source.Terminals)
+	parser.Rules = rules
+	parser.Inputs = source.Inputs
+	parser.Nonterms = source.Nonterms
+	parser.NumTerminals = len(source.Terminals)
+	midrule.finalize(out, g)
 
 	tables, err := lalr.Compile(g, opts.lalrOpts)
-	out.Tables = tables
+	parser.Tables = tables
 	return err
+}
+
+type commandExtractor struct {
+	baseSyms  int
+	takenName map[string]bool
+	index     map[commandKey]lalr.Sym
+	prev      *syntax.Nonterm
+	counter   int
+
+	// Delayed output.
+	syms    []grammar.Symbol
+	midrule []*syntax.Nonterm
+	actions []grammar.SemanticAction
+	rules   []lalr.Rule
+}
+
+type commandKey struct {
+	command    string
+	varsDigest string
+}
+
+func newCommandExtractor(m *syntax.Model, baseSyms int) *commandExtractor {
+	taken := make(map[string]bool)
+	for _, t := range m.Terminals {
+		taken[t] = true
+	}
+	for _, p := range m.Params {
+		taken[p.Name] = true
+	}
+	for _, nt := range m.Nonterms {
+		taken[nt.Name] = true
+	}
+	return &commandExtractor{takenName: taken, index: make(map[commandKey]lalr.Sym), baseSyms: baseSyms}
+}
+
+func (e *commandExtractor) extract(n *syntax.Nonterm, command string, vars *grammar.ActionVars, cmdOrigin status.SourceNode) lalr.Sym {
+	key := commandKey{command, vars.String()}
+	if sym, ok := e.index[key]; ok {
+		return sym
+	}
+
+	if n != e.prev {
+		e.prev = n
+		e.counter = 0
+	}
+
+	// Extract this middle-rule command into a nonterminal.
+	var name string
+	for {
+		e.counter++
+		name = fmt.Sprintf("%s$%v", n.Name, e.counter)
+		if _, ok := e.takenName[name]; !ok {
+			break
+		}
+	}
+	e.takenName[name] = true
+	var args *syntax.CmdArgs
+	if vars != nil {
+		args = new(syntax.CmdArgs)
+		*args = vars.CmdArgs
+
+		// Give a hint to the code generator that this rule's rhs starts
+		// earlier in the stack.
+		args.Delta = -len(vars.Types)
+
+		// Make a copy.
+		copy := *vars
+		copy.CmdArgs = *args
+		vars = &copy
+	}
+
+	// Update the syntax model.
+	nt := &syntax.Nonterm{
+		Name: name,
+		Value: &syntax.Expr{Kind: syntax.Choice, Sub: []*syntax.Expr{
+			{Kind: syntax.Command, Name: command, CmdArgs: args, Origin: cmdOrigin},
+		}},
+		Origin: cmdOrigin,
+	}
+	ntID := e.baseSyms + len(e.syms)
+	e.syms = append(e.syms, grammar.Symbol{
+		Index:  ntID,
+		Name:   name,
+		ID:     ident.Produce(name, ident.CamelCase),
+		Origin: cmdOrigin,
+	})
+	e.midrule = append(e.midrule, nt)
+	e.index[key] = lalr.Sym(ntID)
+
+	// Ingest the new rule into the LALR grammar.
+	rule := lalr.Rule{
+		LHS:    lalr.Sym(ntID),
+		Type:   -1,
+		Origin: nt.Origin,
+	}
+	act := grammar.SemanticAction{
+		Code:   command,
+		Vars:   vars,
+		Origin: cmdOrigin,
+	}
+	rule.Action = len(e.actions)
+	e.actions = append(e.actions, act)
+
+	e.rules = append(e.rules, rule)
+	return lalr.Sym(ntID)
+}
+
+func (e *commandExtractor) finalize(out *grammar.Grammar, g *lalr.Grammar) {
+	out.Syms = append(out.Syms, e.syms...)
+	for _, sym := range e.syms {
+		g.Symbols = append(g.Symbols, sym.Name)
+	}
+	out.Parser.Nonterms = append(out.Parser.Nonterms, e.midrule...)
+
+	base := len(out.Parser.Actions)
+	out.Parser.Actions = append(out.Parser.Actions, e.actions...)
+	for i, rule := range e.rules {
+		e.rules[i].Action = base + rule.Action
+	}
+	g.Rules = append(g.Rules, e.rules...)
+
+	for i := range e.midrule {
+		out.Parser.Rules = append(out.Parser.Rules, &grammar.Rule{Rule: e.rules[i], Value: e.midrule[i].Value})
+	}
 }

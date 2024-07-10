@@ -87,7 +87,7 @@ type ActionVars struct {
 }
 
 // Resolve resolves "val" to an RHS index for the current rule.
-func (a ActionVars) Resolve(val string) (int, bool) {
+func (a *ActionVars) Resolve(val string) (int, bool) {
 	pos, ok := a.CmdArgs.Names[val]
 	if !ok {
 		var err error
@@ -108,8 +108,11 @@ func (a ActionVars) Resolve(val string) (int, bool) {
 	return ret, true
 }
 
-// String is used in test failure messages.
-func (a ActionVars) String() string {
+// String is used as a digest of a semantic action environment (and also as a debug string).
+func (a *ActionVars) String() string {
+	if a == nil {
+		return "nil"
+	}
 	var ret []string
 	for k, pos := range a.CmdArgs.Names {
 		v, ok := a.Remap[pos]
@@ -122,7 +125,7 @@ func (a ActionVars) String() string {
 		ret = append(ret, fmt.Sprintf("%v:%v", k, v))
 	}
 	sort.Strings(ret)
-	return fmt.Sprintf("{#%v %v %#v->%v}", a.MaxPos-1, ret, a.Types, a.LHSType)
+	return fmt.Sprintf("{#%v %v %#v->%v d=%v}", a.MaxPos-1, ret, a.Types, a.LHSType, a.Delta)
 }
 
 // ClassAction resolves class terminals into more specific tokens (such as keywords).

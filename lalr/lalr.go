@@ -45,7 +45,6 @@ type Rule struct {
 	Type       int // index in Parser.RangeTypes; default node for the rule; -1 when unset
 	Flags      []string
 	Origin     status.SourceNode
-	OriginName string
 }
 
 // Associativity decides on grouping of repeated operators.

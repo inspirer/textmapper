@@ -99,7 +99,7 @@ class Parser final {
     pending_symbols_.reserve(startTokenBufferSize);
   }
 
-  absl::Status Parse(Lexer& lexer) { return Parse(0, 45, lexer); }
+  absl::Status Parse(Lexer& lexer) { return Parse(0, 46, lexer); }
 
  private:
   void reportIgnoredToken(symbol sym);
@@ -125,6 +125,8 @@ class Parser final {
   absl::Status action24([[maybe_unused]] stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs);
   absl::Status action26([[maybe_unused]] stackEntry& lhs,
+                        [[maybe_unused]] const stackEntry* rhs);
+  absl::Status action33([[maybe_unused]] stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs);
 
   absl::Status applyRule(int32_t rule, stackEntry& lhs,

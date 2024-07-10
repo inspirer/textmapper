@@ -383,7 +383,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				}
 			}
 
-			target = fmt.Sprintf("rhs[%v]", index)
+			target = fmt.Sprintf("rhs[%v]", index+args.Delta)
 			if ch == '@' {
 				prop = "sym.location"
 			} else {

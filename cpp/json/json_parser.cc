@@ -16,7 +16,7 @@ std::unordered_set<int8_t> barStates = {
     0,
     2,
     20,
-    29,
+    32,
 };
 
 constexpr inline absl::string_view tmNonterminals[] = {
@@ -32,6 +32,7 @@ constexpr inline absl::string_view tmNonterminals[] = {
     "JSONArray",
     "JSONElementList",
     "JSONElementListopt",
+    "JSONMember$1",
 };
 constexpr size_t tmNonterminalsLen =
     sizeof(tmNonterminals) / sizeof(tmNonterminals[0]);
@@ -52,54 +53,54 @@ std::string symbolName(int32_t sym) {
 }
 
 constexpr int32_t tmDefGoto[] = {
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
 
 constexpr int32_t tmGoto[] = {
-    39, 32, 51, 4, 20, 35, 36, 41, 44, 50, 64, 65,
+    37, 27, 54, 4, 19, 33, 38, 31, 24, 47, 59, 62, 40,
 };
 
 constexpr int32_t tmDefAct[] = {
     -1, 20, -1, 17, 18, 10, 11, 12, 13, 0,  15, -1, 14, -1, 16, 29,
-    -1, -1, -1, -1, -1, 28, 19, 22, -1, 25, 26, -1, 30, -1, 21, -1,
-    8,  9,  1,  2,  3,  4,  24, 6,  5,  7,  27, -1, -1, -1,
+    -1, -1, -1, -1, -1, 28, 19, 22, -1, 25, 26, -1, 30, 33, 21, -1,
+    -1, 27, 8,  9,  1,  2,  3,  4,  24, 6,  5,  7,  -1, -1, -1,
 };
 
 constexpr int32_t tmActionBase = -20;
 
 constexpr int32_t tmAction[] = {
     14,  -20, -2,  -20, -20, -20, -20, -20, -20, -20, -20, -1,
-    -20, 5,   -20, -20, 52,  3,   55,  8,   14,  -20, -20, -20,
-    11,  -20, -20, 40,  -20, 30,  -20, 43,  -20, -20, -20, -20,
-    -20, -20, -20, -20, -20, -20, -20, 23,  -20, -20,
+    -20, 5,   -20, -20, 50,  3,   8,   49,  14,  -20, -20, -20,
+    11,  -20, -20, 20,  -20, -20, -20, 52,  30,  -20, -20, -20,
+    -20, -20, -20, -20, -20, -20, -20, -20, 22,  -20, -20,
 };
 
 constexpr int32_t tmTableLen = 80;
 
 constexpr int8_t tmTable[] = {
-    33,  -20, -4, 32,  10, 44, 10,  -21, -23, -5,  -6,  -25, -7,  -8,  -9,  -10,
-    33,  -31, -4, -26, 11, 11, 11,  -47, 10,  -5,  -6,  -27, -7,  -8,  -9,  -10,
-    33,  39,  -4, 12,  13, 12, 13,  43,  11,  -34, -35, -32, -36, -37, -38, -33,
-    -39, 11,  14, 9,   14, 15, -26, 12,  13,  31,  -24, -22, 26,  38,  -27, 27,
-    40,  13,  16, 17,  0,  0,  14,  28,  42,  0,   0,   0,   0,   0,   0,   41,
+    34,  -20, -4, 32, 10,  45, 10,  -21, -23, -5,  -6,  -24, -7,  -8,  -9,  -10,
+    34,  -31, -4, 11, 11,  11, -48, -32, 10,  -5,  -6,  -33, -7,  -8,  -9,  -10,
+    34,  12,  -4, 12, 41,  44, 13,  11,  13,  -36, -37, 27,  -38, -39, -40, 14,
+    -41, 14,  26, 11, -25, 12, 9,   31,  15,  -22, 13,  40,  -26, 16,  33,  -26,
+    17,  42,  0,  14, -27, 32, 13,  -27, 0,   0,   28,  0,   0,   0,   0,   43,
 };
 
 constexpr int8_t tmCheck[] = {
-    2,  2,  4, 5,  0,  1,  2,  2,  5,  11, 12, 3,  14, 15, 16, 17,
-    2,  6,  4, 11, 0,  1,  2,  0,  20, 11, 12, 19, 14, 15, 16, 17,
-    2,  29, 4, 0,  0,  2,  2,  0,  20, 11, 12, 3,  14, 15, 16, 7,
-    18, 29, 0, 0,  2,  2,  11, 20, 20, 5,  3,  7,  19, 29, 19, 19,
-    29, 29, 2, 2,  -1, -1, 20, 20, 31, -1, -1, -1, -1, -1, -1, 29,
+    2,  2,  4,  5,  0,  1,  2,  2,  5,  11, 12, 3,  14, 15, 16, 17,
+    2,  6,  4,  0,  1,  2,  0,  3,  20, 11, 12, 7,  14, 15, 16, 17,
+    2,  0,  4,  2,  32, 0,  0,  20, 2,  11, 12, 19, 14, 15, 16, 0,
+    18, 2,  19, 32, 3,  20, 0,  5,  2,  7,  20, 32, 11, 2,  31, 11,
+    2,  32, -1, 20, 19, 29, 32, 19, -1, -1, 20, -1, -1, -1, -1, 32,
 };
 
 constexpr int8_t tmRuleLen[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 3, 0, 4, 3, 0, 3, 1, 1, 3, 3, 1, 3, 1, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 3, 0, 4, 3, 0, 4, 1, 1, 3, 3, 1, 3, 1, 0, 0, 0,
 };
 
 constexpr int32_t tmRuleSymbol[] = {
-    20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22,
-    22, 22, 23, 24, 25, 25, 26, 27, 27, 28, 28, 29, 30, 30, 31, 31, 26,
+    20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22,
+    22, 23, 24, 25, 25, 26, 27, 27, 28, 28, 29, 30, 30, 31, 31, 32, 26,
 };
 
 constexpr uint32_t tmRuleType[] = {
@@ -135,7 +136,7 @@ constexpr uint32_t tmRuleType[] = {
     0,            // lookahead_notEmptyObject :
     static_cast<uint32_t>(NodeType::JSONMember) +
         (static_cast<uint32_t>(NodeFlags::Foo)
-         << 16),  // JSONMember : JSONString ':' JSONValue
+         << 16),  // JSONMember : JSONString ':' JSONMember$1 JSONValue
     static_cast<uint32_t>(NodeType::SyntaxProblem),  // JSONMember : error
     0,  // JSONMemberList : JSONMember
     0,  // JSONMemberList : JSONMemberList .foo ',' JSONMember
@@ -146,6 +147,7 @@ constexpr uint32_t tmRuleType[] = {
     0,            // JSONElementList : JSONElementList ',' JSONValue_A
     0,            // JSONElementListopt : JSONElementList
     0,            // JSONElementListopt :
+    0,            // JSONMember$1 :
 };
 
 // set(first JSONValue_A) = LBRACE, LBRACK, JSONSTRING, JSONNUMBER, KW_NULL,
@@ -273,7 +275,7 @@ ABSL_MUST_USE_RESULT bool AtEmptyObject(Lexer& lexer, int32_t next) {
   if (debugSyntax) {
     LOG(INFO) << "lookahead EmptyObject; next: " << symbolName(next);
   }
-  return lookahead(lexer, next, 1, 44);
+  return lookahead(lexer, next, 1, 45);
 }
 
 void Parser::reportIgnoredToken(symbol sym) {
@@ -545,6 +547,11 @@ absl::Status Parser::action26([[maybe_unused]] stackEntry& lhs,
   { lhs.value.d = b; }
   return absl::OkStatus();
 }
+absl::Status Parser::action33([[maybe_unused]] stackEntry& lhs,
+                              [[maybe_unused]] const stackEntry* rhs) {
+  { LOG(INFO) << rhs[-1].sym.location.begin; }
+  return absl::OkStatus();
+}
 
 absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
                                [[maybe_unused]] const stackEntry* rhs,
@@ -592,7 +599,7 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
         return action_result;
       }
     } break;
-    case 24:  // JSONMember : JSONString ':' JSONValue
+    case 24:  // JSONMember : JSONString ':' JSONMember$1 JSONValue
     {
       absl::Status action_result = action24(lhs, rhs);
       if (!action_result.ok()) {
@@ -606,8 +613,15 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
         return action_result;
       }
     } break;
+    case 33:  // JSONMember$1 :
+    {
+      absl::Status action_result = action33(lhs, rhs);
+      if (!action_result.ok()) {
+        return action_result;
+      }
+    } break;
 
-    case 33:
+    case 34:
       if (AtEmptyObject(lexer, next_symbol_.symbol)) {
         lhs.sym.symbol = 24; /* lookahead_EmptyObject */
       } else {
