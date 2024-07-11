@@ -8,7 +8,7 @@ extraTypes = ["NonExistingType"]
 
 :: lexer
 
-'{': /\{/
+'{' {int64}: /\{/  { $$ = int64(42); }
 '}': /\}/
 '[': /\[/
 ']': /\]/
@@ -70,7 +70,12 @@ JSONValue<A> {Value} -> JSONValue :
   | JSONNumber
 ;
 
-EmptyObject -> EmptyObject : (?= EmptyObject) '{'[lparen] { /*$lparen*/ } '}' { /*$lparen*/} ;
+EmptyObject -> EmptyObject :
+      (?= EmptyObject)
+         { /* empty mid-rule */ }
+      '{'[lparen] { val := $lparen; if val != int64(42) { panic(fmt.Sprintf("got %v %T", val, val)) } } '}'
+      { val := $lparen; _ = val }
+;
 
 JSONObject -> JSONObject :
     (?= !EmptyObject) '{'[F] JSONMemberList? { /*mid-rule ${F.offset}*/ } '}' { /*starts ${F.offset}*/ } ;

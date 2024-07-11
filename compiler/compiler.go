@@ -384,6 +384,7 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 						}
 						cmdNT := midrule.extract(nt, command, vars, cmdOrigin)
 						rule.RHS = append(rule.RHS, cmdNT)
+						numRefs++
 
 						// Reset the command.
 						command = ""

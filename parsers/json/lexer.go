@@ -54,7 +54,7 @@ restart:
 
 	state := 0
 	hash := uint32(0)
-	backupToken := -1
+	backupRule := -1
 	var backupOffset int
 	backupHash := hash
 	for state >= 0 {
@@ -65,7 +65,7 @@ restart:
 			state = int(tmLexerAction[state*tmNumClasses])
 			if state > tmFirstRule && state < 0 {
 				state = (-1 - state) * 2
-				backupToken = tmBacktracking[state]
+				backupRule = tmBacktracking[state]
 				backupOffset = l.offset
 				backupHash = hash
 				state = tmBacktracking[state+1]
@@ -78,7 +78,7 @@ restart:
 		if state > tmFirstRule {
 			if state < 0 {
 				state = (-1 - state) * 2
-				backupToken = tmBacktracking[state]
+				backupRule = tmBacktracking[state]
 				backupOffset = l.offset
 				backupHash = hash
 				state = tmBacktracking[state+1]
@@ -105,43 +105,46 @@ restart:
 		}
 	}
 
-	tok := token.Type(tmFirstRule - state)
+	rule := tmFirstRule - state
 recovered:
-	switch tok {
-	case token.ID:
+	switch rule {
+	case 12:
 		hh := hash & 7
 		switch hh {
 		case 1:
 			if hash == 0x41 && "A" == l.source[l.tokenOffset:l.offset] {
-				tok = token.CHAR_A
+				rule = 16
 				break
 			}
 		case 2:
 			if hash == 0x42 && "B" == l.source[l.tokenOffset:l.offset] {
-				tok = token.CHAR_B
+				rule = 17
 				break
 			}
 		case 3:
 			if hash == 0x5cb1923 && "false" == l.source[l.tokenOffset:l.offset] {
-				tok = token.FALSE
+				rule = 15
 				break
 			}
 		case 6:
 			if hash == 0x36758e && "true" == l.source[l.tokenOffset:l.offset] {
-				tok = token.TRUE
+				rule = 14
 				break
 			}
 		case 7:
 			if hash == 0x33c587 && "null" == l.source[l.tokenOffset:l.offset] {
-				tok = token.NULL
+				rule = 13
 				break
 			}
 		}
 	}
-	switch tok {
-	case token.INVALID_TOKEN:
-		if backupToken >= 0 {
-			tok = token.Type(backupToken)
+
+	tok := tmToken[rule]
+	var space bool
+	switch rule {
+	case 0: // no match
+		if backupRule >= 0 {
+			rule = backupRule
 			hash = backupHash
 			l.rewind(backupOffset)
 		} else if l.offset == l.tokenOffset {
@@ -150,10 +153,17 @@ recovered:
 			}
 			l.rewind(l.scanOffset)
 		}
-		if tok != token.INVALID_TOKEN {
+		if rule != 0 {
 			goto recovered
 		}
-	case 8:
+	case 2: // '{': /\{/
+		{
+			l.value = int64(42)
+		}
+	case 8: // space: /[\t\r\n ]+/
+		space = true
+	}
+	if space {
 		goto restart
 	}
 	return tok
