@@ -10,7 +10,9 @@ import (
 
 	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/lex"
+	"github.com/inspirer/textmapper/parsers/tm"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
+	"github.com/inspirer/textmapper/parsers/tm/selector"
 	"github.com/inspirer/textmapper/status"
 	"github.com/inspirer/textmapper/util/container"
 	"github.com/inspirer/textmapper/util/ident"
@@ -557,6 +559,13 @@ func (c *lexerCompiler) parseFlexDeclarations(lexer ast.LexerSection) {
 				next++
 			}
 			c.resolver.Syms[tok].FlexID = flexID
+
+			var comment string
+			if c := p.Next(selector.Any); c.Type() == tm.Comment && strings.HasPrefix(c.Text(), "//") && strings.Count(p.Tree().Text()[p.Endoffset():c.Offset()], "\n") == 0 {
+				// This is a trailing comment on the same line.
+				comment = strings.TrimSpace(strings.TrimPrefix(c.Text(), "//"))
+			}
+			c.resolver.Syms[tok].Comment = comment
 
 		case *ast.NamedPattern:
 			c.Errorf(p, "named patterns are not supported in flex mode")

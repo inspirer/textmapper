@@ -62,6 +62,14 @@ func (n *Node) Type() tm.NodeType {
 	return n.t
 }
 
+// Tree returns the tree of the node (can be nil).
+func (n *Node) Tree() *Tree {
+	if n == nil {
+		return nil
+	}
+	return n.tree
+}
+
 // Offset returns the start offset of the node.
 func (n *Node) Offset() int {
 	if n == nil {

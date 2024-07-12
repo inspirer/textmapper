@@ -19,11 +19,12 @@ flexMode = true
 '[': /\[/
 ']': /\]/
 ':': /:/
-',': /,/
+',': /,/  // comma
 
 MultiLineComment: (space)
+// not a trailing comment
 
-JSONString:
+JSONString:   // "string literal"
 JSONNumber:
 
 id:
