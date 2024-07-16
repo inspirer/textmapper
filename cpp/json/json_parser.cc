@@ -640,6 +640,13 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
   return absl::OkStatus();
 }
 
+// There are n symbols in the RHS. The locations can be accessed by
+// get_location(i) where i is in [0, n-1].
+ABSL_MUST_USE_RESULT Lexer::Location DefaultCreateLocationFromRHS(
+    int32_t n, absl::FunctionRef<Lexer::Location(int32_t)> get_location) {
+  return Lexer::Location(get_location(0).begin, get_location(n - 1).end);
+}
+
 absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
   pending_symbols_.clear();
   int8_t state = start;
@@ -683,8 +690,8 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
                                              stack.back().sym.location.end);
         entry.value = stack.back().value;
       } else {
-        entry.sym.location = Lexer::Location(rhs[0].sym.location.begin,
-                                             rhs[ln - 1].sym.location.end);
+        entry.sym.location = DefaultCreateLocationFromRHS(
+            ln, [&](int32_t i) { return rhs[i].sym.location; });
         entry.value = rhs[0].value;
       }
       absl::Status ret = applyRule(rule, entry, rhs, lexer);

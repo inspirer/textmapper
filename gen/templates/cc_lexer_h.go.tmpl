@@ -46,7 +46,7 @@ class Lexer {
 
   // Location of the last token returned by Next().
   ABSL_MUST_USE_RESULT Location LastTokenLocation() const {
-    return Location(token_offset_, offset_);
+    return {{ block "LocationFromOffsets" . }}Location(token_offset_, offset_){{end}};
   }
 
 {{- if .Options.TokenLine}}

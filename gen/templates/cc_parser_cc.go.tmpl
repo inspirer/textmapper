@@ -13,6 +13,10 @@
 #include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
 {{ end -}}
 
+{{ define "locStart" -}}.begin{{ end -}}
+{{ define "locEnd" -}}.end{{ end -}}
+{{ define "CreateLocationFromRHS" -}}DefaultCreateLocationFromRHS{{ end -}}
+
 namespace {{.Options.Namespace}} {
 {{ block "onBeforeParserImpl" .}}{{end -}}
 {{ if .Options.FlexMode -}}
@@ -609,9 +613,9 @@ bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
     if (matching_pos < stack.size()) {
       if (begin == end) {
         // Avoid producing syntax problems covering trailing whitespace.
-        end = stack.back().sym.location.end;
+        end = stack.back().sym.location{{template "locEnd"}};
       }
-      begin = stack[matching_pos].sym.location.begin;
+      begin = stack[matching_pos].sym.location{{template "locStart"}};
 {{ if .ReportTokens true -}}
     } else if (begin == end && !pending_symbols_.empty()) {
       // This means pending tokens don't contain InvalidTokens.
@@ -672,22 +676,23 @@ void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
 {{ range $ind, $tok := .ReportTokens true -}}
     case Token::{{.ID}}:
 {{ end -}}
-    pending_symbols_.push_back(symbol{static_cast<int32_t>(tok),
+      pending_symbols_.push_back(symbol{static_cast<int32_t>(tok),
                                       lexer.LastTokenLocation()});
-    continue;
+      continue;
 {{ end -}}
 {{ if not .ReportsInvalidToken -}}
-  case Token::{{(index .Syms .Lexer.InvalidToken).ID}}:
-    goto restart;
+    case Token::{{(index .Syms .Lexer.InvalidToken).ID}}:
+      continue;
 {{ end -}}
-      default:
-        break;
+    default:
+      break;
     }
     break;
   }
 
   next_symbol_.symbol = static_cast<int32_t>(tok);
   next_symbol_.location = lexer.LastTokenLocation();
+{{ block "onAfterFetchNext" .}}{{end -}}
 }
 
 {{ end -}}
@@ -723,9 +728,9 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
 {{ if $.Parser.UsedFlags -}}
-    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}NodeFlags::None{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
+    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}NodeFlags::None{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location{{template "locStart"}}, rhs[{{minus1 .End}}].sym.location{{template "locEnd"}}));
 {{ else -}}
-    listener_(NodeType::{{$val.Name}}, Lexer::Location(rhs[{{.Start}}].sym.location.begin, rhs[{{minus1 .End}}].sym.location.end));
+    listener_(NodeType::{{$val.Name}}, Lexer::Location(rhs[{{.Start}}].sym.location{{template "locStart"}}, rhs[{{minus1 .End}}].sym.location{{template "locEnd"}}));
 {{ end -}}
 {{ end -}}
 {{ if $act.Code -}}
@@ -771,6 +776,14 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
 {{ end -}}
 {{ end -}}
   return absl::OkStatus();
+}
+
+// There are n symbols in the RHS. The locations can be accessed by
+// get_location(i) where i is in [0, n-1].
+ABSL_MUST_USE_RESULT Lexer::Location DefaultCreateLocationFromRHS(
+    int32_t n, absl::FunctionRef<Lexer::Location(int32_t)> get_location) {
+  return Lexer::Location(get_location(0){{template "locStart"}},
+                         get_location(n-1){{template "locEnd"}});
 }
 
 {{ end -}}
@@ -840,14 +853,14 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       const stackEntry* rhs = &stack[0] + stack.size() - ln;
 
       if (ln == 0) {
-        entry.sym.location = Lexer::Location(stack.back().sym.location.end,
-                                             stack.back().sym.location.end);
+        entry.sym.location = Lexer::Location(stack.back().sym.location{{template "locEnd"}},
+                                             stack.back().sym.location{{template "locEnd"}});
 {{ if .Parser.HasAssocValues -}}
         entry.value = stack.back().value;
 {{ end -}}
       } else {
-        entry.sym.location = Lexer::Location(rhs[0].sym.location.begin,
-                                             rhs[ln-1].sym.location.end);
+        entry.sym.location = {{template "CreateLocationFromRHS" . -}}(ln,
+          [&](int32_t i) { return rhs[i].sym.location; });
 {{ if .Parser.HasAssocValues -}}
         entry.value = rhs[0].value;
 {{ end -}}
