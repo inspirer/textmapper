@@ -488,10 +488,10 @@ func parsePattern(name string, p ast.Pattern, opts lex.CharsetOptions) (*lex.Pat
 func (c *lexerCompiler) parseFlexDeclarations(lexer ast.LexerSection) {
 	c.resolver.addToken(grammar.Eoi, "" /*id*/, ast.RawType{}, noSpace, nil)
 	error := c.resolver.addToken(grammar.Error, "YYerror", ast.RawType{}, noSpace, nil)
-	invalid := c.resolver.addToken(grammar.InvalidToken, "" /*id*/, ast.RawType{}, noSpace, nil)
+	c.out.InvalidToken = c.resolver.addToken(grammar.InvalidToken, "" /*id*/, ast.RawType{}, noSpace, nil)
 
 	c.resolver.Syms[error].FlexID = 256
-	c.resolver.Syms[invalid].FlexID = 257
+	c.resolver.Syms[c.out.InvalidToken].FlexID = 257
 	next := 258
 
 	reOpts := lex.CharsetOptions{ScanBytes: c.opts.ScanBytes, Fold: c.opts.CaseInsensitive}
