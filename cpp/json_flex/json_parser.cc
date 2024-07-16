@@ -421,7 +421,7 @@ bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
   int64_t end = begin;
   for (const auto& tok : pending_symbols_) {
     // Try to cover all nearby invalid tokens.
-    if (Token(tok.symbol) == Token::EOI) {
+    if (Token(tok.symbol) == Token::INVALID_TOKEN) {
       if (begin > tok.location.begin) {
         begin = tok.location.begin;
       }
@@ -468,7 +468,7 @@ bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
     if (begin != end) {
       // Consume trailing invalid tokens.
       for (const auto& tok : pending_symbols_) {
-        if (Token(tok.symbol) == Token::EOI && tok.location.end > end) {
+        if (Token(tok.symbol) == Token::INVALID_TOKEN && tok.location.end > end) {
           end = tok.location.end;
         }
       }

@@ -298,6 +298,7 @@ int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
 {{ define "lookaheadNext" -}}
 {{ if and .Parser.Tables.Lookaheads (.Options.IsEnabled "lookaheadNext") -}}
 ABSL_MUST_USE_RESULT int32_t lookaheadNext(Lexer& lexer) {
+{{ block "lookaheadFetch" . -}}
   Token tok;
 restart:
   tok = lexer.Next();
@@ -314,6 +315,7 @@ restart:
   default:
     break;
   }
+{{ end -}}
   return static_cast<int32_t>(tok);
 }
 
@@ -668,6 +670,7 @@ bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
 {{ define "fetchNext" -}}
 {{ if .Options.IsEnabled "fetchNext" -}}
 void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
+{{ block "fetchImpl" . -}}
   Token tok;
   for (;;) {
     tok = lexer.Next();
@@ -689,6 +692,7 @@ void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
     }
     break;
   }
+{{end -}}
 
   next_symbol_.symbol = static_cast<int32_t>(tok);
   next_symbol_.location = lexer.LastTokenLocation();
