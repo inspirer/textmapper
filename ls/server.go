@@ -170,7 +170,7 @@ func (s *Server) Definition(ctx context.Context, params *lsp.DefinitionParams) (
 		}
 	}
 
-	if len(ret) == 0 || curr.IsDecl() {
+	if len(ret) != 1 || curr.IsDecl() {
 		ret = append(ret, refs...)
 	}
 	if len(ret) == 0 {
