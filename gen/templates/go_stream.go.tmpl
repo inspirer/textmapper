@@ -148,12 +148,13 @@ func (s *TokenStream) line() int {
 {{ end -}}
 
 {{- define "streamNext" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 {{ if .Options.IsEnabled "streamNext" -}}
 // next transforms the lexer stream into a stream of symbols for the parser.
 //
 // Note: "stack" and "endState" are nil and -1 respectively during lookaheads
 // and error recovery.
-func (s *TokenStream) next({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx "context".Context, {{end}}stack []stackEntry, endState int16) symbol {
+func (s *TokenStream) next({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx "context".Context, {{end}}stack []stackEntry, endState int{{$stateType}}) symbol {
 restart:
 	tok := s.lexer.Next()
 	switch tok {
