@@ -2,10 +2,14 @@
   "name": "textmapper-support",
   "displayName": "Textmapper Support",
   "description": "Textmapper Language Support",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "publisher": "inspirer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inspirer/textmapper"
+  },
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.92.0"
   },
   "categories": [
     "Programming Languages"
