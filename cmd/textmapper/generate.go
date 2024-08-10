@@ -17,7 +17,7 @@ import (
 
 var genCmd = &command{
 	Name:  "generate",
-	Title: "generate grammars",
+	Title: "generate one or more grammars",
 	Usage: " [flags] [grammars...]",
 	Help: `By default, Textmapper generates code for all grammars in the current directory.
 
@@ -129,7 +129,7 @@ func (w writer) Write(genfile, content string) error {
 	}
 	err := os.MkdirAll(filepath.Dir(path), 0755)
 	if err != nil {
-		return fmt.Errorf("Error creating directory: %w", err)
+		return fmt.Errorf("error creating directory: %w", err)
 	}
 	return os.WriteFile(path, []byte(content), 0644)
 }

@@ -898,8 +898,8 @@ func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nont
 }
 
 type report struct {
-	node     *syntax.Expr
-	selector *syntax.Expr
+	node     *syntax.Expr // of syntax.Arrow
+	selector *syntax.Expr // of syntax.Arrow
 }
 
 func (r report) withDefault(def report) report {

@@ -14,7 +14,7 @@ import (
 
 var debugCmd = &command{
 	Name:  "debug",
-	Title: "debug grammars",
+	Title: "print out automaton statistics and parsing tables in a human-readable format",
 	Usage: " [flags] [grammars...]",
 	Help: `By default, Textmapper prints out debug info for all grammars in the current directory.
 

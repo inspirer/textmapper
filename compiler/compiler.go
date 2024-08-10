@@ -314,10 +314,15 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 			log.Fatalf("%v is not properly instantiated: %v", nt.Name, nt.Value)
 		}
 		for _, expr := range nt.Value.Sub {
+			pure := expr
+			for pure.Kind == syntax.Arrow && len(pure.Sub) == 1 {
+				pure = pure.Sub[0]
+			}
+
 			rule := lalr.Rule{
 				LHS:    lalr.Sym(g.Terminals + self),
 				Type:   -1,
-				Origin: expr.Origin,
+				Origin: pure.Origin, // without arrows
 			}
 			exprWithPrec := expr
 			if expr.Kind == syntax.Prec {

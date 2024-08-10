@@ -3,4 +3,6 @@
 /cpp/external
 /cpp/compile_commands.json
 /cpp/.cache/
+/vscode-ext/node_modules/
+/vscode-ext/out/
 .vscode

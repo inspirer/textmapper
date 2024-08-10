@@ -33,6 +33,7 @@ var commands = []*command{
 	debugCmd,
 	versionCmd,
 	helpCmd,
+	lsCmd,
 }
 
 func main() {
@@ -88,7 +89,7 @@ var versionCmd = &command{
 
 var helpCmd = &command{
 	Name:  "help",
-	Title: "generate grammars",
+	Title: "prints help",
 	Usage: " [command]",
 	Help:  `Outputs command-specific flags and usage help.`,
 }

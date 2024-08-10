@@ -14,5 +14,5 @@ echo 'Regenerating simple'
 (cd parsers/simple; textmapper generate)
 
 go fmt ./...
-find . -type f -name '*.go' | xargs -I '{}' goimports -w -local github.com '{}'
+find . -type f -name '*.go' | xargs -I '{}' goimports -w -local github.com,go.lsp.dev,go.uber.org '{}'
 go build ./... && go test ./...

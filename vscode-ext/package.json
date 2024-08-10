@@ -2,25 +2,58 @@
   "name": "textmapper-support",
   "displayName": "Textmapper Support",
   "description": "Textmapper Language Support",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "inspirer",
   "engines": {
-    "vscode": "^1.19.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
-    "Languages"
+    "Programming Languages"
   ],
+  "main": "./out/extension",
   "contributes": {
-    "languages": [{
-      "id": "textmapper",
-      "aliases": ["Textmapper", "textmapper"],
-      "extensions": [".tm"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "textmapper",
-      "scopeName": "source.textmapper",
-      "path": "./syntaxes/textmapper.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "textmapper",
+        "aliases": [
+          "Textmapper",
+          "textmapper"
+        ],
+        "extensions": [
+          ".tm"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "textmapper",
+        "scopeName": "source.textmapper",
+        "path": "./syntaxes/textmapper.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Textmapper configuration",
+      "properties": {
+        "textmapper.path": {
+          "type": "string",
+          "default": "tmlsp",
+          "description": "The path to the Textmapper language server"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.1.0",
+    "@types/vscode": "^1.92.0",
+    "typescript": "^5.5.4"
   }
 }
