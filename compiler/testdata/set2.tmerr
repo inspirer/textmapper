@@ -10,6 +10,18 @@ b: /b/
 %generate «afterErr» = set(follow input);
 # err: 'afterErr' is reserved for built-in error recovery
 
-input : d;
+input : d p<+f>;
 
 d : a b ;
+
+%flag f;
+
+q<f>:
+  | [f] a
+  | [!f] b
+;
+
+# Note: sets don't inherit their flags from the containing nonterminal.
+
+p<f>: set(«q»);
+# err: uninitialized parameters: f

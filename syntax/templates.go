@@ -270,9 +270,11 @@ func (i *instance) resolve(arg Arg) boundParam {
 	if arg.Value != "" {
 		return boundParam{param: arg.Param, value: arg.Value}
 	}
-	for _, a := range i.args {
-		if a.param == arg.TakeFrom {
-			return boundParam{param: arg.Param, value: a.value}
+	if i != nil {
+		for _, a := range i.args {
+			if a.param == arg.TakeFrom {
+				return boundParam{param: arg.Param, value: a.value}
+			}
 		}
 	}
 	log.Fatal("grammar inconsistency on TakeFrom")

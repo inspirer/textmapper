@@ -234,7 +234,7 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 	for _, part := range p.GrammarPart() {
 		switch part := part.(type) {
 		case *ast.DirectiveAssert:
-			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
+			set := c.convertSet(part.RhsSet().Expr())
 			index := len(c.out.Sets)
 			c.out.Sets = append(c.out.Sets, set)
 			_, empty := part.Empty()
@@ -333,7 +333,7 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 				continue
 			}
 
-			set := c.convertSet(part.RhsSet().Expr(), nil /*nonterm*/)
+			set := c.convertSet(part.RhsSet().Expr())
 			c.namedSets[name.Text()] = len(c.out.Sets)
 			c.sets = append(c.sets, &grammar.NamedSet{
 				Name: name.Text(),
@@ -349,27 +349,26 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 	}
 }
 
-// TODO remove the second parameter and disallow templating sets
-func (c *syntaxLoader) convertSet(expr ast.SetExpression, nonterm *syntax.Nonterm) *syntax.TokenSet {
+func (c *syntaxLoader) convertSet(expr ast.SetExpression) *syntax.TokenSet {
 	switch expr := expr.(type) {
 	case *ast.SetAnd:
 		return &syntax.TokenSet{
 			Kind:   syntax.Intersection,
-			Sub:    []*syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
+			Sub:    []*syntax.TokenSet{c.convertSet(expr.Left()), c.convertSet(expr.Right())},
 			Origin: expr,
 		}
 	case *ast.SetComplement:
 		return &syntax.TokenSet{
 			Kind:   syntax.Complement,
-			Sub:    []*syntax.TokenSet{c.convertSet(expr.Inner(), nonterm)},
+			Sub:    []*syntax.TokenSet{c.convertSet(expr.Inner())},
 			Origin: expr,
 		}
 	case *ast.SetCompound:
-		return c.convertSet(expr.Inner(), nonterm)
+		return c.convertSet(expr.Inner())
 	case *ast.SetOr:
 		return &syntax.TokenSet{
 			Kind:   syntax.Union,
-			Sub:    []*syntax.TokenSet{c.convertSet(expr.Left(), nonterm), c.convertSet(expr.Right(), nonterm)},
+			Sub:    []*syntax.TokenSet{c.convertSet(expr.Left()), c.convertSet(expr.Right())},
 			Origin: expr,
 		}
 	case *ast.SetSymbol:
@@ -388,7 +387,7 @@ func (c *syntaxLoader) convertSet(expr ast.SetExpression, nonterm *syntax.Nonter
 				c.Errorf(op, "operator must be one of: first, last, precede or follow")
 			}
 		}
-		ret.Symbol, ret.Args = c.resolveRef(expr.Symbol(), nonterm)
+		ret.Symbol, ret.Args = c.resolveRef(expr.Symbol(), nil /*nonterm*/)
 		return ret
 	default:
 		c.Errorf(expr.TmNode(), "syntax error")
@@ -832,7 +831,7 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
 		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(), Origin: p}
 	case *ast.RhsSet:
-		set := c.convertSet(p.Expr(), nonterm)
+		set := c.convertSet(p.Expr())
 		index := len(c.out.Sets)
 		c.out.Sets = append(c.out.Sets, set)
 		return &syntax.Expr{Kind: syntax.Set, Pos: c.allocatePos(), SetIndex: index, Origin: p, Model: c.out}
