@@ -31,11 +31,9 @@ going to fill this gap.
 
 ### Tooling
 
-Textmapper comes as a separate command-line tool, with integration plugins
-for VS Code and IntelliJ IDEA.
+Textmapper comes as a separate command-line tool with an extension for
+for Visual Studio Code.
 
 ### License
 
-Textmapper tool is distributed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
-
-The plug-ins for IntelliJ IDEA is made available under the General Public License (version 3 or above).
+Textmapper tool is distributed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License).

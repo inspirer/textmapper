@@ -4,21 +4,44 @@ title: Textmapper &middot; Download
 kind: download
 ---
 
-Download
-========
+Installation
+============
 
-The latest development build (beta), 0.10.0, Sep 25, 2022:
+Assuming the Go toolchain is installed (see https://go.dev/doc/install),
+execute the following command to download and install the latest build:
 
-* [Textmapper](https://github.com/inspirer/textmapper/releases/tag/0.10.0) (command-line utility)
-* [IntelliJ IDEA plug-in](https://plugins.jetbrains.com/plugin/7291-textmapper)
+    $ go install github.com/inspirer/textmapper/cmd/textmapper@main
 
-Textmapper is currently build with Java, though it is being rewritten in Go.
+You can also install a VS Code extension for syntax highlighting, navigation,
+and continuous grammar analysis (or simply search for 'textmapper' in the
+Marketplace).
+
+    $ code --install-extension inspirer.textmapper-support
+
+Then go to settings, and set 'Textmapper: Path' to point to the location
+of the installed binary. This can also be done in settings.json:
+
+    {
+        "textmapper.path": ".../go/bin/textmapper",
+    }
+
 
 Building from Sources
-==================
+=====================
 
-You will need Java 8+, and also Ant or Maven.
+Clone and build the repository:
 
-    $ cd tm-tool
-    $ ant clean test deploy      (OR mvn clean install)
-    $ ./libs/textmapper.sh --help
+    $ git clone https://github.com/inspirer/textmapper.git
+    $ cd textmapper
+    $ go test ./...
+    $ go install ./cmd/textmapper
+
+Regenerating build-in grammars:
+
+    $ ./regen.sh
+
+Regenerating and testing C++ examples:
+
+    $ cd cpp
+    $ ./gen.sh
+    $ bazel test //...
