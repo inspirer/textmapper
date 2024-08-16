@@ -122,6 +122,93 @@ func addSyntheticInputs(m *syntax.Model) {
 	}
 }
 
+// longestPhrase computes the length of the longest string (in tokens) that can be
+// matched by a given nonterminal.
+//
+// It returns false if the length is unbounded.
+func longestPhrase(m *syntax.Model, expr *syntax.Expr, memo map[int]int) (int, bool) {
+	switch expr.Kind {
+	case syntax.Empty, syntax.StateMarker, syntax.Command, syntax.Lookahead:
+		return 0, true
+	case syntax.Set:
+		return 1, true
+	case syntax.List:
+		// Lists are always unbounded.
+		return 0, false
+	case syntax.Assign, syntax.Append, syntax.Arrow, syntax.Prec, syntax.Optional:
+		return longestPhrase(m, expr.Sub[0], memo)
+	case syntax.Choice:
+		var ret int
+		for _, c := range expr.Sub {
+			val, ok := longestPhrase(m, c, memo)
+			if !ok {
+				return 0, false
+			}
+			ret = max(ret, val)
+		}
+		return ret, true
+	case syntax.Sequence:
+		var ret int
+		for _, c := range expr.Sub {
+			val, ok := longestPhrase(m, c, memo)
+			if !ok {
+				return 0, false
+			}
+			ret += val
+		}
+		return ret, true
+	case syntax.Reference:
+		if expr.Symbol < len(m.Terminals) {
+			return 1, true
+		}
+
+		// Nonterminal reference.
+		val, ok := memo[expr.Symbol]
+		if ok {
+			// Recursive definitions are unbounded.
+			return val, val > 0
+		}
+		memo[expr.Symbol] = 0 // computing
+		val, ok = longestPhrase(m, m.Nonterms[expr.Symbol-len(m.Terminals)].Value, memo)
+		memo[expr.Symbol] = val
+		return val, ok
+	default:
+		log.Fatal("invariant failure")
+		return 0, false
+	}
+}
+
+func checkLookaheads(m *syntax.Model, maxSize int) error {
+	var s status.Status
+	seen := make(map[int]int)
+	m.ForEach(syntax.Lookahead, func(_ *syntax.Nonterm, expr *syntax.Expr) {
+		for _, sub := range expr.Sub {
+			if sub.Kind == syntax.LookaheadNot {
+				sub = sub.Sub[0]
+			}
+			if sub.Kind == syntax.Reference && sub.Symbol >= len(m.Terminals) {
+				length, checked := seen[sub.Symbol]
+				if !checked {
+					max, ok := longestPhrase(m, sub, make(map[int]int))
+					length = max
+					if !ok {
+						length = -1
+					}
+					seen[sub.Symbol] = length
+				}
+				name := m.Nonterms[sub.Symbol-len(m.Terminals)].Name
+				switch {
+				case length == -1:
+					s.Errorf(sub.Origin, "lookahead for %v is unbounded", name)
+				case length > maxSize:
+					s.Errorf(sub.Origin, "lookahead for %v is too long (%v tokens)", name, length)
+				}
+			}
+		}
+	})
+	return s.Err()
+}
+
 func (c *compiler) compileParser(file ast.File) {
 	p, ok := file.Parser()
 	if !ok || !c.out.Options.GenParser {
@@ -174,6 +261,14 @@ func (c *compiler) compileParser(file ast.File) {
 			}
 		}
 		sort.Strings(c.out.Lexer.UsedFlags)
+	}
+
+	if c.out.Options.MaxLookahead > 0 {
+		err := checkLookaheads(source, c.out.Options.MaxLookahead)
+		if err != nil {
+			c.AddError(err)
+			return
+		}
 	}
 
 	if err := syntax.Expand(source); err != nil {

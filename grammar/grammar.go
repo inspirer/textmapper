@@ -197,6 +197,7 @@ type Options struct {
 	OptimizeTables      bool
 	DefaultReduce       bool // Prefer some common reduction to errors in non-LR0 states to compress tables even further.
 	NoEmptyRules        bool // Report empty rules without an %empty marker. True by default for C++.
+	MaxLookahead        int  // If set, all lookaheads expressions will be validated to fit this limit.
 
 	// AST generation. Go-specific for now.
 	TokenStream   bool

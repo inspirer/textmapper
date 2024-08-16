@@ -1,0 +1,43 @@
+language parser(go);
+
+maxLookahead = 3
+
+:: lexer
+
+a: /a/
+b: /b/
+c: /c/
+d: /d/
+
+:: parser
+
+input: A1 B1 C1 D1 E1 F1;
+
+A1: (?= «laA») a;
+# err: lookahead for laA is too long (4 tokens)
+
+laA: a b c d;
+
+B1: (?= laB) b;
+
+laB: a b d;
+
+C1: (?= «laC») c;
+# err: lookahead for laC is too long (4 tokens)
+
+laC: laA | laB ;
+
+# Note: reusing laC again.
+
+D1: (?= «laC») d;
+# err: lookahead for laC is too long (4 tokens)
+
+E1: (?= «laE») d;
+# err: lookahead for laE is unbounded
+
+laE: a+ b;
+
+F1: (?= «laF») d;
+# err: lookahead for laF is unbounded
+
+laF: laE b;

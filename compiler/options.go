@@ -97,6 +97,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.DefaultReduce = p.parseExpr(opt.Value(), opts.DefaultReduce).(bool)
 		case "noEmptyRules":
 			opts.NoEmptyRules = p.parseExpr(opt.Value(), opts.NoEmptyRules).(bool)
+		case "maxLookahead":
+			opts.MaxLookahead = p.parseExpr(opt.Value(), opts.MaxLookahead).(int)
 		case "eventFields":
 			p.validLangs(opt.Key(), "go")
 			opts.EventFields = p.parseExpr(opt.Value(), opts.EventFields).(bool)
@@ -204,6 +206,15 @@ func (p *optionsParser) parseExpr(e ast.Expression, defaultVal any) any {
 	case *ast.BooleanLiteral:
 		if _, ok := defaultVal.(bool); ok {
 			return e.Text() == "true"
+		}
+	case *ast.IntegerLiteral:
+		if _, ok := defaultVal.(int); ok {
+			val, err := strconv.ParseInt(e.Text(), 10, 64)
+			if err != nil {
+				p.Errorf(e, "cannot parse integer literal: %v", err)
+				return defaultVal
+			}
+			return int(val)
 		}
 	case *ast.StringLiteral:
 		if _, ok := defaultVal.(string); ok {
