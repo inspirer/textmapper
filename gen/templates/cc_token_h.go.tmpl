@@ -15,7 +15,7 @@ namespace {{.Options.Namespace}} {
 enum class Token {
   UNAVAILABLE = -1,
 {{- range $i, $tok := .Tokens}}
-  {{.ID}} = {{$i}},{{if .Comment}}  // {{.Comment}}{{end}}
+  {{.ID}} = {{$i}},{{if .Comment}}  /* {{.Comment}} */{{end}}
 {{- end}}
   NumTokens = {{len .Tokens}}
 };
@@ -24,7 +24,7 @@ constexpr inline std::array<absl::string_view,
                             static_cast<size_t>(Token::NumTokens)>
     tokenStr = {
 {{- range .Tokens}}
-  {{str_literal .ID}},{{if .Comment}}  // {{.Comment}}{{end}}
+  {{str_literal .ID}},{{if .Comment}}  /* {{.Comment}} */{{end}}
 {{- end}}
 };
 
@@ -32,7 +32,7 @@ constexpr inline std::array<absl::string_view,
                             static_cast<size_t>(Token::NumTokens)>
     tokenName = {
 {{- range .Tokens}}
-  {{stringify .Name}},{{if .Comment}}  // {{.Comment}}{{end}}
+  {{stringify .Name}},{{if .Comment}}  /* {{.Comment}} */{{end}}
 {{- end}}
 };
 
