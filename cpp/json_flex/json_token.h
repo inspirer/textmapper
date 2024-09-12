@@ -44,14 +44,35 @@ constexpr inline std::array<absl::string_view,
   "LBRACK",
   "RBRACK",
   "COLON",
-  "comma",
+  "COMMA",  // comma
   "MULTILINECOMMENT",
-  "\"string literal\"",
+  "JSONSTRING",  // "string literal"
   "JSONNUMBER",
   "ID",
   "KW_NULL",
   "TRUE",
   "FALSE",
+};
+
+constexpr inline std::array<absl::string_view,
+                            static_cast<size_t>(Token::NumTokens)>
+    tokenName = {
+  "eoi",
+  "error",
+  "invalid_token",
+  "'{'",
+  "'}'",
+  "'['",
+  "']'",
+  "':'",
+  "','",  // comma
+  "MultiLineComment",
+  "JSONString",  // "string literal"
+  "JSONNumber",
+  "id",
+  "kw_null",
+  "'true'",
+  "'false'",
 };
 
 inline std::ostream& operator<<(std::ostream& os, Token tok) {

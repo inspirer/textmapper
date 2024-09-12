@@ -66,8 +66,10 @@ class Lexer {
     return source_.substr(token_offset_, offset_ - token_offset_);
   }
 
+{{ if gt (len .Lexer.StartConditions) 1 -}}
   void set_state(State state) { start_state_ = state; }
   ABSL_MUST_USE_RESULT State state() { return start_state_; }
+{{ end -}}
 
  private:
   // Rewind can be used in lexer actions to accept a portion of a scanned token,

@@ -42,24 +42,49 @@ constexpr inline std::array<absl::string_view,
     tokenStr = {
   "EOI",
   "INVALID_TOKEN",
-  "{",
-  "}",
-  "[",
-  "]",
-  ":",
-  ",",
-  "#",
+  "LBRACE",  // {
+  "RBRACE",  // }
+  "LBRACK",  // [
+  "RBRACK",  // ]
+  "COLON",  // :
+  "COMMA",  // ,
+  "FOO",  // #
   "SPACE",
   "MULTILINECOMMENT",
   "JSONSTRING",
   "JSONNUMBER",
   "ID",
-  "null",
-  "true",
-  "false",
+  "KW_NULL",  // null
+  "TRUE",  // true
+  "FALSE",  // false
   "CHAR_A",
-  "B",
+  "CHAR_B",  // B
   "ERROR",
+};
+
+constexpr inline std::array<absl::string_view,
+                            static_cast<size_t>(Token::NumTokens)>
+    tokenName = {
+  "eoi",
+  "invalid_token",
+  "'{'",  // {
+  "'}'",  // }
+  "'['",  // [
+  "']'",  // ]
+  "':'",  // :
+  "','",  // ,
+  "Foo",  // #
+  "space",
+  "MultiLineComment",
+  "JSONString",
+  "JSONNumber",
+  "id",
+  "kw_null",  // null
+  "'true'",  // true
+  "'false'",  // false
+  "'A'",
+  "'B'",  // B
+  "error",
 };
 
 inline std::ostream& operator<<(std::ostream& os, Token tok) {
