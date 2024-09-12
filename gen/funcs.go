@@ -23,6 +23,7 @@ var funcMap = template.FuncMap{
 	"int_array":           intArray,
 	"int_array_columns":   intArrayColumns,
 	"str_literal":         strconv.Quote,
+	"stringify":           stringify,
 	"title":               strings.Title,
 	"lower":               strings.ToLower,
 	"first_lower":         firstLower,
@@ -46,6 +47,13 @@ var funcMap = template.FuncMap{
 	"last_id":             lastID,
 	"escape_reserved":     escapeReserved,
 	"unwrap_with_default": unwrapWithDefault,
+}
+
+func stringify(s string) string {
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return strconv.Quote(s[1 : len(s)-1])
+	}
+	return strconv.Quote(s)
 }
 
 func sum(a, b int) int {
