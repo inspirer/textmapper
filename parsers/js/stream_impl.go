@@ -4,6 +4,10 @@ import (
 	"github.com/inspirer/textmapper/parsers/js/token"
 )
 
+func (s *TokenStream) line() int {
+	return int(s.lastLine)
+}
+
 // next transforms the lexer stream into a stream of symbols for the parser.
 //
 // This function also takes care of semicolons by implementing the "Automatic
@@ -109,7 +113,8 @@ restart:
 
 	if tok == token.RBRACE {
 		// Not all closing braces require a semicolon. Double checking.
-		if _, success = reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(token.SEMICOLON), endState); success {
+		if _, success = reduceAll(stack[:len(stack)-1], stack[len(stack)-1].state, int32(token.SEMICOLON), endState); success || lastToken == token.DOT {
+			// We always insert a semicolon between a dot and a closing brace.
 			return s.insertSC(ret, state, lastEnd)
 		}
 		return ret

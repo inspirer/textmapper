@@ -88,12 +88,12 @@ func ToJsNode(n *Node) JsNode {
 		return &Cond{n}
 	case js.ConditionalExpr:
 		return &ConditionalExpr{n}
+	case js.Const:
+		return &Const{n}
 	case js.ContinueStmt:
 		return &ContinueStmt{n}
 	case js.DebuggerStmt:
 		return &DebuggerStmt{n}
-	case js.Declare:
-		return &Declare{n}
 	case js.DecoratorCall:
 		return &DecoratorCall{n}
 	case js.DecoratorExpr:
@@ -126,8 +126,12 @@ func ToJsNode(n *Node) JsNode {
 		return &ExprStmt{n}
 	case js.Extends:
 		return &Extends{n}
+	case js.File:
+		return &File{n}
 	case js.Finally:
 		return &Finally{n}
+	case js.FnArrow:
+		return &FnArrow{n}
 	case js.ForBinding:
 		return &ForBinding{n}
 	case js.ForCondition:
@@ -204,8 +208,8 @@ func ToJsNode(n *Node) JsNode {
 		return &LabelIdent{n}
 	case js.LabelledStmt:
 		return &LabelledStmt{n}
-	case js.LetOrConst:
-		return &LetOrConst{n}
+	case js.Let:
+		return &Let{n}
 	case js.LexicalBinding:
 		return &LexicalBinding{n}
 	case js.LexicalDecl:
@@ -224,8 +228,6 @@ func ToJsNode(n *Node) JsNode {
 		return &MemberVar{n}
 	case js.Method:
 		return &Method{n}
-	case js.Module:
-		return &Module{n}
 	case js.ModuleSpec:
 		return &ModuleSpec{n}
 	case js.MultiplicativeExpr:
@@ -324,8 +326,6 @@ func ToJsNode(n *Node) JsNode {
 		return &TryStmt{n}
 	case js.TsAbstract:
 		return &TsAbstract{n}
-	case js.TsAccessibilityModifier:
-		return &TsAccessibilityModifier{n}
 	case js.TsAmbientBinding:
 		return &TsAmbientBinding{n}
 	case js.TsAmbientClass:
@@ -370,6 +370,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsConstructSignature{n}
 	case js.TsConstructorType:
 		return &TsConstructorType{n}
+	case js.TsDeclare:
+		return &TsDeclare{n}
 	case js.TsDynamicImport:
 		return &TsDynamicImport{n}
 	case js.TsEnum:
@@ -440,8 +442,14 @@ func ToJsNode(n *Node) JsNode {
 		return &TsParenthesizedType{n}
 	case js.TsPredefinedType:
 		return &TsPredefinedType{n}
+	case js.TsPrivate:
+		return &TsPrivate{n}
 	case js.TsPropertySignature:
 		return &TsPropertySignature{n}
+	case js.TsProtected:
+		return &TsProtected{n}
+	case js.TsPublic:
+		return &TsPublic{n}
 	case js.TsReadonly:
 		return &TsReadonly{n}
 	case js.TsReadonlyType:
@@ -488,6 +496,8 @@ func ToJsNode(n *Node) JsNode {
 		return &TsUnionType{n}
 	case js.TsUniqueType:
 		return &TsUniqueType{n}
+	case js.TsVarianceModifier:
+		return &TsVarianceModifier{n}
 	case js.UnaryExpr:
 		return &UnaryExpr{n}
 	case js.Var:

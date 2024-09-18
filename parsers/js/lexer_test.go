@@ -180,6 +180,7 @@ var lexerTests = []struct {
 	{token.SET, []string{`«set»`}},
 	{token.STATIC, []string{`«static»`}},
 	{token.TARGET, []string{`«target»`}},
+	{token.OUT, []string{`«out»`}},
 
 	// Typescript keywords.
 	{token.ABSTRACT, []string{`«abstract»`}},

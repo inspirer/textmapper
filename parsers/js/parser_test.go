@@ -102,6 +102,7 @@ var parseTests = []struct {
 	}},
 	{js.Javascript, js.LabelIdent, []string{
 		`«A»: for (;;) {continue «A»; }`,
+		`«out»: for (;;) {continue «out»; }`,
 		`break «B»;`,
 	}},
 	{js.Javascript, js.This, []string{
@@ -412,7 +413,7 @@ var parseTests = []struct {
 		`«{  «{1+2}»  ({a:b}) }»`,
 		`switch(a) «{}»`,
 		`switch(a) «{case 1: case 2: default: case 3:}»`,
-		`function a() { while (true) «{ let a = a. §}» }`, // error recovery
+		`function a() { while (true) «{ let a = a.§ }» }`, // error recovery
 	}},
 	{js.Javascript, js.LexicalDecl, []string{
 		`«let a;»`,
@@ -509,11 +510,21 @@ var parseTests = []struct {
 		`for («var» a of b);`,
 		`for («var» a in b);`,
 	}},
-	{js.Javascript, js.LetOrConst, []string{
+	{js.Javascript, js.Let, []string{
 		`for («let» a in b) continue;`,
-		`for («const» a in b) continue; for (var a in b) continue;`,
 		`for («let» a of b);`,
 		`declare «let» a = 5;`,
+	}},
+	{js.Javascript, js.Const, []string{
+		`for («const» a in b) continue; for (var a in b) continue;`,
+		`declare «const» a = 5;`,
+	}},
+	{js.Javascript, js.FnArrow, []string{
+		`var x: () «=>» number`,
+		`let x: {a: new() «=>» never};`,
+		`(a «=>» a + 1)(1);`,
+		`((a,b) «=>» { return a*b; })(1);`,
+		`for(async of«=>»5;;) {}`,
 	}},
 	{js.Javascript, js.ForInStmt, []string{
 		`«for (a in b) continue;»`,
@@ -699,7 +710,7 @@ var parseTests = []struct {
 		`function a() «{if (false) a();}»`,
 		`var a = function() «{if (false) a();}»;`,
 		`class a { static «{ foo(); }» }`,
-		`function a() «{ let a = a. §}»`, // error recovery
+		`function a() «{ let a = a.§ }»`, // error recovery
 
 		// in arrow functions
 		`((a,b) => «{ return a*b; }»)(1);`,
@@ -861,6 +872,7 @@ var parseTests = []struct {
 		 }»`,
 		`declare class A «{}»`,
 		`declare class A «{  [a:number]:string; private static a; private static foo<T>() : string; }»`,
+		`class A «{ x = this.§}»`, // error recovery
 	}},
 	{js.Javascript, js.EmptyDecl, []string{
 		`class A extends B {
@@ -892,7 +904,7 @@ var parseTests = []struct {
 		   «accessor» b: number
 		 }`,
 	}},
-	{js.Javascript, js.Module, []string{
+	{js.Javascript, js.File, []string{
 		`«»`,
 		`«
 		»`,
@@ -1296,6 +1308,12 @@ var parseTests = []struct {
 		`function foo<«T», «Q extends T»>() {}`,
 		`declare function create<«T extends Foo = Bar»>() : Baz<T>;`,
 	}},
+	{js.Typescript, js.TsVarianceModifier, []string{
+		`function foo<T, «in» Q extends T>() {}`,
+		`function foo<«in» T, «out» Q extends T>() {}`,
+		`function foo<T, «in» «out» Q extends T>() {}`,
+		`function f(){ const out: number; } function foo<T, «in» Q extends T>() {}`,
+	}},
 	{js.Typescript, js.TsTypeConstraint, []string{
 		`function foo<T, Q «extends T&Foo»>() {}`,
 	}},
@@ -1363,8 +1381,17 @@ var parseTests = []struct {
 		`let plusMinusOne: «-1» | «1»;`,
 		"declare function setAlignment(value: «`${VerticalAlignment}-${HorizontalAlignment}`»): void;",
 	}},
-	{js.Typescript, js.TsAccessibilityModifier, []string{
+	{js.Typescript, js.TsPublic, []string{
 		`function a(«public» kind?:number) {}`,
+		`class a{ «public» a(kind?:number) {} }`,
+	}},
+	{js.Typescript, js.TsPrivate, []string{
+		`function a(«private» kind?:number) {}`,
+		`class a{ «private» a(kind?:number) {} }`,
+	}},
+	{js.Typescript, js.TsProtected, []string{
+		`function a(«protected» kind?:number) {}`,
+		`class a{ «protected» a(kind?:number) {} }`,
 	}},
 	{js.Typescript, js.TsTypeAliasDecl, []string{
 		`«type Foo = bar;»`,
@@ -1433,7 +1460,7 @@ var parseTests = []struct {
 		  «private static b;»
 		 }`,
 	}},
-	{js.Typescript, js.Declare, []string{
+	{js.Typescript, js.TsDeclare, []string{
 		`class A {
 		   «declare» tt : foo;
 		   private «declare» static tt : foo;
@@ -1720,19 +1747,22 @@ var parseTests = []struct {
 		`{1} «(1+2) §3»`,
 		`function a() { §«*l;» }`, /* not needed */
 		`function a() { §«*l» }`,  /* required for recovery */
-		`function a() { while (true) { «let a = a.§»} }`,
-		`function a() { a = 5; «let a = a.§»}`,
+		`function a() { while (true) { let a = «a.§»} }`,
+		`function a() { a = 5; let a = «a.§»}`,
 		`enum E{A = 42, B = «C.§»}`,
 		`var a: {«x: a.§»}`,
 		`interface I{«x: N.§»}`,
 		`type T = {«x: N.§»}`,
+		`class A{«x: N.§»}`,
+		`class A{«x: N§+»}`,
+		`class A{x= «N.§»}`,
 
 		// Statements
 		`function a() {
-			var a = «1+»§ /* inserted semicolon */
-			var b = «2+§»;
-			var c = «2+
-			a §= b»;
+		   var a = «1+»§ /* inserted semicolon */
+		   var b = «2+§»;
+		   var c = «2+
+		   a §= b»;
 		   b = a;
 		 }`,
 		`var b = (function() {
@@ -1772,9 +1802,7 @@ var parseTests = []struct {
 		 }`,
 		"«a.§`` b;» foo()",
 		"«a. §. `` b;» foo()",
-
-		// TODO: fix reported ranges.
-		`««a = ({§«{{a>>5»}}»})»`,
+		`a = ({§«{{a>>5}}»})`,
 	}},
 
 	{js.Javascript, js.InvalidToken, []string{
@@ -1817,7 +1845,7 @@ func TestParser(t *testing.T) {
 				err = p.ParseModule(ctx, &s)
 			}
 			if err == nil {
-				listener(js.Module, 0, len(test.Source()))
+				listener(js.File, 0, len(test.Source()))
 			}
 			test.Done(t, err)
 

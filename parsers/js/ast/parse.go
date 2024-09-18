@@ -77,7 +77,7 @@ func (b *builder) build() (*Tree, error) {
 	if b.err != nil {
 		return nil, b.err
 	}
-	b.addNode(js.Module, 0, len(b.tree.content))
+	b.addNode(js.File, 0, len(b.tree.content))
 	b.tree.root = b.stack[0]
 	return b.tree, nil
 }

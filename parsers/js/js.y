@@ -82,6 +82,7 @@
 %token SET
 %token STATIC
 %token TARGET
+%token OUT
 %token IMPLEMENTS
 %token INTERFACE
 %token PRIVATE
@@ -222,6 +223,7 @@ IdentifierName :
 | TARGET
 | ASYNC
 | ASSERT
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -305,6 +307,7 @@ IdentifierName_WithoutAsserts :
 | TARGET
 | ASYNC
 | ASSERT
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -388,6 +391,7 @@ IdentifierName_WithoutFrom :
 | TARGET
 | ASYNC
 | ASSERT
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -434,6 +438,7 @@ IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies :
 | TARGET
 | ASYNC
 | ASSERT
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -516,6 +521,7 @@ IdentifierName_WithoutNew :
 | TARGET
 | ASYNC
 | ASSERT
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -549,6 +555,90 @@ IdentifierName_WithoutNew :
 | SATISFIES
 ;
 
+IdentifierName_WithoutType :
+  IDENTIFIER
+| NEW
+| ASSERTS
+| AWAIT
+| BREAK
+| DO
+| IN
+| TYPEOF
+| CASE
+| ELSE
+| INSTANCEOF
+| VAR
+| CATCH
+| EXPORT
+| VOID
+| CLASS
+| EXTENDS
+| RETURN
+| WHILE
+| CONST
+| FINALLY
+| SUPER
+| WITH
+| CONTINUE
+| FOR
+| SWITCH
+| YIELD
+| DEBUGGER
+| FUNCTION
+| THIS
+| DEFAULT
+| IF
+| THROW
+| DELETE
+| IMPORT
+| TRY
+| ENUM
+| NULL
+| TRUE
+| FALSE
+| AS
+| FROM
+| GET
+| LET
+| OF
+| SET
+| STATIC
+| TARGET
+| ASYNC
+| ASSERT
+| OUT
+| IMPLEMENTS
+| INTERFACE
+| PRIVATE
+| PROTECTED
+| PUBLIC
+| ANY
+| UNKNOWN
+| BOOLEAN
+| NUMBER
+| STRING
+| SYMBOL
+| BIGINT
+| UNDEFINED
+| NEVER
+| OBJECT
+| ABSTRACT
+| CONSTRUCTOR
+| DECLARE
+| IS
+| MODULE
+| NAMESPACE
+| OVERRIDE
+| REQUIRE
+| GLOBAL
+| READONLY
+| KEYOF
+| UNIQUE
+| INFER
+| ACCESSOR
+| SATISFIES
+;
+
 IdentifierNameDecl :
   IdentifierName
 ;
@@ -563,6 +653,10 @@ IdentifierNameRef :
 
 IdentifierNameRef_WithoutAsserts :
   IdentifierName_WithoutAsserts
+;
+
+IdentifierNameRef_WithoutType :
+  IdentifierName_WithoutType
 ;
 
 ClassPrivateRef :
@@ -585,6 +679,7 @@ IdentifierReference :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -633,6 +728,7 @@ IdentifierReference_Await :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -679,6 +775,7 @@ IdentifierReference_Await_NoAsync_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -726,6 +823,7 @@ IdentifierReference_Await_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -773,6 +871,7 @@ IdentifierReference_NoAsync_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -821,6 +920,7 @@ IdentifierReference_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -871,6 +971,7 @@ IdentifierReference_WithDefault :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -920,6 +1021,7 @@ IdentifierReference_WithoutPredefinedTypes :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -954,6 +1056,7 @@ IdentifierReference_Yield :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -1001,6 +1104,7 @@ IdentifierReference_Yield_Await :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -1046,6 +1150,7 @@ IdentifierReference_Yield_Await_NoAsync_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -1092,6 +1197,7 @@ IdentifierReference_Yield_Await_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -1138,6 +1244,7 @@ IdentifierReference_Yield_NoAsync_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -1185,6 +1292,7 @@ IdentifierReference_Yield_NoLet :
 | SET
 | STATIC
 | TARGET
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -1238,6 +1346,7 @@ BindingIdentifier :
 | STATIC
 | TARGET
 | ASYNC
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -1286,6 +1395,7 @@ BindingIdentifier_WithoutImplements :
 | STATIC
 | TARGET
 | ASYNC
+| OUT
 | INTERFACE
 | PRIVATE
 | PROTECTED
@@ -1333,6 +1443,7 @@ LabelIdentifier :
 | STATIC
 | TARGET
 | ASYNC
+| OUT
 | IMPLEMENTS
 | INTERFACE
 | PRIVATE
@@ -6917,8 +7028,11 @@ NamedImports :
 ;
 
 NamedImport :
-  IdentifierNameRef
-| IdentifierNameRef AS ImportedBinding
+  TYPE IdentifierNameRef
+| IdentifierNameRef
+| IdentifierNameRef_WithoutType AS ImportedBinding
+| TYPE IdentifierNameRef AS ImportedBinding
+| TYPE AS ImportedBinding
 | ERROR
 ;
 
@@ -6968,8 +7082,11 @@ ExportElement_list_Comma_separated :
 ;
 
 ExportElement :
-  IdentifierNameRef
-| IdentifierNameRef AS IdentifierNameDecl
+  TYPE IdentifierNameRef
+| IdentifierNameRef
+| IdentifierNameRef_WithoutType AS IdentifierNameDecl
+| TYPE IdentifierNameRef AS IdentifierNameDecl
+| TYPE AS IdentifierNameDecl
 | ERROR
 ;
 
@@ -7265,10 +7382,20 @@ TypeParameters :
 ;
 
 TypeParameter :
-  BindingIdentifier Constraint ASSIGN Type
-| BindingIdentifier Constraint
-| BindingIdentifier ASSIGN Type
-| BindingIdentifier
+  VarianceModifier_optlist BindingIdentifier Constraint ASSIGN Type
+| VarianceModifier_optlist BindingIdentifier Constraint
+| VarianceModifier_optlist BindingIdentifier ASSIGN Type
+| VarianceModifier_optlist BindingIdentifier
+;
+
+VarianceModifier_optlist :
+  VarianceModifier_optlist VarianceModifier
+| %empty
+;
+
+VarianceModifier :
+  IN
+| OUT
 ;
 
 Constraint :
@@ -7540,7 +7667,6 @@ TupleElementType_list_Comma_separated :
 TupleType :
   LBRACK TupleElementType_list_Comma_separated COMMA RBRACK
 | LBRACK TupleElementType_list_Comma_separated RBRACK
-| LBRACK COMMA RBRACK
 | LBRACK RBRACK
 ;
 
@@ -7647,6 +7773,14 @@ PropertySignature :
 | PropertyName_WithoutNew QUEST
 | PropertyName_WithoutNew TypeAnnotation
 | PropertyName_WithoutNew
+| Modifiers NEW QUEST TypeAnnotation
+| Modifiers NEW QUEST
+| Modifiers NEW TypeAnnotation
+| Modifiers NEW
+| NEW QUEST TypeAnnotation
+| NEW QUEST
+| NEW TypeAnnotation
+| NEW
 ;
 
 TypeAnnotation :
@@ -7691,28 +7825,24 @@ CallSignature :
 ParameterList :
   LPAREN Parameter_list_Comma_separated COMMA RPAREN
 | LPAREN Parameter_list_Comma_separated RPAREN
-| LPAREN COMMA RPAREN
 | LPAREN RPAREN
 ;
 
 ParameterList_Await :
   LPAREN Parameter_Await_list_Comma_separated COMMA RPAREN
 | LPAREN Parameter_Await_list_Comma_separated RPAREN
-| LPAREN COMMA RPAREN
 | LPAREN RPAREN
 ;
 
 ParameterList_Yield :
   LPAREN Parameter_Yield_list_Comma_separated COMMA RPAREN
 | LPAREN Parameter_Yield_list_Comma_separated RPAREN
-| LPAREN COMMA RPAREN
 | LPAREN RPAREN
 ;
 
 ParameterList_Yield_Await :
   LPAREN Parameter_Yield_Await_list_Comma_separated COMMA RPAREN
 | LPAREN Parameter_Yield_Await_list_Comma_separated RPAREN
-| LPAREN COMMA RPAREN
 | LPAREN RPAREN
 ;
 
@@ -7739,7 +7869,6 @@ Parameter_list_Comma_separated :
 FunctionTypeParameterList :
   LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated COMMA RPAREN
 | LPAREN lookahead_StartOfFunctionType Parameter_list_Comma_separated RPAREN
-| LPAREN lookahead_StartOfFunctionType COMMA RPAREN
 | LPAREN lookahead_StartOfFunctionType RPAREN
 ;
 

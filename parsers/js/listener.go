@@ -17,13 +17,13 @@ const (
 	Arguments    // TsTypeArguments? list=(Expr)*
 	ArrayLiteral // list=(Expr)*
 	ArrayPattern // list=(ElementPattern | Expr)* BindingRestElement?
-	ArrowFunc    // NameIdent? TsTypeParameters? Parameters? TsTypeAnnotation? Body? ConciseBody? SyntaxProblem?
+	ArrowFunc    // NameIdent? TsTypeParameters? Parameters? TsTypeAnnotation? FnArrow Body? ConciseBody? SyntaxProblem?
 	AssertClause // (AssertEntry)*
 	AssertEntry  // AssertionKey
 	AssertionKey
 	AssignmentExpr // left=Expr AssignmentOperator? right=Expr
 	AssignmentOperator
-	AsyncArrowFunc            // NameIdent? TsTypeParameters? Parameters? TsTypeAnnotation? Body? ConciseBody?
+	AsyncArrowFunc            // NameIdent? TsTypeParameters? Parameters? TsTypeAnnotation? FnArrow Body? ConciseBody?
 	AsyncFunc                 // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
 	AsyncFuncExpr             // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
 	AsyncGeneratorDeclaration // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
@@ -51,9 +51,9 @@ const (
 	ConciseBody          // Expr
 	Cond                 // Expr
 	ConditionalExpr      // cond=Expr then=Expr else=Expr
-	ContinueStmt         // LabelIdent?
+	Const
+	ContinueStmt // LabelIdent?
 	DebuggerStmt
-	Declare
 	DecoratorCall    // (ReferenceIdent)+ Arguments
 	DecoratorExpr    // (ReferenceIdent)+
 	Default          // (StmtListItem)*
@@ -67,33 +67,35 @@ const (
 	ExportClause       // (ExportElement)*
 	ExportDecl         // (Modifier)* TsTypeOnly? VarStmt? Decl? ExportClause? NameIdent? ModuleSpec? AssertClause?
 	ExportDefault      // Expr? (Modifier)* Decl?
-	ExportSpec         // ReferenceIdent? NameIdent
+	ExportSpec         // TsTypeOnly? ReferenceIdent? NameIdent
 	ExprStmt           // Expr
 	Extends            // Expr? TsTypeReference?
+	File               // (ModuleItem)*
 	Finally            // Block
-	ForBinding         // BindingPattern? NameIdent?
-	ForCondition       // Expr?
-	ForFinalExpr       // Expr?
-	ForInStmt          // var=Expr object=Expr Stmt
-	ForInStmtWithVar   // LetOrConst? Var? ForBinding object=Expr Stmt
-	ForOfStmt          // Await? var=Expr iterable=Expr Stmt
-	ForOfStmtWithVar   // Await? LetOrConst? Var? ForBinding iterable=Expr Stmt
-	ForStmt            // var=Expr? ForCondition ForFinalExpr Stmt
-	ForStmtWithVar     // LetOrConst? Var? (LexicalBinding)* (VarDecl)* ForCondition ForFinalExpr Stmt
-	Func               // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
-	FuncExpr           // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
-	Generator          // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
-	GeneratorExpr      // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
-	GeneratorMethod    // PropertyName TsTypeParameters? Parameters TsTypeAnnotation? Body?
-	Getter             // (Modifier)* PropertyName TsTypeAnnotation? Body?
-	IdentExpr          // ReferenceIdent
-	IfStmt             // Expr then=Stmt else=Stmt?
-	ImportDecl         // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec AssertClause?
-	ImportSpec         // ReferenceIdent? NameIdent
-	InExpr             // left=Expr right=Expr
-	IndexAccess        // expr=Expr index=Expr
-	Initializer        // Expr
-	InstanceOfExpr     // left=Expr right=Expr
+	FnArrow
+	ForBinding       // BindingPattern? NameIdent?
+	ForCondition     // Expr?
+	ForFinalExpr     // Expr?
+	ForInStmt        // var=Expr object=Expr Stmt
+	ForInStmtWithVar // Const? Var? Let? ForBinding object=Expr Stmt
+	ForOfStmt        // Await? var=Expr iterable=Expr Stmt
+	ForOfStmtWithVar // Await? Const? Var? Let? ForBinding iterable=Expr Stmt
+	ForStmt          // var=Expr? ForCondition ForFinalExpr Stmt
+	ForStmtWithVar   // Const? Var? Let? (VarDecl)* (LexicalBinding)* ForCondition ForFinalExpr Stmt
+	Func             // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
+	FuncExpr         // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
+	Generator        // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
+	GeneratorExpr    // NameIdent? TsTypeParameters? Parameters TsTypeAnnotation? Body?
+	GeneratorMethod  // PropertyName TsTypeParameters? Parameters TsTypeAnnotation? Body?
+	Getter           // (Modifier)* PropertyName TsTypeAnnotation? Body?
+	IdentExpr        // ReferenceIdent
+	IfStmt           // Expr then=Stmt else=Stmt?
+	ImportDecl       // TsTypeOnly? NameIdent? NameSpaceImport? NamedImports? ModuleSpec AssertClause?
+	ImportSpec       // TsTypeOnly? ReferenceIdent? NameIdent
+	InExpr           // left=Expr right=Expr
+	IndexAccess      // expr=Expr index=Expr
+	Initializer      // Expr
+	InstanceOfExpr   // left=Expr right=Expr
 	JSXAttributeName
 	JSXClosingElement // JSXElementName
 	JSXElement        // JSXOpeningElement? JSXSelfClosingElement? (JSXChild)* JSXClosingElement?
@@ -109,9 +111,9 @@ const (
 	JSXText
 	LabelIdent
 	LabelledStmt // LabelIdent Func? Stmt?
-	LetOrConst
+	Let
 	LexicalBinding // BindingPattern? NameIdent? TsExclToken? TsTypeAnnotation? Initializer?
-	LexicalDecl    // LetOrConst (LexicalBinding)+
+	LexicalDecl    // Const? Let? (LexicalBinding)+
 	Literal
 	LiteralPropertyName // Literal? NameIdent?
 	LogicalAND          // left=Expr right=Expr
@@ -119,7 +121,6 @@ const (
 	MemberMethod        // (Modifier)* MethodDefinition
 	MemberVar           // (Modifier)* PropertyName TsTypeAnnotation? Initializer?
 	Method              // PropertyName TsTypeParameters? Parameters TsTypeAnnotation? Body?
-	Module              // (ModuleItem)*
 	ModuleSpec
 	MultiplicativeExpr // left=Expr right=Expr
 	NameIdent          // ReferenceIdent?
@@ -169,7 +170,6 @@ const (
 	ThrowStmt // Expr
 	TryStmt   // Block Catch? Finally?
 	TsAbstract
-	TsAccessibilityModifier
 	TsAmbientBinding     // NameIdent TsTypeAnnotation? Initializer?
 	TsAmbientClass       // (Modifier)* NameIdent TsTypeParameters? Extends? TsImplementsClause? ClassBody
 	TsAmbientEnum        // TsConst? NameIdent TsEnumBody
@@ -181,7 +181,7 @@ const (
 	TsAmbientModule      // Literal? (NameIdent)* (TsAmbientElement)*
 	TsAmbientNamespace   // (NameIdent)+ (TsAmbientElement)*
 	TsAmbientTypeAlias   // TsTypeAliasDecl
-	TsAmbientVar         // LetOrConst? Var? (TsAmbientBinding)+
+	TsAmbientVar         // Const? Let? Var? (TsAmbientBinding)+
 	TsArrayType          // TsType
 	TsAsConstExpr        // left=Expr TsConst
 	TsAsExpr             // left=Expr TsType
@@ -191,15 +191,16 @@ const (
 	TsConditional        // check=TsType ext=TsType truet=TsType falset=TsType
 	TsConst
 	TsConstructSignature // (Modifier)* TsTypeParameters? Parameters TsTypeAnnotation?
-	TsConstructorType    // TsAbstract? TsTypeParameters? Parameters TsType
-	TsDynamicImport      // Arguments
-	TsEnum               // TsConst? NameIdent TsEnumBody
-	TsEnumBody           // (TsEnumMember)*
-	TsEnumMember         // PropertyName Expr?
+	TsConstructorType    // TsAbstract? TsTypeParameters? Parameters FnArrow TsType
+	TsDeclare
+	TsDynamicImport // Arguments
+	TsEnum          // TsConst? NameIdent TsEnumBody
+	TsEnumBody      // (TsEnumMember)*
+	TsEnumMember    // PropertyName Expr?
 	TsExclToken
 	TsExport
 	TsExportAssignment    // Expr
-	TsFuncType            // TsTypeParameters? Parameters TsType
+	TsFuncType            // TsTypeParameters? Parameters FnArrow TsType
 	TsImplementsClause    // (TsTypeReference)+
 	TsImportAliasDecl     // NameIdent ref=(ReferenceIdent)+
 	TsImportRequireDecl   // TsExport? NameIdent ModuleSpec
@@ -227,7 +228,10 @@ const (
 	TsOverride
 	TsParenthesizedType // TsType
 	TsPredefinedType
+	TsPrivate
 	TsPropertySignature // (Modifier)* PropertyName TsTypeAnnotation?
+	TsProtected
+	TsPublic
 	TsReadonly
 	TsReadonlyType        // TsType
 	TsRestType            // TsType
@@ -243,7 +247,7 @@ const (
 	TsTypeName       // TsNamespaceName? ref=(ReferenceIdent)+
 	TsTypeOf
 	TsTypeOnly
-	TsTypeParameter  // NameIdent TsTypeConstraint? TsType?
+	TsTypeParameter  // (TsVarianceModifier)* NameIdent TsTypeConstraint? TsType?
 	TsTypeParameters // (TsTypeParameter)+
 	TsTypePredicate  // paramref=ReferenceIdent TsType
 	TsTypeQuery      // (ReferenceIdent)+
@@ -251,7 +255,8 @@ const (
 	TsTypeVar        // NameIdent
 	TsUnionType      // inner=(TsType)*
 	TsUniqueType     // TsType
-	UnaryExpr        // Expr
+	TsVarianceModifier
+	UnaryExpr // Expr
 	Var
 	VarDecl   // BindingPattern? NameIdent? TsExclToken? TsTypeAnnotation? Initializer?
 	VarStmt   // (VarDecl)+
@@ -310,9 +315,9 @@ var nodeTypeStr = [...]string{
 	"ConciseBody",
 	"Cond",
 	"ConditionalExpr",
+	"Const",
 	"ContinueStmt",
 	"DebuggerStmt",
-	"Declare",
 	"DecoratorCall",
 	"DecoratorExpr",
 	"Default",
@@ -329,7 +334,9 @@ var nodeTypeStr = [...]string{
 	"ExportSpec",
 	"ExprStmt",
 	"Extends",
+	"File",
 	"Finally",
+	"FnArrow",
 	"ForBinding",
 	"ForCondition",
 	"ForFinalExpr",
@@ -368,7 +375,7 @@ var nodeTypeStr = [...]string{
 	"JSXText",
 	"LabelIdent",
 	"LabelledStmt",
-	"LetOrConst",
+	"Let",
 	"LexicalBinding",
 	"LexicalDecl",
 	"Literal",
@@ -378,7 +385,6 @@ var nodeTypeStr = [...]string{
 	"MemberMethod",
 	"MemberVar",
 	"Method",
-	"Module",
 	"ModuleSpec",
 	"MultiplicativeExpr",
 	"NameIdent",
@@ -428,7 +434,6 @@ var nodeTypeStr = [...]string{
 	"ThrowStmt",
 	"TryStmt",
 	"TsAbstract",
-	"TsAccessibilityModifier",
 	"TsAmbientBinding",
 	"TsAmbientClass",
 	"TsAmbientEnum",
@@ -451,6 +456,7 @@ var nodeTypeStr = [...]string{
 	"TsConst",
 	"TsConstructSignature",
 	"TsConstructorType",
+	"TsDeclare",
 	"TsDynamicImport",
 	"TsEnum",
 	"TsEnumBody",
@@ -486,7 +492,10 @@ var nodeTypeStr = [...]string{
 	"TsOverride",
 	"TsParenthesizedType",
 	"TsPredefinedType",
+	"TsPrivate",
 	"TsPropertySignature",
+	"TsProtected",
+	"TsPublic",
 	"TsReadonly",
 	"TsReadonlyType",
 	"TsRestType",
@@ -510,6 +519,7 @@ var nodeTypeStr = [...]string{
 	"TsTypeVar",
 	"TsUnionType",
 	"TsUniqueType",
+	"TsVarianceModifier",
 	"UnaryExpr",
 	"Var",
 	"VarDecl",
@@ -705,13 +715,15 @@ var MethodDefinition = []NodeType{
 
 var Modifier = []NodeType{
 	Accessor,
-	Declare,
 	DecoratorCall,
 	DecoratorExpr,
 	Static,
 	TsAbstract,
-	TsAccessibilityModifier,
+	TsDeclare,
 	TsOverride,
+	TsPrivate,
+	TsProtected,
+	TsPublic,
 	TsReadonly,
 }
 
@@ -881,6 +893,12 @@ var TokenSet = []NodeType{
 	TemplateHead,
 	TemplateMiddle,
 	TemplateTail,
+}
+
+var TsAccessibilityModifier = []NodeType{
+	TsPrivate,
+	TsProtected,
+	TsPublic,
 }
 
 var TsAmbientElement = []NodeType{

@@ -140,6 +140,39 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 	return nil
 }
 
+func (p *Parser) skipBrokenCode(ctx context.Context, stream *TokenStream, canRecover func(symbol int32) bool) int {
+	var e int
+	var scopes []token.Type
+	// Note: we need to skip the content of all kinds of brackets to avoid cascading failures.
+	for p.next.symbol != eoiToken && (len(scopes) > 0 || !canRecover(p.next.symbol)) {
+		if debugSyntax {
+			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), stream.text(p.next))
+		}
+		t := token.Type(p.next.symbol)
+		switch t {
+		case token.LBRACE:
+			scopes = append(scopes, token.RBRACE)
+		case token.LBRACK:
+			scopes = append(scopes, token.RBRACK)
+		case token.LPAREN:
+			scopes = append(scopes, token.RPAREN)
+		case token.RPAREN, token.RBRACK, token.RBRACE:
+			// The following code tries to ignore unmatching brackets (both opening and closing).
+			for last := len(scopes) - 1; last >= 0; last-- {
+				stop := scopes[last] == t
+				scopes = scopes[:last]
+				if stop {
+					break
+				}
+			}
+		}
+		stream.flush(ctx, p.next)
+		e = p.next.endoffset
+		p.next = stream.next(nil, -1)
+	}
+	return e
+}
+
 func (p *Parser) recoverFromError(ctx context.Context, stream *TokenStream, stack []stackEntry, endState int16) []stackEntry {
 	var recoverSyms [1 + token.NumTokens/8]uint8
 	var recoverPos []int

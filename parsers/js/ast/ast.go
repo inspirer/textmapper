@@ -61,9 +61,9 @@ func (n ComputedPropertyName) JsNode() *Node      { return n.Node }
 func (n ConciseBody) JsNode() *Node               { return n.Node }
 func (n Cond) JsNode() *Node                      { return n.Node }
 func (n ConditionalExpr) JsNode() *Node           { return n.Node }
+func (n Const) JsNode() *Node                     { return n.Node }
 func (n ContinueStmt) JsNode() *Node              { return n.Node }
 func (n DebuggerStmt) JsNode() *Node              { return n.Node }
-func (n Declare) JsNode() *Node                   { return n.Node }
 func (n DecoratorCall) JsNode() *Node             { return n.Node }
 func (n DecoratorExpr) JsNode() *Node             { return n.Node }
 func (n Default) JsNode() *Node                   { return n.Node }
@@ -80,7 +80,9 @@ func (n ExportDefault) JsNode() *Node             { return n.Node }
 func (n ExportSpec) JsNode() *Node                { return n.Node }
 func (n ExprStmt) JsNode() *Node                  { return n.Node }
 func (n Extends) JsNode() *Node                   { return n.Node }
+func (n File) JsNode() *Node                      { return n.Node }
 func (n Finally) JsNode() *Node                   { return n.Node }
+func (n FnArrow) JsNode() *Node                   { return n.Node }
 func (n ForBinding) JsNode() *Node                { return n.Node }
 func (n ForCondition) JsNode() *Node              { return n.Node }
 func (n ForFinalExpr) JsNode() *Node              { return n.Node }
@@ -119,7 +121,7 @@ func (n JSXSpreadExpr) JsNode() *Node             { return n.Node }
 func (n JSXText) JsNode() *Node                   { return n.Node }
 func (n LabelIdent) JsNode() *Node                { return n.Node }
 func (n LabelledStmt) JsNode() *Node              { return n.Node }
-func (n LetOrConst) JsNode() *Node                { return n.Node }
+func (n Let) JsNode() *Node                       { return n.Node }
 func (n LexicalBinding) JsNode() *Node            { return n.Node }
 func (n LexicalDecl) JsNode() *Node               { return n.Node }
 func (n Literal) JsNode() *Node                   { return n.Node }
@@ -129,7 +131,6 @@ func (n LogicalOR) JsNode() *Node                 { return n.Node }
 func (n MemberMethod) JsNode() *Node              { return n.Node }
 func (n MemberVar) JsNode() *Node                 { return n.Node }
 func (n Method) JsNode() *Node                    { return n.Node }
-func (n Module) JsNode() *Node                    { return n.Node }
 func (n ModuleSpec) JsNode() *Node                { return n.Node }
 func (n MultiplicativeExpr) JsNode() *Node        { return n.Node }
 func (n NameIdent) JsNode() *Node                 { return n.Node }
@@ -179,7 +180,6 @@ func (n ThisExpr) JsNode() *Node                  { return n.Node }
 func (n ThrowStmt) JsNode() *Node                 { return n.Node }
 func (n TryStmt) JsNode() *Node                   { return n.Node }
 func (n TsAbstract) JsNode() *Node                { return n.Node }
-func (n TsAccessibilityModifier) JsNode() *Node   { return n.Node }
 func (n TsAmbientBinding) JsNode() *Node          { return n.Node }
 func (n TsAmbientClass) JsNode() *Node            { return n.Node }
 func (n TsAmbientEnum) JsNode() *Node             { return n.Node }
@@ -202,6 +202,7 @@ func (n TsConditional) JsNode() *Node             { return n.Node }
 func (n TsConst) JsNode() *Node                   { return n.Node }
 func (n TsConstructSignature) JsNode() *Node      { return n.Node }
 func (n TsConstructorType) JsNode() *Node         { return n.Node }
+func (n TsDeclare) JsNode() *Node                 { return n.Node }
 func (n TsDynamicImport) JsNode() *Node           { return n.Node }
 func (n TsEnum) JsNode() *Node                    { return n.Node }
 func (n TsEnumBody) JsNode() *Node                { return n.Node }
@@ -237,7 +238,10 @@ func (n TsOptional) JsNode() *Node                { return n.Node }
 func (n TsOverride) JsNode() *Node                { return n.Node }
 func (n TsParenthesizedType) JsNode() *Node       { return n.Node }
 func (n TsPredefinedType) JsNode() *Node          { return n.Node }
+func (n TsPrivate) JsNode() *Node                 { return n.Node }
 func (n TsPropertySignature) JsNode() *Node       { return n.Node }
+func (n TsProtected) JsNode() *Node               { return n.Node }
+func (n TsPublic) JsNode() *Node                  { return n.Node }
 func (n TsReadonly) JsNode() *Node                { return n.Node }
 func (n TsReadonlyType) JsNode() *Node            { return n.Node }
 func (n TsRestType) JsNode() *Node                { return n.Node }
@@ -261,6 +265,7 @@ func (n TsTypeReference) JsNode() *Node           { return n.Node }
 func (n TsTypeVar) JsNode() *Node                 { return n.Node }
 func (n TsUnionType) JsNode() *Node               { return n.Node }
 func (n TsUniqueType) JsNode() *Node              { return n.Node }
+func (n TsVarianceModifier) JsNode() *Node        { return n.Node }
 func (n UnaryExpr) JsNode() *Node                 { return n.Node }
 func (n Var) JsNode() *Node                       { return n.Node }
 func (n VarDecl) JsNode() *Node                   { return n.Node }
@@ -532,16 +537,18 @@ type Modifier interface {
 
 // modifierNode() ensures that only the following types can be
 // assigned to Modifier.
-func (Accessor) modifierNode()                {}
-func (Declare) modifierNode()                 {}
-func (DecoratorCall) modifierNode()           {}
-func (DecoratorExpr) modifierNode()           {}
-func (Static) modifierNode()                  {}
-func (TsAbstract) modifierNode()              {}
-func (TsAccessibilityModifier) modifierNode() {}
-func (TsOverride) modifierNode()              {}
-func (TsReadonly) modifierNode()              {}
-func (NilNode) modifierNode()                 {}
+func (Accessor) modifierNode()      {}
+func (DecoratorCall) modifierNode() {}
+func (DecoratorExpr) modifierNode() {}
+func (Static) modifierNode()        {}
+func (TsAbstract) modifierNode()    {}
+func (TsDeclare) modifierNode()     {}
+func (TsOverride) modifierNode()    {}
+func (TsPrivate) modifierNode()     {}
+func (TsProtected) modifierNode()   {}
+func (TsPublic) modifierNode()      {}
+func (TsReadonly) modifierNode()    {}
+func (NilNode) modifierNode()       {}
 
 type ModuleItem interface {
 	JsNode
@@ -764,6 +771,18 @@ func (TemplateHead) tokenSetNode()           {}
 func (TemplateMiddle) tokenSetNode()         {}
 func (TemplateTail) tokenSetNode()           {}
 
+type TsAccessibilityModifier interface {
+	JsNode
+	tsAccessibilityModifierNode()
+}
+
+// tsAccessibilityModifierNode() ensures that only the following types can be
+// assigned to TsAccessibilityModifier.
+func (TsPrivate) tsAccessibilityModifierNode()   {}
+func (TsProtected) tsAccessibilityModifierNode() {}
+func (TsPublic) tsAccessibilityModifierNode()    {}
+func (NilNode) tsAccessibilityModifierNode()     {}
+
 type TsAmbientElement interface {
 	JsNode
 	tsAmbientElementNode()
@@ -970,6 +989,11 @@ func (n ArrowFunc) TsTypeAnnotation() (TsTypeAnnotation, bool) {
 	return TsTypeAnnotation{child}, child.IsValid()
 }
 
+func (n ArrowFunc) FnArrow() FnArrow {
+	child := n.Child(selector.FnArrow)
+	return FnArrow{child}
+}
+
 func (n ArrowFunc) Body() (Body, bool) {
 	child := n.Child(selector.Body)
 	return Body{child}, child.IsValid()
@@ -1056,6 +1080,11 @@ func (n AsyncArrowFunc) Parameters() (Parameters, bool) {
 func (n AsyncArrowFunc) TsTypeAnnotation() (TsTypeAnnotation, bool) {
 	child := n.Child(selector.TsTypeAnnotation)
 	return TsTypeAnnotation{child}, child.IsValid()
+}
+
+func (n AsyncArrowFunc) FnArrow() FnArrow {
+	child := n.Child(selector.FnArrow)
+	return FnArrow{child}
 }
 
 func (n AsyncArrowFunc) Body() (Body, bool) {
@@ -1569,6 +1598,10 @@ func (n ConditionalExpr) Else() Expr {
 	return ToJsNode(child).(Expr)
 }
 
+type Const struct {
+	*Node
+}
+
 type ContinueStmt struct {
 	*Node
 }
@@ -1579,10 +1612,6 @@ func (n ContinueStmt) LabelIdent() (LabelIdent, bool) {
 }
 
 type DebuggerStmt struct {
-	*Node
-}
-
-type Declare struct {
 	*Node
 }
 
@@ -1820,6 +1849,11 @@ type ExportSpec struct {
 	*Node
 }
 
+func (n ExportSpec) TsTypeOnly() (TsTypeOnly, bool) {
+	child := n.Child(selector.TsTypeOnly)
+	return TsTypeOnly{child}, child.IsValid()
+}
+
 func (n ExportSpec) ReferenceIdent() (ReferenceIdent, bool) {
 	child := n.Child(selector.ReferenceIdent)
 	return ReferenceIdent{child}, child.IsValid()
@@ -1853,6 +1887,19 @@ func (n Extends) TsTypeReference() (TsTypeReference, bool) {
 	return TsTypeReference{child}, child.IsValid()
 }
 
+type File struct {
+	*Node
+}
+
+func (n File) ModuleItem() []ModuleItem {
+	nodes := n.Children(selector.ModuleItem)
+	var ret = make([]ModuleItem, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, ToJsNode(node).(ModuleItem))
+	}
+	return ret
+}
+
 type Finally struct {
 	*Node
 }
@@ -1860,6 +1907,10 @@ type Finally struct {
 func (n Finally) Block() Block {
 	child := n.Child(selector.Block)
 	return Block{child}
+}
+
+type FnArrow struct {
+	*Node
 }
 
 type ForBinding struct {
@@ -1917,14 +1968,19 @@ type ForInStmtWithVar struct {
 	*Node
 }
 
-func (n ForInStmtWithVar) LetOrConst() (LetOrConst, bool) {
-	child := n.Child(selector.LetOrConst)
-	return LetOrConst{child}, child.IsValid()
+func (n ForInStmtWithVar) Const() (Const, bool) {
+	child := n.Child(selector.Const)
+	return Const{child}, child.IsValid()
 }
 
 func (n ForInStmtWithVar) Var() (Var, bool) {
 	child := n.Child(selector.Var)
 	return Var{child}, child.IsValid()
+}
+
+func (n ForInStmtWithVar) Let() (Let, bool) {
+	child := n.Child(selector.Let)
+	return Let{child}, child.IsValid()
 }
 
 func (n ForInStmtWithVar) ForBinding() ForBinding {
@@ -1975,14 +2031,19 @@ func (n ForOfStmtWithVar) Await() (Await, bool) {
 	return Await{child}, child.IsValid()
 }
 
-func (n ForOfStmtWithVar) LetOrConst() (LetOrConst, bool) {
-	child := n.Child(selector.LetOrConst)
-	return LetOrConst{child}, child.IsValid()
+func (n ForOfStmtWithVar) Const() (Const, bool) {
+	child := n.Child(selector.Const)
+	return Const{child}, child.IsValid()
 }
 
 func (n ForOfStmtWithVar) Var() (Var, bool) {
 	child := n.Child(selector.Var)
 	return Var{child}, child.IsValid()
+}
+
+func (n ForOfStmtWithVar) Let() (Let, bool) {
+	child := n.Child(selector.Let)
+	return Let{child}, child.IsValid()
 }
 
 func (n ForOfStmtWithVar) ForBinding() ForBinding {
@@ -2028,9 +2089,9 @@ type ForStmtWithVar struct {
 	*Node
 }
 
-func (n ForStmtWithVar) LetOrConst() (LetOrConst, bool) {
-	child := n.Child(selector.LetOrConst)
-	return LetOrConst{child}, child.IsValid()
+func (n ForStmtWithVar) Const() (Const, bool) {
+	child := n.Child(selector.Const)
+	return Const{child}, child.IsValid()
 }
 
 func (n ForStmtWithVar) Var() (Var, bool) {
@@ -2038,13 +2099,9 @@ func (n ForStmtWithVar) Var() (Var, bool) {
 	return Var{child}, child.IsValid()
 }
 
-func (n ForStmtWithVar) LexicalBinding() []LexicalBinding {
-	nodes := n.Children(selector.LexicalBinding)
-	var ret = make([]LexicalBinding, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, LexicalBinding{node})
-	}
-	return ret
+func (n ForStmtWithVar) Let() (Let, bool) {
+	child := n.Child(selector.Let)
+	return Let{child}, child.IsValid()
 }
 
 func (n ForStmtWithVar) VarDecl() []VarDecl {
@@ -2052,6 +2109,15 @@ func (n ForStmtWithVar) VarDecl() []VarDecl {
 	var ret = make([]VarDecl, 0, len(nodes))
 	for _, node := range nodes {
 		ret = append(ret, VarDecl{node})
+	}
+	return ret
+}
+
+func (n ForStmtWithVar) LexicalBinding() []LexicalBinding {
+	nodes := n.Children(selector.LexicalBinding)
+	var ret = make([]LexicalBinding, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, LexicalBinding{node})
 	}
 	return ret
 }
@@ -2310,6 +2376,11 @@ type ImportSpec struct {
 	*Node
 }
 
+func (n ImportSpec) TsTypeOnly() (TsTypeOnly, bool) {
+	child := n.Child(selector.TsTypeOnly)
+	return TsTypeOnly{child}, child.IsValid()
+}
+
 func (n ImportSpec) ReferenceIdent() (ReferenceIdent, bool) {
 	child := n.Child(selector.ReferenceIdent)
 	return ReferenceIdent{child}, child.IsValid()
@@ -2547,7 +2618,7 @@ func (n LabelledStmt) Stmt() (Stmt, bool) {
 	return ToJsNode(child).(Stmt), child.IsValid()
 }
 
-type LetOrConst struct {
+type Let struct {
 	*Node
 }
 
@@ -2584,9 +2655,14 @@ type LexicalDecl struct {
 	*Node
 }
 
-func (n LexicalDecl) LetOrConst() LetOrConst {
-	child := n.Child(selector.LetOrConst)
-	return LetOrConst{child}
+func (n LexicalDecl) Const() (Const, bool) {
+	child := n.Child(selector.Const)
+	return Const{child}, child.IsValid()
+}
+
+func (n LexicalDecl) Let() (Let, bool) {
+	child := n.Child(selector.Let)
+	return Let{child}, child.IsValid()
 }
 
 func (n LexicalDecl) LexicalBinding() []LexicalBinding {
@@ -2717,19 +2793,6 @@ func (n Method) TsTypeAnnotation() (TsTypeAnnotation, bool) {
 func (n Method) Body() (Body, bool) {
 	child := n.Child(selector.Body)
 	return Body{child}, child.IsValid()
-}
-
-type Module struct {
-	*Node
-}
-
-func (n Module) ModuleItem() []ModuleItem {
-	nodes := n.Children(selector.ModuleItem)
-	var ret = make([]ModuleItem, 0, len(nodes))
-	for _, node := range nodes {
-		ret = append(ret, ToJsNode(node).(ModuleItem))
-	}
-	return ret
 }
 
 type ModuleSpec struct {
@@ -3301,10 +3364,6 @@ type TsAbstract struct {
 	*Node
 }
 
-type TsAccessibilityModifier struct {
-	*Node
-}
-
 type TsAmbientBinding struct {
 	*Node
 }
@@ -3531,9 +3590,14 @@ type TsAmbientVar struct {
 	*Node
 }
 
-func (n TsAmbientVar) LetOrConst() (LetOrConst, bool) {
-	child := n.Child(selector.LetOrConst)
-	return LetOrConst{child}, child.IsValid()
+func (n TsAmbientVar) Const() (Const, bool) {
+	child := n.Child(selector.Const)
+	return Const{child}, child.IsValid()
+}
+
+func (n TsAmbientVar) Let() (Let, bool) {
+	child := n.Child(selector.Let)
+	return Let{child}, child.IsValid()
 }
 
 func (n TsAmbientVar) Var() (Var, bool) {
@@ -3714,9 +3778,18 @@ func (n TsConstructorType) Parameters() Parameters {
 	return Parameters{child}
 }
 
+func (n TsConstructorType) FnArrow() FnArrow {
+	child := n.Child(selector.FnArrow)
+	return FnArrow{child}
+}
+
 func (n TsConstructorType) TsType() TsType {
 	child := n.Child(selector.TsType)
 	return ToJsNode(child).(TsType)
+}
+
+type TsDeclare struct {
+	*Node
 }
 
 type TsDynamicImport struct {
@@ -3803,6 +3876,11 @@ func (n TsFuncType) TsTypeParameters() (TsTypeParameters, bool) {
 func (n TsFuncType) Parameters() Parameters {
 	child := n.Child(selector.Parameters)
 	return Parameters{child}
+}
+
+func (n TsFuncType) FnArrow() FnArrow {
+	child := n.Child(selector.FnArrow)
+	return FnArrow{child}
 }
 
 func (n TsFuncType) TsType() TsType {
@@ -4188,6 +4266,10 @@ type TsPredefinedType struct {
 	*Node
 }
 
+type TsPrivate struct {
+	*Node
+}
+
 type TsPropertySignature struct {
 	*Node
 }
@@ -4209,6 +4291,14 @@ func (n TsPropertySignature) PropertyName() PropertyName {
 func (n TsPropertySignature) TsTypeAnnotation() (TsTypeAnnotation, bool) {
 	child := n.Child(selector.TsTypeAnnotation)
 	return TsTypeAnnotation{child}, child.IsValid()
+}
+
+type TsProtected struct {
+	*Node
+}
+
+type TsPublic struct {
+	*Node
 }
 
 type TsReadonly struct {
@@ -4377,6 +4467,15 @@ type TsTypeParameter struct {
 	*Node
 }
 
+func (n TsTypeParameter) TsVarianceModifier() []TsVarianceModifier {
+	nodes := n.Children(selector.TsVarianceModifier)
+	var ret = make([]TsVarianceModifier, 0, len(nodes))
+	for _, node := range nodes {
+		ret = append(ret, TsVarianceModifier{node})
+	}
+	return ret
+}
+
 func (n TsTypeParameter) NameIdent() NameIdent {
 	child := n.Child(selector.NameIdent)
 	return NameIdent{child}
@@ -4475,6 +4574,10 @@ type TsUniqueType struct {
 func (n TsUniqueType) TsType() TsType {
 	child := n.Child(selector.TsType)
 	return ToJsNode(child).(TsType)
+}
+
+type TsVarianceModifier struct {
+	*Node
 }
 
 type UnaryExpr struct {

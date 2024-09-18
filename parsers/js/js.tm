@@ -11,12 +11,12 @@ eventBased = true
 eventFields = true
 eventAST = true
 writeBison = true
-fileNode = "Module"
+fileNode = "File"
 cancellable = true
 recursiveLookaheads = true
 optimizeTables = true
 extraTypes = ["InsertedSemicolon"]
-customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "session", "lexerCopy", "streamNext"]
+customImpl = ["fetchNext", "Parser", "ParserInit", "parse", "recoverFromError", "session", "skipBrokenCode", "lexerCopy", "streamNext", "streamLine"]
 tokenStream = true
 
 :: lexer
@@ -121,6 +121,7 @@ invalid_token: /#?({identifierStart}{identifierPart}*)?{brokenEscapeSequence}/
 'static':  /static/
 'target':  /target/
 'satisfies': /satisfies/
+'out': /out/
 
 # Strict mode keywords:
 #   implements interface package private protected public
@@ -243,6 +244,7 @@ exp = /[eE][+-]?[0-9](_*[0-9])*/
 bad_exp = /[eE][+-]?([0-9](_*[0-9])*_+)?/
 oct = /[0-7]/
 NumericLiteral: /{int}{frac}?{exp}?/
+NumericLiteral: /{int}n/
 NumericLiteral: /\.[0-9](_*[0-9])*{exp}?/
 NumericLiteral: /0[xX]{hex}(_*{hex})*/
 NumericLiteral: /0[oO]{oct}(_*{oct})*/
@@ -364,6 +366,7 @@ NamespaceNameSnippet -> TsNamespaceName:
 %flag WithoutFrom = false;
 %flag WithoutAs = false;
 %flag WithoutSatisfies = false;
+%flag WithoutType = false;
 
 %lookahead flag NoLet = false;
 %lookahead flag NoLetSq = false;
@@ -376,7 +379,7 @@ NamespaceNameSnippet -> TsNamespaceName:
 SyntaxError -> SyntaxProblem:
     error ;
 
-IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, WithoutAs, WithoutSatisfies>:
+IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, WithoutAs, WithoutSatisfies, WithoutType>:
     Identifier
 
 # Keywords
@@ -410,6 +413,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, Without
   | 'target'
   | 'async'
   | 'assert'
+  | 'out'
 
   # Typescript.
   | 'implements'
@@ -435,7 +439,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, Without
   | 'namespace'
   | 'override'
   | 'require'
-  | 'type'
+  | [!WithoutType] 'type'
   | 'global'
   | 'readonly'
   | 'keyof'
@@ -448,7 +452,7 @@ IdentifierName<WithoutNew, WithoutAsserts, WithoutKeywords, WithoutFrom, Without
 IdentifierNameDecl<WithoutNew> -> NameIdent:
     IdentifierName ;
 
-IdentifierNameRef<WithoutAsserts> -> ReferenceIdent:
+IdentifierNameRef<WithoutAsserts, WithoutType> -> ReferenceIdent:
     IdentifierName ;
 
 ClassPrivateRef -> ReferenceIdent:
@@ -477,6 +481,7 @@ IdentifierReference<Yield, Await, NoAsync, WithoutPredefinedTypes, WithDefault> 
   | 'set'
   | 'static'
   | 'target'
+  | 'out'
 
   # Typescript.
   | 'implements'
@@ -520,6 +525,7 @@ BindingIdentifier<WithoutImplements> -> NameIdent:
   | 'static'
   | 'target'
   | 'async'
+  | 'out'
 
   # Typescript.
   | [!WithoutImplements] 'implements'
@@ -574,6 +580,7 @@ LabelIdentifier -> LabelIdent:
   | 'static'
   | 'target'
   | 'async'
+  | 'out'
 
   # Typescript.
   | 'implements'
@@ -1012,9 +1019,9 @@ StatementListItem<Yield, Await> -> StmtListItem /* interface */:
 LexicalDeclaration<In, Yield, Await> -> LexicalDecl:
     LetOrConst BindingList ';' ;
 
-LetOrConst -> LetOrConst:
-    'let'
-  | 'const'
+LetOrConst:
+    'let'    -> Let
+  | 'const'  -> Const
 ;
 
 BindingList<In, Yield, Await>:
@@ -1231,8 +1238,8 @@ FunctionBody<Yield, Await>:
 ;
 
 ArrowFunction<In> -> ArrowFunc:
-    BindingIdentifier .noLineBreak '=>' ConciseBody
-  | (?= StartOfArrowFunction) FormalParameters<~Yield, ~Await> .noLineBreak '=>' ConciseBody
+    BindingIdentifier .noLineBreak ('=>' -> FnArrow) ConciseBody
+  | (?= StartOfArrowFunction) FormalParameters<~Yield, ~Await> .noLineBreak ('=>' -> FnArrow) ConciseBody
 ;
 
 ArrowParameters:
@@ -1252,7 +1259,7 @@ StartOfArrowFunction:
 ;
 
 AsyncArrowFunction<In> -> AsyncArrowFunc:
-    'async' .afterAsync .noLineBreak (?= StartOfArrowFunction) ArrowParameters .noLineBreak '=>' AsyncConciseBody ;
+    'async' .afterAsync .noLineBreak (?= StartOfArrowFunction) ArrowParameters .noLineBreak ('=>' -> FnArrow) AsyncConciseBody ;
 
 # AsyncArrowHead :
 #      'async' .noLineBreak ArrowFormalParameters<~Yield, +Await> ;
@@ -1362,7 +1369,7 @@ Modifier<WithDeclare> -> Modifier /* interface */:
   | 'override'               -> TsOverride
   | 'readonly'               -> TsReadonly
   | 'accessor'               -> Accessor
-  | [WithDeclare] 'declare'  -> Declare
+  | [WithDeclare] 'declare'  -> TsDeclare
 ;
 
 Modifiers<WithDeclare>:
@@ -1392,7 +1399,7 @@ ClassStaticBlockBody -> Body:
 
 %interface ModuleItem, NamedImport, ExportElement;
 
-Module -> Module:
+Module -> File:
     ModuleBodyopt ;
 
 ModuleBody:
@@ -1456,9 +1463,11 @@ NamedImports -> NamedImports:
 ;
 
 NamedImport -> NamedImport /* interface */:
-    (IdentifierNameRef -> NameIdent)        -> ImportSpec
-  | IdentifierNameRef 'as' ImportedBinding  -> ImportSpec
-  | error                                   -> SyntaxProblem
+    ('type' -> TsTypeOnly)? (IdentifierNameRef -> NameIdent)       -> ImportSpec
+  | IdentifierNameRef<+WithoutType> 'as' ImportedBinding           -> ImportSpec
+  | ('type' -> TsTypeOnly) IdentifierNameRef 'as' ImportedBinding  -> ImportSpec
+  | ('type' -> TsTypeOnly) 'as' ImportedBinding                    -> ImportSpec
+  | error                                                          -> SyntaxProblem
 ;
 
 ModuleSpecifier -> ModuleSpec:
@@ -1486,9 +1495,11 @@ ExportClause -> ExportClause:
 ;
 
 ExportElement -> ExportElement /* interface */:
-    (IdentifierNameRef -> NameIdent)           -> ExportSpec
-  | IdentifierNameRef 'as' IdentifierNameDecl  -> ExportSpec
-  | error                                      -> SyntaxProblem
+    ('type' -> TsTypeOnly)? (IdentifierNameRef -> NameIdent)          -> ExportSpec
+  | IdentifierNameRef<+WithoutType> 'as' IdentifierNameDecl           -> ExportSpec
+  | ('type' -> TsTypeOnly) IdentifierNameRef 'as' IdentifierNameDecl  -> ExportSpec
+  | ('type' -> TsTypeOnly) 'as' IdentifierNameDecl                    -> ExportSpec
+  | error                                                             -> SyntaxProblem
 ;
 
 # ES next: https://github.com/tc39/proposal-decorators
@@ -1602,7 +1613,12 @@ TypeParameters -> TsTypeParameters:
     '<' (TypeParameter separator ',')+ ','? '>' ;
 
 TypeParameter -> TsTypeParameter:
-    BindingIdentifier Constraint? ('=' Type)? ;
+    VarianceModifier* BindingIdentifier Constraint? ('=' Type)? ;
+
+VarianceModifier -> TsVarianceModifier:
+    'in'
+  | 'out'
+;
 
 Constraint -> TsTypeConstraint:
     'extends' Type ;
@@ -1730,7 +1746,7 @@ MappedType -> TsMappedType:
           (('+' | '-')? '?')? TypeAnnotation ';'? '}' ;
 
 TupleType -> TsTupleType:
-    '[' (TupleElementType separator ',')+? ','? ']' ;
+    '[' ((TupleElementType separator ',')+ ','?)? ']' ;
 
 %interface TupleMember;
 
@@ -1758,10 +1774,10 @@ StartOfFunctionType:
 ;
 
 FunctionType<NoQuest> -> TsFuncType:
-    TypeParameters? FunctionTypeParameterList<~Yield, ~Await> '=>' Type ;
+    TypeParameters? FunctionTypeParameterList<~Yield, ~Await> ('=>' -> FnArrow) Type ;
 
 ConstructorType<NoQuest> -> TsConstructorType:
-    ('abstract' -> TsAbstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> '=>' Type ;
+    ('abstract' -> TsAbstract)? 'new' TypeParameters? ParameterList<~Yield, ~Await> ('=>' -> FnArrow) Type ;
 
 %left 'keyof' 'typeof' 'unique' 'readonly' 'infer';
 %nonassoc 'is';
@@ -1784,7 +1800,9 @@ TypeQueryExpression:
 ;
 
 PropertySignature -> TsPropertySignature:
-    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? TypeAnnotation? ;
+    Modifiers? PropertyName<+WithoutNew, ~Yield, ~Await> '?'? TypeAnnotation?
+  | Modifiers? ((('new' -> NameIdent) -> LiteralPropertyName) -> PropertyName) '?'? TypeAnnotation?
+;
 
 TypeAnnotation -> TsTypeAnnotation:
     ':' Type ;
@@ -1796,10 +1814,10 @@ CallSignature -> TsCallSignature:
     TypeParameters? ParameterList<~Yield, ~Await> TypeAnnotation? ;
 
 ParameterList<Yield, Await> -> Parameters:
-    '(' (Parameter separator ',')+? ','? ')' ;
+    '(' ((Parameter separator ',')+ ','?)? ')' ;
 
 FunctionTypeParameterList<Yield, Await> -> Parameters:
-    '(' (?= StartOfFunctionType) (Parameter separator ',')+? ','? ')' ;
+    '(' (?= StartOfFunctionType) ((Parameter separator ',')+ ','?)? ')' ;
 
 %interface Parameter;
 
@@ -1813,10 +1831,12 @@ Parameter<Yield, Await> -> Parameter:
   | SyntaxError
 ;
 
+%interface TsAccessibilityModifier;
+
 AccessibilityModifier -> TsAccessibilityModifier:
-    'public'
-  | 'private'
-  | 'protected'
+    'public'     -> TsPublic
+  | 'private'    -> TsPrivate
+  | 'protected'  -> TsProtected
 ;
 
 BindingIdentifierOrPattern<Yield, Await>:
@@ -1903,8 +1923,8 @@ AmbientDeclaration -> TsAmbientElement /* interface */:
 
 AmbientVariableDeclaration:
     ('var' -> Var) AmbientBindingList ';'
-  | ('let' -> LetOrConst) AmbientBindingList ';'
-  | ('const' -> LetOrConst) AmbientBindingList ';'
+  | ('let' -> Let) AmbientBindingList ';'
+  | ('const' -> Const) AmbientBindingList ';'
 ;
 
 AmbientBindingList:
@@ -2168,18 +2188,19 @@ func (l *Lexer) popState() {
 {{end}}
 
 {{define "streamStateVars" -}}
-	delayed      symbol // by semicolon insertion
+	delayed      symbol // by semicolon insertion and for splitting >> into two tokens
 	recoveryMode bool   // forces use of simplified semicolon insertion rules during error recovery
 
 	lastToken token.Type
 	lastEnd   int
-	lastLine  int
+	lastLine  int  // 1-based
 {{end}}
 
 {{define "initStreamStateVars" -}}
 	s.delayed.symbol = noToken
 	s.recoveryMode = false
 	s.lastToken = token.UNAVAILABLE
+	s.lastLine = 1
 {{end}}
 
 {{define "onAfterStream" -}}

@@ -14,12 +14,12 @@ type TokenStream struct {
 	lexer        Lexer
 	listener     Listener // for ingesting tokens into the AST, nil during lookaheads
 	pending      []symbol
-	delayed      symbol // by semicolon insertion
+	delayed      symbol // by semicolon insertion and for splitting >> into two tokens
 	recoveryMode bool   // forces use of simplified semicolon insertion rules during error recovery
 
 	lastToken token.Type
 	lastEnd   int
-	lastLine  int
+	lastLine  int // 1-based
 }
 
 type symbol struct {
@@ -39,6 +39,7 @@ func (s *TokenStream) Init(content string, l Listener) {
 	s.delayed.symbol = noToken
 	s.recoveryMode = false
 	s.lastToken = token.UNAVAILABLE
+	s.lastLine = 1
 }
 
 func (s *TokenStream) Copy() TokenStream {
@@ -100,10 +101,6 @@ func (s *TokenStream) flush(ctx context.Context, sym symbol) {
 
 func (s *TokenStream) text(sym symbol) string {
 	return s.lexer.source[sym.offset:sym.endoffset]
-}
-
-func (s *TokenStream) line() int {
-	return s.lexer.tokenLine
 }
 
 func (s *TokenStream) SetDialect(d Dialect) {

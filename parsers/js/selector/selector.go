@@ -49,9 +49,9 @@ var (
 	ConciseBody               = func(t js.NodeType) bool { return t == js.ConciseBody }
 	Cond                      = func(t js.NodeType) bool { return t == js.Cond }
 	ConditionalExpr           = func(t js.NodeType) bool { return t == js.ConditionalExpr }
+	Const                     = func(t js.NodeType) bool { return t == js.Const }
 	ContinueStmt              = func(t js.NodeType) bool { return t == js.ContinueStmt }
 	DebuggerStmt              = func(t js.NodeType) bool { return t == js.DebuggerStmt }
-	Declare                   = func(t js.NodeType) bool { return t == js.Declare }
 	DecoratorCall             = func(t js.NodeType) bool { return t == js.DecoratorCall }
 	DecoratorExpr             = func(t js.NodeType) bool { return t == js.DecoratorExpr }
 	Default                   = func(t js.NodeType) bool { return t == js.Default }
@@ -68,7 +68,9 @@ var (
 	ExportSpec                = func(t js.NodeType) bool { return t == js.ExportSpec }
 	ExprStmt                  = func(t js.NodeType) bool { return t == js.ExprStmt }
 	Extends                   = func(t js.NodeType) bool { return t == js.Extends }
+	File                      = func(t js.NodeType) bool { return t == js.File }
 	Finally                   = func(t js.NodeType) bool { return t == js.Finally }
+	FnArrow                   = func(t js.NodeType) bool { return t == js.FnArrow }
 	ForBinding                = func(t js.NodeType) bool { return t == js.ForBinding }
 	ForCondition              = func(t js.NodeType) bool { return t == js.ForCondition }
 	ForFinalExpr              = func(t js.NodeType) bool { return t == js.ForFinalExpr }
@@ -107,7 +109,7 @@ var (
 	JSXText                   = func(t js.NodeType) bool { return t == js.JSXText }
 	LabelIdent                = func(t js.NodeType) bool { return t == js.LabelIdent }
 	LabelledStmt              = func(t js.NodeType) bool { return t == js.LabelledStmt }
-	LetOrConst                = func(t js.NodeType) bool { return t == js.LetOrConst }
+	Let                       = func(t js.NodeType) bool { return t == js.Let }
 	LexicalBinding            = func(t js.NodeType) bool { return t == js.LexicalBinding }
 	LexicalDecl               = func(t js.NodeType) bool { return t == js.LexicalDecl }
 	Literal                   = func(t js.NodeType) bool { return t == js.Literal }
@@ -117,7 +119,6 @@ var (
 	MemberMethod              = func(t js.NodeType) bool { return t == js.MemberMethod }
 	MemberVar                 = func(t js.NodeType) bool { return t == js.MemberVar }
 	Method                    = func(t js.NodeType) bool { return t == js.Method }
-	Module                    = func(t js.NodeType) bool { return t == js.Module }
 	ModuleSpec                = func(t js.NodeType) bool { return t == js.ModuleSpec }
 	MultiplicativeExpr        = func(t js.NodeType) bool { return t == js.MultiplicativeExpr }
 	NameIdent                 = func(t js.NodeType) bool { return t == js.NameIdent }
@@ -167,7 +168,6 @@ var (
 	ThrowStmt                 = func(t js.NodeType) bool { return t == js.ThrowStmt }
 	TryStmt                   = func(t js.NodeType) bool { return t == js.TryStmt }
 	TsAbstract                = func(t js.NodeType) bool { return t == js.TsAbstract }
-	TsAccessibilityModifier   = func(t js.NodeType) bool { return t == js.TsAccessibilityModifier }
 	TsAmbientBinding          = func(t js.NodeType) bool { return t == js.TsAmbientBinding }
 	TsAmbientClass            = func(t js.NodeType) bool { return t == js.TsAmbientClass }
 	TsAmbientEnum             = func(t js.NodeType) bool { return t == js.TsAmbientEnum }
@@ -190,6 +190,7 @@ var (
 	TsConst                   = func(t js.NodeType) bool { return t == js.TsConst }
 	TsConstructSignature      = func(t js.NodeType) bool { return t == js.TsConstructSignature }
 	TsConstructorType         = func(t js.NodeType) bool { return t == js.TsConstructorType }
+	TsDeclare                 = func(t js.NodeType) bool { return t == js.TsDeclare }
 	TsDynamicImport           = func(t js.NodeType) bool { return t == js.TsDynamicImport }
 	TsEnum                    = func(t js.NodeType) bool { return t == js.TsEnum }
 	TsEnumBody                = func(t js.NodeType) bool { return t == js.TsEnumBody }
@@ -225,7 +226,10 @@ var (
 	TsOverride                = func(t js.NodeType) bool { return t == js.TsOverride }
 	TsParenthesizedType       = func(t js.NodeType) bool { return t == js.TsParenthesizedType }
 	TsPredefinedType          = func(t js.NodeType) bool { return t == js.TsPredefinedType }
+	TsPrivate                 = func(t js.NodeType) bool { return t == js.TsPrivate }
 	TsPropertySignature       = func(t js.NodeType) bool { return t == js.TsPropertySignature }
+	TsProtected               = func(t js.NodeType) bool { return t == js.TsProtected }
+	TsPublic                  = func(t js.NodeType) bool { return t == js.TsPublic }
 	TsReadonly                = func(t js.NodeType) bool { return t == js.TsReadonly }
 	TsReadonlyType            = func(t js.NodeType) bool { return t == js.TsReadonlyType }
 	TsRestType                = func(t js.NodeType) bool { return t == js.TsRestType }
@@ -249,6 +253,7 @@ var (
 	TsTypeVar                 = func(t js.NodeType) bool { return t == js.TsTypeVar }
 	TsUnionType               = func(t js.NodeType) bool { return t == js.TsUnionType }
 	TsUniqueType              = func(t js.NodeType) bool { return t == js.TsUniqueType }
+	TsVarianceModifier        = func(t js.NodeType) bool { return t == js.TsVarianceModifier }
 	UnaryExpr                 = func(t js.NodeType) bool { return t == js.UnaryExpr }
 	Var                       = func(t js.NodeType) bool { return t == js.Var }
 	VarDecl                   = func(t js.NodeType) bool { return t == js.VarDecl }
@@ -287,6 +292,7 @@ var (
 	Stmt                      = OneOf(js.Stmt...)
 	StmtListItem              = OneOf(js.StmtListItem...)
 	TokenSet                  = OneOf(js.TokenSet...)
+	TsAccessibilityModifier   = OneOf(js.TsAccessibilityModifier...)
 	TsAmbientElement          = OneOf(js.TsAmbientElement...)
 	TsType                    = OneOf(js.TsType...)
 	TsTypeMember              = OneOf(js.TsTypeMember...)

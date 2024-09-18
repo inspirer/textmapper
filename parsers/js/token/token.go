@@ -70,6 +70,7 @@ const (
 	STATIC             // static
 	TARGET             // target
 	SATISFIES          // satisfies
+	OUT                // out
 	IMPLEMENTS         // implements
 	INTERFACE          // interface
 	PRIVATE            // private
@@ -232,6 +233,7 @@ var tokenStr = [...]string{
 	"static",
 	"target",
 	"satisfies",
+	"out",
 	"implements",
 	"interface",
 	"private",
