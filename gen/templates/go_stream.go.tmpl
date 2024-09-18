@@ -11,6 +11,7 @@ package {{short_pkg .Options.Package}}
 {{ template "streamText" . -}}
 {{ template "streamLine" . -}}
 {{ template "streamNext" . -}}
+{{ define "customReportNext"}}{{end -}}
 {{ block "onAfterStream" .}}{{end -}}
 
 {{- define "streamType" -}}
@@ -23,6 +24,7 @@ type TokenStream struct {
 {{ if .ReportTokens true -}}
 	pending  []symbol
 {{ end -}}
+{{ block "sharedStreamStateVars" .}}{{end -}}
 {{ block "streamStateVars" .}}{{end -}}
 }
 
@@ -53,6 +55,7 @@ func (s *TokenStream) Init(content string, l Listener) {
 	}
 	s.pending = s.pending[:0]
 {{ end -}}
+{{ block "initSharedStreamStateVars" .}}{{end -}}
 {{ block "initStreamStateVars" .}}{{end -}}
 }
 
@@ -67,10 +70,10 @@ func (s *TokenStream) Copy() TokenStream {
 {{ if .Parser.Types -}}
 	ret.listener = nil
 {{ end -}}
-	ret.pending = nil
 {{ if .ReportTokens true -}}
-	return ret
+	ret.pending = nil
 {{ end -}}
+	return ret
 }
 
 {{ end -}}
@@ -96,8 +99,10 @@ func (s *TokenStream) reportIgnored({{if $.Options.Cancellable}}ctx "context".Co
 {{ end -}}
 {{ end -}}
 {{ end -}}
+{{ block "onIgnoreDefault" . -}}
 	default:
 		return
+{{end -}}
 	}
 	if debugSyntax {
 		"fmt".Printf("ignored: %v as %v\n", {{template "tokenType" .}}(tok.symbol), t)
@@ -109,21 +114,42 @@ func (s *TokenStream) reportIgnored({{if $.Options.Cancellable}}ctx "context".Co
 
 
 {{- define "streamFlush" -}}
-{{ if .Options.IsEnabled "streamFlush" -}}
-// flush reports all pending tokens up to a given symbol.
+{{ if and (.ReportTokens true) (.Options.IsEnabled "streamFlush") -}}
+// flush is called for every "shifted" token to report it together with any pending tokens
+// to the listener.
 func (s *TokenStream) flush({{if $.Options.Cancellable}}ctx "context".Context, {{end}}sym symbol) {
-	if len(s.pending) > 0 && s.listener != nil {
+	if s.listener == nil {
+		return
+	}
+	if len(s.pending) > 0 {
 		for i, tok := range s.pending {
 			if tok.endoffset > sym.endoffset {
 				// Note: this copying should not happen during normal operation, only
 				// during error recovery.
 				s.pending = append(s.pending[:0], s.pending[i:]...)
-				return
+				goto flushed
 			}
 			s.reportIgnored({{if $.Options.Cancellable}}ctx, {{end}}tok)
 		}
 		s.pending = s.pending[:0]
+	flushed:
 	}
+{{ block "reportConsumedNext" . -}}
+{{ if .ReportTokens false -}}
+			switch {{template "tokenType" .}}(sym.symbol) {
+{{ range .Parser.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
+	case {{template "tokenPkg" $}}{{$sym.ID}}:
+		s.listener({{template "nodeTypePkg" $}}{{node_id .Name}}, {{if $.Parser.UsedFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{else}}0{{end}}, {{end}}sym.offset, sym.endoffset)
+{{ end -}}
+{{ end -}}
+{{template "customReportNext" . -}}
+			}
+{{else -}}
+{{template "customReportNext" . -}}
+{{ end -}}
+{{ end -}}
 }
 
 {{ end -}}

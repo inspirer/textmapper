@@ -67,19 +67,34 @@ func (s *TokenStream) reportIgnored(ctx context.Context, tok symbol) {
 	s.listener(t, tok.offset, tok.endoffset)
 }
 
-// flush reports all pending tokens up to a given symbol.
+// flush is called for every "shifted" token to report it together with any pending tokens
+// to the listener.
 func (s *TokenStream) flush(ctx context.Context, sym symbol) {
-	if len(s.pending) > 0 && s.listener != nil {
+	if s.listener == nil {
+		return
+	}
+	if len(s.pending) > 0 {
 		for i, tok := range s.pending {
 			if tok.endoffset > sym.endoffset {
 				// Note: this copying should not happen during normal operation, only
 				// during error recovery.
 				s.pending = append(s.pending[:0], s.pending[i:]...)
-				return
+				goto flushed
 			}
 			s.reportIgnored(ctx, tok)
 		}
 		s.pending = s.pending[:0]
+	flushed:
+	}
+	switch token.Type(sym.symbol) {
+	case token.NOSUBSTITUTIONTEMPLATE:
+		s.listener(NoSubstitutionTemplate, sym.offset, sym.endoffset)
+	case token.TEMPLATEHEAD:
+		s.listener(TemplateHead, sym.offset, sym.endoffset)
+	case token.TEMPLATEMIDDLE:
+		s.listener(TemplateMiddle, sym.offset, sym.endoffset)
+	case token.TEMPLATETAIL:
+		s.listener(TemplateTail, sym.offset, sym.endoffset)
 	}
 }
 

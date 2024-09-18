@@ -120,16 +120,6 @@ func (p *Parser) skipBrokenCode(ctx context.Context, stream *TokenStream, canRec
 			fmt.Printf("skipped while recovering: %v (%s)\n", symbolName(p.next.symbol), stream.text(p.next))
 		}
 		stream.flush(ctx, p.next)
-		switch token.Type(p.next.symbol) {
-		case token.NOSUBSTITUTIONTEMPLATE:
-			p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
-		case token.TEMPLATEHEAD:
-			p.listener(TemplateHead, p.next.offset, p.next.endoffset)
-		case token.TEMPLATEMIDDLE:
-			p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
-		case token.TEMPLATETAIL:
-			p.listener(TemplateTail, p.next.offset, p.next.endoffset)
-		}
 		e = p.next.endoffset
 		p.next = stream.next(nil, -1)
 	}

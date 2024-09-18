@@ -41,6 +41,7 @@ package {{short_pkg .Options.Package}}
 {{- define "customReportNext"}}{{end}}
 
 {{- define "reportConsumedNext" -}}
+{{ if not .Options.TokenStream -}}
 {{ if .ReportTokens false -}}
 			switch {{template "tokenType" .}}(p.next.symbol) {
 {{ range .Parser.MappedTokens -}}
@@ -54,6 +55,7 @@ package {{short_pkg .Options.Package}}
 			}
 {{else -}}
 {{template "customReportNext" . -}}
+{{ end -}}
 {{ end -}}
 {{ end -}}
 

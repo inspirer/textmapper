@@ -103,16 +103,6 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 			}
 			stream.flush(ctx, p.next)
 			if p.next.symbol != eoiToken {
-				switch token.Type(p.next.symbol) {
-				case token.NOSUBSTITUTIONTEMPLATE:
-					p.listener(NoSubstitutionTemplate, p.next.offset, p.next.endoffset)
-				case token.TEMPLATEHEAD:
-					p.listener(TemplateHead, p.next.offset, p.next.endoffset)
-				case token.TEMPLATEMIDDLE:
-					p.listener(TemplateMiddle, p.next.offset, p.next.endoffset)
-				case token.TEMPLATETAIL:
-					p.listener(TemplateTail, p.next.offset, p.next.endoffset)
-				}
 				p.next.symbol = noToken
 			}
 			if recovering > 0 {
