@@ -16,23 +16,23 @@ enum class Token {
   UNAVAILABLE = -1,
   EOI = 0,
   INVALID_TOKEN = 1,
-  LBRACE = 2,  // {
-  RBRACE = 3,  // }
-  LBRACK = 4,  // [
-  RBRACK = 5,  // ]
-  COLON = 6,  // :
-  COMMA = 7,  // ,
-  FOO = 8,  // #
+  LBRACE = 2,  /* { */
+  RBRACE = 3,  /* } */
+  LBRACK = 4,  /* [ */
+  RBRACK = 5,  /* ] */
+  COLON = 6,  /* : */
+  COMMA = 7,  /* , */
+  FOO = 8,  /* # */
   SPACE = 9,
   MULTILINECOMMENT = 10,
   JSONSTRING = 11,
   JSONNUMBER = 12,
   ID = 13,
-  KW_NULL = 14,  // null
-  TRUE = 15,  // true
-  FALSE = 16,  // false
+  KW_NULL = 14,  /* null */
+  TRUE = 15,  /* true */
+  FALSE = 16,  /* false */
   CHAR_A = 17,
-  CHAR_B = 18,  // B
+  CHAR_B = 18,  /* B */
   ERROR = 19,
   NumTokens = 20
 };
@@ -42,23 +42,23 @@ constexpr inline std::array<absl::string_view,
     tokenStr = {
   "EOI",
   "INVALID_TOKEN",
-  "LBRACE",  // {
-  "RBRACE",  // }
-  "LBRACK",  // [
-  "RBRACK",  // ]
-  "COLON",  // :
-  "COMMA",  // ,
-  "FOO",  // #
+  "LBRACE",  /* { */
+  "RBRACE",  /* } */
+  "LBRACK",  /* [ */
+  "RBRACK",  /* ] */
+  "COLON",  /* : */
+  "COMMA",  /* , */
+  "FOO",  /* # */
   "SPACE",
   "MULTILINECOMMENT",
   "JSONSTRING",
   "JSONNUMBER",
   "ID",
-  "KW_NULL",  // null
-  "TRUE",  // true
-  "FALSE",  // false
+  "KW_NULL",  /* null */
+  "TRUE",  /* true */
+  "FALSE",  /* false */
   "CHAR_A",
-  "CHAR_B",  // B
+  "CHAR_B",  /* B */
   "ERROR",
 };
 
@@ -67,23 +67,23 @@ constexpr inline std::array<absl::string_view,
     tokenName = {
   "eoi",
   "invalid_token",
-  "'{'",  // {
-  "'}'",  // }
-  "'['",  // [
-  "']'",  // ]
-  "':'",  // :
-  "','",  // ,
-  "Foo",  // #
+  "'{'",  /* { */
+  "'}'",  /* } */
+  "'['",  /* [ */
+  "']'",  /* ] */
+  "':'",  /* : */
+  "','",  /* , */
+  "Foo",  /* # */
   "space",
   "MultiLineComment",
   "JSONString",
   "JSONNumber",
   "id",
-  "kw_null",  // null
-  "'true'",  // true
-  "'false'",  // false
+  "kw_null",  /* null */
+  "'true'",  /* true */
+  "'false'",  /* false */
   "'A'",
-  "'B'",  // B
+  "'B'",  /* B */
   "error",
 };
 

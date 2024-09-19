@@ -29,7 +29,7 @@ const std::vector<Test> tests = {
     {"string",
      Token::JSONSTRING,
      {
-         R"(«"foo"» «"b\nar"»)",
+         R"(«"foo"» «"b\nar"» «"α"»)",
      }},
     {"number",
      Token::JSONNUMBER,
@@ -55,6 +55,7 @@ const std::vector<Test> tests = {
     {"comma", Token::COMMA, {"«,»"}},
 
     {"comment", Token::MULTILINECOMMENT, {"  «/*  asda *** */» bar"}},
+    {"char_a", Token::CHAR_A, {"  «A» «α» «A»"}},
 
     // TODO: handle invalid tokens
     //

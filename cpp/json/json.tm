@@ -10,6 +10,7 @@ eventBased = true
 extraTypes = ["NonExistingType"]
 parseParams = ["int a", "bool b"]
 debugParser = true
+scanBytes = true
 
 :: lexer
 
@@ -46,9 +47,10 @@ kw_null: /null/
 'false': /false/
 
 'A': /A/
+'A': /α/
 'B': /B/
 
-'A': /A!\p{L}+/ { /*some code */ }
+'A': /A!/ { /*some code */ }
 
 error:
 invalid_token:
