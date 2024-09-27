@@ -814,6 +814,7 @@ func lookaheadRule({{if $.Options.Cancellable}}ctx "context".Context, {{end}}{{t
 {{ end -}}
 
 {{- define "lookaheadMethods" -}}
+{{ if .Parser.Tables.Lookaheads -}}
 {{ range $ind, $inp := .Parser.Inputs -}}
 {{ if and .Synthetic .NoEoi -}}
 {{ $sym := index $.Syms (sum $.NumTokens .Nonterm) -}}
@@ -824,6 +825,7 @@ func At{{$sym.Name}}({{if $.Options.Cancellable}}ctx "context".Context, {{end}}{
 	return lookahead({{if $.Options.Cancellable}}ctx, {{end}}{{template "lexerArg" $}}, next, {{$ind}}, {{index $.Parser.Tables.FinalStates $ind}}{{if $.NeedsSession}}, s{{end}});
 }
 
+{{ end -}}
 {{ end -}}
 {{ end -}}
 {{ end -}}
