@@ -267,7 +267,7 @@ void Lexer::Rewind(int64_t rewind_offset) {
   scan_offset_ = rewind_offset;
   offset_ = rewind_offset;
   if (offset_ < source_.size()) {
-    input_rune_ = source_[scan_offset_++];
+    input_rune_ = static_cast<unsigned char>(source_[scan_offset_++]);
   } else {
     input_rune_ = -1;  // Invalid rune for end of input
   }
