@@ -23,6 +23,7 @@ func newOptionsParser(s *status.Status) *optionsParser {
 			TokenLine:         true,
 			GenParser:         true,
 			AbslIncludePrefix: "absl",
+			SkipByteOrderMark: true,
 		},
 		Status: s,
 	}
@@ -134,6 +135,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "parseParams":
 			p.validLangs(opt.Key(), "cc")
 			opts.ParseParams = p.parseExpr(opt.Value(), opts.ParseParams).([]string)
+		case "skipByteOrderMark":
+			opts.SkipByteOrderMark = p.parseExpr(opt.Value(), opts.SkipByteOrderMark).(bool)
 		default:
 			p.Errorf(opt.Key(), "unknown option '%v'", name)
 		}

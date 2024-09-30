@@ -145,9 +145,11 @@ inline uint32_t decodeRune(std::string_view input, int64_t& offset) {
 {{- define "lexerCtor" -}}
 Lexer::Lexer(absl::string_view input_source) {
   source_ = input_source;
+{{- if .Options.SkipByteOrderMark }}
   if (absl::StartsWith(source_, bomSeq)) {
     offset_ += bomSeq.size();
   }
+{{- end }}
   Rewind(offset_);
 }
 {{end -}}

@@ -180,13 +180,14 @@ type Options struct {
 	CustomImpl []string
 
 	// Lexer features.
-	ScanBytes       bool // generate a 8-bit scanner that consumes bytes instead of runes
-	CaseInsensitive bool // generate a case-insensitive scanner
-	TokenLine       bool // true by default
-	TokenLineOffset bool
-	TokenColumn     bool
-	NonBacktracking bool
-	FlexMode        bool // assume that the lexer is implemented using Flex (C/C++ only)
+	ScanBytes         bool // generate a 8-bit scanner that consumes bytes instead of runes
+	CaseInsensitive   bool // generate a case-insensitive scanner
+	TokenLine         bool // true by default
+	TokenLineOffset   bool
+	TokenColumn       bool
+	NonBacktracking   bool
+	FlexMode          bool // assume that the lexer is implemented using Flex (C/C++ only)
+	SkipByteOrderMark bool // true by default
 
 	// Parser features.
 	GenParser           bool // true by default
