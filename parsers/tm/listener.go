@@ -59,7 +59,7 @@ const (
 	ParamModifier
 	ParamRef // Identifier
 	ParamType
-	ParserSection // (GrammarPart)+
+	ParserSection // lookahead=IntegerLiteral? (GrammarPart)+
 	Pattern
 	Predicate      // PredicateExpression
 	PredicateAnd   // left=PredicateExpression right=PredicateExpression

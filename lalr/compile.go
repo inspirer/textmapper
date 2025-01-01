@@ -11,6 +11,7 @@ import (
 
 // Options parameterizes the LALR table generation.
 type Options struct {
+	Lookahead     int  // if non-zero, number of lookahead tokens available to the LALR algorithm
 	Optimize      bool // compress tables for faster lookups
 	DefaultReduce bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
 	Debug         bool // embed debug information into the tables
@@ -19,7 +20,8 @@ type Options struct {
 // Compile generates LALR tables for a given grammar.
 func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c := &compiler{
-		grammar: grammar,
+		grammar:   grammar,
+		lookahead: max(opts.Lookahead, 1),
 		out: &Tables{
 			DefaultEnc: &DefaultEnc{},
 		},
@@ -50,10 +52,11 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 }
 
 type compiler struct {
-	grammar *Grammar
-	out     *Tables
-	s       status.Status
-	pending []*Conflict // to be reported if the number of conflicts does not match the expectations
+	grammar   *Grammar
+	lookahead int
+	out       *Tables
+	s         status.Status
+	pending   []*Conflict // to be reported if the number of conflicts does not match the expectations
 
 	index   []int // the rule start in "right"
 	right   []int // all rules flattened into one slice, each position in this slice is an LR(0) item

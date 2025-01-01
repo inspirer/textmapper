@@ -267,7 +267,8 @@ lexer_section :
 ;
 
 parser_section :
-  COLONCOLON /*.recoveryScope*/ PARSER grammar_parts
+  COLONCOLON /*.recoveryScope*/ PARSER LALR LPAREN integer_literal RPAREN grammar_parts
+| COLONCOLON /*.recoveryScope*/ PARSER grammar_parts
 ;
 
 import_ :

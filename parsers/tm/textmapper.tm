@@ -191,7 +191,7 @@ lexer_section -> LexerSection:
     '::' .recoveryScope 'lexer' lexer_parts ;
 
 parser_section -> ParserSection:
-    '::' .recoveryScope 'parser' grammar_parts ;
+    '::' .recoveryScope 'parser' ('lalr' '(' lookahead=integer_literal ')')? grammar_parts ;
 
 import_ -> Import:
     'import' alias=identifier? path=string_literal ';' ;

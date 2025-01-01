@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/inspirer/textmapper/grammar"
@@ -312,10 +313,21 @@ func (c *compiler) compileParser(file ast.File) {
 	c.resolver.addNonterms(source)
 	c.out.Syms = c.resolver.Syms
 
+	var lookahead int
+	if la, ok := p.Lookahead(); ok {
+		lookahead, _ = strconv.Atoi(la.Text())
+		const maxLookahead = 8
+		if lookahead < 1 || lookahead > maxLookahead {
+			c.Errorf(la, "lookahead value of %v is out of the [1, %v] range", lookahead, maxLookahead)
+			lookahead = 1
+		}
+	}
+
 	opts := genOptions{
 		expectSR: loader.expectSR,
 		expectRR: loader.expectRR,
 		lalrOpts: lalr.Options{
+			Lookahead:     lookahead,
 			Optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
 			DefaultReduce: c.out.Options.DefaultReduce,
 			Debug:         c.params.DebugTables,

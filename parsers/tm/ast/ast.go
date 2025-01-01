@@ -859,6 +859,11 @@ type ParserSection struct {
 	*Node
 }
 
+func (n ParserSection) Lookahead() (IntegerLiteral, bool) {
+	child := n.Child(selector.IntegerLiteral)
+	return IntegerLiteral{child}, child.IsValid()
+}
+
 func (n ParserSection) GrammarPart() []GrammarPart {
 	nodes := n.Children(selector.GrammarPart)
 	var ret = make([]GrammarPart, 0, len(nodes))

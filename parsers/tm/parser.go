@@ -55,11 +55,11 @@ const (
 )
 
 func (p *Parser) ParseFile(ctx context.Context, stream *TokenStream) error {
-	return p.parse(ctx, 0, 632, stream)
+	return p.parse(ctx, 0, 637, stream)
 }
 
 func (p *Parser) ParseNonterm(ctx context.Context, stream *TokenStream) error {
-	return p.parse(ctx, 1, 633, stream)
+	return p.parse(ctx, 1, 638, stream)
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStream) error {
@@ -371,37 +371,37 @@ func gotoState(state int16, symbol int32) int16 {
 
 func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, stack []stackEntry, stream *TokenStream) (err error) {
 	switch rule {
-	case 233: // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
+	case 234: // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
 		p.reportRange(Extend, stack[len(stack)-7:len(stack)-6])
-	case 234: // nonterm : 'extend' identifier nonterm_alias ':' rules ';'
+	case 235: // nonterm : 'extend' identifier nonterm_alias ':' rules ';'
 		p.reportRange(Extend, stack[len(stack)-6:len(stack)-5])
-	case 235: // nonterm : 'extend' identifier reportClause ':' rules ';'
+	case 236: // nonterm : 'extend' identifier reportClause ':' rules ';'
 		p.reportRange(Extend, stack[len(stack)-6:len(stack)-5])
-	case 236: // nonterm : 'extend' identifier ':' rules ';'
+	case 237: // nonterm : 'extend' identifier ':' rules ';'
 		p.reportRange(Extend, stack[len(stack)-5:len(stack)-4])
-	case 237: // nonterm : 'inline' identifier nonterm_params nonterm_alias reportClause ':' rules ';'
+	case 238: // nonterm : 'inline' identifier nonterm_params nonterm_alias reportClause ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-8:len(stack)-7])
-	case 238: // nonterm : 'inline' identifier nonterm_params nonterm_alias ':' rules ';'
+	case 239: // nonterm : 'inline' identifier nonterm_params nonterm_alias ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-7:len(stack)-6])
-	case 239: // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
+	case 240: // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-7:len(stack)-6])
-	case 240: // nonterm : 'inline' identifier nonterm_params ':' rules ';'
+	case 241: // nonterm : 'inline' identifier nonterm_params ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-6:len(stack)-5])
-	case 241: // nonterm : 'inline' identifier nonterm_alias reportClause ':' rules ';'
+	case 242: // nonterm : 'inline' identifier nonterm_alias reportClause ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-7:len(stack)-6])
-	case 242: // nonterm : 'inline' identifier nonterm_alias ':' rules ';'
+	case 243: // nonterm : 'inline' identifier nonterm_alias ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-6:len(stack)-5])
-	case 243: // nonterm : 'inline' identifier reportClause ':' rules ';'
+	case 244: // nonterm : 'inline' identifier reportClause ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-6:len(stack)-5])
-	case 244: // nonterm : 'inline' identifier ':' rules ';'
+	case 245: // nonterm : 'inline' identifier ':' rules ';'
 		p.reportRange(Inline, stack[len(stack)-5:len(stack)-4])
-	case 257: // directive : '%' 'assert' 'empty' rhsSet ';'
+	case 258: // directive : '%' 'assert' 'empty' rhsSet ';'
 		p.reportRange(Empty, stack[len(stack)-3:len(stack)-2])
-	case 258: // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	case 259: // directive : '%' 'assert' 'nonempty' rhsSet ';'
 		p.reportRange(NonEmpty, stack[len(stack)-3:len(stack)-2])
-	case 267: // inputref : symref 'no-eoi'
+	case 268: // inputref : symref 'no-eoi'
 		p.reportRange(NoEoi, stack[len(stack)-1:len(stack)-0])
-	case 306: // lookahead_predicate : '!' symref
+	case 307: // lookahead_predicate : '!' symref
 		p.reportRange(Not, stack[len(stack)-2:len(stack)-1])
 	}
 	if nt := tmRuleType[rule]; nt != 0 {

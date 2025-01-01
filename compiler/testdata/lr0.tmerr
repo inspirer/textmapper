@@ -6,7 +6,8 @@ a: /a/
 b: /b/
 c: /c/
 
-:: parser
+:: parser lalr(«16»)
+# err: lookahead value of 16 is out of the [1, 8] range
 
 input : N;
 
