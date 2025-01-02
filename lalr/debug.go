@@ -84,6 +84,7 @@ func (c *compiler) exportDebugInfo() {
 	conflicts := make([]conflict, c.grammar.Terminals)
 
 	set := container.NewBitSet(len(c.right))
+	seen := container.NewBitSet(c.grammar.Terminals)
 	reuse := make([]int, len(c.right))
 	for _, s := range c.states {
 		c.stateClosure(s, set)
@@ -123,7 +124,7 @@ func (c *compiler) exportDebugInfo() {
 				fmt.Fprintf(&b, " { reduce to %v", c.grammar.Symbols[rule.LHS])
 				if !s.lr0 {
 					b.WriteString(" lookahead [")
-					for i, term := range s.la[reduce].Slice(nil) {
+					for i, term := range c.reduceLA(s, reduce, seen, nil /*reuse*/) {
 						if i > 0 {
 							b.WriteByte(' ')
 						}
@@ -161,7 +162,7 @@ func (c *compiler) exportDebugInfo() {
 				}
 			}
 			for i := range s.reduce {
-				for _, term := range s.la[i].Slice(nil) {
+				for _, term := range c.reduceLA(s, i, seen, nil /*reuse*/) {
 					if conflicts[term] == 0 {
 						conflicts[term] = 2 // reduce
 					} else {

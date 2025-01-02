@@ -304,6 +304,7 @@ func TestStates(t *testing.T) {
 		c.reportConflicts()
 
 		var buf strings.Builder
+		seen := container.NewBitSet(c.grammar.Terminals)
 		for i, state := range c.states {
 			if state.sourceState >= 0 {
 				var suffix string
@@ -329,7 +330,7 @@ func TestStates(t *testing.T) {
 				for i, rule := range state.reduce {
 					fmt.Fprintf(&buf, " reduce %v", c.grammar.Symbols[g.Rules[rule].LHS])
 					if !state.lr0 {
-						la := state.la[i].Slice(nil)
+						la := c.reduceLA(state, i, seen, nil /*reuse*/)
 						if len(la) > 0 {
 							buf.WriteString(" [")
 							for i, term := range la {
