@@ -1,0 +1,30 @@
+{
+  "scopeName": "textmapper.metavars.injection.go",
+  "injectionSelector": "L:entity.code.textmapper.go",
+  "patterns": [
+    {
+      "include": "#dollars-keyword"
+    },
+    {
+      "include": "#dollars-expr"
+    },
+    {
+      "include": "#location-clause"
+    }
+  ],
+  "repository": {
+    "dollars-keyword": {
+      "match": "\\$(\\$|[0-9]+|[a-zA-Z_]([a-zA-Z_0-9\\-]*[a-zA-Z_0-9])?)",
+      "name": "keyword.dollars.tm"
+    },
+    "location-clause": {
+      "match": "\\@(\\$|[0-9]+|[a-zA-Z_]([a-zA-Z_0-9\\-]*[a-zA-Z_0-9])?)",
+      "name": "keyword.ampersand.tm"
+    },
+    "dollars-expr": {
+      "begin": "\\$\\{",
+      "end": "\\}",
+      "name": "keyword.dollars.tm"
+    }
+  }
+}

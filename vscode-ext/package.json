@@ -31,9 +31,27 @@
     ],
     "grammars": [
       {
+        "path": "./syntaxes/cc.injection.json",
+        "scopeName": "textmapper.metavars.injection.cc",
+        "injectTo": [
+          "source.textmapper"
+        ]
+      },
+      {
+        "path": "./syntaxes/go.injection.json",
+        "scopeName": "textmapper.metavars.injection.go",
+        "injectTo": [
+          "source.textmapper"
+        ]
+      },
+      {
         "language": "textmapper",
         "scopeName": "source.textmapper",
-        "path": "./syntaxes/textmapper.tmLanguage.json"
+        "path": "./syntaxes/textmapper.tmLanguage.json",
+        "embeddedLanguages": {
+          "entity.code.textmapper.cc": "cpp",
+          "entity.code.textmapper.go": "go"
+        }
       }
     ],
     "configuration": {
