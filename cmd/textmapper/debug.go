@@ -60,7 +60,8 @@ func debugFile(ctx context.Context, path string) error {
 	}
 
 	start := time.Now()
-	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{DebugTables: *tables})
+	params := compiler.Params{DebugTables: *tables, CheckOnly: true /*disables optimizations*/}
+	g, err := compiler.Compile(ctx, path, string(content), params)
 	if g == nil {
 		return err
 	}
