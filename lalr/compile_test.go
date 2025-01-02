@@ -298,7 +298,7 @@ func TestStates(t *testing.T) {
 		c.computeStates()
 
 		c.initLalr()
-		c.buildFollow()
+		c.buildFollow(true)
 		c.buildLA()
 		c.populateTables()
 		c.reportConflicts()

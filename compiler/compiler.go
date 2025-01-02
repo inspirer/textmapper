@@ -21,9 +21,10 @@ import (
 
 // Params control the grammar compilation process.
 type Params struct {
-	CheckOnly   bool // set to true, if the caller is interested in compilation errors only
-	Verbose     bool // set to true for more verbose errors
-	DebugTables bool // set to true to get generated tables with embedded debug info
+	CheckOnly    bool // set to true, if the caller is interested in compilation errors only
+	Verbose      bool // set to true for more verbose errors
+	DebugTables  bool // set to true to get generated tables with embedded debug info
+	CollectStats bool // set to true to collect more statistics about the LALR algorithm execution
 }
 
 // Compile validates and compiles grammar files.
@@ -331,6 +332,7 @@ func (c *compiler) compileParser(file ast.File) {
 			Optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
 			DefaultReduce: c.out.Options.DefaultReduce,
 			Debug:         c.params.DebugTables,
+			CollectStats:  c.params.CollectStats,
 		},
 	}
 	if err := generateTables(source, c.out, opts, file); err != nil {

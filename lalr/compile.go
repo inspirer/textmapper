@@ -1,11 +1,14 @@
 package lalr
 
 import (
+	"fmt"
 	"log"
 	"slices"
+	"time"
 
 	"github.com/inspirer/textmapper/status"
 	"github.com/inspirer/textmapper/util/container"
+	"github.com/inspirer/textmapper/util/debug"
 	"github.com/inspirer/textmapper/util/graph"
 )
 
@@ -14,6 +17,7 @@ type Options struct {
 	Lookahead     int  // if non-zero, number of lookahead tokens available to the LALR algorithm
 	Optimize      bool // compress tables for faster lookups
 	DefaultReduce bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
+	CollectStats  bool // capture execution statistics
 	Debug         bool // embed debug information into the tables
 }
 
@@ -35,7 +39,7 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c.checkLR0()
 
 	c.initLalr()
-	c.buildFollow()
+	c.buildFollow(opts.CollectStats)
 	c.buildLA()
 	c.populateTables()
 	c.reportConflicts()
@@ -443,7 +447,8 @@ func (c *compiler) initLalr() {
 	}
 }
 
-func (c *compiler) buildFollow() {
+func (c *compiler) buildFollow(stats bool) {
+	start := time.Now()
 	c.follow = container.NewBitSetSlice(c.grammar.Terminals, len(c.out.FromTo)/2)
 
 	// Step 1. Build in-rule follow set and process empty symbols.
@@ -525,6 +530,16 @@ func (c *compiler) buildFollow() {
 	}
 	g = graph.Transpose(g)
 	c.updateFollow(g)
+
+	if stats {
+		d := time.Since(start)
+		var followEntries int
+		for _, set := range c.follow {
+			followEntries += set.Cardinality()
+		}
+		followMem := len(c.follow) * c.follow[0].MemSize()
+		c.out.DebugInfo = append(c.out.DebugInfo, fmt.Sprintf("Follow set (built in %v): %v entries across %v transitions; %v", d, followEntries, len(c.follow), debug.Size(followMem)))
+	}
 }
 
 func (c *compiler) updateFollow(g [][]int) {

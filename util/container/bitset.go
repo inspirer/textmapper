@@ -132,3 +132,8 @@ func (b BitSet) Cardinality() int {
 	}
 	return ret
 }
+
+// Cardinality returns the amount of retained memory by this bitset.
+func (b BitSet) MemSize() int {
+	return len(b) * 4
+}

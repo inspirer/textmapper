@@ -60,7 +60,7 @@ func debugFile(ctx context.Context, path string) error {
 	}
 
 	start := time.Now()
-	params := compiler.Params{DebugTables: *tables, CheckOnly: true /*disables optimizations*/}
+	params := compiler.Params{CollectStats: true, DebugTables: *tables, CheckOnly: true /*disables optimizations*/}
 	g, err := compiler.Compile(ctx, path, string(content), params)
 	if g == nil {
 		return err
@@ -89,7 +89,7 @@ func debugFile(ctx context.Context, path string) error {
 		fmt.Print(newEnc.TableStats())
 	}
 
-	if *tables && g.Parser != nil && g.Parser.Tables != nil {
+	if g.Parser != nil && g.Parser.Tables != nil {
 		for _, info := range g.Parser.Tables.DebugInfo {
 			fmt.Println(info)
 		}
