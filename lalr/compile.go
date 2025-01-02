@@ -73,7 +73,9 @@ type compiler struct {
 
 	states []*state
 
-	follow []sparse.Set // goto -> set of accepted terminals (or terminal transitions)
+	follow []sparse.Set     // goto -> set of accepted terminals (or terminal transitions)
+	aux    container.BitSet // of followSize
+	reuse  []int            // of max(followSize, grammar.Terminals)
 
 	precGroup map[Sym]int // terminal -> index in grammar.Precedence
 	sr, rr    int         // conflicts
@@ -92,7 +94,7 @@ type state struct {
 	dropped     []int // items dropped from core by .greedy (sorted)
 
 	// for non-lr0 states
-	la       []sparse.Set // set of accepted terminals after each reduction in "reduce"
+	la       []sparse.Set // set of accepted terminals (or terminal transitions) after each reduction in "reduce"
 	lookback [][]int      // slice of gotos per reduction to pull LA from
 }
 
@@ -450,29 +452,51 @@ func (c *compiler) initLalr() {
 
 func (c *compiler) buildFollow(stats bool) {
 	start := time.Now()
+
 	c.follow = make([]sparse.Set, len(c.out.FromTo)/2)
+	followSize := c.grammar.Terminals
+	if c.lookahead > 1 {
+		// Keep terminal transitions in the sets instead of terminal themselves to be able to
+		// reconstruct longer follow chains on demand. Reserve one more bit for the "all terminals"
+		// case.
+		followSize = 1 + len(c.follow)
+	}
+
+	c.aux = container.NewBitSet(followSize)
+	c.reuse = make([]int, max(followSize, c.grammar.Terminals))
 
 	// Step 1. Build in-rule follow set and process empty symbols.
 	empties := make([][]int, len(c.follow))
-	b := sparse.NewBuilder(c.grammar.Terminals)
+	b := sparse.NewBuilder(followSize)
 	for gt := range c.follow {
 		from, to := c.states[c.out.FromTo[2*gt]], c.states[c.out.FromTo[2*gt+1]]
-		if int(to.symbol) < c.grammar.Terminals {
+		if int(to.symbol) < c.grammar.Terminals && c.lookahead == 1 {
+			// As an optimization, we can skip computing follow sets for terminal
+			// transitions for LALR(1).
 			continue
 		}
 
 		if from.index < len(c.grammar.Inputs) {
 			inp := c.grammar.Inputs[from.index]
 			if !inp.Eoi && c.out.FinalStates[from.index] == to.index {
-				for i := range c.grammar.Terminals {
-					b.Add(i)
+				// This transition terminates parsing and can be followed by any terminal.
+				if c.lookahead > 1 {
+					b.Add(len(c.follow)) // sentinel value meaning "all terminals"
+				} else {
+					for i := range c.grammar.Terminals {
+						b.Add(i)
+					}
 				}
 			}
 		}
 		for _, shift := range to.shifts {
 			sym := c.states[shift].symbol
 			if int(sym) < c.grammar.Terminals {
-				b.Add(int(sym))
+				if c.lookahead > 1 {
+					b.Add(c.selectGoto(to.index, sym))
+				} else {
+					b.Add(int(sym))
+				}
 			} else if c.empty.Get(int(sym)) {
 				empties[gt] = append(empties[gt], c.selectGoto(to.index, sym))
 			}
@@ -549,9 +573,6 @@ func (c *compiler) buildFollow(stats bool) {
 
 func (c *compiler) updateFollow(g [][]int) {
 	var sets []sparse.Set
-	aux := container.NewBitSet(c.grammar.Terminals)
-	reuse := make([]int, c.grammar.Terminals)
-
 	graph.Tarjan(g, func(gotos []int, _ container.BitSet) {
 		sets := sets[:0]
 		for _, nt := range gotos {
@@ -562,7 +583,7 @@ func (c *compiler) updateFollow(g [][]int) {
 				sets = append(sets, c.follow[target])
 			}
 		}
-		set := sparse.Union(sets, aux, reuse)
+		set := sparse.Union(sets, c.aux, c.reuse)
 		for _, nt := range gotos {
 			c.follow[nt] = set
 		}
@@ -619,16 +640,13 @@ func (c *compiler) selectGoto(state int, sym Sym) int {
 
 func (c *compiler) buildLA() {
 	var sets []sparse.Set
-	aux := container.NewBitSet(c.grammar.Terminals)
-	reuse := make([]int, c.grammar.Terminals)
-
 	for _, state := range c.states {
 		for i, lookback := range state.lookback {
 			sets = sets[:0]
 			for _, from := range lookback {
 				sets = append(sets, c.follow[from])
 			}
-			state.la[i] = sparse.Union(sets, aux, reuse)
+			state.la[i] = sparse.Union(sets, c.aux, c.reuse)
 		}
 	}
 }
@@ -641,7 +659,6 @@ func (c *compiler) populateTables() {
 		}
 	}
 
-	reuse := make([]int, c.grammar.Terminals)
 	seen := container.NewBitSet(c.grammar.Terminals)
 	actionset := make([]int, c.grammar.Terminals)
 	next := make([]int, c.grammar.Terminals)
@@ -674,7 +691,7 @@ func (c *compiler) populateTables() {
 			actionset = append(actionset, term)
 		}
 		for i, rule := range state.reduce {
-			for _, term := range c.reduceLA(state, i, seen, reuse) {
+			for _, term := range c.reduceLA(state, i, seen, c.reuse) {
 				if next[term] == -2 {
 					next[term] = rule
 					actionset = append(actionset, term)
@@ -741,9 +758,30 @@ func (c *compiler) populateTables() {
 
 func (c *compiler) reduceLA(state *state, reduce int, seen container.BitSet, reuse []int) []int {
 	seen.ClearAll(c.grammar.Terminals)
-	// Simply sort the sets.
-	for _, sym := range state.la[reduce] {
-		seen.Set(int(sym))
+	if c.lookahead > 1 {
+		// In the LALR(n) case, the "la" field contains state transitions rather than terminals.
+		transitions := state.la[reduce]
+		for _, gt := range transitions {
+			if gt == len(c.follow) {
+				// This is a special marker
+				seen.SetAll(c.grammar.Terminals)
+				break
+			}
+			sym := c.states[c.out.FromTo[2*gt+1]].symbol
+			if sym >= Sym(c.grammar.Terminals) {
+				log.Fatal("invariant failure")
+			}
+			seen.Set(int(sym))
+		}
+	} else {
+		terms := state.la[reduce]
+		if len(terms) < 2 {
+			return terms
+		}
+		// Sparse sets are unsorted. Sort them via the bitset.
+		for _, sym := range terms {
+			seen.Set(int(sym))
+		}
 	}
 	return seen.Slice(reuse)
 }
