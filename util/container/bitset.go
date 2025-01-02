@@ -123,3 +123,12 @@ func (b BitSet) NextZero(start int) int {
 	}
 	return index * 32
 }
+
+// Cardinality returns the number of ones in the set.
+func (b BitSet) Cardinality() int {
+	var ret int
+	for _, val := range b {
+		ret += bits.OnesCount32(val)
+	}
+	return ret
+}
