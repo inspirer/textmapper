@@ -80,15 +80,15 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "recursiveLookaheads":
 			opts.RecursiveLookaheads = p.parseExpr(opt.Value(), opts.RecursiveLookaheads).(bool)
 		case "tokenStream":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "ts")
 			opts.TokenStream = p.parseExpr(opt.Value(), opts.TokenStream).(bool)
 		case "eventBased":
 			opts.EventBased = p.parseExpr(opt.Value(), opts.EventBased).(bool)
 		case "genSelector":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "ts")
 			opts.GenSelector = p.parseExpr(opt.Value(), opts.GenSelector).(bool)
 		case "fixWhitespace":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "ts")
 			opts.FixWhitespace = p.parseExpr(opt.Value(), opts.FixWhitespace).(bool)
 		case "debugParser":
 			opts.DebugParser = p.parseExpr(opt.Value(), opts.DebugParser).(bool)

@@ -1,0 +1,84 @@
+{{- template "header" . -}}
+
+import * as {{template "tokenPkg"}} from './token';
+
+export const tmNumClasses = {{.Lexer.Tables.NumSymbols}}
+
+{{$runeType := bits .Lexer.Tables.NumSymbols -}}
+{{if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
+export type mapRange = {
+  lo: number;
+  hi: number;
+  defaultVal: number;
+  val: number[];
+}
+
+export function mapRune(c: number): number {
+  let lo = 0;
+  let hi = tmRuneRanges.length;
+  while (lo < hi) {
+    let m = lo + (hi - lo) / 2;
+    let r = tmRuneRanges[m];
+    if (c < r.lo) {
+      hi = m;
+    } else if (c >= r.hi) {
+      lo = m + 1;
+    } else {
+      let i = c - r.lo;
+      if (i < r.val.length) {
+        return r.val[i];
+      }
+      return r.defaultVal;
+    }
+  }
+  return {{.Lexer.Tables.LastMapEntry.Target}}
+}
+
+// Latin-1 characters.
+export const tmRuneClass: number[] = [
+{{- int_array (.Lexer.Tables.SymbolArr 256) "  " 79 -}}
+];
+
+export const tmRuneClassLen = 256;
+export const tmFirstRule = {{.Lexer.Tables.ActionStart}};
+
+export const tmRuneRanges: mapRange[] = [
+{{range .Lexer.Tables.CompressedMap 256}}  { lo: {{- .Lo}}, hi: {{.Hi}}, defaultVal: {{.DefaultVal}}, {{if .Vals}}[
+{{- int_array .Vals "    " 78}}  ]{{else}}[]{{end -}} },
+{{end -}}
+];
+
+{{else -}}
+{{ $runeArr := .Lexer.Tables.SymbolArr 0 -}}
+export const tmRuneClass: number[] = [
+{{- int_array $runeArr "  " 79 -}}
+];
+
+export const tmRuneClassLen = {{len $runeArr}};
+export const tmFirstRule = {{.Lexer.Tables.ActionStart}};
+
+{{end -}}
+{{ if gt (len .Lexer.StartConditions) 1 -}}
+export const tmStateMap: number[] = [
+{{- int_array .Lexer.Tables.StateMap "  " 79 -}}
+];
+
+{{end -}}
+{{if .Lexer.RuleToken -}}
+export const tmToken: {{template "tokenType" .}}[] = [
+{{- int_array .Lexer.RuleToken "  " 79 -}}
+];
+
+{{end -}}
+export const tmLexerAction: number[] = [
+{{- int_array .Lexer.Tables.Dfa "  " 79 -}}
+];
+
+{{- if .Lexer.Tables.Backtrack}}
+
+export const tmBacktracking: number[] = [
+{{- range .Lexer.Tables.Backtrack}}
+  {{.Action}}, {{.NextState}},{{if .Details}} // {{.Details}}{{end}}
+{{- end}}
+];
+{{- end}}

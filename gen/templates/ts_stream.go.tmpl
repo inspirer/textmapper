@@ -1,0 +1,207 @@
+{{ template "header" . -}}
+
+import * as {{template "commonPkg"}} from './common';
+import * as {{template "tokenPkg"}} from './token';
+import * as {{template "lexerPkg"}} from './lexer';
+import * as {{template "listenerPkg"}} from './listener';
+
+{{ block "onBeforeStream" .}}{{end}}
+{{ template "streamType" . -}}
+{{ define "customReportNext"}}{{end -}}
+{{ block "onAfterStream" .}}{{end -}}
+
+{{- define "streamType" -}}
+// TokenStream post-processes lexer output for consumption by the parser.
+export class TokenStream {
+  _lexer: {{template "lexerPkg"}}.Lexer;
+{{ if .Parser.Types -}}
+  _listener: {{template "listenerTypeRef"}}; // for ingesting tokens into the AST, nil during lookaheads
+{{ end -}}
+{{ if .ReportTokens true -}}
+  _pending: {{template "commonPkg"}}.Symbol[];
+{{ end -}}
+{{ block "sharedStreamStateVars" .}}{{end -}}
+{{ block "streamStateVars" .}}{{end -}}
+
+  {{- template "streamInit" . -}}
+  {{- template "streamCopy" . -}}
+  {{- template "streamReportIgnored" . -}}
+  {{- template "streamFlush" . -}}
+  {{- template "streamText" . -}}
+  {{- template "streamLine" . -}}
+  {{- template "streamPending" . -}}
+  {{- template "streamNext" . -}}
+}
+
+{{ end -}}
+
+
+{{- define "streamInit" -}}
+{{ if .Options.IsEnabled "streamInit" -}}
+  constructor(content: string, l: {{template "listenerTypeRef"}}) {
+    this._lexer = new {{template "lexerPkg"}}.Lexer(content);
+{{ if .Parser.Types -}}
+    this._listener = l;
+{{ end -}}
+
+{{ if .ReportTokens true -}}
+    this._pending = [];
+{{ end -}}
+{{ block "initSharedStreamStateVars" .}}{{end -}}
+{{ block "initStreamStateVars" .}}{{end -}}
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamCopy" -}}
+{{ if .Options.IsEnabled "streamCopy" -}}
+  copy(): TokenStream {
+    let copy = JSON.parse(JSON.stringify(this))
+    return copy as TokenStream;
+  }
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "streamReportIgnored" -}}
+{{ if .Options.IsEnabled "streamReportIgnored" -}}
+  private reportIgnored(tok: {{template "commonPkg"}}.Symbol) : void {
+{{ block "onBeforeIgnore" .}}{{end -}}
+    let t: {{template "nodeTypeRef" $}};
+{{ if .Lexer.UsedFlags -}}
+    let flags: {{template "nodeFlagsRef" $}};
+{{ end -}}
+    switch (tok.symbol) {
+{{ range .Parser.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
+      case {{template "tokenType" $}}.{{$sym.ID}}:
+        t = {{template "nodeTypeRef" $}}.{{node_id .Name}};
+{{ if .Flags -}}
+        flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}.{{$flag}}{{end}};
+{{ end -}}
+        break;
+{{ end -}}
+{{ end -}}
+{{ block "onIgnoreDefault" . -}}
+      default:
+        return;
+{{end -}}
+    }
+    if ({{template "commonPkg"}}.debugSyntax) {
+      {{template "commonPkg"}}.debugLog("ignored:", {{template "tokenType" .}}[tok.symbol], "as", t);
+    }
+    this._listener(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset);
+  }
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "streamFlush" -}}
+{{ if and (.ReportTokens true) (.Options.IsEnabled "streamFlush") -}}
+  // flush is called for every "shifted" token to report it together with any pending tokens
+  // to the listener.
+  flush(sym: {{template "commonPkg"}}.Symbol) : void {
+    if (this._listener === null || this._listener === undefined) {
+      return;
+    }
+    let flushed = false;
+    if (this._pending.length > 0) {
+      for (let i = 0; i < this._pending.length; i++) {
+        let tok = this._pending[i];
+        if (tok.endoffset > sym.endoffset) {
+          // Note: this copying should not happen during normal operation, only
+          // during error recovery.
+          this._pending = this._pending.slice(i);
+          flushed = true;
+          break;
+        }
+        this.reportIgnored(tok);
+      }
+      if (!flushed) {
+        this._pending = [];
+      }
+    }
+{{ block "reportConsumedNext" . -}}
+{{ if .ReportTokens false -}}
+    switch (sym.symbol) {
+{{ range .Parser.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
+      case {{template "tokenType" $}}.{{$sym.ID}}:
+        this._listener({{template "nodeTypeRef" $}}.{{node_id .Name}}, {{if $.Parser.UsedFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}.{{$flag}}{{else}}0{{end}}, {{end}}sym.offset, sym.endoffset);
+        break;
+{{ end -}}
+{{ end -}}
+{{template "customReportNext" . -}}
+    }
+{{else -}}
+{{template "customReportNext" . -}}
+{{ end -}}
+{{ end -}}
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamText" -}}
+{{ if .Options.IsEnabled "streamText" -}}
+  text(sym: {{template "commonPkg"}}.Symbol) : string {
+    return this._lexer.source().substring(sym.offset, sym.endoffset);
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamLine" -}}
+{{ if .Options.IsEnabled "streamLine" -}}
+  line() : number {
+    return this._lexer.line();
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamPending" -}}
+{{ if .Options.IsEnabled "streamPending" -}}
+  pending() : {{template "commonPkg"}}.Symbol[] {
+    return this._pending;
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "streamNext" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ if .Options.IsEnabled "streamNext" -}}
+  // next transforms the lexer stream into a stream of symbols for the parser.
+  //
+  // Note: "stack" and "endState" are nil and -1 respectively during lookaheads
+  // and error recovery.
+  next(stack: {{template "commonPkg"}}.StackEntry[], endState: number) : {{template "commonPkg"}}.Symbol {
+    restart: while (true) {
+      let tok = this._lexer.next();
+      switch (tok) {
+{{- if .ReportTokens true }}
+{{- range .ReportTokens true}}
+        case {{template "tokenType" $}}.{{.ID}}:
+{{- end}}
+          let { start, end } = this._lexer.pos();
+          this._pending.push(new {{template "commonPkg"}}.Symbol(tok, start, end));
+          continue restart;
+{{- end}}
+{{- if not .ReportsInvalidToken}}
+        case {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}}:
+          continue restart;
+{{- end}}
+      }
+      let { start, end } = this._lexer.pos();
+      return new {{template "commonPkg"}}.Symbol(tok, start, end);
+    }
+  }
+
+{{ end -}}
+{{ end -}}

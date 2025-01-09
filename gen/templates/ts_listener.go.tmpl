@@ -1,0 +1,38 @@
+{{- template "header" . -}}
+
+export enum NodeType {
+  NoType,
+{{- range .Parser.Types.RangeTypes }}
+  {{.Name}},    {{- if gt (len .Fields) 0}}  // {{.Descriptor}}{{end}}
+{{- end}}
+{{- range .Options.ExtraTypes }}
+  {{.Name}},
+{{- end}}
+  NodeTypeMax
+};
+
+{{if .Parser.UsedFlags -}}
+{{ $flags := .AllFlags -}}
+{{ if $flags -}}
+export enum NodeFlags {
+  None = -1,
+{{ range $i, $it := $flags -}}
+  {{$it}} = {{$i}},
+{{ end -}}
+};
+{{ end -}}
+
+export type Listener = (t: NodeType, flags: NodeFlags, offset: number, endOffset: number) => void;
+{{ else -}}
+export type Listener = (t: NodeType, offset: number, endOffset: number) => void;
+{{ end -}}
+
+{{ block "NodeCategories" . -}}
+{{ range .Parser.Types.Categories -}}
+export const {{.Name}} : NodeType[] = [
+{{- range .Types }}
+  NodeType.{{node_id .}},
+{{- end}}
+];
+{{end -}}
+{{end -}}

@@ -1,0 +1,452 @@
+{{ template "header" . -}}
+
+import { TextDecoder, TextEncoder } from 'util';
+import * as {{template "tokenPkg"}} from './token';
+import * as lt from './lexer_tables';
+
+{{ if gt (len .Lexer.StartConditions) 1 -}}
+// Lexer states.
+{{ range $index, $el := .Lexer.StartConditions -}}
+const State{{title .}} = {{$index}};
+{{ end -}}
+{{ end -}}
+
+{{- if .Options.SkipByteOrderMark }}
+const bomSeq = "\xef\xbb\xbf";
+{{- end }}
+
+{{ block "onBeforeLexer" .}}{{end -}}
+{{ template "decodeRune" . -}}
+{{ template "lexerType" . -}}
+{{ block "onAfterLexer" .}}{{end -}}
+
+{{- define "decodeRune" -}}
+function decodeRune(str: string, offset: number): { rune: number; size: number } {
+  if (offset >= str.length) {
+    return { rune: -1, size: 0 };
+  }
+
+  const decoder = new TextDecoder('utf-8');
+  const remainingString = str.substring(offset); // Create a new string starting from the offset
+  const byteArray = new TextEncoder().encode(remainingString); // Encode the string to a Uint8Array
+  const decoded = decoder.decode(byteArray);
+
+  if (decoded.length === 0) {
+    return { rune: -1, size: 0 };
+  }
+
+  const firstChar = decoded.codePointAt(0)!;
+
+  // Determine the size in bytes of the first character
+  let size = 1;
+  if (firstChar >= 0x80) {
+    if (firstChar >= 0x800) {
+      if (firstChar >= 0x10000) {
+        size = 4
+      } else {
+        size = 3
+      }
+    } else {
+      size = 2
+    }
+  }
+
+  return { rune: firstChar, size: size };
+}
+{{ end -}}
+
+{{- define "lexerType" -}}
+// Lexer uses a generated DFA to scan through a utf-8 encoded input string. {{ if .Options.SkipByteOrderMark }}If
+// the string starts with a BOM character, it gets skipped.{{end}}
+export class Lexer {
+  _source: string;
+  _ch: number;           // current character, -1 means EOI
+  _offset: number;       // character offset
+  _tokenOffset: number;  // last token byte offset
+{{ if .Options.TokenLine -}}
+  _line: number;         // current line number (1-based)
+  _tokenLine: number;    // last token line
+{{ end -}}
+{{ if or .Options.TokenLineOffset .Options.TokenColumn -}}
+  _lineOffset: number;   // current line offset
+{{ end -}}
+{{ if .Options.TokenColumn -}}
+  _tokenColumn: number;  // last token column (in bytes)
+{{ end -}}
+  _scanOffset: number;   // scanning offset
+  _value: any;
+
+{{ if gt (len .Lexer.StartConditions) 1 -}}
+  _state: number;           // lexer state, modifiable
+{{ end -}}
+{{ block "sharedStateVars" .}}{{end -}}
+{{ block "stateVars" .}}{{end -}}
+
+{{ template "lexerInit" .}}
+{{ template "lexerRewind" .}}
+{{ template "lexerNext" .}}
+{{ template "lexerPos" .}}
+{{ if .Options.TokenLine -}}
+  {{ template "lexerLine" .}}
+{{ end -}}
+{{ if .Options.TokenColumn -}}
+  {{ template "lexerColumn" .}}
+{{ end -}}
+{{ template "lexerText" .}}
+{{ template "lexerSource" .}}
+{{ template "lexerValue" .}}
+{{ if .Options.IsEnabled "lexerCopy" -}}
+{{ template "lexerCopy" . -}}
+{{ end -}}
+{{ block "lexerExtras" .}}{{end -}}
+};
+{{end -}}
+
+{{- define "lexerInit" -}}
+  // Initialize the lexer
+  constructor(source: string) {
+    this._source = source;
+    this._ch = 0;
+    this._offset = 0;
+    this._tokenOffset = 0;
+{{ if .Options.TokenLine -}}
+    this._line = 1;
+    this._tokenLine = 1;
+{{ end -}}
+{{ if or .Options.TokenLineOffset .Options.TokenColumn -}}
+    this._lineOffset = 0;
+{{ end -}}
+{{ if .Options.TokenColumn -}}
+    this._tokenColumn = 1;
+{{ end -}}
+{{ if gt (len .Lexer.StartConditions) 1 -}}
+    this._state = 0
+{{ end -}}
+{{ block "sharedInitStateVars" .}}{{end -}}
+{{ block "initStateVars" .}}{{end}}
+{{- if .Options.SkipByteOrderMark }}
+    if (source.startsWith(bomSeq)) {
+      this._offset += bomSeq.length;
+    }
+{{- end }}
+    this.rewind(this._offset)
+  }
+{{end -}}
+
+{{- define "lexerRewind" -}}
+  // rewind can be used in lexer actions to accept a portion of a scanned token, or to include
+  // more text into it.
+  private rewind(offset: number) {
+{{ if .Options.TokenLine -}}
+    if (offset < this._offset) {
+      this._line -= (this._source.substring(offset, this._offset).match(/\n/g) || []).length;
+    } else {
+      if (offset > this._source.length) {
+        offset = this._source.length;
+      }
+      this._line += (this._source.substring(this._offset, offset).match(/\n/g) || []).length;
+    }
+{{ if or .Options.TokenLineOffset .Options.TokenColumn -}}
+    this._lineOffset = 1 + this._source.lastIndexOf('\n', offset - 1);
+{{ end -}}
+{{ end -}}
+
+    // Scan the next character.
+    this._scanOffset = offset;
+    this._offset = offset;
+    if (this._offset < this._source.length) {
+{{ if .Options.ScanBytes -}}
+    this._ch = this._source.charCodeAt(this._offset);
+    this._scanOffset++
+{{ else -}}
+    let r = this._source.charCodeAt(this._offset);
+    let w = 1;
+    if (r >= 0x80) {
+      // not ASCII
+      { r, w } = decodeRune(this._source, this._offset);
+    }
+    this._scanOffset += w;
+    this._ch = r;
+{{ end -}}
+    } else {
+      this._ch = -1; // EOI
+    }
+  }
+{{end -}}
+
+
+{{- define "lexerPos" -}}
+  // pos returns the start and end positions of the last token returned by Next().
+  pos(): {start: number; end: number} {
+    return { start: this._tokenOffset, end: this._offset};
+  }
+{{end -}}
+
+{{- define "lexerLine" -}}
+  // line returns the line number of the last token returned by next() (1-based).
+  line(): number {
+    return this._tokenLine;
+  }
+{{end -}}
+
+{{- define "lexerColumn" -}}
+  // column returns the column of the last token returned by next() (in bytes, 1-based).
+  column(): number {
+    return this._tokenColumn
+  }
+{{end -}}
+
+{{- define "lexerText" -}}
+  // text returns the substring of the input corresponding to the last token.
+  text(): string {
+    return this._source.substring(this._tokenOffset, this._offset);
+  }
+{{end -}}
+
+{{- define "lexerSource" -}}
+  // source returns the input
+  source(): string {
+    return this._source;
+  }
+{{end -}}
+
+{{- define "lexerValue" -}}
+  // Value returns the value associated with the last returned token.
+  value() {
+    return this._value;
+  }
+{{end -}}
+
+{{- define "lexerCopy" -}}
+  // Copy forks the lexer in its current state.
+  copy(): Lexer {
+    let copy = JSON.parse(JSON.stringify(this))
+    return copy as Lexer;
+  }
+{{end -}}
+
+{{- define "lexerNext" -}}
+  // next finds and returns the next token in l.source. The source end is
+  // indicated by {{template "tokenType" }}.EOI.
+  //
+  // The token text can be retrieved later by calling the text() method.
+  next(): {{template "tokenType" .}} {
+{{ $spaceRules := .SpaceActions -}}
+{{ if or $spaceRules .Lexer.RuleToken -}}
+    restart: while(true) {
+{{ end -}}
+{{ if .Options.TokenLine -}}
+      this._tokenLine = this._line;
+{{ end -}}
+{{ if .Options.TokenColumn -}}
+      this._tokenColumn = this._offset - this._lineOffset + 1;
+{{ end -}}
+      this._tokenOffset = this._offset;
+
+      let state = {{ if gt (len .Lexer.StartConditions) 1 }}lt.tmStateMap[this._state]{{else}}{{index .Lexer.Tables.StateMap 0}}{{end}};
+{{ if .Lexer.ClassActions -}}
+      let hash = 0;
+{{ end -}}
+{{ if .Lexer.Tables.Backtrack -}}
+      let backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} = -1;
+      let backupOffset = 0;
+{{ if .Lexer.ClassActions -}}
+      let backupHash = hash;
+{{ end -}}
+{{ end -}}
+      for (; state >= 0; ) {
+        let ch = 0;
+        if (this._ch >= 0 && this._ch < lt.tmRuneClassLen) {
+          ch = lt.tmRuneClass[this._ch];
+        } else if (this._ch < 0) {
+          state = lt.tmLexerAction[state * lt.tmNumClasses];
+{{ if .Lexer.Tables.Backtrack -}}
+          if (state > lt.tmFirstRule && state < 0) {
+            state = (-1 - state) * 2;
+            backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} = lt.tmBacktracking[state];
+            backupOffset = this._offset;
+{{ if .Lexer.ClassActions -}}
+            backupHash = hash;
+{{ end -}}
+            state = lt.tmBacktracking[state + 1];
+          }
+{{ end -}}
+          continue;
+        } else {
+{{ if gt .Lexer.Tables.LastMapEntry.Start 2048 -}}
+          ch = lt.mapRune(this._ch);
+{{ else -}}
+          ch = {{.Lexer.Tables.LastMapEntry.Target}};
+{{ end -}}
+        }
+        state = lt.tmLexerAction[state * lt.tmNumClasses + ch];
+        if (state > lt.tmFirstRule) {
+{{ if .Lexer.Tables.Backtrack -}}
+          if (state < 0) {
+            state = (-1 - state) * 2;
+            backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} = lt.tmBacktracking[state];
+            backupOffset = this._offset;
+{{ if .Lexer.ClassActions -}}
+            backupHash = hash;
+{{ end -}}
+            state = lt.tmBacktracking[state + 1];
+          }
+{{ end -}}
+{{ if .Lexer.ClassActions -}}
+          hash = hash * 31 + this._ch;
+{{ end -}}
+{{ if .Options.TokenLine -}}
+          if (this._ch === '\n'.charCodeAt(0)) {
+            this._line++;
+{{ if or .Options.TokenLineOffset .Options.TokenColumn -}}
+            this._lineOffset = this._offset;
+{{ end -}}
+          }
+{{ end -}}
+          // Scan the next character.
+          // Note: the following code is inlined to avoid performance implications.
+          this._offset = this._scanOffset;
+          if (this._offset < this._source.length) {
+{{ if .Options.ScanBytes -}}
+            this._ch = this._source.charCodeAt(this._offset);
+            this._scanOffset++;
+{{ else -}}
+            let r = this._source.charCodeAt(this_.offset);
+            let w = 1;
+            if r >= 0x80 {
+              // not ASCII
+              { r, w } = decodeRune(this._source, this._offset);
+            }
+            this._scanOffset += w;
+            this._ch = r;
+{{ end -}}
+          } else {
+            this._ch = -1; // EOI
+          }
+        }
+      }
+{{if .Lexer.RuleToken -}}
+      let rule = lt.tmFirstRule - state;
+{{ else -}}
+      let tok = {{template "tokenType" .}}(lt.tmFirstRule - state);
+{{ end -}}
+{{ if .Lexer.Tables.Backtrack -}}
+      recovered: while (true) {
+{{ end -}}
+{{ if .Lexer.ClassActions -}}
+        switch {{if .Lexer.RuleToken}}rule{{else}}tok{{end}} {
+{{ range .Lexer.ClassActions -}}
+{{ if $.Lexer.RuleToken -}}
+          case {{.Action}}:
+{{ else -}}
+          case {{template "tokenPkg" $}}.{{(index $.Syms .Action).ID}}:
+{{ end -}}
+{{ with string_switch .Custom -}}
+          switch (hash & {{.Mask}}) {
+{{ range .Cases -}}
+            case {{.Value}}:
+{{ range .Subcases -}}
+              if (hash === {{hex .Hash}} && {{quote .Str}} === this._source.substring(this._tokenOffset, this._offset)) {
+{{ if $.Lexer.RuleToken -}}
+                rule = {{.Action}};
+{{ else -}}
+                tok = {{template "tokenPkg" $}}.{{(index $.Syms .Action).ID}};
+{{ end -}}
+              break;
+              }
+            break;
+{{ end -}}
+{{ end }}{{/* .Cases */ -}}
+          }
+{{ end -}}
+{{ end }}{{/* .Lexer.ClassActions */ -}}
+        }
+{{ end -}}
+{{ if .Lexer.RuleToken -}}
+        let tok = lt.tmToken[rule];
+        let space = false;
+{{ if .Lexer.Actions -}}
+        switch (rule) {
+          case 0: // no match
+{{ template "handleInvalidToken" . -}}
+          break;
+{{ range .Lexer.Actions -}}
+          case {{.Action}}:{{if .Comments}} // {{join .Comments ", "}}{{end}}
+{{ if .Space -}}
+            space = true
+{{ end -}}
+{{ if .Code -}}
+{{lexer_action .Code}}
+{{ end -}}
+          break;
+{{ end }}{{/* .Lexer.Actions */ -}}
+        }
+{{ else -}}
+        if (rule === 0) {
+{{ template "handleInvalidToken" . -}}
+        }
+{{ end -}}
+        if (space) {
+          continue restart;
+        }
+{{ else -}}
+        switch (tok) {
+          case {{template "tokenType" .}}.{{(index $.Syms .Lexer.InvalidToken).ID}}:
+{{ template "handleInvalidToken" . -}}
+          break;
+{{ if $spaceRules -}}
+{{- range $spaceRules}}
+          case {{.}}:
+{{- end}}
+            continue restart;
+{{ end -}}
+        }
+{{ end -}}
+{{ block "onAfterNext" .}}{{end -}}
+{{ if .Lexer.Tables.Backtrack -}}
+        return tok;
+      }
+{{ end -}}
+{{ if or $spaceRules .Lexer.RuleToken -}}
+    }
+{{ end -}}
+  }
+{{end -}}
+
+
+{{- define "handleInvalidToken" -}}
+    // handleInvalidToken
+{{ if .Lexer.Tables.Backtrack -}}
+    if (backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} >= 0) {
+{{ if .Lexer.RuleToken -}}
+      rule = backupRule;
+{{ else -}}
+      tok = {{template "tokenType" .}}(backupToken);
+{{ end -}}
+{{ if .Lexer.ClassActions -}}
+      hash = backupHash;
+{{ end -}}
+      this.rewind(backupOffset);
+    } else if (this._offset === this._tokenOffset) {
+      if (this._ch === -1) {
+        tok = {{template "tokenType" .}}.{{(index $.Syms 0).ID}};
+      }
+      this.rewind(this._scanOffset);
+    }
+{{ if .Lexer.RuleToken -}}
+    if (rule !== 0) {
+{{ else -}}
+    if (tok !== {{template "tokenPkg" .}}.{{(index $.Syms .Lexer.InvalidToken).ID}}) {
+{{ end -}}
+      continue recovered;
+    }
+{{ else -}}
+    if (this._offset === this._tokenOffset {
+      if (this._ch === -1) {
+        tok = {{template "tokenPkg" .}}.{{(index $.Syms 0).ID}};
+      }
+      this.rewind(this._scanOffset);
+    }
+{{ end -}}
+    // End handleInvalidToken
+{{ end -}}
