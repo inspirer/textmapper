@@ -1,0 +1,135 @@
+{{- template "header" . -}}
+
+import * as {{template "tokenPkg"}} from './token';
+import * as {{template "listenerPkg"}} from './listener';
+
+export const startStackSize = 256;
+{{ if .ReportTokens true -}}
+export const startTokenBufferSize = 16;
+{{ end -}}
+export const noToken = {{template "tokenType"}}.UNAVAILABLE;
+export const eoiToken = {{template "tokenType"}}.EOI;
+
+{{- range .Parser.Tables.Markers}}
+{{- if and (ne .Name "lr0") (ne .Name "greedy")}}
+{{if eq (len .States) 1}}
+const {{.Name}}State = {{index .States 0}};
+{{- else}}
+let {{.Name}}States = {
+{{- range .States}}
+  {{.}}: true,
+{{- end}}
+};
+{{- end}}
+{{- end}}
+{{- end}}
+
+let tmNonterminals: string[] = [
+{{- range .Parser.Nonterms}}
+  "{{.Name}}",
+{{- end}}
+];
+
+export function symbolName(sym: {{template "tokenType"}}): string {
+  if (sym === noToken) {
+    return "<no-token>";
+  }
+  if (sym < {{template "tokenType" .}}.NumTokens) {
+    return {{template "tokenType" .}}[sym];
+  }
+  let i = sym - {{template "tokenType" .}}.NumTokens;
+  if (i < tmNonterminals.length) {
+    return tmNonterminals[i];
+  }
+  return "nonterminal(" + sym + ")";
+}
+
+{{ if .Parser.Tables.Optimized -}}
+export const tmDefGoto : number[] = [
+{{- int_array .Parser.Tables.Optimized.DefGoto "  " 79 -}}
+];
+
+export const tmGoto : number[] = [
+{{- int_array .Parser.Tables.Optimized.Goto "  " 79 -}}
+];
+
+export const tmDefAct : number[] = [
+{{- int_array .Parser.Tables.Optimized.DefAct "  " 79 -}}
+];
+
+export const tmActionBase = {{.Parser.Tables.Optimized.Base}};
+
+export const tmAction : number[] = [
+  {{- int_array .Parser.Tables.Optimized.Action "  " 79 -}}
+];
+
+export const tmTableLen = {{len .Parser.Tables.Optimized.Table}};
+
+export const tmTable : number[] = [
+{{- int_array .Parser.Tables.Optimized.Table "  " 79 -}}
+];
+
+export const tmCheck : number[] = [
+{{- int_array .Parser.Tables.Optimized.Check "  " 79 -}}
+];
+
+{{ else -}}
+export const tmAction : number[] = [
+{{- int_array .Parser.Tables.Action "  " 79 -}}
+];
+{{- if .Parser.Tables.Lalr}}
+export const tmLalr : number[] = [
+  {{- int_array .Parser.Tables.Lalr "  " 79 -}}
+];
+{{- end}}
+
+export const tmGoto : number[] = [
+{{- int_array .Parser.Tables.Goto "  " 79 -}}
+];
+
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+export const tmFromTo : number[] = [
+{{- int_array .Parser.Tables.FromTo "  " 79 -}}
+];
+{{ end -}}
+
+export const tmRuleLen : number[] = [
+{{- int_array .Parser.Tables.RuleLen "  " 79 -}}
+];
+
+export const tmRuleSymbol : number[] = [
+{{- int_array .Parser.Tables.RuleSymbol "  " 79 -}}
+];
+
+{{- if .Parser.UsedFlags}}
+export const tmRuleType : number[] = [
+{{- range .Parser.Rules}}
+{{- if ne .Type -1 }}
+  {{- $val := index $.Parser.Types.RangeTypes .Type }}
+{{if not (is_file_node $val.Name)}}{{template "nodeTypeRef"}}.{{node_id $val.Name}}{{if .Flags}} + ({{template "nodeFlagsRef"}}.{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{$flag}}{{end}} << 16){{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+{{- else }}
+  0, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
+];
+{{- else }}
+export const tmRuleType : {{template "nodeTypeRef"}}[] = [
+{{- range .Parser.Rules}}
+{{- if ne .Type -1 }}
+  {{- $val := index $.Parser.Types.RangeTypes .Type }}
+  {{if not (is_file_node $val.Name)}}{{template "nodeTypeRef"}}.{{node_id $val.Name}}{{else}}0{{end}}, // {{$.RuleString .}}
+{{- else }}
+  0, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
+];
+{{- end }}
+
+{{- range .Sets}}
+// {{.Expr}} = {{.ValueString $}}
+export const {{.Name}} : {{template "tokenType" .}}[] = [
+{{- if gt (len .Terminals) 0 -}}
+  {{- int_array .Terminals "  " 79 -}}
+{{- end -}}
+];
+{{- end}}

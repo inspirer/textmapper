@@ -1,0 +1,52 @@
+{{- template "header" . -}}
+
+import * as {{template "tokenPkg"}} from './token';
+
+export const debugSyntax = {{ .Options.DebugParser }};
+
+export function debugLog(...data: any[]) : void {
+{{ if .Options.DebugParser -}}
+  console.log("[DEBUG]", ...data);
+{{ else -}}
+  // No-op. DebugParser == false
+{{ end -}}
+}
+
+{{ template "symbol" . -}}
+{{ template "stackEntry" . -}}
+
+{{- define "symbol" -}}
+{{ if .Options.IsEnabled "symbol" -}}
+export class Symbol {
+  symbol: {{template "tokenType"}};
+  offset: number;
+  endoffset: number;
+
+  constructor(symbol: {{template "tokenType"}}, offset: number, endoffset: number) {
+    this.symbol = symbol;
+    this.offset = offset;
+    this.endoffset = endoffset;
+  }
+
+  copy() : Symbol {
+    let copy = JSON.parse(JSON.stringify(this));
+    return copy as Symbol;
+  }
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "stackEntry" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ if .Options.IsEnabled "stackEntry" -}}
+export type StackEntry = {
+  sym: Symbol;
+  state: number;
+{{ if .Parser.HasAssocValues -}}
+  value: any;
+{{ end -}}
+};
+
+{{ end -}}
+{{ end -}}

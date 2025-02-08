@@ -53,6 +53,32 @@ var languages = map[string]*language{
 			{"parser.cc", builtin(`cc_parser_cc`)},
 		},
 	},
+
+	"ts": {
+		SharedDefs: builtin(`ts_shared`),
+		CachedDefs: builtin(`ts_cached`),
+		Lexer: []file{
+			{"token.ts", builtin(`ts_token`)},
+			{"lexer_tables.ts", builtin(`ts_lexer_tables`)},
+			{"lexer.ts", builtin(`ts_lexer`)},
+		},
+		Types: []file{
+			{"common.ts", builtin("ts_common")},
+			{"listener.ts", builtin("ts_listener")},
+		},
+		Selector: []file{
+			{"selector.ts", builtin(`ts_selector`)},
+		},
+		Parser: []file{
+			{"parser.ts", builtin("ts_parser")},
+			{"parser_tables.ts", builtin("ts_parser_tables")},
+			{"ast/tree.ts", builtin("ts_ast_tree")},
+			{"ast/parse.ts", builtin("ts_ast_parse")},
+		},
+		Stream: []file{
+			{"stream.ts", builtin(`ts_stream`)},
+		},
+	},
 }
 
 type file struct {

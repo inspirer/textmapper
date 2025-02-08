@@ -1,0 +1,1051 @@
+{{ template "header" . -}}
+
+import * as {{template "commonPkg"}} from './common';
+import * as {{template "tokenPkg"}} from './token';
+import * as {{template "lexerPkg"}} from './lexer';
+import * as {{template "listenerPkg"}} from './listener';
+import * as ptables from './parser_tables';
+{{ if .Options.TokenStream }}import * as {{template "streamPkg"}} from './stream';{{ end }}
+
+{{ template "errorHandler" . -}}
+{{ template "syntaxError" . -}}
+{{ template "parserSession" . -}}
+{{ template "lookahead" . -}}
+{{ template "lookaheadRule" . -}}
+{{ template "lookaheadMethods" . -}}
+{{ template "lookaheadFunc" . -}}
+{{ template "lalr" . -}}
+{{ if and .Options.FixWhitespace (not .Options.TokenStream) -}}
+{{ template "fixTrailingWS" . -}}
+{{ end -}}
+{{ if .Parser.IsRecovering -}}
+{{ template "errSymbol" . -}}
+{{ template "reduceAll" . -}}
+{{ end -}}
+{{ template "gotoState" . -}}
+{{ template "parserType" . -}}
+
+{{- define "lexerParam"}}{{if .Options.TokenStream}}stream: {{template "streamPkg"}}.TokenStream{{else}}lexer: {{template "lexerPkg"}}.Lexer{{end}}{{end}}
+{{- define "lexerArg"}}{{if .Options.TokenStream}}stream{{else}}lexer{{end}}{{end}}
+
+{{- define "errorHandler" -}}
+{{ if .Parser.IsRecovering -}}
+// ErrorHandler is called every time a parser is unable to process some part of the input.
+// This handler can return false to abort the parser.
+export type ErrorHandler = (err: SyntaxError) => boolean;
+
+// StopOnFirstError is an error handler that forces the parser to stop on and return the first
+// error.
+export const StopOnFirstError : ErrorHandler = (err : SyntaxError) : boolean => false;
+
+{{ end -}}
+{{ end -}}
+
+{{- define "syntaxError" -}}
+{{ if .Options.IsEnabled "syntaxError" -}}
+export type SyntaxError = {
+{{ if .Options.TokenLine -}}
+  line: number;
+{{ end -}}
+  offset: number;
+  endoffset: number;
+};
+
+export function ErrorMsg(err : SyntaxError) : string {
+{{ if .Options.TokenLine -}}
+  return "syntax error at line " + err.line;
+{{ else -}}
+  return "syntax error";
+{{ end -}}
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "parserSession" -}}
+{{ if and .NeedsSession (.Options.IsEnabled "session") -}}
+type Session = {
+{{ if .Options.RecursiveLookaheads -}}
+  cache: Map<number, boolean>;
+{{ end -}}
+};
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "parserType" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ if .Options.IsEnabled "Parser" -}}
+// Parser is a table-driven LALR parser for {{.Name}}.
+export class Parser {
+{{ if .Parser.IsRecovering -}}
+  _eh: ErrorHandler;
+{{ end -}}
+{{ if .Parser.Types -}}
+  _listener: {{template "listenerTypeRef"}};
+{{ end -}}
+  _next: {{template "commonPkg"}}.Symbol;
+{{ if .Parser.IsRecovering -}}
+{{ if not .Options.TokenStream -}}
+  _endState: number;
+{{ end -}}
+  _recovering: number;
+{{ end -}}
+{{ if and (.ReportTokens true) (not .Options.TokenStream) -}}
+  // Tokens to be reported with the next shift. Only non-empty when next.symbol != noToken.
+  _pending: {{template "commonPkg"}}.Symbol[];
+{{ end }}
+
+  {{- template "parserInit" . -}}
+  {{- template "parseEntryFuncs" . -}}
+  {{- template "parseFunc" . -}}
+  {{- template "fetchNext" . -}}
+  {{- template "applyRule" . -}}
+{{ if .Parser.IsRecovering -}}
+  {{- template "recoverFromError" . -}}
+  {{- template "skipBrokenCode" . -}}
+{{ end -}}
+{{ if and (.ReportTokens true) (not .Options.TokenStream) -}}
+  {{- template "reportIgnoredToken" . -}}
+  {{- template "parserFlush" . -}}
+{{ end -}}
+  {{- template "reportRange" . -}}
+};
+
+{{ end -}}
+{{ end -}}
+
+{{- define "parserInit" -}}
+{{ if .Options.IsEnabled "ParserInit" -}}
+  constructor({{if .Parser.IsRecovering }}eh: ErrorHandler{{end}}{{if .Parser.Types }}{{if .Parser.IsRecovering }}, {{end}}listener: {{template "listenerTypeRef"}}{{end}}) {
+{{ if .Parser.IsRecovering -}}
+    this._eh = eh;
+{{ end -}}
+{{ if .Parser.Types -}}
+    this._listener = listener;
+{{ end -}}
+    this._next = new {{template "commonPkg"}}.Symbol({{template "tokenType"}}.UNAVAILABLE, 0, 0);
+{{ if and (.ReportTokens true) (not .Options.TokenStream) -}}
+    this._pending = [];
+{{ end -}}
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "parseEntryFuncs" -}}
+{{ range $index, $inp := .Parser.Inputs -}}
+{{ if $inp.Synthetic }}{{continue}}{{end -}}
+{{ $nt := index $.Parser.Nonterms $inp.Nonterm -}}
+  parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}({{template "lexerParam" $}}) : { {{if eq $nt.Type ""}}err? : SyntaxError{{else}}res? : {{$nt.Type}}, err? : SyntaxError){{end}} } {
+{{ if $.Parser.HasInputAssocValues -}}
+    let parseRes = this.doParse({{$index}}, {{index $.Parser.Tables.FinalStates $index}}, {{template "lexerArg" $}});
+{{ if ne $nt.Type "" -}}
+    return { res : parseRes.res as {{$nt.Type}}, err : parseRes.err };
+{{ else -}}
+    return parseRes.err;
+{{ end -}}
+{{ else -}}
+    return this.doParse({{$index}}, {{index $.Parser.Tables.FinalStates $index}}, {{template "lexerArg" $}});
+{{ end -}}
+  }
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "parseFunc" -}}
+{{ $stateType := bits_per_element .Parser.Tables.FromTo -}}
+{{ if .Options.IsEnabled "parse" -}}
+  private doParse(start: number, end: number, {{template "lexerParam" .}}) : { {{if .Parser.HasInputAssocValues}}res? : any, {{end}} err?: SyntaxError } {
+{{ if and (.ReportTokens true) (not .Options.TokenStream) -}}
+    this._pending = [];
+{{ end -}}
+{{ if .NeedsSession -}}
+    let s: Session = {};
+{{ if .Options.RecursiveLookaheads -}}
+    s.cache = {};
+{{ end -}}
+{{ end -}}
+    let state = start;
+{{ if .Parser.IsRecovering -}}
+    let lastErr: SyntaxError = {
+{{ if .Options.TokenLine -}}
+      line: 0,
+{{ end -}}
+      offset: 0,
+      endoffset: 0
+    };
+    this._recovering = 0;
+{{ end -}}
+
+    let stack: {{template "commonPkg"}}.StackEntry[] | null = [{sym: new {{template "commonPkg"}}.Symbol({{template "tokenType"}}.UNAVAILABLE, 0, 0), state: state{{ if .Parser.HasAssocValues }}, value: {}{{end}} }];
+{{ if and .Parser.IsRecovering (not .Options.TokenStream) -}}
+    this._endState = end;
+{{ end -}}
+{{ if .Options.TokenStream -}}
+    this._next = stream.next(stack, end);
+{{ else -}}
+    this.fetchNext(lexer, stack);
+{{ end -}}
+
+    while (state !== end) {
+      let action = ptables.tmAction[state];
+{{ if .Parser.Tables.Optimized -}}
+      if (action > ptables.tmActionBase) {
+        // Lookahead is needed.
+        if (this._next.symbol === ptables.noToken) {
+{{ if .Options.TokenStream -}}
+          this._next = stream.next(stack, end);
+{{ else -}}
+          this.fetchNext(lexer, stack);
+{{ end -}}
+        }
+        let pos = action + this._next.symbol;
+        if (pos >= 0 && pos < ptables.tmTableLen && ptables.tmCheck[pos] === this._next.symbol) {
+          action = ptables.tmTable[pos];
+        } else {
+          action = ptables.tmDefAct[state];
+        }
+      } else {
+        action = ptables.tmDefAct[state];
+      }
+{{ else if .Parser.Tables.Lalr -}}
+      if (action < -2) {
+        // Lookahead is needed.
+        if (this._next.symbol === ptables.noToken) {
+{{ if .Options.TokenStream -}}
+          this._next = stream.next(stack, end);
+{{ else -}}
+          this.fetchNext(lexer, stack);
+{{ end -}}
+        }
+        action = lalr(action, this._next.symbol);
+      }
+{{ end -}}
+      if (action >= 0) {
+        // Reduce.
+        let rule = action;
+        let ln = ptables.tmRuleLen[rule];
+
+
+        let entry : {{template "commonPkg"}}.StackEntry = { sym: new {{template "commonPkg"}}.Symbol(ptables.tmRuleSymbol[rule], 0, 0), state: 0{{ if .Parser.HasAssocValues }}, value: {}{{end}} };
+        let rhs = stack.slice(stack.length - ln);
+{{ if and .Options.FixWhitespace .Options.TokenStream -}}
+        while (ln > 0 && rhs[ln-1].sym.offset === rhs[ln-1].sym.endoffset) {
+          ln--;
+        }
+{{ end -}}
+        if (ln === 0) {
+          if (this._next.symbol === ptables.noToken) {
+{{ if .Options.TokenStream -}}
+            this._next = stream.next(stack, end);
+{{ else -}}
+            this.fetchNext(lexer, stack);
+{{ end -}}
+          }
+          entry.sym.offset = this._next.offset;
+          entry.sym.endoffset = this._next.offset;
+{{ if .Parser.HasAssocValues -}}
+          entry.value = stack[stack.length - 1].value;
+{{ end -}}
+        } else {
+          entry.sym.offset = rhs[0].sym.offset;
+          entry.sym.endoffset = rhs[ln - 1].sym.endoffset;
+{{ if .Parser.HasAssocValues -}}
+          entry.value = rhs[0].value;
+{{ end -}}
+        }
+        this.applyRule(rule, entry, stack, {{template "lexerArg" .}}{{if .NeedsSession}}, s{{end}});
+        stack = stack.slice(0, stack.length - rhs.length);
+        if ({{template "commonPkg"}}.debugSyntax) {
+          {{template "commonPkg"}}.debugLog("reduced to", ptables.symbolName(entry.sym.symbol));
+        }
+        state = gotoState(stack[stack.length - 1].state, entry.sym.symbol);
+        entry.state = state;
+        stack.push(entry);
+
+      } else if (action {{if .Parser.Tables.Optimized}}<{{else}}==={{end}} -1) {
+        // Shift.
+{{ if .Parser.Tables.Optimized -}}
+        state = -2 - action;
+{{ else -}}
+        if (this._next.symbol === ptables.noToken) {
+{{ if .Options.TokenStream -}}
+          this._next = stream.next(stack, end);
+{{ else -}}
+          this.fetchNext(lexer, stack);
+{{ end -}}
+        }
+        state = gotoState(state, this._next.symbol);
+        if (state >= 0) {
+{{ end -}}
+          stack.push({
+            sym:   this._next.copy(),
+            state: state,
+{{ if .Parser.HasAssocValues -}}
+            value: {{template "lexerArg" .}}.value(),
+{{ end -}}
+          });
+          if ({{template "commonPkg"}}.debugSyntax) {
+            {{template "commonPkg"}}.debugLog("lookahead shift:", ptables.symbolName(this._next.symbol), "(", {{if .Options.TokenStream}}stream.text(this._next){{else}}lexer.text(){{end}}, ")");
+          }
+{{ if .ReportTokens true -}}
+          {{if .Options.TokenStream}}stream{{else}}this{{end}}.flush(this._next);
+{{ end -}}
+          if (this._next.symbol !== ptables.eoiToken) {
+{{ template "reportConsumedNext" . -}}
+            this._next.symbol = ptables.noToken;
+          }
+{{ if .Parser.IsRecovering -}}
+          if (this._recovering > 0) {
+            this._recovering--;
+          }
+{{ end -}}
+{{ if not .Parser.Tables.Optimized -}}
+        }
+{{ end -}}
+      }
+
+      if (action === {{ if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state === -1) {
+{{ if .Parser.IsRecovering -}}
+        if (this._recovering === 0) {
+          if (this._next.symbol === ptables.noToken) {
+{{ if .Options.TokenStream -}}
+            this._next = stream.next(stack, end);
+{{ else -}}
+            this.fetchNext(lexer, stack);
+{{ end -}}
+          }
+          lastErr = {
+{{ if .Options.TokenLine -}}
+            line:      {{if .Options.TokenStream}}stream.line(){{else}}lexer.line(){{end}},
+{{ end -}}
+            offset:    this._next.offset,
+            endoffset: this._next.endoffset
+          };
+          if (!this._eh(lastErr)) {
+{{ if .ReportTokens true -}}
+            {{if .Options.TokenStream}}stream{{else}}this{{end}}.flush(this._next);
+{{ end -}}
+            return { err : lastErr };
+          }
+        }
+
+        this._recovering = 4;
+        stack = this.recoverFromError({{template "lexerArg" .}}, stack, end)
+        if (stack === null || stack === undefined) {
+{{ if .ReportTokens true -}}
+          {{if .Options.TokenStream}}stream{{else}}this{{end}}.flush(this._next)
+{{ end -}}
+          return { err : lastErr };
+        }
+        state = stack[stack.length - 1].state;
+{{ else -}}
+        break;
+{{ end -}}
+      }
+    }
+
+{{ if not .Parser.IsRecovering -}}
+    if (state !== end) {
+      if (this._next.symbol === ptables.noToken) {
+{{ if .Options.TokenStream -}}
+        this.next = stream.next(stack, end);
+{{ else -}}
+        this.fetchNext(lexer, stack);
+{{ end -}}
+      }
+      let err : SyntaxError = {
+{{ if .Options.TokenLine -}}
+        line:      {{if .Options.TokenStream}}stream.line(){{else}}lexer.line(){{end}},
+{{ end -}}
+        offset:    this._next.offset,
+        endoffset: this._next.endoffset
+      }
+      return { err: err };
+    }
+
+{{ end -}}
+{{if .Parser.HasInputAssocValues}}
+    return { res : stack[stack.length - 2] };
+{{else}}
+    return { };
+{{end}}
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "fetchNext" -}}
+{{ if and (.Options.IsEnabled "fetchNext") (not .Options.TokenStream) -}}
+  private fetchNext({{template "lexerParam" .}}, stack: {{template "commonPkg"}}.StackEntry[]) : void {
+    restart: while (true) {
+      let tok = lexer.next();
+      switch (tok) {
+{{- if .ReportTokens true -}}
+{{- range .ReportTokens true}}
+        case {{template "tokenType" $}}.{{.ID}}:
+{{- end}}
+          let { start, end } = lexer.pos();
+          this._pending.push(new {{template "commonPkg"}}.Symbol(tok, start, end));
+          continue restart;
+{{ end -}}
+{{ if not .ReportsInvalidToken -}}
+        case {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}}:
+          continue restart;
+{{ end -}}
+      }
+      let { start, end } = lexer.pos();
+      this._next.symbol = tok;
+      this._next.offset = start;
+      this._next.endoffset = end;
+      break;
+    }
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "parserFlush" -}}
+{{ if .Options.IsEnabled "streamFlush" -}}
+  // flush reports all pending tokens up to a given symbol.
+  private flush(sym: {{template "commonPkg"}}.Symbol) : void {
+    if (this._pending.length > 0 && this._listener) {
+      for (let i = 0; i < this._pending.length; i++) {
+        let tok = this._pending[i];
+        if (tok.endoffset > sym.endoffset) {
+          // Note: this copying should not happen during normal operation, only
+          // during error recovery.
+          this._pending = this._pending.slice(i);
+          return;
+        }
+        this.reportIgnoredToken(tok);
+      }
+      this._pending = [];
+    }
+  }
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "customReportNext"}}{{end}}
+
+{{- define "reportConsumedNext" -}}
+{{ if not .Options.TokenStream -}}
+{{ if .ReportTokens false -}}
+      switch (this._next.symbol) {
+{{ range .Parser.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
+        case {{template "tokenType" $}}.{{$sym.ID}}:
+          this._listener({{template "nodeTypeRef" $}}.{{node_id .Name}}, {{if $.Parser.UsedFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}.{{$flag}}{{else}}0{{end}}, {{end}}this._next.offset, this._next.endoffset);
+          break;
+{{ end -}}
+{{ end -}}
+{{template "customReportNext" . -}}
+      }
+{{else -}}
+{{template "customReportNext" . -}}
+{{ end -}}
+{{ end -}}
+{{ end -}}
+
+{{- define "applyRule" -}}
+  private applyRule(rule: number, lhs: {{template "commonPkg"}}.StackEntry, stack: {{template "commonPkg"}}.StackEntry[], {{template "lexerParam" .}}{{if .NeedsSession}}, s: Session{{end}}) : void {
+{{ if or .Parser.HasActions .Parser.Tables.Lookaheads -}}
+    switch (rule) {
+{{ range $index, $rule := .Parser.Rules -}}
+{{ $rulelen := index $.Parser.Tables.RuleLen $index -}}
+{{ $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) (not $.Options.TokenStream) -}}
+{{ if or (ne $rule.Action 0) $fixWS -}}
+{{ $act := index $.Parser.Actions $rule.Action -}}
+{{ if or (ne $act.Code "") $act.Report $fixWS -}}
+      case {{$index}}: // {{$.RuleString $rule}}
+{{ if $fixWS -}}
+        fixTrailingWS(lhs, stack.slice(stack.length - {{$rulelen}}));
+{{ end -}}
+{{ range $act.Report -}}
+{{ $val := index $.Parser.Types.RangeTypes .Type -}}
+{{ if eq .Start .End -}}
+        this._listener({{template "nodeTypeRef" $}}.{{node_id $val.Name}}, {{ if $.Parser.UsedFlags }}
+           {{- range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsRef" $}}.{{$flag}}{{else}}0{{end}}, {{end}}
+           stack[stack.length - {{sub $rulelen .End}}].sym.offset, stack[stack.length - {{sub $rulelen .End}}].sym.offset);
+{{ else -}}
+        this.{{if $.Options.FixWhitespace}}reportRange{{else}}_listener{{end}}({{template "nodeTypeRef" $}}.{{node_id $val.Name}}, {{ if $.Parser.UsedFlags }}
+           {{- range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsRef" $}}.{{$flag}}{{else}}0{{end}}, {{end}}
+           {{- if $.Options.FixWhitespace}}stack.slice(stack.length - {{sub $rulelen .Start}}, stack.length - {{sub $rulelen .End}}){{else}}stack[stack.length - {{sub $rulelen .Start}}].sym.offset, stack[stack.length - {{sub $rulelen (minus1 .End)}}].sym.endoffset{{end}});
+{{ end -}}
+{{ end -}}
+        break;
+{{ end -}}
+{{ end -}}
+{{ end -}}
+{{ range $index, $rule := .Parser.Tables.Lookaheads -}}
+      case {{sum $index (len $.Parser.Rules)}}:
+{{ range $rule.Cases }}
+{{- $sym := index $.Syms (sum $.NumTokens (index $.Parser.Inputs .Predicate.Input).Nonterm) -}}
+        if ({{if .Predicate.Negated}}!{{end}}at{{$sym.Name}}({{template "lexerArg" $}}, this._next{{if $.NeedsSession}}, s{{end}})) {
+          lhs.sym.symbol = {{.Target}}; /* {{(index $.Syms .Target).Name}} */
+        } else {{end}}{
+          lhs.sym.symbol = {{.DefaultTarget}}; /* {{(index $.Syms .DefaultTarget).Name}} */
+        }
+        return;
+{{ end -}}
+    }
+{{ end -}}
+{{ if .Parser.Types -}}
+    let nt = ptables.tmRuleType[rule];
+    if (nt !== 0) {
+{{ if .Parser.UsedFlags -}}
+      this._listener(nt & 0xffff, nt >> 16, lhs.sym.offset, lhs.sym.endoffset)
+{{ else -}}
+      this._listener(nt, lhs.sym.offset, lhs.sym.endoffset);
+{{ end -}}
+    }
+{{ end -}}
+  }
+
+{{ end -}}
+
+{{- define "lookahead" -}}
+{{ if and .Parser.Tables.Lookaheads (.Options.IsEnabled "lookaheadNext") (not .Options.TokenStream) -}}
+function lookaheadNext(lexer: Lexer) : {{template "commonPkg"}}.Symbol {
+  restart: while(true) {
+    let tok = lexer.next();
+    switch tok {
+{{ if .ReportTokens true -}}
+    case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{template "tokenTypeRef" $}}.{{.ID}}{{end}}:
+      continue restart;
+{{ end -}}
+{{ if not .ReportsInvalidToken -}}
+    case {{template "tokenTypeRef" .}}.{{(index .Syms .Lexer.InvalidToken).ID}}:
+      continue restart
+{{ end -}}
+    }
+    let { start, end } = lexer.pos();
+    return {  symbol: tok, offset: start, endoffset:end };
+  }
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "lookaheadNextArgs"}}{{/*(memoization)*/}}{{end -}}
+
+{{- define "lookaheadRule" -}}
+{{ if and .Parser.Tables.Lookaheads .Options.RecursiveLookaheads -}}
+function lookaheadRule({{template "lexerParam" .}}, next: {{template "commonPkg"}}.Symbol, rule: number, s: Session) : number {
+  let sym : number = 0;
+  switch (rule) {
+{{ range $index, $rule := .Parser.Tables.Lookaheads -}}
+  case {{sum $index (len $.Parser.Rules)}}:
+    {{ range $rule.Cases }}
+    {{- $sym := index $.Syms (sum $.NumTokens (index $.Parser.Inputs .Predicate.Input).Nonterm) -}}
+    if {{if .Predicate.Negated}}!{{end}}lookahead({{template "lexerArg" $}}, next, {{.Predicate.Input}}, {{index $.Parser.Tables.FinalStates .Predicate.Input}}{{if $.NeedsSession}}, s{{end}})) {
+      sym = {{.Target}}; /* {{(index $.Syms .Target).Name}} */
+    } else {{end}}{
+      sym = {{.DefaultTarget}}; /* {{(index $.Syms .DefaultTarget).Name}} */
+    }
+    return sym;
+{{ end -}}
+  }
+  return 0;
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "lookaheadMethods" -}}
+{{ if .Parser.Tables.Lookaheads -}}
+{{ range $ind, $inp := .Parser.Inputs -}}
+{{ if and .Synthetic .NoEoi -}}
+{{ $sym := index $.Syms (sum $.NumTokens .Nonterm) -}}
+function at{{$sym.Name}}({{template "lexerParam" $}}, next: {{template "commonPkg"}}.Symbol{{if $.NeedsSession}}, s: Session{{end}}) : boolean {
+  if ({{template "commonPkg"}}.debugSyntax) {
+    {{template "commonPkg"}}.debugLog("lookahead {{$sym.Name}}, next:", ptables.symbolName(next.symbol));
+  }
+  return lookahead({{template "lexerArg" $}}, next, {{$ind}}, {{index $.Parser.Tables.FinalStates $ind}}{{if $.NeedsSession}}, s{{end}});
+}
+
+{{ end -}}
+{{ end -}}
+{{ end -}}
+{{ end -}}
+
+{{- define "lookaheadFunc" -}}
+{{ if .Parser.Tables.Lookaheads -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+function lookahead({{ if .Options.TokenStream }}ts: TokenStream{{else}}l: Lexer{{end}}, next: {{template "commonPkg"}}.Symbol, start: number, end: number{{if $.NeedsSession}}, s: Session{{end}}) : boolean {
+{{ if .Options.TokenStream -}}
+  let stream = ts.copy();
+{{ else -}}
+  let lexer = l.copy();
+{{ end -}}
+{{ if .Options.RecursiveLookaheads -}}
+  // Use memoization for recursive lookaheads.
+  if (next.symbol === ptables.noToken) {
+    next = {{ if .Options.TokenStream }}stream.next(null /*stack*/, end){{else}}lookaheadNext({{template "lexerArg" $}}{{template "lookaheadNextArgs" true}}){{end}};
+  }
+  let key = next.offset + (end << 40);
+  if (s.cache.has(key)) {
+    return s.cache.get(key);
+  }
+{{ end -}}
+  let state = start;
+  let stack = [ { state: state } ];
+
+  while (state !== end) {
+    let action = ptables.tmAction[state];
+{{ if .Parser.Tables.Optimized -}}
+    if (action > ptables.tmActionBase) {
+      // Lookahead is needed.
+      if (next.symbol === ptables.noToken) {
+        next = {{ if .Options.TokenStream }}stream.next(stack, end){{else}}lookaheadNext({{template "lexerArg" $}}{{template "lookaheadNextArgs" false}}){{end}};
+      }
+      let pos = action + next.symbol;
+      if (pos >= 0 && pos < ptables.tmTableLen && ptables.tmCheck[pos] === next.symbol) {
+        action = ptables.tmTable[pos];
+      } else {
+        action = ptables.tmDefAct[state];
+      }
+    } else {
+      action = ptables.tmDefAct[state];
+    }
+{{ else if .Parser.Tables.Lalr -}}
+    if (action < -2) {
+      // Lookahead is needed.
+      if (next.symbol === ptables.noToken) {
+        next = {{ if .Options.TokenStream }}stream.next(stack, end){{else}}lookaheadNext({{template "lexerArg" $}}{{template "lookaheadNextArgs" false}}){{end}};
+      }
+      action = lalr(action, next.symbol);
+    }
+{{ end -}}
+
+    if (action >= 0) {
+      // Reduce.
+      let rule = action;
+      let ln = ptables.tmRuleLen[rule];
+
+      let entry: {{template "commonPkg"}}.StackEntry = { sym : { symbol : ptables.tmRuleSymbol[rule] } };
+      stack = stack.slice(0, stack.length - ln);
+{{ if .Options.RecursiveLookaheads -}}
+      let sym = lookaheadRule({{template "lexerArg" .}}, next, rule, s);
+
+      if (sym != 0) {
+        entry.sym.symbol = sym;
+      }
+{{ end -}}
+      if ({{template "commonPkg"}}.debugSyntax) {
+        {{template "commonPkg"}}.debugLog("lookahead reduced to:", symbolName(entry.sym.symbol));
+      }
+      state = gotoState(stack[stack.length - 1].state, entry.sym.symbol);
+      entry.state = state;
+      stack.push(entry);
+
+    } else if (action {{if .Parser.Tables.Optimized}}<{{else}}==={{end}} -1) {
+      // Shift.
+{{ if .Parser.Tables.Optimized -}}
+      state = -2 - action;
+{{ else -}}
+      if (next.symbol === ptables.noToken) {
+        next = {{ if .Options.TokenStream }}stream.next(stack, end){{else}}lookaheadNext({{template "lexerArg" $}}{{template "lookaheadNextArgs" false}}){{end}};
+      }
+      state = gotoState(state, next.symbol);
+{{ end -}}
+      stack.push({
+        sym:   next,
+        state: state,
+        {{ if .Parser.HasAssocValues }}, value: {}{{end}}
+      });
+      if ({{template "commonPkg"}}.debugSyntax) {
+        {{template "commonPkg"}}.debugLog("lookahead shift:", ptables.symbolName(next.symbol), "(", {{if .Options.TokenStream}}stream.text(next){{else}}lexer.text(){{end}}, ")");
+      }
+      if (state != -1 && next.symbol != ptables.eoiToken) {
+        next.symbol = noToken;
+      }
+    }
+
+    if (action === {{if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state === -1) {
+      break;
+    }
+  }
+
+{{ if .Options.RecursiveLookaheads -}}
+  s.cache[key] = state === end;
+{{ end -}}
+  if ({{template "commonPkg"}}.debugSyntax) {
+    {{template "commonPkg"}}.debugLog("lookahead done: ", state === end);
+  }
+  return state === end;
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "lalr" -}}
+{{ if and .Parser.Tables.Lalr (not .Parser.Tables.Optimized) -}}
+function lalr(action: number, next: number): number {
+  let a = -action - 3;
+  for (; ptables.tmLalr[a] >= 0; a += 2) {
+    if (ptables.tmLalr[a] === next) {
+      break;
+    }
+  }
+  return ptables.tmLalr[a + 1];
+}
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "gotoState" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+function gotoState(state: number, symbol: number) : number {
+{{ if not .Parser.Tables.Optimized -}}
+  let min = ptables.tmGoto[symbol];
+  let max = ptables.tmGoto[symbol + 1];
+
+  if (max - min < 32) {
+    for (let i = min; i < max; i += 2) {
+      if (ptables.tmFromTo[i] === state) {
+        return ptables.tmFromTo[i + 1];
+      }
+    }
+  } else {
+    while (min < max) {
+      let e = ((min + max) >> 1) & ~1;
+      let i = ptables.tmFromTo[e];
+      if (i === state) {
+        return ptables.tmFromTo[e + 1];
+      } else if (i < state) {
+        min = e + 2;
+      } else {
+        max = e;
+      }
+    }
+  }
+{{ else -}}
+{{$checkType := bits_per_element .Parser.Tables.Optimized.Check -}}
+  let numTokens = {{$.NumTokens}};
+  if (symbol >= numTokens) {
+    let pos = ptables.tmGoto[symbol - numTokens] + state;
+    if (pos >= 0 && pos < ptables.tmTableLen && ptables.tmCheck[pos] === state) {
+      return ptables.tmTable[pos];
+    }
+    return ptables.tmDefGoto[symbol-numTokens];
+  }
+
+  // Shifting a token.
+  let action = ptables.tmAction[state];
+  if (action === ptables.tmActionBase) {
+    return -1;
+  }
+  let pos = action + symbol;
+  if (pos >= 0 && pos < ptables.tmTableLen && ptables.tmCheck[pos] === symbol) {
+    action = ptables.tmTable[pos];
+  } else {
+    action = ptables.tmDefAct[state];
+  }
+  if (action < -1) {
+    return -2 - action;
+  }
+{{ end -}}
+  return -1;
+}
+
+{{ end -}}
+
+{{- define "errSymbol" -}}
+  const errSymbol = {{ .Parser.ErrorSymbol }}
+
+{{ end -}}
+
+{{- define "recoverFromError" -}}
+{{ if .Options.IsEnabled "recoverFromError" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+  recoverFromError({{template "lexerParam" .}}, stack: {{template "commonPkg"}}.StackEntry[], endState: number) : ({{template "commonPkg"}}.StackEntry[] | null) {
+    let recoverSyms: number[] = [];
+    let recoverPos: number[] = [];
+
+    if ({{template "commonPkg"}}.debugSyntax) {
+      {{template "commonPkg"}}.debugLog("broke at", ptables.symbolName(this._next.symbol));
+    }
+    for (let size = stack.length; size > 0; size--) {
+      if (gotoState(stack[size - 1].state, errSymbol) === -1) {
+        continue;
+      }
+      recoverPos.push(size);
+{{ range .Parser.Tables.Markers -}}
+{{ if eq (lower .Name) "recoveryscope" -}}
+{{ if eq (len .States) 1 -}}
+      if ({{.Name}}State === stack[size - 1].state) {
+        break;
+      }
+{{ else -}}
+      if ({{.Name}}States[stack[size - 1].state]) {
+        break;
+      }
+{{ end -}}
+{{ end -}}
+{{ end -}}
+    }
+    if (recoverPos.length === 0) {
+      return null;
+    }
+
+    for (let i = 0; i < ptables.afterErr.length; i++) {
+      let v = ptables.afterErr[i];
+      recoverSyms[v / 8] |= (1 << (v % 8));
+    }
+
+    let canRecover = (symbol: number) : boolean => {
+      return (recoverSyms[symbol / 8] & (1 << (symbol % 8))) != 0;
+    }
+    if (this._next.symbol === ptables.noToken) {
+{{ if .Options.TokenStream -}}
+      this._next = stream.next(stack, endState);
+{{ else -}}
+      this.fetchNext(lexer, stack);
+{{ end -}}
+    }
+    // By default, insert 'error' in front of the next token.
+    let s = this._next.offset;
+    let e = s;
+{{ if .ReportsInvalidToken -}}
+    let pending = {{ if .Options.TokenStream }}stream.pending(){{else}}this._pending{{end}};
+    for (let i = 0; i < pending.length; i++) {
+      let tok = pending[i];
+      // Try to cover all nearby invalid tokens.
+      if (tok.symbol === {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}}) {
+        if (s > tok.offset) {
+          s = tok.offset;
+        }
+        e = tok.endoffset;
+      }
+    }
+{{ end -}}
+    while (true) {
+      let endoffset = this.skipBrokenCode({{template "lexerArg" .}}, {{ if not .Options.TokenStream }}stack, {{end}}canRecover);
+      if (endoffset > e) {
+        e = endoffset;
+      }
+
+      let matchingPos: number = 0;
+      if ({{template "commonPkg"}}.debugSyntax) {
+        {{template "commonPkg"}}.debugLog("trying to recover on", ptables.symbolName(this._next.symbol));
+      }
+
+      for (let i = 0; i < recoverPos.length; i++) {
+        let pos = recoverPos[i];
+        let [unused, res] = reduceAll(stack.slice(0, pos), gotoState(stack[pos - 1].state, errSymbol), this._next.symbol, endState);
+        if (res) {
+          matchingPos = pos;
+          break;
+        }
+      }
+      if (matchingPos === 0) {
+        if (this._next.symbol === ptables.eoiToken) {
+          return null;
+        }
+        recoverSyms[this._next.symbol / 8] &= ~(1 << (this._next.symbol % 8));
+        continue;
+      }
+
+      if (matchingPos < stack.length) {
+        if (s === e) {
+          // Avoid producing syntax problems covering trailing whitespace.
+          e = stack[stack.length - 1].sym.endoffset;
+        }
+        s = stack[matchingPos].sym.offset;
+      }
+{{ if .ReportsInvalidToken -}}
+      if (s !== e) {
+        // Try to cover all trailing invalid tokens.
+        let pending = {{ if .Options.TokenStream }}stream.pending(){{else}}this._pending{{end}};
+        for (let i = 0; i < pending.length; i++) {
+          let tok = pending[i];
+          if (tok.symbol === {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}} && tok.endoffset > e) {
+            e = tok.endoffset;
+          }
+        }
+      }
+{{ end -}}
+      if ({{template "commonPkg"}}.debugSyntax) {
+        for (let i = stack.length - 1; i >= matchingPos; i--) {
+          {{template "commonPkg"}}.debugLog("dropped from stack: ", ptables.symbolName(stack[i].sym.symbol));
+        }
+        {{template "commonPkg"}}.debugLog("recovered");
+      }
+{{ if .ReportTokens true -}}
+      {{if .Options.TokenStream}}stream{{else}}this{{end}}.flush(new {{template "commonPkg"}}.Symbol(errSymbol, s, e));
+{{ end -}}
+
+      stack.push({
+        sym: new {{template "commonPkg"}}.Symbol(errSymbol, s, e),
+        state: gotoState(stack[matchingPos - 1].state, errSymbol),
+        {{ if .Parser.HasAssocValues }}, value: {}{{end}}
+      });
+      return stack;
+    }
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "skipBrokenCode" -}}
+{{ if .Options.IsEnabled "skipBrokenCode" -}}
+  skipBrokenCode({{template "lexerParam" .}}, {{ if not .Options.TokenStream }}stack: {{template "commonPkg"}}.StackEntry[], {{end}}canRecover: (symbol: number) => boolean) : number {
+    let e: number = 0;
+    while (this._next.symbol != ptables.eoiToken && !canRecover(this._next.symbol)) {
+      if ({{template "commonPkg"}}.debugSyntax) {
+        {{template "commonPkg"}}.debugLog("skipped while recovering:", ptables.symbolName(this._next.symbol), "(", {{if .Options.TokenStream}}stream.text(this._next){{else}}lexer.text(){{end}}, ")");
+      }
+{{ if .ReportTokens true -}}
+      {{if .Options.TokenStream}}stream{{else}}this{{end}}.flush(this._next);
+{{ end -}}
+{{ template "reportConsumedNext" . -}}
+      e = this._next.endoffset;
+{{ if .Options.TokenStream -}}
+      this._next = stream.next(null, -1);
+{{ else -}}
+      this.fetchNext(lexer, stack);
+{{ end -}}
+    }
+    return e;
+  }
+
+{{ end -}}
+{{ end -}}
+
+{{- define "reportIgnoredToken" -}}
+  reportIgnoredToken(tok: {{template "commonPkg"}}.Symbol) : void {
+{{ block "onBeforeIgnore" .}}{{end -}}
+    let t: {{template "nodeTypeRef" $}};
+{{ if .Lexer.UsedFlags -}}
+    let flags: {{template "nodeFlagsRef" $}};
+{{ end -}}
+    switch (tok.symbol) {
+{{ range .Parser.MappedTokens -}}
+{{ $sym := index $.Syms .Token -}}
+{{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
+      case {{template "tokenType" $}}.{{$sym.ID}}:
+        t = {{template "nodeTypeRef" $}}.{{node_id .Name}};
+{{ if .Flags -}}
+        flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}.{{$flag}}{{end}};
+{{ end -}}
+        break;
+{{ end -}}
+{{ end -}}
+      default:
+        return;
+    }
+    if ({{template "commonPkg"}}.debugSyntax) {
+      {{template "commonPkg"}}.debugLog("ignored:", {{template "tokenType"}}[tok.symbol], "as", t);
+    }
+    this._listener(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset);
+  }
+
+{{ end -}}
+
+{{- define "reportRange" -}}
+{{ if and .Options.FixWhitespace (.Options.IsEnabled "reportRange") .Parser.HasActionsWithReport -}}
+  reportRange(t: {{template "nodeTypeRef" .}}, {{if .Parser.UsedFlags}}flags: {{template "nodeFlagsRef" .}}, {{end}}rhs: {{template "commonPkg"}}.StackEntry[]) : void {
+    while (rhs.length > 1 && rhs[rhs.length - 1].sym.offset === rhs[rhs.length - 1].sym.endoffset) {
+      rhs = rhs.slice(0, rhs.length - 1);
+    }
+    this._listener(t, {{if .Parser.UsedFlags}}flags, {{end}}rhs[0].sym.offset, rhs[rhs.length - 1].sym.endoffset);
+  }
+
+{{ end -}}
+{{ end -}}
+
+
+{{- define "reduceAll" -}}
+{{ if .Options.IsEnabled "reduceAll" -}}
+{{$stateType := bits_per_element .Parser.Tables.FromTo -}}
+// reduceAll simulates all pending reductions and returns true if the parser
+// can consume the next token in the `stack+[state]` parsing stack. This
+// function also returns the state of the parser after the reductions have been
+// applied (but before symbol is shifted).
+function reduceAll(stack: {{template "commonPkg"}}.StackEntry[], state: number, symbol: number, endState: number) : [number, boolean] {
+  if (symbol === ptables.noToken) {
+    throw new Error("a valid next token is expected");
+  }
+  if (state < 0) {
+    return [0, false];
+  }
+
+  let stack2: number[] = [state];
+  let size = stack.length;
+
+  while (state !== endState) {
+    let action = ptables.tmAction[state];
+{{ if .Parser.Tables.Optimized -}}
+    if (action > ptables.tmActionBase) {
+      let pos = action + symbol;
+      if (pos >= 0 && pos < ptables.tmTableLen && ptables.tmCheck[pos] === symbol) {
+        action = ptables.tmTable[pos];
+      } else {
+        action = ptables.tmDefAct[state];
+      }
+    } else {
+      action = ptables.tmDefAct[state];
+    }
+{{ else if .Parser.Tables.Lalr -}}
+    if (action < -2) {
+      action = lalr(action, symbol);
+    }
+{{ end -}}
+
+    if (action >= 0) {
+      // Reduce.
+      let rule = action;
+      let ln = ptables.tmRuleLen[rule];
+      let symbol = ptables.tmRuleSymbol[rule];
+
+      if (ln > 0) {
+        if (ln < stack2.length) {
+          state = stack2[stack2.length - ln - 1];
+          stack2 = stack2.slice(0, stack2.length - ln);
+        } else {
+          size -= ln - stack2.length;
+          state = stack[size - 1].state;
+          stack2 = [];
+        }
+      }
+      state = gotoState(state, symbol);
+      stack2.push(state);
+    } else {
+{{ if .Parser.Tables.Optimized -}}
+      return [state, action < -1];
+{{ else -}}
+      return [state, action === -1 && gotoState(state, symbol) >= 0];
+{{ end -}}
+    }
+  }
+  return [state, symbol === ptables.eoiToken];
+}
+
+{{ end -}}
+{{ end -}}
+
+{{- define "fixTrailingWS" -}}
+function fixTrailingWS(lhs: {{template "commonPkg"}}.StackEntry, rhs: {{template "commonPkg"}}.StackEntry[]) : void {
+  let last = rhs.length - 1;
+  if (last < 0) {
+    return;
+  }
+  while (last >= 0 && rhs[last].sym.offset === rhs[last].sym.endoffset) {
+    last--;
+  }
+  if (last >= 0) {
+    lhs.sym.endoffset = rhs[last].sym.endoffset;
+  } else {
+    lhs.sym.endoffset = lhs.sym.offset;
+  }
+}
+
+{{ end -}}

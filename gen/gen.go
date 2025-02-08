@@ -239,6 +239,9 @@ func extraFuncs(filename string, g *grammar.Grammar, cache *cache) template.Func
 		ret["is_file_node"] = c.isFileNode
 	case "cc":
 		ret["is_file_node"] = c.isFileNode
+	case "ts":
+		ret["node_id"] = cache.nodeID
+		ret["is_file_node"] = c.isFileNode
 	}
 	return ret
 }

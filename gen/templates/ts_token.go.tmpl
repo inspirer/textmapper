@@ -1,0 +1,11 @@
+{{- template "header" . -}}
+
+// Token values.
+export enum TokenType {
+  UNAVAILABLE = -1,
+{{- range $i, $tok := .Tokens}}
+  {{$tok.ID}} = {{$i}},{{if .Comment}}  // {{.Comment}}{{end}}
+{{- end}}
+
+  NumTokens,
+}

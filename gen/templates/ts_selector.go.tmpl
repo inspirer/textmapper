@@ -1,0 +1,19 @@
+{{ template "header" . -}}
+
+import * as {{template "listenerPkg"}} from './listener';
+
+{{ block "Selector" . -}}
+{{ if .Options.IsEnabled "Selector" -}}
+export type Selector = (nt : {{template "nodeTypeRef" $}}) => boolean;
+{{ end -}}
+{{ end -}}
+
+export const Any : Selector = (nt : {{template "nodeTypeRef" $}}) => true;
+{{- range .Parser.Types.RangeTypes}}
+export const {{.Name}} : Selector = (nt : {{template "nodeTypeRef" $}}) : boolean => nt === {{template "nodeTypeRef" $}}.{{node_id .Name}};
+{{- end}}
+{{- range .Options.ExtraTypes }}
+export const {{.Name}} : Selector = (nt : {{template "nodeTypeRef" $}}) : boolean => nt === {{template "nodeTypeRef" $}}.{{node_id .Name}};
+{{- end }}
+{{ block "additionalSelectors" . -}}
+{{ end -}}
