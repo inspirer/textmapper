@@ -14,6 +14,7 @@ cancellable = true
 cancellableFetch = true
 recursiveLookaheads = true
 extraTypes = ["Int7", "Int9 -> Expr"]
+optInstantiationSuffix = "-opt"
 
 :: lexer
 
@@ -154,7 +155,7 @@ Declaration -> Declaration :
   | 'eval' (?= !FooLookahead) '(' expr ')' empty1   -> EvalEmpty1
   | 'eval' (?= FooLookahead) '(' foo_nonterm<+A> ')' -> EvalFoo
   | 'eval' (?= FooLookahead) '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
-  | 'decl2' ':' QualifiedNameopt -> DeclOptQual
+  | 'decl2' ':' QualifiedName-opt -> DeclOptQual
 ;
 
 FooLookahead:

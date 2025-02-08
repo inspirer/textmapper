@@ -92,7 +92,7 @@ Declaration :
 | EVAL lookahead_notFooLookahead LPAREN expr RPAREN empty1
 | EVAL lookahead_FooLookahead LPAREN foo_nonterm_A RPAREN
 | EVAL lookahead_FooLookahead LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
-| DECL2 COLON QualifiedNameopt
+| DECL2 COLON QualifiedName-opt
 ;
 
 // lookahead: FooLookahead
@@ -241,7 +241,7 @@ primaryExpr_WithoutAs :
   INTEGERCONSTANT
 ;
 
-QualifiedNameopt :
+QualifiedName-opt :
   QualifiedName
 | %empty
 ;

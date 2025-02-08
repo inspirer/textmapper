@@ -34,7 +34,7 @@ var tmNonterminals = [...]string{
 	"customPlus",
 	"primaryExpr",
 	"primaryExpr_WithoutAs",
-	"QualifiedNameopt",
+	"QualifiedName-opt",
 }
 
 func symbolName(sym int32) string {
@@ -154,7 +154,7 @@ var tmRuleType = [...]uint32{
 	uint32(EvalEmpty1),  // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
 	uint32(EvalFoo),     // Declaration : 'eval' lookahead_FooLookahead '(' foo_nonterm_A ')'
 	uint32(EvalFoo2),    // Declaration : 'eval' lookahead_FooLookahead '(' IntegerConstant '.' expr '+' .greedy expr ')'
-	uint32(DeclOptQual), // Declaration : 'decl2' ':' QualifiedNameopt
+	uint32(DeclOptQual), // Declaration : 'decl2' ':' QualifiedName-opt
 	0,                   // lookahead_FooLookahead :
 	0,                   // lookahead_notFooLookahead :
 	0,                   // setof_not_EOI_or_DOT_or_RBRACE : invalid_token
@@ -231,8 +231,8 @@ var tmRuleType = [...]uint32{
 	uint32(AsExpr),      // primaryExpr : primaryExpr_WithoutAs 'as' expr
 	uint32(IntExpr),     // primaryExpr : IntegerConstant
 	uint32(IntExpr),     // primaryExpr_WithoutAs : IntegerConstant
-	0,                   // QualifiedNameopt : QualifiedName
-	0,                   // QualifiedNameopt :
+	0,                   // QualifiedName-opt : QualifiedName
+	0,                   // QualifiedName-opt :
 }
 
 // set(follow ERROR) =

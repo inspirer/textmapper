@@ -19,6 +19,7 @@ import (
 type syntaxLoader struct {
 	resolver     *resolver
 	noEmptyRules bool
+	optSuffix    string // if non-empty, triggers auto-instantiation of optional nonterminals
 	*status.Status
 
 	out      *syntax.Model
@@ -39,10 +40,11 @@ type syntaxLoader struct {
 	rhsNames  map[string]int
 }
 
-func newSyntaxLoader(resolver *resolver, noEmptyRules bool, s *status.Status) *syntaxLoader {
+func newSyntaxLoader(resolver *resolver, opts *grammar.Options, s *status.Status) *syntaxLoader {
 	return &syntaxLoader{
 		resolver:     resolver,
-		noEmptyRules: noEmptyRules,
+		noEmptyRules: opts.NoEmptyRules,
+		optSuffix:    opts.OptInstantiationSuffix,
 		Status:       s,
 
 		namedSets: make(map[string]int),
@@ -494,7 +496,7 @@ func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool
 	}
 
 	var ref *syntax.Expr
-	target := name[:len(name)-3]
+	target := strings.TrimSuffix(name, c.optSuffix)
 	if index, ok := c.resolver.syms[target]; ok {
 		nt.Type = c.resolver.Syms[index].Type
 		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.out}
@@ -527,7 +529,7 @@ func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int,
 			index += c.resolver.NumTokens
 		}
 	}
-	if !ok && len(text) > 3 && strings.HasSuffix(text, "opt") {
+	if !ok && c.optSuffix != "" && len(text) > len(c.optSuffix) && strings.HasSuffix(text, c.optSuffix) {
 		index, ok = c.instantiateOpt(text, ref)
 	}
 	if !ok {

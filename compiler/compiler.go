@@ -218,7 +218,7 @@ func (c *compiler) compileParser(file ast.File) {
 		return
 	}
 
-	loader := newSyntaxLoader(c.resolver, c.out.Options.NoEmptyRules, c.Status)
+	loader := newSyntaxLoader(c.resolver, c.out.Options, c.Status)
 	loader.load(p, file.Header())
 	if c.Err() != nil {
 		// Parsing errors cause inconsistencies inside c.source. Aborting.

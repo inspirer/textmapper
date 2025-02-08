@@ -190,15 +190,16 @@ type Options struct {
 	SkipByteOrderMark bool // true by default
 
 	// Parser features.
-	GenParser           bool // true by default
-	Cancellable         bool // Go-specific.
-	RecursiveLookaheads bool
-	DebugParser         bool
-	WriteBison          bool // Output the expanded grammar in a Bison-like format.
-	OptimizeTables      bool
-	DefaultReduce       bool // Prefer some common reduction to errors in non-LR0 states to compress tables even further.
-	NoEmptyRules        bool // Report empty rules without an %empty marker. True by default for C++.
-	MaxLookahead        int  // If set, all lookaheads expressions will be validated to fit this limit.
+	GenParser              bool // true by default
+	Cancellable            bool // Go-specific.
+	RecursiveLookaheads    bool
+	DebugParser            bool
+	WriteBison             bool // Output the expanded grammar in a Bison-like format.
+	OptimizeTables         bool
+	DefaultReduce          bool   // Prefer some common reduction to errors in non-LR0 states to compress tables even further.
+	NoEmptyRules           bool   // Report empty rules without an %empty marker. True by default for C++.
+	MaxLookahead           int    // If set, all lookaheads expressions will be validated to fit this limit.
+	OptInstantiationSuffix string // Suffix that triggers auto-instantiation optional nonterminals (e.g. "opt" or "_opt").
 
 	// AST generation. Go-specific for now.
 	TokenStream   bool

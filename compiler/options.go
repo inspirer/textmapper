@@ -20,10 +20,11 @@ type optionsParser struct {
 func newOptionsParser(s *status.Status) *optionsParser {
 	return &optionsParser{
 		out: &grammar.Options{
-			TokenLine:         true,
-			GenParser:         true,
-			AbslIncludePrefix: "absl",
-			SkipByteOrderMark: true,
+			TokenLine:              true,
+			GenParser:              true,
+			AbslIncludePrefix:      "absl",
+			SkipByteOrderMark:      true,
+			OptInstantiationSuffix: "opt",
 		},
 		Status: s,
 	}
@@ -69,6 +70,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.FlexMode = p.parseExpr(opt.Value(), opts.FlexMode).(bool)
 		case "genParser":
 			opts.GenParser = p.parseExpr(opt.Value(), opts.GenParser).(bool)
+		case "optInstantiationSuffix":
+			opts.OptInstantiationSuffix = p.parseExpr(opt.Value(), opts.OptInstantiationSuffix).(string)
 		case "cancellable":
 			p.validLangs(opt.Key(), "go")
 			opts.Cancellable = p.parseExpr(opt.Value(), opts.Cancellable).(bool)

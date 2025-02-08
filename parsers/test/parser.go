@@ -384,7 +384,7 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, sta
 		p.reportRange(Icon, InTest, stack[len(stack)-1:len(stack)-0])
 	case 18: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
 		fixTrailingWS(lhs, stack[len(stack)-6:])
-	case 21: // Declaration : 'decl2' ':' QualifiedNameopt
+	case 21: // Declaration : 'decl2' ':' QualifiedName-opt
 		fixTrailingWS(lhs, stack[len(stack)-3:])
 	case 83: // If : 'if' '(' O ')' Decl2
 		{ /* 4: stack[len(stack)-1].value */
