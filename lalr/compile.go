@@ -40,8 +40,8 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c.checkLR0()
 
 	c.initLalr()
-	c.buildFollow(opts.CollectStats)
-	c.buildLA()
+	c.buildLA(opts.CollectStats)
+
 	c.populateTables()
 	c.reportConflicts()
 
@@ -73,9 +73,11 @@ type compiler struct {
 
 	states []*state
 
-	follow []sparse.Set     // goto -> set of accepted terminals (or terminal transitions)
-	aux    container.BitSet // of followSize
-	reuse  []int            // of max(followSize, grammar.Terminals)
+	// The "la" fields in individual states can contain either transitions or terminals.
+	// Using transitions is slightly slower but it enables building longer lookahead sets (and helps us
+	// produce better error messages).
+	useTransitions  bool
+	allTokensMarker int // sentinel value for "all terminals" in follow sets when useTransitions is true
 
 	precGroup map[Sym]int // terminal -> index in grammar.Precedence
 	sr, rr    int         // conflicts
@@ -399,6 +401,9 @@ func (c *compiler) rule(item int) int {
 }
 
 func (c *compiler) initLalr() {
+	// By default, stick to terminals for LALR(1) (faster).
+	c.useTransitions = c.lookahead > 1
+
 	// Initialize per-state variables.
 	var n int
 	for _, state := range c.states {
@@ -450,27 +455,47 @@ func (c *compiler) initLalr() {
 	}
 }
 
-func (c *compiler) buildFollow(stats bool) {
+func (c *compiler) buildLA(stats bool) {
 	start := time.Now()
 
-	c.follow = make([]sparse.Set, len(c.out.FromTo)/2)
+	follow := make([]sparse.Set, len(c.out.FromTo)/2) // goto -> set of accepted terminals (or terminal transitions)
 	followSize := c.grammar.Terminals
-	if c.lookahead > 1 {
+	if c.useTransitions {
 		// Keep terminal transitions in the sets instead of terminal themselves to be able to
 		// reconstruct longer follow chains on demand. Reserve one more bit for the "all terminals"
 		// case.
-		followSize = 1 + len(c.follow)
+		followSize = 1 + len(follow)
+		c.allTokensMarker = len(follow)
 	}
 
-	c.aux = container.NewBitSet(followSize)
-	c.reuse = make([]int, max(followSize, c.grammar.Terminals))
+	aux := container.NewBitSet(followSize)
+	reuse := make([]int, max(followSize, c.grammar.Terminals))
+
+	updateFollow := func(g [][]int) {
+		var sets []sparse.Set
+		graph.Tarjan(g, func(gotos []int, _ container.BitSet) {
+			sets := sets[:0]
+			for _, nt := range gotos {
+				if len(follow[nt]) > 0 {
+					sets = append(sets, follow[nt])
+				}
+				for _, target := range g[nt] {
+					sets = append(sets, follow[target])
+				}
+			}
+			set := sparse.Union(sets, aux, reuse)
+			for _, nt := range gotos {
+				follow[nt] = set
+			}
+		})
+	}
 
 	// Step 1. Build in-rule follow set and process empty symbols.
-	empties := make([][]int, len(c.follow))
+	empties := make([][]int, len(follow))
 	b := sparse.NewBuilder(followSize)
-	for gt := range c.follow {
+	for gt := range follow {
 		from, to := c.states[c.out.FromTo[2*gt]], c.states[c.out.FromTo[2*gt+1]]
-		if int(to.symbol) < c.grammar.Terminals && c.lookahead == 1 {
+		if int(to.symbol) < c.grammar.Terminals && !c.useTransitions {
 			// As an optimization, we can skip computing follow sets for terminal
 			// transitions for LALR(1).
 			continue
@@ -480,8 +505,8 @@ func (c *compiler) buildFollow(stats bool) {
 			inp := c.grammar.Inputs[from.index]
 			if !inp.Eoi && c.out.FinalStates[from.index] == to.index {
 				// This transition terminates parsing and can be followed by any terminal.
-				if c.lookahead > 1 {
-					b.Add(len(c.follow)) // sentinel value meaning "all terminals"
+				if c.useTransitions {
+					b.Add(len(follow)) // sentinel value meaning "all terminals"
 				} else {
 					for i := range c.grammar.Terminals {
 						b.Add(i)
@@ -492,7 +517,7 @@ func (c *compiler) buildFollow(stats bool) {
 		for _, shift := range to.shifts {
 			sym := c.states[shift].symbol
 			if int(sym) < c.grammar.Terminals {
-				if c.lookahead > 1 {
+				if c.useTransitions {
 					b.Add(c.selectGoto(to.index, sym))
 				} else {
 					b.Add(int(sym))
@@ -501,9 +526,9 @@ func (c *compiler) buildFollow(stats bool) {
 				empties[gt] = append(empties[gt], c.selectGoto(to.index, sym))
 			}
 		}
-		c.follow[gt] = b.Build()
+		follow[gt] = b.Build()
 	}
-	c.updateFollow(empties)
+	updateFollow(empties)
 
 	// Step 2. Build cross-rule follow set and populate the lookback slice.
 	rules := make([][]int, len(c.grammar.Symbols)-c.grammar.Terminals)
@@ -517,7 +542,7 @@ func (c *compiler) buildFollow(stats bool) {
 	for i := range g {
 		g[i] = g[i][:0]
 	}
-	for gt := range c.follow {
+	for gt := range follow {
 		state := c.states[c.out.FromTo[2*gt]]
 		sym := c.states[c.out.FromTo[2*gt+1]].symbol
 		if int(sym) < c.grammar.Terminals {
@@ -558,36 +583,28 @@ func (c *compiler) buildFollow(stats bool) {
 		}
 	}
 	g = graph.Transpose(g)
-	c.updateFollow(g)
+	updateFollow(g)
+
+	var sets []sparse.Set
+	for _, state := range c.states {
+		for i, lookback := range state.lookback {
+			sets = sets[:0]
+			for _, from := range lookback {
+				sets = append(sets, follow[from])
+			}
+			state.la[i] = sparse.Union(sets, aux, reuse)
+		}
+	}
 
 	if stats {
 		d := time.Since(start)
 		var followEntries int
-		for _, set := range c.follow {
+		for _, set := range follow {
 			followEntries += len(set)
 		}
-		followMem := followEntries*8 + len(c.follow)*24 // slice header
-		c.out.DebugInfo = append(c.out.DebugInfo, fmt.Sprintf("Follow set (built in %v): %v entries across %v transitions; %v", d, followEntries, len(c.follow), debug.Size(followMem)))
+		followMem := followEntries*8 + len(follow)*24 // slice header
+		c.out.DebugInfo = append(c.out.DebugInfo, fmt.Sprintf("Follow set (built in %v): %v entries across %v transitions; %v", d, followEntries, len(follow), debug.Size(followMem)))
 	}
-}
-
-func (c *compiler) updateFollow(g [][]int) {
-	var sets []sparse.Set
-	graph.Tarjan(g, func(gotos []int, _ container.BitSet) {
-		sets := sets[:0]
-		for _, nt := range gotos {
-			if len(c.follow[nt]) > 0 {
-				sets = append(sets, c.follow[nt])
-			}
-			for _, target := range g[nt] {
-				sets = append(sets, c.follow[target])
-			}
-		}
-		set := sparse.Union(sets, c.aux, c.reuse)
-		for _, nt := range gotos {
-			c.follow[nt] = set
-		}
-	})
 }
 
 func (c *compiler) addLookback(state int, rule, gt int) {
@@ -638,19 +655,6 @@ func (c *compiler) selectGoto(state int, sym Sym) int {
 	return -1
 }
 
-func (c *compiler) buildLA() {
-	var sets []sparse.Set
-	for _, state := range c.states {
-		for i, lookback := range state.lookback {
-			sets = sets[:0]
-			for _, from := range lookback {
-				sets = append(sets, c.follow[from])
-			}
-			state.la[i] = sparse.Union(sets, c.aux, c.reuse)
-		}
-	}
-}
-
 func (c *compiler) populateTables() {
 	c.precGroup = make(map[Sym]int)
 	for group, prec := range c.grammar.Precedence {
@@ -662,6 +666,7 @@ func (c *compiler) populateTables() {
 	seen := container.NewBitSet(c.grammar.Terminals)
 	actionset := make([]int, c.grammar.Terminals)
 	next := make([]int, c.grammar.Terminals)
+	reuse := make([]int, c.grammar.Terminals)
 
 	c.out.Action = make([]int, len(c.states))
 	for _, state := range c.states {
@@ -691,7 +696,7 @@ func (c *compiler) populateTables() {
 			actionset = append(actionset, term)
 		}
 		for i, rule := range state.reduce {
-			for _, term := range c.reduceLA(state, i, seen, c.reuse) {
+			for _, term := range c.reduceLA(state, i, seen, reuse) {
 				if next[term] == -2 {
 					next[term] = rule
 					actionset = append(actionset, term)
@@ -758,11 +763,11 @@ func (c *compiler) populateTables() {
 
 func (c *compiler) reduceLA(state *state, reduce int, seen container.BitSet, reuse []int) []int {
 	seen.ClearAll(c.grammar.Terminals)
-	if c.lookahead > 1 {
-		// In the LALR(n) case, the "la" field contains state transitions rather than terminals.
+	if c.useTransitions {
+		// The "la" field contains state transitions rather than terminals.
 		transitions := state.la[reduce]
 		for _, gt := range transitions {
-			if gt == len(c.follow) {
+			if gt == c.allTokensMarker {
 				// This is a special marker
 				seen.SetAll(c.grammar.Terminals)
 				break
