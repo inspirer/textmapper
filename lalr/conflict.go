@@ -57,7 +57,7 @@ func (c *Conflict) String() string {
 		}
 		sb.WriteByte('\n')
 		if len(c.FollowedBy) <= i {
-			break
+			continue
 		}
 		for _, follow := range c.FollowedBy[i] {
 			fmt.Fprintf(&sb, "        followed by: %v\n", follow)
