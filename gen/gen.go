@@ -24,6 +24,7 @@ type Writer interface {
 type Options struct {
 	IncludeDirs []string
 	NoBuiltins  bool
+	Verbose     bool
 }
 
 func loadOverlay(name string, tmpl *template.Template, opts Options) (*template.Template, error) {
@@ -196,7 +197,7 @@ func GenerateFile(ctx context.Context, path string, w Writer, opts Options) (Sta
 	}
 
 	start := time.Now()
-	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{})
+	g, err := compiler.Compile(ctx, path, string(content), compiler.Params{Verbose: opts.Verbose})
 	ret.Compiling = time.Since(start)
 	if err != nil {
 		return ret, err

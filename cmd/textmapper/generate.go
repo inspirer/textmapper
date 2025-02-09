@@ -30,6 +30,7 @@ var (
 	noBuiltins  = genCmd.Flags.Bool("x", false, "do not use built-in templates for code generation")
 	diffFlag    = genCmd.Flags.Bool("diff", false, "compare generated content against files on disk")
 	cpuprofile  = genCmd.Flags.String("cpuprofile", "", "write a CPU profile into a given file")
+	verbose     = genCmd.Flags.Bool("verbose", false, "verbose explanations of conflicts")
 )
 
 func init() {
@@ -79,6 +80,7 @@ func generate(ctx context.Context, files []string) error {
 	opts := gen.Options{
 		IncludeDirs: includes,
 		NoBuiltins:  *noBuiltins,
+		Verbose:     *verbose,
 	}
 
 	for _, path := range files {

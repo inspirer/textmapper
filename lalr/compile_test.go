@@ -298,10 +298,10 @@ func TestStates(t *testing.T) {
 		c.computeStates()
 
 		c.initLalr()
-		c.buildLA(false, true)
+		c.buildLA(false /*useTransitions*/, true /*stats*/)
 
 		c.populateTables()
-		c.reportConflicts()
+		c.reportConflicts(true /*verbose*/)
 
 		var buf strings.Builder
 		seen := container.NewBitSet(c.grammar.Terminals)

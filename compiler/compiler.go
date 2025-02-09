@@ -333,6 +333,7 @@ func (c *compiler) compileParser(file ast.File) {
 			DefaultReduce: c.out.Options.DefaultReduce,
 			Debug:         c.params.DebugTables,
 			CollectStats:  c.params.CollectStats,
+			Verbose:       c.params.Verbose,
 		},
 	}
 	if err := generateTables(source, c.out, opts, file); err != nil {

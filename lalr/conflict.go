@@ -9,11 +9,12 @@ import (
 
 // Conflict represents a grammar ambiguity.
 type Conflict struct {
-	Resolved bool
-	CanShift bool
-	Kind     string
-	Next     []Sym
-	Rules    []int // in g.Rules
+	Resolved   bool
+	CanShift   bool
+	Kind       string
+	Next       []Sym
+	Rules      []int // in g.Rules
+	FollowedBy [][]string
 
 	State int
 	Input []Sym
@@ -38,7 +39,7 @@ func (c *Conflict) String() string {
 		sep = ", "
 	}
 	sb.WriteString(")\n")
-	for _, ruleID := range c.Rules {
+	for i, ruleID := range c.Rules {
 		rule := g.Rules[ruleID]
 		fmt.Fprintf(&sb, "    %v :", g.Symbols[rule.LHS])
 		for _, sym := range rule.RHS {
@@ -55,6 +56,12 @@ func (c *Conflict) String() string {
 			sb.WriteString(g.Symbols[rule.Precedence])
 		}
 		sb.WriteByte('\n')
+		if len(c.FollowedBy) <= i {
+			break
+		}
+		for _, follow := range c.FollowedBy[i] {
+			fmt.Fprintf(&sb, "        followed by: %v\n", follow)
+		}
 	}
 	return sb.String()
 }

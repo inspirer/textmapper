@@ -105,7 +105,7 @@ func (s *Server) DidClose(ctx context.Context, params *lsp.DidCloseTextDocumentP
 func (s *Server) typecheck(ctx context.Context, uri lsp.DocumentURI, version uint32, content string) error {
 	var res []lsp.Diagnostic
 
-	_, err := compiler.Compile(ctx, uri.Filename(), content, compiler.Params{CheckOnly: true})
+	_, err := compiler.Compile(ctx, uri.Filename(), content, compiler.Params{CheckOnly: true, Verbose: true})
 	for _, p := range status.FromError(err) {
 		rng, _, _ := strings.Cut(content[p.Origin.Offset:p.Origin.EndOffset], "\n")
 		res = append(res, lsp.Diagnostic{

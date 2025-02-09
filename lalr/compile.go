@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/inspirer/textmapper/status"
@@ -20,6 +21,7 @@ type Options struct {
 	DefaultReduce bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
 	CollectStats  bool // capture execution statistics
 	Debug         bool // embed debug information into the tables
+	Verbose       bool // verbose explanations of conflicts
 }
 
 // Compile generates LALR tables for a given grammar.
@@ -45,7 +47,7 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c.buildLA(useTransitions, opts.CollectStats)
 
 	c.populateTables()
-	c.reportConflicts()
+	c.reportConflicts(opts.Verbose)
 
 	if opts.Debug {
 		c.exportDebugInfo()
@@ -452,7 +454,6 @@ func (c *compiler) initLalr() {
 
 func (c *compiler) buildLA(useTransitions, stats bool) {
 	start := time.Now()
-	c.useTransitions = useTransitions
 
 	follow := make([]sparse.Set, len(c.out.FromTo)/2) // goto -> set of accepted terminals (or terminal transitions)
 	followSize := c.grammar.Terminals
@@ -461,7 +462,6 @@ func (c *compiler) buildLA(useTransitions, stats bool) {
 		// reconstruct longer follow chains on demand. Reserve one more bit for the "all terminals"
 		// case.
 		followSize = 1 + len(follow)
-		c.allTokensMarker = len(follow)
 	}
 
 	// Allocate memory for lookback.
@@ -629,6 +629,9 @@ func (c *compiler) buildLA(useTransitions, stats bool) {
 		followMem := followEntries*8 + len(follow)*24 // slice header
 		c.out.DebugInfo = append(c.out.DebugInfo, fmt.Sprintf("Follow set (built in %v): %v entries across %v transitions; %v", d, followEntries, len(follow), debug.Size(followMem)))
 	}
+
+	c.useTransitions = useTransitions
+	c.allTokensMarker = len(follow)
 }
 
 func (c *compiler) gotoState(state int, sym Sym) int {
@@ -804,12 +807,64 @@ func (c *compiler) reduceLA(state *state, reduce int, seen container.BitSet, reu
 	return seen.Slice(reuse)
 }
 
-func (c *compiler) reportConflicts() {
+func (c *compiler) reduceRuleInfo(state *state, rule int, next, seen container.BitSet) []string {
+	seen.ClearAll(len(c.right))
+	reduce := -1
+	for i, rr := range state.reduce {
+		if rr == rule {
+			reduce = i
+			break
+		}
+	}
+	if reduce == -1 || !c.useTransitions {
+		log.Fatal("internal error")
+	}
+
+	for _, gt := range state.la[reduce] {
+		if gt == c.allTokensMarker {
+			// This is a special marker for no-eoi.
+			return nil
+		}
+		if next.Get(int(c.states[c.out.FromTo[2*gt+1]].symbol)) {
+			for _, item := range c.states[c.out.FromTo[2*gt+1]].core {
+				seen.Set(item)
+			}
+		}
+	}
+	var ret []string
+	for _, item := range seen.Slice(nil) {
+		if len(ret) == 7 {
+			ret = append(ret, "...")
+			break
+		}
+		var b strings.Builder
+		c.writeItem(item, &b)
+		ret = append(ret, b.String())
+	}
+	return ret
+}
+
+func (c *compiler) reportConflicts(verbose bool) {
 	if c.sr == c.grammar.ExpectSR && c.rr == c.grammar.ExpectRR {
 		return
 	}
 
+	if !c.useTransitions && verbose {
+		// Recompute lookeaheads for better conflict messages.
+		c.buildLA(true /*useTransitions*/, false /*stats*/)
+	}
+
+	seen := container.NewBitSet(len(c.right))
 	for _, conflict := range c.pending {
+		if verbose {
+			next := container.NewBitSet(c.grammar.Terminals)
+			for _, term := range conflict.Next {
+				next.Set(int(term))
+			}
+			for _, rule := range conflict.Rules {
+				conflict.FollowedBy = append(conflict.FollowedBy, c.reduceRuleInfo(c.states[conflict.State], rule, next, seen))
+			}
+		}
 		for _, rule := range conflict.Rules {
 			c.s.Errorf(c.grammar.Rules[rule].Origin, "%s", conflict)
 		}
