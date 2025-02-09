@@ -40,7 +40,9 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c.checkLR0()
 
 	c.initLalr()
-	c.buildLA(opts.CollectStats)
+
+	useTransitions := c.lookahead > 1
+	c.buildLA(useTransitions, opts.CollectStats)
 
 	c.populateTables()
 	c.reportConflicts()
@@ -96,8 +98,7 @@ type state struct {
 	dropped     []int // items dropped from core by .greedy (sorted)
 
 	// for non-lr0 states
-	la       []sparse.Set // set of accepted terminals (or terminal transitions) after each reduction in "reduce"
-	lookback [][]int      // slice of gotos per reduction to pull LA from
+	la []sparse.Set // set of accepted terminals (or terminal transitions) after each reduction in "reduce"
 }
 
 func (c *compiler) init() {
@@ -401,9 +402,6 @@ func (c *compiler) rule(item int) int {
 }
 
 func (c *compiler) initLalr() {
-	// By default, stick to terminals for LALR(1) (faster).
-	c.useTransitions = c.lookahead > 1
-
 	// Initialize per-state variables.
 	var n int
 	for _, state := range c.states {
@@ -412,7 +410,6 @@ func (c *compiler) initLalr() {
 		}
 	}
 	la := make([]sparse.Set, n)
-	pool := make([][]int, n)
 	for _, state := range c.states {
 		if state.lr0 {
 			continue
@@ -420,8 +417,6 @@ func (c *compiler) initLalr() {
 		ln := len(state.reduce)
 		state.la = la[:ln]
 		la = la[ln:]
-		state.lookback = pool[:ln]
-		pool = pool[ln:]
 	}
 
 	// Initialize goto.
@@ -455,17 +450,36 @@ func (c *compiler) initLalr() {
 	}
 }
 
-func (c *compiler) buildLA(stats bool) {
+func (c *compiler) buildLA(useTransitions, stats bool) {
 	start := time.Now()
+	c.useTransitions = useTransitions
 
 	follow := make([]sparse.Set, len(c.out.FromTo)/2) // goto -> set of accepted terminals (or terminal transitions)
 	followSize := c.grammar.Terminals
-	if c.useTransitions {
+	if useTransitions {
 		// Keep terminal transitions in the sets instead of terminal themselves to be able to
 		// reconstruct longer follow chains on demand. Reserve one more bit for the "all terminals"
 		// case.
 		followSize = 1 + len(follow)
 		c.allTokensMarker = len(follow)
+	}
+
+	// Allocate memory for lookback.
+	var n int
+	for _, state := range c.states {
+		if !state.lr0 {
+			n += len(state.reduce)
+		}
+	}
+	pool := make([][]int, n)
+	lookback := make([][][]int, len(c.states)) // state -> reduce -> list of gotos per reduction to pull LA from
+	for i, state := range c.states {
+		if state.lr0 {
+			continue
+		}
+		ln := len(state.reduce)
+		lookback[i] = pool[:ln]
+		pool = pool[ln:]
 	}
 
 	aux := container.NewBitSet(followSize)
@@ -495,7 +509,7 @@ func (c *compiler) buildLA(stats bool) {
 	b := sparse.NewBuilder(followSize)
 	for gt := range follow {
 		from, to := c.states[c.out.FromTo[2*gt]], c.states[c.out.FromTo[2*gt+1]]
-		if int(to.symbol) < c.grammar.Terminals && !c.useTransitions {
+		if int(to.symbol) < c.grammar.Terminals && !useTransitions {
 			// As an optimization, we can skip computing follow sets for terminal
 			// transitions for LALR(1).
 			continue
@@ -505,7 +519,7 @@ func (c *compiler) buildLA(stats bool) {
 			inp := c.grammar.Inputs[from.index]
 			if !inp.Eoi && c.out.FinalStates[from.index] == to.index {
 				// This transition terminates parsing and can be followed by any terminal.
-				if c.useTransitions {
+				if useTransitions {
 					b.Add(len(follow)) // sentinel value meaning "all terminals"
 				} else {
 					for i := range c.grammar.Terminals {
@@ -517,7 +531,7 @@ func (c *compiler) buildLA(stats bool) {
 		for _, shift := range to.shifts {
 			sym := c.states[shift].symbol
 			if int(sym) < c.grammar.Terminals {
-				if c.useTransitions {
+				if useTransitions {
 					b.Add(c.selectGoto(to.index, sym))
 				} else {
 					b.Add(int(sym))
@@ -535,6 +549,16 @@ func (c *compiler) buildLA(stats bool) {
 	for i, rule := range c.grammar.Rules {
 		nt := int(rule.LHS) - c.grammar.Terminals
 		rules[nt] = append(rules[nt], i)
+	}
+
+	addLookback := func(state, rule, gt int) {
+		for i, rr := range c.states[state].reduce {
+			if rr == rule {
+				lookback[state][i] = append(lookback[state][i], gt)
+				return
+			}
+		}
+		log.Fatal("internal error")
 	}
 
 	states := make([]int, 32)
@@ -565,7 +589,7 @@ func (c *compiler) buildLA(stats bool) {
 
 			if !c.states[curr].lr0 {
 				// Rule's lookahead symbols include follow set for the current goto (gt).
-				c.addLookback(curr, rule, gt)
+				addLookback(curr, rule, gt)
 			}
 
 			i--
@@ -586,8 +610,8 @@ func (c *compiler) buildLA(stats bool) {
 	updateFollow(g)
 
 	var sets []sparse.Set
-	for _, state := range c.states {
-		for i, lookback := range state.lookback {
+	for i, state := range c.states {
+		for i, lookback := range lookback[i] {
 			sets = sets[:0]
 			for _, from := range lookback {
 				sets = append(sets, follow[from])
@@ -605,17 +629,6 @@ func (c *compiler) buildLA(stats bool) {
 		followMem := followEntries*8 + len(follow)*24 // slice header
 		c.out.DebugInfo = append(c.out.DebugInfo, fmt.Sprintf("Follow set (built in %v): %v entries across %v transitions; %v", d, followEntries, len(follow), debug.Size(followMem)))
 	}
-}
-
-func (c *compiler) addLookback(state int, rule, gt int) {
-	s := c.states[state]
-	for i, rr := range s.reduce {
-		if rr == rule {
-			s.lookback[i] = append(s.lookback[i], gt)
-			return
-		}
-	}
-	log.Fatal("internal error")
 }
 
 func (c *compiler) gotoState(state int, sym Sym) int {
