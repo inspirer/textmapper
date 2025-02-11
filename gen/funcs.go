@@ -326,7 +326,7 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 	return decls.String() + sb.String(), nil
 }
 
-func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (ret string, err error) {
+func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode, variantStackEntry bool) (ret string, err error) {
 	defer func(s string) {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("crashed with %v in %q with %v", err, s, args)
@@ -360,7 +360,12 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				if t == "" {
 					return "", status.Errorf(origin, "$$ cannot be used inside a nonterminal semantic action without a type")
 				}
-				prop = "value." + lastID(t)
+				if variantStackEntry {
+					prop = "std::get<" + t + ">(" + target + ".value)"
+					target = ""
+				} else {
+					prop = "value." + lastID(t)
+				}
 			}
 			s = s[1:]
 		} else {
@@ -399,11 +404,18 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				if t == "" {
 					return "", status.Errorf(origin, "%c%q does not have an associated type", ch, val)
 				}
-				prop = "value." + lastID(t)
+				if variantStackEntry {
+					prop = "std::get<" + t + ">(" + target + ".value)"
+					target = ""
+				} else {
+					prop = "value." + lastID(t)
+				}
 			}
 		}
-		sb.WriteString(target)
-		sb.WriteByte('.')
+		if len(target) > 0 {
+			sb.WriteString(target)
+			sb.WriteByte('.')
+		}
 		sb.WriteString(prop)
 	}
 	return sb.String(), nil

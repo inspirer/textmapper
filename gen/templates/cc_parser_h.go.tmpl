@@ -37,11 +37,20 @@ struct stackEntry {
   symbol sym;
   int{{$stateType}}_t state = 0;
 {{ if .Parser.HasAssocValues -}}
+{{ if .Options.VariantStackEntry -}}
+  std::variant<
+{{ range .Parser.UnionFields -}}
+    {{.}},
+{{ end -}}
+    std::monostate
+  > value;
+{{ else -}}
   union {
 {{ range .Parser.UnionFields -}}
     {{.}};
 {{ end -}}
   } value;
+{{ end -}}
 {{ end -}}
 };
 
