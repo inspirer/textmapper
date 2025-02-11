@@ -327,7 +327,7 @@ restart:
 {{- define "lookahead" -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
-                                    int{{$stateType}}_t start, 
+                                    int{{$stateType}}_t start,
                                     int{{$stateType}}_t end) {
 {{ block "setupLookaheadLexer" . -}}
   Lexer lexer = lexer_to_copy;
@@ -709,7 +709,13 @@ void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
 {{ if (ne $act.Code "") -}}
 absl::Status Parser::action{{$index}}([[maybe_unused]] stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs) {
-{{ cc_parser_action $act.Code $act.Vars $act.Origin -}}
+{{ if and $.Options.VariantStackEntry (ne $act.Vars.LHSType "") -}}
+{{/* Initialize the variant tag so that semantic action code can use $$ as if it
+     was strongly typed. This allows convenient patterns like `$$ = nullptr;`.
+*/}}
+  lhs.value.emplace<{{$act.Vars.LHSType}}>();
+{{ end -}}
+{{ cc_parser_action $act.Code $act.Vars $act.Origin $.Options.VariantStackEntry -}}
   return absl::OkStatus();
 }
 {{ end -}}
@@ -794,7 +800,7 @@ ABSL_MUST_USE_RESULT Lexer::Location DefaultCreateLocationFromRHS(
 
 {{- define "Parse" -}}
 {{ $stateType := bits_per_element .Parser.Tables.FromTo -}}
-absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end, 
+absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
   Lexer& lexer) {
 {{ if .ReportTokens true -}}
   pending_symbols_.clear();
