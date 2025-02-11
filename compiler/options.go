@@ -138,6 +138,9 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "parseParams":
 			p.validLangs(opt.Key(), "cc")
 			opts.ParseParams = p.parseExpr(opt.Value(), opts.ParseParams).([]string)
+		case "variantStackEntry":
+			p.validLangs(opt.Key(), "cc")
+			opts.VariantStackEntry = p.parseExpr(opt.Value(), opts.VariantStackEntry).(bool)
 		case "skipByteOrderMark":
 			opts.SkipByteOrderMark = p.parseExpr(opt.Value(), opts.SkipByteOrderMark).(bool)
 		default:
