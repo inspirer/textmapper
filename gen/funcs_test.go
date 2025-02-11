@@ -189,13 +189,15 @@ func TestParserAction(t *testing.T) {
 
 func TestCcParserAction(t *testing.T) {
 	tests := []struct {
-		input string
-		args  *grammar.ActionVars
-		want  string
+		input      string
+		args       *grammar.ActionVars
+		want       string
+		useVariant bool
 	}{
-		{"abc", varsOneBased(), "abc"},
-		{"$$ = $1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = rhs[0].value.expr"},
-		{"$$ = @$ @1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = lhs.sym.location rhs[0].sym.location"},
+		{"abc", varsOneBased(), "abc", false},
+		{"$$ = $1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = rhs[0].value.expr", false},
+		{"$$ = @$ @1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = lhs.sym.location rhs[0].sym.location", false},
+		{"$$ = $1", varsOneBased("%node", "a:0:expr"), "std::get<node>(lhs.value) = std::get<expr>(rhs[0].value)", true},
 	}
 
 	for _, tc := range tests {
