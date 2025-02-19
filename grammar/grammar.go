@@ -223,4 +223,5 @@ type Options struct {
 	AbslIncludePrefix  string   // "absl" by default
 	DirIncludePrefix   string   // for generated headers
 	ParseParams        []string // parser fields initialized in the constructor
+	VariantStackEntry  bool     // whether to generate a std::variant stackEntry rather than a union. Default false.
 }
