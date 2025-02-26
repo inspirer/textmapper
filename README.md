@@ -1,6 +1,6 @@
 # TextMapper
 
-[![Build Status](https://app.travis-ci.com/inspirer/textmapper.svg?branch=main)](https://app.travis-ci.com/inspirer/textmapper)
+[![Build Status](https://github.com/inspirer/textmapper/actions/workflows/go.yml/badge.svg)](https://github.com/inspirer/textmapper/actions/workflows/go.yml)
 
 ## Introduction
 
