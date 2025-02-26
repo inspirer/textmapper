@@ -201,7 +201,7 @@ func TestCcParserAction(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got, err := ccParserAction(tc.input, tc.args, node(tc.input))
+		got, err := ccParserAction(tc.input, tc.args, node(tc.input), tc.useVariant)
 		if err != nil {
 			t.Errorf("parserAction(%v, %v) failed with %v", tc.input, tc.args, err)
 			continue
