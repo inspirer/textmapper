@@ -5,7 +5,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "markup/markup.h"
+#include "cpp/markup/markup.h"
 
 namespace json {
 namespace {

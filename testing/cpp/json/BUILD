@@ -19,7 +19,7 @@ cc_test(
     srcs = ["lexer_test.cc"],
     deps = [
         ":lexer",
-        "//markup",
+        "//cpp/markup",
         "@googletest//:gtest_main",
     ],
 )
@@ -44,7 +44,7 @@ cc_test(
     deps = [
         ":lexer",
         ":parser",
-        "//markup",
+        "//cpp/markup",
         "@googletest//:gtest_main",
     ],
 )
