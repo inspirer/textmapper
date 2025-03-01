@@ -1,5 +1,0 @@
-# This file marks the root of the Bazel workspace.
-# See MODULE.bazel for external dependencies setup.
-# 
-# Note: This file is still needed for Bazel versions prior to 6.3,
-# but will be completely removed in Bazel 9 (late 2025).
