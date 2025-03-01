@@ -1,1 +1,4 @@
 build --action_env=BAZEL_CXXOPTS="-std=c++17"
+
+# Enable Bzlmod for every Bazel command
+common --enable_bzlmod

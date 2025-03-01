@@ -5,8 +5,8 @@ cc_library(
     srcs = ["markup.cc"],
     hdrs = ["markup.h"],
     deps = [
-        "@com_google_absl//absl/log:check",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/log:check",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -16,6 +16,6 @@ cc_test(
     srcs = ["markup_test.cc"],
     deps = [
         ":markup",
-        "@com_google_googletest//:gtest_main",
+        "@googletest//:gtest_main",
     ],
 )

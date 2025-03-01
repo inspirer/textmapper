@@ -225,7 +225,7 @@ restart:
 }
 
 ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
-                                    int8_t start, 
+                                    int8_t start,
                                     int8_t end) {
   Lexer lexer = lexer_to_copy;
 
@@ -649,7 +649,7 @@ ABSL_MUST_USE_RESULT Lexer::Location DefaultCreateLocationFromRHS(
                          get_location(n-1).end);
 }
 
-absl::Status Parser::Parse(int8_t start, int8_t end, 
+absl::Status Parser::Parse(int8_t start, int8_t end,
   Lexer& lexer) {
   pending_symbols_.clear();
   int8_t state = start;

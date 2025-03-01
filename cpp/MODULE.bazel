@@ -1,0 +1,21 @@
+module(
+    name = "textmapper",
+    version = "0.10.1",
+)
+
+# Bazel's canonical dependencies
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "platforms", version = "0.0.11")
+
+# External dependencies
+bazel_dep(name = "abseil-cpp", version = "20250127.0")
+bazel_dep(name = "googletest", version = "1.15.2")
+bazel_dep(name = "google_benchmark", version = "1.9.1")
+
+# Hedron's Compile Commands Extractor for Bazel
+bazel_dep(name = "hedron_compile_commands", version = "0.0.0", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    commit = "0e990032f3c5a866e72615cf67e5ce22186dcb97",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+)

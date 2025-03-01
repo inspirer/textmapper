@@ -8,8 +8,8 @@ cc_library(
         "json_token.h",
     ],
     deps = [
-        "@com_google_absl//absl/log",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -20,7 +20,7 @@ cc_test(
     deps = [
         ":lexer",
         "//markup",
-        "@com_google_googletest//:gtest_main",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -30,10 +30,10 @@ cc_library(
     hdrs = ["json_parser.h"],
     deps = [
         ":lexer",
-        "@com_google_absl//absl/functional:function_ref",
-        "@com_google_absl//absl/log",
-        "@com_google_absl//absl/status",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/functional:function_ref",
+        "@abseil-cpp//absl/log",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -45,7 +45,7 @@ cc_test(
         ":lexer",
         ":parser",
         "//markup",
-        "@com_google_googletest//:gtest_main",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -54,6 +54,6 @@ cc_binary(
     srcs = ["benchmark.cc"],
     deps = [
         ":lexer",
-        "@benchmark",
+        "@google_benchmark//:benchmark",
     ],
 )
