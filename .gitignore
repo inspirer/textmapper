@@ -1,8 +1,8 @@
 .DS_Store
-/cpp/bazel-*
-/cpp/external
-/cpp/compile_commands.json
-/cpp/.cache/
+/testing/bazel-*
+/testing/external
+/testing/compile_commands.json
+/testing/.cache/
 /vscode-ext/node_modules/
 /vscode-ext/out/
 .vscode
