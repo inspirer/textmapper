@@ -38,10 +38,10 @@ type Lexer struct {
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
+	scanOffset  int  // scanning offset
 	tokenOffset int  // last token byte offset
 	line        int  // current line number (1-based)
 	tokenLine   int  // last token line
-	scanOffset  int  // scanning offset
 	value       interface{}
 
 	State int // lexer state, modifiable
@@ -60,6 +60,7 @@ func (l *Lexer) Init(source string) {
 
 	l.ch = 0
 	l.offset = 0
+	l.scanOffset = 0
 	l.tokenOffset = 0
 	l.line = 1
 	l.tokenLine = 1
