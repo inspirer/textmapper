@@ -240,7 +240,18 @@ export class Lexer {
 
   // Copy forks the lexer in its current state.
   copy(): Lexer {
-    let copy = JSON.parse(JSON.stringify(this))
-    return copy as Lexer;
+    // Create a new instance of Lexer with the same source
+    const copy = new Lexer(this._source);
+    
+    // Copy all essential state properties
+    copy._ch = this._ch;
+    copy._offset = this._offset;
+    copy._tokenOffset = this._tokenOffset;
+    copy._line = this._line;
+    copy._tokenLine = this._tokenLine;
+    copy._scanOffset = this._scanOffset;
+    copy._value = this._value;
+    
+    return copy;
   }
 };

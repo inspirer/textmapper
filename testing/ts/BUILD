@@ -18,3 +18,8 @@ copy_to_bin(
     srcs = ["tsconfig.json"],
     visibility = ["//ts/json:__subpackages__"],
 )
+
+copy_to_bin(
+    name = "jestconfig_bin",
+    srcs = ["jest.config.js"],
+)

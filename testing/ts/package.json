@@ -1,8 +1,10 @@
 {
   "name": "testing",
   "private": true,
-  "type": "module",
   "packageManager": "pnpm@9.12.1",
+  "scripts": {
+    "test": "jest"
+  },
   "pnpm": {
     "onlyBuiltDependencies": [],
     "packageExtensions": {
@@ -14,7 +16,12 @@
     }
   },
   "devDependencies": {
+    "@types/jest": "29.5.14",
     "@types/node": "20.9.0",
+    "jest": "29.7.0",
+    "jest-cli": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "ts-jest": "29.2.6",
     "typescript": "5.6.2"
   }
 }
