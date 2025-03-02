@@ -1,6 +1,6 @@
 {{ template "header" . -}}
 
-import { NodeType, NodeFlags, Listener } from '../listener'
+import { NodeType, {{if .Parser.UsedFlags}}{{template "nodeFlagsRef" .}}, {{end}}Listener } from '../listener'
 import { Parser, SyntaxError, ErrorMsg{{if .Parser.IsRecovering }}, ErrorHandler{{end}} } from '../parser'
 import { Selector } from '../selector';
 {{ if $.Options.TokenStream -}}
@@ -20,17 +20,17 @@ import { Tree, Node } from './tree'
 * or the {@link Error} in the "err" field if parsing failed.
 */
 export function createTree{{if $.Parser.HasMultipleUserInputs}}From{{$.NontermID $inp.Nonterm}}{{end}}(content: string{{if $.Parser.IsRecovering }}, eh: ErrorHandler{{end}}): { tree?: Tree, err?: Error } {
-  const parseFunc = (p: Parser, s: {{if $.Options.TokenStream}}TokenStream{{else}}Lexer{{end}}) : { err? : SyntaxError } => {
+  const parseFunc = (p: Parser, {{if $.Options.TokenStream}}s: TokenStream{{else}}l: Lexer{{end}}) : { err? : SyntaxError } => {
     return p.parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}({{ if $.Options.TokenStream }}s{{else}}l{{end}});
   };
-  return createTree(content, parseFunc{{if $.Parser.IsRecovering }}, eh{{end}});
+  return create(content, parseFunc{{if $.Parser.IsRecovering }}, eh{{end}});
 }
 {{end -}}
 
-function createTree(content: string, parseFunc: (p: Parser, s: {{if $.Options.TokenStream}}TokenStream{{else}}Lexer{{end}}) => { err? : SyntaxError }{{if .Parser.IsRecovering }}, eh: ErrorHandler{{end}}): { tree?: Tree, err?: Error } {
+function create(content: string, parseFunc: (p: Parser, s: {{if $.Options.TokenStream}}TokenStream{{else}}Lexer{{end}}) => { err? : SyntaxError }{{if .Parser.IsRecovering }}, eh: ErrorHandler{{end}}): { tree?: Tree, err?: Error } {
   const builder = new TreeBuilder(content);
-  const eventListener: Listener = (t: NodeType, flags: NodeFlags, offset: number, endOffset: number) => {
-    builder.addNode(t, flags, offset, endOffset);
+  const eventListener: Listener = (t: NodeType, {{if .Parser.UsedFlags}}flags: {{template "nodeFlagsRef" .}}, {{end}}offset: number, endOffset: number) => {
+    builder.addNode(t, {{if .Parser.UsedFlags}}flags, {{end}}offset, endOffset);
   };
 {{ if $.Options.TokenStream -}}
   const ts = new TokenStream(content, eventListener);
@@ -57,7 +57,7 @@ class TreeBuilder {
     this._stack = [];
   }
 
-  addNode(t: NodeType, flags: NodeFlags, offset: number, endOffset: number) {
+  addNode(t: NodeType, {{if .Parser.UsedFlags}}flags: {{template "nodeFlagsRef" .}}, {{end}}offset: number, endOffset: number) {
     let start = this._stack.length;
     let end = start;
 
@@ -117,6 +117,7 @@ class DefaultTree implements Tree {
   constructor(content: string) {
     this._content = content;
     this._lines = this.lineOffsets(content);
+    this._root = new DefaultNode(this, 0, 0, content.length);
   }
 
   text(): string {

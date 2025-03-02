@@ -1,6 +1,5 @@
 {{ template "header" . -}}
 
-import { TextDecoder, TextEncoder } from 'util';
 import * as {{template "tokenPkg"}} from './token';
 import * as lt from './lexer_tables';
 
@@ -62,6 +61,7 @@ export class Lexer {
   _source: string;
   _ch: number;           // current character, -1 means EOI
   _offset: number;       // character offset
+  _scanOffset: number;   // scanning offset
   _tokenOffset: number;  // last token byte offset
 {{ if .Options.TokenLine -}}
   _line: number;         // current line number (1-based)
@@ -73,7 +73,6 @@ export class Lexer {
 {{ if .Options.TokenColumn -}}
   _tokenColumn: number;  // last token column (in bytes)
 {{ end -}}
-  _scanOffset: number;   // scanning offset
   _value: any;
 
 {{ if gt (len .Lexer.StartConditions) 1 -}}
@@ -108,6 +107,7 @@ export class Lexer {
     this._source = source;
     this._ch = 0;
     this._offset = 0;
+    this._scanOffset = 0;
     this._tokenOffset = 0;
 {{ if .Options.TokenLine -}}
     this._line = 1;
@@ -313,7 +313,7 @@ export class Lexer {
 {{ else -}}
             let r = this._source.charCodeAt(this_.offset);
             let w = 1;
-            if r >= 0x80 {
+            if (r >= 0x80) {
               // not ASCII
               { r, w } = decodeRune(this._source, this._offset);
             }
@@ -334,7 +334,7 @@ export class Lexer {
       recovered: while (true) {
 {{ end -}}
 {{ if .Lexer.ClassActions -}}
-        switch {{if .Lexer.RuleToken}}rule{{else}}tok{{end}} {
+        switch ({{if .Lexer.RuleToken}}rule{{else}}tok{{end}}) {
 {{ range .Lexer.ClassActions -}}
 {{ if $.Lexer.RuleToken -}}
           case {{.Action}}:

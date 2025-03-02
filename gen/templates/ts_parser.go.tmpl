@@ -412,7 +412,7 @@ export class Parser {
 {{ if .Options.IsEnabled "streamFlush" -}}
   // flush reports all pending tokens up to a given symbol.
   private flush(sym: {{template "commonPkg"}}.Symbol) : void {
-    if (this._pending.length > 0 && this._listener) {
+    if (this._pending.length > 0) {
       for (let i = 0; i < this._pending.length; i++) {
         let tok = this._pending[i];
         if (tok.endoffset > sym.endoffset) {
@@ -515,7 +515,7 @@ export class Parser {
 function lookaheadNext(lexer: Lexer) : {{template "commonPkg"}}.Symbol {
   restart: while(true) {
     let tok = lexer.next();
-    switch tok {
+    switch (tok) {
 {{ if .ReportTokens true -}}
     case {{range $ind, $tok := .ReportTokens true}}{{if ne $ind 0}}, {{end}}{{template "tokenTypeRef" $}}.{{.ID}}{{end}}:
       continue restart;

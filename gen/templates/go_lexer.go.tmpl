@@ -35,6 +35,7 @@ type Lexer struct {
 
 	ch          rune // current character, -1 means EOI
 	offset      int  // character offset
+	scanOffset  int  // scanning offset
 	tokenOffset int  // last token byte offset
 {{ if .Options.TokenLine -}}
 	line        int  // current line number (1-based)
@@ -46,7 +47,6 @@ type Lexer struct {
 {{ if .Options.TokenColumn -}}
 	tokenColumn int  // last token column (in bytes)
 {{ end -}}
-	scanOffset  int  // scanning offset
 	value       interface{}
 
 {{ if gt (len .Lexer.StartConditions) 1 -}}
@@ -67,6 +67,7 @@ func (l *Lexer) Init(source string) {
 
 	l.ch = 0
 	l.offset = 0
+	l.scanOffset = 0
 	l.tokenOffset = 0
 {{ if .Options.TokenLine -}}
 	l.line = 1
