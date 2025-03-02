@@ -1,7 +1,7 @@
 {{ template "header" . -}}
 
 import * as {{template "commonPkg"}} from './common';
-import * as {{template "tokenPkg"}} from './token';
+import {{"{"}}{{template "tokenType" $}}} from './token';
 import * as {{template "lexerPkg"}} from './lexer';
 import * as {{template "listenerPkg"}} from './listener';
 import * as ptables from './parser_tables';
@@ -125,7 +125,7 @@ export class Parser {
 {{ if .Parser.Types -}}
     this._listener = listener;
 {{ end -}}
-    this._next = new {{template "commonPkg"}}.Symbol({{template "tokenType"}}.UNAVAILABLE, 0, 0);
+    this._next = new {{template "commonPkg"}}.Symbol({{template "tokenType" $}}.UNAVAILABLE, 0, 0);
 {{ if and (.ReportTokens true) (not .Options.TokenStream) -}}
     this._pending = [];
 {{ end -}}
@@ -180,7 +180,7 @@ export class Parser {
     this._recovering = 0;
 {{ end -}}
 
-    let stack: {{template "commonPkg"}}.StackEntry[] | null = [{sym: new {{template "commonPkg"}}.Symbol({{template "tokenType"}}.UNAVAILABLE, 0, 0), state: state{{ if .Parser.HasAssocValues }}, value: {}{{end}} }];
+    let stack: {{template "commonPkg"}}.StackEntry[] | null = [{sym: new {{template "commonPkg"}}.Symbol({{template "tokenType" $}}.UNAVAILABLE, 0, 0), state: state{{ if .Parser.HasAssocValues }}, value: {}{{end}} }];
 {{ if and .Parser.IsRecovering (not .Options.TokenStream) -}}
     this._endState = end;
 {{ end -}}
@@ -393,7 +393,7 @@ export class Parser {
           continue restart;
 {{ end -}}
 {{ if not .ReportsInvalidToken -}}
-        case {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}}:
+        case {{template "tokenType" $}}.{{(index .Syms .Lexer.InvalidToken).ID}}:
           continue restart;
 {{ end -}}
       }
@@ -819,7 +819,7 @@ function gotoState(state: number, symbol: number) : number {
     for (let i = 0; i < pending.length; i++) {
       let tok = pending[i];
       // Try to cover all nearby invalid tokens.
-      if (tok.symbol === {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}}) {
+      if (tok.symbol === {{template "tokenType" $}}.{{(index .Syms .Lexer.InvalidToken).ID}}) {
         if (s > tok.offset) {
           s = tok.offset;
         }
@@ -867,7 +867,7 @@ function gotoState(state: number, symbol: number) : number {
         let pending = {{ if .Options.TokenStream }}stream.pending(){{else}}this._pending{{end}};
         for (let i = 0; i < pending.length; i++) {
           let tok = pending[i];
-          if (tok.symbol === {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}} && tok.endoffset > e) {
+          if (tok.symbol === {{template "tokenType" $}}.{{(index .Syms .Lexer.InvalidToken).ID}} && tok.endoffset > e) {
             e = tok.endoffset;
           }
         }
@@ -943,7 +943,7 @@ function gotoState(state: number, symbol: number) : number {
         return;
     }
     if ({{template "commonPkg"}}.debugSyntax) {
-      {{template "commonPkg"}}.debugLog("ignored:", {{template "tokenType"}}[tok.symbol], "as", t);
+      {{template "commonPkg"}}.debugLog("ignored:", {{template "tokenType" $}}[tok.symbol], "as", t);
     }
     this._listener(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset);
   }

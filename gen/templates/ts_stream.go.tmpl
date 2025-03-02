@@ -1,7 +1,6 @@
 {{ template "header" . -}}
 
 import * as {{template "commonPkg"}} from './common';
-import * as {{template "tokenPkg"}} from './token';
 import * as {{template "lexerPkg"}} from './lexer';
 import * as {{template "listenerPkg"}} from './listener';
 
@@ -77,7 +76,7 @@ export class TokenStream {
 {{ range .Parser.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if or $sym.Space (eq $sym.Name "invalid_token") -}}
-      case {{template "tokenType" $}}.{{$sym.ID}}:
+      case {{template "tokenTypeRef" $}}.{{$sym.ID}}:
         t = {{template "nodeTypeRef" $}}.{{node_id .Name}};
 {{ if .Flags -}}
         flags = {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}.{{$flag}}{{end}};
@@ -91,7 +90,7 @@ export class TokenStream {
 {{end -}}
     }
     if ({{template "commonPkg"}}.debugSyntax) {
-      {{template "commonPkg"}}.debugLog("ignored:", {{template "tokenType" .}}[tok.symbol], "as", t);
+      {{template "commonPkg"}}.debugLog("ignored:", {{template "tokenTypeRef" $}}[tok.symbol], "as", t);
     }
     this._listener(t, {{if .Parser.UsedFlags}}{{if .Lexer.UsedFlags}}flags{{else}}0{{end}}, {{end}}tok.offset, tok.endoffset);
   }
@@ -131,7 +130,7 @@ export class TokenStream {
 {{ range .Parser.MappedTokens -}}
 {{ $sym := index $.Syms .Token -}}
 {{ if not (or $sym.Space (eq $sym.Name "invalid_token")) -}}
-      case {{template "tokenType" $}}.{{$sym.ID}}:
+      case {{template "tokenTypeRef" $}}.{{$sym.ID}}:
         this._listener({{template "nodeTypeRef" $}}.{{node_id .Name}}, {{if $.Parser.UsedFlags}}{{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}.{{$flag}}{{else}}0{{end}}, {{end}}sym.offset, sym.endoffset);
         break;
 {{ end -}}
@@ -187,14 +186,14 @@ export class TokenStream {
       switch (tok) {
 {{- if .ReportTokens true }}
 {{- range .ReportTokens true}}
-        case {{template "tokenType" $}}.{{.ID}}:
+        case {{template "tokenTypeRef" $}}.{{.ID}}:
 {{- end}}
           let { start, end } = this._lexer.pos();
           this._pending.push(new {{template "commonPkg"}}.Symbol(tok, start, end));
           continue restart;
 {{- end}}
 {{- if not .ReportsInvalidToken}}
-        case {{template "tokenType" .}}.{{(index .Syms .Lexer.InvalidToken).ID}}:
+        case {{template "tokenTypeRef" $}}.{{(index .Syms .Lexer.InvalidToken).ID}}:
           continue restart;
 {{- end}}
       }

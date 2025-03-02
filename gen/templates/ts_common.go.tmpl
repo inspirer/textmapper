@@ -1,7 +1,5 @@
 {{- template "header" . -}}
 
-import * as {{template "tokenPkg"}} from './token';
-
 export const debugSyntax = {{ .Options.DebugParser }};
 
 export function debugLog(...data: any[]) : void {
@@ -18,11 +16,11 @@ export function debugLog(...data: any[]) : void {
 {{- define "symbol" -}}
 {{ if .Options.IsEnabled "symbol" -}}
 export class Symbol {
-  symbol: {{template "tokenType"}};
+  symbol: {{template "tokenTypeRef" $}};
   offset: number;
   endoffset: number;
 
-  constructor(symbol: {{template "tokenType"}}, offset: number, endoffset: number) {
+  constructor(symbol: {{template "tokenTypeRef" $}}, offset: number, endoffset: number) {
     this.symbol = symbol;
     this.offset = offset;
     this.endoffset = endoffset;

@@ -107,7 +107,7 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			p.validLangs(opt.Key(), "go")
 			opts.EventFields = p.parseExpr(opt.Value(), opts.EventFields).(bool)
 		case "eventAST":
-			p.validLangs(opt.Key(), "go")
+			p.validLangs(opt.Key(), "go", "ts")
 			opts.EventAST = p.parseExpr(opt.Value(), opts.EventAST).(bool)
 		case "extraTypes":
 			opts.ExtraTypes = p.parseExpr(opt.Value(), opts.ExtraTypes).([]syntax.ExtraType)

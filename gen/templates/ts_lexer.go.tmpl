@@ -1,6 +1,6 @@
 {{ template "header" . -}}
 
-import * as {{template "tokenPkg"}} from './token';
+import {{"{"}}{{template "tokenType" $}}} from './token';
 import * as lt from './lexer_tables';
 
 {{ if gt (len .Lexer.StartConditions) 1 -}}
@@ -163,7 +163,9 @@ export class Lexer {
     let w = 1;
     if (r >= 0x80) {
       // not ASCII
-      { r, w } = decodeRune(this._source, this._offset);
+      const result = decodeRune(this._source, this._offset);
+      r = result.rune;
+      w = result.size;
     }
     this._scanOffset += w;
     this._ch = r;
@@ -220,17 +222,28 @@ export class Lexer {
 {{- define "lexerCopy" -}}
   // Copy forks the lexer in its current state.
   copy(): Lexer {
-    let copy = JSON.parse(JSON.stringify(this))
-    return copy as Lexer;
+    // Create a new instance of Lexer with the same source
+    const copy = new Lexer(this._source);
+
+    // Copy all essential state properties
+    copy._ch = this._ch;
+    copy._offset = this._offset;
+    copy._tokenOffset = this._tokenOffset;
+    copy._line = this._line;
+    copy._tokenLine = this._tokenLine;
+    copy._scanOffset = this._scanOffset;
+    copy._value = this._value;
+
+    return copy;
   }
 {{end -}}
 
 {{- define "lexerNext" -}}
   // next finds and returns the next token in l.source. The source end is
-  // indicated by {{template "tokenType" }}.EOI.
+  // indicated by {{template "tokenType" $}}.EOI.
   //
   // The token text can be retrieved later by calling the text() method.
-  next(): {{template "tokenType" .}} {
+  next(): {{template "tokenType" $}} {
 {{ $spaceRules := .SpaceActions -}}
 {{ if or $spaceRules .Lexer.RuleToken -}}
     restart: while(true) {
@@ -248,7 +261,7 @@ export class Lexer {
       let hash = 0;
 {{ end -}}
 {{ if .Lexer.Tables.Backtrack -}}
-      let backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} = -1;
+      let backup{{if .Lexer.RuleToken}}Rule{{else}}Token{{end}} = {{if .Lexer.RuleToken}}-1{{else}}{{template "tokenType" $}}.UNAVAILABLE{{end}};
       let backupOffset = 0;
 {{ if .Lexer.ClassActions -}}
       let backupHash = hash;
@@ -311,11 +324,13 @@ export class Lexer {
             this._ch = this._source.charCodeAt(this._offset);
             this._scanOffset++;
 {{ else -}}
-            let r = this._source.charCodeAt(this_.offset);
+            let r = this._source.charCodeAt(this._offset);
             let w = 1;
             if (r >= 0x80) {
               // not ASCII
-              { r, w } = decodeRune(this._source, this._offset);
+              const result = decodeRune(this._source, this._offset);
+              r = result.rune;
+              w = result.size;
             }
             this._scanOffset += w;
             this._ch = r;
@@ -328,7 +343,7 @@ export class Lexer {
 {{if .Lexer.RuleToken -}}
       let rule = lt.tmFirstRule - state;
 {{ else -}}
-      let tok = {{template "tokenType" .}}(lt.tmFirstRule - state);
+      let tok : {{template "tokenType" $}} = lt.tmFirstRule - state;
 {{ end -}}
 {{ if .Lexer.Tables.Backtrack -}}
       recovered: while (true) {
@@ -339,7 +354,7 @@ export class Lexer {
 {{ if $.Lexer.RuleToken -}}
           case {{.Action}}:
 {{ else -}}
-          case {{template "tokenPkg" $}}.{{(index $.Syms .Action).ID}}:
+          case {{template "tokenType" $}}.{{(index $.Syms .Action).ID}}:
 {{ end -}}
 {{ with string_switch .Custom -}}
           switch (hash & {{.Mask}}) {
@@ -350,7 +365,7 @@ export class Lexer {
 {{ if $.Lexer.RuleToken -}}
                 rule = {{.Action}};
 {{ else -}}
-                tok = {{template "tokenPkg" $}}.{{(index $.Syms .Action).ID}};
+                tok = {{template "tokenType" $}}.{{(index $.Syms .Action).ID}};
 {{ end -}}
               break;
               }
@@ -391,7 +406,7 @@ export class Lexer {
         }
 {{ else -}}
         switch (tok) {
-          case {{template "tokenType" .}}.{{(index $.Syms .Lexer.InvalidToken).ID}}:
+          case {{template "tokenType" $}}.{{(index $.Syms .Lexer.InvalidToken).ID}}:
 {{ template "handleInvalidToken" . -}}
           break;
 {{ if $spaceRules -}}
@@ -421,7 +436,7 @@ export class Lexer {
 {{ if .Lexer.RuleToken -}}
       rule = backupRule;
 {{ else -}}
-      tok = {{template "tokenType" .}}(backupToken);
+      tok = backupToken;
 {{ end -}}
 {{ if .Lexer.ClassActions -}}
       hash = backupHash;
@@ -429,21 +444,21 @@ export class Lexer {
       this.rewind(backupOffset);
     } else if (this._offset === this._tokenOffset) {
       if (this._ch === -1) {
-        tok = {{template "tokenType" .}}.{{(index $.Syms 0).ID}};
+        tok = {{template "tokenType" $}}.{{(index $.Syms 0).ID}};
       }
       this.rewind(this._scanOffset);
     }
 {{ if .Lexer.RuleToken -}}
     if (rule !== 0) {
 {{ else -}}
-    if (tok !== {{template "tokenPkg" .}}.{{(index $.Syms .Lexer.InvalidToken).ID}}) {
+    if (tok !== {{template "tokenType" $}}.{{(index $.Syms .Lexer.InvalidToken).ID}}) {
 {{ end -}}
       continue recovered;
     }
 {{ else -}}
     if (this._offset === this._tokenOffset {
       if (this._ch === -1) {
-        tok = {{template "tokenPkg" .}}.{{(index $.Syms 0).ID}};
+        tok = {{template "tokenType" $}}.{{(index $.Syms 0).ID}};
       }
       this.rewind(this._scanOffset);
     }

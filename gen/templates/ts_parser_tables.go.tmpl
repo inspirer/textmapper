@@ -1,14 +1,14 @@
 {{- template "header" . -}}
 
-import * as {{template "tokenPkg"}} from './token';
+import {{"{"}}{{template "tokenType" $}}} from './token';
 import * as {{template "listenerPkg"}} from './listener';
 
 export const startStackSize = 256;
 {{ if .ReportTokens true -}}
 export const startTokenBufferSize = 16;
 {{ end -}}
-export const noToken = {{template "tokenType"}}.UNAVAILABLE;
-export const eoiToken = {{template "tokenType"}}.EOI;
+export const noToken = {{template "tokenType" $}}.UNAVAILABLE;
+export const eoiToken = {{template "tokenType" $}}.EOI;
 
 {{- range .Parser.Tables.Markers}}
 {{- if and (ne .Name "lr0") (ne .Name "greedy")}}
@@ -30,14 +30,14 @@ let tmNonterminals: string[] = [
 {{- end}}
 ];
 
-export function symbolName(sym: {{template "tokenType"}}): string {
+export function symbolName(sym: {{template "tokenType" $}}): string {
   if (sym === noToken) {
     return "<no-token>";
   }
-  if (sym < {{template "tokenType" .}}.NumTokens) {
-    return {{template "tokenType" .}}[sym];
+  if (sym < {{template "tokenType" $}}.NumTokens) {
+    return {{template "tokenType" $}}[sym];
   }
-  let i = sym - {{template "tokenType" .}}.NumTokens;
+  let i = sym - {{template "tokenType" $}}.NumTokens;
   if (i < tmNonterminals.length) {
     return tmNonterminals[i];
   }
@@ -127,7 +127,7 @@ export const tmRuleType : {{template "nodeTypeRef"}}[] = [
 
 {{- range .Sets}}
 // {{.Expr}} = {{.ValueString $}}
-export const {{.Name}} : {{template "tokenType" .}}[] = [
+export const {{.Name}} : {{template "tokenType" $}}[] = [
 {{- if gt (len .Terminals) 0 -}}
   {{- int_array .Terminals "  " 79 -}}
 {{- end -}}

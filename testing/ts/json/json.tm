@@ -2,6 +2,7 @@ language json(ts);
 
 tokenLine = true
 eventBased = true
+eventAST = true
 genSelector = true
 fixWhitespace = true
 extraTypes = ["NonExistingType"]

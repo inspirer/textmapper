@@ -35,6 +35,8 @@ var languages = map[string]*language{
 		AST: []file{
 			{"ast/tree.go", builtin(`go_ast_tree`)},
 			{"ast/parse.go", builtin(`go_ast_parse`)},
+		},
+		TypedAST: []file{
 			{"ast/ast.go", builtin(`go_ast`)},
 			{"ast/factory.go", builtin(`go_ast_factory`)},
 		},
@@ -72,11 +74,13 @@ var languages = map[string]*language{
 		Parser: []file{
 			{"parser.ts", builtin("ts_parser")},
 			{"parser_tables.ts", builtin("ts_parser_tables")},
-			{"ast/tree.ts", builtin("ts_ast_tree")},
-			{"ast/parse.ts", builtin("ts_ast_parse")},
 		},
 		Stream: []file{
 			{"stream.ts", builtin(`ts_stream`)},
+		},
+		AST: []file{
+			{"tree.ts", builtin("ts_tree")},
+			{"builder.ts", builtin("ts_builder")},
 		},
 	},
 }
@@ -93,6 +97,7 @@ type language struct {
 	Types    []file
 	Selector []file
 	AST      []file
+	TypedAST []file
 	Bison    []file
 
 	SharedDefs string
@@ -121,8 +126,11 @@ func (l *language) templates(g *grammar.Grammar) []file {
 		if g.Options.GenSelector || g.Options.EventFields {
 			ret = append(ret, l.Selector...)
 		}
-		if g.Options.EventFields && g.Options.EventAST {
+		if g.Options.EventAST {
 			ret = append(ret, l.AST...)
+		}
+		if g.Options.EventFields && g.Options.EventAST {
+			ret = append(ret, l.TypedAST...)
 		}
 	}
 	if g.Options.WriteBison {

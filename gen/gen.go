@@ -148,6 +148,8 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 		switch g.TargetLang {
 		case "go":
 			src = FormatGo(outName, ExtractGoImports(src))
+		case "ts":
+			src = ExtractTsImports(src)
 		}
 		if err := w.Write(outName, src); err != nil {
 			return err

@@ -1,7 +1,5 @@
 {{- template "header" . -}}
 
-import * as {{template "tokenPkg"}} from './token';
-
 export const tmNumClasses = {{.Lexer.Tables.NumSymbols}}
 
 {{$runeType := bits .Lexer.Tables.NumSymbols -}}
@@ -65,7 +63,7 @@ export const tmStateMap: number[] = [
 
 {{end -}}
 {{if .Lexer.RuleToken -}}
-export const tmToken: {{template "tokenType" .}}[] = [
+export const tmToken: {{template "tokenTypeRef" $}}[] = [
 {{- int_array .Lexer.RuleToken "  " 79 -}}
 ];
 
