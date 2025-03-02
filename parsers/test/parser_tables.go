@@ -235,5 +235,15 @@ var tmRuleType = [...]uint32{
 	0,                   // QualifiedName-opt :
 }
 
+// set(MINUS | PLUS) = MINUS, PLUS
+var plusMinus = []token.Type{
+	25, 27,
+}
+
+// set((MINUS | PLUS) | MINUSGT) = MINUS, MINUSGT, PLUS
+var plusMinusArrow = []token.Type{
+	25, 26, 27,
+}
+
 // set(follow ERROR) =
 var afterErr = []token.Type{}
