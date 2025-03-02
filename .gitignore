@@ -3,6 +3,7 @@
 /testing/external
 /testing/compile_commands.json
 /testing/.cache/
+/testing/ts/node_modules/
 /vscode-ext/node_modules/
 /vscode-ext/out/
 .vscode

@@ -1,0 +1,20 @@
+{
+  "name": "testing",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.12.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [],
+    "packageExtensions": {
+      "rollup": {
+        "dependencies": {
+          "@rollup/rollup-darwin-arm64": "*"
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/node": "20.9.0",
+    "typescript": "5.6.2"
+  }
+}
