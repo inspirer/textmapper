@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/inspirer/textmapper/grammar/grammar"
 	"github.com/inspirer/textmapper/parsers/parsertest"
 	"github.com/inspirer/textmapper/parsers/tm"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
@@ -36,6 +37,7 @@ var testFiles = []string{
 	"inject.tmerr",
 	"flexmode.tmerr",
 	"max_la.tmerr",
+	"disabled_syntax.tmerr",
 }
 
 func TestErrors(t *testing.T) {
@@ -190,4 +192,272 @@ func TestDebugInfo(t *testing.T) {
 			t.Logf("Run (cd compiler/testdata; go run ../../cmd/textmapper/*.go debug --tables %v >> %v) to regenerate.", file, file)
 		}
 	}
+}
+
+func TestArgRef(t *testing.T) {
+	header := `
+		language medium(cc);
+
+		namespace = "medium"
+
+		:: lexer
+
+		KW_A: /a/
+		KW_B: /b/
+		KW_C: /c/
+		KW_D: /d/
+		',': /,/
+
+		:: parser
+
+		%input Z;
+
+		a {std::string}: KW_A;
+		b {int}: KW_B;
+		c {int*}: KW_C;
+		d {double}: KW_D;
+	`
+
+	testCases := []struct {
+		input string
+		// If not provided, default to the start symbol "Z".
+		symbol    string
+		want      [][]string
+		wantMulti [][][]string
+	}{
+		// Section: Optional.
+		{
+			input: "Z: a? {};",
+			want:  [][]string{{`$1[a]?`}},
+		},
+		{
+			input: `Z: c b?;`,
+			// No arg refs are collected because there are no semantic actions.
+			want: [][]string{},
+		},
+		{
+			input: `Z: (a b)? {};`,
+			want:  [][]string{{`$1[a]?`, `$2[b]?`}},
+		},
+		// Mid rule.
+		{
+			input: `Z: b? {} c;`,
+			// Only b is collected because c is after the mid rule.
+			want: [][]string{{`$1[b]?`}},
+		},
+		// Mid rule and semantic action.
+		{
+			input: `Z: b? {} c {};`,
+			// For the mid rule, only b is collected; for the semantic action, both b and c are collected.
+			want: [][]string{{`$1[b]?`}, {`$1[b]?`, `$2[c]`}},
+		},
+		// Duplicate symbol names.
+		{
+			input: `Z: (a a)? {};`,
+			want:  [][]string{{`$1[a]?`, `$2[a]?`}},
+		},
+		// Duplicate symbol names.
+		{
+			input: `Z: a? a {};`,
+			want:  [][]string{{`$1[a]?`, `$2[a]`}},
+		},
+		// Optional terminal.
+		{
+			input: `Z: KW_A? {};`,
+			want:  [][]string{{`$1[KW_A]?`}},
+		},
+		// With state marker.
+		{
+			input: `Z: a? .my_state b {};`,
+			want:  [][]string{{`$1[a]?`, `$2[b]`}},
+		},
+		// Section: List
+		{
+			input: `Z: a+ {};`,
+			want:  [][]string{{`$1[a_list]`}},
+		},
+		{
+			input: `Z: a* {};`,
+			want:  [][]string{{`$1[a_optlist]`}},
+		},
+		// List with separator.
+		{
+			input: `Z: (a separator ',')+ {};`,
+			want:  [][]string{{`$1[a_list_Comma_separated]`}},
+		},
+		// List with separator.
+		{
+			input: `Z: (a separator ',')* {};`,
+			want:  [][]string{{`$1[a_list_Comma_separatedopt]`}},
+		},
+		// List of terminals.
+		{
+			input: `Z: KW_A+ {};`,
+			want: [][]string{{`$1[KWA_list]`}},
+		},
+		// Semantic action inside list.
+		{
+			input:  `Z: ( a {} )+ {};`,
+			symbol: "a_list",
+			want:   [][]string{{`$1[a]`}},
+		},
+		// Section: Alternating group.
+		{
+			input: `Z: (a | b) {};`,
+			want:  [][]string{{`$1[a]?`, `$2[b]?`}},
+		},
+		{
+			// Commands in alternating groups.
+			// cmd1 only has access to b, and cmd2 only has access to c. cmd has access to all a, b, and
+			// c.
+			input: `Z: a ( b {cmd1} | c {cmd2} ) {cmd3};`,
+			wantMulti: [][][]string{
+				// cmd1
+				{{`$2[b]?`}, {`$1[a]`, `$2[b]?`, `$3[c]?`}},
+				// cmd2
+				{{`$3[c]?`}, {`$1[a]`, `$2[b]?`, `$3[c]?`}},
+			},
+		},
+		// Terminals in alternating group.
+		{
+			input: `Z: (KW_A | KW_B) {};`,
+			want:  [][]string{{`$1[KW_A]?`, `$2[KW_B]?`}},
+		},
+		// Section: Nested syntax extensions.
+		{
+			input: `Z: (a? | b) {};`,
+			want:  [][]string{{`$1[a]?`, `$2[b]?`}},
+		},
+		{
+			input: `Z: (a+ | b*) {};`,
+			want:  [][]string{{`$1[a_list]?`, `$2[b_optlist]?`}},
+		},
+		{
+			// Nested choice inside a list
+			input: `Z: ( a {cmd1} | b {cmd2} )+ {cmd3};`,
+			want:  [][]string{{`$1[Z$1]`}},
+		},
+		{
+			// List inside nested choice
+			input: `Z: (a+ {cmd1} | (b{cmd2})* ) {};`,
+			wantMulti: [][][]string{
+				// (a+ {cmd1}) {};
+				{{`$1[a_list]?`}, {`$1[a_list]?`, `$2[b_optlist]?`}},
+				// b{cmd2}* {};
+				{{`$1[a_list]?`, `$2[b_optlist]?`}},
+			},
+		},
+		{
+			input: `Z: (a? b)+ {};`,
+			want:  [][]string{{`$1[Z$1]`}},
+		},
+		{
+			input: `Z: (a | b)* {};`,
+			want:  [][]string{{`$1[Z$1]`}},
+		},
+		// Section: Set.
+		{
+			input: `Z: set(KW_A | KW_B) {};`,
+			want:  [][]string{{`$1[setof_KW_A_or_KW_B]`}},
+		},
+	}
+
+	for _, tc := range testCases {
+		input := header + tc.input
+		parsed, err := parseToGrammar(input)
+
+		if err != nil {
+			t.Fatalf("cannot parse %q: %v", input, err)
+		}
+
+		nts := parsed.Parser.Nonterms
+
+		var sym string
+		if tc.symbol != "" {
+			sym = tc.symbol
+		} else {
+			sym = "Z"
+		}
+		nt := getNt(nts, sym)
+		if nt == nil {
+			t.Fatalf("cannot find the start symbol Z")
+		}
+		rules := []*syntax.Expr{nt.Value}
+		if nt.Value.Kind == syntax.Choice {
+			rules = nt.Value.Sub
+		}
+
+		for i, rule := range rules {
+			got := gotArgRefs(rule, parsed)
+			var want string
+			if tc.wantMulti != nil {
+				want = fmt.Sprintf("%+v", tc.wantMulti[i])
+			} else {
+				want = fmt.Sprintf("%+v", tc.want)
+			}
+			if got != want {
+				t.Errorf("got %v, want %v for input %q", got, want, tc.input)
+			}
+		}
+	}
+}
+
+// A convenience function to parse a grammar string and return the corresponding model.
+func parseToGrammar(content string) (*grammar.Grammar, error) {
+	ctx := context.Background()
+	filename := "test.tm"
+	_, err := ast.Parse(ctx, filename, content, tm.StopOnFirstError)
+	if err != nil {
+		return nil, fmt.Errorf("%v: parsing failed with %v", filename, err)
+	}
+
+	return Compile(ctx, filename, content, Params{DebugTables: true})
+}
+
+func getNt(nts []*syntax.Nonterm, name string) *syntax.Nonterm {
+	for _, nt := range nts {
+		if nt.Name == name {
+			return nt
+		}
+	}
+	return nil
+}
+
+func serializeArgRef(ref syntax.ArgRef, grammar *grammar.Grammar) string {
+	ret := fmt.Sprintf("$%v[%v]", ref.Pos, grammar.Syms[ref.Symbol].Name)
+	if ref.Optional {
+		ret += "?"
+	}
+	return ret
+}
+
+func serializeArgRefs(refs map[int]syntax.ArgRef, grammar *grammar.Grammar) string {
+	var keys []int
+	for k := range refs {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+
+	var ret []string
+	for _, pos := range keys {
+		ret = append(ret, serializeArgRef(refs[pos], grammar))
+	}
+	return "[" + strings.Join(ret, " ") + "]"
+}
+
+func gotArgRefs(e *syntax.Expr, grammar *grammar.Grammar) string {
+	var collect func(e *syntax.Expr)
+	collected := make([]map[int]syntax.ArgRef, 0)
+	collect = func(e *syntax.Expr) {
+		if e.CmdArgs != nil && e.CmdArgs.ArgRefs != nil {
+			collected = append(collected, e.CmdArgs.ArgRefs)
+		}
+	}
+
+	e.ForEach(-1, collect)
+	var ret []string
+	for _, argRefs := range collected {
+		ret = append(ret, serializeArgRefs(argRefs, grammar))
+	}
+	return "[" + strings.Join(ret, " ") + "]"
 }
