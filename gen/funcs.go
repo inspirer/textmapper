@@ -231,6 +231,15 @@ func sub(a, b int) int {
 	return a - b
 }
 
+func indexToPos(i int, remap map[int]int) int {
+	for pos, idx := range remap {
+		if idx == i {
+			return pos
+		}
+	}
+	return 0
+}
+
 func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
 	var decls strings.Builder
 	var sb strings.Builder
@@ -254,18 +263,19 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		}
 
 		var index int
+		var pos int
 		switch id {
 		case "left()", "leftRaw()":
 			index = -2
 		case "first()":
-			if len(args.Types) == 0 {
+			if args.SymRefCount == 0 {
 				index = -1
 			}
 		case "last()":
-			if len(args.Types) == 0 {
+			if args.SymRefCount == 0 {
 				index = -1
 			} else {
-				index = len(args.Types) - 1
+				index = args.SymRefCount - 1
 			}
 		default:
 			if strings.HasPrefix(id, "self[") && strings.HasSuffix(id, "]") {
@@ -275,10 +285,19 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				}
 			}
 
-			var ok bool
-			index, ok = args.Resolve(id)
+			ref, ok := args.Resolve(id)
 			if !ok {
 				return "", status.Errorf(origin, "invalid reference %q", id)
+			}
+			index = ref.Index
+			pos = ref.Pos
+		}
+
+		// We are trying to locate the first or last symbol from RHS.
+		if pos == 0 && index >= 0 {
+			pos = indexToPos(index, args.Remap)
+			if pos == 0 {
+				return "", status.Errorf(origin, "internal error: cannot find the position for index %v", index)
 			}
 		}
 
@@ -294,7 +313,7 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		if index == -2 {
 			v = "lhs"
 		} else {
-			v = fmt.Sprintf("stack[len(stack)-%v]", len(args.Types)-index)
+			v = fmt.Sprintf("stack[len(stack)-%v]", args.SymRefCount-index)
 		}
 		switch {
 		case prop == "sym":
@@ -302,10 +321,10 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		case prop == "value":
 			v += ".value"
 			switch {
-			case index >= 0 && args.Types[index] != "":
+			case index >= 0 && args.Types[pos] != "":
 				varName := fmt.Sprintf("nn%v", index)
 				if !seen[index] {
-					fmt.Fprintf(&decls, "%v, _ := %v.(%v)\n", varName, v, args.Types[index])
+					fmt.Fprintf(&decls, "%v, _ := %v.(%v)\n", varName, v, args.Types[pos])
 					seen[index] = true
 				}
 				v = varName
@@ -324,6 +343,16 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		}
 	}
 	return decls.String() + sb.String(), nil
+}
+
+func ccWrapInOptional(argType, input string) string {
+	return fmt.Sprintf("std::optional<%v>(%v)", argType, input)
+}
+
+// ccTypeFromUnion returns the type of the union field, without the last ID, e.g. the "int" in
+// "int x".
+func ccTypeFromUnion(unionField string) string {
+	return strings.TrimSpace(unionField[:len(unionField)-len(lastID(unionField))])
 }
 
 func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode, variantStackEntry bool) (ret string, err error) {
@@ -349,74 +378,95 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		}
 
 		// Handle the rest of this '$' or '@'
-		var target, prop string
+
+		// $$ --> lhs.value
 		if s[0] == '$' {
-			// $$ --> lhs.value
-			target = "lhs"
+			var replacement string
 			if ch == '@' {
-				prop = "sym.location"
+				replacement = "lhs.sym.location"
 			} else {
 				t := args.LHSType
 				if t == "" {
 					return "", status.Errorf(origin, "$$ cannot be used inside a nonterminal semantic action without a type")
 				}
 				if variantStackEntry {
-					prop = "std::get<" + t + ">(" + target + ".value)"
-					target = ""
+					replacement = "std::get<" + t + ">(lhs.value)"
 				} else {
-					prop = "value." + lastID(t)
+					replacement = "lhs.value." + lastID(t)
 				}
 			}
 			s = s[1:]
-		} else {
-			var d int
-			r, w := utf8.DecodeRuneInString(s)
-			for unicode.IsDigit(r) || unicode.IsLetter(r) || r == '_' {
-				d += w
-				r, w = utf8.DecodeRuneInString(s[d:])
-			}
-			if d == 0 {
-				return "", status.Errorf(origin, "%c should be followed by a number or identifier", ch)
-			}
-			val := s[:d]
-			s = s[d:]
-			var index int
-			if pos, err := strconv.Atoi(val); err == nil {
-				if pos < 1 || pos >= args.CmdArgs.MaxPos {
-					// Index out of range.
-					return "", status.Errorf(origin, "out of bounds reference %c%v [max = %v]", ch, val, args.CmdArgs.MaxPos)
-				}
-				index = pos - 1
-			} else {
-				// Resolve by name
-				var ok bool
-				index, ok = args.Resolve(val)
-				if !ok {
-					return "", status.Errorf(origin, "invalid reference %c%q", ch, val)
-				}
+			sb.WriteString(replacement)
+			continue
+		}
+
+		// RHS symbol references, e.g. $1, @a.
+		var d int
+		r, w := utf8.DecodeRuneInString(s)
+		for unicode.IsDigit(r) || unicode.IsLetter(r) || r == '_' {
+			d += w
+			r, w = utf8.DecodeRuneInString(s[d:])
+		}
+		if d == 0 {
+			return "", status.Errorf(origin, "%c should be followed by a number or identifier", ch)
+		}
+		val := s[:d]
+		s = s[d:]
+
+		// cc uses 1-based indexing.
+		ref, ok := args.ResolveOneBased(val)
+		if !ok {
+			return "", status.Errorf(origin, "invalid reference %c%q", ch, val)
+		}
+
+		index := ref.Index
+		pos := ref.Pos
+
+		argType := args.Types[pos]
+
+		// The symbol reference is valid in the original rule but is not present in the expanded
+		// rule, so it references an optional symbol either expanded from a Choice or an Optional.
+		if index == -1 {
+			// Use std::optional<T>() as the semantic value for the non-present symbol.
+			if ch == '@' {
+				sb.WriteString(ccWrapInOptional("decltype(lhs.sym.location)", ""))
+				continue
 			}
 
-			target = fmt.Sprintf("rhs[%v]", index+args.Delta)
-			if ch == '@' {
-				prop = "sym.location"
+			if argType == "" {
+				return "", status.Errorf(origin, "symbol %c%q does not have an associated type", ch, val)
+			}
+			if !variantStackEntry {
+				argType = ccTypeFromUnion(argType)
+			}
+			sb.WriteString(ccWrapInOptional(argType, ""))
+			continue
+		}
+
+		// The referenced symbol is present in the expanded rule.
+		var replacement string
+		target := fmt.Sprintf("rhs[%v]", index+args.Delta)
+		if ch == '@' {
+			replacement = target + ".sym.location"
+			argType = "decltype(lhs.sym.location)"
+		} else {
+			if argType == "" {
+				return "", status.Errorf(origin, "%c%q does not have an associated type", ch, val)
+			}
+			if variantStackEntry {
+				replacement = "std::get<" + argType + ">(" + target + ".value)"
 			} else {
-				t := args.Types[index]
-				if t == "" {
-					return "", status.Errorf(origin, "%c%q does not have an associated type", ch, val)
-				}
-				if variantStackEntry {
-					prop = "std::get<" + t + ">(" + target + ".value)"
-					target = ""
-				} else {
-					prop = "value." + lastID(t)
-				}
+				replacement = target + ".value." + lastID(argType)
+				argType = ccTypeFromUnion(argType)
 			}
 		}
-		if len(target) > 0 {
-			sb.WriteString(target)
-			sb.WriteByte('.')
+
+		if argRef := args.ArgRefs[pos]; argRef.Optional {
+			// This symbol reference is optional in the original rule, so we wrap it inside a
+			// std::optional to unify the semantic actions for the expanded rules.
+			replacement = ccWrapInOptional(argType, replacement)
 		}
-		sb.WriteString(prop)
+		sb.WriteString(replacement)
 	}
 	return sb.String(), nil
 }
@@ -442,18 +492,19 @@ func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceN
 		}
 
 		var index int
+		var pos int
 		switch id {
 		case "left()", "leftRaw()":
 			index = -2
 		case "first()":
-			if len(args.Types) == 0 {
+			if args.SymRefCount == 0 {
 				index = -1
 			}
 		case "last()":
-			if len(args.Types) == 0 {
+			if args.SymRefCount == 0 {
 				index = -1
 			} else {
-				index = len(args.Types) - 1
+				index = args.SymRefCount - 1
 			}
 		default:
 			if strings.HasPrefix(id, "self[") && strings.HasSuffix(id, "]") {
@@ -463,10 +514,18 @@ func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceN
 				}
 			}
 
-			var ok bool
-			index, ok = args.Resolve(id)
+			ref, ok := args.Resolve(id)
 			if !ok {
 				return "", status.Errorf(origin, "invalid reference %q", id)
+			}
+			index = ref.Index
+			pos = ref.Pos
+		}
+
+		if pos == 0 && index >= 0 {
+			pos = indexToPos(index, args.Remap)
+			if pos == 0 {
+				return "", status.Errorf(origin, "internal error: cannot find the position for index %v", index)
 			}
 		}
 
@@ -484,9 +543,9 @@ func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceN
 			case index < 0 && args.LHSType != "" && id != "leftRaw()":
 				needsParen = true
 				fmt.Fprintf(&sb, "(/*%v*/", args.LHSType)
-			case index >= 0 && args.Types[index] != "":
+			case index >= 0 && args.Types[pos] != "":
 				needsParen = true
-				fmt.Fprintf(&sb, "(/*%v*/", args.Types[index])
+				fmt.Fprintf(&sb, "(/*%v*/", args.Types[pos])
 			}
 			sb.WriteByte('$')
 		} else {

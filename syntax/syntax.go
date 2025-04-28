@@ -11,9 +11,31 @@ import (
 	"github.com/inspirer/textmapper/status"
 )
 
+// Terminal is a terminal symbol used in a grammar.
+type Terminal struct {
+	Name string
+	Type string
+}
+
+func (t *Terminal) String() string {
+	return t.Name + "(type = " + t.Type + ")"
+}
+
+// ArgRef represents a reference to a symbol in semantic actions.
+type ArgRef struct {
+	Pos      int    // The positional index of the symbol in the original rule. 1-based. Used for resolving the number references in semantic actions.
+	Optional bool   // Whether the symbol reference is under an Optional or a Nested Choice.
+	Kind     string // The kind of the symbol, e.g. reference, starQuantifier, etc. Used for debugging.
+	Symbol   int    // The symbol index in the grammar.
+}
+
+func (p *ArgRef) String() string {
+	return fmt.Sprintf("%+v", *p)
+}
+
 // Model is a model of a language's syntax built on top of a set of terminals.
 type Model struct {
-	Terminals []string
+	Terminals []Terminal
 	Params    []Param
 	Nonterms  []*Nonterm // all params and nonterms must have distinct names
 	Inputs    []Input
@@ -24,7 +46,7 @@ type Model struct {
 // Ref returns the string version of a symbol reference for debugging.
 func (m *Model) Ref(sym int, args []Arg) string {
 	if sym < len(m.Terminals) {
-		return m.Terminals[sym]
+		return m.Terminals[sym].Name
 	}
 	nt := m.Nonterms[sym-len(m.Terminals)]
 	if len(args) == 0 {
@@ -80,6 +102,17 @@ func (m *Model) Rearrange(perm []int) {
 	m.ForEach(Reference, func(_ *Nonterm, expr *Expr) {
 		if nt := expr.Symbol - terms; nt >= 0 {
 			expr.Symbol = terms + perm[nt]
+		}
+	})
+	m.ForEach(Command, func(_ *Nonterm, expr *Expr) {
+		if expr.CmdArgs == nil || expr.CmdArgs.ArgRefs == nil {
+			return
+		}
+		for pos, argRef := range expr.CmdArgs.ArgRefs {
+			if nt := argRef.Symbol - terms; nt >= 0 {
+				argRef.Symbol = terms + perm[nt]
+				expr.CmdArgs.ArgRefs[pos] = argRef
+			}
 		}
 	})
 	for _, set := range m.Sets {
@@ -150,7 +183,7 @@ type Expr struct {
 	Sub        []*Expr
 	Symbol     int
 	Args       []Arg
-	Pos        int // Positional index of a reference, set, or list in the original rule.
+	Pos        int // Positional index of a reference, set, or list in the original rule. 1-based.
 	Predicate  *Predicate
 	ListFlags  ListFlags
 	ArrowFlags []string
@@ -158,6 +191,26 @@ type Expr struct {
 	CmdArgs    *CmdArgs
 	Origin     status.SourceNode
 	Model      *Model // Kept for some kinds for debugging. TODO error-prone, get rid of
+}
+
+// ForEach visits all the Exprs of a given kind under `expr`. If `kind` is -1, all Expr kinds are
+// visited.
+func (e *Expr) ForEach(kind ExprKind, consumer func(e *Expr)) {
+	seen := make(map[*Expr]bool)
+	var visit func(e *Expr)
+	visit = func(e *Expr) {
+		if seen[e] {
+			return
+		}
+		seen[e] = true
+		if e.Kind == kind || kind == -1 {
+			consumer(e)
+		}
+		for _, sub := range e.Sub {
+			visit(sub)
+		}
+	}
+	visit(e)
 }
 
 // Equal returns true for equivalent grammar clauses.
@@ -222,7 +275,7 @@ func (e *Expr) String() string {
 	case Prec:
 		var sym string
 		if e.Model != nil {
-			sym = e.Model.Terminals[e.Symbol]
+			sym = e.Model.Terminals[e.Symbol].Name
 		} else {
 			sym = strconv.Itoa(e.Symbol)
 		}
@@ -379,9 +432,10 @@ func (k ExprKind) GoString() string {
 
 // CmdArgs defines which RHS symbols are available inside a semantic action.
 type CmdArgs struct {
-	Names  map[string]int
-	MaxPos int // exclusive, 1-based
-	Delta  int // Added to the final position to adjust for extracted middle rule actions.
+	Names   map[string]int // alias -> position
+	MaxPos  int            // exclusive, 1-based
+	Delta   int            // Added to the final position to adjust for extracted middle rule actions.
+	ArgRefs map[int]ArgRef // position -> ArgRef
 }
 
 // TokenSet is a grammar expression that resolves to a set of tokens.

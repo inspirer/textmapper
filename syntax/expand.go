@@ -10,6 +10,111 @@ import (
 	"github.com/inspirer/textmapper/util/ident"
 )
 
+// updateArgRefs updates the ArgRefs of `e` to include the new nonterminals in `newNts`.
+//
+// When `e.ArgRefs` was created, we did not have the non-terminals that TextMapper creates for
+// Lists yet. We fill in the missing non-terminals once they are created by calling this function.
+func updateArgRefs(m *Model, newNts map[int]int, e *Expr) {
+	if cmdArgs := e.CmdArgs; cmdArgs != nil {
+		for pos, sym := range newNts {
+			copied, exists := cmdArgs.ArgRefs[pos]
+			if !exists {
+				// The ArgRefs of mid rules do not the terminals after it.
+				continue
+			}
+			copied.Symbol = sym
+			cmdArgs.ArgRefs[pos] = copied
+		}
+		return
+	}
+	for _, sub := range e.Sub {
+		updateArgRefs(m, newNts, sub)
+	}
+}
+
+// ExpandOptions contains the options for the Expand function.
+type ExpandOptions struct {
+	// OptionalType returns the type of an optional symbol s? or s_opt, where `t` is the type of the
+	// symbol s.
+	OptionalType func(t string) string
+
+	// OptionalCmd returns the command to calculate the semantic value of an optional symbol s_opt,
+	// where `t` is the type of the symbol s.
+	OptionalCmd func(t string) string
+
+	// ListType returns the type of the list symbol s* or s+, where `t` is the type of the element
+	// symbol s.
+	ListType func(t string) string
+
+	// NewList returns the command to create a new list of the given type.
+	NewList func(elemType string, elemPos int, listFlags ListFlags) string
+
+	// Append returns the command to append an element to a list.
+	Append func(elemPos, listPos int, listFlags ListFlags) string
+
+	// DefaultValue returns the default value of the given type `t`.
+	DefaultValue func(t string) string
+}
+
+// CcExpandOptions returns the ExpandOptions for generating C++ semantic actions.
+func CcExpandOptions() *ExpandOptions {
+	return &ExpandOptions{
+		OptionalType: func(t string) string {
+			if t == "" {
+				return ""
+			}
+			return "std::optional<" + t + ">"
+		},
+		OptionalCmd: func(t string) string {
+			// For cc the semantic action does not need the input type `t`.
+			//
+			// TODO: This involves copying the rhs value when constructing the std::optional. Example
+			// generated code:
+			//
+			// ```cc
+			// lhs.value = std::optional<std::string>(std::get<std::string>(rhs[0].value));
+			// ```
+			//
+			// If this turns out to be a performance bottleneck, we should find a way to use move when
+			// constructing the std::optional.
+			return fmt.Sprintf(`{ $$ = $1; }`)
+		},
+		ListType: func(t string) string {
+			if t == "" {
+				return ""
+			}
+			return "std::vector<" + t + ">"
+		},
+		NewList: func(elemType string, elemPos int, listFlags ListFlags) string {
+			if listFlags&OneOrMore != 0 {
+				return fmt.Sprintf(`
+				  auto& elem = $%v;
+				  auto& mutable_elem = const_cast<std::remove_const<typename std::remove_reference<decltype(elem)>::type>::type&>(elem);
+				  $$ = std::vector<%v>{std::move(mutable_elem)};
+				`, elemPos, elemType)
+			}
+			return fmt.Sprintf(`$$ = std::vector<%v>{};`, elemType)
+		},
+		Append: func(elemPos, listPos int, listFlags ListFlags) string {
+			return fmt.Sprintf(`{
+				auto& list = $%v;
+				auto& elem = $%v;
+				auto& mutable_list = const_cast<std::remove_const<typename std::remove_reference<decltype(list)>::type>::type&>(list);
+				auto& mutable_elem = const_cast<std::remove_const<typename std::remove_reference<decltype(elem)>::type>::type&>(elem);
+				auto new_list = std::move(mutable_list);
+				new_list.push_back(std::move(mutable_elem));
+				$$ = std::move(new_list);
+			}`, listPos, elemPos)
+		},
+		DefaultValue: func(t string) string {
+			if t == "" {
+				return ""
+			}
+			return t + "{}"
+		},
+	}
+}
+
 // Expand rewrites the grammar substituting extended notation clauses with equivalent
 // context-free production forms. Every nonterminal becomes a choice of sequences (production
 // rules), where each sequence can contain only StateMarker, Command, or Reference expressions.
@@ -24,12 +129,13 @@ import (
 // Note: for now it leaves Assign, Append, and Arrow expressions untouched. The first two can
 // contain references only. Arrow can contain a sub-sequence if it reports more than one
 // symbol reference.
-func Expand(m *Model) error {
+func Expand(m *Model, opts *ExpandOptions) error {
 	e := &expander{
 		Model: m,
 		m:     make(map[string]int),
 		perm:  make([]int, len(m.Nonterms)),
 		reuse: make([]int, 0, 16),
+		opts:  opts,
 	}
 	max := len(m.Nonterms)
 	for i, nt := range m.Nonterms {
@@ -68,23 +174,33 @@ func Expand(m *Model) error {
 	for self, nt := range m.Nonterms {
 		switch nt.Value.Kind {
 		case Optional:
-			// Note: this case facilitates 0..* lists extraction.
+			// Note: this case facilitates 0..* lists extraction. All other optionals are handled by
+			// expandRule.
+			if nt.Value.Sub[0].Kind != Reference {
+				return status.Errorf(nt.Value.Origin, "internal error: expecting an optional reference, but got %+v", nt.Value.Sub[0])
+			}
+			symbolType := getSymbolType(nt.Value.Sub[0], m)
+			subs := []*Expr{nt.Value.Sub[0], &Expr{Kind: Empty, Origin: nt.Value.Origin}}
+			// For the %empty rule, use an empty list as the semantic value.
+			if e.opts.DefaultValue != nil && symbolType != "" {
+				defaultVal := e.opts.DefaultValue(symbolType)
+				subs[1] = &Expr{Kind: Command, Name: "$$ = " + defaultVal + ";", Origin: nt.Value.Origin, CmdArgs: &CmdArgs{MaxPos: 1}}
+			}
 			nt.Value = &Expr{
-				Kind: Choice,
-				Sub: []*Expr{
-					nt.Value.Sub[0],
-					{Kind: Empty, Origin: nt.Value.Origin},
-				},
+				Kind:   Choice,
+				Sub:    subs,
 				Origin: nt.Value.Origin,
 			}
 		case List:
 			// Note: at this point all lists either have at least one element or have no separators.
-			rr := nt.Value.ListFlags&RightRecursive != 0
-			nonEmpty := nt.Value.ListFlags&OneOrMore != 0
+			listFlags := nt.Value.ListFlags
+			rr := listFlags&RightRecursive != 0
+			nonEmpty := listFlags&OneOrMore != 0
 			elem := nt.Value.Sub[0]
 			origin := nt.Value.Origin
 			rec := &Expr{Kind: Sequence, Origin: origin}
-			rec.Sub = append(rec.Sub, &Expr{Kind: Reference, Symbol: len(m.Terminals) + self, Model: m, Origin: origin})
+			listRef := &Expr{Kind: Reference, Symbol: len(m.Terminals) + self, Model: m, Origin: origin}
+			rec.Sub = append(rec.Sub, listRef)
 			if len(nt.Value.Sub) > 1 {
 				if rr {
 					rec = concat(origin, nt.Value.Sub[1], rec)
@@ -96,7 +212,65 @@ func Expand(m *Model) error {
 				Kind:   Choice,
 				Origin: origin,
 			}
-			if elem.Kind == Choice {
+			// Automatic value propagation works for lists of references only (with and without
+			// separators). In every other sense this branch repeats the next one.
+			if elem.Kind == Reference {
+				// Add the recursion rule, e.g. `a_list: a_list a`.
+				var recursion []*Expr
+				if rr {
+					recursion = append(recursion, elem, rec)
+				} else {
+					recursion = append(recursion, rec, elem)
+				}
+				elemType := getSymbolType(elem, m)
+				if opts.Append != nil && elemType != "" {
+					// Assign a new Pos for the list reference itself so that its semantic value can be
+					// referenced.
+					//
+					// The position of the list reference only needs to be different from the element Pos,
+					// instead of having to match the order between the listRef and the elem. For example,
+					// consider the following rule:
+					//
+					//   start: a+ {...}
+					//
+					// `elem.Pos` is 1. Assuming we generate left-recursion rules for a_list:
+					//
+					//    a_list: a_list a
+					//
+					// listRef.Pos is 2 (elem.Pos + 1), even though the listRef "a_list" actually appears
+					// before the "a". This is ok because Pos is only used to identify the symbols (and thus
+					// only needs to be unique), and the only semantic action that uses `listRef.Pos` is
+					// generated by `opts.Append`, which accepts both elemPos and listPos as arguments.
+					listPos := elem.Pos + 1
+					listRef.Pos = listPos
+					argRefs := map[int]ArgRef{
+						elem.Pos: ArgRef{Pos: elem.Pos, Symbol: elem.Symbol},
+						listPos:  ArgRef{Pos: listPos, Symbol: listRef.Symbol},
+					}
+					code := opts.Append(elem.Pos, listPos, listFlags)
+					cmdArgs := &CmdArgs{MaxPos: listPos + 1, ArgRefs: argRefs}
+					recursion = append(recursion, &Expr{Kind: Command, Name: code, Origin: origin, CmdArgs: cmdArgs})
+				}
+				nt.Value.Sub = append(nt.Value.Sub, concat(origin, recursion...))
+
+				// Add the base rule, e.g. `a_list: a`.
+				var base []*Expr
+				switch {
+				case nonEmpty:
+					base = append(base, elem)
+					if opts.NewList != nil && elemType != "" {
+						argRefs := map[int]ArgRef{
+							elem.Pos: ArgRef{Pos: elem.Pos, Symbol: elem.Symbol},
+						}
+						base = append(base, &Expr{Kind: Command, Name: opts.NewList(elemType, elem.Pos, listFlags), Origin: origin, CmdArgs: &CmdArgs{MaxPos: elem.Pos + 1, ArgRefs: argRefs}})
+					}
+				case opts.NewList != nil && elemType != "":
+					base = append(base, &Expr{Kind: Command, Name: opts.NewList(elemType, elem.Pos, listFlags), Origin: origin, CmdArgs: &CmdArgs{MaxPos: elem.Pos + 1}})
+				default:
+					base = append(base, &Expr{Kind: Empty, Origin: origin})
+				}
+				nt.Value.Sub = append(nt.Value.Sub, concat(origin, base...))
+			} else if elem.Kind == Choice {
 				if rr {
 					nt.Value.Sub = append(nt.Value.Sub, multiConcat(origin, elem.Sub, []*Expr{rec})...)
 				} else {
@@ -135,6 +309,10 @@ type expander struct {
 	start int // nonterminal, for sorting
 	base  int
 	reuse []int
+
+	createdNts map[int]int // The non-terminals created the current rule. Position -> Symbol
+
+	opts *ExpandOptions // Target-language-specific options during expansion.
 }
 
 func (e *expander) sortTail() {
@@ -163,7 +341,7 @@ func (e *expander) sortTail() {
 	e.reuse = local // return for reuse
 }
 
-func (e *expander) extractNonterm(expr *Expr) *Expr {
+func (e *expander) extractNonterm(expr *Expr, nonTermType string) *Expr {
 	name := ProvisionalName(expr, e.Model)
 	if existing, ok := e.m[name]; ok && expr.Equal(e.Nonterms[existing].Value) {
 		sym := len(e.Terminals) + existing
@@ -191,6 +369,7 @@ func (e *expander) extractNonterm(expr *Expr) *Expr {
 		Name:   name,
 		Value:  expr,
 		Origin: expr.Origin,
+		Type:   nonTermType,
 	}
 	e.Nonterms = append(e.Nonterms, nt)
 	e.extra++
@@ -198,7 +377,14 @@ func (e *expander) extractNonterm(expr *Expr) *Expr {
 	return &Expr{Kind: Reference, Symbol: sym, Model: e.Model, Origin: expr.Origin}
 }
 
-func (e *expander) expandRule(rule *Expr) []*Expr {
+func (e *expander) expandRule(rule *Expr) (expanded []*Expr) {
+	e.createdNts = make(map[int]int)
+	defer func() {
+		for _, rule := range expanded {
+			updateArgRefs(e.Model, e.createdNts, rule)
+		}
+	}()
+
 	if rule.Kind == Prec {
 		ret := e.expandExpr(rule.Sub[0])
 		for i, val := range ret {
@@ -250,8 +436,11 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 		}
 		return ret
 	case Set, Lookahead:
-		ret := e.extractNonterm(expr)
+		ret := e.extractNonterm(expr, "" /*nonTermType*/)
 		ret.Pos = expr.Pos
+		if expr.Kind == Set {
+			e.createdNts[ret.Pos] = ret.Symbol
+		}
 		return []*Expr{ret}
 	case List:
 		out := &Expr{Kind: List, Origin: expr.Origin, ListFlags: expr.ListFlags}
@@ -268,11 +457,34 @@ func (e *expander) expandExpr(expr *Expr) []*Expr {
 			out.Sub = append(out.Sub, sep[0])
 			out.ListFlags |= OneOrMore
 		}
-		ret := e.extractNonterm(out)
+		var listType string
+		// Calculate the list type for list of references. More complex structures, e.g.
+		// (a b)*, (a? b)+, (a?)* do not propagate the type automatically.
+		if expr.Sub[0].Kind == Reference {
+			elemType := getSymbolType(expr.Sub[0], e.Model)
+			if e.opts.ListType != nil {
+				listType = e.opts.ListType(elemType)
+			}
+		}
+		ret := e.extractNonterm(out, listType)
 		if expr.ListFlags&OneOrMore == 0 && out.ListFlags&OneOrMore != 0 {
-			ret = e.extractNonterm(&Expr{Kind: Optional, Sub: []*Expr{ret}, Origin: expr.Origin})
+			// List structs like "(a separator ',')*"" generates the following two non-terminals:
+			//
+			// (1) a_separator_comma_listopt: a_separator_comma_list | %empty
+			// (2) a_separator_comma_list: a_separator_comma_list ',' a | a
+			//
+			// We assign `listType` to "a_separator_comma_listopt" instead of using
+			// `e.opts.OptionalType(listType)` so that empty lists share the same type, e.g.
+			//
+			// list_string {std::string} = (a separator ',')*[a_list] {
+			//   // $a_list will be of type std::vector<std::string>. For the %empty case the list will
+			//   // be empty instead of std::optional<std::vector<std::string>>.
+			//   $$ = absl::StrJoin($a_list, ", ");
+			// }
+			ret = e.extractNonterm(&Expr{Kind: Optional, Sub: []*Expr{ret}, Origin: expr.Origin}, listType)
 		}
 		ret.Pos = expr.Pos
+		e.createdNts[ret.Pos] = ret.Symbol
 		return []*Expr{ret}
 	}
 	return []*Expr{expr}
@@ -335,7 +547,7 @@ func ProvisionalName(expr *Expr, m *Model) string {
 	switch expr.Kind {
 	case Reference:
 		if expr.Symbol < len(m.Terminals) {
-			return ident.Produce(m.Terminals[expr.Symbol], ident.CamelCase)
+			return ident.Produce(m.Terminals[expr.Symbol].Name, ident.CamelCase)
 		}
 		return m.Nonterms[expr.Symbol-len(m.Terminals)].Name
 	case Optional:
@@ -434,4 +646,11 @@ func appendSetName(ts *TokenSet, m *Model, out *strings.Builder) {
 	default:
 		log.Fatalf("cannot compute name for TokenSet Kind=%v", ts.Kind)
 	}
+}
+
+func getSymbolType(expr *Expr, m *Model) string {
+	if expr.Symbol < len(m.Terminals) {
+		return m.Terminals[expr.Symbol].Type
+	}
+	return m.Nonterms[expr.Symbol-len(m.Terminals)].Type
 }

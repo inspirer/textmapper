@@ -36,21 +36,31 @@ type syntaxLoader struct {
 	nonterms  map[string]int // -> index in source.Nonterms
 	cats      map[string]int // -> index in source.Cats
 	paramPerm []int          // for parameter permutations
-	rhsPos    int            // Counter for positional index of a reference in the current rule.
-	rhsNames  map[string]int
+	ruleStack []*rhsRule
+
+	expandOpts *syntax.ExpandOptions
 }
 
-func newSyntaxLoader(resolver *resolver, opts *grammar.Options, s *status.Status) *syntaxLoader {
+func newSyntaxLoader(resolver *resolver, targetLang string, opts *grammar.Options, s *status.Status) *syntaxLoader {
+	var expandOpts *syntax.ExpandOptions
+	switch targetLang {
+	case "cc":
+		expandOpts = syntax.CcExpandOptions()
+	default:
+		expandOpts = &syntax.ExpandOptions{}
+	}
+
 	return &syntaxLoader{
 		resolver:     resolver,
 		noEmptyRules: opts.NoEmptyRules,
 		optSuffix:    opts.OptInstantiationSuffix,
 		Status:       s,
 
-		namedSets: make(map[string]int),
-		params:    make(map[string]int),
-		nonterms:  make(map[string]int),
-		cats:      make(map[string]int),
+		namedSets:  make(map[string]int),
+		params:     make(map[string]int),
+		nonterms:   make(map[string]int),
+		cats:       make(map[string]int),
+		expandOpts: expandOpts,
 	}
 }
 
@@ -497,13 +507,24 @@ func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool
 
 	var ref *syntax.Expr
 	target := strings.TrimSuffix(name, c.optSuffix)
+	var sym int
+	var symType string
 	if index, ok := c.resolver.syms[target]; ok {
-		nt.Type = c.resolver.Syms[index].Type
-		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: index, Origin: origin, Model: c.out}
+		// Opt-terminal is also supported, e.g. KW_Aopt for KW_A.
+		sym = index
+		symType = c.resolver.Syms[sym].Type
+		if c.expandOpts.OptionalType != nil {
+			nt.Type = c.expandOpts.OptionalType(symType)
+		}
+		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: origin, Model: c.out, Pos: 1}
 	} else if nonterm, ok := c.nonterms[target]; ok {
-		nt.Type = c.out.Nonterms[nonterm].Type
+		sym = c.resolver.NumTokens + nonterm
+		symType = c.out.Nonterms[nonterm].Type
+		if c.expandOpts.OptionalType != nil {
+			nt.Type = c.expandOpts.OptionalType(symType)
+		}
 		nt.Params = c.out.Nonterms[nonterm].Params
-		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: c.resolver.NumTokens + nonterm, Origin: origin, Model: c.out}
+		ref = &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Origin: origin, Model: c.out, Pos: 1}
 		for _, param := range nt.Params {
 			ref.Args = append(ref.Args, syntax.Arg{Param: param, TakeFrom: param})
 		}
@@ -512,6 +533,15 @@ func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool
 		return 0, false
 	}
 	nt.Value = &syntax.Expr{Kind: syntax.Optional, Sub: []*syntax.Expr{ref}, Origin: origin}
+
+	if nt.Type != "" && c.expandOpts.OptionalCmd != nil {
+		refs := map[int]syntax.ArgRef{
+			1: syntax.ArgRef{Pos: 1, Kind: "reference", Optional: true, Symbol: sym},
+		}
+		cmdArgs := &syntax.CmdArgs{MaxPos: 2, Names: map[string]int{target: 1}, ArgRefs: refs}
+		cmd := &syntax.Expr{Kind: syntax.Command, Name: c.expandOpts.OptionalCmd(symType), CmdArgs: cmdArgs, Origin: origin}
+		nt.Value = &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{nt.Value, cmd}, Origin: origin}
+	}
 
 	c.nonterms[name] = len(c.out.Nonterms)
 	index := c.resolver.NumTokens + len(c.out.Nonterms)
@@ -727,60 +757,79 @@ func (c *syntaxLoader) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 	}
 }
 
-func (c *syntaxLoader) allocatePos() int {
-	ret := c.rhsPos
-	c.rhsPos++
-	return ret
+func (c *syntaxLoader) allocatePos(underOpts bool, kind string, sym int) int {
+	rule := c.currentRule()
+	pos := rule.nextPos()
+	rule.incPos()
+	ref := syntax.ArgRef{Pos: pos, Kind: kind, Optional: underOpts, Symbol: sym}
+	rule.argRefs = append(rule.argRefs, ref)
+	return pos
 }
 
 func (c *syntaxLoader) pushName(name string, pos int) {
-	if c.rhsNames == nil {
-		c.rhsNames = make(map[string]int)
+	rule := c.currentRule()
+	// Names need to be unique across the top-level rule.
+	var topNames map[string]int
+	names := rule.names
+	if rule.top == nil {
+		topNames = rule.names
+	} else {
+		topNames = rule.top.names
 	}
 	var index int
-	if _, ok := c.rhsNames[name+"#0"]; ok {
+	if _, ok := topNames[name+"#0"]; ok {
 		for {
 			index++
-			if _, ok := c.rhsNames[fmt.Sprintf("%v#%v", name, index)]; !ok {
+			if _, ok := topNames[fmt.Sprintf("%v#%v", name, index)]; !ok {
 				break
 			}
 		}
-	} else if val, ok := c.rhsNames[name]; ok {
-		c.rhsNames[name+"#0"] = val
-		delete(c.rhsNames, name)
+	} else if val, ok := topNames[name]; ok {
+		topNames[name+"#0"] = val
+		names[name+"#0"] = val
+		delete(topNames, name)
+		delete(names, name)
 		index = 1
 	}
 	if index > 0 {
 		name = fmt.Sprintf("%v#%v", name, index)
 	}
-	c.rhsNames[name] = pos
+	topNames[name] = pos
+	names[name] = pos
 }
 
-func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *syntax.Expr {
+func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm, underOpts bool) *syntax.Expr {
+	rhs := c.currentRule()
 	switch p := p.(type) {
 	case *ast.Command:
-		args := &syntax.CmdArgs{MaxPos: c.rhsPos}
-		if len(c.rhsNames) > 0 {
+		args := &syntax.CmdArgs{MaxPos: rhs.nextPos()}
+		if len(rhs.names) > 0 {
 			// Only names and references preceding the command are available to its code.
 			// Note: the list below can include entities from a different alternative but
 			// they'll be automatically filtered later on.
 			args.Names = make(map[string]int)
-			for k, v := range c.rhsNames {
+			for k, v := range rhs.names {
 				args.Names[k] = v
+			}
+		}
+		if len(rhs.argRefs) > 0 {
+			args.ArgRefs = make(map[int]syntax.ArgRef)
+			for _, argRef := range rhs.argRefs {
+				args.ArgRefs[argRef.Pos] = argRef
 			}
 		}
 		text := p.Text()
 		return &syntax.Expr{Kind: syntax.Command, Name: text, CmdArgs: args, Origin: p}
 	case *ast.RhsAssignment:
-		inner := c.convertPart(p.Inner(), nonterm)
+		inner := c.convertPart(p.Inner(), nonterm, underOpts)
 		name := p.Id().Text()
 		subs := []*syntax.Expr{inner}
 		return &syntax.Expr{Kind: syntax.Assign, Name: name, Sub: subs, Origin: p}
 	case *ast.RhsPlusAssignment:
-		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm, underOpts)}
 		return &syntax.Expr{Kind: syntax.Append, Name: p.Id().Text(), Sub: subs, Origin: p}
 	case *ast.RhsAlias:
-		ret := c.convertPart(p.Inner(), nonterm)
+		ret := c.convertPart(p.Inner(), nonterm, underOpts)
 
 		name := p.Name().Text()
 		if ret.Pos > 0 {
@@ -808,39 +857,50 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 		}
 		return &syntax.Expr{Kind: syntax.Lookahead, Sub: subs, Origin: p}
 	case *ast.RhsNested:
-		return c.convertRules(p.Rule0(), nonterm, report{} /*defaultReport*/, false /*topLevel*/, p)
+		return c.convertRules(p.Rule0(), nonterm, report{} /*defaultReport*/, false /*topLevel*/, underOpts, p)
 	case *ast.RhsOptional:
-		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm, true /*underOpts*/)}
 		return &syntax.Expr{Kind: syntax.Optional, Sub: subs, Origin: p}
 	case *ast.RhsPlusList:
-		seq := c.convertSequence(p.RuleParts(), nonterm, false /*topLevel*/, p)
+		c.pushRule(true /*topLevel*/)
+		seq := c.convertSequence(p.RuleParts(), nonterm, false /*topLevel*/, underOpts, p)
+		c.popRule()
 		subs := []*syntax.Expr{seq}
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
 			subs = []*syntax.Expr{seq, sep}
 		}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Pos: c.allocatePos(), Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Pos: c.allocatePos(underOpts, "plusList", -1 /*sym*/), Origin: p}
 	case *ast.RhsStarList:
-		seq := c.convertSequence(p.RuleParts(), nonterm, false /*topLevel*/, p)
+		c.pushRule(true /*topLevel*/)
+		seq := c.convertSequence(p.RuleParts(), nonterm, false /*topLevel*/, underOpts, p)
+		c.popRule()
 		subs := []*syntax.Expr{seq}
 		if sep := c.convertSeparator(p.ListSeparator()); sep.Kind != syntax.Empty {
 			subs = []*syntax.Expr{seq, sep}
 		}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(), Origin: p}
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(underOpts, "starList", -1 /*sym*/), Origin: p}
 	case *ast.RhsPlusQuantifier:
-		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Pos: c.allocatePos(), Origin: p}
+		c.pushRule(true /*topLevel*/)
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm, underOpts)}
+		c.popRule()
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, ListFlags: syntax.OneOrMore, Pos: c.allocatePos(underOpts, "plusQuantifier", -1 /*sym*/), Origin: p}
 	case *ast.RhsStarQuantifier:
-		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm)}
-		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(), Origin: p}
+		c.pushRule(true /*topLevel*/)
+		subs := []*syntax.Expr{c.convertPart(p.Inner(), nonterm, underOpts)}
+		c.popRule()
+		return &syntax.Expr{Kind: syntax.List, Sub: subs, Pos: c.allocatePos(underOpts, "starQuantifier", -1 /*sym*/), Origin: p}
 	case *ast.RhsSet:
+		c.pushRule(true /*topLevel*/)
 		set := c.convertSet(p.Expr())
+		c.popRule()
 		index := len(c.out.Sets)
 		c.out.Sets = append(c.out.Sets, set)
-		return &syntax.Expr{Kind: syntax.Set, Pos: c.allocatePos(), SetIndex: index, Origin: p, Model: c.out}
+		return &syntax.Expr{Kind: syntax.Set, Pos: c.allocatePos(underOpts, "set", -1 /*sym*/), SetIndex: index, Origin: p, Model: c.out}
 	case *ast.RhsSymbol:
 		sym, args := c.resolveRef(p.Reference(), nonterm)
-		c.pushName(p.Reference().Name().Text(), c.rhsPos)
-		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Pos: c.allocatePos(), Origin: p, Model: c.out}
+		pos := c.allocatePos(underOpts, "reference", sym)
+		c.pushName(p.Reference().Name().Text(), pos)
+		return &syntax.Expr{Kind: syntax.Reference, Symbol: sym, Args: args, Pos: pos, Origin: p, Model: c.out}
 	case *ast.StateMarker:
 		return &syntax.Expr{Kind: syntax.StateMarker, Name: p.Name().Text(), Origin: p}
 	case *ast.SyntaxProblem:
@@ -851,7 +911,7 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm) *synt
 	return &syntax.Expr{Kind: syntax.Empty, Origin: p.TmNode()}
 }
 
-func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, topLevel bool, origin status.SourceNode) *syntax.Expr {
+func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nonterm, topLevel, underOpts bool, origin status.SourceNode) *syntax.Expr {
 	var subs []*syntax.Expr
 	var empty *ast.RhsEmpty
 	var nonEmpty bool
@@ -874,7 +934,7 @@ func (c *syntaxLoader) convertSequence(parts []ast.RhsPart, nonterm *syntax.Nont
 			nonEmpty = true
 		}
 
-		out := c.convertPart(p, nonterm)
+		out := c.convertPart(p, nonterm, underOpts)
 		if out.Kind != syntax.Empty {
 			subs = append(subs, out)
 		}
@@ -932,8 +992,14 @@ func (c *syntaxLoader) isSelector(name string) bool {
 	return ok
 }
 
-func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport report, topLevel bool, origin status.SourceNode) *syntax.Expr {
+func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, defaultReport report, topLevel, underOpts bool, origin status.SourceNode) *syntax.Expr {
 	var subs []*syntax.Expr
+
+	if !topLevel && len(rules) > 1 {
+		// This is a nested choice, e.g. the "(a | b)" in "start: (a | b) c".
+		underOpts = true
+	}
+
 	for _, rule0 := range rules {
 		rule, ok := rule0.(*ast.Rule)
 		if !ok {
@@ -941,11 +1007,7 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 			continue
 		}
 
-		if topLevel {
-			// Counting of RHS symbols does not restart for inline alternatives.
-			c.rhsPos = 1
-			c.rhsNames = nil
-		}
+		c.pushRule(topLevel)
 		var prec *ast.RhsPrec
 		for _, p := range rule.RhsPart() {
 			switch p := p.(type) {
@@ -958,7 +1020,7 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 			}
 		}
 
-		expr := c.convertSequence(rule.RhsPart(), nonterm, topLevel, rule)
+		expr := c.convertSequence(rule.RhsPart(), nonterm, topLevel, underOpts, rule)
 		clause, _ := rule.ReportClause()
 		expr = c.convertReportClause(clause).withDefault(defaultReport).apply(expr)
 		if prec != nil && topLevel {
@@ -977,6 +1039,7 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 		}
 
 		subs = append(subs, expr)
+		c.popRule()
 	}
 	switch len(subs) {
 	case 0:
@@ -994,7 +1057,7 @@ func (c *syntaxLoader) convertRules(rules []ast.Rule0, nonterm *syntax.Nonterm, 
 func (c *syntaxLoader) load(p ast.ParserSection, header status.SourceNode) {
 	c.out = new(syntax.Model)
 	for _, sym := range c.resolver.Syms {
-		c.out.Terminals = append(c.out.Terminals, sym.ID)
+		c.out.Terminals = append(c.out.Terminals, syntax.Terminal{Name: sym.ID, Type: sym.Type})
 	}
 	c.collectParams(p)
 	nonterms := c.collectNonterms(p)
@@ -1023,7 +1086,7 @@ func (c *syntaxLoader) load(p ast.ParserSection, header status.SourceNode) {
 			c.Errorf(alias, "nonterminal aliases are not yet supported")
 		}
 		defaultReport := c.convertReportClause(clause)
-		expr := c.convertRules(nt.def.Rule0(), c.out.Nonterms[nt.nonterm], defaultReport, true /*topLevel*/, nt.def)
+		expr := c.convertRules(nt.def.Rule0(), c.out.Nonterms[nt.nonterm], defaultReport, true /*topLevel*/, false /*underOpts*/, nt.def)
 		c.out.Nonterms[nt.nonterm].Value = or(c.out.Nonterms[nt.nonterm].Value, expr)
 	}
 }
@@ -1045,4 +1108,86 @@ func or(a, b *syntax.Expr) *syntax.Expr {
 		return b
 	}
 	return &syntax.Expr{Kind: syntax.Choice, Sub: []*syntax.Expr{a, b}, Origin: b.Origin}
+}
+
+type rhsRule struct {
+	top     *rhsRule        // The top-level rule this rule is nested under. Nil if this is a top-level rule.
+	pos     int             // The next position to be allocated. Populated only for top-level rules.
+	names   map[string]int  // name -> position. Contains the names visible to the command of this rule.
+	argRefs []syntax.ArgRef // The argument references visible to the command of this rule.
+}
+
+// nextPos returns the next position to be allocated w.r.t. the top-level rule.
+func (r *rhsRule) nextPos() int {
+	if r.top == nil {
+		return r.pos
+	}
+	return r.top.pos
+}
+
+func (r *rhsRule) incPos() {
+	if r.top == nil {
+		r.pos++
+	} else {
+		r.top.pos++
+	}
+}
+
+func (r *rhsRule) isTopLevel() bool {
+	return r.top == nil
+}
+
+func (c *syntaxLoader) pushRule(topLevel bool) {
+	var rule *rhsRule
+	if topLevel {
+		rule = &rhsRule{
+			pos:   1,
+			names: make(map[string]int),
+		}
+	} else {
+		p := c.ruleStack[len(c.ruleStack)-1]
+		var top *rhsRule
+		if p.top == nil {
+			top = p
+		} else {
+			top = p.top
+		}
+		rule = &rhsRule{
+			top:   top,
+			names: make(map[string]int),
+		}
+	}
+	c.ruleStack = append(c.ruleStack, rule)
+}
+
+func (c *syntaxLoader) currentRule() *rhsRule {
+	return c.ruleStack[len(c.ruleStack)-1]
+}
+
+func (c *syntaxLoader) popRule() {
+	rule := c.ruleStack[len(c.ruleStack)-1]
+	c.ruleStack = c.ruleStack[:len(c.ruleStack)-1]
+
+	if rule.top == nil {
+		return
+	}
+
+	// This is a nested rule. Add the names and arg refs to the parent rule so that they are
+	// accessible to the command of the parent rule.
+	//
+	// For example, if we have:
+	//
+	// start: a ( b {cmd1} | c {cmd2} ) {cmd3}
+	//
+	// both "b" and "c" should be accessible by cmd3 as well.
+	p := c.ruleStack[len(c.ruleStack)-1]
+	if p.top != nil {
+		// The `names` field of a top-level rule is already populated by pushName().
+		for name, pos := range rule.names {
+			p.names[name] = pos
+		}
+	}
+	for _, ref := range rule.argRefs {
+		p.argRefs = append(p.argRefs, ref)
+	}
 }

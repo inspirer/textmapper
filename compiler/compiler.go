@@ -211,14 +211,42 @@ func checkLookaheads(m *syntax.Model, maxSize int) error {
 	return s.Err()
 }
 
+func checkSyntaxes(m *syntax.Model, opts *grammar.Options) error {
+	var s status.Status
+	disabled := make(map[string]bool)
+	for _, kind := range opts.DisableSyntax {
+		disabled[kind] = true
+	}
+	var visit func(e *syntax.Expr, top bool)
+	visit = func(e *syntax.Expr, top bool) {
+		if disabled["NestedChoice"] && e.Kind == syntax.Choice && !top {
+			s.Errorf(e.Origin, "parenthesized Choice operator is not supported")
+		}
+		var kind = e.Kind.GoString()
+		if disabled[kind] {
+			s.Errorf(e.Origin, "syntax %v is not supported", kind)
+		}
+		for _, sub := range e.Sub {
+			visit(sub, false)
+		}
+	}
+	for _, nt := range m.Nonterms {
+		if len(nt.Params) > 0 && disabled["Templates"] {
+			s.Errorf(nt.Origin, "templates are not supported")
+		}
+		visit(nt.Value, true)
+	}
+	return s.Err()
+}
+
 func (c *compiler) compileParser(file ast.File) {
 	p, ok := file.Parser()
 	if !ok || !c.out.Options.GenParser {
 		// Lexer-only grammar.
 		return
 	}
-
-	loader := newSyntaxLoader(c.resolver, c.out.Options, c.Status)
+    target, _ := file.Header().Target()
+	loader := newSyntaxLoader(c.resolver, target.Text(), c.out.Options, c.Status)
 	loader.load(p, file.Header())
 	if c.Err() != nil {
 		// Parsing errors cause inconsistencies inside c.source. Aborting.
@@ -228,6 +256,15 @@ func (c *compiler) compileParser(file ast.File) {
 	c.out.Parser.Prec = loader.prec
 
 	source := loader.out
+
+	if len(c.out.Options.DisableSyntax) > 0 {
+		err := checkSyntaxes(source, c.out.Options)
+		if err != nil {
+			c.AddError(err)
+			return
+		}
+	}
+
 	if err := syntax.PropagateLookaheads(source); err != nil {
 		c.AddError(err)
 		return
@@ -273,7 +310,7 @@ func (c *compiler) compileParser(file ast.File) {
 		}
 	}
 
-	if err := syntax.Expand(source); err != nil {
+	if err := syntax.Expand(source, loader.expandOpts); err != nil {
 		c.AddError(err)
 		return
 	}
@@ -487,15 +524,11 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 							for _, r := range rule.RHS {
 								if r.IsStateMarker() {
 									s.Errorf(origin, "mixing mid-rule actions with state markers is not supported")
-									continue
-								}
-								if int(r) < len(out.Syms) {
-									vars.Types = append(vars.Types, out.Syms[r].Type)
 								} else {
-									// No types for extracted commands.
-									vars.Types = append(vars.Types, "")
+									vars.SymRefCount++
 								}
 							}
+							addTypes(vars, out.Syms)
 						}
 						cmdNT := midrule.extract(nt, command, vars, cmdOrigin)
 						rule.RHS = append(rule.RHS, cmdNT)
@@ -549,16 +582,11 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 				if args != nil {
 					act.Vars = &grammar.ActionVars{CmdArgs: *args, Remap: actualPos}
 					for _, r := range rule.RHS {
-						if r.IsStateMarker() {
-							continue
-						}
-						if int(r) < len(out.Syms) {
-							act.Vars.Types = append(act.Vars.Types, out.Syms[r].Type)
-						} else {
-							// No types for extracted commands.
-							act.Vars.Types = append(act.Vars.Types, "")
+						if !r.IsStateMarker() {
+							act.Vars.SymRefCount++
 						}
 					}
+					addTypes(act.Vars, out.Syms)
 					act.Vars.LHSType = out.Syms[rule.LHS].Type
 				}
 				rule.Action = len(parser.Actions)
@@ -584,6 +612,20 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 	return err
 }
 
+// addTypes updates the `Types` field of the given action variables using the type information
+// from the given symbols `syms`.
+func addTypes(vars *grammar.ActionVars, syms []grammar.Symbol) {
+	vars.Types = make(map[int]string)
+	for _, ref := range vars.CmdArgs.ArgRefs {
+		if ref.Symbol < len(syms) {
+			vars.Types[ref.Pos] = syms[ref.Symbol].Type
+		} else {
+			// No types for extracted commands.
+			vars.Types[ref.Pos] = ""
+		}
+	}
+}
+
 type commandExtractor struct {
 	baseSyms  int
 	takenName map[string]bool
@@ -606,7 +648,7 @@ type commandKey struct {
 func newCommandExtractor(m *syntax.Model, baseSyms int) *commandExtractor {
 	taken := make(map[string]bool)
 	for _, t := range m.Terminals {
-		taken[t] = true
+		taken[t.Name] = true
 	}
 	for _, p := range m.Params {
 		taken[p.Name] = true
@@ -645,7 +687,7 @@ func (e *commandExtractor) extract(n *syntax.Nonterm, command string, vars *gram
 
 		// Give a hint to the code generator that this rule's rhs starts
 		// earlier in the stack.
-		args.Delta = -len(vars.Types)
+		args.Delta = -vars.SymRefCount
 
 		// Make a copy.
 		copy := *vars

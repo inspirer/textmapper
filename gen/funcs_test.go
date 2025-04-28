@@ -165,7 +165,8 @@ func TestParserAction(t *testing.T) {
 
 		{"$a + ${last()}", vars("a:0", "b", "c:1", "d"), "stack[len(stack)-2].value + stack[len(stack)-1].value"},
 		{"${first()} + ${left()}", vars("a:0", "b", "c:1", "d"), "stack[len(stack)-2].value + lhs.value"},
-		{"${first()} + ${left()}", vars("a:1:bar", "b", "c", "d"), "nn0, _ := stack[len(stack)-1].value.(bar)\nnn0 + lhs.value"},
+		{"${first()} + ${left()}", vars("a:0:bar", "b", "c", "d"), "nn0, _ := stack[len(stack)-1].value.(bar)\nnn0 + lhs.value"},
+		{"${first()} + ${left()} + $a", vars("a:0:bar", "b", "c", "d"), "nn0, _ := stack[len(stack)-1].value.(bar)\nnn0 + lhs.value + nn0"},
 
 		{"${left().sym}", vars("a:0", "b", "c:1", "d:2"), "(&lhs.sym)"},
 		{"${left().offset}", vars("a:0", "b", "c:1", "d:2"), "lhs.sym.offset"},
@@ -194,10 +195,11 @@ func TestCcParserAction(t *testing.T) {
 		want       string
 		useVariant bool
 	}{
-		{"abc", varsOneBased(), "abc", false},
-		{"$$ = $1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = rhs[0].value.expr", false},
-		{"$$ = @$ @1", varsOneBased("%node", "a:0:expr"), "lhs.value.node = lhs.sym.location rhs[0].sym.location", false},
-		{"$$ = $1", varsOneBased("%node", "a:0:expr"), "std::get<node>(lhs.value) = std::get<expr>(rhs[0].value)", true},
+		{"abc", vars(), "abc", false},
+		// The 1-based index for "a" is 2.
+		{"$$ = $2", vars("%node", "a:0:expr"), "lhs.value.node = rhs[0].value.expr", false},
+		{"$$ = @$ @2", vars("%node", "a:0:expr"), "lhs.value.node = lhs.sym.location rhs[0].sym.location", false},
+		{"$$ = $2", vars("%node", "a:0:expr"), "std::get<node>(lhs.value) = std::get<expr>(rhs[0].value)", true},
 	}
 
 	for _, tc := range tests {
@@ -212,45 +214,43 @@ func TestCcParserAction(t *testing.T) {
 	}
 }
 
-func varsOneBased(list ...string) *grammar.ActionVars {
-	return varsWithOffset(false, list...)
-}
-
 func vars(list ...string) *grammar.ActionVars {
-	return varsWithOffset(true, list...)
-}
-
-func varsWithOffset(zeroBased bool, list ...string) *grammar.ActionVars {
 	ret := &grammar.ActionVars{
 		CmdArgs: syntax.CmdArgs{
-			MaxPos: 1 + len(list),
-			Names:  make(map[string]int),
+			MaxPos:  1 + len(list),
+			Names:   make(map[string]int),
+			ArgRefs: make(map[int]syntax.ArgRef),
 		},
 		Remap: make(map[int]int),
+		Types: make(map[int]string),
 	}
 	for i, descr := range list {
+		pos := i + 1
+		ret.CmdArgs.ArgRefs[pos] = syntax.ArgRef{Pos: pos}
+		ret.Types[pos] = ""
+
 		if strings.HasPrefix(descr, "%") {
 			ret.LHSType = descr[1:]
 			continue
 		}
 		name, num, mapped := strings.Cut(descr, ":")
 		if name != "" {
-			ret.Names[name] = i
+			ret.Names[name] = pos
+			ret.ArgRefs[pos] = syntax.ArgRef{
+				Pos:     pos,
+			}
 		}
 		if !mapped {
 			continue
 		}
+		ret.SymRefCount++
 		num, tp, _ := strings.Cut(num, ":")
-		target, err := strconv.Atoi(num)
+		index, err := strconv.Atoi(num)
 		if err != nil {
 			log.Fatalf("cannot parse %q as a number in %q", num, descr)
 		}
-		ret.Types = append(ret.Types, tp)
-		index := i
-		if !zeroBased {
-			index++
-		}
-		ret.Remap[index] = target
+		ret.Types[pos] = tp
+		ret.Remap[pos] = index
 	}
 	return ret
 }

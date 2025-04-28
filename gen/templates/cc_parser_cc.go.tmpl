@@ -721,8 +721,8 @@ absl::Status Parser::action{{$index}}([[maybe_unused]] stackEntry& lhs,
 {{ end -}}
 {{ end -}}
 
-absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
-                        [[maybe_unused]] const stackEntry* rhs,
+absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
+                        [[maybe_unused]] stackEntry* rhs,
                         Lexer& lexer) {
 {{ if or .Parser.HasActions .Parser.Tables.Lookaheads -}}
   switch (rule) {
@@ -768,6 +768,13 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
     return absl::OkStatus();
 {{ end -}}
   default:
+{{ if .Parser.HasAssocValues -}}
+    if (ruleLen > 0) {
+      // If no semantic action is provided, and the rhs is not empty, we use the
+      // value of the first symbol on the RHS as the value of the lhs.
+      lhs.value = std::move(rhs[0].value);
+    }
+{{ end -}}
     break;
   }
 {{ end -}}
@@ -826,6 +833,12 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
   end_state_ = end;
 {{- end}}
   fetchNext(lexer, stack);
+  // The location in this stackEntry will be used for any leading non-terminal
+  // symbols satsified by %empty, so it needs to be initialized. We initialize
+  // it to the start location of the first token.
+  stack.back().sym.location =
+      Lexer::Location(lexer.LastTokenLocation(){{template "locStart"}},
+                      lexer.LastTokenLocation(){{template "locStart"}});
 
   while (state != end) {
     int32_t action = tmAction[state];
@@ -860,22 +873,16 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       int32_t ln = tmRuleLen[rule];
       stackEntry entry;
       entry.sym.symbol = tmRuleSymbol[rule];
-      const stackEntry* rhs = &stack[0] + stack.size() - ln;
+      stackEntry* rhs = &stack[0] + stack.size() - ln;
 
       if (ln == 0) {
         entry.sym.location = Lexer::Location(stack.back().sym.location{{template "locEnd"}},
                                              stack.back().sym.location{{template "locEnd"}});
-{{ if .Parser.HasAssocValues -}}
-        entry.value = stack.back().value;
-{{ end -}}
       } else {
         entry.sym.location = {{template "CreateLocationFromRHS" . -}}(ln,
           [&](int32_t i) { return rhs[i].sym.location; });
-{{ if .Parser.HasAssocValues -}}
-        entry.value = rhs[0].value;
-{{ end -}}
       }
-      absl::Status ret = applyRule(rule, entry, rhs, lexer{{if .NeedsSession}}, &s{{end}});
+      absl::Status ret = applyRule(rule, ln, entry, rhs, lexer{{if .NeedsSession}}, &s{{end}});
       if (!ret.ok()) {
         return ret;
       }
