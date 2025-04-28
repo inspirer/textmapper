@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inspirer/textmapper/grammar/grammar"
+	"github.com/inspirer/textmapper/grammar"
 	"github.com/inspirer/textmapper/parsers/parsertest"
 	"github.com/inspirer/textmapper/parsers/tm"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
