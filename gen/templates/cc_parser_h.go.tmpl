@@ -32,11 +32,22 @@ struct symbol {
 {{end -}}
 
 {{ block "stackEntry" . -}}
+{{ if .Options.VariantStackEntry -}}
+{{ range .Parser.UnionFields -}}
+static_assert(std::is_default_constructible_v<{{.}}>,
+              "Symbol associated value type {{.}} is not default constructible.");
+{{ end -}}
+{{ end -}}
+
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 struct stackEntry {
   symbol sym;
   int{{$stateType}}_t state = 0;
-{{ if .Parser.HasAssocValues -}}
+{{ if .UnionDefinition -}}
+  union
+{{ .UnionDefinition -}}
+  value;
+{{ else if .Parser.HasAssocValues -}}
 {{ if .Options.VariantStackEntry -}}
   std::variant<
 {{ range .Parser.UnionFields -}}
@@ -162,8 +173,8 @@ class Parser final {
 {{ end -}}
 {{ end -}}
 
-  absl::Status applyRule(int32_t rule, stackEntry& lhs,
-                         [[maybe_unused]] const stackEntry* rhs,
+  absl::Status applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
+                         [[maybe_unused]] stackEntry* rhs,
                          Lexer& lexer);
   absl::Status Parse(
     int{{$stateType}}_t start, int{{$stateType}}_t end, Lexer& lexer);

@@ -53,6 +53,7 @@ type Grammar struct {
 	Parser  *Parser
 
 	CustomTemplates string
+	UnionDefinition string
 }
 
 // Range marks the portion of a rule that needs to be reported.
@@ -78,34 +79,82 @@ type SemanticAction struct {
 type ActionVars struct {
 	syntax.CmdArgs
 
-	// Types of the references of the rule.
-	Types   []string
+	// position -> type of the references of the original rule.
+	//
+	// Note: types are indexed by position rather than index to support getting types of references
+	// that are not present in the current expansion of the rule.
+	Types   map[int]string
 	LHSType string
 
 	// Not every symbol reference is present in the desugared rule.
 	Remap map[int]int
+
+	// Number of RHS symbols in the expanded rule.
+	SymRefCount int
 }
 
-// Resolve resolves "val" to an RHS index for the current rule.
-func (a *ActionVars) Resolve(val string) (int, bool) {
-	pos, ok := a.CmdArgs.Names[val]
-	if !ok {
-		var err error
-		pos, err = strconv.Atoi(val)
-		if err != nil {
-			return 0, false
+// Reference is a symbol reference in a semantic action.
+type Reference struct {
+	// Position of the reference in the original rule. 1-based. Used to identify the symbol in
+	// semantic actions code blocks.
+	Pos int
+
+	// Index of the symbol in the expanded rule. 0 based. Used to identify the symbol in the TM
+	// compiler.
+	//
+	// -1 means that the reference is present in the original rule but not in this expanded rule.
+	Index int
+}
+
+// Resolve resolves the symbol reference `val` to an RHS index (0-based). `val` can either be a
+// 0-based index (e.g. "0" in "$0") or a named symbol (e.g. "a" in "$a").
+//
+// Returns 0 if `val` is not a valid symbol in the original rule, e.g. using "$a" in "start: b".
+//
+// Returns -1 if `val` is a valid symbol in the original rule but does not show up in the
+// expanded rule. For example, a: b? expands into two rules:
+//
+//		a: b
+//	  | %empty
+//
+// For the %empty rule, Resolve("b") returns -1.
+func (a *ActionVars) Resolve(val string) (Reference, bool) {
+	return a.resolve(val /*zeroBased=*/, true)
+}
+
+// ResolveOneBased is similar to Resolve, except that `val` is 1-based if it is a number.
+func (a *ActionVars) ResolveOneBased(val string) (Reference, bool) {
+	return a.resolve(val /*zeroBased=*/, false)
+}
+
+func (a *ActionVars) resolve(val string, zeroBased bool) (Reference, bool) {
+	// `pos` is always 1-based.
+	pos, err := strconv.Atoi(val)
+	if err == nil {
+		// The input "val" is a number reference, e.g. $1.
+		if zeroBased {
+			// The input reference starts from 0, e.g. $0 references the first symbol. Change it to
+			// 1-based.
+			pos++
 		}
-		pos++ // "val" is 0-based, while positions are 1-based.
 		if pos < 1 || pos >= a.CmdArgs.MaxPos {
 			// Index out of range.
-			return 0, false
+			return Reference{}, false
+		}
+	} else {
+		// The input "val" is a named symbol reference, e.g. $a.
+		var exists bool
+		pos, exists = a.CmdArgs.Names[val]
+		if !exists {
+			// No such a symbol exists in the original rule.
+			return Reference{}, false
 		}
 	}
-	ret, ok := a.Remap[pos]
-	if !ok {
-		ret = -1
+	idx, exists := a.Remap[pos]
+	if !exists {
+		idx = -1
 	}
-	return ret, true
+	return Reference{Index: idx, Pos: pos}, true
 }
 
 // String is used as a digest of a semantic action environment (and also as a debug string).
@@ -200,6 +249,8 @@ type Options struct {
 	NoEmptyRules           bool   // Report empty rules without an %empty marker. True by default for C++.
 	MaxLookahead           int    // If set, all lookaheads expressions will be validated to fit this limit.
 	OptInstantiationSuffix string // Suffix that triggers auto-instantiation optional nonterminals (e.g. "opt" or "_opt").
+
+	DisableSyntax []string // Lists grammar syntaxes that should be disabled.
 
 	// AST generation. Go-specific for now.
 	TokenStream   bool

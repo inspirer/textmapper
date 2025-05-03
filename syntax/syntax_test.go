@@ -130,14 +130,14 @@ var parserTests = []struct {
 	want  *syntax.Model
 }{
 	{`A: a; B:;`, &syntax.Model{
-		Terminals: []string{"EOI", "a"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}},
 		Nonterms: []*syntax.Nonterm{
 			{Name: "A", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 1}},
 			{Name: "B", Value: &syntax.Expr{Kind: syntax.Empty}},
 		},
 	}},
 	{`A: b=a;`, &syntax.Model{
-		Terminals: []string{"EOI", "a"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}},
 		Nonterms: []*syntax.Nonterm{
 			{Name: "A", Value: &syntax.Expr{Kind: syntax.Assign, Name: "b", Sub: []*syntax.Expr{
 				{Kind: syntax.Reference, Symbol: 1},
@@ -145,7 +145,7 @@ var parserTests = []struct {
 		},
 	}},
 	{`A: a a -> foo;`, &syntax.Model{
-		Terminals: []string{"EOI", "a"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}},
 		Nonterms: []*syntax.Nonterm{
 			{Name: "A", Value: &syntax.Expr{Kind: syntax.Arrow, Name: "foo", Sub: []*syntax.Expr{
 				{Kind: syntax.Sequence, Sub: []*syntax.Expr{
@@ -156,7 +156,7 @@ var parserTests = []struct {
 		},
 	}},
 	{`A: b c+; B: (A separator b)*?;`, &syntax.Model{
-		Terminals: []string{"EOI", "b", "c"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "b"}, {Name: "c"}},
 		Nonterms: []*syntax.Nonterm{
 			{
 				Name: "A",
@@ -179,7 +179,7 @@ var parserTests = []struct {
 		},
 	}},
 	{`%flag T; %lookahead flag V = true; A {foo}: a B<T=V, V=true>; B<T,V>:[T!=123];`, &syntax.Model{
-		Terminals: []string{"EOI", "a"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}},
 		Params: []syntax.Param{
 			{Name: "T"},
 			{Name: "V", DefaultValue: "true", Lookahead: true},
@@ -202,7 +202,7 @@ var parserTests = []struct {
 		},
 	}},
 	{`%flag A; %flag B; input: [A==false && B || !A] a | b;`, &syntax.Model{
-		Terminals: []string{"EOI", "a", "b"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}, {Name: "b"}},
 		Params: []syntax.Param{
 			{Name: "A"},
 			{Name: "B"},
@@ -228,7 +228,7 @@ var parserTests = []struct {
 		},
 	}},
 	{`A: set(a & B | c | ~first B & precede B & last P & follow P & ~Q); B: z; P:; Q:;`, &syntax.Model{
-		Terminals: []string{"EOI", "a", "c", "z"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}, {Name: "c"}, {Name: "z"}},
 		Nonterms: []*syntax.Nonterm{
 			{Name: "A", Value: &syntax.Expr{Kind: syntax.Set, SetIndex: 0}},
 			{Name: "B", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 3}},
@@ -258,7 +258,7 @@ var parserTests = []struct {
 		}},
 	}},
 	{`A: (?= A) a;`, &syntax.Model{
-		Terminals: []string{"EOI", "a"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}},
 		Nonterms: []*syntax.Nonterm{
 			{Name: "A", Value: &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{
 				{Kind: syntax.Lookahead, Sub: []*syntax.Expr{
@@ -269,7 +269,7 @@ var parserTests = []struct {
 		},
 	}},
 	{`A: (?= P & !Q) a b; P: a; Q: b;`, &syntax.Model{
-		Terminals: []string{"EOI", "a", "b"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}, {Name: "b"}},
 		Nonterms: []*syntax.Nonterm{
 			{Name: "A", Value: &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{
 				{Kind: syntax.Lookahead, Sub: []*syntax.Expr{
@@ -286,7 +286,7 @@ var parserTests = []struct {
 		},
 	}},
 	{`%interface Q, P; A: a;`, &syntax.Model{
-		Terminals: []string{"EOI", "a"},
+		Terminals: []syntax.Terminal{{Name: "EOI"}, {Name: "a"}},
 		Nonterms: []*syntax.Nonterm{
 			{Name: "A", Value: &syntax.Expr{Kind: syntax.Reference, Symbol: 1}},
 		},
@@ -354,7 +354,7 @@ func initSymbols(input string, out *syntax.Model) error {
 	var l tm.Lexer
 	l.Init(input)
 	seen := make(map[string]bool)
-	out.Terminals = []string{"EOI"}
+	out.Terminals = []syntax.Terminal{{Name: "EOI"}}
 	out.Nonterms = nil
 	var prev token.Type
 	for tok := l.Next(); tok != token.EOI; tok = l.Next() {
@@ -373,7 +373,7 @@ func initSymbols(input string, out *syntax.Model) error {
 
 		if isTerm(l.Text()) {
 			if !seen[l.Text()] {
-				out.Terminals = append(out.Terminals, l.Text())
+				out.Terminals = append(out.Terminals, syntax.Terminal{Name: l.Text()})
 			}
 			seen[l.Text()] = true
 		} else {
@@ -568,7 +568,7 @@ func (p *parser) parseTermRef() int {
 		p.errorf("terminal reference is expected (found %q)", name)
 	}
 	for i, val := range p.out.Terminals {
-		if val == name {
+		if val.Name == name {
 			return i
 		}
 	}

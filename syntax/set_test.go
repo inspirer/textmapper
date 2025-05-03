@@ -99,7 +99,7 @@ func TestSets(t *testing.T) {
 			t.Errorf("cannot parse %q: %v", tc.input, err)
 			continue
 		}
-		err = syntax.Expand(model)
+		err = syntax.Expand(model, &syntax.ExpandOptions{})
 		if err != nil {
 			t.Errorf("cannot expand %q: %v", tc.input, err)
 			continue
