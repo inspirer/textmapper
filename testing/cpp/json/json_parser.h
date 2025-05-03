@@ -129,8 +129,8 @@ class Parser final {
   absl::Status action33([[maybe_unused]] stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs);
 
-  absl::Status applyRule(int32_t rule, stackEntry& lhs,
-                         [[maybe_unused]] const stackEntry* rhs, Lexer& lexer);
+  absl::Status applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
+                         [[maybe_unused]] stackEntry* rhs, Lexer& lexer);
   absl::Status Parse(int8_t start, int8_t end, Lexer& lexer);
 
   symbol next_symbol_;

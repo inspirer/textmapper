@@ -19,7 +19,7 @@ inline constexpr absl::string_view closing = u8"»";
 }  // namespace
 
 std::tuple<std::vector<Range>, std::string> Parse(absl::string_view text) {
-  std ::string out;
+  std::string out;
   std::vector<Range> ranges;
   std::stack<Range> stack;
 
@@ -28,11 +28,11 @@ std::tuple<std::vector<Range>, std::string> Parse(absl::string_view text) {
     auto b = text[i];
     if ((b & 0xC0) == 0x80) continue;  // skip continuation bytes
     if (absl::StartsWith(text.substr(i), opening)) {
-      out += text.substr(pos, i - pos);
+      out.append(text.substr(pos, i - pos));
       pos = i + opening.size();
       stack.push({static_cast<int64_t>(out.size()), -1});
     } else if (absl::StartsWith(text.substr(i), closing)) {
-      out += text.substr(pos, i - pos);
+      out.append(text.substr(pos, i - pos));
       pos = i + closing.size();
       CHECK(!stack.empty()) << "unexpected closing guillemets in " << text;
       auto rng = stack.top();
@@ -42,7 +42,7 @@ std::tuple<std::vector<Range>, std::string> Parse(absl::string_view text) {
     }
   }
   CHECK(stack.empty()) << "missing closing guillemets in " << text;
-  out += text.substr(pos, text.size() - pos);
+  out.append(text.substr(pos, text.size() - pos));
   return std::make_tuple(ranges, out);
 }
 
@@ -50,7 +50,7 @@ std::string Create(absl::string_view text,
                    const std::vector<markup::Range> &ranges) {
   struct Bracket {
     int64_t offset;
-    std::string_view insert;
+    absl::string_view insert;
 
     bool operator<(const Bracket &rhs) const {
       return offset < rhs.offset ||
@@ -72,13 +72,13 @@ std::string Create(absl::string_view text,
   std::string out;
   for (const auto &b : brackets) {
     if (i < b.offset) {
-      out += text.substr(i, b.offset - i);
+      out.append(text.substr(i, b.offset - i));
     }
-    out += b.insert;
+    out.append(b.insert);
     i = b.offset;
   }
   if (i < text.size()) {
-    out += text.substr(i, text.size() - i);
+    out.append(text.substr(i, text.size() - i));
   }
   return out;
 }

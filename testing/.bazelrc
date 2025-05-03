@@ -1,4 +1,8 @@
-build --action_env=BAZEL_CXXOPTS="-std=c++17"
-
 # TypeScript skipLibCheck configuration for faster performance
 common --@aspect_rules_ts//ts:skipLibCheck=always
+
+# C++ toolchain configuration for macOS
+build --repo_env=CC=clang
+build --repo_env=CXX=clang++
+build --repo_env=BAZEL_CXXOPTS="-std=c++17"
+build --macos_sdk_version=14.0

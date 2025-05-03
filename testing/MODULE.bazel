@@ -11,6 +11,17 @@ bazel_dep(name = "abseil-cpp", version = "20250127.0")
 bazel_dep(name = "googletest", version = "1.15.2")
 bazel_dep(name = "google_benchmark", version = "1.9.1")
 
+# C++ toolchain configuration
+cc_toolchain_config = use_extension("@bazel_tools//tools/cpp:cc_toolchain_config.bzl", "cc_toolchain_config")
+cc_toolchain_config.toolchain(
+    name = "cc-toolchain",
+    compiler = "clang",
+    compiler_version = "14.0",
+    cxx_standard = "c++17",
+    target_cpu = "darwin_arm64",
+)
+use_repo(cc_toolchain_config)
+
 # Hedron's Compile Commands Extractor for Bazel
 bazel_dep(name = "hedron_compile_commands", version = "0.0.0", dev_dependency = True)
 git_override(

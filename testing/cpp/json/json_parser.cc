@@ -509,53 +509,70 @@ void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
 
 absl::Status Parser::action0([[maybe_unused]] stackEntry& lhs,
                              [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.value.b = rhs[0].value.a; }
+  {
+    lhs.value.b = rhs[0].value.a;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action3([[maybe_unused]] stackEntry& lhs,
                              [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.value.a = 5; }
+  {
+    lhs.value.a = 5;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action12([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.value.a = 5; }
+  {
+    lhs.value.a = 5;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action19([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.sym.location.begin = rhs[1].sym.location.begin; }
+  {
+    lhs.sym.location.begin = rhs[1].sym.location.begin;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action21([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.sym.location.begin = rhs[1].sym.location.begin; }
+  {
+    lhs.sym.location.begin = rhs[1].sym.location.begin;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action22([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.sym.location.begin = rhs[1].sym.location.begin; }
+  {
+    lhs.sym.location.begin = rhs[1].sym.location.begin;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action24([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.value.c = a; }
+  {
+    lhs.value.c = a;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action26([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
-  { lhs.value.d = b; }
+  {
+    lhs.value.d = b;
+  }
   return absl::OkStatus();
 }
 absl::Status Parser::action33([[maybe_unused]] stackEntry& lhs,
                               [[maybe_unused]] const stackEntry* rhs) {
-  { LOG(INFO) << rhs[-1].sym.location.begin; }
+  {
+    LOG(INFO) << rhs[-1].sym.location.begin;
+  }
   return absl::OkStatus();
 }
 
-absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
-                               [[maybe_unused]] const stackEntry* rhs,
-                               Lexer& lexer) {
+absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
+                               [[maybe_unused]] stackEntry* rhs, Lexer& lexer) {
   switch (rule) {
     case 0:  // JSONText : JSONValue_A
     {
@@ -629,6 +646,11 @@ absl::Status Parser::applyRule(int32_t rule, stackEntry& lhs,
       }
       return absl::OkStatus();
     default:
+      if (ruleLen > 0) {
+        // If no semantic action is provided, and the rhs is not empty, we use
+        // the value of the first symbol on the RHS as the value of the lhs.
+        lhs.value = std::move(rhs[0].value);
+      }
       break;
   }
 
@@ -659,6 +681,11 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
   stack.push_back(stackEntry{.state = state});
   end_state_ = end;
   fetchNext(lexer, stack);
+  // The location in this stackEntry will be used for any leading non-terminal
+  // symbols satsified by %empty, so it needs to be initialized. We initialize
+  // it to the start location of the first token.
+  stack.back().sym.location = Lexer::Location(lexer.LastTokenLocation().begin,
+                                              lexer.LastTokenLocation().begin);
 
   while (state != end) {
     int32_t action = tmAction[state];
@@ -683,18 +710,16 @@ absl::Status Parser::Parse(int8_t start, int8_t end, Lexer& lexer) {
       int32_t ln = tmRuleLen[rule];
       stackEntry entry;
       entry.sym.symbol = tmRuleSymbol[rule];
-      const stackEntry* rhs = &stack[0] + stack.size() - ln;
+      stackEntry* rhs = &stack[0] + stack.size() - ln;
 
       if (ln == 0) {
         entry.sym.location = Lexer::Location(stack.back().sym.location.end,
                                              stack.back().sym.location.end);
-        entry.value = stack.back().value;
       } else {
         entry.sym.location = DefaultCreateLocationFromRHS(
             ln, [&](int32_t i) { return rhs[i].sym.location; });
-        entry.value = rhs[0].value;
       }
-      absl::Status ret = applyRule(rule, entry, rhs, lexer);
+      absl::Status ret = applyRule(rule, ln, entry, rhs, lexer);
       if (!ret.ok()) {
         return ret;
       }

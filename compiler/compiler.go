@@ -245,7 +245,7 @@ func (c *compiler) compileParser(file ast.File) {
 		// Lexer-only grammar.
 		return
 	}
-    target, _ := file.Header().Target()
+	target, _ := file.Header().Target()
 	loader := newSyntaxLoader(c.resolver, target.Text(), c.out.Options, c.Status)
 	loader.load(p, file.Header())
 	if c.Err() != nil {

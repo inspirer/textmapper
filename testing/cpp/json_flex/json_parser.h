@@ -28,6 +28,7 @@ struct symbol {
 };
 
 
+
 struct stackEntry {
   symbol sym;
   int8_t state = 0;
@@ -135,8 +136,8 @@ class Parser final {
   absl::Status action24([[maybe_unused]] stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs);
 
-  absl::Status applyRule(int32_t rule, stackEntry& lhs,
-                         [[maybe_unused]] const stackEntry* rhs,
+  absl::Status applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
+                         [[maybe_unused]] stackEntry* rhs,
                          Lexer& lexer);
   absl::Status Parse(
     int8_t start, int8_t end, Lexer& lexer);

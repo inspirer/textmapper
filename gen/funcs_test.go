@@ -237,7 +237,7 @@ func vars(list ...string) *grammar.ActionVars {
 		if name != "" {
 			ret.Names[name] = pos
 			ret.ArgRefs[pos] = syntax.ArgRef{
-				Pos:     pos,
+				Pos: pos,
 			}
 		}
 		if !mapped {

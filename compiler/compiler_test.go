@@ -294,7 +294,7 @@ func TestArgRef(t *testing.T) {
 		// List of terminals.
 		{
 			input: `Z: KW_A+ {};`,
-			want: [][]string{{`$1[KWA_list]`}},
+			want:  [][]string{{`$1[KWA_list]`}},
 		},
 		// Semantic action inside list.
 		{

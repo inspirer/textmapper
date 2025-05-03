@@ -106,7 +106,7 @@ constexpr int tmBacktracking[] = {
 {{- define "decodeRune" -}}
 constexpr uint32_t runeErr = 0xfffd;
 
-inline uint32_t decodeRune(std::string_view input, int64_t& offset) {
+inline uint32_t decodeRune(absl::string_view input, int64_t& offset) {
   uint8_t b0 = input[offset++];
   if (b0 < 0x80) {
     return b0;  // ASCII
