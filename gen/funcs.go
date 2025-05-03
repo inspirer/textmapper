@@ -231,7 +231,7 @@ func sub(a, b int) int {
 	return a - b
 }
 
-func indexToPos(i int, remap map[int]int) int {
+func reverseLookup(i int, remap map[int]int) int {
 	for pos, idx := range remap {
 		if idx == i {
 			return pos
@@ -295,7 +295,7 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 
 		// We are trying to locate the first or last symbol from RHS.
 		if pos == 0 && index >= 0 {
-			pos = indexToPos(index, args.Remap)
+			pos = reverseLookup(index, args.Remap)
 			if pos == 0 {
 				return "", status.Errorf(origin, "internal error: cannot find the position for index %v", index)
 			}
@@ -523,7 +523,7 @@ func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceN
 		}
 
 		if pos == 0 && index >= 0 {
-			pos = indexToPos(index, args.Remap)
+			pos = reverseLookup(index, args.Remap)
 			if pos == 0 {
 				return "", status.Errorf(origin, "internal error: cannot find the position for index %v", index)
 			}

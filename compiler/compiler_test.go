@@ -447,15 +447,13 @@ func serializeArgRefs(refs map[int]syntax.ArgRef, grammar *grammar.Grammar) stri
 }
 
 func gotArgRefs(e *syntax.Expr, grammar *grammar.Grammar) string {
-	var collect func(e *syntax.Expr)
-	collected := make([]map[int]syntax.ArgRef, 0)
-	collect = func(e *syntax.Expr) {
+	var collected []map[int]syntax.ArgRef
+	e.ForEach(syntax.Command, func(e *syntax.Expr) {
 		if e.CmdArgs != nil && e.CmdArgs.ArgRefs != nil {
 			collected = append(collected, e.CmdArgs.ArgRefs)
 		}
-	}
+	})
 
-	e.ForEach(-1, collect)
 	var ret []string
 	for _, argRefs := range collected {
 		ret = append(ret, serializeArgRefs(argRefs, grammar))

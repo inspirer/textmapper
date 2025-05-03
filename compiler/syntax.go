@@ -759,7 +759,7 @@ func (c *syntaxLoader) convertSeparator(sep ast.ListSeparator) *syntax.Expr {
 
 func (c *syntaxLoader) allocatePos(underOpts bool, kind string, sym int) int {
 	rule := c.currentRule()
-	pos := rule.nextPos()
+	pos := rule.maxPos()
 	rule.incPos()
 	ref := syntax.ArgRef{Pos: pos, Kind: kind, Optional: underOpts, Symbol: sym}
 	rule.argRefs = append(rule.argRefs, ref)
@@ -771,7 +771,7 @@ func (c *syntaxLoader) pushName(name string, pos int) {
 	// Names need to be unique across the top-level rule.
 	var topNames map[string]int
 	names := rule.names
-	if rule.top == nil {
+	if rule.isTopLevel() {
 		topNames = rule.names
 	} else {
 		topNames = rule.top.names
@@ -802,7 +802,7 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm, under
 	rhs := c.currentRule()
 	switch p := p.(type) {
 	case *ast.Command:
-		args := &syntax.CmdArgs{MaxPos: rhs.nextPos()}
+		args := &syntax.CmdArgs{MaxPos: rhs.maxPos()}
 		if len(rhs.names) > 0 {
 			// Only names and references preceding the command are available to its code.
 			// Note: the list below can include entities from a different alternative but
@@ -1117,16 +1117,16 @@ type rhsRule struct {
 	argRefs []syntax.ArgRef // The argument references visible to the command of this rule.
 }
 
-// nextPos returns the next position to be allocated w.r.t. the top-level rule.
-func (r *rhsRule) nextPos() int {
-	if r.top == nil {
+// maxPos returns the next position to be allocated w.r.t. the top-level rule.
+func (r *rhsRule) maxPos() int {
+	if r.isTopLevel() {
 		return r.pos
 	}
 	return r.top.pos
 }
 
 func (r *rhsRule) incPos() {
-	if r.top == nil {
+	if r.isTopLevel() {
 		r.pos++
 	} else {
 		r.top.pos++
@@ -1147,7 +1147,7 @@ func (c *syntaxLoader) pushRule(topLevel bool) {
 	} else {
 		p := c.ruleStack[len(c.ruleStack)-1]
 		var top *rhsRule
-		if p.top == nil {
+		if p.isTopLevel() {
 			top = p
 		} else {
 			top = p.top
@@ -1168,7 +1168,7 @@ func (c *syntaxLoader) popRule() {
 	rule := c.ruleStack[len(c.ruleStack)-1]
 	c.ruleStack = c.ruleStack[:len(c.ruleStack)-1]
 
-	if rule.top == nil {
+	if rule.isTopLevel() {
 		return
 	}
 
@@ -1187,7 +1187,6 @@ func (c *syntaxLoader) popRule() {
 			p.names[name] = pos
 		}
 	}
-	for _, ref := range rule.argRefs {
-		p.argRefs = append(p.argRefs, ref)
-	}
+
+	p.argRefs = append(p.argRefs, rule.argRefs...)
 }

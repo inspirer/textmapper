@@ -87,9 +87,11 @@ type ActionVars struct {
 	LHSType string
 
 	// Not every symbol reference is present in the desugared rule.
+	//
+	// position -> index (position on the stack relative to the first RHS symbol)
 	Remap map[int]int
 
-	// Number of RHS symbols in the expanded rule.
+	// Number of RHS symbols in the expanded rule (i.e. rule length up to the current command).
 	SymRefCount int
 }
 
@@ -99,32 +101,32 @@ type Reference struct {
 	// semantic actions code blocks.
 	Pos int
 
-	// Index of the symbol in the expanded rule. 0 based. Used to identify the symbol in the TM
-	// compiler.
+	// Index of the symbol in the expanded rule. 0-based. Used to locate the symbol in the
+	// parsing stack.
 	//
-	// -1 means that the reference is present in the original rule but not in this expanded rule.
+	// -1 means that the reference is present in the original rule but not in this expansion.
 	Index int
 }
 
-// Resolve resolves the symbol reference `val` to an RHS index (0-based). `val` can either be a
-// 0-based index (e.g. "0" in "$0") or a named symbol (e.g. "a" in "$a").
+// Resolve resolves a symbol reference. `val` can either be a 0-based index (e.g. "0" in "$0")
+// or a named symbol (e.g. "a" in "$a").
 //
-// Returns 0 if `val` is not a valid symbol in the original rule, e.g. using "$a" in "start: b".
+// Returns "false" if `val` is not a valid reference, e.g. using "$a" in "start: b { $$ = $a };".
 //
-// Returns -1 if `val` is a valid symbol in the original rule but does not show up in the
-// expanded rule. For example, a: b? expands into two rules:
+// Returns "true" with Index == -1 if `val` is a valid symbol in the original rule but it is not
+// present in the expanded rule. For example, a: b? expands into two rules:
 //
 //		a: b
 //	  | %empty
 //
 // For the %empty rule, Resolve("b") returns -1.
 func (a *ActionVars) Resolve(val string) (Reference, bool) {
-	return a.resolve(val /*zeroBased=*/, true)
+	return a.resolve(val, true /*zeroBased*/)
 }
 
 // ResolveOneBased is similar to Resolve, except that `val` is 1-based if it is a number.
 func (a *ActionVars) ResolveOneBased(val string) (Reference, bool) {
-	return a.resolve(val /*zeroBased=*/, false)
+	return a.resolve(val, false /*zeroBased*/)
 }
 
 func (a *ActionVars) resolve(val string, zeroBased bool) (Reference, bool) {

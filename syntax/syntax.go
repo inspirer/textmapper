@@ -432,10 +432,13 @@ func (k ExprKind) GoString() string {
 
 // CmdArgs defines which RHS symbols are available inside a semantic action.
 type CmdArgs struct {
-	Names   map[string]int // alias -> position
+	Names   map[string]int // alias (unique within the rule) -> position
+	ArgRefs map[int]ArgRef // position -> ArgRef (for all potentially visible symbols)
 	MaxPos  int            // exclusive, 1-based
-	Delta   int            // Added to the final position to adjust for extracted middle rule actions.
-	ArgRefs map[int]ArgRef // position -> ArgRef
+
+	// Mid-rule actions are extracted into separate nonterminals but they can access RHS
+	// symbols preceding them. Delta is added to the resulting stack offset to adjust for this.
+	Delta int
 }
 
 // TokenSet is a grammar expression that resolves to a set of tokens.

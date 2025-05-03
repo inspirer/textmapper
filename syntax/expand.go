@@ -10,26 +10,25 @@ import (
 	"github.com/inspirer/textmapper/util/ident"
 )
 
-// updateArgRefs updates the ArgRefs of `e` to include the new nonterminals in `newNts`.
+// updateArgRefs updates the ArgRefs of all commands under `rule` to include newly extracted
+// nonterminals in 'newNts'.
 //
-// When `e.ArgRefs` was created, we did not have the non-terminals that TextMapper creates for
-// Lists yet. We fill in the missing non-terminals once they are created by calling this function.
-func updateArgRefs(m *Model, newNts map[int]int, e *Expr) {
-	if cmdArgs := e.CmdArgs; cmdArgs != nil {
+// newNts is a map from 1-based position within the rule to the new symbol behind that position.
+func updateArgRefs(rule *Expr, newNts map[int]int) {
+	rule.ForEach(Command, func(e *Expr) {
+		if e.CmdArgs == nil {
+			return
+		}
 		for pos, sym := range newNts {
-			copied, exists := cmdArgs.ArgRefs[pos]
+			copied, exists := e.CmdArgs.ArgRefs[pos]
 			if !exists {
-				// The ArgRefs of mid rules do not the terminals after it.
+				// The ArgRefs of mid rules do not reference symbols that come after them.
 				continue
 			}
 			copied.Symbol = sym
-			cmdArgs.ArgRefs[pos] = copied
+			e.CmdArgs.ArgRefs[pos] = copied
 		}
-		return
-	}
-	for _, sub := range e.Sub {
-		updateArgRefs(m, newNts, sub)
-	}
+	})
 }
 
 // ExpandOptions contains the options for the Expand function.
@@ -180,7 +179,7 @@ func Expand(m *Model, opts *ExpandOptions) error {
 				return status.Errorf(nt.Value.Origin, "internal error: expecting an optional reference, but got %+v", nt.Value.Sub[0])
 			}
 			symbolType := getSymbolType(nt.Value.Sub[0], m)
-			subs := []*Expr{nt.Value.Sub[0], &Expr{Kind: Empty, Origin: nt.Value.Origin}}
+			subs := []*Expr{nt.Value.Sub[0], {Kind: Empty, Origin: nt.Value.Origin}}
 			// For the %empty rule, use an empty list as the semantic value.
 			if e.opts.DefaultValue != nil && symbolType != "" {
 				defaultVal := e.opts.DefaultValue(symbolType)
@@ -381,7 +380,7 @@ func (e *expander) expandRule(rule *Expr) (expanded []*Expr) {
 	e.createdNts = make(map[int]int)
 	defer func() {
 		for _, rule := range expanded {
-			updateArgRefs(e.Model, e.createdNts, rule)
+			updateArgRefs(rule, e.createdNts)
 		}
 	}()
 
