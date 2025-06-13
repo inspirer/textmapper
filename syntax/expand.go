@@ -406,7 +406,7 @@ func (e *expander) expandRule(rule *Expr, opts *ExpandOptions) (expanded []*Expr
 		} else if len(expanded) > opts.ExpansionWarn {
 			loc := rule.Origin.SourceRange()
 			log.Printf("WARNING: Expanding rule produced %v rules which exeeds the warning threshold of %v. Refactor the rule to reduce expansion or increase the `expansionWarn` value. At %v.", len(expanded), opts.ExpansionWarn, loc.String())
-		}{
+		}
 		for _, rule := range expanded {
 			updateArgRefs(rule, e.createdNts)
 		}
