@@ -39,6 +39,7 @@ var funcMap = template.FuncMap{
 	"sub":                 sub,
 	"go_parser_action":    goParserAction,
 	"cc_parser_action":    ccParserAction,
+ 	"cc_action_func":      ccActionFunc,
 	"bison_parser_action": bisonParserAction,
 	"short_pkg":           shortPkg,
 	"list":                func(vals ...string) []string { return vals },
@@ -285,9 +286,9 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				}
 			}
 
-			ref, ok := args.Resolve(id)
-			if !ok {
-				return "", status.Errorf(origin, "invalid reference %q", id)
+			ref, err := args.Resolve(id, origin)
+			if err != nil {
+				return "", err
 			}
 			index = ref.Index
 			pos = ref.Pos
@@ -355,7 +356,7 @@ func ccTypeFromUnion(unionField string) string {
 	return strings.TrimSpace(unionField[:len(unionField)-len(lastID(unionField))])
 }
 
-func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode, variantStackEntry bool) (ret string, err error) {
+func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode, opts *grammar.Options) (ret string, err error) {
 	defer func(s string) {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("crashed with %v in %q with %v", err, s, args)
@@ -363,6 +364,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 	}(s)
 
 	var sb strings.Builder
+	sb.WriteString("#line " + strconv.Itoa(origin.SourceRange().Line) + " \"" + origin.SourceRange().Filename + "\"\n")
 	for len(s) > 0 {
 		next := strings.IndexAny(s, "@$")
 		if next == -1 {
@@ -389,7 +391,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				if t == "" {
 					return "", status.Errorf(origin, "$$ cannot be used inside a nonterminal semantic action without a type")
 				}
-				if variantStackEntry {
+				if opts.VariantStackEntry {
 					replacement = "std::get<" + t + ">(lhs.value)"
 				} else {
 					replacement = "lhs.value." + lastID(t)
@@ -414,9 +416,9 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		s = s[d:]
 
 		// cc uses 1-based indexing.
-		ref, ok := args.ResolveOneBased(val)
-		if !ok {
-			return "", status.Errorf(origin, "invalid reference %c%q", ch, val)
+ 		ref, err := args.ResolveOneBased(val, opts.MaxRuleSizeForOrdinalRef, string(ch)+val, origin)
+ 		if err != nil {
+ 			return "", err
 		}
 
 		index := ref.Index
@@ -436,7 +438,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 			if argType == "" {
 				return "", status.Errorf(origin, "symbol %c%q does not have an associated type", ch, val)
 			}
-			if !variantStackEntry {
+			if !opts.VariantStackEntry {
 				argType = ccTypeFromUnion(argType)
 			}
 			sb.WriteString(ccWrapInOptional(argType, ""))
@@ -453,7 +455,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 			if argType == "" {
 				return "", status.Errorf(origin, "%c%q does not have an associated type", ch, val)
 			}
-			if variantStackEntry {
+			if opts.VariantStackEntry {
 				replacement = "std::get<" + argType + ">(" + target + ".value)"
 			} else {
 				replacement = target + ".value." + lastID(argType)
@@ -470,6 +472,16 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 	}
 	return sb.String(), nil
 }
+
+// Generate a C++ function name for a reduce action that encodes information useful for
+// understanding stack traces including the nonterminal name and line number. We also include the
+// rule index because there can be multiple actions on the same line in the grammar file.
+func ccActionFunc(idx int, act *grammar.SemanticAction) string {
+	// Include the index in the name to differentiate between actions of extracted non-terminals and
+	// also actions of named non-terminals that happen to be on the same line of the grammar file.
+	return fmt.Sprintf("Action%v__ReduceOf_%v__AtLine_%v_Column_%v", idx, act.NtName, act.Origin.SourceRange().Line, act.Origin.SourceRange().Column)
+}
+
 
 func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
 	var sb strings.Builder
@@ -514,9 +526,9 @@ func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceN
 				}
 			}
 
-			ref, ok := args.Resolve(id)
-			if !ok {
-				return "", status.Errorf(origin, "invalid reference %q", id)
+			ref, err := args.Resolve(id, origin)
+			if err != nil {
+				return "", err
 			}
 			index = ref.Index
 			pos = ref.Pos

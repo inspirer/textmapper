@@ -111,28 +111,32 @@ type Reference struct {
 // Resolve resolves a symbol reference. `val` can either be a 0-based index (e.g. "0" in "$0")
 // or a named symbol (e.g. "a" in "$a").
 //
-// Returns "false" if `val` is not a valid reference, e.g. using "$a" in "start: b { $$ = $a };".
+// Returns an error if `val` is not a valid reference in the original rule, e.g. using "$a" in
+// "start: b".
 //
-// Returns "true" with Index == -1 if `val` is a valid symbol in the original rule but it is not
-// present in the expanded rule. For example, a: b? expands into two rules:
+// Returns a Reference with Index -1 if `val` is a valid symbol in the original rule but does not
+// show up in the expanded rule. For example, a: b? expands into two rules:
 //
 //		a: b
 //	  | %empty
 //
 // For the %empty rule, Resolve("b") returns -1.
-func (a *ActionVars) Resolve(val string) (Reference, bool) {
-	return a.resolve(val, true /*zeroBased*/)
+func (a *ActionVars) Resolve(val string, origin status.SourceNode) (Reference, error) {
+	return a.resolve(val, true /*zeroBased*/, -1, val, origin)
 }
 
 // ResolveOneBased is similar to Resolve, except that `val` is 1-based if it is a number.
-func (a *ActionVars) ResolveOneBased(val string) (Reference, bool) {
-	return a.resolve(val, false /*zeroBased*/)
+func (a *ActionVars) ResolveOneBased(val string, maxRuleSizeForOrdinalRef int, name string, origin status.SourceNode) (Reference, error) {
+	return a.resolve(val, false /*zeroBased*/, maxRuleSizeForOrdinalRef, name, origin)
 }
 
-func (a *ActionVars) resolve(val string, zeroBased bool) (Reference, bool) {
+func (a *ActionVars) resolve(val string, zeroBased bool, maxRuleSizeForOrdinalRef int, name string, origin status.SourceNode) (Reference, error) {
 	// `pos` is always 1-based.
 	pos, err := strconv.Atoi(val)
 	if err == nil {
+		if maxRuleSizeForOrdinalRef >= 0 && a.SymRefCount > maxRuleSizeForOrdinalRef {
+			return Reference{}, status.Errorf(origin, "invalid reference %q. Ordinal references disabled for rules with more than %v symbols, use the symbol alias instead", name, maxRuleSizeForOrdinalRef)
+		}
 		// The input "val" is a number reference, e.g. $1.
 		if zeroBased {
 			// The input reference starts from 0, e.g. $0 references the first symbol. Change it to
@@ -141,7 +145,10 @@ func (a *ActionVars) resolve(val string, zeroBased bool) (Reference, bool) {
 		}
 		if pos < 1 || pos >= a.CmdArgs.MaxPos {
 			// Index out of range.
-			return Reference{}, false
+			if zeroBased {
+				return Reference{}, status.Errorf(origin, "index %v is out of range [0, %v]", pos, a.CmdArgs.MaxPos-1)
+			}
+			return Reference{}, status.Errorf(origin, "index %v is out of range [1, %v]", pos, a.CmdArgs.MaxPos)
 		}
 	} else {
 		// The input "val" is a named symbol reference, e.g. $a.
@@ -149,14 +156,14 @@ func (a *ActionVars) resolve(val string, zeroBased bool) (Reference, bool) {
 		pos, exists = a.CmdArgs.Names[val]
 		if !exists {
 			// No such a symbol exists in the original rule.
-			return Reference{}, false
+			return Reference{}, status.Errorf(origin, "invalid reference %q. Cannot find symbol %q in rule", name, val)
 		}
 	}
 	idx, exists := a.Remap[pos]
 	if !exists {
 		idx = -1
 	}
-	return Reference{Index: idx, Pos: pos}, true
+	return Reference{Index: idx, Pos: pos}, nil
 }
 
 // String is used as a digest of a semantic action environment (and also as a debug string).
@@ -252,7 +259,9 @@ type Options struct {
 	MaxLookahead           int    // If set, all lookaheads expressions will be validated to fit this limit.
 	OptInstantiationSuffix string // Suffix that triggers auto-instantiation optional nonterminals (e.g. "opt" or "_opt").
 
-	DisableSyntax []string // Lists grammar syntaxes that should be disabled.
+	DisableSyntax  []string // Lists grammar syntaxes that should be disabled.
+	ExpansionLimit int      // Error if a rule expansion produces more than this many rules.
+	ExpansionWarn  int      // Print warning if a rule expansion produces more than this many rules.
 
 	// AST generation. Go-specific for now.
 	TokenStream   bool
@@ -270,11 +279,13 @@ type Options struct {
 	CancellableFetch bool // only in Cancellable parsers
 
 	// C++
-	Namespace          string
-	IncludeGuardPrefix string
-	FilenamePrefix     string
-	AbslIncludePrefix  string   // "absl" by default
-	DirIncludePrefix   string   // for generated headers
-	ParseParams        []string // parser fields initialized in the constructor
-	VariantStackEntry  bool     // whether to generate a std::variant stackEntry rather than a union. Default false.
+	Namespace                string
+	IncludeGuardPrefix       string
+	FilenamePrefix           string
+	AbslIncludePrefix        string   // "absl" by default
+	DirIncludePrefix         string   // for generated headers
+	ParseParams              []string // parser fields initialized in the constructor
+	VariantStackEntry        bool     // whether to generate a std::variant stackEntry rather than a union. Default false.
+	TrackReduces             bool     // whether to track reduced states since most recent shift for error message generation.
+	MaxRuleSizeForOrdinalRef int      // The number of rhs symbols after which ordinal references are disabled in semantic actions.
 }

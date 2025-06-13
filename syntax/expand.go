@@ -53,6 +53,17 @@ type ExpandOptions struct {
 
 	// DefaultValue returns the default value of the given type `t`.
 	DefaultValue func(t string) string
+
+	ExpansionLimit int
+	ExpansionWarn  int
+}
+
+// DefaultExpandOptions returns the default ExpandOptions.
+func DefaultExpandOptions() *ExpandOptions {
+	return &ExpandOptions{
+		ExpansionLimit: 65_536,
+		ExpansionWarn:  256,
+	}
 }
 
 // CcExpandOptions returns the ExpandOptions for generating C++ semantic actions.
@@ -129,6 +140,7 @@ func CcExpandOptions() *ExpandOptions {
 // contain references only. Arrow can contain a sub-sequence if it reports more than one
 // symbol reference.
 func Expand(m *Model, opts *ExpandOptions) error {
+	var s status.Status
 	e := &expander{
 		Model: m,
 		m:     make(map[string]int),
@@ -144,13 +156,20 @@ func Expand(m *Model, opts *ExpandOptions) error {
 		case Choice:
 			var out []*Expr
 			for _, rule := range nt.Value.Sub {
-				out = append(out, e.expandRule(rule)...)
+				rules, err := e.expandRule(rule, opts)
+				if err != nil {
+					s.AddError(err)
+				}
+				out = append(out, rules...)
 			}
 			nt.Value.Sub = collapseEmpty(out)
 		case Set, Lookahead:
 			// Do not introduce new nonterminals for top-level sets and lookaheads.
 		default:
-			rules := e.expandRule(nt.Value)
+			rules, err := e.expandRule(nt.Value, opts)
+			if err != nil {
+				s.AddError(err)
+			}
 			nt.Value = &Expr{
 				Kind:   Choice,
 				Sub:    collapseEmpty(rules),
@@ -295,7 +314,7 @@ func Expand(m *Model, opts *ExpandOptions) error {
 		}
 	}
 	checkOrDie(m, "after expanding syntax sugar")
-	return nil
+	return s.Err()
 }
 
 type expander struct {
@@ -376,9 +395,18 @@ func (e *expander) extractNonterm(expr *Expr, nonTermType string) *Expr {
 	return &Expr{Kind: Reference, Symbol: sym, Model: e.Model, Origin: expr.Origin}
 }
 
-func (e *expander) expandRule(rule *Expr) (expanded []*Expr) {
-	e.createdNts = make(map[int]int)
-	defer func() {
+func (e *expander) expandRule(rule *Expr, opts *ExpandOptions) (expanded []*Expr, err status.Status) {
+ 	e.createdNts = make(map[int]int)
+ 	defer func() {
+		if len(expanded) > opts.ExpansionLimit {
+			if err == nil {
+				err = status.Status{}
+			}
+			err.Errorf(rule.Origin, "expanding rule produced %v rules which exeeds the limit of %v. Refactor the rule to reduce expansion or increase the `expansionLimit` value", len(expanded), opts.ExpansionLimit)
+		} else if len(expanded) > opts.ExpansionWarn {
+			loc := rule.Origin.SourceRange()
+			log.Printf("WARNING: Expanding rule produced %v rules which exeeds the warning threshold of %v. Refactor the rule to reduce expansion or increase the `expansionWarn` value. At %v.", len(expanded), opts.ExpansionWarn, loc.String())
+		}{
 		for _, rule := range expanded {
 			updateArgRefs(rule, e.createdNts)
 		}
@@ -395,10 +423,10 @@ func (e *expander) expandRule(rule *Expr) (expanded []*Expr) {
 				Model:  rule.Model,
 			}
 		}
-		return ret
+		return ret, nil
 	}
 
-	return e.expandExpr(rule)
+	return e.expandExpr(rule), nil
 }
 
 func (e *expander) expandExpr(expr *Expr) []*Expr {

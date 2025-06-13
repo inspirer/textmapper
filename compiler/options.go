@@ -20,11 +20,15 @@ type optionsParser struct {
 func newOptionsParser(s *status.Status) *optionsParser {
 	return &optionsParser{
 		out: &grammar.Options{
-			TokenLine:              true,
-			GenParser:              true,
-			AbslIncludePrefix:      "absl",
-			SkipByteOrderMark:      true,
-			OptInstantiationSuffix: "opt",
+			TokenLine:                true,
+			GenParser:                true,
+			AbslIncludePrefix:        "absl",
+			SkipByteOrderMark:        true,
+			OptInstantiationSuffix:   "opt",
+			ExpansionLimit:           65_536,
+			ExpansionWarn:            256,
+			MaxRuleSizeForOrdinalRef: 16,
+			VariantStackEntry:        true,
 		},
 		Status: s,
 	}
@@ -105,6 +109,10 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.MaxLookahead = p.parseExpr(opt.Value(), opts.MaxLookahead).(int)
 		case "disableSyntax":
 			opts.DisableSyntax = p.parseExpr(opt.Value(), opts.DisableSyntax).([]string)
+ 		case "expansionLimit":
+ 			opts.ExpansionLimit = p.parseExpr(opt.Value(), opts.ExpansionLimit).(int)
+ 		case "expansionWarn":
+ 			opts.ExpansionWarn = p.parseExpr(opt.Value(), opts.ExpansionWarn).(int)
 		case "eventFields":
 			p.validLangs(opt.Key(), "go")
 			opts.EventFields = p.parseExpr(opt.Value(), opts.EventFields).(bool)
@@ -143,6 +151,11 @@ func (p *optionsParser) parseFrom(file ast.File) {
 		case "variantStackEntry":
 			p.validLangs(opt.Key(), "cc")
 			opts.VariantStackEntry = p.parseExpr(opt.Value(), opts.VariantStackEntry).(bool)
+		case "trackReduces":
+			p.validLangs(opt.Key(), "cc")
+			opts.TrackReduces = p.parseExpr(opt.Value(), opts.TrackReduces).(bool)
+		case "maxRuleSizeForOrdinalRef":
+			opts.MaxRuleSizeForOrdinalRef = p.parseExpr(opt.Value(), opts.MaxRuleSizeForOrdinalRef).(int)
 		case "skipByteOrderMark":
 			opts.SkipByteOrderMark = p.parseExpr(opt.Value(), opts.SkipByteOrderMark).(bool)
 		default:

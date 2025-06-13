@@ -39,6 +39,7 @@ var testFiles = []string{
 	"flexmode.tmerr",
 	"max_la.tmerr",
 	"disabled_syntax.tmerr",
+ 	"expansion_limit.tmerr",
 }
 
 func TestErrors(t *testing.T) {
