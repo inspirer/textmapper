@@ -47,8 +47,10 @@ func newSyntaxLoader(resolver *resolver, targetLang string, opts *grammar.Option
 	case "cc":
 		expandOpts = syntax.CcExpandOptions()
 	default:
-		expandOpts = &syntax.ExpandOptions{}
+		expandOpts = syntax.DefaultExpandOptions()
 	}
+	expandOpts.ExpansionLimit = opts.ExpansionLimit
+	expandOpts.ExpansionWarn = opts.ExpansionWarn
 
 	return &syntaxLoader{
 		resolver:     resolver,

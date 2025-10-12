@@ -707,7 +707,7 @@ void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
 {{ range $index, $rule := .Parser.Rules -}}
 {{ $act := index $.Parser.Actions $rule.Action -}}
 {{ if (ne $act.Code "") -}}
-absl::Status Parser::action{{$index}}([[maybe_unused]] stackEntry& lhs,
+absl::Status Parser::{{cc_action_func $index $act}}([[maybe_unused]] stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs) {
 {{ if and $.Options.VariantStackEntry (ne $act.Vars.LHSType "") -}}
 {{/* Initialize the variant tag so that semantic action code can use $$ as if it
@@ -715,7 +715,7 @@ absl::Status Parser::action{{$index}}([[maybe_unused]] stackEntry& lhs,
 */}}
   lhs.value.emplace<{{$act.Vars.LHSType}}>();
 {{ end -}}
-{{ cc_parser_action $act.Code $act.Vars $act.Origin $.Options.VariantStackEntry -}}
+{{ cc_parser_action $act.Code $act.Vars $act.Origin $.Options -}}
   return absl::OkStatus();
 }
 {{ end -}}
@@ -745,7 +745,7 @@ absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
 {{ end -}}
 {{ if $act.Code -}}
 {
-  absl::Status action_result = action{{$index}}(lhs, rhs);
+  absl::Status action_result = {{cc_action_func $index $act}}(lhs, rhs);
   if (!action_result.ok()) {
     return action_result;
   }
@@ -869,6 +869,9 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 
     if (action >= 0) {
       // Reduce.
+{{ if .Options.TrackReduces -}}
+      reduced_states.push_back(stack.back().state);
+{{ end -}}
       int32_t rule = action;
       int32_t ln = tmRuleLen[rule];
       stackEntry entry;
@@ -899,6 +902,9 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 
     } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
       // Shift.
+{{ if .Options.TrackReduces -}}
+      reduced_states.clear();
+{{ end -}}
 {{ if .Parser.Tables.Optimized -}}
       state = -2-action;
 {{ else -}}

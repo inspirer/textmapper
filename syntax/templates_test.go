@@ -10,7 +10,7 @@ import (
 )
 
 func expand(m *syntax.Model) error {
-	return syntax.Expand(m, &syntax.ExpandOptions{})
+	return syntax.Expand(m, syntax.DefaultExpandOptions())
 }
 
 var modelTests = []struct {

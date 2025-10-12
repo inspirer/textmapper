@@ -195,21 +195,52 @@ func TestCcParserAction(t *testing.T) {
 		want       string
 		useVariant bool
 	}{
-		{"abc", vars(), "abc", false},
+		{"abc", vars(), "#line 0 \"abc\"\nabc", false},
 		// The 1-based index for "a" is 2.
-		{"$$ = $2", vars("%node", "a:0:expr"), "lhs.value.node = rhs[0].value.expr", false},
-		{"$$ = @$ @2", vars("%node", "a:0:expr"), "lhs.value.node = lhs.sym.location rhs[0].sym.location", false},
-		{"$$ = $2", vars("%node", "a:0:expr"), "std::get<node>(lhs.value) = std::get<expr>(rhs[0].value)", true},
+		{"$$ = $2", vars("%node", "a:0:expr"), "#line 0 \"$$ = $2\"\nlhs.value.node = rhs[0].value.expr", false},
+		{"$$ = @$ @2", vars("%node", "a:0:expr"), "#line 0 \"$$ = @$ @2\"\nlhs.value.node = lhs.sym.location rhs[0].sym.location", false},
+		{"$$ = $2", vars("%node", "a:0:expr"), "#line 0 \"$$ = $2\"\nstd::get<node>(lhs.value) = std::get<expr>(rhs[0].value)", true},
 	}
 
 	for _, tc := range tests {
-		got, err := ccParserAction(tc.input, tc.args, node(tc.input), tc.useVariant)
+		opts := &grammar.Options{
+			VariantStackEntry:        tc.useVariant,
+			MaxRuleSizeForOrdinalRef: 2,
+		}
+		got, err := ccParserAction(tc.input, tc.args, node(tc.input), opts)
 		if err != nil {
 			t.Errorf("parserAction(%v, %v) failed with %v", tc.input, tc.args, err)
 			continue
 		}
 		if diff := diff.LineDiff(tc.want, got); diff != "" {
 			t.Errorf("parserAction(%v, %v) failed with diff:\n--- want\n+++ got\n%v", tc.input, tc.args, diff)
+		}
+	}
+}
+
+func TestCcParserActionSymbolLookupErrors(t *testing.T) {
+	tests := []struct {
+		input string
+		args  *grammar.ActionVars
+		want  string
+	}{
+		{"$abc", vars(), "$abc:0:0: invalid reference \"$abc\". Cannot find symbol \"abc\" in rule"},
+		{"$$ = $12", vars("%node", "a:0:expr"), "$$ = $12:0:0: index 12 is out of range [1, 3]"},
+		{"$$ = $1", vars("%node", "a:0:expr", "b:1:expr", "c:2:expr"), "$$ = $1:0:0: invalid reference \"$1\". Ordinal references disabled for rules with more than 2 symbols, use the symbol alias instead"},
+	}
+	for _, tc := range tests {
+		opts := &grammar.Options{
+			VariantStackEntry:        true,
+			MaxRuleSizeForOrdinalRef: 2,
+		}
+		got, err := ccParserAction(tc.input, tc.args, node(tc.input), opts)
+		if err == nil {
+			t.Errorf("parserAction(%v, %v) expected to fail with %v", tc.input, tc.args, got)
+			continue
+		}
+		got = err.Error()
+		if diff := diff.LineDiff(tc.want, got); diff != "" {
+			t.Errorf("parserAction(%v, %v) failed, but with diff:\n--- want\n+++ got\n%v", tc.input, tc.args, diff)
 		}
 	}
 }

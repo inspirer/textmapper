@@ -1,0 +1,36 @@
+language parser(go);
+
+expansionWarn = 2
+expansionLimit = 8
+
+:: lexer
+
+a: /a/
+b: /b/
+c: /c/
+d: /d/
+e: /e/
+f: /f/
+g: /g/
+
+:: parser
+
+input: a b c d;
+
+A1: a? b c d;
+
+A2: a? b? c d;
+
+A3: a? b? c? d;
+
+A4: «a? b? c? d?»;
+# err: expanding rule produced 16 rules which exeeds the limit of 8. Refactor the rule to reduce expansion or increase the `expansionLimit` value
+
+A5: «a? b? c? d? e?»;
+# err: expanding rule produced 32 rules which exeeds the limit of 8. Refactor the rule to reduce expansion or increase the `expansionLimit` value
+
+A6: b | «a b? c? d? e?»;
+# err: expanding rule produced 16 rules which exeeds the limit of 8. Refactor the rule to reduce expansion or increase the `expansionLimit` value
+
+A7: «a ( b c? (d | e f? | f | g) | c )»;
+# err: expanding rule produced 11 rules which exeeds the limit of 8. Refactor the rule to reduce expansion or increase the `expansionLimit` value

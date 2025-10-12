@@ -578,6 +578,7 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 					Report: report,
 					Code:   command,
 					Origin: cmdOrigin,
+		            NtName: nt.Name,
 				}
 				if args != nil {
 					act.Vars = &grammar.ActionVars{CmdArgs: *args, Remap: actualPos}
@@ -723,6 +724,7 @@ func (e *commandExtractor) extract(n *syntax.Nonterm, command string, vars *gram
 		Code:   command,
 		Vars:   vars,
 		Origin: cmdOrigin,
+		NtName: nt.Name,
 	}
 	rule.Action = len(e.actions)
 	e.actions = append(e.actions, act)

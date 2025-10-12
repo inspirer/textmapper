@@ -168,7 +168,7 @@ class Parser final {
 {{ range $index, $rule := .Parser.Rules -}}
 {{ $act := index $.Parser.Actions $rule.Action -}}
 {{ if (ne $act.Code "") -}}
-  absl::Status action{{$index}}([[maybe_unused]] stackEntry& lhs,
+  absl::Status {{cc_action_func $index $act}}([[maybe_unused]] stackEntry& lhs,
                         [[maybe_unused]] const stackEntry* rhs);
 {{ end -}}
 {{ end -}}
