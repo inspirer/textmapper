@@ -400,6 +400,20 @@ func (c *syntaxLoader) convertSet(expr ast.SetExpression) *syntax.TokenSet {
 			default:
 				c.Errorf(op, "operator must be one of: first, last, precede or follow")
 			}
+		} else {
+			// Check if the reference targets another named set.
+			name := expr.Symbol().Name()
+			if index, ok := c.namedSets[name.Text()]; ok {
+				if index >= len(c.out.Sets) {
+					c.Errorf(expr.TmNode(), "forward references are not allowed")
+					return ret
+				}
+				if _, ok := c.resolveRefIndex(expr.Symbol()); ok {
+					c.Errorf(expr.TmNode(), "ambigious reference")
+					return ret
+				}
+				return c.out.Sets[index]
+			}
 		}
 		ret.Symbol, ret.Args = c.resolveRef(expr.Symbol(), nil /*nonterm*/)
 		return ret
@@ -551,7 +565,7 @@ func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool
 	return index, true
 }
 
-func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []syntax.Arg) {
+func (c *syntaxLoader) resolveRefIndex(ref ast.Symref) (int, bool) {
 	name := ref.Name()
 	text := name.Text()
 	index, ok := c.resolver.syms[text]
@@ -564,6 +578,13 @@ func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int,
 	if !ok && c.optSuffix != "" && len(text) > len(c.optSuffix) && strings.HasSuffix(text, c.optSuffix) {
 		index, ok = c.instantiateOpt(text, ref)
 	}
+	return index, ok
+}
+
+func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int, []syntax.Arg) {
+	name := ref.Name()
+	text := name.Text()
+	index, ok := c.resolveRefIndex(ref)
 	if !ok {
 		c.Errorf(name, "unresolved reference '%v'", text)
 		return 0, nil // == eoi
