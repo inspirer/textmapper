@@ -1,6 +1,6 @@
 module github.com/inspirer/textmapper
 
-go 1.22
+go 1.25
 
 require (
 	go.lsp.dev/jsonrpc2 v0.10.0

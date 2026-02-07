@@ -578,7 +578,7 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 					Report: report,
 					Code:   command,
 					Origin: cmdOrigin,
-		            NtName: nt.Name,
+					NtName: nt.Name,
 				}
 				if args != nil {
 					act.Vars = &grammar.ActionVars{CmdArgs: *args, Remap: actualPos}

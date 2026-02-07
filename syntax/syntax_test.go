@@ -379,7 +379,7 @@ func initSymbols(input string, out *syntax.Model) error {
 		} else {
 			if prev == token.EOI || prev == token.SEMICOLON {
 				if seen[l.Text()] {
-					return fmt.Errorf("redeclaration of " + l.Text())
+					return fmt.Errorf("redeclaration of %s", l.Text())
 				}
 				seen[l.Text()] = true
 				out.Nonterms = append(out.Nonterms, &syntax.Nonterm{Name: l.Text(), Origin: tokenOrigin(&l)})

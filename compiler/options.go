@@ -109,10 +109,10 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.MaxLookahead = p.parseExpr(opt.Value(), opts.MaxLookahead).(int)
 		case "disableSyntax":
 			opts.DisableSyntax = p.parseExpr(opt.Value(), opts.DisableSyntax).([]string)
- 		case "expansionLimit":
- 			opts.ExpansionLimit = p.parseExpr(opt.Value(), opts.ExpansionLimit).(int)
- 		case "expansionWarn":
- 			opts.ExpansionWarn = p.parseExpr(opt.Value(), opts.ExpansionWarn).(int)
+		case "expansionLimit":
+			opts.ExpansionLimit = p.parseExpr(opt.Value(), opts.ExpansionLimit).(int)
+		case "expansionWarn":
+			opts.ExpansionWarn = p.parseExpr(opt.Value(), opts.ExpansionWarn).(int)
 		case "eventFields":
 			p.validLangs(opt.Key(), "go")
 			opts.EventFields = p.parseExpr(opt.Value(), opts.EventFields).(bool)

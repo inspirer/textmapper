@@ -73,7 +73,7 @@ type SemanticAction struct {
 	Report   []Range // left to right, inner first
 	Vars     *ActionVars
 	Origin   status.SourceNode
- 	NtName   string // empty for mid-rule actions
+	NtName   string // empty for mid-rule actions
 }
 
 // ActionVars captures enough information about a production rule to interpret its semantic action.

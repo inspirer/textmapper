@@ -39,7 +39,7 @@ var funcMap = template.FuncMap{
 	"sub":                 sub,
 	"go_parser_action":    goParserAction,
 	"cc_parser_action":    ccParserAction,
- 	"cc_action_func":      ccActionFunc,
+	"cc_action_func":      ccActionFunc,
 	"bison_parser_action": bisonParserAction,
 	"short_pkg":           shortPkg,
 	"list":                func(vals ...string) []string { return vals },
@@ -260,7 +260,7 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		size, id, prop, err := parseMeta(s)
 		s = s[size:]
 		if err != nil {
-			return "", status.Errorf(origin, err.Error())
+			return "", status.Errorf(origin, "%s", err.Error())
 		}
 
 		var index int
@@ -416,9 +416,9 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		s = s[d:]
 
 		// cc uses 1-based indexing.
- 		ref, err := args.ResolveOneBased(val, opts.MaxRuleSizeForOrdinalRef, string(ch)+val, origin)
- 		if err != nil {
- 			return "", err
+		ref, err := args.ResolveOneBased(val, opts.MaxRuleSizeForOrdinalRef, string(ch)+val, origin)
+		if err != nil {
+			return "", err
 		}
 
 		index := ref.Index
@@ -482,7 +482,6 @@ func ccActionFunc(idx int, act *grammar.SemanticAction) string {
 	return fmt.Sprintf("Action%v__ReduceOf_%v__AtLine_%v_Column_%v", idx, act.NtName, act.Origin.SourceRange().Line, act.Origin.SourceRange().Column)
 }
 
-
 func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
 	var sb strings.Builder
 	for len(s) > 0 {
@@ -500,7 +499,7 @@ func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceN
 		size, id, prop, err := parseMeta(s)
 		s = s[size:]
 		if err != nil {
-			return "", status.Errorf(origin, err.Error())
+			return "", status.Errorf(origin, "%s", err.Error())
 		}
 
 		var index int

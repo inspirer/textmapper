@@ -396,8 +396,8 @@ func (e *expander) extractNonterm(expr *Expr, nonTermType string) *Expr {
 }
 
 func (e *expander) expandRule(rule *Expr, opts *ExpandOptions) (expanded []*Expr, err status.Status) {
- 	e.createdNts = make(map[int]int)
- 	defer func() {
+	e.createdNts = make(map[int]int)
+	defer func() {
 		if len(expanded) > opts.ExpansionLimit {
 			if err == nil {
 				err = status.Status{}
