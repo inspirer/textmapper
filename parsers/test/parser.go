@@ -56,12 +56,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 0, 146, lexer)
+	_, err := p.parse(ctx, 0, 157, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 1, 147, lexer)
+	v, err := p.parse(ctx, 1, 158, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -89,6 +89,13 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 				p.fetchNext(ctx, lexer, stack)
 			}
 			action = lalr(action, p.next.symbol)
+			if action < -2 {
+				lexerCopy := lexer.Copy()
+				for action < -2 {
+					tok := lookaheadNext(&lexerCopy)
+					action = lalr(action, tok.symbol)
+				}
+			}
 		}
 
 		if action >= 0 {
@@ -239,12 +246,12 @@ restart:
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next symbol, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 100:
+	case 107:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 2, 145, s); ok {
-			sym = 43 /* lookahead_FooLookahead */
+		if ok, err = lookahead(ctx, lexer, next, 2, 156, s); ok {
+			sym = 46 /* lookahead_FooLookahead */
 		} else {
-			sym = 44 /* lookahead_notFooLookahead */
+			sym = 47 /* lookahead_notFooLookahead */
 		}
 		return
 	}
@@ -255,7 +262,7 @@ func AtFooLookahead(ctx context.Context, lexer *Lexer, next symbol, s *session) 
 	if debugSyntax {
 		fmt.Printf("lookahead FooLookahead, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 2, 145, s)
+	return lookahead(ctx, lexer, next, 2, 156, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *session) (bool, error) {
@@ -281,6 +288,13 @@ func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *
 				next = lookaheadNext(&lexer)
 			}
 			action = lalr(action, next.symbol)
+			if action < -2 {
+				lexerCopy := lexer.Copy()
+				for action < -2 {
+					tok := lookaheadNext(&lexerCopy)
+					action = lalr(action, tok.symbol)
+				}
+			}
 		}
 
 		if action >= 0 {
@@ -386,25 +400,25 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, sta
 		fixTrailingWS(lhs, stack[len(stack)-6:])
 	case 21: // Declaration : 'decl2' ':' QualifiedName-opt
 		fixTrailingWS(lhs, stack[len(stack)-3:])
-	case 83: // If : 'if' '(' O ')' Decl2
+	case 90: // If : 'if' '(' O ')' Decl2
 		{ /* 4: stack[len(stack)-1].value */
 		}
-	case 94: // customPlus : '\\' primaryExpr '+' expr
+	case 101: // customPlus : '\\' primaryExpr '+' expr
 		{
 			p.listener(PlusExpr, 0, stack[len(stack)-4].sym.offset, stack[len(stack)-1].sym.endoffset)
 		}
-	case 96: // primaryExpr : IntegerConstant
+	case 103: // primaryExpr : IntegerConstant
 		p.listener(Bar, 0,
 			stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.offset)
-	case 97: // primaryExpr_WithoutAs : IntegerConstant
+	case 104: // primaryExpr_WithoutAs : IntegerConstant
 		p.listener(Bar, 0,
 			stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.offset)
-	case 100:
+	case 107:
 		var ok bool
 		if ok, err = AtFooLookahead(ctx, lexer, p.next, s); ok {
-			lhs.sym.symbol = 43 /* lookahead_FooLookahead */
+			lhs.sym.symbol = 46 /* lookahead_FooLookahead */
 		} else {
-			lhs.sym.symbol = 44 /* lookahead_notFooLookahead */
+			lhs.sym.symbol = 47 /* lookahead_notFooLookahead */
 		}
 		return
 	}

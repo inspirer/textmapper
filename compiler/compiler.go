@@ -359,6 +359,10 @@ func (c *compiler) compileParser(file ast.File) {
 			c.Errorf(la, "lookahead value of %v is out of the [1, %v] range", lookahead, maxLookahead)
 			lookahead = 1
 		}
+		if lookahead > 1 && c.out.TargetLang != "go" {
+			c.Errorf(la, "LALR(k) is supported when targeting Go only")
+			lookahead = 1
+		}
 	}
 
 	opts := genOptions{

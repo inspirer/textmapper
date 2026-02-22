@@ -93,6 +93,10 @@ var lexerTests = []struct {
 		" «Zff\\» ",
 		" \x00 «\U0001fffe»«#» ", // \x00 is valid whitespace
 	}},
+
+	{token.CHAR_X, []string{"«x»"}},
+	{token.CHAR_Y, []string{"«y»"}},
+	{token.CHAR_Z, []string{"«z»"}},
 }
 
 func TestLexer(t *testing.T) {

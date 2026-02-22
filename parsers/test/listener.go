@@ -14,6 +14,8 @@ type Listener func(t NodeType, flags NodeFlags, offset, endoffset int)
 
 const (
 	NoType NodeType = iota
+	AX              // X
+	AY              // Y
 	AsExpr          // left=Expr right=Expr
 	Bar
 	Block // Negation? (Declaration)*
@@ -35,6 +37,8 @@ const (
 	Test     // (Declaration)+
 	TestClause
 	TestIntClause // Icon
+	X
+	Y
 	SingleLineComment
 	Identifier
 	InvalidToken
@@ -46,6 +50,8 @@ const (
 
 var nodeTypeStr = [...]string{
 	"NONE",
+	"AX",
+	"AY",
 	"AsExpr",
 	"Bar",
 	"Block",
@@ -67,6 +73,8 @@ var nodeTypeStr = [...]string{
 	"Test",
 	"TestClause",
 	"TestIntClause",
+	"X",
+	"Y",
 	"SingleLineComment",
 	"Identifier",
 	"InvalidToken",
@@ -88,6 +96,8 @@ var Decl2Interface = []NodeType{
 }
 
 var Declaration = []NodeType{
+	AX,
+	AY,
 	AsExpr,
 	Block,
 	Decl1,

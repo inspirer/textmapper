@@ -18,6 +18,9 @@
 %token DECL1
 %token DECL2
 %token EVAL
+%token CHAR_X
+%token CHAR_Y
+%token CHAR_Z
 %token IF
 %token ELSE
 %token LBRACE
@@ -93,6 +96,8 @@ Declaration :
 | EVAL lookahead_FooLookahead LPAREN foo_nonterm_A RPAREN
 | EVAL lookahead_FooLookahead LPAREN INTEGERCONSTANT DOT expr PLUS /*.greedy*/ expr RPAREN
 | DECL2 COLON QualifiedName-opt
+| CHAR_Z X CHAR_Z CHAR_X
+| CHAR_Z Y CHAR_Z CHAR_Y
 ;
 
 // lookahead: FooLookahead
@@ -118,6 +123,9 @@ setof_not_EOI_or_DOT_or_RBRACE :
 | DECL2
 | EVAL
 | AS
+| CHAR_X
+| CHAR_Y
+| CHAR_Z
 | IF
 | ELSE
 | LBRACE
@@ -148,6 +156,14 @@ setof_not_EOI_or_DOT_or_RBRACE :
 setof_not_EOI_or_DOT_or_RBRACE_optlist :
   setof_not_EOI_or_DOT_or_RBRACE_optlist setof_not_EOI_or_DOT_or_RBRACE
 | %empty
+;
+
+X :
+  CHAR_Z
+;
+
+Y :
+  CHAR_Z
 ;
 
 FooLookahead :

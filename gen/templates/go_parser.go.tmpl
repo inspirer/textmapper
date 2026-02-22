@@ -286,6 +286,11 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{ end -}}
 			}
 			action = lalr(action, p.next.symbol)
+{{ if gt .Parser.Tables.UsedLADepth 0 -}}
+			if action < -2 {
+{{ template "resolveDeepLA" . -}}
+			}
+{{ end -}}
 		}
 {{ end -}}
 
@@ -487,6 +492,11 @@ func reduceAll(stack []stackEntry, state int{{$stateType}}, symbol int32, endSta
 {{ else if .Parser.Tables.Lalr -}}
 		if action < -2 {
 			action = lalr(action, symbol)
+{{ if gt .Parser.Tables.UsedLADepth 0 -}}
+			if action < -2 {
+				return 0, false
+			}
+{{ end -}}
 		}
 {{ end -}}
 
@@ -682,6 +692,14 @@ func lalr(action, next int32) int32 {
 {{ end -}}
 {{ end -}}
 
+{{- define "resolveDeepLA" -}}
+				{{if .Options.TokenStream}}streamCopy := stream{{else}}lexerCopy := lexer{{end}}.Copy()
+				for action < -2 {
+					tok := {{if .Options.TokenStream}}streamCopy.next({{if and $.Options.Cancellable $.Options.CancellableFetch}}ctx, {{end}}nil, -1){{else}}lookaheadNext(&lexerCopy){{end}}
+					action = lalr(action, tok.symbol)
+				}
+{{ end -}}
+
 {{- define "gotoState" -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
 func gotoState(state int{{$stateType}}, symbol int32) int{{$stateType}} {
@@ -765,7 +783,7 @@ restart:
 {{ end -}}
 
 {{- define "lookahead" -}}
-{{ if and .Parser.Tables.Lookaheads (.Options.IsEnabled "lookaheadNext") (not .Options.TokenStream) -}}
+{{ if and (or .Parser.Tables.Lookaheads (gt .Parser.Tables.UsedLADepth 0)) (.Options.IsEnabled "lookaheadNext") (not .Options.TokenStream) -}}
 func lookaheadNext(lexer *Lexer) symbol {
 restart:
 	tok := lexer.Next()
@@ -880,6 +898,11 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}{{ if .
 				next = {{ if .Options.TokenStream }}stream.next(stack, end){{else}}lookaheadNext(&{{template "lexerArg" $}}{{template "lookaheadNextArgs" false}}){{end}}
 			}
 			action = lalr(action, next.symbol)
+{{ if gt .Parser.Tables.UsedLADepth 0 -}}
+			if action < -2 {
+{{ template "resolveDeepLA" $ -}}
+			}
+{{ end -}}
 		}
 {{ end -}}
 

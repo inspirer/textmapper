@@ -9,12 +9,13 @@ import (
 
 // Conflict represents a grammar ambiguity.
 type Conflict struct {
-	Resolved   bool
-	CanShift   bool
-	Kind       string
-	Next       []Sym
-	Rules      []int // in g.Rules
-	FollowedBy [][]string
+	Resolved     bool
+	ResolvedByLA int // depth of lookahead that resolved this (0 = not LA-resolved)
+	CanShift     bool
+	Kind         string
+	Next         []Sym
+	Rules        []int // in g.Rules
+	FollowedBy   [][]string
 
 	State int
 	Input []Sym

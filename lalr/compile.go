@@ -47,6 +47,9 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	c.buildLA(useTransitions, opts.CollectStats)
 
 	c.populateTables()
+	if c.lookahead > 1 {
+		c.resolveWithLookahead()
+	}
 	c.reportConflicts(opts.Verbose)
 
 	if opts.Debug {
@@ -82,6 +85,10 @@ type compiler struct {
 	// produce better error messages).
 	useTransitions  bool
 	allTokensMarker int // sentinel value for "all terminals" in follow sets when useTransitions is true
+	// follow stores the computed follow sets for each goto transition. When useTransitions is true,
+	// follow[gt] contains goto indices of the next-level terminal transitions, enabling recursive
+	// chaining for LALR(k) lookahead.
+	follow []sparse.Set
 
 	precGroup map[Sym]int // terminal -> index in grammar.Precedence
 	sr, rr    int         // conflicts
@@ -632,6 +639,9 @@ func (c *compiler) buildLA(useTransitions, stats bool) {
 
 	c.useTransitions = useTransitions
 	c.allTokensMarker = len(follow)
+	if useTransitions {
+		c.follow = follow
+	}
 }
 
 func (c *compiler) gotoState(state int, sym Sym) int {
@@ -777,6 +787,98 @@ func (c *compiler) populateTables() {
 	}
 }
 
+// resolveWithLookahead attempts to resolve unresolved conflicts using deeper
+// lookahead (LALR(k) for k > 1). It walks the pending conflicts, builds
+// lookahead automata, and patches the Lalr array entries.
+func (c *compiler) resolveWithLookahead() {
+	if c.follow == nil || len(c.pending) == 0 {
+		return
+	}
+
+	builder := newTrieBuilder(c)
+
+	var remaining []*Conflict
+	for _, conflict := range c.pending {
+		if conflict.Resolved || conflict.CanShift {
+			// Only resolve reduce/reduce conflicts with deeper lookahead for now.
+			// Shift/reduce conflicts can be resolved with precedence declarations.
+			remaining = append(remaining, conflict)
+			continue
+		}
+
+		state := c.states[conflict.State]
+		resolved := true
+		var maxLA int
+
+		for _, term := range conflict.Next {
+			// Collect per-rule goto indices for this terminal from the state's la sets.
+			ruleGts := make(map[int][]int) // rule -> list of goto indices for this terminal
+
+			for i, rule := range state.reduce {
+				for _, gt := range state.la[i] {
+					if gt == c.allTokensMarker {
+						// This rule has "all terminals" in its follow set.
+						ruleGts[rule] = append(ruleGts[rule], gt)
+						continue
+					}
+					sym := c.states[c.out.FromTo[2*gt+1]].symbol
+					if sym == term {
+						ruleGts[rule] = append(ruleGts[rule], gt)
+					}
+				}
+			}
+
+			// Only include the conflicting rules.
+			filteredGts := make(map[int][]int)
+			for _, rule := range conflict.Rules {
+				if gts, ok := ruleGts[rule]; ok {
+					filteredGts[rule] = gts
+				}
+			}
+
+			if len(filteredGts) < 2 {
+				// No real conflict for this terminal among the listed rules.
+				continue
+			}
+
+			trie := builder.resolve(filteredGts, c.lookahead-1)
+			if trie == nil {
+				resolved = false
+				continue
+			}
+
+			trie = builder.minimize(trie)
+
+			// Emit the automaton and patch the Lalr entry for this terminal.
+			offset := builder.emit(trie)
+
+			// Find and patch the Lalr entry for this state/terminal.
+			action := c.out.Action[state.index]
+			if action >= -2 {
+				continue // not a Lalr state (shouldn't happen)
+			}
+			base := -3 - action
+			for i := base; c.out.Lalr[i] >= 0; i += 2 {
+				if c.out.Lalr[i] == int(term) {
+					c.out.Lalr[i+1] = -3 - offset
+					break
+				}
+			}
+			c.out.UsedLADepth = max(c.out.UsedLADepth, trie.depth+1)
+			maxLA = max(maxLA, trie.depth+1)
+		}
+
+		if resolved {
+			conflict.Resolved = true
+			conflict.ResolvedByLA = maxLA
+			c.rr -= len(conflict.Next)
+		} else {
+			remaining = append(remaining, conflict)
+		}
+	}
+	c.pending = remaining
+}
+
 func (c *compiler) reduceLA(state *state, reduce int, seen container.BitSet, reuse []int) []int {
 	seen.ClearAll(c.grammar.Terminals)
 	if c.useTransitions {
@@ -845,6 +947,8 @@ func (c *compiler) reduceRuleInfo(state *state, rule int, next, seen container.B
 }
 
 func (c *compiler) reportConflicts(verbose bool) {
+	c.out.SR = c.sr
+	c.out.RR = c.rr
 	if c.sr == c.grammar.ExpectSR && c.rr == c.grammar.ExpectRR {
 		return
 	}

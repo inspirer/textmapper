@@ -35,6 +35,9 @@ lastInt: /[0-9]+(\n|{eoi})/
 'decl2':     /decl2/
 'eval':      /eval/
 'as':        /as/
+'x':        /x/
+'y':        /y/
+'z':        /z/
 
 'if': /if/
 "else": /else/
@@ -118,7 +121,7 @@ MultiLineComment:  /\/\*/ (space)
   WhiteSpace: /[^\/*]+|[*\/]/ (space) { space = true }
 }
 
-:: parser
+:: parser lalr(2)
 
 %input Test, Decl1;
 
@@ -156,7 +159,14 @@ Declaration -> Declaration :
   | 'eval' (?= FooLookahead) '(' foo_nonterm<+A> ')' -> EvalFoo
   | 'eval' (?= FooLookahead) '(' IntegerConstant '.' a=expr '+' .greedy b=expr ')' -> EvalFoo2
   | 'decl2' ':' QualifiedName-opt -> DeclOptQual
+
+  # Requires LALR(2)
+  | 'z' X 'z' 'x' -> AX
+  | 'z' Y 'z' 'y' -> AY
 ;
+
+X -> X: 'z';
+Y -> Y: 'z';
 
 FooLookahead:
   '(' IntegerConstant '.' set(foo_la)+ ')' ;

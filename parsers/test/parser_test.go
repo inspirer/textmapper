@@ -129,6 +129,12 @@ var parseTests = []struct {
 	{test.Bar, 0, []string{
 		` eval(4.«»1 as «»2 + «»3) `,
 	}},
+
+	// Testing LALR(2).
+	{test.X, 0, []string{`z «z» z x `}},
+	{test.Y, 0, []string{`z «z» z y `}},
+	{test.AX, 0, []string{` «z z z x» `}},
+	{test.AY, 0, []string{` «z z z y» `}},
 }
 
 func TestParser(t *testing.T) {

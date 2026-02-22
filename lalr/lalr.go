@@ -114,6 +114,8 @@ type Tables struct {
 	Markers     []StateMarker
 	Lookaheads  []LookaheadRule
 	NumStates   int
+	UsedLADepth int      // maximum LALR(k) lookahead depth used (0 means pure LALR(1))
+	SR, RR      int      // number of shift/reduce and reduce/reduce conflicts
 	DebugInfo   []string // per state
 }
 

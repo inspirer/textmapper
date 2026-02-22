@@ -10,6 +10,8 @@ type Selector func(nt test.NodeType) bool
 
 var (
 	Any               = func(t test.NodeType) bool { return true }
+	AX                = func(t test.NodeType) bool { return t == test.AX }
+	AY                = func(t test.NodeType) bool { return t == test.AY }
 	AsExpr            = func(t test.NodeType) bool { return t == test.AsExpr }
 	Bar               = func(t test.NodeType) bool { return t == test.Bar }
 	Block             = func(t test.NodeType) bool { return t == test.Block }
@@ -31,6 +33,8 @@ var (
 	Test              = func(t test.NodeType) bool { return t == test.Test }
 	TestClause        = func(t test.NodeType) bool { return t == test.TestClause }
 	TestIntClause     = func(t test.NodeType) bool { return t == test.TestIntClause }
+	X                 = func(t test.NodeType) bool { return t == test.X }
+	Y                 = func(t test.NodeType) bool { return t == test.Y }
 	SingleLineComment = func(t test.NodeType) bool { return t == test.SingleLineComment }
 	Identifier        = func(t test.NodeType) bool { return t == test.Identifier }
 	InvalidToken      = func(t test.NodeType) bool { return t == test.InvalidToken }

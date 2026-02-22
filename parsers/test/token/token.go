@@ -25,6 +25,9 @@ const (
 	DECL2     // decl2
 	EVAL      // eval
 	AS        // as
+	CHAR_X    // x
+	CHAR_Y    // y
+	CHAR_Z    // z
 	IF        // if
 	ELSE      // else
 	LBRACE    // {
@@ -70,6 +73,9 @@ var tokenStr = [...]string{
 	"decl2",
 	"eval",
 	"as",
+	"x",
+	"y",
+	"z",
 	"if",
 	"else",
 	"{",
