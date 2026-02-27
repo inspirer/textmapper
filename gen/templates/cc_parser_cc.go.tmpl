@@ -13,6 +13,9 @@
 #include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
 {{ end -}}
 
+{{ define "LexerClass" -}}Lexer{{ end -}}
+{{ define "LocationClass" -}}{{ template "LexerClass" }}::Location{{ end -}}
+
 {{ define "locStart" -}}.begin{{ end -}}
 {{ define "locEnd" -}}.end{{ end -}}
 {{ define "CreateLocationFromRHS" -}}DefaultCreateLocationFromRHS{{ end -}}
@@ -67,10 +70,12 @@ Token CreateTokenFromFlex(int32_t t) {
 {{ if and (ne .Name "lr0") (ne .Name "greedy") -}}
 {{ if eq (len .States) 1 -}}
 [[maybe_unused]] constexpr int{{$stateType}}_t {{.Name}}State = {{index .States 0}};
+bool Parser::IsIn{{.Name}}State() const { return state_ == {{index .States 0}}; }
 {{ else -}}
 std::unordered_set<int{{$stateType}}_t> {{.Name}}States = {
 {{- int_array .States "\t" 79 -}}
 };
+bool Parser::IsIn{{.Name}}State() const { return {{.Name}}States.contains(state_); }
 {{ end }}
 {{ end -}}
 {{ end -}}
@@ -297,7 +302,7 @@ int{{$stateType}}_t gotoState(int{{$stateType}}_t state, int32_t symbol) {
 
 {{ define "lookaheadNext" -}}
 {{ if and .Parser.Tables.Lookaheads (.Options.IsEnabled "lookaheadNext") -}}
-ABSL_MUST_USE_RESULT int32_t lookaheadNext(Lexer& lexer) {
+ABSL_MUST_USE_RESULT int32_t lookaheadNext({{template "LexerClass"}}& lexer) {
 {{ block "lookaheadFetch" . -}}
   Token tok;
 restart:
@@ -326,11 +331,11 @@ restart:
 
 {{- define "lookahead" -}}
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
-ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
+ABSL_MUST_USE_RESULT bool lookahead({{template "LexerClass"}}& lexer_to_copy, int32_t next,
                                     int{{$stateType}}_t start,
                                     int{{$stateType}}_t end) {
 {{ block "setupLookaheadLexer" . -}}
-  Lexer lexer = lexer_to_copy;
+  {{template "LexerClass"}} lexer = lexer_to_copy;
 {{end -}}
 {{ if .Options.RecursiveLookaheads }}
   // Use memoization for recursive lookaheads.
@@ -441,7 +446,7 @@ ABSL_MUST_USE_RESULT bool lookahead(Lexer& lexer_to_copy, int32_t next,
 {{ range $ind, $inp := .Parser.Inputs -}}
 {{ if and .Synthetic .NoEoi -}}
 {{ $sym := index $.Syms (sum $.NumTokens .Nonterm) -}}
-ABSL_MUST_USE_RESULT bool At{{$sym.Name}}(Lexer& lexer, int32_t next{{if $.NeedsSession}}, session* s{{end}}) {
+ABSL_MUST_USE_RESULT bool At{{$sym.Name}}({{template "LexerClass"}}& lexer, int32_t next{{if $.NeedsSession}}, session* s{{end}}) {
   if (debugSyntax) {
     LOG(INFO) << "lookahead {{$sym.Name}}; next: " << symbolName(next);
   }
@@ -515,7 +520,7 @@ bool Parser::willShift(int32_t symbol, std::vector<stackEntry>& stack, int size,
 
 {{ define "skipBrokenCode" -}}
 {{ if .Options.IsEnabled "skipBrokenCode" -}}
-int64_t Parser::skipBrokenCode(Lexer& lexer, std::vector<stackEntry>& stack, std::bitset<static_cast<size_t>(Token::NumTokens)>& recover_tokens) {
+int64_t Parser::skipBrokenCode({{template "LexerClass"}}& lexer, std::vector<stackEntry>& stack, std::bitset<static_cast<size_t>(Token::NumTokens)>& recover_tokens) {
   int64_t ret = 0;
   while (next_symbol_.symbol != eoiToken && !recover_tokens[next_symbol_.symbol]) {
     if (debugSyntax) {
@@ -536,7 +541,7 @@ int64_t Parser::skipBrokenCode(Lexer& lexer, std::vector<stackEntry>& stack, std
 
 {{ define "recoverFromError" -}}
 {{ if and (.Options.IsEnabled "recoverFromError") (.Parser.IsRecovering) -}}
-bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
+bool Parser::recoverFromError({{template "LexerClass"}}& lexer, std::vector<stackEntry>& stack) {
   std::bitset<static_cast<size_t>(Token::NumTokens)> recover_tokens;
   std::vector<int> recover_pos;
 
@@ -656,7 +661,7 @@ bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
     stack.push_back(stackEntry{
       .sym =  symbol{
         .symbol = errSymbol,
-        .location = Lexer::Location(begin, end),
+        .location = {{ template "LocationClass" }}(begin, end),
       },
       .state = gotoState(stack[matching_pos-1].state, errSymbol),
     });
@@ -669,7 +674,7 @@ bool Parser::recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack) {
 
 {{ define "fetchNext" -}}
 {{ if .Options.IsEnabled "fetchNext" -}}
-void Parser::fetchNext(Lexer& lexer, std::vector<stackEntry>& stack) {
+void Parser::fetchNext({{template "LexerClass"}}& lexer, std::vector<stackEntry>& stack) {
 {{ block "fetchImpl" . -}}
   Token tok;
   for (;;) {
@@ -722,9 +727,10 @@ absl::Status Parser::{{cc_action_func $index $act}}([[maybe_unused]] stackEntry&
 {{ end -}}
 
 absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
-                        [[maybe_unused]] stackEntry* rhs,
-                        Lexer& lexer) {
+                               [[maybe_unused]] stackEntry* rhs,
+                               {{template "LexerClass"}}& lexer) {
 {{ if or .Parser.HasActions .Parser.Tables.Lookaheads -}}
+  absl::Status action_result;
   switch (rule) {
 {{ range $index, $rule := .Parser.Rules -}}
 {{ $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) -}}
@@ -738,17 +744,14 @@ absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
 {{ range $act.Report -}}
 {{ $val := index $.Parser.Types.RangeTypes .Type -}}
 {{ if $.Parser.UsedFlags -}}
-    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}NodeFlags::None{{end}}, Lexer::Location(rhs[{{.Start}}].sym.location{{template "locStart"}}, rhs[{{minus1 .End}}].sym.location{{template "locEnd"}}));
+    listener_(NodeType::{{$val.Name}}, {{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}NodeFlags::{{$flag}}{{else}}NodeFlags::None{{end}}, {{ template "LocationClass" }}(rhs[{{.Start}}].sym.location{{template "locStart"}}, rhs[{{minus1 .End}}].sym.location{{template "locEnd"}}));
 {{ else -}}
-    listener_(NodeType::{{$val.Name}}, Lexer::Location(rhs[{{.Start}}].sym.location{{template "locStart"}}, rhs[{{minus1 .End}}].sym.location{{template "locEnd"}}));
+    listener_(NodeType::{{$val.Name}}, {{ template "LocationClass" }}(rhs[{{.Start}}].sym.location{{template "locStart"}}, rhs[{{minus1 .End}}].sym.location{{template "locEnd"}}));
 {{ end -}}
 {{ end -}}
 {{ if $act.Code -}}
 {
-  absl::Status action_result = {{cc_action_func $index $act}}(lhs, rhs);
-  if (!action_result.ok()) {
-    return action_result;
-  }
+  action_result = {{cc_action_func $index $act}}(lhs, rhs);
 }
 {{ end -}}
     break;
@@ -777,6 +780,9 @@ absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
 {{ end -}}
     break;
   }
+  if (!action_result.ok()) {
+    return action_result;
+  }
 {{ end -}}
 
 {{ if .Parser.Types -}}
@@ -797,10 +803,10 @@ absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
 
 // There are n symbols in the RHS. The locations can be accessed by
 // get_location(i) where i is in [0, n-1].
-ABSL_MUST_USE_RESULT Lexer::Location DefaultCreateLocationFromRHS(
-    int32_t n, absl::FunctionRef<Lexer::Location(int32_t)> get_location) {
-  return Lexer::Location(get_location(0){{template "locStart"}},
-                         get_location(n-1){{template "locEnd"}});
+ABSL_MUST_USE_RESULT {{ template "LocationClass" }} DefaultCreateLocationFromRHS(
+    int32_t n, absl::FunctionRef<{{ template "LocationClass" }}(int32_t)> get_location) {
+  return {{ template "LocationClass" }}(get_location(0){{template "locStart"}},
+                                        get_location(n-1){{template "locEnd"}});
 }
 
 {{ end -}}
@@ -808,7 +814,7 @@ ABSL_MUST_USE_RESULT Lexer::Location DefaultCreateLocationFromRHS(
 {{- define "Parse" -}}
 {{ $stateType := bits_per_element .Parser.Tables.FromTo -}}
 absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
-  Lexer& lexer) {
+                           {{template "LexerClass"}}& lexer) {
 {{ if .ReportTokens true -}}
   pending_symbols_.clear();
 {{ end -}}
@@ -819,16 +825,21 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
   s.cache = make(map[uint64]bool)
 {{ end -}}
 {{ end -}}
-  int{{$stateType}}_t state = start;
+  state_ = start;
 {{ if .Parser.IsRecovering -}}
   absl::Status lastErr = absl::OkStatus();
-  Lexer::Location lastLoc;
+  {{ template "LocationClass" }} lastLoc;
   int recovering = 0;
 {{ end -}}
 
   std::vector<stackEntry> stack;
   stack.reserve(startStackSize);
-  stack.push_back(stackEntry{.state = state});
+  stack.push_back(stackEntry{.state = state_});
+{{ if .Options.TrackReduces -}}
+  // Maintains a stack of states that have been reduced since the last shift.
+  std::vector<int32_t> reduced_states;
+  reduced_states.reserve(startStackSize);
+{{ end -}}
 {{- if .Parser.IsRecovering }}
   end_state_ = end;
 {{- end}}
@@ -837,11 +848,12 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
   // symbols satsified by %empty, so it needs to be initialized. We initialize
   // it to the start location of the first token.
   stack.back().sym.location =
-      Lexer::Location(lexer.LastTokenLocation(){{template "locStart"}},
-                      lexer.LastTokenLocation(){{template "locStart"}});
+      {{ template "LocationClass" }}(
+          lexer.LastTokenLocation(){{template "locStart"}},
+          lexer.LastTokenLocation(){{template "locStart"}});
 
-  while (state != end) {
-    int32_t action = tmAction[state];
+  while (state_ != end) {
+    int32_t action = tmAction[state_];
 {{ if .Parser.Tables.Optimized -}}
     if (action > tmActionBase) {
       // Lookahead is needed.
@@ -852,10 +864,10 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       if (pos >= 0 && pos < tmTableLen && tmCheck[pos] == next_symbol_.symbol) {
         action = tmTable[pos];
       } else {
-        action = tmDefAct[state];
+        action = tmDefAct[state_];
       }
     } else {
-      action = tmDefAct[state];
+      action = tmDefAct[state_];
     }
 {{ else if .Parser.Tables.Lalr -}}
     if (action < -2) {
@@ -879,8 +891,9 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       stackEntry* rhs = &stack[0] + stack.size() - ln;
 
       if (ln == 0) {
-        entry.sym.location = Lexer::Location(stack.back().sym.location{{template "locEnd"}},
-                                             stack.back().sym.location{{template "locEnd"}});
+        entry.sym.location = {{ template "LocationClass" }}(
+            stack.back().sym.location{{template "locEnd"}},
+            stack.back().sym.location{{template "locEnd"}});
       } else {
         entry.sym.location = {{template "CreateLocationFromRHS" . -}}(ln,
           [&](int32_t i) { return rhs[i].sym.location; });
@@ -896,8 +909,8 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
                   << " consuming " << ln << " symbols, range "
                   << entry.sym.location;
       }
-      state = gotoState(stack[stack.size()-2].state, entry.sym.symbol);
-      entry.state = state;
+      state_ = gotoState(stack[stack.size()-2].state, entry.sym.symbol);
+      entry.state = state_;
       stack.back() = std::move(entry);
 
     } else if (action {{if .Parser.Tables.Optimized}}<{{else}}=={{end}} -1) {
@@ -906,13 +919,13 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       reduced_states.clear();
 {{ end -}}
 {{ if .Parser.Tables.Optimized -}}
-      state = -2-action;
+      state_ = -2-action;
 {{ else -}}
       if (next_symbol_.symbol == noToken) {
         fetchNext(lexer, stack);
       }
-      state = gotoState(state, next_symbol_.symbol);
-      if (state >= 0) {
+      state_ = gotoState(state_, next_symbol_.symbol);
+      if (state_ >= 0) {
 {{ end -}}
         if (debugSyntax) {
           LOG(INFO) << "shift: " << symbolName(next_symbol_.symbol) << " ("
@@ -920,7 +933,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
         }
         stack.emplace_back(stackEntry{
             .sym = std::move(next_symbol_),
-            .state = state,
+            .state = state_,
         });
 {{ block "onAfterShift" .}}{{end -}}
 {{ template "flushPending" . -}}
@@ -937,7 +950,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
       }
 {{ end -}}
     }
-    if (action == {{if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state == -1) {
+    if (action == {{if .Parser.Tables.Optimized}}-1{{else}}-2{{end}} || state_ == -1) {
 {{ if .Parser.IsRecovering -}}
       if (recovering == 0) {
 {{ block "captureParserErr" . -}}
@@ -962,7 +975,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
 {{ template "flushPending" . -}}
         return lastErr;
       }
-      state = stack[stack.size()-1].state;
+      state_ = stack[stack.size()-1].state;
 {{ else -}}
       break;
 {{ end -}}
@@ -970,7 +983,7 @@ absl::Status Parser::Parse(int{{$stateType}}_t start, int{{$stateType}}_t end,
   }
 
 {{ if not .Parser.IsRecovering -}}
-  if (state != end) {
+  if (state_ != end) {
 {{ block "returnParserErr" . -}}
     if (next_symbol_.symbol == noToken) {
       fetchNext(lexer, stack);
