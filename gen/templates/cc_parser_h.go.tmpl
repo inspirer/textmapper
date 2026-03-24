@@ -23,10 +23,13 @@
 {{end}}
 namespace {{.Options.Namespace}} {
 
+{{ define "LexerClass" -}}Lexer{{ end -}}
+{{ define "LocationClass" -}}{{ template "LexerClass" }}::Location{{ end -}}
+
 {{ block "symbol" . -}}
 struct symbol {
   int32_t symbol = 0;
-  Lexer::Location location = Lexer::Location();
+  {{ template "LocationClass" }} location = {{ template "LocationClass" }}();
 };
 
 {{end -}}
@@ -131,6 +134,9 @@ ABSL_MUST_USE_RESULT Token CreateTokenFromFlex(int32_t t);
 
 class Parser final {
  public:
+
+{{block "parserPublicDecls" .}}{{end -}}
+
 {{ if .Parser.Types -}}
   template <typename Listener>
   explicit Parser(Listener&& listener{{if .Parser.IsRecovering}}, absl::FunctionRef<bool(absl::Status)> error_handler{{end}}{{ range .Options.ParseParams}}, {{.}}_arg{{end}})
@@ -148,12 +154,21 @@ class Parser final {
 {{ range $index, $inp := .Parser.Inputs -}}
 {{ if $inp.Synthetic }}{{continue}}{{end -}}
 {{ $nt := index $.Parser.Nonterms $inp.Nonterm -}}
-  absl::Status Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}(Lexer& lexer) {
+  absl::Status Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.Nonterm}}{{end}}( {{template "LexerClass"}}& lexer) {
     return Parse({{$index}}, {{index $.Parser.Tables.FinalStates $index}}, lexer);
   }
 
 {{ end -}}
-{{block "parserPublicDecls" .}}{{end -}}
+
+{{ range .Parser.Tables.Markers -}}
+{{ if and (ne .Name "lr0") (ne .Name "greedy") -}}
+{{ if eq (len .States) 1 -}}
+bool IsIn{{.Name}}State() const;
+{{ else -}}
+bool IsIn{{.Name}}State() const;
+{{ end }}
+{{ end -}}
+{{ end -}}
 
  private:
 {{ if .ReportTokens true -}}
@@ -161,10 +176,10 @@ class Parser final {
 {{ end -}}
 {{ if .Parser.IsRecovering -}}
   bool willShift(int32_t symbol, std::vector<stackEntry>& stack, int size, int{{$stateType}}_t state);
-  int64_t skipBrokenCode(Lexer& lexer, std::vector<stackEntry>& stack, std::bitset<static_cast<size_t>(Token::NumTokens)>& recover_tokens);
-  bool recoverFromError(Lexer& lexer, std::vector<stackEntry>& stack);
+  int64_t skipBrokenCode({{template "LexerClass"}}& lexer, std::vector<stackEntry>& stack, std::bitset<static_cast<size_t>(Token::NumTokens)>& recover_tokens);
+  bool recoverFromError({{template "LexerClass"}}& lexer, std::vector<stackEntry>& stack);
 {{ end -}}
-  void fetchNext(Lexer& lexer, std::vector<stackEntry>& stack);
+  void fetchNext({{template "LexerClass"}}& lexer, std::vector<stackEntry>& stack);
 {{ range $index, $rule := .Parser.Rules -}}
 {{ $act := index $.Parser.Actions $rule.Action -}}
 {{ if (ne $act.Code "") -}}
@@ -175,13 +190,14 @@ class Parser final {
 
   absl::Status applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
                          [[maybe_unused]] stackEntry* rhs,
-                         Lexer& lexer);
+                         {{template "LexerClass"}}& lexer);
   absl::Status Parse(
-    int{{$stateType}}_t start, int{{$stateType}}_t end, Lexer& lexer);
+    int{{$stateType}}_t start, int{{$stateType}}_t end, {{template "LexerClass"}}& lexer);
 
+  int{{$stateType}}_t state_;
   symbol next_symbol_;
 {{ if .Parser.Types -}}
-  absl::FunctionRef<void(NodeType, {{if or .Parser.UsedFlags .Lexer.UsedFlags}}NodeFlags, {{end}}Lexer::Location)> listener_;
+  absl::FunctionRef<void(NodeType, {{if or .Parser.UsedFlags .Lexer.UsedFlags}}NodeFlags, {{end}}{{ template "LocationClass" }})> listener_;
 {{ end -}}
 {{ if .Parser.IsRecovering -}}
   absl::FunctionRef<bool(absl::Status)> error_handler_; // returns true to attempt recovery
