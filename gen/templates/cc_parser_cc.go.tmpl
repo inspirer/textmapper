@@ -586,8 +586,8 @@ bool Parser::recoverFromError({{template "LexerClass"}}& lexer, std::vector<stac
     return false;
   }
 
-  for (int32_t v : afterErr) {
-    recover_tokens[v] = true;
+  for (Token v : afterErr) {
+    recover_tokens[static_cast<int32_t>(v)] = true;
   }
   if (next_symbol_.symbol == noToken) {
     fetchNext(lexer, stack);
