@@ -371,6 +371,7 @@ func (c *compiler) compileParser(file ast.File) {
 		lalrOpts: lalr.Options{
 			Lookahead:     lookahead,
 			Optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
+			MinimizeDFA:   c.out.Options.MinimizeDFA,
 			DefaultReduce: c.out.Options.DefaultReduce,
 			Debug:         c.params.DebugTables,
 			CollectStats:  c.params.CollectStats,

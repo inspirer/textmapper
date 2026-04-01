@@ -1,5 +1,7 @@
 package container
 
+import "slices"
+
 // allocator is used to allocate IntSliceMap values on the first access.
 type allocator[T any] func(key []int) T
 
@@ -36,8 +38,7 @@ func (m *IntSliceMap[T]) Get(key []int) T {
 		}
 	}
 
-	keyCopy := make([]int, len(key))
-	copy(keyCopy, key)
+	keyCopy := slices.Clone(key)
 	val := m.allocate(keyCopy)
 	m.data[hash] = append(m.data[hash], entry[T]{keyCopy, val})
 	return val
@@ -54,4 +55,48 @@ func SliceEqual(a, b []int) bool {
 		}
 	}
 	return true
+}
+
+type intEntry struct {
+	key   []int
+	index int
+}
+
+// IntSliceSet maps slices of ints into integer indices.
+type IntSliceSet struct {
+	size int
+	data map[uint64][]intEntry
+}
+
+// NewIntSliceSet returns an empty set.
+func NewIntSliceSet() *IntSliceSet {
+	return &IntSliceSet{
+		data: make(map[uint64][]intEntry),
+	}
+}
+
+// Insert inserts a slice into the set and returns its index.
+// If the slice is already in the set, it returns the existing index.
+func (s *IntSliceSet) Insert(key []int) int {
+	var hash uint64
+	for _, i := range key {
+		hash = hash*31 + uint64(i)
+	}
+
+	for _, entry := range s.data[hash] {
+		if SliceEqual(key, entry.key) {
+			return entry.index
+		}
+	}
+
+	keyCopy := slices.Clone(key)
+	idx := s.size
+	s.data[hash] = append(s.data[hash], intEntry{keyCopy, idx})
+	s.size++
+	return idx
+}
+
+// Len returns the number of unique slices in the set.
+func (s *IntSliceSet) Len() int {
+	return s.size
 }
