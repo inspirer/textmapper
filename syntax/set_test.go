@@ -67,12 +67,27 @@ var setTests = []struct {
 		"d | a | x | y",
 	}},
 
+	// unused productions
+	{`%input input; %generate follow_c = set(follow c); input: c foo d set(follow_c); foo: a; %generate first_of_bar = set(unused_bar); unused_bar: c b d;`, []string{
+		"a",
+		"",
+		"a",
+	}},
 	// intersection
 	{`%input A; Z: set(B & C); A: B a C; B: c d | A; C: x y z;`, []string{
 		"x | y | z",
 	}},
 	{`%input A; Z: set(B & C); A: B a C; B: c d | y z; C: x y z;`, []string{
 		"y | z",
+	}},
+	// named sets
+	{`%input A; %generate set_a = set(a | b); Z: set(set_a | c); A: a b c;`, []string{
+		"a | b",
+		"a | b | c",
+	}},
+	{`%input A; %generate cycle = set(cycle | a); Z: set(cycle | b); A: a b;`, []string{
+		"a",
+		"a | b",
 	}},
 
 	// complement
@@ -111,7 +126,12 @@ func TestSets(t *testing.T) {
 				indices = append(indices, i)
 			}
 		}
-		if len(indices) == 0 {
+
+		parsedNamed := new(syntax.Model)
+		initNamedSets(tc.input, parsedNamed, make(map[string]int))
+		numNamedSets := len(parsedNamed.Sets)
+
+		if len(indices) == 0 && numNamedSets == 0 {
 			t.Errorf("no sets found in %q: %v", tc.input, model.Nonterms)
 			continue
 		}
@@ -120,6 +140,9 @@ func TestSets(t *testing.T) {
 		if err := syntax.ResolveSets(model); err != nil {
 			got = append(got, "ERR: "+err.Error())
 		} else {
+			for i := 0; i < numNamedSets; i++ {
+				got = append(got, model.Sets[i].String(model))
+			}
 			for _, i := range indices {
 				got = append(got, model.Nonterms[i].Value.String())
 			}

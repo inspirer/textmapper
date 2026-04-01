@@ -452,48 +452,69 @@ type TokenSet struct {
 
 // ForEach visits all token set expressions in the tree.
 func (ts *TokenSet) ForEach(consumer func(ts *TokenSet)) {
-	consumer(ts)
-	for _, sub := range ts.Sub {
-		sub.ForEach(consumer)
+	seen := make(map[*TokenSet]bool)
+	var visit func(ts *TokenSet)
+	visit = func(t *TokenSet) {
+		if seen[t] {
+			return
+		}
+		seen[t] = true
+		consumer(t)
+		for _, sub := range t.Sub {
+			visit(sub)
+		}
 	}
+	visit(ts)
 }
 
 func (ts *TokenSet) String(m *Model) string {
-	switch ts.Kind {
-	case Any:
-		return m.Ref(ts.Symbol, ts.Args)
-	case First:
-		return "first " + m.Ref(ts.Symbol, ts.Args)
-	case Last:
-		return "last " + m.Ref(ts.Symbol, ts.Args)
-	case Follow:
-		return "follow " + m.Ref(ts.Symbol, ts.Args)
-	case Precede:
-		return "precede " + m.Ref(ts.Symbol, ts.Args)
-	case Complement:
-		return fmt.Sprintf("~(%v)", ts.Sub[0].String(m))
-	case Union, Intersection:
-		var buf strings.Builder
-		for i, sub := range ts.Sub {
-			if i > 0 {
-				if ts.Kind == Intersection {
-					buf.WriteString(" & ")
-				} else {
-					buf.WriteString(" | ")
-				}
-			}
-
-			text := sub.String(m)
-			if sub.Kind == Union || sub.Kind == Intersection {
-				text = fmt.Sprintf("(%v)", text)
-			}
-			buf.WriteString(text)
+	seen := make(map[*TokenSet]bool)
+	var visit func(ts *TokenSet) string
+	visit = func(t *TokenSet) string {
+		if seen[t] {
+			// Cycle detected, return an empty terminal set.
+			return "EOI & ~EOI"
 		}
-		return buf.String()
-	default:
-		log.Fatalf("cannot stringify TokenSet Kind=%v", ts.Kind)
-		return ""
+		seen[t] = true
+		defer delete(seen, t)
+
+		switch t.Kind {
+		case Any:
+			return m.Ref(t.Symbol, t.Args)
+		case First:
+			return "first " + m.Ref(t.Symbol, t.Args)
+		case Last:
+			return "last " + m.Ref(t.Symbol, t.Args)
+		case Follow:
+			return "follow " + m.Ref(t.Symbol, t.Args)
+		case Precede:
+			return "precede " + m.Ref(t.Symbol, t.Args)
+		case Complement:
+			return fmt.Sprintf("~(%v)", visit(t.Sub[0]))
+		case Union, Intersection:
+			var buf strings.Builder
+			for i, sub := range t.Sub {
+				if i > 0 {
+					if t.Kind == Intersection {
+						buf.WriteString(" & ")
+					} else {
+						buf.WriteString(" | ")
+					}
+				}
+
+				text := visit(sub)
+				if sub.Kind == Union || sub.Kind == Intersection {
+					text = fmt.Sprintf("(%v)", text)
+				}
+				buf.WriteString(text)
+			}
+			return buf.String()
+		default:
+			log.Fatalf("cannot stringify TokenSet Kind=%v", t.Kind)
+			return ""
+		}
 	}
+	return visit(ts)
 }
 
 // SetOp is a set operator.
@@ -665,7 +686,7 @@ func Check(m *Model) error {
 		}
 	}
 	for _, set := range m.Sets {
-		if err := checkSet(m, set); err != nil {
+		if err := checkSet(m, set, make(map[*TokenSet]bool)); err != nil {
 			return err
 		}
 	}
@@ -714,7 +735,11 @@ func checkExpr(m *Model, expr *Expr) error {
 	return nil
 }
 
-func checkSet(m *Model, set *TokenSet) error {
+func checkSet(m *Model, set *TokenSet, visited map[*TokenSet]bool) error {
+	if visited[set] {
+		return nil
+	}
+	visited[set] = true
 	switch set.Kind {
 	case Any, First, Last, Precede, Follow:
 		if err := checkArgs(m, set.Symbol, set.Args, set.Origin); err != nil {
@@ -722,7 +747,7 @@ func checkSet(m *Model, set *TokenSet) error {
 		}
 	}
 	for _, sub := range set.Sub {
-		if err := checkSet(m, sub); err != nil {
+		if err := checkSet(m, sub, visited); err != nil {
 			return err
 		}
 	}

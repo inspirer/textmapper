@@ -58,11 +58,22 @@ func ResolveSets(m *Model) error {
 		return ret
 	}
 
+	// visited stores proxy sets to break cycles when evaluating recursive sets.
+	visited := make(map[*TokenSet]*set.FutureSet)
+
 	var translate func(s *TokenSet) *set.FutureSet
 	translate = func(s *TokenSet) *set.FutureSet {
+		if proxy, ok := visited[s]; ok {
+			return proxy
+		}
+		// proxy may be returned by a recursive call before it is populated.
+		proxy := cl.Add(nil)
+		visited[s] = proxy
+
 		switch s.Kind {
 		case Any, First, Last, Precede, Follow:
-			return instantiate(s.Kind, lalr.Sym(s.Symbol))
+			proxy.Include(instantiate(s.Kind, lalr.Sym(s.Symbol)))
+			return proxy
 		case Union:
 			var sets []*set.FutureSet
 			for _, sub := range s.Sub {
@@ -70,15 +81,18 @@ func ResolveSets(m *Model) error {
 			}
 			ret := cl.Add(nil)
 			ret.Include(sets...)
-			return ret
+			proxy.Include(ret)
+			return proxy
 		case Intersection:
 			var sets []*set.FutureSet
 			for _, sub := range s.Sub {
 				sets = append(sets, translate(sub))
 			}
-			return cl.Intersect(sets...)
+			proxy.Include(cl.Intersect(sets...))
+			return proxy
 		case Complement:
-			return cl.Complement(translate(s.Sub[0]), s.Origin)
+			proxy.Include(cl.Complement(translate(s.Sub[0]), s.Origin))
+			return proxy
 		default:
 			log.Fatalf("invalid token set: %v", s.Kind)
 		}
@@ -193,6 +207,24 @@ func ResolveSets(m *Model) error {
 				nonterm.Value.Sub = append(nonterm.Value.Sub, &Expr{Kind: Empty, Origin: nonterm.Value.Origin})
 				continue
 			}
+
+			// Determine if the set has a homogeneous type.
+			var setType string
+			homogeneous := true
+			for i, t := range terminals {
+				tType := m.Terminals[t.Symbol].Type
+				if i == 0 {
+					setType = tType
+				} else if setType != tType {
+					homogeneous = false
+					break
+				}
+			}
+
+			if homogeneous && nonterm.Type == "" {
+				nonterm.Type = setType
+			}
+
 			nonterm.Value = &Expr{Kind: Choice, Origin: nonterm.Value.Origin}
 			for _, t := range terminals {
 				nonterm.Value.Sub = append(nonterm.Value.Sub, &Expr{Kind: Reference, Symbol: t.Symbol, Model: m, Origin: nonterm.Value.Origin})

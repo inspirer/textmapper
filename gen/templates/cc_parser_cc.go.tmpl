@@ -188,11 +188,24 @@ constexpr NodeType tmRuleType[] = {
 {{ end -}}
 {{ range .Sets -}}
 // {{.Expr}} = {{.ValueString $}}
-[[maybe_unused]] constexpr int32_t {{.Name}}[] = {
+[[maybe_unused]] constexpr Token {{.Name}}[] = {
 {{- if gt (len .Terminals) 0 -}}
-{{- int_array .Terminals "\t" 79 -}}
+{{ range $i, $term := .Terminals }}{{if gt $i 0}}, {{end}}static_cast<Token>({{$term}}){{end}}
 {{- end -}}
 };
+
+absl::Span<const Token> Parser::{{.Name}}TokenArr() {
+  return absl::MakeConstSpan({{.Name}});
+}
+
+const std::unordered_set<Token>& Parser::{{.Name}}Tokens() {
+  static const auto* set = new std::unordered_set<Token>({
+{{- if gt (len .Terminals) 0 -}}
+{{ range $i, $term := .Terminals }}{{if gt $i 0}}, {{end}}static_cast<Token>({{$term}}){{end}}
+{{- end -}}
+  });
+  return *set;
+}
 
 {{ end -}}
 {{end}}
@@ -752,6 +765,20 @@ absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
 {{ if $act.Code -}}
 {
   action_result = {{cc_action_func $index $act}}(lhs, rhs);
+}
+{{ else if $cast -}}
+{
+  {{/* Even though constexpr if is supposed to conditionally compile its
+       branches, clang seems to not fully support that even in recent versions.
+       The lambda helps this compile. */}}
+  lhs.value = [](auto& val) -> {{$cast.LHS}} {
+    if constexpr (
+        std::is_convertible_v<std::decay_t<decltype(val)>, {{$cast.LHS}}>) {
+      return static_cast<{{$cast.LHS}}>(std::move(val));
+    } else {
+      return {};
+    }
+  }(std::get<{{$cast.RHS}}>(rhs[0].value));
 }
 {{ end -}}
     break;
