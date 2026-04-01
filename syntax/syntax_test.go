@@ -169,7 +169,6 @@ func parse(input string) (*syntax.Model, error) {
 
 	initNamedSets(input, ret, p.namedSets)
 
-	p := parser{out: ret}
 	p.lexer.Init(input)
 	p.next()
 	for p.curr != token.EOI {
