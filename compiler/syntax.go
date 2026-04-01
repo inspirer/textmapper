@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -205,7 +206,11 @@ func (c *syntaxLoader) collectInputs(p ast.ParserSection, header status.SourceNo
 				name := ref.Reference().Name()
 				nonterm, found := c.nonterms[name.Text()]
 				if !found {
-					c.Errorf(name, "unresolved nonterminal '%v'", name.Text())
+					if _, isSet := c.namedSets[name.Text()]; isSet {
+						c.Errorf(name, "named sets cannot be used as input nonterminals")
+					} else {
+						c.Errorf(name, "unresolved nonterminal '%v'", name.Text())
+					}
 					continue
 				}
 				if len(c.out.Nonterms[nonterm].Params) > 0 {
@@ -245,14 +250,23 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 	injected := container.NewBitSet(c.resolver.NumTokens)
 	var seenSR, seenRR bool
 
+	// We resolve `%generate` sets and `%assert` expressions in two passes so that
+	// sets can reference other sets defined later in the grammar file.
+	// We first allocate the target structure and map its index (pass 1).
+	type setResolution struct {
+		index int               // Index of the pre-allocated set structure in c.out.Sets.
+		expr  ast.SetExpression // The AST set expression to evaluate in pass 2.
+	}
+	var setsToResolve []setResolution
+
 	for _, part := range p.GrammarPart() {
 		switch part := part.(type) {
 		case *ast.DirectiveAssert:
-			set := c.convertSet(part.RhsSet().Expr())
 			index := len(c.out.Sets)
-			c.out.Sets = append(c.out.Sets, set)
+			c.out.Sets = append(c.out.Sets, &syntax.TokenSet{})
 			_, empty := part.Empty()
 			c.asserts = append(c.asserts, assert{index: index, empty: empty})
+			setsToResolve = append(setsToResolve, setResolution{index, part.RhsSet().Expr()})
 		case *ast.DirectiveInterface:
 			for _, id := range part.Ids() {
 				text := id.Text()
@@ -282,7 +296,11 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 				name := ref.Name()
 				sym, ok := c.resolver.syms[name.Text()]
 				if !ok || sym >= c.resolver.NumTokens {
-					c.Errorf(name, "unresolved reference '%v'", name.Text())
+					if _, isSet := c.namedSets[name.Text()]; isSet {
+						c.Errorf(name, "named sets cannot be used as terminals")
+					} else {
+						c.Errorf(name, "unresolved reference '%v'", name.Text())
+					}
 					continue
 				}
 				if precTerms.Get(sym) {
@@ -313,7 +331,11 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 			name := part.Symref().Name()
 			sym, ok := c.resolver.syms[name.Text()]
 			if !ok || sym >= c.resolver.NumTokens {
-				c.Errorf(name, "unresolved reference '%v'", name.Text())
+				if _, isSet := c.namedSets[name.Text()]; isSet {
+					c.Errorf(name, "named sets cannot be injected")
+				} else {
+					c.Errorf(name, "unresolved reference '%v'", name.Text())
+				}
 				break
 			}
 			if injected.Get(sym) {
@@ -347,15 +369,21 @@ func (c *syntaxLoader) collectDirectives(p ast.ParserSection) {
 				continue
 			}
 
-			set := c.convertSet(part.RhsSet().Expr())
-			c.namedSets[name.Text()] = len(c.out.Sets)
+			index := len(c.out.Sets)
+			c.out.Sets = append(c.out.Sets, &syntax.TokenSet{})
+			c.namedSets[name.Text()] = index
 			c.sets = append(c.sets, &grammar.NamedSet{
 				Name: name.Text(),
 				Expr: part.RhsSet().Text(), // Note: this gets replaced later with instantiated names
 			})
-			c.out.Sets = append(c.out.Sets, set)
+			setsToResolve = append(setsToResolve, setResolution{index, part.RhsSet().Expr()})
 		}
 	}
+	// Sets pass 2. Resolve the rhs.
+	for _, s := range setsToResolve {
+		*c.out.Sets[s.index] = *c.convertSet(s.expr)
+	}
+
 	for _, mapping := range c.mapping {
 		if _, ok := c.cats[mapping.Name]; ok {
 			c.Errorf(mapping.Origin, "selector clauses (%v) cannot be used with injected terminals", mapping.Name)
@@ -386,6 +414,24 @@ func (c *syntaxLoader) convertSet(expr ast.SetExpression) *syntax.TokenSet {
 			Origin: expr,
 		}
 	case *ast.SetSymbol:
+		name := expr.Symbol().Name().Text()
+
+		_, isTerminal := c.resolver.syms[name]
+		_, isNonterm := c.nonterms[name]
+		isOpt := !isTerminal && !isNonterm && c.optSuffix != "" && len(name) > len(c.optSuffix) && strings.HasSuffix(name, c.optSuffix)
+
+		if !isTerminal && !isNonterm && !isOpt {
+			if index, ok := c.namedSets[name]; ok {
+				if _, ok := expr.Symbol().Args(); ok {
+					c.Errorf(expr.Symbol().Name(), "named sets cannot have arguments")
+				}
+				if op, hasOp := expr.Operator(); hasOp {
+					c.Errorf(op, "operator %v cannot be applied to a named set", op.Text())
+				}
+				return c.out.Sets[index]
+			}
+		}
+
 		ret := &syntax.TokenSet{Kind: syntax.Any}
 		if op, ok := expr.Operator(); ok {
 			switch op.Text() {
@@ -565,7 +611,11 @@ func (c *syntaxLoader) resolveRef(ref ast.Symref, nonterm *syntax.Nonterm) (int,
 		index, ok = c.instantiateOpt(text, ref)
 	}
 	if !ok {
-		c.Errorf(name, "unresolved reference '%v'", text)
+		if _, isSet := c.namedSets[text]; isSet {
+			c.Errorf(name, "named sets must be referenced using the set(...) syntax")
+		} else {
+			c.Errorf(name, "unresolved reference '%v'", text)
+		}
 		return 0, nil // == eoi
 	}
 
@@ -895,8 +945,12 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm, under
 		c.pushRule(true /*topLevel*/)
 		set := c.convertSet(p.Expr())
 		c.popRule()
-		index := len(c.out.Sets)
-		c.out.Sets = append(c.out.Sets, set)
+		// convertSet might return a named set from c.out.Sets, don't insert it the second time.
+		index := slices.Index(c.out.Sets, set)
+		if index == -1 {
+			index = len(c.out.Sets)
+			c.out.Sets = append(c.out.Sets, set)
+		}
 		return &syntax.Expr{Kind: syntax.Set, Pos: c.allocatePos(underOpts, "set", -1 /*sym*/), SetIndex: index, Origin: p, Model: c.out}
 	case *ast.RhsSymbol:
 		sym, args := c.resolveRef(p.Reference(), nonterm)

@@ -103,6 +103,58 @@ func TestEqual(t *testing.T) {
 	}
 }
 
+func TestTokenSetStringFormat(t *testing.T) {
+	tests := []struct {
+		desc   string
+		input  string
+		want   string
+		setIdx int
+	}{
+		{
+			desc:   "Operator precedence and nested parentheses",
+			input:  `B: set(a | (b & c));`,
+			want:   "a | (b & c)",
+			setIdx: 0,
+		},
+		{
+			desc:   "TokenSet unary primitive functions with intersection",
+			input:  `A: set(first a & precede b);`,
+			want:   "first a & precede b",
+			setIdx: 0,
+		},
+		{
+			desc:   "Complement ~( ) wrapping",
+			input:  `A: set(~a);`,
+			want:   "~(a)",
+			setIdx: 0,
+		},
+		{
+			desc:   "Named TokenSet reference resolution",
+			input:  `%generate set_a = set(a | b); B: set(set_a | c);`,
+			want:   "a | b | c",
+			setIdx: 2,
+		},
+		{
+			desc:   "Pointer cycle resolution in TokenSets",
+			input:  `%generate set_a = set(set_a | b); B: set(set_a | c);`,
+			want:   "(EOI & ~EOI) | b | c",
+			setIdx: 2,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			model, err := parse(tc.input)
+			if err != nil {
+				t.Fatalf("parse() failed: %v", err)
+			}
+			got := model.Sets[tc.setIdx].String(model)
+			if got != tc.want {
+				t.Errorf("String() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
 // parse parses a simplified Textmapper grammar into syntax.Model ensuring structural
 // but not semantic validity. Single-letter identifiers are reserved for terminals.
 func parse(input string) (*syntax.Model, error) {
@@ -113,7 +165,10 @@ func parse(input string) (*syntax.Model, error) {
 	}
 
 	// 2. Parse everything
-	p := parser{out: ret}
+	p := parser{out: ret, namedSets: make(map[string]int)}
+
+	initNamedSets(input, ret, p.namedSets)
+
 	p.lexer.Init(input)
 	p.next()
 	for p.curr != token.EOI {
@@ -390,6 +445,27 @@ func initSymbols(input string, out *syntax.Model) error {
 	return nil
 }
 
+// Pre-pass: scan for `%generate <name>` directives and pre-allocate empty TokenSet objects
+// for each named set.
+func initNamedSets(input string, out *syntax.Model, namedSets map[string]int) {
+	var l tm.Lexer
+	l.Init(input)
+	for tok := l.Next(); tok != token.EOI; tok = l.Next() {
+		if tok != token.REM {
+			continue
+		}
+		tok = l.Next()
+		if (tok != token.ID && !tm.IsSoftKeyword(tok)) || l.Text() != "generate" {
+			continue
+		}
+		tok = l.Next()
+		if tok == token.ID {
+			namedSets[l.Text()] = len(out.Sets)
+			out.Sets = append(out.Sets, &syntax.TokenSet{})
+		}
+	}
+}
+
 type node struct {
 	offset, endoffset int
 	line, col         int
@@ -416,6 +492,7 @@ type parser struct {
 	curr  token.Type
 	err   error
 	out   *syntax.Model
+	namedSets map[string]int
 }
 
 func (p *parser) next() {
@@ -489,7 +566,20 @@ func (p *parser) parseDecl() {
 			p.consume(token.SEMICOLON)
 			return
 		case "generate":
-			p.errorf("TODO parse %v", p.lexer.Text())
+			p.next()
+			name := p.lexer.Text()
+			p.consume(token.ID)
+			p.consume(token.ASSIGN)
+			val := p.parsePrimary()
+			if val == nil || val.Kind != syntax.Set {
+				p.errorf("set(...) is expected")
+				return
+			}
+			idx := p.namedSets[name]
+			*p.out.Sets[idx] = *p.out.Sets[val.SetIndex]
+			val.SetIndex = idx
+			p.consume(token.SEMICOLON)
+			return
 		}
 	}
 	p.errorf("syntax error")
@@ -832,26 +922,79 @@ func (p *parser) literal() string {
 	return ""
 }
 
+// appendOrFlatten either appends the item to subs, or if items kind matches the given kind, it is
+// dissolved and its subs are appended to subs.
+//
+// dissolved maintains a list of items that were dissolved as they will be needed to fix up cyclic
+// dependencies in the final sets.
+func appendOrFlatten(subs, dissolved []*syntax.TokenSet, item *syntax.TokenSet, kind syntax.SetOp) ([]*syntax.TokenSet, []*syntax.TokenSet) {
+	if item.Kind == kind {
+		return append(subs, item.Sub...), append(dissolved, item)
+	}
+	return append(subs, item), dissolved
+}
+
 func (p *parser) parseSet() *syntax.TokenSet {
 	p.consume(token.LPAREN)
-	ret := p.parseSetAnd()
-	for p.consumeIf(token.OR) {
-		if ret.Kind != syntax.Union {
-			ret = &syntax.TokenSet{Kind: syntax.Union, Sub: []*syntax.TokenSet{ret}}
+	firstSet := p.parseSetAnd()
+
+	// If there is no OR operator, we can return the result immediately.
+	if !p.consumeIf(token.OR) {
+		p.consume(token.RPAREN)
+		return firstSet
+	}
+
+	// Parse the remaining union inputs.
+	var subs, dissolved []*syntax.TokenSet
+	subs, dissolved = appendOrFlatten(subs, dissolved, firstSet, syntax.Union)
+	for {
+		subs, dissolved = appendOrFlatten(subs, dissolved, p.parseSetAnd(), syntax.Union)
+		if !p.consumeIf(token.OR) {
+			break
 		}
-		ret.Sub = append(ret.Sub, p.parseSetAnd())
 	}
 	p.consume(token.RPAREN)
+
+	// Fix up cyclic dependencies which may have resulted in pointing to dissolved sets.
+	ret := &syntax.TokenSet{Kind: syntax.Union, Sub: subs}
+	for _, f := range dissolved {
+		for i, sub := range subs {
+			if sub == f {
+				// The dissolved set was flattened into ret
+				subs[i] = ret
+			}
+		}
+	}
 	return ret
 }
 
 func (p *parser) parseSetAnd() *syntax.TokenSet {
-	ret := p.parseSetPrimary()
-	for p.consumeIf(token.AND) {
-		if ret.Kind != syntax.Intersection {
-			ret = &syntax.TokenSet{Kind: syntax.Intersection, Sub: []*syntax.TokenSet{ret}}
+	firstSet := p.parseSetPrimary()
+
+	// If there is no AND operator, we can return the result immediately.
+	if !p.consumeIf(token.AND) {
+		return firstSet
+	}
+
+	// Parse the remaining intersection inputs.
+	var subs, dissolved []*syntax.TokenSet
+	subs, dissolved = appendOrFlatten(subs, dissolved, firstSet, syntax.Intersection)
+	for {
+		subs, dissolved = appendOrFlatten(subs, dissolved, p.parseSetPrimary(), syntax.Intersection)
+		if !p.consumeIf(token.AND) {
+			break
 		}
-		ret.Sub = append(ret.Sub, p.parseSetPrimary())
+	}
+
+	// Fix up cyclic dependencies which may have resulted in pointing to dissolved sets.
+	ret := &syntax.TokenSet{Kind: syntax.Intersection, Sub: subs}
+	for _, f := range dissolved {
+		for i, sub := range subs {
+			if sub == f {
+				// The dissolved set was flattened into ret
+				subs[i] = ret
+			}
+		}
 	}
 	return ret
 }
@@ -867,10 +1010,23 @@ func (p *parser) parseSetPrimary() *syntax.TokenSet {
 		return ret
 	}
 	var op string
-	if p.lookahead() == token.ID {
+	if p.curr == token.ID && p.lookahead() == token.ID {
 		op = p.lexer.Text()
 		p.next()
 	}
+
+	// Resolve named set references back to their AST proxy pointers.
+	if op == "" && p.curr == token.ID {
+		if idx, ok := p.namedSets[p.lexer.Text()]; ok {
+			p.next()
+			ret := p.out.Sets[idx]
+			if compl {
+				ret = &syntax.TokenSet{Kind: syntax.Complement, Sub: []*syntax.TokenSet{ret}, Origin: tilde}
+			}
+			return ret
+		}
+	}
+
 	ret := &syntax.TokenSet{}
 	switch op {
 	case "":

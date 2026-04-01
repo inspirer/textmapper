@@ -7,7 +7,7 @@ b: /b/
 
 :: parser
 
-input : d e;
+input : d e | A_bad_complement2;
 
 d : a set(«~d») b ;
 # err: set complement cannot transitively depend on itself
@@ -15,3 +15,13 @@ d : a set(«~d») b ;
 e : set(f) ;
 f : set(«~e») ;
 # err: set complement cannot transitively depend on itself
+
+%generate bad_complement = set(«~(bad_complement)»);
+# err: set complement cannot transitively depend on itself
+
+%generate bad_complement2 = set(«~(first A_bad_complement2)»);
+A_bad_complement2: set(bad_complement2);
+# err: set complement cannot transitively depend on itself
+
+%generate bad_complement3 = set(~(first A_bad_complement3));
+A_bad_complement3: set(bad_complement3);

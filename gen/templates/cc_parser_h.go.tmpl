@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 #include <utility>
+#include <unordered_set>
 #include <vector>
 
 #include "{{.Options.AbslIncludePrefix}}/base/attributes.h"
@@ -19,6 +20,7 @@
 #include "{{.Options.AbslIncludePrefix}}/strings/match.h"
 #include "{{.Options.AbslIncludePrefix}}/strings/str_format.h"
 #include "{{.Options.AbslIncludePrefix}}/strings/str_join.h"
+#include "{{.Options.AbslIncludePrefix}}/types/span.h"
 #include "{{.Options.DirIncludePrefix}}{{.Options.FilenamePrefix}}lexer.h"
 {{end}}
 namespace {{.Options.Namespace}} {
@@ -167,6 +169,13 @@ bool IsIn{{.Name}}State() const;
 {{ else -}}
 bool IsIn{{.Name}}State() const;
 {{ end }}
+{{ end -}}
+{{ end -}}
+
+{{ if .Sets -}}
+{{ range .Sets -}}
+  static absl::Span<const Token> {{.Name}}TokenArr();
+  static const std::unordered_set<Token>& {{.Name}}Tokens();
 {{ end -}}
 {{ end -}}
 

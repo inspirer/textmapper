@@ -69,6 +69,17 @@ Y2<param Foo = «123»> : /*empty*/ ;
 %generate «a» = set(b);
 # err: redeclaration of token set 'a'
 
+%generate MySet = set(b);
+
+%generate test_args = set(«MySet»<foo>);
+# err: named sets cannot have arguments
+
+%generate test_op = set(«last» MySet);
+# err: operator last cannot be applied to a named set
+
+test_set_direct: «MySet» ;
+# err: named sets must be referenced using the set(...) syntax
+
 %generate b = set(«foo» b);
 # err: operator must be one of: first, last, precede or follow
 

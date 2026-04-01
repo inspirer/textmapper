@@ -17,6 +17,7 @@ import (
 )
 
 var funcMap = template.FuncMap{
+	"needs_cast":          needsCast,
 	"hex":                 hex,
 	"bits":                bits,
 	"bits_per_element":    bitsPerElement,
@@ -48,6 +49,41 @@ var funcMap = template.FuncMap{
 	"last_id":             lastID,
 	"escape_reserved":     escapeReserved,
 	"unwrap_with_default": unwrapWithDefault,
+}
+
+// CastInfo contains type information that is needed to generate default semantic actions.
+type CastInfo struct {
+	LHS string
+	RHS string
+}
+
+// needsCast returns the type information for the LHS and RHS for rules with a default semantic
+// action. The template needs this information to know whether it can std::move the variant or
+// whether it needs to access the value by one type in the variant and assign it to another type.
+func needsCast(g *grammar.Grammar, r grammar.Rule) *CastInfo {
+	if !g.Options.VariantStackEntry {
+		return nil
+	}
+	if r.Action != 0 {
+		return nil
+	}
+	lhsType := g.Syms[r.LHS].Type
+	if lhsType == "" || len(r.RHS) == 0 {
+		return nil
+	}
+	var rhs0Type string
+	var found bool
+	for _, sym := range r.RHS {
+		if !sym.IsStateMarker() {
+			rhs0Type = g.Syms[sym].Type
+			found = true
+			break
+		}
+	}
+	if !found || rhs0Type == "" || lhsType == rhs0Type {
+		return nil
+	}
+	return &CastInfo{LHS: lhsType, RHS: rhs0Type}
 }
 
 func stringify(s string) string {
