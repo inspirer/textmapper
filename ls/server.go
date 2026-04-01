@@ -59,7 +59,9 @@ func (s *Server) Initialize(ctx context.Context, params *lsp.InitializeParams) (
 				OpenClose: true,
 				Change:    lsp.TextDocumentSyncKindFull,
 			},
-			DefinitionProvider: true,
+			DefinitionProvider:   true,
+			DocumentSymbolProvider: true,
+			HoverProvider:        true,
 		},
 	}
 	return ret, nil
@@ -133,6 +135,57 @@ func (s *Server) typecheck(ctx context.Context, uri lsp.DocumentURI, version uin
 }
 
 func keepGoing(err tm.SyntaxError) bool { return true }
+
+func (s *Server) DocumentSymbol(ctx context.Context, params *lsp.DocumentSymbolParams) (result []any, err error) {
+	filename := params.TextDocument.URI.Filename()
+	doc := s.docs[filename]
+	if doc == nil {
+		return nil, fmt.Errorf("%s is not opened", filename)
+	}
+
+	tree, err := ast.Parse(ctx, filename, doc.content, keepGoing)
+	if err != nil || tree == nil {
+		s.logger.Info("failed to parse for document symbols", zap.String("filename", filename), zap.Error(err))
+		return []any{}, nil
+	}
+
+	symbols := s.collectDocumentSymbols(tree, params.TextDocument.URI)
+	s.logger.Info("document symbols", zap.String("filename", filename), zap.Int("count", len(symbols)))
+	
+	// Convert to []any for LSP compatibility
+	result = make([]any, len(symbols))
+	for i, sym := range symbols {
+		result[i] = sym
+	}
+	return result, nil
+}
+
+func (s *Server) Hover(ctx context.Context, params *lsp.HoverParams) (*lsp.Hover, error) {
+	filename := params.TextDocument.URI.Filename()
+	doc := s.docs[filename]
+	if doc == nil {
+		return nil, fmt.Errorf("%s is not opened", filename)
+	}
+
+	cursor, err := resolvePosition(doc.content, params.Position)
+	if err != nil {
+		return nil, err
+	}
+
+	tree, err := ast.Parse(ctx, filename, doc.content, keepGoing)
+	if err != nil || tree == nil {
+		s.logger.Info("failed to parse for hover", zap.String("filename", filename), zap.Error(err))
+		return nil, nil
+	}
+
+	hover := s.getHoverInfo(tree, cursor, doc.content)
+	if hover == nil {
+		return nil, nil
+	}
+
+	s.logger.Info("hover", zap.String("filename", filename), zap.Int("cursor", cursor))
+	return hover, nil
+}
 
 func (s *Server) Definition(ctx context.Context, params *lsp.DefinitionParams) (result []lsp.Location, err error) {
 	filename := params.TextDocument.URI.Filename()
@@ -267,4 +320,301 @@ func resolvePosition(content string, pos lsp.Position) (int, error) {
 		}
 	}
 	return ret, nil
+}
+
+// collectDocumentSymbols extracts terminals and nonterminals from the grammar
+func (s *Server) collectDocumentSymbols(tree *ast.Tree, uri lsp.DocumentURI) []lsp.DocumentSymbol {
+	var symbols []lsp.DocumentSymbol
+
+	// Walk the AST to find terminals and nonterminals
+	var visitor func(n *ast.Node)
+	visitor = func(n *ast.Node) {
+		switch n.Type() {
+		case tm.Lexeme:
+			// This is a terminal (lexeme definition)
+			if name := n.Child(selector.Identifier); name.IsValid() {
+				line, col := name.LineColumn()
+				symbols = append(symbols, lsp.DocumentSymbol{
+					Name:   name.Text(),
+					Kind:   lsp.SymbolKindConstant,
+					Detail: "terminal",
+					Range: lsp.Range{
+						Start: lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1)},
+						End:   lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1 + len(name.Text()))},
+					},
+					SelectionRange: lsp.Range{
+						Start: lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1)},
+						End:   lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1 + len(name.Text()))},
+					},
+				})
+			}
+
+		case tm.Nonterm:
+			// This is a nonterminal (rule definition)
+			if name := n.Child(selector.Identifier); name.IsValid() {
+				line, col := name.LineColumn()
+				
+				// Get the rule text for detail
+				detail := "nonterminal"
+				if ruleBody := n.Child(selector.Rule0); ruleBody.IsValid() {
+					// Truncate long rule bodies for readability
+					ruleText := strings.TrimSpace(ruleBody.Text())
+					if len(ruleText) > 100 {
+						ruleText = ruleText[:97] + "..."
+					}
+					detail = fmt.Sprintf("nonterminal: %s", ruleText)
+				}
+
+				symbols = append(symbols, lsp.DocumentSymbol{
+					Name:   name.Text(),
+					Kind:   lsp.SymbolKindFunction,
+					Detail: detail,
+					Range: lsp.Range{
+						Start: lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1)},
+						End:   lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1 + len(name.Text()))},
+					},
+					SelectionRange: lsp.Range{
+						Start: lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1)},
+						End:   lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1 + len(name.Text()))},
+					},
+				})
+			}
+		}
+
+		// Recurse into children
+		for ch := n.Child(selector.Any); ch.IsValid(); ch = ch.Next(selector.Any) {
+			visitor(ch)
+		}
+	}
+
+	visitor(tree.Root())
+	return symbols
+}
+
+// getHoverInfo provides hover information for the symbol at the given cursor position
+func (s *Server) getHoverInfo(tree *ast.Tree, cursor int, fileContent string) *lsp.Hover {
+	// Find the AST node at the cursor position
+	var targetNode *ast.Node
+	var visitor func(n *ast.Node)
+	visitor = func(n *ast.Node) {
+		if n.Offset() <= cursor && cursor < n.Endoffset() {
+			targetNode = n
+		}
+		for ch := n.Child(selector.Any); ch.IsValid(); ch = ch.Next(selector.Any) {
+			visitor(ch)
+		}
+	}
+	visitor(tree.Root())
+
+	if targetNode == nil {
+		return nil
+	}
+
+	// Check if we're hovering over a symbol reference or definition
+	var symbolName string
+	var symbolNode *ast.Node
+
+	// Walk up the tree to find if we're in a symbol reference or definition
+	// We need to manually walk up since Parent() is not public
+	symbolNode = s.findParentIdentifier(tree, targetNode)
+	if symbolNode != nil && symbolNode.Type() == tm.Identifier {
+		symbolName = symbolNode.Text()
+	}
+
+	if symbolName == "" {
+		return nil
+	}
+
+	// Find the definition of this symbol
+	symbolDef := s.findSymbolDefinition(tree, symbolName)
+	if symbolDef == nil {
+		return nil
+	}
+
+	// Create hover content
+	var hoverContent []string
+
+	// Add original definition
+	defText := s.getDefinitionText(symbolDef, tree.Text())
+	if defText != "" {
+		hoverContent = append(hoverContent, "**Definition:**")
+		hoverContent = append(hoverContent, "```textmapper")
+		hoverContent = append(hoverContent, defText)
+		hoverContent = append(hoverContent, "```")
+	}
+
+	// Add expanded/desugared version for nonterminals
+	if symbolDef.symbolType == "nonterminal" {
+		expanded := s.getExpandedDefinition(symbolDef, tree.Text())
+		if expanded != "" && expanded != defText {
+			hoverContent = append(hoverContent, "")
+			hoverContent = append(hoverContent, "**Expanded:**")
+			hoverContent = append(hoverContent, "```textmapper")
+			hoverContent = append(hoverContent, expanded)
+			hoverContent = append(hoverContent, "```")
+		}
+	}
+
+	if len(hoverContent) == 0 {
+		return nil
+	}
+
+	line, col := symbolNode.LineColumn()
+	return &lsp.Hover{
+		Contents: lsp.MarkupContent{
+			Kind:  lsp.Markdown,
+			Value: strings.Join(hoverContent, "\n"),
+		},
+		Range: &lsp.Range{
+			Start: lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1)},
+			End:   lsp.Position{Line: uint32(line - 1), Character: uint32(col - 1 + len(symbolName))},
+		},
+	}
+}
+
+type symbolDefinition struct {
+	name       string
+	symbolType string // "terminal" or "nonterminal"
+	node       *ast.Node
+	ruleNode   *ast.Node // For nonterminals, the rule body
+}
+
+// findParentIdentifier finds an identifier node that contains the target node
+func (s *Server) findParentIdentifier(tree *ast.Tree, targetNode *ast.Node) *ast.Node {
+	// If the target node itself is an identifier, return it
+	if targetNode.Type() == tm.Identifier {
+		return targetNode
+	}
+
+	// Look for identifier nodes that contain the target cursor position
+	var identifierNode *ast.Node
+	var visitor func(n *ast.Node)
+	visitor = func(n *ast.Node) {
+		if n.Type() == tm.Identifier {
+			if n.Offset() <= targetNode.Offset() && targetNode.Endoffset() <= n.Endoffset() {
+				identifierNode = n
+			}
+		}
+		for ch := n.Child(selector.Any); ch.IsValid(); ch = ch.Next(selector.Any) {
+			visitor(ch)
+		}
+	}
+	
+	visitor(tree.Root())
+	return identifierNode
+}
+
+// findSymbolDefinition locates the definition of a symbol by name
+func (s *Server) findSymbolDefinition(tree *ast.Tree, symbolName string) *symbolDefinition {
+	var result *symbolDefinition
+
+	var visitor func(n *ast.Node)
+	visitor = func(n *ast.Node) {
+		switch n.Type() {
+		case tm.Lexeme:
+			if name := n.Child(selector.Identifier); name.IsValid() && name.Text() == symbolName {
+				result = &symbolDefinition{
+					name:       symbolName,
+					symbolType: "terminal",
+					node:       n,
+				}
+				return
+			}
+
+		case tm.Nonterm:
+			if name := n.Child(selector.Identifier); name.IsValid() && name.Text() == symbolName {
+				result = &symbolDefinition{
+					name:       symbolName,
+					symbolType: "nonterminal",
+					node:       n,
+					ruleNode:   n.Child(selector.Rule0),
+				}
+				return
+			}
+		}
+
+		// Continue searching if not found
+		if result == nil {
+			for ch := n.Child(selector.Any); ch.IsValid(); ch = ch.Next(selector.Any) {
+				visitor(ch)
+			}
+		}
+	}
+
+	visitor(tree.Root())
+	return result
+}
+
+// getDefinitionText extracts the definition text without semantic actions
+func (s *Server) getDefinitionText(def *symbolDefinition, content string) string {
+	if def.node == nil {
+		return ""
+	}
+
+	// Get the text of the definition
+	text := def.node.Text()
+	
+	// For nonterminals, remove semantic actions
+	if def.symbolType == "nonterminal" {
+		text = s.removeSemanticActions(text)
+	}
+
+	return text
+}
+
+// getExpandedDefinition returns the expanded/desugared version of a nonterminal
+func (s *Server) getExpandedDefinition(def *symbolDefinition, content string) string {
+	if def.symbolType != "nonterminal" || def.ruleNode == nil {
+		return ""
+	}
+
+	// For now, return the same as definition text but with expanded syntax sugar removed
+	// This is a simplified implementation - a full implementation would expand
+	// operators like ?, *, +, etc.
+	text := def.ruleNode.Text()
+	expanded := s.expandSyntaxSugar(s.removeSemanticActions(text))
+	return fmt.Sprintf("%s: %s", def.name, expanded)
+}
+
+// removeSemanticActions removes { ... } blocks from rule text
+func (s *Server) removeSemanticActions(text string) string {
+	var result strings.Builder
+	braceDepth := 0
+	inAction := false
+
+	for _, r := range text {
+		if r == '{' {
+			if braceDepth == 0 {
+				inAction = true
+			}
+			braceDepth++
+		} else if r == '}' {
+			braceDepth--
+			if braceDepth == 0 {
+				inAction = false
+			}
+		} else if !inAction {
+			result.WriteRune(r)
+		}
+	}
+
+	// Clean up extra whitespace
+	return strings.Join(strings.Fields(result.String()), " ")
+}
+
+// expandSyntaxSugar provides basic expansion of syntax sugar (simplified)
+func (s *Server) expandSyntaxSugar(text string) string {
+	// This is a simplified expansion - a full implementation would parse the grammar
+	// and properly expand operators
+	
+	// Replace some common patterns
+	text = strings.ReplaceAll(text, "?", "| %empty")
+	
+	// For * and +, this would need more complex parsing to properly handle
+	// For now, just add a comment about expansion
+	if strings.Contains(text, "*") || strings.Contains(text, "+") {
+		text = text + " /* list expansion omitted for brevity */"
+	}
+
+	return text
 }
