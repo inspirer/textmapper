@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"google3/third_party/golang/github_com/inspirer/textmapper/v/v0/util/container/container"
+	"github.com/inspirer/textmapper/util/container"
 )
 
 const (
