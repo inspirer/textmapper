@@ -11,6 +11,7 @@ eventAST = true
 writeBison = true
 tokenColumn = true
 optimizeTables = true
+minimizeDFA = true
 fileNode = "File"
 tokenStream = true
 fixWhitespace = true

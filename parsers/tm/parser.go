@@ -55,11 +55,11 @@ const (
 )
 
 func (p *Parser) ParseFile(ctx context.Context, stream *TokenStream) error {
-	return p.parse(ctx, 0, 637, stream)
+	return p.parse(ctx, 0, 408, stream)
 }
 
 func (p *Parser) ParseNonterm(ctx context.Context, stream *TokenStream) error {
-	return p.parse(ctx, 1, 638, stream)
+	return p.parse(ctx, 1, 408, stream)
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStream) error {

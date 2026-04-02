@@ -29,6 +29,8 @@ func newOptionsParser(s *status.Status) *optionsParser {
 			ExpansionWarn:            256,
 			MaxRuleSizeForOrdinalRef: 16,
 			VariantStackEntry:        true,
+			// TODO: Enable DFA minimization by default after soak time.
+			MinimizeDFA: false,
 		},
 		Status: s,
 	}
@@ -101,6 +103,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.DebugParser = p.parseExpr(opt.Value(), opts.DebugParser).(bool)
 		case "optimizeTables":
 			opts.OptimizeTables = p.parseExpr(opt.Value(), opts.OptimizeTables).(bool)
+		case "minimizeDFA":
+			opts.MinimizeDFA = p.parseExpr(opt.Value(), opts.MinimizeDFA).(bool)
 		case "defaultReduce":
 			opts.DefaultReduce = p.parseExpr(opt.Value(), opts.DefaultReduce).(bool)
 		case "noEmptyRules":

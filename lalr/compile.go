@@ -18,6 +18,7 @@ import (
 type Options struct {
 	Lookahead     int  // if non-zero, number of lookahead tokens available to the LALR algorithm
 	Optimize      bool // compress tables for faster lookups
+	MinimizeDFA   bool // minimize number of states by merging similar ones. This incurs a 15-20% compilation overhead.
 	DefaultReduce bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
 	CollectStats  bool // capture execution statistics
 	Debug         bool // embed debug information into the tables
@@ -56,6 +57,9 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 		c.exportDebugInfo()
 	}
 
+	if opts.MinimizeDFA {
+		minimize(c.out, grammar)
+	}
 	if opts.Optimize {
 		numRules := len(c.out.RuleLen) // takes into account runtime lookahead rules
 		c.out.Optimized = Optimize(c.out.DefaultEnc, grammar.Terminals, numRules, opts.DefaultReduce)

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/inspirer/textmapper/grammar"
+	"github.com/inspirer/textmapper/lalr"
 	"github.com/inspirer/textmapper/parsers/parsertest"
 	"github.com/inspirer/textmapper/parsers/tm"
 	"github.com/inspirer/textmapper/parsers/tm/ast"
@@ -460,4 +461,316 @@ func gotArgRefs(e *syntax.Expr, grammar *grammar.Grammar) string {
 		ret = append(ret, serializeArgRefs(argRefs, grammar))
 	}
 	return "[" + strings.Join(ret, " ") + "]"
+}
+
+func TestMinimizeDFA(t *testing.T) {
+	// Helper to extract symbol names
+	symbolNames := func(syms []grammar.Symbol) []string {
+		var names []string
+		for _, s := range syms {
+			names = append(names, s.Name)
+		}
+		return names
+	}
+
+	printTransitions := func(name string, tables *lalr.Tables, symbols []string) string {
+		var b strings.Builder
+		fmt.Fprintf(&b, "Transitions for %s (States: %v):\n", name, tables.NumStates)
+		for i := 0; i < len(tables.Goto)-1; i++ {
+			min := tables.Goto[i]
+			max := tables.Goto[i+1]
+			symbolName := "UNKNOWN"
+			if i < len(symbols) {
+				symbolName = symbols[i]
+			}
+			for i := min; i < max; i += 2 {
+				from := tables.FromTo[i]
+				to := tables.FromTo[i+1]
+				fmt.Fprintf(&b, "  State %d -> State %d on symbol '%s'\n", from, to, symbolName)
+			}
+		}
+		return b.String()
+	}
+
+	testCases := []struct {
+		name    string
+		grammar string
+		wantOff string
+		wantOn  string
+	}{
+		{
+			name: "grammarSet",
+			grammar: `
+language test_set(go);
+%v
+:: lexer
+
+a: /a/
+b: /b/
+c: /c/
+d: /d/
+
+:: parser
+
+input: a (set(~(d | eoi | invalid_token)))* d;
+`,
+			wantOff: `Transitions for grammarSet (minimize OFF) (States: 10):
+  State 8 -> State 9 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 2 -> State 3 on symbol 'a'
+  State 2 -> State 4 on symbol 'b'
+  State 2 -> State 5 on symbol 'c'
+  State 2 -> State 6 on symbol 'd'
+  State 0 -> State 8 on symbol 'input'
+  State 2 -> State 7 on symbol 'setof_not_D_or_EOI_or_INVALID_TOKEN'
+  State 1 -> State 2 on symbol 'setof_not_D_or_EOI_or_INVALID_TOKEN_optlist'
+`,
+			wantOn: `Transitions for grammarSet (minimize ON) (States: 8):
+  State 6 -> State 7 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 2 -> State 3 on symbol 'a'
+  State 2 -> State 3 on symbol 'b'
+  State 2 -> State 3 on symbol 'c'
+  State 2 -> State 4 on symbol 'd'
+  State 0 -> State 6 on symbol 'input'
+  State 2 -> State 5 on symbol 'setof_not_D_or_EOI_or_INVALID_TOKEN'
+  State 1 -> State 2 on symbol 'setof_not_D_or_EOI_or_INVALID_TOKEN_optlist'
+`,
+		},
+		{
+			name: "grammarChoice",
+			grammar: `
+language test_choice(go);
+%v
+:: lexer
+
+a: /a/
+b: /b/
+c: /c/
+d: /d/
+
+:: parser
+
+input: a c d | b c d;
+`,
+			wantOff: `Transitions for grammarChoice (minimize OFF) (States: 9):
+  State 7 -> State 8 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 0 -> State 2 on symbol 'b'
+  State 1 -> State 3 on symbol 'c'
+  State 2 -> State 4 on symbol 'c'
+  State 3 -> State 5 on symbol 'd'
+  State 4 -> State 6 on symbol 'd'
+  State 0 -> State 7 on symbol 'input'
+`,
+			wantOn: `Transitions for grammarChoice (minimize ON) (States: 6):
+  State 4 -> State 5 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 0 -> State 1 on symbol 'b'
+  State 1 -> State 2 on symbol 'c'
+  State 2 -> State 3 on symbol 'd'
+  State 0 -> State 4 on symbol 'input'
+`,
+		},
+		{
+			name: "lookaheadReduce",
+			grammar: `
+language lookahead_reduce(go);
+%v
+:: lexer
+a: /a/
+b: /b/
+c: /c/
+d: /d/
+x: /x/
+y: /y/
+
+:: parser
+input: a R1 c | a R2 d ;
+R1: x y ;
+R2: x y ;`,
+			wantOff: `Transitions for lookaheadReduce (minimize OFF) (States: 10):
+  State 8 -> State 9 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 3 -> State 6 on symbol 'c'
+  State 4 -> State 7 on symbol 'd'
+  State 1 -> State 2 on symbol 'x'
+  State 2 -> State 5 on symbol 'y'
+  State 0 -> State 8 on symbol 'input'
+  State 1 -> State 3 on symbol 'R1'
+  State 1 -> State 4 on symbol 'R2'
+`,
+			wantOn: `Transitions for lookaheadReduce (minimize ON) (States: 9):
+  State 7 -> State 8 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 3 -> State 6 on symbol 'c'
+  State 4 -> State 6 on symbol 'd'
+  State 1 -> State 2 on symbol 'x'
+  State 2 -> State 5 on symbol 'y'
+  State 0 -> State 7 on symbol 'input'
+  State 1 -> State 3 on symbol 'R1'
+  State 1 -> State 4 on symbol 'R2'
+`,
+		},
+		{
+			name: "emptyGrammar",
+			grammar: `
+language test_empty(go);
+%v
+:: lexer
+a: /a/
+
+:: parser
+input: ;
+`,
+			wantOff: `Transitions for emptyGrammar (minimize OFF) (States: 3):
+  State 1 -> State 2 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'input'
+`,
+			wantOn: `Transitions for emptyGrammar (minimize ON) (States: 3):
+  State 1 -> State 2 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'input'
+`,
+		},
+		{
+			name: "diffType",
+			grammar: `
+language diff_type(go);
+eventBased = true
+%v
+:: lexer
+a: /a/
+b: /b/
+:: parser
+input: a -> Type1 | b -> Type2 ;
+Type1: ;
+Type2: ;
+`,
+			wantOff: `Transitions for diffType (minimize OFF) (States: 5):
+  State 3 -> State 4 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 0 -> State 2 on symbol 'b'
+  State 0 -> State 3 on symbol 'input'
+`,
+			wantOn: `Transitions for diffType (minimize ON) (States: 5):
+  State 3 -> State 4 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 0 -> State 2 on symbol 'b'
+  State 0 -> State 3 on symbol 'input'
+`,
+		},
+		{
+			name: "diffFlags",
+			grammar: `
+language diff_flags(go);
+eventBased = true
+%v
+:: lexer
+a: /a/
+b: /b/
+:: parser
+input: a -> input/F1 | b -> input/F2 ;
+`,
+			wantOff: `Transitions for diffFlags (minimize OFF) (States: 5):
+  State 3 -> State 4 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 0 -> State 2 on symbol 'b'
+  State 0 -> State 3 on symbol 'input'
+`,
+			wantOn: `Transitions for diffFlags (minimize ON) (States: 5):
+  State 3 -> State 4 on symbol 'eoi'
+  State 0 -> State 1 on symbol 'a'
+  State 0 -> State 2 on symbol 'b'
+  State 0 -> State 3 on symbol 'input'
+`,
+		},
+		{
+			name: "lookaheadCollision",
+			grammar: `
+language lookahead_collision(go);
+%v
+maxLookahead = 2
+
+:: lexer
+a: /a/
+b: /b/
+
+:: parser
+%%expect-rr 2;
+
+input : a R1 | b R2 ;
+R1 : (?= S1) | ;
+R2 : (?= S2) | ;
+S1 : a ;
+S2 : a ;
+`,
+			wantOff: `Transitions for lookaheadCollision (minimize OFF) (States: 15):
+  State 11 -> State 14 on symbol 'eoi'
+  State 0 -> State 3 on symbol 'a'
+  State 1 -> State 5 on symbol 'a'
+  State 2 -> State 6 on symbol 'a'
+  State 0 -> State 4 on symbol 'b'
+  State 0 -> State 11 on symbol 'input'
+  State 3 -> State 7 on symbol 'R1'
+  State 3 -> State 8 on symbol 'lookahead_S1'
+  State 4 -> State 9 on symbol 'R2'
+  State 4 -> State 10 on symbol 'lookahead_S2'
+  State 1 -> State 12 on symbol 'S1'
+  State 2 -> State 13 on symbol 'S2'
+`,
+			wantOn: `Transitions for lookaheadCollision (minimize ON) (States: 12):
+  State 10 -> State 11 on symbol 'eoi'
+  State 0 -> State 3 on symbol 'a'
+  State 1 -> State 5 on symbol 'a'
+  State 2 -> State 6 on symbol 'a'
+  State 0 -> State 4 on symbol 'b'
+  State 0 -> State 10 on symbol 'input'
+  State 3 -> State 7 on symbol 'R1'
+  State 3 -> State 8 on symbol 'lookahead_S1'
+  State 4 -> State 7 on symbol 'R2'
+  State 4 -> State 9 on symbol 'lookahead_S2'
+  State 1 -> State 11 on symbol 'S1'
+  State 2 -> State 11 on symbol 'S2'
+`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			compOn, err := Compile(t.Context(), fmt.Sprintf("%s.tm", tc.name), fmt.Sprintf(tc.grammar, "minimizeDFA = true"), Params{})
+			if err != nil {
+				t.Fatalf("Compile error with DFA minimization on: %v", err)
+			}
+
+			parserOn := compOn.Parser
+			if parserOn == nil {
+				t.Fatalf("Parser is nil")
+			}
+
+			compOff, err := Compile(t.Context(), fmt.Sprintf("%s.tm", tc.name), fmt.Sprintf(tc.grammar, "minimizeDFA = false"), Params{})
+			if err != nil {
+				t.Fatalf("Compile error with DFA minimization off: %v", err)
+			}
+
+			parserOff := compOff.Parser
+			if parserOff == nil {
+				t.Fatalf("Parser is nil")
+			}
+
+			var nameOff, nameOn string
+			nameOff = tc.name + " (minimize OFF)"
+			nameOn = tc.name + " (minimize ON)"
+
+			offOutput := printTransitions(nameOff, parserOff.Tables, symbolNames(compOff.Syms))
+			onOutput := printTransitions(nameOn, parserOn.Tables, symbolNames(compOn.Syms))
+
+			if offOutput != tc.wantOff {
+				t.Errorf("DFA minimization OFF mismatch:\n--- want\n+++ got\n%v\n%v", tc.wantOff, offOutput)
+			}
+
+			if onOutput != tc.wantOn {
+				t.Errorf("DFA minimization ON mismatch:\n--- want\n+++ got\n%v\n%v", tc.wantOn, onOutput)
+			}
+		})
+	}
 }

@@ -255,6 +255,7 @@ type Options struct {
 	DebugParser            bool
 	WriteBison             bool // Output the expanded grammar in a Bison-like format.
 	OptimizeTables         bool
+	MinimizeDFA            bool
 	DefaultReduce          bool   // Prefer some common reduction to errors in non-LR0 states to compress tables even further.
 	NoEmptyRules           bool   // Report empty rules without an %empty marker. True by default for C++.
 	MaxLookahead           int    // If set, all lookaheads expressions will be validated to fit this limit.
