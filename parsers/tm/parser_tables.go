@@ -5,7 +5,7 @@ package tm
 import (
 	"fmt"
 
-	"google3/third_party/golang/github_com/inspirer/textmapper/v/v0/parsers/tm/token/token"
+	"github.com/inspirer/textmapper/parsers/tm/token"
 )
 
 var recoveryScopeStates = map[int]bool{
