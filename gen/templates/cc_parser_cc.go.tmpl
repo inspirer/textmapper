@@ -747,9 +747,10 @@ absl::Status Parser::applyRule(int32_t rule, int32_t ruleLen, stackEntry& lhs,
   switch (rule) {
 {{ range $index, $rule := .Parser.Rules -}}
 {{ $fixWS := and $.Options.FixWhitespace ($.HasTrailingNulls $rule) -}}
-{{ if or (ne $rule.Action 0) $fixWS -}}
+{{ $cast := needs_cast $ $rule -}}
+{{ if or (ne $rule.Action 0) $fixWS $cast -}}
 {{ $act := index $.Parser.Actions $rule.Action -}}
-{{ if or (ne $act.Code "") $act.Report $fixWS -}}
+{{ if or (ne $act.Code "") $act.Report $fixWS $cast -}}
   case {{$index}}: // {{$.RuleString $rule}}
 {{ if $fixWS -}}
     fixTrailingWS(lhs, rhs)
