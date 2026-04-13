@@ -123,6 +123,9 @@ MultiLineComment:  /\/\*/ (space)
 
 :: parser lalr(2)
 
+%generate plusMinus = set('-' | '+');
+%generate plusMinusArrow = set(plusMinus | '->');
+
 %input Test, Decl1;
 
 %inject SingleLineComment -> SingleLineComment;
@@ -181,7 +184,7 @@ foo_la:
 ;
 
 foo_nonterm<A> :
-      IntegerConstant '.' expr 
+      IntegerConstant '.' expr
     | [A] IntegerConstant 'foo_' expr
 ;
 
