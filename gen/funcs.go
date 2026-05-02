@@ -577,7 +577,7 @@ func ccActionFunc(idx int, act *grammar.SemanticAction) string {
 	// also actions of named non-terminals that happen to be on the same line of the grammar file.
 	// Replace dashes in nonterminal names with "_dash_" to ensure a valid C++ identifier.
 	name := strings.ReplaceAll(act.NtName, "-", "_dash_")
-	return fmt.Sprintf("Action%v__ReduceOf_%v__AtLine_%v_Column_%v", idx, act.NtName, act.Origin.SourceRange().Line, act.Origin.SourceRange().Column)
+	return fmt.Sprintf("Action%v__ReduceOf_%v__AtLine_%v_Column_%v", idx, name, act.Origin.SourceRange().Line, act.Origin.SourceRange().Column)
 }
 
 func bisonParserAction(s string, args *grammar.ActionVars, origin status.SourceNode) (string, error) {
