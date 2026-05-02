@@ -798,14 +798,14 @@ func (c *compiler) populateTables(debugConflicts bool) {
 // lookahead (LALR(k) for k > 1). It walks the pending conflicts, builds
 // lookahead automata, and patches the Lalr array entries.
 func (c *compiler) resolveWithLookahead() {
-	if c.follow == nil || len(c.pending) == 0 {
+	if c.follow == nil || len(c.conflicts) == 0 {
 		return
 	}
 
 	builder := newTrieBuilder(c)
 
 	var remaining []*Conflict
-	for _, conflict := range c.pending {
+	for _, conflict := range c.conflicts {
 		if conflict.Resolved || conflict.CanShift {
 			// Only resolve reduce/reduce conflicts with deeper lookahead for now.
 			// Shift/reduce conflicts can be resolved with precedence declarations.
@@ -883,7 +883,7 @@ func (c *compiler) resolveWithLookahead() {
 			remaining = append(remaining, conflict)
 		}
 	}
-	c.pending = remaining
+	c.conflicts = remaining
 }
 
 func (c *compiler) reduceLA(state *state, reduce int, seen container.BitSet, reuse []int) []int {
