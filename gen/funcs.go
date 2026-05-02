@@ -49,6 +49,7 @@ var funcMap = template.FuncMap{
 	"last_id":             lastID,
 	"escape_reserved":     escapeReserved,
 	"unwrap_with_default": unwrapWithDefault,
+	"all_casts":           allCasts,
 }
 
 // CastInfo contains type information that is needed to generate default semantic actions.
@@ -64,7 +65,8 @@ func needsCast(g *grammar.Grammar, r grammar.Rule) *CastInfo {
 	if !g.Options.VariantStackEntry {
 		return nil
 	}
-	if r.Action != 0 {
+	act := g.Parser.Actions[r.Action]
+	if act.Code != "" || len(act.Report) > 0 {
 		return nil
 	}
 	lhsType := g.Syms[r.LHS].Type
@@ -84,6 +86,26 @@ func needsCast(g *grammar.Grammar, r grammar.Rule) *CastInfo {
 		return nil
 	}
 	return &CastInfo{LHS: lhsType, RHS: rhs0Type}
+}
+
+// allCasts returns the unique set of type casts used in default semantic actions.
+func allCasts(g *grammar.Grammar) []*CastInfo {
+	type castKey struct {
+		lhs string
+		rhs string
+	}
+	seen := make(map[castKey]bool)
+	var ret []*CastInfo
+	for _, r := range g.Parser.Rules {
+		if cast := needsCast(g, *r); cast != nil {
+			key := castKey{lhs: cast.LHS, rhs: cast.RHS}
+			if !seen[key] {
+				seen[key] = true
+				ret = append(ret, cast)
+			}
+		}
+	}
+	return ret
 }
 
 func stringify(s string) string {
@@ -299,20 +321,26 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 			return "", status.Errorf(origin, "%s", err.Error())
 		}
 
-		var index int
-		var pos int
+		var index, endIndex, pos int
 		switch id {
 		case "left()", "leftRaw()":
 			index = -2
+			endIndex = -2
 		case "first()":
 			if args.SymRefCount == 0 {
 				index = -1
+				endIndex = -1
+			} else {
+				index = 0
+				endIndex = 0
 			}
 		case "last()":
 			if args.SymRefCount == 0 {
 				index = -1
+				endIndex = -1
 			} else {
 				index = args.SymRefCount - 1
+				endIndex = index
 			}
 		default:
 			if strings.HasPrefix(id, "self[") && strings.HasSuffix(id, "]") {
@@ -327,6 +355,7 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				return "", err
 			}
 			index = ref.Index
+			endIndex = ref.EndIndex
 			pos = ref.Pos
 		}
 
@@ -346,11 +375,22 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 			}
 			continue
 		}
-		var v string
+
+		if index != endIndex && prop != "offset" && prop != "endoffset" {
+			propName := prop
+			if propName == "" {
+				propName = "value"
+			}
+			return "", status.Errorf(origin, "%v is not accessible for alias %q because it spans multiple symbols; use %s.offset or %s.endoffset for its location", propName, id, id, id)
+		}
+
+		var v, vend string
 		if index == -2 {
 			v = "lhs"
+			vend = "lhs"
 		} else {
 			v = fmt.Sprintf("stack[len(stack)-%v]", args.SymRefCount-index)
+			vend = fmt.Sprintf("stack[len(stack)-%v]", args.SymRefCount-endIndex)
 		}
 		switch {
 		case prop == "sym":
@@ -373,6 +413,12 @@ func goParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 				v = "nn"
 			}
 			sb.WriteString(v)
+		case prop == "offset":
+			sb.WriteString(v)
+			sb.WriteString(".sym.offset")
+		case prop == "endoffset":
+			sb.WriteString(vend)
+			sb.WriteString(".sym.endoffset")
 		default:
 			sb.WriteString(v)
 			sb.WriteString(".sym.")
@@ -458,6 +504,7 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 		}
 
 		index := ref.Index
+		endIndex := ref.EndIndex
 		pos := ref.Pos
 
 		argType := args.Types[pos]
@@ -483,27 +530,40 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 
 		// The referenced symbol is present in the expanded rule.
 		var replacement string
-		target := fmt.Sprintf("rhs[%v]", index+args.Delta)
-		if ch == '@' {
-			replacement = target + ".sym.location"
+		if index != endIndex {
+			if ch != '@' {
+				return "", status.Errorf(origin, "value is not accessible for alias %q because it spans multiple symbols; use @%s for its location", val, val)
+			}
+			replacement = fmt.Sprintf("decltype(lhs.sym.location)(GetLocationStart(rhs[%v].sym.location), GetLocationEnd(rhs[%v].sym.location))", index+args.Delta, endIndex+args.Delta)
 			argType = "decltype(lhs.sym.location)"
 		} else {
-			if argType == "" {
-				return "", status.Errorf(origin, "%c%q does not have an associated type", ch, val)
-			}
-			if opts.VariantStackEntry {
-				replacement = "std::get<" + argType + ">(" + target + ".value)"
+			target := fmt.Sprintf("rhs[%v]", index+args.Delta)
+			if ch == '@' {
+				replacement = target + ".sym.location"
+				argType = "decltype(lhs.sym.location)"
 			} else {
-				replacement = target + ".value." + lastID(argType)
-				argType = ccTypeFromUnion(argType)
+				if argType == "" {
+					return "", status.Errorf(origin, "%c%q does not have an associated type", ch, val)
+				}
+				if opts.VariantStackEntry {
+					replacement = "std::get<" + argType + ">(" + target + ".value)"
+				} else {
+					replacement = target + ".value." + lastID(argType)
+					argType = ccTypeFromUnion(argType)
+				}
 			}
 		}
 
-		if argRef := args.ArgRefs[pos]; argRef.Optional {
+		isOptional := args.ArgRefs[pos].Optional
+		if _, isAlias := args.CmdArgs.Names[val]; isAlias {
+			isOptional = args.MayBeMissing[val]
+		}
+		if isOptional {
 			// This symbol reference is optional in the original rule, so we wrap it inside a
 			// std::optional to unify the semantic actions for the expanded rules.
 			replacement = ccWrapInOptional(argType, replacement)
 		}
+
 		sb.WriteString(replacement)
 	}
 	return sb.String(), nil
@@ -515,6 +575,8 @@ func ccParserAction(s string, args *grammar.ActionVars, origin status.SourceNode
 func ccActionFunc(idx int, act *grammar.SemanticAction) string {
 	// Include the index in the name to differentiate between actions of extracted non-terminals and
 	// also actions of named non-terminals that happen to be on the same line of the grammar file.
+	// Replace dashes in nonterminal names with "_dash_" to ensure a valid C++ identifier.
+	name := strings.ReplaceAll(act.NtName, "-", "_dash_")
 	return fmt.Sprintf("Action%v__ReduceOf_%v__AtLine_%v_Column_%v", idx, act.NtName, act.Origin.SourceRange().Line, act.Origin.SourceRange().Column)
 }
 

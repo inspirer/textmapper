@@ -16,13 +16,14 @@ import (
 
 // Options parameterizes the LALR table generation.
 type Options struct {
-	Lookahead     int  // if non-zero, number of lookahead tokens available to the LALR algorithm
-	Optimize      bool // compress tables for faster lookups
-	MinimizeDFA   bool // minimize number of states by merging similar ones. This incurs a 15-20% compilation overhead.
-	DefaultReduce bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
-	CollectStats  bool // capture execution statistics
-	Debug         bool // embed debug information into the tables
-	Verbose       bool // verbose explanations of conflicts
+	Lookahead      int  // if non-zero, number of lookahead tokens available to the LALR algorithm
+	Optimize       bool // compress tables for faster lookups
+	MinimizeDFA    bool // minimize number of states by merging similar ones. This incurs a 15-20% compilation overhead.
+	DefaultReduce  bool // Bison compatibility mode, perform a default reduction in non-LR(0) states instead of reporting an error
+	CollectStats   bool // capture execution statistics
+	Debug          bool // embed debug information into the tables
+	DebugConflicts bool // report all conflicts even if they match expectations
+	Verbose        bool // verbose explanations of conflicts
 }
 
 // Compile generates LALR tables for a given grammar.
@@ -47,11 +48,11 @@ func Compile(grammar *Grammar, opts Options) (*Tables, error) {
 	useTransitions := c.lookahead > 1
 	c.buildLA(useTransitions, opts.CollectStats)
 
-	c.populateTables()
+	c.populateTables(opts.DebugConflicts)
 	if c.lookahead > 1 {
 		c.resolveWithLookahead()
 	}
-	c.reportConflicts(opts.Verbose)
+	c.reportConflicts(opts.Verbose, opts.DebugConflicts)
 
 	if opts.Debug {
 		c.exportDebugInfo()
@@ -72,7 +73,7 @@ type compiler struct {
 	lookahead int
 	out       *Tables
 	s         status.Status
-	pending   []*Conflict // to be reported if the number of conflicts does not match the expectations
+	conflicts []*Conflict // to be reported if the number of conflicts does not match the expectations
 
 	index   []int // the rule start in "right"
 	right   []int // all rules flattened into one slice, each position in this slice is an LR(0) item
@@ -685,7 +686,7 @@ func (c *compiler) selectGoto(state int, sym Sym) int {
 	return -1
 }
 
-func (c *compiler) populateTables() {
+func (c *compiler) populateTables(debugConflicts bool) {
 	c.precGroup = make(map[Sym]int)
 	for group, prec := range c.grammar.Precedence {
 		for _, term := range prec.Terminals {
@@ -737,10 +738,12 @@ func (c *compiler) populateTables() {
 		}
 
 		for _, conflict := range conflicts.merge(c.grammar, state.index, c.states) {
+			if !conflict.Resolved || debugConflicts {
+				c.conflicts = append(c.conflicts, conflict)
+			}
 			if conflict.Resolved {
 				continue
 			}
-			c.pending = append(c.pending, conflict)
 			if conflict.CanShift {
 				c.sr += len(conflict.Next)
 			} else {
@@ -757,7 +760,7 @@ func (c *compiler) populateTables() {
 		for _, term := range actionset {
 			c.out.Lalr = append(c.out.Lalr, term, next[term])
 		}
-		// Note: all other -2 in c.out.Lalr are caused by non-assoc errros.
+		// Note: all other -2 in c.out.Lalr are caused by non-assoc erros.
 		c.out.Lalr = append(c.out.Lalr, -1, -2)
 	}
 
@@ -950,11 +953,21 @@ func (c *compiler) reduceRuleInfo(state *state, rule int, next, seen container.B
 	return ret
 }
 
-func (c *compiler) reportConflicts(verbose bool) {
+func (c *compiler) reportConflicts(verbose bool, includeResolved bool) {
 	c.out.SR = c.sr
 	c.out.RR = c.rr
-	if c.sr == c.grammar.ExpectSR && c.rr == c.grammar.ExpectRR {
+	verbose = verbose || includeResolved // includeResolved implies verbose because we don't have a flag for verbose.
+	if !includeResolved && c.sr == c.grammar.ExpectSR && c.rr == c.grammar.ExpectRR {
 		return
+	}
+
+	var unresolved, resolved []*Conflict
+	for _, conflict := range c.conflicts {
+		if conflict.Resolved {
+			resolved = append(resolved, conflict)
+		} else {
+			unresolved = append(unresolved, conflict)
+		}
 	}
 
 	if !c.useTransitions && verbose {
@@ -963,21 +976,46 @@ func (c *compiler) reportConflicts(verbose bool) {
 	}
 
 	seen := container.NewBitSet(len(c.right))
-	for _, conflict := range c.pending {
-		if verbose {
-			next := container.NewBitSet(c.grammar.Terminals)
-			for _, term := range conflict.Next {
-				next.Set(int(term))
-			}
-			for _, rule := range conflict.Rules {
-				conflict.FollowedBy = append(conflict.FollowedBy, c.reduceRuleInfo(c.states[conflict.State], rule, next, seen))
-			}
+	report := func(list []*Conflict, label string) {
+		if includeResolved && len(list) > 0 {
+			c.out.DebugInfo = append(c.out.DebugInfo, label)
 		}
-		for _, rule := range conflict.Rules {
-			c.s.Errorf(c.grammar.Rules[rule].Origin, "%s", conflict)
+		for _, conflict := range list {
+			if verbose {
+				next := container.NewBitSet(c.grammar.Terminals)
+				for _, term := range conflict.Next {
+					next.Set(int(term))
+				}
+				for _, rule := range conflict.Rules {
+					conflict.FollowedBy = append(conflict.FollowedBy, c.reduceRuleInfo(c.states[conflict.State], rule, next, seen))
+				}
+			}
+			msg := conflict.String()
+			if includeResolved {
+				r := c.grammar.Rules[conflict.Rules[0]].Origin.SourceRange()
+				c.out.DebugInfo = append(c.out.DebugInfo, r.String()+": "+msg)
+			}
+			if !conflict.Resolved && (c.sr != c.grammar.ExpectSR || c.rr != c.grammar.ExpectRR) {
+				for _, rule := range conflict.Rules {
+					c.s.Errorf(c.grammar.Rules[rule].Origin, "%s", msg)
+				}
+			}
 		}
 	}
-	c.s.Errorf(c.grammar.Origin, "conflicts: %v shift/reduce and %v reduce/reduce", c.sr, c.rr)
+
+	report(unresolved, "Unresolved conflicts:")
+	if includeResolved {
+		report(resolved, "Resolved by precedence:")
+	}
+
+	msgSummary := fmt.Sprintf("conflicts: %v shift/reduce and %v reduce/reduce", c.sr, c.rr)
+	if includeResolved {
+		r := c.grammar.Origin.SourceRange()
+		c.out.DebugInfo = append(c.out.DebugInfo, r.String()+": "+msgSummary)
+	}
+	if c.sr != c.grammar.ExpectSR || c.rr != c.grammar.ExpectRR {
+		c.s.Errorf(c.grammar.Origin, "%s", msgSummary)
+	}
 }
 
 func (c *compiler) resolvePrec(rule int, term Sym) resolution {

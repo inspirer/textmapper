@@ -307,8 +307,8 @@ func TestStates(t *testing.T) {
 		c.initLalr()
 		c.buildLA(false /*useTransitions*/, true /*stats*/)
 
-		c.populateTables()
-		c.reportConflicts(true /*verbose*/)
+		c.populateTables(true /*debugConflicts*/)
+		c.reportConflicts(true /*verbose*/, false /*includeResolved*/)
 
 		var buf strings.Builder
 		seen := container.NewBitSet(c.grammar.Terminals)

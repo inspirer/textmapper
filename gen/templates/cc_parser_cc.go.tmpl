@@ -22,6 +22,22 @@
 
 namespace {{.Options.Namespace}} {
 {{ block "onBeforeParserImpl" .}}{{end -}}
+
+inline auto GetLocationStart(const std::optional<{{ template "LocationClass" }}>& loc) {
+  return (*loc){{template "locStart"}};
+}
+
+inline auto GetLocationEnd(const std::optional<{{ template "LocationClass" }}>& loc) {
+  return (*loc){{template "locEnd"}};
+}
+
+inline auto GetLocationStart(const {{ template "LocationClass" }}& loc) {
+  return loc{{template "locStart"}};
+}
+
+inline auto GetLocationEnd(const {{ template "LocationClass" }}& loc) {
+  return loc{{template "locEnd"}};
+}
 {{ if .Options.FlexMode -}}
 {{ template "flexTranslate" . -}}
 {{ end -}}
@@ -87,6 +103,11 @@ constexpr inline absl::string_view tmNonterminals[] = {
 };
 constexpr size_t tmNonterminalsLen =
     sizeof(tmNonterminals) / sizeof(tmNonterminals[0]);
+    
+{{- range all_casts . }}
+static_assert(std::is_convertible_v<{{.RHS}}, {{.LHS}}>,
+              "Implicit conversion in TM default semantic action failed: {{.RHS}} to {{.LHS}}");
+{{- end }}
 
 std::string symbolName(int32_t sym) {
   if (sym == noToken) {

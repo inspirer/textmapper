@@ -156,6 +156,8 @@ var tmRuleType = [...]uint32{
 	uint32(LastInt),    // Declaration : lastInt
 	uint32(Int),        // Declaration : IntegerConstant '[' ']'
 	uint32(Int),        // Declaration : IntegerConstant
+	uint32(TestClause), // Declaration : 'test' 'decl1' 'test'
+	uint32(TestClause), // Declaration : 'test' 'decl2' 'test'
 	uint32(TestClause), // Declaration : 'test' '{' setof_not_EOI_or_DOT_or_RBRACE_optlist '}'
 	0,                  // Declaration : 'test' '(' empty1 ')'
 	0,                  // Declaration : 'test' '(' foo_nonterm ')'

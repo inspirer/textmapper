@@ -56,12 +56,12 @@ const (
 )
 
 func (p *Parser) ParseTest(ctx context.Context, lexer *Lexer) error {
-	_, err := p.parse(ctx, 0, 157, lexer)
+	_, err := p.parse(ctx, 0, 161, lexer)
 	return err
 }
 
 func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
-	v, err := p.parse(ctx, 1, 158, lexer)
+	v, err := p.parse(ctx, 1, 162, lexer)
 	val, _ := v.(int)
 	return val, err
 }
@@ -246,9 +246,9 @@ restart:
 
 func lookaheadRule(ctx context.Context, lexer *Lexer, next symbol, rule int32, s *session) (sym int32, err error) {
 	switch rule {
-	case 107:
+	case 109:
 		var ok bool
-		if ok, err = lookahead(ctx, lexer, next, 2, 156, s); ok {
+		if ok, err = lookahead(ctx, lexer, next, 2, 160, s); ok {
 			sym = 46 /* lookahead_FooLookahead */
 		} else {
 			sym = 47 /* lookahead_notFooLookahead */
@@ -262,7 +262,7 @@ func AtFooLookahead(ctx context.Context, lexer *Lexer, next symbol, s *session) 
 	if debugSyntax {
 		fmt.Printf("lookahead FooLookahead, next: %v\n", symbolName(next.symbol))
 	}
-	return lookahead(ctx, lexer, next, 2, 156, s)
+	return lookahead(ctx, lexer, next, 2, 160, s)
 }
 
 func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *session) (bool, error) {
@@ -392,28 +392,36 @@ func (p *Parser) applyRule(ctx context.Context, rule int32, lhs *stackEntry, sta
 				p.listener(Int9, 0, stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.endoffset)
 			}
 		}
-	case 15: // Declaration : 'test' '(' empty1 ')'
+	case 14: // Declaration : 'test' 'decl1' 'test'
+		{
+			p.listener(Identifier, 0, stack[len(stack)-2].sym.offset, stack[len(stack)-2].sym.endoffset)
+		}
+	case 15: // Declaration : 'test' 'decl2' 'test'
+		{
+			p.listener(Identifier, 0, stack[len(stack)-2].sym.offset, stack[len(stack)-2].sym.endoffset)
+		}
+	case 17: // Declaration : 'test' '(' empty1 ')'
 		p.reportRange(Empty1, 0, stack[len(stack)-2:len(stack)-1])
-	case 17: // Declaration : 'test' IntegerConstant
+	case 19: // Declaration : 'test' IntegerConstant
 		p.reportRange(Icon, InTest, stack[len(stack)-1:len(stack)-0])
-	case 18: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
+	case 20: // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
 		fixTrailingWS(lhs, stack[len(stack)-6:])
-	case 21: // Declaration : 'decl2' ':' QualifiedName-opt
+	case 23: // Declaration : 'decl2' ':' QualifiedName-opt
 		fixTrailingWS(lhs, stack[len(stack)-3:])
-	case 90: // If : 'if' '(' O ')' Decl2
+	case 92: // If : 'if' '(' O ')' Decl2
 		{ /* 4: stack[len(stack)-1].value */
 		}
-	case 101: // customPlus : '\\' primaryExpr '+' expr
+	case 103: // customPlus : '\\' primaryExpr '+' expr
 		{
 			p.listener(PlusExpr, 0, stack[len(stack)-4].sym.offset, stack[len(stack)-1].sym.endoffset)
 		}
-	case 103: // primaryExpr : IntegerConstant
+	case 105: // primaryExpr : IntegerConstant
 		p.listener(Bar, 0,
 			stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.offset)
-	case 104: // primaryExpr_WithoutAs : IntegerConstant
+	case 106: // primaryExpr_WithoutAs : IntegerConstant
 		p.listener(Bar, 0,
 			stack[len(stack)-1].sym.offset, stack[len(stack)-1].sym.offset)
-	case 107:
+	case 109:
 		var ok bool
 		if ok, err = AtFooLookahead(ctx, lexer, p.next, s); ok {
 			lhs.sym.symbol = 46 /* lookahead_FooLookahead */

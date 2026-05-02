@@ -88,6 +88,10 @@ Declaration :
           p.listener(Int9, 0, @0.offset, @0.endoffset)
         }
       }
+| TEST DECL1 TEST
+			{ p.listener(Identifier, 0, @1.offset, @1.endoffset) }
+| TEST DECL2 TEST
+			{ p.listener(Identifier, 0, @1.offset, @1.endoffset) }
 | TEST LBRACE setof_not_EOI_or_DOT_or_RBRACE_optlist RBRACE
 | TEST LPAREN empty1 RPAREN
 | TEST LPAREN foo_nonterm RPAREN

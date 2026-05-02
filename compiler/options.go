@@ -25,6 +25,7 @@ func newOptionsParser(s *status.Status) *optionsParser {
 			AbslIncludePrefix:        "absl",
 			SkipByteOrderMark:        true,
 			OptInstantiationSuffix:   "opt",
+			AliasIncludesOptSuffix:   true,
 			ExpansionLimit:           65_536,
 			ExpansionWarn:            256,
 			MaxRuleSizeForOrdinalRef: 16,
@@ -78,6 +79,8 @@ func (p *optionsParser) parseFrom(file ast.File) {
 			opts.GenParser = p.parseExpr(opt.Value(), opts.GenParser).(bool)
 		case "optInstantiationSuffix":
 			opts.OptInstantiationSuffix = p.parseExpr(opt.Value(), opts.OptInstantiationSuffix).(string)
+	    case "aliasIncludesOptSuffix":
+			opts.AliasIncludesOptSuffix = p.parseExpr(opt.Value(), opts.AliasIncludesOptSuffix).(bool)
 		case "cancellable":
 			p.validLangs(opt.Key(), "go")
 			opts.Cancellable = p.parseExpr(opt.Value(), opts.Cancellable).(bool)
