@@ -18,9 +18,10 @@ import (
 )
 
 type syntaxLoader struct {
-	resolver     *resolver
-	noEmptyRules bool
-	optSuffix    string // if non-empty, triggers auto-instantiation of optional nonterminals
+	resolver       *resolver
+	noEmptyRules   bool
+	optSuffix      string // if non-empty, triggers auto-instantiation of optional nonterminals
+	aliasOptSuffix bool   // whether the default alias of a non-terminal symbol includes the opt suffix.
 	*status.Status
 
 	out      *syntax.Model
@@ -54,10 +55,11 @@ func newSyntaxLoader(resolver *resolver, targetLang string, opts *grammar.Option
 	expandOpts.ExpansionWarn = opts.ExpansionWarn
 
 	return &syntaxLoader{
-		resolver:     resolver,
-		noEmptyRules: opts.NoEmptyRules,
-		optSuffix:    opts.OptInstantiationSuffix,
-		Status:       s,
+		resolver:       resolver,
+		noEmptyRules:   opts.NoEmptyRules,
+		optSuffix:      opts.OptInstantiationSuffix,
+		aliasOptSuffix: opts.AliasIncludesOptSuffix,
+		Status:         s,
 
 		namedSets:  make(map[string]int),
 		params:     make(map[string]int),
@@ -586,7 +588,7 @@ func (c *syntaxLoader) instantiateOpt(name string, origin ast.Symref) (int, bool
 		refs := map[int]syntax.ArgRef{
 			1: syntax.ArgRef{Pos: 1, Kind: "reference", Optional: true, Symbol: sym},
 		}
-		cmdArgs := &syntax.CmdArgs{MaxPos: 2, Names: map[string]int{target: 1}, ArgRefs: refs}
+		cmdArgs := &syntax.CmdArgs{MaxPos: 2, Names: map[string][]int{target: {1}}, ArgRefs: refs}
 		cmd := &syntax.Expr{Kind: syntax.Command, Name: c.expandOpts.OptionalCmd(symType), CmdArgs: cmdArgs, Origin: origin}
 		nt.Value = &syntax.Expr{Kind: syntax.Sequence, Sub: []*syntax.Expr{nt.Value, cmd}, Origin: origin}
 	}
@@ -818,10 +820,11 @@ func (c *syntaxLoader) allocatePos(underOpts bool, kind string, sym int) int {
 	return pos
 }
 
-func (c *syntaxLoader) pushName(name string, pos int) {
+func (c *syntaxLoader) pushName(name string, pos ...int) {
 	rule := c.currentRule()
 	// Names need to be unique across the top-level rule.
-	var topNames map[string]int
+	// If a collision occurs, a unique #N suffix will be appended automatically.
+	var topNames map[string][]int
 	names := rule.names
 	if rule.isTopLevel() {
 		topNames = rule.names
@@ -859,8 +862,11 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm, under
 			// Only names and references preceding the command are available to its code.
 			// Note: the list below can include entities from a different alternative but
 			// they'll be automatically filtered later on.
-			args.Names = make(map[string]int)
+			args.Names = make(map[string][]int)
 			for k, v := range rhs.names {
+				if !c.aliasOptSuffix && len(k) > len(c.optSuffix) && strings.HasSuffix(k, c.optSuffix) {
+					k = strings.TrimSuffix(k, c.optSuffix)
+				}
 				args.Names[k] = v
 			}
 		}
@@ -884,8 +890,26 @@ func (c *syntaxLoader) convertPart(p ast.RhsPart, nonterm *syntax.Nonterm, under
 		ret := c.convertPart(p.Inner(), nonterm, underOpts)
 
 		name := p.Name().Text()
-		if ret.Pos > 0 {
-			c.pushName(name, ret.Pos)
+
+		// Traverse the generated syntax tree for the alias's inner content.
+		// If the inner content is a choice or sequence (which have e.Pos == 0),
+		// we drill down to collect all explicitly positioned elements.
+		// This allows a single alias to cover multiple alternatives or span across a sequence.
+		var positions []int
+		var collectPos func(e *syntax.Expr)
+		collectPos = func(e *syntax.Expr) {
+			if e.Pos > 0 && (e.Kind == syntax.Reference || e.Kind == syntax.Set || e.Kind == syntax.List) {
+				positions = append(positions, e.Pos)
+				return
+			}
+			for _, sub := range e.Sub {
+				collectPos(sub)
+			}
+		}
+
+		collectPos(ret)
+		if len(positions) > 0 {
+			c.pushName(name, positions...)
 		}
 		return ret
 	case *ast.RhsCast:
@@ -1167,10 +1191,10 @@ func or(a, b *syntax.Expr) *syntax.Expr {
 }
 
 type rhsRule struct {
-	top     *rhsRule        // The top-level rule this rule is nested under. Nil if this is a top-level rule.
-	pos     int             // The next position to be allocated. Populated only for top-level rules.
-	names   map[string]int  // name -> position. Contains the names visible to the command of this rule.
-	argRefs []syntax.ArgRef // The argument references visible to the command of this rule.
+	top     *rhsRule         // The top-level rule this rule is nested under. Nil if this is a top-level rule.
+	pos     int              // The next position to be allocated. Populated only for top-level rules.
+	names   map[string][]int // name -> position. Contains the names visible to the command of this rule.
+	argRefs []syntax.ArgRef  // The argument references visible to the command of this rule.
 }
 
 // maxPos returns the next position to be allocated w.r.t. the top-level rule.
@@ -1198,7 +1222,7 @@ func (c *syntaxLoader) pushRule(topLevel bool) {
 	if topLevel {
 		rule = &rhsRule{
 			pos:   1,
-			names: make(map[string]int),
+			names: make(map[string][]int),
 		}
 	} else {
 		p := c.ruleStack[len(c.ruleStack)-1]
@@ -1210,7 +1234,7 @@ func (c *syntaxLoader) pushRule(topLevel bool) {
 		}
 		rule = &rhsRule{
 			top:   top,
-			names: make(map[string]int),
+			names: make(map[string][]int),
 		}
 	}
 	c.ruleStack = append(c.ruleStack, rule)

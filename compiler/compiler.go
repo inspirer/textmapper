@@ -21,10 +21,11 @@ import (
 
 // Params control the grammar compilation process.
 type Params struct {
-	CheckOnly    bool // set to true, if the caller is interested in compilation errors only
-	Verbose      bool // set to true for more verbose errors
-	DebugTables  bool // set to true to get generated tables with embedded debug info
-	CollectStats bool // set to true to collect more statistics about the LALR algorithm execution
+	CheckOnly      bool // set to true, if the caller is interested in compilation errors only
+	Verbose        bool // set to true for more verbose errors
+	DebugTables    bool // set to true to get generated tables with embedded debug info
+	DebugConflicts bool // set to true to include conflicts in DebugInfo
+	CollectStats   bool // set to true to collect more statistics about the LALR algorithm execution
 }
 
 // Compile validates and compiles grammar files.
@@ -369,13 +370,14 @@ func (c *compiler) compileParser(file ast.File) {
 		expectSR: loader.expectSR,
 		expectRR: loader.expectRR,
 		lalrOpts: lalr.Options{
-			Lookahead:     lookahead,
-			Optimize:      c.out.Options.OptimizeTables && !c.params.CheckOnly,
-			MinimizeDFA:   c.out.Options.MinimizeDFA,
-			DefaultReduce: c.out.Options.DefaultReduce,
-			Debug:         c.params.DebugTables,
-			CollectStats:  c.params.CollectStats,
-			Verbose:       c.params.Verbose,
+			Lookahead:      lookahead,
+			Optimize:       c.out.Options.OptimizeTables && !c.params.CheckOnly,
+			MinimizeDFA:    c.out.Options.MinimizeDFA,
+			DefaultReduce:  c.out.Options.DefaultReduce,
+			Debug:          c.params.DebugTables,
+			DebugConflicts: c.params.DebugConflicts,
+			CollectStats:   c.params.CollectStats,
+			Verbose:        c.params.Verbose,
 		},
 	}
 	if err := generateTables(source, c.out, opts, file); err != nil {
@@ -586,6 +588,25 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 					NtName: nt.Name,
 				}
 				if args != nil {
+					// Note: here we build a union of "missing" aliases across all expansions of a rule.
+					// All expanded rules share the same original args pointer. We can safely accumulate
+					// missing aliases across all rule expansions right into args.MayBeMissing.
+					if args.MayBeMissing == nil {
+						args.MayBeMissing = make(map[string]bool)
+					}
+					for name, positions := range args.Names {
+						missing := true
+						for _, p := range positions {
+							if _, ok := actualPos[p]; ok {
+								missing = false
+								break
+							}
+						}
+						if missing {
+							args.MayBeMissing[name] = true
+						}
+					}
+
 					act.Vars = &grammar.ActionVars{CmdArgs: *args, Remap: actualPos}
 					for _, r := range rule.RHS {
 						if !r.IsStateMarker() {
@@ -612,6 +633,57 @@ func generateTables(source *syntax.Model, out *grammar.Grammar, opts genOptions,
 	parser.Nonterms = source.Nonterms
 	parser.NumTerminals = len(source.Terminals)
 	midrule.finalize(out, g)
+
+	// Assign action ids to rules that will get a default semantic action with a cast. When there is
+	// no user-provided semantic action, Textmapper generates a default semantic action that forwards
+	// the first RHS symbol's value. When the type of the first RHS symbol does not match the return
+	// type, a cast is generated. Assigning action ids prevents states associated with different cast
+	// behaviors from being merged in the DFA minimization step.
+	type castKey struct {
+		lhs string
+		rhs string
+	}
+	castActions := make(map[castKey]int)
+	for i, r := range parser.Rules {
+		if r.Action != 0 {
+			continue // Skip rules with user-provided semantic actions.
+		}
+
+		lhsType := out.Syms[r.LHS].Type
+		if lhsType == "" || len(r.RHS) == 0 {
+			continue // Skip rules that do not require a cast.
+		}
+
+		var rhs0Type string
+		for _, s := range r.RHS {
+			if s.IsStateMarker() {
+				continue
+			}
+			idx := int(s)
+			if idx < len(out.Syms) {
+				rhs0Type = out.Syms[idx].Type
+			}
+			break
+		}
+
+		if rhs0Type == "" || lhsType == rhs0Type {
+			continue // Skip rules that do not require a cast.
+		}
+
+		// Assign a distinct action for each behavior signature.
+		sig := castKey{lhsType, rhs0Type}
+		actionID, ok := castActions[sig]
+		if !ok {
+			actionID = len(parser.Actions)
+			castActions[sig] = actionID
+			parser.Actions = append(parser.Actions, grammar.SemanticAction{
+				NtName: out.Syms[r.LHS].Name,
+				Origin: out.Syms[r.LHS].Origin,
+			})
+		}
+		r.Action = actionID
+		g.Rules[i].Action = actionID
+	}
 
 	tables, err := lalr.Compile(g, opts.lalrOpts)
 	parser.Tables = tables

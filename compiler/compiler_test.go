@@ -156,13 +156,18 @@ func writeNonterm(nt *syntax.Nonterm, b *strings.Builder) {
 	}
 }
 
-var debugFiles = []string{
-	"debug.tm",
+var debugFiles = []struct {
+	file   string
+	params Params
+}{
+	{file: "debug.tm", params: Params{DebugTables: true}},
+	{file: "debug_conflicts.tm", params: Params{DebugConflicts: true}},
 }
 
 func TestDebugInfo(t *testing.T) {
 	ctx := context.Background()
-	for _, file := range debugFiles {
+	for _, tc := range debugFiles {
+		file, params := tc.file, tc.params
 		content, err := os.ReadFile(filepath.Join("testdata", file))
 		if err != nil {
 			t.Errorf("cannot read %v: %v", file, err)
@@ -175,7 +180,7 @@ func TestDebugInfo(t *testing.T) {
 			continue
 		}
 
-		g, err := Compile(ctx, file, string(content), Params{DebugTables: true})
+		g, err := Compile(ctx, file, string(content), params)
 		if err != nil {
 			t.Errorf("%v: compilation failed with %v", file, err)
 			continue
@@ -185,6 +190,9 @@ func TestDebugInfo(t *testing.T) {
 		var b strings.Builder
 		b.WriteString("\n\n")
 		for _, info := range g.Parser.Tables.DebugInfo {
+			if params.DebugTables {
+				info = strings.ReplaceAll(info, "•", "_")
+			}
 			b.WriteString(info)
 			b.WriteByte('\n')
 		}
@@ -192,7 +200,9 @@ func TestDebugInfo(t *testing.T) {
 
 		if diff := diff.LineDiff(want, got); diff != "" {
 			t.Errorf("The in-file debug info does not match the produced one.\n--- %v\n+++ %v (produced)\n%v", file, file, diff)
-			t.Logf("Run (cd compiler/testdata; go run ../../cmd/textmapper/*.go debug --tables %v >> %v) to regenerate.", file, file)
+			if params.DebugTables {
+				t.Logf("Run (cd compiler/testdata; go run ../../cmd/textmapper/*.go debug --tables %v >> %v) to regenerate.", file, file)
+			}
 		}
 	}
 }
@@ -731,6 +741,98 @@ S2 : a ;
   State 4 -> State 9 on symbol 'lookahead_S2'
   State 1 -> State 11 on symbol 'S1'
   State 2 -> State 11 on symbol 'S2'
+`,
+		},
+		{
+			name: "castMerging",
+			grammar: `
+language cast_merging(go);
+%v
+:: lexer
+'a': /a/
+'b': /b/
+'c': /c/
+'x' {int}: /x/
+'y' {float}: /y/
+
+:: parser
+input:
+    'a' shared 'c'
+  | 'b' shared 'c'
+;
+
+shared {float}:
+    'x'
+  | 'y'
+;
+`,
+			wantOff: `Transitions for castMerging (minimize OFF) (States: 11):
+  State 9 -> State 10 on symbol 'eoi'
+  State 0 -> State 1 on symbol ''a''
+  State 0 -> State 2 on symbol ''b''
+  State 5 -> State 7 on symbol ''c''
+  State 6 -> State 8 on symbol ''c''
+  State 1 -> State 3 on symbol ''x''
+  State 2 -> State 3 on symbol ''x''
+  State 1 -> State 4 on symbol ''y''
+  State 2 -> State 4 on symbol ''y''
+  State 0 -> State 9 on symbol 'input'
+  State 1 -> State 5 on symbol 'shared'
+  State 2 -> State 6 on symbol 'shared'
+`,
+			wantOn: `Transitions for castMerging (minimize ON) (States: 8):
+  State 6 -> State 7 on symbol 'eoi'
+  State 0 -> State 1 on symbol ''a''
+  State 0 -> State 1 on symbol ''b''
+  State 4 -> State 5 on symbol ''c''
+  State 1 -> State 2 on symbol ''x''
+  State 1 -> State 3 on symbol ''y''
+  State 0 -> State 6 on symbol 'input'
+  State 1 -> State 4 on symbol 'shared'
+`,
+		},
+		{
+			name: "castMerging2",
+			grammar: `
+language cast_merging2(go);
+%v
+:: lexer
+'a': /a/
+'b': /b/
+'c': /c/
+'x' {int}: /x/
+
+:: parser
+input:
+    'a' r1 'c'
+  | 'b' r2 'c'
+;
+
+r1 {float}: 'x' ; // cast int -> float
+r2 {float}: 'x' ; // same cast int -> float
+`,
+			wantOff: `Transitions for castMerging2 (minimize OFF) (States: 11):
+  State 9 -> State 10 on symbol 'eoi'
+  State 0 -> State 1 on symbol ''a''
+  State 0 -> State 2 on symbol ''b''
+  State 4 -> State 7 on symbol ''c''
+  State 6 -> State 8 on symbol ''c''
+  State 1 -> State 3 on symbol ''x''
+  State 2 -> State 5 on symbol ''x''
+  State 0 -> State 9 on symbol 'input'
+  State 1 -> State 4 on symbol 'r1'
+  State 2 -> State 6 on symbol 'r2'
+`,
+			wantOn: `Transitions for castMerging2 (minimize ON) (States: 9):
+  State 7 -> State 8 on symbol 'eoi'
+  State 0 -> State 1 on symbol ''a''
+  State 0 -> State 2 on symbol ''b''
+  State 4 -> State 6 on symbol ''c''
+  State 1 -> State 3 on symbol ''x''
+  State 2 -> State 5 on symbol ''x''
+  State 0 -> State 7 on symbol 'input'
+  State 1 -> State 4 on symbol 'r1'
+  State 2 -> State 4 on symbol 'r2'
 `,
 		},
 	}

@@ -151,6 +151,8 @@ Declaration -> Declaration :
           p.listener(Int9, 0, ${first().offset}, ${last().endoffset})
         }
       }                                                  -> Int
+  | 'test' ( 'decl1' | 'decl2' )[keyword] 'test'
+      { p.listener(Identifier, 0, ${keyword.offset}, ${keyword.endoffset}) } -> TestClause
   | 'test' '{' set(~(eoi | '.' | '}'))* '}' -> TestClause
   | 'test' '(' (empty1 -> Empty1) ')'
   | 'test' '(' foo_nonterm<~A> ')'
@@ -181,7 +183,7 @@ foo_la:
 ;
 
 foo_nonterm<A> :
-      IntegerConstant '.' expr 
+      IntegerConstant '.' expr
     | [A] IntegerConstant 'foo_' expr
 ;
 

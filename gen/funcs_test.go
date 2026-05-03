@@ -174,6 +174,22 @@ func TestParserAction(t *testing.T) {
 		{"${last().sym}", vars("a:0", "b", "c:1", "d:2"), "(&stack[len(stack)-1].sym)"},
 		{"${last().offset}", vars("a:0", "b", "c:1", "d:2"), "stack[len(stack)-1].sym.offset"},
 		{"${last().endoffset}", vars("a:0", "b", "c:1", "d:2"), "stack[len(stack)-1].sym.endoffset"},
+		{"${het.offset}", &grammar.ActionVars{
+			SymRefCount: 3,
+			CmdArgs: syntax.CmdArgs{
+				MaxPos: 4,
+				Names:  map[string][]int{"het": {1, 2, 3}},
+			},
+			Remap: map[int]int{1: 0, 3: 2},
+		}, "stack[len(stack)-3].sym.offset"},
+		{"${het.endoffset}", &grammar.ActionVars{
+			SymRefCount: 3,
+			CmdArgs: syntax.CmdArgs{
+				MaxPos: 4,
+				Names:  map[string][]int{"het": {1, 2, 3}},
+			},
+			Remap: map[int]int{1: 0, 3: 2},
+		}, "stack[len(stack)-1].sym.endoffset"},
 	}
 
 	for _, tc := range tests {
@@ -184,6 +200,60 @@ func TestParserAction(t *testing.T) {
 		}
 		if diff := diff.LineDiff(tc.want, got); diff != "" {
 			t.Errorf("parserAction(%v, %v) failed with diff:\n--- want\n+++ got\n%v", tc.input, tc.args, diff)
+		}
+	}
+}
+
+func TestParserActionErrors(t *testing.T) {
+	tests := []struct {
+		input string
+		args  *grammar.ActionVars
+		want  string
+	}{
+		{"$abc", vars(), "$abc:0:0: invalid reference \"abc\". Cannot find symbol \"abc\" in rule"},
+		{
+			"$het",
+			&grammar.ActionVars{
+				CmdArgs: syntax.CmdArgs{
+					MaxPos: 4,
+					Names:  map[string][]int{"het": {1, 2, 3}},
+				},
+				Remap:   map[int]int{1: 0, 3: 2},
+				Types:   map[int]string{1: "expr", 3: "expr"},
+				LHSType: "expr",
+			},
+			`$het:0:0: value is not accessible for alias "het" because it spans multiple symbols; use het.offset or het.endoffset for its location`},
+		{
+			"${het.sym}",
+			&grammar.ActionVars{
+				CmdArgs: syntax.CmdArgs{
+					MaxPos: 4,
+					Names:  map[string][]int{"het": {1, 2, 3}},
+				},
+				Remap: map[int]int{1: 0, 3: 2},
+			},
+			`${het.sym}:0:0: sym is not accessible for alias "het" because it spans multiple symbols; use het.offset or het.endoffset for its location`},
+		{
+			"${first()} $het",
+			&grammar.ActionVars{
+				SymRefCount: 3,
+				CmdArgs: syntax.CmdArgs{
+					MaxPos: 4,
+					Names:  map[string][]int{"het": {1, 2, 3}},
+				},
+				Remap: map[int]int{1: 0, 3: 2},
+			},
+			`${first()} $het:0:0: value is not accessible for alias "het" because it spans multiple symbols; use het.offset or het.endoffset for its location`},
+	}
+	for _, tc := range tests {
+		got, err := goParserAction(tc.input, tc.args, node(tc.input))
+		if err == nil {
+			t.Errorf("parserAction(%v, %v) expected to fail with %v", tc.input, tc.args, got)
+			continue
+		}
+		got = err.Error()
+		if diff := diff.LineDiff(tc.want, got); diff != "" {
+			t.Errorf("parserAction(%v, %v) failed, but with diff:\n--- want\n+++ got\n%v", tc.input, tc.args, diff)
 		}
 	}
 }
@@ -227,6 +297,18 @@ func TestCcParserActionSymbolLookupErrors(t *testing.T) {
 		{"$abc", vars(), "$abc:0:0: invalid reference \"$abc\". Cannot find symbol \"abc\" in rule"},
 		{"$$ = $12", vars("%node", "a:0:expr"), "$$ = $12:0:0: index 12 is out of range [1, 3]"},
 		{"$$ = $1", vars("%node", "a:0:expr", "b:1:expr", "c:2:expr"), "$$ = $1:0:0: invalid reference \"$1\". Ordinal references disabled for rules with more than 2 symbols, use the symbol alias instead"},
+		{
+			"$$ = $het",
+			&grammar.ActionVars{
+				CmdArgs: syntax.CmdArgs{
+					MaxPos: 4,
+					Names:  map[string][]int{"het": {1, 2, 3}},
+				},
+				Remap:   map[int]int{1: 0, 3: 2},
+				Types:   map[int]string{1: "expr", 3: "expr"},
+				LHSType: "expr",
+			},
+			`$$ = $het:0:0: value is not accessible for alias "het" because it spans multiple symbols; use @het for its location`},
 	}
 	for _, tc := range tests {
 		opts := &grammar.Options{
@@ -249,7 +331,7 @@ func vars(list ...string) *grammar.ActionVars {
 	ret := &grammar.ActionVars{
 		CmdArgs: syntax.CmdArgs{
 			MaxPos:  1 + len(list),
-			Names:   make(map[string]int),
+			Names:   make(map[string][]int),
 			ArgRefs: make(map[int]syntax.ArgRef),
 		},
 		Remap: make(map[int]int),
@@ -266,7 +348,7 @@ func vars(list ...string) *grammar.ActionVars {
 		}
 		name, num, mapped := strings.Cut(descr, ":")
 		if name != "" {
-			ret.Names[name] = pos
+			ret.Names[name] = []int{pos}
 			ret.ArgRefs[pos] = syntax.ArgRef{
 				Pos: pos,
 			}

@@ -79,6 +79,8 @@ var parseTests = []struct {
 		`«test {}»`,
 		`«test { decl1 }»`,
 		`«test { decl2 decl1 }»`,
+		` «test decl1 test»`,
+		` «test decl2 test»`,
 	}},
 	{test.TestIntClause, test.InTest | test.InFoo, []string{
 		`{ «test 1» }`,
@@ -99,6 +101,8 @@ var parseTests = []struct {
 	}},
 	{test.Identifier, 0, []string{
 		` decl1(«abc».«def1») `,
+		` test «decl1» test`,
+		` test «decl2» test`,
 	}},
 	{test.PlusExpr, 0, []string{
 		` eval(««1 + 2» + 3») `,

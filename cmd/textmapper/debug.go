@@ -22,8 +22,9 @@ Flags:`,
 }
 
 var (
-	stats  = debugCmd.Flags.Bool("stats", false, "output generated table statistics")
-	tables = debugCmd.Flags.Bool("tables", false, "dump generated tables in a human-readable format")
+	stats     = debugCmd.Flags.Bool("stats", false, "output generated table statistics")
+	tables    = debugCmd.Flags.Bool("tables", false, "dump generated tables in a human-readable format")
+	conflicts = debugCmd.Flags.Bool("conflicts", false, "dump all conflicts in a human-readable format")
 )
 
 func init() {
@@ -60,7 +61,7 @@ func debugFile(ctx context.Context, path string) error {
 	}
 
 	start := time.Now()
-	params := compiler.Params{CollectStats: true, DebugTables: *tables, CheckOnly: true /*disables optimizations*/}
+	params := compiler.Params{CollectStats: true, DebugTables: *tables, DebugConflicts: *conflicts, CheckOnly: true /*disables optimizations*/}
 	g, err := compiler.Compile(ctx, path, string(content), params)
 	if g == nil {
 		return err

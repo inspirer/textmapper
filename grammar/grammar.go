@@ -100,13 +100,15 @@ type ActionVars struct {
 type Reference struct {
 	// Position of the reference in the original rule. 1-based. Used to identify the symbol in
 	// semantic actions code blocks.
-	Pos int
+	Pos    int
+	EndPos int // same as Pos if single symbol
 
 	// Index of the symbol in the expanded rule. 0-based. Used to locate the symbol in the
 	// parsing stack.
 	//
 	// -1 means that the reference is present in the original rule but not in this expansion.
-	Index int
+	Index    int
+	EndIndex int // same as Index if single symbol
 }
 
 // Resolve resolves a symbol reference. `val` can either be a 0-based index (e.g. "0" in "$0")
@@ -135,10 +137,10 @@ func (a *ActionVars) resolve(val string, zeroBased bool, maxRuleSizeForOrdinalRe
 	// `pos` is always 1-based.
 	pos, err := strconv.Atoi(val)
 	if err == nil {
+		// The input "val" is a number reference, e.g. $1.
 		if maxRuleSizeForOrdinalRef >= 0 && a.SymRefCount > maxRuleSizeForOrdinalRef {
 			return Reference{}, status.Errorf(origin, "invalid reference %q. Ordinal references disabled for rules with more than %v symbols, use the symbol alias instead", name, maxRuleSizeForOrdinalRef)
 		}
-		// The input "val" is a number reference, e.g. $1.
 		if zeroBased {
 			// The input reference starts from 0, e.g. $0 references the first symbol. Change it to
 			// 1-based.
@@ -153,18 +155,43 @@ func (a *ActionVars) resolve(val string, zeroBased bool, maxRuleSizeForOrdinalRe
 		}
 	} else {
 		// The input "val" is a named symbol reference, e.g. $a.
-		var exists bool
-		pos, exists = a.CmdArgs.Names[val]
-		if !exists {
+		positions, exists := a.CmdArgs.Names[val]
+		if !exists || len(positions) == 0 {
 			// No such a symbol exists in the original rule.
 			return Reference{}, status.Errorf(origin, "invalid reference %q. Cannot find symbol %q in rule", name, val)
 		}
+
+		var active []int
+		for _, p := range positions {
+			if _, has := a.Remap[p]; has {
+				active = append(active, p)
+			}
+		}
+
+		if len(active) == 0 {
+			// The symbol exists in the grammar, but is entirely absent from the current expanded rule
+			return Reference{
+				Index:    -1,
+				EndIndex: -1,
+				Pos:      positions[0],
+				EndPos:   positions[len(positions)-1],
+			}, nil
+		}
+
+		// The active span is [active[0], active[len-1]]
+		return Reference{
+			Pos:      active[0],
+			EndPos:   active[len(active)-1],
+			Index:    a.Remap[active[0]],
+			EndIndex: a.Remap[active[len(active)-1]],
+		}, nil
 	}
+
 	idx, exists := a.Remap[pos]
 	if !exists {
 		idx = -1
 	}
-	return Reference{Index: idx, Pos: pos}, nil
+	return Reference{Index: idx, EndIndex: idx, Pos: pos, EndPos: pos}, nil
 }
 
 // String is used as a digest of a semantic action environment (and also as a debug string).
@@ -173,12 +200,14 @@ func (a *ActionVars) String() string {
 		return "nil"
 	}
 	var ret []string
-	for k, pos := range a.CmdArgs.Names {
-		v, ok := a.Remap[pos]
-		if !ok {
-			v = -1
+	for k, positions := range a.CmdArgs.Names {
+		for _, pos := range positions {
+			v, ok := a.Remap[pos]
+			if !ok {
+				v = -1
+			}
+			ret = append(ret, fmt.Sprintf("%v:%v", k, v))
 		}
-		ret = append(ret, fmt.Sprintf("%v:%v", k, v))
 	}
 	for k, v := range a.Remap {
 		ret = append(ret, fmt.Sprintf("%v:%v", k, v))
@@ -260,6 +289,8 @@ type Options struct {
 	NoEmptyRules           bool   // Report empty rules without an %empty marker. True by default for C++.
 	MaxLookahead           int    // If set, all lookaheads expressions will be validated to fit this limit.
 	OptInstantiationSuffix string // Suffix that triggers auto-instantiation optional nonterminals (e.g. "opt" or "_opt").
+	AliasIncludesOptSuffix bool   // Whether the default alias of a non-terminal symbol includes the opt suffix.
+
 
 	DisableSyntax  []string // Lists grammar syntaxes that should be disabled.
 	ExpansionLimit int      // Error if a rule expansion produces more than this many rules.
