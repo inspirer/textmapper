@@ -157,10 +157,10 @@ func TestLAAutomaton(t *testing.T) {
 		t.Fatal("expected useTransitions=true")
 	}
 
-	c.populateTables()
+	c.populateTables(false /*debugConflicts*/)
 	c.resolveWithLookahead()
 
-	t.Logf("After resolve: pending=%d, sr=%d, rr=%d, UsedLADepth=%d", len(c.pending), c.sr, c.rr, c.out.UsedLADepth)
+	t.Logf("After resolve: pending=%d, sr=%d, rr=%d, UsedLADepth=%d", len(c.conflicts), c.sr, c.rr, c.out.UsedLADepth)
 
 	if c.rr > 0 {
 		t.Errorf("expected reduce/reduce conflicts to be resolved by LALR(2), but got %d", c.rr)
