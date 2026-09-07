@@ -161,8 +161,25 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 			toState[t.FromTo[i]] = t.FromTo[i+1]
 		}
 
-		def := pickDefault(toState, reuse)
+		// Note: states without a transition on this nonterminal never query it, so
+		// "error" entries do not need to be preserved and the most common
+		// real target becomes the default.
+		var targets []int
+		for _, to := range toState {
+			if to != -1 {
+				targets = append(targets, to)
+			}
+		}
+		def := -1
+		if len(targets) > 0 {
+			def = pickDefault(targets, reuse)
+		}
 		ret.DefGoto[nt] = def
+		for i, to := range toState {
+			if to == -1 {
+				toState[i] = def
+			}
+		}
 
 		var pairs []pair
 		for from, to := range toState {
