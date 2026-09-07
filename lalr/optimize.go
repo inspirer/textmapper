@@ -3,10 +3,9 @@ package lalr
 import (
 	"fmt"
 	"log"
+	"math/bits"
 	"sort"
 	"strings"
-
-	"github.com/inspirer/textmapper/util/container"
 )
 
 // DisplacementEnc is a less compact but faster representation of the parser tables.
@@ -56,7 +55,10 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 	}
 
 	reuse := make([]int, states+1+rules) // for pickDefault
+	ruleCount := make([]int, rules)      // for the default reduction, always all-zeros between rows
+	var touched []int                    // rules with a non-zero count in ruleCount
 	next := make([]int, terms)
+	var arena pairArena
 	var lines []line
 	var target []int // of each line: >= for Action, -1-nonterm for Goto
 
@@ -83,9 +85,7 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 			undef := -1
 			if defaultReduce {
 				undef = -2 - states
-				for i := 0; i < rules; i++ {
-					reuse[i] = 0
-				}
+				touched = touched[:0]
 			}
 			for i := range next {
 				next[i] = undef
@@ -107,7 +107,10 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 					if act < 0 || act >= rules {
 						log.Fatal("internal invariant violated: rule index out of range")
 					}
-					reuse[act]++
+					if defaultReduce {
+						ruleCount[act]++
+						touched = append(touched, act)
+					}
 				}
 				next[term] = act
 			}
@@ -116,13 +119,18 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 				// with the most common reduction. This reduces the output tables size at the
 				// expense or error message quality.
 
+				// Note: this picks the smallest rule index among the most frequent ones,
+				// exactly as a left-to-right scan over all rules would.
 				def := -1 // error, aka no default
 				var max int
-				for rule, v := range reuse[:rules] {
-					if v > max {
+				for _, rule := range touched {
+					if v := ruleCount[rule]; v > max || v == max && rule < def {
 						max = v
 						def = rule
 					}
+				}
+				for _, rule := range touched {
+					ruleCount[rule] = 0
 				}
 				for i, v := range next {
 					if v == undef {
@@ -135,10 +143,18 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 		def := pickDefault(next, reuse)
 		ret.DefAct[state] = def
 
-		var pairs []pair
+		var n int
+		for _, val := range next {
+			if val != def {
+				n++
+			}
+		}
+		pairs := arena.alloc(n)
+		n = 0
 		for term, val := range next {
 			if val != def {
-				pairs = append(pairs, pair{term, val})
+				pairs[n] = pair{term, val}
+				n++
 			}
 		}
 		if len(pairs) > 0 {
@@ -150,6 +166,7 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 	}
 
 	toState := make([]int, len(t.Action))
+	targets := make([]int, 0, len(t.Action))
 	for nt := 0; nt < syms-terms; nt++ {
 		min := t.Goto[terms+nt]
 		max := t.Goto[terms+nt+1]
@@ -164,7 +181,7 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 		// Note: states without a transition on this nonterminal never query it, so
 		// "error" entries do not need to be preserved and the most common
 		// real target becomes the default.
-		var targets []int
+		targets = targets[:0]
 		for _, to := range toState {
 			if to != -1 {
 				targets = append(targets, to)
@@ -181,10 +198,18 @@ func Optimize(t *DefaultEnc, terms, rules int, defaultReduce bool) *Displacement
 			}
 		}
 
-		var pairs []pair
+		var n int
+		for _, to := range toState {
+			if to != def {
+				n++
+			}
+		}
+		pairs := arena.alloc(n)
+		n = 0
 		for from, to := range toState {
 			if to != def {
-				pairs = append(pairs, pair{from, to})
+				pairs[n] = pair{from, to}
+				n++
 			}
 		}
 		if len(pairs) > 0 {
@@ -264,11 +289,13 @@ func pack(input []line) (indices, table, check []int) {
 type allocator struct {
 	size     int
 	delta    int
-	taken    container.BitSet
-	usedBase container.BitSet
+	lowzero  int // index of the first free slot in "taken"; monotonically non-decreasing
+	taken    bitmap
+	usedBase bitmap
 	prev     map[key]int
 	table    []int
 	check    []int
+	rel      []int // scratch space for relative pair offsets
 }
 
 type key struct {
@@ -315,17 +342,19 @@ func (a *allocator) place(pairs []pair) (base int) {
 	}
 
 	// Reserve enough bits to allocate these pairs at the very end of the table.
-	a.taken.Grow(a.size + max - min + 1)
-	a.usedBase.Grow(a.delta + a.size + max - min + 1)
+	// Note: the search reads a 64-bit window at the very last candidate offset, so
+	// one extra word is reserved on top of the search range.
+	a.taken.grow(a.size + max - min + 1 + 64)
+	a.usedBase.grow(a.delta + a.size + max - min + 1 + 64)
 	defer func() {
 		for _, p := range pairs {
-			a.taken.Set(base + p.pos)
+			a.taken.set(base + p.pos)
 		}
+		a.usedBase.set(a.delta + base)
 		if max+base >= a.size {
 			a.size = max + base + 1
 			a.grow(a.size)
 		}
-		a.usedBase.Set(a.delta + base)
 		a.prev[key{hash, len(pairs)}] = base
 		for _, p := range pairs {
 			a.table[base+p.pos] = p.val
@@ -333,51 +362,151 @@ func (a *allocator) place(pairs []pair) (base int) {
 		}
 	}()
 
-	// Try to find a free block of the required shape.
-outer:
-	for i := a.taken.NextZero(0); i < a.size; i = a.taken.NextZero(i + 1) {
-		base = i - min
-		if a.usedBase.Get(a.delta+base) || a.taken.Get(base+max) {
-			continue
-		}
-		for _, p := range pairs[1:] {
-			if a.taken.Get(base + p.pos) {
-				continue outer
-			}
-		}
-		// Found space.
-		return
-	}
-
-	// No better solution than allocate at the end of the table.
-	base = a.size - min
-	return
+	return a.search(pairs, min, max)
 }
 
-// pickDefault returns the most common element in a given array.
+// search finds the smallest base offset at which all the pairs of a line fit into
+// the free slots of the table. It tests 64 candidate offsets at a time: for a line
+// with relative pair offsets q_k, the set of offsets that are still viable inside a
+// 64-bit window of candidates i is
+//
+//	free = ^usedBase[i-min] & AND_k ^taken[i+q_k]
+//
+// and the answer is the lowest set bit of "free". This is the very same first-fit
+// rule a bit-at-a-time scan implements, only ~64x fewer operations: the AND chain
+// also stops as soon as the window has no viable offsets left.
+func (a *allocator) search(pairs []pair, min, max int) (base int) {
+	rel := a.rel[:0]
+	for _, p := range pairs[1:] {
+		rel = append(rel, p.pos-min)
+	}
+	a.rel = rel
+
+	// Bits are only ever set, so the first free slot never moves backwards.
+	start := a.taken.nextZero(a.lowzero)
+	a.lowzero = start
+	ubOff := a.delta - min // usedBase index for candidate i is ubOff+i
+	size := a.size
+	first := uint64(0)
+	if s := uint(start) & 63; s != 0 {
+		first = (uint64(1) << s) - 1 // candidates below "start" are already taken
+	}
+	for i := start &^ 63; i < size; i += 64 {
+		m := ^(a.taken.word(i) | first)
+		first = 0
+		if m == 0 {
+			continue
+		}
+		m &^= a.usedBase.word(ubOff + i)
+		if m == 0 {
+			continue
+		}
+		for _, q := range rel {
+			m &^= a.taken.word(i + q)
+			if m == 0 {
+				break
+			}
+		}
+		if m != 0 {
+			cand := i + bits.TrailingZeros64(m)
+			if cand >= size {
+				break
+			}
+			return cand - min
+		}
+	}
+	return size - min
+}
+
+// bitmap is a growable bit set backed by 64-bit words. Unlike container.BitSet it
+// supports reading an arbitrarily aligned 64-bit window in two loads.
+type bitmap []uint64
+
+func (b *bitmap) grow(size int) {
+	// One extra word so that word() can always read b[j+1].
+	ln := (size+63)/64 + 1
+	if len(*b) < ln {
+		*b = append(*b, make([]uint64, ln-len(*b))...)
+	}
+}
+
+func (b bitmap) set(i int) {
+	b[uint(i)/64] |= 1 << (uint(i) % 64)
+}
+
+func (b bitmap) get(i int) bool {
+	return b[uint(i)/64]&(1<<(uint(i)%64)) != 0
+}
+
+// word returns bits [x, x+64) of the bit set.
+func (b bitmap) word(x int) uint64 {
+	j := uint(x) >> 6
+	s := uint(x) & 63
+	// Note: in Go a shift by 64 yields 0, so the s==0 case needs no branch.
+	return b[j]>>s | b[j+1]<<(64-s)
+}
+
+func (b bitmap) nextZero(start int) int {
+	index := uint(start) / 64
+	val := ^b[index] >> (uint(start) % 64)
+	if val != 0 {
+		return start + bits.TrailingZeros64(val)
+	}
+	for index++; index < uint(len(b)); index++ {
+		if val := b[index]; val != ^uint64(0) {
+			return int(index)*64 + bits.TrailingZeros64(^val)
+		}
+	}
+	return int(index) * 64
+}
+
+// pickDefault returns the most common element in a given array. Ties are broken
+// in favor of the smallest value.
+//
+// "reuse" is a scratch counter array indexed by (value - min); only the buckets
+// actually used by "arr" are touched, so the cost does not depend on the range of
+// the values (which can be in the tens of thousands for parser actions).
 func pickDefault(arr []int, reuse []int) int {
-	min, max := arr[0], arr[0]
+	min := arr[0]
 	for _, val := range arr {
 		if val < min {
 			min = val
-		} else if val > max {
-			max = val
 		}
 	}
-	n := max - min
-	for i := 0; i <= n; i++ {
-		reuse[i] = 0
+	for _, val := range arr {
+		reuse[val-min] = 0
 	}
 	for _, val := range arr {
 		reuse[val-min]++
 	}
-	ret := min
-	cnt := reuse[0]
-	for i, count := range reuse[:n+1] {
-		if count > cnt {
-			ret = i + min
-			cnt = count
+	ret, cnt := min, 0
+	for _, val := range arr {
+		if c := reuse[val-min]; c > cnt || c == cnt && val < ret {
+			ret, cnt = val, c
 		}
 	}
+	return ret
+}
+
+// pairArena hands out small non-overlapping slices carved out of larger chunks,
+// which keeps the number of allocations (and the GC pressure) low.
+type pairArena struct {
+	free []pair
+}
+
+func (a *pairArena) alloc(n int) []pair {
+	if n == 0 {
+		return nil
+	}
+	if len(a.free) < n {
+		const chunk = 16 << 10
+		size := chunk
+		if n > size {
+			size = n
+		}
+		a.free = make([]pair, size)
+	}
+	ret := a.free[:n:n]
+	a.free = a.free[n:]
 	return ret
 }

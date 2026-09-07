@@ -126,15 +126,17 @@ func refinePartitions(partition []int, partitions *container.IntSliceSet, t *Tab
 			stateTransitions[from] = append(stateTransitions[from], sym, to)
 		}
 	}
+	// Note: Insert clones its argument, so a single buffer can be reused for all
+	// signatures (this loop runs numStates times per refinement round).
+	var sigParts []int
 	for {
 		newPartitions := container.NewIntSliceSet()
 		newPartition := make([]int, numStates)
 
 		for i := 0; i < numStates; i++ {
-			var sigParts []int
 			// Use sigPartition as prefix to distinguish from state signatures (which use 1..4),
 			// though state signatures and partition signatures are used in different maps.
-			sigParts = append(sigParts, sigPartition, partition[i])
+			sigParts = append(sigParts[:0], sigPartition, partition[i])
 			trans := stateTransitions[i]
 			for j := 0; j < len(trans); j += 2 {
 				sym := trans[j]
