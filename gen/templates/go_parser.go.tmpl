@@ -347,6 +347,12 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				entry.sym.offset = nonEmpty[0].sym.offset
 				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
+{{ $dispatch := .ReduceDispatch -}}
+{{ if eq $dispatch "always" -}}
+			if err := p.applyRule({{if .Options.Cancellable}}ctx, {{end}}rule, &entry, stack, {{template "lexerArg" .}}{{if .NeedsSession}}, &s{{end}}); err != nil {
+				return {{if .Parser.HasInputAssocValues}}nil, {{end}}err
+			}
+{{ else if eq $dispatch "table" -}}
 			if act := tmRuleAction[rule]; act != 0 {
 {{ if .Parser.Types -}}
 				if act > 0 {
@@ -364,6 +370,7 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 				}
 {{ end -}}
 			}
+{{ end -}}
 			stack = stack[:len(stack)-len(rhs)]
 			if debugSyntax {
 				"fmt".Printf("reduced to: %v\n", symbolName(entry.sym.symbol))

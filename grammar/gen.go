@@ -261,6 +261,31 @@ func (g *Grammar) NeedsApplyRule(r *Rule) bool {
 	return act.Code != "" || len(act.Report) > 0
 }
 
+// ReduceDispatch tells the generated parser how to dispatch reductions:
+//
+//	"table":  consult a per-rule table to skip applyRule when reducing a rule has no effect
+//	"always": call applyRule for every reduction (all rules have semantic actions)
+//	"never":  reductions have no observable effects at all
+func (g *Grammar) ReduceDispatch() string {
+	var needsApply, reported int
+	for _, r := range g.Parser.Rules {
+		switch {
+		case g.NeedsApplyRule(r):
+			needsApply++
+		case g.Parser.Types != nil && r.Type != -1 && g.Parser.Types.RangeTypes[r.Type].Name != g.Options.FileNode:
+			reported++
+		}
+	}
+	needsApply += len(g.Parser.Tables.Lookaheads)
+	switch {
+	case needsApply == len(g.Parser.Rules)+len(g.Parser.Tables.Lookaheads):
+		return "always"
+	case needsApply == 0 && reported == 0:
+		return "never"
+	}
+	return "table"
+}
+
 func (g *Grammar) AllFlags() []string {
 	var ret []string
 	ret = append(ret, g.Lexer.UsedFlags...)
