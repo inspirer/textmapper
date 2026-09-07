@@ -66,15 +66,37 @@ func (p *Parser) ParseDecl1(ctx context.Context, lexer *Lexer) (int, error) {
 	return val, err
 }
 
+// lookaheadCacheSize is the number of memoized lookahead results. The cache is
+// direct-mapped and lives inside the session (i.e. on the stack): a miss only
+// costs time, never correctness.
+const lookaheadCacheSize = 128
+
+type lookaheadCacheEntry struct {
+	key   uint64 // zero for empty entries
+	value bool
+}
+
 type session struct {
 	shiftCounter int32
-	cache        map[uint64]bool
+	cache        [lookaheadCacheSize]lookaheadCacheEntry
+}
+
+func (s *session) cacheGet(key uint64) (value, ok bool) {
+	e := &s.cache[(key*0x9e3779b97f4a7c15)>>(64-7)]
+	if e.key == key {
+		return e.value, true
+	}
+	return false, false
+}
+
+func (s *session) cachePut(key uint64, value bool) {
+	e := &s.cache[(key*0x9e3779b97f4a7c15)>>(64-7)]
+	e.key, e.value = key, value
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (interface{}, error) {
 	p.pending = p.pending[:0]
 	var s session
-	s.cache = make(map[uint64]bool)
 	state := start
 
 	var alloc [startStackSize]stackEntry
@@ -281,12 +303,13 @@ func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *
 	if next.symbol == noToken {
 		next = lookaheadNext(&lexer)
 	}
+	// Note: the key is never zero because end states are non-zero.
 	key := uint64(next.offset) + uint64(end)<<40
-	if ret, ok := s.cache[key]; ok {
+	if ret, ok := s.cacheGet(key); ok {
 		return ret, nil
 	}
 
-	var allocated [64]stackEntry
+	var allocated [128]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
 
@@ -361,7 +384,7 @@ func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *
 		}
 	}
 
-	s.cache[key] = state == end
+	s.cachePut(key, state == end)
 	if debugSyntax {
 		fmt.Printf("lookahead done: %v\n", state == end)
 	}

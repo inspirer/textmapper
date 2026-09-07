@@ -19,14 +19,36 @@ func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	p.listener = l
 }
 
+// lookaheadCacheSize is the number of memoized lookahead results. The cache is
+// direct-mapped and lives inside the session (i.e. on the stack): a miss only
+// costs time, never correctness.
+const lookaheadCacheSize = 128
+
+type lookaheadCacheEntry struct {
+	key   uint64 // zero for empty entries
+	value bool
+}
+
 type session struct {
 	shiftCounter int32
-	cache        map[uint64]bool
+	cache        [lookaheadCacheSize]lookaheadCacheEntry
+}
+
+func (s *session) cacheGet(key uint64) (value, ok bool) {
+	e := &s.cache[(key*0x9e3779b97f4a7c15)>>(64-7)]
+	if e.key == key {
+		return e.value, true
+	}
+	return false, false
+}
+
+func (s *session) cachePut(key uint64, value bool) {
+	e := &s.cache[(key*0x9e3779b97f4a7c15)>>(64-7)]
+	e.key, e.value = key, value
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStream) error {
 	var s session
-	s.cache = make(map[uint64]bool)
 
 	state := start
 	var lastErr SyntaxError

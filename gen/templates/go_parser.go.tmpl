@@ -209,15 +209,42 @@ func (p *Parser) Parse{{if $.Parser.HasMultipleUserInputs}}{{$.NontermID $inp.No
 
 {{- define "session" -}}
 {{ if and .NeedsSession (.Options.IsEnabled "session") -}}
+{{ if .Options.RecursiveLookaheads -}}
+// lookaheadCacheSize is the number of memoized lookahead results. The cache is
+// direct-mapped and lives inside the session (i.e. on the stack): a miss only
+// costs time, never correctness.
+const lookaheadCacheSize = 128
+
+type lookaheadCacheEntry struct {
+	key   uint64 // zero for empty entries
+	value bool
+}
+
+{{ end -}}
 type session struct {
 {{ if $.Options.Cancellable -}}
 	shiftCounter int32
 {{ end -}}
 {{ if .Options.RecursiveLookaheads -}}
-	cache map[uint64]bool
+	cache [lookaheadCacheSize]lookaheadCacheEntry
 {{ end -}}
 }
 
+{{ if .Options.RecursiveLookaheads -}}
+func (s *session) cacheGet(key uint64) (value, ok bool) {
+	e := &s.cache[(key*0x9e3779b97f4a7c15)>>(64-7)]
+	if e.key == key {
+		return e.value, true
+	}
+	return false, false
+}
+
+func (s *session) cachePut(key uint64, value bool) {
+	e := &s.cache[(key*0x9e3779b97f4a7c15)>>(64-7)]
+	e.key, e.value = key, value
+}
+
+{{ end -}}
 {{ end -}}
 {{ end -}}
 
@@ -230,9 +257,6 @@ func (p *Parser) parse({{if $.Options.Cancellable}}ctx "context".Context, {{end}
 {{ end -}}
 {{ if .NeedsSession -}}
 	var s session
-{{ if .Options.RecursiveLookaheads -}}
-	s.cache = make(map[uint64]bool)
-{{ end -}}
 {{ else if .Options.Cancellable -}}
 	var shiftCounter int
 
@@ -898,13 +922,14 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}{{ if .
 	if next.symbol == noToken {
 		next = {{ if .Options.TokenStream }}stream.next(nil /*stack*/, end){{else}}lookaheadNext(&{{template "lexerArg" $}}{{template "lookaheadNextArgs" true}}){{end}}
 	}
+	// Note: the key is never zero because end states are non-zero.
 	key := uint64(next.offset) + uint64(end)<<40
-	if ret, ok := s.cache[key]; ok {
+	if ret, ok := s.cacheGet(key); ok {
 		return ret{{if $.Options.Cancellable}}, nil{{end}}
 	}
 
 {{ end -}}
-	var allocated [64]stackEntry
+	var allocated [128]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
 
@@ -1005,7 +1030,7 @@ func lookahead({{if $.Options.Cancellable}}ctx "context".Context, {{end}}{{ if .
 	}
 
 {{ if .Options.RecursiveLookaheads -}}
-	s.cache[key] = state == end
+	s.cachePut(key, state == end)
 {{ end -}}
 	if debugSyntax {
 		"fmt".Printf("lookahead done: %v\n", state == end)

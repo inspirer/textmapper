@@ -295,12 +295,13 @@ func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int
 	if next.symbol == noToken {
 		next = stream.next(nil /*stack*/, end)
 	}
+	// Note: the key is never zero because end states are non-zero.
 	key := uint64(next.offset) + uint64(end)<<40
-	if ret, ok := s.cache[key]; ok {
+	if ret, ok := s.cacheGet(key); ok {
 		return ret, nil
 	}
 
-	var allocated [64]stackEntry
+	var allocated [128]stackEntry
 	state := start
 	stack := append(allocated[:0], stackEntry{state: state})
 
@@ -372,7 +373,7 @@ func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int
 		}
 	}
 
-	s.cache[key] = state == end
+	s.cachePut(key, state == end)
 	if debugSyntax {
 		fmt.Printf("lookahead done: %v\n", state == end)
 	}
